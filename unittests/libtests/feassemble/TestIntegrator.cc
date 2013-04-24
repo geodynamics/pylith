@@ -37,11 +37,15 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestIntegrator );
 void
 pylith::feassemble::TestIntegrator::testTimeStep(void)
 { // testTimeStep
+  PYLITH_METHOD_BEGIN;
+
   ElasticityExplicit integrator;
   const PylithScalar dt = 1.2;
   integrator.timeStep(dt);
 
   CPPUNIT_ASSERT_EQUAL(dt, integrator._dt);
+
+  PYLITH_METHOD_END;
 } // testTimeStep
 
 // ----------------------------------------------------------------------
@@ -49,11 +53,14 @@ pylith::feassemble::TestIntegrator::testTimeStep(void)
 void
 pylith::feassemble::TestIntegrator::testStableTimeStep(void)
 { // testStableTimeStep
+  PYLITH_METHOD_BEGIN;
+
   bc::Neumann integrator;
   topology::Mesh mesh;
 
-  CPPUNIT_ASSERT_EQUAL(pylith::PYLITH_MAXSCALAR,
-		       integrator.stableTimeStep(mesh));
+  CPPUNIT_ASSERT_EQUAL(pylith::PYLITH_MAXSCALAR, integrator.stableTimeStep(mesh));
+
+  PYLITH_METHOD_END;
 } // testStableTimeStep
 
 // ----------------------------------------------------------------------
@@ -61,12 +68,16 @@ pylith::feassemble::TestIntegrator::testStableTimeStep(void)
 void
 pylith::feassemble::TestIntegrator::testIsJacobianSymmetric(void)
 { // testIsJacobianSymmetric
+  PYLITH_METHOD_BEGIN;
+
   ElasticityExplicit integrator;
 
   CPPUNIT_ASSERT_EQUAL(true, integrator.isJacobianSymmetric());
 
   integrator._isJacobianSymmetric = false;
   CPPUNIT_ASSERT_EQUAL(false, integrator.isJacobianSymmetric());
+
+  PYLITH_METHOD_END;
 } // testIsJacobianSymmetric
 
 // ----------------------------------------------------------------------
@@ -74,6 +85,8 @@ pylith::feassemble::TestIntegrator::testIsJacobianSymmetric(void)
 void
 pylith::feassemble::TestIntegrator::testQuadrature(void)
 { // testQuadrature
+  PYLITH_METHOD_BEGIN;
+
   // Since quadrature is cloned, test setting quadrature by testing
   // value of minJacobian
 
@@ -85,6 +98,8 @@ pylith::feassemble::TestIntegrator::testQuadrature(void)
   integrator.quadrature(&quadrature);
 
   CPPUNIT_ASSERT_EQUAL(minJacobian, integrator._quadrature->minJacobian());
+
+  PYLITH_METHOD_END;
 } // testQuadrature
 
 // ----------------------------------------------------------------------
@@ -92,6 +107,8 @@ pylith::feassemble::TestIntegrator::testQuadrature(void)
 void
 pylith::feassemble::TestIntegrator::testNormalizer(void)
 { // testNormalizer
+  PYLITH_METHOD_BEGIN;
+
   const double lengthScale = 2.0;
 
   spatialdata::units::Nondimensional normalizer;
@@ -101,6 +118,8 @@ pylith::feassemble::TestIntegrator::testNormalizer(void)
   integrator.normalizer(normalizer);
 
   CPPUNIT_ASSERT_EQUAL(lengthScale, integrator._normalizer->lengthScale());
+
+  PYLITH_METHOD_END;
 } // testNormalizer
 
 // ----------------------------------------------------------------------
@@ -108,13 +127,17 @@ pylith::feassemble::TestIntegrator::testNormalizer(void)
 void
 pylith::feassemble::TestIntegrator::testGravityField(void)
 { // testGravityField
+  PYLITH_METHOD_BEGIN;
+
   ElasticityImplicit integrator;
   spatialdata::spatialdb::GravityField gravityField;
 
   CPPUNIT_ASSERT(0 == integrator._gravityField);
 
   integrator.gravityField(&gravityField);
-  CPPUNIT_ASSERT(0 != integrator._gravityField);
+  CPPUNIT_ASSERT(integrator._gravityField);
+
+  PYLITH_METHOD_END;
 } // testGravityField
 
 // ----------------------------------------------------------------------
@@ -122,6 +145,8 @@ pylith::feassemble::TestIntegrator::testGravityField(void)
 void
 pylith::feassemble::TestIntegrator::testInitCellVector(void)
 { // testInitCellVector
+  PYLITH_METHOD_BEGIN;
+
   Quadrature<topology::Mesh> quadrature;
   _initQuadrature(&quadrature);
 
@@ -135,6 +160,8 @@ pylith::feassemble::TestIntegrator::testInitCellVector(void)
   CPPUNIT_ASSERT_EQUAL(size, integrator._cellVector.size());
   for (size_t i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(PylithScalar(0.0), integrator._cellVector[i]);
+
+  PYLITH_METHOD_END;
 } // testInitCellVector
 
 // ----------------------------------------------------------------------
@@ -142,6 +169,8 @@ pylith::feassemble::TestIntegrator::testInitCellVector(void)
 void
 pylith::feassemble::TestIntegrator::testResetCellVector(void)
 { // testResetCellVector
+  PYLITH_METHOD_BEGIN;
+
   Quadrature<topology::Mesh> quadrature;
   _initQuadrature(&quadrature);
 
@@ -158,6 +187,8 @@ pylith::feassemble::TestIntegrator::testResetCellVector(void)
   integrator._resetCellVector();
   for (size_t i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(PylithScalar(0.0), integrator._cellVector[i]);
+
+  PYLITH_METHOD_END;
 } // testResetCellVector
 
 // ----------------------------------------------------------------------
@@ -165,6 +196,8 @@ pylith::feassemble::TestIntegrator::testResetCellVector(void)
 void
 pylith::feassemble::TestIntegrator::testInitCellMatrix(void)
 { // testInitCellMatrix
+  PYLITH_METHOD_BEGIN;
+
   Quadrature<topology::Mesh> quadrature;
   _initQuadrature(&quadrature);
 
@@ -179,6 +212,8 @@ pylith::feassemble::TestIntegrator::testInitCellMatrix(void)
   CPPUNIT_ASSERT_EQUAL(size, integrator._cellMatrix.size());
   for (size_t i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(PylithScalar(0.0), integrator._cellMatrix[i]);
+
+  PYLITH_METHOD_END;
 } // testInitCellMatrix
 
 // ----------------------------------------------------------------------
@@ -186,6 +221,8 @@ pylith::feassemble::TestIntegrator::testInitCellMatrix(void)
 void
 pylith::feassemble::TestIntegrator::testResetCellMatrix(void)
 { // testResetCellMatrix
+  PYLITH_METHOD_BEGIN;
+
   Quadrature<topology::Mesh> quadrature;
   _initQuadrature(&quadrature);
 
@@ -203,6 +240,8 @@ pylith::feassemble::TestIntegrator::testResetCellMatrix(void)
   integrator._resetCellMatrix();
   for (size_t i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(PylithScalar(0.0), integrator._cellMatrix[i]);
+
+  PYLITH_METHOD_END;
 } // testResetCellMatrix
 
 // ----------------------------------------------------------------------
@@ -210,6 +249,8 @@ pylith::feassemble::TestIntegrator::testResetCellMatrix(void)
 void
 pylith::feassemble::TestIntegrator::testLumpCellMatrix(void)
 { // testLumpCellMatrix
+  PYLITH_METHOD_BEGIN;
+
   Quadrature<topology::Mesh> quadrature;
   _initQuadrature(&quadrature);
 
@@ -238,6 +279,8 @@ pylith::feassemble::TestIntegrator::testLumpCellMatrix(void)
 	value += 1.23 + 1.2*(index+jBasis*spaceDim+iDim);
       CPPUNIT_ASSERT_DOUBLES_EQUAL(value, integrator._cellVector[iBasis*spaceDim+iDim], tolerance);
     } // for
+
+  PYLITH_METHOD_END;
 } // testLumpCellMatrix
 
 // ----------------------------------------------------------------------
@@ -245,6 +288,7 @@ pylith::feassemble::TestIntegrator::testLumpCellMatrix(void)
 void
 pylith::feassemble::TestIntegrator::testSplitField(void)
 { // testSplitField
+  PYLITH_METHOD_BEGIN;
 
   topology::Mesh mesh;
   topology::Field<topology::Mesh> field(mesh);
@@ -252,24 +296,27 @@ pylith::feassemble::TestIntegrator::testSplitField(void)
   ElasticityExplicit integrator;
   integrator.splitField(&field);
   // Expect nothing to happen
+
+  PYLITH_METHOD_END;
 } // testSplitField
 
 // ----------------------------------------------------------------------
 // Set quadrature information.
 void
-pylith::feassemble::TestIntegrator::_initQuadrature(
-				  Quadrature<topology::Mesh>* quadrature)
+pylith::feassemble::TestIntegrator::_initQuadrature(Quadrature<topology::Mesh>* quadrature)
 { // _initQuadrature
-  CPPUNIT_ASSERT(0 != quadrature);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(quadrature);
 
   const int cellDim = 1;
   const int numBasis = 2;
   const int numQuadPts = 1;
   const int spaceDim = 1;
-  const PylithScalar basis[] = { 0.5, 0.5 };
-  const PylithScalar basisDeriv[] = { -0.5, 0.5 };
-  const PylithScalar quadPtsRef[] = { 0.0 };
-  const PylithScalar quadWts[] = { 2.0 };
+  const PylithScalar basis[numQuadPts*numBasis] = { 0.5, 0.5 };
+  const PylithScalar basisDeriv[numQuadPts*numBasis*cellDim] = { -0.5, 0.5 };
+  const PylithScalar quadPtsRef[numQuadPts*cellDim] = { 0.0 };
+  const PylithScalar quadWts[numQuadPts] = { 2.0 };
   const PylithScalar minJacobian = 1.0;
 
   quadrature->initialize(basis, numQuadPts, numBasis,
@@ -277,6 +324,8 @@ pylith::feassemble::TestIntegrator::_initQuadrature(
 			 quadPtsRef, numQuadPts, cellDim,
 			 quadWts, numQuadPts,
 			 spaceDim);
+
+  PYLITH_METHOD_END;
 } // _initQuadrature
 
 

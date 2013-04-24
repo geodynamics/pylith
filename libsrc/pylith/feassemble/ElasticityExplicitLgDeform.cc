@@ -404,9 +404,8 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(topology::Fiel
   assert(dt > 0);
 
   // Setup field visitors.
+  scalar_array valuesIJ(numBasis);
   topology::VecVisitorMesh jacobianVisitor(*jacobian);
-  PetscScalar* jacobianCell = NULL;
-  PetscInt jacobianSize = 0;
 
   topology::CoordsVisitor coordsVisitor(dmMesh);
   PetscScalar* coordsCell = NULL;
@@ -441,23 +440,30 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(topology::Fiel
     const scalar_array& density = _material->calcDensity();
 
     // Compute Jacobian for inertial terms
-    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-      const PylithScalar wt = 
-	quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad] / dt2;
-      for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-        const PylithScalar valI = wt*basis[iQ+iBasis];
-        for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-          const PylithScalar valIJ = valI * basis[iQ+jBasis];
-          for (int iDim=0; iDim < spaceDim; ++iDim) {
-            const int iBlock = (iBasis*spaceDim + iDim) * (numBasis*spaceDim);
-            const int jBlock = (jBasis*spaceDim + iDim);
-            _cellMatrix[iBlock+jBlock] += valIJ;
-          } // for
-        } // for
+    valuesIJ = 0.0;
+    for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
+      const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad] / dt2;
+      const int iQ = iQuad * numBasis;
+      PylithScalar valJ = 0.0;
+      for (int jBasis = 0; jBasis < numBasis; ++jBasis) {
+        valJ += basis[iQ + jBasis];
+      } // for
+      valJ *= wt;
+      for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
+        valuesIJ[iBasis] += basis[iQ + iBasis] * valJ;
       } // for
     } // for
-    PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(1+spaceDim))));
-    _lumpCellMatrix();
+    for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
+      for (int iDim = 0; iDim < spaceDim; ++iDim) {
+        _cellVector[iBasis*spaceDim+iDim] += valuesIJ[iBasis];
+      } // for
+    } // for
+    
+#if defined(DETAILED_EVENT_LOGGING)
+    PetscLogFlops(numQuadPts*(4 + numBasis*3) + numBasis*spaceDim);
+    _logger->eventEnd(computeEvent);
+    _logger->eventBegin(updateEvent);
+#endif
     
     // Assemble cell contribution into lumped matrix.
     jacobianVisitor.setClosure(&_cellVector[0], _cellVector.size(), cell, ADD_VALUES);

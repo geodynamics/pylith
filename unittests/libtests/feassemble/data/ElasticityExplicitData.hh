@@ -42,6 +42,14 @@ public :
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
+  /// @name Scales information for nondimensionalization.
+  //@{
+  PylithScalar lengthScale; ///< Length scale.
+  PylithScalar pressureScale; ///< Pressure scale.
+  PylithScalar timeScale; ///< Time scale.
+  PylithScalar densityScale; ///< Density scale.
+  //@}  
+
   /// @name Calculated values.
   //@{
   PylithScalar dtStableExplicit; ///< Stable time step for explicit time integration.

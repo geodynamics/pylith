@@ -26,6 +26,8 @@
 #include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
@@ -42,18 +44,18 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityExplicitLgDeform );
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
-
-// ----------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::feassemble::TestElasticityExplicitLgDeform::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   _quadrature = new Quadrature<topology::Mesh>();
   _data = 0;
   _material = 0;
   _gravityField = 0;
+
+  PYLITH_METHOD_END;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -61,10 +63,14 @@ pylith::feassemble::TestElasticityExplicitLgDeform::setUp(void)
 void
 pylith::feassemble::TestElasticityExplicitLgDeform::tearDown(void)
 { // tearDown
+  PYLITH_METHOD_BEGIN;
+
   delete _data; _data = 0;
   delete _quadrature; _quadrature = 0;
   delete _material; _material = 0;
   delete _gravityField; _gravityField = 0;
+
+  PYLITH_METHOD_END;
 } // tearDown
 
 // ----------------------------------------------------------------------
@@ -72,7 +78,11 @@ pylith::feassemble::TestElasticityExplicitLgDeform::tearDown(void)
 void
 pylith::feassemble::TestElasticityExplicitLgDeform::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   ElasticityExplicitLgDeform integrator;
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -80,13 +90,16 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testConstructor(void)
 void 
 pylith::feassemble::TestElasticityExplicitLgDeform::testInitialize(void)
 { // testInitialize
-  CPPUNIT_ASSERT(0 != _data);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_data);
 
   topology::Mesh mesh;
   ElasticityExplicitLgDeform integrator;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
+  PYLITH_METHOD_END;
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -94,7 +107,9 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testInitialize(void)
 void
 pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateResidual(void)
 { // testIntegrateResidual
-  CPPUNIT_ASSERT(0 != _data);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_data);
 
   topology::Mesh mesh;
   ElasticityExplicitLgDeform integrator;
@@ -106,18 +121,6 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateResidual(void)
   integrator.integrateResidual(residual, t, &fields);
 
   const PylithScalar* valsE = _data->valsResidual;
-  const int sizeE = _data->spaceDim * _data->numVertices;
-
-  PetscSection residualSection = residual.petscSection();
-  Vec          residualVec     = residual.localVector();
-  PetscScalar   *vals;
-  PetscInt       size;
-  PetscErrorCode err;
-
-  CPPUNIT_ASSERT(residualSection);CPPUNIT_ASSERT(residualVec);
-  err = VecGetArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
-  err = PetscSectionGetStorageSize(residualSection, &size);CHECK_PETSC_ERROR(err);
-  CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
 #if 0
   residual.view("RESIDUAL");
@@ -126,13 +129,32 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateResidual(void)
     std::cout << "valE: " << valsE[i] << ", val: " << vals[i] << ", val/valE: " << vals[i]/valsE[i] << std::endl;
 #endif
 
-  const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-04;
-  for (int i=0; i < size; ++i)
-    if (fabs(valsE[i]) > 1.0)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
-    else
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
-  err = VecRestoreArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
+  const PetscDM dmMesh = mesh.dmMesh();
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
+  CPPUNIT_ASSERT_EQUAL(_data->numVertices, verticesStratum.size());
+
+  topology::VecVisitorMesh residualVisitor(residual);
+  const PetscScalar* residualArray = residualVisitor.localArray();CPPUNIT_ASSERT(residualArray);
+
+  const PylithScalar accScale = _data->lengthScale / pow(_data->timeScale, 2);
+  const PylithScalar residualScale = _data->densityScale * accScale*pow(_data->lengthScale, _data->spaceDim);
+
+  const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
+  for (PetscInt v = vStart, index = 0; v < vEnd; ++v) {
+    const PetscInt off = residualVisitor.sectionOffset(v);
+    CPPUNIT_ASSERT_EQUAL(_data->spaceDim, residualVisitor.sectionDof(v));
+
+    for (int d=0; d < _data->spaceDim; ++d, ++index) {
+      if (fabs(valsE[index]) > 1.0)
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, residualArray[off+d]/valsE[index]*residualScale, tolerance);
+      else
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[index], residualArray[off+d]*residualScale, tolerance);
+    } // for
+  } // for
+
+  PYLITH_METHOD_END;
 } // testIntegrateResidual
 
 // ----------------------------------------------------------------------
@@ -140,7 +162,9 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateResidual(void)
 void
 pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateJacobian(void)
 { // testIntegrateJacobian
-  CPPUNIT_ASSERT(0 != _data);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_data);
 
   topology::Mesh mesh;
   ElasticityExplicitLgDeform integrator;
@@ -160,39 +184,41 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateJacobian(void)
   jacobian.complete();
 
   const PylithScalar* valsE = _data->valsJacobian;
-  const int sizeE = _data->numVertices * _data->spaceDim;
 
 #if 0 // DEBUGGING
   // TEMPORARY
   jacobian.view("JACOBIAN");
-  std::cout << "\n\nJACOBIAN FULL" << std::endl;
-  const int n = numBasis*spaceDim;
+  std::cout << "\n\nJACOBIAN EXPECTED" << std::endl;
+  const int n = _data->numBasis*_data->spaceDim;
   for (int r=0; r < n; ++r) {
-    for (int c=0; c < n; ++c) 
-      std::cout << "  " << valsMatrixE[r*n+c];
-    std::cout << "\n";
+    std::cout << "  " << valsE[r] << "\n";
   } // for
 #endif // DEBUGGING
 
-  PetscSection jacobianSection = jacobian.petscSection();
-  Vec          jacobianVec     = jacobian.localVector();
-  PetscScalar       *vals;
-  PetscInt           size;
-  PetscErrorCode     err;
+  const PetscDM dmMesh = mesh.dmMesh();
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
+  CPPUNIT_ASSERT_EQUAL(_data->numVertices, verticesStratum.size());
 
-  CPPUNIT_ASSERT(jacobianSection);CPPUNIT_ASSERT(jacobianVec);
-  err = VecGetArray(jacobianVec, &vals);CHECK_PETSC_ERROR(err);
-  err = PetscSectionGetStorageSize(jacobianSection, &size);CHECK_PETSC_ERROR(err);
-  CPPUNIT_ASSERT_EQUAL(sizeE, size);
+  topology::VecVisitorMesh jacobianVisitor(jacobian);
+  const PetscScalar* jacobianArray = jacobianVisitor.localArray();CPPUNIT_ASSERT(jacobianArray);
+  const PylithScalar jacobianScale = _data->densityScale / pow(_data->timeScale, 2) * pow(_data->lengthScale, _data->spaceDim);
 
-  const PylithScalar tolerance = 1.0e-06;
-  for (int i=0; i < size; ++i)
-    if (fabs(valsE[i]) > 1.0)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
-    else
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
+  const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
+  for (PetscInt v = vStart, index = 0; v < vEnd; ++v) {
+    const PetscInt off = jacobianVisitor.sectionOffset(v);
+    CPPUNIT_ASSERT_EQUAL(_data->spaceDim, jacobianVisitor.sectionDof(v));
 
-  err = VecRestoreArray(jacobianVec, &vals);CHECK_PETSC_ERROR(err);
+    for (int d=0; d < _data->spaceDim; ++d, ++index) {
+      if (fabs(valsE[index]) > 1.0)
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, jacobianArray[off+d]/valsE[index]*jacobianScale, tolerance);
+      else
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[index], jacobianArray[off+d]*jacobianScale, tolerance);
+    } // for
+  } // for
+
+  PYLITH_METHOD_END;
 } // testIntegrateJacobian
 
 // ----------------------------------------------------------------------
@@ -200,7 +226,9 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateJacobian(void)
 void 
 pylith::feassemble::TestElasticityExplicitLgDeform::testUpdateStateVars(void)
 { // testUpdateStateVars
-  CPPUNIT_ASSERT(0 != _data);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_data);
 
   topology::Mesh mesh;
   ElasticityExplicitLgDeform integrator;
@@ -209,83 +237,48 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testUpdateStateVars(void)
 
   const PylithScalar t = 1.0;
   integrator.updateStateVars(t, &fields);
+
+  PYLITH_METHOD_END;
 } // testUpdateStateVars
 
+
+// ----------------------------------------------------------------------
 extern PetscErrorCode DMPlexBuildFromCellList_Private(DM dm, PetscInt numCells, PetscInt numVertices, PetscInt numCorners, const int cells[]);
 extern PetscErrorCode DMPlexBuildCoordinates_Private(DM dm, PetscInt spaceDim, PetscInt numCells, PetscInt numVertices, const double vertexCoords[]);
 
-// ----------------------------------------------------------------------
 // Initialize elasticity integrator.
 void
-pylith::feassemble::TestElasticityExplicitLgDeform::_initialize(
-					 topology::Mesh* mesh,
-					 ElasticityExplicitLgDeform* const integrator,
-					 topology::SolutionFields* fields)
+pylith::feassemble::TestElasticityExplicitLgDeform::_initialize(topology::Mesh* mesh,
+								ElasticityExplicitLgDeform* const integrator,
+								topology::SolutionFields* fields)
 { // _initialize
-  CPPUNIT_ASSERT(0 != mesh);
-  CPPUNIT_ASSERT(0 != integrator);
-  CPPUNIT_ASSERT(0 != _data);
-  CPPUNIT_ASSERT(0 != _quadrature);
-  CPPUNIT_ASSERT(0 != _material);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(mesh);
+  CPPUNIT_ASSERT(integrator);
+  CPPUNIT_ASSERT(_data);
+  CPPUNIT_ASSERT(_quadrature);
+  CPPUNIT_ASSERT(_material);
 
   const int spaceDim = _data->spaceDim;
   const PylithScalar dt = _data->dt;
 
   // Setup mesh
-  spatialdata::geocoords::CSCart cs;
-  cs.setSpaceDim(spaceDim);
-  cs.initialize();
-  mesh->coordsys(&cs);
-  mesh->createSieveMesh(_data->cellDim);
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  ALE::Obj<SieveMesh::sieve_type> sieve = 
-    new SieveMesh::sieve_type(mesh->comm());
-  CPPUNIT_ASSERT(!sieve.isNull());
-
   mesh->createDMMesh(_data->cellDim);
-  DM dmMesh = mesh->dmMesh();
-  CPPUNIT_ASSERT(dmMesh);
+  PetscDM dmMesh = mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
 
   // Cells and vertices
   const bool interpolate = false;
-  ALE::Obj<SieveFlexMesh::sieve_type> s = 
-    new SieveFlexMesh::sieve_type(sieve->comm(), sieve->debug());
-  
-  ALE::SieveBuilder<SieveFlexMesh>::buildTopology(s, 
-					      _data->cellDim, _data->numCells,
-                                              const_cast<int*>(_data->cells), 
-					      _data->numVertices,
-                                              interpolate, _data->numBasis);
-  std::map<SieveFlexMesh::point_type,SieveFlexMesh::point_type> renumbering;
-  ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
-  sieveMesh->setSieve(sieve);
-  sieveMesh->stratify();
-  ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, spaceDim, 
-						 _data->vertices);
   PetscErrorCode err;
-
   err = DMPlexBuildFromCellList_Private(dmMesh, _data->numCells, _data->numVertices, _data->numBasis, _data->cells);CHECK_PETSC_ERROR(err);
   err = DMPlexBuildCoordinates_Private(dmMesh, _data->spaceDim, _data->numCells, _data->numVertices, _data->vertices);CHECK_PETSC_ERROR(err);
 
   // Material ids
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->heightStratum(0);
-  CPPUNIT_ASSERT(!cells.isNull());
-  const ALE::Obj<SieveMesh::label_type>& labelMaterials = 
-    sieveMesh->createLabel("material-id");
-  CPPUNIT_ASSERT(!labelMaterials.isNull());
-  int i = 0;
-  for(SieveMesh::label_sequence::iterator e_iter=cells->begin(); 
-      e_iter != cells->end();
-      ++e_iter)
-    sieveMesh->setValue(labelMaterials, *e_iter, _data->matId);
   PetscInt cStart, cEnd, c;
-
   err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
   for(PetscInt c = cStart; c < cEnd; ++c) {
     err = DMPlexSetLabelValue(dmMesh, "material-id", c, _data->matId);CHECK_PETSC_ERROR(err);
-  }
+  } // for
 
   // Setup quadrature
   _quadrature->initialize(_data->basis, _data->numQuadPts, _data->numBasis,
@@ -295,14 +288,30 @@ pylith::feassemble::TestElasticityExplicitLgDeform::_initialize(
 			  _data->quadWts, _data->numQuadPts,
 			  spaceDim);
 
+  // Setup coordinate system.
+  spatialdata::geocoords::CSCart cs;
+  cs.setSpaceDim(spaceDim);
+  cs.initialize();
+  mesh->coordsys(&cs);
+
+  // Setup scales.
+  const PylithScalar timeScale = _data->timeScale;
+  const PylithScalar lengthScale = _data->lengthScale;
+  const PylithScalar velScale = lengthScale / timeScale;
+  const PylithScalar accScale = lengthScale / (timeScale*timeScale);
+  spatialdata::units::Nondimensional normalizer;
+  normalizer.lengthScale(_data->lengthScale);
+  normalizer.pressureScale(_data->pressureScale);
+  normalizer.densityScale(_data->densityScale);
+  normalizer.timeScale(_data->timeScale);
+  mesh->nondimensionalize(normalizer);
+
   // Setup material
   spatialdata::spatialdb::SimpleIOAscii iohandler;
   iohandler.filename(_data->matDBFilename);
   spatialdata::spatialdb::SimpleDB dbProperties;
   dbProperties.ioHandler(&iohandler);
   
-  spatialdata::units::Nondimensional normalizer;
-
   _material->id(_data->matId);
   _material->label(_data->matLabel);
   _material->dbProperties(&dbProperties);
@@ -310,12 +319,12 @@ pylith::feassemble::TestElasticityExplicitLgDeform::_initialize(
 
   integrator->quadrature(_quadrature);
   integrator->gravityField(_gravityField);
-  integrator->timeStep(_data->dt);
+  integrator->timeStep(_data->dt / _data->timeScale);
   integrator->material(_material);
   integrator->initialize(*mesh);
 
   // Setup fields
-  CPPUNIT_ASSERT(0 != fields);
+  CPPUNIT_ASSERT(fields);
   fields->add("residual", "residual");
   fields->add("disp(t)", "displacement");
   fields->add("dispIncr(t->t+dt)", "displacement_increment");
@@ -330,40 +339,56 @@ pylith::feassemble::TestElasticityExplicitLgDeform::_initialize(
   residual.zero();
   fields->copyLayout("residual");
 
-  scalar_array velVertex(spaceDim);
-  scalar_array accVertex(spaceDim);
-  const int offset = _data->numCells;
+  topology::VecVisitorMesh dispTVisitor(fields->get("disp(t)"));
+  PetscScalar* dispTArray = dispTVisitor.localArray();CPPUNIT_ASSERT(dispTArray);
 
-  PetscSection dispTSectionP     = fields->get("disp(t)").petscSection();
-  Vec          dispTVec          = fields->get("disp(t)").localVector();
-  CPPUNIT_ASSERT(dispTSectionP);CPPUNIT_ASSERT(dispTVec);
-  PetscSection dispTIncrSectionP = fields->get("dispIncr(t->t+dt)").petscSection();
-  Vec          dispTIncrVec      = fields->get("dispIncr(t->t+dt)").localVector();
-  CPPUNIT_ASSERT(dispTIncrSectionP);CPPUNIT_ASSERT(dispTIncrVec);
-  PetscSection dispTmdtSectionP  = fields->get("disp(t-dt)").petscSection();
-  Vec          dispTmdtVec       = fields->get("disp(t-dt)").localVector();
-  CPPUNIT_ASSERT(dispTmdtSectionP);CPPUNIT_ASSERT(dispTmdtVec);
-  PetscSection velSectionP       = fields->get("velocity(t)").petscSection();
-  Vec          velVec            = fields->get("velocity(t)").localVector();
-  CPPUNIT_ASSERT(velSectionP);CPPUNIT_ASSERT(velVec);
-  PetscSection accSectionP       = fields->get("acceleration(t)").petscSection();
-  Vec          accVec            = fields->get("acceleration(t)").localVector();
-  CPPUNIT_ASSERT(accSectionP);CPPUNIT_ASSERT(accVec);
-  for(int iVertex=0; iVertex < _data->numVertices; ++iVertex) {
+  topology::VecVisitorMesh dispTmdtVisitor(fields->get("disp(t-dt)"));
+  PetscScalar* dispTmdtArray = dispTmdtVisitor.localArray();CPPUNIT_ASSERT(dispTmdtArray);
+
+  topology::VecVisitorMesh dispTIncrVisitor(fields->get("dispIncr(t->t+dt)"));
+  PetscScalar* dispTIncrArray = dispTIncrVisitor.localArray();CPPUNIT_ASSERT(dispTIncrArray);
+
+  topology::VecVisitorMesh velVisitor(fields->get("velocity(t)"));
+  PetscScalar* velArray = velVisitor.localArray();CPPUNIT_ASSERT(velArray);
+
+  topology::VecVisitorMesh accVisitor(fields->get("acceleration(t)"));
+  PetscScalar* accArray = accVisitor.localArray();CPPUNIT_ASSERT(accArray);
+
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
+  
+  for(PetscInt v = vStart, iVertex = 0; v < vEnd; ++v, ++iVertex) {
+    const PetscInt dtoff = dispTVisitor.sectionOffset(v);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, dispTVisitor.sectionDof(v));
+
+    const PetscInt dmoff = dispTmdtVisitor.sectionOffset(v);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, dispTmdtVisitor.sectionDof(v));
+
+    const PetscInt dioff = dispTIncrVisitor.sectionOffset(v);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, dispTIncrVisitor.sectionDof(v));
+
+    const PetscInt voff = velVisitor.sectionOffset(v);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, velVisitor.sectionDof(v));
+
+    const PetscInt aoff = accVisitor.sectionOffset(v);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, accVisitor.sectionDof(v));
+
     for(int iDim=0; iDim < spaceDim; ++iDim) {
-      velVertex[iDim] = (_data->fieldTIncr[iVertex*spaceDim+iDim] +
-                         _data->fieldT[iVertex*spaceDim+iDim] -
-                         _data->fieldTmdt[iVertex*spaceDim+iDim]) / (2.0*dt);
-      accVertex[iDim] = (_data->fieldTIncr[iVertex*spaceDim+iDim] -
-                         _data->fieldT[iVertex*spaceDim+iDim] +
-                         _data->fieldTmdt[iVertex*spaceDim+iDim]) / (dt*dt);
+      dispTArray[dtoff+iDim] = _data->fieldT[iVertex*spaceDim+iDim] / lengthScale;
+      dispTmdtArray[dmoff+iDim] = _data->fieldTmdt[iVertex*spaceDim+iDim] / lengthScale;
+      dispTIncrArray[dioff+iDim] = _data->fieldTIncr[iVertex*spaceDim+iDim] / lengthScale;
+
+      velArray[voff+iDim] = (_data->fieldTIncr[iVertex*spaceDim+iDim] +
+			     _data->fieldT[iVertex*spaceDim+iDim] -
+			     _data->fieldTmdt[iVertex*spaceDim+iDim]) / (2.0*dt) / velScale;
+      accArray[aoff+iDim] = (_data->fieldTIncr[iVertex*spaceDim+iDim] -
+			     _data->fieldT[iVertex*spaceDim+iDim] +
+			     _data->fieldTmdt[iVertex*spaceDim+iDim]) / (dt*dt) / accScale;
     } // for
-    err = DMPlexVecSetClosure(dmMesh, dispTSectionP,     dispTVec,     iVertex+offset, &_data->fieldT[iVertex*_data->spaceDim],     INSERT_ALL_VALUES);CHECK_PETSC_ERROR(err);
-    err = DMPlexVecSetClosure(dmMesh, dispTIncrSectionP, dispTIncrVec, iVertex+offset, &_data->fieldTIncr[iVertex*_data->spaceDim], INSERT_ALL_VALUES);CHECK_PETSC_ERROR(err);
-    err = DMPlexVecSetClosure(dmMesh, dispTmdtSectionP,  dispTmdtVec,  iVertex+offset, &_data->fieldTmdt[iVertex*_data->spaceDim],  INSERT_ALL_VALUES);CHECK_PETSC_ERROR(err);
-    err = DMPlexVecSetClosure(dmMesh, velSectionP,       velVec,       iVertex+offset, &velVertex[0],                               INSERT_ALL_VALUES);CHECK_PETSC_ERROR(err);
-    err = DMPlexVecSetClosure(dmMesh, accSectionP,       accVec,       iVertex+offset, &accVertex[0],                               INSERT_ALL_VALUES);CHECK_PETSC_ERROR(err);
   } // for
+
+  PYLITH_METHOD_END;
 } // _initialize
 
 
