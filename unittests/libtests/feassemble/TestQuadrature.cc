@@ -38,6 +38,8 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestQuadrature );
 void
 pylith::feassemble::TestQuadrature::testCopyConstructor(void)
 { // testClone
+  PYLITH_METHOD_BEGIN;
+
   // Semi-random values manually set to check cloning
   const PylithScalar minJacobianE = 1.0;
   const bool checkConditioning = true;
@@ -45,10 +47,10 @@ pylith::feassemble::TestQuadrature::testCopyConstructor(void)
   const int numBasisE = 2;
   const int numQuadPtsE = 1;
   const int spaceDimE = 1;
-  const PylithScalar basisE[] = { 0.2, 0.4 };
-  const PylithScalar basisDerivE[] = { 0.8, 1.6 };
-  const PylithScalar quadPtsRefE[] = { 3.2 };
-  const PylithScalar quadWtsE[] = { 6.4 };
+  const PylithScalar basisE[numQuadPtsE*numBasisE] = { 0.2, 0.4 };
+  const PylithScalar basisDerivE[numQuadPtsE*numBasisE*cellDimE] = { 0.8, 1.6 };
+  const PylithScalar quadPtsRefE[numQuadPtsE*cellDimE] = { 3.2 };
+  const PylithScalar quadWtsE[numQuadPtsE] = { 6.4 };
   const PylithScalar quadPtsE[] = { 12.8 };
   const PylithScalar jacobianE[] = { 2.56 };
   const PylithScalar jacobianInvE[] = { 5.12 };
@@ -70,7 +72,7 @@ pylith::feassemble::TestQuadrature::testCopyConstructor(void)
   Quadrature<topology::Mesh> qCopy(qOrig);
   
   // Check copy
-  CPPUNIT_ASSERT(0 == qCopy._engine);
+  CPPUNIT_ASSERT(!qCopy._engine);
   CPPUNIT_ASSERT_EQUAL(minJacobianE, qCopy._minJacobian);
   CPPUNIT_ASSERT_EQUAL(checkConditioning, qCopy._checkConditioning);
   CPPUNIT_ASSERT_EQUAL(cellDimE, qCopy.cellDim());
@@ -105,6 +107,8 @@ pylith::feassemble::TestQuadrature::testCopyConstructor(void)
   CPPUNIT_ASSERT_EQUAL(geometry.cellDim(), qCopy.refGeometry().cellDim());
   CPPUNIT_ASSERT_EQUAL(geometry.spaceDim(), qCopy.refGeometry().spaceDim());
   CPPUNIT_ASSERT_EQUAL(geometry.numCorners(), qCopy.refGeometry().numCorners());
+
+  PYLITH_METHOD_END;
 } // testCopyConstructor
 
 // ----------------------------------------------------------------------
@@ -112,6 +116,8 @@ pylith::feassemble::TestQuadrature::testCopyConstructor(void)
 void
 pylith::feassemble::TestQuadrature::testCheckConditioning(void)
 { // testCheckConditioning
+  PYLITH_METHOD_BEGIN;
+
   Quadrature<topology::Mesh> q;
 
   CPPUNIT_ASSERT_EQUAL(false, q.checkConditioning());
@@ -119,6 +125,8 @@ pylith::feassemble::TestQuadrature::testCheckConditioning(void)
   CPPUNIT_ASSERT_EQUAL(true, q.checkConditioning());
   q.checkConditioning(false);
   CPPUNIT_ASSERT_EQUAL(false, q.checkConditioning());
+
+  PYLITH_METHOD_END;
 } // testCheckConditioning
 
 // ----------------------------------------------------------------------
@@ -126,6 +134,8 @@ pylith::feassemble::TestQuadrature::testCheckConditioning(void)
 void
 pylith::feassemble::TestQuadrature::testEngineAccessors(void)
 { // testEngineAccessors
+  PYLITH_METHOD_BEGIN;
+
   const int cellDim = 2;
   const int numBasis = 5;
   const int numQuadPts = 1;
@@ -169,6 +179,8 @@ pylith::feassemble::TestQuadrature::testEngineAccessors(void)
 
   size = numQuadPts * numBasis * spaceDim;
   CPPUNIT_ASSERT_EQUAL(size, q.basisDeriv().size());
+
+  PYLITH_METHOD_END;
 } // testEngineAccessors
 
 // ----------------------------------------------------------------------
@@ -176,7 +188,7 @@ pylith::feassemble::TestQuadrature::testEngineAccessors(void)
 void
 pylith::feassemble::TestQuadrature::testComputeGeometry(void)
 { // testComputeGeometry
-  typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+  PYLITH_METHOD_BEGIN;
 
   QuadratureData2DLinear data;
   const int cellDim = data.cellDim;
@@ -195,14 +207,13 @@ pylith::feassemble::TestQuadrature::testComputeGeometry(void)
 
   // Create mesh with test cell
   topology::Mesh mesh(data.cellDim);
-  DM dmMesh;
+
   PetscErrorCode err;
 
   // Cells and vertices
   PetscBool interpolate = PETSC_FALSE;
-
-  err = DMPlexCreateFromCellList(mesh.comm(), cellDim, numCells, data.numVertices, numBasis, interpolate, const_cast<int*>(data.cells), spaceDim, data.vertices, &dmMesh);CHECK_PETSC_ERROR(err);
-  CPPUNIT_ASSERT(dmMesh);
+  PetscDM dmMesh = NULL;
+  err = DMPlexCreateFromCellList(mesh.comm(), cellDim, numCells, data.numVertices, numBasis, interpolate, const_cast<int*>(data.cells), spaceDim, data.vertices, &dmMesh);CHECK_PETSC_ERROR(err);CPPUNIT_ASSERT(dmMesh);
   mesh.setDMMesh(dmMesh);
 
   // Setup quadrature and compute geometry
@@ -217,34 +228,25 @@ pylith::feassemble::TestQuadrature::testComputeGeometry(void)
 			spaceDim);
 
   PetscInt cStart, cEnd;
-
   err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
   quadrature.initializeGeometry();
-#if defined(PRECOMPUTE_GEOMETRY)
-  quadrature.computeGeometry(mesh, cells);
-#else
   scalar_array coordinatesCell(numBasis*spaceDim);
-  PetscSection coordSection;
-  Vec          coordVec;
+  PetscSection coordSection = NULL;
+  PetscVec coordVec = NULL;
   err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
-#endif
 
   size_t size = 0;
 
   // Check values from computeGeometry()
   const PylithScalar tolerance = 1.0e-06;
   for (PetscInt c = cStart; c < cEnd; ++c) {
-#if defined(PRECOMPUTE_GEOMETRY)
-    quadrature.retrieveGeometry(c);
-#else
     PetscScalar *coordsArray = NULL;
     PetscInt coordsSize = 0;
 
     err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, c, &coordsSize, &coordsArray);CHECK_PETSC_ERROR(err);
     quadrature.computeGeometry(coordsArray, coordsSize, c);
     err = DMPlexVecRestoreClosure(dmMesh, coordSection, coordVec, c, &coordsSize, &coordsArray);CHECK_PETSC_ERROR(err);
-#endif
 
     const scalar_array& quadPts = quadrature.quadPts();
     size = numQuadPts * spaceDim;
@@ -274,11 +276,13 @@ pylith::feassemble::TestQuadrature::testComputeGeometry(void)
   // Check clear()
   quadrature.clear();
   
-  CPPUNIT_ASSERT(0 == quadrature._geometryFields);
-  CPPUNIT_ASSERT(0 == quadrature._engine);
+  CPPUNIT_ASSERT(!quadrature._geometryFields);
+  CPPUNIT_ASSERT(!quadrature._engine);
 
   // Make sure caling clear without data doesn't generate errors 
   quadrature.clear();
+
+  PYLITH_METHOD_END;
 } // testComputeGeometry
 
 // ----------------------------------------------------------------------
@@ -286,7 +290,7 @@ pylith::feassemble::TestQuadrature::testComputeGeometry(void)
 void
 pylith::feassemble::TestQuadrature::testComputeGeometryCell(void)
 { // testComputeGeometryCell
-  typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+  PYLITH_METHOD_BEGIN;
 
   QuadratureData2DLinear data;
   const int cellDim = data.cellDim;
@@ -304,32 +308,6 @@ pylith::feassemble::TestQuadrature::testComputeGeometryCell(void)
 
   const PylithScalar minJacobian = 1.0e-06;
 
-#if 0
-  // Create mesh with test cell
-  topology::Mesh mesh(data.cellDim);
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  ALE::Obj<SieveMesh::sieve_type> sieve = 
-    new SieveMesh::sieve_type(mesh.comm());
-  CPPUNIT_ASSERT(!sieve.isNull());
-
-  // Cells and vertices
-  const bool interpolate = false;
-  ALE::Obj<SieveFlexMesh::sieve_type> s = 
-    new SieveFlexMesh::sieve_type(sieve->comm(), sieve->debug());
-  
-  ALE::SieveBuilder<SieveFlexMesh>::buildTopology(s, cellDim, numCells,
-                                              const_cast<int*>(data.cells), 
-					      data.numVertices,
-                                              interpolate, numBasis);
-  std::map<SieveFlexMesh::point_type,SieveFlexMesh::point_type> renumbering;
-  ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
-  sieveMesh->setSieve(sieve);
-  sieveMesh->stratify();
-  ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, spaceDim, 
-						 data.vertices);
-#endif
-
   // Setup quadrature and compute geometry
   GeometryTri2D geometry;
   Quadrature<topology::Mesh> quadrature;
@@ -340,11 +318,6 @@ pylith::feassemble::TestQuadrature::testComputeGeometryCell(void)
 			data.quadPtsRef, numQuadPts, cellDim,
 			data.quadWts, numQuadPts,
 			spaceDim);
-
-#if 0
-  const ALE::Obj<SieveMesh::label_sequence>& cells = sieveMesh->heightStratum(0);
-  CPPUNIT_ASSERT(!cells.isNull());
-#endif
 
   quadrature.initializeGeometry();
   quadrature.computeGeometry(vertCoords, vertCoordsSize, 0);
@@ -380,8 +353,10 @@ pylith::feassemble::TestQuadrature::testComputeGeometryCell(void)
 
   quadrature.clear();
 
-  CPPUNIT_ASSERT(0 == quadrature._geometryFields);
-  CPPUNIT_ASSERT(0 == quadrature._engine);
+  CPPUNIT_ASSERT(!quadrature._geometryFields);
+  CPPUNIT_ASSERT(!quadrature._engine);
+
+  PYLITH_METHOD_END;
 } // testComputeGeometryCell
 
 

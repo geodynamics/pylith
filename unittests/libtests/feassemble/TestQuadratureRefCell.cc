@@ -23,6 +23,8 @@
 #include "pylith/feassemble/QuadratureRefCell.hh" // USES QuadratureRefCell
 #include "pylith/feassemble/GeometryLine1D.hh" // USES GeometryLine1D
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+
 #include "data/QuadratureData.hh" // USES QuadratureData
 
 #include <string.h> // USES memcpy()
@@ -35,7 +37,11 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestQuadratureRefCell );
 void
 pylith::feassemble::TestQuadratureRefCell::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   QuadratureRefCell q;
+
+  PYLITH_METHOD_END;
 } // testMinJacobian
 
 // ----------------------------------------------------------------------
@@ -43,11 +49,15 @@ pylith::feassemble::TestQuadratureRefCell::testConstructor(void)
 void
 pylith::feassemble::TestQuadratureRefCell::testMinJacobian(void)
 { // testMinJacobian
+  PYLITH_METHOD_BEGIN;
+
   QuadratureRefCell q;
 
   const PylithScalar min = 1.0;
   q.minJacobian(min);
   CPPUNIT_ASSERT_EQUAL(min, q._minJacobian);
+
+  PYLITH_METHOD_END;
 } // testMinJacobian
 
 // ----------------------------------------------------------------------
@@ -55,6 +65,8 @@ pylith::feassemble::TestQuadratureRefCell::testMinJacobian(void)
 void
 pylith::feassemble::TestQuadratureRefCell::testRefGeometry(void)
 { // testRefGeometry
+  PYLITH_METHOD_BEGIN;
+
   GeometryLine1D geometry;
   QuadratureRefCell quadrature;
 
@@ -64,6 +76,8 @@ pylith::feassemble::TestQuadratureRefCell::testRefGeometry(void)
   CPPUNIT_ASSERT_EQUAL(geometry.cellDim(), test.cellDim());
   CPPUNIT_ASSERT_EQUAL(geometry.spaceDim(), test.spaceDim());
   CPPUNIT_ASSERT_EQUAL(geometry.numCorners(), test.numCorners());
+
+  PYLITH_METHOD_END;
 } // testRefGeometry
 
 // ----------------------------------------------------------------------
@@ -71,6 +85,7 @@ pylith::feassemble::TestQuadratureRefCell::testRefGeometry(void)
 void
 pylith::feassemble::TestQuadratureRefCell::testInitialize(void)
 { // initialize
+  PYLITH_METHOD_BEGIN;
   
   const int cellDim = 1;
   const int numBasis = 2;
@@ -109,6 +124,8 @@ pylith::feassemble::TestQuadratureRefCell::testInitialize(void)
   size = numQuadPts;
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(quadWts[i], q._quadWts[i]);
+
+  PYLITH_METHOD_END;
 } // initialize
 
 

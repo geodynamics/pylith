@@ -53,18 +53,7 @@ testfeassemble_SOURCES = \
 	TestIntegrator.cc \
 	TestIntegratorElasticity.cc \
 	TestElasticityExplicit.cc \
-	TestElasticityExplicit1DLinear.cc \
-	TestElasticityExplicit1DQuadratic.cc \
-	TestElasticityExplicit2DLinear.cc \
-	TestElasticityExplicit2DQuadratic.cc \
-	TestElasticityExplicit3DLinear.cc \
-	TestElasticityExplicit3DQuadratic.cc \
-	TestElasticityExplicitGrav1DLinear.cc \
-	TestElasticityExplicitGrav1DQuadratic.cc \
-	TestElasticityExplicitGrav2DLinear.cc \
-	TestElasticityExplicitGrav2DQuadratic.cc \
-	TestElasticityExplicitGrav3DLinear.cc \
-	TestElasticityExplicitGrav3DQuadratic.cc \
+	TestElasticityExplicitCases.cc \
 	TestElasticityExplicitTri3.cc \
 	TestElasticityExplicitTet4.cc \
 	TestElasticityImplicit.cc \
@@ -82,18 +71,7 @@ testfeassemble_SOURCES = \
 	TestElasticityImplicitGrav3DQuadratic.cc \
 	TestIntegratorElasticityLgDeform.cc \
 	TestElasticityExplicitLgDeform.cc \
-	TestElasticityExplicitLgDeform1DLinear.cc \
-	TestElasticityExplicitLgDeform1DQuadratic.cc \
-	TestElasticityExplicitLgDeform2DLinear.cc \
-	TestElasticityExplicitLgDeform2DQuadratic.cc \
-	TestElasticityExplicitLgDeform3DLinear.cc \
-	TestElasticityExplicitLgDeform3DQuadratic.cc \
-	TestElasticityExplicitLgDeformGrav1DLinear.cc \
-	TestElasticityExplicitLgDeformGrav1DQuadratic.cc \
-	TestElasticityExplicitLgDeformGrav2DLinear.cc \
-	TestElasticityExplicitLgDeformGrav2DQuadratic.cc \
-	TestElasticityExplicitLgDeformGrav3DLinear.cc \
-	TestElasticityExplicitLgDeformGrav3DQuadratic.cc \
+	TestElasticityExplicitLgDeformCases.cc \
 	TestElasticityImplicitLgDeform.cc \
 	TestElasticityImplicitLgDeform1DLinear.cc \
 	TestElasticityImplicitLgDeform1DQuadratic.cc \
@@ -114,18 +92,7 @@ testfeassemble_SOURCES = \
 noinst_HEADERS = \
 	TestCellGeometry.hh \
 	TestElasticityExplicit.hh \
-	TestElasticityExplicit1DLinear.hh \
-	TestElasticityExplicit1DQuadratic.hh \
-	TestElasticityExplicit2DLinear.hh \
-	TestElasticityExplicit2DQuadratic.hh \
-	TestElasticityExplicit3DLinear.hh \
-	TestElasticityExplicit3DQuadratic.hh \
-	TestElasticityExplicitGrav1DLinear.hh \
-	TestElasticityExplicitGrav1DQuadratic.hh \
-	TestElasticityExplicitGrav2DLinear.hh \
-	TestElasticityExplicitGrav2DQuadratic.hh \
-	TestElasticityExplicitGrav3DLinear.hh \
-	TestElasticityExplicitGrav3DQuadratic.hh \
+	TestElasticityExplicitCases.cc \
 	TestElasticityExplicitTri3.hh \
 	TestElasticityExplicitTet4.hh \
 	TestElasticityImplicit.hh \
@@ -143,18 +110,7 @@ noinst_HEADERS = \
 	TestElasticityImplicitGrav3DQuadratic.hh \
 	TestIntegratorElasticityLgDeform.hh \
 	TestElasticityExplicitLgDeform.hh \
-	TestElasticityExplicitLgDeform1DLinear.hh \
-	TestElasticityExplicitLgDeform1DQuadratic.hh \
-	TestElasticityExplicitLgDeform2DLinear.hh \
-	TestElasticityExplicitLgDeform2DQuadratic.hh \
-	TestElasticityExplicitLgDeform3DLinear.hh \
-	TestElasticityExplicitLgDeform3DQuadratic.hh \
-	TestElasticityExplicitLgDeformGrav1DLinear.hh \
-	TestElasticityExplicitLgDeformGrav1DQuadratic.hh \
-	TestElasticityExplicitLgDeformGrav2DLinear.hh \
-	TestElasticityExplicitLgDeformGrav2DQuadratic.hh \
-	TestElasticityExplicitLgDeformGrav3DLinear.hh \
-	TestElasticityExplicitLgDeformGrav3DQuadratic.hh \
+	TestElasticityExplicitLgDeformCases.hh \
 	TestElasticityImplicitLgDeform.hh \
 	TestElasticityImplicitLgDeform1DLinear.hh \
 	TestElasticityImplicitLgDeform1DQuadratic.hh \

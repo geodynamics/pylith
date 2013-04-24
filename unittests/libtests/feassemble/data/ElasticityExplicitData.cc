@@ -21,8 +21,14 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::ElasticityExplicitData::ElasticityExplicitData(void) :
+  lengthScale(1.0e+3),
+  pressureScale(2.25e+10),
+  densityScale(1.0),
+  timeScale(2.0),
   dtStableExplicit(1.0e+99)
 { // constructor
+  const PylithScalar velScale = lengthScale / timeScale;
+  densityScale = pressureScale / (velScale*velScale);
 } // constructor
 
 // ----------------------------------------------------------------------
