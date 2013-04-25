@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -103,14 +103,14 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void)
     PetscInt *closure = NULL;
     PetscInt  closureSize, numVertices = 0;
 
-    err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     for (PetscInt p = 0; p < closureSize*2; p += 2) {
       if ((closure[p] >= vStart) && (closure[p] < vEnd)) closure[numVertices++] = closure[p];
     } // for
     CPPUNIT_ASSERT_EQUAL(_data->numCorners, numVertices);
     for (PetscInt v = 0; v < numVertices; ++v, ++index)
       CPPUNIT_ASSERT_EQUAL(_data->cellsNoFault[index], subpointMap[closure[v]]);
-    err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
   } // for
 
   PYLITH_METHOD_END;
@@ -144,7 +144,7 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
   PetscInt firstFaultVertex = 0;
   PetscInt firstLagrangeVertex, firstFaultCell;
 
-  err = DMPlexGetStratumSize(mesh.dmMesh(), _data->faultLabel, 1, &firstLagrangeVertex);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumSize(mesh.dmMesh(), _data->faultLabel, 1, &firstLagrangeVertex);PYLITH_CHECK_ERROR(err);
   firstFaultCell = firstLagrangeVertex;
   fault.label(_data->faultLabel);
   fault.id(_data->faultId);
@@ -175,14 +175,14 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
     PetscInt *closure = NULL;
     PetscInt  closureSize, numVertices = 0;
 
-    err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     for (PetscInt p = 0; p < closureSize*2; p += 2) {
       if ((closure[p] >= vStart) && (closure[p] < vEnd)) closure[numVertices++] = closure[p];
     } // for
     CPPUNIT_ASSERT_EQUAL(_data->numCorners, numVertices);
     for (PetscInt v = 0; v < numVertices; ++v, ++index)
       CPPUNIT_ASSERT_EQUAL(_data->cellsFault[index], subpointMap[closure[v]]);
-    err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
   } // for
 
   PYLITH_METHOD_END;

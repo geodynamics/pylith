@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -98,7 +98,7 @@ pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
   } // else
 
   PetscDM newDM = NULL;
-  PetscErrorCode err = DMPlexDistribute(origMesh.dmMesh(), partitioner, 0, &newDM);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = DMPlexDistribute(origMesh.dmMesh(), partitioner, 0, &newDM);PYLITH_CHECK_ERROR(err);
   newMesh->setDMMesh(newDM);
 
   PYLITH_METHOD_END;

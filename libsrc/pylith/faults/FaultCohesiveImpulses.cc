@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -313,8 +313,8 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
   PetscSection amplitudeSection = amplitude.petscSection();assert(amplitudeSection);
   PetscSection amplitudeGlobalSection = NULL;
   PetscSF sf = NULL;
-  err = DMGetPointSF(amplitudeDM, &sf);CHECK_PETSC_ERROR(err);
-  err = PetscSectionCreateGlobalSection(amplitudeSection, sf, PETSC_TRUE, &amplitudeGlobalSection);CHECK_PETSC_ERROR(err);
+  err = DMGetPointSF(amplitudeDM, &sf);PYLITH_CHECK_ERROR(err);
+  err = PetscSectionCreateGlobalSection(amplitudeSection, sf, PETSC_TRUE, &amplitudeGlobalSection);PYLITH_CHECK_ERROR(err);
 
   scalar_array coordsVertex(spaceDim);
   PetscDM faultDMMesh = _faultMesh->dmMesh();assert(faultDMMesh);
@@ -333,7 +333,7 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
     const int v_fault = _cohesiveVertices[iVertex].fault;
 
     PetscInt goff;
-    err = PetscSectionGetOffset(amplitudeGlobalSection, v_fault, &goff);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(amplitudeGlobalSection, v_fault, &goff);PYLITH_CHECK_ERROR(err);
     if (goff < 0) {
       continue;
     } // if
@@ -370,7 +370,7 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
       ++count;
     } // if
   } // for
-  err = PetscSectionDestroy(&amplitudeGlobalSection);CHECK_PETSC_ERROR(err);
+  err = PetscSectionDestroy(&amplitudeGlobalSection);PYLITH_CHECK_ERROR(err);
 
   // Close properties database
   _dbImpulseAmp->close();
@@ -400,10 +400,10 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulseOrder(const std::map<int,int
   MPI_Comm comm = _faultMesh->comm();
   PetscMPIInt commSize, commRank;
   PetscErrorCode err;
-  err = MPI_Comm_size(comm, &commSize);CHECK_PETSC_ERROR(err);
-  err = MPI_Comm_rank(comm, &commRank);CHECK_PETSC_ERROR(err);
+  err = MPI_Comm_size(comm, &commSize);PYLITH_CHECK_ERROR(err);
+  err = MPI_Comm_rank(comm, &commRank);PYLITH_CHECK_ERROR(err);
   int_array numImpulsesAll(commSize);
-  err = MPI_Allgather((void *) &numImpulsesLocal, 1, MPI_INT, (void *) &numImpulsesAll[0], commSize, MPI_INT, comm);CHECK_PETSC_ERROR(err);
+  err = MPI_Allgather((void *) &numImpulsesLocal, 1, MPI_INT, (void *) &numImpulsesAll[0], commSize, MPI_INT, comm);PYLITH_CHECK_ERROR(err);
   
   int localOffset = 0;
   for (int i=0; i < commRank; ++i) {

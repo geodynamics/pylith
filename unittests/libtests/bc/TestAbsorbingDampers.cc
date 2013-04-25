@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -142,7 +142,7 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void)
     PetscInt *closure = NULL;
     PetscInt closureSize, numCorners = 0;
 
-    err = DMPlexGetTransitiveClosure(subMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetTransitiveClosure(subMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     for(PetscInt p = 0; p < closureSize*2; p += 2) {
       const PetscInt point = closure[p];
       if ((point >= vStart) && (point < vEnd)) {
@@ -153,7 +153,7 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void)
     for(PetscInt p = 0; p < numCorners; ++p, ++dp) {
       CPPUNIT_ASSERT_EQUAL(_data->cells[dp], closure[p]);
     } // for
-    err = DMPlexRestoreTransitiveClosure(subMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    err = DMPlexRestoreTransitiveClosure(subMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
   } // for
 
   // Check damping constants
@@ -208,7 +208,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateResidual(void)
   const PylithScalar residualScale = dampingConstsScale*velocityScale*pow(_data->lengthScale, _data->spaceDim-1);
 
   CPPUNIT_ASSERT(dmMesh);
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
   const int totalNumVertices = vEnd - vStart;
   const int sizeE = _data->spaceDim * totalNumVertices;
 
@@ -218,19 +218,19 @@ pylith::bc::TestAbsorbingDampers::testIntegrateResidual(void)
   PetscInt size;
 
   CPPUNIT_ASSERT(residualSection);CPPUNIT_ASSERT(residualVec);
-  err = PetscSectionGetStorageSize(residualSection, &size);CHECK_PETSC_ERROR(err);
+  err = PetscSectionGetStorageSize(residualSection, &size);PYLITH_CHECK_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
   //residual->view("RESIDUAL");
 
   const PylithScalar tolerance = 1.0e-06;
-  err = VecGetArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(residualVec, &vals);PYLITH_CHECK_ERROR(err);
   for(int i = 0; i < size; ++i)
     if (fabs(valsE[i]) > 1.0)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i]*residualScale, tolerance);
     else
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i]/residualScale, vals[i], tolerance);
-  err = VecRestoreArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(residualVec, &vals);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // testIntegrateResidual
@@ -276,12 +276,12 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
   int nrows = 0;
   int ncols = 0;
   PetscErrorCode err = 0;
-  err = MatGetSize(jacobianMat, &nrows, &ncols);CHECK_PETSC_ERROR(err);
+  err = MatGetSize(jacobianMat, &nrows, &ncols);PYLITH_CHECK_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(nrowsE, nrows);
   CPPUNIT_ASSERT_EQUAL(ncolsE, ncols);
 
   PetscMat jDense;
-  err = MatConvert(jacobianMat, MATSEQDENSE, MAT_INITIAL_MATRIX, &jDense);CHECK_PETSC_ERROR(err);CPPUNIT_ASSERT(jDense);
+  err = MatConvert(jacobianMat, MATSEQDENSE, MAT_INITIAL_MATRIX, &jDense);PYLITH_CHECK_ERROR(err);CPPUNIT_ASSERT(jDense);
 
   scalar_array vals(nrows*ncols);
   int_array rows(nrows);
@@ -290,7 +290,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
     rows[iRow] = iRow;
   for (int iCol=0; iCol < ncols; ++iCol)
     cols[iCol] = iCol;
-  err = MatGetValues(jDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);CHECK_PETSC_ERROR(err);
+  err = MatGetValues(jDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);PYLITH_CHECK_ERROR(err);
 
 #if 0 // DEBUGGING
   std::cout << "JACOBIAN\n";
@@ -308,7 +308,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
       else
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[index]/jacobianScale, vals[index], tolerance);
     } // for
-  err = MatDestroy(&jDense);CHECK_PETSC_ERROR(err);
+  err = MatDestroy(&jDense);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // testIntegrateJacobian
@@ -465,7 +465,7 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
   PetscErrorCode err;
 
   CPPUNIT_ASSERT(dmMesh);
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
   residual.newSection(pylith::topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
   residual.allocate();
   residual.zero();

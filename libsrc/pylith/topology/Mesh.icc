@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2011 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -20,7 +20,7 @@
 #error "Mesh.icc must be included only from Mesh.hh"
 #else
 
-#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
+#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
 // Get Sieve mesh.
 inline
@@ -50,9 +50,9 @@ pylith::topology::Mesh::setDMMesh(DM dm) {
   PYLITH_METHOD_BEGIN;
 
   PetscErrorCode err;
-  err = DMDestroy(&_newMesh);CHECK_PETSC_ERROR(err);
+  err = DMDestroy(&_newMesh);PYLITH_CHECK_ERROR(err);
   _newMesh = dm;
-  err = PetscObjectSetName((PetscObject) _newMesh, "domain");CHECK_PETSC_ERROR(err);
+  err = PetscObjectSetName((PetscObject) _newMesh, "domain");PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 }
@@ -110,7 +110,7 @@ pylith::topology::Mesh::dimension(void) const {
 
   PetscInt dim = 0;
   if (_newMesh) {
-    PetscErrorCode err = DMPlexGetDimension(_newMesh, &dim);CHECK_PETSC_ERROR(err);
+    PetscErrorCode err = DMPlexGetDimension(_newMesh, &dim);PYLITH_CHECK_ERROR(err);
   } // if
 
   PYLITH_METHOD_RETURN(dim);
@@ -126,8 +126,8 @@ pylith::topology::Mesh::coneSize(void) const {
   if (_newMesh) {
     PetscInt cStart;
     PetscErrorCode err;
-    err = DMPlexGetHeightStratum(_newMesh, 0, &cStart, NULL);CHECK_PETSC_ERROR(err);
-    err = DMPlexGetConeSize(_newMesh, cStart, &coneSize);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetHeightStratum(_newMesh, 0, &cStart, NULL);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetConeSize(_newMesh, cStart, &coneSize);PYLITH_CHECK_ERROR(err);
   } // if
 
   PYLITH_METHOD_RETURN(coneSize);
@@ -142,7 +142,7 @@ pylith::topology::Mesh::numVertices(void) const {
   PetscInt nvertices = 0;
   if (_newMesh) {
     PetscInt begin=0, end=0;
-    PetscErrorCode err = DMPlexGetDepthStratum(_newMesh, 0, &begin, &end);CHECK_PETSC_ERROR(err);
+    PetscErrorCode err = DMPlexGetDepthStratum(_newMesh, 0, &begin, &end);PYLITH_CHECK_ERROR(err);
     nvertices = end-begin;
   } // if
 
@@ -158,7 +158,7 @@ pylith::topology::Mesh::numCells(void) const {
   PetscInt ncells = 0;
   if (_newMesh) {
     PetscInt begin=0, end=0;
-    PetscErrorCode err = DMPlexGetHeightStratum(_newMesh, 0, &begin, &end);CHECK_PETSC_ERROR(err);
+    PetscErrorCode err = DMPlexGetHeightStratum(_newMesh, 0, &begin, &end);PYLITH_CHECK_ERROR(err);
     ncells = end-begin;
   } // if
 
@@ -195,7 +195,7 @@ pylith::topology::Mesh::view(const char* label) const {
   PYLITH_METHOD_BEGIN;
 
   assert(_newMesh);
-  PetscErrorCode err = DMView(_newMesh, PETSC_VIEWER_STDOUT_WORLD);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = DMView(_newMesh, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 }

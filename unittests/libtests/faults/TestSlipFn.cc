@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -50,19 +50,19 @@ pylith::faults::TestSlipFn::_createFaultMesh(topology::SubMesh* faultMesh,
     PetscDM faultBoundaryDM = NULL;
     PetscDM dmMesh = mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
     
-    err = DMPlexGetStratumSize(dmMesh, faultLabel, 1, &firstLagrangeVertex);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetStratumSize(dmMesh, faultLabel, 1, &firstLagrangeVertex);PYLITH_CHECK_ERROR(err);
     firstFaultCell = firstLagrangeVertex;
     if (useLagrangeConstraints) {
       firstFaultCell += firstLagrangeVertex;
     } // if
-    err = DMPlexGetLabel(dmMesh, faultLabel, &groupField);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetLabel(dmMesh, faultLabel, &groupField);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT(groupField);
     ALE::Obj<SieveFlexMesh> faultBoundary = 0;
     const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
     CPPUNIT_ASSERT(!sieveMesh.isNull());
     CohesiveTopology::createFault(faultMesh, faultBoundary, faultBoundaryDM, *mesh, groupField);
     CohesiveTopology::create(mesh, *faultMesh, faultBoundary, faultBoundaryDM, groupField, faultId, firstFaultVertex, firstLagrangeVertex, firstFaultCell, useLagrangeConstraints);
-    err = DMDestroy(&faultBoundaryDM);CHECK_PETSC_ERROR(err);
+    err = DMDestroy(&faultBoundaryDM);PYLITH_CHECK_ERROR(err);
   } // Create mesh
 
   { // Need to copy coordinates from mesh to fault mesh since we are not
@@ -75,44 +75,44 @@ pylith::faults::TestSlipFn::_createFaultMesh(topology::SubMesh* faultMesh,
     PetscSection coordSection = NULL, fcoordSection = NULL;
     PetscInt vStart, vEnd, ffStart, ffEnd;
     
-    err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-    err = DMPlexGetHeightStratum(faultDMMesh, 1, &ffStart, &ffEnd);CHECK_PETSC_ERROR(err);
-    err = DMPlexCreateSubpointIS(faultDMMesh, &subpointIS);CHECK_PETSC_ERROR(err);
-    err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-    err = DMPlexGetCoordinateSection(faultDMMesh, &fcoordSection);CHECK_PETSC_ERROR(err);
-    err = PetscSectionSetChart(fcoordSection, vStart, vEnd);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetHeightStratum(faultDMMesh, 1, &ffStart, &ffEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexCreateSubpointIS(faultDMMesh, &subpointIS);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetCoordinateSection(dmMesh, &coordSection);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetCoordinateSection(faultDMMesh, &fcoordSection);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionSetChart(fcoordSection, vStart, vEnd);PYLITH_CHECK_ERROR(err);
     for(PetscInt v = vStart; v < vEnd; ++v) {
-      err = PetscSectionSetDof(fcoordSection, v, spaceDim);CHECK_PETSC_ERROR(err);
+      err = PetscSectionSetDof(fcoordSection, v, spaceDim);PYLITH_CHECK_ERROR(err);
     } // for
-    err = PetscSectionSetUp(fcoordSection);CHECK_PETSC_ERROR(err);
+    err = PetscSectionSetUp(fcoordSection);PYLITH_CHECK_ERROR(err);
     PetscVec coordVec, fcoordVec;
     PetscScalar *coords,  *fcoords;
     PetscInt coordSize;
     
-    err = PetscSectionGetStorageSize(fcoordSection, &coordSize);CHECK_PETSC_ERROR(err);
-    err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
-    err = VecCreate(mesh->comm(), &fcoordVec);CHECK_PETSC_ERROR(err);
-    err = VecSetSizes(fcoordVec, coordSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
-    err = VecSetFromOptions(fcoordVec);CHECK_PETSC_ERROR(err);
-    err = ISGetIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
-    err = VecGetArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
-    err = VecGetArray(fcoordVec, &fcoords);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetStorageSize(fcoordSection, &coordSize);PYLITH_CHECK_ERROR(err);
+    err = DMGetCoordinatesLocal(dmMesh, &coordVec);PYLITH_CHECK_ERROR(err);
+    err = VecCreate(mesh->comm(), &fcoordVec);PYLITH_CHECK_ERROR(err);
+    err = VecSetSizes(fcoordVec, coordSize, PETSC_DETERMINE);PYLITH_CHECK_ERROR(err);
+    err = VecSetFromOptions(fcoordVec);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(subpointIS, &points);PYLITH_CHECK_ERROR(err);
+    err = VecGetArray(coordVec, &coords);PYLITH_CHECK_ERROR(err);
+    err = VecGetArray(fcoordVec, &fcoords);PYLITH_CHECK_ERROR(err);
     for(PetscInt v = vStart; v < vEnd; ++v) {
       PetscInt off, foff;
       
       // Notice that subpointMap[] does not account for cohesive cells
-      err = PetscSectionGetOffset(coordSection, points[v]+(ffEnd-ffStart), &off);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(fcoordSection, v, &foff);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(coordSection, points[v]+(ffEnd-ffStart), &off);PYLITH_CHECK_ERROR(err);
+      err = PetscSectionGetOffset(fcoordSection, v, &foff);PYLITH_CHECK_ERROR(err);
       for(PetscInt d = 0; d < spaceDim; ++d) {
 	fcoords[foff+d] = coords[off+d];
       } // for
     } // for
-    err = ISRestoreIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
-    err = ISDestroy(&subpointIS);CHECK_PETSC_ERROR(err);
-    err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
-    err = VecRestoreArray(fcoordVec, &fcoords);CHECK_PETSC_ERROR(err);
-    err = DMSetCoordinatesLocal(faultDMMesh, fcoordVec);CHECK_PETSC_ERROR(err);
-    err = VecDestroy(&fcoordVec);CHECK_PETSC_ERROR(err);
+    err = ISRestoreIndices(subpointIS, &points);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&subpointIS);PYLITH_CHECK_ERROR(err);
+    err = VecRestoreArray(coordVec, &coords);PYLITH_CHECK_ERROR(err);
+    err = VecRestoreArray(fcoordVec, &fcoords);PYLITH_CHECK_ERROR(err);
+    err = DMSetCoordinatesLocal(faultDMMesh, fcoordVec);PYLITH_CHECK_ERROR(err);
+    err = VecDestroy(&fcoordVec);PYLITH_CHECK_ERROR(err);
   } // Copy coordiantes
 
 

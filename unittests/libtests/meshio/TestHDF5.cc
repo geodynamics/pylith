@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -22,7 +22,7 @@
 
 #include "pylith/meshio/HDF5.hh" // USES HDF5
 
-#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
 
 #if H5_VERS_MAJOR == 1 && H5_VERS_MINOR >= 8
 #define PYLITH_HDF5_USE_API_18

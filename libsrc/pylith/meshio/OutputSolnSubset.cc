@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -72,7 +72,7 @@ pylith::meshio::OutputSolnSubset::verifyConfiguration(const topology::Mesh& mesh
 
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
   PetscBool hasLabel = PETSC_FALSE;
-  PetscErrorCode err = DMPlexHasLabel(dmMesh, _label.c_str(), &hasLabel);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = DMPlexHasLabel(dmMesh, _label.c_str(), &hasLabel);PYLITH_CHECK_ERROR(err);
   if (!hasLabel) {
     std::ostringstream msg;
     msg << "Mesh missing group of vertices '" << _label

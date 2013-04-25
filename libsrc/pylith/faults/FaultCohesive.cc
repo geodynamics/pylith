@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -84,14 +84,14 @@ pylith::faults::FaultCohesive::numVerticesNoMesh(const topology::Mesh& mesh) con
     PetscErrorCode err;
 
     assert(std::string("") != label());
-    err = DMPlexHasLabel(dmMesh, label(), &hasLabel);CHECK_PETSC_ERROR(err);
+    err = DMPlexHasLabel(dmMesh, label(), &hasLabel);PYLITH_CHECK_ERROR(err);
     if (!hasLabel) {
       std::ostringstream msg;
       msg << "Mesh missing group of vertices '" << label()
           << "' for fault interface condition.";
       throw std::runtime_error(msg.str());
     } // if  
-    err = DMPlexGetStratumSize(dmMesh, label(), 1, &nvertices);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetStratumSize(dmMesh, label(), 1, &nvertices);PYLITH_CHECK_ERROR(err);
   } else {
     assert(3 == mesh.dimension());
     nvertices = -1;
@@ -128,20 +128,20 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
       PetscDMLabel groupField;
       PetscBool hasLabel;
       PetscErrorCode err;
-      err = DMPlexHasLabel(dmMesh, charlabel, &hasLabel);CHECK_PETSC_ERROR(err);
+      err = DMPlexHasLabel(dmMesh, charlabel, &hasLabel);PYLITH_CHECK_ERROR(err);
       if (!hasLabel) {
         std::ostringstream msg;
         msg << "Mesh missing group of vertices '" << label()
             << "' for fault interface condition.";
         throw std::runtime_error(msg.str());
       } // if
-      err = DMPlexGetLabel(dmMesh, charlabel, &groupField);CHECK_PETSC_ERROR(err);
+      err = DMPlexGetLabel(dmMesh, charlabel, &groupField);PYLITH_CHECK_ERROR(err);
       CohesiveTopology::createFault(&faultMesh, faultBoundary, faultBoundaryDM, *mesh, groupField, 
                                     flipFault);
       
       CohesiveTopology::create(mesh, faultMesh, faultBoundary, faultBoundaryDM, groupField, id(), 
                                *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
-      err = DMDestroy(&faultBoundaryDM);CHECK_PETSC_ERROR(err);
+      err = DMDestroy(&faultBoundaryDM);PYLITH_CHECK_ERROR(err);
     } else {
       const int faultDim = 2;
       assert(3 == mesh->dimension());

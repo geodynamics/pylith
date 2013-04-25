@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -44,7 +44,7 @@ extern cudaError_t cleanupKernel(float *geometry, float *elemMat, float *analyti
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimendional
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
-#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
+#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
@@ -417,7 +417,7 @@ pylith::feassemble::ElasticityImplicitCUDA::integrateJacobian(
   _logger->eventEnd(setupEvent);
   _logger->eventBegin(computeEvent);
 
-  cudaError_t cerr = setupKernel(spaceDim, numBasis, cells->size(), K, &geometry, &elemMat, &analytic_gpu, &geometry_gpu, &elemMat_gpu);CHECK_PETSC_ERROR_MSG(cerr, "Failed to setup CUDA kernel");
+  cudaError_t cerr = setupKernel(spaceDim, numBasis, cells->size(), K, &geometry, &elemMat, &analytic_gpu, &geometry_gpu, &elemMat_gpu);PYLITH_CHECK_ERROR_MSG(cerr, "Failed to setup CUDA kernel");
 
   // Loop over cells
   int c = 0;
@@ -484,10 +484,10 @@ pylith::feassemble::ElasticityImplicitCUDA::integrateJacobian(
     PetscErrorCode err = updateOperator(jacobianMat, *sieveMesh->getSieve(),
 					jacobianVisitor, *c_iter,
 					&_cellMatrix[0], ADD_VALUES);
-    CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");
+    PYLITH_CHECK_ERROR_MSG(err, "Update to PETSc Mat failed.");
   }
 
-  cerr = cleanupKernel(geometry, elemMat, analytic_gpu, geometry_gpu, elemMat_gpu);CHECK_PETSC_ERROR_MSG(cerr, "Failed to cleanup CUDA kernel");
+  cerr = cleanupKernel(geometry, elemMat, analytic_gpu, geometry_gpu, elemMat_gpu);PYLITH_CHECK_ERROR_MSG(cerr, "Failed to cleanup CUDA kernel");
 
   _needNewJacobian = false;
   _material->resetNeedNewJacobian();

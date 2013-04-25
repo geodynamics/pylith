@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -58,7 +58,7 @@ pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
   const PetscInt cEnd = cellsStratum.end();
 
   PetscDMLabel materialsLabel = NULL;
-  err = DMPlexGetLabel(dmMesh, "material-id", &materialsLabel);CHECK_PETSC_ERROR(err);assert(materialsLabel);
+  err = DMPlexGetLabel(dmMesh, "material-id", &materialsLabel);PYLITH_CHECK_ERROR(err);assert(materialsLabel);
 
   int *matBegin = materialIds;
   int *matEnd = materialIds + numMaterials;
@@ -67,7 +67,7 @@ pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
   for (PetscInt c = cStart; c < cEnd; ++c) {
     PetscInt matId;
 
-    err = DMLabelGetValue(materialsLabel, c, &matId);CHECK_PETSC_ERROR(err);
+    err = DMLabelGetValue(materialsLabel, c, &matId);PYLITH_CHECK_ERROR(err);
     const int *result = std::find(matBegin, matEnd, matId);
     if (result == matEnd) {
       std::ostringstream msg;
@@ -84,7 +84,7 @@ pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
   // Make sure each material has cells.
   int_array matCellCountsAll(matCellCounts.size());
   err = MPI_Allreduce(&matCellCounts[0], &matCellCountsAll[0],
-                      matCellCounts.size(), MPI_INT, MPI_SUM, mesh.comm());CHECK_PETSC_ERROR(err);
+                      matCellCounts.size(), MPI_INT, MPI_SUM, mesh.comm());PYLITH_CHECK_ERROR(err);
   for (int i=0; i < numMaterials; ++i) {
     const int matId = materialIds[i];
     const int matIndex = materialIndex[matId];
@@ -111,7 +111,7 @@ pylith::topology::MeshOps::numMaterialCells(const Mesh& mesh,
   PetscInt ncells = 0;
 
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-  PetscErrorCode err = DMPlexGetStratumSize(dmMesh, "material-id", materialId, &ncells);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = DMPlexGetStratumSize(dmMesh, "material-id", materialId, &ncells);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_RETURN(ncells);
 } // numMaterialCells

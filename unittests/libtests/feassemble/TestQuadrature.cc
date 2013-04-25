@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -184,108 +184,6 @@ pylith::feassemble::TestQuadrature::testEngineAccessors(void)
 } // testEngineAccessors
 
 // ----------------------------------------------------------------------
-// Test computeGeometry() and retrieveGeometry()
-void
-pylith::feassemble::TestQuadrature::testComputeGeometry(void)
-{ // testComputeGeometry
-  PYLITH_METHOD_BEGIN;
-
-  QuadratureData2DLinear data;
-  const int cellDim = data.cellDim;
-  const int numBasis = data.numBasis;
-  const int numQuadPts = data.numQuadPts;
-  const int spaceDim = data.spaceDim;
-
-  const int numCells = data.numCells;
-  const PylithScalar* vertCoords = data.vertices;
-  const PylithScalar* quadPtsE = data.quadPts;
-  const PylithScalar* jacobianE = data.jacobian;
-  const PylithScalar* jacobianDetE = data.jacobianDet;
-  const PylithScalar* basisDerivE = data.basisDeriv;
-
-  const PylithScalar minJacobian = 1.0e-06;
-
-  // Create mesh with test cell
-  topology::Mesh mesh(data.cellDim);
-
-  PetscErrorCode err;
-
-  // Cells and vertices
-  PetscBool interpolate = PETSC_FALSE;
-  PetscDM dmMesh = NULL;
-  err = DMPlexCreateFromCellList(mesh.comm(), cellDim, numCells, data.numVertices, numBasis, interpolate, const_cast<int*>(data.cells), spaceDim, data.vertices, &dmMesh);CHECK_PETSC_ERROR(err);CPPUNIT_ASSERT(dmMesh);
-  mesh.setDMMesh(dmMesh);
-
-  // Setup quadrature and compute geometry
-  GeometryTri2D geometry;
-  Quadrature<topology::Mesh> quadrature;
-  quadrature.refGeometry(&geometry);
-  quadrature.minJacobian(minJacobian);
-  quadrature.initialize(data.basis, numQuadPts, numBasis,
-			data.basisDerivRef, numQuadPts, numBasis, cellDim,
-			data.quadPtsRef, numQuadPts, cellDim,
-			data.quadWts, numQuadPts,
-			spaceDim);
-
-  PetscInt cStart, cEnd;
-  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-  quadrature.initializeGeometry();
-  scalar_array coordinatesCell(numBasis*spaceDim);
-  PetscSection coordSection = NULL;
-  PetscVec coordVec = NULL;
-  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
-
-  size_t size = 0;
-
-  // Check values from computeGeometry()
-  const PylithScalar tolerance = 1.0e-06;
-  for (PetscInt c = cStart; c < cEnd; ++c) {
-    PetscScalar *coordsArray = NULL;
-    PetscInt coordsSize = 0;
-
-    err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, c, &coordsSize, &coordsArray);CHECK_PETSC_ERROR(err);
-    quadrature.computeGeometry(coordsArray, coordsSize, c);
-    err = DMPlexVecRestoreClosure(dmMesh, coordSection, coordVec, c, &coordsSize, &coordsArray);CHECK_PETSC_ERROR(err);
-
-    const scalar_array& quadPts = quadrature.quadPts();
-    size = numQuadPts * spaceDim;
-    CPPUNIT_ASSERT_EQUAL(size, quadPts.size());
-    for (size_t i=0; i < size; ++i)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(quadPtsE[i], quadPts[i], tolerance);
-
-    const scalar_array& jacobian = quadrature.jacobian();
-    size = numQuadPts * cellDim * spaceDim;
-    CPPUNIT_ASSERT_EQUAL(size, jacobian.size());
-    for (size_t i=0; i < size; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(jacobianE[i], jacobian[i], tolerance);
-
-    const scalar_array& jacobianDet = quadrature.jacobianDet();
-    size = numQuadPts;
-    CPPUNIT_ASSERT_EQUAL(size, jacobianDet.size());
-    for (size_t i=0; i < size; ++i)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(jacobianDetE[i], jacobianDet[i], tolerance);
-    
-    const scalar_array& basisDeriv = quadrature.basisDeriv();
-    size = numQuadPts * numBasis * spaceDim;
-    CPPUNIT_ASSERT_EQUAL(size, basisDeriv.size());
-    for (size_t i=0; i < size; ++i)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(basisDerivE[i], basisDeriv[i], tolerance);
-  } // for
-
-  // Check clear()
-  quadrature.clear();
-  
-  CPPUNIT_ASSERT(!quadrature._geometryFields);
-  CPPUNIT_ASSERT(!quadrature._engine);
-
-  // Make sure caling clear without data doesn't generate errors 
-  quadrature.clear();
-
-  PYLITH_METHOD_END;
-} // testComputeGeometry
-
-// ----------------------------------------------------------------------
 // Test computeGeometry() will coordinates and cell.
 void
 pylith::feassemble::TestQuadrature::testComputeGeometryCell(void)
@@ -353,7 +251,6 @@ pylith::feassemble::TestQuadrature::testComputeGeometryCell(void)
 
   quadrature.clear();
 
-  CPPUNIT_ASSERT(!quadrature._geometryFields);
   CPPUNIT_ASSERT(!quadrature._engine);
 
   PYLITH_METHOD_END;

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -376,16 +376,16 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
     PetscSection fieldSection = field->petscSection();
     PetscInt pStart, pEnd;
     PetscErrorCode err;
-    err = PetscSectionGetChart(fieldSection, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetChart(fieldSection, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
     if (pEnd < 0) {
-      err = DMPlexGetHeightStratum(dmMesh, 0, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
-      err = PetscSectionSetChart(fieldSection, pStart, pEnd);CHECK_PETSC_ERROR(err);
+      err = DMPlexGetHeightStratum(dmMesh, 0, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+      err = PetscSectionSetChart(fieldSection, pStart, pEnd);PYLITH_CHECK_ERROR(err);
     } else {
       // check fiber dimension
       PetscInt totalFiberDimCurrentLocal = 0;
       PetscInt totalFiberDimCurrent = 0;
       if (numCells > 0) {
-	err = PetscSectionGetDof(fieldSection, cells[0], &totalFiberDimCurrentLocal);CHECK_PETSC_ERROR(err);
+	err = PetscSectionGetDof(fieldSection, cells[0], &totalFiberDimCurrentLocal);PYLITH_CHECK_ERROR(err);
       } // if
       MPI_Allreduce((void *) &totalFiberDimCurrentLocal, (void *) &totalFiberDimCurrent, 1, MPIU_INT, MPI_MAX, field->mesh().comm());
       assert(totalFiberDimCurrent > 0);
@@ -453,7 +453,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
       PetscInt totalFiberDimCurrentLocal = 0;
       PetscInt totalFiberDimCurrent = 0;
       if (numCells > 0) {
-	PetscErrorCode err = PetscSectionGetDof(fieldSection, cells[0], &totalFiberDimCurrentLocal);CHECK_PETSC_ERROR(err);
+	PetscErrorCode err = PetscSectionGetDof(fieldSection, cells[0], &totalFiberDimCurrentLocal);PYLITH_CHECK_ERROR(err);
       } // if
       MPI_Allreduce((void*) &totalFiberDimCurrentLocal, (void*) &totalFiberDimCurrent, 1, MPIU_INT, MPI_MAX, field->mesh().comm());
       assert(totalFiberDimCurrent > 0);

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -131,7 +131,7 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
   value.scale(valueScale);
   value.allocate();
   PetscVec valueVec = value.localVector();assert(valueVec);
-  err = VecSet(valueVec, 0.0);CHECK_PETSC_ERROR(err);
+  err = VecSet(valueVec, 0.0);PYLITH_CHECK_ERROR(err);
   
   if (_dbInitial) {
     const std::string& fieldLabel = std::string("initial_") + std::string(fieldName);
@@ -141,7 +141,7 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
     initial.scale(valueScale);
     initial.allocate();
     PetscVec initialVec = initial.localVector();assert(initialVec);
-    err = VecSet(initialVec, 0.0);CHECK_PETSC_ERROR(err);
+    err = VecSet(initialVec, 0.0);PYLITH_CHECK_ERROR(err);
   } // if
   if (_dbRate) {
     const std::string& fieldLabel = std::string("rate_") + std::string(fieldName);
@@ -151,7 +151,7 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
     rate.scale(rateScale);
     rate.allocate();
     PetscVec rateVec = rate.localVector();assert(rateVec);
-    err = VecSet(rateVec, 0.0);CHECK_PETSC_ERROR(err);
+    err = VecSet(rateVec, 0.0);PYLITH_CHECK_ERROR(err);
     const std::string& timeLabel = std::string("rate_time_") + std::string(fieldName);    
     _parameters->add("rate time", timeLabel.c_str(), topology::FieldBase::VERTICES_FIELD, 1);
     topology::Field<topology::Mesh>& rateTime = _parameters->get("rate time");
@@ -159,7 +159,7 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
     rateTime.scale(timeScale);
     rateTime.allocate();
     PetscVec rateTimeVec = rateTime.localVector();assert(rateTimeVec);
-    err = VecSet(rateTimeVec, 0.0);CHECK_PETSC_ERROR(err);
+    err = VecSet(rateTimeVec, 0.0);PYLITH_CHECK_ERROR(err);
   } // if
   if (_dbChange) {
     const std::string& fieldLabel = std::string("change_") + std::string(fieldName);
@@ -169,7 +169,7 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
     change.scale(valueScale);
     change.allocate();
     PetscVec changeVec = change.localVector();assert(changeVec);
-    err = VecSet(changeVec, 0.0);CHECK_PETSC_ERROR(err);
+    err = VecSet(changeVec, 0.0);PYLITH_CHECK_ERROR(err);
     const std::string& timeLabel = std::string("change_time_") + std::string(fieldName);
     _parameters->add("change time", timeLabel.c_str(), topology::FieldBase::VERTICES_FIELD, 1);
     topology::Field<topology::Mesh>& changeTime = _parameters->get("change time");
@@ -177,7 +177,7 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
     changeTime.scale(timeScale);
     changeTime.allocate();
     PetscVec changeTimeVec = _parameters->get("change time").localVector();assert(changeTimeVec);
-    err = VecSet(changeTimeVec, 0.0);CHECK_PETSC_ERROR(err);
+    err = VecSet(changeTimeVec, 0.0);PYLITH_CHECK_ERROR(err);
   } // if
   
   if (_dbInitial) { // Setup initial values, if provided.

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -25,7 +25,7 @@
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 #include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/petscfwd.h" // USES PetscVec
-#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
+#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
@@ -79,7 +79,7 @@ pylith::topology::Mesh::deallocate(void)
 
   delete _coordsys; _coordsys = 0;
   _mesh.destroy();
-  PetscErrorCode err = DMDestroy(&_newMesh);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = DMDestroy(&_newMesh);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // deallocate
@@ -109,11 +109,11 @@ pylith::topology::Mesh::createDMMesh(const int dim)
   PYLITH_METHOD_BEGIN;
 
   PetscErrorCode err;
-  err = DMDestroy(&_newMesh);CHECK_PETSC_ERROR(err);
-  err = DMCreate(_comm, &_newMesh);CHECK_PETSC_ERROR(err);
-  err = DMSetType(_newMesh, DMPLEX);CHECK_PETSC_ERROR(err);
-  err = DMPlexSetDimension(_newMesh, dim);CHECK_PETSC_ERROR(err);
-  err = PetscObjectSetName((PetscObject) _newMesh, "domain");CHECK_PETSC_ERROR(err);
+  err = DMDestroy(&_newMesh);PYLITH_CHECK_ERROR(err);
+  err = DMCreate(_comm, &_newMesh);PYLITH_CHECK_ERROR(err);
+  err = DMSetType(_newMesh, DMPLEX);PYLITH_CHECK_ERROR(err);
+  err = DMPlexSetDimension(_newMesh, dim);PYLITH_CHECK_ERROR(err);
+  err = PetscObjectSetName((PetscObject) _newMesh, "domain");PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // createDMMesh
@@ -149,13 +149,13 @@ pylith::topology::Mesh::groups(int* numNames,
     PetscErrorCode err = 0;
 
     PetscInt numLabels = 0;
-    err = DMPlexGetNumLabels(_newMesh, &numLabels);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetNumLabels(_newMesh, &numLabels);PYLITH_CHECK_ERROR(err);
 
     *numNames = numLabels;
     *names = new char*[numLabels];
     for (int iLabel=0; iLabel < numLabels; ++iLabel) {
       const char* namestr = NULL;
-      err = DMPlexGetLabelName(_newMesh, iLabel, &namestr);CHECK_PETSC_ERROR(err);
+      err = DMPlexGetLabelName(_newMesh, iLabel, &namestr);PYLITH_CHECK_ERROR(err);
       // Must return char* that SWIG can deallocate.
       const char len = strlen(namestr);
       char* newName = 0;
@@ -185,7 +185,7 @@ pylith::topology::Mesh::groupSize(const char *name)
   PetscErrorCode err = 0;
 
   PetscBool hasLabel = PETSC_FALSE;
-  err = DMPlexHasLabel(_newMesh, name, &hasLabel);CHECK_PETSC_ERROR(err);
+  err = DMPlexHasLabel(_newMesh, name, &hasLabel);PYLITH_CHECK_ERROR(err);
   if (!hasLabel) {
     std::ostringstream msg;
     msg << "Cannot get size of group '" << name
@@ -194,7 +194,7 @@ pylith::topology::Mesh::groupSize(const char *name)
   } // if
 
   PetscInt size = 0;
-  err = DMPlexGetLabelSize(_newMesh, name, &size);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetLabelSize(_newMesh, name, &size);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_RETURN(size);
 } // groupSize
@@ -257,10 +257,10 @@ pylith::topology::Mesh::nondimensionalize(const spatialdata::units::Nondimension
 #endif
 
   assert(_newMesh);
-  err = DMGetCoordinatesLocal(_newMesh, &coordVec);CHECK_PETSC_ERROR(err);assert(coordVec);
+  err = DMGetCoordinatesLocal(_newMesh, &coordVec);PYLITH_CHECK_ERROR(err);assert(coordVec);
   // There does not seem to be an advantage to calling nondimensionalize()
-  err = VecScale(coordVec, 1.0/lengthScale);CHECK_PETSC_ERROR(err);
-  err = DMPlexSetScale(_newMesh, PETSC_UNIT_LENGTH, lengthScale);CHECK_PETSC_ERROR(err);
+  err = VecScale(coordVec, 1.0/lengthScale);PYLITH_CHECK_ERROR(err);
+  err = DMPlexSetScale(_newMesh, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // nondimensionalize

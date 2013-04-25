@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -27,7 +27,7 @@
 
 #include <petscksp.h> // USES PetscKSP
 
-#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
+#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -52,7 +52,7 @@ pylith::problems::SolverLinear::deallocate(void)
 
   Solver::deallocate();
 
-  PetscErrorCode err = KSPDestroy(&_ksp);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = KSPDestroy(&_ksp);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // deallocate
@@ -72,14 +72,14 @@ pylith::problems::SolverLinear::initialize(const topology::SolutionFields& field
   Solver::initialize(fields, jacobian, formulation);
 
   PetscErrorCode err = 0;
-  err = KSPDestroy(&_ksp);CHECK_PETSC_ERROR(err);
-  err = KSPCreate(fields.mesh().comm(), &_ksp);CHECK_PETSC_ERROR(err);
-  err = KSPSetInitialGuessNonzero(_ksp, PETSC_FALSE);CHECK_PETSC_ERROR(err);
-  err = KSPSetFromOptions(_ksp);CHECK_PETSC_ERROR(err);
+  err = KSPDestroy(&_ksp);PYLITH_CHECK_ERROR(err);
+  err = KSPCreate(fields.mesh().comm(), &_ksp);PYLITH_CHECK_ERROR(err);
+  err = KSPSetInitialGuessNonzero(_ksp, PETSC_FALSE);PYLITH_CHECK_ERROR(err);
+  err = KSPSetFromOptions(_ksp);PYLITH_CHECK_ERROR(err);
 
   if (formulation->splitFields()) {
     PetscPC pc = 0;
-    err = KSPGetPC(_ksp, &pc);CHECK_PETSC_ERROR(err);
+    err = KSPGetPC(_ksp, &pc);PYLITH_CHECK_ERROR(err);
     _setupFieldSplit(&pc, formulation, jacobian, fields);
   } // if
 
@@ -113,9 +113,9 @@ pylith::problems::SolverLinear::solve(topology::Field<topology::Mesh>* solution,
   PetscErrorCode err = 0;
   const PetscMat jacobianMat = jacobian->matrix();
   if (!jacobian->valuesChanged()) {
-    err = KSPSetOperators(_ksp, jacobianMat, jacobianMat, SAME_PRECONDITIONER);CHECK_PETSC_ERROR(err);
+    err = KSPSetOperators(_ksp, jacobianMat, jacobianMat, SAME_PRECONDITIONER);PYLITH_CHECK_ERROR(err);
   } else {
-    err = KSPSetOperators(_ksp, jacobianMat, jacobianMat, DIFFERENT_NONZERO_PATTERN);CHECK_PETSC_ERROR(err);
+    err = KSPSetOperators(_ksp, jacobianMat, jacobianMat, DIFFERENT_NONZERO_PATTERN);PYLITH_CHECK_ERROR(err);
   } // else
   jacobian->resetValuesChanged();
 
@@ -125,7 +125,7 @@ pylith::problems::SolverLinear::solve(topology::Field<topology::Mesh>* solution,
   _logger->eventEnd(setupEvent);
   _logger->eventBegin(solveEvent);
 
-  err = KSPSolve(_ksp, residualVec, solutionVec); CHECK_PETSC_ERROR(err);
+  err = KSPSolve(_ksp, residualVec, solutionVec); PYLITH_CHECK_ERROR(err);
 
   _logger->eventEnd(solveEvent);
   _logger->eventBegin(scatterEvent);

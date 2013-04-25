@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -20,6 +20,9 @@
 
 #include "FaultCohesiveTract.hh" // implementation of object methods
 #include "CohesiveTopology.hh" // USES CohesiveTopology
+
+#include "pylith/topology/Fields.hh" // USES Fields
+#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Stratum.hh" // USES StratumIS
 
 #include <cassert> // USES assert()
@@ -108,7 +111,7 @@ pylith::faults::FaultCohesiveTract::verifyConfiguration(const topology::Mesh& me
 
   const PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
   PetscBool hasLabel = PETSC_FALSE;
-  PetscErrorCode err = DMPlexHasLabel(dmMesh, label(), &hasLabel);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = DMPlexHasLabel(dmMesh, label(), &hasLabel);PYLITH_CHECK_ERROR(err);
   if (!hasLabel) {
     std::ostringstream msg;
     msg << "Mesh missing group of vertices '" << label()
@@ -135,7 +138,7 @@ pylith::faults::FaultCohesiveTract::verifyConfiguration(const topology::Mesh& me
 
   PetscInt coneSize = 0;
   for (PetscInt i=0; i < ncells; ++i) {
-    err = DMPlexGetConeSize(dmMesh, cells[i], &coneSize);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetConeSize(dmMesh, cells[i], &coneSize);PYLITH_CHECK_ERROR(err);
     if (2*numCorners != coneSize) {
       std::ostringstream msg;
       msg << "Number of vertices in reference cell (" << numCorners 

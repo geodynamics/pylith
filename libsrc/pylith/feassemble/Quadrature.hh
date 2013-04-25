@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -110,35 +110,6 @@ public :
    */
   const scalar_array& jacobianDet(void) const;
 
-  /** Get precomputed geometry fields.
-   *
-   * @returns Geometry fields.
-   */
-  const topology::Fields<topology::Field<mesh_type> >*
-  geometryFields(void) const;
-
-  /** Compute geometric quantities for each cell.
-   *
-   * @param mesh Finite-element mesh
-   * @param cells Finite-element cells for geometry.
-   */
-  void computeGeometry(const mesh_type& mesh,
-		       const ALE::Obj<typename mesh_type::SieveMesh::label_sequence>& cells);
-
-  /** Compute geometric quantities for each cell.
-   *
-   * @param mesh Finite-element mesh
-   * @param cells Finite-element cells for geometry.
-   */
-  void computeGeometry(const mesh_type& mesh, PetscInt cStart, PetscInt cEnd);
-
-  /** Retrieve precomputed geometric quantities for a cell.
-   *
-   * @param mesh Finite-element mesh
-   * @param cell Finite-element cell
-   */
-  void retrieveGeometry(const typename mesh_type::SieveMesh::point_type& cell);
-
   /// Deallocate temporary storage.
   void clear(void);
 
@@ -164,10 +135,6 @@ public :
 private :
 
   QuadratureEngine* _engine; ///< Quadrature geometry engine.
-
-  /// Fields for precomputing geometry information.
-  topology::Fields<topology::Field<mesh_type> >* _geometryFields;
-
   bool _checkConditioning; ///< True if checking for ill-conditioning.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////

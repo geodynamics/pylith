@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -23,7 +23,7 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
-#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -106,18 +106,18 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(const field_type& fi
 
   if (!label) {
     PetscInt cMax;
-    err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-    err = DMPlexGetHybridBounds(dmMesh, &cMax, PETSC_NULL, PETSC_NULL, PETSC_NULL);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetHybridBounds(dmMesh, &cMax, PETSC_NULL, PETSC_NULL, PETSC_NULL);PYLITH_CHECK_ERROR(err);
     if (cMax >= 0) {cEnd = PetscMin(cEnd, cMax);}
     numCells = cEnd - cStart;
   } else {
     const PetscInt *cells;
-    err = DMPlexGetStratumIS(dmMesh, label, 1, &cellIS);CHECK_PETSC_ERROR(err);
-    err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
-    err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetStratumIS(dmMesh, label, 1, &cellIS);PYLITH_CHECK_ERROR(err);
+    err = ISGetSize(cellIS, &numCells);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(cellIS, &cells);PYLITH_CHECK_ERROR(err);
     cStart = cells[0];
-    err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
-    err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
+    err = ISRestoreIndices(cellIS, &cells);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&cellIS);PYLITH_CHECK_ERROR(err);
   } // if
 
   topology::VecVisitorMesh fieldInVisitor(fieldIn);
@@ -177,7 +177,7 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(const field_type& fi
   // Loop over cells
   if (cellIS) {
     const PetscInt *cells = NULL;
-    err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+    err = ISGetIndices(cellIS, &cells);PYLITH_CHECK_ERROR(err);
     for(PetscInt c = 0; c < numCells; ++c) {
       const PetscInt ioff = fieldInVisitor.sectionOffset(cells[c]);
       assert(totalFiberDim == fieldInVisitor.sectionDof(cells[c]));
@@ -191,8 +191,8 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(const field_type& fi
           fieldAvgArray[aoff+i] += wts[iQuad] / volume * fieldInArray[ioff+iQuad*fiberDim+i];
       } // for
     } // for
-    err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
-    err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
+    err = ISRestoreIndices(cellIS, &cells);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&cellIS);PYLITH_CHECK_ERROR(err);
   } else {
     for(PetscInt c = cStart; c < cEnd; ++c) {
       const PetscInt ioff = fieldInVisitor.sectionOffset(c);

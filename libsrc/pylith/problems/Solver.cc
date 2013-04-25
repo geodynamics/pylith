@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -26,7 +26,7 @@
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
-#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
+#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
 #include <petscdmmesh_solvers.hh> // USES constructFieldSplit()
 
@@ -93,8 +93,8 @@ pylith::problems::Solver::deallocate(void)
   delete _logger; _logger = 0;
 
   PetscErrorCode err = 0;
-  err = MatDestroy(&_jacobianPC);CHECK_PETSC_ERROR(err);
-  err = MatDestroy(&_jacobianPCFault);CHECK_PETSC_ERROR(err);
+  err = MatDestroy(&_jacobianPC);PYLITH_CHECK_ERROR(err);
+  err = MatDestroy(&_jacobianPCFault);PYLITH_CHECK_ERROR(err);
 
   _ctx.pc = 0; // KSP PC (managed separately)
   _ctx.A = 0; // Jacobian (managed separately)
@@ -123,22 +123,22 @@ pylith::problems::Solver::initialize(const topology::SolutionFields& fields,
   PetscInt numFields;
   PetscErrorCode err;
 
-  err = DMGetNumFields(dmMesh, &numFields);CHECK_PETSC_ERROR(err);
+  err = DMGetNumFields(dmMesh, &numFields);PYLITH_CHECK_ERROR(err);
   if (formulation->splitFields() && formulation->useCustomConstraintPC() &&
       numFields > 1) {
     // We have split fields with a custom constraint preconditioner
     // and constraints exist.
 
     PylithInt M, N, m, n;
-    err = MatDestroy(&_jacobianPC);CHECK_PETSC_ERROR(err);
-    err = MatGetSize(jacobianMat, &M, &N);CHECK_PETSC_ERROR(err);
-    err = MatGetLocalSize(jacobianMat, &m, &n);CHECK_PETSC_ERROR(err);
-    err = MatCreateShell(fields.mesh().comm(), m, n, M, N, &_ctx, &_jacobianPC);CHECK_PETSC_ERROR(err);
+    err = MatDestroy(&_jacobianPC);PYLITH_CHECK_ERROR(err);
+    err = MatGetSize(jacobianMat, &M, &N);PYLITH_CHECK_ERROR(err);
+    err = MatGetLocalSize(jacobianMat, &m, &n);PYLITH_CHECK_ERROR(err);
+    err = MatCreateShell(fields.mesh().comm(), m, n, M, N, &_ctx, &_jacobianPC);PYLITH_CHECK_ERROR(err);
     err = MatShellSetOperation(_jacobianPC, MATOP_GET_SUBMATRIX, 
-                               (void (*)(void)) MyMatGetSubMatrix);CHECK_PETSC_ERROR(err);
+                               (void (*)(void)) MyMatGetSubMatrix);PYLITH_CHECK_ERROR(err);
   } else {
     _jacobianPC = jacobianMat;
-    err = PetscObjectReference((PetscObject) jacobianMat);CHECK_PETSC_ERROR(err);
+    err = PetscObjectReference((PetscObject) jacobianMat);PYLITH_CHECK_ERROR(err);
   } // if/else
 
   PYLITH_METHOD_END;
@@ -168,14 +168,14 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
 
   const bool separateComponents = formulation->splitFieldComponents();
 
-  err = PetscObjectGetComm((PetscObject) dmMesh, &comm);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetDimension(dmMesh, &spaceDim);CHECK_PETSC_ERROR(err);
-  err = PetscSectionGetNumFields(solutionSection, &numFields);CHECK_PETSC_ERROR(err);
+  err = PetscObjectGetComm((PetscObject) dmMesh, &comm);PYLITH_CHECK_ERROR(err);
+  err = DMPlexGetDimension(dmMesh, &spaceDim);PYLITH_CHECK_ERROR(err);
+  err = PetscSectionGetNumFields(solutionSection, &numFields);PYLITH_CHECK_ERROR(err);
 
-  err = PCSetDM(*pc, dmMesh);CHECK_PETSC_ERROR(err);
-  err = PCSetType(*pc, PCFIELDSPLIT);CHECK_PETSC_ERROR(err);
-  err = PCSetOptionsPrefix(*pc, "fs_");CHECK_PETSC_ERROR(err);
-  err = PCSetFromOptions(*pc);CHECK_PETSC_ERROR(err);
+  err = PCSetDM(*pc, dmMesh);PYLITH_CHECK_ERROR(err);
+  err = PCSetType(*pc, PCFIELDSPLIT);PYLITH_CHECK_ERROR(err);
+  err = PCSetOptionsPrefix(*pc, "fs_");PYLITH_CHECK_ERROR(err);
+  err = PCSetFromOptions(*pc);PYLITH_CHECK_ERROR(err);
 
   if (formulation->splitFields() && formulation->useCustomConstraintPC() &&
       numFields > 1) {
@@ -187,20 +187,20 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     PetscSection lagrangeSection = NULL;
     PetscInt lagrangeFields[1] = {1}, nrows, ncols;
 
-    err = MatDestroy(&_jacobianPCFault);CHECK_PETSC_ERROR(err);
-    err = DMCreateSubDM(dmMesh, 1, lagrangeFields, NULL, &lagrangeDM);CHECK_PETSC_ERROR(err);
-    err = DMGetDefaultGlobalSection(lagrangeDM, &lagrangeSection);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetStorageSize(lagrangeSection, &nrows);CHECK_PETSC_ERROR(err);
+    err = MatDestroy(&_jacobianPCFault);PYLITH_CHECK_ERROR(err);
+    err = DMCreateSubDM(dmMesh, 1, lagrangeFields, NULL, &lagrangeDM);PYLITH_CHECK_ERROR(err);
+    err = DMGetDefaultGlobalSection(lagrangeDM, &lagrangeSection);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetStorageSize(lagrangeSection, &nrows);PYLITH_CHECK_ERROR(err);
     ncols = nrows;
 
-    err = MatCreate(comm, &_jacobianPCFault);CHECK_PETSC_ERROR(err);
-    err = MatSetSizes(_jacobianPCFault, nrows, ncols, PETSC_DECIDE, PETSC_DECIDE);CHECK_PETSC_ERROR(err);
-    err = MatSetType(_jacobianPCFault, MATAIJ);CHECK_PETSC_ERROR(err);
-    err = MatSetFromOptions(_jacobianPCFault);CHECK_PETSC_ERROR(err);
+    err = MatCreate(comm, &_jacobianPCFault);PYLITH_CHECK_ERROR(err);
+    err = MatSetSizes(_jacobianPCFault, nrows, ncols, PETSC_DECIDE, PETSC_DECIDE);PYLITH_CHECK_ERROR(err);
+    err = MatSetType(_jacobianPCFault, MATAIJ);PYLITH_CHECK_ERROR(err);
+    err = MatSetFromOptions(_jacobianPCFault);PYLITH_CHECK_ERROR(err);
     
     // Allocate just the diagonal.
-    err = MatSeqAIJSetPreallocation(_jacobianPCFault, 1, NULL);CHECK_PETSC_ERROR(err);
-    err = MatMPIAIJSetPreallocation(_jacobianPCFault, 1, NULL, 0, NULL);CHECK_PETSC_ERROR(err);
+    err = MatSeqAIJSetPreallocation(_jacobianPCFault, 1, NULL);PYLITH_CHECK_ERROR(err);
+    err = MatMPIAIJSetPreallocation(_jacobianPCFault, 1, NULL, 0, NULL);PYLITH_CHECK_ERROR(err);
     // Set preconditioning matrix in formulation
     formulation->customPCMatrix(_jacobianPCFault);assert(_jacobianPCFault);
 
@@ -235,67 +235,67 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     PetscInt dim = spaceDim, vStart, vEnd;
     PetscVec mode[6];
 
-    err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-    err = DMPlexGetCoordinateSection(dmMesh, &coordinateSection);CHECK_PETSC_ERROR(err);assert(coordinateSection);
-    err = DMGetCoordinatesLocal(dmMesh, &coordinateVec);CHECK_PETSC_ERROR(err);assert(coordinateVec);
+    err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetCoordinateSection(dmMesh, &coordinateSection);PYLITH_CHECK_ERROR(err);assert(coordinateSection);
+    err = DMGetCoordinatesLocal(dmMesh, &coordinateVec);PYLITH_CHECK_ERROR(err);assert(coordinateVec);
     if (dim > 1) {
       const int m = (dim * (dim + 1)) / 2;
       for(int i = 0; i < m; ++i) {
-        err = VecDuplicate(solutionGlobalVec, &mode[i]);CHECK_PETSC_ERROR(err);
+        err = VecDuplicate(solutionGlobalVec, &mode[i]);PYLITH_CHECK_ERROR(err);
       } // for
       // :KLUDGE: Assume P1
       for(int d = 0; d < dim; ++d) {
         PetscScalar values[3] = {0.0, 0.0, 0.0};
 	
         values[d] = 1.0;
-        err = VecSet(solutionVec, 0.0);CHECK_PETSC_ERROR(err);
+        err = VecSet(solutionVec, 0.0);PYLITH_CHECK_ERROR(err);
         for(PetscInt v = vStart; v < vEnd; ++v) {
-          err = DMPlexVecSetClosure(dmMesh, solutionSection, solutionVec, v, values, INSERT_VALUES);CHECK_PETSC_ERROR(err);
+          err = DMPlexVecSetClosure(dmMesh, solutionSection, solutionVec, v, values, INSERT_VALUES);PYLITH_CHECK_ERROR(err);
         } // for
-        err = DMLocalToGlobalBegin(dmMesh, solutionVec, INSERT_VALUES, mode[d]);CHECK_PETSC_ERROR(err);
-        err = DMLocalToGlobalEnd(dmMesh, solutionVec, INSERT_VALUES, mode[d]);CHECK_PETSC_ERROR(err);
+        err = DMLocalToGlobalBegin(dmMesh, solutionVec, INSERT_VALUES, mode[d]);PYLITH_CHECK_ERROR(err);
+        err = DMLocalToGlobalEnd(dmMesh, solutionVec, INSERT_VALUES, mode[d]);PYLITH_CHECK_ERROR(err);
       } // for
       for(int d = dim; d < m; ++d) {
         PetscInt k = (dim > 2) ? d - dim : d;
 	
-        err = VecSet(solutionVec, 0.0);CHECK_PETSC_ERROR(err);
+        err = VecSet(solutionVec, 0.0);PYLITH_CHECK_ERROR(err);
         for(PetscInt v = vStart; v < vEnd; ++v) {
           PetscScalar  values[3] = {0.0, 0.0, 0.0};
           PetscScalar *coords = NULL;
 
-          err = DMPlexVecGetClosure(dmMesh, coordinateSection, coordinateVec, v, NULL, &coords);CHECK_PETSC_ERROR(err);
+          err = DMPlexVecGetClosure(dmMesh, coordinateSection, coordinateVec, v, NULL, &coords);PYLITH_CHECK_ERROR(err);
           for(int i = 0; i < dim; ++i) {
             for(int j = 0; j < dim; ++j) {
               values[j] += _epsilon(i, j, k)*coords[i];
             } // for
           } // for
-          err = DMPlexVecRestoreClosure(dmMesh, coordinateSection, coordinateVec, v, NULL, &coords);CHECK_PETSC_ERROR(err);
-          err = DMPlexVecSetClosure(dmMesh, solutionSection, solutionVec, v, values, INSERT_VALUES);CHECK_PETSC_ERROR(err);
+          err = DMPlexVecRestoreClosure(dmMesh, coordinateSection, coordinateVec, v, NULL, &coords);PYLITH_CHECK_ERROR(err);
+          err = DMPlexVecSetClosure(dmMesh, solutionSection, solutionVec, v, values, INSERT_VALUES);PYLITH_CHECK_ERROR(err);
         }
-        err = DMLocalToGlobalBegin(dmMesh, solutionVec, INSERT_VALUES, mode[d]);CHECK_PETSC_ERROR(err);
-        err = DMLocalToGlobalEnd(dmMesh, solutionVec, INSERT_VALUES, mode[d]);CHECK_PETSC_ERROR(err);
+        err = DMLocalToGlobalBegin(dmMesh, solutionVec, INSERT_VALUES, mode[d]);PYLITH_CHECK_ERROR(err);
+        err = DMLocalToGlobalEnd(dmMesh, solutionVec, INSERT_VALUES, mode[d]);PYLITH_CHECK_ERROR(err);
       } // for
       for(int i = 0; i < dim; ++i) {
-        err = VecNormalize(mode[i], NULL);CHECK_PETSC_ERROR(err);
+        err = VecNormalize(mode[i], NULL);PYLITH_CHECK_ERROR(err);
       } // for
       /* Orthonormalize system */
       for(int i = dim; i < m; ++i) {
         PetscScalar dots[6];
 
-        err = VecMDot(mode[i], i, mode, dots);CHECK_PETSC_ERROR(err);
+        err = VecMDot(mode[i], i, mode, dots);PYLITH_CHECK_ERROR(err);
         for(int j = 0; j < i; ++j) dots[j] *= -1.0;
-        err = VecMAXPY(mode[i], i, dots, mode);CHECK_PETSC_ERROR(err);
-        err = VecNormalize(mode[i], NULL);CHECK_PETSC_ERROR(err);
+        err = VecMAXPY(mode[i], i, dots, mode);PYLITH_CHECK_ERROR(err);
+        err = VecNormalize(mode[i], NULL);PYLITH_CHECK_ERROR(err);
       } // for
-      err = MatNullSpaceCreate(comm, PETSC_FALSE, m, mode, &nullsp);CHECK_PETSC_ERROR(err);
-      for(int i = 0; i< m; ++i) {err = VecDestroy(&mode[i]);CHECK_PETSC_ERROR(err);}
+      err = MatNullSpaceCreate(comm, PETSC_FALSE, m, mode, &nullsp);PYLITH_CHECK_ERROR(err);
+      for(int i = 0; i< m; ++i) {err = VecDestroy(&mode[i]);PYLITH_CHECK_ERROR(err);}
     } // if
 
-    err = DMSetNumFields(dmMesh, 2);CHECK_PETSC_ERROR(err);
-    err = DMGetField(dmMesh, 0, &field);CHECK_PETSC_ERROR(err);
-    err = PetscObjectCompose(field, "nearnullspace", (PetscObject) nullsp);CHECK_PETSC_ERROR(err);
-    err = MatNullSpaceDestroy(&nullsp);CHECK_PETSC_ERROR(err);
-    err = PetscObjectCompose(field, "pmat", (PetscObject) _jacobianPCFault);CHECK_PETSC_ERROR(err);
+    err = DMSetNumFields(dmMesh, 2);PYLITH_CHECK_ERROR(err);
+    err = DMGetField(dmMesh, 0, &field);PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose(field, "nearnullspace", (PetscObject) nullsp);PYLITH_CHECK_ERROR(err);
+    err = MatNullSpaceDestroy(&nullsp);PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose(field, "pmat", (PetscObject) _jacobianPCFault);PYLITH_CHECK_ERROR(err);
   } // if/else
 
   PYLITH_METHOD_END;

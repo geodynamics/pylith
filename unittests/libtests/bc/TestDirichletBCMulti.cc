@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -160,9 +160,9 @@ pylith::bc::TestDirichletBCMulti::testSetConstraints(void)
     const PetscInt *cInd;
     PetscInt dof, cdof;
 
-    err = PetscSectionGetDof(fieldSection, v, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetConstraintDof(fieldSection, v, &cdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetConstraintIndices(fieldSection, v, &cInd);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(fieldSection, v, &dof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetConstraintDof(fieldSection, v, &cdof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetConstraintIndices(fieldSection, v, &cInd);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(numConstrainedDOF, cdof);
     if (numConstrainedDOF > 0) {
       for (int iDOF=0; iDOF < numConstrainedDOF; ++iDOF)

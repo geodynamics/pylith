@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -145,7 +145,7 @@ pylith::faults::TestTractPerturbation::testCalculate(void)
   PetscErrorCode err;
 
   CPPUNIT_ASSERT(faultDMMesh);
-  err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
 
   //traction.view("TRACTION"); // DEBUGGING
 
@@ -158,12 +158,12 @@ pylith::faults::TestTractPerturbation::testCalculate(void)
   PetscScalar *valueArray;
   CPPUNIT_ASSERT(valueSection);CPPUNIT_ASSERT(valueVec);
 
-  err = VecGetArray(valueVec, &valueArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(valueVec, &valueArray);PYLITH_CHECK_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v, ++iPoint) {
     PetscInt vdof, voff;
 
-    err = PetscSectionGetDof(valueSection, v, &vdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(valueSection, v, &voff);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(valueSection, v, &vdof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(valueSection, v, &voff);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(spaceDim, vdof);
     
     for(PetscInt d = 0; d < spaceDim; ++d) {
@@ -171,7 +171,7 @@ pylith::faults::TestTractPerturbation::testCalculate(void)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valueE, valueArray[voff+d], tolerance);
     } // for
   } // for
-  err = VecRestoreArray(valueVec, &valueArray);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(valueVec, &valueArray);PYLITH_CHECK_ERROR(err);
 } // testCalculate
 
 // ----------------------------------------------------------------------
@@ -198,7 +198,7 @@ pylith::faults::TestTractPerturbation::testParameterFields(void)
   PetscErrorCode err;
 
   CPPUNIT_ASSERT(faultDMMesh);
-  err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
 
   CPPUNIT_ASSERT(tract._parameters);
   PetscSection valueSection = tract._parameters->get("value").petscSection();
@@ -220,30 +220,30 @@ pylith::faults::TestTractPerturbation::testParameterFields(void)
 
   const PylithScalar tolerance = 1.0e-06;
   int iPoint = 0;
-  err = VecGetArray(valueVec, &valueArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(initialVec, &initialArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(changeVec, &changeArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(changeTimeVec, &changeTimeArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(valueVec, &valueArray);PYLITH_CHECK_ERROR(err);
+  err = VecGetArray(initialVec, &initialArray);PYLITH_CHECK_ERROR(err);
+  err = VecGetArray(changeVec, &changeArray);PYLITH_CHECK_ERROR(err);
+  err = VecGetArray(changeTimeVec, &changeTimeArray);PYLITH_CHECK_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v, ++iPoint) {
     PetscInt vdof, voff, e = 0;
 
-    err = PetscSectionGetDof(valueSection, v, &vdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(valueSection, v, &voff);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(valueSection, v, &vdof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(valueSection, v, &voff);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(spaceDim, vdof);
     PetscInt idof, ioff;
 
-    err = PetscSectionGetDof(initialSection, v, &idof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(initialSection, v, &ioff);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(initialSection, v, &idof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(initialSection, v, &ioff);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(spaceDim, idof);
     PetscInt cdof, coff;
 
-    err = PetscSectionGetDof(changeSection, v, &cdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(changeSection, v, &coff);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(changeSection, v, &cdof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(changeSection, v, &coff);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(spaceDim, cdof);
     PetscInt ctdof, ctoff;
 
-    err = PetscSectionGetDof(changeTimeSection, v, &ctdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(changeTimeSection, v, &ctoff);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(changeTimeSection, v, &ctdof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(changeTimeSection, v, &ctoff);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(1, ctdof);
     CPPUNIT_ASSERT_EQUAL(fiberDimE, vdof+idof+cdof+ctdof);
 
@@ -260,10 +260,10 @@ pylith::faults::TestTractPerturbation::testParameterFields(void)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(parametersE[iPoint*fiberDimE+e], changeTimeArray[ctoff+d], tolerance);
     } // for
   } // for
-  err = VecRestoreArray(valueVec, &valueArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(initialVec, &initialArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(changeVec, &changeArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(changeTimeVec, &changeTimeArray);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(valueVec, &valueArray);PYLITH_CHECK_ERROR(err);
+  err = VecRestoreArray(initialVec, &initialArray);PYLITH_CHECK_ERROR(err);
+  err = VecRestoreArray(changeVec, &changeArray);PYLITH_CHECK_ERROR(err);
+  err = VecRestoreArray(changeTimeVec, &changeTimeArray);PYLITH_CHECK_ERROR(err);
 } // testParameterFields
 
 // ----------------------------------------------------------------------
@@ -294,23 +294,23 @@ pylith::faults::TestTractPerturbation::testVertexField(void)
   PetscErrorCode err;
 
   CPPUNIT_ASSERT(faultDMMesh);
-  err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
 
   const PylithScalar tolerance = 1.0e-06;
   int iPoint = 0;
-  err = VecGetArray(vec, &array);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(vec, &array);PYLITH_CHECK_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v, ++iPoint) {
     PetscInt dof, off;
 
-    err = PetscSectionGetDof(section, v, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(section, v, &off);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(section, v, &dof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(section, v, &off);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(fiberDimE, dof);
 
     for(PetscInt d = 0; d < dof; ++d) {
       CPPUNIT_ASSERT_DOUBLES_EQUAL(fieldE[iPoint*fiberDimE+d], array[off+d], tolerance);
     } // for
   } // for
-  err = VecRestoreArray(vec, &array);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(vec, &array);PYLITH_CHECK_ERROR(err);
 } // testVertexField
 
 // ----------------------------------------------------------------------
@@ -349,7 +349,7 @@ pylith::faults::TestTractPerturbation::_initialize(topology::Mesh* mesh,
 
   DM       dmMesh = mesh->dmMesh(), faultBoundaryDM;
   PetscInt labelSize;
-  err = DMPlexGetStratumSize(dmMesh, faultLabel, 1, &labelSize);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumSize(dmMesh, faultLabel, 1, &labelSize);PYLITH_CHECK_ERROR(err);
 
   // Create fault mesh
   PetscInt firstFaultVertex    = 0;
@@ -358,7 +358,7 @@ pylith::faults::TestTractPerturbation::_initialize(topology::Mesh* mesh,
   DMLabel  groupField;
   const bool useLagrangeConstraints = true;
 
-  err = DMPlexGetLabel(dmMesh, faultLabel, &groupField);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetLabel(dmMesh, faultLabel, &groupField);PYLITH_CHECK_ERROR(err);
   CPPUNIT_ASSERT(groupField);
   if (useLagrangeConstraints) {
     firstFaultCell += labelSize;
@@ -373,7 +373,7 @@ pylith::faults::TestTractPerturbation::_initialize(topology::Mesh* mesh,
                            faultId,
                            firstFaultVertex, firstLagrangeVertex, firstFaultCell,
                            useLagrangeConstraints);
-  err = DMDestroy(&faultBoundaryDM);CHECK_PETSC_ERROR(err);
+  err = DMDestroy(&faultBoundaryDM);PYLITH_CHECK_ERROR(err);
 
   // Need to copy coordinates from mesh to fault mesh since we are
   // using create() instead of createParallel().
@@ -398,20 +398,20 @@ pylith::faults::TestTractPerturbation::_initialize(topology::Mesh* mesh,
   Vec          orientationVec     = faultOrientation.localVector();
   PetscScalar *orientationArray;
   PetscInt           vStart, vEnd;
-  err = DMPlexGetDepthStratum(faultMesh->dmMesh(), 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(faultMesh->dmMesh(), 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
   CPPUNIT_ASSERT(orientationSection);CPPUNIT_ASSERT(orientationVec);
-  err = VecGetArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(orientationVec, &orientationArray);PYLITH_CHECK_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
     PetscInt odof, ooff;
 
-    err = PetscSectionGetDof(orientationSection, v, &odof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(orientationSection, v, &ooff);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(orientationSection, v, &odof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(orientationSection, v, &ooff);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(spaceDim*spaceDim, odof);
     for(PetscInt d = 0; d < odof; ++d) {
       orientationArray[ooff+d] = orientationVertex[d];
     }
   } // for
-  err = VecRestoreArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(orientationVec, &orientationArray);PYLITH_CHECK_ERROR(err);
   
   spatialdata::units::Nondimensional normalizer;
 
@@ -444,44 +444,44 @@ pylith::faults::TestTractPerturbation::_setupFaultCoordinates(topology::Mesh *me
 
   CPPUNIT_ASSERT(dmMesh);
   CPPUNIT_ASSERT(faultDMMesh);
-  err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetHeightStratum(faultDMMesh, 1, &ffStart, &ffEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexCreateSubpointIS(faultDMMesh, &subpointIS);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetCoordinateSection(faultDMMesh, &fcoordSection);CHECK_PETSC_ERROR(err);
-  err = PetscSectionSetChart(fcoordSection, vStart, vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
+  err = DMPlexGetHeightStratum(faultDMMesh, 1, &ffStart, &ffEnd);PYLITH_CHECK_ERROR(err);
+  err = DMPlexCreateSubpointIS(faultDMMesh, &subpointIS);PYLITH_CHECK_ERROR(err);
+  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);PYLITH_CHECK_ERROR(err);
+  err = DMPlexGetCoordinateSection(faultDMMesh, &fcoordSection);PYLITH_CHECK_ERROR(err);
+  err = PetscSectionSetChart(fcoordSection, vStart, vEnd);PYLITH_CHECK_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
-    err = PetscSectionSetDof(fcoordSection, v, spaceDim);CHECK_PETSC_ERROR(err);
+    err = PetscSectionSetDof(fcoordSection, v, spaceDim);PYLITH_CHECK_ERROR(err);
   }
-  err = PetscSectionSetUp(fcoordSection);CHECK_PETSC_ERROR(err);
+  err = PetscSectionSetUp(fcoordSection);PYLITH_CHECK_ERROR(err);
   Vec          coordVec, fcoordVec;
   PetscScalar *coords,  *fcoords;
   PetscInt     coordSize;
 
-  err = PetscSectionGetStorageSize(fcoordSection, &coordSize);CHECK_PETSC_ERROR(err);
-  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
-  err = VecCreate(mesh->comm(), &fcoordVec);CHECK_PETSC_ERROR(err);
-  err = VecSetSizes(fcoordVec, coordSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
-  err = VecSetFromOptions(fcoordVec);CHECK_PETSC_ERROR(err);
-  err = ISGetIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(fcoordVec, &fcoords);CHECK_PETSC_ERROR(err);
+  err = PetscSectionGetStorageSize(fcoordSection, &coordSize);PYLITH_CHECK_ERROR(err);
+  err = DMGetCoordinatesLocal(dmMesh, &coordVec);PYLITH_CHECK_ERROR(err);
+  err = VecCreate(mesh->comm(), &fcoordVec);PYLITH_CHECK_ERROR(err);
+  err = VecSetSizes(fcoordVec, coordSize, PETSC_DETERMINE);PYLITH_CHECK_ERROR(err);
+  err = VecSetFromOptions(fcoordVec);PYLITH_CHECK_ERROR(err);
+  err = ISGetIndices(subpointIS, &points);PYLITH_CHECK_ERROR(err);
+  err = VecGetArray(coordVec, &coords);PYLITH_CHECK_ERROR(err);
+  err = VecGetArray(fcoordVec, &fcoords);PYLITH_CHECK_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
     PetscInt off, foff;
 
     // Notice that subpointMap[] does not account for cohesive cells
-    err = PetscSectionGetOffset(coordSection, points[v]+(ffEnd-ffStart), &off);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(fcoordSection, v, &foff);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(coordSection, points[v]+(ffEnd-ffStart), &off);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(fcoordSection, v, &foff);PYLITH_CHECK_ERROR(err);
     for(PetscInt d = 0; d < spaceDim; ++d) {
       fcoords[foff+d] = coords[off+d];
     }
   }
-  err = ISRestoreIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
-  err = ISDestroy(&subpointIS);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(fcoordVec, &fcoords);CHECK_PETSC_ERROR(err);
-  err = DMSetCoordinatesLocal(faultDMMesh, fcoordVec);CHECK_PETSC_ERROR(err);
-  err = VecDestroy(&fcoordVec);CHECK_PETSC_ERROR(err);
+  err = ISRestoreIndices(subpointIS, &points);PYLITH_CHECK_ERROR(err);
+  err = ISDestroy(&subpointIS);PYLITH_CHECK_ERROR(err);
+  err = VecRestoreArray(coordVec, &coords);PYLITH_CHECK_ERROR(err);
+  err = VecRestoreArray(fcoordVec, &fcoords);PYLITH_CHECK_ERROR(err);
+  err = DMSetCoordinatesLocal(faultDMMesh, fcoordVec);PYLITH_CHECK_ERROR(err);
+  err = VecDestroy(&fcoordVec);PYLITH_CHECK_ERROR(err);
 } // _setupFaultCoordinates
 
 

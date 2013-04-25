@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2011 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -20,7 +20,7 @@
 #error "CoordsVisitor.icc must be included only from CoordsVisitor.hh"
 #else
 
-#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
+#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -51,9 +51,9 @@ pylith::topology::CoordsVisitor::initialize(void)
 { // initialize
   assert(_dm);
   PetscErrorCode err;
-  err = DMPlexGetCoordinateSection(_dm, &_section);CHECK_PETSC_ERROR(err);assert(_section);
-  err = DMGetCoordinatesLocal(_dm, &_localVec);CHECK_PETSC_ERROR(err);assert(_localVec);
-  err = VecGetArray(_localVec, &_localArray);CHECK_PETSC_ERROR(err);assert(_localArray);
+  err = DMPlexGetCoordinateSection(_dm, &_section);PYLITH_CHECK_ERROR(err);assert(_section);
+  err = DMGetCoordinatesLocal(_dm, &_localVec);PYLITH_CHECK_ERROR(err);assert(_localVec);
+  err = VecGetArray(_localVec, &_localArray);PYLITH_CHECK_ERROR(err);assert(_localArray);
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -63,7 +63,7 @@ void
 pylith::topology::CoordsVisitor::clear(void)
 { // clear
   if (_localVec) {
-    PetscErrorCode err = VecRestoreArray(_localVec, &_localArray);CHECK_PETSC_ERROR(err);
+    PetscErrorCode err = VecRestoreArray(_localVec, &_localArray);PYLITH_CHECK_ERROR(err);
   } // if
 
   _localVec = NULL;
@@ -88,7 +88,7 @@ pylith::topology::CoordsVisitor::sectionDof(const PetscInt point) const
 { // sectionDof
   assert(_section);
   PetscInt dof;
-  PetscErrorCode err = PetscSectionGetDof(_section, point, &dof);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = PetscSectionGetDof(_section, point, &dof);PYLITH_CHECK_ERROR(err);
   return dof;
 } // sectionDof
 
@@ -100,7 +100,7 @@ pylith::topology::CoordsVisitor::sectionOffset(const PetscInt point) const
 { // sectionOffset
   assert(_section);
   PetscInt offset;
-  PetscErrorCode err = PetscSectionGetOffset(_section, point, &offset);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = PetscSectionGetOffset(_section, point, &offset);PYLITH_CHECK_ERROR(err);
   return offset;
 } // sectionOffset
 
@@ -115,7 +115,7 @@ pylith::topology::CoordsVisitor::getClosure(PetscScalar** coordsCell,
   assert(_dm);
   assert(_section);
   assert(_localVec);
-  PetscErrorCode err = DMPlexVecGetClosure(_dm, _section, _localVec, cell, coordsSize, coordsCell);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = DMPlexVecGetClosure(_dm, _section, _localVec, cell, coordsSize, coordsCell);PYLITH_CHECK_ERROR(err);
 } // getClosure
 
 // ----------------------------------------------------------------------
@@ -129,7 +129,7 @@ pylith::topology::CoordsVisitor::restoreClosure(PetscScalar** coordsCell,
   assert(_dm);
   assert(_section);
   assert(_localVec);
-  PetscErrorCode err = DMPlexVecRestoreClosure(_dm, _section, _localVec, cell, coordsSize, coordsCell);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = DMPlexVecRestoreClosure(_dm, _section, _localVec, cell, coordsSize, coordsCell);PYLITH_CHECK_ERROR(err);
 } // restoreClosure
 
 #endif

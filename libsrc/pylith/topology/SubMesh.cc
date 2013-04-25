@@ -10,7 +10,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -24,7 +24,7 @@
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "pylith/utils/petscfwd.h" // USES PetscVec
-#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
+#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
 #include <Selection.hh> // USES ALE::Selection
 
@@ -74,7 +74,7 @@ pylith::topology::SubMesh::deallocate(void)
 
   delete _coordsys; _coordsys = 0;
   _mesh.destroy();
-  PetscErrorCode err = DMDestroy(&_newMesh);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = DMDestroy(&_newMesh);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // deallocate
@@ -158,7 +158,7 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
   PetscBool hasLabel;
   PetscErrorCode err;
 
-  err = DMPlexHasLabel(dmMesh, label, &hasLabel);CHECK_PETSC_ERROR(err);
+  err = DMPlexHasLabel(dmMesh, label, &hasLabel);PYLITH_CHECK_ERROR(err);
   if (!hasLabel) {
     std::ostringstream msg;
     msg << "Could not find group of points '" << label << "' in DM mesh.";
@@ -166,20 +166,20 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
   } // if
 
   /* TODO: Add creation of pointSF for submesh */
-  err = DMDestroy(&_newMesh);CHECK_PETSC_ERROR(err);
-  err = DMPlexCreateSubmesh(dmMesh, label, 1, &_newMesh);CHECK_PETSC_ERROR(err);
+  err = DMDestroy(&_newMesh);PYLITH_CHECK_ERROR(err);
+  err = DMPlexCreateSubmesh(dmMesh, label, 1, &_newMesh);PYLITH_CHECK_ERROR(err);
 
   // Set data from mesh.
   coordsys(mesh);
 
   // Set name
   std::string meshLabel = "subdomain_" + std::string(label);
-  err = PetscObjectSetName((PetscObject) _newMesh, meshLabel.c_str());CHECK_PETSC_ERROR(err);
+  err = PetscObjectSetName((PetscObject) _newMesh, meshLabel.c_str());PYLITH_CHECK_ERROR(err);
   PetscInt maxConeSizeLocal, maxConeSize = 0;
 
-  err = DMPlexGetMaxSizes(dmMesh, &maxConeSizeLocal, NULL);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetMaxSizes(dmMesh, &maxConeSizeLocal, NULL);PYLITH_CHECK_ERROR(err);
   err = MPI_Allreduce(&maxConeSizeLocal, &maxConeSize, 1, MPI_INT, MPI_MAX,
-                      PetscObjectComm((PetscObject) dmMesh)); CHECK_PETSC_ERROR(err);
+                      PetscObjectComm((PetscObject) dmMesh)); PYLITH_CHECK_ERROR(err);
 
   if (maxConeSize <= 0) {
     std::ostringstream msg;

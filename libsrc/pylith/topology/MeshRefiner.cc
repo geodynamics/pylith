@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -22,7 +22,7 @@
 
 #include "MeshOrder.hh" // USES MeshOrder
 
-#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
+#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
 #include <cassert> // USES assert()
 
@@ -819,14 +819,14 @@ ALE::MeshRefiner<cellrefiner_type>::_calcNewOverlap(const Obj<mesh_type>& newMes
   const int numRanks = newSendOverlap->getNumRanks();
   for (int isend=0; isend < numRanks; ++isend) {
     int rank = 0;
-    err = newSendOverlap->getRank(isend, &rank); CHECK_PETSC_ERROR(err);
+    err = newSendOverlap->getRank(isend, &rank); PYLITH_CHECK_ERROR(err);
     int irecv = 0;
     err = newRecvOverlap->getRankIndex(rank, &irecv);
 
     int sendRank = 0;
     int recvRank = 0;
-    err = sendOverlap->getRank(isend, &sendRank); CHECK_PETSC_ERROR(err);
-    err = recvOverlap->getRank(irecv, &recvRank); CHECK_PETSC_ERROR(err);
+    err = sendOverlap->getRank(isend, &sendRank); PYLITH_CHECK_ERROR(err);
+    err = recvOverlap->getRank(irecv, &recvRank); PYLITH_CHECK_ERROR(err);
     if (rank != sendRank || rank != recvRank) {
       throw std::logic_error("Error in constructing new overlaps during mesh "
 			     "refinement.\nMismatch in ranks.");
@@ -836,10 +836,10 @@ ALE::MeshRefiner<cellrefiner_type>::_calcNewOverlap(const Obj<mesh_type>& newMes
     int oldSendNumPoints = 0;
     int newRecvNumPoints = 0;
     int oldRecvNumPoints = 0;
-    err = sendOverlap->getNumPointsByRank(rank, &oldSendNumPoints); CHECK_PETSC_ERROR(err);
-    err = newSendOverlap->getNumPointsByRank(rank, &newSendNumPoints); CHECK_PETSC_ERROR(err);
-    err = recvOverlap->getNumPointsByRank(rank, &oldRecvNumPoints); CHECK_PETSC_ERROR(err);
-    err = newRecvOverlap->getNumPointsByRank(rank, &newRecvNumPoints); CHECK_PETSC_ERROR(err);
+    err = sendOverlap->getNumPointsByRank(rank, &oldSendNumPoints); PYLITH_CHECK_ERROR(err);
+    err = newSendOverlap->getNumPointsByRank(rank, &newSendNumPoints); PYLITH_CHECK_ERROR(err);
+    err = recvOverlap->getNumPointsByRank(rank, &oldRecvNumPoints); PYLITH_CHECK_ERROR(err);
+    err = newRecvOverlap->getNumPointsByRank(rank, &newRecvNumPoints); PYLITH_CHECK_ERROR(err);
     if (newSendNumPoints < oldSendNumPoints || newRecvNumPoints < oldRecvNumPoints) {
       throw std::logic_error("Error in constructing new overlaps during mesh "
 			     "refinement.\nInvalid size for new overlaps.");
@@ -864,8 +864,8 @@ ALE::MeshRefiner<cellrefiner_type>::_calcNewOverlap(const Obj<mesh_type>& newMes
 	for (int j=0; j < numNeighbors; ++j) {
 	  int sendRank = 0;
 	  int recvRank = 0;
-	  err = newSendOverlap->getRank(j, &sendRank);CHECK_PETSC_ERROR(err);
-	  err = newRecvOverlap->getRank(j, &recvRank);CHECK_PETSC_ERROR(err);
+	  err = newSendOverlap->getRank(j, &sendRank);PYLITH_CHECK_ERROR(err);
+	  err = newRecvOverlap->getRank(j, &recvRank);PYLITH_CHECK_ERROR(err);
 	  std::cout << "["<<rank<<"]: "
 		    << "send: " << sendRank
 		    << ", npts: " << newSendOverlap->getNumPoints(j)

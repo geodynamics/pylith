@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -21,7 +21,7 @@
 #include "PsetFileAscii.hh" // implementation of class methods
 
 #include "pylith/utils/array.hh" // USES scalar_array, int_array
-#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
 
 #include "journal/info.h" // USES journal::info_t
 

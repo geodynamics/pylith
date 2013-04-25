@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -29,9 +29,6 @@
 #include "Quadrature2Din3D.hh"
 #include "Quadrature3D.hh"
 
-#include "pylith/topology/Fields.hh" // HOLDSA Fields
-#include "pylith/topology/Field.hh" // HOLDSA Field
-
 #include <cstring> // USES memcpy()
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
@@ -42,7 +39,6 @@
 template<typename mesh_type>
 pylith::feassemble::Quadrature<mesh_type>::Quadrature(void) :
   _engine(0),
-  _geometryFields(0),
   _checkConditioning(false)
 { // constructor
 } // constructor
@@ -66,7 +62,6 @@ pylith::feassemble::Quadrature<mesh_type>::deallocate(void)
   QuadratureRefCell::deallocate();
 
   delete _engine; _engine = 0;
-  delete _geometryFields; _geometryFields = 0;
 
   PYLITH_METHOD_END;
 } // deallocate
@@ -77,12 +72,11 @@ template<typename mesh_type>
 pylith::feassemble::Quadrature<mesh_type>::Quadrature(const Quadrature& q) :
   QuadratureRefCell(q),
   _engine(0),
-  _geometryFields(0),
   _checkConditioning(q._checkConditioning)
 { // copy constructor
   PYLITH_METHOD_BEGIN;
 
-  if (0 != q._engine)
+  if (q._engine)
     _engine = q._engine->clone();
 
   PYLITH_METHOD_END;
@@ -97,7 +91,7 @@ pylith::feassemble::Quadrature<mesh_type>::initializeGeometry(void)
   PYLITH_METHOD_BEGIN;
 
   clear();
-  assert(0 == _engine);
+  assert(!_engine);
 
   const int cellDim = _cellDim;
   const int spaceDim = _spaceDim;
@@ -148,323 +142,11 @@ pylith::feassemble::Quadrature<mesh_type>::initializeGeometry(void)
     assert(0);
   } // if/else
 
-  assert(0 != _engine);
+  assert(_engine);
   _engine->initialize();
 
   PYLITH_METHOD_END;
 } // initializeGeometry
-
-// ----------------------------------------------------------------------
-// Compute geometric quantities for each cell.
-template<typename mesh_type>
-void
-pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
-       const mesh_type& mesh,
-       const ALE::Obj<typename mesh_type::SieveMesh::label_sequence>& cells)
-{ // computeGeometry
-  PYLITH_METHOD_BEGIN;
-
-  assert(0 != _engine);
-
-  typedef typename mesh_type::RealSection RealSection;
-  typedef typename mesh_type::SieveMesh::label_sequence label_sequence;
-  typedef typename mesh_type::RestrictVisitor RestrictVisitor;
-
-  const char* loggingStage = "Quadrature";
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush(loggingStage);
-
-  delete _geometryFields;
-  _geometryFields = new topology::Fields<topology::Field<mesh_type> >;
-
-  // Allocate field and cell buffer for quadrature points
-  _geometryFields->add("quadrature points", "quadrature_points");
-  topology::Field<mesh_type>& quadPtsField = 
-    _geometryFields->get("quadrature points");
-  int fiberDim = _numQuadPts * _spaceDim;
-  quadPtsField.newSection(cells, fiberDim);
-  quadPtsField.allocate();
-
-  // Get chart for reuse in other fields
-  const ALE::Obj<RealSection>& section = quadPtsField->section(); 
-  assert(!section.isNull());
-  const typename RealSection::chart_type& chart = section->getChart();
-
-  // Allocate field and cell buffer for Jacobian at quadrature points
-  std::cout << "Jacobian: cell dim: " << _cellDim << std::endl;
-  _geometryFields->add("jacobian", "jacobian");
-  topology::Field<mesh_type>& jacobianField = 
-    _geometryFields->get("jacobian");
-  fiberDim = (_cellDim > 0) ?
-    _numQuadPts * _cellDim * _spaceDim :
-    _numQuadPts * 1 * _spaceDim;
-  jacobianField->newSection(chart, fiberDim);
-  jacobianField->allocate();
-  
-  // Allocate field and cell buffer for determinant of Jacobian at quad pts
-  std::cout << "Jacobian det:" << std::endl;
-  _geometryFields->add("determinant(jacobian)", "determinant_jacobian");
-  topology::Field<mesh_type>& jacobianDetField = 
-    _geometryFields->get("determinant(jacobian)");
-  fiberDim = _numQuadPts;
-  jacobianDetField.newSection(chart, fiberDim);
-  jacobianDetField.allocate();
-  
-  // Allocate field for derivatives of basis functions at quad pts
-  std::cout << "Basis derivatives: num basis: " << _numBasis << std::endl;
-  _geometryFields->add("derivative basis functions",
-		       "derivative_basis_functions");
-  topology::Field<mesh_type>& basisDerivField = 
-    _geometryFields->get("jacobian");
-  fiberDim = _numQuadPts * _numBasis * _spaceDim;
-  basisDerivField.newSection(chart, fiberDim);
-  basisDerivField.allocate();
-
-  logger.stagePop();
-
-#if defined(ALE_MEM_LOGGING)
-  std::cout 
-    << loggingStage << ": " 
-    << logger.getNumAllocations(loggingStage)
-    << " allocations " << logger.getAllocationTotal(loggingStage)
-    << " bytes"
-    << std::endl
-    << loggingStage << ": "
-    << logger.getNumDeallocations(loggingStage)
-    << " deallocations " << logger.getDeallocationTotal(loggingStage)
-    << " bytes"
-    << std::endl;
-#endif
-
-  assert(!cells.isNull());
-  const typename label_sequence::iterator cellsBegin = cells->begin();
-  const typename label_sequence::iterator cellsEnd = cells->end();
-  assert(0 != _geometry);
-  const int numBasis = _numBasis;
-  const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-
-  scalar_array coordinatesCell(numBasis*_spaceDim);
-  const ALE::Obj<RealSection>& coordinates = 
-    sieveMesh->getRealSection("coordinates");
-  RestrictVisitor coordsVisitor(*coordinates,
-				coordinatesCell.size(), &coordinatesCell[0]);
-
-  const ALE::Obj<RealSection>& quadPtsSection = quadPtsField->section();
-  const ALE::Obj<RealSection>& jacobianSection = jacobianField->section();
-  const ALE::Obj<RealSection>& jacobianDetSection = 
-    jacobianDetField->section();
-  const ALE::Obj<RealSection>& basisDerivSection = basisDerivField->section();
-
-  const scalar_array& quadPts = _engine->quadPts();
-  const scalar_array& jacobian = _engine->jacobian();
-  const scalar_array& jacobianDet = _engine->jacobianDet();
-  const scalar_array& basisDeriv = _engine->basisDeriv();
-
-  for(typename label_sequence::iterator c_iter = cellsBegin;
-      c_iter != cellsEnd;
-      ++c_iter) {
-    coordsVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    _engine->computeGeometry(coordinatesCell, *c_iter);
-
-    // Update fields with cell data
-    quadPtsSection->updatePoint(*c_iter, &quadPts[0]);
-    jacobianSection->updatePoint(*c_iter, &jacobian[0]);
-    jacobianDetSection->updatePoint(*c_iter, &jacobianDet[0]);
-    basisDerivSection->updatePoint(*c_iter, &basisDeriv[0]);
-  } // for
-
-  PYLITH_METHOD_END;
-} // computeGeometry
-
-// ----------------------------------------------------------------------
-// Compute geometric quantities for each cell.
-template<typename mesh_type>
-void
-pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
-       const mesh_type& mesh,
-       PetscInt cStart, PetscInt cEnd)
-{ // computeGeometry
-  PYLITH_METHOD_BEGIN;
-
-  assert(0 != _engine);
-
-  const char* loggingStage = "Quadrature";
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush(loggingStage);
-
-  delete _geometryFields;
-  _geometryFields = new topology::Fields<topology::Field<mesh_type> >;
-
-  // Allocate field and cell buffer for quadrature points
-  _geometryFields->add("quadrature points", "quadrature_points");
-  topology::Field<mesh_type>& quadPtsField = 
-    _geometryFields->get("quadrature points");
-  int fiberDim = _numQuadPts * _spaceDim;
-  quadPtsField.newSection(cStart, cEnd, fiberDim);
-  quadPtsField.allocate();
-
-  // Allocate field and cell buffer for Jacobian at quadrature points
-  std::cout << "Jacobian: cell dim: " << _cellDim << std::endl;
-  _geometryFields->add("jacobian", "jacobian");
-  topology::Field<mesh_type>& jacobianField = 
-    _geometryFields->get("jacobian");
-  fiberDim = (_cellDim > 0) ?
-    _numQuadPts * _cellDim * _spaceDim :
-    _numQuadPts * 1 * _spaceDim;
-  jacobianField->newSection(cStart, cEnd, fiberDim);
-  jacobianField->allocate();
-  
-  // Allocate field and cell buffer for determinant of Jacobian at quad pts
-  std::cout << "Jacobian det:" << std::endl;
-  _geometryFields->add("determinant(jacobian)", "determinant_jacobian");
-  topology::Field<mesh_type>& jacobianDetField = 
-    _geometryFields->get("determinant(jacobian)");
-  fiberDim = _numQuadPts;
-  jacobianDetField.newSection(cStart, cEnd, fiberDim);
-  jacobianDetField.allocate();
-  
-  // Allocate field for derivatives of basis functions at quad pts
-  std::cout << "Basis derivatives: num basis: " << _numBasis << std::endl;
-  _geometryFields->add("derivative basis functions",
-		       "derivative_basis_functions");
-  topology::Field<mesh_type>& basisDerivField = 
-    _geometryFields->get("jacobian");
-  fiberDim = _numQuadPts * _numBasis * _spaceDim;
-  basisDerivField.newSection(cStart, cEnd, fiberDim);
-  basisDerivField.allocate();
-
-  logger.stagePop();
-
-#if defined(ALE_MEM_LOGGING)
-  std::cout 
-    << loggingStage << ": " 
-    << logger.getNumAllocations(loggingStage)
-    << " allocations " << logger.getAllocationTotal(loggingStage)
-    << " bytes"
-    << std::endl
-    << loggingStage << ": "
-    << logger.getNumDeallocations(loggingStage)
-    << " deallocations " << logger.getDeallocationTotal(loggingStage)
-    << " bytes"
-    << std::endl;
-#endif
-
-  assert(0 != _geometry);
-  const int numBasis = _numBasis;
-  PetscErrorCode err;
-
-  DM           dm = mesh.dmMesh();
-  scalar_array coordinatesCell(numBasis*_spaceDim);
-  PetscSection coordSection;
-  Vec          coordVec;
-  err = DMPlexGetCoordinateSection(dm, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMGetCoordinatesLocal(dm, &coordVec);CHECK_PETSC_ERROR(err);
-
-  PetscSection quadPtsSection = quadPtsField->petscSection();
-  Vec          quadPtsVec = quadPtsField->localVector();
-  PetscScalar *quadPtsArray;
-  PetscSection jacobianSection = jacobianField->petscSection();
-  Vec          jacobianVec = jacobianField->localVector();
-  PetscScalar *jacobianArray;
-  PetscSection jacobianDetSection = jacobianDetField->petscSection();
-  Vec          jacobianDetVec = jacobianDetField->localVector();
-  PetscScalar *jacobianDetArray;
-  PetscSection basisDerivSection = basisDerivField->petscSection();
-  Vec          basisDerivVec = basisDerivField->localVector();
-  PetscScalar *basisDerivArray;
-
-  const scalar_array& quadPts = _engine->quadPts();
-  const scalar_array& jacobian = _engine->jacobian();
-  const scalar_array& jacobianDet = _engine->jacobianDet();
-  const scalar_array& basisDeriv = _engine->basisDeriv();
-
-  err = VecGetArray(quadPtsVec, &quadPtsArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(jacobianVec, &jacobianArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(jacobianDetVec, &jacobianDetArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(basisDerivVec, &basisDerivArray);CHECK_PETSC_ERROR(err);
-  for (PetscInt c = cStart; c < cEnd; ++c) {
-    PetscScalar *coords = PETSC_NULL;
-    PetscInt     coordsSize;
-
-    err = DMPlexVecGetClosure(dm, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
-    err = DMPlexVecRestoreClosure(dm, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-
-    _engine->computeGeometry(coordinatesCell, c);
-    // Update fields with cell data
-    PetscInt dof, off;
-
-    err = PetscSectionGetDof(quadPtsSection, c, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(quadPtsSection, c, &off);CHECK_PETSC_ERROR(err);
-    for(PetscInt d = 0; d < dof; ++d) {
-      quadPtsArray[off+d] = quadPts[d];
-    }
-    err = PetscSectionGetDof(jacobianSection, c, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(jacobianSection, c, &off);CHECK_PETSC_ERROR(err);
-    for(PetscInt d = 0; d < dof; ++d) {
-      jacobianArray[off+d] = jacobian[d];
-    }
-    err = PetscSectionGetDof(jacobianDetSection, c, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(jacobianDetSection, c, &off);CHECK_PETSC_ERROR(err);
-    for(PetscInt d = 0; d < dof; ++d) {
-      jacobianDetArray[off+d] = jacobianDet[d];
-    }
-    err = PetscSectionGetDof(basisDerivSection, c, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(basisDerivSection, c, &off);CHECK_PETSC_ERROR(err);
-    for(PetscInt d = 0; d < dof; ++d) {
-      basisDerivArray[off+d] = basisDeriv[d];
-    }
-  } // for
-  err = VecRestoreArray(quadPtsVec, &quadPtsArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(jacobianVec, &jacobianArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(jacobianDetVec, &jacobianDetArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(basisDerivVec, &basisDerivArray);CHECK_PETSC_ERROR(err);
-
-  PYLITH_METHOD_END;
-} // computeGeometry
-
-// ----------------------------------------------------------------------
-template<typename mesh_type>
-void
-pylith::feassemble::Quadrature<mesh_type>::retrieveGeometry(const typename mesh_type::SieveMesh::point_type& cell)
-{ // retrieveGeometry
-  PYLITH_METHOD_BEGIN;
-
-  assert(0 != _geometryFields);
-  assert(0 != _engine);
-
-  typedef typename mesh_type::RealSection RealSection;
-
-  const scalar_array& quadPts = _engine->quadPts();
-  const scalar_array& jacobian = _engine->jacobian();
-  const scalar_array& jacobianDet = _engine->jacobianDet();
-  const scalar_array& basisDeriv = _engine->basisDeriv();
-
-  const ALE::Obj<RealSection>& quadPtsSection =
-    _geometryFields->get("quadrature points").section();
-  quadPtsSection->restrictPoint(cell, const_cast<PylithScalar*>(&quadPts[0]),
-				quadPts.size());
-
-  const ALE::Obj<RealSection>& jacobianSection =
-    _geometryFields->get("jacobian").section();
-  jacobianSection->restrictPoint(cell, const_cast<PylithScalar*>(&jacobian[0]),
-				 jacobian.size());
-
-  const ALE::Obj<RealSection>& jacobianDetSection = 
-    _geometryFields->get("determinant(jacobian)").section();
-  jacobianDetSection->restrictPoint(cell, const_cast<PylithScalar*>(&jacobianDet[0]),
-				    jacobianDet.size());
-
-  const ALE::Obj<RealSection>& basisDerivSection =
-    _geometryFields->get("determinant basisfunctions").section();
-  basisDerivSection->restrictPoint(cell, const_cast<PylithScalar*>(&basisDeriv[0]),
-				   basisDeriv.size());
-
-
-  PYLITH_METHOD_END;
-} // retrieveGeometry
 
 // ----------------------------------------------------------------------
 // Deallocate temporary storage;
@@ -475,10 +157,6 @@ pylith::feassemble::Quadrature<mesh_type>::clear(void)
   PYLITH_METHOD_BEGIN;
 
   delete _engine; _engine = 0;
-
-  // Clear storage of precomputed geometry.
-  delete _geometryFields; _geometryFields = 0;
-
 
   PYLITH_METHOD_END;
 } // clear

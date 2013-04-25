@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -95,14 +95,14 @@ pylith::bc::DirichletBC::setConstraintSizes(const topology::Field<topology::Mesh
   // Set constraints in field
   const int numPoints = _points.size();
   _offsetLocal.resize(numPoints);
-  err = PetscSectionGetNumFields(section, &numFields);CHECK_PETSC_ERROR(err);
+  err = PetscSectionGetNumFields(section, &numFields);PYLITH_CHECK_ERROR(err);
 
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     const PetscInt point = _points[iPoint];
 
     PetscInt dof, cdof;
-    err = PetscSectionGetDof(section, point, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetConstraintDof(section, point, &cdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(section, point, &dof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetConstraintDof(section, point, &cdof);PYLITH_CHECK_ERROR(err);
     if (cdof + numFixedDOF > dof) {
       std::ostringstream msg;
       msg
@@ -113,9 +113,9 @@ pylith::bc::DirichletBC::setConstraintSizes(const topology::Field<topology::Mesh
       throw std::runtime_error(msg.str());
     } // if
     _offsetLocal[iPoint] = cdof;
-    err = PetscSectionAddConstraintDof(section, point, numFixedDOF);CHECK_PETSC_ERROR(err);
+    err = PetscSectionAddConstraintDof(section, point, numFixedDOF);PYLITH_CHECK_ERROR(err);
     // We should be specifying what field the BC is for
-    if (numFields) {err = PetscSectionAddFieldConstraintDof(section, point, 0, numFixedDOF);CHECK_PETSC_ERROR(err);}
+    if (numFields) {err = PetscSectionAddFieldConstraintDof(section, point, 0, numFixedDOF);PYLITH_CHECK_ERROR(err);}
   } // for
 
   PYLITH_METHOD_END;
@@ -137,7 +137,7 @@ pylith::bc::DirichletBC::setConstraints(const topology::Field<topology::Mesh>& f
   PetscErrorCode err = 0;
 
   const int numPoints = _points.size();
-  err = PetscSectionGetNumFields(section, &numFields);CHECK_PETSC_ERROR(err);
+  err = PetscSectionGetNumFields(section, &numFields);PYLITH_CHECK_ERROR(err);
 
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     const PetscInt point = _points[iPoint];
@@ -145,8 +145,8 @@ pylith::bc::DirichletBC::setConstraints(const topology::Field<topology::Mesh>& f
     // Get list of currently constrained DOF
     PetscInt cdof;
     const PetscInt *cInd;
-    err = PetscSectionGetConstraintDof(section, point, &cdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetConstraintIndices(section, point, &cInd);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetConstraintDof(section, point, &cdof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetConstraintIndices(section, point, &cInd);PYLITH_CHECK_ERROR(err);
 
     // Create array holding all constrained DOF
     int_array allCInd(cInd, cdof);
@@ -181,8 +181,8 @@ pylith::bc::DirichletBC::setConstraints(const topology::Field<topology::Mesh>& f
     std::sort(&allCInd[0], &allCInd[cdof]);
 
     // Update list of constrained DOF
-    err = PetscSectionSetConstraintIndices(section, point, &allCInd[0]);CHECK_PETSC_ERROR(err);
-    if (numFields) {err = PetscSectionSetFieldConstraintIndices(section, point, 0, &allCInd[0]);CHECK_PETSC_ERROR(err);}
+    err = PetscSectionSetConstraintIndices(section, point, &allCInd[0]);PYLITH_CHECK_ERROR(err);
+    if (numFields) {err = PetscSectionSetFieldConstraintIndices(section, point, 0, &allCInd[0]);PYLITH_CHECK_ERROR(err);}
   } // for
 
   PYLITH_METHOD_END;

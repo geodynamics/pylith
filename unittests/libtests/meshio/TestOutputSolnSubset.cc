@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -108,7 +108,7 @@ pylith::meshio::TestOutputSolnSubset::testSubdomainMesh(void)
   for (PetscInt c = cStart, index = 0; c < cEnd; ++c) {
     PetscInt *closure = NULL;
     PetscInt closureSize = 0;
-    err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     int count = 0;
     for (int i=0; i < closureSize; ++i) {
       const PetscInt p = closure[2*i];
@@ -119,7 +119,7 @@ pylith::meshio::TestOutputSolnSubset::testSubdomainMesh(void)
       } // if
     } // for
     CPPUNIT_ASSERT_EQUAL(ncorners, count);
-    err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
   } // for
 
   PYLITH_METHOD_END;
