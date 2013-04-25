@@ -533,7 +533,6 @@ pylith::meshio::MeshIO::_getGroupNames(string_vector* names) const
     const char* namestr = NULL;
     err = DMPlexGetLabelName(dmMesh, iLabel, &namestr);PYLITH_CHECK_ERROR(err);
     (*names)[iGroup] = namestr;
-    std::cout << "GROUP " << iGroup << ": " << (*names)[iGroup] << std::endl;
   } // for
 
   PYLITH_METHOD_END;
