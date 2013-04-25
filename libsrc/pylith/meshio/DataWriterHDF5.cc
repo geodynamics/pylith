@@ -129,10 +129,11 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     err = VecView(coordVector, _viewer);PYLITH_CHECK_ERROR(err);
     err = PetscViewerHDF5PopGroup(_viewer); PYLITH_CHECK_ERROR(err);
 
-    PetscInt vStart, vEnd, cStart, cEnd, cMax, dof, conesSize, numCorners, numCornersLocal = 0;
+    PetscInt vStart, vEnd, cellHeight, cStart, cEnd, cMax, dof, conesSize, numCorners, numCornersLocal = 0;
 
+    err = DMPlexGetVTKCellHeight(dmMesh, &cellHeight);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetHeightStratum(dmMesh, cellHeight, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetHybridBounds(dmMesh, &cMax, PETSC_NULL, PETSC_NULL, PETSC_NULL);PYLITH_CHECK_ERROR(err);
     if (cMax >= 0) {
       cEnd = PetscMin(cEnd, cMax);
@@ -166,7 +167,6 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     } else {
       conesSize = (cEnd - cStart)*numCorners;
     } // if/else
-    CHKMEMA; // MATT Why is this here?
 
     PetscIS globalVertexNumbers = NULL;
     const PetscInt *gvertex = NULL;
@@ -188,8 +188,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
       if (label) {
         PetscInt value;
         err = DMPlexGetLabelValue(dmMesh, label, cell, &value);PYLITH_CHECK_ERROR(err);
-        if (value != labelId)
-	  continue;
+        if (value != labelId) continue;
       } // if
 
       err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
@@ -200,9 +199,8 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
         } // if
       } // for
       err = DMPlexRestoreTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-      //assert(v == (cell-cStart+1)*numCorners); :TODO: MATT Why is this here?
+      //assert(v == (cell-cStart+1)*numCorners); Would be true without the label check
     } // for
-    CHKMEMA; // MATT why is this here?
     err = VecRestoreArray(cellVec, &vertices);PYLITH_CHECK_ERROR(err);
     err = PetscViewerHDF5PushGroup(_viewer, "/topology");PYLITH_CHECK_ERROR(err);
     err = VecView(cellVec, _viewer);PYLITH_CHECK_ERROR(err);
