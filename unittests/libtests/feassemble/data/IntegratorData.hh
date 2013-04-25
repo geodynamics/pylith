@@ -72,6 +72,14 @@ public:
   char* matLabel; ///< Label of material.
   //@}
 
+  /// @name Scales information for nondimensionalization.
+  //@{
+  PylithScalar lengthScale; ///< Length scale.
+  PylithScalar pressureScale; ///< Pressure scale.
+  PylithScalar timeScale; ///< Time scale.
+  PylithScalar densityScale; ///< Density scale.
+  //@}  
+
   /// @name Input fields
   //@{
   PylithScalar dt; ///< Time step

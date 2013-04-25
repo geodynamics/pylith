@@ -35,6 +35,10 @@ pylith::feassemble::IntegratorData::IntegratorData(void) :
   quadWts(0),
   basis(0),
   basisDerivRef(0),
+  lengthScale(1.0e+3),
+  pressureScale(2.25e+10),
+  densityScale(1.0),
+  timeScale(2.0),
   matType(0),
   matDBFilename(0),
   matId(0),
@@ -46,6 +50,8 @@ pylith::feassemble::IntegratorData::IntegratorData(void) :
   valsResidual(0),
   valsJacobian(0)
 { // constructor
+  const PylithScalar velScale = lengthScale / timeScale;
+  densityScale = pressureScale / (velScale*velScale);
 } // constructor
 
 // ----------------------------------------------------------------------
