@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -25,6 +25,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/Stratum.hh" // USES StratumIS
 #include "pylith/topology/VisitorMesh.hh" // USES VisitorMesh
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
@@ -874,14 +875,14 @@ pylith::materials::TestElasticMaterial::_initialize(topology::Mesh* mesh,
   PetscErrorCode err = 0;
 
   assert(dmMesh);
-  err = DMPlexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
-  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
-  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);PYLITH_CHECK_ERROR(err);
+  err = ISGetSize(cellIS, &numCells);PYLITH_CHECK_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);PYLITH_CHECK_ERROR(err);
 
   // Compute geometry for cells
   quadrature.initializeGeometry();
-  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
-  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
+  err = ISRestoreIndices(cellIS, &cells);PYLITH_CHECK_ERROR(err);
+  err = ISDestroy(&cellIS);PYLITH_CHECK_ERROR(err);
 
   spatialdata::spatialdb::SimpleDB db;
   spatialdata::spatialdb::SimpleIOAscii dbIO;

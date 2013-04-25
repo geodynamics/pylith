@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -26,7 +26,7 @@
 #include "pylith/utils/array.hh" // USES double_array
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
-#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
+#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
@@ -191,8 +191,8 @@ pylith::playpen::TestClosure::testRestrictClosure(const pylith::topology::Mesh& 
   PetscErrorCode ierr = 0;
   StageLog stageLog = 0;
   EventPerfLog eventLog = 0;
-  ierr = PetscLogGetStageLog(&stageLog); CHECK_PETSC_ERROR(ierr);
-  ierr = StageLogGetEventPerfLog(stageLog, stage, &eventLog); CHECK_PETSC_ERROR(ierr);
+  ierr = PetscLogGetStageLog(&stageLog); PYLITH_CHECK_ERROR(ierr);
+  ierr = StageLogGetEventPerfLog(stageLog, stage, &eventLog); PYLITH_CHECK_ERROR(ierr);
   EventPerfInfo eventInfo = eventLog->eventInfo[closureEvent];
   assert(1 == eventInfo.count);
   assert(count == cells->size() * _niterations);

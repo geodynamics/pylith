@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -28,7 +28,7 @@
 
 #include <petscsnes.h> // USES PetscSNES
 
-#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
+#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
 // KLUDGE, Fixes issue with PetscIsInfOrNanReal and include cmath
 // instead of math.h.
@@ -69,7 +69,7 @@ pylith::problems::SolverNonlinear::deallocate(void)
 
   Solver::deallocate();
 
-  PetscErrorCode err = SNESDestroy(&_snes);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = SNESDestroy(&_snes);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // deallocate
@@ -91,33 +91,33 @@ pylith::problems::SolverNonlinear::initialize(const topology::SolutionFields& fi
   PetscErrorCode err = 0;
   if (_snes) {
     err = SNESDestroy(&_snes); _snes = 0;
-    CHECK_PETSC_ERROR(err);
+    PYLITH_CHECK_ERROR(err);
   } // if    
-  err = SNESCreate(fields.mesh().comm(), &_snes); CHECK_PETSC_ERROR(err);
+  err = SNESCreate(fields.mesh().comm(), &_snes); PYLITH_CHECK_ERROR(err);
 
   const topology::Field<topology::Mesh>& residual = fields.get("residual");
   const PetscVec residualVec = residual.globalVector();
   err = SNESSetFunction(_snes, residualVec, reformResidual, (void*) formulation);
-  CHECK_PETSC_ERROR(err);
+  PYLITH_CHECK_ERROR(err);
 
-  err = SNESSetJacobian(_snes, jacobian.matrix(), _jacobianPC, reformJacobian, (void*) formulation);CHECK_PETSC_ERROR(err);
+  err = SNESSetJacobian(_snes, jacobian.matrix(), _jacobianPC, reformJacobian, (void*) formulation);PYLITH_CHECK_ERROR(err);
 
   // Set default line search type to SNESSHELL and use our custom line search
   PetscSNESLineSearch ls;
-  err = SNESGetSNESLineSearch(_snes, &ls);CHECK_PETSC_ERROR(err);
-  err = SNESLineSearchSetType(ls, SNESSHELL);CHECK_PETSC_ERROR(err);
-  err = SNESLineSearchSetOrder(ls, SNES_LINESEARCH_ORDER_CUBIC);CHECK_PETSC_ERROR(err);
-  err = SNESLineSearchShellSetUserFunc(ls, lineSearch, (void*) formulation);CHECK_PETSC_ERROR(err);
+  err = SNESGetSNESLineSearch(_snes, &ls);PYLITH_CHECK_ERROR(err);
+  err = SNESLineSearchSetType(ls, SNESSHELL);PYLITH_CHECK_ERROR(err);
+  err = SNESLineSearchSetOrder(ls, SNES_LINESEARCH_ORDER_CUBIC);PYLITH_CHECK_ERROR(err);
+  err = SNESLineSearchShellSetUserFunc(ls, lineSearch, (void*) formulation);PYLITH_CHECK_ERROR(err);
 
   // Get SNES options and allow the user to override the line search type
-  err = SNESSetFromOptions(_snes);CHECK_PETSC_ERROR(err);
-  err = SNESSetComputeInitialGuess(_snes, initialGuess, (void*) formulation);CHECK_PETSC_ERROR(err);
+  err = SNESSetFromOptions(_snes);PYLITH_CHECK_ERROR(err);
+  err = SNESSetComputeInitialGuess(_snes, initialGuess, (void*) formulation);PYLITH_CHECK_ERROR(err);
 
   if (formulation->splitFields()) {
     PetscKSP ksp = 0;
     PetscPC pc = 0;
-    err = SNESGetKSP(_snes, &ksp); CHECK_PETSC_ERROR(err);
-    err = KSPGetPC(ksp, &pc); CHECK_PETSC_ERROR(err);
+    err = SNESGetKSP(_snes, &ksp); PYLITH_CHECK_ERROR(err);
+    err = KSPGetPC(ksp, &pc); PYLITH_CHECK_ERROR(err);
     _setupFieldSplit(&pc, formulation, jacobian, fields);
   } // if
 
@@ -142,7 +142,7 @@ pylith::problems::SolverNonlinear::solve(topology::Field<topology::Mesh>* soluti
   PetscErrorCode err = 0;
   const PetscVec solutionVec = solution->globalVector();
 
-  err = SNESSolve(_snes, PETSC_NULL, solutionVec); CHECK_PETSC_ERROR(err);
+  err = SNESSolve(_snes, PETSC_NULL, solutionVec); PYLITH_CHECK_ERROR(err);
   
   _logger->eventEnd(solveEvent);
   _logger->eventBegin(scatterEvent);
@@ -519,7 +519,7 @@ pylith::problems::SolverNonlinear::initialGuess(PetscSNES snes,
 { // initialGuess
   PYLITH_METHOD_BEGIN;
 
-  PetscErrorCode err = VecSet(initialGuessVec, 0.0);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = VecSet(initialGuessVec, 0.0);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_RETURN(0);
 } // initialGuess

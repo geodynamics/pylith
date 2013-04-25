@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -25,9 +25,6 @@
 #include "pylith/topology/Field.hh" // USES Field
 
 #include <stdexcept> // USES std::runtime_error()
-
-// ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -80,21 +77,21 @@ pylith::bc::BoundaryConditionPoints::_getPoints(const topology::Mesh& mesh)
   PetscInt numPoints;
   PetscBool hasLabel;
   PetscErrorCode err;
-  err = DMPlexHasLabel(dmMesh, _label.c_str(), &hasLabel);CHECK_PETSC_ERROR(err);
+  err = DMPlexHasLabel(dmMesh, _label.c_str(), &hasLabel);PYLITH_CHECK_ERROR(err);
   if (!hasLabel) {
     std::ostringstream msg;
     msg << "Could not find group of points '" << _label << "' in mesh.";
     throw std::runtime_error(msg.str());
   } // if
 
-  err = DMPlexGetLabel(dmMesh, _label.c_str(), &label);CHECK_PETSC_ERROR(err);
-  err = DMLabelGetStratumIS(label, 1, &pointIS);CHECK_PETSC_ERROR(err);
-  err = ISGetLocalSize(pointIS, &numPoints);CHECK_PETSC_ERROR(err);
-  err = ISGetIndices(pointIS, &points);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetLabel(dmMesh, _label.c_str(), &label);PYLITH_CHECK_ERROR(err);
+  err = DMLabelGetStratumIS(label, 1, &pointIS);PYLITH_CHECK_ERROR(err);
+  err = ISGetLocalSize(pointIS, &numPoints);PYLITH_CHECK_ERROR(err);
+  err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
   _points.resize(numPoints);
   for(PetscInt p = 0; p < numPoints; ++p) {_points[p] = points[p];}
-  err = ISRestoreIndices(pointIS, &points);CHECK_PETSC_ERROR(err);
-  err = ISDestroy(&pointIS);CHECK_PETSC_ERROR(err);
+  err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
+  err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // _getPoints

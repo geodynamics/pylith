@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -20,7 +20,7 @@
 
 #include "EventLogger.hh" // Implementation of class methods
 
-#include "petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+#include "error.h" // USES PYLITH_METHOD_BEGIN/END
 
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream

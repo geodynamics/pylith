@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -148,8 +148,8 @@ pylith::faults::TopologyOps::classifyCellsDM(DM dmMesh,
   PetscErrorCode  err;
 
   if (debug) {std::cout << "Checking fault vertex " << vertex << std::endl;}
-  err = DMPlexGetSupportSize(dmMesh, vertex, &supportSize);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetSupport(dmMesh, vertex, &support);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetSupportSize(dmMesh, vertex, &supportSize);PYLITH_CHECK_ERROR(err);
+  err = DMPlexGetSupport(dmMesh, vertex, &support);PYLITH_CHECK_ERROR(err);
   for (s = 0; s < supportSize; ++s) {
     const PetscInt point = support[s];
 
@@ -172,8 +172,8 @@ pylith::faults::TopologyOps::classifyCellsDM(DM dmMesh,
         PetscInt        coneSize;
 
         std::cout << "Checking neighbor " << vertex << std::endl;
-        err = DMPlexGetConeSize(dmMesh, vertex, &coneSize);CHECK_PETSC_ERROR(err);
-        err = DMPlexGetCone(dmMesh, vertex, &cone);CHECK_PETSC_ERROR(err);
+        err = DMPlexGetConeSize(dmMesh, vertex, &coneSize);PYLITH_CHECK_ERROR(err);
+        err = DMPlexGetCone(dmMesh, vertex, &cone);PYLITH_CHECK_ERROR(err);
         for (PetscInt c = 0; c < coneSize; ++c) {
           std::cout << "  cone point " << cone[c] << std::endl;
         }
@@ -196,8 +196,8 @@ pylith::faults::TopologyOps::classifyCellsDM(DM dmMesh,
         PetscInt        numCoveringPoints, points[2];
 
         points[0] = point; points[1] = *c_iter;
-        err = DMPlexGetMeet(dmMesh, 2, points, &numCoveringPoints, &coveringPoints);CHECK_PETSC_ERROR(err);
-        err = DMPlexRestoreMeet(dmMesh, 2, points, &numCoveringPoints, &coveringPoints);CHECK_PETSC_ERROR(err);
+        err = DMPlexGetMeet(dmMesh, 2, points, &numCoveringPoints, &coveringPoints);PYLITH_CHECK_ERROR(err);
+        err = DMPlexRestoreMeet(dmMesh, 2, points, &numCoveringPoints, &coveringPoints);PYLITH_CHECK_ERROR(err);
         if (numCoveringPoints == faceSize) {
           if (debug) std::cout << "    Scheduling " << point << " for replacement" << std::endl;
           vReplaceCells.insert(point);
@@ -213,8 +213,8 @@ pylith::faults::TopologyOps::classifyCellsDM(DM dmMesh,
         PetscInt        numCoveringPoints, points[2];
 
         points[0] = point; points[1] = *c_iter;
-        err = DMPlexGetMeet(dmMesh, 2, points, &numCoveringPoints, &coveringPoints);CHECK_PETSC_ERROR(err);
-        err = DMPlexRestoreMeet(dmMesh, 2, points, &numCoveringPoints, &coveringPoints);CHECK_PETSC_ERROR(err);
+        err = DMPlexGetMeet(dmMesh, 2, points, &numCoveringPoints, &coveringPoints);PYLITH_CHECK_ERROR(err);
+        err = DMPlexRestoreMeet(dmMesh, 2, points, &numCoveringPoints, &coveringPoints);PYLITH_CHECK_ERROR(err);
         if (numCoveringPoints == faceSize) {
           if (debug) std::cout << "    Scheduling " << point << " for no replacement" << std::endl;
           vNoReplaceCells.insert(point);

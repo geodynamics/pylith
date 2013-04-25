@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -21,6 +21,8 @@
 #include "ElasticMaterial.hh" // implementation of object methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/Stratum.hh" // USES StratumIS
@@ -482,16 +484,16 @@ pylith::materials::ElasticMaterial::_stableTimeStepImplicitMax(const topology::M
     PetscInt numCells;
     PetscErrorCode err = 0;
 
-    err = DMPlexGetStratumIS(dmMesh, "material-id", id(), &cellIS);CHECK_PETSC_ERROR(err);
-    err = ISGetLocalSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
-    err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetStratumIS(dmMesh, "material-id", id(), &cellIS);PYLITH_CHECK_ERROR(err);
+    err = ISGetLocalSize(cellIS, &numCells);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(cellIS, &cells);PYLITH_CHECK_ERROR(err);
     
     const int fiberDim = 1*numQuadPts;
     bool useCurrentField = false;
     if (fieldSection) {
       // check fiber dimension
       PetscInt fiberDimCurrentLocal = 0;
-      if (numCells > 0) {err = PetscSectionGetDof(fieldSection, cells[0], &fiberDimCurrentLocal);CHECK_PETSC_ERROR(err);}
+      if (numCells > 0) {err = PetscSectionGetDof(fieldSection, cells[0], &fiberDimCurrentLocal);PYLITH_CHECK_ERROR(err);}
       PetscInt fiberDimCurrent = 0;
       MPI_Allreduce(&fiberDimCurrentLocal, &fiberDimCurrent, 1, MPIU_INT, MPI_MAX, field->mesh().comm());
       assert(fiberDimCurrent > 0);
@@ -511,22 +513,22 @@ pylith::materials::ElasticMaterial::_stableTimeStepImplicitMax(const topology::M
 
     scalar_array dtStableCell(numQuadPts);
     dtStableCell = PYLITH_MAXSCALAR;
-    err = VecGetArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
+    err = VecGetArray(fieldVec, &fieldArray);PYLITH_CHECK_ERROR(err);
     for (PetscInt c = 0; c < numCells; ++c) {
       const PetscInt cell = cells[c];
       PetscInt dof, off;
 
       assert(fieldSection);
-      err = PetscSectionGetDof(fieldSection, cell, &dof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(fieldSection, cell, &off);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetDof(fieldSection, cell, &dof);PYLITH_CHECK_ERROR(err);
+      err = PetscSectionGetOffset(fieldSection, cell, &off);PYLITH_CHECK_ERROR(err);
       assert(numQuadPts == dof);
       for (PetscInt d = 0; d < dof; ++d) {
         fieldArray[off+d] = dtStableCell[d];
       }
     } // for
-    err = VecRestoreArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
-    err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
-    err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
+    err = VecRestoreArray(fieldVec, &fieldArray);PYLITH_CHECK_ERROR(err);
+    err = ISRestoreIndices(cellIS, &cells);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&cellIS);PYLITH_CHECK_ERROR(err);
   } // if
   
   PYLITH_METHOD_RETURN(dtStable);

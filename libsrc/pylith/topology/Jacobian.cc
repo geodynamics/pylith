@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -24,7 +24,7 @@
 #include "SubMesh.hh" // USES SubMesh
 #include "Field.hh" // USES Field
 
-#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
+#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -43,7 +43,7 @@ pylith::topology::Jacobian::Jacobian(const Field<Mesh>& field,
   const int blockFlag = (blockOkay) ? -1 : 1;
 
   const char* msg = "Could not create PETSc sparse matrix associated with system Jacobian.";
-  PetscErrorCode err = DMCreateMatrix(dmMesh, matrixType, &_matrix);CHECK_PETSC_ERROR_MSG(err, msg);
+  PetscErrorCode err = DMCreateMatrix(dmMesh, matrixType, &_matrix);PYLITH_CHECK_ERROR_MSG(err, msg);
 
   _type = matrixType;
 
@@ -67,7 +67,7 @@ pylith::topology::Jacobian::Jacobian(const Field<SubMesh>& field,
   const int blockFlag = (blockOkay) ? -1 : 1;
 
   const char* msg = "Could not create PETSc sparse matrix associated with subsystem Jacobian.";
-  PetscErrorCode err = DMCreateMatrix(dmMesh, matrixType, &_matrix);CHECK_PETSC_ERROR_MSG(err, msg);
+  PetscErrorCode err = DMCreateMatrix(dmMesh, matrixType, &_matrix);PYLITH_CHECK_ERROR_MSG(err, msg);
 
   _type = matrixType;
 
@@ -88,7 +88,7 @@ pylith::topology::Jacobian::deallocate(void)
 { // deallocate
   PYLITH_METHOD_BEGIN;
 
-  PetscErrorCode err = MatDestroy(&_matrix);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = MatDestroy(&_matrix);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // deallocate
@@ -126,19 +126,19 @@ pylith::topology::Jacobian::assemble(const char* mode)
 
   PetscErrorCode err = 0;
   if (0 == strcmp(mode, "final_assembly")) {
-    err = MatAssemblyBegin(_matrix, MAT_FINAL_ASSEMBLY);CHECK_PETSC_ERROR(err);
-    err = MatAssemblyEnd(_matrix, MAT_FINAL_ASSEMBLY);CHECK_PETSC_ERROR(err);
+    err = MatAssemblyBegin(_matrix, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
+    err = MatAssemblyEnd(_matrix, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
 
 #if 0 // DEBUGGING
     // Check for empty row
     const PetscInt *cols;
     PetscInt rStart, rEnd, ncols;
 
-    err = MatGetOwnershipRange(_matrix, &rStart, &rEnd);CHECK_PETSC_ERROR(err);
+    err = MatGetOwnershipRange(_matrix, &rStart, &rEnd);PYLITH_CHECK_ERROR(err);
     for(PetscInt r = rStart; r < rEnd; ++r) {
       PetscInt c;
 
-      err = MatGetRow(_matrix,r, &ncols, &cols, PETSC_NULL);CHECK_PETSC_ERROR(err);
+      err = MatGetRow(_matrix,r, &ncols, &cols, PETSC_NULL);PYLITH_CHECK_ERROR(err);
       if (!ncols) {
         std::ostringstream msg;
         msg << "ERROR: Empty row " << r << " in ["<<rStart<<","<<rEnd<<")" << std::endl;
@@ -152,13 +152,13 @@ pylith::topology::Jacobian::assemble(const char* mode)
         msg << "ERROR: Row " << r << " in ["<<rStart<<","<<rEnd<<") is missing diagonal element" << std::endl;
         throw std::runtime_error(msg.str().c_str());
       }
-      err = MatRestoreRow(_matrix,r, &ncols, &cols, PETSC_NULL);CHECK_PETSC_ERROR(err);
+      err = MatRestoreRow(_matrix,r, &ncols, &cols, PETSC_NULL);PYLITH_CHECK_ERROR(err);
     }
 #endif
 
   } else if (0 == strcmp(mode, "flush_assembly")) {
-    err = MatAssemblyBegin(_matrix, MAT_FLUSH_ASSEMBLY);CHECK_PETSC_ERROR(err);
-    err = MatAssemblyEnd(_matrix, MAT_FLUSH_ASSEMBLY);CHECK_PETSC_ERROR(err);
+    err = MatAssemblyBegin(_matrix, MAT_FLUSH_ASSEMBLY);PYLITH_CHECK_ERROR(err);
+    err = MatAssemblyEnd(_matrix, MAT_FLUSH_ASSEMBLY);PYLITH_CHECK_ERROR(err);
   } else
     throw std::runtime_error("Unknown mode for assembly of sparse matrix "
 			     "associated with system Jacobian.");
@@ -175,7 +175,7 @@ pylith::topology::Jacobian::zero(void)
 { // zero
   PYLITH_METHOD_BEGIN;
 
-  PetscErrorCode err = MatZeroEntries(_matrix);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = MatZeroEntries(_matrix);PYLITH_CHECK_ERROR(err);
   _valuesChanged = true;
 
   PYLITH_METHOD_END;
@@ -188,7 +188,7 @@ pylith::topology::Jacobian::view(void) const
 { // view
   PYLITH_METHOD_BEGIN;
 
-  PetscErrorCode err = MatView(_matrix, PETSC_VIEWER_STDOUT_WORLD);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = MatView(_matrix, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // view
@@ -202,10 +202,10 @@ pylith::topology::Jacobian::write(const char* filename,
   PYLITH_METHOD_BEGIN;
 
   PetscViewer viewer;
-  PetscErrorCode err = PetscViewerBinaryOpen(comm, filename, FILE_MODE_WRITE, &viewer);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = PetscViewerBinaryOpen(comm, filename, FILE_MODE_WRITE, &viewer);PYLITH_CHECK_ERROR(err);
 
-  err = MatView(_matrix, viewer); CHECK_PETSC_ERROR(err);
-  err = PetscViewerDestroy(&viewer); CHECK_PETSC_ERROR(err);
+  err = MatView(_matrix, viewer); PYLITH_CHECK_ERROR(err);
+  err = PetscViewerDestroy(&viewer); PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // write
@@ -222,12 +222,12 @@ pylith::topology::Jacobian::verifySymmetry(void) const
 
   int nrows = 0;
   int ncols = 0;
-  err = MatGetSize(matSparse, &nrows, &ncols);CHECK_PETSC_ERROR(err);
+  err = MatGetSize(matSparse, &nrows, &ncols);PYLITH_CHECK_ERROR(err);
 
   PetscMat matDense;
   PetscMat matSparseAIJ;
-  err = MatConvert(matSparse, MATSEQAIJ, MAT_INITIAL_MATRIX, &matSparseAIJ);CHECK_PETSC_ERROR(err);
-  err = MatConvert(matSparseAIJ, MATSEQDENSE, MAT_INITIAL_MATRIX, &matDense);CHECK_PETSC_ERROR(err);
+  err = MatConvert(matSparse, MATSEQAIJ, MAT_INITIAL_MATRIX, &matSparseAIJ);PYLITH_CHECK_ERROR(err);
+  err = MatConvert(matSparseAIJ, MATSEQDENSE, MAT_INITIAL_MATRIX, &matDense);PYLITH_CHECK_ERROR(err);
 
   scalar_array vals(nrows*ncols);
   int_array rows(nrows);
@@ -236,7 +236,7 @@ pylith::topology::Jacobian::verifySymmetry(void) const
     rows[iRow] = iRow;
   for (int iCol=0; iCol < ncols; ++iCol)
     cols[iCol] = iCol;
-  err = MatGetValues(matDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);CHECK_PETSC_ERROR(err);
+  err = MatGetValues(matDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);PYLITH_CHECK_ERROR(err);
   const PylithScalar tolerance = 1.0e-06;
   bool isSymmetric = true;
   for (int iRow=0; iRow < nrows; ++iRow)
@@ -262,8 +262,8 @@ pylith::topology::Jacobian::verifySymmetry(void) const
           isSymmetric = false;
         } // if
     } // for
-  err = MatDestroy(&matDense);CHECK_PETSC_ERROR(err);
-  err = MatDestroy(&matSparseAIJ);CHECK_PETSC_ERROR(err);
+  err = MatDestroy(&matDense);PYLITH_CHECK_ERROR(err);
+  err = MatDestroy(&matSparseAIJ);PYLITH_CHECK_ERROR(err);
   if (!isSymmetric)
     throw std::runtime_error("Jacobian matrix is not symmetric.");
 

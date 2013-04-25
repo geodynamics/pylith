@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2011 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -53,7 +53,7 @@ pylith::meshio::OutputSolnPoints::deallocate(void)
   OutputManager<topology::Mesh, topology::Field<topology::Mesh> >::deallocate();
 
   if (_interpolator) {
-    PetscErrorCode err = err = DMInterpolationDestroy(&_interpolator);CHECK_PETSC_ERROR(err);
+    PetscErrorCode err = err = DMInterpolationDestroy(&_interpolator);PYLITH_CHECK_ERROR(err);
   } // if
 
   _mesh = 0; // :TODO: Use shared pointer
@@ -116,11 +116,11 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
   PetscDM dmMesh = _mesh->dmMesh();assert(dmMesh);
   PetscErrorCode err = 0;
 
-  err = DMInterpolationCreate(_mesh->comm(), &_interpolator);CHECK_PETSC_ERROR(err);
-  err = DMInterpolationSetDim(_interpolator, spaceDim);CHECK_PETSC_ERROR(err);
-  err = DMInterpolationAddPoints(_interpolator, numPoints, (PetscReal*) &pointsNondim[0]);CHECK_PETSC_ERROR(err);
+  err = DMInterpolationCreate(_mesh->comm(), &_interpolator);PYLITH_CHECK_ERROR(err);
+  err = DMInterpolationSetDim(_interpolator, spaceDim);PYLITH_CHECK_ERROR(err);
+  err = DMInterpolationAddPoints(_interpolator, numPoints, (PetscReal*) &pointsNondim[0]);PYLITH_CHECK_ERROR(err);
   const PetscBool pointsAllProcs = PETSC_TRUE;
-  err = DMInterpolationSetUp(_interpolator, dmMesh, pointsAllProcs);CHECK_PETSC_ERROR(err);
+  err = DMInterpolationSetUp(_interpolator, dmMesh, pointsAllProcs);PYLITH_CHECK_ERROR(err);
 
   // Create mesh corresponding to points.
   const int meshDim = 0;
@@ -129,7 +129,7 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
 
   const int numPointsLocal = _interpolator->n;
   PylithScalar* pointsLocal = NULL;
-  err = VecGetArray(_interpolator->coords, &pointsLocal);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(_interpolator->coords, &pointsLocal);PYLITH_CHECK_ERROR(err);
   scalar_array pointsArray(numPointsLocal*spaceDim);
   const int sizeLocal = numPointsLocal*spaceDim;
   for (int i=0; i < sizeLocal; ++i) {
@@ -146,7 +146,7 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
   const bool isParallel = true;
   MeshBuilder::buildMesh(_pointsMesh, &pointsArray, numPointsLocal, spaceDim,
 			 cells, numCells, numCorners, meshDim, interpolate, isParallel);
-  err = VecRestoreArray(_interpolator->coords, &pointsLocal);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(_interpolator->coords, &pointsLocal);PYLITH_CHECK_ERROR(err);
 
   // Set coordinate system and create nondimensionalized coordinates
   _pointsMesh->coordsys(_mesh->coordsys());
@@ -259,8 +259,8 @@ pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
 
   PetscVec fieldInterpVec = fieldInterp.vector(context);
   assert(fieldInterpVec);
-  err = DMInterpolationSetDof(_interpolator, fiberDim);CHECK_PETSC_ERROR(err);
-  err = DMInterpolationEvaluate(_interpolator, dmMesh, field.localVector(), fieldInterpVec);CHECK_PETSC_ERROR(err);
+  err = DMInterpolationSetDof(_interpolator, fiberDim);PYLITH_CHECK_ERROR(err);
+  err = DMInterpolationEvaluate(_interpolator, dmMesh, field.localVector(), fieldInterpVec);PYLITH_CHECK_ERROR(err);
 
   fieldInterp.scatterVectorToSection(context);
 

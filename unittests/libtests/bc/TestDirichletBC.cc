@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -198,10 +198,10 @@ pylith::bc::TestDirichletBC::testSetConstraintSizes(void)
   for(PetscInt v = vStart; v < vEnd; ++v) {
     PetscInt dof, cdof, fdof, fcdof;
 
-    err = PetscSectionGetDof(fieldSection, v, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetConstraintDof(fieldSection, v, &cdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetFieldDof(fieldSection, v, 0, &fdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetFieldConstraintDof(fieldSection, v, 0, &fcdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(fieldSection, v, &dof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetConstraintDof(fieldSection, v, &cdof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetFieldDof(fieldSection, v, 0, &fdof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetFieldConstraintDof(fieldSection, v, 0, &fcdof);PYLITH_CHECK_ERROR(err);
     if (v != _data->constrainedPoints[iConstraint] + offset) {
       CPPUNIT_ASSERT_EQUAL(_data->numDOF, dof);
       CPPUNIT_ASSERT_EQUAL(0, cdof);
@@ -263,12 +263,12 @@ pylith::bc::TestDirichletBC::testSetConstraints(void)
     const PetscInt *cInd, *fcInd;
     PetscInt dof, cdof, fdof, fcdof;
 
-    err = PetscSectionGetDof(fieldSection, v, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetConstraintDof(fieldSection, v, &cdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetFieldDof(fieldSection, v, 0, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetFieldConstraintDof(fieldSection, v, 0, &fcdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetConstraintIndices(fieldSection, v, &cInd);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetFieldConstraintIndices(fieldSection, v, 0, &fcInd);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(fieldSection, v, &dof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetConstraintDof(fieldSection, v, &cdof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetFieldDof(fieldSection, v, 0, &dof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetFieldConstraintDof(fieldSection, v, 0, &fcdof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetConstraintIndices(fieldSection, v, &cInd);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetFieldConstraintIndices(fieldSection, v, 0, &fcInd);PYLITH_CHECK_ERROR(err);
     if (v != _data->constrainedPoints[iConstraint] + offset) {
       CPPUNIT_ASSERT_EQUAL(0, cdof);
       CPPUNIT_ASSERT_EQUAL(0, fcdof);

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -269,7 +269,7 @@ pylith::feassemble::IntegratorElasticity::verifyConfiguration(const topology::Me
     const PetscInt cell = cells[c];
     PetscInt cellNumCorners;
 
-    PetscErrorCode err = DMPlexGetConeSize(dmMesh, cell, &cellNumCorners);CHECK_PETSC_ERROR(err);
+    PetscErrorCode err = DMPlexGetConeSize(dmMesh, cell, &cellNumCorners);PYLITH_CHECK_ERROR(err);
     if (numCorners != cellNumCorners) {
       std::ostringstream msg;
       msg << "Quadrature is incompatible with cell in material '"

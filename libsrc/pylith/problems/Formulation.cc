@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -27,7 +27,7 @@
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 
-#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
+#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 #include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
@@ -66,7 +66,7 @@ pylith::problems::Formulation::deallocate(void)
 #if 0   // :KLUDGE: Assume Solver deallocates matrix.
   PetscErrorCode err = 0;
   if (_customConstraintPCMat) {
-    err = PetscObjectDereference((PetscObject) _customConstraintPCMat);CHECK_PETSC_ERROR(err);
+    err = PetscObjectDereference((PetscObject) _customConstraintPCMat);PYLITH_CHECK_ERROR(err);
     _customConstraintPCMat = 0;
   } // if
 #else
@@ -175,7 +175,7 @@ pylith::problems::Formulation::customPCMatrix(PetscMat& mat)
 
 #if 0 // :KLUDGE: Assume solver deallocates matrix
   PetscErrorCode err = 0;
-  err = PetscObjectReference((PetscObject) mat); CHECK_PETSC_ERROR(err);
+  err = PetscObjectReference((PetscObject) mat); PYLITH_CHECK_ERROR(err);
 #endif
 } // preconditioner
 

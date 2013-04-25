@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -270,14 +270,14 @@ pylith::feassemble::TestElasticityExplicitLgDeform::_initialize(topology::Mesh* 
   // Cells and vertices
   const bool interpolate = false;
   PetscErrorCode err;
-  err = DMPlexBuildFromCellList_Private(dmMesh, _data->numCells, _data->numVertices, _data->numBasis, _data->cells);CHECK_PETSC_ERROR(err);
-  err = DMPlexBuildCoordinates_Private(dmMesh, _data->spaceDim, _data->numCells, _data->numVertices, _data->vertices);CHECK_PETSC_ERROR(err);
+  err = DMPlexBuildFromCellList_Private(dmMesh, _data->numCells, _data->numVertices, _data->numBasis, _data->cells);PYLITH_CHECK_ERROR(err);
+  err = DMPlexBuildCoordinates_Private(dmMesh, _data->spaceDim, _data->numCells, _data->numVertices, _data->vertices);PYLITH_CHECK_ERROR(err);
 
   // Material ids
   PetscInt cStart, cEnd, c;
-  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
   for(PetscInt c = cStart; c < cEnd; ++c) {
-    err = DMPlexSetLabelValue(dmMesh, "material-id", c, _data->matId);CHECK_PETSC_ERROR(err);
+    err = DMPlexSetLabelValue(dmMesh, "material-id", c, _data->matId);PYLITH_CHECK_ERROR(err);
   } // for
 
   // Setup quadrature

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -21,10 +21,9 @@
 #include "BCIntegratorSubMesh.hh" // implementation of object methods
 
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/Fields.hh" // USES Fields
+#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Stratum.hh" // USES Stratum
-
-// ----------------------------------------------------------------------
-typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -105,10 +104,10 @@ pylith::bc::BCIntegratorSubMesh::verifyConfiguration(const topology::Mesh& mesh)
 
   // Make sure surface cells are compatible with quadrature.
   PetscInt depth = 0;
-  PetscErrorCode err = DMPlexGetDepth(dmSubMesh, &depth);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = DMPlexGetDepth(dmSubMesh, &depth);PYLITH_CHECK_ERROR(err);
   for (PetscInt c = cStart; c < cEnd; ++c) {
     PetscInt cellNumCorners = 0;
-    err = DMPlexGetConeSize(dmSubMesh, c, &cellNumCorners);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetConeSize(dmSubMesh, c, &cellNumCorners);PYLITH_CHECK_ERROR(err);
     if (numCorners != cellNumCorners) {
       std::ostringstream msg;
       msg << "Quadrature is incompatible with cell for boundary condition '"

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -112,7 +112,7 @@ pylith::bc::PointForce::integrateResidual(const topology::Field<topology::Mesh>&
   PetscDM dmMesh = residual.dmMesh();assert(dmMesh);
   PetscSection globalSection = NULL;
   PetscErrorCode err;
-  err = DMGetDefaultGlobalSection(dmMesh, &globalSection);CHECK_PETSC_ERROR(err);
+  err = DMGetDefaultGlobalSection(dmMesh, &globalSection);PYLITH_CHECK_ERROR(err);
 
   const int numPoints = _points.size();
   const int numBCDOF = _bcDOF.size();
@@ -121,7 +121,7 @@ pylith::bc::PointForce::integrateResidual(const topology::Field<topology::Mesh>&
 
     // Contribute to residual only if point is local.
     PetscInt goff = -1;
-    err = PetscSectionGetOffset(globalSection, p_bc, &goff);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(globalSection, p_bc, &goff);PYLITH_CHECK_ERROR(err);
     if (goff < 0) continue;
 
     const PetscInt roff = residualVisitor.sectionOffset(p_bc);

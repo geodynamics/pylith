@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2011 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -20,7 +20,7 @@
 #error "Stratum.icc must be included only from Stratum.hh"
 #else
 
-#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
+#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -33,10 +33,10 @@ pylith::topology::Stratum::Stratum(const PetscDM dmMesh,
   PetscErrorCode err = 0;
   switch(stype) {
   case HEIGHT:
-    err = DMPlexGetHeightStratum(dmMesh, level, &_begin, &_end);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetHeightStratum(dmMesh, level, &_begin, &_end);PYLITH_CHECK_ERROR(err);
     break;
   case DEPTH:
-    err = DMPlexGetDepthStratum(dmMesh, level, &_begin, &_end);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetDepthStratum(dmMesh, level, &_begin, &_end);PYLITH_CHECK_ERROR(err);
     break;
   default:
     assert(false);
@@ -91,9 +91,9 @@ pylith::topology::StratumIS::StratumIS(const PetscDM dmMesh,
 { // constructor
   assert(dmMesh);
   PetscErrorCode err;
-  err = DMPlexGetStratumIS(dmMesh, label, id, &_indexSet);CHECK_PETSC_ERROR(err);assert(_indexSet);
-  err = ISGetSize(_indexSet, &_size);CHECK_PETSC_ERROR(err);assert(_size >= 0);
-  err = ISGetIndices(_indexSet, &_points);CHECK_PETSC_ERROR(err);assert(_points);
+  err = DMPlexGetStratumIS(dmMesh, label, id, &_indexSet);PYLITH_CHECK_ERROR(err);assert(_indexSet);
+  err = ISGetSize(_indexSet, &_size);PYLITH_CHECK_ERROR(err);assert(_size >= 0);
+  err = ISGetIndices(_indexSet, &_points);PYLITH_CHECK_ERROR(err);assert(_points);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -111,8 +111,8 @@ void
 pylith::topology::StratumIS::deallocate(void)
 { // deallocate
   PetscErrorCode err = 0;
-  err = ISRestoreIndices(_indexSet, &_points);CHECK_PETSC_ERROR(err);_points=NULL;
-  err = ISDestroy(&_indexSet);CHECK_PETSC_ERROR(err);assert(!_indexSet);
+  err = ISRestoreIndices(_indexSet, &_points);PYLITH_CHECK_ERROR(err);_points=NULL;
+  err = ISDestroy(&_indexSet);PYLITH_CHECK_ERROR(err);assert(!_indexSet);
 } // deallocate
 
 // ----------------------------------------------------------------------

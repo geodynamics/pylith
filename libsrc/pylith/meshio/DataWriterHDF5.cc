@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -56,8 +56,8 @@ pylith::meshio::DataWriterHDF5<mesh_type, field_type>::deallocate(void)
   DataWriter<mesh_type, field_type>::deallocate();
 
   PetscErrorCode err = 0;
-  err = PetscViewerDestroy(&_viewer); CHECK_PETSC_ERROR(err);
-  err = VecDestroy(&_tstamp); CHECK_PETSC_ERROR(err);
+  err = PetscViewerDestroy(&_viewer); PYLITH_CHECK_ERROR(err);
+  err = VecDestroy(&_tstamp); PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // deallocate
@@ -97,13 +97,13 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     _timesteps.clear();
     _tstampIndex = 0;
     PetscMPIInt commRank;
-    err = MPI_Comm_rank(mesh.comm(), &commRank);CHECK_PETSC_ERROR(err);
+    err = MPI_Comm_rank(mesh.comm(), &commRank);PYLITH_CHECK_ERROR(err);
     const int localSize = (!commRank) ? 1 : 0;
-    err = VecCreateMPI(mesh.comm(), localSize, 1, &_tstamp);CHECK_PETSC_ERROR(err);assert(_tstamp);
-    err = VecSetBlockSize(_tstamp, 1); CHECK_PETSC_ERROR(err);CHECK_PETSC_ERROR(err);
-    err = PetscObjectSetName((PetscObject) _tstamp, "time");CHECK_PETSC_ERROR(err);
+    err = VecCreateMPI(mesh.comm(), localSize, 1, &_tstamp);PYLITH_CHECK_ERROR(err);assert(_tstamp);
+    err = VecSetBlockSize(_tstamp, 1); PYLITH_CHECK_ERROR(err);PYLITH_CHECK_ERROR(err);
+    err = PetscObjectSetName((PetscObject) _tstamp, "time");PYLITH_CHECK_ERROR(err);
 
-    err = PetscViewerHDF5Open(mesh.comm(), filename.c_str(), FILE_MODE_WRITE, &_viewer);CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5Open(mesh.comm(), filename.c_str(), FILE_MODE_WRITE, &_viewer);PYLITH_CHECK_ERROR(err);
 
     const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();assert(cs);
 
@@ -116,24 +116,24 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
 
     metadata.label = "vertices";
     metadata.vectorFieldType = topology::FieldBase::VECTOR;
-    err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);CHECK_PETSC_ERROR(err);
-    err = DMGetCoordinateDM(dmMesh, &dmCoord);CHECK_PETSC_ERROR(err);assert(dmCoord);
-    err = PetscObjectReference((PetscObject) dmCoord);CHECK_PETSC_ERROR(err);
-    err = DMGetCoordinatesLocal(dmMesh, &coordinates);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
+    err = DMGetCoordinateDM(dmMesh, &dmCoord);PYLITH_CHECK_ERROR(err);assert(dmCoord);
+    err = PetscObjectReference((PetscObject) dmCoord);PYLITH_CHECK_ERROR(err);
+    err = DMGetCoordinatesLocal(dmMesh, &coordinates);PYLITH_CHECK_ERROR(err);
     topology::Field<mesh_type> field(mesh, dmCoord, coordinates, metadata);
     field.createScatterWithBC(mesh, "", 0, metadata.label.c_str());
     field.scatterSectionToVector(metadata.label.c_str());
     PetscVec coordVector = field.vector(metadata.label.c_str());assert(coordVector);
-    err = VecScale(coordVector, lengthScale);CHECK_PETSC_ERROR(err);
-    err = PetscViewerHDF5PushGroup(_viewer, "/geometry");CHECK_PETSC_ERROR(err);
-    err = VecView(coordVector, _viewer);CHECK_PETSC_ERROR(err);
-    err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
+    err = VecScale(coordVector, lengthScale);PYLITH_CHECK_ERROR(err);
+    err = PetscViewerHDF5PushGroup(_viewer, "/geometry");PYLITH_CHECK_ERROR(err);
+    err = VecView(coordVector, _viewer);PYLITH_CHECK_ERROR(err);
+    err = PetscViewerHDF5PopGroup(_viewer); PYLITH_CHECK_ERROR(err);
 
     PetscInt vStart, vEnd, cStart, cEnd, cMax, dof, conesSize, numCorners, numCornersLocal = 0;
 
-    err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-    err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-    err = DMPlexGetHybridBounds(dmMesh, &cMax, PETSC_NULL, PETSC_NULL, PETSC_NULL);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetHybridBounds(dmMesh, &cMax, PETSC_NULL, PETSC_NULL, PETSC_NULL);PYLITH_CHECK_ERROR(err);
     if (cMax >= 0) {
       cEnd = PetscMin(cEnd, cMax);
     } // if
@@ -141,24 +141,24 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
       PetscInt *closure = NULL;
       PetscInt  closureSize, v;
 
-      err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+      err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
       numCornersLocal = 0;
       for (v = 0; v < closureSize*2; v += 2) {
         if ((closure[v] >= vStart) && (closure[v] < vEnd)) {
           ++numCornersLocal;
         } // if
       } // for
-      err = DMPlexRestoreTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+      err = DMPlexRestoreTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
       if (numCornersLocal)
 	break;
     } // for
-    err = MPI_Allreduce(&numCornersLocal, &numCorners, 1, MPIU_INT, MPI_MAX, mesh.comm());CHECK_PETSC_ERROR(err);
+    err = MPI_Allreduce(&numCornersLocal, &numCorners, 1, MPIU_INT, MPI_MAX, mesh.comm());PYLITH_CHECK_ERROR(err);
 
     if (label) {
       conesSize = 0;
       for(PetscInt cell = cStart; cell < cEnd; ++cell) {
         PetscInt value;
-        err = DMPlexGetLabelValue(dmMesh, label, cell, &value);CHECK_PETSC_ERROR(err);
+        err = DMPlexGetLabelValue(dmMesh, label, cell, &value);PYLITH_CHECK_ERROR(err);
         if (value == labelId)
 	  ++conesSize;
       } // for
@@ -173,45 +173,45 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     PetscVec cellVec = NULL;
     PetscScalar *vertices = NULL;
 
-    err = DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers);CHECK_PETSC_ERROR(err);
-    err = ISGetIndices(globalVertexNumbers, &gvertex);CHECK_PETSC_ERROR(err);
-    err = VecCreate(mesh.comm(), &cellVec);CHECK_PETSC_ERROR(err);
-    err = VecSetSizes(cellVec, conesSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
-    err = VecSetBlockSize(cellVec, numCorners);CHECK_PETSC_ERROR(err);
-    err = VecSetFromOptions(cellVec);CHECK_PETSC_ERROR(err);
-    err = PetscObjectSetName((PetscObject) cellVec, "cells");CHECK_PETSC_ERROR(err);
-    err = VecGetArray(cellVec, &vertices);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(globalVertexNumbers, &gvertex);PYLITH_CHECK_ERROR(err);
+    err = VecCreate(mesh.comm(), &cellVec);PYLITH_CHECK_ERROR(err);
+    err = VecSetSizes(cellVec, conesSize, PETSC_DETERMINE);PYLITH_CHECK_ERROR(err);
+    err = VecSetBlockSize(cellVec, numCorners);PYLITH_CHECK_ERROR(err);
+    err = VecSetFromOptions(cellVec);PYLITH_CHECK_ERROR(err);
+    err = PetscObjectSetName((PetscObject) cellVec, "cells");PYLITH_CHECK_ERROR(err);
+    err = VecGetArray(cellVec, &vertices);PYLITH_CHECK_ERROR(err);
     for(PetscInt cell = cStart, v = 0; cell < cEnd; ++cell) {
       PetscInt *closure = NULL;
       PetscInt  closureSize, p;
 
       if (label) {
         PetscInt value;
-        err = DMPlexGetLabelValue(dmMesh, label, cell, &value);CHECK_PETSC_ERROR(err);
+        err = DMPlexGetLabelValue(dmMesh, label, cell, &value);PYLITH_CHECK_ERROR(err);
         if (value != labelId)
 	  continue;
       } // if
 
-      err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+      err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
       for(p = 0; p < closureSize*2; p += 2) {
         if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
           const PetscInt gv = gvertex[closure[p] - vStart];
           vertices[v++] = gv < 0 ? -(gv+1) : gv;
         } // if
       } // for
-      err = DMPlexRestoreTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+      err = DMPlexRestoreTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
       //assert(v == (cell-cStart+1)*numCorners); :TODO: MATT Why is this here?
     } // for
     CHKMEMA; // MATT why is this here?
-    err = VecRestoreArray(cellVec, &vertices);CHECK_PETSC_ERROR(err);
-    err = PetscViewerHDF5PushGroup(_viewer, "/topology");CHECK_PETSC_ERROR(err);
-    err = VecView(cellVec, _viewer);CHECK_PETSC_ERROR(err);
-    err = PetscViewerHDF5PopGroup(_viewer);CHECK_PETSC_ERROR(err);
-    err = VecDestroy(&cellVec);CHECK_PETSC_ERROR(err);
-    err = ISRestoreIndices(globalVertexNumbers, &gvertex);CHECK_PETSC_ERROR(err);
+    err = VecRestoreArray(cellVec, &vertices);PYLITH_CHECK_ERROR(err);
+    err = PetscViewerHDF5PushGroup(_viewer, "/topology");PYLITH_CHECK_ERROR(err);
+    err = VecView(cellVec, _viewer);PYLITH_CHECK_ERROR(err);
+    err = PetscViewerHDF5PopGroup(_viewer);PYLITH_CHECK_ERROR(err);
+    err = VecDestroy(&cellVec);PYLITH_CHECK_ERROR(err);
+    err = ISRestoreIndices(globalVertexNumbers, &gvertex);PYLITH_CHECK_ERROR(err);
 
     hid_t h5 = -1;
-    err = PetscViewerHDF5GetFileId(_viewer, &h5); CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5GetFileId(_viewer, &h5); PYLITH_CHECK_ERROR(err);
     assert(h5 >= 0);
     const int cellDim = mesh.dimension();
     HDF5::writeAttribute(h5, "/topology/cells", "cell_dim", (void*)&cellDim, H5T_NATIVE_INT);
@@ -237,8 +237,8 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::close(void)
   PYLITH_METHOD_BEGIN;
 
   PetscErrorCode err = 0;
-  err = PetscViewerDestroy(&_viewer); CHECK_PETSC_ERROR(err);
-  err = VecDestroy(&_tstamp); CHECK_PETSC_ERROR(err);assert(!_tstamp);
+  err = PetscViewerDestroy(&_viewer); PYLITH_CHECK_ERROR(err);
+  err = VecDestroy(&_tstamp); PYLITH_CHECK_ERROR(err);assert(!_tstamp);
 
   _timesteps.clear();
   _tstampIndex = 0;
@@ -284,41 +284,41 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(const Pyl
     const int istep = _timesteps[field.label()];
     // Add time stamp to "/time" if necessary.
     PetscMPIInt commRank;
-    err = MPI_Comm_rank(mesh.comm(), &commRank);CHECK_PETSC_ERROR(err);
+    err = MPI_Comm_rank(mesh.comm(), &commRank);PYLITH_CHECK_ERROR(err);
     if (_tstampIndex == istep)
       _writeTimeStamp(t, commRank);
 
 #if 0 // :TODO: MATT What is this doing here?
     const int spaceDim = mesh.coordsys()->spaceDim();
     PetscInt  bs;
-    err = VecGetBlockSize(vector, &bs);CHECK_PETSC_ERROR(err);
+    err = VecGetBlockSize(vector, &bs);PYLITH_CHECK_ERROR(err);
     switch (field.vectorFieldType()) {
     case pylith::topology::FieldBase::VECTOR:
       if (bs % spaceDim) {
-	CHECK_PETSC_ERROR(PETSC_ERR_ARG_WRONG);
+	PYLITH_CHECK_ERROR(PETSC_ERR_ARG_WRONG);
       } // if
       break;
     case pylith::topology::FieldBase::TENSOR:
       if (bs % spaceDim) {
-      CHECK_PETSC_ERROR(PETSC_ERR_ARG_WRONG);
+      PYLITH_CHECK_ERROR(PETSC_ERR_ARG_WRONG);
       } // if
       break;
     default:
       if (bs > 1) {
-	CHECK_PETSC_ERROR(PETSC_ERR_ARG_WRONG);
+	PYLITH_CHECK_ERROR(PETSC_ERR_ARG_WRONG);
       } // if
       break;
     } // switch
 #endif
 
-    err = PetscViewerHDF5PushGroup(_viewer, "/vertex_fields");CHECK_PETSC_ERROR(err);
-    err = PetscViewerHDF5SetTimestep(_viewer, istep);CHECK_PETSC_ERROR(err);
-    err = VecView(vector, _viewer);CHECK_PETSC_ERROR(err);
-    err = PetscViewerHDF5PopGroup(_viewer);CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5PushGroup(_viewer, "/vertex_fields");PYLITH_CHECK_ERROR(err);
+    err = PetscViewerHDF5SetTimestep(_viewer, istep);PYLITH_CHECK_ERROR(err);
+    err = VecView(vector, _viewer);PYLITH_CHECK_ERROR(err);
+    err = PetscViewerHDF5PopGroup(_viewer);PYLITH_CHECK_ERROR(err);
 
     if (0 == istep) {
       hid_t h5 = -1;
-      err = PetscViewerHDF5GetFileId(_viewer, &h5); CHECK_PETSC_ERROR(err);
+      err = PetscViewerHDF5GetFileId(_viewer, &h5); PYLITH_CHECK_ERROR(err);
       assert(h5 >= 0);
       std::string fullName = std::string("/vertex_fields/") + field.label();
       HDF5::writeAttribute(h5, fullName.c_str(), "vector_field_type",
@@ -369,18 +369,18 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(const Pylit
     const int istep = _timesteps[field.label()];
     // Add time stamp to "/time" if necessary.
     PetscMPIInt commRank;
-    err = MPI_Comm_rank(field.mesh().comm(), &commRank);CHECK_PETSC_ERROR(err);
+    err = MPI_Comm_rank(field.mesh().comm(), &commRank);PYLITH_CHECK_ERROR(err);
     if (_tstampIndex == istep)
       _writeTimeStamp(t, commRank);
 
-    err = PetscViewerHDF5PushGroup(_viewer, "/cell_fields");CHECK_PETSC_ERROR(err);
-    err = PetscViewerHDF5SetTimestep(_viewer, istep);CHECK_PETSC_ERROR(err);
-    err = VecView(vector, _viewer);CHECK_PETSC_ERROR(err);
-    err = PetscViewerHDF5PopGroup(_viewer);CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5PushGroup(_viewer, "/cell_fields");PYLITH_CHECK_ERROR(err);
+    err = PetscViewerHDF5SetTimestep(_viewer, istep);PYLITH_CHECK_ERROR(err);
+    err = VecView(vector, _viewer);PYLITH_CHECK_ERROR(err);
+    err = PetscViewerHDF5PopGroup(_viewer);PYLITH_CHECK_ERROR(err);
 
     if (0 == istep) {
       hid_t h5 = -1;
-      err = PetscViewerHDF5GetFileId(_viewer, &h5); CHECK_PETSC_ERROR(err);
+      err = PetscViewerHDF5GetFileId(_viewer, &h5); PYLITH_CHECK_ERROR(err);
       assert(h5 >= 0);
       std::string fullName = std::string("/cell_fields/") + field.label();
       HDF5::writeAttribute(h5, fullName.c_str(), "vector_field_type",
@@ -434,15 +434,15 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::_writeTimeStamp(const Pyli
 
   if (0 == commRank) {
     const PylithScalar tDim = t * DataWriter<mesh_type, field_type>::_timeScale;
-    err = VecSetValue(_tstamp, 0, tDim, INSERT_VALUES); CHECK_PETSC_ERROR(err);
+    err = VecSetValue(_tstamp, 0, tDim, INSERT_VALUES); PYLITH_CHECK_ERROR(err);
   } // if
-  err = VecAssemblyBegin(_tstamp); CHECK_PETSC_ERROR(err);
-  err = VecAssemblyEnd(_tstamp); CHECK_PETSC_ERROR(err);
+  err = VecAssemblyBegin(_tstamp); PYLITH_CHECK_ERROR(err);
+  err = VecAssemblyEnd(_tstamp); PYLITH_CHECK_ERROR(err);
   
-  err = PetscViewerHDF5PushGroup(_viewer, "/"); CHECK_PETSC_ERROR(err);
-  err = PetscViewerHDF5SetTimestep(_viewer, _tstampIndex); CHECK_PETSC_ERROR(err);
-  err = VecView(_tstamp, _viewer); CHECK_PETSC_ERROR(err);
-  err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
+  err = PetscViewerHDF5PushGroup(_viewer, "/"); PYLITH_CHECK_ERROR(err);
+  err = PetscViewerHDF5SetTimestep(_viewer, _tstampIndex); PYLITH_CHECK_ERROR(err);
+  err = VecView(_tstamp, _viewer); PYLITH_CHECK_ERROR(err);
+  err = PetscViewerHDF5PopGroup(_viewer); PYLITH_CHECK_ERROR(err);
 
   _tstampIndex++;
 } // _writeTimeStamp

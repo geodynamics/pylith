@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -41,7 +41,7 @@
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimendional
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
-#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
+#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 

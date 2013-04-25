@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -320,48 +320,48 @@ pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
   PetscDM dmMesh = mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
   PetscErrorCode err;
   
-  err = DMPlexSetChart(dmMesh, 0, ncells+nvertices);CHECK_PETSC_ERROR(err);
+  err = DMPlexSetChart(dmMesh, 0, ncells+nvertices);PYLITH_CHECK_ERROR(err);
   for(PetscInt c = 0; c < ncells; ++c) {
-    err = DMPlexSetConeSize(dmMesh, c, ncorners);CHECK_PETSC_ERROR(err);
+    err = DMPlexSetConeSize(dmMesh, c, ncorners);PYLITH_CHECK_ERROR(err);
   } // for
-  err = DMSetUp(dmMesh);CHECK_PETSC_ERROR(err);
+  err = DMSetUp(dmMesh);PYLITH_CHECK_ERROR(err);
   PetscInt *cone = new PetscInt[ncorners];
   for(PetscInt c = 0; c < ncells; ++c) {
     for(PetscInt v = 0; v < ncorners; ++v) {
       cone[v] = cells[c*ncorners+v]+ncells;
     } // for
-    err = DMPlexSetCone(dmMesh, c, cone);CHECK_PETSC_ERROR(err);
+    err = DMPlexSetCone(dmMesh, c, cone);PYLITH_CHECK_ERROR(err);
   } // for
   delete[] cone; cone = 0;
-  err = DMPlexSymmetrize(dmMesh);CHECK_PETSC_ERROR(err);
-  err = DMPlexStratify(dmMesh);CHECK_PETSC_ERROR(err);
+  err = DMPlexSymmetrize(dmMesh);PYLITH_CHECK_ERROR(err);
+  err = DMPlexStratify(dmMesh);PYLITH_CHECK_ERROR(err);
   PetscSection coordSection = NULL;
   PetscVec coordVec = NULL;
   PetscScalar *coords = NULL;
   PetscInt coordSize = 0;
 
-  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = PetscSectionSetChart(coordSection, ncells, ncells+nvertices);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);PYLITH_CHECK_ERROR(err);
+  err = PetscSectionSetChart(coordSection, ncells, ncells+nvertices);PYLITH_CHECK_ERROR(err);
   for(PetscInt v = ncells; v < ncells+nvertices; ++v) {
-    err = PetscSectionSetDof(coordSection, v, spaceDim);CHECK_PETSC_ERROR(err);
+    err = PetscSectionSetDof(coordSection, v, spaceDim);PYLITH_CHECK_ERROR(err);
   } // for
-  err = PetscSectionSetUp(coordSection);CHECK_PETSC_ERROR(err);
-  err = PetscSectionGetStorageSize(coordSection, &coordSize);CHECK_PETSC_ERROR(err);
-  err = VecCreate(mesh->comm(), &coordVec);CHECK_PETSC_ERROR(err);
-  err = VecSetSizes(coordVec, coordSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
-  err = VecSetFromOptions(coordVec);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
+  err = PetscSectionSetUp(coordSection);PYLITH_CHECK_ERROR(err);
+  err = PetscSectionGetStorageSize(coordSection, &coordSize);PYLITH_CHECK_ERROR(err);
+  err = VecCreate(mesh->comm(), &coordVec);PYLITH_CHECK_ERROR(err);
+  err = VecSetSizes(coordVec, coordSize, PETSC_DETERMINE);PYLITH_CHECK_ERROR(err);
+  err = VecSetFromOptions(coordVec);PYLITH_CHECK_ERROR(err);
+  err = VecGetArray(coordVec, &coords);PYLITH_CHECK_ERROR(err);
   for(PetscInt v = 0; v < nvertices; ++v) {
     PetscInt off;
 
-    err = PetscSectionGetOffset(coordSection, v+ncells, &off);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(coordSection, v+ncells, &off);PYLITH_CHECK_ERROR(err);
     for(PetscInt d = 0; d < spaceDim; ++d) {
       coords[off+d] = coordinates[v*spaceDim+d];
     } // for
   } // for
-  err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
-  err = DMSetCoordinatesLocal(dmMesh, coordVec);CHECK_PETSC_ERROR(err);
-  err = VecDestroy(&coordVec);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(coordVec, &coords);PYLITH_CHECK_ERROR(err);
+  err = DMSetCoordinatesLocal(dmMesh, coordVec);PYLITH_CHECK_ERROR(err);
+  err = VecDestroy(&coordVec);PYLITH_CHECK_ERROR(err);
 
   spatialdata::geocoords::CSCart cs;
   cs.setSpaceDim(spaceDim);
@@ -370,7 +370,7 @@ pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
 
   const int numPoints = _TestSubMesh::groupSize;
   for(PetscInt i = 0; i < numPoints; ++i) {
-    err = DMPlexSetLabelValue(dmMesh, _TestSubMesh::label, ncells+_TestSubMesh::groupVertices[i], 1);CHECK_PETSC_ERROR(err);
+    err = DMPlexSetLabelValue(dmMesh, _TestSubMesh::label, ncells+_TestSubMesh::groupVertices[i], 1);PYLITH_CHECK_ERROR(err);
   } // for
 
   PYLITH_METHOD_END;

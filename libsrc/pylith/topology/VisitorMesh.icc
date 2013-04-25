@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2011 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -24,7 +24,7 @@
 #include "SubMesh.hh" // USES SubMesh
 #include "Field.hh" // USES Field
 
-#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
+#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
 // ----------------------------------------------------------------------
 // Constructor with field over a mesh.
@@ -73,7 +73,7 @@ pylith::topology::VecVisitorMesh::initialize(const field_type& field)
   _section = field.petscSection();assert(_section);
   _localVec = field.localVector();assert(_localVec);
 
-  PetscErrorCode err = VecGetArray(_localVec, &_localArray);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = VecGetArray(_localVec, &_localArray);PYLITH_CHECK_ERROR(err);
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -83,7 +83,7 @@ void
 pylith::topology::VecVisitorMesh::clear(void)
 { // clear
   if (_localVec) {
-    PetscErrorCode err = VecRestoreArray(_localVec, &_localArray);CHECK_PETSC_ERROR(err);assert(!_localArray);
+    PetscErrorCode err = VecRestoreArray(_localVec, &_localArray);PYLITH_CHECK_ERROR(err);assert(!_localArray);
   } // if
 
   _section = NULL;
@@ -125,7 +125,7 @@ pylith::topology::VecVisitorMesh::sectionDof(const PetscInt point) const
 { // sectionDof
   assert(_section);
   PetscInt dof;
-  PetscErrorCode err = PetscSectionGetDof(_section, point, &dof);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = PetscSectionGetDof(_section, point, &dof);PYLITH_CHECK_ERROR(err);
   return dof;
 } // sectionDof
 
@@ -137,7 +137,7 @@ pylith::topology::VecVisitorMesh::sectionConstraintDof(const PetscInt point) con
 { // sectionConstraintDof
   assert(_section);
   PetscInt dof;
-  PetscErrorCode err = PetscSectionGetConstraintDof(_section, point, &dof);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = PetscSectionGetConstraintDof(_section, point, &dof);PYLITH_CHECK_ERROR(err);
   return dof;
 } // sectionConstraintDof
 
@@ -149,7 +149,7 @@ pylith::topology::VecVisitorMesh::sectionOffset(const PetscInt point) const
 { // sectionOffset
   assert(_section);
   PetscInt offset;
-  PetscErrorCode err = PetscSectionGetOffset(_section, point, &offset);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = PetscSectionGetOffset(_section, point, &offset);PYLITH_CHECK_ERROR(err);
   return offset;
 } // sectionOffset
 
@@ -164,7 +164,7 @@ pylith::topology::VecVisitorMesh::getClosure(PetscScalar** valuesCell,
   assert(_dm);
   assert(_section);
   assert(_localVec);
-  PetscErrorCode err = DMPlexVecGetClosure(_dm, _section, _localVec, cell, valuesSize, valuesCell);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = DMPlexVecGetClosure(_dm, _section, _localVec, cell, valuesSize, valuesCell);PYLITH_CHECK_ERROR(err);
 } // getClosure
 
 // ----------------------------------------------------------------------
@@ -178,7 +178,7 @@ pylith::topology::VecVisitorMesh::restoreClosure(PetscScalar** valuesCell,
   assert(_dm);
   assert(_section);
   assert(_localVec);
-  PetscErrorCode err = DMPlexVecRestoreClosure(_dm, _section, _localVec, cell, valuesSize, valuesCell);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = DMPlexVecRestoreClosure(_dm, _section, _localVec, cell, valuesSize, valuesCell);PYLITH_CHECK_ERROR(err);
 } // restoreClosure
 
 // ----------------------------------------------------------------------
@@ -193,7 +193,7 @@ pylith::topology::VecVisitorMesh::setClosure(const PetscScalar* valuesCell,
   assert(_dm);
   assert(_section);
   assert(_localVec);
-  PetscErrorCode err = DMPlexVecSetClosure(_dm, _section, _localVec, cell, valuesCell, mode);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = DMPlexVecSetClosure(_dm, _section, _localVec, cell, valuesCell, mode);PYLITH_CHECK_ERROR(err);
 } // setClosure
 
 // ----------------------------------------------------------------------
@@ -251,7 +251,7 @@ pylith::topology::MatVisitorMesh::setClosure(const PetscScalar* valuesCell,
   assert(_dm);
   assert(_mat);
   assert(_section);
-  PetscErrorCode err = DMPlexMatSetClosure(_dm, _section, NULL, _mat, cell, valuesCell, mode);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = DMPlexMatSetClosure(_dm, _section, NULL, _mat, cell, valuesCell, mode);PYLITH_CHECK_ERROR(err);
 } // setClosure
 
 

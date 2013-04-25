@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2011 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -20,7 +20,7 @@
 #error "Field.icc must be included only from Field.hh"
 #else
 
-#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
+#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
 // Get PetscSection.
 template<typename mesh_type>
@@ -29,7 +29,7 @@ PetscSection
 pylith::topology::Field<mesh_type>::petscSection(void) const {
   PetscSection s = PETSC_NULL;
   if (_dm) {
-    PetscErrorCode err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
+    PetscErrorCode err = DMGetDefaultSection(_dm, &s);PYLITH_CHECK_ERROR(err);
   } // if
   return s;
 }

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -194,7 +194,7 @@ pylith::bc::TestNeumann::testInitialize(void)
     PetscInt *closure = PETSC_NULL;
     PetscInt  closureSize, numCorners = 0;
 
-    err = DMPlexGetTransitiveClosure(subMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetTransitiveClosure(subMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     for(PetscInt p = 0; p < closureSize*2; p += 2) {
       const PetscInt point = closure[p];
       if ((point >= vStart) && (point < vEnd)) {
@@ -205,7 +205,7 @@ pylith::bc::TestNeumann::testInitialize(void)
     for(PetscInt p = 0; p < numCorners; ++p, ++dp) {
       CPPUNIT_ASSERT_EQUAL(_data->cells[dp], closure[p]);
     } // for
-    err = DMPlexRestoreTransitiveClosure(subMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    err = DMPlexRestoreTransitiveClosure(subMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
   } // for
 
   // Check traction values

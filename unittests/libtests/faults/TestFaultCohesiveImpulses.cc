@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -160,20 +160,20 @@ pylith::faults::TestFaultCohesiveImpulses::testInitialize(void)
   PetscErrorCode  err;
 
   CPPUNIT_ASSERT(dmMesh);
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexCreateSubpointIS(dmMesh, &subpointIS);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
+  err = DMPlexCreateSubpointIS(dmMesh, &subpointIS);PYLITH_CHECK_ERROR(err);
   CPPUNIT_ASSERT(subpointIS);
-  err = ISGetSize(subpointIS, &numPoints);CHECK_PETSC_ERROR(err);
-  err = ISGetIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
+  err = ISGetSize(subpointIS, &numPoints);PYLITH_CHECK_ERROR(err);
+  err = ISGetIndices(subpointIS, &points);PYLITH_CHECK_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
     PetscInt faultPoint;
 
-    err = PetscFindInt(_data->negativeVertices[v-vStart], numPoints, points, &faultPoint);CHECK_PETSC_ERROR(err);
+    err = PetscFindInt(_data->negativeVertices[v-vStart], numPoints, points, &faultPoint);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT(faultPoint >= 0);
     CPPUNIT_ASSERT_EQUAL(faultPoint, v);
   } // for
-  err = ISRestoreIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
-  err = ISDestroy(&subpointIS);CHECK_PETSC_ERROR(err);
+  err = ISRestoreIndices(subpointIS, &points);PYLITH_CHECK_ERROR(err);
+  err = ISDestroy(&subpointIS);PYLITH_CHECK_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(_data->numConstraintVert, vEnd-vStart);
 
   // Check orientation
@@ -186,12 +186,12 @@ pylith::faults::TestFaultCohesiveImpulses::testInitialize(void)
   const int spaceDim = _data->spaceDim;
   const int orientationSize = spaceDim*spaceDim;
   int iVertex = 0;
-  err = VecGetArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(orientationVec, &orientationArray);PYLITH_CHECK_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
     PetscInt dof, off;
 
-    err = PetscSectionGetDof(orientationSection, v, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(orientationSection, v, &off);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(orientationSection, v, &dof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(orientationSection, v, &off);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(orientationSize, dof);
 
     const PylithScalar tolerance = 1.0e-06;
@@ -199,7 +199,7 @@ pylith::faults::TestFaultCohesiveImpulses::testInitialize(void)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->orientation[iVertex*orientationSize+d], orientationArray[off+d], tolerance);
     } // for
   } // for
-  err = VecRestoreArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(orientationVec, &orientationArray);PYLITH_CHECK_ERROR(err);
 
   // Initial tractions
   if (fault._dbImpulseAmp) {
@@ -210,18 +210,18 @@ pylith::faults::TestFaultCohesiveImpulses::testInitialize(void)
     CPPUNIT_ASSERT(amplitudeSection);CPPUNIT_ASSERT(amplitudeVec);
     const int spaceDim = _data->spaceDim;
     iVertex = 0;
-    err = VecGetArray(amplitudeVec, &amplitudeArray);CHECK_PETSC_ERROR(err);
+    err = VecGetArray(amplitudeVec, &amplitudeArray);PYLITH_CHECK_ERROR(err);
     for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
       PetscInt dof, off;
 
-      err = PetscSectionGetDof(amplitudeSection, v, &dof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(amplitudeSection, v, &off);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetDof(amplitudeSection, v, &dof);PYLITH_CHECK_ERROR(err);
+      err = PetscSectionGetOffset(amplitudeSection, v, &off);PYLITH_CHECK_ERROR(err);
       CPPUNIT_ASSERT_EQUAL(1, dof);
 
       const PylithScalar tolerance = 1.0e-06;
       CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->amplitude[iVertex], amplitudeArray[off], tolerance);
     } // for
-    err = VecRestoreArray(amplitudeVec, &amplitudeArray);CHECK_PETSC_ERROR(err);
+    err = VecRestoreArray(amplitudeVec, &amplitudeArray);PYLITH_CHECK_ERROR(err);
   } // if
 } // testInitialize
 
@@ -256,15 +256,15 @@ pylith::faults::TestFaultCohesiveImpulses::testIntegrateResidual(void)
   PetscErrorCode  err;
 
   CPPUNIT_ASSERT(dmMesh);
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
   int iVertex = 0;
-  err = VecGetArray(dispVec, &dispArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(dispVec, &dispArray);PYLITH_CHECK_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
     PetscInt off;
-    err = PetscSectionGetOffset(dispSection, v, &off);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(dispSection, v, &off);PYLITH_CHECK_ERROR(err);
     for(PetscInt d = 0; d < spaceDim; ++d) dispArray[off+d] = _data->fieldT[iVertex*spaceDim+d];
   }
-  err = VecRestoreArray(dispVec, &dispArray);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(dispVec, &dispArray);PYLITH_CHECK_ERROR(err);
   
   const PylithScalar t = 1.0;
   const PylithScalar dt = 1.0;
@@ -281,12 +281,12 @@ pylith::faults::TestFaultCohesiveImpulses::testIntegrateResidual(void)
     iVertex = 0;
     const int fiberDimE = spaceDim;
     const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
-    err = VecGetArray(residualVec, &residualArray);CHECK_PETSC_ERROR(err);
+    err = VecGetArray(residualVec, &residualArray);PYLITH_CHECK_ERROR(err);
     for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
       PetscInt dof, off;
 
-      err = PetscSectionGetDof(residualSection, v, &dof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(residualSection, v, &off);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetDof(residualSection, v, &dof);PYLITH_CHECK_ERROR(err);
+      err = PetscSectionGetOffset(residualSection, v, &off);PYLITH_CHECK_ERROR(err);
       CPPUNIT_ASSERT_EQUAL(fiberDimE, dof);
       
       for(PetscInt d = 0; d < fiberDimE; ++d) {
@@ -297,7 +297,7 @@ pylith::faults::TestFaultCohesiveImpulses::testIntegrateResidual(void)
           CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, residualArray[off+d], tolerance);
       } // for
     } // for
-    err = VecRestoreArray(residualVec, &residualArray);CHECK_PETSC_ERROR(err);
+    err = VecRestoreArray(residualVec, &residualArray);PYLITH_CHECK_ERROR(err);
   } // Integrate residual with disp increment.
 } // testIntegrateResidual
 
@@ -343,7 +343,7 @@ pylith::faults::TestFaultCohesiveImpulses::_initialize(
 
   PetscInt       labelSize;
   PetscErrorCode err;
-  err = DMPlexGetStratumSize(mesh->dmMesh(), _data->label, 1, &labelSize);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumSize(mesh->dmMesh(), _data->label, 1, &labelSize);PYLITH_CHECK_ERROR(err);
 
   PetscInt firstFaultVertex    = 0;
   PetscInt firstLagrangeVertex = labelSize;

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -515,7 +515,7 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   PetscInt firstFaultVertex = 0;
   PetscInt firstLagrangeVertex, firstFaultCell;
 
-  err = DMPlexGetStratumSize(dmMesh, "fault", 1, &firstLagrangeVertex);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumSize(dmMesh, "fault", 1, &firstLagrangeVertex);PYLITH_CHECK_ERROR(err);
   firstFaultCell = firstLagrangeVertex;
   if (dynamic_cast<FaultCohesive*>(fault)->useLagrangeConstraints()) {
     firstFaultCell += firstLagrangeVertex;
@@ -534,19 +534,19 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   PetscInt     vStart, vEnd;
 
   dmMesh = mesh.dmMesh();
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMGetCoordinatesLocal(dmMesh, &coordinates);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
+  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);PYLITH_CHECK_ERROR(err);
+  err = DMGetCoordinatesLocal(dmMesh, &coordinates);PYLITH_CHECK_ERROR(err);
   const PetscInt numVertices = vEnd-vStart;
   const PetscInt spaceDim    = data.spaceDim;
   CPPUNIT_ASSERT_EQUAL(data.numVertices, numVertices);
-  err = VecGetArray(coordinates, &coords);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(coordinates, &coords);PYLITH_CHECK_ERROR(err);
   for (PetscInt v = vStart, i = 0; v < vEnd; ++v) {
     const PylithScalar tolerance = 1.0e-06;
     PetscInt           dof, off;
 
-    err = PetscSectionGetDof(coordSection, v, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(coordSection, v, &off);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(coordSection, v, &dof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(coordSection, v, &off);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(spaceDim, dof);
     for (PetscInt d = 0; d < spaceDim; ++d, ++i)
       if (data.vertices[i] < 1.0)
@@ -554,22 +554,22 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
       else
         CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, coords[off+d]/data.vertices[i], tolerance);
   } // for
-  err = VecRestoreArray(coordinates, &coords);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(coordinates, &coords);PYLITH_CHECK_ERROR(err);
 
   //mesh.view("MESH");
 
   // check cells
   PetscInt cStart, cEnd;
 
-  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
   const PetscInt numCells = cEnd-cStart;
   CPPUNIT_ASSERT_EQUAL(data.numCells, numCells);
   for (PetscInt c = cStart, cell = 0, i = 0; c < cEnd; ++c, ++cell) {
     const PetscInt *cone;
     PetscInt        coneSize;
 
-    err = DMPlexGetConeSize(dmMesh, c, &coneSize);CHECK_PETSC_ERROR(err);
-    err = DMPlexGetCone(dmMesh, c, &cone);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetConeSize(dmMesh, c, &coneSize);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetCone(dmMesh, c, &cone);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(data.numCorners[cell], coneSize);
     for (PetscInt p = 0; p < coneSize; ++p, ++i) {
       CPPUNIT_ASSERT_EQUAL(data.cells[i], cone[p]);
@@ -579,13 +579,13 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   // check materials
   DMLabel labelMaterials;
 
-  err = DMPlexGetLabel(dmMesh, "material-id", &labelMaterials);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetLabel(dmMesh, "material-id", &labelMaterials);PYLITH_CHECK_ERROR(err);
   CPPUNIT_ASSERT(labelMaterials);
   const PetscInt idDefault = -999;
   for (PetscInt c = cStart, cell = 0; c < cEnd; ++c, ++cell) {
     PetscInt value;
 
-    err = DMLabelGetValue(labelMaterials, c, &value);CHECK_PETSC_ERROR(err);
+    err = DMLabelGetValue(labelMaterials, c, &value);PYLITH_CHECK_ERROR(err);
     if (value == -1) value = idDefault;
     CPPUNIT_ASSERT_EQUAL(data.materialIds[cell], value);
   }  
@@ -593,7 +593,7 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   // Check groups
   PetscInt numLabels;
 
-  err = DMPlexGetNumLabels(dmMesh, &numLabels);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetNumLabels(dmMesh, &numLabels);PYLITH_CHECK_ERROR(err);
   for (PetscInt l = 0, i = 0, index = 0; l < numLabels; ++l) {
     DMLabel         label;
     IS              is;
@@ -603,15 +603,15 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
     std::string     skipA = "depth";
     std::string     skipB = "material-id";
 
-    err = DMPlexGetLabelName(dmMesh, l, &name);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetLabelName(dmMesh, l, &name);PYLITH_CHECK_ERROR(err);
     if (std::string(name) == skipA) continue;
     if (std::string(name) == skipB) continue;
-    err = DMPlexGetLabel(dmMesh, name, &label);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetLabel(dmMesh, name, &label);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT(label);
-    err = DMLabelGetStratumIS(label, 1, &is);CHECK_PETSC_ERROR(err);
-    err = ISGetLocalSize(is, &numPoints);CHECK_PETSC_ERROR(err);
-    err = ISGetIndices(is, &points);CHECK_PETSC_ERROR(err);
-    err = DMPlexGetLabelValue(dmMesh, "depth", points[0], &depth);CHECK_PETSC_ERROR(err);
+    err = DMLabelGetStratumIS(label, 1, &is);PYLITH_CHECK_ERROR(err);
+    err = ISGetLocalSize(is, &numPoints);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(is, &points);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetLabelValue(dmMesh, "depth", points[0], &depth);PYLITH_CHECK_ERROR(err);
     std::string groupType = depth ? "cell" : "vertex";
 
     CPPUNIT_ASSERT_EQUAL(std::string(data.groupNames[i]), std::string(name));
@@ -619,8 +619,8 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
     CPPUNIT_ASSERT_EQUAL(data.groupSizes[i], numPoints);
     for (PetscInt p = 0; p < numPoints; ++p, ++index)
       CPPUNIT_ASSERT_EQUAL(data.groups[index], points[p]);
-    err = ISRestoreIndices(is, &points);CHECK_PETSC_ERROR(err);
-    err = ISDestroy(&is);CHECK_PETSC_ERROR(err);
+    err = ISRestoreIndices(is, &points);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&is);PYLITH_CHECK_ERROR(err);
     ++i;
   } // for
 } // _testAdjustTopology
@@ -648,8 +648,8 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
   PetscInt firstFaultVertex = 0;
   PetscInt sizeA, sizeB;
 
-  err = DMPlexGetStratumSize(dmMesh, "faultA", 1, &sizeA);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetStratumSize(dmMesh, "faultB", 1, &sizeB);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumSize(dmMesh, "faultA", 1, &sizeA);PYLITH_CHECK_ERROR(err);
+  err = DMPlexGetStratumSize(dmMesh, "faultB", 1, &sizeB);PYLITH_CHECK_ERROR(err);
   PetscInt firstLagrangeVertex = sizeA + sizeB;
   PetscInt firstFaultCell      = sizeA + sizeB;
   if (dynamic_cast<FaultCohesive*>(faultA)->useLagrangeConstraints()) {
@@ -677,19 +677,19 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
   PetscInt     vStart, vEnd;
 
   dmMesh = mesh.dmMesh();
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMGetCoordinatesLocal(dmMesh, &coordinates);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
+  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);PYLITH_CHECK_ERROR(err);
+  err = DMGetCoordinatesLocal(dmMesh, &coordinates);PYLITH_CHECK_ERROR(err);
   const PetscInt numVertices = vEnd-vStart;
   const PetscInt spaceDim    = data.spaceDim;
   CPPUNIT_ASSERT_EQUAL(data.numVertices, numVertices);
-  err = VecGetArray(coordinates, &coords);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(coordinates, &coords);PYLITH_CHECK_ERROR(err);
   for (PetscInt v = vStart, i = 0; v < vEnd; ++v) {
     const PylithScalar tolerance = 1.0e-06;
     PetscInt           dof, off;
 
-    err = PetscSectionGetDof(coordSection, v, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(coordSection, v, &off);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(coordSection, v, &dof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(coordSection, v, &off);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(spaceDim, dof);
     for (PetscInt d = 0; d < spaceDim; ++d, ++i)
       if (data.vertices[i] < 1.0)
@@ -697,20 +697,20 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
       else
         CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, coords[off+d]/data.vertices[i], tolerance);
   } // for
-  err = VecRestoreArray(coordinates, &coords);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(coordinates, &coords);PYLITH_CHECK_ERROR(err);
 
   // check cells
   PetscInt cStart, cEnd;
 
-  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
   const PetscInt numCells = cEnd-cStart;
   CPPUNIT_ASSERT_EQUAL(data.numCells, numCells);
   for (PetscInt c = cStart, cell = 0, i = 0; c < cEnd; ++c, ++cell) {
     const PetscInt *cone;
     PetscInt        coneSize;
 
-    err = DMPlexGetConeSize(dmMesh, c, &coneSize);CHECK_PETSC_ERROR(err);
-    err = DMPlexGetCone(dmMesh, c, &cone);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetConeSize(dmMesh, c, &coneSize);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetCone(dmMesh, c, &cone);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(data.numCorners[cell], coneSize);
     for (PetscInt p = 0; p < coneSize; ++p, ++i) {
       CPPUNIT_ASSERT_EQUAL(data.cells[i], cone[p]);
@@ -720,13 +720,13 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
   // check materials
   DMLabel labelMaterials;
 
-  err = DMPlexGetLabel(dmMesh, "material-id", &labelMaterials);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetLabel(dmMesh, "material-id", &labelMaterials);PYLITH_CHECK_ERROR(err);
   CPPUNIT_ASSERT(labelMaterials);
   const PetscInt idDefault = -999;
   for (PetscInt c = cStart, cell = 0; c < cEnd; ++c, ++cell) {
     PetscInt value;
 
-    err = DMLabelGetValue(labelMaterials, c, &value);CHECK_PETSC_ERROR(err);
+    err = DMLabelGetValue(labelMaterials, c, &value);PYLITH_CHECK_ERROR(err);
     if (value == -1) value = idDefault;
     CPPUNIT_ASSERT_EQUAL(data.materialIds[cell], value);
   }  
@@ -734,7 +734,7 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
   // Check groups
   PetscInt numLabels;
 
-  err = DMPlexGetNumLabels(dmMesh, &numLabels);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetNumLabels(dmMesh, &numLabels);PYLITH_CHECK_ERROR(err);
   for (PetscInt l = 0, i = 0, index = 0; l < numLabels; ++l) {
     DMLabel         label;
     IS              is;
@@ -744,15 +744,15 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
     std::string     skipA = "depth";
     std::string     skipB = "material-id";
 
-    err = DMPlexGetLabelName(dmMesh, l, &name);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetLabelName(dmMesh, l, &name);PYLITH_CHECK_ERROR(err);
     if (std::string(name) == skipA) continue;
     if (std::string(name) == skipB) continue;
-    err = DMPlexGetLabel(dmMesh, name, &label);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetLabel(dmMesh, name, &label);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT(label);
-    err = DMLabelGetStratumIS(label, 1, &is);CHECK_PETSC_ERROR(err);
-    err = ISGetLocalSize(is, &numPoints);CHECK_PETSC_ERROR(err);
-    err = ISGetIndices(is, &points);CHECK_PETSC_ERROR(err);
-    err = DMPlexGetLabelValue(dmMesh, "depth", points[0], &depth);CHECK_PETSC_ERROR(err);
+    err = DMLabelGetStratumIS(label, 1, &is);PYLITH_CHECK_ERROR(err);
+    err = ISGetLocalSize(is, &numPoints);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(is, &points);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetLabelValue(dmMesh, "depth", points[0], &depth);PYLITH_CHECK_ERROR(err);
     std::string groupType = depth ? "cell" : "vertex";
 
     CPPUNIT_ASSERT_EQUAL(std::string(data.groupNames[i]), std::string(name));
@@ -760,8 +760,8 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
     CPPUNIT_ASSERT_EQUAL(data.groupSizes[i], numPoints);
     for (PetscInt p = 0; p < numPoints; ++p, ++index)
       CPPUNIT_ASSERT_EQUAL(data.groups[index], points[p]);
-    err = ISRestoreIndices(is, &points);CHECK_PETSC_ERROR(err);
-    err = ISDestroy(&is);CHECK_PETSC_ERROR(err);
+    err = ISRestoreIndices(is, &points);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&is);PYLITH_CHECK_ERROR(err);
     ++i;
   } // for
 } // _testAdjustTopology

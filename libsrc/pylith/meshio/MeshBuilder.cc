@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -22,7 +22,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/utils/array.hh" // USES scalar_array, int_array
-#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
+#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -157,7 +157,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
   PetscDM dmMesh;
   PetscBool pInterpolate = interpolate ? PETSC_TRUE : PETSC_FALSE;
 
-  err = DMPlexCreateFromCellList(comm, dim, numCells, numVertices, numCorners, pInterpolate, &cells[0], spaceDim, &(*coordinates)[0], &dmMesh);CHECK_PETSC_ERROR(err);
+  err = DMPlexCreateFromCellList(comm, dim, numCells, numVertices, numCorners, pInterpolate, &cells[0], spaceDim, &(*coordinates)[0], &dmMesh);PYLITH_CHECK_ERROR(err);
   mesh->setDMMesh(dmMesh);
 
   PYLITH_METHOD_END;

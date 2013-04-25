@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -135,10 +135,10 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::open(const mesh_type& mesh,
 
   // Save handle for actions required in closeTimeStep() and close();
   PetscErrorCode err = 0;
-  err = DMDestroy(&_dm);CHECK_PETSC_ERROR(err);
+  err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
   _dm = dmMesh;assert(_dm);
-  err = PetscObjectReference((PetscObject) _dm);CHECK_PETSC_ERROR(err);
+  err = PetscObjectReference((PetscObject) _dm);PYLITH_CHECK_ERROR(err);
 
   // Create VTK label in DM: Cleared in close().
   if (label) {
@@ -147,7 +147,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::open(const mesh_type& mesh,
     const PetscInt* cells = cellsIS.points();
 
     for (PetscInt c=0; c < ncells; ++c) {
-      err = DMPlexSetLabelValue(dmMesh, "vtk", cells[c], 1);CHECK_PETSC_ERROR(err);
+      err = DMPlexSetLabelValue(dmMesh, "vtk", cells[c], 1);PYLITH_CHECK_ERROR(err);
     } // for
 
   } // if
@@ -165,12 +165,12 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::close(void)
 
   if (_dm) {
     PetscBool hasLabel = PETSC_FALSE;
-    PetscErrorCode err = DMPlexHasLabel(_dm, "vtk", &hasLabel);CHECK_PETSC_ERROR(err);
+    PetscErrorCode err = DMPlexHasLabel(_dm, "vtk", &hasLabel);PYLITH_CHECK_ERROR(err);
     if (hasLabel) {
-      err = DMPlexClearLabelStratum(_dm, "vtk", 1);CHECK_PETSC_ERROR(err);
-      err = DMPlexClearLabelStratum(_dm, "vtk", 2);CHECK_PETSC_ERROR(err);
+      err = DMPlexClearLabelStratum(_dm, "vtk", 1);PYLITH_CHECK_ERROR(err);
+      err = DMPlexClearLabelStratum(_dm, "vtk", 2);PYLITH_CHECK_ERROR(err);
     } // if
-    err = DMDestroy(&_dm);CHECK_PETSC_ERROR(err);
+    err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
   } // if
 
   DataWriter<mesh_type, field_type>::close();
@@ -193,14 +193,14 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::openTimeStep(const PylithSc
     
   const std::string& filename = _vtkFilename(t);
 
-  err = PetscViewerCreate(mesh.comm(), &_viewer);CHECK_PETSC_ERROR(err);
-  err = PetscViewerSetType(_viewer, PETSCVIEWERVTK);CHECK_PETSC_ERROR(err);
-  err = PetscViewerSetFormat(_viewer, PETSC_VIEWER_ASCII_VTK);CHECK_PETSC_ERROR(err);
-  err = PetscViewerFileSetName(_viewer, filename.c_str());CHECK_PETSC_ERROR(err);
+  err = PetscViewerCreate(mesh.comm(), &_viewer);PYLITH_CHECK_ERROR(err);
+  err = PetscViewerSetType(_viewer, PETSCVIEWERVTK);PYLITH_CHECK_ERROR(err);
+  err = PetscViewerSetFormat(_viewer, PETSC_VIEWER_ASCII_VTK);PYLITH_CHECK_ERROR(err);
+  err = PetscViewerFileSetName(_viewer, filename.c_str());PYLITH_CHECK_ERROR(err);
   
   // Increment reference count on mesh DM, because the viewer destroys the DM.
   assert(_dm && _dm == mesh.dmMesh());
-  err = PetscObjectReference((PetscObject) _dm);CHECK_PETSC_ERROR(err);
+  err = PetscObjectReference((PetscObject) _dm);PYLITH_CHECK_ERROR(err);
   
   PYLITH_METHOD_END;
 } // openTimeStep
@@ -216,10 +216,10 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::closeTimeStep(void)
   // Account for possibility that no fields were written, so viewer doesn't have handle to DM.
   if (_dm && !_wroteVertexHeader && !_wroteCellHeader) {
     // No fields written, so must manually dereference the mesh DM.
-    PetscErrorCode err = PetscObjectDereference((PetscObject) _dm);CHECK_PETSC_ERROR(err);
+    PetscErrorCode err = PetscObjectDereference((PetscObject) _dm);PYLITH_CHECK_ERROR(err);
   } // if
   
-  PetscErrorCode err = PetscViewerDestroy(&_viewer);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = PetscViewerDestroy(&_viewer);PYLITH_CHECK_ERROR(err);
   _wroteVertexHeader = false;
   _wroteCellHeader = false;
   
@@ -247,8 +247,8 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(const Pyli
   // Will change to just VecView() once I setup the vectors correctly
   // (use VecSetOperation() to change the view method).
   PetscViewerVTKFieldType ft = field.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_POINT_FIELD : PETSC_VTK_POINT_VECTOR_FIELD;
-  PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) dmMesh, DMPlexVTKWriteAll, ft, (PetscObject) v);CHECK_PETSC_ERROR(err);
-  err = PetscObjectReference((PetscObject) v);CHECK_PETSC_ERROR(err); /* Needed because viewer destroys the Vec */
+  PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) dmMesh, DMPlexVTKWriteAll, ft, (PetscObject) v);PYLITH_CHECK_ERROR(err);
+  err = PetscObjectReference((PetscObject) v);PYLITH_CHECK_ERROR(err); /* Needed because viewer destroys the Vec */
   
   _wroteVertexHeader = true;
 
@@ -275,8 +275,8 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(const Pylith
   // Will change to just VecView() once I setup the vectors correctly
   // (use VecSetOperation() to change the view).
   PetscViewerVTKFieldType ft = field.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_CELL_FIELD : PETSC_VTK_CELL_VECTOR_FIELD;
-  PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) dmMesh, DMPlexVTKWriteAll, ft, (PetscObject) v); CHECK_PETSC_ERROR(err);
-  err = PetscObjectReference((PetscObject) v);CHECK_PETSC_ERROR(err); /* Needed because viewer destroys the Vec */
+  PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) dmMesh, DMPlexVTKWriteAll, ft, (PetscObject) v); PYLITH_CHECK_ERROR(err);
+  err = PetscObjectReference((PetscObject) v);PYLITH_CHECK_ERROR(err); /* Needed because viewer destroys the Vec */
   
   _wroteCellHeader = true;
 

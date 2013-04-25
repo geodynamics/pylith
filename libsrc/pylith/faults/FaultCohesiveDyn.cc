@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -85,7 +85,7 @@ void pylith::faults::FaultCohesiveDyn::deallocate(void)
   _friction = 0; // :TODO: Use shared pointer
 
   delete _jacobian; _jacobian = 0;
-  PetscErrorCode err = KSPDestroy(&_ksp);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = KSPDestroy(&_ksp);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // deallocate
@@ -207,7 +207,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field<topolo
   // Get sections associated with cohesive cells
   PetscDM residualDM = residual.dmMesh();assert(residualDM);
   PetscSection residualGlobalSection = NULL;
-  PetscErrorCode err = DMGetDefaultGlobalSection(residualDM, &residualGlobalSection);CHECK_PETSC_ERROR(err);assert(residualGlobalSection);
+  PetscErrorCode err = DMGetDefaultGlobalSection(residualDM, &residualGlobalSection);PYLITH_CHECK_ERROR(err);assert(residualGlobalSection);
 
   topology::VecVisitorMesh residualVisitor(residual);
   PetscScalar* residualArray = residualVisitor.localArray();
@@ -256,7 +256,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field<topolo
 
     // Compute contribution only if Lagrange constraint is local.
     PetscInt goff = 0;
-    err = PetscSectionGetOffset(residualGlobalSection, v_lagrange, &goff);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(residualGlobalSection, v_lagrange, &goff);PYLITH_CHECK_ERROR(err);
     if (goff < 0)
       continue;
 
@@ -534,7 +534,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
 
   PetscDM solnDM = fields->get("dispIncr(t->t+dt)").dmMesh();
   PetscSection dispTIncrGlobalSection = NULL;
-  PetscErrorCode err = DMGetDefaultGlobalSection(solnDM, &dispTIncrGlobalSection);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = DMGetDefaultGlobalSection(solnDM, &dispTIncrGlobalSection);PYLITH_CHECK_ERROR(err);
 
   topology::VecVisitorMesh dispTIncrAdjVisitor(fields->get("dispIncr adjust"));
   PetscScalar* dispTIncrAdjArray = dispTIncrAdjVisitor.localArray();
@@ -974,7 +974,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
     // Compute contribution to adjusting solution only if Lagrange
     // constraint is local (the adjustment is assembled across processors).
     PetscInt goff;
-    err = PetscSectionGetOffset(dispTIncrGlobalSection, v_lagrange, &goff);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(dispTIncrGlobalSection, v_lagrange, &goff);PYLITH_CHECK_ERROR(err);
     if (goff >= 0) {
       // Get offsets in displacement increment adjustment.
       const PetscInt dialoff = dispTIncrAdjVisitor.sectionOffset(v_lagrange);
@@ -1089,7 +1089,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(topology::SolutionFields* con
 
   PetscDM solnDM = fields->get("dispIncr(t->t+dt").dmMesh();assert(solnDM);
   PetscSection solnGlobalSection = NULL;
-  PetscErrorCode err = DMGetDefaultGlobalSection(solnDM, &solnGlobalSection);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = DMGetDefaultGlobalSection(solnDM, &solnGlobalSection);PYLITH_CHECK_ERROR(err);
 
   constrainSolnSpace_fn_type constrainSolnSpaceFn;
   switch (spaceDim) { // switch
@@ -1271,7 +1271,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(topology::SolutionFields* con
     // Compute contribution to adjusting solution only if Lagrange
     // constraint is local (the adjustment is assembled across processors).
     PetscInt goff;
-    err = PetscSectionGetOffset(solnGlobalSection, v_lagrange, &goff);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(solnGlobalSection, v_lagrange, &goff);PYLITH_CHECK_ERROR(err);
     if (goff >= 0) {
       const PetscInt dianoff = dispTIncrAdjVisitor.sectionOffset(v_negative);
       assert(spaceDim == dispTIncrAdjVisitor.sectionDof(v_negative));
@@ -1626,24 +1626,24 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
   // Setup PETSc KSP linear solver.
   if (!_ksp) {
     PetscErrorCode err = 0;
-    err = KSPCreate(_faultMesh->comm(), &_ksp);CHECK_PETSC_ERROR(err);
-    err = KSPSetInitialGuessNonzero(_ksp, PETSC_FALSE);CHECK_PETSC_ERROR(err);
+    err = KSPCreate(_faultMesh->comm(), &_ksp);PYLITH_CHECK_ERROR(err);
+    err = KSPSetInitialGuessNonzero(_ksp, PETSC_FALSE);PYLITH_CHECK_ERROR(err);
     PylithScalar rtol = 0.0;
     PylithScalar atol = 0.0;
     PylithScalar dtol = 0.0;
     int maxIters = 0;
-    err = KSPGetTolerances(_ksp, &rtol, &atol, &dtol, &maxIters);CHECK_PETSC_ERROR(err);
+    err = KSPGetTolerances(_ksp, &rtol, &atol, &dtol, &maxIters);PYLITH_CHECK_ERROR(err);
     rtol = 1.0e-3*_zeroTolerance;
     atol = 1.0e-5*_zeroTolerance;
-    err = KSPSetTolerances(_ksp, rtol, atol, dtol, maxIters);CHECK_PETSC_ERROR(err);
+    err = KSPSetTolerances(_ksp, rtol, atol, dtol, maxIters);PYLITH_CHECK_ERROR(err);
 
     PC pc;
-    err = KSPGetPC(_ksp, &pc);CHECK_PETSC_ERROR(err);
-    err = PCSetType(pc, PCJACOBI);CHECK_PETSC_ERROR(err);
-    err = KSPSetType(_ksp, KSPGMRES);CHECK_PETSC_ERROR(err);
+    err = KSPGetPC(_ksp, &pc);PYLITH_CHECK_ERROR(err);
+    err = PCSetType(pc, PCJACOBI);PYLITH_CHECK_ERROR(err);
+    err = KSPSetType(_ksp, KSPGMRES);PYLITH_CHECK_ERROR(err);
 
-    err = KSPAppendOptionsPrefix(_ksp, "friction_");CHECK_PETSC_ERROR(err);
-    err = KSPSetFromOptions(_ksp);CHECK_PETSC_ERROR(err);
+    err = KSPAppendOptionsPrefix(_ksp, "friction_");PYLITH_CHECK_ERROR(err);
+    err = KSPSetFromOptions(_ksp);PYLITH_CHECK_ERROR(err);
   } // if
 
   PYLITH_METHOD_END;
@@ -1676,7 +1676,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
   PetscSection solutionDomainGlobalSection = NULL;
   PetscScalar *solutionDomainArray = NULL;
   assert(solutionDomainSection);assert(solutionDomainVec);
-  err = DMGetDefaultGlobalSection(solutionDomainDM, &solutionDomainGlobalSection);CHECK_PETSC_ERROR(err);
+  err = DMGetDefaultGlobalSection(solutionDomainDM, &solutionDomainGlobalSection);PYLITH_CHECK_ERROR(err);
 
   // Get cohesive cells
   PetscDM dmMesh = fields.mesh().dmMesh();assert(dmMesh);
@@ -1701,7 +1701,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
   PetscVec solutionFaultVec = _fields->get("sensitivity solution").localVector();assert(solutionFaultVec);
   PetscSection solutionFaultGlobalSection = NULL;
   PetscScalar *solutionFaultArray = NULL;
-  err = DMGetDefaultGlobalSection(solutionFaultDM, &solutionFaultGlobalSection);CHECK_PETSC_ERROR(err);
+  err = DMGetDefaultGlobalSection(solutionFaultDM, &solutionFaultGlobalSection);PYLITH_CHECK_ERROR(err);
 
   assert(_jacobian);
   const PetscMat jacobianFaultMatrix = _jacobian->matrix();assert(jacobianFaultMatrix);
@@ -1716,7 +1716,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
     // Get cone for cohesive cell
     PetscInt *closure = NULL;
     PetscInt closureSize, q = 0;
-    err = DMPlexGetTransitiveClosure(dmMesh, cellsCohesive[c], PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetTransitiveClosure(dmMesh, cellsCohesive[c], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     // Filter out non-vertices
     for(PetscInt p = 0; p < closureSize*2; p += 2) {
       if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
@@ -1734,43 +1734,43 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
       const int v_domain = closure[iCone*numBasis+iBasis];
       PetscInt goff;
 
-      err = PetscSectionGetOffset(solutionDomainGlobalSection, v_domain, &goff);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(solutionDomainGlobalSection, v_domain, &goff);PYLITH_CHECK_ERROR(err);
       for(int iDim = 0, iB = iBasis*spaceDim, gind = goff < 0 ? -(goff+1) : goff; iDim < spaceDim; ++iDim) {
         indicesGlobal[iB+iDim] = gind + iDim;
       } // for
     } // for
-    err = DMPlexRestoreTransitiveClosure(dmMesh, cellsCohesive[c], PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    err = DMPlexRestoreTransitiveClosure(dmMesh, cellsCohesive[c], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
 
     for (int i=0; i < subnrows; ++i) {
       indicesPerm[i]  = i;
     } // for
-    err = PetscSortIntWithArray(indicesGlobal.size(), &indicesGlobal[0], &indicesPerm[0]);CHECK_PETSC_ERROR(err);
+    err = PetscSortIntWithArray(indicesGlobal.size(), &indicesGlobal[0], &indicesPerm[0]);PYLITH_CHECK_ERROR(err);
 
     for (int i=0; i < subnrows; ++i) {
       indicesLocal[c*subnrows+indicesPerm[i]] = i;
     } // for
     cellsIS[c] = NULL;
-    err = ISCreateGeneral(PETSC_COMM_SELF, indicesGlobal.size(), &indicesGlobal[0], PETSC_COPY_VALUES, &cellsIS[c]);CHECK_PETSC_ERROR(err);
+    err = ISCreateGeneral(PETSC_COMM_SELF, indicesGlobal.size(), &indicesGlobal[0], PETSC_COPY_VALUES, &cellsIS[c]);PYLITH_CHECK_ERROR(err);
   } // for
 
   PetscMat* submatrices = NULL;
-  err = MatGetSubMatrices(jacobianDomainMatrix, numCohesiveCells, cellsIS, cellsIS, MAT_INITIAL_MATRIX, &submatrices);CHECK_PETSC_ERROR(err);
+  err = MatGetSubMatrices(jacobianDomainMatrix, numCohesiveCells, cellsIS, cellsIS, MAT_INITIAL_MATRIX, &submatrices);PYLITH_CHECK_ERROR(err);
 
   for(PetscInt c = 0; c < numCohesiveCells; ++c) {
     // Get values for submatrix associated with cohesive cell
     jacobianSubCell = 0.0;
     err = MatGetValues(submatrices[c], subnrows, &indicesLocal[c*subnrows], subnrows, &indicesLocal[c*subnrows],
-                       &jacobianSubCell[0]);CHECK_PETSC_ERROR_MSG(err, "Restrict from PETSc Mat failed.");
+                       &jacobianSubCell[0]);PYLITH_CHECK_ERROR_MSG(err, "Restrict from PETSc Mat failed.");
 
     // Insert cell contribution into PETSc Matrix
     PetscInt c_fault = _cohesiveToFault[cellsCohesive[c]];
-    err = DMPlexMatSetClosure(faultDMMesh, solutionFaultSection, solutionFaultGlobalSection,  jacobianFaultMatrix, c_fault, &jacobianSubCell[0], INSERT_VALUES);CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");
+    err = DMPlexMatSetClosure(faultDMMesh, solutionFaultSection, solutionFaultGlobalSection,  jacobianFaultMatrix, c_fault, &jacobianSubCell[0], INSERT_VALUES);PYLITH_CHECK_ERROR_MSG(err, "Update to PETSc Mat failed.");
 
     // Destory IS for cohesiveCell
-    err = ISDestroy(&cellsIS[c]);CHECK_PETSC_ERROR(err);
+    err = ISDestroy(&cellsIS[c]);PYLITH_CHECK_ERROR(err);
   } // for
 
-  err = MatDestroyMatrices(numCohesiveCells, &submatrices);CHECK_PETSC_ERROR(err);
+  err = MatDestroyMatrices(numCohesiveCells, &submatrices);PYLITH_CHECK_ERROR(err);
   delete[] cellsIS; cellsIS = 0;
 
   _jacobian->assemble("final_assembly");
@@ -1901,11 +1901,11 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySolve(void)
 
   PetscErrorCode err = 0;
   const PetscMat jacobianMat = _jacobian->matrix();
-  err = KSPSetOperators(_ksp, jacobianMat, jacobianMat, DIFFERENT_NONZERO_PATTERN);CHECK_PETSC_ERROR(err);
+  err = KSPSetOperators(_ksp, jacobianMat, jacobianMat, DIFFERENT_NONZERO_PATTERN);PYLITH_CHECK_ERROR(err);
 
   const PetscVec residualVec = residual.globalVector();
   const PetscVec solutionVec = solution.globalVector();
-  err = KSPSolve(_ksp, residualVec, solutionVec);CHECK_PETSC_ERROR(err);
+  err = KSPSolve(_ksp, residualVec, solutionVec);PYLITH_CHECK_ERROR(err);
 
   // Update section view of field.
   solution.scatterVectorToSection();
@@ -2048,7 +2048,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceNorm(const PylithScalar alp
 
   PetscDM solnDM = dispTIncr.dmMesh();assert(solnDM);
   PetscSection dispTIncrGlobalSection = NULL;
-  err = DMGetDefaultGlobalSection(solnDM, &dispTIncrGlobalSection);CHECK_PETSC_ERROR(err);
+  err = DMGetDefaultGlobalSection(solnDM, &dispTIncrGlobalSection);PYLITH_CHECK_ERROR(err);
 
   bool isOpening = false;
   PylithScalar norm2 = 0.0;
@@ -2061,7 +2061,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceNorm(const PylithScalar alp
 
     // Compute contribution only if Lagrange constraint is local.
     PetscInt goff;
-    err = PetscSectionGetOffset(dispTIncrGlobalSection, v_lagrange, &goff);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(dispTIncrGlobalSection, v_lagrange, &goff);PYLITH_CHECK_ERROR(err);
     if (goff < 0) {
       continue;
     } // if
