@@ -64,12 +64,6 @@ namespace pylith {
       /// Deallocate temporary storage.
       void clear(void);
 
-      /** Get precomputed geometry fields.
-       *
-       * @returns Geometry fields.
-       */
-      const pylith::topology::Fields<pylith::topology::Field<mesh_type> >* geometryFields(void) const;
-
     }; // Quadrature
 
   } // feassemble
