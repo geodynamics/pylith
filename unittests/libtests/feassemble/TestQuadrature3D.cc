@@ -27,6 +27,8 @@
 #include "data/QuadratureData3DLinear.hh"
 #include "data/QuadratureData3DQuadratic.hh"
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestQuadrature3D );
 
@@ -35,8 +37,12 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestQuadrature3D );
 void
 pylith::feassemble::TestQuadrature3D::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   QuadratureRefCell refCell;
   Quadrature3D quadrature(refCell);
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -44,6 +50,8 @@ pylith::feassemble::TestQuadrature3D::testConstructor(void)
 void
 pylith::feassemble::TestQuadrature3D::testLinear(void)
 { // testLinear
+  PYLITH_METHOD_BEGIN;
+
   GeometryTet3D geometry;
   QuadratureRefCell refCell;
   refCell.refGeometry(&geometry);
@@ -52,6 +60,8 @@ pylith::feassemble::TestQuadrature3D::testLinear(void)
   QuadratureData3DLinear data;
 
   _testComputeGeometry(&q, &refCell, data);
+
+  PYLITH_METHOD_END;
 } // testLinear
 
 // ----------------------------------------------------------------------
@@ -59,6 +69,8 @@ pylith::feassemble::TestQuadrature3D::testLinear(void)
 void
 pylith::feassemble::TestQuadrature3D::testQuadratic(void)
 { // testQuadratic
+  PYLITH_METHOD_BEGIN;
+
   GeometryTet3D geometry;
   QuadratureRefCell refCell;
   refCell.refGeometry(&geometry);
@@ -67,6 +79,8 @@ pylith::feassemble::TestQuadrature3D::testQuadratic(void)
   QuadratureData3DQuadratic data;
 
   _testComputeGeometry(&q, &refCell, data);
+
+  PYLITH_METHOD_END;
 } // testQuadratic
 
 

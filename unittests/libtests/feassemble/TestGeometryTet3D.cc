@@ -26,6 +26,8 @@
 
 #include "data/GeomDataTet3D.hh"
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestGeometryTet3D );
 
@@ -34,8 +36,12 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestGeometryTet3D );
 void
 pylith::feassemble::TestGeometryTet3D::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   _object = new GeometryTet3D();
   _data = new GeomDataTet3D();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -43,7 +49,11 @@ pylith::feassemble::TestGeometryTet3D::setUp(void)
 void
 pylith::feassemble::TestGeometryTet3D::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   GeometryTet3D geometry;
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -51,6 +61,8 @@ pylith::feassemble::TestGeometryTet3D::testConstructor(void)
 void
 pylith::feassemble::TestGeometryTet3D::testGeomLowerDim(void)
 { // testGeomLowerDim
+  PYLITH_METHOD_BEGIN;
+
   GeometryTet3D geometry;
   CellGeometry* geometryLD = geometry.geometryLowerDim();
   GeometryTri3D* geometryPt = dynamic_cast<GeometryTri3D*>(geometryLD);
@@ -58,6 +70,8 @@ pylith::feassemble::TestGeometryTet3D::testGeomLowerDim(void)
   GeometryPoint2D* geometryPt2 = dynamic_cast<GeometryPoint2D*>(geometryLD);
   CPPUNIT_ASSERT(0 == geometryPt2);
   delete geometryLD; geometryLD = 0;
+
+  PYLITH_METHOD_END;
 } // testGeomLowerDim
 
 

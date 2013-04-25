@@ -23,9 +23,9 @@
 #include "pylith/feassemble/QuadratureRefCell.hh" // USES QuadratureRefCell
 #include "pylith/feassemble/Quadrature1D.hh" // USES Quadrature1D
 
-#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
-
 #include "data/QuadratureData.hh" // USES QuadratureData
+
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
 
 #include <string.h> // USES memcpy()
 
