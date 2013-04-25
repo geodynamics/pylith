@@ -177,9 +177,10 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(const mesh_type& m
     // Write cells
 
     // Account for censored cells
-    PetscInt cStart, cEnd, cMax, dof, conesSize, numCells, numCorners, numCornersLocal = 0;
+    PetscInt cellHeight, cStart, cEnd, cMax, dof, conesSize, numCells, numCorners, numCornersLocal = 0;
+    err = DMPlexGetVTKCellHeight(dmMesh, &cellHeight);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetHeightStratum(dmMesh, cellHeight, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetHybridBounds(dmMesh, &cMax, PETSC_NULL, PETSC_NULL, PETSC_NULL);PYLITH_CHECK_ERROR(err);
     if (cMax >= 0) {
       cEnd = PetscMin(cEnd, cMax);
@@ -211,7 +212,6 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(const mesh_type& m
     } else {
       conesSize = (cEnd - cStart)*numCorners;
     } // if/else
-    CHKMEMA;
 
     PetscIS globalVertexNumbers = NULL;
     const PetscInt *gvertex = NULL;
@@ -234,8 +234,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(const mesh_type& m
         PetscInt value;
 
         err = DMPlexGetLabelValue(dmMesh, label, cell, &value);PYLITH_CHECK_ERROR(err);
-        if (value != labelId)
-	  continue;
+        if (value != labelId) continue;
       } // if
       err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
       for(p = 0; p < closureSize*2; p += 2) {
@@ -245,9 +244,8 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(const mesh_type& m
         } // if
       } // for
       err = DMPlexRestoreTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-      //assert(v == (cell-cStart+1)*numCorners);
+      //assert(v == (cell-cStart+1)*numCorners); Would be true without label check
     } // for
-    CHKMEMA;
     err = ISRestoreIndices(globalVertexNumbers, &gvertex);PYLITH_CHECK_ERROR(err);
     err = VecRestoreArray(cellVec, &vertices);PYLITH_CHECK_ERROR(err);
     err = VecGetSize(cellVec, &numCells);PYLITH_CHECK_ERROR(err);
