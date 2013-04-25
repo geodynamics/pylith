@@ -57,34 +57,12 @@ testfeassemble_SOURCES = \
 	TestElasticityExplicitTri3.cc \
 	TestElasticityExplicitTet4.cc \
 	TestElasticityImplicit.cc \
-	TestElasticityImplicit1DLinear.cc \
-	TestElasticityImplicit1DQuadratic.cc \
-	TestElasticityImplicit2DLinear.cc \
-	TestElasticityImplicit2DQuadratic.cc \
-	TestElasticityImplicit3DLinear.cc \
-	TestElasticityImplicit3DQuadratic.cc \
-	TestElasticityImplicitGrav1DLinear.cc \
-	TestElasticityImplicitGrav1DQuadratic.cc \
-	TestElasticityImplicitGrav2DLinear.cc \
-	TestElasticityImplicitGrav2DQuadratic.cc \
-	TestElasticityImplicitGrav3DLinear.cc \
-	TestElasticityImplicitGrav3DQuadratic.cc \
+	TestElasticityImplicitCases.cc \
 	TestIntegratorElasticityLgDeform.cc \
 	TestElasticityExplicitLgDeform.cc \
 	TestElasticityExplicitLgDeformCases.cc \
 	TestElasticityImplicitLgDeform.cc \
-	TestElasticityImplicitLgDeform1DLinear.cc \
-	TestElasticityImplicitLgDeform1DQuadratic.cc \
-	TestElasticityImplicitLgDeform2DLinear.cc \
-	TestElasticityImplicitLgDeform2DQuadratic.cc \
-	TestElasticityImplicitLgDeform3DLinear.cc \
-	TestElasticityImplicitLgDeform3DQuadratic.cc \
-	TestElasticityImplicitLgDeformGrav1DLinear.cc \
-	TestElasticityImplicitLgDeformGrav1DQuadratic.cc \
-	TestElasticityImplicitLgDeformGrav2DLinear.cc \
-	TestElasticityImplicitLgDeformGrav2DQuadratic.cc \
-	TestElasticityImplicitLgDeformGrav3DLinear.cc \
-	TestElasticityImplicitLgDeformGrav3DQuadratic.cc \
+	TestElasticityImplicitLgDeformCases.cc \
 	test_feassemble.cc
 
 
@@ -96,34 +74,12 @@ noinst_HEADERS = \
 	TestElasticityExplicitTri3.hh \
 	TestElasticityExplicitTet4.hh \
 	TestElasticityImplicit.hh \
-	TestElasticityImplicit1DLinear.hh \
-	TestElasticityImplicit1DQuadratic.hh \
-	TestElasticityImplicit2DLinear.hh \
-	TestElasticityImplicit2DQuadratic.hh \
-	TestElasticityImplicit3DLinear.hh \
-	TestElasticityImplicit3DQuadratic.hh \
-	TestElasticityImplicitGrav1DLinear.hh \
-	TestElasticityImplicitGrav1DQuadratic.hh \
-	TestElasticityImplicitGrav2DLinear.hh \
-	TestElasticityImplicitGrav2DQuadratic.hh \
-	TestElasticityImplicitGrav3DLinear.hh \
-	TestElasticityImplicitGrav3DQuadratic.hh \
+	TestElasticityImplicitCases.hh \
 	TestIntegratorElasticityLgDeform.hh \
 	TestElasticityExplicitLgDeform.hh \
 	TestElasticityExplicitLgDeformCases.hh \
 	TestElasticityImplicitLgDeform.hh \
-	TestElasticityImplicitLgDeform1DLinear.hh \
-	TestElasticityImplicitLgDeform1DQuadratic.hh \
-	TestElasticityImplicitLgDeform2DLinear.hh \
-	TestElasticityImplicitLgDeform2DQuadratic.hh \
-	TestElasticityImplicitLgDeform3DLinear.hh \
-	TestElasticityImplicitLgDeform3DQuadratic.hh \
-	TestElasticityImplicitLgDeformGrav1DLinear.hh \
-	TestElasticityImplicitLgDeformGrav1DQuadratic.hh \
-	TestElasticityImplicitLgDeformGrav2DLinear.hh \
-	TestElasticityImplicitLgDeformGrav2DQuadratic.hh \
-	TestElasticityImplicitLgDeformGrav3DLinear.hh \
-	TestElasticityImplicitLgDeformGrav3DQuadratic.hh \
+	TestElasticityImplicitLgDeformCases.hh \
 	TestGeometryPoint1D.hh \
 	TestGeometryPoint2D.hh \
 	TestGeometryPoint3D.hh \
