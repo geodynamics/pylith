@@ -23,6 +23,8 @@
 #include "pylith/feassemble/Quadrature0D.hh"
 #include "pylith/feassemble/QuadratureRefCell.hh"
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestQuadrature0D );
 
@@ -31,8 +33,12 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestQuadrature0D );
 void
 pylith::feassemble::TestQuadrature0D::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   QuadratureRefCell refCell;
   Quadrature0D quadrature(refCell);
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -40,6 +46,8 @@ pylith::feassemble::TestQuadrature0D::testConstructor(void)
 void
 pylith::feassemble::TestQuadrature0D::testPoint(void)
 { // testPoint
+  PYLITH_METHOD_BEGIN;
+
   const int cellDim = 0;
   const int numBasis = 1;
   const int numQuadPts = 1;
@@ -76,14 +84,12 @@ pylith::feassemble::TestQuadrature0D::testPoint(void)
   engine.computeGeometry(vertCoords, 0);
 
   const PylithScalar tolerance = 1.0e-06;
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(quadPts[0], engine._quadPts[0], 
-			       tolerance);
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(jacobian[0], engine._jacobian[0], 
-			       tolerance);
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(jacobianInv[0], engine._jacobianInv[0], 
-			       tolerance);
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(jacobianDet[0], engine._jacobianDet[0], 
-			       tolerance);
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(quadPts[0], engine._quadPts[0], tolerance);
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(jacobian[0], engine._jacobian[0], tolerance);
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(jacobianInv[0], engine._jacobianInv[0], tolerance);
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(jacobianDet[0], engine._jacobianDet[0], tolerance);
+
+  PYLITH_METHOD_END;
 } // testPoint
 
 

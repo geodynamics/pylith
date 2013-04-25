@@ -30,6 +30,8 @@
 #include "data/QuadratureData2Din3DLinearXZ.hh"
 #include "data/QuadratureData2Din3DQuadratic.hh"
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestQuadrature2Din3D );
 
@@ -38,8 +40,12 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestQuadrature2Din3D );
 void
 pylith::feassemble::TestQuadrature2Din3D::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   QuadratureRefCell refCell;
   Quadrature2Din3D quadrature(refCell);
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -47,6 +53,8 @@ pylith::feassemble::TestQuadrature2Din3D::testConstructor(void)
 void
 pylith::feassemble::TestQuadrature2Din3D::testLinearXYZ(void)
 { // testLinearXYZ
+  PYLITH_METHOD_BEGIN;
+
   GeometryTri3D geometry;
   QuadratureRefCell refCell;
   refCell.refGeometry(&geometry);
@@ -55,6 +63,8 @@ pylith::feassemble::TestQuadrature2Din3D::testLinearXYZ(void)
   QuadratureData2Din3DLinearXYZ data;
 
   _testComputeGeometry(&q, &refCell, data);
+
+  PYLITH_METHOD_END;
 } // testLinearXYZ
 
 // ----------------------------------------------------------------------
@@ -62,6 +72,8 @@ pylith::feassemble::TestQuadrature2Din3D::testLinearXYZ(void)
 void
 pylith::feassemble::TestQuadrature2Din3D::testLinearXY(void)
 { // testLinearXY
+  PYLITH_METHOD_BEGIN;
+
   GeometryTri3D geometry;
   QuadratureRefCell refCell;
   refCell.refGeometry(&geometry);
@@ -70,6 +82,8 @@ pylith::feassemble::TestQuadrature2Din3D::testLinearXY(void)
   QuadratureData2Din3DLinearXY data;
 
   _testComputeGeometry(&q, &refCell, data);
+
+  PYLITH_METHOD_END;
 } // testLinearXY
 
 // ----------------------------------------------------------------------
@@ -77,6 +91,8 @@ pylith::feassemble::TestQuadrature2Din3D::testLinearXY(void)
 void
 pylith::feassemble::TestQuadrature2Din3D::testLinearYZ(void)
 { // testLinearYZ
+  PYLITH_METHOD_BEGIN;
+
   GeometryTri3D geometry;
   QuadratureRefCell refCell;
   refCell.refGeometry(&geometry);
@@ -85,6 +101,8 @@ pylith::feassemble::TestQuadrature2Din3D::testLinearYZ(void)
   QuadratureData2Din3DLinearYZ data;
 
   _testComputeGeometry(&q, &refCell, data);
+
+  PYLITH_METHOD_END;
 } // testLinearYZ
 
 // ----------------------------------------------------------------------
@@ -92,6 +110,8 @@ pylith::feassemble::TestQuadrature2Din3D::testLinearYZ(void)
 void
 pylith::feassemble::TestQuadrature2Din3D::testLinearXZ(void)
 { // testLinearXZ
+  PYLITH_METHOD_BEGIN;
+
   GeometryTri3D geometry;
   QuadratureRefCell refCell;
   refCell.refGeometry(&geometry);
@@ -100,6 +120,8 @@ pylith::feassemble::TestQuadrature2Din3D::testLinearXZ(void)
   QuadratureData2Din3DLinearXZ data;
 
   _testComputeGeometry(&q, &refCell, data);
+
+  PYLITH_METHOD_END;
 } // testLinearXZ
 
 // ----------------------------------------------------------------------
@@ -107,6 +129,8 @@ pylith::feassemble::TestQuadrature2Din3D::testLinearXZ(void)
 void
 pylith::feassemble::TestQuadrature2Din3D::testQuadratic(void)
 { // testQuadratic
+  PYLITH_METHOD_BEGIN;
+
   GeometryTri3D geometry;
   QuadratureRefCell refCell;
   refCell.refGeometry(&geometry);
@@ -115,6 +139,8 @@ pylith::feassemble::TestQuadrature2Din3D::testQuadratic(void)
   QuadratureData2Din3DQuadratic data;
 
   _testComputeGeometry(&q, &refCell, data);
+
+  PYLITH_METHOD_END;
 } // testQuadratic
 
 

@@ -27,6 +27,8 @@
 #include "data/QuadratureData1Din2DLinear.hh"
 #include "data/QuadratureData1Din2DQuadratic.hh"
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestQuadrature1Din2D );
 
@@ -35,8 +37,12 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestQuadrature1Din2D );
 void
 pylith::feassemble::TestQuadrature1Din2D::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   QuadratureRefCell refCell;
   Quadrature1Din2D quadrature(refCell);
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -44,6 +50,8 @@ pylith::feassemble::TestQuadrature1Din2D::testConstructor(void)
 void
 pylith::feassemble::TestQuadrature1Din2D::testLinear(void)
 { // testLinear
+  PYLITH_METHOD_BEGIN;
+
   GeometryLine2D geometry;
   QuadratureRefCell refCell;
   refCell.refGeometry(&geometry);
@@ -52,6 +60,8 @@ pylith::feassemble::TestQuadrature1Din2D::testLinear(void)
   QuadratureData1Din2DLinear data;
 
   _testComputeGeometry(&q, &refCell, data);
+
+  PYLITH_METHOD_END;
 } // testLinear
 
 // ----------------------------------------------------------------------
@@ -59,6 +69,8 @@ pylith::feassemble::TestQuadrature1Din2D::testLinear(void)
 void
 pylith::feassemble::TestQuadrature1Din2D::testQuadratic(void)
 { // testQuadratic
+  PYLITH_METHOD_BEGIN;
+
   GeometryLine2D geometry;
   QuadratureRefCell refCell;
   refCell.refGeometry(&geometry);
@@ -67,6 +79,8 @@ pylith::feassemble::TestQuadrature1Din2D::testQuadratic(void)
   QuadratureData1Din2DQuadratic data;
 
   _testComputeGeometry(&q, &refCell, data);
+
+  PYLITH_METHOD_END;
 } // testQuadratic
 
 // End of file 

@@ -26,6 +26,8 @@
 
 #include "data/GeomDataPoint3D.hh"
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestGeometryPoint3D );
 
@@ -34,8 +36,12 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestGeometryPoint3D );
 void
 pylith::feassemble::TestGeometryPoint3D::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+  
   _object = new GeometryPoint3D();
   _data = new GeomDataPoint3D();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -43,7 +49,11 @@ pylith::feassemble::TestGeometryPoint3D::setUp(void)
 void
 pylith::feassemble::TestGeometryPoint3D::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+  
   GeometryPoint3D geometry;
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -51,10 +61,14 @@ pylith::feassemble::TestGeometryPoint3D::testConstructor(void)
 void
 pylith::feassemble::TestGeometryPoint3D::testGeomLowerDim(void)
 { // testGeomLowerDim
+  PYLITH_METHOD_BEGIN;
+  
   GeometryPoint3D geometry;
   CellGeometry* geometryLD = geometry.geometryLowerDim();
   CPPUNIT_ASSERT(0 == geometryLD);
   delete geometryLD; geometryLD = 0;
+
+  PYLITH_METHOD_END;
 } // testGeomLowerDim
 
 // ----------------------------------------------------------------------
@@ -62,6 +76,8 @@ pylith::feassemble::TestGeometryPoint3D::testGeomLowerDim(void)
 void
 pylith::feassemble::TestGeometryPoint3D::testJacobian(void)
 { // testJacobian
+  PYLITH_METHOD_BEGIN;
+  
   GeometryPoint3D geometry;
   GeomDataPoint3D data;
 
@@ -85,6 +101,8 @@ pylith::feassemble::TestGeometryPoint3D::testJacobian(void)
     CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0), jacobian[0]);
     CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0), det);
   } //for
+
+  PYLITH_METHOD_END;
 } // testJacobian
 
 

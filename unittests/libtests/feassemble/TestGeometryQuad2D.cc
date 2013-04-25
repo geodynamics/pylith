@@ -26,6 +26,8 @@
 
 #include "data/GeomDataQuad2D.hh"
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestGeometryQuad2D );
 
@@ -34,8 +36,12 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestGeometryQuad2D );
 void
 pylith::feassemble::TestGeometryQuad2D::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   _object = new GeometryQuad2D();
   _data = new GeomDataQuad2D();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -43,7 +49,11 @@ pylith::feassemble::TestGeometryQuad2D::setUp(void)
 void
 pylith::feassemble::TestGeometryQuad2D::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   GeometryQuad2D geometry;
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -51,6 +61,8 @@ pylith::feassemble::TestGeometryQuad2D::testConstructor(void)
 void
 pylith::feassemble::TestGeometryQuad2D::testGeomLowerDim(void)
 { // testGeomLowerDim
+  PYLITH_METHOD_BEGIN;
+
   GeometryQuad2D geometry;
   CellGeometry* geometryLD = geometry.geometryLowerDim();
   GeometryLine2D* geometryPt = dynamic_cast<GeometryLine2D*>(geometryLD);
@@ -58,6 +70,8 @@ pylith::feassemble::TestGeometryQuad2D::testGeomLowerDim(void)
   GeometryPoint2D* geometryPt2 = dynamic_cast<GeometryPoint2D*>(geometryLD);
   CPPUNIT_ASSERT(0 == geometryPt2);
   delete geometryLD; geometryLD = 0;
+
+  PYLITH_METHOD_END;
 } // testGeomLowerDim
 
 
