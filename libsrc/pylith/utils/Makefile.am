@@ -29,7 +29,7 @@ subpkginclude_HEADERS = \
 	lapack.h \
 	macrodefs.h \
 	petscfwd.h \
-	petscerror.h \
+	error.h \
 	sievefwd.hh \
 	sievetypes.hh \
         types.hh \
