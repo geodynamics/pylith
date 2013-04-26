@@ -164,21 +164,18 @@ pylith::meshio::TestOutputSolnPoints::_testSetupInterpolator(const OutputSolnPoi
   PetscErrorCode err = 0;
   CPPUNIT_ASSERT_EQUAL(numCellsE, cellsStratum.size());
   for (PetscInt c = cStart, index = 0; c < cEnd; ++c) {
-    PetscInt *closure = NULL;
-    PetscInt closureSize = 0;
-    err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-    int count = 0;
-    for (int i=0; i < closureSize; ++i) {
-      const PetscInt p = closure[2*i];
-      if (p >= vStart && p < vEnd) {
-	const int coneE = numCellsE+index;
-	CPPUNIT_ASSERT_EQUAL(coneE, p);
-	++count;
-	++index;
-      } // if
+    const PetscInt *cone = NULL;
+    PetscInt coneSize = 0;
+
+    err = DMPlexGetConeSize(dmMesh, c, &coneSize);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetCone(dmMesh, c, &cone);PYLITH_CHECK_ERROR(err);
+
+    CPPUNIT_ASSERT_EQUAL(numCornersE, coneSize);
+
+    for (PetscInt p = 0; p < coneSize; ++p, ++index) {
+      const int coneE = numCellsE+index;
+      CPPUNIT_ASSERT_EQUAL(coneE, cone[p]);
     } // for
-    CPPUNIT_ASSERT_EQUAL(numCornersE, count);
-    err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
   } // for
   
   PYLITH_METHOD_END;
