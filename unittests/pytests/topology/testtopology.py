@@ -90,8 +90,9 @@ class TestApp(Script):
     from TestMeshImporter import TestMeshImporter
     suite.addTest(unittest.makeSuite(TestMeshImporter))
 
-    from TestRefineUniform import TestRefineUniform
-    suite.addTest(unittest.makeSuite(TestRefineUniform))
+    print "WARNING: TestRefineUniform NOT IMPLEMENTED"
+    #from TestRefineUniform import TestRefineUniform
+    #suite.addTest(unittest.makeSuite(TestRefineUniform))
 
     return suite
 
