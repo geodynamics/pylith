@@ -26,9 +26,10 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
-#include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
@@ -41,20 +42,19 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesiveImpulses );
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
-typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
-
-// ----------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::faults::TestFaultCohesiveImpulses::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   _data = 0;
   _quadrature = new feassemble::Quadrature<topology::SubMesh>();
-  CPPUNIT_ASSERT(0 != _quadrature);
+  CPPUNIT_ASSERT(_quadrature);
   _dbImpulseAmp = 0;
   _flipFault = false;
+
+  PYLITH_METHOD_END;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -62,9 +62,13 @@ pylith::faults::TestFaultCohesiveImpulses::setUp(void)
 void
 pylith::faults::TestFaultCohesiveImpulses::tearDown(void)
 { // tearDown
+  PYLITH_METHOD_BEGIN;
+
   delete _data; _data = 0;
   delete _quadrature; _quadrature = 0;
   delete _dbImpulseAmp; _dbImpulseAmp = 0;
+
+  PYLITH_METHOD_END;
 } // tearDown
 
 // ----------------------------------------------------------------------
@@ -72,7 +76,11 @@ pylith::faults::TestFaultCohesiveImpulses::tearDown(void)
 void
 pylith::faults::TestFaultCohesiveImpulses::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   FaultCohesiveImpulses fault;
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -80,6 +88,8 @@ pylith::faults::TestFaultCohesiveImpulses::testConstructor(void)
 void
 pylith::faults::TestFaultCohesiveImpulses::testDBImpulseAmp(void)
 { // testDBImpulseAmp
+  PYLITH_METHOD_BEGIN;
+
   FaultCohesiveImpulses fault;
 
   const std::string& label = "test database";
@@ -88,6 +98,8 @@ pylith::faults::TestFaultCohesiveImpulses::testDBImpulseAmp(void)
   fault.dbImpulseAmp(&db);
   CPPUNIT_ASSERT(fault._dbImpulseAmp);
   CPPUNIT_ASSERT_EQUAL(label, std::string(fault._dbImpulseAmp->label()));
+
+  PYLITH_METHOD_END;
  } // testDBImpulseAmp
 
 // ----------------------------------------------------------------------
@@ -95,6 +107,8 @@ pylith::faults::TestFaultCohesiveImpulses::testDBImpulseAmp(void)
 void
 pylith::faults::TestFaultCohesiveImpulses::testThreshold(void)
 { // testThreshold
+  PYLITH_METHOD_BEGIN;
+
   FaultCohesiveImpulses fault;
 
   CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0e-6), fault._threshold); // default
@@ -109,6 +123,8 @@ pylith::faults::TestFaultCohesiveImpulses::testThreshold(void)
 void
 pylith::faults::TestFaultCohesiveImpulses::testImpulseDOF(void)
 { // testImpulseDOF
+  PYLITH_METHOD_BEGIN;
+
   FaultCohesiveImpulses fault;
 
   const int ncomps = 2;
@@ -127,6 +143,8 @@ pylith::faults::TestFaultCohesiveImpulses::testImpulseDOF(void)
 void
 pylith::faults::TestFaultCohesiveImpulses::testNumImpulses(void)
 { // testNumImpulses
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_data);
 
   topology::Mesh mesh;
@@ -146,6 +164,8 @@ pylith::faults::TestFaultCohesiveImpulses::testNumImpulses(void)
 void
 pylith::faults::TestFaultCohesiveImpulses::testInitialize(void)
 { // testInitialize
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_data);
 
   topology::Mesh mesh;
@@ -153,16 +173,16 @@ pylith::faults::TestFaultCohesiveImpulses::testInitialize(void)
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &fault, &fields);
 
-  DM              dmMesh = fault._faultMesh->dmMesh();
-  IS              subpointIS;
-  const PetscInt *points;
-  PetscInt        vStart, vEnd, numPoints;
-  PetscErrorCode  err;
+  PetscDM dmMesh = fault._faultMesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
 
-  CPPUNIT_ASSERT(dmMesh);
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
-  err = DMPlexCreateSubpointIS(dmMesh, &subpointIS);PYLITH_CHECK_ERROR(err);
-  CPPUNIT_ASSERT(subpointIS);
+  PetscIS subpointIS = NULL;
+  const PetscInt *points = NULL;
+  PetscInt numPoints = 0;
+  PetscErrorCode err;
+  err = DMPlexCreateSubpointIS(dmMesh, &subpointIS);PYLITH_CHECK_ERROR(err);CPPUNIT_ASSERT(subpointIS);
   err = ISGetSize(subpointIS, &numPoints);PYLITH_CHECK_ERROR(err);
   err = ISGetIndices(subpointIS, &points);PYLITH_CHECK_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
@@ -179,50 +199,37 @@ pylith::faults::TestFaultCohesiveImpulses::testInitialize(void)
   // Check orientation
   //fault._fields->get("orientation").view("ORIENTATION"); // DEBUGGING
 
-  PetscSection orientationSection = fault._fields->get("orientation").petscSection();
-  Vec          orientationVec     = fault._fields->get("orientation").localVector();
-  PetscScalar *orientationArray;
-  CPPUNIT_ASSERT(orientationSection);CPPUNIT_ASSERT(orientationVec);
+  topology::VecVisitorMesh orientationVisitor(fault._fields->get("orientation"));
+  const PetscScalar* orientationArray = orientationVisitor.localArray();
+
   const int spaceDim = _data->spaceDim;
   const int orientationSize = spaceDim*spaceDim;
-  int iVertex = 0;
-  err = VecGetArray(orientationVec, &orientationArray);PYLITH_CHECK_ERROR(err);
-  for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
-    PetscInt dof, off;
-
-    err = PetscSectionGetDof(orientationSection, v, &dof);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionGetOffset(orientationSection, v, &off);PYLITH_CHECK_ERROR(err);
-    CPPUNIT_ASSERT_EQUAL(orientationSize, dof);
+  for(PetscInt v = vStart, iVertex = 0; v < vEnd; ++v, ++iVertex) {
+    const PetscInt off = orientationVisitor.sectionOffset(v);
+    CPPUNIT_ASSERT_EQUAL(orientationSize, orientationVisitor.sectionDof(v));
 
     const PylithScalar tolerance = 1.0e-06;
     for(PetscInt d = 0; d < orientationSize; ++d) {
       CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->orientation[iVertex*orientationSize+d], orientationArray[off+d], tolerance);
     } // for
   } // for
-  err = VecRestoreArray(orientationVec, &orientationArray);PYLITH_CHECK_ERROR(err);
 
   // Initial tractions
   if (fault._dbImpulseAmp) {
-    //fault._fields->get("initial traction").view("INITIAL TRACTIONS"); // DEBUGGING
-    PetscSection amplitudeSection = fault._fields->get("impulse amplitude").petscSection();
-    Vec          amplitudeVec     = fault._fields->get("impulse amplitude").localVector();
-    PetscScalar *amplitudeArray;
-    CPPUNIT_ASSERT(amplitudeSection);CPPUNIT_ASSERT(amplitudeVec);
-    const int spaceDim = _data->spaceDim;
-    iVertex = 0;
-    err = VecGetArray(amplitudeVec, &amplitudeArray);PYLITH_CHECK_ERROR(err);
-    for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
-      PetscInt dof, off;
+    topology::VecVisitorMesh amplitudeVisitor(fault._fields->get("impulse amplitude"));
+    const PetscScalar* amplitudeArray = amplitudeVisitor.localArray();
+    const PylithScalar amplitudeScale = _data->lengthScale;
 
-      err = PetscSectionGetDof(amplitudeSection, v, &dof);PYLITH_CHECK_ERROR(err);
-      err = PetscSectionGetOffset(amplitudeSection, v, &off);PYLITH_CHECK_ERROR(err);
-      CPPUNIT_ASSERT_EQUAL(1, dof);
+    for(PetscInt v = vStart, iVertex = 0; v < vEnd; ++v, ++iVertex) {
+      const PetscInt off = amplitudeVisitor.sectionOffset(v);
+      CPPUNIT_ASSERT_EQUAL(1, amplitudeVisitor.sectionDof(v));
 
       const PylithScalar tolerance = 1.0e-06;
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->amplitude[iVertex], amplitudeArray[off], tolerance);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->amplitude[iVertex], amplitudeArray[off]*amplitudeScale, tolerance);
     } // for
-    err = VecRestoreArray(amplitudeVec, &amplitudeArray);PYLITH_CHECK_ERROR(err);
   } // if
+
+  PYLITH_METHOD_END;
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -230,6 +237,8 @@ pylith::faults::TestFaultCohesiveImpulses::testInitialize(void)
 void
 pylith::faults::TestFaultCohesiveImpulses::testIntegrateResidual(void)
 { // testIntegrateResidual
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_data);
   CPPUNIT_ASSERT(_data->fieldT);
   CPPUNIT_ASSERT(_data->residualIncr);
@@ -240,75 +249,63 @@ pylith::faults::TestFaultCohesiveImpulses::testIntegrateResidual(void)
   _initialize(&mesh, &fault, &fields);
 
   const int spaceDim = _data->spaceDim;
-  topology::Field<topology::Mesh>& residual = fields.get("residual");
-  PetscSection residualSection = residual.petscSection();
-  Vec          residualVec     = residual.localVector();
-  PetscScalar *residualArray;
-  CPPUNIT_ASSERT(residualSection);CPPUNIT_ASSERT(residualVec);
 
-  PetscSection dispSection = fields.get("disp(t)").petscSection();
-  Vec          dispVec     = fields.get("disp(t)").localVector();
-  PetscScalar *dispArray;
-  CPPUNIT_ASSERT(dispSection);CPPUNIT_ASSERT(dispVec);
+  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
 
-  DM              dmMesh = mesh.dmMesh();
-  PetscInt        vStart, vEnd;
-  PetscErrorCode  err;
+  topology::VecVisitorMesh dispVisitor(fields.get("disp(t)"));
+  PetscScalar* dispArray = dispVisitor.localArray();CPPUNIT_ASSERT(dispArray);
 
-  CPPUNIT_ASSERT(dmMesh);
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
-  int iVertex = 0;
-  err = VecGetArray(dispVec, &dispArray);PYLITH_CHECK_ERROR(err);
-  for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
-    PetscInt off;
-    err = PetscSectionGetOffset(dispSection, v, &off);PYLITH_CHECK_ERROR(err);
-    for(PetscInt d = 0; d < spaceDim; ++d) dispArray[off+d] = _data->fieldT[iVertex*spaceDim+d];
-  }
-  err = VecRestoreArray(dispVec, &dispArray);PYLITH_CHECK_ERROR(err);
+  for(PetscInt v = vStart, iVertex=0; v < vEnd; ++v, ++iVertex) {
+    const PetscInt off = dispVisitor.sectionOffset(v);
+    for(PetscInt d = 0; d < spaceDim; ++d)
+      dispArray[off+d] = _data->fieldT[iVertex*spaceDim+d] / _data->lengthScale;
+  } // for
   
   const PylithScalar t = 1.0;
   const PylithScalar dt = 1.0;
   fault.timeStep(dt);
 
+  topology::Field<topology::Mesh>& residual = fields.get("residual");
   residual.zero();
-  { // Integrate residual with disp increment.
-    fault.integrateResidual(residual, t, &fields);
+  fault.integrateResidual(residual, t, &fields);
+  //residual.view("RESIDUAL"); // DEBUGGING
 
-    //residual.view("RESIDUAL"); // DEBUGGING
+  topology::VecVisitorMesh residualVisitor(residual);
+  const PetscScalar* residualArray = residualVisitor.localArray();CPPUNIT_ASSERT(residualArray);
 
-    // Check values
-    const PylithScalar* valsE = _data->residualIncr;
-    iVertex = 0;
-    const int fiberDimE = spaceDim;
-    const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
-    err = VecGetArray(residualVec, &residualArray);PYLITH_CHECK_ERROR(err);
-    for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
-      PetscInt dof, off;
+  // Check values
+  const PylithScalar* valsE = _data->residualIncr;
+  const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
+  const PylithScalar residualScale = pow(_data->lengthScale, spaceDim);
 
-      err = PetscSectionGetDof(residualSection, v, &dof);PYLITH_CHECK_ERROR(err);
-      err = PetscSectionGetOffset(residualSection, v, &off);PYLITH_CHECK_ERROR(err);
-      CPPUNIT_ASSERT_EQUAL(fiberDimE, dof);
-      
-      for(PetscInt d = 0; d < fiberDimE; ++d) {
-        const PylithScalar valE = valsE[iVertex*spaceDim+d];
-        if (fabs(valE) > tolerance)
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, residualArray[off+d]/valE, tolerance);
-        else
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, residualArray[off+d], tolerance);
-      } // for
+  for(PetscInt v = vStart, iVertex = 0; v < vEnd; ++v, ++iVertex) {
+    const PetscInt off = residualVisitor.sectionOffset(v);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, residualVisitor.sectionDof(v));
+    
+    for(PetscInt d = 0; d < spaceDim; ++d) {
+      const PylithScalar valE = valsE[iVertex*spaceDim+d];
+      if (fabs(valE) > tolerance)
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, residualArray[off+d]/valE*residualScale, tolerance);
+      else
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, residualArray[off+d]*residualScale, tolerance);
     } // for
-    err = VecRestoreArray(residualVec, &residualArray);PYLITH_CHECK_ERROR(err);
-  } // Integrate residual with disp increment.
+  } // for
+
+  PYLITH_METHOD_END;
 } // testIntegrateResidual
 
 // ----------------------------------------------------------------------
 // Initialize FaultCohesiveImpulses interface condition.
 void
-pylith::faults::TestFaultCohesiveImpulses::_initialize(
-					topology::Mesh* const mesh,
-					FaultCohesiveImpulses* const fault,
-					topology::SolutionFields* const fields)
+pylith::faults::TestFaultCohesiveImpulses::_initialize(topology::Mesh* const mesh,
+						       FaultCohesiveImpulses* const fault,
+						       topology::SolutionFields* const fields)
 { // _initialize
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(mesh);
   CPPUNIT_ASSERT(fault);
   CPPUNIT_ASSERT(fields);
@@ -319,7 +316,19 @@ pylith::faults::TestFaultCohesiveImpulses::_initialize(
   iohandler.filename(_data->meshFilename);
   iohandler.read(mesh);
   
-  //mesh->debug(true); // DEBUGGING
+  // Set coordinate system
+  spatialdata::geocoords::CSCart cs;
+  cs.setSpaceDim(mesh->dimension());
+  cs.initialize();
+  mesh->coordsys(&cs);
+
+  // Set scales
+  spatialdata::units::Nondimensional normalizer;
+  normalizer.lengthScale(_data->lengthScale);
+  normalizer.pressureScale(_data->pressureScale);
+  normalizer.densityScale(_data->densityScale);
+  normalizer.timeScale(_data->timeScale);
+  mesh->nondimensionalize(normalizer);
   
   _quadrature->initialize(_data->basis, _data->numQuadPts, _data->numBasis,
 			  _data->basisDeriv,
@@ -329,9 +338,7 @@ pylith::faults::TestFaultCohesiveImpulses::_initialize(
 			  _data->spaceDim);
   
   // Setup impulse amplitude
-  spatialdata::spatialdb::SimpleDB* db =
-      new spatialdata::spatialdb::SimpleDB("impulse amplitude");
-  CPPUNIT_ASSERT(db);
+  spatialdata::spatialdb::SimpleDB* db = new spatialdata::spatialdb::SimpleDB("impulse amplitude");CPPUNIT_ASSERT(db);
   spatialdata::spatialdb::SimpleIOAscii ioImpulseAmp;
   ioImpulseAmp.filename(_data->impulseAmpFilename);
   db->ioHandler(&ioImpulseAmp);
@@ -341,31 +348,24 @@ pylith::faults::TestFaultCohesiveImpulses::_initialize(
   CPPUNIT_ASSERT(_data->impulseDOF);
   fault->impulseDOF(_data->impulseDOF, _data->numComponents);
 
-  PetscInt       labelSize;
+  PetscInt labelSize;
   PetscErrorCode err;
   err = DMPlexGetStratumSize(mesh->dmMesh(), _data->label, 1, &labelSize);PYLITH_CHECK_ERROR(err);
 
-  PetscInt firstFaultVertex    = 0;
+  PetscInt firstFaultVertex = 0;
   PetscInt firstLagrangeVertex = labelSize;
-  PetscInt firstFaultCell      = labelSize;
+  PetscInt firstFaultCell = labelSize;
   if (fault->useLagrangeConstraints())
     firstFaultCell += labelSize;
   fault->id(_data->id);
   fault->label(_data->label);
   fault->quadrature(_quadrature);
   
-  fault->adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex,
-			&firstFaultCell, _flipFault);
-  
-  spatialdata::geocoords::CSCart cs;
-  spatialdata::units::Nondimensional normalizer;
-  cs.setSpaceDim(mesh->dimension());
-  cs.initialize();
-  mesh->coordsys(&cs);
-  mesh->nondimensionalize(normalizer);
+  fault->adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell, _flipFault);
   
   const PylithScalar upDir[3] = { 0.0, 0.0, 1.0 };
   
+  fault->normalizer(normalizer);
   fault->initialize(*mesh, upDir);
   
   // Setup fields
@@ -382,6 +382,8 @@ pylith::faults::TestFaultCohesiveImpulses::_initialize(
   fields->copyLayout("disp(t)");
 
   fault->verifyConfiguration(*mesh);
+
+  PYLITH_METHOD_END;
 } // _initialize
 
 // ----------------------------------------------------------------------
@@ -389,7 +391,9 @@ pylith::faults::TestFaultCohesiveImpulses::_initialize(
 bool
 pylith::faults::TestFaultCohesiveImpulses::_isConstraintVertex(const int vertex) const
 { // _isConstraintVertex
-  assert(0 != _data);
+  PYLITH_METHOD_BEGIN;
+
+  assert(_data);
 
   const int numConstraintVert = _data->numConstraintVert;
   bool isFound = false;
@@ -398,7 +402,7 @@ pylith::faults::TestFaultCohesiveImpulses::_isConstraintVertex(const int vertex)
       isFound = true;
       break;
     } // if
-  return isFound;
+  PYLITH_METHOD_RETURN(isFound);
 } // _isConstraintVertex
 
 
