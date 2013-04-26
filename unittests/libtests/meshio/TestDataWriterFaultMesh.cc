@@ -125,11 +125,6 @@ pylith::meshio::TestDataWriterFaultMesh::_createVertexFields(topology::Fields<Me
   const PetscInt vStart = verticesStratum.begin();
   const PetscInt vEnd = verticesStratum.end();
 
-#if 1 // DEBUGGING
-  topology::CoordsVisitor coordsVisitor(dmMesh);
-  const PetscScalar* coordsArray = coordsVisitor.localArray();
-#endif
-
   // Set vertex fields
   for (int i=0; i < nfields; ++i) {
     const char* name = _data->vertexFieldsInfo[i].name;
@@ -149,15 +144,6 @@ pylith::meshio::TestDataWriterFaultMesh::_createVertexFields(topology::Fields<Me
       for(PetscInt d = 0; d < fiberDim; ++d, ++index) {
 	fieldArray[off+d] = _data->vertexFields[i][index];
       } // for
-
-#if 1 // DEBUGGING
-      const PetscInt coff = coordsVisitor.sectionOffset(v);
-      std::cout << "VERTEX " << v;
-      for(PetscInt d = 0; d < coordsVisitor.sectionDof(v); ++d) {
-	std::cout << " " << coordsArray[off+d];
-      } // for
-      std::cout << std::endl;
-#endif
 
     } // for
     CPPUNIT_ASSERT_EQUAL(_data->numVertices, vEnd-vStart);
