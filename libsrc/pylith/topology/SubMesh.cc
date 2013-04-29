@@ -32,8 +32,6 @@
 #include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
 
-#define ALLOW_SIEVE_MESH
-
 // ----------------------------------------------------------------------
 // Default constructor
 pylith::topology::SubMesh::SubMesh(void) :
@@ -73,86 +71,18 @@ pylith::topology::SubMesh::deallocate(void)
   PYLITH_METHOD_BEGIN;
 
   delete _coordsys; _coordsys = 0;
-  _mesh.destroy();
   PetscErrorCode err = DMDestroy(&_newMesh);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
-// Create Sieve mesh.
+// Create PETSc mesh.
 void
 pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
 					 const char* label)
-{ // createSieveMesh
+{ // createSubMesh
   PYLITH_METHOD_BEGIN;
-
-#if defined(ALLOW_SIEVE_MESH) // :TODO: REMOVE SIEVE STUFF
-  _mesh.destroy();
-
-  const ALE::Obj<DomainSieveMesh>& meshSieveMesh = mesh.sieveMesh();
-  if (!meshSieveMesh.isNull()) {
-    if (!meshSieveMesh->hasIntSection(label)) {
-      std::ostringstream msg;
-      msg << "Could not find group of points '" << label << "' in mesh.";
-      throw std::runtime_error(msg.str());
-    } // if
-
-    const ALE::Obj<IntSection>& groupField = meshSieveMesh->getIntSection(label);
-    assert(!groupField.isNull());
-    _mesh = ALE::Selection<DomainSieveMesh>::submeshV<SieveMesh>(meshSieveMesh,
-                                                                 groupField);
-    _mesh->setDebug(mesh.debug());
-    std::string meshLabel = "subdomain_" + std::string(label);
-    _mesh->setName(meshLabel);
-    if (_mesh.isNull()) {
-      std::ostringstream msg;
-      msg << "Could not construct boundary mesh for boundary '"
-          << label << "'.";
-      throw std::runtime_error(msg.str());
-    } // if
-    _mesh->setRealSection("coordinates", 
-                          meshSieveMesh->getRealSection("coordinates"));
-    if (meshSieveMesh->hasRealSection("coordinates_dimensioned"))
-      _mesh->setRealSection("coordinates_dimensioned", 
-                            meshSieveMesh->getRealSection("coordinates_dimensioned"));
-
-    // Create the parallel overlap
-    const ALE::Obj<SieveMesh::sieve_type>& sieve = _mesh->getSieve();
-    assert(!sieve.isNull());
-    ALE::Obj<SieveMesh::send_overlap_type> sendParallelMeshOverlap =
-      _mesh->getSendOverlap();
-    assert(!sendParallelMeshOverlap.isNull());
-    ALE::Obj<SieveMesh::recv_overlap_type> recvParallelMeshOverlap =
-      _mesh->getRecvOverlap();
-    assert(!recvParallelMeshOverlap.isNull());
-
-    SieveMesh::renumbering_type& renumbering = _mesh->getRenumbering();
-
-    DomainSieveMesh::renumbering_type& oldRenumbering = 
-      meshSieveMesh->getRenumbering();
-    const SieveMesh::renumbering_type::const_iterator oldBegin = 
-      oldRenumbering.begin();
-    const SieveMesh::renumbering_type::const_iterator oldEnd = 
-      oldRenumbering.end();
-    for (SieveMesh::renumbering_type::const_iterator r_iter = oldBegin;
-         r_iter != oldEnd;
-         ++r_iter)
-      if (sieve->getChart().hasPoint(r_iter->second) && 
-          (sieve->getConeSize(r_iter->second) || 
-           sieve->getSupportSize(r_iter->second)))
-        renumbering[r_iter->first] = r_iter->second;
-  
-    //   Can I figure this out in a nicer way?
-    ALE::SetFromMap<std::map<DomainSieveMesh::point_type,
-                             DomainSieveMesh::point_type> > globalPoints(renumbering);
-
-    ALE::OverlapBuilder<>::constructOverlap(globalPoints, renumbering,
-                                            sendParallelMeshOverlap,
-                                            recvParallelMeshOverlap);
-    _mesh->setCalculatedOverlap(true);
-  }
-#endif
 
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
   PetscBool hasLabel;
