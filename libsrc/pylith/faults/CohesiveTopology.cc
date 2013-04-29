@@ -84,6 +84,7 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
     err = DMPlexCreateSubmesh(subdm, labelName, 1, &faultBoundaryDM);PYLITH_CHECK_ERROR(err);
     faultMesh->setDMMesh(subdm);
   } else {
+#if 1
     // TODO: This leg will be unnecessary
     ALE::Obj<SieveSubMesh>&                  faultSieveMesh = faultMesh->sieveMesh();
     faultSieveMesh = new SieveSubMesh(mesh.comm(), mesh.dimension()-1, mesh.debug());
@@ -183,6 +184,14 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
     err = DMLabelDestroy(&subpointMap);PYLITH_CHECK_ERROR(err);
     frenumbering.clear();
     faultMesh->setDMMesh(faultDMMesh);
+#else
+    DM             faultDMMesh;
+    const char    *groupName;
+
+    err = DMLabelGetName(groupField, &groupName);PYLITH_CHECK_ERROR(err);
+    err = DMPlexCreateSubmesh(dmMesh, groupName, 1, &faultDMMesh);PYLITH_CHECK_ERROR(err);
+    faultMesh->setDMMesh(faultDMMesh);
+#endif
 
     DMLabel            label;
     const char        *labelName = "boundary";
@@ -192,8 +201,10 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
     err = DMPlexMarkBoundaryFaces(faultDMMesh, label);PYLITH_CHECK_ERROR(err);
     err = DMPlexCreateSubmesh(faultDMMesh, labelName, 1, &faultBoundaryDM);PYLITH_CHECK_ERROR(err);
 
+#if 1
     err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
+#endif
   }
 
   logger.stagePop();
@@ -264,6 +275,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   PetscInt *faceVerticesDM;
 
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh.sieveMesh();
+  // TODO const ALE::Obj<SieveSubMesh>& faultSieveMesh = NULL;
 
   if (!rank) {
     if (!sieveMesh.isNull()) {
@@ -1143,52 +1155,12 @@ pylith::faults::CohesiveTopology::createFaultParallel(
 
   DM dmMesh = mesh.dmMesh();
   assert(dmMesh);
-  DM              dmFaultMesh;
-  {
+  DM dmFaultMesh;
+
+  err = DMPlexCreateCohesiveSubmesh(dmMesh, constraintCell ? PETSC_TRUE : PETSC_FALSE, &dmFaultMesh);PYLITH_CHECK_ERROR(err);
+  faultMesh->setDMMesh(dmFaultMesh);
+
 #if 0
-    DMLabel         faultLabel;
-    IS              cohesiveIS;
-    const PetscInt *cohesiveCells;
-    PetscInt        numCohesiveCells = 0, c;
-    const char     *labelName = "_internal_fault";
-
-    err = DMPlexGetStratumIS(dmMesh, "material-id", materialId, &cohesiveIS);PYLITH_CHECK_ERROR(err);
-    err = DMPlexCreateLabel(dmMesh, labelName);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetLabel(dmMesh, labelName, &faultLabel);PYLITH_CHECK_ERROR(err);
-    if (cohesiveIS) {
-      err = ISGetSize(cohesiveIS, &numCohesiveCells);PYLITH_CHECK_ERROR(err);
-      err = ISGetIndices(cohesiveIS, &cohesiveCells);PYLITH_CHECK_ERROR(err);
-    }
-    /* This is for uninterpolated meshes. For interpolated meshes, we just mark one face and its closure
-       I am using the negative side vertices all the time, and not the Lagrange vertices. Does this matter???
-    */
-    for (c = 0; c < numCohesiveCells; ++c) {
-      const PetscInt  point = cohesiveCells[c];
-      const PetscInt *cone;
-      PetscInt        coneSize, c, faceSize;
-
-      err = DMPlexGetConeSize(dmMesh, point, &coneSize);PYLITH_CHECK_ERROR(err);
-      err = DMPlexGetCone(dmMesh, point, &cone);PYLITH_CHECK_ERROR(err);
-      if (!constraintCell) {
-        faceSize = coneSize / 2;
-      } else {
-        faceSize = coneSize / 3;
-      }
-      for(c = 0; c < faceSize; ++c) {
-        err = DMLabelSetValue(faultLabel, cone[c], 1);PYLITH_CHECK_ERROR(err);
-      }
-    }
-    if (cohesiveIS) {err = ISRestoreIndices(cohesiveIS, &cohesiveCells);PYLITH_CHECK_ERROR(err);}
-    err = ISDestroy(&cohesiveIS);PYLITH_CHECK_ERROR(err);
-    err = DMPlexCreateSubmesh(dmMesh, labelName, &dmFaultMesh);PYLITH_CHECK_ERROR(err);
-    err = DMPlexRemoveLabel(dmMesh, labelName, &faultLabel);PYLITH_CHECK_ERROR(err);
-    err = DMLabelDestroy(&faultLabel);PYLITH_CHECK_ERROR(err);
-#else
-    err = DMPlexCreateCohesiveSubmesh(dmMesh, constraintCell ? PETSC_TRUE : PETSC_FALSE, &dmFaultMesh);PYLITH_CHECK_ERROR(err);
-#endif
-    faultMesh->setDMMesh(dmFaultMesh);
-  }
-
   const int debug = mesh.debug();
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
@@ -1392,6 +1364,7 @@ pylith::faults::CohesiveTopology::createFaultParallel(
 					  sendParallelMeshOverlap,
 					  recvParallelMeshOverlap);
   faultSieveMesh->setCalculatedOverlap(true);
+#endif
 
 #if 0 // Seems to break unit tests.
   // Consistency check for parallel overlap.
