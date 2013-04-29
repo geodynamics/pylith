@@ -114,8 +114,7 @@ protected :
   bool _useLagrangeConstraints; ///< True if uses Lagrange multipliers.
 
   /// Map label of cohesive cell to label of fault cell.
-  std::map<topology::Mesh::SieveMesh::point_type,
-           topology::SubMesh::SieveMesh::point_type> _cohesiveToFault;
+  std::map<PetscInt, PetscInt> _cohesiveToFault;
 
 // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

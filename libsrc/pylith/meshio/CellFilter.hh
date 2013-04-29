@@ -40,15 +40,6 @@ template<typename mesh_type, typename field_type>
 class pylith::meshio::CellFilter
 { // CellFilter
 
-// PROTECTED TYPEDEFS ///////////////////////////////////////////////////
-protected:
-
-  // Convenience typedefs
-  typedef typename mesh_type::SieveMesh SieveMesh;
-  typedef typename SieveMesh::label_sequence label_sequence;
-  typedef typename field_type::Mesh::RealSection RealSection;
-  typedef typename RealSection::chart_type chart_type;
-
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
 
