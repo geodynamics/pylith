@@ -274,9 +274,6 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   PetscInt *origVerticesDM;
   PetscInt *faceVerticesDM;
 
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh.sieveMesh();
-  // TODO const ALE::Obj<SieveSubMesh>& faultSieveMesh = NULL;
-
   if (!rank) {
     if (!sieveMesh.isNull()) {
       numCorners = sieveMesh->getNumCellCorners();
@@ -298,16 +295,8 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 
     err = DMPlexGetHeightStratum(faultDMMesh, 1, &fStart, NULL);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetConeSize(faultDMMesh, fStart, &numFaultCornersDM);PYLITH_CHECK_ERROR(err);
-    if (!faultSieveMesh.isNull()) {
-      assert(!faultSieveMesh->heightStratum(1).isNull());
-      const SieveSubMesh::point_type p = *faultSieveMesh->heightStratum(1)->begin();
-      numFaultCorners = faultSieveMesh->getNumCellCorners(p, faultSieveMesh->depth(p));
-      assert(numFaultCorners == numFaultCornersDM);
-    } else {
-      numFaultCorners = numFaultCornersDM;
-    }
+    numFaultCorners = numFaultCornersDM;
   }
-  //faultSieveMesh->view("Serial fault mesh");
 
   // Add new shadow vertices and possibly Lagrange multipler vertices
 #ifdef USE_DMCOMPLEX_ON
@@ -322,7 +311,6 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 #endif
   const ALE::Obj<std::set<std::string> >& groupNames = sieveMesh->getIntSections();
   assert(!groupNames.isNull());
-  if (!faultSieveMesh.isNull()) assert(faultSieveMesh->depthStratum(0)->size() == numFaultVerticesDM);
   std::map<point_type,point_type> vertexRenumber;
   std::map<point_type,point_type> vertexLagrangeRenumber;
   std::map<point_type,point_type> cellRenumber;
@@ -335,7 +323,6 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   err = DMPlexGetDepthStratum(faultDMMesh, 0, &fvtStart, &fvtEnd);PYLITH_CHECK_ERROR(err);
   err = DMPlexGetHeightStratum(faultDMMesh, 1, &ffStart, &ffEnd);PYLITH_CHECK_ERROR(err);
   numFaultFacesDM = ffEnd - ffStart;
-  if (!faultSieveMesh.isNull()) assert(faultSieveMesh->heightStratum(1)->size() == numFaultFacesDM);
 #ifdef USE_DMCOMPLEX_ON
   /* TODO This will have to change for multiple faults */
   PetscInt numNormalCells, numCohesiveCells, numNormalVertices, numShadowVertices, numLagrangeVertices;
@@ -543,16 +530,6 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> *sV2 = NULL;
   ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type> *cV2 = NULL;
   SieveSubMesh::label_sequence::iterator *f_iter = NULL;
-  if (!faultSieveMesh.isNull()) {
-    ifaultSieve = faultSieveMesh->getSieve();
-    assert(!ifaultSieve.isNull());
-    sV2 = new ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type>(std::max(1, ifaultSieve->getMaxSupportSize()), false);
-    cV2 = new ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type>(*ifaultSieve, (size_t) pow(std::max(1, ifaultSieve->getMaxConeSize()), depth));
-
-    const ALE::Obj<SieveSubMesh::label_sequence>& faces = faultSieveMesh->heightStratum(1);
-    assert(!faces.isNull());
-    f_iter = new SieveSubMesh::label_sequence::iterator(faces->begin());
-  }
   IS subpointIS;
   const PetscInt *subpointMap;
 
@@ -1159,228 +1136,6 @@ pylith::faults::CohesiveTopology::createFaultParallel(
 
   err = DMPlexCreateCohesiveSubmesh(dmMesh, constraintCell ? PETSC_TRUE : PETSC_FALSE, &dmFaultMesh);PYLITH_CHECK_ERROR(err);
   faultMesh->setDMMesh(dmFaultMesh);
-
-#if 0
-  const int debug = mesh.debug();
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-  ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh->sieveMesh();
-  const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
-  assert(!sieve.isNull());
-  faultSieveMesh = new SieveSubMesh(mesh.comm(), mesh.dimension()-1, debug);
-  const ALE::Obj<SieveMesh::sieve_type> ifaultSieve = new SieveMesh::sieve_type(sieve->comm(), sieve->debug());
-  assert(!ifaultSieve.isNull());
-  ALE::Obj<SieveFlexMesh> fault = new SieveFlexMesh(mesh.comm(), mesh.dimension()-1, debug);
-  assert(!fault.isNull());
-  ALE::Obj<SieveFlexMesh::sieve_type> faultSieve = new SieveFlexMesh::sieve_type(sieve->comm(), sieve->debug());
-  assert(!faultSieve.isNull());
-
-  const ALE::Obj<SieveMesh::label_sequence>& cohesiveCells = sieveMesh->getLabelStratum("material-id", materialId);
-  assert(!cohesiveCells.isNull());
-  const SieveMesh::label_sequence::iterator cBegin = cohesiveCells->begin();
-  const SieveMesh::label_sequence::iterator cEnd = cohesiveCells->end();
-  const int sieveEnd = *std::max_element(sieve->getChart().begin(), sieve->getChart().end())+1;
-  const int numFaces = cohesiveCells->size();
-  int globalSieveEnd = 0;
-  int globalFaceOffset = 0;
-
-  // TODO: For multiple faults, this produces duplicate names. Not sure if we need to worry
-  MPI_Allreduce((void *) &sieveEnd, (void *) &globalSieveEnd, 1, MPI_INT, MPI_SUM, sieve->comm());
-  MPI_Scan((void *) &numFaces, (void *) &globalFaceOffset, 1, MPI_INT, MPI_SUM, sieve->comm());
-  int face = globalSieveEnd + globalFaceOffset - numFaces;
-
-  ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> cV(std::max(sieve->getMaxConeSize(), 1));
-
-  for(SieveMesh::label_sequence::iterator c_iter = cBegin;
-      c_iter != cEnd;
-      ++c_iter) {
-    sieve->cone(*c_iter, cV);
-    const int coneSize = cV.getSize();
-    const SieveMesh::point_type *cone = cV.getPoints();
-    int color = 0;
-
-    if (!constraintCell) {
-      const int faceSize = coneSize / 2;
-      assert(0 == coneSize % faceSize);
-
-      // Use first vertices (negative side of the fault) for fault mesh
-      for (int i = 0; i < faceSize; ++i)
-        faultSieve->addArrow(cone[i], face, color++);
-    } else {
-      const int faceSize = coneSize / 3;
-      assert(0 == coneSize % faceSize);
-
-      // Use last vertices (contraints) for fault mesh
-      for (int i = 2*faceSize; i < 3*faceSize; ++i)
-        faultSieve->addArrow(cone[i], face, color++);
-    } // if/else
-    ++face;
-    cV.clear();
-  } // for
-  fault->setSieve(faultSieve);
-  logger.stagePop();
-  logger.stagePush("FaultStratification");
-  fault->stratify();
-  logger.stagePop();
-  logger.stagePush("FaultCreation");
-
-  // Convert fault to an IMesh
-  //   In general, renumbering[global point number] = local point number
-  //   fRenumbering[mesh point] = fault mesh point
-  SieveSubMesh::renumbering_type& fRenumbering =
-    faultSieveMesh->getRenumbering();
-  const SieveSubMesh::renumbering_type::const_iterator fRenumberingEnd = 
-    fRenumbering.end();
-  faultSieveMesh->setSieve(ifaultSieve);
-  //ALE::ISieveConverter::convertMesh(*fault, *faultSieveMesh, fRenumbering, true);
-  {
-    ALE::ISieveConverter::convertSieve(*fault->getSieve(),
-				       *faultSieveMesh->getSieve(),
-				       fRenumbering, true);
-    logger.stagePop();
-    logger.stagePush("FaultStratification");
-    faultSieveMesh->stratify();
-    logger.stagePop();
-    logger.stagePush("FaultCreation");
-    ALE::ISieveConverter::convertOrientation(*fault->getSieve(),
-					     *faultSieveMesh->getSieve(),
-					     fRenumbering,
-					     fault->getArrowSection("orientation").ptr());
-  }
-  fault      = NULL;
-  faultSieve = NULL;
-
-  const ALE::Obj<SieveSubMesh::label_sequence>& faultCells = faultSieveMesh->heightStratum(0);
-  assert(!faultCells.isNull());
-  SieveSubMesh::label_sequence::iterator f_iter = faultCells->begin();
-
-  // Update coordinates
-  const ALE::Obj<topology::Mesh::RealSection>& coordinates  = sieveMesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-  const ALE::Obj<topology::Mesh::RealSection>& fCoordinates = faultSieveMesh->getRealSection("coordinates");
-  assert(!fCoordinates.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices = sieveMesh->depthStratum(0);
-  assert(!vertices.isNull());
-  const SieveMesh::label_sequence::iterator vBegin = vertices->begin();
-  const SieveMesh::label_sequence::iterator vEnd = vertices->end();
-
-  const ALE::Obj<SieveMesh::label_sequence>& fvertices = faultSieveMesh->depthStratum(0);
-  assert(!fvertices.isNull());
-  const point_type fvMin = *std::min_element(fvertices->begin(), 
-					     fvertices->end());
-  const point_type fvMax = *std::max_element(fvertices->begin(),
-					     fvertices->end());
-  
-  fCoordinates->setChart(topology::Mesh::RealSection::chart_type(fvMin, 
-								 fvMax+1));
-  for (SieveMesh::label_sequence::iterator v_iter = vBegin;
-       v_iter != vEnd;
-       ++v_iter) {
-    if (fRenumbering.find(*v_iter) == fRenumberingEnd)
-      continue;
-    fCoordinates->setFiberDimension(fRenumbering[*v_iter],
-				    coordinates->getFiberDimension(*v_iter));
-  } // for
-  fCoordinates->allocatePoint();
-  for(SieveMesh::label_sequence::iterator v_iter = vBegin;
-      v_iter != vEnd;
-      ++v_iter) {
-    if (fRenumbering.find(*v_iter) == fRenumberingEnd)
-      continue;
-    fCoordinates->updatePoint(fRenumbering[*v_iter], 
-			      coordinates->restrictPoint(*v_iter));
-  }
-
-  // Update dimensioned coordinates if they exist.
-  if (sieveMesh->hasRealSection("coordinates_dimensioned")) {
-    const ALE::Obj<topology::Mesh::RealSection>& coordinatesDim =
-      sieveMesh->getRealSection("coordinates_dimensioned");
-    assert(!coordinatesDim.isNull());
-    const ALE::Obj<topology::Mesh::RealSection>& fCoordinatesDim =
-      faultSieveMesh->getRealSection("coordinates_dimensioned");
-    assert(!fCoordinatesDim.isNull());
-
-    fCoordinatesDim->setChart(topology::Mesh::RealSection::chart_type(fvMin,
-								      fvMax+1));
-    for (SieveMesh::label_sequence::iterator v_iter = vBegin;
-	 v_iter != vEnd;
-	 ++v_iter) {
-      if (fRenumbering.find(*v_iter) == fRenumberingEnd)
-	continue;
-      fCoordinatesDim->setFiberDimension(fRenumbering[*v_iter],
-					 coordinatesDim->getFiberDimension(*v_iter));
-    } // for
-    fCoordinatesDim->allocatePoint();
-    for(SieveMesh::label_sequence::iterator v_iter = vBegin;
-	v_iter != vEnd;
-	++v_iter) {
-      if (fRenumbering.find(*v_iter) == fRenumberingEnd)
-	continue;
-      assert(fCoordinatesDim->getFiberDimension(fRenumbering[*v_iter]) ==
-	     coordinatesDim->getFiberDimension(*v_iter));
-      fCoordinatesDim->updatePoint(fRenumbering[*v_iter], 
-				   coordinatesDim->restrictPoint(*v_iter));
-    } // for
-    //faultSieveMesh->view("Parallel fault mesh");
-  } // if
-
-  // Create the parallel overlap
-  //   Can I figure this out in a nicer way?
-  ALE::Obj<SieveSubMesh::send_overlap_type> sendParallelMeshOverlap =
-    faultSieveMesh->getSendOverlap();
-  assert(!sendParallelMeshOverlap.isNull());
-  ALE::Obj<SieveSubMesh::recv_overlap_type> recvParallelMeshOverlap =
-    faultSieveMesh->getRecvOverlap();
-  assert(!recvParallelMeshOverlap.isNull());
-
-  // Must process the renumbering local --> fault to global --> fault
-  SieveMesh::renumbering_type& renumbering = sieveMesh->getRenumbering();
-  SieveMesh::renumbering_type gRenumbering;
-
-  if (renumbering.size()) {
-    //std::cout << "Using renumbering to construct Fault Overlap" << std::endl;
-    const SieveMesh::renumbering_type::const_iterator renumberingEnd =
-      renumbering.end();
-    for (SieveMesh::renumbering_type::const_iterator r_iter = renumbering.begin();
-         r_iter != renumberingEnd;
-         ++r_iter)
-      if (fRenumbering.find(r_iter->second) != fRenumbering.end())
-        gRenumbering[r_iter->first] = fRenumbering[r_iter->second];
-  } else {
-    //std::cout << "Using new numbering to construct Fault Overlap" << std::endl;
-    const SieveMesh::sieve_type::chart_type& chart = sieveMesh->getSieve()->getChart();
-    const ALE::Obj<SieveMesh::numbering_type>& globalNumbering = 
-      sieveMesh->getFactory()->getNumbering(sieveMesh, -1);
-    assert(!globalNumbering.isNull());
-    for(SieveMesh::point_type p = chart.min(); p < chart.max(); ++p) {
-      if (fRenumbering.find(p) != fRenumbering.end()) {
-        gRenumbering[globalNumbering->getIndex(p)] = fRenumbering[p];
-      } // if
-    } // for
-  } // if/else
-
-  ALE::SetFromMap<SieveMesh::renumbering_type> globalPoints(gRenumbering);
-  ALE::OverlapBuilder<>::constructOverlap(globalPoints, gRenumbering,
-					  sendParallelMeshOverlap,
-					  recvParallelMeshOverlap);
-  faultSieveMesh->setCalculatedOverlap(true);
-#endif
-
-#if 0 // Seems to break unit tests.
-  // Consistency check for parallel overlap.
-  if (fRenumbering.size() > 0) {
-    if (renumbering.size() <= 0 ||
-	gRenumbering.size() <= 0) {
-      throw std::logic_error("Inconsistent data when computing overlap for "
-			     "parallel fault mesh.");
-    } // if
-  } // if
-#endif
-  
-#if 0 // DEBUGGING
-  sendParallelMeshOverlap->view("Send parallel fault overlap");
-  recvParallelMeshOverlap->view("Recv parallel fault overlap");
-#endif
 
   logger.stagePop();
 
