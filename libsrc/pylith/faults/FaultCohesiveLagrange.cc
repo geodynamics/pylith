@@ -1601,8 +1601,6 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
 
 #if 0 // DEBUGGING
   area.view("AREA");
-  faultSieveMesh->getSendOverlap()->view("Send fault overlap");
-  faultSieveMesh->getRecvOverlap()->view("Receive fault overlap");
 #endif
 
   PYLITH_METHOD_END;

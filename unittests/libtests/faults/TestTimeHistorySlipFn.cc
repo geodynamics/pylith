@@ -22,6 +22,8 @@
 
 #include "pylith/faults/TimeHistorySlipFn.hh" // USES TimeHistorySlipFn
 
+#include "TestFaultMesh.hh" // USES createFaultMesh()
+
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
@@ -320,7 +322,7 @@ pylith::faults::TestTimeHistorySlipFn::_initialize(topology::Mesh* mesh,
   mesh->coordsys(&cs);
 
   // Create fault mesh
-  TestSlipFn::_createFaultMesh(faultMesh, mesh, faultLabel, faultId);
+  TestFaultMesh::createFaultMesh(faultMesh, mesh, faultLabel, faultId);
 
   // Setup databases
   spatialdata::spatialdb::SimpleDB dbAmplitude("slip amplitude");
@@ -373,7 +375,7 @@ pylith::faults::TestTimeHistorySlipFn::_testInitialize(const _TestTimeHistorySli
 
   // Create fault mesh
   topology::SubMesh faultMesh;
-  TestSlipFn::_createFaultMesh(&faultMesh, &mesh, data.faultLabel, data.faultId);
+  TestFaultMesh::createFaultMesh(&faultMesh, &mesh, data.faultLabel, data.faultId);
 
   // Setup databases
   spatialdata::spatialdb::SimpleDB dbAmplitude("slip amplitude");

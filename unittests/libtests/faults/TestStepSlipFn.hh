@@ -27,7 +27,7 @@
 #if !defined(pylith_faults_teststepslipfn_hh)
 #define pylith_faults_teststepslipfn_hh
 
-#include "TestSlipFn.hh" // ISA TestSlipFn
+#include <cppunit/extensions/HelperMacros.h>
 
 #include "pylith/faults/faultsfwd.hh" // USES StepSlipFn
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh
@@ -44,7 +44,7 @@ namespace pylith {
 } // pylith
 
 /// C++ unit testing for StepSlipFn
-class pylith::faults::TestStepSlipFn : public TestSlipFn
+class pylith::faults::TestStepSlipFn : public CppUnit::TestFixture
 { // class TestStepSlipFn
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////

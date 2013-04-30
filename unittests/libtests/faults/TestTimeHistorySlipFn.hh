@@ -27,7 +27,7 @@
 #if !defined(pylith_faults_testtimehistoryslipfn_hh)
 #define pylith_faults_testtimehistoryslipfn_hh
 
-#include "TestSlipFn.hh" // ISA TestSlipFn
+#include <cppunit/extensions/HelperMacros.h>
 
 #include "pylith/faults/faultsfwd.hh" // USES TimeHistorySlipFn
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh
@@ -45,7 +45,7 @@ namespace pylith {
 } // pylith
 
 /// C++ unit testing for TimeHistorySlipFn
-class pylith::faults::TestTimeHistorySlipFn : public TestSlipFn
+class pylith::faults::TestTimeHistorySlipFn : public CppUnit::TestFixture
 { // class TestTimeHistorySlipFn
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
