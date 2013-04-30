@@ -32,11 +32,15 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFault );
 void
 pylith::faults::TestFault::testID(void)
 { // testID
+  PYLITH_METHOD_BEGIN;
+
   const int id = 346;
   FaultCohesiveKin fault;
   fault.id(id);
   
   CPPUNIT_ASSERT_EQUAL(id, fault.id());
+
+  PYLITH_METHOD_END;
 } // testID
 
 // ----------------------------------------------------------------------
@@ -44,11 +48,15 @@ pylith::faults::TestFault::testID(void)
 void
 pylith::faults::TestFault::testLabel(void)
 { // testLabel
+  PYLITH_METHOD_BEGIN;
+
   const std::string label = "the_database";
   FaultCohesiveKin fault;
   fault.label(label.c_str());
   
   CPPUNIT_ASSERT_EQUAL(label, std::string(fault.label()));
+
+  PYLITH_METHOD_END;
 } // testLabel
     
 
