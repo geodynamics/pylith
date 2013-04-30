@@ -22,6 +22,8 @@
 
 #include "pylith/faults/LiuCosSlipFn.hh" // USES LiuCosSlipFn
 
+#include "TestFaultMesh.hh" // USES createFaultMesh()
+
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
@@ -360,7 +362,7 @@ pylith::faults::TestLiuCosSlipFn::_initialize(topology::Mesh* mesh,
   mesh->coordsys(&cs);
 
   // Create fault mesh
-  TestSlipFn::_createFaultMesh(faultMesh, mesh, faultLabel, faultId);
+  TestFaultMesh::createFaultMesh(faultMesh, mesh, faultLabel, faultId);
 
   // Setup databases
   spatialdata::spatialdb::SimpleDB dbFinalSlip("final slip");
@@ -415,7 +417,7 @@ pylith::faults::TestLiuCosSlipFn::_testInitialize(const _TestLiuCosSlipFn::DataS
 
   // Create fault mesh
   topology::SubMesh faultMesh;
-  TestSlipFn::_createFaultMesh(&faultMesh, &mesh, data.faultLabel, data.faultId);
+  TestFaultMesh::createFaultMesh(&faultMesh, &mesh, data.faultLabel, data.faultId);
 
   // Setup databases
   spatialdata::spatialdb::SimpleDB dbFinalSlip("final slip");

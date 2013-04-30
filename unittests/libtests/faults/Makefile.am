@@ -61,6 +61,7 @@ testfaults_SOURCES = \
 	TestTractPerturbation.cc \
 	TestFaultCohesiveImpulses.cc \
 	TestFaultCohesiveImpulsesCases.cc \
+	TestFaultMesh.cc \
 	test_faults.cc
 
 
@@ -98,7 +99,8 @@ noinst_HEADERS = \
 	TestFaultCohesiveDynHex8.hh \
 	TestTractPerturbation.hh \
 	TestFaultCohesiveImpulses.hh \
-	TestFaultCohesiveImpulsesCases.hh
+	TestFaultCohesiveImpulsesCases.hh \
+	TestFaultMesh.hh
 
 # Source files associated with testing data
 testfaults_SOURCES += \

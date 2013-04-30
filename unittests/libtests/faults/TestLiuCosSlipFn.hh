@@ -27,7 +27,7 @@
 #if !defined(pylith_faults_testliucosslipfn_hh)
 #define pylith_faults_testliucosslipfn_hh
 
-#include "TestSlipFn.hh" // ISA TestSlipFn
+#include <cppunit/extensions/HelperMacros.h>
 
 #include "pylith/faults/faultsfwd.hh" // USES LiuCosSlipFn
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh
@@ -44,7 +44,7 @@ namespace pylith {
 } // pylith
 
 /// C++ unit testing for LiuCosSlipFn
-class pylith::faults::TestLiuCosSlipFn : public TestSlipFn
+class pylith::faults::TestLiuCosSlipFn : public CppUnit::TestFixture
 { // class TestLiuCosSlipFn
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
