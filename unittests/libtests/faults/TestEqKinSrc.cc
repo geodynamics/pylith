@@ -22,12 +22,15 @@
 
 #include "pylith/faults/EqKinSrc.hh" // USES EqKinSrc
 
+#include "TestFaultMesh.hh" // USES createFaultMesh()
 
 #include "pylith/faults/BruneSlipFn.hh" // USES BruneSlipFn
 #include "pylith/faults/CohesiveTopology.hh" // USES CohesiveTopology
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
@@ -39,16 +42,29 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestEqKinSrc );
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::SieveSubMesh SieveSubMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
+namespace pylith {
+  namespace faults {
+    namespace _TestEqKinSrc {
+      const PylithScalar lengthScale = 1.0e+3;
+      const PylithScalar pressureScale = 2.25e+10;
+      const PylithScalar timeScale = 1.0;
+      const PylithScalar velocityScale = lengthScale / timeScale;
+      const PylithScalar densityScale = pressureScale / (velocityScale*velocityScale);
+    } // namespace _TestTractPerturbation
+  } // faults
+} // pylith
+
 
 // ----------------------------------------------------------------------
 // Test constructor.
 void
 pylith::faults::TestEqKinSrc::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   EqKinSrc eqsrc;
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -56,11 +72,15 @@ pylith::faults::TestEqKinSrc::testConstructor(void)
 void
 pylith::faults::TestEqKinSrc::testSlipFn(void)
 { // testSlipFn
+  PYLITH_METHOD_BEGIN;
+
   BruneSlipFn slipfn;
 
   EqKinSrc eqsrc;
   eqsrc.slipfn(&slipfn);
   CPPUNIT_ASSERT(&slipfn == eqsrc._slipfn);
+
+  PYLITH_METHOD_END;
 } // testSlipFn
 
 // ----------------------------------------------------------------------
@@ -69,6 +89,8 @@ pylith::faults::TestEqKinSrc::testSlipFn(void)
 void
 pylith::faults::TestEqKinSrc::testInitialize(void)
 { // testInitialize
+  PYLITH_METHOD_BEGIN;
+
   topology::Mesh mesh;
   topology::SubMesh faultMesh;
   EqKinSrc eqsrc;
@@ -79,6 +101,8 @@ pylith::faults::TestEqKinSrc::testInitialize(void)
   // Don't have access to details of slip time function, so we can't
   // check parameters. Have to rely on test of slip() for verification
   // of results.
+
+  PYLITH_METHOD_END;
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -86,11 +110,13 @@ pylith::faults::TestEqKinSrc::testInitialize(void)
 void
 pylith::faults::TestEqKinSrc::testSlip(void)
 { // testSlip
-  const PylithScalar finalSlipE[] = { 2.3, 0.1, 
-				2.4, 0.2};
-  const PylithScalar slipTimeE[] = { 1.2, 1.3 };
-  const PylithScalar riseTimeE[] = { 1.4, 1.5 };
-  const PylithScalar originTime = 2.42;
+  PYLITH_METHOD_BEGIN;
+
+  const PylithScalar finalSlipE[4] = { 2.3, 0.1,   2.4, 0.2,
+  };
+  const PylithScalar slipTimeE[2] = { 1.2, 1.3 };
+  const PylithScalar riseTimeE[2] = { 1.4, 1.5 };
+  const PylithScalar originTime = 2.42 / _TestEqKinSrc::timeScale;
 
   topology::Mesh mesh;
   topology::SubMesh faultMesh;
@@ -98,31 +124,26 @@ pylith::faults::TestEqKinSrc::testSlip(void)
   BruneSlipFn slipfn;
   _initialize(&mesh, &faultMesh, &eqsrc, &slipfn, originTime);
   
-  const spatialdata::geocoords::CoordSys* cs = faultMesh.coordsys();
-  CPPUNIT_ASSERT(0 != cs);
-
+  const spatialdata::geocoords::CoordSys* cs = faultMesh.coordsys();CPPUNIT_ASSERT(cs);
   const int spaceDim = cs->spaceDim();
-  DM dmMesh = faultMesh.dmMesh();
-  PetscErrorCode err;
-  CPPUNIT_ASSERT(dmMesh);
 
-  PetscInt       vStart, vEnd;
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
   topology::Field<topology::SubMesh> slip(faultMesh);
   slip.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   slip.allocate();
 
-  const PylithScalar t = 2.134;
+  const PylithScalar t = 2.134 / _TestEqKinSrc::timeScale;
   eqsrc.slip(&slip, originTime+t);
 
+  PetscDM dmMesh = faultMesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
+
+  topology::VecVisitorMesh slipVisitor(slip);
+  const PetscScalar* slipArray = slipVisitor.localArray();CPPUNIT_ASSERT(slipArray);
+
   const PylithScalar tolerance = 1.0e-06;
-  int iPoint = 0;
-  PetscSection slipSection = slip.petscSection();
-  Vec          slipVec     = slip.localVector();
-  PetscScalar *slipArray;
-  CPPUNIT_ASSERT(slipSection);CPPUNIT_ASSERT(slipVec);
-  err = VecGetArray(slipVec, &slipArray);PYLITH_CHECK_ERROR(err);
-  for(PetscInt v = vStart; v < vEnd; ++v, ++iPoint) {
+  for(PetscInt v = vStart, iPoint = 0; v < vEnd; ++v, ++iPoint) {
     PylithScalar slipMag = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim)
       slipMag += pow(finalSlipE[iPoint*spaceDim+iDim], 2);
@@ -131,17 +152,16 @@ pylith::faults::TestEqKinSrc::testSlip(void)
     const PylithScalar tau = slipMag / (exp(1.0) * peakRate);
     const PylithScalar t0 = slipTimeE[iPoint];
     const PylithScalar slipNorm = 1.0 - exp(-(t-t0)/tau) * (1.0 + (t-t0)/tau);
-    PetscInt dof, off;
 
-    err = PetscSectionGetDof(slipSection, v, &dof);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionGetOffset(slipSection, v, &off);PYLITH_CHECK_ERROR(err);
-    CPPUNIT_ASSERT_EQUAL(spaceDim, dof);
-    
-    for(PetscInt d = 0; d < dof; ++d) {
+    const PetscInt off = slipVisitor.sectionOffset(v);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, slipVisitor.sectionDof(v));
+    for(PetscInt d = 0; d < spaceDim; ++d) {
       const PylithScalar slipE = finalSlipE[iPoint*spaceDim+d] * slipNorm;
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(slipE, slipArray[off+d], tolerance);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(slipE, slipArray[off+d]*_TestEqKinSrc::lengthScale, tolerance);
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // testSlip
 
 // ----------------------------------------------------------------------
@@ -153,10 +173,12 @@ pylith::faults::TestEqKinSrc::_initialize(topology::Mesh* mesh,
 					  BruneSlipFn* slipfn,
 					  const PylithScalar originTime)
 { // _initialize
-  CPPUNIT_ASSERT(0 != mesh);
-  CPPUNIT_ASSERT(0 != faultMesh);
-  CPPUNIT_ASSERT(0 != eqsrc);
-  CPPUNIT_ASSERT(0 != slipfn);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(mesh);
+  CPPUNIT_ASSERT(faultMesh);
+  CPPUNIT_ASSERT(eqsrc);
+  CPPUNIT_ASSERT(slipfn);
   PetscErrorCode err;
 
   const char* meshFilename = "data/tri3.mesh";
@@ -179,35 +201,16 @@ pylith::faults::TestEqKinSrc::_initialize(topology::Mesh* mesh,
   cs.initialize();
   mesh->coordsys(&cs);
 
+  // Set scales
+  spatialdata::units::Nondimensional normalizer;
+  normalizer.lengthScale(_TestEqKinSrc::lengthScale);
+  normalizer.pressureScale(_TestEqKinSrc::pressureScale);
+  normalizer.densityScale(_TestEqKinSrc::densityScale);
+  normalizer.timeScale(_TestEqKinSrc::timeScale);
+  mesh->nondimensionalize(normalizer);
+
   // Create fault mesh
-  DM       dmMesh = mesh->dmMesh(), faultBoundaryDM;
-  PetscInt firstFaultVertex = 0;
-  PetscInt firstLagrangeVertex, firstFaultCell;
-  DMLabel  groupField;
-  const bool useLagrangeConstraints = true;
-
-  err = DMPlexGetStratumSize(dmMesh, faultLabel, 1, &firstLagrangeVertex);PYLITH_CHECK_ERROR(err);
-  firstFaultCell = firstLagrangeVertex;
-  if (useLagrangeConstraints) {
-    firstFaultCell += firstLagrangeVertex;
-  }
-  err = DMPlexGetLabel(dmMesh, faultLabel, &groupField);PYLITH_CHECK_ERROR(err);
-  CPPUNIT_ASSERT(groupField);
-  ALE::Obj<SieveFlexMesh> faultBoundary = 0;
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  CohesiveTopology::createFault(faultMesh, faultBoundary, faultBoundaryDM,
-                                *mesh, groupField);
-  CohesiveTopology::create(mesh, *faultMesh, faultBoundary, faultBoundaryDM,
-                           groupField,
-                           faultId,
-                           firstFaultVertex, firstLagrangeVertex, firstFaultCell,
-                           useLagrangeConstraints);
-  err = DMDestroy(&faultBoundaryDM);PYLITH_CHECK_ERROR(err);
-
-  // Need to copy coordinates from mesh to fault mesh since we are not
-  // using create() instead of createParallel().
-  _setupFaultCoordinates(mesh, faultMesh);
+  TestFaultMesh::createFaultMesh(faultMesh, mesh, faultLabel, faultId);
 
   // Setup databases
   spatialdata::spatialdb::SimpleDB dbFinalSlip("final slip");
@@ -225,8 +228,6 @@ pylith::faults::TestEqKinSrc::_initialize(topology::Mesh* mesh,
   ioRiseTime.filename(peakRateFilename);
   dbRiseTime.ioHandler(&ioRiseTime);
 
-  spatialdata::units::Nondimensional normalizer;
-
   // setup EqKinSrc
   slipfn->dbFinalSlip(&dbFinalSlip);
   slipfn->dbSlipTime(&dbSlipTime);
@@ -235,69 +236,9 @@ pylith::faults::TestEqKinSrc::_initialize(topology::Mesh* mesh,
   eqsrc->originTime(originTime);
   eqsrc->slipfn(slipfn);
   eqsrc->initialize(*faultMesh, normalizer);
+
+  PYLITH_METHOD_END;
 } // _initialize
-
-// ----------------------------------------------------------------------
-// Setup fault coordinates
-void
-pylith::faults::TestEqKinSrc::_setupFaultCoordinates(topology::Mesh *mesh, topology::SubMesh *faultMesh)
-{ // _setupFaultCoordinates
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh->sieveMesh();
-  if (!faultSieveMesh.isNull()) {
-    const ALE::Obj<RealSection>& oldCoordSection = mesh->sieveMesh()->getRealSection("coordinates");
-    faultSieveMesh->setRealSection("coordinates", oldCoordSection);
-  }
-
-  DM              dmMesh      = mesh->dmMesh();
-  DM              faultDMMesh = faultMesh->dmMesh();
-  const PetscInt  spaceDim    = mesh->dimension();
-  IS              subpointIS;
-  const PetscInt *points;
-  PetscSection    coordSection, fcoordSection;
-  PetscInt        vStart, vEnd, ffStart, ffEnd;
-  PetscErrorCode  err;
-
-  CPPUNIT_ASSERT(dmMesh);
-  CPPUNIT_ASSERT(faultDMMesh);
-  err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetHeightStratum(faultDMMesh, 1, &ffStart, &ffEnd);PYLITH_CHECK_ERROR(err);
-  err = DMPlexCreateSubpointIS(faultDMMesh, &subpointIS);PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetCoordinateSection(faultDMMesh, &fcoordSection);PYLITH_CHECK_ERROR(err);
-  err = PetscSectionSetChart(fcoordSection, vStart, vEnd);PYLITH_CHECK_ERROR(err);
-  for(PetscInt v = vStart; v < vEnd; ++v) {
-    err = PetscSectionSetDof(fcoordSection, v, spaceDim);PYLITH_CHECK_ERROR(err);
-  }
-  err = PetscSectionSetUp(fcoordSection);PYLITH_CHECK_ERROR(err);
-  Vec          coordVec, fcoordVec;
-  PetscScalar *coords,  *fcoords;
-  PetscInt     coordSize;
-
-  err = PetscSectionGetStorageSize(fcoordSection, &coordSize);PYLITH_CHECK_ERROR(err);
-  err = DMGetCoordinatesLocal(dmMesh, &coordVec);PYLITH_CHECK_ERROR(err);
-  err = VecCreate(mesh->comm(), &fcoordVec);PYLITH_CHECK_ERROR(err);
-  err = VecSetSizes(fcoordVec, coordSize, PETSC_DETERMINE);PYLITH_CHECK_ERROR(err);
-  err = VecSetFromOptions(fcoordVec);PYLITH_CHECK_ERROR(err);
-  err = ISGetIndices(subpointIS, &points);PYLITH_CHECK_ERROR(err);
-  err = VecGetArray(coordVec, &coords);PYLITH_CHECK_ERROR(err);
-  err = VecGetArray(fcoordVec, &fcoords);PYLITH_CHECK_ERROR(err);
-  for(PetscInt v = vStart; v < vEnd; ++v) {
-    PetscInt off, foff;
-
-    // Notice that subpointMap[] does not account for cohesive cells
-    err = PetscSectionGetOffset(coordSection, points[v]+(ffEnd-ffStart), &off);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionGetOffset(fcoordSection, v, &foff);PYLITH_CHECK_ERROR(err);
-    for(PetscInt d = 0; d < spaceDim; ++d) {
-      fcoords[foff+d] = coords[off+d];
-    }
-  }
-  err = ISRestoreIndices(subpointIS, &points);PYLITH_CHECK_ERROR(err);
-  err = ISDestroy(&subpointIS);PYLITH_CHECK_ERROR(err);
-  err = VecRestoreArray(coordVec, &coords);PYLITH_CHECK_ERROR(err);
-  err = VecRestoreArray(fcoordVec, &fcoords);PYLITH_CHECK_ERROR(err);
-  err = DMSetCoordinatesLocal(faultDMMesh, fcoordVec);PYLITH_CHECK_ERROR(err);
-  err = VecDestroy(&fcoordVec);PYLITH_CHECK_ERROR(err);
-} // _setupFaultCoordinates
 
 
 // End of file 
