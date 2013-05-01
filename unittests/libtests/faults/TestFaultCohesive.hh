@@ -47,7 +47,6 @@ class pylith::faults::TestFaultCohesive : public CppUnit::TestFixture
   CPPUNIT_TEST_SUITE( TestFaultCohesive );
 
   CPPUNIT_TEST( testUseFaultMesh );
-  CPPUNIT_TEST( testFaultMeshFilename) ; // TEMPORARY
 
   CPPUNIT_TEST( testAdjustTopologyLine2 );
   CPPUNIT_TEST( testAdjustTopologyTri3 );
@@ -96,9 +95,6 @@ public :
 
   /// Test useFaultMesh().
   void testUseFaultMesh(void);
-
-  /// Test faultMeshFilename(). TEMPORARY
-  void testFaultMeshFilename(void);
 
   /// Test adjustTopology() with 1-D line element.
   void testAdjustTopologyLine2(void);
