@@ -191,26 +191,6 @@ const PylithScalar pylith::faults::CohesiveKinDataTet4::_residual[] = {
   -1.0/3.0*(9.0-9.4 + 0.54615537442), // 12
 };
 
-const PylithScalar pylith::faults::CohesiveKinDataTet4::_residualIncr[] = {
-  0.0,  0.0,  0.0,
-   +7.7/3.0,  +8.7/3.0,  +9.7/3.0, // 3
-  +7.9/3.0,  +8.9/3.0,  +9.9/3.0, // 4
-  +7.1/3.0,  +8.1/3.0,  +9.1/3.0, // 5
-  0.0,  0.0,  0.0,
-  -7.7/3.0,  -8.7/3.0,  -9.7/3.0, // 7
-  -7.9/3.0,  -8.9/3.0,  -9.9/3.0, // 8
-  -7.1/3.0,  -8.1/3.0,  -9.1/3.0, // 9
-  -1.0/3.0*(7.6-7.2 + -0.07938069066),
-  -1.0/3.0*(8.6-8.2 + -1.82575588523),
-  -1.0/3.0*(9.6-9.2 + 0.55566483464), // 10
-  -1.0/3.0*(7.8-7.3 + -0.14140241667),
-  -1.0/3.0*(8.8-8.3 + -1.69682900001),
-  -1.0/3.0*(9.8-9.3 + 0.56560966667), // 11
-  -1.0/3.0*(7.0-7.4 + -0.18205179147),
-  -1.0/3.0*(8.0-8.4 + -1.51709826228),
-  -1.0/3.0*(9.0-9.4 + 0.54615537442), // 12
-};
-
 const PylithScalar pylith::faults::CohesiveKinDataTet4::_jacobian[] = {
   0.0, 0.0, 0.0, // 2x
   0.0, 0.0, 0.0,
@@ -613,7 +593,6 @@ pylith::faults::CohesiveKinDataTet4::CohesiveKinDataTet4(void)
   jacobianLumped = const_cast<PylithScalar*>(_jacobianLumped);
   orientation = const_cast<PylithScalar*>(_orientation);
   area = const_cast<PylithScalar*>(_area);
-  residualIncr = const_cast<PylithScalar*>(_residualIncr);
   residual = const_cast<PylithScalar*>(_residual);
   jacobian = const_cast<PylithScalar*>(_jacobian);
   fieldIncrAdjusted = const_cast<PylithScalar*>(_fieldIncrAdjusted);

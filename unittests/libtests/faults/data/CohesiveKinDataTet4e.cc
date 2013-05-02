@@ -212,35 +212,6 @@ const PylithScalar pylith::faults::CohesiveKinDataTet4e::_residual[] = {
   -1.0/3.0*(8.3-7.5 + 0.49761027071), // 17
 };
 
-const PylithScalar pylith::faults::CohesiveKinDataTet4e::_residualIncr[] = {
-  0.0,  0.0,  0.0,
-  +2.0/3.0*3.8, +2.0/3.0*5.8, +2.0/3.0*7.8, // 5
-  +1.0/3.0*3.0, +1.0/3.0*5.0, +1.0/3.0*7.0, // 6
-  +2.0/3.0*4.2, +2.0/3.0*6.2, +2.0/3.0*8.2, // 7
-  +1.0/3.0*4.4, +1.0/3.0*6.4, +1.0/3.0*8.4, // 8
-  0.0,  0.0,  0.0,
-  -2.0/3.0*3.8, -2.0/3.0*5.8, -2.0/3.0*7.8, // 10
-  -1.0/3.0*3.0, -1.0/3.0*5.0, -1.0/3.0*7.0, // 11
-  -2.0/3.0*4.2, -2.0/3.0*6.2, -2.0/3.0*8.2, // 12
-  -1.0/3.0*4.4, -1.0/3.0*6.4, -1.0/3.0*8.4, // 13
-
-  -2.0/3.0*(3.7-3.2 + -0.07938069066),
-  -2.0/3.0*(5.7-5.2 + -1.82575588523),
-  -2.0/3.0*(7.7-7.2 + 0.55566483464), // 14
-
-  -1.0/3.0*(3.9-3.3 + -0.14140241667),
-  -1.0/3.0*(5.9-5.3 + -1.69682900001),
-  -1.0/3.0*(7.9-7.3 + 0.56560966667), // 15
-
-  -2.0/3.0*(4.1-3.4 + -0.18205179147),
-  -2.0/3.0*(6.1-5.4 + -1.51709826228),
-  -2.0/3.0*(8.1-7.4 + 0.54615537442), // 16
-
-  -1.0/3.0*(4.3-3.5 + -0.19904410828),
-  -1.0/3.0*(6.3-5.5 + -1.29378670385),
-  -1.0/3.0*(8.3-7.5 + 0.49761027071), // 17
-};
-
 const PylithScalar pylith::faults::CohesiveKinDataTet4e::_jacobian[] = {
   0.0, 0.0, 0.0, // 4x
   0.0, 0.0, 0.0,
@@ -855,7 +826,6 @@ pylith::faults::CohesiveKinDataTet4e::CohesiveKinDataTet4e(void)
   orientation = const_cast<PylithScalar*>(_orientation);
   area = const_cast<PylithScalar*>(_area);
   residual = const_cast<PylithScalar*>(_residual);
-  residualIncr = const_cast<PylithScalar*>(_residualIncr);
   jacobian = const_cast<PylithScalar*>(_jacobian);
   verticesFault = const_cast<int*>(_verticesFault);
   verticesLagrange = const_cast<int*>(_verticesLagrange);

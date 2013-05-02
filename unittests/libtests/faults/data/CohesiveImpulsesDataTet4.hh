@@ -69,7 +69,7 @@ private:
   static const PylithScalar _area[]; ///< Expected values for fault area.
   static const PylithScalar _amplitude[]; ///< Expected values for impulse amplitude.
   static const int _numImpulses; ///< Number of impulses.
-  static const PylithScalar _residualIncr[]; ///< Expected values from residual calculation with solution increment.
+  static const PylithScalar _residual[]; ///< Expected values from residual calculation.
 
   static const int _constraintVertices[]; ///< Expected points for constraint vertices
   static const int _negativeVertices[]; ///< Expected points for negative-side fault vertices

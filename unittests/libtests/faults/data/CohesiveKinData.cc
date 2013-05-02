@@ -22,6 +22,10 @@
 // Constructor
 pylith::faults::CohesiveKinData::CohesiveKinData(void) :
   meshFilename(0),
+  lengthScale(1.0e+3),
+  pressureScale(2.25e+10),
+  densityScale(1.0),
+  timeScale(2.0),
   spaceDim(0),
   cellDim(0),
   numBasis(0),
@@ -42,7 +46,6 @@ pylith::faults::CohesiveKinData::CohesiveKinData(void) :
   orientation(0),
   area(0),
   residual(0),
-  residualIncr(0),
   jacobian(0),
   fieldIncrAdjusted(0),
   verticesFault(0),
@@ -54,6 +57,8 @@ pylith::faults::CohesiveKinData::CohesiveKinData(void) :
   cellMappingFault(0),
   cellMappingCohesive(0)
 { // constructor
+  const PylithScalar velScale = lengthScale / timeScale;
+  densityScale = pressureScale / (velScale*velScale);
 } // constructor
 
 // ----------------------------------------------------------------------

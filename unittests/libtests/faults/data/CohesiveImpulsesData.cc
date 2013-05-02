@@ -46,7 +46,7 @@ pylith::faults::CohesiveImpulsesData::CohesiveImpulsesData(void) :
   area(0),
   amplitude(0),
   numImpulses(0),
-  residualIncr(0),
+  residual(0),
   constraintVertices(0),
   numConstraintVert(0)
 { // constructor

@@ -241,7 +241,7 @@ pylith::faults::TestFaultCohesiveImpulses::testIntegrateResidual(void)
 
   CPPUNIT_ASSERT(_data);
   CPPUNIT_ASSERT(_data->fieldT);
-  CPPUNIT_ASSERT(_data->residualIncr);
+  CPPUNIT_ASSERT(_data->residual);
 
   topology::Mesh mesh;
   FaultCohesiveImpulses fault;
@@ -277,7 +277,7 @@ pylith::faults::TestFaultCohesiveImpulses::testIntegrateResidual(void)
   const PetscScalar* residualArray = residualVisitor.localArray();CPPUNIT_ASSERT(residualArray);
 
   // Check values
-  const PylithScalar* valsE = _data->residualIncr;
+  const PylithScalar* valsE = _data->residual;
   const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
   const PylithScalar residualScale = pow(_data->lengthScale, spaceDim);
 

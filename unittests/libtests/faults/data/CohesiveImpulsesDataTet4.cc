@@ -152,7 +152,7 @@ const int pylith::faults::CohesiveImpulsesDataTet4::_negativeVertices[] = {
    4,  5,  6
 };
 
-const PylithScalar pylith::faults::CohesiveImpulsesDataTet4::_residualIncr[] = {
+const PylithScalar pylith::faults::CohesiveImpulsesDataTet4::_residual[] = {
   0.0,  0.0,  0.0,
    +7.7/3.0,  +8.7/3.0,  +9.7/3.0, // 3
   +7.9/3.0,  +8.9/3.0,  +9.9/3.0, // 4
@@ -195,7 +195,7 @@ pylith::faults::CohesiveImpulsesDataTet4::CohesiveImpulsesDataTet4(void)
   area = const_cast<PylithScalar*>(_area);
   amplitude = const_cast<PylithScalar*>(_amplitude);
   numImpulses = _numImpulses;
-  residualIncr = const_cast<PylithScalar*>(_residualIncr);
+  residual = const_cast<PylithScalar*>(_residual);
   constraintVertices = const_cast<int*>(_constraintVertices);
   negativeVertices = const_cast<int*>(_negativeVertices);
   numConstraintVert = _numConstraintVert;  

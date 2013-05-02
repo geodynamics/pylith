@@ -129,14 +129,6 @@ const int pylith::faults::CohesiveKinSrcsDataLine2::_cellMappingCohesive[] = {
 };
 
 
-const PylithScalar pylith::faults::CohesiveKinSrcsDataLine2::_residualIncr[] = {
-   0.0,
-  +7.5,
-   0.0,
-  -7.5,
-  -0.2+1.89546413727+0.99414665414,
-};
-
 const PylithScalar pylith::faults::CohesiveKinSrcsDataLine2::_residual[] = {
    0.0,
   +7.5,
@@ -175,7 +167,6 @@ pylith::faults::CohesiveKinSrcsDataLine2::CohesiveKinSrcsDataLine2(void)
   jacobianLumped = const_cast<PylithScalar*>(_jacobianLumped);
   orientation = const_cast<PylithScalar*>(_orientation);
   area = const_cast<PylithScalar*>(_area);
-  residualIncr = const_cast<PylithScalar*>(_residualIncr);
   residual = const_cast<PylithScalar*>(_residual);
   jacobian = const_cast<PylithScalar*>(_jacobian);
   verticesFault = const_cast<int*>(_verticesFault);

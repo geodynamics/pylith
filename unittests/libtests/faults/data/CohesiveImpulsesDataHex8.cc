@@ -184,7 +184,7 @@ const int pylith::faults::CohesiveImpulsesDataHex8::_negativeVertices[] = {
    7,  8,  9, 10
 };
 
-const PylithScalar pylith::faults::CohesiveImpulsesDataHex8::_residualIncr[] = {
+const PylithScalar pylith::faults::CohesiveImpulsesDataHex8::_residual[] = {
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
@@ -238,7 +238,7 @@ pylith::faults::CohesiveImpulsesDataHex8::CohesiveImpulsesDataHex8(void)
   area = const_cast<PylithScalar*>(_area);
   amplitude = const_cast<PylithScalar*>(_amplitude);
   numImpulses = _numImpulses;
-  residualIncr = const_cast<PylithScalar*>(_residualIncr);
+  residual = const_cast<PylithScalar*>(_residual);
   constraintVertices = const_cast<int*>(_constraintVertices);
   negativeVertices = const_cast<int*>(_negativeVertices);
   numConstraintVert = _numConstraintVert;  

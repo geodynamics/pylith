@@ -44,6 +44,14 @@ public:
 
   char* meshFilename; ///< Filename for input mesh
 
+  /// @name Scales information for nondimensionalization.
+  //@{
+  PylithScalar lengthScale; ///< Length scale.
+  PylithScalar pressureScale; ///< Pressure scale.
+  PylithScalar timeScale; ///< Time scale.
+  PylithScalar densityScale; ///< Density scale.
+  //@}
+
   /// @name Quadrature information
   //@{
   int spaceDim; ///< Number of dimensions in vertex coordinates
@@ -79,9 +87,6 @@ public:
   PylithScalar* orientation; ///< Expected values for fault orientation.
   PylithScalar* area; ///< Expected values for fault area.
   PylithScalar* residual; ///< Expected values from residual calculation.
-
-  /// Expected values from residual calculation using solution increment.
-  PylithScalar* residualIncr;
 
   PylithScalar* jacobian; ///< Expected values from Jacobian calculation.
 

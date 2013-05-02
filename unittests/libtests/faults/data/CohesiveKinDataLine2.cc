@@ -129,14 +129,6 @@ const PylithScalar pylith::faults::CohesiveKinDataLine2::_area[] = {
   1.0
 };
 
-const PylithScalar pylith::faults::CohesiveKinDataLine2::_residualIncr[] = {
-   0.0,
-  +7.5, // 3
-   0.0,
-  -7.5, // 5
-  -0.2+1.89546413727,
-};
-
 const PylithScalar pylith::faults::CohesiveKinDataLine2::_residual[] = {
    0.0,
   +7.5, // 3
@@ -183,7 +175,6 @@ pylith::faults::CohesiveKinDataLine2::CohesiveKinDataLine2(void)
   jacobianLumped = const_cast<PylithScalar*>(_jacobianLumped);
   orientation = const_cast<PylithScalar*>(_orientation);
   area = const_cast<PylithScalar*>(_area);
-  residualIncr = const_cast<PylithScalar*>(_residualIncr);
   residual = const_cast<PylithScalar*>(_residual);
   jacobian = const_cast<PylithScalar*>(_jacobian);
   fieldIncrAdjusted = const_cast<PylithScalar*>(_fieldIncrAdjusted);

@@ -177,19 +177,6 @@ const PylithScalar pylith::faults::CohesiveKinSrcsDataTri3::_residual[] = {
  -(9.7-9.3 + 1.77538035254 + 0.68377062865), // 9
 };
 
-const PylithScalar pylith::faults::CohesiveKinSrcsDataTri3::_residualIncr[] = {
-  0.0,  0.0,
- +8.6, +9.6, // 3
- +8.8, +9.8, // 4
-  0.0,  0.0,
- -8.6, -9.6, // 6
- -8.8, -9.8, // 7
- -(8.5-8.2 + 0.08241148423 + 0.04322376757),
- -(9.5-9.2 + 1.89546413727 + 0.99414665414), // 8
- -(8.7-8.3 + 0.14794836271 + 0.05698088572),
- -(9.7-9.3 + 1.77538035254 + 0.68377062865), // 9
-};
-
 const PylithScalar pylith::faults::CohesiveKinSrcsDataTri3::_jacobian[] = {
   0.0, 0.0, // 2x
   0.0, 0.0,
@@ -346,7 +333,6 @@ pylith::faults::CohesiveKinSrcsDataTri3::CohesiveKinSrcsDataTri3(void)
   orientation = const_cast<PylithScalar*>(_orientation);
   area = const_cast<PylithScalar*>(_area);
   residual = const_cast<PylithScalar*>(_residual);
-  residualIncr = const_cast<PylithScalar*>(_residualIncr);
   jacobian = const_cast<PylithScalar*>(_jacobian);
   verticesFault = const_cast<int*>(_verticesFault);
   verticesLagrange = const_cast<int*>(_verticesLagrange);

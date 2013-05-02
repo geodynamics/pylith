@@ -70,7 +70,6 @@ private:
   static const PylithScalar _orientation[]; ///< Expected values for fault orientation.
   static const PylithScalar _area[]; ///< Expected values for fault area.
   static const PylithScalar _residual[]; ///< Expected values from residual calculation.
-  static const PylithScalar _residualIncr[]; ///< Expected values from residual calculation with solution increment.
   static const PylithScalar _jacobian[]; ///< Expected values from Jacobian calculation.
 
   static const int _verticesFault[]; ///< Expected points for Fault vertices
