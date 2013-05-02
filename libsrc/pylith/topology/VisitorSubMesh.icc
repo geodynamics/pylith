@@ -278,7 +278,7 @@ pylith::topology::SubMeshIS::SubMeshIS(const SubMesh& submesh) :
   PetscErrorCode err;
   err = DMPlexCreateSubpointIS(dmMesh, &_indexSet);PYLITH_CHECK_ERROR(err);
   err = ISGetSize(_indexSet, &_size);PYLITH_CHECK_ERROR(err);assert(_size >= 0);
-  err = ISGetIndices(_indexSet, &_points);PYLITH_CHECK_ERROR(err);assert(_points);
+  err = ISGetIndices(_indexSet, &_points);PYLITH_CHECK_ERROR(err);
 } // constructor
 
 // ----------------------------------------------------------------------
