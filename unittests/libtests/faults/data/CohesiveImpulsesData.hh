@@ -87,8 +87,8 @@ public:
   PylithScalar* amplitude; ///< Expected values for impulse amplitude.
   int numImpulses; ///< Number of impulses.
 
-  /// Expected values from residual calculation using solution increment.
-  PylithScalar* residualIncr;
+  /// Expected values from residual calculation.
+  PylithScalar* residual;
 
   int* constraintVertices; ///< Expected points for constraint vertices
   int* negativeVertices; ///< Expected points for negative side fault vertices

@@ -250,45 +250,6 @@ const PylithScalar pylith::faults::CohesiveKinSrcsDataHex8::_residual[] = {
   -(9.9-8.8 + 0.49761027071+0.04944279975),
 };
 
-const PylithScalar pylith::faults::CohesiveKinSrcsDataHex8::_residualIncr[] = {
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  +5.4, +7.4, +9.4, // 6
-  +5.6, +7.6, +9.6, // 7
-  +5.8, +7.8, +9.8, // 8
-  +5.0, +7.0, +9.0, // 9
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  -5.4, -7.4, -9.4, // 14
-  -5.6, -7.6, -9.6, // 15
-  -5.8, -7.8, -9.8, // 16
-  -5.0, -7.0, -9.0, // 17
-
-  // 18 (constraint)
-  -(5.3-4.5 + 0.07938069066+0.03986101755), 
-  -(7.3-6.5 + 1.82575588523+0.91680340354),
-  -(9.3-8.5 + 0.55566483464+0.27902712282),
-
-  // 19 (constraint)
-  -(5.5-4.6 + 0.14140241667+0.05212609695),
-  -(7.5-6.6 + 1.69682900001+0.62551316338),
-  -(9.5-8.6 + 0.56560966667+0.20850438779),
-
-  // 20 (constraint)
-  -(5.7-4.7 + 0.18205179147+0.04188434752),
-  -(7.7-6.7 + 1.51709826228+0.34903622931),
-  -(9.7-8.7 + 0.54615537442+0.12565304255),
-
-  // 21 (constraint)
-  -(5.9-4.8 + 0.19904410828+0.01977711990),
-  -(7.9-6.8 + 1.29378670385+0.12855127934),
-  -(9.9-8.8 + 0.49761027071+0.04944279975),
-};
-
 const PylithScalar pylith::faults::CohesiveKinSrcsDataHex8::_jacobian[] = {
   0.0, 0.0, 0.0, // 2x
   0.0, 0.0, 0.0,
@@ -1515,7 +1476,6 @@ pylith::faults::CohesiveKinSrcsDataHex8::CohesiveKinSrcsDataHex8(void)
   orientation = const_cast<PylithScalar*>(_orientation);
   area = const_cast<PylithScalar*>(_area);
   residual = const_cast<PylithScalar*>(_residual);
-  residualIncr = const_cast<PylithScalar*>(_residualIncr);
   jacobian = const_cast<PylithScalar*>(_jacobian);
   verticesFault = const_cast<int*>(_verticesFault);
   verticesLagrange = const_cast<int*>(_verticesLagrange);
