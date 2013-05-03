@@ -120,10 +120,9 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
 // Integrate contribution of cohesive cells to residual term that do
 // not require assembly across cells, vertices, or processors.
 void
-pylith::faults::FaultCohesiveKin::integrateResidual(
-			     const topology::Field<topology::Mesh>& residual,
-			     const PylithScalar t,
-			     topology::SolutionFields* const fields)
+pylith::faults::FaultCohesiveKin::integrateResidual(const topology::Field<topology::Mesh>& residual,
+						    const PylithScalar t,
+						    topology::SolutionFields* const fields)
 { // integrateResidual
   PYLITH_METHOD_BEGIN;
 
