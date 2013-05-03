@@ -228,11 +228,12 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   // Check area
   topology::VecVisitorMesh areaVisitor(fault._fields->get("area"));
   const PetscScalar* areaArray = areaVisitor.localArray();CPPUNIT_ASSERT(areaArray);
+  const PylithScalar areaScale = pow(_data->lengthScale, spaceDim-1);
   for(PetscInt v = vStart, iVertex = 0; v < vEnd; ++v, ++iVertex) {
     const PetscInt off = areaVisitor.sectionOffset(v);
     CPPUNIT_ASSERT_EQUAL(1, areaVisitor.sectionDof(v));
     const PylithScalar tolerance = 1.0e-06;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->area[iVertex], areaArray[off], tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->area[iVertex], areaArray[off]*areaScale, tolerance);
   } // for
 
   PYLITH_METHOD_END;
@@ -265,12 +266,12 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
     const PetscInt off = dispVisitor.sectionOffset(v);
     CPPUNIT_ASSERT_EQUAL(spaceDim, dispVisitor.sectionDof(v));
     for(PetscInt d = 0; d < spaceDim; ++d) {
-      dispArray[off+d] = _data->fieldT[iVertex*spaceDim+d];
+      dispArray[off+d] = _data->fieldT[iVertex*spaceDim+d] / _data->lengthScale;
     } // for
   } // for
   
-  const PylithScalar t = 2.134;
-  const PylithScalar dt = 0.01;
+  const PylithScalar t = 2.134 / _data->timeScale;
+  const PylithScalar dt = 0.01 / _data->timeScale;
   fault.timeStep(dt);
   topology::Field<topology::Mesh>& residual = fields.get("residual");
   fault.integrateResidual(residual, t, &fields);
@@ -284,15 +285,16 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
   const PetscScalar* residualArray = residualVisitor.localArray();CPPUNIT_ASSERT(residualArray);
       
   const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
+  const PylithScalar residualScale = _data->lengthScale * pow(_data->lengthScale, spaceDim-1);
   for(PetscInt v = vStart, iVertex = 0; v < vEnd; ++v, ++iVertex) {
     const PetscInt off = residualVisitor.sectionOffset(v);
     CPPUNIT_ASSERT_EQUAL(spaceDim, residualVisitor.sectionDof(v));
     for(PetscInt d = 0; d < spaceDim; ++d) {
       const PylithScalar valE = valsE[iVertex*spaceDim+d];
       if (fabs(valE) > tolerance)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, residualArray[off+d]/valE, tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, residualArray[off+d]/valE*residualScale, tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, residualArray[off+d], tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, residualArray[off+d]*residualScale, tolerance);
     } // for
   } // for
 
@@ -363,6 +365,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
     cols[iCol] = iCol;
   MatGetValues(jDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);
   const PylithScalar tolerance = 1.0e-06;
+  const PylithScalar jacobianScale = pow(_data->lengthScale, spaceDim-1);
   for (int iRow=0; iRow < nrows; ++iRow)
     for (int iCol=0; iCol < ncols; ++iCol) {
       const int index = ncols*iRow+iCol;
@@ -375,9 +378,9 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
 		  << std::endl;
 #endif // DEBUGGING
       if (fabs(valE) > 1.0)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[index]/valE, tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[index]/valE*jacobianScale, tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[index], tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[index]*jacobianScale, tolerance);
     } // for
   MatDestroy(&jDense);
   CPPUNIT_ASSERT_EQUAL(false, fault.needNewJacobian());
@@ -492,14 +495,14 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
       const PetscInt off = dispVisitor.sectionOffset(v);
       CPPUNIT_ASSERT_EQUAL(spaceDim, dispVisitor.sectionDof(v));
       for(PetscInt d = 0; d < spaceDim; ++d) {
-        dispArray[off+d] = _data->fieldT[iVertex*spaceDim+d];
+        dispArray[off+d] = _data->fieldT[iVertex*spaceDim+d] / _data->lengthScale;
       } // for
     } // for
   } // setup disp
 
   // compute residual so that slip and residual are setup
-  const PylithScalar t = 2.134;
-  const PylithScalar dt = 0.01;
+  const PylithScalar t = 2.134 / _data->timeScale;
+  const PylithScalar dt = 0.01 / _data->timeScale;
   fault.timeStep(dt);
   topology::Field<topology::Mesh>& residual = fields.get("residual");
   fault.integrateResidual(residual, t, &fields);
@@ -513,7 +516,7 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
       const PetscInt off = dispIncrVisitor.sectionOffset(v);
       CPPUNIT_ASSERT_EQUAL(spaceDim, dispIncrVisitor.sectionDof(v));
       for(PetscInt d = 0; d < spaceDim; ++d) {
-        dispIncrArray[off+d] = _data->fieldIncr[iVertex*spaceDim+d];
+        dispIncrArray[off+d] = _data->fieldIncr[iVertex*spaceDim+d] / _data->lengthScale;
       } // for
     } // for
   } // setup disp increment
@@ -525,13 +528,14 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
   jacobian.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
   jacobian.allocate();
   { // setup jacobian
+    const PylithScalar jacobianScale = pow(_data->lengthScale, spaceDim-1);
     topology::VecVisitorMesh jacobianVisitor(jacobian);
     PetscScalar* jacobianArray = jacobianVisitor.localArray();CPPUNIT_ASSERT(jacobianArray);
     for(PetscInt v = vStart, iVertex = 0; v < vEnd; ++v, ++iVertex) {
       const PetscInt off = jacobianVisitor.sectionOffset(v);
       CPPUNIT_ASSERT_EQUAL(spaceDim, jacobianVisitor.sectionDof(v));
       for(PetscInt d = 0; d < spaceDim; ++d) {
-        jacobianArray[off+d] = _data->jacobianLumped[iVertex*spaceDim+d];
+        jacobianArray[off+d] = _data->jacobianLumped[iVertex*spaceDim+d] / jacobianScale;
       } // for
     } // for
   } // setup jacobian
@@ -555,9 +559,9 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
     CPPUNIT_ASSERT_EQUAL(spaceDim, solutionVisitor.sectionDof(v));
     for(PetscInt d = 0; d < spaceDim; ++d, ++index) {
       if (0.0 != solutionE[index])
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, solutionArray[off+d]/solutionE[index], tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, solutionArray[off+d]/solutionE[index]*_data->lengthScale, tolerance);
       else
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(solutionE[index], solutionArray[off+d], tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(solutionE[index], solutionArray[off+d]*_data->lengthScale, tolerance);
     } // for
   } // for
 
@@ -768,7 +772,7 @@ pylith::faults::TestFaultCohesiveKin::_initialize(topology::Mesh* const mesh,
   // Set scales
   // Most test data is insensitive to the scales because we set the fields directly.
   spatialdata::units::Nondimensional normalizer;
-#if 0 // :TODO: USE SCALES
+#if 1 // :TODO: USE SCALES
   normalizer.lengthScale(_data->lengthScale);
   normalizer.pressureScale(_data->pressureScale);
   normalizer.densityScale(_data->densityScale);
@@ -831,6 +835,7 @@ pylith::faults::TestFaultCohesiveKin::_initialize(topology::Mesh* const mesh,
   fault->adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell, _flipFault);
   
   const PylithScalar upDir[3] = { 0.0, 0.0, 1.0 };
+  fault->normalizer(normalizer);
   fault->initialize(*mesh, upDir); 
   
   delete[] sources; sources = 0;
