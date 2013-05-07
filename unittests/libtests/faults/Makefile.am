@@ -37,27 +37,11 @@ testfaults_SOURCES = \
 	TestFault.cc \
 	TestFaultCohesive.cc \
 	TestFaultCohesiveKin.cc \
-	TestFaultCohesiveKinLine2.cc \
-	TestFaultCohesiveKinTri3.cc \
-	TestFaultCohesiveKinTri3d.cc \
-	TestFaultCohesiveKinQuad4.cc \
-	TestFaultCohesiveKinQuad4e.cc \
-	TestFaultCohesiveKinTet4.cc \
-	TestFaultCohesiveKinTet4e.cc \
-	TestFaultCohesiveKinTet4f.cc \
-	TestFaultCohesiveKinHex8.cc \
+	TestFaultCohesiveKinCases.cc \
 	TestFaultCohesiveKinSrcs.cc \
-	TestFaultCohesiveKinSrcsLine2.cc \
-	TestFaultCohesiveKinSrcsTri3.cc \
-	TestFaultCohesiveKinSrcsQuad4.cc \
-	TestFaultCohesiveKinSrcsTet4.cc \
-	TestFaultCohesiveKinSrcsHex8.cc \
+	TestFaultCohesiveKinSrcsCases.cc \
 	TestFaultCohesiveDyn.cc \
-	TestFaultCohesiveDynTri3.cc \
-	TestFaultCohesiveDynTri3d.cc \
-	TestFaultCohesiveDynQuad4.cc \
-	TestFaultCohesiveDynTet4.cc \
-	TestFaultCohesiveDynHex8.cc \
+	TestFaultCohesiveDynCases.cc \
 	TestTractPerturbation.cc \
 	TestFaultCohesiveImpulses.cc \
 	TestFaultCohesiveImpulsesCases.cc \
@@ -76,27 +60,11 @@ noinst_HEADERS = \
 	TestFault.hh \
 	TestFaultCohesive.hh \
 	TestFaultCohesiveKin.hh \
-	TestFaultCohesiveKinLine2.hh \
-	TestFaultCohesiveKinTri3.hh \
-	TestFaultCohesiveKinTri3d.hh \
-	TestFaultCohesiveKinQuad4.hh \
-	TestFaultCohesiveKinQuad4e.hh \
-	TestFaultCohesiveKinTet4.hh \
-	TestFaultCohesiveKinTet4e.hh \
-	TestFaultCohesiveKinTet4f.hh \
-	TestFaultCohesiveKinHex8.hh \
+	TestFaultCohesiveKinCases.hh \
 	TestFaultCohesiveKinSrcs.hh \
-	TestFaultCohesiveKinSrcsLine2.hh \
-	TestFaultCohesiveKinSrcsTri3.hh \
-	TestFaultCohesiveKinSrcsQuad4.hh \
-	TestFaultCohesiveKinSrcsTet4.hh \
-	TestFaultCohesiveKinSrcsHex8.hh \
+	TestFaultCohesiveKinSrcsCases.hh \
 	TestFaultCohesiveDyn.hh \
-	TestFaultCohesiveDynTri3.hh \
-	TestFaultCohesiveDynTri3d.hh \
-	TestFaultCohesiveDynQuad4.hh \
-	TestFaultCohesiveDynTet4.hh \
-	TestFaultCohesiveDynHex8.hh \
+	TestFaultCohesiveDynCases.hh \
 	TestTractPerturbation.hh \
 	TestFaultCohesiveImpulses.hh \
 	TestFaultCohesiveImpulsesCases.hh \
