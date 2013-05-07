@@ -41,7 +41,7 @@
 /** @brief Vector field over the vertices or cells of a finite-element
  * mesh.
  *
- * Extends Sieve real general section by adding metadata.
+ * Extends PETSc section and vector by adding metadata.
  */
 template<typename mesh_type>
 class pylith::topology::Field : public FieldBase
@@ -204,7 +204,7 @@ public :
    */
   PetscVec globalVector(void) const;
 
-  /** Get the number of sieve points in the chart.
+  /** Get the number of points in the chart.
    *
    * @returns the chart size.
    */
@@ -216,13 +216,13 @@ public :
    */
   int sectionSize(void) const;
 
-  /** Create sieve section.
+  /** Create PETSc section.
    *
    * @note Don't forget to call label().
    */
   void newSection(void);
 
-  /** Create sieve section and set chart and fiber dimesion for a list
+  /** Create PETSc section and set chart and fiber dimesion for a list
    * of points.
    *
    * @param pStart First point
@@ -235,7 +235,7 @@ public :
 		  const PetscInt pEnd,
 		  const int fiberDim);
 
-  /** Create sieve section and set chart and fiber dimesion for a list
+  /** Create PETSc section and set chart and fiber dimesion for a list
    * of points.
    *
    * @param points Points over which to define section.
@@ -246,7 +246,7 @@ public :
   void newSection(const int_array& points,
                   const int fiberDim);
 
-  /** Create sieve section and set chart and fiber dimesion for a list
+  /** Create PETSc section and set chart and fiber dimesion for a list
    * of points.
    *
    * @param points Points over which to define section.
@@ -259,7 +259,7 @@ public :
                   const PetscInt num,
                   const int fiberDim);
 
-  /** Create sieve section and set chart and fiber dimesion.
+  /** Create PETSc section and set chart and fiber dimesion.
    *
    * @param domain Type of points over which to define section.
    * @param dim Fiber dimension for section.
@@ -359,7 +359,7 @@ public :
 
   /** Create PETSc vector scatter for field. This is used to transfer
    * information from the "global" PETSc vector view to the "local"
-   * Sieve section view. The PETSc vector does not contain constrained
+   * PETSc section view. The PETSc vector does not contain constrained
    * DOF. Use createScatterWithBC() to include the constrained DOF in
    * the PETSc vector.
    *
@@ -373,22 +373,7 @@ public :
 
   /** Create PETSc vector scatter for field. This is used to transfer
    * information from the "global" PETSc vector view to the "local"
-   * Sieve section view. The PETSc vector does not contain constrained
-   * DOF. Use createScatterWithBC() to include the constrained DOF in
-   * the PETSc vector.
-   *
-   * @param mesh Mesh associated with scatter.
-   * @param numbering Numbering used to select points in section.
-   * @param context Label for context associated with vector.
-   */
-  template<typename scatter_mesh_type>
-  void createScatter(const scatter_mesh_type& mesh,
-		     const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
-		     const char* context ="");
-
-  /** Create PETSc vector scatter for field. This is used to transfer
-   * information from the "global" PETSc vector view to the "local"
-   * Sieve section view. The PETSc vector includes constrained
+   * PETSc section view. The PETSc vector includes constrained
    * DOF. Use createScatter() if constrained DOF should be omitted
    * from the PETSc vector.
    *
@@ -402,7 +387,7 @@ public :
 
   /** Create PETSc vector scatter for field. This is used to transfer
    * information from the "global" PETSc vector view to the "local"
-   * Sieve section view. The PETSc vector includes constrained
+   * PETSc section view. The PETSc vector includes constrained
    * DOF. Use createScatter() if constrained DOF should be omitted
    * from the PETSc vector.
    *
@@ -444,7 +429,7 @@ public :
 			      const char* context ="") const;
 
   /// Scatter PETSc vector information across processors to update the
-  /// Sieve section view of the field.
+  /// PETSc section view of the field.
   void scatterVectorToSection(const char* context ="") const;
 
   /** Scatter section information across processors to update the

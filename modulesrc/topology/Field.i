@@ -43,15 +43,6 @@ namespace pylith {
     class Field : public FieldBase
     { // Field
 
-      // PRIVATE TYPEDEFS ///////////////////////////////////////////////
-    private:
-
-      // Convenience typedefs
-      typedef typename mesh_type::RealSection RealSection;
-      typedef typename mesh_type::SieveMesh SieveMesh;
-      typedef typename SieveMesh::label_sequence label_sequence;
-      typedef typename RealSection::chart_type chart_type;
-      
       // PUBLIC MEMBERS /////////////////////////////////////////////////
     public :
 
@@ -127,7 +118,7 @@ namespace pylith {
        */
       int spaceDim(void) const;
       
-      /** Get the number of sieve points in the chart.
+      /** Get the number of points in the chart.
        *
        * @returns the chart size.
        */
@@ -139,10 +130,10 @@ namespace pylith {
        */
       int sectionSize(void) const;
       
-      /// Create sieve section.
+      /// Create PETSc section.
       void newSection(void);
 
-      /** Create sieve section and set chart and fiber dimesion.
+      /** Create PETSc section and set chart and fiber dimesion.
        *
        * @param domain Type of points over which to define section.
        * @param dim Fiber dimension for section.
@@ -207,7 +198,7 @@ namespace pylith {
 
       /** Create PETSc vector scatter for field. This is used to transfer
        * information from the "global" PETSc vector view to the "local"
-       * Sieve section view.
+       * PETSc section view.
        *
        * @param mesh Mesh associated with scatter.
        * @param context Label for context associated with vector.
@@ -243,7 +234,7 @@ namespace pylith {
 				  const char* context ="") const;
 
       /// Scatter PETSc vector information across processors to update the
-      /// Sieve section view of the field.
+      /// PETSc section view of the field.
       void scatterVectorToSection(const char* context ="") const;
 
       /** Scatter section information across processors to update the
