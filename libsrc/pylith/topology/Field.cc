@@ -1000,63 +1000,6 @@ pylith::topology::Field<mesh_type>::createScatter(const scatter_mesh_type& mesh,
 template<typename mesh_type>
 template<typename scatter_mesh_type>
 void
-pylith::topology::Field<mesh_type>::createScatter(const scatter_mesh_type& mesh,
-						  const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
-						  const char* context)
-{ // createScatter
-  PYLITH_METHOD_BEGIN;
-
-  assert(!numbering.isNull());
-  assert(context);
-  PetscErrorCode err = 0;
-
-  const bool createScatterOk = true;
-  ScatterInfo& sinfo = _getScatter(context, createScatterOk);
-  
-  // Only create if scatter and scatterVec do not alreay exist.
-  if (sinfo.scatter) {
-    assert(sinfo.scatterVec);
-    assert(sinfo.vector);
-    PYLITH_METHOD_END;
-  } // if
-
-  PetscInt localSize, globalSize;
-
-  err = PetscObjectReference((PetscObject) _dm);PYLITH_CHECK_ERROR(err);
-  err = PetscObjectReference((PetscObject) _globalVec);PYLITH_CHECK_ERROR(err);
-  err = PetscObjectSetName((PetscObject) _globalVec, _metadata["default"].label.c_str());PYLITH_CHECK_ERROR(err);
-  err = VecGetSize(_localVec,  &localSize);PYLITH_CHECK_ERROR(err);
-  err = VecGetSize(_globalVec, &globalSize);PYLITH_CHECK_ERROR(err);
-  //assert(order->getLocalSize()  == localSize);
-  //assert(order->getGlobalSize() == globalSize);
-
-  err = DMDestroy(&sinfo.dm);PYLITH_CHECK_ERROR(err);
-  err = VecDestroy(&sinfo.vector);PYLITH_CHECK_ERROR(err);
-  sinfo.vector = _globalVec;
-  sinfo.dm     = _dm;
-
-#if 0
-  std::cout << "CONTEXT: " << context 
-	    << ", orderLabel: " << orderLabel
-	    << ", section size w/BC: " << _section->sizeWithBC()
-	    << ", section size: " << _section->size()
-	    << ", global numbering size: " << numbering->getGlobalSize()
-	    << ", global size: " << order->getGlobalSize()
-	    << std::endl;
-#endif
-  
-  PYLITH_METHOD_END;
-} // createScatter
-
-// ----------------------------------------------------------------------
-// Create PETSc vector scatter for field. This is used to transfer
-// information from the "global" PETSc vector view to the "local"
-// PETSc section view. The PETSc vector does not contain constrained
-// DOF. Use createScatterWithBC() to include the constrained DOF in
-// the PETSc vector.
-template<typename mesh_type>
-template<typename scatter_mesh_type>
-void
 pylith::topology::Field<mesh_type>::createScatterWithBC(const scatter_mesh_type& mesh,
 							const char* context)
 { // createScatterWithBC

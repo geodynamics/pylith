@@ -34,7 +34,7 @@
 // SubMesh -----------------------------------------------------------------
 /** @brief C++ PyLith finite-element mesh.
  *
- * Extends Sieve mesh over subset of domain to include coordinate
+ * Extends mesh over subset of domain to include coordinate
  * system associated with domain. Also has functions to simply
  * creating submeshes from groups of vertices.
  */
@@ -75,7 +75,7 @@ public :
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
   
-  /** Create Sieve mesh.
+  /** Create mesh.
    *
    * @param mesh Finite-element mesh over domain.
    * @param label Label for vertices marking boundary.

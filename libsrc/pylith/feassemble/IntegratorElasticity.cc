@@ -296,9 +296,9 @@ pylith::feassemble::IntegratorElasticity::cellField(const char* name,
   assert(_material);
   assert(_normalizer);
 
-  if (0 == _outputFields)
-    _outputFields =
-      new topology::Fields<topology::Field<topology::Mesh> >(mesh);
+  if (!_outputFields) {
+    _outputFields = new topology::Fields<topology::Field<topology::Mesh> >(mesh);assert(_outputFields);
+  } // if
   
   if (0 == strcasecmp(name, "total_strain")) {
 
