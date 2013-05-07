@@ -111,13 +111,12 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(const field_type& fi
     if (cMax >= 0) {cEnd = PetscMin(cEnd, cMax);}
     numCells = cEnd - cStart;
   } else {
-    const PetscInt *cells;
+    const PetscInt *cells = NULL;
     err = DMPlexGetStratumIS(dmMesh, label, 1, &cellIS);PYLITH_CHECK_ERROR(err);
     err = ISGetSize(cellIS, &numCells);PYLITH_CHECK_ERROR(err);
     err = ISGetIndices(cellIS, &cells);PYLITH_CHECK_ERROR(err);
     cStart = cells[0];
     err = ISRestoreIndices(cellIS, &cells);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&cellIS);PYLITH_CHECK_ERROR(err);
   } // if
 
   topology::VecVisitorMesh fieldInVisitor(fieldIn);
@@ -192,7 +191,6 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(const field_type& fi
       } // for
     } // for
     err = ISRestoreIndices(cellIS, &cells);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&cellIS);PYLITH_CHECK_ERROR(err);
   } else {
     for(PetscInt c = cStart; c < cEnd; ++c) {
       const PetscInt ioff = fieldInVisitor.sectionOffset(c);
@@ -208,6 +206,7 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(const field_type& fi
       } // for
     } // for
   } // if/else
+  err = ISDestroy(&cellIS);PYLITH_CHECK_ERROR(err);
   PetscLogFlops(numCells * numQuadPts*fiberDim*3);
 
   PYLITH_METHOD_RETURN(*_fieldAvg);
