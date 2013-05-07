@@ -23,6 +23,8 @@
 #include "pylith/faults/EqKinSrc.hh" // USES EqKinSrc
 #include "pylith/faults/BruneSlipFn.hh" // USES BruneSlipFn
 
+#include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesiveKinSrcs );
 
@@ -31,6 +33,8 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesiveKinSrcs );
 void
 pylith::faults::TestFaultCohesiveKinSrcs::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestFaultCohesiveKin::setUp();
   _data = 0;
 
@@ -54,6 +58,8 @@ pylith::faults::TestFaultCohesiveKinSrcs::setUp(void)
   _slipfns[1] = new BruneSlipFn();
 
   _flipFault = false;
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
