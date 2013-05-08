@@ -156,7 +156,7 @@ class TestMeshField(unittest.TestCase):
 
   def test_operatorAdd(self):
     """
-    Test newSection(field).
+    Test operator+=.
     """
     fieldB = MeshField(self.mesh)
     fieldB.allocate()
