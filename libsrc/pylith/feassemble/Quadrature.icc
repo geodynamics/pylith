@@ -75,16 +75,6 @@ pylith::feassemble::Quadrature<mesh_type>::jacobianDet(void) const {
   return _engine->jacobianDet();
 }
 
-// Compute geometric quantities for each cell.
-template<typename mesh_type>
-inline
-void
-pylith::feassemble::Quadrature<mesh_type>::computeGeometry(const scalar_array& coordinatesCell,
-							   const int cell) {
-  assert(_engine);
-  _engine->computeGeometry(coordinatesCell, cell);  
-}
-
 // Compute geometric quantities for a cell at quadrature points.
 template<typename mesh_type>
 void

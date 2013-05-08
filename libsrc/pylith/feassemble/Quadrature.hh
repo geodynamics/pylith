@@ -113,14 +113,6 @@ public :
   /// Deallocate temporary storage.
   void clear(void);
 
-  /** Compute geometric quantities for cell.
-   *
-   * @param coordinatesCell Coordinates of vertices in cell.
-   * @param cell Finite-element cell
-   */
-  void computeGeometry(const scalar_array& coordinatesCell,
-		       const int cell);
-
   /** Compute geometric quantities for a cell at quadrature points.
    *
    * @param coordinatesCell Array of coordinates of cell's vertices.

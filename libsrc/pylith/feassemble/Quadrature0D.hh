@@ -55,14 +55,6 @@ public :
 
   /** Compute geometric quantities for a cell at quadrature points.
    *
-   * @param coordinatesCell Coordinates of cell's vertices.
-   * @param cell Finite-element cell
-   */
-  void computeGeometry(const scalar_array& coordinatesCell,
-		       const int cell);
-
-  /** Compute geometric quantities for a cell at quadrature points.
-   *
    * @param coordinatesCell Array of coordinates of cell's vertices.
    * @param coordinatesSize Size of coordinates array.
    * @param cell Finite-element cell

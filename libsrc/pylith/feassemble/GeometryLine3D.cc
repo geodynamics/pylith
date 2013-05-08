@@ -72,9 +72,9 @@ pylith::feassemble::GeometryLine3D::ptsRefToGlobal(PylithScalar* ptsGlobal,
 						   const int dim,
 						   const int npts) const
 { // ptsRefToGlobal
-  assert(0 != ptsGlobal);
-  assert(0 != ptsRef);
-  assert(0 != vertices);
+  assert(ptsGlobal);
+  assert(ptsRef);
+  assert(vertices);
   assert(3 == dim);
   assert(spaceDim() == dim);
 
@@ -104,16 +104,23 @@ pylith::feassemble::GeometryLine3D::ptsRefToGlobal(PylithScalar* ptsGlobal,
 // Compute Jacobian at location in cell.
 void
 pylith::feassemble::GeometryLine3D::jacobian(scalar_array* jacobian,
-					   PylithScalar* det,
-					   const scalar_array& vertices,
-					   const scalar_array& location) const
+					     PylithScalar* det,
+					     const PylithScalar* vertices,
+					     const int numVertices,
+					     const int spaceDim,
+					     const PylithScalar* location,
+					     const int cellDim) const
 { // jacobian
-  assert(0 != jacobian);
-  assert(0 != det);
+  assert(jacobian);
+  assert(det);
+  assert(vertices);
+  assert(location);
 
-  assert( (numCorners()*spaceDim() == vertices.size()) || // linear edge
-	  ((numCorners()+1)*spaceDim() == vertices.size()) ); // quadratic edge
-  assert(spaceDim()*cellDim() == jacobian->size());
+  assert(this->numCorners() == numVertices || // linear
+	 this->numCorners()+1 == numVertices); // quadratic
+  assert(this->spaceDim() == spaceDim);
+  assert(this->cellDim() == cellDim);
+  assert(spaceDim*cellDim == jacobian->size());
 
   const PylithScalar x0 = vertices[0];
   const PylithScalar y0 = vertices[1];
@@ -142,10 +149,10 @@ pylith::feassemble::GeometryLine3D::jacobian(PylithScalar* jacobian,
 					     const int dim,
 					     const int npts) const
 { // jacobian
-  assert(0 != jacobian);
-  assert(0 != det);
-  assert(0 != vertices);
-  assert(0 != location);
+  assert(jacobian);
+  assert(det);
+  assert(vertices);
+  assert(location);
   assert(3 == dim);
   assert(spaceDim() == dim);
 

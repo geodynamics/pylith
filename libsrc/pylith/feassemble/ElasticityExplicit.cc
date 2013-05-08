@@ -43,7 +43,6 @@
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 
-//#define PRECOMPUTE_GEOMETRY
 //#define DETAILED_EVENT_LOGGING
 
 // ----------------------------------------------------------------------
@@ -248,13 +247,10 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(const topology::Field<
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
-#if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(cell);
-#else
     coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
     _quadrature->computeGeometry(coordsCell, coordsSize, cell);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
-#endif
+
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
     _logger->eventBegin(stateVarsEvent);
@@ -355,7 +351,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(const topology::Field<
 #endif
 
     // Compute B(transpose) * sigma, first computing strains
-    calcTotalStrainFn(&strainCell, basisDeriv, dispAdjCell, numBasis, numQuadPts);
+    calcTotalStrainFn(&strainCell, basisDeriv, &dispAdjCell[0], numBasis, spaceDim, numQuadPts);
     const scalar_array& stressCell = _material->calcStress(strainCell, false);
 
 #if defined(DETAILED_EVENT_LOGGING)
@@ -469,13 +465,9 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(topology::Field<topolo
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
-#if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(cell);
-#else
     coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
     _quadrature->computeGeometry(coordsCell, coordsSize, cell);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
-#endif
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);

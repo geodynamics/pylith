@@ -29,7 +29,6 @@
 #include "Quadrature2Din3D.hh"
 #include "Quadrature3D.hh"
 
-#include <cstring> // USES memcpy()
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream

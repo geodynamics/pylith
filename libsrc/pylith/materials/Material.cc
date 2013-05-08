@@ -31,13 +31,10 @@
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-#include <cstring> // USES memcpy()
 #include <strings.h> // USES strcasecmp()
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
-
-//#define PRECOMPUTE_GEOMETRY
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -146,11 +143,9 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
   topology::VecVisitorMesh propertiesVisitor(*_properties);
   PetscScalar* propertiesArray = propertiesVisitor.localArray();
 
-#if !defined(PRECOMPUTE_GEOMETRY)
   topology::CoordsVisitor coordsVisitor(dmMesh);
   PetscScalar* coordsArray = NULL;
   PetscInt coordsSize = 0;
-#endif
 
   // Create arrays for querying.
   const int numDBProperties = _metadata.numDBProperties();
@@ -205,13 +200,9 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
     // Compute geometry information for current cell
-#if defined(PRECOMPUTE_GEOMETRY)
-    quadrature->retrieveGeometry(cell);
-#else
     coordsVisitor.getClosure(&coordsArray, &coordsSize, cell);
     quadrature->computeGeometry(coordsArray, coordsSize, cell);
     coordsVisitor.restoreClosure(&coordsArray, &coordsSize, cell);
-#endif
 
     const scalar_array& quadPtsNonDim = quadrature->quadPts();
     quadPtsGlobal = quadPtsNonDim;

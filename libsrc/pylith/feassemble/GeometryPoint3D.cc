@@ -65,9 +65,9 @@ pylith::feassemble::GeometryPoint3D::ptsRefToGlobal(PylithScalar* ptsGlobal,
 						    const int dim,
 						    const int npts) const
 { // ptsRefToGlobal
-  assert(0 != ptsGlobal);
-  assert(0 != ptsRef);
-  assert(0 != vertices);
+  assert(ptsGlobal);
+  assert(ptsRef);
+  assert(vertices);
   assert(3 == dim);
   assert(spaceDim() == dim);
 
@@ -80,12 +80,15 @@ pylith::feassemble::GeometryPoint3D::ptsRefToGlobal(PylithScalar* ptsGlobal,
 // Compute Jacobian at location in cell.
 void
 pylith::feassemble::GeometryPoint3D::jacobian(scalar_array* jacobian,
-					    PylithScalar* det,
-					    const scalar_array& vertices,
-					    const scalar_array& location) const
+					     PylithScalar* det,
+					     const PylithScalar* vertices,
+					     const int numVertices,
+					     const int spaceDim,
+					     const PylithScalar* location,
+					     const int cellDim) const
 { // jacobian
-  assert(0 != jacobian);
-  assert(0 != det);
+  assert(jacobian);
+  assert(det);
 
   assert(1 == jacobian->size());
   
@@ -103,10 +106,10 @@ pylith::feassemble::GeometryPoint3D::jacobian(PylithScalar* jacobian,
 					      const int dim,
 					      const int npts) const
 { // jacobian
-  assert(0 != jacobian);
-  assert(0 != det);
-  assert(0 != vertices);
-  assert(0 != location);
+  assert(jacobian);
+  assert(det);
+  assert(vertices);
+  assert(location);
   assert(3 == dim);
   assert(spaceDim() == dim);
 

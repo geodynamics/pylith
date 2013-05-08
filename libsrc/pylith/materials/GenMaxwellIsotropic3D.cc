@@ -31,7 +31,6 @@
 #include "petsc.h" // USES PetscLogFlops
 
 #include <cassert> // USES assert()
-#include <cstring> // USES memcpy()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 

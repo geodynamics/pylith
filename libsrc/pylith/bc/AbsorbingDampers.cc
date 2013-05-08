@@ -34,12 +34,10 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-#include <cstring> // USES memcpy()
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 
-//#define PRECOMPUTE_GEOMETRY
 //#define DETAILED_EVENT_LOGGING
 
 // ----------------------------------------------------------------------
@@ -134,7 +132,6 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
 
   // Container for data returned in query of database
   scalar_array queryData(numValues);
-  scalar_array quadPtRef(cellDim);
   scalar_array quadPtsGlobal(numQuadPts*spaceDim);
 
   // Container for damping constants for current cell
@@ -142,7 +139,6 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   topology::Field<topology::SubMesh>& dampingConsts = _parameters->get("damping constants");
   topology::VecVisitorMesh dampingConstsVisitor(dampingConsts);
 
-  scalar_array coordinatesCell(numBasis*spaceDim);
   PetscScalar *coordsCell = NULL;
   PetscInt coordsSize = 0;
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
@@ -153,7 +149,7 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   assert(_normalizer->timeScale() > 0);
   const PylithScalar velocityScale = _normalizer->lengthScale() / _normalizer->timeScale();
 
-  const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
+  const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();assert(cs);
 
   // Compute quadrature information
   _quadrature->initializeGeometry();
@@ -163,11 +159,7 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   for(PetscInt c = cStart; c < cEnd; ++c) {
     // Compute geometry information for current cell
     coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
-    for (int i=0; i < coordsSize; ++i) { // :TODO: Remove copy
-      coordinatesCell[i] = coordsCell[i];
-    } // for
     _quadrature->computeGeometry(coordsCell, coordsSize, c);
-    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
 
     const PetscInt doff = dampingConstsVisitor.sectionOffset(c);
     assert(fiberDim == dampingConstsVisitor.sectionDof(c));
@@ -204,8 +196,7 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
       dampingConstsLocal[spaceDim-1] = constNormal;
 
       // Compute normal/tangential orientation
-      memcpy(&quadPtRef[0], &quadPtsRef[iQuad*cellDim], cellDim*sizeof(PylithScalar));
-      cellGeometry.jacobian(&jacobian, &jacobianDet, coordinatesCell, quadPtRef);
+      cellGeometry.jacobian(&jacobian, &jacobianDet, coordsCell, numBasis, spaceDim, &quadPtsRef[iQuad*cellDim], cellDim);
       cellGeometry.orientation(&orientation, jacobian, jacobianDet, up);
       assert(jacobianDet > 0.0);
       orientation /= jacobianDet;
@@ -219,6 +210,7 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
         dampingConstsArray[doff+iQuad*spaceDim+iDim] = fabs(dampingConstsArray[doff+iQuad*spaceDim+iDim]);
       } // for
     } // for
+    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
   } // for
 
   _db->close();
@@ -277,11 +269,9 @@ pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field<topology::
 
   submeshIS.deallocate();
   
-#if !defined(PRECOMPUTE_GEOMETRY)
   PetscScalar* coordsCell = NULL;
   PetscInt coordsSize = 0;
 topology::CoordsVisitor coordsVisitor(dmSubMesh);
-#endif
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
   topology::Stratum cellsStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
@@ -298,13 +288,9 @@ topology::CoordsVisitor coordsVisitor(dmSubMesh);
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
-#if defined(PRECOMPUTE_GEOMETRY)
-#error("Code for PRECOMPUTE_GEOMETRY not implemented.")
-#else
     coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
     _quadrature->computeGeometry(coordsCell, coordsSize, c);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
-#endif
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
@@ -423,11 +409,9 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(const topology::Field<topo
 
   submeshIS.deallocate();
 
-#if !defined(PRECOMPUTE_GEOMETRY)
   PetscScalar *coordsCell = NULL;
   PetscInt coordsSize = 0;
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
-#endif
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -439,13 +423,9 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(const topology::Field<topo
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
-#if defined(PRECOMPUTE_GEOMETRY)
-#error("Code for PRECOMPUTE_GEOMETRY not implemented.")
-#else
     coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
     _quadrature->computeGeometry(coordsCell, coordsSize, c);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
-#endif
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
@@ -565,11 +545,9 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Jacobian* jacobian,
   // Allocate matrix for cell values.
   _initCellMatrix();
 
-#if !defined(PRECOMPUTE_GEOMETRY)
   PetscScalar *coordsCell = NULL;
   PetscInt coordsSize = 0;
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
-#endif
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -581,13 +559,10 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Jacobian* jacobian,
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
-#if defined(PRECOMPUTE_GEOMETRY)
-#error("Code for PRECOMPUTE_GEOMETRY not implemented")
-#else
     coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
     _quadrature->computeGeometry(coordsCell, coordsSize, c);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
-#endif
+
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
     _logger->eventBegin(restrictEvent);
@@ -703,11 +678,9 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Field<topology::Mesh>*
 
   submeshIS.deallocate();
   
-#if !defined(PRECOMPUTE_GEOMETRY)
   PetscScalar* coordsCell = NULL;
   PetscInt coordsSize = 0;
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
-#endif
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -719,13 +692,10 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Field<topology::Mesh>*
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
-#if defined(PRECOMPUTE_GEOMETRY)
-#error("Code for PRECOMPUTE_GEOMETRY not implemented");
-#else
     coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
     _quadrature->computeGeometry(coordsCell, coordsSize, c);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
-#endif
+
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
     _logger->eventBegin(restrictEvent);

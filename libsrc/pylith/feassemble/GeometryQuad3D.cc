@@ -74,9 +74,9 @@ pylith::feassemble::GeometryQuad3D::ptsRefToGlobal(PylithScalar* ptsGlobal,
 						   const int dim,
 						   const int npts) const
 { // ptsRefToGlobal
-  assert(0 != ptsGlobal);
-  assert(0 != ptsRef);
-  assert(0 != vertices);
+  assert(ptsGlobal);
+  assert(ptsRef);
+  assert(vertices);
   assert(3 == dim);
   assert(spaceDim() == dim);
 
@@ -125,17 +125,23 @@ pylith::feassemble::GeometryQuad3D::ptsRefToGlobal(PylithScalar* ptsGlobal,
 // Compute Jacobian at location in cell.
 void
 pylith::feassemble::GeometryQuad3D::jacobian(scalar_array* jacobian,
-					  PylithScalar* det,
-					  const scalar_array& vertices,
-					  const scalar_array& location) const
+					     PylithScalar* det,
+					     const PylithScalar* vertices,
+					     const int numVertices,
+					     const int spaceDim,
+					     const PylithScalar* location,
+					     const int cellDim) const
 { // jacobian
-  assert(0 != jacobian);
-  assert(0 != det);
+  assert(jacobian);
+  assert(det);
+  assert(vertices);
+  assert(location);
 
-  assert( (numCorners()*spaceDim() == vertices.size()) || // linear quad
-	  ((numCorners()+5)*spaceDim() == vertices.size()) ); // quadratic quad
-  assert(cellDim() == location.size());
-  assert(spaceDim()*cellDim() == jacobian->size());
+  assert(this->numCorners() == numVertices || // linear
+	 this->numCorners()+1 == numVertices); // quadratic
+  assert(this->spaceDim() == spaceDim);
+  assert(this->cellDim() == cellDim);
+  assert(spaceDim*cellDim == jacobian->size());
   
   const PylithScalar x0 = vertices[0];
   const PylithScalar y0 = vertices[1];
@@ -199,10 +205,10 @@ pylith::feassemble::GeometryQuad3D::jacobian(PylithScalar* jacobian,
 					     const int dim,
 					     const int npts) const
 { // jacobian
-  assert(0 != jacobian);
-  assert(0 != det);
-  assert(0 != vertices);
-  assert(0 != ptsRef);
+  assert(jacobian);
+  assert(det);
+  assert(vertices);
+  assert(ptsRef);
   assert(3 == dim);
   assert(spaceDim() == dim);
   
