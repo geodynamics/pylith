@@ -18,5 +18,5 @@ cppunit
 HDF5
 CUBIT
   netcdf
-PETSc (development version) w/TetGen and ParMetis
-doxygen
+PETSc (development version) w/ParMetis
+
