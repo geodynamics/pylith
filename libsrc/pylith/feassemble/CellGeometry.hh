@@ -126,13 +126,19 @@ public :
    * @param jacobian Jacobian at location.
    * @param det Determinant of Jacobian at location.
    * @param vertices Coordinates of vertices of cell.
+   * @param numVertices Number of vertices in cell.
+   * @param spaceDim Spatial dimension of coordinates.
    * @param location Location in reference cell at which to compute Jacobian.
+   * @param cellDim Dimension of reference cell.
    */
   virtual
   void jacobian(scalar_array* jacobian,
 		PylithScalar* det,
-		const scalar_array& vertices,
-		const scalar_array& location) const = 0;
+		const PylithScalar* vertices,
+		const int numVertices,
+		const int spaceDim,
+		const PylithScalar* location,
+		const int cellDim) const = 0;
 
   /** Compute Jacobian at location in cell.
    *

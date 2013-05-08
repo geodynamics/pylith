@@ -81,7 +81,7 @@ pylith::feassemble::TestQuadrature0D::testPoint(void)
   Quadrature0D engine(refCell);
 
   engine.initialize();
-  engine.computeGeometry(vertCoords, 0);
+  engine.computeGeometry(&vertCoords[0], vertCoords.size(), 0);
 
   const PylithScalar tolerance = 1.0e-06;
   CPPUNIT_ASSERT_DOUBLES_EQUAL(quadPts[0], engine._quadPts[0], tolerance);

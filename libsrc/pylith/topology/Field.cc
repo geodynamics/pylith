@@ -1336,16 +1336,10 @@ pylith::topology::Field<mesh_type>::_getScatter(const char* context,
     // remove old scatter
     ScatterInfo& sinfo = _scatters[context];
     PetscErrorCode err = 0;
-    if (sinfo.vector) {
-      err = VecDestroy(&sinfo.vector);PYLITH_CHECK_ERROR(err);
-    } // if
-    if (sinfo.scatter) {
-      err = VecScatterDestroy(&sinfo.scatter);PYLITH_CHECK_ERROR(err);
-    } // if
-
-    if (sinfo.scatterVec) {
-      err = VecDestroy(&sinfo.scatterVec);PYLITH_CHECK_ERROR(err);
-    } // if
+    err = DMDestroy(&sinfo.dm);PYLITH_CHECK_ERROR(err);
+    err = VecDestroy(&sinfo.vector);PYLITH_CHECK_ERROR(err);
+    err = VecScatterDestroy(&sinfo.scatter);PYLITH_CHECK_ERROR(err);
+    err = VecDestroy(&sinfo.scatterVec);PYLITH_CHECK_ERROR(err);
 
     _scatters.erase(context);
     isNewScatter = true;

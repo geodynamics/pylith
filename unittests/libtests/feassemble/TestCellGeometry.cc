@@ -283,10 +283,7 @@ pylith::feassemble::TestCellGeometry::testJacobian(void)
   scalar_array jacobian(cellDim*spaceDim);
   PylithScalar det = 0;
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
-    scalar_array vertices(_data->vertices, numCorners*spaceDim);
-    scalar_array location(&_data->locations[iLoc*cellDim], cellDim);
-
-    _object->jacobian(&jacobian, &det, vertices, location);
+    _object->jacobian(&jacobian, &det, _data->vertices, numCorners, spaceDim, &_data->locations[iLoc*cellDim], cellDim);
 
     const int size = jacobian.size();
     const int index = iLoc*cellDim*spaceDim;

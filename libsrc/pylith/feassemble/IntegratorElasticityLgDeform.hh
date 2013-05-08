@@ -188,8 +188,8 @@ protected :
   static
   void _calcDeformation(scalar_array* deform,
 			const scalar_array& basisDeriv,
-			const scalar_array& vertices,
-			const scalar_array& disp,
+			const PylithScalar* vertices,
+			const PylithScalar* disp,
 			const int numBasis,
 			const int numQuadPts,
 			const int dim);

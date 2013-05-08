@@ -169,16 +169,22 @@ pylith::feassemble::GeometryHex3D::ptsRefToGlobal(PylithScalar* ptsGlobal,
 void
 pylith::feassemble::GeometryHex3D::jacobian(scalar_array* jacobian,
 					    PylithScalar* det,
-					    const scalar_array& vertices,
-					    const scalar_array& location) const
+					    const PylithScalar* vertices,
+					    const int numVertices,
+					    const int spaceDim,
+					    const PylithScalar* location,
+					    const int cellDim) const
 { // jacobian
   assert(jacobian);
   assert(det);
+  assert(vertices);
+  assert(location);
 
-  assert( (numCorners()*spaceDim() == vertices.size()) || // linear hex
-	  ((numCorners()+19)*spaceDim() == vertices.size()) ); // quadratic hex
-  assert(cellDim() == location.size());
-  assert(spaceDim()*cellDim() == jacobian->size());
+  assert(this->numCorners() == numVertices || // linear hex
+	 this->numCorners()+1 == numVertices); // quadratic hex
+  assert(this->spaceDim() == spaceDim);
+  assert(this->cellDim() == cellDim);
+  assert(spaceDim*cellDim == jacobian->size());
 
   const PylithScalar x0 = vertices[0];
   const PylithScalar y0 = vertices[1];

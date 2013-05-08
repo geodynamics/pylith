@@ -94,10 +94,7 @@ pylith::feassemble::TestGeometryPoint1D::testJacobian(void)
   scalar_array jacobian(1);
   PylithScalar det = 0.0;
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
-    scalar_array vertices(data.vertices, numCorners*spaceDim);
-    scalar_array location(&data.locations[iLoc], 1);
-
-    geometry.jacobian(&jacobian, &det, vertices, location);
+    geometry.jacobian(&jacobian, &det, data.vertices, numCorners, spaceDim, &data.locations[iLoc], 1);
     CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0), jacobian[0]);
     CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0), det);
   } //for

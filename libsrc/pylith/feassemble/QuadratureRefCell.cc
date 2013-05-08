@@ -24,7 +24,6 @@
 
 #include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
 
-#include <cstring> // USES memcpy()
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream

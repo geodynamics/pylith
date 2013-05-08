@@ -39,8 +39,6 @@
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 
-//#define PRECOMPUTE_GEOMETRY
-
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::Neumann::Neumann(void)
@@ -123,21 +121,15 @@ pylith::bc::Neumann::integrateResidual(const topology::Field<topology::Mesh>& re
   topology::VecVisitorSubMesh residualVisitor(residual, submeshIS);
   submeshIS.deallocate();
 
-#if !defined(PRECOMPUTE_GEOMETRY)
   PetscScalar* coordsCell = NULL;
   PetscInt coordsSize = 0;
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
-#endif
 
   // Loop over faces and integrate contribution from each face
   for(PetscInt c = cStart; c < cEnd; ++c) {
-#if defined(PRECOMPUTE_GEOMETRY)
-#error("Code for PRECOMPUTE_GEOMETRY not implemented.")
-#else
     coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
     _quadrature->computeGeometry(coordsCell, coordsSize, c);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
-#endif
 
     // Reset element vector to zero
     _resetCellVector();
@@ -437,20 +429,14 @@ pylith::bc::Neumann::_queryDB(const char* name,
 
   // Compute quadrature information
   _quadrature->initializeGeometry();
-#if defined(PRECOMPUTE_GEOMETRY)
-  _quadrature->computeGeometry(*_boundaryMesh, cells);
-#endif
 
   // Loop over cells in boundary mesh and perform queries.
   for(PetscInt c = cStart; c < cEnd; ++c) {
     // Compute geometry information for current cell
-#if defined(PRECOMPUTE_GEOMETRY)
-#error("Code for PRECOMPUTE_GEOMETRY not implemented.")
-#else
     coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
     _quadrature->computeGeometry(coordsCell, coordsSize, c);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
-#endif
+
     const scalar_array& quadPtsNondim = _quadrature->quadPts();
     quadPtsGlobal = quadPtsNondim;
     _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(), lengthScale);
@@ -511,7 +497,6 @@ void
   const int numBasis = _quadrature->numBasis();
   const int numQuadPts = _quadrature->numQuadPts();
   const int spaceDim = cellGeometry.spaceDim();
-  scalar_array quadPtRef(cellDim);
   const scalar_array& quadPtsRef = _quadrature->quadPtsRef();
   
   // Containers for orientation information
@@ -522,7 +507,6 @@ void
   scalar_array orientation(orientationSize);
 
   // Get coordinates.
-  scalar_array coordinatesCell(numBasis*spaceDim);
   PetscScalar* coordsCell = NULL;
   PetscInt coordsSize = 0;
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
@@ -546,23 +530,12 @@ void
   // rotate corresponding traction vector from local to global coordinates.
   for(PetscInt c = cStart; c < cEnd; ++c) {
     // Compute geometry information for current cell
-#if defined(PRECOMPUTE_GEOMETRY)
-#error("Code for PRECOMPUTE_GEOMETRY not implemented.")
-#else
     coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
-    for (PetscInt i=0; i < coordsSize; ++i) { // :TODO: Remove copy.
-      coordinatesCell[i] = coordsCell[i];
-    } // for
-    _quadrature->computeGeometry(coordinatesCell, c);
-    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
-#endif
+    _quadrature->computeGeometry(coordsCell, coordsSize, c);
+
     for(int iQuad=0, iRef=0, iSpace=0; iQuad < numQuadPts; ++iQuad, iRef+=cellDim, iSpace+=spaceDim) {
       // Compute Jacobian and determinant at quadrature point, then get orientation.
-      memcpy(&quadPtRef[0], &quadPtsRef[iRef], cellDim*sizeof(PylithScalar));
-#if defined(PRECOMPUTE_GEOMETRY)
-#error("Code for PRECOMPUTE_GEOMETRY not implemented.")
-#endif
-      cellGeometry.jacobian(&jacobian, &jacobianDet, coordinatesCell, quadPtRef);
+      cellGeometry.jacobian(&jacobian, &jacobianDet, coordsCell, numBasis, spaceDim, &quadPtsRef[iRef], cellDim);
       cellGeometry.orientation(&orientation, jacobian, jacobianDet, up);
       assert(jacobianDet > 0.0);
       orientation /= jacobianDet;
@@ -615,6 +588,7 @@ void
         } // for
       } // if
     } // for
+    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
   } // for
 
   delete initialVisitor; initialVisitor = 0;

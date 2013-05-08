@@ -1273,7 +1273,6 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   const scalar_array& quadWts = _quadrature->quadWts();
   scalar_array jacobian(jacobianSize);
   PylithScalar jacobianDet = 0;
-  scalar_array refCoordsVertex(cohesiveDim);
 
   assert(cohesiveDim == _quadrature->cellDim());
   assert(spaceDim == _quadrature->spaceDim());
@@ -1310,7 +1309,6 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   PetscScalar* orientationArray = orientationVisitor.localArray();
 
   // Get section containing coordinates of vertices
-  scalar_array coordinatesCell(numBasis * spaceDim); // :TODO: Remove copy.
   topology::CoordsVisitor coordsVisitor(faultDMMesh);
   PetscScalar *coordsCell = NULL;
   PetscInt coordsSize = 0;
@@ -1325,9 +1323,6 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
     // Get orientations at fault cell's vertices.
 
     coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
-    for(PetscInt i = 0; i < coordsSize; ++i) { // :TODO: Remove copy.
-      coordinatesCell[i] = coordsCell[i];
-    } // for
 
     PetscErrorCode err = DMPlexGetTransitiveClosure(faultDMMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
 
@@ -1342,8 +1337,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
     closureSize = q;
     for(PetscInt v = 0; v < closureSize; ++v) {
       // Compute Jacobian and determinant of Jacobian at vertex
-      memcpy(&refCoordsVertex[0], &verticesRef[v * cohesiveDim], cohesiveDim * sizeof(PylithScalar));
-      cellGeometry.jacobian(&jacobian, &jacobianDet, coordinatesCell, refCoordsVertex);
+      cellGeometry.jacobian(&jacobian, &jacobianDet, coordsCell, numBasis, spaceDim, &verticesRef[v*cohesiveDim], cohesiveDim);
 
       // Compute orientation
       cellGeometry.orientation(&orientationVertex, jacobian, jacobianDet, up);

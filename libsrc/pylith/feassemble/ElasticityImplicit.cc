@@ -261,7 +261,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(const topology::Field<
 
     // residualSection->view("After gravity contribution");
     // Compute B(transpose) * sigma, first computing strains
-    calcTotalStrainFn(&strainCell, basisDeriv, dispTpdtCell, numBasis, numQuadPts);
+    calcTotalStrainFn(&strainCell, basisDeriv, &dispTpdtCell[0], numBasis, spaceDim, numQuadPts);
     const scalar_array& stressCell = _material->calcStress(strainCell, true);
 
     CALL_MEMBER_FN(*this, elasticityResidualFn)(stressCell);
@@ -416,7 +416,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(topology::Jacobian* ja
     dispIncrVisitor.restoreClosure(&dispIncrCell, &dispIncrSize, cell);
       
     // Compute strains
-    calcTotalStrainFn(&strainCell, basisDeriv, dispTpdtCell, numBasis, numQuadPts);
+    calcTotalStrainFn(&strainCell, basisDeriv, &dispTpdtCell[0], numBasis, spaceDim, numQuadPts);
       
     // Get "elasticity" matrix at quadrature points for this cell
     const scalar_array& elasticConsts = _material->calcDerivElastic(strainCell);

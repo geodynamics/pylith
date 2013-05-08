@@ -198,7 +198,7 @@ pylith::feassemble::TestQuadratureEngine::_testComputeGeometry(
 
   // Check values from computeGeometry()
   engine->initialize();
-  engine->computeGeometry(vertCoords, 0);
+  engine->computeGeometry(&vertCoords[0], vertCoords.size(), 0);
 
   const PylithScalar tolerance = 1.0e-06;
   int size = numQuadPts * spaceDim;

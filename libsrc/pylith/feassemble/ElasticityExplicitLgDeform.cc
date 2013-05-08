@@ -42,8 +42,6 @@
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
-//#define PRECOMPUTE_GEOMETRY
-
 // ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::ElasticityExplicitLgDeform::ElasticityExplicitLgDeform(void) :
@@ -238,14 +236,8 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(const topology
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
     // Compute geometry information for current cell
-#if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(cell);
-#else
     coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
-    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coordsCell[i];} // :TODO: Remove copy
     _quadrature->computeGeometry(coordsCell, coordsSize, cell);
-    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
-#endif
 
     // Get state variables for cell.
     _material->retrievePropsAndVars(cell);
@@ -327,7 +319,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(const topology
     dispVisitor.restoreClosure(&dispCell, &dispSize, cell);
 
     // Compute B(transpose) * sigma, first computing strains
-    _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispAdjCell, numBasis, numQuadPts, spaceDim);
+    _calcDeformation(&deformCell, basisDeriv, coordsCell, &dispAdjCell[0], numBasis, numQuadPts, spaceDim);
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
     const scalar_array& stressCell = _material->calcStress(strainCell, true);
 
@@ -335,6 +327,8 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(const topology
     
     // Assemble cell contribution into field
     residualVisitor.setClosure(&_cellVector[0], _cellVector.size(), cell, ADD_VALUES);
+
+    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
   } // for
 
   _logger->eventEnd(computeEvent);
@@ -418,13 +412,9 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(topology::Fiel
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
     // Compute geometry information for current cell
-#if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(cell);
-#else
     coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
     _quadrature->computeGeometry(coordsCell, coordsSize, cell);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
-#endif
 
     // Get state variables for cell.
     _material->retrievePropsAndVars(cell);

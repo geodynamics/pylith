@@ -36,7 +36,6 @@
 #include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
-#include <cstring> // USES memcpy()
 #include <strings.h> // USES strcasecmp()
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
@@ -186,40 +185,35 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(const PylithScalar t,
   const PetscInt numCells = materialIS.size();
 
   // Setup visitors.
-  scalar_array dispTCell(numBasis*spaceDim);
   topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
-  PetscScalar* dispCell = NULL;
-  PetscInt dispSize = 0;
-
   topology::CoordsVisitor coordsVisitor(dmMesh);
-  PetscScalar* coordsCell = NULL;
-  PetscInt coordsSize = 0;
 
   // Loop over cells
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
     // Retrieve geometry information for current cell
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
+    PetscScalar* coordsCell = NULL;
+    PetscInt coordsSize = 0;
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
     _quadrature->computeGeometry(coordsCell, coordsSize, cell);
-    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
+    const scalar_array& basisDeriv = _quadrature->basisDeriv();
 
     // Get physical properties and state variables for cell.
     _material->retrievePropsAndVars(cell);
 
     // Restrict input fields to cell
-    dispVisitor.getClosure(&dispCell, &dispSize, cell);
-    assert(numBasis*spaceDim == dispSize);
-    for(PetscInt i = 0; i < dispSize; ++i) {dispTCell[i] = dispCell[i];} // :TODO: Remove copy
-    dispVisitor.restoreClosure(&dispCell, &dispSize, cell);
+    PetscScalar* dispCell = NULL;
+    PetscInt dispSize = 0;
+    dispVisitor.getClosure(&dispCell, &dispSize, cell);assert(dispCell);assert(numBasis*spaceDim == dispSize);
 
-    // Get cell geometry information that depends on cell
-    const scalar_array& basisDeriv = _quadrature->basisDeriv();
-  
     // Compute strains
-    calcTotalStrainFn(&strainCell, basisDeriv, dispTCell, numBasis, numQuadPts);
+    calcTotalStrainFn(&strainCell, basisDeriv, dispCell, numBasis, spaceDim, numQuadPts);
 
     // Update material state
     _material->updateStateVars(strainCell, cell);
+
+    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
+    dispVisitor.restoreClosure(&dispCell, &dispSize, cell);
   } // for
 
   PYLITH_METHOD_END;
@@ -539,17 +533,14 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(topology::Field
     _quadrature->computeGeometry(coordsCell, coordsSize, cell);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
 
-    // Restrict input fields to cell
+    // Get cell geometry information that depends on cell
     dispVisitor.getClosure(&dispCell, &dispSize, cell);
     assert(numBasis*spaceDim == dispSize);
-    for(PetscInt i = 0; i < dispSize; ++i) {dispCellTmp[i] = dispCell[i];} // :TODO: Remove copy
-    dispVisitor.restoreClosure(&dispCell, &dispSize, cell);
-
-    // Get cell geometry information that depends on cell
     const scalar_array& basisDeriv = _quadrature->basisDeriv();
     
     // Compute strains
-    calcTotalStrainFn(&strainCell, basisDeriv, dispCellTmp, numBasis, numQuadPts);
+    calcTotalStrainFn(&strainCell, basisDeriv, dispCell, numBasis, spaceDim, numQuadPts);
+    dispVisitor.restoreClosure(&dispCell, &dispSize, cell);
     
     const PetscInt off = fieldVisitor.sectionOffset(cell);
     assert(tensorCellSize == fieldVisitor.sectionDof(cell));
@@ -973,8 +964,9 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian3D(const scalar_arr
 void
 pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D(scalar_array* strain,
 							     const scalar_array& basisDeriv,
-							     const scalar_array& disp,
+							     const PylithScalar* disp,
 							     const int numBasis,
+							     const int spaceDim,
 							     const int numQuadPts)
 { // calcTotalStrain1D
   assert(strain);
@@ -982,7 +974,7 @@ pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D(scalar_array* strai
   const int dim = 1;
   
   assert(basisDeriv.size() == numQuadPts*numBasis*dim);
-  assert(disp.size() == numBasis*dim);
+  assert(dim == spaceDim);
 
   (*strain) = 0.0;
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
@@ -995,8 +987,9 @@ pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D(scalar_array* strai
 void
 pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D(scalar_array* strain,
 							     const scalar_array& basisDeriv,
-							     const scalar_array& disp,
+							     const PylithScalar* disp,
 							     const int numBasis,
+							     const int spaceDim,
 							     const int numQuadPts)
 { // calcTotalStrain2D
   assert(strain);
@@ -1005,18 +998,15 @@ pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D(scalar_array* strai
   const int strainSize = 3;
 
   assert(basisDeriv.size() == numQuadPts*numBasis*dim);
-  assert(disp.size() == numBasis*dim);
+  assert(dim == spaceDim);
 
   (*strain) = 0.0;
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
     for (int iBasis=0, iQ=iQuad*numBasis*dim; iBasis < numBasis; ++iBasis) {
-      (*strain)[iQuad*strainSize+0] += 
-	basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim  ];
-      (*strain)[iQuad*strainSize+1] += 
-	basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim+1];
-      (*strain)[iQuad*strainSize+2] += 
-	0.5 * (basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim  ] +
-	       basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim+1]);
+      (*strain)[iQuad*strainSize+0] += basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim  ];
+      (*strain)[iQuad*strainSize+1] += basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim+1];
+      (*strain)[iQuad*strainSize+2] += 0.5 * (basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim  ] +
+					      basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim+1]);
     } // for
 } // calcTotalStrain2D
 
@@ -1024,8 +1014,9 @@ pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D(scalar_array* strai
 void
 pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D(scalar_array* strain,
 							     const scalar_array& basisDeriv,
-							     const scalar_array& disp,
+							     const PylithScalar* disp,
 							     const int numBasis,
+							     const int spaceDim,
 							     const int numQuadPts)
 { // calcTotalStrain3D
   assert(strain);
@@ -1034,26 +1025,20 @@ pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D(scalar_array* strai
   const int strainSize = 6;
 
   assert(basisDeriv.size() == numQuadPts*numBasis*dim);
-  assert(disp.size() == numBasis*dim);
+  assert(dim == spaceDim);
 
   (*strain) = 0.0;
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
     for (int iBasis=0, iQ=iQuad*numBasis*dim; iBasis < numBasis; ++iBasis) {
-      (*strain)[iQuad*strainSize  ] += basisDeriv[iQ+iBasis*dim]
-          * disp[iBasis*dim];
-      (*strain)[iQuad*strainSize+1] += basisDeriv[iQ+iBasis*dim+1]
-          * disp[iBasis*dim+1];
-      (*strain)[iQuad*strainSize+2] += basisDeriv[iQ+iBasis*dim+2]
-          * disp[iBasis*dim+2];
-      (*strain)[iQuad*strainSize+3] +=
-          0.5 * (basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim  ] +
-                 basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim+1]);
-      (*strain)[iQuad*strainSize+4] +=
-          0.5 * (basisDeriv[iQ+iBasis*dim+2] * disp[iBasis*dim+1] +
-                 basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim+2]);
-      (*strain)[iQuad*strainSize+5] +=
-          0.5 * (basisDeriv[iQ+iBasis*dim+2] * disp[iBasis*dim  ] +
-                 basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim+2]);
+      (*strain)[iQuad*strainSize  ] += basisDeriv[iQ+iBasis*dim] * disp[iBasis*dim];
+      (*strain)[iQuad*strainSize+1] += basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim+1];
+      (*strain)[iQuad*strainSize+2] += basisDeriv[iQ+iBasis*dim+2] * disp[iBasis*dim+2];
+      (*strain)[iQuad*strainSize+3] += 0.5 * (basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim  ] +
+					      basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim+1]);
+      (*strain)[iQuad*strainSize+4] += 0.5 * (basisDeriv[iQ+iBasis*dim+2] * disp[iBasis*dim+1] +
+					      basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim+2]);
+      (*strain)[iQuad*strainSize+5] += 0.5 * (basisDeriv[iQ+iBasis*dim+2] * disp[iBasis*dim  ] +
+					      basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim+2]);
     } // for
 } // calcTotalStrain3D
 

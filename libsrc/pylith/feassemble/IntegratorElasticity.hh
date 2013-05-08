@@ -51,7 +51,8 @@ public :
 
   typedef void (*totalStrain_fn_type)(scalar_array*,
 				      const scalar_array&,
-				      const scalar_array&,
+				      const PylithScalar*,
+				      const int,
 				      const int,
 				      const int);
   
@@ -196,15 +197,16 @@ protected :
    * @param strain Strain tensor at quadrature points.
    * @param basisDeriv Derivatives of basis functions at quadrature points.
    * @param disp Displacement at vertices of cell.
-   * @param dimension Dimension of cell.
    * @param numBasis Number of basis functions for cell.
+   * @param spaceDim Spatial dimension.
    * @param numQuadPts Number of quadrature points.
    */
   static
   void _calcTotalStrain1D(scalar_array* strain,
 			  const scalar_array& basisDeriv,
-			  const scalar_array& disp,
+			  const PylithScalar* disp,
 			  const int numBasis,
+			  const int spaceDim,
 			  const int numQuadPts);
 
   /** Compute total strain in at quadrature points of a cell.
@@ -213,13 +215,15 @@ protected :
    * @param basisDeriv Derivatives of basis functions at quadrature points.
    * @param disp Displacement at vertices of cell.
    * @param numBasis Number of basis functions for cell.
+   * @param spaceDim Spatial dimension.
    * @param numQuadPts Number of quadrature points.
    */
   static
   void _calcTotalStrain2D(scalar_array* strain,
 			  const scalar_array& basisDeriv,
-			  const scalar_array& disp,
+			  const PylithScalar* disp,
 			  const int numBasis,
+			  const int spaceDim,
 			  const int numQuadPts);
 
   /** Compute total strain in at quadrature points of a cell.
@@ -228,19 +232,16 @@ protected :
    * @param basisDeriv Derivatives of basis functions at quadrature points.
    * @param disp Displacement at vertices of cell.
    * @param numBasis Number of basis functions for cell.
+   * @param spaceDim Spatial dimension.
    * @param numQuadPts Number of quadrature points.
    */
   static
   void _calcTotalStrain3D(scalar_array* strain,
 			  const scalar_array& basisDeriv,
-			  const scalar_array& disp,
+			  const PylithScalar* disp,
 			  const int numBasis,
+			  const int spaceDim,
 			  const int numQuadPts);
-
-// PROTECTED TYPEDEFS ///////////////////////////////////////////////////
-protected :
-
-  typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
