@@ -112,7 +112,6 @@ pylith::feassemble::IntegratorElasticityLgDeform::updateStateVars(const PylithSc
   scalar_array dispTCell(numBasis*spaceDim);
   topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
 
-  scalar_array coordinatesCell(numBasis*spaceDim);
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
   // Loop over cells
@@ -199,7 +198,6 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(topolog
   topology::VecVisitorMesh fieldVisitor(*field);
   PetscScalar* fieldArray = fieldVisitor.localArray();
 
-  scalar_array coordinatesCell(numBasis*spaceDim);
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
   // Loop over cells

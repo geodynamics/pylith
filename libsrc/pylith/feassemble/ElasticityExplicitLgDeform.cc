@@ -199,16 +199,11 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(const topology
   const PetscInt numCells = materialIS.size();
 
   // Setup field visitors.
-  topology::VecVisitorMesh accVisitor(fields->get("acceleration(t)"));
-
-  topology::VecVisitorMesh velVisitor(fields->get("velocity(t)"));
-
   scalar_array dispAdjCell(numBasis*spaceDim);
+  topology::VecVisitorMesh accVisitor(fields->get("acceleration(t)"));
+  topology::VecVisitorMesh velVisitor(fields->get("velocity(t)"));
   topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
-  
   topology::VecVisitorMesh residualVisitor(residual);
-
-  scalar_array coordinatesCell(numBasis*spaceDim);
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
   assert(_normalizer);

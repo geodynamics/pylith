@@ -414,7 +414,6 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
   const int spaceDim = quadrature->spaceDim();
   const int numBasis = quadrature->numBasis();
 
-  scalar_array coordinatesCell(numBasis*spaceDim);
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
   PylithScalar dtStable = pylith::PYLITH_MAXSCALAR;
