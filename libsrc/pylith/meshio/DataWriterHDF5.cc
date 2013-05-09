@@ -120,10 +120,10 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     err = DMGetCoordinateDM(dmMesh, &dmCoord);PYLITH_CHECK_ERROR(err);assert(dmCoord);
     err = PetscObjectReference((PetscObject) dmCoord);PYLITH_CHECK_ERROR(err);
     err = DMGetCoordinatesLocal(dmMesh, &coordinates);PYLITH_CHECK_ERROR(err);
-    topology::Field<mesh_type> field(mesh, dmCoord, coordinates, metadata);
-    field.createScatterWithBC(mesh, "", 0, metadata.label.c_str());
-    field.scatterSectionToVector(metadata.label.c_str());
-    PetscVec coordVector = field.vector(metadata.label.c_str());assert(coordVector);
+    topology::Field<mesh_type> coordinatesField(mesh, dmCoord, coordinates, metadata);
+    coordinatesField.createScatterWithBC(mesh, "", 0, metadata.label.c_str());
+    coordinatesField.scatterSectionToVector(metadata.label.c_str());
+    PetscVec coordVector = coordinatesField.vector(metadata.label.c_str());assert(coordVector);
     err = VecScale(coordVector, lengthScale);PYLITH_CHECK_ERROR(err);
     err = PetscViewerHDF5PushGroup(_viewer, "/geometry");PYLITH_CHECK_ERROR(err);
     err = VecView(coordVector, _viewer);PYLITH_CHECK_ERROR(err);
