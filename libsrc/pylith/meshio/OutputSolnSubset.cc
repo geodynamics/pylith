@@ -90,8 +90,7 @@ pylith::meshio::OutputSolnSubset::subdomainMesh(const topology::Mesh& mesh)
 { // subdomainMesh
   PYLITH_METHOD_BEGIN;
 
-  delete _submesh; _submesh = new topology::SubMesh(mesh, _label.c_str());
-  assert(_submesh);
+  delete _submesh; _submesh = new topology::SubMesh(mesh, _label.c_str());assert(_submesh);
 
   PYLITH_METHOD_RETURN(*_submesh);
 } // subdomainMesh
