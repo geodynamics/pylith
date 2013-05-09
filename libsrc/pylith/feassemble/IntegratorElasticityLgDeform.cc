@@ -111,24 +111,23 @@ pylith::feassemble::IntegratorElasticityLgDeform::updateStateVars(const PylithSc
 
   scalar_array dispTCell(numBasis*spaceDim);
   topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
-  PetscScalar* dispCell = NULL;
-  PetscInt dispSize = 0;
 
   scalar_array coordinatesCell(numBasis*spaceDim);
   topology::CoordsVisitor coordsVisitor(dmMesh);
-  PetscScalar* coordsCell = NULL;
-  PetscInt coordsSize = 0;
 
   // Loop over cells
   for (PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
     // Retrieve geometry information for current cell
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
+    PetscScalar* coordsCell = NULL;
+    PetscInt coordsSize = 0;
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
     _quadrature->computeGeometry(coordsCell, coordsSize, cell);
     const scalar_array& basisDeriv = _quadrature->basisDeriv();
 
-    dispVisitor.getClosure(&dispCell, &dispSize, cell);
-    assert(numBasis*spaceDim == dispSize);
+    PetscScalar* dispCell = NULL;
+    PetscInt dispSize = 0;
+    dispVisitor.getClosure(&dispCell, &dispSize, cell);assert(dispCell);assert(numBasis*spaceDim == dispSize);
   
     // Compute deformation tensor.
     _calcDeformation(&deformCell, basisDeriv, coordsCell, dispCell, numBasis, numQuadPts, spaceDim);

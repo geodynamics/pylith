@@ -1310,8 +1310,6 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
 
   // Get section containing coordinates of vertices
   topology::CoordsVisitor coordsVisitor(faultDMMesh);
-  PetscScalar *coordsCell = NULL;
-  PetscInt coordsSize = 0;
 
   // Loop over cohesive cells, computing orientation weighted by
   // jacobian at constraint vertices
@@ -1322,7 +1320,9 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
 
     // Get orientations at fault cell's vertices.
 
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
+    PetscScalar *coordsCell = NULL;
+    PetscInt coordsSize = 0;
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, c);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
 
     PetscErrorCode err = DMPlexGetTransitiveClosure(faultDMMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
 
@@ -1562,15 +1562,15 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
   scalar_array areaCell(numBasis);
 
   topology::CoordsVisitor coordsVisitor(faultDMMesh);
-  PetscScalar* coordsCell = NULL;
-  PetscInt coordsSize = 0;
 
   // Loop over cells in fault mesh, compute area
   for(PetscInt c = cStart; c < cEnd; ++c) {
     areaCell = 0.0;
 
     // Compute geometry information for current cell
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
+    PetscScalar* coordsCell = NULL;
+    PetscInt coordsSize = 0;
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, c);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
     _quadrature->computeGeometry(coordsCell, coordsSize, c);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
 

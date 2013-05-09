@@ -123,7 +123,9 @@ pylith::feassemble::GeometryPoint3D::jacobian(PylithScalar* jacobian,
 // ----------------------------------------------------------------------
 // Compute minimum width across cell.
 PylithScalar
-pylith::feassemble::GeometryPoint3D::minCellWidth(const scalar_array& coordinatesCell) const
+pylith::feassemble::GeometryPoint3D::minCellWidth(const PylithScalar* coordinatesCell,
+						  const int numVertices,
+						  const int spaceDim) const
 { // minCellWidth
   return PYLITH_MAXSCALAR;
 } // minCellWidth

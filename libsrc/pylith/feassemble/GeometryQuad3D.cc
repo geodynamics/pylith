@@ -272,11 +272,15 @@ pylith::feassemble::GeometryQuad3D::jacobian(PylithScalar* jacobian,
 // ----------------------------------------------------------------------
 // Compute minimum width across cell.
 PylithScalar
-pylith::feassemble::GeometryQuad3D::minCellWidth(const scalar_array& coordinatesCell) const
+pylith::feassemble::GeometryQuad3D::minCellWidth(const PylithScalar* coordinatesCell,
+						 const int numVertices,
+						 const int spaceDim) const
 { // minCellWidth
   const int numCorners = 4;
-  const int spaceDim = 3;
-  assert(numCorners*spaceDim == coordinatesCell.size());
+  const int dim = 3;
+
+  assert(numCorners == numVertices);
+  assert(dim == spaceDim);
 
   const int numEdges = 4;
   const int edges[numEdges][2] = {
@@ -287,12 +291,12 @@ pylith::feassemble::GeometryQuad3D::minCellWidth(const scalar_array& coordinates
   for (int iedge=0; iedge < numEdges; ++iedge) {
     const int iA = edges[iedge][0];
     const int iB = edges[iedge][1];
-    const PylithScalar xA = coordinatesCell[spaceDim*iA  ];
-    const PylithScalar yA = coordinatesCell[spaceDim*iA+1];
-    const PylithScalar zA = coordinatesCell[spaceDim*iA+2];
-    const PylithScalar xB = coordinatesCell[spaceDim*iB  ];
-    const PylithScalar yB = coordinatesCell[spaceDim*iB+1];
-    const PylithScalar zB = coordinatesCell[spaceDim*iB+2];
+    const PylithScalar xA = coordinatesCell[dim*iA  ];
+    const PylithScalar yA = coordinatesCell[dim*iA+1];
+    const PylithScalar zA = coordinatesCell[dim*iA+2];
+    const PylithScalar xB = coordinatesCell[dim*iB  ];
+    const PylithScalar yB = coordinatesCell[dim*iB+1];
+    const PylithScalar zB = coordinatesCell[dim*iB+2];
     
     const PylithScalar edgeLen = sqrt(pow(xB-xA,2) + pow(yB-yA,2) + pow(zB-zA,2));
     if (edgeLen < minWidth) {

@@ -160,10 +160,15 @@ public :
   /** Compute minimum width across cell.
    *
    * @param coordinatesCell Coordinates of vertices in cell.
+   * @param numVertices Number of vertices in cell.
+   * @param spaceDim Coordinate dimension.
+   *
    * @returns Minimum width across cell.
    */
   virtual
-  PylithScalar minCellWidth(const scalar_array& coordinatesCell) const = 0;
+  PylithScalar minCellWidth(const PylithScalar* coordinatesCell,
+			    const int numVertices,
+			    const int spaceDim) const = 0;
 
   /** Compute orientation of cell at location.
    *

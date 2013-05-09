@@ -253,12 +253,16 @@ pylith::feassemble::GeometryTet3D::jacobian(PylithScalar* jacobian,
 // ----------------------------------------------------------------------
 // Compute minimum width across cell.
 PylithScalar
-pylith::feassemble::GeometryTet3D::minCellWidth(const scalar_array& coordinatesCell) const
+pylith::feassemble::GeometryTet3D::minCellWidth(const PylithScalar* coordinatesCell,
+						const int numVertices,
+						const int spaceDim) const
 { // minCellWidth
   const int numCorners = 4;
-  const int spaceDim = 3;
-  assert(4*spaceDim == coordinatesCell.size() ||
-	 10*spaceDim == coordinatesCell.size()); // :KLUDGE: allow quadratic
+  const int dim = 3;
+
+  assert(numCorners == numVertices || // linear
+	 numCorners+6 == numVertices); // quadratic
+  assert(dim == spaceDim);
 
   const int numEdges = 6;
   const int edges[numEdges][2] = {
@@ -270,12 +274,12 @@ pylith::feassemble::GeometryTet3D::minCellWidth(const scalar_array& coordinatesC
   for (int iedge=0; iedge < numEdges; ++iedge) {
     const int iA = edges[iedge][0];
     const int iB = edges[iedge][1];
-    const PylithScalar xA = coordinatesCell[spaceDim*iA  ];
-    const PylithScalar yA = coordinatesCell[spaceDim*iA+1];
-    const PylithScalar zA = coordinatesCell[spaceDim*iA+2];
-    const PylithScalar xB = coordinatesCell[spaceDim*iB  ];
-    const PylithScalar yB = coordinatesCell[spaceDim*iB+1];
-    const PylithScalar zB = coordinatesCell[spaceDim*iB+2];
+    const PylithScalar xA = coordinatesCell[dim*iA  ];
+    const PylithScalar yA = coordinatesCell[dim*iA+1];
+    const PylithScalar zA = coordinatesCell[dim*iA+2];
+    const PylithScalar xB = coordinatesCell[dim*iB  ];
+    const PylithScalar yB = coordinatesCell[dim*iB+1];
+    const PylithScalar zB = coordinatesCell[dim*iB+2];
     
     const PylithScalar edgeLen = sqrt(pow(xB-xA,2) + pow(yB-yA,2) + pow(zB-zA,2));
     if (edgeLen < minWidth) {
@@ -286,11 +290,11 @@ pylith::feassemble::GeometryTet3D::minCellWidth(const scalar_array& coordinatesC
   PetscLogFlops(numEdges*9);
 
   // Radius of inscribed sphere
-  const PylithScalar v = volume(coordinatesCell);
-  const PylithScalar a = faceArea(coordinatesCell, 0) +
-    faceArea(coordinatesCell, 1) +
-    faceArea(coordinatesCell, 2) +
-    faceArea(coordinatesCell, 3);
+  const PylithScalar v = volume(coordinatesCell, numVertices, spaceDim);
+  const PylithScalar a = faceArea(coordinatesCell, numVertices, spaceDim, 0) +
+    faceArea(coordinatesCell, numVertices, spaceDim, 1) +
+    faceArea(coordinatesCell, numVertices, spaceDim, 2) +
+    faceArea(coordinatesCell, numVertices, spaceDim, 3);
     
   const PylithScalar r = 3.0 * v / a;
   const PylithScalar rwidth = 6.38*r; // based on empirical tests
@@ -306,10 +310,16 @@ pylith::feassemble::GeometryTet3D::minCellWidth(const scalar_array& coordinatesC
 // ----------------------------------------------------------------------
 // Compute cell volume.
 PylithScalar
-pylith::feassemble::GeometryTet3D::volume(const scalar_array& coordinatesCell) const
+pylith::feassemble::GeometryTet3D::volume(const PylithScalar* coordinatesCell,
+					  const int numVertices,
+					  const int spaceDim) const
 { // volume
-  assert(12 == coordinatesCell.size() ||
-	 30 == coordinatesCell.size()); // :KLUDGE: allow quadratic
+  const int numCorners = 4;
+  const int dim = 3;
+
+  assert(numCorners == numVertices || // linear
+	 numCorners+6 == numVertices); // quadratic
+  assert(dim == spaceDim);
   
   const PylithScalar x0 = coordinatesCell[0];
   const PylithScalar y0 = coordinatesCell[1];
@@ -342,11 +352,17 @@ pylith::feassemble::GeometryTet3D::volume(const scalar_array& coordinatesCell) c
 // ----------------------------------------------------------------------
 // Compute area of face.
 PylithScalar
-pylith::feassemble::GeometryTet3D::faceArea(const scalar_array& coordinatesCell,
-	 const int face) const
+pylith::feassemble::GeometryTet3D::faceArea(const PylithScalar* coordinatesCell,
+					    const int numVertices,
+					    const int spaceDim,
+					    const int face) const
 { // faceArea
-  assert(12 == coordinatesCell.size() ||
-	 30 == coordinatesCell.size()); // :KLUDGE: allow quadratic
+  const int numCorners = 4;
+  const int dim = 3;
+
+  assert(numCorners == numVertices || // linear
+	 numCorners+6 == numVertices); // quadratic
+  assert(dim == spaceDim);
 
   const PylithScalar x0 = coordinatesCell[0];
   const PylithScalar y0 = coordinatesCell[1];

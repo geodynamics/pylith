@@ -118,24 +118,37 @@ public :
   /** Compute minimum width across cell.
    *
    * @param coordinatesCell Coordinates of vertices in cell.
+   * @param numVertices Number of vertices in cell.
+   * @param spaceDim Coordinate dimension.
+   *
    * @returns Minimum width across cell.
    */
-  PylithScalar minCellWidth(const scalar_array& coordinatesCell) const;
+  PylithScalar minCellWidth(const PylithScalar* coordinatesCell,
+			    const int numVertices,
+			    const int spaceDim) const;
 
   /** Compute cell volume.
    *
    * @param coordinatesCell Coordinates of vertices in cell.
+   * @param numVertices Number of vertices in cell.
+   * @param spaceDim Coordinate dimension.
    * @returns Volume of cell.
    */
-  PylithScalar volume(const scalar_array& coordinatesCell) const;
+  PylithScalar volume(const PylithScalar* coordinatesCell,
+		      const int numVertices,
+		      const int spaceDim) const;
 
   /** Compute area of face.
    *
    * @param coordinatesCell Coordinates of vertices in cell.
+   * @param numVertices Number of vertices in cell.
+   * @param spaceDim Coordinate dimension.
    * @param face Index of vertex across from face.
    * @returns Area of cell face.
    */
-  PylithScalar faceArea(const scalar_array& coordinatesCell,
+  PylithScalar faceArea(const PylithScalar* coordinatesCell,
+			const int numVertices,
+			const int spaceDim,
 			const int face) const;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////

@@ -139,8 +139,6 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   topology::Field<topology::SubMesh>& dampingConsts = _parameters->get("damping constants");
   topology::VecVisitorMesh dampingConstsVisitor(dampingConsts);
 
-  PetscScalar *coordsCell = NULL;
-  PetscInt coordsSize = 0;
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
 
   assert(_normalizer);
@@ -158,7 +156,9 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
 
   for(PetscInt c = cStart; c < cEnd; ++c) {
     // Compute geometry information for current cell
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
+    PetscScalar *coordsCell = NULL;
+    PetscInt coordsSize = 0;
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, c);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
     _quadrature->computeGeometry(coordsCell, coordsSize, c);
 
     const PetscInt doff = dampingConstsVisitor.sectionOffset(c);
@@ -263,14 +263,10 @@ pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field<topology::
   // Use _cellVector for cell residual.
   topology::VecVisitorSubMesh residualVisitor(residual, submeshIS);
 
-  PetscScalar *velocityArray = NULL;
-  PetscInt velocitySize = 0;
   topology::VecVisitorSubMesh velocityVisitor(fields->get("velocity(t)"), submeshIS);
 
   submeshIS.deallocate();
   
-  PetscScalar* coordsCell = NULL;
-  PetscInt coordsSize = 0;
 topology::CoordsVisitor coordsVisitor(dmSubMesh);
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
@@ -288,7 +284,9 @@ topology::CoordsVisitor coordsVisitor(dmSubMesh);
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
+    PetscScalar* coordsCell = NULL;
+    PetscInt coordsSize = 0;
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, c);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
     _quadrature->computeGeometry(coordsCell, coordsSize, c);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
 
@@ -301,8 +299,9 @@ topology::CoordsVisitor coordsVisitor(dmSubMesh);
     _resetCellVector();
 
     // Restrict input fields to cell
-    velocityVisitor.getClosure(&velocityArray, &velocitySize, c);
-    assert(velocitySize == numBasis*spaceDim);
+    PetscScalar *velocityCell = NULL;
+    PetscInt velocitySize = 0;
+    velocityVisitor.getClosure(&velocityCell, &velocitySize, c);assert(velocityCell);assert(numBasis*spaceDim == velocitySize);
 
     const PetscInt doff = dampingConstsVisitor.sectionOffset(c);
     assert(numQuadPts*spaceDim == dampingConstsVisitor.sectionDof(c));
@@ -327,11 +326,11 @@ topology::CoordsVisitor coordsVisitor(dmSubMesh);
           for (int iDim=0; iDim < spaceDim; ++iDim)
             _cellVector[iBasis*spaceDim+iDim] -= 
               dampingConstsArray[doff+iQuad*spaceDim+iDim] *
-              valIJ * velocityArray[jBasis*spaceDim+iDim];
+              valIJ * velocityCell[jBasis*spaceDim+iDim];
         } // for
       } // for
     } // for
-    velocityVisitor.restoreClosure(&velocityArray, &velocitySize, c);
+    velocityVisitor.restoreClosure(&velocityCell, &velocitySize, c);
 
     residualVisitor.setClosure(&_cellVector[0], _cellVector.size(), c, ADD_VALUES);
 
@@ -403,14 +402,10 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(const topology::Field<topo
   // Use _cellVector for cell values.
   topology::VecVisitorSubMesh residualVisitor(residual, submeshIS);
 
-  PetscScalar *velocityArray = NULL;
-  PetscInt velocitySize;
   topology::VecVisitorSubMesh velocityVisitor(fields->get("velocity(t)"), submeshIS);
 
   submeshIS.deallocate();
 
-  PetscScalar *coordsCell = NULL;
-  PetscInt coordsSize = 0;
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
 
   _logger->eventEnd(setupEvent);
@@ -423,7 +418,9 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(const topology::Field<topo
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
+    PetscScalar *coordsCell = NULL;
+    PetscInt coordsSize = 0;
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, c);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
     _quadrature->computeGeometry(coordsCell, coordsSize, c);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
 
@@ -436,8 +433,9 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(const topology::Field<topo
     _resetCellVector();
 
     // Restrict input fields to cell
-    velocityVisitor.getClosure(&velocityArray, &velocitySize, c);
-    assert(velocitySize == numBasis*spaceDim);
+    PetscScalar *velocityCell = NULL;
+    PetscInt velocitySize;
+    velocityVisitor.getClosure(&velocityCell, &velocitySize, c);assert(velocityCell);assert(velocitySize == numBasis*spaceDim);
 
     const PetscInt doff = dampingConstsVisitor.sectionOffset(c);
     assert(numQuadPts*spaceDim == dampingConstsVisitor.sectionDof(c));
@@ -464,10 +462,10 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(const topology::Field<topo
         for (int iDim = 0; iDim < spaceDim; ++iDim)
           _cellVector[iBasis*spaceDim+iDim] -= 
             dampingConstsArray[doff+iQuad*spaceDim+iDim] *
-            valIJ * velocityArray[iBasis*spaceDim+iDim];
+            valIJ * velocityCell[iBasis*spaceDim+iDim];
       } // for
     } // for
-    velocityVisitor.restoreClosure(&velocityArray, &velocitySize, c);
+    velocityVisitor.restoreClosure(&velocityCell, &velocitySize, c);
 
     residualVisitor.setClosure(&_cellVector[0], _cellVector.size(), c, ADD_VALUES);
 
@@ -545,8 +543,6 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Jacobian* jacobian,
   // Allocate matrix for cell values.
   _initCellMatrix();
 
-  PetscScalar *coordsCell = NULL;
-  PetscInt coordsSize = 0;
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
 
   _logger->eventEnd(setupEvent);
@@ -559,7 +555,9 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Jacobian* jacobian,
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
+    PetscScalar *coordsCell = NULL;
+    PetscInt coordsSize = 0;
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, c);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
     _quadrature->computeGeometry(coordsCell, coordsSize, c);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
 
@@ -678,8 +676,6 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Field<topology::Mesh>*
 
   submeshIS.deallocate();
   
-  PetscScalar* coordsCell = NULL;
-  PetscInt coordsSize = 0;
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
 
   _logger->eventEnd(setupEvent);
@@ -692,7 +688,9 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Field<topology::Mesh>*
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
+    PetscScalar* coordsCell = NULL;
+    PetscInt coordsSize = 0;
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, c);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
     _quadrature->computeGeometry(coordsCell, coordsSize, c);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
 

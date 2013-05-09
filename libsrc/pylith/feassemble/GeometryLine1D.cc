@@ -151,12 +151,17 @@ pylith::feassemble::GeometryLine1D::jacobian(PylithScalar* jacobian,
 // ----------------------------------------------------------------------
 // Compute minimum width across cell.
 PylithScalar
-pylith::feassemble::GeometryLine1D::minCellWidth(const scalar_array& coordinatesCell) const
+pylith::feassemble::GeometryLine1D::minCellWidth(const PylithScalar* coordinatesCell,
+						 const int numVertices,
+						 const int spaceDim) const
 { // minCellWidth
   const int numCorners = 2;
-  const int spaceDim = 1;
-  assert(2*spaceDim == coordinatesCell.size() ||
-	 3*spaceDim == coordinatesCell.size()); // :KLUDGE: allow quadratic
+  const int dim = 1;
+
+  assert(coordinatesCell);
+  assert(numCorners == numVertices || // linear
+	 numCorners+1 == numVertices); // quadratic
+  assert(dim == spaceDim);
 
   const PylithScalar xA = coordinatesCell[0];
   const PylithScalar xB = coordinatesCell[1];
