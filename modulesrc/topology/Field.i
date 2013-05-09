@@ -22,20 +22,6 @@
  * @brief Python interface to C++ Field object.
  */
 
-// Typemaps for returning reference in operator+=. The default
-// behavior is that the Python object will gain ownership. We want the
-// C++ object to retain ownership. This could be alleviated by using a
-// shared pointer.
-%typemap(out) pylith::topology::Field<pylith::topology::Mesh>& {
-  $result = SWIG_NewPointerObj(SWIG_as_voidptr($1), $descriptor(pylith::topology::Field<pylith::topology::Mesh>*), 0 | 0);
-  return $result;
- }
-%typemap(out) pylith::topology::Field<pylith::topology::SubMesh>& {
-  $result = SWIG_NewPointerObj(SWIG_as_voidptr($1), $descriptor(pylith::topology::Field<pylith::topology::SubMesh>*), 0 | 0);
-  return $result;
- }
-
-
 namespace pylith {
   namespace topology {
 
@@ -183,8 +169,8 @@ namespace pylith {
        *
        * @param field Field to add.
        */
-      Field& operator+=(const Field& field);
-      
+      void add(const Field& field);
+
       /** Dimensionalize field. Throws runtime_error if field is not
        * allowed to be dimensionalized.
        */

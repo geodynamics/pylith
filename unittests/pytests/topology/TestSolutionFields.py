@@ -111,7 +111,7 @@ def helper_fieldAdd(fields):
   fieldA.allocate()
   fieldB.allocate()
 
-  fieldA += fieldB    
+  fieldA.add(fieldB)
   return
 
 

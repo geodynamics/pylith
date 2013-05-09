@@ -156,11 +156,11 @@ class TestMeshField(unittest.TestCase):
 
   def test_operatorAdd(self):
     """
-    Test operator+=.
+    Test add().
     """
     fieldB = MeshField(self.mesh)
     fieldB.allocate()
-    self.field += fieldB
+    self.field.add(fieldB)
 
     # No test of result
     return
