@@ -84,114 +84,67 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
     err = DMPlexCreateSubmesh(subdm, labelName, 1, &faultBoundaryDM);PYLITH_CHECK_ERROR(err);
     faultMesh->setDMMesh(subdm);
   } else {
-#if 1
-    // TODO: This leg will be unnecessary
-    ALE::Obj<SieveSubMesh>&                  faultSieveMesh = faultMesh->sieveMesh();
-    faultSieveMesh = new SieveSubMesh(mesh.comm(), mesh.dimension()-1, mesh.debug());
-    const ALE::Obj<SieveSubMesh::sieve_type> ifaultSieve = new SieveMesh::sieve_type(mesh.comm(), mesh.debug());
-    assert(!ifaultSieve.isNull());
-
-    ALE::Obj<SieveFlexMesh>             fault      = new SieveFlexMesh(mesh.comm(), mesh.dimension()-1, mesh.debug());
-    ALE::Obj<SieveFlexMesh::sieve_type> faultSieve = new SieveFlexMesh::sieve_type(mesh.comm(), mesh.debug());
-    assert(!fault.isNull());assert(!faultSieve.isNull());
-    const int debug = mesh.debug();
-
-    // Create set with vertices on fault
+    DM              faultDMMeshTmp, faultDMMesh;
+    DMLabel         subpointMapTmp, subpointMap;
     IS              pointIS;
     const PetscInt *points;
-    PetscInt        numPoints, vStart, vEnd;
-    TopologyOps::PointSet faultVertices; // Vertices on fault
-    
-    err = DMLabelGetStratumIS(groupField, 1, &pointIS);PYLITH_CHECK_ERROR(err);
-    err = ISGetLocalSize(pointIS, &numPoints);PYLITH_CHECK_ERROR(err);
-    err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
-    // Figure out offset between numberings
-    PetscInt numNormalCells, numCohesiveCells, numNormalVertices, numShadowVertices, numLagrangeVertices;
-    mesh.getPointTypeSizes(&numNormalCells, &numCohesiveCells, &numNormalVertices, &numShadowVertices, &numLagrangeVertices);
-    for (PetscInt p = 0; p < numPoints; ++p) {
-      const PetscInt point    = points[p];
-      const PetscInt oldPoint = point-numCohesiveCells; // Convert to Sieve numbering
-
-      assert(point >= vStart);assert(point < vEnd);
-      faultVertices.insert(oldPoint);
-    } // for
-
-    const ALE::Obj<SieveMesh>&             sieveMesh = mesh.sieveMesh();
-    assert(!sieveMesh.isNull());
-    const ALE::Obj<SieveMesh::sieve_type>& sieve     = sieveMesh->getSieve();
-    assert(!sieve.isNull());
-
-    // Create a sieve which captures the fault
-    const bool vertexFault = true;
-    const int firstFaultCell = sieve->getBaseSize() + sieve->getCapSize();
-
-    TopologyOps::createFaultSieveFromVertices(fault->getDimension(), firstFaultCell, 
-                                              faultVertices, sieveMesh, 
-                                              fault->getArrowSection("orientation"), 
-                                              faultSieve, flipFault);
-    fault->setSieve(faultSieve);
-
-    logger.stagePop();
-    logger.stagePush("SerialFaultStratification");
-    fault->stratify();
-    logger.stagePop();
-    logger.stagePush("SerialFaultCreation");
-    if (debug) fault->view("Fault mesh");
-
-    faultBoundary = ALE::Selection<SieveFlexMesh>::boundary(fault);
-    if (debug) faultBoundary->view("Fault boundary mesh");
-
-    // Orient the fault sieve
-    TopologyOps::orientFaultSieve(fault->getDimension(), sieveMesh,
-                                  fault->getArrowSection("orientation"), fault);
-
-    // Convert fault to an IMesh
-    SieveSubMesh::renumbering_type& renumbering = faultSieveMesh->getRenumbering();
-    faultSieveMesh->setSieve(ifaultSieve);
-    ALE::ISieveConverter::convertMesh(*fault, *faultSieveMesh, renumbering, false);
-    renumbering.clear();
-
-    DM             faultDMMesh;
-    DMLabel        subpointMap;
-    PetscInt      *renum;
-    PetscInt       pStart, pEnd, cfStart, cfEnd, vfStart, vfEnd;
-    PetscErrorCode err;
-    SieveSubMesh::renumbering_type frenumbering;
-
-    ALE::ISieveConverter::convertMesh(*fault, &faultDMMesh, frenumbering, true);
-    // Have to make subpointMap here: frenumbering[original] = fault
-    err = DMLabelCreate("subpoint_map", &subpointMap);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetChart(faultDMMesh, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
-    assert(frenumbering.size() == pEnd-pStart);
-    err = PetscMalloc((pEnd-pStart) * sizeof(PetscInt), &renum);PYLITH_CHECK_ERROR(err);
-    for(SieveSubMesh::renumbering_type::const_iterator p_iter = frenumbering.begin(); p_iter != frenumbering.end(); ++p_iter) {
-      renum[p_iter->second] = p_iter->first;
-    }
-    for(PetscInt p = 1; p < pEnd-pStart; ++p) {
-      assert(renum[p] > renum[p-1]);
-    }
-    err = DMPlexGetHeightStratum(faultDMMesh, 0, &cfStart, &cfEnd);PYLITH_CHECK_ERROR(err);
-    for(PetscInt p = cfStart; p < cfEnd; ++p) {
-      err = DMLabelSetValue(subpointMap, renum[p], mesh.dimension());PYLITH_CHECK_ERROR(err);
-    }
-    err = DMPlexGetDepthStratum(faultDMMesh, 0, &vfStart, &vfEnd);PYLITH_CHECK_ERROR(err);
-    for(PetscInt p = vfStart; p < vfEnd; ++p) {
-      err = DMLabelSetValue(subpointMap, renum[p], 0);PYLITH_CHECK_ERROR(err);
-    }
-    err = PetscFree(renum);PYLITH_CHECK_ERROR(err);
-    err = DMPlexSetSubpointMap(faultDMMesh, subpointMap);PYLITH_CHECK_ERROR(err);
-    err = DMLabelDestroy(&subpointMap);PYLITH_CHECK_ERROR(err);
-    frenumbering.clear();
-    faultMesh->setDMMesh(faultDMMesh);
-#else
-    DM             faultDMMesh;
-    const char    *groupName;
+    PetscInt        depth, newDepth, h, numPoints, p;
+    const char     *groupName;
 
     err = DMLabelGetName(groupField, &groupName);PYLITH_CHECK_ERROR(err);
-    err = DMPlexCreateSubmesh(dmMesh, groupName, 1, &faultDMMesh);PYLITH_CHECK_ERROR(err);
+    err = DMPlexCreateSubmesh(dmMesh, groupName, 1, &faultDMMeshTmp);PYLITH_CHECK_ERROR(err);
+    err = DMPlexInterpolate(faultDMMeshTmp, &faultDMMesh);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetVTKCellHeight(faultDMMeshTmp, &h);PYLITH_CHECK_ERROR(err);
+    err = DMPlexSetVTKCellHeight(faultDMMesh, h);PYLITH_CHECK_ERROR(err);
+    err = DMPlexOrient(faultDMMesh);PYLITH_CHECK_ERROR(err);
+    err = DMPlexCopyCoordinates(faultDMMeshTmp, faultDMMesh);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetSubpointMap(faultDMMeshTmp, &subpointMapTmp);PYLITH_CHECK_ERROR(err);
+    err = DMLabelCreate("subpoint_map", &subpointMap);PYLITH_CHECK_ERROR(err);
+    err = DMLabelGetStratumIS(subpointMapTmp, 0, &pointIS);PYLITH_CHECK_ERROR(err);
+    err = ISGetLocalSize(pointIS, &numPoints);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
+    for (p = 0; p < numPoints; ++p) {
+      err = DMLabelSetValue(subpointMap, points[p], 0);PYLITH_CHECK_ERROR(err);
+    }
+    err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetDepth(faultDMMeshTmp, &depth);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetDepth(faultDMMesh, &newDepth);PYLITH_CHECK_ERROR(err);
+    err = DMLabelGetStratumIS(subpointMapTmp, depth, &pointIS);PYLITH_CHECK_ERROR(err);
+    err = ISGetLocalSize(pointIS, &numPoints);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
+    for (p = 0; p < numPoints; ++p) {
+      err = DMLabelSetValue(subpointMap, points[p], newDepth);PYLITH_CHECK_ERROR(err);
+    }
+    err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
+    err = DMPlexSetSubpointMap(faultDMMesh, subpointMap);PYLITH_CHECK_ERROR(err);
+    err = DMDestroy(&faultDMMeshTmp);PYLITH_CHECK_ERROR(err);
+    if (flipFault) {
+      PetscInt maxConeSize, *revcone, *revconeO;
+      PetscInt pStart, pEnd;
+
+      err = DMPlexGetHeightStratum(faultDMMesh, h, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+      err = DMPlexGetMaxSizes(faultDMMesh, &maxConeSize, NULL);PYLITH_CHECK_ERROR(err);
+      err = DMGetWorkArray(faultDMMesh, maxConeSize, PETSC_INT, &revcone);PYLITH_CHECK_ERROR(err);
+      err = DMGetWorkArray(faultDMMesh, maxConeSize, PETSC_INT, &revconeO);PYLITH_CHECK_ERROR(err);
+      for (PetscInt p = pStart; p < pEnd; ++p) {
+        const PetscInt *cone, *coneO;
+        PetscInt        coneSize, faceSize, c;
+
+        err = DMPlexGetConeSize(faultDMMesh, p, &coneSize);PYLITH_CHECK_ERROR(err);
+        err = DMPlexGetCone(faultDMMesh, p, &cone);PYLITH_CHECK_ERROR(err);
+        err = DMPlexGetConeOrientation(faultDMMesh, p, &coneO);PYLITH_CHECK_ERROR(err);
+        for (c = 0; c < coneSize; ++c) {
+          err = DMPlexGetConeSize(faultDMMesh, cone[coneSize-1-c], &faceSize);PYLITH_CHECK_ERROR(err);
+          revcone[c]  = cone[coneSize-1-c];
+          revconeO[c] = coneO[coneSize-1-c] >= 0 ? -(faceSize-coneO[coneSize-1-c]) : faceSize+coneO[coneSize-1-c];
+        }
+        err = DMPlexSetCone(faultDMMesh, p, revcone);PYLITH_CHECK_ERROR(err);
+        err = DMPlexSetConeOrientation(faultDMMesh, p, revconeO);PYLITH_CHECK_ERROR(err);
+      }
+      err = DMRestoreWorkArray(faultDMMesh, maxConeSize, PETSC_INT, &revcone);PYLITH_CHECK_ERROR(err);
+      err = DMRestoreWorkArray(faultDMMesh, maxConeSize, PETSC_INT, &revconeO);PYLITH_CHECK_ERROR(err);
+    }
     faultMesh->setDMMesh(faultDMMesh);
-#endif
 
     DMLabel            label;
     const char        *labelName = "boundary";
@@ -200,11 +153,6 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
     err = DMPlexGetLabel(faultDMMesh, labelName, &label);PYLITH_CHECK_ERROR(err);
     err = DMPlexMarkBoundaryFaces(faultDMMesh, label);PYLITH_CHECK_ERROR(err);
     err = DMPlexCreateSubmesh(faultDMMesh, labelName, 1, &faultBoundaryDM);PYLITH_CHECK_ERROR(err);
-
-#if 1
-    err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
-#endif
   }
 
   logger.stagePop();
@@ -557,8 +505,8 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     err = DMPlexGetTransitiveClosure(faultDMMesh, faceDM, PETSC_TRUE, &closureSize, &faceConeDM);PYLITH_CHECK_ERROR(err);
     for (PetscInt c = 0; c < closureSize*2; c += 2) {
       if ((faceConeDM[c] >= fvtStart) && (faceConeDM[c] < fvtEnd)) {
-        // HACK: Transform to original mesh vertices, but subpointMap has not been updated for cohesive cells in prior faults
-        faceConeDM[coneSizeDM++] = subpointMap[faceConeDM[c]] + numCohesiveCells;
+        // TODO After everything works, I will reform the subpointMap with new original vertices
+        faceConeDM[coneSizeDM++] = subpointMap[faceConeDM[c]];
       }
     }
     int coneSize;
@@ -950,10 +898,13 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   PetscSection coordSection, newCoordSection;
   Vec          coordinatesVec, newCoordinatesVec;
   PetscScalar *coords, *newCoords;
-  PetscInt     coordSize;
+  PetscInt     numComp, coordSize;
  
   err = DMPlexGetCoordinateSection(complexMesh, &coordSection);PYLITH_CHECK_ERROR(err);
   err = DMPlexGetCoordinateSection(newMesh,     &newCoordSection);PYLITH_CHECK_ERROR(err);
+  err = PetscSectionSetNumFields(newCoordSection, 1);PYLITH_CHECK_ERROR(err);
+  err = PetscSectionGetDof(coordSection, vStart, &numComp);PYLITH_CHECK_ERROR(err);
+  err = PetscSectionSetFieldComponents(newCoordSection, 0, numComp);PYLITH_CHECK_ERROR(err);
   err = DMGetCoordinatesLocal(complexMesh, &coordinatesVec);PYLITH_CHECK_ERROR(err);
   err = PetscSectionSetChart(newCoordSection, vStart+extraCells, vEnd+extraCells+extraVertices);PYLITH_CHECK_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
