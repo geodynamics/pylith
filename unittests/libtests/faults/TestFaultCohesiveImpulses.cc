@@ -287,10 +287,11 @@ pylith::faults::TestFaultCohesiveImpulses::testIntegrateResidual(void)
     
     for(PetscInt d = 0; d < spaceDim; ++d) {
       const PylithScalar valE = valsE[iVertex*spaceDim+d];
-      if (fabs(valE) > tolerance)
+      if (fabs(valE) > tolerance) {
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, residualArray[off+d]/valE*residualScale, tolerance);
-      else
+      } else {
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, residualArray[off+d]*residualScale, tolerance);
+      } // if/else
     } // for
   } // for
 
