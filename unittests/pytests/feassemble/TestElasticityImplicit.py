@@ -262,8 +262,7 @@ class TestElasticityImplicit(unittest.TestCase):
     normalizer._configure()
 
     from pyre.units.time import s
-    integrator.initialize(totalTime=0.0*s, numTimeSteps=1,
-                          normalizer=normalizer)
+    integrator.initialize(totalTime=0.0*s, numTimeSteps=1, normalizer=normalizer)
     integrator.timeStep(dt)
 
     # Setup fields
