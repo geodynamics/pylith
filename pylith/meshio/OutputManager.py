@@ -108,8 +108,9 @@ class OutputManager(PetscComponent):
     """
     Setup output manager.
     """
+    import weakref
     self._setupLogging()
-    self.dataProvider = dataProvider
+    self.dataProvider = weakref.ref(dataProvider)
     return
   
 
@@ -117,19 +118,19 @@ class OutputManager(PetscComponent):
     """
     Verify compatibility of configuration.
     """
-    if None == self.dataProvider:
+    if None == self.dataProvider():
       raise ValueError("Need to set 'dataProvider' in OutputManager.")
-    self._verifyFields(self.dataProvider.availableFields)
+    self._verifyFields(self.dataProvider().availableFields)
 
-    if not "getDataMesh" in dir(self.dataProvider):
+    if not "getDataMesh" in dir(self.dataProvider()):
       raise TypeError("Data provider must have a 'getDataMesh' function.")
 
     if len(self.vertexInfoFields) > 0 or len(self.vertexDataFields) > 0:
-      if not "getVertexField" in dir(self.dataProvider):
+      if not "getVertexField" in dir(self.dataProvider()):
         raise TypeError("Data provider must have a 'getVertexField' function.")
 
     if len(self.cellInfoFields) > 0 or len(self.cellDataFields) > 0:
-      if not "getCellField" in dir(self.dataProvider):
+      if not "getCellField" in dir(self.dataProvider()):
         raise TypeError("Data provider must have a 'getCellField' function.")
     return
 
@@ -142,6 +143,7 @@ class OutputManager(PetscComponent):
     self._eventLogger.eventBegin(logEvent)    
 
     # Nondimensionalize time step
+    import weakref
     self.normalizer = normalizer
     timeScale = normalizer.timeScale()
     self.dtN = normalizer.nondimensionalize(self.dt, timeScale)
@@ -178,7 +180,7 @@ class OutputManager(PetscComponent):
 
     nsteps = self._estimateNumSteps(totalTime, numTimeSteps)
 
-    (mesh, label, labelId) = self.dataProvider.getDataMesh()
+    (mesh, label, labelId) = self.dataProvider().getDataMesh()
     self._open(mesh, nsteps, label, labelId)
 
     self._eventLogger.eventEnd(logEvent)    
@@ -208,15 +210,15 @@ class OutputManager(PetscComponent):
     if len(self.vertexInfoFields) > 0 or len(self.cellInfoFields) > 0:
       t = 0.0
       self.open(totalTime=0.0, numTimeSteps=0)
-      (mesh, label, labelId) = self.dataProvider.getDataMesh()
+      (mesh, label, labelId) = self.dataProvider().getDataMesh()
       self._openTimeStep(t, mesh, label, labelId)
 
       for name in self.vertexInfoFields:
-        field = self.dataProvider.getVertexField(name)
+        field = self.dataProvider().getVertexField(name)
         self._appendVertexField(t, field, mesh)
 
       for name in self.cellInfoFields:
-        field = self.dataProvider.getCellField(name)
+        field = self.dataProvider().getCellField(name)
         self._appendCellField(t, field, label, labelId)
 
       self._closeTimeStep()
@@ -237,15 +239,15 @@ class OutputManager(PetscComponent):
            ( len(self.vertexDataFields) > 0 or \
              len(self.cellDataFields) ) > 0:
 
-      (mesh, label, labelId) = self.dataProvider.getDataMesh()
+      (mesh, label, labelId) = self.dataProvider().getDataMesh()
       self._openTimeStep(t, mesh, label, labelId)
 
       for name in self.vertexDataFields:
-        field = self.dataProvider.getVertexField(name, fields)
+        field = self.dataProvider().getVertexField(name, fields)
         self._appendVertexField(t, field, mesh)
 
       for name in self.cellDataFields:
-        field = self.dataProvider.getCellField(name, fields)
+        field = self.dataProvider().getCellField(name, fields)
         self._appendCellField(t, field, label, labelId)
 
       self._closeTimeStep()
@@ -341,12 +343,12 @@ class OutputManager(PetscComponent):
       if not fieldCategory in available.keys():
         raise ValueError, \
             "Key '%s' not found in available fields dictionary for " \
-            "object '%s'." % (fieldCategory, self.dataProvider.name)
+            "object '%s'." % (fieldCategory, self.dataProvider().name)
       for dataCategory in ["info", "data"]:
         if not dataCategory in available[fieldCategory].keys():
           raise ValueError, \
               "Key '%s' not found in available fields dictionary for " \
-              "object '%s'." % (fieldCategory, self.dataProvider.name)
+              "object '%s'." % (fieldCategory, self.dataProvider().name)
 
         notavailable = []
         for name in requested[fieldCategory][dataCategory]:
@@ -357,7 +359,7 @@ class OutputManager(PetscComponent):
               "Requested fields not available for output.\n" \
               "Data provider: '%s'\n" \
               "Field type: '%s'\n" \
-              "Data type: '%s'\n" % (self.dataProvider.name,
+              "Data type: '%s'\n" % (self.dataProvider().name,
                                      fieldCategory, dataCategory)
           msg += "Available fields: "
           for name in available[fieldCategory][dataCategory]:
