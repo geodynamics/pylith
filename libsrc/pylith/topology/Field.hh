@@ -346,6 +346,12 @@ public :
    */
   Field& operator+=(const Field& field);
 
+  /** Add two fields, storing the result in one of the fields.
+   *
+   * @param field Field to add.
+   */
+  void add(const Field& field);
+
   /** Dimensionalize field. Throws runtime_error if field is not
    * allowed to be dimensionalized.
    */

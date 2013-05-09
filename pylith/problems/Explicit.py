@@ -241,7 +241,7 @@ class Explicit(Formulation, ModuleExplicit):
     dispTmdt = self.fields.get("disp(t-dt)")
 
     dispTmdt.copy(dispT)
-    dispT += dispIncr
+    dispT.add(dispIncr)
     dispIncr.zero()
 
     # Complete post-step processing.

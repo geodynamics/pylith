@@ -138,6 +138,16 @@ pylith::topology::Field<mesh_type>::addDimensionOkay(void) const {
   return const_cast<Field*>(this)->_metadata["default"].dimsOkay;
 }
 
+// Add two fields, storing the result in one of the fields.
+template<typename mesh_type>
+inline
+void
+pylith::topology::Field<mesh_type>::add(const Field& field) {
+  this->operator+=(field);
+}
+
+
+
 #endif
 
 

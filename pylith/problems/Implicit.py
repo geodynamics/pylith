@@ -238,7 +238,7 @@ class Implicit(Formulation, ModuleImplicit):
     # Update displacement field from time t to time t+dt.
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
     disp = self.fields.get("disp(t)")
-    disp += dispIncr
+    disp.add(dispIncr)
     dispIncr.zero()
 
     # Complete post-step processing, then write data.
