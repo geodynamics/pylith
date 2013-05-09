@@ -567,8 +567,7 @@ pylith::topology::Field<mesh_type>::cloneSection(const Field& src)
         err = VecSetFromOptions(sinfo.vector); PYLITH_CHECK_ERROR(err);  
       } else {
         sinfo.vector = _globalVec;
-        err = PetscObjectReference((PetscObject) sinfo.vector);
-        PYLITH_CHECK_ERROR(err);
+        err = PetscObjectReference((PetscObject) sinfo.vector);PYLITH_CHECK_ERROR(err);
       } // if/else
       err = PetscObjectSetName((PetscObject)sinfo.vector, _metadata["default"].label.c_str());PYLITH_CHECK_ERROR(err);
 	
