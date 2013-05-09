@@ -99,8 +99,8 @@ const int pylith::faults::CohesiveDataTri3d::_cells[] = {
   7,  8,  9,
  14,  6, 12,
  10,  7, 11,
- 10,  7, 14, 12,
   7,  8, 12, 13,
+ 10,  7, 14, 12,
 };
 
 const int pylith::faults::CohesiveDataTri3d::_materialIds[] = {
