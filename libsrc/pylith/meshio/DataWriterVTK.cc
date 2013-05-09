@@ -214,7 +214,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::closeTimeStep(void)
   PYLITH_METHOD_BEGIN;
 
   // Account for possibility that no fields were written, so viewer doesn't have handle to DM.
-  if (_dm && !_wroteVertexHeader && !_wroteCellHeader) {
+  if (_dm && _viewer && !_wroteVertexHeader && !_wroteCellHeader) {
     // No fields written, so must manually dereference the mesh DM.
     PetscErrorCode err = PetscObjectDereference((PetscObject) _dm);PYLITH_CHECK_ERROR(err);
   } // if
