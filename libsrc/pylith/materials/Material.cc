@@ -144,8 +144,6 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
   PetscScalar* propertiesArray = propertiesVisitor.localArray();
 
   topology::CoordsVisitor coordsVisitor(dmMesh);
-  PetscScalar* coordsArray = NULL;
-  PetscInt coordsSize = 0;
 
   // Create arrays for querying.
   const int numDBProperties = _metadata.numDBProperties();
@@ -200,9 +198,11 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
     // Compute geometry information for current cell
-    coordsVisitor.getClosure(&coordsArray, &coordsSize, cell);
-    quadrature->computeGeometry(coordsArray, coordsSize, cell);
-    coordsVisitor.restoreClosure(&coordsArray, &coordsSize, cell);
+    PetscScalar* coordsCell = NULL;
+    PetscInt coordsSize = 0;
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
+    quadrature->computeGeometry(coordsCell, coordsSize, cell);
+    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
 
     const scalar_array& quadPtsNonDim = quadrature->quadPts();
     quadPtsGlobal = quadPtsNonDim;

@@ -174,18 +174,9 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(const topology::Field<
 
   // Setup field visitors.
   topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
-  PetscScalar* dispCell = NULL;
-  PetscInt dispSize = 0;
-
   topology::VecVisitorMesh dispIncrVisitor(fields->get("dispIncr(t->t+dt)"));
-  PetscScalar* dispIncrCell = NULL;
-  PetscInt dispIncrSize = 0;
-
   topology::VecVisitorMesh residualVisitor(residual);
-
   topology::CoordsVisitor coordsVisitor(dmMesh);
-  PetscScalar *coordsCell = NULL;
-  PetscInt coordsSize = 0;
 
   assert(_normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
@@ -201,7 +192,9 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(const topology::Field<
 #if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(cell);
 #else
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
+    PetscScalar *coordsCell = NULL;
+    PetscInt coordsSize = 0;
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
     _quadrature->computeGeometry(coordsCell, coordsSize, cell);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
 #endif
@@ -213,9 +206,13 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(const topology::Field<
     _resetCellVector();
 
     // Restrict input fields to cell
-    dispVisitor.getClosure(&dispCell, &dispSize, cell);
-    dispIncrVisitor.getClosure(&dispIncrCell, &dispIncrSize, cell);
-    assert(dispSize == dispIncrSize);
+    PetscScalar* dispCell = NULL;
+    PetscInt dispSize = 0;
+    dispVisitor.getClosure(&dispCell, &dispSize, cell);assert(dispCell);assert(numBasis*spaceDim == dispSize);
+
+    PetscScalar* dispIncrCell = NULL;
+    PetscInt dispIncrSize = 0;
+    dispIncrVisitor.getClosure(&dispIncrCell, &dispIncrSize, cell);assert(dispIncrCell);assert(numBasis*spaceDim == dispIncrSize);
 
     // Get cell geometry information that depends on cell
     const scalar_array& basis = _quadrature->basis();
@@ -358,16 +355,8 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(topology::Jacobian* ja
 
   // Setup field visitors.
   topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
-  PetscScalar* dispCell = NULL;
-  PetscInt dispSize = 0;
-
   topology::VecVisitorMesh dispIncrVisitor(fields->get("dispIncr(t->t+dt)"));
-  PetscScalar* dispIncrCell = NULL;
-  PetscInt dispIncrSize = 0;
-
   topology::CoordsVisitor coordsVisitor(dmMesh);
-  PetscScalar* coordsCell = NULL;
-  PetscInt coordsSize = 0;
 
   // Get sparse matrix
   const PetscMat jacobianMat = jacobian->matrix();assert(jacobianMat);
@@ -387,7 +376,9 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(topology::Jacobian* ja
 #if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(cell);
 #else
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
+    PetscScalar* coordsCell = NULL;
+    PetscInt coordsSize = 0;
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
     _quadrature->computeGeometry(coordsCell, coordsSize, cell);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
 #endif
@@ -399,9 +390,13 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(topology::Jacobian* ja
     _resetCellMatrix();
 
     // Restrict input fields to cell
-    dispVisitor.getClosure(&dispCell, &dispSize, cell);
-    dispIncrVisitor.getClosure(&dispIncrCell, &dispIncrSize, cell);
-    assert(dispSize == dispIncrSize);
+    PetscScalar* dispCell = NULL;
+    PetscInt dispSize = 0;
+    dispVisitor.getClosure(&dispCell, &dispSize, cell);assert(dispCell);assert(numBasis*spaceDim == dispSize);
+
+    PetscScalar* dispIncrCell = NULL;
+    PetscInt dispIncrSize = 0;
+    dispIncrVisitor.getClosure(&dispIncrCell, &dispIncrSize, cell);assert(dispIncrCell);assert(numBasis*spaceDim == dispIncrSize);
 
     // Get cell geometry information that depends on cell
     const scalar_array& basis = _quadrature->basis();

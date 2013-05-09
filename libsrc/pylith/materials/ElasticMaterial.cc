@@ -416,8 +416,6 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
 
   scalar_array coordinatesCell(numBasis*spaceDim);
   topology::CoordsVisitor coordsVisitor(dmMesh);
-  PetscScalar *coordsArray = NULL;
-  PetscInt coordsSize = 0;
 
   PylithScalar dtStable = pylith::PYLITH_MAXSCALAR;
   scalar_array dtStableCell(numQuadPts);
@@ -426,12 +424,11 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
 
     retrievePropsAndVars(cell);
 
-    coordsVisitor.getClosure(&coordsArray, &coordsSize, cell);
-    for(PetscInt i = 0; i < coordsSize; ++i) {
-      coordinatesCell[i] = coordsArray[i];
-    } // for
-    coordsVisitor.restoreClosure(&coordsArray, &coordsSize, cell);
-    const double minCellWidth = quadrature->minCellWidth(coordinatesCell);
+    PetscScalar *coordsCell = NULL;
+    PetscInt coordsSize = 0;
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
+    const PylithScalar minCellWidth = quadrature->minCellWidth(coordsCell, numBasis, spaceDim);
+    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
 
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
       const PylithScalar dt = 
@@ -590,7 +587,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mes
 
 #if !defined(PRECOMPUTE_GEOMETRY)
   topology::CoordsVisitor coordsVisitor(dmMesh);
-  PetscScalar *coordsArray = NULL;
+  PetscScalar *coordsCell = NULL;
   PetscInt coordsSize = 0;
 #endif
 
@@ -654,9 +651,9 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mes
 #if defined(PRECOMPUTE_GEOMETRY)
     quadrature->retrieveGeometry(*c_iter);
 #else
-    coordsVisitor.getClosure(&coordsArray, &coordsSize, cell);
-    quadrature->computeGeometry(coordsArray, coordsSize, cell);
-    coordsVisitor.restoreClosure(&coordsArray, &coordsSize, cell);
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
+    quadrature->computeGeometry(coordsCell, coordsSize, cell);
+    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
 #endif
 
     // Dimensionalize coordinates for querying
@@ -728,7 +725,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(const topology::Mes
 
 #if !defined(PRECOMPUTE_GEOMETRY)
   topology::CoordsVisitor coordsVisitor(dmMesh);
-  PetscScalar* coordsArray = NULL;
+  PetscScalar* coordsCell = NULL;
   PetscInt coordsSize = 0;
 #endif
 
@@ -792,9 +789,9 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(const topology::Mes
 #if defined(PRECOMPUTE_GEOMETRY)
     quadrature->retrieveGeometry(*c_iter);
 #else
-    coordsVisitor.getClosure(&coordsArray, &coordsSize, cell);
-    quadrature->computeGeometry(coordsArray, coordsSize, cell);
-    coordsVisitor.restoreClosure(&coordsArray, &coordsSize, cell);
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
+    quadrature->computeGeometry(coordsCell, coordsSize, cell);
+    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
 #endif
 
     // Dimensionalize coordinates for querying

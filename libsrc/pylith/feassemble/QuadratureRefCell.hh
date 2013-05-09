@@ -190,9 +190,14 @@ public :
   /** Compute minimum width across cell.
    *
    * @param coordinatesCell Coordinates of vertices in cell.
+   * @param numVertices Number of vertices in cell.
+   * @param spaceDim Coordinate dimension.
+   *
    * @returns Minimum width across cell.
    */
-  PylithScalar minCellWidth(const scalar_array& coordinatesCell) const;
+  PylithScalar minCellWidth(const PylithScalar* coordinatesCell,
+			    const int numVertices,
+			    const int spaceDim) const;
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :

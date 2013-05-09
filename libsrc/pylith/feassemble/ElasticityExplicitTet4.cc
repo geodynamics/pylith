@@ -192,23 +192,15 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
 
   // Setup field visitors.
   topology::VecVisitorMesh accVisitor(fields->get("acceleration(t)"));
-  PetscScalar* accCell = NULL;
-  PetscInt accSize = 0;
 
   topology::VecVisitorMesh velVisitor(fields->get("velocity(t)"));
-  PetscScalar* velCell = NULL;
-  PetscInt velSize = 0;
 
   scalar_array dispAdjCell(numBasis*spaceDim);
   topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
-  PetscScalar* dispCell = NULL;
-  PetscInt dispSize = 0;
   
   topology::VecVisitorMesh residualVisitor(residual);
 
   topology::CoordsVisitor coordsVisitor(dmMesh);
-  PetscScalar *coordsCell = NULL;
-  PetscInt coordsSize = 0;
 
   assert(_normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
@@ -233,11 +225,17 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
 #endif
 
     // Restrict input fields to cell
-    accVisitor.getClosure(&accCell, &accSize, cell);
-    velVisitor.getClosure(&velCell, &velSize, cell);
-    dispVisitor.getClosure(&dispCell, &dispSize, cell);
-    assert(velSize == accSize);
-    assert(dispSize == accSize);
+    PetscScalar* accCell = NULL;
+    PetscInt accSize = 0;
+    accVisitor.getClosure(&accCell, &accSize, cell);assert(accCell);assert(numBasis*spaceDim == accSize);
+    
+    PetscScalar* velCell = NULL;
+    PetscInt velSize = 0;
+    velVisitor.getClosure(&velCell, &velSize, cell);assert(velCell);assert(numBasis*spaceDim == velSize);
+    
+    PetscScalar* dispCell = NULL;
+    PetscInt dispSize = 0;
+    dispVisitor.getClosure(&dispCell, &dispSize, cell);assert(dispCell);assert(numBasis*spaceDim == dispSize);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -245,7 +243,9 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
 #endif
 
     // Compute geometry information for current cell
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
+    PetscScalar *coordsCell = NULL;
+    PetscInt coordsSize = 0;
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
     const PylithScalar volume = _volume(coordsCell, coordsSize);assert(volume > 0.0);
 
 #if defined(DETAILED_EVENT_LOGGING)
@@ -491,8 +491,6 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(topology::Field<to
   PetscInt jacobianSize = 0;
 
   topology::CoordsVisitor coordsVisitor(dmMesh);
-  PetscScalar* coordsCell = NULL;
-  PetscInt coordsSize = 0;
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -505,7 +503,9 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(topology::Field<to
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
+    PetscScalar* coordsCell = NULL;
+    PetscInt coordsSize = 0;
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
     const PylithScalar volume = _volume(coordsCell, coordsSize);assert(volume > 0.0);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
 

@@ -178,11 +178,8 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
 
   // Setup field visitors.
   topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
-
   topology::VecVisitorMesh dispIncrVisitor(fields->get("dispIncr(t->t+dt)"));
-
   topology::VecVisitorMesh residualVisitor(residual);
-
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
   assert(_normalizer);
@@ -213,12 +210,11 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
     // Restrict input fields to cell
     PetscScalar* dispCell = NULL;
     PetscInt dispSize = 0;
-    dispVisitor.getClosure(&dispCell, &dispSize, cell);assert(dispCell);
+    dispVisitor.getClosure(&dispCell, &dispSize, cell);assert(dispCell);assert(numBasis*spaceDim == dispSize);
 
     PetscScalar* dispIncrCell = NULL;
     PetscInt dispIncrSize = 0;
-    dispIncrVisitor.getClosure(&dispIncrCell, &dispIncrSize, cell);assert(dispIncrCell);
-    assert(dispSize == dispIncrSize);
+    dispIncrVisitor.getClosure(&dispIncrCell, &dispIncrSize, cell);assert(dispIncrCell);assert(numBasis*spaceDim == dispIncrSize);
 
     // Get cell geometry information that depends on cell
     const scalar_array& basis = _quadrature->basis();
@@ -366,17 +362,8 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(topology::Jaco
 
   // Setup field visitors.
   topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
-  PetscScalar* dispCell = NULL;
-  PetscInt dispSize = 0;
-
   topology::VecVisitorMesh dispIncrVisitor(fields->get("dispIncr(t->t+dt)"));
-  PetscScalar* dispIncrCell = NULL;
-  PetscInt dispIncrSize = 0;
-
-  scalar_array coordinatesCell(numBasis*spaceDim);
   topology::CoordsVisitor coordsVisitor(dmMesh);
-  PetscScalar* coordsCell = NULL;
-  PetscInt coordsSize = 0;
 
   // Get sparse matrix
   const PetscMat jacobianMat = jacobian->matrix();assert(jacobianMat);
@@ -393,9 +380,10 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(topology::Jaco
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
     // Compute geometry information for current cell
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
+    PetscScalar* coordsCell = NULL;
+    PetscInt coordsSize = 0;
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
     _quadrature->computeGeometry(coordsCell, coordsSize, cell);
-
 
     // Get state variables for cell.
     _material->retrievePropsAndVars(cell);
@@ -404,9 +392,13 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(topology::Jaco
     _resetCellMatrix();
 
     // Restrict input fields to cell
-    dispVisitor.getClosure(&dispCell, &dispSize, cell);
-    dispIncrVisitor.getClosure(&dispIncrCell, &dispIncrSize, cell);
-    assert(dispSize == dispIncrSize);
+    PetscScalar* dispCell = NULL;
+    PetscInt dispSize = 0;
+    dispVisitor.getClosure(&dispCell, &dispSize, cell);assert(dispCell);assert(numBasis*spaceDim == dispSize);
+
+    PetscScalar* dispIncrCell = NULL;
+    PetscInt dispIncrSize = 0;
+    dispIncrVisitor.getClosure(&dispIncrCell, &dispIncrSize, cell);assert(dispIncrCell);assert(numBasis*spaceDim == dispIncrSize);
 
     // Get cell geometry information that depends on cell
     const scalar_array& basis = _quadrature->basis();
