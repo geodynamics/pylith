@@ -256,7 +256,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4f(void)
 
   CohesiveDataQuad4f data;
   FaultCohesiveTract fault;
-  _testAdjustTopology(&fault, data, true);
+  _testAdjustTopology(&fault, data, false);
 
   PYLITH_METHOD_END;
 } // testAdjustTopologyQuad4f
@@ -272,7 +272,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4g(void)
 
   CohesiveDataQuad4g data;
   FaultCohesiveTract fault;
-  _testAdjustTopology(&fault, data, false);
+  _testAdjustTopology(&fault, data, true);
 
   PYLITH_METHOD_END;
 } // testAdjustTopologyQuad4g
@@ -561,7 +561,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8h(void)
 
   CohesiveDataHex8h data;
   FaultCohesiveTract fault;
-  _testAdjustTopology(&fault, data, true);
+  _testAdjustTopology(&fault, data, false);
 
   PYLITH_METHOD_END;
 } // testAdjustTopologyHex8h

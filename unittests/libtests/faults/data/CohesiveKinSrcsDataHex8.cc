@@ -190,16 +190,16 @@ const PylithScalar pylith::faults::CohesiveKinSrcsDataHex8::_area[] = {
 
 const int pylith::faults::CohesiveKinSrcsDataHex8::_numFaultVertices = 4;
 const int pylith::faults::CohesiveKinSrcsDataHex8::_verticesFault[] = {
-  4, 5, 3, 2
+   2,  4,  5,  3
 };
 const int pylith::faults::CohesiveKinSrcsDataHex8::_verticesLagrange[] = {
-  21, 22, 20, 19
+  19, 21, 22, 20
 };
 const int pylith::faults::CohesiveKinSrcsDataHex8::_verticesNegative[] = {
-  9, 10, 8, 7
+   7,  9, 10,  8
 };
 const int pylith::faults::CohesiveKinSrcsDataHex8::_verticesPositive[] = {
-  17, 18, 16, 15
+  15, 17, 18, 16
 };
 
 const int pylith::faults::CohesiveKinSrcsDataHex8::_numCohesiveCells = 1;

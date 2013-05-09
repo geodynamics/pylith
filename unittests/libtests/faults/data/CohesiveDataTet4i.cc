@@ -70,8 +70,8 @@ const int pylith::faults::CohesiveDataTet4i::_cells[] = {
  12, 14, 13, 11,
  15, 11, 14, 12,
   6,  7, 10,  9,
- 10,  9,  7, 15, 14, 12,
   9,  8,  7, 14, 13, 12,
+  7, 10,  9, 12, 15, 14,
 };
 
 const int pylith::faults::CohesiveDataTet4i::_materialIds[] = {

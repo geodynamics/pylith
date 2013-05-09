@@ -108,8 +108,8 @@ const int pylith::faults::CohesiveDataQuad4g::_cells[] = {
  17, 20, 19, 16,
   8,  7, 11, 13,
  11, 10, 12, 13,
- 12, 13, 18, 19,
  13, 14, 19, 20,
+ 12, 13, 18, 19,
 };
 
 const int pylith::faults::CohesiveDataQuad4g::_materialIds[] = {
