@@ -107,6 +107,7 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
       err = DMLabelSetValue(subpointMap, points[p], 0);PYLITH_CHECK_ERROR(err);
     }
     err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetDepth(faultDMMeshTmp, &depth);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetDepth(faultDMMesh, &newDepth);PYLITH_CHECK_ERROR(err);
     err = DMLabelGetStratumIS(subpointMapTmp, depth, &pointIS);PYLITH_CHECK_ERROR(err);
@@ -116,7 +117,9 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
       err = DMLabelSetValue(subpointMap, points[p], newDepth);PYLITH_CHECK_ERROR(err);
     }
     err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
     err = DMPlexSetSubpointMap(faultDMMesh, subpointMap);PYLITH_CHECK_ERROR(err);
+    err = DMLabelDestroy(&subpointMap);PYLITH_CHECK_ERROR(err);
     err = DMDestroy(&faultDMMeshTmp);PYLITH_CHECK_ERROR(err);
     if (flipFault) {
       PetscInt maxConeSize, *revcone, *revconeO;
