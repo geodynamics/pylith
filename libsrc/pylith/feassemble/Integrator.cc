@@ -47,7 +47,6 @@ template<typename quadrature_type>
 pylith::feassemble::Integrator<quadrature_type>::~Integrator(void)
 { // destructor
   deallocate();
-  _gravityField = 0; /// Memory managed elsewhere :TODO: use shared pointer
 } // destructor
   
 // ----------------------------------------------------------------------
@@ -61,6 +60,7 @@ pylith::feassemble::Integrator<quadrature_type>::deallocate(void)
   delete _quadrature; _quadrature = 0;
   delete _normalizer; _normalizer = 0;
   delete _logger; _logger = 0;
+  _gravityField = 0; /// Memory managed elsewhere :TODO: use shared pointer
 
   PYLITH_METHOD_END;
 } // deallocate
@@ -80,8 +80,7 @@ template<typename quadrature_type>
 void
 pylith::feassemble::Integrator<quadrature_type>::quadrature(const quadrature_type* q)
 { // quadrature
-  delete _quadrature;
-  _quadrature = (q) ? new quadrature_type(*q) : 0;
+  delete _quadrature; _quadrature = (q) ? new quadrature_type(*q) : 0;
 
   // Deallocate cell vector and matrix since size may change
   _cellVector.resize(0);

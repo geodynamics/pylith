@@ -39,8 +39,6 @@
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 
-//#define PRECOMPUTE_GEOMETRY
-
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::materials::ElasticMaterial::ElasticMaterial(const int dimension,
@@ -584,11 +582,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mes
   const PetscInt* cells = materialIS.points();
   const PetscInt numCells = materialIS.size();
 
-#if !defined(PRECOMPUTE_GEOMETRY)
   topology::CoordsVisitor coordsVisitor(dmMesh);
-  PetscScalar *coordsCell = NULL;
-  PetscInt coordsSize = 0;
-#endif
 
   // Create arrays for querying
   const int tensorSize = _tensorSize;
@@ -646,14 +640,13 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mes
 
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
+
     // Compute geometry information for current cell
-#if defined(PRECOMPUTE_GEOMETRY)
-    quadrature->retrieveGeometry(*c_iter);
-#else
+    PetscScalar *coordsCell = NULL;
+    PetscInt coordsSize = 0;
     coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
     quadrature->computeGeometry(coordsCell, coordsSize, cell);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
-#endif
 
     // Dimensionalize coordinates for querying
     const scalar_array& quadPtsNonDim = quadrature->quadPts();
@@ -722,11 +715,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(const topology::Mes
   const PetscInt* cells = materialIS.points();
   const PetscInt numCells = materialIS.size();
 
-#if !defined(PRECOMPUTE_GEOMETRY)
   topology::CoordsVisitor coordsVisitor(dmMesh);
-  PetscScalar* coordsCell = NULL;
-  PetscInt coordsSize = 0;
-#endif
 
   // Create arrays for querying
   const int tensorSize = _tensorSize;
@@ -784,14 +773,13 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(const topology::Mes
     
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
+
     // Compute geometry information for current cell
-#if defined(PRECOMPUTE_GEOMETRY)
-    quadrature->retrieveGeometry(*c_iter);
-#else
+    PetscScalar* coordsCell = NULL;
+    PetscInt coordsSize = 0;
     coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
     quadrature->computeGeometry(coordsCell, coordsSize, cell);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
-#endif
 
     // Dimensionalize coordinates for querying
     const scalar_array& quadPtsNonDim = quadrature->quadPts();

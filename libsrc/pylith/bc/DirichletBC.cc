@@ -42,6 +42,7 @@ pylith::bc::DirichletBC::DirichletBC(void)
 // Destructor.
 pylith::bc::DirichletBC::~DirichletBC(void)
 { // destructor
+  deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------

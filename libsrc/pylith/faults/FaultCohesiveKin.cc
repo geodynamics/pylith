@@ -43,7 +43,6 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
-//#define PRECOMPUTE_GEOMETRY
 //#define DETAILED_EVENT_LOGGING
 
 // ----------------------------------------------------------------------

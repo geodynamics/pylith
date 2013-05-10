@@ -48,8 +48,11 @@ pylith::faults::FaultCohesiveTract::~FaultCohesiveTract(void)
 void 
 pylith::faults::FaultCohesiveTract::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   FaultCohesive::deallocate();
 
+  PYLITH_METHOD_END;
 } // deallocate
 
 // ----------------------------------------------------------------------

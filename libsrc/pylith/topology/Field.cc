@@ -179,7 +179,6 @@ template<typename mesh_type>
 pylith::topology::Field<mesh_type>::~Field(void)
 { // destructor
   deallocate();
-  PetscErrorCode err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
 } // destructor
 
 // ----------------------------------------------------------------------
@@ -190,24 +189,8 @@ pylith::topology::Field<mesh_type>::deallocate(void)
 { // deallocate
   PYLITH_METHOD_BEGIN;
 
-  PetscErrorCode err = 0;
-  
-  const typename scatter_map_type::const_iterator scattersEnd = _scatters.end();
-  for (typename scatter_map_type::iterator s_iter=_scatters.begin();
-       s_iter != scattersEnd;
-       ++s_iter) {
-
-    err = DMDestroy(&s_iter->second.dm);PYLITH_CHECK_ERROR(err);
-    err = VecDestroy(&s_iter->second.vector);PYLITH_CHECK_ERROR(err);
-
-    if (s_iter->second.scatter) {
-      err = VecScatterDestroy(&s_iter->second.scatter);PYLITH_CHECK_ERROR(err);
-    } // if
-    err = VecDestroy(&s_iter->second.scatterVec);PYLITH_CHECK_ERROR(err);
-  } // for
-  _scatters.clear();
-  err = VecDestroy(&_globalVec);PYLITH_CHECK_ERROR(err);
-  err = VecDestroy(&_localVec);PYLITH_CHECK_ERROR(err);
+  clear();
+  PetscErrorCode err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // deallocate
@@ -586,7 +569,25 @@ pylith::topology::Field<mesh_type>::clear(void)
 { // clear
   PYLITH_METHOD_BEGIN;
 
-  deallocate();
+  PetscErrorCode err = 0;
+  
+  const typename scatter_map_type::const_iterator scattersEnd = _scatters.end();
+  for (typename scatter_map_type::iterator s_iter=_scatters.begin();
+       s_iter != scattersEnd;
+       ++s_iter) {
+
+    err = DMDestroy(&s_iter->second.dm);PYLITH_CHECK_ERROR(err);
+    err = VecDestroy(&s_iter->second.vector);PYLITH_CHECK_ERROR(err);
+
+    if (s_iter->second.scatter) {
+      err = VecScatterDestroy(&s_iter->second.scatter);PYLITH_CHECK_ERROR(err);
+    } // if
+    err = VecDestroy(&s_iter->second.scatterVec);PYLITH_CHECK_ERROR(err);
+  } // for
+  _scatters.clear();
+  err = VecDestroy(&_globalVec);PYLITH_CHECK_ERROR(err);
+  err = VecDestroy(&_localVec);PYLITH_CHECK_ERROR(err);
+
   _metadata["default"].scale = 1.0;
   _metadata["default"].vectorFieldType = OTHER;
   _metadata["default"].dimsOkay = false;
