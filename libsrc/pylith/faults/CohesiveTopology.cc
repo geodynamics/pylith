@@ -45,8 +45,7 @@ typedef pylith::topology::Mesh::IntSection IntSection;
 // ----------------------------------------------------------------------
 void
 pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
-                                              ALE::Obj<SieveFlexMesh>& faultBoundary,
-                                              DM& faultBoundaryDM,
+                                              DM& faultBoundary,
                                               const topology::Mesh& mesh,
                                               DMLabel groupField,
                                               const bool flipFault)
@@ -81,7 +80,7 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
     err = DMPlexCreateLabel(subdm, labelName);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetLabel(subdm, labelName, &label);PYLITH_CHECK_ERROR(err);
     err = DMPlexMarkBoundaryFaces(subdm, label);PYLITH_CHECK_ERROR(err);
-    err = DMPlexCreateSubmesh(subdm, labelName, 1, &faultBoundaryDM);PYLITH_CHECK_ERROR(err);
+    err = DMPlexCreateSubmesh(subdm, labelName, 1, &faultBoundary);PYLITH_CHECK_ERROR(err);
     faultMesh->setDMMesh(subdm);
   } else {
     DM              faultDMMeshTmp, faultDMMesh;
@@ -155,7 +154,7 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
     err = DMPlexCreateLabel(faultDMMesh, labelName);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetLabel(faultDMMesh, labelName, &label);PYLITH_CHECK_ERROR(err);
     err = DMPlexMarkBoundaryFaces(faultDMMesh, label);PYLITH_CHECK_ERROR(err);
-    err = DMPlexCreateSubmesh(faultDMMesh, labelName, 1, &faultBoundaryDM);PYLITH_CHECK_ERROR(err);
+    err = DMPlexCreateSubmesh(faultDMMesh, labelName, 1, &faultBoundary);PYLITH_CHECK_ERROR(err);
   }
 
   logger.stagePop();
@@ -167,8 +166,7 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
 void
 pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
                                          const topology::SubMesh& faultMesh,
-                                         const ALE::Obj<SieveFlexMesh>& faultBoundary,
-                                         DM faultBoundaryDM,
+                                         DM faultBoundary,
                                          DMLabel groupField,
                                          const int materialId,
                                          int& firstFaultVertex,
@@ -603,27 +601,19 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   TopologyOps::PointSet replaceCellsBase(replaceCells);
 
   TopologyOps::PointSet faultBdVertices;
-#if 0
-  if (!faultBoundary.isNull()) {
-    const ALE::Obj<SieveFlexMesh::label_sequence>& faultBdVerts = faultBoundary->depthStratum(0);
-    assert(!faultBdVerts.isNull());
-    faultBdVertices.insert(faultBdVerts->begin(), faultBdVerts->end());
-  } else {
-#else
-    IS              bdSubpointIS;
-    const PetscInt *points;
-    PetscInt        bfvStart, bfvEnd;
+  IS              bdSubpointIS;
+  const PetscInt *points;
+  PetscInt        bfvStart, bfvEnd;
 
-    assert(faultBoundaryDM);
-    err = DMPlexGetDepthStratum(faultBoundaryDM, 0, &bfvStart, &bfvEnd);PYLITH_CHECK_ERROR(err);
-    err = DMPlexCreateSubpointIS(faultBoundaryDM, &bdSubpointIS);PYLITH_CHECK_ERROR(err);
-    err = ISGetIndices(bdSubpointIS, &points);PYLITH_CHECK_ERROR(err);
-    for (PetscInt v = bfvStart; v < bfvEnd; ++v) {
-      faultBdVertices.insert(subpointMap[points[v]]);
-    }
-    err = ISRestoreIndices(bdSubpointIS, &points);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&bdSubpointIS);PYLITH_CHECK_ERROR(err);
-#endif
+  assert(faultBoundary);
+  err = DMPlexGetDepthStratum(faultBoundary, 0, &bfvStart, &bfvEnd);PYLITH_CHECK_ERROR(err);
+  err = DMPlexCreateSubpointIS(faultBoundary, &bdSubpointIS);PYLITH_CHECK_ERROR(err);
+  err = ISGetIndices(bdSubpointIS, &points);PYLITH_CHECK_ERROR(err);
+  for (PetscInt v = bfvStart; v < bfvEnd; ++v) {
+    faultBdVertices.insert(subpointMap[points[v]]);
+  }
+  err = ISRestoreIndices(bdSubpointIS, &points);PYLITH_CHECK_ERROR(err);
+  err = ISDestroy(&bdSubpointIS);PYLITH_CHECK_ERROR(err);
   err = ISRestoreIndices(subpointIS, &subpointMap);PYLITH_CHECK_ERROR(err);
   err = ISDestroy(&subpointIS);PYLITH_CHECK_ERROR(err);
 
@@ -936,8 +926,8 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 void
 pylith::faults::CohesiveTopology::createInterpolated(topology::Mesh* mesh,
                                          const topology::SubMesh& faultMesh,
-                                         const ALE::Obj<SieveFlexMesh>& faultBoundary,
-                                         const ALE::Obj<topology::Mesh::IntSection>& groupField,
+                                         DM faultBoundary,
+                                         DMLabel groupField,
                                          const int materialId,
                                          int& firstFaultVertex,
                                          int& firstLagrangeVertex,
@@ -945,8 +935,8 @@ pylith::faults::CohesiveTopology::createInterpolated(topology::Mesh* mesh,
                                          const bool constraintCell)
 { // createInterpolated
   assert(0 != mesh);
-  assert(!faultBoundary.isNull());
-  assert(!groupField.isNull());
+  assert(faultBoundary);
+  assert(groupField);
   DM             dm = mesh->dmMesh(), sdm;
   DMLabel        label;
   const char    *labelName = "faultSurface";

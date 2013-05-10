@@ -116,8 +116,7 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
   
   try {
     topology::SubMesh faultMesh;
-    ALE::Obj<SieveFlexMesh> faultBoundary;
-    DM faultBoundaryDM = NULL;
+    DM faultBoundary = NULL;
   
     // Get group of vertices associated with fault
     PetscDM dmMesh = mesh->dmMesh();assert(dmMesh);
@@ -136,12 +135,12 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
         throw std::runtime_error(msg.str());
       } // if
       err = DMPlexGetLabel(dmMesh, charlabel, &groupField);PYLITH_CHECK_ERROR(err);
-      CohesiveTopology::createFault(&faultMesh, faultBoundary, faultBoundaryDM, *mesh, groupField, 
+      CohesiveTopology::createFault(&faultMesh, faultBoundary, *mesh, groupField, 
                                     flipFault);
       
-      CohesiveTopology::create(mesh, faultMesh, faultBoundary, faultBoundaryDM, groupField, id(), 
+      CohesiveTopology::create(mesh, faultMesh, faultBoundary, groupField, id(), 
                                *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
-      err = DMDestroy(&faultBoundaryDM);PYLITH_CHECK_ERROR(err);
+      err = DMDestroy(&faultBoundary);PYLITH_CHECK_ERROR(err);
     } else {
       const int faultDim = 2;
       assert(3 == mesh->dimension());

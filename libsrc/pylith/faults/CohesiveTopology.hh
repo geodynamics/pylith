@@ -53,8 +53,7 @@ public :
    */
   static
   void createFault(topology::SubMesh* faultMesh,
-		   ALE::Obj<SieveFlexMesh>& faultBoundary,
-		   DM& faultBoundaryDM,
+		   DM& faultBoundary,
 		   const topology::Mesh& mesh,
 		   DMLabel groupField,
 		   const bool flipFault =false);
@@ -76,8 +75,7 @@ public :
   static
   void create(topology::Mesh* mesh,
 	      const topology::SubMesh& faultMesh,
-              const ALE::Obj<SieveFlexMesh>& faultBoundary,
-              DM faultBoundaryDM,
+              DM faultBoundary,
               DMLabel groupField,
               const int materialId,
               int& firstFaultVertex,
@@ -102,8 +100,8 @@ public :
   static
   void createInterpolated(topology::Mesh* mesh,
                           const topology::SubMesh& faultMesh,
-                          const ALE::Obj<SieveFlexMesh>& faultBoundary,
-                          const ALE::Obj<topology::Mesh::IntSection>& groupField,
+                          DM faultBoundary,
+                          DMLabel groupField,
                           const int materialId,
                           int& firstFaultVertex,
                           int& firstLagrangeVertex,

@@ -42,7 +42,7 @@ pylith::faults::TestFaultMesh::createFaultMesh(topology::SubMesh* faultMesh,
     PetscInt firstLagrangeVertex = 0, firstFaultCell = 0;
     PetscDMLabel groupField = NULL;
     const bool useLagrangeConstraints = true;
-    PetscDM faultBoundaryDM = NULL;
+    PetscDM faultBoundary = NULL;
     PetscDM dmMesh = mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
     
     err = DMPlexGetStratumSize(dmMesh, faultLabel, 1, &firstLagrangeVertex);PYLITH_CHECK_ERROR(err);
@@ -52,10 +52,9 @@ pylith::faults::TestFaultMesh::createFaultMesh(topology::SubMesh* faultMesh,
     } // if
     err = DMPlexGetLabel(dmMesh, faultLabel, &groupField);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT(groupField);
-    ALE::Obj<SieveFlexMesh> faultBoundary = 0;
-    CohesiveTopology::createFault(faultMesh, faultBoundary, faultBoundaryDM, *mesh, groupField);
-    CohesiveTopology::create(mesh, *faultMesh, faultBoundary, faultBoundaryDM, groupField, faultId, firstFaultVertex, firstLagrangeVertex, firstFaultCell, useLagrangeConstraints);
-    err = DMDestroy(&faultBoundaryDM);PYLITH_CHECK_ERROR(err);
+    CohesiveTopology::createFault(faultMesh, faultBoundary, *mesh, groupField);
+    CohesiveTopology::create(mesh, *faultMesh, faultBoundary, groupField, faultId, firstFaultVertex, firstLagrangeVertex, firstFaultCell, useLagrangeConstraints);
+    err = DMDestroy(&faultBoundary);PYLITH_CHECK_ERROR(err);
   } // Create mesh
 
   { // Need to copy coordinates from mesh to fault mesh since we are not
