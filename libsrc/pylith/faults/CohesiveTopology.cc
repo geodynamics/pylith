@@ -914,6 +914,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     PetscInt dof;
     err = PetscSectionGetDof(coordSection, v, &dof);PYLITH_CHECK_ERROR(err);
     err = PetscSectionSetDof(newCoordSection, v+extraCells, dof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionSetFieldDof(newCoordSection, v+extraCells, 0, dof);PYLITH_CHECK_ERROR(err);
   }
 
   if (debug) coordinates->view("Coordinates without shadow vertices");
@@ -924,7 +925,11 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 
     err = PetscSectionGetDof(coordSection, v, &dof);PYLITH_CHECK_ERROR(err);
     err = PetscSectionSetDof(newCoordSection, vertexRenumberDM[vnew], dof);PYLITH_CHECK_ERROR(err);
-    if (constraintCell) {err = PetscSectionSetDof(newCoordSection, vertexLagrangeRenumberDM[vnew], dof);PYLITH_CHECK_ERROR(err);}
+    err = PetscSectionSetFieldDof(newCoordSection, vertexRenumberDM[vnew], 0, dof);PYLITH_CHECK_ERROR(err);
+    if (constraintCell) {
+      err = PetscSectionSetDof(newCoordSection, vertexLagrangeRenumberDM[vnew], dof);PYLITH_CHECK_ERROR(err);
+      err = PetscSectionSetFieldDof(newCoordSection, vertexLagrangeRenumberDM[vnew], 0, dof);PYLITH_CHECK_ERROR(err);
+    }
 
     coordinates->addPoint(vertexRenumber[v], coordinates->getFiberDimension(v));
     if (constraintCell) coordinates->addPoint(vertexLagrangeRenumber[v], coordinates->getFiberDimension(v));
