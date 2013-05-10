@@ -79,7 +79,7 @@ class DirichletBC(BoundaryCondition,
     logEvent = "%sverify" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
-    BoundaryCondition.verifyConfiguration(self, self.mesh)
+    BoundaryCondition.verifyConfiguration(self, self.mesh())
 
     self._eventLogger.eventEnd(logEvent)
     return

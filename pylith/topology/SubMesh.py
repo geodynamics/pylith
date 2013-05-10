@@ -54,14 +54,4 @@ class SubMesh(ModuleSubMesh):
     return Communicator(ModuleSubMesh.comm(self))
 
 
-  # PRIVATE METHODS ////////////////////////////////////////////////////
-
-  def _cleanup(self):
-    """
-    Deallocate locally managed data structures.
-    """
-    self.deallocate()
-    return
-
-
 # End of file

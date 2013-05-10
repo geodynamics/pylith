@@ -105,7 +105,7 @@ class DirichletBoundary(DirichletBC, ModuleDirichletBoundary):
     self._eventLogger.eventBegin(logEvent)
 
     DirichletBC.verifyConfiguration(self)
-    self.output.verifyConfiguration(self.mesh)
+    self.output.verifyConfiguration(self.mesh())
 
     self._eventLogger.eventEnd(logEvent)
     return

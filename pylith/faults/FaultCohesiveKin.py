@@ -137,7 +137,7 @@ class FaultCohesiveKin(FaultCohesive, Integrator, ModuleFaultCohesiveKin):
 
     FaultCohesive.verifyConfiguration(self)
     Integrator.verifyConfiguration(self)
-    ModuleFaultCohesiveKin.verifyConfiguration(self, self.mesh)
+    ModuleFaultCohesiveKin.verifyConfiguration(self, self.mesh())
 
     for eqsrc in self.eqsrcs.components():
       eqsrc.verifyConfiguration()

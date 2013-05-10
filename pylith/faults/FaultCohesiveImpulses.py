@@ -142,7 +142,7 @@ class FaultCohesiveImpulses(FaultCohesive, Integrator, ModuleFaultCohesiveImpuls
 
     FaultCohesive.verifyConfiguration(self)
     Integrator.verifyConfiguration(self)
-    ModuleFaultCohesiveImpulses.verifyConfiguration(self, self.mesh)
+    ModuleFaultCohesiveImpulses.verifyConfiguration(self, self.mesh())
 
     self._eventLogger.eventEnd(logEvent)
     return

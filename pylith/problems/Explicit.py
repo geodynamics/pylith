@@ -109,10 +109,10 @@ class Explicit(Formulation, ModuleExplicit):
 
     self._initialize(dimension, normalizer)
 
-    from pylith.utils.petsc import MemoryLogger
-    logger = MemoryLogger.singleton()
-    logger.setDebug(0)
-    logger.stagePush("Problem")
+    #from pylith.utils.petsc import MemoryLogger
+    #memoryLogger = MemoryLogger.singleton()
+    #memoryLogger.setDebug(0)
+    #memoryLogger.stagePush("Problem")
 
     # Allocate other fields, reusing layout from dispIncr
     if 0 == comm.rank:
@@ -145,12 +145,12 @@ class Explicit(Formulation, ModuleExplicit):
     accelerationT.zero()
 
     self._debug.log(resourceUsageString())
-    logger.stagePop()
+    #memoryLogger.stagePop()
 
     if 0 == comm.rank:
       self._info.log("Creating lumped Jacobian matrix.")
     from pylith.topology.topology import MeshField
-    jacobian = MeshField(self.mesh)
+    jacobian = MeshField(self.mesh())
     jacobian.newSection(jacobian.VERTICES_FIELD, dimension)
     jacobian.allocate()
     jacobian.label("jacobian")
@@ -158,14 +158,14 @@ class Explicit(Formulation, ModuleExplicit):
     self.jacobian = jacobian
     self._debug.log(resourceUsageString())
 
-    logger.stagePush("Problem")
+    #memoryLogger.stagePush("Problem")
     if 0 == comm.rank:
       self._info.log("Initializing solver.")
     self.solver.initialize(self.fields, self.jacobian, self)
     self._debug.log(resourceUsageString())
 
-    logger.stagePop()
-    logger.setDebug(0)
+    #memoryLogger.stagePop()
+    #memoryLogger.setDebug(0)
     self._eventLogger.eventEnd(logEvent)
     return
 
@@ -288,7 +288,7 @@ class Explicit(Formulation, ModuleExplicit):
     self._eventLogger.eventBegin(logEvent)
 
     if self.dtStable is None:
-      self.dtStable = self.timeStep.timeStep(self.mesh, self.integratorsMesh + self.integratorsSubMesh)
+      self.dtStable = self.timeStep.timeStep(self.mesh(), self.integratorsMesh + self.integratorsSubMesh)
     self._eventLogger.eventEnd(logEvent)
     return self.dtStable
   

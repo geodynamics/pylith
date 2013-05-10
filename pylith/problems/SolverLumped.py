@@ -77,14 +77,6 @@ class SolverLumped(Solver, ModuleSolverLumped):
     return
 
 
-  def _cleanup(self):
-    """
-    Deallocate PETSc and local data structures.
-    """
-    self.deallocate()
-    return
-
-
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def solver():

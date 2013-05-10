@@ -68,12 +68,12 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
     newMesh.coordsys(mesh.coordsys())
     ModuleRefineUniform.refine(self, newMesh, mesh, self.levels)
     if not newMesh == mesh:
-      from pylith.utils.petsc import MemoryLogger
-      sieveLogger =  MemoryLogger.singleton()
+      #from pylith.utils.petsc import MemoryLogger
+      #memoryLogger =  MemoryLogger.singleton()
 
-      sieveLogger.stagePush(mesh.memLoggingStage)      
-      mesh.deallocate()
-      sieveLogger.stagePop()
+      #memoryLogger.stagePush(mesh.memLoggingStage)      
+      mesh.cleanup()
+      #memoryLogger.stagePop()
 
     self._eventLogger.eventEnd(logEvent)
     return newMesh

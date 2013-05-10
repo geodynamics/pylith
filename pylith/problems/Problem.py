@@ -148,17 +148,17 @@ class Problem(PetscComponent):
     comm = mpi_comm_world()
     if 0 == comm.rank:
       self._info.log("Verifying compatibility of problem configuration.")
-    if self.dimension != self.mesh.dimension():
+    if self.dimension != self.mesh().dimension():
       raise ValueError, \
             "Spatial dimension of problem is '%d' but mesh contains cells " \
             "for spatial dimension '%d'." % \
-            (self.dimension, self.mesh.dimension())
+            (self.dimension, self.mesh().dimension())
 
-    if self.dimension != self.mesh.coordsys().spaceDim():
+    if self.dimension != self.mesh().coordsys().spaceDim():
       raise ValueError, \
             "Spatial dimension of problem is '%d' but mesh coordinate system " \
             "is  for spatial dimension '%d'." % \
-            (self.dimension, self.mesh.coordsys().spaceDim())
+            (self.dimension, self.mesh().coordsys().spaceDim())
 
     # Check to make sure ids of materials and interfaces are unique
     materialIds = {}
@@ -186,7 +186,7 @@ class Problem(PetscComponent):
     # Check to make sure material-id for each cell matches the id of a material
     import numpy
     idValues = numpy.array(materialIds.keys(), dtype=numpy.int32)
-    self.mesh.checkMaterialIds(idValues)
+    self.mesh().checkMaterialIds(idValues)
 
     return
   

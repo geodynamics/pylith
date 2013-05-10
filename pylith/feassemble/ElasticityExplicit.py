@@ -53,7 +53,7 @@ class ElasticityExplicit(IntegratorElasticity, ModuleElasticityExplicit):
     self._eventLogger.eventBegin(logEvent)
 
     IntegratorElasticity.initialize(self, totalTime, numTimeSteps, normalizer)
-    ModuleElasticityExplicit.initialize(self, self.mesh)
+    ModuleElasticityExplicit.initialize(self, self.mesh())
     self._initializeOutput(totalTime, numTimeSteps, normalizer)
     
     self._eventLogger.eventEnd(logEvent)
@@ -63,7 +63,7 @@ class ElasticityExplicit(IntegratorElasticity, ModuleElasticityExplicit):
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _verifyConfiguration(self):
-    ModuleElasticityExplicit.verifyConfiguration(self, self.mesh)
+    ModuleElasticityExplicit.verifyConfiguration(self, self.mesh())
     return
 
 

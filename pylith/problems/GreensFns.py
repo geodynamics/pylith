@@ -90,9 +90,9 @@ class GreensFns(Problem):
     
     if 0 == comm.rank:
       self._info.log("Pre-initializing problem.")
-    self.mesh = mesh
-    self.formulation.preinitialize(mesh, self.materials, self.bc,
-                                   self.interfaces, self.gravityField)
+    import weakref
+    self.mesh = weakref.ref(mesh)
+    self.formulation.preinitialize(mesh, self.materials, self.bc, self.interfaces, self.gravityField)
 
     # Find fault for impulses
     found = False

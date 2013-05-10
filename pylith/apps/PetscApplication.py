@@ -39,8 +39,7 @@ class PetscApplication(Application):
 
   # Dummy facility for passing options to PETSc
   from pylith.utils.PetscManager import PetscManager
-  petsc = pyre.inventory.facility("petsc", family="petsc_manager",
-                                  factory=PetscManager)
+  petsc = pyre.inventory.facility("petsc", family="petsc_manager", factory=PetscManager)
   petsc.meta['tip'] = "Manager for PETSc options."
 
 

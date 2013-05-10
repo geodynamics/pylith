@@ -53,7 +53,8 @@ class IntegratorElasticity(Integrator):
     """
     Setup integrator.
     """
-    self.mesh = mesh
+    import weakref
+    self.mesh = weakref.ref(mesh)
     self.output = material.output
     self.availableFields = material.availableFields
     self.materialObj = material
@@ -78,15 +79,15 @@ class IntegratorElasticity(Integrator):
     Integrator.verifyConfiguration(self)
     self.materialObj.verifyConfiguration()
 
-    if self.mesh.dimension() != self.materialObj.dimension():
+    if self.mesh().dimension() != self.materialObj.dimension():
       raise ValueError("Mesh dimension is '%d' but material '%s' of type " \
                          "'%s' applies to dimension '%d'." % \
-                       (self.mesh.dimension(),
+                       (self.mesh().dimension(),
                         self.materialObj.label(),
                         self.materialObj,
                         self.materialObj.dimension()))
     self._verifyConfiguration()
-    self.output.verifyConfiguration(self.mesh)
+    self.output.verifyConfiguration(self.mesh())
 
     self._eventLogger.eventEnd(logEvent)    
     return
@@ -160,9 +161,9 @@ class IntegratorElasticity(Integrator):
     Get cell field.
     """
     if None == fields:
-      field = self.cellField(name, self.mesh)
+      field = self.cellField(name, self.mesh())
     else:
-      field = self.cellField(name, self.mesh, fields)
+      field = self.cellField(name, self.mesh(), fields)
     return field
 
 

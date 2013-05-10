@@ -171,8 +171,9 @@ class Formulation(PetscComponent, ModuleFormulation):
     comm = mpi_comm_world()
 
     self.timeStep.preinitialize()
-    
-    self.mesh = mesh
+
+    import weakref
+    self.mesh = weakref.ref(mesh)
     self.integratorsMesh = []
     self.integratorsSubMesh = []
     self.constraints = []
@@ -206,7 +207,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     for constraint in self.constraints:
       constraint.verifyConfiguration()
     for output in self.output.components():
-      output.verifyConfiguration(self.mesh)
+      output.verifyConfiguration(self.mesh())
 
     self._eventLogger.eventEnd(logEvent)
     return
@@ -240,8 +241,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     logEvent = "%stimestep" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
-    dt = self.timeStep.timeStep(self.mesh,
-                                self.integratorsMesh + self.integratorsSubMesh)
+    dt = self.timeStep.timeStep(self.mesh(), self.integratorsMesh + self.integratorsSubMesh)
 
     self._eventLogger.eventEnd(logEvent)
     return dt
@@ -371,7 +371,7 @@ class Formulation(PetscComponent, ModuleFormulation):
       self.matrixType = "aijcusp"
     for constraint in self.constraints:
       numDimConstrained = constraint.numDimConstrained()
-      if numDimConstrained > 0 and self.mesh.dimension() != numDimConstrained:
+      if numDimConstrained > 0 and self.mesh().dimension() != numDimConstrained:
         self.blockMatrixOkay = False
     return
 
@@ -394,13 +394,12 @@ class Formulation(PetscComponent, ModuleFormulation):
         raise TypeError, \
               "Could not use '%s' as an integrator for material '%s'. " \
               "Functionality missing." % (integrator.name, material.label())
-      integrator.preinitialize(self.mesh, material)
+      integrator.preinitialize(self.mesh(), material)
       self.integratorsMesh.append(integrator)
       self._debug.log(resourceUsageString())
 
       if 0 == comm.rank:
-        self._info.log("Added elasticity integrator for material '%s'." % \
-                         material.label())
+        self._info.log("Added elasticity integrator for material '%s'." % material.label())
     return
 
 
@@ -419,7 +418,7 @@ class Formulation(PetscComponent, ModuleFormulation):
       self._info.log("Pre-initializing boundary conditions.")
     self._debug.log(resourceUsageString())
     for bc in boundaryConditions.components():
-      bc.preinitialize(self.mesh)
+      bc.preinitialize(self.mesh())
       foundType = False
       if implementsIntegrator(bc):
         foundType = True
@@ -457,7 +456,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     if 0 == comm.rank:
       self._info.log("Pre-initializing interior interfaces.")
     for ic in interfaceConditions.components():
-      ic.preinitialize(self.mesh)
+      ic.preinitialize(self.mesh())
       foundType = False
       if implementsIntegrator(ic):
         foundType = True
@@ -492,7 +491,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     totalTime = self.timeStep.totalTime
 
     from pylith.topology.SolutionFields import SolutionFields
-    self.fields = SolutionFields(self.mesh)
+    self.fields = SolutionFields(self.mesh())
     self._debug.log(resourceUsageString())
 
     if 0 == comm.rank:
@@ -514,7 +513,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     if 0 == comm.rank:
       self._info.log("Setting up solution output.")
     for output in self.output.components():
-      output.initialize(self.mesh, normalizer)
+      output.initialize(self.mesh(), normalizer)
       output.writeInfo()
       output.open(totalTime, numTimeSteps)
     self._debug.log(resourceUsageString())
@@ -522,10 +521,10 @@ class Formulation(PetscComponent, ModuleFormulation):
     # Setup fields
     if 0 == comm.rank:
       self._info.log("Creating solution field.")
-    from pylith.utils.petsc import MemoryLogger
-    memoryLogger = MemoryLogger.singleton()
-    memoryLogger.setDebug(0)
-    memoryLogger.stagePush("Problem")
+    #from pylith.utils.petsc import MemoryLogger
+    #memoryLogger = MemoryLogger.singleton()
+    #memoryLogger.setDebug(0)
+    #memoryLogger.stagePush("Problem")
     self.fields.add("dispIncr(t->t+dt)", "displacement_increment")
     self.fields.add("disp(t)", "displacement")
     self.fields.add("residual", "residual")
@@ -570,13 +569,12 @@ class Formulation(PetscComponent, ModuleFormulation):
       for integrator in self.integratorsMesh + self.integratorsSubMesh:
         integrator.checkConstraints(solution)
 
-
-    memoryLogger.stagePop()
+    #memoryLogger.stagePop()
 
     # This also creates a global order.
     solution.createScatterMesh(solution.mesh())
 
-    memoryLogger.stagePush("Problem")
+    #memoryLogger.stagePush("Problem")
     dispT = self.fields.get("disp(t)")
     dispT.vectorFieldType(dispT.VECTOR)
     dispT.scale(lengthScale.value)
@@ -585,8 +583,8 @@ class Formulation(PetscComponent, ModuleFormulation):
     residual.vectorFieldType(residual.VECTOR)
     residual.scale(lengthScale.value)
 
-    memoryLogger.stagePop()
-    memoryLogger.setDebug(0)
+    #memoryLogger.stagePop()
+    #memoryLogger.setDebug(0)
     self._debug.log(resourceUsageString())
 
     return
@@ -611,7 +609,7 @@ class Formulation(PetscComponent, ModuleFormulation):
 
     if self.viewJacobian:
       from pylith.mpi.Communicator import Communicator
-      comm = Communicator(self.mesh.comm())
+      comm = Communicator(self.mesh().comm())
       self.jacobianViewer.view(self.jacobian, t, comm)
 
     self._debug.log(resourceUsageString())
