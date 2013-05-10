@@ -173,6 +173,8 @@ private :
 
   int _precision; ///< Precision of floating point values in output.
 
+  bool _isOpen; ///< True if called open().
+  bool _isOpenTimeStep; ///< true if called openTimeStep().
   bool _wroteVertexHeader; ///< True if wrote header for vertex data.
   bool _wroteCellHeader; ///< True if wrote header for cell data
 

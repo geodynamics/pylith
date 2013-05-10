@@ -971,21 +971,20 @@ pylith::topology::Field<mesh_type>::createScatter(const scatter_mesh_type& mesh,
     PYLITH_METHOD_END;
   } // if
 
-  PetscInt localSize, globalSize;
-
-
-  err = PetscObjectReference((PetscObject) _dm);PYLITH_CHECK_ERROR(err);
-  err = PetscObjectReference((PetscObject) _globalVec);PYLITH_CHECK_ERROR(err);
-  err = PetscObjectSetName((PetscObject) _globalVec, _metadata["default"].label.c_str());PYLITH_CHECK_ERROR(err);
-  err = VecGetSize(_localVec,  &localSize);PYLITH_CHECK_ERROR(err);
-  err = VecGetSize(_globalVec, &globalSize);PYLITH_CHECK_ERROR(err);
-  //assert(order->getLocalSize()  == localSize);
-  //assert(order->getGlobalSize() == globalSize);
-
   err = DMDestroy(&sinfo.dm);PYLITH_CHECK_ERROR(err);
+  sinfo.dm = _dm;
+  err = PetscObjectReference((PetscObject) _dm);PYLITH_CHECK_ERROR(err);
+
   err = VecDestroy(&sinfo.vector);PYLITH_CHECK_ERROR(err);
   sinfo.vector = _globalVec;
-  sinfo.dm     = _dm;
+  err = PetscObjectReference((PetscObject) _globalVec);PYLITH_CHECK_ERROR(err);
+  err = PetscObjectSetName((PetscObject) _globalVec, _metadata["default"].label.c_str());PYLITH_CHECK_ERROR(err);
+
+  //PetscInt localSize, globalSize;
+  //err = VecGetSize(_localVec,  &localSize);PYLITH_CHECK_ERROR(err);
+  //err = VecGetSize(_globalVec, &globalSize);PYLITH_CHECK_ERROR(err);
+  //assert(order->getLocalSize()  == localSize);
+  //assert(order->getGlobalSize() == globalSize);
   
   PYLITH_METHOD_END;
 } // createScatter
