@@ -51,8 +51,6 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::DataWriterVTK(void) :
 template<typename mesh_type, typename field_type>
 pylith::meshio::DataWriterVTK<mesh_type,field_type>::~DataWriterVTK(void)
 { // destructor
-  closeTimeStep(); // Insure time step is closed.
-  close(); // Insure clean up.
   deallocate();
 } // destructor  
 
@@ -64,6 +62,8 @@ pylith::meshio::DataWriterVTK<mesh_type, field_type>::deallocate(void)
 { // deallocate
   PYLITH_METHOD_BEGIN;
 
+  closeTimeStep(); // Insure time step is closed.
+  close(); // Insure clean up.
   DataWriter<mesh_type, field_type>::deallocate();
 
   PYLITH_METHOD_END;

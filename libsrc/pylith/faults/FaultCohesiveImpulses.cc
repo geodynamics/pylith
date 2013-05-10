@@ -71,8 +71,7 @@ pylith::faults::FaultCohesiveImpulses::deallocate(void)
 
   FaultCohesiveLagrange::deallocate();
 
-  // :TODO: Use shared pointers for amplitudes of impulses
-  _dbImpulseAmp = 0;
+  _dbImpulseAmp = 0; // :TODO: Use shared pointers for amplitudes of impulses
 
   PYLITH_METHOD_END;
 } // deallocate

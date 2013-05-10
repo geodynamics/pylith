@@ -43,7 +43,7 @@ pylith::problems::Implicit::calcRateFields(void)
 { // calcRateFields
   PYLITH_METHOD_BEGIN;
 
-  assert(0 != _fields);
+  assert(_fields);
 
   // vel(t) = (disp(t+dt) - disp(t)) / dt
   //        = dispIncr(t+dt) / dt
