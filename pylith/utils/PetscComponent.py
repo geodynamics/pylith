@@ -84,6 +84,8 @@ class PetscComponent(Component):
     """
     Deallocate locally managed data structures.
     """
+    if "deallocate" in dir(self):
+      self.deallocate()
     return
     
 

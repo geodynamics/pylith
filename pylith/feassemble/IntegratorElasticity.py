@@ -140,6 +140,14 @@ class IntegratorElasticity(Integrator):
     return
 
 
+  def cleanup(self):
+    """
+    Deallocate locally managed data structures.
+    """
+    self.deallocate()
+    return
+
+
   def getDataMesh(self):
     """
     Get mesh associated with data fields.
