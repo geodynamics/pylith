@@ -1092,7 +1092,6 @@ pylith::topology::Field<mesh_type>::createScatterWithBC(const scatter_mesh_type&
     PetscIS subpointIS;
     PetscInt n, q;
 
-    err = PetscPrintf(PETSC_COMM_SELF, "Making translation PetscSection\n");PYLITH_CHECK_ERROR(err);
     err = PetscSectionGetChart(section, &qStart, &qEnd);PYLITH_CHECK_ERROR(err);
     err = DMPlexCreateSubpointIS(dm, &subpointIS);PYLITH_CHECK_ERROR(err);
     err = ISGetLocalSize(subpointIS, &n);PYLITH_CHECK_ERROR(err);
@@ -1115,7 +1114,6 @@ pylith::topology::Field<mesh_type>::createScatterWithBC(const scatter_mesh_type&
     err = ISRestoreIndices(subpointIS, &ind);PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&subpointIS);PYLITH_CHECK_ERROR(err);
     /* No need to setup section */
-    err = PetscSectionView(subSection, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
     section = subSection;
     /* There are no excludes for surface meshes */
     numExcludes = 0;
@@ -1135,9 +1133,6 @@ pylith::topology::Field<mesh_type>::createScatterWithBC(const scatter_mesh_type&
     err = DMPlexGetLabel(sinfo.dm, labelName.c_str(), &label);PYLITH_CHECK_ERROR(err);
     err = PetscSectionCreateGlobalSectionLabel(section, sf, PETSC_TRUE, label, labelValue, &gsection);PYLITH_CHECK_ERROR(err);
   } // if/else
-  if (((dim != dimF) || ((pEnd-pStart) < (qEnd-qStart))) && subpointMap && !subpointMapF) {
-    err = PetscSectionView(gsection, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
-  } // if
   err = DMSetDefaultGlobalSection(sinfo.dm, gsection);PYLITH_CHECK_ERROR(err);
   err = PetscSectionDestroy(&gsection);PYLITH_CHECK_ERROR(err);
   err = VecDestroy(&sinfo.vector);PYLITH_CHECK_ERROR(err);
