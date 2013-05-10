@@ -708,6 +708,8 @@ class Formulation(PetscComponent, ModuleFormulation):
       self.jacobian.cleanup()
     if not self.fields is None:
       self.fields.cleanup()
+    for integrator in self.integratorsMesh:
+      integrator.cleanup()
     return
 
 
