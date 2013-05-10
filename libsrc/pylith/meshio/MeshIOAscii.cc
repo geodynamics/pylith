@@ -368,7 +368,7 @@ pylith::meshio::MeshIOAscii::_readCells(spatialdata::utils::LineParser& parser,
       } // for
       if (!_useIndexZero) {
 	// if files begins with index 1, then decrement to index 0
-	// for compatibility with Sieve
+	// for compatibility with PETSc
 	for (int i=0; i < size; ++i)
 	  --(*cells)[i];
       } // if

@@ -374,7 +374,7 @@ pylith::meshio::MeshIOCubit::_orientCells(int_array* const cells,
     // corners, 
     // bottom edges, middle edges, top edges
 
-    // PyLith (Sieve)
+    // PyLith
     // bottom edge, right edge, left edge, corners
 
     // Permutation: 3, 4, 5, 0, 1, 2

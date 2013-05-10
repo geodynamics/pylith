@@ -477,10 +477,6 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   std::set<SieveFlexMesh::point_type> faceSet;
   PetscInt *cohesiveCone;
 
-  ALE::Obj<SieveSubMesh::sieve_type> ifaultSieve;
-  ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> *sV2 = NULL;
-  ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type> *cV2 = NULL;
-  SieveSubMesh::label_sequence::iterator *f_iter = NULL;
   IS subpointIS;
   const PetscInt *subpointMap;
 
@@ -490,13 +486,6 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   for (PetscInt faceDM = ffStart; faceDM < ffEnd; ++faceDM, ++firstFaultCell, ++firstFaultCellDM) {
     PetscInt face = faceDM;
     if (debug) std::cout << "Considering fault face " << faceDM << std::endl;
-    if (!ifaultSieve.isNull()) {
-      face = **f_iter; ++(*f_iter);
-      ifaultSieve->support(face, *sV2);
-      const point_type *cells = sV2->getPoints();
-      point_type cell = cells[0];
-      point_type otherCell = cells[1];
-    }
     const PetscInt *support;
     err = DMPlexGetSupport(faultDMMesh, faceDM, &support);PYLITH_CHECK_ERROR(err);
     // Transform to original mesh cells
@@ -513,55 +502,10 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
       }
     }
     int coneSize;
-    const point_type *faceCone;
-    if (!ifaultSieve.isNull()) {
-      ALE::ISieveTraversal<SieveMesh::sieve_type>::orientedClosure(*ifaultSieve, face, *cV2);
-      coneSize = cV2->getSize();
-      faceCone = cV2->getPoints();
-      assert(coneSize == coneSizeDM);
-    } else {
-      faceCone = NULL;
-    }
-    //ifaultSieve->cone(face, cV2);
-    //const int coneSize = cV2.getSize() ? cV2.getSize() : 1;
-    //const point_type *faceCone = cV2.getSize() ? cV2.getPoints() : &face;
+    const point_type *faceCone = NULL;
     bool found = true;
 
     err = DMPlexGetOrientedFace(complexMesh, cell, coneSizeDM, faceConeDM, numCorners, indicesDM, origVerticesDM, faceVerticesDM, PETSC_NULL);PYLITH_CHECK_ERROR(err);
-    if (faceCone) {
-      for(int i = 0; i < coneSize; ++i) {
-        faceSet.insert(faceCone[i]);
-        assert(faceConeDM[i] == faceCone[i]+faultVertexOffsetDM);
-      }
-      selection::getOrientedFace(sieveMesh, cell, &faceSet, numCorners, indices, &origVertices, &faceVertices);
-      if (faceVertices.size() != coneSize) {
-        std::cout << "Invalid size for faceVertices " << faceVertices.size() << " of face " << face << " should be " << coneSize << std::endl;
-        std::cout << "  firstCohesiveCell " << firstCohesiveCell << " firstFaultCell " << firstFaultCell << " numFaces " << (ffEnd-ffStart) << std::endl;
-        std::cout << "  faceSet:" << std::endl;
-        for(std::set<SieveFlexMesh::point_type>::const_iterator p_iter = faceSet.begin(); p_iter != faceSet.end(); ++p_iter) {
-          std::cout << "    " << *p_iter << std::endl;
-        } // if
-        std::cout << "  cell cone:" << std::endl;
-        ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> cV(std::max(1, sieve->getMaxConeSize()));
-        sieve->cone(cell, cV);
-        const int coneSize2 = cV.getSize();
-        const point_type *cellCone  = cV.getPoints();
-
-        for(int c = 0; c < coneSize2; ++c) std::cout << "    " << cellCone[c] << std::endl;
-        std::cout << "  fault cell support:" << std::endl;
-        ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> sV(std::max(1, ifaultSieve->getMaxSupportSize()));
-        ifaultSieve->support(face, sV);
-        const int supportSize2 = sV.getSize();
-        const point_type *cellSupport  = sV.getPoints();
-        for(int s = 0; s < supportSize2; ++s) std::cout << "    " << cellSupport[s] << std::endl;
-      } // if
-      assert(faceVertices.size() == coneSize);
-      faceSet.clear();
-      for(PetscInt c = 0; c < coneSize; ++c) {
-        assert(faceVertices[c]+faultVertexOffsetDM == faceVerticesDM[c]);
-      }
-    }
-
     if (numFaultCorners == 0) {
       found = false;
     } else if (numFaultCorners == 2) {
@@ -652,17 +596,8 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 #endif
     logger.stagePop();
     logger.stagePush("SerialFaultCreation");
-    if (sV2) {
-      sV2->clear();
-      cV2->clear();
-    }
     err = DMPlexRestoreTransitiveClosure(faultDMMesh, faceDM, PETSC_TRUE, &closureSize, &faceConeDM);PYLITH_CHECK_ERROR(err);
   } // for over fault faces
-  delete f_iter; f_iter = NULL;
-  if (sV2) {
-    delete sV2; sV2 = NULL;
-    delete cV2; cV2 = NULL;
-  }
   // This completes the set of cells scheduled to be replaced
   // TODO: Convert to DMPlex
   TopologyOps::PointSet replaceCellsBase(replaceCells);
