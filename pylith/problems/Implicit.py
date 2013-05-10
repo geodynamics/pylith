@@ -126,10 +126,10 @@ class Implicit(Formulation, ModuleImplicit):
 
     self._initialize(dimension, normalizer)
 
-    from pylith.utils.petsc import MemoryLogger
-    memoryLogger = MemoryLogger.singleton()
-    memoryLogger.setDebug(0)
-    memoryLogger.stagePush("Problem")
+    #from pylith.utils.petsc import MemoryLogger
+    #memoryLogger = MemoryLogger.singleton()
+    #memoryLogger.setDebug(0)
+    #memoryLogger.stagePush("Problem")
 
     # Allocate other fields, reusing layout from dispIncr
     if 0 == comm.rank:
@@ -152,7 +152,7 @@ class Implicit(Formulation, ModuleImplicit):
     velocityT.zero()
 
     self._debug.log(resourceUsageString())
-    memoryLogger.stagePop()
+    #memoryLogger.stagePop()
 
     # Allocates memory for nonzero pattern and Jacobian
     if 0 == comm.rank:
@@ -164,14 +164,14 @@ class Implicit(Formulation, ModuleImplicit):
     self.jacobian.zero() # TEMPORARY, to get correct memory usage
     self._debug.log(resourceUsageString())
 
-    memoryLogger.stagePush("Problem")
+    #memoryLogger.stagePush("Problem")
     if 0 == comm.rank:
       self._info.log("Initializing solver.")
     self.solver.initialize(self.fields, self.jacobian, self)
     self._debug.log(resourceUsageString())
 
-    memoryLogger.stagePop()
-    memoryLogger.setDebug(0)
+    #memoryLogger.stagePop()
+    #memoryLogger.setDebug(0)
     return
 
 

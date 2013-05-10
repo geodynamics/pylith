@@ -116,6 +116,7 @@ class OutputManagerMesh(OutputManager, ModuleOutputManager):
     ModuleOutputManager.appendVertexField(self, t, field, mesh)
     return
 
+
   def _appendCellField(self, t, field, label, labelId):
     """
     Call C++ appendCellField();

@@ -22,7 +22,6 @@
 // Header files for module C++ code
 %{
 #include <petsc.h>
-#include <ALE.hh>
 %}
 
 %include "exception.i"
@@ -39,7 +38,7 @@
 
 // Interfaces
 %include "petsc_general.i"
-%include "petsc_memory.i"
+//%include "petsc_memory.i" // was ALE memory logging stuff
 
 // End of file
 

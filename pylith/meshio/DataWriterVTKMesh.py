@@ -51,8 +51,7 @@ class DataWriterVTKMesh(DataWriterVTK, ModuleDataWriterVTK):
     DataWriterVTK.initialize(self, normalizer)
     
     timeScale = normalizer.timeScale()
-    timeConstantN = normalizer.nondimensionalize(self.timeConstant,
-                                                 timeScale)
+    timeConstantN = normalizer.nondimensionalize(self.timeConstant, timeScale)
 
     ModuleDataWriterVTK.filename(self, self.filename)
     ModuleDataWriterVTK.timeScale(self, timeScale.value)

@@ -131,7 +131,7 @@ class MeshImporter(MeshGenerator):
     # Refine mesh (if necessary)
     newMesh = self.refiner.refine(mesh)
     if not newMesh == mesh:
-      mesh.deallocate()
+      mesh.cleanup()
       newMesh.memLoggingStage = "RefinedMesh"
 
     # Nondimensionalize mesh (coordinates of vertices).

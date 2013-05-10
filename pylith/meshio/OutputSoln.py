@@ -87,7 +87,8 @@ class OutputSoln(OutputManagerMesh):
     logEvent = "%sinit" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)    
 
-    self.mesh = mesh
+    import weakref
+    self.mesh = weakref.ref(mesh)
     OutputManagerMesh.initialize(self, normalizer)
 
     self._eventLogger.eventEnd(logEvent)
@@ -98,7 +99,7 @@ class OutputSoln(OutputManagerMesh):
     """
     Get mesh associated with data fields.
     """
-    return (self.mesh, None, None)
+    return (self.mesh(), None, None)
 
 
   def getVertexField(self, name, fields):

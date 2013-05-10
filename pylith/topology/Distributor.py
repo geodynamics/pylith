@@ -82,12 +82,12 @@ class Distributor(PetscComponent, ModuleDistributor):
     newMesh = Mesh(mesh.dimension())
     ModuleDistributor.distribute(newMesh, mesh, self.partitioner)
 
-    from pylith.utils.petsc import MemoryLogger
-    sieveLogger =  MemoryLogger.singleton()
+    #from pylith.utils.petsc import MemoryLogger
+    #memoryLogger = MemoryLogger.singleton()
 
-    sieveLogger.stagePush(mesh.memLoggingStage)
-    mesh.deallocate()
-    sieveLogger.stagePop()
+    #memoryLogger.stagePush(mesh.memLoggingStage)
+    mesh.cleanup()
+    #memoryLogger.stagePop()
 
     if self.writePartition:
       self.dataWriter.initialize(normalizer)

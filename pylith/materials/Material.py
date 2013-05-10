@@ -121,8 +121,9 @@ class Material(PetscComponent):
     Do pre-initialization setup.
     """
     self._setupLogging()
-    self.mesh = mesh
-    self.quadrature.preinitialize(self.mesh.coordsys().spaceDim())
+    import weakref
+    self.mesh = weakref.ref(mesh)
+    self.quadrature.preinitialize(mesh.coordsys().spaceDim())
     from pylith.topology.topology import MeshOps_numMaterialCells
     self.ncells = MeshOps_numMaterialCells(mesh, self.id())
     return
@@ -135,9 +136,9 @@ class Material(PetscComponent):
     logEvent = "%sverify" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
-    if self.quadrature.cellDim() != self.mesh.dimension() or \
-       self.quadrature.spaceDim() != self.mesh.coordsys().spaceDim() or \
-       self.quadrature.cell.numCorners != self.mesh.coneSize():
+    if self.quadrature.cellDim() != self.mesh().dimension() or \
+       self.quadrature.spaceDim() != self.mesh().coordsys().spaceDim() or \
+       self.quadrature.cell.numCorners != self.mesh().coneSize():
         raise ValueError, \
               "Quadrature scheme for material '%s' and mesh are incompatible.\n" \
               "  Quadrature reference cell:\n" \
@@ -151,8 +152,8 @@ class Material(PetscComponent):
               (self.label(),
                self.quadrature.cellDim(), self.quadrature.spaceDim(),
                self.quadrature.cell.numCorners, 
-               self.mesh.dimension(), self.mesh.coordsys().spaceDim(),
-               self.mesh.coneSize())
+               self.mesh().dimension(), self.mesh().coordsys().spaceDim(),
+               self.mesh().coneSize())
     self._eventLogger.eventEnd(logEvent)
     return
   
@@ -171,7 +172,7 @@ class Material(PetscComponent):
     """
     Get mesh associated with data fields.
     """
-    return (self.mesh, "material-id", self.id())
+    return (self.mesh(), "material-id", self.id())
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -236,13 +237,5 @@ class Material(PetscComponent):
     self._eventLogger = logger
     return
   
-
-  def _cleanup(self):
-    """
-    Deallocate locally managed data structures.
-    """
-    self.deallocate()
-    return
-
 
 # End of file 

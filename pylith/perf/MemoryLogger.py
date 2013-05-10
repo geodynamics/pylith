@@ -226,8 +226,6 @@ class MemoryLogger(Logger):
 
   def processMemDict(self, memDict, indent = 0, namePrefix = '', 
                      includeDealloc = True):
-    from pylith.utils.petsc import MemoryLogger
-    logger    =  MemoryLogger.singleton()
     output    = []
     total     = 0
     codeTotal = 0
@@ -242,22 +240,22 @@ class MemoryLogger(Logger):
         total     += mem
         codeTotal += codeMem
       else:
-        mem = logger.getAllocationTotal(fullname)
+        mem = 0 #logger.getAllocationTotal(fullname)
         if includeDealloc:
-          mem     -= logger.getDeallocationTotal(fullname)
+          mem     -= 0 #logger.getDeallocationTotal(fullname)
         total     += m
         codeTotal += mem
         output.append(self.memLine('Model', name, m, indent))
-        if logger.getAllocationTotal(fullname):
+        if False: #logger.getAllocationTotal(fullname):
           output.append(self.memLine('Code',  name, mem, indent))
     if namePrefix:
-      mem = logger.getAllocationTotal(namePrefix)
+      mem = 0 #logger.getAllocationTotal(namePrefix)
       if includeDealloc:
-        mem -= logger.getDeallocationTotal(namePrefix)
+        mem -= 0 #logger.getDeallocationTotal(namePrefix)
     else:
-      mem = logger.getAllocationTotal()
+      mem = 0 #logger.getAllocationTotal()
       if includeDealloc:
-        mem -= logger.getDeallocationTotal()
+        mem -= 0 #logger.getDeallocationTotal()
     if mem == 0:
       mem = codeTotal
     output.append(self.prefix(indent)+'-'*(60-indent))
@@ -280,12 +278,10 @@ class MemoryLogger(Logger):
     output.extend(self.processMemDict(self.memory, includeDealloc = \
                                         self.includeDealloc)[0])
 
-    from pylith.utils.petsc import MemoryLogger
-    logger    =  MemoryLogger.singleton()
-    output.append(self.memLine('Code',  'Total Alloced', 
-                               logger.getAllocationTotal('default'), 1))
-    output.append(self.memLine('Code',  'Total Dealloced', 
-                               logger.getDeallocationTotal('default'), 1))
+    output.append(self.memLine('Code',  'Total Alloced', 0))
+                               #logger.getAllocationTotal('default'), 1))
+    output.append(self.memLine('Code',  'Total Dealloced', 0))
+                               #logger.getDeallocationTotal('default'), 1))
 
     print '\n'.join(output)
     return

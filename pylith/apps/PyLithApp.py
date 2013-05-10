@@ -141,9 +141,6 @@ class PyLithApp(PetscApplication):
     if self.perfLogger.verbose:
       self.perfLogger.show()
 
-    mesh.deallocate() # :KUDGE: TEMPORARY (required due to circular references)
-    del mesh # long-term solution should be to just delete the mesh
-    del self.problem # long-term solution should be to just delete the problem
     return
   
 

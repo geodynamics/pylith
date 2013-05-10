@@ -38,8 +38,6 @@
 %exception {
   try {
     $action
-  } catch (const ALE::Exception& err) {
-    SWIG_exception(SWIG_RuntimeError, err.message());
   } catch (const std::exception& err) {
     SWIG_exception(SWIG_RuntimeError, err.what());
   } // try/catch

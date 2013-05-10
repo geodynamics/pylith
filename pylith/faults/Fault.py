@@ -124,7 +124,8 @@ class Fault(PetscComponent, ModuleFault):
     """
     Setup fault.
     """
-    self.mesh = mesh
+    import weakref
+    self.mesh = weakref.ref(mesh)
     
     self.faultQuadrature.preinitialize(mesh.coordsys().spaceDim())
 
@@ -141,7 +142,7 @@ class Fault(PetscComponent, ModuleFault):
     logEvent = "%sverify" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
-    faultDim = self.mesh.dimension() - 1
+    faultDim = self.mesh().dimension() - 1
     if faultDim != self.faultQuadrature.cell.cellDim:
       raise ValueError, \
             "Quadrature is incompatible with fault surface.\n" \
@@ -149,7 +150,7 @@ class Fault(PetscComponent, ModuleFault):
             (self.faultQuadrature.cell.cellDim, faultDim)
 
     if None != self.output:
-      self.output.verifyConfiguration(self.mesh)
+      self.output.verifyConfiguration(self.mesh())
 
     self._eventLogger.eventEnd(logEvent)
     return
@@ -163,8 +164,7 @@ class Fault(PetscComponent, ModuleFault):
     self._eventLogger.eventBegin(logEvent)
 
     self.faultQuadrature.initialize()
-    ModuleFault.initialize(self, 
-                           self.mesh, self.upDir)
+    ModuleFault.initialize(self, self.mesh(), self.upDir)
 
     if None != self.output:
       self.output.initialize(normalizer, self.faultQuadrature)
@@ -258,14 +258,6 @@ class Fault(PetscComponent, ModuleFault):
     """
     raise NotImplementedError, \
           "Please implement _modelModelUse() in derived class."
-    return
-
-
-  def _cleanup(self):
-    """
-    Deallocate locally managed data structures.
-    """
-    self.deallocate()
     return
 
 
