@@ -682,141 +682,14 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 #endif
   err = PetscFree3(origVerticesDM, faceVerticesDM, cohesiveCone);PYLITH_CHECK_ERROR(err);
   sieve->reallocate();
-#ifdef USE_DMCOMPLEX_ON
   /* DMPlex */
   err = DMPlexSymmetrize(newMesh);PYLITH_CHECK_ERROR(err);
   err = DMPlexStratify(newMesh);PYLITH_CHECK_ERROR(err);
-#endif
 
-  // More checking
-  const bool firstFault = !sieveMesh->hasRealSection("replaced_cells");
-  const ALE::Obj<topology::Mesh::RealSection>& replacedCells = sieveMesh->getRealSection("replaced_cells");
-  assert(!replacedCells.isNull());
-  TopologyOps::PointSet cellNeighbors;
-	 
-  if (firstFault) {
-    const ALE::Obj<SieveMesh::label_sequence>& cells = sieveMesh->heightStratum(0);
-    assert(!cells.isNull());
-
-    replacedCells->setChart(topology::Mesh::RealSection::chart_type(*std::min_element(cells->begin(), cells->end()), *std::max_element(cells->begin(), cells->end())+1));
-    replacedCells->setFiberDimension(cells, 1);
-    replacedCells->allocatePoint();
-  } // if
-	 
-  const TopologyOps::PointSet::const_iterator noRCellsEnd = noReplaceCells.end();
-  for (TopologyOps::PointSet::const_iterator c_iter = noReplaceCells.begin(); c_iter != noRCellsEnd; ++c_iter) {
-    const PylithScalar minusOne = -1.0;
-    if (replacedCells->restrictPoint(*c_iter)[0] == 0.0) {
-      replacedCells->updatePoint(*c_iter, &minusOne);
-    } else {
-      const PylithScalar minusTwo = -2.0;
-      replacedCells->updatePoint(*c_iter, &minusTwo);
-    } // if/else
-  } // for
-
-  TopologyOps::PointSet::const_iterator rCellsEnd = replaceCells.end();
-  for (TopologyOps::PointSet::const_iterator c_iter = replaceCells.begin(); c_iter != rCellsEnd; ++c_iter) {
-    if (replaceCellsBase.find(*c_iter) != replaceCellsBase.end()) {
-      const PylithScalar one = 1.0;
-      if (replacedCells->restrictPoint(*c_iter)[0] == 0.0) {
-        replacedCells->updatePoint(*c_iter, &one);
-      } else {
-        const PylithScalar two = 2.0;
-        replacedCells->updatePoint(*c_iter, &two);
-      } // if/else
-      continue;
-    } // if
-    const PylithScalar ten = 10.0;
-    if (replacedCells->restrictPoint(*c_iter)[0] == 0.0) {
-      replacedCells->updatePoint(*c_iter, &ten);
-    } else {
-      const PylithScalar twenty = 20.0;
-      replacedCells->updatePoint(*c_iter, &twenty);
-    } // if/else
-    // There should be a way to check for boundary elements
-    if (mesh->dimension() == 1) {
-      if (cellNeighbors.size() > 2) {
-        std::cout << "Cell " << *c_iter << " has an invalid number of neighbors " << cellNeighbors.size() << std::endl;
-        throw ALE::Exception("Invalid number of neighbors");
-      } // if
-    } else if (mesh->dimension() == 2) {
-      if (numCorners == 3) {
-        if (cellNeighbors.size() > 3) {
-          std::cout << "Cell " << *c_iter << " has an invalid number of neighbors " << cellNeighbors.size() << std::endl;
-          throw ALE::Exception("Invalid number of neighbors");
-	} // if
-      } else if (numCorners == 4 || numCorners == 9) {
-        if (cellNeighbors.size() > 4) {
-          std::cout << "Cell " << *c_iter << " has an invalid number of neighbors " << cellNeighbors.size() << std::endl;
-          throw ALE::Exception("Invalid number of neighbors");
-        } // if
-      } // if/else
-    } else if (mesh->dimension() == 3) {
-      if (numCorners == 4) {
-        if (cellNeighbors.size() > 4) {
-          std::cout << "Cell " << *c_iter << " has an invalid number of neighbors " << cellNeighbors.size() << std::endl;
-          throw ALE::Exception("Invalid number of neighbors");
-        } // if
-      } else if (numCorners == 8) {
-        if (cellNeighbors.size() > 6) {
-          std::cout << "Cell " << *c_iter << " has an invalid number of neighbors " << cellNeighbors.size() << std::endl;
-          throw ALE::Exception("Invalid number of neighbors");
-        } // if
-      } // if/else
-    } // if/else
-  } // for
-  ReplaceVisitor<SieveMesh::sieve_type,std::map<SieveMesh::point_type,SieveMesh::point_type> > rVc(vertexRenumber, std::max(1, sieve->getMaxConeSize()), debug);
-  
-  rCellsEnd = replaceCells.end();
-  for (TopologyOps::PointSet::const_iterator c_iter = replaceCells.begin(); c_iter != rCellsEnd; ++c_iter) {
-    sieve->cone(*c_iter, rVc);
-    if (rVc.mappedPoint()) {
-      if (debug) std::cout << "  Replacing cell " << *c_iter << std::endl;
-      sieve->setCone(rVc.getPoints(), *c_iter);
-    } // if
-    rVc.clear();
-  } // for
-  ReplaceVisitor<SieveMesh::sieve_type,std::map<SieveMesh::point_type,SieveMesh::point_type> > rVs(cellRenumber, std::max(1, sieve->getMaxSupportSize()), debug);
-
-  rVerticesEnd = replaceVertices.end();
-  for (TopologyOps::PointSet::const_iterator v_iter = replaceVertices.begin(); v_iter != rVerticesEnd; ++v_iter) {
-    sieve->support(*v_iter, rVs);
-    if (rVs.mappedPoint()) {
-      if (debug) std::cout << "  Replacing support for " << *v_iter << std::endl;
-      sieve->setSupport(*v_iter, rVs.getPoints());
-    } else {
-      if (debug) std::cout << "  Not replacing support for " << *v_iter << std::endl;
-    } // if/else
-    rVs.clear();
-  } // for
   if (!rank) {
     delete [] indices;
     err = PetscFree(indicesDM);PYLITH_CHECK_ERROR(err);
   }
-#if !defined(FAST_STRATIFY)
-  logger.stagePop();
-  logger.stagePush("SerialFaultStratification");
-  sieveMesh->stratify();
-  logger.stagePop();
-  logger.stagePush("SerialFaultCreation");
-#endif
-  const std::string labelName("censored depth");
-
-  if (!sieveMesh->hasLabel(labelName)) {
-    const ALE::Obj<SieveMesh::label_type>& label = sieveMesh->createLabel(labelName);
-    assert(!label.isNull());
-
-    TopologyOps::computeCensoredDepth(label, sieveMesh->getSieve(), firstFaultVertex);
-  } else {
-    // Insert new shadow vertices into existing label
-    const ALE::Obj<SieveMesh::label_type>& label = sieveMesh->getLabel(labelName);
-    assert(!label.isNull());
-
-    const std::map<int,int>::const_iterator vRenumberEnd = vertexRenumber.end();
-    for (std::map<int,int>::const_iterator v_iter = vertexRenumber.begin(); v_iter != vRenumberEnd; ++v_iter)
-      sieveMesh->setValue(label, v_iter->second, 0);
-  } // if/else
-  if (debug) mesh->view("Mesh with Cohesive Elements");
 
   // Fix coordinates
   PetscSection coordSection, newCoordSection;
