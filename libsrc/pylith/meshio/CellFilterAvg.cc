@@ -113,7 +113,7 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(const field_type& fi
     numCells = cEnd - cStart;
   } else {
     const PetscInt *cells = NULL;
-    err = DMPlexGetStratumIS(dmMesh, label, 1, &cellIS);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetStratumIS(dmMesh, label, labelId, &cellIS);PYLITH_CHECK_ERROR(err);
     err = ISGetSize(cellIS, &numCells);PYLITH_CHECK_ERROR(err);
     err = ISGetIndices(cellIS, &cells);PYLITH_CHECK_ERROR(err);
     cStart = cells[0];
