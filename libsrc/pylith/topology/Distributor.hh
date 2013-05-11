@@ -66,20 +66,6 @@ public :
   void write(meshio::DataWriter<topology::Mesh, topology::Field<topology::Mesh> >* const writer,
 	     const topology::Mesh& mesh);
 
-// PRIVATE //////////////////////////////////////////////////////////////
-private :
-
-  /** Distribute mesh among processors.
-   *
-   * @param newMesh Distributed mesh (result).
-   * @param origMesh Mesh to distribute.
-   */
-  template<typename DistributionType>
-  static
-  void
-  _distribute(topology::Mesh* const newMesh,
-	      const topology::Mesh& origMesh);
-
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 

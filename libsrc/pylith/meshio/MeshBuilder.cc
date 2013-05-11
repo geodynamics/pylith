@@ -26,14 +26,9 @@
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-#include "Selection.hh" // USES boundary()
-
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
-
-// ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 
 // ----------------------------------------------------------------------
 // Set vertices and cells in mesh.
@@ -57,10 +52,9 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
   PetscInt dim  = meshDim;
   PetscMPIInt commRank = mesh->commRank();
   PetscErrorCode err;
-  const bool useSieve = true; // :TODO: Remove sieve
 
   { // Check to make sure every vertex is in at least one cell.
-    // This is required by Sieve
+    // This is required by PETSc
     std::vector<bool> vertexInCell(numVertices, false);
     const int size = cells.size();
     for (int i=0; i < size; ++i)
@@ -76,82 +70,6 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
       throw std::runtime_error(msg.str());
     } // if
   } // check
-
-  /* Sieve */
-  if (useSieve) {
-    MPI_Bcast(&dim, 1, MPI_INT, 0, comm);
-    mesh->createSieveMesh(dim);
-    const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
-    assert(!sieveMesh.isNull());
-
-    ALE::Obj<SieveMesh::sieve_type> sieve = new SieveMesh::sieve_type(mesh->comm());
-    sieveMesh->setSieve(sieve);
-
-    if (0 == commRank || isParallel) {
-      assert(coordinates->size() == numVertices*spaceDim);
-      assert(cells.size() == numCells*numCorners);
-      if (!interpolate) {
-	// Create the ISieve
-	sieve->setChart(SieveMesh::sieve_type::chart_type(0, numCells+numVertices));
-	// Set cone and support sizes
-	for (int c = 0; c < numCells; ++c)
-	  sieve->setConeSize(c, numCorners);
-	sieve->symmetrizeSizes(numCells, numCorners, const_cast<int*>(&cells[0]), numCells);
-	// Allocate point storage
-	sieve->allocate();
-	// Fill up cones
-	int *cone  = new int[numCorners];
-	int *coneO = new int[numCorners];
-	for (int v = 0; v < numCorners; ++v)
-	  coneO[v] = 1;
-	for (int c = 0; c < numCells; ++c) {
-	  for (int v = 0; v < numCorners; ++v)
-	    cone[v] = cells[c*numCorners+v]+numCells;
-	  sieve->setCone(cone, c);
-	  sieve->setConeOrientation(coneO, c);
-	} // for
-	delete[] cone; cone = 0;
-	delete[] coneO; coneO = 0;
-	// Symmetrize to fill up supports
-	sieve->symmetrize();
-      } else {
-	// Same old thing
-	ALE::Obj<SieveFlexMesh::sieve_type> s = new SieveFlexMesh::sieve_type(sieve->comm(), sieve->debug());
-	ALE::Obj<SieveFlexMesh::arrow_section_type> orientation = new SieveFlexMesh::arrow_section_type(sieve->comm(), sieve->debug());
-
-	s->setDebug(2);
-	ALE::SieveBuilder<SieveFlexMesh>::buildTopology(s, meshDim, numCells, const_cast<int*>(&cells[0]), numVertices, interpolate,
-							numCorners, -1, orientation);
-	std::map<SieveFlexMesh::point_type,SieveFlexMesh::point_type> renumbering;
-	ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
-      } // if/else
-      if (!interpolate) {
-	// Optimized stratification
-	const ALE::Obj<SieveMesh::label_type>& height = sieveMesh->createLabel("height");
-	const ALE::Obj<SieveMesh::label_type>& depth = sieveMesh->createLabel("depth");
-	
-	for(int c = 0; c < numCells; ++c) {
-	  height->setCone(0, c);
-	  depth->setCone(1, c);
-	} // for
-	for(int v = numCells; v < numCells+numVertices; ++v) {
-	  height->setCone(1, v);
-	  depth->setCone(0, v);
-	} // for
-	sieveMesh->setHeight(1);
-	sieveMesh->setDepth(1);
-      } else {
-	sieveMesh->stratify();
-      } // if/else
-    } else {
-      sieveMesh->getSieve()->setChart(SieveMesh::sieve_type::chart_type());
-      sieveMesh->getSieve()->allocate();
-      sieveMesh->stratify();
-    } // if/else
-
-    ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, spaceDim, &(*coordinates)[0]);
-    sieveMesh->getFactory()->clear();
-  } // if
 
   /* DMPlex */
   PetscDM dmMesh;
