@@ -101,13 +101,13 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
     _outputFields = new topology::Fields<topology::Field<topology::SubMesh> >(*_boundaryMesh);
   } // if
   assert(_outputFields);
-  _outputFields->add("buffer (vector)", "buffer_vector", topology::FieldBase::CELLS_FIELD, spaceDim);
+  _outputFields->add("buffer (vector)", "buffer_vector", topology::FieldBase::FACES_FIELD, spaceDim);
   topology::Field<topology::SubMesh>& bufferVector = _outputFields->get("buffer (vector)");
   bufferVector.vectorFieldType(topology::FieldBase::VECTOR);
   bufferVector.scale(lengthScale);
   bufferVector.allocate();
 
-  _outputFields->add("buffer (scalar)", "buffer_scalar", topology::FieldBase::CELLS_FIELD, 1);
+  _outputFields->add("buffer (scalar)", "buffer_scalar", topology::FieldBase::FACES_FIELD, 1);
   topology::Field<topology::SubMesh>& bufferScalar = _outputFields->get("buffer (scalar)");
   bufferScalar.vectorFieldType(topology::FieldBase::SCALAR);
   bufferScalar.scale(timeScale);
