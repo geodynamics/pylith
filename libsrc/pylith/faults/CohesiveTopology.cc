@@ -21,7 +21,6 @@
 #include "CohesiveTopology.hh" // implementation of object methods
 
 #include "TopologyOps.hh" // USES TopologyOps
-#include "TopologyVisitors.hh" // USES TopologyVisitors
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 
 #include <cassert> // USES assert()

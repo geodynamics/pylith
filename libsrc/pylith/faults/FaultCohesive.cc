@@ -146,11 +146,6 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
       assert(3 == mesh->dimension());
       throw std::logic_error("Support for UCD fault files no longer implemented."); 
     } // if/else
-  } catch (const ALE::Exception& err) {
-    std::ostringstream msg;
-    msg << "Error occurred while adjusting topology to create cohesive cells for fault '" << label() << "'.\n"
-	<< err.message();
-    throw std::runtime_error(msg.str());
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error occurred while adjusting topology to create cohesive cells for fault '" << label() << "'.\n"
