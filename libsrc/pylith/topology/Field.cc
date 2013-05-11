@@ -1393,15 +1393,19 @@ void
 pylith::topology::Field<mesh_type>::addField(const char *name,
 					     int numComponents)
 { // addField
+  PYLITH_METHOD_BEGIN;
+
   // Keep track of name/components until setup
   _tmpFields[name] = numComponents;
   _metadata[name]  = _metadata["default"];
+
+  PYLITH_METHOD_END;
 } // addField
 
 // ----------------------------------------------------------------------
 template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::setupFields()
+pylith::topology::Field<mesh_type>::setupFields(void)
 { // setupFields
   PYLITH_METHOD_BEGIN;
 
