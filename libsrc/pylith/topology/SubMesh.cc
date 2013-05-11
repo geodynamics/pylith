@@ -26,8 +26,6 @@
 #include "pylith/utils/petscfwd.h" // USES PetscVec
 #include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
-#include <Selection.hh> // USES ALE::Selection
-
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()

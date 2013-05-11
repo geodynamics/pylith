@@ -46,9 +46,7 @@ subpkginclude_HEADERS = \
 	faultsfwd.hh
 
 noinst_HEADERS = \
-	TopologyOps.hh \
-	TopologyVisitors.hh \
-	TopologyVisitors.cc
+	TopologyOps.hh
 
 
 # End of file 

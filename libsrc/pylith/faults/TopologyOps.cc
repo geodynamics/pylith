@@ -20,8 +20,6 @@
 
 #include "TopologyOps.hh" // implementation of object methods
 
-#include "TopologyVisitors.hh" // USES ClassifyVisitor
-
 #include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
