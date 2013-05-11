@@ -45,7 +45,8 @@ class pylith::meshio::TestCellFilterAvg : public CppUnit::TestFixture
   CPPUNIT_TEST_SUITE( TestCellFilterAvg );
 
   CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testFilter );
+  CPPUNIT_TEST( testFilterMesh );
+  CPPUNIT_TEST( testFilterSubMesh );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -55,8 +56,11 @@ public :
   /// Test constructor
   void testConstructor(void);
 
-  /// Test filter()
-  void testFilter(void);
+  /// Test filter() w/mesh.
+  void testFilterMesh(void);
+
+  /// Test filter() w/submesh.
+  void testFilterSubMesh(void);
 
 }; // class TestCellFilterAvg
 
