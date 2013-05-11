@@ -30,10 +30,6 @@
 #include "pylith/utils/types.hh"
 
 namespace ALE {
-  template<typename point_type, 
-	   typename value_type,
-	   typename allocator> class IUniformSectionDS;
-
   template<typename cellrefiner_type> class MeshRefiner;
   class RefineEdges2;
   class CellRefinerTri3;
