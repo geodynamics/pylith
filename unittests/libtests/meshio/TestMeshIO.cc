@@ -81,19 +81,8 @@ pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
 
   delete _mesh; _mesh = new topology::Mesh(data.cellDim);CPPUNIT_ASSERT(_mesh);
 
-  const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();CPPUNIT_ASSERT(!sieveMesh.isNull());
-  ALE::Obj<SieveMesh::sieve_type> sieve = new SieveMesh::sieve_type(_mesh->comm());CPPUNIT_ASSERT(!sieve.isNull());
-
   // Cells and vertices
   const bool interpolate = false;
-  ALE::Obj<SieveFlexMesh::sieve_type> s = new SieveFlexMesh::sieve_type(sieve->comm(), sieve->debug());CPPUNIT_ASSERT(s);
-  ALE::SieveBuilder<SieveFlexMesh>::buildTopology(s, data.cellDim, data.numCells, const_cast<int*>(data.cells), data.numVertices, interpolate, data.numCorners);
-  std::map<SieveFlexMesh::point_type,SieveFlexMesh::point_type> renumbering;
-  ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
-  sieveMesh->setSieve(sieve);
-  sieveMesh->stratify();
-  ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, data.spaceDim, data.vertices);
-
   PetscDM dmMesh = NULL;
   PetscBool interpolateMesh = interpolate ? PETSC_TRUE : PETSC_FALSE;
   PetscErrorCode err;
@@ -102,14 +91,6 @@ pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
   _mesh->setDMMesh(dmMesh);
 
   // Material ids
-  const ALE::Obj<SieveMesh::label_sequence>& cells = sieveMesh->heightStratum(0);
-  CPPUNIT_ASSERT(!cells.isNull());
-  const ALE::Obj<SieveMesh::label_type>& labelMaterials = sieveMesh->createLabel("material-id");
-  CPPUNIT_ASSERT(!labelMaterials.isNull());
-  int i = 0;
-  for(SieveMesh::label_sequence::iterator e_iter=cells->begin(); e_iter != cells->end(); ++e_iter)
-    sieveMesh->setValue(labelMaterials, *e_iter, data.materialIds[i++]);
-
   PetscInt cStart, cEnd;
   err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
   for(PetscInt c = cStart; c < cEnd; ++c) {
@@ -118,10 +99,6 @@ pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
 
   // Groups
   for (int iGroup=0, index=0; iGroup < data.numGroups; ++iGroup) {
-    const ALE::Obj<SieveMesh::int_section_type>& groupField = sieveMesh->getIntSection(data.groupNames[iGroup]);
-    CPPUNIT_ASSERT(!groupField.isNull());
-    groupField->setChart(sieveMesh->getSieve()->getChart());
-
     err = DMPlexCreateLabel(dmMesh, data.groupNames[iGroup]);PYLITH_CHECK_ERROR(err);
 
     MeshIO::GroupPtType type;
@@ -129,19 +106,17 @@ pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
     if (0 == strcasecmp("cell", data.groupTypes[iGroup])) {
       type = MeshIO::CELL;
       for(int i=0; i < numPoints; ++i, ++index) {
-        groupField->setFiberDimension(data.groups[index], 1);
         err = DMPlexSetLabelValue(dmMesh, data.groupNames[iGroup], data.groups[index], 1);PYLITH_CHECK_ERROR(err);
       } // for
     } else if (0 == strcasecmp("vertex", data.groupTypes[iGroup])) {
       type = MeshIO::VERTEX;
-      const int numCells = sieveMesh->heightStratum(0)->size();
+      PetscInt numCells;
+      err = DMPlexGetHeightStratum(dmMesh, 0, NULL, &numCells);PYLITH_CHECK_ERROR(err);
       for(int i=0; i < numPoints; ++i, ++index) {
-        groupField->setFiberDimension(data.groups[index]+numCells, 1);
         err = DMPlexSetLabelValue(dmMesh, data.groupNames[iGroup], data.groups[index]+numCells, 1);PYLITH_CHECK_ERROR(err);
       } // for
     } else
       throw std::logic_error("Could not parse group type.");
-    sieveMesh->allocate(groupField);
   } // for
  
     // Set coordinate system

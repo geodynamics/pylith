@@ -19,7 +19,7 @@
 /**
  * @file libsrc/meshio/MeshBuilder.hh
  *
- * @brief Helper class for constructing Sieve mesh data structures.
+ * @brief Helper class for constructing PETSc mesh data structures.
  */
 
 #if !defined(pylith_meshio_meshbuilder_hh)
@@ -34,10 +34,9 @@
 #include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/utils/sievetypes.hh" // USE SieveFlexMesh
 
 // MeshBuilder ----------------------------------------------------------
-/// Helper class for constructing Sieve mesh data structures.
+/// Helper class for constructing PETSc mesh data structures.
 class pylith::meshio::MeshBuilder
 { // MeshBuilder
 

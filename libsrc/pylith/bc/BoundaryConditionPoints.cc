@@ -68,8 +68,6 @@ pylith::bc::BoundaryConditionPoints::_getPoints(const topology::Mesh& mesh)
 { // _getPoints
   PYLITH_METHOD_BEGIN;
 
-  typedef topology::Mesh::IntSection::chart_type chart_type;
-
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
   PetscDMLabel label = NULL;
   PetscIS pointIS = NULL;

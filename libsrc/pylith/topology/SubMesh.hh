@@ -42,19 +42,6 @@ class pylith::topology::SubMesh
 { // SubMesh
   friend class TestSubMesh; // unit testing
 
-// PUBLIC TYPEDEFS //////////////////////////////////////////////////////
-public:
-
-  // Sieve mesh for higher level domain (mesh, not submesh)
-  typedef Mesh::SieveMesh DomainSieveMesh;
-
-  // Typedefs for basic types associated with Sieve mesh.
-  // SieveMesh, RealSection, and IntSection are used in templated code.
-  typedef Mesh::SieveSubMesh SieveMesh;
-
-  typedef Mesh::IntSection IntSection;
-  typedef Mesh::RealSection RealSection;
-
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
 
@@ -82,18 +69,6 @@ public :
    */
   void createSubMesh(const Mesh& mesh,
 		     const char* label);
-
-  /** Get Sieve mesh.
-   *
-   * @returns Sieve mesh.
-   */
-  const ALE::Obj<SieveMesh>& sieveMesh(void) const;
-
-  /** Get Sieve mesh.
-   *
-   * @returns Sieve mesh.
-   */
-  ALE::Obj<SieveMesh>& sieveMesh(void);
 
   /** Get DMPlex mesh.
    *
@@ -187,7 +162,6 @@ public :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  ALE::Obj<SieveMesh> _mesh; ///< Sieve mesh.
   PetscDM _newMesh;
   spatialdata::geocoords::CoordSys* _coordsys; ///< Coordinate system.
   bool _debug; ///< Debugging flag for mesh.

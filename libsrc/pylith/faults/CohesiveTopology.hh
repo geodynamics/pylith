@@ -28,7 +28,6 @@
 #include "faultsfwd.hh" // forward declarations
 
 #include "pylith/topology/Mesh.hh" // USES Mesh::IntSection
-#include "pylith/utils/sievetypes.hh" // USE ALE::Obj and SieveFlexMesh
 
 // CohesiveTopology -----------------------------------------------------
 /// Creation of cohesive cells.
@@ -36,7 +35,7 @@ class pylith::faults::CohesiveTopology
 { // class CohesiveTopology
 
 private :
-  typedef pylith::topology::Mesh::SieveMesh::point_type point_type;
+  typedef PetscInt point_type;
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :

@@ -46,7 +46,6 @@ pylith::topology::Mesh::Mesh(void) :
 // Default constructor
 pylith::topology::Mesh::Mesh(const int dim,
 			     const MPI_Comm& comm) :
-  _mesh(new SieveMesh(comm, dim)),
   _newMesh(NULL),
   _numNormalCells(0), _numCohesiveCells(0), _numNormalVertices(0), _numShadowVertices(0), _numLagrangeVertices(0),
   _coordsys(0),
@@ -56,10 +55,6 @@ pylith::topology::Mesh::Mesh(const int dim,
   PYLITH_METHOD_BEGIN;
 
   createDMMesh(dim);
-  _mesh->setName("domain");
-  assert(!_mesh->getFactory().isNull());
-  _mesh->getFactory()->clear();
-
   PYLITH_METHOD_END;
 } // constructor
 
@@ -78,28 +73,10 @@ pylith::topology::Mesh::deallocate(void)
   PYLITH_METHOD_BEGIN;
 
   delete _coordsys; _coordsys = 0;
-  _mesh.destroy();
   PetscErrorCode err = DMDestroy(&_newMesh);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // deallocate
-  
-// ----------------------------------------------------------------------
-// Create Sieve mesh.
-void
-pylith::topology::Mesh::createSieveMesh(const int dim)
-{ // createSieveMesh
-  PYLITH_METHOD_BEGIN;
-
-  _mesh.destroy();
-  _mesh = new SieveMesh(_comm, dim);
-  _mesh->setDebug(_debug);
-  _mesh->setName("domain");
-  assert(!_mesh->getFactory().isNull());
-  _mesh->getFactory()->clear();
-
-  PYLITH_METHOD_END;
-} // createSieveMesh
   
 // ----------------------------------------------------------------------
 // Create DMPlex mesh.

@@ -105,8 +105,9 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(const field_type& fi
   PetscErrorCode err;
 
   if (!label) {
-    PetscInt cMax;
-    err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+    PetscInt h, cMax;
+    err = DMPlexGetVTKCellHeight(dmMesh, &h);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetHeightStratum(dmMesh, h, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetHybridBounds(dmMesh, &cMax, PETSC_NULL, PETSC_NULL, PETSC_NULL);PYLITH_CHECK_ERROR(err);
     if (cMax >= 0) {cEnd = PetscMin(cEnd, cMax);}
     numCells = cEnd - cStart;

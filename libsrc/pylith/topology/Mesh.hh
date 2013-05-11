@@ -31,41 +31,16 @@
 #include "spatialdata/units/unitsfwd.hh" // forward declarations
 
 #include "pylith/utils/petscfwd.h" // HASA PetscDM
-#include "pylith/utils/sievetypes.hh" // HASA pylith::SieveMesh
 
 // Mesh -----------------------------------------------------------------
 /** @brief PyLith finite-element mesh.
  *
- * Extends Sieve mesh to include coordinate system associated with
+ * Extends PETSc mesh to include coordinate system associated with
  * domain.
  */
 class pylith::topology::Mesh
 { // Mesh
   friend class TestMesh; // unit testing
-
-// PUBLIC TYPEDEFS //////////////////////////////////////////////////////
-public :
-
-  /** Typedefs for basic types associated with Sieve mesh.
-   * All other PyLith mesh and submesh objects should define:
-   *   (1) SieveMesh - Sieve mesh
-   *   (2) RealSection - Section of PylithScalars
-   *   (3) IntSection - Section of ints
-   * because these are used in templated code.
-   * 
-   * All other mesh objects for the domain should also define
-   *   (1) SieveSubMesh - SubMesh object
-   */
-  //@{
-  typedef pylith::SieveMesh SieveMesh;
-  typedef pylith::SieveSubMesh SieveSubMesh;
-
-  typedef SieveMesh::real_section_type RealSection;
-  typedef SieveMesh::int_section_type IntSection;
-
-  typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveMesh::order_type,PylithInt> IndicesVisitor;
-  //@}
-
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
@@ -86,24 +61,6 @@ public :
 
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
-  
-  /** Create Sieve mesh.
-   *
-   * @param dim Dimension associated with mesh cells.
-   */
-  void createSieveMesh(const int dim=3); 
-
-  /** Get Sieve mesh.
-   *
-   * @returns Sieve mesh.
-   */
-  const ALE::Obj<SieveMesh>& sieveMesh(void) const;
-
-  /** Get Sieve mesh.
-   *
-   * @returns Sieve mesh.
-   */
-  ALE::Obj<SieveMesh>& sieveMesh(void);
   
   /** Create DMPlex mesh.
    *
@@ -240,7 +197,6 @@ public :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  ALE::Obj<SieveMesh> _mesh; ///< Sieve mesh.
   PetscDM _newMesh;
 
   /* The old-style point numbering: [normalCells, normalVertices, shadowVertices, lagrangeVertices, cohesiveCells]

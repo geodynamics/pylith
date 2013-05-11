@@ -26,21 +26,15 @@
 #include <stdexcept> // USES std::exception
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-
-// ----------------------------------------------------------------------
 // Set vertices and cells in mesh.
 void
 pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh)
 { // reorder
   assert(mesh);
 
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  //logger.setDebug(1);
-  logger.stagePush("MeshReordering");
-
   const int commRank = mesh->commRank();
   if (0 == commRank) {
+#if 0
     const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
     assert(!sieveMesh.isNull());
     ALE::Obj<ALE::Ordering<>::perm_type> perm = 
@@ -56,9 +50,10 @@ pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh)
     
     sieveMesh->relabel(*reordering);
     //sieveMesh->view("MESH AFTER RELABEL");
+#else
+    assert(0);
+#endif
   } // if    
-
-  logger.stagePop();
 } // reorder
 
 
