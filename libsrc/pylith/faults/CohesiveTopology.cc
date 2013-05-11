@@ -42,10 +42,6 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
 
   assert(0 != faultMesh);
   assert(groupField);
-
-  // Memory logging
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("SerialFaultCreation");
   PetscErrorCode err;
 
   faultMesh->coordsys(mesh);
@@ -145,8 +141,6 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
     err = DMPlexCreateSubmesh(faultDMMesh, labelName, 1, &faultBoundary);PYLITH_CHECK_ERROR(err);
   }
 
-  logger.stagePop();
-
   PYLITH_METHOD_END;
 } // createFault
 
@@ -173,9 +167,6 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 
   err = MPI_Comm_rank(mesh->comm(), &rank);PYLITH_CHECK_ERROR(err);
   err = DMLabelGetName(groupField, &groupName);PYLITH_CHECK_ERROR(err);
-  // Memory logging
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("SerialFaultCreation");
 
   /* DMPlex */
   DM complexMesh = mesh->dmMesh();
@@ -369,8 +360,6 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
       }
     }
   } // for
-  logger.stagePop();
-  logger.stagePush("SerialFault");
 
   // Split the mesh along the fault mesh and create cohesive elements
   const PetscInt firstCohesiveCellDM = firstFaultCellDM;
@@ -625,7 +614,6 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 
   err = ISRestoreIndices(fVertexIS, &fVerticesDM);PYLITH_CHECK_ERROR(err);
   err = ISDestroy(&fVertexIS);PYLITH_CHECK_ERROR(err);
-  logger.stagePop();
 
   mesh->setDMMesh(newMesh);
 
@@ -715,10 +703,6 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   PYLITH_METHOD_BEGIN;
 
   assert(faultMesh);
-
-  // Memory logging
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("FaultCreation");
   PetscErrorCode err;
 
   faultMesh->coordsys(mesh);
@@ -729,8 +713,6 @@ pylith::faults::CohesiveTopology::createFaultParallel(
 
   err = DMPlexCreateCohesiveSubmesh(dmMesh, constraintCell ? PETSC_TRUE : PETSC_FALSE, &dmFaultMesh);PYLITH_CHECK_ERROR(err);
   faultMesh->setDMMesh(dmFaultMesh);
-
-  logger.stagePop();
 
   PYLITH_METHOD_END;
 } // createFaultParallel
