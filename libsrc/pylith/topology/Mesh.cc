@@ -211,51 +211,6 @@ pylith::topology::Mesh::nondimensionalize(const spatialdata::units::Nondimension
   const PylithScalar lengthScale = normalizer.lengthScale();
   PetscErrorCode err;
 
-#if 1 // :TODO: REMOVE SIEVE STUFF
-  // Get coordinates (currently dimensioned).
-  if (!_mesh.isNull()) {
-    const ALE::Obj<RealSection>& coordsSection = _mesh->getRealSection("coordinates");
-    assert(!coordsSection.isNull());
-
-    // Get field for dimensioned coordinates.
-    const ALE::Obj<RealSection>& coordsDimSection =
-      _mesh->getRealSection("coordinates_dimensioned");
-    assert(!coordsDimSection.isNull());
-    coordsDimSection->setAtlas(coordsSection->getAtlas());
-    coordsDimSection->allocateStorage();
-    coordsDimSection->setBC(coordsSection->getBC());
-
-    const ALE::Obj<SieveMesh::label_sequence>& vertices = _mesh->depthStratum(0);
-    assert(!vertices.isNull());
-    const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
-    const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
-
-    PylithScalar coordsVertex[3];
-    for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
-         v_iter != verticesEnd;
-         ++v_iter) {
-      const int spaceDim = coordsSection->getFiberDimension(*v_iter);
-      assert(spaceDim <= 3);
-      const PylithScalar* coordsDimVertex = coordsSection->restrictPoint(*v_iter);
-    
-      // Update section with dimensioned coordinates
-      assert(spaceDim == coordsDimSection->getFiberDimension(*v_iter));
-      coordsDimSection->updatePoint(*v_iter, coordsDimVertex);
-
-      // Copy coordinates to array for nondimensionalization.
-      for (int i=0; i < spaceDim; ++i)
-        coordsVertex[i] = coordsDimVertex[i];
-
-      // Nondimensionalize original coordinates.
-      normalizer.nondimensionalize(&coordsVertex[0], spaceDim, lengthScale);
-    
-      // Update section with nondimensional coordinates
-      assert(spaceDim == coordsSection->getFiberDimension(*v_iter));
-      coordsSection->updatePoint(*v_iter, coordsVertex);
-    } // for
-  }
-#endif
-
   assert(_newMesh);
   err = DMGetCoordinatesLocal(_newMesh, &coordVec);PYLITH_CHECK_ERROR(err);assert(coordVec);
   // There does not seem to be an advantage to calling nondimensionalize()
