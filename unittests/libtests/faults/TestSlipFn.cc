@@ -25,11 +25,6 @@
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::SieveSubMesh SieveSubMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
-
-// ----------------------------------------------------------------------
 void
 pylith::faults::TestSlipFn::_createFaultMesh(topology::SubMesh* faultMesh,
 					     topology::Mesh* mesh,
@@ -57,8 +52,6 @@ pylith::faults::TestSlipFn::_createFaultMesh(topology::SubMesh* faultMesh,
     } // if
     err = DMPlexGetLabel(dmMesh, faultLabel, &groupField);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT(groupField);
-    const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
-    CPPUNIT_ASSERT(!sieveMesh.isNull());
     CohesiveTopology::createFault(faultMesh, faultBoundary, *mesh, groupField);
     CohesiveTopology::create(mesh, *faultMesh, faultBoundary, groupField, faultId, firstFaultVertex, firstLagrangeVertex, firstFaultCell, useLagrangeConstraints);
     err = DMDestroy(&faultBoundary);PYLITH_CHECK_ERROR(err);

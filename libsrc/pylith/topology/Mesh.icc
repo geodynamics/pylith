@@ -22,28 +22,14 @@
 
 #include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
-// Get Sieve mesh.
-inline
-const ALE::Obj<pylith::topology::Mesh::SieveMesh>&
-pylith::topology::Mesh::sieveMesh(void) const {
-  return _mesh;
-}
-
-// Get Sieve mesh.
-inline
-ALE::Obj<pylith::topology::Mesh::SieveMesh>&
-pylith::topology::Mesh::sieveMesh(void) {
-  return _mesh;
-}
-
-// Get DMComplex mesh.
+// Get DMPlex mesh.
 inline
 DM
 pylith::topology::Mesh::dmMesh(void) const {
   return _newMesh;
 }
 
-// Set DMComplex mesh.
+// Set DMPlex mesh.
 inline
 void
 pylith::topology::Mesh::setDMMesh(DM dm) {
@@ -91,8 +77,6 @@ inline
 void
 pylith::topology::Mesh::debug(const bool value) {
   _debug = value;
-  if (!_mesh.isNull())
-    _mesh->setDebug(value);
 }
 
 // Get debug flag.

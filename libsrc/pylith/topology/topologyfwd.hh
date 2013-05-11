@@ -27,7 +27,6 @@
 #if !defined(pylith_topology_topologyfwd_hh)
 #define pylith_topology_topologyfwd_hh
 
-#include "pylith/utils/sievetypes.hh"
 #include "pylith/utils/types.hh"
 
 namespace ALE {

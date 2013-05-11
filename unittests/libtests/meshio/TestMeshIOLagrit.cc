@@ -39,9 +39,6 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestMeshIOLagrit );
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-
-// ----------------------------------------------------------------------
 // Test constructor
 void
 pylith::meshio::TestMeshIOLagrit::testConstructor(void)

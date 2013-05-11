@@ -28,7 +28,6 @@
 #include "faultsfwd.hh" // forward declarations
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/utils/sievetypes.hh" // USE SieveFlexMesh
 
 // TopologyOps ----------------------------------------------------------
 /// Helper object for creation of cohesive cells.

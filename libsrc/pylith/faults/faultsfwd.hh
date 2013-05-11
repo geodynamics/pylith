@@ -52,9 +52,6 @@ namespace pylith {
     class TractPerturbation;
 
     class TopologyOps;
-    template<typename Sieve, typename Renumbering> class ReplaceVisitor;
-    template<typename Sieve> class ClassifyVisitor;
-
   } // faults
 } // pylith
 
