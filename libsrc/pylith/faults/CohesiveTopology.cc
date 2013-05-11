@@ -179,7 +179,6 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   assert(0 != mesh);
   assert(groupField);
 
-  typedef ALE::SieveAlg<SieveFlexMesh> sieveAlg;
   typedef ALE::Selection<SieveFlexMesh> selection;
   const char    *groupName;
   PetscMPIInt    rank;
@@ -820,9 +819,6 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   if (debug) mesh->view("Mesh with Cohesive Elements");
 
   // Fix coordinates
-  const ALE::Obj<topology::Mesh::RealSection>& coordinates = sieveMesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-
   PetscSection coordSection, newCoordSection;
   Vec          coordinatesVec, newCoordinatesVec;
   PetscScalar *coords, *newCoords;
@@ -842,7 +838,6 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     err = PetscSectionSetFieldDof(newCoordSection, v+extraCells, 0, dof);PYLITH_CHECK_ERROR(err);
   }
 
-  if (debug) coordinates->view("Coordinates without shadow vertices");
   for (PetscInt fv = 0; fv < numFaultVerticesDM; ++fv) {
     PetscInt v    = fVerticesDM[fv];
     PetscInt vnew = v+extraCells;
@@ -855,11 +850,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
       err = PetscSectionSetDof(newCoordSection, vertexLagrangeRenumberDM[vnew], dof);PYLITH_CHECK_ERROR(err);
       err = PetscSectionSetFieldDof(newCoordSection, vertexLagrangeRenumberDM[vnew], 0, dof);PYLITH_CHECK_ERROR(err);
     }
-
-    coordinates->addPoint(vertexRenumber[v], coordinates->getFiberDimension(v));
-    if (constraintCell) coordinates->addPoint(vertexLagrangeRenumber[v], coordinates->getFiberDimension(v));
   } // for
-  sieveMesh->reallocate(coordinates);
 
   err = PetscSectionSetUp(newCoordSection);PYLITH_CHECK_ERROR(err);
   err = PetscSectionGetStorageSize(newCoordSection, &coordSize);PYLITH_CHECK_ERROR(err);
@@ -882,16 +873,6 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   }
   for (PetscInt fv = 0; fv < numFaultVerticesDM; ++fv) {
     PetscInt v    = fVerticesDM[fv];
-
-    assert(coordinates->getFiberDimension(v) == coordinates->getFiberDimension(vertexRenumber[v]));
-    coordinates->updatePoint(vertexRenumber[v], coordinates->restrictPoint(v));
-    if (constraintCell) {
-      assert(coordinates->getFiberDimension(v) == coordinates->getFiberDimension(vertexLagrangeRenumber[v]));
-      coordinates->updatePoint(vertexLagrangeRenumber[v], coordinates->restrictPoint(v));
-    } // if
-  } // for
-  for (PetscInt fv = 0; fv < numFaultVerticesDM; ++fv) {
-    PetscInt v    = fVerticesDM[fv];
     PetscInt vnew = v+extraCells;
     PetscInt dof, off, newoff, d;
 
@@ -912,7 +893,6 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   err = VecRestoreArray(newCoordinatesVec, &newCoords);PYLITH_CHECK_ERROR(err);
   err = DMSetCoordinatesLocal(newMesh, newCoordinatesVec);PYLITH_CHECK_ERROR(err);
   err = VecDestroy(&newCoordinatesVec);PYLITH_CHECK_ERROR(err);
-  if (debug) coordinates->view("Coordinates with shadow vertices");
 
   err = ISRestoreIndices(fVertexIS, &fVerticesDM);PYLITH_CHECK_ERROR(err);
   err = ISDestroy(&fVertexIS);PYLITH_CHECK_ERROR(err);
