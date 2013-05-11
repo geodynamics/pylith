@@ -765,7 +765,7 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   // Check groups
   PetscInt numLabels;
   err = DMPlexGetNumLabels(dmMesh, &numLabels);PYLITH_CHECK_ERROR(err);
-  for (PetscInt l = 0, i = 0, index = 0; l < numLabels; ++l) {
+  for (PetscInt l = numLabels-1, i = 0, index = 0; l >= 0; --l) {
     PetscDMLabel label = NULL;
     PetscIS is = NULL;
     const PetscInt *points = NULL;
