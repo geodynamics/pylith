@@ -33,6 +33,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestCellFilterAvg );
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::Field<pylith::topology::Mesh> MeshField;
+typedef pylith::topology::Field<pylith::topology::SubMesh> SubMeshField;
 
 // ----------------------------------------------------------------------
 // Test constructor
@@ -43,10 +44,10 @@ pylith::meshio::TestCellFilterAvg::testConstructor(void)
 } // testConstructor
 
 // ----------------------------------------------------------------------
-// Test filter()
+// Test filter() w/mesh.
 void
-pylith::meshio::TestCellFilterAvg::testFilter(void)
-{ // testFilter
+pylith::meshio::TestCellFilterAvg::testFilterMesh(void)
+{ // testFilterMesh
   PYLITH_METHOD_BEGIN;
 
   const char* filename = "data/quad4.mesh";
@@ -127,7 +128,7 @@ pylith::meshio::TestCellFilterAvg::testFilter(void)
   CellFilterAvg<topology::Mesh, MeshField> filter;
   filter.quadrature(&quadrature);
 
-  const topology::Field<topology::Mesh>& fieldF = filter.filter(field);
+  const MeshField& fieldF = filter.filter(field);
 
   CPPUNIT_ASSERT_EQUAL(fieldTypeE, fieldF.vectorFieldType());
   CPPUNIT_ASSERT_EQUAL(label, std::string(fieldF.label()));
@@ -145,7 +146,113 @@ pylith::meshio::TestCellFilterAvg::testFilter(void)
   } // for
 
   PYLITH_METHOD_END;
-} // testFilter
+} // testFilterMesh
+
+
+// ----------------------------------------------------------------------
+// Test filter() w/submesh.
+void
+pylith::meshio::TestCellFilterAvg::testFilterSubMesh(void)
+{ // testFilterMesh
+  PYLITH_METHOD_BEGIN;
+
+  const char* filename = "data/quad4.mesh";
+  const char* group = "bc";
+
+  const int fiberDim = 2;
+  const int ncells = 2;
+  const std::string label = "field data";
+  const topology::FieldBase::VectorFieldEnum fieldType = 
+    topology::FieldBase::MULTI_SCALAR;
+  const PylithScalar fieldValues[] = {
+    1.1, 1.2,
+    2.1, 2.2,
+  };
+  const int cellDim = 1;
+  const int numBasis = 2;
+  const int numQuadPts = 1;
+  const int spaceDim = 2;
+  const PylithScalar basis[] = {
+    1.0, 1.0,
+    1.0, 1.0,
+  };
+  const PylithScalar basisDerivRef[] = {
+    1.0, 1.0, 1.0, 1.0,
+    1.0, 1.0, 1.0, 1.0,
+  };
+  const PylithScalar quadPtsRef[] = {
+    0.0, 0.0,
+  };
+  const PylithScalar quadWts[] = { 1.0 };
+  const PylithScalar minJacobian = 1.0;
+
+  const topology::FieldBase::VectorFieldEnum fieldTypeE = 
+    topology::FieldBase::SCALAR;
+  const int fiberDimE = 1;
+  const PylithScalar fieldValuesE[] = {
+    (1.5*1.1 + 0.5*1.2)/2.0,
+    (1.5*2.1 + 0.5*2.2)/2.0,
+  };
+
+  MeshIOAscii iohandler;
+  topology::Mesh mesh;
+  iohandler.filename(filename);
+  iohandler.read(&mesh);
+
+  topology::SubMesh submesh(mesh, group);
+
+  // Set cell field
+  SubMeshField field(submesh);
+  field.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
+  field.allocate();
+  field.vectorFieldType(fieldType);
+  field.label(label.c_str());
+
+  PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+  topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 1);
+  const PetscInt cStart = cellsStratum.begin();
+  const PetscInt cEnd = cellsStratum.end();
+
+  topology::VecVisitorMesh fieldVisitor(field);
+  PetscScalar* fieldArray = fieldVisitor.localArray();CPPUNIT_ASSERT(fieldArray);
+  for(PetscInt c = cStart, index = 0; c < cEnd; ++c) {
+    const PetscInt off = fieldVisitor.sectionOffset(c);
+    CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(c));
+
+    for(PetscInt d = 0; d < fiberDim; ++d, ++index) {
+      fieldArray[off+d] = fieldValues[index];
+    } // for
+  } // for
+
+  feassemble::Quadrature<topology::SubMesh> quadrature;
+  quadrature.initialize(basis, numQuadPts, numBasis,
+			basisDerivRef, numQuadPts, numBasis, cellDim,
+			quadPtsRef, numQuadPts, cellDim,
+			quadWts, numQuadPts,
+			spaceDim);
+
+  CellFilterAvg<topology::SubMesh, SubMeshField> filter;
+  filter.quadrature(&quadrature);
+
+  const SubMeshField& fieldF = filter.filter(field);
+
+  CPPUNIT_ASSERT_EQUAL(fieldTypeE, fieldF.vectorFieldType());
+  CPPUNIT_ASSERT_EQUAL(label, std::string(fieldF.label()));
+
+  topology::VecVisitorMesh fieldFVisitor(fieldF);
+  const PetscScalar* fieldFArray = fieldFVisitor.localArray();CPPUNIT_ASSERT(fieldFArray);
+
+  const PylithScalar tolerance = 1.0e-06;
+  for(PetscInt c = cStart, index = 0; c < cEnd; ++c) {
+    const PetscInt off = fieldFVisitor.sectionOffset(c);
+    CPPUNIT_ASSERT_EQUAL(fiberDimE, fieldFVisitor.sectionDof(c));
+    for(PetscInt d = 0; d < fiberDimE; ++d, ++index) {
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, fieldFArray[off+d]/fieldValuesE[index], tolerance);
+    }
+  } // for
+
+  PYLITH_METHOD_END;
+} // testFilterSubMesh
 
 
 // End of file 
