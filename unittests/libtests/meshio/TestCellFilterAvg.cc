@@ -170,26 +170,25 @@ pylith::meshio::TestCellFilterAvg::testFilterSubMesh(void)
   };
   const int cellDim = 1;
   const int numBasis = 2;
-  const int numQuadPts = 1;
+  const int numQuadPts = 2;
   const int spaceDim = 2;
-  const PylithScalar basis[] = {
+  const PylithScalar basis[numQuadPts*numBasis] = {
     1.0, 1.0,
     1.0, 1.0,
   };
-  const PylithScalar basisDerivRef[] = {
-    1.0, 1.0, 1.0, 1.0,
+  const PylithScalar basisDerivRef[numQuadPts*numBasis*cellDim] = {
     1.0, 1.0, 1.0, 1.0,
   };
-  const PylithScalar quadPtsRef[] = {
+  const PylithScalar quadPtsRef[numQuadPts*cellDim] = {
     0.0, 0.0,
   };
-  const PylithScalar quadWts[] = { 1.0 };
+  const PylithScalar quadWts[numQuadPts] = { 1.5, 0.5 };
   const PylithScalar minJacobian = 1.0;
 
   const topology::FieldBase::VectorFieldEnum fieldTypeE = 
     topology::FieldBase::SCALAR;
   const int fiberDimE = 1;
-  const PylithScalar fieldValuesE[] = {
+  const PylithScalar fieldValuesE[numBasis] = {
     (1.5*1.1 + 0.5*1.2)/2.0,
     (1.5*2.1 + 0.5*2.2)/2.0,
   };
