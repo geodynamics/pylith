@@ -202,7 +202,7 @@ pylith::meshio::TestCellFilterAvg::testFilterSubMesh(void)
 
   // Set cell field
   SubMeshField field(submesh);
-  field.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
+  field.newSection(topology::FieldBase::FACES_FIELD, fiberDim);
   field.allocate();
   field.vectorFieldType(fieldType);
   field.label(label.c_str());
