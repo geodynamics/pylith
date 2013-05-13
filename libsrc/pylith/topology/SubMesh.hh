@@ -79,8 +79,10 @@ public :
   /** Set DMPlex mesh.
    *
    * @param DMPlex mesh.
+   * @param label Label for mesh.
    */
-  void setDMMesh(PetscDM dm);
+  void dmMesh(PetscDM dm,
+	      const char* label ="domain");
 
   /** Get sizes for all point types.
    *

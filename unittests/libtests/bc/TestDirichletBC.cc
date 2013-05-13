@@ -25,6 +25,7 @@
 #include "data/DirichletData.hh" // USES DirichletData
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/Stratum.hh" // USES Stratum
@@ -525,7 +526,7 @@ pylith::bc::TestDirichletBC::_initialize(topology::Mesh* mesh,
   cs.setSpaceDim(mesh->dimension());
   cs.initialize();
   mesh->coordsys(&cs);
-  mesh->nondimensionalize(normalizer);
+  topology::MeshOps::nondimensionalize(mesh, normalizer);
 
   spatialdata::spatialdb::SimpleDB db("TestDirichletBC initial");
   spatialdata::spatialdb::SimpleIOAscii dbIO;

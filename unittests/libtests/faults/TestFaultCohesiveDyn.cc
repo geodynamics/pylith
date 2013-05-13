@@ -26,6 +26,7 @@
 #include "data/CohesiveDynData.hh" // USES CohesiveDynData
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
@@ -635,7 +636,7 @@ pylith::faults::TestFaultCohesiveDyn::_initialize(topology::Mesh* const mesh,
   normalizer.pressureScale(_data->pressureScale);
   normalizer.densityScale(_data->densityScale);
   normalizer.timeScale(_data->timeScale);
-  mesh->nondimensionalize(normalizer);
+  topology::MeshOps::nondimensionalize(mesh, normalizer);
   
   _quadrature->initialize(_data->basis, _data->numQuadPts, _data->numBasis,
 			  _data->basisDeriv,

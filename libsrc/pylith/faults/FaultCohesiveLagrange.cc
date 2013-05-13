@@ -92,7 +92,7 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();assert(cs);
 
   delete _faultMesh; _faultMesh = new topology::SubMesh();assert(_faultMesh);
-  CohesiveTopology::createFaultParallel(_faultMesh, mesh, id(), _useLagrangeConstraints);
+  CohesiveTopology::createFaultParallel(_faultMesh, mesh, id(), label(), _useLagrangeConstraints);
   _initializeCohesiveInfo(mesh);
 
   delete _fields;

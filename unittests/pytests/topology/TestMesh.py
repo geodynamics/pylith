@@ -63,21 +63,6 @@ class TestMesh(unittest.TestCase):
     return
 
 
-  def test_createDMMesh(self):
-    """
-    Test createDMMesh().
-    """
-    mesh = Mesh()
-
-    mesh.createDMMesh()
-    self.assertEqual(3, mesh.dimension())
-
-    dim = 2
-    mesh.createDMMesh(dim)
-    self.assertEqual(dim, mesh.dimension())
-    return
-
-
   def test_coordsys(self):
     """
     Test coordsys().

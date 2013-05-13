@@ -23,6 +23,7 @@
 #include "pylith/bc/PointForce.hh" // USES PointForce
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitormesh
@@ -135,7 +136,7 @@ pylith::bc::TestTimeDependentPoints::setUp(void)
   normalizer.pressureScale(_TestTimeDependentPoints::pressureScale);
   normalizer.lengthScale(_TestTimeDependentPoints::lengthScale);
   normalizer.timeScale(_TestTimeDependentPoints::timeScale);
-  _mesh->nondimensionalize(normalizer);
+  topology::MeshOps::nondimensionalize(_mesh, normalizer);
 
   _bc = new PointForce();CPPUNIT_ASSERT(_bc);
   _bc->label("bc");

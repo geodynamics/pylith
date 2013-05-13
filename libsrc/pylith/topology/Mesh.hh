@@ -28,7 +28,6 @@
 // Include directives ---------------------------------------------------
 #include "topologyfwd.hh" // forward declarations
 #include "spatialdata/geocoords/geocoordsfwd.hh" // forward declarations
-#include "spatialdata/units/unitsfwd.hh" // forward declarations
 
 #include "pylith/utils/petscfwd.h" // HASA PetscDM
 
@@ -56,18 +55,20 @@ public :
   Mesh(const int dim,
        const MPI_Comm& comm =PETSC_COMM_WORLD); 
 
+  /** Create submesh.
+   *
+   * @param mesh Mesh over domain.
+   * @param label Label of vertices on boundary.
+   */
+  Mesh(const Mesh& mesh,
+       const char* label);
+
   /// Default destructor
   ~Mesh(void);
 
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
   
-  /** Create DMPlex mesh.
-   *
-   * @param dim Dimension associated with mesh cells.
-   */
-  void createDMMesh(const int dim=3); 
-
   /** Get DMPlex mesh.
    *
    * @returns DMPlex mesh.
@@ -77,8 +78,10 @@ public :
   /** Set DMPlex mesh.
    *
    * @param DMPlex mesh.
+   * @param label Label for mesh.
    */
-  void setDMMesh(PetscDM dm);
+  void dmMesh(PetscDM dm,
+	      const char* label ="domain");
 
   /** Get sizes for all point types.
    *
@@ -88,7 +91,11 @@ public :
    * @param numShadowVertices
    * @param numLagrangeVertices.
    */
-  void getPointTypeSizes(PetscInt *numNormalCells, PetscInt *numCohesiveCells, PetscInt *numNormalVertices, PetscInt *numShadowVertices, PetscInt *numLagrangeVertices) const;
+  void getPointTypeSizes(PetscInt *numNormalCells, 
+			 PetscInt *numCohesiveCells,
+			 PetscInt *numNormalVertices,
+			 PetscInt *numShadowVertices,
+			 PetscInt *numLagrangeVertices) const;
 
   /** Set sizes for all point types.
    *
@@ -98,7 +105,11 @@ public :
    * @param numShadowVertices
    * @param numLagrangeVertices.
    */
-  void setPointTypeSizes(PetscInt numNormalCells, PetscInt numCohesiveCells, PetscInt numNormalVertices, PetscInt numShadowVertices, PetscInt numLagrangeVertices);
+  void setPointTypeSizes(PetscInt numNormalCells,
+			 PetscInt numCohesiveCells,
+			 PetscInt numNormalVertices,
+			 PetscInt numShadowVertices,
+			 PetscInt numLagrangeVertices);
 
   /** Set coordinate system.
    *
@@ -130,17 +141,17 @@ public :
    */
   int dimension(void) const;
 
-  /** Get representative cone size for mesh.
-   *
-   * @returns Representative cone size for mesh.
-   */
-  int coneSize(void) const;
-  
   /** Get number of vertices in mesh.
    *
    * @returns Number of vertices in mesh.
    */
   int numVertices(void) const;
+  
+  /** Get representative cone size for mesh.
+   *
+   * @returns Representative cone size for mesh.
+   */
+  int coneSize(void) const;
   
   /** Get number of cells in mesh.
    *
@@ -188,16 +199,10 @@ public :
    */
   int groupSize(const char *name);
 
-  /** Nondimensionalize the finite-element mesh.
-   *
-   * @param normalizer Nondimensionalizer.
-   */
-  void nondimensionalize(const spatialdata::units::Nondimensional& normalizer);
-
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  PetscDM _newMesh;
+  PetscDM _dmMesh;
 
   /* The old-style point numbering: [normalCells, normalVertices, shadowVertices, lagrangeVertices, cohesiveCells]
      The new-style point numbering: [normalCells, cohesiveCells, normalVertices, shadowVertices, lagrangeVertices]
@@ -207,6 +212,7 @@ private :
   spatialdata::geocoords::CoordSys* _coordsys; ///< Coordinate system.
   MPI_Comm _comm; ///< MPI communicator for mesh.
   bool _debug; ///< Debugging flag for mesh.
+  bool _isSubMesh; ///< True if mesh is a submesh of another mesh.
   
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

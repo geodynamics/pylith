@@ -25,6 +25,7 @@
 #include "pylith/utils/array.hh" // USES scalar_array
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Stratum.hh" // USES StratumIS
 #include "pylith/topology/VisitorMesh.hh" // USES VisitorMesh
@@ -221,7 +222,7 @@ pylith::materials::TestMaterial::testInitialize(void)
   normalizer.pressureScale(pressureScale);
   normalizer.timeScale(timeScale);
   normalizer.densityScale(densityScale);
-  mesh.nondimensionalize(normalizer);
+  topology::MeshOps::nondimensionalize(&mesh, normalizer);
 
   // Setup quadrature
   feassemble::Quadrature<topology::Mesh> quadrature;

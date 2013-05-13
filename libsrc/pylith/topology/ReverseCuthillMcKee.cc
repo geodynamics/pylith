@@ -51,7 +51,7 @@ pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh)
     sieveMesh->relabel(*reordering);
     //sieveMesh->view("MESH AFTER RELABEL");
 #else
-    assert(0);
+    std::cerr << "WARNING: Reverse Cuthill McKee temporarily disabled." << std::endl;
 #endif
   } // if    
 } // reorder

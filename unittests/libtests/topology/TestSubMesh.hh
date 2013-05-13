@@ -56,7 +56,6 @@ class pylith::topology::TestSubMesh : public CppUnit::TestFixture
   CPPUNIT_TEST( testNumVertices );
   CPPUNIT_TEST( testNumCells );
   CPPUNIT_TEST( testComm );
-  CPPUNIT_TEST( testInitialize );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -92,9 +91,6 @@ public :
 
   /// Test comm().
   void testComm(void);
-
-  /// Test initialize().
-  void testInitialize(void);
 
 // PRIVATE METHODS /////////////////////////////////////////////////////
 private :

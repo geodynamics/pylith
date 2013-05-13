@@ -27,6 +27,7 @@
 #include "pylith/faults/BruneSlipFn.hh" // USES BruneSlipFn
 #include "pylith/faults/CohesiveTopology.hh" // USES CohesiveTopology
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Stratum.hh" // USES Stratum
@@ -207,7 +208,7 @@ pylith::faults::TestEqKinSrc::_initialize(topology::Mesh* mesh,
   normalizer.pressureScale(_TestEqKinSrc::pressureScale);
   normalizer.densityScale(_TestEqKinSrc::densityScale);
   normalizer.timeScale(_TestEqKinSrc::timeScale);
-  mesh->nondimensionalize(normalizer);
+  topology::MeshOps::nondimensionalize(mesh, normalizer);
 
   // Create fault mesh
   TestFaultMesh::createFaultMesh(faultMesh, mesh, faultLabel, faultId);

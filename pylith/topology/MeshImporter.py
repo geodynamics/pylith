@@ -135,7 +135,8 @@ class MeshImporter(MeshGenerator):
       newMesh.memLoggingStage = "RefinedMesh"
 
     # Nondimensionalize mesh (coordinates of vertices).
-    newMesh.nondimensionalize(normalizer)
+    from pylith.topology.topology import MeshOps_nondimensionalize
+    MeshOps_nondimensionalize(newMesh, normalizer)
 
     self._eventLogger.eventEnd(logEvent)    
     return newMesh

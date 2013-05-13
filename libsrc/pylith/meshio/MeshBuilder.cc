@@ -77,7 +77,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
 
   err = MPI_Bcast(&dim, 1, MPIU_INT, 0, comm);PYLITH_CHECK_ERROR(err);
   err = DMPlexCreateFromCellList(comm, dim, numCells, numVertices, numCorners, pInterpolate, &cells[0], spaceDim, &(*coordinates)[0], &dmMesh);PYLITH_CHECK_ERROR(err);
-  mesh->setDMMesh(dmMesh);
+  mesh->dmMesh(dmMesh);
 
   PYLITH_METHOD_END;
 } // buildMesh

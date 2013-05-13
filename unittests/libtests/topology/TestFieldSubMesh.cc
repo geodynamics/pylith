@@ -22,6 +22,7 @@
 
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::createDMMesh()
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
@@ -1007,7 +1008,7 @@ pylith::topology::TestFieldSubMesh::_buildMesh(Mesh* mesh,
 
   PetscErrorCode err = 0;
 
-  mesh->createDMMesh(_TestFieldSubMesh::cellDim);
+  MeshOps::createDMMesh(mesh, _TestFieldSubMesh::cellDim);
   PetscDM dmMesh = mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);  
   err = DMPlexSetChart(dmMesh, 0, ncells+nvertices);PYLITH_CHECK_ERROR(err);
   for(PetscInt c = 0; c < ncells; ++c) {

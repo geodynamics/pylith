@@ -25,6 +25,7 @@
 #include "data/PointForceDataTri3.hh" // USES PointForceDataTri3
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
@@ -53,7 +54,7 @@ pylith::bc::TestBoundaryConditionPoints::testGetPoints(void)
   cs.setSpaceDim(mesh.dimension());
   cs.initialize();
   mesh.coordsys(&cs);
-  mesh.nondimensionalize(normalizer);
+  topology::MeshOps::nondimensionalize(&mesh, normalizer);
 
   bc.label(data.label);
   bc.BoundaryConditionPoints::_getPoints(mesh);

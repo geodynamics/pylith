@@ -61,7 +61,7 @@ pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
 
   PetscDM newDM = NULL;
   PetscErrorCode err = DMPlexDistribute(origMesh.dmMesh(), partitioner, 0, &newDM);PYLITH_CHECK_ERROR(err);
-  newMesh->setDMMesh(newDM);
+  newMesh->dmMesh(newDM);
 
   PYLITH_METHOD_END;
 } // distribute

@@ -22,6 +22,19 @@
  * @brief Python interface to C++ MeshOps.
  */
 
+%inline %{
+  /** Nondimensionalize the finite-element mesh.
+   *
+   * @param mesh Finite-element mesh.
+   * @param normalizer Nondimensionalizer.
+   */
+  void
+  MeshOps_nondimensionalize(pylith::topology::Mesh* const mesh,
+			    const spatialdata::units::Nondimensional& normalizer) {
+    pylith::topology::MeshOps::nondimensionalize(mesh, normalizer);
+  } // nondimensionalize
+%}
+
 %apply(int* IN_ARRAY1, int DIM1) {
   (int* const materialIds, const int numMaterials)
   };

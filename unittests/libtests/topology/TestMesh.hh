@@ -47,13 +47,11 @@ class pylith::topology::TestMesh : public CppUnit::TestFixture
   CPPUNIT_TEST_SUITE( TestMesh );
 
   CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testCreateDMMesh );
   CPPUNIT_TEST( testDMMesh );
   CPPUNIT_TEST( testCoordsys );
   CPPUNIT_TEST( testDebug );
   CPPUNIT_TEST( testDimension );
   CPPUNIT_TEST( testComm );
-  CPPUNIT_TEST( testNondimensionalize );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -62,9 +60,6 @@ public :
 
   /// Test constructor.
   void testConstructor(void);
-
-  /// Test createDMMesh().
-  void testCreateDMMesh(void);
 
   /// Test dmMesh().
   void testDMMesh(void);
@@ -80,9 +75,6 @@ public :
 
   /// Test comm().
   void testComm(void);
-
-  /// Test nondimensionalize().
-  void testNondimensionalize(void);
 
 }; // class TestMesh
 

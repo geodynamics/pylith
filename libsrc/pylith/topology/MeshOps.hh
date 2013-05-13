@@ -28,6 +28,8 @@
 // Include directives ---------------------------------------------------
 #include "topologyfwd.hh" // forward declarations
 
+#include "spatialdata/units/unitsfwd.hh" // forward declarations
+
 // MeshOps --------------------------------------------------------------
 /// Simple operations on a Mesh object.
 class pylith::topology::MeshOps
@@ -36,6 +38,28 @@ class pylith::topology::MeshOps
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
+
+  /** Create DMPlex mesh.
+   *
+   * @param mesh Finite-element mesh.
+   * @param dim Dimension associated with mesh cells.
+   * @param comm MPI communicator for mesh.
+   * @param label Label for mesh.
+   */
+  static
+  void createDMMesh(Mesh* const mesh,
+		    const int dim =3,
+		    const MPI_Comm& comm =PETSC_COMM_WORLD,
+		    const char* label ="domain");
+
+  /** Nondimensionalize the finite-element mesh.
+   *
+   * @param mesh Finite-element mesh.
+   * @param normalizer Nondimensionalizer.
+   */
+  static
+  void nondimensionalize(Mesh* const mesh,
+			 const spatialdata::units::Nondimensional& normalizer);
 
   /** Check to make sure material id of every cell matches the id of
    *  one of the materials.

@@ -22,49 +22,63 @@
 
 #include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
+// ----------------------------------------------------------------------
 // Get DMPlex mesh.
 inline
-DM
+PetscDM
 pylith::topology::Mesh::dmMesh(void) const {
-  return _newMesh;
+  return _dmMesh;
 }
 
+// ----------------------------------------------------------------------
 // Set DMPlex mesh.
 inline
 void
-pylith::topology::Mesh::setDMMesh(DM dm) {
+pylith::topology::Mesh::dmMesh(PetscDM dm,
+			       const char* label) {
   PYLITH_METHOD_BEGIN;
 
   PetscErrorCode err;
-  err = DMDestroy(&_newMesh);PYLITH_CHECK_ERROR(err);
-  _newMesh = dm;
-  err = PetscObjectSetName((PetscObject) _newMesh, "domain");PYLITH_CHECK_ERROR(err);
+  err = DMDestroy(&_dmMesh);PYLITH_CHECK_ERROR(err);
+  _dmMesh = dm;
+  err = PetscObjectSetName((PetscObject) _dmMesh, label);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 }
 
+// ----------------------------------------------------------------------
 // Get point type sizes.
 inline
 void
-pylith::topology::Mesh::getPointTypeSizes(PetscInt *numNormalCells, PetscInt *numCohesiveCells, PetscInt *numNormalVertices, PetscInt *numShadowVertices, PetscInt *numLagrangeVertices) const {
-  *numNormalCells      = _numNormalCells;
-  *numCohesiveCells    = _numCohesiveCells;
-  *numNormalVertices   = _numNormalVertices;
-  *numShadowVertices   = _numShadowVertices;
+pylith::topology::Mesh::getPointTypeSizes(PetscInt *numNormalCells,
+					  PetscInt *numCohesiveCells,
+					  PetscInt *numNormalVertices,
+					  PetscInt *numShadowVertices,
+					  PetscInt *numLagrangeVertices) const {
+  *numNormalCells = _numNormalCells;
+  *numCohesiveCells = _numCohesiveCells;
+  *numNormalVertices = _numNormalVertices;
+  *numShadowVertices = _numShadowVertices;
   *numLagrangeVertices = _numLagrangeVertices;
 }
 
+// ----------------------------------------------------------------------
 // Set point type sizes.
 inline
 void
-pylith::topology::Mesh::setPointTypeSizes(PetscInt numNormalCells, PetscInt numCohesiveCells, PetscInt numNormalVertices, PetscInt numShadowVertices, PetscInt numLagrangeVertices) {
-  _numNormalCells      = numNormalCells;
-  _numCohesiveCells    = numCohesiveCells;
-  _numNormalVertices   = numNormalVertices;
-  _numShadowVertices   = numShadowVertices;
+pylith::topology::Mesh::setPointTypeSizes(PetscInt numNormalCells,
+					  PetscInt numCohesiveCells,
+					  PetscInt numNormalVertices,
+					  PetscInt numShadowVertices,
+					  PetscInt numLagrangeVertices) {
+  _numNormalCells = numNormalCells;
+  _numCohesiveCells = numCohesiveCells;
+  _numNormalVertices = numNormalVertices;
+  _numShadowVertices = numShadowVertices;
   _numLagrangeVertices = numLagrangeVertices;
 }
 
+// ----------------------------------------------------------------------
 // Get coordinate system.
 inline
 const spatialdata::geocoords::CoordSys*
@@ -72,6 +86,7 @@ pylith::topology::Mesh::coordsys(void) const {
   return _coordsys;
 }
 
+// ----------------------------------------------------------------------
 // Set debug flag.
 inline
 void
@@ -79,6 +94,7 @@ pylith::topology::Mesh::debug(const bool value) {
   _debug = value;
 }
 
+// ----------------------------------------------------------------------
 // Get debug flag.
 inline
 bool
@@ -86,6 +102,7 @@ pylith::topology::Mesh::debug(void) const {
   return _debug;
 }
 
+// ----------------------------------------------------------------------
 // Get dimension of mesh.
 inline
 int
@@ -93,30 +110,14 @@ pylith::topology::Mesh::dimension(void) const {
   PYLITH_METHOD_BEGIN;
 
   PetscInt dim = 0;
-  if (_newMesh) {
-    PetscErrorCode err = DMPlexGetDimension(_newMesh, &dim);PYLITH_CHECK_ERROR(err);
+  if (_dmMesh) {
+    PetscErrorCode err = DMPlexGetDimension(_dmMesh, &dim);PYLITH_CHECK_ERROR(err);
   } // if
 
   PYLITH_METHOD_RETURN(dim);
 }
 
-// Get representative cone size for mesh.
-inline
-int
-pylith::topology::Mesh::coneSize(void) const {
-  PYLITH_METHOD_BEGIN;
-
-  PetscInt coneSize = 0;
-  if (_newMesh) {
-    PetscInt cStart;
-    PetscErrorCode err;
-    err = DMPlexGetHeightStratum(_newMesh, 0, &cStart, NULL);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetConeSize(_newMesh, cStart, &coneSize);PYLITH_CHECK_ERROR(err);
-  } // if
-
-  PYLITH_METHOD_RETURN(coneSize);
-}
-
+// ----------------------------------------------------------------------
 // Get number of vertices in mesh.
 inline
 int
@@ -124,15 +125,35 @@ pylith::topology::Mesh::numVertices(void) const {
   PYLITH_METHOD_BEGIN;
 
   PetscInt nvertices = 0;
-  if (_newMesh) {
+  if (_dmMesh) {
     PetscInt begin=0, end=0;
-    PetscErrorCode err = DMPlexGetDepthStratum(_newMesh, 0, &begin, &end);PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = DMPlexGetDepthStratum(_dmMesh, 0, &begin, &end);PYLITH_CHECK_ERROR(err);
     nvertices = end-begin;
   } // if
 
   PYLITH_METHOD_RETURN(nvertices);
 }
 
+// ----------------------------------------------------------------------
+// Get representative cone size for mesh.
+inline
+int
+pylith::topology::Mesh::coneSize(void) const {
+  PYLITH_METHOD_BEGIN;
+
+  PetscInt coneSize = 0;
+  if (_dmMesh) {
+    PetscInt cStart;
+    PetscErrorCode err;
+    const int cellHeight = _isSubMesh ? 1 : 0;
+    err = DMPlexGetHeightStratum(_dmMesh, cellHeight, &cStart, NULL);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetConeSize(_dmMesh, cStart, &coneSize);PYLITH_CHECK_ERROR(err);
+  } // if
+
+  PYLITH_METHOD_RETURN(coneSize);
+}
+
+// ----------------------------------------------------------------------
 // Get number of cells in mesh.
 inline
 int
@@ -140,15 +161,17 @@ pylith::topology::Mesh::numCells(void) const {
   PYLITH_METHOD_BEGIN;
 
   PetscInt ncells = 0;
-  if (_newMesh) {
+  if (_dmMesh) {
     PetscInt begin=0, end=0;
-    PetscErrorCode err = DMPlexGetHeightStratum(_newMesh, 0, &begin, &end);PYLITH_CHECK_ERROR(err);
+    const int cellHeight = _isSubMesh ? 1 : 0;
+    PetscErrorCode err = DMPlexGetHeightStratum(_dmMesh, cellHeight, &begin, &end);PYLITH_CHECK_ERROR(err);
     ncells = end-begin;
   } // if
 
   PYLITH_METHOD_RETURN(ncells);
 }
 
+// ----------------------------------------------------------------------
 // Set MPI communicator associated with mesh.
 inline
 void
@@ -156,6 +179,7 @@ pylith::topology::Mesh::comm(const MPI_Comm value) {
   _comm = value;
 }
     
+// ----------------------------------------------------------------------
 // Get MPI communicator associated with mesh.
 inline
 const MPI_Comm
@@ -163,6 +187,7 @@ pylith::topology::Mesh::comm(void) const {
   return _comm;
 }
     
+// ----------------------------------------------------------------------
 // Get MPI rank.
 inline
 int
@@ -172,14 +197,15 @@ pylith::topology::Mesh::commRank(void) const {
   return rank;
 }
     
+// ----------------------------------------------------------------------
 // Print mesh to stdout.
 inline
 void
 pylith::topology::Mesh::view(const char* label) const {
   PYLITH_METHOD_BEGIN;
 
-  assert(_newMesh);
-  PetscErrorCode err = DMView(_newMesh, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
+  assert(_dmMesh);
+  PetscErrorCode err = DMView(_dmMesh, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 }

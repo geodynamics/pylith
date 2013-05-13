@@ -26,6 +26,7 @@
 #include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
@@ -371,7 +372,7 @@ pylith::feassemble::TestElasticityExplicit::_initialize(topology::Mesh* mesh,
   const PylithScalar dt = _data->dt;
 
   // Setup mesh
-  mesh->createDMMesh(_data->cellDim);
+  topology::MeshOps::createDMMesh(mesh, _data->cellDim);
   PetscDM dmMesh = mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
 
   // Cells and vertices
@@ -411,7 +412,7 @@ pylith::feassemble::TestElasticityExplicit::_initialize(topology::Mesh* mesh,
   normalizer.pressureScale(_data->pressureScale);
   normalizer.densityScale(_data->densityScale);
   normalizer.timeScale(_data->timeScale);
-  mesh->nondimensionalize(normalizer);
+  topology::MeshOps::nondimensionalize(mesh, normalizer);
 
   // Setup material
   spatialdata::spatialdb::SimpleIOAscii iohandler;
