@@ -315,8 +315,8 @@ class TestFaultCohesiveDyn(unittest.TestCase):
     firstFaultCell      = 2*nvertices
     fault.adjustTopology(mesh, firstFaultVertex, firstLagrangeVertex,
                          firstFaultCell)
-
-    mesh.nondimensionalize(normalizer)
+    from pylith.topology.topology import MeshOps_nondimensionalize
+    MeshOps_nondimensionalize(mesh, normalizer)
 
     fault.preinitialize(mesh)
     fault.timeStep(dt)

@@ -23,6 +23,7 @@
 #include "data/BoundaryMeshData.hh" // USES BoundaryMeshData
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
@@ -76,7 +77,7 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void)
   cs.setSpaceDim(mesh.dimension());
   cs.initialize();
   mesh.coordsys(&cs);
-  mesh.nondimensionalize(normalizer);
+  topology::MeshOps::nondimensionalize(&mesh, normalizer);
 
   // Create submesh
   topology::SubMesh submesh(mesh, _data->bcLabel);
@@ -137,7 +138,7 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
   cs.setSpaceDim(mesh.dimension());
   cs.initialize();
   mesh.coordsys(&cs);
-  mesh.nondimensionalize(normalizer);
+  topology::MeshOps::nondimensionalize(&mesh, normalizer);
 
   // Adjust topology
   faults::FaultCohesiveKin fault;

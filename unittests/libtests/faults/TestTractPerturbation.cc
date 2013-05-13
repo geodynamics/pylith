@@ -26,6 +26,7 @@
 
 #include "pylith/faults/CohesiveTopology.hh" // USES CohesiveTopology
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
@@ -348,7 +349,7 @@ pylith::faults::TestTractPerturbation::_initialize(topology::Mesh* mesh,
   normalizer.pressureScale(_TestTractPerturbation::pressureScale);
   normalizer.densityScale(_TestTractPerturbation::densityScale);
   normalizer.timeScale(_TestTractPerturbation::timeScale);
-  mesh->nondimensionalize(normalizer);
+  topology::MeshOps::nondimensionalize(mesh, normalizer);
 
   // Create fault mesh
   TestFaultMesh::createFaultMesh(faultMesh, mesh, faultLabel, faultId);

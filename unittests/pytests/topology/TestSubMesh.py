@@ -110,17 +110,6 @@ class TestSubMesh(unittest.TestCase):
     return
 
 
-  def test_initialize(self):
-    """
-    Test initialize().
-    """
-    mesh = self._getMesh()
-    submesh = SubMesh(mesh, "bc")
-
-    submesh.initialize()
-    return
-
-
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _getMesh(self):

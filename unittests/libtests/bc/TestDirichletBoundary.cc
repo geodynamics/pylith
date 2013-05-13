@@ -25,6 +25,7 @@
 #include "data/DirichletData.hh" // USES DirichletData
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
@@ -121,7 +122,7 @@ pylith::bc::TestDirichletBoundary::_initialize(topology::Mesh* mesh,
   cs.setSpaceDim(mesh->dimension());
   cs.initialize();
   mesh->coordsys(&cs);
-  mesh->nondimensionalize(normalizer);
+  topology::MeshOps::nondimensionalize(mesh, normalizer);
 
   spatialdata::spatialdb::SimpleDB db("TestDirichletBoundary initial");
   spatialdata::spatialdb::SimpleIOAscii dbIO;

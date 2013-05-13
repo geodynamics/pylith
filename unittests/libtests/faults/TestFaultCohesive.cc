@@ -26,6 +26,7 @@
 #include "pylith/faults/FaultCohesiveTract.hh" // USES FaultsCohesiveTract
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 
@@ -691,7 +692,7 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   mesh.coordsys(&cs);
 
   spatialdata::units::Nondimensional normalizer;
-  mesh.nondimensionalize(normalizer);
+  topology::MeshOps::nondimensionalize(&mesh, normalizer);
 
   PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
   PetscInt firstFaultVertex = 0;

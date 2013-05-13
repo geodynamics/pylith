@@ -144,6 +144,7 @@ pylith::topology::SubMesh::initialize(void)
 { // initialize
   PYLITH_METHOD_BEGIN;
 
+  assert(0);
   if (_coordsys)
     _coordsys->initialize();
 

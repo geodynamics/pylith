@@ -22,7 +22,6 @@
 #include "Mesh.hh" // implementation of class methods
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 #include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/petscfwd.h" // USES PetscVec
 #include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
@@ -34,29 +33,104 @@
 // ----------------------------------------------------------------------
 // Default constructor
 pylith::topology::Mesh::Mesh(void) :
-  _newMesh(NULL),
-  _numNormalCells(0), _numCohesiveCells(0), _numNormalVertices(0), _numShadowVertices(0), _numLagrangeVertices(0),
+  _dmMesh(NULL),
+  _numNormalCells(0),
+  _numCohesiveCells(0),
+  _numNormalVertices(0),
+  _numShadowVertices(0),
+  _numLagrangeVertices(0),
   _coordsys(0),
   _comm(PETSC_COMM_WORLD),
-  _debug(false)
+  _debug(false),
+  _isSubMesh(false)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
-// Default constructor
+// Constructor with dimension and communicator.
 pylith::topology::Mesh::Mesh(const int dim,
 			     const MPI_Comm& comm) :
-  _newMesh(NULL),
-  _numNormalCells(0), _numCohesiveCells(0), _numNormalVertices(0), _numShadowVertices(0), _numLagrangeVertices(0),
+  _dmMesh(NULL),
+  _numNormalCells(0),
+  _numCohesiveCells(0),
+  _numNormalVertices(0),
+  _numShadowVertices(0),
+  _numLagrangeVertices(0),
   _coordsys(0),
   _comm(comm),
-  _debug(false)
+  _debug(false),
+  _isSubMesh(false)
 { // constructor
   PYLITH_METHOD_BEGIN;
 
-  createDMMesh(dim);
+  PetscErrorCode err;
+  err = DMCreate(_comm, &_dmMesh);PYLITH_CHECK_ERROR(err);
+  err = DMSetType(_dmMesh, DMPLEX);PYLITH_CHECK_ERROR(err);
+  err = DMPlexSetDimension(_dmMesh, dim);PYLITH_CHECK_ERROR(err);
+  err = PetscObjectSetName((PetscObject) _dmMesh, "domain");PYLITH_CHECK_ERROR(err);
+
   PYLITH_METHOD_END;
 } // constructor
+
+// ----------------------------------------------------------------------
+// Create submesh.
+pylith::topology::Mesh::Mesh(const Mesh& mesh,
+			     const char* label) :
+  _dmMesh(NULL),
+  _numNormalCells(0),
+  _numCohesiveCells(0),
+  _numNormalVertices(0),
+  _numShadowVertices(0),
+  _numLagrangeVertices(0),
+  _coordsys(0),
+  _comm(mesh.comm()),
+  _debug(mesh.debug()),
+  _isSubMesh(true)
+{ // Submesh constructor
+  PYLITH_METHOD_BEGIN;
+
+  assert(label);
+
+  coordsys(mesh.coordsys());
+
+  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+  PetscErrorCode err;
+
+  PetscBool hasLabel = PETSC_FALSE;
+  err = DMPlexHasLabel(dmMesh, label, &hasLabel);PYLITH_CHECK_ERROR(err);
+  if (!hasLabel) {
+    std::ostringstream msg;
+    msg << "Could not find group of points '" << label << "' in PETSc DM mesh.";
+    throw std::runtime_error(msg.str());
+  } // if
+
+  if (mesh.dimension() < 1) {
+    throw std::logic_error("INTERNAL ERROR in MeshOps::createSubMesh()\n"
+			   "Cannot create submesh for mesh with dimension < 1.");
+  } // if
+
+  /* TODO: Add creation of pointSF for submesh */
+  err = DMPlexCreateSubmesh(dmMesh, label, 1, &_dmMesh);PYLITH_CHECK_ERROR(err);
+
+  PetscInt maxConeSizeLocal = 0, maxConeSize = 0;
+  err = DMPlexGetMaxSizes(_dmMesh, &maxConeSizeLocal, NULL);PYLITH_CHECK_ERROR(err);
+  err = MPI_Allreduce(&maxConeSizeLocal, &maxConeSize, 1, MPI_INT, MPI_MAX,
+                      PetscObjectComm((PetscObject) _dmMesh)); PYLITH_CHECK_ERROR(err);
+
+  if (maxConeSize <= 0) {
+    std::ostringstream msg;
+    msg << "Error while creating submesh. Submesh '" 
+	<< label << "' does not contain any cells.\n";
+    throw std::runtime_error(msg.str());
+  } // if
+
+  // Set name
+  std::string meshLabel = "subdomain_" + std::string(label);
+  err = PetscObjectSetName((PetscObject) _dmMesh, meshLabel.c_str());PYLITH_CHECK_ERROR(err);
+
+  PYLITH_METHOD_END;
+} // SubMesh constructor
+		     
 
 // ----------------------------------------------------------------------
 // Default destructor
@@ -73,28 +147,11 @@ pylith::topology::Mesh::deallocate(void)
   PYLITH_METHOD_BEGIN;
 
   delete _coordsys; _coordsys = 0;
-  PetscErrorCode err = DMDestroy(&_newMesh);PYLITH_CHECK_ERROR(err);
+  PetscErrorCode err = DMDestroy(&_dmMesh);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // deallocate
   
-// ----------------------------------------------------------------------
-// Create DMPlex mesh.
-void
-pylith::topology::Mesh::createDMMesh(const int dim)
-{ // createDMMesh
-  PYLITH_METHOD_BEGIN;
-
-  PetscErrorCode err;
-  err = DMDestroy(&_newMesh);PYLITH_CHECK_ERROR(err);
-  err = DMCreate(_comm, &_newMesh);PYLITH_CHECK_ERROR(err);
-  err = DMSetType(_newMesh, DMPLEX);PYLITH_CHECK_ERROR(err);
-  err = DMPlexSetDimension(_newMesh, dim);PYLITH_CHECK_ERROR(err);
-  err = PetscObjectSetName((PetscObject) _newMesh, "domain");PYLITH_CHECK_ERROR(err);
-
-  PYLITH_METHOD_END;
-} // createDMMesh
-
 // ----------------------------------------------------------------------
 // Set coordinate system.
 void
@@ -122,17 +179,17 @@ pylith::topology::Mesh::groups(int* numNames,
   *numNames = 0;
   *names = 0;
 
-  if (_newMesh) {
+  if (_dmMesh) {
     PetscErrorCode err = 0;
 
     PetscInt numLabels = 0;
-    err = DMPlexGetNumLabels(_newMesh, &numLabels);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetNumLabels(_dmMesh, &numLabels);PYLITH_CHECK_ERROR(err);
 
     *numNames = numLabels;
     *names = new char*[numLabels];
     for (int iLabel=0; iLabel < numLabels; ++iLabel) {
       const char* namestr = NULL;
-      err = DMPlexGetLabelName(_newMesh, iLabel, &namestr);PYLITH_CHECK_ERROR(err);
+      err = DMPlexGetLabelName(_dmMesh, iLabel, &namestr);PYLITH_CHECK_ERROR(err);
       // Must return char* that SWIG can deallocate.
       const char len = strlen(namestr);
       char* newName = 0;
@@ -157,12 +214,12 @@ pylith::topology::Mesh::groupSize(const char *name)
 { // groupSize
   PYLITH_METHOD_BEGIN;
 
-  assert(_newMesh);
+  assert(_dmMesh);
 
   PetscErrorCode err = 0;
 
   PetscBool hasLabel = PETSC_FALSE;
-  err = DMPlexHasLabel(_newMesh, name, &hasLabel);PYLITH_CHECK_ERROR(err);
+  err = DMPlexHasLabel(_dmMesh, name, &hasLabel);PYLITH_CHECK_ERROR(err);
   if (!hasLabel) {
     std::ostringstream msg;
     msg << "Cannot get size of group '" << name
@@ -171,31 +228,10 @@ pylith::topology::Mesh::groupSize(const char *name)
   } // if
 
   PetscInt size = 0;
-  err = DMPlexGetLabelSize(_newMesh, name, &size);PYLITH_CHECK_ERROR(err);
+  err = DMPlexGetLabelSize(_dmMesh, name, &size);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_RETURN(size);
 } // groupSize
-
-
-// ----------------------------------------------------------------------
-// Nondimensionalize the finite-element mesh.
-void 
-pylith::topology::Mesh::nondimensionalize(const spatialdata::units::Nondimensional& normalizer)
-{ // initialize
-  PYLITH_METHOD_BEGIN;
-
-  PetscVec coordVec, coordDimVec;
-  const PylithScalar lengthScale = normalizer.lengthScale();
-  PetscErrorCode err;
-
-  assert(_newMesh);
-  err = DMGetCoordinatesLocal(_newMesh, &coordVec);PYLITH_CHECK_ERROR(err);assert(coordVec);
-  // There does not seem to be an advantage to calling nondimensionalize()
-  err = VecScale(coordVec, 1.0/lengthScale);PYLITH_CHECK_ERROR(err);
-  err = DMPlexSetScale(_newMesh, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
-
-  PYLITH_METHOD_END;
-} // nondimensionalize
 
 
 // End of file 

@@ -27,6 +27,7 @@
 #include "pylith/friction/SlipWeakening.hh" // USES SlipWeakening
 
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/Stratum.hh" // USES Stratum
@@ -818,17 +819,19 @@ pylith::friction::TestFrictionModel::_initialize(topology::Mesh* mesh,
   iohandler.filename("data/tri3.mesh");
   iohandler.read(mesh);
 
-  // Set up coordinates
+  // Setup coordinates
   spatialdata::geocoords::CSCart cs;
+  cs.setSpaceDim(mesh->dimension());
+  cs.initialize();
+  mesh->coordsys(&cs);
+  
+  // Setup scales
   spatialdata::units::Nondimensional normalizer;
   normalizer.lengthScale(data->lengthScale);
   normalizer.pressureScale(data->pressureScale);
   normalizer.timeScale(data->timeScale);
   normalizer.densityScale(data->densityScale);
-  cs.setSpaceDim(mesh->dimension());
-  cs.initialize();
-  mesh->coordsys(&cs);
-  mesh->nondimensionalize(normalizer);
+  topology::MeshOps::nondimensionalize(mesh, normalizer);
 
   // Setup quadrature
   feassemble::Quadrature<topology::SubMesh> quadrature;

@@ -24,12 +24,57 @@
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/utils/array.hh" // USES int_array
 
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
 
 #include <algorithm> // USES std::sort, std::find
 #include <map> // USES std::map
+
+
+// ----------------------------------------------------------------------
+// Create PETSc DM mesh.
+void
+pylith::topology::MeshOps::createDMMesh(Mesh* const mesh,
+					const int dim,
+					const MPI_Comm& comm,
+					const char* label)
+{ // createDMMesh
+  PYLITH_METHOD_BEGIN;
+
+  PetscErrorCode err;
+  PetscDM dmMesh = NULL;
+  err = DMCreate(comm, &dmMesh);PYLITH_CHECK_ERROR(err);
+  err = DMSetType(dmMesh, DMPLEX);PYLITH_CHECK_ERROR(err);
+  err = DMPlexSetDimension(dmMesh, dim);PYLITH_CHECK_ERROR(err);
+  mesh->dmMesh(dmMesh, label);
+  mesh->comm(comm);
+
+  PYLITH_METHOD_END;
+} // createDMMesh
+
+// ----------------------------------------------------------------------
+// Nondimensionalize the finite-element mesh.
+void 
+pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
+					     const spatialdata::units::Nondimensional& normalizer)
+{ // nondimensionalize
+  PYLITH_METHOD_BEGIN;
+
+  PetscVec coordVec, coordDimVec;
+  const PylithScalar lengthScale = normalizer.lengthScale();
+  PetscErrorCode err;
+
+  PetscDM dmMesh = mesh->dmMesh();assert(dmMesh);
+  err = DMGetCoordinatesLocal(dmMesh, &coordVec);PYLITH_CHECK_ERROR(err);assert(coordVec);
+  // There does not seem to be an advantage to calling nondimensionalize()
+  err = VecScale(coordVec, 1.0/lengthScale);PYLITH_CHECK_ERROR(err);
+  err = DMPlexSetScale(dmMesh, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
+
+  PYLITH_METHOD_END;
+} // nondimensionalize
 
 
 // ----------------------------------------------------------------------

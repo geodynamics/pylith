@@ -25,6 +25,7 @@
 #include "data/DirichletDataMulti.hh" // USES DirichletData
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VisitorMesh
@@ -362,7 +363,7 @@ pylith::bc::TestDirichletBCMulti::_initialize(topology::Mesh* mesh,
   normalizer.pressureScale(_data->pressureScale);
   normalizer.densityScale(_data->densityScale);
   normalizer.timeScale(_data->timeScale);
-  mesh->nondimensionalize(normalizer);
+  topology::MeshOps::nondimensionalize(mesh, normalizer);
 
   // Setup boundary condition A
   spatialdata::spatialdb::SimpleDB db("TestDirichletBCMulti initial");

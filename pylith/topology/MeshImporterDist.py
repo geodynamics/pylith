@@ -94,7 +94,8 @@ class MeshImporterDist(MeshGenerator):
     mesh = self.refiner.refine(mesh)
 
     # Nondimensionalize mesh (coordinates of vertices).
-    mesh.nondimensionalize(normalizer)
+    from pylith.topology.topology import MeshOps_nondimensionalize
+    MeshOps_nondimensionalize(mesh, normalizer)
 
     self._eventLogger.eventEnd(logEvent)    
     return mesh

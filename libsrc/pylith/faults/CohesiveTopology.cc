@@ -27,36 +27,43 @@
 
 #include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
-extern PetscErrorCode DMPlexGetOrientedFace(DM dm, PetscInt cell, PetscInt faceSize, const PetscInt face[], PetscInt numCorners, PetscInt indices[], PetscInt origVertices[], PetscInt faceVertices[], PetscBool *posOriented);
+extern
+PetscErrorCode DMPlexGetOrientedFace(PetscDM dm,
+				     PetscInt cell,
+				     PetscInt faceSize,
+				     const PetscInt face[],
+				     PetscInt numCorners,
+				     PetscInt indices[],
+				     PetscInt origVertices[],
+				     PetscInt faceVertices[],
+				     PetscBool *posOriented);
 
 // ----------------------------------------------------------------------
 void
 pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
-                                              DM& faultBoundary,
+                                              PetscDM& faultBoundary,
                                               const topology::Mesh& mesh,
-                                              DMLabel groupField,
+                                              PetscDMLabel groupField,
                                               const bool flipFault)
 { // createFault
   PYLITH_METHOD_BEGIN;
 
-  assert(0 != faultMesh);
+  assert(faultMesh);
   assert(groupField);
   PetscErrorCode err;
 
   faultMesh->coordsys(mesh);
-  DM       dmMesh = mesh.dmMesh();
-  PetscInt dim, depth;
+  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
 
-  assert(dmMesh);
+  PetscInt dim, depth;
   err = DMPlexGetDimension(dmMesh, &dim);PYLITH_CHECK_ERROR(err);
   err = DMPlexGetDepth(dmMesh, &depth);PYLITH_CHECK_ERROR(err);
 
   // Convert fault to a DM
   if (depth == dim) {
-    DM                 subdm;
-    DMLabel            label;
-    const char        *groupName, *labelName = "boundary";
-    std::ostringstream tmp;
+    PetscDM subdm = NULL;
+    PetscDMLabel label = NULL;
+    const char *groupName = NULL, *labelName = "boundary";
 
     err = DMLabelGetName(groupField, &groupName);PYLITH_CHECK_ERROR(err);
     err = DMPlexCreateSubmesh(dmMesh, groupName, 1, &subdm);PYLITH_CHECK_ERROR(err);
@@ -64,14 +71,15 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
     err = DMPlexGetLabel(subdm, labelName, &label);PYLITH_CHECK_ERROR(err);
     err = DMPlexMarkBoundaryFaces(subdm, label);PYLITH_CHECK_ERROR(err);
     err = DMPlexCreateSubmesh(subdm, labelName, 1, &faultBoundary);PYLITH_CHECK_ERROR(err);
-    faultMesh->setDMMesh(subdm);
+    std::string submeshLabel = "fault_" + std::string(groupName);
+    faultMesh->dmMesh(subdm, submeshLabel.c_str());
   } else {
-    DM              faultDMMeshTmp, faultDMMesh;
-    DMLabel         subpointMapTmp, subpointMap;
-    IS              pointIS;
-    const PetscInt *points;
-    PetscInt        depth, newDepth, h, numPoints, p;
-    const char     *groupName;
+    PetscDM faultDMMeshTmp = NULL, faultDMMesh = NULL;
+    PetscDMLabel subpointMapTmp = NULL, subpointMap = NULL;
+    PetscIS pointIS = NULL;
+    const PetscInt *points = NULL;
+    PetscInt depth, newDepth, h, numPoints, p;
+    const char *groupName = NULL;
 
     err = DMLabelGetName(groupField, &groupName);PYLITH_CHECK_ERROR(err);
     err = DMPlexCreateSubmesh(dmMesh, groupName, 1, &faultDMMeshTmp);PYLITH_CHECK_ERROR(err);
@@ -129,10 +137,12 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
       err = DMRestoreWorkArray(faultDMMesh, maxConeSize, PETSC_INT, &revcone);PYLITH_CHECK_ERROR(err);
       err = DMRestoreWorkArray(faultDMMesh, maxConeSize, PETSC_INT, &revconeO);PYLITH_CHECK_ERROR(err);
     }
-    faultMesh->setDMMesh(faultDMMesh);
 
-    DMLabel            label;
-    const char        *labelName = "boundary";
+    std::string submeshLabel = "fault_" + std::string(groupName);
+    faultMesh->dmMesh(faultDMMesh, submeshLabel.c_str());
+
+    PetscDMLabel label = NULL;
+    const char *labelName = "boundary";
 
     err = DMPlexCreateLabel(faultDMMesh, labelName);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetLabel(faultDMMesh, labelName, &label);PYLITH_CHECK_ERROR(err);
@@ -157,7 +167,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 { // create
   PYLITH_METHOD_BEGIN;
 
-  assert(0 != mesh);
+  assert(mesh);
   assert(groupField);
 
   const char    *groupName;
@@ -614,90 +624,47 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   err = ISRestoreIndices(fVertexIS, &fVerticesDM);PYLITH_CHECK_ERROR(err);
   err = ISDestroy(&fVertexIS);PYLITH_CHECK_ERROR(err);
 
-  mesh->setDMMesh(newMesh);
+  mesh->dmMesh(newMesh);
 
   PYLITH_METHOD_END;
 } // create
 
 void
 pylith::faults::CohesiveTopology::createInterpolated(topology::Mesh* mesh,
-                                         const topology::SubMesh& faultMesh,
-                                         DM faultBoundary,
-                                         DMLabel groupField,
-                                         const int materialId,
-                                         int& firstFaultVertex,
-                                         int& firstLagrangeVertex,
-                                         int& firstFaultCell,
-                                         const bool constraintCell)
+						     const topology::SubMesh& faultMesh,
+						     PetscDM faultBoundary,
+						     PetscDMLabel groupField,
+						     const int materialId,
+						     int& firstFaultVertex,
+						     int& firstLagrangeVertex,
+						     int& firstFaultCell,
+						     const bool constraintCell)
 { // createInterpolated
-  assert(0 != mesh);
+  assert(mesh);
   assert(faultBoundary);
   assert(groupField);
-  DM             dm = mesh->dmMesh(), sdm;
-  DMLabel        label;
-  const char    *labelName = "faultSurface";
+  PetscDM sdm = NULL;
+  PetscDMLabel label = NULL;
+  const char *labelName = "faultSurface";
   PetscErrorCode err;
 
+  PetscDM dm = mesh->dmMesh();assert(dm);
   err = DMPlexGetLabel(dm, labelName, &label);PYLITH_CHECK_ERROR(err);
   // Completes the set of cells scheduled to be replaced
   //   Have to do internal fault vertices before fault boundary vertices, and this is the only thing I use faultBoundary for
   err = DMPlexLabelCohesiveComplete(dm, label);PYLITH_CHECK_ERROR(err);
   err = DMPlexConstructCohesiveCells(dm, label, &sdm);PYLITH_CHECK_ERROR(err);
-  mesh->setDMMesh(sdm);
+  mesh->dmMesh(sdm);
 } // createInterpolated
-
-PetscInt convertSieveToDMPointNumbering(PetscInt sievePoint, PetscInt numNormalCells, PetscInt numCohesiveCells, PetscInt numNormalVertices, PetscInt numShadowVertices, PetscInt numLagrangeVertices)
-{
-  PetscInt dmPoint = -1;
-
-  if ((sievePoint >= 0) && (sievePoint < numNormalCells)) {
-    dmPoint = sievePoint;
-    //std::cout << "normal cell sieve point "<<sievePoint<<" --> "<<" dm point"<<dmPoint<<std::endl;
-  } else if ((sievePoint >= numNormalCells) && (sievePoint < numNormalCells+numNormalVertices)) {
-    dmPoint = sievePoint+numCohesiveCells;
-    //std::cout << "normal vertex sieve point "<<sievePoint<<" --> "<<" dm point"<<dmPoint<<std::endl;
-  } else if ((sievePoint >= numNormalCells+numNormalVertices) && (sievePoint < numNormalCells+numNormalVertices+numShadowVertices+numLagrangeVertices)) {
-    dmPoint = sievePoint+numCohesiveCells;
-    //std::cout << "extra vertex sieve point "<<sievePoint<<" --> "<<" dm point"<<dmPoint<<std::endl;
-  } else if ((sievePoint >= numNormalCells+numNormalVertices+numShadowVertices+numLagrangeVertices) && (sievePoint < numNormalCells+numNormalVertices+numShadowVertices+numLagrangeVertices+numCohesiveCells)) {
-    dmPoint = sievePoint-(numNormalVertices+numShadowVertices+numLagrangeVertices);
-    //std::cout << "extra cell sieve point "<<sievePoint<<" --> "<<" dm point"<<dmPoint<<std::endl;
-  } else {
-    //std::cout << "face sieve point "<<sievePoint<<" --> "<<" dm point"<<dmPoint<<std::endl;
-  }
-  return dmPoint;
-}
-
-PetscInt convertDMToSievePointNumbering(PetscInt dmPoint, PetscInt numNormalCells, PetscInt numCohesiveCells, PetscInt numNormalVertices, PetscInt numShadowVertices, PetscInt numLagrangeVertices)
-{
-  PetscInt sievePoint = -1;
-
-  if ((dmPoint >= 0) && (dmPoint < numNormalCells)) {
-    sievePoint = dmPoint;
-    //std::cout << "normal cell sieve point "<<sievePoint<<" <-- "<<" dm point"<<dmPoint<<std::endl;
-  } else if ((dmPoint >= numNormalCells) && (dmPoint < numNormalCells+numCohesiveCells)) {
-    sievePoint = dmPoint+numNormalVertices+numShadowVertices+numLagrangeVertices;
-    //std::cout << "extra cell sieve point "<<sievePoint<<" <-- "<<" dm point"<<dmPoint<<std::endl;
-  } else if ((dmPoint >= numNormalCells+numCohesiveCells) && (dmPoint < numNormalCells+numCohesiveCells+numNormalVertices)) {
-    sievePoint = dmPoint-numCohesiveCells;
-    //std::cout << "normal vertex sieve point "<<sievePoint<<" <-- "<<" dm point"<<dmPoint<<std::endl;
-  } else if ((dmPoint >= numNormalCells+numCohesiveCells+numNormalVertices) && (dmPoint < numNormalCells+numCohesiveCells+numNormalVertices+numShadowVertices+numLagrangeVertices)) {
-    sievePoint = dmPoint-numCohesiveCells;
-    //std::cout << "extra vertex sieve point "<<sievePoint<<" <-- "<<" dm point"<<dmPoint<<std::endl;
-  } else {
-    //std::cout << "face sieve point "<<sievePoint<<" <-- "<<" dm point"<<dmPoint<<std::endl;
-  }
-  return sievePoint;
-}
 
 // ----------------------------------------------------------------------
 // Form a parallel fault mesh using the cohesive cell information
 void
-pylith::faults::CohesiveTopology::createFaultParallel(
-			    topology::SubMesh* faultMesh,
-			    const topology::Mesh& mesh,
-			    const int materialId,
-			    const bool constraintCell)
+pylith::faults::CohesiveTopology::createFaultParallel(topology::SubMesh* faultMesh,
+						      const topology::Mesh& mesh,
+						      const int materialId,
+						      const char* label,
+						      const bool constraintCell)
 { // createFaultParallel
   PYLITH_METHOD_BEGIN;
 
@@ -706,12 +673,12 @@ pylith::faults::CohesiveTopology::createFaultParallel(
 
   faultMesh->coordsys(mesh);
 
-  DM dmMesh = mesh.dmMesh();
-  assert(dmMesh);
-  DM dmFaultMesh;
+  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+  PetscDM dmFaultMesh;
 
   err = DMPlexCreateCohesiveSubmesh(dmMesh, constraintCell ? PETSC_TRUE : PETSC_FALSE, &dmFaultMesh);PYLITH_CHECK_ERROR(err);
-  faultMesh->setDMMesh(dmFaultMesh);
+  std::string meshLabel = "fault_" + std::string(label);
+  faultMesh->dmMesh(dmFaultMesh, meshLabel.c_str());
 
   PYLITH_METHOD_END;
 } // createFaultParallel

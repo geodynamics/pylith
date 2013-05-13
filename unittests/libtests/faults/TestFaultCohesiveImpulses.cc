@@ -25,6 +25,7 @@
 #include "data/CohesiveImpulsesData.hh" // USES CohesiveImpulsesData
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
@@ -329,7 +330,7 @@ pylith::faults::TestFaultCohesiveImpulses::_initialize(topology::Mesh* const mes
   normalizer.pressureScale(_data->pressureScale);
   normalizer.densityScale(_data->densityScale);
   normalizer.timeScale(_data->timeScale);
-  mesh->nondimensionalize(normalizer);
+  topology::MeshOps::nondimensionalize(mesh, normalizer);
   
   _quadrature->initialize(_data->basis, _data->numQuadPts, _data->numBasis,
 			  _data->basisDeriv,

@@ -21,6 +21,7 @@
 #include "OutputSolnPoints.hh" // implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "MeshBuilder.hh" // USES MeshBuilder
@@ -125,7 +126,7 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
   // Create mesh corresponding to points.
   const int meshDim = 0;
   delete _pointsMesh; _pointsMesh = new topology::Mesh(meshDim);assert(_pointsMesh);
-  _pointsMesh->createDMMesh(meshDim);
+  topology::MeshOps::createDMMesh(_pointsMesh, meshDim, _mesh->comm(), "points");
 
   const int numPointsLocal = _interpolator->n;
   PylithScalar* pointsLocal = NULL;
@@ -150,7 +151,7 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
 
   // Set coordinate system and create nondimensionalized coordinates
   _pointsMesh->coordsys(_mesh->coordsys());
-  _pointsMesh->nondimensionalize(normalizer);
+  topology::MeshOps::nondimensionalize(_pointsMesh, normalizer);
   
 #if 0 // DEBUGGING
   _pointsMesh->view("POINTS MESH");

@@ -43,6 +43,14 @@ namespace pylith {
       Mesh(const int dim,
 	   const MPI_Comm& comm =PETSC_COMM_WORLD); 
 
+      /** Create submesh.
+       *
+       * @param mesh Mesh over domain.
+       * @param label Label of vertices on boundary.
+       */
+      Mesh(const Mesh& mesh,
+	   const char* label);
+
       /// Default destructor
       ~Mesh(void);
       
@@ -50,12 +58,6 @@ namespace pylith {
       virtual
       void deallocate(void);
 
-      /** Create DM mesh.
-       *
-       * @param dim Dimension associated with mesh cells.
-       */
-      void createDMMesh(const int dim=3); 
-      
       /** Set coordinate system.
        *
        * @param cs Coordinate system.
@@ -116,12 +118,6 @@ namespace pylith {
        */
       const MPI_Comm comm(void) const;
     
-      /** Initialize the finite-element mesh.
-       *
-       * @param normalizer Nondimensionalizer.
-       */
-      void nondimensionalize(const spatialdata::units::Nondimensional& normalizer);
-
       /** Print mesh to stdout.
        *
        * @param label Label for mesh.

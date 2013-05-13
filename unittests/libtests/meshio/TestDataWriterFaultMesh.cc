@@ -101,7 +101,7 @@ pylith::meshio::TestDataWriterFaultMesh::_initialize(void)
   fault.label(_data->faultLabel);
   fault.id(_data->faultId);
   fault.adjustTopology(_mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell, _flipFault);
-  faults::CohesiveTopology::createFaultParallel(_faultMesh, *_mesh, _data->faultId, useLagrangeConstraints);
+  faults::CohesiveTopology::createFaultParallel(_faultMesh, *_mesh, _data->faultId, _data->faultLabel, useLagrangeConstraints);
 
   PYLITH_METHOD_END;
 } // _initialize

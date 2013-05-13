@@ -112,6 +112,7 @@ public :
    * @param faultMesh Finite-element mesh of fault (output).
    * @param mesh Finite-element mesh.
    * @param materialId Material id for cohesive elements.
+   * @param label Fault label.
    * @param constraintCell True if creating cells constrained with 
    *   Lagrange multipliers that require extra vertices, false otherwise.
    */
@@ -119,6 +120,7 @@ public :
   void createFaultParallel(topology::SubMesh* faultMesh,
 			   const topology::Mesh& mesh,
 			   const int materialId,
+			   const char* label,
 			   const bool constraintCell =false);
 
 }; // class CohesiveTopology

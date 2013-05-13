@@ -25,6 +25,7 @@
 #include "data/AbsorbingDampersData.hh" // USES AbsorbingDampersData
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Fields.hh" // USES Fields
@@ -421,7 +422,7 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
   normalizer.pressureScale(_data->pressureScale);
   normalizer.densityScale(_data->densityScale);
   normalizer.timeScale(_data->timeScale);
-  mesh->nondimensionalize(normalizer);
+  topology::MeshOps::nondimensionalize(mesh, normalizer);
 
   // Set up quadrature
   _quadrature->initialize(_data->basis, _data->numQuadPts, _data->numBasis,

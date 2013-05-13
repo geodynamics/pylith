@@ -67,8 +67,7 @@ pylith::faults::FaultCohesiveTract::initialize(const topology::Mesh& mesh,
   assert(_quadrature);
 
   delete _faultMesh; _faultMesh = new topology::SubMesh();
-  CohesiveTopology::createFaultParallel(_faultMesh, mesh, id(),
-    useLagrangeConstraints());
+  CohesiveTopology::createFaultParallel(_faultMesh, mesh, id(), label(), useLagrangeConstraints());
 
   // Reset fields.
   delete _fields; 

@@ -43,12 +43,20 @@ class pylith::topology::TestMeshOps : public CppUnit::TestFixture
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestMeshOps );
 
+  CPPUNIT_TEST( testCreateDMMesh );
+  CPPUNIT_TEST( testNondimensionalize );
   CPPUNIT_TEST( testCheckMaterialIds );
 
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
+
+  /// Test createDMMesh().
+  void testCreateDMMesh(void);
+
+  /// Test nondimensionalize().
+  void testNondimensionalize(void);
 
   /// Test checkMaterialIds().
   void testCheckMaterialIds(void);

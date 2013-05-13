@@ -32,11 +32,12 @@ pylith::topology::SubMesh::dmMesh(void) const {
 // Set DMComplex mesh.
 inline
 void
-pylith::topology::SubMesh::setDMMesh(PetscDM dm) {
+pylith::topology::SubMesh::dmMesh(PetscDM dm,
+				  const char* label) {
   PetscErrorCode err;
   err = DMDestroy(&_newMesh);PYLITH_CHECK_ERROR(err);
   _newMesh = dm;
-  err = PetscObjectSetName((PetscObject) _newMesh, "domain");PYLITH_CHECK_ERROR(err);
+  err = PetscObjectSetName((PetscObject) _newMesh, label);PYLITH_CHECK_ERROR(err);
 }
 
 // Get point type sizes.

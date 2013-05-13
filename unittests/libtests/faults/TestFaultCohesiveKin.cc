@@ -27,6 +27,7 @@
 #include "pylith/faults/EqKinSrc.hh" // USES EqKinSrc
 #include "pylith/faults/BruneSlipFn.hh" // USES BruneSlipFn
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
@@ -772,13 +773,11 @@ pylith::faults::TestFaultCohesiveKin::_initialize(topology::Mesh* const mesh,
   // Set scales
   // Most test data is insensitive to the scales because we set the fields directly.
   spatialdata::units::Nondimensional normalizer;
-#if 1 // :TODO: USE SCALES
   normalizer.lengthScale(_data->lengthScale);
   normalizer.pressureScale(_data->pressureScale);
   normalizer.densityScale(_data->densityScale);
   normalizer.timeScale(_data->timeScale);
-#endif
-  mesh->nondimensionalize(normalizer);
+  topology::MeshOps::nondimensionalize(mesh, normalizer);
   
   //mesh->debug(true); // DEBUGGING
   

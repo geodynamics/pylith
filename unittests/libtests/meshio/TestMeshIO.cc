@@ -21,6 +21,7 @@
 #include "TestMeshIO.hh" // Implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 #include "pylith/meshio/MeshIO.hh" // USES MeshIO
@@ -88,7 +89,7 @@ pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
   PetscErrorCode err;
 
   err = DMPlexCreateFromCellList(_mesh->comm(), data.cellDim, data.numCells, data.numVertices, data.numCorners, interpolateMesh, data.cells, data.spaceDim, data.vertices, &dmMesh);PYLITH_CHECK_ERROR(err);
-  _mesh->setDMMesh(dmMesh);
+  _mesh->dmMesh(dmMesh);
 
   // Material ids
   PetscInt cStart, cEnd;
@@ -125,7 +126,7 @@ pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
   cs.setSpaceDim(data.spaceDim);
   cs.initialize();
   _mesh->coordsys(&cs);
-  _mesh->nondimensionalize(normalizer);
+  topology::MeshOps::nondimensionalize(_mesh, normalizer);
 
   PYLITH_METHOD_END;
 } // _createMesh

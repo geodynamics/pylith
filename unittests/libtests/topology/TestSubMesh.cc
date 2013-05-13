@@ -23,6 +23,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::createDMMesh()
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
@@ -284,22 +285,6 @@ pylith::topology::TestSubMesh::testComm(void)
 } // testComm
 
 // ----------------------------------------------------------------------
-// Test initialize().
-void
-pylith::topology::TestSubMesh::testInitialize(void)
-{ // testInitialize
-  PYLITH_METHOD_BEGIN;
-
-  Mesh mesh2D;
-  _buildMesh(&mesh2D);
-  SubMesh mesh(mesh2D, _TestSubMesh::label);
-
-  mesh.initialize();
-
-  PYLITH_METHOD_END;
-} // testInitialize
-
-// ----------------------------------------------------------------------
 void
 pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
 { // _buildMesh
@@ -316,7 +301,7 @@ pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
   const PylithScalar* coordinates = _TestSubMesh::coordinates;
   const bool interpolate = false;
 
-  mesh->createDMMesh(_TestSubMesh::cellDim);
+  MeshOps::createDMMesh(mesh, _TestSubMesh::cellDim);
   PetscDM dmMesh = mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
   PetscErrorCode err;
   
