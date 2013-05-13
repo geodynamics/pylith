@@ -30,7 +30,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "pylith/faults/faultsfwd.hh" // forward declarations
-#include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh
+#include "pylith/topology/topologyfwd.hh" // USES Mesh
 #include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Quadrature
 #include "pylith/friction/frictionfwd.hh" // HOLDSA FrictionModel
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SpatialDB
@@ -70,7 +70,7 @@ class pylith::faults::TestFaultCohesiveDyn: public CppUnit::TestFixture
 protected:
 
   CohesiveDynData* _data; ///< Data for testing
-  feassemble::Quadrature<topology::SubMesh>* _quadrature; ///< Fault quad.
+  feassemble::Quadrature<topology::Mesh>* _quadrature; ///< Fault quad.
   TractPerturbation* _tractPerturbation; ///< Initial tractions.
   spatialdata::spatialdb::SpatialDB* _dbInitialTract; ///< Initial tractions.
   friction::FrictionModel* _friction; ///< Friction model

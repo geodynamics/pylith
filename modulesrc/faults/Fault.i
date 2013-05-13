@@ -128,7 +128,7 @@ namespace pylith {
        *
        * @returns PETSc mesh object
        */
-      const pylith::topology::SubMesh& faultMesh(void) const;
+      const pylith::topology::Mesh& faultMesh(void) const;
       
       /** Get vertex field associated with integrator.
        *
@@ -137,7 +137,7 @@ namespace pylith {
        * @returns Vertex field.
        */
       virtual
-      const pylith::topology::Field<pylith::topology::SubMesh>&
+      const pylith::topology::Field<pylith::topology::Mesh>&
       vertexField(const char* name,
 		  const pylith::topology::SolutionFields* fields =0) = 0;
       
@@ -148,7 +148,7 @@ namespace pylith {
        * @returns Cell field.
        */
       virtual
-      const pylith::topology::Field<pylith::topology::SubMesh>&
+      const pylith::topology::Field<pylith::topology::Mesh>&
       cellField(const char* name,
 		const pylith::topology::SolutionFields* fields =0) = 0;
       

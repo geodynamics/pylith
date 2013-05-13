@@ -26,7 +26,6 @@ subpkgpyexec_PYTHON = topology.py
 swig_sources = \
 	topology.i \
 	Mesh.i \
-	SubMesh.i \
 	MeshOps.i \
 	FieldBase.i \
 	Field.i \

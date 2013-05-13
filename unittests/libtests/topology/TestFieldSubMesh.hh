@@ -146,11 +146,9 @@ private :
   /** Build mesh.
    *
    * @param mesh Finite-element mesh.
-   * @param submesh Boundary mesh.
    */
   static
-  void _buildMesh(Mesh* mesh,
-		  SubMesh* submesh);
+  void _buildMesh(Mesh* mesh);
 
 }; // class TestFieldSubMesh
 

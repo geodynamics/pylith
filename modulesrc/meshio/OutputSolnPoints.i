@@ -25,7 +25,7 @@
 namespace pylith {
   namespace meshio {
 
-%template(_MeshOutputManager) pylith::meshio::OutputManager<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;
+%template(_PointsOutputManager) pylith::meshio::OutputManager<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;
 
 
     class pylith::meshio::OutputSolnPoints : public OutputManager<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >

@@ -24,7 +24,7 @@
 
 // ----------------------------------------------------------------------
 void
-pylith::faults::TopologyOps::classifyCellsDM(DM dmMesh,
+pylith::faults::TopologyOps::classifyCellsDM(PetscDM dmMesh,
                                              PetscInt vertex,
                                              const int depth,
                                              const int faceSize,

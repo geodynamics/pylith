@@ -28,7 +28,6 @@
 #include "pylith/faults/BruneSlipFn.hh" // USES BruneSlipFn
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/VisitorSubMesh.hh" // USES SubMeshIS
@@ -54,7 +53,7 @@ pylith::faults::TestFaultCohesiveKin::setUp(void)
   PYLITH_METHOD_BEGIN;
 
   _data = 0;
-  _quadrature = new feassemble::Quadrature<topology::SubMesh>();
+  _quadrature = new feassemble::Quadrature<topology::Mesh>();
   CPPUNIT_ASSERT(_quadrature);
   const int nsrcs = 1;
   _eqsrcs.resize(nsrcs);
@@ -603,7 +602,7 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
   } // setup disp
 
   CPPUNIT_ASSERT(fault._faultMesh);
-  topology::Field<topology::SubMesh> tractions(*fault._faultMesh);
+  topology::Field<topology::Mesh> tractions(*fault._faultMesh);
   tractions.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   tractions.allocate();
   tractions.zero();

@@ -26,7 +26,6 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
@@ -50,7 +49,7 @@ pylith::faults::TestFaultCohesiveImpulses::setUp(void)
   PYLITH_METHOD_BEGIN;
 
   _data = 0;
-  _quadrature = new feassemble::Quadrature<topology::SubMesh>();
+  _quadrature = new feassemble::Quadrature<topology::Mesh>();
   CPPUNIT_ASSERT(_quadrature);
   _dbImpulseAmp = 0;
   _flipFault = false;

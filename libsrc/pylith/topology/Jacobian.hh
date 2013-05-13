@@ -55,17 +55,6 @@ public :
            const char* matrixType ="aij",
            const bool blockOkay =false);
 
-  /** Constructor with field for submesh.
-   *
-   * @param field Fields associated with submesh and solution of the problem.
-   * @param matrixType Type of PETSc sparse matrix.
-   * @param blockOkay True if okay to use block size equal to fiberDim
-   * (all or none of the DOF at each point are constrained).
-   */
-  Jacobian(const Field<SubMesh>& field,
-           const char* matrixType ="aij",
-           const bool blockOkay =true);
-
   /// Destructor.
   ~Jacobian(void);
 

@@ -172,32 +172,6 @@ pylith::topology::Mesh::numCells(void) const {
 }
 
 // ----------------------------------------------------------------------
-// Set MPI communicator associated with mesh.
-inline
-void
-pylith::topology::Mesh::comm(const MPI_Comm value) {
-  _comm = value;
-}
-    
-// ----------------------------------------------------------------------
-// Get MPI communicator associated with mesh.
-inline
-const MPI_Comm
-pylith::topology::Mesh::comm(void) const {
-  return _comm;
-}
-    
-// ----------------------------------------------------------------------
-// Get MPI rank.
-inline
-int
-pylith::topology::Mesh::commRank(void) const {
-  int rank = 0;
-  MPI_Comm_rank(_comm, &rank);
-  return rank;
-}
-    
-// ----------------------------------------------------------------------
 // Print mesh to stdout.
 inline
 void

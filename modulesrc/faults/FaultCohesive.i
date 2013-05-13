@@ -25,7 +25,7 @@ namespace pylith {
   namespace faults {
 
     class FaultCohesive : public Fault,
-			  public pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::SubMesh> >
+			  public pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::Mesh> >
     { // class FaultCohesive
 
       // PUBLIC METHODS /////////////////////////////////////////////////
@@ -85,8 +85,7 @@ namespace pylith {
        *
        * @returns Fields associated with fault.
        */
-      const pylith::topology::Fields<topology::Field<pylith::topology::SubMesh> >*
-      fields(void) const;
+      const pylith::topology::Fields<topology::Field<pylith::topology::Mesh> >* fields(void) const;
 
     }; // class FaultCohesive
 

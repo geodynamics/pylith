@@ -63,7 +63,7 @@ namespace pylith {
        * @param faultMesh Finite-element mesh of fault.
        * @param normalizer Nondimensionalization of scales.
        */
-      void initialize(const pylith::topology::SubMesh& faultMesh,
+      void initialize(const pylith::topology::Mesh& faultMesh,
 		      const spatialdata::units::Nondimensional& normalizer);
 
       /** Get slip on fault surface at time t.
@@ -71,20 +71,20 @@ namespace pylith {
        * @param slipField Slip field over fault mesh.
        * @param t Time t.
        */
-      void slip(pylith::topology::Field<pylith::topology::SubMesh>* const slipField,
+      void slip(pylith::topology::Field<pylith::topology::Mesh>* const slipField,
 		const PylithScalar t);
 
       /** Get final slip.
        *
        * @returns Final slip.
        */
-      const pylith::topology::Field<pylith::topology::SubMesh>& finalSlip(void) const;
+      const pylith::topology::Field<pylith::topology::Mesh>& finalSlip(void) const;
       
       /** Get time when slip begins at each point.
        *
        * @returns Time when slip begins.
        */
-      const pylith::topology::Field<pylith::topology::SubMesh>& slipTime(void) const;
+      const pylith::topology::Field<pylith::topology::Mesh>& slipTime(void) const;
 
     }; // class EqKinSrc
 

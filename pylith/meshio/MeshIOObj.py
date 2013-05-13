@@ -64,8 +64,7 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
 
     from pylith.mpi.Communicator import petsc_comm_world
     from pylith.topology.Mesh import Mesh    
-    mesh = Mesh()
-    mesh.setComm(petsc_comm_world())
+    mesh = Mesh(dim=self.coordsys.spaceDim(), comm=petsc_comm_world())
     mesh.coordsys(self.coordsys)
 
     # Read mesh

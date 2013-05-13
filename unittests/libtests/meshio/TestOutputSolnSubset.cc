@@ -23,7 +23,6 @@
 #include "pylith/meshio/OutputSolnSubset.hh"
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii

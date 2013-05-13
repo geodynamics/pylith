@@ -33,7 +33,6 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestCellFilterAvg );
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::Field<pylith::topology::Mesh> MeshField;
-typedef pylith::topology::Field<pylith::topology::SubMesh> SubMeshField;
 
 // ----------------------------------------------------------------------
 // Test constructor
@@ -198,10 +197,10 @@ pylith::meshio::TestCellFilterAvg::testFilterSubMesh(void)
   iohandler.filename(filename);
   iohandler.read(&mesh);
 
-  topology::SubMesh submesh(mesh, group);
+  topology::Mesh submesh(mesh, group);
 
   // Set cell field
-  SubMeshField field(submesh);
+  MeshField field(submesh);
   field.newSection(topology::FieldBase::FACES_FIELD, fiberDim);
   field.allocate();
   field.vectorFieldType(fieldType);
@@ -223,17 +222,17 @@ pylith::meshio::TestCellFilterAvg::testFilterSubMesh(void)
     } // for
   } // for
 
-  feassemble::Quadrature<topology::SubMesh> quadrature;
+  feassemble::Quadrature<topology::Mesh> quadrature;
   quadrature.initialize(basis, numQuadPts, numBasis,
 			basisDerivRef, numQuadPts, numBasis, cellDim,
 			quadPtsRef, numQuadPts, cellDim,
 			quadWts, numQuadPts,
 			spaceDim);
 
-  CellFilterAvg<topology::SubMesh, SubMeshField> filter;
+  CellFilterAvg<topology::Mesh, MeshField> filter;
   filter.quadrature(&quadrature);
 
-  const SubMeshField& fieldF = filter.filter(field);
+  const MeshField& fieldF = filter.filter(field);
 
   CPPUNIT_ASSERT_EQUAL(fieldTypeE, fieldF.vectorFieldType());
   CPPUNIT_ASSERT_EQUAL(label, std::string(fieldF.label()));

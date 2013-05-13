@@ -193,8 +193,8 @@ class TestAbsorbingDampers(unittest.TestCase):
     cell.inventory.degree = 1
     cell.inventory.order = 1
     cell._configure()
-    from pylith.feassemble.Quadrature import SubMeshQuadrature
-    quadrature = SubMeshQuadrature()
+    from pylith.feassemble.Quadrature import MeshQuadrature
+    quadrature = MeshQuadrature()
     quadrature.inventory.cell = cell
     quadrature._configure()
 

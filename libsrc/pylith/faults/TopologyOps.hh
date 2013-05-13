@@ -36,20 +36,23 @@ class pylith::faults::TopologyOps
 
   // PUBLIC TYPEDEFS ////////////////////////////////////////////////////
 public :
-  typedef std::set<PetscInt>    PointSet;
+
+  typedef std::set<PetscInt> PointSet;
   typedef std::vector<PetscInt> PointArray;
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
+
   static
-  void classifyCellsDM(DM dmMesh,
-		     PetscInt vertex,
-		     const int depth,
-		     const int faceSize,
-		     PetscInt firstCohesiveCell,
-		     PointSet& replaceCells,
-		     PointSet& noReplaceCells,
-		     const int debug);
+  void classifyCellsDM(PetscDM dmMesh,
+		       PetscInt vertex,
+		       const int depth,
+		       const int faceSize,
+		       PetscInt firstCohesiveCell,
+		       PointSet& replaceCells,
+		       PointSet& noReplaceCells,
+		       const int debug);
+
 }; // class CohesiveTopology
 
 #endif // pylith_faults_cohesivetopology_hh

@@ -22,12 +22,9 @@
 
 __all__ = ['CellFilter',
            'CellFilterAvgMesh',
-           'CellFilterAvgSubMesh',
            'DataWriter',
            'DataWriterVTK',
            'DataWriterVTKMesh',
-           'DataWriterVTKSubMesh',
-           'DataWriterVTKSubSubMesh',
            'DataWriterVTKPoints',
            'MeshIOObj',
            'MeshIOAscii',
@@ -37,7 +34,6 @@ __all__ = ['CellFilter',
            'OutputFaultKin',
            'OutputManager',
            'OutputManagerMesh',
-           'OutputManagerSubMesh',
            'OutputMatElastic',
            'OutputNeumann'
            'OutputSoln',
@@ -47,7 +43,6 @@ __all__ = ['CellFilter',
            'SingleOutput',
            'VertexFilter',
            'VertexFilterVecNormMesh',
-           'VertexFilterVecNormSubMesh',
            ]
 
 

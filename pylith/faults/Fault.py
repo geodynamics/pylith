@@ -97,8 +97,8 @@ class Fault(PetscComponent, ModuleFault):
       "with fault normal; applies to fault surfaces " \
       "in 2-D and 3-D)."
   
-  from pylith.feassemble.Quadrature import SubMeshQuadrature
-  faultQuadrature = pyre.inventory.facility("quadrature", factory=SubMeshQuadrature)
+  from pylith.feassemble.Quadrature import MeshQuadrature
+  faultQuadrature = pyre.inventory.facility("quadrature", factory=MeshQuadrature)
   faultQuadrature.meta['tip'] = "Quadrature object for numerical integration."
   
   from pylith.perf.MemoryLogger import MemoryLogger

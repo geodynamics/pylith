@@ -92,7 +92,7 @@ public :
    * @param fields Solution fields.
    * @returns Vertex field.
    */
-  const topology::Field<topology::SubMesh>&
+  const topology::Field<topology::Mesh>&
   vertexField(const char* name,
 	      const topology::SolutionFields* fields =0);
 

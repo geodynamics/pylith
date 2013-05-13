@@ -109,7 +109,7 @@ namespace pylith {
        * @param fields Solution fields.
        * @returns Vertex field.
        */
-      const pylith::topology::Field<pylith::topology::SubMesh>&
+      const pylith::topology::Field<pylith::topology::Mesh>&
 	vertexField(const char* name,
 		    const pylith::topology::SolutionFields* fields =0);
       
@@ -119,7 +119,7 @@ namespace pylith {
        * @param fields Solution fields.
        * @returns Cell field.
        */
-      const pylith::topology::Field<pylith::topology::SubMesh>&
+      const pylith::topology::Field<pylith::topology::Mesh>&
       cellField(const char* name,
 		const pylith::topology::SolutionFields* fields =0);
 

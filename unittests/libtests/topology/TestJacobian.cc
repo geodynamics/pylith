@@ -23,7 +23,6 @@
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 
@@ -65,8 +64,8 @@ pylith::topology::TestJacobian::testConstructorSubDomain(void)
   Field<Mesh> field(mesh);
   _initializeField(&mesh, &field);
 
-  SubMesh submesh(mesh, "bc");
-  Field<SubMesh> subfield(submesh);
+  Mesh submesh(mesh, "bc");
+  Field<Mesh> subfield(submesh);
   subfield.newSection(FieldBase::VERTICES_FIELD, submesh.dimension());
   subfield.allocate();
   subfield.zero();

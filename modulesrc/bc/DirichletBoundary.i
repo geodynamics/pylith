@@ -52,7 +52,7 @@ namespace pylith {
        *
        * @return Boundary mesh.
        */
-      const pylith::topology::SubMesh& boundaryMesh(void) const;
+      const pylith::topology::Mesh& boundaryMesh(void) const;
       
       /** Get vertex field with BC information.
        *
@@ -61,7 +61,7 @@ namespace pylith {
        *
        * @returns Field over vertices.
        */
-      const pylith::topology::Field<pylith::topology::SubMesh>&
+      const pylith::topology::Field<pylith::topology::Mesh>&
       vertexField(const char* name,
 		  const pylith::topology::SolutionFields& fields);
       

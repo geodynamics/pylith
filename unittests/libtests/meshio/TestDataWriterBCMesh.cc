@@ -36,7 +36,7 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Field<pylith::topology::SubMesh> SubMeshField;
+typedef pylith::topology::Field<pylith::topology::Mesh> MeshField;
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -100,7 +100,7 @@ pylith::meshio::TestDataWriterBCMesh::_initialize(void)
     fault.adjustTopology(_mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell, _flipFault);
   } // if
 
-  delete _submesh; _submesh = new topology::SubMesh(*_mesh, _data->bcLabel);CPPUNIT_ASSERT(_submesh);
+  delete _submesh; _submesh = new topology::Mesh(*_mesh, _data->bcLabel);CPPUNIT_ASSERT(_submesh);
 
   PYLITH_METHOD_END;
 } // _initialize
@@ -108,7 +108,7 @@ pylith::meshio::TestDataWriterBCMesh::_initialize(void)
 // ----------------------------------------------------------------------
 // Create vertex fields.
 void
-pylith::meshio::TestDataWriterBCMesh::_createVertexFields(topology::Fields<SubMeshField>* fields) const
+pylith::meshio::TestDataWriterBCMesh::_createVertexFields(topology::Fields<MeshField>* fields) const
 { // _createVertexFields
   PYLITH_METHOD_BEGIN;
 
@@ -128,7 +128,7 @@ pylith::meshio::TestDataWriterBCMesh::_createVertexFields(topology::Fields<SubMe
     const char* name = _data->vertexFieldsInfo[i].name;
     const int fiberDim = _data->vertexFieldsInfo[i].fiber_dim;
     fields->add(name, name);
-    SubMeshField& field = fields->get(name);
+    MeshField& field = fields->get(name);
     field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
     field.allocate();
     field.vectorFieldType(_data->vertexFieldsInfo[i].field_type);
@@ -152,7 +152,7 @@ pylith::meshio::TestDataWriterBCMesh::_createVertexFields(topology::Fields<SubMe
 // ----------------------------------------------------------------------
 // Create cell fields.
 void
-pylith::meshio::TestDataWriterBCMesh::_createCellFields(topology::Fields<SubMeshField>* fields) const
+pylith::meshio::TestDataWriterBCMesh::_createCellFields(topology::Fields<MeshField>* fields) const
 { // _createCellFields
   PYLITH_METHOD_BEGIN;
 
@@ -174,7 +174,7 @@ pylith::meshio::TestDataWriterBCMesh::_createCellFields(topology::Fields<SubMesh
     const char* name = _data->cellFieldsInfo[i].name;
     const int fiberDim = _data->cellFieldsInfo[i].fiber_dim;
     fields->add(name, name);
-    SubMeshField& field = fields->get(name);
+    MeshField& field = fields->get(name);
     field.newSection(topology::FieldBase::CELLS_FIELD, fiberDim, height);
     field.allocate();
     field.vectorFieldType(_data->cellFieldsInfo[i].field_type);

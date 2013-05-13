@@ -61,7 +61,6 @@ import_array();
 
 // template instantiation
 %template(MeshIntegrator) pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::Mesh> >;
-%template(SubMeshIntegrator) pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::SubMesh> >;
 
 %include "BoundaryCondition.i"
 %include "BoundaryConditionPoints.i"

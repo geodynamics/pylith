@@ -20,7 +20,7 @@
 
 #include "SlipTimeFn.hh" // implementation of object methods
 
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/Field.hh" // USES Field
 
@@ -52,7 +52,7 @@ pylith::faults::SlipTimeFn::deallocate(void)
   
 // ----------------------------------------------------------------------
 // Get parameter fields.
-const pylith::topology::Fields<pylith::topology::Field<pylith::topology::SubMesh> >*
+const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >*
 pylith::faults::SlipTimeFn::parameterFields(void) const
 { // parameterFields
   return _parameters;

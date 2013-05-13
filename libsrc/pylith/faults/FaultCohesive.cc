@@ -51,7 +51,7 @@ pylith::faults::FaultCohesive::deallocate(void)
   PYLITH_METHOD_BEGIN;
 
   Fault::deallocate();
-  feassemble::Integrator<feassemble::Quadrature<topology::SubMesh> >::deallocate();
+  feassemble::Integrator<feassemble::Quadrature<topology::Mesh> >::deallocate();
 
   delete _fields; _fields = 0;
 
@@ -115,8 +115,8 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
   assert(std::string("") != label());
   
   try {
-    topology::SubMesh faultMesh;
-    DM faultBoundary = NULL;
+    topology::Mesh faultMesh;
+    PetscDM faultBoundary = NULL;
   
     // Get group of vertices associated with fault
     PetscDM dmMesh = mesh->dmMesh();assert(dmMesh);
@@ -135,11 +135,9 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
         throw std::runtime_error(msg.str());
       } // if
       err = DMPlexGetLabel(dmMesh, charlabel, &groupField);PYLITH_CHECK_ERROR(err);
-      CohesiveTopology::createFault(&faultMesh, faultBoundary, *mesh, groupField, 
-                                    flipFault);
+      CohesiveTopology::createFault(&faultMesh, faultBoundary, *mesh, groupField, flipFault);
       
-      CohesiveTopology::create(mesh, faultMesh, faultBoundary, groupField, id(), 
-                               *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
+      CohesiveTopology::create(mesh, faultMesh, faultBoundary, groupField, id(), *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
       err = DMDestroy(&faultBoundary);PYLITH_CHECK_ERROR(err);
     } else {
       const int faultDim = 2;

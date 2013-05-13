@@ -20,7 +20,7 @@
 
 #include "StepSlipFn.hh" // implementation of object methods
 
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
@@ -69,7 +69,7 @@ pylith::faults::StepSlipFn::deallocate(void)
 // ----------------------------------------------------------------------
 // Initialize slip time function.
 void
-pylith::faults::StepSlipFn::initialize(const topology::SubMesh& faultMesh,
+pylith::faults::StepSlipFn::initialize(const topology::Mesh& faultMesh,
 				       const spatialdata::units::Nondimensional& normalizer,
 				       const PylithScalar originTime)
 { // initialize
@@ -90,11 +90,11 @@ pylith::faults::StepSlipFn::initialize(const topology::SubMesh& faultMesh,
   const PetscInt vStart = verticesStratum.begin();
   const PetscInt vEnd = verticesStratum.end();
 
-  delete _parameters; _parameters = new topology::Fields<topology::Field<topology::SubMesh> >(faultMesh);
+  delete _parameters; _parameters = new topology::Fields<topology::Field<topology::Mesh> >(faultMesh);
   assert(_parameters);
 
   _parameters->add("final slip", "final_slip");
-  topology::Field<topology::SubMesh>& finalSlip = _parameters->get("final slip");
+  topology::Field<topology::Mesh>& finalSlip = _parameters->get("final slip");
   finalSlip.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   finalSlip.allocate();
   finalSlip.scale(lengthScale);
@@ -103,7 +103,7 @@ pylith::faults::StepSlipFn::initialize(const topology::SubMesh& faultMesh,
   PetscScalar* finalSlipArray = finalSlipVisitor.localArray();
 
   _parameters->add("slip time", "slip_time");
-  topology::Field<topology::SubMesh>& slipTime = _parameters->get("slip time");
+  topology::Field<topology::Mesh>& slipTime = _parameters->get("slip time");
   slipTime.newSection(finalSlip, 1);
   slipTime.allocate();
   slipTime.scale(timeScale);
@@ -202,7 +202,7 @@ pylith::faults::StepSlipFn::initialize(const topology::SubMesh& faultMesh,
 // ----------------------------------------------------------------------
 // Get slip on fault surface at time t.
 void
-pylith::faults::StepSlipFn::slip(topology::Field<topology::SubMesh>* slip,
+pylith::faults::StepSlipFn::slip(topology::Field<topology::Mesh>* slip,
 				 const PylithScalar t)
 { // slip
   PYLITH_METHOD_BEGIN;
@@ -217,11 +217,11 @@ pylith::faults::StepSlipFn::slip(topology::Field<topology::SubMesh>* slip,
   const PetscInt vEnd = verticesStratum.end();
 
   // Get sections
-  const topology::Field<topology::SubMesh>& finalSlip = _parameters->get("final slip");
+  const topology::Field<topology::Mesh>& finalSlip = _parameters->get("final slip");
   topology::VecVisitorMesh finalSlipVisitor(finalSlip);
   const PetscScalar* finalSlipArray = finalSlipVisitor.localArray();
 
-  const topology::Field<topology::SubMesh>& slipTime = _parameters->get("slip time");
+  const topology::Field<topology::Mesh>& slipTime = _parameters->get("slip time");
   topology::VecVisitorMesh slipTimeVisitor(slipTime);
   const PetscScalar* slipTimeArray = slipTimeVisitor.localArray();
 
@@ -253,7 +253,7 @@ pylith::faults::StepSlipFn::slip(topology::Field<topology::SubMesh>* slip,
 
 // ----------------------------------------------------------------------
 // Get final slip.
-const pylith::topology::Field<pylith::topology::SubMesh>&
+const pylith::topology::Field<pylith::topology::Mesh>&
 pylith::faults::StepSlipFn::finalSlip(void)
 { // finalSlip
   PYLITH_METHOD_BEGIN;
@@ -263,7 +263,7 @@ pylith::faults::StepSlipFn::finalSlip(void)
 
 // ----------------------------------------------------------------------
 // Get time when slip begins at each point.
-const pylith::topology::Field<pylith::topology::SubMesh>&
+const pylith::topology::Field<pylith::topology::Mesh>&
 pylith::faults::StepSlipFn::slipTime(void)
 { // slipTime
   PYLITH_METHOD_BEGIN;

@@ -40,7 +40,7 @@ swig_sources = \
 	FaultCohesiveDyn.i \
 	FaultCohesiveImpulses.i \
 	FaultCohesiveTract.i \
-	../topology/SubMesh.i \
+	../topology/Mesh.i \
 	../feassemble/Quadrature.i \
 	../feassemble/Integrator.i
 

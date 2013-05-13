@@ -105,7 +105,7 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   const int fiberDim = numQuadPts * spaceDim;
 
   delete _parameters;
-  _parameters = new topology::Fields<topology::Field<topology::SubMesh> >(*_boundaryMesh);
+  _parameters = new topology::Fields<topology::Field<topology::Mesh> >(*_boundaryMesh);
   assert(_parameters);
   _parameters->add("damping constants", "damping_constants", topology::FieldBase::FACES_FIELD, fiberDim);
   _parameters->get("damping constants").allocate();
@@ -136,7 +136,7 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
 
   // Container for damping constants for current cell
   scalar_array dampingConstsLocal(spaceDim);
-  topology::Field<topology::SubMesh>& dampingConsts = _parameters->get("damping constants");
+  topology::Field<topology::Mesh>& dampingConsts = _parameters->get("damping constants");
   topology::VecVisitorMesh dampingConstsVisitor(dampingConsts);
 
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
@@ -252,7 +252,7 @@ pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field<topology::
   _initCellVector();
 
   // Get sections
-  topology::Field<topology::SubMesh>& dampingConsts = _parameters->get("damping constants");
+  topology::Field<topology::Mesh>& dampingConsts = _parameters->get("damping constants");
   topology::VecVisitorMesh dampingConstsVisitor(dampingConsts);
   PetscScalar* dampingConstsArray = dampingConstsVisitor.localArray();
 
@@ -393,7 +393,7 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(const topology::Field<topo
   const PetscInt cEnd = cellsStratum.end();
 
   // Get sections
-  topology::Field<topology::SubMesh>& dampingConsts = _parameters->get("damping constants");
+  topology::Field<topology::Mesh>& dampingConsts = _parameters->get("damping constants");
   topology::VecVisitorMesh dampingConstsVisitor(dampingConsts);
   PetscScalar* dampingConstsArray = dampingConstsVisitor.localArray();
 
@@ -525,7 +525,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Jacobian* jacobian,
   const PetscInt cEnd = cellsStratum.end();
 
   // Get sections
-  topology::Field<topology::SubMesh>& dampingConsts = _parameters->get("damping constants");
+  topology::Field<topology::Mesh>& dampingConsts = _parameters->get("damping constants");
   topology::VecVisitorMesh dampingConstsVisitor(dampingConsts);
   PetscScalar* dampingConstsArray = dampingConstsVisitor.localArray();
 
@@ -667,7 +667,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Field<topology::Mesh>*
   _initCellVector();
 
   // Get sections
-  topology::Field<topology::SubMesh>& dampingConsts = _parameters->get("damping constants");
+  topology::Field<topology::Mesh>& dampingConsts = _parameters->get("damping constants");
   topology::VecVisitorMesh dampingConstsVisitor(dampingConsts);
   PetscScalar* dampingConstsArray = dampingConstsVisitor.localArray();
 

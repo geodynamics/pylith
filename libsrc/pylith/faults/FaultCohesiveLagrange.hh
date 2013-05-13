@@ -202,7 +202,7 @@ public :
    * @param fields Solution fields.
    * @returns Cell field.
    */
-  const topology::Field<topology::SubMesh>&
+  const topology::Field<topology::Mesh>&
   cellField(const char* name,
 	    const topology::SolutionFields* fields =0);
 
@@ -213,8 +213,8 @@ public :
    * @param faultOrientation Orientation of vertices on fault.
    */
   static
-  void faultToGlobal(topology::Field<topology::SubMesh>* field,
-		     const topology::Field<topology::SubMesh>& faultOrientation);
+  void faultToGlobal(topology::Field<topology::Mesh>* field,
+		     const topology::Field<topology::Mesh>& faultOrientation);
 
   /** Transform field from global coordinate system to local (fault)
    * coordinate system.
@@ -223,8 +223,8 @@ public :
    * @param faultOrientation Orientation of vertices on fault.
    */
   static
-  void globalToFault(topology::Field<topology::SubMesh>* field,
-		     const topology::Field<topology::SubMesh>& faultOrientation);
+  void globalToFault(topology::Field<topology::Mesh>* field,
+		     const topology::Field<topology::Mesh>& faultOrientation);
 
   // PROTECTED STRUCTS //////////////////////////////////////////////////
 protected :
@@ -253,7 +253,7 @@ protected :
    * @param tractions Field for tractions.
    * @param solution Solution over domain
    */
-  void _calcTractionsChange(topology::Field<topology::SubMesh>* tractions,
+  void _calcTractionsChange(topology::Field<topology::Mesh>* tractions,
           const topology::Field<topology::Mesh>& solution);
 
   /// Allocate buffer for vector field.

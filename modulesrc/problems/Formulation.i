@@ -103,7 +103,7 @@ namespace pylith {
        * @param integrators Integrators over lower-dimension meshes.
        * @param numIntegrators Number of integrators.
        */
-      void submeshIntegrators(pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::SubMesh> >** integrators,
+      void submeshIntegrators(pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::Mesh> >** integrators,
 			      const int numIntegrators);
       
       /** Update handles and parameters for reforming the Jacobian and

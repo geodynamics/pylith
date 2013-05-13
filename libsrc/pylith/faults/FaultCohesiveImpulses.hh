@@ -116,7 +116,7 @@ public :
    * @param fields Solution fields.
    * @returns Vertex field.
    */
-  const topology::Field<topology::SubMesh>&
+  const topology::Field<topology::Mesh>&
   vertexField(const char* name,
 	      const topology::SolutionFields* fields =0);
 
@@ -137,7 +137,7 @@ private :
    * @param dispRel Relative displacement field.
    * @parm impulse Index of impulse.
    */
-  void _setRelativeDisp(const topology::Field<topology::SubMesh>& dispRel,
+  void _setRelativeDisp(const topology::Field<topology::Mesh>& dispRel,
 			const int impulse);
 
   // PRIVATE TYPEDEFS ///////////////////////////////////////////////////

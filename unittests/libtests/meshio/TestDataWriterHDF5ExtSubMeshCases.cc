@@ -20,23 +20,12 @@
 
 #include "TestDataWriterHDF5ExtSubMeshCases.hh" // Implementation of class methods
 
-#include "data/DataWriterHDF5DataSubMeshLine2.hh"
-#include "data/DataWriterHDF5DataSubMeshTri3.hh"
-#include "data/DataWriterHDF5DataSubMeshQuad4.hh"
-#include "data/DataWriterHDF5DataSubMeshTet4.hh"
-#include "data/DataWriterHDF5DataSubMeshHex8.hh"
-
 #include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
 
 // ----------------------------------------------------------------------
+#include "data/DataWriterHDF5DataSubMeshLine2.hh"
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5ExtSubMeshLine2 );
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5ExtSubMeshTri3 );
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5ExtSubMeshQuad4 );
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5ExtSubMeshTet4 );
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5ExtSubMeshHex8 );
 
-
-// ----------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterHDF5ExtSubMeshLine2::setUp(void)
@@ -53,6 +42,9 @@ pylith::meshio::TestDataWriterHDF5ExtSubMeshLine2::setUp(void)
 
 
 // ----------------------------------------------------------------------
+#include "data/DataWriterHDF5DataSubMeshTri3.hh"
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5ExtSubMeshTri3 );
+
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterHDF5ExtSubMeshTri3::setUp(void)
@@ -69,6 +61,9 @@ pylith::meshio::TestDataWriterHDF5ExtSubMeshTri3::setUp(void)
 
 
 // ----------------------------------------------------------------------
+#include "data/DataWriterHDF5DataSubMeshQuad4.hh"
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5ExtSubMeshQuad4 );
+
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterHDF5ExtSubMeshQuad4::setUp(void)
@@ -85,6 +80,9 @@ pylith::meshio::TestDataWriterHDF5ExtSubMeshQuad4::setUp(void)
 
 
 // ----------------------------------------------------------------------
+#include "data/DataWriterHDF5DataSubMeshTet4.hh"
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5ExtSubMeshTet4 );
+
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterHDF5ExtSubMeshTet4::setUp(void)
@@ -101,6 +99,9 @@ pylith::meshio::TestDataWriterHDF5ExtSubMeshTet4::setUp(void)
 
 
 // ----------------------------------------------------------------------
+#include "data/DataWriterHDF5DataSubMeshHex8.hh"
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5ExtSubMeshHex8 );
+
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterHDF5ExtSubMeshHex8::setUp(void)

@@ -106,12 +106,6 @@ namespace pylith {
        */
       int numCells(void) const;
       
-      /** Set MPI communicator associated with mesh.
-       *
-       * @param value MPI communicator.
-       */
-      void comm(const MPI_Comm value);
-    
       /** Get MPI communicator associated with mesh.
        *
        * @returns MPI communicator.

@@ -25,7 +25,6 @@
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
@@ -166,14 +165,14 @@ pylith::faults::FaultCohesiveImpulses::integrateResidual(const topology::Field<t
   const int setupEvent = _logger->eventId("FaIR setup");
   _logger->eventBegin(setupEvent);
 
-  topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
+  topology::Field<topology::Mesh>& dispRel = _fields->get("relative disp");
   dispRel.zero();
   // Set impulse corresponding to current time.
   _setRelativeDisp(dispRel, int(t+0.1));
 
   // Transform slip from local (fault) coordinate system to relative
   // displacement field in global coordinate system
-  const topology::Field<topology::SubMesh>& orientation = _fields->get("orientation");
+  const topology::Field<topology::Mesh>& orientation = _fields->get("orientation");
   FaultCohesiveLagrange::faultToGlobal(&dispRel, orientation);
 
   _logger->eventEnd(setupEvent);
@@ -185,7 +184,7 @@ pylith::faults::FaultCohesiveImpulses::integrateResidual(const topology::Field<t
 
 // ----------------------------------------------------------------------
 // Get vertex field associated with integrator.
-const pylith::topology::Field<pylith::topology::SubMesh>&
+const pylith::topology::Field<pylith::topology::Mesh>&
 pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
 						   const topology::SolutionFields* fields)
 { // vertexField
@@ -199,14 +198,14 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
   const int cohesiveDim = _faultMesh->dimension();
   const int spaceDim = _quadrature->spaceDim();
 
-  const topology::Field<topology::SubMesh>& orientation = _fields->get("orientation");
+  const topology::Field<topology::Mesh>& orientation = _fields->get("orientation");
 
   PylithScalar scale = 0.0;
   int fiberDim = 0;
   if (0 == strcasecmp("slip", name)) {
-    const topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
+    const topology::Field<topology::Mesh>& dispRel = _fields->get("relative disp");
     _allocateBufferVectorField();
-    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
+    topology::Field<topology::Mesh>& buffer = _fields->get("buffer (vector)");
     buffer.copy(dispRel);
     buffer.label("slip");
     FaultCohesiveLagrange::globalToFault(&buffer, orientation);
@@ -216,7 +215,7 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
     PetscSection orientationSection = _fields->get("orientation").petscSection();assert(orientationSection);
     PetscVec orientationVec = _fields->get("orientation").localVector();assert(orientationVec);
     _allocateBufferVectorField();
-    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
+    topology::Field<topology::Mesh>& buffer = _fields->get("buffer (vector)");
     buffer.copy(orientationSection, 0, PETSC_DETERMINE, orientationVec);
     buffer.label("strike_dir");
     buffer.scale(1.0);
@@ -227,7 +226,7 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
     PetscVec orientationVec = _fields->get("orientation").localVector();assert(orientationVec);
     assert(orientationSection);assert(orientationVec);
     _allocateBufferVectorField();
-    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
+    topology::Field<topology::Mesh>& buffer = _fields->get("buffer (vector)");
     buffer.copy(orientationSection, 1, PETSC_DETERMINE, orientationVec);
     buffer.label("dip_dir");
     buffer.scale(1.0);
@@ -238,25 +237,25 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
     PetscVec orientationVec = _fields->get("orientation").localVector();assert(orientationVec);
     assert(orientationSection);assert(orientationVec);
     _allocateBufferVectorField();
-    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
+    topology::Field<topology::Mesh>& buffer = _fields->get("buffer (vector)");
     buffer.copy(orientationSection, cohesiveDim, PETSC_DETERMINE, orientationVec);
     buffer.label("normal_dir");
     buffer.scale(1.0);
     PYLITH_METHOD_RETURN(buffer);
 
   } else if (0 == strcasecmp("impulse_amplitude", name)) {
-    topology::Field<topology::SubMesh>& amplitude = _fields->get("impulse amplitude");
+    topology::Field<topology::Mesh>& amplitude = _fields->get("impulse amplitude");
     PYLITH_METHOD_RETURN(amplitude);
 
   } else if (0 == strcasecmp("area", name)) {
-    topology::Field<topology::SubMesh>& area = _fields->get("area");
+    topology::Field<topology::Mesh>& area = _fields->get("area");
     PYLITH_METHOD_RETURN(area);
 
   } else if (0 == strcasecmp("traction_change", name)) {
     assert(fields);
     const topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
     _allocateBufferVectorField();
-    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
+    topology::Field<topology::Mesh>& buffer = _fields->get("buffer (vector)");
     _calcTractionsChange(&buffer, dispT);
     PYLITH_METHOD_RETURN(buffer);
 
@@ -273,7 +272,7 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
 
   // Satisfy return values
   assert(_fields);
-  const topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
+  const topology::Field<topology::Mesh>& buffer = _fields->get("buffer (vector)");
   PYLITH_METHOD_RETURN(buffer);
 } // vertexField
 
@@ -297,8 +296,8 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
 
   // Create section to hold amplitudes of impulses.
   _fields->add("impulse amplitude", "impulse_amplitude");
-  topology::Field<topology::SubMesh>& amplitude = _fields->get("impulse amplitude");
-  topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
+  topology::Field<topology::Mesh>& amplitude = _fields->get("impulse amplitude");
+  topology::Field<topology::Mesh>& dispRel = _fields->get("relative disp");
   const int fiberDim = 1;
   amplitude.newSection(dispRel, fiberDim);
   amplitude.allocate();
@@ -431,7 +430,7 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulseOrder(const std::map<int,int
 // ----------------------------------------------------------------------
 // Set relative displacemet associated with impulse.
 void
-pylith::faults::FaultCohesiveImpulses::_setRelativeDisp(const topology::Field<topology::SubMesh>& dispRel,
+pylith::faults::FaultCohesiveImpulses::_setRelativeDisp(const topology::Field<topology::Mesh>& dispRel,
 							const int impulse)
 { // _setRelativeDisp
   PYLITH_METHOD_BEGIN;
@@ -445,7 +444,7 @@ pylith::faults::FaultCohesiveImpulses::_setRelativeDisp(const topology::Field<to
   const spatialdata::geocoords::CoordSys* cs = _faultMesh->coordsys();assert(cs);
   const int spaceDim = cs->spaceDim();
 
-  topology::Field<topology::SubMesh>& amplitude = _fields->get("impulse amplitude");
+  topology::Field<topology::Mesh>& amplitude = _fields->get("impulse amplitude");
   topology::VecVisitorMesh amplitudeVisitor(amplitude);
   const PetscScalar* amplitudeArray = amplitudeVisitor.localArray();
 

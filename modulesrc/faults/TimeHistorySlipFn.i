@@ -65,7 +65,7 @@ namespace pylith {
        * @param normalizer Nondimensionalization of scales.
        * @param originTime Origin time for earthquake source.
        */
-      void initialize(const pylith::topology::SubMesh& faultMesh,
+      void initialize(const pylith::topology::Mesh& faultMesh,
 		      const spatialdata::units::Nondimensional& normalizer,
 		      const PylithScalar originTime =0.0);
       
@@ -76,20 +76,20 @@ namespace pylith {
        *
        * @returns Slip vector as left-lateral/reverse/normal.
        */
-      void slip(pylith::topology::Field<pylith::topology::SubMesh>* const slipField,
+      void slip(pylith::topology::Field<pylith::topology::Mesh>* const slipField,
 		const PylithScalar t);
   
       /** Get final slip.
        *
        * @returns Final slip.
        */
-      const pylith::topology::Field<pylith::topology::SubMesh>& finalSlip(void);
+      const pylith::topology::Field<pylith::topology::Mesh>& finalSlip(void);
       
       /** Get time when slip begins at each point.
        *
        * @returns Time when slip begins.
        */
-      const pylith::topology::Field<pylith::topology::SubMesh>& slipTime(void);
+      const pylith::topology::Field<pylith::topology::Mesh>& slipTime(void);
 
     }; // class TimeHistorySlipFn
 

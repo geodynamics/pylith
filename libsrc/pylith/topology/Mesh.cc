@@ -32,7 +32,7 @@
 
 // ----------------------------------------------------------------------
 // Default constructor
-pylith::topology::Mesh::Mesh(void) :
+pylith::topology::Mesh::Mesh(const bool isSubMesh) :
   _dmMesh(NULL),
   _numNormalCells(0),
   _numCohesiveCells(0),
@@ -40,9 +40,8 @@ pylith::topology::Mesh::Mesh(void) :
   _numShadowVertices(0),
   _numLagrangeVertices(0),
   _coordsys(0),
-  _comm(PETSC_COMM_WORLD),
   _debug(false),
-  _isSubMesh(false)
+  _isSubMesh(isSubMesh)
 { // constructor
 } // constructor
 
@@ -57,14 +56,13 @@ pylith::topology::Mesh::Mesh(const int dim,
   _numShadowVertices(0),
   _numLagrangeVertices(0),
   _coordsys(0),
-  _comm(comm),
   _debug(false),
   _isSubMesh(false)
 { // constructor
   PYLITH_METHOD_BEGIN;
 
   PetscErrorCode err;
-  err = DMCreate(_comm, &_dmMesh);PYLITH_CHECK_ERROR(err);
+  err = DMCreate(comm, &_dmMesh);PYLITH_CHECK_ERROR(err);
   err = DMSetType(_dmMesh, DMPLEX);PYLITH_CHECK_ERROR(err);
   err = DMPlexSetDimension(_dmMesh, dim);PYLITH_CHECK_ERROR(err);
   err = PetscObjectSetName((PetscObject) _dmMesh, "domain");PYLITH_CHECK_ERROR(err);
@@ -83,8 +81,7 @@ pylith::topology::Mesh::Mesh(const Mesh& mesh,
   _numShadowVertices(0),
   _numLagrangeVertices(0),
   _coordsys(0),
-  _comm(mesh.comm()),
-  _debug(mesh.debug()),
+  _debug(mesh._debug),
   _isSubMesh(true)
 { // Submesh constructor
   PYLITH_METHOD_BEGIN;
@@ -159,12 +156,48 @@ pylith::topology::Mesh::coordsys(const spatialdata::geocoords::CoordSys* cs)
 { // coordsys
   PYLITH_METHOD_BEGIN;
 
-  delete _coordsys; _coordsys = (0 != cs) ? cs->clone() : 0;
-  if (0 != _coordsys)
+  delete _coordsys; _coordsys = (cs) ? cs->clone() : 0;
+  if (_coordsys)
     _coordsys->initialize();
 
   PYLITH_METHOD_END;
 } // coordsys
+
+// ----------------------------------------------------------------------
+// Get MPI communicator associated with mesh.
+MPI_Comm
+pylith::topology::Mesh::comm(void) const
+{ // comm
+  PYLITH_METHOD_BEGIN;
+  
+  MPI_Comm comm;
+  if (_dmMesh) {
+    PetscObjectGetComm((PetscObject) _dmMesh, &comm);
+  } else {
+    comm = PETSC_COMM_WORLD;
+  } // if/else
+  
+  PYLITH_METHOD_RETURN(comm);
+} // comm
+    
+// ----------------------------------------------------------------------
+// Get MPI rank.
+int
+pylith::topology::Mesh::commRank(void) const
+{ // commRank
+  PYLITH_METHOD_BEGIN;
+
+  int rank = 0;
+  MPI_Comm comm;
+  if (_dmMesh) {
+    PetscObjectGetComm((PetscObject) _dmMesh, &comm);
+  } else {
+    comm = PETSC_COMM_WORLD;
+  } // if/else
+  MPI_Comm_rank(comm, &rank);
+
+  PYLITH_METHOD_RETURN(rank);
+} // commRank
 
 // ----------------------------------------------------------------------
 // Return the names of all vertex groups.

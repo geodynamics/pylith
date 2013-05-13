@@ -22,11 +22,10 @@
 
 #include "pylith/faults/CohesiveTopology.hh" // USES CohesiveTopology
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
 
 // ----------------------------------------------------------------------
 void
-pylith::faults::TestFaultMesh::createFaultMesh(topology::SubMesh* faultMesh,
+pylith::faults::TestFaultMesh::createFaultMesh(topology::Mesh* faultMesh,
 					       topology::Mesh* mesh,
 					       const char* faultLabel,
 					       const int faultId)

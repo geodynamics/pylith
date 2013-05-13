@@ -28,7 +28,7 @@
 // Include directives ---------------------------------------------------
 #include "faultsfwd.hh" // forward declarations
 
-#include "pylith/topology/topologyfwd.hh" // USES Field<SubMesh>
+#include "pylith/topology/topologyfwd.hh" // USES Field<Mesh>
 
 #include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
 
@@ -78,7 +78,7 @@ public :
    * @param faultMesh Finite-element mesh of fault.
    * @param normalizer Nondimensionalization of scales.
    */
-  void initialize(const topology::SubMesh& faultMesh,
+  void initialize(const topology::Mesh& faultMesh,
 		  const spatialdata::units::Nondimensional& normalizer);
 
   /** Get slip on fault surface at time t.
@@ -86,20 +86,20 @@ public :
    * @param slipField Slip field over fault mesh.
    * @param t Time t.
    */
-  void slip(topology::Field<topology::SubMesh>* const slipField,
+  void slip(topology::Field<topology::Mesh>* const slipField,
 	    const PylithScalar t);
 
   /** Get final slip.
    *
    * @returns Final slip.
    */
-  const topology::Field<topology::SubMesh>& finalSlip(void) const;
+  const topology::Field<topology::Mesh>& finalSlip(void) const;
 
   /** Get time when slip begins at each point.
    *
    * @returns Time when slip begins.
    */
-  const topology::Field<topology::SubMesh>& slipTime(void) const;
+  const topology::Field<topology::Mesh>& slipTime(void) const;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

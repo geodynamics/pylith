@@ -29,8 +29,7 @@
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
-#include "pylith/topology/SubMesh.hh" // ISA OutputManager<SubMesh>
-#include "pylith/topology/Mesh.hh" // ISA OutputManager<Field<Mesh>>
+#include "pylith/topology/Mesh.hh" // ISA OutputManager<Mesh>
 #include "pylith/topology/Field.hh" // ISA OutputManager<Field<Mesh>>
 #include "OutputManager.hh" // ISA OutputManager
 
@@ -41,7 +40,7 @@
  * a subdomain.
  */
 class pylith::meshio::OutputSolnSubset : 
-  public OutputManager<topology::SubMesh, topology::Field<topology::Mesh> >
+  public OutputManager<topology::Mesh, topology::Field<topology::Mesh> >
 { // OutputSolnSubset
   friend class TestOutputSolnSubset; // unit testing
 
@@ -73,7 +72,7 @@ public :
    *
    * @returns Mesh associated with subdomain.
    */
-  const topology::SubMesh& subdomainMesh(const topology::Mesh& mesh);
+  const topology::Mesh& subdomainMesh(const topology::Mesh& mesh);
   
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
@@ -85,7 +84,7 @@ private :
 private :
 
   std::string _label; ///< Label of subdomain.
-  topology::SubMesh* _submesh; ///< Mesh of subdomain.
+  topology::Mesh* _submesh; ///< Mesh of subdomain.
 
 }; // OutputSolnSubset
 

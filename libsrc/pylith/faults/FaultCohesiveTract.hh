@@ -96,7 +96,7 @@ public :
    *
    * @returns Vertex field.
    */
-  const topology::Field<topology::SubMesh>&
+  const topology::Field<topology::Mesh>&
   vertexField(const char* name,
 	      const topology::SolutionFields* fields =0);
   
@@ -107,7 +107,7 @@ public :
    *
    * @returns Cell field.
    */
-  const topology::Field<topology::SubMesh>&
+  const topology::Field<topology::Mesh>&
   cellField(const char* name,
 	    const topology::SolutionFields* fields =0);
 

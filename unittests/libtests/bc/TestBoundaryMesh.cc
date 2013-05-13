@@ -25,7 +25,6 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorSubMesh.hh" // USES SubMeshIS
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
@@ -80,7 +79,7 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void)
   topology::MeshOps::nondimensionalize(&mesh, normalizer);
 
   // Create submesh
-  topology::SubMesh submesh(mesh, _data->bcLabel);
+  topology::Mesh submesh(mesh, _data->bcLabel);
   PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
 
   // Check vertices
@@ -152,7 +151,7 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
   fault.adjustTopology(&mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell, _flipFault);
 
   // Create submesh
-  topology::SubMesh submesh(mesh, _data->bcLabel);
+  topology::Mesh submesh(mesh, _data->bcLabel);
   PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
 
   // Check vertices

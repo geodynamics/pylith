@@ -36,7 +36,7 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5ExtFaultMesh );
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Field<pylith::topology::SubMesh> MeshField;
+typedef pylith::topology::Field<pylith::topology::Mesh> MeshField;
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -69,7 +69,7 @@ pylith::meshio::TestDataWriterHDF5ExtFaultMesh::testConstructor(void)
 { // testConstructor
   PYLITH_METHOD_BEGIN;
 
-  DataWriterHDF5Ext<topology::SubMesh, MeshField> writer;
+  DataWriterHDF5Ext<topology::Mesh, MeshField> writer;
 
   PYLITH_METHOD_END;
 } // testConstructor
@@ -84,7 +84,7 @@ pylith::meshio::TestDataWriterHDF5ExtFaultMesh::testOpenClose(void)
   CPPUNIT_ASSERT(_mesh);
   CPPUNIT_ASSERT(_data);
 
-  DataWriterHDF5Ext<topology::SubMesh, MeshField> writer;
+  DataWriterHDF5Ext<topology::Mesh, MeshField> writer;
 
   writer.filename(_data->timestepFilename);
 
@@ -118,7 +118,7 @@ pylith::meshio::TestDataWriterHDF5ExtFaultMesh::testWriteVertexField(void)
   CPPUNIT_ASSERT(_mesh);
   CPPUNIT_ASSERT(_data);
 
-  DataWriterHDF5Ext<topology::SubMesh, MeshField> writer;
+  DataWriterHDF5Ext<topology::Mesh, MeshField> writer;
 
   topology::Fields<MeshField> vertexFields(*_faultMesh);
   _createVertexFields(&vertexFields);
@@ -162,7 +162,7 @@ pylith::meshio::TestDataWriterHDF5ExtFaultMesh::testWriteCellField(void)
   CPPUNIT_ASSERT(_mesh);
   CPPUNIT_ASSERT(_data);
 
-  DataWriterHDF5Ext<topology::SubMesh, MeshField> writer;
+  DataWriterHDF5Ext<topology::Mesh, MeshField> writer;
 
   topology::Fields<MeshField> cellFields(*_faultMesh);
   _createCellFields(&cellFields);

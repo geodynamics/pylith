@@ -47,7 +47,6 @@ class pylith::problems::Formulation
 private :
 
   typedef feassemble::Integrator<feassemble::Quadrature<topology::Mesh> > IntegratorMesh;
-  typedef feassemble::Integrator<feassemble::Quadrature<topology::SubMesh> > IntegratorSubMesh;
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
@@ -122,7 +121,7 @@ public :
    * @param integrators Integrators over lower-dimension meshes.
    * @param numIntegrators Number of integrators.
    */
-  void submeshIntegrators(IntegratorSubMesh** integrators,
+  void submeshIntegrators(IntegratorMesh** integrators,
 			  const int numIntegrators);
 
   /** Set handle to preconditioner.
@@ -210,7 +209,7 @@ protected :
   std::vector<IntegratorMesh*> _meshIntegrators;
 
   ///< Integrators over lower-dimensional subdomains of the mesh.
-  std::vector<IntegratorSubMesh*> _submeshIntegrators;
+  std::vector<IntegratorMesh*> _submeshIntegrators;
 
   bool _isJacobianSymmetric; ///< Is system Jacobian symmetric?
   bool _splitFields; ///< True if splitting fields.

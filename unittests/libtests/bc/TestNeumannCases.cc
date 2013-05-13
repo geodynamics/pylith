@@ -20,7 +20,7 @@
 
 #include "TestNeumannCases.hh" // Implementation of class methods
 
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 
 // ----------------------------------------------------------------------

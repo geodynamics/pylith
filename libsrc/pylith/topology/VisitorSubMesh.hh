@@ -247,7 +247,7 @@ public :
    * 
    * @param submesh Submesh associated with index set.
    */
-  SubMeshIS(const SubMesh& submesh);
+  SubMeshIS(const Mesh& submesh);
 
   /// Default destructor.
   ~SubMeshIS(void);
@@ -259,7 +259,7 @@ public :
    *
    * @returns Submesh.
    */
-  const SubMesh& submesh(void) const;
+  const Mesh& submesh(void) const;
 
   /** Get PETSc index set.
    *
@@ -282,7 +282,7 @@ public :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  const SubMesh& _submesh;
+  const Mesh& _submesh;
   PetscIS _indexSet; ///< PETSc index set.
   PetscInt _size; ///< Size of index set.
   const PetscInt* _points; ///< Array of points in index set.

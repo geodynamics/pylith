@@ -75,9 +75,6 @@ class TestApp(Script):
     from TestMeshQuadrature import TestMeshQuadrature
     suite.addTest(unittest.makeSuite(TestMeshQuadrature))
 
-    from TestSubMeshQuadrature import TestSubMeshQuadrature
-    suite.addTest(unittest.makeSuite(TestSubMeshQuadrature))
-
     from TestElasticityImplicit import TestElasticityImplicit
     suite.addTest(unittest.makeSuite(TestElasticityImplicit))
 

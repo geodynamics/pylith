@@ -22,12 +22,12 @@
  * @brief Python interface to C++ OutputSolnSubset object.
  */
 
-%template(_SubMeshOutputManager) pylith::meshio::OutputManager<pylith::topology::SubMesh, pylith::topology::Field<pylith::topology::Mesh> >;
+%template(_MeshOutputManager) pylith::meshio::OutputManager<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;
 
 namespace pylith {
   namespace meshio {
 
-    class pylith::meshio::OutputSolnSubset : public OutputManager<pylith::topology::SubMesh, pylith::topology::Field<pylith::topology::Mesh> >
+    class pylith::meshio::OutputSolnSubset : public OutputManager<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >
     { // OutputSolnSubset
 
       // PUBLIC METHODS /////////////////////////////////////////////////
@@ -58,7 +58,7 @@ namespace pylith {
        *
        * @returns Mesh associated with subdomain.
        */
-      const pylith::topology::SubMesh& subdomainMesh(const pylith::topology::Mesh& mesh);
+      const pylith::topology::Mesh& subdomainMesh(const pylith::topology::Mesh& mesh);
   
     }; // OutputSolnSubset
 

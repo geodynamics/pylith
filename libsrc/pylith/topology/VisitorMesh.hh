@@ -50,12 +50,6 @@ public :
    */
   VecVisitorMesh(const Field<Mesh>& field);
 
-  /** Constructor with field over a submesh.
-   *
-   * @param field Field over a submesh.
-   */
-  VecVisitorMesh(const Field<SubMesh>& field);
-
   /// Default destructor
   ~VecVisitorMesh(void);
 

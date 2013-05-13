@@ -31,7 +31,6 @@ noinst_PYTHON = \
 	TestFIATSimplex.py \
 	TestCellGeometry.py \
 	TestMeshQuadrature.py \
-	TestSubMeshQuadrature.py \
 	TestElasticityExplicit.py \
 	TestElasticityImplicit.py \
 	TestElasticityExplicitLgDeform.py \

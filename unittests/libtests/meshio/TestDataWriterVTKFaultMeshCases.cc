@@ -22,20 +22,10 @@
 
 #include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
 
+// ----------------------------------------------------------------------
 #include "data/DataWriterVTKDataFaultMeshTri3.hh"
-#include "data/DataWriterVTKDataFaultMeshQuad4.hh"
-#include "data/DataWriterVTKDataFaultMeshTet4.hh"
-#include "data/DataWriterVTKDataFaultMeshHex8.hh"
-
-
-// ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKFaultMeshTri3 );
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKFaultMeshQuad4 );
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKFaultMeshTet4 );
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKFaultMeshHex8 );
 
-
-// ----------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterVTKFaultMeshTri3::setUp(void)
@@ -53,6 +43,9 @@ pylith::meshio::TestDataWriterVTKFaultMeshTri3::setUp(void)
 
 
 // ----------------------------------------------------------------------
+#include "data/DataWriterVTKDataFaultMeshQuad4.hh"
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKFaultMeshQuad4 );
+
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterVTKFaultMeshQuad4::setUp(void)
@@ -70,6 +63,9 @@ pylith::meshio::TestDataWriterVTKFaultMeshQuad4::setUp(void)
 
 
 // ----------------------------------------------------------------------
+#include "data/DataWriterVTKDataFaultMeshTet4.hh"
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKFaultMeshTet4 );
+
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterVTKFaultMeshTet4::setUp(void)
@@ -87,6 +83,9 @@ pylith::meshio::TestDataWriterVTKFaultMeshTet4::setUp(void)
 
 
 // ----------------------------------------------------------------------
+#include "data/DataWriterVTKDataFaultMeshHex8.hh"
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKFaultMeshHex8 );
+
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterVTKFaultMeshHex8::setUp(void)

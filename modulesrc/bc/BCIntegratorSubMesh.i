@@ -25,7 +25,7 @@ namespace pylith {
   namespace bc {
 
     class pylith::bc::BCIntegratorSubMesh : public BoundaryCondition,
-		    public pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::SubMesh> >
+		    public pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::Mesh> >
     { // class BoundaryCondition
 
       // PUBLIC METHODS /////////////////////////////////////////////////
@@ -52,7 +52,7 @@ namespace pylith {
        *
        * @return Boundary mesh.
        */
-      const pylith::topology::SubMesh& boundaryMesh(void) const;
+      const pylith::topology::Mesh& boundaryMesh(void) const;
       
       /** Get mesh labels for submesh associated with applied forces.
        *
