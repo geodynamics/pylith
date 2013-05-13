@@ -105,9 +105,8 @@ class TestMesh(unittest.TestCase):
     Test comm().
     """
     from pylith.mpi.Communicator import petsc_comm_self
-    mesh = Mesh()
-    mesh.setComm(petsc_comm_self())
-    comm = mesh.getComm()
+    mesh = Mesh(dim=3, comm=petsc_comm_self())
+    comm = mesh.comm()
     self.assertEqual(0, comm.rank)
     self.assertEqual(1, comm.size)
     return

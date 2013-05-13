@@ -63,7 +63,7 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
     self._eventLogger.eventBegin(logEvent)
 
     from Mesh import Mesh
-    newMesh = Mesh(mesh.dimension(), mesh.getComm())
+    newMesh = Mesh(dim=mesh.dimension(), comm=mesh.comm())
     newMesh.debug(mesh.debug())
     newMesh.coordsys(mesh.coordsys())
     ModuleRefineUniform.refine(self, newMesh, mesh, self.levels)

@@ -25,7 +25,6 @@
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
@@ -91,16 +90,17 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
 
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();assert(cs);
 
-  delete _faultMesh; _faultMesh = new topology::SubMesh();assert(_faultMesh);
+  const bool isSubMesh = true;
+  delete _faultMesh; _faultMesh = new topology::Mesh(isSubMesh);assert(_faultMesh);
   CohesiveTopology::createFaultParallel(_faultMesh, mesh, id(), label(), _useLagrangeConstraints);
   _initializeCohesiveInfo(mesh);
 
   delete _fields;
-  _fields = new topology::Fields<topology::Field<topology::SubMesh> >(*_faultMesh);
+  _fields = new topology::Fields<topology::Field<topology::Mesh> >(*_faultMesh);
 
   // Allocate dispRel field
   _fields->add("relative disp", "relative_disp");
-  topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
+  topology::Field<topology::Mesh>& dispRel = _fields->get("relative disp");
   dispRel.newSection(topology::FieldBase::VERTICES_FIELD, cs->spaceDim());
   dispRel.allocate();
   dispRel.vectorFieldType(topology::FieldBase::VECTOR);
@@ -210,11 +210,11 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(const topology::Field<t
   topology::VecVisitorMesh dispTIncrVisitor(dispTIncr);
   PetscScalar* dispTIncrArray = dispTIncrVisitor.localArray();
 
-  topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
+  topology::Field<topology::Mesh>& dispRel = _fields->get("relative disp");
   topology::VecVisitorMesh dispRelVisitor(dispRel);
   PetscScalar* dispRelArray = dispRelVisitor.localArray();
 
-  topology::Field<topology::SubMesh>& area = _fields->get("area");
+  topology::Field<topology::Mesh>& area = _fields->get("area");
   topology::VecVisitorMesh areaVisitor(area);
   PetscScalar* areaArray = areaVisitor.localArray();
 
@@ -337,7 +337,7 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(topology::Jacobian* jac
   const int spaceDim = _quadrature->spaceDim();
 
   // Get fields.
-  topology::Field<topology::SubMesh>& area = _fields->get("area");
+  topology::Field<topology::Mesh>& area = _fields->get("area");
   topology::VecVisitorMesh areaVisitor(area);
   const PetscScalar* areaArray = areaVisitor.localArray();
   
@@ -600,7 +600,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
   } // for
 
   // Get fields
-  topology::Field<topology::SubMesh>& area = _fields->get("area");
+  topology::Field<topology::Mesh>& area = _fields->get("area");
   topology::VecVisitorMesh areaVisitor(area);
   const PetscScalar* areaArray = areaVisitor.localArray();
 
@@ -752,7 +752,7 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
   const int spaceDim = _quadrature->spaceDim();
 
   // Get fields
-  topology::Field<topology::SubMesh>& area = _fields->get("area");
+  topology::Field<topology::Mesh>& area = _fields->get("area");
   topology::VecVisitorMesh areaVisitor(area);
   const PetscScalar* areaArray = areaVisitor.localArray();
 
@@ -1141,8 +1141,8 @@ pylith::faults::FaultCohesiveLagrange::_initializeLogger(void)
 // Transform field from local (fault) coordinate system to
 // global coordinate system.
 void
-pylith::faults::FaultCohesiveLagrange::faultToGlobal(topology::Field<topology::SubMesh>* field,
-						     const topology::Field<topology::SubMesh>& faultOrientation)
+pylith::faults::FaultCohesiveLagrange::faultToGlobal(topology::Field<topology::Mesh>* field,
+						     const topology::Field<topology::Mesh>& faultOrientation)
 { // faultToGlobal
   PYLITH_METHOD_BEGIN;
 
@@ -1196,8 +1196,8 @@ pylith::faults::FaultCohesiveLagrange::faultToGlobal(topology::Field<topology::S
 // Transform field from global coordinate system to local (fault)
 // coordinate system.
 void
-pylith::faults::FaultCohesiveLagrange::globalToFault(topology::Field<topology::SubMesh>* field,
-						     const topology::Field<topology::SubMesh>& faultOrientation)
+pylith::faults::FaultCohesiveLagrange::globalToFault(topology::Field<topology::Mesh>* field,
+						     const topology::Field<topology::Mesh>& faultOrientation)
 { // globalToFault
   PYLITH_METHOD_BEGIN;
 
@@ -1291,8 +1291,8 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   // Allocate orientation field.
   scalar_array orientationVertex(orientationSize);
   _fields->add("orientation", "orientation");
-  topology::Field<topology::SubMesh>& orientation = _fields->get("orientation");
-  const topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
+  topology::Field<topology::Mesh>& orientation = _fields->get("orientation");
+  const topology::Field<topology::Mesh>& dispRel = _fields->get("relative disp");
   if (spaceDim > 1) orientation.addField("strike_dir", spaceDim);
   if (spaceDim > 2) orientation.addField("dip_dir", spaceDim);
   orientation.addField("normal_dir", spaceDim);
@@ -1549,8 +1549,8 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
 
   // Allocate area field.
   _fields->add("area", "area");
-  topology::Field<topology::SubMesh>& area = _fields->get("area");
-  const topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
+  topology::Field<topology::Mesh>& area = _fields->get("area");
+  const topology::Field<topology::Mesh>& dispRel = _fields->get("relative disp");
   area.newSection(dispRel, 1);
   area.allocate();
   area.vectorFieldType(topology::FieldBase::SCALAR);
@@ -1603,7 +1603,7 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
 // ----------------------------------------------------------------------
 // Compute change in tractions on fault surface using solution.
 void
-pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(topology::Field<topology::SubMesh>* tractions,
+pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(topology::Field<topology::Mesh>* tractions,
 							    const topology::Field<topology::Mesh>& dispT)
 { // _calcTractionsChange
   PYLITH_METHOD_BEGIN;
@@ -1623,13 +1623,13 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(topology::Field<topo
   topology::VecVisitorMesh dispTVisitor(dispT);
   const PetscScalar* dispTArray = dispTVisitor.localArray();
 
-  topology::Field<topology::SubMesh>& orientation = _fields->get("orientation");
+  topology::Field<topology::Mesh>& orientation = _fields->get("orientation");
   topology::VecVisitorMesh orientationVisitor(orientation);
   const PetscScalar* orientationArray = orientationVisitor.localArray();
 
   // Allocate buffer for tractions field (if necessary).
   if (!tractions->petscSection()) {
-    const topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
+    const topology::Field<topology::Mesh>& dispRel = _fields->get("relative disp");
     tractions->cloneSection(dispRel);
   } // if
   tractions->zero();
@@ -1685,8 +1685,8 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferVectorField(void)
   // displacement field.
   assert(_faultMesh);
   _fields->add("buffer (vector)", "buffer");
-  topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
-  const topology::Field<topology::SubMesh>& dispRel = 
+  topology::Field<topology::Mesh>& buffer = _fields->get("buffer (vector)");
+  const topology::Field<topology::Mesh>& dispRel = 
     _fields->get("relative disp");
   buffer.cloneSection(dispRel);
   buffer.zero();
@@ -1709,7 +1709,7 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferScalarField(void)
   // Create vector field; use same shape/chart as area field.
   assert(_faultMesh);
   _fields->add("buffer (scalar)", "buffer");
-  topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (scalar)");
+  topology::Field<topology::Mesh>& buffer = _fields->get("buffer (scalar)");
   buffer.newSection(topology::FieldBase::VERTICES_FIELD, 1);
   buffer.allocate();
   buffer.vectorFieldType(topology::FieldBase::SCALAR);
@@ -1820,7 +1820,7 @@ pylith::faults::FaultCohesiveLagrange::_getJacobianSubmatrixNP(PetscMat* jacobia
 
 // ----------------------------------------------------------------------
 // Get cell field associated with integrator.
-const pylith::topology::Field<pylith::topology::SubMesh>&
+const pylith::topology::Field<pylith::topology::Mesh>&
 pylith::faults::FaultCohesiveLagrange::cellField(const char* name,
                                                  const topology::SolutionFields* fields)
 { // cellField
@@ -1835,7 +1835,7 @@ pylith::faults::FaultCohesiveLagrange::cellField(const char* name,
 
     const int fiberDim = 1;
     _fields->add("partition", "partition", pylith::topology::FieldBase::CELLS_FIELD, fiberDim);
-    topology::Field<topology::SubMesh>& partition = _fields->get("partition");
+    topology::Field<topology::Mesh>& partition = _fields->get("partition");
     partition.allocate();
     topology::VecVisitorMesh partitionVisitor(partition);
     PetscScalar* partitionArray = partitionVisitor.localArray();
@@ -1859,7 +1859,7 @@ pylith::faults::FaultCohesiveLagrange::cellField(const char* name,
 
   // Satisfy return values
   assert(_fields);
-  const topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
+  const topology::Field<topology::Mesh>& buffer = _fields->get("buffer (vector)");
   PYLITH_METHOD_RETURN(buffer);
 } // cellField
 

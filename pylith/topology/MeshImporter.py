@@ -89,8 +89,8 @@ class MeshImporter(MeshGenerator):
     Hook for creating mesh.
     """
     from pylith.utils.profiling import resourceUsageString
-    from pylith.mpi.Communicator import mpi_comm_world
-    comm = mpi_comm_world()
+    from pylith.mpi.Communicator import petsc_comm_world
+    comm = petsc_comm_world()
 
     self._setupLogging()
     logEvent = "%screate" % self._loggingPrefix
@@ -120,7 +120,7 @@ class MeshImporter(MeshGenerator):
     self._adjustTopology(mesh, faults)
 
     # Distribute mesh
-    if mesh.getComm().size > 1:
+    if comm.size > 1:
       if 0 == comm.rank:
         self._info.log("Distributing mesh.")
       mesh = self.distributor.distribute(mesh, normalizer)

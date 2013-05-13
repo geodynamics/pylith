@@ -51,7 +51,7 @@ namespace pylith {
        *
        * @returns Parameter fields.
        */
-      const pylith::topology::Fields<topology::Field<pylith::topology::SubMesh> >* parameterFields(void) const;
+      const pylith::topology::Fields<topology::Field<pylith::topology::Mesh> >* parameterFields(void) const;
       
       /** Initialize slip time function.
        *
@@ -59,8 +59,8 @@ namespace pylith {
        * @param faultOrientation Orientation of fault.
        * @param normalizer Nondimensionalization of scales.
        */
-      void initialize(const pylith::topology::SubMesh& faultMesh,
-		      const pylith::topology::Field<pylith::topology::SubMesh>& faultOrientation,
+      void initialize(const pylith::topology::Mesh& faultMesh,
+		      const pylith::topology::Field<pylith::topology::Mesh>& faultOrientation,
 		      const spatialdata::units::Nondimensional& normalizer);
       
       /** Calculate spatial and temporal variation of value.
@@ -83,7 +83,7 @@ namespace pylith {
        *
        * @returns Traction vector field.
        */
-      const pylith::topology::Field<pylith::topology::SubMesh>&
+      const pylith::topology::Field<pylith::topology::Mesh>&
       vertexField(const char* name,
 		  pylith::topology::SolutionFields* const fields =0);
       

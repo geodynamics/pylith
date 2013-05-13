@@ -23,8 +23,6 @@
 import unittest
 
 from pylith.meshio.DataWriterHDF5Mesh import DataWriterHDF5Mesh
-from pylith.meshio.DataWriterHDF5SubMesh import DataWriterHDF5SubMesh
-from pylith.meshio.DataWriterHDF5SubSubMesh import DataWriterHDF5SubSubMesh
 
 # ----------------------------------------------------------------------
 class TestDataWriterHDF5Mesh(unittest.TestCase):
@@ -59,80 +57,6 @@ class TestDataWriterHDF5Mesh(unittest.TestCase):
     Test factory method.
     """
     from pylith.meshio.DataWriterHDF5Mesh import data_writer
-    filter = data_writer()
-    return
-
-
-# ----------------------------------------------------------------------
-class TestDataWriterHDF5SubMesh(unittest.TestCase):
-  """
-  Unit testing of Python DataWriterHDF5 object.
-  """
-
-  def test_constructor(self):
-    """
-    Test constructor.
-    """
-    filter = DataWriterHDF5SubMesh()
-    filter._configure()
-    return
-
-
-  def test_initialize(self):
-    """
-    Test constructor.
-    """
-    filter = DataWriterHDF5SubMesh()
-    filter._configure()
-
-    from spatialdata.units.Nondimensional import Nondimensional
-    normalizer = Nondimensional()
-    filter.initialize(normalizer)
-    return
-
-
-  def test_factory(self):
-    """
-    Test factory method.
-    """
-    from pylith.meshio.DataWriterHDF5SubMesh import data_writer
-    filter = data_writer()
-    return
-
-
-# ----------------------------------------------------------------------
-class TestDataWriterHDF5SubSubMesh(unittest.TestCase):
-  """
-  Unit testing of Python DataWriterHDF5 object.
-  """
-
-  def test_constructor(self):
-    """
-    Test constructor.
-    """
-    filter = DataWriterHDF5SubSubMesh()
-    filter._configure()
-    return
-
-
-  def test_initialize(self):
-    """
-    Test constructor.
-    """
-    filter = DataWriterHDF5SubSubMesh()
-    filter._configure()
-
-    from spatialdata.units.Nondimensional import Nondimensional
-    normalizer = Nondimensional()
-    filter.initialize(normalizer)
-    return
-
-
-  def test_factory(self):
-    """
-    Test factory method.
-    """
-    from pylith.meshio.DataWriterHDF5SubSubMesh import data_writer
     filter = data_writer()
     return
 

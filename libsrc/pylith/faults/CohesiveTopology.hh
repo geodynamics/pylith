@@ -51,7 +51,7 @@ public :
    * of the fault.
    */
   static
-  void createFault(topology::SubMesh* faultMesh,
+  void createFault(topology::Mesh* faultMesh,
 		   DM& faultBoundary,
 		   const topology::Mesh& mesh,
 		   DMLabel groupField,
@@ -73,7 +73,7 @@ public :
    */
   static
   void create(topology::Mesh* mesh,
-	      const topology::SubMesh& faultMesh,
+	      const topology::Mesh& faultMesh,
               DM faultBoundary,
               DMLabel groupField,
               const int materialId,
@@ -98,7 +98,7 @@ public :
    */
   static
   void createInterpolated(topology::Mesh* mesh,
-                          const topology::SubMesh& faultMesh,
+                          const topology::Mesh& faultMesh,
                           DM faultBoundary,
                           DMLabel groupField,
                           const int materialId,
@@ -117,7 +117,7 @@ public :
    *   Lagrange multipliers that require extra vertices, false otherwise.
    */
   static
-  void createFaultParallel(topology::SubMesh* faultMesh,
+  void createFaultParallel(topology::Mesh* faultMesh,
 			   const topology::Mesh& mesh,
 			   const int materialId,
 			   const char* label,

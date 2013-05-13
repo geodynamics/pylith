@@ -24,9 +24,9 @@
 
 // Get boundary mesh.
 inline
-const pylith::topology::SubMesh&
+const pylith::topology::Mesh&
 pylith::bc::DirichletBoundary::boundaryMesh(void) const {
-  assert(0 != _boundaryMesh);
+  assert(_boundaryMesh);
   return *_boundaryMesh;
 } // boundaryMesh
 

@@ -21,7 +21,7 @@
 #include "CohesiveTopology.hh" // implementation of object methods
 
 #include "TopologyOps.hh" // USES TopologyOps
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/Mesh.hh" // USES Mesh
 
 #include <cassert> // USES assert()
 
@@ -40,7 +40,7 @@ PetscErrorCode DMPlexGetOrientedFace(PetscDM dm,
 
 // ----------------------------------------------------------------------
 void
-pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
+pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
                                               PetscDM& faultBoundary,
                                               const topology::Mesh& mesh,
                                               PetscDMLabel groupField,
@@ -52,7 +52,7 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
   assert(groupField);
   PetscErrorCode err;
 
-  faultMesh->coordsys(mesh);
+  faultMesh->coordsys(mesh.coordsys());
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
 
   PetscInt dim, depth;
@@ -156,7 +156,7 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
 // ----------------------------------------------------------------------
 void
 pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
-                                         const topology::SubMesh& faultMesh,
+                                         const topology::Mesh& faultMesh,
                                          DM faultBoundary,
                                          DMLabel groupField,
                                          const int materialId,
@@ -631,7 +631,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 
 void
 pylith::faults::CohesiveTopology::createInterpolated(topology::Mesh* mesh,
-						     const topology::SubMesh& faultMesh,
+						     const topology::Mesh& faultMesh,
 						     PetscDM faultBoundary,
 						     PetscDMLabel groupField,
 						     const int materialId,
@@ -660,7 +660,7 @@ pylith::faults::CohesiveTopology::createInterpolated(topology::Mesh* mesh,
 // ----------------------------------------------------------------------
 // Form a parallel fault mesh using the cohesive cell information
 void
-pylith::faults::CohesiveTopology::createFaultParallel(topology::SubMesh* faultMesh,
+pylith::faults::CohesiveTopology::createFaultParallel(topology::Mesh* faultMesh,
 						      const topology::Mesh& mesh,
 						      const int materialId,
 						      const char* label,
@@ -671,7 +671,7 @@ pylith::faults::CohesiveTopology::createFaultParallel(topology::SubMesh* faultMe
   assert(faultMesh);
   PetscErrorCode err;
 
-  faultMesh->coordsys(mesh);
+  faultMesh->coordsys(mesh.coordsys());
 
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
   PetscDM dmFaultMesh;

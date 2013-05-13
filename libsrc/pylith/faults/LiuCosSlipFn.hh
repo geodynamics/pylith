@@ -27,7 +27,7 @@
 // Include directives ---------------------------------------------------
 #include "SlipTimeFn.hh"
 
-#include "pylith/topology/topologyfwd.hh" // USES Fields<Field<SubMesh> >
+#include "pylith/topology/topologyfwd.hh" // USES Fields<Field<Mesh> >
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
 
@@ -84,7 +84,7 @@ public :
    * @param normalizer Nondimensionalization of scales.
    * @param originTime Origin time for earthquake source.
    */
-  void initialize(const topology::SubMesh& faultMesh,
+  void initialize(const topology::Mesh& faultMesh,
 		  const spatialdata::units::Nondimensional& normalizer,
 		  const PylithScalar originTime =0.0);
 
@@ -95,20 +95,20 @@ public :
    *
    * @returns Slip vector as left-lateral/reverse/normal.
    */
-  void slip(topology::Field<topology::SubMesh>* const slipField,
+  void slip(topology::Field<topology::Mesh>* const slipField,
 	    const PylithScalar t);
   
   /** Get final slip.
    *
    * @returns Final slip.
    */
-  const topology::Field<topology::SubMesh>& finalSlip(void);
+  const topology::Field<topology::Mesh>& finalSlip(void);
 
   /** Get time when slip begins at each point.
    *
    * @returns Time when slip begins.
    */
-  const topology::Field<topology::SubMesh>& slipTime(void);
+  const topology::Field<topology::Mesh>& slipTime(void);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

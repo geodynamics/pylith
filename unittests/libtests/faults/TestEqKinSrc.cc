@@ -28,7 +28,6 @@
 #include "pylith/faults/CohesiveTopology.hh" // USES CohesiveTopology
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
@@ -93,7 +92,7 @@ pylith::faults::TestEqKinSrc::testInitialize(void)
   PYLITH_METHOD_BEGIN;
 
   topology::Mesh mesh;
-  topology::SubMesh faultMesh;
+  topology::Mesh faultMesh;
   EqKinSrc eqsrc;
   BruneSlipFn slipfn;
   const PylithScalar originTime = 2.45;
@@ -120,7 +119,7 @@ pylith::faults::TestEqKinSrc::testSlip(void)
   const PylithScalar originTime = 2.42 / _TestEqKinSrc::timeScale;
 
   topology::Mesh mesh;
-  topology::SubMesh faultMesh;
+  topology::Mesh faultMesh;
   EqKinSrc eqsrc;
   BruneSlipFn slipfn;
   _initialize(&mesh, &faultMesh, &eqsrc, &slipfn, originTime);
@@ -128,7 +127,7 @@ pylith::faults::TestEqKinSrc::testSlip(void)
   const spatialdata::geocoords::CoordSys* cs = faultMesh.coordsys();CPPUNIT_ASSERT(cs);
   const int spaceDim = cs->spaceDim();
 
-  topology::Field<topology::SubMesh> slip(faultMesh);
+  topology::Field<topology::Mesh> slip(faultMesh);
   slip.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   slip.allocate();
 
@@ -169,7 +168,7 @@ pylith::faults::TestEqKinSrc::testSlip(void)
 // Initialize EqKinSrc.
 void
 pylith::faults::TestEqKinSrc::_initialize(topology::Mesh* mesh,
-					  topology::SubMesh* faultMesh,
+					  topology::Mesh* faultMesh,
 					  EqKinSrc* eqsrc,
 					  BruneSlipFn* slipfn,
 					  const PylithScalar originTime)

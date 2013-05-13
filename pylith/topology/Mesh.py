@@ -30,16 +30,19 @@ class Mesh(ModuleMesh):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, dim=None, comm=None):
+  def __init__(self, dim=None, comm=None, mesh=None, label=None, isSubMesh=False):
     """
     Constructor.
     """
-    if comm is None and dim is None:
-      ModuleMesh.__init__(self)
-    elif comm is None:
+    if comm is None and dim is None and label is None:
+      ModuleMesh.__init__(self, isSubMesh)
+    elif comm is None and mesh is None and label is None:
       ModuleMesh.__init__(self, dim)
-    else:
+    elif label is None:
       ModuleMesh.__init__(self, dim, comm.handle)
+    else:
+      assert(not mesh is None and not label is None)
+      ModuleMesh.__init__(self, mesh, label)
 
     # Name of logging stage for mesh. We progress through various
     # stages as we read, distribute, and refine mesh.
@@ -47,15 +50,7 @@ class Mesh(ModuleMesh):
     return
 
 
-  def setComm(self, comm):
-    """
-    Set communicator.
-    """
-    ModuleMesh.comm(self, comm.handle)
-    return
-
-
-  def getComm(self):
+  def comm(self):
     """
     Get communicator.
     """

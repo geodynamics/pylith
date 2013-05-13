@@ -270,7 +270,7 @@ pylith::topology::MatVisitorSubMesh::setClosure(const PetscScalar* valuesCell,
 // ----------------------------------------------------------------------
 // Default constructor.
 inline
-pylith::topology::SubMeshIS::SubMeshIS(const SubMesh& submesh) :
+pylith::topology::SubMeshIS::SubMeshIS(const Mesh& submesh) :
   _submesh(submesh),
   _indexSet(NULL)
 { // constructor
@@ -305,7 +305,7 @@ pylith::topology::SubMeshIS::deallocate(void)
 // ----------------------------------------------------------------------
 // Get the submesh.
 inline
-const pylith::topology::SubMesh&
+const pylith::topology::Mesh&
 pylith::topology::SubMeshIS::submesh(void) const
 { // submesh
   return _submesh;

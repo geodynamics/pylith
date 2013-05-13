@@ -66,13 +66,13 @@ pylith::faults::FaultCohesiveTract::initialize(const topology::Mesh& mesh,
   assert(upDir);
   assert(_quadrature);
 
-  delete _faultMesh; _faultMesh = new topology::SubMesh();
+  delete _faultMesh; _faultMesh = new topology::Mesh();
   CohesiveTopology::createFaultParallel(_faultMesh, mesh, id(), label(), useLagrangeConstraints());
 
   // Reset fields.
   delete _fields; 
   _fields = 
-    new topology::Fields<topology::Field<topology::SubMesh> >(*_faultMesh);
+    new topology::Fields<topology::Field<topology::Mesh> >(*_faultMesh);
 
   // Initialize quadrature geometry.
   _quadrature->initializeGeometry();
@@ -156,7 +156,7 @@ pylith::faults::FaultCohesiveTract::verifyConfiguration(const topology::Mesh& me
 
 // ----------------------------------------------------------------------
 // Get vertex field associated with integrator.
-const pylith::topology::Field<pylith::topology::SubMesh>&
+const pylith::topology::Field<pylith::topology::Mesh>&
 pylith::faults::FaultCohesiveTract::vertexField(const char* name,
 						const topology::SolutionFields* fields)
 { // vertexField
@@ -165,7 +165,7 @@ pylith::faults::FaultCohesiveTract::vertexField(const char* name,
 
 // ----------------------------------------------------------------------
 // Get cell field associated with integrator.
-const pylith::topology::Field<pylith::topology::SubMesh>&
+const pylith::topology::Field<pylith::topology::Mesh>&
 pylith::faults::FaultCohesiveTract::cellField(const char* name,
 					      const topology::SolutionFields* fields)
 { // cellField

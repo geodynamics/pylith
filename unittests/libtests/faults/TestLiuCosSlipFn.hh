@@ -30,7 +30,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "pylith/faults/faultsfwd.hh" // USES LiuCosSlipFn
-#include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh
+#include "pylith/topology/topologyfwd.hh" // USES Mesh
 
 /// Namespace for pylith package
 namespace pylith {
@@ -104,7 +104,7 @@ private :
    */
   static
   void _initialize(topology::Mesh* mesh,
-		   topology::SubMesh* faultMesh,
+		   topology::Mesh* faultMesh,
 		   LiuCosSlipFn* slipfn,
 		   const PylithScalar originTime);
 
@@ -125,14 +125,6 @@ private :
   PylithScalar _slipFn(const PylithScalar t,
 		 const PylithScalar finalSlip,
 		 const PylithScalar riseTime);
-
-  /** Setup fault coordinates
-   *
-   * @param mesh Finite-element mesh of domain.
-   * @param faultMesh Finite-element mesh of fault.
-   */
-  static
-  void _setupFaultCoordinates(topology::Mesh *mesh, topology::SubMesh *faultMesh);
 
 }; // class TestLiuCosSlipFn
 

@@ -84,7 +84,7 @@ public :
 protected :
 
   AbsorbingDampersData* _data; ///< Data for testing
-  feassemble::Quadrature<topology::SubMesh>* _quadrature; ///< Used in testing.
+  feassemble::Quadrature<topology::Mesh>* _quadrature; ///< Used in testing.
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :

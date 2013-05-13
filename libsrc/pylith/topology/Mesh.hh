@@ -44,8 +44,11 @@ class pylith::topology::Mesh
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
 
-  /// Default constructor.
-  Mesh(void);
+  /** Default constructor.
+   *
+   * @param isSubMesh True if mesh is a submesh of another mesh.
+   */
+  Mesh(const bool isSubMesh =false);
 
   /** Constructor with dimension and communicator.
    *
@@ -159,25 +162,17 @@ public :
    */
   int numCells(void) const;
 
-  /** Set MPI communicator associated with mesh.
-   *
-   * @param value MPI communicator.
-   */
-  void comm(const MPI_Comm value);
-    
   /** Get MPI communicator associated with mesh.
    *
    * @returns MPI communicator.
    */
-  const MPI_Comm comm(void) const;
+  MPI_Comm comm(void) const;
     
   /** Get MPI rank.
    *
    * @returns MPI rank.
    */
   int commRank(void) const;
-    
-  /** Get 
 
   /** Print mesh to stdout.
    *
@@ -210,9 +205,8 @@ private :
   PetscInt _numNormalCells, _numCohesiveCells, _numNormalVertices, _numShadowVertices, _numLagrangeVertices;
 
   spatialdata::geocoords::CoordSys* _coordsys; ///< Coordinate system.
-  MPI_Comm _comm; ///< MPI communicator for mesh.
   bool _debug; ///< Debugging flag for mesh.
-  bool _isSubMesh; ///< True if mesh is a submesh of another mesh.
+  const bool _isSubMesh; ///< True if mesh is a submesh of another mesh.
   
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

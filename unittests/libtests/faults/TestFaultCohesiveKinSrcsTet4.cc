@@ -22,8 +22,8 @@
 
 #include "data/CohesiveKinSrcsDataTet4.hh" // USES CohesiveKinDataTet4
 
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
-#include "pylith/feassemble/Quadrature.hh" // USES Quadrature<SubMesh>
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature<Mesh>
 #include "pylith/feassemble/GeometryTri3D.hh" // USES GeometryTri3D
 
 // ----------------------------------------------------------------------

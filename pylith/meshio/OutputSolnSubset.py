@@ -66,8 +66,8 @@ class OutputSolnSubset(OutputManager, ModuleOutputSolnSubset):
   label = pyre.inventory.str("label", default="", validator=validateLabel)
   label.meta['tip'] = "Label identifier for subdomain."
 
-  from DataWriterVTKSubMesh import DataWriterVTKSubMesh
-  writer = pyre.inventory.facility("writer", factory=DataWriterVTKSubMesh,
+  from DataWriterVTKMesh import DataWriterVTKMesh
+  writer = pyre.inventory.facility("writer", factory=DataWriterVTKMesh,
                                  family="data_writer")
   writer.meta['tip'] = "Writer for data."
 

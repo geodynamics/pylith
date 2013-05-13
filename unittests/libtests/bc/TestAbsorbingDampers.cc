@@ -27,7 +27,6 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
@@ -50,7 +49,7 @@ pylith::bc::TestAbsorbingDampers::setUp(void)
   PYLITH_METHOD_BEGIN;
 
   _data = 0;
-  _quadrature = new feassemble::Quadrature<topology::SubMesh>();
+  _quadrature = new feassemble::Quadrature<topology::Mesh>();
   CPPUNIT_ASSERT(_quadrature);
 
   PYLITH_METHOD_END;
@@ -113,7 +112,7 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void)
 
   CPPUNIT_ASSERT(_data);
 
-  const topology::SubMesh& boundaryMesh = *bc._boundaryMesh;
+  const topology::Mesh& boundaryMesh = *bc._boundaryMesh;
 
   PetscDM subMesh = boundaryMesh.dmMesh();CPPUNIT_ASSERT(subMesh);
 
@@ -193,7 +192,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateResidual(void)
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &bc, &fields);
 
-  const topology::SubMesh& boundaryMesh = *bc._boundaryMesh;
+  const topology::Mesh& boundaryMesh = *bc._boundaryMesh;
   PetscDM             subMesh = boundaryMesh.dmMesh();
   PetscErrorCode err;
 
@@ -250,7 +249,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &bc, &fields);
 
-  const topology::SubMesh& boundaryMesh = *bc._boundaryMesh;
+  const topology::Mesh& boundaryMesh = *bc._boundaryMesh;
   PetscDM subMesh = boundaryMesh.dmMesh();CPPUNIT_ASSERT(subMesh);
 
   topology::Field<topology::Mesh>& solution = fields.solution();
@@ -334,7 +333,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobianLumped(void)
   jacobian.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
   jacobian.allocate();
 
-  const topology::SubMesh& boundaryMesh = *bc._boundaryMesh;
+  const topology::Mesh& boundaryMesh = *bc._boundaryMesh;
   PetscDM subMesh = boundaryMesh.dmMesh();CPPUNIT_ASSERT(subMesh);
 
   const PylithScalar t = 1.0;

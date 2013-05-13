@@ -26,7 +26,7 @@
 // Include directives ---------------------------------------------------
 #include "faultsfwd.hh" // forward declarations
 
-#include "pylith/topology/topologyfwd.hh" // USES Field<SubMesh>, SubMesh
+#include "pylith/topology/topologyfwd.hh" // USES Field<Mesh>, Mesh
 #include "pylith/utils/arrayfwd.hh" // USES scalar_array
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
@@ -146,7 +146,7 @@ public :
    *
    * @returns PETSc mesh object
    */
-  const topology::SubMesh& faultMesh(void) const;
+  const topology::Mesh& faultMesh(void) const;
 
   /** Get vertex field associated with integrator.
    *
@@ -155,7 +155,7 @@ public :
    * @returns Vertex field.
    */
   virtual
-  const topology::Field<topology::SubMesh>&
+  const topology::Field<topology::Mesh>&
   vertexField(const char* name,
 	      const topology::SolutionFields* fields =0) = 0;
 
@@ -166,7 +166,7 @@ public :
    * @returns Cell field.
    */
   virtual
-  const topology::Field<topology::SubMesh>&
+  const topology::Field<topology::Mesh>&
   cellField(const char* name,
 	    const topology::SolutionFields* fields =0) = 0;
 
@@ -179,7 +179,7 @@ private :
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
-  topology::SubMesh* _faultMesh; ///< Mesh over fault surface
+  topology::Mesh* _faultMesh; ///< Mesh over fault surface
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

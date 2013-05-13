@@ -44,9 +44,9 @@ class Neumann(BoundaryCondition,
 
   import pyre.inventory
   
-  from pylith.feassemble.Quadrature import SubMeshQuadrature
+  from pylith.feassemble.Quadrature import MeshQuadrature
   bcQuadrature = pyre.inventory.facility("quadrature",
-                                       factory=SubMeshQuadrature)
+                                       factory=MeshQuadrature)
   bcQuadrature.meta['tip'] = "Quadrature object for numerical integration."
   
   from pylith.meshio.OutputNeumann import OutputNeumann

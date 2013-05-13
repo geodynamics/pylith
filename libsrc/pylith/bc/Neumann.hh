@@ -81,7 +81,7 @@ public :
    *
    * @returns Traction vector at integration points.
    */
-  const topology::Field<topology::SubMesh>&
+  const topology::Field<topology::Mesh>&
   cellField(const char* name,
 	    topology::SolutionFields* const fields =0);
 

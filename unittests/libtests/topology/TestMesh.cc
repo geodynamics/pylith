@@ -52,7 +52,7 @@ pylith::topology::TestMesh::testConstructor(void)
   CPPUNIT_ASSERT(mesh2._dmMesh);
   CPPUNIT_ASSERT_EQUAL(dim, mesh2.dimension());
   MPI_Comm_compare(PETSC_COMM_WORLD, mesh2.comm(), &result);
-  CPPUNIT_ASSERT_EQUAL(int(MPI_IDENT), result);
+  CPPUNIT_ASSERT_EQUAL(int(MPI_CONGRUENT), result);
 
   dim = 1;
   Mesh mesh3(dim, PETSC_COMM_SELF);
@@ -142,10 +142,15 @@ pylith::topology::TestMesh::testComm(void)
   PYLITH_METHOD_BEGIN;
 
   Mesh mesh;
-  CPPUNIT_ASSERT_EQUAL(PETSC_COMM_WORLD, mesh.comm());
+  int result = 0;
+  MPI_Comm_compare(PETSC_COMM_WORLD, mesh.comm(), &result);
+  CPPUNIT_ASSERT_EQUAL(int(MPI_IDENT), result);
 
-  mesh.comm(PETSC_COMM_SELF);
-  CPPUNIT_ASSERT_EQUAL(PETSC_COMM_SELF, mesh.comm());
+
+  Mesh mesh2(2, PETSC_COMM_SELF);
+  result = 0;
+  MPI_Comm_compare(PETSC_COMM_SELF, mesh2.comm(), &result);
+  CPPUNIT_ASSERT_EQUAL(int(MPI_CONGRUENT), result);
 
   PYLITH_METHOD_END;
 } // testComm

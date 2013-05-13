@@ -21,7 +21,6 @@
 #else
 
 #include "Mesh.hh" // USES Mesh
-#include "SubMesh.hh" // USES SubMesh
 #include "Field.hh" // USES Field
 
 #include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
@@ -37,19 +36,6 @@ pylith::topology::VecVisitorMesh::VecVisitorMesh(const Field<Mesh>& field) :
 { // constructor
   _dm = field.mesh().dmMesh();assert(_dm);
   initialize<Field<Mesh> >(field);
-} // constructor
-
-// ----------------------------------------------------------------------
-// Constructor with field over a submesh.
-inline
-pylith::topology::VecVisitorMesh::VecVisitorMesh(const Field<SubMesh>& field) :
-  _dm(NULL),
-  _localVec(NULL),
-  _section(NULL),
-  _localArray(NULL)
-{ // constructor
-  _dm = field.mesh().dmMesh();assert(_dm);
-  initialize<Field<SubMesh> >(field);
 } // constructor
 
 // ----------------------------------------------------------------------

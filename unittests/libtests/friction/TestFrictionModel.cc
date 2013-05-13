@@ -26,7 +26,7 @@
 #include "pylith/friction/StaticFriction.hh" // USES StaticFriction
 #include "pylith/friction/SlipWeakening.hh" // USES SlipWeakening
 
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
@@ -176,7 +176,7 @@ pylith::friction::TestFrictionModel::testInitialize(void)
   for(PetscInt v = vStart; v < vEnd; ++v) {
     for (int i = 0; i < numProperties; ++i, ++index) {
       const materials::Metadata::ParamDescription& property = metadata.getProperty(i);
-      topology::Field<topology::SubMesh>& prop = friction._fieldsPropsStateVars->get(property.name.c_str());
+      topology::Field<topology::Mesh>& prop = friction._fieldsPropsStateVars->get(property.name.c_str());
       topology::VecVisitorMesh propVisitor(prop);
       const PetscScalar* propArray = propVisitor.localArray();CPPUNIT_ASSERT(propArray);
 
@@ -213,7 +213,7 @@ pylith::friction::TestFrictionModel::testGetField(void)
   StaticFrictionData data;
   _initialize(&mesh, &fault, &friction, &data);
 
-  const topology::Field<topology::SubMesh>& frictionField = friction.getField("friction_coefficient");
+  const topology::Field<topology::Mesh>& frictionField = friction.getField("friction_coefficient");
   topology::VecVisitorMesh frictionVisitor(frictionField);
   PetscScalar *frictionArray = frictionVisitor.localArray();CPPUNIT_ASSERT(frictionArray);
 
@@ -402,7 +402,7 @@ pylith::friction::TestFrictionModel::testUpdateStateVars(void)
     CPPUNIT_ASSERT(friction._fieldsPropsStateVars);
     for(PetscInt i = 0; i < numStateVars; ++i) {
       const materials::Metadata::ParamDescription& stateVar = metadata.getStateVar(i);
-      topology::Field<topology::SubMesh>& stateVarField = friction._fieldsPropsStateVars->get(stateVar.name.c_str());
+      topology::Field<topology::Mesh>& stateVarField = friction._fieldsPropsStateVars->get(stateVar.name.c_str());
       topology::VecVisitorMesh stateVarVisitor(stateVarField);
       PetscScalar *fieldsArray = stateVarVisitor.localArray();CPPUNIT_ASSERT(fieldsArray);
 
@@ -834,7 +834,7 @@ pylith::friction::TestFrictionModel::_initialize(topology::Mesh* mesh,
   topology::MeshOps::nondimensionalize(mesh, normalizer);
 
   // Setup quadrature
-  feassemble::Quadrature<topology::SubMesh> quadrature;
+  feassemble::Quadrature<topology::Mesh> quadrature;
   feassemble::GeometryLine2D geometry;
   quadrature.refGeometry(&geometry);
   const int cellDim = 1;

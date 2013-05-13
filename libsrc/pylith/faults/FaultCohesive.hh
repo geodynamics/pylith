@@ -28,14 +28,14 @@
 // Include directives ---------------------------------------------------
 #include "Fault.hh" // ISA Fault
 
-#include "pylith/topology/SubMesh.hh" // ISA Integrator<Quadrature<SubMesh> >
+#include "pylith/topology/Mesh.hh" // ISA Integrator<Quadrature<Mesh> >
 #include "pylith/feassemble/Quadrature.hh" // ISA Integrator<Quadrature>
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
 // FaultCohesive --------------------------------------------------------
 /// Absract base class for fault surface implemented with cohesive cells.
 class pylith::faults::FaultCohesive : public Fault,
-				      public feassemble::Integrator<feassemble::Quadrature<topology::SubMesh> >
+				      public feassemble::Integrator<feassemble::Quadrature<topology::Mesh> >
 { // class FaultCohesive
   friend class TestFaultCohesive; // unit testing
 
@@ -102,14 +102,14 @@ public :
    *
    * @returns Fields associated with fault.
    */
-  const topology::Fields<topology::Field<topology::SubMesh> >*
+  const topology::Fields<topology::Field<topology::Mesh> >*
   fields(void) const;
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
   /// Fields for fault information.
-  topology::Fields<topology::Field<topology::SubMesh> >* _fields;
+  topology::Fields<topology::Field<topology::Mesh> >* _fields;
 
   bool _useLagrangeConstraints; ///< True if uses Lagrange multipliers.
 

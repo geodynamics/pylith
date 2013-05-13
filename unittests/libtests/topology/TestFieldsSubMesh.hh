@@ -35,7 +35,6 @@ namespace pylith {
     class TestFieldsSubMesh;
 
     class Mesh;
-    class SubMesh;
   } // topology
 } // pylith
 
@@ -95,7 +94,7 @@ public :
 private :
 
   Mesh* _mesh;
-  SubMesh* _submesh;
+  Mesh* _submesh;
 
 }; // class TestFieldsSubMesh
 

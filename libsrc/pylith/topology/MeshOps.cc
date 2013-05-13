@@ -50,7 +50,6 @@ pylith::topology::MeshOps::createDMMesh(Mesh* const mesh,
   err = DMSetType(dmMesh, DMPLEX);PYLITH_CHECK_ERROR(err);
   err = DMPlexSetDimension(dmMesh, dim);PYLITH_CHECK_ERROR(err);
   mesh->dmMesh(dmMesh, label);
-  mesh->comm(comm);
 
   PYLITH_METHOD_END;
 } // createDMMesh

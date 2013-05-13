@@ -22,7 +22,6 @@
 // Header files for module C++ code
 %{
 #include "pylith/topology/Mesh.hh"
-#include "pylith/topology/SubMesh.hh"
 #include "pylith/topology/MeshOps.hh"
 #include "pylith/topology/FieldBase.hh"
 #include "pylith/topology/Field.hh"
@@ -45,7 +44,6 @@
 
 %include "typemaps.i"
 %include "../include/chararray.i"
-%include "../include/submeshfield.i"
 %include "../include/scalartypemaps.i"
 
 // Numpy interface stuff
@@ -59,7 +57,6 @@ import_array();
 
 // Interfaces
 %include "Mesh.i"
-%include "SubMesh.i"
 %include "MeshOps.i"
 %include "FieldBase.i"
 %include "Field.i"
@@ -73,15 +70,10 @@ import_array();
 // Template instatiation
 
 %template(MeshField) pylith::topology::Field<pylith::topology::Mesh>;
-%template(SubMeshField) pylith::topology::Field<pylith::topology::SubMesh>;
 %template(MeshFields) pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >;
-%template(SubMeshFields) pylith::topology::Fields<pylith::topology::Field<pylith::topology::SubMesh> >;
 
 %extend pylith::topology::Field<pylith::topology::Mesh> {
   %template(createScatterMesh) createScatter<pylith::topology::Mesh>;
- }
-%extend pylith::topology::Field<pylith::topology::Mesh> {
-  %template(createScatterSubMesh) createScatter<pylith::topology::SubMesh>;
  }
 
 // End of file

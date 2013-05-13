@@ -27,7 +27,7 @@
 #if !defined(pylith_faults_testslipfn_hh)
 #define pylith_faults_testslipfn_hh
 
-#include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh
+#include "pylith/topology/topologyfwd.hh" // USES Mesh
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -54,7 +54,7 @@ protected :
    */
   static
   void
-  _createFaultMesh(topology::SubMesh* faultMesh,
+  _createFaultMesh(topology::Mesh* faultMesh,
 		   topology::Mesh* mesh,
 		   const char* faultLabel,
 		   const int faultId);

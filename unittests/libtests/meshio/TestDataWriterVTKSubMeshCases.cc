@@ -22,22 +22,11 @@
 
 #include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
 
+
+// ----------------------------------------------------------------------
 #include "data/DataWriterVTKDataSubMeshLine2.hh"
-#include "data/DataWriterVTKDataSubMeshTri3.hh"
-#include "data/DataWriterVTKDataSubMeshQuad4.hh"
-#include "data/DataWriterVTKDataSubMeshTet4.hh"
-#include "data/DataWriterVTKDataSubMeshHex8.hh"
-
-
-// ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKSubMeshLine2 );
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKSubMeshTri3 );
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKSubMeshQuad4 );
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKSubMeshTet4 );
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKSubMeshHex8 );
 
-
-// ----------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterVTKSubMeshLine2::setUp(void)
@@ -54,6 +43,9 @@ pylith::meshio::TestDataWriterVTKSubMeshLine2::setUp(void)
 
 
 // ----------------------------------------------------------------------
+#include "data/DataWriterVTKDataSubMeshTri3.hh"
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKSubMeshTri3 );
+
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterVTKSubMeshTri3::setUp(void)
@@ -70,6 +62,9 @@ pylith::meshio::TestDataWriterVTKSubMeshTri3::setUp(void)
 
 
 // ----------------------------------------------------------------------
+#include "data/DataWriterVTKDataSubMeshQuad4.hh"
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKSubMeshQuad4 );
+
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterVTKSubMeshQuad4::setUp(void)
@@ -86,6 +81,9 @@ pylith::meshio::TestDataWriterVTKSubMeshQuad4::setUp(void)
 
 
 // ----------------------------------------------------------------------
+#include "data/DataWriterVTKDataSubMeshTet4.hh"
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKSubMeshTet4 );
+
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterVTKSubMeshTet4::setUp(void)
@@ -102,6 +100,9 @@ pylith::meshio::TestDataWriterVTKSubMeshTet4::setUp(void)
 
 
 // ----------------------------------------------------------------------
+#include "data/DataWriterVTKDataSubMeshHex8.hh"
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKSubMeshHex8 );
+
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterVTKSubMeshHex8::setUp(void)

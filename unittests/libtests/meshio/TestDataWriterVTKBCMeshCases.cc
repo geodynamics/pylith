@@ -22,20 +22,11 @@
 
 #include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
 
+
+// ----------------------------------------------------------------------
 #include "data/DataWriterVTKDataBCMeshTri3.hh"
-#include "data/DataWriterVTKDataBCMeshQuad4.hh"
-#include "data/DataWriterVTKDataBCMeshTet4.hh"
-#include "data/DataWriterVTKDataBCMeshHex8.hh"
-
-
-// ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKBCMeshTri3 );
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKBCMeshQuad4 );
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKBCMeshTet4 );
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKBCMeshHex8 );
 
-
-// ----------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterVTKBCMeshTri3::setUp(void)
@@ -52,6 +43,9 @@ pylith::meshio::TestDataWriterVTKBCMeshTri3::setUp(void)
 
 
 // ----------------------------------------------------------------------
+#include "data/DataWriterVTKDataBCMeshQuad4.hh"
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKBCMeshQuad4 );
+
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterVTKBCMeshQuad4::setUp(void)
@@ -68,6 +62,9 @@ pylith::meshio::TestDataWriterVTKBCMeshQuad4::setUp(void)
 
 
 // ----------------------------------------------------------------------
+#include "data/DataWriterVTKDataBCMeshTet4.hh"
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKBCMeshTet4 );
+
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterVTKBCMeshTet4::setUp(void)
@@ -84,6 +81,9 @@ pylith::meshio::TestDataWriterVTKBCMeshTet4::setUp(void)
 
 
 // ----------------------------------------------------------------------
+#include "data/DataWriterVTKDataBCMeshHex8.hh"
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKBCMeshHex8 );
+
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterVTKBCMeshHex8::setUp(void)

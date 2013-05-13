@@ -20,21 +20,13 @@
 
 #include "TestDataWriterHDF5FaultMeshCases.hh" // Implementation of class methods
 
-#include "data/DataWriterHDF5DataFaultMeshTri3.hh"
-#include "data/DataWriterHDF5DataFaultMeshQuad4.hh"
-#include "data/DataWriterHDF5DataFaultMeshTet4.hh"
-#include "data/DataWriterHDF5DataFaultMeshHex8.hh"
-
 #include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
 
+
 // ----------------------------------------------------------------------
+#include "data/DataWriterHDF5DataFaultMeshTri3.hh"
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5FaultMeshTri3 );
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5FaultMeshQuad4 );
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5FaultMeshTet4 );
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5FaultMeshHex8 );
 
-
-// ----------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterHDF5FaultMeshTri3::setUp(void)
@@ -52,6 +44,9 @@ pylith::meshio::TestDataWriterHDF5FaultMeshTri3::setUp(void)
 
 
 // ----------------------------------------------------------------------
+#include "data/DataWriterHDF5DataFaultMeshQuad4.hh"
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5FaultMeshQuad4 );
+
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterHDF5FaultMeshQuad4::setUp(void)
@@ -69,6 +64,9 @@ pylith::meshio::TestDataWriterHDF5FaultMeshQuad4::setUp(void)
 
 
 // ----------------------------------------------------------------------
+#include "data/DataWriterHDF5DataFaultMeshTet4.hh"
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5FaultMeshTet4 );
+
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterHDF5FaultMeshTet4::setUp(void)
@@ -86,6 +84,9 @@ pylith::meshio::TestDataWriterHDF5FaultMeshTet4::setUp(void)
 
 
 // ----------------------------------------------------------------------
+#include "data/DataWriterHDF5DataFaultMeshHex8.hh"
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5FaultMeshHex8 );
+
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterHDF5FaultMeshHex8::setUp(void)

@@ -97,8 +97,8 @@ namespace pylith {
        * @param quadrature Quadrature for finite-element integration
        */
       virtual
-      void initialize(const pylith::topology::SubMesh& mesh,
-		      pylith::feassemble::Quadrature<pylith::topology::SubMesh>* quadrature);
+      void initialize(const pylith::topology::Mesh& mesh,
+		      pylith::feassemble::Quadrature<pylith::topology::Mesh>* quadrature);
   
       /** Check whether friction model has a field as a property or
        * state variable.
@@ -116,13 +116,13 @@ namespace pylith {
        * @param name Name of field to retrieve.
        * @returns Field over fault interface cells.
        */
-      const pylith::topology::Field<pylith::topology::SubMesh>& getField(const char* name);
+      const pylith::topology::Field<pylith::topology::Mesh>& getField(const char* name);
 
       /** Get the field with all properties and state variables.
        *
        * @returns Properties field.
        */
-      const pylith::topology::Fields<pylith::topology::Field<pylith::topology::SubMesh> >& fieldsPropsStateVars() const;
+      const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >& fieldsPropsStateVars() const;
 
       /** Retrieve parameters for physical properties and state variables
        * for vertex.

@@ -22,19 +22,19 @@
 
 import unittest
 
-from pylith.topology.SubMesh import SubMesh
+from pylith.topology.Mesh import Mesh
 
 # ----------------------------------------------------------------------
 class TestSubMesh(unittest.TestCase):
   """
-  Unit testing of SubMesh object.
+  Unit testing of Mesh object.
   """
 
   def test_constructorA(self):
     """
     Test constructor.
     """
-    mesh = SubMesh()
+    mesh = Mesh()
     self.assertEqual(0, mesh.dimension())
     self.assertEqual(False, mesh.debug())
     return
@@ -45,20 +45,9 @@ class TestSubMesh(unittest.TestCase):
     Test constructor.
     """
     mesh = self._getMesh()
-    submesh = SubMesh(mesh, "bc")
+    submesh = Mesh(mesh=mesh, label="bc")
     self.assertEqual(1, submesh.dimension())
     self.assertEqual(False, mesh.debug())
-    return
-
-
-  def test_createSubMesh(self):
-    """
-    Test createSeiveMesh().
-    """
-    mesh = self._getMesh()
-    submesh = SubMesh()
-    submesh.createSubMesh(mesh, "bc")
-    self.assertEqual(1, submesh.dimension())
     return
 
 
@@ -67,7 +56,7 @@ class TestSubMesh(unittest.TestCase):
     Test coordsys().
     """
     mesh = self._getMesh()
-    submesh = SubMesh(mesh, "bc")
+    submesh = Mesh(mesh=mesh, label="bc")
     self.assertEqual(2, submesh.coordsys().spaceDim())
     return
 
@@ -77,7 +66,7 @@ class TestSubMesh(unittest.TestCase):
     Test debug().
     """
     mesh = self._getMesh()
-    submesh = SubMesh(mesh, "bc")
+    submesh = Mesh(mesh=mesh, label="bc")
 
     self.assertEqual(False, submesh.debug())
 
@@ -91,7 +80,7 @@ class TestSubMesh(unittest.TestCase):
     Test debug().
     """
     mesh = self._getMesh()
-    submesh = SubMesh(mesh, "bc")
+    submesh = Mesh(mesh=mesh, label="bc")
 
     self.assertEqual(1, submesh.dimension())
     return
@@ -102,7 +91,7 @@ class TestSubMesh(unittest.TestCase):
     Test comm().
     """
     mesh = self._getMesh()
-    submesh = SubMesh(mesh, "bc")
+    submesh = Mesh(mesh=mesh, label="bc")
 
     comm = submesh.comm()
     self.assertEqual(0, comm.rank)

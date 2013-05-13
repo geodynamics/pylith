@@ -21,7 +21,6 @@
 #include "DirichletBoundary.hh" // implementation of object methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
@@ -73,7 +72,7 @@ pylith::bc::DirichletBoundary::initialize(const topology::Mesh& mesh,
 
   DirichletBC::initialize(mesh, upDir);
 
-  _boundaryMesh = new topology::SubMesh(mesh, _label.c_str());
+  _boundaryMesh = new topology::Mesh(mesh, _label.c_str());
   assert(_boundaryMesh);
 
   PYLITH_METHOD_END;
@@ -81,7 +80,7 @@ pylith::bc::DirichletBoundary::initialize(const topology::Mesh& mesh,
 
 // ----------------------------------------------------------------------
 // Get vertex field of BC initial or rate of change of values.
-const pylith::topology::Field<pylith::topology::SubMesh>&
+const pylith::topology::Field<pylith::topology::Mesh>&
 pylith::bc::DirichletBoundary::vertexField(const char* name,
 					   const topology::SolutionFields& fields)
 { // getVertexField
@@ -98,17 +97,17 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
   const int spaceDim = cs->spaceDim();
 
   if (!_outputFields) {
-    _outputFields = new topology::Fields<topology::Field<topology::SubMesh> >(*_boundaryMesh);
+    _outputFields = new topology::Fields<topology::Field<topology::Mesh> >(*_boundaryMesh);
   } // if
   assert(_outputFields);
   _outputFields->add("buffer (vector)", "buffer_vector", topology::FieldBase::FACES_FIELD, spaceDim);
-  topology::Field<topology::SubMesh>& bufferVector = _outputFields->get("buffer (vector)");
+  topology::Field<topology::Mesh>& bufferVector = _outputFields->get("buffer (vector)");
   bufferVector.vectorFieldType(topology::FieldBase::VECTOR);
   bufferVector.scale(lengthScale);
   bufferVector.allocate();
 
   _outputFields->add("buffer (scalar)", "buffer_scalar", topology::FieldBase::FACES_FIELD, 1);
-  topology::Field<topology::SubMesh>& bufferScalar = _outputFields->get("buffer (scalar)");
+  topology::Field<topology::Mesh>& bufferScalar = _outputFields->get("buffer (scalar)");
   bufferScalar.vectorFieldType(topology::FieldBase::SCALAR);
   bufferScalar.scale(timeScale);
   bufferScalar.allocate();
@@ -138,7 +137,7 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
 
 // ----------------------------------------------------------------------
 // Get vertex vector field with BC information.
-const pylith::topology::Field<pylith::topology::SubMesh>&
+const pylith::topology::Field<pylith::topology::Mesh>&
 pylith::bc::DirichletBoundary::_bufferVector(const char* name,
 					     const char* label,
 					     const PylithScalar scale)
@@ -157,7 +156,7 @@ pylith::bc::DirichletBoundary::_bufferVector(const char* name,
   } // if
   
   assert(_outputFields->hasField("buffer (vector)"));
-  topology::Field<topology::SubMesh>& buffer = _outputFields->get("buffer (vector)");
+  topology::Field<topology::Mesh>& buffer = _outputFields->get("buffer (vector)");
   topology::VecVisitorMesh bufferVisitor(buffer);
   PetscScalar* bufferArray = bufferVisitor.localArray();
 
@@ -191,7 +190,7 @@ pylith::bc::DirichletBoundary::_bufferVector(const char* name,
 
 // ----------------------------------------------------------------------
 // Get vertex scalar field with BC information.
-const pylith::topology::Field<pylith::topology::SubMesh>&
+const pylith::topology::Field<pylith::topology::Mesh>&
 pylith::bc::DirichletBoundary::_bufferScalar(const char* name,
 					     const char* label,
 					     const PylithScalar scale)
@@ -210,7 +209,7 @@ pylith::bc::DirichletBoundary::_bufferScalar(const char* name,
   } // if
   
   assert(_outputFields->hasField("buffer (scalar)"));
-  topology::Field<topology::SubMesh>& buffer = _outputFields->get("buffer (scalar)");
+  topology::Field<topology::Mesh>& buffer = _outputFields->get("buffer (scalar)");
   topology::VecVisitorMesh bufferVisitor(buffer);
   PetscScalar* bufferArray = bufferVisitor.localArray();
 

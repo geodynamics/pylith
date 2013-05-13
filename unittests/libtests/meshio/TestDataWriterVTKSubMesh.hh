@@ -30,7 +30,7 @@
 #include "TestDataWriterVTK.hh"
 #include "TestDataWriterSubMesh.hh"
 
-#include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh, Field
+#include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 
 #include <cppunit/extensions/HelperMacros.h>
 

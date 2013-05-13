@@ -31,9 +31,9 @@
 // Include directives ---------------------------------------------------
 #include "BoundaryCondition.hh" // ISA BoundaryCondition
 
-#include "pylith/topology/topologyfwd.hh" // HOLDSA Fields, SubMesh
+#include "pylith/topology/topologyfwd.hh" // HOLDSA Fields, Mesh
 
-#include "pylith/topology/SubMesh.hh" // ISA Quadrature<SubMesh>
+#include "pylith/topology/Mesh.hh" // ISA Quadrature<Mesh>
 #include "pylith/feassemble/Quadrature.hh" // ISA Integrator<Quadrature>
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
@@ -41,7 +41,7 @@
 /// @brief Abstract base classs for BoundaryCondition object with
 /// boundary condition applied at a simple-connect surface (submesh).
 class pylith::bc::BCIntegratorSubMesh : public BoundaryCondition,
-      public feassemble::Integrator<feassemble::Quadrature<topology::SubMesh> >
+      public feassemble::Integrator<feassemble::Quadrature<topology::Mesh> >
 { // class BCIntegratorSubMesh
   friend class TestBCIntegratorSubMesh; // unit testing
 
@@ -63,14 +63,14 @@ public :
    *
    * @returns Parameter fields.
    */
-  const topology::Fields<topology::Field<topology::SubMesh> >*
+  const topology::Fields<topology::Field<topology::Mesh> >*
   parameterFields(void) const;
 
   /** Get boundary mesh.
    *
    * @return Boundary mesh.
    */
-  const topology::SubMesh& boundaryMesh(void) const;
+  const topology::Mesh& boundaryMesh(void) const;
 
   /** Get mesh labels for submesh associated with applied forces.
    *
@@ -87,10 +87,10 @@ public :
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
-  topology::SubMesh* _boundaryMesh; ///< Boundary mesh.
+  topology::Mesh* _boundaryMesh; ///< Boundary mesh.
 
   /// Parameters for boundary condition.
-  topology::Fields<topology::Field<topology::SubMesh> >* _parameters;
+  topology::Fields<topology::Field<topology::Mesh> >* _parameters;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

@@ -110,9 +110,7 @@ class TestTimeStepUser(unittest.TestCase):
                    Integrator(80.0)]
 
     from pylith.topology.Mesh import Mesh
-    from pylith.mpi.Communicator import petsc_comm_world
     mesh = Mesh()
-    #mesh.setComm(petsc_comm_world())
 
     self.assertEqual(step1, tstep.timeStep(mesh, integrators))
     self.assertEqual(step2, tstep.timeStep(mesh, integrators))

@@ -39,7 +39,7 @@
 #include <map> // USES std::map
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Field<pylith::topology::SubMesh> MeshField;
+typedef pylith::topology::Field<pylith::topology::Mesh> MeshField;
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -50,7 +50,8 @@ pylith::meshio::TestDataWriterFaultMesh::setUp(void)
 
   _data = 0;
   _mesh = new topology::Mesh();
-  _faultMesh = new topology::SubMesh();
+  const bool isSubMesh = true;
+  _faultMesh = new topology::Mesh(isSubMesh);
   _flipFault = false;
 
   PYLITH_METHOD_END;

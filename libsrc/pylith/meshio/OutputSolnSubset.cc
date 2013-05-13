@@ -44,7 +44,7 @@ pylith::meshio::OutputSolnSubset::deallocate(void)
 { // deallocate
   PYLITH_METHOD_BEGIN;
 
-  OutputManager<topology::SubMesh, topology::Field<topology::Mesh> >::deallocate();
+  OutputManager<topology::Mesh, topology::Field<topology::Mesh> >::deallocate();
 
   delete _submesh; _submesh = 0;
 
@@ -85,12 +85,12 @@ pylith::meshio::OutputSolnSubset::verifyConfiguration(const topology::Mesh& mesh
 
 // ----------------------------------------------------------------------
 // Get mesh associated with subdomain.
-const pylith::topology::SubMesh&
+const pylith::topology::Mesh&
 pylith::meshio::OutputSolnSubset::subdomainMesh(const topology::Mesh& mesh)
 { // subdomainMesh
   PYLITH_METHOD_BEGIN;
 
-  delete _submesh; _submesh = new topology::SubMesh(mesh, _label.c_str());assert(_submesh);
+  delete _submesh; _submesh = new topology::Mesh(mesh, _label.c_str());assert(_submesh);
 
   PYLITH_METHOD_RETURN(*_submesh);
 } // subdomainMesh

@@ -29,6 +29,7 @@
 
 #include "pylith/utils/types.hh"
 
+#if 0 // :TODO: Update this for PETSc DM.
 namespace ALE {
   template<typename cellrefiner_type> class MeshRefiner;
   class RefineEdges2;
@@ -43,12 +44,12 @@ namespace ALE {
 
   class MeshOrder;
 } // ALE
+#endif
 
 namespace pylith {
   namespace topology {
 
     class Mesh;
-    class SubMesh;
     class MeshOps;
     class CoordsVisitor;
     class SubMeshIS;

@@ -34,7 +34,7 @@ namespace pylith {
   } // faults
 } // pylith
 
-#include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh
+#include "pylith/topology/topologyfwd.hh" // USES Mesh
 
 /// C++ object for constructing fault mesh.
 class pylith::faults::TestFaultMesh
@@ -51,7 +51,7 @@ public :
    * @param faultId Material id for fault.
    */
   static
-  void createFaultMesh(topology::SubMesh* faultMesh,
+  void createFaultMesh(topology::Mesh* faultMesh,
 		       topology::Mesh* mesh,
 		       const char* faultLabel,
 		       const int faultId);

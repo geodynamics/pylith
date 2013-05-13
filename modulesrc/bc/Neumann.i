@@ -85,7 +85,7 @@ namespace pylith {
        *
        * @returns Traction vector at integration points.
        */
-      const pylith::topology::Field<pylith::topology::SubMesh>&
+      const pylith::topology::Field<pylith::topology::Mesh>&
       cellField(const char* name,
 		pylith::topology::SolutionFields* const fields =0);
 

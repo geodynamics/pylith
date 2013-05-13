@@ -149,7 +149,6 @@ libpylith_la_SOURCES = \
 	topology/Jacobian.cc \
 	topology/Mesh.cc \
 	topology/MeshOps.cc \
-	topology/SubMesh.cc \
 	topology/SolutionFields.cc \
 	topology/Distributor.cc \
 	topology/ReverseCuthillMcKee.cc \

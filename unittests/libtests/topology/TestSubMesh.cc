@@ -21,7 +21,6 @@
 #include "TestSubMesh.hh" // Implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::createDMMesh()
 
@@ -73,9 +72,9 @@ pylith::topology::TestSubMesh::testConstructor(void)
 { // testConstructor
   PYLITH_METHOD_BEGIN;
 
-  SubMesh mesh;
-  CPPUNIT_ASSERT_EQUAL(0, mesh.dimension());
-  CPPUNIT_ASSERT_EQUAL(false, mesh.debug());
+  Mesh submesh;
+  CPPUNIT_ASSERT_EQUAL(0, submesh.dimension());
+  CPPUNIT_ASSERT_EQUAL(false, submesh.debug());
 
   PYLITH_METHOD_END;
 } // testConstructor
@@ -90,15 +89,15 @@ pylith::topology::TestSubMesh::testConstructorMesh(void)
  Mesh mesh2D;
   _buildMesh(&mesh2D);
   
-  SubMesh mesh(mesh2D, _TestSubMesh::label);
-  CPPUNIT_ASSERT_EQUAL(_TestSubMesh::cellDim-1, mesh.dimension());
+  Mesh submesh(mesh2D, _TestSubMesh::label);
+  CPPUNIT_ASSERT_EQUAL(_TestSubMesh::cellDim-1, submesh.dimension());
 
   int result = 0;
-  MPI_Comm_compare(PETSC_COMM_WORLD, mesh.comm(), &result);
+  MPI_Comm_compare(PETSC_COMM_WORLD, submesh.comm(), &result);
   CPPUNIT_ASSERT_EQUAL(int(MPI_CONGRUENT), result);
 
   // Check vertices
-  const PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+  const PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
   Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
   const PetscInt vStart = depthStratum.begin();
   const PetscInt vEnd = depthStratum.end();
@@ -124,50 +123,6 @@ pylith::topology::TestSubMesh::testConstructorMesh(void)
 } // testConstructorMesh
 
 // ----------------------------------------------------------------------
-// Test createSubMesh().
-void
-pylith::topology::TestSubMesh::testCreateSubMesh(void)
-{ // testCreateSubMesh
-  PYLITH_METHOD_BEGIN;
-
-  Mesh mesh2D;
-  _buildMesh(&mesh2D);
-  
-  SubMesh mesh;
-  mesh.createSubMesh(mesh2D, _TestSubMesh::label);
-  CPPUNIT_ASSERT_EQUAL(_TestSubMesh::cellDim-1, mesh.dimension());
-
-  int result = 0;
-  MPI_Comm_compare(PETSC_COMM_WORLD, mesh.comm(), &result);
-  CPPUNIT_ASSERT_EQUAL(int(MPI_CONGRUENT), result);
-
-  // Check vertices
-  const PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
-  Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
-  const PetscInt vStart = depthStratum.begin();
-  const PetscInt vEnd = depthStratum.end();
-  
-  const PetscInt nvertices = _TestSubMesh::submeshNumVertices;
-  CPPUNIT_ASSERT_EQUAL(nvertices, depthStratum.size());
-  for (PetscInt v = vStart, iV=0; v < vEnd; ++v, ++iV) {
-    CPPUNIT_ASSERT_EQUAL(_TestSubMesh::submeshVertices[iV], v);
-  } // for
-
-  // Check cells
-  Stratum heightStratum(dmMesh, Stratum::HEIGHT, 0);
-  const PetscInt cStart = heightStratum.begin();
-  const PetscInt cEnd = heightStratum.end();
-  
-  const PetscInt ncells = _TestSubMesh::submeshNumCells;
-  CPPUNIT_ASSERT_EQUAL(ncells, heightStratum.size());
-  for (PetscInt c = cStart, iC=0; c < cEnd; ++c, ++iC) {
-    CPPUNIT_ASSERT_EQUAL(_TestSubMesh::submeshCells[iC], c);
-  } // for
-
-  PYLITH_METHOD_END;
-} // testCreateSubMesh
-
-// ----------------------------------------------------------------------
 // Test coordsys().
 void
 pylith::topology::TestSubMesh::testCoordsys(void)
@@ -177,9 +132,9 @@ pylith::topology::TestSubMesh::testCoordsys(void)
   Mesh mesh2D;
   _buildMesh(&mesh2D);
 
-  SubMesh mesh(mesh2D, _TestSubMesh::label);
+  Mesh submesh(mesh2D, _TestSubMesh::label);
 
-  CPPUNIT_ASSERT_EQUAL(_TestSubMesh::cellDim, mesh.coordsys()->spaceDim());
+  CPPUNIT_ASSERT_EQUAL(_TestSubMesh::cellDim, submesh.coordsys()->spaceDim());
 
   PYLITH_METHOD_END;
 } // testCoordsys
@@ -191,11 +146,14 @@ pylith::topology::TestSubMesh::testDebug(void)
 { // testDebug
   PYLITH_METHOD_BEGIN;
 
-  SubMesh mesh;
-  CPPUNIT_ASSERT_EQUAL(false, mesh.debug());
+  Mesh mesh2D;
+  _buildMesh(&mesh2D);
 
-  mesh.debug(true);
-  CPPUNIT_ASSERT_EQUAL(true, mesh.debug());
+  Mesh submesh(mesh2D, _TestSubMesh::label);
+  CPPUNIT_ASSERT_EQUAL(false, submesh.debug());
+
+  submesh.debug(true);
+  CPPUNIT_ASSERT_EQUAL(true, submesh.debug());
 
   PYLITH_METHOD_END;
 } // testDebug
@@ -207,13 +165,13 @@ pylith::topology::TestSubMesh::testDimension(void)
 { // testDimension
   PYLITH_METHOD_BEGIN;
 
-  SubMesh mesh;
-  CPPUNIT_ASSERT_EQUAL(0, mesh.dimension());
+  Mesh submesh;
+  CPPUNIT_ASSERT_EQUAL(0, submesh.dimension());
 
   Mesh mesh2D;
   _buildMesh(&mesh2D);
-  SubMesh mesh2(mesh2D, _TestSubMesh::label);
-  CPPUNIT_ASSERT_EQUAL(_TestSubMesh::cellDim-1, mesh2.dimension());
+  Mesh submesh2(mesh2D, _TestSubMesh::label);
+  CPPUNIT_ASSERT_EQUAL(_TestSubMesh::cellDim-1, submesh2.dimension());
 
   PYLITH_METHOD_END;
 } // testDimension
@@ -228,7 +186,7 @@ pylith::topology::TestSubMesh::testConeSize(void)
   Mesh mesh;
   _buildMesh(&mesh);
 
-  SubMesh submesh(mesh, _TestSubMesh::label);
+  Mesh submesh(mesh, _TestSubMesh::label);
   CPPUNIT_ASSERT_EQUAL(_TestSubMesh::submeshNumCorners, submesh.coneSize());
 
   PYLITH_METHOD_END;
@@ -243,7 +201,7 @@ pylith::topology::TestSubMesh::testNumVertices(void)
 
   Mesh mesh;
   _buildMesh(&mesh);
-  SubMesh submesh(mesh, _TestSubMesh::label);
+  Mesh submesh(mesh, _TestSubMesh::label);
   CPPUNIT_ASSERT_EQUAL(_TestSubMesh::submeshNumVertices, submesh.numVertices());
 
   PYLITH_METHOD_END;
@@ -258,7 +216,7 @@ pylith::topology::TestSubMesh::testNumCells(void)
 
   Mesh mesh;
   _buildMesh(&mesh);
-  SubMesh submesh(mesh, _TestSubMesh::label);
+  Mesh submesh(mesh, _TestSubMesh::label);
   CPPUNIT_ASSERT_EQUAL(_TestSubMesh::submeshNumCells, submesh.numCells());
 
   PYLITH_METHOD_END;
@@ -271,14 +229,13 @@ pylith::topology::TestSubMesh::testComm(void)
 { // testComm
   PYLITH_METHOD_BEGIN;
 
-  SubMesh mesh;
-
   Mesh mesh2D;
   _buildMesh(&mesh2D);
-  mesh.createSubMesh(mesh2D, _TestSubMesh::label);
+
+  Mesh submesh(mesh2D, _TestSubMesh::label);
 
   int result = 0;
-  MPI_Comm_compare(PETSC_COMM_WORLD, mesh.comm(), &result);
+  MPI_Comm_compare(PETSC_COMM_WORLD, submesh.comm(), &result);
   CPPUNIT_ASSERT_EQUAL(int(MPI_CONGRUENT), result);
 
   PYLITH_METHOD_END;

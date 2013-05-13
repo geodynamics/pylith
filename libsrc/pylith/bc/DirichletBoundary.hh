@@ -59,7 +59,7 @@ public :
    *
    * @return Boundary mesh.
    */
-  const topology::SubMesh& boundaryMesh(void) const;
+  const topology::Mesh& boundaryMesh(void) const;
 
   /** Get vertex field with BC information.
    *
@@ -68,7 +68,7 @@ public :
    *
    * @returns Field over vertices.
    */
-  const topology::Field<topology::SubMesh>&
+  const topology::Field<topology::Mesh>&
   vertexField(const char* name,
 	      const topology::SolutionFields& fields);
 
@@ -83,7 +83,7 @@ private :
    *
    * @returns Field over vertices.
    */
-  const topology::Field<topology::SubMesh>&
+  const topology::Field<topology::Mesh>&
   _bufferVector(const char* name,
 		const char* label,
 		const PylithScalar scale);
@@ -96,7 +96,7 @@ private :
    *
    * @returns Field over vertices.
    */
-  const topology::Field<topology::SubMesh>&
+  const topology::Field<topology::Mesh>&
   _bufferScalar(const char* name,
 		const char* label,
 		const PylithScalar scale);
@@ -104,10 +104,10 @@ private :
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
-  topology::SubMesh* _boundaryMesh; ///< Boundary mesh.
+  topology::Mesh* _boundaryMesh; ///< Boundary mesh.
 
   /// Fields manager (holds temporary field for output).
-  topology::Fields<topology::Field<topology::SubMesh> >* _outputFields;
+  topology::Fields<topology::Field<topology::Mesh> >* _outputFields;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

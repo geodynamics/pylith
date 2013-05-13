@@ -27,7 +27,7 @@
 #if !defined(pylith_meshio_testdatawritersubmesh_hh)
 #define pylith_meshio_testdatawritersubmesh_hh
 
-#include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh, Field
+#include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 
 /// Namespace for pylith package
 namespace pylith {
@@ -66,14 +66,14 @@ protected :
    * @param fields Cell fields.
    */
   void
-  _createCellFields(topology::Fields<topology::Field<topology::SubMesh> >* fields) const;
+  _createCellFields(topology::Fields<topology::Field<topology::Mesh> >* fields) const;
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
   DataWriterData* _data; ///< Data for testing
   topology::Mesh* _mesh; ///< Mesh for domain
-  topology::SubMesh* _submesh; ///< Mesh for subdomain.
+  topology::Mesh* _submesh; ///< Mesh for subdomain.
   bool _flipFault; ///< If true, flip fault orientation.
 
 }; // class TestDataWriterSubMesh

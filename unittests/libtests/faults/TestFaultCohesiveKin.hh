@@ -30,7 +30,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "pylith/faults/faultsfwd.hh" // forward declarations
-#include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh
+#include "pylith/topology/topologyfwd.hh" // USES Mesh
 #include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Quadrature
 
 #include <vector> // HASA std::vector
@@ -62,7 +62,7 @@ class pylith::faults::TestFaultCohesiveKin : public CppUnit::TestFixture
 protected :
 
   CohesiveKinData* _data; ///< Data for testing
-  feassemble::Quadrature<topology::SubMesh>* _quadrature; ///< Fault quad.
+  feassemble::Quadrature<topology::Mesh>* _quadrature; ///< Fault quad.
   std::vector<EqKinSrc*> _eqsrcs; ///< Array of Kinematic earthquake sources.
   std::vector<BruneSlipFn*> _slipfns; ///< Slip time function.
   bool _flipFault; ///< If true, flip fault orientation.

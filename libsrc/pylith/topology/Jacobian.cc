@@ -21,7 +21,6 @@
 #include "Jacobian.hh" // implementation of class methods
 
 #include "Mesh.hh" // USES Mesh
-#include "SubMesh.hh" // USES SubMesh
 #include "Field.hh" // USES Field
 
 #include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
@@ -43,30 +42,6 @@ pylith::topology::Jacobian::Jacobian(const Field<Mesh>& field,
   const int blockFlag = (blockOkay) ? -1 : 1;
 
   const char* msg = "Could not create PETSc sparse matrix associated with system Jacobian.";
-  PetscErrorCode err = DMCreateMatrix(dmMesh, matrixType, &_matrix);PYLITH_CHECK_ERROR_MSG(err, msg);
-
-  _type = matrixType;
-
-  PYLITH_METHOD_END;
-} // constructor
-
-// ----------------------------------------------------------------------
-// Default constructor.
-pylith::topology::Jacobian::Jacobian(const Field<SubMesh>& field,
-                                     const char* matrixType,
-                                     const bool blockOkay) :
-  _matrix(0),
-  _valuesChanged(true)
-{ // constructor
-  PYLITH_METHOD_BEGIN;
-
-  PetscDM dmMesh = field.dmMesh();assert(dmMesh);
-
-  // Set blockFlag to -1 if okay to set block size equal to fiber
-  // dimension, otherwise use a block size of 1.
-  const int blockFlag = (blockOkay) ? -1 : 1;
-
-  const char* msg = "Could not create PETSc sparse matrix associated with subsystem Jacobian.";
   PetscErrorCode err = DMCreateMatrix(dmMesh, matrixType, &_matrix);PYLITH_CHECK_ERROR_MSG(err, msg);
 
   _type = matrixType;

@@ -93,9 +93,7 @@ class TestTimeStepAdapt(unittest.TestCase):
                    Integrator(0.5)]
 
     from pylith.topology.Mesh import Mesh
-    from pylith.mpi.Communicator import petsc_comm_world
     mesh = Mesh()
-    mesh.setComm(petsc_comm_world())
 
     # Set time step
     dt = 0.5 / 2.0
@@ -151,9 +149,7 @@ class TestTimeStepAdapt(unittest.TestCase):
                    Integrator(2.4)]
 
     from pylith.topology.Mesh import Mesh
-    from pylith.mpi.Communicator import petsc_comm_world
     mesh = Mesh()
-    mesh.setComm(petsc_comm_world())
 
     dt = 2.4 / 2.0
     tstep.timeStep(mesh, integrators)

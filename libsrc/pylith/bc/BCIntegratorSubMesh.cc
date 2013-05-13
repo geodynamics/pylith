@@ -20,7 +20,7 @@
 
 #include "BCIntegratorSubMesh.hh" // implementation of object methods
 
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Stratum.hh" // USES Stratum
@@ -48,7 +48,7 @@ pylith::bc::BCIntegratorSubMesh::deallocate(void)
   PYLITH_METHOD_BEGIN;
 
   BoundaryCondition::deallocate();
-  feassemble::Integrator<feassemble::Quadrature<topology::SubMesh> >::deallocate();
+  feassemble::Integrator<feassemble::Quadrature<topology::Mesh> >::deallocate();
 
   delete _boundaryMesh; _boundaryMesh = 0;
   delete _parameters; _parameters = 0;
@@ -66,7 +66,7 @@ pylith::bc::BCIntegratorSubMesh::createSubMesh(const topology::Mesh& mesh)
   delete _boundaryMesh; _boundaryMesh = 0;
   delete _parameters; _parameters = 0;
 
-  _boundaryMesh = new topology::SubMesh(mesh, _label.c_str());
+  _boundaryMesh = new topology::Mesh(mesh, _label.c_str());
   assert(_boundaryMesh);
 
   PYLITH_METHOD_END;

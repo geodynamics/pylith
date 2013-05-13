@@ -23,8 +23,6 @@
 import unittest
 
 from pylith.meshio.DataWriterVTKMesh import DataWriterVTKMesh
-from pylith.meshio.DataWriterVTKSubMesh import DataWriterVTKSubMesh
-from pylith.meshio.DataWriterVTKSubSubMesh import DataWriterVTKSubSubMesh
 
 # ----------------------------------------------------------------------
 class TestDataWriterVTKMesh(unittest.TestCase):
@@ -59,80 +57,6 @@ class TestDataWriterVTKMesh(unittest.TestCase):
     Test factory method.
     """
     from pylith.meshio.DataWriterVTKMesh import data_writer
-    filter = data_writer()
-    return
-
-
-# ----------------------------------------------------------------------
-class TestDataWriterVTKSubMesh(unittest.TestCase):
-  """
-  Unit testing of Python DataWriterVTK object.
-  """
-
-  def test_constructor(self):
-    """
-    Test constructor.
-    """
-    filter = DataWriterVTKSubMesh()
-    filter._configure()
-    return
-
-
-  def test_initialize(self):
-    """
-    Test constructor.
-    """
-    filter = DataWriterVTKSubMesh()
-    filter._configure()
-
-    from spatialdata.units.Nondimensional import Nondimensional
-    normalizer = Nondimensional()
-    filter.initialize(normalizer)
-    return
-
-
-  def test_factory(self):
-    """
-    Test factory method.
-    """
-    from pylith.meshio.DataWriterVTKSubMesh import data_writer
-    filter = data_writer()
-    return
-
-
-# ----------------------------------------------------------------------
-class TestDataWriterVTKSubSubMesh(unittest.TestCase):
-  """
-  Unit testing of Python DataWriterVTK object.
-  """
-
-  def test_constructor(self):
-    """
-    Test constructor.
-    """
-    filter = DataWriterVTKSubSubMesh()
-    filter._configure()
-    return
-
-
-  def test_initialize(self):
-    """
-    Test constructor.
-    """
-    filter = DataWriterVTKSubSubMesh()
-    filter._configure()
-
-    from spatialdata.units.Nondimensional import Nondimensional
-    normalizer = Nondimensional()
-    filter.initialize(normalizer)
-    return
-
-
-  def test_factory(self):
-    """
-    Test factory method.
-    """
-    from pylith.meshio.DataWriterVTKSubSubMesh import data_writer
     filter = data_writer()
     return
 

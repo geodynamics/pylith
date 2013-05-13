@@ -27,7 +27,6 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
@@ -54,7 +53,7 @@ pylith::faults::TestFaultCohesiveDyn::setUp(void)
   PYLITH_METHOD_BEGIN;
 
   _data = 0;
-  _quadrature = new feassemble::Quadrature<topology::SubMesh>();
+  _quadrature = new feassemble::Quadrature<topology::Mesh>();
   CPPUNIT_ASSERT(_quadrature);
   _tractPerturbation = 0;
   _dbInitialTract = 0;
@@ -533,7 +532,7 @@ pylith::faults::TestFaultCohesiveDyn::testCalcTractions(void)
   _setFieldsJacobian(&mesh, &fault, &fields, &jacobian, _data->fieldIncrStick);
 
   const int spaceDim = _data->spaceDim;
-  topology::Field<topology::SubMesh> tractions(*fault._faultMesh);
+  topology::Field<topology::Mesh> tractions(*fault._faultMesh);
   tractions.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   tractions.allocate();
   tractions.zero();

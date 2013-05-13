@@ -25,7 +25,6 @@
 #include "TestFaultMesh.hh" // USES createFaultMesh()
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/Stratum.hh" // USES Stratum
@@ -258,14 +257,14 @@ pylith::faults::TestBruneSlipFn::testSlip(void)
   const PylithScalar originTime = 5.064;
 
   topology::Mesh mesh;
-  topology::SubMesh faultMesh;
+  topology::Mesh faultMesh;
   BruneSlipFn slipfn;
   _initialize(&mesh, &faultMesh, &slipfn, originTime);
   
   const spatialdata::geocoords::CoordSys* cs = faultMesh.coordsys();CPPUNIT_ASSERT(cs);
   const int spaceDim = cs->spaceDim();
 
-  topology::Field<topology::SubMesh> slip(faultMesh);
+  topology::Field<topology::Mesh> slip(faultMesh);
   slip.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   slip.allocate();
 
@@ -337,7 +336,7 @@ pylith::faults::TestBruneSlipFn::testSlipTH(void)
 // Initialize BruneSlipFn.
 void
 pylith::faults::TestBruneSlipFn::_initialize(topology::Mesh* mesh,
-					     topology::SubMesh* faultMesh,
+					     topology::Mesh* faultMesh,
 					     BruneSlipFn* slipfn,
 					     const PylithScalar originTime)
 { // _initialize
@@ -423,7 +422,7 @@ pylith::faults::TestBruneSlipFn::_testInitialize(const _TestBruneSlipFn::DataStr
   mesh.coordsys(&cs);
 
   // Create fault mesh
-  topology::SubMesh faultMesh;
+  topology::Mesh faultMesh;
   TestFaultMesh::createFaultMesh(&faultMesh, &mesh, data.faultLabel, data.faultId);
 
   // Setup databases

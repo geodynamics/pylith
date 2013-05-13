@@ -24,14 +24,14 @@
 
 // Get parameter fields.
 inline
-const pylith::topology::Fields<pylith::topology::Field<pylith::topology::SubMesh> >*
+const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >*
 pylith::bc::BCIntegratorSubMesh::parameterFields(void) const {
   return _parameters;
 } // parameterFields
 
 // Get boundary mesh.
 inline
-const pylith::topology::SubMesh&
+const pylith::topology::Mesh&
 pylith::bc::BCIntegratorSubMesh::boundaryMesh(void) const {
   assert(_boundaryMesh);
   return *_boundaryMesh;

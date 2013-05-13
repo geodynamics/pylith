@@ -66,20 +66,8 @@ class TestApp(Script):
     from TestDataWriterHDF5 import TestDataWriterHDF5Mesh
     suite.addTest(unittest.makeSuite(TestDataWriterHDF5Mesh))
 
-    from TestDataWriterHDF5 import TestDataWriterHDF5SubMesh
-    suite.addTest(unittest.makeSuite(TestDataWriterHDF5SubMesh))
-
-    from TestDataWriterHDF5 import TestDataWriterHDF5SubSubMesh
-    suite.addTest(unittest.makeSuite(TestDataWriterHDF5SubSubMesh))
-
     from TestDataWriterHDF5Ext import TestDataWriterHDF5ExtMesh
     suite.addTest(unittest.makeSuite(TestDataWriterHDF5ExtMesh))
-
-    from TestDataWriterHDF5Ext import TestDataWriterHDF5ExtSubMesh
-    suite.addTest(unittest.makeSuite(TestDataWriterHDF5ExtSubMesh))
-
-    from TestDataWriterHDF5Ext import TestDataWriterHDF5ExtSubSubMesh
-    suite.addTest(unittest.makeSuite(TestDataWriterHDF5ExtSubSubMesh))
 
     from TestXdmf import TestXdmf
     suite.addTest(unittest.makeSuite(TestXdmf))

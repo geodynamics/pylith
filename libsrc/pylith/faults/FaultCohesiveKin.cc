@@ -26,7 +26,6 @@
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
@@ -132,7 +131,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(const topology::Field<topolo
   const int setupEvent = _logger->eventId("FaIR setup");
   _logger->eventBegin(setupEvent);
 
-  topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
+  topology::Field<topology::Mesh>& dispRel = _fields->get("relative disp");
   dispRel.zero();
   // Compute slip field at current time step
   const srcs_type::const_iterator srcsEnd = _eqSrcs.end();
@@ -145,7 +144,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(const topology::Field<topolo
 
   // Transform slip from local (fault) coordinate system to relative
   // displacement field in global coordinate system
-  const topology::Field<topology::SubMesh>& orientation = _fields->get("orientation");
+  const topology::Field<topology::Mesh>& orientation = _fields->get("orientation");
   FaultCohesiveLagrange::faultToGlobal(&dispRel, orientation);
 
   _logger->eventEnd(setupEvent);
@@ -158,7 +157,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(const topology::Field<topolo
 
 // ----------------------------------------------------------------------
 // Get vertex field associated with integrator.
-const pylith::topology::Field<pylith::topology::SubMesh>&
+const pylith::topology::Field<pylith::topology::Mesh>&
 pylith::faults::FaultCohesiveKin::vertexField(const char* name,
                                               const topology::SolutionFields* fields)
 { // vertexField
@@ -172,7 +171,7 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
   const int cohesiveDim = _faultMesh->dimension();
   const int spaceDim = _quadrature->spaceDim();
 
-  const topology::Field<topology::SubMesh>& orientation = _fields->get("orientation");
+  const topology::Field<topology::Mesh>& orientation = _fields->get("orientation");
 
   const int slipStrLen = strlen("final_slip");
   const int timeStrLen = strlen("slip_time");
@@ -180,9 +179,9 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
   PylithScalar scale = 0.0;
   int fiberDim = 0;
   if (0 == strcasecmp("slip", name)) {
-    const topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
+    const topology::Field<topology::Mesh>& dispRel = _fields->get("relative disp");
     _allocateBufferVectorField();
-    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
+    topology::Field<topology::Mesh>& buffer = _fields->get("buffer (vector)");
     buffer.copy(dispRel);
     buffer.label("slip");
     FaultCohesiveLagrange::globalToFault(&buffer, orientation);
@@ -192,7 +191,7 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
     PetscSection orientationSection = _fields->get("orientation").petscSection();assert(orientationSection);
     PetscVec orientationVec = _fields->get("orientation").localVector();assert(orientationVec);
     _allocateBufferVectorField();
-    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
+    topology::Field<topology::Mesh>& buffer = _fields->get("buffer (vector)");
     buffer.copy(orientationSection, 0, PETSC_DETERMINE, orientationVec);
     buffer.label("strike_dir");
     buffer.scale(1.0);
@@ -203,7 +202,7 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
     PetscVec orientationVec = _fields->get("orientation").localVector();assert(orientationVec);
     assert(orientationSection);assert(orientationVec);
     _allocateBufferVectorField();
-    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
+    topology::Field<topology::Mesh>& buffer = _fields->get("buffer (vector)");
     buffer.copy(orientationSection, 1, PETSC_DETERMINE, orientationVec);
     buffer.label("dip_dir");
     buffer.scale(1.0);
@@ -214,7 +213,7 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
     PetscVec orientationVec = _fields->get("orientation").localVector();assert(orientationVec);
     assert(orientationSection);assert(orientationVec);
     _allocateBufferVectorField();
-    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
+    topology::Field<topology::Mesh>& buffer = _fields->get("buffer (vector)");
     buffer.copy(orientationSection, cohesiveDim, PETSC_DETERMINE, orientationVec);
     buffer.label("normal_dir");
     buffer.scale(1.0);
@@ -228,7 +227,7 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
     // Need to append name of rupture to final slip label. Because
     // Field is const, we use a buffer.
     _allocateBufferVectorField();
-    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
+    topology::Field<topology::Mesh>& buffer = _fields->get("buffer (vector)");
     buffer.copy(s_iter->second->finalSlip());
     assert(value.length() > 0);
     const std::string& label = (_eqSrcs.size() > 1) ? 
@@ -245,7 +244,7 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
     // Need to append name of rupture to final slip label. Because
     // Field is const, we use a buffer.
     _allocateBufferScalarField();
-    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (scalar)");
+    topology::Field<topology::Mesh>& buffer = _fields->get("buffer (scalar)");
     buffer.copy(s_iter->second->slipTime());
     assert(value.length() > 0);
     const std::string& label = (_eqSrcs.size() > 1) ? 
@@ -257,7 +256,7 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
     assert(fields);
     const topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
     _allocateBufferVectorField();
-    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
+    topology::Field<topology::Mesh>& buffer = _fields->get("buffer (vector)");
     _calcTractionsChange(&buffer, dispT);
     PYLITH_METHOD_RETURN(buffer);
 
@@ -274,7 +273,7 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
 
   // Satisfy return values
   assert(_fields);
-  const topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
+  const topology::Field<topology::Mesh>& buffer = _fields->get("buffer (vector)");
   PYLITH_METHOD_RETURN(buffer);
 } // vertexField
 

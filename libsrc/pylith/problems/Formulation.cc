@@ -21,7 +21,6 @@
 #include "Formulation.hh" // implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Quadrature<Mesh>
-#include "pylith/topology/SubMesh.hh" // USES Quadrature<SubMesh>
 #include "pylith/feassemble/Quadrature.hh" // USES Integrator<Quadrature>
 #include "pylith/feassemble/Integrator.hh" // USES Integrator
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
@@ -156,7 +155,7 @@ pylith::problems::Formulation::meshIntegrators(IntegratorMesh** integrators,
 // ----------------------------------------------------------------------
 // Set integrators over lower-dimension meshes.
 void
-pylith::problems::Formulation::submeshIntegrators(IntegratorSubMesh** integrators,
+pylith::problems::Formulation::submeshIntegrators(IntegratorMesh** integrators,
 						  const int numIntegrators)
 { // submeshIntegrators
   assert( (!integrators && 0 == numIntegrators) ||

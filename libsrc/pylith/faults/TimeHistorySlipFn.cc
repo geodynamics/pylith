@@ -20,7 +20,7 @@
 
 #include "TimeHistorySlipFn.hh" // implementation of object methods
 
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
@@ -75,7 +75,7 @@ pylith::faults::TimeHistorySlipFn::deallocate(void)
 // ----------------------------------------------------------------------
 // Initialize slip time function.
 void
-pylith::faults::TimeHistorySlipFn::initialize(const topology::SubMesh& faultMesh,
+pylith::faults::TimeHistorySlipFn::initialize(const topology::Mesh& faultMesh,
 					      const spatialdata::units::Nondimensional& normalizer,
 					      const PylithScalar originTime)
 { // initialize
@@ -96,11 +96,11 @@ pylith::faults::TimeHistorySlipFn::initialize(const topology::SubMesh& faultMesh
   const PetscInt vStart = verticesStratum.begin();
   const PetscInt vEnd = verticesStratum.end();
 
-  delete _parameters; _parameters = new topology::Fields<topology::Field<topology::SubMesh> >(faultMesh);
+  delete _parameters; _parameters = new topology::Fields<topology::Field<topology::Mesh> >(faultMesh);
   assert(_parameters);
   _parameters->add("slip amplitude", "slip_amplitude");
 
-  topology::Field<topology::SubMesh>& slipAmplitude = _parameters->get("slip amplitude");
+  topology::Field<topology::Mesh>& slipAmplitude = _parameters->get("slip amplitude");
   slipAmplitude.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   slipAmplitude.allocate();
   slipAmplitude.scale(lengthScale);
@@ -109,7 +109,7 @@ pylith::faults::TimeHistorySlipFn::initialize(const topology::SubMesh& faultMesh
   PetscScalar* slipAmplitudeArray = slipAmplitudeVisitor.localArray();
 
   _parameters->add("slip time", "slip_time");
-  topology::Field<topology::SubMesh>& slipTime = _parameters->get("slip time");
+  topology::Field<topology::Mesh>& slipTime = _parameters->get("slip time");
   slipTime.newSection(slipAmplitude, 1);
   slipTime.allocate();
   slipTime.scale(timeScale);
@@ -212,7 +212,7 @@ pylith::faults::TimeHistorySlipFn::initialize(const topology::SubMesh& faultMesh
 // ----------------------------------------------------------------------
 // Get slip on fault surface at time t.
 void
-pylith::faults::TimeHistorySlipFn::slip(topology::Field<topology::SubMesh>* slip,
+pylith::faults::TimeHistorySlipFn::slip(topology::Field<topology::Mesh>* slip,
 					const PylithScalar t)
 { // slip
   PYLITH_METHOD_BEGIN;
@@ -228,11 +228,11 @@ pylith::faults::TimeHistorySlipFn::slip(topology::Field<topology::SubMesh>* slip
   const PetscInt vEnd = verticesStratum.end();
 
   // Get sections
-  const topology::Field<topology::SubMesh>& slipAmplitude = _parameters->get("slip amplitude");
+  const topology::Field<topology::Mesh>& slipAmplitude = _parameters->get("slip amplitude");
   topology::VecVisitorMesh slipAmplitudeVisitor(slipAmplitude);
   const PetscScalar* slipAmplitudeArray = slipAmplitudeVisitor.localArray();
 
-  const topology::Field<topology::SubMesh>& slipTime = _parameters->get("slip time");
+  const topology::Field<topology::Mesh>& slipTime = _parameters->get("slip time");
   topology::VecVisitorMesh slipTimeVisitor(slipTime);
   const PetscScalar* slipTimeArray = slipTimeVisitor.localArray();
 
@@ -275,7 +275,7 @@ pylith::faults::TimeHistorySlipFn::slip(topology::Field<topology::SubMesh>* slip
 
 // ----------------------------------------------------------------------
 // Get final slip.
-const pylith::topology::Field<pylith::topology::SubMesh>&
+const pylith::topology::Field<pylith::topology::Mesh>&
 pylith::faults::TimeHistorySlipFn::finalSlip(void)
 { // finalSlip
   PYLITH_METHOD_BEGIN;
@@ -285,7 +285,7 @@ pylith::faults::TimeHistorySlipFn::finalSlip(void)
 
 // ----------------------------------------------------------------------
 // Get time when slip begins at each point.
-const pylith::topology::Field<pylith::topology::SubMesh>&
+const pylith::topology::Field<pylith::topology::Mesh>&
 pylith::faults::TimeHistorySlipFn::slipTime(void)
 { // slipTime
   PYLITH_METHOD_BEGIN;

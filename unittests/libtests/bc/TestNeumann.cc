@@ -27,7 +27,6 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
@@ -94,7 +93,7 @@ namespace pylith {
       static
       void _checkValues(const PylithScalar* valuesE,
 			const int fiberDimE,
-			const topology::Field<topology::SubMesh>& field);
+			const topology::Field<topology::Mesh>& field);
     } // _TestNeumann
   } // bc
 } // pylith
@@ -107,7 +106,7 @@ pylith::bc::TestNeumann::setUp(void)
   PYLITH_METHOD_BEGIN;
 
   _data = 0;
-  _quadrature = new feassemble::Quadrature<topology::SubMesh>();
+  _quadrature = new feassemble::Quadrature<topology::Mesh>();
   CPPUNIT_ASSERT(_quadrature);
 
   PYLITH_METHOD_END;
@@ -168,7 +167,7 @@ pylith::bc::TestNeumann::testInitialize(void)
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &bc, &fields);
 
-  const topology::SubMesh& boundaryMesh = *bc._boundaryMesh;
+  const topology::Mesh& boundaryMesh = *bc._boundaryMesh;
 
   PetscDM subMesh = boundaryMesh.dmMesh();assert(subMesh);
   topology::Stratum verticesStratum(subMesh, topology::Stratum::DEPTH, 0);
@@ -337,23 +336,23 @@ pylith::bc::TestNeumann::test_queryDatabases(void)
   // bc._parameters->view("PARAMETERS"); // DEBUGGING
 
   // Check initial values.
-  const topology::Field<topology::SubMesh>& initial = bc._parameters->get("initial");
+  const topology::Field<topology::Mesh>& initial = bc._parameters->get("initial");
   _TestNeumann::_checkValues(_TestNeumann::initial, numQuadPts*spaceDim, initial);
 
   // Check rate values.
-  const topology::Field<topology::SubMesh>& rate = bc._parameters->get("rate");
+  const topology::Field<topology::Mesh>& rate = bc._parameters->get("rate");
   _TestNeumann::_checkValues(_TestNeumann::rate, numQuadPts*spaceDim, rate);
 
   // Check rate start time.
-  const topology::Field<topology::SubMesh>& rateTime = bc._parameters->get("rate time");
+  const topology::Field<topology::Mesh>& rateTime = bc._parameters->get("rate time");
   _TestNeumann::_checkValues(_TestNeumann::rateTime, numQuadPts, rateTime);
 
   // Check change values.
-  const topology::Field<topology::SubMesh>& change = bc._parameters->get("change");
+  const topology::Field<topology::Mesh>& change = bc._parameters->get("change");
   _TestNeumann::_checkValues(_TestNeumann::change, numQuadPts*spaceDim, change);
 
   // Check change start time.
-  const topology::Field<topology::SubMesh>& changeTime = bc._parameters->get("change time");
+  const topology::Field<topology::Mesh>& changeTime = bc._parameters->get("change time");
   _TestNeumann::_checkValues(_TestNeumann::changeTime, numQuadPts, changeTime);
   th.close();
 
@@ -419,7 +418,7 @@ pylith::bc::TestNeumann::test_paramsLocalToGlobal(void)
     valuesE[i+0] = _TestNeumann::initial[i+0]; // x
     valuesE[i+1] = -_TestNeumann::initial[i+1]; // y
   } // for
-  const topology::Field<topology::SubMesh>& initial = bc._parameters->get("initial");
+  const topology::Field<topology::Mesh>& initial = bc._parameters->get("initial");
   _TestNeumann::_checkValues(&valuesE[0], numQuadPts*spaceDim, initial);
 
   // Check rate values.
@@ -427,7 +426,7 @@ pylith::bc::TestNeumann::test_paramsLocalToGlobal(void)
     valuesE[i+0] = _TestNeumann::rate[i+0]; // x
     valuesE[i+1] = -_TestNeumann::rate[i+1]; // y
   } // for
-  const topology::Field<topology::SubMesh>& rate = bc._parameters->get("rate");
+  const topology::Field<topology::Mesh>& rate = bc._parameters->get("rate");
   _TestNeumann::_checkValues(&valuesE[0], numQuadPts*spaceDim, rate);
 
   // Check change values.
@@ -435,7 +434,7 @@ pylith::bc::TestNeumann::test_paramsLocalToGlobal(void)
     valuesE[i+0] = _TestNeumann::change[i+0]; // x
     valuesE[i+1] = -_TestNeumann::change[i+1]; // y
   } // for
-  const topology::Field<topology::SubMesh>& change = bc._parameters->get("change");
+  const topology::Field<topology::Mesh>& change = bc._parameters->get("change");
   _TestNeumann::_checkValues(&valuesE[0], numQuadPts*spaceDim, change);
 
   PYLITH_METHOD_END;
@@ -475,7 +474,7 @@ pylith::bc::TestNeumann::test_calculateValueInitial(void)
   CPPUNIT_ASSERT(bc._parameters);
   
   // Check values.
-  const topology::Field<topology::SubMesh>& value = bc._parameters->get("value");
+  const topology::Field<topology::Mesh>& value = bc._parameters->get("value");
   _TestNeumann::_checkValues(_TestNeumann::initial, numQuadPts*spaceDim, value);
 
   PYLITH_METHOD_END;
@@ -515,7 +514,7 @@ pylith::bc::TestNeumann::test_calculateValueRate(void)
   CPPUNIT_ASSERT(bc._parameters);
   
   // Check values.
-  const topology::Field<topology::SubMesh>& value = bc._parameters->get("value");
+  const topology::Field<topology::Mesh>& value = bc._parameters->get("value");
   _TestNeumann::_checkValues(_TestNeumann::valuesRate, numQuadPts*spaceDim, value);
 
   PYLITH_METHOD_END;
@@ -555,7 +554,7 @@ pylith::bc::TestNeumann::test_calculateValueChange(void)
   CPPUNIT_ASSERT(bc._parameters);
   
   // Check values.
-  const topology::Field<topology::SubMesh>& value = bc._parameters->get("value");
+  const topology::Field<topology::Mesh>& value = bc._parameters->get("value");
   _TestNeumann::_checkValues(_TestNeumann::valuesChange, numQuadPts*spaceDim, value);
 
   PYLITH_METHOD_END;
@@ -599,7 +598,7 @@ pylith::bc::TestNeumann::test_calculateValueChangeTH(void)
   CPPUNIT_ASSERT(bc._parameters);
   
   // Check values.
-  const topology::Field<topology::SubMesh>& value = bc._parameters->get("value");
+  const topology::Field<topology::Mesh>& value = bc._parameters->get("value");
   _TestNeumann::_checkValues(_TestNeumann::valuesChangeTH, numQuadPts*spaceDim, value);
 
   PYLITH_METHOD_END;
@@ -665,7 +664,7 @@ pylith::bc::TestNeumann::test_calculateValueAll(void)
       _TestNeumann::valuesRate[i] +
       _TestNeumann::valuesChangeTH[i];
   
-  const topology::Field<topology::SubMesh>& value = bc._parameters->get("value");
+  const topology::Field<topology::Mesh>& value = bc._parameters->get("value");
   _TestNeumann::_checkValues(&valuesE[0], numQuadPts*spaceDim, value);
 
   PYLITH_METHOD_END;
@@ -767,13 +766,13 @@ pylith::bc::TestNeumann::_initialize(topology::Mesh* mesh,
 void
 pylith::bc::_TestNeumann::_checkValues(const PylithScalar* valuesE,
 				       const int fiberDimE,
-				       const topology::Field<topology::SubMesh>& field)
+				       const topology::Field<topology::Mesh>& field)
 { // _checkValues
   PYLITH_METHOD_BEGIN;
 
   CPPUNIT_ASSERT(valuesE);
 
-  const topology::SubMesh& boundaryMesh = field.mesh();
+  const topology::Mesh& boundaryMesh = field.mesh();
   const PetscInt ncells = _TestNeumann::ncells;
 
   PetscDM subMesh = boundaryMesh.dmMesh();CPPUNIT_ASSERT(subMesh);

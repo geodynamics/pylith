@@ -144,10 +144,7 @@ class TestJacobian(unittest.TestCase):
     self.jacobian = Jacobian(self.fields.solution(), "aij")
     self.jacobian.assemble("final_assembly")
 
-    from pylith.mpi.Communicator import Communicator
-    comm = Communicator(self.mesh.comm())
-
-    self.jacobian.write("jacobian.mat", comm)
+    self.jacobian.write("jacobian.mat", self.mesh.comm())
 
     # No testing of result.
     return

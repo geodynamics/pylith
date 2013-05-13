@@ -20,7 +20,7 @@
 
 #include "Fault.hh" // implementation of object methods
 
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/Mesh.hh" // USES Mesh
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -48,7 +48,7 @@ pylith::faults::Fault::deallocate(void)
   
 // ----------------------------------------------------------------------
 // Get mesh associated with fault fields.
-const pylith::topology::SubMesh&
+const pylith::topology::Mesh&
 pylith::faults::Fault::faultMesh(void) const
 { // faultMesh
   return *_faultMesh;

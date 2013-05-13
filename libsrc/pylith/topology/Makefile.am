@@ -37,9 +37,6 @@ subpkginclude_HEADERS = \
 	SolutionFields.hh \
 	Stratum.hh \
 	Stratum.icc \
-	SubMesh.hh \
-	SubMesh.icc \
-	SubMesh.cc \
 	VisitorMesh.hh \
 	VisitorMesh.icc \
 	VisitorSubMesh.hh \

@@ -20,8 +20,8 @@
 
 #include "TestFaultCohesiveImpulsesCases.hh" // Implementation of class methods
 
-#include "pylith/topology/SubMesh.hh" // USES SubMesh
-#include "pylith/feassemble/Quadrature.hh" // USES Quadrature<SubMesh>
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature<Mesh>
 
 #include "pylith/feassemble/GeometryLine2D.hh" // USES GeometryLine2D
 #include "pylith/feassemble/GeometryTri3D.hh" // USES GeometryTri3D

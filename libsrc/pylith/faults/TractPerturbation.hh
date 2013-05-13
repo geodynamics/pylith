@@ -64,7 +64,7 @@ public :
    *
    * @returns Parameter fields.
    */
-  const topology::Fields<topology::Field<topology::SubMesh> >* parameterFields(void) const;
+  const topology::Fields<topology::Field<topology::Mesh> >* parameterFields(void) const;
   
   /** Initialize slip time function.
    *
@@ -72,8 +72,8 @@ public :
    * @param faultOrientation Orientation of fault.
    * @param normalizer Nondimensionalization of scales.
    */
-  void initialize(const topology::SubMesh& faultMesh,
-		  const topology::Field<topology::SubMesh>& faultOrientation,
+  void initialize(const topology::Mesh& faultMesh,
+		  const topology::Field<topology::Mesh>& faultOrientation,
 		  const spatialdata::units::Nondimensional& normalizer);
 
   /** Calculate spatial and temporal variation of value.
@@ -96,7 +96,7 @@ public :
    *
    * @returns Traction vector field.
    */
-  const topology::Field<topology::SubMesh>&
+  const topology::Field<topology::Mesh>&
   vertexField(const char* name,
 	      const topology::SolutionFields* const fields =0);
 
@@ -127,7 +127,7 @@ protected :
 private :
   
   /// Parameters for perturbations.
-  topology::Fields<topology::Field<topology::SubMesh> >* _parameters;
+  topology::Fields<topology::Field<topology::Mesh> >* _parameters;
 
   /// Time scale for current time.
   PylithScalar _timeScale;

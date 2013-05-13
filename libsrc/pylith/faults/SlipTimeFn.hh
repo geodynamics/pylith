@@ -27,7 +27,7 @@
 // Include directives ---------------------------------------------------
 #include "faultsfwd.hh" // forward declarations
 
-#include "pylith/topology/topologyfwd.hh" // USES Fields<SubMesh>
+#include "pylith/topology/topologyfwd.hh" // USES Fields<Mesh>
 
 #include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
 
@@ -62,7 +62,7 @@ public :
    * @param originTime Origin time for earthquake source.
    */
   virtual
-  void initialize(const topology::SubMesh& faultMesh,
+  void initialize(const topology::Mesh& faultMesh,
 		  const spatialdata::units::Nondimensional& normalizer,
 		  const PylithScalar originTime =0.0) = 0;
 
@@ -72,7 +72,7 @@ public :
    * @param t Time t.
    */
   virtual
-  void slip(topology::Field<topology::SubMesh>* const slipField,
+  void slip(topology::Field<topology::Mesh>* const slipField,
 	    const PylithScalar t) = 0;
   
   /** Get final slip.
@@ -80,27 +80,27 @@ public :
    * @returns Final slip.
    */
   virtual
-  const topology::Field<topology::SubMesh>& finalSlip(void) = 0;
+  const topology::Field<topology::Mesh>& finalSlip(void) = 0;
 
   /** Get time when slip begins at each point.
    *
    * @returns Time when slip begins.
    */
   virtual
-  const topology::Field<topology::SubMesh>& slipTime(void) = 0;
+  const topology::Field<topology::Mesh>& slipTime(void) = 0;
 
   /** Get parameter fields.
    *
    * @returns Parameter fields.
    */
-  const topology::Fields<topology::Field<topology::SubMesh> >*
+  const topology::Fields<topology::Field<topology::Mesh> >*
   parameterFields(void) const;
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
   /// Parameters for slip time function.
-  topology::Fields<topology::Field<topology::SubMesh> >* _parameters;
+  topology::Fields<topology::Field<topology::Mesh> >* _parameters;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

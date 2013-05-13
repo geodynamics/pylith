@@ -30,7 +30,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "pylith/faults/faultsfwd.hh" // forward declarations
-#include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh
+#include "pylith/topology/topologyfwd.hh" // USES Mesh
 #include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Quadrature
 #include "pylith/friction/frictionfwd.hh" // HOLDSA FrictionModel
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SpatialDB
@@ -67,7 +67,7 @@ class pylith::faults::TestFaultCohesiveImpulses: public CppUnit::TestFixture
 protected:
 
   CohesiveImpulsesData* _data; ///< Data for testing
-  feassemble::Quadrature<topology::SubMesh>* _quadrature; ///< Fault quad.
+  feassemble::Quadrature<topology::Mesh>* _quadrature; ///< Fault quad.
   spatialdata::spatialdb::SpatialDB* _dbImpulseAmp; ///< Initial tractions.
   bool _flipFault; ///< If true, flip fault orientation.
 
