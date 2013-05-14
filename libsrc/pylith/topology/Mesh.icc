@@ -118,6 +118,29 @@ pylith::topology::Mesh::dimension(void) const {
 }
 
 // ----------------------------------------------------------------------
+// Get number of vertices per cell
+inline
+int
+pylith::topology::Mesh::numCorners(void) const {
+  PYLITH_METHOD_BEGIN;
+
+  PetscInt numCorners = 0;
+  if (_dmMesh) {
+    PetscInt cStart, vStart, vEnd, closureSize, *closure = NULL;
+    PetscErrorCode err;
+    err = DMPlexGetHeightStratum(_dmMesh, 0, &cStart, NULL);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetDepthStratum(_dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetTransitiveClosure(_dmMesh, cStart, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+    for (PetscInt c = 0; c < closureSize*2; c += 2) {
+      if ((closure[c] >= vStart) && (closure[c] < vEnd)) ++numCorners;
+    }
+    err = DMPlexRestoreTransitiveClosure(_dmMesh, cStart, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+  } // if
+
+  PYLITH_METHOD_RETURN(numCorners);
+}
+
+// ----------------------------------------------------------------------
 // Get number of vertices in mesh.
 inline
 int
@@ -132,25 +155,6 @@ pylith::topology::Mesh::numVertices(void) const {
   } // if
 
   PYLITH_METHOD_RETURN(nvertices);
-}
-
-// ----------------------------------------------------------------------
-// Get representative cone size for mesh.
-inline
-int
-pylith::topology::Mesh::coneSize(void) const {
-  PYLITH_METHOD_BEGIN;
-
-  PetscInt coneSize = 0;
-  if (_dmMesh) {
-    PetscInt cStart;
-    PetscErrorCode err;
-    const int cellHeight = _isSubMesh ? 1 : 0;
-    err = DMPlexGetHeightStratum(_dmMesh, cellHeight, &cStart, NULL);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetConeSize(_dmMesh, cStart, &coneSize);PYLITH_CHECK_ERROR(err);
-  } // if
-
-  PYLITH_METHOD_RETURN(coneSize);
 }
 
 // ----------------------------------------------------------------------

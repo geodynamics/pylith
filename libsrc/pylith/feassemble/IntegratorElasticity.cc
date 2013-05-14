@@ -260,12 +260,19 @@ pylith::feassemble::IntegratorElasticity::verifyConfiguration(const topology::Me
   topology::StratumIS materialIS(dmMesh, "material-id", _material->id());
   const PetscInt* cells = materialIS.points();
   const PetscInt numCells = materialIS.size();
+  PetscInt vStart, vEnd;
+  PetscErrorCode err;
 
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
-    PetscInt cellNumCorners;
+    PetscInt cellNumCorners = 0, closureSize, *closure = NULL;
 
-    PetscErrorCode err = DMPlexGetConeSize(dmMesh, cell, &cellNumCorners);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+    for (PetscInt cl = 0; cl < closureSize*2; cl += 2) {
+      if ((closure[cl] >= vStart) && (closure[cl] < vEnd)) ++cellNumCorners;
+    }
+    err = DMPlexRestoreTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     if (numCorners != cellNumCorners) {
       std::ostringstream msg;
       msg << "Quadrature is incompatible with cell in material '"

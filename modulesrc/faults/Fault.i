@@ -71,11 +71,11 @@ namespace pylith {
        */
       int dimension(void) const;
 
-      /** Get representative cone size for mesh.
+      /** Get number of vertices per cell for mesh.
        *
-       * @returns Representative cone size for mesh.
+       * @returns Number of vertices per cell for mesh.
        */
-      int coneSize(void) const;
+      int numCorners(void) const;
   
       /** Get number of vertices in mesh.
        *

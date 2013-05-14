@@ -72,7 +72,7 @@ class MemoryLogger(Logger):
 
     if not stage in self.memory or reset:
       self.memory[stage] = {}
-    meshModel = pylith.perf.Mesh.Mesh(mesh.dimension(), mesh.coneSize(), 
+    meshModel = pylith.perf.Mesh.Mesh(mesh.dimension(), mesh.numCorners(), 
                                       mesh.numVertices(), mesh.numCells())
     meshModel.tabulate(self.memory[stage])
     for group, nvertices in mesh.groupSizes():
@@ -185,7 +185,7 @@ class MemoryLogger(Logger):
     import pylith.perf.Fault
 
     if not stage in self.memory: self.memory[stage] = {}
-    faultModel = pylith.perf.Fault.Fault(mesh.dimension(), mesh.coneSize(),
+    faultModel = pylith.perf.Fault.Fault(mesh.dimension(), mesh.numCorners(),
                                          mesh.numVertices(), mesh.numCells())
     faultModel.tabulate(self.memory[stage])
     return
