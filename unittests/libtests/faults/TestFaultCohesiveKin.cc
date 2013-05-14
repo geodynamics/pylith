@@ -165,7 +165,7 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
 
   // Check fault mesh sizes
   CPPUNIT_ASSERT_EQUAL(_data->cellDim, fault.dimension());
-  CPPUNIT_ASSERT_EQUAL(_data->numBasis, fault.dimension() == 0 ? fault.coneSize()+1 : fault.coneSize());
+  CPPUNIT_ASSERT_EQUAL(_data->numBasis, fault.dimension() == 0 ? fault.numCorners()+1 : fault.numCorners());
   CPPUNIT_ASSERT_EQUAL(_data->numFaultVertices, fault.numVertices());
   CPPUNIT_ASSERT_EQUAL(_data->numCohesiveCells, fault.numCells());
 
