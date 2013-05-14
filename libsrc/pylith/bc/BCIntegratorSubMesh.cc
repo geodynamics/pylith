@@ -25,6 +25,8 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Stratum.hh" // USES Stratum
 
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
+
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::BCIntegratorSubMesh::BCIntegratorSubMesh(void) :
@@ -48,7 +50,7 @@ pylith::bc::BCIntegratorSubMesh::deallocate(void)
   PYLITH_METHOD_BEGIN;
 
   BoundaryCondition::deallocate();
-  feassemble::Integrator<feassemble::Quadrature<topology::Mesh> >::deallocate();
+  feassemble::Integrator::deallocate();
 
   delete _boundaryMesh; _boundaryMesh = 0;
   delete _parameters; _parameters = 0;

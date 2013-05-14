@@ -22,6 +22,8 @@
 
 #include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
 
+#include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
+
 #include <string> // USES std::string
 
 // ----------------------------------------------------------------------

@@ -31,15 +31,21 @@
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 
 #include "pylith/utils/array.hh" // USES scalar_array
+#include "pylith/utils/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
 
-#include "petscmat.h" // USES PetscMat
+#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
+
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+#include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
+#include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimendional
 
-#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
+#include "petscmat.h" // USES PetscMat
+
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
+#include <sstream> // USES std::ostringstream
 
 //#define DETAILED_EVENT_LOGGING
 

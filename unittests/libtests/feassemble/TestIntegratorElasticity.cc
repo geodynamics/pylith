@@ -22,6 +22,8 @@
 
 #include "pylith/feassemble/IntegratorElasticity.hh" // USES IntegratorElasticity
 
+#include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
+
 #include <math.h> // USES fabs()
 
 #include <stdexcept>

@@ -88,7 +88,7 @@ namespace pylith {
        */
       virtual
       PylithScalar stableTimeStepExplicit(const pylith::topology::Mesh& mesh,
-					  pylith::feassemble::Quadrature<pylith::topology::Mesh>* quadrature);
+					  pylith::feassemble::Quadrature* quadrature);
       
       /** Set whether elastic or inelastic constitutive relations are used.
        *

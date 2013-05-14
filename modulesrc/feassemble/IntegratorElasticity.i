@@ -21,13 +21,10 @@
  * @brief Python interface to C++ abstract IntegratorElasticity object.
  */
 
-%template(MeshIntegrator) pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::Mesh> >;
-
 namespace pylith {
   namespace feassemble {
 
-    class IntegratorElasticity :
-      public pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::Mesh> >
+    class IntegratorElasticity : public pylith::feassemble::Integrator
     { // IntegratorElasticity
 
       // PUBLIC MEMBERS /////////////////////////////////////////////////

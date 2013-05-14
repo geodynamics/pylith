@@ -119,7 +119,7 @@ public :
    */
   virtual
   void initialize(const topology::Mesh& mesh,
-		  feassemble::Quadrature<topology::Mesh>* quadrature);
+		  feassemble::Quadrature* quadrature);
   
   /** Check whether friction model has a field as a property or state
    * variable.

@@ -31,17 +31,19 @@
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 
+#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
 #include "pylith/utils/lapack.h" // USES LAPACKdgesvd
 
-#include "petscmat.h" // USES PetscMat
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimendional
+#include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimendional
 
-#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
+#include "petscmat.h" // USES PetscMat
+
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 

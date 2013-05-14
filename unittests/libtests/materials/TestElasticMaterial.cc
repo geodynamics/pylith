@@ -447,7 +447,7 @@ pylith::materials::TestElasticMaterial::testStableTimeStepExplicit(void)
   PetscInt cell = cells[0];
 
   // Setup quadrature
-  feassemble::Quadrature<topology::Mesh> quadrature;
+  feassemble::Quadrature quadrature;
   feassemble::GeometryLine1D geometry;
   quadrature.refGeometry(&geometry);
   const int cellDim = 1;
@@ -844,7 +844,7 @@ pylith::materials::TestElasticMaterial::_initialize(topology::Mesh* mesh,
   topology::MeshOps::nondimensionalize(mesh, normalizer);
 
   // Setup quadrature
-  feassemble::Quadrature<topology::Mesh> quadrature;
+  feassemble::Quadrature quadrature;
   feassemble::GeometryLine1D geometry;
   quadrature.refGeometry(&geometry);
   const int cellDim = 1;

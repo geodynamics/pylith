@@ -100,9 +100,5 @@ import_array();
 %include "ElasticityImplicitCUDA.i"
 #endif
 
-// Template instatiation
-%template(MeshQuadrature) pylith::feassemble::Quadrature<pylith::topology::Mesh>;
-
-
 // End of file
 

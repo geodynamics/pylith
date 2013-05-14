@@ -62,7 +62,7 @@ class pylith::faults::TestFaultCohesiveKin : public CppUnit::TestFixture
 protected :
 
   CohesiveKinData* _data; ///< Data for testing
-  feassemble::Quadrature<topology::Mesh>* _quadrature; ///< Fault quad.
+  feassemble::Quadrature* _quadrature; ///< Fault quadrature.a
   std::vector<EqKinSrc*> _eqsrcs; ///< Array of Kinematic earthquake sources.
   std::vector<BruneSlipFn*> _slipfns; ///< Slip time function.
   bool _flipFault; ///< If true, flip fault orientation.

@@ -25,7 +25,7 @@ namespace pylith {
   namespace bc {
 
     class pylith::bc::PointForce : public TimeDependentPoints,
-				   public pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::Mesh> >
+				   public pylith::feassemble::Integrator
     { // class PointForce
 
       // PUBLIC METHODS /////////////////////////////////////////////////

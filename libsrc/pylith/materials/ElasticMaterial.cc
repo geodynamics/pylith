@@ -82,7 +82,7 @@ pylith::materials::ElasticMaterial::deallocate(void)
 // database.
 void
 pylith::materials::ElasticMaterial::initialize(const topology::Mesh& mesh,
-					       feassemble::Quadrature<topology::Mesh>* quadrature)
+					       feassemble::Quadrature* quadrature)
 { // initialize
   PYLITH_METHOD_BEGIN;
 
@@ -357,7 +357,7 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh&
 // Get stable time step for explicit time integration.
 PylithScalar
 pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh& mesh,
-							   feassemble::Quadrature<topology::Mesh>* quadrature,
+							   feassemble::Quadrature* quadrature,
 							   topology::Field<topology::Mesh>* field)
 { // stableTimeStepImplicit
   PYLITH_METHOD_BEGIN;
@@ -555,7 +555,7 @@ pylith::materials::ElasticMaterial::_allocateCellArrays(void)
 // Initialize initial stress field.
 void
 pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mesh& mesh,
-							     feassemble::Quadrature<topology::Mesh>* quadrature)
+							     feassemble::Quadrature* quadrature)
 { // _initializeInitialStress
   PYLITH_METHOD_BEGIN;
 
@@ -688,7 +688,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mes
 // Initialize initial strain field.
 void
 pylith::materials::ElasticMaterial::_initializeInitialStrain(const topology::Mesh& mesh,
-							     feassemble::Quadrature<topology::Mesh>* quadrature)
+							     feassemble::Quadrature* quadrature)
 { // _initializeInitialStrain
   PYLITH_METHOD_BEGIN;
 

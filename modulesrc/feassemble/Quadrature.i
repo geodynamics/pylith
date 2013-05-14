@@ -24,7 +24,6 @@
 namespace pylith {
   namespace feassemble {
 
-    template<typename mesh_type>
     class Quadrature : public QuadratureRefCell
     { // Quadrature
 

@@ -29,8 +29,7 @@
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
-#include "pylith/topology/topologyfwd.hh" // HOLDSA Quadrature<Mesh>
-#include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Quadrature<Mesh>
+#include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Quadrature
 
 // CellFilter -----------------------------------------------------------
 /** @brief C++ object for filtering cell fields when outputing
@@ -65,7 +64,7 @@ public :
    *
    * @param q Quadrature for cells.
    */
-  void quadrature(const feassemble::Quadrature<mesh_type>* q);
+  void quadrature(const feassemble::Quadrature* q);
 
   /** Filter field. Field type of filtered field is returned via an argument.
    *
@@ -101,7 +100,7 @@ private :
 protected :
 
   /// Quadrature associated with cells.
-  feassemble::Quadrature<mesh_type>* _quadrature;
+  feassemble::Quadrature* _quadrature;
 
 }; // CellFilter
 

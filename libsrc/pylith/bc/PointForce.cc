@@ -53,7 +53,7 @@ pylith::bc::PointForce::deallocate(void)
   PYLITH_METHOD_BEGIN;
 
   TimeDependentPoints::deallocate();
-  feassemble::Integrator<feassemble::Quadrature<topology::Mesh> >::deallocate();
+  feassemble::Integrator::deallocate();
 
   PYLITH_METHOD_END;
 } // deallocate

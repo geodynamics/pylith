@@ -21,7 +21,6 @@
 #include "Formulation.hh" // implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Quadrature<Mesh>
-#include "pylith/feassemble/Quadrature.hh" // USES Integrator<Quadrature>
 #include "pylith/feassemble/Integrator.hh" // USES Integrator
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
@@ -142,29 +141,16 @@ pylith::problems::Formulation::isJacobianSymmetric(void) const
 // ----------------------------------------------------------------------
 // Set integrators over the mesh.
 void
-pylith::problems::Formulation::meshIntegrators(IntegratorMesh** integrators,
-					       const int numIntegrators)
-{ // meshIntegrators
-  assert( (!integrators && 0 == numIntegrators) ||
-	  (integrators && 0 < numIntegrators) );
-  _meshIntegrators.resize(numIntegrators);
+pylith::problems::Formulation::integrators(feassemble::Integrator* integratorArray[],
+					   const int numIntegrators)
+{ // integrators
+  assert( (!integratorArray && 0 == numIntegrators) ||
+	  (integratorArray && 0 < numIntegrators) );
+  _integrators.resize(numIntegrators);
   for (int i=0; i < numIntegrators; ++i)
-    _meshIntegrators[i] = integrators[i];
-} // meshIntegrators
+    _integrators[i] = integratorArray[i];
+} // integrators
   
-// ----------------------------------------------------------------------
-// Set integrators over lower-dimension meshes.
-void
-pylith::problems::Formulation::submeshIntegrators(IntegratorMesh** integrators,
-						  const int numIntegrators)
-{ // submeshIntegrators
-  assert( (!integrators && 0 == numIntegrators) ||
-	  (integrators && 0 < numIntegrators) );
-  _submeshIntegrators.resize(numIntegrators);
-  for (int i=0; i < numIntegrators; ++i)
-    _submeshIntegrators[i] = integrators[i];
-} // submeshIntegrators
-
 // ----------------------------------------------------------------------
 // Set handle to preconditioner.
 void
@@ -240,16 +226,11 @@ pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
   residual.zero();
 
   // Add in contributions that require assembly.
-  int numIntegrators = _meshIntegrators.size();
-  assert(numIntegrators > 0); // must have at least 1 bulk integrator
+  const int numIntegrators = _integrators.size();
+  assert(numIntegrators > 0); // must have at least 1 integrator
   for (int i=0; i < numIntegrators; ++i) {
-    _meshIntegrators[i]->timeStep(_dt);
-    _meshIntegrators[i]->integrateResidual(residual, _t, _fields);
-  } // for
-  numIntegrators = _submeshIntegrators.size();
-  for (int i=0; i < numIntegrators; ++i) {
-    _submeshIntegrators[i]->timeStep(_dt);
-    _submeshIntegrators[i]->integrateResidual(residual, _t, _fields);
+    _integrators[i]->timeStep(_dt);
+    _integrators[i]->integrateResidual(residual, _t, _fields);
   } // for
 
   // Assemble residual.
@@ -288,26 +269,19 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
   _jacobian->zero();
 
   // Add in contributions that require assembly.
-  int numIntegrators = _meshIntegrators.size();
-  for (int i=0; i < numIntegrators; ++i)
-    _meshIntegrators[i]->integrateJacobian(_jacobian, _t, _fields);
-  numIntegrators = _submeshIntegrators.size();
-  for (int i=0; i < numIntegrators; ++i)
-    _submeshIntegrators[i]->integrateJacobian(_jacobian, _t, _fields);
+  const int numIntegrators = _integrators.size();
+  for (int i=0; i < numIntegrators; ++i) {
+    _integrators[i]->integrateJacobian(_jacobian, _t, _fields);
+  } // for
   
   // Assemble jacobian.
   _jacobian->assemble("final_assembly");
 
   if (_customConstraintPCMat) {
     // Recalculate preconditioner.
-    numIntegrators = _meshIntegrators.size();
-    for (int i=0; i < numIntegrators; ++i)
-      _meshIntegrators[i]->calcPreconditioner(&_customConstraintPCMat,
-					      _jacobian, _fields);
-    numIntegrators = _submeshIntegrators.size();
-    for (int i=0; i < numIntegrators; ++i)
-      _submeshIntegrators[i]->calcPreconditioner(&_customConstraintPCMat,
-						 _jacobian, _fields);
+    for (int i=0; i < numIntegrators; ++i) {
+      _integrators[i]->calcPreconditioner(&_customConstraintPCMat, _jacobian, _fields);
+    } // for
 
     MatAssemblyBegin(_customConstraintPCMat, MAT_FINAL_ASSEMBLY);
     MatAssemblyEnd(_customConstraintPCMat, MAT_FINAL_ASSEMBLY);
@@ -335,12 +309,10 @@ pylith::problems::Formulation::reformJacobianLumped(void)
   _jacobianLumped->zero();
 
   // Add in contributions that require assembly.
-  int numIntegrators = _meshIntegrators.size();
-  for (int i=0; i < numIntegrators; ++i)
-    _meshIntegrators[i]->integrateJacobian(_jacobianLumped, _t, _fields);
-  numIntegrators = _submeshIntegrators.size();
-  for (int i=0; i < numIntegrators; ++i)
-    _submeshIntegrators[i]->integrateJacobian(_jacobianLumped, _t, _fields);
+  const int numIntegrators = _integrators.size();
+  for (int i=0; i < numIntegrators; ++i) {
+    _integrators[i]->integrateJacobian(_jacobianLumped, _t, _fields);
+  } // for
   
   // Assemble jacbian.
   _jacobianLumped->complete();
@@ -373,16 +345,11 @@ pylith::problems::Formulation::constrainSolnSpace(const PetscVec* tmpSolutionVec
     solution.scatterVectorToSection(*tmpSolutionVec);
   } // if
 
-  int numIntegrators = _meshIntegrators.size();
+  const int numIntegrators = _integrators.size();
   assert(numIntegrators > 0); // must have at least 1 bulk integrator
   for (int i=0; i < numIntegrators; ++i) {
-    _meshIntegrators[i]->timeStep(_dt);
-    _meshIntegrators[i]->constrainSolnSpace(_fields, _t, *_jacobian);
-  } // for
-  numIntegrators = _submeshIntegrators.size();
-  for (int i=0; i < numIntegrators; ++i) {
-    _submeshIntegrators[i]->timeStep(_dt);
-    _submeshIntegrators[i]->constrainSolnSpace(_fields, _t, *_jacobian);
+    _integrators[i]->timeStep(_dt);
+    _integrators[i]->constrainSolnSpace(_fields, _t, *_jacobian);
   } // for
 
   adjust.complete();
@@ -414,13 +381,10 @@ pylith::problems::Formulation::adjustSolnLumped(void)
   topology::Field<topology::Mesh>& adjust = _fields->get("dispIncr adjust");
   adjust.zero();
 
-  int numIntegrators = _meshIntegrators.size();
-  for (int i=0; i < numIntegrators; ++i)
-    _meshIntegrators[i]->adjustSolnLumped(_fields, _t, *_jacobianLumped);
-
-  numIntegrators = _submeshIntegrators.size();
-  for (int i=0; i < numIntegrators; ++i)
-    _submeshIntegrators[i]->adjustSolnLumped(_fields, _t, *_jacobianLumped);
+  const int numIntegrators = _integrators.size();
+  for (int i=0; i < numIntegrators; ++i) {
+    _integrators[i]->adjustSolnLumped(_fields, _t, *_jacobianLumped);
+  } // for
 
   adjust.complete();
   solution += adjust;

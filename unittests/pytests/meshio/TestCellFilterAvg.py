@@ -53,8 +53,8 @@ class TestCellFilterAvgMesh(unittest.TestCase):
     cell.inventory.order = 2
     cell._configure()
 
-    from pylith.feassemble.Quadrature import MeshQuadrature
-    quadrature = MeshQuadrature()
+    from pylith.feassemble.Quadrature import Quadrature
+    quadrature = Quadrature()
     quadrature.inventory.cell = cell
     quadrature._configure()
     quadrature.preinitialize(spaceDim)

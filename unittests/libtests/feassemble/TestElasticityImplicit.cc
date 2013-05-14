@@ -51,7 +51,7 @@ pylith::feassemble::TestElasticityImplicit::setUp(void)
 { // setUp
   PYLITH_METHOD_BEGIN;
 
-  _quadrature = new Quadrature<topology::Mesh>();
+  _quadrature = new Quadrature();CPPUNIT_ASSERT(_quadrature);
   _data = 0;
   _material = 0;
   _gravityField = 0;

@@ -112,22 +112,22 @@ class QuadratureBase(PetscComponent):
 
 
 # ----------------------------------------------------------------------
-from feassemble import MeshQuadrature as ModuleMeshQuadrature
+from feassemble import Quadrature as ModuleQuadrature
 
-# MeshQuadrature class
-class MeshQuadrature(QuadratureBase, ModuleMeshQuadrature):
+# Quadrature class
+class Quadrature(QuadratureBase, ModuleQuadrature):
   """
   Python object for integrating over finite-elements using quadrature.
   """
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="meshquadrature"):
+  def __init__(self, name="quadrature"):
     """
     Constructor.
     """
     QuadratureBase.__init__(self, name)
-    ModuleMeshQuadrature.__init__(self)
+    ModuleQuadrature.__init__(self)
     return
 
 
@@ -141,17 +141,17 @@ class MeshQuadrature(QuadratureBase, ModuleMeshQuadrature):
     from pylith.utils.utils import sizeofPylithScalar
     size = sizeofPylithScalar()
     if 8 == size:
-        ModuleMeshQuadrature.initialize(self, cell.basis,
-                                        cell.basisDeriv,
-                                        cell.quadPts,
-                                        cell.quadWts,
-                                        cell.geometry.spaceDim())
+      ModuleQuadrature.initialize(self, cell.basis,
+                                  cell.basisDeriv,
+                                  cell.quadPts,
+                                  cell.quadWts,
+                              cell.geometry.spaceDim())
     elif 4 == size:
-        ModuleMeshQuadrature.initialize(self, numpy.float32(cell.basis),
-                                        numpy.float32(cell.basisDeriv),
-                                        numpy.float32(cell.quadPts),
-                                        numpy.float32(cell.quadWts),
-                                        cell.geometry.spaceDim())
+      ModuleQuadrature.initialize(self, numpy.float32(cell.basis),
+                                  numpy.float32(cell.basisDeriv),
+                                  numpy.float32(cell.quadPts),
+                                  numpy.float32(cell.quadWts),
+        cell.geometry.spaceDim())
     else:
         raise ValueError("Unknown size for PylithScalar")
     return

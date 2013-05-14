@@ -91,7 +91,7 @@ pylith::feassemble::TestIntegrator::testQuadrature(void)
   // Since quadrature is cloned, test setting quadrature by testing
   // value of minJacobian
 
-  Quadrature<topology::Mesh> quadrature;
+  Quadrature quadrature;
   const PylithScalar minJacobian = 4.0;
   quadrature.minJacobian(minJacobian);
   
@@ -148,7 +148,7 @@ pylith::feassemble::TestIntegrator::testInitCellVector(void)
 { // testInitCellVector
   PYLITH_METHOD_BEGIN;
 
-  Quadrature<topology::Mesh> quadrature;
+  Quadrature quadrature;
   _initQuadrature(&quadrature);
 
   ElasticityExplicit integrator;
@@ -172,7 +172,7 @@ pylith::feassemble::TestIntegrator::testResetCellVector(void)
 { // testResetCellVector
   PYLITH_METHOD_BEGIN;
 
-  Quadrature<topology::Mesh> quadrature;
+  Quadrature quadrature;
   _initQuadrature(&quadrature);
 
   ElasticityExplicit integrator;
@@ -199,7 +199,7 @@ pylith::feassemble::TestIntegrator::testInitCellMatrix(void)
 { // testInitCellMatrix
   PYLITH_METHOD_BEGIN;
 
-  Quadrature<topology::Mesh> quadrature;
+  Quadrature quadrature;
   _initQuadrature(&quadrature);
 
   ElasticityExplicit integrator;
@@ -224,7 +224,7 @@ pylith::feassemble::TestIntegrator::testResetCellMatrix(void)
 { // testResetCellMatrix
   PYLITH_METHOD_BEGIN;
 
-  Quadrature<topology::Mesh> quadrature;
+  Quadrature quadrature;
   _initQuadrature(&quadrature);
 
   ElasticityExplicit integrator;
@@ -252,7 +252,7 @@ pylith::feassemble::TestIntegrator::testLumpCellMatrix(void)
 { // testLumpCellMatrix
   PYLITH_METHOD_BEGIN;
 
-  Quadrature<topology::Mesh> quadrature;
+  Quadrature quadrature;
   _initQuadrature(&quadrature);
 
   ElasticityExplicit integrator;
@@ -304,7 +304,7 @@ pylith::feassemble::TestIntegrator::testSplitField(void)
 // ----------------------------------------------------------------------
 // Set quadrature information.
 void
-pylith::feassemble::TestIntegrator::_initQuadrature(Quadrature<topology::Mesh>* quadrature)
+pylith::feassemble::TestIntegrator::_initQuadrature(Quadrature* quadrature)
 { // _initQuadrature
   PYLITH_METHOD_BEGIN;
 

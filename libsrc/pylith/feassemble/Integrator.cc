@@ -18,7 +18,11 @@
 
 #include <portinfo>
 
+#include "Integrator.hh" // Implementation of class methods
+
 #include "Quadrature.hh" // USES Quadrature
+
+#include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/constdefs.h" // USES MAXSCALAR
 
@@ -29,8 +33,7 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-template<typename quadrature_type>
-pylith::feassemble::Integrator<quadrature_type>::Integrator(void) :
+pylith::feassemble::Integrator::Integrator(void) :
   _dt(-1.0),
   _quadrature(0),
   _normalizer(new spatialdata::units::Nondimensional),
@@ -43,17 +46,15 @@ pylith::feassemble::Integrator<quadrature_type>::Integrator(void) :
 
 // ----------------------------------------------------------------------
 // Destructor
-template<typename quadrature_type>
-pylith::feassemble::Integrator<quadrature_type>::~Integrator(void)
+pylith::feassemble::Integrator::~Integrator(void)
 { // destructor
   deallocate();
 } // destructor
   
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
-template<typename quadrature_type>
 void
-pylith::feassemble::Integrator<quadrature_type>::deallocate(void)
+pylith::feassemble::Integrator::deallocate(void)
 { // deallocate
   PYLITH_METHOD_BEGIN;
 
@@ -67,20 +68,18 @@ pylith::feassemble::Integrator<quadrature_type>::deallocate(void)
   
 // ----------------------------------------------------------------------
 // Get quadrature for integrating finite-element quantities.
-template<typename quadrature_type>
-const quadrature_type&
-pylith::feassemble::Integrator<quadrature_type>::quadrature()
+const pylith::feassemble::Quadrature&
+pylith::feassemble::Integrator::quadrature()
 { // quadrature
   return *_quadrature;
 } // quadrature
   
 // ----------------------------------------------------------------------
 // Set quadrature for integrating finite-element quantities.
-template<typename quadrature_type>
 void
-pylith::feassemble::Integrator<quadrature_type>::quadrature(const quadrature_type* q)
+pylith::feassemble::Integrator::quadrature(const Quadrature* q)
 { // quadrature
-  delete _quadrature; _quadrature = (q) ? new quadrature_type(*q) : 0;
+  delete _quadrature; _quadrature = (q) ? new Quadrature(*q) : 0;
 
   // Deallocate cell vector and matrix since size may change
   _cellVector.resize(0);
@@ -89,9 +88,8 @@ pylith::feassemble::Integrator<quadrature_type>::quadrature(const quadrature_typ
 
 // ----------------------------------------------------------------------
 // Set manager of scales used to nondimensionalize problem.
-template<typename quadrature_type>
 void
-pylith::feassemble::Integrator<quadrature_type>::normalizer(const spatialdata::units::Nondimensional& dim)
+pylith::feassemble::Integrator::normalizer(const spatialdata::units::Nondimensional& dim)
 { // normalizer
   if (0 == _normalizer)
     _normalizer = new spatialdata::units::Nondimensional(dim);
@@ -101,18 +99,16 @@ pylith::feassemble::Integrator<quadrature_type>::normalizer(const spatialdata::u
 
 // ----------------------------------------------------------------------
 // Set gravity field.
-template<typename quadrature_type>
 void
-pylith::feassemble::Integrator<quadrature_type>::gravityField(spatialdata::spatialdb::GravityField* const gravityField)
+pylith::feassemble::Integrator::gravityField(spatialdata::spatialdb::GravityField* const gravityField)
 { // gravityField
   _gravityField = gravityField;
 } // gravityField
 
 // ----------------------------------------------------------------------
 // Get stable time step for advancing from time t to time t+dt.
-template<typename quadrature_type>
 PylithScalar
-pylith::feassemble::Integrator<quadrature_type>::stableTimeStep(const topology::Mesh& mesh)
+pylith::feassemble::Integrator::stableTimeStep(const topology::Mesh& mesh)
 { // stableTimeStep
   // Assume any time step will work.
   return pylith::PYLITH_MAXSCALAR;
@@ -120,9 +116,8 @@ pylith::feassemble::Integrator<quadrature_type>::stableTimeStep(const topology::
 
 // ----------------------------------------------------------------------
 // Initialize vector containing result of integration action for cell.
-template<typename quadrature_type>
 void
-pylith::feassemble::Integrator<quadrature_type>::_initCellVector(void)
+pylith::feassemble::Integrator::_initCellVector(void)
 { // _initCellVector
   assert(_quadrature);
   const int size = _quadrature->spaceDim() * _quadrature->numBasis();
@@ -132,18 +127,16 @@ pylith::feassemble::Integrator<quadrature_type>::_initCellVector(void)
 
 // ----------------------------------------------------------------------
 // Zero out vector containing result of integration actions for cell.
-template<typename quadrature_type>
 void
-pylith::feassemble::Integrator<quadrature_type>::_resetCellVector(void)
+pylith::feassemble::Integrator::_resetCellVector(void)
 { // _resetCellVector
   _cellVector = 0.0;
 } // _resetCellVector
 
 // ----------------------------------------------------------------------
 // Initialize matrix containing result of integration for cell.
-template<typename quadrature_type>
 void
-pylith::feassemble::Integrator<quadrature_type>::_initCellMatrix(void)
+pylith::feassemble::Integrator::_initCellMatrix(void)
 { // _initCellMatrix
   assert(_quadrature);
   const int size =
@@ -155,9 +148,8 @@ pylith::feassemble::Integrator<quadrature_type>::_initCellMatrix(void)
 
 // ----------------------------------------------------------------------
 // Zero out matrix containing result of integration for cell.
-template<typename quadrature_type>
 void
-pylith::feassemble::Integrator<quadrature_type>::_resetCellMatrix(void)
+pylith::feassemble::Integrator::_resetCellMatrix(void)
 { // _resetCellMatrix
   _cellMatrix = 0.0;
 } // _resetCellMatrix
@@ -165,9 +157,8 @@ pylith::feassemble::Integrator<quadrature_type>::_resetCellMatrix(void)
 // ----------------------------------------------------------------------
 // Lump cell matrix, putting the result in the cell vector using
 // equivalent forces for rigid body motion.
-template<typename quadrature_type>
 void
-pylith::feassemble::Integrator<quadrature_type>::_lumpCellMatrix(void)
+pylith::feassemble::Integrator::_lumpCellMatrix(void)
 { // _lumpCellMatrix
   assert(_quadrature);
   const int numBasis = _quadrature->numBasis();

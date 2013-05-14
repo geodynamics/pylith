@@ -53,8 +53,7 @@ pylith::feassemble::TestElasticityExplicitTri3::setUp(void)
 { // setUp
   PYLITH_METHOD_BEGIN;
 
-  _quadrature = new Quadrature<topology::Mesh>();
-  CPPUNIT_ASSERT(_quadrature);
+  _quadrature = new Quadrature();CPPUNIT_ASSERT(_quadrature);
   GeometryTri2D geometry;
   _quadrature->refGeometry(&geometry);
 

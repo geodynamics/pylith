@@ -23,15 +23,17 @@
 #include "Quadrature.hh" // USES Quadrature
 #include "CellGeometry.hh" // USES CellGeometry
 
-#include "pylith/materials/ElasticMaterial.hh" // USES ElasticMaterial
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
+#include "pylith/materials/ElasticMaterial.hh" // USES ElasticMaterial
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
 #include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
@@ -62,7 +64,7 @@ pylith::feassemble::IntegratorElasticity::deallocate(void)
 { // deallocate
   PYLITH_METHOD_BEGIN;
 
-  Integrator<Quadrature<topology::Mesh> >::deallocate();
+  Integrator::deallocate();
 
   delete _outputFields; _outputFields = 0;
   _material = 0; // :TODO: Use shared pointer.

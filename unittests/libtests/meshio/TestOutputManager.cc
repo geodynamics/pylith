@@ -377,7 +377,7 @@ pylith::meshio::TestOutputManager::testAppendCellField(void)
   const PylithScalar quadWts[] = { 1.5, 0.5 };
   const PylithScalar minJacobian = 1.0;
 
-  feassemble::Quadrature<topology::Mesh> quadrature;
+  feassemble::Quadrature quadrature;
   quadrature.initialize(basis, numQuadPts, numBasis, 
 			basisDerivRef, numQuadPts, numBasis, cellDim,
 			quadPtsRef, numQuadPts, cellDim,

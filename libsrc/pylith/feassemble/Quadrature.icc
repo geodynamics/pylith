@@ -24,61 +24,55 @@
 #include "QuadratureEngine.hh" // USES QuadratureEngine
 
 // Set flag for checking ill-conditioning.
-template<typename mesh_type>
 inline
 void
-pylith::feassemble::Quadrature<mesh_type>::checkConditioning(const bool flag) {
+pylith::feassemble::Quadrature::checkConditioning(const bool flag) {
   _checkConditioning = flag;
 }
 
 // Get flag for checking ill-conditioning.
-template<typename mesh_type>
 inline
 bool
-pylith::feassemble::Quadrature<mesh_type>::checkConditioning(void) const {
+pylith::feassemble::Quadrature::checkConditioning(void) const {
   return _checkConditioning;
 }
 
 // Get coordinates of quadrature points in cell (NOT reference cell).
-template<typename mesh_type>
 inline
 const pylith::scalar_array&
-pylith::feassemble::Quadrature<mesh_type>::quadPts(void) const {
+pylith::feassemble::Quadrature::quadPts(void) const {
   assert(0 != _engine);
   return _engine->quadPts();
 }
 
 // Get derivatives of basis fns evaluated at quadrature points.
-template<typename mesh_type>
 inline
 const pylith::scalar_array&
-pylith::feassemble::Quadrature<mesh_type>::basisDeriv(void) const {
+pylith::feassemble::Quadrature::basisDeriv(void) const {
   assert(0 != _engine);
   return _engine->basisDeriv();
 }
 
 // Get Jacobians evaluated at quadrature points.
-template<typename mesh_type>
 inline
 const pylith::scalar_array&
-pylith::feassemble::Quadrature<mesh_type>::jacobian(void) const {
+pylith::feassemble::Quadrature::jacobian(void) const {
   assert(0 != _engine);
   return _engine->jacobian();
 }
 
 // Get determinants of Jacobian evaluated at quadrature points.
-template<typename mesh_type>
 inline
 const pylith::scalar_array&
-pylith::feassemble::Quadrature<mesh_type>::jacobianDet(void) const {
+pylith::feassemble::Quadrature::jacobianDet(void) const {
   assert(0 != _engine);
   return _engine->jacobianDet();
 }
 
 // Compute geometric quantities for a cell at quadrature points.
-template<typename mesh_type>
+inline
 void
-pylith::feassemble::Quadrature<mesh_type>::computeGeometry(const PylithScalar* coordinatesCell,
+pylith::feassemble::Quadrature::computeGeometry(const PylithScalar* coordinatesCell,
 							   const int coordinatesSize,
 							   const int cell)
 { // computeGeometry

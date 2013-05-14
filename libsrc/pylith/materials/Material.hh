@@ -141,7 +141,7 @@ public :
    */
   virtual
   void initialize(const topology::Mesh& mesh,
-		  feassemble::Quadrature<topology::Mesh>* quadrature);
+		  feassemble::Quadrature* quadrature);
   
   /** Get size of stress/strain tensor associated with material.
    *

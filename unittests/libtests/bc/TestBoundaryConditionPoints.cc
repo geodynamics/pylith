@@ -30,6 +30,7 @@
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestBoundaryConditionPoints );

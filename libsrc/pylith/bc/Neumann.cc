@@ -28,6 +28,8 @@
 #include "pylith/topology/VisitorSubMesh.hh" // USES VecVisitorSubMesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
 
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
+
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys

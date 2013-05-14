@@ -23,8 +23,6 @@
 #include "CohesiveTopology.hh" // USES CohesiveTopology
 #include "TractPerturbation.hh" // HOLDSA TractPerturbation
 
-#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
-#include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
@@ -33,9 +31,16 @@
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/Stratum.hh" // USES Stratum, StratumIS
+
 #include "pylith/friction/FrictionModel.hh" // USES FrictionModel
-#include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
 #include "pylith/problems/SolverLinear.hh" // USES SolverLinear
+
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
+#include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
+
+#include "pylith/utils/EventLogger.hh" // USES EventLogger
+#include "pylith/utils/constdefs.h" // USES PYLITH_MAXFLOAT
+#include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB

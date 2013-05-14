@@ -55,9 +55,8 @@ class AbsorbingDampers(BoundaryCondition, Integrator, ModuleAbsorbingDampers):
 
     import pyre.inventory
 
-    from pylith.feassemble.Quadrature import MeshQuadrature
-    quadrature = pyre.inventory.facility("quadrature",
-                                         factory=MeshQuadrature)
+    from pylith.feassemble.Quadrature import Quadrature
+    quadrature = pyre.inventory.facility("quadrature", factory=Quadrature)
     quadrature.meta['tip'] = "Quadrature object for numerical integration."
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB

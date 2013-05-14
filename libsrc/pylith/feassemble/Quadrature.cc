@@ -18,6 +18,8 @@
 
 #include <portinfo>
 
+#include "Quadrature.hh" // Implementation of class methods
+
 #include "CellGeometry.hh" // USES CellGeometry
 
 #include "QuadratureEngine.hh" // USES QuadratureEngine
@@ -29,14 +31,15 @@
 #include "Quadrature2Din3D.hh"
 #include "Quadrature3D.hh"
 
+#include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
+
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 
 // ----------------------------------------------------------------------
 // Constructor
-template<typename mesh_type>
-pylith::feassemble::Quadrature<mesh_type>::Quadrature(void) :
+pylith::feassemble::Quadrature::Quadrature(void) :
   _engine(0),
   _checkConditioning(false)
 { // constructor
@@ -44,17 +47,15 @@ pylith::feassemble::Quadrature<mesh_type>::Quadrature(void) :
 
 // ----------------------------------------------------------------------
 // Destructor
-template<typename mesh_type>
-pylith::feassemble::Quadrature<mesh_type>::~Quadrature(void)
+pylith::feassemble::Quadrature::~Quadrature(void)
 { // destructor
   deallocate();
 } // destructor
   
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
-template<typename mesh_type>
 void
-pylith::feassemble::Quadrature<mesh_type>::deallocate(void)
+pylith::feassemble::Quadrature::deallocate(void)
 { // deallocate
   PYLITH_METHOD_BEGIN;
 
@@ -67,8 +68,7 @@ pylith::feassemble::Quadrature<mesh_type>::deallocate(void)
   
 // ----------------------------------------------------------------------
 // Copy constructor
-template<typename mesh_type>
-pylith::feassemble::Quadrature<mesh_type>::Quadrature(const Quadrature& q) :
+pylith::feassemble::Quadrature::Quadrature(const Quadrature& q) :
   QuadratureRefCell(q),
   _engine(0),
   _checkConditioning(q._checkConditioning)
@@ -83,9 +83,8 @@ pylith::feassemble::Quadrature<mesh_type>::Quadrature(const Quadrature& q) :
 
 // ----------------------------------------------------------------------
 // Setup quadrature engine.
-template<typename mesh_type>
 void
-pylith::feassemble::Quadrature<mesh_type>::initializeGeometry(void)
+pylith::feassemble::Quadrature::initializeGeometry(void)
 { // initializeGeometry
   PYLITH_METHOD_BEGIN;
 
@@ -149,9 +148,8 @@ pylith::feassemble::Quadrature<mesh_type>::initializeGeometry(void)
 
 // ----------------------------------------------------------------------
 // Deallocate temporary storage;
-template<typename mesh_type>
 void
-pylith::feassemble::Quadrature<mesh_type>::clear(void)
+pylith::feassemble::Quadrature::clear(void)
 { // clear
   PYLITH_METHOD_BEGIN;
 

@@ -94,7 +94,7 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(const field_type& fi
 { // filter
   PYLITH_METHOD_BEGIN;
 
-  const feassemble::Quadrature<mesh_type>* quadrature = CellFilter<mesh_type, field_type>::_quadrature;assert(quadrature);
+  const feassemble::Quadrature* quadrature = CellFilter<mesh_type, field_type>::_quadrature;assert(quadrature);
 
   const int numQuadPts = quadrature->numQuadPts();
   const scalar_array& wts = quadrature->quadWts();

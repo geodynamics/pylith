@@ -93,8 +93,8 @@ class Material(PetscComponent):
                                            factory=NullComponent)
     dbInitialState.meta['tip'] = "Database for initial state variables."
 
-    from pylith.feassemble.Quadrature import MeshQuadrature
-    quadrature = pyre.inventory.facility("quadrature", factory=MeshQuadrature)
+    from pylith.feassemble.Quadrature import Quadrature
+    quadrature = pyre.inventory.facility("quadrature", factory=Quadrature)
     quadrature.meta['tip'] = "Quadrature object for numerical integration."
 
 
