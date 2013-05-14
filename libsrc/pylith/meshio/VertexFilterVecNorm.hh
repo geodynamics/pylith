@@ -33,8 +33,7 @@
 /** @brief C++ object for computing vector norms for fields over
  * vertices when outputing finite-element data.
  */
-template<typename field_type>
-class pylith::meshio::VertexFilterVecNorm : public VertexFilter<field_type>
+class pylith::meshio::VertexFilterVecNorm : public VertexFilter
 { // VertexFilterVecNorm
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
@@ -50,7 +49,7 @@ public :
    *
    * @returns Copy of filter.
    */
-  VertexFilter<field_type>* clone(void) const;
+  VertexFilter* clone(void) const;
 
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
@@ -59,8 +58,8 @@ public :
    *
    * @param fieldIn Field to filter.
    */
-  field_type&
-  filter(const field_type& fieldIn);
+  topology::Field&
+  filter(const topology::Field& fieldIn);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
@@ -81,11 +80,9 @@ private :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  field_type* _fieldVecNorm; ///< Filtered vertex field
+  topology::Field* _fieldVecNorm; ///< Filtered vertex field
 
 }; // VertexFilterVecNorm
-
-#include "VertexFilterVecNorm.cc" // template definitions
 
 #endif // pylith_meshio_cellfiltervecnorm_hh
 

@@ -101,7 +101,7 @@ namespace pylith {
        *
        * @returns Initial stress field.
        */
-      const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >* initialFields(void) const;
+      const pylith::topology::Fields* initialFields(void) const;
 
       // PROTECTED METHODS //////////////////////////////////////////////
     protected :

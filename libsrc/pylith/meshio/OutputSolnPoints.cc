@@ -20,13 +20,16 @@
 
 #include "OutputSolnPoints.hh" // implementation of class methods
 
+#include "MeshBuilder.hh" // USES MeshBuilder
+
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
-#include "MeshBuilder.hh" // USES MeshBuilder
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -51,7 +54,7 @@ pylith::meshio::OutputSolnPoints::deallocate(void)
 { // deallocate
   PYLITH_METHOD_BEGIN;
 
-  OutputManager<topology::Mesh, topology::Field<topology::Mesh> >::deallocate();
+  OutputManager::deallocate();
 
   if (_interpolator) {
     PetscErrorCode err = err = DMInterpolationDestroy(&_interpolator);PYLITH_CHECK_ERROR(err);
@@ -158,7 +161,7 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
 #endif
 
   if (!_fields) {
-    _fields = new topology::Fields<topology::Field<topology::Mesh> >(*_pointsMesh);assert(_fields);
+    _fields = new topology::Fields(*_pointsMesh);assert(_fields);
   } // if
 
   PYLITH_METHOD_END;
@@ -179,7 +182,7 @@ pylith::meshio::OutputSolnPoints::open(const topology::Mesh& mesh,
   assert(!labelId);
 
   assert(_pointsMesh);
-  OutputManager<topology::Mesh, topology::Field<topology::Mesh> >::open(*_pointsMesh, numTimeSteps, label, labelId);
+  OutputManager::open(*_pointsMesh, numTimeSteps, label, labelId);
 
   PYLITH_METHOD_END;
 } // open
@@ -199,7 +202,7 @@ pylith::meshio::OutputSolnPoints::openTimeStep(const PylithScalar t,
   assert(!labelId);
 
   assert(_pointsMesh);
-  OutputManager<topology::Mesh, topology::Field<topology::Mesh> >::openTimeStep(t, *_pointsMesh, label, labelId);
+  OutputManager::openTimeStep(t, *_pointsMesh, label, labelId);
 
   PYLITH_METHOD_END;
 } // openTimeStep
@@ -209,7 +212,7 @@ pylith::meshio::OutputSolnPoints::openTimeStep(const PylithScalar t,
 // Append finite-element vertex field to file.
 void
 pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
-						    topology::Field<topology::Mesh>& field,
+						    topology::Field& field,
 						    const topology::Mesh& mesh)
 { // appendVertexField
   PYLITH_METHOD_BEGIN;
@@ -248,7 +251,7 @@ pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
   } // if
   _fields->add(fieldName.str().c_str(), field.label());
   
-  topology::Field<topology::Mesh>& fieldInterp = _fields->get(fieldName.str().c_str());
+  topology::Field& fieldInterp = _fields->get(fieldName.str().c_str());
   fieldInterp.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
   fieldInterp.allocate();
   fieldInterp.zero();
@@ -265,7 +268,7 @@ pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
 
   fieldInterp.scatterVectorToSection(context);
 
-  OutputManager<topology::Mesh, topology::Field<topology::Mesh> >::appendVertexField(t, fieldInterp, *_pointsMesh);
+  OutputManager::appendVertexField(t, fieldInterp, *_pointsMesh);
 
   PYLITH_METHOD_END;
 } // appendVertexField
@@ -275,7 +278,7 @@ pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
 // Append finite-element cell field to file.
 void
 pylith::meshio::OutputSolnPoints::appendCellField(const PylithScalar t,
-						  topology::Field<topology::Mesh>& field,
+						  topology::Field& field,
 						  const char* label,
 						  const int labelId)
 { // appendCellField

@@ -26,7 +26,7 @@
 // Include directives ---------------------------------------------------
 #include "faultsfwd.hh" // forward declarations
 
-#include "pylith/topology/topologyfwd.hh" // USES Field<Mesh>, Mesh
+#include "pylith/topology/topologyfwd.hh" // USES Field
 #include "pylith/utils/arrayfwd.hh" // USES scalar_array
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
@@ -155,9 +155,8 @@ public :
    * @returns Vertex field.
    */
   virtual
-  const topology::Field<topology::Mesh>&
-  vertexField(const char* name,
-	      const topology::SolutionFields* fields =0) = 0;
+  const topology::Field& vertexField(const char* name,
+				     const topology::SolutionFields* fields =0) = 0;
 
   /** Get cell field associated with integrator.
    *
@@ -166,9 +165,8 @@ public :
    * @returns Cell field.
    */
   virtual
-  const topology::Field<topology::Mesh>&
-  cellField(const char* name,
-	    const topology::SolutionFields* fields =0) = 0;
+  const topology::Field& cellField(const char* name,
+				   const topology::SolutionFields* fields =0) = 0;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

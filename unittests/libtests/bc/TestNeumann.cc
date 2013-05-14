@@ -37,6 +37,7 @@
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "data/NeumannDataQuad4.hh" // USES NeumannDataQuad4
 #include "pylith/feassemble/GeometryLine2D.hh" // USES GeometryLine2D
@@ -93,7 +94,7 @@ namespace pylith {
       static
       void _checkValues(const PylithScalar* valuesE,
 			const int fiberDimE,
-			const topology::Field<topology::Mesh>& field);
+			const topology::Field& field);
     } // _TestNeumann
   } // bc
 } // pylith
@@ -245,7 +246,7 @@ pylith::bc::TestNeumann::testIntegrateResidual(void)
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &bc, &fields);
 
-  topology::Field<topology::Mesh>& residual = fields.get("residual");
+  topology::Field& residual = fields.get("residual");
   const PylithScalar t = 0.0;
   bc.integrateResidual(residual, t, &fields);
 
@@ -335,23 +336,23 @@ pylith::bc::TestNeumann::test_queryDatabases(void)
   // bc._parameters->view("PARAMETERS"); // DEBUGGING
 
   // Check initial values.
-  const topology::Field<topology::Mesh>& initial = bc._parameters->get("initial");
+  const topology::Field& initial = bc._parameters->get("initial");
   _TestNeumann::_checkValues(_TestNeumann::initial, numQuadPts*spaceDim, initial);
 
   // Check rate values.
-  const topology::Field<topology::Mesh>& rate = bc._parameters->get("rate");
+  const topology::Field& rate = bc._parameters->get("rate");
   _TestNeumann::_checkValues(_TestNeumann::rate, numQuadPts*spaceDim, rate);
 
   // Check rate start time.
-  const topology::Field<topology::Mesh>& rateTime = bc._parameters->get("rate time");
+  const topology::Field& rateTime = bc._parameters->get("rate time");
   _TestNeumann::_checkValues(_TestNeumann::rateTime, numQuadPts, rateTime);
 
   // Check change values.
-  const topology::Field<topology::Mesh>& change = bc._parameters->get("change");
+  const topology::Field& change = bc._parameters->get("change");
   _TestNeumann::_checkValues(_TestNeumann::change, numQuadPts*spaceDim, change);
 
   // Check change start time.
-  const topology::Field<topology::Mesh>& changeTime = bc._parameters->get("change time");
+  const topology::Field& changeTime = bc._parameters->get("change time");
   _TestNeumann::_checkValues(_TestNeumann::changeTime, numQuadPts, changeTime);
   th.close();
 
@@ -417,7 +418,7 @@ pylith::bc::TestNeumann::test_paramsLocalToGlobal(void)
     valuesE[i+0] = _TestNeumann::initial[i+0]; // x
     valuesE[i+1] = -_TestNeumann::initial[i+1]; // y
   } // for
-  const topology::Field<topology::Mesh>& initial = bc._parameters->get("initial");
+  const topology::Field& initial = bc._parameters->get("initial");
   _TestNeumann::_checkValues(&valuesE[0], numQuadPts*spaceDim, initial);
 
   // Check rate values.
@@ -425,7 +426,7 @@ pylith::bc::TestNeumann::test_paramsLocalToGlobal(void)
     valuesE[i+0] = _TestNeumann::rate[i+0]; // x
     valuesE[i+1] = -_TestNeumann::rate[i+1]; // y
   } // for
-  const topology::Field<topology::Mesh>& rate = bc._parameters->get("rate");
+  const topology::Field& rate = bc._parameters->get("rate");
   _TestNeumann::_checkValues(&valuesE[0], numQuadPts*spaceDim, rate);
 
   // Check change values.
@@ -433,7 +434,7 @@ pylith::bc::TestNeumann::test_paramsLocalToGlobal(void)
     valuesE[i+0] = _TestNeumann::change[i+0]; // x
     valuesE[i+1] = -_TestNeumann::change[i+1]; // y
   } // for
-  const topology::Field<topology::Mesh>& change = bc._parameters->get("change");
+  const topology::Field& change = bc._parameters->get("change");
   _TestNeumann::_checkValues(&valuesE[0], numQuadPts*spaceDim, change);
 
   PYLITH_METHOD_END;
@@ -473,7 +474,7 @@ pylith::bc::TestNeumann::test_calculateValueInitial(void)
   CPPUNIT_ASSERT(bc._parameters);
   
   // Check values.
-  const topology::Field<topology::Mesh>& value = bc._parameters->get("value");
+  const topology::Field& value = bc._parameters->get("value");
   _TestNeumann::_checkValues(_TestNeumann::initial, numQuadPts*spaceDim, value);
 
   PYLITH_METHOD_END;
@@ -513,7 +514,7 @@ pylith::bc::TestNeumann::test_calculateValueRate(void)
   CPPUNIT_ASSERT(bc._parameters);
   
   // Check values.
-  const topology::Field<topology::Mesh>& value = bc._parameters->get("value");
+  const topology::Field& value = bc._parameters->get("value");
   _TestNeumann::_checkValues(_TestNeumann::valuesRate, numQuadPts*spaceDim, value);
 
   PYLITH_METHOD_END;
@@ -553,7 +554,7 @@ pylith::bc::TestNeumann::test_calculateValueChange(void)
   CPPUNIT_ASSERT(bc._parameters);
   
   // Check values.
-  const topology::Field<topology::Mesh>& value = bc._parameters->get("value");
+  const topology::Field& value = bc._parameters->get("value");
   _TestNeumann::_checkValues(_TestNeumann::valuesChange, numQuadPts*spaceDim, value);
 
   PYLITH_METHOD_END;
@@ -597,7 +598,7 @@ pylith::bc::TestNeumann::test_calculateValueChangeTH(void)
   CPPUNIT_ASSERT(bc._parameters);
   
   // Check values.
-  const topology::Field<topology::Mesh>& value = bc._parameters->get("value");
+  const topology::Field& value = bc._parameters->get("value");
   _TestNeumann::_checkValues(_TestNeumann::valuesChangeTH, numQuadPts*spaceDim, value);
 
   PYLITH_METHOD_END;
@@ -663,7 +664,7 @@ pylith::bc::TestNeumann::test_calculateValueAll(void)
       _TestNeumann::valuesRate[i] +
       _TestNeumann::valuesChangeTH[i];
   
-  const topology::Field<topology::Mesh>& value = bc._parameters->get("value");
+  const topology::Field& value = bc._parameters->get("value");
   _TestNeumann::_checkValues(&valuesE[0], numQuadPts*spaceDim, value);
 
   PYLITH_METHOD_END;
@@ -749,7 +750,7 @@ pylith::bc::TestNeumann::_initialize(topology::Mesh* mesh,
   fields->add("disp(t), bc(t+dt)", "displacement");
   fields->solutionName("disp(t), bc(t+dt)");
 
-  topology::Field<topology::Mesh>& residual = fields->get("residual");
+  topology::Field& residual = fields->get("residual");
   residual.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
   residual.allocate();
   residual.scale(_data->lengthScale);
@@ -765,7 +766,7 @@ pylith::bc::TestNeumann::_initialize(topology::Mesh* mesh,
 void
 pylith::bc::_TestNeumann::_checkValues(const PylithScalar* valuesE,
 				       const int fiberDimE,
-				       const topology::Field<topology::Mesh>& field)
+				       const topology::Field& field)
 { // _checkValues
   PYLITH_METHOD_BEGIN;
 

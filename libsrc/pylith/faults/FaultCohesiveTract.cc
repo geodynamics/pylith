@@ -72,9 +72,7 @@ pylith::faults::FaultCohesiveTract::initialize(const topology::Mesh& mesh,
   CohesiveTopology::createFaultParallel(_faultMesh, mesh, id(), label(), useLagrangeConstraints());
 
   // Reset fields.
-  delete _fields; 
-  _fields = 
-    new topology::Fields<topology::Field<topology::Mesh> >(*_faultMesh);
+  delete _fields; _fields = new topology::Fields(*_faultMesh);assert(_fields);
 
   // Initialize quadrature geometry.
   _quadrature->initializeGeometry();
@@ -85,7 +83,7 @@ pylith::faults::FaultCohesiveTract::initialize(const topology::Mesh& mesh,
 // ----------------------------------------------------------------------
 // Integrate contribution of cohesive cells to residual term.
 void
-pylith::faults::FaultCohesiveTract::integrateResidual(const topology::Field<topology::Mesh>& residual,
+pylith::faults::FaultCohesiveTract::integrateResidual(const topology::Field& residual,
 						      const PylithScalar t,
 						      topology::SolutionFields* const fields)
 { // integrateResidual
@@ -158,7 +156,7 @@ pylith::faults::FaultCohesiveTract::verifyConfiguration(const topology::Mesh& me
 
 // ----------------------------------------------------------------------
 // Get vertex field associated with integrator.
-const pylith::topology::Field<pylith::topology::Mesh>&
+const pylith::topology::Field&
 pylith::faults::FaultCohesiveTract::vertexField(const char* name,
 						const topology::SolutionFields* fields)
 { // vertexField
@@ -167,7 +165,7 @@ pylith::faults::FaultCohesiveTract::vertexField(const char* name,
 
 // ----------------------------------------------------------------------
 // Get cell field associated with integrator.
-const pylith::topology::Field<pylith::topology::Mesh>&
+const pylith::topology::Field&
 pylith::faults::FaultCohesiveTract::cellField(const char* name,
 					      const topology::SolutionFields* fields)
 { // cellField

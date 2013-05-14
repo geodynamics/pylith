@@ -18,35 +18,34 @@
 
 #include <portinfo>
 
+#include "VertexFilterVecNorm.hh" // Implementation of class methods
+
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
 // ----------------------------------------------------------------------
 // Constructor
-template<typename field_type>
-pylith::meshio::VertexFilterVecNorm<field_type>::VertexFilterVecNorm(void) :
+pylith::meshio::VertexFilterVecNorm::VertexFilterVecNorm(void) :
   _fieldVecNorm(0)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-template<typename field_type>
-pylith::meshio::VertexFilterVecNorm<field_type>::~VertexFilterVecNorm(void)
+pylith::meshio::VertexFilterVecNorm::~VertexFilterVecNorm(void)
 { // destructor
   deallocate();
 } // destructor  
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
-template<typename field_type>
 void
-pylith::meshio::VertexFilterVecNorm<field_type>::deallocate(void)
+pylith::meshio::VertexFilterVecNorm::deallocate(void)
 { // deallocate
   PYLITH_METHOD_BEGIN;
 
-  VertexFilter<field_type>::deallocate();  
+  VertexFilter::deallocate();  
 
   delete _fieldVecNorm; _fieldVecNorm = 0;
 
@@ -55,27 +54,24 @@ pylith::meshio::VertexFilterVecNorm<field_type>::deallocate(void)
   
 // ----------------------------------------------------------------------
 // Copy constructor.
-template<typename field_type>
-pylith::meshio::VertexFilterVecNorm<field_type>::VertexFilterVecNorm(const VertexFilterVecNorm& f) :
-  VertexFilter<field_type>(f),
+pylith::meshio::VertexFilterVecNorm::VertexFilterVecNorm(const VertexFilterVecNorm& f) :
+  VertexFilter(f),
   _fieldVecNorm(0)
 { // copy constructor
 } // copy constructor
 
 // ----------------------------------------------------------------------
 // Create copy of filter.
-template<typename field_type>
-pylith::meshio::VertexFilter<field_type>*
-pylith::meshio::VertexFilterVecNorm<field_type>::clone(void) const
+pylith::meshio::VertexFilter*
+pylith::meshio::VertexFilterVecNorm::clone(void) const
 { // clone
   return new VertexFilterVecNorm(*this);
 } // clone
 
 // ----------------------------------------------------------------------
 // Filter field.
-template<typename field_type>
-field_type&
-pylith::meshio::VertexFilterVecNorm<field_type>::filter(const field_type& fieldIn)
+pylith::topology::Field&
+pylith::meshio::VertexFilterVecNorm::filter(const topology::Field& fieldIn)
 { // filter
   PYLITH_METHOD_BEGIN;
 
@@ -92,7 +88,7 @@ pylith::meshio::VertexFilterVecNorm<field_type>::filter(const field_type& fieldI
 
   // Allocate field if necessary
   if (!_fieldVecNorm) {
-    _fieldVecNorm = new field_type(fieldIn.mesh());
+    _fieldVecNorm = new topology::Field(fieldIn.mesh());
     _fieldVecNorm->label("vector norm");
     _fieldVecNorm->newSection(fieldIn, fiberDimNorm);
     _fieldVecNorm->allocate();

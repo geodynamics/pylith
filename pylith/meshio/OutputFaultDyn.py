@@ -23,10 +23,10 @@
 ##
 ## Factory: output_manager
 
-from OutputManagerMesh import OutputManagerMesh
+from OutputManager import OutputManager
 
 # OutputFaultDyn class
-class OutputFaultDyn(OutputManagerMesh):
+class OutputFaultDyn(OutputManager):
   """
   Python object for managing output of finite-element information for
   faults with dynamic ruptures.
@@ -69,7 +69,7 @@ class OutputFaultDyn(OutputManagerMesh):
     """
     Constructor.
     """
-    OutputManagerMesh.__init__(self, name)
+    OutputManager.__init__(self, name)
     return
 
     
@@ -79,7 +79,7 @@ class OutputFaultDyn(OutputManagerMesh):
     """
     Set members based using inventory.
     """
-    OutputManagerMesh._configure(self)
+    OutputManager._configure(self)
     self.vertexInfoFields = self.inventory.vertexInfoFields
     self.vertexDataFields = self.inventory.vertexDataFields
     self.cellInfoFields   = self.inventory.cellInfoFields

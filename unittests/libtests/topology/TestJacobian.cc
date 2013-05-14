@@ -40,7 +40,7 @@ pylith::topology::TestJacobian::testConstructor(void)
 
   Mesh mesh;
   _initializeMesh(&mesh);
-  Field<Mesh> field(mesh);
+  Field field(mesh);
   _initializeField(&mesh, &field);
   Jacobian jacobian(field);
 
@@ -61,11 +61,11 @@ pylith::topology::TestJacobian::testConstructorSubDomain(void)
 
   Mesh mesh;
   _initializeMesh(&mesh);
-  Field<Mesh> field(mesh);
+  Field field(mesh);
   _initializeField(&mesh, &field);
 
   Mesh submesh(mesh, "bc");
-  Field<Mesh> subfield(submesh);
+  Field subfield(submesh);
   subfield.newSection(FieldBase::VERTICES_FIELD, submesh.dimension());
   subfield.allocate();
   subfield.zero();
@@ -84,7 +84,7 @@ pylith::topology::TestJacobian::testMatrix(void)
 
   Mesh mesh;
   _initializeMesh(&mesh);
-  Field<Mesh> field(mesh);
+  Field field(mesh);
   _initializeField(&mesh, &field);
   Jacobian jacobian(field);
 
@@ -103,7 +103,7 @@ pylith::topology::TestJacobian::testAssemble(void)
 
   Mesh mesh;
   _initializeMesh(&mesh);
-  Field<Mesh> field(mesh);
+  Field field(mesh);
   _initializeField(&mesh, &field);
   Jacobian jacobian(field);
 
@@ -122,7 +122,7 @@ pylith::topology::TestJacobian::testZero(void)
 
   Mesh mesh;
   _initializeMesh(&mesh);
-  Field<Mesh> field(mesh);
+  Field field(mesh);
   _initializeField(&mesh, &field);
   Jacobian jacobian(field);
 
@@ -140,7 +140,7 @@ pylith::topology::TestJacobian::testView(void)
 
   Mesh mesh;
   _initializeMesh(&mesh);
-  Field<Mesh> field(mesh);
+  Field field(mesh);
   _initializeField(&mesh, &field);
   Jacobian jacobian(field);
 
@@ -160,7 +160,7 @@ pylith::topology::TestJacobian::testWrite(void)
 
   Mesh mesh;
   _initializeMesh(&mesh);
-  Field<Mesh> field(mesh);
+  Field field(mesh);
   _initializeField(&mesh, &field);
   Jacobian jacobian(field);
 
@@ -189,7 +189,7 @@ pylith::topology::TestJacobian::_initializeMesh(Mesh* mesh) const
 // ----------------------------------------------------------------------
 void
 pylith::topology::TestJacobian::_initializeField(Mesh* mesh,
-                                                 Field<Mesh>* field) const
+                                                 Field* field) const
 { // _initializeField
   PYLITH_METHOD_BEGIN;
 

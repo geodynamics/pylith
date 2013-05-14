@@ -61,7 +61,7 @@ public :
    * @param t Current time
    * @param fields Solution fields
    */
-  void integrateResidual(const topology::Field<topology::Mesh>& residual,
+  void integrateResidual(const topology::Field& residual,
 			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 

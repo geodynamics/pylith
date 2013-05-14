@@ -104,7 +104,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::stableTimeStep(const topology::M
 // Integrate constributions to residual term (r) for operator.
 void
 pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
-			  const topology::Field<topology::Mesh>& residual,
+			  const topology::Field& residual,
 			  const PylithScalar t,
 			  topology::SolutionFields* const fields)
 { // integrateResidual

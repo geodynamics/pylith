@@ -30,6 +30,7 @@
 #include "pylith/utils/array.hh" // USES scalar_array, std::vector
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <strings.h> // USES strcasecmp()
@@ -124,9 +125,7 @@ pylith::friction::FrictionModel::initialize(const topology::Mesh& faultMesh,
   // Query database for properties
 
   // Create fields to hold physical properties and state variables.
-  delete _fieldsPropsStateVars; 
-  _fieldsPropsStateVars = new topology::Fields<topology::Field<topology::Mesh> >(faultMesh);
-  assert(_fieldsPropsStateVars);
+  delete _fieldsPropsStateVars; _fieldsPropsStateVars = new topology::Fields(faultMesh);assert(_fieldsPropsStateVars);
   _setupPropsStateVars();
 
   // Create arrays for querying.
@@ -169,7 +168,7 @@ pylith::friction::FrictionModel::initialize(const topology::Mesh& faultMesh,
     for (int i=0; i < _metadata.numProperties(); ++i) {
       const materials::Metadata::ParamDescription& property = _metadata.getProperty(i);
       // TODO This needs to be an integer instead of a string
-      topology::Field<topology::Mesh>& propertyField = _fieldsPropsStateVars->get(property.name.c_str());
+      topology::Field& propertyField = _fieldsPropsStateVars->get(property.name.c_str());
       topology::VecVisitorMesh propertyVisitor(propertyField);
       PetscScalar* propertyArray = propertyVisitor.localArray();
       const PetscInt off = propertyVisitor.sectionOffset(v);
@@ -222,7 +221,7 @@ pylith::friction::FrictionModel::initialize(const topology::Mesh& faultMesh,
       for (int i=0; i < _metadata.numStateVars(); ++i) {
         const materials::Metadata::ParamDescription& stateVar = _metadata.getStateVar(i);
         // TODO This needs to be an integer instead of a string
-        topology::Field<topology::Mesh>& stateVarField = _fieldsPropsStateVars->get(stateVar.name.c_str());
+        topology::Field& stateVarField = _fieldsPropsStateVars->get(stateVar.name.c_str());
 	topology::VecVisitorMesh stateVarVisitor(stateVarField);
 	PetscScalar* stateVarArray = stateVarVisitor.localArray();
 	const PetscInt off = stateVarVisitor.sectionOffset(v);
@@ -247,7 +246,7 @@ pylith::friction::FrictionModel::initialize(const topology::Mesh& faultMesh,
 
 // ----------------------------------------------------------------------
 // Get the field with all properties and state variables.
-const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >&
+const pylith::topology::Fields&
 pylith::friction::FrictionModel::fieldsPropsStateVars(void) const
 { // fieldsPropsStateVars
   PYLITH_METHOD_BEGIN;
@@ -290,7 +289,7 @@ pylith::friction::FrictionModel::getMetadata()
   
 // ----------------------------------------------------------------------
 // Get physical property or state variable field.
-const pylith::topology::Field<pylith::topology::Mesh>&
+const pylith::topology::Field&
 pylith::friction::FrictionModel::getField(const char* name)
 { // getField
   PYLITH_METHOD_BEGIN;
@@ -314,7 +313,7 @@ pylith::friction::FrictionModel::retrievePropsStateVars(const int point)
   for (int i=0; i < _metadata.numProperties(); ++i) {
     const materials::Metadata::ParamDescription& property = _metadata.getProperty(i);
     // TODO This needs to be an integer instead of a string
-    topology::Field<topology::Mesh>& propertyField = _fieldsPropsStateVars->get(property.name.c_str());
+    topology::Field& propertyField = _fieldsPropsStateVars->get(property.name.c_str());
     topology::VecVisitorMesh propertyVisitor(propertyField);
     PetscScalar* propertyArray = propertyVisitor.localArray();
     const PetscInt off = propertyVisitor.sectionOffset(point);
@@ -326,7 +325,7 @@ pylith::friction::FrictionModel::retrievePropsStateVars(const int point)
   for (int i=0; i < _metadata.numStateVars(); ++i) {
     const materials::Metadata::ParamDescription& stateVar = _metadata.getStateVar(i);
     // TODO This needs to be an integer instead of a string
-    topology::Field<topology::Mesh>& stateVarField = _fieldsPropsStateVars->get(stateVar.name.c_str());
+    topology::Field& stateVarField = _fieldsPropsStateVars->get(stateVar.name.c_str());
     topology::VecVisitorMesh stateVarVisitor(stateVarField);
     PetscScalar* stateVarArray = stateVarVisitor.localArray();
     const PetscInt off = stateVarVisitor.sectionOffset(point);
@@ -391,7 +390,7 @@ pylith::friction::FrictionModel::updateStateVars(const PylithScalar t,
   for (int i=0; i < _metadata.numProperties(); ++i) {
     const materials::Metadata::ParamDescription& property = _metadata.getProperty(i);
     // TODO This needs to be an integer instead of a string
-    topology::Field<topology::Mesh>& propertyField = _fieldsPropsStateVars->get(property.name.c_str());
+    topology::Field& propertyField = _fieldsPropsStateVars->get(property.name.c_str());
     topology::VecVisitorMesh propertyVisitor(propertyField);
     PetscScalar* propertyArray = propertyVisitor.localArray();
     const PetscInt off = propertyVisitor.sectionOffset(vertex);
@@ -403,7 +402,7 @@ pylith::friction::FrictionModel::updateStateVars(const PylithScalar t,
   for (int i=0; i < _metadata.numStateVars(); ++i) {
     const materials::Metadata::ParamDescription& stateVar = _metadata.getStateVar(i);
     // TODO This needs to be an integer instead of a string
-    topology::Field<topology::Mesh>& stateVarField = _fieldsPropsStateVars->get(stateVar.name.c_str());
+    topology::Field& stateVarField = _fieldsPropsStateVars->get(stateVar.name.c_str());
     topology::VecVisitorMesh stateVarVisitor(stateVarField);
     PetscScalar* stateVarArray = stateVarVisitor.localArray();
     const PetscInt off = stateVarVisitor.sectionOffset(vertex);
@@ -472,7 +471,7 @@ pylith::friction::FrictionModel::_setupPropsStateVars(void)
     const materials::Metadata::ParamDescription& property = 
       _metadata.getProperty(i);
     _fieldsPropsStateVars->add(property.name.c_str(), property.name.c_str());
-    topology::Field<topology::Mesh>& propertyField = _fieldsPropsStateVars->get(property.name.c_str());
+    topology::Field& propertyField = _fieldsPropsStateVars->get(property.name.c_str());
     propertyField.newSection(topology::FieldBase::VERTICES_FIELD, property.fiberDim);
     propertyField.allocate();
     propertyField.vectorFieldType(property.fieldType);
@@ -485,7 +484,7 @@ pylith::friction::FrictionModel::_setupPropsStateVars(void)
     const materials::Metadata::ParamDescription& stateVar = 
       _metadata.getStateVar(i);
     _fieldsPropsStateVars->add(stateVar.name.c_str(), stateVar.name.c_str());
-    topology::Field<topology::Mesh>& stateVarField = _fieldsPropsStateVars->get(stateVar.name.c_str());
+    topology::Field& stateVarField = _fieldsPropsStateVars->get(stateVar.name.c_str());
     stateVarField.newSection(topology::FieldBase::VERTICES_FIELD, stateVar.fiberDim);
     stateVarField.allocate();
     stateVarField.vectorFieldType(stateVar.fieldType);

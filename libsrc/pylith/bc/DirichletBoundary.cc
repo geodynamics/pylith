@@ -80,7 +80,7 @@ pylith::bc::DirichletBoundary::initialize(const topology::Mesh& mesh,
 
 // ----------------------------------------------------------------------
 // Get vertex field of BC initial or rate of change of values.
-const pylith::topology::Field<pylith::topology::Mesh>&
+const pylith::topology::Field&
 pylith::bc::DirichletBoundary::vertexField(const char* name,
 					   const topology::SolutionFields& fields)
 { // getVertexField
@@ -97,17 +97,17 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
   const int spaceDim = cs->spaceDim();
 
   if (!_outputFields) {
-    _outputFields = new topology::Fields<topology::Field<topology::Mesh> >(*_boundaryMesh);
+    _outputFields = new topology::Fields(*_boundaryMesh);
   } // if
   assert(_outputFields);
   _outputFields->add("buffer (vector)", "buffer_vector", topology::FieldBase::FACES_FIELD, spaceDim);
-  topology::Field<topology::Mesh>& bufferVector = _outputFields->get("buffer (vector)");
+  topology::Field& bufferVector = _outputFields->get("buffer (vector)");
   bufferVector.vectorFieldType(topology::FieldBase::VECTOR);
   bufferVector.scale(lengthScale);
   bufferVector.allocate();
 
   _outputFields->add("buffer (scalar)", "buffer_scalar", topology::FieldBase::FACES_FIELD, 1);
-  topology::Field<topology::Mesh>& bufferScalar = _outputFields->get("buffer (scalar)");
+  topology::Field& bufferScalar = _outputFields->get("buffer (scalar)");
   bufferScalar.vectorFieldType(topology::FieldBase::SCALAR);
   bufferScalar.scale(timeScale);
   bufferScalar.allocate();
@@ -137,7 +137,7 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
 
 // ----------------------------------------------------------------------
 // Get vertex vector field with BC information.
-const pylith::topology::Field<pylith::topology::Mesh>&
+const pylith::topology::Field&
 pylith::bc::DirichletBoundary::_bufferVector(const char* name,
 					     const char* label,
 					     const PylithScalar scale)
@@ -156,11 +156,11 @@ pylith::bc::DirichletBoundary::_bufferVector(const char* name,
   } // if
   
   assert(_outputFields->hasField("buffer (vector)"));
-  topology::Field<topology::Mesh>& buffer = _outputFields->get("buffer (vector)");
+  topology::Field& buffer = _outputFields->get("buffer (vector)");
   topology::VecVisitorMesh bufferVisitor(buffer);
   PetscScalar* bufferArray = bufferVisitor.localArray();
 
-  topology::Field<topology::Mesh>& field = _parameters->get(name);
+  topology::Field& field = _parameters->get(name);
   topology::VecVisitorMesh fieldVisitor(field);
   PetscScalar* fieldArray = fieldVisitor.localArray();
 
@@ -190,7 +190,7 @@ pylith::bc::DirichletBoundary::_bufferVector(const char* name,
 
 // ----------------------------------------------------------------------
 // Get vertex scalar field with BC information.
-const pylith::topology::Field<pylith::topology::Mesh>&
+const pylith::topology::Field&
 pylith::bc::DirichletBoundary::_bufferScalar(const char* name,
 					     const char* label,
 					     const PylithScalar scale)
@@ -209,11 +209,11 @@ pylith::bc::DirichletBoundary::_bufferScalar(const char* name,
   } // if
   
   assert(_outputFields->hasField("buffer (scalar)"));
-  topology::Field<topology::Mesh>& buffer = _outputFields->get("buffer (scalar)");
+  topology::Field& buffer = _outputFields->get("buffer (scalar)");
   topology::VecVisitorMesh bufferVisitor(buffer);
   PetscScalar* bufferArray = bufferVisitor.localArray();
 
-  topology::Field<topology::Mesh>& field = _parameters->get(name);
+  topology::Field& field = _parameters->get(name);
   topology::VecVisitorMesh fieldVisitor(field);
   PetscScalar* fieldArray = fieldVisitor.localArray();
 

@@ -68,7 +68,7 @@ namespace pylith {
        * @param t Current time
        * @param fields Solution fields
        */
-      void integrateResidual(const pylith::topology::Field<pylith::topology::Mesh>& residual,
+      void integrateResidual(const pylith::topology::Field& residual,
 			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
       

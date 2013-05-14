@@ -21,6 +21,8 @@
 #include "TestOutputManager.hh" // Implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/meshio/OutputManager.hh"
 
@@ -40,9 +42,6 @@
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestOutputManager );
 
- // ----------------------------------------------------------------------
-typedef pylith::topology::Field<pylith::topology::Mesh> MeshField;
-
 // ----------------------------------------------------------------------
 // Test constructor
 void
@@ -50,7 +49,7 @@ pylith::meshio::TestOutputManager::testConstructor(void)
 { // testConstructor
   PYLITH_METHOD_BEGIN;
 
-  OutputManager<topology::Mesh, MeshField> manager;
+  OutputManager manager;
 
   PYLITH_METHOD_END;
 } // testConstructor
@@ -62,7 +61,7 @@ pylith::meshio::TestOutputManager::testCoordsys(void)
 { // testCoordsys
   PYLITH_METHOD_BEGIN;
 
-  OutputManager<topology::Mesh, MeshField> manager;
+  OutputManager manager;
 
   CPPUNIT_ASSERT(!manager._coordsys);
 
@@ -80,11 +79,11 @@ pylith::meshio::TestOutputManager::testWriter(void)
 { // testWriter
   PYLITH_METHOD_BEGIN;
 
-  OutputManager<topology::Mesh, MeshField> manager;
+  OutputManager manager;
 
   CPPUNIT_ASSERT(!manager._writer);
 
-  DataWriterVTK<topology::Mesh, MeshField> writer;
+  DataWriterVTK writer;
   manager.writer(&writer);
   CPPUNIT_ASSERT(manager._writer);
 
@@ -98,12 +97,12 @@ pylith::meshio::TestOutputManager::testVertexFilter(void)
 { // testVertexFilter
   PYLITH_METHOD_BEGIN;
 
-  OutputManager<topology::Mesh, MeshField> manager;
+  OutputManager manager;
 
   CPPUNIT_ASSERT(!manager._vertexFilter);
   CPPUNIT_ASSERT(!manager._cellFilter);
 
-  VertexFilterVecNorm<MeshField> filter;
+  VertexFilterVecNorm filter;
   manager.vertexFilter(&filter);
   CPPUNIT_ASSERT(manager._vertexFilter);
   CPPUNIT_ASSERT(!manager._cellFilter);
@@ -118,12 +117,12 @@ pylith::meshio::TestOutputManager::testCellFilter(void)
 { // testCellFilter
   PYLITH_METHOD_BEGIN;
 
-  OutputManager<topology::Mesh, MeshField> manager;
+  OutputManager manager;
 
   CPPUNIT_ASSERT(!manager._vertexFilter);
   CPPUNIT_ASSERT(!manager._cellFilter);
 
-  CellFilterAvg<topology::Mesh, MeshField> filter;
+  CellFilterAvg filter;
   manager.cellFilter(&filter);
   CPPUNIT_ASSERT(manager._cellFilter);
   CPPUNIT_ASSERT(!manager._vertexFilter);
@@ -138,7 +137,7 @@ pylith::meshio::TestOutputManager::testOpenClose(void)
 { // testOpenClose
   PYLITH_METHOD_BEGIN;
 
-  OutputManager<topology::Mesh, MeshField> manager;
+  OutputManager manager;
 
   topology::Mesh mesh;
   MeshIOAscii iohandler;
@@ -150,7 +149,7 @@ pylith::meshio::TestOutputManager::testOpenClose(void)
 
   // TODO Replace DataVTKWriter with writer that has nontrivial
   // open()/close().
-  DataWriterVTK<topology::Mesh, MeshField> writer;
+  DataWriterVTK writer;
   manager.writer(&writer);
 
   manager.open(mesh, numTimeSteps);
@@ -166,7 +165,7 @@ pylith::meshio::TestOutputManager::testOpenCloseTimeStep(void)
 { // testOpenCloseTimeStep
   PYLITH_METHOD_BEGIN;
 
-  OutputManager<topology::Mesh, MeshField> manager;
+  OutputManager manager;
 
   topology::Mesh mesh;
   MeshIOAscii iohandler;
@@ -179,7 +178,7 @@ pylith::meshio::TestOutputManager::testOpenCloseTimeStep(void)
   const char* filenameRoot = "output.vtk";
   const char* timeFormat = "%3.1f";
 
-  DataWriterVTK<topology::Mesh, MeshField> writer;
+  DataWriterVTK writer;
   writer.filename(filenameRoot);
   writer.timeFormat(timeFormat);
   manager.writer(&writer);
@@ -226,7 +225,7 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
   const PetscInt vStart = verticesStratum.begin();
   const PetscInt vEnd = verticesStratum.end();
 
-  MeshField field(mesh);
+  topology::Field field(mesh);
   field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
   field.allocate();
   field.label(label);
@@ -252,11 +251,11 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
   const char* filenameRootF = "output_vertex_filter.vtk";
   const char* timeFormat = "%3.1f";
 
-  DataWriterVTK<topology::Mesh, MeshField> writer;
+  DataWriterVTK writer;
   writer.filename(filenameRoot);
   writer.timeFormat(timeFormat);
 
-  OutputManager<topology::Mesh, MeshField> manager;
+  OutputManager manager;
   manager.writer(&writer);
   manager.open(mesh, numTimeSteps);
   manager.openTimeStep(t, mesh);
@@ -266,7 +265,7 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
 
   TestDataWriterVTK::checkFile(filenameRoot, t, timeFormat);
 
-  VertexFilterVecNorm<MeshField> filter;
+  VertexFilterVecNorm filter;
   manager.vertexFilter(&filter);
   writer.filename(filenameRootF);
   manager.writer(&writer);
@@ -313,7 +312,7 @@ pylith::meshio::TestOutputManager::testAppendCellField(void)
   const PetscInt cEnd = cellsStratum.end();
   PetscInt numCells = cellsStratum.size();
 
-  MeshField field(mesh);
+  topology::Field field(mesh);
   field.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
   field.allocate();
   field.label(label);
@@ -341,11 +340,11 @@ pylith::meshio::TestOutputManager::testAppendCellField(void)
   const char* filenameRootF = "output_cell_filter.vtk";
   const char* timeFormat = "%3.1f";
 
-  DataWriterVTK<topology::Mesh, MeshField> writer;
+  DataWriterVTK writer;
   writer.filename(filenameRoot);
   writer.timeFormat(timeFormat);
 
-  OutputManager<topology::Mesh, MeshField> manager;
+  OutputManager manager;
   manager.writer(&writer);
   manager.open(mesh, numTimeSteps);
   manager.openTimeStep(t, mesh);
@@ -384,7 +383,7 @@ pylith::meshio::TestOutputManager::testAppendCellField(void)
 			quadWts, numQuadPts,
 			spaceDim);
 
-  CellFilterAvg<topology::Mesh, MeshField> filter;
+  CellFilterAvg filter;
   filter.quadrature(&quadrature);
   manager.cellFilter(&filter);
   writer.filename(filenameRootF);

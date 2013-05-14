@@ -59,7 +59,7 @@ public :
    *
    * @returns Parameter fields.
    */
-  const topology::Fields<topology::Field<topology::Mesh> >* parameterFields(void) const;
+  const topology::Fields* parameterFields(void) const;
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -74,7 +74,7 @@ protected :
 protected :
 
   /// Parameters for boundary condition.
-  topology::Fields<topology::Field<topology::Mesh> >* _parameters;
+  topology::Fields* _parameters;
 
   int_array _points; ///< Points for boundary condition.
 

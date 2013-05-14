@@ -33,8 +33,7 @@
 /** @brief C++ object for averaging cell fields over quadrature points
  * when outputing finite-element data.
  */
-template<typename mesh_type, typename field_type>
-class pylith::meshio::CellFilterAvg : public CellFilter<mesh_type, field_type>
+class pylith::meshio::CellFilterAvg : public CellFilter
 { // CellFilterAvg
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
@@ -50,7 +49,7 @@ public :
    *
    * @returns Copy of filter.
    */
-  CellFilter<mesh_type,field_type>* clone(void) const;
+  CellFilter* clone(void) const;
 
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
@@ -59,7 +58,7 @@ public :
    *
    * @returns Field associated with averaged values.
    */
-  const field_type* fieldAvg(void) const;
+  const topology::Field* fieldAvg(void) const;
   
   /** Filter field over cells.
    *
@@ -69,8 +68,8 @@ public :
    *
    * @returns Averaged field.
    */
-  field_type&
-  filter(const field_type& fieldIn,
+  topology::Field&
+  filter(const topology::Field& fieldIn,
 	 const char* label =0,
 	 const int labelId =0);
 
@@ -93,11 +92,10 @@ private :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  field_type* _fieldAvg; ///< Averaged cell field
+  topology::Field* _fieldAvg; ///< Averaged cell field
 
 }; // CellFilterAvg
 
-#include "CellFilterAvg.cc" // template definitions
 
 #endif // pylith_meshio_cellfilteravg_hh
 

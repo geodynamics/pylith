@@ -29,17 +29,15 @@
 // Include directives ---------------------------------------------------
 #include "topologyfwd.hh" // forward declarations
 
-#include <vector> // HASA std::vector
+#include "Fields.hh" // ISA Fields
 
-#include "Mesh.hh" // ISA Field<Mesh>
-#include "Field.hh" // ISA Fields< Field<Mesh> >
-#include "Fields.hh" // ISA Fields< Field<Mesh> >
+#include <vector> // HASA std::vector
 
 // SolutionFields -------------------------------------------------------
 /** @brief Object for managing solution fields over a finite-element
  * mesh.
  */
-class pylith::topology::SolutionFields : public Fields<Field<Mesh> >
+class pylith::topology::SolutionFields : public Fields
 { // SolutionFields
   friend class TestSolutionFields; // unit testing
 
@@ -68,18 +66,16 @@ public :
    *
    * @returns Solution field.
    */
-  const Field<Mesh>& solution(void) const;
+  const Field& solution(void) const;
 
   /** Get field used in solve.
    *
    * @returns Solution field.
    */
-  Field<Mesh>& solution(void);
+  Field& solution(void);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
-
-  PetscVecScatter _scatter; /// Petsc vector scatter.
 
   /// Name of field that corresponds to the "working" solution to the
   /// problem.

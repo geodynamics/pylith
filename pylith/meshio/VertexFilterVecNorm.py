@@ -24,10 +24,10 @@
 ## Factory: output_vertex_filter
 
 from VertexFilter import VertexFilter
-from meshio import MeshVertexFilterVecNorm as ModuleVertexFilterVecNorm
+from meshio import VertexFilterVecNorm as ModuleVertexFilterVecNorm
 
-# VertexFilterVecNormMesh class
-class VertexFilterVecNormMesh(VertexFilter, ModuleVertexFilterVecNorm):
+# VertexFilterVecNorm class
+class VertexFilterVecNorm(VertexFilter, ModuleVertexFilterVecNorm):
   """
   Python class for computing vector norm for each vertex for field
   over vertices when writing finite-element data.
@@ -37,7 +37,7 @@ class VertexFilterVecNormMesh(VertexFilter, ModuleVertexFilterVecNorm):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="vertexfiltervecnormmesh"):
+  def __init__(self, name="vertexfiltervecnor"):
     """
     Constructor.
     """
@@ -53,7 +53,7 @@ def output_vertex_filter():
   """
   Factory associated with VertexFilter.
   """
-  return VertexFilterVecNormMesh()
+  return VertexFilterVecNorm()
 
 
 # End of file 

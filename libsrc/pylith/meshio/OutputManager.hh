@@ -33,7 +33,6 @@
 
 // OutputManager --------------------------------------------------------
 /// Manager for output of finite-element data.
-template<typename mesh_type, typename field_type>
 class pylith::meshio::OutputManager
 { // OutputManager
   friend class TestOutputManager; // unit testing
@@ -63,25 +62,25 @@ public :
    *
    * @param datawriter Writer for data.
    */
-  void writer(DataWriter<mesh_type, field_type>* const datawriter);
+  void writer(DataWriter* const datawriter);
 
   /** Set filter for vertex data.
    *
    * @param filter Filter to apply to vertex data before writing.
    */
-  void vertexFilter(VertexFilter<field_type>* const filter);
+  void vertexFilter(VertexFilter* const filter);
 
   /** Set filter for cell data.
    *
    * @param filter Filter to apply to cell data before writing.
    */
-  void cellFilter(CellFilter<mesh_type, field_type>* const filter);
+  void cellFilter(CellFilter* const filter);
 
   /** Get fields used in output.
    *
    * @returns Fields associated with output.
    */
-  const topology::Fields<field_type>* fields(void) const;
+  const topology::Fields* fields(void) const;
 
   /** Prepare for output.
    *
@@ -92,7 +91,7 @@ public :
    * @param labelId Value of label defining which cells to include.
    */
   virtual
-  void open(const mesh_type& mesh,
+  void open(const topology::Mesh& mesh,
 	    const int numTimeSteps,
 	    const char* label =0,
 	    const int labelId =0);
@@ -111,7 +110,7 @@ public :
    */
   virtual
   void openTimeStep(const PylithScalar t,
-		    const mesh_type& mesh,
+		    const topology::Mesh& mesh,
 		    const char* label =0,
 		    const int labelId =0);
 
@@ -127,8 +126,8 @@ public :
    */
   virtual
   void appendVertexField(const PylithScalar t,
-			 field_type& field,
-			 const mesh_type& mesh);
+			 topology::Field& field,
+			 const topology::Mesh& mesh);
 
   /** Append finite-element cell field to file.
    *
@@ -140,7 +139,7 @@ public :
    */
   virtual
   void appendCellField(const PylithScalar t,
-		       field_type& field,
+		       topology::Field& field,
 		       const char* label =0,
 		       const int labelId =0);
 
@@ -151,12 +150,12 @@ protected :
    *
    * @param fieldIn Field to dimensionalize.
    */
-  field_type& _dimension(field_type& fieldIn);
+  topology::Field& _dimension(topology::Field& fieldIn);
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
-  topology::Fields<field_type>* _fields; ///< Buffer fields.
+  topology::Fields* _fields; ///< Buffer fields.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
@@ -170,13 +169,11 @@ private :
   /// Coordinate system for output.
   spatialdata::geocoords::CoordSys* _coordsys;
 
-  DataWriter<mesh_type, field_type>* _writer; ///< Writer for data.
-  VertexFilter<field_type>* _vertexFilter; ///< Filter applied to vertex data.
-  CellFilter<mesh_type, field_type>* _cellFilter; ///< Filter applied to cell data.
+  DataWriter* _writer; ///< Writer for data.
+  VertexFilter* _vertexFilter; ///< Filter applied to vertex data.
+  CellFilter* _cellFilter; ///< Filter applied to cell data.
 
 }; // OutputManager
-
-#include "OutputManager.cc" // template methods
 
 #endif // pylith_meshio_outputmanager_hh
 

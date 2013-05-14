@@ -63,7 +63,7 @@ public :
    * @param cs Coordinate system for mesh.
    */
   static
-  void write(meshio::DataWriter<topology::Mesh, topology::Field<topology::Mesh> >* const writer,
+  void write(meshio::DataWriter* const writer,
 	     const topology::Mesh& mesh);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////

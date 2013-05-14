@@ -18,18 +18,20 @@
 
 #include <portinfo>
 
+#include "OutputManager.hh" // Implementation of class methods
+
 #include "DataWriter.hh" // USES DataWriter
 #include "VertexFilter.hh" // USES VertexFilter
 #include "CellFilter.hh" // USES CellFilter
 
+#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
 // ----------------------------------------------------------------------
 // Constructor
-template<typename mesh_type, typename field_type>
-pylith::meshio::OutputManager<mesh_type, field_type>::OutputManager(void) :
+pylith::meshio::OutputManager::OutputManager(void) :
   _coordsys(0),
   _writer(0),
   _vertexFilter(0),
@@ -40,17 +42,15 @@ pylith::meshio::OutputManager<mesh_type, field_type>::OutputManager(void) :
 
 // ----------------------------------------------------------------------
 // Destructor
-template<typename mesh_type, typename field_type>
-pylith::meshio::OutputManager<mesh_type, field_type>::~OutputManager(void)
+pylith::meshio::OutputManager::~OutputManager(void)
 { // destructor
   deallocate();
 } // destructor  
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::OutputManager<mesh_type, field_type>::deallocate(void)
+pylith::meshio::OutputManager::deallocate(void)
 { // deallocate
   _writer = 0; // :TODO: Use shared pointer
   _vertexFilter = 0; // :TODO: Use shared pointer
@@ -61,9 +61,8 @@ pylith::meshio::OutputManager<mesh_type, field_type>::deallocate(void)
   
 // ----------------------------------------------------------------------
 // Set coordinate system in output. The vertex fields in the output
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::OutputManager<mesh_type, field_type>::coordsys(const spatialdata::geocoords::CoordSys* cs)
+pylith::meshio::OutputManager::coordsys(const spatialdata::geocoords::CoordSys* cs)
 { // coordsys
   PYLITH_METHOD_BEGIN;
 
@@ -74,9 +73,8 @@ pylith::meshio::OutputManager<mesh_type, field_type>::coordsys(const spatialdata
 
 // ----------------------------------------------------------------------
 // Set writer to write data to file.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::OutputManager<mesh_type, field_type>::writer(DataWriter<mesh_type, field_type>* const datawriter)
+pylith::meshio::OutputManager::writer(DataWriter* const datawriter)
 { // writer
   PYLITH_METHOD_BEGIN;
 
@@ -87,9 +85,8 @@ pylith::meshio::OutputManager<mesh_type, field_type>::writer(DataWriter<mesh_typ
 
 // ----------------------------------------------------------------------
 // Set filter for vertex data.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::OutputManager<mesh_type, field_type>::vertexFilter(VertexFilter<field_type>* const filter)
+pylith::meshio::OutputManager::vertexFilter(VertexFilter* const filter)
 { // vertexFilter
   PYLITH_METHOD_BEGIN;
 
@@ -100,9 +97,8 @@ pylith::meshio::OutputManager<mesh_type, field_type>::vertexFilter(VertexFilter<
 
 // ----------------------------------------------------------------------
 // Set filter for cell data.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::OutputManager<mesh_type, field_type>::cellFilter(CellFilter<mesh_type, field_type>* const filter)
+pylith::meshio::OutputManager::cellFilter(CellFilter* const filter)
 { // cellFilter
   PYLITH_METHOD_BEGIN;
 
@@ -113,9 +109,8 @@ pylith::meshio::OutputManager<mesh_type, field_type>::cellFilter(CellFilter<mesh
 
 // ----------------------------------------------------------------------
 // Get fields used in output.
-template<typename mesh_type, typename field_type>
-const pylith::topology::Fields<field_type>*
-pylith::meshio::OutputManager<mesh_type, field_type>::fields(void) const
+const pylith::topology::Fields*
+pylith::meshio::OutputManager::fields(void) const
 { // fields
   PYLITH_METHOD_BEGIN;
 
@@ -124,12 +119,11 @@ pylith::meshio::OutputManager<mesh_type, field_type>::fields(void) const
 
 // ----------------------------------------------------------------------
 // Prepare for output.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::OutputManager<mesh_type, field_type>::open(const mesh_type& mesh,
-							   const int numTimeSteps,
-							   const char* label,
-							   const int labelId)
+pylith::meshio::OutputManager::open(const topology::Mesh& mesh,
+				    const int numTimeSteps,
+				    const char* label,
+				    const int labelId)
 { // open
   PYLITH_METHOD_BEGIN;
 
@@ -151,9 +145,8 @@ pylith::meshio::OutputManager<mesh_type, field_type>::open(const mesh_type& mesh
 
 // ----------------------------------------------------------------------
 /// Close output files.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::OutputManager<mesh_type, field_type>::close(void)
+pylith::meshio::OutputManager::close(void)
 { // close
   PYLITH_METHOD_BEGIN;
 
@@ -165,12 +158,11 @@ pylith::meshio::OutputManager<mesh_type, field_type>::close(void)
 
 // ----------------------------------------------------------------------
 // Setup file for writing fields at time step.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::OutputManager<mesh_type, field_type>::openTimeStep(const PylithScalar t,
-								   const mesh_type& mesh,
-								   const char* label,
-								   const int labelId)
+pylith::meshio::OutputManager::openTimeStep(const PylithScalar t,
+					    const topology::Mesh& mesh,
+					    const char* label,
+					    const int labelId)
 { // openTimeStep
   PYLITH_METHOD_BEGIN;
 
@@ -182,9 +174,8 @@ pylith::meshio::OutputManager<mesh_type, field_type>::openTimeStep(const PylithS
 
 // ----------------------------------------------------------------------
 // End writing fields at time step.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::OutputManager<mesh_type, field_type>::closeTimeStep(void)
+pylith::meshio::OutputManager::closeTimeStep(void)
 { // closeTimeStep
   PYLITH_METHOD_BEGIN;
 
@@ -196,16 +187,15 @@ pylith::meshio::OutputManager<mesh_type, field_type>::closeTimeStep(void)
 
 // ----------------------------------------------------------------------
 // Append finite-element vertex field to file.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::OutputManager<mesh_type, field_type>::appendVertexField(const PylithScalar t,
-									field_type& field,
-									const mesh_type& mesh)
+pylith::meshio::OutputManager::appendVertexField(const PylithScalar t,
+						 topology::Field& field,
+						 const topology::Mesh& mesh)
 { // appendVertexField
   PYLITH_METHOD_BEGIN;
 
-  field_type& fieldFiltered = (!_vertexFilter) ? field : _vertexFilter->filter(field);
-  field_type& fieldDimensioned = _dimension(fieldFiltered);
+  topology::Field& fieldFiltered = (!_vertexFilter) ? field : _vertexFilter->filter(field);
+  topology::Field& fieldDimensioned = _dimension(fieldFiltered);
   
   _writer->writeVertexField(t, fieldDimensioned, mesh);
 
@@ -214,17 +204,16 @@ pylith::meshio::OutputManager<mesh_type, field_type>::appendVertexField(const Py
 
 // ----------------------------------------------------------------------
 // Append finite-element cell field to file.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::OutputManager<mesh_type, field_type>::appendCellField(const PylithScalar t,
-								      field_type& field,
-								      const char* label,
-								      const int labelId)
+pylith::meshio::OutputManager::appendCellField(const PylithScalar t,
+					       topology::Field& field,
+					       const char* label,
+					       const int labelId)
 { // appendCellField
   PYLITH_METHOD_BEGIN;
 
-  field_type& fieldFiltered = (!_cellFilter) ? field : _cellFilter->filter(field, label, labelId);
-  field_type& fieldDimensioned = _dimension(fieldFiltered);
+  topology::Field& fieldFiltered = (!_cellFilter) ? field : _cellFilter->filter(field, label, labelId);
+  topology::Field& fieldDimensioned = _dimension(fieldFiltered);
 
   try {
     _writer->writeCellField(t, fieldDimensioned, label, labelId);
@@ -237,9 +226,8 @@ pylith::meshio::OutputManager<mesh_type, field_type>::appendCellField(const Pyli
 
 // ----------------------------------------------------------------------
 // Dimension field.
-template<typename mesh_type, typename field_type>
-field_type&
-pylith::meshio::OutputManager<mesh_type, field_type>::_dimension(field_type& fieldIn)
+pylith::topology::Field&
+pylith::meshio::OutputManager::_dimension(topology::Field& fieldIn)
 { // _dimension
   PYLITH_METHOD_BEGIN;
 
@@ -287,17 +275,17 @@ pylith::meshio::OutputManager<mesh_type, field_type>::_dimension(field_type& fie
       } // switch
     
     if (!_fields) {
-      _fields = new topology::Fields<field_type>(fieldIn.mesh());assert(_fields);
+      _fields = new topology::Fields(fieldIn.mesh());assert(_fields);
     } // if
     
     if (!_fields->hasField(fieldName.c_str())) {
       _fields->add(fieldName.c_str(), fieldIn.label());
-      field_type& fieldOut = _fields->get(fieldName.c_str());
+      topology::Field& fieldOut = _fields->get(fieldName.c_str());
       fieldOut.cloneSection(fieldIn);
       fieldOut.vectorFieldType(fieldIn.vectorFieldType());
       fieldOut.scale(fieldIn.scale());
     } // if
-    field_type& fieldOut = _fields->get(fieldName.c_str());
+    topology::Field& fieldOut = _fields->get(fieldName.c_str());
     fieldOut.copy(fieldIn);
     fieldOut.addDimensionOkay(true);
     fieldOut.dimensionalize();

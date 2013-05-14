@@ -52,7 +52,7 @@ pylith::materials::ElasticMaterial::hasStateVars(void) const {
 
 // Get initial stress/strain fields.
 inline
-const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >*
+const pylith::topology::Fields*
 pylith::materials::ElasticMaterial::initialFields(void) const {
   return _initialFields;
 } // initialFields
@@ -61,10 +61,9 @@ pylith::materials::ElasticMaterial::initialFields(void) const {
 // 2 FLOPs per call
 inline
 void
-pylith::materials::ElasticMaterial::calcDeviatoric2D(
-					PylithScalar* const deviatoric,
-					const PylithScalar* vec,
-					const PylithScalar vecMean)
+pylith::materials::ElasticMaterial::calcDeviatoric2D(PylithScalar* const deviatoric,
+						     const PylithScalar* vec,
+						     const PylithScalar vecMean)
 {
   deviatoric[0] = vec[0] - vecMean;
   deviatoric[1] = vec[1] - vecMean;
@@ -76,10 +75,9 @@ pylith::materials::ElasticMaterial::calcDeviatoric2D(
 // 3 FLOPs per call
 inline
 void
-pylith::materials::ElasticMaterial::calcDeviatoric2DPS(
-					PylithScalar* const deviatoric,
-					const PylithScalar* vec,
-					const PylithScalar vecMean)
+pylith::materials::ElasticMaterial::calcDeviatoric2DPS(PylithScalar* const deviatoric,
+						       const PylithScalar* vec,
+						       const PylithScalar vecMean)
 {
   deviatoric[0] = vec[0] - vecMean;
   deviatoric[1] = vec[1] - vecMean;
@@ -126,9 +124,8 @@ pylith::materials::ElasticMaterial::scalarProduct2D(const PylithScalar* tensor1,
 // 8 FLOPs per call.
 inline
 PylithScalar
-pylith::materials::ElasticMaterial::scalarProduct2DPS(
-						 const PylithScalar* tensor1,
-						 const PylithScalar* tensor2)
+pylith::materials::ElasticMaterial::scalarProduct2DPS(const PylithScalar* tensor1,
+						      const PylithScalar* tensor2)
 { // scalarProduct2DPS
   const PylithScalar scalarProduct = 
     tensor1[0] * tensor2[0] +

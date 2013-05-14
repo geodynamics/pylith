@@ -94,7 +94,7 @@ pylith::faults::EqKinSrc::initialize(const topology::Mesh& faultMesh,
 // ----------------------------------------------------------------------
 // Get slip on fault surface at time t.
 void
-pylith::faults::EqKinSrc::slip(topology::Field<topology::Mesh>* const slipField,
+pylith::faults::EqKinSrc::slip(topology::Field* const slipField,
 			       const PylithScalar t)
 { // slip
   PYLITH_METHOD_BEGIN;
@@ -107,7 +107,7 @@ pylith::faults::EqKinSrc::slip(topology::Field<topology::Mesh>* const slipField,
 
 // ----------------------------------------------------------------------
 // Get final slip.
-const pylith::topology::Field<pylith::topology::Mesh>&
+const pylith::topology::Field&
 pylith::faults::EqKinSrc::finalSlip(void) const
 { // finalSlip
   PYLITH_METHOD_BEGIN;
@@ -118,7 +118,7 @@ pylith::faults::EqKinSrc::finalSlip(void) const
 
 // ----------------------------------------------------------------------
 // Get time when slip begins at each point.
-const pylith::topology::Field<pylith::topology::Mesh>&
+const pylith::topology::Field&
 pylith::faults::EqKinSrc::slipTime(void) const
 { // slipTime
   PYLITH_METHOD_BEGIN;

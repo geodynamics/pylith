@@ -22,19 +22,19 @@
 
 import unittest
 
-from pylith.meshio.DataWriterHDF5ExtMesh import DataWriterHDF5ExtMesh
+from pylith.meshio.DataWriterHDF5Ext import DataWriterHDF5Ext
 
 # ----------------------------------------------------------------------
-class TestDataWriterHDF5ExtMesh(unittest.TestCase):
+class TestDataWriterHDF5Ext(unittest.TestCase):
   """
-  Unit testing of Python DataWriterHDF5ExtMesh object.
+  Unit testing of Python DataWriterHDF5Ext object.
   """
 
   def test_constructor(self):
     """
     Test constructor.
     """
-    filter = DataWriterHDF5ExtMesh()
+    filter = DataWriterHDF5Ext()
     filter._configure()
     return
 
@@ -43,7 +43,7 @@ class TestDataWriterHDF5ExtMesh(unittest.TestCase):
     """
     Test constructor.
     """
-    filter = DataWriterHDF5ExtMesh()
+    filter = DataWriterHDF5Ext()
     filter._configure()
 
     from spatialdata.units.Nondimensional import Nondimensional
@@ -56,7 +56,7 @@ class TestDataWriterHDF5ExtMesh(unittest.TestCase):
     """
     Test factory method.
     """
-    from pylith.meshio.DataWriterHDF5ExtMesh import data_writer
+    from pylith.meshio.DataWriterHDF5Ext import data_writer
     filter = data_writer()
     return
 

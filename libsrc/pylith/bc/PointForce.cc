@@ -84,7 +84,7 @@ pylith::bc::PointForce::initialize(const topology::Mesh& mesh,
 // ----------------------------------------------------------------------
 // Integrate contributions to residual term (r) for operator.
 void
-pylith::bc::PointForce::integrateResidual(const topology::Field<topology::Mesh>& residual,
+pylith::bc::PointForce::integrateResidual(const topology::Field& residual,
 					  const PylithScalar t,
 					  topology::SolutionFields* const fields)
 { // integrateResidualAssembled
@@ -104,7 +104,7 @@ pylith::bc::PointForce::integrateResidual(const topology::Field<topology::Mesh>&
   topology::VecVisitorMesh residualVisitor(residual);
   PetscScalar* residualArray = residualVisitor.localArray();
 
-  topology::Field<topology::Mesh>& valueField = _parameters->get("value");
+  topology::Field& valueField = _parameters->get("value");
   topology::VecVisitorMesh valueVisitor(valueField);
   PetscScalar* valueArray = valueVisitor.localArray();
 

@@ -25,7 +25,6 @@
 namespace pylith {
   namespace meshio {
 
-    template<typename mesh_type, typename field_type>
     class pylith::meshio::DataWriter
     { // DataWriter
 
@@ -65,7 +64,7 @@ namespace pylith {
        * @param labelId Value of label defining which cells to include.
        */
       virtual
-      void open(const mesh_type& mesh,
+      void open(const pylith::topology::Mesh& mesh,
 		const int numTimeSteps,
 		const char* label =0,
 		const int labelId =0);
@@ -84,7 +83,7 @@ namespace pylith {
        */
       virtual
       void openTimeStep(const PylithScalar t,
-			const mesh_type& mesh,
+			const pylith::topology::Mesh& mesh,
 			const char* label =0,
 			const int labelId =0);
       
@@ -100,8 +99,8 @@ namespace pylith {
        */
       virtual
       void writeVertexField(const PylithScalar t,
-			    field_type& field,
-			    const mesh_type& mesh) = 0;
+			    pylith::topology::Field& field,
+			    const pylith::topology::Mesh& mesh) = 0;
       
       /** Write field over cells to file.
        *
@@ -113,7 +112,7 @@ namespace pylith {
        */
       virtual
       void writeCellField(const PylithScalar t,
-			  field_type& field,
+			  pylith::topology::Field& field,
 			  const char* label =0,
 			  const int labelId =0) = 0;
 

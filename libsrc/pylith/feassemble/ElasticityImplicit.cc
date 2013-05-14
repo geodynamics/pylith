@@ -107,7 +107,7 @@ pylith::feassemble::ElasticityImplicit::stableTimeStep(const topology::Mesh& mes
 
 // ----------------------------------------------------------------------
 void
-pylith::feassemble::ElasticityImplicit::integrateResidual(const topology::Field<topology::Mesh>& residual,
+pylith::feassemble::ElasticityImplicit::integrateResidual(const topology::Field& residual,
 							  const PylithScalar t,
 							  topology::SolutionFields* const fields)
 { // integrateResidual

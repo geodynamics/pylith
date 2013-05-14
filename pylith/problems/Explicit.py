@@ -130,7 +130,7 @@ class Explicit(Formulation, ModuleExplicit):
     dispT.zero()
     residual = self.fields.get("residual")
     residual.zero()
-    residual.createScatterMesh(residual.mesh())
+    residual.createScatter(residual.mesh())
 
     lengthScale = normalizer.lengthScale()
     timeScale = normalizer.timeScale()
@@ -149,8 +149,8 @@ class Explicit(Formulation, ModuleExplicit):
 
     if 0 == comm.rank:
       self._info.log("Creating lumped Jacobian matrix.")
-    from pylith.topology.topology import MeshField
-    jacobian = MeshField(self.mesh())
+    from pylith.topology.topology import Field
+    jacobian = Field(self.mesh())
     jacobian.newSection(jacobian.VERTICES_FIELD, dimension)
     jacobian.allocate()
     jacobian.label("jacobian")

@@ -48,7 +48,7 @@ namespace pylith {
        */
       void
       initialize(const pylith::topology::SolutionFields& fields,
-		 const pylith::topology::Field<pylith::topology::Mesh>& jacobian,
+		 const pylith::topology::Field& jacobian,
 		 Formulation* const formulation);
       
       /** Solve the system.
@@ -57,9 +57,9 @@ namespace pylith {
        * @param jacobian Jacobian of the system.
        * @param residual Residual field.
        */
-      void solve(pylith::topology::Field<pylith::topology::Mesh>* solution,
-		 const pylith::topology::Field<pylith::topology::Mesh>& jacobian,
-		 const pylith::topology::Field<pylith::topology::Mesh>& residual);
+      void solve(pylith::topology::Field* solution,
+		 const pylith::topology::Field& jacobian,
+		 const pylith::topology::Field& residual);
       
     }; // SolverLumped
 

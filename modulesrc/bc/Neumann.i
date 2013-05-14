@@ -55,7 +55,7 @@ namespace pylith {
        * @param t Current time.
        * @param fields Solution fields.
        */
-      void integrateResidual(const pylith::topology::Field<pylith::topology::Mesh>& residual,
+      void integrateResidual(const pylith::topology::Field& residual,
 			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
 
@@ -85,9 +85,8 @@ namespace pylith {
        *
        * @returns Traction vector at integration points.
        */
-      const pylith::topology::Field<pylith::topology::Mesh>&
-      cellField(const char* name,
-		pylith::topology::SolutionFields* const fields =0);
+      const pylith::topology::Field& cellField(const char* name,
+					       pylith::topology::SolutionFields* const fields =0);
 
       // PROTECTED METHODS //////////////////////////////////////////////
     protected :

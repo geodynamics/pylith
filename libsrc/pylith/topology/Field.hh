@@ -32,8 +32,6 @@
 #include "pylith/utils/arrayfwd.hh" // HASA int_array
 #include "pylith/utils/petscfwd.h" // HASA PetscVec
 
-#include <petscdmmesh.hh>
-
 #include <map> // USES std::map
 #include <string> // USES std::string
 
@@ -43,20 +41,10 @@
  *
  * Extends PETSc section and vector by adding metadata.
  */
-template<typename mesh_type>
 class pylith::topology::Field : public FieldBase
 { // Field
   friend class TestFieldMesh; // unit testing
   friend class TestFieldSubMesh; // unit testing
-
-// PUBLIC TYPEDEFS //////////////////////////////////////////////////////
-public:
-
-  // Convenience typedefs
-  typedef mesh_type Mesh;
-
-// PRIVATE TYPEDEFS /////////////////////////////////////////////////////
-private:
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
@@ -65,7 +53,7 @@ public :
    *
    * @param mesh Finite-element mesh.
    */
-  Field(const mesh_type& mesh);
+  Field(const Mesh& mesh);
 
   /** Constructor with mesh, DM, and metadata
    *
@@ -73,7 +61,7 @@ public :
    * @param dm PETSc dm for field.
    * @param meteadata Field metadata.
    */
-  Field(const mesh_type& mesh, 
+  Field(const Mesh& mesh, 
 	PetscDM dm,
 	const Metadata& metadata);
 
@@ -84,20 +72,10 @@ public :
    * @param localVec PETSc Vec with local data for field.
    * @param meteadata Field metadata.
    */
-  Field(const mesh_type& mesh, 
+  Field(const Mesh& mesh, 
 	PetscDM dm,
 	PetscVec localVec,
 	const Metadata& metadata);
-
-  /** Constructor with field and subfield information.
-   *
-   * @param mesh Finite-element mesh.
-   * @param fields Array of indices for fields to extract.
-   * @param numFields Size of array.
-   */
-  Field(const Field& src,
-	const int fields[],
-	int numFields);
 
   /// Destructor.
   ~Field(void);
@@ -109,7 +87,7 @@ public :
    *
    * @returns Finite-element mesh.
    */
-  const mesh_type& mesh(void) const;
+  const Mesh& mesh(void) const;
 
   /** Get PETSc DM associated with field.
    *
@@ -372,8 +350,7 @@ public :
    * @param mesh Mesh associated with scatter.
    * @param context Label for context associated with vector.
    */
-  template<typename scatter_mesh_type>
-  void createScatter(const scatter_mesh_type& mesh,
+  void createScatter(const Mesh& mesh,
 		     const char* context ="");
 
 
@@ -386,8 +363,7 @@ public :
    * @param mesh Mesh associated with scatter.
    * @param context Label for context associated with vector.
    */
-  template<typename scatter_mesh_type>
-  void createScatterWithBC(const scatter_mesh_type& mesh,
+  void createScatterWithBC(const Mesh& mesh,
 			   const char* context ="");
 
 
@@ -402,8 +378,7 @@ public :
    * @param labelValue The label stratum defining the point set
    * @param context Label for context associated with vector.
    */
-  template<typename scatter_mesh_type>
-  void createScatterWithBC(const scatter_mesh_type& mesh,
+  void createScatterWithBC(const Mesh& mesh,
                            const std::string& labelName,
                            PetscInt labelValue,
                            const char* context ="");
@@ -501,8 +476,7 @@ private :
 
   map_type _metadata;
 
-  /* Old construction */
-  const mesh_type& _mesh; ///< Mesh associated with section.
+  const Mesh& _mesh; ///< Mesh associated with section.
   scatter_map_type _scatters; ///< Collection of scatters.
 
   /* New construction */
@@ -519,8 +493,7 @@ private :
 
 }; // Field
 
-#include "Field.icc"
-#include "Field.cc"
+#include "Field.icc" // inline methods
 
 #endif // pylith_topology_field_hh
 

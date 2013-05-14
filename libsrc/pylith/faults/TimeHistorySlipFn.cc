@@ -96,11 +96,10 @@ pylith::faults::TimeHistorySlipFn::initialize(const topology::Mesh& faultMesh,
   const PetscInt vStart = verticesStratum.begin();
   const PetscInt vEnd = verticesStratum.end();
 
-  delete _parameters; _parameters = new topology::Fields<topology::Field<topology::Mesh> >(faultMesh);
-  assert(_parameters);
-  _parameters->add("slip amplitude", "slip_amplitude");
+  delete _parameters; _parameters = new topology::Fields(faultMesh);assert(_parameters);
 
-  topology::Field<topology::Mesh>& slipAmplitude = _parameters->get("slip amplitude");
+  _parameters->add("slip amplitude", "slip_amplitude");
+  topology::Field& slipAmplitude = _parameters->get("slip amplitude");
   slipAmplitude.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   slipAmplitude.allocate();
   slipAmplitude.scale(lengthScale);
@@ -109,7 +108,7 @@ pylith::faults::TimeHistorySlipFn::initialize(const topology::Mesh& faultMesh,
   PetscScalar* slipAmplitudeArray = slipAmplitudeVisitor.localArray();
 
   _parameters->add("slip time", "slip_time");
-  topology::Field<topology::Mesh>& slipTime = _parameters->get("slip time");
+  topology::Field& slipTime = _parameters->get("slip time");
   slipTime.newSection(slipAmplitude, 1);
   slipTime.allocate();
   slipTime.scale(timeScale);
@@ -212,7 +211,7 @@ pylith::faults::TimeHistorySlipFn::initialize(const topology::Mesh& faultMesh,
 // ----------------------------------------------------------------------
 // Get slip on fault surface at time t.
 void
-pylith::faults::TimeHistorySlipFn::slip(topology::Field<topology::Mesh>* slip,
+pylith::faults::TimeHistorySlipFn::slip(topology::Field* slip,
 					const PylithScalar t)
 { // slip
   PYLITH_METHOD_BEGIN;
@@ -228,11 +227,11 @@ pylith::faults::TimeHistorySlipFn::slip(topology::Field<topology::Mesh>* slip,
   const PetscInt vEnd = verticesStratum.end();
 
   // Get sections
-  const topology::Field<topology::Mesh>& slipAmplitude = _parameters->get("slip amplitude");
+  const topology::Field& slipAmplitude = _parameters->get("slip amplitude");
   topology::VecVisitorMesh slipAmplitudeVisitor(slipAmplitude);
   const PetscScalar* slipAmplitudeArray = slipAmplitudeVisitor.localArray();
 
-  const topology::Field<topology::Mesh>& slipTime = _parameters->get("slip time");
+  const topology::Field& slipTime = _parameters->get("slip time");
   topology::VecVisitorMesh slipTimeVisitor(slipTime);
   const PetscScalar* slipTimeArray = slipTimeVisitor.localArray();
 
@@ -275,7 +274,7 @@ pylith::faults::TimeHistorySlipFn::slip(topology::Field<topology::Mesh>* slip,
 
 // ----------------------------------------------------------------------
 // Get final slip.
-const pylith::topology::Field<pylith::topology::Mesh>&
+const pylith::topology::Field&
 pylith::faults::TimeHistorySlipFn::finalSlip(void)
 { // finalSlip
   PYLITH_METHOD_BEGIN;
@@ -285,7 +284,7 @@ pylith::faults::TimeHistorySlipFn::finalSlip(void)
 
 // ----------------------------------------------------------------------
 // Get time when slip begins at each point.
-const pylith::topology::Field<pylith::topology::Mesh>&
+const pylith::topology::Field&
 pylith::faults::TimeHistorySlipFn::slipTime(void)
 { // slipTime
   PYLITH_METHOD_BEGIN;

@@ -58,7 +58,7 @@ public :
    */
   void
   initialize(const topology::SolutionFields& fields,
-	     const topology::Field<topology::Mesh>& jacobian,
+	     const topology::Field& jacobian,
 	     Formulation* const formulation);
 
   /** Solve the system.
@@ -67,9 +67,9 @@ public :
    * @param jacobian Jacobian of the system.
    * @param residual Residual field.
    */
-  void solve(topology::Field<topology::Mesh>* solution,
-	     const topology::Field<topology::Mesh>& jacobian,
-	     const topology::Field<topology::Mesh>& residual);
+  void solve(topology::Field* solution,
+	     const topology::Field& jacobian,
+	     const topology::Field& residual);
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :

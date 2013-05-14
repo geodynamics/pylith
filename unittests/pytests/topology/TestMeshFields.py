@@ -18,16 +18,16 @@
 
 ## @file unittests/pytests/topology/TestMeshFields.py
 
-## @brief Unit testing of MeshFields object.
+## @brief Unit testing of Fields object with mesh.
 
 import unittest
 
-from pylith.topology.Fields import MeshFields
+from pylith.topology.Fields import Fields
 
 # ----------------------------------------------------------------------
 class TestMeshFields(unittest.TestCase):
   """
-  Unit testing of MeshFields object.
+  Unit testing of Fields object.
   """
 
   def setUp(self):
@@ -50,7 +50,7 @@ class TestMeshFields(unittest.TestCase):
     importer._configure()
     self.mesh = importer.read(debug=False, interpolate=False)
     
-    self.fields = MeshFields(self.mesh)
+    self.fields = Fields(self.mesh)
     return
 
 

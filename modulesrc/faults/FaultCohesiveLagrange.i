@@ -57,7 +57,7 @@ namespace pylith {
        *
        * @param field Solution field.
        */
-      void splitField(pylith::topology::Field<pylith::topology::Mesh>* field);
+      void splitField(pylith::topology::Field* field);
 
       /** Integrate contributions to residual term (r) for operator that
        * do not require assembly across processors.
@@ -67,7 +67,7 @@ namespace pylith {
        * @param fields Solution fields
        */
       virtual
-      void integrateResidual(const pylith::topology::Field<pylith::topology::Mesh>& residual,
+      void integrateResidual(const pylith::topology::Field& residual,
 			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
 
@@ -90,7 +90,7 @@ namespace pylith {
        * @param t Current time
        * @param fields Solution fields
        */
-      void integrateJacobian(pylith::topology::Field<pylith::topology::Mesh>* jacobian,
+      void integrateJacobian(pylith::topology::Field* jacobian,
 			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
 
@@ -104,7 +104,7 @@ namespace pylith {
       virtual
       void adjustSolnLumped(pylith::topology::SolutionFields* fields,
 			    const PylithScalar t,
-			    const pylith::topology::Field<pylith::topology::Mesh>& jacobian);
+			    const pylith::topology::Field& jacobian);
 
       /** Verify configuration is acceptable.
        *
@@ -117,7 +117,7 @@ namespace pylith {
        * @param field Solution field.
        */
       virtual
-      void checkConstraints(const pylith::topology::Field<pylith::topology::Mesh>& solution) const;
+      void checkConstraints(const pylith::topology::Field& solution) const;
       
     }; // class FaultCohesiveLagrange
 

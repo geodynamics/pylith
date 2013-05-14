@@ -18,41 +18,38 @@
 
 #include <portinfo>
 
+#include "VertexFilter.hh" // Implementation of class methods
+
 // ----------------------------------------------------------------------
 // Constructor
-template<typename field_type>
-pylith::meshio::VertexFilter<field_type>::VertexFilter(void)
+pylith::meshio::VertexFilter::VertexFilter(void)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-template<typename field_type>
-pylith::meshio::VertexFilter<field_type>::~VertexFilter(void)
+pylith::meshio::VertexFilter::~VertexFilter(void)
 { // destructor
   deallocate();
 } // destructor  
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
-template<typename field_type>
 void
-pylith::meshio::VertexFilter<field_type>::deallocate(void)
+pylith::meshio::VertexFilter::deallocate(void)
 { // deallocate
 } // deallocate
   
 // ----------------------------------------------------------------------
 // Copy constructor.
-template<typename field_type>
-pylith::meshio::VertexFilter<field_type>::VertexFilter(const VertexFilter& f)
+pylith::meshio::VertexFilter::VertexFilter(const VertexFilter& f)
 { // copy constructor
 } // copy constructor
 
 // ----------------------------------------------------------------------
 // operator=.
-template<typename field_type>
-const pylith::meshio::VertexFilter<field_type>&
-pylith::meshio::VertexFilter<field_type>::operator=(const VertexFilter& f)
+const pylith::meshio::VertexFilter&
+pylith::meshio::VertexFilter::operator=(const VertexFilter& f)
 { // operator=
 } // operator=
 

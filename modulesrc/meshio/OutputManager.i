@@ -25,7 +25,6 @@
 namespace pylith {
   namespace meshio {
 
-    template<typename mesh_type, typename field_type>
     class pylith::meshio::OutputManager
     { // OutputManager
 
@@ -54,25 +53,25 @@ namespace pylith {
        *
        * @param datawriter Writer for data.
        */
-      void writer(DataWriter<mesh_type, field_type>* const datawriter);
+      void writer(DataWriter* const datawriter);
       
       /** Set filter for vertex data.
        *
        * @param filter Filter to apply to vertex data before writing.
        */
-      void vertexFilter(VertexFilter<field_type>* const filter);
+      void vertexFilter(VertexFilter* const filter);
       
       /** Set filter for cell data.
        *
        * @param filter Filter to apply to cell data before writing.
        */
-      void cellFilter(CellFilter<mesh_type, field_type>* const filter);
+      void cellFilter(CellFilter* const filter);
       
       /** Get fields used in output.
        *
        * @returns Fields associated with output.
        */
-      const pylith::topology::Fields<field_type>* fields(void) const;
+      const pylith::topology::Fields* fields(void) const;
 
       /** Prepare for output.
        *
@@ -82,7 +81,7 @@ namespace pylith {
        *   (=0 means use all cells in mesh).
        * @param labelId Value of label defining which cells to include.
        */
-      void open(const mesh_type& mesh,
+      void open(const pylith::topology::Mesh& mesh,
 		const int numTimeSteps,
 		const char* label =0,
 		const int labelId =0);
@@ -99,7 +98,7 @@ namespace pylith {
        * @param labelId Value of label defining which cells to include.
        */
       void openTimeStep(const PylithScalar t,
-			const mesh_type& mesh,
+			const pylith::topology::Mesh& mesh,
 			const char* label =0,
 			const int labelId =0);
       
@@ -113,8 +112,8 @@ namespace pylith {
        * @param mesh Mesh for output.
        */
       void appendVertexField(const PylithScalar t,
-			     field_type& field,
-			     const mesh_type& mesh);
+			     pylith::topology::Field& field,
+			     const pylith::topology::Mesh& mesh);
       
       /** Append finite-element cell field to file.
        *
@@ -125,7 +124,7 @@ namespace pylith {
        * @param labelId Value of label defining which cells to include.
        */
       void appendCellField(const PylithScalar t,
-			   field_type& field,
+			   pylith::topology::Field& field,
 			   const char* label =0,
 			   const int labelId =0);
 

@@ -120,13 +120,12 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
     strcpy(rateNames[i], name.c_str());
   } // for
 
-  delete _parameters;
-  _parameters = new topology::Fields<topology::Field<topology::Mesh> >(mesh);
+  delete _parameters; _parameters = new topology::Fields(mesh);assert(_parameters);
 
   PetscErrorCode err = 0;
 
   _parameters->add("value", "value", topology::FieldBase::VERTICES_FIELD, numBCDOF);
-  topology::Field<topology::Mesh>& value = _parameters->get("value");
+  topology::Field& value = _parameters->get("value");
   value.vectorFieldType(topology::FieldBase::OTHER);
   value.scale(valueScale);
   value.allocate();
@@ -136,7 +135,7 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
   if (_dbInitial) {
     const std::string& fieldLabel = std::string("initial_") + std::string(fieldName);
     _parameters->add("initial", fieldLabel.c_str(), topology::FieldBase::VERTICES_FIELD, numBCDOF);
-    topology::Field<topology::Mesh>& initial = _parameters->get("initial");
+    topology::Field& initial = _parameters->get("initial");
     initial.vectorFieldType(topology::FieldBase::OTHER);
     initial.scale(valueScale);
     initial.allocate();
@@ -146,7 +145,7 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
   if (_dbRate) {
     const std::string& fieldLabel = std::string("rate_") + std::string(fieldName);
     _parameters->add("rate", fieldLabel.c_str(), topology::FieldBase::VERTICES_FIELD, numBCDOF);
-    topology::Field<topology::Mesh>& rate = _parameters->get("rate");
+    topology::Field& rate = _parameters->get("rate");
     rate.vectorFieldType(topology::FieldBase::OTHER);
     rate.scale(rateScale);
     rate.allocate();
@@ -154,7 +153,7 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
     err = VecSet(rateVec, 0.0);PYLITH_CHECK_ERROR(err);
     const std::string& timeLabel = std::string("rate_time_") + std::string(fieldName);    
     _parameters->add("rate time", timeLabel.c_str(), topology::FieldBase::VERTICES_FIELD, 1);
-    topology::Field<topology::Mesh>& rateTime = _parameters->get("rate time");
+    topology::Field& rateTime = _parameters->get("rate time");
     rateTime.vectorFieldType(topology::FieldBase::SCALAR);
     rateTime.scale(timeScale);
     rateTime.allocate();
@@ -164,7 +163,7 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
   if (_dbChange) {
     const std::string& fieldLabel = std::string("change_") + std::string(fieldName);
     _parameters->add("change", fieldLabel.c_str(), topology::FieldBase::VERTICES_FIELD, numBCDOF);
-    topology::Field<topology::Mesh>& change = _parameters->get("change");
+    topology::Field& change = _parameters->get("change");
     change.vectorFieldType(topology::FieldBase::OTHER);
     change.scale(valueScale);
     change.allocate();
@@ -172,7 +171,7 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
     err = VecSet(changeVec, 0.0);PYLITH_CHECK_ERROR(err);
     const std::string& timeLabel = std::string("change_time_") + std::string(fieldName);
     _parameters->add("change time", timeLabel.c_str(), topology::FieldBase::VERTICES_FIELD, 1);
-    topology::Field<topology::Mesh>& changeTime = _parameters->get("change time");
+    topology::Field& changeTime = _parameters->get("change time");
     changeTime.vectorFieldType(topology::FieldBase::SCALAR);
     changeTime.scale(timeScale);
     changeTime.allocate();
@@ -249,7 +248,7 @@ pylith::bc::TimeDependentPoints::_queryDB(const char* name,
   topology::CoordsVisitor coordsVisitor(dmMesh);
   PetscScalar *coordArray = coordsVisitor.localArray();
 
-  topology::Field<topology::Mesh>& parametersField = _parameters->get(name);
+  topology::Field& parametersField = _parameters->get(name);
   topology::VecVisitorMesh parametersVisitor(parametersField);
   PetscScalar* parametersArray = parametersVisitor.localArray();
 
@@ -297,27 +296,27 @@ pylith::bc::TimeDependentPoints::_calculateValue(const PylithScalar t)
 
   const PylithScalar timeScale = _getNormalizer().timeScale();
 
-  topology::Field<topology::Mesh>& valueField = _parameters->get("value");
+  topology::Field& valueField = _parameters->get("value");
   topology::VecVisitorMesh valueVisitor(valueField);
   PetscScalar* valueArray = valueVisitor.localArray();
   
-  topology::Field<topology::Mesh>* initialField = (_dbInitial) ? &_parameters->get("initial") : 0;
+  topology::Field* initialField = (_dbInitial) ? &_parameters->get("initial") : 0;
   topology::VecVisitorMesh* initialVisitor = (initialField) ? new topology::VecVisitorMesh(*initialField) : 0;
   PetscScalar* initialArray = (initialVisitor) ? initialVisitor->localArray() : NULL;
 
-  topology::Field<topology::Mesh>* rateField = (_dbRate) ? &_parameters->get("rate") : 0;
+  topology::Field* rateField = (_dbRate) ? &_parameters->get("rate") : 0;
   topology::VecVisitorMesh* rateVisitor = (rateField) ? new topology::VecVisitorMesh(*rateField) : 0;
   PetscScalar* rateArray = (rateVisitor) ? rateVisitor->localArray() : NULL;
 
-  topology::Field<topology::Mesh>* rateTimeField = (_dbRate) ? &_parameters->get("rate time") : 0;
+  topology::Field* rateTimeField = (_dbRate) ? &_parameters->get("rate time") : 0;
   topology::VecVisitorMesh* rateTimeVisitor = (rateTimeField) ? new topology::VecVisitorMesh(*rateTimeField) : 0;
   PetscScalar* rateTimeArray = (rateTimeVisitor) ? rateTimeVisitor->localArray() : NULL;
 
-  topology::Field<topology::Mesh>* changeField = (_dbChange) ? &_parameters->get("change") : 0;
+  topology::Field* changeField = (_dbChange) ? &_parameters->get("change") : 0;
   topology::VecVisitorMesh* changeVisitor = (changeField) ? new topology::VecVisitorMesh(*changeField) : 0;
   PetscScalar* changeArray = (changeVisitor) ? changeVisitor->localArray() : NULL;
 
-  topology::Field<topology::Mesh>* changeTimeField = (_dbChange) ? &_parameters->get("change time") : 0;
+  topology::Field* changeTimeField = (_dbChange) ? &_parameters->get("change time") : 0;
   topology::VecVisitorMesh* changeTimeVisitor = (changeTimeField) ? new topology::VecVisitorMesh(*changeTimeField) : 0;
   PetscScalar* changeTimeArray = (changeTimeVisitor) ? changeTimeVisitor->localArray() : NULL;
 
@@ -410,27 +409,27 @@ pylith::bc::TimeDependentPoints::_calculateValueIncr(const PylithScalar t0,
 
   const PylithScalar timeScale = _getNormalizer().timeScale();
 
-  topology::Field<topology::Mesh>& valueField = _parameters->get("value");
+  topology::Field& valueField = _parameters->get("value");
   topology::VecVisitorMesh valueVisitor(valueField);
   PetscScalar* valueArray = valueVisitor.localArray();
   
-  topology::Field<topology::Mesh>* initialField = (_dbInitial) ? &_parameters->get("initial") : 0;
+  topology::Field* initialField = (_dbInitial) ? &_parameters->get("initial") : 0;
   topology::VecVisitorMesh* initialVisitor = (initialField) ? new topology::VecVisitorMesh(*initialField) : 0;
   PetscScalar* initialArray = (initialVisitor) ? initialVisitor->localArray() : NULL;
 
-  topology::Field<topology::Mesh>* rateField = (_dbRate) ? &_parameters->get("rate") : 0;
+  topology::Field* rateField = (_dbRate) ? &_parameters->get("rate") : 0;
   topology::VecVisitorMesh* rateVisitor = (rateField) ? new topology::VecVisitorMesh(*rateField) : 0;
   PetscScalar* rateArray = (rateVisitor) ? rateVisitor->localArray() : NULL;
 
-  topology::Field<topology::Mesh>* rateTimeField = (_dbRate) ? &_parameters->get("rate time") : 0;
+  topology::Field* rateTimeField = (_dbRate) ? &_parameters->get("rate time") : 0;
   topology::VecVisitorMesh* rateTimeVisitor = (rateTimeField) ? new topology::VecVisitorMesh(*rateTimeField) : 0;
   PetscScalar* rateTimeArray = (rateTimeVisitor) ? rateTimeVisitor->localArray() : NULL;
 
-  topology::Field<topology::Mesh>* changeField = (_dbChange) ? &_parameters->get("change") : 0;
+  topology::Field* changeField = (_dbChange) ? &_parameters->get("change") : 0;
   topology::VecVisitorMesh* changeVisitor = (changeField) ? new topology::VecVisitorMesh(*changeField) : 0;
   PetscScalar* changeArray = (changeVisitor) ? changeVisitor->localArray() : NULL;
 
-  topology::Field<topology::Mesh>* changeTimeField = (_dbChange) ? &_parameters->get("change time") : 0;
+  topology::Field* changeTimeField = (_dbChange) ? &_parameters->get("change time") : 0;
   topology::VecVisitorMesh* changeTimeVisitor = (changeTimeField) ? new topology::VecVisitorMesh(*changeTimeField) : 0;
   PetscScalar* changeTimeArray = (changeTimeVisitor) ? changeTimeVisitor->localArray() : NULL;
 

@@ -27,7 +27,6 @@
 
 #include <petsclog.h> // USES PetscLogEventBegin/End() in inline methods
 #include "pylith/utils/arrayfwd.hh" // USES scalar_array
-#include "pylith/utils/sievetypes.hh"
 %}
 
 %include "exception.i"

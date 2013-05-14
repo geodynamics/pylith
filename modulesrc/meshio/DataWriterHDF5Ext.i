@@ -25,9 +25,7 @@
 namespace pylith {
   namespace meshio {
 
-    template<typename mesh_type, typenam field_type>
-    class pylith::meshio::DataWriterHDF5Ext :
-      public DataWriter<mesh_type, field_type>
+    class pylith::meshio::DataWriterHDF5Ext : public DataWriter
     { // DataWriterHDF5Ext  
       
       // PUBLIC METHODS /////////////////////////////////////////////////
@@ -43,7 +41,7 @@ namespace pylith {
        *
        * @returns Copy of this.
        */
-      DataWriter<mesh_type, field_type>* clone(void) const;
+      DataWriter* clone(void) const;
       
       /// Deallocate PETSc and local data structures.
       void deallocate(void);
@@ -62,7 +60,7 @@ namespace pylith {
        *   (=0 means use all cells in mesh).
        * @param labelId Value of label defining which cells to include.
        */
-      void open(const mesh_type& mesh,
+      void open(const pylith::topology::Mesh& mesh,
 		const int numTimeSteps,
 		const char* label =0,
 		const int labelId =0);
@@ -77,8 +75,8 @@ namespace pylith {
        * @param mesh Mesh for output.
        */
       void writeVertexField(const PylithScalar t,
-			    field_type& field,
-			    const mesh_type& mesh);
+			    pylith::topology::Field& field,
+			    const pylith::topology::Mesh& mesh);
       
       /** Write field over cells to file.
        *
@@ -89,7 +87,7 @@ namespace pylith {
        * @param labelId Value of label defining which cells to include.
        */
       void writeCellField(const PylithScalar t,
-			  field_type& field,
+			  pylith::topology::Field& field,
 			  const char* label =0,
 			  const int labelId =0);
       

@@ -69,7 +69,7 @@ pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
 // ----------------------------------------------------------------------
 // Write partitioning info for distributed mesh.
 void
-pylith::topology::Distributor::write(meshio::DataWriter<topology::Mesh, topology::Field<topology::Mesh> >* const writer,
+pylith::topology::Distributor::write(meshio::DataWriter* const writer,
 				     const topology::Mesh& mesh)
 { // write
   PYLITH_METHOD_BEGIN;
@@ -84,7 +84,7 @@ pylith::topology::Distributor::write(meshio::DataWriter<topology::Mesh, topology
 
   // Setup and allocate field
   const int fiberDim = 1;
-  topology::Field<topology::Mesh> partition(mesh);
+  topology::Field partition(mesh);
   partition.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
   partition.allocate();
   partition.scale(1.0);

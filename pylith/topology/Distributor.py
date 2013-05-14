@@ -54,8 +54,8 @@ class Distributor(PetscComponent, ModuleDistributor):
   writePartition = pyre.inventory.bool("write_partition", default=False)
   writePartition.meta['tip'] = "Write partition information to file."
   
-  from pylith.meshio.DataWriterVTKMesh import DataWriterVTKMesh
-  dataWriter = pyre.inventory.facility("data_writer", factory=DataWriterVTKMesh,
+  from pylith.meshio.DataWriterVTK import DataWriterVTK
+  dataWriter = pyre.inventory.facility("data_writer", factory=DataWriterVTK,
                                        family="data_writer")
   dataWriter.meta['tip'] = "Data writer for partition information."
 

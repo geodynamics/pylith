@@ -25,7 +25,6 @@
 namespace pylith {
   namespace meshio {
 
-    template<typename field_type>
     class pylith::meshio::VertexFilter
     { // VertexFilter
 
@@ -55,7 +54,7 @@ namespace pylith {
        * @param fieldIn Field to filter.
        */
       virtual
-      const field_type& filter(const field_type& fieldIn) = 0;
+      const pylith::topology::Field& filter(const pylith::topology::Field& fieldIn) = 0;
 
     }; // VertexFilter
 

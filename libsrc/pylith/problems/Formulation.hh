@@ -138,7 +138,7 @@ public :
    * @param t Current time (nondimensional).
    * @param dt Time step (nondimension).
    */
-  void updateSettings(topology::Field<topology::Mesh>* jacobian,
+  void updateSettings(topology::Field* jacobian,
 		      topology::SolutionFields* fields,
 		      const PylithScalar t,
 		      const PylithScalar dt);
@@ -189,7 +189,7 @@ protected :
   PylithScalar _dt; ///< Current time step (nondimensional).
   topology::Jacobian* _jacobian; ///< Handle to Jacobian of system.
   PetscMat _customConstraintPCMat; ///< Custom PETSc preconditioning matrix for constraints.
-  topology::Field<topology::Mesh>* _jacobianLumped; ///< Handle to lumped Jacobian of system.
+  topology::Field* _jacobianLumped; ///< Handle to lumped Jacobian of system.
   topology::SolutionFields* _fields; ///< Handle to solution fields for system.
 
   std::vector<feassemble::Integrator*> _integrators; ///< Array of integrators.

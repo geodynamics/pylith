@@ -116,7 +116,7 @@ public :
    *
    * @param field Solution field.
    */
-  void splitField(topology::Field<topology::Mesh>* field);
+  void splitField(topology::Field* field);
 
   /** Integrate contributions to residual term (r) for operator that
    * require assembly processors.
@@ -126,9 +126,9 @@ public :
    * @param fields Solution fields
    */
   virtual
-  void integrateResidual(const topology::Field<topology::Mesh>& residual,
-				  const PylithScalar t,
-				  topology::SolutionFields* const fields);
+  void integrateResidual(const topology::Field& residual,
+			 const PylithScalar t,
+			 topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
    * operator that require assembly across processors.
@@ -139,8 +139,8 @@ public :
    */
   virtual
   void integrateJacobian(topology::Jacobian* jacobian,
-				  const PylithScalar t,
-				  topology::SolutionFields* const fields);
+			 const PylithScalar t,
+			 topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
    * operator that require assembly processors.
@@ -150,9 +150,9 @@ public :
    * @param fields Solution fields
    */
   virtual
-  void integrateJacobian(topology::Field<topology::Mesh>* jacobian,
-				  const PylithScalar t,
-				  topology::SolutionFields* const fields);
+  void integrateJacobian(topology::Field* jacobian,
+			 const PylithScalar t,
+			 topology::SolutionFields* const fields);
 
   /** Compute custom fault precoditioner using Schur complement.
    *
@@ -180,7 +180,7 @@ public :
   virtual
   void adjustSolnLumped(topology::SolutionFields* fields,
 			const PylithScalar t,
-			const topology::Field<topology::Mesh>& jacobian);
+			const topology::Field& jacobian);
 
   /** Verify configuration is acceptable.
    *
@@ -194,7 +194,7 @@ public :
    * @param field Solution field.
    */
   virtual
-  void checkConstraints(const topology::Field<topology::Mesh>& solution) const;
+  void checkConstraints(const topology::Field& solution) const;
 
   /** Get cell field associated with integrator.
    *
@@ -202,7 +202,7 @@ public :
    * @param fields Solution fields.
    * @returns Cell field.
    */
-  const topology::Field<topology::Mesh>&
+  const topology::Field&
   cellField(const char* name,
 	    const topology::SolutionFields* fields =0);
 
@@ -213,8 +213,8 @@ public :
    * @param faultOrientation Orientation of vertices on fault.
    */
   static
-  void faultToGlobal(topology::Field<topology::Mesh>* field,
-		     const topology::Field<topology::Mesh>& faultOrientation);
+  void faultToGlobal(topology::Field* field,
+		     const topology::Field& faultOrientation);
 
   /** Transform field from global coordinate system to local (fault)
    * coordinate system.
@@ -223,8 +223,8 @@ public :
    * @param faultOrientation Orientation of vertices on fault.
    */
   static
-  void globalToFault(topology::Field<topology::Mesh>* field,
-		     const topology::Field<topology::Mesh>& faultOrientation);
+  void globalToFault(topology::Field* field,
+		     const topology::Field& faultOrientation);
 
   // PROTECTED STRUCTS //////////////////////////////////////////////////
 protected :
@@ -253,8 +253,8 @@ protected :
    * @param tractions Field for tractions.
    * @param solution Solution over domain
    */
-  void _calcTractionsChange(topology::Field<topology::Mesh>* tractions,
-          const topology::Field<topology::Mesh>& solution);
+  void _calcTractionsChange(topology::Field* tractions,
+			    const topology::Field& solution);
 
   /// Allocate buffer for vector field.
   void _allocateBufferVectorField(void);

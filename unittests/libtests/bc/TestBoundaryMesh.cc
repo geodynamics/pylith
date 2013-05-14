@@ -31,6 +31,7 @@
 #include "pylith/faults/FaultCohesiveKin.hh" // USES FaultsCohesiveKin
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 // ----------------------------------------------------------------------
 // Setup testing data.

@@ -105,7 +105,7 @@ public :
    * @param fields Solution fields
    */
   virtual
-  void integrateResidual(const topology::Field<topology::Mesh>& residual,
+  void integrateResidual(const topology::Field& residual,
 			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 
@@ -137,7 +137,7 @@ public :
    */
   void adjustSolnLumped(topology::SolutionFields* fields,
 			const PylithScalar t,
-			const topology::Field<topology::Mesh>& jacobian);
+			const topology::Field& jacobian);
 
   /** Get vertex field associated with integrator.
    *
@@ -145,9 +145,8 @@ public :
    * @param fields Solution fields.
    * @returns Vertex field.
    */
-  const topology::Field<topology::Mesh>&
-  vertexField(const char* name,
-	      const topology::SolutionFields* fields =0);
+  const topology::Field& vertexField(const char* name,
+				     const topology::SolutionFields* fields =0);
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
@@ -157,8 +156,8 @@ private :
    * @param tractions Field for tractions.
    * @param solution Solution over domain
    */
-  void _calcTractions(topology::Field<topology::Mesh>* tractions,
-          const topology::Field<topology::Mesh>& solution);
+  void _calcTractions(topology::Field* tractions,
+          const topology::Field& solution);
 
   /** Update relative displacement and velocity associated with
    * Lagrange vertex k corresponding to diffential velocity between

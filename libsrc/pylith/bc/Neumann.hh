@@ -64,7 +64,7 @@ public :
    * @param t Current time.
    * @param fields Solution fields.
    */
-  void integrateResidual(const topology::Field<topology::Mesh>& residual,
+  void integrateResidual(const topology::Field& residual,
 			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 
@@ -81,9 +81,8 @@ public :
    *
    * @returns Traction vector at integration points.
    */
-  const topology::Field<topology::Mesh>&
-  cellField(const char* name,
-	    topology::SolutionFields* const fields =0);
+  const topology::Field& cellField(const char* name,
+				   topology::SolutionFields* const fields =0);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :

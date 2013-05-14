@@ -55,7 +55,7 @@ namespace pylith {
        * @param cs Coordinate system for mesh.
        */
       static
-      void write(pylith::meshio::DataWriter<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >* const writer,
+      void write(pylith::meshio::DataWriter* const writer,
 		 const pylith::topology::Mesh& mesh);
 
     }; // Distributor

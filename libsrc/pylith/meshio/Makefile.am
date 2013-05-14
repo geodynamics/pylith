@@ -21,14 +21,10 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	CellFilter.hh \
-	CellFilter.cc \
 	CellFilterAvg.hh \
-	CellFilterAvg.cc \
 	DataWriter.hh \
-	DataWriter.cc \
 	DataWriterVTK.hh \
 	DataWriterVTK.icc \
-	DataWriterVTK.cc \
 	MeshBuilder.hh \
 	MeshIO.hh \
 	MeshIO.icc \
@@ -37,13 +33,10 @@ subpkginclude_HEADERS = \
 	MeshIOLagrit.hh \
 	MeshIOLagrit.icc \
 	OutputManager.hh \
-	OutputManager.cc \
 	OutputSolnSubset.hh \
 	OutputSolnPoints.hh \
 	VertexFilter.hh \
-	VertexFilter.cc \
 	VertexFilterVecNorm.hh \
-	VertexFilterVecNorm.cc \
 	meshiofwd.hh
 
 if ENABLE_HDF5
@@ -52,10 +45,8 @@ if ENABLE_HDF5
 	Xdmf.hh \
 	DataWriterHDF5.hh \
 	DataWriterHDF5.icc \
-	DataWriterHDF5.cc \
 	DataWriterHDF5Ext.hh \
-	DataWriterHDF5Ext.icc \
-	DataWriterHDF5Ext.cc
+	DataWriterHDF5Ext.icc
 endif
 
 if ENABLE_CUBIT

@@ -32,9 +32,6 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestFieldsMesh );
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> > FieldsMesh;
-
-// ----------------------------------------------------------------------
 void
 pylith::topology::TestFieldsMesh::setUp(void)
 { // setUp
@@ -67,7 +64,7 @@ pylith::topology::TestFieldsMesh::testConstructor(void)
   PYLITH_METHOD_BEGIN;
 
   CPPUNIT_ASSERT(_mesh);
-  FieldsMesh fields(*_mesh);
+  Fields fields(*_mesh);
 
   PYLITH_METHOD_END;
 } // testConstructor
@@ -80,7 +77,7 @@ pylith::topology::TestFieldsMesh::testAdd(void)
   PYLITH_METHOD_BEGIN;
 
   CPPUNIT_ASSERT(_mesh);
-  FieldsMesh fields(*_mesh);
+  Fields fields(*_mesh);
   
   const char* label = "field";
   fields.add(label, "displacement");
@@ -100,14 +97,14 @@ pylith::topology::TestFieldsMesh::testAddDomain(void)
   const int fiberDim = 3;
 
   CPPUNIT_ASSERT(_mesh);
-  FieldsMesh fields(*_mesh);
+  Fields fields(*_mesh);
 
   const char* label = "field";
-  fields.add(label, "velocity", Field<Mesh>::VERTICES_FIELD, fiberDim);
+  fields.add(label, "velocity", Field::VERTICES_FIELD, fiberDim);
   const size_t size = 1;
   CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
 
-  Field<Mesh>& field = fields.get(label);
+  Field& field = fields.get(label);
   field.allocate();
 
   PetscDM dmMesh = _mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
@@ -131,7 +128,7 @@ pylith::topology::TestFieldsMesh::testDelete(void)
   PYLITH_METHOD_BEGIN;
 
   CPPUNIT_ASSERT(_mesh);
-  FieldsMesh fields(*_mesh);
+  Fields fields(*_mesh);
 
   const char* labelA = "field A";
   fields.add(labelA, "displacement");
@@ -144,7 +141,7 @@ pylith::topology::TestFieldsMesh::testDelete(void)
   fields.del(labelA);
   size = 1;
   CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
-  const Field<Mesh>& field = fields.get(labelB);
+  const Field& field = fields.get(labelB);
   CPPUNIT_ASSERT_EQUAL(std::string("velocity"), std::string(field.label()));
 
   PYLITH_METHOD_END;
@@ -158,11 +155,11 @@ pylith::topology::TestFieldsMesh::testGet(void)
   PYLITH_METHOD_BEGIN;
 
   CPPUNIT_ASSERT(_mesh);
-  FieldsMesh fields(*_mesh);
+  Fields fields(*_mesh);
 
   const char* label = "field";
   fields.add(label, "velocity");
-  const Field<Mesh>& field = fields.get(label);
+  const Field& field = fields.get(label);
 
   PYLITH_METHOD_END;
 } // testGet
@@ -175,14 +172,14 @@ pylith::topology::TestFieldsMesh::testGetConst(void)
   PYLITH_METHOD_BEGIN;
 
   CPPUNIT_ASSERT(_mesh);
-  FieldsMesh fields(*_mesh);
+  Fields fields(*_mesh);
 
   const char* label = "field";
   fields.add(label, "velocity");
 
-  const FieldsMesh* fieldsPtr = &fields;
+  const Fields* fieldsPtr = &fields;
   CPPUNIT_ASSERT(fieldsPtr);
-  const Field<Mesh>& field = fieldsPtr->get(label);
+  const Field& field = fieldsPtr->get(label);
 
   PYLITH_METHOD_END;
 } // testGetConst
@@ -195,7 +192,7 @@ pylith::topology::TestFieldsMesh::testHasField(void)
   PYLITH_METHOD_BEGIN;
 
   CPPUNIT_ASSERT(_mesh);
-  FieldsMesh fields(*_mesh);
+  Fields fields(*_mesh);
 
   fields.add("field A", "velocity");
   
@@ -223,14 +220,14 @@ pylith::topology::TestFieldsMesh::testCopyLayout(void)
   const int fiberDim = 3;
 
   CPPUNIT_ASSERT(_mesh);
-  FieldsMesh fields(*_mesh);
+  Fields fields(*_mesh);
 
   const char* labelA = "field A";
-  fields.add(labelA, "displacement", Field<Mesh>::VERTICES_FIELD, fiberDim);
+  fields.add(labelA, "displacement", Field::VERTICES_FIELD, fiberDim);
 
   const char* labelB = "field B";
   fields.add(labelB, "velocity");
-  Field<Mesh>& fieldA = fields.get(labelA);
+  Field& fieldA = fields.get(labelA);
   fieldA.allocate();
 
   fields.copyLayout(labelA);
@@ -243,7 +240,7 @@ pylith::topology::TestFieldsMesh::testCopyLayout(void)
   const PetscInt vStart = depthStratum.begin();
   const PetscInt vEnd = depthStratum.end();
   
-  const Field<Mesh>& field = fields.get(labelB);
+  const Field& field = fields.get(labelB);
   VecVisitorMesh fieldVisitor(field);
   for(PetscInt v = vStart; v < vEnd; ++v) {
     CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));

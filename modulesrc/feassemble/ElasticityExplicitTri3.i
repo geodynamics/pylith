@@ -66,7 +66,7 @@ namespace pylith {
        * @param t Current time
        * @param fields Solution fields
        */
-      void integrateResidual(const pylith::topology::Field<pylith::topology::Mesh>& residual,
+      void integrateResidual(const pylith::topology::Field& residual,
 			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
       
@@ -78,7 +78,7 @@ namespace pylith {
        * @param t Current time
        * @param fields Solution fields
        */
-      void integrateJacobian(pylith::topology::Field<pylith::topology::Mesh>* jacobian,
+      void integrateJacobian(pylith::topology::Field* jacobian,
 			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
 

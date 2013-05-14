@@ -72,9 +72,9 @@ public :
    * @param jacobian Jacobian of the system.
    * @param residual Residual field.
    */
-  void solve(topology::Field<topology::Mesh>* solveSoln,
+  void solve(topology::Field* solveSoln,
 	     topology::Jacobian* jacobian,
-	     const topology::Field<topology::Mesh>& residual);
+	     const topology::Field& residual);
 
   /** Generic C interface for reformResidual for integration with
    * PETSc SNES solvers.

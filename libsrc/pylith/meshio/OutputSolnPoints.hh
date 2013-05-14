@@ -30,6 +30,8 @@
 #include "meshiofwd.hh" // forward declarations
 #include "pylith/utils/petscfwd.h"
 
+#include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
+
 #include "pylith/topology/Mesh.hh" // ISA OutputManager<Mesh>
 #include "pylith/topology/Field.hh" // ISA OutputManager<Field<Mesh>>
 #include "OutputManager.hh" // ISA OutputManager
@@ -38,7 +40,7 @@
 /** @brief C++ object for managing output of finite-element data over
  * a subdomain.
  */
-class pylith::meshio::OutputSolnPoints : public OutputManager<topology::Mesh, topology::Field<topology::Mesh> >
+class pylith::meshio::OutputSolnPoints : public OutputManager
 { // OutputSolnPoints
   friend class TestOutputSolnPoints; // unit testing
 
@@ -107,7 +109,7 @@ public :
    * @param mesh Mesh for output.
    */
   void appendVertexField(const PylithScalar t,
-			 topology::Field<topology::Mesh>& field,
+			 topology::Field& field,
 			 const topology::Mesh& mesh);
 
   /** Append finite-element cell field to file.
@@ -119,7 +121,7 @@ public :
    * @param labelId Value of label defining which cells to include.
    */
   void appendCellField(const PylithScalar t,
-		       topology::Field<topology::Mesh>& field,
+		       topology::Field& field,
 		       const char* label =0,
 		       const int labelId =0);
 

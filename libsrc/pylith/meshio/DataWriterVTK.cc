@@ -18,6 +18,10 @@
 
 #include <portinfo>
 
+#include "DataWriterVTK.hh" // Implementation of class methods
+
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Stratum.hh" // USES StratumIS
 
 #include <petscdmmesh_viewers.hh> // USES VTKViewer
@@ -27,12 +31,13 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
-extern PetscErrorCode DMPlexVTKWriteAll(PetscObject odm, PetscViewer viewer);
+extern
+PetscErrorCode DMPlexVTKWriteAll(PetscObject odm, 
+				 PetscViewer viewer);
 
 // ----------------------------------------------------------------------
 // Constructor
-template<typename mesh_type, typename field_type>
-pylith::meshio::DataWriterVTK<mesh_type,field_type>::DataWriterVTK(void) :
+pylith::meshio::DataWriterVTK::DataWriterVTK(void) :
   _timeConstant(1.0),
   _filename("output.vtk"),
   _timeFormat("%f"),
@@ -48,32 +53,29 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::DataWriterVTK(void) :
 
 // ----------------------------------------------------------------------
 // Destructor
-template<typename mesh_type, typename field_type>
-pylith::meshio::DataWriterVTK<mesh_type,field_type>::~DataWriterVTK(void)
+pylith::meshio::DataWriterVTK::~DataWriterVTK(void)
 { // destructor
   deallocate();
 } // destructor  
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterVTK<mesh_type, field_type>::deallocate(void)
+pylith::meshio::DataWriterVTK::deallocate(void)
 { // deallocate
   PYLITH_METHOD_BEGIN;
 
   closeTimeStep(); // Insure time step is closed.
   close(); // Insure clean up.
-  DataWriter<mesh_type, field_type>::deallocate();
+  DataWriter::deallocate();
 
   PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
 // Copy constructor.
-template<typename mesh_type, typename field_type>
-pylith::meshio::DataWriterVTK<mesh_type,field_type>::DataWriterVTK(const DataWriterVTK<mesh_type, field_type>& w) :
-  DataWriter<mesh_type, field_type>(w),
+pylith::meshio::DataWriterVTK::DataWriterVTK(const DataWriterVTK& w) :
+  DataWriter(w),
   _timeConstant(w._timeConstant),
   _filename(w._filename),
   _timeFormat(w._timeFormat),
@@ -88,9 +90,8 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::DataWriterVTK(const DataWri
 
 // ----------------------------------------------------------------------
 // Set value used to normalize time stamp in name of VTK file.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterVTK<mesh_type,field_type>::timeConstant(const PylithScalar value)
+pylith::meshio::DataWriterVTK::timeConstant(const PylithScalar value)
 { // timeConstant
   PYLITH_METHOD_BEGIN;
 
@@ -107,9 +108,8 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::timeConstant(const PylithSc
 
 // ----------------------------------------------------------------------
 // Set precision of floating point values in output.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterVTK<mesh_type,field_type>::precision(const int value)
+pylith::meshio::DataWriterVTK::precision(const int value)
 { // precision
   PYLITH_METHOD_BEGIN;
 
@@ -126,16 +126,15 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::precision(const int value)
 
 // ----------------------------------------------------------------------
 // Prepare for writing files.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterVTK<mesh_type,field_type>::open(const mesh_type& mesh,
-							  const int numTimeSteps,
-							  const char* label,
-							  const int labelId)
+pylith::meshio::DataWriterVTK::open(const topology::Mesh& mesh,
+				    const int numTimeSteps,
+				    const char* label,
+				    const int labelId)
 { // open
   PYLITH_METHOD_BEGIN;
 
-  DataWriter<mesh_type, field_type>::open(mesh, numTimeSteps, label, labelId);
+  DataWriter::open(mesh, numTimeSteps, label, labelId);
 
   // Save handle for actions required in closeTimeStep() and close();
   PetscErrorCode err = 0;
@@ -162,9 +161,8 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::open(const mesh_type& mesh,
 
 // ----------------------------------------------------------------------
 // Close output files.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterVTK<mesh_type,field_type>::close(void)
+pylith::meshio::DataWriterVTK::close(void)
 { // close
   PYLITH_METHOD_BEGIN;
 
@@ -180,19 +178,18 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::close(void)
   } // if
   _isOpen = false;
 
-  DataWriter<mesh_type, field_type>::close();
+  DataWriter::close();
 
   PYLITH_METHOD_END;
 } // close
 
 // ----------------------------------------------------------------------
 // Prepare file for data at a new time step.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterVTK<mesh_type,field_type>::openTimeStep(const PylithScalar t,
-								  const mesh_type& mesh,
-								  const char* label,
-								  const int labelId)
+pylith::meshio::DataWriterVTK::openTimeStep(const PylithScalar t,
+					    const topology::Mesh& mesh,
+					    const char* label,
+					    const int labelId)
 { // openTimeStep
   PYLITH_METHOD_BEGIN;
 
@@ -219,9 +216,8 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::openTimeStep(const PylithSc
 
 // ----------------------------------------------------------------------
 /// Cleanup after writing data for a time step.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterVTK<mesh_type,field_type>::closeTimeStep(void)
+pylith::meshio::DataWriterVTK::closeTimeStep(void)
 { // closeTimeStep
   PYLITH_METHOD_BEGIN;
 
@@ -241,11 +237,10 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::closeTimeStep(void)
 
 // ----------------------------------------------------------------------
 // Write field over vertices to file.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(const PylithScalar t,
-								      field_type& field,
-								      const mesh_type& mesh)
+pylith::meshio::DataWriterVTK::writeVertexField(const PylithScalar t,
+						topology::Field& field,
+						const topology::Mesh& mesh)
 { // writeVertexField
   PYLITH_METHOD_BEGIN;
 
@@ -270,12 +265,11 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(const Pyli
 
 // ----------------------------------------------------------------------
 // Write field over cells to file.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(const PylithScalar t,
-								    field_type& field,
-								    const char* label,
-								    const int labelId)
+pylith::meshio::DataWriterVTK::writeCellField(const PylithScalar t,
+					      topology::Field& field,
+					      const char* label,
+					      const int labelId)
 { // writeCellField
   PYLITH_METHOD_BEGIN;
 
@@ -298,15 +292,14 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(const Pylith
 
 // ----------------------------------------------------------------------
 // Generate filename for VTK file.
-template<typename mesh_type, typename field_type>
 std::string
-pylith::meshio::DataWriterVTK<mesh_type,field_type>::_vtkFilename(const PylithScalar t) const
+pylith::meshio::DataWriterVTK::_vtkFilename(const PylithScalar t) const
 { // _vtkFilename
   PYLITH_METHOD_BEGIN;
 
   std::ostringstream filename;
   const int indexExt = _filename.find(".vtk");
-  const int numTimeSteps = DataWriter<mesh_type, field_type>::_numTimeSteps;
+  const int numTimeSteps = DataWriter::_numTimeSteps;
   if (numTimeSteps > 0) {
     // If data with multiple time steps, then add time stamp to filename
     char sbuffer[256];

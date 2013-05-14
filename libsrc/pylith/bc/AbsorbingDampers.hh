@@ -98,7 +98,7 @@ public :
    * @param t Current time
    * @param fields Solution fields
    */
-  void integrateResidual(const topology::Field<topology::Mesh>& residual,
+  void integrateResidual(const topology::Field& residual,
 			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 
@@ -108,7 +108,7 @@ public :
    * @param t Current time
    * @param fields Solution fields
    */
-  void integrateResidualLumped(const topology::Field<topology::Mesh>& residual,
+  void integrateResidualLumped(const topology::Field& residual,
 			       const PylithScalar t,
 			       topology::SolutionFields* const fields);
 
@@ -130,7 +130,7 @@ public :
    * @param t Current time
    * @param fields Solution fields
    */
-  void integrateJacobian(topology::Field<topology::Mesh>* jacobian,
+  void integrateJacobian(topology::Field* jacobian,
 			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 

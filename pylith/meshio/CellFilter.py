@@ -39,8 +39,7 @@ class CellFilter(PetscComponent):
   import pyre.inventory
 
   from pylith.perf.MemoryLogger import MemoryLogger
-  perfLogger = pyre.inventory.facility("perf_logger", family="perf_logger",
-                                       factory=MemoryLogger)
+  perfLogger = pyre.inventory.facility("perf_logger", family="perf_logger", factory=MemoryLogger)
   perfLogger.meta['tip'] = "Performance and memory logging."
 
 
@@ -91,8 +90,7 @@ class CellFilter(PetscComponent):
     """
     Model memory allocation.
     """
-    raise NotImplementedError("Please implement _modelMemoryUse() in "
-                              "derived class.")
+    raise NotImplementedError("Please implement _modelMemoryUse() in derived class.")
     return
 
 

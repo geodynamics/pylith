@@ -49,7 +49,7 @@ pylith::feassemble::Constraint::deallocate(void)
 void
 pylith::feassemble::Constraint::normalizer(const spatialdata::units::Nondimensional& dim)
 { // normalizer
-  if (0 == _normalizer)
+  if (!_normalizer)
     _normalizer = new spatialdata::units::Nondimensional(dim);
   else
     *_normalizer = dim;

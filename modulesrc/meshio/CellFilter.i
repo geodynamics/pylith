@@ -25,7 +25,6 @@
 namespace pylith {
   namespace meshio {
 
-    template<typename mesh_type, typename field_type>
     class pylith::meshio::CellFilter
     { // CellFilter
 
@@ -65,9 +64,9 @@ namespace pylith {
        * @returns Averaged field.
        */
       virtual
-      field_type& filter(const field_type& fieldIn,
-			 const char* label =0,
-			 const int labelId =0) = 0;
+      pylith::topology::Field& filter(const pylith::topology::Field& fieldIn,
+				      const char* label =0,
+				      const int labelId =0) = 0;
 
     }; // CellFilter
 

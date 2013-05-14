@@ -21,9 +21,10 @@
 ## @brief Python object for writing finite-element data to VTK file.
 
 from DataWriter import DataWriter
+from meshio import DataWriterVTK as ModuleDataWriterVTK
 
 # DataWriterVTK class
-class DataWriterVTK(DataWriter):
+class DataWriterVTK(DataWriter, ModuleDataWriterVTK):
   """
   Python object for writing finite-element data to VTK file.
 
@@ -66,8 +67,26 @@ class DataWriterVTK(DataWriter):
     Constructor.
     """
     DataWriter.__init__(self, name)
+    ModuleDataWriterVTK.__init__(self)
     return
 
+
+  def initialize(self, normalizer):
+    """
+    Initialize writer.
+    """
+    DataWriter.initialize(self, normalizer)
+    
+    timeScale = normalizer.timeScale()
+    timeConstantN = normalizer.nondimensionalize(self.timeConstant, timeScale)
+
+    ModuleDataWriterVTK.filename(self, self.filename)
+    ModuleDataWriterVTK.timeScale(self, timeScale.value)
+    ModuleDataWriterVTK.timeFormat(self, self.timeFormat)
+    ModuleDataWriterVTK.timeConstant(self, timeConstantN)
+    ModuleDataWriterVTK.precision(self, self.precision)
+    return
+  
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
@@ -83,5 +102,15 @@ class DataWriterVTK(DataWriter):
                        "(%s):\n%s" % (aliases, err.message))
 
     return
+
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def data_writer():
+  """
+  Factory associated with DataWriter.
+  """
+  return DataWriterVTK()
+
 
 # End of file 

@@ -86,20 +86,20 @@ public :
    *
    * @returns Slip vector as left-lateral/reverse/normal.
    */
-  void slip(topology::Field<topology::Mesh>* const slipField,
+  void slip(topology::Field* const slipField,
 	    const PylithScalar t);
   
   /** Get final slip.
    *
    * @returns Final slip.
    */
-  const topology::Field<topology::Mesh>& finalSlip(void);
+  const topology::Field& finalSlip(void);
 
   /** Get time when slip begins at each point.
    *
    * @returns Time when slip begins.
    */
-  const topology::Field<topology::Mesh>& slipTime(void);
+  const topology::Field& slipTime(void);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

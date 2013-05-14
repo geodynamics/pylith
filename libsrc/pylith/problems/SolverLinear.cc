@@ -20,9 +20,13 @@
 
 #include "SolverLinear.hh" // implementation of class methods
 
+#include "Formulation.hh" // USES Formulation
+
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
-#include "pylith/problems/Formulation.hh" // USES Formulation
+
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include <petscksp.h> // USES PetscKSP
@@ -89,9 +93,9 @@ pylith::problems::SolverLinear::initialize(const topology::SolutionFields& field
 // ----------------------------------------------------------------------
 // Solve the system.
 void
-pylith::problems::SolverLinear::solve(topology::Field<topology::Mesh>* solution,
+pylith::problems::SolverLinear::solve(topology::Field* solution,
 				      topology::Jacobian* jacobian,
-				      const topology::Field<topology::Mesh>& residual)
+				      const topology::Field& residual)
 { // solve
   PYLITH_METHOD_BEGIN;
 

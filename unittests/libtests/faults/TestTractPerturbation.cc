@@ -212,7 +212,7 @@ pylith::faults::TestTractPerturbation::testParameterFields(void)
   TractPerturbation tract;
   _initialize(&mesh, &faultMesh, &tract);
   
-  const topology::Fields<topology::Field<topology::Mesh> >* parameters = tract.parameterFields();CPPUNIT_ASSERT(parameters);
+  const topology::Fields* parameters = tract.parameterFields();CPPUNIT_ASSERT(parameters);
 
   PetscDM faultDMMesh = faultMesh.dmMesh();CPPUNIT_ASSERT(faultDMMesh);
   topology::Stratum verticesStratum(faultDMMesh, topology::Stratum::DEPTH, 0);
@@ -283,7 +283,7 @@ pylith::faults::TestTractPerturbation::testVertexField(void)
   TractPerturbation tract;
   _initialize(&mesh, &faultMesh, &tract);
 
-  const topology::Field<topology::Mesh>& field = tract.vertexField(label);
+  const topology::Field& field = tract.vertexField(label);
 
   PetscDM faultDMMesh = faultMesh.dmMesh();CPPUNIT_ASSERT(faultDMMesh);
   topology::Stratum verticesStratum(faultDMMesh, topology::Stratum::DEPTH, 0);
@@ -365,7 +365,7 @@ pylith::faults::TestTractPerturbation::_initialize(topology::Mesh* mesh,
   dbChange.ioHandler(&ioChange);
 
   // Setup fault orientation
-  topology::Field<topology::Mesh> faultOrientation(*faultMesh);
+  topology::Field faultOrientation(*faultMesh);
   faultOrientation.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim*spaceDim);
   faultOrientation.allocate();
 

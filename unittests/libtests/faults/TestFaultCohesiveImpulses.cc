@@ -35,6 +35,7 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <stdexcept> // USES runtime_error
 
@@ -267,7 +268,7 @@ pylith::faults::TestFaultCohesiveImpulses::testIntegrateResidual(void)
   const PylithScalar dt = 1.0;
   fault.timeStep(dt);
 
-  topology::Field<topology::Mesh>& residual = fields.get("residual");
+  topology::Field& residual = fields.get("residual");
   residual.zero();
   fault.integrateResidual(residual, t, &fields);
   //residual.view("RESIDUAL"); // DEBUGGING
@@ -376,7 +377,7 @@ pylith::faults::TestFaultCohesiveImpulses::_initialize(topology::Mesh* const mes
   fields->solutionName("dispIncr(t->t+dt)");
   
   const int spaceDim = _data->spaceDim;
-  topology::Field<topology::Mesh>& disp = fields->get("disp(t)");
+  topology::Field& disp = fields->get("disp(t)");
   disp.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   disp.allocate();
   fields->copyLayout("disp(t)");

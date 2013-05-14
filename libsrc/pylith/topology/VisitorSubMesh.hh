@@ -57,7 +57,7 @@ public :
    * @param field Field associated with visitor.
    * @param submeshIS Submesh index set associated with visitor.
    */
-  VecVisitorSubMesh(const Field<Mesh>& field,
+  VecVisitorSubMesh(const Field& field,
 		    const SubMeshIS& submeshIS);
 
   /// Default destructor
@@ -139,7 +139,7 @@ public :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  const Field<Mesh>& _field;
+  const Field& _field;
 
   PetscDM _dm; ///< Cached PETSc dm for submesh.
   PetscVec _localVec; ///< Cached local PETSc Vec.
@@ -173,7 +173,7 @@ public :
    * @param submeshIS Submesh index set associated with visitor.
    */
   MatVisitorSubMesh(const PetscMat mat,
-		    const Field<Mesh>& field,
+		    const Field& field,
 		    const SubMeshIS& submeshIS);
 
   /// Default destructor

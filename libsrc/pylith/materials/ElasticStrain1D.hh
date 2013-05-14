@@ -65,7 +65,7 @@ public :
    * @returns Time step
    */
   PylithScalar stableTimeStepImplicit(const topology::Mesh& mesh,
-				      topology::Field<topology::Mesh>* field =0);
+				      topology::Field* field =0);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :

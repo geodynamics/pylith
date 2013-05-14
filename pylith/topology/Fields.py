@@ -21,11 +21,11 @@
 ## @brief Python object for managing vector fields over vertices or
 ## cells of a finite-element mesh.
 
-from topology import MeshFields as ModuleMeshFields
+from topology import Fields as ModuleFields
 
 # ----------------------------------------------------------------------
-# MeshFields class
-class MeshFields(ModuleMeshFields):
+# Fields class
+class Fields(ModuleFields):
   """
   Python object for managing vector fields over vertices or cells of a
   finite-element mesh.
@@ -37,7 +37,7 @@ class MeshFields(ModuleMeshFields):
     """
     Constructor.
     """
-    ModuleMeshFields.__init__(self, mesh)
+    ModuleFields.__init__(self, mesh)
     return
     
 

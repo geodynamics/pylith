@@ -181,7 +181,7 @@ public :
    */
   virtual
   PylithScalar stableTimeStepImplicit(const topology::Mesh& mesh,
-				      topology::Field<topology::Mesh>* field =0);
+				      topology::Field* field =0);
 
   /** Get stable time step for explicit time integration.
    *
@@ -196,7 +196,7 @@ public :
   virtual
   PylithScalar stableTimeStepExplicit(const topology::Mesh& mesh,
 				      feassemble::Quadrature* quadrature,
-				      topology::Field<topology::Mesh>* field =0);
+				      topology::Field* field =0);
 
   /** Set whether elastic or inelastic constitutive relations are used.
    *
@@ -209,7 +209,7 @@ public :
    *
    * @returns Initial stress field.
    */
-  const topology::Fields<topology::Field<topology::Mesh> >* initialFields(void) const;
+  const topology::Fields* initialFields(void) const;
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -363,7 +363,7 @@ protected :
    * @returns PYLITH::MAX_SCALAR;
    */
   PylithScalar _stableTimeStepImplicitMax(const topology::Mesh& mesh,
-					  topology::Field<topology::Mesh>* field =0);
+					  topology::Field* field =0);
 
   /** Compute 2D deviatoric stress/strain from vector and mean value.
    *
@@ -461,7 +461,7 @@ private :
   spatialdata::spatialdb::SpatialDB* _dbInitialStrain;
 
   /// Initial stress/strain fields.
-  topology::Fields<topology::Field<topology::Mesh> >* _initialFields;
+  topology::Fields* _initialFields;
   
   /** Properties at quadrature points for current cell.
    *

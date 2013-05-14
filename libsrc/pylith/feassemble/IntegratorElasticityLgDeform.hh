@@ -81,7 +81,7 @@ protected :
    * @param name Name of field to compute ('total-strain' or 'stress')
    * @param fields Manager for solution fields.
    */
-  void _calcStrainStressField(topology::Field<topology::Mesh>* field,
+  void _calcStrainStressField(topology::Field* field,
 			      const char* name,
 			      topology::SolutionFields* const fields);
 

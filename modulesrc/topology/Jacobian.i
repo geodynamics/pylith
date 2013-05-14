@@ -38,7 +38,7 @@ namespace pylith {
        * @param blockOkay True if okay to use block size equal to fiberDim
        * (all or none of the DOF at each point are constrained).
        */
-      Jacobian(const Field<Mesh>& field,
+      Jacobian(const Field& field,
 	       const char* matrixType ="aij",
 	       const bool blockOkay =false);
 

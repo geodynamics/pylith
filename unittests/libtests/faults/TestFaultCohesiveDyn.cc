@@ -39,6 +39,7 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <stdexcept> // USES runtime_error
 
@@ -237,8 +238,8 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceStick(void)
   fault.timeStep(dt);
   fault.constrainSolnSpace(&fields, t, jacobian);
   
-  topology::Field<topology::Mesh>& solution = fields.solution();
-  const topology::Field<topology::Mesh>& dispIncrAdj = fields.get("dispIncr adjust");
+  topology::Field& solution = fields.solution();
+  const topology::Field& dispIncrAdj = fields.get("dispIncr adjust");
   solution += dispIncrAdj;
 
   fault.updateStateVars(t, &fields);
@@ -326,8 +327,8 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
   fault.timeStep(dt);
   fault.constrainSolnSpace(&fields, t, jacobian);
 
-  topology::Field<topology::Mesh>& solution = fields.solution();
-  const topology::Field<topology::Mesh>& dispIncrAdj = fields.get("dispIncr adjust");
+  topology::Field& solution = fields.solution();
+  const topology::Field& dispIncrAdj = fields.get("dispIncr adjust");
   solution += dispIncrAdj;
 
   fault.updateStateVars(t, &fields);
@@ -416,8 +417,8 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
   fault.timeStep(dt);
   fault.constrainSolnSpace(&fields, t, jacobian);
 
-  topology::Field<topology::Mesh>& solution = fields.solution();
-  const topology::Field<topology::Mesh>& dispIncrAdj = fields.get("dispIncr adjust");
+  topology::Field& solution = fields.solution();
+  const topology::Field& dispIncrAdj = fields.get("dispIncr adjust");
   solution += dispIncrAdj;
 
   fault.updateStateVars(t, &fields);
@@ -531,7 +532,7 @@ pylith::faults::TestFaultCohesiveDyn::testCalcTractions(void)
   _setFieldsJacobian(&mesh, &fault, &fields, &jacobian, _data->fieldIncrStick);
 
   const int spaceDim = _data->spaceDim;
-  topology::Field<topology::Mesh> tractions(*fault._faultMesh);
+  topology::Field tractions(*fault._faultMesh);
   tractions.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   tractions.allocate();
   tractions.zero();
@@ -698,7 +699,7 @@ pylith::faults::TestFaultCohesiveDyn::_initialize(topology::Mesh* const mesh,
   fields->solutionName("dispIncr(t->t+dt)");
   
   const int spaceDim = _data->spaceDim;
-  topology::Field<topology::Mesh>& disp = fields->get("disp(t)");
+  topology::Field& disp = fields->get("disp(t)");
   disp.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   disp.allocate();
   disp.scale(_data->lengthScale);

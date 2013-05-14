@@ -94,10 +94,10 @@ pylith::faults::LiuCosSlipFn::initialize(const topology::Mesh& faultMesh,
   const PetscInt vStart = verticesStratum.begin();
   const PetscInt vEnd = verticesStratum.end();
 
-  delete _parameters; _parameters = new topology::Fields<topology::Field<topology::Mesh> >(faultMesh);
-  assert(_parameters);
+  delete _parameters; _parameters = new topology::Fields(faultMesh);assert(_parameters);
+
   _parameters->add("final slip", "final_slip");
-  topology::Field<topology::Mesh>& finalSlip = _parameters->get("final slip");
+  topology::Field& finalSlip = _parameters->get("final slip");
   finalSlip.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   finalSlip.allocate();
   finalSlip.scale(lengthScale);
@@ -106,7 +106,7 @@ pylith::faults::LiuCosSlipFn::initialize(const topology::Mesh& faultMesh,
   PetscScalar* finalSlipArray = finalSlipVisitor.localArray();
 
   _parameters->add("slip time", "slip_time");
-  topology::Field<topology::Mesh>& slipTime = _parameters->get("slip time");
+  topology::Field& slipTime = _parameters->get("slip time");
   slipTime.newSection(finalSlip, 1);
   slipTime.allocate();
   slipTime.scale(timeScale);
@@ -115,7 +115,7 @@ pylith::faults::LiuCosSlipFn::initialize(const topology::Mesh& faultMesh,
   PetscScalar* slipTimeArray = slipTimeVisitor.localArray();
 
   _parameters->add("rise time", "rise_time");
-  topology::Field<topology::Mesh>& riseTime = _parameters->get("rise time");
+  topology::Field& riseTime = _parameters->get("rise time");
   riseTime.newSection(finalSlip, 1);
   riseTime.allocate();
   riseTime.scale(timeScale);
@@ -234,7 +234,7 @@ pylith::faults::LiuCosSlipFn::initialize(const topology::Mesh& faultMesh,
 // ----------------------------------------------------------------------
 // Get slip on fault surface at time t.
 void
-pylith::faults::LiuCosSlipFn::slip(topology::Field<topology::Mesh>* slip,
+pylith::faults::LiuCosSlipFn::slip(topology::Field* slip,
 				   const PylithScalar t)
 { // slip
   PYLITH_METHOD_BEGIN;
@@ -249,15 +249,15 @@ pylith::faults::LiuCosSlipFn::slip(topology::Field<topology::Mesh>* slip,
   const PetscInt vEnd = verticesStratum.end();
 
   // Get sections
-  const topology::Field<topology::Mesh>& finalSlip = _parameters->get("final slip");
+  const topology::Field& finalSlip = _parameters->get("final slip");
   topology::VecVisitorMesh finalSlipVisitor(finalSlip);
   const PetscScalar* finalSlipArray = finalSlipVisitor.localArray();
 
-  const topology::Field<topology::Mesh>& slipTime = _parameters->get("slip time");
+  const topology::Field& slipTime = _parameters->get("slip time");
   topology::VecVisitorMesh slipTimeVisitor(slipTime);
   const PetscScalar* slipTimeArray = slipTimeVisitor.localArray();
 
-  const topology::Field<topology::Mesh>& riseTime = _parameters->get("rise time");
+  const topology::Field& riseTime = _parameters->get("rise time");
   topology::VecVisitorMesh riseTimeVisitor(riseTime);
   const PetscScalar* riseTimeArray = riseTimeVisitor.localArray();
 
@@ -297,7 +297,7 @@ pylith::faults::LiuCosSlipFn::slip(topology::Field<topology::Mesh>* slip,
 
 // ----------------------------------------------------------------------
 // Get final slip.
-const pylith::topology::Field<pylith::topology::Mesh>&
+const pylith::topology::Field&
 pylith::faults::LiuCosSlipFn::finalSlip(void)
 { // finalSlip
   PYLITH_METHOD_BEGIN;
@@ -307,7 +307,7 @@ pylith::faults::LiuCosSlipFn::finalSlip(void)
 
 // ----------------------------------------------------------------------
 // Get time when slip begins at each point.
-const pylith::topology::Field<pylith::topology::Mesh>&
+const pylith::topology::Field&
 pylith::faults::LiuCosSlipFn::slipTime(void)
 { // slipTime
   PYLITH_METHOD_BEGIN;

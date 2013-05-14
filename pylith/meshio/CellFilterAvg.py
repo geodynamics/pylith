@@ -16,18 +16,18 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pyre/meshio/CellFilterAvgMesh.py
+## @file pyre/meshio/CellFilterAvg.py
 ##
-## @brief Python class for averageing cell fields over each cell's
+## @brief Python class for averaging cell fields over each cell's
 ## quadrature points when writing finite-element data.
 ##
 ## Factory: output_cell_filter
 
 from CellFilter import CellFilter
-from meshio import MeshCellFilterAvg as ModuleCellFilterAvg
+from meshio import CellFilterAvg as ModuleCellFilterAvg
 
-# CellFilterAvgMesh class
-class CellFilterAvgMesh(CellFilter, ModuleCellFilterAvg):
+# CellFilterAvg class
+class CellFilterAvg(CellFilter, ModuleCellFilterAvg):
   """
   Python class for average cell fields over each cell's quadrature
   points when writing finite-element data.
@@ -37,7 +37,7 @@ class CellFilterAvgMesh(CellFilter, ModuleCellFilterAvg):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="cellfilteravgmesh"):
+  def __init__(self, name="cellfilteravg"):
     """
     Constructor.
     """
@@ -70,7 +70,7 @@ def output_cell_filter():
   """
   Factory associated with CellFilter.
   """
-  return CellFilterAvgMesh()
+  return CellFilterAvg()
 
 
 # End of file 

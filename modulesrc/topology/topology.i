@@ -67,14 +67,5 @@ import_array();
 //%include "RefineUniform.i" // not yet updated
 %include "ReverseCuthillMcKee.i"
 
-// Template instatiation
-
-%template(MeshField) pylith::topology::Field<pylith::topology::Mesh>;
-%template(MeshFields) pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >;
-
-%extend pylith::topology::Field<pylith::topology::Mesh> {
-  %template(createScatterMesh) createScatter<pylith::topology::Mesh>;
- }
-
 // End of file
 

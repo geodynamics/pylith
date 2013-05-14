@@ -44,7 +44,7 @@ pylith::meshio::OutputSolnSubset::deallocate(void)
 { // deallocate
   PYLITH_METHOD_BEGIN;
 
-  OutputManager<topology::Mesh, topology::Field<topology::Mesh> >::deallocate();
+  OutputManager::deallocate();
 
   delete _submesh; _submesh = 0;
 

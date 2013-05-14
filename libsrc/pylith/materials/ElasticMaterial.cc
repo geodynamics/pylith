@@ -93,7 +93,7 @@ pylith::materials::ElasticMaterial::initialize(const topology::Mesh& mesh,
 
   if (_dbInitialStress || _dbInitialStrain) {
     delete _initialFields; 
-    _initialFields = new topology::Fields<topology::Field<topology::Mesh> >(mesh);
+    _initialFields = new topology::Fields(mesh);assert(_initialFields);
   } // if
   _initializeInitialStress(mesh, quadrature);
   _initializeInitialStrain(mesh, quadrature);
@@ -141,7 +141,7 @@ pylith::materials::ElasticMaterial::retrievePropsAndVars(const int cell)
     if (_initialFields->hasField("initial stress")) {
       const int stressSize = _numQuadPts*_tensorSize;
       assert(_initialStressCell.size() == stressSize);
-      topology::Field<topology::Mesh>& stressField = _initialFields->get("initial stress");
+      topology::Field& stressField = _initialFields->get("initial stress");
       topology::VecVisitorMesh stressVisitor(stressField);
       PetscScalar* stressArray = stressVisitor.localArray();
       const PetscInt ioff = stressVisitor.sectionOffset(cell);
@@ -153,7 +153,7 @@ pylith::materials::ElasticMaterial::retrievePropsAndVars(const int cell)
     if (_initialFields->hasField("initial strain")) {
       const int strainSize = _numQuadPts*_tensorSize;
       assert(_initialStrainCell.size() == strainSize);
-      topology::Field<topology::Mesh>& strainField = _initialFields->get("initial strain");
+      topology::Field& strainField = _initialFields->get("initial strain");
       topology::VecVisitorMesh strainVisitor(strainField);
       PetscScalar* strainArray = strainVisitor.localArray();
       const PetscInt ioff = strainVisitor.sectionOffset(cell);
@@ -271,7 +271,7 @@ pylith::materials::ElasticMaterial::updateStateVars(const scalar_array& totalStr
 // Get stable time step for implicit time integration.
 PylithScalar
 pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh& mesh,
-							   topology::Field<topology::Mesh>* field)
+							   topology::Field* field)
 { // stableTimeStepImplicit
   PYLITH_METHOD_BEGIN;
 
@@ -358,7 +358,7 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh&
 PylithScalar
 pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh& mesh,
 							   feassemble::Quadrature* quadrature,
-							   topology::Field<topology::Mesh>* field)
+							   topology::Field* field)
 { // stableTimeStepImplicit
   PYLITH_METHOD_BEGIN;
 
@@ -457,7 +457,7 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
 // Get stable time step for implicit time integration (return large value).
 PylithScalar
 pylith::materials::ElasticMaterial::_stableTimeStepImplicitMax(const topology::Mesh& mesh,
-							       topology::Field<topology::Mesh>* field)
+							       topology::Field* field)
 { // _stableTimeStepImplicitMax
   PYLITH_METHOD_BEGIN;
 
@@ -564,7 +564,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mes
 
   assert(_initialFields);
   _initialFields->add("initial stress", "initial_stress");
-  topology::Field<topology::Mesh>& initialStress = _initialFields->get("initial stress");
+  topology::Field& initialStress = _initialFields->get("initial stress");
 
   assert(_dbInitialStress);
   assert(quadrature);
@@ -697,7 +697,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(const topology::Mes
 
   assert(_initialFields);
   _initialFields->add("initial strain", "initial_strain");
-  topology::Field<topology::Mesh>& initialStrain = _initialFields->get("initial strain");
+  topology::Field& initialStrain = _initialFields->get("initial strain");
 
   assert(_dbInitialStrain);
   assert(quadrature);

@@ -71,13 +71,13 @@ public :
    *
    * @param field Solution field
    */
-  void setConstraintSizes(const topology::Field<topology::Mesh>& field);
+  void setConstraintSizes(const topology::Field& field);
 
   /** Set which degrees of freedom are constrained at points in field.
    *
    * @param field Solution field
    */
-  void setConstraints(const topology::Field<topology::Mesh>& field);
+  void setConstraints(const topology::Field& field);
 
   /** Set values in field.
    *
@@ -85,7 +85,7 @@ public :
    * @param field Solution field
    */
   void setField(const PylithScalar t,
-		const topology::Field<topology::Mesh>& field);
+		const topology::Field& field);
 
   /** Set increment in values from t0 to t1 in field.
    *
@@ -95,7 +95,7 @@ public :
    */
   void setFieldIncr(const PylithScalar t0,
 		    const PylithScalar t1,
-		    const topology::Field<topology::Mesh>& field);
+		    const topology::Field& field);
 
   /** Verify configuration is acceptable.
    *

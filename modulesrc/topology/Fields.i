@@ -25,7 +25,6 @@
 namespace pylith {
   namespace topology {
 
-    template<typename field_type>
     class Fields
     { // Fields
 
@@ -36,7 +35,7 @@ namespace pylith {
        *
        * @param mesh Finite-element mesh.
        */
-      Fields(const typename field_type::Mesh& mesh);
+      Fields(const pylith::topology::Mesh& mesh);
 
       /// Destructor.
       virtual
@@ -83,13 +82,13 @@ namespace pylith {
        *
        * @param name Name of field.
        */
-      const field_type& get(const char* name) const;
+      const pylith::topology::Field& get(const char* name) const;
 	   
       /** Get field.
        *
        * @param name Name of field.
        */
-      field_type& get(const char* name);
+      pylith::topology::Field& get(const char* name);
 	   
       /** Copy layout to other fields.
        *
@@ -101,7 +100,7 @@ namespace pylith {
        *
        * @returns Finite-element mesh.
        */
-      const typename field_type::Mesh& mesh(void) const;
+      const pylith::topology::Mesh& mesh(void) const;
 
       /** Return the names of all fields.
        *

@@ -18,10 +18,15 @@
 
 #include <portinfo>
 
+#include "DataWriter.hh" // Implementation of class methods
+
+#include "pylith/topology/Mesh.hh" // USES Mesh
+
+#include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
+
 // ----------------------------------------------------------------------
 // Constructor
-template<typename mesh_type, typename field_type>
-pylith::meshio::DataWriter<mesh_type, field_type>::DataWriter(void) :
+pylith::meshio::DataWriter::DataWriter(void) :
   _timeScale(1.0),
   _numTimeSteps(0),
   _context("")
@@ -30,26 +35,23 @@ pylith::meshio::DataWriter<mesh_type, field_type>::DataWriter(void) :
 
 // ----------------------------------------------------------------------
 // Destructor
-template<typename mesh_type, typename field_type>
-pylith::meshio::DataWriter<mesh_type, field_type>::~DataWriter(void)
+pylith::meshio::DataWriter::~DataWriter(void)
 { // destructor
   deallocate();
 } // destructor  
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriter<mesh_type, field_type>::deallocate(void)
+pylith::meshio::DataWriter::deallocate(void)
 { // deallocate
 } // deallocate
   
 
 // ----------------------------------------------------------------------
 // Set time scale for simulation time.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriter<mesh_type, field_type>::timeScale(const PylithScalar value)
+pylith::meshio::DataWriter::timeScale(const PylithScalar value)
 { // timeScale
   PYLITH_METHOD_BEGIN;
 
@@ -66,12 +68,11 @@ pylith::meshio::DataWriter<mesh_type, field_type>::timeScale(const PylithScalar 
   
 // ----------------------------------------------------------------------
 // Prepare for writing files.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriter<mesh_type, field_type>::open(const mesh_type& mesh,
-							const int numTimeSteps,
-							const char* label,
-							const int labelId)
+pylith::meshio::DataWriter::open(const topology::Mesh& mesh,
+				 const int numTimeSteps,
+				 const char* label,
+				 const int labelId)
 { // open
   PYLITH_METHOD_BEGIN;
 
@@ -93,36 +94,32 @@ pylith::meshio::DataWriter<mesh_type, field_type>::open(const mesh_type& mesh,
 
 // ----------------------------------------------------------------------
 // Close output files.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriter<mesh_type, field_type>::close(void)
+pylith::meshio::DataWriter::close(void)
 { // close
   _context = "";
 } // close
 
 // ----------------------------------------------------------------------
 // Prepare file for data at a new time step.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriter<mesh_type, field_type>::openTimeStep(const PylithScalar t,
-								const mesh_type& mesh,
-								const char* label,
-								const int labelId)
+pylith::meshio::DataWriter::openTimeStep(const PylithScalar t,
+					 const topology::Mesh& mesh,
+					 const char* label,
+					 const int labelId)
 { // openTimeStep
 } // openTimeStep
 
 // ----------------------------------------------------------------------
 // Cleanup after writing data for a time step.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriter<mesh_type, field_type>::closeTimeStep(void)
+pylith::meshio::DataWriter::closeTimeStep(void)
 { // closeTimeStep
 } // closeTimeStep
 
 // ----------------------------------------------------------------------
 // Copy constructor.
-template<typename mesh_type, typename field_type>
-pylith::meshio::DataWriter<mesh_type, field_type>::DataWriter(const DataWriter& w) :
+pylith::meshio::DataWriter::DataWriter(const DataWriter& w) :
   _numTimeSteps(w._numTimeSteps),
   _context(w._context)
 { // copy constructor

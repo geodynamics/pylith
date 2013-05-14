@@ -76,20 +76,20 @@ namespace pylith {
        *
        * @returns Slip vector as left-lateral/reverse/normal.
        */
-      void slip(pylith::topology::Field<pylith::topology::Mesh>* const slipField,
+      void slip(pylith::topology::Field* const slipField,
 		const PylithScalar t);
       
       /** Get final slip.
        *
        * @returns Final slip.
        */
-      const pylith::topology::Field<pylith::topology::Mesh>& finalSlip(void);
+      const pylith::topology::Field& finalSlip(void);
       
       /** Get time when slip begins at each point.
        *
        * @returns Time when slip begins.
        */
-      const pylith::topology::Field<pylith::topology::Mesh>& slipTime(void);
+      const pylith::topology::Field& slipTime(void);
 
     }; // class BruneSlipFn
 

@@ -39,6 +39,7 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <stdexcept> // USES runtime_error
 
@@ -272,7 +273,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
   const PylithScalar t = 2.134 / _data->timeScale;
   const PylithScalar dt = 0.01 / _data->timeScale;
   fault.timeStep(dt);
-  topology::Field<topology::Mesh>& residual = fields.get("residual");
+  topology::Field& residual = fields.get("residual");
   fault.integrateResidual(residual, t, &fields);
 
   //residual.view("RESIDUAL"); // DEBUGGING
@@ -402,7 +403,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianLumped(void)
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &fault, &fields);
 
-  topology::Field<topology::Mesh> jacobian(mesh);
+  topology::Field jacobian(mesh);
   jacobian.label("Jacobian");
   jacobian.vectorFieldType(topology::FieldBase::VECTOR);
   jacobian.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
@@ -503,7 +504,7 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
   const PylithScalar t = 2.134 / _data->timeScale;
   const PylithScalar dt = 0.01 / _data->timeScale;
   fault.timeStep(dt);
-  topology::Field<topology::Mesh>& residual = fields.get("residual");
+  topology::Field& residual = fields.get("residual");
   fault.integrateResidual(residual, t, &fields);
   residual.complete();
 
@@ -521,7 +522,7 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
   } // setup disp increment
 
   // Set Jacobian values
-  topology::Field<topology::Mesh> jacobian(mesh);
+  topology::Field jacobian(mesh);
   jacobian.label("Jacobian");
   jacobian.vectorFieldType(topology::FieldBase::VECTOR);
   jacobian.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
@@ -540,9 +541,9 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
   } // setup jacobian
   jacobian.complete();
 
-  topology::Field<topology::Mesh>& solution = fields.get("dispIncr(t->t+dt)");
+  topology::Field& solution = fields.get("dispIncr(t->t+dt)");
   fault.adjustSolnLumped(&fields, t, jacobian);
-  const topology::Field<topology::Mesh>& dispIncrAdj = fields.get("dispIncr adjust");
+  const topology::Field& dispIncrAdj = fields.get("dispIncr adjust");
   solution += dispIncrAdj;
 
   //solution.view("SOLUTION AFTER ADJUSTMENT"); // DEBUGGING
@@ -601,7 +602,7 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
   } // setup disp
 
   CPPUNIT_ASSERT(fault._faultMesh);
-  topology::Field<topology::Mesh> tractions(*fault._faultMesh);
+  topology::Field tractions(*fault._faultMesh);
   tractions.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   tractions.allocate();
   tractions.zero();
@@ -685,11 +686,11 @@ pylith::faults::TestFaultCohesiveKin::testSplitField(void)
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &fault, &fields);
 
-  const topology::Field<topology::Mesh>& disp = fields.get("disp(t)");
+  const topology::Field& disp = fields.get("disp(t)");
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();CPPUNIT_ASSERT(cs);
   const int spaceDim = cs->spaceDim();
 
-  topology::Field<topology::Mesh> splitField(mesh);
+  topology::Field splitField(mesh);
   splitField.addField("displacement", spaceDim);
   splitField.addField("multipliers", spaceDim);
   splitField.setupFields();
@@ -848,7 +849,7 @@ pylith::faults::TestFaultCohesiveKin::_initialize(topology::Mesh* const mesh,
   fields->solutionName("dispIncr(t->t+dt)");
   
   const int spaceDim = _data->spaceDim;
-  topology::Field<topology::Mesh>& residual = fields->get("residual");
+  topology::Field& residual = fields->get("residual");
   residual.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   residual.allocate();
   fields->copyLayout("residual");

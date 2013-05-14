@@ -117,7 +117,7 @@ pylith::materials::TestElasticMaterial::testInitialize(void)
   int fiberDim = numQuadPts * tensorSize;
 
   CPPUNIT_ASSERT(material._initialFields);
-  topology::Field<topology::Mesh>& stressField = material._initialFields->get("initial stress");
+  topology::Field& stressField = material._initialFields->get("initial stress");
   topology::VecVisitorMesh stressVisitor(stressField);
   const PetscScalar* initialStress = stressVisitor.localArray();
   PetscInt off = stressVisitor.sectionOffset(cell);
@@ -132,7 +132,7 @@ pylith::materials::TestElasticMaterial::testInitialize(void)
   fiberDim = numQuadPts * tensorSize;
 
   CPPUNIT_ASSERT(material._initialFields);
-  topology::Field<topology::Mesh>& strainField = material._initialFields->get("initial strain");
+  topology::Field& strainField = material._initialFields->get("initial strain");
   topology::VecVisitorMesh strainVisitor(strainField);
   const PetscScalar* initialStrain = strainVisitor.localArray();
   off = strainVisitor.sectionOffset(cell);

@@ -33,9 +33,6 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKSubMesh );
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Field<pylith::topology::Mesh> MeshField;
-
-// ----------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterVTKSubMesh::setUp(void)
@@ -66,7 +63,7 @@ pylith::meshio::TestDataWriterVTKSubMesh::testConstructor(void)
 { // testConstructor
   PYLITH_METHOD_BEGIN;
 
-  DataWriterVTK<topology::Mesh, MeshField> writer;
+  DataWriterVTK writer;
 
   CPPUNIT_ASSERT(!writer._viewer);
   CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
@@ -85,7 +82,7 @@ pylith::meshio::TestDataWriterVTKSubMesh::testTimeStep(void)
   CPPUNIT_ASSERT(_mesh);
   CPPUNIT_ASSERT(_data);
 
-  DataWriterVTK<topology::Mesh, MeshField> writer;
+  DataWriterVTK writer;
 
   writer.filename(_data->timestepFilename);
   writer.timeFormat(_data->timeFormat);
@@ -129,9 +126,9 @@ pylith::meshio::TestDataWriterVTKSubMesh::testWriteVertexField(void)
   CPPUNIT_ASSERT(_mesh);
   CPPUNIT_ASSERT(_data);
 
-  DataWriterVTK<topology::Mesh, MeshField> writer;
+  DataWriterVTK writer;
 
-  topology::Fields<MeshField> vertexFields(*_mesh);
+  topology::Fields vertexFields(*_mesh);
   _createVertexFields(&vertexFields);
 
   writer.filename(_data->vertexFilename);
@@ -151,7 +148,7 @@ pylith::meshio::TestDataWriterVTKSubMesh::testWriteVertexField(void)
     writer.openTimeStep(t, *_submesh, label, id);
   } // else
   for (int i=0; i < nfields; ++i) {
-    MeshField& field = vertexFields.get(_data->vertexFieldsInfo[i].name);
+    topology::Field& field = vertexFields.get(_data->vertexFieldsInfo[i].name);
     writer.writeVertexField(t, field, *_submesh);
     CPPUNIT_ASSERT(writer._wroteVertexHeader);
     CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
@@ -176,9 +173,9 @@ pylith::meshio::TestDataWriterVTKSubMesh::testWriteCellField(void)
   CPPUNIT_ASSERT(_mesh);
   CPPUNIT_ASSERT(_data);
 
-  DataWriterVTK<topology::Mesh, MeshField> writer;
+  DataWriterVTK writer;
 
-  topology::Fields<MeshField> cellFields(*_submesh);
+  topology::Fields cellFields(*_submesh);
   _createCellFields(&cellFields);
 
   writer.filename(_data->cellFilename);
@@ -192,7 +189,7 @@ pylith::meshio::TestDataWriterVTKSubMesh::testWriteCellField(void)
     writer.open(*_submesh, numTimeSteps);
     writer.openTimeStep(t, *_submesh);
     for (int i=0; i < nfields; ++i) {
-      MeshField& field = cellFields.get(_data->cellFieldsInfo[i].name);
+      topology::Field& field = cellFields.get(_data->cellFieldsInfo[i].name);
       writer.writeCellField(t, field);
       CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
       CPPUNIT_ASSERT(writer._wroteCellHeader);
@@ -203,7 +200,7 @@ pylith::meshio::TestDataWriterVTKSubMesh::testWriteCellField(void)
     writer.open(*_submesh, numTimeSteps, label, id);
     writer.openTimeStep(t, *_submesh, label, id);
     for (int i=0; i < nfields; ++i) {
-      MeshField& field = cellFields.get(_data->cellFieldsInfo[i].name);
+      topology::Field& field = cellFields.get(_data->cellFieldsInfo[i].name);
       writer.writeCellField(t, field, label, id);
       CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
       CPPUNIT_ASSERT(writer._wroteCellHeader);

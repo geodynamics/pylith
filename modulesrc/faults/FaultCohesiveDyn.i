@@ -91,7 +91,7 @@ namespace pylith {
        * @param fields Solution fields
        */
       virtual
-      void integrateResidual(const pylith::topology::Field<pylith::topology::Mesh>& residual,
+      void integrateResidual(const pylith::topology::Field& residual,
 				      const PylithScalar t,
 				      pylith::topology::SolutionFields* const fields);
 
@@ -123,7 +123,7 @@ namespace pylith {
        */
       void adjustSolnLumped(pylith::topology::SolutionFields* fields,
 			    const PylithScalar t,
-			    const pylith::topology::Field<pylith::topology::Mesh>& jacobian);
+			    const pylith::topology::Field& jacobian);
 
       /** Verify configuration is acceptable.
        *
@@ -137,9 +137,8 @@ namespace pylith {
        * @param fields Solution fields.
        * @returns Vertex field.
        */
-      const pylith::topology::Field<pylith::topology::Mesh>&
-      vertexField(const char* name,
-		  const pylith::topology::SolutionFields* fields =0);
+      const pylith::topology::Field& vertexField(const char* name,
+						 const pylith::topology::SolutionFields* fields =0);
       
       /** Get cell field associated with integrator.
        *
@@ -147,9 +146,8 @@ namespace pylith {
        * @param fields Solution fields.
        * @returns Cell field.
        */
-      const pylith::topology::Field<pylith::topology::Mesh>&
-      cellField(const char* name,
-		const pylith::topology::SolutionFields* fields =0);
+      const pylith::topology::Field& cellField(const char* name,
+					       const pylith::topology::SolutionFields* fields =0);
 
     }; // class FaultCohesiveDyn
 

@@ -95,8 +95,8 @@ protected :
    */
   static
   int _epsilon(int i,
-	   int j,
-	   int k);
+	       int j,
+	       int k);
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :

@@ -71,20 +71,20 @@ namespace pylith {
        * @param slipField Slip field over fault mesh.
        * @param t Time t.
        */
-      void slip(pylith::topology::Field<pylith::topology::Mesh>* const slipField,
+      void slip(pylith::topology::Field* const slipField,
 		const PylithScalar t);
 
       /** Get final slip.
        *
        * @returns Final slip.
        */
-      const pylith::topology::Field<pylith::topology::Mesh>& finalSlip(void) const;
+      const pylith::topology::Field& finalSlip(void) const;
       
       /** Get time when slip begins at each point.
        *
        * @returns Time when slip begins.
        */
-      const pylith::topology::Field<pylith::topology::Mesh>& slipTime(void) const;
+      const pylith::topology::Field& slipTime(void) const;
 
     }; // class EqKinSrc
 

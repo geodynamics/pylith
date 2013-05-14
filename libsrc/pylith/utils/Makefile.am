@@ -30,8 +30,6 @@ subpkginclude_HEADERS = \
 	macrodefs.h \
 	petscfwd.h \
 	error.h \
-	sievefwd.hh \
-	sievetypes.hh \
         types.hh \
 	utilsfwd.hh
 

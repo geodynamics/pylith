@@ -137,9 +137,8 @@ namespace pylith {
        * @returns Vertex field.
        */
       virtual
-      const pylith::topology::Field<pylith::topology::Mesh>&
-      vertexField(const char* name,
-		  const pylith::topology::SolutionFields* fields =0) = 0;
+      const pylith::topology::Field& vertexField(const char* name,
+						 const pylith::topology::SolutionFields* fields =0) = 0;
       
       /** Get cell field associated with integrator.
        *
@@ -148,9 +147,8 @@ namespace pylith {
        * @returns Cell field.
        */
       virtual
-      const pylith::topology::Field<pylith::topology::Mesh>&
-      cellField(const char* name,
-		const pylith::topology::SolutionFields* fields =0) = 0;
+      const pylith::topology::Field& cellField(const char* name,
+					       const pylith::topology::SolutionFields* fields =0) = 0;
       
     }; // class Fault
     

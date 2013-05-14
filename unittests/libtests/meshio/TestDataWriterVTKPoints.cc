@@ -30,11 +30,10 @@
 #include "pylith/meshio/DataWriterVTK.hh" // USES DataWriterVTK
 #include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
 
-// ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKPoints );
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Field<pylith::topology::Mesh> MeshField;
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKPoints );
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -67,7 +66,7 @@ pylith::meshio::TestDataWriterVTKPoints::testConstructor(void)
 { // testConstructor
   PYLITH_METHOD_BEGIN;
 
-  DataWriterVTK<topology::Mesh, MeshField> writer;
+  DataWriterVTK writer;
 
   CPPUNIT_ASSERT(!writer._viewer);
   CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
@@ -87,7 +86,7 @@ pylith::meshio::TestDataWriterVTKPoints::testTimeStep(void)
   CPPUNIT_ASSERT(_data);
 
   OutputSolnPoints output;
-  DataWriterVTK<topology::Mesh, MeshField> writer;
+  DataWriterVTK writer;
   spatialdata::units::Nondimensional normalizer;
 
   writer.filename(_data->timestepFilename);
@@ -126,10 +125,10 @@ pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void)
   CPPUNIT_ASSERT(_data);
 
   OutputSolnPoints output;
-  DataWriterVTK<topology::Mesh, MeshField> writer;
+  DataWriterVTK writer;
   spatialdata::units::Nondimensional normalizer;
 
-  topology::Fields<MeshField> vertexFields(*_mesh);
+  topology::Fields vertexFields(*_mesh);
   _createVertexFields(&vertexFields);
 
   writer.filename(_data->vertexFilename);
@@ -151,7 +150,7 @@ pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void)
     output.openTimeStep(t, *_mesh, label, id);
   } // else
   for (int i=0; i < nfields; ++i) {
-    MeshField& field = vertexFields.get(_data->vertexFieldsInfo[i].name);
+    topology::Field& field = vertexFields.get(_data->vertexFieldsInfo[i].name);
     // field.view("FIELD"); // DEBUGGING
     output.appendVertexField(t, field, *_mesh);
     CPPUNIT_ASSERT(writer._wroteVertexHeader);

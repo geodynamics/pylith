@@ -59,14 +59,14 @@ protected :
    * @param fields Vertex fields.
    */
   void
-  _createVertexFields(topology::Fields<topology::Field<topology::Mesh> >* fields) const;
+  _createVertexFields(topology::Fields* fields) const;
 
   /** Create cell fields.
    *
    * @param fields Cell fields.
    */
   void
-  _createCellFields(topology::Fields<topology::Field<topology::Mesh> >* fields) const;
+  _createCellFields(topology::Fields* fields) const;
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :

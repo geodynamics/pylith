@@ -36,9 +36,6 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Field<pylith::topology::Mesh> MeshField;
-
-// ----------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterBCMesh::setUp(void)
@@ -108,7 +105,7 @@ pylith::meshio::TestDataWriterBCMesh::_initialize(void)
 // ----------------------------------------------------------------------
 // Create vertex fields.
 void
-pylith::meshio::TestDataWriterBCMesh::_createVertexFields(topology::Fields<MeshField>* fields) const
+pylith::meshio::TestDataWriterBCMesh::_createVertexFields(topology::Fields* fields) const
 { // _createVertexFields
   PYLITH_METHOD_BEGIN;
 
@@ -128,7 +125,7 @@ pylith::meshio::TestDataWriterBCMesh::_createVertexFields(topology::Fields<MeshF
     const char* name = _data->vertexFieldsInfo[i].name;
     const int fiberDim = _data->vertexFieldsInfo[i].fiber_dim;
     fields->add(name, name);
-    MeshField& field = fields->get(name);
+    topology::Field& field = fields->get(name);
     field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
     field.allocate();
     field.vectorFieldType(_data->vertexFieldsInfo[i].field_type);
@@ -152,7 +149,7 @@ pylith::meshio::TestDataWriterBCMesh::_createVertexFields(topology::Fields<MeshF
 // ----------------------------------------------------------------------
 // Create cell fields.
 void
-pylith::meshio::TestDataWriterBCMesh::_createCellFields(topology::Fields<MeshField>* fields) const
+pylith::meshio::TestDataWriterBCMesh::_createCellFields(topology::Fields* fields) const
 { // _createCellFields
   PYLITH_METHOD_BEGIN;
 
@@ -174,7 +171,7 @@ pylith::meshio::TestDataWriterBCMesh::_createCellFields(topology::Fields<MeshFie
     const char* name = _data->cellFieldsInfo[i].name;
     const int fiberDim = _data->cellFieldsInfo[i].fiber_dim;
     fields->add(name, name);
-    MeshField& field = fields->get(name);
+    topology::Field& field = fields->get(name);
     field.newSection(topology::FieldBase::CELLS_FIELD, fiberDim, height);
     field.allocate();
     field.vectorFieldType(_data->cellFieldsInfo[i].field_type);

@@ -86,20 +86,20 @@ public :
    * @param slipField Slip field over fault mesh.
    * @param t Time t.
    */
-  void slip(topology::Field<topology::Mesh>* const slipField,
+  void slip(topology::Field* const slipField,
 	    const PylithScalar t);
 
   /** Get final slip.
    *
    * @returns Final slip.
    */
-  const topology::Field<topology::Mesh>& finalSlip(void) const;
+  const topology::Field& finalSlip(void) const;
 
   /** Get time when slip begins at each point.
    *
    * @returns Time when slip begins.
    */
-  const topology::Field<topology::Mesh>& slipTime(void) const;
+  const topology::Field& slipTime(void) const;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

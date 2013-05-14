@@ -39,9 +39,6 @@
 #include <map> // USES std::map
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Field<pylith::topology::Mesh> MeshField;
-
-// ----------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterFaultMesh::setUp(void)
@@ -111,7 +108,7 @@ pylith::meshio::TestDataWriterFaultMesh::_initialize(void)
 // ----------------------------------------------------------------------
 // Create vertex fields.
 void
-pylith::meshio::TestDataWriterFaultMesh::_createVertexFields(topology::Fields<MeshField>* fields) const
+pylith::meshio::TestDataWriterFaultMesh::_createVertexFields(topology::Fields* fields) const
 { // _createVertexFields
   PYLITH_METHOD_BEGIN;
 
@@ -131,7 +128,7 @@ pylith::meshio::TestDataWriterFaultMesh::_createVertexFields(topology::Fields<Me
     const char* name = _data->vertexFieldsInfo[i].name;
     const int fiberDim = _data->vertexFieldsInfo[i].fiber_dim;
     fields->add(name, name);
-    MeshField& field = fields->get(name);
+    topology::Field& field = fields->get(name);
     field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
     field.allocate();
     field.vectorFieldType(_data->vertexFieldsInfo[i].field_type);
@@ -156,7 +153,7 @@ pylith::meshio::TestDataWriterFaultMesh::_createVertexFields(topology::Fields<Me
 // ----------------------------------------------------------------------
 // Create cell fields.
 void
-pylith::meshio::TestDataWriterFaultMesh::_createCellFields(topology::Fields<MeshField>* fields) const
+pylith::meshio::TestDataWriterFaultMesh::_createCellFields(topology::Fields* fields) const
 { // _createCellFields
   PYLITH_METHOD_BEGIN;
 
@@ -177,7 +174,7 @@ pylith::meshio::TestDataWriterFaultMesh::_createCellFields(topology::Fields<Mesh
     const char* name = _data->cellFieldsInfo[i].name;
     const int fiberDim = _data->cellFieldsInfo[i].fiber_dim;
     fields->add(name, name);
-    MeshField& field = fields->get(name);
+    topology::Field& field = fields->get(name);
     field.newSection(topology::FieldBase::FACES_FIELD, fiberDim);
     field.allocate();
     field.vectorFieldType(_data->cellFieldsInfo[i].field_type);

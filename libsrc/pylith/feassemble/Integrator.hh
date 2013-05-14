@@ -133,7 +133,7 @@ public :
    * @param field Solution field.
    */
   virtual
-  void splitField(topology::Field<topology::Mesh>* field);
+  void splitField(topology::Field* field);
 
   /** Integrate contributions to residual term (r) for operator.
    *
@@ -142,7 +142,7 @@ public :
    * @param fields Solution fields
    */
   virtual 
-  void integrateResidual(const topology::Field<topology::Mesh>& residual,
+  void integrateResidual(const topology::Field& residual,
 			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 
@@ -153,7 +153,7 @@ public :
    * @param fields Solution fields
    */
   virtual
-  void integrateResidualLumped(const topology::Field<topology::Mesh>& residual,
+  void integrateResidualLumped(const topology::Field& residual,
        const PylithScalar t,
        topology::SolutionFields* const fields);
 
@@ -177,7 +177,7 @@ public :
    * @param fields Solution fields
    */
   virtual
-  void integrateJacobian(topology::Field<topology::Mesh>* jacobian,
+  void integrateJacobian(topology::Field* jacobian,
 			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 
@@ -224,7 +224,7 @@ public :
   virtual
   void adjustSolnLumped(topology::SolutionFields* fields,
 			const PylithScalar t,
-			const topology::Field<topology::Mesh>& jacobian);
+			const topology::Field& jacobian);
 
   /** Verify configuration is acceptable.
    *
@@ -238,7 +238,7 @@ public :
    * @param field Solution field.
    */
   virtual
-  void checkConstraints(const topology::Field<topology::Mesh>& solution) const;
+  void checkConstraints(const topology::Field& solution) const;
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :

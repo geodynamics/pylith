@@ -18,11 +18,11 @@
 
 ## @file unittests/pytests/meshio/TestOutputManagerMesh.py
 
-## @brief Unit testing of Python OutputManagerMesh object.
+## @brief Unit testing of Python OutputManager object with mesh.
 
 import unittest
 
-from pylith.meshio.OutputManagerMesh import OutputManagerMesh
+from pylith.meshio.OutputManager import OutputManager
 
 # ----------------------------------------------------------------------
 class TestProvider(object):
@@ -54,8 +54,8 @@ class TestProvider(object):
     normalizer._configure()
     mesh = iohandler.read(debug=False, interpolate=False)
 
-    from pylith.topology.Fields import MeshFields
-    fields = MeshFields(mesh)
+    from pylith.topology.Fields import Fields
+    fields = Fields(mesh)
     
     self.mesh = mesh
     self.fields = fields
@@ -121,7 +121,7 @@ class TestProvider(object):
 # ----------------------------------------------------------------------
 class TestOutputManagerMesh(unittest.TestCase):
   """
-  Unit testing of Python OutputManagerMesh object.
+  Unit testing of Python OutputManager object.
   """
 
   def setUp(self):
@@ -135,7 +135,7 @@ class TestOutputManagerMesh(unittest.TestCase):
     """
     Test constructor.
     """
-    output = OutputManagerMesh()
+    output = OutputManager()
     output.inventory.writer._configure()
     output._configure()
     return
@@ -146,7 +146,7 @@ class TestOutputManagerMesh(unittest.TestCase):
     Test preinitialize().
     """
     dataProvider = TestProvider()
-    output = OutputManagerMesh()
+    output = OutputManager()
     output.preinitialize(dataProvider)
     
     self.failIf(output.dataProvider is None)
@@ -158,7 +158,7 @@ class TestOutputManagerMesh(unittest.TestCase):
     Test verifyConfiguration().
     """
     dataProvider = TestProvider()
-    output = OutputManagerMesh()
+    output = OutputManager()
     output.preinitialize(dataProvider)
 
     output.vertexInfoFields = ["vertex info"]
@@ -174,7 +174,7 @@ class TestOutputManagerMesh(unittest.TestCase):
     Test initialize().
     """
     # No quadrature
-    output = OutputManagerMesh()
+    output = OutputManager()
     output.inventory.writer.inventory.filename = "test.vtk"
     output.inventory.writer._configure()
     output._configure()
@@ -195,7 +195,7 @@ class TestOutputManagerMesh(unittest.TestCase):
     quadrature.inventory.cell = cell
     quadrature._configure()
     
-    output = OutputManagerMesh()
+    output = OutputManager()
     output.inventory.writer.inventory.filename = "test.vtk"
     output.inventory.writer._configure()
     output._configure()
@@ -209,7 +209,7 @@ class TestOutputManagerMesh(unittest.TestCase):
     """
     Test open() and close().
     """
-    output = OutputManagerMesh()
+    output = OutputManager()
     output.inventory.writer.inventory.filename = "output.vtk"
     output.inventory.writer._configure()
     output._configure()
@@ -226,7 +226,7 @@ class TestOutputManagerMesh(unittest.TestCase):
     """
     Test writeInfo().
     """
-    output = OutputManagerMesh()
+    output = OutputManager()
     output.inventory.writer.inventory.filename = "output.vtk"
     output.inventory.writer._configure()
     output.inventory.vertexInfoFields = ["vertex info"]
@@ -247,7 +247,7 @@ class TestOutputManagerMesh(unittest.TestCase):
     """
     Test writeData().
     """
-    output = OutputManagerMesh()
+    output = OutputManager()
     output.inventory.writer.inventory.filename = "output.vtk"
     output.inventory.writer.inventory.timeFormat = "%3.1f"
     output.inventory.writer._configure()
@@ -272,7 +272,7 @@ class TestOutputManagerMesh(unittest.TestCase):
     """
     from pyre.units.time import second
 
-    output = OutputManagerMesh()
+    output = OutputManager()
     output.inventory.outputFreq = "skip"
     output.inventory.skip = 2
     output._configure()
@@ -289,7 +289,7 @@ class TestOutputManagerMesh(unittest.TestCase):
     totalTime = 1.0*second
     self.assertEqual(1, output._estimateNumSteps(totalTime, numTimeSteps))
 
-    output = OutputManagerMesh()
+    output = OutputManager()
     output.inventory.outputFreq = "time_step"
     output.inventory.dt = 2.0*second
     output._configure()
@@ -318,7 +318,7 @@ class TestOutputManagerMesh(unittest.TestCase):
     dataProvider = TestProvider()
 
     # Default values should be true
-    output = OutputManagerMesh()
+    output = OutputManager()
     output.inventory.writer._configure()
     output._configure()
     output.preinitialize(dataProvider)
@@ -327,7 +327,7 @@ class TestOutputManagerMesh(unittest.TestCase):
     self.assertEqual(True, output._checkWrite(3.234e+8))
 
     # Check writing based on time
-    output = OutputManagerMesh()
+    output = OutputManager()
     output.inventory.writer._configure()
     output._configure()
     output.preinitialize(dataProvider)
@@ -345,7 +345,7 @@ class TestOutputManagerMesh(unittest.TestCase):
     self.assertEqual(True, output._checkWrite(t))
     
     # Check writing based on number of steps
-    output = OutputManagerMesh()
+    output = OutputManager()
     output.inventory.writer._configure()
     output.inventory.outputFreq = "skip"
     output.inventory.skip = 1
@@ -374,7 +374,7 @@ class TestOutputManagerMesh(unittest.TestCase):
     """
     Test factory method.
     """
-    from pylith.meshio.OutputManagerMesh import output_manager
+    from pylith.meshio.OutputManager import output_manager
     o = output_manager()
     return
 

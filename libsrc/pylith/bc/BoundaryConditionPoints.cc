@@ -55,7 +55,7 @@ pylith::bc::BoundaryConditionPoints::deallocate(void)
   
 // ----------------------------------------------------------------------
 // Get parameter fields.
-const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >*
+const pylith::topology::Fields*
 pylith::bc::BoundaryConditionPoints::parameterFields(void) const
 { // parameterFields
   return _parameters;

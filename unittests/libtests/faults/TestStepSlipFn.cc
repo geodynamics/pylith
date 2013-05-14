@@ -225,8 +225,8 @@ pylith::faults::TestStepSlipFn::testSlip(void)
   const spatialdata::geocoords::CoordSys* cs = faultMesh.coordsys();CPPUNIT_ASSERT(cs);
   const int spaceDim = cs->spaceDim();
 
-  topology::Field<topology::Mesh> slip(faultMesh);
-  slip.newSection(topology::Field<topology::Mesh>::VERTICES_FIELD, spaceDim);
+  topology::Field slip(faultMesh);
+  slip.newSection(topology::Field::VERTICES_FIELD, spaceDim);
   slip.allocate();
 
   const PylithScalar t = 1.234;

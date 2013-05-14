@@ -16,35 +16,35 @@
 // ======================================================================
 //
 
-#if !defined(pylith_topology_fields_hh)
-#error "Fields.icc must be included only from Fields.hh"
-#endif
+#include <portinfo>
+
+#include "Fields.hh" // Implementation of class methods
+
+#include "Field.hh" // USES Field
+
+#include <pylith/utils/error.h> // USES PYLITH_CHECK_ERROR
 
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
-#include <pylith/utils/error.h> // USES PYLITH_CHECK_ERROR
 
 // ----------------------------------------------------------------------
 // Default constructor.
-template<typename field_type>
-pylith::topology::Fields<field_type>::Fields(const typename field_type::Mesh& mesh) :
+pylith::topology::Fields::Fields(const Mesh& mesh) :
   _mesh(mesh)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor.
-template<typename field_type>
-pylith::topology::Fields<field_type>::~Fields(void)
+pylith::topology::Fields::~Fields(void)
 { // destructor
   deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
-template<typename field_type>
 void
-pylith::topology::Fields<field_type>::deallocate(void)
+pylith::topology::Fields::deallocate(void)
 { // deallocate
   const typename map_type::iterator begin = _fields.begin();
   const typename map_type::iterator end = _fields.end();
@@ -55,9 +55,8 @@ pylith::topology::Fields<field_type>::deallocate(void)
 
 // ----------------------------------------------------------------------
 // Check if fields contains a given field.
-template<typename field_type>
 bool
-pylith::topology::Fields<field_type>::hasField(const char* name) const
+pylith::topology::Fields::hasField(const char* name) const
 { // hasField
   typename map_type::const_iterator iter = _fields.find(name);
   return iter != _fields.end();
@@ -65,10 +64,9 @@ pylith::topology::Fields<field_type>::hasField(const char* name) const
 
 // ----------------------------------------------------------------------
 // Add field.
-template<typename field_type>
 void
-pylith::topology::Fields<field_type>::add(const char* name,
-					  const char* label)
+pylith::topology::Fields::add(const char* name,
+			      const char* label)
 { // add
   if (hasField(name)) {
     std::ostringstream msg;
@@ -77,19 +75,17 @@ pylith::topology::Fields<field_type>::add(const char* name,
     throw std::runtime_error(msg.str());
   } // if
   
-  _fields[name] = new field_type(_mesh);
+  _fields[name] = new Field(_mesh);
   _fields[name]->label(label);
 } // add
 
 // ----------------------------------------------------------------------
 // Add field.
-template<typename field_type>
 void 
-pylith::topology::Fields<field_type>::add(
-			const char* name,
-			const char* label,
-			const pylith::topology::FieldBase::DomainEnum domain,
-			const int fiberDim)
+pylith::topology::Fields::add(const char* name,
+			      const char* label,
+			      const pylith::topology::FieldBase::DomainEnum domain,
+			      const int fiberDim)
 { // add
   if (hasField(name)) {
     std::ostringstream msg;
@@ -98,36 +94,15 @@ pylith::topology::Fields<field_type>::add(
     throw std::runtime_error(msg.str());
   } // if
   
-  _fields[name] = new field_type(_mesh);
+  _fields[name] = new Field(_mesh);
   _fields[name]->label(label);
   _fields[name]->newSection(domain, fiberDim);
 } // add
 
 // ----------------------------------------------------------------------
-// Add field.
-template<typename field_type>
-void 
-pylith::topology::Fields<field_type>::add(
-			const char* name,
-			const char* oldName,
-			const int numFields,
-			const int fields[])
-{ // add
-  if (hasField(name)) {
-    std::ostringstream msg;
-    msg << "Could not add field '" << name
-	<< "' to fields manager, because it already exists.";
-    throw std::runtime_error(msg.str());
-  } // if
-  
-  _fields[name] = new field_type(_fields[oldName], numFields, fields);
-} // add
-
-// ----------------------------------------------------------------------
 // Delete field.
-template<typename field_type>
 void
-pylith::topology::Fields<field_type>::del(const char* name)
+pylith::topology::Fields::del(const char* name)
 { // del
   typename map_type::iterator iter = _fields.find(name);
   if (iter == _fields.end()) {
@@ -142,19 +117,16 @@ pylith::topology::Fields<field_type>::del(const char* name)
 
 // ----------------------------------------------------------------------
 // Delete field.
-template<typename field_type>
-inline
 void
-pylith::topology::Fields<field_type>::delField(const char* name)
+pylith::topology::Fields::delField(const char* name)
 { // delField
   del(name);
 } // delField
 
 // ----------------------------------------------------------------------
 // Get field.
-template<typename field_type>
-const field_type&
-pylith::topology::Fields<field_type>::get(const char* name) const
+const pylith::topology::Field&
+pylith::topology::Fields::get(const char* name) const
 { // get
   typename map_type::const_iterator iter = _fields.find(name);
   if (iter == _fields.end()) {
@@ -168,9 +140,8 @@ pylith::topology::Fields<field_type>::get(const char* name) const
 	   
 // ----------------------------------------------------------------------
 // Get field.
-template<typename field_type>
-field_type&
-pylith::topology::Fields<field_type>::get(const char* name)
+pylith::topology::Field&
+pylith::topology::Fields::get(const char* name)
 { // get
   typename map_type::iterator iter = _fields.find(name);
   if (iter == _fields.end()) {
@@ -184,9 +155,8 @@ pylith::topology::Fields<field_type>::get(const char* name)
 
 // ----------------------------------------------------------------------
 // Copy layout to other fields.
-template<typename field_type>
 void
-pylith::topology::Fields<field_type>::copyLayout(const char* name)
+pylith::topology::Fields::copyLayout(const char* name)
 { // copyLayout
   typename map_type::const_iterator src = _fields.find(name);
   if (src == _fields.end()) {
@@ -205,19 +175,17 @@ pylith::topology::Fields<field_type>::copyLayout(const char* name)
 
 // ----------------------------------------------------------------------
 // Get mesh associated with fields.
-template<typename field_type>
-const typename field_type::Mesh&
-pylith::topology::Fields<field_type>::mesh(void) const
+const pylith::topology::Mesh&
+pylith::topology::Fields::mesh(void) const
 { // mesh
   return _mesh;
 } // mesh
 
 // ----------------------------------------------------------------------
 // Get names of all fields
-template<typename field_type>
 void
-pylith::topology::Fields<field_type>::fieldNames(int* numNames, 
-						 char*** names) const
+pylith::topology::Fields::fieldNames(int* numNames, 
+				     char*** names) const
 { // fieldNames
   assert(numNames);
   assert(names);
