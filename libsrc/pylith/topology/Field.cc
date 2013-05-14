@@ -160,8 +160,12 @@ pylith::topology::Field::label(const char* value)
   PetscErrorCode err;
 
   _metadata["default"].label = value;
-  if (_localVec)  {err = PetscObjectSetName((PetscObject) _localVec, value);PYLITH_CHECK_ERROR(err);}
-  if (_globalVec) {err = PetscObjectSetName((PetscObject) _globalVec, value);PYLITH_CHECK_ERROR(err);}
+  if (_localVec)  {
+    err = PetscObjectSetName((PetscObject) _localVec, value);PYLITH_CHECK_ERROR(err);
+  } // if
+  if (_globalVec) {
+    err = PetscObjectSetName((PetscObject) _globalVec, value);PYLITH_CHECK_ERROR(err);
+  } // if
 
   const scatter_map_type::const_iterator scattersEnd = _scatters.end();
   for (scatter_map_type::const_iterator s_iter=_scatters.begin();
