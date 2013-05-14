@@ -24,11 +24,15 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
-#include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/VisitorSubMesh.hh" // USES VecVisitorSubMesh, MatVisitorSubMesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
+
+#include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
+
+#include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys

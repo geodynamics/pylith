@@ -96,7 +96,7 @@ namespace pylith {
        * @return Number of vertices on the fault.
        */
       virtual
-      int numVerticesNoMesh(const topology::Mesh& mesh) const = 0;
+      int numVerticesNoMesh(const pylith::topology::Mesh& mesh) const = 0;
 
       /** Adjust mesh topology for fault implementation.
        *

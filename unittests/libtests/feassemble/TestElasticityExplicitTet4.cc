@@ -53,8 +53,7 @@ pylith::feassemble::TestElasticityExplicitTet4::setUp(void)
 { // setUp
   PYLITH_METHOD_BEGIN;
 
-  _quadrature = new Quadrature<topology::Mesh>();
-  CPPUNIT_ASSERT(_quadrature);
+  _quadrature = new Quadrature();CPPUNIT_ASSERT(_quadrature);
   GeometryTet3D geometry;
   _quadrature->refGeometry(&geometry);
 

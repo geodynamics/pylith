@@ -18,12 +18,12 @@
 
 ## @file unittests/pytests/feassemble/TestMeshQuadrature.py
 
-## @brief Unit testing of Python MeshQuadrature object.
+## @brief Unit testing of Python Quadrature object.
 
 import unittest
 import numpy
 
-from pylith.feassemble.Quadrature import MeshQuadrature
+from pylith.feassemble.Quadrature import Quadrature
 from pylith.feassemble.FIATSimplex import FIATSimplex
 from pylith.feassemble.FIATLagrange import FIATLagrange
 
@@ -49,7 +49,7 @@ def N2p(p):
 # ----------------------------------------------------------------------
 class TestMeshQuadrature(unittest.TestCase):
   """
-  Unit testing of Python MeshQuadrature object.
+  Unit testing of Python Quadrature object.
   """
 
   def test_minJacobian(self):
@@ -57,7 +57,7 @@ class TestMeshQuadrature(unittest.TestCase):
     Test minJacobian().
     """
     minJacobian = 4.0e-02;
-    q = MeshQuadrature()
+    q = Quadrature()
     q.minJacobian(minJacobian)
     self.assertAlmostEqual(minJacobian, q.minJacobian(), places=5)
     return
@@ -67,7 +67,7 @@ class TestMeshQuadrature(unittest.TestCase):
     """
     Test checkConditioning().
     """
-    q = MeshQuadrature()
+    q = Quadrature()
 
     flag = False # default
     self.assertEqual(flag, q.checkConditioning())
@@ -120,7 +120,7 @@ class TestMeshQuadrature(unittest.TestCase):
       basisDerivE[iQuad] = deriv.reshape((3, 1))
       iQuad += 1
 
-    quadrature = MeshQuadrature()
+    quadrature = Quadrature()
     quadrature.inventory.cell = cell
     quadrature._configure()
 
@@ -157,7 +157,7 @@ class TestMeshQuadrature(unittest.TestCase):
     cell.inventory.dimension = 1
     cell._configure()
     
-    quadrature = MeshQuadrature()
+    quadrature = Quadrature()
     quadrature.inventory.cell = cell
     quadrature._configure()
 
@@ -178,7 +178,7 @@ class TestMeshQuadrature(unittest.TestCase):
     cell.inventory.dimension = 2
     cell._configure()
     
-    quadrature = MeshQuadrature()
+    quadrature = Quadrature()
     quadrature.inventory.cell = cell
     quadrature._configure()
 
@@ -199,7 +199,7 @@ class TestMeshQuadrature(unittest.TestCase):
     cell.inventory.dimension = 3
     cell._configure()
     
-    quadrature = MeshQuadrature()
+    quadrature = Quadrature()
     quadrature.inventory.cell = cell
     quadrature._configure()
 
@@ -220,7 +220,7 @@ class TestMeshQuadrature(unittest.TestCase):
     cell.inventory.dimension = 1
     cell._configure()
     
-    quadrature = MeshQuadrature()
+    quadrature = Quadrature()
     quadrature.inventory.cell = cell
     quadrature._configure()
 
@@ -241,7 +241,7 @@ class TestMeshQuadrature(unittest.TestCase):
     cell.inventory.dimension = 2
     cell._configure()
     
-    quadrature = MeshQuadrature()
+    quadrature = Quadrature()
     quadrature.inventory.cell = cell
     quadrature._configure()
 
@@ -262,7 +262,7 @@ class TestMeshQuadrature(unittest.TestCase):
     cell.inventory.dimension = 3
     cell._configure()
     
-    quadrature = MeshQuadrature()
+    quadrature = Quadrature()
     quadrature.inventory.cell = cell
     quadrature._configure()
 

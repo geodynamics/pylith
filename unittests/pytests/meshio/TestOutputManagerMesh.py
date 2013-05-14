@@ -184,14 +184,14 @@ class TestOutputManagerMesh(unittest.TestCase):
 
     # With quadrature
     from pylith.feassemble.FIATLagrange import FIATLagrange
-    from pylith.feassemble.Quadrature import MeshQuadrature
+    from pylith.feassemble.Quadrature import Quadrature
     cell = FIATLagrange()
     cell.inventory.dimension = 3
     cell.inventory.degree = 2
     cell.inventory.order = 2
     cell._configure()
 
-    quadrature = MeshQuadrature()
+    quadrature = Quadrature()
     quadrature.inventory.cell = cell
     quadrature._configure()
     

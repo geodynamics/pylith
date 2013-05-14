@@ -146,8 +146,8 @@ class TestMaterial(unittest.TestCase):
     cell.inventory.degree = 1
     cell._configure()
 
-    from pylith.feassemble.Quadrature import MeshQuadrature
-    quadrature = MeshQuadrature()
+    from pylith.feassemble.Quadrature import Quadrature
+    quadrature = Quadrature()
     quadrature.inventory.cell = cell
     quadrature.inventory.minJacobian = 1.0e-4
     quadrature._configure()

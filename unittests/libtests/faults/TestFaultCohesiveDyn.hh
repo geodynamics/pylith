@@ -70,7 +70,7 @@ class pylith::faults::TestFaultCohesiveDyn: public CppUnit::TestFixture
 protected:
 
   CohesiveDynData* _data; ///< Data for testing
-  feassemble::Quadrature<topology::Mesh>* _quadrature; ///< Fault quad.
+  feassemble::Quadrature* _quadrature; ///< Fault quad.
   TractPerturbation* _tractPerturbation; ///< Initial tractions.
   spatialdata::spatialdb::SpatialDB* _dbInitialTract; ///< Initial tractions.
   friction::FrictionModel* _friction; ///< Friction model

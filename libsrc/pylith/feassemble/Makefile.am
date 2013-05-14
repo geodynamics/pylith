@@ -33,7 +33,6 @@ subpkginclude_HEADERS = \
 	ElasticityImplicitCUDA.hh \
 	Integrator.hh \
 	Integrator.icc \
-	Integrator.cc \
 	IntegratorElasticity.hh \
 	IntegratorElasticityLgDeform.hh \
 	GeometryPoint1D.hh \
@@ -54,7 +53,6 @@ subpkginclude_HEADERS = \
 	QuadratureEngine.icc \
 	Quadrature.hh \
 	Quadrature.icc \
-	Quadrature.cc \
 	Quadrature0D.hh \
 	Quadrature0D.icc \
 	Quadrature1D.hh \

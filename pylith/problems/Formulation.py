@@ -150,8 +150,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     """
     PetscComponent.__init__(self, name, facility="formulation")
     # ModuleFormulation constructor called in base clase
-    self.integratorsMesh = None
-    self.integratorsSubMesh = None
+    self.integrators = None
     self.constraints = None
     self.jacobian = None
     self.fields = None
@@ -174,8 +173,7 @@ class Formulation(PetscComponent, ModuleFormulation):
 
     import weakref
     self.mesh = weakref.ref(mesh)
-    self.integratorsMesh = []
-    self.integratorsSubMesh = []
+    self.integrators = []
     self.constraints = []
     self.gravityField = gravityField
 
@@ -202,7 +200,7 @@ class Formulation(PetscComponent, ModuleFormulation):
 
     self.timeStep.verifyConfiguration()
 
-    for integrator in self.integratorsMesh + self.integratorsSubMesh:
+    for integrator in self.integrators:
       integrator.verifyConfiguration()
     for constraint in self.constraints:
       constraint.verifyConfiguration()
@@ -241,7 +239,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     logEvent = "%stimestep" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
-    dt = self.timeStep.timeStep(self.mesh(), self.integratorsMesh + self.integratorsSubMesh)
+    dt = self.timeStep.timeStep(self.mesh(), self.integrators)
 
     self._eventLogger.eventEnd(logEvent)
     return dt
@@ -276,7 +274,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     logEvent = "%spoststep" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
-    for integrator in self.integratorsMesh + self.integratorsSubMesh:
+    for integrator in self.integrators:
       integrator.poststep(t, dt, self.fields)
     for constraint in self.constraints:
       constraint.poststep(t, dt, self.fields)
@@ -298,7 +296,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     if 0 == comm.rank:
       self._info.log("Formulation finalize.")
     self._debug.log(resourceUsageString())
-    for integrator in self.integratorsMesh + self.integratorsSubMesh:
+    for integrator in self.integrators:
       integrator.finalize()
     for constraint in self.constraints:
       constraint.finalize()
@@ -357,7 +355,7 @@ class Formulation(PetscComponent, ModuleFormulation):
                  'mpisbaij': 'mpibaij',
                  'unknown': 'aij'}
     isJacobianSymmetric = True
-    for integrator in self.integratorsMesh + self.integratorsSubMesh:
+    for integrator in self.integrators:
       if not integrator.isJacobianSymmetric():
         isJacobianSymmetric = False
     if not isJacobianSymmetric:
@@ -395,7 +393,7 @@ class Formulation(PetscComponent, ModuleFormulation):
               "Could not use '%s' as an integrator for material '%s'. " \
               "Functionality missing." % (integrator.name, material.label())
       integrator.preinitialize(self.mesh(), material)
-      self.integratorsMesh.append(integrator)
+      self.integrators.append(integrator)
       self._debug.log(resourceUsageString())
 
       if 0 == comm.rank:
@@ -422,10 +420,7 @@ class Formulation(PetscComponent, ModuleFormulation):
       foundType = False
       if implementsIntegrator(bc):
         foundType = True
-        if not isinstance(bc, PointForce):
-          self.integratorsSubMesh.append(bc)
-        else:
-          self.integratorsMesh.append(bc)
+        self.integrators.append(bc)
         if 0 == comm.rank:
           self._info.log("Added boundary condition '%s' as an integrator." % \
                            bc.label())
@@ -460,7 +455,7 @@ class Formulation(PetscComponent, ModuleFormulation):
       foundType = False
       if implementsIntegrator(ic):
         foundType = True
-        self.integratorsSubMesh.append(ic)
+        self.integrators.append(ic)
         if 0 == comm.rank:
           self._info.log("Added interface condition '%s' as an integrator." % \
                            ic.label())
@@ -496,12 +491,11 @@ class Formulation(PetscComponent, ModuleFormulation):
 
     if 0 == comm.rank:
       self._info.log("Initializing integrators.")
-    for integrator in self.integratorsMesh + self.integratorsSubMesh:
+    for integrator in self.integrators:
       if not self.gravityField is None:
         integrator.gravityField(self.gravityField)
       integrator.initialize(totalTime, numTimeSteps, normalizer)
-    ModuleFormulation.meshIntegrators(self, self.integratorsMesh)
-    ModuleFormulation.submeshIntegrators(self, self.integratorsSubMesh)
+    ModuleFormulation.integrators(self, self.integrators)
     self._debug.log(resourceUsageString())
 
     if 0 == comm.rank:
@@ -542,14 +536,14 @@ class Formulation(PetscComponent, ModuleFormulation):
       solution.scale(lengthScale.value)
       if self.splitFields():
         solution.splitDefault()
-        for integrator in self.integratorsMesh + self.integratorsSubMesh:
+        for integrator in self.integrators:
           integrator.splitField(solution)
       for constraint in self.constraints:
         constraint.setConstraintSizes(solution)
       solution.allocate()
       for constraint in self.constraints:
         constraint.setConstraints(solution)
-      for integrator in self.integratorsMesh + self.integratorsSubMesh:
+      for integrator in self.integrators:
         integrator.checkConstraints(solution)
     else:
       solution.addField("displacement", dimension)
@@ -566,7 +560,7 @@ class Formulation(PetscComponent, ModuleFormulation):
       solution.allocate()
       for constraint in self.constraints:
         constraint.setConstraints(solution)
-      for integrator in self.integratorsMesh + self.integratorsSubMesh:
+      for integrator in self.integrators:
         integrator.checkConstraints(solution)
 
     #memoryLogger.stagePop()
@@ -642,7 +636,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     logEvent = "%swrite" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
-    for integrator in self.integratorsMesh + self.integratorsSubMesh:
+    for integrator in self.integrators:
       integrator.writeData(t, self.fields)
     for constraint in self.constraints:
       constraint.writeData(t, self.fields)
@@ -693,7 +687,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     self.perfLogger.logJacobian('Jacobian', 'dummy')
     self.perfLogger.logGlobalOrder('GlobalOrder', 'VectorOrder',
                                    self.fields.get('residual'))
-    for integrator in self.integratorsMesh + self.integratorsSubMesh:
+    for integrator in self.integrators:
       self.perfLogger.logQuadrature('Quadrature', integrator.quadrature())
     return
 
@@ -706,8 +700,8 @@ class Formulation(PetscComponent, ModuleFormulation):
       self.jacobian.cleanup()
     if not self.fields is None:
       self.fields.cleanup()
-    if not self.integratorsMesh is None:
-      for integrator in self.integratorsMesh:
+    if not self.integrators is None:
+      for integrator in self.integrators:
         integrator.cleanup()
     return
 

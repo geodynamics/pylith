@@ -54,7 +54,7 @@ namespace pylith {
        *
        * @param q Quadrature for cells.
        */
-      void quadrature(const pylith::feassemble::Quadrature<mesh_type>* q);
+      void quadrature(const pylith::feassemble::Quadrature* q);
 
       /** Filter field. Field type of filtered field is returned via an argument.
        *

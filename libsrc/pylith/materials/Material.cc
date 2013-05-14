@@ -111,7 +111,7 @@ pylith::materials::Material::normalizer(const spatialdata::units::Nondimensional
 // Get physical property parameters and initial state (if used) from database.
 void
 pylith::materials::Material::initialize(const topology::Mesh& mesh,
-					feassemble::Quadrature<topology::Mesh>* quadrature)
+					feassemble::Quadrature* quadrature)
 { // initialize
   PYLITH_METHOD_BEGIN;
 

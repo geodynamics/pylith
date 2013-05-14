@@ -90,21 +90,13 @@ namespace pylith {
        */
       bool isJacobianSymmetric(void) const;
   
-      /** Set handles to integrators over the mesh.
+      /** Set handles to integrators.
        *
-       * @param integrators Integrators over the mesh.
+       * @param integratorArray Array of integrators.
        * @param numIntegrators Number of integrators.
        */
-      void meshIntegrators(pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::Mesh> >** integrators,
-			   const int numIntegrators);
-      
-      /** Set handles to integrators over lower-dimension meshes.
-       *
-       * @param integrators Integrators over lower-dimension meshes.
-       * @param numIntegrators Number of integrators.
-       */
-      void submeshIntegrators(pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::Mesh> >** integrators,
-			      const int numIntegrators);
+      void integrators(pylith::feassemble::Integrator* integratorArray[],
+		       const int numIntegrators);
       
       /** Update handles and parameters for reforming the Jacobian and
        *  residual.

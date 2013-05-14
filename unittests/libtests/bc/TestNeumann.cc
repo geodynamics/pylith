@@ -106,8 +106,7 @@ pylith::bc::TestNeumann::setUp(void)
   PYLITH_METHOD_BEGIN;
 
   _data = 0;
-  _quadrature = new feassemble::Quadrature<topology::Mesh>();
-  CPPUNIT_ASSERT(_quadrature);
+  _quadrature = new feassemble::Quadrature();CPPUNIT_ASSERT(_quadrature);
 
   PYLITH_METHOD_END;
 } // setUp

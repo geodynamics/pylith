@@ -217,8 +217,8 @@ class TestElasticityImplicitLgDeform(unittest.TestCase):
     cell.inventory.degree = 1
     cell.inventory.order = 1
     cell._configure()
-    from pylith.feassemble.Quadrature import MeshQuadrature
-    quadrature = MeshQuadrature()
+    from pylith.feassemble.Quadrature import Quadrature
+    quadrature = Quadrature()
     quadrature.inventory.cell = cell
     quadrature._configure()
     

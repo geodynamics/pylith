@@ -110,7 +110,7 @@ public :
 protected :
 
   NeumannData* _data; ///< Data for testing
-  feassemble::Quadrature<topology::Mesh>* _quadrature; ///< Used in testing.
+  feassemble::Quadrature* _quadrature; ///< Used in testing.
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :

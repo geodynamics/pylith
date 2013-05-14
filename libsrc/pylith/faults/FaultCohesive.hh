@@ -28,14 +28,12 @@
 // Include directives ---------------------------------------------------
 #include "Fault.hh" // ISA Fault
 
-#include "pylith/topology/Mesh.hh" // ISA Integrator<Quadrature<Mesh> >
-#include "pylith/feassemble/Quadrature.hh" // ISA Integrator<Quadrature>
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
 // FaultCohesive --------------------------------------------------------
 /// Absract base class for fault surface implemented with cohesive cells.
 class pylith::faults::FaultCohesive : public Fault,
-				      public feassemble::Integrator<feassemble::Quadrature<topology::Mesh> >
+				      public feassemble::Integrator
 { // class FaultCohesive
   friend class TestFaultCohesive; // unit testing
 

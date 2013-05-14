@@ -84,6 +84,7 @@ libpylith_la_SOURCES = \
 	feassemble/GeometryQuad2D.cc \
 	feassemble/GeometryQuad3D.cc \
 	feassemble/GeometryHex3D.cc \
+	feassemble/Quadrature.cc \
 	feassemble/QuadratureRefCell.cc \
 	feassemble/QuadratureEngine.cc \
 	feassemble/Quadrature0D.cc \
@@ -93,6 +94,7 @@ libpylith_la_SOURCES = \
 	feassemble/Quadrature2D.cc \
 	feassemble/Quadrature2Din3D.cc \
 	feassemble/Quadrature3D.cc \
+	feassemble/Integrator.cc \
 	feassemble/IntegratorElasticity.cc \
 	feassemble/ElasticityImplicit.cc \
 	feassemble/ElasticityExplicit.cc \

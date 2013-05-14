@@ -25,6 +25,8 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Stratum.hh" // USES StratumIS
 
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
+
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error

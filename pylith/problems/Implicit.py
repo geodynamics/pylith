@@ -190,7 +190,7 @@ class Implicit(Formulation, ModuleImplicit):
       constraint.setFieldIncr(t, t+dt, dispIncr)
 
     needNewJacobian = False
-    for integrator in self.integratorsMesh + self.integratorsSubMesh:
+    for integrator in self.integrators:
       integrator.timeStep(dt)
       if integrator.needNewJacobian():
         needNewJacobian = True
@@ -270,7 +270,7 @@ class Implicit(Formulation, ModuleImplicit):
       constraint.setField(t+dt, disp)
 
     needNewJacobian = False
-    for integrator in self.integratorsMesh + self.integratorsSubMesh:
+    for integrator in self.integrators:
       integrator.timeStep(dt)
       if integrator.needNewJacobian():
         needNewJacobian = True

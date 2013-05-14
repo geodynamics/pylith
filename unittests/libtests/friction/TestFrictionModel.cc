@@ -834,7 +834,7 @@ pylith::friction::TestFrictionModel::_initialize(topology::Mesh* mesh,
   topology::MeshOps::nondimensionalize(mesh, normalizer);
 
   // Setup quadrature
-  feassemble::Quadrature<topology::Mesh> quadrature;
+  feassemble::Quadrature quadrature;
   feassemble::GeometryLine2D geometry;
   quadrature.refGeometry(&geometry);
   const int cellDim = 1;

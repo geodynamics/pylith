@@ -25,7 +25,7 @@ namespace pylith {
   namespace faults {
 
     class FaultCohesive : public Fault,
-			  public pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::Mesh> >
+			  public pylith::feassemble::Integrator
     { // class FaultCohesive
 
       // PUBLIC METHODS /////////////////////////////////////////////////
@@ -59,7 +59,7 @@ namespace pylith {
        * @param mesh PETSc mesh
        * @return Number of vertices on the fault.
        */
-      int numVerticesNoMesh(const topology::Mesh& mesh) const;
+      int numVerticesNoMesh(const pylith::topology::Mesh& mesh) const;
 
       /** Adjust mesh topology for fault implementation.
        *
@@ -85,7 +85,7 @@ namespace pylith {
        *
        * @returns Fields associated with fault.
        */
-      const pylith::topology::Fields<topology::Field<pylith::topology::Mesh> >* fields(void) const;
+      const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >* fields(void) const;
 
     }; // class FaultCohesive
 

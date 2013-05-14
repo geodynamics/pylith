@@ -22,6 +22,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
+#include "pylith/feassemble/Quadrature1D.hh" // USES Quadrature1D
 
 #include "pylith/feassemble/GeometryLine1D.hh" // USES GeometryLine1D
 #include "pylith/feassemble/GeometryTri2D.hh" // USES GeometryTri2D
@@ -58,7 +59,7 @@ pylith::feassemble::TestQuadrature::testCopyConstructor(void)
   GeometryLine1D geometry;
 
   // Set values
-  Quadrature<topology::Mesh> qOrig;
+  Quadrature qOrig;
   qOrig.refGeometry(&geometry);
   qOrig.minJacobian(minJacobianE);
   qOrig.checkConditioning(checkConditioning);
@@ -69,7 +70,7 @@ pylith::feassemble::TestQuadrature::testCopyConstructor(void)
 		   spaceDimE);
 
   // Copy
-  Quadrature<topology::Mesh> qCopy(qOrig);
+  Quadrature qCopy(qOrig);
   
   // Check copy
   CPPUNIT_ASSERT(!qCopy._engine);
@@ -118,7 +119,7 @@ pylith::feassemble::TestQuadrature::testCheckConditioning(void)
 { // testCheckConditioning
   PYLITH_METHOD_BEGIN;
 
-  Quadrature<topology::Mesh> q;
+  Quadrature q;
 
   CPPUNIT_ASSERT_EQUAL(false, q.checkConditioning());
   q.checkConditioning(true);
@@ -163,7 +164,7 @@ pylith::feassemble::TestQuadrature::testEngineAccessors(void)
   Quadrature1D engine(refCell);
   engine.initialize();
 
-  Quadrature<topology::Mesh> q;
+  Quadrature q;
   q._engine = engine.clone();
 
   size_t size = 0;
@@ -208,7 +209,7 @@ pylith::feassemble::TestQuadrature::testComputeGeometryCell(void)
 
   // Setup quadrature and compute geometry
   GeometryTri2D geometry;
-  Quadrature<topology::Mesh> quadrature;
+  Quadrature quadrature;
   quadrature.refGeometry(&geometry);
   quadrature.minJacobian(minJacobian);
   quadrature.initialize(data.basis, numQuadPts, numBasis,

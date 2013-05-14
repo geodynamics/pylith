@@ -117,7 +117,7 @@ pylith::meshio::TestCellFilterAvg::testFilterMesh(void)
     } // for
   } // for
 
-  feassemble::Quadrature<topology::Mesh> quadrature;
+  feassemble::Quadrature quadrature;
   quadrature.initialize(basis, numQuadPts, numBasis,
 			basisDerivRef, numQuadPts, numBasis, cellDim,
 			quadPtsRef, numQuadPts, cellDim,
@@ -222,7 +222,7 @@ pylith::meshio::TestCellFilterAvg::testFilterSubMesh(void)
     } // for
   } // for
 
-  feassemble::Quadrature<topology::Mesh> quadrature;
+  feassemble::Quadrature quadrature;
   quadrature.initialize(basis, numQuadPts, numBasis,
 			basisDerivRef, numQuadPts, numBasis, cellDim,
 			quadPtsRef, numQuadPts, cellDim,

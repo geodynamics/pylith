@@ -107,7 +107,7 @@ protected :
 
   ElasticityExplicitData* _data; ///< Data for testing.
   materials::ElasticMaterial* _material; ///< Elastic material.
-  Quadrature<topology::Mesh>* _quadrature; ///< Quadrature information.
+  Quadrature* _quadrature; ///< Quadrature information.
   spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
 
   // PRIVATE METHODS ////////////////////////////////////////////////////

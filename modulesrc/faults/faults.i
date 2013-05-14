@@ -36,10 +36,6 @@
 #include "pylith/faults/FaultCohesiveDyn.hh"
 #include "pylith/faults/FaultCohesiveImpulses.hh"
 #include "pylith/faults/FaultCohesiveTract.hh"
-
-#include "pylith/topology/Mesh.hh"
-#include "pylith/feassemble/Quadrature.hh"
-#include "pylith/feassemble/Integrator.hh"
 %}
 
 %include "exception.i"
@@ -66,13 +62,8 @@ import_array();
 %}
 
 // Interfaces
-%include "../topology/Mesh.i" // ISA Integrator<Quadrature<Mesh> >
-%include "../feassemble/Quadrature.i" // ISA Integrator<Quadrature<Mesh> >
-%include "../feassemble/Integrator.i" // ISA Integrator<Quadrature<Mesh> >
+%include "../feassemble/Integrator.i" // ISA Integrator
 %include "../bc/TimeDependent.i" // ISA TimeDependent
-
-// Template instatiation
-%template(MeshIntegrator) pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::Mesh > >;
 
 %include "SlipTimeFn.i"
 %include "StepSlipFn.i"

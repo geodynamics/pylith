@@ -26,14 +26,12 @@
 
 // Include directives ---------------------------------------------------
 #include "TimeDependentPoints.hh" // ISA TimeDependentPoints
-#include "pylith/topology/Mesh.hh" // ISA Integrator<Quadrature<Mesh> >
-#include "pylith/feassemble/Quadrature.hh" // ISA Integrator<Quadrature<Mesh >
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
 // PointForce ------------------------------------------------------
 /// Point forces applied at vertices.
 class pylith::bc::PointForce : public TimeDependentPoints,
-			       public feassemble::Integrator<feassemble::Quadrature<topology::Mesh> >
+			       public feassemble::Integrator
 { // class PointForce
   friend class TestPointForce; // unit testing
 

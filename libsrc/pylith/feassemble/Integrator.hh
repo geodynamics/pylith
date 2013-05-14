@@ -46,7 +46,6 @@
  * is defined by the quadrature and a database of material property
  * parameters.
  */
-template<typename quadrature_type>
 class pylith::feassemble::Integrator
 { // Integrator
   friend class TestIntegrator; // unit testing
@@ -70,14 +69,14 @@ public :
    *
    * @returns Quadrature for integrating.
    */
-  const quadrature_type& quadrature();
+  const Quadrature& quadrature();
 
   /** Set quadrature for integrating finite-element
    * quantities. Quadrature should already be initialized.
    *
    * @param q Quadrature for integrating.
    */
-  void quadrature(const quadrature_type* q);
+  void quadrature(const Quadrature* q);
 
   /** Set manager of scales used to nondimensionalize problem.
    *
@@ -265,7 +264,7 @@ protected :
 
   PylithScalar _dt; ///< Time step for t -> t+dt
 
-  quadrature_type* _quadrature; ///< Quadrature for integrating finite-element
+  Quadrature* _quadrature; ///< Quadrature for integrating finite-element
 
   spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer.
   spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
@@ -295,7 +294,6 @@ private :
 }; // Integrator
 
 #include "Integrator.icc" // inline methods
-#include "Integrator.cc" // template methods
 
 #endif // pylith_feassemble_integrator_hh
 

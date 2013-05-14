@@ -56,11 +56,7 @@ import_array();
 
 // Interfaces
 %include "../feassemble/Constraint.i" // ISA Constraint
-%include "../feassemble/Quadrature.i" // ISA Quadrature
 %include "../feassemble/Integrator.i" // ISA Integrator
-
-// template instantiation
-%template(MeshIntegrator) pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::Mesh> >;
 
 %include "BoundaryCondition.i"
 %include "BoundaryConditionPoints.i"

@@ -225,7 +225,7 @@ pylith::materials::TestMaterial::testInitialize(void)
   topology::MeshOps::nondimensionalize(&mesh, normalizer);
 
   // Setup quadrature
-  feassemble::Quadrature<topology::Mesh> quadrature;
+  feassemble::Quadrature quadrature;
   feassemble::GeometryLine1D geometry;
   quadrature.refGeometry(&geometry);
   const int cellDim = 1;

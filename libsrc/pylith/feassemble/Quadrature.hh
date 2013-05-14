@@ -47,7 +47,6 @@
  * coordinates in the domain of the cell's quadrature points. The
  * Jacobian and its inverse are computed at the quadrature points.
  */
-template<typename mesh_type>
 class pylith::feassemble::Quadrature : public QuadratureRefCell
 { // Quadrature
   friend class TestQuadrature; // unit testing
@@ -137,7 +136,6 @@ private :
 }; // Quadrature
 
 #include "Quadrature.icc" // inline methods
-#include "Quadrature.cc" // template methods
 
 #endif // pylith_feassemble_quadrature_hh
 

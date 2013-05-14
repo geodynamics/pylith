@@ -44,6 +44,7 @@ namespace pylith {
     class GeometryTet3D;
     class GeometryHex3D;
 
+    class Quadrature;
     class QuadratureRefCell;
     class QuadratureEngine;
     class Quadrature0D;
@@ -53,10 +54,9 @@ namespace pylith {
     class Quadrature2D;
     class Quadrature2Din3D;
     class Quadrature3D;
-    template<typename mesh_type> class Quadrature;
 
     class Constraint;
-    template<typename quadrature_type> class Integrator;
+    class Integrator;
 
     class IntegratorElasticity;
     class ElasticityImplicit;

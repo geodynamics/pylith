@@ -24,7 +24,6 @@
 namespace pylith {
   namespace feassemble {
 
-    template<typename quadrature_type>
     class Integrator
     { // Integrator
 
@@ -47,14 +46,14 @@ namespace pylith {
        *
        * @returns Quadrature for integrating.
        */
-      const quadrature_type& quadrature();
+      const pylith::feassemble::Quadrature& quadrature();
       
       /** Set quadrature for integrating finite-element
        * quantities. Quadrature should already be initialized.
        *
        * @param q Quadrature for integrating.
        */
-      void quadrature(const quadrature_type* q);
+      void quadrature(const pylith::feassemble::Quadrature* q);
       
       /** Set manager of scales used to nondimensionalize problem.
        *

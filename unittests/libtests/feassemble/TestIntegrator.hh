@@ -108,7 +108,7 @@ private :
    *
    * @param quadrature Quadrature to initiqlize.
    */
-  void _initQuadrature(Quadrature<topology::Mesh>* quadrature);
+  void _initQuadrature(Quadrature* quadrature);
 
 }; // class TestIntegrator
 

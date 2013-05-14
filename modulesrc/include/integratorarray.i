@@ -18,37 +18,37 @@
 
 // ----------------------------------------------------------------------
 // List of mesh integrators.
-%typemap(in) (pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::Mesh> >** integrators,
+%typemap(in) (pylith::feassemble::Integrator* integratorArray[],
 	      const int numIntegrators)
 {
   // Check to make sure input is a list.
   if (PyList_Check($input)) {
     const int size = PyList_Size($input);
     $2 = size;
-    $1 = (size > 0) ? new pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::Mesh> >*[size] : 0;
+    $1 = (size > 0) ? new pylith::feassemble::Integrator*[size] : 0;
     for (int i = 0; i < size; i++) {
       PyObject* s = PyList_GetItem($input,i);
-      pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::Mesh> >* integrator = 0;
+      pylith::feassemble::Integrator* integrator = 0;
       int err = SWIG_ConvertPtr(s, (void**) &integrator, 
-				$descriptor(pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::Mesh> >*),
+				$descriptor(pylith::feassemble::Integrator*),
 				0);
       if (SWIG_IsOK(err))
-	$1[i] = (pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::Mesh> >*) integrator;
+	$1[i] = (pylith::feassemble::Integrator*) integrator;
       else {
-	PyErr_SetString(PyExc_TypeError, "List must contain mesh integrators.");
+	PyErr_SetString(PyExc_TypeError, "List must contain integrators.");
 	delete[] $1;
 	return NULL;
       } // if
     } // for
   } else {
-    PyErr_SetString(PyExc_TypeError, "Expected list of mesh integrators.");
+    PyErr_SetString(PyExc_TypeError, "Expected list of integrators.");
     return NULL;
   } // if/else
-} // typemap(in) [List of mesh integrators.]
+} // typemap(in) [List of integrators.]
 
 // This cleans up the array we malloc'd before the function call
-%typemap(freearg) (pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::Mesh> >** integrators,
-	      const int numIntegrators) {
+%typemap(freearg) (pylith::feassemble::Integrator* integratorArray[],
+		   const int numIntegrators) {
   delete[] $1;
 }
 

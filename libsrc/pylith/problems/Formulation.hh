@@ -43,11 +43,6 @@ class pylith::problems::Formulation
 { // Formulation
   friend class TestFormulation; // unit testing
 
-// PRIVATE TYPEDEFS /////////////////////////////////////////////////////
-private :
-
-  typedef feassemble::Integrator<feassemble::Quadrature<topology::Mesh> > IntegratorMesh;
-
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
@@ -108,22 +103,14 @@ public :
    */
   bool isJacobianSymmetric(void) const;
   
-  /** Set handles to integrators over the mesh.
+  /** Set handles to integrators.
    *
-   * @param integrators Integrators over the mesh.
+   * @param integratorArray Array of integrators.
    * @param numIntegrators Number of integrators.
    */
-  void meshIntegrators(IntegratorMesh** integrators,
-		       const int numIntegrators);
+  void integrators(feassemble::Integrator* integratorArray[] ,
+		   const int numIntegrators);
   
-  /** Set handles to integrators over lower-dimension meshes.
-   *
-   * @param integrators Integrators over lower-dimension meshes.
-   * @param numIntegrators Number of integrators.
-   */
-  void submeshIntegrators(IntegratorMesh** integrators,
-			  const int numIntegrators);
-
   /** Set handle to preconditioner.
    *
    * @param pc PETSc preconditioner.
@@ -205,11 +192,7 @@ protected :
   topology::Field<topology::Mesh>* _jacobianLumped; ///< Handle to lumped Jacobian of system.
   topology::SolutionFields* _fields; ///< Handle to solution fields for system.
 
-  /// Integrators over subdomains of the mesh.
-  std::vector<IntegratorMesh*> _meshIntegrators;
-
-  ///< Integrators over lower-dimensional subdomains of the mesh.
-  std::vector<IntegratorMesh*> _submeshIntegrators;
+  std::vector<feassemble::Integrator*> _integrators; ///< Array of integrators.
 
   bool _isJacobianSymmetric; ///< Is system Jacobian symmetric?
   bool _splitFields; ///< True if splitting fields.

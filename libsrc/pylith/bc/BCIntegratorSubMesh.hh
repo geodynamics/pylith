@@ -33,15 +33,13 @@
 
 #include "pylith/topology/topologyfwd.hh" // HOLDSA Fields, Mesh
 
-#include "pylith/topology/Mesh.hh" // ISA Quadrature<Mesh>
-#include "pylith/feassemble/Quadrature.hh" // ISA Integrator<Quadrature>
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
 // BCIntegratorSubMesh ----------------------------------------------
 /// @brief Abstract base classs for BoundaryCondition object with
 /// boundary condition applied at a simple-connect surface (submesh).
 class pylith::bc::BCIntegratorSubMesh : public BoundaryCondition,
-      public feassemble::Integrator<feassemble::Quadrature<topology::Mesh> >
+					public feassemble::Integrator
 { // class BCIntegratorSubMesh
   friend class TestBCIntegratorSubMesh; // unit testing
 

@@ -32,7 +32,6 @@
 #include "pylith/topology/topologyfwd.hh" // HOLDSA Field
 #include "pylith/materials/materialsfwd.hh" // HOLDSA Material
 
-#include "pylith/topology/Mesh.hh" // ISA Integrator<Mesh>
 #include "Integrator.hh" // ISA Integrator
 
 #include "pylith/utils/arrayfwd.hh" // USES std::vector, scalar_array
@@ -41,8 +40,7 @@
 /** @brief General elasticity operations for implicit and explicit
  * time integration of the elasticity equation.
  */
-class pylith::feassemble::IntegratorElasticity :
-  public Integrator<Quadrature<topology::Mesh> >
+class pylith::feassemble::IntegratorElasticity : public Integrator
 { // IntegratorElasticity
   friend class TestIntegratorElasticity; // unit testing
 

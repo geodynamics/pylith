@@ -78,7 +78,7 @@ public :
    * @param quadrature Quadrature for finite-element integration
    */
   void initialize(const topology::Mesh& mesh,
-		  feassemble::Quadrature<topology::Mesh>* quadrature);
+		  feassemble::Quadrature* quadrature);
   
   /** Retrieve parameters for physical properties and state variables
    * for cell.
@@ -195,7 +195,7 @@ public :
    */
   virtual
   PylithScalar stableTimeStepExplicit(const topology::Mesh& mesh,
-				      feassemble::Quadrature<topology::Mesh>* quadrature,
+				      feassemble::Quadrature* quadrature,
 				      topology::Field<topology::Mesh>* field =0);
 
   /** Set whether elastic or inelastic constitutive relations are used.
@@ -441,7 +441,7 @@ private :
    * @param quadrature Quadrature for finite-element integration
    */
   void _initializeInitialStress(const topology::Mesh& mesh,
-				feassemble::Quadrature<topology::Mesh>* quadrature);
+				feassemble::Quadrature* quadrature);
 
   /** Initialize initial strain field.
    *
@@ -449,7 +449,7 @@ private :
    * @param quadrature Quadrature for finite-element integration
    */
   void _initializeInitialStrain(const topology::Mesh& mesh,
-				feassemble::Quadrature<topology::Mesh>* quadrature);
+				feassemble::Quadrature* quadrature);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

@@ -182,7 +182,7 @@ class Explicit(Formulation, ModuleExplicit):
       constraint.setFieldIncr(t, t+dt, dispIncr)
 
     needNewJacobian = False
-    for integrator in self.integratorsMesh + self.integratorsSubMesh:
+    for integrator in self.integrators:
       integrator.timeStep(dt)
       if integrator.needNewJacobian():
         needNewJacobian = True
@@ -266,7 +266,7 @@ class Explicit(Formulation, ModuleExplicit):
       constraint.setField(t+dt, disp)
 
     needNewJacobian = False
-    for integrator in self.integratorsMesh + self.integratorsSubMesh:
+    for integrator in self.integrators:
       integrator.timeStep(dt)
       if integrator.needNewJacobian():
         needNewJacobian = True
@@ -288,7 +288,7 @@ class Explicit(Formulation, ModuleExplicit):
     self._eventLogger.eventBegin(logEvent)
 
     if self.dtStable is None:
-      self.dtStable = self.timeStep.timeStep(self.mesh(), self.integratorsMesh + self.integratorsSubMesh)
+      self.dtStable = self.timeStep.timeStep(self.mesh(), self.integrators)
     self._eventLogger.eventEnd(logEvent)
     return self.dtStable
   

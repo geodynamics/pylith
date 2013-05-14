@@ -22,8 +22,6 @@
 
 #include "CohesiveTopology.hh" // USES CohesiveTopology
 
-#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
-#include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
@@ -31,6 +29,11 @@
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
+
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
+#include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
+
+#include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB

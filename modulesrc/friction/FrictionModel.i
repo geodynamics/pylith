@@ -98,7 +98,7 @@ namespace pylith {
        */
       virtual
       void initialize(const pylith::topology::Mesh& mesh,
-		      pylith::feassemble::Quadrature<pylith::topology::Mesh>* quadrature);
+		      pylith::feassemble::Quadrature* quadrature);
   
       /** Check whether friction model has a field as a property or
        * state variable.

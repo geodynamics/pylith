@@ -33,6 +33,8 @@
 #include "pylith/topology/VisitorSubMesh.hh" // USES SubMeshIS
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
+
+#include "pylith/utils/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
