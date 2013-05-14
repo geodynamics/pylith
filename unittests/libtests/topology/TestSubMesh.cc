@@ -177,20 +177,20 @@ pylith::topology::TestSubMesh::testDimension(void)
 } // testDimension
 
 // ----------------------------------------------------------------------
-// Test coneSize().
+// Test numCorners().
 void
-pylith::topology::TestSubMesh::testConeSize(void)
-{ // testConeSize
+pylith::topology::TestSubMesh::testNumCorners(void)
+{ // testNumCorners
   PYLITH_METHOD_BEGIN;
 
   Mesh mesh;
   _buildMesh(&mesh);
 
   Mesh submesh(mesh, _TestSubMesh::label);
-  CPPUNIT_ASSERT_EQUAL(_TestSubMesh::submeshNumCorners, submesh.coneSize());
+  CPPUNIT_ASSERT_EQUAL(_TestSubMesh::submeshNumCorners, submesh.numCorners());
 
   PYLITH_METHOD_END;
-} // testConeSize
+} // testNumCorners
 
 // ----------------------------------------------------------------------
 // Test numVertices().
