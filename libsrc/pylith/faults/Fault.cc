@@ -65,11 +65,11 @@ pylith::faults::Fault::dimension(void) const
 
 
 // ----------------------------------------------------------------------
-// Get representative cone size for mesh.
+// Get number of vertices per cell for mesh.
 int
-pylith::faults::Fault::coneSize(void) const
+pylith::faults::Fault::numCorners(void) const
 { // coneSize
-  return (_faultMesh) ? _faultMesh->coneSize() : 0;
+  return (_faultMesh) ? _faultMesh->numCorners() : 0;
 } // coneSize
 
 

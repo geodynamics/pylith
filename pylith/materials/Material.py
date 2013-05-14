@@ -138,7 +138,7 @@ class Material(PetscComponent):
 
     if self.quadrature.cellDim() != self.mesh().dimension() or \
        self.quadrature.spaceDim() != self.mesh().coordsys().spaceDim() or \
-       self.quadrature.cell.numCorners != self.mesh().coneSize():
+       self.quadrature.cell.numCorners != self.mesh().numCorners():
         raise ValueError, \
               "Quadrature scheme for material '%s' and mesh are incompatible.\n" \
               "  Quadrature reference cell:\n" \
@@ -153,7 +153,7 @@ class Material(PetscComponent):
                self.quadrature.cellDim(), self.quadrature.spaceDim(),
                self.quadrature.cell.numCorners, 
                self.mesh().dimension(), self.mesh().coordsys().spaceDim(),
-               self.mesh().coneSize())
+               self.mesh().numCorners())
     self._eventLogger.eventEnd(logEvent)
     return
   

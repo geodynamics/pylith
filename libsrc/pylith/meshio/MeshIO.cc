@@ -167,7 +167,7 @@ pylith::meshio::MeshIO::_getCells(int_array* cells,
   const PetscInt vEnd = verticesStratum.end();
   
   *numCells = _mesh->numCells();
-  *numCorners = _mesh->coneSize();
+  *numCorners = _mesh->numCorners();
   *meshDim = _mesh->dimension();
   assert(cellsStratum.size() == *numCells);
 

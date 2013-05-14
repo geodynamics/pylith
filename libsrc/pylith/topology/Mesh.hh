@@ -143,18 +143,18 @@ public :
    * @returns Dimension of mesh.
    */
   int dimension(void) const;
+  
+  /** Get the number of vertices per cell
+   *
+   * @returns Number of vertices per cell.
+   */
+  int numCorners(void) const;
 
   /** Get number of vertices in mesh.
    *
    * @returns Number of vertices in mesh.
    */
   int numVertices(void) const;
-  
-  /** Get representative cone size for mesh.
-   *
-   * @returns Representative cone size for mesh.
-   */
-  int coneSize(void) const;
   
   /** Get number of cells in mesh.
    *
