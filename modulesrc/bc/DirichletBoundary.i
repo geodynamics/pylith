@@ -61,7 +61,7 @@ namespace pylith {
        *
        * @returns Field over vertices.
        */
-      const pylith::topology::Field<pylith::topology::Mesh>&
+      const pylith::topology::Field&
       vertexField(const char* name,
 		  const pylith::topology::SolutionFields& fields);
       

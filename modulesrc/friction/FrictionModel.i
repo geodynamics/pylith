@@ -116,13 +116,13 @@ namespace pylith {
        * @param name Name of field to retrieve.
        * @returns Field over fault interface cells.
        */
-      const pylith::topology::Field<pylith::topology::Mesh>& getField(const char* name);
+      const pylith::topology::Field& getField(const char* name);
 
       /** Get the field with all properties and state variables.
        *
        * @returns Properties field.
        */
-      const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >& fieldsPropsStateVars() const;
+      const pylith::topology::Fields& fieldsPropsStateVars() const;
 
       /** Retrieve parameters for physical properties and state variables
        * for vertex.

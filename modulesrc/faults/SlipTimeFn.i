@@ -61,7 +61,7 @@ namespace pylith {
        * @returns Slip vector as left-lateral/reverse/normal.
        */
       virtual
-      void slip(pylith::topology::Field<pylith::topology::Mesh>* const slipField,
+      void slip(pylith::topology::Field* const slipField,
 		const PylithScalar t) = 0;
   
       /** Get final slip.
@@ -69,21 +69,20 @@ namespace pylith {
        * @returns Final slip.
        */
       virtual
-      const pylith::topology::Field<pylith::topology::Mesh>& finalSlip(void) = 0;
+      const pylith::topology::Field& finalSlip(void) = 0;
 
       /** Get time when slip begins at each point.
        *
        * @returns Time when slip begins.
        */
       virtual
-      const pylith::topology::Field<pylith::topology::Mesh>& slipTime(void) = 0;
+      const pylith::topology::Field& slipTime(void) = 0;
 
       /** Get parameter fields.
        *
        * @returns Parameter fields.
        */
-      const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >*
-      parameterFields(void) const;
+      const pylith::topology::Fields* parameterFields(void) const;
 
     }; // class SlipTimeFn
 

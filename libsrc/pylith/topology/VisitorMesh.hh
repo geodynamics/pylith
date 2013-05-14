@@ -48,7 +48,7 @@ public :
    *
    * @param field Field over a mesh.
    */
-  VecVisitorMesh(const Field<Mesh>& field);
+  VecVisitorMesh(const Field& field);
 
   /// Default destructor
   ~VecVisitorMesh(void);
@@ -57,8 +57,7 @@ public :
    *
    * @param field Field over a mesh/submesh.
    */
-  template<typename field_type>
-  void initialize(const field_type& field);
+  void initialize(const Field& field);
 
   /// Clear cached data.
   void clear(void);
@@ -172,7 +171,7 @@ public :
    * @param field Field associated with matrix layout.
    */
   MatVisitorMesh(const PetscMat mat,
-		 const Field<Mesh>& field);
+		 const Field& field);
 
   /// Default destructor
   ~MatVisitorMesh(void);

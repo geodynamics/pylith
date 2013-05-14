@@ -23,10 +23,9 @@
 #include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
 // Get PetscSection.
-template<typename mesh_type>
 inline
 PetscSection
-pylith::topology::Field<mesh_type>::petscSection(void) const {
+pylith::topology::Field::petscSection(void) const {
   PetscSection s = PETSC_NULL;
   if (_dm) {
     PetscErrorCode err = DMGetDefaultSection(_dm, &s);PYLITH_CHECK_ERROR(err);
@@ -35,114 +34,101 @@ pylith::topology::Field<mesh_type>::petscSection(void) const {
 }
 
 // Get local vector.
-template<typename mesh_type>
 inline
 PetscVec
-pylith::topology::Field<mesh_type>::localVector(void) const {
+pylith::topology::Field::localVector(void) const {
   return _localVec;
 }
 
 // Get global vector.
-template<typename mesh_type>
 inline
 PetscVec
-pylith::topology::Field<mesh_type>::globalVector(void) const {
+pylith::topology::Field::globalVector(void) const {
   return _globalVec;
 }
 
 // Get mesh associated with field.
-template<typename mesh_type>
 inline
 const
-mesh_type&
-pylith::topology::Field<mesh_type>::mesh(void) const {
+pylith::topology::Mesh&
+pylith::topology::Field::mesh(void) const {
   return _mesh;
 }
 
-template<typename mesh_type>
 inline
 PetscDM
-pylith::topology::Field<mesh_type>::dmMesh(void) const {
+pylith::topology::Field::dmMesh(void) const {
   return _dm;
 }
 
 // Get label for field.
-template<typename mesh_type>
 inline
 const char*
-pylith::topology::Field<mesh_type>::label(void) const {
+pylith::topology::Field::label(void) const {
   return const_cast<Field*>(this)->_metadata["default"].label.c_str();
 }
 
 // Set vector field type
-template<typename mesh_type>
 inline
 void
-pylith::topology::Field<mesh_type>::vectorFieldType(const VectorFieldEnum value) {
+pylith::topology::Field::vectorFieldType(const VectorFieldEnum value) {
   _metadata["default"].vectorFieldType = value;
 }
 
 // Set vector field type
-template<typename mesh_type>
 inline
 void
-pylith::topology::Field<mesh_type>::vectorFieldType(const std::string& name, const VectorFieldEnum value) {
+pylith::topology::Field::vectorFieldType(const std::string& name, const VectorFieldEnum value) {
   const_cast<Field *>(this)->_metadata[name].vectorFieldType = value;
 }
 
 // Get vector field type
-template<typename mesh_type>
 inline
-typename pylith::topology::Field<mesh_type>::VectorFieldEnum
-pylith::topology::Field<mesh_type>::vectorFieldType(void) const {
-  return const_cast<Field *>(this)->_metadata["default"].vectorFieldType;
+pylith::topology::Field::VectorFieldEnum
+pylith::topology::Field::vectorFieldType(void) const {
+  return const_cast<Field*>(this)->_metadata["default"].vectorFieldType;
 }
 
 // Set scale for dimensionalizing field.
-template<typename mesh_type>
 inline
 void
-pylith::topology::Field<mesh_type>::scale(const PylithScalar value) {
+pylith::topology::Field::scale(const PylithScalar value) {
   _metadata["default"].scale = value;
 }
 
 // Set scale for dimensionalizing field.
-template<typename mesh_type>
 inline
 void
-pylith::topology::Field<mesh_type>::scale(const std::string& name, const PylithScalar value) {
+pylith::topology::Field::scale(const std::string& name,
+			       const PylithScalar value) {
   _metadata[name].scale = value;
 }
 
 // Get scale for dimensionalizing field.
-template<typename mesh_type>
 inline
 PylithScalar
-pylith::topology::Field<mesh_type>::scale(void) const {
+pylith::topology::Field::scale(void) const {
   return const_cast<Field *>(this)->_metadata["default"].scale;
 }
 
 // Set flag indicating whether it is okay to dimensionalize field.
-template<typename mesh_type>
 inline
 void
-pylith::topology::Field<mesh_type>::addDimensionOkay(const bool value) {
+pylith::topology::Field::addDimensionOkay(const bool value) {
   _metadata["default"].dimsOkay = value;
 }
 
 // Set flag indicating whether it is okay to dimensionalize field.
-template<typename mesh_type>
 inline
 bool
-pylith::topology::Field<mesh_type>::addDimensionOkay(void) const {
+pylith::topology::Field::addDimensionOkay(void) const {
   return const_cast<Field*>(this)->_metadata["default"].dimsOkay;
 }
 
 // Add two fields, storing the result in one of the fields.
-template<typename mesh_type>
 inline
 void
-pylith::topology::Field<mesh_type>::add(const Field& field) {
+pylith::topology::Field::add(const Field& field) {
   this->operator+=(field);
 }
 

@@ -143,13 +143,13 @@ public :
    * @param name Name of field to retrieve.
    * @returns Field over fault interface cells.
    */
-  const topology::Field<topology::Mesh>& getField(const char* name);
+  const topology::Field& getField(const char* name);
 
   /** Get the field with all properties and state variables.
    *
    * @returns Properties field.
    */
-  const topology::Fields<topology::Field<topology::Mesh> >& fieldsPropsStateVars() const;
+  const topology::Fields& fieldsPropsStateVars() const;
 
   /** Retrieve properties and state variables for a point.
    *
@@ -323,7 +323,7 @@ private :
 
   /// Field containing physical properties and state variables of
   /// friction model.
-  topology::Fields<topology::Field<topology::Mesh> >* _fieldsPropsStateVars;
+  topology::Fields* _fieldsPropsStateVars;
 
   /// Buffer for properties and state variables at vertex.
   scalar_array _propsStateVarsVertex;

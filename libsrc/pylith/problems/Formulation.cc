@@ -20,7 +20,9 @@
 
 #include "Formulation.hh" // implementation of class methods
 
-#include "pylith/topology/Mesh.hh" // USES Quadrature<Mesh>
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Field.hh" // USES Field
+
 #include "pylith/feassemble/Integrator.hh" // USES Integrator
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
@@ -187,7 +189,7 @@ pylith::problems::Formulation::updateSettings(topology::Jacobian* jacobian,
 // Update handles and parameters for reforming the Jacobian and
 // residual.
 void
-pylith::problems::Formulation::updateSettings(topology::Field<topology::Mesh>* jacobian,
+pylith::problems::Formulation::updateSettings(topology::Field* jacobian,
 					      topology::SolutionFields* fields,
 					      const PylithScalar t,
 					      const PylithScalar dt)
@@ -214,7 +216,7 @@ pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
 
   // Update section view of field.
   if (tmpSolutionVec) {
-    topology::Field<topology::Mesh>& solution = _fields->solution();
+    topology::Field& solution = _fields->solution();
     solution.scatterVectorToSection(*tmpSolutionVec);
   } // if
 
@@ -222,7 +224,7 @@ pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
   calcRateFields();  
 
   // Set residual to zero.
-  topology::Field<topology::Mesh>& residual = _fields->get("residual");
+  topology::Field& residual = _fields->get("residual");
   residual.zero();
 
   // Add in contributions that require assembly.
@@ -261,7 +263,7 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
 
   // Update section view of field.
   if (tmpSolutionVec) {
-    topology::Field<topology::Mesh>& solution = _fields->solution();
+    topology::Field& solution = _fields->solution();
     solution.scatterVectorToSection(*tmpSolutionVec);
   } // if
 
@@ -330,14 +332,14 @@ pylith::problems::Formulation::constrainSolnSpace(const PetscVec* tmpSolutionVec
   assert(tmpSolutionVec);
   assert(_fields);
 
-  topology::Field<topology::Mesh>& solution = _fields->solution();
+  topology::Field& solution = _fields->solution();
 
   if (!_fields->hasField("dispIncr adjust")) {
     _fields->add("dispIncr adjust", "dispIncr_adjust");
-    topology::Field<topology::Mesh>& adjust = _fields->get("dispIncr adjust");
+    topology::Field& adjust = _fields->get("dispIncr adjust");
     adjust.cloneSection(solution);
   } // for
-  topology::Field<topology::Mesh>& adjust = _fields->get("dispIncr adjust");
+  topology::Field& adjust = _fields->get("dispIncr adjust");
   adjust.zero();
 
   // Update section view of field.
@@ -371,14 +373,14 @@ pylith::problems::Formulation::adjustSolnLumped(void)
 { // adjustSolnLumped
   PYLITH_METHOD_BEGIN;
 
-  topology::Field<topology::Mesh>& solution = _fields->solution();
+  topology::Field& solution = _fields->solution();
 
   if (!_fields->hasField("dispIncr adjust")) {
     _fields->add("dispIncr adjust", "dispIncr_adjust");
-    topology::Field<topology::Mesh>& adjust = _fields->get("dispIncr adjust");
+    topology::Field& adjust = _fields->get("dispIncr adjust");
     adjust.cloneSection(solution);
   } // for
-  topology::Field<topology::Mesh>& adjust = _fields->get("dispIncr adjust");
+  topology::Field& adjust = _fields->get("dispIncr adjust");
   adjust.zero();
 
   const int numIntegrators = _integrators.size();
@@ -404,7 +406,7 @@ pylith::problems::Formulation::printState(PetscVec* solutionVec,
   assert(residualVec);
   assert(searchDirVec);
 
-  meshio::DataWriterHDF5<topology::Mesh,topology::Field<topology::Mesh> > writer;
+  meshio::DataWriterHDF5 writer;
 
   const topology::Mesh& mesh = _fields->mesh();
 
@@ -412,7 +414,7 @@ pylith::problems::Formulation::printState(PetscVec* solutionVec,
   const int numTimeSteps = 1;
   writer.open(mesh, numTimeSteps);
    
-  topology::Field<topology::Mesh>& solution = _fields->solution();
+  topology::Field& solution = _fields->solution();
   solution.scatterVectorToSection(*solutionVec);
   writer.writeVertexField(0.0, solution, mesh);
   solution.view("DIVERGED_SOLUTION");
@@ -424,7 +426,7 @@ pylith::problems::Formulation::printState(PetscVec* solutionVec,
   solution.view("DIVERGED_SOLUTION0");
   solution.label(label);
 
-  topology::Field<topology::Mesh>& residual = _fields->get("residual");
+  topology::Field& residual = _fields->get("residual");
   residual.scatterVectorToSection(*residualVec);
   writer.writeVertexField(0.0, residual, mesh);
   residual.view("DIVERGED_RESIDUAL");

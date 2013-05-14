@@ -185,8 +185,8 @@ class TestElasticityExplicitLgDeform(unittest.TestCase):
     (mesh, integrator) = self._preinitialize()
     fields = self._initialize(mesh, integrator)
 
-    from pylith.topology.Field import MeshField
-    jacobian = MeshField(mesh)
+    from pylith.topology.Field import Field
+    jacobian = Field(mesh)
     jacobian.newSection(jacobian.VERTICES_FIELD, mesh.coordsys().spaceDim())
     jacobian.allocate()
     jacobian.zero()

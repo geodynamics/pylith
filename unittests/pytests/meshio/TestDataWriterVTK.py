@@ -22,19 +22,19 @@
 
 import unittest
 
-from pylith.meshio.DataWriterVTKMesh import DataWriterVTKMesh
+from pylith.meshio.DataWriterVTK import DataWriterVTK
 
 # ----------------------------------------------------------------------
-class TestDataWriterVTKMesh(unittest.TestCase):
+class TestDataWriterVTK(unittest.TestCase):
   """
-  Unit testing of Python DataWriterVTKMesh object.
+  Unit testing of Python DataWriterVTK object.
   """
 
   def test_constructor(self):
     """
     Test constructor.
     """
-    filter = DataWriterVTKMesh()
+    filter = DataWriterVTK()
     filter._configure()
     return
 
@@ -43,7 +43,7 @@ class TestDataWriterVTKMesh(unittest.TestCase):
     """
     Test constructor.
     """
-    filter = DataWriterVTKMesh()
+    filter = DataWriterVTK()
     filter._configure()
 
     from spatialdata.units.Nondimensional import Nondimensional
@@ -56,7 +56,7 @@ class TestDataWriterVTKMesh(unittest.TestCase):
     """
     Test factory method.
     """
-    from pylith.meshio.DataWriterVTKMesh import data_writer
+    from pylith.meshio.DataWriterVTK import data_writer
     filter = data_writer()
     return
 

@@ -28,6 +28,8 @@
 
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+
 // ----------------------------------------------------------------------
 // Constructor
 pylith::problems::SolverLumped::SolverLumped(void)
@@ -57,7 +59,7 @@ pylith::problems::SolverLumped::deallocate(void)
 // Initialize solver.
 void
 pylith::problems::SolverLumped::initialize(const topology::SolutionFields& fields,
-					   const topology::Field<topology::Mesh>& jacobian,
+					   const topology::Field& jacobian,
 					   Formulation* formulation)
 { // initialize
   PYLITH_METHOD_BEGIN;
@@ -74,9 +76,9 @@ pylith::problems::SolverLumped::initialize(const topology::SolutionFields& field
 // ----------------------------------------------------------------------
 // Solve the system.
 void
-pylith::problems::SolverLumped::solve(topology::Field<topology::Mesh>* solution,
-				      const topology::Field<topology::Mesh>& jacobian,
-				      const topology::Field<topology::Mesh>& residual)
+pylith::problems::SolverLumped::solve(topology::Field* solution,
+				      const topology::Field& jacobian,
+				      const topology::Field& residual)
 { // solve
   PYLITH_METHOD_BEGIN;
 

@@ -35,7 +35,6 @@
 
 // Fields ---------------------------------------------------------------
 /// Container for managing multiple fields over a finite-element mesh.
-template<typename field_type>
 class pylith::topology::Fields
 { // Fields
   friend class TestFieldsMesh; // unit testing
@@ -48,7 +47,7 @@ public :
    *
    * @param mesh Finite-element mesh.
    */
-  Fields(const typename field_type::Mesh& mesh);
+  Fields(const Mesh& mesh);
 
   /// Destructor.
   virtual
@@ -85,17 +84,6 @@ public :
 	   const pylith::topology::FieldBase::DomainEnum domain,
 	   const int fiberDim);
 
-  /** Add field.
-   *
-   * @param name Name of field.
-   * @param numFields The number of fields to select
-   * @param fields Set of field numbers for this vector
-   */
-  void add(const char* name,
-           const char* oldName,
-           const int numFields,
-           const int fields[]);
-
   /** Delete field.
    *
    * @param name Name of field.
@@ -112,13 +100,13 @@ public :
    *
    * @param name Name of field.
    */
-  const field_type& get(const char* name) const;
+  const Field& get(const char* name) const;
 	   
   /** Get field.
    *
    * @param name Name of field.
    */
-  field_type& get(const char* name);
+  Field& get(const char* name);
 	   
   /** Copy layout to other fields.
    *
@@ -130,7 +118,7 @@ public :
    *
    * @returns Finite-element mesh.
    */
-  const typename field_type::Mesh& mesh(void) const;
+  const Mesh& mesh(void) const;
 
   /** Return the names of all fields.
    *
@@ -143,13 +131,13 @@ public :
 // PROTECTED TYPEDEFS ///////////////////////////////////////////////////
 protected :
 
-  typedef std::map< std::string, field_type* > map_type;
+  typedef std::map< std::string, Field* > map_type;
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
   map_type _fields;
-  const typename field_type::Mesh& _mesh;
+  const Mesh& _mesh;
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
@@ -158,8 +146,6 @@ private :
   const Fields& operator=(const Fields&); ///< Not implemented
 
 }; // Fields
-
-#include "Fields.icc"
 
 #endif // pylith_topology_fields_hh
 

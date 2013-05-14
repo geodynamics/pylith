@@ -100,14 +100,13 @@ public :
    *
    * @returns Fields associated with fault.
    */
-  const topology::Fields<topology::Field<topology::Mesh> >*
-  fields(void) const;
+  const topology::Fields* fields(void) const;
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
   /// Fields for fault information.
-  topology::Fields<topology::Field<topology::Mesh> >* _fields;
+  topology::Fields* _fields;
 
   bool _useLagrangeConstraints; ///< True if uses Lagrange multipliers.
 

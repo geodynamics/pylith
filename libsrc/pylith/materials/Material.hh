@@ -195,20 +195,20 @@ public :
    * @param field Field over material cells.
    * @param name Name of field to retrieve.
    */
-  void getField(topology::Field<topology::Mesh> *field,
+  void getField(topology::Field *field,
 		const char* name) const;
 
   /** Get the field with all properties.
    *
    * @returns Properties field.
    */
-  const topology::Field<topology::Mesh>* propertiesField() const;
+  const topology::Field* propertiesField() const;
 
   /** Get the field with all of the state variables.
    *
    * @returns State variables field.
    */
-  const topology::Field<topology::Mesh>* stateVarsField() const;
+  const topology::Field* stateVarsField() const;
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -275,10 +275,10 @@ protected :
   PylithScalar _dt; ///< Current time step
 
   /// Field containing physical properties of material.
-  topology::Field<topology::Mesh> *_properties;
+  topology::Field *_properties;
 
   /// Field containing the state variables for the material.
-  topology::Field<topology::Mesh> *_stateVars;
+  topology::Field *_stateVars;
 
   spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer
   

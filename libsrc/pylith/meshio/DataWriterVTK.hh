@@ -28,10 +28,11 @@
 // Include directives ---------------------------------------------------
 #include "DataWriter.hh" // ISA DataWriter
 
+#include "pylith/utils/petscfwd.h" // HASA PetscDM
+
 // DataWriterVTK --------------------------------------------------------
 /// Object for writing finite-element data to VTK file.
-template<typename mesh_type, typename field_type>
-class pylith::meshio::DataWriterVTK : public DataWriter<mesh_type,field_type>
+class pylith::meshio::DataWriterVTK : public DataWriter
 { // DataWriterVTK
   friend class TestDataWriterVTKMesh; // unit testing
   friend class TestDataWriterVTKSubMesh; // unit testing
@@ -52,7 +53,7 @@ public :
    *
    * @returns Copy of this.
    */
-  DataWriter<mesh_type, field_type>* clone(void) const;
+  DataWriter* clone(void) const;
 
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
@@ -92,7 +93,7 @@ public :
    *   (=0 means use all cells in mesh).
    * @param labelId Value of label defining which cells to include.
    */
-  void open(const mesh_type& mesh,
+  void open(const topology::Mesh& mesh,
 	    const int numTimeSteps,
 	    const char* label =0,
 	    const int labelId =0);
@@ -109,7 +110,7 @@ public :
    * @param labelId Value of label defining which cells to include.
    */
   void openTimeStep(const PylithScalar t,
-		    const mesh_type& mesh,
+		    const topology::Mesh& mesh,
 		    const char* label =0,
 		    const int labelId =0);
 
@@ -123,8 +124,8 @@ public :
    * @param mesh Mesh associated with output.
    */
   void writeVertexField(const PylithScalar t,
-			field_type& field,
-			const mesh_type& mesh);
+			topology::Field& field,
+			const topology::Mesh& mesh);
 
   /** Write field over cells to file.
    *
@@ -135,7 +136,7 @@ public :
    * @param labelId Value of label defining which cells to include.
    */
   void writeCellField(const PylithScalar t,
-		      field_type& field,
+		      topology::Field& field,
 		      const char* label =0,
 		      const int labelId =0);
 
@@ -181,7 +182,6 @@ private :
 }; // DataWriterVTK
 
 #include "DataWriterVTK.icc" // inline methods
-#include "DataWriterVTK.cc" // template definitions
 
 #endif // pylith_meshio_datawritervtk_hh
 

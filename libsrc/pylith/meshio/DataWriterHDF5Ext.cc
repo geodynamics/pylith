@@ -18,8 +18,15 @@
 
 #include <portinfo>
 
+#include "DataWriterHDF5Ext.hh" // Implementation of class methods
+
 #include "HDF5.hh" // USES HDF5
 #include "Xdmf.hh" // USES Xdmf
+
+#include "pylith/topology/Mesh.hh" /// USES Mesh
+#include "pylith/topology/Field.hh" /// USES Field
+
+#include "spatialdata/geocoords/CoordSys.hh" /// USES CoordSys
 
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -27,8 +34,7 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-template<typename mesh_type, typename field_type>
-pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::DataWriterHDF5Ext(void) :
+pylith::meshio::DataWriterHDF5Ext::DataWriterHDF5Ext(void) :
   _filename("output.h5"),
   _h5(new HDF5),
   _tstampIndex(0)
@@ -37,8 +43,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::DataWriterHDF5Ext(void)
 
 // ----------------------------------------------------------------------
 // Destructor
-template<typename mesh_type, typename field_type>
-pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::~DataWriterHDF5Ext(void)
+pylith::meshio::DataWriterHDF5Ext::~DataWriterHDF5Ext(void)
 { // destructor
   delete _h5; _h5 = 0;
   deallocate();
@@ -46,13 +51,12 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::~DataWriterHDF5Ext(void
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::deallocate(void)
+pylith::meshio::DataWriterHDF5Ext::deallocate(void)
 { // deallocate
   PYLITH_METHOD_BEGIN;
 
-  DataWriter<mesh_type, field_type>::deallocate();
+  DataWriter::deallocate();
 
   PetscErrorCode err = 0;
   const typename dataset_type::const_iterator& dEnd = _datasets.end();
@@ -67,9 +71,8 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::deallocate(void)
   
 // ----------------------------------------------------------------------
 // Copy constructor.
-template<typename mesh_type, typename field_type>
-pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::DataWriterHDF5Ext(const DataWriterHDF5Ext<mesh_type, field_type>& w) :
-  DataWriter<mesh_type, field_type>(w),
+pylith::meshio::DataWriterHDF5Ext::DataWriterHDF5Ext(const DataWriterHDF5Ext& w) :
+  DataWriter(w),
   _filename(w._filename),
   _h5(new HDF5),
   _tstampIndex(0)
@@ -78,9 +81,8 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::DataWriterHDF5Ext(const
 
 // ----------------------------------------------------------------------
 // Prepare for writing files.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(const mesh_type& mesh,
+pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
 							      const int numTimeSteps,
 							      const char* label,
 							      const int labelId)
@@ -91,8 +93,8 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(const mesh_type& m
   _datasets.clear();
 
   try {
-    DataWriter<mesh_type, field_type>::open(mesh, numTimeSteps, label, labelId);
-    const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
+    DataWriter::open(mesh, numTimeSteps, label, labelId);
+    const char* context = DataWriter::_context.c_str();
 
     PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
     MPI_Comm comm;
@@ -284,13 +286,12 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(const mesh_type& m
 
 // ----------------------------------------------------------------------
 // Close output files.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::close(void)
+pylith::meshio::DataWriterHDF5Ext::close(void)
 { // close
   PYLITH_METHOD_BEGIN;
 
-  DataWriter<mesh_type, field_type>::_context = "";
+  DataWriter::_context = "";
 
   if (_h5->isOpen()) {
     _h5->close();
@@ -313,18 +314,17 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::close(void)
 
 // ----------------------------------------------------------------------
 // Write field over vertices to file.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(const PylithScalar t,
-									  field_type& field,
-									  const mesh_type& mesh)
+pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
+						    topology::Field& field,
+						    const topology::Mesh& mesh)
 { // writeVertexField
   PYLITH_METHOD_BEGIN;
   
   assert(_h5);
 
   try {
-    const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
+    const char* context = DataWriter::_context.c_str();
 
     PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
     MPI_Comm comm;
@@ -389,7 +389,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(const 
     if (!commRank) {
       if (createdExternalDataset) {
         // Add new external dataset to HDF5 file.
-        const int numTimeSteps = DataWriter<mesh_type, field_type>::_numTimeSteps;
+        const int numTimeSteps = DataWriter::_numTimeSteps;
         const hsize_t ndims = (numTimeSteps > 0) ? 3 : 2;
         hsize_t maxDims[3];
         if (3 == ndims) {
@@ -410,7 +410,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(const 
       } else {
         // Update number of time steps in external dataset info in HDF5 file.
         const int totalNumTimeSteps = 
-          DataWriter<mesh_type, field_type>::_numTimeSteps;
+          DataWriter::_numTimeSteps;
         assert(totalNumTimeSteps > 0);
         const int numTimeSteps = _datasets[field.label()].numTimeSteps;
 	
@@ -443,19 +443,18 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(const 
 
 // ----------------------------------------------------------------------
 // Write field over cells to file.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(const PylithScalar t,
-									field_type& field,
-									const char* label,
-									const int labelId)
+pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
+						  topology::Field& field,
+						  const char* label,
+						  const int labelId)
 { // writeCellField
   PYLITH_METHOD_BEGIN;
 
   assert(_h5);
 
   try {
-    const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
+    const char* context = DataWriter::_context.c_str();
 
     PetscDM dmMesh = field.mesh().dmMesh();assert(dmMesh);
     MPI_Comm comm;
@@ -538,7 +537,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(const Py
       // Add new external dataset to HDF5 file.
 
         const int numTimeSteps =
-          DataWriter<mesh_type, field_type>::_numTimeSteps;
+          DataWriter::_numTimeSteps;
         const hsize_t ndims = (numTimeSteps > 0) ? 3 : 2;
         hsize_t maxDims[3];
         if (3 == ndims) {
@@ -560,7 +559,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(const Py
       } else {
         // Update number of time steps in external dataset info in HDF5 file.
         const int totalNumTimeSteps = 
-          DataWriter<mesh_type, field_type>::_numTimeSteps;
+          DataWriter::_numTimeSteps;
         assert(totalNumTimeSteps > 0);
         const int numTimeSteps = _datasets[field.label()].numTimeSteps;
 	
@@ -593,15 +592,14 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(const Py
 
 // ----------------------------------------------------------------------
 // Generate filename for HDF5 file.
-template<typename mesh_type, typename field_type>
 std::string
-pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::_hdf5Filename(void) const
+pylith::meshio::DataWriterHDF5Ext::_hdf5Filename(void) const
 { // _hdf5Filename
   PYLITH_METHOD_BEGIN;
 
   std::ostringstream filename;
   const int indexExt = _filename.find(".h5");
-  const int numTimeSteps = DataWriter<mesh_type, field_type>::_numTimeSteps;
+  const int numTimeSteps = DataWriter::_numTimeSteps;
   if (0 == numTimeSteps) {
     filename << std::string(_filename, 0, indexExt) << "_info.h5";
   } else {
@@ -613,9 +611,8 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::_hdf5Filename(void) con
 
 // ----------------------------------------------------------------------
 // Generate filename for external dataset file.
-template<typename mesh_type, typename field_type>
 std::string
-pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::_datasetFilename(const char* field) const
+pylith::meshio::DataWriterHDF5Ext::_datasetFilename(const char* field) const
 { // _datasetFilename
   PYLITH_METHOD_BEGIN;
 
@@ -629,9 +626,8 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::_datasetFilename(const 
 
 // ----------------------------------------------------------------------
 // Write time stamp to file.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::_writeTimeStamp(
+pylith::meshio::DataWriterHDF5Ext::_writeTimeStamp(
 						  const PylithScalar t)
 { // _writeTimeStamp
   PYLITH_METHOD_BEGIN;
@@ -663,7 +659,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::_writeTimeStamp(
   dims[0] = _tstampIndex+1;
   dims[1] = 1;
   dims[2] = 1;
-  const PylithScalar tDim = t * DataWriter<mesh_type, field_type>::_timeScale;
+  const PylithScalar tDim = t * DataWriter::_timeScale;
   _h5->writeDatasetChunk("/", "time", &tDim, dims, dimsChunk, ndims, _tstampIndex, scalartype);
   
   _tstampIndex++;

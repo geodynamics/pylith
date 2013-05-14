@@ -50,13 +50,13 @@ pylith::feassemble::Integrator::initialize(const topology::Mesh& mesh) {
 // Split solution field for separate preconditioning.
 inline
 void
-pylith::feassemble::Integrator::splitField(topology::Field<topology::Mesh>* field) {
+pylith::feassemble::Integrator::splitField(topology::Field* field) {
 } // splitField
   
 // Integrate contributions to residual term (r) for operator.
 inline
 void
-pylith::feassemble::Integrator::integrateResidual(const topology::Field<topology::Mesh>& residual,
+pylith::feassemble::Integrator::integrateResidual(const topology::Field& residual,
 						  const PylithScalar t,
 						  topology::SolutionFields* const fields) {
 } // integrateResidual
@@ -64,7 +64,7 @@ pylith::feassemble::Integrator::integrateResidual(const topology::Field<topology
 // Integrate contributions to residual term (r) for operator.
 inline
 void
-pylith::feassemble::Integrator::integrateResidualLumped(const topology::Field<topology::Mesh>& residual,
+pylith::feassemble::Integrator::integrateResidualLumped(const topology::Field& residual,
 							const PylithScalar t,
 							topology::SolutionFields* const fields) {
   integrateResidual(residual, t, fields);
@@ -84,7 +84,7 @@ pylith::feassemble::Integrator::integrateJacobian(topology::Jacobian* jacobian,
 // operator.
 inline
 void
-pylith::feassemble::Integrator::integrateJacobian(topology::Field<topology::Mesh>* jacobian,
+pylith::feassemble::Integrator::integrateJacobian(topology::Field* jacobian,
 						  const PylithScalar t,
 						  topology::SolutionFields* const fields) {
   _needNewJacobian = false;
@@ -120,13 +120,13 @@ inline
 void
 pylith::feassemble::Integrator::adjustSolnLumped(topology::SolutionFields* fields,
 						 const PylithScalar t,
-						 const topology::Field<topology::Mesh>& jacobian) {
+						 const topology::Field& jacobian) {
 } // adjustSolnLumped
 
 // Verify constraints are acceptable.
 inline
 void
-pylith::feassemble::Integrator::checkConstraints(const topology::Field<topology::Mesh>& solution) const {
+pylith::feassemble::Integrator::checkConstraints(const topology::Field& solution) const {
 } // checkConstraints
 
 

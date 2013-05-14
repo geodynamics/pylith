@@ -282,7 +282,7 @@ pylith::feassemble::IntegratorElasticity::verifyConfiguration(const topology::Me
 
 // ----------------------------------------------------------------------
 // Get cell field associated with integrator.
-const pylith::topology::Field<pylith::topology::Mesh>&
+const pylith::topology::Field&
 pylith::feassemble::IntegratorElasticity::cellField(const char* name,
 						    const topology::Mesh& mesh,
 						    topology::SolutionFields* fields)
@@ -293,7 +293,7 @@ pylith::feassemble::IntegratorElasticity::cellField(const char* name,
   assert(_normalizer);
 
   if (!_outputFields) {
-    _outputFields = new topology::Fields<topology::Field<topology::Mesh> >(mesh);assert(_outputFields);
+    _outputFields = new topology::Fields(mesh);assert(_outputFields);
   } // if
   
   if (0 == strcasecmp(name, "total_strain")) {
@@ -302,7 +302,7 @@ pylith::feassemble::IntegratorElasticity::cellField(const char* name,
       // total strain is available as a state variable
       assert(fields);
       _allocateTensorField(mesh);
-      topology::Field<topology::Mesh>& buffer = _outputFields->get("buffer (tensor)");    
+      topology::Field& buffer = _outputFields->get("buffer (tensor)");    
       _material->getField(&buffer, "total_strain");
       buffer.addDimensionOkay(true);
       PYLITH_METHOD_RETURN(buffer);
@@ -310,7 +310,7 @@ pylith::feassemble::IntegratorElasticity::cellField(const char* name,
     } else { // must calculate total strain
       assert(fields);
       _allocateTensorField(mesh);
-      topology::Field<topology::Mesh>& buffer = _outputFields->get("buffer (tensor)");
+      topology::Field& buffer = _outputFields->get("buffer (tensor)");
       buffer.label("total_strain");
       buffer.scale(1.0);
       buffer.addDimensionOkay(true);
@@ -324,7 +324,7 @@ pylith::feassemble::IntegratorElasticity::cellField(const char* name,
       // stress is available as a state variable
       assert(fields);
       _allocateTensorField(mesh);
-      topology::Field<topology::Mesh>& buffer = _outputFields->get("buffer (tensor)");    
+      topology::Field& buffer = _outputFields->get("buffer (tensor)");    
       _material->getField(&buffer, "stress");
       buffer.addDimensionOkay(true);
       PYLITH_METHOD_RETURN(buffer);
@@ -334,7 +334,7 @@ pylith::feassemble::IntegratorElasticity::cellField(const char* name,
 	// total strain is available as a state variable
 	assert(fields);
 	_allocateTensorField(mesh);
-	topology::Field<topology::Mesh>& buffer = 
+	topology::Field& buffer = 
 	  _outputFields->get("buffer (tensor)");    
 	_material->getField(&buffer, "total_strain");
 	buffer.label(name);
@@ -346,7 +346,7 @@ pylith::feassemble::IntegratorElasticity::cellField(const char* name,
       } else { // must calculate strain 
 	assert(fields);
 	_allocateTensorField(mesh);
-	topology::Field<topology::Mesh>& buffer = 
+	topology::Field& buffer = 
 	  _outputFields->get("buffer (tensor)");
 	buffer.label("stress");
 	buffer.scale(_normalizer->pressureScale());
@@ -361,7 +361,7 @@ pylith::feassemble::IntegratorElasticity::cellField(const char* name,
   } else if (0 == strcasecmp(name, "stable_dt_implicit")) {
     if (!_outputFields->hasField("buffer (other)"))
       _outputFields->add("buffer (other)", "buffer");
-    topology::Field<topology::Mesh>& buffer = _outputFields->get("buffer (other)");
+    topology::Field& buffer = _outputFields->get("buffer (other)");
     _material->stableTimeStepImplicit(mesh, &buffer);
     buffer.addDimensionOkay(true);
     PYLITH_METHOD_RETURN(buffer);
@@ -369,7 +369,7 @@ pylith::feassemble::IntegratorElasticity::cellField(const char* name,
   } else if (0 == strcasecmp(name, "stable_dt_explicit")) {
     if (!_outputFields->hasField("buffer (other)"))
       _outputFields->add("buffer (other)", "buffer");
-    topology::Field<topology::Mesh>& buffer = _outputFields->get("buffer (other)");
+    topology::Field& buffer = _outputFields->get("buffer (other)");
     _material->stableTimeStepExplicit(mesh, _quadrature, &buffer);
     buffer.addDimensionOkay(true);
     PYLITH_METHOD_RETURN(buffer);
@@ -377,7 +377,7 @@ pylith::feassemble::IntegratorElasticity::cellField(const char* name,
   } else {
     if (!_outputFields->hasField("buffer (other)"))
       _outputFields->add("buffer (other)", "buffer");
-    topology::Field<topology::Mesh>& buffer =
+    topology::Field& buffer =
       _outputFields->get("buffer (other)");
     _material->getField(&buffer, name);
     buffer.addDimensionOkay(true);
@@ -389,15 +389,14 @@ pylith::feassemble::IntegratorElasticity::cellField(const char* name,
   // Return tensor section to satisfy member function definition. Code
   // should never get here.
   throw std::logic_error("Internal error.");
-  topology::Field<topology::Mesh>& buffer = 
-    _outputFields->get("buffer (tensor)");    
+  topology::Field& buffer = _outputFields->get("buffer (tensor)");    
 
   PYLITH_METHOD_RETURN(buffer);
 } // cellField
 
 // ----------------------------------------------------------------------
 // Get output fields.
-const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >*
+const pylith::topology::Fields*
 pylith::feassemble::IntegratorElasticity::outputFields(void) const
 { // outputFields
   return _outputFields;
@@ -458,7 +457,7 @@ pylith::feassemble::IntegratorElasticity::_allocateTensorField(const topology::M
   
   if (!_outputFields->hasField("buffer (tensor)")) {
     _outputFields->add("buffer (tensor)", "buffer");
-    topology::Field<topology::Mesh>& buffer = _outputFields->get("buffer (tensor)");
+    topology::Field& buffer = _outputFields->get("buffer (tensor)");
     buffer.newSection(cellsTmp, numQuadPts*tensorSize);
     buffer.allocate();
     buffer.vectorFieldType(topology::FieldBase::MULTI_TENSOR);
@@ -470,7 +469,7 @@ pylith::feassemble::IntegratorElasticity::_allocateTensorField(const topology::M
 
 // ----------------------------------------------------------------------
 void
-pylith::feassemble::IntegratorElasticity::_calcStrainStressField(topology::Field<topology::Mesh>* field,
+pylith::feassemble::IntegratorElasticity::_calcStrainStressField(topology::Field* field,
 								 const char* name,
 								 topology::SolutionFields* const fields)
 { // _calcStrainStressField
@@ -564,7 +563,7 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(topology::Field
 
 // ----------------------------------------------------------------------
 void
-pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(topology::Field<topology::Mesh>* field)
+pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(topology::Field* field)
 { // _calcStressFromStrain
   PYLITH_METHOD_BEGIN;
 

@@ -25,10 +25,7 @@
 namespace pylith {
   namespace meshio {
 
-%template(_PointsOutputManager) pylith::meshio::OutputManager<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;
-
-
-    class pylith::meshio::OutputSolnPoints : public OutputManager<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >
+    class pylith::meshio::OutputSolnPoints : public OutputManager
     { // OutputSolnPoints
       
       // PUBLIC METHODS ///////////////////////////////////////////////////
@@ -101,7 +98,7 @@ namespace pylith {
        * @param mesh Mesh for output.
        */
       void appendVertexField(const PylithScalar t,
-			     pylith::topology::Field<topology::Mesh>& field,
+			     pylith::topology::Field& field,
 			     const pylith::topology::Mesh& mesh);
 
       /** Append finite-element cell field to file.
@@ -113,7 +110,7 @@ namespace pylith {
        * @param labelId Value of label defining which cells to include.
        */
       void appendCellField(const PylithScalar t,
-			   pylith::topology::Field<topology::Mesh>& field,
+			   pylith::topology::Field& field,
 			   const char* label =0,
 			   const int labelId =0);
 

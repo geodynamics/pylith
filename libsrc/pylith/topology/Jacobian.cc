@@ -27,7 +27,7 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::topology::Jacobian::Jacobian(const Field<Mesh>& field,
+pylith::topology::Jacobian::Jacobian(const Field& field,
                                      const char* matrixType,
                                      const bool blockOkay) :
   _matrix(0),

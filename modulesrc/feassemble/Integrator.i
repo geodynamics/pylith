@@ -110,7 +110,7 @@ namespace pylith {
        * @param field Solution field.
        */
       virtual
-      void splitField(pylith::topology::Field<pylith::topology::Mesh>* field);
+      void splitField(pylith::topology::Field* field);
 
       /** Integrate contributions to residual term (r) for operator.
        *
@@ -119,7 +119,7 @@ namespace pylith {
        * @param fields Solution fields
        */
       virtual 
-      void integrateResidual(const pylith::topology::Field<pylith::topology::Mesh>& residual,
+      void integrateResidual(const pylith::topology::Field& residual,
 			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
 
@@ -143,7 +143,7 @@ namespace pylith {
        * @param fields Solution fields
        */
       virtual
-      void integrateJacobian(pylith::topology::Field<pylith::topology::Mesh>* jacobian,
+      void integrateJacobian(pylith::topology::Field* jacobian,
 			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
       
@@ -169,7 +169,7 @@ namespace pylith {
        * @param field Solution field.
        */
       virtual
-      void checkConstraints(const pylith::topology::Field<pylith::topology::Mesh>& solution) const;
+      void checkConstraints(const pylith::topology::Field& solution) const;
 
 
     }; // Integrator

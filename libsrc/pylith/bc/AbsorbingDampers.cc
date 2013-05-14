@@ -109,7 +109,7 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   const int fiberDim = numQuadPts * spaceDim;
 
   delete _parameters;
-  _parameters = new topology::Fields<topology::Field<topology::Mesh> >(*_boundaryMesh);
+  _parameters = new topology::Fields(*_boundaryMesh);
   assert(_parameters);
   _parameters->add("damping constants", "damping_constants", topology::FieldBase::FACES_FIELD, fiberDim);
   _parameters->get("damping constants").allocate();
@@ -140,7 +140,7 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
 
   // Container for damping constants for current cell
   scalar_array dampingConstsLocal(spaceDim);
-  topology::Field<topology::Mesh>& dampingConsts = _parameters->get("damping constants");
+  topology::Field& dampingConsts = _parameters->get("damping constants");
   topology::VecVisitorMesh dampingConstsVisitor(dampingConsts);
 
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
@@ -225,7 +225,7 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
 // ----------------------------------------------------------------------
 // Integrate contributions to residual term (r) for operator.
 void
-pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field<topology::Mesh>& residual,
+pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field& residual,
 						const PylithScalar t,
 						topology::SolutionFields* const fields)
 { // integrateResidual
@@ -256,7 +256,7 @@ pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field<topology::
   _initCellVector();
 
   // Get sections
-  topology::Field<topology::Mesh>& dampingConsts = _parameters->get("damping constants");
+  topology::Field& dampingConsts = _parameters->get("damping constants");
   topology::VecVisitorMesh dampingConstsVisitor(dampingConsts);
   PetscScalar* dampingConstsArray = dampingConstsVisitor.localArray();
 
@@ -360,7 +360,7 @@ topology::CoordsVisitor coordsVisitor(dmSubMesh);
 // ----------------------------------------------------------------------
 // Integrate contributions to residual term (r) for operator.
 void
-pylith::bc::AbsorbingDampers::integrateResidualLumped(const topology::Field<topology::Mesh>& residual,
+pylith::bc::AbsorbingDampers::integrateResidualLumped(const topology::Field& residual,
 						      const PylithScalar t,
 						      topology::SolutionFields* const fields)
 { // integrateResidualLumped
@@ -397,7 +397,7 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(const topology::Field<topo
   const PetscInt cEnd = cellsStratum.end();
 
   // Get sections
-  topology::Field<topology::Mesh>& dampingConsts = _parameters->get("damping constants");
+  topology::Field& dampingConsts = _parameters->get("damping constants");
   topology::VecVisitorMesh dampingConstsVisitor(dampingConsts);
   PetscScalar* dampingConstsArray = dampingConstsVisitor.localArray();
 
@@ -529,12 +529,12 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Jacobian* jacobian,
   const PetscInt cEnd = cellsStratum.end();
 
   // Get sections
-  topology::Field<topology::Mesh>& dampingConsts = _parameters->get("damping constants");
+  topology::Field& dampingConsts = _parameters->get("damping constants");
   topology::VecVisitorMesh dampingConstsVisitor(dampingConsts);
   PetscScalar* dampingConstsArray = dampingConstsVisitor.localArray();
 
   // Get sparse matrix
-  const topology::Field<topology::Mesh>& solution = fields->solution();
+  const topology::Field& solution = fields->solution();
   topology::SubMeshIS submeshIS(*_boundaryMesh);
   const PetscMat jacobianMat = jacobian->matrix();assert(jacobianMat);
   topology::MatVisitorSubMesh jacobianVisitor(jacobianMat, solution, submeshIS);
@@ -629,7 +629,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Jacobian* jacobian,
 // ----------------------------------------------------------------------
 // Integrate contributions to Jacobian matrix (A) associated with
 void
-pylith::bc::AbsorbingDampers::integrateJacobian(topology::Field<topology::Mesh>* jacobian,
+pylith::bc::AbsorbingDampers::integrateJacobian(topology::Field* jacobian,
 						const PylithScalar t,
 						topology::SolutionFields* const fields)
 { // integrateJacobian
@@ -671,7 +671,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Field<topology::Mesh>*
   _initCellVector();
 
   // Get sections
-  topology::Field<topology::Mesh>& dampingConsts = _parameters->get("damping constants");
+  topology::Field& dampingConsts = _parameters->get("damping constants");
   topology::VecVisitorMesh dampingConstsVisitor(dampingConsts);
   PetscScalar* dampingConstsArray = dampingConstsVisitor.localArray();
 

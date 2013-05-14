@@ -68,7 +68,7 @@ public :
    * @param t Current time
    * @param fields Solution fields
    */
-  void integrateResidual(const topology::Field<topology::Mesh>& residual,
+  void integrateResidual(const topology::Field& residual,
 			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 
@@ -96,9 +96,8 @@ public :
    *
    * @returns Vertex field.
    */
-  const topology::Field<topology::Mesh>&
-  vertexField(const char* name,
-	      const topology::SolutionFields* fields =0);
+  const topology::Field& vertexField(const char* name,
+				     const topology::SolutionFields* fields =0);
   
   /** Get cell field associated with integrator.
    *
@@ -107,9 +106,8 @@ public :
    *
    * @returns Cell field.
    */
-  const topology::Field<topology::Mesh>&
-  cellField(const char* name,
-	    const topology::SolutionFields* fields =0);
+  const topology::Field& cellField(const char* name,
+				   const topology::SolutionFields* fields =0);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

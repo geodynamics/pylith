@@ -90,24 +90,4 @@ import_array();
 %include "Xdmf.i"
 #endif
 
-// Template instatiation
-%template(MeshVertexFilter) pylith::meshio::VertexFilter<pylith::topology::Field<pylith::topology::Mesh> >;
-%template(MeshVertexFilterVecNorm) pylith::meshio::VertexFilterVecNorm<pylith::topology::Field<pylith::topology::Mesh> >;
-
-%template(MeshCellFilter) pylith::meshio::CellFilter<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;
-%template(MeshCellFilterAvg) pylith::meshio::CellFilterAvg<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;
-
-%template(MeshDataWriter) pylith::meshio::DataWriter<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;
-
-%template(MeshDataWriterVTK) pylith::meshio::DataWriterVTK<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;
-%template(PointsDataWriterVTK) pylith::meshio::DataWriterVTK<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;
-
-#if defined(ENABLE_HDF5)
-%template(MeshDataWriterHDF5) pylith::meshio::DataWriterHDF5<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;
-
-%template(MeshDataWriterHDF5Ext) pylith::meshio::DataWriterHDF5Ext<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;
-#endif
-
-%template(MeshOutputManager) pylith::meshio::OutputManager<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;
-
 // End of file

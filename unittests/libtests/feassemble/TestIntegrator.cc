@@ -29,6 +29,7 @@
 #include "pylith/utils/constdefs.h" // USES MAXSCALAR
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestIntegrator );
@@ -292,7 +293,7 @@ pylith::feassemble::TestIntegrator::testSplitField(void)
   PYLITH_METHOD_BEGIN;
 
   topology::Mesh mesh;
-  topology::Field<topology::Mesh> field(mesh);
+  topology::Field field(mesh);
   
   ElasticityExplicit integrator;
   integrator.splitField(&field);

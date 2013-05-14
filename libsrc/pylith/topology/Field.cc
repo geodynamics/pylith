@@ -20,20 +20,24 @@
 
 #include "Field.hh" // implementation of class methods
 
+#include "Mesh.hh" // USES Mesh
+
 #include "pylith/utils/array.hh" // USES scalar_array
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
+
+#include <petscdmmesh.hh>
+
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
 // Default constructor.
-template<typename mesh_type>
-pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh) :
+pylith::topology::Field::Field(const Mesh& mesh) :
   _mesh(mesh),
   _dm(NULL),
   _globalVec(NULL),
@@ -76,8 +80,7 @@ pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh) :
 
 // ----------------------------------------------------------------------
 // Constructor with mesh, DM, and metadata
-template<typename mesh_type>
-pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh,
+pylith::topology::Field::Field(const Mesh& mesh,
 					  PetscDM dm,
 					  const Metadata& metadata) :
   _mesh(mesh),
@@ -101,11 +104,10 @@ pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh,
 
 // ----------------------------------------------------------------------
 // Constructor with mesh, DM, local data, and metadata
-template<typename mesh_type>
-pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh,
-					  PetscDM dm,
-					  PetscVec localVec,
-					  const Metadata& metadata) :
+pylith::topology::Field::Field(const Mesh& mesh,
+			       PetscDM dm,
+			       PetscVec localVec,
+			       const Metadata& metadata) :
   _mesh(mesh),
   _dm(dm),
   _globalVec(NULL),
@@ -129,63 +131,16 @@ pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh,
 } // constructor
 
 // ----------------------------------------------------------------------
-// Constructor with field and subfields
-template<typename mesh_type>
-pylith::topology::Field<mesh_type>::Field(const Field& src,
-					  const int fields[],
-					  int numFields) :
-  _mesh(src._mesh),
-  _dm(NULL),
-  _globalVec(NULL),
-  _localVec(NULL)
-{ // constructor
-  PYLITH_METHOD_BEGIN;
-
-  PetscDM dm = mesh.dmMesh(), coordDM=NULL, newCoordDM=NULL;
-  PetscSection coordSection=NULL, newCoordSection=NULL;
-  PetscVec coordVec=NULL;
-  PetscSection s=NULL;
-  PetscErrorCode err;
-
-  assert(dm);
-  assert(src._dm);
-
-  _metadata["default"] = src._metadata["default"];
-  err = DMGetDefaultSection(src._dm, &s);PYLITH_CHECK_ERROR(err);
-  for(PetscInt f = 0; f < numFields; ++f) {
-    const char *name;
-
-    err = PetscSectionGetFieldName(s, fields[f], &name);PYLITH_CHECK_ERROR(err);
-    _metadata[name] = src._metadata[name];
-  } // for
-  err = DMCreateSubDM(dm, numFields, fields, NULL, &_dm);PYLITH_CHECK_ERROR(err);
-  err = DMGetCoordinatesLocal(dm, &coordVec);PYLITH_CHECK_ERROR(err);
-  if (coordVec) {
-    err = DMGetCoordinateDM(dm, &coordDM);PYLITH_CHECK_ERROR(err);
-    err = DMGetCoordinateDM(_dm, &newCoordDM);PYLITH_CHECK_ERROR(err);
-    err = DMGetDefaultSection(coordDM, &coordSection);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionClone(coordSection, &newCoordSection);PYLITH_CHECK_ERROR(err);
-    err = DMSetDefaultSection(newCoordDM, newCoordSection);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionDestroy(&newCoordSection);PYLITH_CHECK_ERROR(err);
-    err = DMSetCoordinatesLocal(_dm, coordVec);PYLITH_CHECK_ERROR(err);
-  } // if
-
-  PYLITH_METHOD_END;
-} // constructor
-
-// ----------------------------------------------------------------------
 // Destructor.
-template<typename mesh_type>
-pylith::topology::Field<mesh_type>::~Field(void)
+pylith::topology::Field::~Field(void)
 { // destructor
   deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
-template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::deallocate(void)
+pylith::topology::Field::deallocate(void)
 { // deallocate
   PYLITH_METHOD_BEGIN;
 
@@ -197,9 +152,8 @@ pylith::topology::Field<mesh_type>::deallocate(void)
 
 // ----------------------------------------------------------------------
 // Set label for field.
-template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::label(const char* value)
+pylith::topology::Field::label(const char* value)
 { // label
   PYLITH_METHOD_BEGIN;
 
@@ -223,9 +177,8 @@ pylith::topology::Field<mesh_type>::label(const char* value)
 
 // ----------------------------------------------------------------------
 // Get spatial dimension of domain.
-template<typename mesh_type>
 int
-pylith::topology::Field<mesh_type>::spaceDim(void) const
+pylith::topology::Field::spaceDim(void) const
 { // spaceDim
   const spatialdata::geocoords::CoordSys* cs = _mesh.coordsys();
   return (cs) ? cs->spaceDim() : 0;
@@ -233,9 +186,8 @@ pylith::topology::Field<mesh_type>::spaceDim(void) const
 
 // ----------------------------------------------------------------------
 // Get the chart size.
-template<typename mesh_type>
 int
-pylith::topology::Field<mesh_type>::chartSize(void) const
+pylith::topology::Field::chartSize(void) const
 { // chartSize
   PYLITH_METHOD_BEGIN;
 
@@ -252,9 +204,8 @@ pylith::topology::Field<mesh_type>::chartSize(void) const
 
 // ----------------------------------------------------------------------
 // Get the number of degrees of freedom.
-template<typename mesh_type>
 int
-pylith::topology::Field<mesh_type>::sectionSize(void) const
+pylith::topology::Field::sectionSize(void) const
 { // sectionSize
   PYLITH_METHOD_BEGIN;
 
@@ -273,9 +224,8 @@ pylith::topology::Field<mesh_type>::sectionSize(void) const
 
 // ----------------------------------------------------------------------
 // Create seive section.
-template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::newSection(void)
+pylith::topology::Field::newSection(void)
 { // newSection
   // Clear memory
   clear();
@@ -284,10 +234,9 @@ pylith::topology::Field<mesh_type>::newSection(void)
 // ----------------------------------------------------------------------
 // Create PETSc section and set chart and fiber dimesion for a list of
 // points.
-template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::newSection(const int_array& points,
-                                               const int fiberDim)
+pylith::topology::Field::newSection(const int_array& points,
+				    const int fiberDim)
 { // newSection
   PYLITH_METHOD_BEGIN;
 
@@ -333,9 +282,8 @@ pylith::topology::Field<mesh_type>::newSection(const int_array& points,
 // ----------------------------------------------------------------------
 // Create PETSc section and set chart and fiber dimesion for a list of
 // points.
-template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::newSection(const PetscInt *points, 
+pylith::topology::Field::newSection(const PetscInt *points, 
 					       const PetscInt num,
                                                const int fiberDim)
 { // newSection
@@ -380,11 +328,10 @@ pylith::topology::Field<mesh_type>::newSection(const PetscInt *points,
 
 // ----------------------------------------------------------------------
 // Create PETSc section and set chart and fiber dimesion.
-template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::newSection(const DomainEnum domain,
-                                               const int fiberDim,
-                                               const int stratum)
+pylith::topology::Field::newSection(const DomainEnum domain,
+				    const int fiberDim,
+				    const int stratum)
 { // newSection
   PYLITH_METHOD_BEGIN;
 
@@ -418,11 +365,10 @@ pylith::topology::Field<mesh_type>::newSection(const DomainEnum domain,
 
 // ----------------------------------------------------------------------
 // Create PETSc section and set chart and fiber dimesion.
-template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::newSection(const PetscInt pStart, 
-					       const PetscInt pEnd,
-                                               const int fiberDim)
+pylith::topology::Field::newSection(const PetscInt pStart, 
+				    const PetscInt pEnd,
+				    const int fiberDim)
 { // newSection
   PYLITH_METHOD_BEGIN;
 
@@ -444,10 +390,9 @@ pylith::topology::Field<mesh_type>::newSection(const PetscInt pStart,
 
 // ----------------------------------------------------------------------
 // Create section given chart.
-template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::newSection(const Field& src,
-                                               const int fiberDim)
+pylith::topology::Field::newSection(const Field& src,
+				    const int fiberDim)
 { // newSection
   PYLITH_METHOD_BEGIN;
 
@@ -481,9 +426,8 @@ pylith::topology::Field<mesh_type>::newSection(const Field& src,
 
 // ----------------------------------------------------------------------
 // Create section with same layout as another section.
-template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::cloneSection(const Field& src)
+pylith::topology::Field::cloneSection(const Field& src)
 { // cloneSection
   PYLITH_METHOD_BEGIN;
 
@@ -568,9 +512,8 @@ pylith::topology::Field<mesh_type>::cloneSection(const Field& src)
 
 // ----------------------------------------------------------------------
 // Clear variables associated with section.
-template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::clear(void)
+pylith::topology::Field::clear(void)
 { // clear
   PYLITH_METHOD_BEGIN;
 
@@ -604,9 +547,8 @@ pylith::topology::Field<mesh_type>::clear(void)
 
 // ----------------------------------------------------------------------
 // Allocate PETSc section.
-template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::allocate(void)
+pylith::topology::Field::allocate(void)
 { // allocate
   PYLITH_METHOD_BEGIN;
 
@@ -632,9 +574,8 @@ pylith::topology::Field<mesh_type>::allocate(void)
 
 // ----------------------------------------------------------------------
 // Zero section values (excluding constrained DOF).
-template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::zero(void)
+pylith::topology::Field::zero(void)
 { // zero
   PYLITH_METHOD_BEGIN;
 
@@ -664,9 +605,8 @@ pylith::topology::Field<mesh_type>::zero(void)
 
 // ----------------------------------------------------------------------
 // Zero section values (including constrained DOF).
-template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::zeroAll(void)
+pylith::topology::Field::zeroAll(void)
 { // zeroAll
   PYLITH_METHOD_BEGIN;
 
@@ -678,9 +618,8 @@ pylith::topology::Field<mesh_type>::zeroAll(void)
 
 // ----------------------------------------------------------------------
 // Complete section by assembling across processors.
-template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::complete(void)
+pylith::topology::Field::complete(void)
 { // complete
   PYLITH_METHOD_BEGIN;
 
@@ -699,9 +638,8 @@ pylith::topology::Field<mesh_type>::complete(void)
 
 // ----------------------------------------------------------------------
 // Copy field values and metadata.
-template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::copy(const Field& field)
+pylith::topology::Field::copy(const Field& field)
 { // copy
   PYLITH_METHOD_BEGIN;
 
@@ -738,12 +676,12 @@ pylith::topology::Field<mesh_type>::copy(const Field& field)
   PYLITH_METHOD_END;
 } // copy
 
-template<typename mesh_type>
+// ----------------------------------------------------------------------
 void
-pylith::topology::Field<mesh_type>::copy(PetscSection osection,
-					 PetscInt field,
-					 PetscInt component,
-					 PetscVec ovec)
+pylith::topology::Field::copy(PetscSection osection,
+			      PetscInt field,
+			      PetscInt component,
+			      PetscVec ovec)
 { // copy
   PYLITH_METHOD_BEGIN;
 
@@ -822,9 +760,8 @@ pylith::topology::Field<mesh_type>::copy(PetscSection osection,
 
 // ----------------------------------------------------------------------
 // Add two fields, storing the result in one of the fields.
-template<typename mesh_type>
-pylith::topology::Field<mesh_type>&
-pylith::topology::Field<mesh_type>::operator+=(const Field& field)
+pylith::topology::Field&
+pylith::topology::Field::operator+=(const Field& field)
 { // operator+=
   PYLITH_METHOD_BEGIN;
 
@@ -860,9 +797,8 @@ pylith::topology::Field<mesh_type>::operator+=(const Field& field)
 
 // ----------------------------------------------------------------------
 // Dimensionalize field.
-template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::dimensionalize(void) const
+pylith::topology::Field::dimensionalize(void) const
 { // dimensionalize
   PYLITH_METHOD_BEGIN;
 
@@ -900,9 +836,8 @@ pylith::topology::Field<mesh_type>::dimensionalize(void) const
 
 // ----------------------------------------------------------------------
 // Print field to standard out.
-template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::view(const char* label) const
+pylith::topology::Field::view(const char* label) const
 { // view
   PYLITH_METHOD_BEGIN;
 
@@ -961,11 +896,9 @@ pylith::topology::Field<mesh_type>::view(const char* label) const
 // Create PETSc vector scatter for field. This is used to transfer
 // information from the "global" PETSc vector view to the "local"
 // PETSc section view.
-template<typename mesh_type>
-template<typename scatter_mesh_type>
 void
-pylith::topology::Field<mesh_type>::createScatter(const scatter_mesh_type& mesh,
-						  const char* context)
+pylith::topology::Field::createScatter(const Mesh& mesh,
+				       const char* context)
 { // createScatter
   PYLITH_METHOD_BEGIN;
 
@@ -1004,10 +937,8 @@ pylith::topology::Field<mesh_type>::createScatter(const scatter_mesh_type& mesh,
 // PETSc section view. The PETSc vector does not contain constrained
 // DOF. Use createScatterWithBC() to include the constrained DOF in
 // the PETSc vector.
-template<typename mesh_type>
-template<typename scatter_mesh_type>
 void
-pylith::topology::Field<mesh_type>::createScatterWithBC(const scatter_mesh_type& mesh,
+pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
 							const char* context)
 { // createScatterWithBC
   PYLITH_METHOD_BEGIN;
@@ -1055,13 +986,11 @@ pylith::topology::Field<mesh_type>::createScatterWithBC(const scatter_mesh_type&
 // PETSc section view. The PETSc vector includes constrained DOF. Use
 // createScatter() if constrained DOF should be omitted from the PETSc
 // vector.
-template<typename mesh_type>
-template<typename scatter_mesh_type>
 void
-pylith::topology::Field<mesh_type>::createScatterWithBC(const scatter_mesh_type& mesh,
-							const std::string& labelName,
-							PetscInt labelValue,
-							const char* context)
+pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
+					     const std::string& labelName,
+					     PetscInt labelValue,
+					     const char* context)
 { // createScatterWithBC
   PYLITH_METHOD_BEGIN;
 
@@ -1174,9 +1103,8 @@ pylith::topology::Field<mesh_type>::createScatterWithBC(const scatter_mesh_type&
 
 // ----------------------------------------------------------------------
 // Get PETSc vector associated with field.
-template<typename mesh_type>
 PetscVec
-pylith::topology::Field<mesh_type>::vector(const char* context)
+pylith::topology::Field::vector(const char* context)
 { // vector
   PYLITH_METHOD_BEGIN;
 
@@ -1187,9 +1115,8 @@ pylith::topology::Field<mesh_type>::vector(const char* context)
 
 // ----------------------------------------------------------------------
 // Get PETSc vector associated with field.
-template<typename mesh_type>
 const PetscVec
-pylith::topology::Field<mesh_type>::vector(const char* context) const
+pylith::topology::Field::vector(const char* context) const
 { // vector
   PYLITH_METHOD_BEGIN;
 
@@ -1201,9 +1128,8 @@ pylith::topology::Field<mesh_type>::vector(const char* context) const
 // ----------------------------------------------------------------------
 // Scatter section information across processors to update the
 //  PETSc vector view of the field.
-template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::scatterSectionToVector(const char* context) const
+pylith::topology::Field::scatterSectionToVector(const char* context) const
 { // scatterSectionToVector
   PYLITH_METHOD_BEGIN;
 
@@ -1217,9 +1143,8 @@ pylith::topology::Field<mesh_type>::scatterSectionToVector(const char* context) 
 // ----------------------------------------------------------------------
 // Scatter section information across processors to update the
 //  PETSc vector view of the field.
-template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::scatterSectionToVector(const PetscVec vector,
+pylith::topology::Field::scatterSectionToVector(const PetscVec vector,
 							   const char* context) const
 { // scatterSectionToVector
   PYLITH_METHOD_BEGIN;
@@ -1247,9 +1172,8 @@ pylith::topology::Field<mesh_type>::scatterSectionToVector(const PetscVec vector
 // ----------------------------------------------------------------------
 // Scatter PETSc vector information across processors to update the
 // section view of the field.
-template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::scatterVectorToSection(const char* context) const
+pylith::topology::Field::scatterVectorToSection(const char* context) const
 { // scatterVectorToSection
   PYLITH_METHOD_BEGIN;
 
@@ -1264,10 +1188,9 @@ pylith::topology::Field<mesh_type>::scatterVectorToSection(const char* context) 
 // ----------------------------------------------------------------------
 // Scatter PETSc vector information across processors to update the
 // section view of the field.
-template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::scatterVectorToSection(const PetscVec vector,
-									 const char* context) const
+pylith::topology::Field::scatterVectorToSection(const PetscVec vector,
+						const char* context) const
 { // scatterVectorToSection
   PYLITH_METHOD_BEGIN;
 
@@ -1295,9 +1218,8 @@ pylith::topology::Field<mesh_type>::scatterVectorToSection(const PetscVec vector
 // ----------------------------------------------------------------------
 // Get fiber dimension associated with section (only works if fiber
 // dimension is uniform).
-template<typename mesh_type>
 int
-pylith::topology::Field<mesh_type>::_getFiberDim(void)
+pylith::topology::Field::_getFiberDim(void)
 { // _getFiberDim
   PYLITH_METHOD_BEGIN;
 
@@ -1318,10 +1240,9 @@ pylith::topology::Field<mesh_type>::_getFiberDim(void)
 
 // ----------------------------------------------------------------------
 // Get scatter for given context.
-template<typename mesh_type>
-typename pylith::topology::Field<mesh_type>::ScatterInfo&
-pylith::topology::Field<mesh_type>::_getScatter(const char* context,
-						const bool createOk)
+pylith::topology::Field::ScatterInfo&
+pylith::topology::Field::_getScatter(const char* context,
+				     const bool createOk)
 { // _getScatter
   PYLITH_METHOD_BEGIN;
 
@@ -1367,9 +1288,8 @@ pylith::topology::Field<mesh_type>::_getScatter(const char* context,
 
 // ----------------------------------------------------------------------
 // Get scatter for given context.
-template<typename mesh_type>
-const typename pylith::topology::Field<mesh_type>::ScatterInfo&
-pylith::topology::Field<mesh_type>::_getScatter(const char* context) const
+const pylith::topology::Field::ScatterInfo&
+pylith::topology::Field::_getScatter(const char* context) const
 { // _getScatter
   PYLITH_METHOD_BEGIN;
 
@@ -1388,9 +1308,8 @@ pylith::topology::Field<mesh_type>::_getScatter(const char* context) const
 
 // ----------------------------------------------------------------------
 // Experimental
-template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::addField(const char *name,
+pylith::topology::Field::addField(const char *name,
 					     int numComponents)
 { // addField
   PYLITH_METHOD_BEGIN;
@@ -1403,9 +1322,8 @@ pylith::topology::Field<mesh_type>::addField(const char *name,
 } // addField
 
 // ----------------------------------------------------------------------
-template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::setupFields(void)
+pylith::topology::Field::setupFields(void)
 { // setupFields
   PYLITH_METHOD_BEGIN;
 
@@ -1432,11 +1350,10 @@ pylith::topology::Field<mesh_type>::setupFields(void)
 } // setupFields
 
 // ----------------------------------------------------------------------
-template<typename mesh_type>
 void
-pylith::topology::Field<mesh_type>::updateDof(const char *name,
-					      const DomainEnum domain,
-					      int fiberDim)
+pylith::topology::Field::updateDof(const char *name,
+				   const DomainEnum domain,
+				   int fiberDim)
 { // updateDof
   PYLITH_METHOD_BEGIN;
 

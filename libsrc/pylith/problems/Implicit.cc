@@ -24,6 +24,8 @@
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+
 // ----------------------------------------------------------------------
 // Constructor
 pylith::problems::Implicit::Implicit(void)
@@ -49,7 +51,7 @@ pylith::problems::Implicit::calcRateFields(void)
   //        = dispIncr(t+dt) / dt
   const PylithScalar dt = _dt;
 
-  topology::Field<topology::Mesh>& dispIncr = _fields->get("dispIncr(t->t+dt)");
+  topology::Field& dispIncr = _fields->get("dispIncr(t->t+dt)");
   const spatialdata::geocoords::CoordSys* cs = dispIncr.mesh().coordsys();assert(cs);
   const int spaceDim = cs->spaceDim();
 
@@ -57,7 +59,7 @@ pylith::problems::Implicit::calcRateFields(void)
   topology::VecVisitorMesh dispIncrVisitor(dispIncr);
   PetscScalar* dispIncrArray = dispIncrVisitor.localArray();
 
-  topology::Field<topology::Mesh>& velocity = _fields->get("velocity(t)");
+  topology::Field& velocity = _fields->get("velocity(t)");
   topology::VecVisitorMesh velVisitor(velocity);
   PetscScalar* velArray = velVisitor.localArray();
 

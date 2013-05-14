@@ -32,9 +32,6 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestFieldsSubMesh );
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> > FieldsMesh;
-
-// ----------------------------------------------------------------------
 void
 pylith::topology::TestFieldsSubMesh::setUp(void)
 { // setUp
@@ -70,7 +67,7 @@ pylith::topology::TestFieldsSubMesh::testConstructor(void)
   PYLITH_METHOD_BEGIN;
 
   CPPUNIT_ASSERT(_submesh);
-  FieldsMesh fields(*_submesh);
+  Fields fields(*_submesh);
 
   PYLITH_METHOD_END;
 } // testConstructor
@@ -83,7 +80,7 @@ pylith::topology::TestFieldsSubMesh::testAdd(void)
   PYLITH_METHOD_BEGIN;
 
   CPPUNIT_ASSERT(_submesh);
-  FieldsMesh fields(*_submesh);
+  Fields fields(*_submesh);
   
   const char* label = "field";
   fields.add(label, "displacement");
@@ -103,14 +100,14 @@ pylith::topology::TestFieldsSubMesh::testAddDomain(void)
   const int fiberDim = 3;
 
   CPPUNIT_ASSERT(_submesh);
-  FieldsMesh fields(*_submesh);
+  Fields fields(*_submesh);
 
   const char* label = "field";
-  fields.add(label, "velocity", Field<Mesh>::VERTICES_FIELD, fiberDim);
+  fields.add(label, "velocity", Field::VERTICES_FIELD, fiberDim);
   const size_t size = 1;
   CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
 
-  Field<Mesh>& field = fields.get(label);
+  Field& field = fields.get(label);
   field.allocate();
 
   PetscDM dmMesh = _submesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
@@ -134,7 +131,7 @@ pylith::topology::TestFieldsSubMesh::testDelete(void)
   PYLITH_METHOD_BEGIN;
 
   CPPUNIT_ASSERT(_submesh);
-  FieldsMesh fields(*_submesh);
+  Fields fields(*_submesh);
 
   const char* labelA = "field A";
   fields.add(labelA, "displacement");
@@ -147,7 +144,7 @@ pylith::topology::TestFieldsSubMesh::testDelete(void)
   fields.del(labelA);
   size = 1;
   CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
-  const Field<Mesh>& field = fields.get(labelB);
+  const Field& field = fields.get(labelB);
 
   PYLITH_METHOD_END;
 } // testDelete
@@ -160,11 +157,11 @@ pylith::topology::TestFieldsSubMesh::testGet(void)
   PYLITH_METHOD_BEGIN;
 
   CPPUNIT_ASSERT(_submesh);
-  FieldsMesh fields(*_submesh);
+  Fields fields(*_submesh);
 
   const char* label = "field";
   fields.add(label, "displacement");
-  const Field<Mesh>& field = fields.get(label);
+  const Field& field = fields.get(label);
 
   PYLITH_METHOD_END;
 } // testGet
@@ -177,14 +174,14 @@ pylith::topology::TestFieldsSubMesh::testGetConst(void)
   PYLITH_METHOD_BEGIN;
 
   CPPUNIT_ASSERT(_submesh);
-  FieldsMesh fields(*_submesh);
+  Fields fields(*_submesh);
 
   const char* label = "field";
   fields.add(label, "displacement");
 
-  const FieldsMesh* fieldsPtr = &fields;
+  const Fields* fieldsPtr = &fields;
   CPPUNIT_ASSERT(fieldsPtr);
-  const Field<Mesh>& field = fieldsPtr->get(label);
+  const Field& field = fieldsPtr->get(label);
 
   PYLITH_METHOD_END;
 } // testGetConst
@@ -197,7 +194,7 @@ pylith::topology::TestFieldsSubMesh::testHasField(void)
   PYLITH_METHOD_BEGIN;
 
   CPPUNIT_ASSERT(_submesh);
-  FieldsMesh fields(*_submesh);
+  Fields fields(*_submesh);
 
   fields.add("field A", "velocity");
   
@@ -224,21 +221,21 @@ pylith::topology::TestFieldsSubMesh::testCopyLayout(void)
   const int fiberDim = 3;
 
   CPPUNIT_ASSERT(_submesh);
-  FieldsMesh fields(*_submesh);
+  Fields fields(*_submesh);
   
   const char* labelA = "field A";
-  fields.add(labelA, "velocity", Field<Mesh>::VERTICES_FIELD, fiberDim);
+  fields.add(labelA, "velocity", Field::VERTICES_FIELD, fiberDim);
 
   const char* labelB = "field B";
   fields.add(labelB, "displacement");
-  Field<Mesh>& fieldA = fields.get(labelA);
+  Field& fieldA = fields.get(labelA);
   fieldA.allocate();
 
   fields.copyLayout(labelA);
 
   const size_t size = 2;
   CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
-  const Field<Mesh>& field = fields.get(labelB);
+  const Field& field = fields.get(labelB);
 
   PetscDM dmMesh = _submesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
   Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);

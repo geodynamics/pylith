@@ -60,7 +60,7 @@ pylith::topology::TestFieldMesh::testConstructor(void)
   PYLITH_METHOD_BEGIN;
 
   Mesh mesh;
-  Field<Mesh> field(mesh);
+  Field field(mesh);
 
   PYLITH_METHOD_END;
 } // testConstructor
@@ -73,7 +73,7 @@ pylith::topology::TestFieldMesh::testSection(void)
   PYLITH_METHOD_BEGIN;
 
   Mesh mesh;
-  Field<Mesh> field(mesh);
+  Field field(mesh);
 
   PetscSection section = field.petscSection();
   CPPUNIT_ASSERT(!section);
@@ -90,7 +90,7 @@ pylith::topology::TestFieldMesh::testMesh(void)
 
   Mesh mesh;
   _buildMesh(&mesh);
-  Field<Mesh> field(mesh);
+  Field field(mesh);
 
   const Mesh& mesh2 = field.mesh();
   CPPUNIT_ASSERT_EQUAL(_TestFieldMesh::cellDim, mesh2.dimension());  
@@ -109,7 +109,7 @@ pylith::topology::TestFieldMesh::testLabel(void)
 
   Mesh mesh;
   _buildMesh(&mesh);
-  Field<Mesh> field(mesh);
+  Field field(mesh);
 
   field.label(label.c_str());
   CPPUNIT_ASSERT_EQUAL(label, std::string(field.label()));
@@ -128,7 +128,7 @@ pylith::topology::TestFieldMesh::testVectorFieldType(void)
 
   Mesh mesh;
   _buildMesh(&mesh);
-  Field<Mesh> field(mesh);
+  Field field(mesh);
 
   field.vectorFieldType(FieldBase::SCALAR);
   CPPUNIT_ASSERT_EQUAL(FieldBase::SCALAR, field._metadata[label].vectorFieldType);
@@ -147,7 +147,7 @@ pylith::topology::TestFieldMesh::testScale(void)
 
   Mesh mesh;
   _buildMesh(&mesh);
-  Field<Mesh> field(mesh);
+  Field field(mesh);
 
   const PylithScalar scale = 2.0;
   field.scale(scale);
@@ -168,7 +168,7 @@ pylith::topology::TestFieldMesh::testAddDimensionOkay(void)
 
   Mesh mesh;
   _buildMesh(&mesh);
-  Field<Mesh> field(mesh);
+  Field field(mesh);
 
   CPPUNIT_ASSERT_EQUAL(false, field._metadata[label].dimsOkay);
   field.addDimensionOkay(true);
@@ -186,7 +186,7 @@ pylith::topology::TestFieldMesh::testSpaceDim(void)
 
   Mesh mesh;
   _buildMesh(&mesh);
-  Field<Mesh> field(mesh);
+  Field field(mesh);
 
   CPPUNIT_ASSERT_EQUAL(_TestFieldMesh::cellDim, field.spaceDim());
 
@@ -203,7 +203,7 @@ pylith::topology::TestFieldMesh::testNewSection(void)
   Mesh mesh;
   _buildMesh(&mesh);
 
-  Field<Mesh> field(mesh);
+  Field field(mesh);
   const std::string& label = "field A";
   field.label(label.c_str());
 
@@ -227,7 +227,7 @@ pylith::topology::TestFieldMesh::testNewSectionPoints(void)
   Mesh mesh;
   _buildMesh(&mesh);
 
-  Field<Mesh> field(mesh);
+  Field field(mesh);
   field.label(label.c_str());
   field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
   field.allocate();
@@ -262,7 +262,7 @@ pylith::topology::TestFieldMesh::testNewSectionPointsArray(void)
   Mesh mesh;
   _buildMesh(&mesh);
 
-  Field<Mesh> field(mesh);
+  Field field(mesh);
   const std::string& label = "field A";
   field.label(label.c_str());
 
@@ -326,10 +326,10 @@ pylith::topology::TestFieldMesh::testNewSectionDomain(void)
   Mesh mesh;
   _buildMesh(&mesh);
 
-  Field<Mesh> field(mesh);
+  Field field(mesh);
   const std::string& label = "field A";
   field.label(label.c_str());
-  field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
+  field.newSection(Field::VERTICES_FIELD, fiberDim);
   field.allocate();
 
   PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
@@ -363,12 +363,12 @@ pylith::topology::TestFieldMesh::testNewSectionField(void)
   _buildMesh(&mesh);
 
   // Create field with atlas to use to create new field
-  Field<Mesh> fieldSrc(mesh);
-  fieldSrc.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
+  Field fieldSrc(mesh);
+  fieldSrc.newSection(Field::VERTICES_FIELD, fiberDim);
   fieldSrc.allocate();
 
   const int fiberDim2 = 5;
-  Field<Mesh> field(mesh);
+  Field field(mesh);
   const std::string& label = "field A";
   field.label(label.c_str());
   field.newSection(fieldSrc, fiberDim2);
@@ -419,9 +419,9 @@ pylith::topology::TestFieldMesh::testCloneSection(void)
   PetscErrorCode err = 0;
 
   // Create field with atlas to use to create new field
-  Field<Mesh> fieldSrc(mesh);
+  Field fieldSrc(mesh);
   { // Setup source field
-    fieldSrc.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
+    fieldSrc.newSection(Field::VERTICES_FIELD, fiberDim);
     PetscSection section = fieldSrc.petscSection();CPPUNIT_ASSERT(section);
     for(PetscInt v = vStart, iV = 0; v < vEnd; ++v) {
       err = PetscSectionAddConstraintDof(section, v, nconstraints[iV++]);PYLITH_CHECK_ERROR(err);
@@ -437,7 +437,7 @@ pylith::topology::TestFieldMesh::testCloneSection(void)
     fieldSrc.createScatter(mesh, "A");
   } // Setup source field
 
-  Field<Mesh> field(mesh);
+  Field field(mesh);
   const std::string& label = "field A";
   field.label(label.c_str());
   field.cloneSection(fieldSrc);
@@ -470,16 +470,16 @@ pylith::topology::TestFieldMesh::testClear(void)
   PYLITH_METHOD_BEGIN;
 
   Mesh mesh(_TestFieldMesh::cellDim);
-  Field<Mesh> field(mesh);
+  Field field(mesh);
 
   field.scale(2.0);
-  field.vectorFieldType(Field<Mesh>::TENSOR);
+  field.vectorFieldType(Field::TENSOR);
   field.addDimensionOkay(true);
   
   field.clear();
 
   CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0), field._metadata["default"].scale);
-  CPPUNIT_ASSERT_EQUAL(Field<Mesh>::OTHER, field._metadata["default"].vectorFieldType);
+  CPPUNIT_ASSERT_EQUAL(Field::OTHER, field._metadata["default"].vectorFieldType);
   CPPUNIT_ASSERT_EQUAL(false, field._metadata["default"].dimsOkay);
 
   PYLITH_METHOD_END;
@@ -504,8 +504,8 @@ pylith::topology::TestFieldMesh::testAllocate(void)
   Mesh mesh;
   _buildMesh(&mesh);
 
-  Field<Mesh> field(mesh);
-  field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
+  Field field(mesh);
+  field.newSection(Field::VERTICES_FIELD, fiberDim);
   field.allocate();
 
   PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
@@ -554,8 +554,8 @@ pylith::topology::TestFieldMesh::testZero(void)
   Mesh mesh;
   _buildMesh(&mesh);
 
-  Field<Mesh> field(mesh);
-  field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
+  Field field(mesh);
+  field.newSection(Field::VERTICES_FIELD, fiberDim);
   field.allocate();
 
   PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
@@ -620,8 +620,8 @@ pylith::topology::TestFieldMesh::testZeroAll(void)
   const PetscInt vEnd = depthStratum.end();
 
   // Create field and set constraint sizes
-  Field<Mesh> field(mesh);
-  field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
+  Field field(mesh);
+  field.newSection(Field::VERTICES_FIELD, fiberDim);
   PetscSection section = field.petscSection();CPPUNIT_ASSERT(section);
   PetscErrorCode err = 0;
   PetscInt index = 0;
@@ -684,8 +684,8 @@ pylith::topology::TestFieldMesh::testComplete(void)
   const PetscInt vStart = depthStratum.begin();
   const PetscInt vEnd = depthStratum.end();
 
-  Field<Mesh> field(mesh);
-  field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
+  Field field(mesh);
+  field.newSection(Field::VERTICES_FIELD, fiberDim);
   field.allocate();
 
   VecVisitorMesh fieldVisitor(field);
@@ -738,9 +738,9 @@ pylith::topology::TestFieldMesh::testCopy(void)
   const PetscInt vStart = depthStratum.begin();
   const PetscInt vEnd = depthStratum.end();
 
-  Field<Mesh> fieldSrc(mesh);
+  Field fieldSrc(mesh);
   { // Setup source field
-    fieldSrc.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
+    fieldSrc.newSection(Field::VERTICES_FIELD, fiberDim);
     fieldSrc.allocate();
     VecVisitorMesh fieldVisitor(fieldSrc);
     PetscScalar* fieldArray = fieldVisitor.localArray();
@@ -751,8 +751,8 @@ pylith::topology::TestFieldMesh::testCopy(void)
     } // for
   } // Setup source field
     
-  Field<Mesh> field(mesh);
-  field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
+  Field field(mesh);
+  field.newSection(Field::VERTICES_FIELD, fiberDim);
   field.allocate();
 
   field.copy(fieldSrc);
@@ -800,9 +800,9 @@ pylith::topology::TestFieldMesh::testOperatorAdd(void)
   const PetscInt vStart = depthStratum.begin();
   const PetscInt vEnd = depthStratum.end();
 
-  Field<Mesh> fieldSrc(mesh);
+  Field fieldSrc(mesh);
   { // Setup source field
-    fieldSrc.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
+    fieldSrc.newSection(Field::VERTICES_FIELD, fiberDim);
     fieldSrc.allocate();
     VecVisitorMesh fieldVisitor(fieldSrc);
     PetscScalar* fieldArray = fieldVisitor.localArray();
@@ -814,9 +814,9 @@ pylith::topology::TestFieldMesh::testOperatorAdd(void)
   } // Setup source field
     
 
-  Field<Mesh> field(mesh);
+  Field field(mesh);
   { // Setup destination field
-    field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
+    field.newSection(Field::VERTICES_FIELD, fiberDim);
     field.allocate();
     VecVisitorMesh fieldVisitor(field);
     PetscScalar* fieldArray = fieldVisitor.localArray();
@@ -866,9 +866,9 @@ pylith::topology::TestFieldMesh::testDimensionalize(void)
   const PetscInt vStart = depthStratum.begin();
   const PetscInt vEnd = depthStratum.end();
 
-  Field<Mesh> field(mesh);
+  Field field(mesh);
   { // setup field
-    field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
+    field.newSection(Field::VERTICES_FIELD, fiberDim);
     field.allocate();
 
     VecVisitorMesh fieldVisitor(field);
@@ -921,8 +921,8 @@ pylith::topology::TestFieldMesh::testView(void)
   const PetscInt vStart = depthStratum.begin();
   const PetscInt vEnd = depthStratum.end();
 
-  Field<Mesh> field(mesh);
-  field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
+  Field field(mesh);
+  field.newSection(Field::VERTICES_FIELD, fiberDim);
   field.allocate();
   VecVisitorMesh fieldVisitor(field);
   PetscScalar* fieldArray = fieldVisitor.localArray();
@@ -949,10 +949,10 @@ pylith::topology::TestFieldMesh::testCreateScatter(void)
   Mesh mesh;
   _buildMesh(&mesh);
 
-  Field<Mesh> field(mesh);
+  Field field(mesh);
   const std::string& label = "field A";
   field.label(label.c_str());
-  field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
+  field.newSection(Field::VERTICES_FIELD, fiberDim);
   field.allocate();
   
   CPPUNIT_ASSERT_EQUAL(size_t(0), field._scatters.size());
@@ -965,7 +965,7 @@ pylith::topology::TestFieldMesh::testCreateScatter(void)
 
   CPPUNIT_ASSERT_EQUAL(size_t(1), field._scatters.size());
 
-  const Field<Mesh>::ScatterInfo& sinfo = field._getScatter("");
+  const Field::ScatterInfo& sinfo = field._getScatter("");
   CPPUNIT_ASSERT(sinfo.dm);
   CPPUNIT_ASSERT(sinfo.vector);
 
@@ -986,19 +986,19 @@ pylith::topology::TestFieldMesh::testCreateScatter(void)
   // Create another scatter.
   field.createScatter(mesh, "B");
   CPPUNIT_ASSERT_EQUAL(size_t(2), field._scatters.size());
-  const Field<Mesh>::ScatterInfo& sinfoB = field._getScatter("B");
+  const Field::ScatterInfo& sinfoB = field._getScatter("B");
   CPPUNIT_ASSERT(sinfoB.dm);
   CPPUNIT_ASSERT(sinfoB.vector);
 
-  Field<Mesh> field2(mesh);
+  Field field2(mesh);
   field2.cloneSection(field);
   CPPUNIT_ASSERT_EQUAL(size_t(2), field2._scatters.size());
 
-  const Field<Mesh>::ScatterInfo& sinfo2 = field2._getScatter("");
+  const Field::ScatterInfo& sinfo2 = field2._getScatter("");
   CPPUNIT_ASSERT(sinfo2.dm);
   CPPUNIT_ASSERT(sinfo2.vector);
 
-  const Field<Mesh>::ScatterInfo& sinfo2B = field2._getScatter("B");
+  const Field::ScatterInfo& sinfo2B = field2._getScatter("B");
   CPPUNIT_ASSERT(sinfo2B.dm);
   CPPUNIT_ASSERT(sinfo2B.vector);
 
@@ -1018,10 +1018,10 @@ pylith::topology::TestFieldMesh::testCreateScatterWithBC(void)
   Mesh mesh;
   _buildMesh(&mesh);
 
-  Field<Mesh> field(mesh);
+  Field field(mesh);
   const std::string& label = "field A";
   field.label(label.c_str());
-  field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
+  field.newSection(Field::VERTICES_FIELD, fiberDim);
   field.allocate();
 
   CPPUNIT_ASSERT_EQUAL(size_t(0), field._scatters.size());
@@ -1033,7 +1033,7 @@ pylith::topology::TestFieldMesh::testCreateScatterWithBC(void)
   const PetscInt vStart = depthStratum.begin();
   const PetscInt vEnd = depthStratum.end();
 
-  const Field<Mesh>::ScatterInfo& sinfo = field._getScatter("");
+  const Field::ScatterInfo& sinfo = field._getScatter("");
   CPPUNIT_ASSERT(sinfo.dm);
   CPPUNIT_ASSERT(sinfo.vector);
 
@@ -1054,19 +1054,19 @@ pylith::topology::TestFieldMesh::testCreateScatterWithBC(void)
   // Create another scatter.
   field.createScatterWithBC(mesh, "B");
   CPPUNIT_ASSERT_EQUAL(size_t(2), field._scatters.size());
-  const Field<Mesh>::ScatterInfo& sinfoB = field._getScatter("B");
+  const Field::ScatterInfo& sinfoB = field._getScatter("B");
   CPPUNIT_ASSERT(sinfoB.dm);
   CPPUNIT_ASSERT(sinfoB.vector);
 
-  Field<Mesh> field2(mesh);
+  Field field2(mesh);
   field2.cloneSection(field);
   CPPUNIT_ASSERT_EQUAL(size_t(2), field2._scatters.size());
 
-  const Field<Mesh>::ScatterInfo& sinfo2 = field2._getScatter("");
+  const Field::ScatterInfo& sinfo2 = field2._getScatter("");
   CPPUNIT_ASSERT(sinfo2.dm);
   CPPUNIT_ASSERT(sinfo2.vector);
 
-  const Field<Mesh>::ScatterInfo& sinfo2B = field2._getScatter("B");
+  const Field::ScatterInfo& sinfo2B = field2._getScatter("B");
   CPPUNIT_ASSERT(sinfo2B.dm);
   CPPUNIT_ASSERT(sinfo2B.vector);
 
@@ -1086,14 +1086,14 @@ pylith::topology::TestFieldMesh::testVector(void)
   Mesh mesh;
   _buildMesh(&mesh);
 
-  Field<Mesh> field(mesh);
-  field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
+  Field field(mesh);
+  field.newSection(Field::VERTICES_FIELD, fiberDim);
   field.allocate();
   
   CPPUNIT_ASSERT_EQUAL(size_t(0), field._scatters.size());
   field.createScatter(mesh);
   CPPUNIT_ASSERT_EQUAL(size_t(1), field._scatters.size());
-  const Field<Mesh>::ScatterInfo& sinfo = field._getScatter("");
+  const Field::ScatterInfo& sinfo = field._getScatter("");
   CPPUNIT_ASSERT(sinfo.dm);
   CPPUNIT_ASSERT(sinfo.vector);
 
@@ -1136,9 +1136,9 @@ pylith::topology::TestFieldMesh::testScatterSectionToVector(void)
   const PetscInt vStart = depthStratum.begin();
   const PetscInt vEnd = depthStratum.end();
 
-  Field<Mesh> field(mesh);
+  Field field(mesh);
   { // setup field
-    field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
+    field.newSection(Field::VERTICES_FIELD, fiberDim);
     field.allocate();
     VecVisitorMesh fieldVisitor(field);
     PetscScalar* fieldArray = fieldVisitor.localArray();
@@ -1192,8 +1192,8 @@ pylith::topology::TestFieldMesh::testScatterVectorToSection(void)
   const PetscInt vStart = depthStratum.begin();
   const PetscInt vEnd = depthStratum.end();
 
-  Field<Mesh> field(mesh);
-  field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
+  Field field(mesh);
+  field.newSection(Field::VERTICES_FIELD, fiberDim);
   field.allocate();
   field.createScatter(mesh, context);
 
@@ -1252,7 +1252,7 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
   PetscErrorCode err = 0;
 
   // Create field with section to use to create new field
-  Field<Mesh> fieldSrc(mesh);
+  Field fieldSrc(mesh);
   { // Setup source field
     for(PetscInt f = 0; f < numFields; ++f) {
       std::ostringstream msg;
@@ -1260,11 +1260,11 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
       fieldSrc.addField(msg.str().c_str(), 1);
     } // for
     fieldSrc.setupFields();
-    fieldSrc.newSection(Field<Mesh>::VERTICES_FIELD, spaceDim);
+    fieldSrc.newSection(Field::VERTICES_FIELD, spaceDim);
     for(PetscInt f = 0; f < spaceDim; ++f) {
       std::ostringstream msg;
       msg << "Field "<<f;
-      fieldSrc.updateDof(msg.str().c_str(), Field<Mesh>::VERTICES_FIELD, 1);
+      fieldSrc.updateDof(msg.str().c_str(), Field::VERTICES_FIELD, 1);
     } // for
     PetscSection section = fieldSrc.petscSection();CPPUNIT_ASSERT(section);
     PetscInt iV = 0, iC = 0;
@@ -1346,7 +1346,7 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
   PetscErrorCode err = 0;
 
   // Create field with atlas to use to create new field
-  Field<Mesh> fieldSrc(mesh);
+  Field fieldSrc(mesh);
   { // Setup source field
     for(PetscInt f = 0; f < numFields; ++f) {
       std::ostringstream msg;
@@ -1354,11 +1354,11 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
       fieldSrc.addField(msg.str().c_str(), 1);
     } // for
     fieldSrc.setupFields();
-    fieldSrc.newSection(Field<Mesh>::VERTICES_FIELD, spaceDim);
+    fieldSrc.newSection(Field::VERTICES_FIELD, spaceDim);
     for(PetscInt f = 0; f < spaceDim; ++f) {
       std::ostringstream msg;
       msg << "Field "<<f;
-      fieldSrc.updateDof(msg.str().c_str(), Field<Mesh>::VERTICES_FIELD, 1);
+      fieldSrc.updateDof(msg.str().c_str(), Field::VERTICES_FIELD, 1);
     } // for
     PetscSection section = fieldSrc.petscSection();
     CPPUNIT_ASSERT(section);
@@ -1387,7 +1387,7 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
     } // for
   } // Setup source field
 
-  Field<Mesh> field(mesh);
+  Field field(mesh);
   field.cloneSection(fieldSrc);
 
   PetscSection section = field.petscSection();CPPUNIT_ASSERT(section);

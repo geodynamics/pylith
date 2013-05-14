@@ -125,7 +125,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::normViscosity(const PylithScalar
 // ----------------------------------------------------------------------
 // Integrate constributions to residual term (r) for operator.
 void
-pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(const topology::Field<topology::Mesh>& residual,
+pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(const topology::Field& residual,
 								  const PylithScalar t,
 								  topology::SolutionFields* const fields)
 { // integrateResidualLumped
@@ -354,7 +354,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(topology::Jaco
 // ----------------------------------------------------------------------
 // Compute matrix associated with operator.
 void
-pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(topology::Field<topology::Mesh>* jacobian,
+pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(topology::Field* jacobian,
 								  const PylithScalar t,
 								  topology::SolutionFields* fields)
 { // integrateJacobian

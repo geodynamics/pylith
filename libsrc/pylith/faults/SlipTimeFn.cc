@@ -52,7 +52,7 @@ pylith::faults::SlipTimeFn::deallocate(void)
   
 // ----------------------------------------------------------------------
 // Get parameter fields.
-const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >*
+const pylith::topology::Fields*
 pylith::faults::SlipTimeFn::parameterFields(void) const
 { // parameterFields
   return _parameters;

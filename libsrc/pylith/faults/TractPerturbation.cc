@@ -78,7 +78,7 @@ pylith::faults::TractPerturbation::label(const char* value)
 
 // ----------------------------------------------------------------------
 // Get parameter fields.
-const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >*
+const pylith::topology::Fields*
 pylith::faults::TractPerturbation::parameterFields(void) const
 { // parameterFields
   return _parameters;
@@ -88,7 +88,7 @@ pylith::faults::TractPerturbation::parameterFields(void) const
 // Initialize traction perturbation function.
 void
 pylith::faults::TractPerturbation::initialize(const topology::Mesh& faultMesh,
-					      const topology::Field<topology::Mesh>& faultOrientation, 
+					      const topology::Field& faultOrientation, 
 					      const spatialdata::units::Nondimensional& normalizer)
 { // initialize
   PYLITH_METHOD_BEGIN;
@@ -101,42 +101,41 @@ pylith::faults::TractPerturbation::initialize(const topology::Mesh& faultMesh,
   const spatialdata::geocoords::CoordSys* cs = faultMesh.coordsys();assert(cs);
   const int spaceDim = cs->spaceDim();
 
-  delete _parameters; 
-  _parameters = new topology::Fields<topology::Field<topology::Mesh> >(faultMesh);
+  delete _parameters; _parameters = new topology::Fields(faultMesh);assert(_parameters);
 
   // Create section to hold time dependent values
   _parameters->add("value", "traction", topology::FieldBase::VERTICES_FIELD, spaceDim);
-  topology::Field<topology::Mesh>& value = _parameters->get("value");
+  topology::Field& value = _parameters->get("value");
   value.vectorFieldType(topology::FieldBase::VECTOR);
   value.scale(pressureScale);
   value.allocate();
   if (_dbInitial) {
     _parameters->add("initial", "traction_initial", topology::FieldBase::VERTICES_FIELD, spaceDim);
-    topology::Field<topology::Mesh>& initial = _parameters->get("initial");
+    topology::Field& initial = _parameters->get("initial");
     initial.vectorFieldType(topology::FieldBase::VECTOR);
     initial.scale(pressureScale);
     initial.allocate();
   }
   if (_dbRate) {
     _parameters->add("rate", "traction_rate", topology::FieldBase::VERTICES_FIELD, spaceDim);
-    topology::Field<topology::Mesh>& rate = _parameters->get("rate");
+    topology::Field& rate = _parameters->get("rate");
     rate.vectorFieldType(topology::FieldBase::VECTOR);
     rate.scale(rateScale);
     rate.allocate();
     _parameters->add("rate time", "rate_start_time", topology::FieldBase::VERTICES_FIELD, 1);
-    topology::Field<topology::Mesh>& rateTime = _parameters->get("rate time");
+    topology::Field& rateTime = _parameters->get("rate time");
     rateTime.vectorFieldType(topology::FieldBase::SCALAR);
     rateTime.scale(timeScale);
     rateTime.allocate();
   } // if
   if (_dbChange) {
     _parameters->add("change", "traction_change", topology::FieldBase::VERTICES_FIELD, spaceDim);
-    topology::Field<topology::Mesh>& change = _parameters->get("change");
+    topology::Field& change = _parameters->get("change");
     change.vectorFieldType(topology::FieldBase::VECTOR);
     change.scale(pressureScale);
     change.allocate();
     _parameters->add("change time", "change_start_time", topology::FieldBase::VERTICES_FIELD, 1);
-    topology::Field<topology::Mesh>& changeTime = _parameters->get("change time");
+    topology::Field& changeTime = _parameters->get("change time");
     changeTime.vectorFieldType(topology::FieldBase::SCALAR);
     changeTime.scale(timeScale);
     changeTime.allocate();
@@ -170,7 +169,7 @@ pylith::faults::TractPerturbation::initialize(const topology::Mesh& faultMesh,
       } // switch
     _queryDB("initial", _dbInitial, spaceDim, pressureScale, normalizer);
     _dbInitial->close();
-    pylith::topology::Field<pylith::topology::Mesh>& initial = _parameters->get("initial");
+    pylith::topology::Field& initial = _parameters->get("initial");
     FaultCohesiveLagrange::faultToGlobal(&initial, faultOrientation);
   } // if
 
@@ -207,7 +206,7 @@ pylith::faults::TractPerturbation::initialize(const topology::Mesh& faultMesh,
     _dbRate->queryVals(timeNames, 1);
     _queryDB("rate time", _dbRate, 1, timeScale, normalizer);
     _dbRate->close();
-    pylith::topology::Field<pylith::topology::Mesh>& rate = _parameters->get("rate");
+    topology::Field& rate = _parameters->get("rate");
     FaultCohesiveLagrange::faultToGlobal(&rate, faultOrientation);
   } // if
 
@@ -243,7 +242,7 @@ pylith::faults::TractPerturbation::initialize(const topology::Mesh& faultMesh,
     _dbChange->queryVals(timeNames, 1);
     _queryDB("change time", _dbChange, 1, timeScale, normalizer);
     _dbChange->close();
-    pylith::topology::Field<pylith::topology::Mesh>& change = _parameters->get("change");
+    topology::Field& change = _parameters->get("change");
     FaultCohesiveLagrange::faultToGlobal(&change, faultOrientation);
 
     if (_dbTimeHistory)
@@ -273,27 +272,27 @@ pylith::faults::TractPerturbation::calculate(const PylithScalar t)
   const spatialdata::geocoords::CoordSys* cs = _parameters->mesh().coordsys();assert(cs);
   const int spaceDim = cs->spaceDim();
 
-  topology::Field<topology::Mesh>& valueField = _parameters->get("value");
+  topology::Field& valueField = _parameters->get("value");
   topology::VecVisitorMesh valueVisitor(valueField);
   PetscScalar* valueArray = valueVisitor.localArray();
   
-  topology::Field<topology::Mesh>* initialField = (_dbInitial) ? &_parameters->get("initial") : 0;
+  topology::Field* initialField = (_dbInitial) ? &_parameters->get("initial") : 0;
   topology::VecVisitorMesh* initialVisitor = (initialField) ? new topology::VecVisitorMesh(*initialField) : 0;
   PetscScalar* initialArray = (initialVisitor) ? initialVisitor->localArray() : NULL;
 
-  topology::Field<topology::Mesh>* rateField = (_dbRate) ? &_parameters->get("rate") : 0;
+  topology::Field* rateField = (_dbRate) ? &_parameters->get("rate") : 0;
   topology::VecVisitorMesh* rateVisitor = (rateField) ? new topology::VecVisitorMesh(*rateField) : 0;
   PetscScalar* rateArray = (rateVisitor) ? rateVisitor->localArray() : NULL;
 
-  topology::Field<topology::Mesh>* rateTimeField = (_dbRate) ? &_parameters->get("rate time") : 0;
+  topology::Field* rateTimeField = (_dbRate) ? &_parameters->get("rate time") : 0;
   topology::VecVisitorMesh* rateTimeVisitor = (rateTimeField) ? new topology::VecVisitorMesh(*rateTimeField) : 0;
   PetscScalar* rateTimeArray = (rateTimeVisitor) ? rateTimeVisitor->localArray() : NULL;
 
-  topology::Field<topology::Mesh>* changeField = (_dbChange) ? &_parameters->get("change") : 0;
+  topology::Field* changeField = (_dbChange) ? &_parameters->get("change") : 0;
   topology::VecVisitorMesh* changeVisitor = (changeField) ? new topology::VecVisitorMesh(*changeField) : 0;
   PetscScalar* changeArray = (changeVisitor) ? changeVisitor->localArray() : NULL;
 
-  topology::Field<topology::Mesh>* changeTimeField = (_dbChange) ? &_parameters->get("change time") : 0;
+  topology::Field* changeTimeField = (_dbChange) ? &_parameters->get("change time") : 0;
   topology::VecVisitorMesh* changeTimeVisitor = (changeTimeField) ? new topology::VecVisitorMesh(*changeTimeField) : 0;
   PetscScalar* changeTimeArray = (changeTimeVisitor) ? changeTimeVisitor->localArray() : NULL;
 
@@ -390,7 +389,7 @@ pylith::faults::TractPerturbation::hasParameter(const char* name) const
 
 // ----------------------------------------------------------------------
 // Get vertex field with traction perturbation information.
-const pylith::topology::Field<pylith::topology::Mesh>&
+const pylith::topology::Field&
 pylith::faults::TractPerturbation::vertexField(const char* name,
 					       const topology::SolutionFields* const fields)
 { // vertexField
@@ -462,7 +461,7 @@ pylith::faults::TractPerturbation::_queryDB(const char* name,
   topology::CoordsVisitor coordsVisitor(dmMesh);
   PetscScalar *coordArray = coordsVisitor.localArray();
 
-  topology::Field<topology::Mesh>& parametersField = _parameters->get(name);
+  topology::Field& parametersField = _parameters->get(name);
   topology::VecVisitorMesh parametersVisitor(parametersField);
   PetscScalar* parametersArray = parametersVisitor.localArray();
 

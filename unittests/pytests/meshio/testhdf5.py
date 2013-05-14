@@ -63,11 +63,11 @@ class TestApp(Script):
 
     suite = unittest.TestSuite()
 
-    from TestDataWriterHDF5 import TestDataWriterHDF5Mesh
-    suite.addTest(unittest.makeSuite(TestDataWriterHDF5Mesh))
+    from TestDataWriterHDF5 import TestDataWriterHDF5
+    suite.addTest(unittest.makeSuite(TestDataWriterHDF5))
 
-    from TestDataWriterHDF5Ext import TestDataWriterHDF5ExtMesh
-    suite.addTest(unittest.makeSuite(TestDataWriterHDF5ExtMesh))
+    from TestDataWriterHDF5Ext import TestDataWriterHDF5Ext
+    suite.addTest(unittest.makeSuite(TestDataWriterHDF5Ext))
 
     from TestXdmf import TestXdmf
     suite.addTest(unittest.makeSuite(TestXdmf))

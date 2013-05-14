@@ -50,8 +50,7 @@
 
 // DataWriterHDF5Ext ----------------------------------------------------
 /// Object for writing finite-element data to HDF5 file.
-template<typename mesh_type, typename field_type>
-class pylith::meshio::DataWriterHDF5Ext : public DataWriter<mesh_type,field_type>
+class pylith::meshio::DataWriterHDF5Ext : public DataWriter
 { // DataWriterHDF5Ext
   friend class TestDataWriterHDF5ExtMesh; // unit testing
   friend class TestDataWriterHDF5ExtSubMesh; // unit testing
@@ -71,7 +70,7 @@ public :
    *
    * @returns Copy of this.
    */
-  DataWriter<mesh_type, field_type>* clone(void) const;
+  DataWriter* clone(void) const;
 
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
@@ -90,7 +89,7 @@ public :
    *   (=0 means use all cells in mesh).
    * @param labelId Value of label defining which cells to include.
    */
-  void open(const mesh_type& mesh,
+  void open(const topology::Mesh& mesh,
 	    const int numTimeSteps,
 	    const char* label =0,
 	    const int labelId =0);
@@ -105,8 +104,8 @@ public :
    * @param mesh Mesh associated with output.
    */
   void writeVertexField(const PylithScalar t,
-			field_type& field,
-			const mesh_type& mesh);
+			topology::Field& field,
+			const topology::Mesh& mesh);
 
   /** Write field over cells to file.
    *
@@ -117,7 +116,7 @@ public :
    * @param labelId Value of label defining which cells to include.
    */
   void writeCellField(const PylithScalar t,
-		      field_type& field,
+		      topology::Field& field,
 		      const char* label =0,
 		      const int labelId =0);
 
@@ -167,7 +166,6 @@ private :
 }; // DataWriterHDF5Ext
 
 #include "DataWriterHDF5Ext.icc" // inline methods
-#include "DataWriterHDF5Ext.cc" // template definitions
 
 #endif // pylith_meshio_datawriterhdf5ext_hh
 

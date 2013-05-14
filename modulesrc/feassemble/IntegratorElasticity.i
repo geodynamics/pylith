@@ -82,17 +82,15 @@ namespace pylith {
        * @param fields Fields manager.
        * @returns Cell field.
        */
-      const pylith::topology::Field<pylith::topology::Mesh>&
-      cellField(const char* name,
-		const pylith::topology::Mesh& mesh,
-		pylith::topology::SolutionFields* const fields =0);
+      const pylith::topology::Field& cellField(const char* name,
+					       const pylith::topology::Mesh& mesh,
+					       pylith::topology::SolutionFields* const fields =0);
       
       /** Get output fields.
        *
        * @returns Output (buffer) fields.
        */
-      const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >*
-      outputFields(void) const;
+      const pylith::topology::Fields* outputFields(void) const;
 
     }; // IntegratorElasticity
 

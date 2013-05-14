@@ -35,7 +35,6 @@
 
 #include "pylith/utils/types.hh"
 #include "pylith/utils/array.hh"
-#include "pylith/utils/sievetypes.hh"
 %}
 
 %include "exception.i"

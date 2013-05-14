@@ -23,10 +23,10 @@
 ##
 ## Factory: output_manager
 
-from OutputManagerMesh import OutputManagerMesh
+from OutputManager import OutputManager
 
 # OutputSoln class
-class OutputSoln(OutputManagerMesh):
+class OutputSoln(OutputManager):
   """
   Python object for managing output of finite-element solution
   information.
@@ -61,7 +61,7 @@ class OutputSoln(OutputManagerMesh):
     """
     Constructor.
     """
-    OutputManagerMesh.__init__(self, name)
+    OutputManager.__init__(self, name)
     self.availableFields = \
         {'vertex': \
            {'info': [],
@@ -76,7 +76,7 @@ class OutputSoln(OutputManagerMesh):
     """
     Do
     """
-    OutputManagerMesh.preinitialize(self, dataProvider=self)
+    OutputManager.preinitialize(self, dataProvider=self)
     return
   
 
@@ -89,7 +89,7 @@ class OutputSoln(OutputManagerMesh):
 
     import weakref
     self.mesh = weakref.ref(mesh)
-    OutputManagerMesh.initialize(self, normalizer)
+    OutputManager.initialize(self, normalizer)
 
     self._eventLogger.eventEnd(logEvent)
     return
@@ -122,7 +122,7 @@ class OutputSoln(OutputManagerMesh):
     """
     Set members based using inventory.
     """
-    OutputManagerMesh._configure(self)
+    OutputManager._configure(self)
     self.vertexDataFields = self.inventory.vertexDataFields
     self.cellInfoFields = self.inventory.cellInfoFields
     return

@@ -35,7 +35,6 @@
 /** @brief C++ object for filtering vertex fields when outputing
  * finite-element data.
  */
-template<typename field_type>
 class pylith::meshio::VertexFilter
 { // VertexFilter
 
@@ -65,8 +64,8 @@ public :
    * @param fieldIn Field to filter.
    */
   virtual
-  field_type&
-  filter(const field_type& fieldIn) = 0;
+  topology::Field&
+  filter(const topology::Field& fieldIn) = 0;
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
@@ -87,8 +86,6 @@ private :
   const VertexFilter& operator=(const VertexFilter& f);
 
 }; // VertexFilter
-
-#include "VertexFilter.cc" // template definitions
 
 #endif // pylith_meshio_vertexfilter_hh
 

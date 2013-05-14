@@ -116,7 +116,7 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateResidual(void)
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
-  topology::Field<topology::Mesh>& residual = fields.get("residual");
+  topology::Field& residual = fields.get("residual");
   const PylithScalar t = 1.0;
   integrator.integrateResidual(residual, t, &fields);
 
@@ -172,7 +172,7 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateJacobian(void)
   _initialize(&mesh, &integrator, &fields);
   integrator._needNewJacobian = true;
 
-  topology::Field<topology::Mesh> jacobian(mesh);
+  topology::Field jacobian(mesh);
   jacobian.label("Jacobian");
   jacobian.vectorFieldType(topology::FieldBase::VECTOR);
   jacobian.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
@@ -333,7 +333,7 @@ pylith::feassemble::TestElasticityExplicitLgDeform::_initialize(topology::Mesh* 
   fields->add("acceleration(t)", "acceleration");
   fields->solutionName("dispIncr(t->t+dt)");
   
-  topology::Field<topology::Mesh>& residual = fields->get("residual");
+  topology::Field& residual = fields->get("residual");
   residual.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   residual.allocate();
   residual.zero();

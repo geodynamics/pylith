@@ -33,7 +33,6 @@
 
 // DataWriter -----------------------------------------------------------
 /// Abstract base class for writing finite-element data to file.
-template<typename mesh_type, typename field_type>
 class pylith::meshio::DataWriter
 { // DataWriter
 
@@ -73,7 +72,7 @@ public :
    * @param labelId Value of label defining which cells to include.
    */
   virtual
-  void open(const mesh_type& mesh,
+  void open(const topology::Mesh& mesh,
 	    const int numTimeSteps,
 	    const char* label =0,
 	    const int labelId =0);
@@ -92,7 +91,7 @@ public :
    */
   virtual
   void openTimeStep(const PylithScalar t,
-		    const mesh_type& mesh,
+		    const topology::Mesh& mesh,
 		    const char* label =0,
 		    const int labelId =0);
 
@@ -108,8 +107,8 @@ public :
   */
   virtual
   void writeVertexField(const PylithScalar t,
-			field_type& field,
-			const mesh_type& mesh) = 0;
+			topology::Field& field,
+			const topology::Mesh& mesh) = 0;
 
   /** Write field over cells to file.
    *
@@ -121,7 +120,7 @@ public :
    */
   virtual
   void writeCellField(const PylithScalar t,
-		      field_type& field,
+		      topology::Field& field,
 		      const char* label =0,
 		      const int labelId =0) = 0;
 
@@ -147,8 +146,6 @@ protected :
   std::string _context; ///< Context of scatters for DataWriter.
 
 }; // DataWriter
-
-#include "DataWriter.cc" // template methods
 
 #endif // pylith_meshio_datawriter_hh
 

@@ -61,13 +61,13 @@ namespace pylith {
        *
        * @param field Solution field
        */
-      void setConstraintSizes(const pylith::topology::Field<pylith::topology::Mesh>& field);
+      void setConstraintSizes(const pylith::topology::Field& field);
       
       /** Set which degrees of freedom are constrained at points in field.
        *
        * @param field Solution field
        */
-      void setConstraints(const pylith::topology::Field<pylith::topology::Mesh>& field);
+      void setConstraints(const pylith::topology::Field& field);
       
       /** Set values in field.
        *
@@ -75,7 +75,7 @@ namespace pylith {
        * @param field Solution field
        */
       void setField(const PylithScalar t,
-		    const pylith::topology::Field<pylith::topology::Mesh>& field);
+		    const pylith::topology::Field& field);
       
       /** Set values in field.
        *
@@ -85,7 +85,7 @@ namespace pylith {
        */
       void setFieldIncr(const PylithScalar t0,
 			const PylithScalar t1,
-			const pylith::topology::Field<pylith::topology::Mesh>& field);
+			const pylith::topology::Field& field);
       
       // PROTECTED METHODS //////////////////////////////////////////////
     protected :

@@ -66,12 +66,6 @@ class OutputSolnSubset(OutputManager, ModuleOutputSolnSubset):
   label = pyre.inventory.str("label", default="", validator=validateLabel)
   label.meta['tip'] = "Label identifier for subdomain."
 
-  from DataWriterVTKMesh import DataWriterVTKMesh
-  writer = pyre.inventory.facility("writer", factory=DataWriterVTKMesh,
-                                 family="data_writer")
-  writer.meta['tip'] = "Writer for data."
-
-
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="outputsolnsubset"):
@@ -151,13 +145,6 @@ class OutputSolnSubset(OutputManager, ModuleOutputSolnSubset):
     try:
       OutputManager._configure(self)
       ModuleOutputSolnSubset.label(self, self.label)
-      ModuleOutputSolnSubset.coordsys(self, self.inventory.coordsys)
-      ModuleOutputSolnSubset.writer(self, self.inventory.writer)
-      from pylith.utils.NullComponent import NullComponent
-      if not isinstance(self.inventory.vertexFilter, NullComponent):
-        ModuleOutputSolnSubset.vertexFilter(self, self.inventory.vertexFilter)
-      if not isinstance(self.inventory.cellFilter, NullComponent):
-        ModuleOutputSolnSubset.cellFilter(self, self.inventory.cellFilter)
     except ValueError, err:
       aliases = ", ".join(self.aliases)
       raise ValueError("Error while configuring output over boundary "
@@ -171,59 +158,6 @@ class OutputSolnSubset(OutputManager, ModuleOutputSolnSubset):
     Create handle to C++ object.
     """
     ModuleOutputSolnSubset.__init__(self)
-    return
-
-
-  def _open(self, mesh, nsteps, label, labelId):
-    """
-    Call C++ open();
-    """
-    if label != None and labelId != None:
-      ModuleOutputSolnSubset.open(self, mesh, nsteps, label, labelId)
-    else:
-      ModuleOutputSolnSubset.open(self, mesh, nsteps)
-    return
-
-
-  def _openTimeStep(self, t, mesh, label, labelId):
-    """
-    Call C++ openTimeStep();
-    """
-    if label != None and labelId != None:
-      ModuleOutputSolnSubset.openTimeStep(self, t, mesh, label, labelId)
-    else:
-      ModuleOutputSolnSubset.openTimeStep(self, t, mesh)
-    return
-
-
-  def _appendVertexField(self, t, field, mesh):
-    """
-    Call C++ appendVertexField();
-    """
-    ModuleOutputSolnSubset.appendVertexField(self, t, field, mesh)
-    return
-
-  def _appendCellField(self, t, field):
-    """
-    Call C++ appendCellField();
-    """
-    ModuleOutputSolnSubset.appendCellField(self, t, field)
-    return
-
-
-  def _closeTimeStep(self):
-    """
-    Call C++ closeTimeStep().
-    """
-    ModuleOutputSolnSubset.closeTimeStep(self)
-    return
-
-
-  def _close(self):
-    """
-    Call C++ close().
-    """
-    ModuleOutputSolnSubset.close(self)
     return
 
 

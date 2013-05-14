@@ -95,7 +95,7 @@ private :
    * @param field Solution field.
    */
   void _initializeField(Mesh* mesh,
-                        Field<Mesh>* field) const;
+                        Field* field) const;
 
 }; // class TestJacobian
 

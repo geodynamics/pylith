@@ -134,7 +134,7 @@ pylith::feassemble::ElasticityExplicitTri3::normViscosity(const PylithScalar vis
 // ----------------------------------------------------------------------
 // Integrate constributions to residual term (r) for operator.
 void
-pylith::feassemble::ElasticityExplicitTri3::integrateResidual(const topology::Field<topology::Mesh>& residual,
+pylith::feassemble::ElasticityExplicitTri3::integrateResidual(const topology::Field& residual,
 							      const PylithScalar t,
 							      topology::SolutionFields* const fields)
 { // integrateResidual
@@ -409,7 +409,7 @@ pylith::feassemble::ElasticityExplicitTri3::integrateJacobian(topology::Jacobian
 // Compute matrix associated with operator.
 void
 pylith::feassemble::ElasticityExplicitTri3::integrateJacobian(
-			    topology::Field<topology::Mesh>* jacobian,
+			    topology::Field* jacobian,
 			    const PylithScalar t,
 			    topology::SolutionFields* fields)
 { // integrateJacobian

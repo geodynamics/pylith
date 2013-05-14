@@ -23,10 +23,10 @@
 ##
 ## Factory: output_manager
 
-from OutputManagerMesh import OutputManagerMesh
+from OutputManager import OutputManager
 
 # OutputNeumann class
-class OutputNeumann(OutputManagerMesh):
+class OutputNeumann(OutputManager):
   """
   Python object for managing output of finite-element information for
   Neumann boundary conditions.
@@ -36,7 +36,7 @@ class OutputNeumann(OutputManagerMesh):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(OutputManagerMesh.Inventory):
+  class Inventory(OutputManager.Inventory):
     """
     Python object for managing OutputNeumann facilities and properties.
     """
@@ -63,7 +63,7 @@ class OutputNeumann(OutputManagerMesh):
     """
     Constructor.
     """
-    OutputManagerMesh.__init__(self, name)
+    OutputManager.__init__(self, name)
     return
 
     
@@ -73,7 +73,7 @@ class OutputNeumann(OutputManagerMesh):
     """
     Set members based using inventory.
     """
-    OutputManagerMesh._configure(self)
+    OutputManager._configure(self)
     self.vertexInfoFields = []
     self.vertexDataFields = []
     self.cellInfoFields = self.inventory.cellInfoFields

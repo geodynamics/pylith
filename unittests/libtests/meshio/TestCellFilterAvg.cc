@@ -32,14 +32,11 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestCellFilterAvg );
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Field<pylith::topology::Mesh> MeshField;
-
-// ----------------------------------------------------------------------
 // Test constructor
 void
 pylith::meshio::TestCellFilterAvg::testConstructor(void)
 { // testConstructor
-  CellFilterAvg<topology::Mesh, MeshField> filter;
+  CellFilterAvg filter;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -95,7 +92,7 @@ pylith::meshio::TestCellFilterAvg::testFilterMesh(void)
   iohandler.read(&mesh);
 
   // Set cell field
-  MeshField field(mesh);
+  topology::Field field(mesh);
   field.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
   field.allocate();
   field.vectorFieldType(fieldType);
@@ -124,10 +121,10 @@ pylith::meshio::TestCellFilterAvg::testFilterMesh(void)
 			quadWts, numQuadPts,
 			spaceDim);
 
-  CellFilterAvg<topology::Mesh, MeshField> filter;
+  CellFilterAvg filter;
   filter.quadrature(&quadrature);
 
-  const MeshField& fieldF = filter.filter(field);
+  const topology::Field& fieldF = filter.filter(field);
 
   CPPUNIT_ASSERT_EQUAL(fieldTypeE, fieldF.vectorFieldType());
   CPPUNIT_ASSERT_EQUAL(label, std::string(fieldF.label()));
@@ -200,7 +197,7 @@ pylith::meshio::TestCellFilterAvg::testFilterSubMesh(void)
   topology::Mesh submesh(mesh, group);
 
   // Set cell field
-  MeshField field(submesh);
+  topology::Field field(submesh);
   field.newSection(topology::FieldBase::FACES_FIELD, fiberDim);
   field.allocate();
   field.vectorFieldType(fieldType);
@@ -229,10 +226,10 @@ pylith::meshio::TestCellFilterAvg::testFilterSubMesh(void)
 			quadWts, numQuadPts,
 			spaceDim);
 
-  CellFilterAvg<topology::Mesh, MeshField> filter;
+  CellFilterAvg filter;
   filter.quadrature(&quadrature);
 
-  const MeshField& fieldF = filter.filter(field);
+  const topology::Field& fieldF = filter.filter(field);
 
   CPPUNIT_ASSERT_EQUAL(fieldTypeE, fieldF.vectorFieldType());
   CPPUNIT_ASSERT_EQUAL(label, std::string(fieldF.label()));

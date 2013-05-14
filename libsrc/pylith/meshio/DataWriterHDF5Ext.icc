@@ -21,18 +21,16 @@
 #else
 
 // Make copy of this object.
-template<typename mesh_type, typename field_type>
 inline
-pylith::meshio::DataWriter<mesh_type, field_type>*
-pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::clone(void) const {
+pylith::meshio::DataWriter*
+pylith::meshio::DataWriterHDF5Ext::clone(void) const {
   return new DataWriterHDF5Ext(*this);
 }
 
 // Set filename for HDF5 file.
-template<typename mesh_type, typename field_type>
 inline
 void
-pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::filename(const char* filename) {
+pylith::meshio::DataWriterHDF5Ext::filename(const char* filename) {
   _filename = filename;
 }
 

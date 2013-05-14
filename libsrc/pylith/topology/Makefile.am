@@ -26,9 +26,7 @@ subpkginclude_HEADERS = \
 	FieldBase.hh \
 	Field.hh \
 	Field.icc \
-	Field.cc \
 	Fields.hh \
-	Fields.icc \
 	Jacobian.hh \
 	Mesh.hh \
 	Mesh.icc \

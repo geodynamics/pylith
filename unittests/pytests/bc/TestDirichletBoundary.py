@@ -193,8 +193,8 @@ class TestDirichletBoundary(unittest.TestCase):
     bc.initialize(totalTime=0.0, numTimeSteps=1, normalizer=normalizer)
 
     # Setup field
-    from pylith.topology.Field import MeshField
-    field = MeshField(mesh)
+    from pylith.topology.Field import Field
+    field = Field(mesh)
     field.newSection(field.VERTICES_FIELD, cs.spaceDim())
     
     return (mesh, bc, field)

@@ -69,14 +69,14 @@ class TestApp(Script):
     from TestMeshIOLagrit import TestMeshIOLagrit
     suite.addTest(unittest.makeSuite(TestMeshIOLagrit))
 
-    from TestVertexFilterVecNorm import TestVertexFilterVecNormMesh
-    suite.addTest(unittest.makeSuite(TestVertexFilterVecNormMesh))
+    from TestVertexFilterVecNorm import TestVertexFilterVecNorm
+    suite.addTest(unittest.makeSuite(TestVertexFilterVecNorm))
 
-    from TestCellFilterAvg import TestCellFilterAvgMesh
-    suite.addTest(unittest.makeSuite(TestCellFilterAvgMesh))
+    from TestCellFilterAvg import TestCellFilterAvg
+    suite.addTest(unittest.makeSuite(TestCellFilterAvg))
 
-    from TestDataWriterVTK import TestDataWriterVTKMesh
-    suite.addTest(unittest.makeSuite(TestDataWriterVTKMesh))
+    from TestDataWriterVTK import TestDataWriterVTK
+    suite.addTest(unittest.makeSuite(TestDataWriterVTK))
 
     from TestOutputManagerMesh import TestOutputManagerMesh
     suite.addTest(unittest.makeSuite(TestOutputManagerMesh))

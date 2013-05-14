@@ -146,7 +146,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::updateStateVars(const PylithSc
 
 // ----------------------------------------------------------------------
 void
-pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(topology::Field<topology::Mesh>* field,
+pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(topology::Field* field,
 									 const char* name,
 									 topology::SolutionFields* const fields)
 { // _calcStrainStressField

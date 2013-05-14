@@ -37,6 +37,7 @@
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
 #include "spatialdata/spatialdb/UniformDB.hh" // USES UniformDB
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestPointForce );
@@ -176,7 +177,7 @@ pylith::bc::TestPointForce::testIntegrateResidual(void)
   PointForce bc;
   _initialize(&mesh, &bc);
 
-  topology::Field<topology::Mesh> residual(mesh);
+  topology::Field residual(mesh);
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();CPPUNIT_ASSERT(cs);
   const int spaceDim = cs->spaceDim();
   residual.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);

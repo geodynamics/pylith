@@ -18,30 +18,29 @@
 
 #include <portinfo>
 
+#include "CellFilter.hh" // Implementation of class methods
+
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 
 #include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
 
 // ----------------------------------------------------------------------
 // Constructor
-template<typename mesh_type, typename field_type>
-pylith::meshio::CellFilter<mesh_type, field_type>::CellFilter(void) :
+pylith::meshio::CellFilter::CellFilter(void) :
   _quadrature(0)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-template<typename mesh_type, typename field_type>
-pylith::meshio::CellFilter<mesh_type, field_type>::~CellFilter(void)
+pylith::meshio::CellFilter::~CellFilter(void)
 { // destructor
   deallocate();
 } // destructor  
 
 // ----------------------------------------------------------------------
 // Copy constructor.
-template<typename mesh_type, typename field_type>
-pylith::meshio::CellFilter<mesh_type, field_type>::CellFilter(const CellFilter& f) :
+pylith::meshio::CellFilter::CellFilter(const CellFilter& f) :
   _quadrature(0)
 { // copy constructor
   PYLITH_METHOD_BEGIN;
@@ -54,18 +53,16 @@ pylith::meshio::CellFilter<mesh_type, field_type>::CellFilter(const CellFilter& 
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::CellFilter<mesh_type, field_type>::deallocate(void)
+pylith::meshio::CellFilter::deallocate(void)
 { // deallocate
   delete _quadrature; _quadrature = 0;
 } // deallocate
   
 // ----------------------------------------------------------------------
 // Set quadrature associated with cells.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::CellFilter<mesh_type, field_type>::quadrature(const feassemble::Quadrature* q)
+pylith::meshio::CellFilter::quadrature(const feassemble::Quadrature* q)
 { // quadrature
   PYLITH_METHOD_BEGIN;
 

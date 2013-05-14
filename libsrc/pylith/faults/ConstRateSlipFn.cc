@@ -91,10 +91,10 @@ pylith::faults::ConstRateSlipFn::initialize(const topology::Mesh& faultMesh,
   const PetscInt vStart = verticesStratum.begin();
   const PetscInt vEnd = verticesStratum.end();
 
-  delete _parameters; _parameters = new topology::Fields<topology::Field<topology::Mesh> >(faultMesh);
-  assert(_parameters);
+  delete _parameters; _parameters = new topology::Fields(faultMesh);assert(_parameters);
+
   _parameters->add("slip rate", "slip_rate");
-  topology::Field<topology::Mesh>& slipRate = _parameters->get("slip rate");
+  topology::Field& slipRate = _parameters->get("slip rate");
   slipRate.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   slipRate.allocate();
   slipRate.scale(velocityScale);
@@ -103,7 +103,7 @@ pylith::faults::ConstRateSlipFn::initialize(const topology::Mesh& faultMesh,
   PetscScalar* slipRateArray = slipRateVisitor.localArray();
 
   _parameters->add("slip time", "slip_time");
-  topology::Field<topology::Mesh>& slipTime = _parameters->get("slip time");
+  topology::Field& slipTime = _parameters->get("slip time");
   slipTime.newSection(slipRate, 1);
   slipTime.allocate();
   slipTime.scale(timeScale);
@@ -202,7 +202,7 @@ pylith::faults::ConstRateSlipFn::initialize(const topology::Mesh& faultMesh,
 // ----------------------------------------------------------------------
 // Get slip on fault surface at time t.
 void
-pylith::faults::ConstRateSlipFn::slip(topology::Field<topology::Mesh>* slip,
+pylith::faults::ConstRateSlipFn::slip(topology::Field* slip,
 				      const PylithScalar t)
 { // slip
   PYLITH_METHOD_BEGIN;
@@ -217,11 +217,11 @@ pylith::faults::ConstRateSlipFn::slip(topology::Field<topology::Mesh>* slip,
   const PetscInt vEnd = verticesStratum.end();
 
   // Get sections
-  const topology::Field<topology::Mesh>& slipRate = _parameters->get("slip rate");
+  const topology::Field& slipRate = _parameters->get("slip rate");
   topology::VecVisitorMesh slipRateVisitor(slipRate);
   const PetscScalar* slipRateArray = slipRateVisitor.localArray();
 
-  const topology::Field<topology::Mesh>& slipTime = _parameters->get("slip time");
+  const topology::Field& slipTime = _parameters->get("slip time");
   topology::VecVisitorMesh slipTimeVisitor(slipTime);
   const PetscScalar* slipTimeArray = slipTimeVisitor.localArray();
 
@@ -253,7 +253,7 @@ pylith::faults::ConstRateSlipFn::slip(topology::Field<topology::Mesh>* slip,
 
 // ----------------------------------------------------------------------
 // Get final slip.
-const pylith::topology::Field<pylith::topology::Mesh>&
+const pylith::topology::Field&
 pylith::faults::ConstRateSlipFn::finalSlip(void)
 { // finalSlip
   PYLITH_METHOD_BEGIN;
@@ -264,7 +264,7 @@ pylith::faults::ConstRateSlipFn::finalSlip(void)
 
 // ----------------------------------------------------------------------
 // Get time when slip begins at each point.
-const pylith::topology::Field<pylith::topology::Mesh>&
+const pylith::topology::Field&
 pylith::faults::ConstRateSlipFn::slipTime(void)
 { // slipTime
   PYLITH_METHOD_BEGIN;

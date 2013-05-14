@@ -36,6 +36,7 @@
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
 #include "spatialdata/spatialdb/UniformDB.hh" // USES UniformDB
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletBC );
@@ -172,7 +173,7 @@ pylith::bc::TestDirichletBC::testSetConstraintSizes(void)
 
   const int fiberDim = _data->numDOF;
   const int spaceDim = mesh.dimension();
-  topology::Field<topology::Mesh> field(mesh);
+  topology::Field field(mesh);
   field.addField("bc", spaceDim);
   field.setupFields();
   field.newSection(pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
@@ -235,7 +236,7 @@ pylith::bc::TestDirichletBC::testSetConstraints(void)
 
   const int spaceDim = mesh.dimension();
   const int fiberDim = _data->numDOF;
-  topology::Field<topology::Mesh> field(mesh);
+  topology::Field field(mesh);
   field.addField("bc", spaceDim);
   field.setupFields();
   field.newSection(pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
@@ -302,7 +303,7 @@ pylith::bc::TestDirichletBC::testSetField(void)
   _initialize(&mesh, &bc);
 
   const int fiberDim = _data->numDOF;
-  topology::Field<topology::Mesh> field(mesh);
+  topology::Field field(mesh);
   field.addField("bc", fiberDim);
   field.setupFields();
   field.newSection(pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
@@ -410,7 +411,7 @@ pylith::bc::TestDirichletBC::testSetFieldIncr(void)
   _initialize(&mesh, &bc);
 
   const int fiberDim = _data->numDOF;
-  topology::Field<topology::Mesh> field(mesh);
+  topology::Field field(mesh);
   field.addField("bc", fiberDim);
   field.setupFields();
   field.newSection(pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);

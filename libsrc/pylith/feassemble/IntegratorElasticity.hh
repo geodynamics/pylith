@@ -107,8 +107,7 @@ public :
    *
    * @returns Output (buffer) fields.
    */
-  const topology::Fields<topology::Field<topology::Mesh> >*
-  outputFields(void) const;
+  const topology::Fields* outputFields(void) const;
 
   /** Get cell field associated with integrator.
    *
@@ -117,10 +116,9 @@ public :
    * @param fields Fields manager.
    * @returns Cell field.
    */
-  const topology::Field<topology::Mesh>&
-  cellField(const char* name,
-	    const topology::Mesh& mesh,
-	    topology::SolutionFields* const fields =0);
+  const topology::Field& cellField(const char* name,
+				   const topology::Mesh& mesh,
+				   topology::SolutionFields* const fields =0);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
@@ -141,7 +139,7 @@ protected :
    * @param fields Manager for solution fields.
    */
   virtual
-  void _calcStrainStressField(topology::Field<topology::Mesh>* field,
+  void _calcStrainStressField(topology::Field* field,
 			      const char* name,
 			      topology::SolutionFields* const fields);
 
@@ -151,7 +149,7 @@ protected :
    * @param field Field in which to store stress.
    */
   virtual
-  void _calcStressFromStrain(topology::Field<topology::Mesh>* field);
+  void _calcStressFromStrain(topology::Field* field);
 			      
 
   /** Integrate elasticity term in residual for 1-D cells.
@@ -247,8 +245,8 @@ protected :
   /// Elastic material associated with integrator
   materials::ElasticMaterial* _material;
 
-  /// Buffers for output.
-  topology::Fields<topology::Field<topology::Mesh> >* _outputFields;
+  
+  topology::Fields* _outputFields; ///< Buffers for output.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

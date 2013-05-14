@@ -116,7 +116,7 @@ pylith::feassemble::TestElasticityImplicitLgDeform::testIntegrateResidual(void)
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
-  topology::Field<topology::Mesh>& residual = fields.get("residual");
+  topology::Field& residual = fields.get("residual");
   const PylithScalar t = 1.0;
   integrator.integrateResidual(residual, t, &fields);
 
@@ -329,7 +329,7 @@ pylith::feassemble::TestElasticityImplicitLgDeform::_initialize(topology::Mesh* 
   fields->add("dispIncr(t->t+dt)", "displacement_increment");
   fields->solutionName("dispIncr(t->t+dt)");
   
-  topology::Field<topology::Mesh>& residual = fields->get("residual");
+  topology::Field& residual = fields->get("residual");
   residual.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
   residual.allocate();
   residual.zero();

@@ -22,10 +22,10 @@
 
 import unittest
 
-from pylith.meshio.CellFilterAvgMesh import CellFilterAvgMesh
+from pylith.meshio.CellFilterAvg import CellFilterAvg
 
 # ----------------------------------------------------------------------
-class TestCellFilterAvgMesh(unittest.TestCase):
+class TestCellFilterAvg(unittest.TestCase):
   """
   Unit testing of Python CellFilterAvg object.
   """
@@ -34,7 +34,7 @@ class TestCellFilterAvgMesh(unittest.TestCase):
     """
     Test constructor.
     """
-    filter = CellFilterAvgMesh()
+    filter = CellFilterAvg()
     filter._configure()
     self.failIf(filter.filter is None)
     return
@@ -60,7 +60,7 @@ class TestCellFilterAvgMesh(unittest.TestCase):
     quadrature.preinitialize(spaceDim)
     quadrature.initialize()
 
-    filter = CellFilterAvgMesh()
+    filter = CellFilterAvg()
     filter._configure()
     filter.initialize(quadrature)
     return
@@ -70,7 +70,7 @@ class TestCellFilterAvgMesh(unittest.TestCase):
     """
     Test factory method.
     """
-    from pylith.meshio.CellFilterAvgMesh import output_cell_filter
+    from pylith.meshio.CellFilterAvg import output_cell_filter
     filter = output_cell_filter()
     return
 

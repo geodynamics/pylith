@@ -18,16 +18,16 @@
 
 ## @file unittests/pytests/topology/TestMeshField.py
 
-## @brief Unit testing of MeshField object.
+## @brief Unit testing of Field object with mesh.
 
 import unittest
 
-from pylith.topology.Field import MeshField
+from pylith.topology.Field import Field
 
 # ----------------------------------------------------------------------
 class TestMeshField(unittest.TestCase):
   """
-  Unit testing of MeshField object.
+  Unit testing of Field object.
   """
 
   def setUp(self):
@@ -50,7 +50,7 @@ class TestMeshField(unittest.TestCase):
     importer._configure()
     self.mesh = importer.read(debug=False, interpolate=False)
     
-    self.field = MeshField(self.mesh)
+    self.field = Field(self.mesh)
     self.field.allocate()
     return
 
@@ -87,7 +87,7 @@ class TestMeshField(unittest.TestCase):
     """
     Test vectorFieldType().
     """
-    fieldType = MeshField.MULTI_SCALAR
+    fieldType = Field.MULTI_SCALAR
 
     self.field.vectorFieldType(fieldType)
     self.assertEqual(fieldType, self.field.vectorFieldType())
@@ -138,7 +138,7 @@ class TestMeshField(unittest.TestCase):
     """
     Test newSection(domain).
     """
-    self.field.newSection(MeshField.VERTICES_FIELD, 4)
+    self.field.newSection(Field.VERTICES_FIELD, 4)
 
     # No test of result
     return
@@ -148,7 +148,7 @@ class TestMeshField(unittest.TestCase):
     """
     Test newSection(field).
     """
-    fieldB = MeshField(self.mesh)
+    fieldB = Field(self.mesh)
     fieldB.cloneSection(self.field)
 
     # No test of result
@@ -158,7 +158,7 @@ class TestMeshField(unittest.TestCase):
     """
     Test add().
     """
-    fieldB = MeshField(self.mesh)
+    fieldB = Field(self.mesh)
     fieldB.allocate()
     self.field.add(fieldB)
 
@@ -170,7 +170,7 @@ class TestMeshField(unittest.TestCase):
     """
     Test newSection(field).
     """
-    fieldB = MeshField(self.mesh)
+    fieldB = Field(self.mesh)
     fieldB.allocate()
     fieldB.copy(self.field)
 

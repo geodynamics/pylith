@@ -33,6 +33,7 @@
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestTimeDependentPoints );
@@ -107,7 +108,7 @@ namespace pylith {
       static
       void _checkValues(const PylithScalar* valuesE,
 			const int fiberDimE,
-			const topology::Field<topology::Mesh>& field,
+			const topology::Field& field,
 			const PylithScalar scale);
     } // _TestTimeDependentPoints
   } // bc
@@ -695,7 +696,7 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrAll(void)
 void
 pylith::bc::_TestTimeDependentPoints::_checkValues(const PylithScalar* valuesE,
 						   const int fiberDimE,
-						   const topology::Field<topology::Mesh>& field,
+						   const topology::Field& field,
 						   const PylithScalar scale)
 { // _checkValues
   PYLITH_METHOD_BEGIN;

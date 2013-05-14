@@ -71,9 +71,9 @@ public :
    * @param jacobian Jacobian of the system.
    * @param residual Residual field.
    */
-  void solve(topology::Field<topology::Mesh>* solution,
+  void solve(topology::Field* solution,
 	     topology::Jacobian* jacobian,
-	     const topology::Field<topology::Mesh>& residual);
+	     const topology::Field& residual);
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :

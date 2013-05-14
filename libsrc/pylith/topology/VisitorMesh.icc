@@ -28,14 +28,14 @@
 // ----------------------------------------------------------------------
 // Constructor with field over a mesh.
 inline
-pylith::topology::VecVisitorMesh::VecVisitorMesh(const Field<Mesh>& field) :
+pylith::topology::VecVisitorMesh::VecVisitorMesh(const Field& field) :
   _dm(NULL),
   _localVec(NULL),
   _section(NULL),
   _localArray(NULL)
 { // constructor
   _dm = field.mesh().dmMesh();assert(_dm);
-  initialize<Field<Mesh> >(field);
+  initialize(field);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -49,10 +49,9 @@ pylith::topology::VecVisitorMesh::~VecVisitorMesh(void)
 
 // ----------------------------------------------------------------------
 // Initialized cached data members.
-template<typename field_type>
 inline
 void
-pylith::topology::VecVisitorMesh::initialize(const field_type& field)
+pylith::topology::VecVisitorMesh::initialize(const Field& field)
 { // initialize
   clear();
 
@@ -186,7 +185,7 @@ pylith::topology::VecVisitorMesh::setClosure(const PetscScalar* valuesCell,
 // Default constructor.
 inline
 pylith::topology::MatVisitorMesh::MatVisitorMesh(const PetscMat mat,
-						 const Field<Mesh>& field) :
+						 const Field& field) :
   _mat(mat),
   _dm(NULL),
   _section(NULL)

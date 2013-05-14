@@ -258,7 +258,7 @@ pylith::faults::TestTimeHistorySlipFn::testSlip(void)
   const spatialdata::geocoords::CoordSys* cs = faultMesh.coordsys();CPPUNIT_ASSERT(cs);
   const int spaceDim = cs->spaceDim();
 
-  topology::Field<topology::Mesh> slip(faultMesh);
+  topology::Field slip(faultMesh);
   slip.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   slip.allocate();
 

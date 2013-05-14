@@ -28,6 +28,7 @@
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "data/OutputSolnPointsDataTri3.hh"
 #include "data/OutputSolnPointsDataQuad4.hh"

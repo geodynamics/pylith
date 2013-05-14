@@ -25,9 +25,10 @@
 
 from pylith.utils.PetscComponent import PetscComponent
 from pylith.utils.NullComponent import NullComponent
+from meshio import OutputManager as ModuleOutputManager
 
 # OutputManager class
-class OutputManager(PetscComponent):
+class OutputManager(PetscComponent, ModuleOutputManager):
   """
   Python abstract base class for managing output of finite-element
   information.
@@ -48,6 +49,10 @@ class OutputManager(PetscComponent):
   # INVENTORY //////////////////////////////////////////////////////////
 
   import pyre.inventory
+
+  from DataWriterVTK import DataWriterVTK
+  writer = pyre.inventory.facility("writer", factory=DataWriterVTK, family="data_writer")
+  writer.meta['tip'] = "Writer for data."
 
   outputFreq = pyre.inventory.str("output_freq", default="skip",
                                   validator=pyre.inventory.choice(["skip", "time_step"]))
@@ -263,6 +268,14 @@ class OutputManager(PetscComponent):
     Set members based using inventory.
     """
     PetscComponent._configure(self)
+
+    ModuleOutputManager.coordsys(self, self.inventory.coordsys)
+    ModuleOutputManager.writer(self, self.inventory.writer)
+    if not isinstance(self.inventory.vertexFilter, NullComponent):
+      ModuleOutputManager.vertexFilter(self, self.inventory.vertexFilter)
+    if not isinstance(self.inventory.cellFilter, NullComponent):
+      ModuleOutputManager.cellFilter(self, self.inventory.cellFilter)
+
     self.perfLogger = self.inventory.perfLogger
     return
 
@@ -271,8 +284,7 @@ class OutputManager(PetscComponent):
     """
     Create handle to C++ object.
     """
-    raise NotImplementedError, \
-        "Please implement _createModuleObj() in derived class."
+    ModuleOutputManager.__init__(self)
     return
   
 
@@ -398,28 +410,70 @@ class OutputManager(PetscComponent):
     return
   
 
-  def _open(self):
-    raise NotImplementedError("Implement _open() in derived class.")
+  def _open(self, mesh, nsteps, label, labelId):
+    """
+    Call C++ open();
+    """
+    if label != None and labelId != None:
+      ModuleOutputManager.open(self, mesh, nsteps, label, labelId)
+    else:
+      ModuleOutputManager.open(self, mesh, nsteps)
+    return
 
 
   def _openTimeStep(self, t, mesh, label, labelId):
-    raise NotImplementedError("Implement _openTimeStep() in derived class.")
+    """
+    Call C++ openTimeStep();
+    """
+    if label != None and labelId != None:
+      ModuleOutputManager.openTimeStep(self, t, mesh, label, labelId)
+    else:
+      ModuleOutputManager.openTimeStep(self, t, mesh)
+    return
 
 
   def _appendVertexField(self, t, field, mesh):
-    raise NotImplementedError("Implement _appendVertexField() in derived class.")
+    """
+    Call C++ appendVertexField();
+    """
+    ModuleOutputManager.appendVertexField(self, t, field, mesh)
+    return
 
 
   def _appendCellField(self, t, field, label, labelId):
-    raise NotImplementedError("Implement _appendCellField() in derived class.")
+    """
+    Call C++ appendCellField();
+    """
+    if label != None and labelId != None:
+      ModuleOutputManager.appendCellField(self, t, field, label, labelId)
+    else:
+      ModuleOutputManager.appendCellField(self, t, field)
+    return
 
 
   def _closeTimeStep(self):
-    raise NotImplementedError("Implement _closeTimeStep() in derived class.")
+    """
+    Call C++ closeTimeStep().
+    """
+    ModuleOutputManager.closeTimeStep(self)
+    return
 
 
   def _close(self):
-    raise NotImplementedError("Implement _close() in derived class.")
+    """
+    Call C++ close().
+    """
+    ModuleOutputManager.close(self)
+    return
+
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def output_manager():
+  """
+  Factory associated with OutputManager.
+  """
+  return OutputManager()
 
 
 # End of file 

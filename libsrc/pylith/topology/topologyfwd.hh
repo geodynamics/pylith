@@ -57,8 +57,8 @@ namespace pylith {
     class StratumIS;
     
     class FieldBase;
-    template<typename mesh_type> class Field;
-    template<typename field_type> class Fields;
+    class Field;
+    class Fields;
     class VecVisitorMesh;
     class VecVisitorSubMesh;
 

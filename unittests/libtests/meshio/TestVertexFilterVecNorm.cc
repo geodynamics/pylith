@@ -20,8 +20,11 @@
 
 #include "TestVertexFilterVecNorm.hh" // Implementation of class methods
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/meshio/VertexFilterVecNorm.hh"
+
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/topology/Field.hh" // USES Field
@@ -30,16 +33,13 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestVertexFilterVecNorm );
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Field<pylith::topology::Mesh> MeshField;
-
-// ----------------------------------------------------------------------
 // Test constructor
 void
 pylith::meshio::TestVertexFilterVecNorm::testConstructor(void)
 { // testConstructor
   PYLITH_METHOD_BEGIN;
 
-  VertexFilterVecNorm<MeshField> filter;
+  VertexFilterVecNorm filter;
 
   PYLITH_METHOD_END;
 } // testConstructor
@@ -83,7 +83,7 @@ pylith::meshio::TestVertexFilterVecNorm::testFilter(void)
   const PetscInt vStart = verticesStratum.begin();
   const PetscInt vEnd = verticesStratum.end();
   
-  MeshField field(mesh);
+  topology::Field field(mesh);
   field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
   field.allocate();
   field.vectorFieldType(fieldType);
@@ -105,8 +105,8 @@ pylith::meshio::TestVertexFilterVecNorm::testFilter(void)
     } // for
   } // Setup vertex field
 
-  VertexFilterVecNorm<MeshField> filter;
-  const MeshField& fieldNorm = filter.filter(field);
+  VertexFilterVecNorm filter;
+  const topology::Field& fieldNorm = filter.filter(field);
 
   CPPUNIT_ASSERT_EQUAL(fieldTypeE, fieldNorm.vectorFieldType());
   CPPUNIT_ASSERT_EQUAL(label, std::string(fieldNorm.label()));

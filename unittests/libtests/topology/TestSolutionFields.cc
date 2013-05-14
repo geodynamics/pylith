@@ -82,9 +82,9 @@ pylith::topology::TestSolutionFields::testSolution(void)
   for (int i=0; i < size; ++i)
     manager.add(labels[i], "displacement");
 
-  Field<Mesh>& fieldA = manager.get(labels[0]);
-  Field<Mesh>& fieldB = manager.get(labels[1]);
-  Field<Mesh>& fieldC = manager.get(labels[2]);
+  Field& fieldA = manager.get(labels[0]);
+  Field& fieldB = manager.get(labels[1]);
+  Field& fieldC = manager.get(labels[2]);
   fieldA.newSection(FieldBase::VERTICES_FIELD, fiberDimA);
   fieldA.allocate();
   

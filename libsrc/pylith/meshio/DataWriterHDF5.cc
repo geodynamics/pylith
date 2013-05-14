@@ -18,8 +18,14 @@
 
 #include <portinfo>
 
+#include "DataWriterHDF5.hh" // Implementation of class methods
+
 #include "HDF5.hh" // USES HDF5
 #include "Xdmf.hh" // USES Xdmf
+
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Field.hh" // USES Field
+
 #include "petscviewerhdf5.h"
 
 #include <cassert> // USES assert()
@@ -28,8 +34,7 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-template<typename mesh_type, typename field_type>
-pylith::meshio::DataWriterHDF5<mesh_type,field_type>::DataWriterHDF5(void) :
+pylith::meshio::DataWriterHDF5::DataWriterHDF5(void) :
   _filename("output.h5"),
   _viewer(0),
   _tstamp(0),
@@ -39,21 +44,19 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::DataWriterHDF5(void) :
 
 // ----------------------------------------------------------------------
 // Destructor
-template<typename mesh_type, typename field_type>
-pylith::meshio::DataWriterHDF5<mesh_type,field_type>::~DataWriterHDF5(void)
+pylith::meshio::DataWriterHDF5::~DataWriterHDF5(void)
 { // destructor
   deallocate();
 } // destructor  
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterHDF5<mesh_type, field_type>::deallocate(void)
+pylith::meshio::DataWriterHDF5::deallocate(void)
 { // deallocate
   PYLITH_METHOD_BEGIN;
 
-  DataWriter<mesh_type, field_type>::deallocate();
+  DataWriter::deallocate();
 
   PetscErrorCode err = 0;
   err = PetscViewerDestroy(&_viewer); PYLITH_CHECK_ERROR(err);
@@ -64,9 +67,8 @@ pylith::meshio::DataWriterHDF5<mesh_type, field_type>::deallocate(void)
   
 // ----------------------------------------------------------------------
 // Copy constructor.
-template<typename mesh_type, typename field_type>
-pylith::meshio::DataWriterHDF5<mesh_type,field_type>::DataWriterHDF5(const DataWriterHDF5<mesh_type, field_type>& w) :
-  DataWriter<mesh_type, field_type>(w),
+pylith::meshio::DataWriterHDF5::DataWriterHDF5(const DataWriterHDF5& w) :
+  DataWriter(w),
   _filename(w._filename),
   _viewer(0),
   _tstamp(0),
@@ -76,16 +78,15 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::DataWriterHDF5(const DataW
 
 // ----------------------------------------------------------------------
 // Prepare file for data at a new time step.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh,
-							   const int numTimeSteps,
+pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
+				     const int numTimeSteps,
 							   const char* label,
 							   const int labelId)
 { // open
   PYLITH_METHOD_BEGIN;
 
-  DataWriter<mesh_type, field_type>::open(mesh, numTimeSteps, label, labelId);
+  DataWriter::open(mesh, numTimeSteps, label, labelId);
 
   try {
     PetscErrorCode err = 0;
@@ -107,7 +108,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
 
     const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();assert(cs);
 
-    const char *context = DataWriter<mesh_type, field_type>::_context.c_str();
+    const char *context = DataWriter::_context.c_str();
     PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
     PetscDM dmCoord = NULL;
     PetscVec coordinates = NULL; 
@@ -120,7 +121,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     err = DMGetCoordinateDM(dmMesh, &dmCoord);PYLITH_CHECK_ERROR(err);assert(dmCoord);
     err = PetscObjectReference((PetscObject) dmCoord);PYLITH_CHECK_ERROR(err);
     err = DMGetCoordinatesLocal(dmMesh, &coordinates);PYLITH_CHECK_ERROR(err);
-    topology::Field<mesh_type> coordinatesField(mesh, dmCoord, coordinates, metadata);
+    topology::Field coordinatesField(mesh, dmCoord, coordinates, metadata);
     coordinatesField.createScatterWithBC(mesh, "", 0, metadata.label.c_str());
     coordinatesField.scatterSectionToVector(metadata.label.c_str());
     PetscVec coordVector = coordinatesField.vector(metadata.label.c_str());assert(coordVector);
@@ -228,9 +229,8 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
 
 // ----------------------------------------------------------------------
 // Close output files.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterHDF5<mesh_type,field_type>::close(void)
+pylith::meshio::DataWriterHDF5::close(void)
 { // close
   PYLITH_METHOD_BEGIN;
 
@@ -256,11 +256,10 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::close(void)
 
 // ----------------------------------------------------------------------
 // Write field over vertices to file.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(const PylithScalar t,
-								       field_type& field,
-								       const mesh_type& mesh)
+pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
+						 topology::Field& field,
+						 const topology::Mesh& mesh)
 { // writeVertexField
   PYLITH_METHOD_BEGIN;
 
@@ -269,7 +268,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(const Pyl
   try {
     PetscErrorCode err;
 
-    const char* context  = DataWriter<mesh_type, field_type>::_context.c_str();
+    const char* context  = DataWriter::_context.c_str();
 
     field.createScatterWithBC(mesh, "", 0, context);
     field.scatterSectionToVector(context);
@@ -341,19 +340,18 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(const Pyl
 
 // ----------------------------------------------------------------------
 // Write field over cells to file.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(const PylithScalar t,
-								     field_type& field,
-								     const char* label,
-								     const int labelId)
+pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
+					       topology::Field& field,
+					       const char* label,
+					       const int labelId)
 { // writeCellField
   PYLITH_METHOD_BEGIN;
 
   assert(_viewer);
   
   try {
-    const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
+    const char* context = DataWriter::_context.c_str();
     PetscErrorCode err = 0;
 
     field.createScatterWithBC(field.mesh(), label ? label : "", labelId, context);
@@ -401,15 +399,14 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(const Pylit
 
 // ----------------------------------------------------------------------
 // Generate filename for HDF5 file.
-template<typename mesh_type, typename field_type>
 std::string
-pylith::meshio::DataWriterHDF5<mesh_type,field_type>::_hdf5Filename(void) const
+pylith::meshio::DataWriterHDF5::_hdf5Filename(void) const
 { // _hdf5Filename
   PYLITH_METHOD_BEGIN;
 
   std::ostringstream filename;
   const int indexExt = _filename.find(".h5");
-  const int numTimeSteps = DataWriter<mesh_type, field_type>::_numTimeSteps;
+  const int numTimeSteps = DataWriter::_numTimeSteps;
   if (0 == numTimeSteps) {
     filename << std::string(_filename, 0, indexExt) << "_info.h5";
   } else {
@@ -422,16 +419,15 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::_hdf5Filename(void) const
 
 // ----------------------------------------------------------------------
 // Write time stamp to file.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterHDF5<mesh_type,field_type>::_writeTimeStamp(const PylithScalar t,
+pylith::meshio::DataWriterHDF5::_writeTimeStamp(const PylithScalar t,
 								      const int commRank)
 { // _writeTimeStamp
   assert(_tstamp);
   PetscErrorCode err = 0;
 
   if (0 == commRank) {
-    const PylithScalar tDim = t * DataWriter<mesh_type, field_type>::_timeScale;
+    const PylithScalar tDim = t * DataWriter::_timeScale;
     err = VecSetValue(_tstamp, 0, tDim, INSERT_VALUES); PYLITH_CHECK_ERROR(err);
   } // if
   err = VecAssemblyBegin(_tstamp); PYLITH_CHECK_ERROR(err);

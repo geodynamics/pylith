@@ -22,12 +22,10 @@
  * @brief Python interface to C++ SolutionFields object.
  */
 
-%template(SolutionFieldsBase) pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >;
-
 namespace pylith {
   namespace topology {
 
-    class SolutionFields : public Fields <Field <Mesh> >
+    class SolutionFields : public Fields
     { // SolutionFields
 
       // PUBLIC MEMBERS /////////////////////////////////////////////////
@@ -52,13 +50,13 @@ namespace pylith {
        *
        * @returns Solution field.
        */
-      const Field<Mesh>& solution(void) const;
+      const Field& solution(void) const;
       
       /** Get solution field.
        *
        * @returns Solution field.
        */
-      Field<Mesh>& solution(void);
+      Field& solution(void);
       
     }; // SolutionFields
 

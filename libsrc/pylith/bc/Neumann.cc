@@ -85,7 +85,7 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
 // ----------------------------------------------------------------------
 // Integrate contributions to residual term (r) for operator.
 void
-pylith::bc::Neumann::integrateResidual(const topology::Field<topology::Mesh>& residual,
+pylith::bc::Neumann::integrateResidual(const topology::Field& residual,
 				       const PylithScalar t,
 				       topology::SolutionFields* const fields)
 { // integrateResidual
@@ -114,7 +114,7 @@ pylith::bc::Neumann::integrateResidual(const topology::Field<topology::Mesh>& re
 
   // Get sections
   _calculateValue(t);
-  topology::Field<topology::Mesh>& valueField = _parameters->get("value");
+  topology::Field& valueField = _parameters->get("value");
   topology::VecVisitorMesh valueVisitor(valueField);
   PetscScalar* valueArray = valueVisitor.localArray();
 
@@ -183,7 +183,7 @@ pylith::bc::Neumann::verifyConfiguration(const topology::Mesh& mesh) const
 
 // ----------------------------------------------------------------------
 // Get cell field for tractions.
-const pylith::topology::Field<pylith::topology::Mesh>&
+const pylith::topology::Field&
 pylith::bc::Neumann::cellField(const char* name,
 			       topology::SolutionFields* const fields)
 { // cellField
@@ -235,42 +235,41 @@ pylith::bc::Neumann::_queryDatabases(void)
   const int spaceDim = _quadrature->spaceDim();
   const int numQuadPts = _quadrature->numQuadPts();
 
-  delete _parameters; 
-  _parameters = new topology::Fields<topology::Field<topology::Mesh> >(*_boundaryMesh);
+  delete _parameters; _parameters = new topology::Fields(*_boundaryMesh);assert(_parameters);
 
   // Create section to hold time dependent values
   _parameters->add("value", "traction", topology::FieldBase::FACES_FIELD, numQuadPts*spaceDim);
-  topology::Field<topology::Mesh>& value = _parameters->get("value");
+  topology::Field& value = _parameters->get("value");
   value.vectorFieldType(topology::FieldBase::MULTI_VECTOR);
   value.scale(pressureScale);
   value.allocate();
   if (_dbInitial) {
     _parameters->add("initial", "initial_traction", topology::FieldBase::FACES_FIELD, numQuadPts*spaceDim);
-    topology::Field<topology::Mesh>& initial = _parameters->get("initial");
+    topology::Field& initial = _parameters->get("initial");
     initial.vectorFieldType(topology::FieldBase::MULTI_VECTOR);
     initial.scale(pressureScale);
     initial.allocate();
   }
   if (_dbRate) {
     _parameters->add("rate", "traction_rate", topology::FieldBase::FACES_FIELD, numQuadPts*spaceDim);
-    topology::Field<topology::Mesh>& rate = _parameters->get("rate");
+    topology::Field& rate = _parameters->get("rate");
     rate.vectorFieldType(topology::FieldBase::MULTI_VECTOR);
     rate.scale(rateScale);
     rate.allocate();
     _parameters->add("rate time", "traction_rate_time", topology::FieldBase::FACES_FIELD, numQuadPts);
-    topology::Field<topology::Mesh>& rateTime = _parameters->get("rate time");
+    topology::Field& rateTime = _parameters->get("rate time");
     rateTime.vectorFieldType(topology::FieldBase::MULTI_VECTOR);
     rateTime.scale(timeScale);
     rateTime.allocate();
   } // if
   if (_dbChange) {
     _parameters->add("change", "change_traction", topology::FieldBase::FACES_FIELD, numQuadPts*spaceDim);
-    topology::Field<topology::Mesh>& change = _parameters->get("change");
+    topology::Field& change = _parameters->get("change");
     change.vectorFieldType(topology::FieldBase::MULTI_VECTOR);
     change.scale(pressureScale);
     change.allocate();
     _parameters->add("change time", "change_traction_time", topology::FieldBase::FACES_FIELD, numQuadPts);
-    topology::Field<topology::Mesh>& changeTime = _parameters->get("change time");
+    topology::Field& changeTime = _parameters->get("change time");
     changeTime.vectorFieldType(topology::FieldBase::MULTI_VECTOR);
     changeTime.scale(timeScale);
     changeTime.allocate();
@@ -414,7 +413,7 @@ pylith::bc::Neumann::_queryDB(const char* name,
   scalar_array quadPtsGlobal(numQuadPts*spaceDim);
 
   // Get sections.
-  topology::Field<topology::Mesh>& valueField = _parameters->get(name);
+  topology::Field& valueField = _parameters->get(name);
   topology::VecVisitorMesh valueVisitor(valueField);
   PetscScalar* valueArray = valueVisitor.localArray();
 
@@ -514,15 +513,15 @@ void
   // Get sections
   scalar_array tmpLocal(spaceDim);
   
-  topology::Field<topology::Mesh>* initialField = (_dbInitial) ? &_parameters->get("initial") : 0;
+  topology::Field* initialField = (_dbInitial) ? &_parameters->get("initial") : 0;
   topology::VecVisitorMesh* initialVisitor = (initialField) ? new topology::VecVisitorMesh(*initialField) : 0;
   PetscScalar* initialArray = (initialVisitor) ? initialVisitor->localArray() : NULL;
 
-  topology::Field<topology::Mesh>* rateField = (_dbRate) ? &_parameters->get("rate") : 0;
+  topology::Field* rateField = (_dbRate) ? &_parameters->get("rate") : 0;
   topology::VecVisitorMesh* rateVisitor = (rateField) ? new topology::VecVisitorMesh(*rateField) : 0;
   PetscScalar* rateArray = (rateVisitor) ? rateVisitor->localArray() : NULL;
 
-  topology::Field<topology::Mesh>* changeField = (_dbChange) ? &_parameters->get("change") : 0;
+  topology::Field* changeField = (_dbChange) ? &_parameters->get("change") : 0;
   topology::VecVisitorMesh* changeVisitor = (changeField) ? new topology::VecVisitorMesh(*changeField) : 0;
   PetscScalar* changeArray = (changeVisitor) ? changeVisitor->localArray() : NULL;
 
@@ -623,27 +622,27 @@ pylith::bc::Neumann::_calculateValue(const PylithScalar t)
   const int numQuadPts = _quadrature->numQuadPts();
 
   // Get sections
-  topology::Field<topology::Mesh>& valueField = _parameters->get("value");
+  topology::Field& valueField = _parameters->get("value");
   topology::VecVisitorMesh valueVisitor(valueField);
   PetscScalar* valueArray = valueVisitor.localArray();
   
-  topology::Field<topology::Mesh>* initialField = (_dbInitial) ? &_parameters->get("initial") : 0;
+  topology::Field* initialField = (_dbInitial) ? &_parameters->get("initial") : 0;
   topology::VecVisitorMesh* initialVisitor = (initialField) ? new topology::VecVisitorMesh(*initialField) : 0;
   PetscScalar* initialArray = (initialVisitor) ? initialVisitor->localArray() : NULL;
 
-  topology::Field<topology::Mesh>* rateField = (_dbRate) ? &_parameters->get("rate") : 0;
+  topology::Field* rateField = (_dbRate) ? &_parameters->get("rate") : 0;
   topology::VecVisitorMesh* rateVisitor = (rateField) ? new topology::VecVisitorMesh(*rateField) : 0;
   PetscScalar* rateArray = (rateVisitor) ? rateVisitor->localArray() : NULL;
 
-  topology::Field<topology::Mesh>* rateTimeField = (_dbRate) ? &_parameters->get("rate time") : 0;
+  topology::Field* rateTimeField = (_dbRate) ? &_parameters->get("rate time") : 0;
   topology::VecVisitorMesh* rateTimeVisitor = (rateTimeField) ? new topology::VecVisitorMesh(*rateTimeField) : 0;
   PetscScalar* rateTimeArray = (rateTimeVisitor) ? rateTimeVisitor->localArray() : NULL;
 
-  topology::Field<topology::Mesh>* changeField = (_dbChange) ? &_parameters->get("change") : 0;
+  topology::Field* changeField = (_dbChange) ? &_parameters->get("change") : 0;
   topology::VecVisitorMesh* changeVisitor = (changeField) ? new topology::VecVisitorMesh(*changeField) : 0;
   PetscScalar* changeArray = (changeVisitor) ? changeVisitor->localArray() : NULL;
 
-  topology::Field<topology::Mesh>* changeTimeField = (_dbChange) ? &_parameters->get("change time") : 0;
+  topology::Field* changeTimeField = (_dbChange) ? &_parameters->get("change time") : 0;
   topology::VecVisitorMesh* changeTimeVisitor = (changeTimeField) ? new topology::VecVisitorMesh(*changeTimeField) : 0;
   PetscScalar* changeTimeArray = (changeTimeVisitor) ? changeTimeVisitor->localArray() : NULL;
 

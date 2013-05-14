@@ -21,26 +21,23 @@
 #else
 
 // Make copy of this object.
-template<typename mesh_type, typename field_type>
 inline
-pylith::meshio::DataWriter<mesh_type, field_type>*
-pylith::meshio::DataWriterVTK<mesh_type,field_type>::clone(void) const {
+pylith::meshio::DataWriter*
+pylith::meshio::DataWriterVTK::clone(void) const {
   return new DataWriterVTK(*this);
 }
 
 // Set filename for VTK file.
-template<typename mesh_type, typename field_type>
 inline
 void
-pylith::meshio::DataWriterVTK<mesh_type,field_type>::filename(const char* filename) {
+pylith::meshio::DataWriterVTK::filename(const char* filename) {
   _filename = filename;
 }
 
 // Set time format for time stamp in name of VTK file.
-template<typename mesh_type, typename field_type>
 inline
 void
-pylith::meshio::DataWriterVTK<mesh_type,field_type>::timeFormat(const char* format) {
+pylith::meshio::DataWriterVTK::timeFormat(const char* format) {
   _timeFormat = format;
 }
 

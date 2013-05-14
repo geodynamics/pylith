@@ -43,7 +43,6 @@
 #include "pylith/materials/DruckerPragerPlaneStrain.hh"
 
 #include "pylith/utils/arrayfwd.hh"
-#include "pylith/utils/sievetypes.hh"
 %}
 
 %include "exception.i"

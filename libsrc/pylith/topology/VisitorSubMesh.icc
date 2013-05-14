@@ -25,7 +25,7 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 inline
-pylith::topology::VecVisitorSubMesh::VecVisitorSubMesh(const Field<Mesh>& field,
+pylith::topology::VecVisitorSubMesh::VecVisitorSubMesh(const Field& field,
 						       const SubMeshIS& submeshIS) :
   _field(field),
   _dm(NULL),
@@ -163,7 +163,7 @@ pylith::topology::VecVisitorSubMesh::setClosure(const PetscScalar* valuesCell,
 // Default constructor.
 inline
 pylith::topology::MatVisitorSubMesh::MatVisitorSubMesh(const PetscMat mat,
-						       const Field<Mesh>& field,
+						       const Field& field,
 						       const SubMeshIS& submeshIS) :
   _mat(mat),
   _dm(NULL),

@@ -21,14 +21,17 @@
 #include "SolverNonlinear.hh" // implementation of class methods
 
 #include "Formulation.hh" // USES Formulation
+
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
+
 #include "pylith/utils/constdefs.h" // USES PYLITH_MAXSCALAR
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
+#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
 #include <petscsnes.h> // USES PetscSNES
-
-#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
 // KLUDGE, Fixes issue with PetscIsInfOrNanReal and include cmath
 // instead of math.h.
@@ -95,7 +98,7 @@ pylith::problems::SolverNonlinear::initialize(const topology::SolutionFields& fi
   } // if    
   err = SNESCreate(fields.mesh().comm(), &_snes); PYLITH_CHECK_ERROR(err);
 
-  const topology::Field<topology::Mesh>& residual = fields.get("residual");
+  const topology::Field& residual = fields.get("residual");
   const PetscVec residualVec = residual.globalVector();
   err = SNESSetFunction(_snes, residualVec, reformResidual, (void*) formulation);
   PYLITH_CHECK_ERROR(err);
@@ -127,9 +130,9 @@ pylith::problems::SolverNonlinear::initialize(const topology::SolutionFields& fi
 // ----------------------------------------------------------------------
 // Solve the system.
 void
-pylith::problems::SolverNonlinear::solve(topology::Field<topology::Mesh>* solution,
+pylith::problems::SolverNonlinear::solve(topology::Field* solution,
 					 topology::Jacobian* jacobian,
-					 const topology::Field<topology::Mesh>& residual)
+					 const topology::Field& residual)
 { // solve
   PYLITH_METHOD_BEGIN;
 

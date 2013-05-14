@@ -140,6 +140,13 @@ libpylith_la_SOURCES = \
 	meshio/PsetFileBinary.cc \
 	meshio/OutputSolnSubset.cc \
 	meshio/OutputSolnPoints.cc \
+	meshio/CellFilter.cc \
+	meshio/CellFilterAvg.cc \
+	meshio/VertexFilter.cc \
+	meshio/VertexFilterVecNorm.cc \
+	meshio/DataWriter.cc \
+	meshio/DataWriterVTK.cc \
+	meshio/OutputManager.cc \
 	problems/Formulation.cc \
 	problems/Explicit.cc \
 	problems/Implicit.cc \
@@ -151,6 +158,8 @@ libpylith_la_SOURCES = \
 	topology/Jacobian.cc \
 	topology/Mesh.cc \
 	topology/MeshOps.cc \
+	topology/Field.cc \
+	topology/Fields.cc \
 	topology/SolutionFields.cc \
 	topology/Distributor.cc \
 	topology/ReverseCuthillMcKee.cc \
@@ -188,6 +197,8 @@ AM_CPPFLAGS = $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) $(PETSC_SIEVE_FLAGS)
 if ENABLE_HDF5
   libpylith_la_SOURCES += \
 	meshio/HDF5.cc \
+	meshio/DataWriterHDF5.cc \
+	meshio/DataWriterHDF5Ext.cc \
 	meshio/Xdmf.cc
   libpylith_la_LIBADD += -lhdf5
 endif

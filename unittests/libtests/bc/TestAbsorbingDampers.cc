@@ -37,6 +37,7 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestAbsorbingDampers );
@@ -195,7 +196,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateResidual(void)
   PetscDM             subMesh = boundaryMesh.dmMesh();
   PetscErrorCode err;
 
-  topology::Field<topology::Mesh>& residual = fields.get("residual");
+  topology::Field& residual = fields.get("residual");
   const PylithScalar t = 0.0;
   bc.integrateResidual(residual, t, &fields);
 
@@ -251,7 +252,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
   const topology::Mesh& boundaryMesh = *bc._boundaryMesh;
   PetscDM subMesh = boundaryMesh.dmMesh();CPPUNIT_ASSERT(subMesh);
 
-  topology::Field<topology::Mesh>& solution = fields.solution();
+  topology::Field& solution = fields.solution();
   topology::Jacobian jacobian(solution);
 
   const PylithScalar t = 1.0;
@@ -326,7 +327,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobianLumped(void)
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &bc, &fields);
 
-  topology::Field<topology::Mesh> jacobian(mesh);
+  topology::Field jacobian(mesh);
   jacobian.label("Jacobian");
   jacobian.vectorFieldType(topology::FieldBase::VECTOR);
   jacobian.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
@@ -458,9 +459,9 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
   fields->add("velocity(t)", "velocity");
   fields->solutionName("dispIncr(t->t+dt)");
 
-  topology::Field<topology::Mesh>& residual = fields->get("residual");
-  PetscDM             dmMesh = mesh->dmMesh();
-  PetscInt       vStart, vEnd;
+  topology::Field& residual = fields->get("residual");
+  PetscDM dmMesh = mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
+  PetscInt vStart, vEnd;
   PetscErrorCode err;
 
   CPPUNIT_ASSERT(dmMesh);

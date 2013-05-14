@@ -21,9 +21,10 @@
 ## @brief Python object for writing finite-element data to HDF5 file.
 
 from DataWriter import DataWriter
+from meshio import DataWriterHDF5 as ModuleDataWriterHDF5
 
 # DataWriterHDF5 class
-class DataWriterHDF5(DataWriter):
+class DataWriterHDF5(DataWriter, ModuleDataWriterHDF5):
   """
   Python object for writing finite-element data to HDF5 file.
 
@@ -50,7 +51,30 @@ class DataWriterHDF5(DataWriter):
     Constructor.
     """
     DataWriter.__init__(self, name)
+    ModuleDataWriterHDF5.__init__(self)
     return
+
+
+  def initialize(self, normalizer):
+    """
+    Initialize writer.
+    """
+    DataWriter.initialize(self, normalizer)
+
+    timeScale = normalizer.timeScale()
+    
+    ModuleDataWriterHDF5.filename(self, self.filename)
+    ModuleDataWriterHDF5.timeScale(self, timeScale.value)
+    return
+  
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def data_writer():
+  """
+  Factory associated with DataWriter.
+  """
+  return DataWriterHDF5()
 
 
 # End of file 

@@ -18,6 +18,8 @@
 
 #include <portinfo>
 
+#include "CellFilterAvg.hh" // Implementation of class methods
+
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 
 #include "pylith/topology/Field.hh" // USES Field
@@ -27,74 +29,66 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-template<typename mesh_type, typename field_type>
-pylith::meshio::CellFilterAvg<mesh_type, field_type>::CellFilterAvg(void) :
+pylith::meshio::CellFilterAvg::CellFilterAvg(void) :
   _fieldAvg(0)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-template<typename mesh_type, typename field_type>
-pylith::meshio::CellFilterAvg<mesh_type, field_type>::~CellFilterAvg(void)
+pylith::meshio::CellFilterAvg::~CellFilterAvg(void)
 { // destructor
   deallocate();
 } // destructor  
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
-template<typename mesh_type, typename field_type>
 void
-pylith::meshio::CellFilterAvg<mesh_type, field_type>::deallocate(void)
+pylith::meshio::CellFilterAvg::deallocate(void)
 { // deallocate
-  CellFilter<mesh_type, field_type>::deallocate();
+  CellFilter::deallocate();
 
   delete _fieldAvg; _fieldAvg = 0;
 } // deallocate
   
 // ----------------------------------------------------------------------
 // Copy constructor.
-template<typename mesh_type, typename field_type>
-pylith::meshio::CellFilterAvg<mesh_type, field_type>::CellFilterAvg(
-					       const CellFilterAvg& f) :
-  CellFilter<mesh_type, field_type>(f),
+pylith::meshio::CellFilterAvg::CellFilterAvg(const CellFilterAvg& f) :
+  CellFilter(f),
   _fieldAvg(0)
 { // copy constructor
 } // copy constructor
 
 // ----------------------------------------------------------------------
 // Create copy of filter.
-template<typename mesh_type, typename field_type>
-pylith::meshio::CellFilter<mesh_type, field_type>*
-pylith::meshio::CellFilterAvg<mesh_type, field_type>::clone(void) const
+pylith::meshio::CellFilter*
+pylith::meshio::CellFilterAvg::clone(void) const
 { // clone
   PYLITH_METHOD_BEGIN;
   
-  pylith::meshio::CellFilter<mesh_type, field_type>* field = new CellFilterAvg<mesh_type,field_type>(*this);
+  pylith::meshio::CellFilter* f = new CellFilterAvg(*this);
 
-  PYLITH_METHOD_RETURN(field);
+  PYLITH_METHOD_RETURN(f);
 } // clone
 
 // ----------------------------------------------------------------------
 // Get averaged field buffer.
-template<typename mesh_type, typename field_type>
-const field_type*
-pylith::meshio::CellFilterAvg<mesh_type, field_type>::fieldAvg(void) const
+const pylith::topology::Field*
+pylith::meshio::CellFilterAvg::fieldAvg(void) const
 { // fieldAvg
   return _fieldAvg;
 } // fieldAvg
   
 // ----------------------------------------------------------------------
 // Filter field.
-template<typename mesh_type, typename field_type>
-field_type&
-pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(const field_type& fieldIn,
-							    const char* label,
-							    const int labelId)
+pylith::topology::Field&
+pylith::meshio::CellFilterAvg::filter(const topology::Field& fieldIn,
+				      const char* label,
+				      const int labelId)
 { // filter
   PYLITH_METHOD_BEGIN;
 
-  const feassemble::Quadrature* quadrature = CellFilter<mesh_type, field_type>::_quadrature;assert(quadrature);
+  const feassemble::Quadrature* quadrature = CellFilter::_quadrature;assert(quadrature);
 
   const int numQuadPts = quadrature->numQuadPts();
   const scalar_array& wts = quadrature->quadWts();
@@ -129,7 +123,7 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(const field_type& fi
   assert(fiberDim * numQuadPts == totalFiberDim);
   // Allocate field if necessary
   if (!_fieldAvg) {
-    _fieldAvg = new field_type(fieldIn.mesh());assert(_fieldAvg);
+    _fieldAvg = new topology::Field(fieldIn.mesh());assert(_fieldAvg);
     _fieldAvg->newSection(fieldIn, fiberDim);
     _fieldAvg->allocate();
   } else if (_fieldAvg->sectionSize() != numCells*fiberDim) {

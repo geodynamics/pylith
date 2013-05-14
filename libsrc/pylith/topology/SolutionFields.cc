@@ -25,7 +25,7 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::topology::SolutionFields::SolutionFields(const Mesh& mesh) :
-  Fields<Field<Mesh> >(mesh),
+  Fields(mesh),
   _solutionName("")
 { // constructor
 } // constructor
@@ -42,7 +42,7 @@ pylith::topology::SolutionFields::~SolutionFields(void)
 void
 pylith::topology::SolutionFields::deallocate(void)
 { // deallocate
-  Fields<Field<Mesh> >::deallocate();
+  Fields::deallocate();
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -62,7 +62,7 @@ pylith::topology::SolutionFields::solutionName(const char* name)
 
 // ----------------------------------------------------------------------
 // Get solution field.
-const pylith::topology::Field<pylith::topology::Mesh>&
+const pylith::topology::Field&
 pylith::topology::SolutionFields::solution(void) const
 { // solution
   if (_solutionName == "")
@@ -73,7 +73,7 @@ pylith::topology::SolutionFields::solution(void) const
 
 // ----------------------------------------------------------------------
 // Get solution field.
-pylith::topology::Field<pylith::topology::Mesh>&
+pylith::topology::Field&
 pylith::topology::SolutionFields::solution(void)
 { // solution
   if (_solutionName == "")

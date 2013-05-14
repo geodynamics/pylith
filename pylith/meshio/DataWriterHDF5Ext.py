@@ -22,9 +22,10 @@
 ## with datasets stored in external binary files.
 
 from DataWriter import DataWriter
+from meshio import DataWriterHDF5Ext as ModuleDataWriterHDF5Ext
 
 # DataWriterHDF5Ext class
-class DataWriterHDF5Ext(DataWriter):
+class DataWriterHDF5Ext(DataWriter, ModuleDataWriterHDF5Ext):
   """
   @brief Python object for writing finite-element data to HDF5 file
   with datasets stored in external binary files.
@@ -52,6 +53,7 @@ class DataWriterHDF5Ext(DataWriter):
     Constructor.
     """
     DataWriter.__init__(self, name)
+    ModuleDataWriterHDF5Ext.__init__(self)
     return
 
 
@@ -61,6 +63,28 @@ class DataWriterHDF5Ext(DataWriter):
     """
     DataWriter.initialize(self, normalizer)
     return
+
+
+  def initialize(self, normalizer):
+    """
+    Initialize writer.
+    """
+    DataWriter.initialize(self, normalizer)
+    
+    timeScale = normalizer.timeScale()
+
+    ModuleDataWriterHDF5Ext.filename(self, self.filename)
+    ModuleDataWriterHDF5Ext.timeScale(self, timeScale.value)
+    return
+  
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def data_writer():
+  """
+  Factory associated with DataWriter.
+  """
+  return DataWriterHDF5Ext()
 
 
 # End of file 

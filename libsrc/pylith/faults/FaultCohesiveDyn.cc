@@ -150,7 +150,7 @@ pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
 
   // Get initial tractions using a spatial database.
   if (_tractPerturbation) {
-    const topology::Field<topology::Mesh>& orientation = _fields->get("orientation");
+    const topology::Field& orientation = _fields->get("orientation");
     _tractPerturbation->initialize(*_faultMesh, orientation, *_normalizer);
   } // if
 
@@ -166,8 +166,8 @@ pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
 
   // Create field for relative velocity associated with Lagrange vertex k
   _fields->add("relative velocity", "relative_velocity");
-  topology::Field<topology::Mesh>& velRel = _fields->get("relative velocity");
-  topology::Field<topology::Mesh>& dispRel = _fields->get("relative disp");
+  topology::Field& velRel = _fields->get("relative velocity");
+  topology::Field& dispRel = _fields->get("relative disp");
   velRel.cloneSection(dispRel);
   velRel.vectorFieldType(topology::FieldBase::VECTOR);
   velRel.scale(_normalizer->lengthScale() / _normalizer->timeScale());
@@ -178,7 +178,7 @@ pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
 // ----------------------------------------------------------------------
 // Integrate contributions to residual term (r) for operator.
 void
-pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field<topology::Mesh>& residual,
+pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field& residual,
 						    const PylithScalar t,
 						    topology::SolutionFields* const fields)
 { // integrateResidual
@@ -216,11 +216,11 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field<topolo
   topology::VecVisitorMesh residualVisitor(residual);
   PetscScalar* residualArray = residualVisitor.localArray();
 
-  topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
+  topology::Field& dispT = fields->get("disp(t)");
   topology::VecVisitorMesh dispTVisitor(dispT);
   const PetscScalar* dispTArray = dispTVisitor.localArray();
 
-  topology::Field<topology::Mesh>& dispTIncr = fields->get("dispIncr(t->t+dt)");
+  topology::Field& dispTIncr = fields->get("dispIncr(t->t+dt)");
   topology::VecVisitorMesh dispTIncrVisitor(dispTIncr);
   const PetscScalar* dispTIncrArray = dispTIncrVisitor.localArray();
 
@@ -230,18 +230,18 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field<topolo
   if (_tractPerturbation) {
     _tractPerturbation->calculate(t);
     
-    const topology::Fields<topology::Field<topology::Mesh> >* params = _tractPerturbation->parameterFields();assert(params);
-    const topology::Field<topology::Mesh>& tractions = params->get("value");
+    const topology::Fields* params = _tractPerturbation->parameterFields();assert(params);
+    const topology::Field& tractions = params->get("value");
 
     tractionsVisitor = new topology::VecVisitorMesh(tractions);
     tractionsArray = tractionsVisitor->localArray();
   } // if
 
-  topology::Field<topology::Mesh>& area = _fields->get("area");
+  topology::Field& area = _fields->get("area");
   topology::VecVisitorMesh areaVisitor(area);
   const PetscScalar* areaArray = areaVisitor.localArray();
 
-  topology::Field<topology::Mesh>& orientation = _fields->get("orientation");
+  topology::Field& orientation = _fields->get("orientation");
   topology::VecVisitorMesh orientationVisitor(orientation);
   const PetscScalar* orientationArray = orientationVisitor.localArray();
 
@@ -383,25 +383,25 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(const PylithScalar t,
   scalar_array tractionTpdtVertex(spaceDim); // Fault coordinate system
 
   // Get fields.
-  topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
+  topology::Field& dispT = fields->get("disp(t)");
   topology::VecVisitorMesh dispTVisitor(dispT);
   const PetscScalar* dispTArray = dispTVisitor.localArray();
 
-  topology::Field<topology::Mesh>& dispTIncr = fields->get("dispIncr(t->t+dt)");
+  topology::Field& dispTIncr = fields->get("dispIncr(t->t+dt)");
   topology::VecVisitorMesh dispTIncrVisitor(dispTIncr);
   const PetscScalar* dispTIncrArray = dispTIncrVisitor.localArray();
 
   scalar_array slipVertex(spaceDim);
-  topology::Field<topology::Mesh>& dispRel = _fields->get("relative disp");
+  topology::Field& dispRel = _fields->get("relative disp");
   topology::VecVisitorMesh dispRelVisitor(dispRel);
   const PetscScalar* dispRelArray = dispRelVisitor.localArray();
 
   scalar_array slipRateVertex(spaceDim);
-  topology::Field<topology::Mesh>& velRel = _fields->get("relative velocity");
+  topology::Field& velRel = _fields->get("relative velocity");
   topology::VecVisitorMesh velRelVisitor(velRel);
   const PetscScalar* velRelArray = velRelVisitor.localArray();
 
-  topology::Field<topology::Mesh>& orientation = _fields->get("orientation");
+  topology::Field& orientation = _fields->get("orientation");
   topology::VecVisitorMesh orientationVisitor(orientation);
   const PetscScalar* orientationArray = orientationVisitor.localArray();
 
@@ -1008,7 +1008,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
 void
 pylith::faults::FaultCohesiveDyn::adjustSolnLumped(topology::SolutionFields* const fields,
 						   const PylithScalar t,
-						   const topology::Field<topology::Mesh>& jacobian)
+						   const topology::Field& jacobian)
 { // adjustSolnLumped
   PYLITH_METHOD_BEGIN;
 
@@ -1324,7 +1324,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(topology::SolutionFields* con
 
 // ----------------------------------------------------------------------
 // Get vertex field associated with integrator.
-const pylith::topology::Field<pylith::topology::Mesh>&
+const pylith::topology::Field&
 pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
 					      const topology::SolutionFields* fields)
 { // vertexField
@@ -1339,23 +1339,23 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
   const int cohesiveDim = _faultMesh->dimension();
   const int spaceDim = _quadrature->spaceDim();
 
-  const topology::Field<topology::Mesh>& orientation = _fields->get("orientation");
+  const topology::Field& orientation = _fields->get("orientation");
 
   PylithScalar scale = 0.0;
   int fiberDim = 0;
   if (0 == strcasecmp("slip", name)) {
-    const topology::Field<topology::Mesh>& dispRel = _fields->get("relative disp");
+    const topology::Field& dispRel = _fields->get("relative disp");
     _allocateBufferVectorField();
-    topology::Field<topology::Mesh>& buffer =  _fields->get("buffer (vector)");
+    topology::Field& buffer =  _fields->get("buffer (vector)");
     buffer.copy(dispRel);
     buffer.label("slip");
     FaultCohesiveLagrange::globalToFault(&buffer, orientation);
     PYLITH_METHOD_RETURN(buffer);
 
   } else if (0 == strcasecmp("slip_rate", name)) {
-    const topology::Field<topology::Mesh>& velRel = _fields->get("relative velocity");
+    const topology::Field& velRel = _fields->get("relative velocity");
     _allocateBufferVectorField();
-    topology::Field<topology::Mesh>& buffer = _fields->get("buffer (vector)");
+    topology::Field& buffer = _fields->get("buffer (vector)");
     buffer.copy(velRel);
     buffer.label("slip_rate");
     FaultCohesiveLagrange::globalToFault(&buffer, orientation);
@@ -1365,7 +1365,7 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     PetscSection orientationSection = _fields->get("orientation").petscSection();assert(orientationSection);
     PetscVec orientationVec = _fields->get("orientation").localVector();assert(orientationVec);
     _allocateBufferVectorField();
-    topology::Field<topology::Mesh>& buffer = _fields->get("buffer (vector)");
+    topology::Field& buffer = _fields->get("buffer (vector)");
     buffer.copy(orientationSection, 0, PETSC_DETERMINE, orientationVec);
     buffer.label("strike_dir");
     buffer.scale(1.0);
@@ -1375,7 +1375,7 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     PetscSection orientationSection = _fields->get("orientation").petscSection();assert(orientationSection);
     PetscVec orientationVec = _fields->get("orientation").localVector();assert(orientationVec);
     _allocateBufferVectorField();
-    topology::Field<topology::Mesh>& buffer = _fields->get("buffer (vector)");
+    topology::Field& buffer = _fields->get("buffer (vector)");
     buffer.copy(orientationSection, 1, PETSC_DETERMINE, orientationVec);
     buffer.label("dip_dir");
     buffer.scale(1.0);
@@ -1385,7 +1385,7 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     PetscSection orientationSection = _fields->get("orientation").petscSection();assert(orientationSection);
     PetscVec orientationVec = _fields->get("orientation").localVector();assert(orientationVec);
     _allocateBufferVectorField();
-    topology::Field<topology::Mesh>& buffer = _fields->get("buffer (vector)");
+    topology::Field& buffer = _fields->get("buffer (vector)");
     buffer.copy(orientationSection, cohesiveDim, PETSC_DETERMINE, orientationVec);
     buffer.label("normal_dir");
     buffer.scale(1.0);
@@ -1393,9 +1393,9 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
 
   } else if (0 == strcasecmp("traction", name)) {
     assert(fields);
-    const topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
+    const topology::Field& dispT = fields->get("disp(t)");
     _allocateBufferVectorField();
-    topology::Field<topology::Mesh>& buffer = _fields->get("buffer (vector)");
+    topology::Field& buffer = _fields->get("buffer (vector)");
     _calcTractions(&buffer, dispT);
     PYLITH_METHOD_RETURN(buffer);
 
@@ -1403,10 +1403,10 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     PYLITH_METHOD_RETURN(_friction->getField(name));
 
   } else if (_tractPerturbation && _tractPerturbation->hasParameter(name)) {
-    const topology::Field<topology::Mesh>& param = _tractPerturbation->vertexField(name, fields);
+    const topology::Field& param = _tractPerturbation->vertexField(name, fields);
     if (param.vectorFieldType() == topology::FieldBase::VECTOR) {
       _allocateBufferVectorField();
-      topology::Field<topology::Mesh>& buffer = _fields->get("buffer (vector)");
+      topology::Field& buffer = _fields->get("buffer (vector)");
       buffer.copy(param);
       FaultCohesiveLagrange::globalToFault(&buffer, orientation);
       PYLITH_METHOD_RETURN(buffer);
@@ -1426,7 +1426,7 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
 
   // Satisfy return values
   assert(_fields);
-  const topology::Field<topology::Mesh>& buffer = _fields->get("buffer (vector)");
+  const topology::Field& buffer = _fields->get("buffer (vector)");
 
   PYLITH_METHOD_RETURN(buffer);
 } // vertexField
@@ -1434,8 +1434,8 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
 // ----------------------------------------------------------------------
 // Compute tractions on fault surface using solution.
 void
-pylith::faults::FaultCohesiveDyn::_calcTractions(topology::Field<topology::Mesh>* tractions,
-						 const topology::Field<topology::Mesh>& dispT)
+pylith::faults::FaultCohesiveDyn::_calcTractions(topology::Field* tractions,
+						 const topology::Field& dispT)
 { // _calcTractions
   PYLITH_METHOD_BEGIN;
 
@@ -1456,7 +1456,7 @@ pylith::faults::FaultCohesiveDyn::_calcTractions(topology::Field<topology::Mesh>
 
   // Allocate buffer for tractions field (if necessary).
   if (!tractions->petscSection()) {
-    const topology::Field<topology::Mesh>& dispRel = _fields->get("relative disp");
+    const topology::Field& dispRel = _fields->get("relative disp");
     tractions->cloneSection(dispRel);
   } // if
   const PylithScalar pressureScale = _normalizer->pressureScale();
@@ -1590,34 +1590,34 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
   // Setup fields involved in sensitivity solve.
   if (!_fields->hasField("sensitivity solution")) {
     _fields->add("sensitivity solution", "sensitivity_soln");
-    topology::Field<topology::Mesh>& solution = _fields->get("sensitivity solution");
-    const topology::Field<topology::Mesh>& dispRel = _fields->get("relative disp");
+    topology::Field& solution = _fields->get("sensitivity solution");
+    const topology::Field& dispRel = _fields->get("relative disp");
     solution.cloneSection(dispRel);
     solution.createScatter(solution.mesh());
   } // if
-  const topology::Field<topology::Mesh>& solution = _fields->get("sensitivity solution");
+  const topology::Field& solution = _fields->get("sensitivity solution");
 
   if (!_fields->hasField("sensitivity residual")) {
     _fields->add("sensitivity residual", "sensitivity_residual");
-    topology::Field<topology::Mesh>& residual = _fields->get("sensitivity residual");
+    topology::Field& residual = _fields->get("sensitivity residual");
     residual.cloneSection(solution);
     residual.createScatter(solution.mesh());
   } // if
 
   if (!_fields->hasField("sensitivity relative disp")) {
     _fields->add("sensitivity relative disp", "sensitivity_relative_disp");
-    topology::Field<topology::Mesh>& dispRel = _fields->get("sensitivity relative disp");
+    topology::Field& dispRel = _fields->get("sensitivity relative disp");
     dispRel.cloneSection(solution);
   } // if
-  topology::Field<topology::Mesh>& dispRel = _fields->get("sensitivity relative disp");
+  topology::Field& dispRel = _fields->get("sensitivity relative disp");
   dispRel.zero();
 
   if (!_fields->hasField("sensitivity dLagrange")) {
     _fields->add("sensitivity dLagrange", "sensitivity_dlagrange");
-    topology::Field<topology::Mesh>& dLagrange = _fields->get("sensitivity dLagrange");
+    topology::Field& dLagrange = _fields->get("sensitivity dLagrange");
     dLagrange.cloneSection(solution);
   } // if
-  topology::Field<topology::Mesh>& dLagrange = _fields->get("sensitivity dLagrange");
+  topology::Field& dLagrange = _fields->get("sensitivity dLagrange");
   dLagrange.zero();
 
   // Setup Jacobian sparse matrix for sensitivity solve.
@@ -1673,7 +1673,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
   PetscErrorCode err = 0;
 
   // Get solution field
-  const topology::Field<topology::Mesh>& solutionDomain = fields.solution();
+  const topology::Field& solutionDomain = fields.solution();
   PetscDM solutionDomainDM = solutionDomain.dmMesh();assert(solutionDomainDM);
   PetscSection solutionDomainSection = solutionDomain.petscSection();assert(solutionDomainSection);
   PetscVec solutionDomainVec = solutionDomain.localVector();assert(solutionDomainVec);
@@ -1826,7 +1826,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negative
   topology::VecVisitorMesh dLagrangeVisitor(_fields->get("sensitivity dLagrange"));
 
   scalar_array residualCell(numBasis*spaceDim);
-  topology::Field<topology::Mesh>& residual = _fields->get("sensitivity residual");
+  topology::Field& residual = _fields->get("sensitivity residual");
   topology::VecVisitorMesh residualVisitor(residual);
   residual.zero();
 
@@ -1894,8 +1894,8 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySolve(void)
   assert(_jacobian);
   assert(_ksp);
 
-  topology::Field<topology::Mesh>& residual = _fields->get("sensitivity residual");
-  topology::Field<topology::Mesh>& solution = _fields->get("sensitivity solution");
+  topology::Field& residual = _fields->get("sensitivity residual");
+  topology::Field& solution = _fields->get("sensitivity solution");
 
   // Assemble residual over processors.
   residual.complete();
@@ -2046,7 +2046,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceNorm(const PylithScalar alp
   topology::VecVisitorMesh dispTVisitor(fields->get("disp(t)"));
   const PetscScalar* dispTArray = dispTVisitor.localArray();
 
-  topology::Field<topology::Mesh>& dispTIncr = fields->get("dispIncr(t->t+dt)");
+  topology::Field& dispTIncr = fields->get("dispIncr(t->t+dt)");
   topology::VecVisitorMesh dispTIncrVisitor(dispTIncr);
   const PetscScalar* dispTIncrArray = dispTIncrVisitor.localArray();
 

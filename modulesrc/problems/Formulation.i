@@ -120,7 +120,7 @@ namespace pylith {
        * @param t Current time (nondimensional).
        * @param dt Time step (nondimension).
        */
-      void updateSettings(pylith::topology::Field<pylith::topology::Mesh>* jacobian,
+      void updateSettings(pylith::topology::Field* jacobian,
 			  pylith::topology::SolutionFields* fields,
 			  const PylithScalar t,
 			  const PylithScalar dt);

@@ -85,7 +85,7 @@ namespace pylith {
        *
        * @returns Fields associated with fault.
        */
-      const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >* fields(void) const;
+      const pylith::topology::Fields* fields(void) const;
 
     }; // class FaultCohesive
 

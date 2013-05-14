@@ -138,20 +138,20 @@ namespace pylith {
        * @param field Field over material cells.
        * @param name Name of field to retrieve.
        */
-      void getField(pylith::topology::Field<pylith::topology::Mesh>* field,
+      void getField(pylith::topology::Field* field,
 		    const char* name) const;
       
       /** Get the properties field.
        *
        * @returns Properties field.
        */
-      const pylith::topology::Field<pylith::topology::Mesh>* propertiesField() const;
+      const pylith::topology::Field* propertiesField() const;
       
       /** Get the state variables field.
        *
        * @returns State variables field.
        */
-      const pylith::topology::Field<pylith::topology::Mesh>* stateVarsField() const;
+      const pylith::topology::Field* stateVarsField() const;
 
       // PROTECTED METHODS //////////////////////////////////////////////
     protected :

@@ -132,7 +132,7 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();assert(cs);
 
   // Create field to hold physical properties.
-  delete _properties; _properties = new topology::Field<topology::Mesh>(mesh);assert(_properties);
+  delete _properties; _properties = new topology::Field(mesh);assert(_properties);
   _properties->label("properties");
   const int propsFiberDim = numQuadPts * _numPropsQuadPt;
   int_array cellsTmp(cells, numCells);
@@ -160,7 +160,7 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
   // Create field to hold state variables. We create the field even
   // if there is no initial state, because this we will use this field
   // to hold the state variables.
-  delete _stateVars; _stateVars = new topology::Field<topology::Mesh>(mesh);assert(_stateVars);
+  delete _stateVars; _stateVars = new topology::Field(mesh);assert(_stateVars);
   _stateVars->label("state variables");
   const int stateVarsFiberDim = numQuadPts * _numVarsQuadPt;
   topology::VecVisitorMesh* stateVarsVisitor = 0;
@@ -268,7 +268,7 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
 
 // ----------------------------------------------------------------------
 // Get the properties field.
-const pylith::topology::Field<pylith::topology::Mesh>*
+const pylith::topology::Field*
 pylith::materials::Material::propertiesField() const
 { // propertiesField
   return _properties;
@@ -276,7 +276,7 @@ pylith::materials::Material::propertiesField() const
 
 // ----------------------------------------------------------------------
 // Get the state variables field.
-const pylith::topology::Field<pylith::topology::Mesh>*
+const pylith::topology::Field*
 pylith::materials::Material::stateVarsField() const
 { // stateVarsField
   return _stateVars;
@@ -313,7 +313,7 @@ pylith::materials::Material::hasStateVar(const char* name)
 // ----------------------------------------------------------------------
 // Get physical property or state variable field.
 void
-pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
+pylith::materials::Material::getField(topology::Field *field,
 				      const char* name) const
 { // getField
   PYLITH_METHOD_BEGIN;

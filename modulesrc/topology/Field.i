@@ -25,7 +25,6 @@
 namespace pylith {
   namespace topology {
 
-    template<typename mesh_type>
     class Field : public FieldBase
     { // Field
 
@@ -36,7 +35,7 @@ namespace pylith {
        *
        * @param mesh Finite-element mesh.
        */
-      Field(const mesh_type& mesh);
+      Field(const pylith::topology::Mesh& mesh);
 
       /// Destructor.
       ~Field(void);
@@ -48,7 +47,7 @@ namespace pylith {
        *
        * @returns Finite-element mesh.
        */
-      const mesh_type& mesh(void) const;
+      const pylith::topology::Mesh& mesh(void) const;
 
       /** Set label for field.
        *
@@ -189,8 +188,7 @@ namespace pylith {
        * @param mesh Mesh associated with scatter.
        * @param context Label for context associated with vector.
        */
-      template<typename scatter_mesh_type>
-      void createScatter(const scatter_mesh_type& mesh,
+      void createScatter(const pylith::topology::Mesh& mesh,
 			 const char* context ="");
 
       /** Get PETSc vector associated with field.

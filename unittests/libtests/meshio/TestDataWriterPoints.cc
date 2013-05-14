@@ -36,9 +36,6 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Field<pylith::topology::Mesh> MeshField;
-
-// ----------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterPoints::setUp(void)
@@ -104,7 +101,7 @@ pylith::meshio::TestDataWriterPoints::_initialize(void)
 // ----------------------------------------------------------------------
 // Create vertex fields.
 void
-pylith::meshio::TestDataWriterPoints::_createVertexFields(topology::Fields<MeshField>* fields) const
+pylith::meshio::TestDataWriterPoints::_createVertexFields(topology::Fields* fields) const
 { // _createVertexFields
   PYLITH_METHOD_BEGIN;
 
@@ -124,7 +121,7 @@ pylith::meshio::TestDataWriterPoints::_createVertexFields(topology::Fields<MeshF
     const char* name = _data->vertexFieldsInfo[i].name;
     const int fiberDim = _data->vertexFieldsInfo[i].fiber_dim;
     fields->add(name, name);
-    MeshField& field = fields->get(name);
+    topology::Field& field = fields->get(name);
     field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
     field.allocate();
     field.vectorFieldType(_data->vertexFieldsInfo[i].field_type);

@@ -72,7 +72,7 @@ public :
    * @param t Time t.
    */
   virtual
-  void slip(topology::Field<topology::Mesh>* const slipField,
+  void slip(topology::Field* const slipField,
 	    const PylithScalar t) = 0;
   
   /** Get final slip.
@@ -80,27 +80,25 @@ public :
    * @returns Final slip.
    */
   virtual
-  const topology::Field<topology::Mesh>& finalSlip(void) = 0;
+  const topology::Field& finalSlip(void) = 0;
 
   /** Get time when slip begins at each point.
    *
    * @returns Time when slip begins.
    */
   virtual
-  const topology::Field<topology::Mesh>& slipTime(void) = 0;
+  const topology::Field& slipTime(void) = 0;
 
   /** Get parameter fields.
    *
    * @returns Parameter fields.
    */
-  const topology::Fields<topology::Field<topology::Mesh> >*
-  parameterFields(void) const;
+  const topology::Fields* parameterFields(void) const;
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
-  /// Parameters for slip time function.
-  topology::Fields<topology::Field<topology::Mesh> >* _parameters;
+  topology::Fields* _parameters; ///< Parameters for slip time function.
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

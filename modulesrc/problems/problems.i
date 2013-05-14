@@ -33,8 +33,6 @@
 #include "pylith/problems/SolverLinear.hh"
 #include "pylith/problems/SolverNonlinear.hh"
 #include "pylith/problems/SolverLumped.hh"
-
-#include "pylith/utils/sievetypes.hh"
 %}
 
 %include "exception.i"

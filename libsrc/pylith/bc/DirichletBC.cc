@@ -81,7 +81,7 @@ pylith::bc::DirichletBC::initialize(const topology::Mesh& mesh,
 // ----------------------------------------------------------------------
 // Set number of degrees of freedom that are constrained at points in field.
 void
-pylith::bc::DirichletBC::setConstraintSizes(const topology::Field<topology::Mesh>& field)
+pylith::bc::DirichletBC::setConstraintSizes(const topology::Field& field)
 { // setConstraintSizes
   PYLITH_METHOD_BEGIN;
 
@@ -125,7 +125,7 @@ pylith::bc::DirichletBC::setConstraintSizes(const topology::Field<topology::Mesh
 // ----------------------------------------------------------------------
 // Set which degrees of freedom are constrained at points in field.
 void
-pylith::bc::DirichletBC::setConstraints(const topology::Field<topology::Mesh>& field)
+pylith::bc::DirichletBC::setConstraints(const topology::Field& field)
 { // setConstraints
   PYLITH_METHOD_BEGIN;
 
@@ -193,7 +193,7 @@ pylith::bc::DirichletBC::setConstraints(const topology::Field<topology::Mesh>& f
 // Set values in field.
 void
 pylith::bc::DirichletBC::setField(const PylithScalar t,
-				  const topology::Field<topology::Mesh>& field)
+				  const topology::Field& field)
 { // setField
   PYLITH_METHOD_BEGIN;
 
@@ -206,7 +206,7 @@ pylith::bc::DirichletBC::setField(const PylithScalar t,
 
   // Get sections
   assert(_parameters);
-  topology::Field<topology::Mesh>& valueField = _parameters->get("value");
+  topology::Field& valueField = _parameters->get("value");
   topology::VecVisitorMesh valueVisitor(valueField);
   PetscScalar* valueArray = valueVisitor.localArray();
 
@@ -235,7 +235,7 @@ pylith::bc::DirichletBC::setField(const PylithScalar t,
 void
 pylith::bc::DirichletBC::setFieldIncr(const PylithScalar t0,
 				      const PylithScalar t1,
-				      const topology::Field<topology::Mesh>& field)
+				      const topology::Field& field)
 { // setFieldIncr
   PYLITH_METHOD_BEGIN;
 
@@ -248,7 +248,7 @@ pylith::bc::DirichletBC::setFieldIncr(const PylithScalar t0,
 
   // Get sections
   assert(_parameters);
-  topology::Field<topology::Mesh>& valueField = _parameters->get("value");
+  topology::Field& valueField = _parameters->get("value");
   topology::VecVisitorMesh valueVisitor(valueField);
   PetscScalar* valueArray = valueVisitor.localArray();
 

@@ -22,10 +22,10 @@
 
 import unittest
 
-from pylith.meshio.VertexFilterVecNormMesh import VertexFilterVecNormMesh
+from pylith.meshio.VertexFilterVecNorm import VertexFilterVecNorm
 
 # ----------------------------------------------------------------------
-class TestVertexFilterVecNormMesh(unittest.TestCase):
+class TestVertexFilterVecNorm(unittest.TestCase):
   """
   Unit testing of Python VertexFilterVecNorm object.
   """
@@ -34,7 +34,7 @@ class TestVertexFilterVecNormMesh(unittest.TestCase):
     """
     Test constructor.
     """
-    filter = VertexFilterVecNormMesh()
+    filter = VertexFilterVecNorm()
     filter._configure()
     self.failIf(filter.filter is None)
     return
@@ -44,7 +44,7 @@ class TestVertexFilterVecNormMesh(unittest.TestCase):
     """
     Test constructor.
     """
-    filter = VertexFilterVecNormMesh()
+    filter = VertexFilterVecNorm()
     filter._configure()
     filter.initialize()
     return
@@ -54,7 +54,7 @@ class TestVertexFilterVecNormMesh(unittest.TestCase):
     """
     Test factory method.
     """
-    from pylith.meshio.VertexFilterVecNormMesh import output_vertex_filter
+    from pylith.meshio.VertexFilterVecNorm import output_vertex_filter
     filter = output_vertex_filter()
     return
 

@@ -92,17 +92,14 @@ nobase_pkgpyexec_PYTHON = \
 	materials/DruckerPragerPlaneStrain.py \
 	meshio/__init__.py \
 	meshio/CellFilter.py \
-	meshio/CellFilterAvgMesh.py \
+	meshio/CellFilterAvg.py \
 	meshio/DataWriter.py \
 	meshio/DataWriterVTK.py \
-	meshio/DataWriterVTKMesh.py \
-	meshio/DataWriterVTKPoints.py \
 	meshio/MeshIOObj.py \
 	meshio/MeshIOAscii.py \
 	meshio/MeshIOLagrit.py \
 	meshio/OutputDirichlet.py \
 	meshio/OutputManager.py \
-	meshio/OutputManagerMesh.py \
 	meshio/OutputSoln.py \
 	meshio/OutputFaultKin.py \
 	meshio/OutputFaultDyn.py \
@@ -114,7 +111,7 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/PointsList.py \
 	meshio/SingleOutput.py \
 	meshio/VertexFilter.py \
-	meshio/VertexFilterVecNormMesh.py \
+	meshio/VertexFilterVecNorm.py \
 	mpi/__init__.py \
 	mpi/Communicator.py \
 	perf/__init__.py \
@@ -186,9 +183,7 @@ endif
 if ENABLE_HDF5
   nobase_pkgpyexec_PYTHON += \
 	meshio/DataWriterHDF5.py \
-	meshio/DataWriterHDF5Mesh.py \
 	meshio/DataWriterHDF5Ext.py \
-	meshio/DataWriterHDF5ExtMesh.py \
 	meshio/Xdmf.py
 endif
 

@@ -30,12 +30,12 @@
 #include "meshiofwd.hh" // forward declarations
 
 #include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Quadrature
+#include "pylith/topology/topologyfwd.hh" // USES Field
 
 // CellFilter -----------------------------------------------------------
 /** @brief C++ object for filtering cell fields when outputing
  * finite-element data.
  */
-template<typename mesh_type, typename field_type>
 class pylith::meshio::CellFilter
 { // CellFilter
 
@@ -75,8 +75,8 @@ public :
    * @returns Averaged field.
    */
   virtual
-  field_type&
-  filter(const field_type& fieldIn,
+  topology::Field&
+  filter(const topology::Field& fieldIn,
 	 const char* label =0,
 	 const int labelId =0) = 0;
 
@@ -103,8 +103,6 @@ protected :
   feassemble::Quadrature* _quadrature;
 
 }; // CellFilter
-
-#include "CellFilter.cc" // template definitions
 
 #endif // pylith_meshio_cellfilter_hh
 
