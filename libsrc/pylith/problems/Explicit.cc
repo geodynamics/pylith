@@ -65,7 +65,7 @@ pylith::problems::Explicit::calcRateFields(void)
   topology::VecVisitorMesh dispIncrVisitor(dispIncr);
   PetscScalar* dispIncrArray = dispIncrVisitor.localArray();
 
-  topology::Field& dispT = _fields->get("disp");
+  topology::Field& dispT = _fields->get("disp(t)");
   topology::VecVisitorMesh dispTVisitor(dispT);
   PetscScalar* dispTArray = dispTVisitor.localArray();
 
