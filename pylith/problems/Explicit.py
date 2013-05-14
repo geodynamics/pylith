@@ -149,7 +149,7 @@ class Explicit(Formulation, ModuleExplicit):
 
     if 0 == comm.rank:
       self._info.log("Creating lumped Jacobian matrix.")
-    from pylith.topology.topology import Field
+    from pylith.topology.Field import Field
     jacobian = Field(self.mesh())
     jacobian.newSection(jacobian.VERTICES_FIELD, dimension)
     jacobian.allocate()
@@ -327,15 +327,6 @@ class Explicit(Formulation, ModuleExplicit):
       self.jacobian.view("Jacobian")
 
     self._debug.log(resourceUsageString())
-    return
-
-
-  def _cleanup(self):
-    """
-    Deallocate PETSc and local data structures.
-    """
-    if not self.fields is None:
-      self.fields.cleanup()
     return
 
 
