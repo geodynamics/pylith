@@ -163,8 +163,8 @@ pylith::topology::Field::label(const char* value)
   if (_localVec)  {err = PetscObjectSetName((PetscObject) _localVec, value);PYLITH_CHECK_ERROR(err);}
   if (_globalVec) {err = PetscObjectSetName((PetscObject) _globalVec, value);PYLITH_CHECK_ERROR(err);}
 
-  const typename scatter_map_type::const_iterator scattersEnd = _scatters.end();
-  for (typename scatter_map_type::const_iterator s_iter=_scatters.begin();
+  const scatter_map_type::const_iterator scattersEnd = _scatters.end();
+  for (scatter_map_type::const_iterator s_iter=_scatters.begin();
        s_iter != scattersEnd;
        ++s_iter) {
     if (s_iter->second.vector) {
@@ -458,8 +458,8 @@ pylith::topology::Field::cloneSection(const Field& src)
     
   // Reuse scatters in clone
   if (src._scatters.size() > 0) {
-    const typename scatter_map_type::const_iterator scattersEnd = src._scatters.end();
-    for (typename scatter_map_type::const_iterator s_iter=src._scatters.begin();
+    const scatter_map_type::const_iterator scattersEnd = src._scatters.end();
+    for (scatter_map_type::const_iterator s_iter=src._scatters.begin();
          s_iter != scattersEnd;
          ++s_iter) {
       ScatterInfo sinfo;
@@ -519,8 +519,8 @@ pylith::topology::Field::clear(void)
 
   PetscErrorCode err = 0;
   
-  const typename scatter_map_type::const_iterator scattersEnd = _scatters.end();
-  for (typename scatter_map_type::iterator s_iter=_scatters.begin();
+  const scatter_map_type::const_iterator scattersEnd = _scatters.end();
+  for (scatter_map_type::iterator s_iter=_scatters.begin();
        s_iter != scattersEnd;
        ++s_iter) {
 
@@ -1295,7 +1295,7 @@ pylith::topology::Field::_getScatter(const char* context) const
 
   assert(context);
 
-  const typename scatter_map_type::const_iterator s_iter = 
+  const scatter_map_type::const_iterator s_iter = 
     _scatters.find(context);
   if (s_iter == _scatters.end()) {
     std::ostringstream msg;
