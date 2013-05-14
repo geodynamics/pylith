@@ -1310,7 +1310,7 @@ pylith::topology::Field::_getScatter(const char* context) const
 // Experimental
 void
 pylith::topology::Field::addField(const char *name,
-					     int numComponents)
+				  int numComponents)
 { // addField
   PYLITH_METHOD_BEGIN;
 
