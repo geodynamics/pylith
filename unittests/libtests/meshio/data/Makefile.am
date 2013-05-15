@@ -36,77 +36,54 @@ dist_noinst_DATA = \
 	twohex8_13.0.exo \
 	mesh2D_comments.txt \
 	line2.mesh \
-	line2_t10.vtk \
 	line2_vertex_t10.vtk \
 	line2_cell_t10.vtk \
 	tri3.mesh \
-	tri3_t10.vtk \
 	tri3_vertex_t10.vtk \
 	tri3_cell_t10.vtk \
 	quad4.mesh \
-	quad4_t10.vtk \
 	quad4_vertex_t10.vtk \
 	quad4_cell_t10.vtk \
 	tet4.mesh \
-	tet4_t10.vtk \
 	tet4_vertex_t10.vtk \
 	tet4_cell_t10.vtk \
 	hex8.mesh \
-	hex8_t10.vtk \
 	hex8_vertex_t10.vtk \
 	hex8_cell_t10.vtk \
-	line2_mat_t10.vtk \
 	line2_mat_vertex_t10.vtk \
 	line2_mat_cell_t10.vtk \
-	tri3_mat_t10.vtk \
 	tri3_mat_vertex_t10.vtk \
 	tri3_mat_cell_t10.vtk \
-	quad4_mat_t10.vtk \
 	quad4_mat_vertex_t10.vtk \
 	quad4_mat_cell_t10.vtk \
-	tet4_mat_t10.vtk \
 	tet4_mat_vertex_t10.vtk \
 	tet4_mat_cell_t10.vtk \
-	hex8_mat_t10.vtk \
 	hex8_mat_vertex_t10.vtk \
 	hex8_mat_cell_t10.vtk \
-	line2_surf_t10.vtk \
 	line2_surf_vertex_t10.vtk \
 	line2_surf_cell_t10.vtk \
-	tri3_surf_t10.vtk \
 	tri3_surf_vertex_t10.vtk \
 	tri3_surf_cell_t10.vtk \
-	quad4_surf_t10.vtk \
 	quad4_surf_vertex_t10.vtk \
 	quad4_surf_cell_t10.vtk \
-	tet4_surf_t10.vtk \
 	tet4_surf_vertex_t10.vtk \
 	tet4_surf_cell_t10.vtk \
-	hex8_surf_t10.vtk \
 	hex8_surf_vertex_t10.vtk \
 	hex8_surf_cell_t10.vtk \
-	tri3_bc_t10.vtk \
 	tri3_bc_vertex_t10.vtk \
 	tri3_bc_cell_t10.vtk \
-	quad4_bc_t10.vtk \
 	quad4_bc_vertex_t10.vtk \
 	quad4_bc_cell_t10.vtk \
-	tet4_bc_t10.vtk \
 	tet4_bc_vertex_t10.vtk \
 	tet4_bc_cell_t10.vtk \
-	hex8_bc_t10.vtk \
 	hex8_bc_vertex_t10.vtk \
 	hex8_bc_cell_t10.vtk \
-	tri3_fault_t10.vtk \
 	tri3_fault_vertex_t10.vtk \
 	tri3_fault_cell_t10.vtk \
-	quad4_fault_t10.vtk \
 	quad4_fault_vertex_t10.vtk \
 	quad4_fault_cell_t10.vtk \
-	tet4_fault_t10.vtk \
 	tet4_fault_vertex_t10.vtk \
 	tet4_fault_cell_t10.vtk \
-	hex8_fault_t10.vtk \
 	hex8_fault_vertex_t10.vtk \
 	hex8_fault_cell_t10.vtk \
 	output_t12.vtk \
