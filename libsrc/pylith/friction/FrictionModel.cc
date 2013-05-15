@@ -37,6 +37,7 @@
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
+#include <iostream> // USES std::cerr
 
 //#define PRECOMPUTE_GEOMETRY
 

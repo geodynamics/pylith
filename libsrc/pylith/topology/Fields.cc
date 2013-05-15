@@ -46,9 +46,9 @@ pylith::topology::Fields::~Fields(void)
 void
 pylith::topology::Fields::deallocate(void)
 { // deallocate
-  const typename map_type::iterator begin = _fields.begin();
-  const typename map_type::iterator end = _fields.end();
-  for (typename map_type::iterator iter=begin; iter != end; ++iter) {
+  const map_type::iterator begin = _fields.begin();
+  const map_type::iterator end = _fields.end();
+  for (map_type::iterator iter=begin; iter != end; ++iter) {
     delete iter->second; iter->second = 0;
   } // for
 } // deallocate
@@ -58,7 +58,7 @@ pylith::topology::Fields::deallocate(void)
 bool
 pylith::topology::Fields::hasField(const char* name) const
 { // hasField
-  typename map_type::const_iterator iter = _fields.find(name);
+  map_type::const_iterator iter = _fields.find(name);
   return iter != _fields.end();
 } // hasField
 
@@ -104,7 +104,7 @@ pylith::topology::Fields::add(const char* name,
 void
 pylith::topology::Fields::del(const char* name)
 { // del
-  typename map_type::iterator iter = _fields.find(name);
+  map_type::iterator iter = _fields.find(name);
   if (iter == _fields.end()) {
     std::ostringstream msg;
     msg << "Could not find field '" << name
@@ -128,7 +128,7 @@ pylith::topology::Fields::delField(const char* name)
 const pylith::topology::Field&
 pylith::topology::Fields::get(const char* name) const
 { // get
-  typename map_type::const_iterator iter = _fields.find(name);
+  map_type::const_iterator iter = _fields.find(name);
   if (iter == _fields.end()) {
     std::ostringstream msg;
     msg << "Could not find field '" << name
@@ -143,7 +143,7 @@ pylith::topology::Fields::get(const char* name) const
 pylith::topology::Field&
 pylith::topology::Fields::get(const char* name)
 { // get
-  typename map_type::iterator iter = _fields.find(name);
+  map_type::iterator iter = _fields.find(name);
   if (iter == _fields.end()) {
     std::ostringstream msg;
     msg << "Could not find field '" << name
@@ -158,7 +158,7 @@ pylith::topology::Fields::get(const char* name)
 void
 pylith::topology::Fields::copyLayout(const char* name)
 { // copyLayout
-  typename map_type::const_iterator src = _fields.find(name);
+  map_type::const_iterator src = _fields.find(name);
   if (src == _fields.end()) {
     std::ostringstream msg;
     msg << "Could not find field '" << name
@@ -166,9 +166,9 @@ pylith::topology::Fields::copyLayout(const char* name)
     throw std::runtime_error(msg.str());
   } // if
 
-  const typename map_type::iterator begin = _fields.begin();
-  const typename map_type::iterator end = _fields.end();
-  for (typename map_type::iterator iter=begin; iter != end; ++iter)
+  const map_type::iterator begin = _fields.begin();
+  const map_type::iterator end = _fields.end();
+  for (map_type::iterator iter=begin; iter != end; ++iter)
     if (iter != src)
       iter->second->cloneSection(*src->second);
 } // copyLayout
@@ -193,9 +193,9 @@ pylith::topology::Fields::fieldNames(int* numNames,
   *numNames = _fields.size();
   *names = new char*[_fields.size()];
   assert(*names);
-  const typename map_type::const_iterator namesEnd = _fields.end();
+  const map_type::const_iterator namesEnd = _fields.end();
   int i = 0;
-  for (typename map_type::const_iterator name = _fields.begin(); 
+  for (map_type::const_iterator name = _fields.begin(); 
        name != namesEnd;
        ++name) {
     const char len = name->first.length();

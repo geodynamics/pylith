@@ -32,6 +32,7 @@
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::DomainEnum
 
 #include <string> // USES std::string
+#include <map> // USES std::map
 
 // Fields ---------------------------------------------------------------
 /// Container for managing multiple fields over a finite-element mesh.

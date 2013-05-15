@@ -33,9 +33,6 @@
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <cstring> // USES strcpy()
-#include <cassert> // USES assert()
-#include <stdexcept> // USES std::runtime_error
-#include <sstream> // USES std::ostringstream
 
 // ----------------------------------------------------------------------
 // Default constructor.

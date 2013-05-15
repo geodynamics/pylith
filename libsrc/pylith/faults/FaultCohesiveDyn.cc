@@ -340,14 +340,15 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field& resid
         residualArray[rpoff+d] += -areaArray[aoff] * (dispTArray[dtloff+d] + dispTIncrArray[diloff+d] - tractPerturbVertex[d]);
       } // for
     } else { // opening, normal traction should be zero
+      std::ostringstream msg;
       if (fabs(tractionNormal) > _zeroTolerance) {
-        std::cerr << "WARNING! Fault opening with nonzero traction."
+        msg << "WARNING! Fault opening with nonzero traction."
                   << ", v_fault: " << v_fault
                   << ", opening: " << slipNormal
                   << ", normal traction: " << tractionNormal
                   << std::endl;
+        throw std::runtime_error(msg.str());
       } // if
-      assert(fabs(tractionNormal) < _zeroTolerance);
     }  // if/else
 
 #if defined(DETAILED_EVENT_LOGGING)

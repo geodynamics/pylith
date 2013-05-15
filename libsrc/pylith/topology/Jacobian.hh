@@ -31,8 +31,6 @@
 
 #include "pylith/utils/petscfwd.h" // HOLDSA PetscMat
 
-#include <petscdmmesh.hh> // USES MPI_Comm
-
 #include <string> // USES std::string
 
 // Jacobian -------------------------------------------------------------

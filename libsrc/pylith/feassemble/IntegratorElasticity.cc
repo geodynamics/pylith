@@ -41,6 +41,7 @@
 #include <strings.h> // USES strcasecmp()
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
+#include <iostream> // USES std::cerr
 
 // ----------------------------------------------------------------------
 // Constructor

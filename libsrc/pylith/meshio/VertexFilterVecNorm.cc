@@ -108,10 +108,9 @@ pylith::meshio::VertexFilterVecNorm::filter(const topology::Field& fieldIn)
       case topology::FieldBase::TENSOR:
       case topology::FieldBase::OTHER:
       default :
-	std::cerr << "Bad vector field type '" << fieldIn.vectorFieldType()
-		  << "'." << std::endl;
-	assert(0);
-	throw std::logic_error("Bad vector field type in VertexFilterVecNorm.");
+        std::ostringstream msg;
+        msg << "Bad vector field type '" << fieldIn.vectorFieldType() << " for VertexFilterVecNorm'." << std::endl;
+        throw std::logic_error(msg.str());
       } // switch
   } // if
 

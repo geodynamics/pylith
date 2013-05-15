@@ -28,12 +28,7 @@
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
-
-#include <petscdmmesh.hh>
-
-#include <stdexcept> // USES std::runtime_error
-#include <sstream> // USES std::ostringstream
-#include <cassert> // USES assert()
+#include <iostream> // USES std::cout
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -359,8 +354,9 @@ pylith::topology::Field::newSection(const DomainEnum domain,
     err = DMPlexGetChart(_dm, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
     break;
   default:
-    std::cerr << "Unknown value for DomainEnum: " << domain << std::endl;
-    throw std::logic_error("Bad domain enum in Field.");
+    std::ostringstream msg;
+    msg << "Unknown value for DomainEnum: " << domain << "  in Field" << std::endl;
+    throw std::logic_error(msg.str());
   }
   newSection(pStart, pEnd, fiberDim);
 
@@ -872,11 +868,10 @@ pylith::topology::Field::view(const char* label) const
     case MULTI_OTHER:
       vecFieldString = "multiple other values";
       break;
-    default :
-      std::cerr << "Unknown vector field value '" << const_cast<Field*>(this)->_metadata["default"].vectorFieldType
-		<< "'." << std::endl;
-      assert(0);
-      throw std::logic_error("Bad vector field type in Field.");
+    default:
+      std::ostringstream msg;
+      msg << "Unknown vector field value '" << const_cast<Field*>(this)->_metadata["default"].vectorFieldType << "'  in Field." << std::endl;
+      throw std::logic_error(msg.str());
     } // switch
 
   std::cout << "Viewing field '" << const_cast<Field*>(this)->_metadata["default"].label << "' "<< label << ".\n"
@@ -1379,8 +1374,9 @@ pylith::topology::Field::updateDof(const char *name,
     err = DMPlexGetChart(_dm, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
     break;
   default:
-    std::cerr << "Unknown value for DomainEnum: " << domain << std::endl;
-    throw std::logic_error("Bad domain enum in Field.");
+    std::ostringstream msg;
+    msg << "Unknown value for DomainEnum: " << domain << "  in Field" << std::endl;
+    throw std::logic_error(msg.str());
   }
   PetscSection section = NULL;
   err = DMGetDefaultSection(_dm, &section);PYLITH_CHECK_ERROR(err);assert(section);

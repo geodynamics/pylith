@@ -59,8 +59,8 @@ pylith::meshio::DataWriterHDF5Ext::deallocate(void)
   DataWriter::deallocate();
 
   PetscErrorCode err = 0;
-  const typename dataset_type::const_iterator& dEnd = _datasets.end();
-  for (typename dataset_type::iterator d_iter=_datasets.begin();
+  const dataset_type::const_iterator& dEnd = _datasets.end();
+  for (dataset_type::iterator d_iter=_datasets.begin();
        d_iter != dEnd;
        ++d_iter) {
     err = PetscViewerDestroy(&d_iter->second.viewer);PYLITH_CHECK_ERROR(err);

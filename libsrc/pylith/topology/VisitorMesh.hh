@@ -31,8 +31,6 @@
 
 #include "pylith/utils/petscfwd.h" // HASA PetscVec, PetscSection
 
-#include <petscdmmesh.hh>
-
 // VecVisitorMesh ----------------------------------------------------------
 /** @brief Helper class for accessing field values at points in a
  *  finite-element mesh.

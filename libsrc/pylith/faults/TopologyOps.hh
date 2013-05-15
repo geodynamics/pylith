@@ -28,6 +28,9 @@
 #include "faultsfwd.hh" // forward declarations
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include <set>
+#include <vector>
+#include <iostream>
 
 // TopologyOps ----------------------------------------------------------
 /// Helper object for creation of cohesive cells.

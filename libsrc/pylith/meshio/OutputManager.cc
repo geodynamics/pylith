@@ -28,6 +28,7 @@
 #include "pylith/topology/Fields.hh" // USES Fields
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+#include <iostream> // USES std::cout
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -266,12 +267,11 @@ pylith::meshio::OutputManager::_dimension(topology::Field& fieldIn)
 	fieldName = "buffer (multiple others)";
 	break;
       default :
-	// Spit out usefule error message and stop via assert. If
-	// optimized, throw exception.
-	std::cerr << "Unknown field type '" << fieldIn.vectorFieldType()
-		  << "'";
-	assert(0);
-	throw std::logic_error("Unknown field type");
+        // Spit out useful error message and stop via assert. If
+        // optimized, throw exception.
+        std::ostringstream msg;
+        msg << "Unknown field type '" << fieldIn.vectorFieldType() << "'";
+        throw std::logic_error(msg.str());
       } // switch
     
     if (!_fields) {

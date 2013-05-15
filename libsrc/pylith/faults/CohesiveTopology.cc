@@ -27,17 +27,6 @@
 
 #include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
-extern
-PetscErrorCode DMPlexGetOrientedFace(PetscDM dm,
-				     PetscInt cell,
-				     PetscInt faceSize,
-				     const PetscInt face[],
-				     PetscInt numCorners,
-				     PetscInt indices[],
-				     PetscInt origVertices[],
-				     PetscInt faceVertices[],
-				     PetscBool *posOriented);
-
 // ----------------------------------------------------------------------
 void
 pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,

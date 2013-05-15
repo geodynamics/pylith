@@ -30,6 +30,8 @@
 
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
+#include <map>
+
 // FaultCohesive --------------------------------------------------------
 /// Absract base class for fault surface implemented with cohesive cells.
 class pylith::faults::FaultCohesive : public Fault,

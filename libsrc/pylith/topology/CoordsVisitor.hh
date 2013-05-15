@@ -30,8 +30,6 @@
 
 #include "pylith/utils/petscfwd.h" // HASA PetscVec, PetscSection
 
-#include <petscdmmesh.hh>
-
 // CoordsVisitor ----------------------------------------------------------
 /** @brief Helper class for accessing coordinates in a finite-element mesh.
  */

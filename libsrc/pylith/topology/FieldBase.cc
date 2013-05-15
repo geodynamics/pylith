@@ -19,6 +19,7 @@
 #include <portinfo>
 
 #include "FieldBase.hh" // implementation of class methods
+#include "pylith/utils/error.h" // USES std::logic_error
 
 // ----------------------------------------------------------------------
 // Default constructor.

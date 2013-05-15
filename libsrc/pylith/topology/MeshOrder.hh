@@ -30,8 +30,6 @@
 // Include directives ---------------------------------------------------
 #include "topologyfwd.hh" // forward declarations
 
-#include <petscdmmesh.hh> // HASA ALE::IMesh
-
 // MeshOrder ------------------------------------------------------------
 /// Object for managing order of mesh entities.
 class ALE::MeshOrder

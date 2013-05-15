@@ -24,7 +24,6 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Stratum.hh" // USES StratumIS
 
-#include <petscdmmesh_viewers.hh> // USES VTKViewer
 #include <petscdmplex.h>
 
 #include <cassert> // USES assert()

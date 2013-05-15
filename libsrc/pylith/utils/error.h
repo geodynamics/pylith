@@ -25,6 +25,10 @@
 #if !defined(pylith_utils_error_h)
 #define pylith_utils_error_h
 
+#include <cassert>
+#include <stdexcept>
+#include <sstream>
+
 #undef __FUNCT__
 #if defined(__FUNCTION_NAME__)
 #define __FUNCT__ __FUNCTION_NAME__
@@ -38,7 +42,7 @@
 #define PYLITH_METHOD_END PetscFunctionReturnVoid()
 #define PYLITH_METHOD_RETURN(v) PetscFunctionReturn(v)
 
-#define PYLITH_CHECK_ERROR(err) CHKERRXX(err)
+#define PYLITH_CHECK_ERROR(err) do {if (PetscUnlikely(err)) {PetscError(PETSC_COMM_SELF,__LINE__,PETSC_FUNCTION_NAME,__FILE__,__SDIR__,err,PETSC_ERROR_IN_CXX,0);}} while(0)
 
 #define PYLITH_CHECK_ERROR_MSG(err, msg) \
   if (err) { \

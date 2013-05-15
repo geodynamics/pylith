@@ -297,9 +297,9 @@ pylith::bc::Neumann::_queryDatabases(void)
 	break;
       } // case 3
       default :
-	std::cerr << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
-	assert(0);
-	throw std::logic_error("Bad spatial dimension in Neumann.");
+        std::ostringstream msg;
+        msg << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
+        throw std::logic_error(msg.str());
       } // switch
     _queryDB("initial", _dbInitial, spaceDim, pressureScale);
     _dbInitial->close();
@@ -328,9 +328,9 @@ pylith::bc::Neumann::_queryDatabases(void)
 	break;
       } // case 3
       default :
-	std::cerr << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
-	assert(0);
-	throw std::logic_error("Bad spatial dimension in Neumann.");
+        std::ostringstream msg;
+        msg << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
+        throw std::logic_error(msg.str());
       } // switch
     _queryDB("rate", _dbRate, spaceDim, rateScale);
 
@@ -362,9 +362,9 @@ pylith::bc::Neumann::_queryDatabases(void)
 	break;
       } // case 3
       default :
-	std::cerr << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
-	assert(0);
-	throw std::logic_error("Bad spatial dimension in Neumann.");
+        std::ostringstream msg;
+        msg << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
+        throw std::logic_error(msg.str());
       } // switch
     _queryDB("change", _dbChange, spaceDim, pressureScale);
 
