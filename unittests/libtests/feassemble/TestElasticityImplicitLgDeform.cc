@@ -264,13 +264,13 @@ pylith::feassemble::TestElasticityImplicitLgDeform::_initialize(topology::Mesh* 
   const int spaceDim = _data->spaceDim;
 
   // Setup mesh
-  topology::MeshOps::createDMMesh(mesh, _data->cellDim);
-  PetscDM dmMesh = mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
+  PetscDM dmMesh;
 
   // Cells and vertices
+  const PetscBool interpolate = PETSC_FALSE;
   PetscErrorCode err;
-  err = DMPlexBuildFromCellList_Private(dmMesh, _data->numCells, _data->numVertices, _data->numBasis, _data->cells);PYLITH_CHECK_ERROR(err);
-  err = DMPlexBuildCoordinates_Private(dmMesh, _data->spaceDim, _data->numCells, _data->numVertices, _data->vertices);PYLITH_CHECK_ERROR(err);
+  err = DMPlexCreateFromCellList(PETSC_COMM_WORLD, _data->cellDim, _data->numCells, _data->numVertices, _data->numBasis, interpolate, _data->cells, _data->spaceDim, _data->vertices, &dmMesh);PYLITH_CHECK_ERROR(err);
+  mesh->dmMesh(dmMesh, "domain");
 
   // Material ids
   PetscInt cStart, cEnd;
