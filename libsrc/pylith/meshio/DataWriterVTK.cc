@@ -248,7 +248,7 @@ pylith::meshio::DataWriterVTK::writeVertexField(const PylithScalar t,
   assert(_isOpen && _isOpenTimeStep);
 
   // Could check the field.petscSection() matches the default section from VecGetDM().
-  Vec v = field.localVector();assert(v);
+  PetscVec v = field.localVector();assert(v);
 
   // :KLUDGE: MATT You have a note that this is not fully implemented!
   //
