@@ -22,6 +22,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Fields.hh" // HOLDSA Fields
 #include "pylith/topology/Stratum.hh" // USES StratumIS
 
 #include <petscdmplex.h>
@@ -42,11 +43,13 @@ pylith::meshio::DataWriterVTK::DataWriterVTK(void) :
   _timeFormat("%f"),
   _viewer(NULL),
   _dm(NULL),
+  _vertexFieldCache(0),
+  _cellFieldCache(0),
+  _precision(6),
   _isOpen(false),
   _isOpenTimeStep(false),
   _wroteVertexHeader(false),
-  _wroteCellHeader(false),
-  _precision(6)
+  _wroteCellHeader(false)
 { // constructor
 } // constructor
 
@@ -64,6 +67,9 @@ pylith::meshio::DataWriterVTK::deallocate(void)
 { // deallocate
   PYLITH_METHOD_BEGIN;
 
+  delete _vertexFieldCache; _vertexFieldCache = 0;
+  delete _cellFieldCache; _cellFieldCache = 0;
+
   closeTimeStep(); // Insure time step is closed.
   close(); // Insure clean up.
   DataWriter::deallocate();
@@ -80,6 +86,9 @@ pylith::meshio::DataWriterVTK::DataWriterVTK(const DataWriterVTK& w) :
   _timeFormat(w._timeFormat),
   _viewer(NULL),
   _dm(NULL),
+  _vertexFieldCache(0),
+  _cellFieldCache(0),
+  _precision(w._precision),
   _isOpen(w._isOpen),
   _isOpenTimeStep(w._isOpenTimeStep),
   _wroteVertexHeader(w._wroteVertexHeader),
@@ -175,9 +184,18 @@ pylith::meshio::DataWriterVTK::close(void)
     } // if
     err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
   } // if
-  _isOpen = false;
+
+  // Clear field caches.
+  if (_vertexFieldCache) {
+    _vertexFieldCache->deallocate();
+  } // if
+  if (_cellFieldCache) {
+    _cellFieldCache->deallocate();
+  } // if
 
   DataWriter::close();
+
+  _isOpen = false;
 
   PYLITH_METHOD_END;
 } // close
@@ -246,16 +264,32 @@ pylith::meshio::DataWriterVTK::writeVertexField(const PylithScalar t,
   assert(_dm && _dm == mesh.dmMesh());
   assert(_isOpen && _isOpenTimeStep);
 
+  // Cache vertex field since PETSc writer collects all fields and
+  // then writes file. Caching the field locally allows the output
+  // manager to reuse fields as buffers.
+  if (!_vertexFieldCache) {
+    _vertexFieldCache = new topology::Fields(field.mesh());assert(_vertexFieldCache);
+  } // if/else
+  const char* fieldLabel = field.label();
+  if (!_vertexFieldCache->hasField(fieldLabel)) {
+    _vertexFieldCache->add(fieldLabel, fieldLabel);
+    topology::Field& fieldCached = _vertexFieldCache->get(fieldLabel);
+    fieldCached.cloneSection(field);
+  } // if
+  topology::Field& fieldCached = _vertexFieldCache->get(fieldLabel);
+  assert(fieldCached.sectionSize() == field.sectionSize());
+  fieldCached.copy(field);
+
   // Could check the field.petscSection() matches the default section from VecGetDM().
-  PetscVec v = field.localVector();assert(v);
+  PetscVec fieldVec = fieldCached.localVector();assert(fieldVec);
 
   // :KLUDGE: MATT You have a note that this is not fully implemented!
   //
   // Will change to just VecView() once I setup the vectors correctly
   // (use VecSetOperation() to change the view method).
-  PetscViewerVTKFieldType ft = field.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_POINT_FIELD : PETSC_VTK_POINT_VECTOR_FIELD;
-  PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) _dm, DMPlexVTKWriteAll, ft, (PetscObject) v);PYLITH_CHECK_ERROR(err);
-  err = PetscObjectReference((PetscObject) v);PYLITH_CHECK_ERROR(err); /* Needed because viewer destroys the Vec */
+  PetscViewerVTKFieldType ft = fieldCached.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_POINT_FIELD : PETSC_VTK_POINT_VECTOR_FIELD;
+  PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) _dm, DMPlexVTKWriteAll, ft, (PetscObject) fieldVec);PYLITH_CHECK_ERROR(err);
+  err = PetscObjectReference((PetscObject) fieldVec);PYLITH_CHECK_ERROR(err); // Viewer destroys Vec
   
   _wroteVertexHeader = true;
 
@@ -274,15 +308,33 @@ pylith::meshio::DataWriterVTK::writeCellField(const PylithScalar t,
 
   assert(_dm && _dm == field.mesh().dmMesh());
   assert(_isOpen && _isOpenTimeStep);
-  PetscVec v = field.localVector();assert(v);
+
+  // Cache cell field since PETSc writer collects all fields and
+  // then writes file. Caching the field locally allows the output
+  // manager to reuse fields as buffers.
+  if (!_cellFieldCache) {
+    _cellFieldCache = new topology::Fields(field.mesh());assert(_cellFieldCache);
+  } // if/else
+  const char* fieldLabel = field.label();
+  if (!_cellFieldCache->hasField(fieldLabel)) {
+    _cellFieldCache->add(fieldLabel, fieldLabel);
+    topology::Field& fieldCached = _cellFieldCache->get(fieldLabel);
+    fieldCached.cloneSection(field);
+  } // if
+  topology::Field& fieldCached = _cellFieldCache->get(fieldLabel);
+  assert(fieldCached.sectionSize() == field.sectionSize());
+  fieldCached.copy(field);
+
+  // Could check the field.petscSection() matches the default section from VecGetDM().
+  PetscVec fieldVec = fieldCached.localVector();assert(fieldVec);
 
   // :KLUDGE: MATT You have a note that this is not fully implemented!
   //
   // Will change to just VecView() once I setup the vectors correctly
   // (use VecSetOperation() to change the view).
-  PetscViewerVTKFieldType ft = field.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_CELL_FIELD : PETSC_VTK_CELL_VECTOR_FIELD;
-  PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) _dm, DMPlexVTKWriteAll, ft, (PetscObject) v); PYLITH_CHECK_ERROR(err);
-  err = PetscObjectReference((PetscObject) v);PYLITH_CHECK_ERROR(err); /* Needed because viewer destroys the Vec */
+  PetscViewerVTKFieldType ft = fieldCached.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_CELL_FIELD : PETSC_VTK_CELL_VECTOR_FIELD;
+  PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) _dm, DMPlexVTKWriteAll, ft, (PetscObject) fieldVec); PYLITH_CHECK_ERROR(err);
+  err = PetscObjectReference((PetscObject) fieldVec);PYLITH_CHECK_ERROR(err); // Viewer destroys Vec
   
   _wroteCellHeader = true;
 

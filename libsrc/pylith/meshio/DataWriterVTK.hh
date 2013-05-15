@@ -20,6 +20,12 @@
  * @file libsrc/meshio/DataWriterVTK.hh
  *
  * @brief Object for writing finite-element data to VTK file.
+ *
+ * The PETSc VTK viewer collects all fields and then writes them all
+ * at once. This means we need to cache fields locally in order to
+ * allow the output manager to reuse fields for dimensionalizing,
+ * etc. Other writers do not suffer from this restriction, so we
+ * implement this functionality in DataWriterVTK.
  */
 
 #if !defined(pylith_meshio_datawritervtk_hh)
@@ -28,6 +34,7 @@
 // Include directives ---------------------------------------------------
 #include "DataWriter.hh" // ISA DataWriter
 
+#include "pylith/topology/topologyfwd.hh" // HOLDSA Fields
 #include "pylith/utils/petscfwd.h" // HASA PetscDM
 
 // DataWriterVTK --------------------------------------------------------
@@ -171,6 +178,9 @@ private :
 
   PetscViewer _viewer; ///< Output file
   PetscDM _dm; ///< Handle to PETSc DM for mesh
+
+  topology::Fields* _vertexFieldCache; ///< Cache for vertex fields.
+  topology::Fields* _cellFieldCache; ///< Cache for cell fields.
 
   int _precision; ///< Precision of floating point values in output.
 
