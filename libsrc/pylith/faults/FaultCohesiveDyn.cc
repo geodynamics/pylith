@@ -1092,7 +1092,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(topology::SolutionFields* con
   topology::VecVisitorMesh residualVisitor(fields->get("residual"));
   const PetscScalar* residualArray = residualVisitor.localArray();
 
-  PetscDM solnDM = fields->get("dispIncr(t->t+dt").dmMesh();assert(solnDM);
+  PetscDM solnDM = fields->get("dispIncr(t->t+dt)").dmMesh();assert(solnDM);
   PetscSection solnGlobalSection = NULL;
   PetscErrorCode err = DMGetDefaultGlobalSection(solnDM, &solnGlobalSection);PYLITH_CHECK_ERROR(err);
 
