@@ -34,6 +34,8 @@
 #include "types.hh" // USES PylithScalar
 
 #include <string> // USES std::string
+#include <vector> // USES std::vector
+#include <valarray> // USES std::valarray
 
 /// Forward declaration of STL vector
 namespace std {

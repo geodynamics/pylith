@@ -30,8 +30,6 @@
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
-#include <petscdmmesh_solvers.hh> // USES constructFieldSplit()
-
 #include <cassert> // USES assert()
 
 

@@ -137,9 +137,9 @@ pylith::faults::TimeHistorySlipFn::initialize(const topology::Mesh& faultMesh,
       break;
     } // case 3
     default :
-      std::cerr << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
-      assert(0);
-      throw std::logic_error("Bad spatial dimension in TimeHistorySlipFn.");
+      std::ostringstream msg;
+      msg << "Bad spatial dimension '" << spaceDim << " in TimeHistorySlipFn'." << std::endl;
+      throw std::logic_error(msg.str());
     } // switch
 
   _dbSlipTime->open();

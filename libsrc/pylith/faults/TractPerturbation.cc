@@ -163,9 +163,9 @@ pylith::faults::TractPerturbation::initialize(const topology::Mesh& faultMesh,
 	break;
       } // case 3
       default :
-	std::cerr << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
-	assert(0);
-	throw std::logic_error("Bad spatial dimension in TractPerturbation.");
+        std::ostringstream msg;
+        msg << "Bad spatial dimension '" << spaceDim << " in TractPerturbation'." << std::endl;
+        throw std::logic_error(msg.str());
       } // switch
     _queryDB("initial", _dbInitial, spaceDim, pressureScale, normalizer);
     _dbInitial->close();
@@ -196,9 +196,9 @@ pylith::faults::TractPerturbation::initialize(const topology::Mesh& faultMesh,
 	break;
       } // case 3
       default :
-	std::cerr << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
-	assert(0);
-	throw std::logic_error("Bad spatial dimension in TractPerturbation.");
+        std::ostringstream msg;
+        msg << "Bad spatial dimension '" << spaceDim << " in TractPerturbation'." << std::endl;
+        throw std::logic_error(msg.str());
       } // switch
     _queryDB("rate", _dbRate, spaceDim, rateScale, normalizer);
     
@@ -232,9 +232,9 @@ pylith::faults::TractPerturbation::initialize(const topology::Mesh& faultMesh,
 	break;
       } // case 3
       default :
-	std::cerr << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
-	assert(0);
-	throw std::logic_error("Bad spatial dimension in TractPerturbation.");
+        std::ostringstream msg;
+        msg << "Bad spatial dimension '" << spaceDim << " in TractPerturbation'." << std::endl;
+        throw std::logic_error(msg.str());
       } // switch
     _queryDB("change", _dbChange, spaceDim, pressureScale, normalizer);
     

@@ -29,6 +29,8 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh::IntSection
 
+#include <map>
+
 // CohesiveTopology -----------------------------------------------------
 /// Creation of cohesive cells.
 class pylith::faults::CohesiveTopology

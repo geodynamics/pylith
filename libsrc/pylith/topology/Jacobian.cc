@@ -24,6 +24,7 @@
 #include "Field.hh" // USES Field
 
 #include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
+#include <iostream> // USES std::cerr
 
 // ----------------------------------------------------------------------
 // Default constructor.

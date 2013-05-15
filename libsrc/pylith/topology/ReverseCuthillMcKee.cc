@@ -24,6 +24,7 @@
 
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::exception
+#include <iostream> // USES std::cerr
 
 // ----------------------------------------------------------------------
 // Set vertices and cells in mesh.

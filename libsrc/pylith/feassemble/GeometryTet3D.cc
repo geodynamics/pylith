@@ -26,6 +26,7 @@
 
 #include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/constdefs.h" // USES scalar_array
+#include "pylith/utils/error.h" // USES std::logic_error
 
 #include <cassert> // USES assert()
 

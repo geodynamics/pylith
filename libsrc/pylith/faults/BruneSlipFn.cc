@@ -143,9 +143,9 @@ pylith::faults::BruneSlipFn::initialize(const topology::Mesh& faultMesh,
       break;
     } // case 3
     default :
-      std::cerr << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
-      assert(false);
-      throw std::logic_error("Bad spatial dimension in BruneSlipFn.");
+      std::ostringstream msg;
+      msg << "Bad spatial dimension '" << spaceDim << " in BruneSlipFn'." << std::endl;
+      throw std::logic_error(msg.str());
     } // switch
 
   _dbSlipTime->open();

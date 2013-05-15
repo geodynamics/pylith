@@ -91,9 +91,9 @@ pylith::feassemble::IntegratorElasticityLgDeform::updateStateVars(const PylithSc
   } else if (3 == cellDim) {
     calcTotalStrainFn = &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain3D;
   } else {
-    std::cerr << "Bad cell dimension '" << cellDim << "'." << std::endl;
-    assert(false);
-    throw std::logic_error("Bad cell dimension in IntegratorElasticityLgDeform::updateStateVars().");
+    std::ostringstream msg;
+    msg << "Bad cell dimension '" << cellDim << " in IntegratorElasticityLgDeform::updateStateVars()'." << std::endl;
+    throw std::logic_error(msg.str());
   } // else
 
   // Allocate arrays for cell data.
@@ -172,9 +172,9 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(topolog
   } else if (3 == cellDim) {
     calcTotalStrainFn = &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain3D;
   } else {
-      std::cerr << "Bad cell dimension '" << cellDim << "'." << std::endl;
-      assert(false);
-      throw std::logic_error("Bad cell dimension in IntegratorElasticityLgDeform::_calcStrainStressField().");
+    std::ostringstream msg;
+    msg << "Bad cell dimension '" << cellDim << " in IntegratorElasticityLgDeform::_calcStrainStressField()'." << std::endl;
+    throw std::logic_error(msg.str());
   } // else
   
   // Allocate arrays for cell data.

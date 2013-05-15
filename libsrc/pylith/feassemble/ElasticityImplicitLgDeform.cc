@@ -450,10 +450,12 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(topology::Jaco
 	throw std::runtime_error("Lapack SVD failed");
       minSV = svalues[n-7];
       maxSV = svalues[0];
+#if 0
       std::cout << "Element " << cell << std::endl;
       for(int i = 0; i < n; ++i)
-	std::cout << "    sV["<<i<<"] = " << svalues[i] << std::endl;
+        std::cout << "    sV["<<i<<"] = " << svalues[i] << std::endl;
       std::cout << "  kappa(elemMat) = " << maxSV/minSV << std::endl;
+#endif
       delete [] elemMat;
       delete [] svalues;
       delete [] work;

@@ -22,10 +22,10 @@
 
 #include "petsc.h" // USES PetscLogFlops
 
+#include "pylith/utils/error.h" // USES std::logic_error
 #include <cstring> // USES memcpy()
 
 #include <iostream> // USES std::cerr
-#include <stdexcept> // USES std::logic_error
 
 // ----------------------------------------------------------------------
 // Default constructor.

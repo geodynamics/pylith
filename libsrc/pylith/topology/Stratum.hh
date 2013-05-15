@@ -31,8 +31,6 @@
 
 #include "pylith/utils/petscfwd.h" // HASA PetscDM, PetscIS
 
-#include <petscdmmesh.hh>
-
 // Stratum --------------------------------------------------------
 /// Height or depth stratum.
 class pylith::topology::Stratum

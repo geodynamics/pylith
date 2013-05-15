@@ -503,9 +503,9 @@ pylith::materials::Material::getField(topology::Field *field,
     case topology::FieldBase::MULTI_TENSOR:
     case topology::FieldBase::MULTI_OTHER:
     default :
-      std::cerr << "Bad vector field type '" << fieldType << "'." << std::endl;
-      assert(0);
-      throw std::logic_error("Bad vector field type for Material.");
+      std::ostringstream msg;
+      msg << "Bad vector field type '" << fieldType << "  for Material'." << std::endl;
+      throw std::logic_error(msg.str());
     } // switch
   field->vectorFieldType(multiType);
 

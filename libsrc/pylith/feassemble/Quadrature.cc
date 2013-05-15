@@ -35,6 +35,7 @@
 
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
+#include <iostream> // USES std::cerr
 #include <sstream> // USES std::ostringstream
 
 // ----------------------------------------------------------------------
