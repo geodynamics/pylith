@@ -51,6 +51,7 @@ pylith::topology::Fields::deallocate(void)
   for (map_type::iterator iter=begin; iter != end; ++iter) {
     delete iter->second; iter->second = 0;
   } // for
+  _fields.clear();
 } // deallocate
 
 // ----------------------------------------------------------------------
