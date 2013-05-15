@@ -214,6 +214,15 @@ pylith::meshio::TestDataWriterVTKMesh::testWriteVertexField(void)
   for (int i=0; i < nfields; ++i) {
     topology::Field& field = vertexFields.get(_data->vertexFieldsInfo[i].name);
     writer.writeVertexField(t, field, *_mesh);
+
+    // Make sure we can reuse field
+    std::string fieldLabel = std::string(field.label()) + std::string("2");
+    field.label(fieldLabel.c_str());
+    field.addDimensionOkay(true);
+    field.scale(2.0);
+    field.dimensionalize();
+    writer.writeVertexField(t, field, *_mesh);
+
     CPPUNIT_ASSERT(writer._wroteVertexHeader);
     CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
   } // for
