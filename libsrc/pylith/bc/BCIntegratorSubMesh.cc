@@ -24,6 +24,7 @@
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/VisitorSubMesh.hh" // USES VecVisitorSubMesh, MatVisitorSubMesh
 
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 
@@ -31,6 +32,10 @@
 // Default constructor.
 pylith::bc::BCIntegratorSubMesh::BCIntegratorSubMesh(void) :
   _boundaryMesh(0),
+  _submeshIS(0),
+  _residualVisitor(0),
+  _jacobianMatVisitor(0),
+  _jacobianVecVisitor(0),
   _parameters(0)
 { // constructor
 } // constructor
@@ -53,6 +58,12 @@ pylith::bc::BCIntegratorSubMesh::deallocate(void)
   feassemble::Integrator::deallocate();
 
   delete _boundaryMesh; _boundaryMesh = 0;
+
+  delete _residualVisitor; _residualVisitor = 0;
+  delete _jacobianMatVisitor; _jacobianMatVisitor = 0;
+  delete _jacobianVecVisitor; _jacobianVecVisitor = 0;
+  delete _submeshIS; _submeshIS = 0; // Must destroy visitors first
+
   delete _parameters; _parameters = 0;
 
   PYLITH_METHOD_END;
@@ -70,6 +81,9 @@ pylith::bc::BCIntegratorSubMesh::createSubMesh(const topology::Mesh& mesh)
 
   _boundaryMesh = new topology::Mesh(mesh, _label.c_str());
   assert(_boundaryMesh);
+
+  // Create index set for submesh.
+  delete _submeshIS; _submeshIS = new topology::SubMeshIS(*_boundaryMesh);assert(_submeshIS);
 
   PYLITH_METHOD_END;
 } // createSubMesh

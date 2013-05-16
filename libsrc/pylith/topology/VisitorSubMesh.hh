@@ -70,12 +70,6 @@ public :
   /// Clear cached data.
   void clear(void);
   
-  /** Get the array of values associated with the local PETSc Vec.
-   * 
-   * @returns Array of values.
-   */
-  PetscScalar* localArray(void) const;
-
   /** Get the PETSc section.
    * 
    * @returns PETSc section.
@@ -142,7 +136,6 @@ private :
   PetscDM _dm; ///< Cached PETSc dm for submesh.
   PetscVec _localVec; ///< Cached local PETSc Vec.
   PetscSection _section; ///< Cached PETSc subsection.
-  PetscScalar* _localArray; ///< Cached local array
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

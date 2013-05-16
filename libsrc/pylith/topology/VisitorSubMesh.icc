@@ -30,8 +30,7 @@ pylith::topology::VecVisitorSubMesh::VecVisitorSubMesh(const Field& field,
   _field(field),
   _dm(NULL),
   _section(NULL),
-  _localVec(NULL),
-  _localArray(NULL)
+  _localVec(NULL)
 { // constructor
   initialize(submeshIS);
 } // constructor
@@ -60,7 +59,6 @@ pylith::topology::VecVisitorSubMesh::initialize(const SubMeshIS& submeshIS)
   PetscSection section = _field.petscSection();assert(section);
   const PetscIS subpointIS = submeshIS.indexSet();assert(subpointIS);
   err = PetscSectionCreateSubmeshSection(section, subpointIS, &_section);PYLITH_CHECK_ERROR(err);assert(_section);
-  err = VecGetArray(_localVec, &_localArray);PYLITH_CHECK_ERROR(err);assert(_localArray);
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -71,10 +69,6 @@ pylith::topology::VecVisitorSubMesh::clear(void)
 { // clear
   PetscErrorCode err = 0;
 
-  if (_localVec) {
-    err = VecRestoreArray(_localVec, &_localArray);PYLITH_CHECK_ERROR(err);assert(!_localArray);
-  } // if
-  
   if (_section) {
     err = PetscSectionDestroy(&_section);assert(!_section);
   } // if
@@ -82,15 +76,6 @@ pylith::topology::VecVisitorSubMesh::clear(void)
   _dm = NULL;
   _localVec = NULL;
 } // clear
-
-// ----------------------------------------------------------------------
-// Get the local coordinates array associated with the local PETSc Vec.
-inline
-PetscScalar*
-pylith::topology::VecVisitorSubMesh::localArray(void) const
-{ // localArray
-  return _localArray;
-} // localArray
 
 // ----------------------------------------------------------------------
 // Get fiber dimension of coordinates for point.

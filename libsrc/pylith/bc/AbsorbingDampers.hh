@@ -149,6 +149,8 @@ private :
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
+  topology::VecVisitorSubMesh* _velocityVisitor; ///< Cache velocity field visitor.
+
   spatialdata::spatialdb::SpatialDB* _db; ///< Spatial database w/parameters
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////

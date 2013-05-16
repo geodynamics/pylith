@@ -206,9 +206,9 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(const topology::Field&
 
   // Get cell information
   PetscDM dmMesh = fields->mesh().dmMesh();assert(dmMesh);
-  topology::StratumIS materialIS(dmMesh, "material-id", _material->id());
-  const PetscInt* cells = materialIS.points();
-  const PetscInt numCells = materialIS.size();
+  assert(_materialIS);
+  const PetscInt* cells = _materialIS->points();
+  const PetscInt numCells = _materialIS->size();
 
   // Setup field visitors.
   topology::VecVisitorMesh accVisitor(fields->get("acceleration(t)"));
@@ -438,9 +438,9 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(topology::Field* jacob
 
   // Get cell information
   PetscDM dmMesh = fields->mesh().dmMesh();assert(dmMesh);
-  topology::StratumIS materialIS(dmMesh, "material-id", _material->id());
-  const PetscInt* cells = materialIS.points();
-  const PetscInt numCells = materialIS.size();
+  assert(_materialIS);
+  const PetscInt* cells = _materialIS->points();
+  const PetscInt numCells = _materialIS->size();
 
   // Get parameters used in integration.
   const PylithScalar dt = _dt;

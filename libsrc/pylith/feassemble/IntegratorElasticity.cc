@@ -47,6 +47,7 @@
 // Constructor
 pylith::feassemble::IntegratorElasticity::IntegratorElasticity(void) :
   _material(0),
+  _materialIS(0),
   _outputFields(0)
 { // constructor
 } // constructor
@@ -67,8 +68,9 @@ pylith::feassemble::IntegratorElasticity::deallocate(void)
 
   Integrator::deallocate();
 
-  delete _outputFields; _outputFields = 0;
   _material = 0; // :TODO: Use shared pointer.
+  delete _materialIS; _materialIS = 0;
+  delete _outputFields; _outputFields = 0;
 
   PYLITH_METHOD_END;
 } // deallocate
@@ -79,8 +81,9 @@ void
 pylith::feassemble::IntegratorElasticity::material(materials::ElasticMaterial* m)
 { // material
   _material = m;
-  if (_material)
+  if (_material) {
     _material->timeStep(_dt);  
+  } // if
 } // material
 
 // ----------------------------------------------------------------------
@@ -107,6 +110,12 @@ pylith::feassemble::IntegratorElasticity::initialize(const topology::Mesh& mesh)
   assert(_material);
 
   _initializeLogger();
+
+  // Setup index set for material.
+  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+  if (!_materialIS) {
+    delete _materialIS; _materialIS = new topology::StratumIS(dmMesh, "material-id", _material->id());assert(_materialIS);
+  } // if
 
   // Compute geometry for quadrature operations.
   _quadrature->initializeGeometry();
@@ -183,9 +192,9 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(const PylithScalar t,
 
   // Get cell information
   PetscDM dmMesh = fields->mesh().dmMesh();assert(dmMesh);
-  topology::StratumIS materialIS(dmMesh, "material-id", _material->id());
-  const PetscInt* cells = materialIS.points();
-  const PetscInt numCells = materialIS.size();
+  assert(_materialIS);
+  const PetscInt* cells = _materialIS->points();
+  const PetscInt numCells = _materialIS->size();
 
   // Setup visitors.
   topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
@@ -256,11 +265,12 @@ pylith::feassemble::IntegratorElasticity::verifyConfiguration(const topology::Me
     throw std::runtime_error(msg.str());
   } // if
 
-  const int numCorners = _quadrature->refGeometry().numCorners();
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
   topology::StratumIS materialIS(dmMesh, "material-id", _material->id());
   const PetscInt* cells = materialIS.points();
   const PetscInt numCells = materialIS.size();
+
+  const int numCorners = _quadrature->refGeometry().numCorners();
   PetscInt vStart, vEnd;
   PetscErrorCode err;
 
@@ -452,9 +462,9 @@ pylith::feassemble::IntegratorElasticity::_allocateTensorField(const topology::M
 
   // Get cell information
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-  topology::StratumIS materialIS(dmMesh, "material-id", _material->id());
-  const PetscInt* cells = materialIS.points();
-  const PetscInt numCells = materialIS.size();
+  assert(_materialIS);
+  const PetscInt* cells = _materialIS->points();
+  const PetscInt numCells = _materialIS->size();
 
   int_array cellsTmp(cells, numCells);
 
@@ -518,9 +528,9 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(topology::Field
 
   // Get cell information
   PetscDM dmMesh = fields->mesh().dmMesh();assert(dmMesh);
-  topology::StratumIS materialIS(dmMesh, "material-id", _material->id());
-  const PetscInt* cells = materialIS.points();
-  const PetscInt numCells = materialIS.size();
+  assert(_materialIS);
+  const PetscInt* cells = _materialIS->points();
+  const PetscInt numCells = _materialIS->size();
 
   // Setup field visitors.
   topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
@@ -594,9 +604,9 @@ pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(topology::Field*
 
   // Get cell information
   PetscDM dmMesh = field->mesh().dmMesh();assert(dmMesh);
-  topology::StratumIS materialIS(dmMesh, "material-id", _material->id());
-  const PetscInt* cells = materialIS.points();
-  const PetscInt numCells = materialIS.size();
+  assert(_materialIS);
+  const PetscInt* cells = _materialIS->points();
+  const PetscInt numCells = _materialIS->size();
 
   // Setup visitors.
   topology::VecVisitorMesh fieldVisitor(*field);

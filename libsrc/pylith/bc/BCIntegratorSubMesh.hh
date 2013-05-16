@@ -85,6 +85,10 @@ public :
 protected :
 
   topology::Mesh* _boundaryMesh; ///< Boundary mesh.
+  topology::SubMeshIS* _submeshIS; ///< Cache index set for submesh.
+  topology::VecVisitorSubMesh* _residualVisitor; ///< Cache residual field visitor.
+  topology::MatVisitorSubMesh* _jacobianMatVisitor; ///< Cache jacobian  matrix visitor.
+  topology::VecVisitorSubMesh* _jacobianVecVisitor; ///< Cache jacobian field visitor.
 
   /// Parameters for boundary condition.
   topology::Fields* _parameters;
