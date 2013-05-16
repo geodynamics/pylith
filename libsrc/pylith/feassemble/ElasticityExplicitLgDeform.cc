@@ -199,9 +199,9 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(const topology
 
   // Get cell information
   PetscDM dmMesh = fields->mesh().dmMesh();assert(dmMesh);
-  topology::StratumIS materialIS(dmMesh, "material-id", _material->id());
-  const PetscInt* cells = materialIS.points();
-  const PetscInt numCells = materialIS.size();
+  assert(_materialIS);
+  const PetscInt* cells = _materialIS->points();
+  const PetscInt numCells = _materialIS->size();
 
   // Setup field visitors.
   scalar_array dispAdjCell(numBasis*spaceDim);
@@ -389,9 +389,9 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(topology::Fiel
 
   // Get cell information
   PetscDM dmMesh = fields->mesh().dmMesh();assert(dmMesh);
-  topology::StratumIS materialIS(dmMesh, "material-id", _material->id());
-  const PetscInt* cells = materialIS.points();
-  const PetscInt numCells = materialIS.size();
+  assert(_materialIS);
+  const PetscInt* cells = _materialIS->points();
+  const PetscInt numCells = _materialIS->size();
 
   // Get parameters used in integration.
   const PylithScalar dt = _dt;

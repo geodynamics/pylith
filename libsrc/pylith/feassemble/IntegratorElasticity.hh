@@ -242,9 +242,10 @@ protected :
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
-  /// Elastic material associated with integrator
-  materials::ElasticMaterial* _material;
+  
+  materials::ElasticMaterial* _material; ///< Material associated with integrator.
 
+  topology::StratumIS* _materialIS; ///< Index set for material cells.
   
   topology::Fields* _outputFields; ///< Buffers for output.
 
