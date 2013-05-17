@@ -81,8 +81,8 @@ pylith::meshio::DataWriterHDF5::DataWriterHDF5(const DataWriterHDF5& w) :
 void
 pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
 				     const int numTimeSteps,
-							   const char* label,
-							   const int labelId)
+				     const char* label,
+				     const int labelId)
 { // open
   PYLITH_METHOD_BEGIN;
 
@@ -421,7 +421,7 @@ pylith::meshio::DataWriterHDF5::_hdf5Filename(void) const
 // Write time stamp to file.
 void
 pylith::meshio::DataWriterHDF5::_writeTimeStamp(const PylithScalar t,
-								      const int commRank)
+						const int commRank)
 { // _writeTimeStamp
   assert(_tstamp);
   PetscErrorCode err = 0;
