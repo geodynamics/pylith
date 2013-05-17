@@ -982,12 +982,9 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
   
   // Only create if scatter and scatterVec do not alreay exist.
   if (sinfo.dm) {
-    std::cout << "Reusing scatter '" << context << "'" << std::endl;
     assert(sinfo.vector);
     PYLITH_METHOD_END;
   } // if
-
-  std::cout << "Setup scatter '" << context << "'" << std::endl;
 
   PetscDM dm = mesh.dmMesh();assert(dm);
   PetscSection section, newSection, gsection, subSection = NULL;
@@ -1226,7 +1223,6 @@ pylith::topology::Field::_getScatter(const char* context,
     err = DMDestroy(&sinfo.dm);PYLITH_CHECK_ERROR(err);
     err = VecDestroy(&sinfo.vector);PYLITH_CHECK_ERROR(err);
 
-    std::cout << "Removing scatter '" << context << "'" << std::endl;
     _scatters.erase(context);
     isNewScatter = true;
   } // if
@@ -1239,7 +1235,6 @@ pylith::topology::Field::_getScatter(const char* context,
   
   ScatterInfo& sinfo = _scatters[context];
   if (isNewScatter) {
-    std::cout << "Creating scatter '" << context << "'" << std::endl;
     sinfo.dm = 0;
     sinfo.vector = 0;
   } // if
