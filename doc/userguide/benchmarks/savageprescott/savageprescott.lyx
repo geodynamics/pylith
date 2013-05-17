@@ -331,7 +331,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/model_descript.eps
+	filename figs/model_descript.pdf
 	scale 33
 
 \end_inset
@@ -492,7 +492,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/soln_profiles.eps
+	filename figs/soln_profiles.pdf
 	scale 66
 
 \end_inset
