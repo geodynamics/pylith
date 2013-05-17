@@ -271,7 +271,7 @@ output.writer.filename = output/step18-traction.vtk
 \end_layout
 
 \begin_layout LyX-Code
-output.cell_filter = pylith.meshio.CellFilterAvgSubMesh
+output.cell_filter = pylith.meshio.CellFilterAvg
 \begin_inset Newline newline
 \end_inset
 
@@ -533,7 +533,7 @@ Stress field (zz-component) for example step19 at t = 200 years visualized
  using ParaView.
  The stresses appear as four layers since we have used 
 \family typewriter
-CellFilterAvgMesh
+CellFilterAvg
 \family default
  for material output.
 \begin_inset CommandInset label

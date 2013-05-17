@@ -5013,14 +5013,7 @@ Most users will want to apply a filter to cell fields to average the fields
 \end_layout
 
 \begin_layout Description
-CellFilterAvgMesh Compute the weighted average of the values within a bulk
- cell.
- The weights are determined from the quadrature associated with the cells.
-\end_layout
-
-\begin_layout Description
-CellFilterAvgSubMesh Compute the weighted average of the values for a boundary
- cell.
+CellFilterAvg Compute the weighted average of the values within a cell.
  The weights are determined from the quadrature associated with the cells.
 \end_layout
 
