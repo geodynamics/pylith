@@ -76,8 +76,8 @@ pylith::topology::Field::Field(const Mesh& mesh) :
 // ----------------------------------------------------------------------
 // Constructor with mesh, DM, and metadata
 pylith::topology::Field::Field(const Mesh& mesh,
-					  PetscDM dm,
-					  const Metadata& metadata) :
+			       PetscDM dm,
+			       const Metadata& metadata) :
   _mesh(mesh),
   _dm(dm),
   _globalVec(NULL),
@@ -283,8 +283,8 @@ pylith::topology::Field::newSection(const int_array& points,
 // points.
 void
 pylith::topology::Field::newSection(const PetscInt *points, 
-					       const PetscInt num,
-                                               const int fiberDim)
+				    const PetscInt num,
+				    const int fiberDim)
 { // newSection
   PYLITH_METHOD_BEGIN;
 
@@ -464,24 +464,11 @@ pylith::topology::Field::cloneSection(const Field& src)
          ++s_iter) {
       ScatterInfo sinfo;
       sinfo.vector = 0;
-      sinfo.scatter = 0;
-      sinfo.scatterVec = 0;
 
       // Copy DM
       sinfo.dm = s_iter->second.dm;
       err = PetscObjectReference((PetscObject) sinfo.dm);
       PYLITH_CHECK_ERROR(err);
-
-      // Copy scatter
-      if (s_iter->second.scatter) {
-        sinfo.scatter = s_iter->second.scatter;
-        err = PetscObjectReference((PetscObject) sinfo.scatter);
-        PYLITH_CHECK_ERROR(err);
-      } // if
-      
-      // Create scatter Vec
-      sinfo.scatterVec = _localVec;
-      err = PetscObjectReference((PetscObject) sinfo.scatterVec);PYLITH_CHECK_ERROR(err);
 
       // Create vector using sizes from source section
       PetscInt vecLocalSize = 0;
@@ -527,10 +514,6 @@ pylith::topology::Field::clear(void)
     err = DMDestroy(&s_iter->second.dm);PYLITH_CHECK_ERROR(err);
     err = VecDestroy(&s_iter->second.vector);PYLITH_CHECK_ERROR(err);
 
-    if (s_iter->second.scatter) {
-      err = VecScatterDestroy(&s_iter->second.scatter);PYLITH_CHECK_ERROR(err);
-    } // if
-    err = VecDestroy(&s_iter->second.scatterVec);PYLITH_CHECK_ERROR(err);
   } // for
   _scatters.clear();
 
@@ -906,8 +889,7 @@ pylith::topology::Field::createScatter(const Mesh& mesh,
 
   const bool createScatterOk = true;
   ScatterInfo& sinfo = _getScatter(context, createScatterOk);
-  if (sinfo.scatter) {
-    assert(sinfo.scatterVec);
+  if (sinfo.dm) {
     assert(sinfo.vector);
     PYLITH_METHOD_END;
   } // if
@@ -938,7 +920,7 @@ pylith::topology::Field::createScatter(const Mesh& mesh,
 // the PETSc vector.
 void
 pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
-							const char* context)
+					     const char* context)
 { // createScatterWithBC
   PYLITH_METHOD_BEGIN;
 
@@ -947,8 +929,7 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
 
   const bool createScatterOk = true;
   ScatterInfo& sinfo = _getScatter(context, createScatterOk);
-  if (sinfo.scatter) {
-    assert(sinfo.scatterVec);
+  if (sinfo.dm) {
     assert(sinfo.vector);
     PYLITH_METHOD_END;
   } // if
@@ -1000,11 +981,13 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
   ScatterInfo& sinfo = _getScatter(context, createScatterOk);
   
   // Only create if scatter and scatterVec do not alreay exist.
-  if (sinfo.scatter) {
-    assert(sinfo.scatterVec);
+  if (sinfo.dm) {
+    std::cout << "Reusing scatter '" << context << "'" << std::endl;
     assert(sinfo.vector);
     PYLITH_METHOD_END;
   } // if
+
+  std::cout << "Setup scatter '" << context << "'" << std::endl;
 
   PetscDM dm = mesh.dmMesh();assert(dm);
   PetscSection section, newSection, gsection, subSection = NULL;
@@ -1092,8 +1075,6 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
 	    << ", global order size: " << order->getGlobalSize()
 	    << ", local numbering size: " << numbering->getLocalSize()
 	    << ", local order size: " << order->getLocalSize()
-	    << ", scatter from size: " << sinfo.scatter->from_n
-	    << ", scatter: " << sinfo.scatter
 	    << std::endl;
 #endif
 
@@ -1152,14 +1133,6 @@ pylith::topology::Field::scatterSectionToVector(const PetscVec vector,
   assert(context);
   const ScatterInfo& sinfo = _getScatter(context);
   PetscErrorCode err   = 0;
-#if 0 // OBSOLETE??
-  if (!_section.isNull()) {
-    err = VecScatterBegin(sinfo.scatter, sinfo.scatterVec, vector,
-                          INSERT_VALUES, SCATTER_FORWARD);PYLITH_CHECK_ERROR(err);
-    err = VecScatterEnd(sinfo.scatter, sinfo.scatterVec, vector,
-                        INSERT_VALUES, SCATTER_FORWARD);PYLITH_CHECK_ERROR(err);
-  }
-#endif
   if (sinfo.dm) {
     err = DMLocalToGlobalBegin(sinfo.dm, _localVec, INSERT_VALUES, vector);PYLITH_CHECK_ERROR(err);
     err = DMLocalToGlobalEnd(sinfo.dm, _localVec, INSERT_VALUES, vector);PYLITH_CHECK_ERROR(err);
@@ -1198,14 +1171,6 @@ pylith::topology::Field::scatterVectorToSection(const PetscVec vector,
   const ScatterInfo& sinfo = _getScatter(context);
   PetscErrorCode err = 0;
 
-#if 0 // OBSOLETE??
-  if (!_section.isNull()) {
-    err = VecScatterBegin(sinfo.scatter, vector, sinfo.scatterVec,
-                          INSERT_VALUES, SCATTER_REVERSE); PYLITH_CHECK_ERROR(err);
-    err = VecScatterEnd(sinfo.scatter, vector, sinfo.scatterVec,
-                        INSERT_VALUES, SCATTER_REVERSE); PYLITH_CHECK_ERROR(err);
-  }
-#endif
   if (sinfo.dm) {
     err = DMGlobalToLocalBegin(sinfo.dm, vector, INSERT_VALUES, _localVec);PYLITH_CHECK_ERROR(err);
     err = DMGlobalToLocalEnd(sinfo.dm, vector, INSERT_VALUES, _localVec);PYLITH_CHECK_ERROR(err);
@@ -1260,9 +1225,8 @@ pylith::topology::Field::_getScatter(const char* context,
     PetscErrorCode err = 0;
     err = DMDestroy(&sinfo.dm);PYLITH_CHECK_ERROR(err);
     err = VecDestroy(&sinfo.vector);PYLITH_CHECK_ERROR(err);
-    err = VecScatterDestroy(&sinfo.scatter);PYLITH_CHECK_ERROR(err);
-    err = VecDestroy(&sinfo.scatterVec);PYLITH_CHECK_ERROR(err);
 
+    std::cout << "Removing scatter '" << context << "'" << std::endl;
     _scatters.erase(context);
     isNewScatter = true;
   } // if
@@ -1275,10 +1239,9 @@ pylith::topology::Field::_getScatter(const char* context,
   
   ScatterInfo& sinfo = _scatters[context];
   if (isNewScatter) {
+    std::cout << "Creating scatter '" << context << "'" << std::endl;
     sinfo.dm = 0;
     sinfo.vector = 0;
-    sinfo.scatter = 0;
-    sinfo.scatterVec = 0;
   } // if
   assert(_scatters.find(context) != _scatters.end());
 

@@ -428,9 +428,6 @@ private :
   struct ScatterInfo {
     PetscDM dm; ///< PETSc DM defining the communication pattern
     PetscVec vector; ///< PETSc vector associated with field.
-    // Deprecated
-    PetscVecScatter scatter; ///< PETSc scatter associated with field.
-    PetscVec scatterVec; ///< PETSC vector used in scattering.
   }; // ScatterInfo
 
 // PRIVATE TYPEDEFS /////////////////////////////////////////////////////
