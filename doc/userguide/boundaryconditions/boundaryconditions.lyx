@@ -2144,7 +2144,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/faultOrientation.eps
+	filename figs/faultOrientation.pdf
 
 \end_inset
 
@@ -2200,7 +2200,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/slipmotions.eps
+	filename figs/slipmotions.pdf
 
 \end_inset
 
@@ -2268,7 +2268,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/quad4cohesivekin.eps
+	filename figs/quad4cohesivekin.pdf
 
 \end_inset
 
