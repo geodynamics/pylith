@@ -313,18 +313,6 @@ PETSc event logger.
 \begin_layout Description
 
 \family typewriter
-MemoryLogger pylith.perf.MemoryLogger
-\family default
-
-\begin_inset Newline newline
-\end_inset
-
-Memory model logger for reporting memory use by Sieve.
-\end_layout
-
-\begin_layout Description
-
-\family typewriter
 VTKDataReader pylith.utils.VTKDataReader
 \family default
 
@@ -966,25 +954,13 @@ Reader for LaGriT GMV/Pset files.
 \begin_layout Description
 
 \family typewriter
-OutputManagerMesh pylith.meshio.OutputManagerMesh
+OutputManager pylith.meshio.OutputManager
 \family default
 
 \begin_inset Newline newline
 \end_inset
 
-Output manager for mesh information and data.
-\end_layout
-
-\begin_layout Description
-
-\family typewriter
-OutputManagerSubMesh pylith.meshio.OutputManagerSubMesh
-\family default
-
-\begin_inset Newline newline
-\end_inset
-
-Output manager for submesh information and data.
+General output manager for mesh information and data.
 \end_layout
 
 \begin_layout Description
@@ -1126,160 +1102,62 @@ OutputSolnPoints
 \begin_layout Description
 
 \family typewriter
-DataWriterVTKMesh pylith.meshio.DataWriterVTKMesh
+DataWriterVTK pylith.meshio.DataWriterVTK
 \family default
 
 \begin_inset Newline newline
 \end_inset
 
-Writer for output to VTK files with mesh information.
+Writer for output to VTK files.
 \end_layout
 
 \begin_layout Description
 
 \family typewriter
-DataWriterVTKSubMesh pylith.meshio.DataWriterVTKSubMesh
+DataWriterHDF5 pylith.meshio.DataWriterHDF5
 \family default
 
 \begin_inset Newline newline
 \end_inset
 
-Writer for output to VTK files with mesh information over a submesh.
+Writer for output to HDF5 files.
 \end_layout
 
 \begin_layout Description
 
 \family typewriter
-DataWriterVTKSubSubMesh pylith.meshio.DataWriterVTKSubSubMesh
+DataWriterHDF5Ext pylith.meshio.DataWriterHDF5Ext
 \family default
 
 \begin_inset Newline newline
 \end_inset
 
-Writer for output to VTK files with submesh information over a submesh.
-\end_layout
-
-\begin_layout Description
-
-\family typewriter
-DataWriterHDF5Mesh pylith.meshio.DataWriterHDF5Mesh
-\family default
-
-\begin_inset Newline newline
-\end_inset
-
-Writer for output to HDF5 files with mesh information.
-\end_layout
-
-\begin_layout Description
-
-\family typewriter
-DataWriterHDF5SubMesh pylith.meshio.DataWriterHDF5SubMesh
-\family default
-
-\begin_inset Newline newline
-\end_inset
-
-Writer for output to HDF5 files with mesh information over a submesh.
-\end_layout
-
-\begin_layout Description
-
-\family typewriter
-DataWriterHDF5ExtSubSubMesh pylith.meshio.DataWriterHDF5ExtSubSubMesh
-\family default
-
-\begin_inset Newline newline
-\end_inset
-
-Writer for output to HDF5 files with submesh information over a submesh
- with datasets written to external raw binary files.
-\end_layout
-
-\begin_layout Description
-
-\family typewriter
-DataWriterHDF5ExtMesh pylith.meshio.DataWriterHDF5ExtMesh
-\family default
-
-\begin_inset Newline newline
-\end_inset
-
-Writer for output to HDF5 files with mesh information with datasets written
+Writer for output to HDF5 files with datasets written
  to external raw binary files.
 \end_layout
 
 \begin_layout Description
 
 \family typewriter
-DataWriterHDF5ExtSubMesh pylith.meshio.DataWriterHDF5ExtSubMesh
+CellFilterAvg pylith.meshio.CellFilterAvg
 \family default
 
 \begin_inset Newline newline
 \end_inset
 
-Writer for output to HDF5 files with mesh information over a submesh with
- datasets written to external raw binary files.
+Filter that averages information over quadrature points of cells.
 \end_layout
 
 \begin_layout Description
 
 \family typewriter
-DataWriterHDF5SubSubMesh pylith.meshio.DataWriterHDF5SubSubMesh
+VertexFilterVecNorm pylith.meshio.VertexFilterVecNorm
 \family default
 
 \begin_inset Newline newline
 \end_inset
 
-Writer for output to HDF5 files with submesh information over a submesh.
-\end_layout
-
-\begin_layout Description
-
-\family typewriter
-CellFilterAvgMesh pylith.meshio.CellFilterAvgMesh
-\family default
-
-\begin_inset Newline newline
-\end_inset
-
-Filter that averages information over quadrature points of mesh cells.
-\end_layout
-
-\begin_layout Description
-
-\family typewriter
-CellFilterAvgSubMesh pylith.meshio.CellFilterAvgSubMesh
-\family default
-
-\begin_inset Newline newline
-\end_inset
-
-Filter that averages information over quadrature points of submesh cells.
-\end_layout
-
-\begin_layout Description
-
-\family typewriter
-VertexFilterVecNormMesh pylith.meshio.VertexFilterVecNormMesh
-\family default
-
-\begin_inset Newline newline
-\end_inset
-
-Filter that computes magnitude of vectors for vertex field over mesh.
-\end_layout
-
-\begin_layout Description
-
-\family typewriter
-VertexFilterVecNormSubMesh pylith.meshio.VertexFilterVecNormSubMesh
-\family default
-
-\begin_inset Newline newline
-\end_inset
-
-Filter that computes magnitude of vectors for vertex field over submesh.
+Filter that computes magnitude of vectors for vertex fields.
 \end_layout
 
 \begin_layout Section

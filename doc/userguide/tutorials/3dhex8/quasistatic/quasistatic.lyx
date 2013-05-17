@@ -1067,7 +1067,7 @@ time_step = 50.0*year
 \end_layout
 
 \begin_layout LyX-Code
-writer = pylith.meshio.DataWriterHDF5Mesh
+writer = pylith.meshio.DataWriterHDF5
 \end_layout
 
 \begin_layout LyX-Code
@@ -1130,15 +1130,11 @@ label = face_zpos
 \end_layout
 
 \begin_layout LyX-Code
-# Note that we specifically ask for a submesh writer.
-\end_layout
-
-\begin_layout LyX-Code
 skip = 0
 \end_layout
 
 \begin_layout LyX-Code
-writer = pylith.meshio.DataWriterHDF5SubMesh
+writer = pylith.meshio.DataWriterHDF5
 \end_layout
 
 \begin_layout LyX-Code
@@ -1170,33 +1166,21 @@ For fault output we use:
 \end_layout
 
 \begin_layout LyX-Code
-# Note that we specifically ask for a subsubmesh writer.
-\end_layout
-
-\begin_layout LyX-Code
 skip = 0
 \end_layout
 
 \begin_layout LyX-Code
-writer = pylith.meshio.DataWriterHDF5SubSubMesh
+writer = pylith.meshio.DataWriterHDF5
 \end_layout
 
 \begin_layout LyX-Code
 writer.filename = output/step06-fault.h5
 \end_layout
 
-\begin_layout Standard
-Note the usage of 
-\family typewriter
-pylith.meshio.DataWriterHDF5SubMesh
-\family default
- for subdomain output and
-\family typewriter
-
 \begin_inset Newline newline
 \end_inset
 
-pylith.meshio.DataWriterHDF5SubSubMesh
+pylith.meshio.DataWriterHDF5
 \family default
  for fault output.
 \end_layout
@@ -1657,7 +1641,7 @@ time_step = 50.0*year
 \end_layout
 
 \begin_layout LyX-Code
-writer = pylith.meshio.DataWriterHDF5Mesh
+writer = pylith.meshio.DataWriterHDF5
 \end_layout
 
 \begin_layout LyX-Code
@@ -1729,11 +1713,7 @@ skip = 0
 \end_layout
 
 \begin_layout LyX-Code
-# Note that we specifically ask for a submesh writer.
-\end_layout
-
-\begin_layout LyX-Code
-writer = pylith.meshio.DataWriterHDF5SubMesh
+writer = pylith.meshio.DataWriterHDF5
 \end_layout
 
 \begin_layout LyX-Code

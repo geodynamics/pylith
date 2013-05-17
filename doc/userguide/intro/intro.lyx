@@ -139,6 +139,16 @@ y easy scripting using the Python programming language.
 \end_layout
 
 \begin_layout Standard
+PyLith 2.0 replaces the finite-element data structures provided by the C++
+ Sieve implementation with those provided by the C DMPlex implementation.
+ The newly developed DMPlex implementation by the PETSc developers conforms
+ the PETSc data manager (DM) interface, thereby providing tighter integration
+ with other PETSc data structures, such as vectors and matrices.
+ Other improvements include significantly reduced memory use and memory
+ balancing.
+\end_layout
+
+\begin_layout Standard
 PyLith is under active development and we expect a number of additions and
  improvements in the near future.
  Likely enhancements will include additional bulk and fault constitutive
@@ -307,19 +317,18 @@ In writing PyLith 1.0, the code was designed to be object-oriented and modular.
 \end_layout
 
 \begin_layout Standard
-The new code design leverages Pyre, Sieve, and PETSc much more extensively
- than the previous version.
-  Pyre is used to glue together the various modules used to construct a
- simulation and specify the parameters.
- Sieve is used for all finite-element  storage and manipulation and handles
- the creation of the PETSc matrices and vectors.
-  As a result, most of the PyLith source code pertains to implementing the
+The current code design leverages Pyre and PETSc extensively.
+ Pyre glues together the various modules used to construct a simulation
+ and specify the parameters.
+ PETSc provides the finite-element data structuresand handles the creation
+ and manipulation of matrices and vectors.
+ As a result, most of the PyLith source code pertains to implementing the
  geodynamics, such as bulk rheology, boundary conditions, and slip on faults.
  
 \end_layout
 
 \begin_layout Standard
-PyLith also uses FIAT to tabulate the finite-element basis functions  at
+PyLith also uses FIAT to tabulate the finite-element basis functions at
  the numerical integration (quadrature) points.
  Nemesis allows PyLith to run Python using the Message Passing Interface
  (MPI) for parallel processing.
@@ -461,44 +470,42 @@ tion, reasonable defaults, consistency checks of input, good diagnostics,
 \end_layout
 
 \begin_layout Subsection
-Sieve and PETSc
+PETSc
 \end_layout
 
 \begin_layout Standard
-PyLith 1.x makes use of a set of data structures and routines in PETSc called
+PyLith 2.x makes use of a set of data structures and routines in PETSc called
  
 \family typewriter
-Sieve
+DMPlex
 \family default
 , which is still under active development.
  
 \family typewriter
-Sieve
+DMPlex
 \family default
  provides data structures and routines for for representing and manipulating
  computational meshes, and it greatly simplifies finite-element computations.
 
 \family typewriter
- Sieve
+ DMPlex
 \family default
  represents the topology of the domain.
  Zero volume elements are inserted along all fault surfaces to implement
  kinematic (prescribed) or dynamic (constitutive model) implementations
  of fault slip.
- Material properties and other parameters are represented as sections (scalar
- and vector fields) over the mesh, and values for a vertex or cell can be
- retrieved by restricting the section to the vertex or cell.
+ Material properties and other parameters are represented as scalar and
+ vector fields over the mesh using vectors to store the values and sections
+ to map vertices, edges, faces, and cells to indices in the vector.
  For each problem, functions are provided to calculate the residual and
  its Jacobian.
  All numerical integration is done in these functions, and parallel assembly
- is accomplished using the restrict/update paradigm of the 
+ is accomplished using the get/set closure paradigm of the 
 \family typewriter
-Sieve
+DMPlex
 \family default
  framework.
  We assemble into PETSc linear algebra objects and then call PETSc solvers.
- The solution is mapped back into a section, which can be output in VTK
- format.
 \end_layout
 
 \begin_layout Standard

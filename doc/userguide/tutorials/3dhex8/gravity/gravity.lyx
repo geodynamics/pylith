@@ -564,7 +564,7 @@ Stress field (xx-component) for example step16 at t = 200 years visualized
  is no vertical displacement throughout the simulation.
  Also note that the stresses appear as four layers since we have used 
 \family typewriter
-CellFilterAvgMesh
+CellFilterAvg
 \family default
  for material output.
 \begin_inset CommandInset label

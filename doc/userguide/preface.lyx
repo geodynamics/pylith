@@ -120,62 +120,23 @@ geodynamics.org
  It is essential that you recognize these individuals in the normal scientific
  practice by citing the appropriate peer-reviewed papers and making appropriate
  acknowledgements in talks and publications.
- At this time there are no refereed journal articles discussing the design
- and implementation of PyLith, so we request that you cite four AGU meeting
- abstracts associated with PyLith:
+ The following peer-reviewed paper discussed the development of PyLith:
 \end_layout
 
 \begin_layout Itemize
-Williams, C.A., B.
- Aagaard, M.G.
- Knepley (2005), Development of software for studying earthquakes across
- multiple spatial and temporal scales by coupling quasi-static and dynamic
- simulations, 
-\emph on
-Eos Trans.
- AGU, 86
-\emph default
-(52), Fall Meet.
- Suppl., Abstract S53A-1072.
-\end_layout
-
-\begin_layout Itemize
-Williams, C.A.
- (2006), Development of a package for modeling stress in the lithosphere,
- 
-\emph on
-Eos Trans.
- AGU, 87
-\emph default
-(36), Jt.
- Assem.
- Suppl., Abstract T24A-01 Invited.
-\end_layout
-
-\begin_layout Itemize
-Aagaard, B., C.
- Williams, M.
- Knepley (2007), PyLith: A finite-element code for modeling quasi-static
- and dynamic crustal deformation, 
-\emph on
-Eos Trans.
- AGU, 8
-\emph default
-8(52), Fall Meet.
- Suppl., Abstract T21B-0592.
-\end_layout
-
-\begin_layout Itemize
-Aagaard, B., C.
- Williams, M.
- Knepley (2008), PyLith: A finite-element code for modeling quasi-static
- and dynamic crustal deformation, 
-\emph on
-Eos Trans.
- AGU, 89
-\emph default
-(53), Fall Meet.
- Suppl., Abstract T41A-1925.
+Aagaard, B.
+ T.
+ M.
+ G.
+ Knepley, and C.
+ A.
+ Williams (2013).
+ A domain decomposition approach to implementing fault slip in finite-element
+ models of quasi-static and dynamic crustal deformation, 
+\shape italic
+Journal of Geophysical Research: Solid Earth
+\shape default
+, in press.
 \end_layout
 
 \begin_layout Standard
@@ -190,14 +151,14 @@ Aagaard, B., S.
  Strand, and C.
  Williams (2011), 
 \emph on
-PyLith User Manual, Version 1.8.0.
+PyLith User Manual, Version 2.0.0.
 
 \emph default
  Davis, CA: Computational Infrastructure of Geodynamics.
 \begin_inset Newline newline
 \end_inset
 
-URL: geodynamics.org/cig/software/pylith/pylith_manual-1.8.0.pdf
+URL: geodynamics.org/cig/software/pylith/pylith_manual-2.0.0.pdf
 \end_layout
 
 \begin_layout Section
@@ -252,6 +213,18 @@ This material is based upon work supported by the National Science Foundation
  Any opinions, findings, and conclusions or recommendations expressed in
  this material are those of the author(s) and do not necessarily reflect
  the views of the National Science Foundation.
+\end_layout
+
+\begin_layout Section
+Acknowlegements
+\end_layout
+
+\begin_layout Standard
+Many members of the community contribute to PyLith through reporting bugs,
+ suggesting new features and improvements, running benchmarks, and asking
+ questions about the software.
+ In particular, we thank Surendra Sumala for contributing to the development
+ of the fault friction implementation.
 \end_layout
 
 \begin_layout Section
