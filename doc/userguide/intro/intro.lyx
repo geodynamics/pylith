@@ -192,9 +192,8 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/workflow.eps
+	filename figs/workflow.pdf
 	scale 67
-	keepAspectRatio
 
 \end_inset
 
@@ -256,7 +255,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/packages.eps
+	filename figs/packages.pdf
 	scale 40
 
 \end_inset
@@ -392,7 +391,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/pyre_overview.png
+	filename figs/pyre_overview.pdf
 	width 4in
 
 \end_inset
