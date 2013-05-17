@@ -2069,7 +2069,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/pylith-materials.eps
+	filename figs/pylith-materials.pdf
 	scale 75
 
 \end_inset

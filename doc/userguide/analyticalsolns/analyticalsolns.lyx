@@ -1,31 +1,51 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
-\lyxformat 276
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
 \begin_document
 \begin_header
 \textclass book
 \begin_preamble
 
 \end_preamble
+\use_default_options false
+\maintain_unincluded_children false
 \language english
+\language_package default
 \inputencoding latin1
+\fontencoding global
 \font_roman default
 \font_sans default
 \font_typewriter default
 \font_default_family default
+\use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
 \paperfontsize default
 \spacing single
+\use_hyperref false
 \papersize default
 \use_geometry true
 \use_amsmath 1
 \use_esint 0
+\use_mhchem 0
+\use_mathdots 1
 \cite_engine basic
 \use_bibtopic false
+\use_indices false
 \paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
 \leftmargin 1in
 \topmargin 1in
 \rightmargin 1in
@@ -33,21 +53,23 @@
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
-\defskip medskip
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 2
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
-\author "" 
-\author "" 
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
 \end_header
 
 \begin_body
 
 \begin_layout Chapter
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "cha:Analytical-Solns"
 
 \end_inset
@@ -56,7 +78,8 @@ Analytical Solutions
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:TractionProblems"
 
 \end_inset
@@ -81,16 +104,19 @@ Solutions Using Polynomial Stress Functions
 \begin_layout Standard
 Our derivation follows the procedures outlined in Timoshenko and Goodier
  
-\begin_inset LatexCommand cite
+\begin_inset CommandInset citation
+LatexCommand cite
 key "Timoshenko:Goodier:1987"
 
 \end_inset
 
 , and we restrict ourselves to two-dimensional problems.
  Any problem in elastostatics must satisfy the equilibrium equations
-\begin_inset Formula \begin{gather}
+\begin_inset Formula 
+\begin{gather}
 \frac{\partial\sigma_{xx}}{\partial x}+\frac{\partial\sigma_{xy}}{\partial y}+X=0\label{eq:1}\\
-\frac{\partial\sigma_{yy}}{\partial y}+\frac{\partial\sigma_{xy}}{\partial x}+Y=0,\nonumber \end{gather}
+\frac{\partial\sigma_{yy}}{\partial y}+\frac{\partial\sigma_{xy}}{\partial x}+Y=0,\nonumber 
+\end{gather}
 
 \end_inset
 
@@ -128,8 +154,10 @@ Y
  tractions over the surface of the body.
  Finally, the solution must satisfy the conditions of compatibility, which
  may be expressed as:
-\begin_inset Formula \begin{equation}
-\left(\frac{\partial^{2}}{\partial x^{2}}+\frac{\partial^{2}}{\partial y^{2}}\right)\left(\sigma_{xx}+\sigma_{yy}\right)=0.\label{eq:2}\end{equation}
+\begin_inset Formula 
+\begin{equation}
+\left(\frac{\partial^{2}}{\partial x^{2}}+\frac{\partial^{2}}{\partial y^{2}}\right)\left(\sigma_{xx}+\sigma_{yy}\right)=0.\label{eq:2}
+\end{equation}
 
 \end_inset
 
@@ -139,7 +167,8 @@ To compute the displacement field, it is also necessary to specify displacement
 
 \begin_layout Standard
 Equations 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:1"
 
 \end_inset
@@ -157,20 +186,24 @@ x
 y
 \shape default
 , and letting the stress components be given by the following expressions:
-\begin_inset Formula \begin{equation}
-\sigma_{xx}=\frac{\partial^{2}\phi}{\partial y^{2}},\;\sigma_{yy}=\frac{\partial^{2}\phi}{\partial x^{2}},\;\sigma_{xy}=-\frac{\partial^{2}\phi}{\partial x\partial y}.\label{eq:3}\end{equation}
+\begin_inset Formula 
+\begin{equation}
+\sigma_{xx}=\frac{\partial^{2}\phi}{\partial y^{2}},\;\sigma_{yy}=\frac{\partial^{2}\phi}{\partial x^{2}},\;\sigma_{xy}=-\frac{\partial^{2}\phi}{\partial x\partial y}.\label{eq:3}
+\end{equation}
 
 \end_inset
 
 The solution must also satisfy the compatibility equations.
  Substituting Equations 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:3"
 
 \end_inset
 
  into Equation 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:2"
 
 \end_inset
@@ -180,8 +213,10 @@ reference "eq:2"
 \end_inset
 
  must satisfy
-\begin_inset Formula \begin{equation}
-\frac{\partial^{4}\phi}{\partial x^{4}}+2\frac{\partial^{4}\phi}{\partial x^{2}\partial y^{2}}+\frac{\partial^{4}\phi}{\partial y^{4}}=0.\label{eq:4}\end{equation}
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial^{4}\phi}{\partial x^{4}}+2\frac{\partial^{4}\phi}{\partial x^{2}\partial y^{2}}+\frac{\partial^{4}\phi}{\partial y^{4}}=0.\label{eq:4}
+\end{equation}
 
 \end_inset
 
@@ -200,7 +235,8 @@ y
 \shape default
  of second degree or higher.
  Any polynomial of second or third degree will satisfy Equation 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:4"
 
 \end_inset
@@ -208,7 +244,8 @@ reference "eq:4"
 .
  For polynomials of higher degree, they must be substituted into Equation
  
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:4"
 
 \end_inset
@@ -217,7 +254,8 @@ reference "eq:4"
 \end_layout
 
 \begin_layout Subsection
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sub:Analytical-Constant-Traction"
 
 \end_inset
@@ -240,7 +278,8 @@ x
 
 ), and roller boundary conditions are applied along the left and bottom
  boundaries (
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:Const-tractions"
 
 \end_inset
@@ -248,20 +287,26 @@ reference "fig:Const-tractions"
 ).
  Since the tractions are constant, we assume a second degree polynomial
  for the stress function:
-\begin_inset Formula \begin{equation}
-\phi_{2}=\frac{a_{2}}{2}x^{2}+b_{2}xy+\frac{c_{2}}{2}y^{2}.\label{eq:5}\end{equation}
+\begin_inset Formula 
+\begin{equation}
+\phi_{2}=\frac{a_{2}}{2}x^{2}+b_{2}xy+\frac{c_{2}}{2}y^{2}.\label{eq:5}
+\end{equation}
 
 \end_inset
 
 This yields the following expressions for the stresses:
-\begin_inset Formula \begin{equation}
-\sigma_{xx}=\frac{\partial^{2}\phi_{2}}{\partial y^{2}}=c_{2}=N,\;\sigma_{yy}=a_{2}=0,\;\sigma_{xy}=-b_{2}=0.\label{eq:6}\end{equation}
+\begin_inset Formula 
+\begin{equation}
+\sigma_{xx}=\frac{\partial^{2}\phi_{2}}{\partial y^{2}}=c_{2}=N,\;\sigma_{yy}=a_{2}=0,\;\sigma_{xy}=-b_{2}=0.\label{eq:6}
+\end{equation}
 
 \end_inset
 
 From Hooke's law, we have:
-\begin_inset Formula \begin{equation}
-\epsilon_{xx}=\frac{\partial u}{\partial x}=\frac{\left(1-\nu^{2}\right)N}{E},\;\epsilon_{yy}=\frac{\partial v}{\partial y}=\frac{-\nu\left(1+\nu\right)N}{E},\;\epsilon_{xy}=\frac{1}{2}\left(\frac{\partial v}{\partial x}+\frac{\partial u}{\partial y}\right)=0.\label{eq:7}\end{equation}
+\begin_inset Formula 
+\begin{equation}
+\epsilon_{xx}=\frac{\partial u}{\partial x}=\frac{\left(1-\nu^{2}\right)N}{E},\;\epsilon_{yy}=\frac{\partial v}{\partial y}=\frac{-\nu\left(1+\nu\right)N}{E},\;\epsilon_{xy}=\frac{1}{2}\left(\frac{\partial v}{\partial x}+\frac{\partial u}{\partial y}\right)=0.\label{eq:7}
+\end{equation}
 
 \end_inset
 
@@ -270,21 +315,26 @@ The strain components are thus easily obtained from the stress components.
 
 \begin_layout Standard
 To obtain the displacements, we must integrate Equation 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "eq:7"
 
 \end_inset
 
  and make use of the displacement boundary conditions.
  Integrating the first two of these, we obtain
-\begin_inset Formula \begin{equation}
-u=\frac{\left(1-\nu^{2}\right)Nx}{E}+f\left(y\right),\; v=\frac{-\nu\left(1+\nu\right)Ny}{E}+f\left(x\right).\label{eq:8}\end{equation}
+\begin_inset Formula 
+\begin{equation}
+u=\frac{\left(1-\nu^{2}\right)Nx}{E}+f\left(y\right),\; v=\frac{-\nu\left(1+\nu\right)Ny}{E}+f\left(x\right).\label{eq:8}
+\end{equation}
 
 \end_inset
 
 Substituting these into the third expression, we obtain
-\begin_inset Formula \begin{equation}
-\frac{\partial f\left(x\right)}{\partial x}=-\frac{\partial f\left(y\right)}{\partial y},\label{eq:9}\end{equation}
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial f\left(x\right)}{\partial x}=-\frac{\partial f\left(y\right)}{\partial y},\label{eq:9}
+\end{equation}
 
 \end_inset
 
@@ -309,8 +359,10 @@ which means that both
 .
  Doing this, we obtain the following expressions for the displacement components
 :
-\begin_inset Formula \begin{equation}
-u=\frac{\left(1-\nu^{2}\right)N}{E}\left(x-x_{0}\right),\; v=\frac{\nu\left(1+\nu\right)N}{E}\left(y_{0}-y\right).\label{eq:10}\end{equation}
+\begin_inset Formula 
+\begin{equation}
+u=\frac{\left(1-\nu^{2}\right)N}{E}\left(x-x_{0}\right),\; v=\frac{\nu\left(1+\nu\right)N}{E}\left(y_{0}-y\right).\label{eq:10}
+\end{equation}
 
 \end_inset
 
@@ -326,15 +378,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
-\begin_inset LatexCommand label
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:Const-tractions"
 
 \end_inset
@@ -347,11 +400,11 @@ Problem with constant traction boundary conditions applied along right edge.
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename figs/consttract.eps
+	filename figs/consttract.pdf
 
 \end_inset
 

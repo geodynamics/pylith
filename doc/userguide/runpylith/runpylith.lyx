@@ -934,7 +934,7 @@ status open
 \noindent
 \align center
 \begin_inset Graphics
-	filename figs/bar2.eps
+	filename figs/bar2.pdf
 
 \end_inset
 
@@ -981,7 +981,7 @@ status open
 \noindent
 \align center
 \begin_inset Graphics
-	filename figs/tri3.eps
+	filename figs/tri3.pdf
 
 \end_inset
 
@@ -1000,7 +1000,7 @@ hspace*{0.5in}
 
 
 \begin_inset Graphics
-	filename figs/quad4.eps
+	filename figs/quad4.pdf
 
 \end_inset
 
@@ -1048,7 +1048,7 @@ status open
 \noindent
 \align center
 \begin_inset Graphics
-	filename figs/tet4.eps
+	filename figs/tet4.pdf
 
 \end_inset
 
@@ -1067,7 +1067,7 @@ hspace*{0.5in}
 
 
 \begin_inset Graphics
-	filename figs/hex8.eps
+	filename figs/hex8.pdf
 
 \end_inset
 
@@ -1339,7 +1339,7 @@ status open
 \noindent
 \align center
 \begin_inset Graphics
-	filename figs/refinement2x.eps
+	filename figs/refinement2x.pdf
 	scale 125
 
 \end_inset
@@ -5156,7 +5156,7 @@ status open
 \noindent
 \align center
 \begin_inset Graphics
-	filename figs/hdf5layout.eps
+	filename figs/hdf5layout.pdf
 
 \end_inset
 
