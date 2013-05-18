@@ -592,42 +592,42 @@ The example problems are divided into categories that roughly correspond
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand input
-filename "static/static.lyx"
+filename "static.lyx"
 
 \end_inset
 
 
 \begin_inset CommandInset include
 LatexCommand input
-filename "quasistatic/quasistatic.lyx"
+filename "quasistatic.lyx"
 
 \end_inset
 
 
 \begin_inset CommandInset include
 LatexCommand input
-filename "friction/friction.lyx"
+filename "friction.lyx"
 
 \end_inset
 
 
 \begin_inset CommandInset include
 LatexCommand input
-filename "gravity/gravity.lyx"
+filename "gravity.lyx"
 
 \end_inset
 
 
 \begin_inset CommandInset include
 LatexCommand input
-filename "surfload/surfload.lyx"
+filename "surfload.lyx"
 
 \end_inset
 
 
 \begin_inset CommandInset include
 LatexCommand input
-filename "dike/dike.lyx"
+filename "dike.lyx"
 
 \end_inset
 
