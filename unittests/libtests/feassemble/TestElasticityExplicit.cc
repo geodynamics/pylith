@@ -348,11 +348,6 @@ pylith::feassemble::TestElasticityExplicit::testStableTimeStep(void)
   PYLITH_METHOD_END;
 } // testStableTimeStep
 
-
-// ----------------------------------------------------------------------
-extern PetscErrorCode DMPlexBuildFromCellList_Private(PetscDM dm, PetscInt numCells, PetscInt numVertices, PetscInt numCorners, const int cells[]);
-extern PetscErrorCode DMPlexBuildCoordinates_Private(PetscDM dm, PetscInt spaceDim, PetscInt numCells, PetscInt numVertices, const double vertexCoords[]);
-
 // Initialize elasticity integrator.
 void
 pylith::feassemble::TestElasticityExplicit::_initialize(topology::Mesh* mesh,

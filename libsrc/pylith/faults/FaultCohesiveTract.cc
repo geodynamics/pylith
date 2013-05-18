@@ -141,6 +141,7 @@ pylith::faults::FaultCohesiveTract::verifyConfiguration(const topology::Mesh& me
   PetscInt coneSize = 0;
   for (PetscInt i=0; i < ncells; ++i) {
     err = DMPlexGetConeSize(dmMesh, cells[i], &coneSize);PYLITH_CHECK_ERROR(err);
+    // TODO: Why isn't this 3? Should be changed to Closure()
     if (2*numCorners != coneSize) {
       std::ostringstream msg;
       msg << "Number of vertices in reference cell (" << numCorners 
