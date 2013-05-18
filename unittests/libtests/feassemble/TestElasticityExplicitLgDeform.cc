@@ -241,11 +241,6 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testUpdateStateVars(void)
   PYLITH_METHOD_END;
 } // testUpdateStateVars
 
-
-// ----------------------------------------------------------------------
-extern PetscErrorCode DMPlexBuildFromCellList_Private(DM dm, PetscInt numCells, PetscInt numVertices, PetscInt numCorners, const int cells[]);
-extern PetscErrorCode DMPlexBuildCoordinates_Private(DM dm, PetscInt spaceDim, PetscInt numCells, PetscInt numVertices, const double vertexCoords[]);
-
 // Initialize elasticity integrator.
 void
 pylith::feassemble::TestElasticityExplicitLgDeform::_initialize(topology::Mesh* mesh,

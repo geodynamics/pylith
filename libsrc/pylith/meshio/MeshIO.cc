@@ -182,14 +182,19 @@ pylith::meshio::MeshIO::_getCells(int_array* cells,
   err = DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers);PYLITH_CHECK_ERROR(err);
   err = ISGetIndices(globalVertexNumbers, &gvertex);PYLITH_CHECK_ERROR(err);
   for (PetscInt c = cStart, index = 0; c < cEnd; ++c) {
-    err = DMPlexGetConeSize(dmMesh, c, &coneSize);PYLITH_CHECK_ERROR(err);
-    assert(coneSize == *numCorners);
+    PetscInt nC = 0, closureSize, *closure = NULL;
 
-    err = DMPlexGetCone(dmMesh, c, &cone);PYLITH_CHECK_ERROR(err);
-    for(PetscInt p = 0; p < coneSize; ++p) {
-      const PetscInt gv = gvertex[cone[p]-vStart];
-      (*cells)[index++] = gv < 0 ? -(gv+1) : gv;
+    // TODO: VERTEX ORDER
+    err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+    for (PetscInt cl = 0; cl < closureSize*2; cl += 2) {
+      if ((closure[cl] >= vStart) && (closure[cl] < vEnd)) {
+        const PetscInt gv = gvertex[closure[cl]-vStart];
+        (*cells)[index++] = gv < 0 ? -(gv+1) : gv;
+        ++nC;
+      }
     } // for
+    err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+    assert(nC == *numCorners);
   } // for  
 
   PYLITH_METHOD_END;

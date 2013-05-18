@@ -95,6 +95,12 @@ CURRENT ISSUES/PRIORITIES
 
   + Need ribbon around fault in order to develop algorithm
 
+* Vertex ordering
+
+  + Quadrature::computeGeometry()
+  + Quadrature::minCellWidth()
+  + Optimized Tri3 and Tet4 Explicit integrators depend on the basis order
+
 ----------------------------------------
 MISCELLANEOUS
 ----------------------------------------

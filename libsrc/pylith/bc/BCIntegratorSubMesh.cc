@@ -119,11 +119,16 @@ pylith::bc::BCIntegratorSubMesh::verifyConfiguration(const topology::Mesh& mesh)
   const PetscInt cEnd = cellsStratum.end();
 
   // Make sure surface cells are compatible with quadrature.
-  PetscInt depth = 0;
-  PetscErrorCode err = DMPlexGetDepth(dmSubMesh, &depth);PYLITH_CHECK_ERROR(err);
+  PetscInt vStart, vEnd;
+  PetscErrorCode err = DMPlexGetDepthStratum(dmSubMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
   for (PetscInt c = cStart; c < cEnd; ++c) {
-    PetscInt cellNumCorners = 0;
-    err = DMPlexGetConeSize(dmSubMesh, c, &cellNumCorners);PYLITH_CHECK_ERROR(err);
+    PetscInt cellNumCorners = 0, closureSize, *closure = NULL;
+
+    err = DMPlexGetTransitiveClosure(dmSubMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+    for (PetscInt cl = 0; cl < closureSize*2; cl += 2) {
+      if ((closure[cl] >= vStart) && (closure[cl] < vEnd)) ++cellNumCorners;
+    }
+    err = DMPlexRestoreTransitiveClosure(dmSubMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     if (numCorners != cellNumCorners) {
       std::ostringstream msg;
       msg << "Quadrature is incompatible with cell for boundary condition '"

@@ -192,6 +192,7 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
         if (value != labelId) continue;
       } // if
 
+      // TODO: VERTEX ORDER
       err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
       for(p = 0; p < closureSize*2; p += 2) {
         if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
