@@ -4922,7 +4922,7 @@ DataWriterVTKPoints
 \begin_inset Newline linebreak
 \end_inset
 
-DataWriterHDF5Mesh
+DataWriterHDF5
 \family default
 .
 \end_layout
@@ -5434,7 +5434,7 @@ cell_data_fields = [displacement,velocity]
 \end_layout
 
 \begin_layout LyX-Code
-writer = pylith.meshio.DataWriterHDF5ExtMesh
+writer = pylith.meshio.DataWriterHDF5Ext
 \end_layout
 
 \begin_layout LyX-Code

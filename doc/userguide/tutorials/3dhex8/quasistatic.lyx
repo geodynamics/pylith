@@ -1178,15 +1178,6 @@ writer.filename = output/step06-fault.h5
 \end_layout
 
 \begin_layout Standard
-\begin_inset Newline newline
-\end_inset
-
-pylith.meshio.DataWriterHDF5
-\family default
- for fault output.
-\end_layout
-
-\begin_layout Standard
 Due to the simplicity of the boundary conditions, we are able to use the
  default 
 \family typewriter
