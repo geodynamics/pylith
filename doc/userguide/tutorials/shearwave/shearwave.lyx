@@ -93,13 +93,12 @@ This suite of examples focuses on the dynamics of a shear wave propagating
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/bar.eps
-	lyxscale 50
+	filename figs/bar.pdf
 
 \end_inset
 
