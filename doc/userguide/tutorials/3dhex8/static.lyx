@@ -1,0 +1,873 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass book
+\begin_preamble
+
+\end_preamble
+\use_default_options false
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding latin1
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 0
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 2in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Tutorial-3d-hex8-static"
+
+\end_inset
+
+Static Examples
+\end_layout
+
+\begin_layout Standard
+PyLith features discussed in this tutorial:
+\end_layout
+
+\begin_layout Itemize
+Static solution
+\end_layout
+
+\begin_layout Itemize
+VTK output
+\end_layout
+
+\begin_layout Itemize
+Dirichlet displacement boundary conditions
+\end_layout
+
+\begin_layout Itemize
+Neumann traction boundary conditions
+\end_layout
+
+\begin_layout Itemize
+ZeroDispDB spatial database
+\end_layout
+
+\begin_layout Itemize
+SimpleDB spatial database
+\end_layout
+
+\begin_layout Itemize
+UniformDB spatial database
+\end_layout
+
+\begin_layout Itemize
+Static fault rupture
+\end_layout
+
+\begin_layout Itemize
+Specifying more than one material
+\end_layout
+
+\begin_layout Itemize
+Linearly elastic isotropic material
+\end_layout
+
+\begin_layout Subsubsection
+Overview
+\end_layout
+
+\begin_layout Standard
+This set of examples describe the simplest class of problems for PyLith.
+ The problems are all purely elastic, and there is no time-dependence.
+ This set of elastostatic examples primarily demonstrates the application
+ of different types of boundary conditions in PyLith, as well as demonstrating
+ the use of a kinematic fault for a static problem.
+ All of the examples are contained in the directory 
+\family typewriter
+examples/3d/hex8
+\family default
+, and the corresponding 
+\family typewriter
+.cfg
+\family default
+ files are 
+\family typewriter
+step01.cfg
+\family default
+, 
+\family typewriter
+step02.cfg
+\family default
+, and 
+\family typewriter
+step03.cfg
+\family default
+.
+ Each example may be run as follows:
+\end_layout
+
+\begin_layout LyX-Code
+pylith stepXX.cfg
+\end_layout
+
+\begin_layout Standard
+This will cause PyLith to read the default parameters in 
+\family typewriter
+pylithapp.cfg
+\family default
+, and then override or augment them with the additional parameters in the
+ 
+\family typewriter
+stepXX.cfg
+\family default
+ file.
+ Each 
+\family typewriter
+.cfg
+\family default
+ file is extensively documented to provide detailed information on the various
+ parameters.
+\end_layout
+
+\begin_layout Subsubsection
+Step01 - Pure Dirichlet Boundary Conditions
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+step01.cfg
+\family default
+ file defines a problem with pure Dirichlet (displacement) boundary conditions
+ corresponding to compression in the x-direction and shear in the y-direction.
+ The bottom (minimum z) boundary is held fixed in the z-direction.
+ On the positive and negative x-faces, compressional displacements of 1
+ m are applied in the x-direction and shear displacements yielding a left-latera
+l sense of shear are applied in the y-direction.
+ In this example and in subsequent examples we would like to output the
+ displacement solution over a subset of the domain corresponding to the
+ ground surface.
+ To do this, we first set the output to an array of two output managers
+ as follows:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.implicit]
+\end_layout
+
+\begin_layout LyX-Code
+# Set the output to an array of 2 output managers.
+\end_layout
+
+\begin_layout LyX-Code
+# We will output the solution over the domain and the ground surface.
+\end_layout
+
+\begin_layout LyX-Code
+output = [domain,subdomain]
+\end_layout
+
+\begin_layout Standard
+We then define the subdomain output manager to correspond to a subset of
+ the domain:
+\end_layout
+
+\begin_layout LyX-Code
+# Set subdomain component to OutputSolnSubset (boundary of the domain).
+\end_layout
+
+\begin_layout LyX-Code
+output.subdomain = pylith.meshio.OutputSolnSubset
+\end_layout
+
+\begin_layout Standard
+Later (in the output section at the end of the file), we specify the nodeset
+ that corresponds to the desired output:
+\end_layout
+
+\begin_layout LyX-Code
+# Give basename for VTK domain output of solution over ground surface.
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.formulation.output.subdomain]
+\end_layout
+
+\begin_layout LyX-Code
+# Name of nodeset for ground surface.
+\end_layout
+
+\begin_layout LyX-Code
+label = face_zpos
+\end_layout
+
+\begin_layout LyX-Code
+writer.filename = output/step01-groundsurf.vtk
+\end_layout
+
+\begin_layout Standard
+For the boundary conditions, we must describe which degrees of freedom are
+ being constrained (
+\family typewriter
+bc_dof
+\family default
+), we must provide a the label associated with the CUBIT nodeset associated
+ with the BC, and we must specify the type of spatial database is being
+ used to describe the boundary conditions.
+ For the x-faces, we use a 
+\family typewriter
+SimpleDB
+\family default
+ to provide the displacements on the x-faces:
+\end_layout
+
+\begin_layout LyX-Code
+# +x face
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.bc.x_pos]
+\end_layout
+
+\begin_layout LyX-Code
+bc_dof = [0, 1]
+\end_layout
+
+\begin_layout LyX-Code
+label = face_xpos
+\end_layout
+
+\begin_layout LyX-Code
+db_initial = spatialdata.spatialdb.SimpleDB
+\end_layout
+
+\begin_layout LyX-Code
+db_initial.label = Dirichlet BC on +x
+\end_layout
+
+\begin_layout LyX-Code
+db_initial.iohandler.filename = spatialdb/fixeddisp_axial_shear.spatialdb
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+# -x face
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.bc.x_neg]
+\end_layout
+
+\begin_layout LyX-Code
+bc_dof = [0, 1]
+\end_layout
+
+\begin_layout LyX-Code
+label = face_xneg
+\end_layout
+
+\begin_layout LyX-Code
+db_initial = spatialdata.spatialdb.SimpleDB
+\end_layout
+
+\begin_layout LyX-Code
+db_initial.label = Dirichlet BC on -x
+\end_layout
+
+\begin_layout LyX-Code
+db_initial.iohandler.filename = spatialdb/fixeddisp_axial_shear.spatialdb
+\end_layout
+
+\begin_layout Standard
+For a 
+\family typewriter
+SimpleDB
+\family default
+, we must provide a filename.
+ The default spatial database for 
+\family typewriter
+db_initial
+\family default
+ is 
+\family typewriter
+ZeroDispBC
+\family default
+, which automatically applies zero displacements to all vertices in the
+ nodeset, and no filename is required (or needed).
+ This is what we use for the bottom of the mesh:
+\end_layout
+
+\begin_layout LyX-Code
+# -z face
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.bc.z_neg]
+\end_layout
+
+\begin_layout LyX-Code
+bc_dof = [2]
+\end_layout
+
+\begin_layout LyX-Code
+label = face_zneg
+\end_layout
+
+\begin_layout LyX-Code
+db_initial.label = Dirichlet BC on -z
+\end_layout
+
+\begin_layout Standard
+When we have run the simulation, the output VTK files will be contained
+ in 
+\family typewriter
+examples/3d/hex8/output
+\family default
+ (all with a prefix of 
+\family typewriter
+step01
+\family default
+).
+ Results using ParaView are shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:step01-displ"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/step01-displ.jpg
+	lyxscale 50
+	width 10cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Displacement field for example step01 visualized using ParaView.
+ The mesh has been distorted by the computed displacements (magnified by
+ 500), and the vectors show the computed displacements.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:step01-displ"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Step02 - Dirichlet and Neumann Boundary Conditions
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+step02.cfg
+\family default
+ file defines a problem with Dirichlet (displacement) boundary conditions
+ corresponding to zero x and y-displacements applied on the negative x-face
+ and Neumann (traction) boundary conditions corresponding to normal compression
+ and horizontal shear applied on the positive x-face.
+ The bottom (negative z) boundary is held fixed in the z-direction.
+ The problem is similar to example step01, except that 1 MPa of normal compressi
+on and 1 MPa of shear (in a left-lateral sense) are applied on the positive
+ x-face, and the negative x-face is pinned in both the x and y-directions.
+\end_layout
+
+\begin_layout Standard
+For the boundary conditions, we must first change the boundary condition
+ type for the positive x-face from the default Dirichlet to Neumann:
+\end_layout
+
+\begin_layout LyX-Code
+# +x face -- first change bc type to Neumann
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.bc]
+\end_layout
+
+\begin_layout LyX-Code
+x_pos = pylith.bc.Neumann 
+\end_layout
+
+\begin_layout Standard
+We use a 
+\family typewriter
+SimpleDB
+\family default
+ to describe the traction boundary conditions.
+ When applying traction boundary conditions over a surface, it is also necessary
+ to specify integration information for the surface.
+ Since this is a three-dimensional problem, the dimension of the surface
+ is 2.
+ Since the cells being used are trilinear hexahedra, the cell type is 
+\family typewriter
+FIATLagrange
+\family default
+ and we use an integration order of 2.
+ A lower integration order would not provide sufficient accuracy while a
+ higher integration order would offer no benefit (while requiring more computati
+on time and storage):
+\end_layout
+
+\begin_layout LyX-Code
+# +x face
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.bc.x_pos]
+\end_layout
+
+\begin_layout LyX-Code
+label = face_xpos
+\end_layout
+
+\begin_layout LyX-Code
+db_initial = spatialdata.spatialdb.SimpleDB
+\end_layout
+
+\begin_layout LyX-Code
+db_initial.label = Neumann BC on +x
+\end_layout
+
+\begin_layout LyX-Code
+db_initial.iohandler.filename = spatialdb/tractions_axial_shear.spatialdb
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+# We must specify quadrature information for the cell faces.
+\end_layout
+
+\begin_layout LyX-Code
+quadrature.cell = pylith.feassemble.FIATLagrange
+\end_layout
+
+\begin_layout LyX-Code
+quadrature.cell.dimension = 2
+\end_layout
+
+\begin_layout LyX-Code
+quadrature.cell.quad_order = 2 
+\end_layout
+
+\begin_layout Standard
+The boundary conditions on the negative x-face are simpler than they were
+ in example step01 (zero displacements in the x and y-directions), so we
+ can use the default 
+\family typewriter
+ZeroDispBC
+\family default
+:
+\end_layout
+
+\begin_layout LyX-Code
+# -x face
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.bc.x_neg]
+\end_layout
+
+\begin_layout LyX-Code
+bc_dof = [0, 1] 
+\end_layout
+
+\begin_layout LyX-Code
+label = face_xneg
+\end_layout
+
+\begin_layout LyX-Code
+db_initial.label = Dirichlet BC on -x 
+\end_layout
+
+\begin_layout Standard
+The boundary conditions on the negative z-face are supplied in the same
+ manner as for example step01.
+ When we have run the simulation, the output VTK files will be contained
+ in 
+\family typewriter
+examples/3d/hex8/output
+\family default
+ (all with a prefix of 
+\family typewriter
+step02
+\family default
+).
+ Results using ParaView are shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:step02-displ"
+
+\end_inset
+
+.
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/step02-displ.jpg
+	lyxscale 50
+	width 10cm
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Displacement field for example step02 visualized using ParaView.
+ The mesh has been distorted by the computed displacements (magnified by
+ 500), and the vectors show the computed displacements.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:step02-displ"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Step03 - Dirichlet Boundary Conditions with Kinematic Fault Slip
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+step03.cfg
+\family default
+ file describes a problem with Dirichlet (displacement) boundary conditions
+ corresponding to zero x and y-displacements applied on the negative and
+ positive x-faces and a vertical fault with a combination of left-lateral
+ and updip motion.
+ The left-lateral component of fault slip has a constant value of 2 m in
+ the upper crust, and then decreases linearly to zero at the base of the
+ model.
+ The reverse slip component has a value of 0.25 m at the surface, and then
+ decreases linearly to zero at 2 km depth.
+\end_layout
+
+\begin_layout Standard
+Due to the simplicity of the boundary conditions, we are able to use the
+ default 
+\family typewriter
+ZeroDispBC
+\family default
+ for the positive and negative x-faces, as well as the negative z-face.
+ To use a fault, we must first define a fault interface.
+ We do this by providing an array containing a single interface:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent]
+\end_layout
+
+\begin_layout LyX-Code
+# Set interfaces to an array of 1 fault: 'fault'.
+\end_layout
+
+\begin_layout LyX-Code
+interfaces = [fault] 
+\end_layout
+
+\begin_layout Standard
+For this example we specify the fault slip, so we set the interface type
+ to 
+\family typewriter
+FaultCohesiveKin
+\family default
+:
+\end_layout
+
+\begin_layout LyX-Code
+# Set the type of fault interface condition.
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.interfaces]
+\end_layout
+
+\begin_layout LyX-Code
+fault = pylith.faults.FaultCohesiveKin 
+\end_layout
+
+\begin_layout Standard
+We must then identify the nodeset corresponding to the fault, and provide
+ integration information for the fault surface:
+\end_layout
+
+\begin_layout LyX-Code
+# Set the parameters for the fault interface condition.
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.interfaces.fault]
+\end_layout
+
+\begin_layout LyX-Code
+# The label corresponds to the name of the nodeset in CUBIT.
+\end_layout
+
+\begin_layout LyX-Code
+label = fault
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+# We must define the quadrature information for fault cells.
+\end_layout
+
+\begin_layout LyX-Code
+# The fault cells are 2D (surface).
+\end_layout
+
+\begin_layout LyX-Code
+quadrature.cell = pylith.feassemble.FIATLagrange
+\end_layout
+
+\begin_layout LyX-Code
+quadrature.cell.dimension = 2 
+\end_layout
+
+\begin_layout Standard
+We retain the default 
+\family typewriter
+StepSlipFn
+\family default
+ since we want static fault slip.
+ Finally, we use one 
+\family typewriter
+SimpleDB
+\family default
+ to define the spatial variation of fault slip, and another 
+\family typewriter
+SimpleDB
+\family default
+ to define the spatial variation in slip initiation times (the start time
+ is 0.0 everywhere since this is a static problem):
+\end_layout
+
+\begin_layout LyX-Code
+# The slip time and final slip are defined in spatial databases.
+\begin_inset Newline newline
+\end_inset
+
+[pylithapp.timedependent.interfaces.fault.eq_srcs.rupture.slip_function]
+\begin_inset Newline newline
+\end_inset
+
+slip.iohandler.filename = spatialdb/finalslip.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+slip.query_type = linear
+\end_layout
+
+\begin_layout LyX-Code
+slip_time.iohandler.filename = spatialdb/sliptime.spatialdb 
+\end_layout
+
+\begin_layout Standard
+Since the problem now contains a fault, we can request that fault infomation
+ is also output:
+\end_layout
+
+\begin_layout LyX-Code
+# Give basename for VTK fault output.
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.interfaces.fault.output]
+\end_layout
+
+\begin_layout LyX-Code
+writer.filename = output/step03-fault.vtk 
+\end_layout
+
+\begin_layout Standard
+This will result in two extra files being produced.
+ The first file (
+\family typewriter
+step03-fault_info.vtk
+\family default
+) contains information such as the normal directions to the fault surface,
+ the applied fault slip, and the fault slip times.
+ The second file (
+\family typewriter
+step03-fault_t0000000.vtk
+\family default
+) contains the cumulative fault slip for the time step and the change in
+ tractions on the fault surface due to the slip.
+ When we have run the simulation, the output VTK files will be contained
+ in 
+\family typewriter
+examples/3d/hex8/output
+\family default
+ (all with a prefix of 
+\family typewriter
+step03
+\family default
+).
+ Results using ParaView are shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:step03-displ"
+
+\end_inset
+
+.
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/step03-displ.jpg
+	lyxscale 50
+	width 10cm
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Displacement field for example step03 visualized using ParaView.
+ The mesh has been distorted by the computed displacements (magnified by
+ 500), and the vectors show the computed displacements.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:step03-displ"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
