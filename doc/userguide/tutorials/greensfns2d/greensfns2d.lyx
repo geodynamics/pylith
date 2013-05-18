@@ -395,7 +395,7 @@ coordsys.units = km
 \end_layout
 
 \begin_layout LyX-Code
-writer = pylith.meshio.DataWriterHDF5Mesh
+writer = pylith.meshio.DataWriterHDF5
 \end_layout
 
 \begin_layout LyX-Code
