@@ -229,7 +229,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/cartoon_general.eps
+	filename figs/cartoon_general.pdf
 
 \end_inset
 
@@ -309,7 +309,7 @@ Step 3
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename figs/step01.eps
+	filename figs/step01.pdf
 	lyxscale 66
 	width 2in
 
@@ -325,7 +325,7 @@ Step 3
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename figs/step02.eps
+	filename figs/step02.pdf
 	lyxscale 66
 	width 2in
 
@@ -341,7 +341,7 @@ Step 3
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename figs/step03.eps
+	filename figs/step03.pdf
 	lyxscale 66
 	width 2in
 
