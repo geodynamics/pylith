@@ -195,35 +195,35 @@ examples/3d
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand input
-filename "twotri3/twotri3.lyx"
+filename "twocells/twotri3.lyx"
 
 \end_inset
 
  
 \begin_inset CommandInset include
 LatexCommand input
-filename "twoquad4/twoquad4.lyx"
+filename "twocells/twoquad4.lyx"
 
 \end_inset
 
  
 \begin_inset CommandInset include
 LatexCommand input
-filename "twotet4/twotet4.lyx"
+filename "twocells/twotet4.lyx"
 
 \end_inset
 
 
 \begin_inset CommandInset include
 LatexCommand input
-filename "twohex8/twohex8.lyx"
+filename "twocells/twohex8.lyx"
 
 \end_inset
 
 
 \begin_inset CommandInset include
 LatexCommand input
-filename "twotet4-geoproj/twotet4-geoproj.lyx"
+filename "twocells/twotet4-geoproj.lyx"
 
 \end_inset
 
