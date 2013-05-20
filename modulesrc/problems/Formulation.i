@@ -52,18 +52,6 @@ namespace pylith {
        */
       bool splitFields(void) const;
 
-      /** Set flag for splitting field components.
-       *
-       * @param flag True if splitting fields comonents, false otherwise.
-       */
-      void splitFieldComponents(const bool flag);
-      
-      /** Get flag for splitting field components.
-       *
-       * @returns flag True if splitting field components, false otherwise.
-       */
-      bool splitFieldComponents(void) const;
-
       /** Set flag for using custom Lagrange constraint preconditioner.
        *
        * @param flag True if using custom constraint precondition,

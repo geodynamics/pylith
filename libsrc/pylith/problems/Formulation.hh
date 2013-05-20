@@ -67,18 +67,6 @@ public :
    */
   bool splitFields(void) const;
 
-  /** Set flag for splitting field components.
-   *
-   * @param flag True if splitting fields comonents, false otherwise.
-   */
-  void splitFieldComponents(const bool flag);
-
-  /** Get flag for splitting field components.
-   *
-   * @returns flag True if splitting field components, false otherwise.
-   */
-  bool splitFieldComponents(void) const;
-
   /** Set flag for using custom preconditioner for Lagrange constraints.
    *
    * @param flag True if using custom fault preconditioner, false otherwise.
@@ -196,10 +184,8 @@ protected :
 
   bool _isJacobianSymmetric; ///< Is system Jacobian symmetric?
   bool _splitFields; ///< True if splitting fields.
-  bool _splitFieldComponents; ///< True if splitting field components
 
-  /// True if using custom preconditioner for Lagrange constraints.
-  bool _useCustomConstraintPC;
+  bool _useCustomConstraintPC; ///< True if using custom preconditioner for Lagrange constraints.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

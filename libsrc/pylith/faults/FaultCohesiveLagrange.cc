@@ -137,9 +137,10 @@ pylith::faults::FaultCohesiveLagrange::splitField(topology::Field* field)
   PetscErrorCode err;
   err = PetscSectionGetNumFields(fieldSection, &numFields);PYLITH_CHECK_ERROR(err);
   // TODO: Does this make sense?
-  if (!numFields)
+  if (!numFields) {
     PYLITH_METHOD_END;
-  assert(numFields == 2);
+  } // if
+  assert(2 == numFields);
   err = PetscSectionGetFieldComponents(fieldSection, 0, &numComp);PYLITH_CHECK_ERROR(err);assert(numComp == spaceDim);
   err = PetscSectionGetFieldComponents(fieldSection, 1, &numComp);PYLITH_CHECK_ERROR(err);assert(numComp == spaceDim);
 
@@ -148,8 +149,7 @@ pylith::faults::FaultCohesiveLagrange::splitField(topology::Field* field)
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
 
     PetscInt dof;
-    err = PetscSectionGetDof(fieldSection, v_lagrange, &dof);PYLITH_CHECK_ERROR(err);
-    assert(spaceDim == dof);
+    err = PetscSectionGetDof(fieldSection, v_lagrange, &dof);PYLITH_CHECK_ERROR(err);assert(spaceDim == dof);
     err = PetscSectionSetFieldDof(fieldSection, v_lagrange, 1, dof);PYLITH_CHECK_ERROR(err);
   } // for
   err = PetscSectionGetChart(fieldSection, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
@@ -159,7 +159,7 @@ pylith::faults::FaultCohesiveLagrange::splitField(topology::Field* field)
     if (!dof) {
       err = PetscSectionSetFieldDof(fieldSection, p, 0, spaceDim);PYLITH_CHECK_ERROR(err);
     } // if
-  }
+  } // for
 
   PYLITH_METHOD_END;
 } // splitField
