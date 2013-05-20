@@ -124,6 +124,9 @@ pylith::problems::SolverNonlinear::initialize(const topology::SolutionFields& fi
     _setupFieldSplit(&pc, formulation, jacobian, fields);
   } // if
 
+  // :TODO: MATT Does this go here?
+  _createNullSpace(fields);
+
   PYLITH_METHOD_END;
 } // initialize
 

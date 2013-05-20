@@ -30,13 +30,13 @@
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+
 #include <cassert> // USES assert()
 
 
 // ----------------------------------------------------------------------
 EXTERN_C_BEGIN
-#undef __FUNCT__
-#define __FUNCT__ "MyMatGetSubMatrix"
 PetscErrorCode  MyMatGetSubMatrix(PetscMat mat,
 				  PetscIS isrow,
 				  PetscIS iscol,
@@ -47,7 +47,8 @@ PetscErrorCode  MyMatGetSubMatrix(PetscMat mat,
   PetscBool isFaultRow, isFaultCol;
   PetscErrorCode  ierr = 0;
 
-  PetscFunctionBegin;
+  PYLITH_METHOD_BEGIN;
+
   ierr = MatShellGetContext(mat, (void **) &ctx);CHKERRQ(ierr);
   ierr = PCFieldSplitGetIS(ctx->pc, ctx->faultFieldName, &faultIS);CHKERRQ(ierr);assert(faultIS);
   ierr = ISEqual(isrow, faultIS, &isFaultRow);CHKERRQ(ierr);
@@ -61,7 +62,7 @@ PetscErrorCode  MyMatGetSubMatrix(PetscMat mat,
     ierr = MatGetSubMatrix(ctx->A, isrow, iscol, reuse, newmat);CHKERRQ(ierr);
   } // if/else
 
-  PetscFunctionReturn(0);
+  PYLITH_METHOD_RETURN(0);
 } // MyMatGetSubMatrix
 EXTERN_C_END
 
@@ -146,6 +147,99 @@ pylith::problems::Solver::initialize(const topology::SolutionFields& fields,
 
 
 // ----------------------------------------------------------------------
+// Create null space.
+void
+pylith::problems::Solver::_createNullSpace(const topology::SolutionFields& fields)
+{ // _createNullSpace
+  PYLITH_METHOD_BEGIN;
+
+  PetscDM dmMesh = fields.mesh().dmMesh();assert(dmMesh);
+  PetscErrorCode err;
+
+  const spatialdata::geocoords::CoordSys* cs = fields.mesh().coordsys();assert(cs);
+  const int spaceDim = cs->spaceDim();
+
+  MPI_Comm comm;
+  err = PetscObjectGetComm((PetscObject) dmMesh, &comm);PYLITH_CHECK_ERROR(err);
+
+  PetscSection solutionSection = fields.solution().petscSection();assert(solutionSection);
+  PetscVec solutionVec = fields.solution().localVector();assert(solutionVec);
+  PetscVec solutionGlobalVec = fields.solution().globalVector();assert(solutionGlobalVec);
+  MatNullSpace nullsp = NULL;    
+  PetscSection coordinateSection = NULL;
+  PetscVec coordinateVec = NULL;
+  PetscInt vStart, vEnd;
+  PetscVec mode[6];
+  
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
+  err = DMPlexGetCoordinateSection(dmMesh, &coordinateSection);PYLITH_CHECK_ERROR(err);assert(coordinateSection);
+  err = DMGetCoordinatesLocal(dmMesh, &coordinateVec);PYLITH_CHECK_ERROR(err);assert(coordinateVec);
+  if (spaceDim > 1) {
+    const int m = (spaceDim * (spaceDim + 1)) / 2;
+    for(int i = 0; i < m; ++i) {
+      err = VecDuplicate(solutionGlobalVec, &mode[i]);PYLITH_CHECK_ERROR(err);
+    } // for
+    // :KLUDGE: Assume P1
+    for(int d = 0; d < spaceDim; ++d) {
+      PetscScalar values[3] = {0.0, 0.0, 0.0};      
+      values[d] = 1.0;
+
+      err = VecSet(solutionVec, 0.0);PYLITH_CHECK_ERROR(err);
+      for(PetscInt v = vStart; v < vEnd; ++v) {
+	err = DMPlexVecSetClosure(dmMesh, solutionSection, solutionVec, v, values, INSERT_VALUES);PYLITH_CHECK_ERROR(err);
+      } // for
+      err = DMLocalToGlobalBegin(dmMesh, solutionVec, INSERT_VALUES, mode[d]);PYLITH_CHECK_ERROR(err);
+      err = DMLocalToGlobalEnd(dmMesh, solutionVec, INSERT_VALUES, mode[d]);PYLITH_CHECK_ERROR(err);
+    } // for
+    for(int d = spaceDim; d < m; ++d) {
+      PetscInt k = (spaceDim > 2) ? d - spaceDim : d;
+      
+      err = VecSet(solutionVec, 0.0);PYLITH_CHECK_ERROR(err);
+      for(PetscInt v = vStart; v < vEnd; ++v) {
+	PetscScalar  values[3] = {0.0, 0.0, 0.0};
+	PetscScalar *coords = NULL;
+	
+	err = DMPlexVecGetClosure(dmMesh, coordinateSection, coordinateVec, v, NULL, &coords);PYLITH_CHECK_ERROR(err);
+	for(int i = 0; i < spaceDim; ++i) {
+	  for(int j = 0; j < spaceDim; ++j) {
+	    values[j] += _epsilon(i, j, k)*coords[i];
+	  } // for
+	} // for
+	err = DMPlexVecRestoreClosure(dmMesh, coordinateSection, coordinateVec, v, NULL, &coords);PYLITH_CHECK_ERROR(err);
+	err = DMPlexVecSetClosure(dmMesh, solutionSection, solutionVec, v, values, INSERT_VALUES);PYLITH_CHECK_ERROR(err);
+      } // for
+      err = DMLocalToGlobalBegin(dmMesh, solutionVec, INSERT_VALUES, mode[d]);PYLITH_CHECK_ERROR(err);
+      err = DMLocalToGlobalEnd(dmMesh, solutionVec, INSERT_VALUES, mode[d]);PYLITH_CHECK_ERROR(err);
+    } // for
+    for(int i = 0; i < spaceDim; ++i) {
+      err = VecNormalize(mode[i], NULL);PYLITH_CHECK_ERROR(err);
+    } // for
+    // Orthonormalize system
+    for(int i = spaceDim; i < m; ++i) {
+      PetscScalar dots[6];
+      
+      err = VecMDot(mode[i], i, mode, dots);PYLITH_CHECK_ERROR(err);
+      for(int j = 0; j < i; ++j) {
+	dots[j] *= -1.0;
+      } // for
+      err = VecMAXPY(mode[i], i, dots, mode);PYLITH_CHECK_ERROR(err);
+      err = VecNormalize(mode[i], NULL);PYLITH_CHECK_ERROR(err);
+    } // for
+    err = MatNullSpaceCreate(comm, PETSC_FALSE, m, mode, &nullsp);PYLITH_CHECK_ERROR(err);
+    for(int i = 0; i< m; ++i) {
+      err = VecDestroy(&mode[i]);PYLITH_CHECK_ERROR(err);
+    } // for
+  } // if
+  
+  PetscObject field = NULL;
+  err = DMGetField(dmMesh, 0, &field);PYLITH_CHECK_ERROR(err);
+  err = PetscObjectCompose(field, "nearnullspace", (PetscObject) nullsp);PYLITH_CHECK_ERROR(err);
+  err = MatNullSpaceDestroy(&nullsp);PYLITH_CHECK_ERROR(err);
+
+  PYLITH_METHOD_END;
+} // _createNullSpace
+
+// ----------------------------------------------------------------------
 // Setup preconditioner for preconditioning with split fields.
 void
 pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
@@ -210,79 +304,10 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     _ctx.faultFieldName = "1";
     _ctx.faultA = _jacobianPCFault;
   } // if
-  
-  // Create rigid body null space.
-  MatNullSpace nullsp = NULL;    
+    
   PetscObject field = NULL;
-  PetscSection coordinateSection = NULL;
-  PetscVec coordinateVec = NULL;
-  PetscInt dim = spaceDim, vStart, vEnd;
-  PetscVec mode[6];
-  
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetCoordinateSection(dmMesh, &coordinateSection);PYLITH_CHECK_ERROR(err);assert(coordinateSection);
-  err = DMGetCoordinatesLocal(dmMesh, &coordinateVec);PYLITH_CHECK_ERROR(err);assert(coordinateVec);
-  if (dim > 1) {
-    const int m = (dim * (dim + 1)) / 2;
-    for(int i = 0; i < m; ++i) {
-      err = VecDuplicate(solutionGlobalVec, &mode[i]);PYLITH_CHECK_ERROR(err);
-    } // for
-    // :KLUDGE: Assume P1
-    for(int d = 0; d < dim; ++d) {
-      PetscScalar values[3] = {0.0, 0.0, 0.0};      
-      values[d] = 1.0;
-
-      err = VecSet(solutionVec, 0.0);PYLITH_CHECK_ERROR(err);
-      for(PetscInt v = vStart; v < vEnd; ++v) {
-	err = DMPlexVecSetClosure(dmMesh, solutionSection, solutionVec, v, values, INSERT_VALUES);PYLITH_CHECK_ERROR(err);
-      } // for
-      err = DMLocalToGlobalBegin(dmMesh, solutionVec, INSERT_VALUES, mode[d]);PYLITH_CHECK_ERROR(err);
-      err = DMLocalToGlobalEnd(dmMesh, solutionVec, INSERT_VALUES, mode[d]);PYLITH_CHECK_ERROR(err);
-    } // for
-    for(int d = dim; d < m; ++d) {
-      PetscInt k = (dim > 2) ? d - dim : d;
-      
-      err = VecSet(solutionVec, 0.0);PYLITH_CHECK_ERROR(err);
-      for(PetscInt v = vStart; v < vEnd; ++v) {
-	PetscScalar  values[3] = {0.0, 0.0, 0.0};
-	PetscScalar *coords = NULL;
-	
-	err = DMPlexVecGetClosure(dmMesh, coordinateSection, coordinateVec, v, NULL, &coords);PYLITH_CHECK_ERROR(err);
-	for(int i = 0; i < dim; ++i) {
-	  for(int j = 0; j < dim; ++j) {
-	    values[j] += _epsilon(i, j, k)*coords[i];
-	  } // for
-	} // for
-	err = DMPlexVecRestoreClosure(dmMesh, coordinateSection, coordinateVec, v, NULL, &coords);PYLITH_CHECK_ERROR(err);
-	err = DMPlexVecSetClosure(dmMesh, solutionSection, solutionVec, v, values, INSERT_VALUES);PYLITH_CHECK_ERROR(err);
-      } // for
-      err = DMLocalToGlobalBegin(dmMesh, solutionVec, INSERT_VALUES, mode[d]);PYLITH_CHECK_ERROR(err);
-      err = DMLocalToGlobalEnd(dmMesh, solutionVec, INSERT_VALUES, mode[d]);PYLITH_CHECK_ERROR(err);
-    } // for
-    for(int i = 0; i < dim; ++i) {
-      err = VecNormalize(mode[i], NULL);PYLITH_CHECK_ERROR(err);
-    } // for
-    // Orthonormalize system
-    for(int i = dim; i < m; ++i) {
-      PetscScalar dots[6];
-      
-      err = VecMDot(mode[i], i, mode, dots);PYLITH_CHECK_ERROR(err);
-      for(int j = 0; j < i; ++j) {
-	dots[j] *= -1.0;
-      } // for
-      err = VecMAXPY(mode[i], i, dots, mode);PYLITH_CHECK_ERROR(err);
-      err = VecNormalize(mode[i], NULL);PYLITH_CHECK_ERROR(err);
-    } // for
-    err = MatNullSpaceCreate(comm, PETSC_FALSE, m, mode, &nullsp);PYLITH_CHECK_ERROR(err);
-    for(int i = 0; i< m; ++i) {
-      err = VecDestroy(&mode[i]);PYLITH_CHECK_ERROR(err);
-    } // for
-  } // if
-  
   err = DMSetNumFields(dmMesh, 2);PYLITH_CHECK_ERROR(err);
   err = DMGetField(dmMesh, 0, &field);PYLITH_CHECK_ERROR(err);
-  err = PetscObjectCompose(field, "nearnullspace", (PetscObject) nullsp);PYLITH_CHECK_ERROR(err);
-  err = MatNullSpaceDestroy(&nullsp);PYLITH_CHECK_ERROR(err);
   err = PetscObjectCompose(field, "pmat", (PetscObject) _jacobianPCFault);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;

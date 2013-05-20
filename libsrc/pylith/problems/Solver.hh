@@ -78,6 +78,13 @@ public :
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 
+  /** Create rigid body null space.
+   *
+   * @param fields Solution fields.
+   */
+  void
+  _createNullSpace(const topology::SolutionFields& fields);
+
   /** Setup preconditioner for preconditioning using split fields.
    *
    * @param pc PETSc preconditioner.
