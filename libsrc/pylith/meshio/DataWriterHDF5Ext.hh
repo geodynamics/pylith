@@ -151,7 +151,9 @@ private :
 
   struct ExternalDataset {
     PetscViewer viewer;
-    int numTimeSteps;
+    PetscInt numTimeSteps;
+    PetscInt numPoints;
+    PetscInt fiberDim;
   };
   typedef std::map<std::string, ExternalDataset> dataset_type;
 

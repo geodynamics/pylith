@@ -53,7 +53,8 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::faults::FaultCohesiveLagrange::FaultCohesiveLagrange(void)
+pylith::faults::FaultCohesiveLagrange::FaultCohesiveLagrange(void) :
+  _cohesiveIS(0)
 { // constructor
   _useLagrangeConstraints = true;
 } // constructor
@@ -73,6 +74,7 @@ pylith::faults::FaultCohesiveLagrange::deallocate(void)
   PYLITH_METHOD_BEGIN;
   
   FaultCohesive::deallocate();
+  delete _cohesiveIS; _cohesiveIS = 0;
 
   PYLITH_METHOD_END;
 } // deallocate
@@ -933,9 +935,9 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
 
   // Check quadrature against mesh
   const int numCorners = _quadrature->numBasis();
-  topology::StratumIS faultIS(dmMesh, "material-id", id());
-  const PetscInt* cells = faultIS.points();
-  const PetscInt ncells = faultIS.size();
+  topology::StratumIS cohesiveIS(dmMesh, "material-id", id());
+  const PetscInt* cells = cohesiveIS.points();
+  const PetscInt ncells = cohesiveIS.size();
   for(PetscInt i = 0; i < ncells; ++i) {
     PetscInt *closure = NULL;
     PetscInt cellNumCorners = 0, closureSize;
@@ -1017,9 +1019,9 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
 
   // Get cohesive cells
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-  topology::StratumIS faultIS(dmMesh, "material-id", id());
-  const PetscInt* cells = faultIS.points();
-  const int ncells = faultIS.size();
+  delete _cohesiveIS; _cohesiveIS = new topology::StratumIS(dmMesh, "material-id", id());assert(_cohesiveIS);
+  const PetscInt* cells = _cohesiveIS->points();
+  const int ncells = _cohesiveIS->size();
 
   // Get domain vertices
   topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);

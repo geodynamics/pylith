@@ -141,8 +141,10 @@ pylith::faults::FaultCohesiveTract::verifyConfiguration(const topology::Mesh& me
   PetscInt coneSize = 0;
   for (PetscInt i=0; i < ncells; ++i) {
     err = DMPlexGetConeSize(dmMesh, cells[i], &coneSize);PYLITH_CHECK_ERROR(err);
-    // TODO: Why isn't this 3? Should be changed to Closure()
+    // TODO: Should be changed to Closure()
     if (2*numCorners != coneSize) {
+      // No Lagrange vertices, just negative and positive sides of the
+      // fault, so coneSize is 2*numCorners.
       std::ostringstream msg;
       msg << "Number of vertices in reference cell (" << numCorners 
 	  << ") is not compatible with number of vertices (" << coneSize

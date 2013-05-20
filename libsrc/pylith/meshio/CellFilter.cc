@@ -21,13 +21,15 @@
 #include "CellFilter.hh" // Implementation of class methods
 
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
+#include "pylith/topology/Stratum.hh" // USES StratumIS
 
 #include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
 
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::CellFilter::CellFilter(void) :
-  _quadrature(0)
+  _quadrature(0),
+  _cellsIS(0)
 { // constructor
 } // constructor
 
@@ -41,7 +43,8 @@ pylith::meshio::CellFilter::~CellFilter(void)
 // ----------------------------------------------------------------------
 // Copy constructor.
 pylith::meshio::CellFilter::CellFilter(const CellFilter& f) :
-  _quadrature(0)
+  _quadrature(0),
+  _cellsIS(0)
 { // copy constructor
   PYLITH_METHOD_BEGIN;
 
@@ -57,6 +60,7 @@ void
 pylith::meshio::CellFilter::deallocate(void)
 { // deallocate
   delete _quadrature; _quadrature = 0;
+  delete _cellsIS; _cellsIS = 0;
 } // deallocate
   
 // ----------------------------------------------------------------------

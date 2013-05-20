@@ -282,6 +282,8 @@ protected :
 
   spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer
   
+  topology::StratumIS* _materialIS; ///< Index set for material cells.
+
   int _numPropsQuadPt; ///< Number of properties per quad point.
   int _numVarsQuadPt; ///< Number of state variables per quad point.
   const int _dimension; ///< Spatial dimension associated with material.

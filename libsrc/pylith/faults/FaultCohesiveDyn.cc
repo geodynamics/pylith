@@ -1685,9 +1685,9 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
 
   // Get cohesive cells
   PetscDM dmMesh = fields.mesh().dmMesh();assert(dmMesh);
-  topology::StratumIS cellsStratum(dmMesh, "material-id", id());
-  const PetscInt *cellsCohesive = cellsStratum.points();
-  const PetscInt numCohesiveCells = cellsStratum.size();
+  assert(_cohesiveIS);
+  const PetscInt *cellsCohesive = _cohesiveIS->points();
+  const PetscInt numCohesiveCells = _cohesiveIS->size();
 
   topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
   const PetscInt vStart = verticesStratum.begin();

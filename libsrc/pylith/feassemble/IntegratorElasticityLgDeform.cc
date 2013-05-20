@@ -105,9 +105,9 @@ pylith::feassemble::IntegratorElasticityLgDeform::updateStateVars(const PylithSc
 
   // Get cell information
   PetscDM dmMesh = fields->mesh().dmMesh();assert(dmMesh);
-  topology::StratumIS materialIS(dmMesh, "material-id", _material->id());
-  const PetscInt* cells = materialIS.points();
-  const PetscInt numCells = materialIS.size();
+  assert(_materialIS);
+  const PetscInt* cells = _materialIS->points();
+  const PetscInt numCells = _materialIS->size();
 
   scalar_array dispTCell(numBasis*spaceDim);
   topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
@@ -188,9 +188,9 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(topolog
 
   // Get cell information
   PetscDM dmMesh = fields->mesh().dmMesh();assert(dmMesh);
-  topology::StratumIS materialIS(dmMesh, "material-id", _material->id());
-  const PetscInt* cells = materialIS.points();
-  const PetscInt numCells = materialIS.size();
+  assert(_materialIS);
+  const PetscInt* cells = _materialIS->points();
+  const PetscInt numCells = _materialIS->size();
 
   // Setup field visitors.
   topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));

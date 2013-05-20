@@ -286,29 +286,6 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
     if (_tstampIndex == istep)
       _writeTimeStamp(t, commRank);
 
-#if 0 // :TODO: MATT What is this doing here?
-    const int spaceDim = mesh.coordsys()->spaceDim();
-    PetscInt  bs;
-    err = VecGetBlockSize(vector, &bs);PYLITH_CHECK_ERROR(err);
-    switch (field.vectorFieldType()) {
-    case pylith::topology::FieldBase::VECTOR:
-      if (bs % spaceDim) {
-	PYLITH_CHECK_ERROR(PETSC_ERR_ARG_WRONG);
-      } // if
-      break;
-    case pylith::topology::FieldBase::TENSOR:
-      if (bs % spaceDim) {
-      PYLITH_CHECK_ERROR(PETSC_ERR_ARG_WRONG);
-      } // if
-      break;
-    default:
-      if (bs > 1) {
-	PYLITH_CHECK_ERROR(PETSC_ERR_ARG_WRONG);
-      } // if
-      break;
-    } // switch
-#endif
-
     err = PetscViewerHDF5PushGroup(_viewer, "/vertex_fields");PYLITH_CHECK_ERROR(err);
     err = PetscViewerHDF5SetTimestep(_viewer, istep);PYLITH_CHECK_ERROR(err);
     err = VecView(vector, _viewer);PYLITH_CHECK_ERROR(err);
