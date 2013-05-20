@@ -6,7 +6,7 @@ CURRENT BUGS
 
   Not all PETSc memory is being freed when using field split.
 
-  Test cases (examine True_0):
+  Test cases:
     cd examples/3d/tet4
     pylith step02.cfg ../../../share/debug_malloc.cfg
     pylith step04.cfg ../../../share/debug_malloc.cfg
@@ -30,7 +30,6 @@ CURRENT ISSUES/PRIORITIES
 * Cleanup
 
     Add elasticPrestep() to Formulation (called from Problem)
-    Remove solnIncr, keep setField()
 
 * Prescribed fault with opening has zero tractions (step20) Appears to
   be a feature/artifact associated with how we implement slip with
@@ -39,8 +38,6 @@ CURRENT ISSUES/PRIORITIES
 ======================================================================
 1.8.0
 ======================================================================
-
-* GenMaxwellQpQs [BRAD]
 
 * GPU utilization
 
@@ -53,16 +50,6 @@ CURRENT ISSUES/PRIORITIES
 
   + Implicit elasticity finite-element integration
   + Explicit elasticity finite-element integration
-
-* Reimplement parameters to use PackedFields. [BRAD]
-
-    Coordinate this with Matt's new Section stuff.
-
-    Fields
-    FieldsNew -> PackedFields
-    SolutionFields [do this in multifields]
-      Use PackedFields for acc, vel, disp(t+dt), disp(t), etc?
-      Use Field for dispIncr(t->t+dt), residual(t)
 
 * Higher order
 
@@ -101,23 +88,6 @@ CURRENT ISSUES/PRIORITIES
   + Quadrature::minCellWidth()
   + Optimized Tri3 and Tet4 Explicit integrators depend on the basis order
 
-----------------------------------------
-MISCELLANEOUS
-----------------------------------------
-
-* Memory model [MATT and BRAD]
-
-  (1) The memory logging for distribution logs Creation and Stratification
-  as Creation. Because we set the logging stages in PyLith and these
-  are lumped together within the same Sieve routine, we cannot
-  separate them.
-
-  IntSections - Matt improved distribution to use allow IntSections
-  over vertices or cells rather than vertices + cells. This cuts
-  differences down to 75%.
-
-  Need to check sum, because we may not be tracking deallocation.
-
 ----------------------------------------------------------------------
 SECONDARY PRIORITIES
 ----------------------------------------------------------------------
@@ -142,12 +112,6 @@ SECONDARY PRIORITIES
   + Specialized elasticity integrator objects for Quad4, Hex8?
     - Add for lgdeform, implicit time integration?
 
-* Explicit time step
-
-  utility code
-    Compute stable explicit time step
-    Write stable time step explicit (CFL, adhoc)
-
 * Interpolated meshes + temperature field
   No fault, linear elasticity
   Benchmark memory use and speed
@@ -169,11 +133,6 @@ SECONDARY PRIORITIES
 
     Use kinematic slip unless fault constitutive model suggests larger slip
 
-* utilities
-  + pylith_eqsummary
-    Calculate eq statistics for given slip model (VTK output).
-    Ability to get shear modulus on both sides of the fault (use fault normal).
-
 * Lumped solver [Brad]
   + Need to finish unit tests
 
@@ -181,9 +140,6 @@ SECONDARY PRIORITIES
     integrateResidualLumped()
   FaultCohesiveDyn
     adjustSolnLumped()
-
-  Make fault nucleation (initial tractions) modular (allow space/time
-  variation).
 
 * Time step based on state variables
 
@@ -235,20 +191,6 @@ Brad
     2d/tri3
       dislocation
       dislocation2
-  cleanup
-
-    Switch Components to PetscComponents.
-      Add _cleanup() to components to deallocate local data structures.
-      Add cleanup() to non-components to deallocate local data structures.
-
-      Need to call parent deallocate() but not objects deallocate.
-      bc C++, SWIG
-      faults C++, SWIG
-      feassemble C++, SWIG
-      materials C++, SWIG
-      meshio C++, SWIG
-      problems C++, SWIG
-      topology C++, SWIG
 
   * write cells as ints in HDF5
 
@@ -325,19 +267,9 @@ Brad
 
 4. Tidy up
 
-  Replace memcpy() calls with loops.
-
-  Cleanup logging. Constraints and Integrators should log at the C++
-  level using the C++ EventLogger. Add finer grain logging at C++
-  level as in ElasticityImplicit.
-
   Update journaling.
 
   Eliminate use of Inventory class.
-
-  Switch Components to PetscComponents.
-    Add _cleanup() to components to deallocate local data structures.
-    Add cleanup() to non-components to deallocate local data structures.
 
   Create createModuleObj() methods to Python objects as standard way
   of creating handle to C++ object (not necessary in abstract base
@@ -345,24 +277,6 @@ Brad
 
   Add check before calling newSection() when want to enforce at
   least 1 value.
-
-  Cleanup SlipTimeFn tests (refactor test/initialize stuff)
-
-
-----------------------------------------------------------------------
-RELEASE 1.5
-----------------------------------------------------------------------
-
-3. 2-D Plane strain Generalized Maxwell viscoelastic rheology [Charles]
-
-4. 2-D Power-law rheology [Charles]
-   2D viscoelastic models for plane strain
-
-5. Initial stress, strain, state variables for inelastic models
-
-  Use switch to do elastic prestep so that main time loop is all
-  anelastic in the most general case. Want to generate an error if
-  both initial state variables are given and using an elastic prestep.
 
 ======================================================================
 KNOWN DEFICIENCIES
@@ -443,7 +357,6 @@ Release 2.0
 
   2. Output data at arbitrary point locations
 
-     Interpolate solution to desired location
      Solution field (time history)
 
 ----------------------------------------------------------------------
