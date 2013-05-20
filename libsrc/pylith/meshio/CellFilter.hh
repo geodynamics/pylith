@@ -102,6 +102,8 @@ protected :
   /// Quadrature associated with cells.
   feassemble::Quadrature* _quadrature;
 
+  topology::StratumIS* _cellsIS; ///< Index set of cells.
+
 }; // CellFilter
 
 #endif // pylith_meshio_cellfilter_hh

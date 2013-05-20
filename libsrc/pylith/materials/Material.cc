@@ -45,6 +45,7 @@ pylith::materials::Material::Material(const int dimension,
   _properties(0),
   _stateVars(0),
   _normalizer(new spatialdata::units::Nondimensional),
+  _materialIS(0),
   _numPropsQuadPt(0),
   _numVarsQuadPt(0),
   _dimension(dimension),
@@ -83,6 +84,7 @@ pylith::materials::Material::deallocate(void)
   PYLITH_METHOD_BEGIN;
 
   delete _normalizer; _normalizer = 0;
+  delete _materialIS; _materialIS = 0;
   delete _properties; _properties = 0;
   delete _stateVars; _stateVars = 0;
 
@@ -125,9 +127,9 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
 
   // Get cells associated with material
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-  topology::StratumIS materialIS(dmMesh, "material-id", _id);
-  const PetscInt numCells = materialIS.size();
-  const PetscInt* cells = materialIS.points();
+  delete _materialIS; _materialIS = new topology::StratumIS(dmMesh, "material-id", _id);assert(_materialIS);
+  const PetscInt numCells = _materialIS->size();
+  const PetscInt* cells = _materialIS->points();
 
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();assert(cs);
 
@@ -334,9 +336,9 @@ pylith::materials::Material::getField(topology::Field *field,
 
   // Get cell information
   PetscDM dmMesh = field->mesh().dmMesh();assert(dmMesh);
-  topology::StratumIS materialIS(dmMesh, "material-id", _id);
-  const PetscInt numCells = materialIS.size();
-  const PetscInt* cells = materialIS.points();
+  assert(_materialIS);
+  const PetscInt numCells = _materialIS->size();
+  const PetscInt* cells = _materialIS->points();
 
   topology::FieldBase::VectorFieldEnum fieldType = topology::FieldBase::OTHER;
       

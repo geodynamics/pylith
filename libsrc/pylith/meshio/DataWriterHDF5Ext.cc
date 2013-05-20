@@ -25,6 +25,7 @@
 
 #include "pylith/topology/Mesh.hh" /// USES Mesh
 #include "pylith/topology/Field.hh" /// USES Field
+#include "pylith/topology/Stratum.hh" /// USES StratumIS
 
 #include "spatialdata/geocoords/CoordSys.hh" /// USES CoordSys
 
@@ -83,9 +84,9 @@ pylith::meshio::DataWriterHDF5Ext::DataWriterHDF5Ext(const DataWriterHDF5Ext& w)
 // Prepare for writing files.
 void
 pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
-							      const int numTimeSteps,
-							      const char* label,
-							      const int labelId)
+					const int numTimeSteps,
+					const char* label,
+					const int labelId)
 { // open
   PYLITH_METHOD_BEGIN;
 
@@ -359,47 +360,59 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
 
     PetscVec vector = field.vector(context);assert(vector);
     err = VecView(vector, binaryViewer);PYLITH_CHECK_ERROR(err);
-    ++_datasets[field.label()].numTimeSteps;
 
-    PetscDM dm = NULL;
-    PetscSection section = NULL;
-    PetscInt dof = 0, n, numLocalVertices = 0, numVertices, vStart;
-    PetscIS globalVertexNumbers = NULL;
+    ExternalDataset& datasetInfo = _datasets[field.label()];
+    ++datasetInfo.numTimeSteps;
 
-    err = VecGetDM(vector, &dm);PYLITH_CHECK_ERROR(err);
-    err = DMGetDefaultSection(dm, &section);PYLITH_CHECK_ERROR(err);assert(section);
-
-    err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, PETSC_NULL);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers);PYLITH_CHECK_ERROR(err);
-    err = ISGetSize(globalVertexNumbers, &n);PYLITH_CHECK_ERROR(err);
-    if (n > 0) {
-      const PetscInt *indices = NULL;
-      err = ISGetIndices(globalVertexNumbers, &indices);PYLITH_CHECK_ERROR(err);
-      err = PetscSectionGetDof(section, vStart, &dof);PYLITH_CHECK_ERROR(err);
-      for(PetscInt v = 0; v < n; ++v) {
-        if (indices[v] >= 0) ++numLocalVertices;
-      } // for
-      err = ISRestoreIndices(globalVertexNumbers, &indices);PYLITH_CHECK_ERROR(err);
-    } // for
-    int fiberDimLocal = dof;
-    int fiberDim = 0;
-    err = MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX, comm);PYLITH_CHECK_ERROR(err);
-    err = MPI_Allreduce(&numLocalVertices, &numVertices, 1, MPI_INT, MPI_SUM, comm);PYLITH_CHECK_ERROR(err);
-    assert(fiberDim > 0);assert(numVertices > 0);
-
+    // Update time stamp in "/time, if necessary.      
     if (!commRank) {
-      if (createdExternalDataset) {
+      if (_tstampIndex+1 == datasetInfo.numTimeSteps)
+        _writeTimeStamp(t);
+    } // if
+
+    // Add dataset to HDF5 file, if necessary
+    if (createdExternalDataset) {
+      PetscDM dm = NULL;
+      PetscSection section = NULL;
+      PetscInt dof = 0, n, numLocalVertices = 0, numVertices, vStart;
+      PetscIS globalVertexNumbers = NULL;
+
+      err = VecGetDM(vector, &dm);PYLITH_CHECK_ERROR(err);
+      err = DMGetDefaultSection(dm, &section);PYLITH_CHECK_ERROR(err);assert(section);
+
+      err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, PETSC_NULL);PYLITH_CHECK_ERROR(err);
+      err = DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers);PYLITH_CHECK_ERROR(err);
+      err = ISGetSize(globalVertexNumbers, &n);PYLITH_CHECK_ERROR(err);
+      if (n > 0) {
+	const PetscInt *indices = NULL;
+	err = ISGetIndices(globalVertexNumbers, &indices);PYLITH_CHECK_ERROR(err);
+	err = PetscSectionGetDof(section, vStart, &dof);PYLITH_CHECK_ERROR(err);
+	for(PetscInt v = 0; v < n; ++v) {
+	  if (indices[v] >= 0) ++numLocalVertices;
+	} // for
+	err = ISRestoreIndices(globalVertexNumbers, &indices);PYLITH_CHECK_ERROR(err);
+      } // for
+      int fiberDimLocal = dof;
+      int fiberDim = 0;
+      err = MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX, comm);PYLITH_CHECK_ERROR(err);
+      err = MPI_Allreduce(&numLocalVertices, &numVertices, 1, MPI_INT, MPI_SUM, comm);PYLITH_CHECK_ERROR(err);
+      assert(fiberDim > 0);assert(numVertices > 0);
+
+      datasetInfo.numPoints = numVertices;
+      datasetInfo.fiberDim = fiberDim;
+
+      if (!commRank) {
         // Add new external dataset to HDF5 file.
         const int numTimeSteps = DataWriter::_numTimeSteps;
         const hsize_t ndims = (numTimeSteps > 0) ? 3 : 2;
         hsize_t maxDims[3];
         if (3 == ndims) {
           maxDims[0] = H5S_UNLIMITED;
-          maxDims[1] = numVertices;
-          maxDims[2] = fiberDim;
+          maxDims[1] = datasetInfo.numPoints;
+          maxDims[2] = datasetInfo.fiberDim;
         } else {
-          maxDims[0] = numVertices;
-          maxDims[1] = fiberDim;
+          maxDims[0] = datasetInfo.numPoints;
+          maxDims[1] = datasetInfo.fiberDim;
         } // else
         // Create 'vertex_fields' group if necessary.
         if (!_h5->hasGroup("/vertex_fields"))
@@ -408,24 +421,21 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
         _h5->createDatasetRawExternal("/vertex_fields", field.label(), _datasetFilename(field.label()).c_str(), maxDims, ndims, scalartype);
         std::string fullName = std::string("/vertex_fields/") + field.label();
         _h5->writeAttribute(fullName.c_str(), "vector_field_type", topology::FieldBase::vectorFieldString(field.vectorFieldType()));
-      } else {
+      } // if
+    } else {
+      if (!commRank) {
         // Update number of time steps in external dataset info in HDF5 file.
-        const int totalNumTimeSteps = 
-          DataWriter::_numTimeSteps;
+        const int totalNumTimeSteps = DataWriter::_numTimeSteps;
         assert(totalNumTimeSteps > 0);
-        const int numTimeSteps = _datasets[field.label()].numTimeSteps;
 	
         const hsize_t ndims = 3;
         hsize_t dims[3];
-        dims[0] = numTimeSteps; // update to current value
-        dims[1] = numVertices;
-        dims[2] = fiberDim;
+        dims[0] = datasetInfo.numTimeSteps; // update to current value
+        dims[1] = datasetInfo.numPoints;
+        dims[2] = datasetInfo.fiberDim;
         _h5->extendDatasetRawExternal("/vertex_fields", field.label(), dims, ndims);
-      } // if/else
-      // Update time stamp in "/time, if necessary.
-      if (_tstampIndex+1 == _datasets[field.label()].numTimeSteps)
-        _writeTimeStamp(t);
-    } // if
+      } // if
+    } // if/else
 
   } catch (const std::exception& err) {
     std::ostringstream msg;
@@ -489,64 +499,68 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
 
     PetscVec vector = field.vector(context);assert(vector);
     err = VecView(vector, binaryViewer);PYLITH_CHECK_ERROR(err);
-    ++_datasets[field.label()].numTimeSteps;
 
-    PetscSection section = field.petscSection();assert(section);
-    PetscInt dof = 0, n, numLocalCells = 0, numCells, cellHeight, cStart, cEnd;
-    PetscIS globalCellNumbers;
+    ExternalDataset& datasetInfo = _datasets[field.label()];
+    ++datasetInfo.numTimeSteps;
 
-    err = DMPlexGetVTKCellHeight(dmMesh, &cellHeight);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetHeightStratum(dmMesh, cellHeight, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-    if (label) {
-      PetscIS pointIS;
-
-      DMPlexGetStratumIS(dmMesh, label, labelId, &pointIS);PYLITH_CHECK_ERROR(err);
-      err = ISGetLocalSize(pointIS, &n);PYLITH_CHECK_ERROR(err);
-      if (n > 0) {
-        const PetscInt *indices;
-        err = ISGetIndices(pointIS, &indices);PYLITH_CHECK_ERROR(err);
-        for(PetscInt c = 0; c < n; ++c) {
-          if ((indices[c] >= cStart) && (indices[c] < cEnd)) {
-            err = PetscSectionGetDof(section, indices[0], &dof);PYLITH_CHECK_ERROR(err);
-            ++numLocalCells;
-          } // if
-        } // for
-        err = ISRestoreIndices(pointIS, &indices);PYLITH_CHECK_ERROR(err);
-      } // if
-      err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
-    } else {
-      err = DMPlexGetCellNumbering(dmMesh, &globalCellNumbers);PYLITH_CHECK_ERROR(err);
-      err = ISGetLocalSize(globalCellNumbers, &n);PYLITH_CHECK_ERROR(err);
-      if (n > 0) {
-        const PetscInt *indices = NULL;
-        err = ISGetIndices(globalCellNumbers, &indices);PYLITH_CHECK_ERROR(err);
-        err = PetscSectionGetDof(section, cStart, &dof);PYLITH_CHECK_ERROR(err);
-        for(PetscInt v = 0; v < n; ++v) {
-          if (indices[v] >= 0) ++numLocalCells;
-        } // for
-        err = ISRestoreIndices(globalCellNumbers, &indices);PYLITH_CHECK_ERROR(err);
-      } // if
-    } // if/else
-    int fiberDimLocal = dof;
-    int fiberDim = 0;
-    MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX, comm);
-    err = MPI_Allreduce(&numLocalCells, &numCells, 1, MPI_INT, MPI_SUM, comm);PYLITH_CHECK_ERROR(err);
-    assert(fiberDim > 0);assert(numCells > 0);
-
+    // Update time stamp in "/time, if necessary.      
     if (!commRank) {
-      if (createdExternalDataset) {
-      // Add new external dataset to HDF5 file.
+      if (_tstampIndex+1 == datasetInfo.numTimeSteps)
+        _writeTimeStamp(t);
+    } // if
 
-        const int numTimeSteps =
-          DataWriter::_numTimeSteps;
+    // Add dataset to HDF5 file, if necessary
+    if (createdExternalDataset) {
+      // Get cell information
+      PetscSection section = field.petscSection();assert(section);
+      PetscInt dof = 0, n, numLocalCells = 0, numCells, cellHeight, cStart, cEnd;
+      PetscIS globalCellNumbers;
+    
+      err = DMPlexGetVTKCellHeight(dmMesh, &cellHeight);PYLITH_CHECK_ERROR(err);
+      err = DMPlexGetHeightStratum(dmMesh, cellHeight, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+      if (label) {
+	topology::StratumIS cellsIS(dmMesh, label, labelId);
+	numCells = cellsIS.size();
+	const PetscInt* cells = (numCells > 0) ? cellsIS.points() : 0;
+	for(PetscInt c = 0; c < numCells; ++c) {
+	  err = PetscSectionGetDof(section, cells[0], &dof);PYLITH_CHECK_ERROR(err);
+	  if ((cells[c] >= cStart) && (cells[c] < cEnd)) {
+	    ++numLocalCells;
+	  } // if
+	} // for
+      } else {
+	err = DMPlexGetCellNumbering(dmMesh, &globalCellNumbers);PYLITH_CHECK_ERROR(err);
+	err = ISGetLocalSize(globalCellNumbers, &numCells);PYLITH_CHECK_ERROR(err);
+	if (numCells > 0) {
+	  const PetscInt *indices = NULL;
+	  err = ISGetIndices(globalCellNumbers, &indices);PYLITH_CHECK_ERROR(err);
+	  err = PetscSectionGetDof(section, cStart, &dof);PYLITH_CHECK_ERROR(err);
+	  for(PetscInt v = 0; v < numCells; ++v) {
+	    if (indices[v] >= 0) ++numLocalCells;
+	  } // for
+	  err = ISRestoreIndices(globalCellNumbers, &indices);PYLITH_CHECK_ERROR(err);
+	} // if
+      } // if/else
+      int fiberDimLocal = dof;
+      int fiberDim = 0;
+      MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX, comm);
+      err = MPI_Allreduce(&numLocalCells, &numCells, 1, MPI_INT, MPI_SUM, comm);PYLITH_CHECK_ERROR(err);
+      assert(fiberDim > 0);assert(numCells > 0);
+
+      datasetInfo.numPoints = numCells;
+      datasetInfo.fiberDim = fiberDim;
+
+      if (!commRank) {
+	// Add new external dataset to HDF5 file.	
+        const int numTimeSteps = DataWriter::_numTimeSteps;
         const hsize_t ndims = (numTimeSteps > 0) ? 3 : 2;
         hsize_t maxDims[3];
         if (3 == ndims) {
           maxDims[0] = H5S_UNLIMITED;
-          maxDims[1] = numCells;
-          maxDims[2] = fiberDim;
+          maxDims[1] = datasetInfo.numPoints;
+          maxDims[2] = datasetInfo.fiberDim;
         } else {
-          maxDims[0] = numCells;
+          maxDims[0] = datasetInfo.numPoints;
           maxDims[1] = fiberDim;
         } // else
         // Create 'cell_fields' group if necessary.
@@ -557,25 +571,20 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
         std::string fullName = std::string("/cell_fields/") + field.label();
         _h5->writeAttribute(fullName.c_str(), "vector_field_type",
                             topology::FieldBase::vectorFieldString(field.vectorFieldType()));
-      } else {
-        // Update number of time steps in external dataset info in HDF5 file.
-        const int totalNumTimeSteps = 
-          DataWriter::_numTimeSteps;
-        assert(totalNumTimeSteps > 0);
-        const int numTimeSteps = _datasets[field.label()].numTimeSteps;
-	
-        const hsize_t ndims = 3;
-        hsize_t dims[3];
-        dims[0] = numTimeSteps; // update to current value
-        dims[1] = numCells;
-        dims[2] = fiberDim;
-        _h5->extendDatasetRawExternal("/cell_fields", field.label(), dims, ndims);
-      } // if/else
-      // Update time stamp in "/time, if necessary.
-      if (_tstampIndex+1 == _datasets[field.label()].numTimeSteps)
-        _writeTimeStamp(t);
-    } // if
+      } // if
 
+    } else {
+      // Update number of time steps in external dataset info in HDF5 file.
+      const int totalNumTimeSteps = DataWriter::_numTimeSteps;assert(totalNumTimeSteps > 0);
+	
+      const hsize_t ndims = 3;
+      hsize_t dims[3];
+      dims[0] = datasetInfo.numTimeSteps; // update to current value
+      dims[1] = datasetInfo.numPoints;
+      dims[2] = datasetInfo.fiberDim;
+      _h5->extendDatasetRawExternal("/cell_fields", field.label(), dims, ndims);
+    } // if/else
+      
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 

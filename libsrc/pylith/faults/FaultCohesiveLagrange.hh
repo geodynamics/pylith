@@ -304,6 +304,8 @@ protected :
   /// Map label of cohesive cell to label of cells in fault mesh.
   std::map<PetscInt, PetscInt> _cohesiveToFault;
 
+  topology::StratumIS* _cohesiveIS; ///< Index set of cohesive cells.
+
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
