@@ -519,24 +519,18 @@ class Formulation(PetscComponent, ModuleFormulation):
     if 1:
       solution = self.fields.get("dispIncr(t->t+dt)")
       solution.addField("displacement", dimension)
+      if self.splitFields():
+        solution.addField("constraints", dimension)
       solution.setupFields()
       solution.newSection(solution.VERTICES_FIELD, dimension)
       solution.updateDof("displacement", solution.VERTICES_FIELD, dimension)
 
       solution.vectorFieldType(solution.VECTOR)
       solution.scale(lengthScale.value)
-      if self.splitFields():
-        for integrator in self.integrators:
-          integrator.splitField(solution)
-      for constraint in self.constraints:
-        constraint.setConstraintSizes(solution)
-      solution.allocate()
-      for constraint in self.constraints:
-        constraint.setConstraints(solution)
-      for integrator in self.integrators:
-        integrator.checkConstraints(solution)
     else:
       solution.addField("displacement", dimension)
+      if self.splitFields():
+        solution.addField("constraints", dimension)
       solution.addField("pressure", 1)
       solution.addField("temperature", 1)
       solution.setupFields()
@@ -545,13 +539,17 @@ class Formulation(PetscComponent, ModuleFormulation):
       solution.updateDof("temperature",  solution.VERTICES_FIELD, 1)
       solution.vectorFieldType("displacement", solution.VECTOR)
       solution.scale("displacement", lengthScale.value)
-      for constraint in self.constraints:
-        constraint.setConstraintSizes(solution)
-      solution.allocate()
-      for constraint in self.constraints:
-        constraint.setConstraints(solution)
+
+    if self.splitFields():
       for integrator in self.integrators:
-        integrator.checkConstraints(solution)
+        integrator.splitField(solution)
+    for constraint in self.constraints:
+      constraint.setConstraintSizes(solution)
+    solution.allocate()
+    for constraint in self.constraints:
+      constraint.setConstraints(solution)
+    for integrator in self.integrators:
+      integrator.checkConstraints(solution)
 
     #memoryLogger.stagePop()
 
