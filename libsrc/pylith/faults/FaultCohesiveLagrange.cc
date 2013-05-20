@@ -157,7 +157,8 @@ pylith::faults::FaultCohesiveLagrange::splitField(topology::Field* field)
     PetscInt dof;
     err = PetscSectionGetFieldDof(fieldSection, p, 1, &dof);PYLITH_CHECK_ERROR(err);
     if (!dof) {
-      err = PetscSectionSetFieldDof(fieldSection, p, 0, spaceDim);PYLITH_CHECK_ERROR(err);
+      err = PetscSectionGetDof(fieldSection, p, &dof);PYLITH_CHECK_ERROR(err);assert(spaceDim == dof);
+      err = PetscSectionSetFieldDof(fieldSection, p, 0, dof);PYLITH_CHECK_ERROR(err);
     } // if
   } // for
 
