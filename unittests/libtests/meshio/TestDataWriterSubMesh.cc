@@ -25,6 +25,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/Stratum.hh" // USES Stratum
@@ -34,6 +35,7 @@
 #include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -81,6 +83,10 @@ pylith::meshio::TestDataWriterSubMesh::_initialize(void)
   spatialdata::geocoords::CSCart cs;
   cs.setSpaceDim(_mesh->dimension());
   _mesh->coordsys(&cs);
+
+  spatialdata::units::Nondimensional normalizer;
+  normalizer.lengthScale(10.0);
+  topology::MeshOps::nondimensionalize(_mesh, normalizer);
 
   if (_data->faultLabel) {
     faults::FaultCohesiveKin fault;

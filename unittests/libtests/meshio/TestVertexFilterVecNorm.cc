@@ -72,6 +72,7 @@ pylith::meshio::TestVertexFilterVecNorm::testFilter(void)
     sqrt(pow(3.1, 2) + pow(3.2, 2)),
     sqrt(pow(4.1, 2) + pow(4.2, 2))
   };
+  const PylithScalar fieldScale = 4.0;
 
   MeshIOAscii iohandler;
   topology::Mesh mesh;
@@ -88,6 +89,7 @@ pylith::meshio::TestVertexFilterVecNorm::testFilter(void)
   field.allocate();
   field.vectorFieldType(fieldType);
   field.label(label.c_str());
+  field.scale(fieldScale);
 
   { // Setup vertex field
     topology::VecVisitorMesh fieldVisitor(field);
@@ -110,6 +112,7 @@ pylith::meshio::TestVertexFilterVecNorm::testFilter(void)
 
   CPPUNIT_ASSERT_EQUAL(fieldTypeE, fieldNorm.vectorFieldType());
   CPPUNIT_ASSERT_EQUAL(label, std::string(fieldNorm.label()));
+  CPPUNIT_ASSERT_EQUAL(fieldScale, fieldNorm.scale());
 
   topology::VecVisitorMesh fieldNormVisitor(fieldNorm);
   const PetscScalar* fieldNormArray = fieldNormVisitor.localArray();

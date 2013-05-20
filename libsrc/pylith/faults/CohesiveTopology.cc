@@ -613,6 +613,9 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   err = ISRestoreIndices(fVertexIS, &fVerticesDM);PYLITH_CHECK_ERROR(err);
   err = ISDestroy(&fVertexIS);PYLITH_CHECK_ERROR(err);
 
+  PetscReal lengthScale = 1.0;
+  err = DMPlexGetScale(complexMesh, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
+  err = DMPlexSetScale(newMesh, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
   mesh->dmMesh(newMesh);
 
   PYLITH_METHOD_END;
@@ -643,6 +646,10 @@ pylith::faults::CohesiveTopology::createInterpolated(topology::Mesh* mesh,
   //   Have to do internal fault vertices before fault boundary vertices, and this is the only thing I use faultBoundary for
   err = DMPlexLabelCohesiveComplete(dm, label);PYLITH_CHECK_ERROR(err);
   err = DMPlexConstructCohesiveCells(dm, label, &sdm);PYLITH_CHECK_ERROR(err);
+
+  PetscReal lengthScale = 1.0;
+  err = DMPlexGetScale(dm, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
+  err = DMPlexSetScale(sdm, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
   mesh->dmMesh(sdm);
 } // createInterpolated
 
@@ -667,6 +674,11 @@ pylith::faults::CohesiveTopology::createFaultParallel(topology::Mesh* faultMesh,
 
   err = DMPlexCreateCohesiveSubmesh(dmMesh, constraintCell ? PETSC_TRUE : PETSC_FALSE, &dmFaultMesh);PYLITH_CHECK_ERROR(err);
   std::string meshLabel = "fault_" + std::string(label);
+
+  PetscReal lengthScale = 1.0;
+  err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
+  err = DMPlexSetScale(dmFaultMesh, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
+
   faultMesh->dmMesh(dmFaultMesh, meshLabel.c_str());
 
   PYLITH_METHOD_END;

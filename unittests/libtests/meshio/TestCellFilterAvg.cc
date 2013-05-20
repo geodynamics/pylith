@@ -85,6 +85,7 @@ pylith::meshio::TestCellFilterAvg::testFilterMesh(void)
     (1.5*1.1 + 0.5*1.2)/2.0,
     (1.5*2.1 + 0.5*2.2)/2.0,
   };
+  const PylithScalar fieldScale = 2.0;
 
   MeshIOAscii iohandler;
   topology::Mesh mesh;
@@ -97,6 +98,7 @@ pylith::meshio::TestCellFilterAvg::testFilterMesh(void)
   field.allocate();
   field.vectorFieldType(fieldType);
   field.label(label.c_str());
+  field.scale(fieldScale);
 
   PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
   topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
@@ -128,6 +130,7 @@ pylith::meshio::TestCellFilterAvg::testFilterMesh(void)
 
   CPPUNIT_ASSERT_EQUAL(fieldTypeE, fieldF.vectorFieldType());
   CPPUNIT_ASSERT_EQUAL(label, std::string(fieldF.label()));
+  CPPUNIT_ASSERT_EQUAL(fieldScale, fieldF.scale());
 
   topology::VecVisitorMesh fieldFVisitor(fieldF);
   const PetscScalar* fieldFArray = fieldFVisitor.localArray();CPPUNIT_ASSERT(fieldFArray);
@@ -188,6 +191,7 @@ pylith::meshio::TestCellFilterAvg::testFilterSubMesh(void)
     (1.5*1.1 + 0.5*1.2)/2.0,
     (1.5*2.1 + 0.5*2.2)/2.0,
   };
+  const PylithScalar fieldScale = 2.0;
 
   MeshIOAscii iohandler;
   topology::Mesh mesh;
@@ -202,6 +206,7 @@ pylith::meshio::TestCellFilterAvg::testFilterSubMesh(void)
   field.allocate();
   field.vectorFieldType(fieldType);
   field.label(label.c_str());
+  field.scale(fieldScale);
 
   PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
   topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 1);
@@ -233,6 +238,7 @@ pylith::meshio::TestCellFilterAvg::testFilterSubMesh(void)
 
   CPPUNIT_ASSERT_EQUAL(fieldTypeE, fieldF.vectorFieldType());
   CPPUNIT_ASSERT_EQUAL(label, std::string(fieldF.label()));
+  CPPUNIT_ASSERT_EQUAL(fieldScale, fieldF.scale());
 
   topology::VecVisitorMesh fieldFVisitor(fieldF);
   const PetscScalar* fieldFArray = fieldFVisitor.localArray();CPPUNIT_ASSERT(fieldFArray);

@@ -25,6 +25,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/Stratum.hh" // USES Stratum
@@ -35,6 +36,7 @@
 #include "pylith/faults/CohesiveTopology.hh" // USES CohesiveTopology
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <map> // USES std::map
 
@@ -86,6 +88,10 @@ pylith::meshio::TestDataWriterFaultMesh::_initialize(void)
   spatialdata::geocoords::CSCart cs;
   cs.setSpaceDim(_mesh->dimension());
   _mesh->coordsys(&cs);
+
+  spatialdata::units::Nondimensional normalizer;
+  normalizer.lengthScale(10.0);
+  topology::MeshOps::nondimensionalize(_mesh, normalizer);
 
   faults::FaultCohesiveKin fault;
   const bool useLagrangeConstraints = true;
