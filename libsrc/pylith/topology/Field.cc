@@ -1122,7 +1122,7 @@ pylith::topology::Field::scatterSectionToVector(const char* context) const
 //  PETSc vector view of the field.
 void
 pylith::topology::Field::scatterSectionToVector(const PetscVec vector,
-							   const char* context) const
+						const char* context) const
 { // scatterSectionToVector
   PYLITH_METHOD_BEGIN;
 
