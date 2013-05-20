@@ -41,9 +41,9 @@ stepxx.cfg - PyLith configuration file containing parameters for a
 particular example. The example problems are briefly described below:
 
 step01: Dirichlet BC (static) causing shear.
-step02: step01 with mesh refinement and field split preconditioning.
+step02: step01 with mesh refinement and algebraic multigrid preconditioner.
 step03: DirichletBC with fault slip (static) Slip on a vertical fault
-step04: step03 with mesh refinement and field split preconditioning.
+step04: step03 with mesh refinement and algebraic multigrid preconditioner.
 
 ----------------------------------------
 figures directory

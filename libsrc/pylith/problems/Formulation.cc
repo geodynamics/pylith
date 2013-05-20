@@ -40,8 +40,7 @@ pylith::problems::Formulation::Formulation(void) :
   _fields(0),
   _customConstraintPCMat(0),
   _isJacobianSymmetric(false),
-  _splitFields(false),
-  _splitFieldComponents(false)
+  _splitFields(false)
 { // constructor
 } // constructor
 
@@ -91,22 +90,6 @@ pylith::problems::Formulation::splitFields(void) const
 { // splitFields
   return _splitFields;
 } // splitFields
-
-// ----------------------------------------------------------------------
-// Set flag for splitting field components.
-void
-pylith::problems::Formulation::splitFieldComponents(const bool flag)
-{ // splitFieldComponents
-  _splitFieldComponents = flag;
-} // splitFieldComponents
-
-// ----------------------------------------------------------------------
-// Get flag for splitting field components.
-bool
-pylith::problems::Formulation::splitFieldComponents(void) const
-{ // splitFieldComponents
-  return _splitFieldComponents;
-} // splitFieldComponents
 
 // ----------------------------------------------------------------------
 // Set flag for using custom preconditioner for Lagrange constraints.
