@@ -125,6 +125,11 @@ pylith::topology::Mesh::Mesh(const Mesh& mesh,
   std::string meshLabel = "subdomain_" + std::string(label);
   err = PetscObjectSetName((PetscObject) _dmMesh, meshLabel.c_str());PYLITH_CHECK_ERROR(err);
 
+  // Set lengthscale
+  PylithScalar lengthScale;
+  err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
+  err = DMPlexSetScale(_dmMesh, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
+
   PYLITH_METHOD_END;
 } // SubMesh constructor
 		     

@@ -122,10 +122,12 @@ pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
  
     // Set coordinate system
   spatialdata::geocoords::CSCart cs;
-  spatialdata::units::Nondimensional normalizer;
   cs.setSpaceDim(data.spaceDim);
   cs.initialize();
   _mesh->coordsys(&cs);
+
+  spatialdata::units::Nondimensional normalizer;
+  normalizer.lengthScale(10.0);
   topology::MeshOps::nondimensionalize(_mesh, normalizer);
 
   PYLITH_METHOD_END;
