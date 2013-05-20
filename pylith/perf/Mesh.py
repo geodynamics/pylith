@@ -22,7 +22,8 @@
 
 from Memory import Memory
 
-cellTypes = {(1,2): 'line2',
+cellTypes = {(0,1): 'point',
+             (1,2): 'line2',
              (1,3): 'line3',
              (2,3): 'tri3',
              (2,6): 'tri6',
