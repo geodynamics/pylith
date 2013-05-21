@@ -234,7 +234,9 @@ pylith::problems::Solver::_createNullSpace(const topology::SolutionFields& field
   PetscObject field = NULL;
   PetscInt    numFields;
   err = DMGetNumFields(dmMesh, &numFields);PYLITH_CHECK_ERROR(err);
-  if (!numFields) {err = DMSetNumFields(dmMesh, 1);PYLITH_CHECK_ERROR(err);}
+  if (!numFields) {
+    err = DMSetNumFields(dmMesh, 1);PYLITH_CHECK_ERROR(err);
+  } // if
   err = DMGetField(dmMesh, 0, &field);PYLITH_CHECK_ERROR(err);
   err = PetscObjectCompose(field, "nearnullspace", (PetscObject) nullsp);PYLITH_CHECK_ERROR(err);
   err = MatNullSpaceDestroy(&nullsp);PYLITH_CHECK_ERROR(err);
@@ -255,7 +257,7 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
   assert(pc);
   assert(formulation);
 
-  PetscDM dmMesh = fields.mesh().dmMesh();assert(dmMesh);
+  PetscDM dmMesh = fields.solution().dmMesh();assert(dmMesh);
   MPI_Comm comm;
   PetscSection solutionSection = fields.solution().petscSection();assert(solutionSection);
   PetscVec solutionVec = fields.solution().localVector();assert(solutionVec);
