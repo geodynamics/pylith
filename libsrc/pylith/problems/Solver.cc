@@ -153,7 +153,7 @@ pylith::problems::Solver::_createNullSpace(const topology::SolutionFields& field
 { // _createNullSpace
   PYLITH_METHOD_BEGIN;
 
-  PetscDM dmMesh = fields.mesh().dmMesh();assert(dmMesh);
+  PetscDM dmMesh = fields.solution().dmMesh();assert(dmMesh);
   PetscErrorCode err;
 
   const spatialdata::geocoords::CoordSys* cs = fields.mesh().coordsys();assert(cs);
@@ -232,6 +232,9 @@ pylith::problems::Solver::_createNullSpace(const topology::SolutionFields& field
   } // if
   
   PetscObject field = NULL;
+  PetscInt    numFields;
+  err = DMGetNumFields(dmMesh, &numFields);PYLITH_CHECK_ERROR(err);
+  if (!numFields) {err = DMSetNumFields(dmMesh, 1);PYLITH_CHECK_ERROR(err);}
   err = DMGetField(dmMesh, 0, &field);PYLITH_CHECK_ERROR(err);
   err = PetscObjectCompose(field, "nearnullspace", (PetscObject) nullsp);PYLITH_CHECK_ERROR(err);
   err = MatNullSpaceDestroy(&nullsp);PYLITH_CHECK_ERROR(err);
