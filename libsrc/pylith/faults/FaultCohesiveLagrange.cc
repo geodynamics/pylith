@@ -132,7 +132,7 @@ pylith::faults::FaultCohesiveLagrange::splitField(topology::Field* field)
   PetscDM dmMesh = field->dmMesh();assert(dmMesh);
   PetscSection fieldSection  = field->petscSection();assert(fieldSection);
   const PetscInt spaceDim = field->mesh().dimension();
-  PetscInt numFields, numComp, pStart, pEnd;
+  PetscInt numFields, numComp;
 
   PetscErrorCode err;
   err = PetscSectionGetNumFields(fieldSection, &numFields);PYLITH_CHECK_ERROR(err);
@@ -150,16 +150,8 @@ pylith::faults::FaultCohesiveLagrange::splitField(topology::Field* field)
 
     PetscInt dof;
     err = PetscSectionGetDof(fieldSection, v_lagrange, &dof);PYLITH_CHECK_ERROR(err);assert(spaceDim == dof);
+    err = PetscSectionSetFieldDof(fieldSection, v_lagrange, 0, 0);PYLITH_CHECK_ERROR(err);
     err = PetscSectionSetFieldDof(fieldSection, v_lagrange, 1, dof);PYLITH_CHECK_ERROR(err);
-  } // for
-  err = PetscSectionGetChart(fieldSection, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
-  for(PetscInt p = pStart; p < pEnd; ++p) {
-    PetscInt dof;
-    err = PetscSectionGetFieldDof(fieldSection, p, 1, &dof);PYLITH_CHECK_ERROR(err);
-    if (!dof) {
-      err = PetscSectionGetDof(fieldSection, p, &dof);PYLITH_CHECK_ERROR(err);assert(spaceDim == dof);
-      err = PetscSectionSetFieldDof(fieldSection, p, 0, dof);PYLITH_CHECK_ERROR(err);
-    } // if
   } // for
 
   PYLITH_METHOD_END;
