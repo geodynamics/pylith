@@ -262,11 +262,10 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
   PetscSection solutionSection = fields.solution().petscSection();assert(solutionSection);
   PetscVec solutionVec = fields.solution().localVector();assert(solutionVec);
   PetscVec solutionGlobalVec = fields.solution().globalVector();assert(solutionGlobalVec);
-  PetscInt spaceDim, numFields;
+  PetscInt numFields;
   PetscErrorCode err;
 
   err = PetscObjectGetComm((PetscObject) dmMesh, &comm);PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetDimension(dmMesh, &spaceDim);PYLITH_CHECK_ERROR(err);
 
   err = PCSetDM(*pc, dmMesh);PYLITH_CHECK_ERROR(err);
   err = PCSetType(*pc, PCFIELDSPLIT);PYLITH_CHECK_ERROR(err);

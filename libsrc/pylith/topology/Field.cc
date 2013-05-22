@@ -1295,13 +1295,6 @@ pylith::topology::Field::setupFields(void)
     err = PetscSectionSetFieldComponents(section, f, f_iter->second);PYLITH_CHECK_ERROR(err);
   } // for
   _tmpFields.clear();
-#if 0 // :MATT: What is going on here? Is this obsolete?
-  // Right now, we assume that the section covers the entire chart
-  PetscInt pStart, pEnd;
-
-  err = DMPlexGetChart(_dm, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
-  err = PetscSectionSetChart(section, pStart, pEnd);PYLITH_CHECK_ERROR(err);
-#endif
 
   PYLITH_METHOD_END;
 } // setupFields
@@ -1345,7 +1338,7 @@ pylith::topology::Field::updateDof(const char *name,
   } // for
   assert(f < _metadata.size());
   for(PetscInt p = pStart; p < pEnd; ++p) {
-    //err = PetscSectionAddDof(section, p, fiberDim);PYLITH_CHECK_ERROR(err);
+    //err = PetscSectionAddDof(section, p, fiberDim);PYLITH_CHECK_ERROR(err); // Future use
     err = PetscSectionSetFieldDof(section, p, f, fiberDim);PYLITH_CHECK_ERROR(err);
   } // for
 

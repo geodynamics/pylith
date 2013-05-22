@@ -131,15 +131,17 @@ pylith::faults::FaultCohesiveLagrange::splitField(topology::Field* field)
 
   PetscDM dmMesh = field->dmMesh();assert(dmMesh);
   PetscSection fieldSection  = field->petscSection();assert(fieldSection);
-  const PetscInt spaceDim = field->mesh().dimension();
   PetscInt numFields, numComp;
+
+  assert(_quadrature);
+  const int spaceDim = _quadrature->spaceDim();
 
   PetscErrorCode err;
   err = PetscSectionGetNumFields(fieldSection, &numFields);PYLITH_CHECK_ERROR(err);
-  // TODO: Does this make sense?
   if (!numFields) {
     PYLITH_METHOD_END;
   } // if
+
   assert(2 == numFields);
   err = PetscSectionGetFieldComponents(fieldSection, 0, &numComp);PYLITH_CHECK_ERROR(err);assert(numComp == spaceDim);
   err = PetscSectionGetFieldComponents(fieldSection, 1, &numComp);PYLITH_CHECK_ERROR(err);assert(numComp == spaceDim);
