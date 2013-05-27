@@ -692,9 +692,10 @@ pylith::faults::TestFaultCohesiveKin::testSplitField(void)
 
   topology::Field splitField(mesh);
   splitField.addField("displacement", spaceDim);
-  splitField.addField("constraints", spaceDim);
+  splitField.addField("fault constraints", spaceDim);
   splitField.setupFields();
   splitField.newSection(disp, spaceDim);
+  splitField.updateDof("displacement", topology::FieldBase::VERTICES_FIELD, spaceDim);
   fault.splitField(&splitField);
   splitField.allocate();
   splitField.zero();
