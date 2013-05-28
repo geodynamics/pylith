@@ -232,19 +232,26 @@ pylith::meshio::DataWriterVTK::closeTimeStep(void)
 { // closeTimeStep
   PYLITH_METHOD_BEGIN;
 
-  // Account for possibility that no fields were written, so viewer doesn't have handle to DM.
-  if (_isOpenTimeStep && !_wroteVertexHeader && !_wroteCellHeader) {
-    // No fields written, so must manually dereference the mesh DM.
+  PetscErrorCode err = 0;
+
+  // Remove label
+  if (_isOpenTimeStep) {
+    assert(_dm);
     PetscBool hasLabel = PETSC_FALSE;
-    PetscErrorCode err = DMPlexHasLabel(_dm, "vtk", &hasLabel);PYLITH_CHECK_ERROR(err);
+    err = DMPlexHasLabel(_dm, "vtk", &hasLabel);PYLITH_CHECK_ERROR(err);
     if (hasLabel) {
       err = DMPlexClearLabelStratum(_dm, "vtk", 1);PYLITH_CHECK_ERROR(err);
       err = DMPlexClearLabelStratum(_dm, "vtk", 2);PYLITH_CHECK_ERROR(err);
     } // if
+  } // if
+  
+  // Account for possibility that no fields were written, so viewer doesn't have handle to DM.
+  if (_isOpenTimeStep && !_wroteVertexHeader && !_wroteCellHeader) {
+    // No fields written, so must manually dereference the mesh DM.
     err = PetscObjectDereference((PetscObject) _dm);PYLITH_CHECK_ERROR(err);
   } // if
   
-  PetscErrorCode err = PetscViewerDestroy(&_viewer);PYLITH_CHECK_ERROR(err);
+  err = PetscViewerDestroy(&_viewer);PYLITH_CHECK_ERROR(err);
   _isOpenTimeStep = false;
   _wroteVertexHeader = false;
   _wroteCellHeader = false;
