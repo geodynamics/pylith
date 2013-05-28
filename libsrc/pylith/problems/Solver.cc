@@ -186,7 +186,7 @@ pylith::problems::Solver::_createNullSpace(const topology::SolutionFields& field
 
       err = VecSet(solutionVec, 0.0);PYLITH_CHECK_ERROR(err);
       for(PetscInt v = vStart; v < vEnd; ++v) {
-	err = DMPlexVecSetClosure(dmMesh, solutionSection, solutionVec, v, values, INSERT_VALUES);PYLITH_CHECK_ERROR(err);
+        err = DMPlexVecSetClosure(dmMesh, solutionSection, solutionVec, v, values, INSERT_VALUES);PYLITH_CHECK_ERROR(err);
       } // for
       err = DMLocalToGlobalBegin(dmMesh, solutionVec, INSERT_VALUES, mode[d]);PYLITH_CHECK_ERROR(err);
       err = DMLocalToGlobalEnd(dmMesh, solutionVec, INSERT_VALUES, mode[d]);PYLITH_CHECK_ERROR(err);
@@ -196,17 +196,17 @@ pylith::problems::Solver::_createNullSpace(const topology::SolutionFields& field
       
       err = VecSet(solutionVec, 0.0);PYLITH_CHECK_ERROR(err);
       for(PetscInt v = vStart; v < vEnd; ++v) {
-	PetscScalar  values[3] = {0.0, 0.0, 0.0};
-	PetscScalar *coords = NULL;
+        PetscScalar  values[3] = {0.0, 0.0, 0.0};
+        PetscScalar *coords = NULL;
 	
-	err = DMPlexVecGetClosure(dmMesh, coordinateSection, coordinateVec, v, NULL, &coords);PYLITH_CHECK_ERROR(err);
-	for(int i = 0; i < spaceDim; ++i) {
-	  for(int j = 0; j < spaceDim; ++j) {
-	    values[j] += _epsilon(i, j, k)*coords[i];
-	  } // for
-	} // for
-	err = DMPlexVecRestoreClosure(dmMesh, coordinateSection, coordinateVec, v, NULL, &coords);PYLITH_CHECK_ERROR(err);
-	err = DMPlexVecSetClosure(dmMesh, solutionSection, solutionVec, v, values, INSERT_VALUES);PYLITH_CHECK_ERROR(err);
+        err = DMPlexVecGetClosure(dmMesh, coordinateSection, coordinateVec, v, NULL, &coords);PYLITH_CHECK_ERROR(err);
+        for(int i = 0; i < spaceDim; ++i) {
+          for(int j = 0; j < spaceDim; ++j) {
+            values[j] += _epsilon(i, j, k)*coords[i];
+          } // for
+        } // for
+        err = DMPlexVecRestoreClosure(dmMesh, coordinateSection, coordinateVec, v, NULL, &coords);PYLITH_CHECK_ERROR(err);
+        err = DMPlexVecSetClosure(dmMesh, solutionSection, solutionVec, v, values, INSERT_VALUES);PYLITH_CHECK_ERROR(err);
       } // for
       err = DMLocalToGlobalBegin(dmMesh, solutionVec, INSERT_VALUES, mode[d]);PYLITH_CHECK_ERROR(err);
       err = DMLocalToGlobalEnd(dmMesh, solutionVec, INSERT_VALUES, mode[d]);PYLITH_CHECK_ERROR(err);
@@ -220,7 +220,7 @@ pylith::problems::Solver::_createNullSpace(const topology::SolutionFields& field
       
       err = VecMDot(mode[i], i, mode, dots);PYLITH_CHECK_ERROR(err);
       for(int j = 0; j < i; ++j) {
-	dots[j] *= -1.0;
+        dots[j] *= -1.0;
       } // for
       err = VecMAXPY(mode[i], i, dots, mode);PYLITH_CHECK_ERROR(err);
       err = VecNormalize(mode[i], NULL);PYLITH_CHECK_ERROR(err);
