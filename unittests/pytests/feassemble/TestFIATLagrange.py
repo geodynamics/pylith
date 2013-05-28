@@ -435,9 +435,9 @@ class Hex8(object):
     Setup hex8 cell.
     """
     vertices = numpy.array([[-1.0, -1.0, -1.0],
-                            [+1.0, -1.0, -1.0],
-                            [+1.0, +1.0, -1.0],
                             [-1.0, +1.0, -1.0],
+                            [+1.0, +1.0, -1.0],
+                            [+1.0, -1.0, -1.0],
                             [-1.0, -1.0, +1.0],
                             [+1.0, -1.0, +1.0],
                             [+1.0, +1.0, +1.0],
@@ -457,15 +457,15 @@ class Hex8(object):
     basisDeriv = numpy.zeros( (8, 8, 3), dtype=numpy.float64)
     iQuad = 0
     for q in quadPts:
-      basis[iQuad] = numpy.array([self.N0(q), self.N1(q),
-                                  self.N2(q), self.N3(q),
+      basis[iQuad] = numpy.array([self.N0(q), self.N3(q),
+                                  self.N2(q), self.N1(q),
                                   self.N4(q), self.N5(q),
                                   self.N6(q), self.N7(q)],
                                  dtype=numpy.float64).reshape( (8,) )
       deriv = numpy.array([[self.N0p(q), self.N0q(q), self.N0r(q)],
-                           [self.N1p(q), self.N1q(q), self.N1r(q)],
-                           [self.N2p(q), self.N2q(q), self.N2r(q)],
                            [self.N3p(q), self.N3q(q), self.N3r(q)],
+                           [self.N2p(q), self.N2q(q), self.N2r(q)],
+                           [self.N1p(q), self.N1q(q), self.N1r(q)],
                            [self.N4p(q), self.N4q(q), self.N4r(q)],
                            [self.N5p(q), self.N5q(q), self.N5r(q)],
                            [self.N6p(q), self.N6q(q), self.N6r(q)],
@@ -589,9 +589,9 @@ class Hex8Collocated(Hex8):
     Setup hex8 cell.
     """
     vertices = numpy.array([[-1.0, -1.0, -1.0],
-                            [+1.0, -1.0, -1.0],
-                            [+1.0, +1.0, -1.0],
                             [-1.0, +1.0, -1.0],
+                            [+1.0, +1.0, -1.0],
+                            [+1.0, -1.0, -1.0],
                             [-1.0, -1.0, +1.0],
                             [+1.0, -1.0, +1.0],
                             [+1.0, +1.0, +1.0],
@@ -611,15 +611,15 @@ class Hex8Collocated(Hex8):
     basisDeriv = numpy.zeros( (8, 8, 3), dtype=numpy.float64)
     iQuad = 0
     for q in quadPts:
-      basis[iQuad] = numpy.array([self.N0(q), self.N1(q),
-                                  self.N2(q), self.N3(q),
+      basis[iQuad] = numpy.array([self.N0(q), self.N3(q),
+                                  self.N2(q), self.N1(q),
                                   self.N4(q), self.N5(q),
                                   self.N6(q), self.N7(q)],
                                  dtype=numpy.float64).reshape( (8,) )
       deriv = numpy.array([[self.N0p(q), self.N0q(q), self.N0r(q)],
-                           [self.N1p(q), self.N1q(q), self.N1r(q)],
-                           [self.N2p(q), self.N2q(q), self.N2r(q)],
                            [self.N3p(q), self.N3q(q), self.N3r(q)],
+                           [self.N2p(q), self.N2q(q), self.N2r(q)],
+                           [self.N1p(q), self.N1q(q), self.N1r(q)],
                            [self.N4p(q), self.N4q(q), self.N4r(q)],
                            [self.N5p(q), self.N5q(q), self.N5r(q)],
                            [self.N6p(q), self.N6q(q), self.N6r(q)],
@@ -646,9 +646,9 @@ class Hex27(object):
     Setup hex8 cell.
     """
     vertices = numpy.array([[-1.0, -1.0, -1.0], # Corners
-                            [+1.0, -1.0, -1.0],
-                            [+1.0, +1.0, -1.0],
                             [-1.0, +1.0, -1.0],
+                            [+1.0, +1.0, -1.0],
+                            [+1.0, -1.0, -1.0],
                             [-1.0, -1.0, +1.0],
                             [+1.0, -1.0, +1.0],
                             [+1.0, +1.0, +1.0],
@@ -714,7 +714,7 @@ class Hex27(object):
     basisDeriv = numpy.zeros( (27, 27, 3), dtype=numpy.float64)
     iQuad = 0
     for q in quadPts:
-      basis[iQuad] = numpy.array([self.N0(q), self.N1(q), self.N2(q), self.N3(q), # Corners
+      basis[iQuad] = numpy.array([self.N0(q), self.N3(q), self.N2(q), self.N1(q), # Corners
                                   self.N4(q), self.N5(q), self.N6(q), self.N7(q),
                                   self.N8(q), self.N9(q), self.N10(q), self.N11(q), # Edges
                                   self.N12(q), self.N13(q), self.N14(q), self.N15(q),
@@ -725,9 +725,9 @@ class Hex27(object):
                                   self.N25(q), self.N26(q)],
                                  dtype=numpy.float64).reshape( (27,) )
       deriv = numpy.array([[self.N0p(q), self.N0q(q), self.N0r(q)],
-                           [self.N1p(q), self.N1q(q), self.N1r(q)],
-                           [self.N2p(q), self.N2q(q), self.N2r(q)],
                            [self.N3p(q), self.N3q(q), self.N3r(q)],
+                           [self.N2p(q), self.N2q(q), self.N2r(q)],
+                           [self.N1p(q), self.N1q(q), self.N1r(q)],
                            [self.N4p(q), self.N4q(q), self.N4r(q)],
                            [self.N5p(q), self.N5q(q), self.N5r(q)],
                            [self.N6p(q), self.N6q(q), self.N6r(q)],

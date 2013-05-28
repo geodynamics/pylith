@@ -34,7 +34,7 @@ const int pylith::bc::BoundaryMeshDataTet4::_verticesNoFault[] = {
 };
 const int pylith::bc::BoundaryMeshDataTet4::_cellsNoFault[] = {
   5, 4, 2,
-  2, 6, 5,
+  5, 2, 6,
 };
 
 const int pylith::bc::BoundaryMeshDataTet4::_numVerticesFault = 6;
@@ -43,7 +43,7 @@ const int pylith::bc::BoundaryMeshDataTet4::_verticesFault[] = {
 };
 const int pylith::bc::BoundaryMeshDataTet4::_cellsFault[] = {
   6, 5, 3,
-  8, 7, 10,
+  10, 8, 7,
 };
 
 pylith::bc::BoundaryMeshDataTet4::BoundaryMeshDataTet4(void)

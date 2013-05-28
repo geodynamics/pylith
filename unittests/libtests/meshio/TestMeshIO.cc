@@ -86,9 +86,17 @@ pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
   const bool interpolate = false;
   PetscDM dmMesh = NULL;
   PetscBool interpolateMesh = interpolate ? PETSC_TRUE : PETSC_FALSE;
+  PetscInt  bound           = data.numCells*data.numCorners;
   PetscErrorCode err;
 
-  err = DMPlexCreateFromCellList(_mesh->comm(), data.cellDim, data.numCells, data.numVertices, data.numCorners, interpolateMesh, data.cells, data.spaceDim, data.vertices, &dmMesh);PYLITH_CHECK_ERROR(err);
+
+  int *cells = new int[bound];
+  for (PetscInt coff = 0; coff < bound; ++coff) {cells[coff] = data.cells[coff];}
+  for (PetscInt coff = 0; coff < bound; coff += data.numCorners) {
+    err = DMPlexInvertCell(data.cellDim, data.numCorners, &cells[coff]);PYLITH_CHECK_ERROR(err);
+  }
+  err = DMPlexCreateFromCellList(_mesh->comm(), data.cellDim, data.numCells, data.numVertices, data.numCorners, interpolateMesh, cells, data.spaceDim, data.vertices, &dmMesh);PYLITH_CHECK_ERROR(err);
+  delete [] cells;
   _mesh->dmMesh(dmMesh);
 
   // Material ids
@@ -183,12 +191,22 @@ pylith::meshio::TestMeshIO::_checkVals(const MeshData& data)
   PetscInt coneSize = 0;
   PetscErrorCode err = 0;
   for(PetscInt c = cStart, index = 0; c < cEnd; ++c) {
-    err = DMPlexGetConeSize(dmMesh, c, &coneSize);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetCone(dmMesh, c, &cone);PYLITH_CHECK_ERROR(err);
-    CPPUNIT_ASSERT_EQUAL(data.numCorners, coneSize);
-    for(PetscInt p = 0; p < coneSize; ++p, ++index) {
-      CPPUNIT_ASSERT_EQUAL(data.cells[index], cone[p]-offset);
+    PetscInt *closure = PETSC_NULL;
+    PetscInt  closureSize, numCorners = 0;
+
+    err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+    for(PetscInt p = 0; p < closureSize*2; p += 2) {
+      const PetscInt point = closure[p];
+      if ((point >= vStart) && (point < vEnd)) {
+        closure[numCorners++] = point;
+      } // if
     } // for
+    err = DMPlexInvertCell(data.cellDim, numCorners, closure);PYLITH_CHECK_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(data.numCorners, numCorners);
+    for(PetscInt p = 0; p < numCorners; ++p, ++index) {
+      CPPUNIT_ASSERT_EQUAL(data.cells[index], closure[p]-offset);
+    } // for
+    err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
   } // for
 
   // check materials

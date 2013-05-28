@@ -173,6 +173,7 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
     const PetscInt *gvertex = NULL;
     PetscVec cellVec = NULL;
     PetscScalar *vertices = NULL;
+    const PetscInt dim = mesh.dimension();
 
     err = DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers);PYLITH_CHECK_ERROR(err);
     err = ISGetIndices(globalVertexNumbers, &gvertex);PYLITH_CHECK_ERROR(err);
@@ -184,7 +185,7 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
     err = VecGetArray(cellVec, &vertices);PYLITH_CHECK_ERROR(err);
     for(PetscInt cell = cStart, v = 0; cell < cEnd; ++cell) {
       PetscInt *closure = NULL;
-      PetscInt  closureSize, p;
+      PetscInt  closureSize, nC = 0, p;
 
       if (label) {
         PetscInt value;
@@ -192,14 +193,17 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
         if (value != labelId) continue;
       } // if
 
-      // TODO: VERTEX ORDER
       err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
       for(p = 0; p < closureSize*2; p += 2) {
         if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
-          const PetscInt gv = gvertex[closure[p] - vStart];
-          vertices[v++] = gv < 0 ? -(gv+1) : gv;
+          closure[nC++] = closure[p];
         } // if
       } // for
+      err = DMPlexInvertCell(dim, nC, closure);PYLITH_CHECK_ERROR(err);
+      for (p = 0; p < nC; ++p) {
+        const PetscInt gv = gvertex[closure[p] - vStart];
+        vertices[v++] = gv < 0 ? -(gv+1) : gv;
+      }
       err = DMPlexRestoreTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
       //assert(v == (cell-cStart+1)*numCorners); Would be true without the label check
     } // for

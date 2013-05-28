@@ -739,14 +739,22 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   const PetscInt cEnd = cellsStratum.end();
   CPPUNIT_ASSERT_EQUAL(data.numCells, cellsStratum.size());
   for (PetscInt c = cStart, cell = 0, i = 0; c < cEnd; ++c, ++cell) {
-    const PetscInt *cone = NULL;
-    PetscInt coneSize = 0;
-    err = DMPlexGetConeSize(dmMesh, c, &coneSize);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetCone(dmMesh, c, &cone);PYLITH_CHECK_ERROR(err);
-    CPPUNIT_ASSERT_EQUAL(data.numCorners[cell], coneSize);
-    for (PetscInt p = 0; p < coneSize; ++p, ++i) {
-      CPPUNIT_ASSERT_EQUAL(data.cells[i], cone[p]);
+    PetscInt *closure = PETSC_NULL;
+    PetscInt  closureSize, numCorners = 0;
+
+    err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+    for(PetscInt p = 0; p < closureSize*2; p += 2) {
+      const PetscInt point = closure[p];
+      if ((point >= vStart) && (point < vEnd)) {
+        closure[numCorners++] = point;
+      } // if
     } // for
+    err = DMPlexInvertCell(data.cellDim, numCorners, closure);PYLITH_CHECK_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(data.numCorners[cell], numCorners);
+    for (PetscInt p = 0; p < numCorners; ++p, ++i) {
+      CPPUNIT_ASSERT_EQUAL(data.cells[i], closure[p]);
+    } // for
+    err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
   } // for
 
   // check materials

@@ -72,10 +72,14 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
   } // check
 
   /* DMPlex */
-  PetscDM dmMesh;
+  PetscDM   dmMesh;
   PetscBool pInterpolate = interpolate ? PETSC_TRUE : PETSC_FALSE;
+  PetscInt  bound        = numCells*numCorners, coff;
 
   err = MPI_Bcast(&dim, 1, MPIU_INT, 0, comm);PYLITH_CHECK_ERROR(err);
+  for (coff = 0; coff < bound; coff += numCorners) {
+    err = DMPlexInvertCell(dim, numCorners, (int *) &cells[coff]);PYLITH_CHECK_ERROR(err);
+  }
   err = DMPlexCreateFromCellList(comm, dim, numCells, numVertices, numCorners, pInterpolate, &cells[0], spaceDim, &(*coordinates)[0], &dmMesh);PYLITH_CHECK_ERROR(err);
   mesh->dmMesh(dmMesh);
 

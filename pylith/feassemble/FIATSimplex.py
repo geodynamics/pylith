@@ -200,7 +200,12 @@ class FIATSimplex(ReferenceCell):
       for face in ids[2]:
         permutation.extend(ids[2][face])
     elif dim == 3:
-      for vertex in ids[0]:
+      # Flip vertices 0 and 1
+      vids = [v for v in ids[0]]
+      tmp     = vids[0]
+      vids[0] = vids[1]
+      vids[1] = tmp
+      for vertex in vids:
         permutation.extend(ids[0][vertex])
       for edge in [2, 0, 1, 3]:
         permutation.extend(ids[1][edge])

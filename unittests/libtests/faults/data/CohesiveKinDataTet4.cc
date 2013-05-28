@@ -137,16 +137,16 @@ const PylithScalar pylith::faults::CohesiveKinDataTet4::_jacobianLumped[] = {
 
 const int pylith::faults::CohesiveKinDataTet4::_numFaultVertices = 3;
 const int pylith::faults::CohesiveKinDataTet4::_verticesFault[] = {
-   4,  3,  2
+   3,  2,  4
 };
 const int pylith::faults::CohesiveKinDataTet4::_verticesLagrange[] = {
-  13, 12, 11
+  12, 11, 13
 };
 const int pylith::faults::CohesiveKinDataTet4::_verticesNegative[] = {
-   6,  5,  4
+   5,  4,  6
 };
 const int pylith::faults::CohesiveKinDataTet4::_verticesPositive[] = {
-  10,  9,  8
+   9,  8, 10
 };
 
 const int pylith::faults::CohesiveKinDataTet4::_numCohesiveCells = 1;

@@ -161,16 +161,16 @@ const PylithScalar pylith::faults::CohesiveKinDataTet4e::_area[] = {
 
 const int pylith::faults::CohesiveKinDataTet4e::_numFaultVertices = 4;
 const int pylith::faults::CohesiveKinDataTet4e::_verticesFault[] = {
-   6,  5,  4,  7
+   5,  4,  6,  7
 };
 const int pylith::faults::CohesiveKinDataTet4e::_verticesLagrange[] = {
-  18, 17, 16, 19
+  17, 16, 18, 19
 };
 const int pylith::faults::CohesiveKinDataTet4e::_verticesNegative[] = {
-   9,  8,  7, 10
+   8,  7,  9, 10
 };
 const int pylith::faults::CohesiveKinDataTet4e::_verticesPositive[] = {
-  14, 13, 12, 15
+  13, 12, 14, 15
 };
 
 const int pylith::faults::CohesiveKinDataTet4e::_numCohesiveCells = 2;

@@ -184,7 +184,6 @@ pylith::meshio::MeshIO::_getCells(int_array* cells,
   for (PetscInt c = cStart, index = 0; c < cEnd; ++c) {
     PetscInt nC = 0, closureSize, *closure = NULL;
 
-    // TODO: VERTEX ORDER
     err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     for (PetscInt cl = 0; cl < closureSize*2; cl += 2) {
       if ((closure[cl] >= vStart) && (closure[cl] < vEnd)) {
@@ -194,6 +193,7 @@ pylith::meshio::MeshIO::_getCells(int_array* cells,
       }
     } // for
     err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+    err = DMPlexInvertCell(*meshDim, nC, &(*cells)[index-nC]);PYLITH_CHECK_ERROR(err);
     assert(nC == *numCorners);
   } // for  
 
