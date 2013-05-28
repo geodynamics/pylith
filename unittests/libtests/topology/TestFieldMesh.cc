@@ -194,6 +194,81 @@ pylith::topology::TestFieldMesh::testSpaceDim(void)
 } // testSpaceDim
 
 // ----------------------------------------------------------------------
+// Test chartSize().
+void 
+pylith::topology::TestFieldMesh::testChartSize(void)
+{ // testChartSize
+  PYLITH_METHOD_BEGIN;
+
+  const int fiberDim = 2;
+  const std::string& label = "field A";
+
+  Mesh mesh;
+  _buildMesh(&mesh);
+
+  Field field(mesh);
+  field.label(label.c_str());
+
+  CPPUNIT_ASSERT_EQUAL(0, field.chartSize());
+
+  field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
+  field.allocate();
+
+  CPPUNIT_ASSERT_EQUAL(_TestFieldMesh::nvertices, field.chartSize());
+
+  PYLITH_METHOD_END;
+} // testChartSize
+
+// ----------------------------------------------------------------------
+// Test sectionSize().
+void 
+pylith::topology::TestFieldMesh::testSectionSize(void)
+{ // testSectionSize
+  PYLITH_METHOD_BEGIN;
+
+  const int fiberDim = 2;
+  const std::string& label = "field A";
+
+  Mesh mesh;
+  _buildMesh(&mesh);
+
+  Field field(mesh);
+  field.label(label.c_str());
+
+  CPPUNIT_ASSERT_EQUAL(0, field.sectionSize());
+
+  field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
+  field.allocate();
+
+  CPPUNIT_ASSERT_EQUAL(_TestFieldMesh::nvertices*fiberDim, field.sectionSize());
+
+  PYLITH_METHOD_END;
+} // testSectionSize
+
+// ----------------------------------------------------------------------
+// Test hasSection().
+void 
+pylith::topology::TestFieldMesh::testHasSection(void)
+{ // testHasSection
+  PYLITH_METHOD_BEGIN;
+
+  const int fiberDim = 2;
+  const std::string& label = "field A";
+
+  Mesh mesh;
+  _buildMesh(&mesh);
+  Field field(mesh);
+  field.label(label.c_str());
+
+  CPPUNIT_ASSERT(!field.hasSection());
+  field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
+  
+  CPPUNIT_ASSERT(field.hasSection());
+
+  PYLITH_METHOD_END;
+} // testHasSection
+
+// ----------------------------------------------------------------------
 // Test newSection().
 void
 pylith::topology::TestFieldMesh::testNewSection(void)

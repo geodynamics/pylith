@@ -53,6 +53,9 @@ class pylith::topology::TestFieldMesh : public CppUnit::TestFixture
   CPPUNIT_TEST( testScale );
   CPPUNIT_TEST( testAddDimensionOkay );
   CPPUNIT_TEST( testSpaceDim );
+  CPPUNIT_TEST( testChartSize );
+  CPPUNIT_TEST( testSectionSize );
+  CPPUNIT_TEST( testHasSection );
   CPPUNIT_TEST( testNewSection );
   CPPUNIT_TEST( testNewSectionPoints );
   CPPUNIT_TEST( testNewSectionPointsArray );
@@ -104,6 +107,15 @@ public :
 
   /// Test spaceDim().
   void testSpaceDim(void);
+
+  /// Test chartSize().
+  void testChartSize(void);
+
+  /// Test sectionSize().
+  void testSectionSize(void);
+
+  /// Test hasSection().
+  void testHasSection(void);
 
   /// Test newSection().
   void testNewSection(void);

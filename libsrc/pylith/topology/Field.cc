@@ -184,6 +184,25 @@ pylith::topology::Field::spaceDim(void) const
 } // spaceDim
 
 // ----------------------------------------------------------------------
+// Has section been setup?
+bool
+pylith::topology::Field::hasSection(void) const
+{ // hasSection
+  PYLITH_METHOD_BEGIN;
+
+  PetscErrorCode err;
+  PetscSection s = NULL;
+  err = DMGetDefaultSection(_dm, &s);PYLITH_CHECK_ERROR(err);
+
+  PetscInt pStart = 0, pEnd = 0;
+  err = PetscSectionGetChart(s, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+  
+  bool result = (pEnd < 0) ? false : true;
+  
+  PYLITH_METHOD_RETURN(result);
+} // hasSection
+
+// ----------------------------------------------------------------------
 // Get the chart size.
 int
 pylith::topology::Field::chartSize(void) const
@@ -255,9 +274,9 @@ pylith::topology::Field::newSection(const int_array& points,
   const PetscInt npts = points.size();
   if (npts > 0) {
     PetscSection s = NULL;
-    PetscInt pointMin = 0, pointMax = 0;
+    PetscInt pointMin = points[0], pointMax = points[0];
 
-    for (PetscInt i = 0; i < npts; ++i) {
+    for (PetscInt i = 1; i < npts; ++i) {
       pointMin = std::min(pointMin, points[i]);
       pointMax = std::max(pointMax, points[i]);
     } // for
@@ -302,9 +321,9 @@ pylith::topology::Field::newSection(const PetscInt *points,
   
   if (num > 0) {
     PetscSection s = NULL;
-    PetscInt pointMin = 0, pointMax = 0;
+    PetscInt pointMin = points[0], pointMax = points[0];
 
-    for (PetscInt i = 0; i < num; ++i) {
+    for (PetscInt i = 1; i < num; ++i) {
       pointMin = std::min(pointMin, points[i]);
       pointMax = std::max(pointMax, points[i]);
     } // for
@@ -1062,18 +1081,6 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
   /* assert(order->getLocalSize()  == localSize); This does not work because the local vector includes the lagrange cell variables */
   /* assert(order->getGlobalSize() == globalSize); */
   err = PetscSectionDestroy(&subSection);PYLITH_CHECK_ERROR(err);
-#if 0
-  std::cout << "["<<mesh.commRank()<<"] CONTEXT: " << context 
-	    << ", orderLabel: " << orderLabel
-	    << ", section size w/BC: " << _section->sizeWithBC()
-	    << ", section size: " << _section->size()
-	    << ", section storage size: " << _section->getStorageSize()
-	    << ", global numbering size: " << numbering->getGlobalSize()
-	    << ", global order size: " << order->getGlobalSize()
-	    << ", local numbering size: " << numbering->getLocalSize()
-	    << ", local order size: " << order->getLocalSize()
-	    << std::endl;
-#endif
 
   PYLITH_METHOD_END;
 } // createScatterWithBC
