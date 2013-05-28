@@ -115,6 +115,12 @@ namespace pylith {
        */
       int sectionSize(void) const;
       
+      /** Has section been setup?
+       *
+       * @returns True if section has been setup.
+       */
+      bool hasSection(void) const;
+
       /// Create PETSc section.
       void newSection(void);
 
