@@ -150,18 +150,6 @@ pylith::meshio::DataWriterVTK::open(const topology::Mesh& mesh,
   _dm = mesh.dmMesh();assert(_dm);
   err = PetscObjectReference((PetscObject) _dm);PYLITH_CHECK_ERROR(err);
 
-  // Create VTK label in DM: Cleared in close().
-  if (label) {
-    topology::StratumIS cellsIS(_dm, label, labelId);
-    const PetscInt ncells = cellsIS.size();
-    const PetscInt* cells = cellsIS.points();
-
-    for (PetscInt c=0; c < ncells; ++c) {
-      err = DMPlexSetLabelValue(_dm, "vtk", cells[c], 1);PYLITH_CHECK_ERROR(err);
-    } // for
-
-  } // if
-
   _isOpen = true;
 
   PYLITH_METHOD_END;
@@ -176,13 +164,7 @@ pylith::meshio::DataWriterVTK::close(void)
 
   if (_isOpen) {
     assert(_dm);
-    PetscBool hasLabel = PETSC_FALSE;
-    PetscErrorCode err = DMPlexHasLabel(_dm, "vtk", &hasLabel);PYLITH_CHECK_ERROR(err);
-    if (hasLabel) {
-      err = DMPlexClearLabelStratum(_dm, "vtk", 1);PYLITH_CHECK_ERROR(err);
-      err = DMPlexClearLabelStratum(_dm, "vtk", 2);PYLITH_CHECK_ERROR(err);
-    } // if
-    err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
   } // if
 
   // Clear field caches.
@@ -217,6 +199,18 @@ pylith::meshio::DataWriterVTK::openTimeStep(const PylithScalar t,
     
   const std::string& filename = _vtkFilename(t);
 
+  // Create VTK label in DM: Cleared in close().
+  if (label) {
+    topology::StratumIS cellsIS(_dm, label, labelId);
+    const PetscInt ncells = cellsIS.size();
+    const PetscInt* cells = cellsIS.points();
+
+    for (PetscInt c=0; c < ncells; ++c) {
+      err = DMPlexSetLabelValue(_dm, "vtk", cells[c], 1);PYLITH_CHECK_ERROR(err);
+    } // for
+
+  } // if
+
   err = PetscViewerCreate(mesh.comm(), &_viewer);PYLITH_CHECK_ERROR(err);
   err = PetscViewerSetType(_viewer, PETSCVIEWERVTK);PYLITH_CHECK_ERROR(err);
   err = PetscViewerSetFormat(_viewer, PETSC_VIEWER_ASCII_VTK);PYLITH_CHECK_ERROR(err);
@@ -241,7 +235,13 @@ pylith::meshio::DataWriterVTK::closeTimeStep(void)
   // Account for possibility that no fields were written, so viewer doesn't have handle to DM.
   if (_isOpenTimeStep && !_wroteVertexHeader && !_wroteCellHeader) {
     // No fields written, so must manually dereference the mesh DM.
-    PetscErrorCode err = PetscObjectDereference((PetscObject) _dm);PYLITH_CHECK_ERROR(err);
+    PetscBool hasLabel = PETSC_FALSE;
+    PetscErrorCode err = DMPlexHasLabel(_dm, "vtk", &hasLabel);PYLITH_CHECK_ERROR(err);
+    if (hasLabel) {
+      err = DMPlexClearLabelStratum(_dm, "vtk", 1);PYLITH_CHECK_ERROR(err);
+      err = DMPlexClearLabelStratum(_dm, "vtk", 2);PYLITH_CHECK_ERROR(err);
+    } // if
+    err = PetscObjectDereference((PetscObject) _dm);PYLITH_CHECK_ERROR(err);
   } // if
   
   PetscErrorCode err = PetscViewerDestroy(&_viewer);PYLITH_CHECK_ERROR(err);
