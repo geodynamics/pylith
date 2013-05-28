@@ -229,7 +229,7 @@ class FIATLagrange(ReferenceCell):
       elif dim == 3:
         # Set order of vertices and basis functions.
         # Corners
-        vertexOrder = [(0,0,0), (1,0,0), (1,1,0), (0,1,0),
+        vertexOrder = [(0,0,0), (0,1,0), (1,1,0), (1,0,0),
                        (0,0,1), (1,0,1), (1,1,1), (0,1,1)]
         # Edges
         #   Bottom front

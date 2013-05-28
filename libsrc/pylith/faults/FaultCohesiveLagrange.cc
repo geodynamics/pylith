@@ -603,9 +603,14 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
   topology::VecVisitorMesh areaVisitor(area);
   const PetscScalar* areaArray = areaVisitor.localArray();
 
+  topology::Field& dispRel = _fields->get("relative disp");
+  PetscDM      dispDM = dispRel.dmMesh();
+  PetscSection dispGlobalSection = NULL;
+  PetscErrorCode err = DMGetDefaultGlobalSection(dispDM, &dispGlobalSection);PYLITH_CHECK_ERROR(err);
+
   PetscDM solnDM = fields->solution().dmMesh();
   PetscSection solnGlobalSection = NULL;
-  PetscErrorCode err = DMGetDefaultGlobalSection(solnDM, &solnGlobalSection);PYLITH_CHECK_ERROR(err);
+  err = DMGetDefaultGlobalSection(solnDM, &solnGlobalSection);PYLITH_CHECK_ERROR(err);
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -679,10 +684,14 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
 #endif
 
     // Set diagonal entries in preconditioned matrix.
+    // TODO Do we use v_lagrange, or v_negative?
+    PetscInt poff = 0;
+    err = PetscSectionGetOffset(dispGlobalSection, v_negative, &poff);PYLITH_CHECK_ERROR(err);
+
     for (int iDim=0; iDim < spaceDim; ++iDim)
       MatSetValue(*precondMatrix,
-		  gloff + iDim,
-		  gloff + iDim,
+		  poff + iDim,
+		  poff + iDim,
 		  precondVertexL[iDim],
 		  INSERT_VALUES);
 

@@ -72,7 +72,7 @@ const int pylith::faults::CohesiveDataHex8b::_numCorners[] = {
 const int pylith::faults::CohesiveDataHex8b::_cells[] = {
   3, 15, 16,  4,  5, 17, 18,  6,
   7, 11, 12,  8,  9, 13, 14, 10,
-  7,  9, 10,  8, 15, 17, 18, 16,
+  7,  8, 10,  9, 15, 17, 18, 16,
 };
 
 const int pylith::faults::CohesiveDataHex8b::_materialIds[] = {

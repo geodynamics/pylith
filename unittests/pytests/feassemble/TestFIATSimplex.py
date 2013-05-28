@@ -381,8 +381,8 @@ class Tet4(object):
     """
     Setup tri33 cell.
     """
-    vertices = numpy.array([[-1.0, -1.0, -1.0],
-                            [+1.0, -1.0, -1.0],
+    vertices = numpy.array([[+1.0, -1.0, -1.0],
+                            [-1.0, -1.0, -1.0],
                             [-1.0, +1.0, -1.0],
                             [-1.0, -1.0, +1.0]])
     quadPts = numpy.array([ [-1.0/2.0, -1.0/2.0, -1.0/2.0] ])
@@ -393,11 +393,11 @@ class Tet4(object):
     basisDeriv = numpy.zeros( (1, 4, 3), dtype=numpy.float64)
     iQuad = 0
     for q in quadPts:
-      basis[iQuad] = numpy.array([self.N0(q), self.N1(q), 
+      basis[iQuad] = numpy.array([self.N1(q), self.N0(q), 
                                   self.N2(q), self.N3(q)],
                                  dtype=numpy.float64).reshape( (4,) )
-      deriv = numpy.array([[self.N0p(q), self.N0q(q), self.N0r(q)],
-                           [self.N1p(q), self.N1q(q), self.N1r(q)],
+      deriv = numpy.array([[self.N1p(q), self.N1q(q), self.N1r(q)],
+                           [self.N0p(q), self.N0q(q), self.N0r(q)],
                            [self.N2p(q), self.N2q(q), self.N2r(q)],
                            [self.N3p(q), self.N3q(q), self.N3r(q)]])      
       basisDeriv[iQuad] = deriv.reshape((4, 3))
@@ -470,11 +470,14 @@ class Tet4Collocated(Tet4):
     """
     Setup tri33 cell.
     """
-    vertices = numpy.array([[-1.0, -1.0, -1.0],
+    vertices = numpy.array([[+1.0, -1.0, -1.0],
+                            [-1.0, -1.0, -1.0],
+                            [-1.0, +1.0, -1.0],
+                            [-1.0, -1.0, +1.0]])
+    quadPts = numpy.array([[-1.0, -1.0, -1.0],
                             [+1.0, -1.0, -1.0],
                             [-1.0, +1.0, -1.0],
                             [-1.0, -1.0, +1.0]])
-    quadPts = vertices[:]
     quadWts = numpy.array( [1.0/3.0, 1.0/3.0, 1.0/3.0, 1.0/3.0])
 
     # Compute basis fns and derivatives at quadrature points
@@ -482,11 +485,11 @@ class Tet4Collocated(Tet4):
     basisDeriv = numpy.zeros( (4, 4, 3), dtype=numpy.float64)
     iQuad = 0
     for q in quadPts:
-      basis[iQuad] = numpy.array([self.N0(q), self.N1(q), 
+      basis[iQuad] = numpy.array([self.N1(q), self.N0(q), 
                                   self.N2(q), self.N3(q)],
                                  dtype=numpy.float64).reshape( (4,) )
-      deriv = numpy.array([[self.N0p(q), self.N0q(q), self.N0r(q)],
-                           [self.N1p(q), self.N1q(q), self.N1r(q)],
+      deriv = numpy.array([[self.N1p(q), self.N1q(q), self.N1r(q)],
+                           [self.N0p(q), self.N0q(q), self.N0r(q)],
                            [self.N2p(q), self.N2q(q), self.N2r(q)],
                            [self.N3p(q), self.N3q(q), self.N3r(q)]])      
       basisDeriv[iQuad] = deriv.reshape((4, 3))
