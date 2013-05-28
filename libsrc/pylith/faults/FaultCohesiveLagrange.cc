@@ -684,9 +684,8 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
 #endif
 
     // Set diagonal entries in preconditioned matrix.
-    // TODO Do we use v_lagrange, or v_negative?
     PetscInt poff = 0;
-    err = PetscSectionGetOffset(dispGlobalSection, v_negative, &poff);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(dispGlobalSection, v_fault, &poff);PYLITH_CHECK_ERROR(err);
 
     for (int iDim=0; iDim < spaceDim; ++iDim)
       MatSetValue(*precondMatrix,
