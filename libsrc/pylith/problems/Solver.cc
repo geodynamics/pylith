@@ -311,7 +311,7 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     
   PetscObject field = NULL;
   err = DMSetNumFields(dmMesh, 2);PYLITH_CHECK_ERROR(err);
-  err = DMGetField(dmMesh, 0, &field);PYLITH_CHECK_ERROR(err);
+  err = DMGetField(dmMesh, 1, &field);PYLITH_CHECK_ERROR(err);
   err = PetscObjectCompose(field, "pmat", (PetscObject) _jacobianPCFault);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
