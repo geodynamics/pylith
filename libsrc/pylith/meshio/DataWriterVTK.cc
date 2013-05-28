@@ -199,7 +199,7 @@ pylith::meshio::DataWriterVTK::openTimeStep(const PylithScalar t,
     
   const std::string& filename = _vtkFilename(t);
 
-  // Create VTK label in DM: Cleared in close().
+  // Create VTK label in DM: Cleared in closeTimeStep().
   if (label) {
     topology::StratumIS cellsIS(_dm, label, labelId);
     const PetscInt ncells = cellsIS.size();
@@ -234,6 +234,15 @@ pylith::meshio::DataWriterVTK::closeTimeStep(void)
 
   PetscErrorCode err = 0;
 
+  // Destroy the viewer (which also writes the file).
+  err = PetscViewerDestroy(&_viewer);PYLITH_CHECK_ERROR(err);
+
+  // Account for possibility that no fields were written, so viewer doesn't have handle to DM.
+  if (_isOpenTimeStep && !_wroteVertexHeader && !_wroteCellHeader) {
+    // No fields written, so must manually dereference the mesh DM.
+    err = PetscObjectDereference((PetscObject) _dm);PYLITH_CHECK_ERROR(err);
+  } // if
+  
   // Remove label
   if (_isOpenTimeStep) {
     assert(_dm);
@@ -244,14 +253,7 @@ pylith::meshio::DataWriterVTK::closeTimeStep(void)
       err = DMPlexClearLabelStratum(_dm, "vtk", 2);PYLITH_CHECK_ERROR(err);
     } // if
   } // if
-  
-  // Account for possibility that no fields were written, so viewer doesn't have handle to DM.
-  if (_isOpenTimeStep && !_wroteVertexHeader && !_wroteCellHeader) {
-    // No fields written, so must manually dereference the mesh DM.
-    err = PetscObjectDereference((PetscObject) _dm);PYLITH_CHECK_ERROR(err);
-  } // if
-  
-  err = PetscViewerDestroy(&_viewer);PYLITH_CHECK_ERROR(err);
+
   _isOpenTimeStep = false;
   _wroteVertexHeader = false;
   _wroteCellHeader = false;
