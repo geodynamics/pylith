@@ -164,6 +164,24 @@ public :
    */
   int spaceDim(void) const;
 
+  /** Get the number of points in the chart.
+   *
+   * @returns the chart size.
+   */
+  int chartSize(void) const;
+
+  /** Get the number of degrees of freedom.
+   *
+   * @returns the number of degrees of freedom.
+   */
+  int sectionSize(void) const;
+
+  /** Has section been setup?
+   *
+   * @returns True if section has been setup.
+   */
+  bool hasSection(void) const;
+
   /** Get PetscSection.
    *
    * @returns PETSc section.
@@ -181,18 +199,6 @@ public :
    * @returns PETSc Vec object.
    */
   PetscVec globalVector(void) const;
-
-  /** Get the number of points in the chart.
-   *
-   * @returns the chart size.
-   */
-  int chartSize(void) const;
-
-  /** Get the number of degrees of freedom.
-   *
-   * @returns the number of degrees of freedom.
-   */
-  int sectionSize(void) const;
 
   /** Create PETSc section.
    *

@@ -366,30 +366,22 @@ pylith::materials::Material::getField(topology::Field *field,
 
     // Allocate buffer for property field if necessary.
     bool useCurrentField = false;
-    PetscSection fieldSection = field->petscSection();
-    PetscInt pStart, pEnd;
-    PetscErrorCode err;
-    err = PetscSectionGetChart(fieldSection, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
-    if (pEnd < 0) {
-      err = DMPlexGetHeightStratum(dmMesh, 0, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
-      err = PetscSectionSetChart(fieldSection, pStart, pEnd);PYLITH_CHECK_ERROR(err);
-    } else {
+    if (field->hasSection()) {
       // check fiber dimension
       PetscInt totalFiberDimCurrentLocal = 0;
       PetscInt totalFiberDimCurrent = 0;
       if (numCells > 0) {
-	err = PetscSectionGetDof(fieldSection, cells[0], &totalFiberDimCurrentLocal);PYLITH_CHECK_ERROR(err);
+	PetscSection fieldSection = field->petscSection();
+	PetscErrorCode err = PetscSectionGetDof(fieldSection, cells[0], &totalFiberDimCurrentLocal);PYLITH_CHECK_ERROR(err);
       } // if
       MPI_Allreduce((void *) &totalFiberDimCurrentLocal, (void *) &totalFiberDimCurrent, 1, MPIU_INT, MPI_MAX, field->mesh().comm());
       assert(totalFiberDimCurrent > 0);
       useCurrentField = totalFiberDim == totalFiberDimCurrent;
     } // if
     if (!useCurrentField) {
-      int_array cellsTmp(cells, numCells);
-      field->newSection(cellsTmp, totalFiberDim);
+      field->newSection(cells, numCells, totalFiberDim);
       field->allocate();
     } // if
-    assert(fieldSection);
     field->label(name);
     field->scale(1.0);
     fieldType = _metadata.getProperty(propertyIndex).fieldType;
@@ -439,13 +431,13 @@ pylith::materials::Material::getField(topology::Field *field,
     const int totalFiberDim = numQuadPts * fiberDim;
 
     // Allocate buffer for state variable field if necessary.
-    PetscSection fieldSection = field->petscSection();
-    bool useCurrentField = fieldSection != NULL;
-    if (fieldSection) {
+    bool useCurrentField = false;
+    if (field->hasSection()) {
       // check fiber dimension
       PetscInt totalFiberDimCurrentLocal = 0;
       PetscInt totalFiberDimCurrent = 0;
       if (numCells > 0) {
+	PetscSection fieldSection = field->petscSection();
 	PetscErrorCode err = PetscSectionGetDof(fieldSection, cells[0], &totalFiberDimCurrentLocal);PYLITH_CHECK_ERROR(err);
       } // if
       MPI_Allreduce((void*) &totalFiberDimCurrentLocal, (void*) &totalFiberDimCurrent, 1, MPIU_INT, MPI_MAX, field->mesh().comm());
@@ -453,11 +445,9 @@ pylith::materials::Material::getField(topology::Field *field,
       useCurrentField = totalFiberDim == totalFiberDimCurrent;
     } // if
     if (!useCurrentField) {
-      int_array cellsTmp(cells, numCells);
-      field->newSection(cellsTmp, totalFiberDim);
+      field->newSection(cells, numCells, totalFiberDim);
       field->allocate();
     } // if
-    assert(fieldSection);
     fieldType = _metadata.getStateVar(stateVarIndex).fieldType;
     field->label(name);
     field->scale(1.0);
@@ -484,8 +474,7 @@ pylith::materials::Material::getField(topology::Field *field,
     } // for
   } // if/else
 
-  topology::FieldBase::VectorFieldEnum multiType = 
-    topology::FieldBase::MULTI_OTHER;
+  topology::FieldBase::VectorFieldEnum multiType = topology::FieldBase::MULTI_OTHER;
   switch (fieldType)
     { // switch
     case topology::FieldBase::SCALAR:
