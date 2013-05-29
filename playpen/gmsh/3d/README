@@ -1,0 +1,21 @@
+This is a simple initial test of using gmsh to create a mesh to use with
+PyLith.  At present, there is just a single example, mesh_tet4.geo.  This
+example includes the geometry file (geometry.geo).
+
+If used in interactive mode:
+1.  Open the mesh_tet4.geo file from within gmsh.
+2.  Mesh the volumes using the Mesh->3D command.
+3.  Optimize the mesh using the Mesh->Optimize 3D command.
+4.  Export the mesh using either the File->Save command (uses default gmsh
+    format), or the File->Save As command (select output type from list).
+
+If used in command-line mode, you can just run the run_gmsh.sh script, which
+creates a mesh in gmsh format.
+
+At present, I haven't figured out how to do the equivalent of nodesets, or
+how to do logical operations on physical groups.
+
+Note that the various output formats included here were produced using
+interactive mode.  Some of the output options require additional information
+(provided in popup windows), and it's unclear how this information would
+be provided in command-line mode.
