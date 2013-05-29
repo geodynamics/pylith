@@ -93,7 +93,7 @@ pylith::topology::StratumIS::StratumIS(const PetscDM dmMesh,
   PetscErrorCode err;
   err = DMPlexGetStratumIS(dmMesh, label, id, &_indexSet);PYLITH_CHECK_ERROR(err);assert(_indexSet);
   err = ISGetSize(_indexSet, &_size);PYLITH_CHECK_ERROR(err);assert(_size >= 0);
-  err = ISGetIndices(_indexSet, &_points);PYLITH_CHECK_ERROR(err);assert(_points);
+  err = ISGetIndices(_indexSet, &_points);PYLITH_CHECK_ERROR(err);
 } // constructor
 
 // ----------------------------------------------------------------------
