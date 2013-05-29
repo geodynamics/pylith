@@ -15,7 +15,5 @@ creates a mesh in gmsh format.
 At present, I haven't figured out how to do the equivalent of nodesets, or
 how to do logical operations on physical groups.
 
-Note that the various output formats included here were produced using
-interactive mode.  Some of the output options require additional information
-(provided in popup windows), and it's unclear how this information would
-be provided in command-line mode.
+At present, it appears that the simplest method of producing various
+output formats is to do it in interactive mode.
