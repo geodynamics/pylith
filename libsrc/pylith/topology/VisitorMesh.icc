@@ -188,10 +188,16 @@ pylith::topology::MatVisitorMesh::MatVisitorMesh(const PetscMat mat,
 						 const Field& field) :
   _mat(mat),
   _dm(NULL),
-  _section(NULL)
+  _section(NULL),
+  _globalSection(NULL)
 { // constructor
+  PetscSF sf = NULL;
+  PetscErrorCode err;
+
   _dm = field.mesh().dmMesh();assert(_dm);
   _section = field.petscSection();assert(_section);
+  err = DMGetPointSF(_dm, &sf);PYLITH_CHECK_ERROR(err);assert(sf);
+  err = PetscSectionCreateGlobalSection(_section, sf, PETSC_FALSE, &_globalSection);PYLITH_CHECK_ERROR(err);assert(_globalSection);
 
   initialize();
 } // constructor
@@ -205,6 +211,7 @@ pylith::topology::MatVisitorMesh::~MatVisitorMesh(void)
 
   _dm = NULL;
   _section = NULL;
+  PetscErrorCode err = PetscSectionDestroy(&_globalSection);assert(!_globalSection);
 } // destructor
 
 // ----------------------------------------------------------------------
@@ -236,7 +243,8 @@ pylith::topology::MatVisitorMesh::setClosure(const PetscScalar* valuesCell,
   assert(_dm);
   assert(_mat);
   assert(_section);
-  PetscErrorCode err = DMPlexMatSetClosure(_dm, _section, NULL, _mat, cell, valuesCell, mode);PYLITH_CHECK_ERROR(err);
+  assert(_globalSection);
+  PetscErrorCode err = DMPlexMatSetClosure(_dm, _section, _globalSection, _mat, cell, valuesCell, mode);PYLITH_CHECK_ERROR(err);
 } // setClosure
 
 
