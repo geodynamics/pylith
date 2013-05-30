@@ -198,6 +198,7 @@ private :
   const PetscMat _mat; ///< Cached PETSc matrix.
   PetscDM _dm; ///< Cached PETSc dm for mesh.
   PetscSection _section; ///< Cached PETSc section.
+  PetscSection _globalSection; ///< Cached PETSc global section.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
