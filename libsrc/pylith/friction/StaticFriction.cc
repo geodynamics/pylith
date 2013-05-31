@@ -88,9 +88,8 @@ pylith::friction::StaticFriction::~StaticFriction(void)
 // ----------------------------------------------------------------------
 // Compute properties from values in spatial database.
 void
-pylith::friction::StaticFriction::_dbToProperties(
-					   PylithScalar* const propValues,
-					   const scalar_array& dbValues) const
+pylith::friction::StaticFriction::_dbToProperties(PylithScalar* const propValues,
+						  const scalar_array& dbValues) const
 { // _dbToProperties
   assert(propValues);
   const int numDBValues = dbValues.size();
@@ -165,6 +164,23 @@ pylith::friction::StaticFriction::_calcFriction(const PylithScalar t,
 
   return friction;
 } // _calcFriction
+
+
+// ----------------------------------------------------------------------
+// Compute derivative of friction with slip from properties and
+// state variables.
+PylithScalar
+pylith::friction::StaticFriction::_calcFrictionDeriv(const PylithScalar t,
+						     const PylithScalar slip,
+						     const PylithScalar slipRate,
+						     const PylithScalar normalTraction,
+						     const PylithScalar* properties,
+						     const int numProperties,
+						     const PylithScalar* stateVars,
+						     const int numStateVars)
+{ // _calcFrictionDeriv
+  return 0.0;
+} // _calcFrictionDeriv
 
 
 // End of file 

@@ -294,12 +294,12 @@ pylith::friction::SlipWeakeningTime::_calcFriction(const PylithScalar t,
   PylithScalar mu_f = 0.0;
   if (normalTraction <= 0.0) {
     // if fault is in compression
-    if (stateVars[s_slipCum] < properties[p_d0] &&
-	t < properties[p_weaktime]) {
+    const PylithScalar slipPrev = stateVars[s_slipPrev];
+    const PylithScalar slipCum = stateVars[s_slipCum] + fabs(slip - slipPrev);
+
+    if (slipCum < properties[p_d0] && t < properties[p_weaktime]) {
 	// if/else linear slip-weakening form of mu_f 
-	mu_f = properties[p_coefS] -
-	  (properties[p_coefS] - properties[p_coefD]) * 
-	  stateVars[s_slipCum] / properties[p_d0];
+	mu_f = properties[p_coefS] - (properties[p_coefS] - properties[p_coefD]) * slipCum / properties[p_d0];
       } else {
 	mu_f = properties[p_coefD];
       } // if/else
@@ -310,6 +310,42 @@ pylith::friction::SlipWeakeningTime::_calcFriction(const PylithScalar t,
 
   return friction;
 } // _calcFriction
+
+
+// ----------------------------------------------------------------------
+// Compute derivative of friction with slip from properties and
+// state variables.
+PylithScalar
+pylith::friction::SlipWeakeningTime::_calcFrictionDeriv(const PylithScalar t,
+							const PylithScalar slip,
+							const PylithScalar slipRate,
+							const PylithScalar normalTraction,
+							const PylithScalar* properties,
+							const int numProperties,
+							const PylithScalar* stateVars,
+							const int numStateVars)
+{ // _calcFrictionDeriv
+  assert(properties);
+  assert(_SlipWeakeningTime::numProperties == numProperties);
+  assert(stateVars);
+  assert(_SlipWeakeningTime::numStateVars == numStateVars);
+
+  PylithScalar frictionDeriv = 0.0;
+  if (normalTraction <= 0.0) {
+    // if fault is in compression
+    const PylithScalar slipPrev = stateVars[s_slipPrev];
+    const PylithScalar slipCum = stateVars[s_slipCum] + fabs(slip - slipPrev);
+
+    if (slipCum < properties[p_d0] && t < properties[p_weaktime]) {
+      frictionDeriv = -normalTraction * (properties[p_coefS] - properties[p_coefD]) / properties[p_d0];
+    } // if
+  } // if
+
+  PetscLogFlops(7);
+
+  return frictionDeriv;
+} // _calcFrictionDeriv
+
 
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).

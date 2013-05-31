@@ -305,6 +305,41 @@ pylith::friction::SlipWeakening::_calcFriction(const PylithScalar t,
 } // _calcFriction
 
 // ----------------------------------------------------------------------
+// Compute derivative of friction with slip from properties and
+// state variables.
+PylithScalar
+pylith::friction::SlipWeakening::_calcFrictionDeriv(const PylithScalar t,
+						    const PylithScalar slip,
+						    const PylithScalar slipRate,
+						    const PylithScalar normalTraction,
+						    const PylithScalar* properties,
+						    const int numProperties,
+						    const PylithScalar* stateVars,
+						    const int numStateVars)
+{ // _calcFrictionDeriv
+  assert(properties);
+  assert(_SlipWeakening::numProperties == numProperties);
+  assert(stateVars);
+  assert(_SlipWeakening::numStateVars == numStateVars);
+
+  PylithScalar frictionDeriv = 0.0;
+  if (normalTraction <= 0.0) {
+    // if fault is in compression
+    const PylithScalar slipPrev = stateVars[s_slipPrev];
+    const PylithScalar slipCum = stateVars[s_slipCum] + fabs(slip - slipPrev);
+
+    if (slipCum < properties[p_d0]) {
+      frictionDeriv = -normalTraction * (properties[p_coefS] - properties[p_coefD]) / properties[p_d0];
+    } // if
+  } // if
+
+  PetscLogFlops(7);
+
+  return frictionDeriv;
+} // _calcFrictionDeriv
+
+
+// ----------------------------------------------------------------------
 // Update state variables (for next time step).
 void
 pylith::friction::SlipWeakening::_updateStateVars(const PylithScalar t,
