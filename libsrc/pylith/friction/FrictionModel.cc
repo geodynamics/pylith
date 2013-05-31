@@ -39,8 +39,6 @@
 #include <sstream> // USES std::ostringstream
 #include <iostream> // USES std::cerr
 
-//#define PRECOMPUTE_GEOMETRY
-
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::friction::FrictionModel::FrictionModel(const materials::Metadata& metadata) :
@@ -363,6 +361,30 @@ pylith::friction::FrictionModel::calcFriction(const PylithScalar t,
   
   PYLITH_METHOD_RETURN(friction);
 } // calcFriction
+
+// ----------------------------------------------------------------------
+// Compute derivative of friction with slip at vertex.
+PylithScalar
+pylith::friction::FrictionModel::calcFrictionDeriv(const PylithScalar t,
+						   const PylithScalar slip,
+						   const PylithScalar slipRate,
+						   const PylithScalar normalTraction)
+{ // calcFrictionDeriv
+  PYLITH_METHOD_BEGIN;
+
+  assert(_fieldsPropsStateVars);
+
+  assert(_propsFiberDim+_varsFiberDim == _propsStateVarsVertex.size());
+  const PylithScalar* propertiesVertex = &_propsStateVarsVertex[0];
+  const PylithScalar* stateVarsVertex = (_varsFiberDim > 0) ?
+    &_propsStateVarsVertex[_propsFiberDim] : 0;
+
+  const PylithScalar friction = _calcFrictionDeriv(t, slip, slipRate, normalTraction,
+						   propertiesVertex, _propsFiberDim,
+						   stateVarsVertex, _varsFiberDim);
+  
+  PYLITH_METHOD_RETURN(friction);
+} // calcFrictionDeriv
 
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).
