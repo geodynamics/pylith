@@ -1,0 +1,39 @@
+# ----------------------------------------------------------------------
+# Create block
+# ----------------------------------------------------------------------
+
+# Block is 6 km x 6 km x 4 km
+# -3 km <= x <= 3 km
+# -3 km <= y <= 3 km
+# -4 km <= z <= 0 km
+reset
+brick x 6000 y 6000 z 4000
+
+# Translate block so the top is at z=0
+volume 1 move x 0 y 0 z -2000
+
+# ----------------------------------------------------------------------
+# Create interface surfaces
+# ----------------------------------------------------------------------
+create planar surface with plane xplane offset 0
+surface 7 name "fault_surface"
+create planar surface with plane zplane offset -2000
+surface 8 name "material_interface"
+
+# ----------------------------------------------------------------------
+# Divide volumes using interface surfaces
+# ----------------------------------------------------------------------
+webcut volume 1 with plane surface fault_surface
+webcut volume 1 with plane surface material_interface
+webcut volume 4 with plane surface material_interface
+volume 1 name "elastic_xpos"
+volume 4 name "elastic_xneg"
+volume 5 name "visco_xpos"
+volume 6 name "visco_xneg"
+
+# ----------------------------------------------------------------------
+# Imprint all volumes, merging surfaces
+# ----------------------------------------------------------------------
+imprint all with volume all
+merge all
+delete body 2 3

@@ -1,0 +1,8 @@
+This directory contains simple examples based on 3d/hex8 to produce sidesets
+using Cubit. There are examples for both hex8 and tet4 meshes.
+
+The resulting Exodus II file then contains extra entries analogous to
+nodesets. The file first lists the cells associated with each face on the
+surface (elem_ssX), and then the face number for each face on the surface.
+The ordering of faces for Exodus II files is shown in the attached JPEG
+file.
