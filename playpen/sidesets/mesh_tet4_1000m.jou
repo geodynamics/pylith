@@ -33,8 +33,8 @@ nodeset 10 name "fault"
 # ----------------------------------------------------------------------
 # Create sideset for faces in fault
 # ----------------------------------------------------------------------
-group "fault_faces" add face in fault_surface
-group "fault_faces" add face in fault_surface@A
+group "fault_faces" add tri in fault_surface
+group "fault_faces" add tri in fault_surface@A
 sideset 10 group fault_faces
 sideset 10 name "fault_faces"
 
@@ -102,4 +102,5 @@ nodeset 17 name "face_zpos"
 # Export exodus file
 # ----------------------------------------------------------------------
 export mesh "box_tet4_1000m.exo" dimension 3 overwrite
+
 
