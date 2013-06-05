@@ -240,29 +240,26 @@ pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
 
   // Create field if necessary for interpolated values or recreate
   // field if mismatch in size between buffer and field.
-  std::ostringstream fieldName;
-  const char* context = field.label();
-  fieldName << context << " (interpolated)" << std::endl;
-
-  if (_fields->hasField(fieldName.str().c_str())) {
-    std::ostringstream msg;
-    msg << "Field " << fieldName << "already present in manager" << std::endl;
-    throw std::logic_error(msg.str());
+  const std::string& fieldName = std::string(field.label()) + " (interpolated)";
+  if (!_fields->hasField(fieldName.c_str())) {
+    _fields->add(fieldName.c_str(), field.label());
   } // if
-  _fields->add(fieldName.str().c_str(), field.label());
-  
-  topology::Field& fieldInterp = _fields->get(fieldName.str().c_str());
-  fieldInterp.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
-  fieldInterp.allocate();
+
+  topology::Field& fieldInterp = _fields->get(fieldName.c_str());
+  if (numVertices*fiberDim != fieldInterp.sectionSize()) {
+    fieldInterp.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
+    fieldInterp.allocate();
+  } // if
+
   fieldInterp.zero();
   fieldInterp.label(field.label());
   fieldInterp.vectorFieldType(field.vectorFieldType());
   fieldInterp.scale(field.scale());
 
+  const char* context = fieldName.c_str();
   fieldInterp.createScatter(*_pointsMesh, context);
 
-  PetscVec fieldInterpVec = fieldInterp.vector(context);
-  assert(fieldInterpVec);
+  PetscVec fieldInterpVec = fieldInterp.vector(context);assert(fieldInterpVec);
   err = DMInterpolationSetDof(_interpolator, fiberDim);PYLITH_CHECK_ERROR(err);
   err = DMInterpolationEvaluate(_interpolator, dmMesh, field.localVector(), fieldInterpVec);PYLITH_CHECK_ERROR(err);
 
