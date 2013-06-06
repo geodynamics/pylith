@@ -42,6 +42,9 @@ README - This file.
 pylithapp.cfg - PyLith configuration file containing parameters common to
 all simulations.
 
+greensfns.cfg - Green's function generation file that is only read for
+problem step21.
+
 stepxx.cfg - PyLith configuration file containing parameters for a
 particular example. The example problems are briefly described below:
 
@@ -69,6 +72,7 @@ step17: Gravitational body forces + finite strain with generalized Maxwell
 step18: Axial traction surface load on top surface (static)
 step19: Time dependent axial traction surface load on top surface (quasi-static)
 step20: Dike opening via initial tractions and fault constitutive model
+step21: Generation of Green's functions for a strike-slip fault (static)
 
 ----------------------------------------
 mesh directory
@@ -100,6 +104,11 @@ finalslip_rupture.spatialdb
 
   Spatial database defining fault rupture for examples step06, step07,
   step08, and step09.
+
+impulse_amplitude.spatialdb
+
+  Spatial database defining impulses to be applied for GF generation
+  (step21).
 
 initial_stress.spatialdb
 
