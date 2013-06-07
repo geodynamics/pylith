@@ -81,11 +81,14 @@ pylith::faults::FaultCohesive::numVerticesNoMesh(const topology::Mesh& mesh) con
     // Get group of vertices associated with fault
     PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
     PetscBool hasLabel = PETSC_FALSE;
+    PetscMPIInt rank;
     PetscErrorCode err;
 
     assert(std::string("") != label());
+    // We do not have labels on all ranks until after distribution
+    err = MPI_Comm_rank(PetscObjectComm((PetscObject) dmMesh), &rank);PYLITH_CHECK_ERROR(err);
     err = DMPlexHasLabel(dmMesh, label(), &hasLabel);PYLITH_CHECK_ERROR(err);
-    if (!hasLabel) {
+    if (!hasLabel && !rank) {
       std::ostringstream msg;
       msg << "Mesh missing group of vertices '" << label()
           << "' for fault interface condition.";
@@ -126,9 +129,12 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
 
       PetscDMLabel groupField;
       PetscBool hasLabel;
+      PetscMPIInt rank;
       PetscErrorCode err;
+      // We do not have labels on all ranks until after distribution
+      err = MPI_Comm_rank(PetscObjectComm((PetscObject) dmMesh), &rank);PYLITH_CHECK_ERROR(err);
       err = DMPlexHasLabel(dmMesh, charlabel, &hasLabel);PYLITH_CHECK_ERROR(err);
-      if (!hasLabel) {
+      if (!hasLabel && !rank) {
         std::ostringstream msg;
         msg << "Mesh missing group of vertices '" << label()
             << "' for fault interface condition.";
