@@ -165,7 +165,7 @@ class TestOutputSolnPoints(unittest.TestCase):
     output = OutputSolnPoints()
     output.inventory.reader.inventory.filename = "data/points.txt"
     output.inventory.reader._configure()
-    output.inventory.writer.inventory.filename = "outputsub.vtk"
+    output.inventory.writer.inventory.filename = "output_sub.vtk"
     output.inventory.writer.inventory.timeFormat = "%3.1f"
     output.inventory.writer._configure()
     output.inventory.vertexDataFields = ["displacement"]

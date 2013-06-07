@@ -158,7 +158,7 @@ class TestOutputSolnSubset(unittest.TestCase):
     """
     output = OutputSolnSubset()
     output.inventory.label = "2"
-    output.inventory.writer.inventory.filename = "outputsub.vtk"
+    output.inventory.writer.inventory.filename = "output_sub.vtk"
     output.inventory.writer.inventory.timeFormat = "%3.1f"
     output.inventory.writer._configure()
     output.inventory.vertexDataFields = ["displacement"]

@@ -54,8 +54,6 @@ if ENABLE_CUBIT
 endif	
 
 noinst_tmp = \
-	output_info.vtk \
-	output_t20.vtk \
 	output_sub_t20.vtk
 
 CLEANFILES = $(noinst_tmp)
