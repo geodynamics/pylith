@@ -16,36 +16,45 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/friction/SlipWeakeningTime.hh
+/** @file libsrc/friction/SlipWeakeningTimeStable.hh
  *
- * @brief C++ slip weakening fault constitutive model.
+ * @brief C++ slip + time weakening fault constitutive model.
+ *
+ * This constitutive model is used in the SCEC spontaneous rupture
+ * benchmarks suite.
+ *
+ * This version of slip + time weakening contains a time constant to
+ * make it more stable then SlipWeakeningTime.
  */
 
-#if !defined(pylith_friction_slipweakeningtime_hh)
-#define pylith_friction_slipweakeningtime_hh
+#if !defined(pylith_friction_slipweakeningtimestable_hh)
+#define pylith_friction_slipweakeningtimestable_hh
 
 // Include directives ---------------------------------------------------
 #include "FrictionModel.hh" // ISA FrictionModel
 
-// SlipWeakeningTime -------------------------------------------------------
+// SlipWeakeningTimeStable -------------------------------------------------------
 /** @brief C++ slip + time weakening fault constitutive model.
  *
  * Friction is equal to the product of a coefficient of friction (function
  * of slip path length) and the normal traction.
+ *
+ * This version of slip + time weakening contains a time constant to
+ * make it more stable then SlipWeakeningTime.
  */
 
-class pylith::friction::SlipWeakeningTime : public FrictionModel
-{ // class SlipWeakeningTime
-  friend class TestSlipWeakeningTime; // unit testing
+class pylith::friction::SlipWeakeningTimeStable : public FrictionModel
+{ // class SlipWeakeningTimeStable
+  friend class TestSlipWeakeningTimeStable; // unit testing
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
   /// Default constructor.
-  SlipWeakeningTime(void);
+  SlipWeakeningTimeStable(void);
 
   /// Destructor.
-  ~SlipWeakeningTime(void);
+  ~SlipWeakeningTimeStable(void);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -177,12 +186,14 @@ private :
   static const int p_d0;
   static const int p_cohesion;
   static const int p_weaktime;
+  static const int p_t0;
 
   static const int db_coefS;
   static const int db_coefD;
   static const int db_d0;
   static const int db_cohesion;
   static const int db_weaktime;
+  static const int db_t0;
 
   /// Indices for state variables in section and spatial database.
   static const int s_slipCum;
@@ -194,12 +205,12 @@ private :
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
-  SlipWeakeningTime(const SlipWeakeningTime&); ///< Not implemented.
-  const SlipWeakeningTime& operator=(const SlipWeakeningTime&); ///< Not implemented
+  SlipWeakeningTimeStable(const SlipWeakeningTimeStable&); ///< Not implemented.
+  const SlipWeakeningTimeStable& operator=(const SlipWeakeningTimeStable&); ///< Not implemented
 
-}; // class SlipWeakeningTime
+}; // class SlipWeakeningTimeStable
 
-#endif // pylith_friction_slipweakeningtime_hh
+#endif // pylith_friction_slipweakeningtimestable_hh
 
 
 // End of file 

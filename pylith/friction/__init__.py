@@ -24,6 +24,7 @@ __all__ = ['FrictionModel',
            'StaticFriction',
            'SlipWeakening',
            'SlipWeakeningTime',
+           'SlipWeakeningTimeStable',
            'RateStateAgeing',
            'TimeWeakening',
            ]

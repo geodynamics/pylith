@@ -229,7 +229,7 @@ pylith::friction::RateStateAgeing::_nondimProperties(PylithScalar* const values,
 // Dimensionalize properties.
 void
 pylith::friction::RateStateAgeing::_dimProperties(PylithScalar* const values,
-						      const int nvalues) const
+						  const int nvalues) const
 { // _dimProperties
   assert(_normalizer);
   assert(values);
@@ -247,9 +247,8 @@ pylith::friction::RateStateAgeing::_dimProperties(PylithScalar* const values,
 // ----------------------------------------------------------------------
 // Compute state variables from values in spatial database.
 void
-pylith::friction::RateStateAgeing::_dbToStateVars(
-					   PylithScalar* const stateValues,
-					   const scalar_array& dbValues) const
+pylith::friction::RateStateAgeing::_dbToStateVars(PylithScalar* const stateValues,
+						  const scalar_array& dbValues) const
 { // _dbToStateVars
   assert(stateValues);
   const int numDBValues = dbValues.size();
@@ -277,7 +276,7 @@ pylith::friction::RateStateAgeing::_nondimStateVars(PylithScalar* const values,
 // Dimensionalize state variables.
 void
 pylith::friction::RateStateAgeing::_dimStateVars(PylithScalar* const values,
-						      const int nvalues) const
+						 const int nvalues) const
 { // _dimStateVars
   assert(_normalizer);
   assert(values);
