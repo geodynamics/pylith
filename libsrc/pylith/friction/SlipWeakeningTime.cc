@@ -32,6 +32,7 @@
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
+
 // ----------------------------------------------------------------------
 namespace pylith {
   namespace friction {
@@ -311,6 +312,41 @@ pylith::friction::SlipWeakeningTime::_calcFriction(const PylithScalar t,
 
   return friction;
 } // _calcFriction
+
+// ----------------------------------------------------------------------
+// Compute derivative of friction with slip from properties and
+// state variables.
+PylithScalar
+pylith::friction::SlipWeakeningTime::_calcFrictionDeriv(const PylithScalar t,
+							const PylithScalar slip,
+							const PylithScalar slipRate,
+							const PylithScalar normalTraction,
+							const PylithScalar* properties,
+							const int numProperties,
+							const PylithScalar* stateVars,
+							const int numStateVars)
+{ // _calcFrictionDeriv
+  assert(properties);
+  assert(_SlipWeakeningTime::numProperties == numProperties);
+  assert(stateVars);
+  assert(_SlipWeakeningTime::numStateVars == numStateVars);
+
+  PylithScalar frictionDeriv = 0.0;
+  if (normalTraction <= 0.0) {
+    // if fault is in compression
+    const PylithScalar slipPrev = stateVars[s_slipPrev];
+    const PylithScalar slipCum = stateVars[s_slipCum] + fabs(slip - slipPrev);
+
+    if (slipCum < properties[p_d0] && t < properties[p_weaktime]) {
+      frictionDeriv = -normalTraction * (properties[p_coefS] - properties[p_coefD]) / properties[p_d0];
+    } // if
+  } // if
+
+  PetscLogFlops(7);
+
+  return frictionDeriv;
+} // _calcFrictionDeriv
+
 
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).

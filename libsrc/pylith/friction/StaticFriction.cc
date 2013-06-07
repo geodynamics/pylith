@@ -167,4 +167,21 @@ pylith::friction::StaticFriction::_calcFriction(const PylithScalar t,
 } // _calcFriction
 
 
+// ----------------------------------------------------------------------
+// Compute derivative of friction with slip from properties and
+// state variables.
+PylithScalar
+pylith::friction::StaticFriction::_calcFrictionDeriv(const PylithScalar t,
+						     const PylithScalar slip,
+						     const PylithScalar slipRate,
+						     const PylithScalar normalTraction,
+						     const PylithScalar* properties,
+						     const int numProperties,
+						     const PylithScalar* stateVars,
+						     const int numStateVars)
+{ // _calcFrictionDeriv
+  return 0.0;
+} // _calcFrictionDeriv
+
+
 // End of file 

@@ -32,7 +32,7 @@
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
-#include <iostream>
+
 // ----------------------------------------------------------------------
 namespace pylith {
   namespace friction {
@@ -282,6 +282,23 @@ pylith::friction::TimeWeakening::_calcFriction(const PylithScalar t,
 
   return friction;
 } // _calcFriction
+
+// ----------------------------------------------------------------------
+// Compute derivative of friction with slip from properties and
+// state variables.
+PylithScalar
+pylith::friction::TimeWeakening::_calcFrictionDeriv(const PylithScalar t,
+						    const PylithScalar slip,
+						    const PylithScalar slipRate,
+						    const PylithScalar normalTraction,
+						    const PylithScalar* properties,
+						    const int numProperties,
+						    const PylithScalar* stateVars,
+						    const int numStateVars)
+{ // _calcFrictionDeriv
+  return 0.0;
+} // _calcFrictionDeriv
+
 
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).
