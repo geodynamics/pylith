@@ -32,6 +32,11 @@ typing:
 
 where xx is the number of the desired example.
 
+Note that the exception to this is step21.cfg (Green's function example).
+It is run as follows:
+
+pylith step21.cfg --problem=pylith.problems.GreensFns
+
 
 ----------------------------------------------------------------------
 DESCRIPTION OF FILES
