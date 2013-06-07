@@ -38,7 +38,6 @@ pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
   PYLITH_METHOD_BEGIN;
 
   assert(faultMesh);
-  assert(groupField);
   PetscErrorCode err;
 
   faultMesh->coordsys(mesh.coordsys());
@@ -52,9 +51,9 @@ pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
   if (depth == dim) {
     PetscDM subdm = NULL;
     PetscDMLabel label = NULL;
-    const char *groupName = NULL, *labelName = "boundary";
+    const char *groupName = "", *labelName = "boundary";
 
-    err = DMLabelGetName(groupField, &groupName);PYLITH_CHECK_ERROR(err);
+    if (groupField) {err = DMLabelGetName(groupField, &groupName);PYLITH_CHECK_ERROR(err);}
     err = DMPlexCreateSubmesh(dmMesh, groupName, 1, &subdm);PYLITH_CHECK_ERROR(err);
     err = DMPlexCreateLabel(subdm, labelName);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetLabel(subdm, labelName, &label);PYLITH_CHECK_ERROR(err);
@@ -67,10 +66,10 @@ pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
     PetscDMLabel subpointMapTmp = NULL, subpointMap = NULL;
     PetscIS pointIS = NULL;
     const PetscInt *points = NULL;
-    PetscInt depth, newDepth, h, numPoints, p;
-    const char *groupName = NULL;
+    PetscInt depth, newDepth, h, numPoints = 0, p;
+    const char *groupName = "";
 
-    err = DMLabelGetName(groupField, &groupName);PYLITH_CHECK_ERROR(err);
+    if (groupField) {err = DMLabelGetName(groupField, &groupName);PYLITH_CHECK_ERROR(err);}
     err = DMPlexCreateSubmesh(dmMesh, groupName, 1, &faultDMMeshTmp);PYLITH_CHECK_ERROR(err);
     err = DMPlexInterpolate(faultDMMeshTmp, &faultDMMesh);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetVTKCellHeight(faultDMMeshTmp, &h);PYLITH_CHECK_ERROR(err);
@@ -80,22 +79,26 @@ pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
     err = DMPlexGetSubpointMap(faultDMMeshTmp, &subpointMapTmp);PYLITH_CHECK_ERROR(err);
     err = DMLabelCreate("subpoint_map", &subpointMap);PYLITH_CHECK_ERROR(err);
     err = DMLabelGetStratumIS(subpointMapTmp, 0, &pointIS);PYLITH_CHECK_ERROR(err);
-    err = ISGetLocalSize(pointIS, &numPoints);PYLITH_CHECK_ERROR(err);
-    err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
+    if (pointIS) {
+      err = ISGetLocalSize(pointIS, &numPoints);PYLITH_CHECK_ERROR(err);
+      err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
+    }
     for (p = 0; p < numPoints; ++p) {
       err = DMLabelSetValue(subpointMap, points[p], 0);PYLITH_CHECK_ERROR(err);
     }
-    err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
+    if (pointIS) {err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);}
     err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetDepth(faultDMMeshTmp, &depth);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetDepth(faultDMMesh, &newDepth);PYLITH_CHECK_ERROR(err);
     err = DMLabelGetStratumIS(subpointMapTmp, depth, &pointIS);PYLITH_CHECK_ERROR(err);
-    err = ISGetLocalSize(pointIS, &numPoints);PYLITH_CHECK_ERROR(err);
-    err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
+    if (pointIS) {
+      err = ISGetLocalSize(pointIS, &numPoints);PYLITH_CHECK_ERROR(err);
+      err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
+    }
     for (p = 0; p < numPoints; ++p) {
       err = DMLabelSetValue(subpointMap, points[p], newDepth);PYLITH_CHECK_ERROR(err);
     }
-    err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
+    if (pointIS) {err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);}
     err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
     err = DMPlexSetSubpointMap(faultDMMesh, subpointMap);PYLITH_CHECK_ERROR(err);
     err = DMLabelDestroy(&subpointMap);PYLITH_CHECK_ERROR(err);
@@ -157,14 +160,13 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   PYLITH_METHOD_BEGIN;
 
   assert(mesh);
-  assert(groupField);
 
-  const char    *groupName;
+  const char    *groupName = NULL;
   PetscMPIInt    rank;
   PetscErrorCode err;
 
   err = MPI_Comm_rank(mesh->comm(), &rank);PYLITH_CHECK_ERROR(err);
-  err = DMLabelGetName(groupField, &groupName);PYLITH_CHECK_ERROR(err);
+  if (groupField) {err = DMLabelGetName(groupField, &groupName);PYLITH_CHECK_ERROR(err);}
 
   /* DMPlex */
   DM complexMesh = mesh->dmMesh();
@@ -200,13 +202,15 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   }
 
   // Add new shadow vertices and possibly Lagrange multipler vertices
-  IS              fVertexIS;
-  const PetscInt *fVerticesDM;
-  PetscInt        numFaultVerticesDM, vStart, vEnd;
+  IS              fVertexIS   = NULL;
+  const PetscInt *fVerticesDM = NULL;
+  PetscInt        numFaultVerticesDM = 0, vStart, vEnd;
 
-  err = DMLabelGetStratumIS(groupField, 1, &fVertexIS);PYLITH_CHECK_ERROR(err);
-  err = ISGetLocalSize(fVertexIS, &numFaultVerticesDM);PYLITH_CHECK_ERROR(err);
-  err = ISGetIndices(fVertexIS, &fVerticesDM);PYLITH_CHECK_ERROR(err);
+  if (groupField) {
+    err = DMLabelGetStratumIS(groupField, 1, &fVertexIS);PYLITH_CHECK_ERROR(err);
+    err = ISGetLocalSize(fVertexIS, &numFaultVerticesDM);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(fVertexIS, &fVerticesDM);PYLITH_CHECK_ERROR(err);
+  }
   err = DMPlexGetDepthStratum(complexMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
   std::map<point_type,point_type> vertexRenumber;
   std::map<point_type,point_type> vertexLagrangeRenumber;
@@ -366,10 +370,10 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   TopologyOps::PointSet replaceVerticesDM;
   PetscInt       *cohesiveCone;
   IS              subpointIS;
-  const PetscInt *subpointMap;
+  const PetscInt *subpointMap = NULL;
 
   err = DMPlexCreateSubpointIS(faultDMMesh, &subpointIS);PYLITH_CHECK_ERROR(err);
-  err = ISGetIndices(subpointIS, &subpointMap);PYLITH_CHECK_ERROR(err);
+  if (subpointIS) {err = ISGetIndices(subpointIS, &subpointMap);PYLITH_CHECK_ERROR(err);}
   err = PetscMalloc3(faceSizeDM,PetscInt,&origVerticesDM,faceSizeDM,PetscInt,&faceVerticesDM,faceSizeDM*3,PetscInt,&cohesiveCone);PYLITH_CHECK_ERROR(err);
   for (PetscInt faceDM = ffStart; faceDM < ffEnd; ++faceDM, ++firstFaultCell, ++firstFaultCellDM) {
     if (debug) std::cout << "Considering fault face " << faceDM << std::endl;
@@ -476,13 +480,13 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   assert(faultBoundary);
   err = DMPlexGetDepthStratum(faultBoundary, 0, &bfvStart, &bfvEnd);PYLITH_CHECK_ERROR(err);
   err = DMPlexCreateSubpointIS(faultBoundary, &bdSubpointIS);PYLITH_CHECK_ERROR(err);
-  err = ISGetIndices(bdSubpointIS, &points);PYLITH_CHECK_ERROR(err);
+  if (bdSubpointIS) {err = ISGetIndices(bdSubpointIS, &points);PYLITH_CHECK_ERROR(err);}
   for (PetscInt v = bfvStart; v < bfvEnd; ++v) {
     faultBdVertices.insert(subpointMap[points[v]]);
   }
-  err = ISRestoreIndices(bdSubpointIS, &points);PYLITH_CHECK_ERROR(err);
+  if (bdSubpointIS) {err = ISRestoreIndices(bdSubpointIS, &points);PYLITH_CHECK_ERROR(err);}
   err = ISDestroy(&bdSubpointIS);PYLITH_CHECK_ERROR(err);
-  err = ISRestoreIndices(subpointIS, &subpointMap);PYLITH_CHECK_ERROR(err);
+  if (subpointIS) {err = ISRestoreIndices(subpointIS, &subpointMap);PYLITH_CHECK_ERROR(err);}
   err = ISDestroy(&subpointIS);PYLITH_CHECK_ERROR(err);
   // Classify cells by side of the fault
   TopologyOps::PointSet::const_iterator rVerticesEnd = replaceVerticesDM.end();
@@ -538,12 +542,12 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   PetscSection coordSection, newCoordSection;
   Vec          coordinatesVec, newCoordinatesVec;
   PetscScalar *coords, *newCoords;
-  PetscInt     numComp, coordSize;
+  PetscInt     numComp = 0, coordSize = 0;
  
   err = DMPlexGetCoordinateSection(complexMesh, &coordSection);PYLITH_CHECK_ERROR(err);
   err = DMPlexGetCoordinateSection(newMesh,     &newCoordSection);PYLITH_CHECK_ERROR(err);
   err = PetscSectionSetNumFields(newCoordSection, 1);PYLITH_CHECK_ERROR(err);
-  err = PetscSectionGetDof(coordSection, vStart, &numComp);PYLITH_CHECK_ERROR(err);
+  if (vEnd > vStart) {err = PetscSectionGetDof(coordSection, vStart, &numComp);PYLITH_CHECK_ERROR(err);}
   err = PetscSectionSetFieldComponents(newCoordSection, 0, numComp);PYLITH_CHECK_ERROR(err);
   err = DMGetCoordinatesLocal(complexMesh, &coordinatesVec);PYLITH_CHECK_ERROR(err);
   err = PetscSectionSetChart(newCoordSection, vStart+extraCells, vEnd+extraCells+extraVertices);PYLITH_CHECK_ERROR(err);
@@ -567,7 +571,6 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
       err = PetscSectionSetFieldDof(newCoordSection, vertexLagrangeRenumberDM[vnew], 0, dof);PYLITH_CHECK_ERROR(err);
     }
   } // for
-
   err = PetscSectionSetUp(newCoordSection);PYLITH_CHECK_ERROR(err);
   err = PetscSectionGetStorageSize(newCoordSection, &coordSize);PYLITH_CHECK_ERROR(err);
   err = VecCreate(mesh->comm(), &newCoordinatesVec);PYLITH_CHECK_ERROR(err);
@@ -610,7 +613,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   err = DMSetCoordinatesLocal(newMesh, newCoordinatesVec);PYLITH_CHECK_ERROR(err);
   err = VecDestroy(&newCoordinatesVec);PYLITH_CHECK_ERROR(err);
 
-  err = ISRestoreIndices(fVertexIS, &fVerticesDM);PYLITH_CHECK_ERROR(err);
+  if (fVertexIS) {err = ISRestoreIndices(fVertexIS, &fVerticesDM);PYLITH_CHECK_ERROR(err);}
   err = ISDestroy(&fVertexIS);PYLITH_CHECK_ERROR(err);
 
   PetscReal lengthScale = 1.0;
