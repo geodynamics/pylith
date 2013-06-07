@@ -16,7 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/friction/SlipWeakeningTime.py
+## @file pylith/friction/SlipWeakeningTimeStable.py
 ##
 ## @brief Python object implementing slip weakening with forced
 ## weakening at a give time (sometimes used for nucleation).
@@ -24,10 +24,10 @@
 ## Factory: friction_model.
 
 from FrictionModel import FrictionModel
-from friction import SlipWeakeningTime as ModuleSlipWeakeningTime
+from friction import SlipWeakeningTimeStable as ModuleSlipWeakeningTimeStable
 
-# SlipWeakeningTime class
-class SlipWeakeningTime(FrictionModel, ModuleSlipWeakeningTime):
+# SlipWeakeningTimeStable class
+class SlipWeakeningTimeStable(FrictionModel, ModuleSlipWeakeningTimeStable):
   """
   Python object implementing Slip Weakening.
 
@@ -36,7 +36,7 @@ class SlipWeakeningTime(FrictionModel, ModuleSlipWeakeningTime):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="slipweakeningtime"):
+  def __init__(self, name="slipweakeningtimestable"):
     """
     Constructor.
     """
@@ -47,7 +47,8 @@ class SlipWeakeningTime(FrictionModel, ModuleSlipWeakeningTime):
                      "dynamic_coefficient",
                      "slip_weakening_parameter",
                      "cohesion",
-                     "weakening_time"],
+                     "time_weakening_time",
+                     "time_weakening_parameter"],
             'data': ["cumulative_slip",
                      "previous_slip"]},
          'cell': \
@@ -63,7 +64,7 @@ class SlipWeakeningTime(FrictionModel, ModuleSlipWeakeningTime):
     """
     Call constructor for module object for access to C++ object.
     """
-    ModuleSlipWeakeningTime.__init__(self)
+    ModuleSlipWeakeningTimeStable.__init__(self)
     return
   
 
@@ -71,9 +72,9 @@ class SlipWeakeningTime(FrictionModel, ModuleSlipWeakeningTime):
 
 def friction_model():
   """
-  Factory associated with SlipWeakeningTime.
+  Factory associated with SlipWeakeningTimeStable.
   """
-  return SlipWeakeningTime()
+  return SlipWeakeningTimeStable()
 
 
 # End of file 

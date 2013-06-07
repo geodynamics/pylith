@@ -35,6 +35,7 @@ namespace pylith {
     class StaticFriction;
     class SlipWeakening;
     class SlipWeakeningTime;
+    class SlipWeakeningTimeStable;
     class RateStateAgeing;
     class TimeWeakening;
 

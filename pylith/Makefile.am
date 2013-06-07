@@ -70,6 +70,7 @@ nobase_pkgpyexec_PYTHON = \
 	friction/StaticFriction.py \
 	friction/SlipWeakening.py \
 	friction/SlipWeakeningTime.py \
+	friction/SlipWeakeningTimeStable.py \
 	friction/RateStateAgeing.py \
 	friction/TimeWeakening.py \
 	materials/__init__.py \

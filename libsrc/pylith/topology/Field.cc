@@ -953,8 +953,8 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
     PYLITH_METHOD_END;
   } // if
 
-  PetscSection section, newSection, gsection;
-  PetscSF      sf;
+  PetscSection section = NULL, newSection = NULL, gsection = NULL;
+  PetscSF sf = NULL;
 
   err = DMDestroy(&sinfo.dm);PYLITH_CHECK_ERROR(err);
   err = DMPlexClone(_dm, &sinfo.dm);PYLITH_CHECK_ERROR(err);
@@ -1006,9 +1006,9 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
   } // if
 
   PetscDM dm = mesh.dmMesh();assert(dm);
-  PetscSection section, newSection, gsection, subSection = NULL;
-  PetscSF sf;
-  PetscDMLabel subpointMap, subpointMapF;
+  PetscSection section = NULL, newSection = NULL, gsection = NULL, subSection = NULL;
+  PetscSF sf = NULL;
+  PetscDMLabel subpointMap = NULL, subpointMapF = NULL;
   PetscInt dim, dimF, pStart, pEnd, qStart, qEnd, cEnd, cMax, vEnd, vMax;
   err = DMPlexGetHeightStratum(_dm, 0, NULL, &cEnd);PYLITH_CHECK_ERROR(err);
   err = DMPlexGetDepthStratum(_dm, 0, NULL, &vEnd);PYLITH_CHECK_ERROR(err);
@@ -1136,7 +1136,7 @@ pylith::topology::Field::scatterSectionToVector(const PetscVec vector,
   assert(vector);
   assert(context);
   const ScatterInfo& sinfo = _getScatter(context);
-  PetscErrorCode err   = 0;
+  PetscErrorCode err = 0;
   if (sinfo.dm) {
     err = DMLocalToGlobalBegin(sinfo.dm, _localVec, INSERT_VALUES, vector);PYLITH_CHECK_ERROR(err);
     err = DMLocalToGlobalEnd(sinfo.dm, _localVec, INSERT_VALUES, vector);PYLITH_CHECK_ERROR(err);
