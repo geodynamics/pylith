@@ -48,10 +48,6 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
-// Precomputing geometry significantly increases storage but gives a
-// slight speed improvement.
-//#define PRECOMPUTE_GEOMETRY
-
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
@@ -545,6 +541,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
      const scalar_array&,
      const scalar_array&,
      const scalar_array&,
+     const PylithScalar,
      const bool);
 
   assert(fields);
@@ -735,12 +732,13 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     // Use fault constitutive model to compute traction associated with
     // friction.
     dTractionTpdtVertex = 0.0;
+    const PylithScalar jacobianShearVertex = 0.0;
     const bool iterating = true; // Iterating to get friction
     CALL_MEMBER_FN(*this,
 		   constrainSolnSpaceFn)(&dTractionTpdtVertex,
 					 t, slipTpdtVertex, slipRateVertex,
 					 tractionTpdtVertex,
-					 iterating);
+					 jacobianShearVertex, iterating);
 
     // Rotate increment in traction back to global coordinate system.
     dLagrangeTpdtVertex = 0.0;
@@ -1172,6 +1170,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
      const scalar_array&,
      const scalar_array&,
      const scalar_array&,
+     const PylithScalar,
      const bool);
 
   assert(fields);
@@ -1375,6 +1374,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     slipVertex = 0.0;
     slipRateVertex = 0.0;
     tractionTpdtVertex = 0.0;
+    PylithScalar jacobianShearVertex = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       for (int jDim=0; jDim < spaceDim; ++jDim) {
 	slipVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
@@ -1383,6 +1383,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 	  velRelVertex[jDim];
 	tractionTpdtVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
 	  (lagrangeTVertex[jDim] + lagrangeTIncrVertex[jDim]);
+	jacobianShearVertex += orientationVertex[iDim*spaceDim+jDim] * (-1.0 / (areaVertex * (1.0 / jacobianVertexN[iDim] + 1.0 / jacobianVertexP[iDim])));
       } // for
     } // for
     
@@ -1397,7 +1398,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 		   constrainSolnSpaceFn)(&dTractionTpdtVertex,
 					 t, slipVertex, slipRateVertex,
 					 tractionTpdtVertex,
-					 iterating);
+					 jacobianShearVertex, iterating);
 
     // Rotate traction back to global coordinate system.
     dLagrangeTpdtVertex = 0.0;
@@ -2247,6 +2248,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceNorm(const PylithScalar alp
      const scalar_array&,
      const scalar_array&,
      const scalar_array&,
+     const PylithScalar,
      const bool);
 
   // Update time step in friction (can vary).
@@ -2431,12 +2433,13 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceNorm(const PylithScalar alp
     // Use fault constitutive model to compute traction associated with
     // friction.
     tractionMisfitVertex = 0.0;
+    const PylithScalar jacobianShearVertex = 0.0;
     const bool iterating = true; // Iterating to get friction
     CALL_MEMBER_FN(*this,
 		   constrainSolnSpaceFn)(&tractionMisfitVertex, t,
 					 slipTpdtVertex, slipRateVertex,
 					 tractionTpdtVertex,
-					 iterating);
+					 jacobianShearVertex, iterating);
 
 #if 0 // DEBUGGING
     std::cout << "alpha: " << alpha
@@ -2491,6 +2494,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace1D(scalar_array* dTractionT
          const scalar_array& slip,
          const scalar_array& sliprate,
 	 const scalar_array& tractionTpdt,
+	 const PylithScalar jacobianShear,
 	 const bool iterating)
 { // _constrainSolnSpace1D
   assert(dTractionTpdt);
@@ -2515,11 +2519,12 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(scalar_array* dTractionT
          const scalar_array& slip,
          const scalar_array& slipRate,
 	 const scalar_array& tractionTpdt,
+	 const PylithScalar jacobianShear,
 	 const bool iterating)
 { // _constrainSolnSpace2D
   assert(dTractionTpdt);
 
-  const PylithScalar slipMag = fabs(slip[0]);
+  PylithScalar slipMag = fabs(slip[0]);
   const PylithScalar slipRateMag = fabs(slipRate[0]);
 
   const PylithScalar tractionNormal = tractionTpdt[1];
@@ -2527,17 +2532,44 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(scalar_array* dTractionT
 
   if (fabs(slip[1]) < _zeroTolerance && tractionNormal < -_zeroTolerance) {
     // if in compression and no opening
-    const PylithScalar frictionStress = 
-      _friction->calcFriction(t, slipMag, slipRateMag, tractionNormal);
+    PylithScalar frictionStress = _friction->calcFriction(t, slipMag, slipRateMag, tractionNormal);
+
     if (tractionShearMag > frictionStress || (iterating && slipRateMag > 0.0)) {
       // traction is limited by friction, so have sliding OR
       // friction exceeds traction due to overshoot in slip
 
       if (tractionShearMag > 0.0) {
+#if 1 // New Newton stuff
+	if (fabs(jacobianShear) > 0.0) {
+	  // Use Newton to get better update
+	  const int maxiter = 16;
+	  PylithScalar slipMagCur = slipMag;
+	  PylithScalar slipRateMagCur = slipRateMag;
+	  PylithScalar tractionShearMagCur = tractionShearMag;
+	  for (int iter=0; iter < maxiter; ++iter) {
+	    const PylithScalar frictionDeriv = _friction->calcFrictionDeriv(t, slipMagCur, slipRateMagCur, tractionNormal);
+	    slipMag = slipMagCur;
+	    if (slipMag > 0.0) {
+	      // Use Newton (in log slip space) to get better update in slip & traction.
+	      // D_{i+1} = exp(ln(D_i) - (T-T_f)/(D_i * (jacobian - frictionDeriv))
+	      slipMagCur = exp(log(slipMag) - (tractionShearMagCur - frictionStress) / (slipMag * (jacobianShear - frictionDeriv)));
+	    } else {
+	      // Use Newton (in linear slip space) to get better update in slip & traction.
+	      // D_{i+1} = D_i - (T-T_f)/(jacobian - frictionDeriv)
+	      slipMagCur = slipMag - (tractionShearMagCur - frictionStress) / (jacobianShear - frictionDeriv);
+	    } // if
+	    tractionShearMagCur += (slipMagCur - slipMag) * jacobianShear;
+	    slipRateMagCur += (slipMagCur - slipMag) / _dt;
+	    frictionStress = _friction->calcFriction(t, slipMagCur, slipRateMagCur, tractionNormal);
+	    if (fabs(tractionShearMagCur - frictionStress) < _zeroTolerance) {
+	      break;
+	    } // if
+	  } // for
+	} // if
+#endif
 	// Update traction increment based on value required to stick
 	// versus friction
-	const PylithScalar dlp = -(tractionShearMag - frictionStress) *
-	  tractionTpdt[0] / tractionShearMag;
+	const PylithScalar dlp = -(tractionShearMag - frictionStress) * tractionTpdt[0] / tractionShearMag;
 	(*dTractionTpdt)[0] = dlp;
       } else {
 	// No shear stress and no friction.
@@ -2566,36 +2598,58 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(scalar_array* dTractionT
          const scalar_array& slip,
          const scalar_array& slipRate,
 	 const scalar_array& tractionTpdt,
+	 const PylithScalar jacobianShear,
 	 const bool iterating)
 { // _constrainSolnSpace3D
   assert(dTractionTpdt);
 
-  const PylithScalar slipShearMag = sqrt(slip[0] * slip[0] +
-             slip[1] * slip[1]);
-  PylithScalar slipRateMag = sqrt(slipRate[0]*slipRate[0] + 
-            slipRate[1]*slipRate[1]);
+  PylithScalar slipMag = sqrt(slip[0] * slip[0] + slip[1] * slip[1]);
+  const PylithScalar slipRateMag = sqrt(slipRate[0]*slipRate[0] + slipRate[1]*slipRate[1]);
   
   const PylithScalar tractionNormal = tractionTpdt[2];
-  const PylithScalar tractionShearMag = 
-    sqrt(tractionTpdt[0] * tractionTpdt[0] +
-	 tractionTpdt[1] * tractionTpdt[1]);
+  const PylithScalar tractionShearMag = sqrt(tractionTpdt[0] * tractionTpdt[0] + tractionTpdt[1] * tractionTpdt[1]);
   
   if (fabs(slip[2]) < _zeroTolerance && tractionNormal < -_zeroTolerance) {
     // if in compression and no opening
-    const PylithScalar frictionStress = 
-      _friction->calcFriction(t, slipShearMag, slipRateMag, tractionNormal);
+    PylithScalar frictionStress = _friction->calcFriction(t, slipMag, slipRateMag, tractionNormal);
 
     if (tractionShearMag > frictionStress || (iterating && slipRateMag > 0.0)) {
       // traction is limited by friction, so have sliding OR
       // friction exceeds traction due to overshoot in slip
       
       if (tractionShearMag > 0.0) {
+#if 1 // New Newton stuff
+	if (fabs(jacobianShear) > 0.0) {
+	  // Use Newton to get better update
+	  const int maxiter = 16;
+	  PylithScalar slipMagCur = slipMag;
+	  PylithScalar slipRateMagCur = slipRateMag;
+	  PylithScalar tractionShearMagCur = tractionShearMag;
+	  for (int iter=0; iter < maxiter; ++iter) {
+	    const PylithScalar frictionDeriv = _friction->calcFrictionDeriv(t, slipMagCur, slipRateMagCur, tractionNormal);
+	    slipMag = slipMagCur;
+	    if (slipMag > 0.0) {
+	      // Use Newton (in log slip space) to get better update in slip & traction.
+	      // D_{i+1} = exp(ln(D_i) - (T-T_f)/(D_i * (jacobian - frictionDeriv))
+	      slipMagCur = exp(log(slipMag) - (tractionShearMagCur - frictionStress) / (slipMag * (jacobianShear - frictionDeriv)));
+	    } else {
+	      // Use Newton (in linear slip space) to get better update in slip & traction.
+	      // D_{i+1} = D_i - (T-T_f)/(jacobian - frictionDeriv)
+	      slipMagCur = slipMag - (tractionShearMagCur - frictionStress) / (jacobianShear - frictionDeriv);
+	    } // if
+	    tractionShearMagCur += (slipMagCur - slipMag) * jacobianShear;
+	    slipRateMagCur += (slipMagCur - slipMag) / _dt;
+	    frictionStress = _friction->calcFriction(t, slipMagCur, slipRateMagCur, tractionNormal);
+	    if (fabs(tractionShearMagCur - frictionStress) < _zeroTolerance) {
+	      break;
+	    } // if
+	  } // for
+	} // if
+#endif
 	// Update traction increment based on value required to stick
 	// versus friction
-	const PylithScalar dlp = -(tractionShearMag - frictionStress) * 
-	  tractionTpdt[0] / tractionShearMag;
-	const PylithScalar dlq = -(tractionShearMag - frictionStress) * 
-	  tractionTpdt[1] / tractionShearMag;
+	const PylithScalar dlp = -(tractionShearMag - frictionStress) * tractionTpdt[0] / tractionShearMag;
+	const PylithScalar dlq = -(tractionShearMag - frictionStress) * tractionTpdt[1] / tractionShearMag;
 	
 	(*dTractionTpdt)[0] = dlp;
 	(*dTractionTpdt)[1] = dlq;

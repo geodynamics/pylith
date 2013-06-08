@@ -230,12 +230,15 @@ private :
    * @param slip Slip assoc. w/Lagrange multiplier vertex.
    * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
    * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
+   * @param jacobianShear Derivative of shear traction with respect to slip (elasticity).
+   * @param iterating True if iterating on solution.
    */
   void _constrainSolnSpace1D(scalar_array* dLagrangeTpdt,
 			     const PylithScalar t,
 			     const scalar_array& slip,
 			     const scalar_array& slipRate,
 			     const scalar_array& tractionTpdt,
+			     const PylithScalar jacobianShear,
 			     const bool iterating =true);
 
   /** Constrain solution space in 2-D.
@@ -245,12 +248,15 @@ private :
    * @param slip Slip assoc. w/Lagrange multiplier vertex.
    * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
    * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
+   * @param jacobianShear Derivative of shear traction with respect to slip (elasticity).
+   * @param iterating True if iterating on solution.
    */
   void _constrainSolnSpace2D(scalar_array* dLagrangeTpdt,
 			     const PylithScalar t,
 			     const scalar_array& slip,
 			     const scalar_array& slipRate,
 			     const scalar_array& tractionTpdt,
+			     const PylithScalar jacobianShear,
 			     const bool iterating =true);
 
   /** Constrain solution space in 3-D.
@@ -260,12 +266,15 @@ private :
    * @param slip Slip assoc. w/Lagrange multiplier vertex.
    * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
    * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
+   * @param jacobianShear Derivative of shear traction with respect to slip (elasticity).
+   * @param iterating True if iterating on solution.
    */
   void _constrainSolnSpace3D(scalar_array* dLagrangeTpdt,
 			     const PylithScalar t,
 			     const scalar_array& slip,
 			     const scalar_array& slipRate,
 			     const scalar_array& tractionTpdt,
+			     const PylithScalar jacobianShear,
 			     const bool iterating =true);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
