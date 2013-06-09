@@ -57,7 +57,7 @@ pylith::topology::VecVisitorSubMesh::initialize(const SubMeshIS& submeshIS)
 
   PetscErrorCode err;
   PetscSection section = _field.petscSection();assert(section);
-  const PetscIS subpointIS = submeshIS.indexSet();assert(subpointIS);
+  const PetscIS subpointIS = submeshIS.indexSet();
   err = PetscSectionCreateSubmeshSection(section, subpointIS, &_section);PYLITH_CHECK_ERROR(err);assert(_section);
 } // initialize
 
@@ -257,13 +257,17 @@ pylith::topology::MatVisitorSubMesh::setClosure(const PetscScalar* valuesCell,
 inline
 pylith::topology::SubMeshIS::SubMeshIS(const Mesh& submesh) :
   _submesh(submesh),
-  _indexSet(NULL)
+  _indexSet(NULL),
+  _size(0),
+  _points(0)
 { // constructor
   PetscDM dmMesh = submesh.dmMesh();assert(dmMesh);
   PetscErrorCode err;
   err = DMPlexCreateSubpointIS(dmMesh, &_indexSet);PYLITH_CHECK_ERROR(err);
-  err = ISGetSize(_indexSet, &_size);PYLITH_CHECK_ERROR(err);assert(_size >= 0);
-  err = ISGetIndices(_indexSet, &_points);PYLITH_CHECK_ERROR(err);
+  if (_indexSet) {
+    err = ISGetSize(_indexSet, &_size);PYLITH_CHECK_ERROR(err);assert(_size >= 0);
+    err = ISGetIndices(_indexSet, &_points);PYLITH_CHECK_ERROR(err);
+  } // if
 } // constructor
 
 // ----------------------------------------------------------------------
