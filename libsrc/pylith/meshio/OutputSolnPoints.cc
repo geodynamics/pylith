@@ -246,7 +246,11 @@ pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
   } // if
 
   topology::Field& fieldInterp = _fields->get(fieldName.c_str());
-  if (numVertices*fiberDim != fieldInterp.sectionSize()) {
+  // The decision to reallocate a field must be collective
+  PetscInt reallocate = numVertices*fiberDim != fieldInterp.sectionSize();
+  PetscInt reallocateGlobal = 0;
+  err = MPI_Allreduce(&reallocate, &reallocateGlobal, 1, MPIU_INT, MPI_LOR, fieldInterp.mesh().comm());PYLITH_CHECK_ERROR(err);
+  if (reallocateGlobal) {
     fieldInterp.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
     fieldInterp.allocate();
   } // if
