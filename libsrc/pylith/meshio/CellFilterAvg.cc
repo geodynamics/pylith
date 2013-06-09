@@ -123,11 +123,13 @@ pylith::meshio::CellFilterAvg::filter(const topology::Field& fieldIn,
   const int fiberDim = totalFiberDim / numQuadPts;
   assert(fiberDim * numQuadPts == totalFiberDim);
   // The decision to reallocate a field must be collective
-  PetscInt reallocate = ((!_fieldAvg) || (_fieldAvg->sectionSize() != numCells*fiberDim)), reallocateGlobal;
-
+  PetscInt reallocate = ((!_fieldAvg) || (_fieldAvg->sectionSize() != numCells*fiberDim));
+  PetscInt reallocateGlobal = 0;
   err = MPI_Allreduce(&reallocate, &reallocateGlobal, 1, MPIU_INT, MPI_LOR, fieldIn.mesh().comm());PYLITH_CHECK_ERROR(err);
   if (reallocateGlobal) {
-    if (!_fieldAvg) _fieldAvg = new topology::Field(fieldIn.mesh());assert(_fieldAvg);
+    if (!_fieldAvg) {
+      _fieldAvg = new topology::Field(fieldIn.mesh());assert(_fieldAvg);
+    } // if
     _fieldAvg->newSection(fieldIn, fiberDim);
     _fieldAvg->allocate();
   } // if
