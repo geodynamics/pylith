@@ -120,7 +120,12 @@ pylith::faults::FaultCohesiveImpulses::threshold(const PylithScalar value)
 int
 pylith::faults::FaultCohesiveImpulses::numImpulses(void) const
 { // numImpulses
-  return _impulsePoints.size();
+  MPI_Comm comm = _faultMesh->comm();
+  int numImpulsesLocal = _impulsePoints.size();
+  int numImpulses = 0;
+  MPI_Allreduce(&numImpulsesLocal, &numImpulses, 1, MPI_INT, MPI_SUM, comm);
+
+  return numImpulses;
 } // numImpulses
 
 // ----------------------------------------------------------------------
@@ -334,6 +339,9 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
     const int v_fault = _cohesiveVertices[iVertex].fault;
 
     PetscInt goff;
+    // :BUG: MATT This doesn't work. The offsets are all positive. I
+    // expected negative offsets for nonlocal values. Is the SF not
+    // setup properly for a section over the fault?
     err = PetscSectionGetOffset(amplitudeGlobalSection, v_fault, &goff);PYLITH_CHECK_ERROR(err);
     if (goff < 0) {
       continue;
@@ -397,14 +405,14 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulseOrder(const std::map<int,int
   PetscDM faultDMMesh = _faultMesh->dmMesh();assert(faultDMMesh);
 
   // Gather number of points on each processor.
-  const int numImpulsesLocal = pointOrder.size();
+  int numImpulsesLocal = pointOrder.size();
   MPI_Comm comm = _faultMesh->comm();
   PetscMPIInt commSize, commRank;
   PetscErrorCode err;
   err = MPI_Comm_size(comm, &commSize);PYLITH_CHECK_ERROR(err);
   err = MPI_Comm_rank(comm, &commRank);PYLITH_CHECK_ERROR(err);
   int_array numImpulsesAll(commSize);
-  err = MPI_Allgather((void *) &numImpulsesLocal, 1, MPI_INT, (void *) &numImpulsesAll[0], commSize, MPI_INT, comm);PYLITH_CHECK_ERROR(err);
+  err = MPI_Allgather((void*) &numImpulsesLocal, 1, MPI_INT, (void*) &numImpulsesAll[0], 1, MPI_INT, comm);PYLITH_CHECK_ERROR(err);
   
   int localOffset = 0;
   for (int i=0; i < commRank; ++i) {
