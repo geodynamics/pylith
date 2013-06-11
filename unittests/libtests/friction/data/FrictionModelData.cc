@@ -40,6 +40,7 @@ pylith::friction::FrictionModelData::FrictionModelData(void) :
   propertiesNondim(0),
   stateVarsNondim(0),
   friction(0),
+  frictionDeriv(0),
   slip(0),
   slipRate(0),
   normalTraction(0),

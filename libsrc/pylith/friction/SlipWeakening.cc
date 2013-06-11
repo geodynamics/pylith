@@ -329,11 +329,11 @@ pylith::friction::SlipWeakening::_calcFrictionDeriv(const PylithScalar t,
     const PylithScalar slipCum = stateVars[s_slipCum] + fabs(slip - slipPrev);
 
     if (slipCum < properties[p_d0]) {
-      frictionDeriv = -normalTraction * (properties[p_coefS] - properties[p_coefD]) / properties[p_d0];
+      frictionDeriv = normalTraction * (properties[p_coefS] - properties[p_coefD]) / properties[p_d0];
     } // if
   } // if
 
-  PetscLogFlops(7);
+  PetscLogFlops(6);
 
   return frictionDeriv;
 } // _calcFrictionDeriv

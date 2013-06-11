@@ -66,6 +66,7 @@ public:
   PylithScalar* stateVarsNondim; ///< Nondimensional state variables at locations.
 
   PylithScalar* friction; ///< Friction at locations.
+  PylithScalar* frictionDeriv; ///< Derivative of friction with slip at locations.
   PylithScalar* slip; ///< Slip at locations.
   PylithScalar* slipRate; ///< Slip rate at locations.
   PylithScalar* normalTraction; ///< Normal traction at locations.

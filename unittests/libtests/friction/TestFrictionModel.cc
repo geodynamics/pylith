@@ -44,10 +44,6 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-#include <cstring> // USES memcpy()
-
-//#define PRECOMPUTE_GEOMETRY
-
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::friction::TestFrictionModel );
 
@@ -324,6 +320,38 @@ pylith::friction::TestFrictionModel::testCalcFriction(void)
 
   PYLITH_METHOD_END;
 } // testCalcFriction
+    
+// ----------------------------------------------------------------------
+// Test calcFrictionDeriv()
+void
+pylith::friction::TestFrictionModel::testCalcFrictionDeriv(void)
+{ // testCalcFrictionDeriv
+  PYLITH_METHOD_BEGIN;
+
+  topology::Mesh mesh;
+  faults::FaultCohesiveDyn fault;
+  StaticFriction friction;
+  StaticFrictionData data;
+  _initialize(&mesh, &fault, &friction, &data);
+
+  const PylithScalar t = 1.5;
+  const PylithScalar slip = 1.2;
+  const PylithScalar slipRate = -2.3;
+  const PylithScalar normalTraction = -2.4e-3;
+  const PylithScalar frictionCoef = 0.6;
+  const PylithScalar cohesion = 1.0e+6/data.pressureScale;
+  const PylithScalar frictionDerivE = 0.0;
+  const int vertex = 2;
+
+  friction.timeStep(data.dt);
+  friction.retrievePropsStateVars(vertex);
+  const PylithScalar frictionDeriv = friction.calcFrictionDeriv(t, slip, slipRate, normalTraction);
+
+  const PylithScalar tolerance = 1.0e-06;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(frictionDerivE, frictionDeriv, tolerance);
+
+  PYLITH_METHOD_END;
+} // testCalcFrictionDeriv
     
 // ----------------------------------------------------------------------
 // Test updateStateVars()
@@ -726,6 +754,51 @@ pylith::friction::TestFrictionModel::test_calcFriction(void)
 
   PYLITH_METHOD_END;
 } // _testCalcFriction
+
+// ----------------------------------------------------------------------
+// Test _calcFriction()
+void
+pylith::friction::TestFrictionModel::test_calcFrictionDeriv(void)
+{ // _testCalcFrictionDeriv
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_friction);
+  CPPUNIT_ASSERT(_data);
+
+  const int numLocs = _data->numLocs;
+  const int numPropsVertex = _data->numPropsVertex;
+  const int numVarsVertex = _data->numVarsVertex;
+  
+  scalar_array properties(numPropsVertex);
+  scalar_array stateVars(numVarsVertex);
+
+  for (int iLoc=0; iLoc < numLocs; ++iLoc) {
+    for (int i=0; i < numPropsVertex; ++i)
+      properties[i] = _data->properties[iLoc*numPropsVertex+i];
+    for (int i=0; i < numVarsVertex; ++i)
+      stateVars[i] = _data->stateVars[iLoc*numVarsVertex+i];
+    const PylithScalar t = 1.5;
+    const PylithScalar slip = _data->slip[iLoc];
+    const PylithScalar slipRate = _data->slipRate[iLoc];
+    const PylithScalar normalTraction = _data->normalTraction[iLoc];
+
+    _friction->timeStep(_data->dt);
+    const PylithScalar frictionDeriv = 
+      _friction->_calcFrictionDeriv(t, slip, slipRate, normalTraction,
+				    &properties[0], properties.size(),
+				    &stateVars[0], stateVars.size());
+    
+    const PylithScalar frictionDerivE = _data->frictionDeriv[iLoc];
+    
+    const PylithScalar tolerance = 1.0e-06;
+    if (0.0 != frictionDerivE)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, frictionDeriv/frictionDerivE, tolerance);
+    else
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(frictionDerivE, frictionDeriv, tolerance);
+  } // for
+
+  PYLITH_METHOD_END;
+} // _testCalcFrictionDeriv
 
 // ----------------------------------------------------------------------
 // Test _updateStateVars()
