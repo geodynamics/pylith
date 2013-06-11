@@ -134,8 +134,8 @@ const PylithScalar pylith::friction::RateStateAgeingData::_friction[] = {
 };
 
 const PylithScalar pylith::friction::RateStateAgeingData::_frictionDeriv[] = {
-  -2.2e+5*0.0125/(0.0011*0.01),
-  -2.3e+5*0.0225/(0.0021*0.01),
+  2.2e+5*0.0125/(0.0011*0.01),
+  2.3e+5*0.0225/(0.0021*0.01),
 };
 
 const PylithScalar pylith::friction::RateStateAgeingData::_slip[] = {
