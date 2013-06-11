@@ -271,6 +271,15 @@ const PylithScalar pylith::friction::SlipWeakeningTimeStableData::_friction[6] =
   11.15e+5,
 };
 
+const PylithScalar pylith::friction::SlipWeakeningTimeStableData::_frictionDeriv[6] = {
+  -2.2e+5*0.1/0.8,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+};
+
 const PylithScalar pylith::friction::SlipWeakeningTimeStableData::_slip[6] = {
   0.15,
   0.15,
@@ -343,6 +352,7 @@ pylith::friction::SlipWeakeningTimeStableData::SlipWeakeningTimeStableData(void)
   propertiesNondim = const_cast<PylithScalar*>(_propertiesNondim);
   stateVarsNondim = const_cast<PylithScalar*>(_stateVarsNondim);
   friction = const_cast<PylithScalar*>(_friction);
+  frictionDeriv = const_cast<PylithScalar*>(_frictionDeriv);
   slip = const_cast<PylithScalar*>(_slip);
   slipRate = const_cast<PylithScalar*>(_slipRate);
   normalTraction = const_cast<PylithScalar*>(_normalTraction);

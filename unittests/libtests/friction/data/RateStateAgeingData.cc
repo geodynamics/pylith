@@ -133,6 +133,11 @@ const PylithScalar pylith::friction::RateStateAgeingData::_friction[] = {
   11.164378652801948e+5,
 };
 
+const PylithScalar pylith::friction::RateStateAgeingData::_frictionDeriv[] = {
+  -2.2e+5*0.0125/(0.0011*0.01),
+  -2.3e+5*0.0225/(0.0021*0.01),
+};
+
 const PylithScalar pylith::friction::RateStateAgeingData::_slip[] = {
   0.12,
   0.22,
@@ -178,6 +183,7 @@ pylith::friction::RateStateAgeingData::RateStateAgeingData(void)
   propertiesNondim = const_cast<PylithScalar*>(_propertiesNondim);
   stateVarsNondim = const_cast<PylithScalar*>(_stateVarsNondim);
   friction = const_cast<PylithScalar*>(_friction);
+  frictionDeriv = const_cast<PylithScalar*>(_frictionDeriv);
   slip = const_cast<PylithScalar*>(_slip);
   slipRate = const_cast<PylithScalar*>(_slipRate);
   normalTraction = const_cast<PylithScalar*>(_normalTraction);
