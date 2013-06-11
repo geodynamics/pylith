@@ -86,6 +86,8 @@ private:
 
   static const PylithScalar _friction[];
 
+  static const PylithScalar _frictionDeriv[];
+
   static const PylithScalar _slip[];
 
   static const PylithScalar _slipRate[];

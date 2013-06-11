@@ -379,11 +379,11 @@ pylith::friction::FrictionModel::calcFrictionDeriv(const PylithScalar t,
   const PylithScalar* stateVarsVertex = (_varsFiberDim > 0) ?
     &_propsStateVarsVertex[_propsFiberDim] : 0;
 
-  const PylithScalar friction = _calcFrictionDeriv(t, slip, slipRate, normalTraction,
-						   propertiesVertex, _propsFiberDim,
-						   stateVarsVertex, _varsFiberDim);
+  const PylithScalar frictionDeriv = _calcFrictionDeriv(t, slip, slipRate, normalTraction,
+							propertiesVertex, _propsFiberDim,
+							stateVarsVertex, _varsFiberDim);
   
-  PYLITH_METHOD_RETURN(friction);
+  PYLITH_METHOD_RETURN(frictionDeriv);
 } // calcFrictionDeriv
 
 // ----------------------------------------------------------------------

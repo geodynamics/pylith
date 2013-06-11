@@ -58,6 +58,7 @@ class pylith::friction::TestFrictionModel : public CppUnit::TestFixture
   CPPUNIT_TEST( testGetField );
   CPPUNIT_TEST( testRetrievePropsStateVars );
   CPPUNIT_TEST( testCalcFriction );
+  CPPUNIT_TEST( testCalcFrictionDeriv );
   CPPUNIT_TEST( testUpdateStateVars );
 
   CPPUNIT_TEST_SUITE_END();
@@ -91,6 +92,9 @@ public :
 
   /// Test calcFriction()
   void testCalcFriction(void);
+
+  /// Test calcFrictionDeriv()
+  void testCalcFrictionDeriv(void);
 
   /// Test updateStateVars().
   void testUpdateStateVars(void);
@@ -128,6 +132,9 @@ public :
 
   /// Test _calcFriction().
   void test_calcFriction(void);
+
+  /// Test _calcFrictionDeriv().
+  void test_calcFrictionDeriv(void);
 
   /// Test _updateStateVars().
   void test_updateStateVars(void);

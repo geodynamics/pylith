@@ -88,6 +88,11 @@ const PylithScalar pylith::friction::StaticFrictionData::_friction[] = {
   1.0e+6,
 };
 
+const PylithScalar pylith::friction::StaticFrictionData::_frictionDeriv[] = {
+  0.0,
+  0.0,
+};
+
 const PylithScalar pylith::friction::StaticFrictionData::_slip[] = {
   0.12,
   0.25,
@@ -130,6 +135,7 @@ pylith::friction::StaticFrictionData::StaticFrictionData(void)
   propertiesNondim = const_cast<PylithScalar*>(_propertiesNondim);
   stateVarsNondim = const_cast<PylithScalar*>(_stateVarsNondim);
   friction = const_cast<PylithScalar*>(_friction);
+  frictionDeriv = const_cast<PylithScalar*>(_frictionDeriv);
   slip = const_cast<PylithScalar*>(_slip);
   slipRate = const_cast<PylithScalar*>(_slipRate);
   normalTraction = const_cast<PylithScalar*>(_normalTraction);

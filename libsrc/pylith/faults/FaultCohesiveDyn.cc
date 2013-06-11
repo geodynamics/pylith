@@ -54,10 +54,6 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
-// Precomputing geometry significantly increases storage but gives a
-// slight speed improvement.
-//#define PRECOMPUTE_GEOMETRY
-
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::faults::FaultCohesiveDyn::FaultCohesiveDyn(void) :
@@ -669,9 +665,9 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
     // Use fault constitutive model to compute traction associated with
     // friction.
     dTractionTpdtVertex = 0.0;
-    const PylithScalar jacobianShear = 0.0;
+    const PylithScalar jacobianShearVertex = 0.0;
     const bool iterating = true; // Iterating to get friction
-    CALL_MEMBER_FN(*this, constrainSolnSpaceFn)(&dTractionTpdtVertex, t, slipTpdtVertex, slipRateVertex, tractionTpdtVertex, jacobianShear, iterating);
+    CALL_MEMBER_FN(*this, constrainSolnSpaceFn)(&dTractionTpdtVertex, t, slipTpdtVertex, slipRateVertex, tractionTpdtVertex, jacobianShearVertex, iterating);
 
     // Rotate increment in traction back to global coordinate system.
     dLagrangeTpdtVertex = 0.0;
@@ -2387,6 +2383,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(scalar_array* dTractionT
 	  } // for
 	} // if
 #endif
+
 	// Update traction increment based on value required to stick
 	// versus friction
 	const PylithScalar dlp = -(tractionShearMag - frictionStress) * tractionTpdt[0] / tractionShearMag;

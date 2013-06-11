@@ -47,6 +47,7 @@ class pylith::friction::TestTimeWeakening : public TestFrictionModel
   CPPUNIT_TEST( testDimStateVars );
   CPPUNIT_TEST( testHasPropStateVar );
   CPPUNIT_TEST( test_calcFriction );
+  CPPUNIT_TEST( test_calcFrictionDeriv );
   CPPUNIT_TEST( test_updateStateVars );
 
   CPPUNIT_TEST_SUITE_END();

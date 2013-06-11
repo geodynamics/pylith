@@ -243,7 +243,6 @@ private :
   /** Constrain solution space in 2-D.
    *
    * @param dLagrangeTpdt Adjustment to Lagrange multiplier.
-   * @param dSlip Adjustment to slip.
    * @param t Current time.
    * @param slip Slip assoc. w/Lagrange multiplier vertex.
    * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
@@ -262,7 +261,6 @@ private :
   /** Constrain solution space in 3-D.
    *
    * @param dLagrangeTpdt Adjustment to Lagrange multiplier.
-   * @param dSlip Adjustment to slip.
    * @param t Current time.
    * @param slip Slip assoc. w/Lagrange multiplier vertex.
    * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
