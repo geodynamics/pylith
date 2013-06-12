@@ -1373,9 +1373,13 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 	  dispRelVertex[jDim];
 	tractionTpdtVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
 	  (lagrangeTVertex[jDim] + lagrangeTIncrVertex[jDim]);
-	jacobianShearVertex += orientationVertex[iDim*spaceDim+jDim] * (-0.5 / (areaVertex * (1.0 / jacobianVertexN[jDim] + 1.0 / jacobianVertexP[jDim])));
       } // for
     } // for
+    // Jacobian is diagonal and isotropic, so it is invariant with
+    // respect to rotation and contains one unique term.  Fault
+    // traction is equal and opposite, so the Jacobian for the change
+    // in traction with slip requires a factor of 0.5.
+    jacobianShearVertex = -0.5 / (areaVertex * (1.0 / jacobianVertexN[0] + 1.0 / jacobianVertexP[0]));
     
     // Get friction properties and state variables.
     _friction->retrievePropsStateVars(v_fault);
@@ -2530,7 +2534,8 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(scalar_array* dTractionT
 
       if (tractionShearMag > 0.0) {
 #if 1 // New Newton stuff
-	if (fabs(jacobianShear) > 0.0) {
+	if (0.0 != jacobianShear) {
+	  assert(jacobianShear < 0.0);
 	  // Use Newton to get better update
 	  const int maxiter = 32;
 	  PylithScalar slipMagCur = slipMag;
@@ -2610,7 +2615,8 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(scalar_array* dTractionT
       
       if (tractionShearMag > 0.0) {
 #if 1 // New Newton stuff
-	if (fabs(jacobianShear) > 0.0) {
+	if (0.0 != jacobianShear) {
+	  assert(jacobianShear < 0.0);
 	  // Use Newton to get better update
 	  const int maxiter = 32;
 	  PylithScalar slipMagCur = slipMag;
