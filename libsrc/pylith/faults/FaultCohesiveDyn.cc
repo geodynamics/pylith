@@ -1067,8 +1067,6 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(topology::SolutionFields* con
   PetscScalar* dispRelArray = dispRelVisitor.localArray();
 
   scalar_array slipRateVertex(spaceDim);
-  topology::VecVisitorMesh velRelVisitor(_fields->get("relative velocity"));
-  PetscScalar* velRelArray = velRelVisitor.localArray();
 
   topology::VecVisitorMesh areaVisitor(_fields->get("area"));
   const PetscScalar* areaArray = areaVisitor.localArray();
@@ -1163,10 +1161,6 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(topology::SolutionFields* con
     const PetscInt droff = dispRelVisitor.sectionOffset(v_fault);
     assert(spaceDim == dispRelVisitor.sectionDof(v_fault));
 
-    // Get relative velocity at fault vertex.
-    const PetscInt vroff = velRelVisitor.sectionOffset(v_fault);
-    assert(spaceDim == velRelVisitor.sectionDof(v_fault));
-    
     // Get area at fault vertex.
     const PetscInt aoff = areaVisitor.sectionOffset(v_fault);
     assert(1 == areaVisitor.sectionDof(v_fault));
@@ -1199,15 +1193,17 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(topology::SolutionFields* con
     slipVertex = 0.0;
     slipRateVertex = 0.0;
     tractionTpdtVertex = 0.0;
-    PylithScalar jacobianShearVertex = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       for (int jDim=0; jDim < spaceDim; ++jDim) {
         slipVertex[iDim] += orientationArray[ooff+iDim*spaceDim+jDim] * dispRelArray[droff+jDim];
-        slipRateVertex[iDim] += orientationArray[ooff+iDim*spaceDim+jDim] * velRelArray[vroff+jDim];
         tractionTpdtVertex[iDim] += orientationArray[ooff+iDim*spaceDim+jDim] * (dispTArray[dtloff+jDim] + lagrangeTIncrVertex[jDim]);
-	jacobianShearVertex += orientationArray[ooff+iDim*spaceDim+jDim] * (-1.0 / (areaVertex * (1.0 / jacobianArray[jnoff+iDim] + 1.0 / jacobianArray[jpoff+iDim])));
       } // for
     } // for
+    // Jacobian is diagonal and isotropic, so it is invariant with
+    // respect to rotation and contains one unique term.  Fault
+    // traction is equal and opposite, so the Jacobian for the change
+    // in traction with slip requires a factor of 0.5.
+    const PylithScalar jacobianShearVertex = -0.5 / (areaVertex * (1.0 / jacobianArray[jnoff+0] + 1.0 / jacobianArray[jpoff+0]));
     
     // Get friction properties and state variables.
     _friction->retrievePropsStateVars(v_fault);
@@ -2276,12 +2272,14 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(scalar_array* dTractionT
 
       if (tractionShearMag > 0.0) {
 #if 1 // New Newton stuff
-	if (fabs(jacobianShear) > 0.0) {
+	if (0.0 != jacobianShear) {
+	  assert(jacobianShear < 0.0);
 	  // Use Newton to get better update
-	  const int maxiter = 16;
+	  const int maxiter = 32;
 	  PylithScalar slipMagCur = slipMag;
 	  PylithScalar slipRateMagCur = slipRateMag;
 	  PylithScalar tractionShearMagCur = tractionShearMag;
+	  const PylithScalar slipMag0 = fabs(slip[0] - slipRate[0] * _dt);
 	  for (int iter=0; iter < maxiter; ++iter) {
 	    const PylithScalar frictionDeriv = _friction->calcFrictionDeriv(t, slipMagCur, slipRateMagCur, tractionNormal);
 	    slipMag = slipMagCur;
@@ -2295,7 +2293,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(scalar_array* dTractionT
 	      slipMagCur = slipMag - (tractionShearMagCur - frictionStress) / (jacobianShear - frictionDeriv);
 	    } // if
 	    tractionShearMagCur += (slipMagCur - slipMag) * jacobianShear;
-	    slipRateMagCur += (slipMagCur - slipMag) / _dt;
+	    slipRateMagCur = (slipMagCur - slipMag0) / _dt;
 	    frictionStress = _friction->calcFriction(t, slipMagCur, slipRateMagCur, tractionNormal);
 	    if (fabs(tractionShearMagCur - frictionStress) < _zeroTolerance) {
 	      break;
@@ -2356,12 +2354,14 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(scalar_array* dTractionT
       
       if (tractionShearMag > 0.0) {
 #if 1 // New Newton stuff
-	if (fabs(jacobianShear) > 0.0) {
+	if (0.0 != jacobianShear) {
+	  assert(jacobianShear < 0.0);
 	  // Use Newton to get better update
-	  const int maxiter = 16;
+	  const int maxiter = 32;
 	  PylithScalar slipMagCur = slipMag;
 	  PylithScalar slipRateMagCur = slipRateMag;
 	  PylithScalar tractionShearMagCur = tractionShearMag;
+	  const PylithScalar slipMag0 = sqrt(pow(slip[0]-slipRate[0]*_dt, 2) + pow(slip[1]-slipRate[1]*_dt, 2));
 	  for (int iter=0; iter < maxiter; ++iter) {
 	    const PylithScalar frictionDeriv = _friction->calcFrictionDeriv(t, slipMagCur, slipRateMagCur, tractionNormal);
 	    slipMag = slipMagCur;
@@ -2375,7 +2375,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(scalar_array* dTractionT
 	      slipMagCur = slipMag - (tractionShearMagCur - frictionStress) / (jacobianShear - frictionDeriv);
 	    } // if
 	    tractionShearMagCur += (slipMagCur - slipMag) * jacobianShear;
-	    slipRateMagCur += (slipMagCur - slipMag) / _dt;
+	    slipRateMagCur = (slipMagCur - slipMag0) / _dt;
 	    frictionStress = _friction->calcFriction(t, slipMagCur, slipRateMagCur, tractionNormal);
 	    if (fabs(tractionShearMagCur - frictionStress) < _zeroTolerance) {
 	      break;
