@@ -1366,7 +1366,6 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     slipVertex = 0.0;
     slipRateVertex = 0.0;
     tractionTpdtVertex = 0.0;
-    PylithScalar jacobianShearVertex = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       for (int jDim=0; jDim < spaceDim; ++jDim) {
 	slipVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
@@ -1379,7 +1378,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     // respect to rotation and contains one unique term.  Fault
     // traction is equal and opposite, so the Jacobian for the change
     // in traction with slip requires a factor of 0.5.
-    jacobianShearVertex = -0.5 / (areaVertex * (1.0 / jacobianVertexN[0] + 1.0 / jacobianVertexP[0]));
+    const PylithScalar jacobianShearVertex = -0.5 / (areaVertex * (1.0 / jacobianVertexN[0] + 1.0 / jacobianVertexP[0]));
     
     // Get friction properties and state variables.
     _friction->retrievePropsStateVars(v_fault);
