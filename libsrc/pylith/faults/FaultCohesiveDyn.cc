@@ -1218,9 +1218,6 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
   assert(!dispRelSection.isNull());
 
   scalar_array slipRateVertex(spaceDim);
-  const ALE::Obj<RealSection>& velRelSection =
-      _fields->get("relative velocity").section();
-  assert(!velRelSection.isNull());
 
   const ALE::Obj<RealSection>& orientationSection =
       _fields->get("orientation").section();
@@ -1330,11 +1327,6 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     dispRelSection->restrictPoint(v_fault, &dispRelVertex[0], 
 				  dispRelVertex.size());
 
-    // Get relative velocity at fault vertex.
-    assert(spaceDim == velRelSection->getFiberDimension(v_fault));
-    const PylithScalar* velRelVertex = velRelSection->restrictPoint(v_fault);
-    assert(velRelVertex);
-    
     // Get fault orientation at fault vertex.
     assert(spaceDim*spaceDim == orientationSection->getFiberDimension(v_fault));
     const PylithScalar* orientationVertex = 
@@ -1379,11 +1371,9 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
       for (int jDim=0; jDim < spaceDim; ++jDim) {
 	slipVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
 	  dispRelVertex[jDim];
-	slipRateVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
-	  velRelVertex[jDim];
 	tractionTpdtVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
 	  (lagrangeTVertex[jDim] + lagrangeTIncrVertex[jDim]);
-	jacobianShearVertex += orientationVertex[iDim*spaceDim+jDim] * (-1.0 / (areaVertex * (1.0 / jacobianVertexN[iDim] + 1.0 / jacobianVertexP[iDim])));
+	jacobianShearVertex += orientationVertex[iDim*spaceDim+jDim] * (-0.5 / (areaVertex * (1.0 / jacobianVertexN[jDim] + 1.0 / jacobianVertexP[jDim])));
       } // for
     } // for
     
@@ -2542,10 +2532,11 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(scalar_array* dTractionT
 #if 1 // New Newton stuff
 	if (fabs(jacobianShear) > 0.0) {
 	  // Use Newton to get better update
-	  const int maxiter = 16;
+	  const int maxiter = 32;
 	  PylithScalar slipMagCur = slipMag;
 	  PylithScalar slipRateMagCur = slipRateMag;
 	  PylithScalar tractionShearMagCur = tractionShearMag;
+	  const PylithScalar slipMag0 = fabs(slip[0] - slipRate[0] * _dt);
 	  for (int iter=0; iter < maxiter; ++iter) {
 	    const PylithScalar frictionDeriv = _friction->calcFrictionDeriv(t, slipMagCur, slipRateMagCur, tractionNormal);
 	    slipMag = slipMagCur;
@@ -2559,7 +2550,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(scalar_array* dTractionT
 	      slipMagCur = slipMag - (tractionShearMagCur - frictionStress) / (jacobianShear - frictionDeriv);
 	    } // if
 	    tractionShearMagCur += (slipMagCur - slipMag) * jacobianShear;
-	    slipRateMagCur += (slipMagCur - slipMag) / _dt;
+	    slipRateMagCur = (slipMagCur - slipMag0) / _dt;
 	    frictionStress = _friction->calcFriction(t, slipMagCur, slipRateMagCur, tractionNormal);
 	    if (fabs(tractionShearMagCur - frictionStress) < _zeroTolerance) {
 	      break;
@@ -2621,10 +2612,11 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(scalar_array* dTractionT
 #if 1 // New Newton stuff
 	if (fabs(jacobianShear) > 0.0) {
 	  // Use Newton to get better update
-	  const int maxiter = 16;
+	  const int maxiter = 32;
 	  PylithScalar slipMagCur = slipMag;
 	  PylithScalar slipRateMagCur = slipRateMag;
 	  PylithScalar tractionShearMagCur = tractionShearMag;
+	  const PylithScalar slipMag0 = sqrt(pow(slip[0]-slipRate[0]*_dt, 2) + pow(slip[1]-slipRate[1]*_dt, 2));
 	  for (int iter=0; iter < maxiter; ++iter) {
 	    const PylithScalar frictionDeriv = _friction->calcFrictionDeriv(t, slipMagCur, slipRateMagCur, tractionNormal);
 	    slipMag = slipMagCur;
@@ -2638,7 +2630,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(scalar_array* dTractionT
 	      slipMagCur = slipMag - (tractionShearMagCur - frictionStress) / (jacobianShear - frictionDeriv);
 	    } // if
 	    tractionShearMagCur += (slipMagCur - slipMag) * jacobianShear;
-	    slipRateMagCur += (slipMagCur - slipMag) / _dt;
+	    slipRateMagCur = (slipMagCur - slipMag0) / _dt;
 	    frictionStress = _friction->calcFriction(t, slipMagCur, slipRateMagCur, tractionNormal);
 	    if (fabs(tractionShearMagCur - frictionStress) < _zeroTolerance) {
 	      break;
