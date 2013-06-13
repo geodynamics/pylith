@@ -1200,10 +1200,8 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(topology::SolutionFields* con
       } // for
     } // for
     // Jacobian is diagonal and isotropic, so it is invariant with
-    // respect to rotation and contains one unique term.  Fault
-    // traction is equal and opposite, so the Jacobian for the change
-    // in traction with slip requires a factor of 0.5.
-    const PylithScalar jacobianShearVertex = -0.5 / (areaVertex * (1.0 / jacobianArray[jnoff+0] + 1.0 / jacobianArray[jpoff+0]));
+    // respect to rotation and contains one unique term.
+    const PylithScalar jacobianShearVertex = -1.0 / (areaVertex * (1.0 / jacobianArray[jnoff+0] + 1.0 / jacobianArray[jpoff+0]));
     
     // Get friction properties and state variables.
     _friction->retrievePropsStateVars(v_fault);
