@@ -178,7 +178,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   err = DMPlexGetHeightStratum(complexMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
   PetscInt faceSizeDM;
   int numFaultCorners = 0; // The number of vertices in a fault cell
-  PetscInt *indicesDM = PETSC_NULL; // The indices of a face vertex set in a cell
+  PetscInt *indicesDM = NULL; // The indices of a face vertex set in a cell
   const int debug = mesh->debug();
   int oppositeVertex = 0;    // For simplices, the vertex opposite a given face
   TopologyOps::PointArray origVertices;
@@ -230,7 +230,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   extraVertices         = numFaultVerticesDM * (constraintCell ? 2 : 1); /* Total number of fault vertices on this fault (shadow + Lagrange) */
   extraCells            = numFaultFacesDM;                               /* Total number of fault cells */
   firstFaultVertexDM    = vEnd + extraCells;
-  firstLagrangeVertexDM = firstFaultVertexDM + firstLagrangeVertex;
+  firstLagrangeVertexDM = firstFaultVertexDM + numFaultVerticesDM * (constraintCell ? 1 : 0);
   firstFaultCellDM      = cEnd;
   mesh->getPointTypeSizes(&numNormalCells, &numCohesiveCells, &numNormalVertices, &numShadowVertices, &numLagrangeVertices);
   faultVertexOffsetDM   = numCohesiveCells;
@@ -281,9 +281,9 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     err = DMPlexSetCone(newMesh, c, newCone);PYLITH_CHECK_ERROR(err);
   }
   err = PetscFree(newCone);PYLITH_CHECK_ERROR(err);
-  PetscInt cMax, vMax;
+  PetscInt cMax;
 
-  err = DMPlexGetHybridBounds(newMesh, &cMax, PETSC_NULL, PETSC_NULL, &vMax);PYLITH_CHECK_ERROR(err);
+  err = DMPlexGetHybridBounds(newMesh, &cMax, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
   if (cMax < 0) {
     err = DMPlexSetHybridBounds(newMesh, firstFaultCellDM, PETSC_DETERMINE, PETSC_DETERMINE, PETSC_DETERMINE);PYLITH_CHECK_ERROR(err);
   }
@@ -395,7 +395,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     int coneSize;
     bool found = true;
 
-    err = DMPlexGetOrientedFace(complexMesh, cell, coneSizeDM, faceConeDM, numCornersDM, indicesDM, origVerticesDM, faceVerticesDM, PETSC_NULL);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetOrientedFace(complexMesh, cell, coneSizeDM, faceConeDM, numCornersDM, indicesDM, origVerticesDM, faceVerticesDM, NULL);PYLITH_CHECK_ERROR(err);
     if (numFaultCorners == 0) {
       found = false;
     } else if (numFaultCorners == 2) {
