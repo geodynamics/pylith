@@ -412,7 +412,7 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulseOrder(const std::map<int,int
   err = MPI_Comm_size(comm, &commSize);PYLITH_CHECK_ERROR(err);
   err = MPI_Comm_rank(comm, &commRank);PYLITH_CHECK_ERROR(err);
   int_array numImpulsesAll(commSize);
-  err = MPI_Allgather((void*) &numImpulsesLocal, 1, MPI_INT, (void*) &numImpulsesAll[0], 1, MPI_INT, comm);PYLITH_CHECK_ERROR(err);
+  err = MPI_Allgather(&numImpulsesLocal, 1, MPI_INT, &numImpulsesAll[0], 1, MPI_INT, comm);PYLITH_CHECK_ERROR(err);
   
   int localOffset = 0;
   for (int i=0; i < commRank; ++i) {

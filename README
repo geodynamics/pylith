@@ -43,6 +43,37 @@ TIPS
 
 
 ======================================================================
+MIGRATING FROM VERSION 1.8 TO 2.0
+======================================================================
+
+----------------------------------------------------------------------
+Version 2.0.0
+----------------------------------------------------------------------
+
+* Bug fixes
+
+  - Fixed two MPI related bugs in computing Green's functions in
+    parallel. The number of impulses corresponded to only those on
+    process 0.
+
+  - Corrected computation of fault tractions (Lagrange multipliers) on
+    process boundaries for prescribed slip with explicit time stepping.
+
+  - Fixed bug when reading in list of output points with just one
+    point.
+
+  - Adjusted autoconf Python setup macro to remove temporary
+    sysconfig.pyc file.
+
+  - Added check to make sure degree of freedom specified in Dirichlet
+    BC is consistent with spatial dimension of problem.
+
+  - Corrected two typos in the manual related to fault opening and
+    tractions in examples/3d/hex8/step20 and updating to the use of
+    cell.dimension for the quadrature scheme with tets.
+
+
+======================================================================
 MIGRATING FROM VERSION 1.7 TO 1.8
 ======================================================================
 
