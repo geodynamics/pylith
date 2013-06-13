@@ -44,8 +44,7 @@ namespace contrib {
 } // pylith
 
 // ViscousFriction -------------------------------------------------------
-class contrib::friction::ViscousFriction : 
-  public pylith::friction::FrictionModel
+class contrib::friction::ViscousFriction : public pylith::friction::FrictionModel
 { // class ViscousFriction
   friend class TestViscousFriction; // unit testing
 
@@ -141,6 +140,29 @@ protected :
 			     const PylithScalar* stateVars,
 			     const int numStateVars);
 
+  /** Compute derivative friction with slip from properties and state
+   * variables.
+   *
+   * @param t Time in simulation.
+   * @param slip Current slip at location.
+   * @param slipRate Current slip rate at location.
+   * @param normalTraction Normal traction at location.
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
+   * @param stateVars State variables at location.
+   * @param numStateVars Number of state variables.
+   *
+   * @returns Derivative of friction (magnitude of shear traction) at vertex.
+   */
+  PylithScalar _calcFrictionDeriv(const PylithScalar t,
+				  const PylithScalar slip,
+				  const PylithScalar slipRate,
+				  const PylithScalar normalTraction,
+				  const PylithScalar* properties,
+				  const int numProperties,
+				  const PylithScalar* stateVars,
+				  const int numStateVars);
+  
   // --------------------------------------------------------------------
   // Optional function in the PyLith interface for a fault
   // constitutive model. Even though this function is optional, for it

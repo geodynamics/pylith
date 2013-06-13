@@ -62,7 +62,7 @@ namespace contrib {
       const int numProperties = 3;
 
       // Physical properties. 
-      const pylith::materials::Metadata::ParamDescription properties[] = {
+      const pylith::materials::Metadata::ParamDescription properties[numProperties] = {
 	{ "density", 1, pylith::topology::FieldBase::SCALAR },
 	{ "mu", 1, pylith::topology::FieldBase::SCALAR },
 	{ "lambda", 1, pylith::topology::FieldBase::SCALAR },
@@ -70,7 +70,7 @@ namespace contrib {
 
       // Values expected in spatial database
       const int numDBProperties = 3;
-      const char* dbProperties[] = { "density", "vs", "vp" };      
+      const char* dbProperties[numDBProperties] = { "density", "vs", "vp" };      
       
       // These are the state variables stored during the
       // simulation. Usually, we store only the time-dependent values
@@ -82,7 +82,7 @@ namespace contrib {
       const int numStateVars = 2;
       
       /// State variables.
-      const pylith::materials::Metadata::ParamDescription stateVars[] = {
+      const pylith::materials::Metadata::ParamDescription stateVars[numStateVars] = {
 	{ "total_strain", tensorSize, pylith::topology::FieldBase::TENSOR },
 	{ "stress", tensorSize, pylith::topology::FieldBase::TENSOR },
       };
@@ -146,12 +146,11 @@ contrib::materials::PlaneStrainState::~PlaneStrainState(void)
 // ----------------------------------------------------------------------
 // Compute parameters from values in spatial database.
 void
-contrib::materials::PlaneStrainState::_dbToProperties(
-				PylithScalar* const propValues,
-                                const pylith::scalar_array& dbValues)
+contrib::materials::PlaneStrainState::_dbToProperties(PylithScalar* const propValues,
+						      const pylith::scalar_array& dbValues)
 { // _dbToProperties
   // Check consistency of arguments
-  assert(0 != propValues);
+  assert(propValues);
   const int numDBValues = dbValues.size();
   assert(_PlaneStrainState::numDBProperties == numDBValues);
 
@@ -201,8 +200,8 @@ contrib::materials::PlaneStrainState::_nondimProperties(PylithScalar* const valu
 							 const int nvalues) const
 { // _nondimProperties
   // Check consistency of arguments.
-  assert(0 != _normalizer);
-  assert(0 != values);
+  assert(_normalizer);
+  assert(values);
   assert(nvalues == _PlaneStrainState::numProperties);
 
   // Get scales needed to nondimensional parameters from the
@@ -227,8 +226,8 @@ contrib::materials::PlaneStrainState::_dimProperties(PylithScalar* const values,
 						      const int nvalues) const
 { // _dimProperties
   // Check consistency of arguments
-  assert(0 != _normalizer);
-  assert(0 != values);
+  assert(_normalizer);
+  assert(values);
   assert(nvalues == _PlaneStrainState::numProperties);
 
   // Get scales needed to dimensional parameters from the
@@ -256,10 +255,10 @@ contrib::materials::PlaneStrainState::_calcDensity(PylithScalar* const density,
 						    const int numStateVars)
 { // calcDensity
   // Check consistency of arguments.
-  assert(0 != density);
-  assert(0 != properties);
+  assert(density);
+  assert(properties);
   assert(_numPropsQuadPt == numProperties);
-  assert(0 != stateVars);
+  assert(stateVars);
   assert(_numVarsQuadPt == numStateVars);
 
   // Set density using physical properties (trivial since one our
@@ -285,17 +284,17 @@ contrib::materials::PlaneStrainState::_calcStress(PylithScalar* const stress,
 						   const bool computeStateVars)
 { // _calcStress
   // Check consistency of arguments.
-  assert(0 != stress);
+  assert(stress);
   assert(_PlaneStrainState::tensorSize == stressSize);
-  assert(0 != properties);
+  assert(properties);
   assert(_numPropsQuadPt == numProperties);
-  assert(0 != stateVars);
+  assert(stateVars);
   assert(_numVarsQuadPt == numStateVars);
-  assert(0 != totalStrain);
+  assert(totalStrain);
   assert(_PlaneStrainState::tensorSize == strainSize);
-  assert(0 != initialStress);
+  assert(initialStress);
   assert(_PlaneStrainState::tensorSize == initialStressSize);
-  assert(0 != initialStrain);
+  assert(initialStrain);
   assert(_PlaneStrainState::tensorSize == initialStrainSize);
 
   // Extract the material properties from the properties array.
@@ -338,17 +337,17 @@ contrib::materials::PlaneStrainState::_calcElasticConsts(
 					     const int initialStrainSize)
 { // calcElasticConsts
   // Check consistency of arguments.
-  assert(0 != elasticConsts);
+  assert(elasticConsts);
   assert(_PlaneStrainState::numElasticConsts == numElasticConsts);
-  assert(0 != properties);
+  assert(properties);
   assert(_numPropsQuadPt == numProperties);
-  assert(0 != stateVars);
+  assert(stateVars);
   assert(_numVarsQuadPt == numStateVars);
-  assert(0 != totalStrain);
+  assert(totalStrain);
   assert(_PlaneStrainState::tensorSize == strainSize);
-  assert(0 != initialStress);
+  assert(initialStress);
   assert(_PlaneStrainState::tensorSize == initialStressSize);
-  assert(0 != initialStrain);
+  assert(initialStrain);
   assert(_PlaneStrainState::tensorSize == initialStrainSize);
  
   // Extract the material properties from the properties array.
@@ -373,8 +372,7 @@ contrib::materials::PlaneStrainState::_calcElasticConsts(
 // ----------------------------------------------------------------------
 // Get stable time step for implicit time integration.
 PylithScalar
-contrib::materials::PlaneStrainState::stableTimeStepImplicit(
-				    const pylith::topology::Mesh& mesh) {
+contrib::materials::PlaneStrainState::stableTimeStepImplicit(const pylith::topology::Mesh& mesh) {
   // Override the ElasticMaterial::stableTimeStepImplicit() function
   // (which calls _stableTimeStepImplicit() for each quadrature point
   // ) with an optimized calculation of the stable time step. This is
@@ -386,11 +384,10 @@ contrib::materials::PlaneStrainState::stableTimeStepImplicit(
 // ----------------------------------------------------------------------
 // Get stable time step for implicit time integration.
 PylithScalar
-contrib::materials::PlaneStrainState::_stableTimeStepImplicit(
-				     const PylithScalar* properties,
-				     const int numProperties,
-				     const PylithScalar* stateVars,
-				     const int numStateVars) const
+contrib::materials::PlaneStrainState::_stableTimeStepImplicit(const PylithScalar* properties,
+							      const int numProperties,
+							      const PylithScalar* stateVars,
+							      const int numStateVars) const
 { // _stableTimeStepImplicit
   //  Return the stable time step for this material given its current
   // state. This function will never be called because we provide the
@@ -402,30 +399,52 @@ contrib::materials::PlaneStrainState::_stableTimeStepImplicit(
 } // _stableTimeStepImplicit
 
 // ----------------------------------------------------------------------
+// Get stable time step for explicit time integration.
+PylithScalar
+contrib::materials::PlaneStrainState::_stableTimeStepExplicit(const PylithScalar* properties,
+							     const int numProperties,
+							     const PylithScalar* stateVars,
+							     const int numStateVars,
+							     const double minCellWidth) const
+{ // _stableTimeStepExplicit
+  assert(properties);
+  assert(_numPropsQuadPt == numProperties);
+ 
+  const PylithScalar mu = properties[p_mu];
+  const PylithScalar lambda = properties[p_lambda];
+  const PylithScalar density = properties[p_density];
+
+  assert(density > 0.0);
+  const PylithScalar vp = sqrt((lambda + 2*mu) / density);
+
+  const PylithScalar dtStable = minCellWidth / vp;
+  return dtStable;
+} // _stableTimeStepExplicit
+
+// ----------------------------------------------------------------------
 // Update state variables.
 void
-contrib::materials::PlaneStrainState::_updateStateVars(
-					    PylithScalar* const stateVars,
-					    const int numStateVars,
-					    const PylithScalar* properties,
-					    const int numProperties,
-					    const PylithScalar* totalStrain,
-					    const int strainSize,
-					    const PylithScalar* initialStress,
-					    const int initialStressSize,
-					    const PylithScalar* initialStrain,
-					    const int initialStrainSize)
+contrib::materials::PlaneStrainState::_updateStateVars(PylithScalar* const stateVars,
+						       const int numStateVars,
+						       const PylithScalar* properties,
+						       const int numProperties,
+						       const PylithScalar* totalStrain,
+						       const int strainSize,
+						       const PylithScalar* initialStress,
+						       const int initialStressSize,
+						       const PylithScalar* initialStrain,
+						       const int initialStrainSize)
 { // _updateStateVars
   // Check consistency of arguments.
-  assert(0 != stateVars);
+  assert(stateVars);
   assert(_numVarsQuadPt == numStateVars);
-  assert(0 != properties);
+  assert(properties);
   assert(_numPropsQuadPt == numProperties);
-  assert(0 != totalStrain);
+  assert(totalStrain);
   assert(_PlaneStrainState::tensorSize == strainSize);
-  assert(0 != initialStress);
+  assert(initialStress);
   assert(_PlaneStrainState::tensorSize == initialStressSize);
-  assert(0 != initialStrain);
+  assert(initialStrain);
   assert(_PlaneStrainState::tensorSize == initialStrainSize);
 
   // Store the tensor size as a local value.
