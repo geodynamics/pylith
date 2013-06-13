@@ -52,7 +52,7 @@ namespace contrib {
       const int numProperties = 3;
 
       // Friction model parameters.
-      const pylith::materials::Metadata::ParamDescription properties[] = {
+      const pylith::materials::Metadata::ParamDescription properties[numProperties] = {
 	{ "static_coefficient", 1, pylith::topology::FieldBase::SCALAR },
 	{ "reference_slip_rate", 1, pylith::topology::FieldBase::SCALAR },
 	{ "cohesion", 1, pylith::topology::FieldBase::SCALAR },
@@ -62,15 +62,16 @@ namespace contrib {
       const int numStateVars = 1;
 
       // State variables.
-      const pylith::materials::Metadata::ParamDescription stateVars[] = {
+      const pylith::materials::Metadata::ParamDescription stateVars[numStateVars] = {
 	{ "slip_rate", 1, pylith::topology::FieldBase::SCALAR },
       };
 
       // Values expected in spatial database
       const int numDBProperties = 3;
-      const char* dbProperties[3] = { "static-coefficient",
-				      "reference-slip-rate",
-				      "cohesion",
+      const char* dbProperties[numDBProperties] = { 
+	"static-coefficient",
+	"reference-slip-rate",
+	"cohesion",
       };
 
       // These are the state variables stored during the
@@ -80,7 +81,8 @@ namespace contrib {
       // slip rate.
 
       const int numDBStateVars = 1;
-      const char* dbStateVars[1] = { "slip-rate",
+      const char* dbStateVars[numDBStateVars] = { 
+	"slip-rate",
       };      
       
     } // _ViscousFriction
@@ -130,12 +132,11 @@ contrib::friction::ViscousFriction::~ViscousFriction(void)
 // ----------------------------------------------------------------------
 // Compute properties from values in spatial database.
 void
-contrib::friction::ViscousFriction::_dbToProperties(
-				   PylithScalar* const propValues,
-				   const pylith::scalar_array& dbValues) const
+contrib::friction::ViscousFriction::_dbToProperties(PylithScalar* const propValues,
+						    const pylith::scalar_array& dbValues) const
 { // _dbToProperties
   // Check consistency of arguments
-  assert(0 != propValues);
+  assert(propValues);
   const int numDBValues = dbValues.size();
   assert(_ViscousFriction::numDBProperties == numDBValues);
 
@@ -172,11 +173,11 @@ contrib::friction::ViscousFriction::_dbToProperties(
 // Nondimensionalize properties.
 void
 contrib::friction::ViscousFriction::_nondimProperties(PylithScalar* const values,
-						    const int nvalues) const
+						      const int nvalues) const
 { // _nondimProperties
   // Check consistency of arguments.
-  assert(0 != _normalizer);
-  assert(0 != values);
+  assert(_normalizer);
+  assert(values);
   assert(nvalues == _ViscousFriction::numProperties);
 
   // Get scales needed to nondimensional parameters from the
@@ -197,11 +198,11 @@ contrib::friction::ViscousFriction::_nondimProperties(PylithScalar* const values
 // Dimensionalize properties.
 void
 contrib::friction::ViscousFriction::_dimProperties(PylithScalar* const values,
-						      const int nvalues) const
+						   const int nvalues) const
 { // _dimProperties
   // Check consistency of arguments.
-  assert(0 != _normalizer);
-  assert(0 != values);
+  assert(_normalizer);
+  assert(values);
   assert(nvalues == _ViscousFriction::numProperties);
 
   // Get scales needed to dimensional parameters from the
@@ -221,12 +222,11 @@ contrib::friction::ViscousFriction::_dimProperties(PylithScalar* const values,
 // ----------------------------------------------------------------------
 // Compute state variables from values in spatial database.
 void
-contrib::friction::ViscousFriction::_dbToStateVars(
-				  PylithScalar* const stateValues,
-				  const pylith::scalar_array& dbValues) const
+contrib::friction::ViscousFriction::_dbToStateVars(PylithScalar* const stateValues,
+						   const pylith::scalar_array& dbValues) const
 { // _dbToStateVars
   // Check consistency of arguments.
-  assert(0 != stateValues);
+  assert(stateValues);
   const int numDBValues = dbValues.size();
   assert(_ViscousFriction::numDBStateVars == numDBValues);
 
@@ -242,11 +242,11 @@ contrib::friction::ViscousFriction::_dbToStateVars(
 // Nondimensionalize state variables.
 void
 contrib::friction::ViscousFriction::_nondimStateVars(PylithScalar* const values,
-						  const int nvalues) const
+						     const int nvalues) const
 { // _nondimStateVars
   // Check consistency of arguments.
-  assert(0 != _normalizer);
-  assert(0 != values);
+  assert(_normalizer);
+  assert(values);
   assert(nvalues == _ViscousFriction::numStateVars);
 
   // Get scales needed to nondimensional parameters from the
@@ -265,7 +265,7 @@ contrib::friction::ViscousFriction::_nondimStateVars(PylithScalar* const values,
 // Dimensionalize state variables.
 void
 contrib::friction::ViscousFriction::_dimStateVars(PylithScalar* const values,
-					       const int nvalues) const
+						  const int nvalues) const
 { // _dimStateVars
   // Check consistency of arguments.
   assert(_normalizer);
@@ -313,6 +313,39 @@ contrib::friction::ViscousFriction::_calcFriction(const PylithScalar t,
 
   return friction;
 } // _calcFriction
+
+// ----------------------------------------------------------------------
+// Compute derivative of friction with slip from properties and state variables.
+PylithScalar
+contrib::friction::ViscousFriction::_calcFrictionDeriv(const PylithScalar t,
+						       const PylithScalar slip,
+						       const PylithScalar slipRate,
+						       const PylithScalar normalTraction,
+						       const PylithScalar* properties,
+						       const int numProperties,
+						       const PylithScalar* stateVars,
+						       const int numStateVars)
+{ // _calcFrictionDeriv
+  // Check consistency of arguments.
+  assert(properties);
+  assert(_ViscousFriction::numProperties == numProperties);
+  assert(numStateVars);
+  assert(_ViscousFriction::numStateVars == numStateVars);
+
+  // Compute friction traction.
+  PylithScalar frictionDeriv = 0.0;
+  if (normalTraction <= 0.0) {
+    // if fault is in compression
+
+    // We want the derivative of friction with respect to
+    // slip. Because the friction model depends on slip rate, we
+    // approximate the derivative with respect to slip by taking the
+    // derivative with respect to slip rate and multiplying by the time step (dt).
+    frictionDeriv = -normalTraction * properties[p_coefS] / (properties[p_v0] * _dt);
+  } // if
+
+  return frictionDeriv;
+} // _calcFrictionDeriv
 
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).

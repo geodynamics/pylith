@@ -25,11 +25,12 @@
 %{
 #include "pylith/materials/materialsfwd.hh" // forward declarations
 
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // forward declarations
+#include "spatialdata/units/unitsfwd.hh" // forward declarations
+
 #include "PlaneStrainState.hh"
 
-#include "pylith/utils/types.hh"
-#include "pylith/utils/array.hh"
-#include "pylith/utils/sievetypes.hh"
+#include "pylith/utils/arrayfwd.hh"
 %}
 
 // Convert standard C++ exceptions to Python exceptions.

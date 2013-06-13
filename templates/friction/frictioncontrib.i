@@ -25,11 +25,13 @@
 %{
 #include "pylith/friction/frictionfwd.hh" // forward declarations
 
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // forward declarations
+#include "spatialdata/units/unitsfwd.hh" // forward declarations
+
 #include "ViscousFriction.hh"
 
 #include "pylith/utils/types.hh"
 #include "pylith/utils/array.hh"
-#include "pylith/utils/sievetypes.hh"
 %}
 
 // Convert standard C++ exceptions to Python exceptions.

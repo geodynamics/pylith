@@ -49,8 +49,7 @@ namespace contrib {
 } // contrib
 
 // PlaneStrainState -----------------------------------------------------
-class contrib::materials::PlaneStrainState : 
-  public pylith::materials::ElasticMaterial
+class contrib::materials::PlaneStrainState : public pylith::materials::ElasticMaterial
 { // class PlaneStrainState
   friend class TestPlaneStrainState; // unit testing
 
@@ -199,6 +198,22 @@ protected :
 				       const PylithScalar* stateVars,
 				       const int numStateVars) const;
 
+  /** Get stable time step for explicit time integration.
+   *
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
+   * @param stateVars State variables at location.
+   * @param numStateVars Number of state variables.
+   * @param minCellWidth Minimum width across cell.
+   *
+   * @returns Time step
+   */
+  PylithScalar _stableTimeStepExplicit(const PylithScalar* properties,
+				       const int numProperties,
+				       const PylithScalar* stateVars,
+				       const int numStateVars,
+				       const double minCellWidth) const;
+  
   // --------------------------------------------------------------------
   // Optional function in the PyLith interface for a bulk constitutive
   // model. Even though this function is optional, for it to be used
