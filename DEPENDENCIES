@@ -19,4 +19,4 @@ HDF5
 CUBIT
   netcdf
 PETSc (development version) w/ParMetis
-
+  git (if building from repository)
