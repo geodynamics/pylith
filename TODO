@@ -2,14 +2,7 @@
 CURRENT BUGS
 ======================================================================
 
-* Deallocation with field split
-
-  Not all PETSc memory is being freed when using field split.
-
-  Test cases:
-    cd examples/3d/tet4
-    pylith step02.cfg ../../../share/debug_malloc.cfg
-    pylith step04.cfg ../../../share/debug_malloc.cfg
+* None
 
 ======================================================================
 CURRENT ISSUES/PRIORITIES
@@ -27,17 +20,100 @@ CURRENT ISSUES/PRIORITIES
     PETSc configure options (for example, with/without HDF5 and
     single/double precision).
 
-* Cleanup
-
-    Add elasticPrestep() to Formulation (called from Problem)
-
 * Prescribed fault with opening has zero tractions (step20) Appears to
   be a feature/artifact associated with how we implement slip with
   Lagrange multipliers.
 
 ======================================================================
-1.8.0
+KNOWN DEFICIENCIES
 ======================================================================
+
+* Dirichlet BC and fault BC
+
+  Can't use block Jacobi preconditioner when Dirichlet BC overlap with
+  fault BC's, because we end up with a DOF associated with a Lagrange
+  multiplier that is "free". Not sure if this is okay, when the fault
+  is at an angle to the boundary.
+
+    Might be able to fix this problem by examining constraints
+    relative to orientation and if orientation coincides with
+    preexisting constraint, then constrain Lagrange multiplier DOF.
+
+  Need better error trapping when using LineParser. State of
+  ifstream is insufficient. Need state of istringstream buffer, but it
+  is often !good() at eof(). Test of !good() and !eof()?
+
+* ZeroDispDB
+
+  The default BC is ZeroDispDB which hardwires the values in a UniformDB
+  to 0. No error message is generated if the user sets the values or
+  data properties and they are overwritten by the hardwired values. A
+  possible solution is for ZeroDispDB to use a C++ UniformDB but not
+  inherit from the Python UniformDB.
+
+* Fault orientatin in 1-D mesh
+
+  How do we determine the orientation for a fault in a 1-D mesh? We
+  assume normaldir is +1.0, but cohesive cells could be created so
+  that the fault has a normaldir of -1.0. If the normaldir is -1.0,
+  then we need to flip the orientation field to get the correct
+  sense of slip.
+
+
+======================================================================
+PLANNED RELEASES
+======================================================================
+
+----------------------------------------------------------------------
+Release 2.0
+----------------------------------------------------------------------
+
+* Higher order
+
+   Nonisoparametric cells
+
+     C++ unit tests for CellGeometry refPtsToGlobal() and jacobian()
+     Update quadrature to use CellGeometry refPtsToGlobal() and
+     jacobian() Remove CellGeometry jacobian(double_array)
+
+----------------------------------------------------------------------
+Release 2.1
+----------------------------------------------------------------------
+
+* Coupling
+
+  Use slip rate threshold for quasi-static -> dynamic transition.
+  Use velocity threshold for dynamic -> quasi-static transition.
+
+  1. Damping for Q
+    Generalized Maxwell approach for attenuation
+
+----------------------------------------------------------------------
+Release 2.x
+----------------------------------------------------------------------
+
+  1. Restart / checkpointing
+    Checkpointing
+    Spin up
+    Saving quasi-static information is probably more important
+
+----------------------------------------------------------------------
+Low-priority items (release unknown)
+----------------------------------------------------------------------
+
+  6. FaultCohesiveTract (dikes)
+
+  4. Improved support for spherical geometry in user-interface
+
+----------------------------------------------------------------------
+LONG TERM WISH LIST
+----------------------------------------------------------------------
+
+Student
+      Create a spatial database for the PREM model
+
+  5. Use shared pointers for objects where both Python and C++ hold pointers.
+
 
 * GPU utilization
 
@@ -51,42 +127,10 @@ CURRENT ISSUES/PRIORITIES
   + Implicit elasticity finite-element integration
   + Explicit elasticity finite-element integration
 
-* Higher order
-
-* Coupling
-
-  Use slip rate threshold for quasi-static -> dynamic transition.
-  Use velocity threshold for dynamic -> quasi-static transition.
-
-* Field split.
-
-    Add flag to material [default is false] for creating null vector
-    When setting up solver, create null vector, and pass it to KSP
-
-  Need to check performance of custom fault preconditioner.
-
 * Line search [MATT]
 
   Line search should be improved to include the inequality constraints.
 
-
-
-* Scalable distribution [MATT]
-
-  + It appears that topology adjustment is not currently limiting the runs
-  + Need a more memory scalable Distribution
-    + Consider simple distribution, followed by cleanup
-  + I think the Overlap structure is probably taking up all the memory
-    + send/recvMeshOverlap is only used in completeConesV() to call SimpleCopy::copy()
-      + Can we use a lighter-weight structure to sit in copy()?
-
-  + Need ribbon around fault in order to develop algorithm
-
-* Vertex ordering
-
-  + Quadrature::computeGeometry()
-  + Quadrature::minCellWidth()
-  + Optimized Tri3 and Tet4 Explicit integrators depend on the basis order
 
 ----------------------------------------------------------------------
 SECONDARY PRIORITIES
@@ -106,11 +150,6 @@ SECONDARY PRIORITIES
         (will work parallel)
       + Refactor friction sensitivity solve, fault preconditioner, and
         adjustSolnLumped()
-
-* Optimization
-  + inline methods (what isn't getting inlined) -Winline
-  + Specialized elasticity integrator objects for Quad4, Hex8?
-    - Add for lgdeform, implicit time integration?
 
 * Interpolated meshes + temperature field
   No fault, linear elasticity
@@ -171,17 +210,6 @@ CLEANUP
 
 Brad
 
-  Memory model
-    C++ Objects with fields
-        DirichletBoundary (_outputFields)
-        PointForce (BoundaryConditionPoints::_parameters) ACCESSOR DONE
-        AbsorbingDampers (_parameters)
-        Neumann (_parameters)
-        Quadrature (_geometryFields) [should be NULL]
-        OutputManager (_fields)
-        CellFilterAvg (_fieldAvg)
-        VertexFilterVecNorm (_fieldVecNorm)
- 
   full-scale testing
     2d/quad4
       axialtract
@@ -279,153 +307,15 @@ Brad
   least 1 value.
 
 ======================================================================
-KNOWN DEFICIENCIES
+MISC PRIORITIES
 ======================================================================
 
-* Dirichlet BC and fault BC
-
-  Can't use block Jacobi preconditioner when Dirichlet BC overlap with
-  fault BC's, because we end up with a DOF associated with a Lagrange
-  multiplier that is "free". Not sure if this is okay, when the fault
-  is at an angle to the boundary.
-
-    Might be able to fix this problem by examining constraints
-    relative to orientation and if orientation coincides with
-    preexisting constraint, then constrain Lagrange multiplier DOF.
-
-  Need better error trapping when using LineParser. State of
-  ifstream is insufficient. Need state of istringstream buffer, but it
-  is often !good() at eof(). Test of !good() and !eof()?
-
-* ZeroDispDB
-
-  The default BC is ZeroDispDB which hardwires the values in a UniformDB
-  to 0. No error message is generated if the user sets the values or
-  data properties and they are overwritten by the hardwired values. A
-  possible solution is for ZeroDispDB to use a C++ UniformDB but not
-  inherit from the Python UniformDB.
-
-* Fault orientatin in 1-D mesh
-
-  How do we determine the orientation for a fault in a 1-D mesh? We
-  assume normaldir is +1.0, but cohesive cells could be created so
-  that the fault has a normaldir of -1.0. If the normaldir is -1.0,
-  then we need to flip the orientation field to get the correct
-  sense of slip.
-
-
-
-======================================================================
-MISC PRIORITIES (Brad)
-======================================================================
-
-4. OutputManager
+1. OutputManager
    a. VertexFilterChangeCS
       OutputFilter for writing vertex coordinates in another 
       coordinate system. Need test for whether two coordinate systems 
       are the same.
 
-======================================================================
-PLANNED RELEASES
-======================================================================
+2. Coarsening for PyLith meshes
 
-----------------------------------------------------------------------
-Release 1.8
-----------------------------------------------------------------------
-
-  1. Damping for Q
-    Generalized Maxwell approach for attenuation
-
-----------------------------------------------------------------------
-Release 2.0
-----------------------------------------------------------------------
-
-  1. Restart / checkpointing
-    Checkpointing
-    Spin up
-    Saving quasi-static information is probably more important
-
-  3. Coupling of quasi-static and dynamic simulations
-
-  1. Higher order cells
-
-     Nonisoparametric cells
-
-       C++ unit tests for CellGeometry refPtsToGlobal() and jacobian()
-       Update quadrature to use CellGeometry refPtsToGlobal() and
-       jacobian() Remove CellGeometry jacobian(double_array)
-
-  2. Output data at arbitrary point locations
-
-     Solution field (time history)
-
-----------------------------------------------------------------------
-Low-priority items (release unknown)
-----------------------------------------------------------------------
-
-  6. FaultCohesiveTract (dikes)
-
-  4. Improved support for spherical geometry in user-interface
-
-----------------------------------------------------------------------
-LONG TERM WISH LIST
-----------------------------------------------------------------------
-
-Student
-      Create a spatial database for the PREM model
-
-  5. Use shared pointers for objects where both Python and C++ hold pointers.
-
-======================================================================
-THINGS WE NEED SIEVE TO DO (Matt)
-======================================================================
-
-2. Construct mesh with higher order cells from mesh with lower order cells.
-
-  Many mesh generators do not know how to construct higher order
-  elements, so we will need a general utility for doing this.
-
-  Inputs:
-    * PETSc Mesh
-    * some sort of map (Python object) defining how to construct
-      higher order reference cell from lower order reference cell.
-  Output:
-    * PETSc Mesh
-
-  This already works. Our code is written in terms of numBasisFuncs, not
-  vertices. Therefore, if we just use the P2 element from FIAT, our only
-  problem is to correctly allocate the section (I think). To do this, we
-  add the appropriate setFiberDimension() call. FIAT has this information,
-  we just are not using it right now.
-
-3. Uniform refinement of mesh.
-
-  Inputs:
-    * PETSc Mesh (original)
-    * refinement factor (limited to factor of 2- 2 or 4)
-  Outputs:
-    * PETSc Mesh (refined)
-
-  This already works. You just call
-
-  double maxVolume   = 0.01;
-  bool   interpolate = false;
-  ALE::Obj<ALE::Mesh> newMesh = ALE::Generator::refineMesh(oldMesh, maxVolume, interpolate);
-
-  There is another version that takes an array of maxVolumes, one for each cell in oldMesh.
-
-6. Coarsening for PyLith meshes
-
-7. Time fixes
-
-  Not used a. Remove extra time in uninterpolated restrict(). May need special method for P1.
-
-  Done c. getStateVars() is way too expensive. 
-
-  Not used d. Same as a) for update
-
-8. Memory fixes
-
-  Done a. Share memory in precomputation sections
-
-11. For Schur complement directly for mass matrix and Lagrange multiplier problem
+3. For Schur complement directly for mass matrix and Lagrange multiplier problem
