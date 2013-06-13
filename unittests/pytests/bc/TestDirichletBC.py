@@ -99,6 +99,22 @@ class TestDirichletBC(unittest.TestCase):
     return
 
 
+  def test_verifyConfiguration(self):
+    """
+    Test verifyConfiguration().
+
+    WARNING: This is not a rigorous test of verifyConfiguration() because we
+    don't verify the results.
+    """
+
+    (mesh, bc, field) = self._initialize()
+    bc.verifyConfiguration()
+
+    # We should really add something here to check to make sure things
+    # actually initialized correctly    
+    return
+
+
   def test_setConstraintSizes(self):
     """
     Test setConstraintSizes().
@@ -183,7 +199,6 @@ class TestDirichletBC(unittest.TestCase):
     neither set the input fields or verify the results.
     """
     (mesh, bc, field) = self._initialize()
-    field.allocate()
     bc.finalize()
 
     # We should really add something here to check to make sure things
@@ -243,7 +258,10 @@ class TestDirichletBC(unittest.TestCase):
     from pylith.topology.Field import Field
     field = Field(mesh)
     field.newSection(field.VERTICES_FIELD, cs.spaceDim())
+    field.allocate()
 
+    field.zero()
+    
     return (mesh, bc, field)
 
 

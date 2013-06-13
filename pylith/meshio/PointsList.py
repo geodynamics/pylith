@@ -89,6 +89,10 @@ class PointsList(Component):
       points = numpy.loadtxt(self.filename,
                              comments=self.commentDelimiter, 
                              delimiter=self.valueDelimiter)
+    ndims = len(points.shape)
+    if ndims == 1:
+      spaceDim = points.shape[0]
+      points = points.reshape((1,spaceDim))
     return points
   
 

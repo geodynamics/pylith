@@ -262,19 +262,18 @@ pylith::materials::ElasticPlaneStrain::_calcStress(PylithScalar* const stress,
 // ----------------------------------------------------------------------
 // Compute elastic constants at location from properties.
 void
-pylith::materials::ElasticPlaneStrain::_calcElasticConsts(
-					     PylithScalar* const elasticConsts,
-					     const int numElasticConsts,
-					     const PylithScalar* properties,
-					     const int numProperties,
-					     const PylithScalar* stateVars,
-					     const int numStateVars,
-					     const PylithScalar* totalStrain,
-					     const int strainSize,
-					     const PylithScalar* initialStress,
-					     const int initialStressSize,
-					     const PylithScalar* initialStrain,
-					     const int initialStrainSize)
+pylith::materials::ElasticPlaneStrain::_calcElasticConsts(PylithScalar* const elasticConsts,
+							  const int numElasticConsts,
+							  const PylithScalar* properties,
+							  const int numProperties,
+							  const PylithScalar* stateVars,
+							  const int numStateVars,
+							  const PylithScalar* totalStrain,
+							  const int strainSize,
+							  const PylithScalar* initialStress,
+							  const int initialStressSize,
+							  const PylithScalar* initialStrain,
+							  const int initialStrainSize)
 { // calcElasticConsts
   assert(0 != elasticConsts);
   assert(_ElasticPlaneStrain::numElasticConsts == numElasticConsts);
@@ -319,11 +318,10 @@ pylith::materials::ElasticPlaneStrain::stableTimeStepImplicit(const topology::Me
 // ----------------------------------------------------------------------
 // Get stable time step for implicit time integration.
 PylithScalar
-pylith::materials::ElasticPlaneStrain::_stableTimeStepImplicit(
-				     const PylithScalar* properties,
-				     const int numProperties,
-				     const PylithScalar* stateVars,
-				     const int numStateVars) const
+pylith::materials::ElasticPlaneStrain::_stableTimeStepImplicit(const PylithScalar* properties,
+							       const int numProperties,
+							       const PylithScalar* stateVars,
+							       const int numStateVars) const
 { // _stableTimeStepImplicit
   return pylith::PYLITH_MAXSCALAR;
 } // _stableTimeStepImplicit

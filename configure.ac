@@ -212,6 +212,21 @@ if test "$enable_hdf5" = "yes" ; then
   CIT_HDF5_LIB_PARALLEL
 fi
 
+# Full-scale testing with h5py
+if test "$enable_full_testing" = yes ; then
+  AM_PATH_PYTHON
+   AC_MSG_CHECKING(for python module h5py for full scale testing)
+  $PYTHON -c "import h5py" 2>/dev/null   
+  if test $? == 0; then
+    AC_MSG_RESULT([found h5py, enabling full scale testing])
+    enable_full_testing=yes
+  else
+    AC_MSG_RESULT([not found, disabling full scale testing])
+    enable_full_testing=no
+  fi
+fi
+AM_CONDITIONAL([ENABLE_FULL_TESTING], [test "$enable_full_testing" = yes])
+
 # CUDA
 if test "$enable_cuda" = "yes" ; then
   CIT_CUDA_INCDIR
