@@ -23,6 +23,7 @@ dist_noinst_DATA = \
 	cube2.txt \
 	twohex8.exo \
 	twohex8.txt \
+	point.txt \
 	points.txt
 
 noinst_TMP = \

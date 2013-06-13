@@ -108,6 +108,7 @@ class TestDirichletBC(unittest.TestCase):
     """
 
     (mesh, bc, field) = self._initialize()
+    field.allocate()
     bc.verifyConfiguration()
 
     # We should really add something here to check to make sure things
@@ -258,9 +259,6 @@ class TestDirichletBC(unittest.TestCase):
     from pylith.topology.Field import Field
     field = Field(mesh)
     field.newSection(field.VERTICES_FIELD, cs.spaceDim())
-    field.allocate()
-
-    field.zero()
     
     return (mesh, bc, field)
 
