@@ -1,5 +1,8 @@
 #!/bin/sh
 #
+# Customized for PETSc tarball for PyLith by Brad Aagaard.
+# Original is $PETSC_DIR/bin/maint/builddist.
+#
 # This script builds the PETSc tar file distribution
 #
 # Usage: builddist petscrepo branch
@@ -101,7 +104,7 @@ echo "Building ~/petsc$version.tar.gz and ~/petsc-lite$version.tar.gz"
 # create fortran stubdocs and cleanup
 cd $PETSC_DIR
 # we should have an option of running configure - without compilers/mpi/blas etc..
-./config/configure.py --with-mpi=0 --with-matlab=0 --with-c2html=0 --with-sowing=0
+./config/configure.py --with-mpi=0 --with-matlab=0 --with-c2html=0
 make allfortranstubs
 #make alldoc LOC=${PETSC_DIR}
 #
