@@ -1,4 +1,4 @@
-We are pleased to announce release of PyLith version 1.8.1
+We are pleased to announce release of PyLith version 1.9.0
 
 Please submit bug reports via the World Wide Web at:
     http://geodynamics.org/roundup    
@@ -62,7 +62,7 @@ and ExplicitLumped is now Explicit.
   formulation = pylith.problems.ExplicitTet4
 
 ----------------------------------------------------------------------
-Version 1.8.1
+Version 1.9.0
 ----------------------------------------------------------------------
 
 * Bug fixes
