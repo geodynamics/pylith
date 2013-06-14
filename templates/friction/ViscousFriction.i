@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2012 University of California, Davis
+// Copyright (c) 2010-2013 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -90,6 +90,28 @@ namespace contrib {
 				 const PylithScalar* stateVars,
 				 const int numStateVars);
 
+      /** Compute derivative of friction with slip from properties and
+       * state variables.
+       *
+       * @param t Time in simulation.
+       * @param slip Current slip at location.
+       * @param slipRate Current slip rate at location.
+       * @param normalTraction Normal traction at location.
+       * @param properties Properties at location.
+       * @param numProperties Number of properties.
+       * @param stateVars State variables at location.
+       * @param numStateVars Number of state variables.
+       *
+       * @returns Derivative of friction (magnitude of shear traction) at vertex.
+       */
+      PylithScalar _calcFrictionDeriv(const PylithScalar t,
+				      const PylithScalar slip,
+				      const PylithScalar slipRate,
+				      const PylithScalar normalTraction,
+				      const PylithScalar* properties,
+				      const int numProperties,
+				      const PylithScalar* stateVars,
+				      const int numStateVars);
     }; // class ViscousFriction
 
   } // friction
