@@ -46,24 +46,29 @@ TIPS
 MIGRATING FROM VERSION 1.7 TO 1.8
 ======================================================================
 
-Explicit time stepping with a non-lumped Jacobian has been eliminated
-and ExplicitLumped is now Explicit.
-
-  Old setting
-  ------------------------------------------------
-  formulation = pylith.problems.ExplicitLumped
-  formulation = pylith.problems.ExplicitLumpedTri3
-  formulation = pylith.problems.ExplicitLumpedTet4
-
-  New setting
-  ------------------------------------------------
-  formulation = pylith.problems.Explicit
-  formulation = pylith.problems.ExplicitTri3
-  formulation = pylith.problems.ExplicitTet4
+No changes are needed in .cfg files to switch from v1.8.0 to
+v1.9.0. Version 1.9.0 does includes some changes to the friction and
+material model interfaces, so extensions do require changes. See the
+templates for details.
 
 ----------------------------------------------------------------------
 Version 1.9.0
 ----------------------------------------------------------------------
+
+* New features
+
+  * Added Newton-Raphson algorithm for spontaneous rupture simulations
+    with explicit-stepping.
+
+    Enforcing the friction criterion in a spontaneous rupture
+    simulation with explicit time-stepping now uses a Newton-Raphson
+    algorithm to find the correct traction increment. This provides a
+    more stable numerical solution and eliminates oscillatory behavior
+    when using rate-state friction. 
+
+    Added SCEC spontaneous rupture benchmark TPV102 to the benchmark
+    repository. PyLith produces results very similar to several other
+    finite-element codes.
 
 * Bug fixes
 
@@ -85,7 +90,26 @@ Version 1.9.0
 
   - Corrected two typos in the manual related to fault opening and
     tractions in examples/3d/hex8/step20 and updating to the use of
-    cell.dimension for the quadrature scheme with tets.
+    cell.dimension for the quadrature scheme with tetrahedral cells.
+
+======================================================================
+MIGRATING FROM VERSION 1.7 TO 1.8
+======================================================================
+
+Explicit time stepping with a non-lumped Jacobian has been eliminated
+and ExplicitLumped is now Explicit.
+
+  Old setting
+  ------------------------------------------------
+  formulation = pylith.problems.ExplicitLumped
+  formulation = pylith.problems.ExplicitLumpedTri3
+  formulation = pylith.problems.ExplicitLumpedTet4
+
+  New setting
+  ------------------------------------------------
+  formulation = pylith.problems.Explicit
+  formulation = pylith.problems.ExplicitTri3
+  formulation = pylith.problems.ExplicitTet4
 
 ----------------------------------------------------------------------
 Version 1.8.0
