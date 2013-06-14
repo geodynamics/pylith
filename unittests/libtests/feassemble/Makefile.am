@@ -70,7 +70,7 @@ testfeassemble_SOURCES = \
 noinst_HEADERS = \
 	TestCellGeometry.hh \
 	TestElasticityExplicit.hh \
-	TestElasticityExplicitCases.cc \
+	TestElasticityExplicitCases.hh \
 	TestElasticityExplicitTri3.hh \
 	TestElasticityExplicitTet4.hh \
 	TestElasticityImplicit.hh \
