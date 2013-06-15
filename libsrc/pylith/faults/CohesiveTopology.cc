@@ -281,13 +281,19 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     err = DMPlexSetCone(newMesh, c, newCone);PYLITH_CHECK_ERROR(err);
   }
   err = PetscFree(newCone);PYLITH_CHECK_ERROR(err);
-  PetscInt cMax;
+  PetscInt cMax, vMax;
 
-  err = DMPlexGetHybridBounds(newMesh, &cMax, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
+  err = DMPlexGetHybridBounds(complexMesh, &cMax, NULL, NULL, &vMax);PYLITH_CHECK_ERROR(err);
   if (cMax < 0) {
     err = DMPlexSetHybridBounds(newMesh, firstFaultCellDM, PETSC_DETERMINE, PETSC_DETERMINE, PETSC_DETERMINE);PYLITH_CHECK_ERROR(err);
+  } else {
+    err = DMPlexSetHybridBounds(newMesh, cMax, PETSC_DETERMINE, PETSC_DETERMINE, PETSC_DETERMINE);PYLITH_CHECK_ERROR(err);
   }
-  err = DMPlexSetHybridBounds(newMesh, PETSC_DETERMINE, PETSC_DETERMINE, PETSC_DETERMINE, firstLagrangeVertexDM);PYLITH_CHECK_ERROR(err);
+  if (vMax < 0) {
+    err = DMPlexSetHybridBounds(newMesh, PETSC_DETERMINE, PETSC_DETERMINE, PETSC_DETERMINE, firstLagrangeVertexDM);PYLITH_CHECK_ERROR(err);
+  } else {
+    err = DMPlexSetHybridBounds(newMesh, PETSC_DETERMINE, PETSC_DETERMINE, PETSC_DETERMINE, vMax+extraCells);PYLITH_CHECK_ERROR(err);
+  }
 
   // TODO: Use DMPlexGetLabels(): Renumber labels
   PetscInt    numLabels;
