@@ -674,6 +674,7 @@ pylith::faults::CohesiveTopology::createFaultParallel(topology::Mesh* faultMesh,
   PYLITH_METHOD_BEGIN;
 
   assert(faultMesh);
+  const char    *labelname = "material-id";
   PetscErrorCode err;
 
   faultMesh->coordsys(mesh.coordsys());
@@ -681,7 +682,8 @@ pylith::faults::CohesiveTopology::createFaultParallel(topology::Mesh* faultMesh,
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
   PetscDM dmFaultMesh;
 
-  err = DMPlexCreateCohesiveSubmesh(dmMesh, constraintCell ? PETSC_TRUE : PETSC_FALSE, &dmFaultMesh);PYLITH_CHECK_ERROR(err);
+
+  err = DMPlexCreateCohesiveSubmesh(dmMesh, constraintCell ? PETSC_TRUE : PETSC_FALSE, labelname, materialId, &dmFaultMesh);PYLITH_CHECK_ERROR(err);
   std::string meshLabel = "fault_" + std::string(label);
 
   PetscReal lengthScale = 1.0;
