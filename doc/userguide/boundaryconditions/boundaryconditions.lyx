@@ -6596,7 +6596,7 @@ force_healing Flag indicating whether healing (cumalative slip state variable
 \end_layout
 
 \begin_layout Standard
-An example of setting the properties for the rate and state friction component
+An example of setting the properties for the slip-weakening friction component
  in a 
 \family typewriter
 .cfg
@@ -6609,8 +6609,7 @@ An example of setting the properties for the rate and state friction component
 \end_layout
 
 \begin_layout LyX-Code
-friction = pylith.friction.SlipWeakening ; Change friction model from the
- default
+friction = pylith.friction.SlipWeakening ; Change from the default
 \end_layout
 
 \begin_layout LyX-Code
@@ -7216,6 +7215,877 @@ Elasped time of slip,
 \begin_layout Paragraph
 \begin_inset CommandInset label
 LatexCommand label
+name "sec:friction:slip:time:weakening"
+
+\end_inset
+
+Slip- and Time-Weakening Friction I
+\end_layout
+
+\begin_layout Standard
+This friction model, used in a few SCEC Spontaneous Rupture benchmarks,
+ combines characteristics of slip-weakening and time-weakening friction.
+ The time-weakening portion is generally used to force nucleation of the
+ rupture.
+ The model produces shear tractions equal to the cohesive stress plus a
+ contribution proportional to the fault normal traction that decreases from
+ a static value to a dynamic value as slip progresses or when a weakening
+ time is reached,
+\begin_inset Formula 
+\begin{equation}
+T_{f}=\begin{cases}
+T_{c}-(\mu_{s}-(\mu_{s}-\mu_{d})\frac{d}{d_{0}})T_{n} & d\leq d_{0}\text{ and }t<t_{w}\text{ and }T_{n}\leq0\\
+T_{c}-\mu_{d}T_{n} & (d>d_{0}\text{ or }t\ge t_{w})\text{ and }T_{n}\leq0\\
+0 & T_{n}>0
+\end{cases}
+\end{equation}
+
+\end_inset
+
+The spatial database files for the slip- and time-weakening friction model
+ properties and state variables specify the spatial variation of the fault
+ constitutive model parameters given in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:slip:time:weakening:properties:statevars"
+
+\end_inset
+
+.
+ As long as the fault is locked, the initial state variables are zero, so
+ specifying the initial state variables for slip-weakening friction is rare.
+ This variation of slip-weakening friction does not include the 
+\family typewriter
+force_healing
+\family default
+ parameter, because this friction model was developed for dynamic simulations.
+\end_layout
+
+\begin_layout Standard
+An example of setting the properties for the rate and state friction component
+ in a 
+\family typewriter
+.cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.interfaces.fault]
+\end_layout
+
+\begin_layout LyX-Code
+friction = pylith.friction.SlipWeakeningTime ; Change from the default
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:slip:time:weakening:properties:statevars"
+
+\end_inset
+
+Values in spatial databases for a simple slip- and time-weakening friction
+ model.
+\end_layout
+
+\end_inset
+
+
+\begin_inset VSpace defskip
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="8" columns="3">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="2.5in">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Spatial database
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+db_properties
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+static-coefficient
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Static coefficient of friction, 
+\begin_inset Formula $\mu_{s}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+dynamic-coefficient
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Dynamic coefficient of friction, 
+\begin_inset Formula $\mu_{d}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+slip-weakening-parameter
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Slip-weakening parameter, 
+\begin_inset Formula $d_{0}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+weakening-time
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Weakening time, 
+\begin_inset Formula $t_{w}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+cohesion
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Cohesive stress, 
+\begin_inset Formula $T_{c}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+db_initial_state
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+cumulative-slip
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Cumulative slip, 
+\begin_inset Formula $d$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+previous-slip
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Slip at previous time step, 
+\begin_inset Formula $d(t-\Delta t)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:friction:slip:time:stable:weakening"
+
+\end_inset
+
+Slip- and Time-Weakening Friction II
+\end_layout
+
+\begin_layout Standard
+This friction model, used in a few SCEC Spontaneous Rupture benchmarks,
+ merges features of slip-weakening and time-weakening to provide a more
+ numerically stable version of the Slip- and Time-Weakening Friction I model.
+ Rather than an instantaneous drop in the coefficient of friction from the
+ static value to the dynamic value when the weakening time is reached, the
+ weakening progresses linearly with time.
+ As in the other slip- and time-weakening friction model, the time-weakening
+ portion is generally used to force nucleation of the rupture.
+ The model produces shear tractions equal to the cohesive stress plus a
+ contribution proportional to the fault normal traction that decreases from
+ a static value to a dynamic value as slip and time progress,
+\begin_inset Formula 
+\begin{equation}
+T_{f}=\begin{cases}
+T_{c}-(\mu_{s}-(\mu_{s}-\mu_{d})max(f_{1},f_{2}))T_{n} & T_{n}\leq0\\
+0 & T_{n}>0
+\end{cases}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+f_{1}=\begin{cases}
+d/d_{0} & d\leq d_{0}\\
+1 & d\ge d_{0}
+\end{cases}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+f_{2}=\begin{cases}
+0 & t\leq t_{w}\\
+(t-t_{w})/t_{0} & t_{w}<t\le t_{w}+t_{0}\\
+1 & t>t_{w}+t_{0}
+\end{cases}
+\end{equation}
+
+\end_inset
+
+The spatial database files for the slip- and time-weakening friction model
+ properties and state variables specify the spatial variation of the fault
+ constitutive model parameters given in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:slip:time:stable:weakening:properties:statevars"
+
+\end_inset
+
+.
+ As long as the fault is locked, the initial state variables are zero, so
+ specifying the initial state variables for slip-weakening friction is rare.
+ This variation of slip-weakening friction does not include the 
+\family typewriter
+force_healing
+\family default
+ parameter, because this friction model was developed for dynamic simulations.
+\end_layout
+
+\begin_layout Standard
+An example of setting the properties for the rate and state friction component
+ in a 
+\family typewriter
+.cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.interfaces.fault]
+\end_layout
+
+\begin_layout LyX-Code
+friction = pylith.friction.SlipWeakeningTimeStable ; Change from the default
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:slip:time:stable:weakening:properties:statevars"
+
+\end_inset
+
+Values in spatial databases for a second slip- and time-weakening friction
+ model.
+\end_layout
+
+\end_inset
+
+
+\begin_inset VSpace defskip
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="9" columns="3">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="2.5in">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Spatial database
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+db_properties
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+static-coefficient
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Static coefficient of friction, 
+\begin_inset Formula $\mu_{s}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+dynamic-coefficient
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Dynamic coefficient of friction, 
+\begin_inset Formula $\mu_{d}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+slip-weakening-parameter
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Slip-weakening parameter, 
+\begin_inset Formula $d_{0}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+time-weakening-time
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Weakening time, 
+\begin_inset Formula $t_{w}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+time-weakening-parameter
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Time-weakening parameter, 
+\begin_inset Formula $t_{0}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+cohesion
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Cohesive stress, 
+\begin_inset Formula $T_{c}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+db_initial_state
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+cumulative-slip
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Cumulative slip, 
+\begin_inset Formula $d$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+previous-slip
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Slip at previous time step, 
+\begin_inset Formula $d(t-\Delta t)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:friction:rate:state:ageing"
 
 \end_inset
@@ -7322,7 +8192,7 @@ As the slip rate approaches zero, the first exponential term approaches
 \theta(t+\Delta t)=\begin{cases}
 \theta(t)\exp\left(-\frac{V(t)\Delta t}{L}\right)+\Delta t-\frac{1}{2}\frac{V(t)\Delta t^{2}}{L} & \frac{V(t)\Delta t}{L}<0.00001\\
 \theta(t)\exp\left(-\frac{V(t)\Delta t}{L}\right)+\frac{L}{V(t)}\left(1-\exp\left(-\frac{V(t)\Delta t}{L}\right)\right) & \frac{V(t)\Delta t}{L}\ge0.00001
-\end{cases}.
+\end{cases}
 \end{equation}
 
 \end_inset
@@ -7374,8 +8244,7 @@ An example of setting the properties for the rate- and state-friction component
 \begin_layout LyX-Code
 
 \size footnotesize
-friction = pylith.friction.RateStateAgeing ; Change friction model from the
- default
+friction = pylith.friction.RateStateAgeing ; Change from the default
 \end_layout
 
 \begin_layout LyX-Code
