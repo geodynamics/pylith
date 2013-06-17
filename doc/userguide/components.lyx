@@ -891,6 +891,32 @@ TimeWeakening pylith.friction.TimeWeakening
 Linear time-weakening friction fault constitutive model.
 \end_layout
 
+\begin_layout Description
+
+\family typewriter
+SlipWeakeningTime pylith.friction.SlipWeakening
+\family default
+Time
+\begin_inset Newline newline
+\end_inset
+
+Combination of slip-weakening and time-dependent friction used in SCEC spontaneo
+us rupture benchmarks.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+SlipWeakeningTimeStable pylith.friction.SlipWeakening
+\family default
+TimeStable
+\begin_inset Newline newline
+\end_inset
+
+Combination of slip-weakening and time-weakening friction used in SCEC spontaneo
+us rupture benchmarks.
+\end_layout
+
 \begin_layout Subsection
 Discretization Components
 \end_layout
