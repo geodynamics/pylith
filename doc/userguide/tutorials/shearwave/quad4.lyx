@@ -327,9 +327,9 @@ reference "sec:fault:constitutive:models"
  imposing initial tractions directly on the fault surface rather than through
  deformation within the bar.
  We impose initial tractions (75 MPa of right-lateral shear and 120 MPa
- compressive traction) plus a temporal variation (smoothly increasing from
- 0 to 25 MPa of right-lateral shear) similar to what would be used in a
- 2-D or 3-D version.
+ of compression) plus a temporal variation (smoothly increasing from 0 to
+ 25 MPa of right-lateral shear) similar to what would be used in a 2-D or
+ 3-D version.
  While the magnitude of these stresses is reasonable for tectonic problems,
  they give rise to very large slip rates in this 1-D bar.
  The temporal variation, as specified via the 
@@ -375,7 +375,7 @@ The steady-state solution for this problem is constant velocity and slip
 \family typewriter
 analytical_soln.py
 \family default
-, computes some parts of the steady-state solution.
+, is included for computing values related to the steady-state solution.
 \end_layout
 
 \begin_layout Subsubsection
@@ -383,8 +383,8 @@ Dynamic Fault with Static Friction
 \end_layout
 
 \begin_layout Standard
-The parameters specific to this example are related to the use of the static
- friction fault constitutive model.
+The parameters specific to this example involve the static friction fault
+ constitutive model.
  We set the fault constitutive model via
 \end_layout
 
@@ -535,7 +535,7 @@ dynamic_coefficient,slip_weakening_parameter,cohesion]
 \begin_layout Standard
 The parameters specific to this example are in 
 \family typewriter
-dynamic_slipweakening.cfg
+spontaneousrup_slipweakening.cfg
 \family default
 , so we run the problem via:
 \end_layout
@@ -659,10 +659,11 @@ and use a UniformDB to set the rate-state friction parameters.
  We use a reference coefficient of friction of 0.6, reference slip rate of
  1.0e-6 m/s, characteristic slip distance of 0.02 m, coefficients a and b
  of 0.008 and 0.012, and no cohesion (0 MPa).
- We set the initial value of the state variable to The parameters specific
- to this example are in 
+ We set the initial value of the state variable so that the fault is in
+ equilibrium for the initial tractions.
+ The parameters specific to this example are in 
 \family typewriter
-dynamic_ratestateageing.cfg
+spontaneousrup_ratestateageing.cfg
 \family default
 , so we run the problem via:
 \end_layout
