@@ -35,13 +35,16 @@ Files associated with the example problems:
 
     - spontaneousrup.cfg: Parameters common to dynamic friction problems
     - spontaneousrup_staticfriction.cfg: Parameters for simulation 
+    - traction_change.timedb: Temporal variation of fault traction
 
   + Spontaneous rupture with linear slip-weakening fault constitutive model
 
     - spontaneousrup.cfg: Parameters common to dynamic friction problems
     - spontaneousrup_slipweakening.cfg: Parameters for simulation 
+    - traction_change.timedb: Temporal variation of fault traction
 
   + Spontaneous rupture with rate- and state-friction fault constitutive model
 
     - spontaneousrup.cfg: Parameters common to dynamic friction problems
     - spontaneousrup_ratestateageing.cfg: Parameters for simulation 
+    - traction_change.timedb: Temporal variation of fault traction
