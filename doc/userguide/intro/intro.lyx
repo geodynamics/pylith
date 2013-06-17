@@ -4,7 +4,7 @@
 \begin_header
 \textclass book
 \begin_preamble
-
+\usepackage{tikz}
 \end_preamble
 \use_default_options false
 \maintain_unincluded_children false
@@ -182,9 +182,8 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/workflow.eps
+	filename figs/workflow.pdf
 	scale 67
-	keepAspectRatio
 
 \end_inset
 
