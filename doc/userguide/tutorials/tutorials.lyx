@@ -308,10 +308,11 @@ http://geodynamics.org/svn/cig/short/3D/PyLith/benchmarks/trunk
 \end_inset
 
  contains input files for a number of community benchmarks.
- Some of the benchmarks include complete sets of PyLith input files.
- However, most of the benchmarks do not include the mesh files because they
- are so large; instead they include the CUBIT journal files that can be
- used to generate the meshes.
+ The benchmarks do not include the mesh files because they are so large;
+ instead they include the CUBIT journal files that can be used to generate
+ the meshes.
+ The input files in the repository are updated for PyLith v2.0.0, so you will
+ need to modify them if you use another version of PyLith.
 \end_layout
 
 \end_body
