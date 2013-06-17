@@ -126,15 +126,17 @@ pylith::topology::Mesh::numCorners(void) const {
 
   PetscInt numCorners = 0;
   if (_dmMesh) {
-    PetscInt cStart, vStart, vEnd, closureSize, *closure = NULL;
+    PetscInt cStart, cEnd, vStart, vEnd, closureSize, *closure = NULL;
     PetscErrorCode err;
-    err = DMPlexGetHeightStratum(_dmMesh, 0, &cStart, NULL);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetHeightStratum(_dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetDepthStratum(_dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetTransitiveClosure(_dmMesh, cStart, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-    for (PetscInt c = 0; c < closureSize*2; c += 2) {
-      if ((closure[c] >= vStart) && (closure[c] < vEnd)) ++numCorners;
+    if (cEnd > cStart) {
+      err = DMPlexGetTransitiveClosure(_dmMesh, cStart, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+      for (PetscInt c = 0; c < closureSize*2; c += 2) {
+        if ((closure[c] >= vStart) && (closure[c] < vEnd)) ++numCorners;
+      }
+      err = DMPlexRestoreTransitiveClosure(_dmMesh, cStart, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     }
-    err = DMPlexRestoreTransitiveClosure(_dmMesh, cStart, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
   } // if
 
   PYLITH_METHOD_RETURN(numCorners);
