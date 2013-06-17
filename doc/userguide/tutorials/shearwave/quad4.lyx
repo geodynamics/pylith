@@ -201,7 +201,7 @@ name "fig:shearwave:quad4:mesh"
 \end_layout
 
 \begin_layout Subsection
-Kinematic Fault
+Kinematic Fault (Prescribed Slip)
 \end_layout
 
 \begin_layout Standard
@@ -306,7 +306,7 @@ name "fig:shearwave:quad4:kinematic"
 \end_layout
 
 \begin_layout Subsection
-Dynamic Fault
+Dynamic Fault (Spontaneous Rupture)
 \end_layout
 
 \begin_layout Standard
@@ -326,15 +326,34 @@ reference "sec:fault:constitutive:models"
  continue to be absorbed at the ends of the bar, so we drive the fault by
  imposing initial tractions directly on the fault surface rather than through
  deformation within the bar.
- We employ a UniformDB object to specify 6.1 MPa of right-lateral shear and
- 10.0 MPa of normal compression for the initial fault tractions.
- The parameters common to the dynamic fault simulations are in 
+ We impose initial tractions (75 MPa of right-lateral shear and 120 MPa
+ compressive traction) plus a temporal variation (smoothly increasing from
+ 0 to 25 MPa of right-lateral shear) similar to what would be used in a
+ 2-D or 3-D version.
+ While the magnitude of these stresses is reasonable for tectonic problems,
+ they give rise to very large slip rates in this 1-D bar.
+ The temporal variation, as specified via the 
 \family typewriter
-spontaneousrup.cfg
+traction_change.timedb
 \family default
-.
- We also request that the fault output include slip, slip rate, and traction
- fields:
+ file, has the functional form:
+\begin_inset Formula 
+\begin{equation}
+f(t)=\begin{cases}
+\exp\left(\frac{\left(t-t_{n}\right)^{2}}{t\left(t-2t_{n}\right)}\right), & 0<t\le t_{n}\\
+1, & t>t_{n}
+\end{cases}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $t_{n}$
+\end_inset
+
+ = 1.0 s.
+ We request that the fault output include the initial traction value and
+ the slip, slip rate, and traction fields:
 \end_layout
 
 \begin_layout LyX-Code
@@ -342,7 +361,21 @@ spontaneousrup.cfg
 \end_layout
 
 \begin_layout LyX-Code
+vertex_info_fields=[traction_initial_value]
+\end_layout
+
+\begin_layout LyX-Code
 vertex_data_fields = [slip,slip_rate,traction]
+\end_layout
+
+\begin_layout Standard
+The steady-state solution for this problem is constant velocity and slip
+ rate with uniform strain within the bar.
+ A Python script, 
+\family typewriter
+analytical_soln.py
+\family default
+, computes some parts of the steady-state solution.
 \end_layout
 
 \begin_layout Subsubsection
@@ -401,10 +434,10 @@ reference "fig:shearwave:quad4:staticfriction"
 \end_inset
 
 , which was generated using ParaView.
- The steady-state solution is a constant slip rate of 0.08 m/s, a shear traction
- of 6.0 MPa on the fault surface, and a uniform shear strain of 2e-5 in the
- bar with uniform, constant velocities in the y-direction of +0.04 m/s and
- -0.04 m/s on the -x and +x sides of the fault, respectively.
+ The steady-state solution is a constant slip rate of 22.4 m/s, a shear traction
+ of 72.0 MPa on the fault surface, a uniform shear strain of 5.6e-3 in the
+ bar with uniform, and constant velocities in the y-direction of +11.2 m/s
+ and -11.2 m/s on the -x and +x sides of the fault, respectively.
 \end_layout
 
 \begin_layout Standard
@@ -433,7 +466,7 @@ status open
 \begin_layout Plain Layout
 Velocity field in the bar at 3.0 s for the static friction fault constitutive
  model.
- Deformation has been exaggerated by a factor of 800.
+ Deformation has been exaggerated by a factor of 20.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:shearwave:quad4:staticfriction"
@@ -484,8 +517,7 @@ and use a UniformDB to set the slip-weakening friction parameters.
  friction of 0.5, a slip-weakening parameter of 0.2 m, and no cohesion (0
  MPa).
  The fault constitutive model is associated with the fault, so we can append
- the fault constitutive model parameters to the vertex information fields
- and the fault constitutive model state variables to the vertex data fields:
+ the fault constitutive model parameters to the vertex information fields:
 \end_layout
 
 \begin_layout LyX-Code
@@ -498,10 +530,6 @@ vertex_info_fields = [strike_dir,normal_dir,initial_traction,static_coefficient,
 \end_inset
 
 dynamic_coefficient,slip_weakening_parameter,cohesion]
-\end_layout
-
-\begin_layout LyX-Code
-vertex_data_fields = [slip,traction,cumulative_slip,previous_slip]
 \end_layout
 
 \begin_layout Standard
@@ -535,10 +563,10 @@ reference "fig:shearwave:quad4:slipweakening"
 \end_inset
 
 , which was generated using ParaView.
- The steady-state solution is a constant slip rate of 0.88 m/s and shear
- traction of 5.0 MPa on the fault surface, a uniform shear strain of 2.2e-4
- in the bar with uniform, constant velocities in the y-direction of +0.44
- m/s and -0.44 m/s on the -x and +x sides of the fault, respectively.
+ The steady-state solution is a constant slip rate of 32.0 m/s and shear
+ traction of 60.0 MPa on the fault surface, a uniform shear strain of 8.0e-3
+ in the bar with uniform, constant velocities in the y-direction of +16.0
+ m/s and -46.0 m/s on the -x and +x sides of the fault, respectively.
 \end_layout
 
 \begin_layout Standard
@@ -567,7 +595,7 @@ status open
 \begin_layout Plain Layout
 Velocity field in the bar at 3.0 s for the slip-weakening friction fault
  constitutive model.
- Deformation has been exaggerated by a factor of 800.
+ Deformation has been exaggerated by a factor of 20.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:shearwave:quad4:slipweakening"
@@ -602,7 +630,8 @@ reference "sec:fault:constitutive:models"
 
 ).
  The evolution of the state variable uses the ageing law.
- We set the fault constitutive model via
+ We set the fault constitutive model and add the state variable to the output
+ via
 \end_layout
 
 \begin_layout LyX-Code
@@ -611,14 +640,27 @@ reference "sec:fault:constitutive:models"
 
 \begin_layout LyX-Code
 friction = pylith.friction.RateStateAgeing
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.interfaces.fault.output]
+\begin_inset Newline newline
+\end_inset
+
+vertex_data_fields = [slip, slip_rate, traction, state_variable] 
 \end_layout
 
 \begin_layout Standard
-and use a UniformDB to set the static friction parameters.
+and use a UniformDB to set the rate-state friction parameters.
  We use a reference coefficient of friction of 0.6, reference slip rate of
- 1.0e-6 m/s, characteristic slip distance of 0.037 m, coefficients a and b
- of 0.0125 and 0.0172, and no cohesion (0 MPa).
- The parameters specific to this example are in 
+ 1.0e-6 m/s, characteristic slip distance of 0.02 m, coefficients a and b
+ of 0.008 and 0.012, and no cohesion (0 MPa).
+ We set the initial value of the state variable to The parameters specific
+ to this example are in 
 \family typewriter
 dynamic_ratestateageing.cfg
 \family default
@@ -648,10 +690,10 @@ reference "fig:shearwave:quad4:ratestateageing"
 \end_inset
 
 , which was generated using ParaView.
- The steady-state solution is a constant slip rate of 0.572 m/s and shear
- traction of 5.385 MPa on the fault surface, a uniform shear strain of 1.43e-4
- in the bar with uniform, constant velocities in the y-direction of +0.286
- m/s and -0.286 m/s on the -x and +x sides of the fault, respectively.
+ The steady-state solution is a constant slip rate of 30.0 m/s and shear
+ traction of 63.7 MPa on the fault surface, a uniform shear strain of 7.25e-3
+ in the bar with uniform, constant velocities in the y-direction of +15.0
+ m/s and -15.0 m/s on the -x and +x sides of the fault, respectively.
 \end_layout
 
 \begin_layout Standard
@@ -680,7 +722,7 @@ status open
 \begin_layout Plain Layout
 Velocity field in the bar at 3.0 s for the rate- and state-friction fault
  constitutive model.
- Deformation has been exaggerated by a factor of 800.
+ Deformation has been exaggerated by a factor of 20.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:shearwave:quad4:ratestateageing"
