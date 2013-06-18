@@ -4962,7 +4962,7 @@ friction.db_properties.iohandler.filename = friction.spatialdb
 \begin_layout Standard
 The prescribed traction perturbation is specified using the same fault coordinat
 e system as the slip directions in the kinematic ruptures.
- The perurbation has the same functional form as the time-dependent boundary
+ The perturbation has the same functional form as the time-dependent boundary
  conditions (and same spatial databases).
  Table 
 \begin_inset CommandInset ref
@@ -6591,7 +6591,7 @@ force_healing
 \end_layout
 
 \begin_layout Description
-force_healing Flag indicating whether healing (cumalative slip state variable
+force_healing Flag indicating whether healing (cumulative slip state variable
  reset to zero) is forced after every time step.
 \end_layout
 
@@ -8137,7 +8137,7 @@ where
 \end_inset
 
  is a state variable.
- With an interative solver in quasi-static simulations with its small, but
+ With an iterative solver in quasi-static simulations with its small, but
  nonzero residual tolerance we never encounter zero slip rates in quasi-static
  simulations.
  Instead we want to avoid significant variations in the coefficient of friction
