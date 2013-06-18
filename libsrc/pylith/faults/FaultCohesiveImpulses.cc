@@ -316,6 +316,7 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
   amplitude.newSection(dispRel, fiberDim);
   amplitude.allocate();
   amplitude.scale(lengthScale);
+  amplitude.vectorFieldType(topology::FieldBase::SCALAR);
 
   topology::VecVisitorMesh amplitudeVisitor(amplitude);
   PetscScalar *amplitudeArray = amplitudeVisitor.localArray();
