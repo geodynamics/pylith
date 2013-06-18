@@ -119,7 +119,7 @@ geodynamics.org
  careers toward the development of this software.
  It is essential that you recognize these individuals in the normal scientific
  practice by citing the appropriate peer-reviewed papers and making appropriate
- acknowledgements in talks and publications.
+ acknowledgments in talks and publications.
  The following peer-reviewed paper discussed the development of PyLith:
 \end_layout
 
@@ -216,14 +216,14 @@ This material is based upon work supported by the National Science Foundation
 \end_layout
 
 \begin_layout Section
-Acknowlegements
+Acknowledgments
 \end_layout
 
 \begin_layout Standard
 Many members of the community contribute to PyLith through reporting bugs,
  suggesting new features and improvements, running benchmarks, and asking
  questions about the software.
- In particular, we thank Surendra Sumala for contributing to the development
+ In particular, we thank Surendra Somala for contributing to the development
  of the fault friction implementation.
 \end_layout
 
