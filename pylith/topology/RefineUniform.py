@@ -24,10 +24,11 @@
 ## Factory: mesh_refiner.
 
 from MeshRefiner import MeshRefiner
-from topology import RefineUniform as ModuleRefineUniform
+#from topology import RefineUniform as ModuleRefineUniform # TEMPORARY
 
 # RefineUniform class
-class RefineUniform(MeshRefiner, ModuleRefineUniform):
+#class RefineUniform(MeshRefiner, ModuleRefineUniform): # TEMPORARY
+class RefineUniform(MeshRefiner):
   """
   Python manager for uniform global refinement of mesh in parallel.
 
@@ -62,18 +63,20 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
     logEvent = "%srefine" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
-    from Mesh import Mesh
-    newMesh = Mesh(dim=mesh.dimension(), comm=mesh.comm())
-    newMesh.debug(mesh.debug())
-    newMesh.coordsys(mesh.coordsys())
-    ModuleRefineUniform.refine(self, newMesh, mesh, self.levels)
-    if not newMesh == mesh:
-      #from pylith.utils.petsc import MemoryLogger
-      #memoryLogger =  MemoryLogger.singleton()
-
-      #memoryLogger.stagePush(mesh.memLoggingStage)      
-      mesh.cleanup()
-      #memoryLogger.stagePop()
+    print "WARNING: RefineUniform not yet implemented in v2.0.0."
+    newMesh = mesh
+    #from Mesh import Mesh
+    #newMesh = Mesh(dim=mesh.dimension(), comm=mesh.comm())
+    #newMesh.debug(mesh.debug())
+    #newMesh.coordsys(mesh.coordsys())
+    #ModuleRefineUniform.refine(self, newMesh, mesh, self.levels)
+    #if not newMesh == mesh:
+    #  #from pylith.utils.petsc import MemoryLogger
+    #  #memoryLogger =  MemoryLogger.singleton()
+    #
+    #  #memoryLogger.stagePush(mesh.memLoggingStage)      
+    #  mesh.cleanup()
+    #  #memoryLogger.stagePop()
 
     self._eventLogger.eventEnd(logEvent)
     return newMesh
@@ -94,7 +97,7 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
     """
     Create handle to C++ object.
     """
-    ModuleRefineUniform.__init__(self)
+    #ModuleRefineUniform.__init__(self) # TEMPORARY
     return
   
 
