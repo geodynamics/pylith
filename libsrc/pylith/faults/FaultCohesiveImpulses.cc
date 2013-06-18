@@ -345,9 +345,6 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
     const int v_fault = _cohesiveVertices[iVertex].fault;
 
     PetscInt goff;
-    // :BUG: MATT This doesn't work. The offsets are all positive. I
-    // expected negative offsets for nonlocal values. Is the SF not
-    // setup properly for a section over the fault?
     err = PetscSectionGetOffset(amplitudeGlobalSection, v_fault, &goff);PYLITH_CHECK_ERROR(err);
     if (goff < 0) {
       continue;
@@ -439,6 +436,27 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulseOrder(const std::map<int,int
       _impulsePoints[impulse] = impulseInfo;
     } // for
   } // for
+
+#if 0 // DEBUGGING
+  topology::VecVisitorMesh amplitudeVisitor(_fields->get("impulse amplitude"));
+  const PetscScalar* amplitudeArray = amplitudeVisitor.localArray();
+  int impulse = 0;
+  for (int irank=0; irank < commSize; ++irank) {
+    MPI_Barrier(comm);
+    if (commRank == irank) {
+      std::cout << "RANK: " << commRank << ", # impulses: " << _impulsePoints.size() << std::endl;
+      const srcs_type::const_iterator impulsePointsEnd = _impulsePoints.end();
+      for (srcs_type::const_iterator piter=_impulsePoints.begin(); piter != impulsePointsEnd; ++piter) {
+	const int impulse = piter->first;
+	const ImpulseInfoStruct& info = piter->second;
+	const PetscInt aoff = amplitudeVisitor.sectionOffset(_cohesiveVertices[info.indexCohesive].fault);
+	assert(1 == amplitudeVisitor.sectionDof(_cohesiveVertices[info.indexCohesive].fault));
+	std::cout << "["<<irank<<"]: " << impulse << " -> (" << info.indexCohesive << "," << info.indexDOF << "), v_fault: " << _cohesiveVertices[info.indexCohesive].fault << ", amplitude: " << amplitudeArray[aoff] << std::endl;
+      } // for
+    } // if
+  } // for
+#endif
+
 
   PYLITH_METHOD_END;
 } // _setupImpulseOrder
