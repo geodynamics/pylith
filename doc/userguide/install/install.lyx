@@ -769,8 +769,66 @@ Using a Batch System
 \end_layout
 
 \begin_layout Standard
-The settings which are important when using a batch system are summarized
- in the sample configuration file which follows.
+Many clusters use some implementation of a PBS (e.g., TORQUE/Maui) or LSF
+ batch system.
+ The examples below illustrate use of some of the more important settings.
+ You may need to make use of more options or adjust these to submit jobs
+ on various cluster.
+ These settings are usually placed in 
+\family typewriter
+~/.pyre/pylithapp/pylithapp.cfg
+\family default
+ or in a system-wide configuration file.
+ They can be overridden on the command line, where one typically specifies
+ the number of compute nodes and number of processes per compute node, the
+ job name, and the allotted time for the job:
+\end_layout
+
+\begin_layout LyX-Code
+$ pylith example1.cfg --job.queue=debug 
+\backslash
+
+\end_layout
+
+\begin_layout LyX-Code
+    --job.name=example1 --job.stdout=example1.log --job.stderr=example1.err 
+\backslash
+
+\end_layout
+
+\begin_layout LyX-Code
+    --job.walltime=5*minute 
+\backslash
+
+\end_layout
+
+\begin_layout LyX-Code
+    --nodes=4
+\end_layout
+
+\begin_layout Standard
+Note that the values for nodes is equal to the number of compute nodes times
+ the number of processes (usually the number of cores) requested per compute
+ node.
+ Specifying the number of processes per compute node depends on the batch
+ system.
+ For more information on configuring Pyre for your batch system, see CIG's
+ Pythia page 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+geodynamics.org/cig/software/packages/cs/pythia
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+LSF Batch System
 \end_layout
 
 \begin_layout LyX-Code
@@ -778,7 +836,7 @@ The settings which are important when using a batch system are summarized
 \end_layout
 
 \begin_layout LyX-Code
-scheduler = lsf    ; the type of the installed batch system
+scheduler = lsf    ; the type of batch system
 \end_layout
 
 \begin_layout LyX-Code
@@ -817,53 +875,64 @@ command = mpirun.lsf    ; 'mpirun' command to use on our cluster
 queue = normal    ; default queue for jobs
 \end_layout
 
+\begin_layout Subsubsection
+PBS Batch System
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp]
+\end_layout
+
+\begin_layout LyX-Code
+scheduler = pbs     ; the type of batch system
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.pbs]
+\end_layout
+
+\begin_layout LyX-Code
+shell = /bin/bash     ; submit the job using a bash shell script
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+# Export all environment variables to the batch job
+\end_layout
+
+\begin_layout LyX-Code
+# Send email to johndoe@mydomain.org when the job begins, ends, or aborts
+\end_layout
+
+\begin_layout LyX-Code
+qsub-options = -V -m bea -M johndoe@mydomain.org
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.launcher]
+\end_layout
+
+\begin_layout LyX-Code
+command = mpirun -np ${nodes} -machinefile ${PBS_NODEFILE}
+\end_layout
+
 \begin_layout Standard
-These settings are usually placed in 
+For most PBS batch systems you can specify 4 processes per compute node
+ via the command line argument 
 \family typewriter
-~/.pyre/pylithapp/pylithapp.cfg
+--scheduler.ppn=4
 \family default
- or in a system-wide configuration file.
- They can be overridden on the command line, where one typically specifies
- the job name and the allotted time for the job:
-\end_layout
-
-\begin_layout LyX-Code
-$ pylith example1.cfg --job.queue=debug 
-\backslash
-
-\end_layout
-
-\begin_layout LyX-Code
-    --job.name=example1 --job.walltime=5*minute 
-\backslash
-
-\end_layout
-
-\begin_layout LyX-Code
-    --nodes=4
-\end_layout
-
-\begin_layout Standard
-The number of processors to allocate for the job is given using the 
-\family typewriter
-nodes
-\family default
- parameter.
-\end_layout
-
-\begin_layout Standard
-For more information on configuring Pyre for your batch system, see CIG's
- Pythia page 
-\begin_inset Flex URL
-status collapsed
-
-\begin_layout Plain Layout
-
-geodynamics.org/cig/software/packages/cs/pythia
-\end_layout
-
-\end_inset
-
 .
 \end_layout
 
