@@ -836,11 +836,11 @@ reference "fig:benchmark:strikeslip:summary"
  to eight for the hexahedral cell.
  This leads to approximately the same number of integration points for the
  two meshes, but the time required to unpack/pack information for each cell
- from the Sieve data structure is greater than the time required to do the
+ from the finite-element data structure is greater than the time required to do the
  calculation for each quadrature point (which can take advantage of the
  very fast, small memory cache in the processor).
- As a result, the runtime for the simulations with hexahedral cells is significa
-ntly less than that for the tetrahedral cells at the same resolution.
+ As a result, the runtime for the simulations with hexahedral cells is significantly
+ less than that for the tetrahedral cells at the same resolution.
  
 \end_layout
 
