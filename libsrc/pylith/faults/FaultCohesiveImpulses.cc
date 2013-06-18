@@ -217,6 +217,7 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
     buffer.copy(dispRel);
     buffer.label("slip");
     FaultCohesiveLagrange::globalToFault(&buffer, orientation);
+    buffer.complete();
     PYLITH_METHOD_RETURN(buffer);
 
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
@@ -253,7 +254,12 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
 
   } else if (0 == strcasecmp("impulse_amplitude", name)) {
     topology::Field& amplitude = _fields->get("impulse amplitude");
-    PYLITH_METHOD_RETURN(amplitude);
+    _allocateBufferScalarField();
+    topology::Field& buffer = _fields->get("buffer (scalar)");
+    buffer.copy(amplitude);
+    buffer.label("impulse_amplitude");
+    buffer.complete();
+    PYLITH_METHOD_RETURN(buffer);
 
   } else if (0 == strcasecmp("area", name)) {
     topology::Field& area = _fields->get("area");
