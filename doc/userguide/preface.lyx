@@ -125,7 +125,7 @@ geodynamics.org
 
 \begin_layout Itemize
 Aagaard, B.
- T.
+ T.,
  M.
  G.
  Knepley, and C.
@@ -146,10 +146,9 @@ To cite this manual, use:
 \begin_layout Itemize
 Aagaard, B., S.
  Kientz, M.
- Knepley, S.
- Somala, L.
+ Knepley, L.
  Strand, and C.
- Williams (2011), 
+ Williams (2013), 
 \emph on
 PyLith User Manual, Version 2.0.0.
 
