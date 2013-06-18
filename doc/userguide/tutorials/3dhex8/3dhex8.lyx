@@ -90,6 +90,14 @@ Quasi-static solution
 \end_layout
 
 \begin_layout Itemize
+Running a different problem type
+\end_layout
+
+\begin_layout Itemize
+Green's function generation
+\end_layout
+
+\begin_layout Itemize
 CUBIT mesh format
 \end_layout
 
@@ -103,6 +111,10 @@ VTK output
 
 \begin_layout Itemize
 HDF5 output
+\end_layout
+
+\begin_layout Itemize
+Interpolated point output
 \end_layout
 
 \begin_layout Itemize
@@ -131,6 +143,10 @@ Static fault rupture
 
 \begin_layout Itemize
 Multiple kinematic fault ruptures
+\end_layout
+
+\begin_layout Itemize
+Kinematic fault impulses
 \end_layout
 
 \begin_layout Itemize
@@ -628,6 +644,13 @@ filename "surfload/surfload.lyx"
 \begin_inset CommandInset include
 LatexCommand input
 filename "dike/dike.lyx"
+
+\end_inset
+
+
+\begin_inset CommandInset include
+LatexCommand input
+filename "greensfns/greensfns.lyx"
 
 \end_inset
 
