@@ -632,6 +632,13 @@ filename "dike.lyx"
 \end_inset
 
 
+\begin_inset CommandInset include
+LatexCommand input
+filename "greensfns.lyx"
+
+\end_inset
+
+
 \end_layout
 
 \end_body
