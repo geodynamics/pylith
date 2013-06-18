@@ -212,6 +212,7 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
     buffer.copy(dispRel);
     buffer.label("slip");
     FaultCohesiveLagrange::globalToFault(&buffer, orientation);
+    buffer.complete();
     return buffer;
 
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
@@ -253,7 +254,12 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
 
   } else if (0 == strcasecmp("impulse_amplitude", name)) {
     topology::Field<topology::SubMesh>& amplitude = _fields->get("impulse amplitude");
-    return amplitude;
+    _allocateBufferScalarField();
+    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (scalar)");
+    buffer.copy(amplitude);
+    buffer.label("impulse_amplitude");
+    buffer.complete();
+    return buffer;
 
   } else if (0 == strcasecmp("area", name)) {
     topology::Field<topology::SubMesh>& area = _fields->get("area");
@@ -307,6 +313,7 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
   amplitude.newSection(dispRel, fiberDim);
   amplitude.allocate();
   amplitude.scale(lengthScale);
+  amplitude.vectorFieldType(topology::FieldBase::SCALAR);
 
   PylithScalar amplitudeVertex;
   const ALE::Obj<RealSection>& amplitudeSection = amplitude.section();
