@@ -144,7 +144,7 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
 
     FaultCohesive.verifyConfiguration(self)
     Integrator.verifyConfiguration(self)
-    ModuleFaultCohesiveDyn.verifyConfiguration(self, self.mesh)
+    ModuleFaultCohesiveDyn.verifyConfiguration(self, self.mesh())
 
     self._eventLogger.eventEnd(logEvent)
     return

@@ -72,7 +72,7 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
       sieveLogger =  MemoryLogger.singleton()
 
       sieveLogger.stagePush(mesh.memLoggingStage)      
-      mesh.deallocate()
+      mesh.cleanup()
       sieveLogger.stagePop()
 
     self._eventLogger.eventEnd(logEvent)

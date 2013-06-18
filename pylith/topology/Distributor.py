@@ -86,7 +86,7 @@ class Distributor(PetscComponent, ModuleDistributor):
     sieveLogger =  MemoryLogger.singleton()
 
     sieveLogger.stagePush(mesh.memLoggingStage)
-    mesh.deallocate()
+    mesh.cleanup()
     sieveLogger.stagePop()
 
     if self.writePartition:
