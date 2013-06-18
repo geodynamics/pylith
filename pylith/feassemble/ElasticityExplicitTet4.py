@@ -53,7 +53,7 @@ class ElasticityExplicitTet4(IntegratorElasticity, ModuleElasticityExplicitTet4)
     self._eventLogger.eventBegin(logEvent)
 
     IntegratorElasticity.initialize(self, totalTime, numTimeSteps, normalizer)
-    ModuleElasticityExplicitTet4.initialize(self, self.mesh)
+    ModuleElasticityExplicitTet4.initialize(self, self.mesh())
     self._initializeOutput(totalTime, numTimeSteps, normalizer)
     
     self._eventLogger.eventEnd(logEvent)
@@ -63,7 +63,7 @@ class ElasticityExplicitTet4(IntegratorElasticity, ModuleElasticityExplicitTet4)
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _verifyConfiguration(self):
-    ModuleElasticityExplicitTet4.verifyConfiguration(self, self.mesh)
+    ModuleElasticityExplicitTet4.verifyConfiguration(self, self.mesh())
     return
 
 

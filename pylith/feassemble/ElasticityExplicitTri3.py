@@ -53,7 +53,7 @@ class ElasticityExplicitTri3(IntegratorElasticity, ModuleElasticityExplicitTri3)
     self._eventLogger.eventBegin(logEvent)
 
     IntegratorElasticity.initialize(self, totalTime, numTimeSteps, normalizer)
-    ModuleElasticityExplicitTri3.initialize(self, self.mesh)
+    ModuleElasticityExplicitTri3.initialize(self, self.mesh())
     self._initializeOutput(totalTime, numTimeSteps, normalizer)
     
     self._eventLogger.eventEnd(logEvent)
@@ -63,7 +63,7 @@ class ElasticityExplicitTri3(IntegratorElasticity, ModuleElasticityExplicitTri3)
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _verifyConfiguration(self):
-    ModuleElasticityExplicitTri3.verifyConfiguration(self, self.mesh)
+    ModuleElasticityExplicitTri3.verifyConfiguration(self, self.mesh())
     return
 
 

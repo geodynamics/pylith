@@ -79,8 +79,8 @@ class DirichletBC(BoundaryCondition,
     logEvent = "%sverify" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
-    BoundaryCondition.verifyConfiguration(self, self.mesh)
-    spaceDim = self.mesh.coordsys().spaceDim()
+    BoundaryCondition.verifyConfiguration(self, self.mesh())
+    spaceDim = self.mesh().coordsys().spaceDim()
     for d in self.bcDOF:
       if d < 0 or d >= spaceDim:
         raise ValueError("Attempting to constrain DOF (%d) that doesn't exist. Space dimension is %d." % \

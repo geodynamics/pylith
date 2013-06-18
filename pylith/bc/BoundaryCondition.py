@@ -116,7 +116,8 @@ class BoundaryCondition(PetscComponent, ModuleBoundaryCondition):
     """
     Setup boundary condition.
     """
-    self.mesh = mesh
+    import weakref
+    self.mesh = weakref.ref(mesh)
     return
 
 
@@ -124,7 +125,7 @@ class BoundaryCondition(PetscComponent, ModuleBoundaryCondition):
     """
     Initialize boundary condition.
     """
-    ModuleBoundaryCondition.initialize(self, self.mesh, self.upDir)
+    ModuleBoundaryCondition.initialize(self, self.mesh(), self.upDir)
     return
 
 
@@ -152,14 +153,6 @@ class BoundaryCondition(PetscComponent, ModuleBoundaryCondition):
       raise ValueError("Error while configuring boundary condition "
                        "(%s):\n%s" % (aliases, err.message))
                          
-    return
-
-
-  def _cleanup(self):
-    """
-    Deallocate locally managed data structures.
-    """
-    self.deallocate()
     return
 
 

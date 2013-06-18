@@ -55,7 +55,7 @@ class ElasticityImplicitLgDeform(IntegratorElasticityLgDeform,
 
     IntegratorElasticityLgDeform.initialize(self, totalTime, numTimeSteps,
                                             normalizer)
-    ModuleElasticityImplicitLgDeform.initialize(self, self.mesh)
+    ModuleElasticityImplicitLgDeform.initialize(self, self.mesh())
     self._initializeOutput(totalTime, numTimeSteps, normalizer)
     
     self._eventLogger.eventEnd(logEvent)
@@ -65,7 +65,7 @@ class ElasticityImplicitLgDeform(IntegratorElasticityLgDeform,
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _verifyConfiguration(self):
-    ModuleElasticityImplicitLgDeform.verifyConfiguration(self, self.mesh)
+    ModuleElasticityImplicitLgDeform.verifyConfiguration(self, self.mesh())
     return
 
 

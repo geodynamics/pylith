@@ -34,7 +34,8 @@ typedef pylith::topology::Mesh::RealSection RealSection;
 pylith::meshio::OutputSolnPoints::OutputSolnPoints(void) :
   _mesh(0),
   _pointsMesh(0),
-  _interpolator(0)
+  _interpolator(0),
+  _dm(0)
 { // constructor
 } // constructor
 
@@ -52,17 +53,12 @@ pylith::meshio::OutputSolnPoints::deallocate(void)
 { // deallocate
   OutputManager<topology::Mesh, topology::Field<topology::Mesh> >::deallocate();
 
+  PetscErrorCode err = 0;
   if (_interpolator) {
-    assert(_mesh);
-    const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
-    DM dm;
-    PetscErrorCode err = 0;
-
-    err = DMMeshCreate(sieveMesh->comm(), &dm);CHECK_PETSC_ERROR(err);
-    err = DMMeshSetMesh(dm, sieveMesh);CHECK_PETSC_ERROR(err);
-    err = DMMeshInterpolationDestroy(dm, &_interpolator);CHECK_PETSC_ERROR(err);
-    err = DMDestroy(&dm);CHECK_PETSC_ERROR(err);
+    assert(_dm);
+    err = DMMeshInterpolationDestroy(_dm, &_interpolator);CHECK_PETSC_ERROR(err);
   } // if
+  err = DMDestroy(&_dm);CHECK_PETSC_ERROR(err);
 
   _mesh = 0; // :TODO: Use shared pointer
   delete _pointsMesh; _pointsMesh = 0;
@@ -116,20 +112,19 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
   assert(csMesh->spaceDim() == spaceDim);
 
   // Setup interpolator object
-  DM dm;
   PetscErrorCode err = 0;
 
   assert(!_mesh->sieveMesh().isNull());
-  err = DMMeshCreate(_mesh->sieveMesh()->comm(), &dm);CHECK_PETSC_ERROR(err);
-  err = DMMeshSetMesh(dm, _mesh->sieveMesh());CHECK_PETSC_ERROR(err);
-  err = DMMeshInterpolationCreate(dm, &_interpolator);CHECK_PETSC_ERROR(err);
+  err = DMDestroy(&_dm);CHECK_PETSC_ERROR(err);
+  err = DMMeshCreate(_mesh->sieveMesh()->comm(), &_dm);CHECK_PETSC_ERROR(err);
+  err = DMMeshSetMesh(_dm, _mesh->sieveMesh());CHECK_PETSC_ERROR(err);
+  err = DMMeshInterpolationCreate(_dm, &_interpolator);CHECK_PETSC_ERROR(err);
   
-  err = DMMeshInterpolationSetDim(dm, spaceDim, _interpolator);CHECK_PETSC_ERROR(err);
+  err = DMMeshInterpolationSetDim(_dm, spaceDim, _interpolator);CHECK_PETSC_ERROR(err);
 
-  err = DMMeshInterpolationAddPoints(dm, numPoints, (PetscReal*)&pointsNondim[0], _interpolator);CHECK_PETSC_ERROR(err);
+  err = DMMeshInterpolationAddPoints(_dm, numPoints, (PetscReal*)&pointsNondim[0], _interpolator);CHECK_PETSC_ERROR(err);
   const PetscBool pointsAllProcs = PETSC_TRUE;
-  err = DMMeshInterpolationSetUp(dm, _interpolator, pointsAllProcs);CHECK_PETSC_ERROR(err);
-  err = DMDestroy(&dm);CHECK_PETSC_ERROR(err);
+  err = DMMeshInterpolationSetUp(_dm, _interpolator, pointsAllProcs);CHECK_PETSC_ERROR(err);
 
   // Create mesh corresponding to points.
   const int meshDim = 0;
@@ -271,23 +266,18 @@ pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
   PetscVec fieldInterpVec = fieldInterp.vector(context);
   assert(fieldInterpVec);
 
-  DM dm;
   SectionReal section;
   PetscErrorCode err = 0;
-  
-  err = DMMeshCreate(sieveMesh->comm(), &dm);CHECK_PETSC_ERROR(err);
-  err = DMMeshSetMesh(dm, sieveMesh);CHECK_PETSC_ERROR(err);
-  err = DMMeshInterpolationSetDof(dm, fiberDim, 
-				  _interpolator);CHECK_PETSC_ERROR(err);
+
+  assert(_dm);
+  err = DMMeshInterpolationSetDof(_dm, fiberDim, _interpolator);CHECK_PETSC_ERROR(err);
 
   err = SectionRealCreate(sieveMesh->comm(), &section);CHECK_PETSC_ERROR(err);
   err = SectionRealSetSection(section, field.section());CHECK_PETSC_ERROR(err);
   err = SectionRealSetBundle(section, sieveMesh);CHECK_PETSC_ERROR(err);
 
-  err = DMMeshInterpolationEvaluate(dm, section, fieldInterpVec, 
-				    _interpolator);CHECK_PETSC_ERROR(err);
+  err = DMMeshInterpolationEvaluate(_dm, section, fieldInterpVec, _interpolator);CHECK_PETSC_ERROR(err);
   err = SectionRealDestroy(&section);CHECK_PETSC_ERROR(err);
-  err = DMDestroy(&dm);CHECK_PETSC_ERROR(err);
 
   fieldInterp.scatterVectorToSection(context);
 

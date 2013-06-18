@@ -152,7 +152,7 @@ class Explicit(Formulation, ModuleExplicit):
     if 0 == comm.rank:
       self._info.log("Creating lumped Jacobian matrix.")
     from pylith.topology.topology import MeshField
-    jacobian = MeshField(self.mesh)
+    jacobian = MeshField(self.mesh())
     jacobian.newSection(jacobian.VERTICES_FIELD, dimension)
     jacobian.allocate()
     jacobian.label("jacobian")
@@ -290,7 +290,7 @@ class Explicit(Formulation, ModuleExplicit):
     self._eventLogger.eventBegin(logEvent)
 
     if self.dtStable is None:
-      self.dtStable = self.timeStep.timeStep(self.mesh, self.integratorsMesh + self.integratorsSubMesh)
+      self.dtStable = self.timeStep.timeStep(self.mesh(), self.integratorsMesh + self.integratorsSubMesh)
     self._eventLogger.eventEnd(logEvent)
     return self.dtStable
   

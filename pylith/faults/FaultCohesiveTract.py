@@ -117,7 +117,7 @@ class FaultCohesiveTract(FaultCohesive, Integrator, ModuleFaultCohesiveTract):
 
     FaultCohesive.verifyConfiguration(self)
     Integrator.verifyConfiguration(self)
-    ModuleFaultCohesiveTract.verifyConfiguration(self, self.mesh)
+    ModuleFaultCohesiveTract.verifyConfiguration(self, self.mesh())
 
     self._eventLogger.eventEnd(logEvent)
     return
