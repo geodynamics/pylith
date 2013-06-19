@@ -47,7 +47,7 @@ brick x {blockLength} y {blockWidth} z {blockHeight}
 #{idVol=Id("volume")}
 
 # Translate block so the top is at z=0
-volume {idVol} move x {domain_x} y {domain_y} z {-0.5*blockHeight}
+volume {idVol} move x 0 y 0 z {-0.5*blockHeight}
 
 # ----------------------------------------------------------------------
 # Create fault comprised of multiple planar segments 
@@ -95,9 +95,3 @@ imprint all with volume all
 merge all
 
 # End of file
-
-
-
-
-
-
