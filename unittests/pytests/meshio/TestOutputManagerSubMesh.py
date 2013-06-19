@@ -153,7 +153,7 @@ class TestOutputManagerSubMesh(unittest.TestCase):
     output = OutputManagerSubMesh()
     output.preinitialize(dataProvider)
     
-    self.assertEqual(dataProvider, output.dataProvider)
+    self.assertEqual(dataProvider, output.dataProvider())
     return
 
 
