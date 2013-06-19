@@ -10,16 +10,35 @@
 # ----------------------------------------------------------------------
 # Create blocks for materials
 # ----------------------------------------------------------------------
-block 1 volume 8 9 10 20 22
-block 1 name "outer_domain"
-block 2 volume 19 21
-block 2 name "christchurch"
+block 1 volume 1
+block 1 name "plate"
+block 2 volume 6
+block 2 name "slab"
+block 3 volume 7
+block 3 name "sediments"
+
+# ----------------------------------------------------------------------
+# Create nodeset for subduction interface
+# ----------------------------------------------------------------------
+group "subd_fault" add node in surface 33 38
+nodeset 100 group subd_fault
+nodeset 100 name "subd_fault"
+
+# ----------------------------------------------------------------------
+# Create nodeset for splay fault
+# ----------------------------------------------------------------------
+group "splay_fault" add node in surface 36
+
+# We must remove the nodes that are already contained in the subduction interface.
+group "splay_fault" remove node in group subd_fault
+
+nodeset 100 group subd_fault
+nodeset 100 name "subd_fault"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +x face
 # ----------------------------------------------------------------------
-group "face_xpos" add node in surface 17
-group "face_xpos" add node in surface 20
+group "face_xpos" add node in surface 12
 nodeset 10 group face_xpos
 nodeset 10 name "face xpos"
 
@@ -111,6 +130,7 @@ nodeset 103 name "fault_nnwepi"
 
 
 # End of file
+
 
 
 
