@@ -39,13 +39,9 @@ mesh volume all
 # ----------------------------------------------------------------------
 # Smooth mesh to imporve quality.
 # ----------------------------------------------------------------------
-#{condnum=6.4}
-#{loop(22)}
 cleanup volume all
-volume all smooth scheme condition number beta {condnum} cpu 2
+volume all smooth scheme condition number beta 2.0 cpu 4
 smooth volume all
-#{condnum=condnum-0.2}
-#{endloop}
 #
 # ----------------------------------------------------------------------
 # Boundary conditions.
@@ -56,9 +52,10 @@ playback 'bc.jou'
 # Export exodus file.
 # ----------------------------------------------------------------------
 set large exodus off
-export mesh "subduct_mesh_tet4.exo" dimension 3 overwrite
+export mesh "mesh.exo" dimension 3 overwrite
 
 
 # End of file
+
 
 

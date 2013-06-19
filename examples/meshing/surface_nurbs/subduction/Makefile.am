@@ -16,16 +16,17 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	contours \
-	dem \
-	triangles \
-	merge_surfs \
-	subduction
-
-
 dist_noinst_DATA = \
-	README
+	README \
+	geometry.jou \
+	mesh.jou \
+	bc.jou \
+	topobath_netsurf.py \
+	topobath_points.txt \
+	interface_netsurf.py \
+	interface_points.txt \
+	splay_skinsurf.py \
+	splay_points.txt
 
 
 # End of file 
