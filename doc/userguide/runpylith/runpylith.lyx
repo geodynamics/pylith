@@ -456,6 +456,20 @@ PyLith's command-line arguments can control Pyre and PyLith properties and
 $ pylith --help
 \end_layout
 
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\color inherit
+ 
+\series default
+\color none
+This only works if the input passes the minimum validation tests.
+ Running PyLith in a directory without any input will fail the validation
+ step due to a missing mesh input file.
+\end_layout
+
 \begin_layout Standard
 All PyLith-related properties are associated with the 
 \family typewriter
