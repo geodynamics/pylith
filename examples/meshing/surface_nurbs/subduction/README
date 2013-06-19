@@ -1,0 +1,46 @@
+This example demonstrates a simple meshing example involving a subduction
+interface, a steeply-dipping splay fault, and topography/bathymetry.
+
+To generate the mesh for this example, we need to perform the following
+steps:
+
+1.  Create the Cubit journal files that will allow creation of the
+    surfaces:
+
+    a.  Create the subduction interface journal file by first running the
+    interface_netsurf.py script. This will read points from the file
+    interface_points.txt that define the interface geometry, and then
+    creates a Cubit journal file to create the surface using a net
+    surface.
+
+    b.  Create the splay fault journal file by first running the
+    splay_skinsurf.py script. This will read points from the file
+    splay_points.txt that define the splay fault geometry, and then
+    creates a Cubit journal file to create the surface using a skin
+    surface.
+
+    c.  Create the topography/bathymetry journal file by first running the
+    topobath_netsurf.py script. This will read points from the file
+    topobath_points.txt that define the topography/bathymetry, and then
+    creates a Cubit journal file to create the surface using a net
+    surface.
+
+2.  Create the necessary surfaces by running Cubit with the journal files
+    produced by the Python scripts:
+
+    a.  Run the interface_netsurf.jou file to create the interface surface.
+
+    b.  Run the splay_skinsurf.jou file to create the splay fault surface.
+
+    c.  Run the topobath_netsurf.jou file to create the DEM surface.
+
+
+3.  Create the mesh using these surfaces by running the meth_tet4.jou file
+    within Cubit. Note that this file makes use of the following journal
+    files:
+
+    geometry.jou:  Imports the surfaces created in step 2 and creates the
+                   volumes needed for meshing.
+
+    bc.jou:        Creates material blocks and nodesets needed by the
+                   finite element model.
