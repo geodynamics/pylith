@@ -27,13 +27,13 @@ nodeset 100 name "subd_fault"
 # ----------------------------------------------------------------------
 # Create nodeset for splay fault
 # ----------------------------------------------------------------------
-group "splay_fault" add node in surface 36
+group "splay_fault" add node in surface 30
 
 # We must remove the nodes that are already contained in the subduction interface.
 group "splay_fault" remove node in group subd_fault
 
-nodeset 100 group subd_fault
-nodeset 100 name "subd_fault"
+nodeset 101 group splay_fault
+nodeset 101 name "splay_fault"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +x face
@@ -45,88 +45,57 @@ nodeset 10 name "face xpos"
 # ----------------------------------------------------------------------
 # Create nodeset for -x face
 # ----------------------------------------------------------------------
-group "face_xneg" add node in surface 22
-group "face_xneg" add node in surface 33
-group "face_xneg" add node in surface 28
+group "face_xneg" add node in surface 21 26
 nodeset 11 group face_xneg
 nodeset 11 name "face xneg"
+
+# To apply BC on face_xneg, we also create a nodeset that has fault nodes removed.
+group "face_xneg_nofault" add node in group face_xneg
+group "face_xneg_nofault" remove node in group subd_fault
+nodeset 16 group face_xneg_nofault
+nodeset 16 name "face_xneg_nofault"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +y face
 # ----------------------------------------------------------------------
-group "face_ypos" add node in surface 37
-group "face_ypos" add node in surface 55
-group "face_ypos" add node in surface 47
-group "face_ypos" add node in surface 14
+group "face_ypos" add node in surface 32 27 39
 nodeset 12 group face_ypos
 nodeset 12 name "face ypos"
+
+# To apply BC on face_ypos, we also create a nodeset that has fault nodes removed.
+group "face_ypos_nofault" add node in group face_ypos
+group "face_ypos_nofault" remove node in group subd_fault
+group "face_ypos_nofault" remove node in group splay_fault
+nodeset 17 group face_ypos_nofault
+nodeset 17 name "face_ypos_nofault"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -y face
 # ----------------------------------------------------------------------
-group "face_yneg" add node in surface 26
-group "face_yneg" add node in surface 35
+group "face_yneg" add node in surface 29 34 37
 nodeset 13 group face_yneg
 nodeset 13 name "face yneg"
+
+# To apply BC on face_yneg, we also create a nodeset that has fault nodes removed.
+group "face_yneg_nofault" add node in group face_yneg
+group "face_yneg_nofault" remove node in group subd_fault
+group "face_yneg_nofault" remove node in group splay_fault
+nodeset 18 group face_yneg_nofault
+nodeset 18 name "face_yneg_nofault"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -z face
 # ----------------------------------------------------------------------
-group "face_zneg" add node in surface 29
-group "face_zneg" add node in surface 32
-group "face_zneg" add node in surface 42
-group "face_zneg" add node in surface 40
+group "face_zneg" add node in surface 2
 nodeset 14 group face_zneg
 nodeset 14 name "face zneg"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +z face
 # ----------------------------------------------------------------------
-group "face_zpos" add node in surface 34
-group "face_zpos" add node in surface 50
-group "face_zpos" add node in surface 52
-group "face_zpos" add node in surface 133
-group "face_zpos" add node in surface 127
-group "face_zpos" add node in surface 135
-group "face_zpos" add node in surface 141
+group "face_zpos" add node in surface 28 36 31
 nodeset 15 group face_zpos
 nodeset 15 name "face zpos"
-
-# ----------------------------------------------------------------------
-# Create nodeset for fault_greendale
-# ----------------------------------------------------------------------
-group "fault_greendale" add node in surface greendale
-group "fault_greendale" add node in surface greendale@A 
-group "fault_greendale" add node in surface greendale@B
-group "fault_greendale" add node in surface greendale@C
-nodeset 100 group fault_greendale
-nodeset 100 name "fault_greendale"
-
-# ----------------------------------------------------------------------
-# Create nodeset for fault_hororata
-# ----------------------------------------------------------------------
-group "fault_hororata" add node in surface hororata
-group "fault_hororata" remove node in fault_greendale
-nodeset 101 group fault_hororata
-nodeset 101 name "fault_hororata"
-
-# ----------------------------------------------------------------------
-# Create nodeset for fault_charing
-# ----------------------------------------------------------------------
-group "fault_charing" add node in surface charing
-group "fault_charing" add node in surface charing@A
-group "fault_charing" remove node in fault_greendale
-nodeset 102 group fault_charing
-nodeset 102 name "fault_charing"
-
-# ----------------------------------------------------------------------
-# Create nodeset for fault_nnwepi
-# ----------------------------------------------------------------------
-group "fault_nnwepi" add node in surface nnwepi
-group "fault_nnwepi" remove node in fault_charing
-group "fault_nnwepi" remove node in fault_greendale
-nodeset 103 group fault_nnwepi
-nodeset 103 name "fault_nnwepi"
 
 
 # End of file
