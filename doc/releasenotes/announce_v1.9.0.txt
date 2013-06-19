@@ -43,7 +43,8 @@ RELEASE NOTES - PyLith v1.9.0
 
   - Fixed two MPI related bugs in computing Green's functions in
     parallel. The number of impulses corresponded to only those on
-    processor 0.
+    process 0 and the output of the impulses for vertices on processor
+    boundaries was inconsistent.
 
   - Corrected computation of fault tractions (Lagrange multipliers) on
     process boundaries for prescribed slip with explicit time stepping.
