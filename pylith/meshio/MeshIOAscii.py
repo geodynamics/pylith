@@ -32,7 +32,11 @@ def validateFilename(value):
   Validate filename.
   """
   if 0 == len(value):
-    raise ValueError("Filename for ASCII input mesh not specified.")
+    msg = "Filename for ASCII input mesh not specified.\n\n" + \
+        "PyLith runs some minimum validation on the input before even\n" + \
+        "displaying help information. To test PyLith, run an example as\n" +\
+        "discussed in the manual.\n"
+    raise ValueError(msg)
   return value
 
 

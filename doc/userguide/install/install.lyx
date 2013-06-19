@@ -443,6 +443,107 @@ geodynamics.org/cig/software/packages/short/pylith/
 \end_layout
 
 \begin_layout Section
+Verifying PyLith is Installed Correctly
+\end_layout
+
+\begin_layout Standard
+The easiest way to verify that PyLith has been installed correctly is to
+ run one or more of the examples supplied with the binary and source code.
+ In the binary distribution, the examples are located in 
+\family typewriter
+src/pylith/examples
+\family default
+ while in the source distribution, they are located in 
+\family typewriter
+pylith-1.9.0/examples
+\family default
+.
+ Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cha:Tutorials"
+
+\end_inset
+
+ discusses how to run and visualize the results for the examples.
+ To run the example discussed in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Tutorial-3d-hex8-static"
+
+\end_inset
+
+:
+\end_layout
+
+\begin_layout LyX-Code
+$ cd examples/3d/hex8
+\begin_inset Newline newline
+\end_inset
+
+$ pylith step01.cfg
+\end_layout
+
+\begin_layout Standard
+If you run PyLith if a directory without any input, you will get the error
+ message:
+\end_layout
+
+\begin_layout LyX-Code
+Traceback (most recent call last):
+\end_layout
+
+\begin_layout LyX-Code
+...
+\end_layout
+
+\begin_layout LyX-Code
+ValueError: Filename for ASCII input mesh not specified.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+PyLith runs some minimum validation on the input before even
+\end_layout
+
+\begin_layout LyX-Code
+displaying help information.
+ To test PyLith, run an example as 
+\end_layout
+
+\begin_layout LyX-Code
+discussed in the manual.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Backtrace - Component meshioascii, reader
+\end_layout
+
+\begin_layout LyX-Code
+Backtrace - Component meshimporter, mesh_generator
+\end_layout
+
+\begin_layout LyX-Code
+Backtrace - Component pylithapp 
+\end_layout
+
+\begin_layout Standard
+This indicates that 
+\family typewriter
+pylithapp.mesh_generator.reader
+\family default
+ component, which is a MeshIOAscii object, is missing an the filename for
+ an ASCII input mesh.
+\end_layout
+
+\begin_layout Section
 Configuration on a Cluster
 \end_layout
 
@@ -621,7 +722,7 @@ scheduler
 \end_layout
 
 \begin_layout LyX-Code
-pylith --scheduler.dry
+$ pylith --scheduler.dry
 \end_layout
 
 \begin_layout Standard
@@ -636,7 +737,7 @@ This option will cause PyLith to perform a ``dry run,'' dumping the batch
 \end_layout
 
 \begin_layout LyX-Code
-pylith --launcher.dry
+$ pylith --launcher.dry
 \end_layout
 
 \begin_layout Standard
