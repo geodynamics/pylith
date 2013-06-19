@@ -1,0 +1,63 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2013 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+#
+# CUBIT journal file to create an ExodusII file with a mesh at uniform
+# resolution.
+#
+# ----------------------------------------------------------------------
+# Generate geometry.
+# ----------------------------------------------------------------------
+playback 'geometry.jou'
+
+# ----------------------------------------------------------------------
+# Create tet4 mesh at 6.0 km resolution.
+# ----------------------------------------------------------------------
+
+#{dx=6.0*km}
+volume all size {dx}
+volume all scheme tetmesh
+
+# ----------------------------------------------------------------------
+# Generate the mesh.
+# ----------------------------------------------------------------------
+mesh surface all
+mesh volume all
+
+# ----------------------------------------------------------------------
+# Smooth mesh to imporve quality.
+# ----------------------------------------------------------------------
+#{condnum=2.0}
+#{loop(4)}
+cleanup volume all
+volume all smooth scheme condition number beta {condnum} cpu 2
+smooth volume all
+#{condnum=condnum-0.1}
+#{endloop}
+#
+# ----------------------------------------------------------------------
+# Boundary conditions.
+# ----------------------------------------------------------------------
+playback 'bc.jou'
+
+# ----------------------------------------------------------------------
+# Export exodus file.
+# ----------------------------------------------------------------------
+set large exodus off
+export mesh "subduct_mesh_tet4.exo" dimension 3 overwrite
+
+
+# End of file
+
