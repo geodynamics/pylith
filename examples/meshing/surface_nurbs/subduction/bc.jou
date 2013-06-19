@@ -1,0 +1,118 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Charles A. Williams, GNS Science
+#
+# ----------------------------------------------------------------------
+#
+# CUBIT journal file with boundary condition info for M7.1 Darfield earthquake modeling.
+#
+# ----------------------------------------------------------------------
+# Create blocks for materials
+# ----------------------------------------------------------------------
+block 1 volume 8 9 10 20 22
+block 1 name "outer_domain"
+block 2 volume 19 21
+block 2 name "christchurch"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +x face
+# ----------------------------------------------------------------------
+group "face_xpos" add node in surface 17
+group "face_xpos" add node in surface 20
+nodeset 10 group face_xpos
+nodeset 10 name "face xpos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -x face
+# ----------------------------------------------------------------------
+group "face_xneg" add node in surface 22
+group "face_xneg" add node in surface 33
+group "face_xneg" add node in surface 28
+nodeset 11 group face_xneg
+nodeset 11 name "face xneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +y face
+# ----------------------------------------------------------------------
+group "face_ypos" add node in surface 37
+group "face_ypos" add node in surface 55
+group "face_ypos" add node in surface 47
+group "face_ypos" add node in surface 14
+nodeset 12 group face_ypos
+nodeset 12 name "face ypos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -y face
+# ----------------------------------------------------------------------
+group "face_yneg" add node in surface 26
+group "face_yneg" add node in surface 35
+nodeset 13 group face_yneg
+nodeset 13 name "face yneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -z face
+# ----------------------------------------------------------------------
+group "face_zneg" add node in surface 29
+group "face_zneg" add node in surface 32
+group "face_zneg" add node in surface 42
+group "face_zneg" add node in surface 40
+nodeset 14 group face_zneg
+nodeset 14 name "face zneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +z face
+# ----------------------------------------------------------------------
+group "face_zpos" add node in surface 34
+group "face_zpos" add node in surface 50
+group "face_zpos" add node in surface 52
+group "face_zpos" add node in surface 133
+group "face_zpos" add node in surface 127
+group "face_zpos" add node in surface 135
+group "face_zpos" add node in surface 141
+nodeset 15 group face_zpos
+nodeset 15 name "face zpos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for fault_greendale
+# ----------------------------------------------------------------------
+group "fault_greendale" add node in surface greendale
+group "fault_greendale" add node in surface greendale@A 
+group "fault_greendale" add node in surface greendale@B
+group "fault_greendale" add node in surface greendale@C
+nodeset 100 group fault_greendale
+nodeset 100 name "fault_greendale"
+
+# ----------------------------------------------------------------------
+# Create nodeset for fault_hororata
+# ----------------------------------------------------------------------
+group "fault_hororata" add node in surface hororata
+group "fault_hororata" remove node in fault_greendale
+nodeset 101 group fault_hororata
+nodeset 101 name "fault_hororata"
+
+# ----------------------------------------------------------------------
+# Create nodeset for fault_charing
+# ----------------------------------------------------------------------
+group "fault_charing" add node in surface charing
+group "fault_charing" add node in surface charing@A
+group "fault_charing" remove node in fault_greendale
+nodeset 102 group fault_charing
+nodeset 102 name "fault_charing"
+
+# ----------------------------------------------------------------------
+# Create nodeset for fault_nnwepi
+# ----------------------------------------------------------------------
+group "fault_nnwepi" add node in surface nnwepi
+group "fault_nnwepi" remove node in fault_charing
+group "fault_nnwepi" remove node in fault_greendale
+nodeset 103 group fault_nnwepi
+nodeset 103 name "fault_nnwepi"
+
+
+# End of file
+
+
+
+
+
