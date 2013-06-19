@@ -39,12 +39,12 @@ mesh volume all
 # ----------------------------------------------------------------------
 # Smooth mesh to imporve quality.
 # ----------------------------------------------------------------------
-#{condnum=2.0}
-#{loop(4)}
+#{condnum=6.4}
+#{loop(22)}
 cleanup volume all
 volume all smooth scheme condition number beta {condnum} cpu 2
 smooth volume all
-#{condnum=condnum-0.1}
+#{condnum=condnum-0.2}
 #{endloop}
 #
 # ----------------------------------------------------------------------
@@ -60,4 +60,5 @@ export mesh "subduct_mesh_tet4.exo" dimension 3 overwrite
 
 
 # End of file
+
 
