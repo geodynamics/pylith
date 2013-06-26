@@ -2807,7 +2807,7 @@ Precondition fields separately.
 
 \family typewriter
 \size footnotesize
-fs_pc_fieldsplit_real_diagonal
+fs_pc_use_amat
 \end_layout
 
 \end_inset
@@ -3076,7 +3076,7 @@ fs_pc_fieldsplit_schur_factorization_type = full
 \end_layout
 
 \begin_layout LyX-Code
-fs_pc_fieldsplit_real_diagonal = true
+fs_pc_use_amat = true
 \end_layout
 
 \begin_layout LyX-Code
