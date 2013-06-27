@@ -39,7 +39,7 @@ curve 22 scheme bias fine size {dx} factor {bias_factor} start vertex 15
 curve 21 size {dxC}
 
 # A to D
-curve 18 scheme bias fine size {dxA} coarse size {dxD} start vertex 11
+curve 14 scheme bias fine size {dxA} coarse size {dxD} start vertex 11
 
 # B to C
 curve 16 scheme bias fine size {dxA} coarse size {dxD} start vertex 12
@@ -50,6 +50,7 @@ curve 18 scheme bias fine size {dxA} coarse size {dxD} start vertex 13
 surface 8 9 sizing function type bias start curve fault_surface factor {bias_factor}
 
 # End of file
+
 
 
 
