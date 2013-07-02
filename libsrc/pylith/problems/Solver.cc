@@ -291,6 +291,7 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     err = DMGetDefaultGlobalSection(lagrangeDM, &lagrangeSection);PYLITH_CHECK_ERROR(err);
     err = PetscSectionGetStorageSize(lagrangeSection, &nrows);PYLITH_CHECK_ERROR(err);
     ncols = nrows;
+    err = DMDestroy(&lagrangeDM);PYLITH_CHECK_ERROR(err);
 
     err = MatCreate(comm, &_jacobianPCFault);PYLITH_CHECK_ERROR(err);
     err = MatSetSizes(_jacobianPCFault, nrows, ncols, PETSC_DECIDE, PETSC_DECIDE);PYLITH_CHECK_ERROR(err);
