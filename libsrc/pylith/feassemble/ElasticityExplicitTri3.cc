@@ -236,10 +236,6 @@ pylith::feassemble::ElasticityExplicitTri3::integrateResidual(const topology::Fi
 #endif
 
     // Restrict input fields to cell
-#if 1
-    coordsVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
-
     accVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, accVisitor);
 
@@ -248,16 +244,6 @@ pylith::feassemble::ElasticityExplicitTri3::integrateResidual(const topology::Fi
 
     dispVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, dispVisitor);
-#else
-    coordsVisitor.clear();
-    sieve->orientedConeOpt(*c_iter, coordsVisitor, numBasis, spaceDim);
-
-    accVisitor.clear();
-    sieve->orientedConeOpt(*c_iter, accVisitor, numBasis, spaceDim);
-
-    dispVisitor.clear();
-    sieve->orientedConeOpt(*c_iter, dispVisitor, numBasis, spaceDim);
-#endif
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -265,6 +251,9 @@ pylith::feassemble::ElasticityExplicitTri3::integrateResidual(const topology::Fi
 #endif
 
     // Compute geometry information for current cell
+    coordsVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
+
     const PylithScalar area = _area(coordinatesCell);
     assert(area > 0.0);
 
