@@ -237,6 +237,11 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(const topology::Field&
   _logger->eventBegin(computeEvent);
 #endif
 
+  PetscScalar *coordsCell = new PetscScalar[64];
+  PetscScalar *accCell    = new PetscScalar[64];
+  PetscScalar *velCell    = new PetscScalar[64];
+  PetscScalar *dispCell   = new PetscScalar[64];
+
   // Loop over cells
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
@@ -244,11 +249,10 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(const topology::Field&
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
-    PetscScalar *coordsCell = NULL;
-    PetscInt coordsSize = 0;
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
+    PetscInt coordsSize = 64;
+    coordsVisitor.getClosure((PetscScalar **) &coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
     _quadrature->computeGeometry(coordsCell, coordsSize, cell);
-    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
+    //coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
@@ -267,17 +271,14 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(const topology::Field&
     _resetCellVector();
 
     // Restrict input fields to cell
-    PetscScalar* accCell = NULL;
-    PetscInt accSize = 0;
-    accVisitor.getClosure(&accCell, &accSize, cell);assert(accCell);assert(numBasis*spaceDim == accSize);
+    PetscInt accSize = 64;
+    accVisitor.getClosure((PetscScalar **) &accCell, &accSize, cell);assert(accCell);assert(numBasis*spaceDim == accSize);
 
-    PetscScalar* velCell = NULL;
-    PetscInt velSize = 0;
-    velVisitor.getClosure(&velCell, &velSize, cell);assert(velCell);assert(numBasis*spaceDim == velSize);
+    PetscInt velSize = 64;
+    velVisitor.getClosure((PetscScalar **) &velCell, &velSize, cell);assert(velCell);assert(numBasis*spaceDim == velSize);
 
-    PetscScalar* dispCell = NULL;
-    PetscInt dispSize = 0;
-    dispVisitor.getClosure(&dispCell, &dispSize, cell);assert(dispCell);assert(numBasis*spaceDim == dispSize);
+    PetscInt dispSize = 64;
+    dispVisitor.getClosure((PetscScalar **) &dispCell, &dispSize, cell);assert(dispCell);assert(numBasis*spaceDim == dispSize);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -306,7 +307,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(const topology::Field&
         const int err = db->query(&gravVec[0], gravVec.size(), &quadPtsGlobal[0], spaceDim, cs);
         if (err) {
           throw std::runtime_error("Unable to get gravity vector for point.");
-	} // if
+        } // if
         _normalizer->nondimensionalize(&gravVec[0], gravVec.size(), gravityScale);
         const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
         for (int iBasis = 0, iQ = iQuad * numBasis; iBasis < numBasis; ++iBasis) {
@@ -345,9 +346,9 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(const topology::Field&
     for(PetscInt i = 0; i < dispSize; ++i) {
       dispAdjCell[i] = dispCell[i] + viscosity * velCell[i];
     } // for
-    accVisitor.restoreClosure(&accCell, &accSize, cell);
-    velVisitor.restoreClosure(&velCell, &velSize, cell);
-    dispVisitor.restoreClosure(&dispCell, &dispSize, cell);
+    //accVisitor.restoreClosure(&accCell, &accSize, cell);
+    //velVisitor.restoreClosure(&velCell, &velSize, cell);
+    //dispVisitor.restoreClosure(&dispCell, &dispSize, cell);
 
 #if defined(DETAILED_EVENT_LOGGING)
     PetscLogFlops(numQuadPts*(4+numBasis*3));
@@ -378,6 +379,11 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(const topology::Field&
     _logger->eventEnd(updateEvent);
 #endif
   } // for
+
+  delete [] coordsCell;
+  delete [] accCell;
+  delete [] velCell;
+  delete [] dispCell;
 
 #if !defined(DETAILED_EVENT_LOGGING)
   PetscLogFlops(numCells*numQuadPts*(4+numBasis*3));
