@@ -222,6 +222,11 @@ pylith::feassemble::ElasticityExplicitTri3::integrateResidual(const topology::Fi
   _logger->eventBegin(computeEvent);
 #endif
 
+  PetscScalar *coordsCell = new PetscScalar[64];
+  PetscScalar *accCell    = new PetscScalar[64];
+  PetscScalar *velCell    = new PetscScalar[64];
+  PetscScalar *dispCell   = new PetscScalar[64];
+
   // Loop over cells
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
@@ -230,16 +235,13 @@ pylith::feassemble::ElasticityExplicitTri3::integrateResidual(const topology::Fi
 #endif
 
     // Restrict input fields to cell
-    PetscScalar* accCell = NULL;
-    PetscInt accSize = 0;
+    PetscInt accSize = 64;
     accVisitor.getClosure(&accCell, &accSize, cell);assert(accCell);assert(numBasis*spaceDim == accSize);
 
-    PetscScalar* velCell = NULL;
-    PetscInt velSize = 0;
+    PetscInt velSize = 64;
     velVisitor.getClosure(&velCell, &velSize, cell);assert(velCell);assert(numBasis*spaceDim == velSize);
 
-    PetscScalar* dispCell = NULL;
-    PetscInt dispSize = 0;
+    PetscInt dispSize = 64;
     dispVisitor.getClosure(&dispCell, &dispSize, cell);assert(dispCell);assert(numBasis*spaceDim == dispSize);
 
 #if defined(DETAILED_EVENT_LOGGING)
@@ -248,8 +250,7 @@ pylith::feassemble::ElasticityExplicitTri3::integrateResidual(const topology::Fi
 #endif
 
     // Compute geometry information for current cell
-    PetscScalar *coordsCell = NULL;
-    PetscInt coordsSize = 0;
+    PetscInt coordsSize = 64;
     coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
     const PylithScalar area = _area(coordsCell, coordsSize);assert(area > 0.0);
 
@@ -318,9 +319,9 @@ pylith::feassemble::ElasticityExplicitTri3::integrateResidual(const topology::Fi
     for(PetscInt i = 0; i < cellVectorSize; ++i) {
       dispAdjCell[i] = dispCell[i] + viscosity * velCell[i];
     } // for
-    accVisitor.restoreClosure(&accCell, &accSize, cell);
-    velVisitor.restoreClosure(&velCell, &velSize, cell);
-    dispVisitor.restoreClosure(&dispCell, &dispSize, cell);
+    //accVisitor.restoreClosure(&accCell, &accSize, cell);
+    //velVisitor.restoreClosure(&velCell, &velSize, cell);
+    //dispVisitor.restoreClosure(&dispCell, &dispSize, cell);
 
     // Compute B(transpose) * sigma, first computing strains
     const PylithScalar x0 = coordsCell[0];
@@ -373,7 +374,7 @@ pylith::feassemble::ElasticityExplicitTri3::integrateResidual(const topology::Fi
     _logger->eventBegin(updateEvent);
 #endif
 
-    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
+    //coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
 
     // Assemble cell contribution into field
     residualVisitor.setClosure(&_cellVector[0], _cellVector.size(), cell, ADD_VALUES);
@@ -382,6 +383,11 @@ pylith::feassemble::ElasticityExplicitTri3::integrateResidual(const topology::Fi
     _logger->eventEnd(updateEvent);
 #endif
   } // for
+
+  delete [] coordsCell;
+  delete [] accCell;
+  delete [] velCell;
+  delete [] dispCell;
 
 #if !defined(DETAILED_EVENT_LOGGING)
   PetscLogFlops(numCells*(2 + numBasis*spaceDim*2 + 34+30));
