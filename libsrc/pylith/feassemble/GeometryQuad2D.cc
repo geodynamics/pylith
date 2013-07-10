@@ -34,7 +34,7 @@
 pylith::feassemble::GeometryQuad2D::GeometryQuad2D(void) :
   CellGeometry(QUADRILATERAL, 2)
 { // constructor
-  const PylithScalar vertices[] = {
+  const PylithScalar vertices[4*2] = {
     -1.0,  -1.0,
     +1.0,  -1.0,
     +1.0,  +1.0,

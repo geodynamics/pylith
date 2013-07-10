@@ -411,7 +411,9 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
 
   const int spaceDim = quadrature->spaceDim();
   const int numBasis = quadrature->numBasis();
+  const int numCorners = quadrature->refGeometry().numCorners();
 
+  scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
   PylithScalar dtStable = pylith::PYLITH_MAXSCALAR;
@@ -421,11 +423,8 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
 
     retrievePropsAndVars(cell);
 
-    PetscScalar *coordsCell = NULL;
-    PetscInt coordsSize = 0;
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
-    const PylithScalar minCellWidth = quadrature->minCellWidth(coordsCell, numBasis, spaceDim);
-    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
+    coordsVisitor.getClosure(&coordsCell, cell);
+    const PylithScalar minCellWidth = quadrature->minCellWidth(&coordsCell[0], numBasis, spaceDim);
 
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
       const PylithScalar dt = 
@@ -560,6 +559,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mes
   const int numQuadPts = quadrature->numQuadPts();
   const int spaceDim = quadrature->spaceDim();
   const int numBasis = quadrature->numBasis();
+  const int numCorners = quadrature->refGeometry().numCorners();
 
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();assert(cs);
 
@@ -569,6 +569,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mes
   const PetscInt* cells = _materialIS->points();
   const PetscInt numCells = _materialIS->size();
 
+  scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
   // Create arrays for querying
@@ -629,11 +630,8 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mes
     const PetscInt cell = cells[c];
 
     // Compute geometry information for current cell
-    PetscScalar *coordsCell = NULL;
-    PetscInt coordsSize = 0;
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
-    quadrature->computeGeometry(coordsCell, coordsSize, cell);
-    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
+    coordsVisitor.getClosure(&coordsCell, cell);
+    quadrature->computeGeometry(&coordsCell[0], coordsCell.size(), cell);
 
     // Dimensionalize coordinates for querying
     const scalar_array& quadPtsNonDim = quadrature->quadPts();
@@ -693,6 +691,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(const topology::Mes
   const int numQuadPts = quadrature->numQuadPts();
   const int spaceDim = quadrature->spaceDim();
   const int numBasis = quadrature->numBasis();
+  const int numCorners = quadrature->refGeometry().numCorners();
 
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();assert(cs);
 
@@ -702,6 +701,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(const topology::Mes
   const PetscInt* cells = _materialIS->points();
   const PetscInt numCells = _materialIS->size();
 
+  scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
   // Create arrays for querying
@@ -762,11 +762,8 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(const topology::Mes
     const PetscInt cell = cells[c];
 
     // Compute geometry information for current cell
-    PetscScalar* coordsCell = NULL;
-    PetscInt coordsSize = 0;
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
-    quadrature->computeGeometry(coordsCell, coordsSize, cell);
-    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
+    coordsVisitor.getClosure(&coordsCell, cell);
+    quadrature->computeGeometry(&coordsCell[0], coordsCell.size(), cell);
 
     // Dimensionalize coordinates for querying
     const scalar_array& quadPtsNonDim = quadrature->quadPts();

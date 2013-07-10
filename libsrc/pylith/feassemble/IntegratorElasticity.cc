@@ -172,6 +172,7 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(const PylithScalar t,
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
+  const int numCorners = _quadrature->refGeometry().numCorners();
   const int tensorSize = _material->tensorSize();
   totalStrain_fn_type calcTotalStrainFn;
   if (1 == cellDim) {
@@ -197,35 +198,31 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(const PylithScalar t,
   const PetscInt numCells = _materialIS->size();
 
   // Setup visitors.
+  scalar_array dispCell(numBasis*spaceDim);
   topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
+
+  scalar_array coordsCell(numCorners*spaceDim);
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
   // Loop over cells
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
     // Retrieve geometry information for current cell
-    PetscScalar* coordsCell = NULL;
-    PetscInt coordsSize = 0;
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
-    _quadrature->computeGeometry(coordsCell, coordsSize, cell);
+    coordsVisitor.getClosure(&coordsCell, cell);
+    _quadrature->computeGeometry(&coordsCell[0], coordsCell.size(), cell);
     const scalar_array& basisDeriv = _quadrature->basisDeriv();
 
     // Get physical properties and state variables for cell.
     _material->retrievePropsAndVars(cell);
 
     // Restrict input fields to cell
-    PetscScalar* dispCell = NULL;
-    PetscInt dispSize = 0;
-    dispVisitor.getClosure(&dispCell, &dispSize, cell);assert(dispCell);assert(numBasis*spaceDim == dispSize);
+    dispVisitor.getClosure(&dispCell, cell);
 
     // Compute strains
-    calcTotalStrainFn(&strainCell, basisDeriv, dispCell, numBasis, spaceDim, numQuadPts);
+    calcTotalStrainFn(&strainCell, basisDeriv, &dispCell[0], numBasis, spaceDim, numQuadPts);
 
     // Update material state
     _material->updateStateVars(strainCell, cell);
-
-    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
-    dispVisitor.restoreClosure(&dispCell, &dispSize, cell);
   } // for
 
   PYLITH_METHOD_END;
@@ -503,6 +500,7 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(topology::Field
   const int cellDim = _quadrature->cellDim();
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
+  const int numCorners = _quadrature->refGeometry().numCorners();
   const int spaceDim = _quadrature->spaceDim();
   const int tensorSize = _material->tensorSize();
   totalStrain_fn_type calcTotalStrainFn;
@@ -533,32 +531,29 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(topology::Field
   const PetscInt numCells = _materialIS->size();
 
   // Setup field visitors.
+  scalar_array dispCell(numBasis*spaceDim);
   topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
 
   topology::VecVisitorMesh fieldVisitor(*field);
   PetscScalar* fieldArray = fieldVisitor.localArray();
 
+  scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
   // Loop over cells
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
+
     // Retrieve geometry information for current cell
-    PetscScalar *coordsCell = NULL;
-    PetscInt coordsSize = 0;
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
-    _quadrature->computeGeometry(coordsCell, coordsSize, cell);
-    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
+    coordsVisitor.getClosure(&coordsCell, cell);
+    _quadrature->computeGeometry(&coordsCell[0], coordsCell.size(), cell);
 
     // Get cell geometry information that depends on cell
-    PetscScalar* dispCell = NULL;
-    PetscInt dispSize = 0;
-    dispVisitor.getClosure(&dispCell, &dispSize, cell);assert(dispCell);assert(numBasis*spaceDim == dispSize);
+    dispVisitor.getClosure(&dispCell, cell);
     const scalar_array& basisDeriv = _quadrature->basisDeriv();
     
     // Compute strains
-    calcTotalStrainFn(&strainCell, basisDeriv, dispCell, numBasis, spaceDim, numQuadPts);
-    dispVisitor.restoreClosure(&dispCell, &dispSize, cell);
+    calcTotalStrainFn(&strainCell, basisDeriv, &dispCell[0], numBasis, spaceDim, numQuadPts);
     
     const PetscInt off = fieldVisitor.sectionOffset(cell);
     assert(tensorCellSize == fieldVisitor.sectionDof(cell));
