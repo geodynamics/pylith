@@ -121,6 +121,22 @@ pylith::topology::CoordsVisitor::getClosure(PetscScalar** coordsCell,
 } // getClosure
 
 // ----------------------------------------------------------------------
+// Get coordinates array associated with closure.
+inline
+void
+pylith::topology::CoordsVisitor::getClosure(scalar_array* coords,
+					    const PetscInt cell) const
+{ // getClosure
+  assert(_dm);
+  assert(_section);
+  assert(_localVec);
+  assert(coords);
+  PetscScalar* coordsCell = &(*coords)[0];
+  PetscInt coordsSize = coords->size();
+  PetscErrorCode err = DMPlexVecGetClosure(_dm, _section, _localVec, cell, &coordsSize, &coordsCell);PYLITH_CHECK_ERROR(err);
+} // getClosure
+
+// ----------------------------------------------------------------------
 // Restore coordinates array associated with closure.
 inline
 void

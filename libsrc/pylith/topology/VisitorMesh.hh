@@ -30,6 +30,7 @@
 #include "topologyfwd.hh" // forward declarations
 
 #include "pylith/utils/petscfwd.h" // HASA PetscVec, PetscSection
+#include "pylith/utils/arrayfwd.hh" // USES scalar_array
 
 // VecVisitorMesh ----------------------------------------------------------
 /** @brief Helper class for accessing field values at points in a
@@ -101,7 +102,7 @@ public :
 
   /** Get array of values associated with closure.
    *
-   * @pre Must be followed by call to getClosure().
+   * @pre Must be followed by call to restoreClosure().
    *
    * @param valuesCell Array of values for cell.
    * @param valuesSize Size of values array.
@@ -109,6 +110,14 @@ public :
    */
   void getClosure(PetscScalar** valuesCell,
 		  PetscInt* valuesSize,
+		  const PetscInt cell) const;
+
+  /** Get array of values associated with closure.
+   *
+   * @param values Array of values for cell.
+   * @param cell Finite-element cell.
+   */
+  void getClosure(scalar_array* values,
 		  const PetscInt cell) const;
 
   /** Restore array of values associated with closure.

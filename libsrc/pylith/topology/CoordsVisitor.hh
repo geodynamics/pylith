@@ -29,6 +29,7 @@
 #include "topologyfwd.hh" // forward declarations
 
 #include "pylith/utils/petscfwd.h" // HASA PetscVec, PetscSection
+#include "pylith/utils/arrayfwd.hh" // USES scalar_array
 
 // CoordsVisitor ----------------------------------------------------------
 /** @brief Helper class for accessing coordinates in a finite-element mesh.
@@ -77,6 +78,8 @@ public :
 
   /** Get coordinates array associated with closure.
    *
+   * @pre Must be followed by call to restoreClosure().
+   *
    * @param coordsCell Array of coordinates for cell.
    * @param coordsSize Size of coordinates array.
    * @param cell Finite-element cell.
@@ -85,7 +88,17 @@ public :
 		  PetscInt* coordsSize,
 		  const PetscInt cell) const;
 
+  /** Get coordinates array associated with closure.
+   *
+   * @param coords Array of coordinates for cell.
+   * @param cell Finite-element cell.
+   */
+  void getClosure(scalar_array* coordsCell,
+		  const PetscInt cell) const;
+
   /** Restore coordinates array associated with closure.
+   *
+   * @pre Must be preceded by call to getClosure().
    *
    * @param coordsCell Array of coordinates for cell.
    * @param coordsSize Size of coordinates array.

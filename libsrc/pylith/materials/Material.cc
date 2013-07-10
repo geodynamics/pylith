@@ -123,6 +123,7 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
   // Get quadrature information
   const int numQuadPts = quadrature->numQuadPts();
   const int numBasis = quadrature->numBasis();
+  const int numCorners = quadrature->refGeometry().numCorners();
   const int spaceDim = quadrature->spaceDim();
 
   // Get cells associated with material
@@ -145,6 +146,7 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
   topology::VecVisitorMesh propertiesVisitor(*_properties);
   PetscScalar* propertiesArray = propertiesVisitor.localArray();
 
+  scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
   // Create arrays for querying.
@@ -199,12 +201,10 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
 
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
+
     // Compute geometry information for current cell
-    PetscScalar* coordsCell = NULL;
-    PetscInt coordsSize = 0;
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
-    quadrature->computeGeometry(coordsCell, coordsSize, cell);
-    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
+    coordsVisitor.getClosure(&coordsCell, cell);
+    quadrature->computeGeometry(&coordsCell[0], coordsCell.size(), cell);
 
     const scalar_array& quadPtsNonDim = quadrature->quadPts();
     quadPtsGlobal = quadPtsNonDim;

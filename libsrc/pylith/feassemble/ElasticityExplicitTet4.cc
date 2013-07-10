@@ -54,6 +54,7 @@ const int pylith::feassemble::ElasticityExplicitTet4::_spaceDim = 3;
 const int pylith::feassemble::ElasticityExplicitTet4::_cellDim = 3;
 const int pylith::feassemble::ElasticityExplicitTet4::_tensorSize = 6;
 const int pylith::feassemble::ElasticityExplicitTet4::_numBasis = 4;
+const int pylith::feassemble::ElasticityExplicitTet4::_numCorners = 4;
 const int pylith::feassemble::ElasticityExplicitTet4::_numQuadPts = 1;
 
 // ----------------------------------------------------------------------
@@ -170,6 +171,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
   const int cellDim = _cellDim;
   const int tensorSize = _tensorSize;
   const int numBasis = _numBasis;
+  const int numCorners = _numCorners;
   const int numQuadPts = _numQuadPts;
   const int cellVectorSize = numBasis*spaceDim;
   /** :TODO:
@@ -197,15 +199,19 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
   const PetscInt numCells = _materialIS->size();
 
   // Setup field visitors.
+  scalar_array accCell(numBasis*spaceDim);
   topology::VecVisitorMesh accVisitor(fields->get("acceleration(t)"));
 
+  scalar_array velCell(numBasis*spaceDim);
   topology::VecVisitorMesh velVisitor(fields->get("velocity(t)"));
 
+  scalar_array dispCell(numBasis*spaceDim);
   scalar_array dispAdjCell(numBasis*spaceDim);
   topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
   
   topology::VecVisitorMesh residualVisitor(residual);
 
+  scalar_array coordsCell(numCorners*spaceDim);
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
   assert(_normalizer);
@@ -231,17 +237,9 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
 #endif
 
     // Restrict input fields to cell
-    PetscScalar* accCell = NULL;
-    PetscInt accSize = 0;
-    accVisitor.getClosure(&accCell, &accSize, cell);assert(accCell);assert(numBasis*spaceDim == accSize);
-    
-    PetscScalar* velCell = NULL;
-    PetscInt velSize = 0;
-    velVisitor.getClosure(&velCell, &velSize, cell);assert(velCell);assert(numBasis*spaceDim == velSize);
-    
-    PetscScalar* dispCell = NULL;
-    PetscInt dispSize = 0;
-    dispVisitor.getClosure(&dispCell, &dispSize, cell);assert(dispCell);assert(numBasis*spaceDim == dispSize);
+    accVisitor.getClosure(&accCell, cell);
+    velVisitor.getClosure(&velCell, cell);
+    dispVisitor.getClosure(&dispCell, cell);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -249,10 +247,8 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
 #endif
 
     // Compute geometry information for current cell
-    PetscScalar *coordsCell = NULL;
-    PetscInt coordsSize = 0;
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
-    const PylithScalar volume = _volume(coordsCell, coordsSize);assert(volume > 0.0);
+    coordsVisitor.getClosure(&coordsCell, cell);
+    const PylithScalar volume = _volume(coordsCell);assert(volume > 0.0);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
@@ -303,7 +299,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
 
     // Compute action for inertial terms
     const PylithScalar wtVertex = density[0] * volume / 4.0;
-    assert(cellVectorSize == dispSize);
+    assert(cellVectorSize == dispCell.size());
     for(PetscInt i = 0; i < cellVectorSize; ++i) {
       _cellVector[i] -= wtVertex * accCell[i];
     } // for
@@ -319,9 +315,6 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
     for(PetscInt i = 0; i < cellVectorSize; ++i) {
       dispAdjCell[i] = dispCell[i] + viscosity * velCell[i];
     } // for
-    accVisitor.restoreClosure(&accCell, &accSize, cell);
-    velVisitor.restoreClosure(&velCell, &velSize, cell);
-    dispVisitor.restoreClosure(&dispCell, &dispSize, cell);
 
     // Compute B(transpose) * sigma, first computing strains
     const PylithScalar x0 = coordsCell[0];
@@ -412,8 +405,6 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
     _logger->eventBegin(updateEvent);
 #endif
 
-    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
-
     // Assemble cell contribution into field
     residualVisitor.setClosure(&_cellVector[0], _cellVector.size(), cell, ADD_VALUES);
 
@@ -475,6 +466,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(topology::Field* j
   const int spaceDim = _spaceDim;
   const int cellDim = _cellDim;
   const int numBasis = _numBasis;
+  const int numCorners = _numCorners;
   if (cellDim != spaceDim)
     throw std::logic_error("Don't know how to integrate elasticity " \
 			   "contribution to Jacobian matrix for cells with " \
@@ -496,6 +488,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(topology::Field* j
   PetscScalar* jacobianCell = NULL;
   PetscInt jacobianSize = 0;
 
+  scalar_array coordsCell(numCorners*spaceDim);
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
   _logger->eventEnd(setupEvent);
@@ -509,11 +502,8 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(topology::Field* j
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
-    PetscScalar* coordsCell = NULL;
-    PetscInt coordsSize = 0;
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
-    const PylithScalar volume = _volume(coordsCell, coordsSize);assert(volume > 0.0);
-    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
+    coordsVisitor.getClosure(&coordsCell, cell);
+    const PylithScalar volume = _volume(coordsCell);assert(volume > 0.0);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
@@ -584,10 +574,9 @@ pylith::feassemble::ElasticityExplicitTet4::verifyConfiguration(const topology::
 // ----------------------------------------------------------------------
 // Compute volume of tetrahedral cell.
 PylithScalar
-pylith::feassemble::ElasticityExplicitTet4::_volume(const PylithScalar coordinatesCell[],
-						    const int coordinatesSize) const
+pylith::feassemble::ElasticityExplicitTet4::_volume(const scalar_array& coordinatesCell) const
 { // __volume
-  assert(12 == coordinatesSize);
+  assert(12 == coordinatesCell.size());
 
   const PylithScalar x0 = coordinatesCell[0];
   const PylithScalar y0 = coordinatesCell[1];

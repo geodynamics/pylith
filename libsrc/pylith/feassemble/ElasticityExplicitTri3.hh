@@ -138,11 +138,9 @@ private :
   /** Compute area of triangular cell.
    *
    * @param coordinatesCell Coordinates of vertices of cell.
-   * @param coordinatesSize Size of array.
-   * @returns Volume of cell.
+   * @returns Area of cell.
    */
-  PylithScalar _area(const PylithScalar coordinatesCell[],
-		     const int coordinatesSize) const;
+  PylithScalar _area(const scalar_array& coordinatesCell) const;
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
@@ -154,6 +152,7 @@ private :
   static const int _cellDim;
   static const int _tensorSize;
   static const int _numBasis;
+  static const int _numCorners;
   static const int _numQuadPts;
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////

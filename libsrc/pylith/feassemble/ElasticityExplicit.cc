@@ -160,6 +160,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(const topology::Field&
   const scalar_array& quadWts = _quadrature->quadWts();
   assert(quadWts.size() == numQuadPts);
   const int numBasis = _quadrature->numBasis();
+  const int numCorners = _quadrature->refGeometry().numCorners();
   const int spaceDim = _quadrature->spaceDim();
   const int cellDim = _quadrature->cellDim();
   const int tensorSize = _material->tensorSize();
@@ -211,15 +212,19 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(const topology::Field&
   const PetscInt numCells = _materialIS->size();
 
   // Setup field visitors.
+  scalar_array accCell(numBasis*spaceDim);
   topology::VecVisitorMesh accVisitor(fields->get("acceleration(t)"));
 
+  scalar_array velCell(numBasis*spaceDim);
   topology::VecVisitorMesh velVisitor(fields->get("velocity(t)"));
 
+  scalar_array dispCell(numBasis*spaceDim);
   scalar_array dispAdjCell(numBasis*spaceDim);
   topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
   
   topology::VecVisitorMesh residualVisitor(residual);
 
+  scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
   assert(_normalizer);
@@ -237,11 +242,6 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(const topology::Field&
   _logger->eventBegin(computeEvent);
 #endif
 
-  PetscScalar *coordsCell = new PetscScalar[64];
-  PetscScalar *accCell    = new PetscScalar[64];
-  PetscScalar *velCell    = new PetscScalar[64];
-  PetscScalar *dispCell   = new PetscScalar[64];
-
   // Loop over cells
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
@@ -249,10 +249,8 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(const topology::Field&
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
-    PetscInt coordsSize = 64;
-    coordsVisitor.getClosure((PetscScalar **) &coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
-    _quadrature->computeGeometry(coordsCell, coordsSize, cell);
-    //coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
+    coordsVisitor.getClosure(&coordsCell, cell);
+    _quadrature->computeGeometry(&coordsCell[0], coordsCell.size(), cell);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
@@ -271,14 +269,9 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(const topology::Field&
     _resetCellVector();
 
     // Restrict input fields to cell
-    PetscInt accSize = 64;
-    accVisitor.getClosure((PetscScalar **) &accCell, &accSize, cell);assert(accCell);assert(numBasis*spaceDim == accSize);
-
-    PetscInt velSize = 64;
-    velVisitor.getClosure((PetscScalar **) &velCell, &velSize, cell);assert(velCell);assert(numBasis*spaceDim == velSize);
-
-    PetscInt dispSize = 64;
-    dispVisitor.getClosure((PetscScalar **) &dispCell, &dispSize, cell);assert(dispCell);assert(numBasis*spaceDim == dispSize);
+    accVisitor.getClosure(&accCell, cell);
+    velVisitor.getClosure(&velCell, cell);
+    dispVisitor.getClosure(&dispCell, cell);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -343,12 +336,9 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(const topology::Field&
 
     // Numerical damping. Compute displacements adjusted by velocity
     // times normalized viscosity.
-    for(PetscInt i = 0; i < dispSize; ++i) {
+    for(PetscInt i = 0, dispSize = dispCell.size(); i < dispSize; ++i) {
       dispAdjCell[i] = dispCell[i] + viscosity * velCell[i];
     } // for
-    //accVisitor.restoreClosure(&accCell, &accSize, cell);
-    //velVisitor.restoreClosure(&velCell, &velSize, cell);
-    //dispVisitor.restoreClosure(&dispCell, &dispSize, cell);
 
 #if defined(DETAILED_EVENT_LOGGING)
     PetscLogFlops(numQuadPts*(4+numBasis*3));
@@ -379,11 +369,6 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(const topology::Field&
     _logger->eventEnd(updateEvent);
 #endif
   } // for
-
-  delete [] coordsCell;
-  delete [] accCell;
-  delete [] velCell;
-  delete [] dispCell;
 
 #if !defined(DETAILED_EVENT_LOGGING)
   PetscLogFlops(numCells*numQuadPts*(4+numBasis*3));
@@ -435,6 +420,7 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(topology::Field* jacob
   const scalar_array& quadWts = _quadrature->quadWts();
   assert(quadWts.size() == numQuadPts);
   const int numBasis = _quadrature->numBasis();
+  const int numCorners = _quadrature->refGeometry().numCorners();
   const int spaceDim = _quadrature->spaceDim();
   const int cellDim = _quadrature->cellDim();
   if (cellDim != spaceDim)
@@ -460,6 +446,7 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(topology::Field* jacob
   PetscScalar* jacobianCell = NULL;
   PetscInt jacobianSize = 0;
 
+  scalar_array coordsCell(numBasis*spaceDim); // :KLUDGE: numBasis to numCorners after switching to higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
   _logger->eventEnd(setupEvent);
@@ -474,11 +461,8 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(topology::Field* jacob
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
-    PetscScalar* coordsCell = NULL;
-    PetscInt coordsSize = 0;
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
-    _quadrature->computeGeometry(coordsCell, coordsSize, cell);
-    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
+    coordsVisitor.getClosure(&coordsCell, cell);
+    _quadrature->computeGeometry(&coordsCell[0], coordsCell.size(), cell);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
