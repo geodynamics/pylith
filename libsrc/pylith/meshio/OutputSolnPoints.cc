@@ -267,7 +267,7 @@ pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
   err = DMInterpolationSetDof(_interpolator, fiberDim);PYLITH_CHECK_ERROR(err);
   err = DMInterpolationEvaluate(_interpolator, dmMesh, field.localVector(), fieldInterpVec);PYLITH_CHECK_ERROR(err);
 
-  fieldInterp.scatterVectorToSection(context);
+  fieldInterp.scatterGlobalToLocal(context);
 
   OutputManager::appendVertexField(t, fieldInterp, *_pointsMesh);
 

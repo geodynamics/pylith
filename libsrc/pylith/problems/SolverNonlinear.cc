@@ -153,7 +153,7 @@ pylith::problems::SolverNonlinear::solve(topology::Field* solution,
   _logger->eventBegin(scatterEvent);
 
   // Update section view of field.
-  solution->scatterVectorToSection();
+  solution->scatterGlobalToLocal();
 
   _logger->eventEnd(scatterEvent);
 

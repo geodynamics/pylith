@@ -66,8 +66,8 @@ class pylith::topology::TestFieldSubMesh : public CppUnit::TestFixture
   CPPUNIT_TEST( testCreateScatter );
   CPPUNIT_TEST( testCreateScatterWithBC );
   CPPUNIT_TEST( testVector );
-  CPPUNIT_TEST( testScatterSectionToVector );
-  CPPUNIT_TEST( testScatterVectorToSection );
+  CPPUNIT_TEST( testScatterLocalToGlobal );
+  CPPUNIT_TEST( testScatterGlobalToLocal );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -134,11 +134,11 @@ public :
   /// Test vector().
   void testVector(void);
 
-  /// Test scatterSectionToVector().
-  void testScatterSectionToVector(void);
+  /// Test scatterLocalToGlobal().
+  void testScatterLocalToGlobal(void);
 
-  /// Test scatterVectorToSection().
-  void testScatterVectorToSection(void);
+  /// Test scatterGlobalToLocal().
+  void testScatterGlobalToLocal(void);
 
 // PRIVATE METHODS /////////////////////////////////////////////////////
 private :

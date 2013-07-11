@@ -874,10 +874,10 @@ pylith::topology::TestFieldSubMesh::testVector(void)
 } // testVector
 
 // ----------------------------------------------------------------------
-// Test scatterSectionToVector().
+// Test scatterLocalToGlobal().
 void
-pylith::topology::TestFieldSubMesh::testScatterSectionToVector(void)
-{ // testScatterSectionToVector
+pylith::topology::TestFieldSubMesh::testScatterLocalToGlobal(void)
+{ // testScatterLocalToGlobal
   PYLITH_METHOD_BEGIN;
 
   const char* context = "abc";
@@ -912,7 +912,7 @@ pylith::topology::TestFieldSubMesh::testScatterSectionToVector(void)
   } // setup field
 
   field.createScatter(submesh, context);
-  field.scatterSectionToVector(context);
+  field.scatterLocalToGlobal(context);
 
   PetscErrorCode err = 0;
   const PetscVec vec = field.vector(context);CPPUNIT_ASSERT(vec);
@@ -929,13 +929,13 @@ pylith::topology::TestFieldSubMesh::testScatterSectionToVector(void)
   err = VecRestoreArray(vec, &valuesVec);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
-} // testScatterSectionToVector
+} // testScatterLocalToGlobal
 
 // ----------------------------------------------------------------------
-// Test scatterVectorToSection().
+// Test scatterGlobalToLocal().
 void
-pylith::topology::TestFieldSubMesh::testScatterVectorToSection(void)
-{ // testScatterVectorToSection
+pylith::topology::TestFieldSubMesh::testScatterGlobalToLocal(void)
+{ // testScatterGlobalToLocal
   PYLITH_METHOD_BEGIN;
 
   const char* context = "abcd";
@@ -971,7 +971,7 @@ pylith::topology::TestFieldSubMesh::testScatterVectorToSection(void)
     valuesVec[i] = valuesE[i];
   err = VecRestoreArray(vec, &valuesVec);PYLITH_CHECK_ERROR(err);
 
-  field.scatterVectorToSection(context);
+  field.scatterGlobalToLocal(context);
 
   const PylithScalar tolerance = 1.0e-06;
   VecVisitorMesh fieldVisitor(field);
@@ -986,7 +986,7 @@ pylith::topology::TestFieldSubMesh::testScatterVectorToSection(void)
 
 
   PYLITH_METHOD_END;
-} // testScatterVectorToSection
+} // testScatterGlobalToLocal
 
 // ----------------------------------------------------------------------
 void

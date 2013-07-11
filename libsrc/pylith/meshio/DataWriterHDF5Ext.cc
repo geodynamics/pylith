@@ -340,7 +340,7 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
     err = PetscObjectGetComm((PetscObject) dmMesh, &comm);PYLITH_CHECK_ERROR(err);
     err = MPI_Comm_rank(comm, &commRank);PYLITH_CHECK_ERROR(err);
     field.createScatterWithBC(mesh, "", 0, context);
-    field.scatterSectionToVector(context);
+    field.scatterLocalToGlobal(context);
 
     PetscViewer binaryViewer;
 
@@ -479,7 +479,7 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
     err = PetscObjectGetComm((PetscObject) dmMesh, &comm);PYLITH_CHECK_ERROR(err);
     err = MPI_Comm_rank(comm, &commRank);PYLITH_CHECK_ERROR(err);
     field.createScatterWithBC(field.mesh(), label ? label : "", labelId, context);
-    field.scatterSectionToVector(context);
+    field.scatterLocalToGlobal(context);
 
     PetscViewer binaryViewer;
 

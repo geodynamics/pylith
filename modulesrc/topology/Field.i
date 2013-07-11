@@ -211,29 +211,37 @@ namespace pylith {
        */
       const PetscVec vector(const char* context ="") const;
 
-      /// Scatter section information across processors to update the
-      /// PETSc vector view of the field.
-      void scatterSectionToVector(const char* context ="") const;
-
       /** Scatter section information across processors to update the
-       * PETSc vector view of the field.
+       * global view of the field.
+       *
+       * @param context Label for context associated with vector.
+       */
+      void scatterLocalToGlobal(const char* context ="") const;
+      
+      /** Scatter section information across processors to update the
+       * global view of the field.
        *
        * @param vector PETSc vector to update.
+       * @param context Label for context associated with vector.
        */
-      void scatterSectionToVector(const PetscVec vector,
-				  const char* context ="") const;
-
-      /// Scatter PETSc vector information across processors to update the
-      /// PETSc section view of the field.
-      void scatterVectorToSection(const char* context ="") const;
-
-      /** Scatter section information across processors to update the
-       * PETSc vector view of the field.
+      void scatterLocalToGlobal(const PetscVec vector,
+				const char* context ="") const;
+      
+      /** Scatter global information across processors to update the local
+       * view of the field.
+       *
+       * @param context Label for context associated with vector.
+       */
+      void scatterGlobalToLocal(const char* context ="") const;
+      
+      /** Scatter global information across processors to update the local
+       * view of the field.
        *
        * @param vector PETSc vector used in update.
+       * @param context Label for context associated with vector.
        */
-      void scatterVectorToSection(const PetscVec vector,
-				  const char* context ="") const;
+      void scatterGlobalToLocal(const PetscVec vector,
+				const char* context ="") const;
 
     }; // Field
 

@@ -200,7 +200,7 @@ pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
   // Update section view of field.
   if (tmpSolutionVec) {
     topology::Field& solution = _fields->solution();
-    solution.scatterVectorToSection(*tmpSolutionVec);
+    solution.scatterGlobalToLocal(*tmpSolutionVec);
   } // if
 
   // Update rate fields (must be consistent with current solution).
@@ -223,9 +223,9 @@ pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
 
   // Update PETSc view of residual
   if (tmpResidualVec)
-    residual.scatterSectionToVector(*tmpResidualVec);
+    residual.scatterLocalToGlobal(*tmpResidualVec);
   else
-    residual.scatterSectionToVector();
+    residual.scatterLocalToGlobal();
 
   // TODO: Move this to SolverLinear 
   if (tmpResidualVec)
@@ -247,7 +247,7 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
   // Update section view of field.
   if (tmpSolutionVec) {
     topology::Field& solution = _fields->solution();
-    solution.scatterVectorToSection(*tmpSolutionVec);
+    solution.scatterGlobalToLocal(*tmpSolutionVec);
   } // if
 
   // Set jacobian to zero.
@@ -327,7 +327,7 @@ pylith::problems::Formulation::constrainSolnSpace(const PetscVec* tmpSolutionVec
 
   // Update section view of field.
   if (tmpSolutionVec) {
-    solution.scatterVectorToSection(*tmpSolutionVec);
+    solution.scatterGlobalToLocal(*tmpSolutionVec);
   } // if
 
   const int numIntegrators = _integrators.size();
@@ -342,7 +342,7 @@ pylith::problems::Formulation::constrainSolnSpace(const PetscVec* tmpSolutionVec
 
   // Update PETScVec of solution for changes to Lagrange multipliers.
   if (tmpSolutionVec) {
-    solution.scatterSectionToVector(*tmpSolutionVec);
+    solution.scatterLocalToGlobal(*tmpSolutionVec);
   } // if
 
   PYLITH_METHOD_END;
@@ -398,24 +398,24 @@ pylith::problems::Formulation::printState(PetscVec* solutionVec,
   writer.open(mesh, numTimeSteps);
    
   topology::Field& solution = _fields->solution();
-  solution.scatterVectorToSection(*solutionVec);
+  solution.scatterGlobalToLocal(*solutionVec);
   writer.writeVertexField(0.0, solution, mesh);
   solution.view("DIVERGED_SOLUTION");
   const char* label = solution.label();
 
   solution.label("solution_0");
-  solution.scatterVectorToSection(*solution0Vec);
+  solution.scatterGlobalToLocal(*solution0Vec);
   writer.writeVertexField(0.0, solution, mesh);
   solution.view("DIVERGED_SOLUTION0");
   solution.label(label);
 
   topology::Field& residual = _fields->get("residual");
-  residual.scatterVectorToSection(*residualVec);
+  residual.scatterGlobalToLocal(*residualVec);
   writer.writeVertexField(0.0, residual, mesh);
   residual.view("DIVERGED_RESIDUAL");
 
   residual.label("search_dir");
-  residual.scatterVectorToSection(*searchDirVec);
+  residual.scatterGlobalToLocal(*searchDirVec);
   writer.writeVertexField(0.0, residual, mesh);
   residual.view("DIVERGED_SEARCHDIR");
 
