@@ -1113,24 +1113,24 @@ pylith::topology::Field::vector(const char* context) const
 // Scatter section information across processors to update the
 //  PETSc vector view of the field.
 void
-pylith::topology::Field::scatterSectionToVector(const char* context) const
-{ // scatterSectionToVector
+pylith::topology::Field::scatterLocalToGlobal(const char* context) const
+{ // scatterLocalToGlobal
   PYLITH_METHOD_BEGIN;
 
   assert(context);
   const ScatterInfo& sinfo = _getScatter(context);
-  scatterSectionToVector(sinfo.vector, context);
+  scatterLocalToGlobal(sinfo.vector, context);
 
   PYLITH_METHOD_END;
-} // scatterSectionToVector
+} // scatterLocalToGlobal
 
 // ----------------------------------------------------------------------
 // Scatter section information across processors to update the
 //  PETSc vector view of the field.
 void
-pylith::topology::Field::scatterSectionToVector(const PetscVec vector,
+pylith::topology::Field::scatterLocalToGlobal(const PetscVec vector,
 						const char* context) const
-{ // scatterSectionToVector
+{ // scatterLocalToGlobal
   PYLITH_METHOD_BEGIN;
 
   assert(vector);
@@ -1143,31 +1143,31 @@ pylith::topology::Field::scatterSectionToVector(const PetscVec vector,
   } // if
   
   PYLITH_METHOD_END;
-} // scatterSectionToVector
+} // scatterLocalToGlobal
 
 // ----------------------------------------------------------------------
 // Scatter PETSc vector information across processors to update the
 // section view of the field.
 void
-pylith::topology::Field::scatterVectorToSection(const char* context) const
-{ // scatterVectorToSection
+pylith::topology::Field::scatterGlobalToLocal(const char* context) const
+{ // scatterGlobalToLocal
   PYLITH_METHOD_BEGIN;
 
   assert(context);
 
   const ScatterInfo& sinfo = _getScatter(context);
-  scatterVectorToSection(sinfo.vector, context);
+  scatterGlobalToLocal(sinfo.vector, context);
 
   PYLITH_METHOD_END;
-} // scatterVectorToSection
+} // scatterGlobalToLocal
 
 // ----------------------------------------------------------------------
 // Scatter PETSc vector information across processors to update the
 // section view of the field.
 void
-pylith::topology::Field::scatterVectorToSection(const PetscVec vector,
-						const char* context) const
-{ // scatterVectorToSection
+pylith::topology::Field::scatterGlobalToLocal(const PetscVec vector,
+					      const char* context) const
+{ // scatterGlobalToLocal
   PYLITH_METHOD_BEGIN;
 
   assert(vector);
@@ -1181,7 +1181,7 @@ pylith::topology::Field::scatterVectorToSection(const PetscVec vector,
   } // if
 
   PYLITH_METHOD_END;
-} // scatterVectorToSection
+} // scatterGlobalToLocal
 
 // ----------------------------------------------------------------------
 // Get fiber dimension associated with section (only works if fiber

@@ -1188,10 +1188,10 @@ pylith::topology::TestFieldMesh::testVector(void)
 } // testVector
 
 // ----------------------------------------------------------------------
-// Test scatterSectionToVector().
+// Test scatterLocalToGlobal().
 void
-pylith::topology::TestFieldMesh::testScatterSectionToVector(void)
-{ // testScatterSectionToVector
+pylith::topology::TestFieldMesh::testScatterLocalToGlobal(void)
+{ // testScatterLocalToGlobal
   PYLITH_METHOD_BEGIN;
 
   const char* context = "abc";
@@ -1225,7 +1225,7 @@ pylith::topology::TestFieldMesh::testScatterSectionToVector(void)
   } // setup field
 
   field.createScatter(mesh, context);
-  field.scatterSectionToVector(context);
+  field.scatterLocalToGlobal(context);
 
   const PetscVec vec = field.vector(context);CPPUNIT_ASSERT(vec);
   PetscInt size = 0;
@@ -1241,13 +1241,13 @@ pylith::topology::TestFieldMesh::testScatterSectionToVector(void)
   err = VecRestoreArray(vec, &valuesVec);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
-} // testScatterSectionToVector
+} // testScatterLocalToGlobal
 
 // ----------------------------------------------------------------------
-// Test scatterVectorToSection().
+// Test scatterGlobalToLocal().
 void
-pylith::topology::TestFieldMesh::testScatterVectorToSection(void)
-{ // testScatterVectorToSection
+pylith::topology::TestFieldMesh::testScatterGlobalToLocal(void)
+{ // testScatterGlobalToLocal
   PYLITH_METHOD_BEGIN;
 
   const char* context = "abcd";
@@ -1283,7 +1283,7 @@ pylith::topology::TestFieldMesh::testScatterVectorToSection(void)
     valuesVec[i] = valuesE[i];
   err = VecRestoreArray(vec, &valuesVec);PYLITH_CHECK_ERROR(err);
 
-  field.scatterVectorToSection(context);
+  field.scatterGlobalToLocal(context);
 
   const PylithScalar tolerance = 1.0e-06;
   VecVisitorMesh fieldVisitor(field);
@@ -1297,7 +1297,7 @@ pylith::topology::TestFieldMesh::testScatterVectorToSection(void)
   } // for
 
   PYLITH_METHOD_END;
-} // testScatterVectorToSection
+} // testScatterGlobalToLocal
 
 // ----------------------------------------------------------------------
 // Test splitDefault().

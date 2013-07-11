@@ -123,7 +123,7 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
     err = DMGetCoordinatesLocal(dmMesh, &coordinates);PYLITH_CHECK_ERROR(err);
     topology::Field coordinatesField(mesh, dmCoord, coordinates, metadata);
     coordinatesField.createScatterWithBC(mesh, "", 0, metadata.label.c_str());
-    coordinatesField.scatterSectionToVector(metadata.label.c_str());
+    coordinatesField.scatterLocalToGlobal(metadata.label.c_str());
     PetscVec coordVector = coordinatesField.vector(metadata.label.c_str());assert(coordVector);
     err = VecScale(coordVector, lengthScale);PYLITH_CHECK_ERROR(err);
     err = PetscViewerHDF5PushGroup(_viewer, "/geometry");PYLITH_CHECK_ERROR(err);
@@ -276,7 +276,7 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
     const char* context  = DataWriter::_context.c_str();
 
     field.createScatterWithBC(mesh, "", 0, context);
-    field.scatterSectionToVector(context);
+    field.scatterLocalToGlobal(context);
     PetscVec vector = field.vector(context);assert(vector);
 
     if (_timesteps.find(field.label()) == _timesteps.end())
@@ -337,7 +337,7 @@ pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
     PetscErrorCode err = 0;
 
     field.createScatterWithBC(field.mesh(), label ? label : "", labelId, context);
-    field.scatterSectionToVector(context);
+    field.scatterLocalToGlobal(context);
     PetscVec vector = field.vector(context);assert(vector);
 
     if (_timesteps.find(field.label()) == _timesteps.end())

@@ -111,7 +111,7 @@ pylith::problems::SolverLinear::solve(topology::Field* solution,
   _logger->eventBegin(scatterEvent);
 
   // Update PetscVector view of field.
-  residual.scatterSectionToVector();
+  residual.scatterLocalToGlobal();
 
   _logger->eventEnd(scatterEvent);
   _logger->eventBegin(setupEvent);
@@ -137,7 +137,7 @@ pylith::problems::SolverLinear::solve(topology::Field* solution,
   _logger->eventBegin(scatterEvent);
 
   // Update section view of field.
-  solution->scatterVectorToSection();
+  solution->scatterGlobalToLocal();
 
   _logger->eventEnd(scatterEvent);
 

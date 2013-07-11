@@ -1903,7 +1903,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySolve(void)
   residual.complete();
 
   // Update PetscVector view of field.
-  residual.scatterSectionToVector();
+  residual.scatterLocalToGlobal();
 
   PetscErrorCode err = 0;
   const PetscMat jacobianMat = _jacobian->matrix();
@@ -1914,7 +1914,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySolve(void)
   err = KSPSolve(_ksp, residualVec, solutionVec);PYLITH_CHECK_ERROR(err);
 
   // Update section view of field.
-  solution.scatterVectorToSection();
+  solution.scatterGlobalToLocal();
 
 #if 0 // DEBUGGING
   residual.view("SENSITIVITY RESIDUAL");
