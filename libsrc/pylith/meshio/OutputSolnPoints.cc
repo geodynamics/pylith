@@ -255,10 +255,10 @@ pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
     fieldInterp.allocate();
   } // if
 
-  fieldInterp.zero();
   fieldInterp.label(field.label());
   fieldInterp.vectorFieldType(field.vectorFieldType());
   fieldInterp.scale(field.scale());
+  fieldInterp.zeroAll();
 
   const char* context = fieldName.c_str();
   fieldInterp.createScatter(*_pointsMesh, context);

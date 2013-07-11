@@ -54,6 +54,8 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
+//#define DETAILED_EVENT_LOGGING
+
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::faults::FaultCohesiveDyn::FaultCohesiveDyn(void) :
@@ -1462,7 +1464,7 @@ pylith::faults::FaultCohesiveDyn::_calcTractions(topology::Field* tractions,
   const PylithScalar pressureScale = _normalizer->pressureScale();
   tractions->label("traction");
   tractions->scale(pressureScale);
-  tractions->zero();
+  tractions->zeroAll();
 
   topology::VecVisitorMesh tractionsVisitor(*tractions);
   PetscScalar* tractionsArray = tractionsVisitor.localArray();
@@ -1610,7 +1612,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
     dispRel.cloneSection(solution);
   } // if
   topology::Field& dispRel = _fields->get("sensitivity relative disp");
-  dispRel.zero();
+  dispRel.zeroAll();
 
   if (!_fields->hasField("sensitivity dLagrange")) {
     _fields->add("sensitivity dLagrange", "sensitivity_dlagrange");
@@ -1618,7 +1620,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
     dLagrange.cloneSection(solution);
   } // if
   topology::Field& dLagrange = _fields->get("sensitivity dLagrange");
-  dLagrange.zero();
+  dLagrange.zeroAll();
 
   // Setup Jacobian sparse matrix for sensitivity solve.
   if (!_jacobian) {
@@ -1828,7 +1830,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negative
   scalar_array residualCell(numBasis*spaceDim);
   topology::Field& residual = _fields->get("sensitivity residual");
   topology::VecVisitorMesh residualVisitor(residual);
-  residual.zero();
+  residual.zeroAll();
 
   // Loop over cells
   for(PetscInt c = cStart; c < cEnd; ++c) {

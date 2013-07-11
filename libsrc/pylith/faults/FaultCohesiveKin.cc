@@ -135,7 +135,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(const topology::Field& resid
   _logger->eventBegin(setupEvent);
 
   topology::Field& dispRel = _fields->get("relative disp");
-  dispRel.zero();
+  dispRel.zeroAll();
   // Compute slip field at current time step
   const srcs_type::const_iterator srcsEnd = _eqSrcs.end();
   for (srcs_type::iterator s_iter = _eqSrcs.begin(); s_iter != srcsEnd; ++s_iter) {

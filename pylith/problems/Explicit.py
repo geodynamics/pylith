@@ -125,11 +125,11 @@ class Explicit(Formulation, ModuleExplicit):
 
     # Setup fields and set to zero
     dispTmdt = self.fields.get("disp(t-dt)")
-    dispTmdt.zero()
+    dispTmdt.zeroAll()
     dispT = self.fields.get("disp(t)")
-    dispT.zero()
+    dispT.zeroAll()
     residual = self.fields.get("residual")
-    residual.zero()
+    residual.zeroAll()
     residual.createScatter(residual.mesh())
 
     lengthScale = normalizer.lengthScale()
@@ -137,12 +137,12 @@ class Explicit(Formulation, ModuleExplicit):
     velocityScale = lengthScale / timeScale
     velocityT = self.fields.get("velocity(t)")
     velocityT.scale(velocityScale.value)
-    velocityT.zero()
+    velocityT.zeroAll()
 
     accelerationScale = velocityScale / timeScale
     accelerationT = self.fields.get("acceleration(t)")
     accelerationT.scale(accelerationScale.value)
-    accelerationT.zero()
+    accelerationT.zeroAll()
 
     self._debug.log(resourceUsageString())
     #memoryLogger.stagePop()
@@ -197,9 +197,6 @@ class Explicit(Formulation, ModuleExplicit):
     """
     Advance to next time step.
     """
-    logEvent = "%sstep" % self._loggingPrefix
-    self._eventLogger.eventBegin(logEvent)
-
     from pylith.mpi.Communicator import mpi_comm_world
     comm = mpi_comm_world()
 
@@ -207,11 +204,11 @@ class Explicit(Formulation, ModuleExplicit):
     
     if 0 == comm.rank:
       self._info.log("Solving equations.")
+
     residual = self.fields.get("residual")
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
     self.solver.solve(dispIncr, self.jacobian, residual)
 
-    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -242,7 +239,7 @@ class Explicit(Formulation, ModuleExplicit):
 
     dispTmdt.copy(dispT)
     dispT.add(dispIncr)
-    dispIncr.zero()
+    dispIncr.zeroAll()
 
     # Complete post-step processing.
     Formulation.poststep(self, t, dt)
@@ -261,7 +258,7 @@ class Explicit(Formulation, ModuleExplicit):
     if 0 == comm.rank:
       self._info.log("Setting constraints.")
     disp = self.fields.get("dispIncr(t->t+dt)")
-    disp.zero()
+    disp.zeroAll()
     for constraint in self.constraints:
       constraint.setField(t+dt, disp)
 

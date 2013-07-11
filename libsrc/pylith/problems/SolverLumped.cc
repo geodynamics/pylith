@@ -161,7 +161,6 @@ pylith::problems::SolverLumped::_initializeLogger(void)
   _logger->registerEvent("SoLu solve");
   _logger->registerEvent("SoLu adjust");
 
-
   PYLITH_METHOD_END;
 } // initializeLogger
 

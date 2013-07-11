@@ -499,7 +499,7 @@ pylith::friction::FrictionModel::_setupPropsStateVars(void)
     propertyField.allocate();
     propertyField.vectorFieldType(property.fieldType);
     propertyField.scale(propertiesVertex[iScale]);
-    propertyField.zero();
+    propertyField.zeroAll();
     iScale += property.fiberDim;
   } // for
   
@@ -512,7 +512,7 @@ pylith::friction::FrictionModel::_setupPropsStateVars(void)
     stateVarField.allocate();
     stateVarField.vectorFieldType(stateVar.fieldType);
     stateVarField.scale(stateVarsVertex[iScale]);
-    stateVarField.zero();
+    stateVarField.zeroAll();
     iScale += stateVar.fiberDim;
   } // for
   assert(_varsFiberDim >= 0);

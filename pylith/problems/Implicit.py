@@ -139,9 +139,9 @@ class Implicit(Formulation, ModuleImplicit):
 
     # Setup fields and set to zero
     dispT = self.fields.get("disp(t)")
-    dispT.zero()
+    dispT.zeroAll()
     residual = self.fields.get("residual")
-    residual.zero()
+    residual.zeroAll()
     residual.createScatter(residual.mesh())
 
     lengthScale = normalizer.lengthScale()
@@ -149,7 +149,7 @@ class Implicit(Formulation, ModuleImplicit):
     velocityScale = lengthScale / timeScale
     velocityT = self.fields.get("velocity(t)")
     velocityT.scale(velocityScale.value)
-    velocityT.zero()
+    velocityT.zeroAll()
 
     self._debug.log(resourceUsageString())
     #memoryLogger.stagePop()
@@ -185,7 +185,7 @@ class Implicit(Formulation, ModuleImplicit):
     if 0 == comm.rank:
       self._info.log("Setting constraints.")
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
-    dispIncr.zero()
+    dispIncr.zeroAll()
     for constraint in self.constraints:
       constraint.setFieldIncr(t, t+dt, dispIncr)
 
@@ -213,8 +213,9 @@ class Implicit(Formulation, ModuleImplicit):
 
     if 0 == comm.rank:
       self._info.log("Solving equations.")
-    residual = self.fields.get("residual")
     self._eventLogger.stagePush("Solve")
+
+    residual = self.fields.get("residual")
     #self.jacobian.view() # TEMPORARY
     self.solver.solve(dispIncr, self.jacobian, residual)
     #dispIncr.view("DISP INCR") # TEMPORARY
@@ -239,7 +240,7 @@ class Implicit(Formulation, ModuleImplicit):
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
     disp = self.fields.get("disp(t)")
     disp.add(dispIncr)
-    dispIncr.zero()
+    dispIncr.zeroAll()
 
     # Complete post-step processing, then write data.
     Formulation.poststep(self, t, dt)
@@ -265,7 +266,7 @@ class Implicit(Formulation, ModuleImplicit):
     if 0 == comm.rank:
       self._info.log("Setting constraints.")
     disp = self.fields.get("dispIncr(t->t+dt)")
-    disp.zero()
+    disp.zeroAll()
     for constraint in self.constraints:
       constraint.setField(t+dt, disp)
 

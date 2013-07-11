@@ -174,7 +174,7 @@ pylith::faults::FaultCohesiveImpulses::integrateResidual(const topology::Field& 
   _logger->eventBegin(setupEvent);
 
   topology::Field& dispRel = _fields->get("relative disp");
-  dispRel.zero();
+  dispRel.zeroAll();
   // Set impulse corresponding to current time.
   _setRelativeDisp(dispRel, int(t+0.1));
 
