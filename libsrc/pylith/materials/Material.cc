@@ -142,7 +142,7 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
 
   _properties->newSection(cellsTmp, propsFiberDim);
   _properties->allocate();
-  _properties->zero();
+  _properties->zeroAll();
   topology::VecVisitorMesh propertiesVisitor(*_properties);
   PetscScalar* propertiesArray = propertiesVisitor.localArray();
 
@@ -174,7 +174,7 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
     assert(_properties);
     _stateVars->newSection(*_properties, stateVarsFiberDim);
     _stateVars->allocate();
-    _stateVars->zero();
+    _stateVars->zeroAll();
     stateVarsVisitor = new topology::VecVisitorMesh(*_stateVars);
     stateVarsArray = stateVarsVisitor->localArray();
   } // if

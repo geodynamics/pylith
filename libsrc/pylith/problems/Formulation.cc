@@ -208,7 +208,7 @@ pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
 
   // Set residual to zero.
   topology::Field& residual = _fields->get("residual");
-  residual.zero();
+  residual.zeroAll();
 
   // Add in contributions that require assembly.
   const int numIntegrators = _integrators.size();
@@ -291,7 +291,7 @@ pylith::problems::Formulation::reformJacobianLumped(void)
   assert(_fields);
 
   // Set jacobian to zero.
-  _jacobianLumped->zero();
+  _jacobianLumped->zeroAll();
 
   // Add in contributions that require assembly.
   const int numIntegrators = _integrators.size();
@@ -323,7 +323,7 @@ pylith::problems::Formulation::constrainSolnSpace(const PetscVec* tmpSolutionVec
     adjust.cloneSection(solution);
   } // for
   topology::Field& adjust = _fields->get("dispIncr adjust");
-  adjust.zero();
+  adjust.zeroAll();
 
   // Update section view of field.
   if (tmpSolutionVec) {
@@ -364,7 +364,7 @@ pylith::problems::Formulation::adjustSolnLumped(void)
     adjust.cloneSection(solution);
   } // for
   topology::Field& adjust = _fields->get("dispIncr adjust");
-  adjust.zero();
+  adjust.zeroAll();
 
   const int numIntegrators = _integrators.size();
   for (int i=0; i < numIntegrators; ++i) {

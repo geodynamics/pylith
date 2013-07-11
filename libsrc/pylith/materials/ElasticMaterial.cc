@@ -583,7 +583,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mes
   int_array cellsTmp(cells, numCells);
   initialStress.newSection(cellsTmp, fiberDim);
   initialStress.allocate();
-  initialStress.zero();
+  initialStress.zeroAll();
   topology::VecVisitorMesh stressVisitor(initialStress);
 
   // Setup databases for querying
@@ -715,7 +715,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(const topology::Mes
   int_array cellsTmp(cells, numCells);
   initialStrain.newSection(cellsTmp, fiberDim);
   initialStrain.allocate();
-  initialStrain.zero();
+  initialStrain.zeroAll();
   topology::VecVisitorMesh strainVisitor(initialStrain);
 
   // Setup databases for querying
