@@ -598,7 +598,7 @@ pylith::topology::Field::zero(void)
     err = PetscSectionGetDof(section, p, &dof);PYLITH_CHECK_ERROR(err);
     if (dof > 0) {
       assert(dof <= maxDof);
-      err = DMPlexVecSetClosure(_dm, section, _localVec, p, &values[0], INSERT_VALUES);PYLITH_CHECK_ERROR(err);
+      err = VecSetValuesSection(_localVec, section, p, &values[0], INSERT_VALUES);PYLITH_CHECK_ERROR(err);
     } // if
   } // for
 
