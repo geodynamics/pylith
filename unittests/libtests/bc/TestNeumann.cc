@@ -191,6 +191,7 @@ pylith::bc::TestNeumann::testInitialize(void)
   PetscInt dp = 0;
   PetscErrorCode err = 0;
   for (PetscInt c = cStart; c < cEnd; ++c) {
+    PetscInt  vertices[32];
     PetscInt *closure = PETSC_NULL;
     PetscInt  closureSize, numCorners = 0;
 
@@ -198,14 +199,14 @@ pylith::bc::TestNeumann::testInitialize(void)
     for(PetscInt p = 0; p < closureSize*2; p += 2) {
       const PetscInt point = closure[p];
       if ((point >= vStart) && (point < vEnd)) {
-        closure[numCorners++] = point;
+        vertices[numCorners++] = point;
       } // if
     } // for
+    err = DMPlexRestoreTransitiveClosure(subMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(_data->numCorners, numCorners);
     for(PetscInt p = 0; p < numCorners; ++p, ++dp) {
-      CPPUNIT_ASSERT_EQUAL(_data->cells[dp], closure[p]);
+      CPPUNIT_ASSERT_EQUAL(_data->cells[dp], vertices[p]);
     } // for
-    err = DMPlexRestoreTransitiveClosure(subMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
   } // for
 
   // Check traction values
