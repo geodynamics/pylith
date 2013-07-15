@@ -101,17 +101,18 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void)
   CPPUNIT_ASSERT_EQUAL(_data->numCells, cellsStratum.size());
   PetscErrorCode err = 0;
   for (PetscInt c = cStart, index = 0; c < cEnd; ++c) {
+    PetscInt  vertices[32];
     PetscInt *closure = NULL;
     PetscInt  closureSize, numVertices = 0;
 
     err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     for (PetscInt p = 0; p < closureSize*2; p += 2) {
-      if ((closure[p] >= vStart) && (closure[p] < vEnd)) closure[numVertices++] = closure[p];
+      if ((closure[p] >= vStart) && (closure[p] < vEnd)) vertices[numVertices++] = closure[p];
     } // for
+    err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(_data->numCorners, numVertices);
     for (PetscInt v = 0; v < numVertices; ++v, ++index)
-      CPPUNIT_ASSERT_EQUAL(_data->cellsNoFault[index], subpointMap[closure[v]]);
-    err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+      CPPUNIT_ASSERT_EQUAL(_data->cellsNoFault[index], subpointMap[vertices[v]]);
   } // for
 
   PYLITH_METHOD_END;
@@ -154,6 +155,9 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
   // Create submesh
   topology::Mesh submesh(mesh, _data->bcLabel);
   PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+  PetscViewerPushFormat(PETSC_VIEWER_STDOUT_WORLD, PETSC_VIEWER_ASCII_INFO_DETAIL);
+  DMView(mesh.dmMesh(), PETSC_VIEWER_STDOUT_WORLD);
+  PetscViewerPopFormat(PETSC_VIEWER_STDOUT_WORLD);
 
   // Check vertices
   topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
@@ -173,17 +177,18 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
   CPPUNIT_ASSERT_EQUAL(_data->numCells, cellsStratum.size());
 
   for (PetscInt c = cStart, index = 0; c < cEnd; ++c) {
+    PetscInt  vertices[32];
     PetscInt *closure = NULL;
     PetscInt  closureSize, numVertices = 0;
 
     err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     for (PetscInt p = 0; p < closureSize*2; p += 2) {
-      if ((closure[p] >= vStart) && (closure[p] < vEnd)) closure[numVertices++] = closure[p];
+      if ((closure[p] >= vStart) && (closure[p] < vEnd)) vertices[numVertices++] = closure[p];
     } // for
+    err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(_data->numCorners, numVertices);
     for (PetscInt v = 0; v < numVertices; ++v, ++index)
-      CPPUNIT_ASSERT_EQUAL(_data->cellsFault[index], subpointMap[closure[v]]);
-    err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+      CPPUNIT_ASSERT_EQUAL(_data->cellsFault[index], subpointMap[vertices[v]]);
   } // for
 
   PYLITH_METHOD_END;
