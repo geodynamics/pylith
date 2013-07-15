@@ -55,6 +55,35 @@ pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
 
     if (groupField) {err = DMLabelGetName(groupField, &groupName);PYLITH_CHECK_ERROR(err);}
     err = DMPlexCreateSubmesh(dmMesh, groupName, 1, &subdm);PYLITH_CHECK_ERROR(err);
+
+    if (flipFault) {
+      PetscInt maxConeSize, *revcone, *revconeO;
+      PetscInt pStart, pEnd, h;
+
+      err = DMPlexGetVTKCellHeight(subdm, &h);PYLITH_CHECK_ERROR(err);
+      err = DMPlexGetHeightStratum(subdm, h, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+      err = DMPlexGetMaxSizes(subdm, &maxConeSize, NULL);PYLITH_CHECK_ERROR(err);
+      err = DMGetWorkArray(subdm, maxConeSize, PETSC_INT, &revcone);PYLITH_CHECK_ERROR(err);
+      err = DMGetWorkArray(subdm, maxConeSize, PETSC_INT, &revconeO);PYLITH_CHECK_ERROR(err);
+      for (PetscInt p = pStart; p < pEnd; ++p) {
+        const PetscInt *cone, *coneO;
+        PetscInt        coneSize, faceSize, c;
+
+        err = DMPlexGetConeSize(subdm, p, &coneSize);PYLITH_CHECK_ERROR(err);
+        err = DMPlexGetCone(subdm, p, &cone);PYLITH_CHECK_ERROR(err);
+        err = DMPlexGetConeOrientation(subdm, p, &coneO);PYLITH_CHECK_ERROR(err);
+        for (c = 0; c < coneSize; ++c) {
+          err = DMPlexGetConeSize(subdm, cone[coneSize-1-c], &faceSize);PYLITH_CHECK_ERROR(err);
+          revcone[c]  = cone[coneSize-1-c];
+          revconeO[c] = coneO[coneSize-1-c] >= 0 ? -(faceSize-coneO[coneSize-1-c]) : faceSize+coneO[coneSize-1-c];
+        }
+        err = DMPlexSetCone(subdm, p, revcone);PYLITH_CHECK_ERROR(err);
+        err = DMPlexSetConeOrientation(subdm, p, revconeO);PYLITH_CHECK_ERROR(err);
+      }
+      err = DMRestoreWorkArray(subdm, maxConeSize, PETSC_INT, &revcone);PYLITH_CHECK_ERROR(err);
+      err = DMRestoreWorkArray(subdm, maxConeSize, PETSC_INT, &revconeO);PYLITH_CHECK_ERROR(err);
+    }
+
     err = DMPlexCreateLabel(subdm, labelName);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetLabel(subdm, labelName, &label);PYLITH_CHECK_ERROR(err);
     err = DMPlexMarkBoundaryFaces(subdm, label);PYLITH_CHECK_ERROR(err);
@@ -644,17 +673,19 @@ pylith::faults::CohesiveTopology::createInterpolated(topology::Mesh* mesh,
   assert(mesh);
   assert(faultBoundary);
   assert(groupField);
-  PetscDM sdm = NULL;
-  PetscDMLabel label = NULL;
-  const char *labelName = "faultSurface";
+  PetscDM        sdm   = NULL;
+  PetscDMLabel   subpointMap = NULL, label = NULL;
   PetscErrorCode err;
 
   PetscDM dm = mesh->dmMesh();assert(dm);
-  err = DMPlexGetLabel(dm, labelName, &label);PYLITH_CHECK_ERROR(err);
+  err = DMPlexGetSubpointMap(faultMesh.dmMesh(), &subpointMap);PYLITH_CHECK_ERROR(err);
+  err = DMLabelDuplicate(subpointMap, &label);PYLITH_CHECK_ERROR(err);
+  err = DMLabelClearStratum(label, mesh->dimension());PYLITH_CHECK_ERROR(err);
   // Completes the set of cells scheduled to be replaced
   //   Have to do internal fault vertices before fault boundary vertices, and this is the only thing I use faultBoundary for
   err = DMPlexLabelCohesiveComplete(dm, label);PYLITH_CHECK_ERROR(err);
   err = DMPlexConstructCohesiveCells(dm, label, &sdm);PYLITH_CHECK_ERROR(err);
+  err = DMLabelDestroy(&label);PYLITH_CHECK_ERROR(err);
 
   PetscReal lengthScale = 1.0;
   err = DMPlexGetScale(dm, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
