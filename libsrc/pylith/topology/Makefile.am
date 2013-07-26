@@ -39,24 +39,10 @@ subpkginclude_HEADERS = \
 	VisitorMesh.icc \
 	VisitorSubMesh.hh \
 	VisitorSubMesh.icc \
+	RefineUniform.hh \
 	topologyfwd.hh
 
 
 noinst_HEADERS =
-
-# TEMPORARY
-#noinst_HEADERS += \
-#	RefineUniform.hh
-#	MeshRefiner.hh \
-#	MeshRefiner.cc \
-#	RefineEdges2.hh \
-#	CellRefinerTri3.hh \
-#	CellRefinerTet4.hh \
-#	RefineFace4Edges2.hh \
-#	CellRefinerQuad4.hh \
-#	RefineVol8Face4Edges2.hh \
-#	CellRefinerHex8.hh \
-#	MeshOrder.hh
-
 
 # End of file 

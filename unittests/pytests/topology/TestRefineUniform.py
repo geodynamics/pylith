@@ -24,8 +24,6 @@ import unittest
 
 from pylith.topology.RefineUniform import RefineUniform
 
-from pylith.topology.RefineUniform import RefineUniform
-
 # ----------------------------------------------------------------------
 class TestRefineUniform(unittest.TestCase):
   """

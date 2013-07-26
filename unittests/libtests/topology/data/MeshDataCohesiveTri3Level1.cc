@@ -16,30 +16,30 @@
 // ======================================================================
 //
 
-#include "MeshDataCohesiveTri3Level2.hh"
+#include "MeshDataCohesiveTri3Level1.hh"
 
-const char* pylith::topology::MeshDataCohesiveTri3Level2::_filename = 
+const char* pylith::topology::MeshDataCohesiveTri3Level1::_filename = 
   "data/fourtri3.mesh";
 
-const int pylith::topology::MeshDataCohesiveTri3Level2::_refineLevel = 2;
-const char* pylith::topology::MeshDataCohesiveTri3Level2::_faultA = 0;
-const char* pylith::topology::MeshDataCohesiveTri3Level2::_faultB = 0;
+const int pylith::topology::MeshDataCohesiveTri3Level1::_refineLevel = 2;
+const char* pylith::topology::MeshDataCohesiveTri3Level1::_faultA = 0;
+const char* pylith::topology::MeshDataCohesiveTri3Level1::_faultB = 0;
 
-const int pylith::topology::MeshDataCohesiveTri3Level2::_numVertices = 13;
+const int pylith::topology::MeshDataCohesiveTri3Level1::_numVertices = 13;
 
-const int pylith::topology::MeshDataCohesiveTri3Level2::_spaceDim = 2;
+const int pylith::topology::MeshDataCohesiveTri3Level1::_spaceDim = 2;
 
-const int pylith::topology::MeshDataCohesiveTri3Level2::_numCells = 16;
+const int pylith::topology::MeshDataCohesiveTri3Level1::_numCells = 16;
 
-const int pylith::topology::MeshDataCohesiveTri3Level2::_numCellsCohesive = 0;
+const int pylith::topology::MeshDataCohesiveTri3Level1::_numCellsCohesive = 0;
 
-const int pylith::topology::MeshDataCohesiveTri3Level2::_cellDim = 2;
+const int pylith::topology::MeshDataCohesiveTri3Level1::_cellDim = 2;
 
-const int pylith::topology::MeshDataCohesiveTri3Level2::_numCorners = 3;
+const int pylith::topology::MeshDataCohesiveTri3Level1::_numCorners = 3;
 
-const int pylith::topology::MeshDataCohesiveTri3Level2::_numCornersCohesive = 6;
+const int pylith::topology::MeshDataCohesiveTri3Level1::_numCornersCohesive = 6;
 
-const PylithScalar pylith::topology::MeshDataCohesiveTri3Level2::_vertices[] = {
+const PylithScalar pylith::topology::MeshDataCohesiveTri3Level1::_vertices[] = {
   -1.0,  0.0,
    0.0, -1.0,
    0.0,  0.0,
@@ -55,7 +55,7 @@ const PylithScalar pylith::topology::MeshDataCohesiveTri3Level2::_vertices[] = {
    0.5,  0.5,
 };
 
-const int pylith::topology::MeshDataCohesiveTri3Level2::_cells[] = {
+const int pylith::topology::MeshDataCohesiveTri3Level1::_cells[] = {
   16,  21,  23,
   21,  22,  23,
   17,  22,  21,
@@ -73,41 +73,41 @@ const int pylith::topology::MeshDataCohesiveTri3Level2::_cells[] = {
   20,  28,  27,
   19,  24,  28,
 };
-const int pylith::topology::MeshDataCohesiveTri3Level2::_cellsCohesive[] = {
+const int pylith::topology::MeshDataCohesiveTri3Level1::_cellsCohesive[] = {
 };
-const int pylith::topology::MeshDataCohesiveTri3Level2::_materialIds[] = {
+const int pylith::topology::MeshDataCohesiveTri3Level1::_materialIds[] = {
   1, 1, 1, 1, 1, 1, 1, 1,
   2, 2, 2, 2, 2, 2, 2, 2,
 };
 
-const int pylith::topology::MeshDataCohesiveTri3Level2::_numGroups = 4;
+const int pylith::topology::MeshDataCohesiveTri3Level1::_numGroups = 4;
 
-const int pylith::topology::MeshDataCohesiveTri3Level2::_groupSizes[] = {
+const int pylith::topology::MeshDataCohesiveTri3Level1::_groupSizes[] = {
   5, 3, 2, 5,
 };
 
-const int pylith::topology::MeshDataCohesiveTri3Level2::_groups[] = {
+const int pylith::topology::MeshDataCohesiveTri3Level1::_groups[] = {
   16, 17, 19, 21, 25,
   17, 20, 26,
   16, 20,
   17, 18, 19, 22, 24,
 };
 
-const char* pylith::topology::MeshDataCohesiveTri3Level2::_groupNames[] = {
+const char* pylith::topology::MeshDataCohesiveTri3Level1::_groupNames[] = {
   "edge 1",
   "edge 2",
   "end points",
   "fault",
 };
 
-const char* pylith::topology::MeshDataCohesiveTri3Level2::_groupTypes[] = {
+const char* pylith::topology::MeshDataCohesiveTri3Level1::_groupTypes[] = {
   "vertex", 
   "vertex",
   "vertex",
   "vertex",
 };
 
-pylith::topology::MeshDataCohesiveTri3Level2::MeshDataCohesiveTri3Level2(void)
+pylith::topology::MeshDataCohesiveTri3Level1::MeshDataCohesiveTri3Level1(void)
 { // constructor
   filename = const_cast<char*>(_filename);
   refineLevel = _refineLevel;
@@ -132,7 +132,7 @@ pylith::topology::MeshDataCohesiveTri3Level2::MeshDataCohesiveTri3Level2(void)
   numGroups = _numGroups;
 } // constructor
 
-pylith::topology::MeshDataCohesiveTri3Level2::~MeshDataCohesiveTri3Level2(void)
+pylith::topology::MeshDataCohesiveTri3Level1::~MeshDataCohesiveTri3Level1(void)
 {}
 
 

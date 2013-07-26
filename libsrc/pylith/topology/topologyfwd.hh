@@ -29,23 +29,6 @@
 
 #include "pylith/utils/types.hh"
 
-#if 0 // :TODO: Update this for PETSc DM.
-namespace ALE {
-  template<typename cellrefiner_type> class MeshRefiner;
-  class RefineEdges2;
-  class CellRefinerTri3;
-  class CellRefinerTet4;
-
-  class RefineFace4Edges2;
-  class CellRefinerQuad4;
-
-  class RefineVol8Face4Edges2;
-  class CellRefinerHex8;
-
-  class MeshOrder;
-} // ALE
-#endif
-
 namespace pylith {
   namespace topology {
 

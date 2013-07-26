@@ -29,7 +29,7 @@
 #include "pylith/topology/SolutionFields.hh"
 #include "pylith/topology/Jacobian.hh"
 #include "pylith/topology/Distributor.hh"
-//#include "pylith/topology/RefineUniform.hh" // Not yet updated
+#include "pylith/topology/RefineUniform.hh"
 #include "pylith/topology/ReverseCuthillMcKee.hh"
 %}
 
@@ -64,7 +64,7 @@ import_array();
 %include "SolutionFields.i"
 %include "Jacobian.i"
 %include "Distributor.i"
-//%include "RefineUniform.i" // not yet updated
+%include "RefineUniform.i"
 %include "ReverseCuthillMcKee.i"
 
 // End of file

@@ -16,28 +16,28 @@
 // ======================================================================
 //
 
-#if !defined(pylith_topology_meshdatacohesivetri3level2_hh)
-#define pylith_topology_meshdatacohesivetri3level2_hh
+#if !defined(pylith_topology_meshdatacohesivetri3level1fault1_hh)
+#define pylith_topology_meshdatacohesivetri3level1fault1_hh
 
 #include "MeshDataCohesive.hh"
 
 namespace pylith {
   namespace topology {
-     class MeshDataCohesiveTri3Level2;
+     class MeshDataCohesiveTri3Level1Fault1;
   } // pylith
 } // topology
 
-class pylith::topology::MeshDataCohesiveTri3Level2 : public MeshDataCohesive
-{ // MeshDataCohesiveTri3Level2
+class pylith::topology::MeshDataCohesiveTri3Level1Fault1 : public MeshDataCohesive
+{ // MeshDataCohesiveTri3Level1Fault1
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public: 
 
   /// Constructor
-  MeshDataCohesiveTri3Level2(void);
+  MeshDataCohesiveTri3Level1Fault1(void);
 
   /// Destructor
-  ~MeshDataCohesiveTri3Level2(void);
+  ~MeshDataCohesiveTri3Level1Fault1(void);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
@@ -66,8 +66,8 @@ private:
   static const char* _groupTypes[]; ///< Array of group types
   static const int _numGroups; ///< Number of groups
 
-}; // MeshDataCohesiveTri3Level2
+}; // MeshDataCohesiveTri3Level1Fault1
 
-#endif // pylith_topology_meshdatacohesivetri3level2_hh
+#endif // pylith_topology_meshdatacohesivetri3level1fault1_hh
 
 // End of file

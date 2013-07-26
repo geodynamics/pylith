@@ -22,18 +22,9 @@
 
 #include "Mesh.hh" // USES Mesh
 
-#include "CellRefinerTri3.hh" // USES CellRefinerTri3
-#include "CellRefinerQuad4.hh" // USES CellRefinerQuad4
-#include "CellRefinerTet4.hh" // USES CellRefinerTet4
-#include "CellRefinerHex8.hh" // USES CellRefinerHex8
-#include "MeshRefiner.hh" // USES MeshRefiner
-
-#include <stdexcept> // USES std::runtime_error
-#include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
-
-// ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+#include <sstream> // USES std::ostringstream
+#include <stdexcept> // USES std::runtime_error
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -62,74 +53,29 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
 					const Mesh& mesh,
 					const int levels)
 { // refine
-  assert(0 != newMesh);
+  assert(newMesh);
 
-  typedef SieveMesh::point_type point_type;
+  PetscErrorCode err;
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh>& newSieveMesh = newMesh->sieveMesh();
-  assert(!newSieveMesh.isNull());
-  ALE::Obj<SieveMesh::sieve_type> newSieve =
-    new SieveMesh::sieve_type(mesh.comm(), mesh.debug());
-  newSieveMesh->setSieve(newSieve);
+  PetscDM dmNew = newMesh->dmMesh();
+  PetscDM dmOrig = mesh.dmMesh();
+  
+  PetscInt meshDepth = 0;
+  err = DMPlexGetDepth(dmOrig, &meshDepth);
 
-  const Obj<SieveMesh::label_sequence>& cells = sieveMesh->heightStratum(0);
-  assert(!cells.isNull());
-  assert(cells->size() > 0);
+  const int meshDim = mesh.dimension();
+  if (meshDim > 0 && meshDepth !=  meshDim) {
+    std::ostringstream msg;
+    msg << "Mesh refinement for uninterpolated meshes not supported.\n"
+	<< "Turn on interpolated meshes using 'interpolate' mesh generator property.";
+    throw std::runtime_error(msg.str());
+  } // if
 
-  const int numCorners = sieveMesh->getNumCellCorners();
-  const int dim = mesh.dimension();
+  err = DMPlexSetRefinementUniform(dmOrig, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
 
-  switch (dim) {
-  case 0:
-  case 1:
-    throw std::runtime_error("Uniform refinement not implemented.");
-    break;
-
-  case 2:
-    switch (numCorners) {
-    case 3: {
-      ALE::CellRefinerTri3 cellSplitter(*sieveMesh);
-      ALE::MeshRefiner<ALE::CellRefinerTri3> refinement;
-      refinement.refine(newSieveMesh, sieveMesh, cellSplitter);
-      break;
-    } // case 3
-    case 4: {
-      ALE::CellRefinerQuad4 cellSplitter(*sieveMesh);
-      ALE::MeshRefiner<ALE::CellRefinerQuad4> refinement;
-      refinement.refine(newSieveMesh, sieveMesh, cellSplitter);
-      break;
-    } // case 4
-    default :
-      throw std::runtime_error("Unknown number of corners for cells.");
-    } // switch
-    break;
-    
-  case 3:
-    switch (numCorners) {
-    case 4: {
-      ALE::CellRefinerTet4 cellSplitter(*sieveMesh);
-      ALE::MeshRefiner<ALE::CellRefinerTet4> refinement;
-      refinement.refine(newSieveMesh, sieveMesh, cellSplitter);
-      break;
-    } // case 4
-    case 8: {
-      ALE::CellRefinerHex8 cellSplitter(*sieveMesh);
-      ALE::MeshRefiner<ALE::CellRefinerHex8> refinement;
-      refinement.refine(newSieveMesh, sieveMesh, cellSplitter);
-      break;
-    } // case 8
-    default :
-      assert(0);
-      throw std::runtime_error("Unknown number of corners for cells.");
-    } // switch
-    break;
-
-  default :
-    assert(0);
-    throw std::logic_error("Unknown dimension.");
-  } // switch
+  for (int i=0; i < levels; ++i) {
+    err = DMRefine(dmOrig, mesh.comm(), &dmNew);PYLITH_CHECK_ERROR(err);
+  } // for
 
   // newMesh->view("REFINED MESH");
 } // refine

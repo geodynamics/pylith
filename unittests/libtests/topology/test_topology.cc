@@ -32,7 +32,7 @@
 
 #include <stdlib.h> // USES abort()
 
-#define MALLOC_DUMP
+//#define MALLOC_DUMP
 
 int
 main(int argc,
