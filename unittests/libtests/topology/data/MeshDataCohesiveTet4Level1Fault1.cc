@@ -16,31 +16,31 @@
 // ======================================================================
 //
 
-#include "MeshDataCohesiveTet4Level2Fault1.hh"
+#include "MeshDataCohesiveTet4Level1Fault1.hh"
 
-const char* pylith::topology::MeshDataCohesiveTet4Level2Fault1::_filename = 
+const char* pylith::topology::MeshDataCohesiveTet4Level1Fault1::_filename = 
   "data/twotet4.mesh";
 
-const int pylith::topology::MeshDataCohesiveTet4Level2Fault1::_refineLevel = 2;
-const char* pylith::topology::MeshDataCohesiveTet4Level2Fault1::_faultA = 
+const int pylith::topology::MeshDataCohesiveTet4Level1Fault1::_refineLevel = 2;
+const char* pylith::topology::MeshDataCohesiveTet4Level1Fault1::_faultA = 
   "fault";
-const char* pylith::topology::MeshDataCohesiveTet4Level2Fault1::_faultB = 0;
+const char* pylith::topology::MeshDataCohesiveTet4Level1Fault1::_faultB = 0;
 
-const int pylith::topology::MeshDataCohesiveTet4Level2Fault1::_numVertices = 26;
+const int pylith::topology::MeshDataCohesiveTet4Level1Fault1::_numVertices = 26;
 
-const int pylith::topology::MeshDataCohesiveTet4Level2Fault1::_spaceDim = 3;
+const int pylith::topology::MeshDataCohesiveTet4Level1Fault1::_spaceDim = 3;
 
-const int pylith::topology::MeshDataCohesiveTet4Level2Fault1::_numCells = 16;
+const int pylith::topology::MeshDataCohesiveTet4Level1Fault1::_numCells = 16;
 
-const int pylith::topology::MeshDataCohesiveTet4Level2Fault1::_numCellsCohesive = 4;
+const int pylith::topology::MeshDataCohesiveTet4Level1Fault1::_numCellsCohesive = 4;
 
-const int pylith::topology::MeshDataCohesiveTet4Level2Fault1::_cellDim = 3;
+const int pylith::topology::MeshDataCohesiveTet4Level1Fault1::_cellDim = 3;
 
-const int pylith::topology::MeshDataCohesiveTet4Level2Fault1::_numCorners = 4;
+const int pylith::topology::MeshDataCohesiveTet4Level1Fault1::_numCorners = 4;
 
-const int pylith::topology::MeshDataCohesiveTet4Level2Fault1::_numCornersCohesive = 9;
+const int pylith::topology::MeshDataCohesiveTet4Level1Fault1::_numCornersCohesive = 9;
 
-const PylithScalar pylith::topology::MeshDataCohesiveTet4Level2Fault1::_vertices[] = {
+const PylithScalar pylith::topology::MeshDataCohesiveTet4Level1Fault1::_vertices[] = {
   -1.0,  0.0, 0.0,
    0.0, -1.0, 0.0,
    0.0,  0.0, 1.0,
@@ -69,7 +69,7 @@ const PylithScalar pylith::topology::MeshDataCohesiveTet4Level2Fault1::_vertices
    0.0,  0.5, 0.5,
 };
 
-const int pylith::topology::MeshDataCohesiveTet4Level2Fault1::_cells[] = {
+const int pylith::topology::MeshDataCohesiveTet4Level1Fault1::_cells[] = {
   17,  27,  24,  26,
   24,  25,  26,  27,
   24,  27,  28,  25,
@@ -87,46 +87,46 @@ const int pylith::topology::MeshDataCohesiveTet4Level2Fault1::_cells[] = {
   31,  34,  35,  33,
   20,  33,  35,  34,
 };
-const int pylith::topology::MeshDataCohesiveTet4Level2Fault1::_cellsCohesive[] = {
+const int pylith::topology::MeshDataCohesiveTet4Level1Fault1::_cellsCohesive[] = {
   18,  24,  25,  22,  32,  31,  37,  39,  41,
   24,  26,  25,  32,  30,  31,  39,  40,  41,
   17,  26,  24,  21,  30,  32,  36,  40,  39,
   19,  25,  26,  23,  31,  30,  38,  41,  40,
 };
-const int pylith::topology::MeshDataCohesiveTet4Level2Fault1::_materialIds[] = {
+const int pylith::topology::MeshDataCohesiveTet4Level1Fault1::_materialIds[] = {
   1, 1, 1, 1, 1, 1, 1, 1,
   2, 2, 2, 2, 2, 2, 2, 2,
   100, 100, 100, 100,
 };
 
-const int pylith::topology::MeshDataCohesiveTet4Level2Fault1::_numGroups = 4;
+const int pylith::topology::MeshDataCohesiveTet4Level1Fault1::_numGroups = 4;
 
-const int pylith::topology::MeshDataCohesiveTet4Level2Fault1::_groupSizes[] = {
+const int pylith::topology::MeshDataCohesiveTet4Level1Fault1::_groupSizes[] = {
   4, 4, 2, 18,
 };
 
-const int pylith::topology::MeshDataCohesiveTet4Level2Fault1::_groups[] = {
+const int pylith::topology::MeshDataCohesiveTet4Level1Fault1::_groups[] = {
  16, 17, 21, 27,
  18, 20, 22, 35,
  16, 20,
  17, 18, 19, 21, 22, 23, 24, 25, 26, 30, 31, 32, 36, 37, 38, 39, 40, 41,
 };
 
-const char* pylith::topology::MeshDataCohesiveTet4Level2Fault1::_groupNames[] = {
+const char* pylith::topology::MeshDataCohesiveTet4Level1Fault1::_groupNames[] = {
   "edge 1",
   "edge 2",
   "end points",
   "fault",
 };
 
-const char* pylith::topology::MeshDataCohesiveTet4Level2Fault1::_groupTypes[] = {
+const char* pylith::topology::MeshDataCohesiveTet4Level1Fault1::_groupTypes[] = {
   "vertex", 
   "vertex",
   "vertex",
   "vertex",
 };
 
-pylith::topology::MeshDataCohesiveTet4Level2Fault1::MeshDataCohesiveTet4Level2Fault1(void)
+pylith::topology::MeshDataCohesiveTet4Level1Fault1::MeshDataCohesiveTet4Level1Fault1(void)
 { // constructor
   filename = const_cast<char*>(_filename);
   refineLevel = _refineLevel;
@@ -151,7 +151,7 @@ pylith::topology::MeshDataCohesiveTet4Level2Fault1::MeshDataCohesiveTet4Level2Fa
   numGroups = _numGroups;
 } // constructor
 
-pylith::topology::MeshDataCohesiveTet4Level2Fault1::~MeshDataCohesiveTet4Level2Fault1(void)
+pylith::topology::MeshDataCohesiveTet4Level1Fault1::~MeshDataCohesiveTet4Level1Fault1(void)
 {}
 
 

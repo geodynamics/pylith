@@ -54,7 +54,7 @@ public :
    */
   void refine(Mesh* const newMesh,
 	      const Mesh& mesh,
-	      const int levels =2);
+	      const int levels =1);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

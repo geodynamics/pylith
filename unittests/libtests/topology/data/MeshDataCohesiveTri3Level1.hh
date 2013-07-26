@@ -16,28 +16,28 @@
 // ======================================================================
 //
 
-#if !defined(pylith_topology_meshdatacohesivequad4level2_hh)
-#define pylith_topology_meshdatacohesivequad4level2_hh
+#if !defined(pylith_topology_meshdatacohesivetri3level1_hh)
+#define pylith_topology_meshdatacohesivetri3level1_hh
 
 #include "MeshDataCohesive.hh"
 
 namespace pylith {
   namespace topology {
-     class MeshDataCohesiveQuad4Level2;
+     class MeshDataCohesiveTri3Level1;
   } // pylith
 } // topology
 
-class pylith::topology::MeshDataCohesiveQuad4Level2 : public MeshDataCohesive
-{ // MeshDataCohesiveQuad4Level2
+class pylith::topology::MeshDataCohesiveTri3Level1 : public MeshDataCohesive
+{ // MeshDataCohesiveTri3Level1
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public: 
 
   /// Constructor
-  MeshDataCohesiveQuad4Level2(void);
+  MeshDataCohesiveTri3Level1(void);
 
   /// Destructor
-  ~MeshDataCohesiveQuad4Level2(void);
+  ~MeshDataCohesiveTri3Level1(void);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
@@ -66,8 +66,8 @@ private:
   static const char* _groupTypes[]; ///< Array of group types
   static const int _numGroups; ///< Number of groups
 
-}; // MeshDataCohesiveQuad4Level2
+}; // MeshDataCohesiveTri3Level1
 
-#endif // pylith_topology_meshdatacohesivequad4level2_hh
+#endif // pylith_topology_meshdatacohesivetri3level1_hh
 
 // End of file

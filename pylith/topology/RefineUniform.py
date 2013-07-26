@@ -24,11 +24,10 @@
 ## Factory: mesh_refiner.
 
 from MeshRefiner import MeshRefiner
-#from topology import RefineUniform as ModuleRefineUniform # TEMPORARY
+from topology import RefineUniform as ModuleRefineUniform
 
 # RefineUniform class
-#class RefineUniform(MeshRefiner, ModuleRefineUniform): # TEMPORARY
-class RefineUniform(MeshRefiner):
+class RefineUniform(MeshRefiner, ModuleRefineUniform):
   """
   Python manager for uniform global refinement of mesh in parallel.
 
@@ -39,8 +38,7 @@ class RefineUniform(MeshRefiner):
 
   import pyre.inventory
 
-  levels = pyre.inventory.int("levels", default=2,
-                              validator=pyre.inventory.choice([2, 4]))
+  levels = pyre.inventory.int("levels", default=1, validator=pyre.inventory.greaterEqual(1))
   levels.meta['tip'] = "Number of refinement levels."
 
 
@@ -63,20 +61,19 @@ class RefineUniform(MeshRefiner):
     logEvent = "%srefine" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
-    print "WARNING: RefineUniform not yet implemented in v2.0.0."
     newMesh = mesh
-    #from Mesh import Mesh
-    #newMesh = Mesh(dim=mesh.dimension(), comm=mesh.comm())
-    #newMesh.debug(mesh.debug())
-    #newMesh.coordsys(mesh.coordsys())
-    #ModuleRefineUniform.refine(self, newMesh, mesh, self.levels)
-    #if not newMesh == mesh:
-    #  #from pylith.utils.petsc import MemoryLogger
-    #  #memoryLogger =  MemoryLogger.singleton()
-    #
-    #  #memoryLogger.stagePush(mesh.memLoggingStage)      
-    #  mesh.cleanup()
-    #  #memoryLogger.stagePop()
+    from Mesh import Mesh
+    newMesh = Mesh(dim=mesh.dimension(), comm=mesh.comm())
+    newMesh.debug(mesh.debug())
+    newMesh.coordsys(mesh.coordsys())
+    ModuleRefineUniform.refine(self, newMesh, mesh, self.levels)
+    if not newMesh == mesh:
+      #from pylith.utils.petsc import MemoryLogger
+      #memoryLogger =  MemoryLogger.singleton()
+    
+      #memoryLogger.stagePush(mesh.memLoggingStage)      
+      mesh.cleanup()
+      #memoryLogger.stagePop()
 
     self._eventLogger.eventEnd(logEvent)
     return newMesh
@@ -97,7 +94,7 @@ class RefineUniform(MeshRefiner):
     """
     Create handle to C++ object.
     """
-    #ModuleRefineUniform.__init__(self) # TEMPORARY
+    ModuleRefineUniform.__init__(self)
     return
   
 

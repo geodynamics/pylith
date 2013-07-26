@@ -37,9 +37,9 @@ testtopology_SOURCES = \
 	TestFieldsSubMesh.cc \
 	TestSolutionFields.cc \
 	TestJacobian.cc \
+	TestRefineUniform.cc \
 	test_topology.cc
 
-#	TestRefineUniform.cc 
 
 
 noinst_HEADERS = \
@@ -52,33 +52,33 @@ noinst_HEADERS = \
 	TestFieldsMesh.hh \
 	TestFieldsSubMesh.hh \
 	TestSolutionFields.hh \
+	TestRefineUniform.hh \
 	TestJacobian.hh
 
-#	TestRefineUniform.hh
 
 
 # Source files associated with testing data
 testtopology_SOURCES += \
 	data/MeshDataCohesive.cc \
-	data/MeshDataCohesiveTri3Level2.cc \
-	data/MeshDataCohesiveTri3Level2Fault1.cc \
-	data/MeshDataCohesiveQuad4Level2.cc \
-	data/MeshDataCohesiveQuad4Level2Fault1.cc \
-	data/MeshDataCohesiveTet4Level2.cc \
-	data/MeshDataCohesiveTet4Level2Fault1.cc \
-	data/MeshDataCohesiveHex8Level2.cc \
-	data/MeshDataCohesiveHex8Level2Fault1.cc
+	data/MeshDataCohesiveTri3Level1.cc \
+	data/MeshDataCohesiveTri3Level1Fault1.cc \
+	data/MeshDataCohesiveQuad4Level1.cc \
+	data/MeshDataCohesiveQuad4Level1Fault1.cc \
+	data/MeshDataCohesiveTet4Level1.cc \
+	data/MeshDataCohesiveTet4Level1Fault1.cc \
+	data/MeshDataCohesiveHex8Level1.cc \
+	data/MeshDataCohesiveHex8Level1Fault1.cc
 
 noinst_HEADERS += \
 	data/MeshDataCohesive.hh \
-	data/MeshDataCohesiveTri3Level2.hh \
-	data/MeshDataCohesiveTri3Level2Fault1.hh \
-	data/MeshDataCohesiveQuad4Level2.hh \
-	data/MeshDataCohesiveQuad4Level2Fault1.hh \
-	data/MeshDataCohesiveTet4Level2.hh \
-	data/MeshDataCohesiveTet4Level2Fault1.hh \
-	data/MeshDataCohesiveHex8Level2.hh \
-	data/MeshDataCohesiveHex8Level2Fault1.hh
+	data/MeshDataCohesiveTri3Level1.hh \
+	data/MeshDataCohesiveTri3Level1Fault1.hh \
+	data/MeshDataCohesiveQuad4Level1.hh \
+	data/MeshDataCohesiveQuad4Level1Fault1.hh \
+	data/MeshDataCohesiveTet4Level1.hh \
+	data/MeshDataCohesiveTet4Level1Fault1.hh \
+	data/MeshDataCohesiveHex8Level1.hh \
+	data/MeshDataCohesiveHex8Level1Fault1.hh
 
 AM_CPPFLAGS = \
 	$(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES) \

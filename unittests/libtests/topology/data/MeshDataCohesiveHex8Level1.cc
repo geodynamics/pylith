@@ -16,30 +16,30 @@
 // ======================================================================
 //
 
-#include "MeshDataCohesiveHex8Level2.hh"
+#include "MeshDataCohesiveHex8Level1.hh"
 
-const char* pylith::topology::MeshDataCohesiveHex8Level2::_filename = 
+const char* pylith::topology::MeshDataCohesiveHex8Level1::_filename = 
   "data/twohex8.mesh";
 
-const int pylith::topology::MeshDataCohesiveHex8Level2::_refineLevel = 2;
-const char* pylith::topology::MeshDataCohesiveHex8Level2::_faultA = 0;
-const char* pylith::topology::MeshDataCohesiveHex8Level2::_faultB = 0;
+const int pylith::topology::MeshDataCohesiveHex8Level1::_refineLevel = 2;
+const char* pylith::topology::MeshDataCohesiveHex8Level1::_faultA = 0;
+const char* pylith::topology::MeshDataCohesiveHex8Level1::_faultB = 0;
 
-const int pylith::topology::MeshDataCohesiveHex8Level2::_numVertices = 45;
+const int pylith::topology::MeshDataCohesiveHex8Level1::_numVertices = 45;
 
-const int pylith::topology::MeshDataCohesiveHex8Level2::_spaceDim = 3;
+const int pylith::topology::MeshDataCohesiveHex8Level1::_spaceDim = 3;
 
-const int pylith::topology::MeshDataCohesiveHex8Level2::_numCells = 16;
+const int pylith::topology::MeshDataCohesiveHex8Level1::_numCells = 16;
 
-const int pylith::topology::MeshDataCohesiveHex8Level2::_numCellsCohesive = 0;
+const int pylith::topology::MeshDataCohesiveHex8Level1::_numCellsCohesive = 0;
 
-const int pylith::topology::MeshDataCohesiveHex8Level2::_cellDim = 3;
+const int pylith::topology::MeshDataCohesiveHex8Level1::_cellDim = 3;
 
-const int pylith::topology::MeshDataCohesiveHex8Level2::_numCorners = 8;
+const int pylith::topology::MeshDataCohesiveHex8Level1::_numCorners = 8;
 
-const int pylith::topology::MeshDataCohesiveHex8Level2::_numCornersCohesive = 6;
+const int pylith::topology::MeshDataCohesiveHex8Level1::_numCornersCohesive = 6;
 
-const PylithScalar pylith::topology::MeshDataCohesiveHex8Level2::_vertices[] = {
+const PylithScalar pylith::topology::MeshDataCohesiveHex8Level1::_vertices[] = {
   -2.0, -1.0, -1.0, // 26
   -2.0, +1.0, -1.0,
   -2.0, -1.0, +1.0,
@@ -87,7 +87,7 @@ const PylithScalar pylith::topology::MeshDataCohesiveHex8Level2::_vertices[] = {
   +1.0, +0.0, +0.0, // 60 (volume)
 };
 
-const int pylith::topology::MeshDataCohesiveHex8Level2::_cells[] = {
+const int pylith::topology::MeshDataCohesiveHex8Level1::_cells[] = {
   16,   28,   44,   31,   36,   40,   46,   43,
   20,   29,   44,   28,   37,   41,   46,   40, 
   21,   30,   44,   29,   38,   42,   46,   41, 
@@ -105,41 +105,41 @@ const int pylith::topology::MeshDataCohesiveHex8Level2::_cells[] = {
   38,   41,   60,   56,   23,   33,   59,   51, 
   37,   57,   60,   41,   22,   52,   59,   33, 
 };
-const int pylith::topology::MeshDataCohesiveHex8Level2::_cellsCohesive[] = {
+const int pylith::topology::MeshDataCohesiveHex8Level1::_cellsCohesive[] = {
 };
-const int pylith::topology::MeshDataCohesiveHex8Level2::_materialIds[] = {
+const int pylith::topology::MeshDataCohesiveHex8Level1::_materialIds[] = {
   1, 1, 1, 1, 1, 1, 1, 1,
   2, 2, 2, 2, 2, 2, 2, 2,
 };
 
-const int pylith::topology::MeshDataCohesiveHex8Level2::_numGroups = 4;
+const int pylith::topology::MeshDataCohesiveHex8Level1::_numGroups = 4;
 
-const int pylith::topology::MeshDataCohesiveHex8Level2::_groupSizes[] = {
+const int pylith::topology::MeshDataCohesiveHex8Level1::_groupSizes[] = {
   2, 9, 9, 9,
 };
 
-const int pylith::topology::MeshDataCohesiveHex8Level2::_groups[] = {
+const int pylith::topology::MeshDataCohesiveHex8Level1::_groups[] = {
   16, 24,
   16, 17, 18, 19, 31, 35, 36, 39, 43,
   20, 22, 24, 26, 37, 49, 52, 53, 57,
   20, 21, 22, 23, 29, 33, 37, 38, 41,
 };
 
-const char* pylith::topology::MeshDataCohesiveHex8Level2::_groupNames[] = {
+const char* pylith::topology::MeshDataCohesiveHex8Level1::_groupNames[] = {
   "end points",
   "face 1",
   "face 2",
   "fault",
 };
 
-const char* pylith::topology::MeshDataCohesiveHex8Level2::_groupTypes[] = {
+const char* pylith::topology::MeshDataCohesiveHex8Level1::_groupTypes[] = {
   "vertex",
   "vertex",
   "vertex",
   "vertex",
 };
 
-pylith::topology::MeshDataCohesiveHex8Level2::MeshDataCohesiveHex8Level2(void)
+pylith::topology::MeshDataCohesiveHex8Level1::MeshDataCohesiveHex8Level1(void)
 { // constructor
   filename = const_cast<char*>(_filename);
   refineLevel = _refineLevel;
@@ -164,7 +164,7 @@ pylith::topology::MeshDataCohesiveHex8Level2::MeshDataCohesiveHex8Level2(void)
   numGroups = _numGroups;
 } // constructor
 
-pylith::topology::MeshDataCohesiveHex8Level2::~MeshDataCohesiveHex8Level2(void)
+pylith::topology::MeshDataCohesiveHex8Level1::~MeshDataCohesiveHex8Level1(void)
 {}
 
 

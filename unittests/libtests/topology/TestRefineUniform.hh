@@ -51,17 +51,17 @@ class pylith::topology::TestRefineUniform : public CppUnit::TestFixture
 
   CPPUNIT_TEST( testConstructor );
 
-  CPPUNIT_TEST( testRefineTri3Level2 );
-  CPPUNIT_TEST( testRefineTri3Level2Fault1 );
+  CPPUNIT_TEST( testRefineTri3Level1 );
+  //CPPUNIT_TEST( testRefineTri3Level1Fault1 );
 
-  CPPUNIT_TEST( testRefineQuad4Level2 );
-  CPPUNIT_TEST( testRefineQuad4Level2Fault1 );
+  CPPUNIT_TEST( testRefineQuad4Level1 );
+  //CPPUNIT_TEST( testRefineQuad4Level1Fault1 );
 
-  CPPUNIT_TEST( testRefineTet4Level2 );
-  CPPUNIT_TEST( testRefineTet4Level2Fault1 );
+  CPPUNIT_TEST( testRefineTet4Level1 );
+  //CPPUNIT_TEST( testRefineTet4Level1Fault1 );
 
-  CPPUNIT_TEST( testRefineHex8Level2 );
-  CPPUNIT_TEST( testRefineHex8Level2Fault1 );
+  CPPUNIT_TEST( testRefineHex8Level1 );
+  //CPPUNIT_TEST( testRefineHex8Level1Fault1 );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -72,28 +72,28 @@ public :
   void testConstructor(void);
 
   /// Test refine() with level 2, tri3 cells, and no fault.
-  void testRefineTri3Level2(void);
+  void testRefineTri3Level1(void);
 
   /// Test refine() with level 2, tri3 cells, and one fault.
-  void testRefineTri3Level2Fault1(void);
+  void testRefineTri3Level1Fault1(void);
 
   /// Test refine() with level 2, quad4 cells, and no fault.
-  void testRefineQuad4Level2(void);
+  void testRefineQuad4Level1(void);
 
   /// Test refine() with level 2, quad4 cells, and one fault.
-  void testRefineQuad4Level2Fault1(void);
+  void testRefineQuad4Level1Fault1(void);
 
   /// Test refine() with level 2, tet4 cells, and no fault.
-  void testRefineTet4Level2(void);
+  void testRefineTet4Level1(void);
 
   /// Test refine() with level 2, tet4 cells, and one fault.
-  void testRefineTet4Level2Fault1(void);
+  void testRefineTet4Level1Fault1(void);
 
   /// Test refine() with level 2, hex8 cells, and no fault.
-  void testRefineHex8Level2(void);
+  void testRefineHex8Level1(void);
 
   /// Test refine() with level 2, hex8 cells, and one fault.
-  void testRefineHex8Level2Fault1(void);
+  void testRefineHex8Level1Fault1(void);
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :

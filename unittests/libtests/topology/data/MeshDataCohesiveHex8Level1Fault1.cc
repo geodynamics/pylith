@@ -16,31 +16,31 @@
 // ======================================================================
 //
 
-#include "MeshDataCohesiveHex8Level2Fault1.hh"
+#include "MeshDataCohesiveHex8Level1Fault1.hh"
 
-const char* pylith::topology::MeshDataCohesiveHex8Level2Fault1::_filename = 
+const char* pylith::topology::MeshDataCohesiveHex8Level1Fault1::_filename = 
   "data/twohex8.mesh";
 
-const int pylith::topology::MeshDataCohesiveHex8Level2Fault1::_refineLevel = 2;
-const char* pylith::topology::MeshDataCohesiveHex8Level2Fault1::_faultA = 
+const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_refineLevel = 2;
+const char* pylith::topology::MeshDataCohesiveHex8Level1Fault1::_faultA = 
   "fault";
-const char* pylith::topology::MeshDataCohesiveHex8Level2Fault1::_faultB = 0;
+const char* pylith::topology::MeshDataCohesiveHex8Level1Fault1::_faultB = 0;
 
-const int pylith::topology::MeshDataCohesiveHex8Level2Fault1::_numVertices = 63;
+const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_numVertices = 63;
 
-const int pylith::topology::MeshDataCohesiveHex8Level2Fault1::_spaceDim = 3;
+const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_spaceDim = 3;
 
-const int pylith::topology::MeshDataCohesiveHex8Level2Fault1::_numCells = 16;
+const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_numCells = 16;
 
-const int pylith::topology::MeshDataCohesiveHex8Level2Fault1::_numCellsCohesive = 4;
+const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_numCellsCohesive = 4;
 
-const int pylith::topology::MeshDataCohesiveHex8Level2Fault1::_cellDim = 3;
+const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_cellDim = 3;
 
-const int pylith::topology::MeshDataCohesiveHex8Level2Fault1::_numCorners = 8;
+const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_numCorners = 8;
 
-const int pylith::topology::MeshDataCohesiveHex8Level2Fault1::_numCornersCohesive = 12;
+const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_numCornersCohesive = 12;
 
-const PylithScalar pylith::topology::MeshDataCohesiveHex8Level2Fault1::_vertices[] = {
+const PylithScalar pylith::topology::MeshDataCohesiveHex8Level1Fault1::_vertices[] = {
   -2.0, -1.0, -1.0, // 16
   -2.0, +1.0, -1.0,
   -2.0, -1.0, +1.0,
@@ -106,7 +106,7 @@ const PylithScalar pylith::topology::MeshDataCohesiveHex8Level2Fault1::_vertices
    0.0,  0.0,  0.0, // 78 (face)
 };
 
-const int pylith::topology::MeshDataCohesiveHex8Level2Fault1::_cells[] = {
+const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_cells[] = {
   16, 32, 48, 35, 40, 44, 50, 47, 
   20, 33, 48, 32, 41, 45, 50, 44, 
   21, 34, 48, 33, 42, 46, 50, 45, 
@@ -124,25 +124,25 @@ const int pylith::topology::MeshDataCohesiveHex8Level2Fault1::_cells[] = {
   61, 65, 69, 64, 31, 57, 68, 56, 
   62, 66, 69, 65, 30, 58, 68, 57, 
 };
-const int pylith::topology::MeshDataCohesiveHex8Level2Fault1::_cellsCohesive[] = {
+const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_cellsCohesive[] = {
   20, 33, 45, 41, 28, 53, 65, 62, 70, 74, 78, 77, 
   21, 42, 45, 33, 29, 61, 65, 53, 71, 75, 78, 74, 
   23, 37, 45, 42, 31, 57, 65, 61, 73, 76, 78, 75, 
   22, 41, 45, 37, 30, 62, 65, 57, 72, 77, 78, 76, 
 };
-const int pylith::topology::MeshDataCohesiveHex8Level2Fault1::_materialIds[] = {
+const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_materialIds[] = {
   1, 1, 1, 1, 1, 1, 1, 1,
   2, 2, 2, 2, 2, 2, 2, 2,
   100, 100, 100, 100,
 };
 
-const int pylith::topology::MeshDataCohesiveHex8Level2Fault1::_numGroups = 4;
+const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_numGroups = 4;
 
-const int pylith::topology::MeshDataCohesiveHex8Level2Fault1::_groupSizes[] = {
+const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_groupSizes[] = {
   2, 9, 12, 27,
 };
 
-const int pylith::topology::MeshDataCohesiveHex8Level2Fault1::_groups[] = {
+const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_groups[] = {
   16, 24,
   16, 17, 18, 19, 35, 39, 40, 43, 47,
   20, 22, 24, 26, 28, 30, 41, 54, 58, 59, 62, 66,
@@ -150,21 +150,21 @@ const int pylith::topology::MeshDataCohesiveHex8Level2Fault1::_groups[] = {
   70, 71, 72, 73, 74, 75, 76, 77, 78,
 };
 
-const char* pylith::topology::MeshDataCohesiveHex8Level2Fault1::_groupNames[] = {
+const char* pylith::topology::MeshDataCohesiveHex8Level1Fault1::_groupNames[] = {
   "end points",
   "face 1",
   "face 2",
   "fault",
 };
 
-const char* pylith::topology::MeshDataCohesiveHex8Level2Fault1::_groupTypes[] = {
+const char* pylith::topology::MeshDataCohesiveHex8Level1Fault1::_groupTypes[] = {
   "vertex",
   "vertex",
   "vertex",
   "vertex",
 };
 
-pylith::topology::MeshDataCohesiveHex8Level2Fault1::MeshDataCohesiveHex8Level2Fault1(void)
+pylith::topology::MeshDataCohesiveHex8Level1Fault1::MeshDataCohesiveHex8Level1Fault1(void)
 { // constructor
   filename = const_cast<char*>(_filename);
   refineLevel = _refineLevel;
@@ -189,7 +189,7 @@ pylith::topology::MeshDataCohesiveHex8Level2Fault1::MeshDataCohesiveHex8Level2Fa
   numGroups = _numGroups;
 } // constructor
 
-pylith::topology::MeshDataCohesiveHex8Level2Fault1::~MeshDataCohesiveHex8Level2Fault1(void)
+pylith::topology::MeshDataCohesiveHex8Level1Fault1::~MeshDataCohesiveHex8Level1Fault1(void)
 {}
 
 

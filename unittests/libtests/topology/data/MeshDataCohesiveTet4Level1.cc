@@ -16,30 +16,30 @@
 // ======================================================================
 //
 
-#include "MeshDataCohesiveTet4Level2.hh"
+#include "MeshDataCohesiveTet4Level1.hh"
 
-const char* pylith::topology::MeshDataCohesiveTet4Level2::_filename = 
+const char* pylith::topology::MeshDataCohesiveTet4Level1::_filename = 
   "data/twotet4.mesh";
 
-const int pylith::topology::MeshDataCohesiveTet4Level2::_refineLevel = 2;
-const char* pylith::topology::MeshDataCohesiveTet4Level2::_faultA = 0;
-const char* pylith::topology::MeshDataCohesiveTet4Level2::_faultB = 0;
+const int pylith::topology::MeshDataCohesiveTet4Level1::_refineLevel = 2;
+const char* pylith::topology::MeshDataCohesiveTet4Level1::_faultA = 0;
+const char* pylith::topology::MeshDataCohesiveTet4Level1::_faultB = 0;
 
-const int pylith::topology::MeshDataCohesiveTet4Level2::_numVertices = 14;
+const int pylith::topology::MeshDataCohesiveTet4Level1::_numVertices = 14;
 
-const int pylith::topology::MeshDataCohesiveTet4Level2::_spaceDim = 3;
+const int pylith::topology::MeshDataCohesiveTet4Level1::_spaceDim = 3;
 
-const int pylith::topology::MeshDataCohesiveTet4Level2::_numCells = 16;
+const int pylith::topology::MeshDataCohesiveTet4Level1::_numCells = 16;
 
-const int pylith::topology::MeshDataCohesiveTet4Level2::_numCellsCohesive = 0;
+const int pylith::topology::MeshDataCohesiveTet4Level1::_numCellsCohesive = 0;
 
-const int pylith::topology::MeshDataCohesiveTet4Level2::_cellDim = 3;
+const int pylith::topology::MeshDataCohesiveTet4Level1::_cellDim = 3;
 
-const int pylith::topology::MeshDataCohesiveTet4Level2::_numCorners = 4;
+const int pylith::topology::MeshDataCohesiveTet4Level1::_numCorners = 4;
 
-const int pylith::topology::MeshDataCohesiveTet4Level2::_numCornersCohesive = 9;
+const int pylith::topology::MeshDataCohesiveTet4Level1::_numCornersCohesive = 9;
 
-const PylithScalar pylith::topology::MeshDataCohesiveTet4Level2::_vertices[] = {
+const PylithScalar pylith::topology::MeshDataCohesiveTet4Level1::_vertices[] = {
   -1.000000e+00,      0.000000e+00,      0.000000e+00,
    0.000000e+00,     -1.000000e+00,      0.000000e+00,
    0.000000e+00,      0.000000e+00,      1.000000e+00,
@@ -56,7 +56,7 @@ const PylithScalar pylith::topology::MeshDataCohesiveTet4Level2::_vertices[] = {
    5.000000e-01,      0.000000e+00,      5.000000e-01,
 };
 
-const int pylith::topology::MeshDataCohesiveTet4Level2::_cells[] = {
+const int pylith::topology::MeshDataCohesiveTet4Level1::_cells[] = {
   17,  24,  21,  23,
   21,  22,  23,  24,
   21,  24,  25,  22,
@@ -74,41 +74,41 @@ const int pylith::topology::MeshDataCohesiveTet4Level2::_cells[] = {
   22,  28,  29,  27,
   20,  27,  29,  28,
 };
-const int pylith::topology::MeshDataCohesiveTet4Level2::_cellsCohesive[] = {
+const int pylith::topology::MeshDataCohesiveTet4Level1::_cellsCohesive[] = {
 };
-const int pylith::topology::MeshDataCohesiveTet4Level2::_materialIds[] = {
+const int pylith::topology::MeshDataCohesiveTet4Level1::_materialIds[] = {
   1, 1, 1, 1, 1, 1, 1, 1,
   2, 2, 2, 2, 2, 2, 2, 2,
 };
 
-const int pylith::topology::MeshDataCohesiveTet4Level2::_numGroups = 4;
+const int pylith::topology::MeshDataCohesiveTet4Level1::_numGroups = 4;
 
-const int pylith::topology::MeshDataCohesiveTet4Level2::_groupSizes[] = {
+const int pylith::topology::MeshDataCohesiveTet4Level1::_groupSizes[] = {
   3, 3, 2, 6,
 };
 
-const int pylith::topology::MeshDataCohesiveTet4Level2::_groups[] = {
+const int pylith::topology::MeshDataCohesiveTet4Level1::_groups[] = {
   16, 17, 24,
   18, 20, 29,
   16, 20,
   17, 18, 19, 21, 22, 23,
 };
 
-const char* pylith::topology::MeshDataCohesiveTet4Level2::_groupNames[] = {
+const char* pylith::topology::MeshDataCohesiveTet4Level1::_groupNames[] = {
   "edge 1",
   "edge 2",
   "end points",
   "fault",
 };
 
-const char* pylith::topology::MeshDataCohesiveTet4Level2::_groupTypes[] = {
+const char* pylith::topology::MeshDataCohesiveTet4Level1::_groupTypes[] = {
   "vertex", 
   "vertex",
   "vertex",
   "vertex",
 };
 
-pylith::topology::MeshDataCohesiveTet4Level2::MeshDataCohesiveTet4Level2(void)
+pylith::topology::MeshDataCohesiveTet4Level1::MeshDataCohesiveTet4Level1(void)
 { // constructor
   filename = const_cast<char*>(_filename);
   refineLevel = _refineLevel;
@@ -133,7 +133,7 @@ pylith::topology::MeshDataCohesiveTet4Level2::MeshDataCohesiveTet4Level2(void)
   numGroups = _numGroups;
 } // constructor
 
-pylith::topology::MeshDataCohesiveTet4Level2::~MeshDataCohesiveTet4Level2(void)
+pylith::topology::MeshDataCohesiveTet4Level1::~MeshDataCohesiveTet4Level1(void)
 {}
 
 
