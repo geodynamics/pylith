@@ -21,7 +21,7 @@
 const char* pylith::topology::MeshDataCohesiveTet4Level1::_filename = 
   "data/twotet4.mesh";
 
-const int pylith::topology::MeshDataCohesiveTet4Level1::_refineLevel = 2;
+const int pylith::topology::MeshDataCohesiveTet4Level1::_refineLevel = 1;
 const char* pylith::topology::MeshDataCohesiveTet4Level1::_faultA = 0;
 const char* pylith::topology::MeshDataCohesiveTet4Level1::_faultB = 0;
 

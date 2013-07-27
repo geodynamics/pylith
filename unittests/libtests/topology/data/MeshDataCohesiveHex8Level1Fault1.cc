@@ -21,7 +21,7 @@
 const char* pylith::topology::MeshDataCohesiveHex8Level1Fault1::_filename = 
   "data/twohex8.mesh";
 
-const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_refineLevel = 2;
+const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_refineLevel = 1;
 const char* pylith::topology::MeshDataCohesiveHex8Level1Fault1::_faultA = 
   "fault";
 const char* pylith::topology::MeshDataCohesiveHex8Level1Fault1::_faultB = 0;

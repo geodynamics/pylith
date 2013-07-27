@@ -21,7 +21,7 @@
 const char* pylith::topology::MeshDataCohesiveTri3Level1::_filename = 
   "data/fourtri3.mesh";
 
-const int pylith::topology::MeshDataCohesiveTri3Level1::_refineLevel = 2;
+const int pylith::topology::MeshDataCohesiveTri3Level1::_refineLevel = 1;
 const char* pylith::topology::MeshDataCohesiveTri3Level1::_faultA = 0;
 const char* pylith::topology::MeshDataCohesiveTri3Level1::_faultB = 0;
 
@@ -57,21 +57,21 @@ const PylithScalar pylith::topology::MeshDataCohesiveTri3Level1::_vertices[] = {
 
 const int pylith::topology::MeshDataCohesiveTri3Level1::_cells[] = {
   16,  21,  23,
+  21,  17,  22,
+  23,  22,  18,
   21,  22,  23,
-  17,  22,  21,
-  18,  23,  22,
   18,  24,  23,
+  24,  19,  25,
+  23,  25, 16,
   24,  25,  23,
-  19,  25,  24,
-  16,  23,  25,
   18,  22,  27,
+  22,  17,  26,
+  27,  26,  20,
   22,  26,  27,
-  17,  26,  22,
-  20,  27,  26,
   18,  27,  24,
+  27,  20,  28,
+  24,  28,  19,
   27,  28,  24,
-  20,  28,  27,
-  19,  24,  28,
 };
 const int pylith::topology::MeshDataCohesiveTri3Level1::_cellsCohesive[] = {
 };

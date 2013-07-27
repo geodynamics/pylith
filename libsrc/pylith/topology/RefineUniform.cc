@@ -53,6 +53,8 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
 					const Mesh& mesh,
 					const int levels)
 { // refine
+  PYLITH_METHOD_BEGIN;
+  
   assert(newMesh);
 
   PetscErrorCode err;
@@ -77,7 +79,11 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
     err = DMRefine(dmOrig, mesh.comm(), &dmNew);PYLITH_CHECK_ERROR(err);
   } // for
 
-  // newMesh->view("REFINED MESH");
+  newMesh->dmMesh(dmNew);
+
+  newMesh->view("REFINED MESH");
+
+  PYLITH_METHOD_END;
 } // refine
     
 
