@@ -50,7 +50,11 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestRefineUniform );
 void
 pylith::topology::TestRefineUniform::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   RefineUniform refiner;
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -58,8 +62,12 @@ pylith::topology::TestRefineUniform::testConstructor(void)
 void
 pylith::topology::TestRefineUniform::testRefineTri3Level1(void)
 { // testRefineTri3Level1
+  PYLITH_METHOD_BEGIN;
+
   MeshDataCohesiveTri3Level1 data;
   _testRefine(data);
+
+  PYLITH_METHOD_END;
 } // testRefineTri3Level1
 
 // ----------------------------------------------------------------------
@@ -67,8 +75,12 @@ pylith::topology::TestRefineUniform::testRefineTri3Level1(void)
 void
 pylith::topology::TestRefineUniform::testRefineTri3Level1Fault1(void)
 { // testRefineTri3Level1Fault1
+  PYLITH_METHOD_BEGIN;
+
   MeshDataCohesiveTri3Level1Fault1 data;
   _testRefine(data);
+
+  PYLITH_METHOD_END;
 } // testRefineTri3Level1Fault1
 
 // ----------------------------------------------------------------------
@@ -76,8 +88,12 @@ pylith::topology::TestRefineUniform::testRefineTri3Level1Fault1(void)
 void
 pylith::topology::TestRefineUniform::testRefineQuad4Level1(void)
 { // testRefineQuad4Level1
+  PYLITH_METHOD_BEGIN;
+
   MeshDataCohesiveQuad4Level1 data;
   _testRefine(data);
+
+  PYLITH_METHOD_END;
 } // testRefineQuad4Level1
 
 // ----------------------------------------------------------------------
@@ -85,8 +101,12 @@ pylith::topology::TestRefineUniform::testRefineQuad4Level1(void)
 void
 pylith::topology::TestRefineUniform::testRefineQuad4Level1Fault1(void)
 { // testRefineQuad4Level1Fault1
+  PYLITH_METHOD_BEGIN;
+
   MeshDataCohesiveQuad4Level1Fault1 data;
   _testRefine(data);
+
+  PYLITH_METHOD_END;
 } // testRefineQuad4Level1Fault1
 
 // ----------------------------------------------------------------------
@@ -94,8 +114,12 @@ pylith::topology::TestRefineUniform::testRefineQuad4Level1Fault1(void)
 void
 pylith::topology::TestRefineUniform::testRefineTet4Level1(void)
 { // testRefineTet4Level1
+  PYLITH_METHOD_BEGIN;
+
   MeshDataCohesiveTet4Level1 data;
   _testRefine(data);
+
+  PYLITH_METHOD_END;
 } // testRefineTet4Level1
 
 // ----------------------------------------------------------------------
@@ -103,8 +127,12 @@ pylith::topology::TestRefineUniform::testRefineTet4Level1(void)
 void
 pylith::topology::TestRefineUniform::testRefineTet4Level1Fault1(void)
 { // testRefineTet4Level1Fault1
+  PYLITH_METHOD_BEGIN;
+
   MeshDataCohesiveTet4Level1Fault1 data;
   _testRefine(data);
+
+  PYLITH_METHOD_END;
 } // testRefineTet4Level1Fault1
 
 // ----------------------------------------------------------------------
@@ -112,8 +140,12 @@ pylith::topology::TestRefineUniform::testRefineTet4Level1Fault1(void)
 void
 pylith::topology::TestRefineUniform::testRefineHex8Level1(void)
 { // testRefineHex8Level1
+  PYLITH_METHOD_BEGIN;
+
   MeshDataCohesiveHex8Level1 data;
   _testRefine(data);
+
+  PYLITH_METHOD_END;
 } // testRefineHex8Level1
 
 // ----------------------------------------------------------------------
@@ -121,8 +153,12 @@ pylith::topology::TestRefineUniform::testRefineHex8Level1(void)
 void
 pylith::topology::TestRefineUniform::testRefineHex8Level1Fault1(void)
 { // testRefineHex8Level1Fault1
+  PYLITH_METHOD_BEGIN;
+
   MeshDataCohesiveHex8Level1Fault1 data;
   _testRefine(data);
+
+  PYLITH_METHOD_END;
 } // testRefineHex8Level1Fault1
 
 // ----------------------------------------------------------------------
@@ -130,10 +166,13 @@ void
 pylith::topology::TestRefineUniform::_setupMesh(Mesh* const mesh,
 						const MeshDataCohesive& data)
 { // _setupMesh
-  assert(0 != mesh);
+  PYLITH_METHOD_BEGIN;
+
+  assert(mesh);
 
   meshio::MeshIOAscii iohandler;
   iohandler.filename(data.filename);
+  iohandler.interpolate(true);
 
   iohandler.read(mesh);
 
@@ -168,6 +207,8 @@ pylith::topology::TestRefineUniform::_setupMesh(Mesh* const mesh,
       faultB.adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
     } // if
   } // if
+
+  PYLITH_METHOD_END;
 } // _setupMesh
 
 // ----------------------------------------------------------------------
@@ -175,6 +216,7 @@ pylith::topology::TestRefineUniform::_setupMesh(Mesh* const mesh,
 void
 pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data)
 { // _testRefine
+  PYLITH_METHOD_BEGIN;
 
   Mesh mesh(data.cellDim);
   _setupMesh(&mesh, data);
@@ -204,7 +246,7 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data)
     CPPUNIT_ASSERT_EQUAL(spaceDim, coordsVisitor.sectionDof(v));
 
     for (int iDim=0; iDim < spaceDim; ++iDim, ++index) {
-      if (data.vertices[index] < 1.0) {
+      if (fabs(data.vertices[index]) < 1.0) {
         CPPUNIT_ASSERT_DOUBLES_EQUAL(data.vertices[index], coordsArray[off+iDim], tolerance);
       } else {
         CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, coordsArray[off+iDim]/data.vertices[index], tolerance);
@@ -238,8 +280,9 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data)
     } // for
     err = DMPlexInvertCell(data.cellDim, numCorners, closure);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(data.numCorners, numCorners);
+
     for(PetscInt p = 0; p < numCorners; ++p, ++index) {
-      CPPUNIT_ASSERT_EQUAL(data.cells[index], closure[p]-offset);
+      CPPUNIT_ASSERT_EQUAL(data.cells[index], closure[p]);
     } // for
     err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
   } // for
@@ -310,6 +353,7 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data)
     err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
   } // for
 
+  PYLITH_METHOD_END;
 } // _testRefine
 
 

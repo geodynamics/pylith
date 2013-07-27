@@ -83,7 +83,7 @@ class TestRefineUniform(unittest.TestCase):
     io.inventory.coordsys = cs
     io._configure()
     
-    mesh = io.read(debug=False, interpolate=False)
+    mesh = io.read(debug=False, interpolate=True)
 
     if not faultGroup is None:
       from pylith.faults.FaultCohesiveKin import FaultCohesiveKin

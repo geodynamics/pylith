@@ -21,7 +21,7 @@
 const char* pylith::topology::MeshDataCohesiveQuad4Level1Fault1::_filename = 
   "data/fourquad4.mesh";
 
-const int pylith::topology::MeshDataCohesiveQuad4Level1Fault1::_refineLevel = 2;
+const int pylith::topology::MeshDataCohesiveQuad4Level1Fault1::_refineLevel = 1;
 const char* pylith::topology::MeshDataCohesiveQuad4Level1Fault1::_faultA = "fault";
 const char* pylith::topology::MeshDataCohesiveQuad4Level1Fault1::_faultB = 0;
 
