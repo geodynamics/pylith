@@ -37,7 +37,7 @@ pylith::faults::TestFaultMesh::createFaultMesh(topology::Mesh* faultMesh,
 
   PetscErrorCode err = 0;
   { // Create mesh
-    PetscInt firstFaultVertex = 0;
+    PetscInt depth = -1, firstFaultVertex = 0;
     PetscInt firstLagrangeVertex = 0, firstFaultCell = 0;
     PetscDMLabel groupField = NULL;
     const bool useLagrangeConstraints = true;
@@ -49,10 +49,15 @@ pylith::faults::TestFaultMesh::createFaultMesh(topology::Mesh* faultMesh,
     if (useLagrangeConstraints) {
       firstFaultCell += firstLagrangeVertex;
     } // if
+    err = DMPlexGetDepth(dmMesh, &depth);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetLabel(dmMesh, faultLabel, &groupField);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT(groupField);
     CohesiveTopology::createFault(faultMesh, faultBoundary, *mesh, groupField);
-    CohesiveTopology::create(mesh, *faultMesh, faultBoundary, groupField, faultId, firstFaultVertex, firstLagrangeVertex, firstFaultCell, useLagrangeConstraints);
+    if (mesh->dimension() > 1 && mesh->dimension() == depth) {
+      CohesiveTopology::createInterpolated(mesh, *faultMesh, faultBoundary, groupField, faultId, firstFaultVertex, firstLagrangeVertex, firstFaultCell, useLagrangeConstraints);
+    } else {
+      CohesiveTopology::create(mesh, *faultMesh, faultBoundary, groupField, faultId, firstFaultVertex, firstLagrangeVertex, firstFaultCell, useLagrangeConstraints);
+    }
     err = DMDestroy(&faultBoundary);PYLITH_CHECK_ERROR(err);
   } // Create mesh
 

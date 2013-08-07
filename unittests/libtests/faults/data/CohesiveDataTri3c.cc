@@ -75,6 +75,12 @@ const int pylith::faults::CohesiveDataTri3c::_numCorners[] = {
   4
 };
 
+const int pylith::faults::CohesiveDataTri3c::_cellsInt[] = {
+  7,  3,  8,
+  6,  4,  5,
+  4,  5,  7,  8
+};
+
 const int pylith::faults::CohesiveDataTri3c::_cells[] = {
   4,  3,  5,
   6,  7,  8,
@@ -115,6 +121,7 @@ pylith::faults::CohesiveDataTri3c::CohesiveDataTri3c(void)
   vertices = const_cast<PylithScalar*>(_vertices);
   numCorners = const_cast<int*>(_numCorners);
   cells = const_cast<int*>(_cells);
+  cellsInt = const_cast<int*>(_cellsInt);
   materialIds = const_cast<int*>(_materialIds);
   groups = const_cast<int*>(_groups);
   groupSizes = const_cast<int*>(_groupSizes);

@@ -226,7 +226,8 @@ public :
    */
   void _testAdjustTopology(Fault* fault,
 			   const CohesiveData& data,
-			   const bool flipFault);
+               const bool flipFault,
+			   const bool flipFaultInt);
 
   /** Test adjustTopology().
    *

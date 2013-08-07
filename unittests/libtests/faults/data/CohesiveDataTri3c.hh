@@ -50,6 +50,7 @@ private:
   static const PylithScalar _vertices[]; ///< Pointer to coordinates of vertices
   static const int _numCorners[]; ///< Number of vertices in cell
   static const int _cells[]; ///< Pointer to indices of vertices in cells
+  static const int _cellsInt[]; ///< Pointer to indices of vertices in cells from an interpolated mesh
   static const int _materialIds[]; ///< Pointer to cell material identifiers
 
   static const int _groups[]; ///< Groups of points
