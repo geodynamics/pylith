@@ -25,6 +25,17 @@
 //    \ |   | /
 //      7---4
 //
+// Interpolated mesh with fault
+//      8-16--5
+//     /|     |\
+//   11 |     | 13
+//   /  |     |  \
+//  3 0 14 2 10 1 6
+//   \  |     |  /
+//    9 |     | 12
+//     \|     |/
+//      7-15--4
+//
 mesh = {
   dimension = 2
   use-index-zero = true
