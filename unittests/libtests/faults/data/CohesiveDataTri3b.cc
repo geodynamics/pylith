@@ -48,6 +48,17 @@
  *            \ |    | /
  *             \|    |/
  *              5 -- 8
+ *
+ * Interpolated mesh with fault
+ *      7-15--4
+ *     /|     |\
+ *   10 |     | 13
+ *   /  |     |  \
+ *  3 0 14 2  9 1 6
+ *   \  |     |  /
+ *   11 |     | 12
+ *     \|     |/
+ *      8-16--5
  */
 
 #include "CohesiveDataTri3b.hh"
@@ -75,10 +86,16 @@ const int pylith::faults::CohesiveDataTri3b::_numCorners[] = {
   4
 };
 
+const int pylith::faults::CohesiveDataTri3b::_cellsInt[] = {
+  8,  7,  3,
+  5,  6,  4,
+  4,  5,  7,  8
+};
+
 const int pylith::faults::CohesiveDataTri3b::_cells[] = {
   5,  4,  3,
   8,  6,  7,
-  5,  4,  8, 7
+  5,  4,  8,  7
 };
 
 const int pylith::faults::CohesiveDataTri3b::_materialIds[] = {
@@ -115,6 +132,7 @@ pylith::faults::CohesiveDataTri3b::CohesiveDataTri3b(void)
   vertices = const_cast<PylithScalar*>(_vertices);
   numCorners = const_cast<int*>(_numCorners);
   cells = const_cast<int*>(_cells);
+  cellsInt = const_cast<int*>(_cellsInt);
   materialIds = const_cast<int*>(_materialIds);
   groups = const_cast<int*>(_groups);
   groupSizes = const_cast<int*>(_groupSizes);

@@ -28,6 +28,7 @@ pylith::faults::CohesiveData::CohesiveData(void) :
   vertices(0),
   numCorners(0),
   cells(0),
+  cellsInt(0),
   materialIds(0),
   groups(0),
   groupSizes(0),

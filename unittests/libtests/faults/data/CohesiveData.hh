@@ -50,6 +50,7 @@ public:
   PylithScalar* vertices; ///< Pointer to coordinates of vertices
   int* numCorners; ///< Number of vertices in cell
   int* cells; ///< Pointer to indices of vertices in cells
+  int* cellsInt; ///< Pointer to indices of vertices in cells for interpolated meshes
   int* materialIds; ///< Pointer to cell material identifiers
 
   int* groups; ///< Array of pointers to indices of points in groups
