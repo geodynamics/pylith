@@ -1,0 +1,99 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{external}
+\tikzexternalize % activate
+
+\begin{document}
+\usetikzlibrary{arrows,shapes}
+\input{../../palettes/figcolors}
+\tikzstyle{level0} = [rectangle, 
+                      minimum width=5em, 
+                      text centered,
+                      rounded corners=0.75em,
+                      minimum height=1.5em,
+                      very thick,
+                      draw=blue!80!black,
+                      top color=ltblue!50!white,
+                      bottom color=blue]
+\tikzstyle{level1} = [rectangle, 
+                      minimum width=5em, 
+                      text centered,
+                      rounded corners=0.75em,
+                      minimum height=1.5em,
+                      very thick,
+                      draw=green!80!black,
+                      top color=ltgreen!50!white,
+                      bottom color=green]
+\tikzstyle{level2} = [rectangle, 
+                      minimum width=5em, 
+                      text centered,
+                      rounded corners=0.75em,
+                      minimum height=1.5em,
+                      very thick,
+                      draw=orange!80!black,
+                      top color=ltorange!50!white,
+                      bottom color=orange]
+\tikzstyle{level3} = [rectangle, 
+                      minimum width=5em, 
+                      text centered,
+                      rounded corners=0.75em,
+                      minimum height=1.5em,
+                      very thick,
+                      draw=red!80!black,
+                      top color=ltred!50!white,
+                      bottom color=red]
+
+\tikzstyle{arrowto} = [->, thick]
+\tikzstyle{arrow01} = [arrowto, color=green]
+
+\tikzstyle{arrow02} = [arrowto, color=orange]
+\tikzstyle{arrow12} = [arrowto, color=orange]
+
+\tikzstyle{arrow13} = [arrowto, color=red]
+\tikzstyle{arrow23} = [arrowto, color=red]
+
+\begin{tikzpicture}[node distance=7.0em]
+  % Level 0
+  \node (pylith) [level0] {PyLith};
+
+  % Level 1
+  \node (spatialdata) [level1, below of=pylith, yshift=+3em] {spatialdata};
+  \node (petsc) [level1, left of=spatialdata, xshift=0em] {PETSc};
+  \node (fiat) [level1, right of=spatialdata] {FIAT};
+
+  \path (pylith) edge[arrow01] (petsc);
+  \path (pylith) edge[arrow01] (spatialdata);
+  \path (pylith) edge[arrow01] (fiat);
+
+  % Level 2
+  \node (proj4) [level2, below of=spatialdata, xshift=0em, yshift=+3em] {Proj.4};
+  \node (hdf5) [level2, left of=proj4, xshift=0em] {HDF5};
+  \node (netcdf) [level2, left of=hdf5, xshift=0em] {NetCDF};
+  \node (pyre) [level2, right of=proj4, xshift=0em] {Pyre};
+  \node (numpy) [level2, right of=pyre, xshift=0em] {numpy};
+
+  \path (petsc) edge[arrow12] (hdf5);
+  \path (spatialdata) edge[arrow12] (pyre);
+  \path (spatialdata) edge[arrow12] (proj4);
+  \path (spatialdata) edge[arrow12] (numpy);
+  \path (fiat) edge[arrow12] (numpy);
+  \path (netcdf) edge[arrow12] (hdf5);
+
+  \path (pylith) edge[arrow02] (hdf5);
+  \path (pylith) edge[arrow02, bend right=30] (netcdf);
+  \path (pylith) edge[arrow02] (pyre);
+
+  % Level 3
+  \node (mpi) [level3, below of=proj4, yshift=+3em] {MPI};
+  \node (blas) [level3, left of=mpi, xshift=-4em] {BLAS/LAPACK};
+
+  \path (pyre) edge[arrow23] (mpi);
+  \path (hdf5) edge[arrow23] (mpi);
+
+  \path (petsc) edge[arrow13] (mpi);
+  \path (petsc) edge[arrow13, bend right=25] (blas);
+
+
+\end{tikzpicture}
+
+\end{document}

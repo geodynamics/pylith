@@ -178,7 +178,7 @@ reference "fig:Workflow-summary"
  The modeling of the physical processes of interest is performed by a code
  such as PyLith.
  Present output consists of VTK or HDF5/Xdmf files which can be used by
- a number of visualization codes (e.g., ParaView, Visit, MayaVi, and Matlab).
+ a number of visualization codes (e.g., ParaView, Visit, and Matlab).
  
 \end_layout
 
@@ -193,7 +193,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figs/workflow.pdf
-	scale 67
+	width 4in
 
 \end_inset
 
@@ -256,7 +256,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figs/packages.pdf
-	scale 40
+	width 4in
 
 \end_inset
 
