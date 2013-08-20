@@ -1,0 +1,118 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{external}
+\tikzexternalize % activate
+
+\begin{document}
+\usetikzlibrary{arrows,shapes}
+\input{../../palettes/figcolors}
+\tikzstyle{mesh} = [rectangle, 
+                      minimum width=5em, 
+                      text centered,
+                      minimum height=1.5em,
+                      very thick,
+                      draw=green!0!white,
+                      fill=ltgreen!50!white]
+\tikzstyle{params} = [rectangle, 
+                      minimum width=5em, 
+                      text centered,
+                      minimum height=1.5em,
+                      very thick,
+                      draw=dkyellow!0!white,
+                      fill=yellow!50!white]
+\tikzstyle{visualize} = [rectangle, 
+                      minimum width=5em, 
+                      text centered,
+                      minimum height=1.5em,
+                      very thick,
+                      draw=blue!0!white,
+                      fill=ltblue!50!white]
+\tikzstyle{postprocess} = [rectangle, 
+                      minimum width=5em, 
+                      text centered,
+                      minimum height=1.5em,
+                      very thick,
+                      draw=purple!0!white,
+                      fill=ltpurple!50!white]
+
+\tikzstyle{pylith} = [rectangle, 
+                      minimum width=5em, 
+                      text centered,
+                      rounded corners=0.75em,
+                      minimum height=1.5em,
+                      very thick,
+                      draw=red!80!black,
+                      top color=ltred!50!white,
+                      bottom color=red]
+
+\tikzstyle{app} = [rectangle, 
+                      minimum width=5em, 
+                      text centered,
+                      rounded corners=0.75em,
+                      minimum height=1.5em,
+                      very thick,
+                      draw=orange!80!black,
+                      top color=ltorange!50!white,
+                      bottom color=orange]
+\tikzstyle{input} = [rectangle, 
+                      minimum width=5em, 
+                      text centered,
+                      minimum height=1.5em,
+                      very thick,
+                      draw=green!80!black,
+                      top color=ltgreen!50!white,
+                      bottom color=green]
+\tikzstyle{output} = [rectangle, 
+                      minimum width=5em, 
+                      text centered,
+                      minimum height=1.5em,
+                      very thick,
+                      draw=blue!80!black,
+                      top color=ltblue!50!white,
+                      bottom color=blue]
+
+\tikzstyle{arrowto} = [>=stealth', ->, thick]
+\tikzstyle{arrow_opt} = [arrowto, dashed]
+
+\begin{tikzpicture}[node distance=7.0em]
+  % PyLith
+  \node (pylith) [pylith] {PyLith};
+
+  % Mesh
+  \node (mesh) [mesh, above of=pylith, xshift=-2em] {Mesh Generator};
+
+  \node (cubit) [app, below of=mesh] {Cubit / Trelis};
+  \node (exodus) [input, below of=cubit] {Exodus file [.exo]};
+
+  \node (lagrit) [app, right of=cubit] {LaGriT};
+  \node (gmvpset) [input, below of=lagrit] {GMV File [.gmv] Pset File [.pset]};
+
+  \node (textedit) [app, right of=lagrit] {Text Editor};
+  \node (asciimesh) [input, below of=textedit] {ASCII File [.mesh]};
+
+  % Simulation parameters
+  \node (params) [params, right of=mesh, xshift=2em] {Simulation Parameters};
+
+  \node (cfg) [input, below of=params] {Parameter File(s) [.cfg]};
+  \node (spatialdb) [input, right of=cfg] {Spatial Database(s) [.spatialdb]};
+
+  % Visualization
+  \node (viz) [visualize, below of=pylith] {Visualization};
+
+  \node (vtk) [output, below of=viz] {VTK File(s) [.vtk]};
+  \node (hdf5) [output, right of=vtk] {HDF5 File(s) [.h5] Xdmf File(s) [.xmf]};
+
+  % Post-processing
+  \node (postprocess) [postprocess, right of=viz] {Post-processing};
+
+  % Arrows
+  \path (mesh) edge[arrowto] (pylith);
+  \path (params) edge[arrowto] (pylith);
+
+  \path (pylith) edge[arrowto] (viz);
+  \path (viz) edge[arrowto,<->] (postprocess);
+
+
+\end{tikzpicture}
+
+\end{document}
