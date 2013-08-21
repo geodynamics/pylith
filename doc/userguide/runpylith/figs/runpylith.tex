@@ -46,7 +46,6 @@
 
 \tikzstyle{arrowto} = [>=latex, ->, very thick]
 \tikzstyle{arrowto_minor} = [arrowto, thin]
-\tikzstyle{arrow_opt} = [arrowto, dashed]
 \tikzstyle{connect} = [very thick]
 \tikzstyle{connect_opt} = [connect, dashed]
 
@@ -56,15 +55,15 @@
     
     \node (pylith) [pylith] {PyLith};
 
-    \node (mesh) [mesh, above left of=pylith, text depth=12em, minimum width=26em, xshift=-5em] {Mesh Generator};
-    \node (params) [params, above right of=pylith, text depth=12em, minimum width=18em, xshift=+5em] {Simulation Parameters};
+    \node (mesh) [mesh, above left of=pylith, text depth=11em, minimum width=26em, xshift=-5em] {Mesh Generator};
+    \node (params) [params, above right of=pylith, text depth=11em, minimum width=18em, xshift=+5em] {Simulation Parameters};
     \node (viz) [visualize, below left of=pylith, text height=12em, minimum width=18em] {Visualization};
     \node (postprocess) [postprocess, right of=viz, text height=8em, xshift=5em] {Post-processing};
     
   \end{pgfonlayer}
   
   % Mesh
-  \node (cubit) [app, xshift=-9em, yshift=+2em] at (mesh) {CUBIT / Trelis};
+  \node (cubit) [app, xshift=-9em, yshift=+3em] at (mesh) {CUBIT / Trelis};
   \node (exodus) [input, below of=cubit, yshift=+4em] {Exodus file [.exo]};
 
   \node (lagrit) [app, right of=cubit] {LaGriT};
@@ -74,7 +73,7 @@
   \node (asciimesh) [input, below of=textedit, yshift=+4em] {ASCII File [.mesh]};
 
   % Simulation parameters
-  \node (textedit2) [app, yshift=+2em] at (params) {Text Editor};
+  \node (textedit2) [app, yshift=+3em] at (params) {Text Editor};
   \node (cfg) [input, below of=textedit2, xshift=-4.5em, yshift=+4em] {Parameter File(s) [.cfg]};
   \node (spatialdb) [input, right of=cfg] {Spatial Database(s) [.spatialdb]};
 
@@ -98,8 +97,9 @@
   \draw[arrowto] (cfg.south) |- (pylith.east);
   \draw[arrowto] (spatialdb.south) |- (pylith.east);
 
-  \draw[arrowto] (pylith.south) |-+(0,-2em)-| (vtk.north);
-  \draw[arrowto] (pylith.south) |-+(0,-2em)-| (hdf5.north);
+  \draw[arrowto] (pylith.south) |-+(0,-1em)-| (viz.north);
+  \draw[connect_opt] (viz.north) -| (vtk.north);
+  \draw[connect_opt] (viz.north) -| (hdf5.north);
   \path (hdf5.east) edge[arrowto,<->] (postprocess.west);
 
   % Annotation
