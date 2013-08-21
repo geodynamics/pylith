@@ -106,6 +106,14 @@ public :
 		  PetscInt* valuesSize,
 		  const PetscInt cell) const;
 
+  /** Get array of values associated with closure.
+   *
+   * @param values Array of values for cell.
+   * @param cell Finite-element cell.
+   */
+  void getClosure(scalar_array* values,
+		  const PetscInt cell) const;
+
   /** Restore array of values associated with closure.
    *
    * @param valuesCell Array of values for cell.
