@@ -4,113 +4,116 @@
 \tikzexternalize % activate
 
 \begin{document}
+
+\pgfdeclarelayer{background}
+\pgfsetlayers{background,main}
+
 \usetikzlibrary{arrows,shapes}
 \input{../../palettes/figcolors}
-\tikzstyle{mesh} = [rectangle, 
-                      minimum width=5em, 
-                      text centered,
-                      minimum height=1.5em,
-                      very thick,
-                      draw=green!0!white,
-                      fill=ltgreen!50!white]
-\tikzstyle{params} = [rectangle, 
-                      minimum width=5em, 
-                      text centered,
-                      minimum height=1.5em,
-                      very thick,
-                      draw=dkyellow!0!white,
-                      fill=yellow!50!white]
-\tikzstyle{visualize} = [rectangle, 
-                      minimum width=5em, 
-                      text centered,
-                      minimum height=1.5em,
-                      very thick,
-                      draw=blue!0!white,
-                      fill=ltblue!50!white]
-\tikzstyle{postprocess} = [rectangle, 
-                      minimum width=5em, 
-                      text centered,
-                      minimum height=1.5em,
-                      very thick,
-                      draw=purple!0!white,
-                      fill=ltpurple!50!white]
+\tikzstyle{maincomps} = [rectangle, text centered, very thick, font=\bf\large]
+\tikzstyle{mesh} = [maincomps, draw=green!0!white, fill=ltgreen!50!white]
+\tikzstyle{params} = [maincomps, draw=dkyellow!0!white, fill=yellow!50!white]
+\tikzstyle{visualize} = [maincomps, draw=blue!0!white, fill=ltblue!50!white]
+\tikzstyle{postprocess} = [maincomps, draw=purple!0!white, fill=ltpurple!50!white]
 
 \tikzstyle{pylith} = [rectangle, 
-                      minimum width=5em, 
+                      font=\bf\large,
+                      minimum width=6em, 
                       text centered,
                       rounded corners=0.75em,
-                      minimum height=1.5em,
+                      minimum height=3.0em,
                       very thick,
                       draw=red!80!black,
                       top color=ltred!50!white,
                       bottom color=red]
 
-\tikzstyle{app} = [rectangle, 
-                      minimum width=5em, 
-                      text centered,
+\tikzstyle{subcomps} = [rectangle, text width=6em, text centered, very thick, minimum height=1.5em, font=\small, node distance=9.0em]
+\tikzstyle{app} = [subcomps,
                       rounded corners=0.75em,
-                      minimum height=1.5em,
-                      very thick,
                       draw=orange!80!black,
                       top color=ltorange!50!white,
                       bottom color=orange]
-\tikzstyle{input} = [rectangle, 
-                      minimum width=5em, 
-                      text centered,
-                      minimum height=1.5em,
-                      very thick,
+\tikzstyle{input} = [subcomps,
+                      font=\tt,
                       draw=green!80!black,
                       top color=ltgreen!50!white,
                       bottom color=green]
-\tikzstyle{output} = [rectangle, 
-                      minimum width=5em, 
-                      text centered,
-                      minimum height=1.5em,
-                      very thick,
+\tikzstyle{output} = [subcomps, 
+                      font=\tt,
                       draw=blue!80!black,
                       top color=ltblue!50!white,
                       bottom color=blue]
 
-\tikzstyle{arrowto} = [>=stealth', ->, thick]
+\tikzstyle{arrowto} = [>=latex, ->, very thick]
+\tikzstyle{arrowto_minor} = [arrowto, thin]
 \tikzstyle{arrow_opt} = [arrowto, dashed]
+\tikzstyle{connect} = [very thick]
+\tikzstyle{connect_opt} = [connect, dashed]
 
-\begin{tikzpicture}[node distance=7.0em]
-  % PyLith
-  \node (pylith) [pylith] {PyLith};
+\begin{tikzpicture}[node distance=15.0em]
 
+  \begin{pgfonlayer}{background}
+    
+    \node (pylith) [pylith] {PyLith};
+
+    \node (mesh) [mesh, above left of=pylith, text depth=12em, minimum width=26em, xshift=-5em] {Mesh Generator};
+    \node (params) [params, above right of=pylith, text depth=12em, minimum width=18em, xshift=+5em] {Simulation Parameters};
+    \node (viz) [visualize, below left of=pylith, text height=12em, minimum width=18em] {Visualization};
+    \node (postprocess) [postprocess, right of=viz, text height=8em, xshift=5em] {Post-processing};
+    
+  \end{pgfonlayer}
+  
   % Mesh
-  \node (mesh) [mesh, above of=pylith, xshift=-2em] {Mesh Generator};
-
-  \node (cubit) [app, below of=mesh] {Cubit / Trelis};
-  \node (exodus) [input, below of=cubit] {Exodus file [.exo]};
+  \node (cubit) [app, xshift=-9em, yshift=+2em] at (mesh) {CUBIT / Trelis};
+  \node (exodus) [input, below of=cubit, yshift=+4em] {Exodus file [.exo]};
 
   \node (lagrit) [app, right of=cubit] {LaGriT};
-  \node (gmvpset) [input, below of=lagrit] {GMV File [.gmv] Pset File [.pset]};
+  \node (gmvpset) [input, below of=lagrit, yshift=+4em] {GMV File [.gmv] \par Pset File [.pset]};
 
   \node (textedit) [app, right of=lagrit] {Text Editor};
-  \node (asciimesh) [input, below of=textedit] {ASCII File [.mesh]};
+  \node (asciimesh) [input, below of=textedit, yshift=+4em] {ASCII File [.mesh]};
 
   % Simulation parameters
-  \node (params) [params, right of=mesh, xshift=2em] {Simulation Parameters};
-
-  \node (cfg) [input, below of=params] {Parameter File(s) [.cfg]};
+  \node (textedit2) [app, yshift=+2em] at (params) {Text Editor};
+  \node (cfg) [input, below of=textedit2, xshift=-4.5em, yshift=+4em] {Parameter File(s) [.cfg]};
   \node (spatialdb) [input, right of=cfg] {Spatial Database(s) [.spatialdb]};
 
   % Visualization
-  \node (viz) [visualize, below of=pylith] {Visualization};
+  \node (vtk) [output, xshift=-4.5em, yshift=+2em] at (viz) {VTK File(s) [.vtk]};
+  \node (hdf5) [output, right of=vtk] {HDF5 File(s) [.h5] \par Xdmf File(s) [.xmf]};
 
-  \node (vtk) [output, below of=viz] {VTK File(s) [.vtk]};
-  \node (hdf5) [output, right of=vtk] {HDF5 File(s) [.h5] Xdmf File(s) [.xmf]};
+  \node (paraview) [app, below of=vtk, yshift=+4em] {ParaView};
+  \node (visit) [app, right of=paraview] {Visit};
+
 
   % Post-processing
-  \node (postprocess) [postprocess, right of=viz] {Post-processing};
+  \node (h5py) [app, yshift=+2em] at (postprocess) {Python w/h5py};
+  \node (matlab) [app, below of=h5py, yshift=+6em] {Matlab};
 
-  % Arrows
-  \path (mesh) edge[arrowto] (pylith);
-  \path (params) edge[arrowto] (pylith);
+  % Main workflow
+  \draw[connect_opt] (exodus.south) |- (mesh.south);
+  \draw[connect_opt] (gmvpset.south) |- (mesh.south);
+  \draw[connect_opt] (asciimesh.south) |- (mesh.south);
+  \draw[arrowto] (mesh.south) |- (pylith.west);
+  \draw[arrowto] (cfg.south) |- (pylith.east);
+  \draw[arrowto] (spatialdb.south) |- (pylith.east);
 
-  \path (pylith) edge[arrowto] (viz);
-  \path (viz) edge[arrowto,<->] (postprocess);
+  \draw[arrowto] (pylith.south) |-+(0,-2em)-| (vtk.north);
+  \draw[arrowto] (pylith.south) |-+(0,-2em)-| (hdf5.north);
+  \path (hdf5.east) edge[arrowto,<->] (postprocess.west);
+
+  % Annotation
+  \path (cubit) edge[arrowto_minor] (exodus);
+  \path (lagrit) edge[arrowto_minor] (gmvpset);
+  \path (textedit) edge[arrowto_minor] (asciimesh);
+
+  \path (textedit2.south) edge[arrowto_minor] (cfg.north);
+  \path (textedit2.south) edge[arrowto_minor] (spatialdb.north);
+
+  \path (vtk.south) edge[arrowto_minor] (paraview.north);
+  \path (vtk.south) edge[arrowto_minor] (visit.north);
+  \path (hdf5.south) edge[arrowto_minor] (paraview.north);
+  \path (hdf5.south) edge[arrowto_minor] (visit.north);
 
 
 \end{tikzpicture}
