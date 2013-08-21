@@ -72,22 +72,15 @@ Running PyLith
 \end_layout
 
 \begin_layout Standard
-There are essentially three major inputs needed to run a problem with PyLith:
-\end_layout
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:pylith:workflow"
 
-\begin_layout Enumerate
-A set of parameters describing the problem.
- These parameters describe the type of problem to be run, solver information,
- time-stepping information, boundary conditions, materials, etc.
- This information can be provided from the command-line or by using a 
-\family typewriter
-.cfg
-\family default
- or 
-\family typewriter
-.pml
-\family default
- file.
+\end_inset
+
+ shows the workflow for running PyLith.
+ There are essentially three main inputs needed to run a problem with PyLith:
 \end_layout
 
 \begin_layout Enumerate
@@ -123,6 +116,15 @@ reference "cha:Tutorials"
 \end_layout
 
 \begin_layout Enumerate
+A set of parameters describing the problem.
+ These parameters describe the type of problem to be run, solver information,
+ time-stepping information, boundary conditions, materials, etc.
+ This information can be provided from the command-line or by using a 
+\family typewriter
+.cfg.
+\end_layout
+
+\begin_layout Enumerate
 Databases specifying the material property values and boundary condition
  values to be used.
  Arbitrarily complex spatial variations in boundary and fault conditions
@@ -142,6 +144,68 @@ reference "sec:Spatialdata:SimpleIOAscii"
 \end_inset
 
  for the format specification).
+\end_layout
+
+\begin_layout Standard
+PyLith writes solution information, such as solution fields and state variables,
+ to either VTK files or HDF5/Xdmf files.
+ ParaView and Visit can read both types of files.
+ Post-processing of output is generally performed using HDF5 files accessed
+ via a Python script and the h5py package or a Matlab script.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename figs/runpylith.pdf
+	width 5in
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+PyLith requires a finite-element mesh (three different mechanisms for generating
+ a mesh are currently supported), simulation parameters, and spatial databases
+ (defining the spatial variation of various parameters).
+ PyLith writes the solution output to either VTK or HDF5/Xdmf files, which
+ can be visualized with ParaView or Visit.
+ Post-processing is generally done using the HDF5 files with Python or Matlab
+ scripts.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:pylith:workflow"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
