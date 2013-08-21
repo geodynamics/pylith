@@ -2,21 +2,28 @@ See INSTALL for suggested methods for installing PyLith.
 
 REQUIRED DEPENDENCIES
 
-MPI
-PETSc (development version)
-pythia
-spatialdata
-  proj
-numpy
-FIAT
-nemesis
+Note that many of these packages must be configured using non-default
+arguments for use with PyLith. While in most cases PyLith is
+compatible with the latest versions of the packages on which it
+depends, there may be dependencies that may have been updated since
+PyLith's latest release. For these reasons, we strongly recommend
+using the PyLith installer utility for installing PyLith.
+
+MPI (mpich, openmpi, etc)
+PETSc (knepley/pylith branch)
+pythia (http://www.geodynamics.org/cig/software/pythia)
+spatialdata (http://www.geodynamics.org/cig/software/pylith)
+  proj (https://trac.osgeo.org/proj/)
+numpy (http://www.numpy.org/)
+FIAT (https://bitbucket.org/fenics-project/fiat)
+nemesis (http://www.geodynamics.org/cig/software/pythia)
 SWIG (if building from repository)
 
 OPTIONAL DEPENDENCIES
 
-cppunit
-HDF5
-CUBIT
-  netcdf
-PETSc (development version) w/ParMetis
+cppunit (http://sourceforge.net/projects/cppunit/)
+HDF5 (http://www.hdfgroup.org/HDF5/)
+CUBIT (http://cubit.sandia.gov)
+  netcdf (http://www.unidata.ucar.edu/software/netcdf/)
+PETSc (knepley/pylith) w/ParMetis
   git (if building from repository)
