@@ -268,22 +268,50 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
 
   assert(_mesh);
 
-  PetscDM dmMesh = _mesh->dmMesh();assert(dmMesh);
+  PetscDM        dmMesh    = _mesh->dmMesh();assert(dmMesh);
   const PetscInt numPoints = points.size();
+  DMLabel        label;
   PetscErrorCode err;
 
+  err = DMPlexCreateLabel(dmMesh, name.c_str());PYLITH_CHECK_ERROR(err);
+  err = DMPlexGetLabel(dmMesh, name.c_str(), &label);PYLITH_CHECK_ERROR(err);
   if (CELL == type) {
     for(PetscInt p = 0; p < numPoints; ++p) {
-      err = DMPlexSetLabelValue(dmMesh, name.c_str(), points[p], 1);PYLITH_CHECK_ERROR(err);
+      err = DMLabelSetValue(label, points[p], 1);PYLITH_CHECK_ERROR(err);
     } // for
   } else if (VERTEX == type) {
-    PetscInt cStart, cEnd, numCells;
+    PetscInt cStart, cEnd, vStart, vEnd, numCells;
 
     err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
     numCells = cEnd - cStart;
     for(PetscInt p = 0; p < numPoints; ++p) {
-      err = DMPlexSetLabelValue(dmMesh, name.c_str(), numCells+points[p], 1);PYLITH_CHECK_ERROR(err);
+      err = DMLabelSetValue(label, numCells+points[p], 1);PYLITH_CHECK_ERROR(err);
     } // for
+    // Also add any non-cells which have all vertices marked
+    for(PetscInt p = 0; p < numPoints; ++p) {
+      const PetscInt *support;
+      PetscInt        supportSize, s;
+      const PetscInt  vertex = numCells+points[p];
+
+      err = DMPlexGetSupportSize(dmMesh, vertex, &supportSize);PYLITH_CHECK_ERROR(err);
+      err = DMPlexGetSupport(dmMesh, vertex, &support);PYLITH_CHECK_ERROR(err);
+      for (s = 0; s < supportSize; ++s) {
+        PetscInt *closure = NULL, closureSize, c, value;
+        PetscBool marked  = PETSC_TRUE;
+
+        if ((support[s] >= cStart) && (support[s] < cEnd)) continue;
+        err = DMPlexGetTransitiveClosure(dmMesh, support[s], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+        for (c = 0; c < closureSize*2; c += 2) {
+          if ((closure[c] >= vStart) && (closure[c] < vEnd)) {
+            err = DMLabelGetValue(label, closure[c], &value);PYLITH_CHECK_ERROR(err);
+            if (value != 1) {marked = PETSC_FALSE; break;}
+          }
+        }
+        err = DMPlexRestoreTransitiveClosure(dmMesh, support[s], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+        if (marked) {err = DMLabelSetValue(label, support[s], 1);PYLITH_CHECK_ERROR(err);}
+      }
+    }
   } // if/else
 
   PYLITH_METHOD_END;
