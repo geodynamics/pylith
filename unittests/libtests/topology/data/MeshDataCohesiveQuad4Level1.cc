@@ -95,13 +95,13 @@ const int pylith::topology::MeshDataCohesiveQuad4Level1::_materialIds[16] = {
 const int pylith::topology::MeshDataCohesiveQuad4Level1::_numGroups = 3;
 
 const int pylith::topology::MeshDataCohesiveQuad4Level1::_groupSizes[3] = {
-  5, 5, 5,
+  9, 9, 9,
 };
 
-const int pylith::topology::MeshDataCohesiveQuad4Level1::_groups[5+5+5] = {
-  16, 19, 22, 25, 32,
-  16, 17, 18, 28, 34,
-  19, 20, 21, 26, 35,
+const int pylith::topology::MeshDataCohesiveQuad4Level1::_groups[9+9+9] = { // vertices, edges
+  16, 19, 22, 25, 31,    41, 42, 53, 54,
+  16, 17, 18, 28, 32,    47, 48, 55, 56,
+  19, 20, 21, 26, 33,    43, 44, 57, 58,
 };
 
 const char* pylith::topology::MeshDataCohesiveQuad4Level1::_groupNames[3] = {

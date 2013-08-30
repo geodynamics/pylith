@@ -318,18 +318,27 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data)
   PetscInt numGroups, pStart, pEnd;
   err = DMPlexGetChart(dmMesh, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
   err = DMPlexGetNumLabels(dmMesh, &numGroups);PYLITH_CHECK_ERROR(err);
-  numGroups -= 2; // Remove depth and material labels.
-  CPPUNIT_ASSERT_EQUAL(data.numGroups, numGroups);
+  CPPUNIT_ASSERT_EQUAL(data.numGroups, numGroups-2); // Omit depth and material labels
   PetscInt index  = 0;
-  for(PetscInt iGroup = 0, iLabel = numGroups-1; iGroup < numGroups; ++iGroup, --iLabel) {
+  for(PetscInt iGroup = 0; iGroup < data.numGroups; ++iGroup) {
+    // Don't know order of labels, so do brute force linear search
+    bool foundLabel = false;
+    int iLabel = 0;
     const char *name = NULL;
     PetscInt firstPoint = 0;
+    while (iLabel < numGroups) {
+      err = DMPlexGetLabelName(dmMesh, iLabel, &name);PYLITH_CHECK_ERROR(err);
+      if (0 == strcmp(data.groupNames[iGroup], name)) {
+	foundLabel = true;
+	break;
+      } else {
+	++iLabel;
+      } // if/else
+    } // while
+    CPPUNIT_ASSERT(foundLabel);
 
-    err = DMPlexGetLabelName(dmMesh, iLabel, &name);PYLITH_CHECK_ERROR(err);
-    CPPUNIT_ASSERT_EQUAL(std::string(data.groupNames[iGroup]), std::string(name));
     for(PetscInt p = pStart; p < pEnd; ++p) {
       PetscInt val;
-
       err = DMPlexGetLabelValue(dmMesh, name, p, &val);PYLITH_CHECK_ERROR(err);
       if (val >= 0) {
         firstPoint = p;
@@ -347,7 +356,7 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data)
     err = DMPlexGetStratumIS(dmMesh, name, 1, &pointIS);PYLITH_CHECK_ERROR(err);
     err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
     for(PetscInt p = 0; p < numPoints; ++p) {
-      CPPUNIT_ASSERT_EQUAL(data.groups[index++], points[p]-offset);
+      CPPUNIT_ASSERT_EQUAL(data.groups[index++], points[p]);
     } // for
     err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
