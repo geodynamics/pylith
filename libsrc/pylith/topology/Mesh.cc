@@ -214,14 +214,18 @@ pylith::topology::Mesh::view(const char* label,
 
   assert(_dmMesh);
 
-  std::ostringstream optionname, optionprefix;
-  optionname  << "-" << label << "_dm_view";
-  optionprefix << label << "_";
-
   PetscErrorCode err;
-  err = DMSetOptionsPrefix(_dmMesh, optionprefix.str().c_str());PYLITH_CHECK_ERROR(err);
-  err = PetscOptionsSetValue(optionname.str().c_str(), viewOption);PYLITH_CHECK_ERROR(err);
-  err = DMSetFromOptions(_dmMesh);PYLITH_CHECK_ERROR(err);
+  if (strlen(viewOption) > 0) {
+    std::ostringstream optionname, optionprefix;
+    optionname  << "-" << label << "_dm_view";
+    optionprefix << label << "_";
+
+    err = DMSetOptionsPrefix(_dmMesh, optionprefix.str().c_str());PYLITH_CHECK_ERROR(err);
+    err = PetscOptionsSetValue(optionname.str().c_str(), viewOption);PYLITH_CHECK_ERROR(err);
+    err = DMSetFromOptions(_dmMesh);PYLITH_CHECK_ERROR(err);
+  } else {
+    err = DMView(_dmMesh, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
+  } // if/else
 
   PYLITH_METHOD_END;
 } // view
