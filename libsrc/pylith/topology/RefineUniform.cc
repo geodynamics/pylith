@@ -81,7 +81,7 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
 
   newMesh->dmMesh(dmNew);
 
-  newMesh->view("REFINED_MESH");
+  newMesh->view("REFINED_MESH", "::ascii_info_detail");
 
   PYLITH_METHOD_END;
 } // refine
