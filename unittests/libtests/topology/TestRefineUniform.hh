@@ -52,16 +52,16 @@ class pylith::topology::TestRefineUniform : public CppUnit::TestFixture
   CPPUNIT_TEST( testConstructor );
 
   CPPUNIT_TEST( testRefineTri3Level1 );
-  //CPPUNIT_TEST( testRefineTri3Level1Fault1 );
+  CPPUNIT_TEST( testRefineTri3Level1Fault1 );
 
   CPPUNIT_TEST( testRefineQuad4Level1 );
-  //CPPUNIT_TEST( testRefineQuad4Level1Fault1 );
+  CPPUNIT_TEST( testRefineQuad4Level1Fault1 );
 
   CPPUNIT_TEST( testRefineTet4Level1 );
-  //CPPUNIT_TEST( testRefineTet4Level1Fault1 );
+  CPPUNIT_TEST( testRefineTet4Level1Fault1 );
 
   CPPUNIT_TEST( testRefineHex8Level1 );
-  //CPPUNIT_TEST( testRefineHex8Level1Fault1 );
+  CPPUNIT_TEST( testRefineHex8Level1Fault1 );
 
   CPPUNIT_TEST_SUITE_END();
 

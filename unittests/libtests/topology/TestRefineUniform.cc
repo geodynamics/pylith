@@ -42,6 +42,8 @@
 #include <strings.h> // USES strcasecmp()
 #include <stdexcept> // USES std::logic_error
 
+#define DISABLE_FAULT_TEST
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestRefineUniform );
 
@@ -77,8 +79,12 @@ pylith::topology::TestRefineUniform::testRefineTri3Level1Fault1(void)
 { // testRefineTri3Level1Fault1
   PYLITH_METHOD_BEGIN;
 
+#if !defined(DISABLE_FAULT_TEST)
   MeshDataCohesiveTri3Level1Fault1 data;
   _testRefine(data);
+#else
+  CPPUNIT_ASSERT(false);
+#endif
 
   PYLITH_METHOD_END;
 } // testRefineTri3Level1Fault1
@@ -103,8 +109,12 @@ pylith::topology::TestRefineUniform::testRefineQuad4Level1Fault1(void)
 { // testRefineQuad4Level1Fault1
   PYLITH_METHOD_BEGIN;
 
+#if !defined(DISABLE_FAULT_TEST)
   MeshDataCohesiveQuad4Level1Fault1 data;
   _testRefine(data);
+#else
+  CPPUNIT_ASSERT(false);
+#endif
 
   PYLITH_METHOD_END;
 } // testRefineQuad4Level1Fault1
@@ -129,8 +139,12 @@ pylith::topology::TestRefineUniform::testRefineTet4Level1Fault1(void)
 { // testRefineTet4Level1Fault1
   PYLITH_METHOD_BEGIN;
 
+#if !defined(DISABLE_FAULT_TEST)
   MeshDataCohesiveTet4Level1Fault1 data;
   _testRefine(data);
+#else
+  CPPUNIT_ASSERT(false);
+#endif
 
   PYLITH_METHOD_END;
 } // testRefineTet4Level1Fault1
@@ -155,8 +169,12 @@ pylith::topology::TestRefineUniform::testRefineHex8Level1Fault1(void)
 { // testRefineHex8Level1Fault1
   PYLITH_METHOD_BEGIN;
 
+#if !defined(DISABLE_FAULT_TEST)
   MeshDataCohesiveHex8Level1Fault1 data;
   _testRefine(data);
+#else
+  CPPUNIT_ASSERT(false);
+#endif
 
   PYLITH_METHOD_END;
 } // testRefineHex8Level1Fault1
