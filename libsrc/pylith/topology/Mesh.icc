@@ -177,19 +177,6 @@ pylith::topology::Mesh::numCells(void) const {
   PYLITH_METHOD_RETURN(ncells);
 }
 
-// ----------------------------------------------------------------------
-// Print mesh to stdout.
-inline
-void
-pylith::topology::Mesh::view(const char* label) const {
-  PYLITH_METHOD_BEGIN;
-
-  assert(_dmMesh);
-  PetscErrorCode err = DMView(_dmMesh, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
-
-  PYLITH_METHOD_END;
-}
-
 #endif
 
 

@@ -205,6 +205,28 @@ pylith::topology::Mesh::commRank(void) const
 } // commRank
 
 // ----------------------------------------------------------------------
+// Print mesh to stdout.
+void
+pylith::topology::Mesh::view(const char* label,
+			     const char* viewOption) const
+{ // view
+  PYLITH_METHOD_BEGIN;
+
+  assert(_dmMesh);
+
+  std::ostringstream optionname, optionprefix;
+  optionname  << "-" << label << "_dm_view";
+  optionprefix << label << "_";
+
+  PetscErrorCode err;
+  err = DMSetOptionsPrefix(_dmMesh, optionprefix.str().c_str());PYLITH_CHECK_ERROR(err);
+  err = PetscOptionsSetValue(optionname.str().c_str(), viewOption);PYLITH_CHECK_ERROR(err);
+  err = DMSetFromOptions(_dmMesh);PYLITH_CHECK_ERROR(err);
+
+  PYLITH_METHOD_END;
+} // view
+
+// ----------------------------------------------------------------------
 // Return the names of all vertex groups.
 void
 pylith::topology::Mesh::groups(int* numNames, 

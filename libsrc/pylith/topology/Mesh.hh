@@ -174,11 +174,20 @@ public :
    */
   int commRank(void) const;
 
-  /** Print mesh to stdout.
+  /** View mesh.
    *
    * @param label Label for mesh.
+   * @param viewOption View option
+   *
+   * PETSc mesh view options include:
+   *   short summary [empty]
+   *   detail summary ::ascii_info_detail
+   *   detail in a file :refined.mesh:ascii_info_detail
+   *   latex in a file  :refined.tex:ascii_latex
+   *   VTK vtk:refined.vtk:ascii_vtk
    */
-  void view(const char* label) const;
+  void view(const char* label,
+	    const char* viewOption ="") const;
 
   /** Return the names of all vertex groups.
    *
