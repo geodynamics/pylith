@@ -81,7 +81,7 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
 
   newMesh->dmMesh(dmNew);
 
-  newMesh->view("REFINED MESH");
+  newMesh->view("REFINED_MESH");
 
   PYLITH_METHOD_END;
 } // refine

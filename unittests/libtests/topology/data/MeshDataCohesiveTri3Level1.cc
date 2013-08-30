@@ -83,24 +83,24 @@ const int pylith::topology::MeshDataCohesiveTri3Level1::_materialIds[] = {
 const int pylith::topology::MeshDataCohesiveTri3Level1::_numGroups = 4;
 
 const int pylith::topology::MeshDataCohesiveTri3Level1::_groupSizes[] = {
-  5, 3, 2, 5,
+  9, 5, 2, 9,
 };
 
-const int pylith::topology::MeshDataCohesiveTri3Level1::_groups[] = {
-  16, 17, 19, 21, 25,
-  17, 20, 26,
+const int pylith::topology::MeshDataCohesiveTri3Level1::_groups[] = { // vertices, edges
+  16, 17, 19, 21, 25,    29, 30, 37, 38,
+  17, 20, 26,    39, 40,
   16, 20,
-  17, 18, 19, 22, 24,
+  17, 18, 19, 22, 24,    31, 32, 35, 36,
 };
 
-const char* pylith::topology::MeshDataCohesiveTri3Level1::_groupNames[] = {
+const char* pylith::topology::MeshDataCohesiveTri3Level1::_groupNames[4] = {
   "edge 1",
   "edge 2",
   "end points",
   "fault",
 };
 
-const char* pylith::topology::MeshDataCohesiveTri3Level1::_groupTypes[] = {
+const char* pylith::topology::MeshDataCohesiveTri3Level1::_groupTypes[4] = {
   "vertex", 
   "vertex",
   "vertex",
