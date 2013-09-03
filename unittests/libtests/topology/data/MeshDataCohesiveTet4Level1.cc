@@ -65,7 +65,7 @@ const int pylith::topology::MeshDataCohesiveTet4Level1::_cells[16*4] = {
   25, 21, 22, 26,
   22, 23, 26, 21,
   26, 24, 25, 21,
-  17,  27,  23,  21,
+  17,  27,  23,  21, // update cells starting here
   23,  22,  21,  27,
   23,  27,  28,  22,
   19,  28,  22,  23,
@@ -76,32 +76,32 @@ const int pylith::topology::MeshDataCohesiveTet4Level1::_cells[16*4] = {
 };
 const int pylith::topology::MeshDataCohesiveTet4Level1::_cellsCohesive[] = {
 };
-const int pylith::topology::MeshDataCohesiveTet4Level1::_materialIds[] = {
+const int pylith::topology::MeshDataCohesiveTet4Level1::_materialIds[16] = {
   1, 1, 1, 1, 1, 1, 1, 1,
   2, 2, 2, 2, 2, 2, 2, 2,
 };
 
 const int pylith::topology::MeshDataCohesiveTet4Level1::_numGroups = 4;
 
-const int pylith::topology::MeshDataCohesiveTet4Level1::_groupSizes[] = {
-  3, 3, 2, 6,
+const int pylith::topology::MeshDataCohesiveTet4Level1::_groupSizes[4] = {
+  5, 5, 2, 19,
 };
 
-const int pylith::topology::MeshDataCohesiveTet4Level1::_groups[] = {
-  16, 17, 24,
-  18, 20, 29,
+const int pylith::topology::MeshDataCohesiveTet4Level1::_groups[5+5+2+19] = { // vertices, edges, faces
+  16, 17, 25,    82, 83,
+  18, 20, 29,    90, 91,
   16, 20,
-  17, 18, 19, 21, 22, 23,
+  17, 18, 19, 21, 22, 23,    74, 75, 76, 77, 78, 79, 92, 93, 94,    30, 31, 32, 33,
 };
 
-const char* pylith::topology::MeshDataCohesiveTet4Level1::_groupNames[] = {
+const char* pylith::topology::MeshDataCohesiveTet4Level1::_groupNames[4] = {
   "edge 1",
   "edge 2",
   "end points",
   "fault",
 };
 
-const char* pylith::topology::MeshDataCohesiveTet4Level1::_groupTypes[] = {
+const char* pylith::topology::MeshDataCohesiveTet4Level1::_groupTypes[4] = {
   "vertex", 
   "vertex",
   "vertex",
