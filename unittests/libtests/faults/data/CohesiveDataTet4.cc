@@ -66,6 +66,12 @@ const int pylith::faults::CohesiveDataTet4::_cells[] = {
   5,  4,  6,  9,  8, 10
 };
 
+const int pylith::faults::CohesiveDataTet4::_cellsInt[] = {
+  4,  5,  6,  3,
+ 10,  9,  8,  7,
+  4,  8,  5,  9,  6, 10
+};
+
 const int pylith::faults::CohesiveDataTet4::_materialIds[] = {
   0,  0,
   1
@@ -100,6 +106,7 @@ pylith::faults::CohesiveDataTet4::CohesiveDataTet4(void)
   vertices = const_cast<PylithScalar*>(_vertices);
   numCorners = const_cast<int*>(_numCorners);
   cells = const_cast<int*>(_cells);
+  cellsInt = const_cast<int*>(_cellsInt);
   materialIds = const_cast<int*>(_materialIds);
   groups = const_cast<int*>(_groups);
   groupSizes = const_cast<int*>(_groupSizes);
