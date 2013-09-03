@@ -111,8 +111,17 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void)
     } // for
     err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(_data->numCorners, numVertices);
-    for (PetscInt v = 0; v < numVertices; ++v, ++index)
-      CPPUNIT_ASSERT_EQUAL(_data->cellsNoFault[index], subpointMap[vertices[v]]);
+    // Allow cyclic permutations to handle both interpolated and non-interpolated cases
+    if (submesh.dimension() > 1) {
+      PetscInt first;
+      for (first = 0; first < numVertices; ++first) if (_data->cellsNoFault[index] == subpointMap[vertices[first]]) break;
+      CPPUNIT_ASSERT(first < numVertices);
+      for (PetscInt v = 0; v < numVertices; ++v, ++index)
+        CPPUNIT_ASSERT_EQUAL(_data->cellsNoFault[index], subpointMap[vertices[(v+first)%numVertices]]);
+    } else {
+      for (PetscInt v = 0; v < numVertices; ++v, ++index)
+        CPPUNIT_ASSERT_EQUAL(_data->cellsNoFault[index], subpointMap[vertices[v]]);
+    }
   } // for
 
   PYLITH_METHOD_END;
@@ -187,8 +196,17 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
     } // for
     err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(_data->numCorners, numVertices);
-    for (PetscInt v = 0; v < numVertices; ++v, ++index)
-      CPPUNIT_ASSERT_EQUAL(_data->cellsFault[index], subpointMap[vertices[v]]);
+    // Allow cyclic permutations to handle both interpolated and non-interpolated cases
+    if (submesh.dimension() > 1) {
+      PetscInt first;
+      for (first = 0; first < numVertices; ++first) if (_data->cellsFault[index] == subpointMap[vertices[first]]) break;
+      CPPUNIT_ASSERT(first < numVertices);
+      for (PetscInt v = 0; v < numVertices; ++v, ++index)
+        CPPUNIT_ASSERT_EQUAL(_data->cellsFault[index], subpointMap[vertices[(v+first)%numVertices]]);
+    } else {
+      for (PetscInt v = 0; v < numVertices; ++v, ++index)
+        CPPUNIT_ASSERT_EQUAL(_data->cellsFault[index], subpointMap[vertices[v]]);
+    }
   } // for
 
   PYLITH_METHOD_END;

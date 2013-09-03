@@ -204,9 +204,17 @@ pylith::bc::TestNeumann::testInitialize(void)
     } // for
     err = DMPlexRestoreTransitiveClosure(subMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(_data->numCorners, numCorners);
-    for(PetscInt p = 0; p < numCorners; ++p, ++dp) {
-      CPPUNIT_ASSERT_EQUAL(_data->cells[dp], vertices[p]);
-    } // for
+    if (boundaryMesh.dimension() > 1) {
+      PetscInt first;
+      for (first = 0; first < numCorners; ++first) if (_data->cells[dp] == vertices[first]) break;
+      CPPUNIT_ASSERT(first < numCorners);
+      for (PetscInt p = 0; p < numCorners; ++p, ++dp)
+        CPPUNIT_ASSERT_EQUAL(_data->cells[dp], vertices[(p+first)%numCorners]);
+    } else {
+      for(PetscInt p = 0; p < numCorners; ++p, ++dp) {
+        CPPUNIT_ASSERT_EQUAL(_data->cells[dp], vertices[p]);
+      } // for
+    }
   } // for
 
   // Check traction values
