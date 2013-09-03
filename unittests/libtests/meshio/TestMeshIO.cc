@@ -187,8 +187,6 @@ pylith::meshio::TestMeshIO::_checkVals(const MeshData& data)
 
   CPPUNIT_ASSERT_EQUAL(data.numCells, numCells);
   const int offset = numCells;
-  const PetscInt* cone = NULL;
-  PetscInt coneSize = 0;
   PetscErrorCode err = 0;
   for(PetscInt c = cStart, index = 0; c < cEnd; ++c) {
     PetscInt *closure = PETSC_NULL;
