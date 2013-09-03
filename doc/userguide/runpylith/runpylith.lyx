@@ -1342,7 +1342,7 @@ partitioner Choice of partitioner (
 \begin_inset Quotes eld
 \end_inset
 
-parmetis
+metis
 \begin_inset Quotes erd
 \end_inset
 
