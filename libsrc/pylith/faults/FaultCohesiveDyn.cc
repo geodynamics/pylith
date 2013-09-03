@@ -1823,8 +1823,10 @@ pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negative
   const PetscInt numCells = cellsStratum.size();
 
   // Get sections
+  scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(faultDMMesh);
 
+  scalar_array dLagrangeCell(numBasis*spaceDim);
   topology::VecVisitorMesh dLagrangeVisitor(_fields->get("sensitivity dLagrange"));
 
   scalar_array residualCell(numBasis*spaceDim);
@@ -1835,16 +1837,11 @@ pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negative
   // Loop over cells
   for(PetscInt c = cStart; c < cEnd; ++c) {
     // Compute geometry
-    PetscScalar *coordsCell = NULL;
-    PetscInt coordsSize = 0;
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, c);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
-    _quadrature->computeGeometry(coordsCell, coordsSize, c);
-    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
+    coordsVisitor.getClosure(&coordsCell, c);
+    _quadrature->computeGeometry(&coordsCell[0], coordsCell.size(), c);
 
     // Restrict input fields to cell
-    PetscScalar* dLagrangeCell = NULL;
-    PetscInt dLagrangeSize = 0;
-    dLagrangeVisitor.getClosure(&dLagrangeCell, &dLagrangeSize, c);assert(dLagrangeCell);assert(numBasis*spaceDim == dLagrangeSize);
+    dLagrangeVisitor.getClosure(&dLagrangeCell, c);
 
     // Get cell geometry information that depends on cell
     const scalar_array& basis = _quadrature->basis();
@@ -1876,7 +1873,6 @@ pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negative
         } // for
       } // for
     } // for
-    dLagrangeVisitor.restoreClosure(&dLagrangeCell, &dLagrangeSize, c);
 
     // Assemble cell contribution into field
     residualVisitor.setClosure(&residualCell[0], residualCell.size(), c, ADD_VALUES);
