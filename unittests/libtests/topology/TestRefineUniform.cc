@@ -280,8 +280,6 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data)
 
   CPPUNIT_ASSERT_EQUAL(data.numCells+data.numCellsCohesive, numCells);
   const int offset = numCells;
-  const PetscInt* cone = NULL;
-  PetscInt coneSize = 0;
   PetscErrorCode err = 0;
 
   // Normal cells
