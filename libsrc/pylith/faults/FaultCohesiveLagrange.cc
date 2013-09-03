@@ -1316,6 +1316,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   PetscScalar* orientationArray = orientationVisitor.localArray();
 
   // Get section containing coordinates of vertices
+  scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(faultDMMesh);
 
   // Loop over cohesive cells, computing orientation weighted by
@@ -1326,10 +1327,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
     PetscInt closureSize, q = 0;
 
     // Get orientations at fault cell's vertices.
-
-    PetscScalar *coordsCell = NULL;
-    PetscInt coordsSize = 0;
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, c);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
+    coordsVisitor.getClosure(&coordsCell, c);
 
     PetscErrorCode err = DMPlexGetTransitiveClosure(faultDMMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
 
@@ -1344,7 +1342,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
     closureSize = q;
     for(PetscInt v = 0; v < closureSize; ++v) {
       // Compute Jacobian and determinant of Jacobian at vertex
-      cellGeometry.jacobian(&jacobian, &jacobianDet, coordsCell, numBasis, spaceDim, &verticesRef[v*cohesiveDim], cohesiveDim);
+      cellGeometry.jacobian(&jacobian, &jacobianDet, &coordsCell[0], numBasis, spaceDim, &verticesRef[v*cohesiveDim], cohesiveDim);
 
       // Compute orientation
       cellGeometry.orientation(&orientationVertex, jacobian, jacobianDet, up);
@@ -1355,7 +1353,6 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
         orientationArray[ooff+d] += orientationVertex[d];
       } // for
     } // for
-    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
     err = DMPlexRestoreTransitiveClosure(faultDMMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
   } // for
   orientationVisitor.clear();
@@ -1568,6 +1565,7 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
   topology::VecVisitorMesh areaVisitor(area);
   scalar_array areaCell(numBasis);
 
+  scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(faultDMMesh);
 
   // Loop over cells in fault mesh, compute area
@@ -1575,11 +1573,8 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
     areaCell = 0.0;
 
     // Compute geometry information for current cell
-    PetscScalar* coordsCell = NULL;
-    PetscInt coordsSize = 0;
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, c);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
-    _quadrature->computeGeometry(coordsCell, coordsSize, c);
-    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
+    coordsVisitor.getClosure(&coordsCell, c);
+    _quadrature->computeGeometry(&coordsCell[0], coordsCell.size(), c);
 
     // Get cell geometry information that depends on cell
     const scalar_array& basis = _quadrature->basis();
