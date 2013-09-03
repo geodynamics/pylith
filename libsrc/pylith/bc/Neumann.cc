@@ -123,15 +123,13 @@ pylith::bc::Neumann::integrateResidual(const topology::Field& residual,
   topology::VecVisitorSubMesh residualVisitor(residual, submeshIS);
   submeshIS.deallocate();
 
+  scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
 
   // Loop over faces and integrate contribution from each face
   for(PetscInt c = cStart; c < cEnd; ++c) {
-    PetscScalar* coordsCell = NULL;
-    PetscInt coordsSize = 0;
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, c);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
-    _quadrature->computeGeometry(coordsCell, coordsSize, c);
-    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
+    coordsVisitor.getClosure(&coordsCell, c);
+    _quadrature->computeGeometry(&coordsCell[0], coordsCell.size(), c);
 
     // Reset element vector to zero
     _resetCellVector();
@@ -418,6 +416,7 @@ pylith::bc::Neumann::_queryDB(const char* name,
   PetscScalar* valueArray = valueVisitor.localArray();
 
   // Get coordinates
+  scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
 
   const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
@@ -432,11 +431,8 @@ pylith::bc::Neumann::_queryDB(const char* name,
   // Loop over cells in boundary mesh and perform queries.
   for(PetscInt c = cStart; c < cEnd; ++c) {
     // Compute geometry information for current cell
-    PetscScalar* coordsCell = NULL;
-    PetscInt coordsSize = 0;
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, c);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
-    _quadrature->computeGeometry(coordsCell, coordsSize, c);
-    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
+    coordsVisitor.getClosure(&coordsCell, c);
+    _quadrature->computeGeometry(&coordsCell[0], coordsCell.size(), c);
 
     const scalar_array& quadPtsNondim = _quadrature->quadPts();
     quadPtsGlobal = quadPtsNondim;
@@ -508,6 +504,7 @@ void
   scalar_array orientation(orientationSize);
 
   // Get coordinates.
+  scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
 
   // Get sections
@@ -529,14 +526,12 @@ void
   // rotate corresponding traction vector from local to global coordinates.
   for(PetscInt c = cStart; c < cEnd; ++c) {
     // Compute geometry information for current cell
-    PetscScalar* coordsCell = NULL;
-    PetscInt coordsSize = 0;
-    coordsVisitor.getClosure(&coordsCell, &coordsSize, c);assert(coordsCell);assert(numBasis*spaceDim == coordsSize);
-    _quadrature->computeGeometry(coordsCell, coordsSize, c);
+    coordsVisitor.getClosure(&coordsCell, c);
+    _quadrature->computeGeometry(&coordsCell[0], coordsCell.size(), c);
 
     for(int iQuad=0, iRef=0, iSpace=0; iQuad < numQuadPts; ++iQuad, iRef+=cellDim, iSpace+=spaceDim) {
       // Compute Jacobian and determinant at quadrature point, then get orientation.
-      cellGeometry.jacobian(&jacobian, &jacobianDet, coordsCell, numBasis, spaceDim, &quadPtsRef[iRef], cellDim);
+      cellGeometry.jacobian(&jacobian, &jacobianDet, &coordsCell[0], numBasis, spaceDim, &quadPtsRef[iRef], cellDim);
       cellGeometry.orientation(&orientation, jacobian, jacobianDet, up);
       assert(jacobianDet > 0.0);
       orientation /= jacobianDet;
@@ -589,7 +584,6 @@ void
         } // for
       } // if
     } // for
-    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
   } // for
 
   delete initialVisitor; initialVisitor = 0;
