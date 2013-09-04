@@ -199,9 +199,6 @@ class Explicit(Formulation, ModuleExplicit):
     """
     Advance to next time step.
     """
-    logEvent = "%sstep" % self._loggingPrefix
-    self._eventLogger.eventBegin(logEvent)
-
     from pylith.mpi.Communicator import mpi_comm_world
     comm = mpi_comm_world()
 
@@ -209,11 +206,10 @@ class Explicit(Formulation, ModuleExplicit):
     
     if 0 == comm.rank:
       self._info.log("Solving equations.")
+
     residual = self.fields.get("residual")
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
     self.solver.solve(dispIncr, self.jacobian, residual)
-
-    self._eventLogger.eventEnd(logEvent)
     return
 
 
