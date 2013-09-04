@@ -43,12 +43,14 @@ TIPS
 
 
 ======================================================================
-MIGRATING FROM VERSION 1.8 TO 2.0
+MIGRATING FROM VERSION 1.9 TO 2.0
 ======================================================================
 
 ----------------------------------------------------------------------
 Version 2.0.0
 ----------------------------------------------------------------------
+
+* parmetis -> metis
 
 * Bug fixes
 
@@ -72,6 +74,57 @@ Version 2.0.0
     tractions in examples/3d/hex8/step20 and updating to the use of
     cell.dimension for the quadrature scheme with tets.
 
+
+======================================================================
+MIGRATING FROM VERSION 1.8 TO 1.9
+======================================================================
+
+No changes are needed in .cfg files to switch from v1.8.0 to
+v1.9.0. Version 1.9.0 does includes some changes to the friction and
+material model interfaces, so extensions do require changes. See the
+templates for details.
+
+----------------------------------------------------------------------
+Version 1.9.0
+----------------------------------------------------------------------
+
+* New features
+
+  * Added Newton-Raphson algorithm for spontaneous rupture simulations
+    with explicit-stepping.
+
+    Enforcing the friction criterion in a spontaneous rupture
+    simulation with explicit time-stepping now uses a Newton-Raphson
+    algorithm to find the correct traction increment. This provides a
+    more stable numerical solution and eliminates oscillatory behavior
+    when using rate-state friction. 
+
+    Added SCEC spontaneous rupture benchmark TPV102 to the benchmark
+    repository. PyLith produces results very similar to several other
+    finite-element codes.
+
+* Bug fixes
+
+  - Fixed two MPI related bugs in computing Green's functions in
+    parallel. The number of impulses corresponded to only those on
+    process 0 and the output of the impulses for vertices on processor
+    boundaries was inconsistent.
+
+  - Corrected computation of fault tractions (Lagrange multipliers) on
+    process boundaries for prescribed slip with explicit time stepping.
+
+  - Fixed bug when reading in list of output points with just one
+    point.
+
+  - Adjusted autoconf Python setup macro to remove temporary
+    sysconfig.pyc file.
+
+  - Added check to make sure degree of freedom specified in Dirichlet
+    BC is consistent with spatial dimension of problem.
+
+  - Corrected two typos in the manual related to fault opening and
+    tractions in examples/3d/hex8/step20 and updating to the use of
+    cell.dimension for the quadrature scheme with tetrahedral cells.
 
 ======================================================================
 MIGRATING FROM VERSION 1.7 TO 1.8
