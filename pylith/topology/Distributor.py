@@ -33,7 +33,7 @@ class Distributor(PetscComponent, ModuleDistributor):
   Inventory
 
   \b Properties
-  @li \b partitioner Name of mesh partitioner {"parmetis", "chaco"}.
+  @li \b partitioner Name of mesh partitioner {"metis", "chaco"}.
   @li \b writePartition Write partition information to file.
   
   \b Facilities
@@ -48,7 +48,7 @@ class Distributor(PetscComponent, ModuleDistributor):
     
   partitioner = pyre.inventory.str("partitioner", default="chaco",
                                    validator=pyre.inventory.choice(["chaco",
-                                                                    "parmetis"]))
+                                                                    "metis"]))
   partitioner.meta['tip'] = "Name of mesh partitioner."
   
   writePartition = pyre.inventory.bool("write_partition", default=False)
