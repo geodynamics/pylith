@@ -216,10 +216,10 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   DM faultDMMesh = faultMesh.dmMesh();
   assert(complexMesh);assert(faultDMMesh);
 
-  PetscInt depth, cStart, cEnd;
+  PetscInt depth, cStart = 0, cEnd = 0;
   err = DMPlexGetDepth(complexMesh, &depth);PYLITH_CHECK_ERROR(err);
   err = DMPlexGetHeightStratum(complexMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-  PetscInt faceSizeDM;
+  PetscInt faceSizeDM = 0;
   int numFaultCorners = 0; // The number of vertices in a fault cell
   PetscInt *indicesDM = NULL; // The indices of a face vertex set in a cell
   const int debug = mesh->debug();
@@ -227,8 +227,8 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   TopologyOps::PointArray origVertices;
   TopologyOps::PointArray faceVertices;
   TopologyOps::PointArray neighborVertices;
-  PetscInt *origVerticesDM;
-  PetscInt *faceVerticesDM;
+  PetscInt *origVerticesDM = NULL;
+  PetscInt *faceVerticesDM = NULL;
   PetscInt cellDim, numCornersDM = 0;
 
   err = DMPlexGetDimension(complexMesh, &cellDim);PYLITH_CHECK_ERROR(err);
@@ -293,7 +293,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 
   /* DMPlex */
   DM        newMesh;
-  PetscInt *newCone;
+  PetscInt *newCone = NULL;
   PetscInt  dim, maxConeSize = 0;
 
   err = DMCreate(mesh->comm(), &newMesh);PYLITH_CHECK_ERROR(err);
@@ -313,7 +313,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   err = DMSetUp(newMesh);PYLITH_CHECK_ERROR(err);
   err = PetscMalloc(maxConeSize * sizeof(PetscInt), &newCone);PYLITH_CHECK_ERROR(err);
   for(PetscInt c = cStart; c < cEnd; ++c) {
-    const PetscInt *cone;
+    const PetscInt *cone = NULL;
     PetscInt        coneSize, cp;
 
     err = DMPlexGetCone(complexMesh, c, &cone);PYLITH_CHECK_ERROR(err);
@@ -344,10 +344,10 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 
   err = DMPlexGetNumLabels(complexMesh, &numLabels);PYLITH_CHECK_ERROR(err);
   for (PetscInt l = 0; l < numLabels; ++l) {
-    const char     *lname;
-    IS              idIS;
+    const char     *lname = NULL;
+    IS              idIS = NULL;
     PetscInt        n;
-    const PetscInt *ids;
+    const PetscInt *ids = NULL;
 
     err = DMPlexGetLabelName(complexMesh, l, &lname);PYLITH_CHECK_ERROR(err);
     if (std::string(lname) == skip) continue;
@@ -356,8 +356,8 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     err = ISGetIndices(idIS, &ids);PYLITH_CHECK_ERROR(err);
     for(PetscInt i = 0; i < n; ++i) {
       const PetscInt  id = ids[i];
-      const PetscInt *points;
-      IS              sIS;
+      const PetscInt *points = NULL;
+      IS              sIS = NULL;
       PetscInt        size;
 
       err = DMPlexGetStratumSize(complexMesh, lname, id, &size);PYLITH_CHECK_ERROR(err);
@@ -398,7 +398,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     // vertices (if they exist) because we don't want BC, etc to act
     // on constraint vertices
     for (PetscInt l = 0; l < numLabels; ++l) {
-      const char *name;
+      const char *name = NULL;
       PetscInt    value;
 
       err = DMPlexGetLabelName(complexMesh, l, &name);PYLITH_CHECK_ERROR(err);
@@ -417,8 +417,8 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   TopologyOps::PointSet replaceCells;
   TopologyOps::PointSet noReplaceCells;
   TopologyOps::PointSet replaceVerticesDM;
-  PetscInt       *cohesiveCone;
-  IS              subpointIS;
+  PetscInt       *cohesiveCone = NULL;
+  IS              subpointIS = NULL;
   const PetscInt *subpointMap = NULL;
 
   err = DMPlexCreateSubpointIS(faultDMMesh, &subpointIS);PYLITH_CHECK_ERROR(err);
