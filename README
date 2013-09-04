@@ -43,7 +43,7 @@ TIPS
 
 
 ======================================================================
-MIGRATING FROM VERSION 1.7 TO 1.8
+MIGRATING FROM VERSION 1.8 TO 1.9
 ======================================================================
 
 No changes are needed in .cfg files to switch from v1.8.0 to
