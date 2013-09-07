@@ -1,3 +1,12 @@
 [submodule "m4"]
 	path = m4
 	url = git://github.com/geodynamics/autoconf_cig.git
+[submodule "templates/materials/m4"]
+	path = templates/materials/m4
+	url = git://github.com/geodynamics/autoconf_cig.git
+[submodule "templates/friction/m4"]
+	path = templates/friction/m4
+	url = git://github.com/geodynamics/autoconf_cig.git
+[submodule "playpen/memcheck/m4"]
+	path = playpen/memcheck/m4
+	url = git://github.com/geodynamics/autoconf_cig.git
