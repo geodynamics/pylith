@@ -36,6 +36,6 @@ setup(
     author_email = 'cig-short@geodynamics.org',
     description = """A finite element code for the solution of crustal deformation problems associated with earthquakes, including kinematic ruptures, spontaneous ruptures, and pre- and post-seismic deformation.""",
     license = 'other',
-    url = 'http://www.geodynamics.org/cig/software/packages/short/pylith/',
+    url = 'http://www.geodynamics.org/cig/software/pylith/',
 
 )
