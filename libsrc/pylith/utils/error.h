@@ -38,7 +38,7 @@
 #define __FUNCT__ __func__
 #endif
 
-#define PYLITH_METHOD_BEGIN PetscFunctionBegin
+#define PYLITH_METHOD_BEGIN PetscFunctionBeginUser
 #define PYLITH_METHOD_END PetscFunctionReturnVoid()
 #define PYLITH_METHOD_RETURN(v) PetscFunctionReturn(v)
 
