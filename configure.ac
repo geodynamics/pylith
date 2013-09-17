@@ -155,9 +155,6 @@ CIT_PATH_PETSC([3.4.2])
 CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC
 
-# Check for Python modules and packages.
-CIT_PYTHON_EGG_SETUP
-
 # Large file support
 AC_SYS_LARGEFILE
 
@@ -238,9 +235,17 @@ fi
 CIT_PROJ4_HEADER
 CIT_PROJ4_LIB
 
+# PYTHIA
+CIT_PYTHON_MODULE([pyre],[0.8.1])
+CIT_PYTHON_MODULE([journal],[0.8.1])
+eval p=`$PYTHON -c "import pyre; print pyre.__""file__.replace('pyre/__init__.pyc','')"`
+PYTHON_EGG_CPPFLAGS="-I$p"
+AC_SUBST(PYTHON_EGG_CPPFLAGS)
+
 # SPATIALDATA
 CIT_SPATIALDATA_HEADER
 CIT_SPATIALDATA_LIB
+CIT_PYTHON_MODULE([spatialdata],[1.9.3])
 
 # DOXYGEN
 if test "$enable_documentation" = "yes" ; then
