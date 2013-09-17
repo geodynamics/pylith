@@ -28,3 +28,4 @@ aux-config
 PyLith.egg-info
 autom4te.cache
 *~
+*.pyc
