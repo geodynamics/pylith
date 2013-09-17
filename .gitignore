@@ -21,7 +21,10 @@ modulesrc/topology/topology_wrap.cxx
 modulesrc/utils/utils.py
 modulesrc/utils/utils_wrap.cxx
 configure
+aclocal.m4
+Makefile.in
 portinfo.in
 aux-config
 PyLith.egg-info
 autom4te.cache
+*~
