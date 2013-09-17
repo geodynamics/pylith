@@ -29,16 +29,6 @@ from problems import Formulation as ModuleFormulation
 from pylith.utils.profiling import resourceUsageString
 from pyre.units.time import second
 
-# VALIDATORS ///////////////////////////////////////////////////////////
-
-# Validate use of CUDA.
-def validateUseCUDA(value):
-  from pylith.utils.utils import isCUDAEnabled
-  if value and not isCUDAEnabled:
-    raise ValueError("PyLith is not built with CUDA support.")
-  return value
-
-
 # ITEM FACTORIES ///////////////////////////////////////////////////////
 
 def outputFactory(name):
@@ -72,7 +62,6 @@ class Formulation(PetscComponent, ModuleFormulation):
     ## Python object for managing Formulation facilities and properties.
     ##
     ## \b Properties
-    ## @li \b use_cuda Enable use of CUDA for finite-element integrations.
     ## @li \b matrix_type Type of PETSc sparse matrix.
     ## @li \b split_fields Split solution fields into displacements and Lagrange constraints.
     ## @li \b use_custom_constraint_pc Use custom preconditioner for Lagrange constraints.
@@ -85,12 +74,6 @@ class Formulation(PetscComponent, ModuleFormulation):
     ## @li \b jacobian_viewer Writer for Jacobian sparse matrix.
 
     import pyre.inventory
-
-    # WARNING: This setting is not yet functional!!!!!!!!!
-    useCUDA = pyre.inventory.bool("use_cuda", default=False,
-                                  validator=validateUseCUDA)
-    useCUDA.meta['tip'] = "Enable use of CUDA for finite-element integrations."
-    
 
     matrixType = pyre.inventory.str("matrix_type", default="unknown")
     matrixType.meta['tip'] = "Type of PETSc sparse matrix."
@@ -311,7 +294,6 @@ class Formulation(PetscComponent, ModuleFormulation):
     Set members based using inventory.
     """
     PetscComponent._configure(self)
-    self.useCUDA = self.inventory.useCUDA
     self.matrixType = self.inventory.matrixType
     self.timeStep = self.inventory.timeStep
     self.solver = self.inventory.solver
