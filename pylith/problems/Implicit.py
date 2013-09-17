@@ -104,13 +104,8 @@ class Implicit(Formulation, ModuleImplicit):
     """
     Get integrator for elastic material.
     """
-    integrator = None
-    if self.useCUDA:
-      from pylith.feassemble.ElasticityImplicitCUDA import ElasticityImplicitCUDA
-      integrator = ElasticityImplicitCUDA()
-    else:
-      from pylith.feassemble.ElasticityImplicit import ElasticityImplicit
-      integrator = ElasticityImplicit()
+    from pylith.feassemble.ElasticityImplicit import ElasticityImplicit
+    integrator = ElasticityImplicit()
     return integrator
 
 

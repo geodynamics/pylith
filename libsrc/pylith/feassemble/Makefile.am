@@ -30,7 +30,6 @@ subpkginclude_HEADERS = \
 	ElasticityExplicitLgDeform.hh \
 	ElasticityImplicit.hh \
 	ElasticityImplicitLgDeform.hh \
-	ElasticityImplicitCUDA.hh \
 	Integrator.hh \
 	Integrator.icc \
 	IntegratorElasticity.hh \

@@ -27,19 +27,6 @@ SUBDIRS = \
 	friction \
 	problems
 
-SUFFIXES=.cu
-
-LTCUDACOMPILE = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=compile nvcc $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
-	$(AM_CPPFLAGS) $(CPPFLAGS) -arch=sm_13 -m64 -prefer-non-pic --compiler-options="$(CXXFLAGS)" $(AM_CXXFLAGS) $(NVCC_FLAGS)
-
-.cu.lo:
-@am__fastdepCXX_FALSE@	$(LTCUDACOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCXX_FALSE@	mv -f $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
-@AMDEP_TRUE@@am__fastdepCXX_TRUE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_TRUE@	DEPDIR=$(DEPDIR) depmode=none $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_TRUE@	$(LTCUDACOMPILE) -c -o $@ $<
-
 lib_LTLIBRARIES = libpylith.la
 
 libpylith_la_SOURCES = \
@@ -197,13 +184,6 @@ if ENABLE_CUBIT
 	meshio/ExodusII.cc \
 	meshio/MeshIOCubit.cc
   libpylith_la_LIBADD += -lnetcdf_c++ -lnetcdf
-endif
-
-if ENABLE_CUDA
-  libpylith_la_SOURCES += \
-	feassemble/ElasticityImplicitCUDA.cc \
-	feassemble/ElasticityImplicitCUDAKernel.cu
-  libpylith_la_LIBADD += -lcudart -lcuda 
 endif
 
 
