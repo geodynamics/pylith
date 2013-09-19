@@ -23,9 +23,6 @@
 #
 # Usage: pylith_genxdmf --file=FILE
 
-__requires__ = "PyLith"
-
-
 # ======================================================================
 class GenXdmfApp(object):
   """
