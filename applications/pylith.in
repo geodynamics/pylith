@@ -20,19 +20,7 @@
 ## @file applications/pylith
 ## @brief Python PyLith application driver
 
-__requires__ = "PyLith"
-
 if __name__ == "__main__":
-
-    # re-create the PYTHONPATH at 'configure' time
-    import os.path, sys, site
-    path = '@PYTHONPATH@'.split(':')
-    path.reverse()
-    for directory in path:
-        if directory:
-            directory = os.path.abspath(directory)
-            sys.path.insert(1, directory)
-            site.addsitedir(directory)
 
     from pylith.apps.PyLithApp import PyLithApp
     from pyre.applications import start
