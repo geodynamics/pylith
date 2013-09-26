@@ -20,6 +20,8 @@
 
 ## @brief Python top-level PyLith module initialization
 
+__version__ = "1.9.0"
+
 __all__ = ['apps',
            'bc',
            'faults',
