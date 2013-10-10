@@ -107,7 +107,9 @@ pylith::topology::Mesh::Mesh(const Mesh& mesh,
   } // if
 
   /* TODO: Add creation of pointSF for submesh */
-  err = DMPlexCreateSubmesh(dmMesh, label, 1, &_dmMesh);PYLITH_CHECK_ERROR(err);
+  DMLabel l;
+  err = DMPlexGetLabel(dmMesh, label, &l);PYLITH_CHECK_ERROR(err);
+  err = DMPlexCreateSubmesh(dmMesh, l, 1, &_dmMesh);PYLITH_CHECK_ERROR(err);
 
   PetscInt maxConeSizeLocal = 0, maxConeSize = 0;
   err = DMPlexGetMaxSizes(_dmMesh, &maxConeSizeLocal, NULL);PYLITH_CHECK_ERROR(err);

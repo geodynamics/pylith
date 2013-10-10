@@ -54,7 +54,7 @@ pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
     const char *groupName = "", *labelName = "boundary";
 
     if (groupField) {err = DMLabelGetName(groupField, &groupName);PYLITH_CHECK_ERROR(err);}
-    err = DMPlexCreateSubmesh(dmMesh, groupName, 1, &subdm);PYLITH_CHECK_ERROR(err);
+    err = DMPlexCreateSubmesh(dmMesh, groupField, 1, &subdm);PYLITH_CHECK_ERROR(err);
     err = DMPlexOrient(subdm);PYLITH_CHECK_ERROR(err);
 
     if (flipFault) {
@@ -101,7 +101,7 @@ pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
     err = DMPlexCreateLabel(subdm, labelName);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetLabel(subdm, labelName, &label);PYLITH_CHECK_ERROR(err);
     err = DMPlexMarkBoundaryFaces(subdm, label);PYLITH_CHECK_ERROR(err);
-    err = DMPlexCreateSubmesh(subdm, labelName, 1, &faultBoundary);PYLITH_CHECK_ERROR(err);
+    err = DMPlexCreateSubmesh(subdm, label, 1, &faultBoundary);PYLITH_CHECK_ERROR(err);
     std::string submeshLabel = "fault_" + std::string(groupName);
     faultMesh->dmMesh(subdm, submeshLabel.c_str());
   } else {
@@ -113,7 +113,7 @@ pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
     const char *groupName = "";
 
     if (groupField) {err = DMLabelGetName(groupField, &groupName);PYLITH_CHECK_ERROR(err);}
-    err = DMPlexCreateSubmesh(dmMesh, groupName, 1, &faultDMMeshTmp);PYLITH_CHECK_ERROR(err);
+    err = DMPlexCreateSubmesh(dmMesh, groupField, 1, &faultDMMeshTmp);PYLITH_CHECK_ERROR(err);
     err = DMPlexInterpolate(faultDMMeshTmp, &faultDMMesh);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetVTKCellHeight(faultDMMeshTmp, &h);PYLITH_CHECK_ERROR(err);
     err = DMPlexSetVTKCellHeight(faultDMMesh, h);PYLITH_CHECK_ERROR(err);
@@ -182,7 +182,7 @@ pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
     err = DMPlexCreateLabel(faultDMMesh, labelName);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetLabel(faultDMMesh, labelName, &label);PYLITH_CHECK_ERROR(err);
     err = DMPlexMarkBoundaryFaces(faultDMMesh, label);PYLITH_CHECK_ERROR(err);
-    err = DMPlexCreateSubmesh(faultDMMesh, labelName, 1, &faultBoundary);PYLITH_CHECK_ERROR(err);
+    err = DMPlexCreateSubmesh(faultDMMesh, label, 1, &faultBoundary);PYLITH_CHECK_ERROR(err);
   }
 
   PYLITH_METHOD_END;
