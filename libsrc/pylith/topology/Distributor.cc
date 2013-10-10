@@ -60,7 +60,7 @@ pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
   journal::info_t info("distributor");
 
   PetscDM newDM = NULL;
-  PetscErrorCode err = DMPlexDistribute(origMesh.dmMesh(), partitioner, 0, &newDM);PYLITH_CHECK_ERROR(err);
+  PetscErrorCode err = DMPlexDistribute(origMesh.dmMesh(), partitioner, 0, NULL, &newDM);PYLITH_CHECK_ERROR(err);
   newMesh->dmMesh(newDM);
 
   PYLITH_METHOD_END;
