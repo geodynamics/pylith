@@ -43,7 +43,7 @@ pylith::topology::Jacobian::Jacobian(const Field& field,
   const int blockFlag = (blockOkay) ? -1 : 1;
 
   const char* msg = "Could not create PETSc sparse matrix associated with system Jacobian.";
-  PetscErrorCode err = DMCreateMatrix(dmMesh, matrixType, &_matrix);PYLITH_CHECK_ERROR_MSG(err, msg);
+  PetscErrorCode err = DMCreateMatrix(dmMesh, &_matrix);PYLITH_CHECK_ERROR_MSG(err, msg);
 
   _type = matrixType;
 
