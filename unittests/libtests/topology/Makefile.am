@@ -38,6 +38,7 @@ testtopology_SOURCES = \
 	TestSolutionFields.cc \
 	TestJacobian.cc \
 	TestRefineUniform.cc \
+	TestReverseCuthillMcKee.cc \
 	test_topology.cc
 
 
@@ -53,6 +54,7 @@ noinst_HEADERS = \
 	TestFieldsSubMesh.hh \
 	TestSolutionFields.hh \
 	TestRefineUniform.hh \
+	TestReverseCuthillMcKee.hh \
 	TestJacobian.hh
 
 
