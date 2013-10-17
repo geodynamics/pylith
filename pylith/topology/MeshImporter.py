@@ -101,7 +101,7 @@ class MeshImporter(MeshGenerator):
     if self.debug:
       mesh.view("Finite-element mesh.")
 
-    # Reorder mesh
+    # Reorder mesh (serial) :TODO: Move this after adjusting topology?
     if self.reorderMesh:
       logEvent2 = "%sreorder" % self._loggingPrefix
       self._eventLogger.eventBegin(logEvent2)
@@ -133,6 +133,15 @@ class MeshImporter(MeshGenerator):
     if not newMesh == mesh:
       mesh.cleanup()
       newMesh.memLoggingStage = "RefinedMesh"
+
+    # Reorder mesh again (each processor independently)
+    if self.reorderMesh:
+      self._eventLogger.eventBegin(logEvent2)
+      self._debug.log(resourceUsageString())
+      if 0 == comm.rank:
+        self._info.log("Reordering cells and vertices.")
+      ordering.reorder(mesh)
+      self._eventLogger.eventEnd(logEvent2)
 
     # Nondimensionalize mesh (coordinates of vertices).
     from pylith.topology.topology import MeshOps_nondimensionalize
