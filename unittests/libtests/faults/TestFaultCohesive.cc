@@ -704,7 +704,7 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   err = DMPlexGetDepth(dmMesh, &depth);PYLITH_CHECK_ERROR(err);
   err = DMPlexGetStratumSize(dmMesh, "fault", 1, &firstLagrangeVertex);PYLITH_CHECK_ERROR(err);
   PetscViewerPushFormat(PETSC_VIEWER_STDOUT_WORLD, PETSC_VIEWER_ASCII_INFO_DETAIL);
-  DMView(mesh.dmMesh(), PETSC_VIEWER_STDOUT_WORLD);
+  //DMView(mesh.dmMesh(), PETSC_VIEWER_STDOUT_WORLD);
   PetscViewerPopFormat(PETSC_VIEWER_STDOUT_WORLD);
   isInterpolated = (mesh.dimension() > 1) && (mesh.dimension() == depth) ? PETSC_TRUE : PETSC_FALSE;
   firstFaultCell = firstLagrangeVertex;
@@ -716,7 +716,7 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   fault->adjustTopology(&mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell, isInterpolated ? flipFaultInt : flipFault);
   //mesh->view(data.filename);
   PetscViewerPushFormat(PETSC_VIEWER_STDOUT_WORLD, PETSC_VIEWER_ASCII_INFO_DETAIL);
-  DMView(mesh.dmMesh(), PETSC_VIEWER_STDOUT_WORLD);
+  //DMView(mesh.dmMesh(), PETSC_VIEWER_STDOUT_WORLD);
   PetscViewerPopFormat(PETSC_VIEWER_STDOUT_WORLD);
 
   CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh.dimension());
