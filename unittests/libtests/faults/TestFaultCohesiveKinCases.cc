@@ -30,7 +30,7 @@
 
 // ----------------------------------------------------------------------
 #include "data/CohesiveKinDataLine2.hh" // USES CohesiveKinDataLine2
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesiveKinLine2 );
+//CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesiveKinLine2 );
 
 // Setup testing data.
 void
