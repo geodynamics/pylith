@@ -21,7 +21,11 @@ dist_noinst_DATA = \
 	fourtri3.mesh \
 	fourquad4.mesh \
 	twotet4.mesh \
-	twohex8.mesh
+	twohex8.mesh \
+	reorder_tri3.mesh \
+	reorder_quad4.mesh \
+	reorder_tet4.mesh \
+	reorder_hex8.mesh
 
 noinst_TMP = 
 

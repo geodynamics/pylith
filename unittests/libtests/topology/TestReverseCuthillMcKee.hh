@@ -37,8 +37,6 @@
 namespace pylith {
   namespace topology {
     class TestReverseCuthillMcKee;
-
-    class MeshDataCohesive; // test data
   } // topology
 } // pylith
 
@@ -96,16 +94,20 @@ private :
   /** Setup mesh.
    *
    * @mesh Mesh to setup.
-   * @param data Test data.
+   * @param filename Mesh filename.
+   * @param faultGroup Name of fault group.
    */
   void _setupMesh(Mesh* const mesh,
-		  const MeshDataCohesive& data);
+		  const char* filename,
+		  const char* faultGroup =0);
 
   /** Test reorder().
    *
-   * @param data Test data.
+   * @param filename Mesh filename.
+   * @param faultGroup Name of fault group.
    */
-  void _testReorder(const MeshDataCohesive& data);
+  void _testReorder(const char* filename,
+		    const char* faultGroup =0);
 
 }; // class TestReverseCuthillMcKee
 
