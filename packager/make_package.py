@@ -76,7 +76,7 @@ def getMakeInfo():
     info = {'package_name': makefile['PACKAGE_NAME'],
             'package': makefile['PACKAGE'],
             'version': makefile['VERSION'],
-            'srcdir': makefile['abs_top_srcdir'],
+            'srcdir': makefile['top_srcdir'],
             'prefix': makefile['prefix'],
             'python_version': makefile['PYTHON_VERSION'],
             }
