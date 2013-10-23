@@ -34,18 +34,32 @@ pylith::faults::Fault::id(void) const {
   return _id;
 }
 
-// Set name of fault.
+// Set label of group of vertices associated with fault.
 inline
 void
 pylith::faults::Fault::label(const char* value) {
   _label = value;
 }
 
-// Get label of fault.
+// Get label of group of vertices associated with fault.
 inline
 const char*
 pylith::faults::Fault::label(void) const {
   return _label.c_str();
+}
+
+// Set label of group of vertices defining buried edge of fault.
+inline
+void
+pylith::faults::Fault::edge(const char* value) {
+  _edge = value;
+}
+
+// Get label of group of vertices defining buried edge of fault.
+inline
+const char*
+pylith::faults::Fault::edge(void) const {
+  return _edge.c_str();
 }
 
 // End of file 

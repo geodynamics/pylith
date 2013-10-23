@@ -65,6 +65,18 @@ namespace pylith {
        */
       const char* label(void) const;
 
+      /** Set label of group of vertices defining buried edge of fault.
+       *
+       * @param value Label of fault
+       */
+      void edge(const char* value);
+      
+      /** Get label of group of vertices defining buried edge of fault.
+       *
+       * @returns Label of fault
+       */
+      const char* edge(void) const;
+
       /** Get dimension of mesh.
        *
        * @returns Dimension of mesh.

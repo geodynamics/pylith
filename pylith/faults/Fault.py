@@ -90,6 +90,9 @@ class Fault(PetscComponent, ModuleFault):
   faultLabel = pyre.inventory.str("label", default="", validator=validateLabel)
   faultLabel.meta['tip'] = "Label identifier for fault."
   
+  faultEdge = pyre.inventory.str("edge", default="")
+  faultEdge.meta['tip'] = "Label identifier for fault edge."
+  
   upDir = pyre.inventory.list("up_dir", default=[0, 0, 1],
                               validator=validateDir)
   upDir.meta['tip'] = "Up-dip or up direction " \
@@ -236,6 +239,7 @@ class Fault(PetscComponent, ModuleFault):
       self.upDir = map(float, self.inventory.upDir)
       ModuleFault.id(self, self.inventory.matId)
       ModuleFault.label(self, self.inventory.faultLabel)
+      ModuleFault.edge(self, self.inventory.faultEdge)
       self.perfLogger = self.inventory.perfLogger
     except ValueError, err:
       aliases = ", ".join(self.aliases)

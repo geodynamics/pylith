@@ -62,4 +62,21 @@ pylith::faults::TestFault::testLabel(void)
 } // testLabel
     
 
+// ----------------------------------------------------------------------
+// Test edge()
+void
+pylith::faults::TestFault::testEdge(void)
+{ // testLabel
+  PYLITH_METHOD_BEGIN;
+
+  const std::string edge = "the_edge";
+  FaultCohesiveKin fault;
+  fault.edge(edge.c_str());
+  
+  CPPUNIT_ASSERT_EQUAL(edge, std::string(fault.edge()));
+
+  PYLITH_METHOD_END;
+} // testEdge
+    
+
 // End of file 

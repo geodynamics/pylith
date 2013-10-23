@@ -42,8 +42,11 @@ class pylith::faults::TestFault : public CppUnit::TestFixture
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestFault );
+
   CPPUNIT_TEST( testID );
   CPPUNIT_TEST( testLabel );
+  CPPUNIT_TEST( testEdge );
+
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -54,6 +57,9 @@ public :
 
   /// Test label()
   void testLabel(void);
+
+  /// Test edge()
+  void testEdge(void);
 
 }; // class TestFault
 

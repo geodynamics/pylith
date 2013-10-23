@@ -47,6 +47,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     """
     fault = FaultCohesiveKin()
     fault.inventory.faultLabel = "fault group"
+    fault.inventory.faultEdge = "fault edge"
     fault._configure()
     return
 
@@ -100,6 +101,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     fault = FaultCohesiveKin()
     fault.inventory.matId = 10
     fault.inventory.faultLabel = "fault"
+    fault.inventory.faultEdge = "fault_edge"
     fault._configure()
 
     nvertices = fault.numVerticesNoMesh(mesh)
@@ -313,6 +315,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     fault.inventory.output._configure()
     fault.inventory.matId = 10
     fault.inventory.faultLabel = "fault"
+    fault.inventory.faultEdge = "fault_edge"
     fault.inventory.upDir = [0, 0, 1]
     fault.inventory.faultQuadrature = quadrature
     fault._configure()

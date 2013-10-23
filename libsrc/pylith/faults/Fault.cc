@@ -27,6 +27,7 @@
 pylith::faults::Fault::Fault(void) :
   _id(0),
   _label(""),
+  _edge(""),
   _faultMesh(0)
 { // constructor
 } // constructor
