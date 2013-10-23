@@ -204,19 +204,6 @@ pylith::topology::TestReverseCuthillMcKee::_testReorder(const char* filename,
   PetscErrorCode err;
   err = DMPlexGetNumLabels(dmOrig, &numGroupsE);PYLITH_CHECK_ERROR(err);
   err = DMPlexGetNumLabels(dmMesh, &numGroups);PYLITH_CHECK_ERROR(err);
-  { // DEBUGGING
-    PetscErrorCode err;
-    for (PetscInt iGroup = 0; iGroup < numGroupsE; ++iGroup) {
-      const char *name = NULL;
-      err = DMPlexGetLabelName(dmOrig, iGroup, &name);PYLITH_CHECK_ERROR(err);
-      std::cout << "ORIG Group["<<iGroup<<"]: " << name << std::endl;
-    } // for
-    for (PetscInt iGroup = 0; iGroup < numGroups; ++iGroup) {
-      const char *name = NULL;
-      err = DMPlexGetLabelName(dmMesh, iGroup, &name);PYLITH_CHECK_ERROR(err);
-      std::cout << "REORDER Group["<<iGroup<<"]: " << name << std::endl;
-    } // for
-  } // DEBUGGING
   CPPUNIT_ASSERT_EQUAL(numGroupsE, numGroups);
 
   for (PetscInt iGroup = 0; iGroup < numGroups; ++iGroup) {
