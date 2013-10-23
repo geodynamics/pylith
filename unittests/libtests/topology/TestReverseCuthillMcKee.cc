@@ -175,8 +175,12 @@ pylith::topology::TestReverseCuthillMcKee::_testReorder(const char* filename,
 
   Mesh mesh;
   _setupMesh(&mesh, filename, faultGroup);
+
+  // Get original DM and create Mesh for it
   const PetscDM dmOrig = mesh.dmMesh();
   PetscObjectReference((PetscObject) dmOrig);
+  Mesh meshOrig;
+  meshOrig.dmMesh(dmOrig);
 
   ReverseCuthillMcKee::reorder(&mesh);
   
@@ -226,13 +230,23 @@ pylith::topology::TestReverseCuthillMcKee::_testReorder(const char* filename,
   } // for
 
   // Verify reduction in Jacobian bandwidth
+  Field fieldOrig(meshOrig);
+  fieldOrig.newSection(FieldBase::VERTICES_FIELD, meshOrig.dimension());
+  fieldOrig.allocate();
+  fieldOrig.zero();
+  Jacobian jacobianOrig(fieldOrig);
+  PetscInt bandwidthOrig = 0;
+  err = MatComputeBandwidth(jacobianOrig.matrix(), 0.0, &bandwidthOrig);PYLITH_CHECK_ERROR(err);
+
   Field field(mesh);
   field.newSection(FieldBase::VERTICES_FIELD, mesh.dimension());
   field.allocate();
   field.zero();
   Jacobian jacobian(field);
-  std::cout << "****TEST IS DISABLED. FORCING FAILURE.****" << std::endl;
-  CPPUNIT_ASSERT(false);
+  PetscInt bandwidth = 0;
+  err = MatComputeBandwidth(jacobian.matrix(), 0.0, &bandwidth);PYLITH_CHECK_ERROR(err);
+
+  CPPUNIT_ASSERT(bandwidth < bandwidthOrig);
 
   PYLITH_METHOD_END;
 } // _testReorder
