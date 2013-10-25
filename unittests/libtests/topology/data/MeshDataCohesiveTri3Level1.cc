@@ -39,58 +39,13 @@ const int pylith::topology::MeshDataCohesiveTri3Level1::_numCorners = 3;
 
 const int pylith::topology::MeshDataCohesiveTri3Level1::_numCornersCohesive = 6;
 
-const PylithScalar pylith::topology::MeshDataCohesiveTri3Level1::_vertices[] = {
-  -1.0,  0.0,
-   0.0, -1.0,
-   0.0,  0.0,
-   0.0,  1.0,
-   1.0,  0.0,
-  -0.5, -0.5,
-   0.0, -0.5,
-  -0.5,  0.0,
-   0.0,  0.5,
-  -0.5,  0.5,
-   0.5, -0.5,
-   0.5,  0.0,
-   0.5,  0.5,
-};
-
-const int pylith::topology::MeshDataCohesiveTri3Level1::_cells[] = {
-  16,  21,  23,
-  21,  17,  22,
-  23,  22,  18,
-  21,  22,  23,
-  18,  24,  23,
-  24,  19,  25,
-  23,  25, 16,
-  24,  25,  23,
-  18,  22,  27,
-  22,  17,  26,
-  27,  26,  20,
-  22,  26,  27,
-  18,  27,  24,
-  27,  20,  28,
-  24,  28,  19,
-  27,  28,  24,
-};
-const int pylith::topology::MeshDataCohesiveTri3Level1::_cellsCohesive[] = {
-};
-const int pylith::topology::MeshDataCohesiveTri3Level1::_materialIds[] = {
-  1, 1, 1, 1, 1, 1, 1, 1,
-  2, 2, 2, 2, 2, 2, 2, 2,
-};
+const int pylith::topology::MeshDataCohesiveTri3Level1::_matIdSum =
+  8*1 + 8*2;
 
 const int pylith::topology::MeshDataCohesiveTri3Level1::_numGroups = 4;
 
-const int pylith::topology::MeshDataCohesiveTri3Level1::_groupSizes[] = {
+const int pylith::topology::MeshDataCohesiveTri3Level1::_groupSizes[4] = {
   9, 5, 2, 9,
-};
-
-const int pylith::topology::MeshDataCohesiveTri3Level1::_groups[] = { // vertices, edges
-  16, 17, 19, 21, 25,    29, 30, 37, 38,
-  17, 20, 26,    39, 40,
-  16, 20,
-  17, 18, 19, 22, 24,    31, 32, 35, 36,
 };
 
 const char* pylith::topology::MeshDataCohesiveTri3Level1::_groupNames[4] = {
@@ -121,11 +76,7 @@ pylith::topology::MeshDataCohesiveTri3Level1::MeshDataCohesiveTri3Level1(void)
   numCorners = _numCorners;
   numCellsCohesive = _numCellsCohesive;
   numCornersCohesive = _numCornersCohesive;
-  vertices = const_cast<PylithScalar*>(_vertices);
-  cells = const_cast<int*>(_cells);
-  cellsCohesive = const_cast<int*>(_cellsCohesive);
-  materialIds = const_cast<int*>(_materialIds);
-  groups = const_cast<int*>(_groups);
+  matIdSum = _matIdSum;
   groupSizes = const_cast<int*>(_groupSizes);
   groupNames = const_cast<char**>(_groupNames);
   groupTypes = const_cast<char**>(_groupTypes);

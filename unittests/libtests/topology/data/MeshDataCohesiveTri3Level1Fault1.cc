@@ -40,83 +40,23 @@ const int pylith::topology::MeshDataCohesiveTri3Level1Fault1::_numCorners = 3;
 
 const int pylith::topology::MeshDataCohesiveTri3Level1Fault1::_numCornersCohesive = 6;
 
-const PylithScalar pylith::topology::MeshDataCohesiveTri3Level1Fault1::_vertices[] = {
-  -1.0,  0.0,
-   0.0, -1.0,
-   0.0,  0.0,
-   0.0,  1.0,
-   1.0,  0.0,
-   0.0, -1.0,
-   0.0,  0.0,
-   0.0,  1.0,
-  -0.5, -0.5,
-   0.0, -0.5,
-  -0.5,  0.0,
-   0.0,  0.5,
-  -0.5,  0.5,
-   0.0, -0.5,
-   0.5, -0.5,
-   0.5,  0.0,
-   0.5,  0.5,
-   0.0,  0.5,
-   0.0, -1.0,
-   0.0,  0.0,
-   0.0,  1.0,
-   0.0, -0.5,
-   0.0,  0.5,
-};
-
-const int pylith::topology::MeshDataCohesiveTri3Level1Fault1::_cells[] = {
-  16,  24,  26,
-  24,  25,  26,
-  17,  25,  24,
-  18,  26,  25,
-  18,  27,  26,
-  27,  28,  26,
-  19,  28,  27,
-  16,  26,  28,
-  22,  29,  31,
-  29,  30,  31,
-  21,  30,  29,
-  20,  31,  30,
-  22,  31,  33,
-  31,  32,  33,
-  20,  32,  31,
-  23,  33,  32,
-};
-const int pylith::topology::MeshDataCohesiveTri3Level1Fault1::_cellsCohesive[] = {
-  17,  25,  21,  29,  34,  37,
-  25,  18,  29,  22,  37,  35,
-  18,  27,  22,  33,  35,  38,
-  27,  19,  33,  23,  38,  36,
-};
-const int pylith::topology::MeshDataCohesiveTri3Level1Fault1::_materialIds[] = {
-  1, 1, 1, 1, 1, 1, 1, 1,
-  2, 2, 2, 2, 2, 2, 2, 2,
-  100, 100, 100, 100,
-};
+const int pylith::topology::MeshDataCohesiveTri3Level1Fault1::_matIdSum =
+  8*1 + 8*2 + 4*100;
 
 const int pylith::topology::MeshDataCohesiveTri3Level1Fault1::_numGroups = 4;
 
-const int pylith::topology::MeshDataCohesiveTri3Level1Fault1::_groupSizes[] = {
+const int pylith::topology::MeshDataCohesiveTri3Level1Fault1::_groupSizes[4] = {
   7, 4, 2, 15,
 };
 
-const int pylith::topology::MeshDataCohesiveTri3Level1Fault1::_groups[] = {
-  16, 17, 19, 21, 23, 24, 28,
-  17, 20, 21, 30,
-  16, 20,
-  17, 18, 19, 21, 22, 23, 25, 27, 29, 33, 34, 35, 36, 37, 38,
-};
-
-const char* pylith::topology::MeshDataCohesiveTri3Level1Fault1::_groupNames[] = {
+const char* pylith::topology::MeshDataCohesiveTri3Level1Fault1::_groupNames[4] = {
   "edge 1",
   "edge 2",
   "end points",
   "fault",
 };
 
-const char* pylith::topology::MeshDataCohesiveTri3Level1Fault1::_groupTypes[] = {
+const char* pylith::topology::MeshDataCohesiveTri3Level1Fault1::_groupTypes[4] = {
   "vertex", 
   "vertex",
   "vertex",
@@ -137,11 +77,7 @@ pylith::topology::MeshDataCohesiveTri3Level1Fault1::MeshDataCohesiveTri3Level1Fa
   numCorners = _numCorners;
   numCellsCohesive = _numCellsCohesive;
   numCornersCohesive = _numCornersCohesive;
-  vertices = const_cast<PylithScalar*>(_vertices);
-  cells = const_cast<int*>(_cells);
-  cellsCohesive = const_cast<int*>(_cellsCohesive);
-  materialIds = const_cast<int*>(_materialIds);
-  groups = const_cast<int*>(_groups);
+  matIdSum = _matIdSum;
   groupSizes = const_cast<int*>(_groupSizes);
   groupNames = const_cast<char**>(_groupNames);
   groupTypes = const_cast<char**>(_groupTypes);

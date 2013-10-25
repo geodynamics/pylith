@@ -71,28 +71,28 @@ public :
   /// Test constructor.
   void testConstructor(void);
 
-  /// Test refine() with level 2, tri3 cells, and no fault.
+  /// Test refine() with level 1, tri3 cells, and no fault.
   void testRefineTri3Level1(void);
 
-  /// Test refine() with level 2, tri3 cells, and one fault.
+  /// Test refine() with level 1, tri3 cells, and one fault.
   void testRefineTri3Level1Fault1(void);
 
-  /// Test refine() with level 2, quad4 cells, and no fault.
+  /// Test refine() with level 1, quad4 cells, and no fault.
   void testRefineQuad4Level1(void);
 
-  /// Test refine() with level 2, quad4 cells, and one fault.
+  /// Test refine() with level 1, quad4 cells, and one fault.
   void testRefineQuad4Level1Fault1(void);
 
-  /// Test refine() with level 2, tet4 cells, and no fault.
+  /// Test refine() with level 1, tet4 cells, and no fault.
   void testRefineTet4Level1(void);
 
-  /// Test refine() with level 2, tet4 cells, and one fault.
+  /// Test refine() with level 1, tet4 cells, and one fault.
   void testRefineTet4Level1Fault1(void);
 
-  /// Test refine() with level 2, hex8 cells, and no fault.
+  /// Test refine() with level 1, hex8 cells, and no fault.
   void testRefineHex8Level1(void);
 
-  /// Test refine() with level 2, hex8 cells, and one fault.
+  /// Test refine() with level 1, hex8 cells, and one fault.
   void testRefineHex8Level1Fault1(void);
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
@@ -109,8 +109,10 @@ private :
   /** Test refine().
    *
    * @param data Test data.
+   * @param isSimplexMesh True if mesh is simplex (tri,tet), false if not (quad,hex).
    */
-  void _testRefine(const MeshDataCohesive& data);
+  void _testRefine(const MeshDataCohesive& data,
+		   const bool isSimplexMesh);
 
 }; // class TestRefineUniform
 
