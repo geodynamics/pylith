@@ -290,27 +290,27 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
     } // for
     // Also add any non-cells which have all vertices marked
     for(PetscInt p = 0; p < numPoints; ++p) {
-      const PetscInt *support;
-      PetscInt        supportSize, s;
-      const PetscInt  vertex = numCells+points[p];
+      const PetscInt vertex = numCells+points[p];
+      PetscInt      *star   = NULL, starSize, s;
 
-      err = DMPlexGetSupportSize(dmMesh, vertex, &supportSize);PYLITH_CHECK_ERROR(err);
-      err = DMPlexGetSupport(dmMesh, vertex, &support);PYLITH_CHECK_ERROR(err);
-      for (s = 0; s < supportSize; ++s) {
-        PetscInt *closure = NULL, closureSize, c, value;
-        PetscBool marked  = PETSC_TRUE;
+      err = DMPlexGetTransitiveClosure(dmMesh, vertex, PETSC_FALSE, &starSize, &star);PYLITH_CHECK_ERROR(err);
+      for (s = 0; s < starSize*2; s += 2) {
+        const PetscInt point   = star[s];
+        PetscInt      *closure = NULL, closureSize, c, value;
+        PetscBool      marked  = PETSC_TRUE;
 
-        if ((support[s] >= cStart) && (support[s] < cEnd)) continue;
-        err = DMPlexGetTransitiveClosure(dmMesh, support[s], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+        if ((point >= cStart) && (point < cEnd)) continue;
+        err = DMPlexGetTransitiveClosure(dmMesh, point, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
         for (c = 0; c < closureSize*2; c += 2) {
           if ((closure[c] >= vStart) && (closure[c] < vEnd)) {
             err = DMLabelGetValue(label, closure[c], &value);PYLITH_CHECK_ERROR(err);
             if (value != 1) {marked = PETSC_FALSE; break;}
           }
         }
-        err = DMPlexRestoreTransitiveClosure(dmMesh, support[s], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-        if (marked) {err = DMLabelSetValue(label, support[s], 1);PYLITH_CHECK_ERROR(err);}
+        err = DMPlexRestoreTransitiveClosure(dmMesh, point, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+        if (marked) {err = DMLabelSetValue(label, point, 1);PYLITH_CHECK_ERROR(err);}
       }
+      err = DMPlexRestoreTransitiveClosure(dmMesh, vertex, PETSC_FALSE, &starSize, &star);PYLITH_CHECK_ERROR(err);
     }
   } // if/else
 
