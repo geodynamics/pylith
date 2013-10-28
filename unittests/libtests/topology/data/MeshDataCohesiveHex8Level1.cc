@@ -45,7 +45,7 @@ const int pylith::topology::MeshDataCohesiveHex8Level1::_matIdSum =
 const int pylith::topology::MeshDataCohesiveHex8Level1::_numGroups = 4;
 
 const int pylith::topology::MeshDataCohesiveHex8Level1::_groupSizes[4] = {
-  3+2+0, 9+12+4, 9+12+4, 9+12+4, // vertices + edges + faces
+  2+0+0, 9+12+4, 9+12+4, 9+12+4, // vertices + edges + faces
 };
 
 const char* pylith::topology::MeshDataCohesiveHex8Level1::_groupNames[4] = {
