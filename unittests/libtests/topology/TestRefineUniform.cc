@@ -314,21 +314,22 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data,
   PetscInt numGroups, pStart, pEnd;
   err = DMPlexGetChart(dmMesh, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
   err = DMPlexGetNumLabels(dmMesh, &numGroups);PYLITH_CHECK_ERROR(err);
-  CPPUNIT_ASSERT_EQUAL(data.numGroups, numGroups-2); // Omit depth and material labels
   PetscInt index  = 0;
   for(PetscInt iGroup = 0; iGroup < data.numGroups; ++iGroup) {
+    // Omit depth, vtk, ghost and material-id labels
     // Don't know order of labels, so do brute force linear search
     bool foundLabel = false;
     int iLabel = 0;
     const char *name = NULL;
     PetscInt firstPoint = 0;
+
     while (iLabel < numGroups) {
       err = DMPlexGetLabelName(dmMesh, iLabel, &name);PYLITH_CHECK_ERROR(err);
       if (0 == strcmp(data.groupNames[iGroup], name)) {
-	foundLabel = true;
-	break;
+        foundLabel = true;
+        break;
       } else {
-	++iLabel;
+        ++iLabel;
       } // if/else
     } // while
     CPPUNIT_ASSERT(foundLabel);
