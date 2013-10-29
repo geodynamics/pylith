@@ -79,13 +79,8 @@ pylith::topology::TestRefineUniform::testRefineTri3Level1Fault1(void)
 { // testRefineTri3Level1Fault1
   PYLITH_METHOD_BEGIN;
 
-#if !defined(DISABLE_FAULT_TEST)
   MeshDataCohesiveTri3Level1Fault1 data;
   _testRefine(data, true);
-#else
-  std::cout << "****TEST IS DISABLED. FORCING FAILURE.****" << std::endl;
-  CPPUNIT_ASSERT(false);
-#endif
 
   PYLITH_METHOD_END;
 } // testRefineTri3Level1Fault1
@@ -141,13 +136,8 @@ pylith::topology::TestRefineUniform::testRefineTet4Level1Fault1(void)
 { // testRefineTet4Level1Fault1
   PYLITH_METHOD_BEGIN;
 
-#if !defined(DISABLE_FAULT_TEST)
   MeshDataCohesiveTet4Level1Fault1 data;
   _testRefine(data, true);
-#else
-  std::cout << "****TEST IS DISABLED. FORCING FAILURE.****" << std::endl;
-  CPPUNIT_ASSERT(false);
-#endif
 
   PYLITH_METHOD_END;
 } // testRefineTet4Level1Fault1
