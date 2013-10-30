@@ -43,55 +43,28 @@ const int pylith::faults::CohesiveDataTet4::_numCells = 3;
 
 const int pylith::faults::CohesiveDataTet4::_cellDim = 3;
 
-const PylithScalar pylith::faults::CohesiveDataTet4::_vertices[] = {
-  -1.0,  0.0,  0.0,
-   0.0, -1.0,  0.0,
-   0.0,  0.0,  1.0,
-   0.0,  1.0,  0.0,
-   1.0,  0.0,  0.0,
-   0.0, -1.0,  0.0,
-   0.0,  0.0,  1.0,
-   0.0,  1.0,  0.0
-};
-
-const int pylith::faults::CohesiveDataTet4::_numCorners[] = {
+const int pylith::faults::CohesiveDataTet4::_numCorners[3] = {
   4,
   4,
   6
 };
 
-const int pylith::faults::CohesiveDataTet4::_cells[] = {
-  4,  5,  6,  3,
-  8, 10,  9,  7,
-  5,  4,  6,  9,  8, 10
-};
-
-const int pylith::faults::CohesiveDataTet4::_cellsInt[] = {
-  4,  5,  6,  3,
- 10,  9,  8,  7,
-  4,  8,  5,  9,  6, 10
-};
-
-const int pylith::faults::CohesiveDataTet4::_materialIds[] = {
+const int pylith::faults::CohesiveDataTet4::_materialIds[3] = {
   0,  0,
   1
 };
 
 const int pylith::faults::CohesiveDataTet4::_numGroups = 2;
 
-const int pylith::faults::CohesiveDataTet4::_groupSizes[] = 
-  { 5, 6 };
-
-const int pylith::faults::CohesiveDataTet4::_groups[] = {
-  3, 5, 6, 9, 10,
-  4, 5, 6, 8,  9, 10
+const int pylith::faults::CohesiveDataTet4::_groupSizes[2] = {
+  5+4+1, 6+6+2 // vertices+edges+faces
 };
 
-const char* pylith::faults::CohesiveDataTet4::_groupNames[] = {
+const char* pylith::faults::CohesiveDataTet4::_groupNames[2] = {
   "output", "fault"
 };
 
-const char* pylith::faults::CohesiveDataTet4::_groupTypes[] = {
+const char* pylith::faults::CohesiveDataTet4::_groupTypes[2] = {
   "vertex", "vertex"
 };
 
@@ -103,12 +76,8 @@ pylith::faults::CohesiveDataTet4::CohesiveDataTet4(void)
   spaceDim = _spaceDim;
   numCells = _numCells;
   cellDim = _cellDim;
-  vertices = const_cast<PylithScalar*>(_vertices);
   numCorners = const_cast<int*>(_numCorners);
-  cells = const_cast<int*>(_cells);
-  cellsInt = const_cast<int*>(_cellsInt);
   materialIds = const_cast<int*>(_materialIds);
-  groups = const_cast<int*>(_groups);
   groupSizes = const_cast<int*>(_groupSizes);
   groupNames = const_cast<char**>(_groupNames);
   groupTypes = const_cast<char**>(_groupTypes);

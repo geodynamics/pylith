@@ -43,49 +43,28 @@ const int pylith::faults::CohesiveDataTet4g::_numCells = 3;
 
 const int pylith::faults::CohesiveDataTet4g::_cellDim = 3;
 
-const PylithScalar pylith::faults::CohesiveDataTet4g::_vertices[] = {
-  -1.0,  0.0,  0.0,
-   0.0, -1.0,  0.0,
-   0.0,  0.0,  1.0,
-   0.0,  1.0,  0.0,
-   1.0,  0.0,  0.0,
-   0.0, -1.0,  0.0,
-   0.0,  0.0,  1.0,
-   0.0,  1.0,  0.0
-};
-
-const int pylith::faults::CohesiveDataTet4g::_numCorners[] = {
+const int pylith::faults::CohesiveDataTet4g::_numCorners[3] = {
   4,
   4,
   6
 };
 
-const int pylith::faults::CohesiveDataTet4g::_cells[] = {
-  4,  6,  5,  7,
-  8, 10,  3,  9,
-  6,  4,  5, 10,  8,  9
-};
-
-const int pylith::faults::CohesiveDataTet4g::_materialIds[] = {
+const int pylith::faults::CohesiveDataTet4g::_materialIds[3] = {
   0,  0,
   1
 };
 
 const int pylith::faults::CohesiveDataTet4g::_numGroups = 2;
 
-const int pylith::faults::CohesiveDataTet4g::_groupSizes[] = 
-  { 5, 6 };
-
-const int pylith::faults::CohesiveDataTet4g::_groups[] = {
-  3, 5, 6, 9, 10,
-  4, 5, 6, 8,  9, 10
+const int pylith::faults::CohesiveDataTet4g::_groupSizes[2] = {
+  5+4+1, 6+6+2 // vertices+edges+faces
 };
 
-const char* pylith::faults::CohesiveDataTet4g::_groupNames[] = {
+const char* pylith::faults::CohesiveDataTet4g::_groupNames[2] = {
   "output", "fault"
 };
 
-const char* pylith::faults::CohesiveDataTet4g::_groupTypes[] = {
+const char* pylith::faults::CohesiveDataTet4g::_groupTypes[2] = {
   "vertex", "vertex"
 };
 
@@ -97,11 +76,8 @@ pylith::faults::CohesiveDataTet4g::CohesiveDataTet4g(void)
   spaceDim = _spaceDim;
   numCells = _numCells;
   cellDim = _cellDim;
-  vertices = const_cast<PylithScalar*>(_vertices);
   numCorners = const_cast<int*>(_numCorners);
-  cells = const_cast<int*>(_cells);
   materialIds = const_cast<int*>(_materialIds);
-  groups = const_cast<int*>(_groups);
   groupSizes = const_cast<int*>(_groupSizes);
   groupNames = const_cast<char**>(_groupNames);
   groupTypes = const_cast<char**>(_groupTypes);

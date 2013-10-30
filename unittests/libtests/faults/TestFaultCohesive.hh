@@ -48,7 +48,6 @@ class pylith::faults::TestFaultCohesive : public CppUnit::TestFixture
 
   CPPUNIT_TEST( testUseFaultMesh );
 
-  CPPUNIT_TEST( testAdjustTopologyLine2 );
   CPPUNIT_TEST( testAdjustTopologyTri3 );
   CPPUNIT_TEST( testAdjustTopologyTri3b );
   CPPUNIT_TEST( testAdjustTopologyTri3c );
@@ -82,7 +81,6 @@ class pylith::faults::TestFaultCohesive : public CppUnit::TestFixture
   CPPUNIT_TEST( testAdjustTopologyHex8h );
   CPPUNIT_TEST( testAdjustTopologyHex8i );
 
-  CPPUNIT_TEST( testAdjustTopologyLine2Lagrange );
   CPPUNIT_TEST( testAdjustTopologyTri3Lagrange );
   CPPUNIT_TEST( testAdjustTopologyQuad4Lagrange );
   CPPUNIT_TEST( testAdjustTopologyTet4Lagrange );
@@ -95,9 +93,6 @@ public :
 
   /// Test useFaultMesh().
   void testUseFaultMesh(void);
-
-  /// Test adjustTopology() with 1-D line element.
-  void testAdjustTopologyLine2(void);
 
   /// Test adjustTopology() with 2-D triangular element.
   void testAdjustTopologyTri3(void);
@@ -195,10 +190,6 @@ public :
   /// Test adjustTopology() with 3-D hexahedral element (edge/vertex on fault).
   void testAdjustTopologyHex8i(void);
 
-  /// Test adjustTopology() with 1-D line element for Lagrange
-  /// multipliers.
-  void testAdjustTopologyLine2Lagrange(void);
-
   /// Test adjustTopology() with 2-D triangular element for Lagrange
   /// multipliers.
   void testAdjustTopologyTri3Lagrange(void);
@@ -222,26 +213,19 @@ public :
    *
    * @param fault Fault for cohesive elements.
    * @param data Cohesive element data.
-   * @param flipFault If true, add vertices to opposite side of fault.
    */
   void _testAdjustTopology(Fault* fault,
-			   const CohesiveData& data,
-               const bool flipFault,
-			   const bool flipFaultInt);
+			   const CohesiveData& data);
 
   /** Test adjustTopology().
    *
    * @param faultA First fault for cohesive elements.
    * @param faultB Second fault for cohesive elements.
    * @param data Cohesive element data.
-   * @param flipFaultA If true, add vertices to opposite side of fault A.
-   * @param flipFaultB If true, add vertices to opposite side of fault B.
    */
   void _testAdjustTopology(Fault* faultA,
 			   Fault* faultB,
-			   const CohesiveData& data,
-			   const bool flipFaultA,
-			   const bool flipFaultB);
+			   const CohesiveData& data);
 
 }; // class TestFaultCohesive
 

@@ -47,13 +47,9 @@ public:
   int numCells; ///< Number of cells
   int cellDim; ///< Number of dimensions associated with cell
 
-  PylithScalar* vertices; ///< Pointer to coordinates of vertices
   int* numCorners; ///< Number of vertices in cell
-  int* cells; ///< Pointer to indices of vertices in cells
-  int* cellsInt; ///< Pointer to indices of vertices in cells for interpolated meshes
   int* materialIds; ///< Pointer to cell material identifiers
 
-  int* groups; ///< Array of pointers to indices of points in groups
   int* groupSizes; ///< Array of sizes of each group
   char** groupNames; ///< Array of group names
   char** groupTypes; ///< Array of group types

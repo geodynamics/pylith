@@ -57,31 +57,12 @@ const int pylith::faults::CohesiveDataTri3f::_numCells = 5;
 
 const int pylith::faults::CohesiveDataTri3f::_cellDim = 2;
 
-const PylithScalar pylith::faults::CohesiveDataTri3f::_vertices[] = {
- -2.0, -1.0,
- -2.0,  1.0,
-  0.0, -1.0,
-  0.0,  1.0,
-  2.0, -1.0,
-  2.0,  1.0,
-  0.0, -1.0,
-  0.0,  1.0,
-};
-
 const int pylith::faults::CohesiveDataTri3f::_numCorners[] = {
   3,
   3,
   3,
   3,
   4,
-};
-
-const int pylith::faults::CohesiveDataTri3f::_cells[] = {
-  5,  8,  6,
- 10, 12, 11,
- 11,  9, 10,
-  7,  8,  5,
-  7,  8, 11, 12,
 };
 
 const int pylith::faults::CohesiveDataTri3f::_materialIds[] = {
@@ -92,12 +73,7 @@ const int pylith::faults::CohesiveDataTri3f::_materialIds[] = {
 const int pylith::faults::CohesiveDataTri3f::_numGroups = 2;
 
 const int pylith::faults::CohesiveDataTri3f::_groupSizes[] = 
-  { 4, 4 };
-
-const int pylith::faults::CohesiveDataTri3f::_groups[] = {
-  6, 8, 10, 12,
-  7, 8, 11, 12
-};
+  { 4+2, 4+2 }; // vertices+edges
 
 const char* pylith::faults::CohesiveDataTri3f::_groupNames[] = {
   "output", "fault"
@@ -115,11 +91,8 @@ pylith::faults::CohesiveDataTri3f::CohesiveDataTri3f(void)
   spaceDim = _spaceDim;
   numCells = _numCells;
   cellDim = _cellDim;
-  vertices = const_cast<PylithScalar*>(_vertices);
   numCorners = const_cast<int*>(_numCorners);
-  cells = const_cast<int*>(_cells);
   materialIds = const_cast<int*>(_materialIds);
-  groups = const_cast<int*>(_groups);
   groupSizes = const_cast<int*>(_groupSizes);
   groupNames = const_cast<char**>(_groupNames);
   groupTypes = const_cast<char**>(_groupTypes);

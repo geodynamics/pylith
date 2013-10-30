@@ -30,37 +30,12 @@
 /// Namespace for pylith package
 namespace pylith {
   namespace faults {
-    class TestFaultCohesiveKinSrcsLine2;
     class TestFaultCohesiveKinSrcsTri3;
     class TestFaultCohesiveKinSrcsQuad4;
     class TestFaultCohesiveKinSrcsTet4;
     class TestFaultCohesiveKinSrcsHex8;
   } // bc
 } // pylith
-
-// ----------------------------------------------------------------------
-/// C++ unit testing for FaultCohesiveKin for mesh with 1-D line cells.
-class pylith::faults::TestFaultCohesiveKinSrcsLine2 : public TestFaultCohesiveKinSrcs
-{ // class TestFaultCohesiveKinSrcsLine2
-
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestFaultCohesiveKinSrcsLine2 );
-
-  CPPUNIT_TEST( testInitialize );
-  CPPUNIT_TEST( testIntegrateResidual );
-  CPPUNIT_TEST( testIntegrateJacobian );
-  CPPUNIT_TEST( testIntegrateJacobianLumped );
-  CPPUNIT_TEST( testCalcTractionsChange );
-
-  CPPUNIT_TEST_SUITE_END();
-
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
-
-  /// Setup testing data.
-  void setUp(void);
-
-}; // class TestFaultCohesiveKinSrcsLine2
 
 // ----------------------------------------------------------------------
 /// C++ unit testing for FaultCohesiveKinSrcs for mesh with 2-D triangular cells.

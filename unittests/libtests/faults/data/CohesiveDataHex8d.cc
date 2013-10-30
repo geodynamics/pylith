@@ -44,57 +44,28 @@ const int pylith::faults::CohesiveDataHex8d::_numCells = 3;
 
 const int pylith::faults::CohesiveDataHex8d::_cellDim = 3;
 
-const PylithScalar pylith::faults::CohesiveDataHex8d::_vertices[] = {
-  -2.0, -1.0, -1.0,
-  -2.0,  1.0, -1.0,
-  -2.0, -1.0,  1.0,
-  -2.0,  1.0,  1.0,
-   0.0, -1.0, -1.0,
-   0.0,  1.0, -1.0,
-   0.0, -1.0,  1.0,
-   0.0,  1.0,  1.0,
-   2.0, -1.0, -1.0,
-   2.0,  1.0, -1.0,
-   2.0, -1.0,  1.0,
-   2.0,  1.0,  1.0,
-   0.0, -1.0, -1.0,
-   0.0,  1.0, -1.0,
-   0.0, -1.0,  1.0,
-   0.0,  1.0,  1.0,
-};
-
-const int pylith::faults::CohesiveDataHex8d::_numCorners[] = {
+const int pylith::faults::CohesiveDataHex8d::_numCorners[3] = {
   8,
   8,
   8
 };
 
-const int pylith::faults::CohesiveDataHex8d::_cells[] = {
-  5,  9,  7,  3,  6, 10,  8,  4,
- 17, 13, 11, 15, 18, 14, 12, 16,
-  9, 10,  8,  7, 17, 15, 16, 18,
-};
-
-const int pylith::faults::CohesiveDataHex8d::_materialIds[] = {
+const int pylith::faults::CohesiveDataHex8d::_materialIds[3] = {
   0,  0,
   1
 };
 
 const int pylith::faults::CohesiveDataHex8d::_numGroups = 2;
 
-const int pylith::faults::CohesiveDataHex8d::_groupSizes[] = 
-  { 8, 8 };
-
-const int pylith::faults::CohesiveDataHex8d::_groups[] = {
-  5, 6, 9, 10, 13, 14, 17, 18,
-  7, 8, 9, 10, 15, 16, 17, 18
+const int pylith::faults::CohesiveDataHex8d::_groupSizes[2] = {
+  8+8+2, 8+8+2 // vertices+edges+faces 
 };
 
-const char* pylith::faults::CohesiveDataHex8d::_groupNames[] = {
+const char* pylith::faults::CohesiveDataHex8d::_groupNames[2] = {
   "output", "fault"
 };
 
-const char* pylith::faults::CohesiveDataHex8d::_groupTypes[] = {
+const char* pylith::faults::CohesiveDataHex8d::_groupTypes[2] = {
   "vertex", "vertex"
 };
 
@@ -107,11 +78,8 @@ pylith::faults::CohesiveDataHex8d::CohesiveDataHex8d(void)
   spaceDim = _spaceDim;
   numCells = _numCells;
   cellDim = _cellDim;
-  vertices = const_cast<PylithScalar*>(_vertices);
   numCorners = const_cast<int*>(_numCorners);
-  cells = const_cast<int*>(_cells);
   materialIds = const_cast<int*>(_materialIds);
-  groups = const_cast<int*>(_groups);
   groupSizes = const_cast<int*>(_groupSizes);
   groupNames = const_cast<char**>(_groupNames);
   groupTypes = const_cast<char**>(_groupTypes);

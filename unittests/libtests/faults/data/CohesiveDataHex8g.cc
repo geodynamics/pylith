@@ -57,34 +57,7 @@ const int pylith::faults::CohesiveDataHex8g::_numCells = 6;
 
 const int pylith::faults::CohesiveDataHex8g::_cellDim = 3;
 
-const PylithScalar pylith::faults::CohesiveDataHex8g::_vertices[] = {
-  -2.0, -1.0, -2.0,
-  -2.0,  1.0, -2.0,
-  -2.0, -1.0,  0.0,
-  -2.0,  1.0,  0.0,
-  -2.0, -1.0,  2.0,
-  -2.0,  1.0,  2.0,
-   0.0, -1.0, -2.0,
-   0.0,  1.0, -2.0,
-   0.0, -1.0,  0.0,
-   0.0,  1.0,  0.0,
-   0.0, -1.0,  2.0,
-   0.0,  1.0,  2.0,
-   2.0, -1.0, -2.0,
-   2.0,  1.0, -2.0,
-   2.0, -1.0,  0.0,
-   2.0,  1.0,  0.0,
-   2.0, -1.0,  2.0,
-   2.0,  1.0,  2.0,
-   0.0, -1.0, -2.0,
-   0.0,  1.0, -2.0,
-   0.0, -1.0,  0.0,
-   0.0,  1.0,  0.0,
-   0.0, -1.0,  2.0,
-   0.0,  1.0,  2.0,
-};
-
-const int pylith::faults::CohesiveDataHex8g::_numCorners[] = {
+const int pylith::faults::CohesiveDataHex8g::_numCorners[6] = {
   8,
   8,
   8,
@@ -93,35 +66,22 @@ const int pylith::faults::CohesiveDataHex8g::_numCorners[] = {
   8
 };
 
-const int pylith::faults::CohesiveDataHex8g::_cells[] = {
-   6, 24, 25,  7,  8, 26, 27,  9,
-   8, 26, 27,  9, 10, 28, 29, 11,
-  12, 18, 19, 13, 14, 20, 21, 15,
-  14, 20, 21, 15, 16, 22, 23, 17,
-  12, 13, 15, 14, 24, 26, 27, 25,
-  14, 15, 17, 16, 26, 28, 29, 27,
-};
-
-const int pylith::faults::CohesiveDataHex8g::_materialIds[] = {
+const int pylith::faults::CohesiveDataHex8g::_materialIds[6] = {
   0,  0,  0,  0,
   1,  1
 };
 
 const int pylith::faults::CohesiveDataHex8g::_numGroups = 2;
 
-const int pylith::faults::CohesiveDataHex8g::_groupSizes[] = 
-  { 8, 12 };
-
-const int pylith::faults::CohesiveDataHex8g::_groups[] = {
-  10, 11, 16, 17, 22, 23, 28, 29,
-  12, 13, 14, 15, 16, 17, 24, 25, 26, 27, 28, 29
+const int pylith::faults::CohesiveDataHex8g::_groupSizes[2] = {
+  8+8+2, 12+14+4 // vertices+edges+faces 
 };
 
-const char* pylith::faults::CohesiveDataHex8g::_groupNames[] = {
+const char* pylith::faults::CohesiveDataHex8g::_groupNames[2] = {
   "output", "fault"
 };
 
-const char* pylith::faults::CohesiveDataHex8g::_groupTypes[] = {
+const char* pylith::faults::CohesiveDataHex8g::_groupTypes[2] = {
   "vertex", "vertex"
 };
 
@@ -134,11 +94,8 @@ pylith::faults::CohesiveDataHex8g::CohesiveDataHex8g(void)
   spaceDim = _spaceDim;
   numCells = _numCells;
   cellDim = _cellDim;
-  vertices = const_cast<PylithScalar*>(_vertices);
   numCorners = const_cast<int*>(_numCorners);
-  cells = const_cast<int*>(_cells);
   materialIds = const_cast<int*>(_materialIds);
-  groups = const_cast<int*>(_groups);
   groupSizes = const_cast<int*>(_groupSizes);
   groupNames = const_cast<char**>(_groupNames);
   groupTypes = const_cast<char**>(_groupTypes);

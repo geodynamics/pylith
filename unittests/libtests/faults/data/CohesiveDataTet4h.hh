@@ -47,12 +47,9 @@ private:
   static const int _numCells; ///< Number of cells
   static const int _cellDim; ///< Number of dimensions associated with cell
 
-  static const PylithScalar _vertices[]; ///< Pointer to coordinates of vertices
   static const int _numCorners[]; ///< Number of vertices in cell
-  static const int _cells[]; ///< Pointer to indices of vertices in cells
   static const int _materialIds[]; ///< Pointer to cell material identifiers
 
-  static const int _groups[]; ///< Groups of points
   static const int _groupSizes[]; ///< Sizes of groups
   static const char* _groupNames[]; ///< Array of group names
   static const char* _groupTypes[]; ///< Array of group types

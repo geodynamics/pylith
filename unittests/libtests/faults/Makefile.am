@@ -27,6 +27,9 @@ check_PROGRAMS = testfaults
 
 # Primary source files
 testfaults_SOURCES = \
+	TestFault.cc \
+	TestFaultCohesive.cc \
+	TestFaultMesh.cc \
 	TestSlipFn.cc \
 	TestStepSlipFn.cc \
 	TestConstRateSlipFn.cc \
@@ -34,8 +37,6 @@ testfaults_SOURCES = \
 	TestLiuCosSlipFn.cc \
 	TestTimeHistorySlipFn.cc \
 	TestEqKinSrc.cc \
-	TestFault.cc \
-	TestFaultCohesive.cc \
 	TestFaultCohesiveKin.cc \
 	TestFaultCohesiveKinCases.cc \
 	TestFaultCohesiveKinSrcs.cc \
@@ -45,7 +46,6 @@ testfaults_SOURCES = \
 	TestTractPerturbation.cc \
 	TestFaultCohesiveImpulses.cc \
 	TestFaultCohesiveImpulsesCases.cc \
-	TestFaultMesh.cc \
 	test_faults.cc
 
 
@@ -73,8 +73,6 @@ noinst_HEADERS = \
 # Source files associated with testing data
 testfaults_SOURCES += \
 	data/CohesiveData.cc \
-	data/CohesiveDataLine2.cc \
-	data/CohesiveDataLine2Lagrange.cc \
 	data/CohesiveDataTri3.cc \
 	data/CohesiveDataTri3b.cc \
 	data/CohesiveDataTri3c.cc \
@@ -112,7 +110,6 @@ testfaults_SOURCES += \
 	data/CohesiveDataHex8i.cc \
 	data/CohesiveDataHex8Lagrange.cc \
 	data/CohesiveKinData.cc \
-	data/CohesiveKinDataLine2.cc \
 	data/CohesiveKinDataTri3.cc \
 	data/CohesiveKinDataTri3d.cc \
 	data/CohesiveKinDataQuad4.cc \
@@ -121,7 +118,6 @@ testfaults_SOURCES += \
 	data/CohesiveKinDataTet4e.cc \
 	data/CohesiveKinDataTet4f.cc \
 	data/CohesiveKinDataHex8.cc \
-	data/CohesiveKinSrcsDataLine2.cc \
 	data/CohesiveKinSrcsDataTri3.cc \
 	data/CohesiveKinSrcsDataQuad4.cc \
 	data/CohesiveKinSrcsDataTet4.cc \
@@ -140,8 +136,6 @@ testfaults_SOURCES += \
 
 noinst_HEADERS += \
 	data/CohesiveData.hh \
-	data/CohesiveDataLine2.hh \
-	data/CohesiveDataLine2Lagrange.hh \
 	data/CohesiveDataTri3.hh \
 	data/CohesiveDataTri3b.hh \
 	data/CohesiveDataTri3c.hh \
@@ -179,7 +173,6 @@ noinst_HEADERS += \
 	data/CohesiveDataHex8i.hh \
 	data/CohesiveDataHex8Lagrange.hh \
 	data/CohesiveKinData.hh \
-	data/CohesiveKinDataLine2.hh \
 	data/CohesiveKinDataTri3.hh \
 	data/CohesiveKinDataTri3d.hh \
 	data/CohesiveKinDataQuad4.hh \
@@ -188,7 +181,6 @@ noinst_HEADERS += \
 	data/CohesiveKinDataTet4e.hh \
 	data/CohesiveKinDataTet4f.hh \
 	data/CohesiveKinDataHex8.hh \
-	data/CohesiveKinSrcsDataLine2.hh \
 	data/CohesiveKinSrcsDataTri3.hh \
 	data/CohesiveKinSrcsDataQuad4.hh \
 	data/CohesiveKinSrcsDataTet4.hh \
