@@ -886,14 +886,17 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
   PYLITH_METHOD_BEGIN;
 
   assert(_quadrature);
+  PetscErrorCode err = 0;
 
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
-  const PetscInt vStart = verticesStratum.begin();
-  const PetscInt vEnd = verticesStratum.end();
+  topology::Stratum edgeStratum(dmMesh, topology::Stratum::DEPTH, 1);
+  const PetscInt eEnd = edgeStratum.end();
+  PetscInt eMax;
+
+  err = DMPlexGetHybridBounds(dmMesh, NULL, NULL, &eMax, NULL);PYLITH_CHECK_ERROR(err);
 
   PetscBool hasLabel;
-  PetscErrorCode err = DMPlexHasLabel(dmMesh, label(), &hasLabel);PYLITH_CHECK_ERROR(err);
+  err = DMPlexHasLabel(dmMesh, label(), &hasLabel);PYLITH_CHECK_ERROR(err);
   if (!hasLabel) {
     std::ostringstream msg;
     msg << "Mesh missing group of vertices '" << label() << " for boundary condition.";
@@ -937,25 +940,25 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
   } // if
 
   // Check quadrature against mesh
-  const int numCorners = _quadrature->numBasis();
+  const int numConstraints = _quadrature->numBasis();
   topology::StratumIS cohesiveIS(dmMesh, "material-id", id());
   const PetscInt* cells = cohesiveIS.points();
   const PetscInt ncells = cohesiveIS.size();
   for(PetscInt i = 0; i < ncells; ++i) {
     PetscInt *closure = NULL;
-    PetscInt cellNumCorners = 0, closureSize;
+    PetscInt cellNumEdges = 0, closureSize;
 
     err = DMPlexGetTransitiveClosure(dmMesh, cells[i], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     for(PetscInt p = 0; p < closureSize*2; p += 2) {
       const PetscInt point = closure[p];
-      if ((point >= vStart) && (point < vEnd)) {
-        ++cellNumCorners;
+      if ((point >= eMax) && (point < eEnd)) {
+        ++cellNumEdges;
       }
     }
-    if (3 * numCorners != cellNumCorners) {
+    if (numConstraints != cellNumEdges) {
       std::ostringstream msg;
-      msg << "Number of vertices in reference cell (" << numCorners
-          << ") is not compatible with number of vertices (" << cellNumCorners
+      msg << "Number of dofs in reference cell (" << numConstraints
+          << ") is not compatible with number of edges (" << cellNumEdges
           << ") in cohesive cell " << cells[i] << " for fault '" << label()
           << "'.";
       throw std::runtime_error(msg.str());
@@ -1017,8 +1020,8 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
 
   assert(_quadrature);
 
-  const int numConstraintVert = _quadrature->numBasis();
-  const int numCorners = 3 * numConstraintVert; // cohesive cell
+  const int numConstraintEdges = _quadrature->numBasis();
+  PetscErrorCode err = 0;
 
   // Get cohesive cells
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
@@ -1027,9 +1030,12 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
   const int ncells = _cohesiveIS->size();
 
   // Get domain vertices
-  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
-  const PetscInt vStart = verticesStratum.begin();
-  const PetscInt vEnd = verticesStratum.end();
+  topology::Stratum edgeStratum(dmMesh, topology::Stratum::DEPTH, 1);
+  const PetscInt eStart = edgeStratum.begin();
+  const PetscInt eEnd = edgeStratum.end();
+  PetscInt eMax;
+
+  err = DMPlexGetHybridBounds(dmMesh, NULL, NULL, &eMax, NULL);PYLITH_CHECK_ERROR(err);
 
   // Get vertices and cells in fault mesh.
   PetscDM faultDMMesh = _faultMesh->dmMesh();assert(faultDMMesh);
@@ -1051,7 +1057,6 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
   _cohesiveVertices.resize(fvEnd-fvStart);
 
   PetscInt index = 0;
-  PetscErrorCode err = 0;
   for(PetscInt c = 0; c < ncells; ++c) {
     _cohesiveToFault[cells[c]] = c+fcStart;
 
@@ -1061,24 +1066,27 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
     err = DMPlexGetTransitiveClosure(dmMesh, cells[c], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     for(PetscInt p = 0; p < closureSize*2; p += 2) {
       const PetscInt point = closure[p];
-      if ((point >= vStart) && (point < vEnd)) {
+      if ((point >= eMax) && (point < eEnd)) {
         closure[q++] = point;
       } // if
     } // for
     closureSize = q;
-    assert(closureSize == numCorners);
+    assert(closureSize == numConstraintEdges);
 
-    for (int iConstraint = 0; iConstraint < numConstraintVert; ++iConstraint) {
+    for (int iConstraint = 0; iConstraint < numConstraintEdges; ++iConstraint) {
       // normal cohesive vertices i and j and constraint vertex k
-      const int indexI = iConstraint;
-      const int indexJ = iConstraint + numConstraintVert;
-      const int indexK = iConstraint + 2 * numConstraintVert;
+      const PetscInt  v_lagrange = closure[iConstraint];
+      const PetscInt *cone;
+      PetscInt        coneSize;
 
-      const PetscInt v_lagrange = closure[indexK];
-      const PetscInt v_negative = closure[indexI];
-      const PetscInt v_positive = closure[indexJ];
+      err = DMPlexGetConeSize(dmMesh, v_lagrange, &coneSize);PYLITH_CHECK_ERROR(err);
+      assert(coneSize == 2);
+      err = DMPlexGetCone(dmMesh, v_lagrange, &cone);PYLITH_CHECK_ERROR(err);
 
-      PetscInt v_fault;
+      const PetscInt v_negative = cone[0];
+      const PetscInt v_positive = cone[1];
+      PetscInt       v_fault;
+
       err = PetscFindInt(v_negative, numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
       assert(v_fault >= 0);
       if (indexMap.end() == indexMap.find(v_lagrange)) {
@@ -1087,7 +1095,7 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
         _cohesiveVertices[index].negative = v_negative;
         _cohesiveVertices[index].fault = v_fault;
 #if 0
-	std::cout << "cohesiveVertices[" << index << "]: "
+        std::cout << "cohesiveVertices[" << index << "]: "
 		  << "l: " << v_lagrange
 		  << ", p: " << v_positive
 		  << ", n: " << v_negative
