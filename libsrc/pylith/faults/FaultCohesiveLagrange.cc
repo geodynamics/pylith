@@ -97,7 +97,7 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
 
   const bool isSubMesh = true;
   delete _faultMesh; _faultMesh = new topology::Mesh(isSubMesh);assert(_faultMesh);
-  CohesiveTopology::createFaultParallel(_faultMesh, mesh, id(), label(), _useLagrangeConstraints);
+  CohesiveTopology::createFaultParallel(_faultMesh, mesh, id(), label(), _useLagrangeConstraints); // :TODO: Obsolete?
   _initializeCohesiveInfo(mesh);
 
   delete _fields; _fields = new topology::Fields(*_faultMesh);assert(_fields);
@@ -105,7 +105,7 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
   // Allocate dispRel field
   _fields->add("relative disp", "relative_disp");
   topology::Field& dispRel = _fields->get("relative disp");
-  dispRel.newSection(topology::FieldBase::VERTICES_FIELD, cs->spaceDim());
+  dispRel.newSection(topology::FieldBase::VERTICES_FIELD, cs->spaceDim()); // :TODO: Update?
   dispRel.allocate();
   dispRel.vectorFieldType(topology::FieldBase::VECTOR);
   dispRel.scale(_normalizer->lengthScale());
@@ -141,6 +141,8 @@ pylith::faults::FaultCohesiveLagrange::splitField(topology::Field* field)
   if (!numFields) {
     PYLITH_METHOD_END;
   } // if
+
+  // :TODO: Update this.
 
   assert(2 == numFields);
   err = PetscSectionGetFieldComponents(fieldSection, 0, &numComp);PYLITH_CHECK_ERROR(err);assert(numComp == spaceDim);
@@ -892,13 +894,24 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
   const PetscInt vStart = verticesStratum.begin();
   const PetscInt vEnd = verticesStratum.end();
 
+  // Check for fault groups
   PetscBool hasLabel;
   PetscErrorCode err = DMPlexHasLabel(dmMesh, label(), &hasLabel);PYLITH_CHECK_ERROR(err);
   if (!hasLabel) {
     std::ostringstream msg;
-    msg << "Mesh missing group of vertices '" << label() << " for boundary condition.";
+    msg << "Mesh missing group of vertices '" << label() << " defining fault.";
     throw std::runtime_error(msg.str());
   } // if  
+
+  if (strlen(edge()) > 0) {
+    PetscBool hasLabel;
+    PetscErrorCode err = DMPlexHasLabel(dmMesh, edge(), &hasLabel);PYLITH_CHECK_ERROR(err);
+    if (!hasLabel) {
+      std::ostringstream msg;
+      msg << "Mesh missing group of vertices '" << edge() << " defining buried edges of fault.";
+      throw std::runtime_error(msg.str());
+    } // if  
+  } // if
 
   // Verify quadrature scheme is consistent with points collocated
   // with verties. Expect basis functions to be 1.0 at one quadrature
@@ -952,7 +965,7 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
         ++cellNumCorners;
       }
     }
-    if (3 * numCorners != cellNumCorners) {
+    if (2 * numCorners != cellNumCorners) {
       std::ostringstream msg;
       msg << "Number of vertices in reference cell (" << numCorners
           << ") is not compatible with number of vertices (" << cellNumCorners
@@ -973,8 +986,8 @@ pylith::faults::FaultCohesiveLagrange::checkConstraints(const topology::Field& s
 { // checkConstraints
   PYLITH_METHOD_BEGIN;
 
-  // Check to make sure no vertices connected to the
-  //fault are constrained.
+  // Check to make sure no vertices connected to the fault are
+  // constrained.
 
   const PetscInt spaceDim = solution.mesh().dimension();
   topology::VecVisitorMesh solutionVisitor(solution);
@@ -1017,8 +1030,10 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
 
   assert(_quadrature);
 
+  // :TODO: Update this.
+
   const int numConstraintVert = _quadrature->numBasis();
-  const int numCorners = 3 * numConstraintVert; // cohesive cell
+  const int numCorners = 2 * numConstraintVert; // cohesive cell
 
   // Get cohesive cells
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
@@ -1531,6 +1546,8 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
   assert(_fields);
   assert(_normalizer);
 
+  // :TODO: Update for higher order?
+
   // Containers for area information
   const int cellDim = _quadrature->cellDim();
   const int numBasis = _quadrature->numBasis();
@@ -1688,8 +1705,7 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferVectorField(void)
   assert(_faultMesh);
   _fields->add("buffer (vector)", "buffer");
   topology::Field& buffer = _fields->get("buffer (vector)");
-  const topology::Field& dispRel = 
-    _fields->get("relative disp");
+  const topology::Field& dispRel = _fields->get("relative disp");
   buffer.cloneSection(dispRel);
   buffer.zeroAll();
   assert(buffer.vectorFieldType() == topology::FieldBase::VECTOR);
@@ -1712,7 +1728,7 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferScalarField(void)
   assert(_faultMesh);
   _fields->add("buffer (scalar)", "buffer");
   topology::Field& buffer = _fields->get("buffer (scalar)");
-  buffer.newSection(topology::FieldBase::VERTICES_FIELD, 1);
+  buffer.newSection(topology::FieldBase::VERTICES_FIELD, 1); // :TODO: Update?
   buffer.allocate();
   buffer.vectorFieldType(topology::FieldBase::SCALAR);
   buffer.scale(1.0);
