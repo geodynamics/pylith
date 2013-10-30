@@ -229,14 +229,15 @@ public :
   // PROTECTED STRUCTS //////////////////////////////////////////////////
 protected :
 
-  /** Data structure to hold relations between vertices in cohesive cell
-   *  in mesh of domain and cell of fault mesh.
+  /** Data structure to hold relations between points (vertices and
+   *  edges) in cohesive cell in mesh of domain and cell of fault
+   *  mesh.
    */
   struct CohesiveInfo {
-    int lagrange; ///< Vertex associated with Lagrange multiplier.
-    int positive; ///< Vertex on positive side of the fault.
-    int negative; ///< Vertex on negative side of the fault.
-    int fault; ///< Vertex in fault mesh.
+    int lagrange; ///< Point (edge) associated with Lagrange multiplier.
+    int positive; ///< Point (vertex) on positive side of the fault.
+    int negative; ///< Point (vertex) on negative side of the fault.
+    int fault; ///< Point (vertex) in fault mesh.
   };
 
   // PROTECTED METHODS //////////////////////////////////////////////////
