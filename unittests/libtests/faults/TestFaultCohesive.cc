@@ -683,6 +683,15 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh.dimension());
   dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
 
+  // Check consistency
+  PetscBool isSimplexMesh = PETSC_TRUE;
+  if ((data.cellDim == 2 && data.numCorners[0] == 4) ||
+      (data.cellDim == 3 && data.numCorners[0] == 8)) {
+    isSimplexMesh = PETSC_FALSE;
+  } // if
+  err = DMPlexCheckSymmetry(dmMesh);CPPUNIT_ASSERT(!err);
+  err = DMPlexCheckSkeleton(dmMesh, isSimplexMesh);CPPUNIT_ASSERT(!err);
+
   // Check vertices
   topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
   const PetscInt vStart = verticesStratum.begin();
@@ -826,6 +835,15 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
 
   CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh.dimension());
   dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+
+  // Check consistency
+  PetscBool isSimplexMesh = PETSC_TRUE;
+  if ((data.cellDim == 2 && data.numCorners[0] == 4) ||
+      (data.cellDim == 3 && data.numCorners[0] == 8)) {
+    isSimplexMesh = PETSC_FALSE;
+  } // if
+  err = DMPlexCheckSymmetry(dmMesh);CPPUNIT_ASSERT(!err);
+  err = DMPlexCheckSkeleton(dmMesh, isSimplexMesh);CPPUNIT_ASSERT(!err);
 
   // Check vertices
   topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
