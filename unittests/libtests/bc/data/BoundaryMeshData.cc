@@ -25,10 +25,7 @@ pylith::bc::BoundaryMeshData::BoundaryMeshData(void) :
   bcLabel(0),
   faultLabel(0),
   faultId(0),
-  verticesNoFault(0),
-  cellsNoFault(0),
-  verticesFault(0),
-  cellsFault(0)
+  isSimplexMesh(true)
 { // constructor
 } // constructor
 

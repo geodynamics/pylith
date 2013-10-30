@@ -65,6 +65,7 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void)
   PYLITH_METHOD_BEGIN;
 
   CPPUNIT_ASSERT(_data);
+  PetscErrorCode err;
 
   topology::Mesh mesh;
   meshio::MeshIOAscii iohandler;
@@ -83,23 +84,23 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void)
   topology::Mesh submesh(mesh, _data->bcLabel);
   PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
 
+  // Check consistency
+  err = DMPlexCheckSymmetry(dmMesh);CPPUNIT_ASSERT(!err);
+  if (submesh.dimension() > 1) {
+    //err = DMPlexCheckSkeleton(dmMesh, _data->isSimplexMesh ? PETSC_TRUE : PETSC_FALSE);CPPUNIT_ASSERT(!err);
+  } // if
+
   // Check vertices
   topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
   const PetscInt vStart = verticesStratum.begin();
   const PetscInt vEnd = verticesStratum.end();
   CPPUNIT_ASSERT_EQUAL(_data->numVerticesNoFault, verticesStratum.size());
 
-  topology::SubMeshIS subpointIS(submesh);
-  const PetscInt* subpointMap = subpointIS.points();CPPUNIT_ASSERT(subpointMap);
-  for (PetscInt v = vStart; v < vEnd; ++v)
-    CPPUNIT_ASSERT_EQUAL(_data->verticesNoFault[v-vStart], subpointMap[v]);
-
   // Check cells
   topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 1);
   const PetscInt cStart = cellsStratum.begin();
   const PetscInt cEnd = cellsStratum.end();
   CPPUNIT_ASSERT_EQUAL(_data->numCells, cellsStratum.size());
-  PetscErrorCode err = 0;
   for (PetscInt c = cStart, index = 0; c < cEnd; ++c) {
     PetscInt  vertices[32];
     PetscInt *closure = NULL;
@@ -111,17 +112,6 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void)
     } // for
     err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(_data->numCorners, numVertices);
-    // Allow cyclic permutations to handle both interpolated and non-interpolated cases
-    if (submesh.dimension() > 1) {
-      PetscInt first;
-      for (first = 0; first < numVertices; ++first) if (_data->cellsNoFault[index] == subpointMap[vertices[first]]) break;
-      CPPUNIT_ASSERT(first < numVertices);
-      for (PetscInt v = 0; v < numVertices; ++v, ++index)
-        CPPUNIT_ASSERT_EQUAL(_data->cellsNoFault[index], subpointMap[vertices[(v+first)%numVertices]]);
-    } else {
-      for (PetscInt v = 0; v < numVertices; ++v, ++index)
-        CPPUNIT_ASSERT_EQUAL(_data->cellsNoFault[index], subpointMap[vertices[v]]);
-    }
   } // for
 
   PYLITH_METHOD_END;
@@ -159,7 +149,7 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
   firstFaultCell = firstLagrangeVertex;
   fault.label(_data->faultLabel);
   fault.id(_data->faultId);
-  fault.adjustTopology(&mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell, _flipFault);
+  fault.adjustTopology(&mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
 
   // Create submesh
   topology::Mesh submesh(mesh, _data->bcLabel);
@@ -168,16 +158,17 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
   DMView(mesh.dmMesh(), PETSC_VIEWER_STDOUT_WORLD);
   PetscViewerPopFormat(PETSC_VIEWER_STDOUT_WORLD);
 
+  // Check consistency
+  err = DMPlexCheckSymmetry(dmMesh);CPPUNIT_ASSERT(!err);
+  if (submesh.dimension() > 1) {
+    //err = DMPlexCheckSkeleton(dmMesh, _data->isSimplexMesh ? PETSC_TRUE : PETSC_FALSE);CPPUNIT_ASSERT(!err);
+  } // if
+
   // Check vertices
   topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
   const PetscInt vStart = verticesStratum.begin();
   const PetscInt vEnd = verticesStratum.end();
   CPPUNIT_ASSERT_EQUAL(_data->numVerticesFault, verticesStratum.size());
-
-  topology::SubMeshIS subpointIS(submesh);
-  const PetscInt *subpointMap = subpointIS.points();CPPUNIT_ASSERT(subpointMap);
-  for (PetscInt v = vStart; v < vEnd; ++v)
-    CPPUNIT_ASSERT_EQUAL(_data->verticesFault[v-vStart], subpointMap[v]);
 
   // Check cells
   topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 1);
@@ -196,17 +187,6 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
     } // for
     err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(_data->numCorners, numVertices);
-    // Allow cyclic permutations to handle both interpolated and non-interpolated cases
-    if (submesh.dimension() > 1) {
-      PetscInt first;
-      for (first = 0; first < numVertices; ++first) if (_data->cellsFault[index] == subpointMap[vertices[first]]) break;
-      CPPUNIT_ASSERT(first < numVertices);
-      for (PetscInt v = 0; v < numVertices; ++v, ++index)
-        CPPUNIT_ASSERT_EQUAL(_data->cellsFault[index], subpointMap[vertices[(v+first)%numVertices]]);
-    } else {
-      for (PetscInt v = 0; v < numVertices; ++v, ++index)
-        CPPUNIT_ASSERT_EQUAL(_data->cellsFault[index], subpointMap[vertices[v]]);
-    }
   } // for
 
   PYLITH_METHOD_END;

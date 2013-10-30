@@ -27,24 +27,11 @@ const int pylith::bc::BoundaryMeshDataQuad4::_faultId = 100;
 
 const int pylith::bc::BoundaryMeshDataQuad4::_numCorners = 2;
 const int pylith::bc::BoundaryMeshDataQuad4::_numCells = 2;
+const bool pylith::bc::BoundaryMeshDataQuad4::_isSimplexMesh = false;
 
 const int pylith::bc::BoundaryMeshDataQuad4::_numVerticesNoFault = 3;
-const int pylith::bc::BoundaryMeshDataQuad4::_verticesNoFault[] = {
-  2, 4, 6
-};
-const int pylith::bc::BoundaryMeshDataQuad4::_cellsNoFault[] = {
-  2, 4,
-  4, 6,
-};
 
 const int pylith::bc::BoundaryMeshDataQuad4::_numVerticesFault = 4;
-const int pylith::bc::BoundaryMeshDataQuad4::_verticesFault[] = {
-  3, 5, 7, 9,
-};
-const int pylith::bc::BoundaryMeshDataQuad4::_cellsFault[] = {
-  3, 9,
-  5, 7,
-};
 
 pylith::bc::BoundaryMeshDataQuad4::BoundaryMeshDataQuad4(void)
 { // constructor
@@ -57,14 +44,11 @@ pylith::bc::BoundaryMeshDataQuad4::BoundaryMeshDataQuad4(void)
 
   numCorners = _numCorners;
   numCells = _numCells;
+  isSimplexMesh = _isSimplexMesh;
 
   numVerticesNoFault = _numVerticesNoFault;
-  verticesNoFault = const_cast<int*>(_verticesNoFault);
-  cellsNoFault = const_cast<int*>(_cellsNoFault);
 
   numVerticesFault = _numVerticesFault;
-  verticesFault = const_cast<int*>(_verticesFault);
-  cellsFault = const_cast<int*>(_cellsFault);
 } // constructor
 
 pylith::bc::BoundaryMeshDataQuad4::~BoundaryMeshDataQuad4(void)

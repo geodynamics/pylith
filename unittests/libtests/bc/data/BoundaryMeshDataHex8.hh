@@ -49,14 +49,11 @@ private:
 
   static const int _numCorners;
   static const int _numCells;
+  static const bool _isSimplexMesh;
 
   static const int _numVerticesNoFault;
-  static const int _verticesNoFault[];
-  static const int _cellsNoFault[];
 
   static const int _numVerticesFault;
-  static const int _verticesFault[];
-  static const int _cellsFault[];
 
 };
 

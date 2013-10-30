@@ -32,7 +32,6 @@ void
 pylith::bc::TestBoundaryMeshTri3::setUp(void)
 { // setUp
   _data = new BoundaryMeshDataTri3();
-  _flipFault = true;
 } // setUp
 
 
@@ -46,7 +45,6 @@ void
 pylith::bc::TestBoundaryMeshQuad4::setUp(void)
 { // setUp
   _data = new BoundaryMeshDataQuad4();
-  _flipFault = true;
 } // setUp
 
 
@@ -60,7 +58,6 @@ void
 pylith::bc::TestBoundaryMeshTet4::setUp(void)
 { // setUp
   _data = new BoundaryMeshDataTet4();
-  _flipFault = false;
 } // setUp
 
 
@@ -74,7 +71,6 @@ void
 pylith::bc::TestBoundaryMeshHex8::setUp(void)
 { // setUp
   _data = new BoundaryMeshDataHex8();
-  _flipFault = true;
 } // setUp
 
 

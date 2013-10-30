@@ -47,19 +47,16 @@ public:
 
   int numCorners; ///< Number of vertices in cells of boundary mesh.
   int numCells; ///< Number of cells in boundary mesh.
+  bool isSimplexMesh; ///< True if simplex mesh, false otherwise.
 
   /// @name Boundary mesh without fault.
   //@{
   int numVerticesNoFault; ///< Number of vertices.
-  int* verticesNoFault; ///< Array of vertex labels.
-  int* cellsNoFault; ///< Array of vertex labels for cells.
   //@}
 
   /// @name Boundary mesh without fault.
   //@{
   int numVerticesFault; ///< Number of vertices.
-  int* verticesFault; ///< Array of vertex labels.
-  int* cellsFault; ///< Array of vertex labels for cells.
   //@}
 
 };

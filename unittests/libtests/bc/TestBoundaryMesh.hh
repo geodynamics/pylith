@@ -61,7 +61,6 @@ public :
 protected :
 
   BoundaryMeshData* _data; ///< Data for testing
-  bool _flipFault; ///< If true, flip fault orientation.
 
 }; // class TestBoundaryMesh
 
