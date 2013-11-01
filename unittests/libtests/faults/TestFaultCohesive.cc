@@ -20,8 +20,6 @@
 
 #include "TestFaultCohesive.hh" // Implementation of class methods
 
-#include "TestFaultMesh.hh" // USES createFaultMesh()
-
 #include "pylith/faults/FaultCohesiveKin.hh" // USES FaultsCohesiveKin
 #include "pylith/faults/FaultCohesiveTract.hh" // USES FaultsCohesiveTract
 
