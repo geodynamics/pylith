@@ -154,9 +154,11 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
   // Create submesh
   topology::Mesh submesh(mesh, _data->bcLabel);
   PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+#if 0 // DEBUGGING
   PetscViewerPushFormat(PETSC_VIEWER_STDOUT_WORLD, PETSC_VIEWER_ASCII_INFO_DETAIL);
   DMView(mesh.dmMesh(), PETSC_VIEWER_STDOUT_WORLD);
   PetscViewerPopFormat(PETSC_VIEWER_STDOUT_WORLD);
+#endif
 
   // Check consistency
   err = DMPlexCheckSymmetry(dmMesh);CPPUNIT_ASSERT(!err);

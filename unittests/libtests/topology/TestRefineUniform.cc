@@ -346,7 +346,6 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data,
     CPPUNIT_ASSERT_EQUAL(std::string(data.groupTypes[iGroup]), groupType);
     PetscInt numPoints;
     err = DMPlexGetStratumSize(dmMesh, name, 1, &numPoints);PYLITH_CHECK_ERROR(err);
-    std::cout << "NAME:" << name << ", size: " << numPoints << std::endl;
     CPPUNIT_ASSERT_EQUAL(data.groupSizes[iGroup], numPoints);
     PetscIS pointIS = NULL;
     const PetscInt *points = NULL;
