@@ -49,6 +49,8 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
+#include <iostream>
+
 //#define DETAILED_EVENT_LOGGING
 
 // ----------------------------------------------------------------------
@@ -160,6 +162,48 @@ pylith::faults::FaultCohesiveLagrange::splitField(topology::Field* field)
 
   PYLITH_METHOD_END;
 } // splitField
+
+// ----------------------------------------------------------------------
+void
+pylith::faults::FaultCohesiveLagrange::setupSolnDof(topology::Field* field)
+{ // setupSolnDof
+  PYLITH_METHOD_BEGIN;
+
+  assert(field);
+
+  const int indexDisp = field->subfieldMetadata("displacement").index;
+  const int indexLagrange = field->subfieldMetadata("lagrange multiplier").index;
+
+  PetscDM dmMesh = field->dmMesh();assert(dmMesh);
+  PetscSection fieldSection  = field->petscSection();assert(fieldSection);
+  PetscErrorCode err;
+
+  assert(_quadrature);
+  const int spaceDim = _quadrature->spaceDim();
+
+  const int numVertices = _cohesiveVertices.size();
+  for(PetscInt iVertex = 0; iVertex < numVertices; ++iVertex) {
+    const int v_positive = _cohesiveVertices[iVertex].positive;
+    const int v_negative = _cohesiveVertices[iVertex].negative;
+    const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
+
+    // Set DOF in section (all subfields)
+    err = PetscSectionSetDof(fieldSection, e_lagrange, spaceDim);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionSetDof(fieldSection, v_positive, spaceDim);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionSetDof(fieldSection, v_negative, spaceDim);PYLITH_CHECK_ERROR(err);
+
+    // Set DOF in displacement subfield
+    err = PetscSectionSetFieldDof(fieldSection, v_positive, indexDisp, spaceDim);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionSetFieldDof(fieldSection, v_negative, indexDisp, spaceDim);PYLITH_CHECK_ERROR(err);
+
+    // Set DOF in Lagrange multiplier subfield
+    err = PetscSectionSetFieldDof(fieldSection, e_lagrange, indexLagrange, spaceDim);PYLITH_CHECK_ERROR(err);
+  } // for
+
+  PYLITH_METHOD_END;
+} // setupSolnDof
+
+
 
 // ----------------------------------------------------------------------
 // Integrate contribution of cohesive cells to residual term.
@@ -1104,7 +1148,7 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
         _cohesiveVertices[index].positive = v_positive;
         _cohesiveVertices[index].negative = v_negative;
         _cohesiveVertices[index].fault = v_fault;
-#if 0
+#if 1
         std::cout << "cohesiveVertices[" << index << "]: "
 		  << "l: " << e_lagrange
 		  << ", p: " << v_positive
@@ -1318,15 +1362,15 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   _fields->add("orientation", "orientation");
   topology::Field& orientation = _fields->get("orientation");
   const topology::Field& dispRel = _fields->get("relative disp");
-  if (spaceDim > 1) orientation.addField("strike_dir", spaceDim);
-  if (spaceDim > 2) orientation.addField("dip_dir", spaceDim);
-  orientation.addField("normal_dir", spaceDim);
-  orientation.setupFields();
+  if (spaceDim > 1) orientation.subfieldAdd("strike_dir", spaceDim);
+  if (spaceDim > 2) orientation.subfieldAdd("dip_dir", spaceDim);
+  orientation.subfieldAdd("normal_dir", spaceDim);
+  orientation.subfieldsSetup();
   orientation.newSection(dispRel, orientationSize);
   // Create components for along-strike, up-dip, and normal directions
-  if (spaceDim > 1) orientation.updateDof("strike_dir", pylith::topology::FieldBase::VERTICES_FIELD, spaceDim);
-  if (spaceDim > 2) orientation.updateDof("dip_dir", pylith::topology::FieldBase::VERTICES_FIELD, spaceDim);
-  orientation.updateDof("normal_dir", pylith::topology::FieldBase::VERTICES_FIELD, spaceDim);
+  if (spaceDim > 1) orientation.subfieldSetDof("strike_dir", pylith::topology::FieldBase::VERTICES_FIELD, spaceDim);
+  if (spaceDim > 2) orientation.subfieldSetDof("dip_dir", pylith::topology::FieldBase::VERTICES_FIELD, spaceDim);
+  orientation.subfieldSetDof("normal_dir", pylith::topology::FieldBase::VERTICES_FIELD, spaceDim);
   orientation.allocate();
   orientation.zeroAll();
 

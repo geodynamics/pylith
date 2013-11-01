@@ -49,7 +49,7 @@
  *      /     \
  *     /       \
  *   10---------  7
- * 17 |        15/|
+ * 28 |        26/|
  *   14--------12 |
  *     \       /| |\
  *      \     / | | \
@@ -61,7 +61,7 @@
  *            \ | | /
  *             \| |/
  *             13-8
- *               16
+ *               27
  */
 
 
@@ -123,9 +123,9 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3d::_fieldT[] = {
   6.7, 8.7, // 10
   6.9, 8.9, // 11
   7.1, 9.1, // 12
-  6.8, 8.8, // 13
-  6.0, 8.0, // 14
-  7.2, 9.2, // 15
+  6.8, 8.8, // 26
+  6.0, 8.0, // 27
+  7.2, 9.2, // 28
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataTri3d::_fieldIncr[] = {
@@ -138,9 +138,9 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3d::_fieldIncr[] = {
   3.7, 7.7, // 10
   3.9, 7.9, // 11
   3.1, 7.1, // 12
-  3.8, 7.8, // 13
-  3.0, 7.0, // 14
-  2.2, 5.2, // 15
+  3.8, 7.8, // 26
+  3.0, 7.0, // 27
+  2.2, 5.2, // 28
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataTri3d::_jacobianLumped[] = {
@@ -153,17 +153,17 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3d::_jacobianLumped[] = {
   6.7, 8.7, // 10
   6.9, 8.9, // 11
   7.1, 9.1, // 12
-  1.0, 1.0, // 13
-  1.0, 1.0, // 14
-  1.0, 1.0, // 15
+  1.0, 1.0, // 26
+  1.0, 1.0, // 27
+  1.0, 1.0, // 28
 };
 
 
 const PylithScalar pylith::faults::CohesiveKinDataTri3d::_orientation[] = {
-  +0.70710678118654757, -0.70710678118654757,  
-  -0.70710678118654757, -0.70710678118654757,
-  0.0, -1.0,  -1.0,  0.0,
- +1.0,  0.0,   0.0, -1.0
+  -0.70710678118654757, +0.70710678118654757,  
+  +0.70710678118654757, +0.70710678118654757,
+  0.0, +1.0,  +1.0,  0.0,
+ -1.0,  0.0,   0.0, +1.0
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataTri3d::_area[] = {
@@ -176,8 +176,8 @@ const int pylith::faults::CohesiveKinDataTri3d::_numFaultVertices = 3;
 const int pylith::faults::CohesiveKinDataTri3d::_verticesFault[] = {
    4,  5,  6
 };
-const int pylith::faults::CohesiveKinDataTri3d::_verticesLagrange[] = {
-  15, 16, 17
+const int pylith::faults::CohesiveKinDataTri3d::_edgesLagrange[] = {
+  26, 27, 28
 };
 const int pylith::faults::CohesiveKinDataTri3d::_verticesNegative[] = {
    7,  8, 10
@@ -204,12 +204,12 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3d::_residual[] = {
  -2.0*6.8, -2.0*8.8, // 10
  -1.0*6.0, -1.0*8.0, // 6
  -1.0*7.2, -1.0*9.2, // 8
-  -2.0*(6.7-6.2 -0.70710678118654757*(1.89546413727-0.08241148423)),
-  -2.0*(8.7-8.2 -0.70710678118654757*(-1.89546413727-0.08241148423)), // 13
-  -1.0*(6.9-6.3 +0.14794836271),
-  -1.0*(8.9-8.3 +1.77538035254), // 14
-  -1.0*(7.1-6.5 -1.59887481971),
-  -1.0*(9.1-8.5 +0.19186497837), // 15
+  -2.0*(6.7-6.2 +0.70710678118654757*(1.89546413727-0.08241148423)),
+  -2.0*(8.7-8.2 +0.70710678118654757*(-1.89546413727-0.08241148423)), // 26
+  -1.0*(6.9-6.3 -0.14794836271),
+  -1.0*(8.9-8.3 -1.77538035254), // 27
+  -1.0*(7.1-6.5 +1.59887481971),
+  -1.0*(9.1-8.5 -0.19186497837), // 28
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataTri3d::_jacobian[] = {
@@ -528,7 +528,7 @@ pylith::faults::CohesiveKinDataTri3d::CohesiveKinDataTri3d(void)
   residual = const_cast<PylithScalar*>(_residual);
   jacobian = const_cast<PylithScalar*>(_jacobian);
   verticesFault = const_cast<int*>(_verticesFault);
-  verticesLagrange = const_cast<int*>(_verticesLagrange);
+  edgesLagrange = const_cast<int*>(_edgesLagrange);
   verticesNegative = const_cast<int*>(_verticesNegative);
   verticesPositive = const_cast<int*>(_verticesPositive);
   numFaultVertices = _numFaultVertices;  

@@ -1,43 +1,24 @@
-test = "hex8"
-vertex = 3
+test = "tri3"
+vertex = 1
 
 # ----------------------------------------------------------------------
-if test == "line2":
-    jL = 1.0; rL = +1.69546413727;
-    jN = 2.2; duN = 1.2
-    jP = 2.4; duP = 1.4
-
-    Sinv = 1.0/(jL**2 * (1.0/jN + 1.0/jP))
-    duL = Sinv * (-rL + jL*(duP-duN));
-
-    dduN = jL / jN * duL
-    dduP = -jL / jP * duL
-
-    #print "Aru",Aru
-    #print "Aruslip",Aruslip
-    #print "Si",Si
-    #print "dlip",dlp
-
-    print duN+dduN,duP+dduP,duL
-
-# ----------------------------------------------------------------------
-elif test == "tri3" or test == "quad4":
+if test == "tri3" or test == "quad4":
 
     if test == "tri3":
 
         if vertex == 0:
             # Lagrange vertex 8, vertex N: 3, vertex P: 6
             jL = 1.0
-            rLx = -(8.5-8.2) - (0.08241148423)
-            rLy = -(9.5-9.2) - (1.89546413727)
+            rLx = -(8.5-8.2) + (0.08241148423)
+            rLy = -(9.5-9.2) + (1.89546413727)
             jN = 1.2; duNx = 3.2; duNy = 4.2;
             jP = 1.5; duPx = 3.5; duPy = 4.5;
 
         elif vertex == 1:
             # Lagrange vertex 9, vertex N: 4, vertex P: 7
             jL = 1.0
-            rLx = -(8.7-8.3) - (0.14794836271)
-            rLy = -(9.7-9.3) - (1.77538035254)
+            rLx = -(8.7-8.3) + (0.14794836271)
+            rLy = -(9.7-9.3) + (1.77538035254)
             jN = 1.3; duNx = 3.3; duNy = 4.3;
             jP = 1.7; duPx = 3.7; duPy = 4.7;
             

@@ -118,6 +118,12 @@ public :
    */
   void splitField(topology::Field* field);
 
+  /** Setup DOF on solution field.
+   *
+   * @param field Solution field.
+   */
+  void setupSolnDof(topology::Field* field);
+
   /** Integrate contributions to residual term (r) for operator that
    * require assembly processors.
    *

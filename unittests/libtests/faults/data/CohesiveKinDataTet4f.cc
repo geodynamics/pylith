@@ -152,7 +152,7 @@ const int pylith::faults::CohesiveKinDataTet4f::_numFaultVertices = 3;
 const int pylith::faults::CohesiveKinDataTet4f::_verticesFault[] = {
    4,  2,  3
 };
-const int pylith::faults::CohesiveKinDataTet4f::_verticesLagrange[] = {
+const int pylith::faults::CohesiveKinDataTet4f::_edgesLagrange[] = {
   13, 11, 12
 };
 const int pylith::faults::CohesiveKinDataTet4f::_verticesNegative[] = {
@@ -582,7 +582,7 @@ pylith::faults::CohesiveKinDataTet4f::CohesiveKinDataTet4f(void)
   residual = const_cast<PylithScalar*>(_residual);
   jacobian = const_cast<PylithScalar*>(_jacobian);
   verticesFault = const_cast<int*>(_verticesFault);
-  verticesLagrange = const_cast<int*>(_verticesLagrange);
+  edgesLagrange = const_cast<int*>(_edgesLagrange);
   verticesNegative = const_cast<int*>(_verticesNegative);
   verticesPositive = const_cast<int*>(_verticesPositive);
   numFaultVertices = _numFaultVertices;  

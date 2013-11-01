@@ -692,18 +692,24 @@ pylith::faults::TestFaultCohesiveDyn::_initialize(topology::Mesh* const mesh,
   fault->initialize(*mesh, upDir);
   
   // Setup fields
+  fields->add("residual", "residual");
   fields->add("disp(t)", "displacement");
   fields->add("dispIncr(t->t+dt)", "displacement_increment");
   fields->add("velocity(t)", "velocity");
   fields->add("dispIncr adjust", "dispIncr_adjust");
   fields->solutionName("dispIncr(t->t+dt)");
-  
+
   const int spaceDim = _data->spaceDim;
-  topology::Field& disp = fields->get("disp(t)");
-  disp.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
-  disp.allocate();
-  disp.scale(_data->lengthScale);
-  fields->copyLayout("disp(t)");
+  topology::Field& residual = fields->get("residual");
+  residual.subfieldAdd("displacement", spaceDim);
+  residual.subfieldAdd("lagrange multiplier", spaceDim);
+  residual.subfieldsSetup();
+  residual.setupSolnChart();
+  fault->setupSolnDof(&residual);
+  residual.allocate();
+  residual.zero();
+
+  fields->copyLayout("residual");
 
   fault->verifyConfiguration(*mesh);
 

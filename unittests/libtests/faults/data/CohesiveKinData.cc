@@ -49,7 +49,7 @@ pylith::faults::CohesiveKinData::CohesiveKinData(void) :
   jacobian(0),
   fieldIncrAdjusted(0),
   verticesFault(0),
-  verticesLagrange(0),
+  edgesLagrange(0),
   verticesPositive(0),
   verticesNegative(0),
   numFaultVertices(0),

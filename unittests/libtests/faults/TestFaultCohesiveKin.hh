@@ -106,11 +106,18 @@ public :
   /// Test _calcTractionsChange().
   void testCalcTractionsChange(void);
 
-  /// Test splitField().
-  void testSplitField(void);
-
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
+
+  /** Set field values.
+   *
+   * @param field Field to assign values to.
+   * @param data Array of data.
+   * @param scale Scale to nondimensionalize values by.
+   */
+  void _fieldSetValues(topology::Field* field,
+		       const PylithScalar* data,
+		       const PylithScalar scale =1.0);
 
   /** Initialize FaultCohesiveKin interface condition.
    *

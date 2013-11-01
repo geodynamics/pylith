@@ -145,7 +145,7 @@ const int pylith::faults::CohesiveKinSrcsDataTri3::_numFaultVertices = 2;
 const int pylith::faults::CohesiveKinSrcsDataTri3::_verticesFault[] = {
   2, 3
 };
-const int pylith::faults::CohesiveKinSrcsDataTri3::_verticesLagrange[] = {
+const int pylith::faults::CohesiveKinSrcsDataTri3::_edgesLagrange[] = {
   9, 10
 };
 const int pylith::faults::CohesiveKinSrcsDataTri3::_verticesNegative[] = {
@@ -335,7 +335,7 @@ pylith::faults::CohesiveKinSrcsDataTri3::CohesiveKinSrcsDataTri3(void)
   residual = const_cast<PylithScalar*>(_residual);
   jacobian = const_cast<PylithScalar*>(_jacobian);
   verticesFault = const_cast<int*>(_verticesFault);
-  verticesLagrange = const_cast<int*>(_verticesLagrange);
+  edgesLagrange = const_cast<int*>(_edgesLagrange);
   verticesNegative = const_cast<int*>(_verticesNegative);
   verticesPositive = const_cast<int*>(_verticesPositive);
   numFaultVertices = _numFaultVertices;  

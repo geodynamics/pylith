@@ -55,7 +55,6 @@ class pylith::faults::TestFaultCohesiveKinTri3 : public TestFaultCohesiveKin
   CPPUNIT_TEST( testIntegrateJacobianLumped );
   CPPUNIT_TEST( testAdjustSolnLumped );
   CPPUNIT_TEST( testCalcTractionsChange );
-  CPPUNIT_TEST( testSplitField );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -81,7 +80,6 @@ class pylith::faults::TestFaultCohesiveKinTri3d : public TestFaultCohesiveKin
   CPPUNIT_TEST( testIntegrateJacobian );
   CPPUNIT_TEST( testIntegrateJacobianLumped );
   CPPUNIT_TEST( testCalcTractionsChange );
-  CPPUNIT_TEST( testSplitField );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -108,7 +106,6 @@ class pylith::faults::TestFaultCohesiveKinQuad4 : public TestFaultCohesiveKin
   CPPUNIT_TEST( testIntegrateJacobianLumped );
   CPPUNIT_TEST( testAdjustSolnLumped );
   CPPUNIT_TEST( testCalcTractionsChange );
-  CPPUNIT_TEST( testSplitField );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -134,7 +131,6 @@ class pylith::faults::TestFaultCohesiveKinQuad4e : public TestFaultCohesiveKin
   CPPUNIT_TEST( testIntegrateJacobian );
   CPPUNIT_TEST( testIntegrateJacobianLumped );
   CPPUNIT_TEST( testCalcTractionsChange );
-  CPPUNIT_TEST( testSplitField );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -161,7 +157,6 @@ class pylith::faults::TestFaultCohesiveKinTet4 : public TestFaultCohesiveKin
   CPPUNIT_TEST( testIntegrateJacobianLumped );
   CPPUNIT_TEST( testAdjustSolnLumped );
   CPPUNIT_TEST( testCalcTractionsChange );
-  CPPUNIT_TEST( testSplitField );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -187,7 +182,6 @@ class pylith::faults::TestFaultCohesiveKinTet4e : public TestFaultCohesiveKin
   CPPUNIT_TEST( testIntegrateJacobian );
   CPPUNIT_TEST( testIntegrateJacobianLumped );
   CPPUNIT_TEST( testCalcTractionsChange );
-  CPPUNIT_TEST( testSplitField );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -213,7 +207,6 @@ class pylith::faults::TestFaultCohesiveKinTet4f : public TestFaultCohesiveKin
   CPPUNIT_TEST( testIntegrateJacobian );
   CPPUNIT_TEST( testIntegrateJacobianLumped );
   CPPUNIT_TEST( testCalcTractionsChange );
-  CPPUNIT_TEST( testSplitField );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -240,7 +233,6 @@ class pylith::faults::TestFaultCohesiveKinHex8 : public TestFaultCohesiveKin
   CPPUNIT_TEST( testIntegrateJacobianLumped );
   CPPUNIT_TEST( testAdjustSolnLumped );
   CPPUNIT_TEST( testCalcTractionsChange );
-  CPPUNIT_TEST( testSplitField );
 
   CPPUNIT_TEST_SUITE_END();
 
