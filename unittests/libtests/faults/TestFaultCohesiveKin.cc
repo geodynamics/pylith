@@ -157,6 +157,7 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   PYLITH_METHOD_BEGIN;
 
   CPPUNIT_ASSERT(_data);
+  PetscErrorCode err;
 
   topology::Mesh mesh;
   FaultCohesiveKin fault;
@@ -169,7 +170,18 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   CPPUNIT_ASSERT_EQUAL(_data->numFaultVertices, fault.numVertices());
   CPPUNIT_ASSERT_EQUAL(_data->numCohesiveCells, fault.numCells());
 
+  // Check fault mesh consistency
   PetscDM dmMesh = fault._faultMesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
+  PetscBool isSimplexMesh = PETSC_TRUE;
+  if ((_data->cellDim == 2 && _data->numBasis == 4) ||
+      (_data->cellDim == 3 && _data->numBasis == 8)) {
+    isSimplexMesh = PETSC_FALSE;
+  } // if
+  err = DMPlexCheckSymmetry(dmMesh);CPPUNIT_ASSERT(!err);
+  if (_data->cellDim > 1) {
+    err = DMPlexCheckSkeleton(dmMesh, isSimplexMesh);CPPUNIT_ASSERT(!err);
+  } // if
+  
   topology::SubMeshIS subpointIS(*fault._faultMesh);
   const PetscInt numPoints = subpointIS.size();
   const PetscInt* points = subpointIS.points();CPPUNIT_ASSERT(points);
@@ -181,7 +193,7 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   for(PetscInt v = vStart; v < vEnd; ++v) {
     PetscInt faultPoint;
 
-    PetscErrorCode err = PetscFindInt(_data->verticesNegative[v-vStart], numPoints, points, &faultPoint);PYLITH_CHECK_ERROR(err);
+    err = PetscFindInt(_data->verticesNegative[v-vStart], numPoints, points, &faultPoint);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT(faultPoint >= 0);
     CPPUNIT_ASSERT_EQUAL(faultPoint, _data->verticesFault[v-vStart]);
   } // for
