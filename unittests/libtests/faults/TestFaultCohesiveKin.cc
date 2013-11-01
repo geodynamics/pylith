@@ -217,7 +217,7 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   } // for
 
   // Check orientation
-  fault._fields->get("orientation").view("ORIENTATION"); // DEBUGGING
+  //fault._fields->get("orientation").view("ORIENTATION"); // DEBUGGING
   topology::VecVisitorMesh orientationVisitor(fault._fields->get("orientation"));
   const PetscScalar* orientationArray = orientationVisitor.localArray();CPPUNIT_ASSERT(orientationArray);
 
@@ -271,7 +271,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
   topology::Field& residual = fields.get("residual");
   fault.integrateResidual(residual, t, &fields);
 
-  residual.view("RESIDUAL"); // DEBUGGING
+  //residual.view("RESIDUAL"); // DEBUGGING
 
   // Check values
   CPPUNIT_ASSERT(_data->residual);
@@ -364,7 +364,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
     for (int iCol=0; iCol < ncols; ++iCol) {
       const int index = ncols*iRow+iCol;
       const PylithScalar valE = valsE[index];
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
       if (fabs(valE-vals[index]*jacobianScale) > tolerance)
 	std::cout << "ERROR: iRow: " << iRow << ", iCol: " << iCol
 		  << "valE: " << valE
@@ -406,7 +406,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianLumped(void)
   CPPUNIT_ASSERT_EQUAL(false, fault.needNewJacobian());
   jacobian.complete();
 
-  jacobian.view("JACOBIAN"); // DEBUGGING
+  //jacobian.view("JACOBIAN"); // DEBUGGING
 
   const int spaceDim = _data->spaceDim;
 
@@ -482,7 +482,7 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
   const topology::Field& dispIncrAdj = fields.get("dispIncr adjust");
   solution += dispIncrAdj;
 
-  solution.view("SOLUTION AFTER ADJUSTMENT"); // DEBUGGING
+  //solution.view("SOLUTION AFTER ADJUSTMENT"); // DEBUGGING
 
   PetscInt pStart, pEnd;
   PetscErrorCode err = PetscSectionGetChart(jacobian.petscSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
@@ -740,10 +740,10 @@ pylith::faults::TestFaultCohesiveKin::_initialize(topology::Mesh* const mesh,
 } // _initialize
 
 // ----------------------------------------------------------------------
-// Determine if vertex is a Lagrange multiplier constraint vertex.
+// Determine if point is a Lagrange multiplier constraint point.
 bool
-pylith::faults::TestFaultCohesiveKin::_isConstraintVertex(const int vertex) const
-{ // _isConstraintVertex
+pylith::faults::TestFaultCohesiveKin::_isConstraintEdge(const int point) const
+{ // _isConstraintEdge
   PYLITH_METHOD_BEGIN;
 
   CPPUNIT_ASSERT(_data);
@@ -751,12 +751,12 @@ pylith::faults::TestFaultCohesiveKin::_isConstraintVertex(const int vertex) cons
   const int numFaultVertices = _data->numFaultVertices;
   bool isFound = false;
   for (int i=0; i < _data->numFaultVertices; ++i)
-    if (_data->edgesLagrange[i] == vertex) {
+    if (_data->edgesLagrange[i] == point) {
       isFound = true;
       break;
     } // if
   PYLITH_METHOD_RETURN(isFound);
-} // _isConstraintVertex
+} // _isConstraintEdge
 
 
 // End of file 
