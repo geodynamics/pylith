@@ -218,7 +218,7 @@ pylith::meshio::TestDataWriterVTKMesh::testWriteVertexField(void)
     // Make sure we can reuse field
     std::string fieldLabel = std::string(field.label()) + std::string("2");
     field.label(fieldLabel.c_str());
-    field.addDimensionOkay(true);
+    field.dimensionalizeOkay(true);
     field.scale(2.0);
     field.dimensionalize();
     writer.writeVertexField(t, field, *_mesh);
