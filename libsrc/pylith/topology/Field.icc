@@ -114,14 +114,14 @@ pylith::topology::Field::scale(void) const {
 // Set flag indicating whether it is okay to dimensionalize field.
 inline
 void
-pylith::topology::Field::addDimensionOkay(const bool value) {
+pylith::topology::Field::dimensionalizeOkay(const bool value) {
   _metadata["default"].dimsOkay = value;
 }
 
 // Set flag indicating whether it is okay to dimensionalize field.
 inline
 bool
-pylith::topology::Field::addDimensionOkay(void) const {
+pylith::topology::Field::dimensionalizeOkay(void) const {
   return const_cast<Field*>(this)->_metadata["default"].dimsOkay;
 }
 

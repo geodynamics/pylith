@@ -50,7 +50,6 @@ class pylith::topology::TestFieldSubMesh : public CppUnit::TestFixture
   CPPUNIT_TEST( testSection );
   CPPUNIT_TEST( testMesh );
   CPPUNIT_TEST( testSpaceDim );
-  CPPUNIT_TEST( testNewSection );
   CPPUNIT_TEST( testNewSectionPoints );
   CPPUNIT_TEST( testNewSectionDomain );
   CPPUNIT_TEST( testNewSectionField );
@@ -85,9 +84,6 @@ public :
 
   /// Test spaceDim().
   void testSpaceDim(void);
-
-  /// Test newSection().
-  void testNewSection(void);
 
   /// Test newSection(points).
   void testNewSectionPoints(void);

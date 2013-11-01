@@ -40,6 +40,22 @@
  * mesh.
  *
  * Extends PETSc section and vector by adding metadata.
+ *
+ * General steps for setting up a field:
+ *
+ * 1. Set the number of subfields and the number of components per subfield.
+ * 2. Set the chart.
+ * 3. Set the DOF (fiberdim) for each point in the chart.
+ * 4. Set any constraints (known DOF).
+ * 5. Allocate.
+ * 6. Set the indices for the constrained DOF.
+ *
+ * For local fields associated with parameters, we do not have steps 4
+ * and 6. The newSection() methods provide a convenient interface for
+ * steps 2-3.
+ *
+ * For the solution field, etc, the integrators know how to layout the
+ * DOF over the points (vertices, edges, faces).
  */
 class pylith::topology::Field : public FieldBase
 { // Field
@@ -150,13 +166,13 @@ public :
    *
    * @param value True if it is okay to dimensionalize field.
    */
-  void addDimensionOkay(const bool value);
+  void dimensionalizeOkay(const bool value);
 
   /** Set flag indicating whether it is okay to dimensionalize field.
    *
    * @param value True if it is okay to dimensionalize field.
    */
-  bool addDimensionOkay(void) const;
+  bool dimensionalizeOkay(void) const;
 
   /** Get spatial dimension of domain.
    *
@@ -200,11 +216,14 @@ public :
    */
   PetscVec globalVector(void) const;
 
-  /** Create PETSc section.
+  /// Set chart for solution.
+  void setupSolnChart(void);
+
+  /** Set default DOF for solution.
    *
-   * @note Don't forget to call label().
+   * @param fiberDim Total number of components in solution.
    */
-  void newSection(void);
+  void setupSolnDof(const int fiberDim);
 
   /** Create PETSc section and set chart and fiber dimesion for a list
    * of points.
@@ -276,20 +295,40 @@ public :
    */
   void cloneSection(const Field& src);
 
-  /** :MATT: ADD DOCUMENTATION
+  /** Add subfield to current field.
+   *
+   * Should be followed by calls to subfieldsSetup() and subfieldSetDof().
+   *
+   * @param name Name of subfield.
+   * @param numComponents Number of components in subfield.
    */
-  void addField(const char *name,
-		int numComponents);
-
-  /** :MATT: ADD DOCUMENTATION
+  void subfieldAdd(const char *name, 
+		   int numComponents);
+  
+  /** Setup sections for subfields.
+   *
+   * Should be preceded by calls to subfieldAdd() and followed by calls to subfieldSetDof().
    */
-  void setupFields(void);
-
-  /** :MATT: ADD DOCUMENTATION
+  void subfieldsSetup(void);
+  
+  /** Convenience method for setting number of DOF (fiberdim) for subfield at points.
+   *
+   * Should be preceded by calls to subfieldAdd() and subfieldsSetup().
+   *
+   * @param name Name of subfield.
+   * @param domain Point classification for subfield.
+   * @param fiberDim Number of subfield components per point.
    */
-  void updateDof(const char *name,
-		 const DomainEnum domain,
-		 const int fiberDim);
+  void subfieldSetDof(const char *name, 
+		      const pylith::topology::FieldBase::DomainEnum domain, 
+		      const int fiberDim);
+  
+  /** Get metadata for subfield.
+   *
+   * @param name Name of subfield.
+   * @returns Metadata for subfield.
+   */
+  const Metadata& subfieldMetadata(const char* name);
 
   /// Clear variables associated with section.
   void clear(void);
@@ -453,14 +492,6 @@ private :
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
 
-  /** Get fiber dimension associated with section (only works if fiber
-   * dimension is uniform).
-   *
-   * Fiber dimension is determined from the first point on each
-   * processor with the maximum value gathered across the processors.
-   */
-  int _getFiberDim(void);
-
   /** Get scatter for given context.
    *
    * @param context Context for scatter.
@@ -480,7 +511,8 @@ private :
 // PROTECTED TYPEDEFS ///////////////////////////////////////////////////
 protected :
 
-  typedef std::map< std::string, Metadata > map_type;
+  typedef std::map<std::string, Metadata> map_type;
+  typedef std::map<std::string, int> fieldcomps_type;
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
@@ -490,11 +522,10 @@ private :
   const Mesh& _mesh; ///< Mesh associated with section.
   scatter_map_type _scatters; ///< Collection of scatters.
 
-  /* New construction */
   PetscDM _dm; ///< Manages the PetscSection
   PetscVec _globalVec; ///< Global PETSc vector
   PetscVec _localVec; ///< Local PETSc vector
-  std::map<std::string, int> _tmpFields; ///< Map of fields to bundle together.
+  fieldcomps_type _subfieldComps; ///< Map of subfields bundled together.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

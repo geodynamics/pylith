@@ -80,7 +80,7 @@ pylith::topology::TestFieldSubMesh::testConstructor(void)
 } // testConstructor
 
 // ----------------------------------------------------------------------
-// Test newSection().
+// Test section().
 void
 pylith::topology::TestFieldSubMesh::testSection(void)
 { // testSection
@@ -131,25 +131,6 @@ pylith::topology::TestFieldSubMesh::testSpaceDim(void)
 
   PYLITH_METHOD_END;
 } // testSpaceDim
-
-// ----------------------------------------------------------------------
-// Test newSection().
-void
-pylith::topology::TestFieldSubMesh::testNewSection(void)
-{ // testNewSection
-  PYLITH_METHOD_BEGIN;
-
-  Mesh mesh;
-  _buildMesh(&mesh);
-  Mesh submesh(mesh, _TestFieldSubMesh::label);
-  Field field(submesh);
-
-  field.newSection();
-  PetscSection section = field.petscSection();
-  CPPUNIT_ASSERT(section);
-
-  PYLITH_METHOD_END;
-} // testNewSection
 
 // ----------------------------------------------------------------------
 // Test newSection(points).
@@ -322,7 +303,7 @@ pylith::topology::TestFieldSubMesh::testClear(void)
 
   field.scale(2.0);
   field.vectorFieldType(Field::TENSOR);
-  field.addDimensionOkay(true);
+  field.dimensionalizeOkay(true);
   
   field.clear();
 
@@ -657,7 +638,7 @@ pylith::topology::TestFieldSubMesh::testDimensionalize(void)
   } // setup field
 
   field.scale(scale);
-  field.addDimensionOkay(true);
+  field.dimensionalizeOkay(true);
   field.dimensionalize();
 
   const PylithScalar tolerance = 1.0e-6;

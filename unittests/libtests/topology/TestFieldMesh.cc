@@ -158,7 +158,7 @@ pylith::topology::TestFieldMesh::testScale(void)
 } // testScale
 
 // ----------------------------------------------------------------------
-// Test addDimensionOkay().
+// Test dimensionalizeOkay().
 void
 pylith::topology::TestFieldMesh::testAddDimensionOkay(void)
 { // testAddDimensionOkay
@@ -171,7 +171,7 @@ pylith::topology::TestFieldMesh::testAddDimensionOkay(void)
   Field field(mesh);
 
   CPPUNIT_ASSERT_EQUAL(false, field._metadata[label].dimsOkay);
-  field.addDimensionOkay(true);
+  field.dimensionalizeOkay(true);
   CPPUNIT_ASSERT_EQUAL(true, field._metadata[label].dimsOkay);
 
   PYLITH_METHOD_END;
@@ -267,27 +267,6 @@ pylith::topology::TestFieldMesh::testHasSection(void)
 
   PYLITH_METHOD_END;
 } // testHasSection
-
-// ----------------------------------------------------------------------
-// Test newSection().
-void
-pylith::topology::TestFieldMesh::testNewSection(void)
-{ // testNewSection
-  PYLITH_METHOD_BEGIN;
-
-  Mesh mesh;
-  _buildMesh(&mesh);
-
-  Field field(mesh);
-  const std::string& label = "field A";
-  field.label(label.c_str());
-
-  field.newSection();
-  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
-  PetscSection section = field.petscSection();CPPUNIT_ASSERT(section);
-
-  PYLITH_METHOD_END;
-} // testNewSection
 
 // ----------------------------------------------------------------------
 // Test newSection(points).
@@ -549,7 +528,7 @@ pylith::topology::TestFieldMesh::testClear(void)
 
   field.scale(2.0);
   field.vectorFieldType(Field::TENSOR);
-  field.addDimensionOkay(true);
+  field.dimensionalizeOkay(true);
   
   field.clear();
 
@@ -956,7 +935,7 @@ pylith::topology::TestFieldMesh::testDimensionalize(void)
   } // setup field
 
   field.scale(scale);
-  field.addDimensionOkay(true);
+  field.dimensionalizeOkay(true);
   field.dimensionalize();
 
   VecVisitorMesh fieldVisitor(field);
@@ -1332,14 +1311,14 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
     for(PetscInt f = 0; f < numFields; ++f) {
       std::ostringstream msg;
       msg << "Field "<<f;
-      fieldSrc.addField(msg.str().c_str(), 1);
+      fieldSrc.subfieldAdd(msg.str().c_str(), 1);
     } // for
-    fieldSrc.setupFields();
+    fieldSrc.subfieldsSetup();
     fieldSrc.newSection(Field::VERTICES_FIELD, spaceDim);
     for(PetscInt f = 0; f < spaceDim; ++f) {
       std::ostringstream msg;
       msg << "Field "<<f;
-      fieldSrc.updateDof(msg.str().c_str(), Field::VERTICES_FIELD, 1);
+      fieldSrc.subfieldSetDof(msg.str().c_str(), Field::VERTICES_FIELD, 1);
     } // for
     PetscSection section = fieldSrc.petscSection();CPPUNIT_ASSERT(section);
     PetscInt iV = 0, iC = 0;
@@ -1426,14 +1405,14 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
     for(PetscInt f = 0; f < numFields; ++f) {
       std::ostringstream msg;
       msg << "Field "<<f;
-      fieldSrc.addField(msg.str().c_str(), 1);
+      fieldSrc.subfieldAdd(msg.str().c_str(), 1);
     } // for
-    fieldSrc.setupFields();
+    fieldSrc.subfieldsSetup();
     fieldSrc.newSection(Field::VERTICES_FIELD, spaceDim);
     for(PetscInt f = 0; f < spaceDim; ++f) {
       std::ostringstream msg;
       msg << "Field "<<f;
-      fieldSrc.updateDof(msg.str().c_str(), Field::VERTICES_FIELD, 1);
+      fieldSrc.subfieldSetDof(msg.str().c_str(), Field::VERTICES_FIELD, 1);
     } // for
     PetscSection section = fieldSrc.petscSection();
     CPPUNIT_ASSERT(section);

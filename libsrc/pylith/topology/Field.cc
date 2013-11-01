@@ -41,6 +41,7 @@ pylith::topology::Field::Field(const Mesh& mesh) :
   PYLITH_METHOD_BEGIN;
 
   _metadata["default"].label = "unknown";
+  _metadata["default"].index = 0;
   _metadata["default"].vectorFieldType = OTHER;
   _metadata["default"].scale = 1.0;
   _metadata["default"].dimsOkay = false;
@@ -241,13 +242,81 @@ pylith::topology::Field::sectionSize(void) const
 } // sectionSize
 
 // ----------------------------------------------------------------------
-// Create seive section.
+// Set chart for solution.
 void
-pylith::topology::Field::newSection(void)
-{ // newSection
-  // Clear memory
+pylith::topology::Field::setupSolnChart(void)
+{ // setupSolnChart
+  PYLITH_METHOD_BEGIN;
+
   clear();
-} // newSection
+  assert(_dm);
+
+  // :TODO: Update this to use discretization information after removing FIAT.
+
+  // :KLUDGE: Assume solution has DOF over vertices and hybrid edges.
+  PetscErrorCode err;
+  // Get range of vertices.
+  PetscInt pStart = -1;
+  PetscInt pEnd = -1;
+  err = DMPlexGetDepthStratum(_dm, 0, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+  // Get last edge and 
+  PetscInt eEnd = -1;
+  PetscInt eMax = -1;
+  err = DMPlexGetDepthStratum(_dm, 1, NULL, &eEnd);PYLITH_CHECK_ERROR(err);
+  err = DMPlexGetHybridBounds(_dm, NULL, NULL, &eMax, NULL);PYLITH_CHECK_ERROR(err);
+  // If have hybrid edges, extend chart to include hybrid edges; otherwise just use points.
+  if (eEnd > eMax) {
+    pEnd = eEnd;
+  } // if
+
+  PetscSection s = NULL;
+  if (pStart < pEnd) {
+    err = DMGetDefaultSection(_dm, &s);PYLITH_CHECK_ERROR(err);
+    err = DMSetDefaultGlobalSection(_dm, NULL);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionSetChart(s, pStart, pEnd);PYLITH_CHECK_ERROR(err);
+  } else { // create empty chart
+    err = DMGetDefaultSection(_dm, &s);PYLITH_CHECK_ERROR(err);
+    err = DMSetDefaultGlobalSection(_dm, NULL);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionSetChart(s, 0, 0);PYLITH_CHECK_ERROR(err);
+  } // if/else
+
+  PYLITH_METHOD_END;
+} // setupSolnChart
+
+
+// ----------------------------------------------------------------------
+// Setup default DOF for solution.
+void
+pylith::topology::Field::setupSolnDof(const int fiberDim)
+{ // setupSolnDof
+  PYLITH_METHOD_BEGIN;
+
+  clear();
+  assert(_dm);
+
+  // :TODO: Update this to use discretization information after removing FIAT.
+
+  // :KLUDGE: Assume solution has DOF over vertices.
+  const int indexDisp = subfieldMetadata("displacement").index;
+
+  PetscErrorCode err;
+  // Get range of vertices.
+  PetscInt pStart = -1;
+  PetscInt pEnd = -1;
+  err = DMPlexGetDepthStratum(_dm, 0, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+
+  PetscSection s = NULL;
+  err = DMGetDefaultSection(_dm, &s);PYLITH_CHECK_ERROR(err);
+  for (PetscInt p = pStart; p < pEnd; ++p) {
+    err = PetscSectionSetDof(s, p, fiberDim);PYLITH_CHECK_ERROR(err);
+
+    // Set DOF in displacement subfield
+    err = PetscSectionSetFieldDof(s, p, indexDisp, fiberDim);PYLITH_CHECK_ERROR(err);
+  } // for
+
+  PYLITH_METHOD_END;
+} // setupSolnDof
+
 
 // ----------------------------------------------------------------------
 // Create PETSc section and set chart and fiber dimesion for a list of
@@ -539,7 +608,8 @@ pylith::topology::Field::clear(void)
   err = VecDestroy(&_globalVec);PYLITH_CHECK_ERROR(err);
   err = VecDestroy(&_localVec);PYLITH_CHECK_ERROR(err);
 
-  _tmpFields.clear();
+  _subfieldComps.clear();
+  _metadata["default"].index = 0;
   _metadata["default"].scale = 1.0;
   _metadata["default"].vectorFieldType = OTHER;
   _metadata["default"].dimsOkay = false;
@@ -1184,29 +1254,6 @@ pylith::topology::Field::scatterGlobalToLocal(const PetscVec vector,
 } // scatterGlobalToLocal
 
 // ----------------------------------------------------------------------
-// Get fiber dimension associated with section (only works if fiber
-// dimension is uniform).
-int
-pylith::topology::Field::_getFiberDim(void)
-{ // _getFiberDim
-  PYLITH_METHOD_BEGIN;
-
-  assert(_dm);
-
-  PetscSection s = NULL;
-  PetscInt pStart, pEnd;
-  int fiberDimLocal, fiberDim = 0;
-  PetscErrorCode err;
-
-  err = DMGetDefaultSection(_dm, &s);PYLITH_CHECK_ERROR(err);
-  err = PetscSectionGetChart(s, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
-  if (pEnd > pStart) {err = PetscSectionGetDof(s, pStart, &fiberDimLocal);PYLITH_CHECK_ERROR(err);}
-  MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX, _mesh.comm());
-
-  PYLITH_METHOD_RETURN(fiberDim);
-} // _getFiberDim
-
-// ----------------------------------------------------------------------
 // Get scatter for given context.
 pylith::topology::Field::ScatterInfo&
 pylith::topology::Field::_getScatter(const char* context,
@@ -1273,48 +1320,49 @@ pylith::topology::Field::_getScatter(const char* context) const
 // ----------------------------------------------------------------------
 // Experimental
 void
-pylith::topology::Field::addField(const char *name,
-				  int numComponents)
-{ // addField
+pylith::topology::Field::subfieldAdd(const char *name,
+				     int numComponents)
+{ // subfieldAdd
   PYLITH_METHOD_BEGIN;
 
   // Keep track of name/components until setup
-  _tmpFields[name] = numComponents;
+  _subfieldComps[name] = numComponents;
   _metadata[name]  = _metadata["default"];
 
   PYLITH_METHOD_END;
-} // addField
+} // subfieldAdd
 
 // ----------------------------------------------------------------------
 void
-pylith::topology::Field::setupFields(void)
-{ // setupFields
+pylith::topology::Field::subfieldsSetup(void)
+{ // subfieldsSetup
   PYLITH_METHOD_BEGIN;
 
   assert(_dm);
-  // Keep track of name/components until setup
-  PetscSection section;
-  PetscInt f = 0;
+
+  // Setup section now that we know the total number of sub-fields and components.
+  PetscSection section = NULL;
+  PetscInt iField = 0;
   PetscErrorCode err = DMGetDefaultSection(_dm, &section);PYLITH_CHECK_ERROR(err);assert(section);
-  err = PetscSectionSetNumFields(section, _tmpFields.size());PYLITH_CHECK_ERROR(err);
-  for(std::map<std::string, int>::const_iterator f_iter = _tmpFields.begin(); f_iter != _tmpFields.end(); ++f_iter, ++f) {
-    err = PetscSectionSetFieldName(section, f, f_iter->first.c_str());PYLITH_CHECK_ERROR(err);
-    err = PetscSectionSetFieldComponents(section, f, f_iter->second);PYLITH_CHECK_ERROR(err);
+  err = PetscSectionSetNumFields(section, _subfieldComps.size());PYLITH_CHECK_ERROR(err);
+  for(std::map<std::string, int>::const_iterator f_iter = _subfieldComps.begin(); f_iter != _subfieldComps.end(); ++f_iter, ++iField) {
+    err = PetscSectionSetFieldName(section, iField, f_iter->first.c_str());PYLITH_CHECK_ERROR(err);
+    err = PetscSectionSetFieldComponents(section, iField, f_iter->second);PYLITH_CHECK_ERROR(err);
+    _metadata[f_iter->first].index = iField;
   } // for
-  _tmpFields.clear();
 
   PYLITH_METHOD_END;
-} // setupFields
+} // subfieldsSetup
 
 // ----------------------------------------------------------------------
 void
-pylith::topology::Field::updateDof(const char *name,
-				   const DomainEnum domain,
-				   int fiberDim)
-{ // updateDof
+pylith::topology::Field::subfieldSetDof(const char *name,
+					const DomainEnum domain,
+					int fiberDim)
+{ // subfieldSetDof
   PYLITH_METHOD_BEGIN;
 
-  PetscInt pStart, pEnd, f = 0;
+  PetscInt pStart, pEnd;
   PetscErrorCode err;
 
   assert(_dm);
@@ -1338,18 +1386,28 @@ pylith::topology::Field::updateDof(const char *name,
   }
   PetscSection section = NULL;
   err = DMGetDefaultSection(_dm, &section);PYLITH_CHECK_ERROR(err);assert(section);
-  for(map_type::const_iterator f_iter = _metadata.begin(); f_iter != _metadata.end(); ++f_iter) {
-    if (f_iter->first == name) break;
-    if (f_iter->first == "default") continue;
-    ++f;
-  } // for
-  assert(f < _metadata.size());
+  const int iField = _metadata[name].index;
   for(PetscInt p = pStart; p < pEnd; ++p) {
     //err = PetscSectionAddDof(section, p, fiberDim);PYLITH_CHECK_ERROR(err); // Future use
-    err = PetscSectionSetFieldDof(section, p, f, fiberDim);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionSetFieldDof(section, p, iField, fiberDim);PYLITH_CHECK_ERROR(err);
   } // for
 
   PYLITH_METHOD_END;
-} // updateDof
+} // subfieldSetDof
+
+// ----------------------------------------------------------------------
+// Get metadata for subfield.
+const pylith::topology::FieldBase::Metadata&
+pylith::topology::Field::subfieldMetadata(const char* name)
+{ // subfieldMetadata
+  try {
+    const Metadata& metadata = _metadata[name];
+    return metadata;
+  } catch (std::exception& err) {
+    std::ostringstream msg;
+    msg << "Could not find subfield '" << name << "' in field '" << label() << "'." << std::endl;
+    throw std::runtime_error(msg.str());
+  } // try/catch
+} // subfieldmetadata
 
 // End of file 

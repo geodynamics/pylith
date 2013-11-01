@@ -89,13 +89,13 @@ namespace pylith {
        *
        * @param value True if it is okay to dimensionalize field.
        */
-      void addDimensionOkay(const bool value);
+      void dimensionalizeOkay(const bool value);
       
       /** Set flag indicating whether it is okay to dimensionalize field.
        *
        * @param value True if it is okay to dimensionalize field.
        */
-      bool addDimensionOkay(void) const;
+      bool dimensionalizeOkay(void) const;
       
       /** Get spatial dimension of domain.
        *
@@ -121,9 +121,6 @@ namespace pylith {
        */
       bool hasSection(void) const;
 
-      /// Create PETSc section.
-      void newSection(void);
-
       /** Create PETSc section and set chart and fiber dimesion.
        *
        * @param domain Type of points over which to define section.
@@ -143,11 +140,33 @@ namespace pylith {
        */
       void cloneSection(const Field& src);
 
-      void addField(const char *name, int numComponents);
+      /** Add subfield to current field.
+       *
+       * Should be followed by calls to subfieldsSetup() and subfieldSetDof().
+       *
+       * @param name Name of subfield.
+       * @param numComponents Number of components in subfield.
+       */
+      void subfieldAdd(const char *name, 
+		       int numComponents);
 
-      void setupFields();
+      /** Setup sections for subfields.
+       *
+       * Should be preceded by calls to subfieldAdd() and followed by calls to subfieldSetDof().
+       */
+      void subfieldsSetup(void);
 
-      void updateDof(const char *name, const pylith::topology::FieldBase::DomainEnum domain, const int fiberDim);
+      /** Convenience method for setting number of DOF (fiberdim) for subfield at points.
+       *
+       * Should be preceded by calls to subfieldAdd() and subfieldsSetup().
+       *
+       * @param name Name of subfield.
+       * @param domain Point classification for subfield.
+       * @param fiberDim Number of subfield components per point.
+       */
+      void subfieldSetDof(const char *name, 
+			  const pylith::topology::FieldBase::DomainEnum domain, 
+			  const int fiberDim);
 
       /// Clear variables associated with section.
       void clear(void);

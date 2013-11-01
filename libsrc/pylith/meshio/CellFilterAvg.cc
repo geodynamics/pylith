@@ -161,7 +161,7 @@ pylith::meshio::CellFilterAvg::filter(const topology::Field& fieldIn,
 
   _fieldAvg->label(fieldIn.label());
   _fieldAvg->scale(fieldIn.scale());
-  _fieldAvg->addDimensionOkay(true);
+  _fieldAvg->dimensionalizeOkay(true);
 
   topology::VecVisitorMesh fieldAvgVisitor(*_fieldAvg);
   PetscScalar* fieldAvgArray = fieldAvgVisitor.localArray();
