@@ -16,23 +16,6 @@
 // ======================================================================
 //
 
-/* Original mesh
- *
- * Cells are 0-3, vertices are 4-8.
- *
- * 4   5,6,7  8
- *
- *     ^^^^^ Face in x-y plane
- *
- * After adding cohesive elements
- *
- * Cells are 0-3,18,19, vertices are 4-17.
- *
- * 4   5,6,7  10,11,12   8
- *            13,14,15
- *     ^^^^^^^^^^^^ Cohesive element in x-y plane.
- */
-
 #include "CohesiveKinDataTet4e.hh"
 
 const char* pylith::faults::CohesiveKinDataTet4e::_meshFilename =
@@ -161,16 +144,16 @@ const PylithScalar pylith::faults::CohesiveKinDataTet4e::_area[] = {
 
 const int pylith::faults::CohesiveKinDataTet4e::_numFaultVertices = 4;
 const int pylith::faults::CohesiveKinDataTet4e::_verticesFault[] = {
-   5,  4,  6,  7
+   4,  5,  6,  7
 };
 const int pylith::faults::CohesiveKinDataTet4e::_edgesLagrange[] = {
-  17, 16, 18, 19
+  53, 54, 55, 56
 };
 const int pylith::faults::CohesiveKinDataTet4e::_verticesNegative[] = {
-   8,  7,  9, 10
+   7,  8,  9, 10
 };
 const int pylith::faults::CohesiveKinDataTet4e::_verticesPositive[] = {
-  13, 12, 14, 15
+  12, 13, 14, 15
 };
 
 const int pylith::faults::CohesiveKinDataTet4e::_numCohesiveCells = 2;

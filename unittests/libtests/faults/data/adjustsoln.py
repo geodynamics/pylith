@@ -1,5 +1,5 @@
-test = "tri3"
-vertex = 1
+test = "hex8"
+vertex = 3
 
 # ----------------------------------------------------------------------
 if test == "tri3" or test == "quad4":
@@ -91,8 +91,8 @@ elif test == "tet4" or test == "hex8":
         if vertex == 0:
             # Lagrange vertex 18, vertex N: 6, vertex P: 14
             jL = 1.0
-            rLx = -(5.3-4.5+0.07938069066)
-            rLy = -(7.3-6.5+1.82575588523)
+            rLx = -(5.3-4.5-0.07938069066)
+            rLy = -(7.3-6.5-1.82575588523)
             rLz = -(9.3-8.5+0.55566483464)
             jN = 1.5; duNx = 3.5; duNy = 4.5; duNz = 5.5;
             jP = 1.3; duPx = 3.3; duPy = 4.3; duPz = 5.3;
@@ -100,8 +100,8 @@ elif test == "tet4" or test == "hex8":
         elif vertex == 1:
             # Lagrange vertex 19, vertex N: 7, vertex P: 15
             jL = 1.0
-            rLx = -(5.5-4.6+0.14140241667)
-            rLy = -(7.5-6.6+1.69682900001)
+            rLx = -(5.5-4.6-0.14140241667)
+            rLy = -(7.5-6.6-1.69682900001)
             rLz = -(9.5-8.6+0.56560966667)
             jN = 1.6; duNx = 3.6; duNy = 4.6; duNz = 5.6;
             jP = 1.5; duPx = 3.5; duPy = 4.5; duPz = 5.5;
@@ -109,8 +109,8 @@ elif test == "tet4" or test == "hex8":
         elif vertex == 2:
             # Lagrange vertex 20, vertex N: 8, vertex P: 16
             jL = 1.0
-            rLx = -(5.7-4.7+0.18205179147)
-            rLy = -(7.7-6.7+1.51709826228)
+            rLx = -(5.7-4.7-0.18205179147)
+            rLy = -(7.7-6.7-1.51709826228)
             rLz = -(9.7-8.7+0.54615537442)
             jN = 1.7; duNx = 3.7; duNy = 4.7; duNz = 5.7;
             jP = 1.7; duPx = 3.7; duPy = 4.7; duPz = 5.7;
@@ -118,8 +118,8 @@ elif test == "tet4" or test == "hex8":
         elif vertex == 3:
             # Lagrange vertex 21, vertex N: 9, vertex P: 17
             jL = 1.0
-            rLx = -(5.9-4.8+0.19904410828)
-            rLy = -(7.9-6.8+1.29378670385)
+            rLx = -(5.9-4.8-0.19904410828)
+            rLy = -(7.9-6.8-1.29378670385)
             rLz = -(9.9-8.8+0.49761027071)
             jN = 1.8; duNx = 3.8; duNy = 4.8; duNz = 5.8;
             jP = 1.9; duPx = 3.9; duPy = 4.9; duPz = 5.9;
