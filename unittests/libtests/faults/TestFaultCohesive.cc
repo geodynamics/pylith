@@ -827,7 +827,7 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
   faultA->label("faultA");
   faultA->adjustTopology(&mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
 
-  // Check consistency
+  // Check consistency of original mesh.
   dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
   err = DMPlexCheckSymmetry(dmMesh);CPPUNIT_ASSERT(!err);
   err = DMPlexCheckSkeleton(dmMesh, isSimplexMesh);CPPUNIT_ASSERT(!err);
@@ -841,7 +841,7 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
   PetscViewerPopFormat(PETSC_VIEWER_STDOUT_WORLD);
 #endif
 
-  // Check consistency
+  // Check consistency of mesh after adjusting topology.
   CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh.dimension());
   dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
   err = DMPlexCheckSymmetry(dmMesh);CPPUNIT_ASSERT(!err);
