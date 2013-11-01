@@ -47,8 +47,8 @@ pylith::faults::CohesiveImpulsesData::CohesiveImpulsesData(void) :
   amplitude(0),
   numImpulses(0),
   residual(0),
-  constraintVertices(0),
-  numConstraintVert(0)
+  constraintEdges(0),
+  numConstraintEdges(0)
 { // constructor
   const PylithScalar velScale = lengthScale / timeScale;
   densityScale = pressureScale / (velScale*velScale);

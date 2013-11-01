@@ -194,10 +194,10 @@ pylith::faults::TestFaultCohesiveImpulses::testInitialize(void)
   } // for
   err = ISRestoreIndices(subpointIS, &points);PYLITH_CHECK_ERROR(err);
   err = ISDestroy(&subpointIS);PYLITH_CHECK_ERROR(err);
-  CPPUNIT_ASSERT_EQUAL(_data->numConstraintVert, vEnd-vStart);
+  CPPUNIT_ASSERT_EQUAL(_data->numConstraintEdges, vEnd-vStart);
 
   // Check orientation
-  //fault._fields->get("orientation").view("ORIENTATION"); // DEBUGGING
+  fault._fields->get("orientation").view("ORIENTATION"); // DEBUGGING
 
   topology::VecVisitorMesh orientationVisitor(fault._fields->get("orientation"));
   const PetscScalar* orientationArray = orientationVisitor.localArray();
@@ -251,19 +251,28 @@ pylith::faults::TestFaultCohesiveImpulses::testIntegrateResidual(void)
   const int spaceDim = _data->spaceDim;
 
   PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+  PetscInt pStart, pEnd;
+
+  // Set displacement values
+  topology::Field& disp = fields.get("disp(t)");
+  topology::VecVisitorMesh dispVisitor(disp);
+  PetscErrorCode err = PetscSectionGetChart(disp.petscSection(), &pStart, &pEnd);CPPUNIT_ASSERT(!err);
+  PetscScalar* dispArray = dispVisitor.localArray();CPPUNIT_ASSERT(dispArray);
+  for (PetscInt p = pStart, iVertex = 0; p < pEnd; ++p) {
+    if (dispVisitor.sectionDof(p) > 0) {
+      const PetscInt off = dispVisitor.sectionOffset(p);
+      CPPUNIT_ASSERT_EQUAL(spaceDim, dispVisitor.sectionDof(p));
+      for(PetscInt d = 0; d < spaceDim; ++d) {
+	dispArray[off+d] = _data->fieldT[iVertex*spaceDim+d] / _data->lengthScale;
+      } // for
+      ++iVertex;
+    } // if
+  } // for
+
   topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
   const PetscInt vStart = verticesStratum.begin();
   const PetscInt vEnd = verticesStratum.end();
 
-  topology::VecVisitorMesh dispVisitor(fields.get("disp(t)"));
-  PetscScalar* dispArray = dispVisitor.localArray();CPPUNIT_ASSERT(dispArray);
-
-  for(PetscInt v = vStart, iVertex=0; v < vEnd; ++v, ++iVertex) {
-    const PetscInt off = dispVisitor.sectionOffset(v);
-    for(PetscInt d = 0; d < spaceDim; ++d)
-      dispArray[off+d] = _data->fieldT[iVertex*spaceDim+d] / _data->lengthScale;
-  } // for
-  
   const PylithScalar t = 1.0;
   const PylithScalar dt = 1.0;
   fault.timeStep(dt);
@@ -271,28 +280,28 @@ pylith::faults::TestFaultCohesiveImpulses::testIntegrateResidual(void)
   topology::Field& residual = fields.get("residual");
   residual.zero();
   fault.integrateResidual(residual, t, &fields);
-  //residual.view("RESIDUAL"); // DEBUGGING
+  residual.view("RESIDUAL"); // DEBUGGING
 
   topology::VecVisitorMesh residualVisitor(residual);
   const PetscScalar* residualArray = residualVisitor.localArray();CPPUNIT_ASSERT(residualArray);
 
   // Check values
-  const PylithScalar* valsE = _data->residual;
   const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
   const PylithScalar residualScale = pow(_data->lengthScale, spaceDim);
 
-  for(PetscInt v = vStart, iVertex = 0; v < vEnd; ++v, ++iVertex) {
-    const PetscInt off = residualVisitor.sectionOffset(v);
-    CPPUNIT_ASSERT_EQUAL(spaceDim, residualVisitor.sectionDof(v));
-    
-    for(PetscInt d = 0; d < spaceDim; ++d) {
-      const PylithScalar valE = valsE[iVertex*spaceDim+d];
-      if (fabs(valE) > tolerance) {
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, residualArray[off+d]/valE*residualScale, tolerance);
-      } else {
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, residualArray[off+d]*residualScale, tolerance);
-      } // if/else
-    } // for
+  for (PetscInt p = pStart, iPoint = 0; p < pEnd; ++p) {
+    if (residualVisitor.sectionDof(p) > 0) {
+      const PetscInt off = residualVisitor.sectionOffset(p);
+      CPPUNIT_ASSERT_EQUAL(spaceDim, residualVisitor.sectionDof(p));
+      for(PetscInt d = 0; d < spaceDim; ++d) {
+	const PylithScalar valE = _data->residual[iPoint*spaceDim+d];
+	if (fabs(valE) > tolerance)
+	  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, residualArray[off+d]/valE*residualScale, tolerance);
+	else
+	  CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, residualArray[off+d]*residualScale, tolerance);
+      } // for
+      ++iPoint;
+    } // if
   } // for
 
   PYLITH_METHOD_END;
@@ -382,6 +391,7 @@ pylith::faults::TestFaultCohesiveImpulses::_initialize(topology::Mesh* const mes
   residual.subfieldAdd("lagrange multiplier", spaceDim);
   residual.subfieldsSetup();
   residual.setupSolnChart();
+  residual.setupSolnDof(spaceDim);
   fault->setupSolnDof(&residual);
   residual.allocate();
   residual.zero();
@@ -394,23 +404,23 @@ pylith::faults::TestFaultCohesiveImpulses::_initialize(topology::Mesh* const mes
 } // _initialize
 
 // ----------------------------------------------------------------------
-// Determine if vertex is a Lagrange multiplier constraint vertex.
+// Determine if point is a Lagrange multiplier constraint point.
 bool
-pylith::faults::TestFaultCohesiveImpulses::_isConstraintVertex(const int vertex) const
-{ // _isConstraintVertex
+pylith::faults::TestFaultCohesiveImpulses::_isConstraintEdge(const int point) const
+{ // _isConstraintEdge
   PYLITH_METHOD_BEGIN;
 
   assert(_data);
 
-  const int numConstraintVert = _data->numConstraintVert;
+  const int numConstraintEdges = _data->numConstraintEdges;
   bool isFound = false;
-  for (int i=0; i < _data->numConstraintVert; ++i)
-    if (_data->constraintVertices[i] == vertex) {
+  for (int i=0; i < _data->numConstraintEdges; ++i)
+    if (_data->constraintEdges[i] == point) {
       isFound = true;
       break;
     } // if
   PYLITH_METHOD_RETURN(isFound);
-} // _isConstraintVertex
+} // _isConstraintEdge
 
 
 // End of file 

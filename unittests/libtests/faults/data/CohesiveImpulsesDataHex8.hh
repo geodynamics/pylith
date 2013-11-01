@@ -71,9 +71,9 @@ private:
   static const int _numImpulses; ///< Number of impulses.
   static const PylithScalar _residual[]; ///< Expected values from residual.
 
-  static const int _constraintVertices[]; ///< Expected points for constraint vertices
+  static const int _constraintEdges[]; ///< Expected points for constraint edges
   static const int _negativeVertices[]; ///< Expected points for negative-side fault vertices
-  static const int _numConstraintVert; ///< Number of constraint vertices
+  static const int _numConstraintEdges; ///< Number of constraint edges
 
 };
 

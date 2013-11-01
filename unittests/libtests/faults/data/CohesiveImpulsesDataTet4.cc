@@ -144,8 +144,8 @@ const PylithScalar pylith::faults::CohesiveImpulsesDataTet4::_amplitude[3] = {
 
 const int pylith::faults::CohesiveImpulsesDataTet4::_numImpulses = 4;
 
-const int pylith::faults::CohesiveImpulsesDataTet4::_numConstraintVert = 3;
-const int pylith::faults::CohesiveImpulsesDataTet4::_constraintVertices[] = {
+const int pylith::faults::CohesiveImpulsesDataTet4::_numConstraintEdges = 3;
+const int pylith::faults::CohesiveImpulsesDataTet4::_constraintEdges[] = {
   11, 12, 13,
 };
 const int pylith::faults::CohesiveImpulsesDataTet4::_negativeVertices[] = {
@@ -196,9 +196,9 @@ pylith::faults::CohesiveImpulsesDataTet4::CohesiveImpulsesDataTet4(void)
   amplitude = const_cast<PylithScalar*>(_amplitude);
   numImpulses = _numImpulses;
   residual = const_cast<PylithScalar*>(_residual);
-  constraintVertices = const_cast<int*>(_constraintVertices);
+  constraintEdges = const_cast<int*>(_constraintEdges);
   negativeVertices = const_cast<int*>(_negativeVertices);
-  numConstraintVert = _numConstraintVert;  
+  numConstraintEdges = _numConstraintEdges;  
 } // constructor
 
 pylith::faults::CohesiveImpulsesDataTet4::~CohesiveImpulsesDataTet4(void)
