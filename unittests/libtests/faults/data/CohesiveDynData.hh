@@ -92,9 +92,9 @@ public:
   PylithScalar* fieldIncrOpenE; ///< Expected values for solution increment for opening case.
   PylithScalar* slipOpenE; ///< Expected values for slip for opening case.
 
-  int* constraintVertices; ///< Expected points for constraint vertices
+  int* constraintEdges; ///< Expected points for constraint edges
   int* negativeVertices; ///< Expected points for negative side fault vertices
-  int numConstraintVert; ///< Number of constraint vertices
+  int numConstraintEdges; ///< Number of constraint edges
   //@}
 
 };

@@ -147,13 +147,13 @@ private:
       topology::Jacobian* const jacobian,
       const PylithScalar* const fieldIncrVals);
 
-  /** Determine if vertex is a Lagrange multiplier constraint vertex.
+  /** Determine if point is a Lagrange multiplier constraint point.
    *
-   * @param vertex Label of vertex.
+   * @param point Label of point.
    *
-   * @returns True if vertex is a constraint vertex, false otherwise.
+   * @returns True if point is a constraint point, false otherwise.
    */
-  bool _isConstraintVertex(const int vertex) const;
+  bool _isConstraintEdge(const int point) const;
 
 }; // class TestFaultCohesiveDyn
 

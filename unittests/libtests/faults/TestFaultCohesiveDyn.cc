@@ -153,13 +153,25 @@ pylith::faults::TestFaultCohesiveDyn::testInitialize(void)
   PYLITH_METHOD_BEGIN;
 
   CPPUNIT_ASSERT(_data);
+  PetscErrorCode err;
 
   topology::Mesh mesh;
   FaultCohesiveDyn fault;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &fault, &fields);
 
+  // Check fault mesh consistency
   PetscDM dmMesh = fault._faultMesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
+  PetscBool isSimplexMesh = PETSC_TRUE;
+  if ((_data->cellDim == 2 && _data->numBasis == 4) ||
+      (_data->cellDim == 3 && _data->numBasis == 8)) {
+    isSimplexMesh = PETSC_FALSE;
+  } // if
+  err = DMPlexCheckSymmetry(dmMesh);CPPUNIT_ASSERT(!err);
+  if (_data->cellDim > 1) {
+    err = DMPlexCheckSkeleton(dmMesh, isSimplexMesh);CPPUNIT_ASSERT(!err);
+  } // if
+  
   topology::SubMeshIS subpointIS(*fault._faultMesh);
   const PetscInt numPoints = subpointIS.size();
   const PetscInt* points = subpointIS.points();CPPUNIT_ASSERT(points);
@@ -171,14 +183,14 @@ pylith::faults::TestFaultCohesiveDyn::testInitialize(void)
   for(PetscInt v = vStart; v < vEnd; ++v) {
     PetscInt faultPoint;
 
-    PetscErrorCode err = PetscFindInt(_data->negativeVertices[v-vStart], numPoints, points, &faultPoint);PYLITH_CHECK_ERROR(err);
+    err = PetscFindInt(_data->negativeVertices[v-vStart], numPoints, points, &faultPoint);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT(faultPoint >= 0);
     CPPUNIT_ASSERT_EQUAL(faultPoint, v);
   } // for
-  CPPUNIT_ASSERT_EQUAL(_data->numConstraintVert, vEnd-vStart);
+  CPPUNIT_ASSERT_EQUAL(_data->numConstraintEdges, vEnd-vStart);
 
   // Check orientation
-  //fault._fields->get("orientation").view("ORIENTATION"); // DEBUGGING
+  fault._fields->get("orientation").view("ORIENTATION"); // DEBUGGING
   topology::VecVisitorMesh orientationVisitor(fault._fields->get("orientation"));
   const PetscScalar* orientationArray = orientationVisitor.localArray();
 
@@ -333,6 +345,8 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
 
   fault.updateStateVars(t, &fields);
 
+  solution.view("SOLUTION"); // DEBUGGING
+
   { // Check solution values
     // Lagrange multipliers should be adjusted according to friction
     // as reflected in the fieldIncrSlipE data member.
@@ -423,7 +437,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
 
   fault.updateStateVars(t, &fields);
 
-  //solution.view("SOLUTION"); // DEBUGGING
+  solution.view("SOLUTION"); // DEBUGGING
 
   { // Check solution values
     // Lagrange multipliers should be set to zero as reflected in the
@@ -541,62 +555,43 @@ pylith::faults::TestFaultCohesiveDyn::testCalcTractions(void)
   fault.updateStateVars(t, &fields);
   fault._calcTractions(&tractions, fields.get("disp(t)"));
 
-  PetscDM faultDMMesh = fault._faultMesh->dmMesh();CPPUNIT_ASSERT(faultDMMesh);
-  topology::SubMeshIS subpointIS(*fault._faultMesh);
-  const PetscInt numPoints = subpointIS.size();
-  const PetscInt* points = subpointIS.points();CPPUNIT_ASSERT(points);
-
   topology::VecVisitorMesh tractionVisitor(tractions);
   const PetscScalar* tractionArray = tractionVisitor.localArray();CPPUNIT_ASSERT(tractionArray);
 
   topology::VecVisitorMesh dispVisitor(fields.get("disp(t)"));
   const PetscScalar* dispArray = dispVisitor.localArray();CPPUNIT_ASSERT(dispArray);
 
-  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
-  topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
-  PetscInt cStart = cellsStratum.begin();
-  const PetscInt cEnd = cellsStratum.end();
-  PetscErrorCode err = DMPlexGetHybridBounds(dmMesh, &cStart, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
+  const int numConstraintEdges = _data->numConstraintEdges;
+  CPPUNIT_ASSERT_EQUAL(numConstraintEdges, int(fault._cohesiveVertices.size()));
+  int_array constraintEdgesSorted(_data->constraintEdges, numConstraintEdges);
+  int* sortedBegin = &constraintEdgesSorted[0];
+  int* sortedEnd = &constraintEdgesSorted[numConstraintEdges];
+  std::sort(sortedBegin, sortedEnd);
+  for (int i=0; i < numConstraintEdges; ++i) {
+    const int* iter = std::lower_bound(sortedBegin, sortedEnd, fault._cohesiveVertices[i].lagrange);
+    CPPUNIT_ASSERT(iter != sortedEnd);
+    const int index = iter - sortedBegin;
 
-  topology::Stratum fverticesStratum(faultDMMesh, topology::Stratum::DEPTH, 0);
-  const PetscInt fvStart = fverticesStratum.begin();
+    const PetscInt v_fault = fault._cohesiveVertices[i].fault;
+    const PetscInt e_lagrange = fault._cohesiveVertices[i].lagrange;
 
-  const PylithScalar tolerance = 1.0e-06;
-  for(PetscInt c = cStart; c < cEnd; ++c) {
-    const PetscInt *cone = NULL;
-    PetscInt coneSize = 0, p = 0;
+    const PetscInt toff = tractionVisitor.sectionOffset(v_fault);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, tractionVisitor.sectionDof(v_fault));
 
-    err = DMPlexGetConeSize(dmMesh, c, &coneSize);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetCone(dmMesh, c, &cone);PYLITH_CHECK_ERROR(err);
-    // Check Lagrange multiplier dofs
-    //   For depth = 1, we have a prism and use the last third
-    CPPUNIT_ASSERT_EQUAL(0, coneSize % 3);
-    coneSize /= 3;
-    //   For depth > 1, we take the edges
-    for (p = 2*coneSize; p < 3*coneSize; ++p) {
-      const PetscInt v_lagrange = cone[p];
-      const PetscInt v_negative = cone[p-2*coneSize];
-      PetscInt v_fault;
+    const PetscInt doff = dispVisitor.sectionOffset(e_lagrange);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, dispVisitor.sectionDof(e_lagrange));
+      
+    const PylithScalar* orientationVertex = &_data->orientation[index*spaceDim*spaceDim];
 
-      err = PetscFindInt(v_negative, numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);CPPUNIT_ASSERT(v_fault >= 0);
-      const PetscInt toff = tractionVisitor.sectionOffset(v_fault);
-      CPPUNIT_ASSERT_EQUAL(spaceDim, tractionVisitor.sectionDof(v_fault));
-
-      const PetscInt doff = dispVisitor.sectionOffset(v_lagrange);
-      CPPUNIT_ASSERT_EQUAL(spaceDim, dispVisitor.sectionDof(v_lagrange));
-
-      const PylithScalar *orientationVertex = &_data->orientation[(v_fault-fvStart)*spaceDim*spaceDim];
-      CPPUNIT_ASSERT(orientationVertex);
-
-      for(PetscInt d = 0; d < spaceDim; ++d) {
-        PylithScalar tractionE = 0.0;
-        for(PetscInt e = 0; e < spaceDim; ++e)
-          tractionE += orientationVertex[d*spaceDim+e] * dispArray[doff+e];
-        if (tractionE > 1.0) 
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tractionArray[toff+d]/tractionE, tolerance);
-        else
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(tractionE, tractionArray[toff+d], tolerance);
-      } // for
+    const PylithScalar tolerance = 1.0e-06;
+    for(PetscInt d = 0; d < spaceDim; ++d) {
+      PylithScalar tractionE = 0.0;
+      for(PetscInt e = 0; e < spaceDim; ++e)
+	tractionE += orientationVertex[d*spaceDim+e] * dispArray[doff+e];
+      if (tractionE > 1.0) 
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tractionArray[toff+d]/tractionE, tolerance);
+      else
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(tractionE, tractionArray[toff+d], tolerance);
     } // for
   } // for
 
@@ -705,6 +700,7 @@ pylith::faults::TestFaultCohesiveDyn::_initialize(topology::Mesh* const mesh,
   residual.subfieldAdd("lagrange multiplier", spaceDim);
   residual.subfieldsSetup();
   residual.setupSolnChart();
+  residual.setupSolnDof(spaceDim);
   fault->setupSolnDof(&residual);
   residual.allocate();
   residual.zero();
@@ -735,43 +731,52 @@ pylith::faults::TestFaultCohesiveDyn::_setFieldsJacobian(topology::Mesh* const m
   CPPUNIT_ASSERT(fieldIncr);
 
   const int spaceDim = _data->spaceDim;
-  const PylithScalar lengthScale = 1.0; // _data->lengthScale;
+  const PylithScalar lengthScale = 1.0;
 
   // Get vertices in mesh
   PetscDM dmMesh = mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
   topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
-  const PetscInt vStart = verticesStratum.begin();
-  const PetscInt vEnd = verticesStratum.end();
+  PetscErrorCode err;
+  PetscInt pStart, pEnd;
 
   // Set displacement values
-  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
+  topology::Field& disp = fields->get("disp(t)");
+  topology::VecVisitorMesh dispVisitor(disp);
+  err = PetscSectionGetChart(disp.petscSection(), &pStart, &pEnd);CPPUNIT_ASSERT(!err);
   PetscScalar* dispArray = dispVisitor.localArray();CPPUNIT_ASSERT(dispArray);
-  for(PetscInt v = vStart, iVertex = 0; v < vEnd; ++v, ++iVertex) {
-    const PetscInt off = dispVisitor.sectionOffset(v);
-    CPPUNIT_ASSERT_EQUAL(spaceDim, dispVisitor.sectionDof(v));
-    for(PetscInt d = 0; d < spaceDim; ++d) {
-      dispArray[off+d] = _data->fieldT[iVertex*spaceDim+d] / lengthScale;
-    } // for
+  for (PetscInt p = pStart, iVertex = 0; p < pEnd; ++p) {
+    if (dispVisitor.sectionDof(p) > 0) {
+      const PetscInt off = dispVisitor.sectionOffset(p);
+      CPPUNIT_ASSERT_EQUAL(spaceDim, dispVisitor.sectionDof(p));
+      for(PetscInt d = 0; d < spaceDim; ++d) {
+	dispArray[off+d] = _data->fieldT[iVertex*spaceDim+d] / lengthScale;
+      } // for
+      ++iVertex;
+    } // if
   } // for
 
   // Set increment values
-  topology::VecVisitorMesh dispIncrVisitor(fields->get("dispIncr(t->t+dt)"));
+  topology::Field& dispIncr = fields->get("dispIncr(t->t+dt)");
+  topology::VecVisitorMesh dispIncrVisitor(dispIncr);
+  err = PetscSectionGetChart(dispIncr.petscSection(), &pStart, &pEnd);CPPUNIT_ASSERT(!err);
   PetscScalar* dispIncrArray = dispIncrVisitor.localArray();CPPUNIT_ASSERT(dispIncrArray);
-  for(PetscInt v = vStart, iVertex = 0; v < vEnd; ++v, ++iVertex) {
-    const PetscInt off = dispIncrVisitor.sectionOffset(v);
-    CPPUNIT_ASSERT_EQUAL(spaceDim, dispIncrVisitor.sectionDof(v));
-    for(PetscInt d = 0; d < spaceDim; ++d) {
-      dispIncrArray[off+d] = fieldIncr[iVertex*spaceDim+d] / lengthScale;
-    } // for
+  for (PetscInt p = pStart, iVertex = 0; p < pEnd; ++p) {
+    if (dispIncrVisitor.sectionDof(p) > 0) {
+      const PetscInt off = dispIncrVisitor.sectionOffset(p);
+      CPPUNIT_ASSERT_EQUAL(spaceDim, dispIncrVisitor.sectionDof(p));
+      for(PetscInt d = 0; d < spaceDim; ++d) {
+	dispIncrArray[off+d] = fieldIncr[iVertex*spaceDim+d] / lengthScale;
+      } // for
+      ++iVertex;
+    } // if
   } // for
 
   // Setup Jacobian matrix
-  const PetscInt nrows = verticesStratum.size() * spaceDim;
+  const PetscInt nrows = (verticesStratum.size()+_data->numConstraintEdges) * spaceDim;
   const PetscInt ncols = nrows;
   int nrowsM = 0;
   int ncolsM = 0;
   PetscMat jacobianMat = jacobian->matrix();
-  PetscErrorCode err;
   err = MatGetSize(jacobianMat, &nrowsM, &ncolsM);PYLITH_CHECK_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(nrows, nrowsM);
   CPPUNIT_ASSERT_EQUAL(ncols, ncolsM);
@@ -791,23 +796,23 @@ pylith::faults::TestFaultCohesiveDyn::_setFieldsJacobian(topology::Mesh* const m
 } // _setFieldsJacobian
 
 // ----------------------------------------------------------------------
-// Determine if vertex is a Lagrange multiplier constraint vertex.
+// Determine if point is a Lagrange multiplier constraint point.
 bool
-pylith::faults::TestFaultCohesiveDyn::_isConstraintVertex(const int vertex) const
-{ // _isConstraintVertex
+pylith::faults::TestFaultCohesiveDyn::_isConstraintEdge(const int point) const
+{ // _isConstraintEdge
   PYLITH_METHOD_BEGIN;
 
   assert(_data);
 
-  const int numConstraintVert = _data->numConstraintVert;
+  const int numConstraintEdges = _data->numConstraintEdges;
   bool isFound = false;
-  for (int i=0; i < _data->numConstraintVert; ++i)
-    if (_data->constraintVertices[i] == vertex) {
+  for (int i=0; i < _data->numConstraintEdges; ++i)
+    if (_data->constraintEdges[i] == point) {
       isFound = true;
       break;
     } // if
   PYLITH_METHOD_RETURN(isFound);
-} // _isConstraintVertex
+} // _isConstraintEdge
 
 
 // End of file 

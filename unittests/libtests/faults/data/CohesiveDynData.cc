@@ -51,8 +51,8 @@ pylith::faults::CohesiveDynData::CohesiveDynData(void) :
   slipSlipE(0),
   fieldIncrOpenE(0),
   slipOpenE(0),
-  constraintVertices(0),
-  numConstraintVert(0)
+  constraintEdges(0),
+  numConstraintEdges(0)
 { // constructor
   const PylithScalar velScale = lengthScale / timeScale;
   densityScale = pressureScale / (velScale*velScale);
