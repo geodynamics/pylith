@@ -27,8 +27,6 @@ swig_sources = \
 	materials.i \
 	Material.i \
 	ElasticMaterial.i \
-	ElasticStrain1D.i \
-	ElasticStress1D.i \
 	ElasticPlaneStrain.i \
 	ElasticPlaneStress.i \
 	ElasticIsotropic3D.i \

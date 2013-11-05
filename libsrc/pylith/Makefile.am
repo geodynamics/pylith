@@ -100,8 +100,6 @@ libpylith_la_SOURCES = \
 	materials/Metadata.cc \
 	materials/Material.cc \
 	materials/ElasticMaterial.cc \
-	materials/ElasticStrain1D.cc \
-	materials/ElasticStress1D.cc \
 	materials/ElasticPlaneStrain.cc \
 	materials/ElasticPlaneStress.cc \
 	materials/ElasticIsotropic3D.cc \

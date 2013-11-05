@@ -636,13 +636,10 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mes
     // Dimensionalize coordinates for querying
     const scalar_array& quadPtsNonDim = quadrature->quadPts();
     quadPtsGlobal = quadPtsNonDim;
-    _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
-				lengthScale);
+    _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(), lengthScale);
     
     // Loop over quadrature points in cell and query database
-    for (int iQuadPt=0, iCoord=0, iStress=0; 
-	 iQuadPt < numQuadPts; 
-	 ++iQuadPt, iCoord+=spaceDim, iStress+=tensorSize) {
+    for (int iQuadPt=0, iCoord=0, iStress=0; iQuadPt < numQuadPts; ++iQuadPt, iCoord+=spaceDim, iStress+=tensorSize) {
       int err = _dbInitialStress->query(&stressCell[iStress], tensorSize,
 					&quadPtsGlobal[iCoord], spaceDim, cs);
       if (err) {

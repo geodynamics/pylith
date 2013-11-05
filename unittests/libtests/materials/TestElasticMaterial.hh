@@ -36,7 +36,7 @@ namespace pylith {
   namespace materials {
     class TestElasticMaterial;
     class ElasticMaterialData;
-    class ElasticStrain1DData;
+    class ElasticPlaneStrainData;
   } // materials
 } // pylith
 
@@ -146,8 +146,8 @@ private :
    * @param data Data with properties for elastic material.
    */
   void _initialize(topology::Mesh* mesh,
-		   ElasticStrain1D* material,
-		   const ElasticStrain1DData* data);
+		   ElasticPlaneStrain* material,
+		   const ElasticPlaneStrainData* data);
 
 }; // class TestElasticMaterial
 
