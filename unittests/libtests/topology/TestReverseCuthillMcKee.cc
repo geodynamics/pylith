@@ -28,6 +28,8 @@
 #include "pylith/topology/Jacobian.hh" // USES Field
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
+#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestReverseCuthillMcKee );
@@ -215,6 +217,46 @@ pylith::topology::TestReverseCuthillMcKee::_testReorder(const char* filename,
     err = DMPlexGetStratumSize(dmMesh, name, 1, &numPoints);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(numPointsE, numPoints);
   } // for
+
+  // Check element centroids
+  PylithScalar coordsCheckOrig = 0.0;
+  { // original
+    Stratum cellsStratum(dmOrig, Stratum::HEIGHT, 0);
+    const PetscInt cStart = cellsStratum.begin();
+    const PetscInt cEnd = cellsStratum.end();
+    topology::CoordsVisitor coordsVisitor(dmOrig);
+    for (PetscInt cell = cStart; cell < cEnd; ++cell) {
+      PetscScalar* coordsCell = NULL;
+      PetscInt coordsSize = 0;
+      PylithScalar value = 0.0;
+      coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
+      for (int i=0; i < coordsSize; ++i) {
+	value += coordsCell[i];
+      } // for
+      coordsCheckOrig += value*value;
+      coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
+    } // for
+  } // original
+  PylithScalar coordsCheck = 0.0;
+  { // reordered
+    Stratum cellsStratum(dmMesh, Stratum::HEIGHT, 0);
+    const PetscInt cStart = cellsStratum.begin();
+    const PetscInt cEnd = cellsStratum.end();
+    topology::CoordsVisitor coordsVisitor(dmMesh);
+    for (PetscInt cell = cStart; cell < cEnd; ++cell) {
+      PetscScalar* coordsCell = NULL;
+      PetscInt coordsSize = 0;
+      PylithScalar value = 0.0;
+      coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
+      for (int i=0; i < coordsSize; ++i) {
+	value += coordsCell[i];
+      } // for
+      coordsCheck += value*value;
+      coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
+    } // for
+  } // reordered
+  const PylithScalar tolerance = 1.0e-6;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(coordsCheckOrig, coordsCheck, tolerance*coordsCheckOrig);
 
   // Verify reduction in Jacobian bandwidth
   Field fieldOrig(meshOrig);
