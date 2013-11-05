@@ -86,9 +86,7 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void)
 
   // Check consistency
   err = DMPlexCheckSymmetry(dmMesh);CPPUNIT_ASSERT(!err);
-  if (submesh.dimension() > 1) {
-    //err = DMPlexCheckSkeleton(dmMesh, _data->isSimplexMesh ? PETSC_TRUE : PETSC_FALSE);CPPUNIT_ASSERT(!err);
-  } // if
+  //err = DMPlexCheckSkeleton(dmMesh, _data->isSimplexMesh ? PETSC_TRUE : PETSC_FALSE);CPPUNIT_ASSERT(!err);
 
   // Check vertices
   topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
