@@ -21,19 +21,6 @@
 #include "TestPointForceCases.hh" // Implementation of class methods
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestPointForceLine2 );
-
-#include "data/PointForceDataLine2.hh" // USES DirichletDataLine2
-
-// Setup testing data.
-void
-pylith::bc::TestPointForceLine2::setUp(void)
-{ // setUp
-  _data = new PointForceDataLine2();
-} // setUp
-
-
-// ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestPointForceTri3 );
 
 #include "data/PointForceDataTri3.hh" // USES DirichletDataTri3
