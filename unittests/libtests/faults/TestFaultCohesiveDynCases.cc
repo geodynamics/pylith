@@ -43,8 +43,6 @@ pylith::faults::TestFaultCohesiveDynTri3::setUp(void)
   feassemble::GeometryLine2D geometry;
   _quadrature->refGeometry(&geometry);
   
-  _flipFault = true;
-
   PYLITH_METHOD_END;
 } // setUp
 
@@ -66,8 +64,6 @@ pylith::faults::TestFaultCohesiveDynTri3d::setUp(void)
   feassemble::GeometryLine2D geometry;
   _quadrature->refGeometry(&geometry);
   
-  _flipFault = true;
-
   PYLITH_METHOD_END;
 } // setUp
 
@@ -89,8 +85,6 @@ pylith::faults::TestFaultCohesiveDynQuad4::setUp(void)
   feassemble::GeometryLine2D geometry;
   _quadrature->refGeometry(&geometry);
   
-  _flipFault = true;
-
   PYLITH_METHOD_END;
 } // setUp
 
@@ -112,8 +106,6 @@ pylith::faults::TestFaultCohesiveDynTet4::setUp(void)
   feassemble::GeometryTri3D geometry;
   _quadrature->refGeometry(&geometry);
   
-  _flipFault = true;
-
   PYLITH_METHOD_END;
 } // setUp
 
@@ -135,8 +127,6 @@ pylith::faults::TestFaultCohesiveDynHex8::setUp(void)
   feassemble::GeometryQuad3D geometry;
   _quadrature->refGeometry(&geometry);
   
-  _flipFault = true;
-
   PYLITH_METHOD_END;
 } // setUp
 

@@ -45,8 +45,6 @@ pylith::faults::TestFaultCohesiveKinSrcsTri3::setUp(void)
   feassemble::GeometryLine2D geometry;
   _quadrature->refGeometry(&geometry);
   
-  _flipFault = true;
-
   PYLITH_METHOD_END;
 } // setUp
 
@@ -110,8 +108,6 @@ pylith::faults::TestFaultCohesiveKinSrcsHex8::setUp(void)
   feassemble::GeometryQuad3D geometry;
   _quadrature->refGeometry(&geometry);
   
-  _flipFault = true;
-
   PYLITH_METHOD_END;
 } // setUp
 

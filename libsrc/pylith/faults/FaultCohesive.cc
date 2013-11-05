@@ -109,8 +109,7 @@ void
 pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
                                               int *firstFaultVertex,
                                               int *firstLagrangeVertex,
-                                              int *firstFaultCell,
-                                              const bool flipFault)
+                                              int *firstFaultCell)
 { // adjustTopology
   PYLITH_METHOD_BEGIN;
 
@@ -144,7 +143,7 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
       err = DMPlexGetDimension(dmMesh, &dim);PYLITH_CHECK_ERROR(err);
       err = DMPlexGetDepth(dmMesh, &depth);PYLITH_CHECK_ERROR(err);
       err = DMPlexGetLabel(dmMesh, charlabel, &groupField);PYLITH_CHECK_ERROR(err);
-      CohesiveTopology::createFault(&faultMesh, faultBoundary, *mesh, groupField, flipFault);
+      CohesiveTopology::createFault(&faultMesh, faultBoundary, *mesh, groupField);
 
       if (dim > 1 && dim == depth) {
         CohesiveTopology::createInterpolated(mesh, faultMesh, faultBoundary, groupField, id(), *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());

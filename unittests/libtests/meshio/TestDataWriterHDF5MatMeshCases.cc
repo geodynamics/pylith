@@ -43,7 +43,6 @@ pylith::meshio::TestDataWriterHDF5MatMeshTri3::setUp(void)
 
   TestDataWriterHDF5Mesh::setUp();
   _data = new DataWriterHDF5DataMatMeshTri3;
-  _flipFault = true;
   _initialize();
 
   PYLITH_METHOD_END;
@@ -59,7 +58,6 @@ pylith::meshio::TestDataWriterHDF5MatMeshQuad4::setUp(void)
 
   TestDataWriterHDF5Mesh::setUp();
   _data = new DataWriterHDF5DataMatMeshQuad4;
-  _flipFault = false;
   _initialize();
 
   PYLITH_METHOD_END;
@@ -75,7 +73,6 @@ pylith::meshio::TestDataWriterHDF5MatMeshTet4::setUp(void)
 
   TestDataWriterHDF5Mesh::setUp();
   _data = new DataWriterHDF5DataMatMeshTet4;
-  _flipFault = false;
   _initialize();
 
   PYLITH_METHOD_END;
@@ -91,7 +88,6 @@ pylith::meshio::TestDataWriterHDF5MatMeshHex8::setUp(void)
 
   TestDataWriterHDF5Mesh::setUp();
   _data = new DataWriterHDF5DataMatMeshHex8;
-  _flipFault = true;
   _initialize();
 
   PYLITH_METHOD_END;

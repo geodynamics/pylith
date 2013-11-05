@@ -69,7 +69,6 @@ protected:
   CohesiveImpulsesData* _data; ///< Data for testing
   feassemble::Quadrature* _quadrature; ///< Fault quadrature.
   spatialdata::spatialdb::SpatialDB* _dbImpulseAmp; ///< Initial tractions.
-  bool _flipFault; ///< If true, flip fault orientation.
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public:

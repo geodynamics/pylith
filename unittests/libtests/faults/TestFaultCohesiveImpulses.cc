@@ -52,7 +52,6 @@ pylith::faults::TestFaultCohesiveImpulses::setUp(void)
   _data = 0;
   _quadrature = new feassemble::Quadrature();CPPUNIT_ASSERT(_quadrature);
   _dbImpulseAmp = 0;
-  _flipFault = false;
 
   PYLITH_METHOD_END;
 } // setUp
@@ -371,7 +370,7 @@ pylith::faults::TestFaultCohesiveImpulses::_initialize(topology::Mesh* const mes
   fault->label(_data->label);
   fault->quadrature(_quadrature);
   
-  fault->adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell, _flipFault);
+  fault->adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
   
   const PylithScalar upDir[3] = { 0.0, 0.0, 1.0 };
   

@@ -74,7 +74,6 @@ protected :
   DataWriterData* _data; ///< Data for testing
   topology::Mesh* _mesh; ///< Mesh for domain
   topology::Mesh* _submesh; ///< Mesh for subdomain.
-  bool _flipFault; ///< If true, flip fault orientation.
 
 }; // class TestDataWriterBCMesh
 

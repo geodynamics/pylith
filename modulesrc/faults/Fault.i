@@ -119,8 +119,7 @@ namespace pylith {
       void adjustTopology(pylith::topology::Mesh* const mesh,
                           int *firstFaultVertex,
                           int *firstLagrangeVertex,
-                          int *firstFaultCell,
-                          const bool flipFault = false) = 0;
+                          int *firstFaultCell) = 0;
       %clear int *firstFaultVertex, int *firstFaultCell;
       
       /** Initialize fault. Determine orientation and setup boundary

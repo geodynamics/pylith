@@ -75,7 +75,6 @@ protected:
   spatialdata::spatialdb::SpatialDB* _dbInitialTract; ///< Initial tractions.
   friction::FrictionModel* _friction; ///< Friction model
   spatialdata::spatialdb::SpatialDB* _dbFriction; ///< Friction parameters.
-  bool _flipFault; ///< If true, flip fault orientation.
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public:

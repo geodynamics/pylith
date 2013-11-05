@@ -66,7 +66,6 @@ protected :
 
   DataWriterDataPoints* _data; ///< Data for testing
   topology::Mesh* _mesh; ///< Mesh for data
-  bool _flipFault; ///< If true, flip fault orientation.
 
 }; // class TestDataWriterPoints
 

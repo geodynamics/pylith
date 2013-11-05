@@ -44,7 +44,6 @@ pylith::meshio::TestDataWriterVTKPointsTri3::setUp(void)
 
   TestDataWriterVTKPoints::setUp();
   _data = new DataWriterVTKDataPointsTri3;
-  _flipFault = true;
   _initialize();
 
   PYLITH_METHOD_END;
@@ -60,7 +59,6 @@ pylith::meshio::TestDataWriterVTKPointsQuad4::setUp(void)
 
   TestDataWriterVTKPoints::setUp();
   _data = new DataWriterVTKDataPointsQuad4;
-  _flipFault = false;
   _initialize();
 
   PYLITH_METHOD_END;
@@ -76,7 +74,6 @@ pylith::meshio::TestDataWriterVTKPointsTet4::setUp(void)
 
   TestDataWriterVTKPoints::setUp();
   _data = new DataWriterVTKDataPointsTet4;
-  _flipFault = true;
   _initialize();
 
   PYLITH_METHOD_END;
@@ -92,7 +89,6 @@ pylith::meshio::TestDataWriterVTKPointsHex8::setUp(void)
 
   TestDataWriterVTKPoints::setUp();
   _data = new DataWriterVTKDataPointsHex8;
-  _flipFault = false;
   _initialize();
 
   PYLITH_METHOD_END;

@@ -32,8 +32,7 @@ void
 pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
                                               PetscDM& faultBoundary,
                                               const topology::Mesh& mesh,
-                                              PetscDMLabel groupField,
-                                              const bool flipFault)
+                                              PetscDMLabel groupField)
 { // createFault
   PYLITH_METHOD_BEGIN;
 
@@ -56,47 +55,6 @@ pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
     if (groupField) {err = DMLabelGetName(groupField, &groupName);PYLITH_CHECK_ERROR(err);}
     err = DMPlexCreateSubmesh(dmMesh, groupField, 1, &subdm);PYLITH_CHECK_ERROR(err);
     err = DMPlexOrient(subdm);PYLITH_CHECK_ERROR(err);
-
-    if (flipFault) {
-      PetscInt maxConeSize, *revcone, *revconeO;
-      PetscInt pStart, pEnd, h;
-
-      err = DMPlexGetVTKCellHeight(subdm, &h);PYLITH_CHECK_ERROR(err);
-      err = DMPlexGetHeightStratum(subdm, h, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
-      err = DMPlexGetMaxSizes(subdm, &maxConeSize, NULL);PYLITH_CHECK_ERROR(err);
-      err = DMGetWorkArray(subdm, maxConeSize, PETSC_INT, &revcone);PYLITH_CHECK_ERROR(err);
-      err = DMGetWorkArray(subdm, maxConeSize, PETSC_INT, &revconeO);PYLITH_CHECK_ERROR(err);
-      for (PetscInt p = pStart; p < pEnd; ++p) {
-        const PetscInt *cone, *coneO, *support;
-        PetscInt        coneSize, faceSize, supportSize, cp, sp;
-
-        err = DMPlexGetConeSize(subdm, p, &coneSize);PYLITH_CHECK_ERROR(err);
-        err = DMPlexGetCone(subdm, p, &cone);PYLITH_CHECK_ERROR(err);
-        err = DMPlexGetConeOrientation(subdm, p, &coneO);PYLITH_CHECK_ERROR(err);
-        for (cp = 0; cp < coneSize; ++cp) {
-          err = DMPlexGetConeSize(subdm, cone[coneSize-1-cp], &faceSize);PYLITH_CHECK_ERROR(err);
-          revcone[cp]  = cone[coneSize-1-cp];
-          revconeO[cp] = coneO[coneSize-1-cp] >= 0 ? -(faceSize-coneO[coneSize-1-cp]) : faceSize+coneO[coneSize-1-cp];
-        }
-        err = DMPlexSetCone(subdm, p, revcone);PYLITH_CHECK_ERROR(err);
-        err = DMPlexSetConeOrientation(subdm, p, revconeO);PYLITH_CHECK_ERROR(err);
-        /* Reverse orientations of support */
-        faceSize = coneSize;
-        err = DMPlexGetSupportSize(subdm, p, &supportSize);PYLITH_CHECK_ERROR(err);
-        err = DMPlexGetSupport(subdm, p, &support);PYLITH_CHECK_ERROR(err);
-        for (sp = 0; sp < supportSize; ++sp) {
-          err = DMPlexGetConeSize(subdm, support[sp], &coneSize);PYLITH_CHECK_ERROR(err);
-          err = DMPlexGetCone(subdm, support[sp], &cone);PYLITH_CHECK_ERROR(err);
-          err = DMPlexGetConeOrientation(subdm, support[sp], &coneO);PYLITH_CHECK_ERROR(err);
-          for (cp = 0; cp < coneSize; ++cp) {
-            if (cone[cp] != p) continue;
-            err = DMPlexInsertConeOrientation(subdm, support[sp], cp, coneO[cp] >= 0 ? -(faceSize-coneO[cp]) : faceSize+coneO[cp]);PYLITH_CHECK_ERROR(err);
-          }
-        }
-      }
-      err = DMRestoreWorkArray(subdm, maxConeSize, PETSC_INT, &revcone);PYLITH_CHECK_ERROR(err);
-      err = DMRestoreWorkArray(subdm, maxConeSize, PETSC_INT, &revconeO);PYLITH_CHECK_ERROR(err);
-    }
 
     err = DMPlexCreateLabel(subdm, labelName);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetLabel(subdm, labelName, &label);PYLITH_CHECK_ERROR(err);
@@ -146,33 +104,7 @@ pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
     err = DMPlexSetSubpointMap(faultDMMesh, subpointMap);PYLITH_CHECK_ERROR(err);
     err = DMLabelDestroy(&subpointMap);PYLITH_CHECK_ERROR(err);
     err = DMDestroy(&faultDMMeshTmp);PYLITH_CHECK_ERROR(err);
-    if (flipFault) {
-      PetscInt maxConeSize, *revcone, *revconeO;
-      PetscInt pStart, pEnd;
-
-      err = DMPlexGetHeightStratum(faultDMMesh, h, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
-      err = DMPlexGetMaxSizes(faultDMMesh, &maxConeSize, NULL);PYLITH_CHECK_ERROR(err);
-      err = DMGetWorkArray(faultDMMesh, maxConeSize, PETSC_INT, &revcone);PYLITH_CHECK_ERROR(err);
-      err = DMGetWorkArray(faultDMMesh, maxConeSize, PETSC_INT, &revconeO);PYLITH_CHECK_ERROR(err);
-      for (PetscInt p = pStart; p < pEnd; ++p) {
-        const PetscInt *cone, *coneO;
-        PetscInt        coneSize, faceSize, c;
-
-        err = DMPlexGetConeSize(faultDMMesh, p, &coneSize);PYLITH_CHECK_ERROR(err);
-        err = DMPlexGetCone(faultDMMesh, p, &cone);PYLITH_CHECK_ERROR(err);
-        err = DMPlexGetConeOrientation(faultDMMesh, p, &coneO);PYLITH_CHECK_ERROR(err);
-        for (c = 0; c < coneSize; ++c) {
-          err = DMPlexGetConeSize(faultDMMesh, cone[coneSize-1-c], &faceSize);PYLITH_CHECK_ERROR(err);
-          revcone[c]  = cone[coneSize-1-c];
-          revconeO[c] = coneO[coneSize-1-c] >= 0 ? -(faceSize-coneO[coneSize-1-c]) : faceSize+coneO[coneSize-1-c];
-        }
-        err = DMPlexSetCone(faultDMMesh, p, revcone);PYLITH_CHECK_ERROR(err);
-        err = DMPlexSetConeOrientation(faultDMMesh, p, revconeO);PYLITH_CHECK_ERROR(err);
-      }
-      err = DMRestoreWorkArray(faultDMMesh, maxConeSize, PETSC_INT, &revcone);PYLITH_CHECK_ERROR(err);
-      err = DMRestoreWorkArray(faultDMMesh, maxConeSize, PETSC_INT, &revconeO);PYLITH_CHECK_ERROR(err);
-    }
-
+    
     std::string submeshLabel = "fault_" + std::string(groupName);
     faultMesh->dmMesh(faultDMMesh, submeshLabel.c_str());
 

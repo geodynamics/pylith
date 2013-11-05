@@ -924,7 +924,6 @@ pylith::friction::TestFrictionModel::_initialize(topology::Mesh* mesh,
 			quadWts, numQuadPts,
 			spaceDim);
 
-  const bool flipFault = false;
   const char* label = "fault";
 
   PetscInt labelSize;
@@ -938,7 +937,7 @@ pylith::friction::TestFrictionModel::_initialize(topology::Mesh* mesh,
   fault->id(100);
   fault->label(label);
   fault->quadrature(&quadrature);
-  fault->adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell, flipFault);
+  fault->adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
   fault->normalizer(normalizer);
 
   spatialdata::spatialdb::SimpleDB db;

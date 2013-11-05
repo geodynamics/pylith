@@ -46,7 +46,6 @@ pylith::meshio::TestDataWriterPoints::setUp(void)
 
   _data = 0;
   _mesh = 0;
-  _flipFault = false;
 
   PYLITH_METHOD_END;
 } // setUp
@@ -98,7 +97,7 @@ pylith::meshio::TestDataWriterPoints::_initialize(void)
     } // if
     fault.label(_data->faultLabel);
     fault.id(_data->faultId);
-    fault.adjustTopology(_mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell, _flipFault);
+    fault.adjustTopology(_mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
   } // if
 
   PYLITH_METHOD_END;

@@ -83,13 +83,11 @@ public :
    * @param firstFaultVertex The first point eligible to become a new fault vertex
    * @param firstLagrangeVertex The first point eligible to become a new Lagrange vertex
    * @param firstFaultCell The first point eligible to become a new fault cell
-   * @param flipFault Flip fault orientation.
    */
   void adjustTopology(topology::Mesh* const mesh,
                       int *firstFaultVertex,
                       int *firstLagrangeVertex,
-                      int *firstFaultCell,
-                      const bool flipFault = false);
+                      int *firstFaultCell);
 
   /** Cohesive cells use Lagrange multiplier constraints?
    *

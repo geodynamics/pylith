@@ -59,7 +59,6 @@ pylith::faults::TestFaultCohesiveDyn::setUp(void)
   _dbInitialTract = 0;
   _friction = 0;
   _dbFriction = 0;
-  _flipFault = false;
 
   PYLITH_METHOD_END;
 } // setUp
@@ -679,7 +678,7 @@ pylith::faults::TestFaultCohesiveDyn::_initialize(topology::Mesh* const mesh,
   fault->label(_data->label);
   fault->quadrature(_quadrature);
   
-  fault->adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell, _flipFault);
+  fault->adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
   
   const PylithScalar upDir[3] = { 0.0, 0.0, 1.0 };
   

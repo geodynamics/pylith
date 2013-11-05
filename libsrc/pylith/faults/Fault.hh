@@ -133,13 +133,15 @@ public :
   /** Adjust mesh topology for fault implementation.
    *
    * @param mesh PETSc mesh
+   * @param firstFaultVertex The first point eligible to become a new fault vertex
+   * @param firstLagrangeVertex The first point eligible to become a new Lagrange vertex
+   * @param firstFaultCell The first point eligible to become a new fault cell
    */
   virtual
   void adjustTopology(topology::Mesh* const mesh,
                       int *firstFaultVertex,
                       int *firstLagrangeVertex,
-                      int *firstFaultCell,
-                      const bool flipFault = false) = 0;
+                      int *firstFaultCell) = 0;
 
   /** Initialize fault. Determine orientation and setup boundary
    * condition parameters.

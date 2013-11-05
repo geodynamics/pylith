@@ -61,8 +61,6 @@ pylith::faults::TestFaultCohesiveKin::setUp(void)
   _slipfns.resize(nsrcs);
   _slipfns[0] = new BruneSlipFn();
 
-  _flipFault = false;
-
   PYLITH_METHOD_END;
 } // setUp
 
@@ -715,7 +713,7 @@ pylith::faults::TestFaultCohesiveKin::_initialize(topology::Mesh* const mesh,
   PetscErrorCode err = DMPlexGetStratumSize(dmMesh, _data->label, 1, &firstLagrangeVertex);PYLITH_CHECK_ERROR(err);
   PetscInt firstFaultCell = firstLagrangeVertex + firstLagrangeVertex;
   
-  fault->adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell, _flipFault);
+  fault->adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
   
   const PylithScalar upDir[3] = { 0.0, 0.0, 1.0 };
   fault->normalizer(normalizer);

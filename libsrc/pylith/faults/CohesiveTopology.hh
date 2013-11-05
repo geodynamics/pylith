@@ -49,15 +49,12 @@ public :
    * @param mesh Finite-element mesh of domain.
    * @param groupdField Group of vertices assocated with faces of
    *   cells defining fault surface
-   * @param flipFault Flag indicating to flip positive/negative sides
-   * of the fault.
    */
   static
   void createFault(topology::Mesh* faultMesh,
 		   DM& faultBoundary,
 		   const topology::Mesh& mesh,
-		   DMLabel groupField,
-		   const bool flipFault =false);
+		   DMLabel groupField);
 
   /** Create cohesive cells.
    *

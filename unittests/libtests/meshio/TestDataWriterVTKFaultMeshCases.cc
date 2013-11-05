@@ -34,7 +34,6 @@ pylith::meshio::TestDataWriterVTKFaultMeshTri3::setUp(void)
 
   TestDataWriterVTKFaultMesh::setUp();
   _data = new DataWriterVTKDataFaultMeshTri3;
-  _flipFault = true;
 
   _initialize();
 
@@ -54,7 +53,6 @@ pylith::meshio::TestDataWriterVTKFaultMeshQuad4::setUp(void)
 
   TestDataWriterVTKFaultMesh::setUp();
   _data = new DataWriterVTKDataFaultMeshQuad4;
-  _flipFault = true;
 
   _initialize();
 
@@ -74,7 +72,6 @@ pylith::meshio::TestDataWriterVTKFaultMeshTet4::setUp(void)
 
   TestDataWriterVTKFaultMesh::setUp();
   _data = new DataWriterVTKDataFaultMeshTet4;
-  _flipFault = false;
 
   _initialize();
 
@@ -94,7 +91,6 @@ pylith::meshio::TestDataWriterVTKFaultMeshHex8::setUp(void)
 
   TestDataWriterVTKFaultMesh::setUp();
   _data = new DataWriterVTKDataFaultMeshHex8;
-  _flipFault = true;
 
   _initialize();
 
