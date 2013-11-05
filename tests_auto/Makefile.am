@@ -17,7 +17,6 @@
 #
 
 SUBDIRS = \
-	1d \
 	2d \
 	petsc \
 	eqinfo
