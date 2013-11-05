@@ -32,35 +32,12 @@
 /// Namespace for pylith package
 namespace pylith {
   namespace bc {
-    class TestAbsorbingDampersLine2;
     class TestAbsorbingDampersTri3;
     class TestAbsorbingDampersQuad4;
     class TestAbsorbingDampersTet4;
     class TestAbsorbingDampersHex8;
   } // bc
 } // pylith
-
-// ----------------------------------------------------------------------
-/// C++ unit testing for AbsorbingDampers for mesh with 1-D line cells.
-class pylith::bc::TestAbsorbingDampersLine2 : public TestAbsorbingDampers
-{ // class TestAbsorbingDampers
-
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUB_SUITE( TestAbsorbingDampersLine2, TestAbsorbingDampers );
-  CPPUNIT_TEST( testInitialize );
-  CPPUNIT_TEST( testIntegrateResidual );
-  CPPUNIT_TEST( testIntegrateJacobian );
-  CPPUNIT_TEST( testIntegrateJacobianLumped );
-  CPPUNIT_TEST_SUITE_END();
-
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
-
-  /// Setup testing data.
-  void setUp(void);
-
-}; // class TestAbsorbingDampersLine2
-
 
 // ----------------------------------------------------------------------
 /// C++ unit testing for AbsorbingDampers for mesh with 2-D tri cells.

@@ -87,17 +87,14 @@ noinst_HEADERS = \
 # Source files associated with testing data
 testmeshio_SOURCES += \
 	data/DataWriterData.cc \
-	data/DataWriterVTKDataMeshLine2.cc \
 	data/DataWriterVTKDataMeshTri3.cc \
 	data/DataWriterVTKDataMeshQuad4.cc \
 	data/DataWriterVTKDataMeshTet4.cc \
 	data/DataWriterVTKDataMeshHex8.cc \
-	data/DataWriterVTKDataMatMeshLine2.cc \
 	data/DataWriterVTKDataMatMeshTri3.cc \
 	data/DataWriterVTKDataMatMeshQuad4.cc \
 	data/DataWriterVTKDataMatMeshTet4.cc \
 	data/DataWriterVTKDataMatMeshHex8.cc \
-	data/DataWriterVTKDataSubMeshLine2.cc \
 	data/DataWriterVTKDataSubMeshTri3.cc \
 	data/DataWriterVTKDataSubMeshQuad4.cc \
 	data/DataWriterVTKDataSubMeshTet4.cc \
@@ -110,17 +107,14 @@ testmeshio_SOURCES += \
 	data/DataWriterVTKDataBCMeshQuad4.cc \
 	data/DataWriterVTKDataBCMeshTet4.cc \
 	data/DataWriterVTKDataBCMeshHex8.cc \
-	data/DataWriterHDF5DataMeshLine2.cc \
 	data/DataWriterHDF5DataMeshTri3.cc \
 	data/DataWriterHDF5DataMeshQuad4.cc \
 	data/DataWriterHDF5DataMeshTet4.cc \
 	data/DataWriterHDF5DataMeshHex8.cc \
-	data/DataWriterHDF5DataMatMeshLine2.cc \
 	data/DataWriterHDF5DataMatMeshTri3.cc \
 	data/DataWriterHDF5DataMatMeshQuad4.cc \
 	data/DataWriterHDF5DataMatMeshTet4.cc \
 	data/DataWriterHDF5DataMatMeshHex8.cc \
-	data/DataWriterHDF5DataSubMeshLine2.cc \
 	data/DataWriterHDF5DataSubMeshTri3.cc \
 	data/DataWriterHDF5DataSubMeshQuad4.cc \
 	data/DataWriterHDF5DataSubMeshTet4.cc \
@@ -160,17 +154,14 @@ testmeshio_SOURCES += \
 
 noinst_HEADERS += \
 	data/DataWriterData.hh \
-	data/DataWriterVTKDataMeshLine2.hh \
 	data/DataWriterVTKDataMeshTri3.hh \
 	data/DataWriterVTKDataMeshQuad4.hh \
 	data/DataWriterVTKDataMeshTet4.hh \
 	data/DataWriterVTKDataMeshHex8.hh \
-	data/DataWriterVTKDataMatMeshLine2.hh \
 	data/DataWriterVTKDataMatMeshTri3.hh \
 	data/DataWriterVTKDataMatMeshQuad4.hh \
 	data/DataWriterVTKDataMatMeshTet4.hh \
 	data/DataWriterVTKDataMatMeshHex8.hh \
-	data/DataWriterVTKDataSubMeshLine2.hh \
 	data/DataWriterVTKDataSubMeshTri3.hh \
 	data/DataWriterVTKDataSubMeshQuad4.hh \
 	data/DataWriterVTKDataSubMeshTet4.hh \
@@ -183,17 +174,14 @@ noinst_HEADERS += \
 	data/DataWriterVTKDataBCMeshQuad4.hh \
 	data/DataWriterVTKDataBCMeshTet4.hh \
 	data/DataWriterVTKDataBCMeshHex8.hh \
-	data/DataWriterHDF5DataMeshLine2.hh \
 	data/DataWriterHDF5DataMeshTri3.hh \
 	data/DataWriterHDF5DataMeshQuad4.hh \
 	data/DataWriterHDF5DataMeshTet4.hh \
 	data/DataWriterHDF5DataMeshHex8.hh \
-	data/DataWriterHDF5DataMatMeshLine2.hh \
 	data/DataWriterHDF5DataMatMeshTri3.hh \
 	data/DataWriterHDF5DataMatMeshQuad4.hh \
 	data/DataWriterHDF5DataMatMeshTet4.hh \
 	data/DataWriterHDF5DataMatMeshHex8.hh \
-	data/DataWriterHDF5DataSubMeshLine2.hh \
 	data/DataWriterHDF5DataSubMeshTri3.hh \
 	data/DataWriterHDF5DataSubMeshQuad4.hh \
 	data/DataWriterHDF5DataSubMeshTet4.hh \

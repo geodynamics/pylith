@@ -30,8 +30,6 @@ testmaterials_SOURCES = \
 	TestMetadata.cc \
 	TestMaterial.cc \
 	TestElasticMaterial.cc \
-	TestElasticStrain1D.cc \
-	TestElasticStress1D.cc \
 	TestElasticPlaneStrain.cc \
 	TestElasticPlaneStress.cc \
 	TestElasticIsotropic3D.cc \
@@ -52,8 +50,6 @@ noinst_HEADERS = \
 	TestMetadata.hh \
 	TestMaterial.hh \
 	TestElasticMaterial.hh \
-	TestElasticStrain1D.hh \
-	TestElasticStress1D.hh \
 	TestElasticPlaneStrain.hh \
 	TestElasticPlaneStress.hh \
 	TestElasticIsotropic3D.hh \
@@ -72,8 +68,6 @@ noinst_HEADERS = \
 testmaterials_SOURCES += \
 	data/MaterialData.cc \
 	data/ElasticMaterialData.cc \
-	data/ElasticStrain1DData.cc \
-	data/ElasticStress1DData.cc \
 	data/ElasticPlaneStrainData.cc \
 	data/ElasticPlaneStressData.cc \
 	data/ElasticIsotropic3DData.cc \
@@ -103,8 +97,6 @@ noinst_HEADERS += \
 	data/ElasticIsotropic3DData.hh \
 	data/ElasticPlaneStrainData.hh \
 	data/ElasticPlaneStressData.hh \
-	data/ElasticStrain1DData.hh \
-	data/ElasticStress1DData.hh \
 	data/GenMaxwellIsotropic3DElasticData.hh \
 	data/GenMaxwellIsotropic3DTimeDepData.hh \
 	data/GenMaxwellPlaneStrainElasticData.hh \

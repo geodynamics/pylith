@@ -17,10 +17,6 @@
 #
 
 dist_noinst_DATA = \
-	line2.mesh \
-	line2_disp.spatialdb \
-	line2_tractions.spatialdb \
-	line2_force.spatialdb \
 	elasticstrain1d.spatialdb \
 	tri3.mesh \
 	tri3_disp.spatialdb \

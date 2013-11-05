@@ -22,7 +22,6 @@
 
 #include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
 
-#include "data/DataWriterVTKDataMeshLine2.hh" // USES DataWriterVTKDataMeshLine2
 #include "data/DataWriterVTKDataMeshTri3.hh" // USES DataWriterVTKDataMeshTri3
 #include "data/DataWriterVTKDataMeshQuad4.hh" // USES DataWriterVTKDataMeshQuad4
 #include "data/DataWriterVTKDataMeshTet4.hh" // USES DataWriterVTKDataMeshTet4
@@ -30,27 +29,10 @@
 
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKMeshLine2 );
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKMeshTri3 );
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKMeshQuad4 );
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKMeshTet4 );
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKMeshHex8 );
-
-
-// ----------------------------------------------------------------------
-// Setup testing data.
-void
-pylith::meshio::TestDataWriterVTKMeshLine2::setUp(void)
-{ // setUp
-  PYLITH_METHOD_BEGIN;
-
-  TestDataWriterVTKMesh::setUp();
-  _data = new DataWriterVTKDataMeshLine2;
-  _flipFault = false;
-  _initialize();
-
-  PYLITH_METHOD_END;
-} // setUp
 
 
 // ----------------------------------------------------------------------

@@ -24,25 +24,6 @@
 
 
 // ----------------------------------------------------------------------
-#include "data/DataWriterVTKDataSubMeshLine2.hh"
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKSubMeshLine2 );
-
-// Setup testing data.
-void
-pylith::meshio::TestDataWriterVTKSubMeshLine2::setUp(void)
-{ // setUp
-  PYLITH_METHOD_BEGIN;
-
-  TestDataWriterVTKSubMesh::setUp();
-  _data = new DataWriterVTKDataSubMeshLine2;
-  _flipFault = false;
-  _initialize();
-
-  PYLITH_METHOD_END;
-} // setUp
-
-
-// ----------------------------------------------------------------------
 #include "data/DataWriterVTKDataSubMeshTri3.hh"
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKSubMeshTri3 );
 

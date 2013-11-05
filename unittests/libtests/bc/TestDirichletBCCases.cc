@@ -21,32 +21,6 @@
 #include "TestDirichletBCCases.hh" // Implementation of cases
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletBCLine2 );
-
-#include "data/DirichletDataLine2.hh" // USES DirichletDataLine2
-
-// Setup testing data.
-void
-pylith::bc::TestDirichletBCLine2::setUp(void)
-{ // setUp
-  _data = new DirichletDataLine2();
-} // setUp
-
-
-// ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletBCLine2b );
-
-#include "data/DirichletDataLine2b.hh" // USES DirichletDataLine2b
-
-// Setup testing data.
-void
-pylith::bc::TestDirichletBCLine2b::setUp(void)
-{ // setUp
-  _data = new DirichletDataLine2b();
-} // setUp
-
-
-// ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletBCTri3 );
 
 #include "data/DirichletDataTri3.hh" // USES DirichletDataTri3

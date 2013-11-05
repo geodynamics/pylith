@@ -31,36 +31,12 @@
 /// Namespace for pylith package
 namespace pylith {
   namespace meshio {
-    class TestDataWriterVTKMatMeshLine2;
     class TestDataWriterVTKMatMeshTri3;
     class TestDataWriterVTKMatMeshQuad4;
     class TestDataWriterVTKMatMeshTet4;
     class TestDataWriterVTKMatMeshHex8;
   } // meshio
 } // pylith
-
-
-// ----------------------------------------------------------------------
-/// C++ unit testing for DataWriterVTK
-class pylith::meshio::TestDataWriterVTKMatMeshLine2 : public TestDataWriterVTKMesh
-{ // class TestDataWriterVTKMatMeshLine2
-
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestDataWriterVTKMatMeshLine2 );
-
-  CPPUNIT_TEST( testTimeStep );
-  CPPUNIT_TEST( testWriteVertexField );
-  CPPUNIT_TEST( testWriteCellField );
-
-  CPPUNIT_TEST_SUITE_END();
-
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
-
-  /// Setup testing data.
-  void setUp(void);
-
-}; // class TestDataWriterVTKMatMeshLine2
 
 
 // ----------------------------------------------------------------------

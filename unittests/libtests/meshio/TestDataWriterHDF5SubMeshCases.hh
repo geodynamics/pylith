@@ -31,36 +31,12 @@
 /// Namespace for pylith package
 namespace pylith {
   namespace meshio {
-    class TestDataWriterHDF5SubMeshLine2;
     class TestDataWriterHDF5SubMeshTri3;
     class TestDataWriterHDF5SubMeshQuad4;
     class TestDataWriterHDF5SubMeshTet4;
     class TestDataWriterHDF5SubMeshHex8;
   } // meshio
 } // pylith
-
-
-// ----------------------------------------------------------------------
-/// C++ unit testing for DataWriterHDF5
-class pylith::meshio::TestDataWriterHDF5SubMeshLine2 : public TestDataWriterHDF5SubMesh
-{ // class TestDataWriterHDF5SubMeshLine2
-
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestDataWriterHDF5SubMeshLine2 );
-
-  CPPUNIT_TEST( testOpenClose );
-  CPPUNIT_TEST( testWriteVertexField );
-  CPPUNIT_TEST( testWriteCellField );
-
-  CPPUNIT_TEST_SUITE_END();
-
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
-
-  /// Setup testing data.
-  void setUp(void);
-
-}; // class TestDataWriterHDF5SubMeshLine2
 
 
 // ----------------------------------------------------------------------
