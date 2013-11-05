@@ -24,24 +24,6 @@
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestAbsorbingDampersLine2 );
-
-#include "data/AbsorbingDampersDataLine2.hh" // USES AbsorbingDampersDataLine2
-#include "pylith/feassemble/GeometryPoint1D.hh" // USES GeometryPoint0D
-
-// Setup testing data.
-void
-pylith::bc::TestAbsorbingDampersLine2::setUp(void)
-{ // setUp
-  TestAbsorbingDampers::setUp();
-  _data = new AbsorbingDampersDataLine2();
-  feassemble::GeometryPoint1D geometry;
-  CPPUNIT_ASSERT(_quadrature);
-  _quadrature->refGeometry(&geometry);
-} // setUp
-
-
-// ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestAbsorbingDampersTri3 );
 
 #include "data/AbsorbingDampersDataTri3.hh" // USES AbsorbingDampersDataTri3

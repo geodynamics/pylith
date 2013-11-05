@@ -21,7 +21,7 @@
 #include "TestElasticMaterial.hh" // Implementation of class methods
 
 #include "data/ElasticMaterialData.hh" // USES ElasticMaterialData
-#include "data/ElasticStrain1DData.hh" // USES ElasticStrain1DData
+#include "data/ElasticPlaneStrainData.hh" // USES ElasticPlaneStrainData
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
@@ -30,10 +30,9 @@
 #include "pylith/topology/Stratum.hh" // USES StratumIS
 #include "pylith/topology/VisitorMesh.hh" // USES VisitorMesh
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
-#include "pylith/materials/ElasticStrain1D.hh" // USES ElasticStrain1D
+#include "pylith/materials/ElasticPlaneStrain.hh" // USES ElasticPlaneStrain
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
-#include "pylith/feassemble/GeometryLine1D.hh" // USES GeometryLine1D
+#include "pylith/feassemble/GeometryTri2D.hh" // USES GeometryTri2D
 
 #include "pylith/utils/array.hh" // USES scalar_array
 
@@ -58,7 +57,7 @@ pylith::materials::TestElasticMaterial::testDBInitialStress(void)
   spatialdata::spatialdb::SimpleDB db;
   db.label(label.c_str());
   
-  ElasticIsotropic3D material;
+  ElasticPlaneStrain material;
   material.dbInitialStress(&db);
   
   CPPUNIT_ASSERT(material._dbInitialStress);
@@ -78,7 +77,7 @@ pylith::materials::TestElasticMaterial::testDBInitialStrain(void)
   spatialdata::spatialdb::SimpleDB db;
   db.label(label.c_str());
   
-  ElasticIsotropic3D material;
+  ElasticPlaneStrain material;
   material.dbInitialStrain(&db);
   
   CPPUNIT_ASSERT(material._dbInitialStrain);
@@ -95,8 +94,8 @@ pylith::materials::TestElasticMaterial::testInitialize(void)
   PYLITH_METHOD_BEGIN;
 
   topology::Mesh mesh;
-  ElasticStrain1D material;
-  ElasticStrain1DData data;
+  ElasticPlaneStrain material;
+  ElasticPlaneStrainData data;
   _initialize(&mesh, &material, &data);
 
   // Get cells associated with material
@@ -167,7 +166,7 @@ pylith::materials::TestElasticMaterial::testInitialize(void)
       numElasticConsts = 1;
       break;
     case 2 :
-      numElasticConsts = 6;
+      numElasticConsts = 9;
       break;
     case 3 :
       numElasticConsts = 21;
@@ -189,8 +188,8 @@ pylith::materials::TestElasticMaterial::testRetrievePropsAndVars(void)
   PYLITH_METHOD_BEGIN;
 
   topology::Mesh mesh;
-  ElasticStrain1D material;
-  ElasticStrain1DData data;
+  ElasticPlaneStrain material;
+  ElasticPlaneStrainData data;
   _initialize(&mesh, &material, &data);
 
   // Get cells associated with material
@@ -257,8 +256,8 @@ pylith::materials::TestElasticMaterial::testCalcDensity(void)
   PYLITH_METHOD_BEGIN;
 
   topology::Mesh mesh;
-  ElasticStrain1D material;
-  ElasticStrain1DData data;
+  ElasticPlaneStrain material;
+  ElasticPlaneStrainData data;
   _initialize(&mesh, &material, &data);
 
   // Get cells associated with material
@@ -294,8 +293,8 @@ pylith::materials::TestElasticMaterial::testCalcStress(void)
   PYLITH_METHOD_BEGIN;
 
   topology::Mesh mesh;
-  ElasticStrain1D material;
-  ElasticStrain1DData data;
+  ElasticPlaneStrain material;
+  ElasticPlaneStrainData data;
   _initialize(&mesh, &material, &data);
 
   // Get cells associated with material
@@ -334,8 +333,8 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
   PYLITH_METHOD_BEGIN;
 
   topology::Mesh mesh;
-  ElasticStrain1D material;
-  ElasticStrain1DData data;
+  ElasticPlaneStrain material;
+  ElasticPlaneStrainData data;
   _initialize(&mesh, &material, &data);
 
   // Get cells associated with material
@@ -376,9 +375,13 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
   const size_t size = numQuadPts * numElasticConsts;
   CPPUNIT_ASSERT_EQUAL(size, elasticConsts.size());
   const PylithScalar tolerance = 1.0e-06;
-  for (size_t i=0; i < size; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, elasticConsts[i]/elasticConstsE[i]*data.pressureScale,
-				 tolerance);
+  for (size_t i=0; i < size; ++i) {
+    if (fabs(elasticConstsE[i]) > tolerance) {
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, elasticConsts[i]/elasticConstsE[i]*data.pressureScale, tolerance);
+    } else {
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(elasticConstsE[i], elasticConsts[i]*data.pressureScale, tolerance);
+    } // if/else
+  } // for
 
   PYLITH_METHOD_END;
 } // testCalcDerivElastic
@@ -404,8 +407,8 @@ pylith::materials::TestElasticMaterial::testStableTimeStepImplicit(void)
   PYLITH_METHOD_BEGIN;
 
   topology::Mesh mesh;
-  ElasticStrain1D material;
-  ElasticStrain1DData data;
+  ElasticPlaneStrain material;
+  ElasticPlaneStrainData data;
   _initialize(&mesh, &material, &data);
 
   // Get cells associated with material
@@ -434,8 +437,8 @@ pylith::materials::TestElasticMaterial::testStableTimeStepExplicit(void)
   PYLITH_METHOD_BEGIN;
 
   topology::Mesh mesh;
-  ElasticStrain1D material;
-  ElasticStrain1DData data;
+  ElasticPlaneStrain material;
+  ElasticPlaneStrainData data;
   _initialize(&mesh, &material, &data);
 
   // Get cells associated with material
@@ -448,23 +451,31 @@ pylith::materials::TestElasticMaterial::testStableTimeStepExplicit(void)
 
   // Setup quadrature
   feassemble::Quadrature quadrature;
-  feassemble::GeometryLine1D geometry;
+  feassemble::GeometryTri2D geometry;
   quadrature.refGeometry(&geometry);
-  const int cellDim = 1;
+  const int cellDim = 2;
   const int numCorners = 3;
   const int numQuadPts = 2;
-  const int spaceDim = 1;
-  const PylithScalar basis[] = { 0.455, -0.122, 0.667, -0.122, 0.455, 0.667 };
-  const PylithScalar basisDeriv[] = { 
-    -1.07735027e+00,
-    -7.73502692e-02,
-    1.15470054e+00,
-    7.73502692e-02,
-    1.07735027e+00,
-    -1.15470054e+00,
+  const int spaceDim = 2;
+  const PylithScalar basis[numQuadPts*numCorners] = {
+    1.0/6.0, 1.0/3.0, 1.0/2.0,
+    1.0/6.0, 1.0/2.0, 1.0/3.0,
   };
-  const PylithScalar quadPtsRef[] = { -0.577350269, 0.577350269 };
-  const PylithScalar quadWts[] = { 1.0, 1.0  };
+  const PylithScalar basisDeriv[numQuadPts*numCorners*cellDim] = { 
+    -0.5, 0.5,
+    -0.5, 0.0,
+     0.0, 0.5,
+    -0.5, 0.5,
+    -0.5, 0.0,
+     0.0, 0.5,
+  };
+  const PylithScalar quadPtsRef[numQuadPts*spaceDim] = { 
+    -1.0/3.0,      0.0,
+         0.0, -1.0/3.0,
+  };
+  const PylithScalar quadWts[numQuadPts] = {
+    1.0, 1.0,
+  };
   quadrature.initialize(basis, numQuadPts, numCorners,
 			basisDeriv, numQuadPts, numCorners, cellDim,
 			quadPtsRef, numQuadPts, cellDim,
@@ -475,7 +486,7 @@ pylith::materials::TestElasticMaterial::testStableTimeStepExplicit(void)
   const PylithScalar dt = material.stableTimeStepExplicit(mesh, &quadrature);
 
   const PylithScalar tolerance = 1.0e-06;
-  const PylithScalar dtE = 2.0 / 5196.15242;
+  const PylithScalar dtE = 2.0*1.757359312880716 / 5196.15242;
   CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, dt/dtE, tolerance);
 
   PYLITH_METHOD_END;
@@ -816,8 +827,8 @@ pylith::materials::TestElasticMaterial::setupNormalizer(void)
 // Setup mesh and material.
 void
 pylith::materials::TestElasticMaterial::_initialize(topology::Mesh* mesh,
-						    ElasticStrain1D* material,
-						    const ElasticStrain1DData* data)
+						    ElasticPlaneStrain* material,
+						    const ElasticPlaneStrainData* data)
 { // _initialize
   PYLITH_METHOD_BEGIN;
 
@@ -826,7 +837,7 @@ pylith::materials::TestElasticMaterial::_initialize(topology::Mesh* mesh,
   CPPUNIT_ASSERT(data);
 
   meshio::MeshIOAscii iohandler;
-  iohandler.filename("data/line3.mesh");
+  iohandler.filename("data/tri3.mesh");
   iohandler.read(mesh);
 
   // Setup coordinates.
@@ -845,35 +856,42 @@ pylith::materials::TestElasticMaterial::_initialize(topology::Mesh* mesh,
 
   // Setup quadrature
   feassemble::Quadrature quadrature;
-  feassemble::GeometryLine1D geometry;
+  feassemble::GeometryTri2D geometry;
   quadrature.refGeometry(&geometry);
-  const int cellDim = 1;
+  const int cellDim = 2;
   const int numCorners = 3;
   const int numQuadPts = 2;
-  const int spaceDim = 1;
-  const PylithScalar basis[] = { 0.455, -0.122, 0.667, -0.122, 0.455, 0.667 };
-  const PylithScalar basisDeriv[] = { 
-    -1.07735027e+00,
-    -7.73502692e-02,
-    1.15470054e+00,
-    7.73502692e-02,
-    1.07735027e+00,
-    -1.15470054e+00,
+  const int spaceDim = 2;
+  const PylithScalar basis[numQuadPts*numCorners] = {
+    1.0/6.0, 1.0/3.0, 1.0/2.0,
+    1.0/6.0, 1.0/2.0, 1.0/3.0,
   };
-  const PylithScalar quadPtsRef[] = { -0.577350269, 0.577350269 };
-  const PylithScalar quadWts[] = { 1.0, 1.0  };
+  const PylithScalar basisDeriv[numQuadPts*numCorners*cellDim] = { 
+    -0.5, 0.5,
+    -0.5, 0.0,
+     0.0, 0.5,
+    -0.5, 0.5,
+    -0.5, 0.0,
+     0.0, 0.5,
+  };
+  const PylithScalar quadPtsRef[numQuadPts*spaceDim] = { 
+    -1.0/3.0,        0,
+           0, -1.0/3.0,
+  };
+  const PylithScalar quadWts[numQuadPts] = {
+    1.0, 1.0,
+  };
   quadrature.initialize(basis, numQuadPts, numCorners,
 			basisDeriv, numQuadPts, numCorners, cellDim,
 			quadPtsRef, numQuadPts, cellDim,
 			quadWts, numQuadPts,
 			spaceDim);
 
-
   // Get cells associated with material
   const int materialId = 24;
   PetscDM dmMesh = mesh->dmMesh();
-  PetscIS cellIS;
-  const PetscInt *cells;
+  PetscIS cellIS = NULL;
+  const PetscInt *cells = NULL;
   PetscInt numCells;
   PetscErrorCode err = 0;
 

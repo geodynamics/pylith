@@ -30,10 +30,9 @@
 #include "pylith/topology/Stratum.hh" // USES StratumIS
 #include "pylith/topology/VisitorMesh.hh" // USES VisitorMesh
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
-#include "pylith/materials/ElasticStrain1D.hh" // USES ElasticStrain1D
+#include "pylith/materials/ElasticPlaneStrain.hh" // USES ElasticPlaneStrain
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
-#include "pylith/feassemble/GeometryLine1D.hh" // USES GeometryLine1D
+#include "pylith/feassemble/GeometryTri2D.hh" // USES GeometryTri2D
 
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
@@ -55,7 +54,7 @@ pylith::materials::TestMaterial::testID(void)
   PYLITH_METHOD_BEGIN;
  
   const int id = 346;
-  ElasticIsotropic3D material;
+  ElasticPlaneStrain material;
   material.id(id);
   
   CPPUNIT_ASSERT_EQUAL(id,  material.id());
@@ -71,7 +70,7 @@ pylith::materials::TestMaterial::testLabel(void)
   PYLITH_METHOD_BEGIN;
  
   const std::string& label = "the database";
-  ElasticIsotropic3D material;
+  ElasticPlaneStrain material;
   material.label(label.c_str());
   
   CPPUNIT_ASSERT_EQUAL(label, std::string(material.label()));
@@ -87,7 +86,7 @@ pylith::materials::TestMaterial::testTimeStep(void)
   PYLITH_METHOD_BEGIN;
  
   const PylithScalar dt = 2.0;
-  ElasticIsotropic3D material;
+  ElasticPlaneStrain material;
   material.timeStep(dt);
   
   CPPUNIT_ASSERT_EQUAL(dt, material.timeStep());
@@ -106,7 +105,7 @@ pylith::materials::TestMaterial::testDBProperties(void)
   spatialdata::spatialdb::SimpleDB db;
   db.label(label.c_str());
   
-  ElasticIsotropic3D material;
+  ElasticPlaneStrain material;
   material.dbProperties(&db);
   
   CPPUNIT_ASSERT(material._dbProperties);
@@ -126,7 +125,7 @@ pylith::materials::TestMaterial::testDBStateVars(void)
   spatialdata::spatialdb::SimpleDB db;
   db.label(label.c_str());
   
-  ElasticIsotropic3D material;
+  ElasticPlaneStrain material;
   material.dbInitialState(&db);
   
   CPPUNIT_ASSERT(material._dbInitialState);
@@ -146,7 +145,7 @@ pylith::materials::TestMaterial::testNormalizer(void)
   const double lengthScale = 2.0;
   normalizer.lengthScale(lengthScale);
 
-  ElasticIsotropic3D material;
+  ElasticPlaneStrain material;
   material.normalizer(normalizer);
   
   CPPUNIT_ASSERT(material._normalizer);
@@ -162,7 +161,7 @@ pylith::materials::TestMaterial::testNeedNewJacobian(void)
 { // testNeedNewJacobian
   PYLITH_METHOD_BEGIN;
  
-  ElasticIsotropic3D material;
+  ElasticPlaneStrain material;
 
   bool flag = false;
   material._needNewJacobian = flag;
@@ -182,7 +181,7 @@ pylith::materials::TestMaterial::testIsJacobianSymmetric(void)
 { // testIsJacobianSymmetric
   PYLITH_METHOD_BEGIN;
  
-  ElasticIsotropic3D material;
+  ElasticPlaneStrain material;
 
   CPPUNIT_ASSERT_EQUAL(true, material.isJacobianSymmetric());
 
@@ -203,7 +202,7 @@ pylith::materials::TestMaterial::testInitialize(void)
   // Setup mesh
   topology::Mesh mesh;
   meshio::MeshIOAscii iohandler;
-  iohandler.filename("data/line3.mesh");
+  iohandler.filename("data/tri3.mesh");
   iohandler.read(&mesh);
 
   // Set up coordinates
@@ -226,23 +225,20 @@ pylith::materials::TestMaterial::testInitialize(void)
 
   // Setup quadrature
   feassemble::Quadrature quadrature;
-  feassemble::GeometryLine1D geometry;
+  feassemble::GeometryTri2D geometry;
   quadrature.refGeometry(&geometry);
-  const int cellDim = 1;
+  const int cellDim = 2;
   const int numCorners = 3;
-  const int numQuadPts = 2;
-  const int spaceDim = 1;
-  const PylithScalar basis[] = { 0.455, -0.122, 0.667, -0.122, 0.455, 0.667 };
+  const int numQuadPts = 1;
+  const int spaceDim = 2;
+  const PylithScalar basis[] = { 1.0/3.0, 1.0/3.0, 1.0/3.0 };
   const PylithScalar basisDeriv[] = { 
-    -1.07735027e+00,
-    -7.73502692e-02,
-    1.15470054e+00,
-    7.73502692e-02,
-    1.07735027e+00,
-    -1.15470054e+00,
+    -0.5, 0.5,
+    -0.5, 0.0,
+     0.0, 0.5,
   };
-  const PylithScalar quadPtsRef[] = { -0.577350269, 0.577350269 };
-  const PylithScalar quadWts[] = { 1.0, 1.0  };
+  const PylithScalar quadPtsRef[] = { -1.0/3.0, -1.0/3.0 };
+  const PylithScalar quadWts[] = { 2.0  };
   quadrature.initialize(basis, numQuadPts, numCorners,
 			basisDeriv, numQuadPts, numCorners, cellDim,
 			quadPtsRef, numQuadPts, cellDim,
@@ -266,7 +262,7 @@ pylith::materials::TestMaterial::testInitialize(void)
   db.ioHandler(&dbIO);
   db.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
   
-  ElasticStrain1D material;
+  ElasticPlaneStrain material;
   material.dbProperties(&db);
   material.id(materialId);
   material.label("my_material");

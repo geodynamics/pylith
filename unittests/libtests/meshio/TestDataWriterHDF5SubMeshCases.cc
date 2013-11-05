@@ -24,25 +24,6 @@
 
 
 // ----------------------------------------------------------------------
-#include "data/DataWriterHDF5DataSubMeshLine2.hh"
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5SubMeshLine2 );
-
-// Setup testing data.
-void
-pylith::meshio::TestDataWriterHDF5SubMeshLine2::setUp(void)
-{ // setUp
-  PYLITH_METHOD_BEGIN;
-
-  TestDataWriterHDF5SubMesh::setUp();
-  _data = new DataWriterHDF5DataSubMeshLine2;
-  _flipFault = false;
-  _initialize();
-
-  PYLITH_METHOD_END;
-} // setUp
-
-
-// ----------------------------------------------------------------------
 #include "data/DataWriterHDF5DataSubMeshTri3.hh"
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5SubMeshTri3 );
 

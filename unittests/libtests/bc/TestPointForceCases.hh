@@ -32,36 +32,12 @@
 /// Namespace for pylith package
 namespace pylith {
   namespace bc {
-    class TestPointForceLine2;
     class TestPointForceTri3;
     class TestPointForceQuad4;
     class TestPointForceTet4;
     class TestPointForceHex8;
   } // bc
 } // pylith
-
-// ----------------------------------------------------------------------
-/// C++ unit testing for PointForce for mesh with 2-D tri cells.
-class pylith::bc::TestPointForceLine2 : public TestPointForce
-{ // class TestPointForce
-
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUB_SUITE( TestPointForceLine2, TestPointForce );
-
-  CPPUNIT_TEST( testInitialize );
-  CPPUNIT_TEST( testIntegrateResidual );
-  CPPUNIT_TEST( testVerifyConfiguration );
-
-  CPPUNIT_TEST_SUITE_END();
-
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
-
-  /// Setup testing data.
-  void setUp(void);
-
-}; // class TestPointForceLine2
-
 
 // ----------------------------------------------------------------------
 /// C++ unit testing for PointForce for mesh with 2-D tri cells.

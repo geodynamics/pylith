@@ -5,11 +5,11 @@ SimpleDB {
   value-units =  kg/m**3  m/s  m/s
   num-locs = 2
   data-dim = 1
-  space-dim = 1
+  space-dim = 2
   cs-data = cartesian {
     to-meters = 1.0
-    space-dim = 1
+    space-dim = 2
   }
 }
--0.5  2500.0  3000.0  5196.15242
-+0.5  2000.0  1200.0  2078.46097
+-0.5  0.0  2500.0  3000.0  5196.15242
++0.5  0.0  2000.0  1200.0  2078.46097

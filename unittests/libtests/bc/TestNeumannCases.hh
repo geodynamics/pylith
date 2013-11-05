@@ -17,7 +17,7 @@
 //
 
 /**
- * @file unittests/libtests/bc/TestNeumannLine2.hh
+ * @file unittests/libtests/bc/TestNeumannCases.hh
  *
  * @brief C++ TestNeumann object.
  *
@@ -32,35 +32,12 @@
 /// Namespace for pylith package
 namespace pylith {
   namespace bc {
-    class TestNeumannLine2;
     class TestNeumannTri3;
     class TestNeumannQuad4;
     class TestNeumannTet4;
     class TestNeumannHex8;
   } // bc
 } // pylith
-
-// ----------------------------------------------------------------------
-/// C++ unit testing for Neumann for mesh with 1-D line cells.
-class pylith::bc::TestNeumannLine2 : public TestNeumann
-{ // class TestNeumann
-
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestNeumannLine2 );
-
-  CPPUNIT_TEST( testInitialize );
-  CPPUNIT_TEST( testIntegrateResidual );
-
-  CPPUNIT_TEST_SUITE_END();
-
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
-
-  /// Setup testing data.
-  void setUp(void);
-
-}; // class TestNeumannLine2
-
 
 // ----------------------------------------------------------------------
 /// C++ unit testing for Neumann for mesh with 2-D tri cells.

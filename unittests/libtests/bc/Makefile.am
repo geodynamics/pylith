@@ -76,14 +76,11 @@ testbc_SOURCES += \
 	data/BoundaryMeshDataTet4.cc \
 	data/BoundaryMeshDataHex8.cc \
 	data/AbsorbingDampersData.cc \
-	data/AbsorbingDampersDataLine2.cc \
 	data/AbsorbingDampersDataTri3.cc \
 	data/AbsorbingDampersDataQuad4.cc \
 	data/AbsorbingDampersDataTet4.cc \
 	data/AbsorbingDampersDataHex8.cc \
 	data/DirichletData.cc \
-	data/DirichletDataLine2.cc \
-	data/DirichletDataLine2b.cc \
 	data/DirichletDataTri3.cc \
 	data/DirichletDataQuad4.cc \
 	data/DirichletDataTet4.cc \
@@ -92,13 +89,11 @@ testbc_SOURCES += \
 	data/DirichletDataMultiTri3.cc \
 	data/DirichletDataMultiTet4.cc \
 	data/NeumannData.cc \
-	data/NeumannDataLine2.cc \
 	data/NeumannDataTri3.cc \
 	data/NeumannDataQuad4.cc \
 	data/NeumannDataTet4.cc \
 	data/NeumannDataHex8.cc \
 	data/PointForceData.cc \
-	data/PointForceDataLine2.cc \
 	data/PointForceDataTri3.cc \
 	data/PointForceDataQuad4.cc \
 	data/PointForceDataTet4.cc \
@@ -111,14 +106,11 @@ noinst_HEADERS += \
 	data/BoundaryMeshDataTet4.hh \
 	data/BoundaryMeshDataHex8.hh \
 	data/AbsorbingDampersData.hh \
-	data/AbsorbingDampersDataLine2.hh \
 	data/AbsorbingDampersDataTri3.hh \
 	data/AbsorbingDampersDataQuad4.hh \
 	data/AbsorbingDampersDataTet4.hh \
 	data/AbsorbingDampersDataHex8.hh \
 	data/DirichletData.hh \
-	data/DirichletDataLine2.hh \
-	data/DirichletDataLine2b.hh \
 	data/DirichletDataTri3.hh \
 	data/DirichletDataQuad4.hh \
 	data/DirichletDataTet4.hh \
@@ -127,13 +119,11 @@ noinst_HEADERS += \
 	data/DirichletDataMultiTri3.hh \
 	data/DirichletDataMultiTet4.hh \
 	data/NeumannData.hh \
-	data/NeumannDataLine2.hh \
 	data/NeumannDataTri3.hh \
 	data/NeumannDataQuad4.hh \
 	data/NeumannDataTet4.hh \
 	data/NeumannDataHex8.hh \
 	data/PointForceData.hh \
-	data/PointForceDataLine2.hh \
 	data/PointForceDataTri3.hh \
 	data/PointForceDataQuad4.hh \
 	data/PointForceDataTet4.hh \

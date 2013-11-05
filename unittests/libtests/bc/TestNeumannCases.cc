@@ -24,24 +24,6 @@
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestNeumannLine2 );
-
-#include "data/NeumannDataLine2.hh" // USES NeumannDataLine2
-#include "pylith/feassemble/GeometryPoint1D.hh" // USES GeometryPoint1D
-
-// Setup testing data.
-void
-pylith::bc::TestNeumannLine2::setUp(void)
-{ // setUp
-  TestNeumann::setUp();
-  _data = new NeumannDataLine2();
-  feassemble::GeometryPoint1D geometry;
-  CPPUNIT_ASSERT(_quadrature);
-  _quadrature->refGeometry(&geometry);
-} // setUp
-
-
-// ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestNeumannTri3 );
 
 #include "data/NeumannDataTri3.hh" // USES NeumannDataTri3

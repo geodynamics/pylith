@@ -35,9 +35,6 @@ dist_noinst_DATA = \
 	twohex8_12.2.exo \
 	twohex8_13.0.exo \
 	mesh2D_comments.txt \
-	line2.mesh \
-	line2_vertex_t10.vtk \
-	line2_cell_t10.vtk \
 	tri3.mesh \
 	tri3_vertex_t10.vtk \
 	tri3_cell_t10.vtk \
@@ -50,8 +47,6 @@ dist_noinst_DATA = \
 	hex8.mesh \
 	hex8_vertex_t10.vtk \
 	hex8_cell_t10.vtk \
-	line2_mat_vertex_t10.vtk \
-	line2_mat_cell_t10.vtk \
 	tri3_mat_vertex_t10.vtk \
 	tri3_mat_cell_t10.vtk \
 	quad4_mat_vertex_t10.vtk \
@@ -60,8 +55,6 @@ dist_noinst_DATA = \
 	tet4_mat_cell_t10.vtk \
 	hex8_mat_vertex_t10.vtk \
 	hex8_mat_cell_t10.vtk \
-	line2_surf_vertex_t10.vtk \
-	line2_surf_cell_t10.vtk \
 	tri3_surf_vertex_t10.vtk \
 	tri3_surf_cell_t10.vtk \
 	quad4_surf_vertex_t10.vtk \
@@ -91,9 +84,6 @@ dist_noinst_DATA = \
 	output_vertex_filter_t12.vtk \
 	output_cell_t12.vtk \
 	output_cell_filter_t12.vtk \
-	line2.h5 \
-	line2_cell.h5 \
-	line2_vertex.h5 \
 	tri3.h5 \
 	tri3_cell.h5 \
 	tri3_cell.xmf \
@@ -114,9 +104,6 @@ dist_noinst_DATA = \
 	hex8_cell.xmf \
 	hex8_vertex.h5 \
 	hex8_vertex.xmf \
-	line2_mat.h5 \
-	line2_mat_vertex.h5 \
-	line2_mat_cell.h5 \
 	tri3_mat.h5 \
 	tri3_mat_vertex.h5 \
 	tri3_mat_cell.h5 \
@@ -129,9 +116,6 @@ dist_noinst_DATA = \
 	hex8_mat.h5 \
 	hex8_mat_vertex.h5 \
 	hex8_mat_cell.h5 \
-	line2_surf.h5 \
-	line2_surf_vertex.h5 \
-	line2_surf_cell.h5 \
 	tri3_surf.h5 \
 	tri3_surf_vertex.h5 \
 	tri3_surf_cell.h5 \

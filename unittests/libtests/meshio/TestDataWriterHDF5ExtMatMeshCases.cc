@@ -20,7 +20,6 @@
 
 #include "TestDataWriterHDF5ExtMatMeshCases.hh" // Implementation of class methods
 
-#include "data/DataWriterHDF5DataMatMeshLine2.hh"
 #include "data/DataWriterHDF5DataMatMeshTri3.hh"
 #include "data/DataWriterHDF5DataMatMeshQuad4.hh"
 #include "data/DataWriterHDF5DataMatMeshTet4.hh"
@@ -29,27 +28,10 @@
 #include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5ExtMatMeshLine2 );
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5ExtMatMeshTri3 );
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5ExtMatMeshQuad4 );
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5ExtMatMeshTet4 );
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5ExtMatMeshHex8 );
-
-
-// ----------------------------------------------------------------------
-// Setup testing data.
-void
-pylith::meshio::TestDataWriterHDF5ExtMatMeshLine2::setUp(void)
-{ // setUp
-  PYLITH_METHOD_BEGIN;
-
-  TestDataWriterHDF5ExtMesh::setUp();
-  _data = new DataWriterHDF5DataMatMeshLine2;
-  _flipFault = false;
-  _initialize();
-
-  PYLITH_METHOD_END;
-} // setUp
 
 
 // ----------------------------------------------------------------------

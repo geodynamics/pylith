@@ -27,8 +27,6 @@
 #include "spatialdata/units/unitsfwd.hh" // forward declarations
 
 #include "pylith/materials/ElasticMaterial.hh"
-#include "pylith/materials/ElasticStrain1D.hh"
-#include "pylith/materials/ElasticStress1D.hh"
 #include "pylith/materials/ElasticPlaneStrain.hh"
 #include "pylith/materials/ElasticPlaneStress.hh"
 #include "pylith/materials/ElasticIsotropic3D.hh"
@@ -69,8 +67,6 @@ import_array();
 // Interfaces
 %include "Material.i"
 %include "ElasticMaterial.i"
-%include "ElasticStrain1D.i"
-%include "ElasticStress1D.i"
 %include "ElasticPlaneStrain.i"
 %include "ElasticPlaneStress.i"
 %include "ElasticIsotropic3D.i"

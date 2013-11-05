@@ -20,11 +20,6 @@ dist_noinst_DATA = \
 	slipfn.timedb \
 	static_friction_2d.spatialdb \
 	static_friction_3d.spatialdb \
-	line2.mesh \
-	line2_finalslip.spatialdb \
-	line2_sliptime.spatialdb \
-	line2_sliprate.spatialdb \
-	line2_risetime.spatialdb \
 	tri3.mesh \
 	tri3b.mesh \
 	tri3c.mesh \
