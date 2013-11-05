@@ -34,7 +34,6 @@ pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh)
   if (numCells > 0) {
     // Reorder mesh if mesh is only on proc 0 --or--
     // reorder mesh on each processor indpendently.
-#if 1
     PetscIS permutation;
     PetscDM dmOrig = mesh->dmMesh();
     PetscDM dmNew = NULL;
@@ -43,10 +42,8 @@ pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh)
     err = DMPlexPermute(dmOrig, permutation, &dmNew);PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&permutation);PYLITH_CHECK_ERROR(err);
     mesh->dmMesh(dmNew);
-#else
-    std::cerr << "WARNING: Reverse Cuthill McKee temporarily disabled." << std::endl;
-#endif
-  } // if    
+  } // if
+
 } // reorder
 
 
