@@ -136,41 +136,6 @@ pylith::faults::TestLiuCosSlipFn::testDbRiseTime(void)
 } // testDbRiseTime
 
 // ----------------------------------------------------------------------
-// Test initialize() in 1-D.
-void
-pylith::faults::TestLiuCosSlipFn::testInitialize1D(void)
-{ // testInitialize1D
-  PYLITH_METHOD_BEGIN;
-
-  const char* meshFilename = "data/line2.mesh";
-  const char* faultLabel = "fault";
-  const int faultId = 2;
-  const char* finalSlipFilename = "data/line2_finalslip.spatialdb";
-  const char* slipTimeFilename = "data/line2_sliptime.spatialdb";
-  const char* riseTimeFilename = "data/line2_risetime.spatialdb";
-  const int constraintPts[] = { 3 };
-  const PylithScalar finalSlipE[] = { 2.3 };
-  const PylithScalar slipTimeE[] = { 1.2 };
-  const PylithScalar riseTimeE[] = { 1.4 };
-  const int numConstraintPts = 1;
-
-  _TestLiuCosSlipFn::DataStruct data = {meshFilename,
-				       faultLabel,
-				       faultId,
-				       finalSlipFilename,
-				       slipTimeFilename,
-				       riseTimeFilename,
-				       constraintPts,
-				       finalSlipE,
-				       slipTimeE,
-				       riseTimeE,
-				       numConstraintPts};
-  _testInitialize(data);
-
-  PYLITH_METHOD_END;
-} // testInitialize1D
-
-// ----------------------------------------------------------------------
 // Test initialize() in 2-D.
 void
 pylith::faults::TestLiuCosSlipFn::testInitialize2D(void)

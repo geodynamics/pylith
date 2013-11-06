@@ -55,7 +55,6 @@ class pylith::faults::TestTimeHistorySlipFn : public CppUnit::TestFixture
   CPPUNIT_TEST( testDbAmplitude );
   CPPUNIT_TEST( testDbSlipTime );
   CPPUNIT_TEST( testDbTimeHistory );
-  CPPUNIT_TEST( testInitialize1D );
   CPPUNIT_TEST( testInitialize2D );
   CPPUNIT_TEST( testInitialize3D );
   CPPUNIT_TEST( testSlip );
@@ -76,9 +75,6 @@ public :
 
   /// Test dbTimeHistory().
   void testDbTimeHistory(void);
-
-  /// Test initialize() in 1-D.
-  void testInitialize1D(void);
 
   /// Test initialize() in 2-D.
   void testInitialize2D(void);

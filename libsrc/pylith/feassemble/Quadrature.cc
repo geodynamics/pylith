@@ -23,8 +23,6 @@
 #include "CellGeometry.hh" // USES CellGeometry
 
 #include "QuadratureEngine.hh" // USES QuadratureEngine
-#include "Quadrature0D.hh"
-#include "Quadrature1D.hh"
 #include "Quadrature1Din2D.hh"
 #include "Quadrature1Din3D.hh"
 #include "Quadrature2D.hh"
@@ -95,24 +93,11 @@ pylith::feassemble::Quadrature::initializeGeometry(void)
   const int cellDim = _cellDim;
   const int spaceDim = _spaceDim;
 
-  if (1 == spaceDim)
-    if (1 == cellDim)
-      _engine = new Quadrature1D(*this);
-    else if (0 == cellDim)
-      _engine = new Quadrature0D(*this);
-    else {
-      std::cerr << "Unknown quadrature case with cellDim '" 
-		<< cellDim << "' and spaceDim '" << spaceDim << "'" 
-		<< std::endl;
-      assert(0);
-    } // if/else
-  else if (2 == spaceDim)
+  if (2 == spaceDim)
     if (2 == cellDim)
       _engine = new Quadrature2D(*this);
     else if (1 == cellDim)
       _engine = new Quadrature1Din2D(*this);
-    else if (0 == cellDim)
-      _engine = new Quadrature0D(*this);
     else {
       std::cerr << "Unknown quadrature case with cellDim '" 
 		<< cellDim << "' and spaceDim '" << spaceDim << "'" 
@@ -126,8 +111,6 @@ pylith::feassemble::Quadrature::initializeGeometry(void)
       _engine = new Quadrature2Din3D(*this);
     else if (1 == cellDim)
       _engine = new Quadrature1Din3D(*this);
-    else if (0 == cellDim)
-      _engine = new Quadrature0D(*this);
     else {
       std::cerr << "Unknown quadrature case with cellDim '" 
 		<< cellDim << "' and spaceDim '" << spaceDim << "'" 

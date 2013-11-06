@@ -146,10 +146,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(const topology::Field&
   // Set variables dependent on dimension of cell
   totalStrain_fn_type calcTotalStrainFn;
   elasticityResidual_fn_type elasticityResidualFn;
-  if (1 == cellDim) {
-    elasticityResidualFn = &pylith::feassemble::ElasticityImplicit::_elasticityResidual1D;
-    calcTotalStrainFn = &pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D;
-  } else if (2 == cellDim) {
+  if (2 == cellDim) {
     elasticityResidualFn = &pylith::feassemble::ElasticityImplicit::_elasticityResidual2D;
     calcTotalStrainFn = &pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D;
   } else if (3 == cellDim) {
@@ -316,12 +313,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(topology::Jacobian* ja
   // Set variables dependent on dimension of cell
   totalStrain_fn_type calcTotalStrainFn;
   elasticityJacobian_fn_type elasticityJacobianFn;
-  if (1 == cellDim) {
-    elasticityJacobianFn = 
-      &pylith::feassemble::ElasticityImplicit::_elasticityJacobian1D;
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D;
-  } else if (2 == cellDim) {
+  if (2 == cellDim) {
     elasticityJacobianFn = 
       &pylith::feassemble::ElasticityImplicit::_elasticityJacobian2D;
     calcTotalStrainFn = 

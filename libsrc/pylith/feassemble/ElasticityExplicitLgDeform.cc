@@ -174,12 +174,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(const topology
   // Set variables dependent on dimension of cell
   totalStrain_fn_type calcTotalStrainFn;
   elasticityResidual_fn_type elasticityResidualFn;
-  if (1 == cellDim) {
-    elasticityResidualFn = 
-      &pylith::feassemble::ElasticityExplicitLgDeform::_elasticityResidual1D;
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain1D;
-  } else if (2 == cellDim) {
+  if (2 == cellDim) {
     elasticityResidualFn = 
       &pylith::feassemble::ElasticityExplicitLgDeform::_elasticityResidual2D;
     calcTotalStrainFn = 
@@ -189,8 +184,10 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(const topology
       &pylith::feassemble::ElasticityExplicitLgDeform::_elasticityResidual3D;
     calcTotalStrainFn = 
       &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain3D;
-  } else
+  } else {
     assert(0);
+    throw std::runtime_error("Error unknown cell dimension.");
+  } // if/else
 
   // Allocate vectors for cell values.
   scalar_array deformCell(numQuadPts*spaceDim*spaceDim);

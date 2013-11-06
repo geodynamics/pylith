@@ -23,31 +23,9 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature<Mesh>
 
-#include "pylith/feassemble/GeometryPoint1D.hh" // USES GeometryPoint1D
 #include "pylith/feassemble/GeometryLine2D.hh" // USES GeometryLine2D
 #include "pylith/feassemble/GeometryTri3D.hh" // USES GeometryTri3D
 #include "pylith/feassemble/GeometryQuad3D.hh" // USES GeometryQuad3D
-
-// ----------------------------------------------------------------------
-#include "data/CohesiveKinDataLine2.hh" // USES CohesiveKinDataLine2
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesiveKinLine2 );
-
-// Setup testing data.
-void
-pylith::faults::TestFaultCohesiveKinLine2::setUp(void)
-{ // setUp
-  PYLITH_METHOD_BEGIN;
-  
-  TestFaultCohesiveKin::setUp();
-  _data = new CohesiveKinDataLine2();
-
-  assert(_quadrature);
-  feassemble::GeometryPoint1D geometry;
-  _quadrature->refGeometry(&geometry);
-
-  PYLITH_METHOD_END;
-} // setUp
-
 
 // ----------------------------------------------------------------------
 #include "data/CohesiveKinDataTri3.hh" // USES CohesiveKinDataTri3

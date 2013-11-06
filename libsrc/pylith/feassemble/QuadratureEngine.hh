@@ -29,7 +29,7 @@
 #include "feassemblefwd.hh" // forward declaration
 #include "pylith/utils/array.hh" // HASA scalar_array
 
-// Quadrature0D ---------------------------------------------------------
+// QuadratureEngine -----------------------------------------------------
 /// Abstract base class for quadrature computation engine.
 class pylith::feassemble::QuadratureEngine
 { // QuadratureEngine

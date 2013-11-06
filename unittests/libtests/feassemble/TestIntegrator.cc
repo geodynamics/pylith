@@ -286,23 +286,6 @@ pylith::feassemble::TestIntegrator::testLumpCellMatrix(void)
 } // testLumpCellMatrix
 
 // ----------------------------------------------------------------------
-// Test splitField().
-void
-pylith::feassemble::TestIntegrator::testSplitField(void)
-{ // testSplitField
-  PYLITH_METHOD_BEGIN;
-
-  topology::Mesh mesh;
-  topology::Field field(mesh);
-  
-  ElasticityExplicit integrator;
-  integrator.splitField(&field);
-  // Expect nothing to happen
-
-  PYLITH_METHOD_END;
-} // testSplitField
-
-// ----------------------------------------------------------------------
 // Set quadrature information.
 void
 pylith::feassemble::TestIntegrator::_initQuadrature(Quadrature* quadrature)
