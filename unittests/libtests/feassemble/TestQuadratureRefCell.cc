@@ -21,7 +21,7 @@
 #include "TestQuadratureRefCell.hh" // Implementation of class methods
 
 #include "pylith/feassemble/QuadratureRefCell.hh" // USES QuadratureRefCell
-#include "pylith/feassemble/GeometryLine1D.hh" // USES GeometryLine1D
+#include "pylith/feassemble/GeometryLine2D.hh" // USES GeometryLine2D
 
 #include "data/QuadratureData.hh" // USES QuadratureData
 
@@ -67,7 +67,7 @@ pylith::feassemble::TestQuadratureRefCell::testRefGeometry(void)
 { // testRefGeometry
   PYLITH_METHOD_BEGIN;
 
-  GeometryLine1D geometry;
+  GeometryLine2D geometry;
   QuadratureRefCell quadrature;
 
   quadrature.refGeometry(&geometry);

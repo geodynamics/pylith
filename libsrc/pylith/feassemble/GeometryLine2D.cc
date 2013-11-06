@@ -20,8 +20,6 @@
 
 #include "GeometryLine2D.hh" // implementation of class methods
 
-#include "GeometryPoint2D.hh" // USES GeometryPoint
-
 #include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/constdefs.h" // USES scalar_array
 
@@ -60,7 +58,7 @@ pylith::feassemble::GeometryLine2D::clone(void) const
 pylith::feassemble::CellGeometry*
 pylith::feassemble::GeometryLine2D::geometryLowerDim(void) const
 { // geometryLowerDim
-  return new GeometryPoint2D();
+  return 0;
 } // geometryLowerDim
 
 // ----------------------------------------------------------------------

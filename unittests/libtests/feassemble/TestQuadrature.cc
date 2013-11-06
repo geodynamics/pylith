@@ -22,9 +22,8 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
-#include "pylith/feassemble/Quadrature1D.hh" // USES Quadrature1D
+#include "pylith/feassemble/Quadrature2D.hh" // USES Quadrature1D
 
-#include "pylith/feassemble/GeometryLine1D.hh" // USES GeometryLine1D
 #include "pylith/feassemble/GeometryTri2D.hh" // USES GeometryTri2D
 
 #include "data/QuadratureData2DLinear.hh" // USES QuadratureData2DLinear
@@ -44,19 +43,19 @@ pylith::feassemble::TestQuadrature::testCopyConstructor(void)
   // Semi-random values manually set to check cloning
   const PylithScalar minJacobianE = 1.0;
   const bool checkConditioning = true;
-  const int cellDimE = 1;
-  const int numBasisE = 2;
+  const int cellDimE = 2;
+  const int numBasisE = 3;
   const int numQuadPtsE = 1;
-  const int spaceDimE = 1;
-  const PylithScalar basisE[numQuadPtsE*numBasisE] = { 0.2, 0.4 };
-  const PylithScalar basisDerivE[numQuadPtsE*numBasisE*cellDimE] = { 0.8, 1.6 };
-  const PylithScalar quadPtsRefE[numQuadPtsE*cellDimE] = { 3.2 };
+  const int spaceDimE = 2;
+  const PylithScalar basisE[numQuadPtsE*numBasisE] = { 0.2, 0.3, 0.4 };
+  const PylithScalar basisDerivE[numQuadPtsE*numBasisE*cellDimE] = { 0.8, 0.9, 1.2, 1.3, 1.6, 1.7 };
+  const PylithScalar quadPtsRefE[numQuadPtsE*cellDimE] = { 3.2, 3.3 };
   const PylithScalar quadWtsE[numQuadPtsE] = { 6.4 };
   const PylithScalar quadPtsE[] = { 12.8 };
   const PylithScalar jacobianE[] = { 2.56 };
   const PylithScalar jacobianInvE[] = { 5.12 };
   const PylithScalar jacobianDetE[] = { 10.24 };
-  GeometryLine1D geometry;
+  GeometryTri2D geometry;
 
   // Set values
   Quadrature qOrig;
@@ -161,7 +160,7 @@ pylith::feassemble::TestQuadrature::testEngineAccessors(void)
 		     quadWts, numQuadPts,
 		     spaceDim);
 
-  Quadrature1D engine(refCell);
+  Quadrature2D engine(refCell);
   engine.initialize();
 
   Quadrature q;

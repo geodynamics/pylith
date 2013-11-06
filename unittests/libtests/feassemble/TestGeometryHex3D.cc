@@ -22,7 +22,7 @@
 
 #include "pylith/feassemble/GeometryHex3D.hh"
 #include "pylith/feassemble/GeometryQuad3D.hh"
-#include "pylith/feassemble/GeometryPoint2D.hh"
+#include "pylith/feassemble/GeometryQuad2D.hh"
 
 #include "data/GeomDataHex3D.hh"
 
@@ -66,9 +66,9 @@ pylith::feassemble::TestGeometryHex3D::testGeomLowerDim(void)
   GeometryHex3D geometry;
   CellGeometry* geometryLD = geometry.geometryLowerDim();
   GeometryQuad3D* geometryPt = dynamic_cast<GeometryQuad3D*>(geometryLD);
-  CPPUNIT_ASSERT(0 != geometryPt);
-  GeometryPoint2D* geometryPt2 = dynamic_cast<GeometryPoint2D*>(geometryLD);
-  CPPUNIT_ASSERT(0 == geometryPt2);
+  CPPUNIT_ASSERT(geometryPt);
+  GeometryQuad2D* geometryPt2 = dynamic_cast<GeometryQuad2D*>(geometryLD);
+  CPPUNIT_ASSERT(!geometryPt2);
   delete geometryLD; geometryLD = 0;
 
   PYLITH_METHOD_END;

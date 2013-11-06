@@ -146,12 +146,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
   // Set variables dependent on dimension of cell
   totalStrain_fn_type calcTotalStrainFn;
   elasticityResidual_fn_type elasticityResidualFn;
-  if (1 == cellDim) {
-    elasticityResidualFn = 
-      &pylith::feassemble::ElasticityImplicitLgDeform::_elasticityResidual1D;
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain1D;
-  } else if (2 == cellDim) {
+  if (2 == cellDim) {
     elasticityResidualFn = 
       &pylith::feassemble::ElasticityImplicitLgDeform::_elasticityResidual2D;
     calcTotalStrainFn = 
@@ -161,8 +156,10 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
       &pylith::feassemble::ElasticityImplicitLgDeform::_elasticityResidual3D;
     calcTotalStrainFn = 
       &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain3D;
-  } else
-    assert(0);
+  } else {
+    assert(false);
+    throw std::logic_error("Unsupported cell dimension in ElasticityImplicit::integrateJacobian().");
+  } // if/else
 
   // Allocate vectors for cell values.
   scalar_array dispTCell(numBasis*spaceDim);
@@ -326,12 +323,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(topology::Jaco
   // Set variables dependent on dimension of cell
   totalStrain_fn_type calcTotalStrainFn;
   elasticityJacobian_fn_type elasticityJacobianFn;
-  if (1 == cellDim) {
-    elasticityJacobianFn = 
-      &pylith::feassemble::ElasticityImplicitLgDeform::_elasticityJacobian1D;
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain1D;
-  } else if (2 == cellDim) {
+  if (2 == cellDim) {
     elasticityJacobianFn = 
       &pylith::feassemble::ElasticityImplicitLgDeform::_elasticityJacobian2D;
     calcTotalStrainFn = 
@@ -341,8 +333,10 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(topology::Jaco
       &pylith::feassemble::ElasticityImplicitLgDeform::_elasticityJacobian3D;
     calcTotalStrainFn = 
       &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain3D;
-  } else
-    assert(0);
+  } else {
+    assert(false);
+    throw std::logic_error("Unsupported cell dimension in ElasticityImplicitLgDeform::integrateJacobian().");
+  } // if/else
 
   // Allocate vector for total strain
   scalar_array dispTCell(numBasis*spaceDim);

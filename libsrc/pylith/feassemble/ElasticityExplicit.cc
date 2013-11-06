@@ -179,12 +179,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(const topology::Field&
   // Set variables dependent on dimension of cell
   totalStrain_fn_type calcTotalStrainFn;
   elasticityResidual_fn_type elasticityResidualFn;
-  if (1 == cellDim) {
-    elasticityResidualFn =
-      &pylith::feassemble::ElasticityExplicit::_elasticityResidual1D;
-    calcTotalStrainFn =
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D;
-  } else if (2 == cellDim) {
+  if (2 == cellDim) {
     elasticityResidualFn =
       &pylith::feassemble::ElasticityExplicit::_elasticityResidual2D;
     calcTotalStrainFn =

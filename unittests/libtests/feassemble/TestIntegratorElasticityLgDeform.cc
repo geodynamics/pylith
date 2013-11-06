@@ -32,59 +32,6 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestIntegratorElasticityLgDeform );
 
 // ----------------------------------------------------------------------
-// Test calcDeformation() for 1-D.
-void
-pylith::feassemble::TestIntegratorElasticityLgDeform::testCalcDeformation1D(void)
-{ // testCalcDeformation1D
-  PYLITH_METHOD_BEGIN;
-
-  // N0 = 0.5 * (1 - x)
-  // N1 = 0.5 * (1 + x)
-  // dN0/dx = -0.5
-  // dN1/dx = +0.5
-  const int dim = 1;
-  const int numBasis = 2;
-  const int numQuadPts = 2;
-  const PylithScalar vertices[numBasis*dim] = { -1.0, 1.0 };
-  const PylithScalar basisDerivVals[numQuadPts*numBasis*dim] = {
-    -0.50, 0.50,
-    -0.50, 0.50 };
-  const int tensorSize = 1;
-
-  const int size = numQuadPts * dim*dim;
-  scalar_array deform(size);    
-  scalar_array basisDeriv(basisDerivVals, numQuadPts*numBasis*dim);
-
-  const PylithScalar tolerance = 1.0e-06;
-
-  { // Rigid body translation
-    // u(x) = 1.0
-    const PylithScalar disp[numBasis*dim] = { 1.0, 1.0 };
-    const PylithScalar deformE[size] = { 1.0, 1.0 };
-    
-    IntegratorElasticityLgDeform::_calcDeformation(&deform, basisDeriv, vertices, disp, numBasis, numQuadPts, dim);
-    
-    CPPUNIT_ASSERT_EQUAL(size, int(deform.size()));
-    for (int i=0; i < size; ++i)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(deformE[i], deform[i], tolerance);
-  } // Rigid body translation
-
-  { // Uniform strain
-    // u(x) = 0.1*x
-    const PylithScalar disp[numBasis*dim] = { -0.1, 0.1 };
-    const PylithScalar deformE[size] = { 1.1, 1.1 };
-    
-    IntegratorElasticityLgDeform::_calcDeformation(&deform, basisDeriv, vertices, disp, numBasis, numQuadPts, dim);
-    
-    CPPUNIT_ASSERT_EQUAL(size, int(deform.size()));
-    for (int i=0; i < size; ++i)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(deformE[i], deform[i], tolerance);
-  } // Uniform strain
-
-  PYLITH_METHOD_END;
-} // testCalcDeformation1D
-
-// ----------------------------------------------------------------------
 // Test calcDeformation() for 2-D.
 void
 pylith::feassemble::TestIntegratorElasticityLgDeform::testCalcDeformation2D(void)
@@ -320,40 +267,6 @@ pylith::feassemble::TestIntegratorElasticityLgDeform::testCalcDeformation3D(void
 
   PYLITH_METHOD_END;
 } // testCalcDeformation3D
-
-// ----------------------------------------------------------------------
-// Test calcTotalStrain1D().
-void
-pylith::feassemble::TestIntegratorElasticityLgDeform::testCalcTotalStrain1D(void)
-{ // testCalcTotalStrain1D
-  PYLITH_METHOD_BEGIN;
-
-  // Deformation tensor X
-  // X = [ 2.0 ], [ 0.4 ]
-  const int dim = 1;
-  const int numQuadPts = 2;
-  const PylithScalar deformVals[] = {
-    2.0,  0.4,
-  };
-  const PylithScalar strainE[] = {
-    0.5*(2.0*2.0-1.0),  0.5*(0.4*0.4-1.0),
-  };
-  const int tensorSize = 1;
-
-  const int size = numQuadPts * tensorSize;
-  scalar_array strain(size);
-
-  scalar_array deform(deformVals, numQuadPts*dim*dim);
-
-  IntegratorElasticityLgDeform::_calcTotalStrain1D(&strain, deform, numQuadPts);
-
-  const PylithScalar tolerance = 1.0e-06;
-  CPPUNIT_ASSERT_EQUAL(size, int(strain.size()));
-  for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(strainE[i], strain[i], tolerance);
-
-  PYLITH_METHOD_END;
-} // testCalcTotalStrain1D
 
 // ----------------------------------------------------------------------
 // Test calcTotalStrain2D().

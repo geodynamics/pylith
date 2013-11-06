@@ -31,45 +31,6 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestIntegratorElasticity );
 
 // ----------------------------------------------------------------------
-// Test calcTotalStrain1D().
-void
-pylith::feassemble::TestIntegratorElasticity::testCalcTotalStrain1D(void)
-{ // testCalcTotalStrain1D
-  PYLITH_METHOD_BEGIN;
-
-  // N0 = 0.5 * (1 - x)
-  // N1 = 0.5 * (1 + x)
-  // dN0/dx = -0.5
-  // dN1/dx = +0.5
-  // Let quad pt 0 be dN/dx, let quad pt 1 be 0.5*dN/dx
-  const int dim = 1;
-  const int numBasis = 2;
-  const int numQuadPts = 2;
-  const PylithScalar basisDerivVals[numQuadPts*numBasis*dim] = {
-    -0.50, 0.50,
-    -0.25, 0.25 };
-  const int tensorSize = 1;
-
-  // Let u(x) = 1 + 0.5 * x
-  const PylithScalar disp[numBasis*dim] = { 0.5, 1.5 };
-  const PylithScalar strainE[numQuadPts*tensorSize] = { 0.5, 0.25 };
-
-  const int size = numQuadPts * tensorSize;
-  scalar_array strain(size);
-
-  scalar_array basisDeriv(basisDerivVals, numQuadPts*numBasis*dim);
-
-  IntegratorElasticity::_calcTotalStrain1D(&strain, basisDeriv, disp, numBasis, dim, numQuadPts);
-
-  const PylithScalar tolerance = 1.0e-06;
-  CPPUNIT_ASSERT_EQUAL(size, int(strain.size()));
-  for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(strainE[i], strain[i], tolerance);
-
-  PYLITH_METHOD_END;
-} // testCalcTotalStrain1D
-
-// ----------------------------------------------------------------------
 // Test calcTotalStrain2D().
 void
 pylith::feassemble::TestIntegratorElasticity::testCalcTotalStrain2D(void)

@@ -40,7 +40,6 @@ class pylith::feassemble::CellGeometry
 public :
   
   enum ShapeEnum { 
-    POINT=0, // 0-D point cell
     LINE=2, // 1-D line cell (2 points)
     TRIANGLE=4, // 2-D triangular cell (3 edges)
     QUADRILATERAL=5, // 2-D quadrilateral cell (4 edges)
@@ -226,30 +225,6 @@ private :
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
 
-  /** Compute orientation of 0-D cell. Orientation is either at
-   * vertices or quadrature points, depending on whether the arguments
-   * have been evaluated at the vertices or quadrature points.
-   *
-   * The orientation of a 0-D cell is always [1.0].
-   *
-   * The orientation is returned as an array of direction cosines.
-   *
-   * size = spaceDim*spaceDim
-   * index = iDir*spaceDim + iComponent
-   *
-   * @param orientation Array of direction cosines.
-   * @param jacobian Jacobian matrix at point.
-   * @param jacobianDet Determinant of Jacobian matrix at point.
-   * @param upDir Direction perpendicular to along-strike direction that is 
-   *   not collinear with fault normal (usually "up" direction but could 
-   *   be up-dip direction).
-   */
-  static
-  void _orient0D(scalar_array* orientation,
-		 const scalar_array& jacobian,
-		 const PylithScalar jacobianDet,
-		 const scalar_array& upDir);
-		
   /** Compute orientation of 1-D cell. Orientation is either at
    * vertices or quadrature points, depending on whether the arguments
    * have been evaluated at the vertices or quadrature points.

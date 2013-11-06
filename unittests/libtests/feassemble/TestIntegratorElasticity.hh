@@ -43,7 +43,6 @@ class pylith::feassemble::TestIntegratorElasticity : public CppUnit::TestFixture
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestIntegratorElasticity );
 
-  CPPUNIT_TEST( testCalcTotalStrain1D );
   CPPUNIT_TEST( testCalcTotalStrain2D );
   CPPUNIT_TEST( testCalcTotalStrain3D );
 
@@ -51,9 +50,6 @@ class pylith::feassemble::TestIntegratorElasticity : public CppUnit::TestFixture
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
-
-  /// Test calcTotalStrain1D().
-  void testCalcTotalStrain1D(void);
 
   /// Test calcTotalStrain2D().
   void testCalcTotalStrain2D(void);

@@ -34,10 +34,6 @@ subpkginclude_HEADERS = \
 	Integrator.icc \
 	IntegratorElasticity.hh \
 	IntegratorElasticityLgDeform.hh \
-	GeometryPoint1D.hh \
-	GeometryPoint2D.hh \
-	GeometryPoint3D.hh \
-	GeometryLine1D.hh \
 	GeometryLine2D.hh \
 	GeometryLine3D.hh \
 	GeometryTri2D.hh \
@@ -52,10 +48,6 @@ subpkginclude_HEADERS = \
 	QuadratureEngine.icc \
 	Quadrature.hh \
 	Quadrature.icc \
-	Quadrature0D.hh \
-	Quadrature0D.icc \
-	Quadrature1D.hh \
-	Quadrature1D.icc \
 	Quadrature1Din2D.hh \
 	Quadrature1Din2D.icc \
 	Quadrature1Din3D.hh \

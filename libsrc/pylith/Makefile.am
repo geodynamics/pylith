@@ -59,10 +59,6 @@ libpylith_la_SOURCES = \
 	faults/TractPerturbation.cc \
 	feassemble/CellGeometry.cc \
 	feassemble/Constraint.cc \
-	feassemble/GeometryPoint1D.cc \
-	feassemble/GeometryPoint2D.cc \
-	feassemble/GeometryPoint3D.cc \
-	feassemble/GeometryLine1D.cc \
 	feassemble/GeometryLine2D.cc \
 	feassemble/GeometryLine3D.cc \
 	feassemble/GeometryTri2D.cc \
@@ -74,8 +70,6 @@ libpylith_la_SOURCES = \
 	feassemble/Quadrature.cc \
 	feassemble/QuadratureRefCell.cc \
 	feassemble/QuadratureEngine.cc \
-	feassemble/Quadrature0D.cc \
-	feassemble/Quadrature1D.cc \
 	feassemble/Quadrature1Din2D.cc \
 	feassemble/Quadrature1Din3D.cc \
 	feassemble/Quadrature2D.cc \

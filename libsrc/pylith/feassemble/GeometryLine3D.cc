@@ -20,8 +20,6 @@
 
 #include "GeometryLine3D.hh" // implementation of class methods
 
-#include "GeometryPoint3D.hh" // USES GeometryPoint3D
-
 #include "petsc.h" // USES PetscLogFlops
 
 #include "pylith/utils/array.hh" // USES scalar_array
@@ -60,7 +58,7 @@ pylith::feassemble::GeometryLine3D::clone(void) const
 pylith::feassemble::CellGeometry*
 pylith::feassemble::GeometryLine3D::geometryLowerDim(void) const
 { // geometryLowerDim
-  return new GeometryPoint3D();
+  return 0;
 } // geometryLowerDim
 
 // ----------------------------------------------------------------------

@@ -21,7 +21,7 @@
 #include "TestQuadratureEngine.hh" // Implementation of class methods
 
 #include "pylith/feassemble/QuadratureRefCell.hh" // USES QuadratureRefCell
-#include "pylith/feassemble/Quadrature1D.hh" // USES Quadrature1D
+#include "pylith/feassemble/Quadrature2D.hh" // USES Quadrature2D
 
 #include "data/QuadratureData.hh" // USES QuadratureData
 
@@ -48,7 +48,7 @@ pylith::feassemble::TestQuadratureEngine::testCopyConstructor(void)
 
   QuadratureRefCell refCell;
 
-  Quadrature1D engineOrig(refCell);
+  Quadrature2D engineOrig(refCell);
   size_t size = 0;
 
   // Set values
@@ -132,7 +132,7 @@ pylith::feassemble::TestQuadratureEngine::testInitialize(void)
 		     quadWts, numQuadPts,
 		     spaceDim);
 
-  Quadrature1D engine(refCell);
+  Quadrature2D engine(refCell);
   engine.initialize();
 
   size_t size = 0;

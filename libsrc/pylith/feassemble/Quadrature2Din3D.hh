@@ -28,7 +28,7 @@
 // Include directives ---------------------------------------------------
 #include "QuadratureEngine.hh"
 
-// Quadrature0D ---------------------------------------------------------
+// Quadrature2Din3D -----------------------------------------------------
 /// Quadrature for 2-D finite-elements in 3-D space.
 class pylith::feassemble::Quadrature2Din3D : public QuadratureEngine
 { // Quadrature2Din3D
