@@ -125,46 +125,6 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
 
 // ----------------------------------------------------------------------
 void
-pylith::faults::FaultCohesiveLagrange::splitField(topology::Field* field)
-{ // splitField
-  PYLITH_METHOD_BEGIN;
-
-  assert(field);
-
-  PetscDM dmMesh = field->dmMesh();assert(dmMesh);
-  PetscSection fieldSection  = field->petscSection();assert(fieldSection);
-  PetscInt numFields, numComp;
-
-  assert(_quadrature);
-  const int spaceDim = _quadrature->spaceDim();
-
-  PetscErrorCode err;
-  err = PetscSectionGetNumFields(fieldSection, &numFields);PYLITH_CHECK_ERROR(err);
-  if (!numFields) {
-    PYLITH_METHOD_END;
-  } // if
-
-  // :TODO: Update this.
-
-  assert(2 == numFields);
-  err = PetscSectionGetFieldComponents(fieldSection, 0, &numComp);PYLITH_CHECK_ERROR(err);assert(numComp == spaceDim);
-  err = PetscSectionGetFieldComponents(fieldSection, 1, &numComp);PYLITH_CHECK_ERROR(err);assert(numComp == spaceDim);
-
-  const int numVertices = _cohesiveVertices.size();
-  for(PetscInt iVertex = 0; iVertex < numVertices; ++iVertex) {
-    const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
-
-    PetscInt dof;
-    err = PetscSectionGetDof(fieldSection, e_lagrange, &dof);PYLITH_CHECK_ERROR(err);assert(spaceDim == dof);
-    err = PetscSectionSetFieldDof(fieldSection, e_lagrange, 0, 0);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionSetFieldDof(fieldSection, e_lagrange, 1, dof);PYLITH_CHECK_ERROR(err);
-  } // for
-
-  PYLITH_METHOD_END;
-} // splitField
-
-// ----------------------------------------------------------------------
-void
 pylith::faults::FaultCohesiveLagrange::setupSolnDof(topology::Field* field)
 { // setupSolnDof
   PYLITH_METHOD_BEGIN;

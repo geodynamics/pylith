@@ -128,13 +128,6 @@ public :
   virtual
   void initialize(const topology::Mesh& mesh);
   
-  /** Split solution field for separate preconditioning.
-   *
-   * @param field Solution field.
-   */
-  virtual
-  void splitField(topology::Field* field);
-
   /** Integrate contributions to residual term (r) for operator.
    *
    * @param residual Field containing values for residual

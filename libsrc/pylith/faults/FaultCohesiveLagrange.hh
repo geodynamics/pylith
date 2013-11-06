@@ -112,12 +112,6 @@ public :
   void initialize(const topology::Mesh& mesh,
 		  const PylithScalar upDir[3]);
 
-  /** Split solution field for separate preconditioning.
-   *
-   * @param field Solution field.
-   */
-  void splitField(topology::Field* field);
-
   /** Setup DOF on solution field.
    *
    * @param field Solution field.

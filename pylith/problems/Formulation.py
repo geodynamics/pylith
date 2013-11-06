@@ -500,12 +500,12 @@ class Formulation(PetscComponent, ModuleFormulation):
     lengthScale = normalizer.lengthScale()
     if 1:
       solution = self.fields.get("dispIncr(t->t+dt)")
-      solution.addField("displacement", dimension)
+      solution.subfieldAdd("displacement", dimension)
       if self.splitFields():
-        solution.addField("lagrange_multipliers", dimension)
-      solution.setupFields()
+        solution.subfieldAdd("lagrange_multipliers", dimension)
+      solution.subfieldsSetup()
       solution.newSection(solution.VERTICES_FIELD, dimension)
-      solution.updateDof("displacement", solution.VERTICES_FIELD, dimension)
+      solution.subfieldSetDof("displacement", solution.VERTICES_FIELD, dimension)
 
       solution.vectorFieldType(solution.VECTOR)
       solution.scale(lengthScale.value)

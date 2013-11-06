@@ -47,12 +47,6 @@ void
 pylith::feassemble::Integrator::initialize(const topology::Mesh& mesh) {
 } // initialize
 
-// Split solution field for separate preconditioning.
-inline
-void
-pylith::feassemble::Integrator::splitField(topology::Field* field) {
-} // splitField
-  
 // Integrate contributions to residual term (r) for operator.
 inline
 void
