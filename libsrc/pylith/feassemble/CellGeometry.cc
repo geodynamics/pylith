@@ -87,9 +87,6 @@ pylith::feassemble::CellGeometry::cellDim(void) const
   int dim = 0;
   switch (_shape)
     { // switch
-    case POINT :
-      dim = 0;
-      break;
     case LINE :
       dim = 1;
       break;
@@ -118,9 +115,6 @@ pylith::feassemble::CellGeometry::numCorners(void) const
   int corners = 0;
   switch (_shape)
     { // switch
-    case POINT :
-      corners = 1;
-      break;
     case LINE :
       corners = 2;
       break;
@@ -153,13 +147,8 @@ pylith::feassemble::CellGeometry::_setVertices(const PylithScalar* vertices,
 					       const int numVertices,
 					       const int dim)
 { // _setVertices
-  if (POINT != _shape) {
-    assert(numCorners() == numVertices);
-    assert(cellDim() == dim);
-  } else {
-    assert(1 == numVertices);
-    assert(1 == dim);
-  } // if/else
+  assert(numCorners() == numVertices);
+  assert(cellDim() == dim);
   const int nbytes = numVertices*dim*sizeof(PylithScalar);
   _vertices.resize(numVertices*dim);
   memcpy(&_vertices[0], vertices, nbytes);
