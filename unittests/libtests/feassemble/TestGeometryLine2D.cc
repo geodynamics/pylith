@@ -21,8 +21,6 @@
 #include "TestGeometryLine2D.hh" // Implementation of class methods
 
 #include "pylith/feassemble/GeometryLine2D.hh"
-#include "pylith/feassemble/GeometryPoint2D.hh"
-#include "pylith/feassemble/GeometryPoint1D.hh"
 
 #include "data/GeomDataLine2D.hh"
 
@@ -65,11 +63,7 @@ pylith::feassemble::TestGeometryLine2D::testGeomLowerDim(void)
 
   GeometryLine2D geometry;
   CellGeometry* geometryLD = geometry.geometryLowerDim();
-  GeometryPoint2D* geometryPt = dynamic_cast<GeometryPoint2D*>(geometryLD);
-  CPPUNIT_ASSERT(0 != geometryPt);
-  GeometryPoint1D* geometryPt2 = dynamic_cast<GeometryPoint1D*>(geometryLD);
-  CPPUNIT_ASSERT(0 == geometryPt2);
-  delete geometryLD; geometryLD = 0;
+  CPPUNIT_ASSERT(!geometryLD);
 
   PYLITH_METHOD_END;
 } // testGeomLowerDim

@@ -28,10 +28,6 @@ check_PROGRAMS = testfeassemble
 # Primary source files
 testfeassemble_SOURCES = \
 	TestCellGeometry.cc \
-	TestGeometryPoint1D.cc \
-	TestGeometryPoint2D.cc \
-	TestGeometryPoint3D.cc \
-	TestGeometryLine1D.cc \
 	TestGeometryLine2D.cc \
 	TestGeometryLine3D.cc \
 	TestGeometryTri2D.cc \
@@ -42,8 +38,6 @@ testfeassemble_SOURCES = \
 	TestGeometryHex3D.cc \
 	TestQuadratureRefCell.cc \
 	TestQuadratureEngine.cc \
-	TestQuadrature0D.cc \
-	TestQuadrature1D.cc \
 	TestQuadrature1Din2D.cc \
 	TestQuadrature1Din3D.cc \
 	TestQuadrature2D.cc \
@@ -80,10 +74,6 @@ noinst_HEADERS = \
 	TestElasticityExplicitLgDeformCases.hh \
 	TestElasticityImplicitLgDeform.hh \
 	TestElasticityImplicitLgDeformCases.hh \
-	TestGeometryPoint1D.hh \
-	TestGeometryPoint2D.hh \
-	TestGeometryPoint3D.hh \
-	TestGeometryLine1D.hh \
 	TestGeometryLine2D.hh \
 	TestGeometryLine3D.hh \
 	TestGeometryTri2D.hh \
@@ -97,8 +87,6 @@ noinst_HEADERS = \
 	TestIntegrator.hh \
 	TestIntegratorElasticity.hh \
 	TestQuadrature.hh \
-	TestQuadrature0D.hh \
-	TestQuadrature1D.hh \
 	TestQuadrature1Din2D.hh \
 	TestQuadrature1Din3D.hh \
 	TestQuadrature2D.hh \
@@ -108,10 +96,6 @@ noinst_HEADERS = \
 # Source files associated with testing data
 testfeassemble_SOURCES += \
 	data/CellGeomData.cc \
-	data/GeomDataPoint1D.cc \
-	data/GeomDataPoint2D.cc \
-	data/GeomDataPoint3D.cc \
-	data/GeomDataLine1D.cc \
 	data/GeomDataLine2D.cc \
 	data/GeomDataLine3D.cc \
 	data/GeomDataTri2D.cc \
@@ -122,57 +106,39 @@ testfeassemble_SOURCES += \
 	data/GeomDataHex3D.cc \
 	data/IntegratorData.cc \
 	data/ElasticityExplicitData.cc \
-	data/ElasticityExplicitData1DLinear.cc \
-	data/ElasticityExplicitData1DQuadratic.cc \
 	data/ElasticityExplicitData2DLinear.cc \
 	data/ElasticityExplicitData2DQuadratic.cc \
 	data/ElasticityExplicitData3DLinear.cc \
 	data/ElasticityExplicitData3DQuadratic.cc \
-	data/ElasticityExplicitGravData1DLinear.cc \
-	data/ElasticityExplicitGravData1DQuadratic.cc \
 	data/ElasticityExplicitGravData2DLinear.cc \
 	data/ElasticityExplicitGravData2DQuadratic.cc \
 	data/ElasticityExplicitGravData3DLinear.cc \
 	data/ElasticityExplicitGravData3DQuadratic.cc \
-	data/ElasticityImplicitData1DLinear.cc \
-	data/ElasticityImplicitData1DQuadratic.cc \
 	data/ElasticityImplicitData2DLinear.cc \
 	data/ElasticityImplicitData2DQuadratic.cc \
 	data/ElasticityImplicitData3DLinear.cc \
 	data/ElasticityImplicitData3DQuadratic.cc \
-	data/ElasticityImplicitGravData1DLinear.cc \
-	data/ElasticityImplicitGravData1DQuadratic.cc \
 	data/ElasticityImplicitGravData2DLinear.cc \
 	data/ElasticityImplicitGravData2DQuadratic.cc \
 	data/ElasticityImplicitGravData3DLinear.cc \
 	data/ElasticityImplicitGravData3DQuadratic.cc \
-	data/ElasticityExplicitLgDeformData1DLinear.cc \
-	data/ElasticityExplicitLgDeformData1DQuadratic.cc \
 	data/ElasticityExplicitLgDeformData2DLinear.cc \
 	data/ElasticityExplicitLgDeformData2DQuadratic.cc \
 	data/ElasticityExplicitLgDeformData3DLinear.cc \
 	data/ElasticityExplicitLgDeformData3DQuadratic.cc \
-	data/ElasticityExplicitLgDeformGravData1DLinear.cc \
-	data/ElasticityExplicitLgDeformGravData1DQuadratic.cc \
 	data/ElasticityExplicitLgDeformGravData2DLinear.cc \
 	data/ElasticityExplicitLgDeformGravData2DQuadratic.cc \
 	data/ElasticityExplicitLgDeformGravData3DLinear.cc \
 	data/ElasticityExplicitLgDeformGravData3DQuadratic.cc \
-	data/ElasticityImplicitLgDeformData1DLinear.cc \
-	data/ElasticityImplicitLgDeformData1DQuadratic.cc \
 	data/ElasticityImplicitLgDeformData2DLinear.cc \
 	data/ElasticityImplicitLgDeformData2DQuadratic.cc \
 	data/ElasticityImplicitLgDeformData3DLinear.cc \
 	data/ElasticityImplicitLgDeformData3DQuadratic.cc \
-	data/ElasticityImplicitLgDeformGravData1DLinear.cc \
-	data/ElasticityImplicitLgDeformGravData1DQuadratic.cc \
 	data/ElasticityImplicitLgDeformGravData2DLinear.cc \
 	data/ElasticityImplicitLgDeformGravData2DQuadratic.cc \
 	data/ElasticityImplicitLgDeformGravData3DLinear.cc \
 	data/ElasticityImplicitLgDeformGravData3DQuadratic.cc \
 	data/QuadratureData.cc \
-	data/QuadratureData1DLinear.cc \
-	data/QuadratureData1DQuadratic.cc \
 	data/QuadratureData1Din2DLinear.cc \
 	data/QuadratureData1Din2DQuadratic.cc \
 	data/QuadratureData1Din3DLinear.cc \
@@ -189,10 +155,6 @@ testfeassemble_SOURCES += \
 
 noinst_HEADERS += \
 	data/CellGeomData.hh \
-	data/GeomDataPoint1D.hh \
-	data/GeomDataPoint2D.hh \
-	data/GeomDataPoint3D.hh \
-	data/GeomDataLine1D.hh \
 	data/GeomDataLine2D.hh \
 	data/GeomDataLine3D.hh \
 	data/GeomDataTri2D.hh \
@@ -203,57 +165,39 @@ noinst_HEADERS += \
 	data/GeomDataHex3D.hh \
 	data/IntegratorData.hh \
 	data/ElasticityExplicitData.hh \
-	data/ElasticityExplicitData1DLinear.hh \
-	data/ElasticityExplicitData1DQuadratic.hh \
 	data/ElasticityExplicitData2DLinear.hh \
 	data/ElasticityExplicitData2DQuadratic.hh \
 	data/ElasticityExplicitData3DLinear.hh \
 	data/ElasticityExplicitData3DQuadratic.hh \
-	data/ElasticityExplicitGravData1DLinear.hh \
-	data/ElasticityExplicitGravData1DQuadratic.hh \
 	data/ElasticityExplicitGravData2DLinear.hh \
 	data/ElasticityExplicitGravData2DQuadratic.hh \
 	data/ElasticityExplicitGravData3DLinear.hh \
 	data/ElasticityExplicitGravData3DQuadratic.hh \
-	data/ElasticityImplicitData1DLinear.hh \
-	data/ElasticityImplicitData1DQuadratic.hh \
 	data/ElasticityImplicitData2DLinear.hh \
 	data/ElasticityImplicitData2DQuadratic.hh \
 	data/ElasticityImplicitData3DLinear.hh \
 	data/ElasticityImplicitData3DQuadratic.hh \
-	data/ElasticityImplicitGravData1DLinear.hh \
-	data/ElasticityImplicitGravData1DQuadratic.hh \
 	data/ElasticityImplicitGravData2DLinear.hh \
 	data/ElasticityImplicitGravData2DQuadratic.hh \
 	data/ElasticityImplicitGravData3DLinear.hh \
 	data/ElasticityImplicitGravData3DQuadratic.hh \
-	data/ElasticityExplicitLgDeformData1DLinear.hh \
-	data/ElasticityExplicitLgDeformData1DQuadratic.hh \
 	data/ElasticityExplicitLgDeformData2DLinear.hh \
 	data/ElasticityExplicitLgDeformData2DQuadratic.hh \
 	data/ElasticityExplicitLgDeformData3DLinear.hh \
 	data/ElasticityExplicitLgDeformData3DQuadratic.hh \
-	data/ElasticityExplicitLgDeformGravData1DLinear.hh \
-	data/ElasticityExplicitLgDeformGravData1DQuadratic.hh \
 	data/ElasticityExplicitLgDeformGravData2DLinear.hh \
 	data/ElasticityExplicitLgDeformGravData2DQuadratic.hh \
 	data/ElasticityExplicitLgDeformGravData3DLinear.hh \
 	data/ElasticityExplicitLgDeformGravData3DQuadratic.hh \
-	data/ElasticityImplicitLgDeformData1DLinear.hh \
-	data/ElasticityImplicitLgDeformData1DQuadratic.hh \
 	data/ElasticityImplicitLgDeformData2DLinear.hh \
 	data/ElasticityImplicitLgDeformData2DQuadratic.hh \
 	data/ElasticityImplicitLgDeformData3DLinear.hh \
 	data/ElasticityImplicitLgDeformData3DQuadratic.hh \
-	data/ElasticityImplicitLgDeformGravData1DLinear.hh \
-	data/ElasticityImplicitLgDeformGravData1DQuadratic.hh \
 	data/ElasticityImplicitLgDeformGravData2DLinear.hh \
 	data/ElasticityImplicitLgDeformGravData2DQuadratic.hh \
 	data/ElasticityImplicitLgDeformGravData3DLinear.hh \
 	data/ElasticityImplicitLgDeformGravData3DQuadratic.hh \
 	data/QuadratureData.hh \
-	data/QuadratureData1DLinear.hh \
-	data/QuadratureData1DQuadratic.hh \
 	data/QuadratureData1Din2DLinear.hh \
 	data/QuadratureData1Din2DQuadratic.hh \
 	data/QuadratureData1Din3DLinear.hh \

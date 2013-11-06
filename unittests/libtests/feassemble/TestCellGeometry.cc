@@ -56,29 +56,6 @@ pylith::feassemble::TestCellGeometry::tearDown(void)
 } // tearDown
 
 // ----------------------------------------------------------------------
-// Test _orient0D().
-void
-pylith::feassemble::TestCellGeometry::testOrient0D(void)
-{ // testOrient0D
-  PYLITH_METHOD_BEGIN;
-
-  scalar_array jacobian;
-  PylithScalar jacobianDet;
-  scalar_array upDir;
-  scalar_array orientation(1);
-  
-  CellGeometry::_orient0D(&orientation, jacobian, jacobianDet, upDir);
-
-  const int size = orientation.size();
-  CPPUNIT_ASSERT_EQUAL(1, size);
-  const PylithScalar tolerance = 1.0e-6;
-  for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, orientation[i], tolerance);
-
-  PYLITH_METHOD_END;
-} // testOrient0D
-
-// ----------------------------------------------------------------------
 // Test _orient1D().
 void
 pylith::feassemble::TestCellGeometry::testOrient1D(void)

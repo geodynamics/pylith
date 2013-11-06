@@ -32,73 +32,17 @@
 /// Namespace for pylith package
 namespace pylith {
   namespace feassemble {
-    class TestElasticityImplicit1DLinear;
-    class TestElasticityImplicit1DQuadratic;
     class TestElasticityImplicit2DLinear;
     class TestElasticityImplicit2DQuadratic;
     class TestElasticityImplicit3DLinear;
     class TestElasticityImplicit3DQuadratic;
 
-    class TestElasticityImplicitGrav1DLinear;
-    class TestElasticityImplicitGrav1DQuadratic;
     class TestElasticityImplicitGrav2DLinear;
     class TestElasticityImplicitGrav2DQuadratic;
     class TestElasticityImplicitGrav3DLinear;
     class TestElasticityImplicitGrav3DQuadratic;
   } // feassemble
 } // pylith
-
-// ----------------------------------------------------------------------
-/// C++ unit testing for ElasticityImplicit w/1-D linear cells.
-class pylith::feassemble::TestElasticityImplicit1DLinear :
-  public TestElasticityImplicit
-{ // class TestElasticityImplicit1DLinear
-
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestElasticityImplicit1DLinear );
-
-  CPPUNIT_TEST( testInitialize );
-  CPPUNIT_TEST( testIntegrateResidual );
-  CPPUNIT_TEST( testIntegrateJacobian );
-  CPPUNIT_TEST( testUpdateStateVars );
-  CPPUNIT_TEST( testStableTimeStep );
-
-  CPPUNIT_TEST_SUITE_END();
-
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
-
-  /// Setup testing data.
-  void setUp(void);
-
-}; // class TestElasticityImplicit1DLinear
-
-
-// ----------------------------------------------------------------------
-/// C++ unit testing for ElasticityImplicit w/1-D quadratic cells.
-class pylith::feassemble::TestElasticityImplicit1DQuadratic :
-  public TestElasticityImplicit
-{ // class TestElasticityImplicit1DQuadratic
-
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestElasticityImplicit1DQuadratic );
-
-  CPPUNIT_TEST( testInitialize );
-  CPPUNIT_TEST( testIntegrateResidual );
-  CPPUNIT_TEST( testIntegrateJacobian );
-  CPPUNIT_TEST( testUpdateStateVars );
-  CPPUNIT_TEST( testStableTimeStep );
-
-  CPPUNIT_TEST_SUITE_END();
-
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
-
-  /// Setup testing data.
-  void setUp(void);
-
-}; // class TestElasticityImplicit1DQuadratic
-
 
 // ----------------------------------------------------------------------
 /// C++ unit testing for ElasticityImplicit w/2-D linear cells.
@@ -202,58 +146,6 @@ public :
   void setUp(void);
 
 }; // class TestElasticityImplicit3DQuadratic
-
-
-// ----------------------------------------------------------------------
-/// C++ unit testing for ElasticityImplicit w/1-D linear cells and gravity.
-class pylith::feassemble::TestElasticityImplicitGrav1DLinear :
-  public TestElasticityImplicit
-{ // class TestElasticityImplicitGrav1DLinear
-
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestElasticityImplicitGrav1DLinear );
-
-  CPPUNIT_TEST( testInitialize );
-  CPPUNIT_TEST( testIntegrateResidual );
-  CPPUNIT_TEST( testIntegrateJacobian );
-  CPPUNIT_TEST( testUpdateStateVars );
-  CPPUNIT_TEST( testStableTimeStep );
-
-  CPPUNIT_TEST_SUITE_END();
-
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
-
-  /// Setup testing data.
-  void setUp(void);
-
-}; // class TestElasticityImplicitGrav1DLinear
-
-
-// ----------------------------------------------------------------------
-/// C++ unit testing for ElasticityImplicit w/1-D quadratic cells and gravity.
-class pylith::feassemble::TestElasticityImplicitGrav1DQuadratic :
-  public TestElasticityImplicit
-{ // class TestElasticityImplicitGrav1DQuadratic
-
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestElasticityImplicitGrav1DQuadratic );
-
-  CPPUNIT_TEST( testInitialize );
-  CPPUNIT_TEST( testIntegrateResidual );
-  CPPUNIT_TEST( testIntegrateJacobian );
-  CPPUNIT_TEST( testUpdateStateVars );
-  CPPUNIT_TEST( testStableTimeStep );
-
-  CPPUNIT_TEST_SUITE_END();
-
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
-
-  /// Setup testing data.
-  void setUp(void);
-
-}; // class TestElasticityImplicitGrav1DQuadratic
 
 
 // ----------------------------------------------------------------------

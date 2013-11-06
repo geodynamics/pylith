@@ -22,7 +22,7 @@
 
 #include "pylith/feassemble/GeometryTet3D.hh"
 #include "pylith/feassemble/GeometryTri3D.hh"
-#include "pylith/feassemble/GeometryPoint2D.hh"
+#include "pylith/feassemble/GeometryLine2D.hh"
 
 #include "data/GeomDataTet3D.hh"
 
@@ -66,9 +66,9 @@ pylith::feassemble::TestGeometryTet3D::testGeomLowerDim(void)
   GeometryTet3D geometry;
   CellGeometry* geometryLD = geometry.geometryLowerDim();
   GeometryTri3D* geometryPt = dynamic_cast<GeometryTri3D*>(geometryLD);
-  CPPUNIT_ASSERT(0 != geometryPt);
-  GeometryPoint2D* geometryPt2 = dynamic_cast<GeometryPoint2D*>(geometryLD);
-  CPPUNIT_ASSERT(0 == geometryPt2);
+  CPPUNIT_ASSERT(geometryPt);
+  GeometryLine2D* geometryPt2 = dynamic_cast<GeometryLine2D*>(geometryLD);
+  CPPUNIT_ASSERT(!geometryPt2);
   delete geometryLD; geometryLD = 0;
 
   PYLITH_METHOD_END;

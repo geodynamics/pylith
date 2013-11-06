@@ -22,7 +22,7 @@
 
 #include "pylith/feassemble/GeometryTri2D.hh"
 #include "pylith/feassemble/GeometryLine2D.hh"
-#include "pylith/feassemble/GeometryPoint2D.hh"
+#include "pylith/feassemble/GeometryLine3D.hh"
 
 #include "data/GeomDataTri2D.hh"
 
@@ -66,9 +66,9 @@ pylith::feassemble::TestGeometryTri2D::testGeomLowerDim(void)
   GeometryTri2D geometry;
   CellGeometry* geometryLD = geometry.geometryLowerDim();
   GeometryLine2D* geometryPt = dynamic_cast<GeometryLine2D*>(geometryLD);
-  CPPUNIT_ASSERT(0 != geometryPt);
-  GeometryPoint2D* geometryPt2 = dynamic_cast<GeometryPoint2D*>(geometryLD);
-  CPPUNIT_ASSERT(0 == geometryPt2);
+  CPPUNIT_ASSERT(geometryPt);
+  GeometryLine3D* geometryPt2 = dynamic_cast<GeometryLine3D*>(geometryLD);
+  CPPUNIT_ASSERT(!geometryPt2);
   delete geometryLD; geometryLD = 0;
 
   PYLITH_METHOD_END;

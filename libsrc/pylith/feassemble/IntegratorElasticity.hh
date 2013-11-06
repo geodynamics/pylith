@@ -152,12 +152,6 @@ protected :
   void _calcStressFromStrain(topology::Field* field);
 			      
 
-  /** Integrate elasticity term in residual for 1-D cells.
-   *
-   * @param stress Stress tensor for cell at quadrature points.
-   */
-  void _elasticityResidual1D(const scalar_array& stress);
-
   /** Integrate elasticity term in residual for 2-D cells.
    *
    * @param stress Stress tensor for cell at quadrature points.
@@ -170,12 +164,6 @@ protected :
    */
   void _elasticityResidual3D(const scalar_array& stress);
 
-  /** Integrate elasticity term in Jacobian for 1-D cells.
-   *
-   * @param elasticConsts Matrix of elasticity constants at quadrature points.
-   */
-  void _elasticityJacobian1D(const scalar_array& elasticConsts);
-
   /** Integrate elasticity term in Jacobian for 2-D cells.
    *
    * @param elasticConsts Matrix of elasticity constants at quadrature points.
@@ -187,23 +175,6 @@ protected :
    * @param elasticConsts Matrix of elasticity constants at quadrature points.
    */
   void _elasticityJacobian3D(const scalar_array& elasticConsts);
-
-  /** Compute total strain in at quadrature points of a cell.
-   *
-   * @param strain Strain tensor at quadrature points.
-   * @param basisDeriv Derivatives of basis functions at quadrature points.
-   * @param disp Displacement at vertices of cell.
-   * @param numBasis Number of basis functions for cell.
-   * @param spaceDim Spatial dimension.
-   * @param numQuadPts Number of quadrature points.
-   */
-  static
-  void _calcTotalStrain1D(scalar_array* strain,
-			  const scalar_array& basisDeriv,
-			  const PylithScalar* disp,
-			  const int numBasis,
-			  const int spaceDim,
-			  const int numQuadPts);
 
   /** Compute total strain in at quadrature points of a cell.
    *

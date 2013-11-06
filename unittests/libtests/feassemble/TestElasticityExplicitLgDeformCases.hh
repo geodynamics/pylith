@@ -17,7 +17,7 @@
 //
 
 /**
- * @file unittests/libtests/feassemble/TestElasticityExplicitLgDeform1DLinear.hh
+ * @file unittests/libtests/feassemble/TestElasticityExplicitLgDeformCases.hh
  *
  * @brief C++ TestElasticityExplicitLgDeform object
  *
@@ -32,71 +32,17 @@
 /// Namespace for pylith package
 namespace pylith {
   namespace feassemble {
-    class TestElasticityExplicitLgDeform1DLinear;
-    class TestElasticityExplicitLgDeform1DQuadratic;
     class TestElasticityExplicitLgDeform2DLinear;
     class TestElasticityExplicitLgDeform2DQuadratic;
     class TestElasticityExplicitLgDeform3DLinear;
     class TestElasticityExplicitLgDeform3DQuadratic;
 
-    class TestElasticityExplicitLgDeformGrav1DLinear;
-    class TestElasticityExplicitLgDeformGrav1DQuadratic;
     class TestElasticityExplicitLgDeformGrav2DLinear;
     class TestElasticityExplicitLgDeformGrav2DQuadratic;
     class TestElasticityExplicitLgDeformGrav3DLinear;
     class TestElasticityExplicitLgDeformGrav3DQuadratic;
   } // feassemble
 } // pylith
-
-// ----------------------------------------------------------------------
-/// C++ unit testing for ElasticityExplicitLgDeform w/1-D linear cells.
-class pylith::feassemble::TestElasticityExplicitLgDeform1DLinear :
-  public TestElasticityExplicitLgDeform
-{ // class TestElasticityExplicitLgDeform1DLinear
-
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestElasticityExplicitLgDeform1DLinear );
-
-  CPPUNIT_TEST( testInitialize );
-  CPPUNIT_TEST( testIntegrateResidual );
-  CPPUNIT_TEST( testIntegrateJacobian );
-  CPPUNIT_TEST( testUpdateStateVars );
-
-  CPPUNIT_TEST_SUITE_END();
-
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
-
-  /// Setup testing data.
-  void setUp(void);
-
-}; // class TestElasticityExplicitLgDeform1DLinear
-
-
-// ----------------------------------------------------------------------
-/// C++ unit testing for ElasticityExplicitLgDeform w/1-D quadratic cells.
-class pylith::feassemble::TestElasticityExplicitLgDeform1DQuadratic :
-  public TestElasticityExplicitLgDeform
-{ // class TestElasticityExplicitLgDeform1DQuadratic
-
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestElasticityExplicitLgDeform1DQuadratic );
-
-  CPPUNIT_TEST( testInitialize );
-  CPPUNIT_TEST( testIntegrateResidual );
-  CPPUNIT_TEST( testIntegrateJacobian );
-  CPPUNIT_TEST( testUpdateStateVars );
-
-  CPPUNIT_TEST_SUITE_END();
-
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
-
-  /// Setup testing data.
-  void setUp(void);
-
-}; // class TestElasticityExplicitLgDeform1DQuadratic
-
 
 // ----------------------------------------------------------------------
 /// C++ unit testing for ElasticityExplicitLgDeform w/2-D linear cells.
@@ -196,56 +142,6 @@ public :
   void setUp(void);
 
 }; // class TestElasticityExplicitLgDeform3DQuadratic
-
-
-// ----------------------------------------------------------------------
-/// C++ unit testing for ElasticityExplicitLgDeform w/1-D linear cells and gravity.
-class pylith::feassemble::TestElasticityExplicitLgDeformGrav1DLinear :
-  public TestElasticityExplicitLgDeform
-{ // class TestElasticityExplicitLgDeformGrav1DLinear
-
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestElasticityExplicitLgDeformGrav1DLinear );
-
-  CPPUNIT_TEST( testInitialize );
-  CPPUNIT_TEST( testIntegrateResidual );
-  CPPUNIT_TEST( testIntegrateJacobian );
-  CPPUNIT_TEST( testUpdateStateVars );
-
-  CPPUNIT_TEST_SUITE_END();
-
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
-
-  /// Setup testing data.
-  void setUp(void);
-
-}; // class TestElasticityExplicitLgDeformGrav1DLinear
-
-
-// ----------------------------------------------------------------------
-/// C++ unit testing for ElasticityExplicitLgDeform w/1-D quadratic cells and gravity.
-class pylith::feassemble::TestElasticityExplicitLgDeformGrav1DQuadratic :
-  public TestElasticityExplicitLgDeform
-{ // class TestElasticityExplicitLgDeformGrav1DQuadratic
-
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestElasticityExplicitLgDeformGrav1DQuadratic );
-
-  CPPUNIT_TEST( testInitialize );
-  CPPUNIT_TEST( testIntegrateResidual );
-  CPPUNIT_TEST( testIntegrateJacobian );
-  CPPUNIT_TEST( testUpdateStateVars );
-
-  CPPUNIT_TEST_SUITE_END();
-
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
-
-  /// Setup testing data.
-  void setUp(void);
-
-}; // class TestElasticityExplicitLgDeformGrav1DQuadratic
 
 
 // ----------------------------------------------------------------------

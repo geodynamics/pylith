@@ -54,7 +54,6 @@ class pylith::faults::TestLiuCosSlipFn : public CppUnit::TestFixture
   CPPUNIT_TEST( testDbFinalSlip );
   CPPUNIT_TEST( testDbSlipTime );
   CPPUNIT_TEST( testDbRiseTime );
-  CPPUNIT_TEST( testInitialize1D );
   CPPUNIT_TEST( testInitialize2D );
   CPPUNIT_TEST( testInitialize3D );
   CPPUNIT_TEST( testSlip );
@@ -76,9 +75,6 @@ public :
 
   /// Test dbRiseTime().
   void testDbRiseTime(void);
-
-  /// Test initialize() in 1-D.
-  void testInitialize1D(void);
 
   /// Test initialize() in 2-D.
   void testInitialize2D(void);

@@ -43,10 +43,8 @@ class pylith::feassemble::TestIntegratorElasticityLgDeform : public CppUnit::Tes
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestIntegratorElasticityLgDeform );
 
-  CPPUNIT_TEST( testCalcDeformation1D );
   CPPUNIT_TEST( testCalcDeformation2D );
   CPPUNIT_TEST( testCalcDeformation3D );
-  CPPUNIT_TEST( testCalcTotalStrain1D );
   CPPUNIT_TEST( testCalcTotalStrain2D );
   CPPUNIT_TEST( testCalcTotalStrain3D );
 
@@ -55,17 +53,11 @@ class pylith::feassemble::TestIntegratorElasticityLgDeform : public CppUnit::Tes
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
-  /// Test calcDeformation() for 1-D.
-  void testCalcDeformation1D(void);
-
   /// Test calcDeformation() for 2-D.
   void testCalcDeformation2D(void);
 
   /// Test calcDeformation() for 3-D.
   void testCalcDeformation3D(void);
-
-  /// Test calcTotalStrain1D().
-  void testCalcTotalStrain1D(void);
 
   /// Test calcTotalStrain2D().
   void testCalcTotalStrain2D(void);

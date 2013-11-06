@@ -111,37 +111,6 @@ pylith::faults::TestStepSlipFn::testDbSlipTime(void)
 } // testDbSlipTime
 
 // ----------------------------------------------------------------------
-// Test initialize() in 1-D.
-void
-pylith::faults::TestStepSlipFn::testInitialize1D(void)
-{ // testInitialize1D
-  PYLITH_METHOD_BEGIN;
-
-  const char* meshFilename = "data/line2.mesh";
-  const char* faultLabel = "fault";
-  const int faultId = 2;
-  const char* finalSlipFilename = "data/line2_finalslip.spatialdb";
-  const char* slipTimeFilename = "data/line2_sliptime.spatialdb";
-  const int constraintPts[] = { 3 };
-  const PylithScalar finalSlipE[] = { 2.3 };
-  const PylithScalar slipTimeE[] = { 1.2 };
-  const int numConstraintPts = 1;
-
-  _TestStepSlipFn::DataStruct data = {meshFilename,
-				      faultLabel,
-				      faultId,
-				      finalSlipFilename,
-				      slipTimeFilename,
-				      constraintPts,
-				      finalSlipE,
-				      slipTimeE,
-				      numConstraintPts};
-  _testInitialize(data);
-
-  PYLITH_METHOD_END;
-} // testInitialize1D
-
-// ----------------------------------------------------------------------
 // Test initialize() in 2-D.
 void
 pylith::faults::TestStepSlipFn::testInitialize2D(void)

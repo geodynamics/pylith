@@ -37,9 +37,6 @@ pylith::feassemble::CellGeometry::CellGeometry(const ShapeEnum shape,
 { // constructor
   switch (shape)
     { // switch
-    case POINT :
-      _orientFn = _orient0D;
-      break;
     case LINE :
       _orientFn = _orient1D;
       break;
@@ -168,19 +165,6 @@ pylith::feassemble::CellGeometry::_setVertices(const PylithScalar* vertices,
   memcpy(&_vertices[0], vertices, nbytes);
 } // _setVertices
 
-// ----------------------------------------------------------------------
-// Compute orientation of 0-D cell.
-void
-pylith::feassemble::CellGeometry::_orient0D(scalar_array* orientation,
-					    const scalar_array& jacobian,
-					    const PylithScalar jacobianDet,
-					    const scalar_array& upDir)
-{ // _orient0D
-  assert(orientation);
-  assert(1 == orientation->size());
-  (*orientation) = 1.0;
-} // _orient0D
-		
 // ----------------------------------------------------------------------
 // Compute orientation of 1-D cell.
 void

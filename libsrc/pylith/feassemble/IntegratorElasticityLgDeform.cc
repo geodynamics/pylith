@@ -85,9 +85,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::updateStateVars(const PylithSc
   const int spaceDim = _quadrature->spaceDim();
   const int tensorSize = _material->tensorSize();
   totalStrain_fn_type calcTotalStrainFn;
-  if (1 == cellDim) {
-    calcTotalStrainFn = &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain1D;
-  } else if (2 == cellDim) {
+  if (2 == cellDim) {
     calcTotalStrainFn = &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain2D;
   } else if (3 == cellDim) {
     calcTotalStrainFn = &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain3D;
@@ -162,9 +160,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(topolog
   const int spaceDim = _quadrature->spaceDim();
   const int tensorSize = _material->tensorSize();
   totalStrain_fn_type calcTotalStrainFn;
-  if (1 == cellDim) {
-    calcTotalStrainFn = &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain1D;
-  } else if (2 == cellDim) {
+  if (2 == cellDim) {
     calcTotalStrainFn = &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain2D;
   } else if (3 == cellDim) {
     calcTotalStrainFn = &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain3D;
@@ -235,37 +231,6 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(topolog
 
   PYLITH_METHOD_END;
 } // _calcStrainStressField
-
-// ----------------------------------------------------------------------
-// Integrate elasticity term in residual for 1-D cells.
-void
-pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual1D(const scalar_array& stress,
-									const scalar_array& disp)
-{ // _elasticityResidual1D
-  const int numQuadPts = _quadrature->numQuadPts();
-  const int numBasis = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
-  const int cellDim = _quadrature->cellDim();
-  const scalar_array& quadWts = _quadrature->quadWts();
-  const scalar_array& jacobianDet = _quadrature->jacobianDet();
-  const scalar_array& basisDeriv = _quadrature->basisDeriv();
-
-  assert(1 == cellDim);
-  assert(quadWts.size() == numQuadPts);
-
-  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-    const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad];
-    const PylithScalar s11 = stress[iQuad];
-    PylithScalar l11 = 0.0;
-    for (int kBasis=0; kBasis < numBasis; ++kBasis)
-      l11 += basisDeriv[iQuad*numBasis+kBasis  ] * disp[kBasis  ]; 
-    for (int iBasis=0; iBasis < numBasis; ++iBasis) {
-      const PylithScalar N1 = wt * (1.0 + l11) * basisDeriv[iQuad*numBasis+iBasis  ];
-      _cellVector[iBasis*spaceDim  ] -= N1*s11;
-    } // for
-  } // for
-  PetscLogFlops(numQuadPts*(1+numBasis*5+numBasis*2));
-} // _elasticityResidual1D
 
 // ----------------------------------------------------------------------
 // Integrate elasticity term in residual for 2-D cells.
@@ -412,53 +377,6 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual3D(const sc
   } // for
   PetscLogFlops(numQuadPts*(1+numBasis*(numBasis*18+3*27)));
 } // _elasticityResidual3D
-
-// ----------------------------------------------------------------------
-// Integrate elasticity term in Jacobian for 1-D cells.
-void
-pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian1D(const scalar_array& elasticConsts,
-									const scalar_array& stress,
-									const scalar_array& disp)
-{ // _elasticityJacobian1D
-  const int numQuadPts = _quadrature->numQuadPts();
-  const int numBasis = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
-  const int cellDim = _quadrature->cellDim();
-  const scalar_array& quadWts = _quadrature->quadWts();
-  const scalar_array& jacobianDet = _quadrature->jacobianDet();
-  const scalar_array& basisDeriv = _quadrature->basisDeriv();
-  
-  assert(1 == cellDim);
-  assert(quadWts.size() == numQuadPts);
-  
-  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-    const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad];
-    const PylithScalar C1111 = elasticConsts[iQuad];
-    const PylithScalar s11 = stress[iQuad];
-
-    PylithScalar l11 = 0.0;
-    for (int kBasis=0; kBasis < numBasis; ++kBasis)
-      l11 += basisDeriv[iQuad*numBasis+kBasis  ] * disp[kBasis  ]; 
-
-    // KLij = valI * valJ * C1111 + valInl * valJnl * s11
-    // valI = (1+l11) * Ni,1
-    // valJ = (1+l11) * Nj,1
-    // valInl = Ni,1
-    // valJnl = Nj,1
-    for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-      const PylithScalar valI = wt*basisDeriv[iQ+iBasis]*(1.0+l11)*(1.0+l11)*C1111;
-      const PylithScalar valInl = wt*s11*basisDeriv[iQ+iBasis];
-      for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-	const PylithScalar valIJ = valI * basisDeriv[iQ+jBasis];
-	const PylithScalar valIJnl = valInl * basisDeriv[iQ+jBasis];
-	const int iBlock = iBasis*spaceDim * (numBasis*spaceDim);
-	const int jBlock = jBasis*spaceDim;
-	_cellMatrix[iBlock+jBlock] += valIJ + valIJnl;
-      } // for
-    } // for
-  } // for
-  PetscLogFlops(numQuadPts*(1+numBasis*(6+numBasis*4)));
-} // _elasticityJacobian1D
 
 // ----------------------------------------------------------------------
 // Integrate elasticity term in Jacobian for 2-D cells.
@@ -1066,29 +984,6 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian3D(const sc
   PetscLogFlops(numQuadPts*(1+numBasis*(3+numBasis*(6*26+9))));
 } // _elasticityJacobian3D
 
-// ----------------------------------------------------------------------
-// Calculate Green-Lagrange strain tensor at quadrature points of a 1-D cell.
-void 
-pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain1D(scalar_array* strain,
-								     const scalar_array& deform,
-								     const int numQuadPts)
-{ // _calcTotalStrain1D
-  // Green-Lagrange strain tensor = 1/2 ( X^T X - I )
-  // X: deformation tensor
-  // I: identity matrix
-
-  assert(strain);
-
-  const int dim = 1;
-  const int strainSize = 1;
-  assert(deform.size() == numQuadPts*dim*dim);
-  assert(strain->size() == numQuadPts*strainSize);
-
-
-  for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
-      (*strain)[iQuad] = 0.5*(deform[iQuad]*deform[iQuad] - 1.0);
-} // _calcTotalStrain1D
-  
 // ----------------------------------------------------------------------
 // Calculate Green-Lagrange strain tensor at quadrature points of a 2-D cell.
 void 

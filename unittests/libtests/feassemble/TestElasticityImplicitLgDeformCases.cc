@@ -23,67 +23,13 @@
 #include "pylith/topology/Mesh.hh" // USES Quadrature<Mesh>
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 
-#include "pylith/feassemble/GeometryLine1D.hh" // USES GeometryLine1D
 #include "pylith/feassemble/GeometryTri2D.hh" // USES GeometryTri2D
 #include "pylith/feassemble/GeometryTet3D.hh" // USES GeometryTet3D
 
-#include "pylith/materials/ElasticStrain1D.hh" // USES ElasticStrain1D
 #include "pylith/materials/ElasticPlaneStrain.hh" // USES ElasticPlaneStrain
 #include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
-
-
-// ----------------------------------------------------------------------
-#include "data/ElasticityImplicitLgDeformData1DLinear.hh"
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityImplicitLgDeform1DLinear );
-
-// Setup testing data.
-void
-pylith::feassemble::TestElasticityImplicitLgDeform1DLinear::setUp(void)
-{ // setUp
-  PYLITH_METHOD_BEGIN;
-  
-  TestElasticityImplicitLgDeform::setUp();
-
-  _data = new ElasticityImplicitLgDeformData1DLinear();
-  _gravityField = 0;
-  GeometryLine1D geometry;
-  CPPUNIT_ASSERT(_quadrature);
-  _quadrature->refGeometry(&geometry);
-  _material = new materials::ElasticStrain1D;
-
-  CPPUNIT_ASSERT(_data);
-  CPPUNIT_ASSERT_EQUAL(std::string("ElasticStrain1D"), std::string(_data->matType));
-
-  PYLITH_METHOD_END;
-} // setUp
-
-
-// ----------------------------------------------------------------------
-#include "data/ElasticityImplicitLgDeformData1DQuadratic.hh"
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityImplicitLgDeform1DQuadratic );
-
-// Setup testing data.
-void
-pylith::feassemble::TestElasticityImplicitLgDeform1DQuadratic::setUp(void)
-{ // setUp
-  PYLITH_METHOD_BEGIN;
-  
-  TestElasticityImplicitLgDeform::setUp();
-
-  _data = new ElasticityImplicitLgDeformData1DQuadratic();
-  _gravityField = 0;
-  GeometryLine1D geometry;
-  CPPUNIT_ASSERT(_quadrature);
-  _quadrature->refGeometry(&geometry);
-  _material = new materials::ElasticStrain1D;
-
-  CPPUNIT_ASSERT(_data);
-  CPPUNIT_ASSERT_EQUAL(std::string("ElasticStrain1D"), std::string(_data->matType));
-
-  PYLITH_METHOD_END;
-} // setUp
 
 
 // ----------------------------------------------------------------------
@@ -193,76 +139,6 @@ pylith::feassemble::TestElasticityImplicitLgDeform3DQuadratic::setUp(void)
   
   CPPUNIT_ASSERT(_data);
   CPPUNIT_ASSERT_EQUAL(std::string("ElasticIsotropic3D"), std::string(_data->matType));
-
-  PYLITH_METHOD_END;
-} // setUp
-
-
-// ----------------------------------------------------------------------
-#include "data/ElasticityImplicitLgDeformGravData1DLinear.hh"
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityImplicitLgDeformGrav1DLinear );
-
-// Setup testing data.
-void
-pylith::feassemble::TestElasticityImplicitLgDeformGrav1DLinear::setUp(void)
-{ // setUp
-  PYLITH_METHOD_BEGIN;
-  
-  TestElasticityImplicitLgDeform::setUp();
-
-  _data = new ElasticityImplicitLgDeformGravData1DLinear();
-  _gravityField = new spatialdata::spatialdb::GravityField();
-  CPPUNIT_ASSERT(_quadrature);
-  CPPUNIT_ASSERT(_gravityField);
-  GeometryLine1D geometry;
-  _quadrature->refGeometry(&geometry);
-
-  const PylithScalar accScale = _data->lengthScale / (_data->timeScale * _data->timeScale);
-  const PylithScalar g = 1.0e8 / accScale;
-  const PylithScalar gravityDir[3] = { -1.0, 0.0, 0.0};
-  _gravityField->gravAcceleration(g);
-  _gravityField->gravityDir(gravityDir[0], gravityDir[1], gravityDir[2]);
-
-  _material = new materials::ElasticStrain1D;
-  CPPUNIT_ASSERT(_material);
-  
-  CPPUNIT_ASSERT(_data);
-  CPPUNIT_ASSERT_EQUAL(std::string("ElasticStrain1D"), std::string(_data->matType));
-
-  PYLITH_METHOD_END;
-} // setUp
-
-
-// ----------------------------------------------------------------------
-#include "data/ElasticityImplicitLgDeformGravData1DQuadratic.hh"
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityImplicitLgDeformGrav1DQuadratic );
-
-// Setup testing data.
-void
-pylith::feassemble::TestElasticityImplicitLgDeformGrav1DQuadratic::setUp(void)
-{ // setUp
-  PYLITH_METHOD_BEGIN;
-  
-  TestElasticityImplicitLgDeform::setUp();
-
-  _data = new ElasticityImplicitLgDeformGravData1DQuadratic();
-  _gravityField = new spatialdata::spatialdb::GravityField();
-  CPPUNIT_ASSERT(_quadrature);
-  CPPUNIT_ASSERT(_gravityField);
-  GeometryLine1D geometry;
-  _quadrature->refGeometry(&geometry);
-
-  const PylithScalar accScale = _data->lengthScale / (_data->timeScale * _data->timeScale);
-  const PylithScalar g = 1.0e8 / accScale;
-  const PylithScalar gravityDir[3] = { -1.0, 0.0, 0.0};
-  _gravityField->gravAcceleration(g);
-  _gravityField->gravityDir(gravityDir[0], gravityDir[1], gravityDir[2]);
-
-  _material = new materials::ElasticStrain1D;
-  CPPUNIT_ASSERT(_material);
-  
-  CPPUNIT_ASSERT(_data);
-  CPPUNIT_ASSERT_EQUAL(std::string("ElasticStrain1D"), std::string(_data->matType));
 
   PYLITH_METHOD_END;
 } // setUp

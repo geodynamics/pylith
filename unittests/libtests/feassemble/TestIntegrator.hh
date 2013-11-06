@@ -58,7 +58,6 @@ class pylith::feassemble::TestIntegrator : public CppUnit::TestFixture
   CPPUNIT_TEST( testInitCellMatrix );
   CPPUNIT_TEST( testResetCellMatrix );
   CPPUNIT_TEST( testLumpCellMatrix );
-  CPPUNIT_TEST( testSplitField );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -97,9 +96,6 @@ public :
 
   /// Test _lumpCellMatrix().
   void testLumpCellMatrix(void);
-
-  /// Test splitField().
-  void testSplitField(void);
 
   // PRIVATE METHODS /////////////////////////////////////////////////////
 private :

@@ -31,10 +31,6 @@ namespace pylith {
   namespace feassemble {
 
     class CellGeometry;
-    class GeometryPoint1D;
-    class GeometryPoint2D;
-    class GeometryPoint3D;
-    class GeometryLine1D;
     class GeometryLine2D;
     class GeometryLine3D;
     class GeometryTri2D;
@@ -47,8 +43,6 @@ namespace pylith {
     class Quadrature;
     class QuadratureRefCell;
     class QuadratureEngine;
-    class Quadrature0D;
-    class Quadrature1D;
     class Quadrature1Din2D;
     class Quadrature1Din3D;
     class Quadrature2D;
