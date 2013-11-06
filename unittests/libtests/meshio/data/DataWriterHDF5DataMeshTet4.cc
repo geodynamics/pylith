@@ -41,7 +41,7 @@ const PylithScalar pylith::meshio::DataWriterHDF5DataMeshTet4::_time = 1.0;
 const char* pylith::meshio::DataWriterHDF5DataMeshTet4::_timeFormat = 
   "%3.1f";
 
-const int pylith::meshio::DataWriterHDF5DataMeshTet4::_numVertices = 11;
+const int pylith::meshio::DataWriterHDF5DataMeshTet4::_numVertices = 8;
 
 const pylith::meshio::DataWriterData::FieldStruct
 pylith::meshio::DataWriterHDF5DataMeshTet4::_vertexFields[4] = {
@@ -50,10 +50,10 @@ pylith::meshio::DataWriterHDF5DataMeshTet4::_vertexFields[4] = {
   { "stress", topology::FieldBase::TENSOR, 6 },
   { "other", topology::FieldBase::OTHER, 2 },
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataMeshTet4::_vertexFieldScalar[11*1] = {
-  2.1, 3.2, 4.3, 5.4, 6.5, 7.6, 8.7, 9.8, 10.9, 11.0, 12.1,
+const PylithScalar pylith::meshio::DataWriterHDF5DataMeshTet4::_vertexFieldScalar[8*1] = {
+  2.1, 3.2, 4.3, 5.4, 6.5, 7.6, 8.7, 9.8,
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataMeshTet4::_vertexFieldVector[11*3] = {
+const PylithScalar pylith::meshio::DataWriterHDF5DataMeshTet4::_vertexFieldVector[8*3] = {
   1.1, 2.2, 3.3,
   4.4, 5.5, 6.6,
   7.7, 8.8, 9.9,
@@ -62,11 +62,8 @@ const PylithScalar pylith::meshio::DataWriterHDF5DataMeshTet4::_vertexFieldVecto
   16.6, 17.7, 18.8,
   19.9, 20.0, 21.1,
   22.2, 23.3, 24.4,
-  25.5, 26.6, 27.7,
-  28.8, 29.9, 30.0,
-  31.1, 32.2, 33.3,
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataMeshTet4::_vertexFieldTensor[11*6] = {
+const PylithScalar pylith::meshio::DataWriterHDF5DataMeshTet4::_vertexFieldTensor[8*6] = {
   1.1, 1.2, 1.3, 1.4, 1.5, 1.6,
   2.1, 2.2, 2.3, 2.4, 2.5, 2.6,
   3.1, 3.2, 3.3, 3.4, 3.5, 3.6,
@@ -75,11 +72,8 @@ const PylithScalar pylith::meshio::DataWriterHDF5DataMeshTet4::_vertexFieldTenso
   6.1, 6.2, 6.3, 6.4, 6.5, 6.6,
   7.1, 7.2, 7.3, 7.4, 7.5, 7.6,
   8.1, 8.2, 8.3, 8.4, 8.5, 8.6,
-  9.1, 9.2, 9.3, 9.4, 9.5, 9.6,
-  10.1, 10.2, 10.3, 10.4, 10.5, 10.6,
-  11.1, 11.2, 11.3, 11.4, 11.5, 11.6,
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataMeshTet4::_vertexFieldOther[11*2] = {
+const PylithScalar pylith::meshio::DataWriterHDF5DataMeshTet4::_vertexFieldOther[8*2] = {
   1.2, 2.3,
   3.4, 4.5,
   5.6, 6.7,
@@ -88,9 +82,6 @@ const PylithScalar pylith::meshio::DataWriterHDF5DataMeshTet4::_vertexFieldOther
   11.2, 12.3,
   13.4, 14.5,
   15.6, 16.7,
-  17.8, 18.9,
-  19.0, 20.1,
-  21.2, 22.3,
 };
 
 const int pylith::meshio::DataWriterHDF5DataMeshTet4::_numCells = 3;

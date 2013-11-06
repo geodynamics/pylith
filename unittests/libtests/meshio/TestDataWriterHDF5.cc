@@ -112,11 +112,13 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
     // Compare data values.
     const double tolerance = 1.0e-6;
     CPPUNIT_ASSERT_EQUAL(sizeE, size);
-    for (int i=0; i < size; ++i)
-      if (dataE[i] != 0.0)
+    for (int i=0; i < size; ++i) {
+      if (dataE[i] != 0.0) {
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, double(data[i])/dataE[i], tolerance);
-      else
+      } else {
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(dataE[i], double(data[i]), tolerance);
+      } // if/else
+    } // for
 
     delete[] dimsE; dimsE = 0;
     delete[] dataE; dataE = 0;
