@@ -44,11 +44,11 @@ class TestCellFilterAvg(unittest.TestCase):
     """
     Test constructor.
     """
-    spaceDim = 1
+    spaceDim = 2
     
     from pylith.feassemble.FIATSimplex import FIATSimplex
     cell = FIATSimplex()
-    cell.inventory.dimension = 1
+    cell.inventory.dimension = 2
     cell.inventory.degree = 2
     cell.inventory.order = 2
     cell._configure()
