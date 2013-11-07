@@ -31,7 +31,6 @@ namespace pylith {
     public :
       
       enum ShapeEnum { 
-	POINT=0, // 0-D point cell
 	LINE=2, // 1-D line cell (2 points)
 	TRIANGLE=4, // 2-D triangular cell (3 edges)
 	QUADRILATERAL=5, // 2-D quadrilateral cell (4 edges)

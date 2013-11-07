@@ -32,8 +32,8 @@ class TestElasticMaterial(unittest.TestCase):
     """
     Setup test subject.
     """
-    from pylith.materials.ElasticStrain1D import ElasticStrain1D
-    self.material = ElasticStrain1D()
+    from pylith.materials.ElasticPlaneStrain import ElasticPlaneStrain
+    self.material = ElasticPlaneStrain()
     return
     
 

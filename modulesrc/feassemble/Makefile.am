@@ -26,10 +26,6 @@ subpkgpyexec_PYTHON = feassemble.py
 swig_sources = \
 	feassemble.i \
 	CellGeometry.i \
-	GeometryPoint1D.i \
-	GeometryPoint2D.i \
-	GeometryPoint3D.i \
-	GeometryLine1D.i \
 	GeometryLine2D.i \
 	GeometryLine3D.i \
 	GeometryTri2D.i \
