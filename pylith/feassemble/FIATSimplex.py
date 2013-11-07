@@ -91,47 +91,36 @@ class FIATSimplex(ReferenceCell):
     """
     self._setupGeometry(spaceDim)
 
-    if self.cellDim == 0:
-      # Need 0-D quadrature for boundary conditions of 1-D meshes
-      self.cellDim = 0
-      self.numCorners = 1
-      self.numQuadPts = 1
-      self.basis = numpy.array([[1.0]], dtype=numpy.float64)
-      self.basisDeriv = numpy.array([[[1.0]]], dtype=numpy.float64)
-      self.quadPts = numpy.array([[0.0]], dtype=numpy.float64)
-      self.quadWts = numpy.array([1.0], dtype=numpy.float64)
-      self.vertices = numpy.array([[0.0]], dtype=numpy.float64)
-    else:
-      quadrature = self._setupQuadrature()
-      basisFns = self._setupBasisFns()
+    quadrature = self._setupQuadrature()
+    basisFns = self._setupBasisFns()
 
-      # Get coordinates of vertices (dual basis)
-      vertices = numpy.array(self._setupVertices(), dtype=numpy.float64)
+    # Get coordinates of vertices (dual basis)
+    vertices = numpy.array(self._setupVertices(), dtype=numpy.float64)
 
-      # Evaluate basis functions at quadrature points
-      from FIAT.polynomial_set import mis
-      quadpts = quadrature.get_points()
-      dim     = basisFns.ref_el.get_spatial_dimension()
-      evals   = basisFns.tabulate(quadpts, 1)
-      basis   = numpy.array(evals[mis(dim, 0)[0]], dtype=numpy.float64).transpose()
+    # Evaluate basis functions at quadrature points
+    from FIAT.polynomial_set import mis
+    quadpts = quadrature.get_points()
+    dim     = basisFns.ref_el.get_spatial_dimension()
+    evals   = basisFns.tabulate(quadpts, 1)
+    basis   = numpy.array(evals[mis(dim, 0)[0]], dtype=numpy.float64).transpose()
 
-      # Evaluate derivatives of basis functions at quadrature points
-      basisDeriv = numpy.array([evals[alpha] for alpha in mis(dim, 1)], dtype=numpy.float64).transpose()
+    # Evaluate derivatives of basis functions at quadrature points
+    basisDeriv = numpy.array([evals[alpha] for alpha in mis(dim, 1)], dtype=numpy.float64).transpose()
 
-      self.cellDim = dim
-      self.numCorners = basisFns.get_num_members()
-      self.numQuadPts = len(quadrature.get_weights())
+    self.cellDim = dim
+    self.numCorners = basisFns.get_num_members()
+    self.numQuadPts = len(quadrature.get_weights())
 
-      # Permute from FIAT order to Sieve order
-      p = self._permutationFIATToSieve()
-      self.vertices = vertices[p,:]
-      self.basis = numpy.reshape(basis[:,p].flatten(), basis.shape)
-      self.basisDeriv = numpy.reshape(basisDeriv[:,p,:].flatten(), 
-                                      basisDeriv.shape)
+    # Permute from FIAT order to Sieve order
+    p = self._permutationFIATToSieve()
+    self.vertices = vertices[p,:]
+    self.basis = numpy.reshape(basis[:,p].flatten(), basis.shape)
+    self.basisDeriv = numpy.reshape(basisDeriv[:,p,:].flatten(), 
+                                    basisDeriv.shape)
 
-      # No permutation in order of quadrature points
-      self.quadPts = numpy.array(quadrature.get_points(), dtype=numpy.float64)
-      self.quadWts = numpy.array(quadrature.get_weights(), dtype=numpy.float64)
+    # No permutation in order of quadrature points
+    self.quadPts = numpy.array(quadrature.get_points(), dtype=numpy.float64)
+    self.quadWts = numpy.array(quadrature.get_weights(), dtype=numpy.float64)
 
 
     from pylith.mpi.Communicator import mpi_comm_world

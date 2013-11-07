@@ -29,22 +29,31 @@ from pylith.feassemble.FIATLagrange import FIATLagrange
 
 # ----------------------------------------------------------------------
 def N0(p):
-  return -0.5*p*(1.0-p)
+  return 0.5*(-p[0]-p[1])
 
 def N0p(p):
-  return -0.5*(1.0-p) + 0.5*p
+  return -0.5
+
+def N0q(p):
+  return -0.5
 
 def N1(p):
-  return 0.5*p*(1.0+p)
+  return 0.5*(1.0+p[0])
 
 def N1p(p):
-  return +0.5*(1.0+p) + 0.5*p
+  return +0.5
+
+def N1q(p):
+  return 0.0
 
 def N2(p):
-  return (1.0-p**2)
+  return 0.5*(1.0+p[1])
 
 def N2p(p):
-  return -2.0*p
+  return 0.0
+
+def N2q(p):
+  return 0.5
 
 # ----------------------------------------------------------------------
 class TestMeshQuadrature(unittest.TestCase):
@@ -88,9 +97,8 @@ class TestMeshQuadrature(unittest.TestCase):
     Test initialize().
     """
     cell = FIATSimplex()
-    cell.inventory.dimension = 1
-    cell.inventory.degree = 2
-    cell.inventory.order = 2
+    cell.inventory.dimension = 2
+    cell.inventory.order = 1
     cell._configure()
 
     scalarType = None
@@ -102,46 +110,40 @@ class TestMeshQuadrature(unittest.TestCase):
     else:
       raise ValueError("Unknown size for PylithScalar.")
 
-    verticesE = numpy.array([ [-1.0], [1.0], [0.0] ])
-    quadPtsE = numpy.array( [[-1.0/3**0.5],
-                             [+1.0/3**0.5]],
-                            dtype=scalarType )
-    quadWtsE = numpy.array( [1.0, 1.0], dtype=scalarType )
+    verticesE = numpy.array([ [-1.0, -1.0],
+                              [+1.0, -1.0],
+                              [-1.0, +1.0] ])
+    quadPtsE = numpy.array( [[-1.0/3.0, -1.0/3.0]], dtype=scalarType )
+    quadWtsE = numpy.array( [2.0], dtype=scalarType )
 
     # Compute basis functions and derivatives at quadrature points
-    basisE = numpy.zeros( (2, 3), dtype=scalarType)
-    basisDerivE = numpy.zeros( (2, 3, 1), dtype=scalarType)
+    basisE = numpy.zeros( (1, 3), dtype=scalarType)
+    basisDerivE = numpy.zeros( (1, 3, 2), dtype=scalarType)
     iQuad = 0
-    for q in quadPtsE:
-      basisE[iQuad] = numpy.array([N0(q), N1(q), N2(q)],
-                                  dtype=scalarType).reshape( (3,) )
-      deriv = numpy.array([[N0p(q)], [N1p(q)], [N2p(q)]],
-                          dtype=scalarType)      
-      basisDerivE[iQuad] = deriv.reshape((3, 1))
+    for x in quadPtsE:
+      basisE[iQuad] = numpy.array([N0(x), N1(x), N2(x)], dtype=scalarType).reshape( (3,) )
+      deriv = numpy.array([[N0p(x), N0q(x)], [N1p(x), N1q(x)], [N2p(x), N2q(x)]], dtype=scalarType)      
+      basisDerivE[iQuad] = deriv.reshape((1, 3, 2))
       iQuad += 1
 
     quadrature = Quadrature()
     quadrature.inventory.cell = cell
     quadrature._configure()
 
-    quadrature.preinitialize(spaceDim=1)
+    quadrature.preinitialize(spaceDim=2)
     quadrature.initialize()
 
-    self.assertEqual(1, quadrature.cellDim())
-    self.assertEqual(1, quadrature.spaceDim())
+    self.assertEqual(2, quadrature.cellDim())
+    self.assertEqual(2, quadrature.spaceDim())
     self.assertEqual(3, quadrature.numBasis())
-    self.assertEqual(2, quadrature.numQuadPts())
+    self.assertEqual(1, quadrature.numQuadPts())
 
     from pylith.utils.utils import TestArray_checkScalar
 
-    self.failUnless(TestArray_checkScalar(basisE.ravel(),
-                                          quadrature.basis()))
-    self.failUnless(TestArray_checkScalar(basisDerivE.ravel(),
-                                          quadrature.basisDerivRef()))
-    self.failUnless(TestArray_checkScalar(quadPtsE.ravel(),
-                                          quadrature.quadPtsRef()))
-    self.failUnless(TestArray_checkScalar(quadWtsE.ravel(),
-                                          quadrature.quadWts()))
+    self.failUnless(TestArray_checkScalar(basisE.ravel(), quadrature.basis()))
+    self.failUnless(TestArray_checkScalar(basisDerivE.ravel(), quadrature.basisDerivRef()))
+    self.failUnless(TestArray_checkScalar(quadPtsE.ravel(), quadrature.quadPtsRef()))
+    self.failUnless(TestArray_checkScalar(quadWtsE.ravel(), quadrature.quadWts()))
 
     quadrature.initializeGeometry()
     return
