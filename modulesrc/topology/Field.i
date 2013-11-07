@@ -121,6 +121,15 @@ namespace pylith {
        */
       bool hasSection(void) const;
 
+      /// Set chart for solution.
+      void setupSolnChart(void);
+      
+      /** Set default DOF for solution.
+       *
+       * @param fiberDim Total number of components in solution.
+       */
+      void setupSolnDof(const int fiberDim);
+
       /** Create PETSc section and set chart and fiber dimesion.
        *
        * @param domain Type of points over which to define section.
