@@ -105,14 +105,14 @@ class TestMeshField(unittest.TestCase):
     return
 
 
-  def test_addDimensionOkay(self):
+  def test_dimensionalizeOkay(self):
     """
-    Test addDimensionOkay().
+    Test dimensionalizeOkay().
     """
-    self.assertEqual(False, self.field.addDimensionOkay())
+    self.assertEqual(False, self.field.dimensionalizeOkay())
 
-    self.field.addDimensionOkay(True)
-    self.assertEqual(True, self.field.addDimensionOkay())
+    self.field.dimensionalizeOkay(True)
+    self.assertEqual(True, self.field.dimensionalizeOkay())
     return
 
 
@@ -121,16 +121,6 @@ class TestMeshField(unittest.TestCase):
     Test spaceDim().
     """
     self.assertEqual(2, self.field.spaceDim())
-    return
-
-
-  def test_newSection(self):
-    """
-    Test newSection().
-    """
-    self.field.newSection()
-
-    # No test of result
     return
 
 

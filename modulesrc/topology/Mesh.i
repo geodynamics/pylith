@@ -125,7 +125,7 @@ namespace pylith {
        *   VTK vtk:refined.vtk:ascii_vtk
        */
       void view(const char* label,
-		const char* viewOption) const;
+		const char* viewOption ="") const;
 
       /** Return the names of all vertex groups.
        *
