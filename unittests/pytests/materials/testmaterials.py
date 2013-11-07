@@ -63,12 +63,6 @@ class TestApp(Script):
 
     suite = unittest.TestSuite()
 
-    from TestElasticStrain1D import TestElasticStrain1D
-    suite.addTest(unittest.makeSuite(TestElasticStrain1D))
-
-    from TestElasticStress1D import TestElasticStress1D
-    suite.addTest(unittest.makeSuite(TestElasticStress1D))
-
     from TestElasticPlaneStrain import TestElasticPlaneStrain
     suite.addTest(unittest.makeSuite(TestElasticPlaneStrain))
 

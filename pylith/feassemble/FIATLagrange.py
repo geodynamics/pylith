@@ -445,19 +445,10 @@ class FIATLagrange(ReferenceCell):
       elif 3 == spaceDim:
         self.geometry = CellGeometry.GeometryQuad3D()
     elif 1 == self.cellDim:
-      if 1 == spaceDim:
-        self.geometry = CellGeometry.GeometryLine1D()
-      elif 2 == spaceDim:
+      if 2 == spaceDim:
         self.geometry = CellGeometry.GeometryLine2D()
       elif 3 == spaceDim:
         self.geometry = CellGeometry.GeometryLine3D()
-    elif 0 == self.cellDim:
-      if 1 == spaceDim:
-        self.geometry = CellGeometry.GeometryPoint1D()
-      elif 2 == spaceDim:
-        self.geometry = CellGeometry.GeometryPoint2D()
-      elif 3 == spaceDim:
-        self.geometry = CellGeometry.GeometryPoint3D()
     if None == self.geometry:
       raise ValueError("Could not set shape of %dD cell for "
                        "Quadrature object '%s' in spatial " \

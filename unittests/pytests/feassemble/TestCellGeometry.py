@@ -23,7 +23,7 @@
 import unittest
 import numpy
 
-from pylith.feassemble.CellGeometry import GeometryPoint1D
+from pylith.feassemble.CellGeometry import GeometryLine2D
 
 
 # ----------------------------------------------------------------------
@@ -37,9 +37,9 @@ class TestCellGeometry(unittest.TestCase):
     Test constructors for cell geometry objects.
     """
     
-    geometry = GeometryPoint1D()
-    self.assertEqual(0, geometry.cellDim())
-    self.assertEqual(1, geometry.spaceDim())
+    geometry = GeometryLine2D()
+    self.assertEqual(1, geometry.cellDim())
+    self.assertEqual(2, geometry.spaceDim())
 
     return
     

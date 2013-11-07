@@ -237,19 +237,10 @@ class FIATSimplex(ReferenceCell):
       elif 3 == spaceDim:
         self.geometry = CellGeometry.GeometryTri3D()
     elif self.cellDim == 1:
-      if 1 == spaceDim:
-        self.geometry = CellGeometry.GeometryLine1D()
-      elif 2 == spaceDim:
+      if 2 == spaceDim:
         self.geometry = CellGeometry.GeometryLine2D()
       elif 3 == spaceDim:
         self.geometry = CellGeometry.GeometryLine3D()
-    elif self.cellDim == 0:
-      if 1 == spaceDim:
-        self.geometry = CellGeometry.GeometryPoint1D()
-      elif 2 == spaceDim:
-        self.geometry = CellGeometry.GeometryPoint2D()
-      elif 3 == spaceDim:
-        self.geometry = CellGeometry.GeometryPoint3D()
     if None == self.geometry:
       raise ValueError("Could not set geometry of cell with dimension '%d' for '%s' in spatial " \
                        "dimension '%s'." % (self.cellDim, self.name, spaceDim))

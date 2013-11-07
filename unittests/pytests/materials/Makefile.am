@@ -30,8 +30,6 @@ noinst_PYTHON = \
 	TestHomogeneous.py \
 	TestMaterial.py \
 	TestElasticMaterial.py \
-	TestElasticStrain1D.py \
-	TestElasticStress1D.py \
 	TestElasticPlaneStrain.py \
 	TestElasticPlaneStress.py \
 	TestElasticIsotropic3D.py \

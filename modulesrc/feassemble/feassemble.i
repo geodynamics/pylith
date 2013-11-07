@@ -22,10 +22,6 @@
 // Header files for module C++ code
 %{
 #include "pylith/feassemble/CellGeometry.hh"
-#include "pylith/feassemble/GeometryPoint1D.hh"
-#include "pylith/feassemble/GeometryPoint2D.hh"
-#include "pylith/feassemble/GeometryPoint3D.hh"
-#include "pylith/feassemble/GeometryLine1D.hh"
 #include "pylith/feassemble/GeometryLine2D.hh"
 #include "pylith/feassemble/GeometryLine3D.hh"
 #include "pylith/feassemble/GeometryTri2D.hh"
@@ -72,10 +68,6 @@ import_array();
 %}
 
 %include "CellGeometry.i"
-%include "GeometryPoint1D.i"
-%include "GeometryPoint2D.i"
-%include "GeometryPoint3D.i"
-%include "GeometryLine1D.i"
 %include "GeometryLine2D.i"
 %include "GeometryLine3D.i"
 %include "GeometryTri2D.i"
