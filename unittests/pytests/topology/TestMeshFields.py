@@ -74,7 +74,6 @@ class TestMeshFields(unittest.TestCase):
   def test_add(self):
     self.fields.add("field", "displacement")
     field = self.fields.get("field")
-    field.newSection()
 
     self.assertEqual(2, field.spaceDim())
     return
