@@ -32,8 +32,8 @@ class TestMaterial(unittest.TestCase):
     """
     Setup test subject.
     """
-    from pylith.materials.ElasticStrain1D import ElasticStrain1D
-    self.material = ElasticStrain1D()
+    from pylith.materials.ElasticPlaneStrain import ElasticPlaneStrain
+    self.material = ElasticPlaneStrain()
     return
     
 
@@ -162,8 +162,8 @@ class TestMaterial(unittest.TestCase):
     db.inventory.iohandler = iohandler
     db._configure()
 
-    from pylith.materials.ElasticStrain1D import ElasticStrain1D
-    material = ElasticStrain1D()
+    from pylith.materials.ElasticPlaneStrain import ElasticPlaneStrain
+    material = ElasticPlaneStrain()
     material.inventory.quadrature = quadrature
     material.inventory.dbProperties = db
     material.inventory.label = "my material"

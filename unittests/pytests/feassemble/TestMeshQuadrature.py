@@ -147,27 +147,6 @@ class TestMeshQuadrature(unittest.TestCase):
     return
 
 
-  def test_simplex1D(self):
-    """
-    Test setup of quadrature for simplex cells for a 1-D problem.
-    """
-    spaceDim = 1
-
-    cell = FIATSimplex()
-    cell.inventory.dimension = 1
-    cell._configure()
-    
-    quadrature = Quadrature()
-    quadrature.inventory.cell = cell
-    quadrature._configure()
-
-    quadrature.preinitialize(spaceDim)
-    self.assertEqual(1, quadrature.cellDim())
-    self.assertEqual(spaceDim, quadrature.spaceDim())
-    self.assertEqual(2, quadrature.numBasis())
-    return
-
-
   def test_simplex2D(self):
     """
     Test setup of quadrature for simplex cells for a 2-D problem.
@@ -207,27 +186,6 @@ class TestMeshQuadrature(unittest.TestCase):
     self.assertEqual(3, quadrature.cellDim())
     self.assertEqual(spaceDim, quadrature.spaceDim())
     self.assertEqual(4, quadrature.numBasis())
-    return
-
-
-  def test_lagrange1D(self):
-    """
-    Test setup of quadrature for Lagrange cells for a 1-D problem.
-    """
-    spaceDim = 1
-
-    cell = FIATLagrange()
-    cell.inventory.dimension = 1
-    cell._configure()
-    
-    quadrature = Quadrature()
-    quadrature.inventory.cell = cell
-    quadrature._configure()
-
-    quadrature.preinitialize(spaceDim)
-    self.assertEqual(1, quadrature.cellDim())
-    self.assertEqual(spaceDim, quadrature.spaceDim())
-    self.assertEqual(2, quadrature.numBasis())
     return
 
 
