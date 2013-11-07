@@ -502,7 +502,7 @@ class Formulation(PetscComponent, ModuleFormulation):
       solution = self.fields.get("dispIncr(t->t+dt)")
       solution.subfieldAdd("displacement", dimension)
       if self.splitFields():
-        solution.subfieldAdd("lagrange_multipliers", dimension)
+        solution.subfieldAdd("lagrange multiplier", dimension)
       solution.subfieldsSetup()
       solution.newSection(solution.VERTICES_FIELD, dimension)
       solution.subfieldSetDof("displacement", solution.VERTICES_FIELD, dimension)
