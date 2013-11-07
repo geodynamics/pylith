@@ -72,7 +72,7 @@ class TestMeshIOCubit(unittest.TestCase):
     from spatialdata.units.Nondimensional import Nondimensional
     normalizer = Nondimensional()
 
-    mesh = io.read(debug=False, interpolate=False)
+    mesh = io.read(debug=False, interpolate=True)
 
     testhandler = MeshIOAscii()
     testhandler.filename(filenameOut)

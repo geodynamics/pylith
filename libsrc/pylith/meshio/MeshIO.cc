@@ -375,30 +375,46 @@ pylith::meshio::MeshIO::_getGroup(int_array* points,
   const PetscInt cEnd = cellsStratum.end();
   const PetscInt numCells = cellsStratum.size();
 
-  PetscInt pStart, pEnd, firstPoint = 0;
-  PetscErrorCode err = 0;
-  err = DMPlexGetChart(dmMesh, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
-  for(PetscInt p = pStart; p < pEnd; ++p) {
-    PetscInt val;
-    err = DMPlexGetLabelValue(dmMesh, name, p, &val);PYLITH_CHECK_ERROR(err);
-    if (val >= 0) {
-      firstPoint = p;
-      break;
-    } // if
-  } // for
-  *groupType = (firstPoint >= cStart && firstPoint < cEnd) ? CELL : VERTEX;
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
 
-  PetscInt groupSize;
-  err = DMPlexGetStratumSize(dmMesh, name, 1, &groupSize);PYLITH_CHECK_ERROR(err);
-  points->resize(groupSize);
-
-  const PetscInt offset = (VERTEX == *groupType) ? numCells : 0;
   PetscIS groupIS = NULL;
   const PetscInt* groupIndices = NULL;
+  PetscErrorCode err;
   err = DMPlexGetStratumIS(dmMesh, name, 1, &groupIS);PYLITH_CHECK_ERROR(err);
   err = ISGetIndices(groupIS, &groupIndices);PYLITH_CHECK_ERROR(err);
+
+  PetscInt totalSize;
+  err = DMPlexGetStratumSize(dmMesh, name, 1, &totalSize);PYLITH_CHECK_ERROR(err);
+
+  *groupType = VERTEX;
+  if (totalSize > 0 && (groupIndices[0] >= cStart && groupIndices[0] < cEnd)) {
+    *groupType = CELL;
+  } // if
+    
+  PetscInt offset = 0;
+  PetscInt pStart = cStart;
+  PetscInt pEnd = cEnd;
+  if (VERTEX == *groupType) {
+    offset = numCells;
+    pStart = vStart;
+    pEnd = vEnd;
+  } // if
+
+  // Count number of cells/vertices, filtering out edges and faces
+  PetscInt groupSize = 0;
+  for (PetscInt p = 0; p < totalSize; ++p) {
+    if (groupIndices[p] >= pStart && groupIndices[p] < pEnd) {
+      ++groupSize;
+    } // if
+  } // for
+
+  points->resize(groupSize);
   for(PetscInt p = 0; p < groupSize; ++p) {
-    (*points)[p] = groupIndices[p]-offset;
+    if (groupIndices[p] >= pStart && groupIndices[p] < pEnd) {
+      (*points)[p] = groupIndices[p]-offset;
+    } // if
   } // for
   err = ISRestoreIndices(groupIS, &groupIndices);PYLITH_CHECK_ERROR(err);
   err = ISDestroy(&groupIS);PYLITH_CHECK_ERROR(err);
