@@ -915,7 +915,7 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
     PetscErrorCode err = DMPlexHasLabel(dmMesh, edge(), &hasLabel);PYLITH_CHECK_ERROR(err);
     if (!hasLabel) {
       std::ostringstream msg;
-      msg << "Mesh missing group of vertices '" << edge() << " defining buried edges of fault.";
+      msg << "Mesh missing group of vertices '" << edge() << "' defining buried edges of fault.";
       throw std::runtime_error(msg.str());
     } // if  
   } // if
