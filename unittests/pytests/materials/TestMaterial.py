@@ -141,7 +141,7 @@ class TestMaterial(unittest.TestCase):
     """
     from pylith.feassemble.FIATSimplex import FIATSimplex
     cell = FIATSimplex()
-    cell.inventory.dimension = 1
+    cell.inventory.dimension = 2
     cell.inventory.order = 1
     cell.inventory.degree = 1
     cell._configure()
@@ -172,7 +172,7 @@ class TestMaterial(unittest.TestCase):
 
     from spatialdata.geocoords.CSCart import CSCart
     cs = CSCart()
-    cs.inventory.spaceDim = 1
+    cs.inventory.spaceDim = 2
     cs._configure()
 
     from spatialdata.units.Nondimensional import Nondimensional
