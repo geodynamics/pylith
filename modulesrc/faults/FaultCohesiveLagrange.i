@@ -53,12 +53,6 @@ namespace pylith {
       void initialize(const pylith::topology::Mesh& mesh,
 		      const PylithScalar upDir[3]);
       
-      /** Split solution field for separate preconditioning.
-       *
-       * @param field Solution field.
-       */
-      void splitField(pylith::topology::Field* field);
-
       /** Integrate contributions to residual term (r) for operator that
        * do not require assembly across processors.
        *
