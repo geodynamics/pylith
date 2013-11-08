@@ -957,7 +957,6 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
   } // if
 
   // Check quadrature against mesh
-  const int numConstraints = _quadrature->numBasis();
   topology::StratumIS cohesiveIS(dmMesh, "material-id", id());
   const PetscInt* cells = cohesiveIS.points();
   const PetscInt ncells = cohesiveIS.size();
@@ -972,9 +971,9 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
         ++cellNumEdges;
       }
     }
-    if (numConstraints != cellNumEdges) {
+    if (numBasis != cellNumEdges) {
       std::ostringstream msg;
-      msg << "Number of dofs in reference cell (" << numConstraints
+      msg << "Number of dofs in reference cell (" << numBasis
           << ") is not compatible with number of edges (" << cellNumEdges
           << ") in cohesive cell " << cells[i] << " for fault '" << label()
           << "'.";
