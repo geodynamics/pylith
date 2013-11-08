@@ -681,15 +681,6 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh.dimension());
   dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
 
-  // Check consistency
-  PetscBool isSimplexMesh = PETSC_TRUE;
-  if ((data.cellDim == 2 && data.numCorners[0] == 4) ||
-      (data.cellDim == 3 && data.numCorners[0] == 8)) {
-    isSimplexMesh = PETSC_FALSE;
-  } // if
-  err = DMPlexCheckSymmetry(dmMesh);CPPUNIT_ASSERT(!err);
-  err = DMPlexCheckSkeleton(dmMesh, isSimplexMesh);CPPUNIT_ASSERT(!err);
-
   // Check vertices
   topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
   const PetscInt vStart = verticesStratum.begin();
@@ -827,11 +818,6 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
   faultA->label("faultA");
   faultA->adjustTopology(&mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
 
-  // Check consistency of original mesh.
-  dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
-  err = DMPlexCheckSymmetry(dmMesh);CPPUNIT_ASSERT(!err);
-  err = DMPlexCheckSkeleton(dmMesh, isSimplexMesh);CPPUNIT_ASSERT(!err);
-
   faultB->id(2);
   faultB->label("faultB");
   faultB->adjustTopology(&mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
@@ -841,11 +827,8 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
   PetscViewerPopFormat(PETSC_VIEWER_STDOUT_WORLD);
 #endif
 
-  // Check consistency of mesh after adjusting topology.
   CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh.dimension());
-  dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
-  err = DMPlexCheckSymmetry(dmMesh);CPPUNIT_ASSERT(!err);
-  err = DMPlexCheckSkeleton(dmMesh, isSimplexMesh);CPPUNIT_ASSERT(!err);
+  dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);  
 
   // Check vertices
   topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);

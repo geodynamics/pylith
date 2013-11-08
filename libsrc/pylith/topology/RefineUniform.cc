@@ -21,6 +21,7 @@
 #include "RefineUniform.hh" // implementation of class methods
 
 #include "Mesh.hh" // USES Mesh
+#include "MeshOps.hh" // USES MeshOps
 
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -80,6 +81,9 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
   } // for
 
   newMesh->dmMesh(dmNew);
+
+  // Check consistency
+  topology::MeshOps::checkTopology(*newMesh);
 
   //newMesh->view("REFINED_MESH", "::ascii_info_detail");
 

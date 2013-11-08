@@ -61,6 +61,13 @@ public :
   void nondimensionalize(Mesh* const mesh,
 			 const spatialdata::units::Nondimensional& normalizer);
 
+  /** Check topology of mesh.
+   *
+   * @param mesh Finite-element mesh.
+   */
+  static
+  void checkTopology(const Mesh& mesh);
+
   /** Check to make sure material id of every cell matches the id of
    *  one of the materials.
    *

@@ -25,6 +25,7 @@
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
@@ -100,6 +101,9 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
   const bool isSubMesh = true;
   delete _faultMesh; _faultMesh = new topology::Mesh(isSubMesh);assert(_faultMesh);
   CohesiveTopology::createFaultParallel(_faultMesh, mesh, id(), label(), _useLagrangeConstraints); // :TODO: Obsolete?
+  
+  topology::MeshOps::checkTopology(*_faultMesh);
+
   _initializeCohesiveInfo(mesh);
 
   delete _fields; _fields = new topology::Fields(*_faultMesh);assert(_fields);
@@ -957,7 +961,6 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
   } // if
 
   // Check quadrature against mesh
-  const int numConstraints = _quadrature->numBasis();
   topology::StratumIS cohesiveIS(dmMesh, "material-id", id());
   const PetscInt* cells = cohesiveIS.points();
   const PetscInt ncells = cohesiveIS.size();
@@ -972,9 +975,9 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
         ++cellNumEdges;
       }
     }
-    if (numConstraints != cellNumEdges) {
+    if (numBasis != cellNumEdges) {
       std::ostringstream msg;
-      msg << "Number of dofs in reference cell (" << numConstraints
+      msg << "Number of dofs in reference cell (" << numBasis
           << ") is not compatible with number of edges (" << cellNumEdges
           << ") in cohesive cell " << cells[i] << " for fault '" << label()
           << "'.";

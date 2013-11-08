@@ -21,6 +21,8 @@
 
 #include "Mesh.hh" // implementation of class methods
 
+#include "MeshOps.hh" // USES MeshOps
+
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/petscfwd.h" // USES PetscVec
@@ -131,6 +133,9 @@ pylith::topology::Mesh::Mesh(const Mesh& mesh,
   PylithScalar lengthScale;
   err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
   err = DMPlexSetScale(_dmMesh, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
+
+  // Check topology
+  MeshOps::checkTopology(*this);
 
   PYLITH_METHOD_END;
 } // SubMesh constructor

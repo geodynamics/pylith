@@ -21,6 +21,7 @@
 #include "MeshIO.hh" // implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/Stratum.hh" // USES Stratum
 
 #include "pylith/utils/array.hh" // USES scalar_array, int_array
@@ -76,6 +77,9 @@ pylith::meshio::MeshIO::read(topology::Mesh* mesh)
   _mesh = mesh;
   _mesh->debug(_debug);
   _read();
+
+  // Check mesh consistency
+  topology::MeshOps::checkTopology(*_mesh);
 
   _mesh = 0;
 

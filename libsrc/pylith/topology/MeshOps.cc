@@ -77,6 +77,30 @@ pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
 
 
 // ----------------------------------------------------------------------
+// Check topology of mesh.
+void
+pylith::topology::MeshOps::checkTopology(const Mesh& mesh)
+{ // checkTopology
+  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+
+  const int cellDim = mesh.dimension();
+  const int numCorners = mesh.numCorners();
+  PetscBool isSimplexMesh = PETSC_TRUE;
+  if ((cellDim == 2 && numCorners == 4) ||
+      (cellDim == 3 && numCorners == 8)) {
+    isSimplexMesh = PETSC_FALSE;
+  } // if
+
+  PetscErrorCode err;
+  err = DMPlexCheckSymmetry(dmMesh);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh associated with symmetry of adjacency information.");
+
+  if (cellDim > 1) {
+    err = DMPlexCheckSkeleton(dmMesh, isSimplexMesh);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh cells.");
+  } // if
+} // checkTopology
+
+
+// ----------------------------------------------------------------------
 void
 pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
 					    int* const materialIds,

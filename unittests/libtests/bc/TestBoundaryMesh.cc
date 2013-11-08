@@ -84,10 +84,6 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void)
   topology::Mesh submesh(mesh, _data->bcLabel);
   PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
 
-  // Check consistency
-  err = DMPlexCheckSymmetry(dmMesh);CPPUNIT_ASSERT(!err);
-  //err = DMPlexCheckSkeleton(dmMesh, _data->isSimplexMesh ? PETSC_TRUE : PETSC_FALSE);CPPUNIT_ASSERT(!err);
-
   // Check vertices
   topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
   const PetscInt vStart = verticesStratum.begin();
@@ -157,12 +153,6 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
   DMView(mesh.dmMesh(), PETSC_VIEWER_STDOUT_WORLD);
   PetscViewerPopFormat(PETSC_VIEWER_STDOUT_WORLD);
 #endif
-
-  // Check consistency
-  err = DMPlexCheckSymmetry(dmMesh);CPPUNIT_ASSERT(!err);
-  if (submesh.dimension() > 1) {
-    //err = DMPlexCheckSkeleton(dmMesh, _data->isSimplexMesh ? PETSC_TRUE : PETSC_FALSE);CPPUNIT_ASSERT(!err);
-  } // if
 
   // Check vertices
   topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
