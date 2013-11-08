@@ -204,9 +204,13 @@ pylith::meshio::DataWriterVTK::openTimeStep(const PylithScalar t,
     topology::StratumIS cellsIS(_dm, label, labelId);
     const PetscInt ncells = cellsIS.size();
     const PetscInt* cells = cellsIS.points();
+    DMLabel label;
 
+    err = DMPlexCreateLabel(_dm, "vtk");PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetLabel(_dm, "vtk", &label);PYLITH_CHECK_ERROR(err);
+    err = DMLabelClearStratum(label, 1);PYLITH_CHECK_ERROR(err);
     for (PetscInt c=0; c < ncells; ++c) {
-      err = DMPlexSetLabelValue(_dm, "vtk", cells[c], 1);PYLITH_CHECK_ERROR(err);
+      err = DMLabelSetValue(label, cells[c], 1);PYLITH_CHECK_ERROR(err);
     } // for
 
   } // if
