@@ -23,6 +23,7 @@
 #include "CohesiveTopology.hh" // USES CohesiveTopology
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
+#include "pylith/topology/MeshOps.hh" // USES MeshOps
 
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -156,12 +157,18 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
       assert(3 == mesh->dimension());
       throw std::logic_error("Support for UCD fault files no longer implemented."); 
     } // if/else
+
+    // Check consistency of mesh.
+    topology::MeshOps::checkTopology(*mesh);
+    topology::MeshOps::checkTopology(faultMesh);
+
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error occurred while adjusting topology to create cohesive cells for fault '" << label() << "'.\n"
 	<< err.what();
     throw std::runtime_error(msg.str());
   }
+
 
   PYLITH_METHOD_END;
 } // adjustTopology

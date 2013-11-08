@@ -242,11 +242,6 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data,
   CPPUNIT_ASSERT_EQUAL(data.cellDim, newMesh.dimension());
 
   const PetscDM& dmMesh = newMesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
-  PetscErrorCode err;
-
-  // Check consistency
-  err = DMPlexCheckSymmetry(dmMesh);CPPUNIT_ASSERT(!err);
-  err = DMPlexCheckSkeleton(dmMesh, isSimplexMesh ? PETSC_TRUE : PETSC_FALSE);CPPUNIT_ASSERT(!err);
 
   // Check vertices
   topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
@@ -267,6 +262,7 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data,
   const PetscInt numCells = cellsStratum.size();
 
   CPPUNIT_ASSERT_EQUAL(data.numCells+data.numCellsCohesive, numCells);
+  PetscErrorCode err;
   // Normal cells
   for(PetscInt c = cStart, index = 0; c < data.numCells; ++c) {
     PetscInt *closure = PETSC_NULL;

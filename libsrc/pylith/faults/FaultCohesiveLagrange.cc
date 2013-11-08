@@ -25,6 +25,7 @@
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
@@ -100,6 +101,9 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
   const bool isSubMesh = true;
   delete _faultMesh; _faultMesh = new topology::Mesh(isSubMesh);assert(_faultMesh);
   CohesiveTopology::createFaultParallel(_faultMesh, mesh, id(), label(), _useLagrangeConstraints); // :TODO: Obsolete?
+  
+  topology::MeshOps::checkTopology(*_faultMesh);
+
   _initializeCohesiveInfo(mesh);
 
   delete _fields; _fields = new topology::Fields(*_faultMesh);assert(_fields);
