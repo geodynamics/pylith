@@ -1111,7 +1111,7 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
         _cohesiveVertices[index].positive = v_positive;
         _cohesiveVertices[index].negative = v_negative;
         _cohesiveVertices[index].fault = v_fault;
-#if 1
+#if 0 // DEBUGGING
         std::cout << "cohesiveVertices[" << index << "]: "
 		  << "l: " << e_lagrange
 		  << ", p: " << v_positive

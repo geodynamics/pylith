@@ -178,7 +178,7 @@ pylith::faults::TestFaultCohesiveDyn::testInitialize(void)
   CPPUNIT_ASSERT_EQUAL(_data->numConstraintEdges, vEnd-vStart);
 
   // Check orientation
-  fault._fields->get("orientation").view("ORIENTATION"); // DEBUGGING
+  //fault._fields->get("orientation").view("ORIENTATION"); // DEBUGGING
   topology::VecVisitorMesh orientationVisitor(fault._fields->get("orientation"));
   const PetscScalar* orientationArray = orientationVisitor.localArray();
 
@@ -333,7 +333,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
 
   fault.updateStateVars(t, &fields);
 
-  solution.view("SOLUTION"); // DEBUGGING
+  //solution.view("SOLUTION"); // DEBUGGING
 
   { // Check solution values
     // Lagrange multipliers should be adjusted according to friction
@@ -425,7 +425,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
 
   fault.updateStateVars(t, &fields);
 
-  solution.view("SOLUTION"); // DEBUGGING
+  //solution.view("SOLUTION"); // DEBUGGING
 
   { // Check solution values
     // Lagrange multipliers should be set to zero as reflected in the

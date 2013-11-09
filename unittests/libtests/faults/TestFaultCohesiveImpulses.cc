@@ -196,7 +196,7 @@ pylith::faults::TestFaultCohesiveImpulses::testInitialize(void)
   CPPUNIT_ASSERT_EQUAL(_data->numConstraintEdges, vEnd-vStart);
 
   // Check orientation
-  fault._fields->get("orientation").view("ORIENTATION"); // DEBUGGING
+  //fault._fields->get("orientation").view("ORIENTATION"); // DEBUGGING
 
   topology::VecVisitorMesh orientationVisitor(fault._fields->get("orientation"));
   const PetscScalar* orientationArray = orientationVisitor.localArray();
@@ -279,7 +279,7 @@ pylith::faults::TestFaultCohesiveImpulses::testIntegrateResidual(void)
   topology::Field& residual = fields.get("residual");
   residual.zero();
   fault.integrateResidual(residual, t, &fields);
-  residual.view("RESIDUAL"); // DEBUGGING
+  //residual.view("RESIDUAL"); // DEBUGGING
 
   topology::VecVisitorMesh residualVisitor(residual);
   const PetscScalar* residualArray = residualVisitor.localArray();CPPUNIT_ASSERT(residualArray);

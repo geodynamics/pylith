@@ -963,7 +963,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
       dDispTIncrVertexP[iDim] = +0.5*dDispRelVertex[iDim];
     } // for
 
-#if 1 // debugging
+#if 0 // debugging
     std::cout << "v_fault: " << v_fault;
     std::cout << ", tractionTpdtVertex: ";
     for (int iDim=0; iDim < spaceDim; ++iDim)
@@ -1747,7 +1747,6 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
         indicesGlobal[iB+iDim] = gind + iDim;
       } // for
 
-      std::cout << "v_domain["<<iBasis<<"]: " << v_domain << ", globalIndex: " << goff << std::endl;
     } // for
     err = DMPlexRestoreTransitiveClosure(dmMesh, cellsCohesive[c], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
 
@@ -1762,27 +1761,10 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
     cellsIS[c] = NULL;
     err = ISCreateGeneral(PETSC_COMM_SELF, indicesGlobal.size(), &indicesGlobal[0], PETSC_COPY_VALUES, &cellsIS[c]);PYLITH_CHECK_ERROR(err);
 
-#if 1 // DEBUGGING
-    std::cout << "indicesGlobal:";
-    for (int ii=0; ii < indicesGlobal.size(); ++ii) {
-      std::cout << " " << indicesGlobal[ii];
-    }
-    std::cout << std::endl;
-
-    std::cout << "indicesLocal:";
-    for (int ii=0; ii < subnrows; ++ii) {
-      std::cout << " " << indicesLocal[c*subnrows+ii];
-    }
-    std::cout << std::endl;
-
-#endif
-
   } // for
 
   PetscMat* submatrices = NULL;
   err = MatGetSubMatrices(jacobianDomainMatrix, numCohesiveCells, cellsIS, cellsIS, MAT_INITIAL_MATRIX, &submatrices);PYLITH_CHECK_ERROR(err);
-
-  _faultMesh->view("fault", "::ascii_info_detail");
 
   for (PetscInt c = 0; c < numCohesiveCells; ++c) {
     // Get values for submatrix associated with cohesive cell
@@ -1790,17 +1772,8 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
     err = MatGetValues(submatrices[c], subnrows, &indicesLocal[c*subnrows], subnrows, &indicesLocal[c*subnrows],
                        &jacobianSubCell[0]);PYLITH_CHECK_ERROR_MSG(err, "Restrict from PETSc Mat failed.");
 
-    std::cout << "SUBMATRIX " << c << std::endl;
-    MatView(submatrices[c], PETSC_VIEWER_STDOUT_WORLD);
-    std::cout << "jacobianSubCell: ";
-    for (int ii=0; ii < subnrows*subnrows; ++ii) {
-      std::cout << " " << jacobianSubCell[ii];
-    }
-    std::cout << std::endl;
-
     // Insert cell contribution into PETSc Matrix
     PetscInt c_fault = _cohesiveToFault[cellsCohesive[c]];
-    std::cout << "c_fault: " << c_fault << std::endl;
 
     err = DMPlexMatSetClosure(faultDMMesh, solutionFaultSection, solutionFaultGlobalSection,  jacobianFaultMatrix, c_fault, &jacobianSubCell[0], INSERT_VALUES);PYLITH_CHECK_ERROR_MSG(err, "Update to PETSc Mat failed.");
 
@@ -1813,7 +1786,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
 
   _jacobian->assemble("final_assembly");
 
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
   //std::cout << "DOMAIN JACOBIAN" << std::endl;
   //jacobian.view();
   std::cout << "SENSITIVITY JACOBIAN" << std::endl;
@@ -1944,7 +1917,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySolve(void)
   // Update section view of field.
   solution.scatterGlobalToLocal();
 
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
   residual.view("SENSITIVITY RESIDUAL");
   solution.view("SENSITIVITY SOLUTION");
 #endif
