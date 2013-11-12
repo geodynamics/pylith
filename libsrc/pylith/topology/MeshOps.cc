@@ -94,9 +94,7 @@ pylith::topology::MeshOps::checkTopology(const Mesh& mesh)
   PetscErrorCode err;
   err = DMPlexCheckSymmetry(dmMesh);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh associated with symmetry of adjacency information.");
 
-  if (cellDim > 1) {
-    err = DMPlexCheckSkeleton(dmMesh, isSimplexMesh);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh cells.");
-  } // if
+  err = DMPlexCheckSkeleton(dmMesh, isSimplexMesh);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh cells.");
 } // checkTopology
 
 
