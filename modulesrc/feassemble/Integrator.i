@@ -105,6 +105,13 @@ namespace pylith {
       virtual
       void initialize(const pylith::topology::Mesh& mesh);
       
+      /** Setup DOF on solution field.
+       *
+       * @param field Solution field.
+       */
+      virtual
+      void setupSolnDof(pylith::topology::Field* field);
+
       /** Integrate contributions to residual term (r) for operator.
        *
        * @param residual Field containing values for residual

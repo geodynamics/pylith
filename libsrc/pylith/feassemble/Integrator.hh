@@ -127,7 +127,14 @@ public :
    */
   virtual
   void initialize(const topology::Mesh& mesh);
-  
+
+  /** Setup DOF on solution field.
+   *
+   * @param field Solution field.
+   */
+  virtual
+  void setupSolnDof(topology::Field* field);
+
   /** Integrate contributions to residual term (r) for operator.
    *
    * @param residual Field containing values for residual

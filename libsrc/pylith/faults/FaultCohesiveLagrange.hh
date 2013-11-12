@@ -116,6 +116,7 @@ public :
    *
    * @param field Solution field.
    */
+  virtual
   void setupSolnDof(topology::Field* field);
 
   /** Integrate contributions to residual term (r) for operator that

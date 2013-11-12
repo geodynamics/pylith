@@ -504,9 +504,11 @@ class Formulation(PetscComponent, ModuleFormulation):
       if self.splitFields():
         solution.subfieldAdd("lagrange multiplier", dimension)
       solution.subfieldsSetup()
-      solution.newSection(solution.VERTICES_FIELD, dimension)
-      solution.subfieldSetDof("displacement", solution.VERTICES_FIELD, dimension)
-
+      solution.setupSolnChart()
+      solution.setupSolnDof(dimension)
+      # Loop over integrators to adjust DOF layout
+      for integrator in self.integrators:
+        integrator.setupSolnDof(solution)
       solution.vectorFieldType(solution.VECTOR)
       solution.scale(lengthScale.value)
     else:
@@ -522,12 +524,10 @@ class Formulation(PetscComponent, ModuleFormulation):
       solution.vectorFieldType("displacement", solution.VECTOR)
       solution.scale("displacement", lengthScale.value)
 
-    if self.splitFields():
-      for integrator in self.integrators:
-        integrator.splitField(solution)
     for constraint in self.constraints:
       constraint.setConstraintSizes(solution)
     solution.allocate()
+    solution.zero()
     for constraint in self.constraints:
       constraint.setConstraints(solution)
     for integrator in self.integrators:

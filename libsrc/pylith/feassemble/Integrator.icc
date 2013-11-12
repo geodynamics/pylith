@@ -47,6 +47,12 @@ void
 pylith::feassemble::Integrator::initialize(const topology::Mesh& mesh) {
 } // initialize
 
+// Setup DOF on solution field.
+inline
+void
+pylith::feassemble::Integrator::setupSolnDof(topology::Field* field) {
+} // setupSolnDof
+
 // Integrate contributions to residual term (r) for operator.
 inline
 void
