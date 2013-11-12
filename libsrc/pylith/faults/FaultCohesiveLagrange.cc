@@ -1381,6 +1381,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
 
       // Update orientation
       const PetscInt ooff = orientationVisitor.sectionOffset(closure[v*2]);
+
       for(PetscInt d = 0; d < orientationSize; ++d) {
         orientationArray[ooff+d] += orientationVertex[d];
       } // for
@@ -1406,10 +1407,22 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
     } // for
     for (int iDim = 0; iDim < spaceDim; ++iDim) {
       PylithScalar mag = 0;
-      for (int jDim = 0, index = iDim * spaceDim; jDim < spaceDim; ++jDim)
+      for (int jDim = 0, index = iDim * spaceDim; jDim < spaceDim; ++jDim) {
         mag += pow(orientationVertex[index + jDim], 2);
+      } // for
+
+      if (mag <= 0.0) {
+	std::ostringstream msg;
+	msg << "Error calculating fault orientation at fault vertex " << v << ".\n" 
+	    << "Orientation vector " << iDim << ": (";
+	for (int jDim = 0, index = iDim * spaceDim; jDim < spaceDim; ++jDim) {
+	  msg << " " << orientationVertex[index + jDim];
+	} // for
+	msg << " )" << std::endl;
+	throw std::runtime_error(msg.str());
+      } // if
+
       mag = sqrt(mag);
-      assert(mag > 0.0);
       for (int jDim = 0, index = iDim * spaceDim; jDim < spaceDim; ++jDim)
         orientationVertex[index + jDim] /= mag;
     } // for
