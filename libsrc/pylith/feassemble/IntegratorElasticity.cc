@@ -266,14 +266,16 @@ pylith::feassemble::IntegratorElasticity::verifyConfiguration(const topology::Me
   const PetscInt numCells = materialIS.size();
 
   const int numCorners = _quadrature->refGeometry().numCorners();
-  PetscInt vStart, vEnd;
+  PetscInt cStart, cEnd, vStart, vEnd;
   PetscErrorCode err;
 
+  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
     PetscInt cellNumCorners = 0, closureSize, *closure = NULL;
 
+    if ((cell < cStart) || (cell >= cEnd)) continue;
     err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     for (PetscInt cl = 0; cl < closureSize*2; cl += 2) {
       if ((closure[cl] >= vStart) && (closure[cl] < vEnd)) ++cellNumCorners;
