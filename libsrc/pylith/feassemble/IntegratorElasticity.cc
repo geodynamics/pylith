@@ -114,7 +114,8 @@ pylith::feassemble::IntegratorElasticity::initialize(const topology::Mesh& mesh)
   // Setup index set for material.
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
   if (!_materialIS) {
-    delete _materialIS; _materialIS = new topology::StratumIS(dmMesh, "material-id", _material->id());assert(_materialIS); // :TODO: FIX THIS
+    const bool includeOnlyCells = true;
+    delete _materialIS; _materialIS = new topology::StratumIS(dmMesh, "material-id", _material->id(), includeOnlyCells);assert(_materialIS);
   } // if
 
   // Compute geometry for quadrature operations.
@@ -261,7 +262,8 @@ pylith::feassemble::IntegratorElasticity::verifyConfiguration(const topology::Me
   } // if
 
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-  topology::StratumIS materialIS(dmMesh, "material-id", _material->id()); // :TODO: FIX THIS
+  const bool includeOnlyCells = true;
+  topology::StratumIS materialIS(dmMesh, "material-id", _material->id(), includeOnlyCells);
   const PetscInt* cells = materialIS.points();
   const PetscInt numCells = materialIS.size();
 

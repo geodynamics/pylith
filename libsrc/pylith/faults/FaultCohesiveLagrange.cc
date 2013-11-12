@@ -966,7 +966,8 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
   } // if
 
   // Check quadrature against mesh
-  topology::StratumIS cohesiveIS(dmMesh, "material-id", id());
+  const bool includeOnlyCells = true;
+  topology::StratumIS cohesiveIS(dmMesh, "material-id", id(), includeOnlyCells);
   const PetscInt* cells = cohesiveIS.points();
   const PetscInt ncells = cohesiveIS.size();
   for(PetscInt i = 0; i < ncells; ++i) {
@@ -1050,7 +1051,8 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
 
   // Get cohesive cells
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-  delete _cohesiveIS; _cohesiveIS = new topology::StratumIS(dmMesh, "material-id", id());assert(_cohesiveIS);
+  const bool includeOnlyCells = true;
+  delete _cohesiveIS; _cohesiveIS = new topology::StratumIS(dmMesh, "material-id", id(), includeOnlyCells);assert(_cohesiveIS);
   const PetscInt* cohesiveCells = _cohesiveIS->points();
   const int numCohesiveCells = _cohesiveIS->size();
 

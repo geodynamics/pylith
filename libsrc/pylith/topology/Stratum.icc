@@ -92,13 +92,33 @@ pylith::topology::StratumIS::StratumIS(const PetscDM dmMesh,
 { // constructor
   assert(dmMesh);
   PetscErrorCode err;
-  err = DMPlexGetStratumIS(dmMesh, label, id, &_indexSet);PYLITH_CHECK_ERROR(err);assert(_indexSet);
   if (!includeOnlyCells) {
-    err = ISGetSize(_indexSet, &_size);PYLITH_CHECK_ERROR(err);assert(_size >= 0);
-    err = ISGetIndices(_indexSet, &_points);PYLITH_CHECK_ERROR(err);assert(!_size || _points);
+    err = DMPlexGetStratumIS(dmMesh, label, id, &_indexSet);PYLITH_CHECK_ERROR(err);assert(_indexSet);
   } else {
-    // :TODO: Matt add stuff here
+    PetscIS pointsIS = NULL;
+    PetscInt numPoints = 0;
+    const PetscInt* points = NULL;
+    err = DMPlexGetStratumIS(dmMesh, label, id, &pointsIS);PYLITH_CHECK_ERROR(err);assert(pointsIS);
+    err = ISGetSize(pointsIS, &numPoints);PYLITH_CHECK_ERROR(err);assert(numPoints >= 0);
+    err = ISGetIndices(pointsIS, &points);PYLITH_CHECK_ERROR(err);assert(!numPoints || points);
+    PetscInt cStart, cEnd;
+    err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+    PetscInt* cells = (numPoints > 0) ? new PetscInt[numPoints] : 0;
+    PetscInt count = 0;
+    for (PetscInt i=0; i < numPoints; ++i) {
+      if (points[i] >= cStart && points[i] < cEnd) {
+	cells[count++] = points[i];
+      } // if
+    } // for
+    MPI_Comm comm;
+    err = PetscObjectGetComm((PetscObject) dmMesh, &comm);PYLITH_CHECK_ERROR(err);
+    err = ISCreateGeneral(comm, count, cells, PETSC_COPY_VALUES, &_indexSet);PYLITH_CHECK_ERROR(err);
+    delete[] cells; cells = 0;
+    err = ISDestroy(&pointsIS);PYLITH_CHECK_ERROR(err);assert(!pointsIS);
   } // if/else
+
+  err = ISGetSize(_indexSet, &_size);PYLITH_CHECK_ERROR(err);assert(_size >= 0);
+  err = ISGetIndices(_indexSet, &_points);PYLITH_CHECK_ERROR(err);assert(!_size || _points);
 } // constructor
 
 // ----------------------------------------------------------------------

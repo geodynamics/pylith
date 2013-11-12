@@ -134,7 +134,8 @@ pylith::faults::FaultCohesiveTract::verifyConfiguration(const topology::Mesh& me
   } // if
 
   const int numCorners = _quadrature->refGeometry().numCorners();
-  topology::StratumIS cohesiveIS(dmMesh, "material-id", id());
+  const bool includeOnlyCells = true;
+  topology::StratumIS cohesiveIS(dmMesh, "material-id", id(), includeOnlyCells);
   const PetscInt* cells = cohesiveIS.points();
   const PetscInt ncells = cohesiveIS.size();
 

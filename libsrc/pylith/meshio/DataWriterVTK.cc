@@ -201,7 +201,8 @@ pylith::meshio::DataWriterVTK::openTimeStep(const PylithScalar t,
 
   // Create VTK label in DM: Cleared in closeTimeStep().
   if (label) {
-    topology::StratumIS cellsIS(_dm, label, labelId);
+    const bool includeOnlyCells = true;
+    topology::StratumIS cellsIS(_dm, label, labelId, includeOnlyCells);
     const PetscInt ncells = cellsIS.size();
     const PetscInt* cells = cellsIS.points();
     DMLabel label;

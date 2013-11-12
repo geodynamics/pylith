@@ -107,7 +107,8 @@ pylith::meshio::CellFilterAvg::filter(const topology::Field& fieldIn,
     numCells = cEnd - cStart;
   } else {
     if (!_cellsIS) {
-      _cellsIS = new topology::StratumIS(dmMesh, label, labelId);assert(_cellsIS);
+      const bool includeOnlyCells = true;
+      _cellsIS = new topology::StratumIS(dmMesh, label, labelId, includeOnlyCells);assert(_cellsIS);
     } // if
     numCells = _cellsIS->size();
     if (numCells > 0) {
