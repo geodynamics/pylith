@@ -90,11 +90,14 @@ pylith::topology::MeshOps::checkTopology(const Mesh& mesh)
       (cellDim == 3 && numCorners == 8)) {
     isSimplexMesh = PETSC_FALSE;
   } // if
+  DMLabel subpointMap;
+  PetscErrorCode ierr = DMPlexGetSubpointMap(dmMesh, &subpointMap);PYLITH_CHECK_ERROR(ierr);
+  PetscInt cellHeight = subpointMap ? 1 : 0;
 
   PetscErrorCode err;
   err = DMPlexCheckSymmetry(dmMesh);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh associated with symmetry of adjacency information.");
 
-  err = DMPlexCheckSkeleton(dmMesh, isSimplexMesh);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh cells.");
+  err = DMPlexCheckSkeleton(dmMesh, isSimplexMesh, cellHeight);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh cells.");
 } // checkTopology
 
 
