@@ -106,7 +106,8 @@ public :
    */
   StratumIS(const PetscDM dmMesh,
 	    const char* label,
-	    const int id);
+	    const int id,
+	    const bool includeOnlyCells =false);
 
   /// Default destructor.
   ~StratumIS(void);

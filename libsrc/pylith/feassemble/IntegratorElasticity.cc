@@ -114,7 +114,7 @@ pylith::feassemble::IntegratorElasticity::initialize(const topology::Mesh& mesh)
   // Setup index set for material.
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
   if (!_materialIS) {
-    delete _materialIS; _materialIS = new topology::StratumIS(dmMesh, "material-id", _material->id());assert(_materialIS);
+    delete _materialIS; _materialIS = new topology::StratumIS(dmMesh, "material-id", _material->id());assert(_materialIS); // :TODO: FIX THIS
   } // if
 
   // Compute geometry for quadrature operations.
@@ -261,21 +261,19 @@ pylith::feassemble::IntegratorElasticity::verifyConfiguration(const topology::Me
   } // if
 
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-  topology::StratumIS materialIS(dmMesh, "material-id", _material->id());
+  topology::StratumIS materialIS(dmMesh, "material-id", _material->id()); // :TODO: FIX THIS
   const PetscInt* cells = materialIS.points();
   const PetscInt numCells = materialIS.size();
 
   const int numCorners = _quadrature->refGeometry().numCorners();
-  PetscInt cStart, cEnd, vStart, vEnd;
+  PetscInt vStart, vEnd;
   PetscErrorCode err;
 
-  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
     PetscInt cellNumCorners = 0, closureSize, *closure = NULL;
 
-    if ((cell < cStart) || (cell >= cEnd)) continue;
     err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     for (PetscInt cl = 0; cl < closureSize*2; cl += 2) {
       if ((closure[cl] >= vStart) && (closure[cl] < vEnd)) ++cellNumCorners;

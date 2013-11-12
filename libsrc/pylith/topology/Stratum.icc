@@ -87,13 +87,18 @@ pylith::topology::Stratum::size(void) const
 inline
 pylith::topology::StratumIS::StratumIS(const PetscDM dmMesh,
 				       const char* label,
-				       const int id)
+				       const int id,
+				       const bool includeOnlyCells)
 { // constructor
   assert(dmMesh);
   PetscErrorCode err;
   err = DMPlexGetStratumIS(dmMesh, label, id, &_indexSet);PYLITH_CHECK_ERROR(err);assert(_indexSet);
-  err = ISGetSize(_indexSet, &_size);PYLITH_CHECK_ERROR(err);assert(_size >= 0);
-  err = ISGetIndices(_indexSet, &_points);PYLITH_CHECK_ERROR(err);assert(!_size || _points);
+  if (!includeOnlyCells) {
+    err = ISGetSize(_indexSet, &_size);PYLITH_CHECK_ERROR(err);assert(_size >= 0);
+    err = ISGetIndices(_indexSet, &_points);PYLITH_CHECK_ERROR(err);assert(!_size || _points);
+  } else {
+    // :TODO: Matt add stuff here
+  } // if/else
 } // constructor
 
 // ----------------------------------------------------------------------

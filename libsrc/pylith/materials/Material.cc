@@ -128,7 +128,7 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
 
   // Get cells associated with material
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-  delete _materialIS; _materialIS = new topology::StratumIS(dmMesh, "material-id", _id);assert(_materialIS);
+  delete _materialIS; _materialIS = new topology::StratumIS(dmMesh, "material-id", _id);assert(_materialIS); // :TODO: FIX THIS
   const PetscInt numCells = _materialIS->size();
   const PetscInt* cells = _materialIS->points();
 
