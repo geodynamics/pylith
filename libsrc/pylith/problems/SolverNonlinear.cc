@@ -107,7 +107,7 @@ pylith::problems::SolverNonlinear::initialize(const topology::SolutionFields& fi
 
   // Set default line search type to SNESSHELL and use our custom line search
   PetscSNESLineSearch ls;
-  err = SNESGetSNESLineSearch(_snes, &ls);PYLITH_CHECK_ERROR(err);
+  err = SNESGetLineSearch(_snes, &ls);PYLITH_CHECK_ERROR(err);
   err = SNESLineSearchSetType(ls, SNESSHELL);PYLITH_CHECK_ERROR(err);
   err = SNESLineSearchSetOrder(ls, SNES_LINESEARCH_ORDER_CUBIC);PYLITH_CHECK_ERROR(err);
   err = SNESLineSearchShellSetUserFunc(ls, lineSearch, (void*) formulation);PYLITH_CHECK_ERROR(err);
