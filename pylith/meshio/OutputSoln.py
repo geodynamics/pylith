@@ -106,14 +106,27 @@ class OutputSoln(OutputManager):
     """
     Get vertex field.
     """
-    field = None
+    # :TODO: Clean this up for multiple fields
+
+    buffer = None
     if name == "displacement":
       field = fields.get("disp(t)")
+      if not fields.hasField("buffer (vector)"):
+        fields.add("buffer (vector)", "buffer")
+      buffer = fields.get("buffer (vector)")
+      buffer.copySubfield(field, "displacement")
+      buffer.scale(field.scale()) # :KLUDGE: Fix for multiple fields
     elif name == "velocity":
       field = fields.get("velocity(t)")
+      if not fields.hasField("buffer (vector)"):
+        fields.add("buffer (vector)", "buffer")
+      buffer = fields.get("buffer (vector)")
+      buffer.copySubfield(field, "displacement")
+      buffer.label(field.label()) # :KLUDGE: Fix for multiple fields
+      buffer.scale(field.scale()) # :KLUDGE: Fix for multiple fields
     else:
       raise ValueError, "Vertex field '%s' not available." % name
-    return field
+    return buffer
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
