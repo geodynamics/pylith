@@ -287,7 +287,8 @@ pylith::topology::Field::setupSolnChart(void)
 // ----------------------------------------------------------------------
 // Setup default DOF for solution.
 void
-pylith::topology::Field::setupSolnDof(const int fiberDim)
+  pylith::topology::Field::setupSolnDof(const int fiberDim,
+					const char* subfieldName)
 { // setupSolnDof
   PYLITH_METHOD_BEGIN;
 
@@ -297,7 +298,7 @@ pylith::topology::Field::setupSolnDof(const int fiberDim)
   // :TODO: Update this to use discretization information after removing FIAT.
 
   // :KLUDGE: Assume solution has DOF over vertices.
-  const int indexDisp = subfieldMetadata("displacement").index;
+  const int subfieldIndex = subfieldMetadata(subfieldName).index;
 
   PetscErrorCode err;
   // Get range of vertices.
@@ -310,8 +311,8 @@ pylith::topology::Field::setupSolnDof(const int fiberDim)
   for (PetscInt p = pStart; p < pEnd; ++p) {
     err = PetscSectionSetDof(s, p, fiberDim);PYLITH_CHECK_ERROR(err);
 
-    // Set DOF in displacement subfield
-    err = PetscSectionSetFieldDof(s, p, indexDisp, fiberDim);PYLITH_CHECK_ERROR(err);
+    // Set DOF in subfield
+    err = PetscSectionSetFieldDof(s, p, subfieldIndex, fiberDim);PYLITH_CHECK_ERROR(err);
   } // for
 
   PYLITH_METHOD_END;
@@ -1350,16 +1351,16 @@ pylith::topology::Field::copySubfield(const Field& field,
   _metadata["default"] = subfieldMetadata;
   label(subfieldMetadata.label.c_str()); // Use method to insure propagation to subsidiary objects
 
-  const PetscSection& fieldSection = field.petscSection();
-  const PetscSection& subfieldSection = this->petscSection();
-
   // Check compatibility of sections
   const int srcSize = field.chartSize();
   const int dstSize = chartSize();
-  if (srcSize < dstSize) {
+  if (dstSize < srcSize) {
     _extractSubfield(field, name);
   } // if
   assert(_localVec && field._localVec);
+
+  const PetscSection& fieldSection = field.petscSection();
+  const PetscSection& subfieldSection = this->petscSection();
 
   PetscInt pStart, pEnd;
   err = PetscSectionGetChart(subfieldSection, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
@@ -1404,12 +1405,12 @@ pylith::topology::Field::_extractSubfield(const Field& field,
   const int subfieldIndex = subfieldMetadata.index;assert(subfieldIndex >= 0);
 
   PetscErrorCode err;
-  PetscDM subfieldDM = NULL;
   PetscIS subfieldIS = NULL;
   const int numSubfields = 1;
   int indicesSubfield[1];
   indicesSubfield[0] = subfieldIndex;
-  err = DMCreateSubDM(_dm, numSubfields, indicesSubfield, &subfieldIS, &subfieldDM);PYLITH_CHECK_ERROR(err);assert(subfieldDM);assert(subfieldIS);
+  err = DMCreateSubDM(field.dmMesh(), numSubfields, indicesSubfield, &subfieldIS, &_dm);PYLITH_CHECK_ERROR(err);assert(_dm);
+  err = ISDestroy(&subfieldIS);PYLITH_CHECK_ERROR(err);
 
   err = DMCreateLocalVector(_dm, &_localVec);PYLITH_CHECK_ERROR(err);
   err = DMCreateGlobalVector(_dm, &_globalVec);PYLITH_CHECK_ERROR(err);
@@ -1417,35 +1418,33 @@ pylith::topology::Field::_extractSubfield(const Field& field,
   // Setup section
   const PetscSection& fieldSection = field.petscSection();
   PetscSection subfieldSection = NULL;
-  err = DMGetDefaultSection(this->_dm, &subfieldSection);PYLITH_CHECK_ERROR(err);
-  err = DMSetDefaultGlobalSection(this->_dm, NULL);PYLITH_CHECK_ERROR(err);
+  err = DMGetDefaultSection(_dm, &subfieldSection);PYLITH_CHECK_ERROR(err);
+  err = DMSetDefaultGlobalSection(_dm, NULL);PYLITH_CHECK_ERROR(err);
 
-  const PetscInt* points = NULL;
-  PetscInt numPoints = 0;
-  err = ISGetSize(subfieldIS, &numPoints);PYLITH_CHECK_ERROR(err);
-  err = ISGetIndices(subfieldIS, &points);PYLITH_CHECK_ERROR(err);
-  const PetscInt pStart = (numPoints > 0) ? points[0] : 0;
-  const PetscInt pEnd = (numPoints > 0) ? points[numPoints-1] : 0;
+  PetscInt pStart = -1, pEnd = -1;
+  err = PetscSectionGetChart(fieldSection, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
   err = PetscSectionSetChart(subfieldSection, pStart, pEnd);PYLITH_CHECK_ERROR(err);
 
-  for (PetscInt i=0; i < numPoints; ++i) {
-    const PetscInt point = points[i];
+  for (PetscInt p=pStart; p < pEnd; ++p) {
     PetscInt dof;
-    err = PetscSectionGetFieldDof(fieldSection, point, subfieldIndex, &dof);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionSetDof(subfieldSection, point, dof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetFieldDof(fieldSection, p, subfieldIndex, &dof);PYLITH_CHECK_ERROR(err);
+    if (dof > 0) {
+      err = PetscSectionSetDof(subfieldSection, p, dof);PYLITH_CHECK_ERROR(err);
 
-    err = PetscSectionGetFieldConstraintDof(fieldSection, point, subfieldIndex, &dof);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionSetConstraintDof(subfieldSection, point, dof);PYLITH_CHECK_ERROR(err);
+      err = PetscSectionGetFieldConstraintDof(fieldSection, p, subfieldIndex, &dof);PYLITH_CHECK_ERROR(err);
+      err = PetscSectionSetConstraintDof(subfieldSection, p, dof);PYLITH_CHECK_ERROR(err);
+    } // if
   } // for
-  this->allocate();
+  allocate();
 
-  for (PetscInt i=0; i < numPoints; ++i) {
-    const PetscInt point = points[i];
+  for (PetscInt p=pStart; p < pEnd; ++p) {
     PetscInt dof;
     const PetscInt* indices = NULL;
-    err = PetscSectionGetConstraintDof(subfieldSection, point, &dof);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionGetFieldConstraintIndices(fieldSection, point, subfieldIndex, &indices);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionSetConstraintIndices(subfieldSection, point, indices);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetConstraintDof(subfieldSection, p, &dof);PYLITH_CHECK_ERROR(err);
+    if (dof > 0) {
+      err = PetscSectionGetFieldConstraintIndices(fieldSection, p, subfieldIndex, &indices);PYLITH_CHECK_ERROR(err);
+      err = PetscSectionSetConstraintIndices(subfieldSection, p, indices);PYLITH_CHECK_ERROR(err);
+    } // if
   } // for
 
   PYLITH_METHOD_END;

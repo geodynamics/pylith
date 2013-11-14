@@ -127,8 +127,10 @@ namespace pylith {
       /** Set default DOF for solution.
        *
        * @param fiberDim Total number of components in solution.
+       * @param subfieldName Name of subfield for DOF.
        */
-      void setupSolnDof(const int fiberDim);
+      void setupSolnDof(const int fiberDim,
+			const char* subfieldName ="displacement");
 
       /** Create PETSc section and set chart and fiber dimesion.
        *

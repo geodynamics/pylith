@@ -825,6 +825,106 @@ pylith::topology::TestFieldMesh::testCopy(void)
 } // testCopy
 
 // ----------------------------------------------------------------------
+// Test copySubfield().
+void
+pylith::topology::TestFieldMesh::testCopySubfield(void)
+{ // testCopy
+  PYLITH_METHOD_BEGIN;
+
+  const int fiberDimA = 1;
+  const char* fieldA = "one";
+  const int fiberDimB = 2;
+  const char* fieldB = "two";
+  const int fiberDim = fiberDimA + fiberDimB;
+
+  const PylithScalar scale = 2.0;
+  const int npoints = 4;
+  const PylithScalar valuesNondim[npoints*fiberDim] = {
+    1.1, 2.2, 3.3,
+    1.2, 2.3, 3.4,
+    1.3, 2.4, 3.5,
+    1.4, 2.5, 3.6,
+  };
+  const PylithScalar valuesANondim[npoints*fiberDimA] = {
+    1.1,
+    1.2,
+    1.3,
+    1.4,
+  };
+  const PylithScalar valuesBNondim[npoints*fiberDimB] = {
+    2.2, 3.3,
+    2.3, 3.4,
+    2.4, 3.5,
+    2.5, 3.6,
+  };
+
+  Mesh mesh;
+  _buildMesh(&mesh);
+
+  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+  Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
+  const PetscInt vStart = depthStratum.begin();
+  const PetscInt vEnd = depthStratum.end();
+
+  Field fieldSrc(mesh);
+  { // Setup source field
+    fieldSrc.label("solution");
+    fieldSrc.subfieldAdd("one", fiberDimA);
+    fieldSrc.subfieldAdd("two", fiberDimB);
+    fieldSrc.subfieldsSetup();
+    fieldSrc.newSection(Field::VERTICES_FIELD, fiberDim);
+    fieldSrc.subfieldSetDof("one", Field::VERTICES_FIELD, fiberDimA);
+    fieldSrc.subfieldSetDof("two", Field::VERTICES_FIELD, fiberDimB);
+    fieldSrc.allocate();
+
+    VecVisitorMesh fieldVisitor(fieldSrc);
+    PetscScalar* fieldArray = fieldVisitor.localArray();
+    for (PetscInt v = vStart, i = 0; v < vEnd; ++v) {
+      const PetscInt off = fieldVisitor.sectionOffset(v);
+      CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
+      for (PetscInt d = 0; d < fiberDim; ++d)
+	fieldArray[off+d] = valuesNondim[i++];
+    } // for
+  } // Setup source field
+    
+  { // Test with preallocated field
+    Field field(mesh);
+    field.newSection(Field::VERTICES_FIELD, fiberDimB);
+    field.allocate();
+    field.copySubfield(fieldSrc, "two");
+
+    VecVisitorMesh fieldVisitor(field);
+    const PetscScalar* fieldArray = fieldVisitor.localArray();
+    const PylithScalar tolerance = 1.0e-6;
+    for (PetscInt v = vStart, i = 0; v < vEnd; ++v) {
+      const PetscInt off = fieldVisitor.sectionOffset(v);
+      CPPUNIT_ASSERT_EQUAL(fiberDimB, fieldVisitor.sectionDof(v));
+      for (PetscInt d = 0; d < fiberDimB; ++d) {
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesBNondim[i++], fieldArray[off+d], tolerance);
+      } // for
+    } // for
+  } // Test with preallocated field
+
+  { // Test with unallocated field
+    Field field(mesh);
+    field.copySubfield(fieldSrc, "one");
+
+    VecVisitorMesh fieldVisitor(field);
+    const PetscScalar* fieldArray = fieldVisitor.localArray();
+    const PylithScalar tolerance = 1.0e-6;
+    for (PetscInt v = vStart, i = 0; v < vEnd; ++v) {
+      const PetscInt off = fieldVisitor.sectionOffset(v);
+      CPPUNIT_ASSERT_EQUAL(fiberDimA, fieldVisitor.sectionDof(v));
+      for (PetscInt d = 0; d < fiberDimA; ++d) {
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesANondim[i++], fieldArray[off+d], tolerance);
+      } // for
+    } // for
+  } // Test with unallocated field
+
+  PYLITH_METHOD_END;
+} // testCopySubfield
+
+// ----------------------------------------------------------------------
 // Test operator+=().
 void
 pylith::topology::TestFieldMesh::testOperatorAdd(void)

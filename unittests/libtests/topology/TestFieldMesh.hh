@@ -67,6 +67,7 @@ class pylith::topology::TestFieldMesh : public CppUnit::TestFixture
   CPPUNIT_TEST( testZeroAll );
   CPPUNIT_TEST( testComplete );
   CPPUNIT_TEST( testCopy );
+  CPPUNIT_TEST( testCopySubfield );
   CPPUNIT_TEST( testOperatorAdd );
   CPPUNIT_TEST( testDimensionalize );
   CPPUNIT_TEST( testView );
@@ -148,6 +149,9 @@ public :
 
   /// Test copy().
   void testCopy(void);
+
+  /// Test copySubfield().
+  void testCopySubfield(void);
 
   /// Test operator+=().
   void testOperatorAdd(void);
