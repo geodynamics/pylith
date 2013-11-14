@@ -157,9 +157,13 @@ namespace pylith {
        *
        * @param name Name of subfield.
        * @param numComponents Number of components in subfield.
+       * @param fieldType Type of vector field.
+       * @param scale Scale for dimensionalizing field.
        */
       void subfieldAdd(const char *name, 
-		       int numComponents);
+		       int numComponents,
+		       const VectorFieldEnum fieldType,
+		       const PylithScalar scale =1.0);
 
       /** Setup sections for subfields.
        *

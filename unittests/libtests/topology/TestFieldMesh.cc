@@ -869,8 +869,8 @@ pylith::topology::TestFieldMesh::testCopySubfield(void)
   Field fieldSrc(mesh);
   { // Setup source field
     fieldSrc.label("solution");
-    fieldSrc.subfieldAdd("one", fiberDimA);
-    fieldSrc.subfieldAdd("two", fiberDimB);
+    fieldSrc.subfieldAdd("one", fiberDimA, Field::SCALAR);
+    fieldSrc.subfieldAdd("two", fiberDimB, Field::VECTOR);
     fieldSrc.subfieldsSetup();
     fieldSrc.newSection(Field::VERTICES_FIELD, fiberDim);
     fieldSrc.subfieldSetDof("one", Field::VERTICES_FIELD, fiberDimA);
@@ -1411,7 +1411,7 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
     for(PetscInt f = 0; f < numFields; ++f) {
       std::ostringstream msg;
       msg << "Field "<<f;
-      fieldSrc.subfieldAdd(msg.str().c_str(), 1);
+      fieldSrc.subfieldAdd(msg.str().c_str(), 1, Field::SCALAR);
     } // for
     fieldSrc.subfieldsSetup();
     fieldSrc.newSection(Field::VERTICES_FIELD, spaceDim);
@@ -1505,7 +1505,7 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
     for(PetscInt f = 0; f < numFields; ++f) {
       std::ostringstream msg;
       msg << "Field "<<f;
-      fieldSrc.subfieldAdd(msg.str().c_str(), 1);
+      fieldSrc.subfieldAdd(msg.str().c_str(), 1, Field::SCALAR);
     } // for
     fieldSrc.subfieldsSetup();
     fieldSrc.newSection(Field::VERTICES_FIELD, spaceDim);

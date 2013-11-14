@@ -52,6 +52,8 @@ class TestOutputSolnSubset(unittest.TestCase):
     fields.add(name, "displacement")
     fields.solutionName(name)
     field = fields.get(name)
+    field.subfieldAdd("displacement", mesh.dimension(), field.VECTOR)
+    field.subfieldsSetup()
     field.newSection(field.VERTICES_FIELD, mesh.dimension())
     field.allocate()
 

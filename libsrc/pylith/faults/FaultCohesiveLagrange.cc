@@ -1332,22 +1332,19 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   _fields->add("orientation", "orientation");
   topology::Field& orientation = _fields->get("orientation");
   const topology::Field& dispRel = _fields->get("relative disp");
-  if (spaceDim > 1) orientation.subfieldAdd("strike_dir", spaceDim);
-  if (spaceDim > 2) orientation.subfieldAdd("dip_dir", spaceDim);
-  orientation.subfieldAdd("normal_dir", spaceDim);
+  if (spaceDim > 1) orientation.subfieldAdd("strike_dir", spaceDim, topology::Field::VECTOR);
+  if (spaceDim > 2) orientation.subfieldAdd("dip_dir", spaceDim, topology::Field::VECTOR);
+  orientation.subfieldAdd("normal_dir", spaceDim, topology::Field::VECTOR);
   orientation.subfieldsSetup();
   orientation.newSection(dispRel, orientationSize);
   // Create components for along-strike, up-dip, and normal directions
   if (spaceDim > 1) { 
     orientation.subfieldSetDof("strike_dir", topology::FieldBase::VERTICES_FIELD, spaceDim);
-    orientation.vectorFieldType("strike_dir", topology::FieldBase::VECTOR);
   } // if
   if (spaceDim > 2) {
     orientation.subfieldSetDof("dip_dir", topology::FieldBase::VERTICES_FIELD, spaceDim);
-    orientation.vectorFieldType("dip_dir", topology::FieldBase::VECTOR);
   } // if
   orientation.subfieldSetDof("normal_dir", topology::FieldBase::VERTICES_FIELD, spaceDim);
-  orientation.vectorFieldType("normal_dir", topology::FieldBase::VECTOR);
   orientation.allocate();
   orientation.zeroAll();
 

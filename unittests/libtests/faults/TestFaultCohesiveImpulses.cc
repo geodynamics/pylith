@@ -386,8 +386,8 @@ pylith::faults::TestFaultCohesiveImpulses::_initialize(topology::Mesh* const mes
   
   const int spaceDim = _data->spaceDim;
   topology::Field& residual = fields->get("residual");
-  residual.subfieldAdd("displacement", spaceDim);
-  residual.subfieldAdd("lagrange_multiplier", spaceDim);
+  residual.subfieldAdd("displacement", spaceDim, topology::Field::VECTOR);
+  residual.subfieldAdd("lagrange_multiplier", spaceDim, topology::Field::VECTOR);
   residual.subfieldsSetup();
   residual.setupSolnChart();
   residual.setupSolnDof(spaceDim);

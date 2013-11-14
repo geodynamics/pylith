@@ -129,14 +129,6 @@ public :
    */
   void vectorFieldType(const VectorFieldEnum value);
 
-  /** Set vector field type
-   *
-   * @param name Field name
-   * @param value Type of vector field.
-   */
-  void vectorFieldType(const std::string& name,
-		       const VectorFieldEnum value);
-
   /** Get vector field type
    *
    * @returns Type of vector field.
@@ -303,9 +295,13 @@ public :
    *
    * @param name Name of subfield.
    * @param numComponents Number of components in subfield.
+   * @param fieldType Type of vector field.
+   * @param scale Scale for dimensionalizing field.
    */
   void subfieldAdd(const char *name, 
-		   int numComponents);
+		   int numComponents,
+		   const VectorFieldEnum fieldType,
+		   const PylithScalar scale =1.0);
   
   /** Setup sections for subfields.
    *

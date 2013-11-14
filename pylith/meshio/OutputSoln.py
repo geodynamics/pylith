@@ -115,7 +115,6 @@ class OutputSoln(OutputManager):
         fields.add("buffer (vector)", "buffer")
       buffer = fields.get("buffer (vector)")
       buffer.copySubfield(field, "displacement")
-      buffer.scale(field.scale()) # :KLUDGE: Fix for multiple fields
     elif name == "velocity":
       field = fields.get("velocity(t)")
       if not fields.hasField("buffer (vector)"):
@@ -126,6 +125,8 @@ class OutputSoln(OutputManager):
       buffer.scale(field.scale()) # :KLUDGE: Fix for multiple fields
     else:
       raise ValueError, "Vertex field '%s' not available." % name
+
+    buffer.dimensionalizeOkay(True)
     return buffer
 
 

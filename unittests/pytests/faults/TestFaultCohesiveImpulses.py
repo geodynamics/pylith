@@ -325,8 +325,8 @@ class TestFaultCohesiveImpulses(unittest.TestCase):
     fields.solutionName("dispIncr(t->t+dt)")
 
     residual = fields.get("residual")
-    residual.subfieldAdd("displacement", cs.spaceDim())
-    residual.subfieldAdd("lagrange_multiplier", cs.spaceDim())
+    residual.subfieldAdd("displacement", cs.spaceDim(), residual.VECTOR)
+    residual.subfieldAdd("lagrange_multiplier", cs.spaceDim(), residual.VECTOR)
     residual.subfieldsSetup()
     residual.setupSolnChart()
     residual.setupSolnDof(cs.spaceDim())

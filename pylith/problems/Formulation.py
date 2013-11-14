@@ -498,30 +498,19 @@ class Formulation(PetscComponent, ModuleFormulation):
     self.fields.solutionName("dispIncr(t->t+dt)")
 
     lengthScale = normalizer.lengthScale()
-    if 1:
-      solution = self.fields.get("dispIncr(t->t+dt)")
-      solution.subfieldAdd("displacement", dimension)
-      solution.subfieldAdd("lagrange_multiplier", dimension)
-      solution.subfieldsSetup()
-      solution.setupSolnChart()
-      solution.setupSolnDof(dimension)
-      # Loop over integrators to adjust DOF layout
-      for integrator in self.integrators:
-        integrator.setupSolnDof(solution)
-      solution.vectorFieldType(solution.VECTOR)
-      solution.scale(lengthScale.value)
-    else:
-      solution.addField("displacement", dimension)
-      if self.splitFields():
-        solution.addField("constraints", dimension)
-      solution.addField("pressure", 1)
-      solution.addField("temperature", 1)
-      solution.setupFields()
-      solution.updateDof("displacement", solution.VERTICES_FIELD, dimension)
-      solution.updateDof("pressure",     solution.CELLS_FIELD,    1)
-      solution.updateDof("temperature",  solution.VERTICES_FIELD, 1)
-      solution.vectorFieldType("displacement", solution.VECTOR)
-      solution.scale("displacement", lengthScale.value)
+    pressureScale = normalizer.pressureScale()
+
+    solution = self.fields.get("dispIncr(t->t+dt)")
+    solution.subfieldAdd("displacement", dimension, solution.VECTOR, lengthScale.value)
+    solution.subfieldAdd("lagrange_multiplier", dimension, solution.VECTOR, pressureScale.value)
+    solution.subfieldsSetup()
+    solution.setupSolnChart()
+    solution.setupSolnDof(dimension)
+    # Loop over integrators to adjust DOF layout
+    for integrator in self.integrators:
+      integrator.setupSolnDof(solution)
+    solution.vectorFieldType(solution.VECTOR)
+    solution.scale(lengthScale.value)
 
     for constraint in self.constraints:
       constraint.setConstraintSizes(solution)

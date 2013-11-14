@@ -1241,7 +1241,9 @@ pylith::topology::Field::_getScatter(const char* context) const
 // Experimental
 void
 pylith::topology::Field::subfieldAdd(const char *name,
-				     int numComponents)
+				     int numComponents,
+				     const VectorFieldEnum fieldType,
+				     const PylithScalar scale)
 { // subfieldAdd
   PYLITH_METHOD_BEGIN;
 
@@ -1252,6 +1254,9 @@ pylith::topology::Field::subfieldAdd(const char *name,
   _subfieldComps[name] = numComponents;
   _metadata[name] = _metadata["default"];
   _metadata[name].label = name;
+  _metadata[name].vectorFieldType = fieldType;
+  _metadata[name].scale = scale;
+  _metadata[name].dimsOkay = false;
   _metadata[name].index = _metadata.size()-2; // Indices match order added (account for "default").
 
   PYLITH_METHOD_END;

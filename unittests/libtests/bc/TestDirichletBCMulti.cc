@@ -77,7 +77,7 @@ pylith::bc::TestDirichletBCMulti::testSetConstraintSizes(void)
 
   const int fiberDim = _data->numDOF;
   topology::Field field(mesh);
-  field.subfieldAdd("bc", fiberDim);
+  field.subfieldAdd("bc", fiberDim, topology::Field::VECTOR);
   field.subfieldsSetup();
   field.newSection(pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
   field.subfieldSetDof("bc", pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
@@ -128,7 +128,7 @@ pylith::bc::TestDirichletBCMulti::testSetConstraints(void)
 
   const int fiberDim = _data->numDOF;
   topology::Field field(mesh);
-  field.subfieldAdd("bc", fiberDim);
+  field.subfieldAdd("bc", fiberDim, topology::Field::VECTOR);
   field.subfieldsSetup();
   field.newSection(pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
   field.subfieldSetDof("bc", pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
@@ -192,7 +192,7 @@ pylith::bc::TestDirichletBCMulti::testSetField(void)
 
   const int fiberDim = _data->numDOF;
   topology::Field field(mesh);
-  field.subfieldAdd("bc", fiberDim);
+  field.subfieldAdd("bc", fiberDim, topology::Field::VECTOR);
   field.subfieldsSetup();
   field.newSection(pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
   field.subfieldSetDof("bc", pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
@@ -272,7 +272,7 @@ pylith::bc::TestDirichletBCMulti::testSetFieldIncr(void)
 
   const int fiberDim = _data->numDOF;
   topology::Field field(mesh);
-  field.subfieldAdd("bc", fiberDim);
+  field.subfieldAdd("bc", fiberDim, topology::Field::VECTOR);
   field.subfieldsSetup();
   field.newSection(pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
   field.subfieldSetDof("bc", pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
