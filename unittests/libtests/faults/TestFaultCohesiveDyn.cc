@@ -685,7 +685,7 @@ pylith::faults::TestFaultCohesiveDyn::_initialize(topology::Mesh* const mesh,
   const int spaceDim = _data->spaceDim;
   topology::Field& residual = fields->get("residual");
   residual.subfieldAdd("displacement", spaceDim);
-  residual.subfieldAdd("lagrange multiplier", spaceDim);
+  residual.subfieldAdd("lagrange_multiplier", spaceDim);
   residual.subfieldsSetup();
   residual.setupSolnChart();
   residual.setupSolnDof(spaceDim);

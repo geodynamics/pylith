@@ -501,8 +501,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     if 1:
       solution = self.fields.get("dispIncr(t->t+dt)")
       solution.subfieldAdd("displacement", dimension)
-      if self.splitFields():
-        solution.subfieldAdd("lagrange multiplier", dimension)
+      solution.subfieldAdd("lagrange_multiplier", dimension)
       solution.subfieldsSetup()
       solution.setupSolnChart()
       solution.setupSolnDof(dimension)

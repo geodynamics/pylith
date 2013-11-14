@@ -335,7 +335,7 @@ class TestFaultCohesiveDyn(unittest.TestCase):
 
     residual = fields.get("residual")
     residual.subfieldAdd("displacement", cs.spaceDim())
-    residual.subfieldAdd("lagrange multiplier", cs.spaceDim())
+    residual.subfieldAdd("lagrange_multiplier", cs.spaceDim())
     residual.subfieldsSetup()
     residual.setupSolnChart()
     residual.setupSolnDof(cs.spaceDim())

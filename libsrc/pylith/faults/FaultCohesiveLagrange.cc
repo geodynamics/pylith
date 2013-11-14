@@ -136,7 +136,7 @@ pylith::faults::FaultCohesiveLagrange::setupSolnDof(topology::Field* field)
   assert(field);
 
   const int indexDisp = field->subfieldMetadata("displacement").index;
-  const int indexLagrange = field->subfieldMetadata("lagrange multiplier").index;
+  const int indexLagrange = field->subfieldMetadata("lagrange_multiplier").index;
 
   PetscDM dmMesh = field->dmMesh();assert(dmMesh);
   PetscSection fieldSection  = field->petscSection();assert(fieldSection);
