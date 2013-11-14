@@ -198,6 +198,14 @@ namespace pylith {
        */
       void copy(const Field& field);
       
+      /** Copy subfield values and its metadata to field;
+       *
+       * @param field Field to copy from.
+       * @param name Name of subfield to copy.
+       */
+      void copySubfield(const Field& field,
+			const char* name);
+
       /** Add two fields, storing the result in one of the fields.
        *
        * @param field Field to add.

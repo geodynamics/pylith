@@ -524,7 +524,7 @@ pylith::topology::Field::cloneSection(const Field& src)
   // Clear memory
   clear();
 
-  _metadata["default"] = const_cast<Field&>(src)._metadata["default"];
+  _metadata = src._metadata;
   label(origLabel.c_str());
 
   PetscSection section = src.petscSection();
@@ -1266,12 +1266,12 @@ pylith::topology::Field::subfieldsSetup(void)
 
   // Setup section now that we know the total number of sub-fields and components.
   PetscSection section = NULL;
-  PetscInt iField = 0;
   PetscErrorCode err = DMGetDefaultSection(_dm, &section);PYLITH_CHECK_ERROR(err);assert(section);
   err = PetscSectionSetNumFields(section, _subfieldComps.size());PYLITH_CHECK_ERROR(err);
-  for(std::map<std::string, int>::const_iterator f_iter = _subfieldComps.begin(); f_iter != _subfieldComps.end(); ++f_iter, ++iField) {
-    err = PetscSectionSetFieldName(section, iField, f_iter->first.c_str());PYLITH_CHECK_ERROR(err);
-    err = PetscSectionSetFieldComponents(section, iField, f_iter->second);PYLITH_CHECK_ERROR(err);
+  for(std::map<std::string, int>::const_iterator f_iter = _subfieldComps.begin(); f_iter != _subfieldComps.end(); ++f_iter) {
+    const PetscInt index = subfieldMetadata(f_iter->first.c_str()).index;
+    err = PetscSectionSetFieldName(section, index, f_iter->first.c_str());PYLITH_CHECK_ERROR(err);
+    err = PetscSectionSetFieldComponents(section, index, f_iter->second);PYLITH_CHECK_ERROR(err);
   } // for
 
   PYLITH_METHOD_END;
@@ -1325,17 +1325,13 @@ pylith::topology::Field::subfieldMetadata(const char* name)
 { // subfieldMetadata
   PYLITH_METHOD_BEGIN;
 
-  try {
-    const Metadata& metadata = _metadata[name];
-    PYLITH_METHOD_RETURN(metadata);
-  } catch (std::exception& err) {
+  if (!_metadata.count(name)) {
     std::ostringstream msg;
     msg << "Could not find subfield '" << name << "' in field '" << label() << "'." << std::endl;
     throw std::runtime_error(msg.str());
-  } // try/catch
+  } // if
 
-  // Satisfy return value
-  PYLITH_METHOD_RETURN(_metadata["default"]);
+  PYLITH_METHOD_RETURN(_metadata[name]);
 } // subfieldmetadata
 
 
