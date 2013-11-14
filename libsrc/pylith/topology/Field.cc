@@ -1348,6 +1348,7 @@ pylith::topology::Field::copySubfield(const Field& field,
   const int subfieldIndex = subfieldMetadata.index;assert(subfieldIndex >= 0);
 
   PetscErrorCode err;
+  _metadata.clear();
   _metadata["default"] = subfieldMetadata;
   label(subfieldMetadata.label.c_str()); // Use method to insure propagation to subsidiary objects
 
@@ -1400,7 +1401,6 @@ pylith::topology::Field::_extractSubfield(const Field& field,
   PYLITH_METHOD_BEGIN;
 
   clear();
-  _metadata.clear();
 
   const Metadata& subfieldMetadata = const_cast<Field&>(field).subfieldMetadata(name);
   const int subfieldIndex = subfieldMetadata.index;assert(subfieldIndex >= 0);
