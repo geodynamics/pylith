@@ -1400,6 +1400,7 @@ pylith::topology::Field::_extractSubfield(const Field& field,
   PYLITH_METHOD_BEGIN;
 
   clear();
+  _metadata.clear();
 
   const Metadata& subfieldMetadata = const_cast<Field&>(field).subfieldMetadata(name);
   const int subfieldIndex = subfieldMetadata.index;assert(subfieldIndex >= 0);
@@ -1409,9 +1410,10 @@ pylith::topology::Field::_extractSubfield(const Field& field,
   const int numSubfields = 1;
   int indicesSubfield[1];
   indicesSubfield[0] = subfieldIndex;
+  err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
   err = DMCreateSubDM(field.dmMesh(), numSubfields, indicesSubfield, &subfieldIS, &_dm);PYLITH_CHECK_ERROR(err);assert(_dm);
   err = ISDestroy(&subfieldIS);PYLITH_CHECK_ERROR(err);
-
+  
   err = DMCreateLocalVector(_dm, &_localVec);PYLITH_CHECK_ERROR(err);
   err = DMCreateGlobalVector(_dm, &_globalVec);PYLITH_CHECK_ERROR(err);
 
