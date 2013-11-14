@@ -624,7 +624,7 @@ pylith::topology::Field::allocate(void)
 { // allocate
   PYLITH_METHOD_BEGIN;
 
-  PetscSection   s = NULL;
+  PetscSection s = NULL;
   PetscErrorCode err;
 
   if (_dm) {
@@ -719,7 +719,6 @@ pylith::topology::Field::copy(const Field& field)
   const int srcSize = field.chartSize();
   const int dstSize = chartSize();
   if (field.spaceDim() != spaceDim() ||
-      const_cast<Field&>(field)._metadata["default"].vectorFieldType != _metadata["default"].vectorFieldType ||
       srcSize != dstSize) {
     std::ostringstream msg;
 
@@ -742,90 +741,10 @@ pylith::topology::Field::copy(const Field& field)
 
   PetscErrorCode err = VecCopy(field._localVec, _localVec);PYLITH_CHECK_ERROR(err);
 
+  // Update metadata
   label(const_cast<Field&>(field)._metadata["default"].label.c_str()); // Update label
-  _metadata["default"].scale = const_cast<Field&>(field)._metadata["default"].scale;
-
-  PYLITH_METHOD_END;
-} // copy
-
-// ----------------------------------------------------------------------
-void
-pylith::topology::Field::copy(PetscSection osection,
-			      PetscInt field,
-			      PetscInt component,
-			      PetscVec ovec)
-{ // copy
-  PYLITH_METHOD_BEGIN;
-
-  assert(osection);
-  assert(ovec);
-  assert(_localVec);
-
-  PetscSection section = NULL;
-  PetscScalar *array = NULL, *oarray = NULL;
-  PetscInt numFields, numComp, pStart, pEnd, qStart, qEnd;
-  PetscErrorCode err;
-
-  assert(_dm);
-  err = DMGetDefaultSection(_dm, &section);PYLITH_CHECK_ERROR(err);assert(section);  
-  err = PetscSectionGetNumFields(osection, &numFields);PYLITH_CHECK_ERROR(err);
-  err = PetscSectionGetChart(section, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
-  err = PetscSectionGetChart(osection, &qStart, &qEnd);PYLITH_CHECK_ERROR(err);
-  if ((pStart != qStart) || (pEnd != qEnd)) {
-    std::ostringstream msg;
-
-    msg << "Cannot copy values from PETSc section "
-	<< _metadata["default"].label << "'. Sections are incompatible.\n"
-	<< "  Source section:\n"
-    << "    chart: ["<<pStart<<","<<pEnd<<")\n"
-	<< "  Destination section:\n"
-	<< "    space dim: " << spaceDim() << "\n"
-	<< "    vector field type: " << _metadata["default"].vectorFieldType << "\n"
-	<< "    scale: " << _metadata["default"].scale << "\n"
-    << "    chart: ["<<qStart<<","<<qEnd<<")";
-    throw std::runtime_error(msg.str());
-  } // if
-  if (field >= numFields) {
-    std::ostringstream msg;
-    msg << "Invalid field "<<field<<" should be in [0, "<<numFields<<")";
-    throw std::runtime_error(msg.str());
-  }
-  if ((field >= 0) && (component >= 0)) {
-    err = PetscSectionGetFieldComponents(osection, field, &numComp);PYLITH_CHECK_ERROR(err);
-    if (component >= numComp) {
-      std::ostringstream msg;
-      msg << "Invalid field component "<<component<<" should be in [0, "<<numComp<<")";
-      throw std::runtime_error(msg.str());
-    } // if
-  } // if
-  // Copy values from field
-  err = VecGetArray(_localVec, &array);PYLITH_CHECK_ERROR(err);
-  err = VecGetArray(ovec, &oarray);PYLITH_CHECK_ERROR(err);
-  for(PetscInt p = pStart; p < pEnd; ++p) {
-    PetscInt dof, off, odof, ooff;
-
-    err = PetscSectionGetDof(section, p, &dof);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionGetOffset(section, p, &off);PYLITH_CHECK_ERROR(err);
-    if (field >= 0) {
-      err = PetscSectionGetFieldDof(osection, p, field, &odof);PYLITH_CHECK_ERROR(err);
-      err = PetscSectionGetFieldOffset(osection, p, field, &ooff);PYLITH_CHECK_ERROR(err);
-      if (component >= 0) {
-        assert(!(odof%numComp));
-        odof  = odof/numComp;
-        ooff += odof*component;
-      } // if
-    } else {
-      err = PetscSectionGetDof(osection, p, &odof);PYLITH_CHECK_ERROR(err);
-      err = PetscSectionGetOffset(osection, p, &ooff);PYLITH_CHECK_ERROR(err);
-    } // else
-    assert(odof == dof);
-    if (!odof) continue;
-    for(PetscInt d = 0; d < dof; ++d) {
-      array[off+d] = oarray[ooff+d];
-    } // for
-  } // for
-  err = VecRestoreArray(_localVec, &array);PYLITH_CHECK_ERROR(err);
-  err = VecRestoreArray(ovec, &oarray);PYLITH_CHECK_ERROR(err);
+  vectorFieldType(const_cast<Field&>(field)._metadata["default"].vectorFieldType);
+  scale(const_cast<Field&>(field)._metadata["default"].scale);
 
   PYLITH_METHOD_END;
 } // copy
@@ -1325,9 +1244,14 @@ pylith::topology::Field::subfieldAdd(const char *name,
 { // subfieldAdd
   PYLITH_METHOD_BEGIN;
 
+  assert(0 == _subfieldComps.count(name));
+  assert(0 == _metadata.count(name));
+
   // Keep track of name/components until setup
   _subfieldComps[name] = numComponents;
-  _metadata[name]  = _metadata["default"];
+  _metadata[name] = _metadata["default"];
+  _metadata[name].label = name;
+  _metadata[name].index = _metadata.size()-2; // Indices match order added (account for "default").
 
   PYLITH_METHOD_END;
 } // subfieldAdd
@@ -1348,7 +1272,6 @@ pylith::topology::Field::subfieldsSetup(void)
   for(std::map<std::string, int>::const_iterator f_iter = _subfieldComps.begin(); f_iter != _subfieldComps.end(); ++f_iter, ++iField) {
     err = PetscSectionSetFieldName(section, iField, f_iter->first.c_str());PYLITH_CHECK_ERROR(err);
     err = PetscSectionSetFieldComponents(section, iField, f_iter->second);PYLITH_CHECK_ERROR(err);
-    _metadata[f_iter->first].index = iField;
   } // for
 
   PYLITH_METHOD_END;
@@ -1400,14 +1323,136 @@ pylith::topology::Field::subfieldSetDof(const char *name,
 const pylith::topology::FieldBase::Metadata&
 pylith::topology::Field::subfieldMetadata(const char* name)
 { // subfieldMetadata
+  PYLITH_METHOD_BEGIN;
+
   try {
     const Metadata& metadata = _metadata[name];
-    return metadata;
+    PYLITH_METHOD_RETURN(metadata);
   } catch (std::exception& err) {
     std::ostringstream msg;
     msg << "Could not find subfield '" << name << "' in field '" << label() << "'." << std::endl;
     throw std::runtime_error(msg.str());
   } // try/catch
+
+  // Satisfy return value
+  PYLITH_METHOD_RETURN(_metadata["default"]);
 } // subfieldmetadata
+
+
+// ----------------------------------------------------------------------
+// Copy subfield values to field.
+void
+pylith::topology::Field::copySubfield(const Field& field,
+				      const char* name)
+{ // copySubfield
+  PYLITH_METHOD_BEGIN;
+
+  const Metadata& subfieldMetadata = const_cast<Field&>(field).subfieldMetadata(name);
+  const int subfieldIndex = subfieldMetadata.index;assert(subfieldIndex >= 0);
+
+  PetscErrorCode err;
+  _metadata["default"] = subfieldMetadata;
+  label(subfieldMetadata.label.c_str()); // Use method to insure propagation to subsidiary objects
+
+  const PetscSection& fieldSection = field.petscSection();
+  const PetscSection& subfieldSection = this->petscSection();
+
+  // Check compatibility of sections
+  const int srcSize = field.chartSize();
+  const int dstSize = chartSize();
+  if (srcSize < dstSize) {
+    _extractSubfield(field, name);
+  } // if
+  assert(_localVec && field._localVec);
+
+  PetscInt pStart, pEnd;
+  err = PetscSectionGetChart(subfieldSection, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+
+  // Copy values from field
+  PylithScalar* subfieldArray = NULL;
+  PylithScalar* fieldArray = NULL;
+  err = VecGetArray(this->_localVec, &subfieldArray);PYLITH_CHECK_ERROR(err);
+  err = VecGetArray(field._localVec, &fieldArray);PYLITH_CHECK_ERROR(err);
+  for (PetscInt p = pStart; p < pEnd; ++p) {
+    PetscInt fdof, foff, sdof, soff;
+    
+    err = PetscSectionGetDof(subfieldSection, p, &sdof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(subfieldSection, p, &soff);PYLITH_CHECK_ERROR(err);
+    
+    err = PetscSectionGetFieldDof(fieldSection, p, subfieldIndex, &fdof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetFieldOffset(fieldSection, p, subfieldIndex, &foff);PYLITH_CHECK_ERROR(err);
+    
+    assert(fdof == sdof);
+    for (PetscInt d = 0; d < fdof; ++d) {
+      subfieldArray[soff+d] = fieldArray[foff+d];
+    } // for
+  } // for
+  err = VecRestoreArray(field._localVec, &fieldArray);PYLITH_CHECK_ERROR(err);
+  err = VecRestoreArray(this->_localVec, &subfieldArray);PYLITH_CHECK_ERROR(err);
+
+  PYLITH_METHOD_END;
+} // copySubfield
+
+
+// ----------------------------------------------------------------------
+// Extract subfield.
+void
+pylith::topology::Field::_extractSubfield(const Field& field,
+					  const char* name)
+{ // _extractSubfield
+  PYLITH_METHOD_BEGIN;
+
+  clear();
+
+  const Metadata& subfieldMetadata = const_cast<Field&>(field).subfieldMetadata(name);
+  const int subfieldIndex = subfieldMetadata.index;assert(subfieldIndex >= 0);
+
+  PetscErrorCode err;
+  PetscDM subfieldDM = NULL;
+  PetscIS subfieldIS = NULL;
+  const int numSubfields = 1;
+  int indicesSubfield[1];
+  indicesSubfield[0] = subfieldIndex;
+  err = DMCreateSubDM(_dm, numSubfields, indicesSubfield, &subfieldIS, &subfieldDM);PYLITH_CHECK_ERROR(err);assert(subfieldDM);assert(subfieldIS);
+
+  err = DMCreateLocalVector(_dm, &_localVec);PYLITH_CHECK_ERROR(err);
+  err = DMCreateGlobalVector(_dm, &_globalVec);PYLITH_CHECK_ERROR(err);
+
+  // Setup section
+  const PetscSection& fieldSection = field.petscSection();
+  PetscSection subfieldSection = NULL;
+  err = DMGetDefaultSection(this->_dm, &subfieldSection);PYLITH_CHECK_ERROR(err);
+  err = DMSetDefaultGlobalSection(this->_dm, NULL);PYLITH_CHECK_ERROR(err);
+
+  const PetscInt* points = NULL;
+  PetscInt numPoints = 0;
+  err = ISGetSize(subfieldIS, &numPoints);PYLITH_CHECK_ERROR(err);
+  err = ISGetIndices(subfieldIS, &points);PYLITH_CHECK_ERROR(err);
+  const PetscInt pStart = (numPoints > 0) ? points[0] : 0;
+  const PetscInt pEnd = (numPoints > 0) ? points[numPoints-1] : 0;
+  err = PetscSectionSetChart(subfieldSection, pStart, pEnd);PYLITH_CHECK_ERROR(err);
+
+  for (PetscInt i=0; i < numPoints; ++i) {
+    const PetscInt point = points[i];
+    PetscInt dof;
+    err = PetscSectionGetFieldDof(fieldSection, point, subfieldIndex, &dof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionSetDof(subfieldSection, point, dof);PYLITH_CHECK_ERROR(err);
+
+    err = PetscSectionGetFieldConstraintDof(fieldSection, point, subfieldIndex, &dof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionSetConstraintDof(subfieldSection, point, dof);PYLITH_CHECK_ERROR(err);
+  } // for
+  this->allocate();
+
+  for (PetscInt i=0; i < numPoints; ++i) {
+    const PetscInt point = points[i];
+    PetscInt dof;
+    const PetscInt* indices = NULL;
+    err = PetscSectionGetConstraintDof(subfieldSection, point, &dof);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetFieldConstraintIndices(fieldSection, point, subfieldIndex, &indices);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionSetConstraintIndices(subfieldSection, point, indices);PYLITH_CHECK_ERROR(err);
+  } // for
+
+  PYLITH_METHOD_END;
+} // _extractSubField
 
 // End of file 

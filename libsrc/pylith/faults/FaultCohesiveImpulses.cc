@@ -221,35 +221,21 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
     PYLITH_METHOD_RETURN(buffer);
 
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
-    PetscSection orientationSection = _fields->get("orientation").petscSection();assert(orientationSection);
-    PetscVec orientationVec = _fields->get("orientation").localVector();assert(orientationVec);
     _allocateBufferVectorField();
     topology::Field& buffer = _fields->get("buffer (vector)");
-    buffer.copy(orientationSection, 0, PETSC_DETERMINE, orientationVec);
-    buffer.label("strike_dir");
-    buffer.scale(1.0);
+    buffer.copySubfield(orientation, "strike_dir");
     PYLITH_METHOD_RETURN(buffer);
 
   } else if (2 == cohesiveDim && 0 == strcasecmp("dip_dir", name)) {
-    PetscSection orientationSection = _fields->get("orientation").petscSection();assert(orientationSection);
-    PetscVec orientationVec = _fields->get("orientation").localVector();assert(orientationVec);
-    assert(orientationSection);assert(orientationVec);
     _allocateBufferVectorField();
     topology::Field& buffer = _fields->get("buffer (vector)");
-    buffer.copy(orientationSection, 1, PETSC_DETERMINE, orientationVec);
-    buffer.label("dip_dir");
-    buffer.scale(1.0);
+    buffer.copySubfield(orientation, "dip_dir");
     PYLITH_METHOD_RETURN(buffer);
 
   } else if (0 == strcasecmp("normal_dir", name)) {
-    PetscSection orientationSection = _fields->get("orientation").petscSection();assert(orientationSection);
-    PetscVec orientationVec = _fields->get("orientation").localVector();assert(orientationVec);
-    assert(orientationSection);assert(orientationVec);
     _allocateBufferVectorField();
     topology::Field& buffer = _fields->get("buffer (vector)");
-    buffer.copy(orientationSection, cohesiveDim, PETSC_DETERMINE, orientationVec);
-    buffer.label("normal_dir");
-    buffer.scale(1.0);
+    buffer.copySubfield(orientation, "normal_dir");
     PYLITH_METHOD_RETURN(buffer);
 
   } else if (0 == strcasecmp("impulse_amplitude", name)) {

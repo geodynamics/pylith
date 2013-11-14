@@ -351,17 +351,13 @@ public :
    */
   void copy(const Field& field);
 
-  /** Copy field values.
+  /** Copy subfield values and its metadata to field;
    *
-   * @param osection Field to copy.
-   * @param field Section field or -1
-   * @param component Section field component or -1
-   * @param ovec Values to copy.
+   * @param field Field to copy from.
+   * @param name Name of subfield to copy.
    */
-  void copy(PetscSection osection,
-	    PetscInt field,
-	    PetscInt component,
-	    PetscVec ovec);
+  void copySubfield(const Field& field,
+		    const char* name);
 
   /** Add two fields, storing the result in one of the fields.
    *
@@ -491,6 +487,14 @@ private :
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
+
+  /** Setup field to hold values extract from subfield of another field.
+   *
+   * @param field Field to copy from.
+   * @param name Name of subfield.
+   */
+  void _extractSubfield(const Field& field,
+			const char* name);
 
   /** Get scatter for given context.
    *
