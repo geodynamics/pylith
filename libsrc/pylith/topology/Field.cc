@@ -1349,14 +1349,6 @@ pylith::topology::Field::copySubfield(const Field& field,
 { // copySubfield
   PYLITH_METHOD_BEGIN;
 
-  const Metadata& subfieldMetadata = const_cast<Field&>(field).subfieldMetadata(name);
-  const int subfieldIndex = subfieldMetadata.index;assert(subfieldIndex >= 0);
-
-  PetscErrorCode err;
-  _metadata.clear();
-  _metadata["default"] = subfieldMetadata;
-  label(subfieldMetadata.label.c_str()); // Use method to insure propagation to subsidiary objects
-
   // Check compatibility of sections
   const int srcSize = field.chartSize();
   const int dstSize = chartSize();
@@ -1365,6 +1357,14 @@ pylith::topology::Field::copySubfield(const Field& field,
   } // if
   assert(_localVec && field._localVec);
 
+  const Metadata& subfieldMetadata = const_cast<Field&>(field).subfieldMetadata(name);
+  const int subfieldIndex = subfieldMetadata.index;assert(subfieldIndex >= 0);
+
+  _metadata.clear();
+  _metadata["default"] = subfieldMetadata;
+  label(subfieldMetadata.label.c_str()); // Use method to insure propagation to subsidiary objects
+
+  PetscErrorCode err;
   const PetscSection& fieldSection = field.petscSection();
   const PetscSection& subfieldSection = this->petscSection();
 
