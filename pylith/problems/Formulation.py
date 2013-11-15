@@ -515,7 +515,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     for constraint in self.constraints:
       constraint.setConstraintSizes(solution)
     solution.allocate()
-    solution.zero()
+    solution.zeroAll()
     for constraint in self.constraints:
       constraint.setConstraints(solution)
     for integrator in self.integrators:

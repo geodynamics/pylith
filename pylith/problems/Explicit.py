@@ -166,7 +166,7 @@ class Explicit(Formulation, ModuleExplicit):
       integrator.setupSolnDof(jacobian)
     jacobian.vectorFieldType(jacobian.VECTOR)
     jacobian.allocate()
-    jacobian.zero()
+    jacobian.zeroAll()
     self.jacobian = jacobian
     self._debug.log(resourceUsageString())
 
