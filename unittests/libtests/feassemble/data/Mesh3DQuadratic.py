@@ -50,8 +50,8 @@ class Mesh3DQuadratic(Component):
     self.gravityVec = numpy.array( [0.0, 0.0, -1.0e8],
                                    dtype=numpy.float64)
     self.vertices = numpy.array( [[-0.5, -2.0, -1.0],
-                                  [ 2.0, -2.0, -0.5],
                                   [ 1.0,  1.0,  0.0],
+                                  [ 2.0, -2.0, -0.5],
                                   [ 0.2,  0.5,  2.0],
                                   [ 1.5, -0.5, -0.25],
                                   [ 0.25, -0.5, -0.5],
@@ -63,8 +63,8 @@ class Mesh3DQuadratic(Component):
     self.cells = numpy.array( [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]],
                               dtype=numpy.int32)
     self.verticesRef = numpy.array( [[-1.0, -1.0, -1.0],
-                                     [+1.0, -1.0, -1.0],
                                      [-1.0, +1.0, -1.0],
+                                     [+1.0, -1.0, -1.0],
                                      [-1.0, -1.0, +1.0],
                                      [ 0.0,  0.0, -1.0],
                                      [-1.0,  0.0, -1.0],
@@ -87,8 +87,8 @@ class Mesh3DQuadratic(Component):
     e23 = ((v2[0]-v3[0])**2 + (v2[1]-v3[1])**2 + (v2[2]-v3[2])**2)**0.5
 
     vol = 1.0/6.0*numpy.linalg.det(numpy.array([[1.0, v0[0], v0[1], v0[2]],
-                                                [1.0, v1[0], v1[1], v1[2]],
                                                 [1.0, v2[0], v2[1], v2[2]],
+                                                [1.0, v1[0], v1[1], v1[2]],
                                                 [1.0, v3[0], v3[1], v3[2]]],
                                                dtype=numpy.float64))
     cross012 = numpy.cross(v1-v0, v2-v0)

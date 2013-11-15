@@ -265,12 +265,14 @@ pylith::feassemble::TestCellGeometry::testJacobian(void)
     const int size = jacobian.size();
     const int index = iLoc*cellDim*spaceDim;
     const PylithScalar tolerance = 1.0e-06;
-    for (int i=0; i < size; ++i)
+
+    for (int i=0; i < size; ++i) {
       if (_data->jacobian[index+i] < 1.0)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->jacobian[index+i], jacobian[i], tolerance);
       else
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, jacobian[i]/_data->jacobian[index+i], tolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->jacobianDet[iLoc], det, tolerance);
+    } // for
   } // for
 
   PYLITH_METHOD_END;

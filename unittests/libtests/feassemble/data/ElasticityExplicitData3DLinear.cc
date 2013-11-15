@@ -51,8 +51,8 @@ const PylithScalar pylith::feassemble::ElasticityExplicitData3DLinear::_gravityV
 
 const PylithScalar pylith::feassemble::ElasticityExplicitData3DLinear::_vertices[] = {
  -5.00000000e-01, -1.00000000e+00, -5.00000000e-01,
-  2.00000000e+00, -5.00000000e-01, -4.00000000e-01,
   1.00000000e+00, -1.00000000e-01, -3.00000000e-01,
+  2.00000000e+00, -5.00000000e-01, -4.00000000e-01,
  -2.00000000e-01,  5.00000000e-01,  2.00000000e+00,
 };
 
@@ -62,8 +62,8 @@ const int pylith::feassemble::ElasticityExplicitData3DLinear::_cells[] = {
 
 const PylithScalar pylith::feassemble::ElasticityExplicitData3DLinear::_verticesRef[] = {
  -1.00000000e+00, -1.00000000e+00, -1.00000000e+00,
-  1.00000000e+00, -1.00000000e+00, -1.00000000e+00,
  -1.00000000e+00,  1.00000000e+00, -1.00000000e+00,
+  1.00000000e+00, -1.00000000e+00, -1.00000000e+00,
  -1.00000000e+00, -1.00000000e+00,  1.00000000e+00,
 };
 
@@ -81,8 +81,8 @@ const PylithScalar pylith::feassemble::ElasticityExplicitData3DLinear::_basis[] 
 
 const PylithScalar pylith::feassemble::ElasticityExplicitData3DLinear::_basisDerivRef[] = {
  -5.00000000e-01, -5.00000000e-01, -5.00000000e-01,
-  5.00000000e-01,  0.00000000e+00,  0.00000000e+00,
   0.00000000e+00,  5.00000000e-01,  0.00000000e+00,
+  5.00000000e-01,  0.00000000e+00,  0.00000000e+00,
   0.00000000e+00,  0.00000000e+00,  5.00000000e-01,
 };
 
@@ -108,10 +108,10 @@ const PylithScalar pylith::feassemble::ElasticityExplicitData3DLinear::_fieldTmd
 };
 
 const PylithScalar pylith::feassemble::ElasticityExplicitData3DLinear::_valsResidual[] = {
- -6.53643381e+09,  3.88073108e+10,  3.46544326e+09,
- -4.31950537e+09,  7.13977327e+10,  2.36607350e+10,
-  7.21485556e+09, -1.13028007e+11, -3.40771285e+10,
-  3.64444612e+09,  2.82296339e+09,  6.95364028e+09,
+ -8.99885327e+09, -4.07464129e+10,  6.21335449e+08,
+  1.27906263e+10,  1.08322387e+11,  1.13912957e+10,
+  1.66969875e+08, -6.20694753e+10, -9.45473384e+09,
+ -3.95538040e+09, -5.50649912e+09, -2.55520730e+09,
 };
 
 const PylithScalar pylith::feassemble::ElasticityExplicitData3DLinear::_valsJacobian[] = {

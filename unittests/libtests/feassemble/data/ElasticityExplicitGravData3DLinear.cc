@@ -51,8 +51,8 @@ const PylithScalar pylith::feassemble::ElasticityExplicitGravData3DLinear::_grav
 
 const PylithScalar pylith::feassemble::ElasticityExplicitGravData3DLinear::_vertices[] = {
  -5.00000000e-01, -1.00000000e+00, -5.00000000e-01,
-  2.00000000e+00, -5.00000000e-01, -4.00000000e-01,
   1.00000000e+00, -1.00000000e-01, -3.00000000e-01,
+  2.00000000e+00, -5.00000000e-01, -4.00000000e-01,
  -2.00000000e-01,  5.00000000e-01,  2.00000000e+00,
 };
 
@@ -62,8 +62,8 @@ const int pylith::feassemble::ElasticityExplicitGravData3DLinear::_cells[] = {
 
 const PylithScalar pylith::feassemble::ElasticityExplicitGravData3DLinear::_verticesRef[] = {
  -1.00000000e+00, -1.00000000e+00, -1.00000000e+00,
-  1.00000000e+00, -1.00000000e+00, -1.00000000e+00,
  -1.00000000e+00,  1.00000000e+00, -1.00000000e+00,
+  1.00000000e+00, -1.00000000e+00, -1.00000000e+00,
  -1.00000000e+00, -1.00000000e+00,  1.00000000e+00,
 };
 
@@ -81,8 +81,8 @@ const PylithScalar pylith::feassemble::ElasticityExplicitGravData3DLinear::_basi
 
 const PylithScalar pylith::feassemble::ElasticityExplicitGravData3DLinear::_basisDerivRef[] = {
  -5.00000000e-01, -5.00000000e-01, -5.00000000e-01,
-  5.00000000e-01,  0.00000000e+00,  0.00000000e+00,
   0.00000000e+00,  5.00000000e-01,  0.00000000e+00,
+  5.00000000e-01,  0.00000000e+00,  0.00000000e+00,
   0.00000000e+00,  0.00000000e+00,  5.00000000e-01,
 };
 
@@ -108,10 +108,10 @@ const PylithScalar pylith::feassemble::ElasticityExplicitGravData3DLinear::_fiel
 };
 
 const PylithScalar pylith::feassemble::ElasticityExplicitGravData3DLinear::_valsResidual[] = {
- -6.53643381e+09,  3.88073108e+10, -3.01595567e+10,
- -4.31950537e+09,  7.13977327e+10, -9.96426503e+09,
-  7.21485556e+09, -1.13028007e+11, -6.77021285e+10,
-  3.64444612e+09,  2.82296339e+09, -2.66713597e+10,
+ -8.99885327e+09, -4.07464129e+10, -3.30036646e+10,
+  1.27906263e+10,  1.08322387e+11, -2.22337043e+10,
+  1.66969875e+08, -6.20694753e+10, -4.30797338e+10,
+ -3.95538040e+09, -5.50649912e+09, -3.61802073e+10,
 };
 
 const PylithScalar pylith::feassemble::ElasticityExplicitGravData3DLinear::_valsJacobian[] = {

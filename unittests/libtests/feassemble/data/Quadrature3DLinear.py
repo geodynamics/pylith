@@ -39,28 +39,28 @@ def N0q(p):
 def N0r(p):
   return -0.5
 
-def N1(p):
+def N2(p):
   return 0.5*(1.0 + p[0])
 
-def N1p(p):
-  return 0.5
-
-def N1q(p):
-  return 0.0
-
-def N1r(p):
-  return 0.0
-
-def N2(p):
-  return 0.5*(1.0 + p[1])
-
 def N2p(p):
-  return 0.0
+  return 0.5
 
 def N2q(p):
-  return 0.5
+  return 0.0
 
 def N2r(p):
+  return 0.0
+
+def N1(p):
+  return 0.5*(1.0 + p[1])
+
+def N1p(p):
+  return 0.0
+
+def N1q(p):
+  return 0.5
+
+def N1r(p):
   return 0.0
 
 def N3(p):
