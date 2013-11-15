@@ -33,6 +33,7 @@ dist_noinst_DATA = \
 	spontaneousrup.cfg \
 	spontaneousrup_staticfriction.cfg \
 	spontaneousrup_slipweakening.cfg \
-	spontaneousrup_ratestateageing.cfg
+	spontaneousrup_ratestateageing.cfg \
+	traction_change.timedb
 
 # End of file 
