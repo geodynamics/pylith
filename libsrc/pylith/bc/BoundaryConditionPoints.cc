@@ -72,8 +72,8 @@ pylith::bc::BoundaryConditionPoints::_getPoints(const topology::Mesh& mesh)
   PetscDMLabel label = NULL;
   PetscIS pointIS = NULL;
   const PetscInt *points;
-  PetscInt numPoints, vStart, vEnd, numVertices = 0;
-  PetscBool hasLabel;
+  PetscInt numPoints = 0, vStart = 0, vEnd = 0, numVertices = 0;
+  PetscBool hasLabel = PETSC_FALSE;
   PetscErrorCode err;
   err = DMPlexHasLabel(dmMesh, _label.c_str(), &hasLabel);PYLITH_CHECK_ERROR(err);
   if (!hasLabel) {
@@ -85,12 +85,23 @@ pylith::bc::BoundaryConditionPoints::_getPoints(const topology::Mesh& mesh)
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
   err = DMPlexGetLabel(dmMesh, _label.c_str(), &label);PYLITH_CHECK_ERROR(err);
   err = DMLabelGetStratumIS(label, 1, &pointIS);PYLITH_CHECK_ERROR(err);
-  err = ISGetLocalSize(pointIS, &numPoints);PYLITH_CHECK_ERROR(err);
-  err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
+  if (pointIS) {
+    err = ISGetLocalSize(pointIS, &numPoints);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
+  } // if
+
   // For now, only use vertices
-  for (PetscInt p = 0; p < numPoints; ++p) if ((points[p] >= vStart) && (points[p] < vEnd)) ++numVertices;
+  for (PetscInt p = 0; p < numPoints; ++p) {
+    if ((points[p] >= vStart) && (points[p] < vEnd)) {
+      ++numVertices;
+    } // if
+  } // for
   _points.resize(numVertices);
-  for (PetscInt p = 0, v = 0; p < numPoints; ++p) if ((points[p] >= vStart) && (points[p] < vEnd)) _points[v++] = points[p];
+  for (PetscInt p = 0, v = 0; p < numPoints; ++p) {
+    if ((points[p] >= vStart) && (points[p] < vEnd)) {
+      _points[v++] = points[p];
+    } // if
+  } // for
   err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
   err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
 
