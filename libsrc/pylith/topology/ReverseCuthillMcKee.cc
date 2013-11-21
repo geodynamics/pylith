@@ -29,21 +29,15 @@ void
 pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh)
 { // reorder
   assert(mesh);
+  PetscIS permutation;
+  PetscDM dmOrig = mesh->dmMesh();
+  PetscDM dmNew = NULL;
+  PetscErrorCode err;
 
-  const int numCells = mesh->numCells();
-  if (numCells > 0) {
-    // Reorder mesh if mesh is only on proc 0 --or--
-    // reorder mesh on each processor indpendently.
-    PetscIS permutation;
-    PetscDM dmOrig = mesh->dmMesh();
-    PetscDM dmNew = NULL;
-    PetscErrorCode err;
-    err = DMPlexGetOrdering(dmOrig, MATORDERINGRCM, &permutation);PYLITH_CHECK_ERROR(err);
-    err = DMPlexPermute(dmOrig, permutation, &dmNew);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&permutation);PYLITH_CHECK_ERROR(err);
-    mesh->dmMesh(dmNew);
-  } // if
-
+  err = DMPlexGetOrdering(dmOrig, MATORDERINGRCM, &permutation);PYLITH_CHECK_ERROR(err);
+  err = DMPlexPermute(dmOrig, permutation, &dmNew);PYLITH_CHECK_ERROR(err);
+  err = ISDestroy(&permutation);PYLITH_CHECK_ERROR(err);
+  mesh->dmMesh(dmNew);
 } // reorder
 
 
