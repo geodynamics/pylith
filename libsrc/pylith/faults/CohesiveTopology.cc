@@ -636,10 +636,12 @@ pylith::faults::CohesiveTopology::createInterpolated(topology::Mesh* mesh,
   PetscInt cMax, cEnd;
 
   err = DMPlexGetLabel(sdm, "material-id", &mlabel);PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetHeightStratum(sdm, 0, NULL, &cEnd);PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetHybridBounds(sdm, &cMax, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
-  for (PetscInt cell = cMax; cell < cEnd; ++cell) {
-    err = DMLabelSetValue(mlabel, cell, materialId);PYLITH_CHECK_ERROR(err);
+  if (mlabel) {
+    err = DMPlexGetHeightStratum(sdm, 0, NULL, &cEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetHybridBounds(sdm, &cMax, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
+    for (PetscInt cell = cMax; cell < cEnd; ++cell) {
+      err = DMLabelSetValue(mlabel, cell, materialId);PYLITH_CHECK_ERROR(err);
+    }
   }
 
   PetscReal lengthScale = 1.0;
