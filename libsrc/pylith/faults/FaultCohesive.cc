@@ -129,7 +129,7 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
 
       PetscDMLabel   groupField;
       PetscBool      hasLabel;
-      PetscInt       depth, dim;
+      PetscInt       depth, gdepth, dim;
       PetscMPIInt    rank;
       PetscErrorCode err;
       // We do not have labels on all ranks until after distribution
@@ -143,11 +143,12 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
       } // if
       err = DMPlexGetDimension(dmMesh, &dim);PYLITH_CHECK_ERROR(err);
       err = DMPlexGetDepth(dmMesh, &depth);PYLITH_CHECK_ERROR(err);
+      err = MPI_Allreduce(&depth, &gdepth, 1, MPIU_INT, MPI_MAX, mesh->comm());PYLITH_CHECK_ERROR(err);
       err = DMPlexGetLabel(dmMesh, charlabel, &groupField);PYLITH_CHECK_ERROR(err);
       CohesiveTopology::createFault(&faultMesh, faultBoundary, *mesh, groupField);
 
-      if (dim > 1 && dim == depth) {
-        CohesiveTopology::createInterpolated(mesh, faultMesh, faultBoundary, groupField, id(), *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
+      if (dim > 1 && dim == gdepth) {
+        CohesiveTopology::createInterpolated(mesh, faultMesh, faultBoundary, id(), *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
       } else {
         CohesiveTopology::create(mesh, faultMesh, faultBoundary, groupField, id(), *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
       }

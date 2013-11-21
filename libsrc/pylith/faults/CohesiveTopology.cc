@@ -42,12 +42,13 @@ pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
   faultMesh->coordsys(mesh.coordsys());
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
 
-  PetscInt dim, depth;
+  PetscInt dim, depth, gdepth;
   err = DMPlexGetDimension(dmMesh, &dim);PYLITH_CHECK_ERROR(err);
   err = DMPlexGetDepth(dmMesh, &depth);PYLITH_CHECK_ERROR(err);
 
   // Convert fault to a DM
-  if (depth == dim) {
+  err = MPI_Allreduce(&depth, &gdepth, 1, MPIU_INT, MPI_MAX, mesh.comm());PYLITH_CHECK_ERROR(err);
+  if (gdepth == dim) {
     PetscDM subdm = NULL;
     PetscDMLabel label = NULL;
     const char *groupName = "", *labelName = "boundary";
