@@ -610,7 +610,6 @@ void
 pylith::faults::CohesiveTopology::createInterpolated(topology::Mesh* mesh,
 						     const topology::Mesh& faultMesh,
 						     PetscDM faultBoundary,
-						     PetscDMLabel groupField,
 						     const int materialId,
 						     int& firstFaultVertex,
 						     int& firstLagrangeVertex,
@@ -619,7 +618,6 @@ pylith::faults::CohesiveTopology::createInterpolated(topology::Mesh* mesh,
 { // createInterpolated
   assert(mesh);
   assert(faultBoundary);
-  assert(groupField);
   PetscDM        sdm   = NULL;
   PetscDMLabel   subpointMap = NULL, label = NULL;
   PetscErrorCode err;

@@ -99,7 +99,6 @@ public :
   void createInterpolated(topology::Mesh* mesh,
                           const topology::Mesh& faultMesh,
                           DM faultBoundary,
-                          DMLabel groupField,
                           const int materialId,
                           int& firstFaultVertex,
                           int& firstLagrangeVertex,
