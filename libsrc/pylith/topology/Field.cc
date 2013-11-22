@@ -1014,14 +1014,16 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
   err = DMPlexGetSubpointMap(dm,  &subpointMap);PYLITH_CHECK_ERROR(err);
   err = DMPlexGetSubpointMap(_dm, &subpointMapF);PYLITH_CHECK_ERROR(err);
   if (((dim != dimF) || ((pEnd-pStart) < (qEnd-qStart))) && subpointMap && !subpointMapF) {
-    const PetscInt *ind;
-    PetscIS subpointIS;
-    PetscInt n, q;
+    const PetscInt *ind = NULL;
+    PetscIS subpointIS = NULL;
+    PetscInt n = 0, q = 0;
 
     err = PetscSectionGetChart(section, &qStart, &qEnd);PYLITH_CHECK_ERROR(err);
     err = DMPlexCreateSubpointIS(dm, &subpointIS);PYLITH_CHECK_ERROR(err);
-    err = ISGetLocalSize(subpointIS, &n);PYLITH_CHECK_ERROR(err);
-    err = ISGetIndices(subpointIS, &ind);PYLITH_CHECK_ERROR(err);
+    if (subpointIS) {
+      err = ISGetLocalSize(subpointIS, &n);PYLITH_CHECK_ERROR(err);
+      err = ISGetIndices(subpointIS, &ind);PYLITH_CHECK_ERROR(err);
+    } // if
     err = PetscSectionCreate(mesh.comm(), &subSection);PYLITH_CHECK_ERROR(err);
     err = PetscSectionSetChart(subSection, pStart, pEnd);PYLITH_CHECK_ERROR(err);
     for(q = qStart; q < qEnd; ++q) {
@@ -1037,8 +1039,10 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
         } // if
       } // if
     } // for
-    err = ISRestoreIndices(subpointIS, &ind);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&subpointIS);PYLITH_CHECK_ERROR(err);
+    if (subpointIS) {
+      err = ISRestoreIndices(subpointIS, &ind);PYLITH_CHECK_ERROR(err);
+      err = ISDestroy(&subpointIS);PYLITH_CHECK_ERROR(err);
+    } // if
     /* No need to setup section */
     section = subSection;
     /* There are no excludes for surface meshes */
