@@ -61,19 +61,12 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
     logEvent = "%srefine" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
-    newMesh = mesh
     from Mesh import Mesh
-    newMesh = Mesh(dim=mesh.dimension(), comm=mesh.comm())
+    newMesh = Mesh()
     newMesh.debug(mesh.debug())
     newMesh.coordsys(mesh.coordsys())
     ModuleRefineUniform.refine(self, newMesh, mesh, self.levels)
-    if not newMesh == mesh:
-      #from pylith.utils.petsc import MemoryLogger
-      #memoryLogger =  MemoryLogger.singleton()
-    
-      #memoryLogger.stagePush(mesh.memLoggingStage)      
-      mesh.cleanup()
-      #memoryLogger.stagePop()
+    mesh.cleanup()
 
     self._eventLogger.eventEnd(logEvent)
     return newMesh

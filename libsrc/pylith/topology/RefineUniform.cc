@@ -56,12 +56,14 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
 { // refine
   PYLITH_METHOD_BEGIN;
   
+  if (levels < 1) {
+    PYLITH_METHOD_END;
+  } // if
+
   assert(newMesh);
 
   PetscErrorCode err;
-
-  PetscDM dmNew = newMesh->dmMesh();
-  PetscDM dmOrig = mesh.dmMesh();
+  PetscDM dmOrig = mesh.dmMesh();assert(dmOrig);
   
   PetscInt meshDepth = 0;
   err = DMPlexGetDepth(dmOrig, &meshDepth);
@@ -74,10 +76,17 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
     throw std::runtime_error(msg.str());
   } // if
 
+  // Refine, keeping original mesh intact.
+  PetscDM dmNew = NULL;
   err = DMPlexSetRefinementUniform(dmOrig, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
+  err = DMRefine(dmOrig, mesh.comm(), &dmNew);PYLITH_CHECK_ERROR(err);
 
-  for (int i=0; i < levels; ++i) {
-    err = DMRefine(dmOrig, mesh.comm(), &dmNew);PYLITH_CHECK_ERROR(err);
+  for (int i=1; i < levels; ++i) {
+    PetscDM dmCur = dmNew; dmNew = NULL;
+    err = DMPlexSetRefinementUniform(dmCur, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
+    err = DMRefine(dmCur, mesh.comm(), &dmNew);PYLITH_CHECK_ERROR(err);
+
+    err = DMDestroy(&dmCur);PYLITH_CHECK_ERROR(err);
   } // for
 
   newMesh->dmMesh(dmNew);
