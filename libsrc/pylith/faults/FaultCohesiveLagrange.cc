@@ -904,11 +904,6 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
   PetscInt eMax;
 
   err = DMPlexGetHybridBounds(dmMesh, NULL, NULL, &eMax, NULL);PYLITH_CHECK_ERROR(err);
-  if (eMax < 0) {
-    std::ostringstream msg;
-    msg << "No hybrid edges found in mesh.";
-    throw std::runtime_error(msg.str());
-  } // if  
 
   // Check for fault groups
   PetscBool hasLabel;
@@ -970,6 +965,13 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
   topology::StratumIS cohesiveIS(dmMesh, "material-id", id(), includeOnlyCells);
   const PetscInt* cells = cohesiveIS.points();
   const PetscInt ncells = cohesiveIS.size();
+
+  if (ncells > 0 && eMax < 0) {
+    std::ostringstream msg;
+    msg << "No hybrid edges found in mesh with cohesive cells.";
+    throw std::runtime_error(msg.str());
+  } // if  
+
   for(PetscInt i = 0; i < ncells; ++i) {
     PetscInt *closure = NULL;
     PetscInt cellNumEdges = 0, closureSize;

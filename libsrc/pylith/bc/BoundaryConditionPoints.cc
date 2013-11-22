@@ -102,8 +102,10 @@ pylith::bc::BoundaryConditionPoints::_getPoints(const topology::Mesh& mesh)
       _points[v++] = points[p];
     } // if
   } // for
-  err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
-  err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
+  if (pointIS) {
+    err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
+  } // if
 
   PYLITH_METHOD_END;
 } // _getPoints
