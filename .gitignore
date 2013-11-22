@@ -29,3 +29,4 @@ PyLith.egg-info
 autom4te.cache
 *~
 *.pyc
+examples/*/*/output/*.vtk
