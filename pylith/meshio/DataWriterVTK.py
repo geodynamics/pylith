@@ -75,7 +75,7 @@ class DataWriterVTK(DataWriter, ModuleDataWriterVTK):
     """
     Initialize writer.
     """
-    DataWriter.initialize(self, normalizer)
+    DataWriter.initialize(self, normalizer, self.filename)
     
     timeScale = normalizer.timeScale()
     timeConstantN = normalizer.nondimensionalize(self.timeConstant, timeScale)

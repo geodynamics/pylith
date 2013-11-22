@@ -59,7 +59,7 @@ class DataWriterHDF5(DataWriter, ModuleDataWriterHDF5):
     """
     Initialize writer.
     """
-    DataWriter.initialize(self, normalizer)
+    DataWriter.initialize(self, normalizer, self.filename)
 
     timeScale = normalizer.timeScale()
     

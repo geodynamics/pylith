@@ -61,15 +61,7 @@ class DataWriterHDF5Ext(DataWriter, ModuleDataWriterHDF5Ext):
     """
     Initialize writer.
     """
-    DataWriter.initialize(self, normalizer)
-    return
-
-
-  def initialize(self, normalizer):
-    """
-    Initialize writer.
-    """
-    DataWriter.initialize(self, normalizer)
+    DataWriter.initialize(self, normalizer, self.filename)
     
     timeScale = normalizer.timeScale()
 

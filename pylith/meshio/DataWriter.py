@@ -51,10 +51,14 @@ class DataWriter(PetscComponent):
     return
 
 
-  def initialize(self, normalizer):
+  def initialize(self, normalizer, filename):
     """
     Initialize writer.
     """
+    import os
+    relpath = os.path.dirname(filename)
+    if not os.path.exists(relpath):
+      os.makedirs(relpath)
     return
 
 
