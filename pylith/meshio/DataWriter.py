@@ -57,7 +57,7 @@ class DataWriter(PetscComponent):
     """
     import os
     relpath = os.path.dirname(filename)
-    if not os.path.exists(relpath):
+    if len(relpath) > 0 and not os.path.exists(relpath):
       os.makedirs(relpath)
     return
 
