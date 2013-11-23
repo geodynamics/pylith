@@ -59,6 +59,7 @@ pylith::topology::VecVisitorMesh::initialize(const Field& field)
   _localVec = field.localVector();assert(_localVec);
 
   PetscErrorCode err = VecGetArray(_localVec, &_localArray);PYLITH_CHECK_ERROR(err);
+  err = DMPlexCreateClosureIndex(_dm, _section);PYLITH_CHECK_ERROR(err);
 } // initialize
 
 // ----------------------------------------------------------------------

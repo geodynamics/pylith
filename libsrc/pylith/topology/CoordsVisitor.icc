@@ -53,6 +53,7 @@ pylith::topology::CoordsVisitor::initialize(void)
   PetscInt       size;
   PetscErrorCode err;
   err = DMPlexGetCoordinateSection(_dm, &_section);PYLITH_CHECK_ERROR(err);assert(_section);
+  err = DMPlexCreateClosureIndex(_dm, _section);PYLITH_CHECK_ERROR(err);
   err = DMGetCoordinatesLocal(_dm, &_localVec);PYLITH_CHECK_ERROR(err);assert(_localVec);
   err = VecGetLocalSize(_localVec, &size);PYLITH_CHECK_ERROR(err);
   err = VecGetArray(_localVec, &_localArray);PYLITH_CHECK_ERROR(err);assert(!size || _localArray);
