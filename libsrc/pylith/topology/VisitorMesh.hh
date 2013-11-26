@@ -100,6 +100,10 @@ public :
    */
   PetscInt sectionOffset(const PetscInt point) const;
 
+  /** Optimize the closure operator by using extra storage.
+   */
+  void optimizeClosure();
+
   /** Get array of values associated with closure.
    *
    * @pre Must be followed by call to restoreClosure().

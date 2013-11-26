@@ -59,7 +59,6 @@ pylith::topology::VecVisitorMesh::initialize(const Field& field)
   _localVec = field.localVector();assert(_localVec);
 
   PetscErrorCode err = VecGetArray(_localVec, &_localArray);PYLITH_CHECK_ERROR(err);
-  err = DMPlexCreateClosureIndex(_dm, _section);PYLITH_CHECK_ERROR(err);
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -138,6 +137,19 @@ pylith::topology::VecVisitorMesh::sectionOffset(const PetscInt point) const
   PetscErrorCode err = PetscSectionGetOffset(_section, point, &offset);PYLITH_CHECK_ERROR(err);
   return offset;
 } // sectionOffset
+
+// ----------------------------------------------------------------------
+// Optimize the closure operation.
+inline
+void
+pylith::topology::VecVisitorMesh::optimizeClosure()
+{ // optimizeClosure
+  PetscSection   clSection;
+  PetscErrorCode err;
+
+  err = PetscSectionGetClosureIndex(_section, (PetscObject) _dm, &clSection, NULL);PYLITH_CHECK_ERROR(err);
+  if (!clSection) {err = DMPlexCreateClosureIndex(_dm, _section);PYLITH_CHECK_ERROR(err);}
+} // optimizeClosure
 
 // ----------------------------------------------------------------------
 // Get coordinates array associated with closure.
