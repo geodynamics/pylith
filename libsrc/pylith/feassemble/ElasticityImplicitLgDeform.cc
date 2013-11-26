@@ -179,14 +179,18 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
   // Setup field visitors.
   scalar_array dispCell(numBasis*spaceDim);
   topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
+  dispVisitor.optimizeClosure();
 
   scalar_array dispIncrCell(numBasis*spaceDim);
   topology::VecVisitorMesh dispIncrVisitor(fields->get("dispIncr(t->t+dt)"));
+  dispIncrVisitor.optimizeClosure();
 
   topology::VecVisitorMesh residualVisitor(residual);
+  residualVisitor.optimizeClosure();
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
+  coordsVisitor.optimizeClosure();
 
   assert(_normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
@@ -355,12 +359,15 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(topology::Jaco
   // Setup field visitors.
   scalar_array dispCell(numBasis*spaceDim);
   topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
+  dispVisitor.optimizeClosure();
 
   scalar_array dispIncrCell(numBasis*spaceDim);
   topology::VecVisitorMesh dispIncrVisitor(fields->get("dispIncr(t->t+dt)"));
+  dispIncrVisitor.optimizeClosure();
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
+  coordsVisitor.optimizeClosure();
 
   // Get sparse matrix
   const PetscMat jacobianMat = jacobian->matrix();assert(jacobianMat);

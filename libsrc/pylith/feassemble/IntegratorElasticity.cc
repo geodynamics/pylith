@@ -199,9 +199,11 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(const PylithScalar t,
   // Setup visitors.
   scalar_array dispCell(numBasis*spaceDim);
   topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
+  dispVisitor.optimizeClosure();
 
   scalar_array coordsCell(numCorners*spaceDim);
   topology::CoordsVisitor coordsVisitor(dmMesh);
+  coordsVisitor.optimizeClosure();
 
   // Loop over cells
   for(PetscInt c = 0; c < numCells; ++c) {
@@ -531,12 +533,14 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(topology::Field
   // Setup field visitors.
   scalar_array dispCell(numBasis*spaceDim);
   topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
+  dispVisitor.optimizeClosure();
 
   topology::VecVisitorMesh fieldVisitor(*field);
   PetscScalar* fieldArray = fieldVisitor.localArray();
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
+  coordsVisitor.optimizeClosure();
 
   // Loop over cells
   for(PetscInt c = 0; c < numCells; ++c) {

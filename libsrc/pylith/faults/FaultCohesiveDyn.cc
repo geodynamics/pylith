@@ -549,6 +549,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
   scalar_array dLagrangeTpdtVertex(spaceDim);
   topology::VecVisitorMesh dLagrangeVisitor(_fields->get("sensitivity dLagrange"));
   PetscScalar* dLagrangeArray = dLagrangeVisitor.localArray();
+  dLagrangeVisitor.optimizeClosure();
 
   constrainSolnSpace_fn_type constrainSolnSpaceFn;
   switch (spaceDim) { // switch
@@ -1818,6 +1819,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negative
   // Get sections
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(faultDMMesh);
+  coordsVisitor.optimizeClosure();
 
   scalar_array dLagrangeCell(numBasis*spaceDim);
   topology::VecVisitorMesh dLagrangeVisitor(_fields->get("sensitivity dLagrange"));

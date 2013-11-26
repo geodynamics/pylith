@@ -147,6 +147,7 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
+  coordsVisitor.optimizeClosure();
 
   assert(_normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
@@ -275,6 +276,7 @@ pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field& residual,
   
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
+  coordsVisitor.optimizeClosure();
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
   topology::Stratum cellsStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
@@ -411,6 +413,7 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(const topology::Field& res
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
+  coordsVisitor.optimizeClosure();
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -544,6 +547,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Jacobian* jacobian,
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
+  coordsVisitor.optimizeClosure();
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -675,6 +679,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Field* jacobian,
   
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
+  coordsVisitor.optimizeClosure();
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)

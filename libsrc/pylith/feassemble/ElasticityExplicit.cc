@@ -209,18 +209,23 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(const topology::Field&
   // Setup field visitors.
   scalar_array accCell(numBasis*spaceDim);
   topology::VecVisitorMesh accVisitor(fields->get("acceleration(t)"));
+  accVisitor.optimizeClosure();
 
   scalar_array velCell(numBasis*spaceDim);
   topology::VecVisitorMesh velVisitor(fields->get("velocity(t)"));
+  velVisitor.optimizeClosure();
 
   scalar_array dispCell(numBasis*spaceDim);
   scalar_array dispAdjCell(numBasis*spaceDim);
   topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
-  
+  dispVisitor.optimizeClosure();
+
   topology::VecVisitorMesh residualVisitor(residual);
+  residualVisitor.optimizeClosure();
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
+  coordsVisitor.optimizeClosure();
 
   assert(_normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
@@ -443,6 +448,7 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(topology::Field* jacob
 
   scalar_array coordsCell(numBasis*spaceDim); // :KLUDGE: numBasis to numCorners after switching to higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
+  coordsVisitor.optimizeClosure();
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)

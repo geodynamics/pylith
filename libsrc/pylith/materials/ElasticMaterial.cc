@@ -417,6 +417,7 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
+  coordsVisitor.optimizeClosure();
 
   PylithScalar dtStable = pylith::PYLITH_MAXSCALAR;
   scalar_array dtStableCell(numQuadPts);
@@ -576,6 +577,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mes
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
+  coordsVisitor.optimizeClosure();
 
   // Create arrays for querying
   const int tensorSize = _tensorSize;
@@ -705,6 +707,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(const topology::Mes
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
+  coordsVisitor.optimizeClosure();
 
   // Create arrays for querying
   const int tensorSize = _tensorSize;

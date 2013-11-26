@@ -125,6 +125,7 @@ pylith::bc::Neumann::integrateResidual(const topology::Field& residual,
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
+  coordsVisitor.optimizeClosure();
 
   // Loop over faces and integrate contribution from each face
   for(PetscInt c = cStart; c < cEnd; ++c) {
@@ -418,6 +419,7 @@ pylith::bc::Neumann::_queryDB(const char* name,
   // Get coordinates
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
+  coordsVisitor.optimizeClosure();
 
   const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
   assert(cs);
@@ -506,6 +508,7 @@ void
   // Get coordinates.
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
+  coordsVisitor.optimizeClosure();
 
   // Get sections
   scalar_array tmpLocal(spaceDim);

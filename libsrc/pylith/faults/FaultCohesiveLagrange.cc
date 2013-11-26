@@ -1356,6 +1356,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   // Get section containing coordinates of vertices
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(faultDMMesh);
+  coordsVisitor.optimizeClosure();
 
   // Loop over cohesive cells, computing orientation weighted by
   // jacobian at constraint vertices
@@ -1620,6 +1621,7 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(faultDMMesh);
+  coordsVisitor.optimizeClosure();
 
   // Loop over cells in fault mesh, compute area
   for(PetscInt c = cStart; c < cEnd; ++c) {
