@@ -41,6 +41,7 @@ def run_pylith(dir, examples, nprocs=1):
     for simfiles in examples:
         cmd = "pylith --nodes=%d %s" % (nprocs, simfiles)
         print "WORKDIR: %s, RUNNING %s" % (wkd, cmd)
+        sys.stdout.flush()
         os.system(cmd)
 
 # ======================================================================
