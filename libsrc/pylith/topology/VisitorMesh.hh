@@ -100,10 +100,6 @@ public :
    */
   PetscInt sectionOffset(const PetscInt point) const;
 
-  /** Optimize the closure operator by using extra storage.
-   */
-  void optimizeClosure();
-
   /** Get array of values associated with closure.
    *
    * @pre Must be followed by call to restoreClosure().
@@ -147,6 +143,19 @@ public :
 		  const PetscInt valuesSize,
 		  const PetscInt cell,
 		  const InsertMode mode) const;
+
+  /** Optimize the closure operator by creating index for closures.
+   *
+   * :TODO: Remove this method. Call static version when setting up fields.
+   */
+  void optimizeClosure(void);
+
+  /** Optimize the closure operator by creating index for closures.
+   *
+   * @param field Field to optimize closure for.
+   */
+  static
+  void optimizeClosure(const Field& field);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :

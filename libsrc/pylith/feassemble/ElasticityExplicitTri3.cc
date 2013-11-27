@@ -216,7 +216,6 @@ pylith::feassemble::ElasticityExplicitTri3::integrateResidual(const topology::Fi
 
   scalar_array coordsCell(numCorners*spaceDim);
   topology::CoordsVisitor coordsVisitor(dmMesh);
-  coordsVisitor.optimizeClosure();
 
   assert(_normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
@@ -457,7 +456,6 @@ pylith::feassemble::ElasticityExplicitTri3::integrateJacobian(
 
   scalar_array coordsCell(numCorners*spaceDim);
   topology::CoordsVisitor coordsVisitor(dmMesh);
-  coordsVisitor.optimizeClosure();
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)

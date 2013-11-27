@@ -149,7 +149,9 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
-  coordsVisitor.optimizeClosure();
+
+  // Optimize coordinate retrieval in closure  
+  topology::CoordsVisitor::optimizeClosure(dmMesh);
 
   // Create arrays for querying.
   const int numDBProperties = _metadata.numDBProperties();

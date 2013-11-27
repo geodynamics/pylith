@@ -139,19 +139,6 @@ pylith::topology::VecVisitorMesh::sectionOffset(const PetscInt point) const
 } // sectionOffset
 
 // ----------------------------------------------------------------------
-// Optimize the closure operation.
-inline
-void
-pylith::topology::VecVisitorMesh::optimizeClosure()
-{ // optimizeClosure
-  PetscSection   clSection;
-  PetscErrorCode err;
-
-  err = PetscSectionGetClosureIndex(_section, (PetscObject) _dm, &clSection, NULL);PYLITH_CHECK_ERROR(err);
-  if (!clSection) {err = DMPlexCreateClosureIndex(_dm, _section);PYLITH_CHECK_ERROR(err);}
-} // optimizeClosure
-
-// ----------------------------------------------------------------------
 // Get coordinates array associated with closure.
 inline
 void
@@ -209,6 +196,39 @@ pylith::topology::VecVisitorMesh::setClosure(const PetscScalar* valuesCell,
   assert(_localVec);
   PetscErrorCode err = DMPlexVecSetClosure(_dm, _section, _localVec, cell, valuesCell, mode);PYLITH_CHECK_ERROR(err);
 } // setClosure
+
+// ----------------------------------------------------------------------
+// Optimize the closure operation.
+inline
+void
+pylith::topology::VecVisitorMesh::optimizeClosure(void)
+{ // optimizeClosure
+  PetscErrorCode err;
+
+  PetscSection indexSection = NULL;
+  err = PetscSectionGetClosureIndex(_section, (PetscObject) _dm, &indexSection, NULL);PYLITH_CHECK_ERROR(err);
+  if (!indexSection) {
+    err = DMPlexCreateClosureIndex(_dm, _section);PYLITH_CHECK_ERROR(err);
+  } // if
+} // optimizeClosure
+
+// ----------------------------------------------------------------------
+// Optimize the closure operation.
+inline
+void
+pylith::topology::VecVisitorMesh::optimizeClosure(const Field& field)
+{ // optimizeClosure
+  PetscErrorCode err;
+
+  PetscSection fieldSection = field.petscSection();assert(fieldSection);
+  PetscDM dmMesh = field.mesh().dmMesh();assert(dmMesh);
+  PetscSection indexSection = NULL;
+  err = PetscSectionGetClosureIndex(fieldSection, (PetscObject) dmMesh, &indexSection, NULL);PYLITH_CHECK_ERROR(err);
+  if (!indexSection) {
+    err = DMPlexCreateClosureIndex(dmMesh, fieldSection);PYLITH_CHECK_ERROR(err);
+  } // if
+} // optimizeClosure
+
 
 // ----------------------------------------------------------------------
 // Default constructor.

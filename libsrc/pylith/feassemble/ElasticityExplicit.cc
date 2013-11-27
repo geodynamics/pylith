@@ -225,7 +225,6 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(const topology::Field&
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
-  coordsVisitor.optimizeClosure();
 
   assert(_normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
@@ -448,7 +447,6 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(topology::Field* jacob
 
   scalar_array coordsCell(numBasis*spaceDim); // :KLUDGE: numBasis to numCorners after switching to higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
-  coordsVisitor.optimizeClosure();
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)

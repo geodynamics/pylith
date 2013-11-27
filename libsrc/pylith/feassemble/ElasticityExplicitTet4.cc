@@ -135,10 +135,9 @@ pylith::feassemble::ElasticityExplicitTet4::normViscosity(const PylithScalar vis
 // ----------------------------------------------------------------------
 // Integrate constributions to residual term (r) for operator.
 void
-pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
-        const topology::Field& residual,
-        const PylithScalar t,
-        topology::SolutionFields* const fields)
+pylith::feassemble::ElasticityExplicitTet4::integrateResidual(const topology::Field& residual,
+							      const PylithScalar t,
+							      topology::SolutionFields* const fields)
 { // integrateResidual
   PYLITH_METHOD_BEGIN;
   
@@ -217,7 +216,6 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
 
   scalar_array coordsCell(numCorners*spaceDim);
   topology::CoordsVisitor coordsVisitor(dmMesh);
-  coordsVisitor.optimizeClosure();
 
   assert(_normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
@@ -495,7 +493,6 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(topology::Field* j
 
   scalar_array coordsCell(numCorners*spaceDim);
   topology::CoordsVisitor coordsVisitor(dmMesh);
-  coordsVisitor.optimizeClosure();
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)

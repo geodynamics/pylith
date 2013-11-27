@@ -121,6 +121,9 @@ pylith::feassemble::IntegratorElasticity::initialize(const topology::Mesh& mesh)
   // Compute geometry for quadrature operations.
   _quadrature->initializeGeometry();
 
+  // Optimize coordinate retrieval in closure
+  topology::CoordsVisitor::optimizeClosure(dmMesh);
+
   // Initialize material.
   _material->initialize(mesh, _quadrature);
   _isJacobianSymmetric = _material->isJacobianSymmetric();
@@ -203,7 +206,6 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(const PylithScalar t,
 
   scalar_array coordsCell(numCorners*spaceDim);
   topology::CoordsVisitor coordsVisitor(dmMesh);
-  coordsVisitor.optimizeClosure();
 
   // Loop over cells
   for(PetscInt c = 0; c < numCells; ++c) {
@@ -540,7 +542,6 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(topology::Field
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
-  coordsVisitor.optimizeClosure();
 
   // Loop over cells
   for(PetscInt c = 0; c < numCells; ++c) {

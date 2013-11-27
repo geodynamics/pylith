@@ -76,10 +76,6 @@ public :
    */
   PetscInt sectionOffset(const PetscInt point) const;
 
-  /** Optimize the closure operator by using extra storage.
-   */
-  void optimizeClosure();
-
   /** Get coordinates array associated with closure.
    *
    * @pre Must be followed by call to restoreClosure().
@@ -111,6 +107,13 @@ public :
   void restoreClosure(PetscScalar** coordsCell,
 		      PetscInt* coordsSize,
 		      const PetscInt cell) const;
+
+  /** Optimize the closure operator by creating index for closures.
+   *
+   * @param dmMesh PETSc DM to optimize closure on coordinates field.
+   */
+  static
+  void optimizeClosure(PetscDM dmMesh);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :

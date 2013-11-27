@@ -107,19 +107,6 @@ pylith::topology::CoordsVisitor::sectionOffset(const PetscInt point) const
 } // sectionOffset
 
 // ----------------------------------------------------------------------
-// Optimize the closure operation.
-inline
-void
-pylith::topology::CoordsVisitor::optimizeClosure()
-{ // optimizeClosure
-  PetscSection   clSection;
-  PetscErrorCode err;
-
-  err = PetscSectionGetClosureIndex(_section, (PetscObject) _dm, &clSection, NULL);PYLITH_CHECK_ERROR(err);
-  if (!clSection) {err = DMPlexCreateClosureIndex(_dm, _section);PYLITH_CHECK_ERROR(err);}
-} // optimizeClosure
-
-// ----------------------------------------------------------------------
 // Get coordinates array associated with closure.
 inline
 void
@@ -162,6 +149,26 @@ pylith::topology::CoordsVisitor::restoreClosure(PetscScalar** coordsCell,
   assert(_localVec);
   PetscErrorCode err = DMPlexVecRestoreClosure(_dm, _section, _localVec, cell, coordsSize, coordsCell);PYLITH_CHECK_ERROR(err);
 } // restoreClosure
+
+// ----------------------------------------------------------------------
+// Optimize the closure operation.
+inline
+void
+pylith::topology::CoordsVisitor::optimizeClosure(PetscDM dmMesh)
+{ // optimizeClosure
+  assert(dmMesh);
+
+  PetscErrorCode err;
+  PetscSection fieldSection = NULL;
+  err = DMPlexGetCoordinateSection(dmMesh, &fieldSection);PYLITH_CHECK_ERROR(err);assert(fieldSection);
+
+  PetscSection indexSection = NULL;
+  err = PetscSectionGetClosureIndex(fieldSection, (PetscObject) dmMesh, &indexSection, NULL);PYLITH_CHECK_ERROR(err);
+  if (!indexSection) {
+    err = DMPlexCreateClosureIndex(dmMesh, fieldSection);PYLITH_CHECK_ERROR(err);
+  } // if
+
+} // optimizeClosure
 
 #endif
 
