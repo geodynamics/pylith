@@ -356,7 +356,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 
   err = DMPlexCreateSubpointIS(faultDMMesh, &subpointIS);PYLITH_CHECK_ERROR(err);
   if (subpointIS) {err = ISGetIndices(subpointIS, &subpointMap);PYLITH_CHECK_ERROR(err);}
-  err = PetscMalloc3(faceSizeDM,PetscInt,&origVerticesDM,faceSizeDM,PetscInt,&faceVerticesDM,faceSizeDM*3,PetscInt,&cohesiveCone);PYLITH_CHECK_ERROR(err);
+  err = PetscMalloc3(faceSizeDM,&origVerticesDM,faceSizeDM,&faceVerticesDM,faceSizeDM*3,&cohesiveCone);PYLITH_CHECK_ERROR(err);
   for (PetscInt faceDM = ffStart; faceDM < ffEnd; ++faceDM, ++firstFaultCell, ++firstFaultCellDM) {
     if (debug) std::cout << "Considering fault face " << faceDM << std::endl;
     const PetscInt *support;
