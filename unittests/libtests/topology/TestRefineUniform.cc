@@ -162,13 +162,8 @@ pylith::topology::TestRefineUniform::testRefineHex8Level1Fault1(void)
 { // testRefineHex8Level1Fault1
   PYLITH_METHOD_BEGIN;
 
-#if !defined(DISABLE_FAULT_TEST)
   MeshDataCohesiveHex8Level1Fault1 data;
   _testRefine(data, false);
-#else
-  std::cout << "****TEST IS DISABLED. FORCING FAILURE.****" << std::endl;
-  CPPUNIT_ASSERT(false);
-#endif
 
   PYLITH_METHOD_END;
 } // testRefineHex8Level1Fault1

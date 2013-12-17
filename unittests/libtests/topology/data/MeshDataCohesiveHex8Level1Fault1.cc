@@ -26,7 +26,7 @@ const char* pylith::topology::MeshDataCohesiveHex8Level1Fault1::_faultA =
   "fault";
 const char* pylith::topology::MeshDataCohesiveHex8Level1Fault1::_faultB = 0;
 
-const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_numVertices = 63;
+const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_numVertices = 54;
 
 const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_spaceDim = 3;
 
@@ -38,7 +38,7 @@ const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_cellDim = 3;
 
 const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_numCorners = 8;
 
-const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_numCornersCohesive = 12;
+const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_numCornersCohesive = 8;
 
 const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_matIdSum = 
   8*1 + 8*2 + 4*100;
@@ -46,7 +46,7 @@ const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_matIdSum =
 const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_numGroups = 4;
 
 const int pylith::topology::MeshDataCohesiveHex8Level1Fault1::_groupSizes[] = {
-  2, 9, 12, 27,
+  2, 4+12+9, 6+17+12, 18+33+18, // faces+edges+vertices
 };
 
 const char* pylith::topology::MeshDataCohesiveHex8Level1Fault1::_groupNames[] = {
