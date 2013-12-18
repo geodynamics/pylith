@@ -33,9 +33,12 @@ def suite():
   from TestDislocation import TestDislocation
   suite.addTest(unittest.makeSuite(TestDislocation))
 
+  from TestDislocation import TestDislocation2
+  suite.addTest(unittest.makeSuite(TestDislocation2))
+
   # Not complete
-  ##from TestDislocation2 import TestDislocation2
-  ##suite.addTest(unittest.makeSuite(TestDislocation2))
+  ##from TestDislocationTwoFaults import TestDislocation
+  ##suite.addTest(unittest.makeSuite(TestDislocation))
 
   from TestLgDeformRigidBody import TestRigidBody
   suite.addTest(unittest.makeSuite(TestRigidBody))

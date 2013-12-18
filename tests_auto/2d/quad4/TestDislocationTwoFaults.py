@@ -18,15 +18,15 @@
 
 ## @file tests/2d/quad4/TestDislocation.py
 ##
-## @brief Test suite for testing pylith with fault slip.
+## @brief Test suite for testing pylith with slip on two faults.
 
 import numpy
 from TestQuad4 import TestQuad4
 from dislocation_soln import AnalyticalSoln
-
+from pylith.utils.VTKDataReader import has_vtk
+from pylith.utils.VTKDataReader import VTKDataReader
 from pylith.tests.Fault import check_vertex_fields
 
-# ----------------------------------------------------------------------
 # Local version of PyLithApp
 from pylith.apps.PyLithApp import PyLithApp
 class LocalApp(PyLithApp):
@@ -48,10 +48,9 @@ def run_pylith():
   return
 
 
-# ----------------------------------------------------------------------
-class TestDislocation(TestQuad4):
+class TestDislocation2(TestQuad4):
   """
-  Test suite for fault with prescribed slip.
+  Test suite for testing pylith with 2-D axial extension.
   """
 
   def setUp(self):
@@ -59,44 +58,80 @@ class TestDislocation(TestQuad4):
     Setup for test.
     """
     TestQuad4.setUp(self)
-    self.mesh['nvertices'] = 81+9
+    self.mesh['nvertices'] = 81+18
     self.nverticesO = 81
-    self.faultMesh = {'nvertices': 9,
-                      'spaceDim': 2,
-                      'ncells': 8,
-                      'ncorners': 2}
+    self.fault1Mesh = {'nvertices': 9,
+                       'spaceDim': 3,
+                       'ncells': 8,
+                       'ncorners': 2}
+    self.fault2Mesh = {'nvertices': 9,
+                       'spaceDim': 3,
+                       'ncells': 8,
+                       'ncorners': 2}
 
     run_pylith()
-    self.outputRoot = "dislocation"
-    self.soln = AnalyticalSoln()
+    self.outputRoot = "dislocation2"
+    if has_vtk():
+      self.reader = VTKDataReader()
+      self.soln = AnalyticalSoln()
+    else:
+      self.reader = None
 
     return
 
 
-  def test_fault_info(self):
+  def test_fault1_info(self):
     """
     Check fault information.
     """
-    if not self.checkResults:
+    if self.reader is None:
       return
 
-    filename = "%s-fault_info.h5" % self.outputRoot
+    filename = "%s-fault1_info.vtk" % self.outputRoot
     fields = ["normal_dir", "final_slip", "slip_time"]
-    check_vertex_fields(self, filename, self.faultMesh, fields)
+    check_vertex_fields(self, filename, self.fault1Mesh, fields)
 
     return
 
 
-  def test_fault_data(self):
+  def test_fault1_data(self):
     """
     Check fault information.
     """
-    if not self.checkResults:
+    if self.reader is None:
       return
 
-    filename = "%s-fault.h5" % self.outputRoot
-    fields = ["slip", "traction_change"]
-    check_vertex_fields(self, filename, self.faultMesh, fields)
+    filename = "%s-fault1_t0000000.vtk" % self.outputRoot
+    fields = ["cumulative_slip", "traction_change"]
+    check_vertex_fields(self, filename, self.fault1Mesh, fields)
+
+    return
+
+
+  def test_fault2_info(self):
+    """
+    Check fault information.
+    """
+    if self.reader is None:
+      return
+
+    filename = "%s-fault2_info.vtk" % self.outputRoot
+    fields = ["normal_dir", "final_slip", "slip_time"]
+    check_vertex_fields(self, filename, self.fault2Mesh, fields)
+
+    return
+
+
+  def test_fault2_data(self):
+    """
+    Check fault information.
+    """
+    if self.reader is None:
+      return
+
+    filename = "%s-fault2_t0000000.vtk" % self.outputRoot
+    fields = ["cumulative_slip", "traction_change"]
+    check_vertex_fields(self, filename, self.fault2Mesh, fields)
 
     return
 
@@ -136,24 +171,24 @@ class TestDislocation(TestQuad4):
     nvertices = self.faultMesh['nvertices']
 
     if name == "normal_dir":
-      field = numpy.zeros( (1, nvertices, 2), dtype=numpy.float64)
-      field[0,:,0] = normalDir[0]
-      field[0,:,1] = normalDir[1]
+      field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
+      field[:,0] = normalDir[0]
+      field[:,1] = normalDir[1]
 
     elif name == "final_slip":
-      field = numpy.zeros( (1, nvertices, 2), dtype=numpy.float64)
-      field[0,:,0] = finalSlip
+      field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
+      field[:,0] = finalSlip
       
     elif name == "slip_time":
-      field = slipTime*numpy.zeros( (1, nvertices, 1), dtype=numpy.float64)
+      field = slipTime*numpy.zeros( (nvertices, 1), dtype=numpy.float64)
       
-    elif name == "slip":
-      field = numpy.zeros( (1, nvertices, 2), dtype=numpy.float64)
-      field[0,:,0] = finalSlip
+    elif name == "cumulative_slip":
+      field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
+      field[:,0] = finalSlip
 
     elif name == "traction_change":
-      field = numpy.zeros( (1, nvertices, 2), dtype=numpy.float64)
-      field[0,:,0] = 0.0
+      field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
+      field[:,0] = 0.0
       
     else:
       raise ValueError("Unknown fault field '%s'." % name)
@@ -162,63 +197,12 @@ class TestDislocation(TestQuad4):
 
 
 # ----------------------------------------------------------------------
-# Local version of PyLithApp
-from pylith.apps.PyLithApp import PyLithApp
-class LocalApp2(PyLithApp):
-  def __init__(self):
-    PyLithApp.__init__(self, name="dislocation_np2")
-    return
-
-
-# Helper function to run PyLith
-def run_pylith2():
-  """
-  Run pylith.
-  """
-  if not "done" in dir(run_pylith2):
-    # Run PyLith
-    run_pylith2.done = True
-    app = LocalApp2()
-    app.run()
-  return
-
-
-# ----------------------------------------------------------------------
-class TestDislocation2(TestDislocation):
-  """
-  Test suite for fault with prescribed slip w/2 procs.
-  """
-
-  def setUp(self):
-    """
-    Setup for test.
-    """
-    TestQuad4.setUp(self)
-    self.mesh['nvertices'] = 81+9
-    self.nverticesO = 81
-    self.faultMesh = {'nvertices': 9,
-                      'spaceDim': 2,
-                      'ncells': 8,
-                      'ncorners': 2}
-
-    run_pylith2()
-    self.outputRoot = "dislocation_np2"
-    self.soln = AnalyticalSoln()
-
-    return
-
-
-# ----------------------------------------------------------------------
 if __name__ == '__main__':
   import unittest
-  from TestDislocation import TestDislocation as Tester
-  from TestDislocation import TestDislocation2 as Tester2
+  from TestDislocation2 import TestDislocation2 as Tester
 
   suite = unittest.TestSuite()
-
   suite.addTest(unittest.makeSuite(Tester))
-  suite.addTest(unittest.makeSuite(Tester2))
-
   unittest.TextTestRunner(verbosity=2).run(suite)
 
 

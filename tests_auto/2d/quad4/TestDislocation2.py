@@ -29,7 +29,7 @@ from pylith.tests.Fault import check_vertex_fields
 
 # Local version of PyLithApp
 from pylith.apps.PyLithApp import PyLithApp
-class AxialApp(PyLithApp):
+class LocalApp(PyLithApp):
   def __init__(self):
     PyLithApp.__init__(self, name="dislocation")
     return
@@ -42,9 +42,9 @@ def run_pylith():
   """
   if not "done" in dir(run_pylith):
     # Run PyLith
-    app = AxialApp()
-    app.run()
     run_pylith.done = True
+    app = LocalApp()
+    app.run()
   return
 
 
@@ -199,7 +199,7 @@ class TestDislocation2(TestQuad4):
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
   import unittest
-  from TestDislocation2 import TestDislocation2 as Tester
+  from TestDislocationTwoFaults import TestDislocation2 as Tester
 
   suite = unittest.TestSuite()
   suite.addTest(unittest.makeSuite(Tester))
