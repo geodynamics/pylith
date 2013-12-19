@@ -526,8 +526,8 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   PetscScalar *coords, *newCoords;
   PetscInt     numComp = 0, coordSize = 0;
  
-  err = DMPlexGetCoordinateSection(complexMesh, &coordSection);PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetCoordinateSection(newMesh,     &newCoordSection);PYLITH_CHECK_ERROR(err);
+  err = DMGetCoordinateSection(complexMesh, &coordSection);PYLITH_CHECK_ERROR(err);
+  err = DMGetCoordinateSection(newMesh,     &newCoordSection);PYLITH_CHECK_ERROR(err);
   err = PetscSectionSetNumFields(newCoordSection, 1);PYLITH_CHECK_ERROR(err);
   if (vEnd > vStart) {err = PetscSectionGetDof(coordSection, vStart, &numComp);PYLITH_CHECK_ERROR(err);}
   err = PetscSectionSetFieldComponents(newCoordSection, 0, numComp);PYLITH_CHECK_ERROR(err);

@@ -52,7 +52,7 @@ pylith::topology::CoordsVisitor::initialize(void)
   assert(_dm);
   PetscInt       size;
   PetscErrorCode err;
-  err = DMPlexGetCoordinateSection(_dm, &_section);PYLITH_CHECK_ERROR(err);assert(_section);
+  err = DMGetCoordinateSection(_dm, &_section);PYLITH_CHECK_ERROR(err);assert(_section);
   err = DMGetCoordinatesLocal(_dm, &_localVec);PYLITH_CHECK_ERROR(err);assert(_localVec);
   err = VecGetLocalSize(_localVec, &size);PYLITH_CHECK_ERROR(err);
   err = VecGetArray(_localVec, &_localArray);PYLITH_CHECK_ERROR(err);assert(!size || _localArray);
@@ -160,7 +160,7 @@ pylith::topology::CoordsVisitor::optimizeClosure(PetscDM dmMesh)
 
   PetscErrorCode err;
   PetscSection fieldSection = NULL;
-  err = DMPlexGetCoordinateSection(dmMesh, &fieldSection);PYLITH_CHECK_ERROR(err);assert(fieldSection);
+  err = DMGetCoordinateSection(dmMesh, &fieldSection);PYLITH_CHECK_ERROR(err);assert(fieldSection);
 
   PetscSection indexSection = NULL;
   err = PetscSectionGetClosureIndex(fieldSection, (PetscObject) dmMesh, &indexSection, NULL);PYLITH_CHECK_ERROR(err);

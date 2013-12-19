@@ -172,7 +172,7 @@ pylith::problems::Solver::_createNullSpace(const topology::SolutionFields& field
   PetscVec mode[6];
   
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetCoordinateSection(dmMesh, &coordinateSection);PYLITH_CHECK_ERROR(err);assert(coordinateSection);
+  err = DMGetCoordinateSection(dmMesh, &coordinateSection);PYLITH_CHECK_ERROR(err);assert(coordinateSection);
   err = DMGetCoordinatesLocal(dmMesh, &coordinateVec);PYLITH_CHECK_ERROR(err);assert(coordinateVec);
   if (spaceDim > 1) {
     const int m = (spaceDim * (spaceDim + 1)) / 2;
