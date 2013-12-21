@@ -282,7 +282,7 @@ pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
   PetscScalar *coords = NULL;
   PetscInt coordSize = 0;
 
-  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);PYLITH_CHECK_ERROR(err);
+  err = DMGetCoordinateSection(dmMesh, &coordSection);PYLITH_CHECK_ERROR(err);
   err = PetscSectionSetNumFields(coordSection, 1);PYLITH_CHECK_ERROR(err);
   err = PetscSectionSetFieldComponents(coordSection, 0, spaceDim);PYLITH_CHECK_ERROR(err);
   err = PetscSectionSetChart(coordSection, ncells, ncells+nvertices);PYLITH_CHECK_ERROR(err);
