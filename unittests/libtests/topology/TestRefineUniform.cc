@@ -42,8 +42,6 @@
 #include <strings.h> // USES strcasecmp()
 #include <stdexcept> // USES std::logic_error
 
-#define DISABLE_FAULT_TEST
-
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestRefineUniform );
 
@@ -105,13 +103,8 @@ pylith::topology::TestRefineUniform::testRefineQuad4Level1Fault1(void)
 { // testRefineQuad4Level1Fault1
   PYLITH_METHOD_BEGIN;
 
-#if !defined(DISABLE_FAULT_TEST)
   MeshDataCohesiveQuad4Level1Fault1 data;
   _testRefine(data, false);
-#else
-  std::cout << "****TEST IS DISABLED. FORCING FAILURE.****" << std::endl;
-  CPPUNIT_ASSERT(false);
-#endif
 
   PYLITH_METHOD_END;
 } // testRefineQuad4Level1Fault1

@@ -25,7 +25,7 @@ const int pylith::topology::MeshDataCohesiveQuad4Level1Fault1::_refineLevel = 1;
 const char* pylith::topology::MeshDataCohesiveQuad4Level1Fault1::_faultA = "fault";
 const char* pylith::topology::MeshDataCohesiveQuad4Level1Fault1::_faultB = 0;
 
-const int pylith::topology::MeshDataCohesiveQuad4Level1Fault1::_numVertices = 35;
+const int pylith::topology::MeshDataCohesiveQuad4Level1Fault1::_numVertices = 30;
 
 const int pylith::topology::MeshDataCohesiveQuad4Level1Fault1::_spaceDim = 2;
 
@@ -37,7 +37,7 @@ const int pylith::topology::MeshDataCohesiveQuad4Level1Fault1::_cellDim = 2;
 
 const int pylith::topology::MeshDataCohesiveQuad4Level1Fault1::_numCorners = 4;
 
-const int pylith::topology::MeshDataCohesiveQuad4Level1Fault1::_numCornersCohesive = 6;
+const int pylith::topology::MeshDataCohesiveQuad4Level1Fault1::_numCornersCohesive = 4;
 
 const int pylith::topology::MeshDataCohesiveQuad4Level1Fault1::_matIdSum = 
   8*1 + 8*2 + 4*100;
@@ -45,7 +45,9 @@ const int pylith::topology::MeshDataCohesiveQuad4Level1Fault1::_matIdSum =
 const int pylith::topology::MeshDataCohesiveQuad4Level1Fault1::_numGroups = 3;
 
 const int pylith::topology::MeshDataCohesiveQuad4Level1Fault1::_groupSizes[3] = {
-  6, 5, 15,
+  6+4, // vertices+edges
+  5+4, 
+  10+8,
 };
 
 const char* pylith::topology::MeshDataCohesiveQuad4Level1Fault1::_groupNames[3] = {
