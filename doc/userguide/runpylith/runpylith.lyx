@@ -3601,6 +3601,12 @@ www.mcs.anl.gov/petsc/petsc-as/documentation/index.html
 \end_layout
 
 \begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Time-Stepping"
+
+\end_inset
+
 Time Stepping
 \end_layout
 
@@ -3616,6 +3622,15 @@ PyLith provides three choices for controlling the time step in time-dependent
  In general, quasi-static simulations should use automatically calculated
  time steps and dynamic simulations should use a uniform, user-specified
  time step.
+ Note that all three of the time stepping schemes make use of the computed
+ stable time step (see 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Stable-time-step"
+
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Standard
@@ -3638,8 +3653,8 @@ Uniform, User-Specified Time Step
 \begin_layout Standard
 With a uniform, user-specified time step, the user selects the time step
  that is used over the entire duration of the simulation.
- This value is used whether or not it yields a stable solution, so users
- should be careful when selecting the time-step value.
+ If this value exceeds the computed stable time step at any time, PyLith
+ will terminate with an error.
  The properties for the uniform, user-specified time step are:
 \end_layout
 
@@ -3704,6 +3719,9 @@ reference "sec:FileFormat:TimeStepUser"
  If the total duration exceeds the time associated with the time steps,
  then a flag determines whether to cycle through the time steps or to use
  the last specified time step for the time remaining.
+ Similar to the uniform time step, if the user-specified time step size
+ exceeds the computed stable time step at any time, PyLith will terminate
+ with an error.
  The properties for the nonuniform, user-specified time step are:
 \end_layout
 
@@ -3762,15 +3780,22 @@ Nonuniform, Automatic Time Step
 \end_layout
 
 \begin_layout Standard
-This time-step implementation automatically calculates a stable time step
+This time-step implementation automatically calculates a time step size
  based on the constitutive model and rate of deformation.
  As a result, this choice for choosing the time step relies on accurate
  calculation of a stable time step within each finite-element cell by the
  constitutive models.
- In order to provide some control over the time-step selection, the user
- can control the frequency that a new time step is calculated, the time
- step to use relative to the value determined by the constitutive models,
- and a maximum value for the time step.
+ To provide some control over the time-step selection, the user can control
+ the frequency with which a new time step is calculated, the time step to
+ use relative to the value determined by the constitutive models, and a
+ maximum value for the time step.
+ Note that the stability factor allows the computed time step size to exceed
+ the computed stable time step.
+ A stability factor of 1.0 would provide a time step size equal to the stable
+ time step, while a value of 2.0 (default value) would provide a time step
+ size equal to 1/2 the stable time step.
+ Caution should be used when adjusting the stability factor to values less
+ than 1.0, as the large time step size may result in inaccurate solutions.
  The properties for controlling the automatic time-step selection are:
 \end_layout
 

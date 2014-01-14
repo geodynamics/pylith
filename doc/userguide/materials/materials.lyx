@@ -1211,6 +1211,12 @@ stress4
 \end_layout
 
 \begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Stable-time-step"
+
+\end_inset
+
 Stable time step
 \end_layout
 
@@ -1220,12 +1226,20 @@ s.
  In quasi-static simulations the stability of the implicit time stepping
  scheme does not depend on the time step; instead, the stable time step
  is associated with the accuracy of the solution.
+ For viscoelastic materials the stable time step is 1/5 of the minimum viscoelas
+tic relaxation time.
  In purely elastic materials, the accuracy is independent of the time step,
  so the stable time step is infinite.
- For viscoelastic materials we set the stable time step to be 1/5 of the
- relaxation time.
+ The same is true for elastoplastic materials, since there is no inherent
+ time scale for these problems.
+ Depending on the loading rate, however, it is possible to impose too great
+ a load in a given time step, and the resulting solution may be inaccurate
+ or divergent.
+ Caution must be used in assigning time step sizes for elastoplastic problems,
+ and the linear and nonlinear convergence should be monitored closely.
  In quasi-static simulations we check the stable time step at every time
  step.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -1296,8 +1310,19 @@ where
 \end_layout
 
 \begin_layout Standard
-The stable time steps for each cell can be included in the output with the
- other 
+The stable time step is used in all three of the time stepping schemes used
+ by PyLith (see Subsection 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Time-Stepping"
+
+\end_inset
+
+).
+ In general, an error is generated if the user attempts to use a time step
+ size larger than the stable time step.
+ The stable time steps for each cell can be included in the output with
+ the other 
 \family typewriter
 cell_info_fields
 \family default
@@ -2601,16 +2626,24 @@ K
  follows the evolution equations
 \begin_inset Formula 
 \begin{equation}
-\underline{\dot{q}}^{i}+\frac{1}{\lambda_{i}}\underline{q}^{i}=\underline{\dot{e}}.\label{eq:20}
+\underline{\dot{q}}^{i}+\frac{1}{\tau_{i}}\underline{q}^{i}=\underline{\dot{e}}.\label{eq:20}
 \end{equation}
 
 \end_inset
 
 The 
-\begin_inset Formula $\lambda_{i}$
+\begin_inset Formula $\tau_{i}$
 \end_inset
 
- are the relaxation times for each Maxwell model.
+ are the relaxation times for each Maxwell model:
+\begin_inset Formula 
+\begin{equation}
+\tau_{i}=\frac{\eta_{i}}{\mu_{tot}\mu_{i}}\:.\label{eq:21-1}
+\end{equation}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2647,7 +2680,7 @@ where
  an integral equation:
 \begin_inset Formula 
 \begin{equation}
-\underline{S}\left(t\right)=\intop_{-\infty}^{t}\mu\left(t-\tau\right)\underline{\dot{e}}\, d\tau\,.\label{eq:22}
+\underline{S}\left(t\right)=\intop_{-\infty}^{t}\mu\left(t-T\right)\underline{\dot{e}}\, dT\,.\label{eq:22}
 \end{equation}
 
 \end_inset
@@ -2655,7 +2688,7 @@ where
 If we assume the modulus function in Prony series form we obtain
 \begin_inset Formula 
 \begin{equation}
-\mu\left(t\right)=\mu_{tot}\left(\mu_{0}+\sum_{i=1}^{N}\mu_{i}\exp\frac{-t}{\lambda_{i}}\right)\,,\label{eq:23}
+\mu\left(t\right)=\mu_{tot}\left(\mu_{0}+\sum_{i=1}^{N}\mu_{i}\exp\frac{-t}{\tau_{i}}\right)\,,\label{eq:23}
 \end{equation}
 
 \end_inset
@@ -2683,7 +2716,7 @@ If we assume the material is undisturbed until a strain is suddenly applied
  at time zero, we can divide the integral into
 \begin_inset Formula 
 \begin{equation}
-\intop_{-\infty}^{t}\left(\cdot\right)\, d\tau=\intop_{-\infty}^{0^{-}}\left(\cdot\right)\, d\tau+\intop_{0^{-}}^{0^{+}}\left(\cdot\right)\, d\tau+\intop_{0^{+}}^{t}\left(\cdot\right)\, d\tau\,.\label{eq:27}
+\intop_{-\infty}^{t}\left(\cdot\right)\, dT=\intop_{-\infty}^{0^{-}}\left(\cdot\right)\, dT+\intop_{0^{-}}^{0^{+}}\left(\cdot\right)\, dT+\intop_{0^{+}}^{t}\left(\cdot\right)\, dT\,.\label{eq:27}
 \end{equation}
 
 \end_inset
@@ -2704,7 +2737,7 @@ reference "eq:22"
 ,
 \begin_inset Formula 
 \begin{equation}
-\underline{S}\left(t\right)=2\mu\left(t\right)\left(\underline{e}_{0}-\underline{e}^{I}\right)+\underline{S}^{I}+2\int_{0}^{t}\mu\left(t-\tau\right)\underline{\dot{e}}\left(\tau\right)\, d\tau\,,\label{eq:28}
+\underline{S}\left(t\right)=2\mu\left(t\right)\left(\underline{e}_{0}-\underline{e}^{I}\right)+\underline{S}^{I}+2\int_{0}^{t}\mu\left(t-T\right)\underline{\dot{e}}\left(T\right)\, dT\,,\label{eq:28}
 \end{equation}
 
 \end_inset
@@ -2730,7 +2763,7 @@ reference "eq:28"
 , we obtain
 \begin_inset Formula 
 \begin{equation}
-\underline{S}\left(t\right)=2\mu_{tot}\left\{ \mu_{0}\underline{e}\left(t\right)+\sum_{i=1}^{N}\left[\mu_{i}\exp\frac{-t}{\lambda_{i}}\left(\underline{e}_{0}+\intop_{0}^{t}\exp\frac{t}{\lambda_{i}}\underline{\dot{e}}\left(\tau\right)\, d\tau\right)\right]-\underline{e}^{I}\right\} +\underline{S}^{I}\,.\label{eq:29}
+\underline{S}\left(t\right)=2\mu_{tot}\left\{ \mu_{0}\underline{e}\left(t\right)+\sum_{i=1}^{N}\left[\mu_{i}\exp\frac{-t}{\tau_{i}}\left(\underline{e}_{0}+\intop_{0}^{t}\exp\frac{t}{\tau_{i}}\underline{\dot{e}}\left(T\right)\, dT\right)\right]-\underline{e}^{I}\right\} +\underline{S}^{I}\,.\label{eq:29}
 \end{equation}
 
 \end_inset
@@ -2750,7 +2783,7 @@ We then split each integral into two ranges: from 0 to
 , and define each integral as
 \begin_inset Formula 
 \begin{equation}
-\underline{i}_{i}^{1}\left(t\right)=\intop_{0}^{t}\exp\frac{\tau}{\lambda_{i}}\underline{\dot{e}}\left(\tau\right)\, d\tau\,.\label{eq:30}
+\underline{i}_{i}^{1}\left(t\right)=\intop_{0}^{t}\exp\frac{T}{\tau_{i}}\underline{\dot{e}}\left(T\right)\, dT\,.\label{eq:30}
 \end{equation}
 
 \end_inset
@@ -2758,7 +2791,7 @@ We then split each integral into two ranges: from 0 to
 The integral then becomes
 \begin_inset Formula 
 \begin{equation}
-\underline{i}_{i}^{1}\left(t\right)=\underline{i}_{i}^{1}\left(t_{n}\right)+\intop_{t_{n}}^{t}\exp\frac{\tau}{\lambda_{i}}\underline{\dot{e}}\left(\tau\right)\, d\tau\,.\label{eq:31}
+\underline{i}_{i}^{1}\left(t\right)=\underline{i}_{i}^{1}\left(t_{n}\right)+\intop_{t_{n}}^{t}\exp\frac{T}{\tau_{i}}\underline{\dot{e}}\left(T\right)\, dT\,.\label{eq:31}
 \end{equation}
 
 \end_inset
@@ -2766,7 +2799,7 @@ The integral then becomes
 Including the negative exponential multiplier:
 \begin_inset Formula 
 \begin{equation}
-\underline{h}_{i}^{1}\left(t\right)=\exp\frac{-t}{\lambda_{i}}\underline{i}_{i}^{1}\,.\label{eq:32}
+\underline{h}_{i}^{1}\left(t\right)=\exp\frac{-t}{\tau_{i}}\underline{i}_{i}^{1}\,.\label{eq:32}
 \end{equation}
 
 \end_inset
@@ -2774,7 +2807,7 @@ Including the negative exponential multiplier:
 Then
 \begin_inset Formula 
 \begin{equation}
-\underline{h}_{i}^{1}\left(t\right)=\exp\frac{-\Delta t}{\lambda_{i}}\underline{h}_{i}^{1}\left(t_{n}\right)+\Delta\underline{h}_{i}\,,\label{eq:33}
+\underline{h}_{i}^{1}\left(t\right)=\exp\frac{-\Delta t}{\tau_{i}}\underline{h}_{i}^{1}\left(t_{n}\right)+\Delta\underline{h}_{i}\,,\label{eq:33}
 \end{equation}
 
 \end_inset
@@ -2782,7 +2815,7 @@ Then
 where
 \begin_inset Formula 
 \begin{equation}
-\Delta\underline{h}_{i}=\exp\frac{-t}{\lambda_{i}}\intop_{t_{n}}^{t}\exp\frac{\tau}{\lambda_{i}}\underline{\dot{e}}\left(\tau\right)\, d\tau\,.\label{eq:34}
+\Delta\underline{h}_{i}=\exp\frac{-t}{\tau_{i}}\intop_{t_{n}}^{t}\exp\frac{T}{\tau_{i}}\underline{\dot{e}}\left(T\right)\, dT\,.\label{eq:34}
 \end{equation}
 
 \end_inset
@@ -2791,7 +2824,7 @@ Approximating the strain rate as constant over each time step, the solution
  may be found as
 \begin_inset Formula 
 \begin{equation}
-\Delta\underline{h}_{i}=\frac{\lambda_{i}}{\Delta t}\left(1-\exp\frac{-\Delta t}{\lambda_{i}}\right)\left(\underline{e}-\underline{e}_{n}\right)=\Delta h_{i}\left(\underline{e}-\underline{e}_{n}\right)\,.\label{eq:35}
+\Delta\underline{h}_{i}=\frac{\tau_{i}}{\Delta t}\left(1-\exp\frac{-\Delta t}{\tau_{i}}\right)\left(\underline{e}-\underline{e}_{n}\right)=\Delta h_{i}\left(\underline{e}-\underline{e}_{n}\right)\,.\label{eq:35}
 \end{equation}
 
 \end_inset
@@ -2800,7 +2833,7 @@ The approximation is singular for zero time steps, but a series expansion
  may be used for small time-step sizes:
 \begin_inset Formula 
 \begin{equation}
-\Delta h_{i}\approx1-\frac{1}{2}\left(\frac{\Delta t}{\lambda_{i}}\right)+\frac{1}{3!}\left(\frac{\Delta t}{\lambda_{i}}\right)^{2}-\frac{1}{4!}\left(\frac{\Delta t}{\lambda_{i}}\right)^{3}+\cdots\,.\label{eq:36}
+\Delta h_{i}\approx1-\frac{1}{2}\left(\frac{\Delta t}{\tau_{i}}\right)+\frac{1}{3!}\left(\frac{\Delta t}{\tau_{i}}\right)^{2}-\frac{1}{4!}\left(\frac{\Delta t}{\tau_{i}}\right)^{3}+\cdots\,.\label{eq:36}
 \end{equation}
 
 \end_inset
@@ -2900,7 +2933,15 @@ c models.
 \begin_inset Formula $N=3.$
 \end_inset
 
+ The stable time step is equal to 1/5 of the minimum relaxation time for
+ all of the Maxwell models (equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:21-1"
 
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Standard
@@ -4157,6 +4198,20 @@ reference "eq:42"
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Standard
+Once the stresses are computed for the current time step, we can compute
+ the relaxation time (used in computing the stable time step) by first computing
+ an effective viscosity:
+\begin_inset Formula 
+\begin{equation}
+\eta_{eff}=\frac{1}{\phantom{}^{t+\Delta t}\gamma}=\frac{S_{0}^{n}}{\dot{e}_{0}\sqrt{\phantom{}^{t+\Delta t}J_{2}^{\prime}}}
+\end{equation}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
