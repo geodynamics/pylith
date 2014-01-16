@@ -192,7 +192,7 @@ class PowerLaw3DElastic(ElasticMaterialApp):
                                           stressUpdated[1,:]],
                                          dtype=numpy.float64)
 
-    self.dtStableImplicit = 0.1*min(maxwellTimeA, maxwellTimeB)
+    self.dtStableImplicit = 0.2 * min(maxwellTimeA, maxwellTimeB)
     self.dtStableExplicit = 1000.0 / vpA
 
     return
@@ -228,8 +228,8 @@ class PowerLaw3DElastic(ElasticMaterialApp):
     effStress = (0.5 * devStressProd)**0.5
     maxwellTime = 1.0
     if (effStress != 0.0):
-      maxwellTime = 0.5 * (refStress/effStress)**(powerLawExponent - 1.0) * \
-                    (refStress/mu)/refStrainRate
+      maxwellTime = (refStress/effStress)**(powerLawExponent - 1.0) * \
+                    (refStress/mu)/(refStrainRate * 6.0)
 
     return maxwellTime
 

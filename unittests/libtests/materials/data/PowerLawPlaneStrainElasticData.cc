@@ -45,7 +45,7 @@ const PylithScalar pylith::materials::PowerLawPlaneStrainElasticData::_pressureS
 
 const PylithScalar pylith::materials::PowerLawPlaneStrainElasticData::_densityScale =   2.25000000e+04;
 
-const PylithScalar pylith::materials::PowerLawPlaneStrainElasticData::_dtStableImplicit =   4.09893495e+06;
+const PylithScalar pylith::materials::PowerLawPlaneStrainElasticData::_dtStableImplicit =   2.73262330e+06;
 
 const PylithScalar pylith::materials::PowerLawPlaneStrainElasticData::_dtStableExplicit =   1.92450090e-01;
 

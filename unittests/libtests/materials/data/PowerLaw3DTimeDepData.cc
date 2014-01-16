@@ -45,7 +45,7 @@ const PylithScalar pylith::materials::PowerLaw3DTimeDepData::_pressureScale =   
 
 const PylithScalar pylith::materials::PowerLaw3DTimeDepData::_densityScale =   2.25000000e+04;
 
-const PylithScalar pylith::materials::PowerLaw3DTimeDepData::_dtStableImplicit =   4.44444444e+06;
+const PylithScalar pylith::materials::PowerLaw3DTimeDepData::_dtStableImplicit =   2.96296296e+06;
 
 const PylithScalar pylith::materials::PowerLaw3DTimeDepData::_dtStableExplicit =   1.92450090e-01;
 

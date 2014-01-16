@@ -421,9 +421,8 @@ pylith::materials::PowerLaw3D::_stableTimeStepImplicit(
   if (effStress <= 0.0) {
     dtTest = pylith::PYLITH_MAXSCALAR;
   } else {
-    dtTest = 0.05 *
-    pow((referenceStress/effStress), (powerLawExp - 1.0)) *
-    (referenceStress/mu)/referenceStrainRate;
+    dtTest = pow((referenceStress/effStress), (powerLawExp - 1.0)) *
+      (referenceStress/mu)/(referenceStrainRate * 30.0);
   } //else
   const PylithScalar dtStable = dtTest;
 
@@ -431,7 +430,7 @@ pylith::materials::PowerLaw3D::_stableTimeStepImplicit(
   PylithScalar maxwellTime = 10.0 * dtStable;
   std::cout << "Maxwell time:  " << maxwellTime << std::endl;
 #endif
-  PetscLogFlops(21);
+  PetscLogFlops(27);
   return dtStable;
 } // _stableTimeStepImplicit
 
