@@ -1668,6 +1668,23 @@ mass_density = 3.0e+3*kg/m**3
 wave_period = 1.0*s
 \end_layout
 
+\begin_layout Standard
+The default nondimensionalization is reasonable for many problems; however,
+ it may be necessary to change the default values in some cases.
+ When doing this, keep in mind that the nondimensionalization generally
+ applies to the minimum values encountered for a problem.
+ For example, in a problem with a very small mesh size, the 
+\family typewriter
+length_scale
+\family default
+ for a quasistatic problem should be on the order of the minimum cell size.
+ Similarly, for a problem involving very short relaxation times, the 
+\family typewriter
+relaxation_time
+\family default
+ should be on the order of the minimum relaxation time for the problem.
+\end_layout
+
 \begin_layout Subsection
 Finite-Element Integration Settings
 \end_layout

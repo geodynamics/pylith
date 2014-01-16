@@ -4203,15 +4203,46 @@ reference "eq:42"
 \begin_layout Standard
 Once the stresses are computed for the current time step, we can compute
  the relaxation time (used in computing the stable time step) by first computing
- an effective viscosity:
+ the effective viscous strain rate from Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:79"
+
+\end_inset
+
+:
 \begin_inset Formula 
 \begin{equation}
-\eta_{eff}=\frac{1}{\phantom{}^{t+\Delta t}\gamma}=\frac{S_{0}^{n}}{\dot{e}_{0}\sqrt{\phantom{}^{t+\Delta t}J_{2}^{\prime}}}
+\dot{\bar{e}}^{C}=\frac{2\dot{e}_{0}\left(\frac{\bar{\sigma}}{\sqrt{3}}\right)^{n}}{\sqrt{3}S_{0}^{n}}\:.
 \end{equation}
 
 \end_inset
 
+Similarly, the effective elastic strain is computed as:
+\begin_inset Formula 
+\begin{equation}
+\bar{e}^{E}=\frac{\bar{\sigma}}{3\mu}\:.
+\end{equation}
 
+\end_inset
+
+The relaxation time is then the ratio between these two:
+\begin_inset Formula 
+\begin{equation}
+\tau=\frac{\bar{e}^{E}}{\bar{\dot{e}}^{C}}=\left(\frac{S_{0}}{\sqrt{J_{2}^{\prime}}}\right)^{n-1}\frac{S_{0}}{6\mu\dot{e}_{0}}\:.\label{eq:86-1}
+\end{equation}
+
+\end_inset
+
+The stable time step returned by PyLith is 1/5 of the value computed from
+ Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:86-1"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
