@@ -201,7 +201,7 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(const PylithScalar t,
 
   // Setup visitors.
   scalar_array dispCell(numBasis*spaceDim);
-  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
+  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"), "displacement");
   dispVisitor.optimizeClosure();
 
   scalar_array coordsCell(numCorners*spaceDim);
@@ -534,7 +534,7 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(topology::Field
 
   // Setup field visitors.
   scalar_array dispCell(numBasis*spaceDim);
-  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
+  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"), "displacement");
   dispVisitor.optimizeClosure();
 
   topology::VecVisitorMesh fieldVisitor(*field);

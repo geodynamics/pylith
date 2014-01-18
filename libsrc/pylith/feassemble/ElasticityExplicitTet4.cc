@@ -199,19 +199,19 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(const topology::Fi
 
   // Setup field visitors.
   scalar_array accCell(numBasis*spaceDim);
-  topology::VecVisitorMesh accVisitor(fields->get("acceleration(t)"));
+  topology::VecVisitorMesh accVisitor(fields->get("acceleration(t)"), "displacement");
   accVisitor.optimizeClosure();
 
   scalar_array velCell(numBasis*spaceDim);
-  topology::VecVisitorMesh velVisitor(fields->get("velocity(t)"));
+  topology::VecVisitorMesh velVisitor(fields->get("velocity(t)"), "displacement");
   velVisitor.optimizeClosure();
 
   scalar_array dispCell(numBasis*spaceDim);
   scalar_array dispAdjCell(numBasis*spaceDim);
-  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
+  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"), "displacement");
   dispVisitor.optimizeClosure();
   
-  topology::VecVisitorMesh residualVisitor(residual);
+  topology::VecVisitorMesh residualVisitor(residual, "displacement");
   residualVisitor.optimizeClosure();
 
   scalar_array coordsCell(numCorners*spaceDim);
@@ -487,9 +487,8 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(topology::Field* j
   assert(dt > 0);
 
   // Setup visitors.
-  topology::VecVisitorMesh jacobianVisitor(*jacobian);
-  PetscScalar* jacobianCell = NULL;
-  PetscInt jacobianSize = 0;
+  topology::VecVisitorMesh jacobianVisitor(*jacobian, "displacement");
+  // Don't optimize closure since we compute the Jacobian only once.
 
   scalar_array coordsCell(numCorners*spaceDim);
   topology::CoordsVisitor coordsVisitor(dmMesh);

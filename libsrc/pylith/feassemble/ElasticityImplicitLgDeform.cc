@@ -178,14 +178,14 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
 
   // Setup field visitors.
   scalar_array dispCell(numBasis*spaceDim);
-  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
+  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"), "displacement");
   dispVisitor.optimizeClosure();
 
   scalar_array dispIncrCell(numBasis*spaceDim);
-  topology::VecVisitorMesh dispIncrVisitor(fields->get("dispIncr(t->t+dt)"));
+  topology::VecVisitorMesh dispIncrVisitor(fields->get("dispIncr(t->t+dt)"), "displacement");
   dispIncrVisitor.optimizeClosure();
 
-  topology::VecVisitorMesh residualVisitor(residual);
+  topology::VecVisitorMesh residualVisitor(residual, "displacement");
   residualVisitor.optimizeClosure();
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
@@ -357,11 +357,11 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(topology::Jaco
 
   // Setup field visitors.
   scalar_array dispCell(numBasis*spaceDim);
-  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
+  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"), "displacement");
   dispVisitor.optimizeClosure();
 
   scalar_array dispIncrCell(numBasis*spaceDim);
-  topology::VecVisitorMesh dispIncrVisitor(fields->get("dispIncr(t->t+dt)"));
+  topology::VecVisitorMesh dispIncrVisitor(fields->get("dispIncr(t->t+dt)"), "displacement");
   dispIncrVisitor.optimizeClosure();
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
