@@ -618,11 +618,17 @@ pylith::faults::CohesiveTopology::createInterpolated(topology::Mesh* mesh,
 { // createInterpolated
   assert(mesh);
   assert(faultBoundary);
-  PetscDM        sdm   = NULL;
-  PetscDMLabel   subpointMap = NULL, label = NULL;
+  PetscDM        sdm = NULL;
+  PetscDM        dm  = mesh->dmMesh();assert(dm);
+  PetscDMLabel   subpointMap = NULL, label = NULL, mlabel = NULL;
+  PetscInt       cMax, cEnd, numCohesiveCellsOld;
   PetscErrorCode err;
 
-  PetscDM dm = mesh->dmMesh();assert(dm);
+  // Have to remember the old number of cohesive cells
+  err = DMPlexGetHeightStratum(dm, 0, NULL, &cEnd);PYLITH_CHECK_ERROR(err);
+  err = DMPlexGetHybridBounds(dm, &cMax, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
+  numCohesiveCellsOld = cEnd - (cMax < 0 ? cEnd : cMax);
+  // Create cohesive cells
   err = DMPlexGetSubpointMap(faultMesh.dmMesh(), &subpointMap);PYLITH_CHECK_ERROR(err);
   err = DMLabelDuplicate(subpointMap, &label);PYLITH_CHECK_ERROR(err);
   err = DMLabelClearStratum(label, mesh->dimension());PYLITH_CHECK_ERROR(err);
@@ -632,14 +638,12 @@ pylith::faults::CohesiveTopology::createInterpolated(topology::Mesh* mesh,
   err = DMPlexConstructCohesiveCells(dm, label, &sdm);PYLITH_CHECK_ERROR(err);
   err = DMLabelDestroy(&label);PYLITH_CHECK_ERROR(err);
 
-  DMLabel  mlabel;
-  PetscInt cMax, cEnd;
-
   err = DMPlexGetLabel(sdm, "material-id", &mlabel);PYLITH_CHECK_ERROR(err);
   if (mlabel) {
     err = DMPlexGetHeightStratum(sdm, 0, NULL, &cEnd);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetHybridBounds(sdm, &cMax, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
-    for (PetscInt cell = cMax; cell < cEnd; ++cell) {
+    assert(cEnd > cMax + numCohesiveCellsOld);
+    for (PetscInt cell = cMax; cell < cEnd - numCohesiveCellsOld; ++cell) {
       err = DMLabelSetValue(mlabel, cell, materialId);PYLITH_CHECK_ERROR(err);
     }
   }
