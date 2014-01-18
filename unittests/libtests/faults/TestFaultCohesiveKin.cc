@@ -729,7 +729,7 @@ pylith::faults::TestFaultCohesiveKin::_initialize(topology::Mesh* const mesh,
   residual.setupSolnDof(spaceDim);
   fault->setupSolnDof(&residual);
   residual.allocate();
-  residual.zero();
+  residual.zeroAll();
 
   fields->copyLayout("residual");
 
