@@ -28,14 +28,15 @@
 // ----------------------------------------------------------------------
 // Constructor with field over a mesh.
 inline
-pylith::topology::VecVisitorMesh::VecVisitorMesh(const Field& field) :
+pylith::topology::VecVisitorMesh::VecVisitorMesh(const Field& field,
+						 const char* subfield) :
   _dm(NULL),
   _localVec(NULL),
   _section(NULL),
   _localArray(NULL)
 { // constructor
   _dm = field.mesh().dmMesh();assert(_dm);
-  initialize(field);
+  initialize(field, subfield);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -51,14 +52,26 @@ pylith::topology::VecVisitorMesh::~VecVisitorMesh(void)
 // Initialized cached data members.
 inline
 void
-pylith::topology::VecVisitorMesh::initialize(const Field& field)
+pylith::topology::VecVisitorMesh::initialize(const Field& field,
+					     const char* subfield)
 { // initialize
   clear();
 
-  _section = field.petscSection();assert(_section);
+  PetscErrorCode err;
+  PetscSection fieldSection = field.petscSection();assert(fieldSection);
+  PetscInt numFields = 0;
+  err = PetscSectionGetNumFields(fieldSection, &numFields);PYLITH_CHECK_ERROR(err);
+
+  if (!subfield || numFields < 2) {
+    _section = fieldSection;
+  } else {
+    const Field::Metadata fieldMetadata = field.subfieldMetadata(subfield);
+    assert(fieldMetadata.index >= 0 && fieldMetadata.index < numFields);
+    err = PetscSectionGetField(fieldSection, fieldMetadata.index, &_section);PYLITH_CHECK_ERROR(err);
+  } // if/else
   _localVec = field.localVector();assert(_localVec);
 
-  PetscErrorCode err = VecGetArray(_localVec, &_localArray);PYLITH_CHECK_ERROR(err);
+  err = VecGetArray(_localVec, &_localArray);PYLITH_CHECK_ERROR(err);
 } // initialize
 
 // ----------------------------------------------------------------------

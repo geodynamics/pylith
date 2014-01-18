@@ -45,18 +45,30 @@ public :
 
   /** Constructor with field over a mesh.
    *
+   * The optional subfield argument is designed to improve performance
+   * when the visitor is associated with a single subfield within a
+   * field.
+   *
    * @param field Field over a mesh.
+   * @param subfield Name of subfield section to use instead of field section.
    */
-  VecVisitorMesh(const Field& field);
+  VecVisitorMesh(const Field& field,
+		 const char* subfield =0);
 
   /// Default destructor
   ~VecVisitorMesh(void);
 
   /** Initialize using field over a mesh or submesh.
    *
+   * The optional subfield argument is designed to improve performance
+   * when the visitor is associated with a single subfield within a
+   * field.
+   *
    * @param field Field over a mesh/submesh.
+   * @param subfield Name of subfield section to use instead of field section.
    */
-  void initialize(const Field& field);
+  void initialize(const Field& field,
+		  const char *subfield =0);
 
   /// Clear cached data.
   void clear(void);
