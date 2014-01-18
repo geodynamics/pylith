@@ -321,6 +321,7 @@ pylith::feassemble::TestElasticityImplicit::testStableTimeStep(void)
   PYLITH_METHOD_END;
 } // testStableTimeStep
 
+// ----------------------------------------------------------------------
 // Initialize elasticity integrator.
 void
 pylith::feassemble::TestElasticityImplicit::_initialize(topology::Mesh* mesh,
@@ -344,7 +345,7 @@ pylith::feassemble::TestElasticityImplicit::_initialize(topology::Mesh* mesh,
   const PetscBool interpolate = PETSC_FALSE;
   PetscErrorCode err;
   err = DMPlexCreateFromCellList(PETSC_COMM_WORLD, _data->cellDim, _data->numCells, _data->numVertices, _data->numBasis, interpolate, _data->cells, _data->spaceDim, _data->vertices, &dmMesh);PYLITH_CHECK_ERROR(err);
-  mesh->dmMesh(dmMesh, "domain");
+  mesh->dmMesh(dmMesh);
 
   // Material ids
   PetscInt cStart, cEnd;
@@ -404,9 +405,18 @@ pylith::feassemble::TestElasticityImplicit::_initialize(topology::Mesh* mesh,
   fields->solutionName("dispIncr(t->t+dt)");
   
   topology::Field& residual = fields->get("residual");
+#if 1
   residual.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
+#else
+  residual.subfieldAdd("displacement", spaceDim, topology::Field::VECTOR, lengthScale);
+  residual.subfieldAdd("lagrange_multiplier", spaceDim, topology::Field::VECTOR);
+
+  residual.subfieldsSetup();
+  residual.setupSolnChart();
+  residual.setupSolnDof(spaceDim);
+#endif
   residual.allocate();
-  residual.zero();
+  residual.zeroAll();
   fields->copyLayout("residual");
 
   topology::VecVisitorMesh dispTVisitor(fields->get("disp(t)"));
