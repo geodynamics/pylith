@@ -326,7 +326,7 @@ public :
    * @param name Name of subfield.
    * @returns Metadata for subfield.
    */
-  const Metadata& subfieldMetadata(const char* name);
+  const Metadata& subfieldMetadata(const char* name) const;
 
   /// Clear variables associated with section.
   void clear(void);

@@ -248,7 +248,6 @@ pylith::topology::Field::setupSolnChart(void)
 { // setupSolnChart
   PYLITH_METHOD_BEGIN;
 
-  clear();
   assert(_dm);
 
   // :TODO: Update this to use discretization information after removing FIAT.
@@ -292,7 +291,6 @@ void
 { // setupSolnDof
   PYLITH_METHOD_BEGIN;
 
-  clear();
   assert(_dm);
 
   // :TODO: Update this to use discretization information after removing FIAT.
@@ -1331,17 +1329,18 @@ pylith::topology::Field::subfieldSetDof(const char *name,
 // ----------------------------------------------------------------------
 // Get metadata for subfield.
 const pylith::topology::FieldBase::Metadata&
-pylith::topology::Field::subfieldMetadata(const char* name)
+pylith::topology::Field::subfieldMetadata(const char* name) const
 { // subfieldMetadata
   PYLITH_METHOD_BEGIN;
 
-  if (!_metadata.count(name)) {
+  map_type::const_iterator iter = _metadata.find(name);
+  if (_metadata.end() == iter) {
     std::ostringstream msg;
     msg << "Could not find subfield '" << name << "' in field '" << label() << "'." << std::endl;
     throw std::runtime_error(msg.str());
   } // if
 
-  PYLITH_METHOD_RETURN(_metadata[name]);
+  PYLITH_METHOD_RETURN(iter->second);
 } // subfieldmetadata
 
 
