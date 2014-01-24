@@ -193,9 +193,15 @@ class TestElasticityExplicit(unittest.TestCase):
 
     from pylith.topology.Field import Field
     jacobian = Field(mesh)
-    jacobian.newSection(jacobian.VERTICES_FIELD, mesh.coordsys().spaceDim())
-    jacobian.allocate()
-    jacobian.zero()
+    spaceDim = mesh.coordsys().spaceDim()
+    jacobian.subfieldAdd("displacement", spaceDim, jacobian.VECTOR);
+    jacobian.subfieldAdd("lagrange_multiplier", spaceDim, jacobian.VECTOR);
+
+    jacobian.subfieldsSetup();
+    jacobian.setupSolnChart();
+    jacobian.setupSolnDof(spaceDim);
+    jacobian.allocate();
+    jacobian.zeroAll();
 
     t = 7.3
     self.assertEqual(True, integrator.needNewJacobian())
