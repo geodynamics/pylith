@@ -46,12 +46,16 @@ pylith::topology::Fields::~Fields(void)
 void
 pylith::topology::Fields::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   const map_type::iterator begin = _fields.begin();
   const map_type::iterator end = _fields.end();
   for (map_type::iterator iter=begin; iter != end; ++iter) {
     delete iter->second; iter->second = 0;
   } // for
   _fields.clear();
+
+  PYLITH_METHOD_END;
 } // deallocate
 
 // ----------------------------------------------------------------------
@@ -59,8 +63,11 @@ pylith::topology::Fields::deallocate(void)
 bool
 pylith::topology::Fields::hasField(const char* name) const
 { // hasField
+  PYLITH_METHOD_BEGIN;
+
   map_type::const_iterator iter = _fields.find(name);
-  return iter != _fields.end();
+
+  PYLITH_METHOD_RETURN(iter != _fields.end());
 } // hasField
 
 // ----------------------------------------------------------------------
@@ -69,6 +76,8 @@ void
 pylith::topology::Fields::add(const char* name,
 			      const char* label)
 { // add
+  PYLITH_METHOD_BEGIN;
+
   if (hasField(name)) {
     std::ostringstream msg;
     msg << "Could not add field '" << name
@@ -78,6 +87,8 @@ pylith::topology::Fields::add(const char* name,
   
   _fields[name] = new Field(_mesh);
   _fields[name]->label(label);
+
+  PYLITH_METHOD_END;
 } // add
 
 // ----------------------------------------------------------------------
@@ -88,6 +99,8 @@ pylith::topology::Fields::add(const char* name,
 			      const pylith::topology::FieldBase::DomainEnum domain,
 			      const int fiberDim)
 { // add
+  PYLITH_METHOD_BEGIN;
+
   if (hasField(name)) {
     std::ostringstream msg;
     msg << "Could not add field '" << name
@@ -98,6 +111,8 @@ pylith::topology::Fields::add(const char* name,
   _fields[name] = new Field(_mesh);
   _fields[name]->label(label);
   _fields[name]->newSection(domain, fiberDim);
+
+  PYLITH_METHOD_END;
 } // add
 
 // ----------------------------------------------------------------------
@@ -105,6 +120,8 @@ pylith::topology::Fields::add(const char* name,
 void
 pylith::topology::Fields::del(const char* name)
 { // del
+  PYLITH_METHOD_BEGIN;
+
   map_type::iterator iter = _fields.find(name);
   if (iter == _fields.end()) {
     std::ostringstream msg;
@@ -114,6 +131,8 @@ pylith::topology::Fields::del(const char* name)
   } // if
   delete iter->second; iter->second = 0;
   _fields.erase(name);
+
+  PYLITH_METHOD_END;
 } // del
 
 // ----------------------------------------------------------------------
@@ -129,6 +148,8 @@ pylith::topology::Fields::delField(const char* name)
 const pylith::topology::Field&
 pylith::topology::Fields::get(const char* name) const
 { // get
+  PYLITH_METHOD_BEGIN;
+
   map_type::const_iterator iter = _fields.find(name);
   if (iter == _fields.end()) {
     std::ostringstream msg;
@@ -136,7 +157,8 @@ pylith::topology::Fields::get(const char* name) const
 	<< "' in fields manager for retrieval.";
     throw std::runtime_error(msg.str());
   } // if
-  return *iter->second;
+
+  PYLITH_METHOD_RETURN(*iter->second);
 } // get
 	   
 // ----------------------------------------------------------------------
@@ -144,6 +166,8 @@ pylith::topology::Fields::get(const char* name) const
 pylith::topology::Field&
 pylith::topology::Fields::get(const char* name)
 { // get
+  PYLITH_METHOD_BEGIN;
+
   map_type::iterator iter = _fields.find(name);
   if (iter == _fields.end()) {
     std::ostringstream msg;
@@ -151,7 +175,8 @@ pylith::topology::Fields::get(const char* name)
 	<< "' in fields manager for retrieval.";
     throw std::runtime_error(msg.str());
   } // if
-  return *iter->second;
+
+  PYLITH_METHOD_RETURN(*iter->second);
 } // get
 
 // ----------------------------------------------------------------------
@@ -159,6 +184,8 @@ pylith::topology::Fields::get(const char* name)
 void
 pylith::topology::Fields::copyLayout(const char* name)
 { // copyLayout
+  PYLITH_METHOD_BEGIN;
+
   map_type::const_iterator src = _fields.find(name);
   if (src == _fields.end()) {
     std::ostringstream msg;
@@ -172,6 +199,8 @@ pylith::topology::Fields::copyLayout(const char* name)
   for (map_type::iterator iter=begin; iter != end; ++iter)
     if (iter != src)
       iter->second->cloneSection(*src->second);
+
+  PYLITH_METHOD_END;
 } // copyLayout
 
 // ----------------------------------------------------------------------
@@ -188,6 +217,8 @@ void
 pylith::topology::Fields::fieldNames(int* numNames, 
 				     char*** names) const
 { // fieldNames
+  PYLITH_METHOD_BEGIN;
+
   assert(numNames);
   assert(names);
 
@@ -210,6 +241,8 @@ pylith::topology::Fields::fieldNames(int* numNames,
     } // if/else
     (*names)[i++] = newName;
   } // for
+
+  PYLITH_METHOD_END;
 } // fieldNames
 
 
