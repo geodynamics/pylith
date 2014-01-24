@@ -64,6 +64,7 @@ pylith::topology::VecVisitorMesh::initialize(const Field& field,
 
   if (!subfield) {
     _section = fieldSection;
+    err = PetscObjectReference((PetscObject)_section);PYLITH_CHECK_ERROR(err);
   } else {
     const Field::Metadata fieldMetadata = field.subfieldMetadata(subfield);
     assert(fieldMetadata.index >= 0 && fieldMetadata.index < numFields);
@@ -80,11 +81,14 @@ inline
 void
 pylith::topology::VecVisitorMesh::clear(void)
 { // clear
+  PetscErrorCode err;
+
   if (_localVec) {
-    PetscErrorCode err = VecRestoreArray(_localVec, &_localArray);PYLITH_CHECK_ERROR(err);assert(!_localArray);
+    err = VecRestoreArray(_localVec, &_localArray);PYLITH_CHECK_ERROR(err);assert(!_localArray);
   } // if
 
-  _section = NULL;
+  err = PetscSectionDestroy(&_section);PYLITH_CHECK_ERROR(err);
+
   _localVec = NULL;
 } // clear
 
