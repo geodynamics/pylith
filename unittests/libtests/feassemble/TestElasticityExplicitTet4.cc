@@ -244,11 +244,20 @@ pylith::feassemble::TestElasticityExplicitTet4::testIntegrateJacobian(void)
   _initialize(&mesh, &integrator, &fields);
   integrator._needNewJacobian = true;
 
+  const int spaceDim = _data->spaceDim;
+  const PylithScalar lengthScale = _data->lengthScale;
+
   topology::Field jacobian(mesh);
   jacobian.label("Jacobian");
   jacobian.vectorFieldType(topology::FieldBase::VECTOR);
-  jacobian.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
+  jacobian.subfieldAdd("displacement", spaceDim, topology::Field::VECTOR, lengthScale);
+  jacobian.subfieldAdd("lagrange_multiplier", spaceDim, topology::Field::VECTOR);
+
+  jacobian.subfieldsSetup();
+  jacobian.setupSolnChart();
+  jacobian.setupSolnDof(spaceDim);
   jacobian.allocate();
+  jacobian.zeroAll();
 
   const PylithScalar t = 1.0;
   integrator.integrateJacobian(&jacobian, t, &fields);
@@ -256,7 +265,6 @@ pylith::feassemble::TestElasticityExplicitTet4::testIntegrateJacobian(void)
   jacobian.complete();
 
   const PylithScalar* valsE = _data->valsJacobian;
-  const int spaceDim = _data->spaceDim;
   const int numBasis = _data->numVertices;
 
 #if 0 // DEBUGGING
@@ -356,7 +364,7 @@ pylith::feassemble::TestElasticityExplicitTet4::_initialize(topology::Mesh* mesh
   PetscDM dmMesh;
 
   // Cells and vertices
-  const PetscBool interpolate = PETSC_FALSE;
+  const PetscBool interpolate = PETSC_TRUE;
   PetscErrorCode err;
   err = DMPlexCreateFromCellList(PETSC_COMM_WORLD, _data->cellDim, _data->numCells, _data->numVertices, _data->numBasis, interpolate, _data->cells, _data->spaceDim, _data->vertices, &dmMesh);PYLITH_CHECK_ERROR(err);
   mesh->dmMesh(dmMesh, "domain");
@@ -422,9 +430,14 @@ pylith::feassemble::TestElasticityExplicitTet4::_initialize(topology::Mesh* mesh
   fields->solutionName("dispIncr(t->t+dt)");
   
   topology::Field& residual = fields->get("residual");
-  residual.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
+  residual.subfieldAdd("displacement", spaceDim, topology::Field::VECTOR, lengthScale);
+  residual.subfieldAdd("lagrange_multiplier", spaceDim, topology::Field::VECTOR);
+
+  residual.subfieldsSetup();
+  residual.setupSolnChart();
+  residual.setupSolnDof(spaceDim);
   residual.allocate();
-  residual.zero();
+  residual.zeroAll();
   fields->copyLayout("residual");
 
   topology::VecVisitorMesh dispTVisitor(fields->get("disp(t)"));

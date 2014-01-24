@@ -57,7 +57,8 @@ pylith::feassemble::TestElasticityExplicitLgDeform2DLinear::setUp(void)
 
 // ----------------------------------------------------------------------
 #include "data/ElasticityExplicitLgDeformData2DQuadratic.hh"
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityExplicitLgDeform2DQuadratic );
+// :TODO: Update after removing FIAT
+//CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityExplicitLgDeform2DQuadratic );
 
 // Setup testing data.
 void
@@ -105,7 +106,8 @@ pylith::feassemble::TestElasticityExplicitLgDeform3DLinear::setUp(void)
 
 // ----------------------------------------------------------------------
 #include "data/ElasticityExplicitLgDeformData3DQuadratic.hh"
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityExplicitLgDeform3DQuadratic );
+// :TODO: Update after removing FIAT
+//CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityExplicitLgDeform3DQuadratic );
 
 // Setup testing data.
 void
@@ -160,7 +162,8 @@ pylith::feassemble::TestElasticityExplicitLgDeformGrav2DLinear::setUp(void)
 
 // ----------------------------------------------------------------------
 #include "data/ElasticityExplicitLgDeformGravData2DQuadratic.hh"
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityExplicitLgDeformGrav2DQuadratic );
+// :TODO: Update after removing FIAT
+//CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityExplicitLgDeformGrav2DQuadratic );
 
 // Setup testing data.
 void
@@ -220,7 +223,8 @@ pylith::feassemble::TestElasticityExplicitLgDeformGrav3DLinear::setUp(void)
 
 // ----------------------------------------------------------------------
 #include "data/ElasticityExplicitLgDeformGravData3DQuadratic.hh"
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityExplicitLgDeformGrav3DQuadratic );
+// :TODO: Update after removing FIAT
+//CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityExplicitLgDeformGrav3DQuadratic );
 
 // Setup testing data.
 void

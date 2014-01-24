@@ -62,7 +62,7 @@ pylith::topology::VecVisitorMesh::initialize(const Field& field,
   PetscInt numFields = 0;
   err = PetscSectionGetNumFields(fieldSection, &numFields);PYLITH_CHECK_ERROR(err);
 
-  if (!subfield || numFields < 2) {
+  if (!subfield) {
     _section = fieldSection;
   } else {
     const Field::Metadata fieldMetadata = field.subfieldMetadata(subfield);

@@ -323,11 +323,18 @@ class TestElasticityExplicit(unittest.TestCase):
     fields.solutionName("dispIncr(t->t+dt)")
 
     residual = fields.get("residual")
-    residual.newSection(residual.VERTICES_FIELD, mesh.coordsys().spaceDim())
-    residual.allocate()
+    spaceDim = mesh.coordsys().spaceDim()
+    lengthScale = normalizer.lengthScale()
+    residual.subfieldAdd("displacement", spaceDim, residual.VECTOR, lengthScale.value);
+    residual.subfieldAdd("lagrange_multiplier", spaceDim, residual.VECTOR);
+
+    residual.subfieldsSetup();
+    residual.setupSolnChart();
+    residual.setupSolnDof(spaceDim);
+    residual.allocate();
+    residual.zeroAll();
     fields.copyLayout("residual")
 
-    residual.zero()
     return fields
 
 
