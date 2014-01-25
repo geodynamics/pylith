@@ -18,6 +18,7 @@
 
 EXTRA_DIST = \
 	valgrind-python.supp \
+	valgrind-openmpi.supp \
 	generateetags.py
 
 
