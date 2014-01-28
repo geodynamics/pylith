@@ -386,7 +386,7 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
 
       err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, PETSC_NULL);PYLITH_CHECK_ERROR(err);
       err = DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers);PYLITH_CHECK_ERROR(err);
-      err = ISGetSize(globalVertexNumbers, &n);PYLITH_CHECK_ERROR(err);
+      err = ISGetLocalSize(globalVertexNumbers, &n);PYLITH_CHECK_ERROR(err);
       if (n > 0) {
 	const PetscInt *indices = NULL;
 	err = ISGetIndices(globalVertexNumbers, &indices);PYLITH_CHECK_ERROR(err);
