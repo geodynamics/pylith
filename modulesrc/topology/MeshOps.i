@@ -59,8 +59,9 @@
 
 %inline %{
   int
-  MeshOps_numMaterialCells(const pylith::topology::Mesh& mesh, int materialId) {
-    pylith::topology::MeshOps::numMaterialCells(mesh,materialId);
+  MeshOps_numMaterialCells(const pylith::topology::Mesh& mesh, 
+			   int materialId) {
+    return pylith::topology::MeshOps::numMaterialCells(mesh, materialId);
   } // numMaterialCells
 %}
 
