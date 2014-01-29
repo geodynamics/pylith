@@ -37,7 +37,7 @@
   TestArray_checkScalar(const PylithScalar* valuesE,
 			const int nvalues,
 			const pylith::scalar_array& values) {
-    pylith::utils::TestArray::check(valuesE, nvalues, values);
+    return pylith::utils::TestArray::check(valuesE, nvalues, values);
   } // check(PylithScalar)
 %} // inline
 %clear(const PylithScalar* valuesE, const int nvalues);
