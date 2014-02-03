@@ -20,6 +20,11 @@ dist_noinst_DATA = \
 	README \
 	axialdisp2d.cfg \
 	axialdisp3d.cfg \
+	axialdisp_init_stress_2d.cfg \
+	axialdisp_init_stress_3d.cfg \
+	init_state_2d.spatialdb \
+	init_stress_2d.spatialdb \
+	init_stress_3d.spatialdb \
 	planestrain2d.cfg \
 	planestrain3d.cfg \
 	pylithapp.cfg \
