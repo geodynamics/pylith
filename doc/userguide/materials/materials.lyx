@@ -1873,8 +1873,17 @@ reference "cha:Alternative-Formulations"
 stress_zz_initial
 \family default
 ).
- Note that this is not an issue for the 2D elastic models, since this initial
- stress component is not needed.
+ This state variable is provided for all of the viscoelastic material models
+ as well as the plane strain Drucker-Prager elastoplastic model.
+ See section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Initial-State-Variables"
+
+\end_inset
+
+ for additional information on specifying initial stresses for plane strain
+ problems.
  For the PowerLawPlaneStrain model, all four of the stress components are
  needed, so a 4-component stress state variable (
 \family typewriter
@@ -5938,6 +5947,12 @@ allow_tensile_yield = False ; default
 \end_layout
 
 \begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Initial-State-Variables"
+
+\end_inset
+
 Initial State Variables
 \end_layout
 
@@ -6001,6 +6016,79 @@ db_initial_stress = spatialdata.spatialdb.SimpleDB
 
 \begin_layout LyX-Code
 db_initial_stress.iohandler.filename = initial_stress.spatialdb
+\end_layout
+
+\begin_layout Standard
+As mentioned in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:ViscoelasticFormulations"
+
+\end_inset
+
+, plane strain problems do not include the out-of-plane stress component
+ (
+\begin_inset Formula $\sigma_{zz}$
+\end_inset
+
+), and an additional state variable (
+\family typewriter
+stress-zz-initial
+\family default
+) is provided for all two-dimensional viscoelastic and elastoplastic models.
+ To completely specify the initial stresses, the user must provide two spatial
+ databases: an initial stress database that includes the three 2D stress
+ components (
+\begin_inset Formula $\sigma_{xx},\:\sigma_{yy},\:\sigma_{xy}$
+\end_inset
+
+) and an additional database containing all the initial state variables
+ for the given material.
+ The complete initial stress field may then be defined in the 
+\family typewriter
+.cfg
+\family default
+ file as:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.materials.powerlaw]
+\end_layout
+
+\begin_layout LyX-Code
+# First define initial 2D stresses.
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress = spatialdata.spatialdb.SimpleDB
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress.label = 2D initial stress
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress.iohandler.filename = init_stress_2d.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+# Now define out-of-plane initial stresses (and any other state variables).
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_state = spatialdata.spatialdb.SimpleDB
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_state.label = Out of plane strain initial stress
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_state.iohandler.filename = init_state_2d.spatialdb
 \end_layout
 
 \begin_layout Standard
