@@ -1362,7 +1362,9 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   topology::CoordsVisitor coordsVisitor(faultDMMesh);
 
   // Loop over cohesive cells, computing orientation weighted by
-  // jacobian at constraint vertices
+  // jacobian at constraint vertices. This involves looping over cells
+  // and summing across processors (complete the section) just like a
+  // normal FE integration.
 
   for(PetscInt c = cStart; c < cEnd; ++c) {
     PetscInt *closure = NULL;
@@ -1411,6 +1413,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   orientationArray = orientationVisitor.localArray();
   int count = 0;
   for(PetscInt v = vStart; v < vEnd; ++v, ++count) {
+    assert(orientationSize == orientationVisitor.sectionDof(v));
     const PetscInt ooff = orientationVisitor.sectionOffset(v);
     for(PetscInt d = 0; d < orientationSize; ++d) {
       orientationVertex[d] = orientationArray[ooff+d];
@@ -1424,6 +1427,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
       if (mag <= 0.0) {
 	std::ostringstream msg;
 	msg << "Error calculating fault orientation at fault vertex " << v << ".\n" 
+	    << "Zero vector in parallel likely indicates inconsistent fault orientation (creation) across processors.\n"
 	    << "Orientation vector " << iDim << ": (";
 	for (int jDim = 0, index = iDim * spaceDim; jDim < spaceDim; ++jDim) {
 	  msg << " " << orientationVertex[index + jDim];
