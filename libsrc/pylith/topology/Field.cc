@@ -869,13 +869,20 @@ pylith::topology::Field::view(const char* label) const
 	    << "  scale: " << const_cast<Field*>(this)->_metadata["default"].scale << "\n"
 	    << "  dimensionalize flag: " << const_cast<Field*>(this)->_metadata["default"].dimsOkay << std::endl;
   if (_dm) {
-    PetscSection section = NULL;
+    PetscSection   section = NULL;
+    PetscMPIInt    numProcs, rank;
     PetscErrorCode err;
 
     err = DMGetDefaultSection(_dm, &section);PYLITH_CHECK_ERROR(err);
     err = DMView(_dm, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
     err = PetscSectionView(section, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
-    err = VecView(_localVec, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
+    err = MPI_Comm_size(PetscObjectComm((PetscObject) _dm), &numProcs);PYLITH_CHECK_ERROR(err);
+    err = MPI_Comm_rank(PetscObjectComm((PetscObject) _dm), &rank);PYLITH_CHECK_ERROR(err);
+    for (PetscInt p = 0; p < numProcs; ++p) {
+      err = PetscPrintf(PetscObjectComm((PetscObject) _dm), "Proc %d local vector\n", p);PYLITH_CHECK_ERROR(err);
+      if (p == rank) {err = VecView(_localVec, PETSC_VIEWER_STDOUT_SELF);PYLITH_CHECK_ERROR(err);}
+      err = PetscBarrier((PetscObject) _dm);PYLITH_CHECK_ERROR(err);
+    }
   }
 
   PYLITH_METHOD_END;
