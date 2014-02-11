@@ -961,10 +961,10 @@ reference "fig:3D-linear-elements"
 \end_inset
 
 .
- Quadratic cells are also supported, but at present the only method for
- using these cells in PyLith is using PyLith ASCII format.
- PyLith does not yet support automatic generation of a quadratic mesh from
- the linear meshes created by CUBIT or LaGriT.
+ PyLith no longer supports use of quadratic cells using the PyLith ASCII
+ mesh format.
+ In the next release, we plan to support higher order discretizations via
+ PETSc finite-element features from meshes with linear cells as input.
 \end_layout
 
 \begin_layout Standard
@@ -1384,8 +1384,8 @@ Refiner
 \end_layout
 
 \begin_layout Standard
-The refiner is used to decrease node spacing by a factor of two by subdividing
- each cell.
+The refiner is used to decrease node spacing by a power of two by recursively
+ subdividing each cell by a factor of two.
  In a 2D triangular mesh a node is inserted at the midpoint of each edge,
  splitting each cell into four cells (see Figure 
 \begin_inset CommandInset ref
@@ -1456,14 +1456,32 @@ name "fig:uniform:refinement:2x"
 \begin_layout Standard
 Refinement occurs after distribution of the mesh among processors.
  This allows one to run much larger simulations by (1) permitting the mesh
- generator to construct a mesh with a node spacing twice as large as that
- needed in the simulation and (2) operations performed in serial during
- the simulation setup phase, such as, adjusting the topology to insert cohesive
- cells and distribution of the mesh among processors uses this much smaller
- coarse mesh.
+ generator to construct a mesh with a node spacing largeer than that needed
+ in the simulation and (2) operations performed in serial during the simulation
+ setup phase, such as, adjusting the topology to insert cohesive cells and
+ distribution of the mesh among processors uses this much smaller coarse
+ mesh.
  For 2D problems the global mesh refinement increases the maximum problem
- size by a factor of four, and for 3D problems it increases the maximum
- problem size by a factor of eight.
+ size by a factor of 
+\begin_inset Formula $4^{n}$
+\end_inset
+
+, and for 3D problems it increases the maximum problem size by a factor
+ of 
+\begin_inset Formula $8^{n}$
+\end_inset
+
+, where 
+\begin_inset Formula $n$
+\end_inset
+
+ is the number of recursive refinement levels.
+ For a tetrahedral mesh, the element quality decreases with refinement so
+ 
+\begin_inset Formula $n$
+\end_inset
+
+ should be limited to 1-2.
 \end_layout
 
 \begin_layout Subsection
