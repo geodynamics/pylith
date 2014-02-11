@@ -142,7 +142,7 @@ y easy scripting using the Python programming language.
 PyLith 2.0 replaces the finite-element data structures provided by the C++
  Sieve implementation with those provided by the C DMPlex implementation.
  The newly developed DMPlex implementation by the PETSc developers conforms
- the PETSc data manager (DM) interface, thereby providing tighter integration
+ to the PETSc data manager (DM) interface, thereby providing tighter integration
  with other PETSc data structures, such as vectors and matrices.
  Other improvements include significantly reduced memory use and memory
  balancing.
