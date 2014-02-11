@@ -96,14 +96,14 @@ Installation of PyLith on a desktop or laptop machine is, in most cases,
  can be difficult for inexperienced users.
  We have created a small utility called PyLith Installer that makes installing
  PyLith and all of its dependencies from source much easier.
- Help is available from both a CIG mailing list and CIG Roundup Bug Tracking
- System 
+ Help is available from both a CIG mailing list and the Github issue tracking
+ system 
 \begin_inset Flex URL
 status open
 
 \begin_layout Plain Layout
 
-geodynamics.org/roundup/
+https://github.com/geodynamics/pylith/issues
 \end_layout
 
 \end_inset
@@ -154,17 +154,17 @@ geodynamics.org/cig/lists/cig-short
 \begin_layout Standard
 CIG uses 
 \family typewriter
-Roundup
+Github
 \family default
- for bug tracking.
- If you find a bug in PyLith, please submit a bug report to the CIG Roundup
- System 
+ for source control and bug tracking.
+ If you find a bug in PyLith, please submit a bug report to the Github issue
+ tracking system for PyLith 
 \begin_inset Flex URL
-status collapsed
+status open
 
 \begin_layout Plain Layout
 
-geodynamics.org/roundup/
+https://github.com/geodynamics/pylith/issues
 \end_layout
 
 \end_inset
@@ -172,17 +172,13 @@ geodynamics.org/roundup/
 .
  Of course, it is helpful to first check to see if someone else already
  submitted a report related to the issue; one of the CIG developers may
- have posted a solution to the problem.
+ have posted a work around to the problem.
  You can reply to a current issue by clicking on the issue title.
- To submit a new issue, click 
+ To submit a new issue, click on the 
 \family sans
-Create New
+New Issue
 \family default
- under 
-\family sans
-Issues
-\family default
-.
+ button.
 \end_layout
 
 \begin_layout Section
@@ -190,8 +186,8 @@ Installation of Binary Executable
 \end_layout
 
 \begin_layout Standard
-Binary executables are available for Linux, Mac OS X (Intel 10.5 and Intel
- 10.6/10.7), and Windows from the PyLith web page 
+Binary executables are available for Linux, Mac OS X (Intel 10.6+), and Windows
+ from the PyLith web page 
 \begin_inset Flex URL
 status collapsed
 
@@ -302,9 +298,9 @@ $ cd pylith
 
 \end_deeper
 \begin_layout Enumerate
-Download the appropriate Darwin tarball from the PyLith web page 
+Download the Darwin tarball from the PyLith web page 
 \begin_inset Flex URL
-status collapsed
+status open
 
 \begin_layout Plain Layout
 
@@ -313,8 +309,7 @@ geodynamics.org/cig/software/packages/short/pylith/
 
 \end_inset
 
- based on your operating system and save it to the desired location, e.g.,
- 
+ and save it to the desired location, e.g., 
 \family typewriter
 $HOME/pylith
 \family default
@@ -323,12 +318,12 @@ $HOME/pylith
 
 \begin_layout Enumerate
 Unpack the tarball.
- For the 10.5.x operating system
+ 
 \end_layout
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -xzf pylith-2.0.0-darwin-10.5.tgz
+$ tar -xzf pylith-2.0.0-darwin-10.6.8.tgz
 \end_layout
 
 \end_deeper
@@ -455,7 +450,7 @@ src/pylith/examples
 \family default
  while in the source distribution, they are located in 
 \family typewriter
-pylith-1.9.0/examples
+pylith-2.0.0/examples
 \family default
 .
  Chapter 
