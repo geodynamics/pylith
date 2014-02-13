@@ -20,6 +20,7 @@ EXTRA_DIST = \
 	general \
 	Sieve.tex \
 	toplevel_flow.txt \
+	update_1.9to2.0.sh \
 	SWIG
 
 
