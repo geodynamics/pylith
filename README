@@ -118,6 +118,11 @@ Version 2.0.0
   was included. This provides significantly more information for
   debugging.
 
+* Several small improvements to various sections of the manual based
+  on feedback and questions from users.
+
+  - Added a discussion of how to set scales for nondimensionalization.
+
 * Bug fixes
 
   - Fixed two MPI related bugs in computing Green's functions in
@@ -139,6 +144,9 @@ Version 2.0.0
   - Corrected two typos in the manual related to fault opening and
     tractions in examples/3d/hex8/step20 and updating to the use of
     cell.dimension for the quadrature scheme with tets.
+
+  - Fixed stable time step computed for power-law viscoelastic
+    rheology to match manual.
 
 
 ======================================================================
