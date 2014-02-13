@@ -354,9 +354,8 @@ reference "sec:Spatialdata:SimpleIOAscii"
 \end_layout
 
 \begin_layout Standard
-By default the output manager for a material does not output any information.
- This behavior may be changed by specifying output files for each material
- group:
+In general, we average the output over the quadrature points within a cell
+ and specify the name of the output files for each material group:
 \end_layout
 
 \begin_layout LyX-Code
@@ -364,7 +363,7 @@ By default the output manager for a material does not output any information.
 \end_layout
 
 \begin_layout LyX-Code
-cell_filter = pylith.meshio.CellFilterAvgMesh
+cell_filter = pylith.meshio.CellFilterAvg
 \end_layout
 
 \begin_layout LyX-Code
@@ -380,7 +379,7 @@ writer.filename = dislocation-elastic.vtk
 \end_layout
 
 \begin_layout LyX-Code
-cell_filter = pylith.meshio.CellFilterAvgMesh
+cell_filter = pylith.meshio.CellFilterAvg
 \end_layout
 
 \begin_layout LyX-Code
@@ -401,18 +400,21 @@ reference "sec:Tutorial-3d-hex8"
 writer.filename
 \family default
  settings) will cause two files to be created for each material group: an
- info file, which describes the material properties used in the model, and
- a state variables file, which contains the state variable information.
- Note that the material properties described by the info file are the properties
- used internally by PyLith.
- They do not necessarily correspond to properties specified by the user.
+ info file, which describes the material property parameters used in the
+ model, and a state variables file, which contains the state variable informatio
+n.
+ Note that the material property parameters described by the info file are
+ the parameters used internally by PyLith.
+ In some cases they are parameters convenient for use in the constitutive
+ models and are derived from the parameters specified by the user via the
+ spatial database.
  If the problem has more than one time step, a state variable output file
  will be created for each requested time step.
  We have requested that the values be averaged over each cell.
  Otherwise, output would be produced for each quadrature point, which can
  cause problems with some visualization packages.
  For this example problem, the material is three-dimensional isotropic elastic,
- and is thus described by only three material properties (
+ and is thus described by three parameters (
 \begin_inset Formula $\lambda$
 \end_inset
 
@@ -1232,8 +1234,8 @@ tic relaxation time.
  so the stable time step is infinite.
  The same is true for elastoplastic materials, since there is no inherent
  time scale for these problems.
- Depending on the loading rate, however, it is possible to impose too great
- a load in a given time step, and the resulting solution may be inaccurate
+ Depending on the loading rate, however, it is possible to impose a load
+ increment that is large enough so that the resulting solution may be inaccurate
  or divergent.
  Caution must be used in assigning time step sizes for elastoplastic problems,
  and the linear and nonlinear convergence should be monitored closely.
@@ -6042,8 +6044,8 @@ stress-zz-initial
 \begin_inset Formula $\sigma_{xx},\:\sigma_{yy},\:\sigma_{xy}$
 \end_inset
 
-) and an additional database containing all the initial state variables
- for the given material.
+) and an additional database containing the out of plane stress and initial
+ values for all other state variables for the given material.
  The complete initial stress field may then be defined in the 
 \family typewriter
 .cfg
@@ -6056,7 +6058,7 @@ stress-zz-initial
 \end_layout
 
 \begin_layout LyX-Code
-# First define initial 2D stresses.
+# First specify initial 2D stresses
 \end_layout
 
 \begin_layout LyX-Code
@@ -6068,7 +6070,7 @@ db_initial_stress.label = 2D initial stress
 \end_layout
 
 \begin_layout LyX-Code
-db_initial_stress.iohandler.filename = init_stress_2d.spatialdb
+db_initial_stress.iohandler.filename = inititial_stress_2d.spatialdb
 \end_layout
 
 \begin_layout LyX-Code
@@ -6076,7 +6078,7 @@ db_initial_stress.iohandler.filename = init_stress_2d.spatialdb
 \end_layout
 
 \begin_layout LyX-Code
-# Now define out-of-plane initial stresses (and any other state variables).
+# Now specify out-of-plane initial stresses (and all other state variables)
 \end_layout
 
 \begin_layout LyX-Code
@@ -6088,7 +6090,7 @@ db_initial_state.label = Out of plane strain initial stress
 \end_layout
 
 \begin_layout LyX-Code
-db_initial_state.iohandler.filename = init_state_2d.spatialdb
+db_initial_state.iohandler.filename = initial_state_2d.spatialdb
 \end_layout
 
 \begin_layout Standard
