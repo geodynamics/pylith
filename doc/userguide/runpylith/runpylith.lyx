@@ -1594,7 +1594,7 @@ PyLith nondimensionalizes all parameters provided by the user so that the
 \family typewriter
 NondimElasticQuasistatic
 \family default
- normalizer has the following properties:
+ normalizer (which is the default) has the following properties:
 \end_layout
 
 \begin_layout Description
@@ -1691,16 +1691,16 @@ The default nondimensionalization is reasonable for many problems; however,
  it may be necessary to change the default values in some cases.
  When doing this, keep in mind that the nondimensionalization generally
  applies to the minimum values encountered for a problem.
- For example, in a problem with a very small mesh size, the 
+ For example, in a quasistatic problem, the 
 \family typewriter
 length_scale
 \family default
- for a quasistatic problem should be on the order of the minimum cell size.
- Similarly, for a problem involving very short relaxation times, the 
+ should be on the order of the minimum cell size.
+ Similarly, the 
 \family typewriter
 relaxation_time
 \family default
- should be on the order of the minimum relaxation time for the problem.
+ should be on the order of the minimum relaxation time.
 \end_layout
 
 \begin_layout Subsection
@@ -2826,9 +2826,9 @@ PETSc options used with split fields algebraic multigrid preconditioning
 \begin_inset Tabular
 <lyxtabular version="3" rows="8" columns="3">
 <features tabularvalignment="middle">
-<column alignment="left" valignment="top" width="2.25in">
+<column alignment="left" valignment="top" width="2.75in">
 <column alignment="center" valignment="middle" width="0.75in">
-<column alignment="left" valignment="top" width="3in">
+<column alignment="left" valignment="top" width="2.5in">
 <row>
 <cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
@@ -2852,7 +2852,7 @@ Value
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2888,7 +2888,7 @@ field_split
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2922,7 +2922,7 @@ true
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2956,7 +2956,7 @@ multiplicative
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2975,7 +2975,7 @@ Apply each field preconditioning in sequence, which is stronger than all-at-once
 
 \family typewriter
 \size footnotesize
-fs_fieldsplit_0_pc_type
+fs_fieldsplit_displacement_pc_type
 \end_layout
 
 \end_inset
@@ -2991,7 +2991,7 @@ ml
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3009,7 +3009,7 @@ Multilevel algebraic multigrid preconditioning using Trilinos/ML via PETSc.
 
 \family typewriter
 \size footnotesize
-fs_fieldsplit_1_pc_type
+fs_fieldsplit_lagrange_multiplier_pc_type
 \end_layout
 
 \end_inset
@@ -3025,7 +3025,7 @@ jacobi
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3044,7 +3044,7 @@ Jacobi preconditioning for Lagrange multiplier block (only use if there
 
 \family typewriter
 \size footnotesize
-fs_fieldsplit_0_ksp_type
+fs_fieldsplit_displacement_ksp_type
 \end_layout
 
 \end_inset
@@ -3060,7 +3060,7 @@ preonly
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3078,7 +3078,7 @@ Apply only the preconditioner.
 
 \family typewriter
 \size footnotesize
-fs_fieldsplit_1_ksp_type
+fs_fieldsplit_lagrange_multiplier_ksp_type
 \end_layout
 
 \end_inset
@@ -3094,7 +3094,7 @@ preonly
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3132,6 +3132,15 @@ ioner.
  If the solver for the Schur complement S is given a very low tolerance,
  this is effectively a direct solver.
  The options given below will construct this solver in PyLith.
+ These settings are available in
+\family typewriter
+
+\begin_inset Newline newline
+\end_inset
+
+$PYLITH_DIR/share/settings/solver_fault_exact.cfg
+\family default
+.
 \end_layout
 
 \begin_layout LyX-Code
@@ -3147,10 +3156,6 @@ matrix_type = aij
 \end_layout
 
 \begin_layout LyX-Code
-use_custom_constraint_pc = True
-\end_layout
-
-\begin_layout LyX-Code
 
 \end_layout
 
@@ -3163,11 +3168,11 @@ fs_pc_type = fieldsplit
 \end_layout
 
 \begin_layout LyX-Code
-fs_pc_fieldsplit_type = schur
+fs_pc_use_amat = True
 \end_layout
 
 \begin_layout LyX-Code
-fs_pc_fieldsplit_schur_precondition = user
+fs_pc_fieldsplit_type = schur
 \end_layout
 
 \begin_layout LyX-Code
@@ -3175,31 +3180,23 @@ fs_pc_fieldsplit_schur_factorization_type = full
 \end_layout
 
 \begin_layout LyX-Code
-fs_pc_use_amat = true
+fs_fieldsplit_displacement_ksp_type = preonly
 \end_layout
 
 \begin_layout LyX-Code
-fs_fieldsplit_0_pc_type = lu
+fs_fieldsplit_displacement_pc_type = lu
 \end_layout
 
 \begin_layout LyX-Code
-fs_fieldsplit_0_ksp_type = gmres
+fs_fieldsplit_lagrange_multiplier_pc_type = jacobi
 \end_layout
 
 \begin_layout LyX-Code
-fs_fieldsplit_0_ksp_rtol = 1.0e-10
+fs_fieldsplit_lagrange_multiplier_ksp_type = gmres
 \end_layout
 
 \begin_layout LyX-Code
-fs_fieldsplit_1_pc_type = jacobi
-\end_layout
-
-\begin_layout LyX-Code
-fs_fieldsplit_1_ksp_type = gmres
-\end_layout
-
-\begin_layout LyX-Code
-fs_fieldsplit_1_ksp_rtol = 1.0e-10 
+fs_fieldsplit_lagrange_multiplier_ksp_rtol = 1.0e-11
 \end_layout
 
 \begin_layout Subsubsection
@@ -3649,14 +3646,14 @@ Time Stepping
 PyLith provides three choices for controlling the time step in time-dependent
  simulations.
  These include (1) a uniform, user-specified time step (which is the default),
- (2) nonuniform, user-specified time steps, and (3) nonuniform, automatically
- calculated time steps.
+ (2) user-specified time steps (potentially nonuniform), and (3) automatically
+ calculated (potentially nonuniform) time steps.
  The procedure for automatically selecting time steps requires that the
  material models provide a reasonable estimate of the time step for stable
  time integration.
- In general, quasi-static simulations should use automatically calculated
- time steps and dynamic simulations should use a uniform, user-specified
- time step.
+ In general, quasi-static simulations with viscoelastic materials should
+ use automatically calculated time steps and dynamic simulations should
+ use a uniform, user-specified time step.
  Note that all three of the time stepping schemes make use of the computed
  stable time step (see 
 \begin_inset CommandInset ref
@@ -3666,6 +3663,10 @@ reference "sub:Stable-time-step"
 \end_inset
 
 ).
+ When using user-specified time steps, the value is checked against the
+ computed stable time step.
+ The automatically calculated time step comes from the computed stable time
+ step.
 \end_layout
 
 \begin_layout Standard
@@ -3677,8 +3678,9 @@ Warning:
 \color none
  
 \color inherit
-Changing the time step requires recomputing the Jacobian of the system,
- which can greatly increase the runtime if the time-step size changes frequently.
+Varying the time step within a simulation requires recomputing the Jacobian
+ of the system whenever the time step changes, which can greatly increase
+ the runtime if the time-step size changes frequently.
 \end_layout
 
 \begin_layout Subsubsection
@@ -4946,7 +4948,7 @@ time_step = 1.0*yr
 \end_layout
 
 \begin_layout LyX-Code
-cell_filter = pylith.meshio.CellFilterAvgMesh
+cell_filter = pylith.meshio.CellFilterAvg
 \end_layout
 
 \begin_layout LyX-Code
@@ -5518,6 +5520,23 @@ h5dump -d /geometry/vertices mydata.h5
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+We have also include a utility 
+\family typewriter
+pylith_genxdmf
+\family default
+ (see Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:pylith_genxdmf"
+
+\end_inset
+
+) that generates an appropriate Xdmf file from a PyLith HDF5 file.
+ This is very useful if you add fields to HDF5 files in post-processing
+ and wish to view the results in ParaView or Visit.
+\end_layout
+
 \begin_layout Subsubsection
 DataWriterHDF5 Parameters
 \end_layout
@@ -6036,6 +6055,12 @@ coordsys Coordinate system associated with mesh in simulation.
 \begin_layout Subsection
 
 \family typewriter
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:pylith_genxdmf"
+
+\end_inset
+
 pylith_genxdmf
 \end_layout
 
