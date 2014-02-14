@@ -16,7 +16,6 @@
 # ----------------------------------------------------------------------
 #
 
-for i in `find . -name "*.eps"`; do epstopdf $i; done
-lyx -e pdf userguide.lyx
+lyx -e pdf2 userguide.lyx
 
 # End of file

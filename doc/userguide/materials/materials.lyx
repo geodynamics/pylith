@@ -5993,9 +5993,11 @@ Specification of Initial State Variables
 \end_layout
 
 \begin_layout Standard
-Since state variables are specific to a given material, initial values for
+State variables are specific to a given material, so initial values for
  state variables are specified as part of the material description.
- By default, initial state values are not used.
+ The default is that no initial state variables are specified.
+ In computing the elastic prestep, appropriate values for the state variables
+ are set; otherwise the state variables are set to zero.
  To override this behavior, specify a spatial database for the initial stress,
  strain, and/or state variables as in the example from the tutorial in Section
  
@@ -6018,6 +6020,34 @@ db_initial_stress = spatialdata.spatialdb.SimpleDB
 
 \begin_layout LyX-Code
 db_initial_stress.iohandler.filename = initial_stress.spatialdb
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\color inherit
+ 
+\series default
+Using the elastic prestep with initial state variables will generally lead
+ to the state variables being ignored (the initial out of plane stress is
+ the exception), because the elastic prestep will set the state variables
+ based on the elastic solution.
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\color inherit
+ 
+\series default
+Currently, PyLith assumes initial displacements and velocities of zero,
+ so any initial strain and state variables should be consistent with these
+ initial conditions.
+ This limitation will be removed in future releases.
 \end_layout
 
 \begin_layout Standard
