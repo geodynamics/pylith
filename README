@@ -121,7 +121,15 @@ Version 2.0.0
 * Several small improvements to various sections of the manual based
   on feedback and questions from users.
 
+  - Added more information about the workflow involved in using PyLith.
+
   - Added a discussion of how to set scales for nondimensionalization.
+
+  - Added a discussion of how the stable time step is computed for the
+    various materials.
+
+  - Updated and expanded the discussion of using initial state
+    variables.
 
 * Bug fixes
 
