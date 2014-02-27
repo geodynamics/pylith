@@ -16,9 +16,9 @@
 # ----------------------------------------------------------------------
 #
 
-## @file tests/2d/tri3/axialdisp_soln.py
+## @file tests/2d/tri3/sheardisp_soln.py
 ##
-## @brief Analytical solution to axial displacement problem.
+## @brief Analytical solution to shear displacement problem.
 
 import numpy
 
@@ -31,10 +31,10 @@ p_mu = p_density*p_vs**2
 p_lambda = p_density*p_vp**2 - 2*p_mu
 
 # Uniform stress field (plane stress)
-sxx = 1.0e+7
+sxx = 0.0
 syy = 0.0
 szz = 0.0
-sxy = 0.0
+sxy = 1.0e+7
 syz = 0.0
 sxz = 0.0
 

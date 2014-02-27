@@ -17,10 +17,7 @@
 #
 
 SUBDIRS = \
-	2d \
-	3dnew \
-	petsc \
-	eqinfo
+	tet4
 
 
 # End of file 
