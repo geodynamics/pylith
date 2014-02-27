@@ -18,7 +18,7 @@
 
 SUBDIRS = \
 	2d \
-	3dnew \
+	3d \
 	petsc \
 	eqinfo
 
