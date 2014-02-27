@@ -36,7 +36,7 @@ def check_displacements(testcase, filename, mesh):
   testcase.assertEqual(mesh['spaceDim'], spaceDim)
 
   # Check displacement solution
-  toleranceMask = 1.0e-3
+  toleranceAbsMask = 0.1
   tolerance = 1.0e-5
 
   dispE = testcase.calcDisplacements(vertices)
@@ -51,7 +51,7 @@ def check_displacements(testcase, filename, mesh):
   for istep in xrange(nsteps):
     for icomp in xrange(ncomps):
 
-      mask = numpy.abs(dispE[istep,:,icomp]) > toleranceMask
+      mask = numpy.abs(dispE[istep,:,icomp]) > toleranceAbsMask
       diff = numpy.abs(disp[istep,:,icomp] - dispE[istep,:,icomp])
       diffR = numpy.abs(1.0 - disp[istep,:,icomp] / dispE[istep,:,icomp])  
       okay = ~mask * (diff < tolerance) + mask * (diffR < tolerance)
@@ -59,9 +59,10 @@ def check_displacements(testcase, filename, mesh):
         print "Error in component %d of displacement field at time step %d." % (icomp, istep)
         print "Expected values: ",dispE[istep,:,:]
         print "Output values: ",disp[istep,:,:]
-        print dispE[istep,~okay,icomp]
-        print disp[istep,~okay,icomp]
-        print diffR[~okay]
+        print "Expected values (not okay): ",dispE[istep,~okay,icomp]
+        print "Computed values (not okay): ",disp[istep,~okay,icomp]
+        print "Relative diff (not okay): ",diffR[~okay]
+        print "Coordinates (not okay): ",vertices[~okay,:]
       testcase.assertEqual(nvertices, numpy.sum(okay))    
     
   h5.close()
