@@ -98,16 +98,14 @@ public :
    * @param tmpSolveSolnVec Temporary PETSc vector for solution.
    * @param jacobianMat PETSc sparse matrix for system Jacobian.
    * @param preconditionerMat PETSc sparse matrix for preconditioner.
-   * @param Flag indicating layout of preconditioner matrix.
    * @param context ArgsJacobian structure with arguments.
    * @returns PETSc error code.
    */
   static
   PetscErrorCode reformJacobian(PetscSNES snes,
 				PetscVec tmpSolveSolnVec,
-				PetscMat* jacobianMat,
-				PetscMat* preconditionerMat,
-				MatStructure* preconditionerLayout,
+				PetscMat jacobianMat,
+				PetscMat preconditionerMat,
 				void* context);
 
   /** Generic C interface for customized PETSc line search.

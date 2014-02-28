@@ -193,9 +193,8 @@ pylith::problems::SolverNonlinear::reformResidual(PetscSNES snes,
 PetscErrorCode
 pylith::problems::SolverNonlinear::reformJacobian(PetscSNES snes,
 						  PetscVec tmpSolutionVec,
-						  PetscMat* jacobianMat,
-						  PetscMat* preconditionerMat,
-						  MatStructure* preconditionerLayout,
+						  PetscMat jacobianMat,
+						  PetscMat preconditionerMat,
 						  void* context)
 { // reformJacobian
   PYLITH_METHOD_BEGIN;

@@ -118,11 +118,7 @@ pylith::problems::SolverLinear::solve(topology::Field* solution,
 
   PetscErrorCode err = 0;
   const PetscMat jacobianMat = jacobian->matrix();
-  if (!jacobian->valuesChanged()) {
-    err = KSPSetOperators(_ksp, jacobianMat, jacobianMat, SAME_PRECONDITIONER);PYLITH_CHECK_ERROR(err);
-  } else {
-    err = KSPSetOperators(_ksp, jacobianMat, jacobianMat, DIFFERENT_NONZERO_PATTERN);PYLITH_CHECK_ERROR(err);
-  } // else
+  err = KSPSetOperators(_ksp, jacobianMat, jacobianMat);PYLITH_CHECK_ERROR(err);
   jacobian->resetValuesChanged();
 
   const PetscVec residualVec = residual.globalVector();
