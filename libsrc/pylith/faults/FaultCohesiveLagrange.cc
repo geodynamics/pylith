@@ -1366,52 +1366,51 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   // and summing across processors (complete the section) just like a
   // normal FE integration.
 
-  for(PetscInt c = cStart; c < cEnd; ++c) {
-    PetscInt *closure = NULL;
-    PetscInt closureSize, q = 0;
-
-    // Get orientations at fault cell's vertices.
-    coordsVisitor.getClosure(&coordsCell, c);
-
-    PetscErrorCode err = DMPlexGetTransitiveClosure(faultDMMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-
-#define CHECKING_ORIENTATION
-#ifdef CHECKING_ORIENTATION
-    PetscInt *cl = new PetscInt[closureSize*2];
-    for(PetscInt p = 0; p < closureSize*2; ++p) {cl[p] = closure[p];}
-    err = DMPlexRestoreTransitiveClosure(faultDMMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-    closure = cl;
-#endif
-    // Filter out non-vertices
-    for(PetscInt p = 0; p < closureSize*2; p += 2) {
-      if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
-        closure[q*2]   = closure[p];
-        closure[q*2+1] = closure[p+1];
-        ++q;
-      } // if
-    } // for
-    closureSize = q;
-
-    for(PetscInt v = 0; v < closureSize; ++v) {
-      // Compute Jacobian and determinant of Jacobian at vertex
-      cellGeometry.jacobian(&jacobian, &jacobianDet, &coordsCell[0], numBasis, spaceDim, &verticesRef[v*cohesiveDim], cohesiveDim);
-
-      // Compute orientation
-      cellGeometry.orientation(&orientationVertex, jacobian, jacobianDet, up);
-
-      // Update orientation
-      const PetscInt ooff = orientationVisitor.sectionOffset(closure[v*2]);
-
-      for(PetscInt d = 0; d < orientationSize; ++d) {
-        orientationArray[ooff+d] += orientationVertex[d];
+  PetscInt *closure = NULL;
+  PetscInt closureSize = 0;
+  PetscInt cell;
+  try {
+    for(cell = cStart; cell < cEnd; ++cell) {
+      
+      // Get orientations at fault cell's vertices.
+      coordsVisitor.getClosure(&coordsCell, cell);
+      
+      PetscErrorCode err = DMPlexGetTransitiveClosure(faultDMMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+      
+      // Filter out non-vertices
+      PetscInt numVertices = 0;
+      for(PetscInt p = 0; p < closureSize*2; p += 2) {
+	if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
+	  closure[numVertices*2]   = closure[p];
+	  closure[numVertices*2+1] = closure[p+1];
+	  ++numVertices;
+	} // if
       } // for
+      
+      for(PetscInt v = 0; v < numVertices; ++v) {
+	// Compute Jacobian and determinant of Jacobian at vertex
+	cellGeometry.jacobian(&jacobian, &jacobianDet, &coordsCell[0], numBasis, spaceDim, &verticesRef[v*cohesiveDim], cohesiveDim);
+	
+	// Compute orientation
+	cellGeometry.orientation(&orientationVertex, jacobian, jacobianDet, up);
+	
+	// Update orientation
+	const PetscInt ooff = orientationVisitor.sectionOffset(closure[v*2]);
+	
+	for(PetscInt d = 0; d < orientationSize; ++d) {
+	  orientationArray[ooff+d] += orientationVertex[d];
+	} // for
+      } // for
+      err = DMPlexRestoreTransitiveClosure(faultDMMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     } // for
-#ifdef CHECKING_ORIENTATION
-    delete [] closure;
-#else
-    err = DMPlexRestoreTransitiveClosure(faultDMMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-#endif
-  } // for
+  } catch (const std::exception& err) {
+    if (closure) {
+      DMPlexRestoreTransitiveClosure(faultDMMesh, cell, PETSC_TRUE, &closureSize, &closure);
+    } // if
+    throw;
+  } catch (...) {
+    throw;
+  } // try/catch
   orientationVisitor.clear();
 
   //orientation.view("ORIENTATION BEFORE COMPLETE"); // DEBUGGING
