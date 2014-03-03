@@ -1375,6 +1375,13 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
 
     PetscErrorCode err = DMPlexGetTransitiveClosure(faultDMMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
 
+#define CHECKING_ORIENTATION
+#ifdef CHECKING_ORIENTATION
+    PetscInt *cl = new PetscInt[closureSize*2];
+    for(PetscInt p = 0; p < closureSize*2; ++p) {cl[p] = closure[p];}
+    err = DMPlexRestoreTransitiveClosure(faultDMMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+    closure = cl;
+#endif
     // Filter out non-vertices
     for(PetscInt p = 0; p < closureSize*2; p += 2) {
       if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
@@ -1384,6 +1391,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
       } // if
     } // for
     closureSize = q;
+
     for(PetscInt v = 0; v < closureSize; ++v) {
       // Compute Jacobian and determinant of Jacobian at vertex
       cellGeometry.jacobian(&jacobian, &jacobianDet, &coordsCell[0], numBasis, spaceDim, &verticesRef[v*cohesiveDim], cohesiveDim);
@@ -1398,7 +1406,11 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
         orientationArray[ooff+d] += orientationVertex[d];
       } // for
     } // for
+#ifdef CHECKING_ORIENTATION
+    delete [] closure;
+#else
     err = DMPlexRestoreTransitiveClosure(faultDMMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+#endif
   } // for
   orientationVisitor.clear();
 
