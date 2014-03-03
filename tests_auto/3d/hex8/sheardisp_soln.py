@@ -16,10 +16,9 @@
 # ----------------------------------------------------------------------
 #
 
-## @file tests/3dnew/hex8/lgdeformtraction_soln.py
+## @file tests/2d/tri3/sheardisp_soln.py
 ##
-## @brief Analytical solution to axial tractions with large
-## deformation formulation.
+## @brief Analytical solution to shear displacement problem.
 
 import numpy
 
@@ -31,27 +30,24 @@ p_vp = 5291.502622129181
 p_mu = p_density*p_vs**2
 p_lambda = p_density*p_vp**2 - 2*p_mu
 
-# Uniform stress field
-sxx0 = -100.0e+6
-syy0 = -10.0e+6
-ux = -13.7398
-uy = 2.30274
-uz = 3.05947
-
-sxx = -1.00172e+8
-syy = -9.99712e+6
+# Uniform stress field (plane stress)
+sxx = 0.0
+syy = 0.0
 szz = 0.0
-sxy = 0.0
+sxy = 1.0e+7
 syz = 0.0
 sxz = 0.0
 
 # Uniform strain field
-exx = -0.001716
-eyy = 0.000287884
-ezz = 0.000510042
-exy = 0.0
-eyz = 0.0
-exz = 0.0
+exx = 1.0/(2*p_mu) * (sxx - p_lambda/(3*p_lambda+2*p_mu) * (sxx+syy+szz))
+eyy = 1.0/(2*p_mu) * (syy - p_lambda/(3*p_lambda+2*p_mu) * (sxx+syy+szz))
+ezz = 1.0/(2*p_mu) * (szz - p_lambda/(3*p_lambda+2*p_mu) * (sxx+syy+szz))
+
+exy = 1.0/(2*p_mu) * (sxy)
+eyz = 1.0/(2*p_mu) * (syz)
+exz = 1.0/(2*p_mu) * (sxz)
+
+#print exx,eyy,ezz,exy,eyz,exz
 
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
@@ -68,10 +64,10 @@ class AnalyticalSoln(object):
     Compute displacement field at locations.
     """
     (npts, dim) = locs.shape
-    disp = numpy.zeros( (npts, 3), dtype=numpy.float64)
-    disp[:,0] = ux*(4000.0 + locs[:,0]) / 8000.0
-    disp[:,1] = uy*(4000.0 + locs[:,1]) / 8000.0
-    disp[:,2] = uz*(6000.0 + locs[:,2]) / 6000.0
+    disp = numpy.zeros( (1, npts, 3), dtype=numpy.float64)
+    disp[0,:,0] = exx*locs[:,0] + exy*locs[:,1] + exz*locs[:,2]
+    disp[0,:,1] = eyy*locs[:,1] + exy*locs[:,0] + eyz*locs[:,2]
+    disp[0,:,2] = ezz*locs[:,2] + exz*locs[:,0] + eyz*locs[:,1]
     return disp
 
 
@@ -80,13 +76,13 @@ class AnalyticalSoln(object):
     Compute strain field at locations.
     """
     (npts, dim) = locs.shape
-    strain = numpy.zeros( (npts, 6), dtype=numpy.float64)
-    strain[:,0] = exx
-    strain[:,1] = eyy
-    strain[:,2] = ezz
-    strain[:,3] = exy
-    strain[:,4] = eyz
-    strain[:,5] = exz
+    strain = numpy.zeros( (1, npts, 6), dtype=numpy.float64)
+    strain[0,:,0] = exx
+    strain[0,:,1] = eyy
+    strain[0,:,2] = ezz
+    strain[0,:,3] = exy
+    strain[0,:,4] = eyz
+    strain[0,:,5] = exz
     return strain
   
 
@@ -95,13 +91,13 @@ class AnalyticalSoln(object):
     Compute stress field at locations.
     """
     (npts, dim) = locs.shape
-    stress = numpy.zeros( (npts, 6), dtype=numpy.float64)
-    stress[:,0] = sxx
-    stress[:,1] = syy
-    stress[:,2] = szz
-    stress[:,3] = sxy
-    stress[:,4] = syz
-    stress[:,5] = sxz
+    stress = numpy.zeros( (1, npts, 6), dtype=numpy.float64)
+    stress[0,:,0] = sxx
+    stress[0,:,1] = syy
+    stress[0,:,2] = szz
+    stress[0,:,3] = sxy
+    stress[0,:,4] = syz
+    stress[0,:,5] = sxz
     return stress
 
 

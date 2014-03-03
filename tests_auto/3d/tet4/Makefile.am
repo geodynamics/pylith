@@ -45,7 +45,7 @@ TESTS_ENVIRONMENT = $(PYTHON)
 
 
 # 'export' the input files by performing a mock install
-export_datadir = $(top_builddir)/tests_auto/3dnew/tet4
+export_datadir = $(top_builddir)/tests_auto/3d/tet4
 export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
 	for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
 

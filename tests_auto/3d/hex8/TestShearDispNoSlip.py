@@ -16,22 +16,20 @@
 # ----------------------------------------------------------------------
 #
 
-## @file tests/3dnew/hex8/TestRigidBody.py
+## @file tests/3d/hex8/TestShearDispNoSlip.py
 ##
-## @brief Test suite for testing pylith with rigid body motion for
-## large deformations in 3-D.
+## @brief Test suite for testing pylith with 3-D shear motion with no
+## fault slip.
 
 import numpy
 from TestHex8 import TestHex8
-from rigidbody_soln import AnalyticalSoln
-from pylith.utils.VTKDataReader import has_vtk
-from pylith.utils.VTKDataReader import VTKDataReader
+from sheardisp_soln import AnalyticalSoln
 
 # Local version of PyLithApp
 from pylith.apps.PyLithApp import PyLithApp
-class RigidBodyApp(PyLithApp):
+class ShearApp(PyLithApp):
   def __init__(self):
-    PyLithApp.__init__(self, name="lgdeformrigidbody")
+    PyLithApp.__init__(self, name="sheardispnoslip")
     return
 
 
@@ -42,20 +40,20 @@ def run_pylith():
   """
   if not "done" in dir(run_pylith):
     # Generate spatial databases
-    from rigidbody_gendb import GenerateDB
+    from sheardisp_gendb import GenerateDB
     db = GenerateDB()
     db.run()
 
     # Run PyLith
-    app = RigidBodyApp()
+    app = ShearApp()
+    run_pylith.done = True # Put before run() so only called once
     app.run()
-    run_pylith.done = True
   return
 
 
-class TestRigidBody(TestHex8):
+class TestShearDispNoSlip(TestHex8):
   """
-  Test suite for testing pylith with 2-D rigid body motion.
+  Test suite for testing pylith with 2-D shear extension.
   """
 
   def setUp(self):
@@ -64,12 +62,9 @@ class TestRigidBody(TestHex8):
     """
     TestHex8.setUp(self)
     run_pylith()
-    self.outputRoot = "lgdeformrigidbody"
-    if has_vtk():
-      self.reader = VTKDataReader()
-      self.soln = AnalyticalSoln()
-    else:
-      self.reader = None
+    self.outputRoot = "sheardispnoslip"
+
+    self.soln = AnalyticalSoln()
     return
 
 
@@ -94,6 +89,16 @@ class TestRigidBody(TestHex8):
       raise ValueError("Unknown state variable '%s'." % name)
 
     return stateVar
+
+
+# ----------------------------------------------------------------------
+if __name__ == '__main__':
+  import unittest
+  from TestShearDispNoSlip import TestShearDispNoSlip as Tester
+
+  suite = unittest.TestSuite()
+  suite.addTest(unittest.makeSuite(Tester))
+  unittest.TextTestRunner(verbosity=2).run(suite)
 
 
 # End of file 

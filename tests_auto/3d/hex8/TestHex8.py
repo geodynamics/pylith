@@ -16,28 +16,35 @@
 # ----------------------------------------------------------------------
 #
 
-## @file tests/3dnew/hex8/TestHex8.py
+## @file tests/3d/hex8/TestHex8.py
 ##
 ## @brief Generic tests for problems using 3-D mesh.
 
 import unittest
 import numpy
 
+from pylith.tests import has_h5py
+
 class TestHex8(unittest.TestCase):
   """
-  Generic tests for problems using 3-D mesh.
+  Generic tests for problems using 3-D hex8 mesh.
   """
 
   def setUp(self):
     """
     Setup for tests.
     """
-    self.mesh = {'ncells_elastic': 128,
-                 'ncells_viscoelastic': 256,
+    self.mesh = {'ncells-elastic': 768,
+                 'ncells-viscoelastic': 1280,
                  'ncorners': 8,
-                 'nvertices': 567,
+                 'nvertices': 2601,
                  'spaceDim': 3,
                  'tensorSize': 6}
+
+    if has_h5py():
+      self.checkResults = True
+    else:
+      self.checkResults = False
     return
 
 
@@ -45,33 +52,26 @@ class TestHex8(unittest.TestCase):
     """
     Check elastic info.
     """
-    if self.reader is None:
+    if not self.checkResults:
       return
 
-    from pylith.tests.PhysicalProperties import check_properties
-    from rigidbody_soln import p_mu,p_lambda,p_density
+    for material in ["elastic", "viscoelastic"]:
+      ncells= self.mesh['ncells-%s' % material]
+      self.mesh['ncells'] = ncells
 
-    self.mesh['ncells'] = self.mesh['ncells_elastic']
-    ncells= self.mesh['ncells']
-    filename = "%s-elastic_info.vtk" % self.outputRoot
-    propMu =  p_mu*numpy.ones( (ncells, 1), dtype=numpy.float64)
-    propLambda = p_lambda*numpy.ones( (ncells, 1), dtype=numpy.float64)
-    propDensity = p_density*numpy.ones( (ncells, 2), dtype=numpy.float64)
-    properties = {'mu': propMu,
-                  'lambda': propLambda,
-                  'density': propDensity}
-    check_properties(self, filename, self.mesh, properties)
+      filename = "%s-%s_info.h5" % (self.outputRoot, material)
+      from axialdisp_soln import p_mu,p_lambda,p_density
 
-    self.mesh['ncells'] = self.mesh['ncells_viscoelastic']
-    ncells= self.mesh['ncells']
-    filename = "%s-viscoelastic_info.vtk" % self.outputRoot
-    propMu =  p_mu*numpy.ones( (ncells, 1), dtype=numpy.float64)
-    propLambda = p_lambda*numpy.ones( (ncells, 1), dtype=numpy.float64)
-    propDensity = p_density*numpy.ones( (ncells, 2), dtype=numpy.float64)
-    properties = {'mu': propMu,
-                  'lambda': propLambda,
-                  'density': propDensity}
-    check_properties(self, filename, self.mesh, properties)
+      propMu =  p_mu*numpy.ones( (1, ncells, 1), dtype=numpy.float64)
+      propLambda = p_lambda*numpy.ones( (1, ncells, 1), dtype=numpy.float64)
+      propDensity = p_density*numpy.ones( (1, ncells, 1), dtype=numpy.float64)
+
+      properties = {'mu': propMu,
+                    'lambda': propLambda,
+                    'density': propDensity}
+
+      from pylith.tests.PhysicalProperties import check_properties
+      check_properties(self, filename, self.mesh, properties)
 
     return
 
@@ -80,10 +80,10 @@ class TestHex8(unittest.TestCase):
     """
     Check solution (displacement) field.
     """
-    if self.reader is None:
+    if not self.checkResults:
       return
 
-    filename = "%s_t0000000.vtk" % self.outputRoot
+    filename = "%s.h5" % self.outputRoot
     from pylith.tests.Solution import check_displacements
     check_displacements(self, filename, self.mesh)
 
@@ -94,19 +94,19 @@ class TestHex8(unittest.TestCase):
     """
     Check elastic state variables.
     """
-    if self.reader is None:
+    if not self.checkResults:
       return
 
-    from pylith.tests.StateVariables import check_state_variables
-    stateVars = ["total_strain", "stress"]
 
-    filename = "%s-elastic_t0000000.vtk" % self.outputRoot
-    self.mesh['ncells'] = self.mesh['ncells_elastic']
-    check_state_variables(self, filename, self.mesh, stateVars)
+    for material in ["elastic", "viscoelastic"]:
+      ncells= self.mesh['ncells-%s' % material]
+      self.mesh['ncells'] = ncells
 
-    filename = "%s-viscoelastic_t0000000.vtk" % self.outputRoot
-    self.mesh['ncells'] = self.mesh['ncells_viscoelastic']
-    check_state_variables(self, filename, self.mesh, stateVars)
+      filename = "%s-%s.h5" % (self.outputRoot, material)
+
+      from pylith.tests.StateVariables import check_state_variables
+      stateVars = ["total_strain", "stress"]
+      check_state_variables(self, filename, self.mesh, stateVars)
 
     return
 

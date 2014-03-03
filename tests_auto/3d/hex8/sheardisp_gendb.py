@@ -16,17 +16,17 @@
 # ----------------------------------------------------------------------
 #
 
-## @file tests/2d/tri3/axialdisp_gendb.py
+## @file tests/2d/tri3/sheardisp_gendb.py
 ##
 ## @brief Python script to generate spatial database with displacement
-## boundary conditions for the axial displacement test.
+## boundary conditions for the shear displacement test.
 
 import numpy
 
 class GenerateDB(object):
   """
   Python object to generate spatial database with displacement
-  boundary conditions for the axial displacement test.
+  boundary conditions for the shear displacement test.
   """
   
   def __init__(self):
@@ -40,7 +40,7 @@ class GenerateDB(object):
     """
     Generate the database.
     """
-    from axialdisp_soln import AnalyticalSoln
+    from sheardisp_soln import AnalyticalSoln
     soln = AnalyticalSoln()
 
     from spatialdata.geocoords.CSCart import CSCart
@@ -52,21 +52,21 @@ class GenerateDB(object):
     io = SimpleIOAscii()
 
     for component in ["x","y","z"]:
-      if component == "x":
+      if component == "y":
         xyz = numpy.array([[-40.0e+3, 0.0, 0.0],
                            [+40.0e+3, 0.0, 0.0]], dtype=numpy.float64)
-        ic = 0
-      elif component == "y":
+        ic = 1
+      elif component == "x":
         xyz = numpy.array([[0.0, -40.0e+3, 0.0],
                            [0.0, +40.0e+3, 0.0]], dtype=numpy.float64)
-        ic = 1
+        ic = 0
       elif component == "z":
         xyz = numpy.array([[0.0, 0.0, -40.0e+3],
                            [0.0, 0.0,   0.0]], dtype=numpy.float64)
         ic = 2
       disp = soln.displacement(xyz)
 
-      io.inventory.filename = "axial_disp%s.spatialdb" % component
+      io.inventory.filename = "shear_disp%s.spatialdb" % component
       io._configure()
       data = {'points': xyz,
               'coordsys': cs,

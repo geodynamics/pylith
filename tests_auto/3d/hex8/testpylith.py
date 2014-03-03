@@ -24,11 +24,14 @@ def suite():
   """
   suite = unittest.TestSuite()
 
-  from TestLgDeformRigidBody import TestRigidBody
-  suite.addTest(unittest.makeSuite(TestRigidBody))
+  from TestAxialDisp import TestAxialDisp
+  suite.addTest(unittest.makeSuite(TestAxialDisp))
 
-  from TestLgDeformTraction import TestTraction
-  suite.addTest(unittest.makeSuite(TestTraction))
+  from TestShearDisp import TestShearDisp
+  suite.addTest(unittest.makeSuite(TestShearDisp))
+
+  #from TestShearDispNoSlip import TestShearDispNoSlip
+  #suite.addTest(unittest.makeSuite(TestShearDispNoSlip))
 
   return suite
 

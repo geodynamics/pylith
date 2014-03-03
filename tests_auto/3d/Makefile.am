@@ -17,7 +17,8 @@
 #
 
 SUBDIRS = \
-	tet4
+	tet4 \
+	hex8
 
 
 # End of file 

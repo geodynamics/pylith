@@ -334,6 +334,7 @@ AC_CONFIG_FILES([Makefile
 		tests_auto/2d/quad4/Makefile
 		tests_auto/3d/Makefile
 		tests_auto/3d/tet4/Makefile
+		tests_auto/3d/hex8/Makefile
 		tests_auto/petsc/Makefile
 		tests_auto/eqinfo/Makefile
 		tests/Makefile

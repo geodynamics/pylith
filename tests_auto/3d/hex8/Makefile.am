@@ -22,40 +22,30 @@ check_SCRIPTS = testpylith.py
 
 dist_noinst_PYTHON = \
 	TestHex8.py \
-	TestLgDeformRigidBody.py \
-	rigidbody_soln.py \
-	rigidbody_gendb.py \
-	TestLgDeformTraction.py \
-	lgdeformtraction_soln.py \
+	TestAxialDisp.py \
+	axialdisp_gendb.py \
+	axialdisp_soln.py \
+	TestShearDisp.py \
+	TestShearDispNoSlip.py \
+	sheardisp_gendb.py \
+	sheardisp_soln.py \
 	testpylith.py
+
 
 dist_noinst_DATA = \
 	geometry.jou \
 	mesh.jou \
 	mesh.exo \
 	matprops.spatialdb \
-	lgdeformrigidbody.cfg \
-	lgdeformtraction.cfg
-
-noinst_TMP = \
-	rigidbody_disp.spatialdb \
-	lgdeformrigidbody_t0000000.vtk \
-	lgdeformrigidbody-elastic_info.vtk \
-	lgdeformrigidbody-elastic_t0000000.vtk \
-	lgdeformrigidbody-viscoelastic_info.vtk \
-	lgdeformrigidbody-viscoelastic_t0000000.vtk \
-	lgdeformtraction_t0000000.vtk \
-	lgdeformtraction-elastic_info.vtk \
-	lgdeformtraction-elastic_t0000000.vtk \
-	lgdeformtraction-viscoelastic_info.vtk \
-	lgdeformtraction-viscoelastic_t0000000.vtk
-
+	axialdisp.cfg \
+	sheardisp.cfg \
+	sheardispnoslip.cfg
 
 TESTS_ENVIRONMENT = $(PYTHON)
 
 
 # 'export' the input files by performing a mock install
-export_datadir = $(top_builddir)/tests/3dnew/hex8
+export_datadir = $(top_builddir)/tests_auto/3d/hex8
 export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
 	for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
 
@@ -64,7 +54,11 @@ clean-data:
 
 
 BUILT_SOURCES = export-data
-clean-local: clean-data
-CLEANFILES = *.pyc
+
+clean-local: clean-local-tmp clean-data
+.PHONY: clean-local-tmp
+clean-local-tmp:
+	-rm *.h5 *.xmf *.pyc *.spatialdb
+
 
 # End of file 
