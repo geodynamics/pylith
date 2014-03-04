@@ -47,12 +47,12 @@
  * |  0   |   1   |
  * |      |       |
  * |      |  6    |
- *12 ----13-21----14
+ *12 ----13-21-----14
  * |      |  |      |
  * |      |7 |      |
  * |  2   |  |  3   |
  * |      |  |      |
- *15 ----16-22----17
+ *15 ----16-22-----17
  * |      |  |      |
  * |  4   |  |  5   |
  * |      |8 |      |
@@ -78,7 +78,7 @@ const int pylith::faults::CohesiveDataQuad4i::_numCorners[9] = {
 
 const int pylith::faults::CohesiveDataQuad4i::_materialIds[9] = {
   10, 10, 10, 11, 10, 11,
-  1, 1, 1,
+  -999, 1, 1,
 };
 
 const int pylith::faults::CohesiveDataQuad4i::_numGroups = 3;

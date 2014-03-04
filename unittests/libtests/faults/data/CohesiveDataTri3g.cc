@@ -37,7 +37,7 @@ const int pylith::faults::CohesiveDataTri3g::_numCorners[8] = {
 
 const int pylith::faults::CohesiveDataTri3g::_materialIds[8] = {
   0,  2,  0,  2,  0,  2,
-  1, 1,
+  -999, 1,
 };
 
 const int pylith::faults::CohesiveDataTri3g::_numGroups = 2;
