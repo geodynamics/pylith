@@ -54,6 +54,8 @@ class pylith::faults::TestFaultCohesive : public CppUnit::TestFixture
   CPPUNIT_TEST( testAdjustTopologyTri3d );
   CPPUNIT_TEST( testAdjustTopologyTri3e );
   CPPUNIT_TEST( testAdjustTopologyTri3f );
+  CPPUNIT_TEST( testAdjustTopologyTri3g );
+  CPPUNIT_TEST( testAdjustTopologyTri3h );
   CPPUNIT_TEST( testAdjustTopologyQuad4 );
   CPPUNIT_TEST( testAdjustTopologyQuad4b );
   CPPUNIT_TEST( testAdjustTopologyQuad4c );
@@ -62,6 +64,7 @@ class pylith::faults::TestFaultCohesive : public CppUnit::TestFixture
   CPPUNIT_TEST( testAdjustTopologyQuad4f );
   CPPUNIT_TEST( testAdjustTopologyQuad4g );
   CPPUNIT_TEST( testAdjustTopologyQuad4h );
+  CPPUNIT_TEST( testAdjustTopologyQuad4i );
   CPPUNIT_TEST( testAdjustTopologyTet4 );
   CPPUNIT_TEST( testAdjustTopologyTet4b );
   CPPUNIT_TEST( testAdjustTopologyTet4c );
@@ -112,6 +115,12 @@ public :
   /// Test adjustTopology() with 2-D triangular element (vertex on fault).
   void testAdjustTopologyTri3f(void);
 
+  /// Test adjustTopology() with 2-D triangular element (embedded fault).
+  void testAdjustTopologyTri3g(void);
+
+  /// Test adjustTopology() with 2-D triangular element (embedded fault, 2 cohesive cells).
+  void testAdjustTopologyTri3h(void);
+
   /// Test adjustTopology() with 2-D quadrilateral element.
   void testAdjustTopologyQuad4(void);
 
@@ -135,6 +144,9 @@ public :
 
   /// Test adjustTopology() with 2-D quadrilateral element (2 faults).
   void testAdjustTopologyQuad4h(void);
+
+  /// Test adjustTopology() with 2-D quadrilateral element (embedded fault).
+  void testAdjustTopologyQuad4i(void);
 
   /// Test adjustTopology() with 3-D tetrahedral element.
   void testAdjustTopologyTet4(void);

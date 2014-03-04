@@ -149,6 +149,38 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTri3f(void)
 } // testAdjustTopologyTri3f
 
 // ----------------------------------------------------------------------
+#include "data/CohesiveDataTri3g.hh" // USES CohesiveDataTri3g
+
+// Test adjustTopology() with 2-D triangular element (vertex on fault).
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyTri3g(void)
+{ // testAdjustTopologyTri3g
+  PYLITH_METHOD_BEGIN;
+
+  CohesiveDataTri3g data;
+  FaultCohesiveTract fault;
+  _testAdjustTopology(&fault, data);
+
+  PYLITH_METHOD_END;
+} // testAdjustTopologyTri3g
+
+// ----------------------------------------------------------------------
+#include "data/CohesiveDataTri3h.hh" // USES CohesiveDataTri3h
+
+// Test adjustTopology() with 2-D triangular element (vertex on fault).
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyTri3h(void)
+{ // testAdjustTopologyTri3h
+  PYLITH_METHOD_BEGIN;
+
+  CohesiveDataTri3h data;
+  FaultCohesiveTract fault;
+  _testAdjustTopology(&fault, data);
+
+  PYLITH_METHOD_END;
+} // testAdjustTopologyTri3h
+
+// ----------------------------------------------------------------------
 #include "data/CohesiveDataQuad4.hh" // USES CohesiveDataQuad4
 
 // Test adjustTopology() with 2-D quadrilateral element.
@@ -276,6 +308,22 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4h(void)
 
   PYLITH_METHOD_END;
 } // testAdjustTopologyQuad4h
+
+// ----------------------------------------------------------------------
+#include "data/CohesiveDataQuad4i.hh" // USES CohesiveDataQuad4i
+
+// Test adjustTopology() with 2-D quadrilateral element.
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4i(void)
+{ // testAdjustTopologyQuad4i
+  PYLITH_METHOD_BEGIN;
+
+  CohesiveDataQuad4i data;
+  FaultCohesiveTract fault;
+  _testAdjustTopology(&fault, data);
+
+  PYLITH_METHOD_END;
+} // testAdjustTopologyQuad4i
 
 // ----------------------------------------------------------------------
 #include "data/CohesiveDataTet4.hh" // USES CohesiveDataTet4
