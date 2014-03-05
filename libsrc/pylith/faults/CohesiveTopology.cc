@@ -621,7 +621,7 @@ pylith::faults::CohesiveTopology::createInterpolated(topology::Mesh* mesh,
   PetscDM        sdm = NULL;
   PetscDM        dm  = mesh->dmMesh();assert(dm);
   PetscDMLabel   subpointMap = NULL, label = NULL, mlabel = NULL;
-  PetscInt       cMax, cEnd, numCohesiveCellsOld;
+  PetscInt       dim, cMax, cEnd, numCohesiveCellsOld;
   PetscErrorCode err;
 
   // Have to remember the old number of cohesive cells
@@ -636,17 +636,25 @@ pylith::faults::CohesiveTopology::createInterpolated(topology::Mesh* mesh,
   //   Have to do internal fault vertices before fault boundary vertices, and this is the only thing I use faultBoundary for
   err = DMPlexLabelCohesiveComplete(dm, label, PETSC_FALSE, faultMesh.dmMesh());PYLITH_CHECK_ERROR(err);
   err = DMPlexConstructCohesiveCells(dm, label, &sdm);PYLITH_CHECK_ERROR(err);
-  err = DMLabelDestroy(&label);PYLITH_CHECK_ERROR(err);
 
+  /* TODO: Eliminate Lagrange dofs from lopback edges */
+  err = DMPlexGetDimension(dm, &dim);PYLITH_CHECK_ERROR(err);
   err = DMPlexGetLabel(sdm, "material-id", &mlabel);PYLITH_CHECK_ERROR(err);
   if (mlabel) {
     err = DMPlexGetHeightStratum(sdm, 0, NULL, &cEnd);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetHybridBounds(sdm, &cMax, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
     assert(cEnd > cMax + numCohesiveCellsOld);
     for (PetscInt cell = cMax; cell < cEnd - numCohesiveCellsOld; ++cell) {
+      PetscInt onBd;
+
+      /* Eliminate hybrid cells on the boundary of the split from cohesive label,
+         they are marked with -(cell number) since the hybrid cell number aliases vertices in the old mesh */
+      err = DMLabelGetValue(label, -cell, &onBd);PYLITH_CHECK_ERROR(err);
+      if (onBd == dim) continue;
       err = DMLabelSetValue(mlabel, cell, materialId);PYLITH_CHECK_ERROR(err);
     }
   }
+  err = DMLabelDestroy(&label);PYLITH_CHECK_ERROR(err);
 
   PetscReal lengthScale = 1.0;
   err = DMPlexGetScale(dm, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
