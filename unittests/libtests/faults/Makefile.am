@@ -115,8 +115,10 @@ testfaults_SOURCES += \
 	data/CohesiveKinData.cc \
 	data/CohesiveKinDataTri3.cc \
 	data/CohesiveKinDataTri3d.cc \
+	data/CohesiveKinDataTri3g.cc \
 	data/CohesiveKinDataQuad4.cc \
 	data/CohesiveKinDataQuad4e.cc \
+	data/CohesiveKinDataQuad4i.cc \
 	data/CohesiveKinDataTet4.cc \
 	data/CohesiveKinDataTet4e.cc \
 	data/CohesiveKinDataTet4f.cc \
@@ -181,8 +183,10 @@ noinst_HEADERS += \
 	data/CohesiveKinData.hh \
 	data/CohesiveKinDataTri3.hh \
 	data/CohesiveKinDataTri3d.hh \
+	data/CohesiveKinDataTri3g.hh \
 	data/CohesiveKinDataQuad4.hh \
 	data/CohesiveKinDataQuad4e.hh \
+	data/CohesiveKinDataQuad4i.hh \
 	data/CohesiveKinDataTet4.hh \
 	data/CohesiveKinDataTet4e.hh \
 	data/CohesiveKinDataTet4f.hh \

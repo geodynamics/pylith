@@ -36,6 +36,9 @@ dist_noinst_DATA = \
 	tri3d_finalslip.spatialdb \
 	tri3d_sliptime.spatialdb \
 	tri3d_risetime.spatialdb \
+	tri3g_finalslip.spatialdb \
+	tri3g_sliptime.spatialdb \
+	tri3g_risetime.spatialdb \
 	tri3_initialtract.spatialdb \
 	tri3_changetract.spatialdb \
 	tri3d_initialtract.spatialdb \
@@ -55,6 +58,9 @@ dist_noinst_DATA = \
 	quad4e_finalslip.spatialdb \
 	quad4e_sliptime.spatialdb \
 	quad4e_risetime.spatialdb \
+	quad4i_finalslip.spatialdb \
+	quad4i_sliptime.spatialdb \
+	quad4i_risetime.spatialdb \
 	quad4_initialtract.spatialdb \
 	quad4_impulses.spatialdb \
 	tet4.mesh \

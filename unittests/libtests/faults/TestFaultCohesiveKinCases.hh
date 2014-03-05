@@ -32,8 +32,10 @@ namespace pylith {
   namespace faults {
     class TestFaultCohesiveKinTri3;
     class TestFaultCohesiveKinTri3d;
+    class TestFaultCohesiveKinTri3g;
     class TestFaultCohesiveKinQuad4;
     class TestFaultCohesiveKinQuad4e;
+    class TestFaultCohesiveKinQuad4i;
     class TestFaultCohesiveKinTet4;
     class TestFaultCohesiveKinTet4e;
     class TestFaultCohesiveKinTet4f;
@@ -93,6 +95,33 @@ public :
 
 
 // ----------------------------------------------------------------------
+/// C++ unit testing for FaultCohesiveKin for mesh with 2-D triangular cells.
+class pylith::faults::TestFaultCohesiveKinTri3g : public TestFaultCohesiveKin
+{ // class TestFaultCohesiveKinTri3g
+
+  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+  CPPUNIT_TEST_SUITE( TestFaultCohesiveKinTri3g );
+
+#if 0
+  CPPUNIT_TEST( testInitialize );
+  CPPUNIT_TEST( testIntegrateResidual );
+  CPPUNIT_TEST( testIntegrateJacobian );
+  CPPUNIT_TEST( testIntegrateJacobianLumped );
+  CPPUNIT_TEST( testCalcTractionsChange );
+#endif
+
+  CPPUNIT_TEST_SUITE_END();
+
+  // PUBLIC METHODS /////////////////////////////////////////////////////
+public :
+
+  /// Setup testing data.
+  void setUp(void);
+
+}; // class TestFaultCohesiveKinTri3g
+
+
+// ----------------------------------------------------------------------
 /// C++ unit testing for FaultCohesiveKin for mesh with 2-D quadrilateral cells.
 class pylith::faults::TestFaultCohesiveKinQuad4 : public TestFaultCohesiveKin
 { // class TestFaultCohesiveKinQuad4
@@ -141,6 +170,32 @@ public :
   void setUp(void);
 
 }; // class TestFaultCohesiveKinQuad4e
+
+// ----------------------------------------------------------------------
+/// C++ unit testing for FaultCohesiveKin for mesh with 2-D quadrilateral cells.
+class pylith::faults::TestFaultCohesiveKinQuad4i : public TestFaultCohesiveKin
+{ // class TestFaultCohesiveKinQuad4i
+
+  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+  CPPUNIT_TEST_SUITE( TestFaultCohesiveKinQuad4i );
+
+#if 0
+  CPPUNIT_TEST( testInitialize );
+  CPPUNIT_TEST( testIntegrateResidual );
+  CPPUNIT_TEST( testIntegrateJacobian );
+  CPPUNIT_TEST( testIntegrateJacobianLumped );
+  CPPUNIT_TEST( testCalcTractionsChange );
+#endif
+
+  CPPUNIT_TEST_SUITE_END();
+
+  // PUBLIC METHODS /////////////////////////////////////////////////////
+public :
+
+  /// Setup testing data.
+  void setUp(void);
+
+}; // class TestFaultCohesiveKinQuad4i
 
 
 // ----------------------------------------------------------------------

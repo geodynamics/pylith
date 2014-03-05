@@ -70,6 +70,27 @@ pylith::faults::TestFaultCohesiveKinTri3d::setUp(void)
 
 
 // ----------------------------------------------------------------------
+#include "data/CohesiveKinDataTri3g.hh" // USES CohesiveKinDataTri3g
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesiveKinTri3g );
+
+// Setup testing data.
+void
+pylith::faults::TestFaultCohesiveKinTri3g::setUp(void)
+{ // setUp
+  PYLITH_METHOD_BEGIN;
+  
+  TestFaultCohesiveKin::setUp();
+  _data = new CohesiveKinDataTri3g();
+
+  CPPUNIT_ASSERT(_quadrature);
+  feassemble::GeometryLine2D geometry;
+  _quadrature->refGeometry(&geometry);
+  
+  PYLITH_METHOD_END;
+} // setUp
+
+
+// ----------------------------------------------------------------------
 #include "data/CohesiveKinDataQuad4.hh" // USES CohesiveKinDataQuad4
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesiveKinQuad4 );
 
@@ -102,6 +123,27 @@ pylith::faults::TestFaultCohesiveKinQuad4e::setUp(void)
   
   TestFaultCohesiveKin::setUp();
   _data = new CohesiveKinDataQuad4e();
+
+  CPPUNIT_ASSERT(_quadrature);
+  feassemble::GeometryLine2D geometry;
+  _quadrature->refGeometry(&geometry);
+  
+  PYLITH_METHOD_END;
+} // setUp
+
+
+// ----------------------------------------------------------------------
+#include "data/CohesiveKinDataQuad4i.hh" // USES CohesiveKinDataQuad4i
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesiveKinQuad4i );
+
+// Setup testing data.
+void
+pylith::faults::TestFaultCohesiveKinQuad4i::setUp(void)
+{ // setUp
+  PYLITH_METHOD_BEGIN;
+  
+  TestFaultCohesiveKin::setUp();
+  _data = new CohesiveKinDataQuad4i();
 
   CPPUNIT_ASSERT(_quadrature);
   feassemble::GeometryLine2D geometry;
