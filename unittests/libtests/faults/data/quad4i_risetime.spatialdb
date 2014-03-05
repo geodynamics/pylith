@@ -3,7 +3,7 @@ SimpleDB {
   num-values = 1
   value-names =  rise-time
   value-units =  s
-  num-locs = 2
+  num-locs = 3
   data-dim = 1
   space-dim = 2
   cs-data = cartesian {

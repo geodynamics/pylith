@@ -177,13 +177,11 @@ class pylith::faults::TestFaultCohesiveKinQuad4i : public TestFaultCohesiveKin
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestFaultCohesiveKinQuad4i );
 
-#if 0
   CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testIntegrateResidual );
   CPPUNIT_TEST( testIntegrateJacobian );
   CPPUNIT_TEST( testIntegrateJacobianLumped );
   CPPUNIT_TEST( testCalcTractionsChange );
-#endif
 
   CPPUNIT_TEST_SUITE_END();
 
