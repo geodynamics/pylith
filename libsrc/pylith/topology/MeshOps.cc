@@ -137,6 +137,12 @@ pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
     PetscInt matId;
 
     err = DMLabelGetValue(materialsLabel, c, &matId);PYLITH_CHECK_ERROR(err);
+    if (matId < 0) {
+      // :KLUDGE: Skip cells that are probably hybrid cells in halo
+      // around fault that we currently ignore when looping over
+      // materials (including cohesive cells).
+      continue;
+    } // if
     const int *result = std::find(matBegin, matEnd, matId);
     if (result == matEnd) {
       std::ostringstream msg;
