@@ -168,6 +168,12 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   CPPUNIT_ASSERT_EQUAL(_data->numFaultVertices, fault.numVertices());
   CPPUNIT_ASSERT_EQUAL(_data->numCohesiveCells, fault.numCells());
 
+#if 0 // DEBUGGING
+  PetscViewerPushFormat(PETSC_VIEWER_STDOUT_WORLD, PETSC_VIEWER_ASCII_INFO_DETAIL);
+  DMView(fault._faultMesh->dmMesh(), PETSC_VIEWER_STDOUT_WORLD);
+  PetscViewerPopFormat(PETSC_VIEWER_STDOUT_WORLD);
+#endif
+
   topology::SubMeshIS subpointIS(*fault._faultMesh);
   const PetscInt numPoints = subpointIS.size();
   const PetscInt* points = subpointIS.points();CPPUNIT_ASSERT(points);

@@ -102,13 +102,11 @@ class pylith::faults::TestFaultCohesiveKinTri3g : public TestFaultCohesiveKin
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestFaultCohesiveKinTri3g );
 
-#if 0
   CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testIntegrateResidual );
   CPPUNIT_TEST( testIntegrateJacobian );
   CPPUNIT_TEST( testIntegrateJacobianLumped );
   CPPUNIT_TEST( testCalcTractionsChange );
-#endif
 
   CPPUNIT_TEST_SUITE_END();
 

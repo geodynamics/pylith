@@ -124,7 +124,7 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3g::_area[2] = {
 
 const int pylith::faults::CohesiveKinDataTri3g::_numFaultVertices = 2;
 const int pylith::faults::CohesiveKinDataTri3g::_verticesFault[2] = {
-   4,  5,
+   2,  3,
 };
 const int pylith::faults::CohesiveKinDataTri3g::_edgesLagrange[2] = {
   31, 32,
@@ -138,7 +138,7 @@ const int pylith::faults::CohesiveKinDataTri3g::_verticesPositive[2] = {
 
 const int pylith::faults::CohesiveKinDataTri3g::_numCohesiveCells = 1;
 const int pylith::faults::CohesiveKinDataTri3g::_cellMappingFault[1] = {
-  0,
+  4,
 };
 const int pylith::faults::CohesiveKinDataTri3g::_cellMappingCohesive[1] = {
   7,
@@ -147,17 +147,17 @@ const int pylith::faults::CohesiveKinDataTri3g::_cellMappingCohesive[1] = {
 const PylithScalar pylith::faults::CohesiveKinDataTri3g::_residual[(9+2)*2] = {
   0.0,  0.0, // 8
   0.0,  0.0, // 9
- +1.0*6.0, +1.0*8.0, // 10
+ +6.8, +8.8, // 10
   0.0,  0.0, // 11
   0.0,  0.0, // 12
- -2.0*6.8, -2.0*8.8, // 13
- -1.0*6.0, -1.0*8.0, // 15
+ +6.0, +8.0, // 13
   0.0,  0.0, // 14
- -1.0*7.2, -1.0*9.2, // 16
-  -2.0*(6.7-6.2 +1.89546413727),
-  -2.0*(8.7-8.2 -1.89546413727), // 31
-  -1.0*(6.9-6.3 -0.14794836271),
-  -1.0*(8.9-8.3 -1.77538035254), // 32
+ -6.8, -8.8, // 15
+ -6.0, -8.0, // 16
+ -(6.9-6.3) + (0.08241148423),
+ -(8.9-8.3) + (1.89546413727), // 31
+ -(7.1-6.6) + (0.14794836271),
+ -(9.1-8.6) + (1.77538035254), // 32
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataTri3g::_jacobian[(9+2)*2*(9+2)*2] = {
@@ -214,7 +214,7 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3g::_jacobian[(9+2)*2*(9+2)
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
+ -1.0, 0.0, // 31
   0.0, 0.0,
   0.0, 0.0, // 10y
   0.0, 0.0,
@@ -225,7 +225,7 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3g::_jacobian[(9+2)*2*(9+2)
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
+  0.0,-1.0, // 31
   0.0, 0.0,
   0.0, 0.0, // 11x
   0.0, 0.0,
@@ -281,7 +281,7 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3g::_jacobian[(9+2)*2*(9+2)
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
+ -1.0, 0.0, // 32
   0.0, 0.0, // 13y
   0.0, 0.0,
   0.0, 0.0,
@@ -292,7 +292,7 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3g::_jacobian[(9+2)*2*(9+2)
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
+  0.0,-1.0, // 32
   0.0, 0.0, // 14x
   0.0, 0.0,
   0.0, 0.0,
@@ -324,7 +324,7 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3g::_jacobian[(9+2)*2*(9+2)
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
+ +1.0, 0.0, // 31
   0.0, 0.0,
   0.0, 0.0, // 15y
   0.0, 0.0,
@@ -335,7 +335,7 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3g::_jacobian[(9+2)*2*(9+2)
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
+  0.0,+1.0, // 31
   0.0, 0.0,
   0.0, 0.0, // 16x
   0.0, 0.0,
@@ -347,7 +347,7 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3g::_jacobian[(9+2)*2*(9+2)
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
+ +1.0, 0.0, // 32
   0.0, 0.0, // 16y
   0.0, 0.0,
   0.0, 0.0,
@@ -358,26 +358,26 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3g::_jacobian[(9+2)*2*(9+2)
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
+  0.0,+1.0, // 32
   0.0, 0.0, // 31x
   0.0, 0.0,
+ -1.0, 0.0, // 10
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
+ +1.0, 0.0, // 15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 31y
   0.0, 0.0,
+  0.0,-1.0, // 10
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
+  0.0,+1.0, // 15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -386,10 +386,10 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3g::_jacobian[(9+2)*2*(9+2)
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
+ -1.0, 0.0, // 13
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
+ +1.0, 0.0, // 16
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 32y
@@ -397,10 +397,10 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3g::_jacobian[(9+2)*2*(9+2)
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
+  0.0,-1.0, // 13
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
+  0.0,+1.0, // 16
   0.0, 0.0,
   0.0, 0.0,
 };
