@@ -637,7 +637,6 @@ pylith::faults::CohesiveTopology::createInterpolated(topology::Mesh* mesh,
   err = DMPlexLabelCohesiveComplete(dm, label, PETSC_FALSE, faultMesh.dmMesh());PYLITH_CHECK_ERROR(err);
   err = DMPlexConstructCohesiveCells(dm, label, &sdm);PYLITH_CHECK_ERROR(err);
 
-  /* TODO: Eliminate Lagrange dofs from lopback edges */
   err = DMPlexGetDimension(dm, &dim);PYLITH_CHECK_ERROR(err);
   err = DMPlexGetLabel(sdm, "material-id", &mlabel);PYLITH_CHECK_ERROR(err);
   if (mlabel) {
