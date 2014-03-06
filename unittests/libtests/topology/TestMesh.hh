@@ -52,6 +52,7 @@ class pylith::topology::TestMesh : public CppUnit::TestFixture
   CPPUNIT_TEST( testDebug );
   CPPUNIT_TEST( testDimension );
   CPPUNIT_TEST( testComm );
+  CPPUNIT_TEST( testView );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -75,6 +76,9 @@ public :
 
   /// Test comm().
   void testComm(void);
+
+  /// Test view().
+  void testView(void);
 
 }; // class TestMesh
 

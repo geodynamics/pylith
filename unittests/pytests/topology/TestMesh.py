@@ -118,7 +118,14 @@ class TestMesh(unittest.TestCase):
     """
     mesh = self._getMesh()
 
-    mesh.view("Testing view")
+    mesh.view()
+
+    import os
+    filename = "mesh.view"
+    if os.path.isfile(filename):
+      os.remove(filename)
+    mesh.view(":%s:ascii_info_detail" % filename)
+    self.assertTrue(os.path.isfile(filename))
     return
 
 

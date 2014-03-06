@@ -214,8 +214,7 @@ pylith::topology::Mesh::commRank(void) const
 // ----------------------------------------------------------------------
 // Print mesh to stdout.
 void
-pylith::topology::Mesh::view(const char* label,
-			     const char* viewOption) const
+pylith::topology::Mesh::view(const char* viewOption) const
 { // view
   PYLITH_METHOD_BEGIN;
 
@@ -223,13 +222,17 @@ pylith::topology::Mesh::view(const char* label,
 
   PetscErrorCode err;
   if (strlen(viewOption) > 0) {
+    const char* label = 0;
+    err = PetscObjectGetName((PetscObject) _dmMesh, &label);PYLITH_CHECK_ERROR(err);
+
     std::ostringstream optionname, optionprefix;
-    optionname  << "-" << label << "_dm_view";
     optionprefix << label << "_";
+    optionname  << "-" << label << "_dm_view";
 
     err = DMSetOptionsPrefix(_dmMesh, optionprefix.str().c_str());PYLITH_CHECK_ERROR(err);
     err = PetscOptionsSetValue(optionname.str().c_str(), viewOption);PYLITH_CHECK_ERROR(err);
-    err = DMSetFromOptions(_dmMesh);PYLITH_CHECK_ERROR(err);
+    err = DMViewFromOptions(_dmMesh, NULL, "-dm_view");PYLITH_CHECK_ERROR(err);
+
   } else {
     err = DMView(_dmMesh, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
   } // if/else

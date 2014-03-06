@@ -155,4 +155,26 @@ pylith::topology::TestMesh::testComm(void)
   PYLITH_METHOD_END;
 } // testComm
 
+
+// ----------------------------------------------------------------------
+// Test view().
+void
+pylith::topology::TestMesh::testView(void)
+{ // testView
+  PYLITH_METHOD_BEGIN;
+
+  const char* filename = "data/tri3.mesh";
+
+  Mesh mesh;
+  meshio::MeshIOAscii iohandler;
+  iohandler.filename(filename);
+  iohandler.read(&mesh);
+
+  mesh.view();
+  mesh.view(":mesh.view:ascii_info_detail");
+  
+  PYLITH_METHOD_END;
+} // testView
+
+
 // End of file 

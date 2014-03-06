@@ -176,8 +176,7 @@ public :
 
   /** View mesh.
    *
-   * @param label Label for mesh.
-   * @param viewOption View option
+   * @param viewOption PETSc DM view option.
    *
    * PETSc mesh view options include:
    *   short summary [empty]
@@ -186,8 +185,7 @@ public :
    *   latex in a file  :refined.tex:ascii_latex
    *   VTK vtk:refined.vtk:ascii_vtk
    */
-  void view(const char* label,
-	    const char* viewOption ="") const;
+  void view(const char* viewOption ="") const;
 
   /** Return the names of all vertex groups.
    *
