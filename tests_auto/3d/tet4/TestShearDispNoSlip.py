@@ -61,6 +61,12 @@ class TestShearDispNoSlip(TestTet4):
     Setup for test.
     """
     TestTet4.setUp(self)
+    self.nverticesO = self.mesh['nvertices']
+    self.mesh['nvertices'] += 51
+    self.faultMesh = {'nvertices': 51,
+                      'spaceDim': 3,
+                      'ncells': 30,
+                      'ncorners': 3}
     run_pylith()
     self.outputRoot = "sheardispnoslip"
 
@@ -89,6 +95,44 @@ class TestShearDispNoSlip(TestTet4):
       raise ValueError("Unknown state variable '%s'." % name)
 
     return stateVar
+
+
+  def calcFaultField(self, name, vertices):
+    """
+    Calculate fault info.
+    """
+
+    normalDir = (-1.0, 0.0, 0.0)
+    finalSlip = 0.0
+    slipTime = 0.0
+
+    nvertices = self.faultMesh['nvertices']
+
+    if name == "normal_dir":
+      field = numpy.zeros( (1, nvertices, 3), dtype=numpy.float64)
+      field[0,:,0] = normalDir[0]
+      field[0,:,1] = normalDir[1]
+      field[0,:,2] = normalDir[2]
+
+    elif name == "final_slip":
+      field = numpy.zeros( (1, nvertices, 3), dtype=numpy.float64)
+      field[0,:,0] = finalSlip
+      
+    elif name == "slip_time":
+      field = slipTime*numpy.zeros( (1, nvertices, 1), dtype=numpy.float64)
+      
+    elif name == "slip":
+      field = numpy.zeros( (1, nvertices, 3), dtype=numpy.float64)
+      field[0,:,0] = finalSlip
+
+    elif name == "traction_change":
+      field = numpy.zeros( (1, nvertices, 3), dtype=numpy.float64)
+      field[0,:,0] = 0.0
+      
+    else:
+      raise ValueError("Unknown fault field '%s'." % name)
+
+    return field
 
 
 # ----------------------------------------------------------------------

@@ -25,6 +25,8 @@ import numpy
 from TestHex8 import TestHex8
 from sheardisp_soln import AnalyticalSoln
 
+from pylith.tests.Fault import check_vertex_fields
+
 # Local version of PyLithApp
 from pylith.apps.PyLithApp import PyLithApp
 class ShearApp(PyLithApp):
@@ -61,10 +63,45 @@ class TestShearDispNoSlip(TestHex8):
     Setup for test.
     """
     TestHex8.setUp(self)
+    self.nverticesO = self.mesh['nvertices']
+    self.mesh['nvertices'] += 44
+    self.faultMesh = {'nvertices': 44,
+                      'spaceDim': 3,
+                      'ncells': 30,
+                      'ncorners': 4}
+
     run_pylith()
     self.outputRoot = "sheardispnoslip"
 
     self.soln = AnalyticalSoln()
+    return
+
+
+  def test_fault_info(self):
+    """
+    Check fault information.
+    """
+    if not self.checkResults:
+      return
+
+    filename = "%s-fault_info.h5" % self.outputRoot
+    fields = ["normal_dir", "final_slip", "slip_time"]
+    check_vertex_fields(self, filename, self.faultMesh, fields)
+
+    return
+
+
+  def test_fault_data(self):
+    """
+    Check fault information.
+    """
+    if not self.checkResults:
+      return
+
+    filename = "%s-fault.h5" % self.outputRoot
+    fields = ["slip"]
+    check_vertex_fields(self, filename, self.faultMesh, fields)
+
     return
 
 
@@ -89,6 +126,44 @@ class TestShearDispNoSlip(TestHex8):
       raise ValueError("Unknown state variable '%s'." % name)
 
     return stateVar
+
+
+  def calcFaultField(self, name, vertices):
+    """
+    Calculate fault info.
+    """
+
+    normalDir = (-1.0, 0.0, 0.0)
+    finalSlip = 0.0
+    slipTime = 0.0
+
+    nvertices = self.faultMesh['nvertices']
+
+    if name == "normal_dir":
+      field = numpy.zeros( (1, nvertices, 3), dtype=numpy.float64)
+      field[0,:,0] = normalDir[0]
+      field[0,:,1] = normalDir[1]
+      field[0,:,2] = normalDir[2]
+
+    elif name == "final_slip":
+      field = numpy.zeros( (1, nvertices, 3), dtype=numpy.float64)
+      field[0,:,0] = finalSlip
+      
+    elif name == "slip_time":
+      field = slipTime*numpy.zeros( (1, nvertices, 1), dtype=numpy.float64)
+      
+    elif name == "slip":
+      field = numpy.zeros( (1, nvertices, 3), dtype=numpy.float64)
+      field[0,:,0] = finalSlip
+
+    elif name == "traction_change":
+      field = numpy.zeros( (1, nvertices, 3), dtype=numpy.float64)
+      field[0,:,0] = 0.0
+      
+    else:
+      raise ValueError("Unknown fault field '%s'." % name)
+
+    return field
 
 
 # ----------------------------------------------------------------------
