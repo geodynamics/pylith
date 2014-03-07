@@ -99,7 +99,7 @@ class MeshImporter(MeshGenerator):
     # Read mesh
     mesh = self.reader.read(self.debug, self.interpolate)
     if self.debug:
-      mesh.view("Finite-element mesh.")
+      mesh.view()
 
     # Reorder mesh
     if self.reorderMesh:
@@ -125,7 +125,7 @@ class MeshImporter(MeshGenerator):
         self._info.log("Distributing mesh.")
       mesh = self.distributor.distribute(mesh, normalizer)
       if self.debug:
-        mesh.view("Distributed mesh.")
+        mesh.view()
       mesh.memLoggingStage = "DistributedMesh"
 
     # Refine mesh (if necessary)

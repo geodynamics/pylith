@@ -87,7 +87,7 @@ class MeshImporterDist(MeshGenerator):
 
     mesh = self.reader.read(self.debug, self.interpolate)
     if self.debug:
-      mesh.view("Finite-element mesh.")
+      mesh.view()
     self._debug.log(resourceUsageString())
 
     # refine mesh (if necessary)
