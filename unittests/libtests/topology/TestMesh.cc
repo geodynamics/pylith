@@ -172,6 +172,7 @@ pylith::topology::TestMesh::testView(void)
 
   mesh.view();
   mesh.view(":mesh.view:ascii_info_detail");
+  mesh.view("vtk:mesh.vtk:ascii_vtk");
   
   PYLITH_METHOD_END;
 } // testView
