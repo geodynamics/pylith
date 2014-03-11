@@ -30,8 +30,8 @@ def suite():
   from TestShearDisp import TestShearDisp
   suite.addTest(unittest.makeSuite(TestShearDisp))
 
-  #from TestShearDispNoSlip import TestShearDispNoSlip
-  #suite.addTest(unittest.makeSuite(TestShearDispNoSlip))
+  from TestShearDispNoSlip import TestShearDispNoSlip
+  suite.addTest(unittest.makeSuite(TestShearDispNoSlip))
 
   return suite
 
