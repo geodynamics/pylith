@@ -2,6 +2,7 @@
 
 cat<<EOF > rmtemplates.sed
 s/CellFilterAvgMesh/CellFilterAvg/g
+s/CellFilterAvgSubMesh/CellFilterAvg/g
 s/DataWriterVTKMesh/DataWriterVTK/g
 s/DataWriterVTKSubMesh/DataWriterVTK/g
 s/DataWriterVTKSubSubMesh/DataWriterVTK/g

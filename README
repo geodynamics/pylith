@@ -50,6 +50,7 @@ Changes to various C++ objects permitted simplifying the specification
 of a number of components. The map below indicates the name changes.
 
   CellFilterAvgMesh -> CellFilterAvg
+  CellFilterAvgSubMesh -> CellFilterAvg
   DataWriterVTKMesh -> DataWriterVTK
   DataWriterVTKSubMesh -> DataWriterVTK
   DataWriterVTKSubSubMesh -> DataWriterVTK
