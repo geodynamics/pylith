@@ -6,7 +6,7 @@ TESTING
 
   * Check tests on all buildbots.
 
-  * Run valgrind on unit tests.
+  * Run valgrind on unit tests (make leakcheck)
 
   * Run all examples.
 
@@ -36,9 +36,11 @@ SOURCE CODE
 
 DISTRIBUTIONS
 
-  * Generate binaries on buildbots. Check on various platforms.
+  * Generate binaries on buildbots.
+    Check on various platforms.
+    Check trapping of errors.
 
-  * Get petsc-dev nightly tarball.
+  * Create PETSc tarball.
 
     - Check build.
 
@@ -50,4 +52,19 @@ TAG
 
   * Tag source code.
 
-  svn copy -m "ADD MESSAGE HERE" svn+ssh://svn@geodynamics.org/cig/short/3D/PyLith/trunk svn+ssh://svn@geodynamics.org/cig/short/3D/PyLith/tags/v1.x.x
+  git tag -a vX.X.X -m "MY MESSAGE"
+  git push origin vX.X.X
+
+RELEASE
+
+  * Create source tarball and upload to GitHub.
+
+  * Upload binaries to GitHub.
+
+  * Upload manual to GitHub.
+
+UPDATE next and maint
+
+  * Rewind next to master
+
+  * Rewind maint to master
