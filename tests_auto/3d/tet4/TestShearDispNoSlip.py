@@ -65,12 +65,44 @@ class TestShearDispNoSlip(TestTet4):
     self.mesh['nvertices'] += 51
     self.faultMesh = {'nvertices': 51,
                       'spaceDim': 3,
-                      'ncells': 30,
+                      'ncells': 74,
                       'ncorners': 3}
     run_pylith()
     self.outputRoot = "sheardispnoslip"
 
     self.soln = AnalyticalSoln()
+    return
+
+
+  def test_fault_info(self):
+    """
+    Check fault information.
+    """
+    if not self.checkResults:
+      return
+
+    filename = "%s-fault_info.h5" % self.outputRoot
+    fields = ["normal_dir", "final_slip", "slip_time"]
+
+    from pylith.tests.Fault import check_vertex_fields
+    check_vertex_fields(self, filename, self.faultMesh, fields)
+
+    return
+
+
+  def test_fault_data(self):
+    """
+    Check fault information.
+    """
+    if not self.checkResults:
+      return
+
+    filename = "%s-fault.h5" % self.outputRoot
+    fields = ["slip"]
+
+    from pylith.tests.Fault import check_vertex_fields
+    check_vertex_fields(self, filename, self.faultMesh, fields)
+
     return
 
 

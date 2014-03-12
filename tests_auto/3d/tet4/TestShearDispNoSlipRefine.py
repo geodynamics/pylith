@@ -64,11 +64,11 @@ class TestShearDispNoSlipRefine(TestTet4):
     self.mesh = {'ncells-elastic': 7068*8,
                  'ncells-viscoelastic': 11131*8,
                  'ncorners': 4,
-                 'nvertices': 3652,
+                 'nvertices': 26947,
                  'spaceDim': 3,
                  'tensorSize': 6}
     self.nverticesO = self.mesh['nvertices']
-    self.mesh['nvertices'] += 51
+    self.mesh['nvertices'] += 0
     self.faultMesh = {'nvertices': 51,
                       'spaceDim': 3,
                       'ncells': 30*4,
