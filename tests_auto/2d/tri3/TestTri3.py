@@ -34,9 +34,9 @@ class TestTri3(unittest.TestCase):
     """
     Setup for tests.
     """
-    self.mesh = {'ncells': 124,
+    self.mesh = {'ncells': 142,
                  'ncorners': 3,
-                 'nvertices': 79,
+                 'nvertices': 88,
                  'spaceDim': 2,
                  'tensorSize': 3}
 

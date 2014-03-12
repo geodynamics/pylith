@@ -45,8 +45,8 @@ def run_pylith():
 
     # Run PyLith
     app = AxialApp()
+    run_pylith.done = True # Put before run() so only called once
     app.run()
-    run_pylith.done = True
   return
 
 

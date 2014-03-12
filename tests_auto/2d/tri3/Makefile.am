@@ -26,12 +26,15 @@ dist_noinst_PYTHON = \
 	axialdisp_soln.py \
 	axialdisp_gendb.py \
 	TestShearDisp.py \
+	TestShearDispNoSlip.py \
+	TestShearDispNoSlipRefine.py \
 	sheardisp_soln.py \
 	sheardisp_gendb.py \
+	TestSlipOneFault.py \
+	sliponefault_soln.py \
+	TestSlipTwoFaults.py \
+	sliptwofaults_soln.py \
 	testpylith.py
-
-#	TestDislocation.py \
-#	dislocation_soln.py
 
 dist_noinst_DATA = \
 	geometry.jou \
@@ -39,24 +42,15 @@ dist_noinst_DATA = \
 	mesh.exo \
 	matprops.spatialdb \
 	axialdisp.cfg \
-	sheardisp.cfg
-
-#	dislocation.cfg
+	sheardisp.cfg \
+	sheardispnoslip.cfg \
+	sheardispnosliprefine.cfg \
+	sliponefault.cfg \
+	sliptwofaults.cfg
 
 noinst_TMP = \
 	axial_disp.spatialdb \
-	axialdisp_t0000000.vtk \
-	axialdisp-elastic_info.vtk \
-	axialdisp-elastic_t0000000.vtk \
-	shear_disp.spatialdb \
-	sheardisp_t0000000.vtk \
-	sheardisp-elastic_info.vtk \
-	sheardisp-elastic_t0000000.vtk \
-	dislocation_t0000000.vtk \
-	dislocation-elastic_info.vtk \
-	dislocation-elastic_t0000000.vtk \
-	dislocation-fault_info.vtk \
-	dislocation-fault_t0000000.vtk
+	shear_disp.spatialdb
 
 
 TESTS_ENVIRONMENT = $(PYTHON)
@@ -72,7 +66,11 @@ clean-data:
 
 
 BUILT_SOURCES = export-data
-clean-local: clean-data
-CLEANFILES = *.pyc
+
+clean-local: clean-local-tmp clean-data
+.PHONY: clean-local-tmp
+clean-local-tmp:
+	-rm *.h5 *.xmf *.pyc
+
 
 # End of file 
