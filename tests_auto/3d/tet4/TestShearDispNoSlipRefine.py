@@ -61,22 +61,54 @@ class TestShearDispNoSlipRefine(TestTet4):
     Setup for test.
     """
     TestTet4.setUp(self)
-    self.mesh = {'ncells-elastic': 7068*8,
-                 'ncells-viscoelastic': 11131*8,
+    self.mesh = {'ncells-elastic': 1266*8,
+                 'ncells-viscoelastic': 1276*8,
                  'ncorners': 4,
-                 'nvertices': 26947,
+                 'nvertices': 4040,
                  'spaceDim': 3,
                  'tensorSize': 6}
     self.nverticesO = self.mesh['nvertices']
-    self.mesh['nvertices'] += 0
-    self.faultMesh = {'nvertices': 51,
+    self.mesh['nvertices'] +=57
+    self.faultMesh = {'nvertices': 57,
                       'spaceDim': 3,
-                      'ncells': 30*4,
+                      'ncells': 20*4,
                       'ncorners': 3}
     run_pylith()
     self.outputRoot = "sheardispnosliprefine"
 
     self.soln = AnalyticalSoln()
+    return
+
+
+  def test_fault_info(self):
+    """
+    Check fault information.
+    """
+    if not self.checkResults:
+      return
+
+    filename = "%s-fault_info.h5" % self.outputRoot
+    fields = ["normal_dir", "final_slip", "slip_time"]
+
+    from pylith.tests.Fault import check_vertex_fields
+    check_vertex_fields(self, filename, self.faultMesh, fields)
+
+    return
+
+
+  def test_fault_data(self):
+    """
+    Check fault information.
+    """
+    if not self.checkResults:
+      return
+
+    filename = "%s-fault.h5" % self.outputRoot
+    fields = ["slip"]
+
+    from pylith.tests.Fault import check_vertex_fields
+    check_vertex_fields(self, filename, self.faultMesh, fields)
+
     return
 
 
@@ -108,7 +140,7 @@ class TestShearDispNoSlipRefine(TestTet4):
     Calculate fault info.
     """
 
-    normalDir = (-1.0, 0.0, 0.0)
+    normalDir = (+1.0, 0.0, 0.0)
     finalSlip = 0.0
     slipTime = 0.0
 

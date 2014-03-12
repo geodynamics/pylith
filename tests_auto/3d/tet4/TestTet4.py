@@ -34,10 +34,10 @@ class TestTet4(unittest.TestCase):
     """
     Setup for tests.
     """
-    self.mesh = {'ncells-elastic': 7068,
-                 'ncells-viscoelastic': 11131,
+    self.mesh = {'ncells-elastic': 1266,
+                 'ncells-viscoelastic': 1276,
                  'ncorners': 4,
-                 'nvertices': 3652,
+                 'nvertices': 590,
                  'spaceDim': 3,
                  'tensorSize': 6}
 

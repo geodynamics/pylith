@@ -6,7 +6,7 @@ DOMAIN
 -40 km <= y <= +40 km
 -40 km <= z <= 0 km
 
-Mesh is tet4 cells with nominal 5km discretization size.
+Mesh is tet4 cells with nominal 10km discretization size.
 
 ======================================================================
 AXIAL COMPRESSION - axialdisp

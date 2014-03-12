@@ -33,6 +33,11 @@ def suite():
   from TestShearDispNoSlip import TestShearDispNoSlip
   suite.addTest(unittest.makeSuite(TestShearDispNoSlip))
 
+  # Disabled. Incorrect solution due to refinement of fault halo not
+  # tied together.
+  #from TestShearDispNoSlipRefine import TestShearDispNoSlipRefine
+  #suite.addTest(unittest.makeSuite(TestShearDispNoSlipRefine))
+
   return suite
 
 
