@@ -30,6 +30,10 @@ dist_noinst_PYTHON = \
 	TestShearDispNoSlipRefine.py \
 	sheardisp_gendb.py \
 	sheardisp_soln.py \
+	TestSlipOneFault.py \
+	sliponefault_soln.py \
+	TestSlipTwoFaults.py \
+	sliptwofaults.py \
 	testpylith.py
 
 
@@ -41,7 +45,9 @@ dist_noinst_DATA = \
 	axialdisp.cfg \
 	sheardisp.cfg \
 	sheardispnoslip.cfg \
-	sheardispnosliprefine.cfg
+	sheardispnosliprefine.cfg \
+	sliponefault.cfg \
+	sliptwofaults.cfg
 
 noinst_TMP = \
 	axial_dispx.spatialdb \
