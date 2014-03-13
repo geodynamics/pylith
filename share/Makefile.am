@@ -22,7 +22,8 @@ EXTRA_DIST = \
 	generateetags.py \
 	settings/debug_malloc.cfg \
 	settings/solver_fault_exact.cfg \
-	settings/solver_fault_opt.cfg
+	settings/solver_fault_schur.cfg \
+	settings/solver_fault_fieldsplit.cfg
 
 
 # End of file 

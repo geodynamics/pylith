@@ -2817,7 +2817,11 @@ name "tab:petsc:options:advanced"
 \end_inset
 
 PETSc options used with split fields algebraic multigrid preconditioning
- that often provide improved performance in quasi-static elasticity problems.
+ that often provide improved performance in quasi-static elasticity problems
+ with faults.
+ These are available in 
+\family typewriter
+$PYLITH_DIR/share/settings/solver_fault_fieldsplit.cfg.
 \end_layout
 
 \end_inset
@@ -3029,8 +3033,7 @@ jacobi
 \begin_inset Text
 
 \begin_layout Plain Layout
-Jacobi preconditioning for Lagrange multiplier block (only use if there
- is at least one fault)
+Jacobi preconditioning for Lagrange multiplier block
 \end_layout
 
 \end_inset
