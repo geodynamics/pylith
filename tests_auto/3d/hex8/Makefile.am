@@ -27,6 +27,7 @@ dist_noinst_PYTHON = \
 	axialdisp_soln.py \
 	TestShearDisp.py \
 	TestShearDispNoSlip.py \
+	TestShearDispNoSlipRefine.py \
 	sheardisp_gendb.py \
 	sheardisp_soln.py \
 	testpylith.py
@@ -39,7 +40,13 @@ dist_noinst_DATA = \
 	matprops.spatialdb \
 	axialdisp.cfg \
 	sheardisp.cfg \
-	sheardispnoslip.cfg
+	sheardispnoslip.cfg \
+	sheardispnosliprefine.cfg
+
+noinst_TMP = \
+	shear_dispx.spatialdb \
+	shear_dispy.spatialdb \
+	shear_dispz.spatialdb
 
 TESTS_ENVIRONMENT = $(PYTHON)
 
@@ -58,7 +65,7 @@ BUILT_SOURCES = export-data
 clean-local: clean-local-tmp clean-data
 .PHONY: clean-local-tmp
 clean-local-tmp:
-	-rm *.h5 *.xmf *.pyc *.spatialdb
+	-rm *.h5 *.xmf *.pyc
 
 
 # End of file 

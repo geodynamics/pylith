@@ -16,20 +16,19 @@
 # ----------------------------------------------------------------------
 #
 
-## @file tests/3d/hex8/TestShearDispNoSlipRefine.py
+## @file tests/3d/tet4/TestSlipOneFault.py
 ##
-## @brief Test suite for testing pylith with 3-D shear motion with no
-## fault slip and mesh refinement.
+## @brief Test suite for testing pylith with shear slip.
 
 import numpy
-from TestHex8 import TestHex8
-from sheardisp_soln import AnalyticalSoln
+from TestTet4 import TestTet4
+from sliponefault_soln import AnalyticalSoln
 
 # Local version of PyLithApp
 from pylith.apps.PyLithApp import PyLithApp
-class ShearApp(PyLithApp):
+class SlipOneFaultApp(PyLithApp):
   def __init__(self):
-    PyLithApp.__init__(self, name="sheardispnosliprefine")
+    PyLithApp.__init__(self, name="sliponefault")
     return
 
 
@@ -39,43 +38,30 @@ def run_pylith():
   Run pylith.
   """
   if not "done" in dir(run_pylith):
-    # Generate spatial databases
-    from sheardisp_gendb import GenerateDB
-    db = GenerateDB()
-    db.run()
-
-    # Run PyLith
-    app = ShearApp()
+    app = SlipOneFaultApp()
     run_pylith.done = True # Put before run() so only called once
     app.run()
   return
 
 
-class TestShearDispNoSlipRefine(TestHex8):
+class TestSlipOneFault(TestTet4):
   """
-  Test suite for testing pylith with 2-D shear extension.
+  Test suite for testing pylith with shear sliponefault for 2-D box.
   """
 
   def setUp(self):
     """
     Setup for test.
     """
-    TestHex8.setUp(self)
-    self.mesh = {'ncells-elastic': 768*8,
-                 'ncells-viscoelastic': 1280*8,
-                 'ncorners': 8,
-                 'nvertices': 2601,
-                 'spaceDim': 3,
-                 'tensorSize': 6}
+    TestTet4.setUp(self)
     self.nverticesO = self.mesh['nvertices']
-    self.mesh['nvertices'] += 44
-    self.faultMesh = {'nvertices': 44,
+    self.mesh['nvertices'] += 50
+    self.faultMesh = {'nvertices': 50,
                       'spaceDim': 3,
-                      'ncells': 30*4,
-                      'ncorners': 4}
-
+                      'ncells': 72,
+                      'ncorners': 3}
     run_pylith()
-    self.outputRoot = "sheardispnosliprefine"
+    self.outputRoot = "sliponefault"
 
     self.soln = AnalyticalSoln()
     return
@@ -117,7 +103,7 @@ class TestShearDispNoSlipRefine(TestHex8):
     """
     Calculate displacement field given coordinates of vertices.
     """
-    return self.soln.displacement(vertices)
+    return self.soln.displacement(vertices, self.nverticesO)
 
 
   def calcStateVar(self, name, vertices, cells):
@@ -140,32 +126,33 @@ class TestShearDispNoSlipRefine(TestHex8):
     """
     Calculate fault info.
     """
+    dim = 3
 
-    normalDir = (-1.0, 0.0, 0.0)
-    finalSlip = 0.0
+    normalDir = (+1.0, 0.0, 0.0)
+    finalSlip = -2.0
     slipTime = 0.0
 
     nvertices = self.faultMesh['nvertices']
 
     if name == "normal_dir":
-      field = numpy.zeros( (1, nvertices, 3), dtype=numpy.float64)
+      field = numpy.zeros( (1, nvertices, dim), dtype=numpy.float64)
       field[0,:,0] = normalDir[0]
       field[0,:,1] = normalDir[1]
       field[0,:,2] = normalDir[2]
 
     elif name == "final_slip":
-      field = numpy.zeros( (1, nvertices, 3), dtype=numpy.float64)
+      field = numpy.zeros( (1, nvertices, dim), dtype=numpy.float64)
       field[0,:,0] = finalSlip
       
     elif name == "slip_time":
       field = slipTime*numpy.zeros( (1, nvertices, 1), dtype=numpy.float64)
       
     elif name == "slip":
-      field = numpy.zeros( (1, nvertices, 3), dtype=numpy.float64)
+      field = numpy.zeros( (1, nvertices, dim), dtype=numpy.float64)
       field[0,:,0] = finalSlip
 
     elif name == "traction_change":
-      field = numpy.zeros( (1, nvertices, 3), dtype=numpy.float64)
+      field = numpy.zeros( (1, nvertices, dim), dtype=numpy.float64)
       field[0,:,0] = 0.0
       
     else:
@@ -177,7 +164,7 @@ class TestShearDispNoSlipRefine(TestHex8):
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
   import unittest
-  from TestShearDispNoSlipRefine import TestShearDispNoSlipRefine as Tester
+  from TestSlipOneFault import TestSlipOneFault as Tester
 
   suite = unittest.TestSuite()
   suite.addTest(unittest.makeSuite(Tester))

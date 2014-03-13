@@ -94,7 +94,7 @@ BUILT_SOURCES = export-data
 clean-local: clean-local-tmp clean-data
 .PHONY: clean-local-tmp
 clean-local-tmp:
-	-rm *.h5 *.xmf *.pyc *.spatialdb
+	-rm *.h5 *.xmf *.pyc
 
 
 # End of file 

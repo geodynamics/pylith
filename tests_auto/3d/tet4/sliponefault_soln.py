@@ -16,7 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file tests/2d/tri3/sliponefault_soln.py
+## @file tests/2d/quad4/sliponefault_soln.py
 ##
 ## @brief Analytical solution to sliponefault (rigid motion).
 
@@ -32,9 +32,11 @@ p_lambda = p_density*p_vp**2 - 2*p_mu
 
 # Uniform stress field (plane strain)
 sxx = 0.0
-sxy = 0.0
 syy = 0.0
-szz = p_lambda/(2*p_lambda+2*p_mu)*(sxx+syy)
+szz = 0.0
+sxy = 0.0
+syz = 0.0
+sxz = 0.0
 
 # Uniform strain field
 exx = 1.0/(2*p_mu) * (sxx - p_lambda/(3*p_lambda+2*p_mu) * (sxx+syy+szz))
@@ -42,14 +44,15 @@ eyy = 1.0/(2*p_mu) * (syy - p_lambda/(3*p_lambda+2*p_mu) * (sxx+syy+szz))
 ezz = 1.0/(2*p_mu) * (szz - p_lambda/(3*p_lambda+2*p_mu) * (sxx+syy+szz))
 
 exy = 1.0/(2*p_mu) * (sxy)
+eyz = 1.0/(2*p_mu) * (syz)
+exz = 1.0/(2*p_mu) * (sxz)
 
-#print exx,eyy,exy,ezz
-#print -exx*p_lambda/(p_lambda+2*p_mu)
+#print exx,eyy,ezz,exy,eyz,exz
 
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
   """
-  Analytical solution to axial/shear displacement problem.
+  Analytical solution to fault slip problem.
   """
 
   def __init__(self):
@@ -62,11 +65,11 @@ class AnalyticalSoln(object):
     """
     (nlocs, dim) = locs.shape
 
-    disp = numpy.zeros( (1, nlocs, 2), dtype=numpy.float64)
-    maskN = numpy.bitwise_or(locs[:,0] >= 0.0, locs[:,0] <= -2.0e+3)
-    maskN[nlocsO:nlocs] = False
-    maskP = numpy.bitwise_and(locs[:,0] <= 0.0, ~maskN)
-    disp[0,:,1] = maskN*(-1.0) + maskP*(+1.0)
+    disp = numpy.zeros( (1, nlocs, 3), dtype=numpy.float64)
+    maskP = locs[:,0] > 0.0
+    maskP[nlocsO:nlocs] = True
+    maskN = numpy.bitwise_and(locs[:,0] <= 0.0, ~maskP)
+    disp[0,:,1] = maskN*(+1.0) + maskP*(-1.0)
     return disp
 
 
@@ -75,10 +78,13 @@ class AnalyticalSoln(object):
     Compute strain field at locations.
     """
     (nlocs, dim) = locs.shape
-    strain = numpy.zeros( (1, nlocs, 3), dtype=numpy.float64)
+    strain = numpy.zeros( (1, nlocs, 6), dtype=numpy.float64)
     strain[0,:,0] = exx
     strain[0,:,1] = eyy
-    strain[0,:,2] = exy
+    strain[0,:,2] = ezz
+    strain[0,:,3] = exy
+    strain[0,:,4] = eyz
+    strain[0,:,5] = exz
     return strain
   
 
@@ -87,10 +93,13 @@ class AnalyticalSoln(object):
     Compute stress field at locations.
     """
     (nlocs, dim) = locs.shape
-    stress = numpy.zeros( (1, nlocs, 3), dtype=numpy.float64)
+    stress = numpy.zeros( (1, nlocs, 6), dtype=numpy.float64)
     stress[0,:,0] = sxx
     stress[0,:,1] = syy
-    stress[0,:,2] = sxy
+    stress[0,:,2] = szz
+    stress[0,:,3] = sxy
+    stress[0,:,4] = syz
+    stress[0,:,5] = sxz
     return stress
 
 

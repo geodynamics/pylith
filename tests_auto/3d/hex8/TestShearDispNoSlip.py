@@ -25,8 +25,6 @@ import numpy
 from TestHex8 import TestHex8
 from sheardisp_soln import AnalyticalSoln
 
-from pylith.tests.Fault import check_vertex_fields
-
 # Local version of PyLithApp
 from pylith.apps.PyLithApp import PyLithApp
 class ShearApp(PyLithApp):
@@ -86,6 +84,8 @@ class TestShearDispNoSlip(TestHex8):
 
     filename = "%s-fault_info.h5" % self.outputRoot
     fields = ["normal_dir", "final_slip", "slip_time"]
+
+    from pylith.tests.Fault import check_vertex_fields
     check_vertex_fields(self, filename, self.faultMesh, fields)
 
     return
@@ -100,6 +100,8 @@ class TestShearDispNoSlip(TestHex8):
 
     filename = "%s-fault.h5" % self.outputRoot
     fields = ["slip"]
+
+    from pylith.tests.Fault import check_vertex_fields
     check_vertex_fields(self, filename, self.faultMesh, fields)
 
     return

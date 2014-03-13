@@ -38,6 +38,12 @@ def suite():
   #from TestShearDispNoSlipRefine import TestShearDispNoSlipRefine
   #suite.addTest(unittest.makeSuite(TestShearDispNoSlipRefine))
 
+  from TestSlipOneFault import TestSlipOneFault
+  suite.addTest(unittest.makeSuite(TestSlipOneFault))
+
+  from TestSlipTwoFaults import TestSlipTwoFaults
+  suite.addTest(unittest.makeSuite(TestSlipTwoFaults))
+
   return suite
 
 
