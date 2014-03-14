@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -21,6 +21,7 @@
 #include "MeshIO.hh" // implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/Stratum.hh" // USES Stratum
 
 #include "pylith/utils/array.hh" // USES scalar_array, int_array
@@ -76,6 +77,9 @@ pylith::meshio::MeshIO::read(topology::Mesh* mesh)
   _mesh = mesh;
   _mesh->debug(_debug);
   _read();
+
+  // Check mesh consistency
+  topology::MeshOps::checkTopology(*_mesh);
 
   _mesh = 0;
 
@@ -290,27 +294,27 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
     } // for
     // Also add any non-cells which have all vertices marked
     for(PetscInt p = 0; p < numPoints; ++p) {
-      const PetscInt *support;
-      PetscInt        supportSize, s;
-      const PetscInt  vertex = numCells+points[p];
+      const PetscInt vertex = numCells+points[p];
+      PetscInt      *star   = NULL, starSize, s;
 
-      err = DMPlexGetSupportSize(dmMesh, vertex, &supportSize);PYLITH_CHECK_ERROR(err);
-      err = DMPlexGetSupport(dmMesh, vertex, &support);PYLITH_CHECK_ERROR(err);
-      for (s = 0; s < supportSize; ++s) {
-        PetscInt *closure = NULL, closureSize, c, value;
-        PetscBool marked  = PETSC_TRUE;
+      err = DMPlexGetTransitiveClosure(dmMesh, vertex, PETSC_FALSE, &starSize, &star);PYLITH_CHECK_ERROR(err);
+      for (s = 0; s < starSize*2; s += 2) {
+        const PetscInt point   = star[s];
+        PetscInt      *closure = NULL, closureSize, c, value;
+        PetscBool      marked  = PETSC_TRUE;
 
-        if ((support[s] >= cStart) && (support[s] < cEnd)) continue;
-        err = DMPlexGetTransitiveClosure(dmMesh, support[s], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+        if ((point >= cStart) && (point < cEnd)) continue;
+        err = DMPlexGetTransitiveClosure(dmMesh, point, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
         for (c = 0; c < closureSize*2; c += 2) {
           if ((closure[c] >= vStart) && (closure[c] < vEnd)) {
             err = DMLabelGetValue(label, closure[c], &value);PYLITH_CHECK_ERROR(err);
             if (value != 1) {marked = PETSC_FALSE; break;}
           }
         }
-        err = DMPlexRestoreTransitiveClosure(dmMesh, support[s], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-        if (marked) {err = DMLabelSetValue(label, support[s], 1);PYLITH_CHECK_ERROR(err);}
+        err = DMPlexRestoreTransitiveClosure(dmMesh, point, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+        if (marked) {err = DMLabelSetValue(label, point, 1);PYLITH_CHECK_ERROR(err);}
       }
+      err = DMPlexRestoreTransitiveClosure(dmMesh, vertex, PETSC_FALSE, &starSize, &star);PYLITH_CHECK_ERROR(err);
     }
   } // if/else
 
@@ -375,30 +379,46 @@ pylith::meshio::MeshIO::_getGroup(int_array* points,
   const PetscInt cEnd = cellsStratum.end();
   const PetscInt numCells = cellsStratum.size();
 
-  PetscInt pStart, pEnd, firstPoint = 0;
-  PetscErrorCode err = 0;
-  err = DMPlexGetChart(dmMesh, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
-  for(PetscInt p = pStart; p < pEnd; ++p) {
-    PetscInt val;
-    err = DMPlexGetLabelValue(dmMesh, name, p, &val);PYLITH_CHECK_ERROR(err);
-    if (val >= 0) {
-      firstPoint = p;
-      break;
-    } // if
-  } // for
-  *groupType = (firstPoint >= cStart && firstPoint < cEnd) ? CELL : VERTEX;
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
 
-  PetscInt groupSize;
-  err = DMPlexGetStratumSize(dmMesh, name, 1, &groupSize);PYLITH_CHECK_ERROR(err);
-  points->resize(groupSize);
-
-  const PetscInt offset = (VERTEX == *groupType) ? numCells : 0;
   PetscIS groupIS = NULL;
   const PetscInt* groupIndices = NULL;
+  PetscErrorCode err;
   err = DMPlexGetStratumIS(dmMesh, name, 1, &groupIS);PYLITH_CHECK_ERROR(err);
   err = ISGetIndices(groupIS, &groupIndices);PYLITH_CHECK_ERROR(err);
+
+  PetscInt totalSize;
+  err = DMPlexGetStratumSize(dmMesh, name, 1, &totalSize);PYLITH_CHECK_ERROR(err);
+
+  *groupType = VERTEX;
+  if (totalSize > 0 && (groupIndices[0] >= cStart && groupIndices[0] < cEnd)) {
+    *groupType = CELL;
+  } // if
+    
+  PetscInt offset = 0;
+  PetscInt pStart = cStart;
+  PetscInt pEnd = cEnd;
+  if (VERTEX == *groupType) {
+    offset = numCells;
+    pStart = vStart;
+    pEnd = vEnd;
+  } // if
+
+  // Count number of cells/vertices, filtering out edges and faces
+  PetscInt groupSize = 0;
+  for (PetscInt p = 0; p < totalSize; ++p) {
+    if (groupIndices[p] >= pStart && groupIndices[p] < pEnd) {
+      ++groupSize;
+    } // if
+  } // for
+
+  points->resize(groupSize);
   for(PetscInt p = 0; p < groupSize; ++p) {
-    (*points)[p] = groupIndices[p]-offset;
+    if (groupIndices[p] >= pStart && groupIndices[p] < pEnd) {
+      (*points)[p] = groupIndices[p]-offset;
+    } // if
   } // for
   err = ISRestoreIndices(groupIS, &groupIndices);PYLITH_CHECK_ERROR(err);
   err = ISDestroy(&groupIS);PYLITH_CHECK_ERROR(err);

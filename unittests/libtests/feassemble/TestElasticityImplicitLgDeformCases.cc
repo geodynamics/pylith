@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -62,7 +62,8 @@ pylith::feassemble::TestElasticityImplicitLgDeform2DLinear::setUp(void)
 
 // ----------------------------------------------------------------------
 #include "data/ElasticityImplicitLgDeformData2DQuadratic.hh"
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityImplicitLgDeform2DQuadratic );
+// :TODO: Update after removing FIAT
+//CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityImplicitLgDeform2DQuadratic );
 
 // Setup testing data.
 void
@@ -118,7 +119,8 @@ pylith::feassemble::TestElasticityImplicitLgDeform3DLinear::setUp(void)
 
 // ----------------------------------------------------------------------
 #include "data/ElasticityImplicitLgDeformData3DQuadratic.hh"
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityImplicitLgDeform3DQuadratic );
+// :TODO: Update after removing FIAT
+//CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityImplicitLgDeform3DQuadratic );
 
 // Setup testing data.
 void
@@ -181,7 +183,8 @@ pylith::feassemble::TestElasticityImplicitLgDeformGrav2DLinear::setUp(void)
 
 // ----------------------------------------------------------------------
 #include "data/ElasticityImplicitLgDeformGravData2DQuadratic.hh"
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityImplicitLgDeformGrav2DQuadratic );
+// :TODO: Update after removing FIAT
+//CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityImplicitLgDeformGrav2DQuadratic );
 
 // Setup testing data.
 void
@@ -249,7 +252,8 @@ pylith::feassemble::TestElasticityImplicitLgDeformGrav3DLinear::setUp(void)
 
 // ----------------------------------------------------------------------
 #include "data/ElasticityImplicitLgDeformGravData3DQuadratic.hh"
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityImplicitLgDeformGrav3DQuadratic );
+// :TODO: Update after removing FIAT
+//CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityImplicitLgDeformGrav3DQuadratic );
 
 // Setup testing data.
 void

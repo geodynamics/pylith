@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2013 University of California, Davis
+# Copyright (c) 2010-2014 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -26,9 +26,10 @@ from dislocation_soln import AnalyticalSoln
 
 from pylith.tests.Fault import check_vertex_fields
 
+# ----------------------------------------------------------------------
 # Local version of PyLithApp
 from pylith.apps.PyLithApp import PyLithApp
-class AxialApp(PyLithApp):
+class LocalApp(PyLithApp):
   def __init__(self):
     PyLithApp.__init__(self, name="dislocation")
     return
@@ -41,15 +42,16 @@ def run_pylith():
   """
   if not "done" in dir(run_pylith):
     # Run PyLith
-    app = AxialApp()
-    app.run()
     run_pylith.done = True
+    app = LocalApp()
+    app.run()
   return
 
 
+# ----------------------------------------------------------------------
 class TestDislocation(TestQuad4):
   """
-  Test suite for testing pylith with 2-D axial extension.
+  Test suite for fault with prescribed slip.
   """
 
   def setUp(self):
@@ -160,12 +162,63 @@ class TestDislocation(TestQuad4):
 
 
 # ----------------------------------------------------------------------
+# Local version of PyLithApp
+from pylith.apps.PyLithApp import PyLithApp
+class LocalApp2(PyLithApp):
+  def __init__(self):
+    PyLithApp.__init__(self, name="dislocation_np2")
+    return
+
+
+# Helper function to run PyLith
+def run_pylith2():
+  """
+  Run pylith.
+  """
+  if not "done" in dir(run_pylith2):
+    # Run PyLith
+    run_pylith2.done = True
+    app = LocalApp2()
+    app.run()
+  return
+
+
+# ----------------------------------------------------------------------
+class TestDislocation2(TestDislocation):
+  """
+  Test suite for fault with prescribed slip w/2 procs.
+  """
+
+  def setUp(self):
+    """
+    Setup for test.
+    """
+    TestQuad4.setUp(self)
+    self.mesh['nvertices'] = 81+9
+    self.nverticesO = 81
+    self.faultMesh = {'nvertices': 9,
+                      'spaceDim': 2,
+                      'ncells': 8,
+                      'ncorners': 2}
+
+    run_pylith2()
+    self.outputRoot = "dislocation_np2"
+    self.soln = AnalyticalSoln()
+
+    return
+
+
+# ----------------------------------------------------------------------
 if __name__ == '__main__':
   import unittest
   from TestDislocation import TestDislocation as Tester
+  from TestDislocation import TestDislocation2 as Tester2
 
   suite = unittest.TestSuite()
+
   suite.addTest(unittest.makeSuite(Tester))
+  suite.addTest(unittest.makeSuite(Tester2))
+
   unittest.TextTestRunner(verbosity=2).run(suite)
 
 

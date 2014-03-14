@@ -1,0 +1,150 @@
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+playback 'geometry.jou'
+
+# ----------------------------------------------------------------------
+# Set discretization size
+# ----------------------------------------------------------------------
+volume all size 10000.0
+
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+volume all scheme tetmesh
+mesh volume all
+
+volume all smooth scheme condition number beta 1.7 cpu 10
+smooth volume all
+
+# ----------------------------------------------------------------------
+# Create blocks for materials
+# ----------------------------------------------------------------------
+block 1 volume elastic_xpos elastic_xmid elastic_xnegypos elastic_xnegyneg
+block 1 name "elastic"
+block 2 volume visco_xpos visco_xmid visco_xnegypos visco_xnegyneg
+block 2 name "viscoelastic"
+
+# ----------------------------------------------------------------------
+# Create nodesets for faults
+# ----------------------------------------------------------------------
+group "fault_x_thru" add node in surface fault_surface_x@A
+group "fault_x_thru" add node in surface fault_surface_x@C
+group "fault_x_thru" add node in surface fault_surface_x
+group "fault_x_thru" add node in surface fault_surface_x@E
+group "fault_x_thru" add node in surface fault_surface_x@D
+group "fault_x_thru" add node in surface fault_surface_x@B
+nodeset 10 group fault_x_thru
+nodeset 10 name "fault_x_thru"
+
+group "fault_x_trim" add node in surface fault_surface_x@A
+group "fault_x_trim" add node in surface fault_surface_x
+nodeset 11 group fault_x_trim
+nodeset 11 name "fault_x_trim"
+
+group "fault_x_trim_edge" add node in curve 153
+group "fault_x_trim_edge" add node in curve 204
+group "fault_x_trim_edge" add node in curve 208
+group "fault_x_trim_edge" add node in curve 155
+nodeset 12 group fault_x_trim_edge
+nodeset 12 name "fault_x_trim_edge"
+
+group "fault_x2_thru" add node in surface fault_surface_x2@A
+group "fault_x2_thru" add node in surface fault_surface_x2@B
+group "fault_x2_thru" add node in surface fault_surface_x2
+group "fault_x2_thru" add node in surface fault_surface_x2@C
+nodeset 13 group fault_x2_thru
+nodeset 13 name "fault_x2_thru"
+
+group "fault_y" add node in surface fault_surface_y@D
+nodeset 14 group fault_y
+nodeset 14 name "fault_y"
+
+group "fault_y_edge" add node in curve 116
+group "fault_y_edge" add node in curve 109
+group "fault_y_edge" add node in curve 115
+nodeset 16 group fault_y_edge
+nodeset 16 name "fault_y_edge"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +x face
+# ----------------------------------------------------------------------
+group "face_xpos" add node in surface 90
+group "face_xpos" add node in surface 94
+group "face_xpos" add node in surface 127
+group "face_xpos" add node in surface 134
+nodeset 20 group face_xpos
+nodeset 20 name "face_xpos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -x face
+# ----------------------------------------------------------------------
+group "face_xneg" add node in surface 120
+group "face_xneg" add node in surface 116
+group "face_xneg" add node in surface 137
+group "face_xneg" add node in surface 142
+nodeset 21 group face_xneg
+nodeset 21 name "face_xneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +y face
+# ----------------------------------------------------------------------
+group "face_ypos" add node in surface 43
+group "face_ypos" add node in surface 62
+group "face_ypos" add node in surface 55
+group "face_ypos" add node in surface 49
+group "face_ypos" add node in surface 70
+group "face_ypos" add node in surface 57
+nodeset 22 group face_ypos
+nodeset 22 name "face_ypos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -y face
+# ----------------------------------------------------------------------
+group "face_yneg" add node in surface 53
+group "face_yneg" add node in surface 72
+group "face_yneg" add node in surface 45
+group "face_yneg" add node in surface 59
+group "face_yneg" add node in surface 80
+group "face_yneg" add node in surface 47
+nodeset 23 group face_yneg
+nodeset 23 name "face_yneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +z face
+# ----------------------------------------------------------------------
+group "face_zpos" add node in surface 115
+group "face_zpos" add node in surface 33
+group "face_zpos" add node in surface 96
+group "face_zpos" add node in surface 122
+group "face_zpos" add node in surface 39
+group "face_zpos" add node in surface 89
+nodeset 24 group face_zpos
+nodeset 24 name "face_zpos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -z face
+# ----------------------------------------------------------------------
+group "face_zneg" add node in surface 37
+group "face_zneg" add node in surface 133
+group "face_zneg" add node in surface 141
+group "face_zneg" add node in surface 35
+group "face_zneg" add node in surface 128
+group "face_zneg" add node in surface 135
+nodeset 25 group face_zneg
+nodeset 25 name "face_zneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -z face
+# ----------------------------------------------------------------------
+group "face_zneg_nofault" add node in face_zneg
+group "face_zneg_nofault" remove node in fault_x_thru
+group "face_zneg_nofault" remove node in fault_x2_thru
+nodeset 26 group face_zneg_nofault
+nodeset 26 name "face_zneg_nofault"
+
+# ----------------------------------------------------------------------
+# Export exodus file
+# ----------------------------------------------------------------------
+export mesh "mesh.exo" dimension 3 overwrite
+

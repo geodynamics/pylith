@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -45,7 +45,7 @@ const PylithScalar pylith::meshio::DataWriterVTKDataMatMeshHex8::_time = 1.0;
 const char* pylith::meshio::DataWriterVTKDataMatMeshHex8::_timeFormat = 
   "%3.1f";
 
-const int pylith::meshio::DataWriterVTKDataMatMeshHex8::_numVertices = 20;
+const int pylith::meshio::DataWriterVTKDataMatMeshHex8::_numVertices = 16;
 
 const pylith::meshio::DataWriterData::FieldStruct
 pylith::meshio::DataWriterVTKDataMatMeshHex8::_vertexFields[4] = {
@@ -54,12 +54,11 @@ pylith::meshio::DataWriterVTKDataMatMeshHex8::_vertexFields[4] = {
   { "stress", topology::FieldBase::TENSOR, 6 },
   { "other", topology::FieldBase::OTHER, 2 },
 };
-const PylithScalar pylith::meshio::DataWriterVTKDataMatMeshHex8::_vertexFieldScalar[20*1] = {
+const PylithScalar pylith::meshio::DataWriterVTKDataMatMeshHex8::_vertexFieldScalar[16*1] = {
   2.1, 3.2, 4.3, 5.4, 6.5, 7.6, 8.7, 9.8,
   10.0, 12.1, 11.1, 13.1, 14.1, 15.1, 16.1, 17.1,
-  18.1, 19.1, 20.1, 21.1
 };
-const PylithScalar pylith::meshio::DataWriterVTKDataMatMeshHex8::_vertexFieldVector[20*3] = {
+const PylithScalar pylith::meshio::DataWriterVTKDataMatMeshHex8::_vertexFieldVector[16*3] = {
   1.1, 2.2, 3.3,
   4.4, 5.5, 6.6,
   7.7, 8.8, 9.9,
@@ -76,12 +75,8 @@ const PylithScalar pylith::meshio::DataWriterVTKDataMatMeshHex8::_vertexFieldVec
   16.8, 17.9, 18.1,
   19.2, 20.3, 21.4,
   22.5, 23.6, 24.7,
-  25.5, 26.6, 27.7,
-  28.8, 29.9, 30.0,
-  31.1, 32.2, 33.3,
-  34.4, 35.5, 36.6
 };
-const PylithScalar pylith::meshio::DataWriterVTKDataMatMeshHex8::_vertexFieldTensor[20*6] = {
+const PylithScalar pylith::meshio::DataWriterVTKDataMatMeshHex8::_vertexFieldTensor[16*6] = {
   1.1, 1.2, 1.3, 1.4, 1.5, 1.6,
   2.1, 2.2, 2.3, 2.4, 2.5, 2.6,
   3.1, 3.2, 3.3, 3.4, 3.5, 3.6,
@@ -98,12 +93,8 @@ const PylithScalar pylith::meshio::DataWriterVTKDataMatMeshHex8::_vertexFieldTen
   14.1, 14.2, 14.3, 14.4, 14.5, 14.6,
   15.1, 15.2, 15.3, 15.4, 15.5, 15.6,
   16.1, 16.2, 16.3, 16.4, 16.5, 16.6,
-  17.1, 17.2, 17.3, 17.4, 17.5, 17.6,
-  18.1, 18.2, 18.3, 18.4, 18.5, 18.6,
-  19.1, 19.2, 19.3, 19.4, 19.5, 19.6,
-  20.1, 20.2, 20.3, 20.4, 20.5, 20.6,
 };
-const PylithScalar pylith::meshio::DataWriterVTKDataMatMeshHex8::_vertexFieldOther[20*2] = {
+const PylithScalar pylith::meshio::DataWriterVTKDataMatMeshHex8::_vertexFieldOther[16*2] = {
   1.2, 2.3,
   3.4, 4.5,
   5.6, 6.7,
@@ -120,10 +111,6 @@ const PylithScalar pylith::meshio::DataWriterVTKDataMatMeshHex8::_vertexFieldOth
   4.8, 1.5,
   2.6, 3.7,
   4.8, 5.9,
-  1.1, 1.2,
-  2.1, 2.2,
-  3.1, 3.2,
-  4.1, 4.2,
 };
 
 const int pylith::meshio::DataWriterVTKDataMatMeshHex8::_numCells = 1;

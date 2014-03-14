@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -114,11 +114,15 @@ pylith::feassemble::IntegratorElasticity::initialize(const topology::Mesh& mesh)
   // Setup index set for material.
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
   if (!_materialIS) {
-    delete _materialIS; _materialIS = new topology::StratumIS(dmMesh, "material-id", _material->id());assert(_materialIS);
+    const bool includeOnlyCells = true;
+    delete _materialIS; _materialIS = new topology::StratumIS(dmMesh, "material-id", _material->id(), includeOnlyCells);assert(_materialIS);
   } // if
 
   // Compute geometry for quadrature operations.
   _quadrature->initializeGeometry();
+
+  // Optimize coordinate retrieval in closure
+  topology::CoordsVisitor::optimizeClosure(dmMesh);
 
   // Initialize material.
   _material->initialize(mesh, _quadrature);
@@ -197,7 +201,8 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(const PylithScalar t,
 
   // Setup visitors.
   scalar_array dispCell(numBasis*spaceDim);
-  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
+  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"), "displacement");
+  dispVisitor.optimizeClosure();
 
   scalar_array coordsCell(numCorners*spaceDim);
   topology::CoordsVisitor coordsVisitor(dmMesh);
@@ -261,7 +266,8 @@ pylith::feassemble::IntegratorElasticity::verifyConfiguration(const topology::Me
   } // if
 
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-  topology::StratumIS materialIS(dmMesh, "material-id", _material->id());
+  const bool includeOnlyCells = true;
+  topology::StratumIS materialIS(dmMesh, "material-id", _material->id(), includeOnlyCells);
   const PetscInt* cells = materialIS.points();
   const PetscInt numCells = materialIS.size();
 
@@ -317,7 +323,7 @@ pylith::feassemble::IntegratorElasticity::cellField(const char* name,
       _allocateTensorField(mesh);
       topology::Field& buffer = _outputFields->get("buffer (tensor)");    
       _material->getField(&buffer, "total_strain");
-      buffer.addDimensionOkay(true);
+      buffer.dimensionalizeOkay(true);
       PYLITH_METHOD_RETURN(buffer);
 
     } else { // must calculate total strain
@@ -326,7 +332,7 @@ pylith::feassemble::IntegratorElasticity::cellField(const char* name,
       topology::Field& buffer = _outputFields->get("buffer (tensor)");
       buffer.label("total_strain");
       buffer.scale(1.0);
-      buffer.addDimensionOkay(true);
+      buffer.dimensionalizeOkay(true);
       _calcStrainStressField(&buffer, name, fields);
       PYLITH_METHOD_RETURN(buffer);
 
@@ -339,7 +345,7 @@ pylith::feassemble::IntegratorElasticity::cellField(const char* name,
       _allocateTensorField(mesh);
       topology::Field& buffer = _outputFields->get("buffer (tensor)");    
       _material->getField(&buffer, "stress");
-      buffer.addDimensionOkay(true);
+      buffer.dimensionalizeOkay(true);
       PYLITH_METHOD_RETURN(buffer);
 
     } else { // must calculate stress from strain
@@ -352,7 +358,7 @@ pylith::feassemble::IntegratorElasticity::cellField(const char* name,
 	_material->getField(&buffer, "total_strain");
 	buffer.label(name);
 	buffer.scale(_normalizer->pressureScale());
-	buffer.addDimensionOkay(true);
+	buffer.dimensionalizeOkay(true);
 	_calcStressFromStrain(&buffer);
 	PYLITH_METHOD_RETURN(buffer);
 
@@ -363,7 +369,7 @@ pylith::feassemble::IntegratorElasticity::cellField(const char* name,
 	  _outputFields->get("buffer (tensor)");
 	buffer.label("stress");
 	buffer.scale(_normalizer->pressureScale());
-	buffer.addDimensionOkay(true);
+	buffer.dimensionalizeOkay(true);
 	_calcStrainStressField(&buffer, name, fields);
 	PYLITH_METHOD_RETURN(buffer);
 	
@@ -376,7 +382,7 @@ pylith::feassemble::IntegratorElasticity::cellField(const char* name,
       _outputFields->add("buffer (other)", "buffer");
     topology::Field& buffer = _outputFields->get("buffer (other)");
     _material->stableTimeStepImplicit(mesh, &buffer);
-    buffer.addDimensionOkay(true);
+    buffer.dimensionalizeOkay(true);
     PYLITH_METHOD_RETURN(buffer);
     
   } else if (0 == strcasecmp(name, "stable_dt_explicit")) {
@@ -384,7 +390,7 @@ pylith::feassemble::IntegratorElasticity::cellField(const char* name,
       _outputFields->add("buffer (other)", "buffer");
     topology::Field& buffer = _outputFields->get("buffer (other)");
     _material->stableTimeStepExplicit(mesh, _quadrature, &buffer);
-    buffer.addDimensionOkay(true);
+    buffer.dimensionalizeOkay(true);
     PYLITH_METHOD_RETURN(buffer);
     
   } else {
@@ -393,7 +399,7 @@ pylith::feassemble::IntegratorElasticity::cellField(const char* name,
     topology::Field& buffer =
       _outputFields->get("buffer (other)");
     _material->getField(&buffer, name);
-    buffer.addDimensionOkay(true);
+    buffer.dimensionalizeOkay(true);
     PYLITH_METHOD_RETURN(buffer);
     
   } // if/else
@@ -474,7 +480,7 @@ pylith::feassemble::IntegratorElasticity::_allocateTensorField(const topology::M
     buffer.newSection(cellsTmp, numQuadPts*tensorSize);
     buffer.allocate();
     buffer.vectorFieldType(topology::FieldBase::MULTI_TENSOR);
-    buffer.addDimensionOkay(true);
+    buffer.dimensionalizeOkay(true);
   } // if
 
   PYLITH_METHOD_END;
@@ -528,7 +534,8 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(topology::Field
 
   // Setup field visitors.
   scalar_array dispCell(numBasis*spaceDim);
-  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
+  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"), "displacement");
+  dispVisitor.optimizeClosure();
 
   topology::VecVisitorMesh fieldVisitor(*field);
   PetscScalar* fieldArray = fieldVisitor.localArray();

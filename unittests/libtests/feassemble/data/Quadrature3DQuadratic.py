@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2013 University of California, Davis
+# Copyright (c) 2010-2014 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -39,28 +39,28 @@ def N0q(p):
 def N0r(p):
   return 1.5+p[0]+p[1]+p[2]
 
-def N1(p):
+def N2(p):
   return 0.5*(1.0+p[0])*p[0]
 
-def N1p(p):
+def N2p(p):
   return 0.5+p[0]
 
-def N1q(p):
-  return 0.0
-
-def N1r(p):
-  return 0.0
-
-def N2(p):
-  return 0.5*(1.0+p[1])*p[1]
-
-def N2p(p):
-  return 0.0
-
 def N2q(p):
-  return 0.5+p[1]
+  return 0.0
 
 def N2r(p):
+  return 0.0
+
+def N1(p):
+  return 0.5*(1.0+p[1])*p[1]
+
+def N1p(p):
+  return 0.0
+
+def N1q(p):
+  return 0.5+p[1]
+
+def N1r(p):
   return 0.0
 
 def N3(p):

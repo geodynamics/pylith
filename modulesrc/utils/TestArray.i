@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -37,7 +37,7 @@
   TestArray_checkScalar(const PylithScalar* valuesE,
 			const int nvalues,
 			const pylith::scalar_array& values) {
-    pylith::utils::TestArray::check(valuesE, nvalues, values);
+    return pylith::utils::TestArray::check(valuesE, nvalues, values);
   } // check(PylithScalar)
 %} // inline
 %clear(const PylithScalar* valuesE, const int nvalues);

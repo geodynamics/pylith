@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2013 University of California, Davis
+# Copyright (c) 2010-2014 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -213,7 +213,7 @@ class PowerLawPlaneStrainElastic(ElasticMaterialApp):
                                         stressUpdated[1,:])
 
 
-    self.dtStableImplicit = 0.1*min(maxwellTimeA, maxwellTimeB)
+    self.dtStableImplicit = 0.2 * min(maxwellTimeA, maxwellTimeB)
     self.dtStableExplicit = 1000.0 / vpA
 
     return
@@ -247,8 +247,8 @@ class PowerLawPlaneStrainElastic(ElasticMaterialApp):
     effStress = (0.5 * devStressProd)**0.5
     maxwellTime = 1.0
     if (effStress != 0.0):
-      maxwellTime = 0.5 * (refStress/effStress)**(powerLawExponent - 1.0) * \
-                    (refStress/mu)/refStrainRate
+      maxwellTime = (refStress/effStress)**(powerLawExponent - 1.0) * \
+                    (refStress/mu)/(refStrainRate * 6.0)
 
     return maxwellTime
 

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -27,6 +27,7 @@
 pylith::faults::Fault::Fault(void) :
   _id(0),
   _label(""),
+  _edge(""),
   _faultMesh(0)
 { // constructor
 } // constructor

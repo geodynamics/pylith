@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -228,7 +228,7 @@ pylith::feassemble::CellGeometry::_orient2D(scalar_array* orientation,
 	<< upDir[0] << ", " << upDir[1] << ", " << upDir[2] << ") "
 	<< " cannot be parallel to the face normal ("
 	<< r0 << ", " << r1 << ", " << r2 << ").\n"
-	<< "Adjust the up_dir parameter.";
+	<< "If the face is horizontal, adjust the up_dir parameter.";
     throw std::runtime_error(msg.str());
   } // if
   p0 /= mag;

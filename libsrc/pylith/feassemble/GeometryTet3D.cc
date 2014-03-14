@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -151,13 +151,13 @@ pylith::feassemble::GeometryTet3D::jacobian(scalar_array* jacobian,
   const PylithScalar y0 = vertices[1];
   const PylithScalar z0 = vertices[2];
 
-  const PylithScalar x1 = vertices[3];
-  const PylithScalar y1 = vertices[4];
-  const PylithScalar z1 = vertices[5];
+  const PylithScalar x2 = vertices[3];
+  const PylithScalar y2 = vertices[4];
+  const PylithScalar z2 = vertices[5];
 
-  const PylithScalar x2 = vertices[6];
-  const PylithScalar y2 = vertices[7];
-  const PylithScalar z2 = vertices[8];
+  const PylithScalar x1 = vertices[6];
+  const PylithScalar y1 = vertices[7];
+  const PylithScalar z1 = vertices[8];
 
   const PylithScalar x3 = vertices[9];
   const PylithScalar y3 = vertices[10];
@@ -326,13 +326,13 @@ pylith::feassemble::GeometryTet3D::volume(const PylithScalar* coordinatesCell,
   const PylithScalar y0 = coordinatesCell[1];
   const PylithScalar z0 = coordinatesCell[2];
   
-  const PylithScalar x1 = coordinatesCell[3];
-  const PylithScalar y1 = coordinatesCell[4];
-  const PylithScalar z1 = coordinatesCell[5];
+  const PylithScalar x2 = coordinatesCell[3];
+  const PylithScalar y2 = coordinatesCell[4];
+  const PylithScalar z2 = coordinatesCell[5];
   
-  const PylithScalar x2 = coordinatesCell[6];
-  const PylithScalar y2 = coordinatesCell[7];
-  const PylithScalar z2 = coordinatesCell[8];
+  const PylithScalar x1 = coordinatesCell[6];
+  const PylithScalar y1 = coordinatesCell[7];
+  const PylithScalar z1 = coordinatesCell[8];
   
   const PylithScalar x3 = coordinatesCell[9];
   const PylithScalar y3 = coordinatesCell[10];
@@ -343,7 +343,8 @@ pylith::feassemble::GeometryTet3D::volume(const PylithScalar* coordinatesCell,
     x0*((y2*z3-y3*z2)-y1*(z3-z2)+(y3-y2)*z1) +
     y0*((x2*z3-x3*z2)-x1*(z3-z2)+(x3-x2)*z1) -
     z0*((x2*y3-x3*y2)-x1*(y3-y2)+(x3-x2)*y1);
-  
+  assert(det > 0.0);
+
   const PylithScalar v = det / 6.0;
   PetscLogFlops(48);
   

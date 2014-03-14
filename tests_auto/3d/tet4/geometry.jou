@@ -1,0 +1,57 @@
+# ----------------------------------------------------------------------
+# Create block
+# ----------------------------------------------------------------------
+
+# Block is 80 km x 80 km x 40 km
+# -40 km <= x <= 40 km
+# -40 km <= y <= 40 km
+# -40 km <= z <= 0 km
+reset
+brick x 80000 y 80000 z 40000
+
+# Translate block so the top is at z=0
+volume 1 move x 0 y 0 z -20000
+
+# ----------------------------------------------------------------------
+# Create interface surfaces
+# ----------------------------------------------------------------------
+create planar surface with plane xplane offset 0
+surface 7 name "fault_surface_x"
+create planar surface with plane xplane offset +20000
+surface 8 name "fault_surface_x2"
+create planar surface with plane yplane offset 0
+surface 9 name "fault_surface_y"
+create planar surface with plane zplane offset -20000
+surface 10 name "material_interface"
+
+# ----------------------------------------------------------------------
+# Divide volumes using interface surfaces
+# ----------------------------------------------------------------------
+webcut volume 1 with plane surface fault_surface_x
+webcut volume 1 with plane surface fault_surface_x2
+webcut volume 7 with plane surface fault_surface_y
+webcut volume 1 6 7 8 with plane surface material_interface
+volume 1 name "elastic_xpos"
+volume 7 name "elastic_xmid"
+volume 6 name "elastic_xnegypos"
+volume 8 name "elastic_xnegyneg"
+volume 9 name "visco_xpos"
+volume 11 name "visco_xmid"
+volume 10 name "visco_xnegypos"
+volume 12 name "visco_xnegyneg"
+
+# ----------------------------------------------------------------------
+# Chop x and y faults into pieces
+# ----------------------------------------------------------------------
+# fault_surface_x
+brick x 2000 y 50000 z 40000
+chop volume 2 with volume 13
+
+# ----------------------------------------------------------------------
+# Imprint all volumes, merging surfaces
+# ----------------------------------------------------------------------
+imprint all with volume all
+merge all
+
+
+

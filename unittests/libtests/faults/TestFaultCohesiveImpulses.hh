@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -69,7 +69,6 @@ protected:
   CohesiveImpulsesData* _data; ///< Data for testing
   feassemble::Quadrature* _quadrature; ///< Fault quadrature.
   spatialdata::spatialdb::SpatialDB* _dbImpulseAmp; ///< Initial tractions.
-  bool _flipFault; ///< If true, flip fault orientation.
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
@@ -114,13 +113,13 @@ private:
 		   FaultCohesiveImpulses* const fault,
 		   topology::SolutionFields* const fields);
 
-  /** Determine if vertex is a Lagrange multiplier constraint vertex.
+  /** Determine if point is a Lagrange multiplier constraint point.
    *
-   * @param vertex Label of vertex.
+   * @param point Label of point.
    *
-   * @returns True if vertex is a constraint vertex, false otherwise.
+   * @returns True if point is a constraint point, false otherwise.
    */
-  bool _isConstraintVertex(const int vertex) const;
+  bool _isConstraintEdge(const int point) const;
 
 }; // class TestFaultCohesiveImpulses
 

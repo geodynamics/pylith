@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2013 University of California, Davis
+# Copyright (c) 2010-2014 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -30,11 +30,19 @@ def suite():
   from TestShearDisp import TestShearDisp
   suite.addTest(unittest.makeSuite(TestShearDisp))
 
-  #from TestDislocation import TestDislocation
-  #suite.addTest(unittest.makeSuite(TestDislocation))
+  from TestShearDispNoSlip import TestShearDispNoSlip
+  suite.addTest(unittest.makeSuite(TestShearDispNoSlip))
 
-  #from TestDislocation2 import TestDislocation2
-  #suite.addTest(unittest.makeSuite(TestDislocation2))
+  # Disabled. Incorrect solution due to refinement of fault halo not
+  # tied together.
+  #from TestShearDispNoSlipRefine import TestShearDispNoSlipRefine
+  #suite.addTest(unittest.makeSuite(TestShearDispNoSlipRefine))
+
+  from TestSlipOneFault import TestSlipOneFault
+  suite.addTest(unittest.makeSuite(TestSlipOneFault))
+
+  from TestSlipTwoFaults import TestSlipTwoFaults
+  suite.addTest(unittest.makeSuite(TestSlipTwoFaults))
 
   return suite
 

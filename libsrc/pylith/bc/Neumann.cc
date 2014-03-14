@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -78,6 +78,11 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
 
   _queryDatabases();
   _paramsLocalToGlobal(upDir);
+
+  // Optimize coordinate retrieval in closure
+  assert(_boundaryMesh);
+  const PetscDM dmSubMesh = _boundaryMesh->dmMesh();assert(dmSubMesh);
+  topology::CoordsVisitor::optimizeClosure(dmSubMesh);
 
   PYLITH_METHOD_END;
 } // initialize

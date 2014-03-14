@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2013 University of California, Davis
+# Copyright (c) 2010-2014 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -151,10 +151,22 @@ class Explicit(Formulation, ModuleExplicit):
       self._info.log("Creating lumped Jacobian matrix.")
     from pylith.topology.Field import Field
     jacobian = Field(self.mesh())
-    jacobian.newSection(jacobian.VERTICES_FIELD, dimension)
-    jacobian.allocate()
     jacobian.label("jacobian")
+
+    # Setup section manually. Cloning the solution field includes
+    # constraints which messes up the solve for constrained DOF.
+    pressureScale = normalizer.pressureScale()
+    jacobian.subfieldAdd("displacement", dimension, jacobian.VECTOR, lengthScale.value)
+    jacobian.subfieldAdd("lagrange_multiplier", dimension, jacobian.VECTOR, pressureScale.value)
+    jacobian.subfieldsSetup()
+    jacobian.setupSolnChart()
+    jacobian.setupSolnDof(dimension)
+    # Loop over integrators to adjust DOF layout
+    for integrator in self.integrators:
+      integrator.setupSolnDof(jacobian)
     jacobian.vectorFieldType(jacobian.VECTOR)
+    jacobian.allocate()
+    jacobian.zeroAll()
     self.jacobian = jacobian
     self._debug.log(resourceUsageString())
 

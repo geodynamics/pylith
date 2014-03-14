@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -158,7 +158,7 @@ pylith::topology::TestFieldMesh::testScale(void)
 } // testScale
 
 // ----------------------------------------------------------------------
-// Test addDimensionOkay().
+// Test dimensionalizeOkay().
 void
 pylith::topology::TestFieldMesh::testAddDimensionOkay(void)
 { // testAddDimensionOkay
@@ -171,7 +171,7 @@ pylith::topology::TestFieldMesh::testAddDimensionOkay(void)
   Field field(mesh);
 
   CPPUNIT_ASSERT_EQUAL(false, field._metadata[label].dimsOkay);
-  field.addDimensionOkay(true);
+  field.dimensionalizeOkay(true);
   CPPUNIT_ASSERT_EQUAL(true, field._metadata[label].dimsOkay);
 
   PYLITH_METHOD_END;
@@ -267,27 +267,6 @@ pylith::topology::TestFieldMesh::testHasSection(void)
 
   PYLITH_METHOD_END;
 } // testHasSection
-
-// ----------------------------------------------------------------------
-// Test newSection().
-void
-pylith::topology::TestFieldMesh::testNewSection(void)
-{ // testNewSection
-  PYLITH_METHOD_BEGIN;
-
-  Mesh mesh;
-  _buildMesh(&mesh);
-
-  Field field(mesh);
-  const std::string& label = "field A";
-  field.label(label.c_str());
-
-  field.newSection();
-  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
-  PetscSection section = field.petscSection();CPPUNIT_ASSERT(section);
-
-  PYLITH_METHOD_END;
-} // testNewSection
 
 // ----------------------------------------------------------------------
 // Test newSection(points).
@@ -549,7 +528,7 @@ pylith::topology::TestFieldMesh::testClear(void)
 
   field.scale(2.0);
   field.vectorFieldType(Field::TENSOR);
-  field.addDimensionOkay(true);
+  field.dimensionalizeOkay(true);
   
   field.clear();
 
@@ -846,6 +825,106 @@ pylith::topology::TestFieldMesh::testCopy(void)
 } // testCopy
 
 // ----------------------------------------------------------------------
+// Test copySubfield().
+void
+pylith::topology::TestFieldMesh::testCopySubfield(void)
+{ // testCopy
+  PYLITH_METHOD_BEGIN;
+
+  const int fiberDimA = 1;
+  const char* fieldA = "one";
+  const int fiberDimB = 2;
+  const char* fieldB = "two";
+  const int fiberDim = fiberDimA + fiberDimB;
+
+  const PylithScalar scale = 2.0;
+  const int npoints = 4;
+  const PylithScalar valuesNondim[npoints*fiberDim] = {
+    1.1, 2.2, 3.3,
+    1.2, 2.3, 3.4,
+    1.3, 2.4, 3.5,
+    1.4, 2.5, 3.6,
+  };
+  const PylithScalar valuesANondim[npoints*fiberDimA] = {
+    1.1,
+    1.2,
+    1.3,
+    1.4,
+  };
+  const PylithScalar valuesBNondim[npoints*fiberDimB] = {
+    2.2, 3.3,
+    2.3, 3.4,
+    2.4, 3.5,
+    2.5, 3.6,
+  };
+
+  Mesh mesh;
+  _buildMesh(&mesh);
+
+  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+  Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
+  const PetscInt vStart = depthStratum.begin();
+  const PetscInt vEnd = depthStratum.end();
+
+  Field fieldSrc(mesh);
+  { // Setup source field
+    fieldSrc.label("solution");
+    fieldSrc.subfieldAdd("one", fiberDimA, Field::SCALAR);
+    fieldSrc.subfieldAdd("two", fiberDimB, Field::VECTOR);
+    fieldSrc.subfieldsSetup();
+    fieldSrc.newSection(Field::VERTICES_FIELD, fiberDim);
+    fieldSrc.subfieldSetDof("one", Field::VERTICES_FIELD, fiberDimA);
+    fieldSrc.subfieldSetDof("two", Field::VERTICES_FIELD, fiberDimB);
+    fieldSrc.allocate();
+
+    VecVisitorMesh fieldVisitor(fieldSrc);
+    PetscScalar* fieldArray = fieldVisitor.localArray();
+    for (PetscInt v = vStart, i = 0; v < vEnd; ++v) {
+      const PetscInt off = fieldVisitor.sectionOffset(v);
+      CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
+      for (PetscInt d = 0; d < fiberDim; ++d)
+	fieldArray[off+d] = valuesNondim[i++];
+    } // for
+  } // Setup source field
+    
+  { // Test with preallocated field
+    Field field(mesh);
+    field.newSection(Field::VERTICES_FIELD, fiberDimB);
+    field.allocate();
+    field.copySubfield(fieldSrc, "two");
+
+    VecVisitorMesh fieldVisitor(field);
+    const PetscScalar* fieldArray = fieldVisitor.localArray();
+    const PylithScalar tolerance = 1.0e-6;
+    for (PetscInt v = vStart, i = 0; v < vEnd; ++v) {
+      const PetscInt off = fieldVisitor.sectionOffset(v);
+      CPPUNIT_ASSERT_EQUAL(fiberDimB, fieldVisitor.sectionDof(v));
+      for (PetscInt d = 0; d < fiberDimB; ++d) {
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesBNondim[i++], fieldArray[off+d], tolerance);
+      } // for
+    } // for
+  } // Test with preallocated field
+
+  { // Test with unallocated field
+    Field field(mesh);
+    field.copySubfield(fieldSrc, "one");
+
+    VecVisitorMesh fieldVisitor(field);
+    const PetscScalar* fieldArray = fieldVisitor.localArray();
+    const PylithScalar tolerance = 1.0e-6;
+    for (PetscInt v = vStart, i = 0; v < vEnd; ++v) {
+      const PetscInt off = fieldVisitor.sectionOffset(v);
+      CPPUNIT_ASSERT_EQUAL(fiberDimA, fieldVisitor.sectionDof(v));
+      for (PetscInt d = 0; d < fiberDimA; ++d) {
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesANondim[i++], fieldArray[off+d], tolerance);
+      } // for
+    } // for
+  } // Test with unallocated field
+
+  PYLITH_METHOD_END;
+} // testCopySubfield
+
+// ----------------------------------------------------------------------
 // Test operator+=().
 void
 pylith::topology::TestFieldMesh::testOperatorAdd(void)
@@ -956,7 +1035,7 @@ pylith::topology::TestFieldMesh::testDimensionalize(void)
   } // setup field
 
   field.scale(scale);
-  field.addDimensionOkay(true);
+  field.dimensionalizeOkay(true);
   field.dimensionalize();
 
   VecVisitorMesh fieldVisitor(field);
@@ -1332,14 +1411,14 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
     for(PetscInt f = 0; f < numFields; ++f) {
       std::ostringstream msg;
       msg << "Field "<<f;
-      fieldSrc.addField(msg.str().c_str(), 1);
+      fieldSrc.subfieldAdd(msg.str().c_str(), 1, Field::SCALAR);
     } // for
-    fieldSrc.setupFields();
+    fieldSrc.subfieldsSetup();
     fieldSrc.newSection(Field::VERTICES_FIELD, spaceDim);
     for(PetscInt f = 0; f < spaceDim; ++f) {
       std::ostringstream msg;
       msg << "Field "<<f;
-      fieldSrc.updateDof(msg.str().c_str(), Field::VERTICES_FIELD, 1);
+      fieldSrc.subfieldSetDof(msg.str().c_str(), Field::VERTICES_FIELD, 1);
     } // for
     PetscSection section = fieldSrc.petscSection();CPPUNIT_ASSERT(section);
     PetscInt iV = 0, iC = 0;
@@ -1426,14 +1505,14 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
     for(PetscInt f = 0; f < numFields; ++f) {
       std::ostringstream msg;
       msg << "Field "<<f;
-      fieldSrc.addField(msg.str().c_str(), 1);
+      fieldSrc.subfieldAdd(msg.str().c_str(), 1, Field::SCALAR);
     } // for
-    fieldSrc.setupFields();
+    fieldSrc.subfieldsSetup();
     fieldSrc.newSection(Field::VERTICES_FIELD, spaceDim);
     for(PetscInt f = 0; f < spaceDim; ++f) {
       std::ostringstream msg;
       msg << "Field "<<f;
-      fieldSrc.updateDof(msg.str().c_str(), Field::VERTICES_FIELD, 1);
+      fieldSrc.subfieldSetDof(msg.str().c_str(), Field::VERTICES_FIELD, 1);
     } // for
     PetscSection section = fieldSrc.petscSection();
     CPPUNIT_ASSERT(section);
@@ -1533,7 +1612,7 @@ pylith::topology::TestFieldMesh::_buildMesh(Mesh* mesh)
   PetscScalar *coords = NULL;
   PetscInt coordSize;
 
-  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);PYLITH_CHECK_ERROR(err);
+  err = DMGetCoordinateSection(dmMesh, &coordSection);PYLITH_CHECK_ERROR(err);
   err = PetscSectionSetNumFields(coordSection, 1);PYLITH_CHECK_ERROR(err);
   err = PetscSectionSetFieldComponents(coordSection, 0, spaceDim);PYLITH_CHECK_ERROR(err);
   err = PetscSectionSetChart(coordSection, ncells, ncells+nvertices);PYLITH_CHECK_ERROR(err);

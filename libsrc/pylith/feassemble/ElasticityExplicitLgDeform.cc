@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -203,16 +203,20 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(const topology
 
   // Setup field visitors.
   scalar_array accCell(numBasis*spaceDim);
-  topology::VecVisitorMesh accVisitor(fields->get("acceleration(t)"));
+  topology::VecVisitorMesh accVisitor(fields->get("acceleration(t)"), "displacement");
+  accVisitor.optimizeClosure();
 
   scalar_array velCell(numBasis*spaceDim);
-  topology::VecVisitorMesh velVisitor(fields->get("velocity(t)"));
+  topology::VecVisitorMesh velVisitor(fields->get("velocity(t)"), "displacement");
+  velVisitor.optimizeClosure();
 
   scalar_array dispCell(numBasis*spaceDim);
   scalar_array dispAdjCell(numBasis*spaceDim);
-  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
+  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"), "displacement");
+  dispVisitor.optimizeClosure();
 
-  topology::VecVisitorMesh residualVisitor(residual);
+  topology::VecVisitorMesh residualVisitor(residual, "displacement");
+  residualVisitor.optimizeClosure();
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
@@ -392,7 +396,8 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(topology::Fiel
 
   // Setup field visitors.
   scalar_array valuesIJ(numBasis);
-  topology::VecVisitorMesh jacobianVisitor(*jacobian);
+  topology::VecVisitorMesh jacobianVisitor(*jacobian, "displacement");
+  // Don't optimize closure since we compute the Jacobian only once.
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);

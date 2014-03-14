@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -20,6 +20,8 @@
 #include <stdexcept>
 
 #include "Mesh.hh" // implementation of class methods
+
+#include "MeshOps.hh" // USES MeshOps
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "pylith/utils/array.hh" // USES scalar_array
@@ -107,7 +109,9 @@ pylith::topology::Mesh::Mesh(const Mesh& mesh,
   } // if
 
   /* TODO: Add creation of pointSF for submesh */
-  err = DMPlexCreateSubmesh(dmMesh, label, 1, &_dmMesh);PYLITH_CHECK_ERROR(err);
+  DMLabel l;
+  err = DMPlexGetLabel(dmMesh, label, &l);PYLITH_CHECK_ERROR(err);
+  err = DMPlexCreateSubmesh(dmMesh, l, 1, &_dmMesh);PYLITH_CHECK_ERROR(err);
 
   PetscInt maxConeSizeLocal = 0, maxConeSize = 0;
   err = DMPlexGetMaxSizes(_dmMesh, &maxConeSizeLocal, NULL);PYLITH_CHECK_ERROR(err);
@@ -129,6 +133,9 @@ pylith::topology::Mesh::Mesh(const Mesh& mesh,
   PylithScalar lengthScale;
   err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
   err = DMPlexSetScale(_dmMesh, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
+
+  // Check topology
+  MeshOps::checkTopology(*this);
 
   PYLITH_METHOD_END;
 } // SubMesh constructor
@@ -207,8 +214,7 @@ pylith::topology::Mesh::commRank(void) const
 // ----------------------------------------------------------------------
 // Print mesh to stdout.
 void
-pylith::topology::Mesh::view(const char* label,
-			     const char* viewOption) const
+pylith::topology::Mesh::view(const char* viewOption) const
 { // view
   PYLITH_METHOD_BEGIN;
 
@@ -216,13 +222,17 @@ pylith::topology::Mesh::view(const char* label,
 
   PetscErrorCode err;
   if (strlen(viewOption) > 0) {
+    const char* label = 0;
+    err = PetscObjectGetName((PetscObject) _dmMesh, &label);PYLITH_CHECK_ERROR(err);
+
     std::ostringstream optionname, optionprefix;
-    optionname  << "-" << label << "_dm_view";
     optionprefix << label << "_";
+    optionname  << "-" << label << "_dm_view";
 
     err = DMSetOptionsPrefix(_dmMesh, optionprefix.str().c_str());PYLITH_CHECK_ERROR(err);
     err = PetscOptionsSetValue(optionname.str().c_str(), viewOption);PYLITH_CHECK_ERROR(err);
-    err = DMSetFromOptions(_dmMesh);PYLITH_CHECK_ERROR(err);
+    err = DMViewFromOptions(_dmMesh, NULL, "-dm_view");PYLITH_CHECK_ERROR(err);
+
   } else {
     err = DMView(_dmMesh, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
   } // if/else

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -106,7 +106,8 @@ public :
    */
   StratumIS(const PetscDM dmMesh,
 	    const char* label,
-	    const int id);
+	    const int id,
+	    const bool includeOnlyCells =false);
 
   /// Default destructor.
   ~StratumIS(void);

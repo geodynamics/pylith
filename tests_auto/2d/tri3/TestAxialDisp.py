@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2013 University of California, Davis
+# Copyright (c) 2010-2014 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -45,8 +45,8 @@ def run_pylith():
 
     # Run PyLith
     app = AxialApp()
+    run_pylith.done = True # Put before run() so only called once
     app.run()
-    run_pylith.done = True
   return
 
 

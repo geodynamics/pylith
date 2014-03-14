@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -141,8 +141,8 @@ const PylithScalar pylith::faults::CohesiveImpulsesDataQuad4::_amplitude[] = {
 
 const int pylith::faults::CohesiveImpulsesDataQuad4::_numImpulses = 2;
 
-const int pylith::faults::CohesiveImpulsesDataQuad4::_numConstraintVert = 2;
-const int pylith::faults::CohesiveImpulsesDataQuad4::_constraintVertices[] = {
+const int pylith::faults::CohesiveImpulsesDataQuad4::_numConstraintEdges = 2;
+const int pylith::faults::CohesiveImpulsesDataQuad4::_constraintEdges[] = {
   11, 12
 };
 const int pylith::faults::CohesiveImpulsesDataQuad4::_negativeVertices[] = {
@@ -188,9 +188,9 @@ pylith::faults::CohesiveImpulsesDataQuad4::CohesiveImpulsesDataQuad4(void)
   amplitude = const_cast<PylithScalar*>(_amplitude);
   numImpulses = _numImpulses;
   residual = const_cast<PylithScalar*>(_residual);
-  constraintVertices = const_cast<int*>(_constraintVertices);
+  constraintEdges = const_cast<int*>(_constraintEdges);
   negativeVertices = const_cast<int*>(_negativeVertices);
-  numConstraintVert = _numConstraintVert;  
+  numConstraintEdges = _numConstraintEdges;  
 } // constructor
 
 pylith::faults::CohesiveImpulsesDataQuad4::~CohesiveImpulsesDataQuad4(void)

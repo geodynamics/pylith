@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -27,7 +27,7 @@
 #if !defined(pylith_meshio_testdatawritermesh_hh)
 #define pylith_meshio_testdatawritermesh_hh
 
-#include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
+#include "pylith/topology/topologyfwd.hh" // HOLDSA Mesh, Field
 
 /// Namespace for pylith package
 namespace pylith {
@@ -73,7 +73,6 @@ protected :
 
   DataWriterData* _data; ///< Data for testing
   topology::Mesh* _mesh; ///< Mesh for data
-  bool _flipFault; ///< If true, flip fault orientation.
 
 }; // class TestDataWriterMesh
 

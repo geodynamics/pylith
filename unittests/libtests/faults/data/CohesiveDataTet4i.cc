@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -43,20 +43,7 @@ const int pylith::faults::CohesiveDataTet4i::_numCells = 6;
 
 const int pylith::faults::CohesiveDataTet4i::_cellDim = 3;
 
-const PylithScalar pylith::faults::CohesiveDataTet4i::_vertices[] = {
-  -1.0,  0.0,  0.0,
-   0.0, -1.0,  0.0,
-   0.0,  0.0,  1.0,
-   0.0,  1.0,  0.0,
-   0.0,  0.0, -1.0,
-   1.0,  0.0,  0.0,
-   0.0, -1.0,  0.0,
-   0.0,  0.0,  1.0,
-   0.0,  1.0,  0.0,
-   0.0,  0.0, -1.0,
-};
-
-const int pylith::faults::CohesiveDataTet4i::_numCorners[] = {
+const int pylith::faults::CohesiveDataTet4i::_numCorners[6] = {
   4,
   4,
   4,
@@ -65,35 +52,22 @@ const int pylith::faults::CohesiveDataTet4i::_numCorners[] = {
   6,
 };
 
-const int pylith::faults::CohesiveDataTet4i::_cells[] = {
-  7,  8,  9,  6,
- 12, 14, 13, 11,
- 15, 11, 14, 12,
-  6,  7, 10,  9,
-  8,  7,  9, 13, 12, 14,
-  7, 10,  9, 12, 15, 14,
-};
-
-const int pylith::faults::CohesiveDataTet4i::_materialIds[] = {
+const int pylith::faults::CohesiveDataTet4i::_materialIds[6] = {
   0, 0, 0, 0,
   1, 1
 };
 
 const int pylith::faults::CohesiveDataTet4i::_numGroups = 2;
 
-const int pylith::faults::CohesiveDataTet4i::_groupSizes[] = 
-  { 2, 8 };
-
-const int pylith::faults::CohesiveDataTet4i::_groups[] = {
-  6, 11,
-  7,  8, 9, 10, 12, 13, 14, 15
+const int pylith::faults::CohesiveDataTet4i::_groupSizes[2] = {
+  2+0+0, 8+10+4 // vertices+edges+faces
 };
 
-const char* pylith::faults::CohesiveDataTet4i::_groupNames[] = {
+const char* pylith::faults::CohesiveDataTet4i::_groupNames[2] = {
   "output", "fault"
 };
 
-const char* pylith::faults::CohesiveDataTet4i::_groupTypes[] = {
+const char* pylith::faults::CohesiveDataTet4i::_groupTypes[2] = {
   "vertex", "vertex"
 };
 
@@ -105,11 +79,8 @@ pylith::faults::CohesiveDataTet4i::CohesiveDataTet4i(void)
   spaceDim = _spaceDim;
   numCells = _numCells;
   cellDim = _cellDim;
-  vertices = const_cast<PylithScalar*>(_vertices);
   numCorners = const_cast<int*>(_numCorners);
-  cells = const_cast<int*>(_cells);
   materialIds = const_cast<int*>(_materialIds);
-  groups = const_cast<int*>(_groups);
   groupSizes = const_cast<int*>(_groupSizes);
   groupNames = const_cast<char**>(_groupNames);
   groupTypes = const_cast<char**>(_groupTypes);

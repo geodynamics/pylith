@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -85,6 +85,18 @@ public :
    */
   const char* label(void) const;
 
+  /** Set label of group of vertices defining buried edge of fault.
+   *
+   * @param value Label of fault
+   */
+  void edge(const char* value);
+
+  /** Get label of group of vertices defining buried edge of fault.
+   *
+   * @returns Label of fault
+   */
+  const char* edge(void) const;
+
   /** Get dimension of mesh.
    *
    * @returns Dimension of mesh.
@@ -121,13 +133,15 @@ public :
   /** Adjust mesh topology for fault implementation.
    *
    * @param mesh PETSc mesh
+   * @param firstFaultVertex The first point eligible to become a new fault vertex
+   * @param firstLagrangeVertex The first point eligible to become a new Lagrange vertex
+   * @param firstFaultCell The first point eligible to become a new fault cell
    */
   virtual
   void adjustTopology(topology::Mesh* const mesh,
                       int *firstFaultVertex,
                       int *firstLagrangeVertex,
-                      int *firstFaultCell,
-                      const bool flipFault = false) = 0;
+                      int *firstFaultCell) = 0;
 
   /** Initialize fault. Determine orientation and setup boundary
    * condition parameters.
@@ -183,7 +197,8 @@ protected :
 private :
 
   int _id; ///< Fault identifier
-  std::string _label; ///< Label of fault
+  std::string _label; ///< Label for points associated with fault.
+  std::string _edge; ///< Label for points defining edge of fault.
 
 }; // class Fault
 

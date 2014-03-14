@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -350,6 +350,8 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh&
   } // for
   delete fieldVisitor; fieldVisitor = 0;
 
+  assert(dtStable > 0.0);
+
   PYLITH_METHOD_RETURN(dtStable);
 } // stableTimeStepImplicit
 
@@ -425,6 +427,7 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
 
     coordsVisitor.getClosure(&coordsCell, cell);
     const PylithScalar minCellWidth = quadrature->minCellWidth(&coordsCell[0], numBasis, spaceDim);
+  assert(minCellWidth > 0.0);
 
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
       const PylithScalar dt = 
@@ -448,6 +451,8 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
     } // if
   } // for
   delete fieldVisitor; fieldVisitor = 0;
+
+  assert(dtStable > 0.0);
 
   PYLITH_METHOD_RETURN(dtStable);
 } // stableTimeStepExplicit

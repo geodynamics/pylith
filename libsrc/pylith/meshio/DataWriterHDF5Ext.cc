@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -126,7 +126,7 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
 
     /* TODO Get rid of this and use the createScatterWithBC(numbering) code */
     err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetCoordinateSection(dmMesh, &coordSection);PYLITH_CHECK_ERROR(err);
+    err = DMGetCoordinateSection(dmMesh, &coordSection);PYLITH_CHECK_ERROR(err);
     err = DMGetCoordinatesLocal(dmMesh, &coordinates);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetHybridBounds(dmMesh, PETSC_NULL, PETSC_NULL, PETSC_NULL, &vMax);PYLITH_CHECK_ERROR(err);
@@ -386,7 +386,7 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
 
       err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, PETSC_NULL);PYLITH_CHECK_ERROR(err);
       err = DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers);PYLITH_CHECK_ERROR(err);
-      err = ISGetSize(globalVertexNumbers, &n);PYLITH_CHECK_ERROR(err);
+      err = ISGetLocalSize(globalVertexNumbers, &n);PYLITH_CHECK_ERROR(err);
       if (n > 0) {
 	const PetscInt *indices = NULL;
 	err = ISGetIndices(globalVertexNumbers, &indices);PYLITH_CHECK_ERROR(err);

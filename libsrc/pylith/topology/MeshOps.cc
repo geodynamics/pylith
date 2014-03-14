@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -77,6 +77,31 @@ pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
 
 
 // ----------------------------------------------------------------------
+// Check topology of mesh.
+void
+pylith::topology::MeshOps::checkTopology(const Mesh& mesh)
+{ // checkTopology
+  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+
+  const int cellDim = mesh.dimension();
+  const int numCorners = mesh.numCorners();
+  PetscBool isSimplexMesh = PETSC_TRUE;
+  if ((cellDim == 2 && numCorners == 4) ||
+      (cellDim == 3 && numCorners == 8)) {
+    isSimplexMesh = PETSC_FALSE;
+  } // if
+  DMLabel subpointMap;
+  PetscErrorCode ierr = DMPlexGetSubpointMap(dmMesh, &subpointMap);PYLITH_CHECK_ERROR(ierr);
+  PetscInt cellHeight = subpointMap ? 1 : 0;
+
+  PetscErrorCode err;
+  err = DMPlexCheckSymmetry(dmMesh);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh associated with symmetry of adjacency information.");
+
+  err = DMPlexCheckSkeleton(dmMesh, isSimplexMesh, cellHeight);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh cells.");
+} // checkTopology
+
+
+// ----------------------------------------------------------------------
 void
 pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
 					    int* const materialIds,
@@ -112,6 +137,12 @@ pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
     PetscInt matId;
 
     err = DMLabelGetValue(materialsLabel, c, &matId);PYLITH_CHECK_ERROR(err);
+    if (matId < 0) {
+      // :KLUDGE: Skip cells that are probably hybrid cells in halo
+      // around fault that we currently ignore when looping over
+      // materials (including cohesive cells).
+      continue;
+    } // if
     const int *result = std::find(matBegin, matEnd, matId);
     if (result == matEnd) {
       std::ostringstream msg;

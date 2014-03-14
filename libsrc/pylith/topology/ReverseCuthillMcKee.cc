@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -21,40 +21,23 @@
 #include "ReverseCuthillMcKee.hh" // implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
-
-#include <cassert> // USES assert()
-#include <stdexcept> // USES std::exception
-#include <iostream> // USES std::cerr
+#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
 // ----------------------------------------------------------------------
-// Set vertices and cells in mesh.
+// Reorder vertices and cells in mesh.
 void
 pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh)
 { // reorder
   assert(mesh);
+  PetscIS permutation;
+  PetscDM dmOrig = mesh->dmMesh();
+  PetscDM dmNew = NULL;
+  PetscErrorCode err;
 
-  const int commRank = mesh->commRank();
-  if (0 == commRank) {
-#if 0
-    const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
-    assert(!sieveMesh.isNull());
-    ALE::Obj<ALE::Ordering<>::perm_type> perm = 
-      new ALE::Ordering<>::perm_type(sieveMesh->comm(), sieveMesh->debug());
-    ALE::Obj<ALE::Ordering<>::perm_type> reordering = 
-      new ALE::Ordering<>::perm_type(sieveMesh->comm(), sieveMesh->debug());
-    
-    ALE::Ordering<>::calculateMeshReordering(sieveMesh, perm, reordering);
-    
-    //perm->view("PERMUTATION");
-    //reordering->view("REORDERING");
-    //sieveMesh->view("MESH BEFORE RELABEL");
-    
-    sieveMesh->relabel(*reordering);
-    //sieveMesh->view("MESH AFTER RELABEL");
-#else
-    std::cerr << "WARNING: Reverse Cuthill McKee temporarily disabled." << std::endl;
-#endif
-  } // if    
+  err = DMPlexGetOrdering(dmOrig, MATORDERINGRCM, &permutation);PYLITH_CHECK_ERROR(err);
+  err = DMPlexPermute(dmOrig, permutation, &dmNew);PYLITH_CHECK_ERROR(err);
+  err = ISDestroy(&permutation);PYLITH_CHECK_ERROR(err);
+  mesh->dmMesh(dmNew);
 } // reorder
 
 

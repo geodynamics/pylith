@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -92,9 +92,9 @@ public:
   PylithScalar* fieldIncrOpenE; ///< Expected values for solution increment for opening case.
   PylithScalar* slipOpenE; ///< Expected values for slip for opening case.
 
-  int* constraintVertices; ///< Expected points for constraint vertices
+  int* constraintEdges; ///< Expected points for constraint edges
   int* negativeVertices; ///< Expected points for negative side fault vertices
-  int numConstraintVert; ///< Number of constraint vertices
+  int numConstraintEdges; ///< Number of constraint edges
   //@}
 
 };

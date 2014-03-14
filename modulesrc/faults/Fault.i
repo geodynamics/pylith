@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -65,6 +65,18 @@ namespace pylith {
        */
       const char* label(void) const;
 
+      /** Set label of group of vertices defining buried edge of fault.
+       *
+       * @param value Label of fault
+       */
+      void edge(const char* value);
+      
+      /** Get label of group of vertices defining buried edge of fault.
+       *
+       * @returns Label of fault
+       */
+      const char* edge(void) const;
+
       /** Get dimension of mesh.
        *
        * @returns Dimension of mesh.
@@ -107,8 +119,7 @@ namespace pylith {
       void adjustTopology(pylith::topology::Mesh* const mesh,
                           int *firstFaultVertex,
                           int *firstLagrangeVertex,
-                          int *firstFaultCell,
-                          const bool flipFault = false) = 0;
+                          int *firstFaultCell) = 0;
       %clear int *firstFaultVertex, int *firstFaultCell;
       
       /** Initialize fault. Determine orientation and setup boundary

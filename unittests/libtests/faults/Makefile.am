@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2013 University of California, Davis
+# Copyright (c) 2010-2014 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -27,6 +27,9 @@ check_PROGRAMS = testfaults
 
 # Primary source files
 testfaults_SOURCES = \
+	TestFault.cc \
+	TestFaultCohesive.cc \
+	TestFaultMesh.cc \
 	TestSlipFn.cc \
 	TestStepSlipFn.cc \
 	TestConstRateSlipFn.cc \
@@ -34,8 +37,6 @@ testfaults_SOURCES = \
 	TestLiuCosSlipFn.cc \
 	TestTimeHistorySlipFn.cc \
 	TestEqKinSrc.cc \
-	TestFault.cc \
-	TestFaultCohesive.cc \
 	TestFaultCohesiveKin.cc \
 	TestFaultCohesiveKinCases.cc \
 	TestFaultCohesiveKinSrcs.cc \
@@ -45,7 +46,6 @@ testfaults_SOURCES = \
 	TestTractPerturbation.cc \
 	TestFaultCohesiveImpulses.cc \
 	TestFaultCohesiveImpulsesCases.cc \
-	TestFaultMesh.cc \
 	test_faults.cc
 
 
@@ -73,14 +73,14 @@ noinst_HEADERS = \
 # Source files associated with testing data
 testfaults_SOURCES += \
 	data/CohesiveData.cc \
-	data/CohesiveDataLine2.cc \
-	data/CohesiveDataLine2Lagrange.cc \
 	data/CohesiveDataTri3.cc \
 	data/CohesiveDataTri3b.cc \
 	data/CohesiveDataTri3c.cc \
 	data/CohesiveDataTri3d.cc \
 	data/CohesiveDataTri3e.cc \
 	data/CohesiveDataTri3f.cc \
+	data/CohesiveDataTri3g.cc \
+	data/CohesiveDataTri3h.cc \
 	data/CohesiveDataTri3Lagrange.cc \
 	data/CohesiveDataQuad4.cc \
 	data/CohesiveDataQuad4b.cc \
@@ -90,6 +90,7 @@ testfaults_SOURCES += \
 	data/CohesiveDataQuad4f.cc \
 	data/CohesiveDataQuad4g.cc \
 	data/CohesiveDataQuad4h.cc \
+	data/CohesiveDataQuad4i.cc \
 	data/CohesiveDataQuad4Lagrange.cc \
 	data/CohesiveDataTet4.cc \
 	data/CohesiveDataTet4b.cc \
@@ -112,16 +113,16 @@ testfaults_SOURCES += \
 	data/CohesiveDataHex8i.cc \
 	data/CohesiveDataHex8Lagrange.cc \
 	data/CohesiveKinData.cc \
-	data/CohesiveKinDataLine2.cc \
 	data/CohesiveKinDataTri3.cc \
 	data/CohesiveKinDataTri3d.cc \
+	data/CohesiveKinDataTri3g.cc \
 	data/CohesiveKinDataQuad4.cc \
 	data/CohesiveKinDataQuad4e.cc \
+	data/CohesiveKinDataQuad4i.cc \
 	data/CohesiveKinDataTet4.cc \
 	data/CohesiveKinDataTet4e.cc \
 	data/CohesiveKinDataTet4f.cc \
 	data/CohesiveKinDataHex8.cc \
-	data/CohesiveKinSrcsDataLine2.cc \
 	data/CohesiveKinSrcsDataTri3.cc \
 	data/CohesiveKinSrcsDataQuad4.cc \
 	data/CohesiveKinSrcsDataTet4.cc \
@@ -140,14 +141,14 @@ testfaults_SOURCES += \
 
 noinst_HEADERS += \
 	data/CohesiveData.hh \
-	data/CohesiveDataLine2.hh \
-	data/CohesiveDataLine2Lagrange.hh \
 	data/CohesiveDataTri3.hh \
 	data/CohesiveDataTri3b.hh \
 	data/CohesiveDataTri3c.hh \
 	data/CohesiveDataTri3d.hh \
 	data/CohesiveDataTri3e.hh \
 	data/CohesiveDataTri3f.hh \
+	data/CohesiveDataTri3g.hh \
+	data/CohesiveDataTri3h.hh \
 	data/CohesiveDataTri3Lagrange.hh \
 	data/CohesiveDataQuad4.hh \
 	data/CohesiveDataQuad4b.hh \
@@ -157,6 +158,7 @@ noinst_HEADERS += \
 	data/CohesiveDataQuad4f.hh \
 	data/CohesiveDataQuad4g.hh \
 	data/CohesiveDataQuad4h.hh \
+	data/CohesiveDataQuad4i.hh \
 	data/CohesiveDataQuad4Lagrange.hh \
 	data/CohesiveDataTet4.hh \
 	data/CohesiveDataTet4b.hh \
@@ -179,16 +181,16 @@ noinst_HEADERS += \
 	data/CohesiveDataHex8i.hh \
 	data/CohesiveDataHex8Lagrange.hh \
 	data/CohesiveKinData.hh \
-	data/CohesiveKinDataLine2.hh \
 	data/CohesiveKinDataTri3.hh \
 	data/CohesiveKinDataTri3d.hh \
+	data/CohesiveKinDataTri3g.hh \
 	data/CohesiveKinDataQuad4.hh \
 	data/CohesiveKinDataQuad4e.hh \
+	data/CohesiveKinDataQuad4i.hh \
 	data/CohesiveKinDataTet4.hh \
 	data/CohesiveKinDataTet4e.hh \
 	data/CohesiveKinDataTet4f.hh \
 	data/CohesiveKinDataHex8.hh \
-	data/CohesiveKinSrcsDataLine2.hh \
 	data/CohesiveKinSrcsDataTri3.hh \
 	data/CohesiveKinSrcsDataQuad4.hh \
 	data/CohesiveKinSrcsDataTet4.hh \

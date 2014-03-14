@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -25,6 +25,7 @@
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
@@ -48,6 +49,8 @@
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
+
+#include <iostream>
 
 //#define DETAILED_EVENT_LOGGING
 
@@ -97,7 +100,14 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
 
   const bool isSubMesh = true;
   delete _faultMesh; _faultMesh = new topology::Mesh(isSubMesh);assert(_faultMesh);
-  CohesiveTopology::createFaultParallel(_faultMesh, mesh, id(), label(), _useLagrangeConstraints);
+  CohesiveTopology::createFaultParallel(_faultMesh, mesh, id(), label(), _useLagrangeConstraints); // :TODO: Obsolete?
+  
+  topology::MeshOps::checkTopology(*_faultMesh);
+
+  // Optimize coordinate retrieval in closure
+  PetscDM faultDMMesh = _faultMesh->dmMesh();assert(faultDMMesh);
+  topology::CoordsVisitor::optimizeClosure(faultDMMesh);
+
   _initializeCohesiveInfo(mesh);
 
   delete _fields; _fields = new topology::Fields(*_faultMesh);assert(_fields);
@@ -105,7 +115,7 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
   // Allocate dispRel field
   _fields->add("relative disp", "relative_disp");
   topology::Field& dispRel = _fields->get("relative disp");
-  dispRel.newSection(topology::FieldBase::VERTICES_FIELD, cs->spaceDim());
+  dispRel.newSection(topology::FieldBase::VERTICES_FIELD, cs->spaceDim()); // :TODO: Update?
   dispRel.allocate();
   dispRel.vectorFieldType(topology::FieldBase::VECTOR);
   dispRel.scale(_normalizer->lengthScale());
@@ -123,41 +133,45 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
 
 // ----------------------------------------------------------------------
 void
-pylith::faults::FaultCohesiveLagrange::splitField(topology::Field* field)
-{ // splitField
+pylith::faults::FaultCohesiveLagrange::setupSolnDof(topology::Field* field)
+{ // setupSolnDof
   PYLITH_METHOD_BEGIN;
 
   assert(field);
 
+  const int indexDisp = field->subfieldMetadata("displacement").index;
+  const int indexLagrange = field->subfieldMetadata("lagrange_multiplier").index;
+
   PetscDM dmMesh = field->dmMesh();assert(dmMesh);
   PetscSection fieldSection  = field->petscSection();assert(fieldSection);
-  PetscInt numFields, numComp;
+  PetscErrorCode err;
 
   assert(_quadrature);
   const int spaceDim = _quadrature->spaceDim();
 
-  PetscErrorCode err;
-  err = PetscSectionGetNumFields(fieldSection, &numFields);PYLITH_CHECK_ERROR(err);
-  if (!numFields) {
-    PYLITH_METHOD_END;
-  } // if
-
-  assert(2 == numFields);
-  err = PetscSectionGetFieldComponents(fieldSection, 0, &numComp);PYLITH_CHECK_ERROR(err);assert(numComp == spaceDim);
-  err = PetscSectionGetFieldComponents(fieldSection, 1, &numComp);PYLITH_CHECK_ERROR(err);assert(numComp == spaceDim);
-
   const int numVertices = _cohesiveVertices.size();
   for(PetscInt iVertex = 0; iVertex < numVertices; ++iVertex) {
-    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    const int v_positive = _cohesiveVertices[iVertex].positive;
+    const int v_negative = _cohesiveVertices[iVertex].negative;
+    const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
 
-    PetscInt dof;
-    err = PetscSectionGetDof(fieldSection, v_lagrange, &dof);PYLITH_CHECK_ERROR(err);assert(spaceDim == dof);
-    err = PetscSectionSetFieldDof(fieldSection, v_lagrange, 0, 0);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionSetFieldDof(fieldSection, v_lagrange, 1, dof);PYLITH_CHECK_ERROR(err);
+    // Set DOF in section (all subfields)
+    err = PetscSectionSetDof(fieldSection, e_lagrange, spaceDim);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionSetDof(fieldSection, v_positive, spaceDim);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionSetDof(fieldSection, v_negative, spaceDim);PYLITH_CHECK_ERROR(err);
+
+    // Set DOF in displacement subfield
+    err = PetscSectionSetFieldDof(fieldSection, v_positive, indexDisp, spaceDim);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionSetFieldDof(fieldSection, v_negative, indexDisp, spaceDim);PYLITH_CHECK_ERROR(err);
+
+    // Set DOF in Lagrange multiplier subfield
+    err = PetscSectionSetFieldDof(fieldSection, e_lagrange, indexLagrange, spaceDim);PYLITH_CHECK_ERROR(err);
   } // for
 
   PYLITH_METHOD_END;
-} // splitField
+} // setupSolnDof
+
+
 
 // ----------------------------------------------------------------------
 // Integrate contribution of cohesive cells to residual term.
@@ -228,14 +242,14 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(const topology::Field& 
   // Loop over fault vertices
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
     // Compute contribution only if Lagrange constraint is local.
     PetscInt goff  = 0;
-    err = PetscSectionGetOffset(residualGlobalSection, v_lagrange, &goff);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(residualGlobalSection, e_lagrange, &goff);PYLITH_CHECK_ERROR(err);
     if (goff < 0)
       continue;
 
@@ -259,8 +273,8 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(const topology::Field& 
     const PetscInt dtpoff = dispTVisitor.sectionOffset(v_positive);
     assert(spaceDim == dispTVisitor.sectionDof(v_positive));
 
-    const PetscInt dtloff = dispTVisitor.sectionOffset(v_lagrange);
-    assert(spaceDim == dispTVisitor.sectionDof(v_lagrange));
+    const PetscInt dtloff = dispTVisitor.sectionOffset(e_lagrange);
+    assert(spaceDim == dispTVisitor.sectionDof(e_lagrange));
 
     // Get dispIncr(t->t+dt) at conventional vertices and Lagrange vertex.
     const PetscInt dinoff = dispTIncrVisitor.sectionOffset(v_negative);
@@ -269,8 +283,8 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(const topology::Field& 
     const PetscInt dipoff = dispTIncrVisitor.sectionOffset(v_positive);
     assert(spaceDim == dispTIncrVisitor.sectionDof(v_positive));
 
-    const PetscInt diloff = dispTIncrVisitor.sectionOffset(v_lagrange);
-    assert(spaceDim == dispTIncrVisitor.sectionDof(v_lagrange));
+    const PetscInt diloff = dispTIncrVisitor.sectionOffset(e_lagrange);
+    assert(spaceDim == dispTIncrVisitor.sectionDof(e_lagrange));
 
     // Assemble contributions into field
     const PetscInt rnoff = residualVisitor.sectionOffset(v_negative);
@@ -279,8 +293,8 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(const topology::Field& 
     const PetscInt rpoff = residualVisitor.sectionOffset(v_positive);
     assert(spaceDim == residualVisitor.sectionDof(v_positive));
 
-    const PetscInt rloff = residualVisitor.sectionOffset(v_lagrange);
-    assert(spaceDim == residualVisitor.sectionDof(v_lagrange));
+    const PetscInt rloff = residualVisitor.sectionOffset(e_lagrange);
+    assert(spaceDim == residualVisitor.sectionDof(e_lagrange));
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -368,14 +382,14 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(topology::Jacobian* jac
 
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
     // Compute contribution only if Lagrange constraint is local.
     PetscInt gloff = 0;
-    err = PetscSectionGetOffset(solnGlobalSection, v_lagrange, &gloff);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(solnGlobalSection, e_lagrange, &gloff);PYLITH_CHECK_ERROR(err);
     if (gloff < 0)
       continue;
 
@@ -510,19 +524,19 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(topology::Field* jacobi
 
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
 
     // Compute contribution only if Lagrange constraint is local.
     PetscInt goff = 0;
-    err = PetscSectionGetOffset(jacobianGlobalSection, v_lagrange, &goff);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(jacobianGlobalSection, e_lagrange, &goff);PYLITH_CHECK_ERROR(err);
     if (goff < 0) 
       continue;
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(updateEvent);
 #endif
-    const PetscInt off = jacobianVisitor.sectionOffset(v_lagrange);
-    assert(spaceDim == jacobianVisitor.sectionDof(v_lagrange));
+    const PetscInt off = jacobianVisitor.sectionOffset(e_lagrange);
+    assert(spaceDim == jacobianVisitor.sectionDof(e_lagrange));
 
     for(PetscInt d = 0; d < spaceDim; ++d) {
       jacobianArray[off+d] = 1.0;
@@ -623,14 +637,14 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
   
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0, cV = 0; iVertex < numVertices; ++iVertex) {
-    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
     // Compute contribution only if Lagrange constraint is local.
     PetscInt gloff = 0;
-    err = PetscSectionGetOffset(solnGlobalSection, v_lagrange, &gloff);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(solnGlobalSection, e_lagrange, &gloff);PYLITH_CHECK_ERROR(err);
     if (gloff < 0) {
       continue;
     } // if
@@ -695,7 +709,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
 		  INSERT_VALUES);
 
 #if 0 // DEBUGGING
-    std::cout << "1/P_vertex " << *v_lagrange << std::endl;
+    std::cout << "1/P_vertex " << *e_lagrange << std::endl;
     for(int iDim = 0; iDim < spaceDim; ++iDim) {
       std::cout << "  " << precondVertexL[iDim] << std::endl;
     } // for
@@ -790,22 +804,22 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
 
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
     // Set Lagrange multiplier value. Value from preliminary solve is
     // bogus due to artificial diagonal entry.
-    const PetscInt dtloff = dispTIncrVisitor.sectionOffset(v_lagrange);
-    assert(spaceDim == dispTIncrVisitor.sectionDof(v_lagrange));
+    const PetscInt dtloff = dispTIncrVisitor.sectionOffset(e_lagrange);
+    assert(spaceDim == dispTIncrVisitor.sectionDof(e_lagrange));
     for(PetscInt d = 0; d < spaceDim; ++d) {
       dispTIncrArray[dtloff+d] = 0.0;
     } // for
 
     // Compute contribution only if Lagrange constraint is local.
     PetscInt goff;
-    err = PetscSectionGetOffset(jacobianGlobalSection, v_lagrange, &goff);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(jacobianGlobalSection, e_lagrange, &goff);PYLITH_CHECK_ERROR(err);
     if (goff < 0) {
       continue;
     } // if
@@ -815,8 +829,8 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
 #endif
 
     // Residual at Lagrange vertex.
-    const PetscInt rloff = residualVisitor.sectionOffset(v_lagrange);
-    assert(spaceDim == residualVisitor.sectionDof(v_lagrange));
+    const PetscInt rloff = residualVisitor.sectionOffset(e_lagrange);
+    assert(spaceDim == residualVisitor.sectionDof(e_lagrange));
 
     // Get jacobian at cohesive cell's vertices.
     const PetscInt jnoff = jacobianVisitor.sectionOffset(v_negative);
@@ -843,8 +857,8 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
     const PetscInt dapoff = dispTIncrAdjVisitor.sectionOffset(v_positive);
     assert(spaceDim == dispTIncrAdjVisitor.sectionDof(v_positive));
 
-    const PetscInt daloff = dispTIncrAdjVisitor.sectionOffset(v_lagrange);
-    assert(spaceDim == dispTIncrAdjVisitor.sectionDof(v_lagrange));
+    const PetscInt daloff = dispTIncrAdjVisitor.sectionOffset(e_lagrange);
+    assert(spaceDim == dispTIncrAdjVisitor.sectionDof(e_lagrange));
     
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -886,19 +900,33 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
   PYLITH_METHOD_BEGIN;
 
   assert(_quadrature);
+  PetscErrorCode err = 0;
 
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
-  const PetscInt vStart = verticesStratum.begin();
-  const PetscInt vEnd = verticesStratum.end();
+  topology::Stratum edgeStratum(dmMesh, topology::Stratum::DEPTH, 1);
+  const PetscInt eEnd = edgeStratum.end();
+  PetscInt eMax;
 
+  err = DMPlexGetHybridBounds(dmMesh, NULL, NULL, &eMax, NULL);PYLITH_CHECK_ERROR(err);
+
+  // Check for fault groups
   PetscBool hasLabel;
-  PetscErrorCode err = DMPlexHasLabel(dmMesh, label(), &hasLabel);PYLITH_CHECK_ERROR(err);
+  err = DMPlexHasLabel(dmMesh, label(), &hasLabel);PYLITH_CHECK_ERROR(err);
   if (!hasLabel) {
     std::ostringstream msg;
-    msg << "Mesh missing group of vertices '" << label() << " for boundary condition.";
+    msg << "Mesh missing group of vertices '" << label() << " defining fault.";
     throw std::runtime_error(msg.str());
   } // if  
+
+  if (strlen(edge()) > 0) {
+    PetscBool hasLabel;
+    PetscErrorCode err = DMPlexHasLabel(dmMesh, edge(), &hasLabel);PYLITH_CHECK_ERROR(err);
+    if (!hasLabel) {
+      std::ostringstream msg;
+      msg << "Mesh missing group of vertices '" << edge() << "' defining buried edges of fault.";
+      throw std::runtime_error(msg.str());
+    } // if  
+  } // if
 
   // Verify quadrature scheme is consistent with points collocated
   // with verties. Expect basis functions to be 1.0 at one quadrature
@@ -937,25 +965,32 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
   } // if
 
   // Check quadrature against mesh
-  const int numCorners = _quadrature->numBasis();
-  topology::StratumIS cohesiveIS(dmMesh, "material-id", id());
+  const bool includeOnlyCells = true;
+  topology::StratumIS cohesiveIS(dmMesh, "material-id", id(), includeOnlyCells);
   const PetscInt* cells = cohesiveIS.points();
   const PetscInt ncells = cohesiveIS.size();
+
+  if (ncells > 0 && eMax < 0) {
+    std::ostringstream msg;
+    msg << "No hybrid edges found in mesh with cohesive cells.";
+    throw std::runtime_error(msg.str());
+  } // if  
+
   for(PetscInt i = 0; i < ncells; ++i) {
     PetscInt *closure = NULL;
-    PetscInt cellNumCorners = 0, closureSize;
+    PetscInt cellNumEdges = 0, closureSize;
 
     err = DMPlexGetTransitiveClosure(dmMesh, cells[i], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     for(PetscInt p = 0; p < closureSize*2; p += 2) {
       const PetscInt point = closure[p];
-      if ((point >= vStart) && (point < vEnd)) {
-        ++cellNumCorners;
+      if ((point >= eMax) && (point < eEnd)) {
+        ++cellNumEdges;
       }
     }
-    if (3 * numCorners != cellNumCorners) {
+    if (numBasis != cellNumEdges) {
       std::ostringstream msg;
-      msg << "Number of vertices in reference cell (" << numCorners
-          << ") is not compatible with number of vertices (" << cellNumCorners
+      msg << "Number of dofs in reference cell (" << numBasis
+          << ") is not compatible with number of edges (" << cellNumEdges
           << ") in cohesive cell " << cells[i] << " for fault '" << label()
           << "'.";
       throw std::runtime_error(msg.str());
@@ -973,8 +1008,8 @@ pylith::faults::FaultCohesiveLagrange::checkConstraints(const topology::Field& s
 { // checkConstraints
   PYLITH_METHOD_BEGIN;
 
-  // Check to make sure no vertices connected to the
-  //fault are constrained.
+  // Check to make sure no vertices connected to the fault are
+  // constrained.
 
   const PetscInt spaceDim = solution.mesh().dimension();
   topology::VecVisitorMesh solutionVisitor(solution);
@@ -1017,19 +1052,22 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
 
   assert(_quadrature);
 
-  const int numConstraintVert = _quadrature->numBasis();
-  const int numCorners = 3 * numConstraintVert; // cohesive cell
+  const int numBasis = _quadrature->numBasis();
+  PetscErrorCode err = 0;
 
   // Get cohesive cells
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-  delete _cohesiveIS; _cohesiveIS = new topology::StratumIS(dmMesh, "material-id", id());assert(_cohesiveIS);
-  const PetscInt* cells = _cohesiveIS->points();
-  const int ncells = _cohesiveIS->size();
+  const bool includeOnlyCells = true;
+  delete _cohesiveIS; _cohesiveIS = new topology::StratumIS(dmMesh, "material-id", id(), includeOnlyCells);assert(_cohesiveIS);
+  const PetscInt* cohesiveCells = _cohesiveIS->points();
+  const int numCohesiveCells = _cohesiveIS->size();
 
-  // Get domain vertices
-  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
-  const PetscInt vStart = verticesStratum.begin();
-  const PetscInt vEnd = verticesStratum.end();
+  // Get domain edges (Lagrange multiplier DOF)
+  topology::Stratum edgeStratum(dmMesh, topology::Stratum::DEPTH, 1);
+  const PetscInt eStart = edgeStratum.begin();
+  const PetscInt eEnd = edgeStratum.end();
+  PetscInt eMax;
+  err = DMPlexGetHybridBounds(dmMesh, NULL, NULL, &eMax, NULL);PYLITH_CHECK_ERROR(err);
 
   // Get vertices and cells in fault mesh.
   PetscDM faultDMMesh = _faultMesh->dmMesh();assert(faultDMMesh);
@@ -1039,7 +1077,7 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
   topology::Stratum faultCellsStratum(faultDMMesh, topology::Stratum::HEIGHT, 1);
   const PetscInt fcStart = faultCellsStratum.begin();
   const PetscInt fcEnd = faultCellsStratum.end();
-  assert(ncells == fcEnd-fcStart);
+  assert(numCohesiveCells == fcEnd-fcStart);
 
   topology::SubMeshIS faultMeshIS(*_faultMesh);
   const PetscInt numPoints = faultMeshIS.size();
@@ -1051,54 +1089,54 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
   _cohesiveVertices.resize(fvEnd-fvStart);
 
   PetscInt index = 0;
-  PetscErrorCode err = 0;
-  for(PetscInt c = 0; c < ncells; ++c) {
-    _cohesiveToFault[cells[c]] = c+fcStart;
+  for (PetscInt iCell = 0; iCell < numCohesiveCells; ++iCell) {
+    _cohesiveToFault[cohesiveCells[iCell]] = iCell+fcStart;
 
     // Get oriented closure
     PetscInt *closure = NULL;
     PetscInt  closureSize, q = 0;
-    err = DMPlexGetTransitiveClosure(dmMesh, cells[c], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-    for(PetscInt p = 0; p < closureSize*2; p += 2) {
+    err = DMPlexGetTransitiveClosure(dmMesh, cohesiveCells[iCell], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+    for (PetscInt p = 0; p < closureSize*2; p += 2) {
       const PetscInt point = closure[p];
-      if ((point >= vStart) && (point < vEnd)) {
+      if ((point >= eMax) && (point < eEnd)) {
         closure[q++] = point;
       } // if
     } // for
     closureSize = q;
-    assert(closureSize == numCorners);
+    assert(closureSize == numBasis);
 
-    for (int iConstraint = 0; iConstraint < numConstraintVert; ++iConstraint) {
-      // normal cohesive vertices i and j and constraint vertex k
-      const int indexI = iConstraint;
-      const int indexJ = iConstraint + numConstraintVert;
-      const int indexK = iConstraint + 2 * numConstraintVert;
+    for (int iConstraint = 0; iConstraint < numBasis; ++iConstraint) {
+      const PetscInt  e_lagrange = closure[iConstraint];
 
-      const PetscInt v_lagrange = closure[indexK];
-      const PetscInt v_negative = closure[indexI];
-      const PetscInt v_positive = closure[indexJ];
+      const PetscInt *cone = NULL;
+      PetscInt coneSize;
+      err = DMPlexGetConeSize(dmMesh, e_lagrange, &coneSize);PYLITH_CHECK_ERROR(err);
+      assert(coneSize == 2);
+      err = DMPlexGetCone(dmMesh, e_lagrange, &cone);PYLITH_CHECK_ERROR(err);
+      const PetscInt v_negative = cone[0];
+      const PetscInt v_positive = cone[1];
 
       PetscInt v_fault;
       err = PetscFindInt(v_negative, numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
       assert(v_fault >= 0);
-      if (indexMap.end() == indexMap.find(v_lagrange)) {
-        _cohesiveVertices[index].lagrange = v_lagrange;
+      if (indexMap.end() == indexMap.find(e_lagrange)) {
+        _cohesiveVertices[index].lagrange = e_lagrange;
         _cohesiveVertices[index].positive = v_positive;
         _cohesiveVertices[index].negative = v_negative;
         _cohesiveVertices[index].fault = v_fault;
-#if 0
-	std::cout << "cohesiveVertices[" << index << "]: "
-		  << "l: " << v_lagrange
+#if 0 // DEBUGGING
+        std::cout << "cohesiveVertices[" << index << "]: "
+		  << "l: " << e_lagrange
 		  << ", p: " << v_positive
 		  << ", n: " << v_negative
 		  << ", f: " << v_fault
 		  << std::endl;
 #endif
-        indexMap[v_lagrange] = index; // add index to map
+        indexMap[e_lagrange] = index; // add index to map
         ++index;
       } // if
     } // for
-    err = DMPlexRestoreTransitiveClosure(dmMesh, cells[c], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+    err = DMPlexRestoreTransitiveClosure(dmMesh, cohesiveCells[iCell], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
   } // for
 
   PYLITH_METHOD_END;
@@ -1300,15 +1338,19 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   _fields->add("orientation", "orientation");
   topology::Field& orientation = _fields->get("orientation");
   const topology::Field& dispRel = _fields->get("relative disp");
-  if (spaceDim > 1) orientation.addField("strike_dir", spaceDim);
-  if (spaceDim > 2) orientation.addField("dip_dir", spaceDim);
-  orientation.addField("normal_dir", spaceDim);
-  orientation.setupFields();
+  if (spaceDim > 1) orientation.subfieldAdd("strike_dir", spaceDim, topology::Field::VECTOR);
+  if (spaceDim > 2) orientation.subfieldAdd("dip_dir", spaceDim, topology::Field::VECTOR);
+  orientation.subfieldAdd("normal_dir", spaceDim, topology::Field::VECTOR);
+  orientation.subfieldsSetup();
   orientation.newSection(dispRel, orientationSize);
   // Create components for along-strike, up-dip, and normal directions
-  if (spaceDim > 1) orientation.updateDof("strike_dir", pylith::topology::FieldBase::VERTICES_FIELD, spaceDim);
-  if (spaceDim > 2) orientation.updateDof("dip_dir", pylith::topology::FieldBase::VERTICES_FIELD, spaceDim);
-  orientation.updateDof("normal_dir", pylith::topology::FieldBase::VERTICES_FIELD, spaceDim);
+  if (spaceDim > 1) { 
+    orientation.subfieldSetDof("strike_dir", topology::FieldBase::VERTICES_FIELD, spaceDim);
+  } // if
+  if (spaceDim > 2) {
+    orientation.subfieldSetDof("dip_dir", topology::FieldBase::VERTICES_FIELD, spaceDim);
+  } // if
+  orientation.subfieldSetDof("normal_dir", topology::FieldBase::VERTICES_FIELD, spaceDim);
   orientation.allocate();
   orientation.zeroAll();
 
@@ -1320,41 +1362,55 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   topology::CoordsVisitor coordsVisitor(faultDMMesh);
 
   // Loop over cohesive cells, computing orientation weighted by
-  // jacobian at constraint vertices
+  // jacobian at constraint vertices. This involves looping over cells
+  // and summing across processors (complete the section) just like a
+  // normal FE integration.
 
-  for(PetscInt c = cStart; c < cEnd; ++c) {
-    PetscInt *closure = NULL;
-    PetscInt closureSize, q = 0;
-
-    // Get orientations at fault cell's vertices.
-    coordsVisitor.getClosure(&coordsCell, c);
-
-    PetscErrorCode err = DMPlexGetTransitiveClosure(faultDMMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-
-    // Filter out non-vertices
-    for(PetscInt p = 0; p < closureSize*2; p += 2) {
-      if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
-        closure[q*2]   = closure[p];
-        closure[q*2+1] = closure[p+1];
-        ++q;
-      } // if
-    } // for
-    closureSize = q;
-    for(PetscInt v = 0; v < closureSize; ++v) {
-      // Compute Jacobian and determinant of Jacobian at vertex
-      cellGeometry.jacobian(&jacobian, &jacobianDet, &coordsCell[0], numBasis, spaceDim, &verticesRef[v*cohesiveDim], cohesiveDim);
-
-      // Compute orientation
-      cellGeometry.orientation(&orientationVertex, jacobian, jacobianDet, up);
-
-      // Update orientation
-      const PetscInt ooff = orientationVisitor.sectionOffset(closure[v*2]);
-      for(PetscInt d = 0; d < orientationSize; ++d) {
-        orientationArray[ooff+d] += orientationVertex[d];
+  PetscInt *closure = NULL;
+  PetscInt closureSize = 0;
+  PetscInt cell;
+  try {
+    for(cell = cStart; cell < cEnd; ++cell) {
+      
+      // Get orientations at fault cell's vertices.
+      coordsVisitor.getClosure(&coordsCell, cell);
+      
+      PetscErrorCode err = DMPlexGetTransitiveClosure(faultDMMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+      
+      // Filter out non-vertices
+      PetscInt numVertices = 0;
+      for(PetscInt p = 0; p < closureSize*2; p += 2) {
+	if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
+	  closure[numVertices*2]   = closure[p];
+	  closure[numVertices*2+1] = closure[p+1];
+	  ++numVertices;
+	} // if
       } // for
+      
+      for(PetscInt v = 0; v < numVertices; ++v) {
+	// Compute Jacobian and determinant of Jacobian at vertex
+	cellGeometry.jacobian(&jacobian, &jacobianDet, &coordsCell[0], numBasis, spaceDim, &verticesRef[v*cohesiveDim], cohesiveDim);
+	
+	// Compute orientation
+	cellGeometry.orientation(&orientationVertex, jacobian, jacobianDet, up);
+	
+	// Update orientation
+	const PetscInt ooff = orientationVisitor.sectionOffset(closure[v*2]);
+	
+	for(PetscInt d = 0; d < orientationSize; ++d) {
+	  orientationArray[ooff+d] += orientationVertex[d];
+	} // for
+      } // for
+      err = DMPlexRestoreTransitiveClosure(faultDMMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     } // for
-    err = DMPlexRestoreTransitiveClosure(faultDMMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-  } // for
+  } catch (const std::exception& err) {
+    if (closure) {
+      DMPlexRestoreTransitiveClosure(faultDMMesh, cell, PETSC_TRUE, &closureSize, &closure);
+    } // if
+    throw;
+  } catch (...) {
+    throw;
+  } // try/catch
   orientationVisitor.clear();
 
   //orientation.view("ORIENTATION BEFORE COMPLETE"); // DEBUGGING
@@ -1368,16 +1424,30 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   orientationArray = orientationVisitor.localArray();
   int count = 0;
   for(PetscInt v = vStart; v < vEnd; ++v, ++count) {
+    assert(orientationSize == orientationVisitor.sectionDof(v));
     const PetscInt ooff = orientationVisitor.sectionOffset(v);
     for(PetscInt d = 0; d < orientationSize; ++d) {
       orientationVertex[d] = orientationArray[ooff+d];
     } // for
     for (int iDim = 0; iDim < spaceDim; ++iDim) {
       PylithScalar mag = 0;
-      for (int jDim = 0, index = iDim * spaceDim; jDim < spaceDim; ++jDim)
+      for (int jDim = 0, index = iDim * spaceDim; jDim < spaceDim; ++jDim) {
         mag += pow(orientationVertex[index + jDim], 2);
+      } // for
+
+      if (mag <= 0.0) {
+	std::ostringstream msg;
+	msg << "Error calculating fault orientation at fault vertex " << v << ".\n" 
+	    << "Zero vector in parallel likely indicates inconsistent fault orientation (creation) across processors.\n"
+	    << "Orientation vector " << iDim << ": (";
+	for (int jDim = 0, index = iDim * spaceDim; jDim < spaceDim; ++jDim) {
+	  msg << " " << orientationVertex[index + jDim];
+	} // for
+	msg << " )" << std::endl;
+	throw std::runtime_error(msg.str());
+      } // if
+
       mag = sqrt(mag);
-      assert(mag > 0.0);
       for (int jDim = 0, index = iDim * spaceDim; jDim < spaceDim; ++jDim)
         orientationVertex[index + jDim] /= mag;
     } // for
@@ -1531,6 +1601,8 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
   assert(_fields);
   assert(_normalizer);
 
+  // :TODO: Update for higher order?
+
   // Containers for area information
   const int cellDim = _quadrature->cellDim();
   const int numBasis = _quadrature->numBasis();
@@ -1643,11 +1715,11 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(topology::Field* tra
 
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
 
-    const PetscInt dtoff = dispTVisitor.sectionOffset(v_lagrange);
-    assert(spaceDim == dispTVisitor.sectionDof(v_lagrange));
+    const PetscInt dtoff = dispTVisitor.sectionOffset(e_lagrange);
+    assert(spaceDim == dispTVisitor.sectionDof(e_lagrange));
 
     const PetscInt ooff = orientationVisitor.sectionOffset(v_fault);
     assert(spaceDim*spaceDim == orientationVisitor.sectionDof(v_fault));
@@ -1688,8 +1760,7 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferVectorField(void)
   assert(_faultMesh);
   _fields->add("buffer (vector)", "buffer");
   topology::Field& buffer = _fields->get("buffer (vector)");
-  const topology::Field& dispRel = 
-    _fields->get("relative disp");
+  const topology::Field& dispRel = _fields->get("relative disp");
   buffer.cloneSection(dispRel);
   buffer.zeroAll();
   assert(buffer.vectorFieldType() == topology::FieldBase::VECTOR);
@@ -1712,7 +1783,7 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferScalarField(void)
   assert(_faultMesh);
   _fields->add("buffer (scalar)", "buffer");
   topology::Field& buffer = _fields->get("buffer (scalar)");
-  buffer.newSection(topology::FieldBase::VERTICES_FIELD, 1);
+  buffer.newSection(topology::FieldBase::VERTICES_FIELD, 1); // :TODO: Update?
   buffer.allocate();
   buffer.vectorFieldType(topology::FieldBase::SCALAR);
   buffer.scale(1.0);
@@ -1754,11 +1825,11 @@ pylith::faults::FaultCohesiveLagrange::_getJacobianSubmatrixNP(PetscMat* jacobia
   const int numVertices = _cohesiveVertices.size();
   int numIndicesNP = 0;
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
 
     // Compute contribution only if Lagrange constraint is local.
     PetscInt goff = 0;
-    err = PetscSectionGetOffset(solutionGlobalSection, v_lagrange, &goff);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(solutionGlobalSection, e_lagrange, &goff);PYLITH_CHECK_ERROR(err);
     if (goff < 0)
       continue;
 
@@ -1767,13 +1838,13 @@ pylith::faults::FaultCohesiveLagrange::_getJacobianSubmatrixNP(PetscMat* jacobia
   int_array indicesNP(numIndicesNP*spaceDim);
 
   for (int iVertex=0, indexNP=0; iVertex < numVertices; ++iVertex) {
-    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
     // Compute contribution only if Lagrange constraint is local.
     PetscInt gloff = 0;
-    err = PetscSectionGetOffset(solutionGlobalSection, v_lagrange, &gloff);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(solutionGlobalSection, e_lagrange, &gloff);PYLITH_CHECK_ERROR(err);
     if (gloff < 0)
       continue;
 

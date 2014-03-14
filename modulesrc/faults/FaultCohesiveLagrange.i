@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -53,11 +53,11 @@ namespace pylith {
       void initialize(const pylith::topology::Mesh& mesh,
 		      const PylithScalar upDir[3]);
       
-      /** Split solution field for separate preconditioning.
+      /** Setup DOF on solution field.
        *
        * @param field Solution field.
        */
-      void splitField(pylith::topology::Field* field);
+      void setupSolnDof(pylith::topology::Field* field);
 
       /** Integrate contributions to residual term (r) for operator that
        * do not require assembly across processors.

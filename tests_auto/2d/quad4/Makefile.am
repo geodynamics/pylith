@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2013 University of California, Davis
+# Copyright (c) 2010-2014 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -29,7 +29,7 @@ dist_noinst_PYTHON = \
 	sheardisp_soln.py \
 	sheardisp_gendb.py \
 	TestDislocation.py \
-	TestDislocation2.py \
+	TestDislocationTwoFaults.py \
 	dislocation_soln.py \
 	dislocation2_soln.py \
 	TestLgDeformRigidBody.py \
@@ -63,6 +63,7 @@ dist_noinst_DATA = \
 	axialdisp.cfg \
 	sheardisp.cfg \
 	dislocation.cfg \
+	dislocation_np2.cfg \
 	dislocation2.cfg \
 	lgdeformrigidbody.cfg \
 	lgdeformtraction.cfg \
@@ -74,52 +75,6 @@ dist_noinst_DATA = \
 	slipweakening_shear_stick.cfg \
 	slipweakening_shear_sliding.cfg \
 	slipweakening_opening.cfg
-
-noinst_TMP = \
-	axial_disp.spatialdb \
-	axialdisp_t0000000.vtk \
-	axialdisp-elastic_info.vtk \
-	axialdisp-elastic_t0000000.vtk \
-	shear_disp.spatialdb \
-	sheardisp_t0000000.vtk \
-	sheardisp-elastic_info.vtk \
-	sheardisp-elastic_t0000000.vtk \
-	dislocation_t0000000.vtk \
-	dislocation-elastic_info.vtk \
-	dislocation-elastic_t0000000.vtk \
-	dislocation-fault_info.vtk \
-	dislocation-fault_t0000000.vtk \
-	rigidbody_disp.spatialdb \
-	lgdeformrigidbody_t0000000.vtk \
-	lgdeformrigidbody-elastic_info.vtk \
-	lgdeformrigidbody-elastic_t0000000.vtk \
-	lgdeformtraction_t0000000.vtk \
-	lgdeformtraction-elastic_info.vtk \
-	lgdeformtraction-elastic_t0000000.vtk \
-	friction_compression_t0000000.vtk \
-	friction_compression-elastic_info.vtk \
-	friction_compression-elastic_t0000000.vtk \
-	friction_shear_stick_t0000000.vtk \
-	friction_shear_stick-elastic_info.vtk \
-	friction_shear_stick-elastic_t0000000.vtk \
-	friction_shear_sliding_t0000000.vtk \
-	friction_shear_sliding-elastic_info.vtk \
-	friction_shear_sliding-elastic_t0000000.vtk \
-	friction_opening_t0000000.vtk \
-	friction_opening-elastic_info.vtk \
-	friction_opening-elastic_t0000000.vtk \
-	slipweakening_compression_t0000000.vtk \
-	slipweakening_compression-elastic_info.vtk \
-	slipweakening_compression-elastic_t0000000.vtk \
-	slipweakening_shear_stick_t0000000.vtk \
-	slipweakening_shear_stick-elastic_info.vtk \
-	slipweakening_shear_stick-elastic_t0000000.vtk \
-	slipweakening_shear_sliding_t0000000.vtk \
-	slipweakening_shear_sliding-elastic_info.vtk \
-	slipweakening_shear_sliding-elastic_t0000000.vtk \
-	slipweakening_opening_t0000000.vtk \
-	slipweakening_opening-elastic_info.vtk \
-	slipweakening_opening-elastic_t0000000.vtk
 
 
 TESTS_ENVIRONMENT = $(PYTHON)
@@ -135,7 +90,11 @@ clean-data:
 
 
 BUILT_SOURCES = export-data
-clean-local: clean-data
-CLEANFILES = *.pyc
+
+clean-local: clean-local-tmp clean-data
+.PHONY: clean-local-tmp
+clean-local-tmp:
+	-rm *.h5 *.xmf *.pyc
+
 
 # End of file 

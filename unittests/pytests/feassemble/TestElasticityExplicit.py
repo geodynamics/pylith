@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2013 University of California, Davis
+# Copyright (c) 2010-2014 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -193,9 +193,15 @@ class TestElasticityExplicit(unittest.TestCase):
 
     from pylith.topology.Field import Field
     jacobian = Field(mesh)
-    jacobian.newSection(jacobian.VERTICES_FIELD, mesh.coordsys().spaceDim())
-    jacobian.allocate()
-    jacobian.zero()
+    spaceDim = mesh.coordsys().spaceDim()
+    jacobian.subfieldAdd("displacement", spaceDim, jacobian.VECTOR);
+    jacobian.subfieldAdd("lagrange_multiplier", spaceDim, jacobian.VECTOR);
+
+    jacobian.subfieldsSetup();
+    jacobian.setupSolnChart();
+    jacobian.setupSolnDof(spaceDim);
+    jacobian.allocate();
+    jacobian.zeroAll();
 
     t = 7.3
     self.assertEqual(True, integrator.needNewJacobian())
@@ -323,11 +329,18 @@ class TestElasticityExplicit(unittest.TestCase):
     fields.solutionName("dispIncr(t->t+dt)")
 
     residual = fields.get("residual")
-    residual.newSection(residual.VERTICES_FIELD, mesh.coordsys().spaceDim())
-    residual.allocate()
+    spaceDim = mesh.coordsys().spaceDim()
+    lengthScale = normalizer.lengthScale()
+    residual.subfieldAdd("displacement", spaceDim, residual.VECTOR, lengthScale.value);
+    residual.subfieldAdd("lagrange_multiplier", spaceDim, residual.VECTOR);
+
+    residual.subfieldsSetup();
+    residual.setupSolnChart();
+    residual.setupSolnDof(spaceDim);
+    residual.allocate();
+    residual.zeroAll();
     fields.copyLayout("residual")
 
-    residual.zero()
     return fields
 
 

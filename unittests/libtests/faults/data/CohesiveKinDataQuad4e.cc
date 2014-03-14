@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -44,7 +44,7 @@
  *
  * Cells are 0-3,4-5 vertices are 6-20.
  *
- *      12 --------13-20-17 --------14
+ *      12 --------13-34-17 --------14
  *       |          |     |          |
  *       |          |     |          |
  *       |          |     |          |
@@ -53,7 +53,7 @@
  *       |          |     |          |
  *       |          |     |          |
  *       |          |     |          |
- *       7 -------- 9-19-16 --------11
+ *       7 -------- 9-33-16 --------11
  *       |          |     |          |
  *       |          |     |          |
  *       |          |     |          |
@@ -62,7 +62,7 @@
  *       |          |     |          |
  *       |          |     |          |
  *       |          |     |          |
- *       6 -------- 8-18-15 --------10
+ *       6 -------- 8-32-15 --------10
  */
 
 
@@ -127,9 +127,9 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_fieldT[] = {
   3.0, 5.0, // 13
   4.2, 6.2, // 14
   4.4, 6.4, // 15
-  4.1, 6.1, // 16
-  4.3, 6.3, // 17
-  4.5, 6.5, // 18
+  4.1, 6.1, // 32
+  4.3, 6.3, // 33
+  4.5, 6.5, // 34
 };
 
 
@@ -147,9 +147,9 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_fieldIncr[] = {
   6.0, 4.0, // 13
   5.2, 3.2, // 14
   5.4, 3.4, // 15
-  5.1, 3.1, // 16
-  5.3, 3.3, // 17
-  5.5, 3.5, // 18
+  5.1, 3.1, // 32
+  5.3, 3.3, // 33
+  5.5, 3.5, // 34
 };
 
 
@@ -166,17 +166,17 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_jacobianLumped[] = {
   1.0, 7.0, // 13
   2.2, 3.2, // 14
   2.4, 3.4, // 15
-  1.0, 1.0, // 16
-  1.0, 1.0, // 17
-  1.0, 1.0, // 18
+  1.0, 1.0, // 32
+  1.0, 1.0, // 33
+  1.0, 1.0, // 34
 };
 
 
 
 const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_orientation[] = {
-  0.0, -1.0,  -1.0, 0.0,
-  0.0, -1.0,  -1.0, 0.0,
-  0.0, -1.0,  -1.0, 0.0,
+  0.0, +1.0,   1.0, 0.0,
+  0.0, +1.0,   1.0, 0.0,
+  0.0, +1.0,   1.0, 0.0,
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_area[] = {
@@ -187,16 +187,16 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_area[] = {
 
 const int pylith::faults::CohesiveKinDataQuad4e::_numFaultVertices = 3;
 const int pylith::faults::CohesiveKinDataQuad4e::_verticesFault[] = {
-   5,  4,  6
+   4,  5,  6
 };
-const int pylith::faults::CohesiveKinDataQuad4e::_verticesLagrange[] = {
-  19, 18, 20
+const int pylith::faults::CohesiveKinDataQuad4e::_edgesLagrange[] = {
+  32, 33, 34
 };
 const int pylith::faults::CohesiveKinDataQuad4e::_verticesNegative[] = {
-   9,  8, 13
+   8,  9, 13
 };
 const int pylith::faults::CohesiveKinDataQuad4e::_verticesPositive[] = {
-  16, 15, 17
+  15, 16, 17
 };
 
 const int pylith::faults::CohesiveKinDataQuad4e::_numCohesiveCells = 2;
@@ -221,12 +221,12 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_residual[] = {
  -1.0*4.1, -1.0*6.1, // 13
  -2.0*4.3, -2.0*6.3, // 14
  -1.0*4.5, -1.0*6.5, // 15
- -1.0*(3.0-3.3 + 0.14794836271),
- -1.0*(5.0-5.3 + 1.77538035254), // 16
- -2.0*(4.2-3.4 + 0.08241148423),
- -2.0*(6.2-5.4 + 1.89546413727), // 17
- -1.0*(4.4-3.8 + 0.19186497837),
- -1.0*(6.4-5.8 + 1.59887481971), // 18
+ -1.0*(3.0-3.3 - 0.14794836271),
+ -1.0*(5.0-5.3 - 1.77538035254), // 32
+ -2.0*(4.2-3.4 - 0.08241148423),
+ -2.0*(6.2-5.4 - 1.89546413727), // 33
+ -1.0*(4.4-3.8 - 0.19186497837),
+ -1.0*(6.4-5.8 - 1.59887481971), // 34
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_jacobian[] = {
@@ -707,7 +707,7 @@ pylith::faults::CohesiveKinDataQuad4e::CohesiveKinDataQuad4e(void)
   residual = const_cast<PylithScalar*>(_residual);
   jacobian = const_cast<PylithScalar*>(_jacobian);
   verticesFault = const_cast<int*>(_verticesFault);
-  verticesLagrange = const_cast<int*>(_verticesLagrange);
+  edgesLagrange = const_cast<int*>(_edgesLagrange);
   verticesNegative = const_cast<int*>(_verticesNegative);
   verticesPositive = const_cast<int*>(_verticesPositive);
   numFaultVertices = _numFaultVertices;  

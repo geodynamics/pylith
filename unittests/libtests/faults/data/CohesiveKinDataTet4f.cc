@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -29,7 +29,7 @@
  * Cells are 0-1,10, vertices are 2-9.
  *
  * 2   7,9,11   3,4,5  6
- *      8,10,12
+ *      34,35,36
  *     ^^^^^^^^^^^^ Cohesive element in x-y plane.
  */
 
@@ -102,9 +102,9 @@ const PylithScalar pylith::faults::CohesiveKinDataTet4f::_fieldT[] = {
   7.6, 8.6, 9.6, // 7
   7.8, 8.8, 9.8, // 8
   7.0, 8.0, 9.0, // 9
-  7.7, 8.7, 9.7, // 10
-  7.9, 8.9, 9.9, // 11
-  7.1, 8.1, 9.1, // 12
+  7.7, 8.7, 9.7, // 34
+  7.9, 8.9, 9.9, // 35
+  7.1, 8.1, 9.1, // 36
 };
 
 
@@ -117,9 +117,9 @@ const PylithScalar pylith::faults::CohesiveKinDataTet4f::_fieldIncr[] = {
   3.6, 4.6, 5.6, // 7
   3.8, 4.8, 5.8, // 8
   3.0, 4.0, 5.0, // 9
-  3.7, 4.7, 5.7, // 10
-  3.9, 4.9, 5.9, // 11
-  3.1, 4.1, 5.1, // 12
+  3.7, 4.7, 5.7, // 34
+  3.9, 4.9, 5.9, // 35
+  3.1, 4.1, 5.1, // 36
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataTet4f::_jacobianLumped[] = {
@@ -131,9 +131,9 @@ const PylithScalar pylith::faults::CohesiveKinDataTet4f::_jacobianLumped[] = {
   1.6, 1.6, 1.6, // 7
   1.8, 1.8, 1.8, // 8
   1.0, 1.0, 1.0, // 9
-  1.0, 1.0, 1.0, // 10
-  1.0, 1.0, 1.0, // 11
-  1.0, 1.0, 1.0, // 12
+  1.0, 1.0, 1.0, // 34
+  1.0, 1.0, 1.0, // 35
+  1.0, 1.0, 1.0, // 36
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataTet4f::_orientation[] = {
@@ -150,16 +150,16 @@ const PylithScalar pylith::faults::CohesiveKinDataTet4f::_area[] = {
 
 const int pylith::faults::CohesiveKinDataTet4f::_numFaultVertices = 3;
 const int pylith::faults::CohesiveKinDataTet4f::_verticesFault[] = {
-   4,  2,  3
+   2,  3,  4
 };
-const int pylith::faults::CohesiveKinDataTet4f::_verticesLagrange[] = {
-  13, 11, 12
+const int pylith::faults::CohesiveKinDataTet4f::_edgesLagrange[] = {
+  34, 35, 36
 };
 const int pylith::faults::CohesiveKinDataTet4f::_verticesNegative[] = {
-   6,  4,  5
+   4,  5,  6
 };
 const int pylith::faults::CohesiveKinDataTet4f::_verticesPositive[] = {
-  10,  8,  9
+   8,  9,  10
 };
 
 const int pylith::faults::CohesiveKinDataTet4f::_numCohesiveCells = 1;
@@ -182,13 +182,13 @@ const PylithScalar pylith::faults::CohesiveKinDataTet4f::_residual[] = {
   -7.1/3.0,  -8.1/3.0,  -9.1/3.0, // 9
   -1.0/3.0*(7.6-7.2 +  0.07938069066),
   -1.0/3.0*(8.6-8.2 +  1.82575588523),
-  -1.0/3.0*(9.6-9.2 +  0.55566483464), // 10
+  -1.0/3.0*(9.6-9.2 +  0.55566483464), // 34
   -1.0/3.0*(7.8-7.3 +  0.14140241667),
   -1.0/3.0*(8.8-8.3 +  1.69682900001),
-  -1.0/3.0*(9.8-9.3 +  0.56560966667), // 11
+  -1.0/3.0*(9.8-9.3 +  0.56560966667), // 35
   -1.0/3.0*(7.0-7.4 +  0.18205179147),
   -1.0/3.0*(8.0-8.4 +  1.51709826228),
-  -1.0/3.0*(9.0-9.4 +  0.54615537442), // 12
+  -1.0/3.0*(9.0-9.4 +  0.54615537442), // 36
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataTet4f::_jacobian[] = {
@@ -582,7 +582,7 @@ pylith::faults::CohesiveKinDataTet4f::CohesiveKinDataTet4f(void)
   residual = const_cast<PylithScalar*>(_residual);
   jacobian = const_cast<PylithScalar*>(_jacobian);
   verticesFault = const_cast<int*>(_verticesFault);
-  verticesLagrange = const_cast<int*>(_verticesLagrange);
+  edgesLagrange = const_cast<int*>(_edgesLagrange);
   verticesNegative = const_cast<int*>(_verticesNegative);
   verticesPositive = const_cast<int*>(_verticesPositive);
   numFaultVertices = _numFaultVertices;  

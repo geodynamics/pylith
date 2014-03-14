@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -25,10 +25,7 @@ pylith::bc::BoundaryMeshData::BoundaryMeshData(void) :
   bcLabel(0),
   faultLabel(0),
   faultId(0),
-  verticesNoFault(0),
-  cellsNoFault(0),
-  verticesFault(0),
-  cellsFault(0)
+  isSimplexMesh(true)
 { // constructor
 } // constructor
 

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -72,8 +72,8 @@ pylith::bc::BoundaryConditionPoints::_getPoints(const topology::Mesh& mesh)
   PetscDMLabel label = NULL;
   PetscIS pointIS = NULL;
   const PetscInt *points;
-  PetscInt numPoints;
-  PetscBool hasLabel;
+  PetscInt numPoints = 0, vStart = 0, vEnd = 0, numVertices = 0;
+  PetscBool hasLabel = PETSC_FALSE;
   PetscErrorCode err;
   err = DMPlexHasLabel(dmMesh, _label.c_str(), &hasLabel);PYLITH_CHECK_ERROR(err);
   if (!hasLabel) {
@@ -82,14 +82,30 @@ pylith::bc::BoundaryConditionPoints::_getPoints(const topology::Mesh& mesh)
     throw std::runtime_error(msg.str());
   } // if
 
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
   err = DMPlexGetLabel(dmMesh, _label.c_str(), &label);PYLITH_CHECK_ERROR(err);
   err = DMLabelGetStratumIS(label, 1, &pointIS);PYLITH_CHECK_ERROR(err);
-  err = ISGetLocalSize(pointIS, &numPoints);PYLITH_CHECK_ERROR(err);
-  err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
-  _points.resize(numPoints);
-  for(PetscInt p = 0; p < numPoints; ++p) {_points[p] = points[p];}
-  err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
-  err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
+  if (pointIS) {
+    err = ISGetLocalSize(pointIS, &numPoints);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
+  } // if
+
+  // For now, only use vertices
+  for (PetscInt p = 0; p < numPoints; ++p) {
+    if ((points[p] >= vStart) && (points[p] < vEnd)) {
+      ++numVertices;
+    } // if
+  } // for
+  _points.resize(numVertices);
+  for (PetscInt p = 0, v = 0; p < numPoints; ++p) {
+    if ((points[p] >= vStart) && (points[p] < vEnd)) {
+      _points[v++] = points[p];
+    } // if
+  } // for
+  if (pointIS) {
+    err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
+  } // if
 
   PYLITH_METHOD_END;
 } // _getPoints

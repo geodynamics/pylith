@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2013 University of California, Davis
+# Copyright (c) 2010-2014 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -87,7 +87,7 @@ class MeshImporterDist(MeshGenerator):
 
     mesh = self.reader.read(self.debug, self.interpolate)
     if self.debug:
-      mesh.view("Finite-element mesh.")
+      mesh.view()
     self._debug.log(resourceUsageString())
 
     # refine mesh (if necessary)

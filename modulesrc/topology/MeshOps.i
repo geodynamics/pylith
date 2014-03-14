@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -59,8 +59,9 @@
 
 %inline %{
   int
-  MeshOps_numMaterialCells(const pylith::topology::Mesh& mesh, int materialId) {
-    pylith::topology::MeshOps::numMaterialCells(mesh,materialId);
+  MeshOps_numMaterialCells(const pylith::topology::Mesh& mesh, 
+			   int materialId) {
+    return pylith::topology::MeshOps::numMaterialCells(mesh, materialId);
   } // numMaterialCells
 %}
 

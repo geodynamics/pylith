@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -23,6 +23,7 @@
 #include "CohesiveTopology.hh" // USES CohesiveTopology
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
+#include "pylith/topology/MeshOps.hh" // USES MeshOps
 
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -109,8 +110,7 @@ void
 pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
                                               int *firstFaultVertex,
                                               int *firstLagrangeVertex,
-                                              int *firstFaultCell,
-                                              const bool flipFault)
+                                              int *firstFaultCell)
 { // adjustTopology
   PYLITH_METHOD_BEGIN;
 
@@ -129,7 +129,7 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
 
       PetscDMLabel   groupField;
       PetscBool      hasLabel;
-      PetscInt       depth, dim;
+      PetscInt       depth, gdepth, dim;
       PetscMPIInt    rank;
       PetscErrorCode err;
       // We do not have labels on all ranks until after distribution
@@ -143,11 +143,12 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
       } // if
       err = DMPlexGetDimension(dmMesh, &dim);PYLITH_CHECK_ERROR(err);
       err = DMPlexGetDepth(dmMesh, &depth);PYLITH_CHECK_ERROR(err);
+      err = MPI_Allreduce(&depth, &gdepth, 1, MPIU_INT, MPI_MAX, mesh->comm());PYLITH_CHECK_ERROR(err);
       err = DMPlexGetLabel(dmMesh, charlabel, &groupField);PYLITH_CHECK_ERROR(err);
-      CohesiveTopology::createFault(&faultMesh, faultBoundary, *mesh, groupField, flipFault);
+      CohesiveTopology::createFault(&faultMesh, faultBoundary, *mesh, groupField);
 
-      if (dim > 1 && dim == depth) {
-        CohesiveTopology::createInterpolated(mesh, faultMesh, faultBoundary, groupField, id(), *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
+      if (dim > 1 && dim == gdepth) {
+        CohesiveTopology::createInterpolated(mesh, faultMesh, faultBoundary, id(), *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
       } else {
         CohesiveTopology::create(mesh, faultMesh, faultBoundary, groupField, id(), *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
       }
@@ -157,12 +158,18 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
       assert(3 == mesh->dimension());
       throw std::logic_error("Support for UCD fault files no longer implemented."); 
     } // if/else
+
+    // Check consistency of mesh.
+    topology::MeshOps::checkTopology(*mesh);
+    topology::MeshOps::checkTopology(faultMesh);
+
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error occurred while adjusting topology to create cohesive cells for fault '" << label() << "'.\n"
 	<< err.what();
     throw std::runtime_error(msg.str());
   }
+
 
   PYLITH_METHOD_END;
 } // adjustTopology

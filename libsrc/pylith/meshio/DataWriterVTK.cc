@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -201,12 +201,17 @@ pylith::meshio::DataWriterVTK::openTimeStep(const PylithScalar t,
 
   // Create VTK label in DM: Cleared in closeTimeStep().
   if (label) {
-    topology::StratumIS cellsIS(_dm, label, labelId);
+    const bool includeOnlyCells = true;
+    topology::StratumIS cellsIS(_dm, label, labelId, includeOnlyCells);
     const PetscInt ncells = cellsIS.size();
     const PetscInt* cells = cellsIS.points();
+    DMLabel label;
 
+    err = DMPlexCreateLabel(_dm, "vtk");PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetLabel(_dm, "vtk", &label);PYLITH_CHECK_ERROR(err);
+    err = DMLabelClearStratum(label, 1);PYLITH_CHECK_ERROR(err);
     for (PetscInt c=0; c < ncells; ++c) {
-      err = DMPlexSetLabelValue(_dm, "vtk", cells[c], 1);PYLITH_CHECK_ERROR(err);
+      err = DMLabelSetValue(label, cells[c], 1);PYLITH_CHECK_ERROR(err);
     } // for
 
   } // if

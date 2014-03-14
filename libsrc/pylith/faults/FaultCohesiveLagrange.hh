@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -112,11 +112,12 @@ public :
   void initialize(const topology::Mesh& mesh,
 		  const PylithScalar upDir[3]);
 
-  /** Split solution field for separate preconditioning.
+  /** Setup DOF on solution field.
    *
    * @param field Solution field.
    */
-  void splitField(topology::Field* field);
+  virtual
+  void setupSolnDof(topology::Field* field);
 
   /** Integrate contributions to residual term (r) for operator that
    * require assembly processors.
@@ -229,14 +230,15 @@ public :
   // PROTECTED STRUCTS //////////////////////////////////////////////////
 protected :
 
-  /** Data structure to hold relations between vertices in cohesive cell
-   *  in mesh of domain and cell of fault mesh.
+  /** Data structure to hold relations between points (vertices and
+   *  edges) in cohesive cell in mesh of domain and cell of fault
+   *  mesh.
    */
   struct CohesiveInfo {
-    int lagrange; ///< Vertex associated with Lagrange multiplier.
-    int positive; ///< Vertex on positive side of the fault.
-    int negative; ///< Vertex on negative side of the fault.
-    int fault; ///< Vertex in fault mesh.
+    int lagrange; ///< Point (edge) associated with Lagrange multiplier.
+    int positive; ///< Point (vertex) on positive side of the fault.
+    int negative; ///< Point (vertex) on negative side of the fault.
+    int fault; ///< Point (vertex) in fault mesh.
   };
 
   // PROTECTED METHODS //////////////////////////////////////////////////

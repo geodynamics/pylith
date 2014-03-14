@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -107,7 +107,8 @@ pylith::meshio::CellFilterAvg::filter(const topology::Field& fieldIn,
     numCells = cEnd - cStart;
   } else {
     if (!_cellsIS) {
-      _cellsIS = new topology::StratumIS(dmMesh, label, labelId);assert(_cellsIS);
+      const bool includeOnlyCells = true;
+      _cellsIS = new topology::StratumIS(dmMesh, label, labelId, includeOnlyCells);assert(_cellsIS);
     } // if
     numCells = _cellsIS->size();
     if (numCells > 0) {
@@ -161,7 +162,7 @@ pylith::meshio::CellFilterAvg::filter(const topology::Field& fieldIn,
 
   _fieldAvg->label(fieldIn.label());
   _fieldAvg->scale(fieldIn.scale());
-  _fieldAvg->addDimensionOkay(true);
+  _fieldAvg->dimensionalizeOkay(true);
 
   topology::VecVisitorMesh fieldAvgVisitor(*_fieldAvg);
   PetscScalar* fieldAvgArray = fieldAvgVisitor.localArray();

@@ -354,9 +354,8 @@ reference "sec:Spatialdata:SimpleIOAscii"
 \end_layout
 
 \begin_layout Standard
-By default the output manager for a material does not output any information.
- This behavior may be changed by specifying output files for each material
- group:
+In general, we average the output over the quadrature points within a cell
+ and specify the name of the output files for each material group:
 \end_layout
 
 \begin_layout LyX-Code
@@ -364,7 +363,7 @@ By default the output manager for a material does not output any information.
 \end_layout
 
 \begin_layout LyX-Code
-cell_filter = pylith.meshio.CellFilterAvgMesh
+cell_filter = pylith.meshio.CellFilterAvg
 \end_layout
 
 \begin_layout LyX-Code
@@ -380,7 +379,7 @@ writer.filename = dislocation-elastic.vtk
 \end_layout
 
 \begin_layout LyX-Code
-cell_filter = pylith.meshio.CellFilterAvgMesh
+cell_filter = pylith.meshio.CellFilterAvg
 \end_layout
 
 \begin_layout LyX-Code
@@ -401,18 +400,21 @@ reference "sec:Tutorial-3d-hex8"
 writer.filename
 \family default
  settings) will cause two files to be created for each material group: an
- info file, which describes the material properties used in the model, and
- a state variables file, which contains the state variable information.
- Note that the material properties described by the info file are the properties
- used internally by PyLith.
- They do not necessarily correspond to properties specified by the user.
+ info file, which describes the material property parameters used in the
+ model, and a state variables file, which contains the state variable informatio
+n.
+ Note that the material property parameters described by the info file are
+ the parameters used internally by PyLith.
+ In some cases they are parameters convenient for use in the constitutive
+ models and are derived from the parameters specified by the user via the
+ spatial database.
  If the problem has more than one time step, a state variable output file
  will be created for each requested time step.
  We have requested that the values be averaged over each cell.
  Otherwise, output would be produced for each quadrature point, which can
  cause problems with some visualization packages.
  For this example problem, the material is three-dimensional isotropic elastic,
- and is thus described by only three material properties (
+ and is thus described by three parameters (
 \begin_inset Formula $\lambda$
 \end_inset
 
@@ -1211,6 +1213,12 @@ stress4
 \end_layout
 
 \begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Stable-time-step"
+
+\end_inset
+
 Stable time step
 \end_layout
 
@@ -1220,12 +1228,20 @@ s.
  In quasi-static simulations the stability of the implicit time stepping
  scheme does not depend on the time step; instead, the stable time step
  is associated with the accuracy of the solution.
+ For viscoelastic materials the stable time step is 1/5 of the minimum viscoelas
+tic relaxation time.
  In purely elastic materials, the accuracy is independent of the time step,
  so the stable time step is infinite.
- For viscoelastic materials we set the stable time step to be 1/5 of the
- relaxation time.
+ The same is true for elastoplastic materials, since there is no inherent
+ time scale for these problems.
+ Depending on the loading rate, however, it is possible to impose a load
+ increment that is large enough so that the resulting solution may be inaccurate
+ or divergent.
+ Caution must be used in assigning time step sizes for elastoplastic problems,
+ and the linear and nonlinear convergence should be monitored closely.
  In quasi-static simulations we check the stable time step at every time
  step.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -1296,8 +1312,19 @@ where
 \end_layout
 
 \begin_layout Standard
-The stable time steps for each cell can be included in the output with the
- other 
+The stable time step is used in all three of the time stepping schemes used
+ by PyLith (see Subsection 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Time-Stepping"
+
+\end_inset
+
+).
+ In general, an error is generated if the user attempts to use a time step
+ size larger than the stable time step.
+ The stable time steps for each cell can be included in the output with
+ the other 
 \family typewriter
 cell_info_fields
 \family default
@@ -1848,8 +1875,17 @@ reference "cha:Alternative-Formulations"
 stress_zz_initial
 \family default
 ).
- Note that this is not an issue for the 2D elastic models, since this initial
- stress component is not needed.
+ This state variable is provided for all of the viscoelastic material models
+ as well as the plane strain Drucker-Prager elastoplastic model.
+ See section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Initial-State-Variables"
+
+\end_inset
+
+ for additional information on specifying initial stresses for plane strain
+ problems.
  For the PowerLawPlaneStrain model, all four of the stress components are
  needed, so a 4-component stress state variable (
 \family typewriter
@@ -2601,16 +2637,24 @@ K
  follows the evolution equations
 \begin_inset Formula 
 \begin{equation}
-\underline{\dot{q}}^{i}+\frac{1}{\lambda_{i}}\underline{q}^{i}=\underline{\dot{e}}.\label{eq:20}
+\underline{\dot{q}}^{i}+\frac{1}{\tau_{i}}\underline{q}^{i}=\underline{\dot{e}}.\label{eq:20}
 \end{equation}
 
 \end_inset
 
 The 
-\begin_inset Formula $\lambda_{i}$
+\begin_inset Formula $\tau_{i}$
 \end_inset
 
- are the relaxation times for each Maxwell model.
+ are the relaxation times for each Maxwell model:
+\begin_inset Formula 
+\begin{equation}
+\tau_{i}=\frac{\eta_{i}}{\mu_{tot}\mu_{i}}\:.\label{eq:21-1}
+\end{equation}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2647,7 +2691,7 @@ where
  an integral equation:
 \begin_inset Formula 
 \begin{equation}
-\underline{S}\left(t\right)=\intop_{-\infty}^{t}\mu\left(t-\tau\right)\underline{\dot{e}}\, d\tau\,.\label{eq:22}
+\underline{S}\left(t\right)=\intop_{-\infty}^{t}\mu\left(t-T\right)\underline{\dot{e}}\, dT\,.\label{eq:22}
 \end{equation}
 
 \end_inset
@@ -2655,7 +2699,7 @@ where
 If we assume the modulus function in Prony series form we obtain
 \begin_inset Formula 
 \begin{equation}
-\mu\left(t\right)=\mu_{tot}\left(\mu_{0}+\sum_{i=1}^{N}\mu_{i}\exp\frac{-t}{\lambda_{i}}\right)\,,\label{eq:23}
+\mu\left(t\right)=\mu_{tot}\left(\mu_{0}+\sum_{i=1}^{N}\mu_{i}\exp\frac{-t}{\tau_{i}}\right)\,,\label{eq:23}
 \end{equation}
 
 \end_inset
@@ -2683,7 +2727,7 @@ If we assume the material is undisturbed until a strain is suddenly applied
  at time zero, we can divide the integral into
 \begin_inset Formula 
 \begin{equation}
-\intop_{-\infty}^{t}\left(\cdot\right)\, d\tau=\intop_{-\infty}^{0^{-}}\left(\cdot\right)\, d\tau+\intop_{0^{-}}^{0^{+}}\left(\cdot\right)\, d\tau+\intop_{0^{+}}^{t}\left(\cdot\right)\, d\tau\,.\label{eq:27}
+\intop_{-\infty}^{t}\left(\cdot\right)\, dT=\intop_{-\infty}^{0^{-}}\left(\cdot\right)\, dT+\intop_{0^{-}}^{0^{+}}\left(\cdot\right)\, dT+\intop_{0^{+}}^{t}\left(\cdot\right)\, dT\,.\label{eq:27}
 \end{equation}
 
 \end_inset
@@ -2704,7 +2748,7 @@ reference "eq:22"
 ,
 \begin_inset Formula 
 \begin{equation}
-\underline{S}\left(t\right)=2\mu\left(t\right)\left(\underline{e}_{0}-\underline{e}^{I}\right)+\underline{S}^{I}+2\int_{0}^{t}\mu\left(t-\tau\right)\underline{\dot{e}}\left(\tau\right)\, d\tau\,,\label{eq:28}
+\underline{S}\left(t\right)=2\mu\left(t\right)\left(\underline{e}_{0}-\underline{e}^{I}\right)+\underline{S}^{I}+2\int_{0}^{t}\mu\left(t-T\right)\underline{\dot{e}}\left(T\right)\, dT\,,\label{eq:28}
 \end{equation}
 
 \end_inset
@@ -2730,7 +2774,7 @@ reference "eq:28"
 , we obtain
 \begin_inset Formula 
 \begin{equation}
-\underline{S}\left(t\right)=2\mu_{tot}\left\{ \mu_{0}\underline{e}\left(t\right)+\sum_{i=1}^{N}\left[\mu_{i}\exp\frac{-t}{\lambda_{i}}\left(\underline{e}_{0}+\intop_{0}^{t}\exp\frac{t}{\lambda_{i}}\underline{\dot{e}}\left(\tau\right)\, d\tau\right)\right]-\underline{e}^{I}\right\} +\underline{S}^{I}\,.\label{eq:29}
+\underline{S}\left(t\right)=2\mu_{tot}\left\{ \mu_{0}\underline{e}\left(t\right)+\sum_{i=1}^{N}\left[\mu_{i}\exp\frac{-t}{\tau_{i}}\left(\underline{e}_{0}+\intop_{0}^{t}\exp\frac{t}{\tau_{i}}\underline{\dot{e}}\left(T\right)\, dT\right)\right]-\underline{e}^{I}\right\} +\underline{S}^{I}\,.\label{eq:29}
 \end{equation}
 
 \end_inset
@@ -2750,7 +2794,7 @@ We then split each integral into two ranges: from 0 to
 , and define each integral as
 \begin_inset Formula 
 \begin{equation}
-\underline{i}_{i}^{1}\left(t\right)=\intop_{0}^{t}\exp\frac{\tau}{\lambda_{i}}\underline{\dot{e}}\left(\tau\right)\, d\tau\,.\label{eq:30}
+\underline{i}_{i}^{1}\left(t\right)=\intop_{0}^{t}\exp\frac{T}{\tau_{i}}\underline{\dot{e}}\left(T\right)\, dT\,.\label{eq:30}
 \end{equation}
 
 \end_inset
@@ -2758,7 +2802,7 @@ We then split each integral into two ranges: from 0 to
 The integral then becomes
 \begin_inset Formula 
 \begin{equation}
-\underline{i}_{i}^{1}\left(t\right)=\underline{i}_{i}^{1}\left(t_{n}\right)+\intop_{t_{n}}^{t}\exp\frac{\tau}{\lambda_{i}}\underline{\dot{e}}\left(\tau\right)\, d\tau\,.\label{eq:31}
+\underline{i}_{i}^{1}\left(t\right)=\underline{i}_{i}^{1}\left(t_{n}\right)+\intop_{t_{n}}^{t}\exp\frac{T}{\tau_{i}}\underline{\dot{e}}\left(T\right)\, dT\,.\label{eq:31}
 \end{equation}
 
 \end_inset
@@ -2766,7 +2810,7 @@ The integral then becomes
 Including the negative exponential multiplier:
 \begin_inset Formula 
 \begin{equation}
-\underline{h}_{i}^{1}\left(t\right)=\exp\frac{-t}{\lambda_{i}}\underline{i}_{i}^{1}\,.\label{eq:32}
+\underline{h}_{i}^{1}\left(t\right)=\exp\frac{-t}{\tau_{i}}\underline{i}_{i}^{1}\,.\label{eq:32}
 \end{equation}
 
 \end_inset
@@ -2774,7 +2818,7 @@ Including the negative exponential multiplier:
 Then
 \begin_inset Formula 
 \begin{equation}
-\underline{h}_{i}^{1}\left(t\right)=\exp\frac{-\Delta t}{\lambda_{i}}\underline{h}_{i}^{1}\left(t_{n}\right)+\Delta\underline{h}_{i}\,,\label{eq:33}
+\underline{h}_{i}^{1}\left(t\right)=\exp\frac{-\Delta t}{\tau_{i}}\underline{h}_{i}^{1}\left(t_{n}\right)+\Delta\underline{h}_{i}\,,\label{eq:33}
 \end{equation}
 
 \end_inset
@@ -2782,7 +2826,7 @@ Then
 where
 \begin_inset Formula 
 \begin{equation}
-\Delta\underline{h}_{i}=\exp\frac{-t}{\lambda_{i}}\intop_{t_{n}}^{t}\exp\frac{\tau}{\lambda_{i}}\underline{\dot{e}}\left(\tau\right)\, d\tau\,.\label{eq:34}
+\Delta\underline{h}_{i}=\exp\frac{-t}{\tau_{i}}\intop_{t_{n}}^{t}\exp\frac{T}{\tau_{i}}\underline{\dot{e}}\left(T\right)\, dT\,.\label{eq:34}
 \end{equation}
 
 \end_inset
@@ -2791,7 +2835,7 @@ Approximating the strain rate as constant over each time step, the solution
  may be found as
 \begin_inset Formula 
 \begin{equation}
-\Delta\underline{h}_{i}=\frac{\lambda_{i}}{\Delta t}\left(1-\exp\frac{-\Delta t}{\lambda_{i}}\right)\left(\underline{e}-\underline{e}_{n}\right)=\Delta h_{i}\left(\underline{e}-\underline{e}_{n}\right)\,.\label{eq:35}
+\Delta\underline{h}_{i}=\frac{\tau_{i}}{\Delta t}\left(1-\exp\frac{-\Delta t}{\tau_{i}}\right)\left(\underline{e}-\underline{e}_{n}\right)=\Delta h_{i}\left(\underline{e}-\underline{e}_{n}\right)\,.\label{eq:35}
 \end{equation}
 
 \end_inset
@@ -2800,7 +2844,7 @@ The approximation is singular for zero time steps, but a series expansion
  may be used for small time-step sizes:
 \begin_inset Formula 
 \begin{equation}
-\Delta h_{i}\approx1-\frac{1}{2}\left(\frac{\Delta t}{\lambda_{i}}\right)+\frac{1}{3!}\left(\frac{\Delta t}{\lambda_{i}}\right)^{2}-\frac{1}{4!}\left(\frac{\Delta t}{\lambda_{i}}\right)^{3}+\cdots\,.\label{eq:36}
+\Delta h_{i}\approx1-\frac{1}{2}\left(\frac{\Delta t}{\tau_{i}}\right)+\frac{1}{3!}\left(\frac{\Delta t}{\tau_{i}}\right)^{2}-\frac{1}{4!}\left(\frac{\Delta t}{\tau_{i}}\right)^{3}+\cdots\,.\label{eq:36}
 \end{equation}
 
 \end_inset
@@ -2900,7 +2944,15 @@ c models.
 \begin_inset Formula $N=3.$
 \end_inset
 
+ The stable time step is equal to 1/5 of the minimum relaxation time for
+ all of the Maxwell models (equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:21-1"
 
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Standard
@@ -4153,6 +4205,51 @@ reference "eq:82"
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:42"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Once the stresses are computed for the current time step, we can compute
+ the relaxation time (used in computing the stable time step) by first computing
+ the effective viscous strain rate from Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:79"
+
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{equation}
+\dot{\bar{e}}^{C}=\frac{2\dot{e}_{0}\left(\frac{\bar{\sigma}}{\sqrt{3}}\right)^{n}}{\sqrt{3}S_{0}^{n}}\:.
+\end{equation}
+
+\end_inset
+
+Similarly, the effective elastic strain is computed as:
+\begin_inset Formula 
+\begin{equation}
+\bar{e}^{E}=\frac{\bar{\sigma}}{3\mu}\:.
+\end{equation}
+
+\end_inset
+
+The relaxation time is then the ratio between these two:
+\begin_inset Formula 
+\begin{equation}
+\tau=\frac{\bar{e}^{E}}{\bar{\dot{e}}^{C}}=\left(\frac{S_{0}}{\sqrt{J_{2}^{\prime}}}\right)^{n-1}\frac{S_{0}}{6\mu\dot{e}_{0}}\:.\label{eq:86-1}
+\end{equation}
+
+\end_inset
+
+The stable time step returned by PyLith is 1/5 of the value computed from
+ Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:86-1"
 
 \end_inset
 
@@ -5852,6 +5949,12 @@ allow_tensile_yield = False ; default
 \end_layout
 
 \begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Initial-State-Variables"
+
+\end_inset
+
 Initial State Variables
 \end_layout
 
@@ -5890,9 +5993,11 @@ Specification of Initial State Variables
 \end_layout
 
 \begin_layout Standard
-Since state variables are specific to a given material, initial values for
+State variables are specific to a given material, so initial values for
  state variables are specified as part of the material description.
- By default, initial state values are not used.
+ The default is that no initial state variables are specified.
+ In computing the elastic prestep, appropriate values for the state variables
+ are set; otherwise the state variables are set to zero.
  To override this behavior, specify a spatial database for the initial stress,
  strain, and/or state variables as in the example from the tutorial in Section
  
@@ -5915,6 +6020,107 @@ db_initial_stress = spatialdata.spatialdb.SimpleDB
 
 \begin_layout LyX-Code
 db_initial_stress.iohandler.filename = initial_stress.spatialdb
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\color inherit
+ 
+\series default
+Using the elastic prestep with initial state variables will generally lead
+ to the state variables being ignored (the initial out of plane stress is
+ the exception), because the elastic prestep will set the state variables
+ based on the elastic solution.
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\color inherit
+ 
+\series default
+Currently, PyLith assumes initial displacements and velocities of zero,
+ so any initial strain and state variables should be consistent with these
+ initial conditions.
+ This limitation will be removed in future releases.
+\end_layout
+
+\begin_layout Standard
+As mentioned in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:ViscoelasticFormulations"
+
+\end_inset
+
+, plane strain problems do not include the out-of-plane stress component
+ (
+\begin_inset Formula $\sigma_{zz}$
+\end_inset
+
+), and an additional state variable (
+\family typewriter
+stress-zz-initial
+\family default
+) is provided for all two-dimensional viscoelastic and elastoplastic models.
+ To completely specify the initial stresses, the user must provide two spatial
+ databases: an initial stress database that includes the three 2D stress
+ components (
+\begin_inset Formula $\sigma_{xx},\:\sigma_{yy},\:\sigma_{xy}$
+\end_inset
+
+) and an additional database containing the out of plane stress and initial
+ values for all other state variables for the given material.
+ The complete initial stress field may then be defined in the 
+\family typewriter
+.cfg
+\family default
+ file as:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.materials.powerlaw]
+\end_layout
+
+\begin_layout LyX-Code
+# First specify initial 2D stresses
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress = spatialdata.spatialdb.SimpleDB
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress.label = 2D initial stress
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress.iohandler.filename = inititial_stress_2d.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+# Now specify out-of-plane initial stresses (and all other state variables)
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_state = spatialdata.spatialdb.SimpleDB
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_state.label = Out of plane strain initial stress
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_state.iohandler.filename = initial_state_2d.spatialdb
 \end_layout
 
 \begin_layout Standard

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -45,18 +45,30 @@ public :
 
   /** Constructor with field over a mesh.
    *
+   * The optional subfield argument is designed to improve performance
+   * when the visitor is associated with a single subfield within a
+   * field.
+   *
    * @param field Field over a mesh.
+   * @param subfield Name of subfield section to use instead of field section.
    */
-  VecVisitorMesh(const Field& field);
+  VecVisitorMesh(const Field& field,
+		 const char* subfield =0);
 
   /// Default destructor
   ~VecVisitorMesh(void);
 
   /** Initialize using field over a mesh or submesh.
    *
+   * The optional subfield argument is designed to improve performance
+   * when the visitor is associated with a single subfield within a
+   * field.
+   *
    * @param field Field over a mesh/submesh.
+   * @param subfield Name of subfield section to use instead of field section.
    */
-  void initialize(const Field& field);
+  void initialize(const Field& field,
+		  const char *subfield =0);
 
   /// Clear cached data.
   void clear(void);
@@ -143,6 +155,19 @@ public :
 		  const PetscInt valuesSize,
 		  const PetscInt cell,
 		  const InsertMode mode) const;
+
+  /** Optimize the closure operator by creating index for closures.
+   *
+   * :TODO: Remove this method. Call static version when setting up fields.
+   */
+  void optimizeClosure(void);
+
+  /** Optimize the closure operator by creating index for closures.
+   *
+   * @param field Field to optimize closure for.
+   */
+  static
+  void optimizeClosure(const Field& field);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -75,7 +75,6 @@ protected:
   spatialdata::spatialdb::SpatialDB* _dbInitialTract; ///< Initial tractions.
   friction::FrictionModel* _friction; ///< Friction model
   spatialdata::spatialdb::SpatialDB* _dbFriction; ///< Friction parameters.
-  bool _flipFault; ///< If true, flip fault orientation.
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
@@ -147,13 +146,13 @@ private:
       topology::Jacobian* const jacobian,
       const PylithScalar* const fieldIncrVals);
 
-  /** Determine if vertex is a Lagrange multiplier constraint vertex.
+  /** Determine if point is a Lagrange multiplier constraint point.
    *
-   * @param vertex Label of vertex.
+   * @param point Label of point.
    *
-   * @returns True if vertex is a constraint vertex, false otherwise.
+   * @returns True if point is a constraint point, false otherwise.
    */
-  bool _isConstraintVertex(const int vertex) const;
+  bool _isConstraintEdge(const int point) const;
 
 }; // class TestFaultCohesiveDyn
 

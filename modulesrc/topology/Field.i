@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -89,13 +89,13 @@ namespace pylith {
        *
        * @param value True if it is okay to dimensionalize field.
        */
-      void addDimensionOkay(const bool value);
+      void dimensionalizeOkay(const bool value);
       
       /** Set flag indicating whether it is okay to dimensionalize field.
        *
        * @param value True if it is okay to dimensionalize field.
        */
-      bool addDimensionOkay(void) const;
+      bool dimensionalizeOkay(void) const;
       
       /** Get spatial dimension of domain.
        *
@@ -121,8 +121,16 @@ namespace pylith {
        */
       bool hasSection(void) const;
 
-      /// Create PETSc section.
-      void newSection(void);
+      /// Set chart for solution.
+      void setupSolnChart(void);
+      
+      /** Set default DOF for solution.
+       *
+       * @param fiberDim Total number of components in solution.
+       * @param subfieldName Name of subfield for DOF.
+       */
+      void setupSolnDof(const int fiberDim,
+			const char* subfieldName ="displacement");
 
       /** Create PETSc section and set chart and fiber dimesion.
        *
@@ -143,11 +151,37 @@ namespace pylith {
        */
       void cloneSection(const Field& src);
 
-      void addField(const char *name, int numComponents);
+      /** Add subfield to current field.
+       *
+       * Should be followed by calls to subfieldsSetup() and subfieldSetDof().
+       *
+       * @param name Name of subfield.
+       * @param numComponents Number of components in subfield.
+       * @param fieldType Type of vector field.
+       * @param scale Scale for dimensionalizing field.
+       */
+      void subfieldAdd(const char *name, 
+		       int numComponents,
+		       const VectorFieldEnum fieldType,
+		       const PylithScalar scale =1.0);
 
-      void setupFields();
+      /** Setup sections for subfields.
+       *
+       * Should be preceded by calls to subfieldAdd() and followed by calls to subfieldSetDof().
+       */
+      void subfieldsSetup(void);
 
-      void updateDof(const char *name, const pylith::topology::FieldBase::DomainEnum domain, const int fiberDim);
+      /** Convenience method for setting number of DOF (fiberdim) for subfield at points.
+       *
+       * Should be preceded by calls to subfieldAdd() and subfieldsSetup().
+       *
+       * @param name Name of subfield.
+       * @param domain Point classification for subfield.
+       * @param fiberDim Number of subfield components per point.
+       */
+      void subfieldSetDof(const char *name, 
+			  const pylith::topology::FieldBase::DomainEnum domain, 
+			  const int fiberDim);
 
       /// Clear variables associated with section.
       void clear(void);
@@ -170,6 +204,14 @@ namespace pylith {
        */
       void copy(const Field& field);
       
+      /** Copy subfield values and its metadata to field;
+       *
+       * @param field Field to copy from.
+       * @param name Name of subfield to copy.
+       */
+      void copySubfield(const Field& field,
+			const char* name);
+
       /** Add two fields, storing the result in one of the fields.
        *
        * @param field Field to add.

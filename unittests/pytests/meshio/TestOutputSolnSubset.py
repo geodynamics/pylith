@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2013 University of California, Davis
+# Copyright (c) 2010-2014 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -52,6 +52,8 @@ class TestOutputSolnSubset(unittest.TestCase):
     fields.add(name, "displacement")
     fields.solutionName(name)
     field = fields.get(name)
+    field.subfieldAdd("displacement", mesh.dimension(), field.VECTOR)
+    field.subfieldsSetup()
     field.newSection(field.VERTICES_FIELD, mesh.dimension())
     field.allocate()
 

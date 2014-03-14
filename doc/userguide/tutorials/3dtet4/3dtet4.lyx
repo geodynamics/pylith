@@ -930,8 +930,8 @@ step01.cfg
 step02.cfg
 \family default
 ), we use a more sophisticated preconditioner that preconditions the degrees
- of freedom associated with the three Cartesian coordinates separately while
- using an algebraic multigrid algorithm (see Section 
+ of freedom associated with the displacement field with an algebraic multigrid
+ algorithm (see Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:petsc:options"
@@ -1116,7 +1116,7 @@ none (546 DOF)
 \begin_inset Text
 
 \begin_layout Plain Layout
-48
+47
 \end_layout
 
 \end_inset
@@ -1154,7 +1154,7 @@ none (546 DOF)
 \begin_inset Text
 
 \begin_layout Plain Layout
-12
+13
 \end_layout
 
 \end_inset
@@ -1196,7 +1196,7 @@ none (546 DOF)
 \begin_inset Text
 
 \begin_layout Plain Layout
-17 (step02)
+28 (step02)
 \end_layout
 
 \end_inset
@@ -1234,7 +1234,7 @@ none (735 DOF)
 \begin_inset Text
 
 \begin_layout Plain Layout
-35 (step03)
+28 (step03)
 \end_layout
 
 \end_inset
@@ -1276,7 +1276,7 @@ none (735 DOF)
 \begin_inset Text
 
 \begin_layout Plain Layout
-83
+63
 \end_layout
 
 \end_inset
@@ -1314,7 +1314,7 @@ none (735 DOF)
 \begin_inset Text
 
 \begin_layout Plain Layout
-33
+28
 \end_layout
 
 \end_inset
@@ -1356,7 +1356,7 @@ none (735 DOF)
 \begin_inset Text
 
 \begin_layout Plain Layout
-53 (step04)
+38 (step04)
 \end_layout
 
 \end_inset
@@ -1388,10 +1388,6 @@ step02.cfg
 \end_layout
 
 \begin_layout LyX-Code
-split_fields = True
-\end_layout
-
-\begin_layout LyX-Code
 matrix_type = aij
 \end_layout
 
@@ -1404,39 +1400,7 @@ matrix_type = aij
 \end_layout
 
 \begin_layout LyX-Code
-fs_pc_type = fieldsplit
-\end_layout
-
-\begin_layout LyX-Code
-fs_pc_use_amat = 
-\end_layout
-
-\begin_layout LyX-Code
-fs_pc_fieldsplit_type = multiplicative
-\end_layout
-
-\begin_layout LyX-Code
-fs_fieldsplit_0_pc_type = ml
-\end_layout
-
-\begin_layout LyX-Code
-fs_fieldsplit_1_pc_type = ml
-\end_layout
-
-\begin_layout LyX-Code
-fs_fieldsplit_2_pc_type = ml
-\end_layout
-
-\begin_layout LyX-Code
-fs_fieldsplit_0_ksp_type = preonly
-\end_layout
-
-\begin_layout LyX-Code
-fs_fieldsplit_1_ksp_type = preonly
-\end_layout
-
-\begin_layout LyX-Code
-fs_fieldsplit_2_ksp_type = preonly
+pc_type = ml
 \end_layout
 
 \begin_layout Standard
@@ -1907,7 +1871,7 @@ fs_pc_type = fieldsplit
 \end_layout
 
 \begin_layout LyX-Code
-fs_pc_use_amat =
+fs_pc_use_amat = true
 \end_layout
 
 \begin_layout LyX-Code
@@ -1915,35 +1879,19 @@ fs_pc_fieldsplit_type = multiplicative
 \end_layout
 
 \begin_layout LyX-Code
-fs_fieldsplit_0_pc_type = ml
+fs_fieldsplit_displacement_pc_type = ml
 \end_layout
 
 \begin_layout LyX-Code
-fs_fieldsplit_1_pc_type = ml
+fs_fieldsplit_lagrange_multiplier_pc_type = jacobi
 \end_layout
 
 \begin_layout LyX-Code
-fs_fieldsplit_2_pc_type = ml
+fs_fieldsplit_displacement_ksp_type = preonly
 \end_layout
 
 \begin_layout LyX-Code
-fs_fieldsplit_3_pc_type = ml
-\end_layout
-
-\begin_layout LyX-Code
-fs_fieldsplit_0_ksp_type = preonly
-\end_layout
-
-\begin_layout LyX-Code
-fs_fieldsplit_1_ksp_type = preonly
-\end_layout
-
-\begin_layout LyX-Code
-fs_fieldsplit_2_ksp_type = preonly
-\end_layout
-
-\begin_layout LyX-Code
-fs_fieldsplit_3_ksp_type = preonly
+fs_fieldsplit_lagrange_multiplier_ksp_type = preonly
 \end_layout
 
 \begin_layout Standard

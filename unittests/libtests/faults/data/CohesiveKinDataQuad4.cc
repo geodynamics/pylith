@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -35,7 +35,7 @@
  *
  * Cells are 0-1,2 vertices are 3-8,9-12.
  *
- *       4 -------- 6 -12--10 -------- 8
+ *       4 -------- 6 -20--10 -------- 8
  *       |          |       |          |
  *       |          |       |          |
  *       |          |       |          |
@@ -44,7 +44,7 @@
  *       |          |       |          |
  *       |          |       |          |
  *       |          |       |          |
- *       3 -------- 5 -11-- 9 -------- 7
+ *       3 -------- 5 -19-- 9 -------- 7
  */
 
 #include "CohesiveKinDataQuad4.hh"
@@ -104,8 +104,8 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4::_fieldT[] = {
   8.6, 9.6,
   8.7, 9.7, // 8
   8.9, 9.9, // 9
-  8.8, 9.8, // 10
-  8.0, 9.0, // 11
+  8.8, 9.8, // 19
+  8.0, 9.0, // 20
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataQuad4::_fieldIncr[] = {
@@ -117,8 +117,8 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4::_fieldIncr[] = {
   3.6, 4.6,
   3.7, 4.7, // 8
   3.9, 4.9, // 9
-  3.8, 4.8, // 10
-  3.0, 4.0, // 11
+  3.8, 4.8, // 19
+  3.0, 4.0, // 20
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataQuad4::_jacobianLumped[] = {
@@ -130,8 +130,8 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4::_jacobianLumped[] = {
   1.6, 1.6,
   1.7, 1.7, // 8
   1.9, 1.9, // 9
-  1.0, 1.0, // 10
-  1.0, 1.0, // 11
+  1.0, 1.0, // 19
+  1.0, 1.0, // 20
 };
 
 
@@ -139,8 +139,8 @@ const int pylith::faults::CohesiveKinDataQuad4::_numFaultVertices = 2;
 const int pylith::faults::CohesiveKinDataQuad4::_verticesFault[] = {
    2,  3
 };
-const int pylith::faults::CohesiveKinDataQuad4::_verticesLagrange[] = {
-  11, 12
+const int pylith::faults::CohesiveKinDataQuad4::_edgesLagrange[] = {
+  19, 20
 };
 const int pylith::faults::CohesiveKinDataQuad4::_verticesNegative[] = {
    5,  6
@@ -178,9 +178,9 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4::_residual[] = {
  -8.8, -9.8, // 8
  -8.0, -9.0, // 9
   -(8.7-8.3) + 0.14794836271,
-  -(9.7-9.3) + 1.77538035254, // 10
+  -(9.7-9.3) + 1.77538035254, // 19
   -(8.9-8.4) + 0.08241148423,
-  -(9.9-9.4) + 1.89546413727, // 11
+  -(9.9-9.4) + 1.89546413727, // 20
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataQuad4::_jacobian[] = {
@@ -395,8 +395,8 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4::_fieldIncrAdjusted[] = 
   3.6, 4.6,
   3.41744429051, 5.12266481943, // 8
   3.51072002361, 5.27989387642, // 9
-  0.480344706137, -0.718530193038, // 10
-  0.739631955136, -0.721798365193, // 11
+  0.480344706137, -0.718530193038, // 19
+  0.739631955136, -0.721798365193, // 20
 };
 
 pylith::faults::CohesiveKinDataQuad4::CohesiveKinDataQuad4(void)
@@ -425,7 +425,7 @@ pylith::faults::CohesiveKinDataQuad4::CohesiveKinDataQuad4(void)
   jacobian = const_cast<PylithScalar*>(_jacobian);
   fieldIncrAdjusted = const_cast<PylithScalar*>(_fieldIncrAdjusted);
   verticesFault = const_cast<int*>(_verticesFault);
-  verticesLagrange = const_cast<int*>(_verticesLagrange);
+  edgesLagrange = const_cast<int*>(_edgesLagrange);
   verticesNegative = const_cast<int*>(_verticesNegative);
   verticesPositive = const_cast<int*>(_verticesPositive);
   numFaultVertices = _numFaultVertices;  

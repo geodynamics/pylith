@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -35,7 +35,6 @@ pylith::meshio::TestDataWriterVTKSubMeshTri3::setUp(void)
 
   TestDataWriterVTKSubMesh::setUp();
   _data = new DataWriterVTKDataSubMeshTri3;
-  _flipFault = true;
   _initialize();
 
   PYLITH_METHOD_END;
@@ -54,7 +53,6 @@ pylith::meshio::TestDataWriterVTKSubMeshQuad4::setUp(void)
 
   TestDataWriterVTKSubMesh::setUp();
   _data = new DataWriterVTKDataSubMeshQuad4;
-  _flipFault = false;
   _initialize();
 
   PYLITH_METHOD_END;
@@ -73,7 +71,6 @@ pylith::meshio::TestDataWriterVTKSubMeshTet4::setUp(void)
 
   TestDataWriterVTKSubMesh::setUp();
   _data = new DataWriterVTKDataSubMeshTet4;
-  _flipFault = false;
   _initialize();
 
   PYLITH_METHOD_END;
@@ -92,7 +89,6 @@ pylith::meshio::TestDataWriterVTKSubMeshHex8::setUp(void)
 
   TestDataWriterVTKSubMesh::setUp();
   _data = new DataWriterVTKDataSubMeshHex8;
-  _flipFault = true;
   _initialize();
 
   PYLITH_METHOD_END;

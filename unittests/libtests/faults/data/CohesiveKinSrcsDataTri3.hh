@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -73,7 +73,7 @@ private:
   static const PylithScalar _jacobian[]; ///< Expected values from Jacobian calculation.
 
   static const int _verticesFault[]; ///< Expected points for Fault vertices
-  static const int _verticesLagrange[]; ///< Expected points for Lagrange vertices
+  static const int _edgesLagrange[]; ///< Expected points for Lagrange multipliers
   static const int _verticesPositive[]; ///< Expected points for vertices on + side of fault.
   static const int _verticesNegative[]; ///< Expected points for vertices on - side of fault.
   static const int _numFaultVertices; ///< Number of fault vertices

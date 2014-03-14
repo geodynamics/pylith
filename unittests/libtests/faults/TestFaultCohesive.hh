@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -48,13 +48,14 @@ class pylith::faults::TestFaultCohesive : public CppUnit::TestFixture
 
   CPPUNIT_TEST( testUseFaultMesh );
 
-  CPPUNIT_TEST( testAdjustTopologyLine2 );
   CPPUNIT_TEST( testAdjustTopologyTri3 );
   CPPUNIT_TEST( testAdjustTopologyTri3b );
   CPPUNIT_TEST( testAdjustTopologyTri3c );
   CPPUNIT_TEST( testAdjustTopologyTri3d );
   CPPUNIT_TEST( testAdjustTopologyTri3e );
   CPPUNIT_TEST( testAdjustTopologyTri3f );
+  CPPUNIT_TEST( testAdjustTopologyTri3g );
+  CPPUNIT_TEST( testAdjustTopologyTri3h );
   CPPUNIT_TEST( testAdjustTopologyQuad4 );
   CPPUNIT_TEST( testAdjustTopologyQuad4b );
   CPPUNIT_TEST( testAdjustTopologyQuad4c );
@@ -63,6 +64,7 @@ class pylith::faults::TestFaultCohesive : public CppUnit::TestFixture
   CPPUNIT_TEST( testAdjustTopologyQuad4f );
   CPPUNIT_TEST( testAdjustTopologyQuad4g );
   CPPUNIT_TEST( testAdjustTopologyQuad4h );
+  CPPUNIT_TEST( testAdjustTopologyQuad4i );
   CPPUNIT_TEST( testAdjustTopologyTet4 );
   CPPUNIT_TEST( testAdjustTopologyTet4b );
   CPPUNIT_TEST( testAdjustTopologyTet4c );
@@ -82,7 +84,6 @@ class pylith::faults::TestFaultCohesive : public CppUnit::TestFixture
   CPPUNIT_TEST( testAdjustTopologyHex8h );
   CPPUNIT_TEST( testAdjustTopologyHex8i );
 
-  CPPUNIT_TEST( testAdjustTopologyLine2Lagrange );
   CPPUNIT_TEST( testAdjustTopologyTri3Lagrange );
   CPPUNIT_TEST( testAdjustTopologyQuad4Lagrange );
   CPPUNIT_TEST( testAdjustTopologyTet4Lagrange );
@@ -95,9 +96,6 @@ public :
 
   /// Test useFaultMesh().
   void testUseFaultMesh(void);
-
-  /// Test adjustTopology() with 1-D line element.
-  void testAdjustTopologyLine2(void);
 
   /// Test adjustTopology() with 2-D triangular element.
   void testAdjustTopologyTri3(void);
@@ -116,6 +114,12 @@ public :
 
   /// Test adjustTopology() with 2-D triangular element (vertex on fault).
   void testAdjustTopologyTri3f(void);
+
+  /// Test adjustTopology() with 2-D triangular element (embedded fault).
+  void testAdjustTopologyTri3g(void);
+
+  /// Test adjustTopology() with 2-D triangular element (embedded fault, 2 cohesive cells).
+  void testAdjustTopologyTri3h(void);
 
   /// Test adjustTopology() with 2-D quadrilateral element.
   void testAdjustTopologyQuad4(void);
@@ -140,6 +144,9 @@ public :
 
   /// Test adjustTopology() with 2-D quadrilateral element (2 faults).
   void testAdjustTopologyQuad4h(void);
+
+  /// Test adjustTopology() with 2-D quadrilateral element (embedded fault).
+  void testAdjustTopologyQuad4i(void);
 
   /// Test adjustTopology() with 3-D tetrahedral element.
   void testAdjustTopologyTet4(void);
@@ -195,10 +202,6 @@ public :
   /// Test adjustTopology() with 3-D hexahedral element (edge/vertex on fault).
   void testAdjustTopologyHex8i(void);
 
-  /// Test adjustTopology() with 1-D line element for Lagrange
-  /// multipliers.
-  void testAdjustTopologyLine2Lagrange(void);
-
   /// Test adjustTopology() with 2-D triangular element for Lagrange
   /// multipliers.
   void testAdjustTopologyTri3Lagrange(void);
@@ -222,26 +225,19 @@ public :
    *
    * @param fault Fault for cohesive elements.
    * @param data Cohesive element data.
-   * @param flipFault If true, add vertices to opposite side of fault.
    */
   void _testAdjustTopology(Fault* fault,
-			   const CohesiveData& data,
-               const bool flipFault,
-			   const bool flipFaultInt);
+			   const CohesiveData& data);
 
   /** Test adjustTopology().
    *
    * @param faultA First fault for cohesive elements.
    * @param faultB Second fault for cohesive elements.
    * @param data Cohesive element data.
-   * @param flipFaultA If true, add vertices to opposite side of fault A.
-   * @param flipFaultB If true, add vertices to opposite side of fault B.
    */
   void _testAdjustTopology(Fault* faultA,
 			   Fault* faultB,
-			   const CohesiveData& data,
-			   const bool flipFaultA,
-			   const bool flipFaultB);
+			   const CohesiveData& data);
 
 }; // class TestFaultCohesive
 

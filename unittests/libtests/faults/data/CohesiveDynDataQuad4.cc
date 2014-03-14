@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -36,7 +36,7 @@
  *
  * Cells are 0-1,2 vertices are 3-10,11-12.
  *
- *       4 -------- 6 -12--10 -------- 8
+ *       4 -------- 6 -20--10 -------- 8
  *       |          |       |          |
  *       |          |       |          |
  *       |          |       |          |
@@ -45,7 +45,7 @@
  *       |          |       |          |
  *       |          |       |          |
  *       |          |       |          |
- *       3 -------- 5 -11-- 9 -------- 7
+ *       3 -------- 5 -19-- 9 -------- 7
  */
 
 #include "CohesiveDynDataQuad4.hh"
@@ -92,15 +92,15 @@ const char* pylith::faults::CohesiveDynDataQuad4::_initialTractFilename =
 
 const PylithScalar pylith::faults::CohesiveDynDataQuad4::_fieldT[] = {
   8.1, 9.1,
-  8.2, 9.2,
-  8.3, 9.3, // 4
-  8.4, 9.4, // 5
+  8.3, 9.3,
+  8.2, 9.2, // 4
+  8.3, 9.3, // 5
   8.5, 9.5,
   8.6, 9.6,
-  8.3, 9.3, // 8
-  8.4, 9.4, // 9
-  8.8, 9.8, // 10
-  8.0, 9.0, // 11
+  8.2, 9.6, // 8
+  8.3, 9.8, // 9
+ -8.6, 9.6, // 19
+ -8.8, 9.8, // 20
 };
 
 const PylithScalar pylith::faults::CohesiveDynDataQuad4::_jacobian[] = {
@@ -271,8 +271,8 @@ const PylithScalar pylith::faults::CohesiveDynDataQuad4::_jacobian[] = {
 // ----------------------------------------------------------------------
 
 const PylithScalar pylith::faults::CohesiveDynDataQuad4::_orientation[] = {
-  0.0,  -1.0,  -1.0, 0.0,
-  0.0,  -1.0,  -1.0, 0.0
+  0.0,  +1.0,  +1.0, 0.0,
+  0.0,  +1.0,  +1.0, 0.0
 };
 
 const PylithScalar pylith::faults::CohesiveDynDataQuad4::_area[] = {
@@ -287,9 +287,9 @@ const PylithScalar pylith::faults::CohesiveDynDataQuad4::_initialTractions[] = {
 };
 
 
-const int pylith::faults::CohesiveDynDataQuad4::_numConstraintVert = 2;
-const int pylith::faults::CohesiveDynDataQuad4::_constraintVertices[] = {
-  11, 12
+const int pylith::faults::CohesiveDynDataQuad4::_numConstraintEdges = 2;
+const int pylith::faults::CohesiveDynDataQuad4::_constraintEdges[] = {
+  19, 20
 };
 const int pylith::faults::CohesiveDynDataQuad4::_negativeVertices[] = {
    5,  6
@@ -301,21 +301,21 @@ const int pylith::faults::CohesiveDynDataQuad4::_negativeVertices[] = {
 // Input
 const PylithScalar pylith::faults::CohesiveDynDataQuad4::_fieldIncrStick[] = {
   1.1, 2.1,
-  1.2, 2.2,
-  1.3, 2.3, // 4
-  1.4, 2.4, // 5
+  1.4, 2.4,
+  1.2, 2.2, // 4
+  1.3, 2.3, // 5
   1.5, 2.5,
   1.6, 2.6,
-  1.3, 2.7, // 8
-  1.4, 2.9, // 9
-  11.2, 2.20, // 10
-  16.0, 5.40, // 11
+  1.2, 2.2, // 8
+  1.3, 2.3, // 9
+ -21.6,  2.6, // 19
+ -21.6,  2.5, // 20
 };
 
 // No change in slip
 const PylithScalar pylith::faults::CohesiveDynDataQuad4::_slipStickE[] = {
- -0.4,  0.0,
- -0.5,  0.0,
+  0.4,  0.0,
+  0.5,  0.0,
 };
 
 // ----------------------------------------------------------------------
@@ -325,33 +325,33 @@ const PylithScalar pylith::faults::CohesiveDynDataQuad4::_slipStickE[] = {
 const PylithScalar pylith::faults::CohesiveDynDataQuad4::_fieldIncrSlip[] = {
   1.1, 2.1,
   1.2, 2.2,
-  1.3, 2.3, // 4
-  1.4, 2.4, // 5
+  1.2, 2.2, // 4
+  1.3, 2.3, // 5
   1.5, 2.5,
   1.6, 2.6,
-  1.3, 2.3, // 8
-  1.4, 2.4, // 9
-  1.8, 2.8, // 10
-  1.0, 2.0, // 11
+  1.2, 2.2, // 8 
+  1.3, 2.3, // 9 
+ -1.6, 2.6, // 10
+ -1.8, 2.5, // 11
 };
 
 // Output
 const PylithScalar pylith::faults::CohesiveDynDataQuad4::_fieldIncrSlipE[] = {
    1.100000000000,   2.100000000000,
    1.200000000000,   2.200000000000,
-   1.300000000000,   2.300106970298,
-   1.400000000000,   2.400969389712,
+   1.200000000000,   2.200157498929,
+   1.300000000000,   2.300968885890,
    1.500000000000,   2.500000000000,
    1.600000000000,   2.600000000000,
-   1.300000000000,   2.299893029702,
-   1.400000000000,   2.399030610288,
-   1.800000000000,  -3.440000000000,
-   1.000000000000,  -3.600000000000,
+   1.200000000000,   2.199842501071,
+   1.300000000000,   2.299031114110,
+  -1.600000000000,  -3.480000000000,
+  -1.800000000000,  -3.440000000000,
 };
 
 const PylithScalar pylith::faults::CohesiveDynDataQuad4::_slipSlipE[] = {
-   0.000213940595,   0.000000000000,
-   0.001938779425,   0.000000000000,
+   0.399685002143,   0.000000000000,
+   0.498062228219,   0.000000000000,
 };
 
 // ----------------------------------------------------------------------
@@ -361,33 +361,33 @@ const PylithScalar pylith::faults::CohesiveDynDataQuad4::_slipSlipE[] = {
 const PylithScalar pylith::faults::CohesiveDynDataQuad4::_fieldIncrOpen[] = {
   1.1, 2.1,
   1.2, 2.2,
-  1.3, 2.3, // 4
-  1.4, 2.4, // 5
+  1.2, 2.2, // 4
+  1.3, 2.3, // 5
   1.5, 2.5,
   1.6, 2.6,
-  1.3, 2.3, // 8
-  1.4, 2.4, // 9
-  -10.8, 2.8, // 10
-  -10.0, 2.0, // 11
+  1.2, 2.2, // 8
+  1.3, 2.3, // 9
+  +10.6, -12.6, // 10
+  +10.8, -12.8, // 11
 };
 
 // Output
 const PylithScalar pylith::faults::CohesiveDynDataQuad4::_fieldIncrOpenE[] = {
    1.100000000000,   2.100000000000,
    1.200000000000,   2.200000000000,
-   1.302515834136,   2.299739404157,
-   1.402887400343,   2.401420863468,
+   1.199388886535,   2.200357375764,
+   1.299417086548,   2.300039516147,
    1.500000000000,   2.500000000000,
    1.600000000000,   2.600000000000,
-   1.297484165864,   2.300260595843,
-   1.397112599657,   2.398579136532,
-  -8.800000000000,  -9.800000000000,
-  -8.000000000000,  -9.000000000000,
+   1.200611113465,   2.199642624236,
+   1.300582913452,   2.299960483853,
+   8.600000000000,  -9.600000000000,
+   8.800000000000,  -9.800000000000,
 };
 
 const PylithScalar pylith::faults::CohesiveDynDataQuad4::_slipOpenE[] = {
-  -0.000521191686,   0.005031668272,
-   0.002841726937,   0.005774800686,
+   0.399285248472,   0.001222226930,
+   0.499920967705,   0.001165826903,
 };
 
 // ----------------------------------------------------------------------
@@ -413,9 +413,9 @@ pylith::faults::CohesiveDynDataQuad4::CohesiveDynDataQuad4(void)
   area = const_cast<PylithScalar*>(_area);
   initialTractions = const_cast<PylithScalar*>(_initialTractions);
 
-  constraintVertices = const_cast<int*>(_constraintVertices);
+  constraintEdges = const_cast<int*>(_constraintEdges);
   negativeVertices = const_cast<int*>(_negativeVertices);
-  numConstraintVert = _numConstraintVert;  
+  numConstraintEdges = _numConstraintEdges;  
 
   // Stick
   fieldIncrStick = const_cast<PylithScalar*>(_fieldIncrStick);

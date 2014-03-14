@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2013 University of California, Davis
+# Copyright (c) 2010-2014 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -24,14 +24,25 @@ def suite():
   """
   suite = unittest.TestSuite()
 
-  from TestAxialElasticIsotropic import TestAxialElasticIsotropic
-  suite.addTest(unittest.makeSuite(TestAxialElasticIsotropic))
+  from TestAxialDisp import TestAxialDisp
+  suite.addTest(unittest.makeSuite(TestAxialDisp))
 
-  from TestShearElasticIsotropic import TestShearElasticIsotropic
-  suite.addTest(unittest.makeSuite(TestShearElasticIsotropic))
+  from TestShearDisp import TestShearDisp
+  suite.addTest(unittest.makeSuite(TestShearDisp))
 
-  from TestDislocation import TestDislocation
-  suite.addTest(unittest.makeSuite(TestDislocation))
+  from TestShearDispNoSlip import TestShearDispNoSlip
+  suite.addTest(unittest.makeSuite(TestShearDispNoSlip))
+
+  # Disabled. Incorrect solution due to refinement of fault halo not
+  # tied together.
+  #from TestShearDispNoSlipRefine import TestShearDispNoSlipRefine
+  #suite.addTest(unittest.makeSuite(TestShearDispNoSlipRefine))
+
+  from TestSlipOneFault import TestSlipOneFault
+  suite.addTest(unittest.makeSuite(TestSlipOneFault))
+
+  from TestSlipTwoFaults import TestSlipTwoFaults
+  suite.addTest(unittest.makeSuite(TestSlipTwoFaults))
 
   return suite
 

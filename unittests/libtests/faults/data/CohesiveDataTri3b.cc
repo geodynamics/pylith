@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -71,31 +71,10 @@ const int pylith::faults::CohesiveDataTri3b::_numCells = 3;
 
 const int pylith::faults::CohesiveDataTri3b::_cellDim = 2;
 
-const PylithScalar pylith::faults::CohesiveDataTri3b::_vertices[] = {
- -1.0,  0.0,
-  0.0,  1.0,
-  0.0, -1.0,
-  1.0,  0.0,
-  0.0,  1.0,
-  0.0, -1.0
-};
-
 const int pylith::faults::CohesiveDataTri3b::_numCorners[] = {
   3,
   3,
   4
-};
-
-const int pylith::faults::CohesiveDataTri3b::_cellsInt[] = {
-  8,  7,  3,
-  5,  6,  4,
-  4,  5,  7,  8
-};
-
-const int pylith::faults::CohesiveDataTri3b::_cells[] = {
-  5,  4,  3,
-  8,  6,  7,
-  5,  4,  8,  7
 };
 
 const int pylith::faults::CohesiveDataTri3b::_materialIds[] = {
@@ -106,12 +85,7 @@ const int pylith::faults::CohesiveDataTri3b::_materialIds[] = {
 const int pylith::faults::CohesiveDataTri3b::_numGroups = 2;
 
 const int pylith::faults::CohesiveDataTri3b::_groupSizes[] = 
-  { 5, 4 };
-
-const int pylith::faults::CohesiveDataTri3b::_groups[] = {
-  4, 5, 6, 7, 8,
-  4, 5, 7, 8
-};
+  { 5+4, 4+2 }; // vertices+edges
 
 const char* pylith::faults::CohesiveDataTri3b::_groupNames[] = {
   "output", "fault"
@@ -129,12 +103,8 @@ pylith::faults::CohesiveDataTri3b::CohesiveDataTri3b(void)
   spaceDim = _spaceDim;
   numCells = _numCells;
   cellDim = _cellDim;
-  vertices = const_cast<PylithScalar*>(_vertices);
   numCorners = const_cast<int*>(_numCorners);
-  cells = const_cast<int*>(_cells);
-  cellsInt = const_cast<int*>(_cellsInt);
   materialIds = const_cast<int*>(_materialIds);
-  groups = const_cast<int*>(_groups);
   groupSizes = const_cast<int*>(_groupSizes);
   groupNames = const_cast<char**>(_groupNames);
   groupTypes = const_cast<char**>(_groupTypes);

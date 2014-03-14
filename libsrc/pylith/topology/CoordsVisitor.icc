@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -52,7 +52,7 @@ pylith::topology::CoordsVisitor::initialize(void)
   assert(_dm);
   PetscInt       size;
   PetscErrorCode err;
-  err = DMPlexGetCoordinateSection(_dm, &_section);PYLITH_CHECK_ERROR(err);assert(_section);
+  err = DMGetCoordinateSection(_dm, &_section);PYLITH_CHECK_ERROR(err);assert(_section);
   err = DMGetCoordinatesLocal(_dm, &_localVec);PYLITH_CHECK_ERROR(err);assert(_localVec);
   err = VecGetLocalSize(_localVec, &size);PYLITH_CHECK_ERROR(err);
   err = VecGetArray(_localVec, &_localArray);PYLITH_CHECK_ERROR(err);assert(!size || _localArray);
@@ -149,6 +149,26 @@ pylith::topology::CoordsVisitor::restoreClosure(PetscScalar** coordsCell,
   assert(_localVec);
   PetscErrorCode err = DMPlexVecRestoreClosure(_dm, _section, _localVec, cell, coordsSize, coordsCell);PYLITH_CHECK_ERROR(err);
 } // restoreClosure
+
+// ----------------------------------------------------------------------
+// Optimize the closure operation.
+inline
+void
+pylith::topology::CoordsVisitor::optimizeClosure(PetscDM dmMesh)
+{ // optimizeClosure
+  assert(dmMesh);
+
+  PetscErrorCode err;
+  PetscSection fieldSection = NULL;
+  err = DMGetCoordinateSection(dmMesh, &fieldSection);PYLITH_CHECK_ERROR(err);assert(fieldSection);
+
+  PetscSection indexSection = NULL;
+  err = PetscSectionGetClosureIndex(fieldSection, (PetscObject) dmMesh, &indexSection, NULL);PYLITH_CHECK_ERROR(err);
+  if (!indexSection) {
+    err = DMPlexCreateClosureIndex(dmMesh, fieldSection);PYLITH_CHECK_ERROR(err);
+  } // if
+
+} // optimizeClosure
 
 #endif
 

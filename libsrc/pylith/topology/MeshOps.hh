@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -60,6 +60,13 @@ public :
   static
   void nondimensionalize(Mesh* const mesh,
 			 const spatialdata::units::Nondimensional& normalizer);
+
+  /** Check topology of mesh.
+   *
+   * @param mesh Finite-element mesh.
+   */
+  static
+  void checkTopology(const Mesh& mesh);
 
   /** Check to make sure material id of every cell matches the id of
    *  one of the materials.

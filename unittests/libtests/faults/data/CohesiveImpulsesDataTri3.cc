@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -37,7 +37,7 @@
  *
  * Cells are 0-1, 2, vertices are 3-8,9-10.
  *
- *              7 -9- 4
+ *              7 -15- 4
  *             /|     |\
  *            / |     | \
  *           /  |     |  \
@@ -47,7 +47,7 @@
  *           \  |     |  /
  *            \ |     | /
  *             \|     |/
- *              8-10- 5
+ *              8-16- 5
  */
 
 #include "CohesiveImpulsesDataTri3.hh"
@@ -124,8 +124,8 @@ const PylithScalar pylith::faults::CohesiveImpulsesDataTri3::_fieldIncr[] = {
 // ----------------------------------------------------------------------
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataTri3::_orientation[] = {
-  0.0, -1.0,  -1.0, 0.0,
-  0.0, -1.0,  -1.0, 0.0
+  0.0, +1.0,  +1.0, 0.0,
+  0.0, +1.0,  +1.0, 0.0
 };
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataTri3::_area[] = {
@@ -140,9 +140,9 @@ const PylithScalar pylith::faults::CohesiveImpulsesDataTri3::_amplitude[] = {
 
 const int pylith::faults::CohesiveImpulsesDataTri3::_numImpulses = 2;
 
-const int pylith::faults::CohesiveImpulsesDataTri3::_numConstraintVert = 2;
-const int pylith::faults::CohesiveImpulsesDataTri3::_constraintVertices[] = {
-  9, 10
+const int pylith::faults::CohesiveImpulsesDataTri3::_numConstraintEdges = 2;
+const int pylith::faults::CohesiveImpulsesDataTri3::_constraintEdges[] = {
+  15, 16
 };
 const int pylith::faults::CohesiveImpulsesDataTri3::_negativeVertices[] = {
   4, 5
@@ -155,10 +155,10 @@ const PylithScalar pylith::faults::CohesiveImpulsesDataTri3::_residual[] = {
   0.0,  0.0,
  -8.6, -9.6, // 6
  -8.8, -9.8, // 7
- -(8.5-8.2) - (0),
- -(9.5-9.2) - (0), // 8
- -(8.7-8.3) - (2.1),
- -(9.7-9.3) - (0), // 9
+ -(8.5-8.2) + (2.0),
+ -(9.5-9.2) + (0), // 8
+ -(8.7-8.3) + (0),
+ -(9.7-9.3) + (0), // 9
 };
 
 pylith::faults::CohesiveImpulsesDataTri3::CohesiveImpulsesDataTri3(void)
@@ -185,9 +185,9 @@ pylith::faults::CohesiveImpulsesDataTri3::CohesiveImpulsesDataTri3(void)
   amplitude = const_cast<PylithScalar*>(_amplitude);
   numImpulses = _numImpulses;
   residual = const_cast<PylithScalar*>(_residual);
-  constraintVertices = const_cast<int*>(_constraintVertices);
+  constraintEdges = const_cast<int*>(_constraintEdges);
   negativeVertices = const_cast<int*>(_negativeVertices);
-  numConstraintVert = _numConstraintVert;  
+  numConstraintEdges = _numConstraintEdges;  
 } // constructor
 
 pylith::faults::CohesiveImpulsesDataTri3::~CohesiveImpulsesDataTri3(void)

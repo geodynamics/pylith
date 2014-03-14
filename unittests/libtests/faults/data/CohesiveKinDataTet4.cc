@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -26,10 +26,10 @@
  *
  * After adding cohesive elements
  *
- * Cells are 0-1,2, vertices are 3-13.
+ * Cells are 0-1,2, vertices are 3-10.
  *
  * 3   4,5,6  8,9,10   7
- *             11,12,13
+ *             34,35,36
  *     ^^^^^^^^^^^^ Cohesive element in x-y plane.
  */
 
@@ -102,9 +102,9 @@ const PylithScalar pylith::faults::CohesiveKinDataTet4::_fieldT[] = {
   7.6, 8.6, 9.6, // 7
   7.8, 8.8, 9.8, // 8
   7.0, 8.0, 9.0, // 9
-  7.7, 8.7, 9.7, // 10
-  7.9, 8.9, 9.9, // 11
-  7.1, 8.1, 9.1, // 12
+  7.7, 8.7, 9.7, // 34
+  7.9, 8.9, 9.9, // 35
+  7.1, 8.1, 9.1, // 36
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataTet4::_fieldIncr[] = {
@@ -116,9 +116,9 @@ const PylithScalar pylith::faults::CohesiveKinDataTet4::_fieldIncr[] = {
   3.6, 4.6, 5.6, // 7
   3.8, 4.8, 5.8, // 8
   3.0, 4.0, 5.0, // 9
-  3.7, 4.7, 5.7, // 10
-  3.9, 4.9, 5.9, // 11
-  3.1, 4.1, 5.1, // 12
+  3.7, 4.7, 5.7, // 34
+  3.9, 4.9, 5.9, // 35
+  3.1, 4.1, 5.1, // 36
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataTet4::_jacobianLumped[] = {
@@ -130,23 +130,23 @@ const PylithScalar pylith::faults::CohesiveKinDataTet4::_jacobianLumped[] = {
   1.6, 1.6, 1.6, // 7
   1.8, 1.8, 1.8, // 8
   1.0, 1.0, 1.0, // 9
-  1.0, 1.0, 1.0, // 10
-  1.0, 1.0, 1.0, // 11
-  1.0, 1.0, 1.0, // 12
+  1.0, 1.0, 1.0, // 34
+  1.0, 1.0, 1.0, // 35
+  1.0, 1.0, 1.0, // 36
 };
 
 const int pylith::faults::CohesiveKinDataTet4::_numFaultVertices = 3;
 const int pylith::faults::CohesiveKinDataTet4::_verticesFault[] = {
-   3,  2,  4
+   2,  3,  4
 };
-const int pylith::faults::CohesiveKinDataTet4::_verticesLagrange[] = {
-  12, 11, 13
+const int pylith::faults::CohesiveKinDataTet4::_edgesLagrange[] = {
+  34, 35, 36
 };
 const int pylith::faults::CohesiveKinDataTet4::_verticesNegative[] = {
-   5,  4,  6
+   4,  5,  6
 };
 const int pylith::faults::CohesiveKinDataTet4::_verticesPositive[] = {
-   9,  8, 10
+   8,  9, 10
 };
 
 const int pylith::faults::CohesiveKinDataTet4::_numCohesiveCells = 1;
@@ -182,13 +182,13 @@ const PylithScalar pylith::faults::CohesiveKinDataTet4::_residual[] = {
   -7.1/3.0,  -8.1/3.0,  -9.1/3.0, // 9
   -1.0/3.0*(7.6-7.2 + -0.07938069066),
   -1.0/3.0*(8.6-8.2 + -1.82575588523),
-  -1.0/3.0*(9.6-9.2 + 0.55566483464), // 10
+  -1.0/3.0*(9.6-9.2 + 0.55566483464), // 34
   -1.0/3.0*(7.8-7.3 + -0.14140241667),
   -1.0/3.0*(8.8-8.3 + -1.69682900001),
-  -1.0/3.0*(9.8-9.3 + 0.56560966667), // 11
+  -1.0/3.0*(9.8-9.3 + 0.56560966667), // 35
   -1.0/3.0*(7.0-7.4 + -0.18205179147),
   -1.0/3.0*(8.0-8.4 + -1.51709826228),
-  -1.0/3.0*(9.0-9.4 + 0.54615537442), // 12
+  -1.0/3.0*(9.0-9.4 + 0.54615537442), // 36
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataTet4::_jacobian[] = {
@@ -566,9 +566,9 @@ const PylithScalar pylith::faults::CohesiveKinDataTet4::_fieldIncrAdjusted[] = {
   3.29116315314, 5.0396096651, 5.01900078515, // 7
   3.43994294893, 5.09221861291, 5.14345401075, // 8
   3.57286354502, 5.351640653, 5.14807603159, // 9
-  1.48241686493, -2.11012639247, 2.78879623126, // 10
-  1.9443080758, -1.5779805097, 3.54534834194, // 11
-  -1.71859063507, -4.05492195899, -0.444228094765, // 12
+  1.48241686493, -2.11012639247, 2.78879623126, // 34
+  1.9443080758, -1.5779805097, 3.54534834194, // 35
+  -1.71859063507, -4.05492195899, -0.444228094765, // 36
 };
 
 pylith::faults::CohesiveKinDataTet4::CohesiveKinDataTet4(void)
@@ -597,7 +597,7 @@ pylith::faults::CohesiveKinDataTet4::CohesiveKinDataTet4(void)
   jacobian = const_cast<PylithScalar*>(_jacobian);
   fieldIncrAdjusted = const_cast<PylithScalar*>(_fieldIncrAdjusted);
   verticesFault = const_cast<int*>(_verticesFault);
-  verticesLagrange = const_cast<int*>(_verticesLagrange);
+  edgesLagrange = const_cast<int*>(_edgesLagrange);
   verticesNegative = const_cast<int*>(_verticesNegative);
   verticesPositive = const_cast<int*>(_verticesPositive);
   numFaultVertices = _numFaultVertices;  

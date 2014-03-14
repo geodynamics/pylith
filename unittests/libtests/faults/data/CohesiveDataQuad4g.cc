@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -75,24 +75,7 @@ const int pylith::faults::CohesiveDataQuad4g::_numCells = 7;
 
 const int pylith::faults::CohesiveDataQuad4g::_cellDim = 2;
 
-const PylithScalar pylith::faults::CohesiveDataQuad4g::_vertices[] = {
-  -2.0, -2.0,
-  -2.0,  0.0,
-  -2.0,  2.0,
-  -1.0, -2.0,
-  -1.0, -1.0,
-   0.0, -2.0,
-   0.0,  0.0,
-   0.0,  2.0,
-   2.0, -2.0,
-   2.0,  0.0,
-   2.0,  2.0,
-   0.0, -2.0,
-   0.0,  0.0,
-   0.0,  2.0,
-};
-
-const int pylith::faults::CohesiveDataQuad4g::_numCorners[] = {
+const int pylith::faults::CohesiveDataQuad4g::_numCorners[7] = {
   4,
   4,
   4,
@@ -102,36 +85,22 @@ const int pylith::faults::CohesiveDataQuad4g::_numCorners[] = {
   4,
 };
 
-const int pylith::faults::CohesiveDataQuad4g::_cells[] = {
-  8, 13, 14,  9,
- 19, 18, 15, 16,
- 17, 20, 19, 16,
-  8,  7, 11, 13,
- 11, 10, 12, 13,
- 13, 14, 19, 20,
- 12, 13, 18, 19,
-};
-
-const int pylith::faults::CohesiveDataQuad4g::_materialIds[] = {
+const int pylith::faults::CohesiveDataQuad4g::_materialIds[7] = {
   0,  0,  0,  2,  2,
   1,  1,
 };
 
 const int pylith::faults::CohesiveDataQuad4g::_numGroups = 2;
 
-const int pylith::faults::CohesiveDataQuad4g::_groupSizes[] = 
-  { 3, 6 };
-
-const int pylith::faults::CohesiveDataQuad4g::_groups[] = {
-  15, 16, 17,
-  12, 13, 14, 18, 19, 20
+const int pylith::faults::CohesiveDataQuad4g::_groupSizes[2] = {
+  3+2, 6+4 // vertices+edges
 };
 
-const char* pylith::faults::CohesiveDataQuad4g::_groupNames[] = {
+const char* pylith::faults::CohesiveDataQuad4g::_groupNames[2] = {
   "output", "fault"
 };
 
-const char* pylith::faults::CohesiveDataQuad4g::_groupTypes[] = {
+const char* pylith::faults::CohesiveDataQuad4g::_groupTypes[2] = {
   "vertex", "vertex"
 };
 
@@ -144,11 +113,8 @@ pylith::faults::CohesiveDataQuad4g::CohesiveDataQuad4g(void)
   spaceDim = _spaceDim;
   numCells = _numCells;
   cellDim = _cellDim;
-  vertices = const_cast<PylithScalar*>(_vertices);
   numCorners = const_cast<int*>(_numCorners);
-  cells = const_cast<int*>(_cells);
   materialIds = const_cast<int*>(_materialIds);
-  groups = const_cast<int*>(_groups);
   groupSizes = const_cast<int*>(_groupSizes);
   groupNames = const_cast<char**>(_groupNames);
   groupTypes = const_cast<char**>(_groupTypes);

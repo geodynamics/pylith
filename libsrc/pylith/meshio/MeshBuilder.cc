@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -73,7 +73,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
 
   /* DMPlex */
   PetscDM   dmMesh;
-  PetscBool pInterpolate = interpolate ? PETSC_TRUE : PETSC_FALSE;
+  PetscBool pInterpolate = PETSC_TRUE; /* pInterpolate = interpolate ? PETSC_TRUE : PETSC_FALSE; */
   PetscInt  bound        = numCells*numCorners, coff;
 
   err = MPI_Bcast(&dim, 1, MPIU_INT, 0, comm);PYLITH_CHECK_ERROR(err);

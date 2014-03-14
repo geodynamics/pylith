@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -107,6 +107,13 @@ public :
   void restoreClosure(PetscScalar** coordsCell,
 		      PetscInt* coordsSize,
 		      const PetscInt cell) const;
+
+  /** Optimize the closure operator by creating index for closures.
+   *
+   * @param dmMesh PETSc DM to optimize closure on coordinates field.
+   */
+  static
+  void optimizeClosure(PetscDM dmMesh);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -32,11 +32,7 @@ pylith::topology::MeshDataCohesive::MeshDataCohesive(void) :
   numCorners(0),
   numCellsCohesive(0),
   numCornersCohesive(0),
-  vertices(0),
-  cells(0),
-  cellsCohesive(0),
-  materialIds(0),
-  groups(0),
+  matIdSum(0),
   groupSizes(0),
   groupNames(0),
   groupTypes(0),

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -57,49 +57,28 @@ const int pylith::faults::CohesiveDataQuad4d::_numCells = 3;
 
 const int pylith::faults::CohesiveDataQuad4d::_cellDim = 2;
 
-const PylithScalar pylith::faults::CohesiveDataQuad4d::_vertices[] = {
-  -2.0, -1.0,
-  -2.0,  1.0,
-   0.0, -1.0,
-   0.0,  1.0,
-   2.0, -1.0,
-   2.0,  1.0,
-   0.0, -1.0,
-   0.0,  1.0,
-};
-
-const int pylith::faults::CohesiveDataQuad4d::_numCorners[] = {
+const int pylith::faults::CohesiveDataQuad4d::_numCorners[3] = {
   4,
   4,
   4
 };
 
-const int pylith::faults::CohesiveDataQuad4d::_cells[] = {
-  4,  3,  9, 10,
-  5,  7,  8,  6,
-  6,  5, 10,  9,
-};
-
-const int pylith::faults::CohesiveDataQuad4d::_materialIds[] = {
+const int pylith::faults::CohesiveDataQuad4d::_materialIds[3] = {
   0,  0,
   1
 };
 
 const int pylith::faults::CohesiveDataQuad4d::_numGroups = 2;
 
-const int pylith::faults::CohesiveDataQuad4d::_groupSizes[] = 
-  { 4, 4 };
-
-const int pylith::faults::CohesiveDataQuad4d::_groups[] = {
-  4, 6, 8, 10,
-  5, 6, 9, 10
+const int pylith::faults::CohesiveDataQuad4d::_groupSizes[2] = {
+  4+2, 4+2 // vertices+edges
 };
 
-const char* pylith::faults::CohesiveDataQuad4d::_groupNames[] = {
+const char* pylith::faults::CohesiveDataQuad4d::_groupNames[2] = {
   "output", "fault"
 };
 
-const char* pylith::faults::CohesiveDataQuad4d::_groupTypes[] = {
+const char* pylith::faults::CohesiveDataQuad4d::_groupTypes[2] = {
   "vertex", "vertex"
 };
 
@@ -112,11 +91,8 @@ pylith::faults::CohesiveDataQuad4d::CohesiveDataQuad4d(void)
   spaceDim = _spaceDim;
   numCells = _numCells;
   cellDim = _cellDim;
-  vertices = const_cast<PylithScalar*>(_vertices);
   numCorners = const_cast<int*>(_numCorners);
-  cells = const_cast<int*>(_cells);
   materialIds = const_cast<int*>(_materialIds);
-  groups = const_cast<int*>(_groups);
   groupSizes = const_cast<int*>(_groupSizes);
   groupNames = const_cast<char**>(_groupNames);
   groupTypes = const_cast<char**>(_groupTypes);

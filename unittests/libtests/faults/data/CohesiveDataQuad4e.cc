@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -75,22 +75,7 @@ const int pylith::faults::CohesiveDataQuad4e::_numCells = 6;
 
 const int pylith::faults::CohesiveDataQuad4e::_cellDim = 2;
 
-const PylithScalar pylith::faults::CohesiveDataQuad4e::_vertices[] = {
-  -2.0, -1.0,
-  -2.0,  1.0,
-   0.0, -1.0,
-   0.0,  1.0,
-   2.0, -1.0,
-   2.0,  1.0,
-  -2.0,  3.0,
-   0.0,  3.0,
-   2.0,  3.0,
-   0.0, -1.0,
-   0.0,  1.0,
-   0.0,  3.0,
-};
-
-const int pylith::faults::CohesiveDataQuad4e::_numCorners[] = {
+const int pylith::faults::CohesiveDataQuad4e::_numCorners[6] = {
   4,
   4,
   4,
@@ -99,35 +84,22 @@ const int pylith::faults::CohesiveDataQuad4e::_numCorners[] = {
   4,
 };
 
-const int pylith::faults::CohesiveDataQuad4e::_cells[] = {
-  6, 15, 16,  7,
-  8, 10, 11,  9,
-  7, 16, 17, 12,
-  9, 11, 14, 13,
-  9,  8, 16, 15,
- 13,  9, 17, 16,
-};
-
-const int pylith::faults::CohesiveDataQuad4e::_materialIds[] = {
+const int pylith::faults::CohesiveDataQuad4e::_materialIds[6] = {
   0,  0,  0, 0,
   1,  1,
 };
 
 const int pylith::faults::CohesiveDataQuad4e::_numGroups = 2;
 
-const int pylith::faults::CohesiveDataQuad4e::_groupSizes[] = 
-  { 4, 6 };
-
-const int pylith::faults::CohesiveDataQuad4e::_groups[] = {
-  7, 9, 11, 16,
-  8, 9, 13, 15, 16, 17
+const int pylith::faults::CohesiveDataQuad4e::_groupSizes[2] = {
+  4+2, 6+4 // vertices+edges
 };
 
-const char* pylith::faults::CohesiveDataQuad4e::_groupNames[] = {
+const char* pylith::faults::CohesiveDataQuad4e::_groupNames[2] = {
   "output", "fault"
 };
 
-const char* pylith::faults::CohesiveDataQuad4e::_groupTypes[] = {
+const char* pylith::faults::CohesiveDataQuad4e::_groupTypes[2] = {
   "vertex", "vertex"
 };
 
@@ -140,11 +112,8 @@ pylith::faults::CohesiveDataQuad4e::CohesiveDataQuad4e(void)
   spaceDim = _spaceDim;
   numCells = _numCells;
   cellDim = _cellDim;
-  vertices = const_cast<PylithScalar*>(_vertices);
   numCorners = const_cast<int*>(_numCorners);
-  cells = const_cast<int*>(_cells);
   materialIds = const_cast<int*>(_materialIds);
-  groups = const_cast<int*>(_groups);
   groupSizes = const_cast<int*>(_groupSizes);
   groupNames = const_cast<char**>(_groupNames);
   groupTypes = const_cast<char**>(_groupTypes);

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -45,7 +45,7 @@ const PylithScalar pylith::materials::PowerLaw3DTimeDepData::_pressureScale =   
 
 const PylithScalar pylith::materials::PowerLaw3DTimeDepData::_densityScale =   2.25000000e+04;
 
-const PylithScalar pylith::materials::PowerLaw3DTimeDepData::_dtStableImplicit =   4.44444444e+06;
+const PylithScalar pylith::materials::PowerLaw3DTimeDepData::_dtStableImplicit =   2.96296296e+06;
 
 const PylithScalar pylith::materials::PowerLaw3DTimeDepData::_dtStableExplicit =   1.92450090e-01;
 

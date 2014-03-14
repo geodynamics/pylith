@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -52,6 +52,7 @@ class pylith::topology::TestMesh : public CppUnit::TestFixture
   CPPUNIT_TEST( testDebug );
   CPPUNIT_TEST( testDimension );
   CPPUNIT_TEST( testComm );
+  CPPUNIT_TEST( testView );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -75,6 +76,9 @@ public :
 
   /// Test comm().
   void testComm(void);
+
+  /// Test view().
+  void testView(void);
 
 }; // class TestMesh
 

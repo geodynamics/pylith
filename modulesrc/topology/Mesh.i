@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -114,8 +114,7 @@ namespace pylith {
     
       /** View mesh.
        *
-       * @param label Label for mesh.
-       * @param viewOption View option
+       * @param viewOption PETSc DM view option.
        *
        * PETSc mesh view options include:
        *   short summary [empty]
@@ -124,8 +123,7 @@ namespace pylith {
        *   latex in a file  :refined.tex:ascii_latex
        *   VTK vtk:refined.vtk:ascii_vtk
        */
-      void view(const char* label,
-		const char* viewOption) const;
+      void view(const char* viewOption ="") const;
 
       /** Return the names of all vertex groups.
        *

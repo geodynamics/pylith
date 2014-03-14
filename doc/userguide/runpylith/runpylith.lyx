@@ -961,10 +961,10 @@ reference "fig:3D-linear-elements"
 \end_inset
 
 .
- Quadratic cells are also supported, but at present the only method for
- using these cells in PyLith is using PyLith ASCII format.
- PyLith does not yet support automatic generation of a quadratic mesh from
- the linear meshes created by CUBIT or LaGriT.
+ PyLith no longer supports use of quadratic cells using the PyLith ASCII
+ mesh format.
+ In the next release, we plan to support higher order discretizations via
+ PETSc finite-element features from meshes with linear cells as input.
 \end_layout
 
 \begin_layout Standard
@@ -1384,8 +1384,8 @@ Refiner
 \end_layout
 
 \begin_layout Standard
-The refiner is used to decrease node spacing by a factor of two by subdividing
- each cell.
+The refiner is used to decrease node spacing by a power of two by recursively
+ subdividing each cell by a factor of two.
  In a 2D triangular mesh a node is inserted at the midpoint of each edge,
  splitting each cell into four cells (see Figure 
 \begin_inset CommandInset ref
@@ -1456,14 +1456,32 @@ name "fig:uniform:refinement:2x"
 \begin_layout Standard
 Refinement occurs after distribution of the mesh among processors.
  This allows one to run much larger simulations by (1) permitting the mesh
- generator to construct a mesh with a node spacing twice as large as that
- needed in the simulation and (2) operations performed in serial during
- the simulation setup phase, such as, adjusting the topology to insert cohesive
- cells and distribution of the mesh among processors uses this much smaller
- coarse mesh.
+ generator to construct a mesh with a node spacing largeer than that needed
+ in the simulation and (2) operations performed in serial during the simulation
+ setup phase, such as, adjusting the topology to insert cohesive cells and
+ distribution of the mesh among processors uses this much smaller coarse
+ mesh.
  For 2D problems the global mesh refinement increases the maximum problem
- size by a factor of four, and for 3D problems it increases the maximum
- problem size by a factor of eight.
+ size by a factor of 
+\begin_inset Formula $4^{n}$
+\end_inset
+
+, and for 3D problems it increases the maximum problem size by a factor
+ of 
+\begin_inset Formula $8^{n}$
+\end_inset
+
+, where 
+\begin_inset Formula $n$
+\end_inset
+
+ is the number of recursive refinement levels.
+ For a tetrahedral mesh, the element quality decreases with refinement so
+ 
+\begin_inset Formula $n$
+\end_inset
+
+ should be limited to 1-2.
 \end_layout
 
 \begin_layout Subsection
@@ -1576,7 +1594,7 @@ PyLith nondimensionalizes all parameters provided by the user so that the
 \family typewriter
 NondimElasticQuasistatic
 \family default
- normalizer has the following properties:
+ normalizer (which is the default) has the following properties:
 \end_layout
 
 \begin_layout Description
@@ -1666,6 +1684,23 @@ mass_density = 3.0e+3*kg/m**3
 
 \begin_layout LyX-Code
 wave_period = 1.0*s
+\end_layout
+
+\begin_layout Standard
+The default nondimensionalization is reasonable for many problems; however,
+ it may be necessary to change the default values in some cases.
+ When doing this, keep in mind that the nondimensionalization generally
+ applies to the minimum values encountered for a problem.
+ For example, in a quasistatic problem, the 
+\family typewriter
+length_scale
+\family default
+ should be on the order of the minimum cell size.
+ Similarly, the 
+\family typewriter
+relaxation_time
+\family default
+ should be on the order of the minimum relaxation time.
 \end_layout
 
 \begin_layout Subsection
@@ -2782,7 +2817,11 @@ name "tab:petsc:options:advanced"
 \end_inset
 
 PETSc options used with split fields algebraic multigrid preconditioning
- that often provide improved performance in quasi-static elasticity problems.
+ that often provide improved performance in quasi-static elasticity problems
+ with faults.
+ These are available in 
+\family typewriter
+$PYLITH_DIR/share/settings/solver_fault_fieldsplit.cfg.
 \end_layout
 
 \end_inset
@@ -2791,9 +2830,9 @@ PETSc options used with split fields algebraic multigrid preconditioning
 \begin_inset Tabular
 <lyxtabular version="3" rows="8" columns="3">
 <features tabularvalignment="middle">
-<column alignment="left" valignment="top" width="2.25in">
+<column alignment="left" valignment="top" width="2.75in">
 <column alignment="center" valignment="middle" width="0.75in">
-<column alignment="left" valignment="top" width="3in">
+<column alignment="left" valignment="top" width="2.5in">
 <row>
 <cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
@@ -2817,7 +2856,7 @@ Value
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2853,7 +2892,7 @@ field_split
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2887,7 +2926,7 @@ true
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2921,7 +2960,7 @@ multiplicative
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2940,7 +2979,7 @@ Apply each field preconditioning in sequence, which is stronger than all-at-once
 
 \family typewriter
 \size footnotesize
-fs_fieldsplit_0_pc_type
+fs_fieldsplit_displacement_pc_type
 \end_layout
 
 \end_inset
@@ -2956,7 +2995,7 @@ ml
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2974,7 +3013,7 @@ Multilevel algebraic multigrid preconditioning using Trilinos/ML via PETSc.
 
 \family typewriter
 \size footnotesize
-fs_fieldsplit_1_pc_type
+fs_fieldsplit_lagrange_multiplier_pc_type
 \end_layout
 
 \end_inset
@@ -2990,12 +3029,11 @@ jacobi
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-Jacobi preconditioning for Lagrange multiplier block (only use if there
- is at least one fault)
+Jacobi preconditioning for Lagrange multiplier block
 \end_layout
 
 \end_inset
@@ -3009,7 +3047,7 @@ Jacobi preconditioning for Lagrange multiplier block (only use if there
 
 \family typewriter
 \size footnotesize
-fs_fieldsplit_0_ksp_type
+fs_fieldsplit_displacement_ksp_type
 \end_layout
 
 \end_inset
@@ -3025,7 +3063,7 @@ preonly
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3043,7 +3081,7 @@ Apply only the preconditioner.
 
 \family typewriter
 \size footnotesize
-fs_fieldsplit_1_ksp_type
+fs_fieldsplit_lagrange_multiplier_ksp_type
 \end_layout
 
 \end_inset
@@ -3059,7 +3097,7 @@ preonly
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3097,6 +3135,15 @@ ioner.
  If the solver for the Schur complement S is given a very low tolerance,
  this is effectively a direct solver.
  The options given below will construct this solver in PyLith.
+ These settings are available in
+\family typewriter
+
+\begin_inset Newline newline
+\end_inset
+
+$PYLITH_DIR/share/settings/solver_fault_exact.cfg
+\family default
+.
 \end_layout
 
 \begin_layout LyX-Code
@@ -3112,10 +3159,6 @@ matrix_type = aij
 \end_layout
 
 \begin_layout LyX-Code
-use_custom_constraint_pc = True
-\end_layout
-
-\begin_layout LyX-Code
 
 \end_layout
 
@@ -3128,11 +3171,11 @@ fs_pc_type = fieldsplit
 \end_layout
 
 \begin_layout LyX-Code
-fs_pc_fieldsplit_type = schur
+fs_pc_use_amat = True
 \end_layout
 
 \begin_layout LyX-Code
-fs_pc_fieldsplit_schur_precondition = user
+fs_pc_fieldsplit_type = schur
 \end_layout
 
 \begin_layout LyX-Code
@@ -3140,31 +3183,23 @@ fs_pc_fieldsplit_schur_factorization_type = full
 \end_layout
 
 \begin_layout LyX-Code
-fs_pc_use_amat = true
+fs_fieldsplit_displacement_ksp_type = preonly
 \end_layout
 
 \begin_layout LyX-Code
-fs_fieldsplit_0_pc_type = lu
+fs_fieldsplit_displacement_pc_type = lu
 \end_layout
 
 \begin_layout LyX-Code
-fs_fieldsplit_0_ksp_type = gmres
+fs_fieldsplit_lagrange_multiplier_pc_type = jacobi
 \end_layout
 
 \begin_layout LyX-Code
-fs_fieldsplit_0_ksp_rtol = 1.0e-10
+fs_fieldsplit_lagrange_multiplier_ksp_type = gmres
 \end_layout
 
 \begin_layout LyX-Code
-fs_fieldsplit_1_pc_type = jacobi
-\end_layout
-
-\begin_layout LyX-Code
-fs_fieldsplit_1_ksp_type = gmres
-\end_layout
-
-\begin_layout LyX-Code
-fs_fieldsplit_1_ksp_rtol = 1.0e-10 
+fs_fieldsplit_lagrange_multiplier_ksp_rtol = 1.0e-11
 \end_layout
 
 \begin_layout Subsubsection
@@ -3601,6 +3636,12 @@ www.mcs.anl.gov/petsc/petsc-as/documentation/index.html
 \end_layout
 
 \begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Time-Stepping"
+
+\end_inset
+
 Time Stepping
 \end_layout
 
@@ -3608,14 +3649,27 @@ Time Stepping
 PyLith provides three choices for controlling the time step in time-dependent
  simulations.
  These include (1) a uniform, user-specified time step (which is the default),
- (2) nonuniform, user-specified time steps, and (3) nonuniform, automatically
- calculated time steps.
+ (2) user-specified time steps (potentially nonuniform), and (3) automatically
+ calculated (potentially nonuniform) time steps.
  The procedure for automatically selecting time steps requires that the
  material models provide a reasonable estimate of the time step for stable
  time integration.
- In general, quasi-static simulations should use automatically calculated
- time steps and dynamic simulations should use a uniform, user-specified
- time step.
+ In general, quasi-static simulations with viscoelastic materials should
+ use automatically calculated time steps and dynamic simulations should
+ use a uniform, user-specified time step.
+ Note that all three of the time stepping schemes make use of the computed
+ stable time step (see 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Stable-time-step"
+
+\end_inset
+
+).
+ When using user-specified time steps, the value is checked against the
+ computed stable time step.
+ The automatically calculated time step comes from the computed stable time
+ step.
 \end_layout
 
 \begin_layout Standard
@@ -3627,8 +3681,9 @@ Warning:
 \color none
  
 \color inherit
-Changing the time step requires recomputing the Jacobian of the system,
- which can greatly increase the runtime if the time-step size changes frequently.
+Varying the time step within a simulation requires recomputing the Jacobian
+ of the system whenever the time step changes, which can greatly increase
+ the runtime if the time-step size changes frequently.
 \end_layout
 
 \begin_layout Subsubsection
@@ -3638,8 +3693,8 @@ Uniform, User-Specified Time Step
 \begin_layout Standard
 With a uniform, user-specified time step, the user selects the time step
  that is used over the entire duration of the simulation.
- This value is used whether or not it yields a stable solution, so users
- should be careful when selecting the time-step value.
+ If this value exceeds the computed stable time step at any time, PyLith
+ will terminate with an error.
  The properties for the uniform, user-specified time step are:
 \end_layout
 
@@ -3704,6 +3759,9 @@ reference "sec:FileFormat:TimeStepUser"
  If the total duration exceeds the time associated with the time steps,
  then a flag determines whether to cycle through the time steps or to use
  the last specified time step for the time remaining.
+ Similar to the uniform time step, if the user-specified time step size
+ exceeds the computed stable time step at any time, PyLith will terminate
+ with an error.
  The properties for the nonuniform, user-specified time step are:
 \end_layout
 
@@ -3762,15 +3820,22 @@ Nonuniform, Automatic Time Step
 \end_layout
 
 \begin_layout Standard
-This time-step implementation automatically calculates a stable time step
+This time-step implementation automatically calculates a time step size
  based on the constitutive model and rate of deformation.
  As a result, this choice for choosing the time step relies on accurate
  calculation of a stable time step within each finite-element cell by the
  constitutive models.
- In order to provide some control over the time-step selection, the user
- can control the frequency that a new time step is calculated, the time
- step to use relative to the value determined by the constitutive models,
- and a maximum value for the time step.
+ To provide some control over the time-step selection, the user can control
+ the frequency with which a new time step is calculated, the time step to
+ use relative to the value determined by the constitutive models, and a
+ maximum value for the time step.
+ Note that the stability factor allows the computed time step size to exceed
+ the computed stable time step.
+ A stability factor of 1.0 would provide a time step size equal to the stable
+ time step, while a value of 2.0 (default value) would provide a time step
+ size equal to 1/2 the stable time step.
+ Caution should be used when adjusting the stability factor to values less
+ than 1.0, as the large time step size may result in inaccurate solutions.
  The properties for controlling the automatic time-step selection are:
 \end_layout
 
@@ -4886,7 +4951,7 @@ time_step = 1.0*yr
 \end_layout
 
 \begin_layout LyX-Code
-cell_filter = pylith.meshio.CellFilterAvgMesh
+cell_filter = pylith.meshio.CellFilterAvg
 \end_layout
 
 \begin_layout LyX-Code
@@ -5458,6 +5523,23 @@ h5dump -d /geometry/vertices mydata.h5
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+We have also include a utility 
+\family typewriter
+pylith_genxdmf
+\family default
+ (see Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:pylith_genxdmf"
+
+\end_inset
+
+) that generates an appropriate Xdmf file from a PyLith HDF5 file.
+ This is very useful if you add fields to HDF5 files in post-processing
+ and wish to view the results in ParaView or Visit.
+\end_layout
+
 \begin_layout Subsubsection
 DataWriterHDF5 Parameters
 \end_layout
@@ -5976,6 +6058,12 @@ coordsys Coordinate system associated with mesh in simulation.
 \begin_layout Subsection
 
 \family typewriter
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:pylith_genxdmf"
+
+\end_inset
+
 pylith_genxdmf
 \end_layout
 

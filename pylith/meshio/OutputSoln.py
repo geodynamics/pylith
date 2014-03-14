@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2013 University of California, Davis
+# Copyright (c) 2010-2014 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -106,14 +106,28 @@ class OutputSoln(OutputManager):
     """
     Get vertex field.
     """
-    field = None
+    # :TODO: Clean this up for multiple fields
+
+    buffer = None
     if name == "displacement":
       field = fields.get("disp(t)")
+      if not fields.hasField("buffer (vector)"):
+        fields.add("buffer (vector)", "buffer")
+      buffer = fields.get("buffer (vector)")
+      buffer.copySubfield(field, "displacement")
     elif name == "velocity":
       field = fields.get("velocity(t)")
+      if not fields.hasField("buffer (vector)"):
+        fields.add("buffer (vector)", "buffer")
+      buffer = fields.get("buffer (vector)")
+      buffer.copySubfield(field, "displacement")
+      buffer.label(field.label()) # :KLUDGE: Fix for multiple fields
+      buffer.scale(field.scale()) # :KLUDGE: Fix for multiple fields
     else:
       raise ValueError, "Vertex field '%s' not available." % name
-    return field
+
+    buffer.dimensionalizeOkay(True)
+    return buffer
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////

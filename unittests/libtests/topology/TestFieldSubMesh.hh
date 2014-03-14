@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -50,7 +50,6 @@ class pylith::topology::TestFieldSubMesh : public CppUnit::TestFixture
   CPPUNIT_TEST( testSection );
   CPPUNIT_TEST( testMesh );
   CPPUNIT_TEST( testSpaceDim );
-  CPPUNIT_TEST( testNewSection );
   CPPUNIT_TEST( testNewSectionPoints );
   CPPUNIT_TEST( testNewSectionDomain );
   CPPUNIT_TEST( testNewSectionField );
@@ -85,9 +84,6 @@ public :
 
   /// Test spaceDim().
   void testSpaceDim(void);
-
-  /// Test newSection().
-  void testNewSection(void);
 
   /// Test newSection(points).
   void testNewSectionPoints(void);

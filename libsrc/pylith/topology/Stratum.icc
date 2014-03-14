@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -87,13 +87,43 @@ pylith::topology::Stratum::size(void) const
 inline
 pylith::topology::StratumIS::StratumIS(const PetscDM dmMesh,
 				       const char* label,
-				       const int id)
+				       const int id,
+				       const bool includeOnlyCells) :
+  _indexSet(0),
+  _points(0),
+  _size(0)
 { // constructor
   assert(dmMesh);
   PetscErrorCode err;
-  err = DMPlexGetStratumIS(dmMesh, label, id, &_indexSet);PYLITH_CHECK_ERROR(err);assert(_indexSet);
-  err = ISGetSize(_indexSet, &_size);PYLITH_CHECK_ERROR(err);assert(_size >= 0);
-  err = ISGetIndices(_indexSet, &_points);PYLITH_CHECK_ERROR(err);assert(!_size || _points);
+  if (!includeOnlyCells) {
+    err = DMPlexGetStratumIS(dmMesh, label, id, &_indexSet);PYLITH_CHECK_ERROR(err);assert(_indexSet);
+  } else {
+    PetscIS pointsIS = NULL;
+    PetscInt numPoints = 0;
+    const PetscInt* points = NULL;
+    err = DMPlexGetStratumIS(dmMesh, label, id, &pointsIS);PYLITH_CHECK_ERROR(err);
+    if (pointsIS) {
+      err = ISGetSize(pointsIS, &numPoints);PYLITH_CHECK_ERROR(err);assert(numPoints >= 0);
+      err = ISGetIndices(pointsIS, &points);PYLITH_CHECK_ERROR(err);assert(!numPoints || points);
+      PetscInt cStart, cEnd;
+      err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+      PetscInt* cells = (numPoints > 0) ? new PetscInt[numPoints] : 0;
+      PetscInt count = 0;
+      for (PetscInt i=0; i < numPoints; ++i) {
+	if (points[i] >= cStart && points[i] < cEnd) {
+	  cells[count++] = points[i];
+	} // if
+      } // for
+      err = ISCreateGeneral(PETSC_COMM_SELF, count, cells, PETSC_COPY_VALUES, &_indexSet);PYLITH_CHECK_ERROR(err);
+      delete[] cells; cells = 0;
+      err = ISDestroy(&pointsIS);PYLITH_CHECK_ERROR(err);assert(!pointsIS);
+    } // if
+  } // if/else
+    
+  if (_indexSet) {
+    err = ISGetSize(_indexSet, &_size);PYLITH_CHECK_ERROR(err);assert(_size >= 0);
+    err = ISGetIndices(_indexSet, &_points);PYLITH_CHECK_ERROR(err);assert(!_size || _points);
+  } // if
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -111,8 +141,10 @@ void
 pylith::topology::StratumIS::deallocate(void)
 { // deallocate
   PetscErrorCode err = 0;
-  err = ISRestoreIndices(_indexSet, &_points);PYLITH_CHECK_ERROR(err);_points=NULL;
-  err = ISDestroy(&_indexSet);PYLITH_CHECK_ERROR(err);assert(!_indexSet);
+  if (_indexSet) {
+    err = ISRestoreIndices(_indexSet, &_points);PYLITH_CHECK_ERROR(err);_points=NULL;
+    err = ISDestroy(&_indexSet);PYLITH_CHECK_ERROR(err);assert(!_indexSet);
+  } // if
 } // deallocate
 
 // ----------------------------------------------------------------------

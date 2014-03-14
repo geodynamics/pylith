@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2013 University of California, Davis
+# Copyright (c) 2010-2014 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -61,15 +61,7 @@ class DataWriterHDF5Ext(DataWriter, ModuleDataWriterHDF5Ext):
     """
     Initialize writer.
     """
-    DataWriter.initialize(self, normalizer)
-    return
-
-
-  def initialize(self, normalizer):
-    """
-    Initialize writer.
-    """
-    DataWriter.initialize(self, normalizer)
+    DataWriter.initialize(self, normalizer, self.filename)
     
     timeScale = normalizer.timeScale()
 

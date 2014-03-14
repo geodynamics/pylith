@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -154,5 +154,28 @@ pylith::topology::TestMesh::testComm(void)
 
   PYLITH_METHOD_END;
 } // testComm
+
+
+// ----------------------------------------------------------------------
+// Test view().
+void
+pylith::topology::TestMesh::testView(void)
+{ // testView
+  PYLITH_METHOD_BEGIN;
+
+  const char* filename = "data/tri3.mesh";
+
+  Mesh mesh;
+  meshio::MeshIOAscii iohandler;
+  iohandler.filename(filename);
+  iohandler.read(&mesh);
+
+  mesh.view();
+  mesh.view(":mesh.view:ascii_info_detail");
+  mesh.view("vtk:mesh.vtk:ascii_vtk");
+  
+  PYLITH_METHOD_END;
+} // testView
+
 
 // End of file 

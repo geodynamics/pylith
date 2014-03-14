@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -116,8 +116,8 @@ const PylithScalar pylith::faults::CohesiveKinSrcsDataTri3::_fieldIncr[] = {
   3.4, 4.4,
   3.5, 4.5, // 6
   3.7, 4.7, // 7
-  3.6, 4.6, // 8
-  3.8, 4.8, // 9
+  3.6, 4.6, // 15
+  3.8, 4.8, // 16
 };
 
 const PylithScalar pylith::faults::CohesiveKinSrcsDataTri3::_jacobianLumped[] = {
@@ -127,13 +127,13 @@ const PylithScalar pylith::faults::CohesiveKinSrcsDataTri3::_jacobianLumped[] = 
   1.4, 1.4,
   1.5, 1.5, // 6
   1.7, 1.7, // 7
-  1.0, 1.0, // 8
-  1.0, 1.0, // 9
+  1.0, 1.0, // 15
+  1.0, 1.0, // 16
 };
 
 const PylithScalar pylith::faults::CohesiveKinSrcsDataTri3::_orientation[] = {
-  0.0, -1.0,  -1.0, 0.0,
-  0.0, -1.0,  -1.0, 0.0
+  0.0, +1.0,  +1.0, 0.0,
+  0.0, +1.0,  +1.0, 0.0
 };
 
 const PylithScalar pylith::faults::CohesiveKinSrcsDataTri3::_area[] = {
@@ -145,8 +145,8 @@ const int pylith::faults::CohesiveKinSrcsDataTri3::_numFaultVertices = 2;
 const int pylith::faults::CohesiveKinSrcsDataTri3::_verticesFault[] = {
   2, 3
 };
-const int pylith::faults::CohesiveKinSrcsDataTri3::_verticesLagrange[] = {
-  9, 10
+const int pylith::faults::CohesiveKinSrcsDataTri3::_edgesLagrange[] = {
+  15, 16
 };
 const int pylith::faults::CohesiveKinSrcsDataTri3::_verticesNegative[] = {
   4, 5
@@ -171,10 +171,10 @@ const PylithScalar pylith::faults::CohesiveKinSrcsDataTri3::_residual[] = {
   0.0,  0.0,
  -8.6, -9.6, // 6
  -8.8, -9.8, // 7
- -(8.5-8.2 + 0.08241148423 + 0.04322376757),
- -(9.5-9.2 + 1.89546413727 + 0.99414665414), // 8
- -(8.7-8.3 + 0.14794836271 + 0.05698088572),
- -(9.7-9.3 + 1.77538035254 + 0.68377062865), // 9
+ -(8.5-8.2 - 0.08241148423 - 0.04322376757),
+ -(9.5-9.2 - 1.89546413727 - 0.99414665414), // 15
+ -(8.7-8.3 - 0.14794836271 - 0.05698088572),
+ -(9.7-9.3 - 1.77538035254 - 0.68377062865), // 16
 };
 
 const PylithScalar pylith::faults::CohesiveKinSrcsDataTri3::_jacobian[] = {
@@ -335,7 +335,7 @@ pylith::faults::CohesiveKinSrcsDataTri3::CohesiveKinSrcsDataTri3(void)
   residual = const_cast<PylithScalar*>(_residual);
   jacobian = const_cast<PylithScalar*>(_jacobian);
   verticesFault = const_cast<int*>(_verticesFault);
-  verticesLagrange = const_cast<int*>(_verticesLagrange);
+  edgesLagrange = const_cast<int*>(_edgesLagrange);
   verticesNegative = const_cast<int*>(_verticesNegative);
   verticesPositive = const_cast<int*>(_verticesPositive);
   numFaultVertices = _numFaultVertices;  

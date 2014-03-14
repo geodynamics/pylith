@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -46,7 +46,6 @@ pylith::meshio::TestDataWriterMesh::setUp(void)
 
   _data = 0;
   _mesh = 0;
-  _flipFault = false;
 
   PYLITH_METHOD_END;
 } // setUp
@@ -98,7 +97,7 @@ pylith::meshio::TestDataWriterMesh::_initialize(void)
     } // if
     fault.label(_data->faultLabel);
     fault.id(_data->faultId);
-    fault.adjustTopology(_mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell, _flipFault);
+    fault.adjustTopology(_mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
   } // if
 
   PYLITH_METHOD_END;

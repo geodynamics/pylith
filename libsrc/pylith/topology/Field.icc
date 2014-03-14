@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -75,13 +75,6 @@ pylith::topology::Field::vectorFieldType(const VectorFieldEnum value) {
   _metadata["default"].vectorFieldType = value;
 }
 
-// Set vector field type
-inline
-void
-pylith::topology::Field::vectorFieldType(const std::string& name, const VectorFieldEnum value) {
-  const_cast<Field *>(this)->_metadata[name].vectorFieldType = value;
-}
-
 // Get vector field type
 inline
 pylith::topology::Field::VectorFieldEnum
@@ -114,14 +107,14 @@ pylith::topology::Field::scale(void) const {
 // Set flag indicating whether it is okay to dimensionalize field.
 inline
 void
-pylith::topology::Field::addDimensionOkay(const bool value) {
+pylith::topology::Field::dimensionalizeOkay(const bool value) {
   _metadata["default"].dimsOkay = value;
 }
 
 // Set flag indicating whether it is okay to dimensionalize field.
 inline
 bool
-pylith::topology::Field::addDimensionOkay(void) const {
+pylith::topology::Field::dimensionalizeOkay(void) const {
   return const_cast<Field*>(this)->_metadata["default"].dimsOkay;
 }
 

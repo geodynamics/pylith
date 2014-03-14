@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -178,12 +178,15 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
 
   // Setup field visitors.
   scalar_array dispCell(numBasis*spaceDim);
-  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
+  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"), "displacement");
+  dispVisitor.optimizeClosure();
 
   scalar_array dispIncrCell(numBasis*spaceDim);
-  topology::VecVisitorMesh dispIncrVisitor(fields->get("dispIncr(t->t+dt)"));
+  topology::VecVisitorMesh dispIncrVisitor(fields->get("dispIncr(t->t+dt)"), "displacement");
+  dispIncrVisitor.optimizeClosure();
 
-  topology::VecVisitorMesh residualVisitor(residual);
+  topology::VecVisitorMesh residualVisitor(residual, "displacement");
+  residualVisitor.optimizeClosure();
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
@@ -354,10 +357,12 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(topology::Jaco
 
   // Setup field visitors.
   scalar_array dispCell(numBasis*spaceDim);
-  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
+  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"), "displacement");
+  dispVisitor.optimizeClosure();
 
   scalar_array dispIncrCell(numBasis*spaceDim);
-  topology::VecVisitorMesh dispIncrVisitor(fields->get("dispIncr(t->t+dt)"));
+  topology::VecVisitorMesh dispIncrVisitor(fields->get("dispIncr(t->t+dt)"), "displacement");
+  dispIncrVisitor.optimizeClosure();
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);

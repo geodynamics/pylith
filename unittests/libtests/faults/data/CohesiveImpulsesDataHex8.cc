@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -29,7 +29,7 @@
  * Cells are 0-1,2 and vertices are 3-18,19-22.
  *
  *       3,4,5,6 -------- 7,8,9,10 -- 15,16,17,18 -------- 11,12,13,14
- *                                    19,20,21,22
+ *                                    59,60,61,62
  *                        ^^^^^^^^^^^^^^^^^^^^^^ Cohesive element
  *
  */
@@ -157,10 +157,10 @@ const PylithScalar pylith::faults::CohesiveImpulsesDataHex8::_fieldIncr[] = {
 // ----------------------------------------------------------------------
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataHex8::_orientation[] = {
-  0.0, -1.0, 0.0,    0.0, 0.0, +1.0,    -1.0, 0.0, 0.0,
-  0.0, -1.0, 0.0,    0.0, 0.0, +1.0,    -1.0, 0.0, 0.0,
-  0.0, -1.0, 0.0,    0.0, 0.0, +1.0,    -1.0, 0.0, 0.0,
-  0.0, -1.0, 0.0,    0.0, 0.0, +1.0,    -1.0, 0.0, 0.0,
+  0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
+  0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
+  0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
+  0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
 };
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataHex8::_area[] = {
@@ -176,11 +176,11 @@ const PylithScalar pylith::faults::CohesiveImpulsesDataHex8::_amplitude[4] = {
 
 const int pylith::faults::CohesiveImpulsesDataHex8::_numImpulses = 3;
 
-const int pylith::faults::CohesiveImpulsesDataHex8::_numConstraintVert = 4;
-const int pylith::faults::CohesiveImpulsesDataHex8::_constraintVertices[4] = {
-  19, 20, 21, 22
+const int pylith::faults::CohesiveImpulsesDataHex8::_numConstraintEdges = 4;
+const int pylith::faults::CohesiveImpulsesDataHex8::_constraintEdges[4] = {
+  59, 60, 61, 62
 };
-const int pylith::faults::CohesiveImpulsesDataHex8::_negativeVertices[] = {
+const int pylith::faults::CohesiveImpulsesDataHex8::_negativeVertices[4] = {
    7,  8,  9, 10
 };
 
@@ -203,16 +203,16 @@ const PylithScalar pylith::faults::CohesiveImpulsesDataHex8::_residual[] = {
   -5.0, -7.0, -9.0, // 18
 
   // 19 (constraint)
-  -(5.3-4.5+0.0), -(7.3-6.5+0.0), -(9.3-8.5+0.0),
+  -(5.3-4.5-0.0), -(7.3-6.5+0.0), -(9.3-8.5-0.0),
 
   // 20 (constraint)
-  -(5.5-4.6+0.0), -(7.5-6.6+0.0), -(9.5-8.6+0.0),
+  -(5.5-4.6-0.0), -(7.5-6.6+0.0), -(9.5-8.6-1.6),
 
   // 21 (constraint)
-  -(5.7-4.7+0.0), -(7.7-6.7+0.0), -(9.7-8.7+0.0),
+  -(5.7-4.7-0.0), -(7.7-6.7+0.0), -(9.7-8.7-0.0),
 
   // 22 (constraint)
-  -(5.9-4.8+0.0), -(7.9-6.8+0.0), -(9.9-8.8-1.2),
+  -(5.9-4.8-0.0), -(7.9-6.8+0.0), -(9.9-8.8-0.0),
 };
 
 pylith::faults::CohesiveImpulsesDataHex8::CohesiveImpulsesDataHex8(void)
@@ -239,9 +239,9 @@ pylith::faults::CohesiveImpulsesDataHex8::CohesiveImpulsesDataHex8(void)
   amplitude = const_cast<PylithScalar*>(_amplitude);
   numImpulses = _numImpulses;
   residual = const_cast<PylithScalar*>(_residual);
-  constraintVertices = const_cast<int*>(_constraintVertices);
+  constraintEdges = const_cast<int*>(_constraintEdges);
   negativeVertices = const_cast<int*>(_negativeVertices);
-  numConstraintVert = _numConstraintVert;  
+  numConstraintEdges = _numConstraintEdges;  
 } // constructor
 
 pylith::faults::CohesiveImpulsesDataHex8::~CohesiveImpulsesDataHex8(void)

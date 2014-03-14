@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -135,10 +135,9 @@ pylith::feassemble::ElasticityExplicitTet4::normViscosity(const PylithScalar vis
 // ----------------------------------------------------------------------
 // Integrate constributions to residual term (r) for operator.
 void
-pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
-        const topology::Field& residual,
-        const PylithScalar t,
-        topology::SolutionFields* const fields)
+pylith::feassemble::ElasticityExplicitTet4::integrateResidual(const topology::Field& residual,
+							      const PylithScalar t,
+							      topology::SolutionFields* const fields)
 { // integrateResidual
   PYLITH_METHOD_BEGIN;
   
@@ -200,16 +199,20 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
 
   // Setup field visitors.
   scalar_array accCell(numBasis*spaceDim);
-  topology::VecVisitorMesh accVisitor(fields->get("acceleration(t)"));
+  topology::VecVisitorMesh accVisitor(fields->get("acceleration(t)"), "displacement");
+  accVisitor.optimizeClosure();
 
   scalar_array velCell(numBasis*spaceDim);
-  topology::VecVisitorMesh velVisitor(fields->get("velocity(t)"));
+  topology::VecVisitorMesh velVisitor(fields->get("velocity(t)"), "displacement");
+  velVisitor.optimizeClosure();
 
   scalar_array dispCell(numBasis*spaceDim);
   scalar_array dispAdjCell(numBasis*spaceDim);
-  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
+  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"), "displacement");
+  dispVisitor.optimizeClosure();
   
-  topology::VecVisitorMesh residualVisitor(residual);
+  topology::VecVisitorMesh residualVisitor(residual, "displacement");
+  residualVisitor.optimizeClosure();
 
   scalar_array coordsCell(numCorners*spaceDim);
   topology::CoordsVisitor coordsVisitor(dmMesh);
@@ -484,9 +487,8 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(topology::Field* j
   assert(dt > 0);
 
   // Setup visitors.
-  topology::VecVisitorMesh jacobianVisitor(*jacobian);
-  PetscScalar* jacobianCell = NULL;
-  PetscInt jacobianSize = 0;
+  topology::VecVisitorMesh jacobianVisitor(*jacobian, "displacement");
+  // Don't optimize closure since we compute the Jacobian only once.
 
   scalar_array coordsCell(numCorners*spaceDim);
   topology::CoordsVisitor coordsVisitor(dmMesh);
@@ -582,13 +584,13 @@ pylith::feassemble::ElasticityExplicitTet4::_volume(const scalar_array& coordina
   const PylithScalar y0 = coordinatesCell[1];
   const PylithScalar z0 = coordinatesCell[2];
 
-  const PylithScalar x1 = coordinatesCell[3];
-  const PylithScalar y1 = coordinatesCell[4];
-  const PylithScalar z1 = coordinatesCell[5];
+  const PylithScalar x2 = coordinatesCell[3];
+  const PylithScalar y2 = coordinatesCell[4];
+  const PylithScalar z2 = coordinatesCell[5];
 
-  const PylithScalar x2 = coordinatesCell[6];
-  const PylithScalar y2 = coordinatesCell[7];
-  const PylithScalar z2 = coordinatesCell[8];
+  const PylithScalar x1 = coordinatesCell[6];
+  const PylithScalar y1 = coordinatesCell[7];
+  const PylithScalar z1 = coordinatesCell[8];
 
   const PylithScalar x3 = coordinatesCell[9];
   const PylithScalar y3 = coordinatesCell[10];
@@ -599,7 +601,8 @@ pylith::feassemble::ElasticityExplicitTet4::_volume(const scalar_array& coordina
     x0*((y2*z3-y3*z2)-y1*(z3-z2)+(y3-y2)*z1) +
     y0*((x2*z3-x3*z2)-x1*(z3-z2)+(x3-x2)*z1) -
     z0*((x2*y3-x3*y2)-x1*(y3-y2)+(x3-x2)*y1);
-    
+  assert(det > 0.0);
+
   const PylithScalar volume = det / 6.0;
   PetscLogFlops(48);
 

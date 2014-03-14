@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -98,16 +98,14 @@ public :
    * @param tmpSolveSolnVec Temporary PETSc vector for solution.
    * @param jacobianMat PETSc sparse matrix for system Jacobian.
    * @param preconditionerMat PETSc sparse matrix for preconditioner.
-   * @param Flag indicating layout of preconditioner matrix.
    * @param context ArgsJacobian structure with arguments.
    * @returns PETSc error code.
    */
   static
   PetscErrorCode reformJacobian(PetscSNES snes,
 				PetscVec tmpSolveSolnVec,
-				PetscMat* jacobianMat,
-				PetscMat* preconditionerMat,
-				MatStructure* preconditionerLayout,
+				PetscMat jacobianMat,
+				PetscMat preconditionerMat,
 				void* context);
 
   /** Generic C interface for customized PETSc line search.

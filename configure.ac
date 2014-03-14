@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2013 University of California, Davis
+# Copyright (c) 2010-2014 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -332,6 +332,9 @@ AC_CONFIG_FILES([Makefile
 		tests_auto/2d/Makefile
 		tests_auto/2d/tri3/Makefile
 		tests_auto/2d/quad4/Makefile
+		tests_auto/3d/Makefile
+		tests_auto/3d/tet4/Makefile
+		tests_auto/3d/hex8/Makefile
 		tests_auto/petsc/Makefile
 		tests_auto/eqinfo/Makefile
 		tests/Makefile

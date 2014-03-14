@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -29,7 +29,7 @@
  * Cells are 0-1,16 and vertices are 4-15.
  *
  *       2,3,4,5 -------- 6,7,8,9 -- 14,15,16,17 -------- 10,11,12,13
- *                                    18,19,20,21
+ *                                    59,60,61,62
  *                        ^^^^^^^^^^^^^^^^^^^^^^ Cohesive element
  *
  */
@@ -124,10 +124,10 @@ const PylithScalar pylith::faults::CohesiveKinDataHex8::_fieldT[] = {
   5.5, 7.5, 9.5, // 15
   5.7, 7.7, 9.7, // 16
   5.9, 7.9, 9.9, // 17
-  5.4, 7.4, 9.4, // 18
-  5.6, 7.6, 9.6, // 19
-  5.8, 7.8, 9.8, // 20
-  5.0, 7.0, 9.0, // 21
+  5.4, 7.4, 9.4, // 59
+  5.6, 7.6, 9.6, // 60
+  5.8, 7.8, 9.8, // 61
+  5.0, 7.0, 9.0, // 62
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataHex8::_fieldIncr[] = {
@@ -147,10 +147,10 @@ const PylithScalar pylith::faults::CohesiveKinDataHex8::_fieldIncr[] = {
   3.5, 4.5, 5.5, // 15
   3.7, 4.7, 5.7, // 16
   3.9, 4.9, 5.9, // 17
-  3.4, 4.4, 5.4, // 18
-  3.6, 4.6, 5.6, // 19
-  3.8, 4.8, 5.8, // 20
-  3.0, 4.0, 5.0, // 21
+  3.4, 4.4, 5.4, // 59
+  3.6, 4.6, 5.6, // 60
+  3.8, 4.8, 5.8, // 61
+  3.0, 4.0, 5.0, // 62
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataHex8::_jacobianLumped[] = {
@@ -170,24 +170,24 @@ const PylithScalar pylith::faults::CohesiveKinDataHex8::_jacobianLumped[] = {
   1.5, 1.5, 1.5, // 15
   1.7, 1.7, 1.7, // 16
   1.9, 1.9, 1.9, // 17
-  1.0, 1.0, 1.0, // 18
-  1.0, 1.0, 1.0, // 19
-  1.0, 1.0, 1.0, // 20
-  1.0, 1.0, 1.0, // 21
+  1.0, 1.0, 1.0, // 59
+  1.0, 1.0, 1.0, // 60
+  1.0, 1.0, 1.0, // 61
+  1.0, 1.0, 1.0, // 62
 };
 
 const int pylith::faults::CohesiveKinDataHex8::_numFaultVertices = 4;
 const int pylith::faults::CohesiveKinDataHex8::_verticesFault[] = {
-   2,  4,  5,  3
+  2,  3,  4,  5,
 };
-const int pylith::faults::CohesiveKinDataHex8::_verticesLagrange[] = {
-  19, 21, 22, 20
+const int pylith::faults::CohesiveKinDataHex8::_edgesLagrange[] = {
+  59, 60, 61, 62
 };
 const int pylith::faults::CohesiveKinDataHex8::_verticesNegative[] = {
-   7,  9, 10,  8
+   7,  8,  9,  10
 };
 const int pylith::faults::CohesiveKinDataHex8::_verticesPositive[] = {
-  15, 17, 18, 16
+  15, 16, 17, 18
 };
 
 const int pylith::faults::CohesiveKinDataHex8::_numCohesiveCells = 1;
@@ -200,10 +200,10 @@ const int pylith::faults::CohesiveKinDataHex8::_cellMappingCohesive[] = {
 
 
 const PylithScalar pylith::faults::CohesiveKinDataHex8::_orientation[] = {
-  0.0, -1.0, 0.0,    0.0, 0.0, +1.0,    -1.0, 0.0, 0.0,
-  0.0, -1.0, 0.0,    0.0, 0.0, +1.0,    -1.0, 0.0, 0.0,
-  0.0, -1.0, 0.0,    0.0, 0.0, +1.0,    -1.0, 0.0, 0.0,
-  0.0, -1.0, 0.0,    0.0, 0.0, +1.0,    -1.0, 0.0, 0.0,
+  0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
+  0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
+  0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
+  0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataHex8::_area[] = {
@@ -228,17 +228,17 @@ const PylithScalar pylith::faults::CohesiveKinDataHex8::_residual[] = {
   -5.8, -7.8, -9.8, // 16
   -5.0, -7.0, -9.0, // 17
 
-  // 18 (constraint)
-  -(5.3-4.5+0.07938069066), -(7.3-6.5+1.82575588523), -(9.3-8.5+0.55566483464),
+  // 59 (constraint)
+  -(5.3-4.5-0.07938069066), -(7.3-6.5-1.82575588523), -(9.3-8.5+0.55566483464),
 
-  // 19 (constraint)
-  -(5.5-4.6+0.14140241667), -(7.5-6.6+1.69682900001), -(9.5-8.6+0.56560966667),
+  // 60 (constraint)
+  -(5.5-4.6-0.14140241667), -(7.5-6.6-1.69682900001), -(9.5-8.6+0.56560966667),
 
-  // 20 (constraint)
-  -(5.7-4.7+0.18205179147), -(7.7-6.7+1.51709826228), -(9.7-8.7+0.54615537442),
+  // 61 (constraint)
+  -(5.7-4.7-0.18205179147), -(7.7-6.7-1.51709826228), -(9.7-8.7+0.54615537442),
 
-  // 21 (constraint)
-  -(5.9-4.8+0.19904410828), -(7.9-6.8+1.29378670385), -(9.9-8.8+0.49761027071),
+  // 62 (constraint)
+  -(5.9-4.8-0.19904410828), -(7.9-6.8-1.29378670385), -(9.9-8.8+0.49761027071),
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataHex8::_jacobian[] = {
@@ -1449,22 +1449,22 @@ const PylithScalar pylith::faults::CohesiveKinDataHex8::_fieldIncrAdjusted[] = {
   3.2, 4.2, 5.2,
   3.3, 4.3, 5.3,
   3.4, 4.4, 5.4,
-  3.81542674923, 5.62624380386, 6.03655867323, // 6
-  4.05551729839, 5.80814306452, 6.26077887097, // 7
-  4.29102589574, 5.95854913114, 6.47307768721, // 8
-  4.5184280556, 6.08059317225, 6.67174581469, // 9
+  3.74171610791, 3.93089905329, 6.03655867323, // 6
+  3.91867625, 4.16605048387, 6.26077887097, // 7
+  4.10897410427, 4.44145086886, 6.47307768721, // 8
+  4.31400437683, 4.75183926019, 6.67174581469, // 9
   3.9, 4.9, 5.9,
   3.0, 4.0, 5.0,
   3.1, 4.1, 5.1,
   3.2, 4.2, 5.2,
-  2.93604605858, 3.00048791863, 4.68089383859, // 14
-  3.01411488172, 3.21131406451, 4.7951692043, // 15
-  3.10897410427, 3.44145086886, 4.92692231279, // 16
-  3.21938394732, 3.6868064684, 5.07413554398, // 17
-  0.473140123852, 1.68936570579, 0.804838009839, // 18
-  0.728827677422, 1.93302890323, 1.05724619355, // 19
-  1.00474402275, 2.13953352294, 1.31423206826, // 20
-  1.29317050009, 2.30506771005, 1.56914246644, // 21
+  3.02109679857, 4.95665493852, 4.68089383859, // 14
+  3.16007866667, 4.96287948388, 4.7951692043, // 15
+  3.29102589574, 4.95854913114, 4.92692231279, // 16
+  3.41304848511, 4.94562596404, 5.07413554398, // 17
+  0.362574161862, -0.853651420071, 0.804838009839, // 59
+  0.509881999997, -0.694319225814, 1.05724619355, // 60
+  0.695255977251, -0.439533522938, 1.31423206826, // 61
+  0.925207878293, -0.0866893316668, 1.56914246644, // 62
 };
 
 pylith::faults::CohesiveKinDataHex8::CohesiveKinDataHex8(void)
@@ -1493,7 +1493,7 @@ pylith::faults::CohesiveKinDataHex8::CohesiveKinDataHex8(void)
   jacobian = const_cast<PylithScalar*>(_jacobian);
   fieldIncrAdjusted = const_cast<PylithScalar*>(_fieldIncrAdjusted);
   verticesFault = const_cast<int*>(_verticesFault);
-  verticesLagrange = const_cast<int*>(_verticesLagrange);
+  edgesLagrange = const_cast<int*>(_edgesLagrange);
   verticesNegative = const_cast<int*>(_verticesNegative);
   verticesPositive = const_cast<int*>(_verticesPositive);
   numFaultVertices = _numFaultVertices;  

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -263,7 +263,7 @@ pylith::feassemble::TestElasticityImplicitLgDeform::_initialize(topology::Mesh* 
   PetscDM dmMesh;
 
   // Cells and vertices
-  const PetscBool interpolate = PETSC_FALSE;
+  const PetscBool interpolate = PETSC_TRUE;
   PetscErrorCode err;
   err = DMPlexCreateFromCellList(PETSC_COMM_WORLD, _data->cellDim, _data->numCells, _data->numVertices, _data->numBasis, interpolate, _data->cells, _data->spaceDim, _data->vertices, &dmMesh);PYLITH_CHECK_ERROR(err);
   mesh->dmMesh(dmMesh, "domain");
@@ -326,9 +326,14 @@ pylith::feassemble::TestElasticityImplicitLgDeform::_initialize(topology::Mesh* 
   fields->solutionName("dispIncr(t->t+dt)");
   
   topology::Field& residual = fields->get("residual");
-  residual.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
+  residual.subfieldAdd("displacement", spaceDim, topology::Field::VECTOR, lengthScale);
+  residual.subfieldAdd("lagrange_multiplier", spaceDim, topology::Field::VECTOR);
+
+  residual.subfieldsSetup();
+  residual.setupSolnChart();
+  residual.setupSolnDof(spaceDim);
   residual.allocate();
-  residual.zero();
+  residual.zeroAll();
   fields->copyLayout("residual");
 
   topology::VecVisitorMesh dispTVisitor(fields->get("disp(t)"));

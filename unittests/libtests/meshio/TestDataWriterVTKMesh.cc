@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -218,7 +218,7 @@ pylith::meshio::TestDataWriterVTKMesh::testWriteVertexField(void)
     // Make sure we can reuse field
     std::string fieldLabel = std::string(field.label()) + std::string("2");
     field.label(fieldLabel.c_str());
-    field.addDimensionOkay(true);
+    field.dimensionalizeOkay(true);
     field.scale(2.0);
     field.dimensionalize();
     writer.writeVertexField(t, field, *_mesh);

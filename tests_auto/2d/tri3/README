@@ -2,116 +2,20 @@
 DOMAIN
 ======================================================================
 
--400 <= x <= +400
--400 <= y <= +400
+-4km <= x <= +4km
+-4km <= y <= +4km
 
-Mesh is tri3 cells with nominal 100m discretization size.
+Mesh is tri3 cells with nominal 1km discretization size.
 
-======================================================================
-AXIAL COMPRESSION
-======================================================================
+AXIALDISP: Axial extension, see axialdisp_soln.py
 
-2-D axial compression test with linear triangular cells.
+SHEARDISP: Shear, see sheardisp_soln.py
 
-         Uy=-1.0 m
-         ----------
-         |        |
-Ux=0.0 m |        |
-         |        |
-         |        |
-         ----------
-         Uy=+1.0 m
+SHEARDISPNOSLIP: SHEARDISP w/fault and no slip
 
-Dirichlet boundary conditions
-  Ux(0,y) = 0.0
-  Uy(x,-400) = +1.0 m
-  Uy(x,+400) = -1.0 m
+SHEARDISPNOSLIPREFINE: SHEARDISP w/fault and no slip and mesh refinement
 
-Analytical solution
-  Ux(x,y) = 0
-  Uy(x,y) = -0.004 * y
+SLIPONEFAULT: slip on one fault, see sliponefault_soln.py
 
+SLIPTWOFAULTS: slip on two faults, see sliptwofaults_soln.py
 
-======================================================================
-SHEAR
-======================================================================
-
-2-D shear test with linear triangular cells.
-
-
-          ----------
-          |        |
-Uy=-1.0 m |        | Uy=+1.0m
-          |        |
-          |        |
-          ----------
-
-
-Dirichlet boundary conditions
-  Ux(   0,y) =  0.0
-  Uy(   0,y) = -1.0 m
-  Ux(+400,y) =  0.0
-  Uy(+400,y) = +1.0 m
-
-Analytical solution
-  Ux(x,y) = 0
-  Uy(x,y) = -0.004 * x
-
-
-======================================================================
-DISLOCATION
-======================================================================
-
-2-D dislocation test with linear triangular cells.
-
-
-          ----------
-          |    |    |
-Uy=-0.5 m |    |    | Uy=+0.5m
-          |    |    |
-          |    |    |
-          ----------
-
-
-Dirichlet boundary conditions
-  Ux(   0,y) =  0.0
-  Uy(   0,y) = -0.5 m
-  Ux(+400,y) =  0.0
-  Uy(+400,y) = +0.5 m
-
-Analytical solution
-  Ux(x<0,y) = -0.5 m
-  Ux(x>0,y) = +0.5 m
-  Uy = 0.0
-
-======================================================================
-DISLOCATION2
-======================================================================
-
-2-D dislocation test with linear triangular cells with 2 faults. One
-is right-lateral and one is left-lateral to cause the middle section
-to move 1.0 m to the right.
-
-
-           Ux=0     
-         ----------
-         |        |
-         |--------| 
-         | Ux=1.0m|
-         |--------|
-         |        |
-         ----------
-           Ux=0
-
-
-Dirichlet boundary conditions
-  Ux(x,+400) =  0.0
-  Uy(x,+400) =  0.0
-  Ux(x,-400) =  0.0
-  Uy(x,-400) =  0.0
-
-Analytical solution
-  Ux(x,-100<y<+100) = +1.0 m
-  Ux(x,-100>y) = 0.0
-  Ux(x,+100<y) = 0.0
-  Uy = 0.0

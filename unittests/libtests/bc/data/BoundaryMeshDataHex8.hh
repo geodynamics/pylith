@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -49,14 +49,11 @@ private:
 
   static const int _numCorners;
   static const int _numCells;
+  static const bool _isSimplexMesh;
 
   static const int _numVerticesNoFault;
-  static const int _verticesNoFault[];
-  static const int _cellsNoFault[];
 
   static const int _numVerticesFault;
-  static const int _verticesFault[];
-  static const int _cellsFault[];
 
 };
 

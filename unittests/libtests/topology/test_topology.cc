@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -32,7 +32,7 @@
 
 #include <stdlib.h> // USES abort()
 
-//#define MALLOC_DUMP
+#define MALLOC_DUMP
 
 int
 main(int argc,

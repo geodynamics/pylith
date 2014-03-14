@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -65,7 +65,6 @@ protected :
   feassemble::Quadrature* _quadrature; ///< Fault quadrature.a
   std::vector<EqKinSrc*> _eqsrcs; ///< Array of Kinematic earthquake sources.
   std::vector<BruneSlipFn*> _slipfns; ///< Slip time function.
-  bool _flipFault; ///< If true, flip fault orientation.
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
@@ -106,11 +105,18 @@ public :
   /// Test _calcTractionsChange().
   void testCalcTractionsChange(void);
 
-  /// Test splitField().
-  void testSplitField(void);
-
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
+
+  /** Set field values.
+   *
+   * @param field Field to assign values to.
+   * @param data Array of data.
+   * @param scale Scale to nondimensionalize values by.
+   */
+  void _fieldSetValues(topology::Field* field,
+		       const PylithScalar* data,
+		       const PylithScalar scale =1.0);
 
   /** Initialize FaultCohesiveKin interface condition.
    *
@@ -122,13 +128,13 @@ private :
 		   FaultCohesiveKin* const fault,
 		   topology::SolutionFields* const fields) const;
 
-  /** Determine if vertex is a Lagrange multiplier constraint vertex.
+  /** Determine if point is a Lagrange multiplier constraint point.
    *
-   * @param vertex Label of vertex.
+   * @param point Label of point.
    *
-   * @returns True if vertex is a constraint vertex, false otherwise.
+   * @returns True if point is a constraint point, false otherwise.
    */
-  bool _isConstraintVertex(const int vertex) const;
+  bool _isConstraintEdge(const int point) const;
   
 
 }; // class TestFaultCohesiveKin

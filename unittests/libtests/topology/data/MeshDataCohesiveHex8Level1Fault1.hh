@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -55,12 +55,8 @@ private:
   static const int _numCellsCohesive; ///< Number of cohesive cells.
   static const int _numCornersCohesive; ///< Number of vertices in cohesive cell.
 
-  static const PylithScalar _vertices[]; ///< Pointer to coordinates of vertices
-  static const int _cells[]; ///< Pointer to indices of vertices in cells
-  static const int _cellsCohesive[]; ///< Pointer to indices of vertices in cohseive cells
-  static const int _materialIds[]; ///< Pointer to cell material identifiers
+  static const int _matIdSum; ///< Sum of material identifiers (checksum).
 
-  static const int _groups[]; ///< Groups of points
   static const int _groupSizes[]; ///< Sizes of groups
   static const char* _groupNames[]; ///< Array of group names
   static const char* _groupTypes[]; ///< Array of group types

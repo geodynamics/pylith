@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -47,12 +47,12 @@ void
 pylith::feassemble::Integrator::initialize(const topology::Mesh& mesh) {
 } // initialize
 
-// Split solution field for separate preconditioning.
+// Setup DOF on solution field.
 inline
 void
-pylith::feassemble::Integrator::splitField(topology::Field* field) {
-} // splitField
-  
+pylith::feassemble::Integrator::setupSolnDof(topology::Field* field) {
+} // setupSolnDof
+
 // Integrate contributions to residual term (r) for operator.
 inline
 void

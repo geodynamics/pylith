@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -71,9 +71,9 @@ private:
   static const int _numImpulses; ///< Number of impulses.
   static const PylithScalar _residual[]; ///< Expected values from residual.
 
-  static const int _constraintVertices[]; ///< Expected points for constraint vertices
+  static const int _constraintEdges[]; ///< Expected points for constraint edges
   static const int _negativeVertices[]; ///< Expected points for negative-side fault vertices
-  static const int _numConstraintVert; ///< Number of constraint vertices
+  static const int _numConstraintEdges; ///< Number of constraint edges
 
 };
 

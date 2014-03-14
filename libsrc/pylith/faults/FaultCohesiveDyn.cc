@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -53,6 +53,8 @@
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
+
+#include <iostream> // TEMPORARY
 
 //#define DETAILED_EVENT_LOGGING
 
@@ -1364,33 +1366,21 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     PYLITH_METHOD_RETURN(buffer);
 
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
-    PetscSection orientationSection = _fields->get("orientation").petscSection();assert(orientationSection);
-    PetscVec orientationVec = _fields->get("orientation").localVector();assert(orientationVec);
     _allocateBufferVectorField();
     topology::Field& buffer = _fields->get("buffer (vector)");
-    buffer.copy(orientationSection, 0, PETSC_DETERMINE, orientationVec);
-    buffer.label("strike_dir");
-    buffer.scale(1.0);
+    buffer.copySubfield(orientation, "strike_dir");
     PYLITH_METHOD_RETURN(buffer);
 
   } else if (2 == cohesiveDim && 0 == strcasecmp("dip_dir", name)) {
-    PetscSection orientationSection = _fields->get("orientation").petscSection();assert(orientationSection);
-    PetscVec orientationVec = _fields->get("orientation").localVector();assert(orientationVec);
     _allocateBufferVectorField();
     topology::Field& buffer = _fields->get("buffer (vector)");
-    buffer.copy(orientationSection, 1, PETSC_DETERMINE, orientationVec);
-    buffer.label("dip_dir");
-    buffer.scale(1.0);
+    buffer.copySubfield(orientation, "dip_dir");
     PYLITH_METHOD_RETURN(buffer);
 
   } else if (0 == strcasecmp("normal_dir", name)) {
-    PetscSection orientationSection = _fields->get("orientation").petscSection();assert(orientationSection);
-    PetscVec orientationVec = _fields->get("orientation").localVector();assert(orientationVec);
     _allocateBufferVectorField();
     topology::Field& buffer = _fields->get("buffer (vector)");
-    buffer.copy(orientationSection, cohesiveDim, PETSC_DETERMINE, orientationVec);
-    buffer.label("normal_dir");
-    buffer.scale(1.0);
+    buffer.copySubfield(orientation, "normal_dir");
     PYLITH_METHOD_RETURN(buffer);
 
   } else if (0 == strcasecmp("traction", name)) {
@@ -1618,6 +1608,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
     _fields->add("sensitivity dLagrange", "sensitivity_dlagrange");
     topology::Field& dLagrange = _fields->get("sensitivity dLagrange");
     dLagrange.cloneSection(solution);
+    topology::VecVisitorMesh::optimizeClosure(dLagrange);
   } // if
   topology::Field& dLagrange = _fields->get("sensitivity dLagrange");
   dLagrange.zeroAll();
@@ -1706,7 +1697,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
   PetscSection solutionFaultSection = _fields->get("sensitivity solution").petscSection();assert(solutionFaultSection);
   PetscVec solutionFaultVec = _fields->get("sensitivity solution").localVector();assert(solutionFaultVec);
   PetscSection solutionFaultGlobalSection = NULL;
-  PetscScalar *solutionFaultArray = NULL;
+  PetscScalar* solutionFaultArray = NULL;
   err = DMGetDefaultGlobalSection(solutionFaultDM, &solutionFaultGlobalSection);PYLITH_CHECK_ERROR(err);
 
   assert(_jacobian);
@@ -1714,13 +1705,13 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
 
   const int iCone = (negativeSide) ? 0 : 1;
 
-  PetscIS *cellsIS = (numCohesiveCells > 0) ? new PetscIS[numCohesiveCells] : 0;
+  PetscIS* cellsIS = (numCohesiveCells > 0) ? new PetscIS[numCohesiveCells] : 0;
   int_array indicesGlobal(subnrows);
   int_array indicesLocal(numCohesiveCells*subnrows);
   int_array indicesPerm(subnrows);
-  for(PetscInt c = 0; c < numCohesiveCells; ++c) {
+  for (PetscInt c = 0; c < numCohesiveCells; ++c) {
     // Get cone for cohesive cell
-    PetscInt *closure = NULL;
+    PetscInt* closure = NULL;
     PetscInt closureSize, q = 0;
     err = DMPlexGetTransitiveClosure(dmMesh, cellsCohesive[c], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     // Filter out non-vertices
@@ -1731,19 +1722,20 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
       } // if
     } // for
     closureSize = q;
-    assert(closureSize == 3*numBasis);
+    assert(closureSize == 2*numBasis);
 
     // Get indices
-    for(int iBasis = 0; iBasis < numBasis; ++iBasis) {
+    for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
       // negative side of the fault: iCone=0
       // positive side of the fault: iCone=1
       const int v_domain = closure[iCone*numBasis+iBasis];
       PetscInt goff;
 
       err = PetscSectionGetOffset(solutionDomainGlobalSection, v_domain, &goff);PYLITH_CHECK_ERROR(err);
-      for(int iDim = 0, iB = iBasis*spaceDim, gind = goff < 0 ? -(goff+1) : goff; iDim < spaceDim; ++iDim) {
+      for (int iDim = 0, iB = iBasis*spaceDim, gind = goff < 0 ? -(goff+1) : goff; iDim < spaceDim; ++iDim) {
         indicesGlobal[iB+iDim] = gind + iDim;
       } // for
+
     } // for
     err = DMPlexRestoreTransitiveClosure(dmMesh, cellsCohesive[c], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
 
@@ -1757,12 +1749,13 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
     } // for
     cellsIS[c] = NULL;
     err = ISCreateGeneral(PETSC_COMM_SELF, indicesGlobal.size(), &indicesGlobal[0], PETSC_COPY_VALUES, &cellsIS[c]);PYLITH_CHECK_ERROR(err);
+
   } // for
 
   PetscMat* submatrices = NULL;
   err = MatGetSubMatrices(jacobianDomainMatrix, numCohesiveCells, cellsIS, cellsIS, MAT_INITIAL_MATRIX, &submatrices);PYLITH_CHECK_ERROR(err);
 
-  for(PetscInt c = 0; c < numCohesiveCells; ++c) {
+  for (PetscInt c = 0; c < numCohesiveCells; ++c) {
     // Get values for submatrix associated with cohesive cell
     jacobianSubCell = 0.0;
     err = MatGetValues(submatrices[c], subnrows, &indicesLocal[c*subnrows], subnrows, &indicesLocal[c*subnrows],
@@ -1770,6 +1763,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
 
     // Insert cell contribution into PETSc Matrix
     PetscInt c_fault = _cohesiveToFault[cellsCohesive[c]];
+
     err = DMPlexMatSetClosure(faultDMMesh, solutionFaultSection, solutionFaultGlobalSection,  jacobianFaultMatrix, c_fault, &jacobianSubCell[0], INSERT_VALUES);PYLITH_CHECK_ERROR_MSG(err, "Update to PETSc Mat failed.");
 
     // Destory IS for cohesiveCell
@@ -1903,7 +1897,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySolve(void)
 
   PetscErrorCode err = 0;
   const PetscMat jacobianMat = _jacobian->matrix();
-  err = KSPSetOperators(_ksp, jacobianMat, jacobianMat, DIFFERENT_NONZERO_PATTERN);PYLITH_CHECK_ERROR(err);
+  err = KSPSetOperators(_ksp, jacobianMat, jacobianMat);PYLITH_CHECK_ERROR(err);
 
   const PetscVec residualVec = residual.globalVector();
   const PetscVec solutionVec = solution.globalVector();

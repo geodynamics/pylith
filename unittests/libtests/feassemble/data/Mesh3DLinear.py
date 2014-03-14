@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2013 University of California, Davis
+# Copyright (c) 2010-2014 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -50,13 +50,13 @@ class Mesh3DLinear(Component):
     self.gravityVec = numpy.array( [0.0, 0.0, -1.0e8],
                                    dtype=numpy.float64)
     self.vertices = numpy.array( [[-0.5, -1.0, -0.5],
-                                  [ 2.0, -0.5, -0.4],
                                   [ 1.0, -0.1, -0.3],
+                                  [ 2.0, -0.5, -0.4],
                                   [-0.2,  0.5,  2.0]], dtype=numpy.float64)
     self.cells = numpy.array( [[0, 1, 2, 3]], dtype=numpy.int32)
     self.verticesRef = numpy.array( [[-1.0, -1.0, -1.0],
-                                     [+1.0, -1.0, -1.0],
                                      [-1.0, +1.0, -1.0],
+                                     [+1.0, -1.0, -1.0],
                                      [-1.0, -1.0, +1.0]],
                                     dtype=numpy.float64)
 
@@ -73,8 +73,8 @@ class Mesh3DLinear(Component):
     e23 = ((v2[0]-v3[0])**2 + (v2[1]-v3[1])**2 + (v2[2]-v3[2])**2)**0.5
 
     vol = 1.0/6.0*numpy.linalg.det(numpy.array([[1.0, v0[0], v0[1], v0[2]],
-                                                [1.0, v1[0], v1[1], v1[2]],
                                                 [1.0, v2[0], v2[1], v2[2]],
+                                                [1.0, v1[0], v1[1], v1[2]],
                                                 [1.0, v3[0], v3[1], v3[2]]],
                                                dtype=numpy.float64))
     cross012 = numpy.cross(v1-v0, v2-v0)

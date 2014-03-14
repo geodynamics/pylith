@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -51,7 +51,6 @@ pylith::meshio::TestDataWriterFaultMesh::setUp(void)
   _mesh = new topology::Mesh();
   const bool isSubMesh = true;
   _faultMesh = new topology::Mesh(isSubMesh);
-  _flipFault = false;
 
   PYLITH_METHOD_END;
 } // setUp
@@ -104,7 +103,7 @@ pylith::meshio::TestDataWriterFaultMesh::_initialize(void)
   } // if
   fault.label(_data->faultLabel);
   fault.id(_data->faultId);
-  fault.adjustTopology(_mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell, _flipFault);
+  fault.adjustTopology(_mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
   faults::CohesiveTopology::createFaultParallel(_faultMesh, *_mesh, _data->faultId, _data->faultLabel, useLagrangeConstraints);
 
   PYLITH_METHOD_END;

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -134,7 +134,8 @@ pylith::faults::FaultCohesiveTract::verifyConfiguration(const topology::Mesh& me
   } // if
 
   const int numCorners = _quadrature->refGeometry().numCorners();
-  topology::StratumIS cohesiveIS(dmMesh, "material-id", id());
+  const bool includeOnlyCells = true;
+  topology::StratumIS cohesiveIS(dmMesh, "material-id", id(), includeOnlyCells);
   const PetscInt* cells = cohesiveIS.points();
   const PetscInt ncells = cohesiveIS.size();
 

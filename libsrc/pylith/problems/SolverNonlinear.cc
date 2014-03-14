@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -107,7 +107,7 @@ pylith::problems::SolverNonlinear::initialize(const topology::SolutionFields& fi
 
   // Set default line search type to SNESSHELL and use our custom line search
   PetscSNESLineSearch ls;
-  err = SNESGetSNESLineSearch(_snes, &ls);PYLITH_CHECK_ERROR(err);
+  err = SNESGetLineSearch(_snes, &ls);PYLITH_CHECK_ERROR(err);
   err = SNESLineSearchSetType(ls, SNESSHELL);PYLITH_CHECK_ERROR(err);
   err = SNESLineSearchSetOrder(ls, SNES_LINESEARCH_ORDER_CUBIC);PYLITH_CHECK_ERROR(err);
   err = SNESLineSearchShellSetUserFunc(ls, lineSearch, (void*) formulation);PYLITH_CHECK_ERROR(err);
@@ -193,9 +193,8 @@ pylith::problems::SolverNonlinear::reformResidual(PetscSNES snes,
 PetscErrorCode
 pylith::problems::SolverNonlinear::reformJacobian(PetscSNES snes,
 						  PetscVec tmpSolutionVec,
-						  PetscMat* jacobianMat,
-						  PetscMat* preconditionerMat,
-						  MatStructure* preconditionerLayout,
+						  PetscMat jacobianMat,
+						  PetscMat preconditionerMat,
 						  void* context)
 { // reformJacobian
   PYLITH_METHOD_BEGIN;

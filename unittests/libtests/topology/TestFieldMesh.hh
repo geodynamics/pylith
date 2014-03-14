@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -56,7 +56,6 @@ class pylith::topology::TestFieldMesh : public CppUnit::TestFixture
   CPPUNIT_TEST( testChartSize );
   CPPUNIT_TEST( testSectionSize );
   CPPUNIT_TEST( testHasSection );
-  CPPUNIT_TEST( testNewSection );
   CPPUNIT_TEST( testNewSectionPoints );
   CPPUNIT_TEST( testNewSectionPointsArray );
   CPPUNIT_TEST( testNewSectionDomain );
@@ -68,6 +67,7 @@ class pylith::topology::TestFieldMesh : public CppUnit::TestFixture
   CPPUNIT_TEST( testZeroAll );
   CPPUNIT_TEST( testComplete );
   CPPUNIT_TEST( testCopy );
+  CPPUNIT_TEST( testCopySubfield );
   CPPUNIT_TEST( testOperatorAdd );
   CPPUNIT_TEST( testDimensionalize );
   CPPUNIT_TEST( testView );
@@ -117,9 +117,6 @@ public :
   /// Test hasSection().
   void testHasSection(void);
 
-  /// Test newSection().
-  void testNewSection(void);
-
   /// Test newSection(points).
   void testNewSectionPoints(void);
 
@@ -152,6 +149,9 @@ public :
 
   /// Test copy().
   void testCopy(void);
+
+  /// Test copySubfield().
+  void testCopySubfield(void);
 
   /// Test operator+=().
   void testOperatorAdd(void);

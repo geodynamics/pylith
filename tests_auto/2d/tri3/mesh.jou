@@ -17,19 +17,32 @@ mesh surface all
 # ----------------------------------------------------------------------
 # Create blocks for materials
 # ----------------------------------------------------------------------
-block 1 surface 3 4 5 
+block 1 surface 3 5 6 7
 block 1 name "elastic"
 
 # ----------------------------------------------------------------------
 # Create nodeset for faults
 # ----------------------------------------------------------------------
-group "fault_x" add node in curve 5
+group "fault_x" add node in curve 16
+group "fault_x" add node in curve 19
 nodeset 10 group fault_x
 nodeset 10 name "fault_x"
 
-group "fault_x2" add node in curve 10
+group "fault_x2" add node in curve 17
+group "fault_x2" add node in curve 18
 nodeset 11 group fault_x2
 nodeset 11 name "fault_x2"
+
+group "fault_y" add node in curve 15
+nodeset 12 group fault_y
+nodeset 12 name "fault_y"
+
+group "faults_x" add node in group fault_x
+group "faults_x" add node in group fault_x2
+group "fault_y_edge" intersect group fault_y with group faults_x
+nodeset 13 group fault_y_edge
+nodeset 13 name "fault_y_edge"
+delete group faults_x
 
 # ----------------------------------------------------------------------
 # Create nodeset for +x edge
@@ -67,3 +80,4 @@ nodeset 23 name "edge yneg"
 # Export exodus file
 # ----------------------------------------------------------------------
 export mesh "mesh.exo" dimension 2 overwrite
+

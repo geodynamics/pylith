@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -238,17 +238,22 @@ pylith::meshio::TestMeshIO::_checkVals(const MeshData& data)
     } // for
     std::string groupType = (firstPoint >= cStart && firstPoint < cEnd) ? "cell" : "vertex";
     CPPUNIT_ASSERT_EQUAL(std::string(data.groupTypes[iGroup]), groupType);
-    PetscInt numPoints;
+    PetscInt numPoints, numVertices = 0;
     err = DMPlexGetStratumSize(dmMesh, name, 1, &numPoints);PYLITH_CHECK_ERROR(err);
-    CPPUNIT_ASSERT_EQUAL(data.groupSizes[iGroup], numPoints);
     PetscIS pointIS = NULL;
     const PetscInt *points = NULL;
     const PetscInt offset = ("vertex" == groupType) ? numCells : 0;
     err = DMPlexGetStratumIS(dmMesh, name, 1, &pointIS);PYLITH_CHECK_ERROR(err);
     err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
     for(PetscInt p = 0; p < numPoints; ++p) {
-      CPPUNIT_ASSERT_EQUAL(data.groups[index++], points[p]-offset);
+      const PetscInt pStart = ("vertex" == groupType) ? vStart : cStart;
+      const PetscInt pEnd   = ("vertex" == groupType) ? vEnd   : cEnd;
+      if ((points[p] >= pStart) && (points[p] < pEnd)) {
+        CPPUNIT_ASSERT_EQUAL(data.groups[index++], points[p]-offset);
+        ++numVertices;
+      }
     } // for
+    CPPUNIT_ASSERT_EQUAL(data.groupSizes[iGroup], numVertices);
     err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
   } // for

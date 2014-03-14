@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -34,7 +34,6 @@ pylith::meshio::TestDataWriterVTKFaultMeshTri3::setUp(void)
 
   TestDataWriterVTKFaultMesh::setUp();
   _data = new DataWriterVTKDataFaultMeshTri3;
-  _flipFault = true;
 
   _initialize();
 
@@ -54,7 +53,6 @@ pylith::meshio::TestDataWriterVTKFaultMeshQuad4::setUp(void)
 
   TestDataWriterVTKFaultMesh::setUp();
   _data = new DataWriterVTKDataFaultMeshQuad4;
-  _flipFault = true;
 
   _initialize();
 
@@ -74,7 +72,6 @@ pylith::meshio::TestDataWriterVTKFaultMeshTet4::setUp(void)
 
   TestDataWriterVTKFaultMesh::setUp();
   _data = new DataWriterVTKDataFaultMeshTet4;
-  _flipFault = false;
 
   _initialize();
 
@@ -94,7 +91,6 @@ pylith::meshio::TestDataWriterVTKFaultMeshHex8::setUp(void)
 
   TestDataWriterVTKFaultMesh::setUp();
   _data = new DataWriterVTKDataFaultMeshHex8;
-  _flipFault = true;
 
   _initialize();
 

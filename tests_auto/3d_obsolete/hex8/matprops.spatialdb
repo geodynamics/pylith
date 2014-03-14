@@ -1,0 +1,14 @@
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 3
+  value-names =  density vs vp
+  value-units =  kg/m^3  m/s  m/s
+  num-locs = 1
+  data-dim = 0
+  space-dim = 3
+  cs-data = cartesian {
+    to-meters = 1.0
+    space-dim = 3
+  }
+}
+0.0 0.0  0.0   2700.0  3333.333333333333  5773.502691896258

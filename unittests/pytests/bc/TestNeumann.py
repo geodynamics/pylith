@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2013 University of California, Davis
+# Copyright (c) 2010-2014 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -220,7 +220,7 @@ class TestNeumann(unittest.TestCase):
     importer.inventory.filename = "data/tri3.mesh"
     importer.inventory.coordsys = cs
     importer._configure()
-    mesh = importer.read(debug=False, interpolate=False)
+    mesh = importer.read(debug=False, interpolate=True)
     
     bc.preinitialize(mesh)
     bc.initialize(totalTime=0.0, numTimeSteps=1, normalizer=normalizer)
@@ -230,7 +230,7 @@ class TestNeumann(unittest.TestCase):
     from pylith.topology.SolutionFields import SolutionFields
     fields = SolutionFields(mesh)
     fields.add("residual", "residual")
-    fields.add("disp(t), bc(t+dt)", "displacement")
+    fields.add("disp(t)", "displacement")
     fields.add("dispIncr(t->t+dt)", "displacement")
     fields.solutionName("dispIncr(t->t+dt)")
 

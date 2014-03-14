@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -49,15 +49,12 @@ public :
    * @param mesh Finite-element mesh of domain.
    * @param groupdField Group of vertices assocated with faces of
    *   cells defining fault surface
-   * @param flipFault Flag indicating to flip positive/negative sides
-   * of the fault.
    */
   static
   void createFault(topology::Mesh* faultMesh,
 		   DM& faultBoundary,
 		   const topology::Mesh& mesh,
-		   DMLabel groupField,
-		   const bool flipFault =false);
+		   DMLabel groupField);
 
   /** Create cohesive cells.
    *
@@ -102,7 +99,6 @@ public :
   void createInterpolated(topology::Mesh* mesh,
                           const topology::Mesh& faultMesh,
                           DM faultBoundary,
-                          DMLabel groupField,
                           const int materialId,
                           int& firstFaultVertex,
                           int& firstLagrangeVertex,

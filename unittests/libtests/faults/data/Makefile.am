@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2013 University of California, Davis
+# Copyright (c) 2010-2014 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -26,6 +26,8 @@ dist_noinst_DATA = \
 	tri3d.mesh \
 	tri3e.mesh \
 	tri3f.mesh \
+	tri3g.mesh \
+	tri3h.mesh \
 	tri3_finalslip.spatialdb \
 	tri3_finalslipB.spatialdb \
 	tri3_sliptime.spatialdb \
@@ -34,6 +36,9 @@ dist_noinst_DATA = \
 	tri3d_finalslip.spatialdb \
 	tri3d_sliptime.spatialdb \
 	tri3d_risetime.spatialdb \
+	tri3g_finalslip.spatialdb \
+	tri3g_sliptime.spatialdb \
+	tri3g_risetime.spatialdb \
 	tri3_initialtract.spatialdb \
 	tri3_changetract.spatialdb \
 	tri3d_initialtract.spatialdb \
@@ -46,12 +51,16 @@ dist_noinst_DATA = \
 	quad4f.mesh \
 	quad4g.mesh \
 	quad4h.mesh \
+	quad4i.mesh \
 	quad4_finalslip.spatialdb \
 	quad4_sliptime.spatialdb \
 	quad4_risetime.spatialdb \
 	quad4e_finalslip.spatialdb \
 	quad4e_sliptime.spatialdb \
 	quad4e_risetime.spatialdb \
+	quad4i_finalslip.spatialdb \
+	quad4i_sliptime.spatialdb \
+	quad4i_risetime.spatialdb \
 	quad4_initialtract.spatialdb \
 	quad4_impulses.spatialdb \
 	tet4.mesh \

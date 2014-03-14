@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -44,8 +44,6 @@ pylith::faults::TestFaultCohesiveKinTri3::setUp(void)
   feassemble::GeometryLine2D geometry;
   _quadrature->refGeometry(&geometry);
   
-  _flipFault = true;
-
   PYLITH_METHOD_END;
 } // setUp
 
@@ -67,8 +65,27 @@ pylith::faults::TestFaultCohesiveKinTri3d::setUp(void)
   feassemble::GeometryLine2D geometry;
   _quadrature->refGeometry(&geometry);
   
-  _flipFault = true;
+  PYLITH_METHOD_END;
+} // setUp
 
+
+// ----------------------------------------------------------------------
+#include "data/CohesiveKinDataTri3g.hh" // USES CohesiveKinDataTri3g
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesiveKinTri3g );
+
+// Setup testing data.
+void
+pylith::faults::TestFaultCohesiveKinTri3g::setUp(void)
+{ // setUp
+  PYLITH_METHOD_BEGIN;
+  
+  TestFaultCohesiveKin::setUp();
+  _data = new CohesiveKinDataTri3g();
+
+  CPPUNIT_ASSERT(_quadrature);
+  feassemble::GeometryLine2D geometry;
+  _quadrature->refGeometry(&geometry);
+  
   PYLITH_METHOD_END;
 } // setUp
 
@@ -111,8 +128,27 @@ pylith::faults::TestFaultCohesiveKinQuad4e::setUp(void)
   feassemble::GeometryLine2D geometry;
   _quadrature->refGeometry(&geometry);
   
-  _flipFault = true;
+  PYLITH_METHOD_END;
+} // setUp
 
+
+// ----------------------------------------------------------------------
+#include "data/CohesiveKinDataQuad4i.hh" // USES CohesiveKinDataQuad4i
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesiveKinQuad4i );
+
+// Setup testing data.
+void
+pylith::faults::TestFaultCohesiveKinQuad4i::setUp(void)
+{ // setUp
+  PYLITH_METHOD_BEGIN;
+  
+  TestFaultCohesiveKin::setUp();
+  _data = new CohesiveKinDataQuad4i();
+
+  CPPUNIT_ASSERT(_quadrature);
+  feassemble::GeometryLine2D geometry;
+  _quadrature->refGeometry(&geometry);
+  
   PYLITH_METHOD_END;
 } // setUp
 
@@ -197,8 +233,6 @@ pylith::faults::TestFaultCohesiveKinHex8::setUp(void)
   feassemble::GeometryQuad3D geometry;
   _quadrature->refGeometry(&geometry);
   
-  _flipFault = true;
-
   PYLITH_METHOD_END;
 } // setUp
 

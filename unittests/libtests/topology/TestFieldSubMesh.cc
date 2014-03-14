@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -80,7 +80,7 @@ pylith::topology::TestFieldSubMesh::testConstructor(void)
 } // testConstructor
 
 // ----------------------------------------------------------------------
-// Test newSection().
+// Test section().
 void
 pylith::topology::TestFieldSubMesh::testSection(void)
 { // testSection
@@ -131,25 +131,6 @@ pylith::topology::TestFieldSubMesh::testSpaceDim(void)
 
   PYLITH_METHOD_END;
 } // testSpaceDim
-
-// ----------------------------------------------------------------------
-// Test newSection().
-void
-pylith::topology::TestFieldSubMesh::testNewSection(void)
-{ // testNewSection
-  PYLITH_METHOD_BEGIN;
-
-  Mesh mesh;
-  _buildMesh(&mesh);
-  Mesh submesh(mesh, _TestFieldSubMesh::label);
-  Field field(submesh);
-
-  field.newSection();
-  PetscSection section = field.petscSection();
-  CPPUNIT_ASSERT(section);
-
-  PYLITH_METHOD_END;
-} // testNewSection
 
 // ----------------------------------------------------------------------
 // Test newSection(points).
@@ -322,7 +303,7 @@ pylith::topology::TestFieldSubMesh::testClear(void)
 
   field.scale(2.0);
   field.vectorFieldType(Field::TENSOR);
-  field.addDimensionOkay(true);
+  field.dimensionalizeOkay(true);
   
   field.clear();
 
@@ -657,7 +638,7 @@ pylith::topology::TestFieldSubMesh::testDimensionalize(void)
   } // setup field
 
   field.scale(scale);
-  field.addDimensionOkay(true);
+  field.dimensionalizeOkay(true);
   field.dimensionalize();
 
   const PylithScalar tolerance = 1.0e-6;
@@ -1029,7 +1010,7 @@ pylith::topology::TestFieldSubMesh::_buildMesh(Mesh* mesh)
   PetscVec coordVec = NULL;
   PetscScalar *coords = NULL;
   PetscInt coordSize = 0;
-  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);PYLITH_CHECK_ERROR(err);
+  err = DMGetCoordinateSection(dmMesh, &coordSection);PYLITH_CHECK_ERROR(err);
   err = PetscSectionSetNumFields(coordSection, 1);PYLITH_CHECK_ERROR(err);
   err = PetscSectionSetFieldComponents(coordSection, 0, spaceDim);PYLITH_CHECK_ERROR(err);
   err = PetscSectionSetChart(coordSection, ncells, ncells+nvertices);PYLITH_CHECK_ERROR(err);

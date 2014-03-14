@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -235,7 +235,7 @@ pylith::meshio::OutputManager::_dimension(topology::Field& fieldIn)
   if (1.0 == fieldIn.scale())
     PYLITH_METHOD_RETURN(fieldIn);
 
-  if (fieldIn.addDimensionOkay()) {
+  if (fieldIn.dimensionalizeOkay()) {
     fieldIn.dimensionalize();
     PYLITH_METHOD_RETURN(fieldIn);
   } else {
@@ -287,7 +287,7 @@ pylith::meshio::OutputManager::_dimension(topology::Field& fieldIn)
     } // if
     topology::Field& fieldOut = _fields->get(fieldName.c_str());
     fieldOut.copy(fieldIn);
-    fieldOut.addDimensionOkay(true);
+    fieldOut.dimensionalizeOkay(true);
     fieldOut.dimensionalize();
 
     PYLITH_METHOD_RETURN(fieldOut);

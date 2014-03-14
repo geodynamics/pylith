@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -128,7 +128,8 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
 
   // Get cells associated with material
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-  delete _materialIS; _materialIS = new topology::StratumIS(dmMesh, "material-id", _id);assert(_materialIS);
+  const bool includeOnlyCells = true;
+  delete _materialIS; _materialIS = new topology::StratumIS(dmMesh, "material-id", _id, includeOnlyCells);assert(_materialIS);
   const PetscInt numCells = _materialIS->size();
   const PetscInt* cells = _materialIS->points();
 
@@ -148,6 +149,9 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
+
+  // Optimize coordinate retrieval in closure  
+  topology::CoordsVisitor::optimizeClosure(dmMesh);
 
   // Create arrays for querying.
   const int numDBProperties = _metadata.numDBProperties();

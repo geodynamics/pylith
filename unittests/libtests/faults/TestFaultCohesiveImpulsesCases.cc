@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -44,8 +44,6 @@ pylith::faults::TestFaultCohesiveImpulsesTri3::setUp(void)
   CPPUNIT_ASSERT(_quadrature);
   feassemble::GeometryLine2D geometry;
   _quadrature->refGeometry(&geometry); 
-
-  _flipFault = true;
 
   PYLITH_METHOD_END;
 } // setUp
@@ -109,8 +107,6 @@ pylith::faults::TestFaultCohesiveImpulsesHex8::setUp(void)
   CPPUNIT_ASSERT(_quadrature);
   feassemble::GeometryQuad3D geometry;
   _quadrature->refGeometry(&geometry); 
-
-  _flipFault = true;
 
   PYLITH_METHOD_END;
 } // setUp

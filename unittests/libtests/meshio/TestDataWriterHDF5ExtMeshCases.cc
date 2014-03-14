@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -43,7 +43,6 @@ pylith::meshio::TestDataWriterHDF5ExtMeshTri3::setUp(void)
 
   TestDataWriterHDF5ExtMesh::setUp();
   _data = new DataWriterHDF5DataMeshTri3;
-  _flipFault = true;
   _initialize();
 
   PYLITH_METHOD_END;
@@ -59,7 +58,6 @@ pylith::meshio::TestDataWriterHDF5ExtMeshQuad4::setUp(void)
 
   TestDataWriterHDF5ExtMesh::setUp();
   _data = new DataWriterHDF5DataMeshQuad4;
-  _flipFault = false;
   _initialize();
 
   PYLITH_METHOD_END;
@@ -75,7 +73,6 @@ pylith::meshio::TestDataWriterHDF5ExtMeshTet4::setUp(void)
 
   TestDataWriterHDF5ExtMesh::setUp();
   _data = new DataWriterHDF5DataMeshTet4;
-  _flipFault = false;
   _initialize();
 
   PYLITH_METHOD_END;
@@ -91,7 +88,6 @@ pylith::meshio::TestDataWriterHDF5ExtMeshHex8::setUp(void)
 
   TestDataWriterHDF5ExtMesh::setUp();
   _data = new DataWriterHDF5DataMeshHex8;
-  _flipFault = true;
   _initialize();
 
   PYLITH_METHOD_END;

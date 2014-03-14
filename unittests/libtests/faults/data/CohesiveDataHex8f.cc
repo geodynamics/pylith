@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -44,57 +44,28 @@ const int pylith::faults::CohesiveDataHex8f::_numCells = 3;
 
 const int pylith::faults::CohesiveDataHex8f::_cellDim = 3;
 
-const PylithScalar pylith::faults::CohesiveDataHex8f::_vertices[] = {
-  -2.0, -1.0, -1.0,
-  -2.0,  1.0, -1.0,
-  -2.0, -1.0,  1.0,
-  -2.0,  1.0,  1.0,
-   0.0, -1.0, -1.0,
-   0.0,  1.0, -1.0,
-   0.0, -1.0,  1.0,
-   0.0,  1.0,  1.0,
-   2.0, -1.0, -1.0,
-   2.0,  1.0, -1.0,
-   2.0, -1.0,  1.0,
-   2.0,  1.0,  1.0,
-   0.0, -1.0, -1.0,
-   0.0,  1.0, -1.0,
-   0.0, -1.0,  1.0,
-   0.0,  1.0,  1.0,
-};
-
-const int pylith::faults::CohesiveDataHex8f::_numCorners[] = {
+const int pylith::faults::CohesiveDataHex8f::_numCorners[3] = {
   8,
   8,
   8
 };
 
-const int pylith::faults::CohesiveDataHex8f::_cells[] = {
-  4, 16, 18,  6,  3, 15, 17,  5,
-  8, 12, 14, 10,  7, 11, 13,  9,
-  8, 10,  9,  7, 16, 15, 17, 18,
-};
-
-const int pylith::faults::CohesiveDataHex8f::_materialIds[] = {
+const int pylith::faults::CohesiveDataHex8f::_materialIds[3] = {
   0,  0,
   1
 };
 
 const int pylith::faults::CohesiveDataHex8f::_numGroups = 2;
 
-const int pylith::faults::CohesiveDataHex8f::_groupSizes[] = 
-  { 8, 8 };
-
-const int pylith::faults::CohesiveDataHex8f::_groups[] = {
-  5, 6, 9, 10, 13, 14, 17, 18,
-  7, 8, 9, 10, 15, 16, 17, 18
+const int pylith::faults::CohesiveDataHex8f::_groupSizes[2] = {
+  8+8+2, 8+8+2 // vertices+edges+faces 
 };
 
-const char* pylith::faults::CohesiveDataHex8f::_groupNames[] = {
+const char* pylith::faults::CohesiveDataHex8f::_groupNames[2] = {
   "output", "fault"
 };
 
-const char* pylith::faults::CohesiveDataHex8f::_groupTypes[] = {
+const char* pylith::faults::CohesiveDataHex8f::_groupTypes[2] = {
   "vertex", "vertex"
 };
 
@@ -107,11 +78,8 @@ pylith::faults::CohesiveDataHex8f::CohesiveDataHex8f(void)
   spaceDim = _spaceDim;
   numCells = _numCells;
   cellDim = _cellDim;
-  vertices = const_cast<PylithScalar*>(_vertices);
   numCorners = const_cast<int*>(_numCorners);
-  cells = const_cast<int*>(_cells);
   materialIds = const_cast<int*>(_materialIds);
-  groups = const_cast<int*>(_groups);
   groupSizes = const_cast<int*>(_groupSizes);
   groupNames = const_cast<char**>(_groupNames);
   groupTypes = const_cast<char**>(_groupTypes);

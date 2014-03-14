@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -27,22 +27,11 @@ const int pylith::bc::BoundaryMeshDataTri3::_faultId = 100;
 
 const int pylith::bc::BoundaryMeshDataTri3::_numCorners = 2;
 const int pylith::bc::BoundaryMeshDataTri3::_numCells = 1;
+const bool pylith::bc::BoundaryMeshDataTri3::_isSimplexMesh = false;
 
 const int pylith::bc::BoundaryMeshDataTri3::_numVerticesNoFault = 2;
-const int pylith::bc::BoundaryMeshDataTri3::_verticesNoFault[] = {
-  3, 5
-};
-const int pylith::bc::BoundaryMeshDataTri3::_cellsNoFault[] = {
-  3, 5
-};
 
 const int pylith::bc::BoundaryMeshDataTri3::_numVerticesFault = 2;
-const int pylith::bc::BoundaryMeshDataTri3::_verticesFault[] = {
-  4, 6
-};
-const int pylith::bc::BoundaryMeshDataTri3::_cellsFault[] = {
-  4, 6
-};
 
 pylith::bc::BoundaryMeshDataTri3::BoundaryMeshDataTri3(void)
 { // constructor
@@ -55,14 +44,11 @@ pylith::bc::BoundaryMeshDataTri3::BoundaryMeshDataTri3(void)
 
   numCorners = _numCorners;
   numCells = _numCells;
+  isSimplexMesh = _isSimplexMesh;
 
   numVerticesNoFault = _numVerticesNoFault;
-  verticesNoFault = const_cast<int*>(_verticesNoFault);
-  cellsNoFault = const_cast<int*>(_cellsNoFault);
 
   numVerticesFault = _numVerticesFault;
-  verticesFault = const_cast<int*>(_verticesFault);
-  cellsFault = const_cast<int*>(_cellsFault);
 } // constructor
 
 pylith::bc::BoundaryMeshDataTri3::~BoundaryMeshDataTri3(void)

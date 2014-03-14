@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2013 University of California, Davis
+// Copyright (c) 2010-2014 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -30,44 +30,18 @@
 /// Namespace for pylith package
 namespace pylith {
   namespace faults {
-    class TestFaultCohesiveKinLine2;
     class TestFaultCohesiveKinTri3;
     class TestFaultCohesiveKinTri3d;
+    class TestFaultCohesiveKinTri3g;
     class TestFaultCohesiveKinQuad4;
     class TestFaultCohesiveKinQuad4e;
+    class TestFaultCohesiveKinQuad4i;
     class TestFaultCohesiveKinTet4;
     class TestFaultCohesiveKinTet4e;
     class TestFaultCohesiveKinTet4f;
     class TestFaultCohesiveKinHex8;
   } // bc
 } // pylith
-
-// ----------------------------------------------------------------------
-/// C++ unit testing for FaultCohesiveKin for mesh with 1-D line cells.
-class pylith::faults::TestFaultCohesiveKinLine2 : public TestFaultCohesiveKin
-{ // class TestFaultCohesiveKinLine2
-
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestFaultCohesiveKinLine2 );
-
-  CPPUNIT_TEST( testInitialize );
-  CPPUNIT_TEST( testIntegrateResidual );
-  CPPUNIT_TEST( testIntegrateJacobian );
-  CPPUNIT_TEST( testIntegrateJacobianLumped );
-  CPPUNIT_TEST( testAdjustSolnLumped );
-  CPPUNIT_TEST( testCalcTractionsChange );
-  CPPUNIT_TEST( testSplitField );
-
-  CPPUNIT_TEST_SUITE_END();
-
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
-
-  /// Setup testing data.
-  void setUp(void);
-
-}; // class TestFaultCohesiveKinLine2
-
 
 // ----------------------------------------------------------------------
 /// C++ unit testing for FaultCohesiveKin for mesh with 2-D triangular cells.
@@ -83,7 +57,6 @@ class pylith::faults::TestFaultCohesiveKinTri3 : public TestFaultCohesiveKin
   CPPUNIT_TEST( testIntegrateJacobianLumped );
   CPPUNIT_TEST( testAdjustSolnLumped );
   CPPUNIT_TEST( testCalcTractionsChange );
-  CPPUNIT_TEST( testSplitField );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -109,7 +82,6 @@ class pylith::faults::TestFaultCohesiveKinTri3d : public TestFaultCohesiveKin
   CPPUNIT_TEST( testIntegrateJacobian );
   CPPUNIT_TEST( testIntegrateJacobianLumped );
   CPPUNIT_TEST( testCalcTractionsChange );
-  CPPUNIT_TEST( testSplitField );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -120,6 +92,31 @@ public :
   void setUp(void);
 
 }; // class TestFaultCohesiveKinTri3d
+
+
+// ----------------------------------------------------------------------
+/// C++ unit testing for FaultCohesiveKin for mesh with 2-D triangular cells.
+class pylith::faults::TestFaultCohesiveKinTri3g : public TestFaultCohesiveKin
+{ // class TestFaultCohesiveKinTri3g
+
+  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+  CPPUNIT_TEST_SUITE( TestFaultCohesiveKinTri3g );
+
+  CPPUNIT_TEST( testInitialize );
+  CPPUNIT_TEST( testIntegrateResidual );
+  CPPUNIT_TEST( testIntegrateJacobian );
+  CPPUNIT_TEST( testIntegrateJacobianLumped );
+  CPPUNIT_TEST( testCalcTractionsChange );
+
+  CPPUNIT_TEST_SUITE_END();
+
+  // PUBLIC METHODS /////////////////////////////////////////////////////
+public :
+
+  /// Setup testing data.
+  void setUp(void);
+
+}; // class TestFaultCohesiveKinTri3g
 
 
 // ----------------------------------------------------------------------
@@ -136,7 +133,6 @@ class pylith::faults::TestFaultCohesiveKinQuad4 : public TestFaultCohesiveKin
   CPPUNIT_TEST( testIntegrateJacobianLumped );
   CPPUNIT_TEST( testAdjustSolnLumped );
   CPPUNIT_TEST( testCalcTractionsChange );
-  CPPUNIT_TEST( testSplitField );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -162,7 +158,6 @@ class pylith::faults::TestFaultCohesiveKinQuad4e : public TestFaultCohesiveKin
   CPPUNIT_TEST( testIntegrateJacobian );
   CPPUNIT_TEST( testIntegrateJacobianLumped );
   CPPUNIT_TEST( testCalcTractionsChange );
-  CPPUNIT_TEST( testSplitField );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -173,6 +168,30 @@ public :
   void setUp(void);
 
 }; // class TestFaultCohesiveKinQuad4e
+
+// ----------------------------------------------------------------------
+/// C++ unit testing for FaultCohesiveKin for mesh with 2-D quadrilateral cells.
+class pylith::faults::TestFaultCohesiveKinQuad4i : public TestFaultCohesiveKin
+{ // class TestFaultCohesiveKinQuad4i
+
+  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+  CPPUNIT_TEST_SUITE( TestFaultCohesiveKinQuad4i );
+
+  CPPUNIT_TEST( testInitialize );
+  CPPUNIT_TEST( testIntegrateResidual );
+  CPPUNIT_TEST( testIntegrateJacobian );
+  CPPUNIT_TEST( testIntegrateJacobianLumped );
+  CPPUNIT_TEST( testCalcTractionsChange );
+
+  CPPUNIT_TEST_SUITE_END();
+
+  // PUBLIC METHODS /////////////////////////////////////////////////////
+public :
+
+  /// Setup testing data.
+  void setUp(void);
+
+}; // class TestFaultCohesiveKinQuad4i
 
 
 // ----------------------------------------------------------------------
@@ -189,7 +208,6 @@ class pylith::faults::TestFaultCohesiveKinTet4 : public TestFaultCohesiveKin
   CPPUNIT_TEST( testIntegrateJacobianLumped );
   CPPUNIT_TEST( testAdjustSolnLumped );
   CPPUNIT_TEST( testCalcTractionsChange );
-  CPPUNIT_TEST( testSplitField );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -215,7 +233,6 @@ class pylith::faults::TestFaultCohesiveKinTet4e : public TestFaultCohesiveKin
   CPPUNIT_TEST( testIntegrateJacobian );
   CPPUNIT_TEST( testIntegrateJacobianLumped );
   CPPUNIT_TEST( testCalcTractionsChange );
-  CPPUNIT_TEST( testSplitField );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -241,7 +258,6 @@ class pylith::faults::TestFaultCohesiveKinTet4f : public TestFaultCohesiveKin
   CPPUNIT_TEST( testIntegrateJacobian );
   CPPUNIT_TEST( testIntegrateJacobianLumped );
   CPPUNIT_TEST( testCalcTractionsChange );
-  CPPUNIT_TEST( testSplitField );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -268,7 +284,6 @@ class pylith::faults::TestFaultCohesiveKinHex8 : public TestFaultCohesiveKin
   CPPUNIT_TEST( testIntegrateJacobianLumped );
   CPPUNIT_TEST( testAdjustSolnLumped );
   CPPUNIT_TEST( testCalcTractionsChange );
-  CPPUNIT_TEST( testSplitField );
 
   CPPUNIT_TEST_SUITE_END();
 

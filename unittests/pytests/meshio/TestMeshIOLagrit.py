@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2013 University of California, Davis
+# Copyright (c) 2010-2014 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -77,7 +77,7 @@ class TestMeshIOLagrit(unittest.TestCase):
     from spatialdata.units.Nondimensional import Nondimensional
     normalizer = Nondimensional()
 
-    mesh = io.read(debug=False, interpolate=False)
+    mesh = io.read(debug=False, interpolate=True)
 
     testhandler = MeshIOAscii()
     testhandler.filename(filenameOut)

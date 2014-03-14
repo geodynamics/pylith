@@ -1,7 +1,7 @@
 We are pleased to announce release of PyLith version 2.0.0
 
 Please submit bug reports via the World Wide Web at:
-    http://geodynamics.org/roundup    
+    https://github.com/geodynamics/pylith/issues
 
 Please send all questions by electronic mail to:
     cig-short@geodynamics.org
@@ -46,11 +46,91 @@ TIPS
 MIGRATING FROM VERSION 1.9 TO 2.0
 ======================================================================
 
+Changes to various C++ objects permitted simplifying the specification
+of a number of components. The map below indicates the name changes.
+
+  CellFilterAvgMesh -> CellFilterAvg
+  CellFilterAvgSubMesh -> CellFilterAvg
+  DataWriterVTKMesh -> DataWriterVTK
+  DataWriterVTKSubMesh -> DataWriterVTK
+  DataWriterVTKSubSubMesh -> DataWriterVTK
+  DataWriterHDF5Mesh -> DataWriterHDF5
+  DataWriterHDF5SubMesh -> DataWriterHDF5
+  DataWriterHDF5SubSubMesh -> DataWriterHDF5
+  DataWriterHDF5ExtMesh -> DataWriterHDF5Ext
+  DataWriterHDF5ExtSubMesh -> DataWriterHDF5Ext
+  DataWriterHDF5ExtSubSubMesh -> DataWriterHDF5Ext
+
+  Running the script:
+
+    bash $PYLITH_DIR/doc/developer/update_1.9to2.0.sh
+
+  will update all .cfg files in the current directory and all
+  subdirectories with the new names (you will need to replace
+  $PYLITH_DIR with the directory containing the PyLith source code).
+
+
+PyLith allows use of the Chaco and ParMetis/Metis partitioners. The
+name of the ParMetis/Metis partitioner was changed from "parmetis" to
+"metis".
+
+  [pylithapp.mesh_generator]
+  distributor.partitioner = metis
+
 ----------------------------------------------------------------------
 Version 2.0.0
 ----------------------------------------------------------------------
 
-* parmetis -> metis
+* Replaced C++ Sieve implementation of finite-element data structures
+  with C DMPlex implementation.
+
+  DMPlex provides a simpler, more efficient implementation of the
+  finite-element data structures that conforms to the PETSc data
+  management (DM) interface. This provides tighter integration with
+  the rest of PETSc. Additionally, this rewrite of the data structures
+  results in a more efficient memory layout, resulting in better
+  performance.
+
+* Switched from using Subversion to Git for version control.
+
+  The source code repository changed from a CIG maintained Subversion
+  repository to a Git repository at Github.com. The URL for the Git
+  repository is https://github.com/geodynamics/pylith. The installer
+  has been updated accordingly.
+
+* Added ability to recursively refine a mesh.
+
+  Global uniform refinement can now be done recursively. Each
+  refinement reduces the vertex spacing by a factor of two. Using more
+  than one level of refinement should be done carefully as the mesh
+  quality will generally deteriorate with more levels of refinement.
+
+* Directories for output are created as necessary.
+
+  Directories where output files are written will be created if
+  necesary. Previously, the directories would not be created, so that
+  opening the output files in a nonexistent directory would generate
+  an error.
+
+* Improved error messages.
+
+  Error messages originating in PETSc will include a stack trace that
+  includes both PyLith and PETSc code. Previously, only the PETSc code
+  was included. This provides significantly more information for
+  debugging.
+
+* Several small improvements to various sections of the manual based
+  on feedback and questions from users.
+
+  - Added more information about the workflow involved in using PyLith.
+
+  - Added a discussion of how to set scales for nondimensionalization.
+
+  - Added a discussion of how the stable time step is computed for the
+    various materials.
+
+  - Updated and expanded the discussion of using initial state
+    variables.
 
 * Bug fixes
 
@@ -73,6 +153,9 @@ Version 2.0.0
   - Corrected two typos in the manual related to fault opening and
     tractions in examples/3d/hex8/step20 and updating to the use of
     cell.dimension for the quadrature scheme with tets.
+
+  - Fixed stable time step computed for power-law viscoelastic
+    rheology to match manual.
 
 
 ======================================================================
