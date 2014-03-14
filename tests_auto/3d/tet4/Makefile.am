@@ -33,7 +33,7 @@ dist_noinst_PYTHON = \
 	TestSlipOneFault.py \
 	sliponefault_soln.py \
 	TestSlipTwoFaults.py \
-	sliptwofaults.py \
+	sliptwofaults_soln.py \
 	testpylith.py
 
 
