@@ -16,7 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file tests/3d/tet4/sliponefault_soln.py
+## @file tests/2d/quad4/sliponefault_soln.py
 ##
 ## @brief Analytical solution to sliponefault (rigid motion).
 
@@ -52,7 +52,7 @@ exz = 1.0/(2*p_mu) * (sxz)
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
   """
-  Analytical solution to axial/shear displacement problem.
+  Analytical solution to fault slip problem.
   """
 
   def __init__(self):
@@ -66,8 +66,8 @@ class AnalyticalSoln(object):
     (nlocs, dim) = locs.shape
 
     disp = numpy.zeros( (1, nlocs, 3), dtype=numpy.float64)
-    maskP = numpy.bitwise_or(locs[:,0] <= 0.0, locs[:,0] >= +20.0e+3)
-    maskP[nlocsO:nlocs] = False
+    maskP = locs[:,0] < 0.0
+    maskP[nlocsO:nlocs] = True
     maskN = ~maskP
     disp[0,:,1] = maskN*(-1.0) + maskP*(+1.0)
     return disp

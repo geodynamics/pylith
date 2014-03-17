@@ -2,20 +2,31 @@
 DOMAIN
 ======================================================================
 
--4km <= x <= +4km
--4km <= y <= +4km
+-4 km <= x <= +4 km
+-4 km <= y <= +4 km
 
-Mesh is tri3 cells with nominal 1km discretization size.
+Mesh is tri3 cells with nominal 1 km discretization size.
 
-AXIALDISP: Axial extension, see axialdisp_soln.py
+AXIALDISP: See axialdisp_soln.py
+  Axial extension
+  No fault
+  Dirichlet BC
 
-SHEARDISP: Shear, see sheardisp_soln.py
+SHEARDISP: See sheardisp_soln.py
+  Shear
+  No fault
+  Dirichlet BC
 
-SHEARDISPNOSLIP: SHEARDISP w/fault and no slip
+SHEARDISPNOSLIP:
+  Same as SHEARDISP
+  Embedded fault w/zero slip
 
-SHEARDISPNOSLIPREFINE: SHEARDISP w/fault and no slip and mesh refinement
+SHEARDISPNOSLIPREFINE:
+  Same as SHEARDISPNOSLIP
+  Uniform refinement
 
-SLIPONEFAULT: slip on one fault, see sliponefault_soln.py
+SLIPONEFAULT: See sliponefault_soln.py
+  One through-going fault with uniform slip
 
-SLIPTWOFAULTS: slip on two faults, see sliptwofaults_soln.py
-
+SLIPTWOFAULTS: See sliptwofaults_soln.py
+  Two through-going faults with uniform slip
