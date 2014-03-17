@@ -66,9 +66,9 @@ class AnalyticalSoln(object):
     (nlocs, dim) = locs.shape
 
     disp = numpy.zeros( (1, nlocs, 3), dtype=numpy.float64)
-    maskP = numpy.bitwise_or(locs[:,0] <= 0.0, locs[:,0] >= -20.0e+3)
+    maskP = numpy.bitwise_or(locs[:,0] <= 0.0, locs[:,0] >= +20.0e+3)
     maskP[nlocsO:nlocs] = False
-    maskN = numpy.bitwise_and(locs[:,0] <= 0.0, ~maskP)
+    maskN = ~maskP
     disp[0,:,1] = maskN*(-1.0) + maskP*(+1.0)
     return disp
 
