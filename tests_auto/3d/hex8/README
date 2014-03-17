@@ -6,133 +6,32 @@ DOMAIN
 -40 km <= y <= +40 km
 -40 km <= z <= 0 km
 
-Mesh is tet4 cells with nominal 5km discretization size.
+Mesh is hex8 cells with nominal 5 km discretization size.
 
-======================================================================
-AXIAL COMPRESSION - axialdisp
-======================================================================
+AXIALDISP: See axialdisp_soln.py
+  Axial extension
+  No fault
+  Dirichlet BC
 
-3-D axial extension test with linear tetrahedral cells.
+SHEARDISP: See sheardisp_soln.py
+  Shear
+  No fault
+  Dirichlet BC
 
-Specify
-  Ux(-40km,    y,    z)
-  Uy(    x,+40km,    z)
-  Uy(    x,-40km,    z)
-  Uz(    x,    y,-40km)
+SHEARDISPNOSLIP:
+  Same as SHEARDISP
+  Embedded fault w/zero slip
 
-Construct solution (see axialdisp_soln.py) from specified Sxx.
+SHEARDISPNOSLIPREFINE:
+  Same as SHEARDISPNOSLIP
+  Uniform refinement
 
+  NOTE: The solution test currently fails in v2.0.0 because in the
+  refined mesh we don't connect the vertices across the ends of the
+  fault in the halo around the fault.
 
-======================================================================
-SHEAR - sheardisp
-======================================================================
+SLIPONEFAULT: See sliponefault_soln.py
+  One through-going fault with uniform slip
 
-2-D shear test with linear tetrahedral cells.
-
-Specify
-  Uy(+40km,y,z)
-  Uy(-40km,y,z)
-  Ux(x,+40km,z)
-  Ux(x,-40km,z)
-  Uz(x,y,-40km)
-
-Construct solution (see sheardisp_soln.py) from specified Sxy.
-
-======================================================================
-SHEAR (NO FAULT SLIP) - shearnoslip
-======================================================================
-
-2-D shear test with linear tetrahedral cells with zero slip on fault.
-
-Same Dirichlet boundary conditions and solution as sheardisp.
-
-
-======================================================================
-THRUFAULTSLIP
-======================================================================
-
-3-D dislocation test with linear tetrahedral cells.
-
-
-          ----------
-          |    |    |
-Uy=-0.5 m |    |    | Uy=+0.5m
-          |    |    |
-          |    |    |
-          ----------
-
-
-Dirichlet boundary conditions
-  Ux(   0,y) =  0.0
-  Uy(   0,y) = -0.5 m
-  Ux(+400,y) =  0.0
-  Uy(+400,y) = +0.5 m
-
-Analytical solution
-  Ux(x<0,y) = -0.5 m
-  Ux(x>0,y) = +0.5 m
-  Uy = 0.0
-
-======================================================================
-THRUFAULT2SLIP
-======================================================================
-
-3-D dislocation test with linear tetrahedral cells with 2 faults. One
-is right-lateral and one is left-lateral to cause the middle section
-to move 1.0 m to the right.
-
-
-           Ux=0     
-         ----------
-         |        |
-         |--------| 
-         | Ux=1.0m|
-         |--------|
-         |        |
-         ----------
-           Ux=0
-
-
-Dirichlet boundary conditions
-  Ux(x,+400) =  0.0
-  Uy(x,+400) =  0.0
-  Ux(x,-400) =  0.0
-  Uy(x,-400) =  0.0
-
-Analytical solution
-  Ux(x,-100<y<+100) = +1.0 m
-  Ux(x,-100>y) = 0.0
-  Ux(x,+100<y) = 0.0
-  Uy = 0.0
-
-======================================================================
-TRIMFAULTSLIP
-======================================================================
-
-3-D dislocation test with linear tetrahedral cells with 2 faults. One
-is right-lateral and one is left-lateral to cause the middle section
-to move 1.0 m to the right.
-
-
-           Ux=0     
-         ----------
-         |        |
-         |--------| 
-         | Ux=1.0m|
-         |--------|
-         |        |
-         ----------
-           Ux=0
-
-
-Dirichlet boundary conditions
-  Ux(x,+400) =  0.0
-  Uy(x,+400) =  0.0
-  Ux(x,-400) =  0.0
-  Uy(x,-400) =  0.0
-
-Analytical solution
-  Ux(x,-100<y<+100) = +1.0 m
-  Ux(x,-100>y) = 0.0
-  Ux(x,+100<y) = 0.0
-  Uy = 0.0
+SLIPTWOFAULTS: See sliptwofaults_soln.py
+  Two through-going faults with uniform slip
