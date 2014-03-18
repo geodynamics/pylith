@@ -446,7 +446,7 @@ The easiest way to verify that PyLith has been installed correctly is to
  run one or more of the examples supplied with the binary and source code.
  In the binary distribution, the examples are located in 
 \family typewriter
-src/pylith/examples
+src/pylith-2.0.0/examples
 \family default
  while in the source distribution, they are located in 
 \family typewriter
