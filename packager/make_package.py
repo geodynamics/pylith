@@ -17,6 +17,8 @@
 #
 # Create PyLith binary package.
 #
+# Run from the top-level PyLith build dir.
+#
 # Usage: make_package.py
 
 import os, sys, platform
@@ -251,11 +253,6 @@ def ospawn(*argv):
     return output
 
 
-def cygpath(*args):
-    output = ospawn("cygpath", *args)
-    return output[0].rstrip()
-
-
 def getGitInfo(srcdir):
     workdir = os.getcwd()
     os.chdir(srcdir)
@@ -267,83 +264,6 @@ def getGitInfo(srcdir):
             values = line.split()
             revision = values[2]
     return revision
-
-
-def itwindirs(l, sourceDir):
-    for src in l:
-        if isinstance(src, tuple):
-            src, dest = src
-        elif isabs(src):
-            dest = src[1:]
-        else:
-            dest = src
-        src = cygpath("-w", src)
-        if src.startswith(sourceDir):
-            src = src[len(sourceDir)+1:]
-        dest = "{app}\\" + dest.replace("/", "\\")
-        yield src, dest
-    return
-
-
-def itwinfiles(l, sourceDir):
-    for src in l:
-        if isinstance(src, tuple):
-            src, dest = src
-        elif isabs(src):
-            dest = dirname(src)[1:]
-        else:
-            dest = dirname(src)
-        src = cygpath("-w", src)
-        if src.startswith(sourceDir):
-            src = src[len(sourceDir)+1:]
-        dest = "{app}\\" + dest.replace("/", "\\")
-        yield src, dest
-    return
-
-
-def copyAll(srcList, prefix):
-    for src in srcList:
-        if isinstance(src, tuple):
-            src, dest = src
-        elif isabs(src):
-            dest = dirname(src)[1:]
-        else:
-            dest = dirname(src)
-        if not isabs(src):
-            src = join(prefix, src)
-        if not isdir(dest):
-            os.makedirs(dest)
-
-        if not isdir(src):
-            shutil.copy(src, dest) # faster than os.system() for small files
-        else:
-            os.system("cp -r %s %s" % (src, dest))
-    return
-
-
-def generateBashrc(prefix, package, info):
-    bashrc = "." + package.lower() + "rc"
-    s = open(prefix + "/" + bashrc, "w")
-
-    stuff = {
-        "line": "-" * len(info["AppVerName"]),
-        }
-    stuff.update(info)
-
-    s.write(
-r"""
-
-export PATH=/usr/bin:/bin:/lib:/lib/lapack:$PATH
-
-echo %(line)s
-echo %(AppVerName)s
-echo %(line)s
-
-PS1='\[\e]0;\w\a\]\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\n\$ '
-""" % stuff
-    )
-    
-    return bashrc
 
 
 def stripBinaries(pl, opSys):
@@ -469,6 +389,8 @@ def mkpkg():
         shutil.rmtree("src", ignore_errors=True)
 
     elif opSys == "win":
+        name = "pylith"
+        version = makeinfo['version']
         stage = cygwin.stageInstallation(prefix, workdir, python, pl)
         cygwin.createInstaller(python, stage, workdir, name, package, version, pl,
                                revision + "-" + distdir_arch)

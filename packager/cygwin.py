@@ -21,7 +21,113 @@
 
 import os, sys
 from os.path import basename, dirname, isabs, isdir, isfile, join
+from popen2 import Popen4
 import shutil
+
+def ospawn(*argv):
+    print ' '.join(argv)
+    child = Popen4(argv)
+
+    child.tochild.close()
+
+    output = child.fromchild.readlines()
+    status = child.wait()
+
+    exitStatus = None
+    if (os.WIFSIGNALED(status)):
+        statusStr = "signal %d" % os.WTERMSIG(status)
+    elif (os.WIFEXITED(status)):
+        exitStatus = os.WEXITSTATUS(status)
+        statusStr = "exit %d" % exitStatus
+    else:
+        statusStr = "status %d" % status
+    if exitStatus != 0:
+        sys.exit("%s: %s: %s" % (sys.argv[0], argv[0], statusStr))
+
+    return output
+
+
+def cygpath(*args):
+    output = ospawn("cygpath", *args)
+    return output[0].rstrip()
+
+
+def itwindirs(l, sourceDir):
+    for src in l:
+        if isinstance(src, tuple):
+            src, dest = src
+        elif isabs(src):
+            dest = src[1:]
+        else:
+            dest = src
+        src = cygpath("-w", src)
+        if src.startswith(sourceDir):
+            src = src[len(sourceDir)+1:]
+        dest = "{app}\\" + dest.replace("/", "\\")
+        yield src, dest
+    return
+
+
+def itwinfiles(l, sourceDir):
+    for src in l:
+        if isinstance(src, tuple):
+            src, dest = src
+        elif isabs(src):
+            dest = dirname(src)[1:]
+        else:
+            dest = dirname(src)
+        src = cygpath("-w", src)
+        if src.startswith(sourceDir):
+            src = src[len(sourceDir)+1:]
+        dest = "{app}\\" + dest.replace("/", "\\")
+        yield src, dest
+    return
+
+
+def copyAll(srcList, prefix):
+    for src in srcList:
+        if isinstance(src, tuple):
+            src, dest = src
+        elif isabs(src):
+            dest = dirname(src)[1:]
+        else:
+            dest = dirname(src)
+        if not isabs(src):
+            src = join(prefix, src)
+        if not isdir(dest):
+            os.makedirs(dest)
+
+        if not isdir(src):
+            shutil.copy(src, dest) # faster than os.system() for small files
+        else:
+            os.system("cp -r %s %s" % (src, dest))
+    return
+
+
+def generateBashrc(prefix, package, info):
+    bashrc = "." + package.lower() + "rc"
+    s = open(prefix + "/" + bashrc, "w")
+
+    stuff = {
+        "line": "-" * len(info["AppVerName"]),
+        }
+    stuff.update(info)
+
+    s.write(
+r"""
+
+export PATH=/usr/bin:/bin:/lib:/lib/lapack:$PATH
+
+echo %(line)s
+echo %(AppVerName)s
+echo %(line)s
+
+PS1='\[\e]0;\w\a\]\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\n\$ '
+""" % stuff
+    )
+    
+    return bashrc
+
 
 def installCigIcon(prefix):
     cigIco = "cig.ico"
