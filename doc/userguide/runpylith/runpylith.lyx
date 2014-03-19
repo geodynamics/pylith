@@ -1851,6 +1851,11 @@ reference "tab:petsc:options:advanced"
 \end_inset
 
 .
+ These are available in 
+\family typewriter
+$PYLITH_DIR/share/settings/solver_fault_fieldsplit.cfg.
+
+\family default
  These settings are limited to problems where we store the stiffness matrix
  as a nonsymmetric sparse matrix and require additional settings for the
  formulation,
@@ -2819,9 +2824,6 @@ name "tab:petsc:options:advanced"
 PETSc options used with split fields algebraic multigrid preconditioning
  that often provide improved performance in quasi-static elasticity problems
  with faults.
- These are available in 
-\family typewriter
-$PYLITH_DIR/share/settings/solver_fault_fieldsplit.cfg.
 \end_layout
 
 \end_inset
