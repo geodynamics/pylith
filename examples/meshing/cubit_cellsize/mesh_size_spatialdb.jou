@@ -36,12 +36,7 @@ curve all scheme stride
 # ----------------------------------------------------------------------
 # Generate the mesh
 # ----------------------------------------------------------------------
-# Generate the volume mesh to insure cell sizes match desired
-# distribution, then delete volume cells, smooth the surface mesh, and
-# then generate the volume mesh again.
-mesh volume viscoelastic
-mesh volume elastic_xpos elastic_xneg
-delete mesh volume all
+mesh surface all
 surface all smooth scheme condition number beta 1.2 cpu 10
 smooth surface all
 mesh volume all
@@ -64,6 +59,7 @@ export mesh "mesh_size_spatialdb.exo" dimension 3 overwrite
 
 
 # End of file
+
 
 
 
