@@ -28,25 +28,15 @@ playback 'geometry.jou'
 # Create tet4 mesh with resolution dictated by 'cell_size_fn'.
 # ----------------------------------------------------------------------
 volume all scheme tetmesh
-#{numvol=3}
-#{ivol=1}
-#{loop(numvol)}
-  import sizing Function "mesh_cellsize.exo" Block {ivol} Variable "cell_size_fn" Time 0.0
-  volume {ivol} sizing function type exodus
-  #{ivol++}
-#{endloop}
+import sizing function  "mesh_cellsize.exo" block all variable "cell_size_fn" time 0.0000000 
+volume all sizing function type exodus
 surface all sizing function type exodus
 curve all scheme stride
 
 # ----------------------------------------------------------------------
 # Generate the mesh
 # ----------------------------------------------------------------------
-# Generate the volume mesh to insure cell sizes match desired
-# distribution, then delete volume cells, smooth the surface mesh, and
-# then generate the volume mesh again.
-mesh volume viscoelastic
-mesh volume elastic_xpos elastic_xneg
-delete mesh volume all
+mesh surface all
 surface all smooth scheme condition number beta 1.2 cpu 10
 smooth surface all
 mesh volume all
@@ -69,6 +59,8 @@ export mesh "mesh_size_analyticfn.exo" dimension 3 overwrite
 
 
 # End of file
+
+
 
 
 
