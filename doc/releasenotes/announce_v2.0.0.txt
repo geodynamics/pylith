@@ -96,6 +96,14 @@ RELEASE NOTES - PyLith v2.0.0
   was included. This provides significantly more information for
   debugging.
 
+* Improved CUBIT example for mesh sizing functions.
+
+  Based on experimentation with CUBIT 14.0, 14.1, and Trelis 15.0, we
+  have improved the CUBIT mesh sizing examples
+  (examples/meshing/cubit_cellsize). We were able to simplify the
+  journal files and use fewer CUBIT commands. The new procedure also
+  eliminates some CUBIT warnings.
+
 * Several small improvements to various sections of the manual based
   on feedback and questions from users.
 
