@@ -41,6 +41,7 @@ mesh volume all
 # Export exodus file
 # ----------------------------------------------------------------------
 set large exodus off
+# Create one block so all sizing function information is in one block.
 block 1 volume all
 export mesh "mesh_cellsize.exo" dimension 3 overwrite
 

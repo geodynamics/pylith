@@ -5,7 +5,8 @@ works for triangluar, quadrilateral, and tetrahedral cells.
 Steps:
 
 1. Generate a background mesh (ExodusII file) that will hold the field
-variable (computed at the vertices) for the cell size.
+variable (computed at the vertices) for the cell size. Create one
+block so all sizing information is contained in a single block.
 
   Run the CUBIT journal file mesh_cellsize.jou.
 
