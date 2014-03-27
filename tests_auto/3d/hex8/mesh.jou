@@ -6,15 +6,13 @@ playback 'geometry.jou'
 # ----------------------------------------------------------------------
 # Set discretization size
 # ----------------------------------------------------------------------
-volume all size 5000
+volume all size 10000
 
 # ----------------------------------------------------------------------
 # Generate the mesh
 # ----------------------------------------------------------------------
 volume all scheme map
 mesh volume all
-
-smooth volume all
 
 # ----------------------------------------------------------------------
 # Create blocks for materials
@@ -151,3 +149,4 @@ nodeset 26 name "face_zneg_nofault"
 # Export exodus file
 # ----------------------------------------------------------------------
 export mesh "mesh.exo" dimension 3 overwrite
+

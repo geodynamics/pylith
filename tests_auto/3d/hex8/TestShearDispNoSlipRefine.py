@@ -61,17 +61,17 @@ class TestShearDispNoSlipRefine(TestHex8):
     Setup for test.
     """
     TestHex8.setUp(self)
-    self.mesh = {'ncells-elastic': 768*8,
-                 'ncells-viscoelastic': 1280*8,
+    self.mesh = {'ncells-elastic': 180*8,
+                 'ncells-viscoelastic': 180*8,
                  'ncorners': 8,
-                 'nvertices': 2601,
+                 'nvertices': 3614,
                  'spaceDim': 3,
                  'tensorSize': 6}
     self.nverticesO = self.mesh['nvertices']
-    self.mesh['nvertices'] += 44
-    self.faultMesh = {'nvertices': 44,
+    self.mesh['nvertices'] += 65
+    self.faultMesh = {'nvertices': 65,
                       'spaceDim': 3,
-                      'ncells': 30*4,
+                      'ncells': 48,
                       'ncorners': 4}
 
     run_pylith()
