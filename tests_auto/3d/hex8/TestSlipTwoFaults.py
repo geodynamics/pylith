@@ -55,10 +55,10 @@ class TestSlipTwoFaults(TestHex8):
     """
     TestHex8.setUp(self)
     self.nverticesO = self.mesh['nvertices']
-    self.mesh['nvertices'] += 2*153
-    self.faultMesh = {'nvertices': 153,
+    self.mesh['nvertices'] += 2*55
+    self.faultMesh = {'nvertices': 55,
                       'spaceDim': 3,
-                      'ncells': 128,
+                      'ncells': 40,
                       'ncorners': 4}
     run_pylith()
     self.outputRoot = "sliptwofaults"

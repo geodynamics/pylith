@@ -34,10 +34,10 @@ class TestHex8(unittest.TestCase):
     """
     Setup for tests.
     """
-    self.mesh = {'ncells-elastic': 768,
-                 'ncells-viscoelastic': 1280,
+    self.mesh = {'ncells-elastic': 180,
+                 'ncells-viscoelastic': 180,
                  'ncorners': 8,
-                 'nvertices': 2601,
+                 'nvertices': 550,
                  'spaceDim': 3,
                  'tensorSize': 6}
 

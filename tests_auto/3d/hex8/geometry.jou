@@ -21,7 +21,7 @@ create planar surface with plane xplane offset +20000
 surface 8 name "fault_surface_x2"
 create planar surface with plane yplane offset 0
 surface 9 name "fault_surface_y"
-create planar surface with plane zplane offset -15000
+create planar surface with plane zplane offset -20000
 surface 10 name "material_interface"
 
 # ----------------------------------------------------------------------
@@ -44,11 +44,11 @@ volume 12 name "visco_xnegyneg"
 # Chop x and y faults into pieces
 # ----------------------------------------------------------------------
 # fault_surface_x
-brick x 2000 y 50000 z 30000
+brick x 2000 y 50000 z 40000
 chop volume 2 with volume 13
 
 # fault_surface_y
-brick x 25000 y 2000 z 30000
+brick x 25000 y 2000 z 40000
 volume 16 move x -12500 y 0 z 0
 chop volume 4 with volume 16
 
