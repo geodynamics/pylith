@@ -292,18 +292,18 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh&
   const PetscInt numCells = _materialIS->size();
  
   // Setup field if necessary.
-  topology::VecVisitorMesh* fieldVisitor = (field) ? new topology::VecVisitorMesh(*field) : 0;
+  topology::VecVisitorMesh* fieldVisitor = NULL;
   PetscScalar* fieldArray = NULL;
   if (field) {
-    assert(fieldVisitor);
     const int fiberDim = 1*numQuadPts;
     bool useCurrentField = false;
-    if (fieldVisitor->petscSection()) {
+    if (field->hasSection()) {
       // check fiber dimension
       int fiberDimCurrentLocal = 0;
       int fiberDimCurrent = 0;
       if (numCells > 0) {
-	fiberDimCurrentLocal = fieldVisitor->sectionDof(cells[0]);
+	topology::VecVisitorMesh fieldVisitor(*field);
+	fiberDimCurrentLocal = fieldVisitor.sectionDof(cells[0]);
       } // if
       MPI_Allreduce((void *) &fiberDimCurrentLocal, 
 		    (void *) &fiberDimCurrent, 1, 
@@ -320,6 +320,7 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh&
     assert(_normalizer);
     field->scale(_normalizer->timeScale());
     field->vectorFieldType(topology::FieldBase::MULTI_SCALAR);
+    fieldVisitor = new topology::VecVisitorMesh(*field);assert(fieldVisitor);
     fieldArray = fieldVisitor->localArray();
   } // if
 
@@ -383,17 +384,17 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
   const PetscInt numCells = _materialIS->size();
 
   // Setup field if necessary.
-  topology::VecVisitorMesh* fieldVisitor = (field) ? new topology::VecVisitorMesh(*field) : 0;
+  topology::VecVisitorMesh* fieldVisitor = NULL;
   PetscScalar *fieldArray = NULL;
   if (field) {
-    assert(fieldVisitor);
     const int fiberDim = 1*numQuadPts;
     bool useCurrentField = false;
-    if (fieldVisitor->petscSection()) {
+    if (field->hasSection()) {
       // check fiber dimension
       PetscInt fiberDimCurrentLocal = 0;
       if (numCells > 0) {
-	fiberDimCurrentLocal = fieldVisitor->sectionDof(cells[0]);
+	topology::VecVisitorMesh fieldVisitor(*field);
+	fiberDimCurrentLocal = fieldVisitor.sectionDof(cells[0]);
       } // if
       PetscInt fiberDimCurrent = 0;
       MPI_Allreduce(&fiberDimCurrentLocal, &fiberDimCurrent, 1, MPIU_INT, MPI_MAX, field->mesh().comm());
@@ -408,6 +409,7 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
     assert(_normalizer);
     field->scale(_normalizer->timeScale());
     field->vectorFieldType(topology::FieldBase::MULTI_SCALAR);
+    fieldVisitor = new topology::VecVisitorMesh(*field);assert(fieldVisitor);
     fieldArray = fieldVisitor->localArray();
   } // if
 
@@ -474,17 +476,17 @@ pylith::materials::ElasticMaterial::_stableTimeStepImplicitMax(const topology::M
     PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
 
     assert(_materialIS);
-    const PetscInt *cells = _materialIS->points();
+    const PetscInt* cells = _materialIS->points();
     const PetscInt numCells = _materialIS->size();
     
     // Setup field if necessary.
-    topology::VecVisitorMesh fieldVisitor(*field);
     const int fiberDim = 1*numQuadPts;
     bool useCurrentField = false;
-    if (fieldVisitor.petscSection()) {
+    if (field->hasSection()) {
       // check fiber dimension
       PetscInt fiberDimCurrentLocal = 0;
       if (numCells > 0) {
+	topology::VecVisitorMesh fieldVisitor(*field);
 	fiberDimCurrentLocal = fieldVisitor.sectionDof(cells[0]);
       } // if
       PetscInt fiberDimCurrent = 0;
@@ -500,6 +502,7 @@ pylith::materials::ElasticMaterial::_stableTimeStepImplicitMax(const topology::M
     assert(_normalizer);
     field->scale(_normalizer->timeScale());
     field->vectorFieldType(topology::FieldBase::MULTI_SCALAR);
+    topology::VecVisitorMesh fieldVisitor(*field);
     PetscScalar* fieldArray = fieldVisitor.localArray();
 
     scalar_array dtStableCell(numQuadPts);
