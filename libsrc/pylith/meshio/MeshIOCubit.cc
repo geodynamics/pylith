@@ -77,6 +77,7 @@ pylith::meshio::MeshIOCubit::_read(void)
   scalar_array coordinates;
   int_array cells;
   int_array materialIds;
+  PetscErrorCode err = 0;
 
   if (0 == commRank) {
     try {
@@ -85,6 +86,7 @@ pylith::meshio::MeshIOCubit::_read(void)
       const int meshDim = exofile.getDim("num_dim");
 
       _readVertices(exofile, &coordinates, &numVertices, &spaceDim);
+      err = MPI_Bcast(&spaceDim, 1, MPI_INT, 0, _mesh->comm());PYLITH_CHECK_ERROR(err);
       _readCells(exofile, &cells, &materialIds, &numCells, &numCorners);
       _orientCells(&cells, numCells, numCorners, meshDim);
       MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim,
@@ -105,6 +107,7 @@ pylith::meshio::MeshIOCubit::_read(void)
       throw std::runtime_error(msg.str());
     } // try/catch
   } else {
+    err = MPI_Bcast(&spaceDim, 1, MPI_INT, 0, _mesh->comm());PYLITH_CHECK_ERROR(err);
     MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim,
 			   cells, numCells, numCorners, meshDim,
 			   _interpolate);
