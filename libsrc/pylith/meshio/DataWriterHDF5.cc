@@ -32,6 +32,11 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
+extern "C" {
+extern PetscErrorCode VecView_Seq(Vec, PetscViewer);
+extern PetscErrorCode VecView_MPI(Vec, PetscViewer);
+}
+
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::DataWriterHDF5::DataWriterHDF5(void) :
@@ -127,7 +132,14 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
     PetscVec coordVector = coordinatesField.vector(metadata.label.c_str());assert(coordVector);
     err = VecScale(coordVector, lengthScale);PYLITH_CHECK_ERROR(err);
     err = PetscViewerHDF5PushGroup(_viewer, "/geometry");PYLITH_CHECK_ERROR(err);
+#if 0
     err = VecView(coordVector, _viewer);PYLITH_CHECK_ERROR(err);
+#else
+    PetscBool isseq;
+    err = PetscObjectTypeCompare((PetscObject) coordVector, VECSEQ, &isseq);PYLITH_CHECK_ERROR(err);
+    if (isseq) {err = VecView_Seq(coordVector, _viewer);PYLITH_CHECK_ERROR(err);}
+    else       {err = VecView_MPI(coordVector, _viewer);PYLITH_CHECK_ERROR(err);}
+#endif
     err = PetscViewerHDF5PopGroup(_viewer); PYLITH_CHECK_ERROR(err);
 
     PetscInt vStart, vEnd, cellHeight, cStart, cEnd, cMax, dof, conesSize, numCorners, numCornersLocal = 0;
@@ -292,7 +304,14 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
 
     err = PetscViewerHDF5PushGroup(_viewer, "/vertex_fields");PYLITH_CHECK_ERROR(err);
     err = PetscViewerHDF5SetTimestep(_viewer, istep);PYLITH_CHECK_ERROR(err);
+#if 0
     err = VecView(vector, _viewer);PYLITH_CHECK_ERROR(err);
+#else
+    PetscBool isseq;
+    err = PetscObjectTypeCompare((PetscObject) vector, VECSEQ, &isseq);PYLITH_CHECK_ERROR(err);
+    if (isseq) {err = VecView_Seq(vector, _viewer);PYLITH_CHECK_ERROR(err);}
+    else       {err = VecView_MPI(vector, _viewer);PYLITH_CHECK_ERROR(err);}
+#endif
     err = PetscViewerHDF5PopGroup(_viewer);PYLITH_CHECK_ERROR(err);
 
     if (0 == istep) {
@@ -353,7 +372,14 @@ pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
 
     err = PetscViewerHDF5PushGroup(_viewer, "/cell_fields");PYLITH_CHECK_ERROR(err);
     err = PetscViewerHDF5SetTimestep(_viewer, istep);PYLITH_CHECK_ERROR(err);
+#if 0
     err = VecView(vector, _viewer);PYLITH_CHECK_ERROR(err);
+#else
+    PetscBool isseq;
+    err = PetscObjectTypeCompare((PetscObject) vector, VECSEQ, &isseq);PYLITH_CHECK_ERROR(err);
+    if (isseq) {err = VecView_Seq(vector, _viewer);PYLITH_CHECK_ERROR(err);}
+    else       {err = VecView_MPI(vector, _viewer);PYLITH_CHECK_ERROR(err);}
+#endif
     err = PetscViewerHDF5PopGroup(_viewer);PYLITH_CHECK_ERROR(err);
 
     if (0 == istep) {
