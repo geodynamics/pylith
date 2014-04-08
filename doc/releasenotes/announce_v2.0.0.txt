@@ -85,7 +85,7 @@ RELEASE NOTES - PyLith v2.0.0
 * Directories for output are created as necessary.
 
   Directories where output files are written will be created if
-  necesary. Previously, the directories would not be created, so that
+  necessary. Previously, the directories would not be created, so that
   opening the output files in a nonexistent directory would generate
   an error.
 
