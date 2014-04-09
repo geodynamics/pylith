@@ -57,7 +57,27 @@ TAG
 
 RELEASE
 
-  * Create source tarball and upload to GitHub.
+  * Create source tarball and upload to GitHub. 
+
+    NOTE: This must be done on the same machine as the spatialdata
+    distribution to insure SWIG constructs the same fingerprints for
+    pointers.
+
+    make dist
+
+  * Create petsc source tarball and upload to GitHub.
+
+    1. Clone/update a clean petsc repo (e.g., petsc_dist)
+    2. packager/make_petscdist.sh PETSC_REPO knepley/pylith
+    3. mv petsc-lite-pylith.tar.gz petsc-pylith-vX.X.X.tgz
+
+  * Package binaries
+
+    1. Build master branch on buildbots
+    2. Run packager on buildbots
+    3. cd PYLITH_DIR/binaries/master
+    4. packager/make_package.py
+    5. Download binary.
 
   * Upload binaries to GitHub.
 
@@ -67,4 +87,26 @@ UPDATE next and maint
 
   * Rewind next to master
 
-  * Rewind maint to master
+    git checkout master
+    git branch -D next
+    git checkout -b next
+    git push -f
+
+    EVERYONE with a clone of 'next' must resync to new 'next' branch
+
+    git checkout master
+    git branch -D next
+    git fetch
+
+  * Fast-forward maint to master
+
+    git checkout maint
+    git merge master
+    git push
+
+Updating a tag label
+
+  git tag new old
+  git tag -d old
+  git push origin :refs/tags/old
+  git push --tags
