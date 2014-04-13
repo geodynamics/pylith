@@ -1068,6 +1068,7 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
   const PetscInt eEnd = edgeStratum.end();
   PetscInt eMax;
   err = DMPlexGetHybridBounds(dmMesh, NULL, NULL, &eMax, NULL);PYLITH_CHECK_ERROR(err);
+  if (eMax < 0) eMax = eEnd;
 
   // Get vertices and cells in fault mesh.
   PetscDM faultDMMesh = _faultMesh->dmMesh();assert(faultDMMesh);
@@ -1104,7 +1105,8 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
     const PetscInt v_positive = cone[1];
 
     PetscInt v_fault;
-    err = PetscFindInt(v_negative, numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);assert(v_fault >= 0);
+    err = PetscFindInt(v_negative, numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
+    /* v_fault can be < 0 if this hybrid edge is in no normal cohesive cell on this process */
     _cohesiveVertices[index].lagrange = e_lagrange;
     _cohesiveVertices[index].positive = v_positive;
     _cohesiveVertices[index].negative = v_negative;
