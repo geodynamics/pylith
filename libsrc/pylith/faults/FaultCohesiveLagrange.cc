@@ -1084,59 +1084,40 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
   const PetscInt* points = faultMeshIS.points();
 
   _cohesiveToFault.clear();
-  typedef std::map<int, int> indexmap_type;
-  indexmap_type indexMap;
   _cohesiveVertices.resize(fvEnd-fvStart);
 
-  PetscInt index = 0;
+  // A loop over normal cohesive cells misses hybrid edges which are only present in cells with clamped edges on this process,
+  // but are in normal cohesive cells on another process. Thus, we must loop over all hybrid edges.
   for (PetscInt iCell = 0; iCell < numCohesiveCells; ++iCell) {
     _cohesiveToFault[cohesiveCells[iCell]] = iCell+fcStart;
+  }
+  PetscInt index = 0;
+  for (PetscInt e_lagrange = eMax; e_lagrange < eEnd; ++e_lagrange) {
+    const PetscInt *cone = NULL;
+    PetscInt        coneSize;
 
-    // Get oriented closure
-    PetscInt *closure = NULL;
-    PetscInt  closureSize, q = 0;
-    err = DMPlexGetTransitiveClosure(dmMesh, cohesiveCells[iCell], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-    for (PetscInt p = 0; p < closureSize*2; p += 2) {
-      const PetscInt point = closure[p];
-      if ((point >= eMax) && (point < eEnd)) {
-        closure[q++] = point;
-      } // if
-    } // for
-    closureSize = q;
-    assert(closureSize == numBasis);
+    err = DMPlexGetConeSize(dmMesh, e_lagrange, &coneSize);PYLITH_CHECK_ERROR(err);assert(coneSize == 2);
+    err = DMPlexGetCone(dmMesh, e_lagrange, &cone);PYLITH_CHECK_ERROR(err);
+    // Check for clamped vertex
+    if (cone[0] == cone[1]) continue;
+    const PetscInt v_negative = cone[0];
+    const PetscInt v_positive = cone[1];
 
-    for (int iConstraint = 0; iConstraint < numBasis; ++iConstraint) {
-      const PetscInt  e_lagrange = closure[iConstraint];
-
-      const PetscInt *cone = NULL;
-      PetscInt coneSize;
-      err = DMPlexGetConeSize(dmMesh, e_lagrange, &coneSize);PYLITH_CHECK_ERROR(err);
-      assert(coneSize == 2);
-      err = DMPlexGetCone(dmMesh, e_lagrange, &cone);PYLITH_CHECK_ERROR(err);
-      const PetscInt v_negative = cone[0];
-      const PetscInt v_positive = cone[1];
-
-      PetscInt v_fault;
-      err = PetscFindInt(v_negative, numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
-      assert(v_fault >= 0);
-      if (indexMap.end() == indexMap.find(e_lagrange)) {
-        _cohesiveVertices[index].lagrange = e_lagrange;
-        _cohesiveVertices[index].positive = v_positive;
-        _cohesiveVertices[index].negative = v_negative;
-        _cohesiveVertices[index].fault = v_fault;
+    PetscInt v_fault;
+    err = PetscFindInt(v_negative, numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);assert(v_fault >= 0);
+    _cohesiveVertices[index].lagrange = e_lagrange;
+    _cohesiveVertices[index].positive = v_positive;
+    _cohesiveVertices[index].negative = v_negative;
+    _cohesiveVertices[index].fault    = v_fault;
 #if 0 // DEBUGGING
-        std::cout << "cohesiveVertices[" << index << "]: "
-		  << "l: " << e_lagrange
-		  << ", p: " << v_positive
-		  << ", n: " << v_negative
-		  << ", f: " << v_fault
-		  << std::endl;
+    std::cout << "cohesiveVertices[" << index << "]: "
+              << "l: " << e_lagrange
+              << ", p: " << v_positive
+              << ", n: " << v_negative
+              << ", f: " << v_fault
+              << std::endl;
 #endif
-        indexMap[e_lagrange] = index; // add index to map
-        ++index;
-      } // if
-    } // for
-    err = DMPlexRestoreTransitiveClosure(dmMesh, cohesiveCells[iCell], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+    ++index;
   } // for
 
   PYLITH_METHOD_END;
