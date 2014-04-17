@@ -1130,6 +1130,7 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
           indexMap[e_lagrange] = index; // add index to map
           ++index;
         } // if
+        err = DMPlexSetLabelValue(faultDMMesh, "clamped", v_fault, 1);PYLITH_CHECK_ERROR(err);
         continue;
       }
       const PetscInt v_negative = cone[0];
