@@ -78,7 +78,7 @@ const int pylith::faults::CohesiveDataQuad4i::_numCorners[9] = {
 
 const int pylith::faults::CohesiveDataQuad4i::_materialIds[9] = {
   10, 10, 10, 11, 10, 11,
-  -999, 1, 1,
+  1, 1, 1,
 };
 
 const int pylith::faults::CohesiveDataQuad4i::_numGroups = 3;
