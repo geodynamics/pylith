@@ -649,7 +649,7 @@ pylith::faults::CohesiveTopology::createInterpolated(topology::Mesh* mesh,
       /* Eliminate hybrid cells on the boundary of the split from cohesive label,
          they are marked with -(cell number) since the hybrid cell number aliases vertices in the old mesh */
       err = DMLabelGetValue(label, -cell, &onBd);PYLITH_CHECK_ERROR(err);
-      if (onBd == dim) continue;
+      //if (onBd == dim) continue;
       err = DMLabelSetValue(mlabel, cell, materialId);PYLITH_CHECK_ERROR(err);
     }
   }

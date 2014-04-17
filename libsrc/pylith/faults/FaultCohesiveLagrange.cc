@@ -155,6 +155,7 @@ pylith::faults::FaultCohesiveLagrange::setupSolnDof(topology::Field* field)
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
 
+    if (e_lagrange < 0) continue;
     // Set DOF in section (all subfields)
     err = PetscSectionSetDof(fieldSection, e_lagrange, spaceDim);PYLITH_CHECK_ERROR(err);
     err = PetscSectionSetDof(fieldSection, v_positive, spaceDim);PYLITH_CHECK_ERROR(err);
@@ -247,6 +248,7 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(const topology::Field& 
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
+    if (e_lagrange < 0) continue;
     // Compute contribution only if Lagrange constraint is local.
     PetscInt goff  = 0;
     err = PetscSectionGetOffset(residualGlobalSection, e_lagrange, &goff);PYLITH_CHECK_ERROR(err);
@@ -387,6 +389,7 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(topology::Jacobian* jac
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
+    if (e_lagrange < 0) continue;
     // Compute contribution only if Lagrange constraint is local.
     PetscInt gloff = 0;
     err = PetscSectionGetOffset(solnGlobalSection, e_lagrange, &gloff);PYLITH_CHECK_ERROR(err);
@@ -526,6 +529,7 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(topology::Field* jacobi
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
 
+    if (e_lagrange < 0) continue;
     // Compute contribution only if Lagrange constraint is local.
     PetscInt goff = 0;
     err = PetscSectionGetOffset(jacobianGlobalSection, e_lagrange, &goff);PYLITH_CHECK_ERROR(err);
@@ -1068,7 +1072,6 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
   const PetscInt eEnd = edgeStratum.end();
   PetscInt eMax;
   err = DMPlexGetHybridBounds(dmMesh, NULL, NULL, &eMax, NULL);PYLITH_CHECK_ERROR(err);
-  if (eMax < 0) eMax = eEnd;
 
   // Get vertices and cells in fault mesh.
   PetscDM faultDMMesh = _faultMesh->dmMesh();assert(faultDMMesh);
@@ -1085,42 +1088,76 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
   const PetscInt* points = faultMeshIS.points();
 
   _cohesiveToFault.clear();
+  typedef std::map<int, int> indexmap_type;
+  indexmap_type indexMap;
   _cohesiveVertices.resize(fvEnd-fvStart);
 
-  // A loop over normal cohesive cells misses hybrid edges which are only present in cells with clamped edges on this process,
-  // but are in normal cohesive cells on another process. Thus, we must loop over all hybrid edges.
+  PetscInt index = 0;
   for (PetscInt iCell = 0; iCell < numCohesiveCells; ++iCell) {
     _cohesiveToFault[cohesiveCells[iCell]] = iCell+fcStart;
-  }
-  PetscInt index = 0;
-  for (PetscInt e_lagrange = eMax; e_lagrange < eEnd; ++e_lagrange) {
-    const PetscInt *cone = NULL;
-    PetscInt        coneSize;
 
-    err = DMPlexGetConeSize(dmMesh, e_lagrange, &coneSize);PYLITH_CHECK_ERROR(err);assert(coneSize == 2);
-    err = DMPlexGetCone(dmMesh, e_lagrange, &cone);PYLITH_CHECK_ERROR(err);
-    // Check for clamped vertex
-    if (cone[0] == cone[1]) continue;
-    const PetscInt v_negative = cone[0];
-    const PetscInt v_positive = cone[1];
+    // Get oriented closure
+    PetscInt *closure = NULL;
+    PetscInt  closureSize, q = 0;
+    err = DMPlexGetTransitiveClosure(dmMesh, cohesiveCells[iCell], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+    for (PetscInt p = 0; p < closureSize*2; p += 2) {
+      const PetscInt point = closure[p];
+      if ((point >= eMax) && (point < eEnd)) {
+        closure[q++] = point;
+      } // if
+    } // for
+    closureSize = q;
+    assert(closureSize == numBasis);
 
-    PetscInt v_fault;
-    err = PetscFindInt(v_negative, numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
-    /* v_fault can be < 0 if this hybrid edge is in no normal cohesive cell on this process */
-    _cohesiveVertices[index].lagrange = e_lagrange;
-    _cohesiveVertices[index].positive = v_positive;
-    _cohesiveVertices[index].negative = v_negative;
-    _cohesiveVertices[index].fault    = v_fault;
+    for (int iConstraint = 0; iConstraint < numBasis; ++iConstraint) {
+      const PetscInt  e_lagrange = closure[iConstraint];
+
+      const PetscInt *cone = NULL;
+      PetscInt coneSize;
+      err = DMPlexGetConeSize(dmMesh, e_lagrange, &coneSize);PYLITH_CHECK_ERROR(err);
+      assert(coneSize == 2);
+      err = DMPlexGetCone(dmMesh, e_lagrange, &cone);PYLITH_CHECK_ERROR(err);
+      // Check for clamped vertex
+      if (cone[0] == cone[1]) {
+        PetscInt v_fault;
+        err = PetscFindInt(cone[0], numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
+        assert(v_fault >= 0);
+        if (indexMap.end() == indexMap.find(e_lagrange)) {
+          _cohesiveVertices[index].lagrange = -e_lagrange;
+          _cohesiveVertices[index].positive = -cone[0];
+          _cohesiveVertices[index].negative = -cone[0];
+          _cohesiveVertices[index].fault    = -v_fault;
+          indexMap[e_lagrange] = index; // add index to map
+          ++index;
+        } // if
+        continue;
+      }
+      const PetscInt v_negative = cone[0];
+      const PetscInt v_positive = cone[1];
+
+      PetscInt v_fault;
+      err = PetscFindInt(v_negative, numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
+      assert(v_fault >= 0);
+      if (indexMap.end() == indexMap.find(e_lagrange)) {
+        _cohesiveVertices[index].lagrange = e_lagrange;
+        _cohesiveVertices[index].positive = v_positive;
+        _cohesiveVertices[index].negative = v_negative;
+        _cohesiveVertices[index].fault = v_fault;
 #if 0 // DEBUGGING
-    std::cout << "cohesiveVertices[" << index << "]: "
-              << "l: " << e_lagrange
-              << ", p: " << v_positive
-              << ", n: " << v_negative
-              << ", f: " << v_fault
-              << std::endl;
+        std::cout << "cohesiveVertices[" << index << "]: "
+		  << "l: " << e_lagrange
+		  << ", p: " << v_positive
+		  << ", n: " << v_negative
+		  << ", f: " << v_fault
+		  << std::endl;
 #endif
-    ++index;
+        indexMap[e_lagrange] = index; // add index to map
+        ++index;
+      } // if
+    } // for
+    err = DMPlexRestoreTransitiveClosure(dmMesh, cohesiveCells[iCell], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
   } // for
+  assert(index == _cohesiveVertices.size());
 
   PYLITH_METHOD_END;
 } // _initializeCohesiveInfo
@@ -1701,6 +1738,7 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(topology::Field* tra
     const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
 
+    if (e_lagrange < 0) continue;
     const PetscInt dtoff = dispTVisitor.sectionOffset(e_lagrange);
     assert(spaceDim == dispTVisitor.sectionDof(e_lagrange));
 
