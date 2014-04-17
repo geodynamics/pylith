@@ -167,7 +167,7 @@ pylith::faults::BruneSlipFn::initialize(const topology::Mesh& faultMesh,
   err = DMPlexGetLabel(faultDMMesh, "clamped", &clamped);PYLITH_CHECK_ERROR(err);
   _slipVertex.resize(spaceDim);
   for(PetscInt v = vStart; v < vEnd; ++v) {
-    PetscInt value = 0;
+    PetscInt value = -1;
 
     if (clamped) {err = DMLabelGetValue(clamped, v, &value);PYLITH_CHECK_ERROR(err);}
     if (value >= 0) continue;
@@ -276,7 +276,7 @@ pylith::faults::BruneSlipFn::slip(topology::Field* slip,
   err = DMPlexGetLabel(dmMesh, "clamped", &clamped);PYLITH_CHECK_ERROR(err);
   const int spaceDim = _slipVertex.size();
   for(PetscInt v = vStart; v < vEnd; ++v) {
-    PetscInt value = 0;
+    PetscInt value = -1;
 
     if (clamped) {err = DMLabelGetValue(clamped, v, &value);PYLITH_CHECK_ERROR(err);}
     if (value >= 0) continue;
