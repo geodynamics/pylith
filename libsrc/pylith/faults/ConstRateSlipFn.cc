@@ -26,6 +26,7 @@
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/faults/FaultCohesiveLagrange.hh" // USES isClampedVertex()
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -146,8 +147,16 @@ pylith::faults::ConstRateSlipFn::initialize(const topology::Mesh& faultMesh,
   topology::CoordsVisitor coordsVisitor(dmMesh);
   PetscScalar* coordsArray = coordsVisitor.localArray();
 
+  PetscDM faultDMMesh = faultMesh.dmMesh();assert(faultDMMesh);
+  PetscDMLabel clamped = NULL;
+  PetscErrorCode err = DMPlexGetLabel(faultDMMesh, "clamped", &clamped);PYLITH_CHECK_ERROR(err);
+
   _slipRateVertex.resize(spaceDim);
   for(PetscInt v = vStart; v < vEnd; ++v) {
+    if (FaultCohesiveLagrange::isClampedVertex(clamped, v)) {
+      continue;
+    } // if
+      
     // Dimensionalize coordinates
     const PetscInt coff = coordsVisitor.sectionOffset(v);
     assert(spaceDim == coordsVisitor.sectionDof(v));
