@@ -248,7 +248,10 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(const topology::Field& 
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
-    if (e_lagrange < 0) continue;
+    if (e_lagrange < 0) { // Skip clamped edges.
+      continue;
+    } // if
+
     // Compute contribution only if Lagrange constraint is local.
     PetscInt goff  = 0;
     err = PetscSectionGetOffset(residualGlobalSection, e_lagrange, &goff);PYLITH_CHECK_ERROR(err);
@@ -389,7 +392,10 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(topology::Jacobian* jac
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
-    if (e_lagrange < 0) continue;
+    if (e_lagrange < 0) { // Skip clamped edges.
+      continue;
+    } // if
+
     // Compute contribution only if Lagrange constraint is local.
     PetscInt gloff = 0;
     err = PetscSectionGetOffset(solnGlobalSection, e_lagrange, &gloff);PYLITH_CHECK_ERROR(err);
@@ -529,7 +535,10 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(topology::Field* jacobi
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
 
-    if (e_lagrange < 0) continue;
+    if (e_lagrange < 0) { // Skip clamped edges
+      continue;
+    } // if
+
     // Compute contribution only if Lagrange constraint is local.
     PetscInt goff = 0;
     err = PetscSectionGetOffset(jacobianGlobalSection, e_lagrange, &goff);PYLITH_CHECK_ERROR(err);
@@ -645,6 +654,10 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
     const int v_fault = _cohesiveVertices[iVertex].fault;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
+
+    if (e_lagrange < 0) { // Skip clamped edges.
+      continue;
+    } // if
 
     // Compute contribution only if Lagrange constraint is local.
     PetscInt gloff = 0;
@@ -812,6 +825,10 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
     const int v_fault = _cohesiveVertices[iVertex].fault;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
+
+    if (e_lagrange < 0) { // Skip clamped edges
+      continue;
+    } // if
 
     // Set Lagrange multiplier value. Value from preliminary solve is
     // bogus due to artificial diagonal entry.
@@ -1023,6 +1040,12 @@ pylith::faults::FaultCohesiveLagrange::checkConstraints(const topology::Field& s
   for(int iVertex = 0; iVertex < numVertices; ++iVertex) {
 
     const int v_negative = _cohesiveVertices[iVertex].negative;
+    const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
+
+    if (e_lagrange < 0) { // Skip clamped edges.
+      continue;
+    } // if
+
     assert(spaceDim == solutionVisitor.sectionDof(v_negative));
     numConstraints = solutionVisitor.sectionConstraintDof(v_negative);
     if (numConstraints > 0) {
@@ -1313,6 +1336,29 @@ pylith::faults::FaultCohesiveLagrange::globalToFault(topology::Field* field,
   PYLITH_METHOD_END;
 } // faultToGlobal
 
+
+// ----------------------------------------------------------------------
+// Check to see if given vertex is clamped.
+bool
+pylith::faults::FaultCohesiveLagrange::isClampedVertex(PetscDMLabel clamped,
+						       PetscInt vertex)
+{ // _isClampedVertex
+  PYLITH_METHOD_BEGIN;
+  
+  bool isClamped = false;
+  
+  if (clamped) {
+    PetscInt value = -1;
+    PetscErrorCode err = DMLabelGetValue(clamped, vertex, &value);PYLITH_CHECK_ERROR(err);
+    if (value >= 0) {
+      isClamped = true;
+    } // if
+  } // if
+  
+  PYLITH_METHOD_RETURN(isClamped);
+} // _isClampedVertex
+
+
 // ----------------------------------------------------------------------
 // Calculate orientation at fault vertices.
 void
@@ -1352,6 +1398,9 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   topology::Stratum cellsStratum(faultDMMesh, topology::Stratum::HEIGHT, 1);
   const PetscInt cStart = cellsStratum.begin();
   const PetscInt cEnd = cellsStratum.end();
+
+  PetscDMLabel clamped = NULL;
+  PetscErrorCode err = DMPlexGetLabel(faultDMMesh, "clamped", &clamped);PYLITH_CHECK_ERROR(err);
 
   // Containers for orientation information.
   // Allocate orientation field.
@@ -1396,19 +1445,31 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
       // Get orientations at fault cell's vertices.
       coordsVisitor.getClosure(&coordsCell, cell);
       
-      PetscErrorCode err = DMPlexGetTransitiveClosure(faultDMMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+      err = DMPlexGetTransitiveClosure(faultDMMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
       
       // Filter out non-vertices
       PetscInt numVertices = 0;
+      bool hasClampedVertex = false;
       for(PetscInt p = 0; p < closureSize*2; p += 2) {
 	if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
+	  // :KLUDGE: Filter out clamped vertices. Remove this when fault edges are clamped.
+	  if (isClampedVertex(clamped, closure[p])) {
+	    hasClampedVertex = true;
+	  } // if
+
 	  closure[numVertices*2]   = closure[p];
 	  closure[numVertices*2+1] = closure[p+1];
 	  ++numVertices;
 	} // if
       } // for
-      
+      if (hasClampedVertex) {
+	err = DMPlexRestoreTransitiveClosure(faultDMMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+	continue;
+      } // if
+
       for(PetscInt v = 0; v < numVertices; ++v) {
+	const PetscInt v_fault = closure[v*2];
+
 	// Compute Jacobian and determinant of Jacobian at vertex
 	cellGeometry.jacobian(&jacobian, &jacobianDet, &coordsCell[0], numBasis, spaceDim, &verticesRef[v*cohesiveDim], cohesiveDim);
 	
@@ -1416,7 +1477,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
 	cellGeometry.orientation(&orientationVertex, jacobian, jacobianDet, up);
 	
 	// Update orientation
-	const PetscInt ooff = orientationVisitor.sectionOffset(closure[v*2]);
+	const PetscInt ooff = orientationVisitor.sectionOffset(v_fault);
 	
 	for(PetscInt d = 0; d < orientationSize; ++d) {
 	  orientationArray[ooff+d] += orientationVertex[d];
@@ -1445,6 +1506,11 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   orientationArray = orientationVisitor.localArray();
   int count = 0;
   for(PetscInt v = vStart; v < vEnd; ++v, ++count) {
+    // :KLUDGE: Filter out clamped vertices. Remove this when fault edges are clamped.
+    if (isClampedVertex(clamped, v)) {
+      continue;
+    } // if
+
     assert(orientationSize == orientationVisitor.sectionDof(v));
     const PetscInt ooff = orientationVisitor.sectionOffset(v);
     for(PetscInt d = 0; d < orientationSize; ++d) {
@@ -1739,7 +1805,10 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(topology::Field* tra
     const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
 
-    if (e_lagrange < 0) continue;
+    if (e_lagrange < 0) { // skip clamped edges
+      continue;
+    } // if
+
     const PetscInt dtoff = dispTVisitor.sectionOffset(e_lagrange);
     assert(spaceDim == dispTVisitor.sectionDof(e_lagrange));
 
@@ -1913,6 +1982,7 @@ pylith::faults::FaultCohesiveLagrange::_getJacobianSubmatrixNP(PetscMat* jacobia
   PYLITH_METHOD_END;
 } // _getJacobianSubmatrixNP
 
+
 // ----------------------------------------------------------------------
 // Get cell field associated with integrator.
 const pylith::topology::Field&
@@ -1952,7 +2022,7 @@ pylith::faults::FaultCohesiveLagrange::cellField(const char* name,
   msg << "Request for unknown cell field '" << name << "' for fault '" << label() << ".";
   throw std::runtime_error(msg.str());
 
-  // Satisfy return values
+  // Satisfy return value
   assert(_fields);
   const topology::Field& buffer = _fields->get("buffer (vector)");
   PYLITH_METHOD_RETURN(buffer);

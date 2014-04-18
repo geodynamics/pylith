@@ -227,6 +227,15 @@ public :
   void globalToFault(topology::Field* field,
 		     const topology::Field& faultOrientation);
 
+  /** Check to see if given vertex is clamped.
+   *
+   * @param clamped Label in fault mesh associated with clamped vertices.
+   * @param vertex Point in fault mesh.
+   */
+  static
+  bool isClampedVertex(PetscDMLabel clamped,
+		       PetscInt vertex);
+
   // PROTECTED STRUCTS //////////////////////////////////////////////////
 protected :
 
