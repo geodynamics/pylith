@@ -253,14 +253,19 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field& resid
   // Loop over fault vertices
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
+    // Skip clamped vertices
+    if (e_lagrange < 0) {
+      continue;
+    } // if
+
     // Compute contribution only if Lagrange constraint is local.
     PetscInt goff = 0;
-    err = PetscSectionGetOffset(residualGlobalSection, v_lagrange, &goff);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(residualGlobalSection, e_lagrange, &goff);PYLITH_CHECK_ERROR(err);
     if (goff < 0)
       continue;
 
@@ -294,8 +299,8 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field& resid
     const PetscInt dtpoff = dispTVisitor.sectionOffset(v_positive);
     assert(spaceDim == dispTVisitor.sectionDof(v_positive));
 
-    const PetscInt dtloff = dispTVisitor.sectionOffset(v_lagrange);
-    assert(spaceDim == dispTVisitor.sectionDof(v_lagrange));
+    const PetscInt dtloff = dispTVisitor.sectionOffset(e_lagrange);
+    assert(spaceDim == dispTVisitor.sectionDof(e_lagrange));
 
     // Get dispIncr(t->t+dt) at conventional vertices and Lagrange vertex.
     const PetscInt dinoff = dispTIncrVisitor.sectionOffset(v_negative);
@@ -304,8 +309,8 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field& resid
     const PetscInt dipoff = dispTIncrVisitor.sectionOffset(v_positive);
     assert(spaceDim == dispTIncrVisitor.sectionDof(v_positive));
 
-    const PetscInt diloff = dispTIncrVisitor.sectionOffset(v_lagrange);
-    assert(spaceDim == dispTIncrVisitor.sectionDof(v_lagrange));
+    const PetscInt diloff = dispTIncrVisitor.sectionOffset(e_lagrange);
+    assert(spaceDim == dispTIncrVisitor.sectionDof(e_lagrange));
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -408,10 +413,15 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(const PylithScalar t,
 
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
+
+    // Skip clamped vertices
+    if (e_lagrange < 0) {
+      continue;
+    } // if
 
     // Get relative displacement
     const PetscInt droff = dispRelVisitor.sectionOffset(v_fault);
@@ -426,11 +436,11 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(const PylithScalar t,
     assert(spaceDim*spaceDim == orientationVisitor.sectionDof(v_fault));
 
     // Get Lagrange multiplier values from disp(t), and dispIncr(t->t+dt)
-    const PetscInt dtloff = dispTVisitor.sectionOffset(v_lagrange);
-    assert(spaceDim == dispTVisitor.sectionDof(v_lagrange));
+    const PetscInt dtloff = dispTVisitor.sectionOffset(e_lagrange);
+    assert(spaceDim == dispTVisitor.sectionDof(e_lagrange));
 
-    const PetscInt diloff = dispTIncrVisitor.sectionOffset(v_lagrange);
-    assert(spaceDim == dispTIncrVisitor.sectionDof(v_lagrange));
+    const PetscInt diloff = dispTIncrVisitor.sectionOffset(e_lagrange);
+    assert(spaceDim == dispTIncrVisitor.sectionDof(e_lagrange));
 
     // Compute slip, slip rate, and fault traction (Lagrange
     // multiplier) at time t+dt in fault coordinate system.
@@ -572,10 +582,15 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
 
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
+
+    // Skip clamped vertices
+    if (e_lagrange < 0) {
+      continue;
+    } // if
 
     // Get displacement values
     const PetscInt dtnoff = dispTVisitor.sectionOffset(v_negative);
@@ -584,8 +599,8 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
     const PetscInt dtpoff = dispTVisitor.sectionOffset(v_positive);
     assert(spaceDim == dispTVisitor.sectionDof(v_positive));
 
-    const PetscInt dtloff = dispTVisitor.sectionOffset(v_lagrange);
-    assert(spaceDim == dispTVisitor.sectionDof(v_lagrange));
+    const PetscInt dtloff = dispTVisitor.sectionOffset(e_lagrange);
+    assert(spaceDim == dispTVisitor.sectionDof(e_lagrange));
 
     // Get displacement increment values.
     const PetscInt dinoff = dispTIncrVisitor.sectionOffset(v_negative);
@@ -594,8 +609,8 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
     const PetscInt dipoff = dispTIncrVisitor.sectionOffset(v_positive);
     assert(spaceDim == dispTIncrVisitor.sectionDof(v_positive));
 
-    const PetscInt diloff = dispTIncrVisitor.sectionOffset(v_lagrange);
-    assert(spaceDim == dispTIncrVisitor.sectionDof(v_lagrange));
+    const PetscInt diloff = dispTIncrVisitor.sectionOffset(e_lagrange);
+    assert(spaceDim == dispTIncrVisitor.sectionDof(e_lagrange));
 
     // Get orientation
     const PetscInt ooff = orientationVisitor.sectionOffset(v_fault);
@@ -843,7 +858,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
 
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_fault = _cohesiveVertices[iVertex].fault;
-    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
@@ -870,8 +885,8 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
     const PetscInt dtpoff = dispTVisitor.sectionOffset(v_positive);
     assert(spaceDim == dispTVisitor.sectionDof(v_positive));
 
-    const PetscInt dtloff = dispTVisitor.sectionOffset(v_lagrange);
-    assert(spaceDim == dispTVisitor.sectionDof(v_lagrange));
+    const PetscInt dtloff = dispTVisitor.sectionOffset(e_lagrange);
+    assert(spaceDim == dispTVisitor.sectionDof(e_lagrange));
 
     // Get displacement increment (trial solution).
     const PetscInt dinoff = dispTIncrVisitor.sectionOffset(v_negative);
@@ -880,8 +895,8 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
     const PetscInt dipoff = dispTIncrVisitor.sectionOffset(v_positive);
     assert(spaceDim == dispTIncrVisitor.sectionDof(v_positive));
 
-    const PetscInt diloff = dispTIncrVisitor.sectionOffset(v_lagrange);
-    assert(spaceDim == dispTIncrVisitor.sectionDof(v_lagrange));
+    const PetscInt diloff = dispTIncrVisitor.sectionOffset(e_lagrange);
+    assert(spaceDim == dispTIncrVisitor.sectionDof(e_lagrange));
 
     // Scale perturbation in relative displacements and change in
     // Lagrange multipliers by alpha using only shear components.
@@ -983,11 +998,11 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
     // Compute contribution to adjusting solution only if Lagrange
     // constraint is local (the adjustment is assembled across processors).
     PetscInt goff;
-    err = PetscSectionGetOffset(dispTIncrGlobalSection, v_lagrange, &goff);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(dispTIncrGlobalSection, e_lagrange, &goff);PYLITH_CHECK_ERROR(err);
     if (goff >= 0) {
       // Get offsets in displacement increment adjustment.
-      const PetscInt dialoff = dispTIncrAdjVisitor.sectionOffset(v_lagrange);
-      assert(spaceDim == dispTIncrAdjVisitor.sectionDof(v_lagrange));
+      const PetscInt dialoff = dispTIncrAdjVisitor.sectionOffset(e_lagrange);
+      assert(spaceDim == dispTIncrAdjVisitor.sectionDof(e_lagrange));
 
       const PetscInt dianoff = dispTIncrAdjVisitor.sectionOffset(v_negative);
       assert(spaceDim == dispTIncrAdjVisitor.sectionDof(v_negative));
@@ -1127,18 +1142,23 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(topology::SolutionFields* con
 
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
+
+    // Skip clamped vertices
+    if (e_lagrange < 0) {
+      continue;
+    } // if
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(restrictEvent);
 #endif
 
     // Get residual at cohesive cell's vertices.
-    const PetscInt rloff = residualVisitor.sectionOffset(v_lagrange);
-    assert(spaceDim == residualVisitor.sectionDof(v_lagrange));
+    const PetscInt rloff = residualVisitor.sectionOffset(e_lagrange);
+    assert(spaceDim == residualVisitor.sectionDof(e_lagrange));
 
     // Get jacobian at cohesive cell's vertices.
     const PetscInt jnoff = jacobianVisitor.sectionOffset(v_negative);
@@ -1148,8 +1168,8 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(topology::SolutionFields* con
     assert(spaceDim == jacobianVisitor.sectionDof(v_positive));
 
     // Get disp(t) at Lagrange vertex.
-    const PetscInt dtloff = dispTVisitor.sectionOffset(v_lagrange);
-    assert(spaceDim == dispTVisitor.sectionDof(v_lagrange));
+    const PetscInt dtloff = dispTVisitor.sectionOffset(e_lagrange);
+    assert(spaceDim == dispTVisitor.sectionDof(e_lagrange));
 
     // Get dispIncr(t) at cohesive cell's vertices.
     const PetscInt dinoff = dispTIncrVisitor.sectionOffset(v_negative);
@@ -1158,8 +1178,8 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(topology::SolutionFields* con
     const PetscInt dipoff = dispTIncrVisitor.sectionOffset(v_positive);
     assert(spaceDim == dispTIncrVisitor.sectionDof(v_positive));
 
-    const PetscInt diloff = dispTIncrVisitor.sectionOffset(v_lagrange);
-    assert(spaceDim == dispTIncrVisitor.sectionDof(v_lagrange));
+    const PetscInt diloff = dispTIncrVisitor.sectionOffset(e_lagrange);
+    assert(spaceDim == dispTIncrVisitor.sectionDof(e_lagrange));
 
     // Get relative displacement at fault vertex.
     const PetscInt droff = dispRelVisitor.sectionOffset(v_fault);
@@ -1279,7 +1299,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(topology::SolutionFields* con
     // Compute contribution to adjusting solution only if Lagrange
     // constraint is local (the adjustment is assembled across processors).
     PetscInt goff;
-    err = PetscSectionGetOffset(solnGlobalSection, v_lagrange, &goff);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(solnGlobalSection, e_lagrange, &goff);PYLITH_CHECK_ERROR(err);
     if (goff >= 0) {
       const PetscInt dianoff = dispTIncrAdjVisitor.sectionOffset(v_negative);
       assert(spaceDim == dispTIncrAdjVisitor.sectionDof(v_negative));
@@ -1461,11 +1481,16 @@ pylith::faults::FaultCohesiveDyn::_calcTractions(topology::Field* tractions,
 
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
 
-    const PetscInt dtloff = dispTVisitor.sectionOffset(v_lagrange);
-    assert(spaceDim == dispTVisitor.sectionDof(v_lagrange));
+    // Skip clamped vertices
+    if (e_lagrange < 0) {
+      continue;
+    } // if
+
+    const PetscInt dtloff = dispTVisitor.sectionOffset(e_lagrange);
+    assert(spaceDim == dispTVisitor.sectionDof(e_lagrange));
 
     const PetscInt ooff = orientationVisitor.sectionOffset(v_fault);
     assert(spaceDim*spaceDim == orientationVisitor.sectionDof(v_fault));
@@ -1525,6 +1550,11 @@ pylith::faults::FaultCohesiveDyn::_updateRelMotion(const topology::SolutionField
     const int v_fault = _cohesiveVertices[iVertex].fault;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
+
+    // Skip clamped vertices
+    if (v_fault < 0) {
+      continue;
+    } // if
 
     // Get displacement offsets.
     const PetscInt dtnoff = dispTVisitor.sectionOffset(v_negative);
@@ -1942,6 +1972,11 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateSoln(const bool negativeSide
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_fault = _cohesiveVertices[iVertex].fault;
 
+    // Skip clamped vertices
+    if (v_fault < 0) {
+      continue;
+    } // if
+
     const PetscInt dloff = dLagrangeVisitor.sectionOffset(v_fault);
     assert(spaceDim == dLagrangeVisitor.sectionDof(v_fault));
 
@@ -2051,14 +2086,19 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceNorm(const PylithScalar alp
   PylithScalar norm2 = 0.0;
   int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
+    // Skip clamped vertices
+    if (e_lagrange < 0) {
+      continue;
+    } // if
+
     // Compute contribution only if Lagrange constraint is local.
     PetscInt goff;
-    err = PetscSectionGetOffset(dispTIncrGlobalSection, v_lagrange, &goff);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(dispTIncrGlobalSection, e_lagrange, &goff);PYLITH_CHECK_ERROR(err);
     if (goff < 0) {
       continue;
     } // if
@@ -2070,8 +2110,8 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceNorm(const PylithScalar alp
     const PetscInt dtpoff = dispTVisitor.sectionOffset(v_positive);
     assert(spaceDim == dispTVisitor.sectionDof(v_positive));
     
-    const PetscInt dtloff = dispTVisitor.sectionOffset(v_lagrange);
-    assert(spaceDim == dispTVisitor.sectionDof(v_lagrange));
+    const PetscInt dtloff = dispTVisitor.sectionOffset(e_lagrange);
+    assert(spaceDim == dispTVisitor.sectionDof(e_lagrange));
     
     // Get displacement increment values.
     const PetscInt dinoff = dispTIncrVisitor.sectionOffset(v_negative);
@@ -2080,8 +2120,8 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceNorm(const PylithScalar alp
     const PetscInt dipoff = dispTIncrVisitor.sectionOffset(v_positive);
     assert(spaceDim == dispTIncrVisitor.sectionDof(v_positive));
     
-    const PetscInt diloff = dispTIncrVisitor.sectionOffset(v_lagrange);
-    assert(spaceDim == dispTIncrVisitor.sectionDof(v_lagrange));
+    const PetscInt diloff = dispTIncrVisitor.sectionOffset(e_lagrange);
+    assert(spaceDim == dispTIncrVisitor.sectionDof(e_lagrange));
     
     // Get orientation
     const PetscInt ooff = orientationVisitor.sectionOffset(v_fault);
