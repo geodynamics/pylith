@@ -73,6 +73,7 @@ def check_vertex_fields(testcase, filename, mesh, fieldNames):
           print "Error in component %d of field '%s' for timestep %d." % (idim, name, istep)
           print "Expected values:",valuesE
           print "Output values:",values
+          print "Coordinates: ",vertices
         testcase.assertEqual(numpy.sum(okay), nvertices)
 
   h5.close()
