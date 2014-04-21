@@ -1037,9 +1037,7 @@ pylith::faults::FaultCohesiveLagrange::checkConstraints(const topology::Field& s
 
   const int numVertices = _cohesiveVertices.size();
   PetscInt fiberDim = 0, numConstraints = 0;
-  for(int iVertex = 0; iVertex < numVertices; ++iVertex) {
-
-    if (_cohesiveVertices[iVertex].lagrange < 0) continue;
+  for (int iVertex = 0; iVertex < numVertices; ++iVertex) {
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
 
