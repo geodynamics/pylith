@@ -98,7 +98,8 @@ public :
   static
   void createInterpolated(topology::Mesh* mesh,
                           const topology::Mesh& faultMesh,
-                          DM faultBoundary,
+                          PetscDM faultBoundary,
+                          PetscDMLabel faultBdLabel,
                           const int materialId,
                           int& firstFaultVertex,
                           int& firstLagrangeVertex,

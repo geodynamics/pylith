@@ -54,7 +54,7 @@ pylith::faults::TestFaultMesh::createFaultMesh(topology::Mesh* faultMesh,
     CPPUNIT_ASSERT(groupField);
     CohesiveTopology::createFault(faultMesh, faultBoundary, *mesh, groupField);
     if (mesh->dimension() > 1 && mesh->dimension() == depth) {
-      CohesiveTopology::createInterpolated(mesh, *faultMesh, faultBoundary, faultId, firstFaultVertex, firstLagrangeVertex, firstFaultCell, useLagrangeConstraints);
+      CohesiveTopology::createInterpolated(mesh, *faultMesh, faultBoundary, NULL, faultId, firstFaultVertex, firstLagrangeVertex, firstFaultCell, useLagrangeConstraints);
     } else {
       CohesiveTopology::create(mesh, *faultMesh, faultBoundary, groupField, faultId, firstFaultVertex, firstLagrangeVertex, firstFaultCell, useLagrangeConstraints);
     }

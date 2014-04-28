@@ -148,7 +148,10 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
       CohesiveTopology::createFault(&faultMesh, faultBoundary, *mesh, groupField);
 
       if (dim > 1 && dim == gdepth) {
-        CohesiveTopology::createInterpolated(mesh, faultMesh, faultBoundary, id(), *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
+        PetscDMLabel faultBdLabel = NULL;
+
+        if (edge()) {err = DMPlexGetLabel(dmMesh, edge(), &faultBdLabel);PYLITH_CHECK_ERROR(err);}
+        CohesiveTopology::createInterpolated(mesh, faultMesh, faultBoundary, faultBdLabel, id(), *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
       } else {
         CohesiveTopology::create(mesh, faultMesh, faultBoundary, groupField, id(), *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
       }

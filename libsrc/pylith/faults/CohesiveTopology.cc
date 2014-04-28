@@ -60,6 +60,7 @@ pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
     err = DMPlexCreateLabel(subdm, labelName);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetLabel(subdm, labelName, &label);PYLITH_CHECK_ERROR(err);
     err = DMPlexMarkBoundaryFaces(subdm, label);PYLITH_CHECK_ERROR(err);
+    err = DMPlexLabelComplete(subdm, label);PYLITH_CHECK_ERROR(err);
     err = DMPlexCreateSubmesh(subdm, label, 1, &faultBoundary);PYLITH_CHECK_ERROR(err);
     std::string submeshLabel = "fault_" + std::string(groupName);
     faultMesh->dmMesh(subdm, submeshLabel.c_str());
@@ -610,6 +611,7 @@ void
 pylith::faults::CohesiveTopology::createInterpolated(topology::Mesh* mesh,
 						     const topology::Mesh& faultMesh,
 						     PetscDM faultBoundary,
+                             PetscDMLabel faultBdLabel,
 						     const int materialId,
 						     int& firstFaultVertex,
 						     int& firstLagrangeVertex,
@@ -634,7 +636,7 @@ pylith::faults::CohesiveTopology::createInterpolated(topology::Mesh* mesh,
   err = DMLabelClearStratum(label, mesh->dimension());PYLITH_CHECK_ERROR(err);
   // Completes the set of cells scheduled to be replaced
   //   Have to do internal fault vertices before fault boundary vertices, and this is the only thing I use faultBoundary for
-  err = DMPlexLabelCohesiveComplete(dm, label, PETSC_FALSE, faultMesh.dmMesh());PYLITH_CHECK_ERROR(err);
+  err = DMPlexLabelCohesiveComplete(dm, label, faultBdLabel, PETSC_FALSE, faultMesh.dmMesh());PYLITH_CHECK_ERROR(err);
   err = DMPlexConstructCohesiveCells(dm, label, &sdm);PYLITH_CHECK_ERROR(err);
 
   err = DMPlexGetDimension(dm, &dim);PYLITH_CHECK_ERROR(err);
