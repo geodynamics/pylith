@@ -61,6 +61,11 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
     logEvent = "%srefine" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
+    from pylith.mpi.Communicator import petsc_comm_world
+    comm = petsc_comm_world()
+    if 0 == comm.rank:
+      self._info.log("Refining mesh using uniform refinement.")
+
     from Mesh import Mesh
     newMesh = Mesh()
     newMesh.debug(mesh.debug())
