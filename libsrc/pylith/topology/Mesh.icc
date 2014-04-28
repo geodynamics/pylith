@@ -128,7 +128,8 @@ pylith::topology::Mesh::numCorners(void) const {
   if (_dmMesh) {
     PetscInt cStart, cEnd, vStart, vEnd, closureSize, *closure = NULL;
     PetscErrorCode err;
-    err = DMPlexGetHeightStratum(_dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+    const int cellHeight = _isSubMesh ? 1 : 0;
+    err = DMPlexGetHeightStratum(_dmMesh, cellHeight, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetDepthStratum(_dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
     if (cEnd > cStart) {
       err = DMPlexGetTransitiveClosure(_dmMesh, cStart, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
