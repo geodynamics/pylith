@@ -27,6 +27,8 @@
 
 #include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
+extern "C" PetscErrorCode DMPlexMarkBoundaryFaces_Internal(DM, PetscInt, DMLabel);
+
 // ----------------------------------------------------------------------
 void
 pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
@@ -59,7 +61,7 @@ pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
 
     err = DMPlexCreateLabel(subdm, labelName);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetLabel(subdm, labelName, &label);PYLITH_CHECK_ERROR(err);
-    err = DMPlexMarkBoundaryFaces(subdm, label);PYLITH_CHECK_ERROR(err);
+    err = DMPlexMarkBoundaryFaces_Internal(subdm, 1, label);PYLITH_CHECK_ERROR(err);
     err = DMPlexLabelComplete(subdm, label);PYLITH_CHECK_ERROR(err);
     err = DMPlexCreateSubmesh(subdm, label, 1, &faultBoundary);PYLITH_CHECK_ERROR(err);
     std::string submeshLabel = "fault_" + std::string(groupName);
