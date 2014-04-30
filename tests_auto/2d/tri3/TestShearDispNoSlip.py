@@ -63,7 +63,7 @@ class TestShearDispNoSlip(TestTri3):
     TestTri3.setUp(self)
     self.nverticesO = self.mesh['nvertices']
     self.mesh['nvertices'] += 3
-    self.faultMesh = {'nvertices': 5,
+    self.faultMesh = {'nvertices': 3,
                       'spaceDim': 2,
                       'ncells': 4,
                       'ncorners': 2}
