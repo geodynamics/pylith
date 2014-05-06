@@ -57,6 +57,7 @@ private:
 
   static const int _id; ///< Fault material identifier
   static const char* _label; ///< Label for fault
+  static const char* _edge; ///< Label for fault edge
   static const char* _finalSlipFilename; ///< Name of db for final slip
   static const char* _slipTimeFilename; ///< Name of db for slip time
   static const char* _riseTimeFilename; ///< Name of db for rise time

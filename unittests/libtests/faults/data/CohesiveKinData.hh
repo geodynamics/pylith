@@ -69,6 +69,7 @@ public:
   //@{
   int id; ///< Fault material identifier
   char* label; ///< Label for fault
+  char* edge; ///< Label for fault edge
   char* finalSlipFilename; ///< Name of db for final slip
   char* slipTimeFilename; ///< Name of db for slip time
   char* riseTimeFilename; ///< Name of db for rise time

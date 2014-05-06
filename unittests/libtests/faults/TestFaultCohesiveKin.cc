@@ -162,16 +162,16 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &fault, &fields);
 
+#if 1 // DEBUGGING
+  mesh.view("::ascii_info_detail");
+  fault._faultMesh->view("::ascii_info_detail");
+#endif
+
   // Check fault mesh sizes
   CPPUNIT_ASSERT_EQUAL(_data->cellDim, fault.dimension());
   CPPUNIT_ASSERT_EQUAL(_data->numBasis, fault.numCorners());
   CPPUNIT_ASSERT_EQUAL(_data->numFaultVertices, fault.numVertices());
   CPPUNIT_ASSERT_EQUAL(_data->numCohesiveCells, fault.numCells());
-
-#if 0 // DEBUGGING
-  mesh.view("::ascii_info_detail");
-  fault._faultMesh->view("::ascii_info_detail");
-#endif
 
   topology::SubMeshIS subpointIS(*fault._faultMesh);
   const PetscInt numPoints = subpointIS.size();
@@ -709,6 +709,9 @@ pylith::faults::TestFaultCohesiveKin::_initialize(topology::Mesh* const mesh,
 
   fault->id(_data->id);
   fault->label(_data->label);
+  if (_data->edge) {
+    fault->edge(_data->edge);
+  } // if
   fault->quadrature(_quadrature);
   fault->eqsrcs(const_cast<const char**>(names), nsrcs, sources, nsrcs);
 
