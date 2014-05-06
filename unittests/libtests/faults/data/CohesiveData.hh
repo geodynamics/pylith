@@ -56,6 +56,8 @@ public:
   int numGroups; ///< Number of groups
 
   char* filename; ///< Filename for input mesh
+  char* fault; ///< Label for fault.
+  char* edge; ///< Label for fault edge.
 };
 
 #endif // pylith_faults_cohesivedata_hh

@@ -58,6 +58,15 @@ mesh = {
     }
   }
   group = {
+    name = edge
+    type = vertices
+    count = 2
+    indices = {
+      4
+      7
+    }
+  }
+  group = {
     name = output
     type = vertices
     count = 3
