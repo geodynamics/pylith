@@ -162,7 +162,7 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &fault, &fields);
 
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
   mesh.view("::ascii_info_detail");
   fault._faultMesh->view("::ascii_info_detail");
 #endif
