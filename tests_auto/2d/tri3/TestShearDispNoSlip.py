@@ -62,10 +62,10 @@ class TestShearDispNoSlip(TestTri3):
     """
     TestTri3.setUp(self)
     self.nverticesO = self.mesh['nvertices']
-    self.mesh['nvertices'] += 3
+    self.mesh['nvertices'] += 1
     self.faultMesh = {'nvertices': 3,
                       'spaceDim': 2,
-                      'ncells': 4,
+                      'ncells': 2,
                       'ncorners': 2}
     run_pylith()
     self.outputRoot = "sheardispnoslip"
