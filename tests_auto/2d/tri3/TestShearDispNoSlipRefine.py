@@ -63,14 +63,14 @@ class TestShearDispNoSlipRefine(TestTri3):
     TestTri3.setUp(self)
     self.mesh = {'ncells': 142*4,
                  'ncorners': 3,
-                 'nvertices': 319,
+                 'nvertices': 317,
                  'spaceDim': 2,
                  'tensorSize': 3}
     self.nverticesO = self.mesh['nvertices']
-    self.mesh['nvertices'] += 5
-    self.faultMesh = {'nvertices': 9,
+    self.mesh['nvertices'] += 3
+    self.faultMesh = {'nvertices': 5,
                       'spaceDim': 2,
-                      'ncells': 4*2,
+                      'ncells': 2*2,
                       'ncorners': 2}
     run_pylith()
     self.outputRoot = "sheardispnosliprefine"
