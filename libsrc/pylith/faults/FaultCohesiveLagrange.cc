@@ -1448,39 +1448,29 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
       
       // Filter out non-vertices
       PetscInt numVertices = 0;
-      bool hasClampedVertex = false;
       for(PetscInt p = 0; p < closureSize*2; p += 2) {
-	if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
-	  // :KLUDGE: Filter out clamped vertices. Remove this when fault edges are clamped.
-	  if (isClampedVertex(clamped, closure[p])) {
-	    hasClampedVertex = true;
-	  } // if
-
-	  closure[numVertices*2]   = closure[p];
-	  closure[numVertices*2+1] = closure[p+1];
-	  ++numVertices;
-	} // if
+        if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
+          closure[numVertices*2]   = closure[p];
+          closure[numVertices*2+1] = closure[p+1];
+          ++numVertices;
+        } // if
       } // for
-      if (hasClampedVertex) {
-	err = DMPlexRestoreTransitiveClosure(faultDMMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-	continue;
-      } // if
 
       for(PetscInt v = 0; v < numVertices; ++v) {
-	const PetscInt v_fault = closure[v*2];
+        const PetscInt v_fault = closure[v*2];
 
-	// Compute Jacobian and determinant of Jacobian at vertex
-	cellGeometry.jacobian(&jacobian, &jacobianDet, &coordsCell[0], numBasis, spaceDim, &verticesRef[v*cohesiveDim], cohesiveDim);
+        // Compute Jacobian and determinant of Jacobian at vertex
+        cellGeometry.jacobian(&jacobian, &jacobianDet, &coordsCell[0], numBasis, spaceDim, &verticesRef[v*cohesiveDim], cohesiveDim);
 	
-	// Compute orientation
-	cellGeometry.orientation(&orientationVertex, jacobian, jacobianDet, up);
+        // Compute orientation
+        cellGeometry.orientation(&orientationVertex, jacobian, jacobianDet, up);
 	
-	// Update orientation
-	const PetscInt ooff = orientationVisitor.sectionOffset(v_fault);
+        // Update orientation
+        const PetscInt ooff = orientationVisitor.sectionOffset(v_fault);
 	
-	for(PetscInt d = 0; d < orientationSize; ++d) {
-	  orientationArray[ooff+d] += orientationVertex[d];
-	} // for
+        for(PetscInt d = 0; d < orientationSize; ++d) {
+          orientationArray[ooff+d] += orientationVertex[d];
+        } // for
       } // for
       err = DMPlexRestoreTransitiveClosure(faultDMMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     } // for
@@ -1505,11 +1495,6 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   orientationArray = orientationVisitor.localArray();
   int count = 0;
   for(PetscInt v = vStart; v < vEnd; ++v, ++count) {
-    // :KLUDGE: Filter out clamped vertices. Remove this when fault edges are clamped.
-    if (isClampedVertex(clamped, v)) {
-      continue;
-    } // if
-
     assert(orientationSize == orientationVisitor.sectionDof(v));
     const PetscInt ooff = orientationVisitor.sectionOffset(v);
     for(PetscInt d = 0; d < orientationSize; ++d) {
@@ -1522,15 +1507,15 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
       } // for
 
       if (mag <= 0.0) {
-	std::ostringstream msg;
-	msg << "Error calculating fault orientation at fault vertex " << v << ".\n" 
-	    << "Zero vector in parallel likely indicates inconsistent fault orientation (creation) across processors.\n"
-	    << "Orientation vector " << iDim << ": (";
-	for (int jDim = 0, index = iDim * spaceDim; jDim < spaceDim; ++jDim) {
-	  msg << " " << orientationVertex[index + jDim];
-	} // for
-	msg << " )" << std::endl;
-	throw std::runtime_error(msg.str());
+        std::ostringstream msg;
+        msg << "Error calculating fault orientation at fault vertex " << v << ".\n" 
+            << "Zero vector in parallel likely indicates inconsistent fault orientation (creation) across processors.\n"
+            << "Orientation vector " << iDim << ": (";
+        for (int jDim = 0, index = iDim * spaceDim; jDim < spaceDim; ++jDim) {
+          msg << " " << orientationVertex[index + jDim];
+        } // for
+        msg << " )" << std::endl;
+        throw std::runtime_error(msg.str());
       } // if
 
       mag = sqrt(mag);
