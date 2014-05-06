@@ -1398,9 +1398,6 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   const PetscInt cStart = cellsStratum.begin();
   const PetscInt cEnd = cellsStratum.end();
 
-  PetscDMLabel clamped = NULL;
-  PetscErrorCode err = DMPlexGetLabel(faultDMMesh, "clamped", &clamped);PYLITH_CHECK_ERROR(err);
-
   // Containers for orientation information.
   // Allocate orientation field.
   scalar_array orientationVertex(orientationSize);
@@ -1444,7 +1441,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
       // Get orientations at fault cell's vertices.
       coordsVisitor.getClosure(&coordsCell, cell);
       
-      err = DMPlexGetTransitiveClosure(faultDMMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+      PetscErrorCode err = DMPlexGetTransitiveClosure(faultDMMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
       
       // Filter out non-vertices
       PetscInt numVertices = 0;
