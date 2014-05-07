@@ -27,8 +27,6 @@
 
 #include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
-extern "C" PetscErrorCode DMPlexMarkBoundaryFaces_Internal(DM, PetscInt, DMLabel);
-
 // ----------------------------------------------------------------------
 void
 pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
@@ -43,80 +41,16 @@ pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
   faultMesh->coordsys(mesh.coordsys());
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
 
-  PetscInt dim, depth, gdepth;
-  err = DMPlexGetDimension(dmMesh, &dim);PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetDepth(dmMesh, &depth);PYLITH_CHECK_ERROR(err);
-
   // Convert fault to a DM
-  err = MPI_Allreduce(&depth, &gdepth, 1, MPIU_INT, MPI_MAX, mesh.comm());PYLITH_CHECK_ERROR(err);
-  if (gdepth == dim) {
-    PetscDM subdm = NULL;
-    PetscDMLabel label = NULL;
-    const char *groupName = "", *labelName = "boundary";
+  PetscDM subdm = NULL;
+  const char *groupName = "";
 
-    if (groupField) {err = DMLabelGetName(groupField, &groupName);PYLITH_CHECK_ERROR(err);}
-    err = DMPlexCreateSubmesh(dmMesh, groupField, 1, &subdm);PYLITH_CHECK_ERROR(err);
-    err = DMPlexOrient(subdm);PYLITH_CHECK_ERROR(err);
+  if (groupField) {err = DMLabelGetName(groupField, &groupName);PYLITH_CHECK_ERROR(err);}
+  err = DMPlexCreateSubmesh(dmMesh, groupField, 1, &subdm);PYLITH_CHECK_ERROR(err);
+  err = DMPlexOrient(subdm);PYLITH_CHECK_ERROR(err);
 
-    err = DMPlexCreateLabel(subdm, labelName);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetLabel(subdm, labelName, &label);PYLITH_CHECK_ERROR(err);
-    err = DMPlexMarkBoundaryFaces_Internal(subdm, 1, label);PYLITH_CHECK_ERROR(err);
-    err = DMPlexLabelComplete(subdm, label);PYLITH_CHECK_ERROR(err);
-    std::string submeshLabel = "fault_" + std::string(groupName);
-    faultMesh->dmMesh(subdm, submeshLabel.c_str());
-  } else {
-    PetscDM faultDMMeshTmp = NULL, faultDMMesh = NULL;
-    PetscDMLabel subpointMapTmp = NULL, subpointMap = NULL;
-    PetscIS pointIS = NULL;
-    const PetscInt *points = NULL;
-    PetscInt depth, newDepth, h, numPoints = 0, p;
-    const char *groupName = "";
-
-    if (groupField) {err = DMLabelGetName(groupField, &groupName);PYLITH_CHECK_ERROR(err);}
-    err = DMPlexCreateSubmesh(dmMesh, groupField, 1, &faultDMMeshTmp);PYLITH_CHECK_ERROR(err);
-    err = DMPlexInterpolate(faultDMMeshTmp, &faultDMMesh);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetVTKCellHeight(faultDMMeshTmp, &h);PYLITH_CHECK_ERROR(err);
-    err = DMPlexSetVTKCellHeight(faultDMMesh, h);PYLITH_CHECK_ERROR(err);
-    err = DMPlexOrient(faultDMMesh);PYLITH_CHECK_ERROR(err);
-    err = DMPlexCopyCoordinates(faultDMMeshTmp, faultDMMesh);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetSubpointMap(faultDMMeshTmp, &subpointMapTmp);PYLITH_CHECK_ERROR(err);
-    err = DMLabelCreate("subpoint_map", &subpointMap);PYLITH_CHECK_ERROR(err);
-    err = DMLabelGetStratumIS(subpointMapTmp, 0, &pointIS);PYLITH_CHECK_ERROR(err);
-    if (pointIS) {
-      err = ISGetLocalSize(pointIS, &numPoints);PYLITH_CHECK_ERROR(err);
-      err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
-    }
-    for (p = 0; p < numPoints; ++p) {
-      err = DMLabelSetValue(subpointMap, points[p], 0);PYLITH_CHECK_ERROR(err);
-    }
-    if (pointIS) {err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);}
-    err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetDepth(faultDMMeshTmp, &depth);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetDepth(faultDMMesh, &newDepth);PYLITH_CHECK_ERROR(err);
-    err = DMLabelGetStratumIS(subpointMapTmp, depth, &pointIS);PYLITH_CHECK_ERROR(err);
-    if (pointIS) {
-      err = ISGetLocalSize(pointIS, &numPoints);PYLITH_CHECK_ERROR(err);
-      err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
-    }
-    for (p = 0; p < numPoints; ++p) {
-      err = DMLabelSetValue(subpointMap, points[p], newDepth);PYLITH_CHECK_ERROR(err);
-    }
-    if (pointIS) {err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);}
-    err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
-    err = DMPlexSetSubpointMap(faultDMMesh, subpointMap);PYLITH_CHECK_ERROR(err);
-    err = DMLabelDestroy(&subpointMap);PYLITH_CHECK_ERROR(err);
-    err = DMDestroy(&faultDMMeshTmp);PYLITH_CHECK_ERROR(err);
-    
-    std::string submeshLabel = "fault_" + std::string(groupName);
-    faultMesh->dmMesh(faultDMMesh, submeshLabel.c_str());
-
-    PetscDMLabel label = NULL;
-    const char *labelName = "boundary";
-
-    err = DMPlexCreateLabel(faultDMMesh, labelName);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetLabel(faultDMMesh, labelName, &label);PYLITH_CHECK_ERROR(err);
-    err = DMPlexMarkBoundaryFaces(faultDMMesh, label);PYLITH_CHECK_ERROR(err);
-  }
+  std::string submeshLabel = "fault_" + std::string(groupName);
+  faultMesh->dmMesh(subdm, submeshLabel.c_str());
 
   PYLITH_METHOD_END;
 } // createFault
