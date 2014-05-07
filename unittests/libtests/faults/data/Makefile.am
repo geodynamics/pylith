@@ -73,6 +73,8 @@ dist_noinst_DATA = \
 	tet4h.mesh \
 	tet4i.mesh \
 	tet4j.mesh \
+	tet4k.jou \
+	tet4k.mesh \
 	tet4_finalslip.spatialdb \
 	tet4_sliptime.spatialdb \
 	tet4_risetime.spatialdb \
@@ -96,7 +98,8 @@ dist_noinst_DATA = \
 	hex8_sliptime.spatialdb \
 	hex8_risetime.spatialdb \
 	hex8_initialtract.spatialdb \
-	hex8_impulses.spatialdb 
+	hex8_impulses.spatialdb \
+	exotoascii.py
 
 noinst_TMP =
 

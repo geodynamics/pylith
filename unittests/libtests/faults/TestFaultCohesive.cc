@@ -470,6 +470,22 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTet4j(void)
 } // testAdjustTopologyTet4j
 
 // ----------------------------------------------------------------------
+#include "data/CohesiveDataTet4k.hh" // USES CohesiveDataTet4k
+
+// Test adjustTopology() with 3-D tetrahedral element (embedded fault from CUBIT).
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyTet4k(void)
+{ // testAdjustTopologyTet4k
+  PYLITH_METHOD_BEGIN;
+
+  CohesiveDataTet4k data;
+  FaultCohesiveTract fault;
+  _testAdjustTopology(&fault, data);
+
+  PYLITH_METHOD_END;
+} // testAdjustTopologyTet4k
+
+// ----------------------------------------------------------------------
 #include "data/CohesiveDataHex8.hh" // USES CohesiveDataHex8
 
 // Test adjustTopology() with 3-D hexahedral element.

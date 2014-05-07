@@ -101,6 +101,7 @@ testfaults_SOURCES += \
 	data/CohesiveDataTet4h.cc \
 	data/CohesiveDataTet4i.cc \
 	data/CohesiveDataTet4j.cc \
+	data/CohesiveDataTet4k.cc \
 	data/CohesiveDataTet4Lagrange.cc \
 	data/CohesiveDataHex8.cc \
 	data/CohesiveDataHex8b.cc \
@@ -170,6 +171,7 @@ noinst_HEADERS += \
 	data/CohesiveDataTet4h.hh \
 	data/CohesiveDataTet4i.hh \
 	data/CohesiveDataTet4j.hh \
+	data/CohesiveDataTet4k.hh \
 	data/CohesiveDataTet4Lagrange.hh \
 	data/CohesiveDataHex8.hh \
 	data/CohesiveDataHex8b.hh \
