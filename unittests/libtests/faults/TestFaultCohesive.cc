@@ -614,6 +614,22 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8i(void)
 } // testAdjustTopologyHex8i
 
 // ----------------------------------------------------------------------
+#include "data/CohesiveDataHex8j.hh" // USES CohesiveDataHex8j
+
+// Test adjustTopology() with 3-D hexahedral element (embedded fault).
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyHex8j(void)
+{ // testAdjustTopologyHex8j
+  PYLITH_METHOD_BEGIN;
+
+  CohesiveDataHex8j data;
+  FaultCohesiveTract fault;
+  _testAdjustTopology(&fault, data);
+
+  PYLITH_METHOD_END;
+} // testAdjustTopologyHex8j
+
+// ----------------------------------------------------------------------
 #include "data/CohesiveDataTri3Lagrange.hh" // USES CohesiveDataTri3Lagrange
 
 // Test adjustTopology() with 2-D triangular element for Lagrange

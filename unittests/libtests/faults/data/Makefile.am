@@ -91,6 +91,7 @@ dist_noinst_DATA = \
 	hex8g.mesh \
 	hex8h.mesh \
 	hex8i.mesh \
+	hex8j.mesh \
 	hex8_finalslip.spatialdb \
 	hex8_sliptime.spatialdb \
 	hex8_risetime.spatialdb \
