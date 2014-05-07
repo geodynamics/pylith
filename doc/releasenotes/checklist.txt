@@ -55,6 +55,10 @@ TAG
   git tag -a vX.X.X -m "MY MESSAGE"
   git push origin vX.X.X
 
+  To delete a tag:
+    REMOTE: git push --delete origin vX.X.X
+    LOCAL: git tag -d vX.X.X
+
 RELEASE
 
   * Create source tarball and upload to GitHub. 
