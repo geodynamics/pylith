@@ -634,7 +634,7 @@ pylith::faults::CohesiveTopology::createInterpolated(topology::Mesh* mesh,
   err = DMLabelClearStratum(label, mesh->dimension());PYLITH_CHECK_ERROR(err);
   // Completes the set of cells scheduled to be replaced
   //   Have to do internal fault vertices before fault boundary vertices, and this is the only thing I use faultBoundary for
-  err = DMPlexLabelCohesiveComplete(dm, label, PETSC_FALSE, faultMesh.dmMesh());PYLITH_CHECK_ERROR(err);
+  err = DMPlexLabelCohesiveComplete(dm, label, NULL, PETSC_FALSE, faultMesh.dmMesh());PYLITH_CHECK_ERROR(err);
   err = DMPlexConstructCohesiveCells(dm, label, &sdm);PYLITH_CHECK_ERROR(err);
 
   err = DMPlexGetDimension(dm, &dim);PYLITH_CHECK_ERROR(err);
