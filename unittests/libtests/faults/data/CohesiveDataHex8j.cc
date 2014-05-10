@@ -52,6 +52,8 @@ const int pylith::faults::CohesiveDataHex8j::_numCorners[22] = {
   8,
   8,
   8,
+  5,
+  5,
 };
 
 const int pylith::faults::CohesiveDataHex8j::_materialIds[22] = {
@@ -62,7 +64,7 @@ const int pylith::faults::CohesiveDataHex8j::_materialIds[22] = {
 const int pylith::faults::CohesiveDataHex8j::_numGroups = 3;
 
 const int pylith::faults::CohesiveDataHex8j::_groupSizes[3] = {
-  21+31+10, 5+4, 6+7+2 // vertices+edges+faces 
+  21+31+10, 5+4, 6+7+2 + 1+2+3 // vertices+edges+faces + split versions
 };
 
 const char* pylith::faults::CohesiveDataHex8j::_groupNames[3] = {
