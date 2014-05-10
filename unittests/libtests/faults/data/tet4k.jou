@@ -56,8 +56,8 @@ smooth volume all
 # ----------------------------------------------------------------------
 # Create blocks for materials
 # ----------------------------------------------------------------------
-block 1 volume elastic_xpos elastic_xneg
-block 1 name "elastic"
+block 10 volume elastic_xpos elastic_xneg
+block 10 name "elastic"
 
 # ----------------------------------------------------------------------
 # Create nodesets for faults
