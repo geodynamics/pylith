@@ -62,10 +62,10 @@ class TestShearDispNoSlip(TestHex8):
     """
     TestHex8.setUp(self)
     self.nverticesO = self.mesh['nvertices']
-    self.mesh['nvertices'] += 21
-    self.faultMesh = {'nvertices': 34,
+    self.mesh['nvertices'] += 10
+    self.faultMesh = {'nvertices': 21,
                       'spaceDim': 3,
-                      'ncells': 23,
+                      'ncells': 12,
                       'ncorners': 4}
 
     run_pylith()

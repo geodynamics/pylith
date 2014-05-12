@@ -64,11 +64,11 @@ class TestShearDispNoSlipRefine(TestHex8):
     self.mesh = {'ncells-elastic': 180*8,
                  'ncells-viscoelastic': 180*8,
                  'ncorners': 8,
-                 'nvertices': 3614,
+                 'nvertices': 3591,
                  'spaceDim': 3,
                  'tensorSize': 6}
     self.nverticesO = self.mesh['nvertices']
-    self.mesh['nvertices'] += 65
+    self.mesh['nvertices'] += 44
     self.faultMesh = {'nvertices': 65,
                       'spaceDim': 3,
                       'ncells': 48,
