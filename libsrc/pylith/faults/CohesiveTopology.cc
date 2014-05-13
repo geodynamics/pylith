@@ -72,6 +72,53 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   PetscInt       dim, cMax, cEnd, numCohesiveCellsOld;
   PetscErrorCode err;
 
+  // Fix over-aggressive completion of boundary label
+  err = DMPlexGetDimension(dm, &dim);PYLITH_CHECK_ERROR(err);
+  if (faultBdLabel && (dim > 2)) {
+    PetscIS         bdIS;
+    const PetscInt *bd;
+    PetscInt        fStart, fEnd, n, i;
+
+    err = DMPlexGetHeightStratum(dm, 1, &fStart, &fEnd);PYLITH_CHECK_ERROR(err);
+    err = DMLabelGetStratumIS(faultBdLabel, 1, &bdIS);PYLITH_CHECK_ERROR(err);
+    err = ISGetLocalSize(bdIS, &n);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(bdIS, &bd);PYLITH_CHECK_ERROR(err);
+    for (i = 0; i < n; ++i) {
+      const PetscInt p = bd[i];
+
+      // Remove faces
+      if ((p >= fStart) && (p < fEnd)) {
+        const PetscInt *edges,   *verts;
+        PetscInt        numEdges, numVerts, supportSizeA, supportSizeB, e;
+
+        err = DMLabelClearValue(faultBdLabel, p, 1);PYLITH_CHECK_ERROR(err);
+        // Remove the cross edge
+        err = DMPlexGetCone(dm, p, &edges);PYLITH_CHECK_ERROR(err);
+        err = DMPlexGetConeSize(dm, p, &numEdges);PYLITH_CHECK_ERROR(err);
+        if (numEdges != 3) {
+          std::ostringstream msg;
+          msg << "Face "<<p<<" has "<<numEdges<<" edges != 3.";
+          throw std::runtime_error(msg.str());
+        }
+        for (e = 0; e < numEdges; ++e) {
+          err = DMPlexGetCone(dm, edges[e], &verts);PYLITH_CHECK_ERROR(err);
+          err = DMPlexGetConeSize(dm, edges[e], &numVerts);PYLITH_CHECK_ERROR(err);
+          if (numVerts != 2) {
+            std::ostringstream msg;
+            msg << "Edge "<<edges[e]<<" has "<<numVerts<<" vertices != 2.";
+            throw std::runtime_error(msg.str());
+          }
+          err = DMPlexGetSupportSize(dm, verts[0], &supportSizeA);PYLITH_CHECK_ERROR(err);
+          err = DMPlexGetSupportSize(dm, verts[1], &supportSizeB);PYLITH_CHECK_ERROR(err);
+          if ((supportSizeA > 2) && (supportSizeB > 2)) {
+            err = DMLabelClearValue(faultBdLabel, edges[e], 1);PYLITH_CHECK_ERROR(err);
+            break;
+          }
+        }
+      }
+    }
+    err = ISRestoreIndices(bdIS, &bd);PYLITH_CHECK_ERROR(err);
+  }
   // Have to remember the old number of cohesive cells
   err = DMPlexGetHeightStratum(dm, 0, NULL, &cEnd);PYLITH_CHECK_ERROR(err);
   err = DMPlexGetHybridBounds(dm, &cMax, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
@@ -84,7 +131,6 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   err = DMPlexLabelCohesiveComplete(dm, label, faultBdLabel, PETSC_FALSE, faultMesh.dmMesh());PYLITH_CHECK_ERROR(err);
   err = DMPlexConstructCohesiveCells(dm, label, &sdm);PYLITH_CHECK_ERROR(err);
 
-  err = DMPlexGetDimension(dm, &dim);PYLITH_CHECK_ERROR(err);
   err = DMPlexGetLabel(sdm, "material-id", &mlabel);PYLITH_CHECK_ERROR(err);
   if (mlabel) {
     err = DMPlexGetHeightStratum(sdm, 0, NULL, &cEnd);PYLITH_CHECK_ERROR(err);
