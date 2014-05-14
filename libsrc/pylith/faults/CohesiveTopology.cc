@@ -118,6 +118,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
       }
     }
     err = ISRestoreIndices(bdIS, &bd);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&bdIS);PYLITH_CHECK_ERROR(err);
   }
   // Have to remember the old number of cohesive cells
   err = DMPlexGetHeightStratum(dm, 0, NULL, &cEnd);PYLITH_CHECK_ERROR(err);
