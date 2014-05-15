@@ -68,10 +68,10 @@ class TestShearDispNoSlipRefine(TestTet4):
                  'spaceDim': 3,
                  'tensorSize': 6}
     self.nverticesO = self.mesh['nvertices']
-    self.mesh['nvertices'] +=57
-    self.faultMesh = {'nvertices': 106,
+    self.mesh['nvertices'] += 36
+    self.faultMesh = {'nvertices': 57,
                       'spaceDim': 3,
-                      'ncells': 43*4,
+                      'ncells': 80,
                       'ncorners': 3}
     run_pylith()
     self.outputRoot = "sheardispnosliprefine"
