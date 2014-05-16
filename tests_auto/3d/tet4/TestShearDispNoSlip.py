@@ -62,10 +62,10 @@ class TestShearDispNoSlip(TestTet4):
     """
     TestTet4.setUp(self)
     self.nverticesO = self.mesh['nvertices']
-    self.mesh['nvertices'] += 19
-    self.faultMesh = {'nvertices': 32,
+    self.mesh['nvertices'] += 8
+    self.faultMesh = {'nvertices': 19,
                       'spaceDim': 3,
-                      'ncells': 43,
+                      'ncells': 20,
                       'ncorners': 3}
     run_pylith()
     self.outputRoot = "sheardispnoslip"
