@@ -88,8 +88,9 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 
       // Remove faces
       if ((p >= fStart) && (p < fEnd)) {
-        const PetscInt *edges,   *verts;
-        PetscInt        numEdges, numVerts, supportSizeA, supportSizeB, e;
+        const PetscInt *edges,   *verts, *supportA, *supportB;
+        PetscInt        numEdges, numVerts, supportSizeA, sA, supportSizeB, sB, bval, e, s;
+        PetscBool       found = PETSC_FALSE;
 
         err = DMLabelClearValue(faultBdLabel, p, 1);PYLITH_CHECK_ERROR(err);
         // Remove the cross edge
@@ -109,11 +110,27 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
             throw std::runtime_error(msg.str());
           }
           err = DMPlexGetSupportSize(dm, verts[0], &supportSizeA);PYLITH_CHECK_ERROR(err);
+          err = DMPlexGetSupport(dm, verts[0], &supportA);PYLITH_CHECK_ERROR(err);
+          for (s = 0, sA = 0; s < supportSizeA; ++s) {
+            err = DMLabelGetValue(faultBdLabel, supportA[s], &bval);PYLITH_CHECK_ERROR(err);
+            if (bval >= 0) ++sA;
+          }
           err = DMPlexGetSupportSize(dm, verts[1], &supportSizeB);PYLITH_CHECK_ERROR(err);
-          if ((supportSizeA > 2) && (supportSizeB > 2)) {
+          err = DMPlexGetSupport(dm, verts[1], &supportB);PYLITH_CHECK_ERROR(err);
+          for (s = 0, sB = 0; s < supportSizeB; ++s) {
+            err = DMLabelGetValue(faultBdLabel, supportB[s], &bval);PYLITH_CHECK_ERROR(err);
+            if (bval >= 0) ++sB;
+          }
+          if ((sA > 2) && (sB > 2)) {
             err = DMLabelClearValue(faultBdLabel, edges[e], 1);PYLITH_CHECK_ERROR(err);
+            found = PETSC_TRUE;
             break;
           }
+        }
+        if (!found) {
+          std::ostringstream msg;
+          msg << "Face "<<p<<" has no cross edge.";
+          throw std::runtime_error(msg.str());
         }
       }
     }
