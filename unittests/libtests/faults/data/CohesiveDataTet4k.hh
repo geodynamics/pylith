@@ -16,28 +16,28 @@
 // ======================================================================
 //
 
-#if !defined(pylith_faults_cohesivedatatri3h_hh)
-#define pylith_faults_cohesivedatatri3h_hh
+#if !defined(pylith_faults_cohesivedatatet4k_hh)
+#define pylith_faults_cohesivedatatet4k_hh
 
 #include "CohesiveData.hh"
 
 namespace pylith {
   namespace faults {
-     class CohesiveDataTri3h;
+     class CohesiveDataTet4k;
   } // pylith
 } // faults
 
-class pylith::faults::CohesiveDataTri3h : public CohesiveData
+class pylith::faults::CohesiveDataTet4k : public CohesiveData
 {
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public: 
 
   /// Constructor
-  CohesiveDataTri3h(void);
+  CohesiveDataTet4k(void);
 
   /// Destructor
-  ~CohesiveDataTri3h(void);
+  ~CohesiveDataTet4k(void);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
@@ -60,6 +60,6 @@ private:
   static const char* _edge; ///< Label for fault edge.
 };
 
-#endif // pylith_faults_cohesivedatatri3h_hh
+#endif // pylith_faults_cohesivedatatet4k_hh
 
 // End of file

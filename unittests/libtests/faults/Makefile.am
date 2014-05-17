@@ -101,6 +101,7 @@ testfaults_SOURCES += \
 	data/CohesiveDataTet4h.cc \
 	data/CohesiveDataTet4i.cc \
 	data/CohesiveDataTet4j.cc \
+	data/CohesiveDataTet4k.cc \
 	data/CohesiveDataTet4Lagrange.cc \
 	data/CohesiveDataHex8.cc \
 	data/CohesiveDataHex8b.cc \
@@ -111,6 +112,7 @@ testfaults_SOURCES += \
 	data/CohesiveDataHex8g.cc \
 	data/CohesiveDataHex8h.cc \
 	data/CohesiveDataHex8i.cc \
+	data/CohesiveDataHex8j.cc \
 	data/CohesiveDataHex8Lagrange.cc \
 	data/CohesiveKinData.cc \
 	data/CohesiveKinDataTri3.cc \
@@ -169,6 +171,7 @@ noinst_HEADERS += \
 	data/CohesiveDataTet4h.hh \
 	data/CohesiveDataTet4i.hh \
 	data/CohesiveDataTet4j.hh \
+	data/CohesiveDataTet4k.hh \
 	data/CohesiveDataTet4Lagrange.hh \
 	data/CohesiveDataHex8.hh \
 	data/CohesiveDataHex8b.hh \
@@ -179,6 +182,7 @@ noinst_HEADERS += \
 	data/CohesiveDataHex8g.hh \
 	data/CohesiveDataHex8h.hh \
 	data/CohesiveDataHex8i.hh \
+	data/CohesiveDataHex8j.hh \
 	data/CohesiveDataHex8Lagrange.hh \
 	data/CohesiveKinData.hh \
 	data/CohesiveKinDataTri3.hh \

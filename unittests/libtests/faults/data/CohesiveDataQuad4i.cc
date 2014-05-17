@@ -47,56 +47,57 @@
  * |  0   |   1   |
  * |      |       |
  * |      |  6    |
- *12 ----13-21-----14
+ *12 ----13------14
  * |      |  |      |
  * |      |7 |      |
  * |  2   |  |  3   |
  * |      |  |      |
- *15 ----16-22-----17
+ *15 ----16-21-----17
  * |      |  |      |
  * |  4   |  |  5   |
  * |      |8 |      |
  * |      |  |      |
- *18 ----19-23 ----20
+ *18 ----19-22 ----20
  *
  */
 
 #include "CohesiveDataQuad4i.hh"
 
-const int pylith::faults::CohesiveDataQuad4i::_numVertices = 15;
+const int pylith::faults::CohesiveDataQuad4i::_numVertices = 14;
 
 const int pylith::faults::CohesiveDataQuad4i::_spaceDim = 2;
 
-const int pylith::faults::CohesiveDataQuad4i::_numCells = 9;
+const int pylith::faults::CohesiveDataQuad4i::_numCells = 8;
 
 const int pylith::faults::CohesiveDataQuad4i::_cellDim = 2;
 
-const int pylith::faults::CohesiveDataQuad4i::_numCorners[9] = {
+const int pylith::faults::CohesiveDataQuad4i::_numCorners[8] = {
   4, 4, 4, 4, 4, 4,
-  3, 4, 4,
+  3, 4,
 };
 
-const int pylith::faults::CohesiveDataQuad4i::_materialIds[9] = {
+const int pylith::faults::CohesiveDataQuad4i::_materialIds[8] = {
   10, 10, 10, 11, 10, 11,
-  -999, 1, 1,
+  1, 1,
 };
 
-const int pylith::faults::CohesiveDataQuad4i::_numGroups = 3;
+const int pylith::faults::CohesiveDataQuad4i::_numGroups = 4;
 
-const int pylith::faults::CohesiveDataQuad4i::_groupSizes[3] = {
-  3+2, 4+2, 6+4, // vertices+edges
+const int pylith::faults::CohesiveDataQuad4i::_groupSizes[4] = {
+  3+2, 4+2, 1, 5+4, // vertices+edges
 };
 
-const char* pylith::faults::CohesiveDataQuad4i::_groupNames[3] = {
-  "output2", "output1", "fault",
+const char* pylith::faults::CohesiveDataQuad4i::_groupNames[4] = {
+  "output2", "output1", "edge", "fault",
 };
 
-const char* pylith::faults::CohesiveDataQuad4i::_groupTypes[3] = {
-  "vertex", "vertex", "vertex",
+const char* pylith::faults::CohesiveDataQuad4i::_groupTypes[4] = {
+  "vertex", "vertex", "vertex", "vertex",
 };
 
-const char* pylith::faults::CohesiveDataQuad4i::_filename = 
-  "data/quad4i.mesh";
+const char* pylith::faults::CohesiveDataQuad4i::_filename = "data/quad4i.mesh";
+const char* pylith::faults::CohesiveDataQuad4i::_fault = "fault";
+const char* pylith::faults::CohesiveDataQuad4i::_edge = "edge";
 
 pylith::faults::CohesiveDataQuad4i::CohesiveDataQuad4i(void)
 { // constructor
@@ -111,6 +112,8 @@ pylith::faults::CohesiveDataQuad4i::CohesiveDataQuad4i(void)
   groupTypes = const_cast<char**>(_groupTypes);
   numGroups = _numGroups;
   filename = const_cast<char*>(_filename);
+  fault = const_cast<char*>(_fault);
+  edge = const_cast<char*>(_edge);
 } // constructor
 
 pylith::faults::CohesiveDataQuad4i::~CohesiveDataQuad4i(void)

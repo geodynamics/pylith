@@ -26,6 +26,7 @@
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/faults/FaultCohesiveLagrange.hh" // USES isClampedVertex()
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -161,8 +162,16 @@ pylith::faults::BruneSlipFn::initialize(const topology::Mesh& faultMesh,
   topology::CoordsVisitor coordsVisitor(dmMesh);
   PetscScalar* coordsArray = coordsVisitor.localArray();
 
+  PetscDM faultDMMesh = faultMesh.dmMesh();assert(faultDMMesh);
+  PetscDMLabel clamped = NULL;
+  PetscErrorCode err = DMPlexGetLabel(faultDMMesh, "clamped", &clamped);PYLITH_CHECK_ERROR(err);
+
   _slipVertex.resize(spaceDim);
-  for(PetscInt v = vStart; v < vEnd; ++v) {
+  for (PetscInt v = vStart; v < vEnd; ++v) {
+    if (FaultCohesiveLagrange::isClampedVertex(clamped, v)) {
+      continue;
+    } // if
+      
     // Dimensionalize coordinates
     const PetscInt coff = coordsVisitor.sectionOffset(v);
     assert(spaceDim == coordsVisitor.sectionDof(v));
@@ -174,7 +183,7 @@ pylith::faults::BruneSlipFn::initialize(const topology::Mesh& faultMesh,
     // Final slip
     const PetscInt fsoff = finalSlipVisitor.sectionOffset(v);
     assert(spaceDim == finalSlipVisitor.sectionDof(v));
-    int err = _dbFinalSlip->query(&_slipVertex[0], _slipVertex.size(), &vCoordsGlobal[0], vCoordsGlobal.size(), cs);
+    err = _dbFinalSlip->query(&_slipVertex[0], _slipVertex.size(), &vCoordsGlobal[0], vCoordsGlobal.size(), cs);
     if (err) {
       std::ostringstream msg;
       msg << "Could not find slip rate at (";
@@ -262,9 +271,16 @@ pylith::faults::BruneSlipFn::slip(topology::Field* slip,
 
   topology::VecVisitorMesh slipVisitor(*slip);
   PetscScalar* slipArray = slipVisitor.localArray();
+  DMLabel clamped = NULL;
+  PetscErrorCode err;
 
+  err = DMPlexGetLabel(dmMesh, "clamped", &clamped);PYLITH_CHECK_ERROR(err);
   const int spaceDim = _slipVertex.size();
-  for(PetscInt v = vStart; v < vEnd; ++v) {
+  for (PetscInt v = vStart; v < vEnd; ++v) {
+    if (FaultCohesiveLagrange::isClampedVertex(clamped, v)) {
+      continue;
+    } // if
+
     const PetscInt fsoff = finalSlipVisitor.sectionOffset(v);
     const PetscInt stoff = slipTimeVisitor.sectionOffset(v);
     const PetscInt rtoff = riseTimeVisitor.sectionOffset(v);

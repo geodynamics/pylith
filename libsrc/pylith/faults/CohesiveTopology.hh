@@ -45,41 +45,14 @@ public :
   /** Create the fault mesh.
    *
    * @param faultMesh Finite-element mesh of fault (output).
-   * @param faultBoundary Finite-element mesh of fault boundary (output).
    * @param mesh Finite-element mesh of domain.
    * @param groupdField Group of vertices assocated with faces of
    *   cells defining fault surface
    */
   static
   void createFault(topology::Mesh* faultMesh,
-		   DM& faultBoundary,
 		   const topology::Mesh& mesh,
 		   DMLabel groupField);
-
-  /** Create cohesive cells.
-   *
-   * If firstFaultVertex == 0, then firstFaultVertex is set to the first point
-   * not currently used in the mesh, and firstFaultCell is incremented with this
-   * point. These values are updated as new fault vertices and cells are added.
-   *
-   * @param fault Finite-element mesh of fault (output)
-   * @param mesh Finite-element mesh
-   * @param materialId Material id for cohesive elements.
-   * @param firstFaultVertex The first point eligible to become a new fault vertex
-   * @param firstFaultCell The first point eligible to become a new fault cell
-   * @param constraintCell True if creating cells constrained with 
-   *   Lagrange multipliers that require extra vertices, false otherwise
-   */
-  static
-  void create(topology::Mesh* mesh,
-	      const topology::Mesh& faultMesh,
-              DM faultBoundary,
-              DMLabel groupField,
-              const int materialId,
-              int& firstFaultVertex,
-              int& firstLagrangeVertex,
-              int& firstFaultCell,
-              const bool constraintCell = false);
 
   /** Create cohesive cells in an interpolated mesh.
    *
@@ -96,14 +69,14 @@ public :
    *   Lagrange multipliers that require extra vertices, false otherwise
    */
   static
-  void createInterpolated(topology::Mesh* mesh,
-                          const topology::Mesh& faultMesh,
-                          DM faultBoundary,
-                          const int materialId,
-                          int& firstFaultVertex,
-                          int& firstLagrangeVertex,
-                          int& firstFaultCell,
-                          const bool constraintCell = false);
+  void create(topology::Mesh* mesh,
+              const topology::Mesh& faultMesh,
+              PetscDMLabel faultBdLabel,
+              const int materialId,
+              int& firstFaultVertex,
+              int& firstLagrangeVertex,
+              int& firstFaultCell,
+              const bool constraintCell = false);
 
   /** Create (distributed) fault mesh from cohesive cells.
    *

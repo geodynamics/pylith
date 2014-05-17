@@ -470,6 +470,22 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTet4j(void)
 } // testAdjustTopologyTet4j
 
 // ----------------------------------------------------------------------
+#include "data/CohesiveDataTet4k.hh" // USES CohesiveDataTet4k
+
+// Test adjustTopology() with 3-D tetrahedral element (embedded fault from CUBIT).
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyTet4k(void)
+{ // testAdjustTopologyTet4k
+  PYLITH_METHOD_BEGIN;
+
+  CohesiveDataTet4k data;
+  FaultCohesiveTract fault;
+  _testAdjustTopology(&fault, data);
+
+  PYLITH_METHOD_END;
+} // testAdjustTopologyTet4k
+
+// ----------------------------------------------------------------------
 #include "data/CohesiveDataHex8.hh" // USES CohesiveDataHex8
 
 // Test adjustTopology() with 3-D hexahedral element.
@@ -614,6 +630,22 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8i(void)
 } // testAdjustTopologyHex8i
 
 // ----------------------------------------------------------------------
+#include "data/CohesiveDataHex8j.hh" // USES CohesiveDataHex8j
+
+// Test adjustTopology() with 3-D hexahedral element (embedded fault).
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyHex8j(void)
+{ // testAdjustTopologyHex8j
+  PYLITH_METHOD_BEGIN;
+
+  CohesiveDataHex8j data;
+  FaultCohesiveTract fault;
+  _testAdjustTopology(&fault, data);
+
+  PYLITH_METHOD_END;
+} // testAdjustTopologyHex8j
+
+// ----------------------------------------------------------------------
 #include "data/CohesiveDataTri3Lagrange.hh" // USES CohesiveDataTri3Lagrange
 
 // Test adjustTopology() with 2-D triangular element for Lagrange
@@ -690,12 +722,12 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   PYLITH_METHOD_BEGIN;
 
   CPPUNIT_ASSERT(fault);
+  CPPUNIT_ASSERT(data.fault);
 
   topology::Mesh mesh;
   meshio::MeshIOAscii iohandler;
   iohandler.filename(data.filename);
   iohandler.debug(false);
-  iohandler.interpolate(false);
   iohandler.read(&mesh);
 
   spatialdata::geocoords::CSCart cs;
@@ -712,13 +744,16 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   PetscErrorCode err;
 
   err = DMPlexGetDepth(dmMesh, &depth);PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetStratumSize(dmMesh, "fault", 1, &firstLagrangeVertex);PYLITH_CHECK_ERROR(err);
+  err = DMPlexGetStratumSize(dmMesh, data.fault, 1, &firstLagrangeVertex);PYLITH_CHECK_ERROR(err);
   firstFaultCell = firstLagrangeVertex;
   if (dynamic_cast<FaultCohesive*>(fault)->useLagrangeConstraints()) {
     firstFaultCell += firstLagrangeVertex;
   } // if
   fault->id(1);
-  fault->label("fault");
+  fault->label(data.fault);
+  if (data.edge) {
+    fault->edge(data.edge);
+  } // if
   fault->adjustTopology(&mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
 #if 0 // DEBUGGING
   PetscViewerPushFormat(PETSC_VIEWER_STDOUT_WORLD, PETSC_VIEWER_ASCII_INFO_DETAIL);
@@ -838,7 +873,6 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
   meshio::MeshIOAscii iohandler;
   iohandler.filename(data.filename);
   iohandler.debug(false);
-  iohandler.interpolate(false);
   iohandler.read(&mesh);
 
   PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);

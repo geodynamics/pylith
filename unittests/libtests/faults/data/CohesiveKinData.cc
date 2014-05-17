@@ -37,6 +37,7 @@ pylith::faults::CohesiveKinData::CohesiveKinData(void) :
   verticesRef(0),
   id(0),
   label(0),
+  edge(0),
   finalSlipFilename(0),
   slipTimeFilename(0),
   riseTimeFilename(0),

@@ -119,7 +119,6 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
   
   try {
     topology::Mesh faultMesh;
-    PetscDM faultBoundary = NULL;
   
     // Get group of vertices associated with fault
     PetscDM dmMesh = mesh->dmMesh();assert(dmMesh);
@@ -145,14 +144,11 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
       err = DMPlexGetDepth(dmMesh, &depth);PYLITH_CHECK_ERROR(err);
       err = MPI_Allreduce(&depth, &gdepth, 1, MPIU_INT, MPI_MAX, mesh->comm());PYLITH_CHECK_ERROR(err);
       err = DMPlexGetLabel(dmMesh, charlabel, &groupField);PYLITH_CHECK_ERROR(err);
-      CohesiveTopology::createFault(&faultMesh, faultBoundary, *mesh, groupField);
+      CohesiveTopology::createFault(&faultMesh, *mesh, groupField);
+      PetscDMLabel faultBdLabel = NULL;
 
-      if (dim > 1 && dim == gdepth) {
-        CohesiveTopology::createInterpolated(mesh, faultMesh, faultBoundary, id(), *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
-      } else {
-        CohesiveTopology::create(mesh, faultMesh, faultBoundary, groupField, id(), *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
-      }
-      err = DMDestroy(&faultBoundary);PYLITH_CHECK_ERROR(err);
+      if (edge()) {err = DMPlexGetLabel(dmMesh, edge(), &faultBdLabel);PYLITH_CHECK_ERROR(err);}
+      CohesiveTopology::create(mesh, faultMesh, faultBdLabel, id(), *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
     } else {
       const int faultDim = 2;
       assert(3 == mesh->dimension());

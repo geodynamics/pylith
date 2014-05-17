@@ -62,7 +62,7 @@ class TestShearDispNoSlip(TestTet4):
     """
     TestTet4.setUp(self)
     self.nverticesO = self.mesh['nvertices']
-    self.mesh['nvertices'] += 19
+    self.mesh['nvertices'] += 8
     self.faultMesh = {'nvertices': 19,
                       'spaceDim': 3,
                       'ncells': 20,
@@ -163,6 +163,13 @@ class TestShearDispNoSlip(TestTet4):
       
     else:
       raise ValueError("Unknown fault field '%s'." % name)
+
+    # Mask clamped edges
+    maskX = numpy.fabs(vertices[:,0]) <= 1.0
+    maskY = numpy.fabs(vertices[:,1]) <= 25.001e+3
+    maskZ = vertices[:,2] >= -20.001e+3
+    mask = numpy.bitwise_and(numpy.bitwise_and(maskX,maskY),maskZ)
+    field[:,~mask,:] = 0.0
 
     return field
 

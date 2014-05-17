@@ -62,7 +62,7 @@ class TestShearDispNoSlip(TestHex8):
     """
     TestHex8.setUp(self)
     self.nverticesO = self.mesh['nvertices']
-    self.mesh['nvertices'] += 21
+    self.mesh['nvertices'] += 10
     self.faultMesh = {'nvertices': 21,
                       'spaceDim': 3,
                       'ncells': 12,
@@ -141,6 +141,7 @@ class TestShearDispNoSlip(TestHex8):
 
     nvertices = self.faultMesh['nvertices']
 
+
     if name == "normal_dir":
       field = numpy.zeros( (1, nvertices, 3), dtype=numpy.float64)
       field[0,:,0] = normalDir[0]
@@ -164,6 +165,13 @@ class TestShearDispNoSlip(TestHex8):
       
     else:
       raise ValueError("Unknown fault field '%s'." % name)
+
+    # Mask clamped vertices
+    maskX = numpy.fabs(vertices[:,0]) <= 1.0
+    maskY = numpy.fabs(vertices[:,1]) <= 25.001e+3
+    maskZ = vertices[:,2] >= -20.001e+3
+    mask = numpy.bitwise_and(numpy.bitwise_and(maskX,maskY),maskZ)
+    field[:,~mask,:] = 0.0
 
     return field
 

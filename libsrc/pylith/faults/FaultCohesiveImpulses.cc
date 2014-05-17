@@ -331,6 +331,11 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_fault = _cohesiveVertices[iVertex].fault;
 
+    // Skip clamped vertices
+    if (v_fault < 0) {
+      continue;
+    } // if
+
     PetscInt goff;
     err = PetscSectionGetOffset(amplitudeGlobalSection, v_fault, &goff);PYLITH_CHECK_ERROR(err);
     if (goff < 0) {
@@ -477,7 +482,12 @@ pylith::faults::FaultCohesiveImpulses::_setRelativeDisp(const topology::Field& d
   if (impulseInfo != _impulsePoints.end()) {
     const int iVertex = impulseInfo->second.indexCohesive;
     const int v_fault = _cohesiveVertices[iVertex].fault;
-    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
+
+    // Skip clamped vertices
+    if (e_lagrange < 0) {
+      PYLITH_METHOD_END;
+    } // if
 
     // Get amplitude of slip impulse
     const PetscInt aoff = amplitudeVisitor.sectionOffset(v_fault);

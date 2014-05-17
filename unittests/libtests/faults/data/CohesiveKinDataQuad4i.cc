@@ -23,8 +23,7 @@
 
 #include "CohesiveKinDataQuad4i.hh"
 
-const char* pylith::faults::CohesiveKinDataQuad4i::_meshFilename =
-  "data/quad4i.mesh";
+const char* pylith::faults::CohesiveKinDataQuad4i::_meshFilename = "data/quad4i.mesh";
 
 const int pylith::faults::CohesiveKinDataQuad4i::_spaceDim = 2;
 
@@ -59,6 +58,7 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_verticesRef[2] = {
 const int pylith::faults::CohesiveKinDataQuad4i::_id = 100;
 
 const char* pylith::faults::CohesiveKinDataQuad4i::_label = "fault";
+const char* pylith::faults::CohesiveKinDataQuad4i::_edge = "edge";
 
 const char* pylith::faults::CohesiveKinDataQuad4i::_finalSlipFilename = 
   "data/quad4i_finalslip.spatialdb";
@@ -69,70 +69,64 @@ const char* pylith::faults::CohesiveKinDataQuad4i::_slipTimeFilename =
 const char* pylith::faults::CohesiveKinDataQuad4i::_riseTimeFilename = 
   "data/quad4i_risetime.spatialdb";
 
-const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_fieldT[(15+3)*2] = {
-  3.1, 5.1, // 9
-  3.2, 5.2, // 10
-  3.3, 5.3, // 11
-  3.4, 5.4, // 12
-  3.5, 5.5, // 13
-  3.6, 5.6, // 14
-  3.7, 5.7, // 15
-  3.8, 5.8, // 16
-  3.9, 5.9, // 17
-  3.0, 5.0, // 18
-  4.2, 6.2, // 19
-  4.4, 6.4, // 20
-  4.1, 6.1, // 21
-  4.3, 6.3, // 22
-  4.5, 6.5, // 23
-  4.7, 6.6, // 44
-  4.9, 6.7, // 45
-  4.6, 6.8, // 46
+const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_fieldT[(14+2)*2] = {
+  3.1, 5.1, // 8
+  3.2, 5.2, // 9
+  3.3, 5.3, // 10
+  3.4, 5.4, // 11
+  3.5, 5.5, // 12
+  3.6, 5.6, // 13
+  3.7, 5.7, // 14
+  3.8, 5.8, // 15
+  3.9, 5.9, // 16
+  3.0, 5.0, // 17
+  4.2, 6.2, // 18
+  4.4, 6.4, // 19
+  4.1, 6.1, // 20
+  4.3, 6.3, // 21
+  4.5, 6.5, // 41
+  4.7, 6.6, // 42
 };
 
 
 
-const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_fieldIncr[(15+3)*2] = {
-  6.1, 4.1, // 9
-  6.2, 4.2, // 10
-  6.3, 4.3, // 11
-  6.4, 4.4, // 12
-  6.5, 4.5, // 13
-  6.6, 4.6, // 14
-  6.7, 4.7, // 15
-  6.8, 4.8, // 16
-  6.9, 4.9, // 17
-  6.0, 4.0, // 18
-  5.2, 3.2, // 19
-  5.4, 3.4, // 20
-  5.1, 3.1, // 21
-  5.3, 3.3, // 22
-  5.5, 3.5, // 23
-  5.7, 3.7, // 44
-  5.9, 3.9, // 45
-  5.6, 3.2, // 46
+const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_fieldIncr[(14+2)*2] = {
+  6.1, 4.1, // 8
+  6.2, 4.2, // 9
+  6.3, 4.3, // 10
+  6.4, 4.4, // 11
+  6.5, 4.5, // 12
+  6.6, 4.6, // 13
+  6.7, 4.7, // 14
+  6.8, 4.8, // 15
+  6.9, 4.9, // 16
+  6.0, 4.0, // 17
+  5.2, 3.2, // 18
+  5.4, 3.4, // 19
+  5.1, 3.1, // 20
+  5.3, 3.3, // 21
+  5.5, 3.5, // 41
+  5.7, 3.7, // 42
 };
 
 
-const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_jacobianLumped[(15+3)*2] = {
-  1.1, 7.1, // 9
-  1.2, 7.2, // 10
-  1.3, 7.3, // 11
-  1.4, 7.4, // 12
-  1.5, 7.5, // 13
-  1.6, 7.6, // 14
-  1.7, 7.7, // 15
-  1.8, 7.8, // 16
-  1.9, 7.9, // 17
-  1.0, 7.0, // 18
-  2.2, 3.2, // 19
-  2.4, 3.4, // 20
-  2.6, 3.5, // 21
-  2.8, 3.6, // 22
-  3.0, 3.7, // 23
-  1.0, 1.0, // 44
-  1.0, 1.0, // 45
-  1.0, 1.0, // 46
+const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_jacobianLumped[(14+2)*2] = {
+  1.1, 7.1, // 8
+  1.2, 7.2, // 9
+  1.3, 7.3, // 10
+  1.4, 7.4, // 11
+  1.5, 7.5, // 12
+  1.6, 7.6, // 13
+  1.7, 7.7, // 14
+  1.8, 7.8, // 15
+  1.9, 7.9, // 16
+  1.0, 7.0, // 17
+  2.2, 3.2, // 18
+  2.4, 3.4, // 19
+  2.6, 3.5, // 20
+  2.8, 3.6, // 21
+  3.0, 3.7, // 41
+  1.0, 1.0, // 42
 };
 
 
@@ -151,16 +145,16 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_area[3] = {
 
 const int pylith::faults::CohesiveKinDataQuad4i::_numFaultVertices = 3;
 const int pylith::faults::CohesiveKinDataQuad4i::_verticesFault[3] = {
-   4,  5,  6
+  4,  5,  6,
 };
 const int pylith::faults::CohesiveKinDataQuad4i::_edgesLagrange[3] = {
-  44, 45, 46
+  43, 41, 42,
 };
 const int pylith::faults::CohesiveKinDataQuad4i::_verticesNegative[3] = {
-   13,  16, 19
+  12, 15, 18,
 };
 const int pylith::faults::CohesiveKinDataQuad4i::_verticesPositive[3] = {
-  21, 22, 23
+  12, 20, 21,
 };
 
 const int pylith::faults::CohesiveKinDataQuad4i::_numCohesiveCells = 2;
@@ -168,38 +162,65 @@ const int pylith::faults::CohesiveKinDataQuad4i::_cellMappingFault[2] = {
   7, 8,
 };
 const int pylith::faults::CohesiveKinDataQuad4i::_cellMappingCohesive[2] = {
-  7, 8,
+  6, 7,
 };
 
 
-const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_residual[(15+3)*2] = {
+const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_residual[(14+2)*2] = {
+  0.0,  0.0, // 8
   0.0,  0.0, // 9
   0.0,  0.0, // 10
   0.0,  0.0, // 11
   0.0,  0.0, // 12
- +5.0*4.7, +5.0*6.6, // 13
+  0.0,  0.0, // 13
   0.0,  0.0, // 14
-  0.0,  0.0, // 15
- +10.0*4.9, +10.0*6.7, // 16
+ +10.0*4.5, +10.0*6.5, // 15
+  0.0,  0.0, // 16
   0.0,  0.0, // 17
-  0.0,  0.0, // 18
- +5.0*4.6, +5.0*6.8, // 19
-  0.0,  0.0, // 20
+ +5.0*4.7, +5.0*6.6, // 18
+  0.0,  0.0, // 19
+ -10.0*4.5, -10.0*6.5, // 20
  -5.0*4.7, -5.0*6.6, // 21
- -10.0*4.9, -10.0*6.7, // 22
- -5.0*4.6, -5.0*6.8, // 23
-  -5.0*(4.1-3.5 - 0.08241148423),
-  -5.0*(6.1-5.5 - 1.89546413727), // 44
- -10.0*(4.3-3.8 - 0.14794836271),
- -10.0*(6.3-5.8 - 1.77538035254), // 45
-  -5.0*(4.5-4.2 - 0.19186497837),
-  -5.0*(6.5-6.2 - 1.59887481971), // 46
+ -10.0*(4.1-3.8 - 0.14794836271),
+ -10.0*(6.1-5.8 - 1.77538035254), // 41
+  -5.0*(4.3-4.2 - 0.19186497837),
+  -5.0*(6.3-6.2 - 1.59887481971), // 42
 };
 
-const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_jacobian[(15+3)*2*(15+3)*2] = {
+const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_jacobian[(14+2)*2*(14+2)*2] = {
+  0.0, 0.0, // 8x
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0, // 8y
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
   0.0, 0.0, // 9x
-  0.0, 0.0,
-  0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -231,11 +252,7 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_jacobian[(15+3)*2*(15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
   0.0, 0.0, // 10x
-  0.0, 0.0,
-  0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -267,11 +284,7 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_jacobian[(15+3)*2*(15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
   0.0, 0.0, // 11x
-  0.0, 0.0,
-  0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -303,11 +316,7 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_jacobian[(15+3)*2*(15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
   0.0, 0.0, // 12x
-  0.0, 0.0,
-  0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -339,8 +348,6 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_jacobian[(15+3)*2*(15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
   0.0, 0.0, // 13x
   0.0, 0.0,
   0.0, 0.0,
@@ -355,8 +362,6 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_jacobian[(15+3)*2*(15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
- -5.0, 0.0, // 44
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 13y
@@ -374,12 +379,8 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_jacobian[(15+3)*2*(15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,-5.0, // 44
-  0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 14x
-  0.0, 0.0,
-  0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -411,8 +412,6 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_jacobian[(15+3)*2*(15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
   0.0, 0.0, // 15x
   0.0, 0.0,
   0.0, 0.0,
@@ -427,9 +426,7 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_jacobian[(15+3)*2*(15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
+-10.0, 0.0, // 41
   0.0, 0.0,
   0.0, 0.0, // 15y
   0.0, 0.0,
@@ -445,9 +442,7 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_jacobian[(15+3)*2*(15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
+  0.0,-10.0, // 41
   0.0, 0.0,
   0.0, 0.0, // 16x
   0.0, 0.0,
@@ -465,8 +460,6 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_jacobian[(15+3)*2*(15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
--10.0, 0.0, // 45
-  0.0, 0.0,
   0.0, 0.0, // 16y
   0.0, 0.0,
   0.0, 0.0,
@@ -483,11 +476,7 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_jacobian[(15+3)*2*(15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,-10.0, // 45
-  0.0, 0.0,
   0.0, 0.0, // 17x
-  0.0, 0.0,
-  0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -519,8 +508,6 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_jacobian[(15+3)*2*(15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
   0.0, 0.0, // 18x
   0.0, 0.0,
   0.0, 0.0,
@@ -536,9 +523,7 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_jacobian[(15+3)*2*(15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
+ -5.0, 0.0, // 42
   0.0, 0.0, // 18y
   0.0, 0.0,
   0.0, 0.0,
@@ -554,9 +539,7 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_jacobian[(15+3)*2*(15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
+  0.0,-5.0, // 42
   0.0, 0.0, // 19x
   0.0, 0.0,
   0.0, 0.0,
@@ -573,8 +556,6 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_jacobian[(15+3)*2*(15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
- -5.0, 0.0, // 46
   0.0, 0.0, // 19y
   0.0, 0.0,
   0.0, 0.0,
@@ -591,8 +572,6 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_jacobian[(15+3)*2*(15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
-  0.0,-5.0, // 46
   0.0, 0.0, // 20x
   0.0, 0.0,
   0.0, 0.0,
@@ -607,9 +586,7 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_jacobian[(15+3)*2*(15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
++10.0, 0.0, // 41
   0.0, 0.0,
   0.0, 0.0, // 20y
   0.0, 0.0,
@@ -625,9 +602,7 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_jacobian[(15+3)*2*(15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
+  0.0,+10.0, // 41
   0.0, 0.0,
   0.0, 0.0, // 21x
   0.0, 0.0,
@@ -644,9 +619,7 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_jacobian[(15+3)*2*(15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- +5.0, 0.0, // 44
-  0.0, 0.0,
-  0.0, 0.0,
+ +5.0, 0.0, // 42
   0.0, 0.0, // 21y
   0.0, 0.0,
   0.0, 0.0,
@@ -662,36 +635,40 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_jacobian[(15+3)*2*(15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,+5.0, // 44
+  0.0,+5.0, // 42
+  0.0, 0.0, // 41x
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0, // 22x
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
+-10.0, 0.0, // 15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
+ +10.0, 0.0, // 20
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
+  0.0, 0.0, // 41y
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-+10.0, 0.0, // 45
   0.0, 0.0,
-  0.0, 0.0, // 22y
   0.0, 0.0,
+  0.0,-10.0, // 15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
+  0.0,+10.0, // 20
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
+  0.0, 0.0, // 42x
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -699,150 +676,28 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4i::_jacobian[(15+3)*2*(15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,+10.0, // 45
   0.0, 0.0,
-  0.0, 0.0, // 23x
   0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
- +5.0, 0.0, // 46
-  0.0, 0.0, // 23y
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0,+5.0, // 46
-  0.0, 0.0, // 44x
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
- -5.0, 0.0, // 13
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
+ -5.0, 0.0, // 18
   0.0, 0.0,
   0.0, 0.0,
  +5.0, 0.0, // 21
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0, // 44y
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0,-5.0, // 13
+  0.0, 0.0, // 42y
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0, 0.0,
+  0.0,-5.0, // 18
   0.0, 0.0,
   0.0, 0.0,
   0.0,+5.0, // 21
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0, // 45x
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
--10.0, 0.0, // 16
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
- +10.0, 0.0, // 22
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0, // 45y
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0,-10.0, // 16
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0,+10.0, // 22
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0, // 46x
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
- -5.0, 0.0, // 19
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
- +5.0, 0.0, // 23
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0, // 46y
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0,-5.0, // 19
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0,+5.0, // 23
-  0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
 };
@@ -861,6 +716,7 @@ pylith::faults::CohesiveKinDataQuad4i::CohesiveKinDataQuad4i(void)
   verticesRef = const_cast<PylithScalar*>(_verticesRef);
   id = _id;
   label = const_cast<char*>(_label);
+  edge = const_cast<char*>(_edge);
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   riseTimeFilename = const_cast<char*>(_riseTimeFilename);

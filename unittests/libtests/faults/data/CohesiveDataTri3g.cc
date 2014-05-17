@@ -22,38 +22,40 @@
 
 #include "CohesiveDataTri3g.hh"
 
-const int pylith::faults::CohesiveDataTri3g::_numVertices = 9;
+const int pylith::faults::CohesiveDataTri3g::_numVertices = 8;
 
 const int pylith::faults::CohesiveDataTri3g::_spaceDim = 2;
 
-const int pylith::faults::CohesiveDataTri3g::_numCells = 8;
+const int pylith::faults::CohesiveDataTri3g::_numCells = 7;
 
 const int pylith::faults::CohesiveDataTri3g::_cellDim = 2;
 
-const int pylith::faults::CohesiveDataTri3g::_numCorners[8] = {
+const int pylith::faults::CohesiveDataTri3g::_numCorners[7] = {
   3, 3, 3, 3, 3, 3,
-  3, 4,
+  3,
 };
 
-const int pylith::faults::CohesiveDataTri3g::_materialIds[8] = {
+const int pylith::faults::CohesiveDataTri3g::_materialIds[7] = {
   0,  2,  0,  2,  0,  2,
-  -999, 1,
+  1,
 };
 
-const int pylith::faults::CohesiveDataTri3g::_numGroups = 2;
+const int pylith::faults::CohesiveDataTri3g::_numGroups = 3;
 
-const int pylith::faults::CohesiveDataTri3g::_groupSizes[2] = 
-  { 5+3, 4+2 }; // vertices+edges
+const int pylith::faults::CohesiveDataTri3g::_groupSizes[3] = 
+  { 5+3, 1, 3+2 }; // vertices+edges
 
-const char* pylith::faults::CohesiveDataTri3g::_groupNames[2] = {
-  "output", "fault"
+const char* pylith::faults::CohesiveDataTri3g::_groupNames[3] = {
+  "output", "edge", "fault"
 };
 
-const char* pylith::faults::CohesiveDataTri3g::_groupTypes[2] = {
-  "vertex", "vertex"
+const char* pylith::faults::CohesiveDataTri3g::_groupTypes[3] = {
+  "vertex", "vertex", "vertex"
 };
 
 const char* pylith::faults::CohesiveDataTri3g::_filename = "data/tri3g.mesh";
+const char* pylith::faults::CohesiveDataTri3g::_fault = "fault";
+const char* pylith::faults::CohesiveDataTri3g::_edge = "edge";
 
 pylith::faults::CohesiveDataTri3g::CohesiveDataTri3g(void)
 { // constructor
@@ -68,6 +70,8 @@ pylith::faults::CohesiveDataTri3g::CohesiveDataTri3g(void)
   groupTypes = const_cast<char**>(_groupTypes);
   numGroups = _numGroups;
   filename = const_cast<char*>(_filename);
+  fault = const_cast<char*>(_fault);
+  edge = const_cast<char*>(_edge);
 } // constructor
 
 pylith::faults::CohesiveDataTri3g::~CohesiveDataTri3g(void)

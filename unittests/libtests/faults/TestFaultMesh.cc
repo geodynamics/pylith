@@ -41,7 +41,6 @@ pylith::faults::TestFaultMesh::createFaultMesh(topology::Mesh* faultMesh,
     PetscInt firstLagrangeVertex = 0, firstFaultCell = 0;
     PetscDMLabel groupField = NULL;
     const bool useLagrangeConstraints = true;
-    PetscDM faultBoundary = NULL;
     PetscDM dmMesh = mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
     
     err = DMPlexGetStratumSize(dmMesh, faultLabel, 1, &firstLagrangeVertex);PYLITH_CHECK_ERROR(err);
@@ -52,13 +51,8 @@ pylith::faults::TestFaultMesh::createFaultMesh(topology::Mesh* faultMesh,
     err = DMPlexGetDepth(dmMesh, &depth);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetLabel(dmMesh, faultLabel, &groupField);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT(groupField);
-    CohesiveTopology::createFault(faultMesh, faultBoundary, *mesh, groupField);
-    if (mesh->dimension() > 1 && mesh->dimension() == depth) {
-      CohesiveTopology::createInterpolated(mesh, *faultMesh, faultBoundary, faultId, firstFaultVertex, firstLagrangeVertex, firstFaultCell, useLagrangeConstraints);
-    } else {
-      CohesiveTopology::create(mesh, *faultMesh, faultBoundary, groupField, faultId, firstFaultVertex, firstLagrangeVertex, firstFaultCell, useLagrangeConstraints);
-    }
-    err = DMDestroy(&faultBoundary);PYLITH_CHECK_ERROR(err);
+    CohesiveTopology::createFault(faultMesh, *mesh, groupField);
+    CohesiveTopology::create(mesh, *faultMesh, NULL, faultId, firstFaultVertex, firstLagrangeVertex, firstFaultCell, useLagrangeConstraints);
   } // Create mesh
 
   PYLITH_METHOD_END;

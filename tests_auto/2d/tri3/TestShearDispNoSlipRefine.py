@@ -63,11 +63,11 @@ class TestShearDispNoSlipRefine(TestTri3):
     TestTri3.setUp(self)
     self.mesh = {'ncells': 142*4,
                  'ncorners': 3,
-                 'nvertices': 319,
+                 'nvertices': 317,
                  'spaceDim': 2,
                  'tensorSize': 3}
     self.nverticesO = self.mesh['nvertices']
-    self.mesh['nvertices'] += 5
+    self.mesh['nvertices'] += 3
     self.faultMesh = {'nvertices': 5,
                       'spaceDim': 2,
                       'ncells': 2*2,
@@ -167,6 +167,12 @@ class TestShearDispNoSlipRefine(TestTri3):
       
     else:
       raise ValueError("Unknown fault field '%s'." % name)
+
+    # Mask clamped vertices
+    maskX = numpy.bitwise_and(vertices[:,0] >= -2.0001e+3, vertices[:,0] <= 1.0)
+    maskY = numpy.fabs(vertices[:,1]) <= 0.01e+3
+    mask = numpy.bitwise_and(maskX,maskY)
+    field[:,~mask,:] = 0
 
     return field
 

@@ -155,6 +155,7 @@ pylith::faults::FaultCohesiveLagrange::setupSolnDof(topology::Field* field)
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
 
+    if (e_lagrange < 0) continue;
     // Set DOF in section (all subfields)
     err = PetscSectionSetDof(fieldSection, e_lagrange, spaceDim);PYLITH_CHECK_ERROR(err);
     err = PetscSectionSetDof(fieldSection, v_positive, spaceDim);PYLITH_CHECK_ERROR(err);
@@ -246,6 +247,10 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(const topology::Field& 
     const int v_fault = _cohesiveVertices[iVertex].fault;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
+
+    if (e_lagrange < 0) { // Skip clamped edges.
+      continue;
+    } // if
 
     // Compute contribution only if Lagrange constraint is local.
     PetscInt goff  = 0;
@@ -387,6 +392,10 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(topology::Jacobian* jac
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
+    if (e_lagrange < 0) { // Skip clamped edges.
+      continue;
+    } // if
+
     // Compute contribution only if Lagrange constraint is local.
     PetscInt gloff = 0;
     err = PetscSectionGetOffset(solnGlobalSection, e_lagrange, &gloff);PYLITH_CHECK_ERROR(err);
@@ -526,6 +535,10 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(topology::Field* jacobi
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
 
+    if (e_lagrange < 0) { // Skip clamped edges
+      continue;
+    } // if
+
     // Compute contribution only if Lagrange constraint is local.
     PetscInt goff = 0;
     err = PetscSectionGetOffset(jacobianGlobalSection, e_lagrange, &goff);PYLITH_CHECK_ERROR(err);
@@ -641,6 +654,10 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
     const int v_fault = _cohesiveVertices[iVertex].fault;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
+
+    if (e_lagrange < 0) { // Skip clamped edges.
+      continue;
+    } // if
 
     // Compute contribution only if Lagrange constraint is local.
     PetscInt gloff = 0;
@@ -808,6 +825,10 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
     const int v_fault = _cohesiveVertices[iVertex].fault;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
+
+    if (e_lagrange < 0) { // Skip clamped edges
+      continue;
+    } // if
 
     // Set Lagrange multiplier value. Value from preliminary solve is
     // bogus due to artificial diagonal entry.
@@ -1016,9 +1037,14 @@ pylith::faults::FaultCohesiveLagrange::checkConstraints(const topology::Field& s
 
   const int numVertices = _cohesiveVertices.size();
   PetscInt fiberDim = 0, numConstraints = 0;
-  for(int iVertex = 0; iVertex < numVertices; ++iVertex) {
-
+  for (int iVertex = 0; iVertex < numVertices; ++iVertex) {
     const int v_negative = _cohesiveVertices[iVertex].negative;
+    const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
+
+    if (e_lagrange < 0) { // Skip clamped edges.
+      continue;
+    } // if
+
     assert(spaceDim == solutionVisitor.sectionDof(v_negative));
     numConstraints = solutionVisitor.sectionConstraintDof(v_negative);
     if (numConstraints > 0) {
@@ -1113,6 +1139,22 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
       err = DMPlexGetConeSize(dmMesh, e_lagrange, &coneSize);PYLITH_CHECK_ERROR(err);
       assert(coneSize == 2);
       err = DMPlexGetCone(dmMesh, e_lagrange, &cone);PYLITH_CHECK_ERROR(err);
+      // Check for clamped vertex
+      if (cone[0] == cone[1]) {
+        PetscInt v_fault;
+        err = PetscFindInt(cone[0], numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
+        assert(v_fault >= 0);
+        if (indexMap.end() == indexMap.find(e_lagrange)) {
+          _cohesiveVertices[index].lagrange = -e_lagrange;
+          _cohesiveVertices[index].positive = -cone[0];
+          _cohesiveVertices[index].negative = -cone[0];
+          _cohesiveVertices[index].fault    = -v_fault;
+          indexMap[e_lagrange] = index; // add index to map
+          ++index;
+        } // if
+        err = DMPlexSetLabelValue(faultDMMesh, "clamped", v_fault, 1);PYLITH_CHECK_ERROR(err);
+        continue;
+      }
       const PetscInt v_negative = cone[0];
       const PetscInt v_positive = cone[1];
 
@@ -1138,6 +1180,7 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
     } // for
     err = DMPlexRestoreTransitiveClosure(dmMesh, cohesiveCells[iCell], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
   } // for
+  assert(index == _cohesiveVertices.size());
 
   PYLITH_METHOD_END;
 } // _initializeCohesiveInfo
@@ -1292,6 +1335,29 @@ pylith::faults::FaultCohesiveLagrange::globalToFault(topology::Field* field,
   PYLITH_METHOD_END;
 } // faultToGlobal
 
+
+// ----------------------------------------------------------------------
+// Check to see if given vertex is clamped.
+bool
+pylith::faults::FaultCohesiveLagrange::isClampedVertex(PetscDMLabel clamped,
+						       PetscInt vertex)
+{ // _isClampedVertex
+  PYLITH_METHOD_BEGIN;
+  
+  bool isClamped = false;
+  
+  if (clamped) {
+    PetscInt value = -1;
+    PetscErrorCode err = DMLabelGetValue(clamped, vertex, &value);PYLITH_CHECK_ERROR(err);
+    if (value >= 0) {
+      isClamped = true;
+    } // if
+  } // if
+  
+  PYLITH_METHOD_RETURN(isClamped);
+} // _isClampedVertex
+
+
 // ----------------------------------------------------------------------
 // Calculate orientation at fault vertices.
 void
@@ -1380,26 +1446,28 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
       // Filter out non-vertices
       PetscInt numVertices = 0;
       for(PetscInt p = 0; p < closureSize*2; p += 2) {
-	if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
-	  closure[numVertices*2]   = closure[p];
-	  closure[numVertices*2+1] = closure[p+1];
-	  ++numVertices;
-	} // if
+        if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
+          closure[numVertices*2]   = closure[p];
+          closure[numVertices*2+1] = closure[p+1];
+          ++numVertices;
+        } // if
       } // for
-      
+
       for(PetscInt v = 0; v < numVertices; ++v) {
-	// Compute Jacobian and determinant of Jacobian at vertex
-	cellGeometry.jacobian(&jacobian, &jacobianDet, &coordsCell[0], numBasis, spaceDim, &verticesRef[v*cohesiveDim], cohesiveDim);
+        const PetscInt v_fault = closure[v*2];
+
+        // Compute Jacobian and determinant of Jacobian at vertex
+        cellGeometry.jacobian(&jacobian, &jacobianDet, &coordsCell[0], numBasis, spaceDim, &verticesRef[v*cohesiveDim], cohesiveDim);
 	
-	// Compute orientation
-	cellGeometry.orientation(&orientationVertex, jacobian, jacobianDet, up);
+        // Compute orientation
+        cellGeometry.orientation(&orientationVertex, jacobian, jacobianDet, up);
 	
-	// Update orientation
-	const PetscInt ooff = orientationVisitor.sectionOffset(closure[v*2]);
+        // Update orientation
+        const PetscInt ooff = orientationVisitor.sectionOffset(v_fault);
 	
-	for(PetscInt d = 0; d < orientationSize; ++d) {
-	  orientationArray[ooff+d] += orientationVertex[d];
-	} // for
+        for(PetscInt d = 0; d < orientationSize; ++d) {
+          orientationArray[ooff+d] += orientationVertex[d];
+        } // for
       } // for
       err = DMPlexRestoreTransitiveClosure(faultDMMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     } // for
@@ -1436,15 +1504,15 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
       } // for
 
       if (mag <= 0.0) {
-	std::ostringstream msg;
-	msg << "Error calculating fault orientation at fault vertex " << v << ".\n" 
-	    << "Zero vector in parallel likely indicates inconsistent fault orientation (creation) across processors.\n"
-	    << "Orientation vector " << iDim << ": (";
-	for (int jDim = 0, index = iDim * spaceDim; jDim < spaceDim; ++jDim) {
-	  msg << " " << orientationVertex[index + jDim];
-	} // for
-	msg << " )" << std::endl;
-	throw std::runtime_error(msg.str());
+        std::ostringstream msg;
+        msg << "Error calculating fault orientation at fault vertex " << v << ".\n" 
+            << "Zero vector in parallel likely indicates inconsistent fault orientation (creation) across processors.\n"
+            << "Orientation vector " << iDim << ": (";
+        for (int jDim = 0, index = iDim * spaceDim; jDim < spaceDim; ++jDim) {
+          msg << " " << orientationVertex[index + jDim];
+        } // for
+        msg << " )" << std::endl;
+        throw std::runtime_error(msg.str());
       } // if
 
       mag = sqrt(mag);
@@ -1718,6 +1786,10 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(topology::Field* tra
     const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
 
+    if (e_lagrange < 0) { // skip clamped edges
+      continue;
+    } // if
+
     const PetscInt dtoff = dispTVisitor.sectionOffset(e_lagrange);
     assert(spaceDim == dispTVisitor.sectionDof(e_lagrange));
 
@@ -1891,6 +1963,7 @@ pylith::faults::FaultCohesiveLagrange::_getJacobianSubmatrixNP(PetscMat* jacobia
   PYLITH_METHOD_END;
 } // _getJacobianSubmatrixNP
 
+
 // ----------------------------------------------------------------------
 // Get cell field associated with integrator.
 const pylith::topology::Field&
@@ -1930,7 +2003,7 @@ pylith::faults::FaultCohesiveLagrange::cellField(const char* name,
   msg << "Request for unknown cell field '" << name << "' for fault '" << label() << ".";
   throw std::runtime_error(msg.str());
 
-  // Satisfy return values
+  // Satisfy return value
   assert(_fields);
   const topology::Field& buffer = _fields->get("buffer (vector)");
   PYLITH_METHOD_RETURN(buffer);

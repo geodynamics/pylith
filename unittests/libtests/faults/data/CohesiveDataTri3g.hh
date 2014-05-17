@@ -56,6 +56,8 @@ private:
   static const int _numGroups; ///< Number of groups
 
   static const char* _filename; ///< Filename of input mesh
+  static const char* _fault; ///< Label for fault.
+  static const char* _edge; ///< Label for fault edge.
 };
 
 #endif // pylith_faults_cohesivedatatri3g_hh

@@ -1,0 +1,87 @@
+# ----------------------------------------------------------------------
+# Create block
+# ----------------------------------------------------------------------
+
+# Block is 40 km x 80 km x 40 km
+# -20 km <= x <= 20 km
+# -40 km <= y <= 40 km
+# -40 km <= z <= 0 km
+reset
+brick x 40000 y 80000 z 40000
+
+# Translate block so the top is at z=0
+volume 1 move x 0 y 0 z -20000
+
+# ----------------------------------------------------------------------
+# Create interface surfaces
+# ----------------------------------------------------------------------
+create planar surface with plane xplane offset 0
+surface 7 name "fault_surface"
+
+# ----------------------------------------------------------------------
+# Divide volumes using interface surfaces
+# ----------------------------------------------------------------------
+webcut volume 1 with plane surface fault_surface
+volume 1 name "elastic_xpos"
+volume 3 name "elastic_xneg"
+
+# ----------------------------------------------------------------------
+# Chop x and y faults into pieces
+# ----------------------------------------------------------------------
+# fault_surface_x
+brick x 2000 y 50000 z 40000
+chop volume 2 with volume 4
+
+# ----------------------------------------------------------------------
+# Imprint all volumes, merging surfaces
+# ----------------------------------------------------------------------
+imprint all with volume all
+merge all
+
+# ----------------------------------------------------------------------
+# Set discretization size
+# ----------------------------------------------------------------------
+volume all size 10000.0
+
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+volume all scheme tetmesh
+mesh volume all
+
+volume all smooth scheme condition number beta 1.7 cpu 10
+smooth volume all
+
+
+# ----------------------------------------------------------------------
+# Create blocks for materials
+# ----------------------------------------------------------------------
+block 10 volume elastic_xpos elastic_xneg
+block 10 name "elastic"
+
+# ----------------------------------------------------------------------
+# Create nodesets for faults
+# ----------------------------------------------------------------------
+group "fault" add node in surface fault_surface
+nodeset 10 group fault
+nodeset 10 name "fault"
+
+group "fault_edge" add node in curve 45
+group "fault_edge" add node in curve 46
+group "fault_edge" add node in curve 47
+nodeset 11 group fault_edge
+nodeset 11 name "fault_edge"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +z face
+# ----------------------------------------------------------------------
+group "face_zpos" add node in surface 9
+group "face_zpos" add node in surface 16
+nodeset 20 group face_zpos
+nodeset 20 name "face_zpos"
+
+# ----------------------------------------------------------------------
+# Export exodus file
+# ----------------------------------------------------------------------
+export mesh "tet4k.exo" dimension 3 overwrite
+

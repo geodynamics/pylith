@@ -50,6 +50,14 @@ mesh = {
     }
   }
   group = {
+    name = edge
+    type = vertices
+    count = 1
+    indices = {
+      4
+    }
+  }
+  group = {
     name = output1
     type = vertices
     count = 3

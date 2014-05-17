@@ -162,17 +162,16 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &fault, &fields);
 
+#if 0 // DEBUGGING
+  mesh.view("::ascii_info_detail");
+  fault._faultMesh->view("::ascii_info_detail");
+#endif
+
   // Check fault mesh sizes
   CPPUNIT_ASSERT_EQUAL(_data->cellDim, fault.dimension());
   CPPUNIT_ASSERT_EQUAL(_data->numBasis, fault.numCorners());
   CPPUNIT_ASSERT_EQUAL(_data->numFaultVertices, fault.numVertices());
   CPPUNIT_ASSERT_EQUAL(_data->numCohesiveCells, fault.numCells());
-
-#if 0 // DEBUGGING
-  PetscViewerPushFormat(PETSC_VIEWER_STDOUT_WORLD, PETSC_VIEWER_ASCII_INFO_DETAIL);
-  DMView(fault._faultMesh->dmMesh(), PETSC_VIEWER_STDOUT_WORLD);
-  PetscViewerPopFormat(PETSC_VIEWER_STDOUT_WORLD);
-#endif
 
   topology::SubMeshIS subpointIS(*fault._faultMesh);
   const PetscInt numPoints = subpointIS.size();
@@ -193,6 +192,9 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   CPPUNIT_ASSERT_EQUAL(_data->numFaultVertices, vEnd-vStart);
 
   // Check cohesive vertex info; permit different order of vertices.
+  PetscDMLabel clamped = NULL;
+  err = DMPlexGetLabel(dmMesh, "clamped", &clamped);PYLITH_CHECK_ERROR(err);
+
   const int numFaultVertices = _data->numFaultVertices;
   CPPUNIT_ASSERT_EQUAL(numFaultVertices, int(fault._cohesiveVertices.size()));
   int_array verticesFaultSorted(_data->verticesFault, numFaultVertices);
@@ -200,14 +202,16 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   int* sortedEnd = &verticesFaultSorted[numFaultVertices];
   std::sort(sortedBegin, sortedEnd);
   for (int i=0; i < numFaultVertices; ++i) {
-    const int* iter = std::lower_bound(sortedBegin, sortedEnd, fault._cohesiveVertices[i].fault);
+    const PetscInt sign = (fault._cohesiveVertices[i].fault < 0) ? -1 : 1;
+    const PetscInt v_fault = sign*fault._cohesiveVertices[i].fault;
+    const int* iter = std::lower_bound(sortedBegin, sortedEnd, v_fault);
     CPPUNIT_ASSERT(iter != sortedEnd);
     const int index = iter - sortedBegin;
-    
-    CPPUNIT_ASSERT_EQUAL(_data->verticesFault[index], fault._cohesiveVertices[i].fault);
-    CPPUNIT_ASSERT_EQUAL(_data->edgesLagrange[index], fault._cohesiveVertices[i].lagrange);
-    CPPUNIT_ASSERT_EQUAL(_data->verticesNegative[index], fault._cohesiveVertices[i].negative);
-    CPPUNIT_ASSERT_EQUAL(_data->verticesPositive[index], fault._cohesiveVertices[i].positive);
+
+    CPPUNIT_ASSERT_EQUAL(_data->verticesFault[index], sign*fault._cohesiveVertices[i].fault);
+    CPPUNIT_ASSERT_EQUAL(_data->edgesLagrange[index], sign*fault._cohesiveVertices[i].lagrange);
+    CPPUNIT_ASSERT_EQUAL(_data->verticesNegative[index], sign*fault._cohesiveVertices[i].negative);
+    CPPUNIT_ASSERT_EQUAL(_data->verticesPositive[index], sign*fault._cohesiveVertices[i].positive);
   } // for
 
   // Check cohesive cell info
@@ -337,8 +341,11 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
   topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
 
+  PetscInt numClampedVertices = 0;
+  PetscErrorCode err = DMPlexGetLabelSize(fault._faultMesh->dmMesh(), "clamped", &numClampedVertices);PYLITH_CHECK_ERROR(err);
+
   CPPUNIT_ASSERT(_data->jacobian);
-  const int numDOF = verticesStratum.size() + _data->numFaultVertices;
+  const int numDOF = verticesStratum.size() + _data->numFaultVertices - numClampedVertices;
   const int spaceDim = _data->spaceDim;
   const PylithScalar* valsE = _data->jacobian;
   const PetscInt nrowsE = numDOF * _data->spaceDim;
@@ -564,6 +571,9 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
 
     const PetscInt v_fault = fault._cohesiveVertices[i].fault;
     const PetscInt e_lagrange = fault._cohesiveVertices[i].lagrange;
+    if (e_lagrange < 0) { // skip clamped edges
+      continue;
+    } // if
 
     const PetscInt toff = tractionVisitor.sectionOffset(v_fault);
     CPPUNIT_ASSERT_EQUAL(spaceDim, tractionVisitor.sectionDof(v_fault));
@@ -699,6 +709,9 @@ pylith::faults::TestFaultCohesiveKin::_initialize(topology::Mesh* const mesh,
 
   fault->id(_data->id);
   fault->label(_data->label);
+  if (_data->edge) {
+    fault->edge(_data->edge);
+  } // if
   fault->quadrature(_quadrature);
   fault->eqsrcs(const_cast<const char**>(names), nsrcs, sources, nsrcs);
 

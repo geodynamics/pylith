@@ -74,6 +74,7 @@ class pylith::faults::TestFaultCohesive : public CppUnit::TestFixture
   CPPUNIT_TEST( testAdjustTopologyTet4h );
   CPPUNIT_TEST( testAdjustTopologyTet4i );
   CPPUNIT_TEST( testAdjustTopologyTet4j );
+  CPPUNIT_TEST( testAdjustTopologyTet4k );
   CPPUNIT_TEST( testAdjustTopologyHex8 );
   CPPUNIT_TEST( testAdjustTopologyHex8b );
   CPPUNIT_TEST( testAdjustTopologyHex8c );
@@ -83,6 +84,7 @@ class pylith::faults::TestFaultCohesive : public CppUnit::TestFixture
   CPPUNIT_TEST( testAdjustTopologyHex8g );
   CPPUNIT_TEST( testAdjustTopologyHex8h );
   CPPUNIT_TEST( testAdjustTopologyHex8i );
+  CPPUNIT_TEST( testAdjustTopologyHex8j );
 
   CPPUNIT_TEST( testAdjustTopologyTri3Lagrange );
   CPPUNIT_TEST( testAdjustTopologyQuad4Lagrange );
@@ -175,6 +177,9 @@ public :
   /// Test adjustTopology() with 3-D tetrahedral element (vertex/edge on fault).
   void testAdjustTopologyTet4j(void);
 
+  /// Test adjustTopology() with 3-D tetrahedral element (embedded fault from CUBIT).
+  void testAdjustTopologyTet4k(void);
+
   /// Test adjustTopology() with 3-D hexahedral element.
   void testAdjustTopologyHex8(void);
 
@@ -201,6 +206,9 @@ public :
 
   /// Test adjustTopology() with 3-D hexahedral element (edge/vertex on fault).
   void testAdjustTopologyHex8i(void);
+
+  /// Test adjustTopology() with 3-D hexahedral element (embedded fault).
+  void testAdjustTopologyHex8j(void);
 
   /// Test adjustTopology() with 2-D triangular element for Lagrange
   /// multipliers.

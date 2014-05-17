@@ -129,8 +129,6 @@ class MeshImporter(MeshGenerator):
       mesh.memLoggingStage = "DistributedMesh"
 
     # Refine mesh (if necessary)
-    if 0 == comm.rank:
-      self._info.log("Refining mesh.")
     newMesh = self.refiner.refine(mesh)
     if not newMesh == mesh:
       mesh.cleanup()

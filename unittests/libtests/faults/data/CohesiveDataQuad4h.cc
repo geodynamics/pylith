@@ -110,7 +110,7 @@ const int pylith::faults::CohesiveDataQuad4h::_numCorners[14] = {
 
 const int pylith::faults::CohesiveDataQuad4h::_materialIds[14] = {
   10, 10, 11, 10, 10, 11, 12, 12, 11,
-  2, -999, 1, 1, -999, 
+  2, 2, 1, 1, 1, 
 };
 
 const int pylith::faults::CohesiveDataQuad4h::_numGroups = 2;

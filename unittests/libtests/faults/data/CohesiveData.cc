@@ -31,7 +31,9 @@ pylith::faults::CohesiveData::CohesiveData(void) :
   groupNames(0),
   groupTypes(0),
   numGroups(0),
-  filename(0)
+  filename(0),
+  fault("fault"),
+  edge(0)
 { // constructor
 } // constructor
 

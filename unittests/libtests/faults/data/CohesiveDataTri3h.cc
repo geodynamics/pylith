@@ -22,39 +22,41 @@
 
 #include "CohesiveDataTri3h.hh"
 
-const int pylith::faults::CohesiveDataTri3h::_numVertices = 13;
+const int pylith::faults::CohesiveDataTri3h::_numVertices = 11;
 
 const int pylith::faults::CohesiveDataTri3h::_spaceDim = 2;
 
-const int pylith::faults::CohesiveDataTri3h::_numCells = 15;
+const int pylith::faults::CohesiveDataTri3h::_numCells = 13;
 
 const int pylith::faults::CohesiveDataTri3h::_cellDim = 2;
 
-const int pylith::faults::CohesiveDataTri3h::_numCorners[15] = {
+const int pylith::faults::CohesiveDataTri3h::_numCorners[13] = {
   3, 3, 3, 3, 3, 3, 3, 3, 3, 3,  3,
-  4, 3, 4, 3,
+  3, 3,
 };
 
-const int pylith::faults::CohesiveDataTri3h::_materialIds[15] = {
+const int pylith::faults::CohesiveDataTri3h::_materialIds[13] = {
   0, 0, 0, 0, 
   2, 2, 3, 3, 3, 2, 3,
-  1, -999, 1, -999,
+  1, 1, 
 };
 
-const int pylith::faults::CohesiveDataTri3h::_numGroups = 2;
+const int pylith::faults::CohesiveDataTri3h::_numGroups = 3;
 
-const int pylith::faults::CohesiveDataTri3h::_groupSizes[2] = 
-  { 3+2, 6+4 }; // vertices+edges
+const int pylith::faults::CohesiveDataTri3h::_groupSizes[3] = 
+  { 3+2, 2, 4+4 }; // vertices+edges
 
-const char* pylith::faults::CohesiveDataTri3h::_groupNames[2] = {
-  "output", "fault"
+const char* pylith::faults::CohesiveDataTri3h::_groupNames[3] = {
+  "output", "edge", "fault"
 };
 
-const char* pylith::faults::CohesiveDataTri3h::_groupTypes[2] = {
-  "vertex", "vertex"
+const char* pylith::faults::CohesiveDataTri3h::_groupTypes[3] = {
+  "vertex", "vertex", "vertex"
 };
 
 const char* pylith::faults::CohesiveDataTri3h::_filename = "data/tri3h.mesh";
+const char* pylith::faults::CohesiveDataTri3h::_fault = "fault";
+const char* pylith::faults::CohesiveDataTri3h::_edge = "edge";
 
 pylith::faults::CohesiveDataTri3h::CohesiveDataTri3h(void)
 { // constructor
@@ -69,6 +71,8 @@ pylith::faults::CohesiveDataTri3h::CohesiveDataTri3h(void)
   groupTypes = const_cast<char**>(_groupTypes);
   numGroups = _numGroups;
   filename = const_cast<char*>(_filename);
+  fault = const_cast<char*>(_fault);
+  edge = const_cast<char*>(_edge);
 } // constructor
 
 pylith::faults::CohesiveDataTri3h::~CohesiveDataTri3h(void)

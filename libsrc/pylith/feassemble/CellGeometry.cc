@@ -222,7 +222,7 @@ pylith::feassemble::CellGeometry::_orient2D(scalar_array* orientation,
   PylithScalar p2 =  upDir[0]*r1 - upDir[1]*r0;
   // Make unit vector
   mag = sqrt(p0*p0 + p1*p1 + p2*p2);
-  if (0.0 == mag) {
+  if (mag < 1.0e-6) {
     std::ostringstream msg;
     msg << "Error computing orientation of cell face.\nUp direction ("
 	<< upDir[0] << ", " << upDir[1] << ", " << upDir[2] << ") "
