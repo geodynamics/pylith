@@ -36,7 +36,7 @@ void
 pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
 				       scalar_array* coordinates,
 				       const int numVertices,
-				       const int spaceDim,
+				       int spaceDim,
 				       const int_array& cells,
 				       const int numCells,
 				       const int numCorners,
@@ -77,6 +77,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
   PetscInt  bound        = numCells*numCorners, coff;
 
   err = MPI_Bcast(&dim, 1, MPIU_INT, 0, comm);PYLITH_CHECK_ERROR(err);
+  err = MPI_Bcast(&spaceDim, 1, MPIU_INT, 0, comm);PYLITH_CHECK_ERROR(err);
   for (coff = 0; coff < bound; coff += numCorners) {
     err = DMPlexInvertCell(dim, numCorners, (int *) &cells[coff]);PYLITH_CHECK_ERROR(err);
   }

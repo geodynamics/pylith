@@ -67,7 +67,7 @@ public :
   void buildMesh(topology::Mesh* mesh,
 		 scalar_array* coordinates,
 		 const int numVertices,
-		 const int spaceDim,
+		 int spaceDim,
 		 const int_array& cells,
 		 const int numCells,
 		 const int numCorners,
