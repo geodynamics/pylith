@@ -2311,7 +2311,7 @@ For faults that have buried edges, splitting the mesh apart and inserting
  In PyLith v2.0.0 we have changed how the buried edges of the fault are managed.
  An additional group of fault nodes is specified (e.g., via a nodeset from
  CUBIT) that marks the buried edges of the fault.
- This allows the cohesive cell insertion algorithm to djust the topology
+ This allows the cohesive cell insertion algorithm to adjust the topology
  so that cohseive cells are inserted up to the buried edge of the fault
  but no additional degrees of freedom are added on the fault edge.
  This naturally forces slip to zero along the buried edges.
