@@ -77,6 +77,11 @@ name of the ParMetis/Metis partitioner was changed from "parmetis" to
   [pylithapp.mesh_generator]
   distributor.partitioner = metis
 
+Buried edges of faults are handled differently in v2.0. A separate
+nodeset/pset should be created and contain the vertices on the buried
+edges of the fault. See the Section 6.4.2 of the PyLith manual for
+more information.
+
 ----------------------------------------------------------------------
 Version 2.0.0
 ----------------------------------------------------------------------
@@ -90,6 +95,15 @@ Version 2.0.0
   the rest of PETSc. Additionally, this rewrite of the data structures
   results in a more efficient memory layout, resulting in better
   performance.
+
+* Improved treatment of buried fault edges, so that the slip naturally
+  tapers to zero along the buried edges.
+
+  An additional nodeset/pset is used to designate the buried edges of
+  a fault. This allows the cohesive cells to be inserted up to the
+  edge of the fault without splitting the mesh at the fault edge. The
+  slip will naturally taper to zero at along the buried edges as a
+  result of how the cohesive cells are created.
 
 * Switched from using Subversion to Git for version control.
 
