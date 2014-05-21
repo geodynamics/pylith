@@ -2248,12 +2248,15 @@ t mesh, additional degrees of freedom are added along with adjustment of
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:fault:cohesive:quad4"
+reference "fig:fault:cohesive:cells"
 
 \end_inset
 
- illustrates the results of inserting a cohesive cell in a mesh consisting
- of two quadrilateral cells.
+ illustrates the results of inserting cohesive cells in a mesh consisting
+ of triangular cells.
+ This example also shows the distinction between how buried fault edges
+ are handled differently than fault edges that reach the edge of the domain,
+ such as the ground surface.
 \end_layout
 
 \begin_layout Standard
@@ -2268,7 +2271,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/quad4cohesivekin.pdf
+	filename figs/cohesivecell.pdf
 
 \end_inset
 
@@ -2279,13 +2282,12 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Example of cohesive cell inserted into a mesh of two quadrilateral cells.
- The zero thickness cohesive cell (shown with dashed lines) controls slip
- on the fault via the relative motion between vertices 3 and 7 and 2 and
- 6.
+Example of cohesive cells inserted into a mesh of triangular cells.
+ The zero thickness cohesive cells control slip on the fault via the relative
+ motion between the vertices on the positive and negative sides of the fault.
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:fault:cohesive:quad4"
+name "fig:fault:cohesive:cells"
 
 \end_inset
 
@@ -2300,6 +2302,19 @@ name "fig:fault:cohesive:quad4"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+For faults that have buried edges, splitting the mesh apart and inserting
+ the cohesive cells becomes complex at the buried edges due to the ambiguity
+ of defining where the fault ends and how to insert the cohesive cell.
+ In PyLith v2.0.0 we have changed how the buried edges of the fault are managed.
+ An additional group of fault nodes is specified (e.g., via a nodeset from
+ CUBIT) that marks the buried edges of the fault.
+ This allows the cohesive cell insertion algorithm to djust the topology
+ so that cohseive cells are inserted up to the buried edge of the fault
+ but no additional degrees of freedom are added on the fault edge.
+ This naturally forces slip to zero along the buried edges.
 \end_layout
 
 \begin_layout Subsection
@@ -2322,9 +2337,12 @@ material-id
 \end_layout
 
 \begin_layout Description
-name Name or label for the fault.
- This associates sets of vertices with the fault surface in addition to
- being used in error and diagnostic reports.
+label Name of group of vertices associated with the fault surface.
+ This label is also used in error and diagnostic reports.
+\end_layout
+
+\begin_layout Description
+edge Name of group of vertices marking the buried edges of the fault.
 \end_layout
 
 \begin_layout Description
@@ -2409,7 +2427,11 @@ fault = pylith.faults.FaultCohesiveKin ; default
 \begin_inset Newline newline
 \end_inset
 
-label = fault A ; Group of vertices defining the fault surface
+label = fault_A ; Group of vertices defining the fault surface
+\end_layout
+
+\begin_layout LyX-Code
+edge = fault_edge ; Group of vertices defining the buried edges
 \end_layout
 
 \begin_layout LyX-Code
@@ -2474,7 +2496,7 @@ In conventional implementations the additional degrees of freedom associated
  as shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:fault:cohesive:quad4"
+reference "fig:fault:cohesive:cells"
 
 \end_inset
 

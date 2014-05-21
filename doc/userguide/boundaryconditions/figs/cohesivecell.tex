@@ -1,0 +1,361 @@
+\documentclass{standalone}
+\usepackage[none]{hyphenat}
+\usepackage{helvet}
+\renewcommand{\familydefault}{phv}
+
+\makeatletter
+\renewcommand{\large}{\@setfontsize\large{10}{9}}
+\renewcommand{\normalsize}{\@setfontsize\normalsize{8}{9.5}}
+\makeatother
+
+\usepackage{tikz}
+
+\begin{document}
+\pagestyle{empty}
+
+\input{figcolors}
+\pgfdeclarelayer{background}
+\pgfsetlayers{background,main}
+
+
+\begin{tikzpicture}[>=latex,line width=0.75pt]
+
+\usetikzlibrary{shapes,calc}%
+
+\colorlet{colpositive}{red}
+\colorlet{colnegative}{blue}
+\colorlet{collagrange}{orange}
+\colorlet{coledge}{ltgreen}
+\colorlet{colother}{dkslate}
+
+\tikzstyle{title}=[text width=37mm,font=\bfseries\large]
+
+\tikzstyle{vertex}=[circle,color=colother,fill=colother,inner sep=1.5pt]
+\tikzstyle{vertexe}=[circle,color=coledge,fill=coledge,inner sep=1.5pt]
+\tikzstyle{vertexp}=[circle,color=colpositive,fill=colpositive,inner sep=1.5pt]
+\tikzstyle{vertexn}=[circle,color=colnegative,fill=colnegative,inner sep=1.5pt]
+\tikzstyle{vertexl}=[circle,color=collagrange,fill=collagrange,inner sep=1.5pt]
+\tikzstyle{edgel}=[color=collagrange,line width=1.0pt]
+
+\tikzstyle{fsurfp}=[color=colpositive,line width=1.5pt]
+\tikzstyle{fsurfn}=[color=colnegative,line width=1.5pt]
+
+\tikzstyle{cell}=[color=black,line width=0.5pt]
+\tikzstyle{cellp}=[fill=colpositive!30]
+\tikzstyle{celln}=[fill=colnegative!30]
+
+\tikzstyle{classify}=[font=\bfseries\large]
+
+% Reference points
+\coordinate (o1) at (-60mm,0mm);
+\coordinate (o2) at (-20mm,0mm);
+\coordinate (o3) at (+20mm,0mm);
+\coordinate (o4) at (+60mm,0mm);
+
+
+% ----------------------------------------------------------------------
+% Original mesh
+
+\node[title] at ($ (o1)+(0,40mm) $) {(a) Original mesh};
+
+% Vertices
+\node[vertexn] (v1) at ($ (o1)+(0mm,+30mm) $) {};
+\node[vertexn] (v2) at ($ (o1)+(0mm,+10mm) $) {};
+\node[vertexn] (v3) at ($ (o1)+(0mm,-10mm) $) {};
+\node[vertexe] (v4) at ($ (o1)+(0mm,-30mm) $) {};
+
+\node[vertex]  (v5) at ($ (o1)+(-11.25mm,0.0mm) $) {};
+\node[vertex]  (v6) at ($ (o1)+(+11.25mm,0.0mm) $) {};
+
+\node[vertex]  (v7) at ($ (o1)+(-11.25mm,+20.0mm) $) {};
+\node[vertex]  (v8) at ($ (o1)+(+11.25mm,+20.0mm) $) {};
+\node[vertex]  (v9) at ($ (o1)+(-11.25mm,-20.0mm) $) {};
+\node[vertex] (v10) at ($ (o1)+(+11.25mm,-20.0mm) $) {};
+
+\node[vertex] (v11) at ($ (o1)+(-11.25mm,+30.0mm) $) {};
+\node[vertex] (v12) at ($ (o1)+(+11.25mm,+30.0mm) $) {};
+\node[vertex] (v13) at ($ (o1)+(-7.5mm,-40.0mm) $) {};
+\node[vertex] (v14) at ($ (o1)+(+7.5mm,-40.0mm) $) {};
+
+% Cells
+\draw[cell]  (v1) -- (v11) --  (v7) -- (v1);
+\draw[cell]  (v1) --  (v7) --  (v2) -- (v1);
+\draw[cell]  (v2) --  (v7) --  (v5) -- (v2);
+\draw[cell]  (v2) --  (v5) --  (v3) -- (v2);
+\draw[cell]  (v3) --  (v5) --  (v9) -- (v3);
+\draw[cell]  (v3) --  (v9) --  (v4) -- (v3);
+\draw[cell]  (v4) --  (v9) -- (v13) -- (v4);
+\draw[cell]  (v4) -- (v13) -- (v14) -- (v4);
+\draw[cell]  (v4) -- (v14) -- (v10) -- (v4);
+\draw[cell]  (v3) --  (v4) -- (v10) -- (v3);
+\draw[cell]  (v3) -- (v10) --  (v6) -- (v3);
+\draw[cell]  (v3) --  (v6) --  (v2) -- (v3);
+\draw[cell]  (v2) --  (v6) --  (v8) -- (v2);
+\draw[cell]  (v1) --  (v2) --  (v8) -- (v1);
+\draw[cell]  (v1) --  (v8) -- (v12) -- (v1);
+
+\draw[fsurfn] (v1) -- (v2) -- (v3) -- (v4);
+
+\node(tlabel) [color=colnegative] at ($ (o1)+(-19mm,+15mm) $) {fault vertex};
+\path[color=colnegative,->] (tlabel) edge [bend right] (v2);
+
+\node(tlabel) [color=coledge] at ($ (o1)+(-10mm,-45mm) $) {fault edge vertex};
+\path[color=coledge,->] (tlabel) edge [bend right] (v4);
+
+\coordinate[color=black,label=right:{$\mathbf{n}$}] (nlabel) at ($ (o1)+(5mm,0mm) $);
+\path[color=black,->] ($ (o1) $) edge (nlabel);
+
+% ----------------------------------------------------------------------
+% Add vertices, create cohesive cell
+
+\node[title] at ($ (o2)+(0,40mm) $) {(b) Add colocated vertices};
+
+% Vertices
+\node[vertexe] (v4) at ($ (o2)+(0mm,-30mm) $) {};
+
+\node[vertexn] (v1) at ($ (o2)+(-1.5mm,+30mm) $) {};
+\node[vertexn] (v2) at ($ (o2)+(-1.5mm,+10mm) $) {};
+\node[vertexn] (v3) at ($ (o2)+(-1.5mm,-10mm) $) {};
+
+\node[vertexp] (v5) at ($ (o2)+(+1.5mm,+30mm) $) {};
+\node[vertexp] (v6) at ($ (o2)+(+1.5mm,+10mm) $) {};
+\node[vertexp] (v7) at ($ (o2)+(+1.5mm,-10mm) $) {};
+
+
+% surface and edges
+\draw[fsurfn] (v1) -- (v2) -- (v3) -- (v4);
+\draw[fsurfp] (v5) -- (v6) -- (v7) -- (v4);
+\draw[edgel] (v1) -- (v5);
+\draw[edgel] (v2) -- (v6);
+\draw[edgel] (v3) -- (v7);
+
+% Fault surface labels
+\node(tlabel) [color=colnegative] at ($ (o2)+(-10mm,+20mm) $) {$S_{f-}$};
+\path [color=colnegative,->] (tlabel.south) edge [bend right] ($ (o2)+(-2mm,+7.5mm) $);
+
+\node(tlabel) [color=colpositive] at ($ (o2)+(+10mm,+20mm) $) {$S_{f+}$};
+\path [color=colpositive,->] (tlabel.south) edge [bend left] ($ (o2)+(+2mm,+7.5mm) $);
+
+
+% Fault vertex labels
+\node(tlabel) [text width=25mm,align=right,color=colnegative] at ($ (o2)+(-17mm,-30mm) $) {Original fault vertex (negative side)};
+\path [color=colnegative,->] (tlabel.north east) edge [bend right] (v3);
+
+\node(tlabel) [text width=25mm,align=right,color=collagrange] at ($ (o2)+(-12mm,-40mm) $) {Add Lagrange multiplier edge};
+\path [color=collagrange,->] (tlabel.north east) edge [bend right] ($ (o2)+(0mm,-10mm) $);
+
+\node(tlabel) [text width=25mm,align=right,color=colpositive] at ($(o2)+(-7mm,-50mm) $) {Add vertex on positive side};
+\path [color=colpositive,->] (tlabel.north east) edge [bend right] (v7);
+
+
+
+% ----------------------------------------------------------------------
+% Update cells with faces on fault
+
+\node[title] at ($ (o3)+(0,40mm) $) {(c) Update cells with fault faces};
+
+\coordinate  (p1) at ($ (o3)+(0mm,+30mm)-(1.5mm,0mm) $);
+\coordinate  (p2) at ($ (o3)+(0mm,+30mm)+(1.5mm,0mm) $);
+
+\coordinate  (p3) at ($ (o3)+(0mm,+10mm)-(1.5mm,0mm) $);
+\coordinate  (p4) at ($ (o3)+(0mm,+10mm)+(1.5mm,0mm) $);
+
+\coordinate  (p5) at ($ (o3)+(0mm,-10mm)-(1.5mm,0mm) $);
+\coordinate  (p6) at ($ (o3)+(0mm,-10mm)+(1.5mm,0mm) $);
+
+\coordinate  (p7) at ($ (o3)+(0mm,-30mm) $);
+
+\coordinate  (p8) at ($ (o3)+(-11.25mm,+20.0mm) $);
+\coordinate  (p9) at ($ (o3)+(+11.25mm,+20.0mm) $);
+\coordinate (p10) at ($ (o3)+(-11.25mm, +0.0mm) $);
+\coordinate (p11) at ($ (o3)+(+11.25mm, +0.0mm) $);
+\coordinate (p12) at ($ (o3)+(-11.25mm,-20.0mm) $);
+\coordinate (p13) at ($ (o3)+(+11.25mm,-20.0mm) $);
+
+
+% Vertices
+\node[vertexe] (v7) at  (p7) {};
+
+\node[vertexn] (v1) at  (p1) {};
+\node[vertexn] (v3) at  (p3) {};
+\node[vertexn] (v5) at  (p5) {};
+
+\node[vertexp] (v2) at  (p2) {};
+\node[vertexp] (v4) at  (p4) {};
+\node[vertexp] (v6) at  (p6) {};
+
+\node[vertex]  (v8) at  (p8) {};
+\node[vertex]  (v9) at  (p9) {};
+\node[vertex] (v10) at (p10) {};
+\node[vertex] (v11) at (p11) {};
+\node[vertex] (v12) at (p12) {};
+\node[vertex] (v13) at (p13) {};
+
+% surface and edges
+\draw[fsurfp] (v2) -- (v4) -- (v6) -- (v7);
+\draw[fsurfn] (v1) -- (v3) -- (v5) -- (v7);
+\draw[edgel] (v1) -- (v2);
+\draw[edgel] (v3) -- (v4);
+\draw[edgel] (v5) -- (v6);
+
+
+\begin{pgfonlayer}{background}
+% cells
+\fill[celln] (p1) -- (p8) -- (p3) -- cycle;
+\fill[celln] (p3) -- (p10) -- (p5) -- cycle;
+\fill[celln] (p5) -- (p12) -- (p7) -- cycle;
+
+\fill[cellp] (p2) -- (p4) -- (p9) -- cycle;
+\fill[cellp] (p4) -- (p6) -- (p11) -- cycle;
+\fill[cellp] (p6) -- (p7) -- (p13) -- cycle;
+
+\draw[cell]  (v1) -- (v8) --  (v3) -- (v1);
+\draw[cell]  (v3) -- (v10) --  (v5) -- (v3);
+\draw[cell]  (v5) -- (v12) --  (v7) -- (v5);
+
+\draw[cell]  (v2) -- (v4) --  (v9) -- (v2);
+\draw[cell]  (v4) -- (v6) --  (v11) -- (v4);
+\draw[cell]  (v6) -- (v7) --  (v13) -- (v6);
+
+\end{pgfonlayer}
+
+\node[classify] at ($ 1/3*(p1)+1/3*(p8)+1/3*(p3) $) {-};
+\node[classify] at ($ 1/3*(p3)+1/3*(p10)+1/3*(p5) $) {-};
+\node[classify] at ($ 1/3*(p5)+1/3*(p12)+1/3*(p7) $) {-};
+
+\node[classify] at ($ 1/3*(p2)+1/3*(p4)+1/3*(p9) $) {+};
+\node[classify] at ($ 1/3*(p4)+1/3*(p6)+1/3*(p11) $) {+};
+\node[classify] at ($ 1/3*(p6)+1/3*(p7)+1/3*(p13) $) {+};
+
+% Fault vertex labels
+\node(tlabel) [text width=12mm,color=colnegative] at ($ (o3)+(-12mm,-40mm) $) {Cell on negative side};
+\path [color=colnegative,->] (tlabel.north) edge [bend left] ($ (v7)+(-5mm,+5mm) $);
+
+\node(tlabel) [text width=12mm,color=colpositive] at ($ (o3)+(+12mm,-40mm) $) {Cell on positive side};
+\path [color=colpositive,->] (tlabel.north) edge [bend right] ($ (v7)+(+5mm,+5mm) $);
+
+
+% ----------------------------------------------------------------------
+% Classify cells and update other cells
+
+\node[title] at ($ (o4)+(0,40mm) $) {(d) Classify cells and update remaining cells};
+
+\coordinate  (p1) at ($ (o4)+(0mm,+30mm)-(1.5mm,0mm) $);
+\coordinate  (p2) at ($ (o4)+(0mm,+30mm)+(1.5mm,0mm) $);
+
+\coordinate  (p3) at ($ (o4)+(0mm,+10mm)-(1.5mm,0mm) $);
+\coordinate  (p4) at ($ (o4)+(0mm,+10mm)+(1.5mm,0mm) $);
+
+\coordinate  (p5) at ($ (o4)+(0mm,-10mm)-(1.5mm,0mm) $);
+\coordinate  (p6) at ($ (o4)+(0mm,-10mm)+(1.5mm,0mm) $);
+
+\coordinate  (p7) at ($ (o4)+(0mm,-30mm) $);
+
+\coordinate  (p8) at ($ (o4)+(-11.25mm,+20.0mm) $);
+\coordinate  (p9) at ($ (o4)+(+11.25mm,+20.0mm) $);
+\coordinate (p10) at ($ (o4)+(-11.25mm, +0.0mm) $);
+\coordinate (p11) at ($ (o4)+(+11.25mm, +0.0mm) $);
+\coordinate (p12) at ($ (o4)+(-11.25mm,-20.0mm) $);
+\coordinate (p13) at ($ (o4)+(+11.25mm,-20.0mm) $);
+
+\coordinate (p14) at ($ (o4)+(-11.25mm,+30.0mm) $);
+\coordinate (p15) at ($ (o4)+(+11.25mm,+30.0mm) $);
+
+\coordinate (p16) at ($ (o4)+(-7.5mm,-40.0mm) $);
+\coordinate (p17) at ($ (o4)+(+7.5mm,-40.0mm) $);
+
+
+% Vertices
+\node[vertexe] (v7) at  (p7) {};
+
+\node[vertexn] (v1) at  (p1) {};
+\node[vertexn] (v3) at  (p3) {};
+\node[vertexn] (v5) at  (p5) {};
+
+\node[vertexp] (v2) at  (p2) {};
+\node[vertexp] (v4) at  (p4) {};
+\node[vertexp] (v6) at  (p6) {};
+
+\node[vertex]  (v8) at  (p8) {};
+\node[vertex]  (v9) at  (p9) {};
+\node[vertex] (v10) at (p10) {};
+\node[vertex] (v11) at (p11) {};
+\node[vertex] (v12) at (p12) {};
+\node[vertex] (v13) at (p13) {};
+
+\node[vertex] (v14) at (p14) {};
+\node[vertex] (v15) at (p15) {};
+\node[vertex] (v16) at (p16) {};
+\node[vertex] (v17) at (p17) {};
+
+% surface and edges
+\draw[fsurfp] (v2) -- (v4) -- (v6) -- (v7);
+\draw[fsurfn] (v1) -- (v3) -- (v5) -- (v7);
+\draw[edgel] (v1) -- (v2);
+\draw[edgel] (v3) -- (v4);
+\draw[edgel] (v5) -- (v6);
+
+
+\begin{pgfonlayer}{background}
+% cells
+\fill[celln] (p1) -- (p8) -- (p3) -- cycle;
+\fill[celln] (p3) -- (p10) -- (p5) -- cycle;
+\fill[celln] (p5) -- (p12) -- (p7) -- cycle;
+
+\fill[celln] (p1) -- (p14) -- (p8) -- cycle;
+\fill[celln] (p3) -- (p8) -- (p10) -- cycle;
+\fill[celln] (p5) -- (p10) -- (p12) -- cycle;
+
+\fill[cellp] (p2) -- (p4) -- (p9) -- cycle;
+\fill[cellp] (p4) -- (p6) -- (p11) -- cycle;
+\fill[cellp] (p6) -- (p7) -- (p13) -- cycle;
+
+\fill[cellp] (p2) -- (p9) -- (p15) -- cycle;
+\fill[cellp] (p4) -- (p11) -- (p9) -- cycle;
+\fill[cellp] (p6) -- (p13) -- (p11) -- cycle;
+
+% negative
+\draw[cell]  (v1) -- (v8) --  (v3) -- (v1);
+\draw[cell]  (v3) -- (v10) --  (v5) -- (v3);
+\draw[cell]  (v5) -- (v12) --  (v7) -- (v5);
+
+\draw[cell]  (v1) -- (v14) --  (v8) -- (v1);
+\draw[cell]  (v3) -- (v8) --  (v10) -- (v3);
+\draw[cell]  (v5) -- (v10) --  (v12) -- (v5);
+
+% positive
+\draw[cell]  (p7) -- (v12) --  (v16) -- (v7);
+\draw[cell]  (v2) -- (v4) --  (v9) -- (v2);
+\draw[cell]  (v4) -- (v6) --  (v11) -- (v4);
+
+\draw[cell]  (v2) -- (v9) --  (v15) -- (v2);
+\draw[cell]  (v4) -- (v11) --  (v9) -- (v4);
+\draw[cell]  (v6) -- (v13) --  (v11) -- (v6);
+
+% unclassified
+\draw[cell]  (v6) -- (v7) --  (v13) -- (v6);
+\draw[cell]  (v7) -- (v17) --  (v13) -- (v7);
+\draw[cell]  (v7) -- (v16) --  (v17) -- (v7);
+
+\end{pgfonlayer}
+
+\node[classify] at ($ 1/3*(p1)+1/3*(p8)+1/3*(p3) $) {-};
+\node[classify] at ($ 1/3*(p3)+1/3*(p10)+1/3*(p5) $) {-};
+\node[classify] at ($ 1/3*(p5)+1/3*(p12)+1/3*(p7) $) {-};
+
+\node[classify] at ($ 1/3*(p1)+1/3*(p14)+1/3*(p8) $) {-};
+\node[classify] at ($ 1/3*(p3)+1/3*(p8)+1/3*(p10) $) {-};
+\node[classify] at ($ 1/3*(p5)+1/3*(p10)+1/3*(p12) $) {-};
+
+\node[classify] at ($ 1/3*(p2)+1/3*(p4)+1/3*(p9) $) {+};
+\node[classify] at ($ 1/3*(p4)+1/3*(p6)+1/3*(p11) $) {+};
+\node[classify] at ($ 1/3*(p6)+1/3*(p7)+1/3*(p13) $) {+};
+
+\node[classify] at ($ 1/3*(p2)+1/3*(p9)+1/3*(p15) $) {+};
+\node[classify] at ($ 1/3*(p4)+1/3*(p11)+1/3*(p9) $) {+};
+\node[classify] at ($ 1/3*(p6)+1/3*(p13)+1/3*(p11) $) {+};
+
+
+
+\end{tikzpicture}
+\end{document}
