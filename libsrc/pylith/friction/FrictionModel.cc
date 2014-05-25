@@ -28,6 +28,7 @@
 #include "pylith/topology/VisitorMesh.hh" // USES VisitorMesh
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/utils/array.hh" // USES scalar_array, std::vector
+#include "pylith/faults/FaultCohesiveLagrange.hh" // USES isClampedVertex()
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -194,7 +195,14 @@ pylith::friction::FrictionModel::initialize(const topology::Mesh& faultMesh,
     _dbInitialState->queryVals(_metadata.dbStateVars(),
 			       _metadata.numDBStateVars());
     
+    PetscDMLabel clamped = NULL;
+    PetscErrorCode err = DMPlexGetLabel(faultDMMesh, "clamped", &clamped);PYLITH_CHECK_ERROR(err);
+
     for(PetscInt v = vStart; v < vEnd; ++v) {
+      if (faults::FaultCohesiveLagrange::isClampedVertex(clamped, v)) {
+	continue;
+      } // if
+
       const PetscInt coff = coordsVisitor.sectionOffset(v);
       assert(spaceDim == coordsVisitor.sectionDof(v));
       for (PetscInt d = 0; d < spaceDim; ++d) {
@@ -225,6 +233,7 @@ pylith::friction::FrictionModel::initialize(const topology::Mesh& faultMesh,
 	PetscScalar* stateVarArray = stateVarVisitor.localArray();
 	const PetscInt off = stateVarVisitor.sectionOffset(v);
 	const PetscInt dof = stateVarVisitor.sectionDof(v);
+	std::cout << "v: " << v << ", dof: " << dof << ", stateVarsVetex: " << stateVarsVertex.size() << std::endl;
 	assert(stateVarsVertex.size() == dof);
         for(PetscInt d = 0; d < dof; ++d, ++iOff) {
           stateVarArray[off+d] += stateVarsVertex[iOff];

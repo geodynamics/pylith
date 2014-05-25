@@ -1898,12 +1898,16 @@ pylith::faults::FaultCohesiveLagrange::_getJacobianSubmatrixNP(PetscMat* jacobia
   int numIndicesNP = 0;
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
+    if (e_lagrange < 0) { // Ignore clamped edges.
+      continue;
+    } // if
 
     // Compute contribution only if Lagrange constraint is local.
     PetscInt goff = 0;
     err = PetscSectionGetOffset(solutionGlobalSection, e_lagrange, &goff);PYLITH_CHECK_ERROR(err);
-    if (goff < 0)
+    if (goff < 0) {
       continue;
+    } // if
 
     numIndicesNP += 2;
   } // for
@@ -1913,6 +1917,10 @@ pylith::faults::FaultCohesiveLagrange::_getJacobianSubmatrixNP(PetscMat* jacobia
     const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
+
+    if (e_lagrange < 0) { // Ignore clamped edges.
+      continue;
+    } // if
 
     // Compute contribution only if Lagrange constraint is local.
     PetscInt gloff = 0;
