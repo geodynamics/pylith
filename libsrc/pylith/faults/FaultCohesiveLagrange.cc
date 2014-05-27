@@ -437,42 +437,37 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(topology::Jacobian* jac
       jacobianVertex[iDim*spaceDim+iDim] = areaArray[aoff];
 
     // Values at positive vertex, entry L,P in Jacobian
-    MatSetValues(jacobianMatrix,
-                 indicesL.size(), &indicesL[0],
-                 indicesP.size(), &indicesP[0],
-                 &jacobianVertex[0],
-                 ADD_VALUES);
+    err = MatSetValues(jacobianMatrix, 
+		       indicesL.size(), &indicesL[0], 
+		       indicesP.size(), &indicesP[0], 
+		       &jacobianVertex[0], ADD_VALUES);PYLITH_CHECK_ERROR(err);
 
     // Values at positive vertex, entry P,L in Jacobian
-    MatSetValues(jacobianMatrix,
-                 indicesP.size(), &indicesP[0],
-                 indicesL.size(), &indicesL[0],
-                 &jacobianVertex[0],
-                 ADD_VALUES);
-
+    err = MatSetValues(jacobianMatrix, 
+		       indicesP.size(), &indicesP[0], 
+		       indicesL.size(), &indicesL[0], 
+		       &jacobianVertex[0], ADD_VALUES);PYLITH_CHECK_ERROR(err);
+    
     // Values at negative vertex, entry L,N in Jacobian
     jacobianVertex *= -1.0;
-    MatSetValues(jacobianMatrix,
-                 indicesL.size(), &indicesL[0],
-                 indicesN.size(), &indicesN[0],
-                 &jacobianVertex[0],
-                 ADD_VALUES);
+    err = MatSetValues(jacobianMatrix,
+		       indicesL.size(), &indicesL[0],
+		       indicesN.size(), &indicesN[0],
+		       &jacobianVertex[0], ADD_VALUES);PYLITH_CHECK_ERROR(err);
 
     // Values at negative vertex, entry N,L in Jacobian
-    MatSetValues(jacobianMatrix,
-                 indicesN.size(), &indicesN[0],
-                 indicesL.size(), &indicesL[0],
-                 &jacobianVertex[0],
-                 ADD_VALUES);
+    err = MatSetValues(jacobianMatrix,
+		       indicesN.size(), &indicesN[0],
+		       indicesL.size(), &indicesL[0],
+		       &jacobianVertex[0], ADD_VALUES);PYLITH_CHECK_ERROR(err);
 
     // Values at Lagrange vertex, entry L,L in Jacobian
     // We must have entries on the diagonal.
     jacobianVertex = 0.0;
-    MatSetValues(jacobianMatrix,
-                 indicesL.size(), &indicesL[0],
-                 indicesL.size(), &indicesL[0],
-                 &jacobianVertex[0],
-                 ADD_VALUES);
+    err = MatSetValues(jacobianMatrix,
+		       indicesL.size(), &indicesL[0],
+		       indicesL.size(), &indicesL[0],
+		       &jacobianVertex[0], ADD_VALUES);PYLITH_CHECK_ERROR(err);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
@@ -679,14 +674,14 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
     indicesN = indicesRel + indicesMatToSubmat[gnoff];
     err = MatGetValues(jacobianNP,
                        indicesN.size(), &indicesN[0], indicesN.size(), &indicesN[0],
-                       &jacobianVertexN[0]); PYLITH_CHECK_ERROR(err);
+                       &jacobianVertexN[0]);PYLITH_CHECK_ERROR(err);
 
     PetscInt gpoff = 0;
     err = PetscSectionGetOffset(solnGlobalSection, v_positive, &gpoff);PYLITH_CHECK_ERROR(err);
     indicesP = indicesRel + indicesMatToSubmat[gpoff];
     err = MatGetValues(jacobianNP,
                        indicesP.size(), &indicesP[0], indicesP.size(), &indicesP[0],
-                       &jacobianVertexP[0]); PYLITH_CHECK_ERROR(err);
+                       &jacobianVertexP[0]);PYLITH_CHECK_ERROR(err);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -719,7 +714,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
     err = PetscSectionGetOffset(dispGlobalSection, v_fault, &poff);PYLITH_CHECK_ERROR(err);
 
     for (int iDim=0; iDim < spaceDim; ++iDim) {
-      MatSetValue(*precondMatrix, poff+iDim, poff+iDim, precondVertexL[iDim], INSERT_VALUES);
+      err = MatSetValue(*precondMatrix, poff+iDim, poff+iDim, precondVertexL[iDim], INSERT_VALUES);PYLITH_CHECK_ERROR(err);
     } // for
 
 #if 0 // DEBUGGING
