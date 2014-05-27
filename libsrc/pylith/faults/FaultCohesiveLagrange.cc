@@ -649,7 +649,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
   _getJacobianSubmatrixNP(&jacobianNP, &indicesMatToSubmat, *jacobian, *fields);
   
   const int numVertices = _cohesiveVertices.size();
-  for (int iVertex=0, cV = 0; iVertex < numVertices; ++iVertex) {
+  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
     const int v_negative = _cohesiveVertices[iVertex].negative;
@@ -718,15 +718,12 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
     PetscInt poff = 0;
     err = PetscSectionGetOffset(dispGlobalSection, v_fault, &poff);PYLITH_CHECK_ERROR(err);
 
-    for (int iDim=0; iDim < spaceDim; ++iDim)
-      MatSetValue(*precondMatrix,
-		  poff + iDim,
-		  poff + iDim,
-		  precondVertexL[iDim],
-		  INSERT_VALUES);
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      MatSetValue(*precondMatrix, poff+iDim, poff+iDim, precondVertexL[iDim], INSERT_VALUES);
+    } // for
 
 #if 0 // DEBUGGING
-    std::cout << "1/P_vertex " << *e_lagrange << std::endl;
+    std::cout << "1/P_vertex " << e_lagrange << std::endl;
     for(int iDim = 0; iDim < spaceDim; ++iDim) {
       std::cout << "  " << precondVertexL[iDim] << std::endl;
     } // for
@@ -1898,12 +1895,16 @@ pylith::faults::FaultCohesiveLagrange::_getJacobianSubmatrixNP(PetscMat* jacobia
   int numIndicesNP = 0;
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
+    if (e_lagrange < 0) { // Ignore clamped edges.
+      continue;
+    } // if
 
     // Compute contribution only if Lagrange constraint is local.
     PetscInt goff = 0;
     err = PetscSectionGetOffset(solutionGlobalSection, e_lagrange, &goff);PYLITH_CHECK_ERROR(err);
-    if (goff < 0)
+    if (goff < 0) {
       continue;
+    } // if
 
     numIndicesNP += 2;
   } // for
@@ -1913,6 +1914,10 @@ pylith::faults::FaultCohesiveLagrange::_getJacobianSubmatrixNP(PetscMat* jacobia
     const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
+
+    if (e_lagrange < 0) { // Ignore clamped edges.
+      continue;
+    } // if
 
     // Compute contribution only if Lagrange constraint is local.
     PetscInt gloff = 0;
