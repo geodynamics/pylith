@@ -107,6 +107,9 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
   // Optimize coordinate retrieval in closure
   PetscDM faultDMMesh = _faultMesh->dmMesh();assert(faultDMMesh);
   topology::CoordsVisitor::optimizeClosure(faultDMMesh);
+  topology::SubMeshIS faultMeshIS(*_faultMesh);
+  const PetscInt numPoints = faultMeshIS.size();
+  const PetscInt* points = faultMeshIS.points();
 
   _initializeCohesiveInfo(mesh);
 
@@ -116,7 +119,51 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
   _fields->add("relative disp", "relative_disp");
   topology::Field& dispRel = _fields->get("relative disp");
   dispRel.newSection(topology::FieldBase::VERTICES_FIELD, cs->spaceDim()); // :TODO: Update?
+  if (edge()) {
+    PetscDMLabel    label;
+    PetscIS         vertexIS;
+    const PetscInt *vertices;
+    PetscInt        n, i;
+    PetscErrorCode  err;
+
+    err = DMPlexGetLabel(mesh.dmMesh(), edge(), &label);PYLITH_CHECK_ERROR(err);
+    err = DMLabelGetStratumIS(label, 1, &vertexIS);PYLITH_CHECK_ERROR(err);
+    err = ISGetLocalSize(vertexIS, &n);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(vertexIS, &vertices);PYLITH_CHECK_ERROR(err);
+    for (i = 0; i < n; ++i) {
+      PetscInt v_fault;
+
+      err = PetscFindInt(vertices[i], numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
+      err = PetscSectionSetConstraintDof(dispRel.petscSection(), v_fault, cs->spaceDim());PYLITH_CHECK_ERROR(err);
+    }
+    err = ISRestoreIndices(vertexIS, &vertices);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&vertexIS);PYLITH_CHECK_ERROR(err);
+  }
   dispRel.allocate();
+  if (edge()) {
+    PetscDMLabel    label;
+    PetscIS         vertexIS;
+    const PetscInt *vertices;
+    PetscInt       *ind, n, i;
+    PetscErrorCode  err;
+
+    PetscMalloc1(cs->spaceDim(),&ind);
+    for (i = 0; i < cs->spaceDim(); ++i) ind[i] = i;
+
+    err = DMPlexGetLabel(mesh.dmMesh(), edge(), &label);PYLITH_CHECK_ERROR(err);
+    err = DMLabelGetStratumIS(label, 1, &vertexIS);PYLITH_CHECK_ERROR(err);
+    err = ISGetLocalSize(vertexIS, &n);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(vertexIS, &vertices);PYLITH_CHECK_ERROR(err);
+    for (i = 0; i < n; ++i) {
+      PetscInt v_fault;
+
+      err = PetscFindInt(vertices[i], numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
+      err = PetscSectionSetConstraintIndices(dispRel.petscSection(), points[i], ind);PYLITH_CHECK_ERROR(err);
+    }
+    err = ISRestoreIndices(vertexIS, &vertices);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&vertexIS);PYLITH_CHECK_ERROR(err);
+    err = PetscFree(ind);PYLITH_CHECK_ERROR(err);
+  }
   dispRel.vectorFieldType(topology::FieldBase::VECTOR);
   dispRel.scale(_normalizer->lengthScale());
 
