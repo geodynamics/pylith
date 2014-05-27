@@ -116,54 +116,57 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
   delete _fields; _fields = new topology::Fields(*_faultMesh);assert(_fields);
 
   // Allocate dispRel field
+  const int spaceDim = cs->spaceDim();
   _fields->add("relative disp", "relative_disp");
   topology::Field& dispRel = _fields->get("relative disp");
-  dispRel.newSection(topology::FieldBase::VERTICES_FIELD, cs->spaceDim()); // :TODO: Update?
-  if (edge()) {
-    PetscDMLabel    label;
-    PetscIS         vertexIS;
-    const PetscInt *vertices;
-    PetscInt        n, i;
-    PetscErrorCode  err;
+  dispRel.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim); // :TODO: Update?
+  if (strlen(edge()) > 0) {
+    PetscDMLabel label = NULL;
+    PetscIS vertexIS = NULL;
+    const PetscInt* vertices = NULL;
+    PetscInt numVertices;
+    PetscErrorCode err;
 
     err = DMPlexGetLabel(mesh.dmMesh(), edge(), &label);PYLITH_CHECK_ERROR(err);
     err = DMLabelGetStratumIS(label, 1, &vertexIS);PYLITH_CHECK_ERROR(err);
-    err = ISGetLocalSize(vertexIS, &n);PYLITH_CHECK_ERROR(err);
+    err = ISGetLocalSize(vertexIS, &numVertices);PYLITH_CHECK_ERROR(err);
     err = ISGetIndices(vertexIS, &vertices);PYLITH_CHECK_ERROR(err);
-    for (i = 0; i < n; ++i) {
+    for (int i = 0; i < numVertices; ++i) {
       PetscInt v_fault;
 
       err = PetscFindInt(vertices[i], numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
-      err = PetscSectionSetConstraintDof(dispRel.petscSection(), v_fault, cs->spaceDim());PYLITH_CHECK_ERROR(err);
-    }
+      err = PetscSectionSetConstraintDof(dispRel.petscSection(), v_fault, spaceDim);PYLITH_CHECK_ERROR(err);
+    } // for
     err = ISRestoreIndices(vertexIS, &vertices);PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&vertexIS);PYLITH_CHECK_ERROR(err);
   }
   dispRel.allocate();
-  if (edge()) {
-    PetscDMLabel    label;
-    PetscIS         vertexIS;
-    const PetscInt *vertices;
-    PetscInt       *ind, n, i;
-    PetscErrorCode  err;
+  if (strlen(edge()) > 0) {
+    PetscDMLabel label = NULL;
+    PetscIS vertexIS = NULL;
+    const PetscInt *vertices = NULL;
+    PetscInt numVertices;
+    PetscErrorCode err;
 
-    PetscMalloc1(cs->spaceDim(),&ind);
-    for (i = 0; i < cs->spaceDim(); ++i) ind[i] = i;
+    PetscInt* ind = (spaceDim > 0) ? new PetscInt[spaceDim] : 0;
+    for (int i = 0; i < spaceDim; ++i) { 
+      ind[i] = i;
+    } // for
 
     err = DMPlexGetLabel(mesh.dmMesh(), edge(), &label);PYLITH_CHECK_ERROR(err);
     err = DMLabelGetStratumIS(label, 1, &vertexIS);PYLITH_CHECK_ERROR(err);
-    err = ISGetLocalSize(vertexIS, &n);PYLITH_CHECK_ERROR(err);
+    err = ISGetLocalSize(vertexIS, &numVertices);PYLITH_CHECK_ERROR(err);
     err = ISGetIndices(vertexIS, &vertices);PYLITH_CHECK_ERROR(err);
-    for (i = 0; i < n; ++i) {
+    for (int i = 0; i < numVertices; ++i) {
       PetscInt v_fault;
 
       err = PetscFindInt(vertices[i], numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
-      err = PetscSectionSetConstraintIndices(dispRel.petscSection(), points[i], ind);PYLITH_CHECK_ERROR(err);
-    }
+      err = PetscSectionSetConstraintIndices(dispRel.petscSection(), v_fault, ind);PYLITH_CHECK_ERROR(err);
+    } // for
     err = ISRestoreIndices(vertexIS, &vertices);PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&vertexIS);PYLITH_CHECK_ERROR(err);
-    err = PetscFree(ind);PYLITH_CHECK_ERROR(err);
-  }
+    delete[] ind; ind = 0;
+  } // for
   dispRel.vectorFieldType(topology::FieldBase::VECTOR);
   dispRel.scale(_normalizer->lengthScale());
 
