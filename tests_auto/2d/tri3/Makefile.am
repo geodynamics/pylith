@@ -28,6 +28,7 @@ dist_noinst_PYTHON = \
 	TestShearDisp.py \
 	TestShearDispNoSlip.py \
 	TestShearDispNoSlipRefine.py \
+	TestShearDispFriction.py \
 	sheardisp_soln.py \
 	sheardisp_gendb.py \
 	TestSlipOneFault.py \
@@ -45,6 +46,7 @@ dist_noinst_DATA = \
 	sheardisp.cfg \
 	sheardispnoslip.cfg \
 	sheardispnosliprefine.cfg \
+	sheardispfriction.cfg \
 	sliponefault.cfg \
 	sliptwofaults.cfg
 

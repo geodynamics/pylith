@@ -862,6 +862,11 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
+    // Skip clamped vertices
+    if (e_lagrange < 0) {
+      continue;
+    } // if
+
     // Get change in Lagrange multiplier computed from friction criterion.
     const PetscInt soff = dLagrangeVisitor.sectionOffset(v_fault);
     assert(spaceDim == dLagrangeVisitor.sectionDof(v_fault));
@@ -1744,8 +1749,9 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
     PetscInt* closure = NULL;
     PetscInt closureSize, q = 0;
     err = DMPlexGetTransitiveClosure(dmMesh, cellsCohesive[c], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+
     // Filter out non-vertices
-    for(PetscInt p = 0; p < closureSize*2; p += 2) {
+    for (PetscInt p = 0; p < closureSize*2; p += 2) {
       if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
         closure[q] = closure[p];
         ++q;

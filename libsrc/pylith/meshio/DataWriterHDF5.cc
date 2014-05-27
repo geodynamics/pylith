@@ -33,8 +33,8 @@
 #include <stdexcept> // USES std::runtime_error
 
 extern "C" {
-extern PetscErrorCode VecView_Seq(Vec, PetscViewer);
-extern PetscErrorCode VecView_MPI(Vec, PetscViewer);
+  extern PetscErrorCode VecView_Seq(Vec, PetscViewer);
+  extern PetscErrorCode VecView_MPI(Vec, PetscViewer);
 }
 
 // ----------------------------------------------------------------------
