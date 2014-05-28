@@ -33,6 +33,9 @@ def suite():
   from TestShearDispNoSlip import TestShearDispNoSlip
   suite.addTest(unittest.makeSuite(TestShearDispNoSlip))
 
+  from TestShearDispFriction import TestShearDispFriction
+  suite.addTest(unittest.makeSuite(TestShearDispFriction))
+
   from TestShearDispNoSlipRefine import TestShearDispNoSlipRefine
   suite.addTest(unittest.makeSuite(TestShearDispNoSlipRefine))
 
