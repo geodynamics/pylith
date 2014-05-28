@@ -107,9 +107,6 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
   // Optimize coordinate retrieval in closure
   PetscDM faultDMMesh = _faultMesh->dmMesh();assert(faultDMMesh);
   topology::CoordsVisitor::optimizeClosure(faultDMMesh);
-  topology::SubMeshIS faultMeshIS(*_faultMesh);
-  const PetscInt numPoints = faultMeshIS.size();
-  const PetscInt* points = faultMeshIS.points();
 
   _initializeCohesiveInfo(mesh);
 
@@ -120,32 +117,44 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
   _fields->add("relative disp", "relative_disp");
   topology::Field& dispRel = _fields->get("relative disp");
   dispRel.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim); // :TODO: Update?
+
+  topology::SubMeshIS faultMeshIS(*_faultMesh);
+  const PetscInt numPoints = faultMeshIS.size();
+  const PetscInt* points = faultMeshIS.points();
+
+  topology::Stratum verticesStratum(faultDMMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
+
   if (strlen(edge()) > 0 && numPoints > 0) {
     PetscDMLabel label = NULL;
-    PetscIS vertexIS = NULL;
-    const PetscInt* vertices = NULL;
-    PetscInt numVertices;
+    PetscIS clampedIS = NULL;
+    const PetscInt* clampedPoints = NULL;
+    PetscInt numClampedPoints;
     PetscErrorCode err;
 
     err = DMPlexGetLabel(mesh.dmMesh(), edge(), &label);PYLITH_CHECK_ERROR(err);
-    err = DMLabelGetStratumIS(label, 1, &vertexIS);PYLITH_CHECK_ERROR(err);
-    err = ISGetLocalSize(vertexIS, &numVertices);PYLITH_CHECK_ERROR(err);
-    err = ISGetIndices(vertexIS, &vertices);PYLITH_CHECK_ERROR(err);
-    for (int i = 0; i < numVertices; ++i) {
+    err = DMLabelGetStratumIS(label, 1, &clampedIS);PYLITH_CHECK_ERROR(err);
+    err = ISGetLocalSize(clampedIS, &numClampedPoints);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(clampedIS, &clampedPoints);PYLITH_CHECK_ERROR(err);
+    for (int i = 0; i < numClampedPoints; ++i) {
+      if (clampedPoints[i] < vStart || clampedPoints[i] >= vEnd) { // skip non-vertices
+	continue;
+      } // if
       PetscInt v_fault;
 
-      err = PetscFindInt(vertices[i], numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
+      err = PetscFindInt(clampedPoints[i], numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
       err = PetscSectionSetConstraintDof(dispRel.petscSection(), v_fault, spaceDim);PYLITH_CHECK_ERROR(err);
     } // for
-    err = ISRestoreIndices(vertexIS, &vertices);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&vertexIS);PYLITH_CHECK_ERROR(err);
+    err = ISRestoreIndices(clampedIS, &clampedPoints);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&clampedIS);PYLITH_CHECK_ERROR(err);
   } // if
   dispRel.allocate();
   if (strlen(edge()) > 0 && numPoints > 0) {
     PetscDMLabel label = NULL;
-    PetscIS vertexIS = NULL;
-    const PetscInt *vertices = NULL;
-    PetscInt numVertices;
+    PetscIS clampedIS = NULL;
+    const PetscInt *clampedPoints = NULL;
+    PetscInt numClampedPoints;
     PetscErrorCode err;
 
     PetscInt* ind = (spaceDim > 0) ? new PetscInt[spaceDim] : 0;
@@ -154,17 +163,20 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
     } // for
 
     err = DMPlexGetLabel(mesh.dmMesh(), edge(), &label);PYLITH_CHECK_ERROR(err);
-    err = DMLabelGetStratumIS(label, 1, &vertexIS);PYLITH_CHECK_ERROR(err);
-    err = ISGetLocalSize(vertexIS, &numVertices);PYLITH_CHECK_ERROR(err);
-    err = ISGetIndices(vertexIS, &vertices);PYLITH_CHECK_ERROR(err);
-    for (int i = 0; i < numVertices; ++i) {
+    err = DMLabelGetStratumIS(label, 1, &clampedIS);PYLITH_CHECK_ERROR(err);
+    err = ISGetLocalSize(clampedIS, &numClampedPoints);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(clampedIS, &clampedPoints);PYLITH_CHECK_ERROR(err);
+    for (int i = 0; i < numClampedPoints; ++i) {
+      if (clampedPoints[i] < vStart || clampedPoints[i] >= vEnd) { // skip non-vertices
+	continue;
+      } // if
       PetscInt v_fault;
 
-      err = PetscFindInt(vertices[i], numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
+      err = PetscFindInt(clampedPoints[i], numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
       err = PetscSectionSetConstraintIndices(dispRel.petscSection(), v_fault, ind);PYLITH_CHECK_ERROR(err);
     } // for
-    err = ISRestoreIndices(vertexIS, &vertices);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&vertexIS);PYLITH_CHECK_ERROR(err);
+    err = ISRestoreIndices(clampedIS, &clampedPoints);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&clampedIS);PYLITH_CHECK_ERROR(err);
     delete[] ind; ind = 0;
   } // for
   dispRel.vectorFieldType(topology::FieldBase::VECTOR);
