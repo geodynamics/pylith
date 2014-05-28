@@ -120,7 +120,7 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
   _fields->add("relative disp", "relative_disp");
   topology::Field& dispRel = _fields->get("relative disp");
   dispRel.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim); // :TODO: Update?
-  if (strlen(edge()) > 0) {
+  if (strlen(edge()) > 0 && numPoints > 0) {
     PetscDMLabel label = NULL;
     PetscIS vertexIS = NULL;
     const PetscInt* vertices = NULL;
@@ -139,9 +139,9 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
     } // for
     err = ISRestoreIndices(vertexIS, &vertices);PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&vertexIS);PYLITH_CHECK_ERROR(err);
-  }
+  } // if
   dispRel.allocate();
-  if (strlen(edge()) > 0) {
+  if (strlen(edge()) > 0 && numPoints > 0) {
     PetscDMLabel label = NULL;
     PetscIS vertexIS = NULL;
     const PetscInt *vertices = NULL;
