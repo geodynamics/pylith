@@ -138,12 +138,12 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
     err = ISGetLocalSize(clampedIS, &numClampedPoints);PYLITH_CHECK_ERROR(err);
     err = ISGetIndices(clampedIS, &clampedPoints);PYLITH_CHECK_ERROR(err);
     for (int i = 0; i < numClampedPoints; ++i) {
-      if (clampedPoints[i] < vStart || clampedPoints[i] >= vEnd) { // skip non-vertices
+      PetscInt v_fault;
+      err = PetscFindInt(clampedPoints[i], numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
+      if (v_fault < vStart || v_fault >= vEnd) { // skip non-vertices
 	continue;
       } // if
-      PetscInt v_fault;
 
-      err = PetscFindInt(clampedPoints[i], numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
       err = PetscSectionSetConstraintDof(dispRel.petscSection(), v_fault, spaceDim);PYLITH_CHECK_ERROR(err);
     } // for
     err = ISRestoreIndices(clampedIS, &clampedPoints);PYLITH_CHECK_ERROR(err);
@@ -167,12 +167,12 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
     err = ISGetLocalSize(clampedIS, &numClampedPoints);PYLITH_CHECK_ERROR(err);
     err = ISGetIndices(clampedIS, &clampedPoints);PYLITH_CHECK_ERROR(err);
     for (int i = 0; i < numClampedPoints; ++i) {
-      if (clampedPoints[i] < vStart || clampedPoints[i] >= vEnd) { // skip non-vertices
+      PetscInt v_fault;
+      err = PetscFindInt(clampedPoints[i], numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
+      if (v_fault < vStart || v_fault >= vEnd) { // skip non-vertices
 	continue;
       } // if
-      PetscInt v_fault;
 
-      err = PetscFindInt(clampedPoints[i], numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
       err = PetscSectionSetConstraintIndices(dispRel.petscSection(), v_fault, ind);PYLITH_CHECK_ERROR(err);
     } // for
     err = ISRestoreIndices(clampedIS, &clampedPoints);PYLITH_CHECK_ERROR(err);
@@ -688,9 +688,9 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
   const PetscScalar* areaArray = areaVisitor.localArray();
 
   topology::Field& dispRel = _fields->get("relative disp");
-  PetscDM      dispDM = dispRel.dmMesh();
-  PetscSection dispGlobalSection = NULL;
-  PetscErrorCode err = DMGetDefaultGlobalSection(dispDM, &dispGlobalSection);PYLITH_CHECK_ERROR(err);
+  PetscDM dispRelDM = dispRel.dmMesh();
+  PetscSection dispRelGlobalSection = NULL;
+  PetscErrorCode err = DMGetDefaultGlobalSection(dispRelDM, &dispRelGlobalSection);PYLITH_CHECK_ERROR(err);
 
   PetscDM solnDM = fields->solution().dmMesh();
   PetscSection solnGlobalSection = NULL;
@@ -773,7 +773,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
 
     // Set diagonal entries in preconditioned matrix.
     PetscInt poff = 0;
-    err = PetscSectionGetOffset(dispGlobalSection, v_fault, &poff);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(dispRelGlobalSection, v_fault, &poff);PYLITH_CHECK_ERROR(err);
 
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       err = MatSetValue(*precondMatrix, poff+iDim, poff+iDim, precondVertexL[iDim], INSERT_VALUES);PYLITH_CHECK_ERROR(err);
