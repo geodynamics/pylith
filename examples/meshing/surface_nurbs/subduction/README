@@ -28,7 +28,7 @@ To generate the mesh for this example, we perform the following steps:
     creates a CUBIT journal file to create the surface using a net
     surface.
 
-      python splay_skinsurf.py    
+      python topobath_netsurf.py    
 
 2.  Create the surfaces by running each of the three journal files
 produced by the Python scripts within CUBIT.
@@ -47,5 +47,5 @@ produced by the Python scripts within CUBIT.
     geometry.jou:  Imports the surfaces created in step 2 and creates the
                    volumes needed for meshing.
 
-    bc.jou:        Creates material blocks and nodesets needed by the
-                   finite element model.
+    bc.jou:        Creates material blocks and nodesets that could be used in
+                   a PyLith simulation.
