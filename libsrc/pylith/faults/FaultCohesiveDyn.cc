@@ -1746,25 +1746,42 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
   int_array indicesPerm(subnrows);
   for (PetscInt c = 0; c < numCohesiveCells; ++c) {
     // Get cone for cohesive cell
-    PetscInt* closure = NULL;
-    PetscInt closureSize, q = 0;
-    err = DMPlexGetTransitiveClosure(dmMesh, cellsCohesive[c], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+    const PetscInt *cone;
+    PetscInt        coneSize;
+    PetscInt       *closureA = NULL, *closureB = NULL;
+    PetscInt        closureSizeA, closureSizeB, q;
 
+    err = DMPlexGetCone(dmMesh, cellsCohesive[c], &cone);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetConeSize(dmMesh, cellsCohesive[c], &coneSize);PYLITH_CHECK_ERROR(err);
+    assert(coneSize >= 4);
+    err = DMPlexGetTransitiveClosure(dmMesh, cone[0], PETSC_TRUE, &closureSizeA, &closureA);PYLITH_CHECK_ERROR(err);
     // Filter out non-vertices
-    for (PetscInt p = 0; p < closureSize*2; p += 2) {
-      if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
-        closure[q] = closure[p];
+    q = 0;
+    for(PetscInt p = 0; p < closureSizeA*2; p += 2) {
+      if ((closureA[p] >= vStart) && (closureA[p] < vEnd)) {
+        closureA[q] = closureA[p];
         ++q;
       } // if
     } // for
-    closureSize = q;
-    assert(closureSize == 2*numBasis);
+    closureSizeA = q;
+    err = DMPlexGetTransitiveClosure(dmMesh, cone[1], PETSC_TRUE, &closureSizeB, &closureB);PYLITH_CHECK_ERROR(err);
+    // Filter out non-vertices
+    q = 0;
+    for(PetscInt p = 0; p < closureSizeB*2; p += 2) {
+      if ((closureB[p] >= vStart) && (closureB[p] < vEnd)) {
+        closureB[q] = closureB[p];
+        ++q;
+      } // if
+    } // for
+    closureSizeB = q;
+    assert(closureSizeA == numBasis);
+    assert(closureSizeB == numBasis);
 
     // Get indices
     for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
       // negative side of the fault: iCone=0
       // positive side of the fault: iCone=1
-      const int v_domain = closure[iCone*numBasis+iBasis];
+      const int v_domain = iCone ? closureB[iBasis] :  closureA[iBasis];
       PetscInt goff;
 
       err = PetscSectionGetOffset(solutionDomainGlobalSection, v_domain, &goff);PYLITH_CHECK_ERROR(err);
@@ -1773,7 +1790,8 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
       } // for
 
     } // for
-    err = DMPlexRestoreTransitiveClosure(dmMesh, cellsCohesive[c], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+    err = DMPlexRestoreTransitiveClosure(dmMesh, cone[0], PETSC_TRUE, &closureSizeA, &closureA);PYLITH_CHECK_ERROR(err);
+    err = DMPlexRestoreTransitiveClosure(dmMesh, cone[1], PETSC_TRUE, &closureSizeB, &closureB);PYLITH_CHECK_ERROR(err);
 
     for (int i=0; i < subnrows; ++i) {
       indicesPerm[i]  = i;

@@ -113,10 +113,72 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
   delete _fields; _fields = new topology::Fields(*_faultMesh);assert(_fields);
 
   // Allocate dispRel field
+  const int spaceDim = cs->spaceDim();
   _fields->add("relative disp", "relative_disp");
   topology::Field& dispRel = _fields->get("relative disp");
-  dispRel.newSection(topology::FieldBase::VERTICES_FIELD, cs->spaceDim()); // :TODO: Update?
+  dispRel.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim); // :TODO: Update?
+
+  topology::SubMeshIS faultMeshIS(*_faultMesh);
+  const PetscInt numPoints = faultMeshIS.size();
+  const PetscInt* points = faultMeshIS.points();
+
+  topology::Stratum verticesStratum(faultDMMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
+
+  if (strlen(edge()) > 0 && numPoints > 0) {
+    PetscDMLabel label = NULL;
+    PetscIS clampedIS = NULL;
+    const PetscInt* clampedPoints = NULL;
+    PetscInt numClampedPoints;
+    PetscErrorCode err;
+
+    err = DMPlexGetLabel(mesh.dmMesh(), edge(), &label);PYLITH_CHECK_ERROR(err);
+    err = DMLabelGetStratumIS(label, 1, &clampedIS);PYLITH_CHECK_ERROR(err);
+    err = ISGetLocalSize(clampedIS, &numClampedPoints);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(clampedIS, &clampedPoints);PYLITH_CHECK_ERROR(err);
+    for (int i = 0; i < numClampedPoints; ++i) {
+      PetscInt v_fault;
+      err = PetscFindInt(clampedPoints[i], numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
+      if (v_fault < vStart || v_fault >= vEnd) { // skip non-vertices
+	continue;
+      } // if
+
+      err = PetscSectionSetConstraintDof(dispRel.petscSection(), v_fault, spaceDim);PYLITH_CHECK_ERROR(err);
+    } // for
+    err = ISRestoreIndices(clampedIS, &clampedPoints);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&clampedIS);PYLITH_CHECK_ERROR(err);
+  } // if
   dispRel.allocate();
+  if (strlen(edge()) > 0 && numPoints > 0) {
+    PetscDMLabel label = NULL;
+    PetscIS clampedIS = NULL;
+    const PetscInt *clampedPoints = NULL;
+    PetscInt numClampedPoints;
+    PetscErrorCode err;
+
+    PetscInt* ind = (spaceDim > 0) ? new PetscInt[spaceDim] : 0;
+    for (int i = 0; i < spaceDim; ++i) { 
+      ind[i] = i;
+    } // for
+
+    err = DMPlexGetLabel(mesh.dmMesh(), edge(), &label);PYLITH_CHECK_ERROR(err);
+    err = DMLabelGetStratumIS(label, 1, &clampedIS);PYLITH_CHECK_ERROR(err);
+    err = ISGetLocalSize(clampedIS, &numClampedPoints);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(clampedIS, &clampedPoints);PYLITH_CHECK_ERROR(err);
+    for (int i = 0; i < numClampedPoints; ++i) {
+      PetscInt v_fault;
+      err = PetscFindInt(clampedPoints[i], numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
+      if (v_fault < vStart || v_fault >= vEnd) { // skip non-vertices
+	continue;
+      } // if
+
+      err = PetscSectionSetConstraintIndices(dispRel.petscSection(), v_fault, ind);PYLITH_CHECK_ERROR(err);
+    } // for
+    err = ISRestoreIndices(clampedIS, &clampedPoints);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&clampedIS);PYLITH_CHECK_ERROR(err);
+    delete[] ind; ind = 0;
+  } // for
   dispRel.vectorFieldType(topology::FieldBase::VECTOR);
   dispRel.scale(_normalizer->lengthScale());
 
@@ -437,42 +499,37 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(topology::Jacobian* jac
       jacobianVertex[iDim*spaceDim+iDim] = areaArray[aoff];
 
     // Values at positive vertex, entry L,P in Jacobian
-    MatSetValues(jacobianMatrix,
-                 indicesL.size(), &indicesL[0],
-                 indicesP.size(), &indicesP[0],
-                 &jacobianVertex[0],
-                 ADD_VALUES);
+    err = MatSetValues(jacobianMatrix, 
+		       indicesL.size(), &indicesL[0], 
+		       indicesP.size(), &indicesP[0], 
+		       &jacobianVertex[0], ADD_VALUES);PYLITH_CHECK_ERROR(err);
 
     // Values at positive vertex, entry P,L in Jacobian
-    MatSetValues(jacobianMatrix,
-                 indicesP.size(), &indicesP[0],
-                 indicesL.size(), &indicesL[0],
-                 &jacobianVertex[0],
-                 ADD_VALUES);
-
+    err = MatSetValues(jacobianMatrix, 
+		       indicesP.size(), &indicesP[0], 
+		       indicesL.size(), &indicesL[0], 
+		       &jacobianVertex[0], ADD_VALUES);PYLITH_CHECK_ERROR(err);
+    
     // Values at negative vertex, entry L,N in Jacobian
     jacobianVertex *= -1.0;
-    MatSetValues(jacobianMatrix,
-                 indicesL.size(), &indicesL[0],
-                 indicesN.size(), &indicesN[0],
-                 &jacobianVertex[0],
-                 ADD_VALUES);
+    err = MatSetValues(jacobianMatrix,
+		       indicesL.size(), &indicesL[0],
+		       indicesN.size(), &indicesN[0],
+		       &jacobianVertex[0], ADD_VALUES);PYLITH_CHECK_ERROR(err);
 
     // Values at negative vertex, entry N,L in Jacobian
-    MatSetValues(jacobianMatrix,
-                 indicesN.size(), &indicesN[0],
-                 indicesL.size(), &indicesL[0],
-                 &jacobianVertex[0],
-                 ADD_VALUES);
+    err = MatSetValues(jacobianMatrix,
+		       indicesN.size(), &indicesN[0],
+		       indicesL.size(), &indicesL[0],
+		       &jacobianVertex[0], ADD_VALUES);PYLITH_CHECK_ERROR(err);
 
     // Values at Lagrange vertex, entry L,L in Jacobian
     // We must have entries on the diagonal.
     jacobianVertex = 0.0;
-    MatSetValues(jacobianMatrix,
-                 indicesL.size(), &indicesL[0],
-                 indicesL.size(), &indicesL[0],
-                 &jacobianVertex[0],
-                 ADD_VALUES);
+    err = MatSetValues(jacobianMatrix,
+		       indicesL.size(), &indicesL[0],
+		       indicesL.size(), &indicesL[0],
+		       &jacobianVertex[0], ADD_VALUES);PYLITH_CHECK_ERROR(err);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
@@ -631,9 +688,9 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
   const PetscScalar* areaArray = areaVisitor.localArray();
 
   topology::Field& dispRel = _fields->get("relative disp");
-  PetscDM      dispDM = dispRel.dmMesh();
-  PetscSection dispGlobalSection = NULL;
-  PetscErrorCode err = DMGetDefaultGlobalSection(dispDM, &dispGlobalSection);PYLITH_CHECK_ERROR(err);
+  PetscDM dispRelDM = dispRel.dmMesh();
+  PetscSection dispRelGlobalSection = NULL;
+  PetscErrorCode err = DMGetDefaultGlobalSection(dispRelDM, &dispRelGlobalSection);PYLITH_CHECK_ERROR(err);
 
   PetscDM solnDM = fields->solution().dmMesh();
   PetscSection solnGlobalSection = NULL;
@@ -649,7 +706,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
   _getJacobianSubmatrixNP(&jacobianNP, &indicesMatToSubmat, *jacobian, *fields);
   
   const int numVertices = _cohesiveVertices.size();
-  for (int iVertex=0, cV = 0; iVertex < numVertices; ++iVertex) {
+  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
     const int v_negative = _cohesiveVertices[iVertex].negative;
@@ -679,14 +736,14 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
     indicesN = indicesRel + indicesMatToSubmat[gnoff];
     err = MatGetValues(jacobianNP,
                        indicesN.size(), &indicesN[0], indicesN.size(), &indicesN[0],
-                       &jacobianVertexN[0]); PYLITH_CHECK_ERROR(err);
+                       &jacobianVertexN[0]);PYLITH_CHECK_ERROR(err);
 
     PetscInt gpoff = 0;
     err = PetscSectionGetOffset(solnGlobalSection, v_positive, &gpoff);PYLITH_CHECK_ERROR(err);
     indicesP = indicesRel + indicesMatToSubmat[gpoff];
     err = MatGetValues(jacobianNP,
                        indicesP.size(), &indicesP[0], indicesP.size(), &indicesP[0],
-                       &jacobianVertexP[0]); PYLITH_CHECK_ERROR(err);
+                       &jacobianVertexP[0]);PYLITH_CHECK_ERROR(err);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -716,17 +773,14 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
 
     // Set diagonal entries in preconditioned matrix.
     PetscInt poff = 0;
-    err = PetscSectionGetOffset(dispGlobalSection, v_fault, &poff);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(dispRelGlobalSection, v_fault, &poff);PYLITH_CHECK_ERROR(err);
 
-    for (int iDim=0; iDim < spaceDim; ++iDim)
-      MatSetValue(*precondMatrix,
-		  poff + iDim,
-		  poff + iDim,
-		  precondVertexL[iDim],
-		  INSERT_VALUES);
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      err = MatSetValue(*precondMatrix, poff+iDim, poff+iDim, precondVertexL[iDim], INSERT_VALUES);PYLITH_CHECK_ERROR(err);
+    } // for
 
 #if 0 // DEBUGGING
-    std::cout << "1/P_vertex " << *e_lagrange << std::endl;
+    std::cout << "1/P_vertex " << e_lagrange << std::endl;
     for(int iDim = 0; iDim < spaceDim; ++iDim) {
       std::cout << "  " << precondVertexL[iDim] << std::endl;
     } // for

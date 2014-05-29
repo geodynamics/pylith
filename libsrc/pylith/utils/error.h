@@ -42,11 +42,11 @@
 #define PYLITH_METHOD_END PetscFunctionReturnVoid()
 #define PYLITH_METHOD_RETURN(v) PetscFunctionReturn(v)
 
-#define PYLITH_CHECK_ERROR(err) do {if (PetscUnlikely(err)) {PetscError(PETSC_COMM_SELF,__LINE__,PETSC_FUNCTION_NAME,__FILE__,err,PETSC_ERROR_IN_CXX,0);}} while(0)
+#define PYLITH_CHECK_ERROR(err) do {if (PetscUnlikely(err)) {PetscError(PETSC_COMM_SELF,__LINE__,PETSC_FUNCTION_NAME,__FILE__,err,PETSC_ERROR_REPEAT,0);throw std::runtime_error("Error detected while in PETSc function.");}} while(0)
 
 #define PYLITH_CHECK_ERROR_MSG(err, msg) \
   if (err) { \
-    PetscError(PETSC_COMM_SELF,__LINE__,__FUNCT__,__FILE__,err,PETSC_ERROR_IN_CXX, 0, " "); \
+    PetscError(PETSC_COMM_SELF,__LINE__,__FUNCT__,__FILE__,err,PETSC_ERROR_REPEAT, 0, " "); \
     throw std::runtime_error(msg); }
 
 #endif // pylith_utils_error_h

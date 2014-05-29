@@ -134,10 +134,10 @@ class TestShearDispFriction(TestTri3):
     Calculate fault info.
     """
 
-    strikeDir = (1.0, 0.0)
+    strikeDir = (-1.0, 0.0)
     normalDir = (0.0, 1.0)
-    initialTraction = (0.0, -1.0e+7)
-    frictionCoefficient = 0.6
+    initialTraction = (0.0, -100.0e+6)
+    frictionCoefficient = 1.0
 
     nvertices = self.faultMesh['nvertices']
 

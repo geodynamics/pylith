@@ -45,17 +45,22 @@ group "fault_coseismic" add node in slabtop@D
 nodeset 20 group fault_coseismic
 nodeset 20 name "fault_coseismic"
 
+# Fault edge (coseismic region only)
+group "fault_coseismic_edge" add node in vertex 74
+nodeset 21 group fault_coseismic_edge
+nodeset 21 name "fault_coseismic_edge"
+
 group "fault_slabtop" add node in slabtop@A
 group "fault_slabtop" add node in slabtop@D
 group "fault_slabtop" add node in slabtop
-nodeset 21 group fault_slabtop
-nodeset 21 name "fault_slabtop"
+nodeset 22 group fault_slabtop
+nodeset 22 name "fault_slabtop"
 
 group "fault_slabbot" add node in slabbot@B
 group "fault_slabbot" add node in slabbot@C
 group "fault_slabbot" add node in slabbot
-nodeset 22 group fault_slabbot
-nodeset 22 name "fault_slabbot"
+nodeset 23 group fault_slabbot
+nodeset 23 name "fault_slabbot"
 
 # ----------------------------------------------------------------------
 # Create nodeset for topography/bathymetry
@@ -105,5 +110,6 @@ nodeset 15 name "bndry_bot_mantle"
 
 
 # End of file
+
 
 
