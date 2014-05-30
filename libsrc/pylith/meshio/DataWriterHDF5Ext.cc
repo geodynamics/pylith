@@ -398,7 +398,7 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
       PetscInt dof = 0, n, numVerticesLocal = 0, numVertices, vStart;
       PetscIS globalVertexNumbers = NULL;
 
-      err = VecGetDM(vector, &dm);PYLITH_CHECK_ERROR(err);
+      err = VecGetDM(vector, &dm);PYLITH_CHECK_ERROR(err);assert(dm);
       err = DMGetDefaultSection(dm, &section);PYLITH_CHECK_ERROR(err);assert(section);
 
       err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, PETSC_NULL);PYLITH_CHECK_ERROR(err);
@@ -425,15 +425,16 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
       if (!commRank) {
         // Add new external dataset to HDF5 file.
         const int numTimeSteps = DataWriter::_numTimeSteps;
-        const hsize_t ndims = (numTimeSteps > 0) ? 3 : 2;
-        hsize_t maxDims[3];
-        if (3 == ndims) {
+	const hsize_t ndims = 3;
+        hsize_t maxDims[ndims];
+	if (numTimeSteps > 0) {
           maxDims[0] = H5S_UNLIMITED;
           maxDims[1] = datasetInfo.numPoints;
           maxDims[2] = datasetInfo.fiberDim;
         } else {
-          maxDims[0] = datasetInfo.numPoints;
-          maxDims[1] = datasetInfo.fiberDim;
+          maxDims[0] = 1;
+          maxDims[1] = datasetInfo.numPoints;
+          maxDims[2] = datasetInfo.fiberDim;
         } // else
         // Create 'vertex_fields' group if necessary.
         if (!_h5->hasGroup("/vertex_fields"))
@@ -581,15 +582,16 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
       if (!commRank) {
 	// Add new external dataset to HDF5 file.	
         const int numTimeSteps = DataWriter::_numTimeSteps;
-        const hsize_t ndims = (numTimeSteps > 0) ? 3 : 2;
-        hsize_t maxDims[3];
-        if (3 == ndims) {
+	const hsize_t ndims = 3;
+        hsize_t maxDims[ndims];
+        if (numTimeSteps > 0) {
           maxDims[0] = H5S_UNLIMITED;
           maxDims[1] = datasetInfo.numPoints;
           maxDims[2] = datasetInfo.fiberDim;
         } else {
-          maxDims[0] = datasetInfo.numPoints;
-          maxDims[1] = fiberDim;
+          maxDims[0] = 1;
+          maxDims[1] = datasetInfo.numPoints;
+          maxDims[2] = fiberDim;
         } // else
         // Create 'cell_fields' group if necessary.
         if (!_h5->hasGroup("/cell_fields"))
