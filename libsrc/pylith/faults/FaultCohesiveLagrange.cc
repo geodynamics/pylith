@@ -135,19 +135,21 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
 
     err = DMPlexGetLabel(mesh.dmMesh(), edge(), &label);PYLITH_CHECK_ERROR(err);
     err = DMLabelGetStratumIS(label, 1, &clampedIS);PYLITH_CHECK_ERROR(err);
-    err = ISGetLocalSize(clampedIS, &numClampedPoints);PYLITH_CHECK_ERROR(err);
-    err = ISGetIndices(clampedIS, &clampedPoints);PYLITH_CHECK_ERROR(err);
-    for (int i = 0; i < numClampedPoints; ++i) {
-      PetscInt v_fault;
-      err = PetscFindInt(clampedPoints[i], numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
-      if (v_fault < vStart || v_fault >= vEnd) { // skip non-vertices
-	continue;
-      } // if
+    if (clampedIS) {
+      err = ISGetLocalSize(clampedIS, &numClampedPoints);PYLITH_CHECK_ERROR(err);
+      err = ISGetIndices(clampedIS, &clampedPoints);PYLITH_CHECK_ERROR(err);
+      for (int i = 0; i < numClampedPoints; ++i) {
+	PetscInt v_fault;
+	err = PetscFindInt(clampedPoints[i], numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
+	if (v_fault < vStart || v_fault >= vEnd) { // skip non-vertices
+	  continue;
+	} // if
 
-      err = PetscSectionSetConstraintDof(dispRel.petscSection(), v_fault, spaceDim);PYLITH_CHECK_ERROR(err);
-    } // for
-    err = ISRestoreIndices(clampedIS, &clampedPoints);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&clampedIS);PYLITH_CHECK_ERROR(err);
+	err = PetscSectionSetConstraintDof(dispRel.petscSection(), v_fault, spaceDim);PYLITH_CHECK_ERROR(err);
+      } // for
+      err = ISRestoreIndices(clampedIS, &clampedPoints);PYLITH_CHECK_ERROR(err);
+      err = ISDestroy(&clampedIS);PYLITH_CHECK_ERROR(err);
+    } // if
   } // if
   dispRel.allocate();
   if (strlen(edge()) > 0 && numPoints > 0) {
@@ -157,28 +159,31 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
     PetscInt numClampedPoints;
     PetscErrorCode err;
 
-    PetscInt* ind = (spaceDim > 0) ? new PetscInt[spaceDim] : 0;
-    for (int i = 0; i < spaceDim; ++i) { 
-      ind[i] = i;
-    } // for
-
     err = DMPlexGetLabel(mesh.dmMesh(), edge(), &label);PYLITH_CHECK_ERROR(err);
     err = DMLabelGetStratumIS(label, 1, &clampedIS);PYLITH_CHECK_ERROR(err);
-    err = ISGetLocalSize(clampedIS, &numClampedPoints);PYLITH_CHECK_ERROR(err);
-    err = ISGetIndices(clampedIS, &clampedPoints);PYLITH_CHECK_ERROR(err);
-    for (int i = 0; i < numClampedPoints; ++i) {
-      PetscInt v_fault;
-      err = PetscFindInt(clampedPoints[i], numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
-      if (v_fault < vStart || v_fault >= vEnd) { // skip non-vertices
-	continue;
-      } // if
+    if (clampedIS) {
+      err = ISGetLocalSize(clampedIS, &numClampedPoints);PYLITH_CHECK_ERROR(err);
+      err = ISGetIndices(clampedIS, &clampedPoints);PYLITH_CHECK_ERROR(err);
 
-      err = PetscSectionSetConstraintIndices(dispRel.petscSection(), v_fault, ind);PYLITH_CHECK_ERROR(err);
-    } // for
-    err = ISRestoreIndices(clampedIS, &clampedPoints);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&clampedIS);PYLITH_CHECK_ERROR(err);
-    delete[] ind; ind = 0;
-  } // for
+      PetscInt* ind = (spaceDim > 0) ? new PetscInt[spaceDim] : 0;
+      for (int i = 0; i < spaceDim; ++i) { 
+	ind[i] = i;
+      } // for
+
+      for (int i = 0; i < numClampedPoints; ++i) {
+	PetscInt v_fault;
+	err = PetscFindInt(clampedPoints[i], numPoints, points, &v_fault);PYLITH_CHECK_ERROR(err);
+	if (v_fault < vStart || v_fault >= vEnd) { // skip non-vertices
+	  continue;
+	} // if
+	
+	err = PetscSectionSetConstraintIndices(dispRel.petscSection(), v_fault, ind);PYLITH_CHECK_ERROR(err);
+      } // for
+      err = ISRestoreIndices(clampedIS, &clampedPoints);PYLITH_CHECK_ERROR(err);
+      err = ISDestroy(&clampedIS);PYLITH_CHECK_ERROR(err);
+      delete[] ind; ind = 0;
+    } // if
+  } // if
   dispRel.vectorFieldType(topology::FieldBase::VECTOR);
   dispRel.scale(_normalizer->lengthScale());
 
