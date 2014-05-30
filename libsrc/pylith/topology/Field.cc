@@ -554,23 +554,14 @@ pylith::topology::Field::cloneSection(const Field& src)
 
       // Copy DM
       sinfo.dm = s_iter->second.dm;
-      err = PetscObjectReference((PetscObject) sinfo.dm);
-      PYLITH_CHECK_ERROR(err);
+      err = PetscObjectReference((PetscObject) sinfo.dm);PYLITH_CHECK_ERROR(err);
 
       // Create vector using sizes from source section
-      PetscInt vecLocalSize = 0;
       PetscInt vecGlobalSize = 0, vecGlobalSize2 = 0;
-      err = VecGetLocalSize(s_iter->second.vector, &vecLocalSize);PYLITH_CHECK_ERROR(err);
       err = VecGetSize(s_iter->second.vector, &vecGlobalSize);PYLITH_CHECK_ERROR(err);
-      err = VecGetSize(_globalVec, &vecGlobalSize2);PYLITH_CHECK_ERROR(err);
-      
+      err = VecGetSize(_globalVec, &vecGlobalSize2);PYLITH_CHECK_ERROR(err);      
       if (vecGlobalSize != vecGlobalSize2) {
-        int blockSize = 1;
-        err = VecGetBlockSize(s_iter->second.vector, &blockSize);PYLITH_CHECK_ERROR(err);
-        err = VecCreate(_mesh.comm(), &sinfo.vector);PYLITH_CHECK_ERROR(err);
-        err = VecSetSizes(sinfo.vector, vecLocalSize, vecGlobalSize);PYLITH_CHECK_ERROR(err);
-        err = VecSetBlockSize(sinfo.vector, blockSize);PYLITH_CHECK_ERROR(err);
-        err = VecSetFromOptions(sinfo.vector); PYLITH_CHECK_ERROR(err);  
+	err = DMCreateGlobalVector(sinfo.dm, &sinfo.vector);PYLITH_CHECK_ERROR(err);
       } else {
         sinfo.vector = _globalVec;
         err = PetscObjectReference((PetscObject) sinfo.vector);PYLITH_CHECK_ERROR(err);
@@ -910,19 +901,13 @@ pylith::topology::Field::createScatter(const Mesh& mesh,
 
   err = DMDestroy(&sinfo.dm);PYLITH_CHECK_ERROR(err);
   sinfo.dm = _dm;
-  err = PetscObjectReference((PetscObject) _dm);PYLITH_CHECK_ERROR(err);
+  err = PetscObjectReference((PetscObject) sinfo.dm);PYLITH_CHECK_ERROR(err);
 
   err = VecDestroy(&sinfo.vector);PYLITH_CHECK_ERROR(err);
   sinfo.vector = _globalVec;
-  err = PetscObjectReference((PetscObject) _globalVec);PYLITH_CHECK_ERROR(err);
-  err = PetscObjectSetName((PetscObject) _globalVec, _metadata["default"].label.c_str());PYLITH_CHECK_ERROR(err);
+  err = PetscObjectReference((PetscObject) sinfo.vector);PYLITH_CHECK_ERROR(err);
+  err = PetscObjectSetName((PetscObject) sinfo.vector, _metadata["default"].label.c_str());PYLITH_CHECK_ERROR(err);
 
-  //PetscInt localSize, globalSize;
-  //err = VecGetSize(_localVec,  &localSize);PYLITH_CHECK_ERROR(err);
-  //err = VecGetSize(_globalVec, &globalSize);PYLITH_CHECK_ERROR(err);
-  //assert(order->getLocalSize()  == localSize);
-  //assert(order->getGlobalSize() == globalSize);
-  
   PYLITH_METHOD_END;
 } // createScatter
 
@@ -964,12 +949,6 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
   err = VecDestroy(&sinfo.vector);PYLITH_CHECK_ERROR(err);
   err = DMCreateGlobalVector(sinfo.dm, &sinfo.vector);PYLITH_CHECK_ERROR(err);
   err = PetscObjectSetName((PetscObject) sinfo.vector, _metadata["default"].label.c_str());PYLITH_CHECK_ERROR(err);
-  PetscInt localSize, globalSize;
-
-  err = PetscSectionGetStorageSize(section, &localSize);PYLITH_CHECK_ERROR(err);
-  err = VecGetSize(sinfo.vector, &globalSize);PYLITH_CHECK_ERROR(err);
-  //assert(order->getLocalSize()  == localSize);
-  //assert(order->getGlobalSize() == globalSize);
 
   PYLITH_METHOD_END;
 } // createScatterWithBC
@@ -1073,12 +1052,7 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
   err = VecDestroy(&sinfo.vector);PYLITH_CHECK_ERROR(err);
   err = DMCreateGlobalVector(sinfo.dm, &sinfo.vector);PYLITH_CHECK_ERROR(err);
   err = PetscObjectSetName((PetscObject) sinfo.vector, _metadata["default"].label.c_str());PYLITH_CHECK_ERROR(err);
-  PetscInt localSize, globalSize;
 
-  err = PetscSectionGetStorageSize(section, &localSize);PYLITH_CHECK_ERROR(err);
-  err = VecGetSize(sinfo.vector, &globalSize);PYLITH_CHECK_ERROR(err);
-  /* assert(order->getLocalSize()  == localSize); This does not work because the local vector includes the lagrange cell variables */
-  /* assert(order->getGlobalSize() == globalSize); */
   err = PetscSectionDestroy(&subSection);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
