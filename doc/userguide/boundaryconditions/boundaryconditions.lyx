@@ -4981,6 +4981,92 @@ friction.db_properties = spatialdata.spatialdb.SimpleDB
 friction.db_properties.iohandler.filename = friction.spatialdb
 \end_layout
 
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\color inherit
+ 
+\series default
+\color none
+Use of the dynamic rupture implementation in a quasi-static simulations
+ requires use of the nonlinear solver and careful selection of linear and
+ nonlinear solver tolerances.
+ A key issue is making sure the linear solver toleance is tighter (smaller)
+ than the tolerance used to detect slip (fault 
+\family typewriter
+\color inherit
+zero_toelerance
+\family default
+\color none
+).
+ As a result, the linear and solver absolute tolerances should be used to
+ for convergence, not the relative tolerances.
+ The code below illustrates the relevant parameters and example values.
+ The values can be scaled to change the overall desired tolerances.
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.interfaces.fault]
+\end_layout
+
+\begin_layout LyX-Code
+zero_tolerance = 1.0e-11
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+[pylithapp.petsc]
+\begin_inset Newline newline
+\end_inset
+
+# Linear solver tolerances
+\begin_inset Newline newline
+\end_inset
+
+ksp_rtol = 1.0e-20
+\begin_inset Newline newline
+\end_inset
+
+ksp_atol = 1.0e-12
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+# Nonlinear solver tolerances
+\begin_inset Newline newline
+\end_inset
+
+snes_rtol = 1.0e-20
+\begin_inset Newline newline
+\end_inset
+
+snes_atol = 1.0e-10
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+# Set preconditioner for friction sensitivity solve
+\begin_inset Newline newline
+\end_inset
+
+friction_pc_type = asm
+\begin_inset Newline newline
+\end_inset
+
+friction_sub_pc_factor_shift_type = nonzero
+\end_layout
+
 \begin_layout Standard
 The prescribed traction perturbation is specified using the same fault coordinat
 e system as the slip directions in the kinematic ruptures.
