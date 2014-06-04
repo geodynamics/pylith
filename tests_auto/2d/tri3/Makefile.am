@@ -35,6 +35,7 @@ dist_noinst_PYTHON = \
 	sliponefault_soln.py \
 	TestSlipTwoFaults.py \
 	sliptwofaults_soln.py \
+	TestFaultsIntersect.py \
 	testpylith.py
 
 dist_noinst_DATA = \
@@ -48,7 +49,8 @@ dist_noinst_DATA = \
 	sheardispnosliprefine.cfg \
 	sheardispfriction.cfg \
 	sliponefault.cfg \
-	sliptwofaults.cfg
+	sliptwofaults.cfg \
+	faultsintersect.cfg
 
 noinst_TMP = \
 	axial_disp.spatialdb \
