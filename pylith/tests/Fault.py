@@ -118,7 +118,7 @@ def check_data(testcase, filename, mesh, fieldNames):
         print "Error in component %d of field '%s'." % (i, name)
         print "Expected values:",valuesE
         print "Output values:",values
-      testcase.assertEqual(numpy.sum(okay), nvertices)
+      testcase.assertEqual(nvertices, numpy.sum(okay))
   h5.close()
   return
 
