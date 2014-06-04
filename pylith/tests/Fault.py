@@ -74,7 +74,7 @@ def check_vertex_fields(testcase, filename, mesh, fieldNames):
           print "Expected values:",valuesE
           print "Output values:",values
           print "Coordinates: ",vertices
-        testcase.assertEqual(numpy.sum(okay), nvertices)
+        testcase.assertEqual(nvertices, numpy.sum(okay))
 
   h5.close()
   return
