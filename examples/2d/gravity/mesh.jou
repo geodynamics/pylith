@@ -72,7 +72,7 @@ nodeset 14 name "face_ypos"
 # ----------------------------------------------------------------------
 # Export exodus file
 # ----------------------------------------------------------------------
-export mesh "mesh_tri3.exo" dimension 2 overwrite
+export mesh "mesh.exo" dimension 2 overwrite
 
 
 # End of file

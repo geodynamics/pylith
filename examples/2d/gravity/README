@@ -9,7 +9,7 @@ different simulations, which should generally be performed in order:
 1.  pylith grav_stress.cfg
     This will run a single elastic time step to compute the stresses due to
     'turning on' gravity. These stresses will be used as initial stresses
-    in one of the other simulations. To conver the output PyLith stresses
+    in one of the other simulations. To convert the stresses PyLith outputs
     to a spatial database of initial stresses, run the stress2spatialdb.py
     script:
     ./stress2spatialdb.py
@@ -36,7 +36,8 @@ different simulations, which should generally be performed in order:
     This simulation uses a finite strain formulation, and should thus
     produce less vertical deformation that the infinitesimal strain version.
 
-The results of all the different simulations may be viewed using ParaView,
-and a ParaView state file is contained in the output directory. By loading
-this state file into ParaView and changing the filename appropriately, the
-various simulation results may be viewed.
+The results of all the different simulations may be viewed using
+ParaView. We provide a ParaView state file (output/deform_view.pvsm),
+which you can load in ParaView to view the solution over the
+domain. The visualization is intended for steps 3 and 4 in which there
+is deformation.
