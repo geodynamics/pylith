@@ -1,0 +1,43 @@
+This set of example is meant to demonstrate the use of body forces and
+initial stresses for a 2D problem. The example simply consists of an
+elastic block contained within a viscoelastic material of higher density.
+The surface of the block is coincident with the surface of the viscoelastic
+material initially. Depending on how we set up the problem, the elastic
+block will 'float' upwards due to the density contrast. There are 4
+different simulations, which should generally be performed in order:
+
+1.  pylith grav_stress.cfg
+    This will run a single elastic time step to compute the stresses due to
+    'turning on' gravity. These stresses will be used as initial stresses
+    in one of the other simulations. To convert the stresses PyLith outputs
+    to a spatial database of initial stresses, run the stress2spatialdb.py
+    script:
+    ./stress2spatialdb.py
+
+2.  pylith grav_stress_infin_is1.cfg
+    This will run a time-dependent simulation (200 years) that uses the
+    initial stresses computed in step 1 to exactly balance the imposed
+    gravitational body forces. Since the stresses are in equilibrium, no
+    deformation should occur. This simulation uses the default infinitesimal
+    strain formulation.
+
+3.  pylith grav_stress_infin_is2.cfg
+    This will run a time-dependent simulation (200 years) that uses initial
+    stresses computed assuming a constant density equivalent to the density
+    of the viscoelastic material. The resulting stress state will reflect
+    the density contrast between the block and the surrounding material.
+    This simulation uses the default infinitesimal strain formulation.
+
+4.  pylith grav_stress_finite_is2.cfg
+    This will run a time-dependent simulation (200 years) that uses initial
+    stresses computed assuming a constant density equivalent to the density
+    of the viscoelastic material. The resulting stress state will reflect
+    the density contrast between the block and the surrounding material.
+    This simulation uses a finite strain formulation, and should thus
+    produce less vertical deformation that the infinitesimal strain version.
+
+The results of all the different simulations may be viewed using
+ParaView. We provide a ParaView state file (output/deform_view.pvsm),
+which you can load in ParaView to view the solution over the
+domain. The visualization is intended for steps 3 and 4 in which there
+is deformation.

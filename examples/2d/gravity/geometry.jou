@@ -1,0 +1,68 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2014 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+#
+# CUBIT journal file with geometry for 2-D floating box gravity example.
+#
+# We use the CUBIT support for APREPRO (the expressions in braces),
+# which includes units and mathematical functions. See the APREPRO
+# section in the appendix of the CUBIT documentation for more
+# information.
+#
+# ----------------------------------------------------------------------
+# Set units to SI.
+# ----------------------------------------------------------------------
+# {Units('si')}
+#
+# ----------------------------------------------------------------------
+# Reset geometry.
+# ----------------------------------------------------------------------
+reset
+
+# Make sure undo is off to prevent errors in stitching volumes.
+undo off
+
+# ----------------------------------------------------------------------
+# Create outer box (50 km x 40 km x 10 km)..
+# ----------------------------------------------------------------------
+#{outerBlockX=40.0*km}
+#{outerBlockY=30.0*km}
+#{outerBlockZ=10.0*km}
+brick x {outerBlockX} y {outerBlockY} z {outerBlockZ}
+volume 1 move x 0.0 y {-0.5*outerBlockY} z 0.0
+
+# ----------------------------------------------------------------------
+# Create inner box (2.5 km x 5 km x 10 km)..
+# ----------------------------------------------------------------------
+#{innerBlockX=2.5*km}
+#{innerBlockY=5.0*km}
+#{innerBlockZ=10.0*km}
+brick x {innerBlockX} y {innerBlockY} z {innerBlockZ}
+volume 2 move x 0.0 y {-0.5*innerBlockY} z 0.0
+
+# ----------------------------------------------------------------------
+# Webcut outer block with inner block and then form a midsurface
+# ----------------------------------------------------------------------
+chop volume 1 with volume 2
+create midsurface volume 3 surface 14 15
+create midsurface volume 4 surface 20 22
+
+# ----------------------------------------------------------------------
+# Delete volumes, imprint and merge surfaces.
+# ----------------------------------------------------------------------
+delete volume 3 4
+imprint all
+merge all
+
