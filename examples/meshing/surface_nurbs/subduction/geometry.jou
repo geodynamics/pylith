@@ -62,19 +62,19 @@ import Acis "splay_surf.sat"
 # Webcut block with topography and delete volume lying above topography.
 # ----------------------------------------------------------------------
 webcut volume {idVol} with sheet surface 7
-delete volume 5
+delete volume 1
 delete body 2
 
 # ----------------------------------------------------------------------
 # Webcut remaining portion of block with subduction interface.
 # ----------------------------------------------------------------------
-webcut volume 1 with sheet surface 8
+webcut volume 5 with sheet surface 8
 delete body 3
 
 # ----------------------------------------------------------------------
 # Webcut volume above subduction interface with splay fault.
 # ----------------------------------------------------------------------
-webcut volume 1 with sheet surface 9
+webcut volume 5 with sheet surface 9
 delete body 4
 
 # ----------------------------------------------------------------------
@@ -84,6 +84,7 @@ imprint all with volume all
 merge all
 
 # End of file
+
 
 
 

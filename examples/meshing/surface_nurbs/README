@@ -1,10 +1,15 @@
 These examples demonstrate how to create NURBS surfaces in CUBIT. 
 
-contours - Example of creating a nonplanar fault surface using surface
-           contours.
-
 dem - Example of creating a topographic surface using a grid of spline
-      curves.
+    curves.
+
+merge_surfs - Merge primitive geometry to create sheet body made up of
+    multiple planar segments.
+
+subduction - Example of creating a 3-D mesh of a subduction zone with
+  topography/bathymetry and multiple nonplanar faults (subduction +
+  splay).
 
 triangles - Example of creating a NURBS surface from a triangulated
-            surface in Facets format.
+    surface in Facets format.
+

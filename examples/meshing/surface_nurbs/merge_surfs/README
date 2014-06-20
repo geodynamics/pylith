@@ -3,4 +3,4 @@ use them in a webcut. This technique is useful for creating
 multisegment faults from primitive geometry.
 
 Geometry and meshing commands are in the CUBIT journal files
-'geometry.jou' and m'mesh.jou' respectively.
+'geometry.jou' and 'mesh.jou' respectively.
