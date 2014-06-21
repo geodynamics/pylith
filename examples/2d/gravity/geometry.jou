@@ -35,18 +35,18 @@ reset
 undo off
 
 # ----------------------------------------------------------------------
-# Create outer box (50 km x 40 km x 10 km)..
+# Create outer box (50 km x 50 km x 10 km)..
 # ----------------------------------------------------------------------
-#{outerBlockX=40.0*km}
-#{outerBlockY=30.0*km}
+#{outerBlockX=50.0*km}
+#{outerBlockY=50.0*km}
 #{outerBlockZ=10.0*km}
 brick x {outerBlockX} y {outerBlockY} z {outerBlockZ}
 volume 1 move x 0.0 y {-0.5*outerBlockY} z 0.0
 
 # ----------------------------------------------------------------------
-# Create inner box (2.5 km x 5 km x 10 km)..
+# Create inner box (5 km x 5 km x 10 km)..
 # ----------------------------------------------------------------------
-#{innerBlockX=2.5*km}
+#{innerBlockX=5.0*km}
 #{innerBlockY=5.0*km}
 #{innerBlockZ=10.0*km}
 brick x {innerBlockX} y {innerBlockY} z {innerBlockZ}
