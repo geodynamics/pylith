@@ -49,11 +49,10 @@ for iProfile in range(numProfiles):
         if 0 == iPoint:
             j.write("#{idBeg=Id('vertex')}\n")
     j.write("#{idEnd=Id('vertex')}\n")
-    j.write("create curve spline vertex {idBeg} to {idEnd}\n")
+    j.write("create curve spline vertex {idBeg} to {idEnd} delete\n")
     if 0 == iProfile:
         j.write("#{idCBeg=Id('curve')}\n")
 j.write("#{idCEnd=Id('curve')}\n\n")
-j.write("delete vertex all\n")
 
 # Create skin surface.
 j.write("create surface skin curve {idCBeg} to {idCEnd}\n")
