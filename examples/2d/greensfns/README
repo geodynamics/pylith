@@ -44,6 +44,9 @@ Mesh generation (optional)
   recommend that you study the contents of the journal files to
   understand the mesh generation process.
 
+  NOTE: We use IDless journal files to maximize the compatibility
+  of the journal files with various versions of CUBIT and Trelis.
+
 
 Step 1. Forward simulation
 

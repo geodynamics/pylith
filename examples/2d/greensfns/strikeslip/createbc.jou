@@ -15,7 +15,7 @@
 # ----------------------------------------------------------------------
 # Create blocks for materials
 # ----------------------------------------------------------------------
-block 1 surface 8 9
+block 1 surface all
 block 1 name "elastic"
 
 # ----------------------------------------------------------------------
@@ -28,37 +28,39 @@ nodeset 10 name "fault"
 # ----------------------------------------------------------------------
 # Create nodeset for fault edge
 # ----------------------------------------------------------------------
-group "fault_edge" add node in vertex 15 16
+group "fault_edge" add node in vertex vertex_fault_ypos vertex_fault_yneg
 nodeset 11 group fault_edge
 nodeset 11 name "fault_edge"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +x face
 # ----------------------------------------------------------------------
-group "face_xpos" add node in curve 14
+group "face_xpos" add node in curve edge_xpos
 nodeset 21 group face_xpos
 nodeset 21 name "face_xpos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -x face
 # ----------------------------------------------------------------------
-group "face_xneg" add node in curve 16
+group "face_xneg" add node in curve edge_xneg
 nodeset 22 group face_xneg
 nodeset 22 name "face_xneg"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +y face
 # ----------------------------------------------------------------------
-group "face_ypos" add node in curve 18
-group "face_ypos" add node in curve 21
+group "face_ypos" add node in curve edge_ypos_xneg
+group "face_ypos" add node in curve edge_ypos_xpos
 nodeset 23 group face_ypos
 nodeset 23 name "face_ypos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -y face
 # ----------------------------------------------------------------------
-group "face_yneg" add node in curve 19
-group "face_yneg" add node in curve 20
+group "face_yneg" add node in curve edge_yneg_xneg
+group "face_yneg" add node in curve edge_yneg_xpos
 nodeset 24 group face_yneg
 nodeset 24 name "face_yneg"
 
+
+# End of file

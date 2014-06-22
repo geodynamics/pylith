@@ -20,7 +20,7 @@
 # ----------------------------------------------------------------------
 # Set units to SI.
 # ----------------------------------------------------------------------
-# {Units('si')}
+${Units('si')}
 #
 # ----------------------------------------------------------------------
 # Reset geometry.
@@ -29,6 +29,11 @@ reset
 
 # Make sure undo is off to prevent errors in stitching volumes.
 undo off
+
+# Turn on IDless journal files for maximum compatibility.
+# The commands echoed to the log will replace the object ID with a
+# geometric specification of the object. Note that this means changing
+# the geometry will require changes to subsequent journal commands.
 journal idless on
 
 # ----------------------------------------------------------------------
@@ -38,24 +43,25 @@ journal idless on
 # -75.0 km <= x <= 75.0 km
 # -80.0 km <= y <= 0.0 km
 #
-#{blockWidth=150*km}
-#{blockHeight=80*km}
-#{blockLength=10*km}
-#
-#{faultWidth=30.0*km}
-#{faultDipAngle=45.0}
-#
-#{xoffset=0.5*faultWidth*cosd(faultDipAngle)}
+${blockWidth=150*km}
+${blockHeight=80*km}
+${blockLength=10*km}
+
+${faultWidth=30.0*km}
+${faultDipAngle=45.0}
+
+${xoffset=0.5*faultWidth*cosd(faultDipAngle)}
 
 brick x {blockWidth} y {blockHeight} z {blockLength}
-#{idV=Id("volume")}
+${idV=Id("volume")}
 volume {idV} move x {-xoffset} y {-blockHeight/2.0} z 0.0
 
-# create midsurface volume {idV} surface 1 2
+#create midsurface volume {idV} surface 1 2
 surface ( at -10606.6 -40000 5000 ordinal 1 ) name "surf_front"
 surface ( at -10606.6 -40000 -5000 ordinal 1 ) name "surf_back"
 create midsurface volume {idV} surface surf_front surf_back
-#{idS=Id("surface")}
+
+${idS=Id("surface")}
 delete volume {idV}
 
 # ----------------------------------------------------------------------
@@ -120,3 +126,6 @@ vertex ( at 64393.4 -80000 0 ordinal 1 ordered ) name "vertex_bot_xpos"
 
 #vertex 10 name "vertex_bot_xneg"
 vertex ( at -85606.6 -80000 0 ordinal 1 ordered ) name "vertex_bot_xneg"
+
+
+# End of file
