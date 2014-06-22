@@ -25,7 +25,7 @@ playback 'geometry.jou'
 # Set discretization size and scheme
 # ----------------------------------------------------------------------
 #{dxInner=150.0*m}
-#{dxOuter=0.75*km}
+#{dxOuter=1.50*km}
 
 surface all scheme trimesh
 surface 23 size {dxInner}
@@ -76,6 +76,7 @@ export mesh "mesh.exo" dimension 2 overwrite
 
 
 # End of file
+
 
 
 
