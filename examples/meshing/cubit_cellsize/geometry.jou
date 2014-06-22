@@ -25,7 +25,7 @@
 # ----------------------------------------------------------------------
 # Set units to SI.
 # ----------------------------------------------------------------------
-# {Units('si')}
+${Units('si')}
 #
 # ----------------------------------------------------------------------
 # Reset geometry.
@@ -39,12 +39,12 @@ undo off
 # Create block
 # ----------------------------------------------------------------------
 # Block is 100 km x 100 km x 50 km
-#{blockLength=100.0*km}
-#{blockWidth=100.0*km}
-#{blockHeight=50.0*km}
+${blockLength=100.0*km}
+${blockWidth=100.0*km}
+${blockHeight=50.0*km}
 
 brick x {blockLength} y {blockWidth} z {blockHeight}
-#{idVol=Id("volume")}
+${idVol=Id("volume")}
 
 # Translate block so the top is at z=0
 volume {idVol} move x {domain_x} y {domain_y} z {-0.5*blockHeight}
@@ -53,10 +53,10 @@ volume {idVol} move x {domain_x} y {domain_y} z {-0.5*blockHeight}
 # Create interface surfaces
 # ----------------------------------------------------------------------
 create planar surface with plane xplane offset 0
-#{idFault=Id("surface")}
+${idFault=Id("surface")}
 surface {idFault} name "fault_surface"
 create planar surface with plane zplane offset {-20.0*km}
-#{idMoho=Id("surface")}
+${idMoho=Id("surface")}
 surface {idMoho} name "material_interface"
 
 # ----------------------------------------------------------------------

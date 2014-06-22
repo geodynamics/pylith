@@ -27,7 +27,7 @@ playback 'geometry.jou'
 # Create tet4 mesh at 4.0 km resolution.
 # ----------------------------------------------------------------------
 
-#{dx=4.0*km}
+${dx=4.0*km}
 volume all size {dx}
 volume all scheme tetmesh
 
