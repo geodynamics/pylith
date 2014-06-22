@@ -46,12 +46,12 @@ for iProfile in range(numProfiles):
         j.write("create vertex x %10.2e y %10.2e z %10.2e\n" % \
                     (point[0], point[1], point[2]))
         if 0 == iPoint:
-            j.write("#{idBeg=Id('vertex')}\n")
-    j.write("#{idEnd=Id('vertex')}\n")
+            j.write("${idBeg=Id('vertex')}\n")
+    j.write("${idEnd=Id('vertex')}\n")
     j.write("create curve spline vertex {idBeg} to {idEnd} delete\n")
     if 0 == iProfile:
-        j.write("#{idPBeg=Id('curve')}\n")
-j.write("#{idPEnd=Id('curve')}\n\n")
+        j.write("${idPBeg=Id('curve')}\n")
+j.write("${idPEnd=Id('curve')}\n\n")
 
 # Loop over contours (v-lines).
 for iContour in range(pointsPerProfile):
@@ -61,12 +61,12 @@ for iContour in range(pointsPerProfile):
         j.write("create vertex x %10.2e y %10.2e z %10.2e\n" % \
                     (point[0], point[1], point[2]))
         if 0 == iPoint:
-            j.write("#{idBeg=Id('vertex')}\n")
-    j.write("#{idEnd=Id('vertex')}\n")
+            j.write("${idBeg=Id('vertex')}\n")
+    j.write("${idEnd=Id('vertex')}\n")
     j.write("create curve spline vertex {idBeg} to {idEnd} delete\n")
     if 0 == iContour:
-        j.write("#{idCBeg=Id('curve')}\n")
-j.write("#{idCEnd=Id('curve')}\n\n")
+        j.write("${idCBeg=Id('curve')}\n")
+j.write("${idCEnd=Id('curve')}\n\n")
 
 # Create net surface.
 j.write("create surface net u curve {idCBeg} to {idCEnd} v curve {idPBeg} to {idPEnd}\n")
