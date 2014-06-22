@@ -17,7 +17,6 @@
 #
 
 SUBDIRS = \
-	contours \
 	dem \
 	triangles \
 	merge_surfs \
