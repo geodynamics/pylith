@@ -28,8 +28,6 @@ SOURCE CODE
 
   * Increment version number in configure.ac.
 
-  * Increment version number in setup.py.
-
   * Add changes to README.
 
   * Add release notes in doc/releasenotes.

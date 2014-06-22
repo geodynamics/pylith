@@ -17,7 +17,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith], [2.0.0], [cig-short@geodynamics.org])
+AC_INIT([PyLith], [2.0.1], [cig-short@geodynamics.org])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
@@ -395,8 +395,6 @@ AC_CONFIG_FILES([Makefile
 		examples/twocells/twotri3/Makefile
 		examples/meshing/Makefile
 		examples/meshing/surface_nurbs/Makefile
-		examples/meshing/surface_nurbs/contours/Makefile
-		examples/meshing/surface_nurbs/contours/journal/Makefile
 		examples/meshing/surface_nurbs/dem/Makefile
 		examples/meshing/surface_nurbs/dem/ulines/Makefile
 		examples/meshing/surface_nurbs/dem/vlines/Makefile

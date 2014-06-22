@@ -1069,10 +1069,10 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
     }
     if (numBasis != cellNumEdges) {
       std::ostringstream msg;
-      msg << "Number of dofs in reference cell (" << numBasis
-          << ") is not compatible with number of edges (" << cellNumEdges
-          << ") in cohesive cell " << cells[i] << " for fault '" << label()
-          << "'.";
+      msg << "Quadrature is incompatible with cell for fault '" << label() << "'.\n"
+	  << "Cell " << cells[i] << " has " << cellNumEdges
+	  << " edges but quadrature reference cell has "
+	  << numBasis << " edges.";
       throw std::runtime_error(msg.str());
     } // if
     err = DMPlexRestoreTransitiveClosure(dmMesh, cells[i], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
