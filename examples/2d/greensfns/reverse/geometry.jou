@@ -20,7 +20,7 @@
 # ----------------------------------------------------------------------
 # Set units to SI.
 # ----------------------------------------------------------------------
-# {Units('si')}
+${Units('si')}
 #
 # ----------------------------------------------------------------------
 # Reset geometry.
@@ -30,6 +30,12 @@ reset
 # Make sure undo is off to prevent errors in stitching volumes.
 undo off
 
+# Turn on IDless journal files for maximum compatibility.
+# The commands echoed to the log will replace the object ID with a
+# geometric specification of the object. Note that this means changing
+# the geometry will require changes to subsequent journal commands.
+journal idless on
+
 # ----------------------------------------------------------------------
 # Create block
 # ----------------------------------------------------------------------
@@ -37,33 +43,89 @@ undo off
 # -75.0 km <= x <= 75.0 km
 # -80.0 km <= y <= 0.0 km
 #
-#{blockWidth=150*km}
-#{blockHeight=80*km}
-#{blockLength=10*km}
-#
-#{faultWidth=30.0*km}
-#{faultDipAngle=45.0}
-#
-#{xoffset=0.5*faultWidth*cosd(faultDipAngle)}
+${blockWidth=150*km}
+${blockHeight=80*km}
+${blockLength=10*km}
+
+${faultWidth=30.0*km}
+${faultDipAngle=45.0}
+
+${xoffset=0.5*faultWidth*cosd(faultDipAngle)}
 
 brick x {blockWidth} y {blockHeight} z {blockLength}
-volume 1 move x {-xoffset} y {-blockHeight/2.0} z 0.0
+${idV=Id("volume")}
+volume {idV} move x {-xoffset} y {-blockHeight/2.0} z 0.0
 
-create midsurface volume 1 surface 1 2
-delete volume 1
+#create midsurface volume {idV} surface 1 2
+surface ( at -10606.6 -40000 5000 ordinal 1 ) name "surf_front"
+surface ( at -10606.6 -40000 -5000 ordinal 1 ) name "surf_back"
+create midsurface volume {idV} surface surf_front surf_back
+
+${idS=Id("surface")}
+delete volume {idV}
 
 # ----------------------------------------------------------------------
 # Create fault surface
 # ----------------------------------------------------------------------
 
 # Create fault (yz plane) at x = 0.0
-split surface 7 across location position 0 0 0 location position {-blockHeight/tand(faultDipAngle)} {-blockHeight} 0
-split curve 17 at position {-faultWidth*cosd(faultDipAngle)} {-faultWidth*sind(faultDipAngle)} 0
-curve 23 name "fault_surface"
+split surface {idS} across location position 0 0 0 location position {-blockHeight/tand(faultDipAngle)} {-blockHeight} 0
+
+# curve 17 name "fault_extended"
+curve ( at -40000 -40000 0 ordinal 1 ordered ) name "fault_extended"
+split curve fault_extended at position {-faultWidth*cosd(faultDipAngle)} {-faultWidth*sind(faultDipAngle)} 0
 
 # ----------------------------------------------------------------------
-# Imprint all volumes, merging surfaces
+# Name curves
 # ----------------------------------------------------------------------
-imprint all
-merge all
+#curve 23 name "fault_surface"
+curve ( at -10606.6 -10606.6 0 ordinal 1 ordered ) name "fault_surface"
 
+#curve 19 name "ground_fw"
+curve ( at 32196.7 0 0 ordinal 1 ordered )  name "ground_fw"
+
+#curve 20 name "ground_hw"
+curve ( at -42803.3 0 0 ordinal 1 ordered ) name "ground_hw"
+
+#curve 14 name "edge_xpos"
+curve ( at 64393.4 -40000 0 ordinal 1 ordered ) name "edge_xpos"
+
+#curve 16 name "edge_xneg"
+curve ( at -85606.6 -40000 0 ordinal 1 ordered ) name "edge_xneg"
+
+#curve 21 name "edge_yneg_hw"
+curve ( at -82803.3 -80000 0 ordinal 1 ordered ) name "edge_yneg_hw"
+
+#curve 18 name "edge_yneg_fw"
+curve ( at -7803.3 -80000 0 ordinal 1 ordered ) name "edge_yneg_fw"
+
+#curve 22 name "fault_extended"
+curve ( at -50606.6 -50606.6 0 ordinal 1 ordered ) name "fault_extended"
+
+# ----------------------------------------------------------------------
+# Name vertices
+# ----------------------------------------------------------------------
+
+#vertex 15 name "vertex_fault_bot"
+vertex ( at -21213.2 -21213.2 0 ordinal 1 ordered ) name "vertex_fault_bot"
+
+#vertex 14 name "vertex_fault_top"
+vertex ( at 0 0 0 ordinal 1 ordered ) name "vertex_fault_top"
+
+#vertex 13 name "vertex_fault_yneg"
+vertex ( at -80000 -80000 0 ordinal 1 ordered ) name "vertex_fault_yneg"
+
+#vertex 11 name "vertex_top_xpos"
+vertex ( at 64393.4 0 0 ordinal 1 ordered ) name "vertex_top_xpos"
+
+#vertex 12 name "vertex_top_xneg"
+vertex ( at -85606.6 0 0 ordinal 1 ordered ) name "vertex_top_xneg"
+
+#vertex 9 name "vertex_bot_xpos"
+vertex ( at 64393.4 -80000 0 ordinal 1 ordered ) name "vertex_bot_xpos"
+
+#vertex 10 name "vertex_bot_xneg"
+vertex ( at -85606.6 -80000 0 ordinal 1 ordered ) name "vertex_bot_xneg"
+
+
+# End of file

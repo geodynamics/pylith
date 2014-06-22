@@ -10,7 +10,7 @@ playback 'geometry.jou'
 # ----------------------------------------------------------------------
 # Set discretization size and scheme
 # ----------------------------------------------------------------------
-#{dx=1.0*km}
+${dx=1.0*km}
 surface all scheme trimesh
 playback 'gradient.jou'
 
@@ -37,6 +37,7 @@ export mesh "mesh_tri3.exo" dimension 2 overwrite
 
 
 # End of file
+
 
 
 

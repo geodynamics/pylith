@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Create blocks for materials
 # ----------------------------------------------------------------------
-block 1 surface 8 9
+block 1 surface all
 block 1 name "elastic"
 
 # ----------------------------------------------------------------------
@@ -14,36 +14,37 @@ nodeset 10 name "fault"
 # ----------------------------------------------------------------------
 # Create nodeset for fault edge
 # ----------------------------------------------------------------------
-group "fault_edge" add node in vertex 15
+group "fault_edge" add node in vertex vertex_fault_bot
 nodeset 11 group fault_edge
 nodeset 11 name "fault_edge"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +x face
 # ----------------------------------------------------------------------
-group "face_xpos" add node in curve 14
+group "face_xpos" add node in curve edge_xpos
 nodeset 20 group face_xpos
 nodeset 20 name "face_xpos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -x face
 # ----------------------------------------------------------------------
-group "face_xneg" add node in curve 16
+group "face_xneg" add node in curve edge_xneg
 nodeset 21 group face_xneg
 nodeset 21 name "face_xneg"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +y face
 # ----------------------------------------------------------------------
-group "face_ypos" add node in curve 19 20
+group "face_ypos" add node in curve ground_fw ground_hw
 nodeset 22 group face_ypos
 nodeset 22 name "face_ypos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -y face
 # ----------------------------------------------------------------------
-group "face_yneg" add node in curve 18 21
+group "face_yneg" add node in curve edge_yneg_fw edge_yneg_hw
 nodeset 23 group face_yneg
 nodeset 23 name "face_yneg"
+
 
 

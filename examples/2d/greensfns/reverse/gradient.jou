@@ -1,26 +1,26 @@
 # ----------------------------------------------------------------------
 # Set vertex spacing with increasing spacing away from fault
 # ----------------------------------------------------------------------
-#{bias_factor=1.05}
+${bias_factor=1.05}
 
 # Function for computing discretization size at end of curve with bias
-#{fun_dx='dxStart*bias_factor**ceil( ln(1-curveL/dxStart*(1-bias_factor))/ln(bias_factor))'}
+${fun_dx='dxStart*bias_factor**ceil( ln(1-curveL/dxStart*(1-bias_factor))/ln(bias_factor))'}
 
 # ----------------------------------------------------------------------
 # Compute sizes at curve endpoints
 # ----------------------------------------------------------------------
 
-# dxA - size at vertex 11
-#{dxStart=dx}{curveL=Length(19)}{execute("dxA="//fun_dx)}
+# dxA - size at vertex_xpos
+${dxStart=dx}{curveL=Length(Id("ground_fw"))}{execute("dxA="//fun_dx)}
 
-# dxB - size at vertex 12
-#{dxStart=dx}{curveL=Length(20)}{execute("dxB="//fun_dx)}
+# dxB - size at vertex_xneg
+${dxStart=dx}{curveL=Length(Id("ground_hw"))}{execute("dxB="//fun_dx)}
 
-# dxC - size at vertex 13, 10
-#{dxStart=dx}{curveL=Length(22)}{execute("dxC="//fun_dx)}
+# dxC - size at vertex_fault_yneg, vertex_bot_yneg
+${dxStart=dx}{curveL=Length(Id("fault_extended"))}{execute("dxC="//fun_dx)}
 
-# dxD - size at vertex 9
-#{dxStart=dxA}{curveL=Length(14)}{execute("dxD="//fun_dx)}
+# dxD - size at vertex__xpos, vertex_top_xneg
+${dxStart=dxA}{curveL=Length(Id("edge_xpos"))}{execute("dxD="//fun_dx)}
 
 # ----------------------------------------------------------------------
 # Reset sizes
@@ -32,24 +32,21 @@ surface all sizing function none
 curve fault_surface size {dx}
 
 # Set bias on curves extending from faults
-curve 19 scheme bias fine size {dx} factor {bias_factor} start vertex 14
-curve 20 scheme bias fine size {dx} factor {bias_factor} start vertex 14
-curve 22 scheme bias fine size {dx} factor {bias_factor} start vertex 15
+curve ground_fw scheme bias fine size {dx} factor {bias_factor} start vertex vertex_fault_top
+curve ground_hw scheme bias fine size {dx} factor {bias_factor} start vertex vertex_fault_top
+curve fault_extended scheme bias fine size {dx} factor {bias_factor} start vertex vertex_fault_bot
 
-curve 21 size {dxC}
+curve edge_yneg_hw size {dxC}
 
 # A to D
-curve 18 scheme bias fine size {dxA} coarse size {dxD} start vertex 11
+curve edge_xpos scheme bias fine size {dxA} coarse size {dxD} start vertex vertex_top_xpos
 
 # B to C
-curve 16 scheme bias fine size {dxA} coarse size {dxD} start vertex 12
+curve edge_xneg scheme bias fine size {dxA} coarse size {dxD} start vertex vertex_top_xneg
 
 # D to C
-curve 18 scheme bias fine size {dxA} coarse size {dxD} start vertex 13
+curve edge_yneg_fw scheme bias fine size {dxA} coarse size {dxD} start vertex vertex_fault_yneg
 
-surface 8 9 sizing function type bias start curve fault_surface factor {bias_factor}
+surface all sizing function type bias start curve fault_surface factor {bias_factor}
 
 # End of file
-
-
-

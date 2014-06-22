@@ -15,20 +15,20 @@
 # ----------------------------------------------------------------------
 # Set vertex spacing with increasing spacing away from fault
 # ----------------------------------------------------------------------
-#{bias_factor=1.05}
+${bias_factor=1.05}
 
 # Function for computing discretization size at end of curve with bias
-#{fun_dx='dxStart*bias_factor**ceil( ln(1-curveL/dxStart*(1-bias_factor))/ln(bias_factor))'}
+${fun_dx='dxStart*bias_factor**ceil( ln(1-curveL/dxStart*(1-bias_factor))/ln(bias_factor))'}
 
 # ----------------------------------------------------------------------
 # Compute sizes at curve endpoints
 # ----------------------------------------------------------------------
 
-# dxA - size at vertex 13 14
-#{dxStart=dx}{curveL=Length(22)}{execute("dxA="//fun_dx)}
+# dxA - size at vertex_ypos_mid, vertex_yneg_mid
+${dxStart=dx}{curveL=Length(Id("fault_ext_ypos"))}{execute("dxA="//fun_dx)}
 
-# dxB - size at vertex 9 10 11 12
-#{dxStart=dxA}{curveL=Length(21)}{execute("dxC="//fun_dx)}
+# dxB - size at domain corners
+${dxStart=dxA}{curveL=Length(Id("edge_ypos_xpos"))}{execute("dxC="//fun_dx)}
 
 # ----------------------------------------------------------------------
 # Reset sizes
@@ -40,21 +40,22 @@ surface all sizing function none
 curve fault_surface size {dx}
 
 # Set bias on curves extending from faults
-curve 22 scheme bias fine size {dx} factor {bias_factor} start vertex 15
-curve 24 scheme bias fine size {dx} factor {bias_factor} start vertex 16
+curve fault_ext_ypos scheme bias fine size {dx} factor {bias_factor} start vertex vertex_fault_ypos
+curve fault_ext_yneg scheme bias fine size {dx} factor {bias_factor} start vertex vertex_fault_yneg
 
 # A to B
-curve 18 scheme bias fine size {dxA} factor {bias_factor} start vertex 13
-curve 21 scheme bias fine size {dxA} factor {bias_factor} start vertex 13
-curve 19 scheme bias fine size {dxA} factor {bias_factor} start vertex 14
-curve 20 scheme bias fine size {dxA} factor {bias_factor} start vertex 14
+curve edge_ypos_xneg scheme bias fine size {dxA} factor {bias_factor} start vertex vertex_ypos_mid
+curve edge_ypos_xpos scheme bias fine size {dxA} factor {bias_factor} start vertex vertex_ypos_mid
+curve edge_yneg_xneg scheme bias fine size {dxA} factor {bias_factor} start vertex vertex_yneg_mid
+curve edge_yneg_xpos scheme bias fine size {dxA} factor {bias_factor} start vertex vertex_yneg_mid
 
 # B to B
-curve 16 size {dxC}
-curve 14 size {dxC}
+curve edge_xneg size {dxC}
+curve edge_xpos size {dxC}
 
-surface 8 9 sizing function type bias start curve fault_surface factor {bias_factor}
+surface all sizing function type bias start curve fault_surface factor {bias_factor}
 
 # End of file
+
 
 

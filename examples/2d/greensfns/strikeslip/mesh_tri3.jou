@@ -24,7 +24,7 @@ playback 'geometry.jou'
 # ----------------------------------------------------------------------
 # Set discretization size and scheme
 # ----------------------------------------------------------------------
-#{dx=1.0*km}
+${dx=1.0*km}
 surface all scheme trimesh
 playback 'gradient.jou'
 
