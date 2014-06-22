@@ -26,7 +26,7 @@ playback 'geometry.jou'
 # Create tet4 mesh at 6.0 km resolution.
 # ----------------------------------------------------------------------
 
-#{dx=6.0*km}
+${dx=6.0*km}
 volume all size {dx}
 volume all scheme tetmesh
 
@@ -37,7 +37,7 @@ mesh surface all
 mesh volume all
 
 # ----------------------------------------------------------------------
-# Smooth mesh to imporve quality.
+# Smooth mesh to improve quality.
 # ----------------------------------------------------------------------
 cleanup volume all
 volume all smooth scheme condition number beta 2.0 cpu 4
@@ -51,7 +51,6 @@ playback 'bc.jou'
 # ----------------------------------------------------------------------
 # Export exodus file.
 # ----------------------------------------------------------------------
-set large exodus off
 export mesh "mesh.exo" dimension 3 overwrite
 
 

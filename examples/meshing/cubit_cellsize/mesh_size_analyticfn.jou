@@ -44,13 +44,13 @@ mesh volume all
 # ----------------------------------------------------------------------
 # Smooth mesh to improve quality
 # ----------------------------------------------------------------------
-#{condnum=2.0}
-#{loop(4)}
+${condnum=2.0}
+${loop(4)}
 cleanup volume all
 volume all smooth scheme condition number beta {condnum} cpu 10
 smooth volume all
-#{condnum=condnum-0.1}
-#{endloop}
+${condnum=condnum-0.1}
+${endloop}
 
 # ----------------------------------------------------------------------
 # Export exodus file

@@ -30,10 +30,10 @@ curve all scheme default
 surface all sizing function none
 
 # Discretization size on fault (finest resolution)
-#{dx=8.0*km}
+${dx=8.0*km}
 # Bias factor corresponding to geometric rate at which discretization size will
 # increase away from fault.
-#{bias_factor=1.2}
+${bias_factor=1.2}
 
 # Set size on faults (and bottom of slab corresponding to fault section)
 curve slabtop@A slabtop@D size {dx}
