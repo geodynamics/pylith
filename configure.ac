@@ -406,6 +406,7 @@ AC_CONFIG_FILES([Makefile
 		examples/meshing/surface_nurbs/merge_surfs/Makefile
 		examples/meshing/surface_nurbs/subduction/Makefile
 		examples/meshing/cubit_cellsize/Makefile
+		examples/debugging/Makefile
 		templates/Makefile
 		share/Makefile
 		])
