@@ -186,8 +186,8 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
             << "(";
         for (int i=0; i < spaceDim; ++i)
           msg << "  " << quadPtsGlobal[iQuad*spaceDim+i];
-        msg << ") for absorbing boundary condition " << _label << "\n"
-            << "using spatial database " << _db->label() << ".";
+        msg << ") for absorbing boundary condition '" << _label
+            << "' using spatial database '" << _db->label() << "'.";
         throw std::runtime_error(msg.str());
       } // if
       // Nondimensionalize damping constants

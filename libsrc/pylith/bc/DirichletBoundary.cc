@@ -203,7 +203,7 @@ pylith::bc::DirichletBoundary::_bufferScalar(const char* name,
 
   if (!_parameters->hasField(name)) {
     std::ostringstream msg;
-    msg << "Parameters for field '" << label << " not provided in "
+    msg << "Parameters for field '" << label << "' not provided in "
 	<< "Dirichlet BC '" << _label << "'.";
     throw std::runtime_error(msg.str());
   } // if
