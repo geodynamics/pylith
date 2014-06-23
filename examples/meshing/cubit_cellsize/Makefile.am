@@ -22,7 +22,8 @@ dist_noinst_DATA = \
 	geometry.jou \
 	mesh_cellsize.jou \
 	mesh_size_analyticfn.jou \
-	mesh_size_spatialdb.jou
+	mesh_size_spatialdb.jou \
+	matprops.spatialdb
 
 
 # End of file 
