@@ -367,9 +367,14 @@ class Dem2Lines(Application):
       masterString = masterPref + outputFileName + "'" + newLine
       um.write(masterString)
       u = open(outputFileName, 'w')
-      u.write('create curve spline')
       for column in range(self.numXOut):
-        u.write(fmt % (self.xOut[column], y, self.zOut[row, column]))
+        point = (self.xOut[column], y, self.zOut[row, column])
+        u.write("create vertex x %10.5e y %10.5e z %10.5e\n" % \
+                    (point[0], point[1], point[2]))
+        if 0 == column:
+            u.write("${idBeg=Id('vertex')}\n")
+      u.write("${idEnd=Id('vertex')}\n")
+      u.write("create curve spline vertex {idBeg} to {idEnd} delete\n")
 
       u.close()
 
@@ -385,10 +390,14 @@ class Dem2Lines(Application):
       masterString = masterPref + outputFileName + "'" + newLine
       vm.write(masterString)
       v = open(outputFileName, 'w')
-      v.write('create curve spline')
       for row in range(self.numYOut):
-        v.write(fmt % (x, self.yOut[row], self.zOut[row, column]))
-
+        point = (x, self.yOut[row], self.zOut[row, column])
+        v.write("create vertex x %10.5e y %10.5e z %10.5e\n" % \
+                    (point[0], point[1], point[2]))
+        if 0 == row:
+            v.write("${idBeg=Id('vertex')}\n")
+      v.write("${idEnd=Id('vertex')}\n")
+      v.write("create curve spline vertex {idBeg} to {idEnd} delete\n")
       v.close()
 
     vm.close()
