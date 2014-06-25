@@ -16,10 +16,21 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	subduction \
-	greensfns \
-	gravity
+dist_noinst_DATA = \
+	README \
+	geometry.jou \
+	mesh.jou \
+	mesh.exo \
+	pylithapp.cfg \
+	step01.cfg \
+	step01_correct.cfg \
+	step02.cfg \
+	step02_correct.cfg \
+	step03.cfg \
+	step03_correct.cfg \
+	mat_elastic.spatialdb \
+	mat_maxwell.spatialdb \
+	mat_maxwell_correct.spatialdb
 
 
 # End of file 

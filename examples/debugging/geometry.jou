@@ -1,0 +1,85 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2014 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+#
+# CUBIT journal file with geometry for debugging example.
+#
+# We also use the CUBIT support for APREPRO (the expressions in
+# braces), which includes units and mathematical functions. See the
+# APREPRO section in the appendix of the CUBIT documentation for more
+# information.
+#
+# ----------------------------------------------------------------------
+# Set units to SI.
+# ----------------------------------------------------------------------
+${Units('si')}
+#
+# ----------------------------------------------------------------------
+# Reset geometry.
+# ----------------------------------------------------------------------
+reset
+
+# ----------------------------------------------------------------------
+# Create block
+# ----------------------------------------------------------------------
+# Block is 80 km x 80 km x 40 km
+${blockLength=80.0*km}
+${blockWidth=80.0*km}
+${blockHeight=40.0*km}
+
+brick x {blockLength} y {blockWidth} z {blockHeight}
+${idVol=Id("volume")}
+
+volume {idVol} move x 0 y 0 z {-0.5*blockHeight}
+
+# ----------------------------------------------------------------------
+# Create interface surfaces
+# ----------------------------------------------------------------------
+create planar surface with plane xplane offset 0
+${idSf=Id("surface")}
+surface {idSf} name "fault_surface"
+create planar surface with plane zplane offset -20000
+${idSi=Id("surface")}
+surface {idSi} name "material_interface"
+
+# ----------------------------------------------------------------------
+# Divide volumes using interface surfaces
+# ----------------------------------------------------------------------
+webcut volume 1 with plane surface fault_surface
+webcut volume 1 4 with plane surface material_interface
+volume 1 name "elastic_xpos"
+volume 4 name "elastic_xneg"
+volume 5 name "visco_xpos"
+volume 6 name "visco_xneg"
+
+# ----------------------------------------------------------------------
+# Create embedded fault
+# ----------------------------------------------------------------------
+${faultLength=40*km}
+${faultWidth=30.0*km}
+brick x {1.0*km} y {faultLength} z {2.0*faultWidth}
+${idV=Id("volume")}
+chop volume 2 with volume {idV}
+
+# ----------------------------------------------------------------------
+# Imprint all volumes, merging surfaces
+# ----------------------------------------------------------------------
+imprint all with volume all
+merge all
+
+delete body 3 8 9
+
+# End of file
+

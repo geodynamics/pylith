@@ -104,8 +104,7 @@ pylith::bc::BCIntegratorSubMesh::verifyConfiguration(const topology::Mesh& mesh)
   if (_quadrature->cellDim() != _boundaryMesh->dimension()) {
     std::ostringstream msg;
     msg << "Quadrature is incompatible with cells for boundary condition '"
-	<< _label << "'.\n"
-	<< "Dimension of boundary mesh: " << _boundaryMesh->dimension()
+	<< _label << "'. Dimension of boundary mesh: " << _boundaryMesh->dimension()
 	<< ", dimension of quadrature: " << _quadrature->cellDim()
 	<< ".";
     throw std::runtime_error(msg.str());
@@ -132,8 +131,7 @@ pylith::bc::BCIntegratorSubMesh::verifyConfiguration(const topology::Mesh& mesh)
     if (numCorners != cellNumCorners) {
       std::ostringstream msg;
       msg << "Quadrature is incompatible with cell for boundary condition '"
-	  << _label << "'.\n"
-	  << "Cell " << c << " has " << cellNumCorners
+	  << _label << "'. Cell " << c << " has " << cellNumCorners
 	  << " vertices but quadrature reference cell has "
 	  << numCorners << " vertices.";
       throw std::runtime_error(msg.str());

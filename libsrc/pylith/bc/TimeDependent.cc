@@ -62,7 +62,7 @@ pylith::bc::TimeDependent::verifyConfiguration(const topology::Mesh& mesh) const
 { // verifyConfiguration
   if (!_dbChange && _dbTimeHistory) {
     std::ostringstream msg;
-    msg << "Time dependent boundary condition '" << _getLabel() << "',\n has a "
+    msg << "Time dependent boundary condition '" << _getLabel() << "', has a "
 	<< "time history database but not change in value spatial database.";
     throw std::runtime_error(msg.str());
   } // if

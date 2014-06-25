@@ -16,10 +16,8 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	subduction \
-	greensfns \
-	gravity
+dist_noinst_DATA = \
+	deform_view.pvsm
 
 
 # End of file 

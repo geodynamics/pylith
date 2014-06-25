@@ -175,10 +175,6 @@ pylith::bc::Neumann::verifyConfiguration(const topology::Mesh& mesh) const
 { // verifyConfiguration
   PYLITH_METHOD_BEGIN;
 
-  if (1 == mesh.dimension())
-    throw std::runtime_error("Neumann boundary conditions are not "
-			     "implemented for a 1-D mesh.");
-
   BCIntegratorSubMesh::verifyConfiguration(mesh);
 
   PYLITH_METHOD_END;
@@ -453,8 +449,8 @@ pylith::bc::Neumann::_queryDB(const char* name,
         msg << "Could not find values at (";
         for (int i=0; i < spaceDim; ++i)
           msg << " " << quadPtsGlobal[i+iSpace];
-        msg << ") for traction boundary condition " << _label << "\n"
-            << "using spatial database " << db->label() << ".";
+        msg << ") for traction boundary condition '" << _label
+            << "' using spatial database '" << db->label() << "'.";
         throw std::runtime_error(msg.str());
       } // if
     } // for
