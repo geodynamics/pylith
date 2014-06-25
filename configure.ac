@@ -395,8 +395,6 @@ AC_CONFIG_FILES([Makefile
 		examples/twocells/twotri3/Makefile
 		examples/meshing/Makefile
 		examples/meshing/surface_nurbs/Makefile
-		examples/meshing/surface_nurbs/contours/Makefile
-		examples/meshing/surface_nurbs/contours/journal/Makefile
 		examples/meshing/surface_nurbs/dem/Makefile
 		examples/meshing/surface_nurbs/dem/ulines/Makefile
 		examples/meshing/surface_nurbs/dem/vlines/Makefile
