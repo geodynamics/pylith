@@ -35,22 +35,22 @@ reset
 undo off
 
 # ----------------------------------------------------------------------
-# Create outer box (50 km x 50 km x 10 km)..
+# Create outer box (70 km x 50 km x 10 km).
 # ----------------------------------------------------------------------
-${outerBlockX=50.0*km}
+${outerBlockX=70.0*km}
 ${outerBlockY=50.0*km}
 ${outerBlockZ=10.0*km}
 brick x {outerBlockX} y {outerBlockY} z {outerBlockZ}
 volume 1 move x 0.0 y {-0.5*outerBlockY} z 0.0
 
 # ----------------------------------------------------------------------
-# Create inner box (5 km x 5 km x 10 km)..
+# Create inner box (5 km x 5 km x 10 km) and move it to left side.
 # ----------------------------------------------------------------------
 ${innerBlockX=5.0*km}
 ${innerBlockY=5.0*km}
 ${innerBlockZ=10.0*km}
 brick x {innerBlockX} y {innerBlockY} z {innerBlockZ}
-volume 2 move x 0.0 y {-0.5*innerBlockY} z 0.0
+volume 2 move x {-0.5*(outerBlockX-innerBlockX)} y {-0.5*innerBlockY} z 0.0
 
 # ----------------------------------------------------------------------
 # Webcut outer block with inner block and then form a midsurface
@@ -65,5 +65,4 @@ create midsurface volume 4 surface 20 22
 delete volume 3 4
 imprint all
 merge all
-
 
