@@ -178,6 +178,8 @@ pylith::problems::Solver::_createNullSpace(const topology::SolutionFields& field
     const int m = (spaceDim * (spaceDim + 1)) / 2;
     for(int i = 0; i < m; ++i) {
       err = VecDuplicate(solutionGlobalVec, &mode[i]);PYLITH_CHECK_ERROR(err);
+      // This is necessary to avoid circular references when we compose this MatNullSpace with a field in the DM
+      err = VecSetDM(mode[i], NULL);PYLITH_CHECK_ERROR(err);
     } // for
     // :KLUDGE: Assume P1
     for(int d = 0; d < spaceDim; ++d) {

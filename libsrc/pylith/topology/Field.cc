@@ -1257,10 +1257,14 @@ pylith::topology::Field::subfieldsSetup(void)
   PetscSection section = NULL;
   PetscErrorCode err = DMGetDefaultSection(_dm, &section);PYLITH_CHECK_ERROR(err);assert(section);
   err = PetscSectionSetNumFields(section, _subfieldComps.size());PYLITH_CHECK_ERROR(err);
+  err = DMSetNumFields(_dm, _subfieldComps.size());PYLITH_CHECK_ERROR(err);
   for(std::map<std::string, int>::const_iterator f_iter = _subfieldComps.begin(); f_iter != _subfieldComps.end(); ++f_iter) {
+    PetscObject fobj;
     const PetscInt index = subfieldMetadata(f_iter->first.c_str()).index;
     err = PetscSectionSetFieldName(section, index, f_iter->first.c_str());PYLITH_CHECK_ERROR(err);
     err = PetscSectionSetFieldComponents(section, index, f_iter->second);PYLITH_CHECK_ERROR(err);
+    err = DMGetField(_dm, index, &fobj);PYLITH_CHECK_ERROR(err);assert(section);
+    err = PetscObjectSetName(fobj, f_iter->first.c_str());PYLITH_CHECK_ERROR(err);
   } // for
 
   PYLITH_METHOD_END;
