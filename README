@@ -1,4 +1,4 @@
-We are pleased to announce release of PyLith version 2.0.1
+We are pleased to announce release of PyLith version 2.0.2
 
 Please submit bug reports via the World Wide Web at:
     https://github.com/geodynamics/pylith/issues
@@ -26,9 +26,9 @@ Installation instructions are in the bundled README and INSTALL
 files, as well as in the User Manual on the web page.
 
 PyLith is under active development and we expect a number of additions
-and improvements in the near future. Likely enhancements will include
-additional bulk and fault constitutive models and the generation of
-Green's functions to be used in inversions.
+and improvements in the near future. See
+http://wiki.geodynamics.org/software:pylith:plans:2014 for the current
+development plan.
 
 ======================================================================
 TIPS
@@ -83,11 +83,26 @@ edges of the fault. See the Section 6.4.2 of the PyLith manual for
 more information.
 
 ----------------------------------------------------------------------
-Version 2.0.1
+Version 2.0.2
 ----------------------------------------------------------------------
 
-* Added example (examples/2d/gravity) for viscoelastic deformation in
-  2-D with gravitational body forces and small strain formulation.
+* Bug fixes
+
+  - Fixed linking issue in Darwin binary distribution, primarily
+    affecting systems with OS X 10.7 and 10.8.
+
+  - Improved example journal files for CUBIT/Trelis to improve
+    compability (examples/meshing/surface_nurbs/dem).
+
+  - Updated more journal in examples so that APREPRO lines have a
+    leading '$' instead of a '#' to differentiate from comments.
+
+  - Added examples/debugging files from Crustal Deformation Modeling
+    workshop debugging tutorial.
+
+----------------------------------------------------------------------
+Version 2.0.1
+----------------------------------------------------------------------
 
 * Bug fixes
 
