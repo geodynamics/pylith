@@ -1,0 +1,8 @@
+Example demonstrating how to debug PyLith examples. See tutorial from
+Crustal Deformation Modeling workshop 2014 for details. The info on
+the slides will be added to the manual in v2.1.
+
+The .cfg files in this directory contain errors. The correct versions
+of the files are in the directory 'correct'. The goal is to fix the
+files in this directory to match the correct versions.
+

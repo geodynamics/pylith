@@ -23,14 +23,15 @@ dist_noinst_DATA = \
 	mesh.exo \
 	pylithapp.cfg \
 	step01.cfg \
-	step01_correct.cfg \
 	step02.cfg \
-	step02_correct.cfg \
 	step03.cfg \
-	step03_correct.cfg \
 	mat_elastic.spatialdb \
 	mat_maxwell.spatialdb \
-	mat_maxwell_correct.spatialdb
+	correct/pylithapp.cfg \
+	correct/step01.cfg \
+	correct/step02.cfg \
+	correct/step03.cfg \
+	correct/mat_elastic.spatialdb
 
 
 # End of file 

@@ -21,6 +21,7 @@ SUBDIRS = \
 	3d \
 	bar_shearwave \
 	meshing \
+	debugging \
 	twocells
 
 
