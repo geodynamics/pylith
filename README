@@ -1,4 +1,4 @@
-We are pleased to announce release of PyLith version 2.0.0
+We are pleased to announce release of PyLith version 2.0.2
 
 Please submit bug reports via the World Wide Web at:
     https://github.com/geodynamics/pylith/issues
@@ -9,10 +9,10 @@ Please send all questions by electronic mail to:
 PyLith is free software.  See the file COPYING for copying conditions.
 
 This release allows the solution of both quasi-static and dynamic
-problems in one, two, or three dimensions. The code runs in either
-serial or parallel mode, and the design allows for relatively easy
-scripting using the Python programming language. Material properties
-and parameters for boundary and fault conditions are specified using a
+problems in two or three dimensions. The code runs in either serial or
+parallel mode, and the design allows for relatively easy scripting
+using the Python programming language. Material properties and
+parameters for boundary and fault conditions are specified using a
 spatial database, which permits easy prescription of complex spatial
 variations of properties and parameters. Simulation parameters are
 generally specified through the use of simple ASCII files or the
@@ -26,9 +26,9 @@ Installation instructions are in the bundled README and INSTALL
 files, as well as in the User Manual on the web page.
 
 PyLith is under active development and we expect a number of additions
-and improvements in the near future. Likely enhancements will include
-additional bulk and fault constitutive models and the generation of
-Green's functions to be used in inversions.
+and improvements in the near future. See
+http://wiki.geodynamics.org/software:pylith:plans:2014 for the current
+development plan.
 
 ======================================================================
 TIPS
@@ -81,6 +81,42 @@ Buried edges of faults are handled differently in v2.0. A separate
 nodeset/pset should be created and contain the vertices on the buried
 edges of the fault. See the Section 6.4.2 of the PyLith manual for
 more information.
+
+----------------------------------------------------------------------
+Version 2.0.2
+----------------------------------------------------------------------
+
+* Bug fixes
+
+  - Fixed linking issue in Darwin binary distribution, primarily
+    affecting systems with OS X 10.7 and 10.8.
+
+  - Improved example journal files for CUBIT/Trelis to improve
+    compability (examples/meshing/surface_nurbs/dem).
+
+  - Updated more journal in examples so that APREPRO lines have a
+    leading '$' instead of a '#' to differentiate from comments.
+
+  - Added examples/debugging files from Crustal Deformation Modeling
+    workshop debugging tutorial.
+
+----------------------------------------------------------------------
+Version 2.0.1
+----------------------------------------------------------------------
+
+* Bug fixes
+
+  - Improved example journal files for CUBIT/Trelis to improve
+    compability. All journal files should work with CUBIT 14.1 and
+    Trelis 15.0.
+
+  - Created examples of IDless journal files in examples/2d/greensfns.
+    These files should work with all recent versions of CUBIT and
+    Trelis.
+
+  - Switched journal APREPRO lines to have leading '$' instead of '#'
+    to differentiate from comments.
+
 
 ----------------------------------------------------------------------
 Version 2.0.0

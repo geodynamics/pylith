@@ -107,10 +107,10 @@ pylith::bc::DirichletBC::setConstraintSizes(const topology::Field& field)
     if (cdof + numFixedDOF > dof) {
       std::ostringstream msg;
       msg
-	<< "Found overly constrained point while setting up constraints for\n"
-	<< "DirichletBC boundary condition '" << _label << "'.\n"
+	<< "Found overly constrained point while setting up constraints for "
+	<< "DirichletBC boundary condition '" << _label << "'. "
 	<< "Number of DOF at point " << point << " is " << dof
-	<< "\nand number of attempted constraints is " << cdof+numFixedDOF << ".";
+	<< " and number of attempted constraints is " << cdof+numFixedDOF << ".";
       throw std::runtime_error(msg.str());
     } // if
     _offsetLocal[iPoint] = cdof;
@@ -158,9 +158,9 @@ pylith::bc::DirichletBC::setConstraints(const topology::Field& field)
       for (int jDOF=0; jDOF < numFixedDOF; ++jDOF)
         if (allCInd[iDOF] == _bcDOF[jDOF]) {
           std::ostringstream msg;
-          msg << "Found multiple constraints on degrees of freedom at\n"
-              << "point while setting up constraints for DirichletBC\n"
-              << "boundary condition '" << _label << "'.\n"
+          msg << "Found multiple constraints on degrees of freedom at "
+              << "point while setting up constraints for DirichletBC "
+              << "boundary condition '" << _label << "'. "
 	      << "Degree of freedom " << _bcDOF[jDOF] 
               << " is already constrained by another Dirichlet BC.";
           throw std::runtime_error(msg.str());

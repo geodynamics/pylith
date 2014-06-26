@@ -134,7 +134,7 @@ pylith::faults::ConstRateSlipFn::initialize(const topology::Mesh& faultMesh,
     } // case 3
     default :
       std::ostringstream msg;
-      msg << "Bad spatial dimension '" << spaceDim << " in ConstRateSlipFn'." << std::endl;
+      msg << "Bad spatial dimension '" << spaceDim << "' in ConstRateSlipFn." << std::endl;
       throw std::logic_error(msg.str());
     } // switch
 
@@ -174,7 +174,7 @@ pylith::faults::ConstRateSlipFn::initialize(const topology::Mesh& faultMesh,
       msg << "Could not find slip rate at (";
       for (int i=0; i < spaceDim; ++i)
         msg << "  " << vCoordsGlobal[i];
-      msg << ") using spatial database " << _dbSlipRate->label() << ".";
+      msg << ") using spatial database '" << _dbSlipRate->label() << "'.";
       throw std::runtime_error(msg.str());
     } // if
     normalizer.nondimensionalize(&_slipRateVertex[0], _slipRateVertex.size(), velocityScale);
@@ -188,7 +188,7 @@ pylith::faults::ConstRateSlipFn::initialize(const topology::Mesh& faultMesh,
       msg << "Could not find slip initiation time at (";
       for (int i=0; i < spaceDim; ++i)
         msg << "  " << vCoordsGlobal[i];
-      msg << ") using spatial database " << _dbSlipTime->label() << ".";
+      msg << ") using spatial database '" << _dbSlipTime->label() << "'.";
       throw std::runtime_error(msg.str());
     } // if
     normalizer.nondimensionalize(&_slipTimeVertex, 1, timeScale);

@@ -40,7 +40,7 @@
 # ----------------------------------------------------------------------
 # Set units to SI.
 # ----------------------------------------------------------------------
-# {Units('si')}
+${Units('si')}
 #
 # ----------------------------------------------------------------------
 # Reset geometry.
@@ -62,7 +62,7 @@ undo off
 # to select multiple vertices.
 #
 create vertex x { -600.0*km} y {-2000.0*m}
-#{idPtTopoW=Id("vertex")}
+${idPtTopoW=Id("vertex")}
 create vertex x { -439.1*km} y { -300.0*m}
 create vertex x { -351.2*km} y { -800.0*m}
 create vertex x { -263.4*km} y {    0.0*m}
@@ -71,12 +71,12 @@ create vertex x {  -87.7*km} y {    0.0*m}
 create vertex x {    0.0*km} y { -400.0*m}
 create vertex x {   87.7*km} y {-3000.0*m}
 create vertex x {  165.6*km} y {-6000.0*m}
-#{idPtTrench=Id("vertex")}
+${idPtTrench=Id("vertex")}
 create vertex x {  263.4*km} y {-5400.0*m}
 create vertex x {  351.2*km} y {-5400.0*m}
 create vertex x {  439.1*km} y {-5400.0*m}
 create vertex x {  600.0*km} y {-5700.0*m}
-#{idPtTopoE=Id("vertex")}
+${idPtTopoE=Id("vertex")}
 
 create curve spline vertex {idPtTopoW} to {idPtTopoE}
 curve {Id("curve")} name "topobathy"
@@ -85,7 +85,7 @@ curve {Id("curve")} name "topobathy"
 # Hayes and Wald, 2009
 # http://earthquake.usgs.gov/research/data/slab
 create vertex x { -600.0*km} y {-340.00*km}
-#{idPtSlabBot=Id("vertex")}
+${idPtSlabBot=Id("vertex")}
 create vertex x { -422.4*km} y {-240.00*km}
 create vertex x { -331.0*km} y {-180.00*km}
 create vertex x { -261.6*km} y {-140.00*km}
@@ -93,12 +93,12 @@ create vertex x { -223.9*km} y {-120.00*km}
 create vertex x { -182.6*km} y {-100.00*km}
 create vertex x { -134.3*km} y {-80.00*km}
 create vertex x {  -74.6*km} y {-60.00*km}
-#{idPtSlabMoho=Id("vertex")}
+${idPtSlabMoho=Id("vertex")}
 create vertex x {   -7.9*km} y {-40.00*km}
-#{idPtSlabTopMoho=Id("vertex")}
+${idPtSlabTopMoho=Id("vertex")}
 create vertex x {   71.1*km} y {-20.00*km}
 create vertex x {  160.5*km} y {-7.50*km}
-#{idPtSlabTop=Id("vertex")}
+${idPtSlabTop=Id("vertex")}
 
 create curve spline vertex {idPtSlabBot} to {idPtSlabTop} {idPtTrench}
 curve {Id("curve")} name "slabtop"
@@ -108,24 +108,24 @@ curve {Id("curve")} name "slabtop"
 # Better approach would be to move points normal to slab to preserve
 # uniform thickness.
 vertex {idPtSlabBot} to {idPtSlabMoho} copy move X {120.0*km}
-#{idPtSlabBotW=idPtSlabTop+1}
+${idPtSlabBotW=idPtSlabTop+1}
 create vertex x {  175.6*km} y {-40.0*km}
 create vertex x {  600.0*km} y {-40.0*km}
-#{idPtMohoE=Id("vertex")}
+${idPtMohoE=Id("vertex")}
 
 create curve spline vertex {idPtSlabBotW} to {idPtMohoE}
 curve {Id("curve")} name "slabbot"
 
 # Top of mantle (uniform depth of 40 km)
 create vertex x { -600.0*km} y {-40.00*km}
-#{idPtMohoW=Id("vertex")}
+${idPtMohoW=Id("vertex")}
 
 create curve spline vertex {idPtMohoW} {idPtSlabTopMoho}
 curve {Id("curve")} name "conmoho"
 
 # Lateral edges and bottom boundary
 create vertex x { 600.0*km} y {-340.00*km}
-#{idPtBotE=Id("vertex")}
+${idPtBotE=Id("vertex")}
 
 create curve spline vertex {idPtTopoW} {idPtMohoW} {idPtSlabBot}
 curve {Id("curve")} name "edgewest"

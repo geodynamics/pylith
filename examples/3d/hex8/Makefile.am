@@ -39,6 +39,10 @@ dist_noinst_DATA = \
 	step18.cfg \
 	step19.cfg \
 	step20.cfg \
+	step21.cfg \
+	greensfns.cfg \
+	greensfns_points.txt \
+	output_points.txt \
 	mesh/geometry.jou \
 	mesh/mesh_hex8_1000m.jou \
 	mesh/box_hex8_1000m.exo \
@@ -60,7 +64,8 @@ dist_noinst_DATA = \
 	spatialdb/powerlaw/powerlaw_params.spatialdb \
 	spatialdb/powerlaw/powerlaw_points.txt \
 	spatialdb/powerlaw/temperature.spatialdb \
-	spatialdb/tractions_opening.spatialdb
+	spatialdb/tractions_opening.spatialdb \
+	spatialdb/impulse_amplitude.spatialdb
 
 
 SUBDIRS = \

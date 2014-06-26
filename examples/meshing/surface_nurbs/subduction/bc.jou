@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------
 # Create blocks for materials
 # ----------------------------------------------------------------------
-block 1 volume 1
+block 1 volume 5
 block 1 name "plate"
 block 2 volume 6
 block 2 name "slab"
@@ -38,7 +38,7 @@ nodeset 101 name "splay_fault"
 # ----------------------------------------------------------------------
 # Create nodeset for +x face
 # ----------------------------------------------------------------------
-group "face_xpos" add node in surface 12
+group "face_xpos" add node in surface 17
 nodeset 10 group face_xpos
 nodeset 10 name "face xpos"
 
@@ -99,6 +99,7 @@ nodeset 15 name "face zpos"
 
 
 # End of file
+
 
 
 

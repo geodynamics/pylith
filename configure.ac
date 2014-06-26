@@ -17,7 +17,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith], [2.0.0], [cig-short@geodynamics.org])
+AC_INIT([PyLith], [2.0.2], [cig-short@geodynamics.org])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
@@ -373,6 +373,8 @@ AC_CONFIG_FILES([Makefile
 		examples/2d/Makefile
 		examples/2d/subduction/Makefile
 		examples/2d/subduction/output/Makefile
+		examples/2d/gravity/Makefile
+		examples/2d/gravity/output/Makefile
 		examples/2d/greensfns/Makefile
 		examples/2d/greensfns/strikeslip/Makefile
 		examples/2d/greensfns/strikeslip/output/Makefile
@@ -395,8 +397,6 @@ AC_CONFIG_FILES([Makefile
 		examples/twocells/twotri3/Makefile
 		examples/meshing/Makefile
 		examples/meshing/surface_nurbs/Makefile
-		examples/meshing/surface_nurbs/contours/Makefile
-		examples/meshing/surface_nurbs/contours/journal/Makefile
 		examples/meshing/surface_nurbs/dem/Makefile
 		examples/meshing/surface_nurbs/dem/ulines/Makefile
 		examples/meshing/surface_nurbs/dem/vlines/Makefile
@@ -404,6 +404,7 @@ AC_CONFIG_FILES([Makefile
 		examples/meshing/surface_nurbs/merge_surfs/Makefile
 		examples/meshing/surface_nurbs/subduction/Makefile
 		examples/meshing/cubit_cellsize/Makefile
+		examples/debugging/Makefile
 		templates/Makefile
 		share/Makefile
 		])

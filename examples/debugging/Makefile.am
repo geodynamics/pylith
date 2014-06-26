@@ -16,7 +16,22 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = 
+dist_noinst_DATA = \
+	README \
+	geometry.jou \
+	mesh.jou \
+	mesh.exo \
+	pylithapp.cfg \
+	step01.cfg \
+	step02.cfg \
+	step03.cfg \
+	mat_elastic.spatialdb \
+	mat_maxwell.spatialdb \
+	correct/pylithapp.cfg \
+	correct/step01.cfg \
+	correct/step02.cfg \
+	correct/step03.cfg \
+	correct/mat_elastic.spatialdb
 
 
 # End of file 
