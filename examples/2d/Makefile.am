@@ -18,7 +18,8 @@
 
 SUBDIRS = \
 	subduction \
-	greensfns
+	greensfns \
+	gravity
 
 
 # End of file 

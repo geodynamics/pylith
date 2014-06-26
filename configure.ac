@@ -373,6 +373,8 @@ AC_CONFIG_FILES([Makefile
 		examples/2d/Makefile
 		examples/2d/subduction/Makefile
 		examples/2d/subduction/output/Makefile
+		examples/2d/gravity/Makefile
+		examples/2d/gravity/output/Makefile
 		examples/2d/greensfns/Makefile
 		examples/2d/greensfns/strikeslip/Makefile
 		examples/2d/greensfns/strikeslip/output/Makefile
@@ -402,6 +404,7 @@ AC_CONFIG_FILES([Makefile
 		examples/meshing/surface_nurbs/merge_surfs/Makefile
 		examples/meshing/surface_nurbs/subduction/Makefile
 		examples/meshing/cubit_cellsize/Makefile
+		examples/debugging/Makefile
 		templates/Makefile
 		share/Makefile
 		])

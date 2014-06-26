@@ -16,13 +16,8 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	2d \
-	3d \
-	bar_shearwave \
-	meshing \
-	debugging \
-	twocells
+dist_noinst_DATA = \
+	deform_view.pvsm
 
 
 # End of file 

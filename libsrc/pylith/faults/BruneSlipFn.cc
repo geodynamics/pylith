@@ -145,7 +145,7 @@ pylith::faults::BruneSlipFn::initialize(const topology::Mesh& faultMesh,
     } // case 3
     default :
       std::ostringstream msg;
-      msg << "Bad spatial dimension '" << spaceDim << " in BruneSlipFn'." << std::endl;
+      msg << "Bad spatial dimension '" << spaceDim << "' in BruneSlipFn." << std::endl;
       throw std::logic_error(msg.str());
     } // switch
 
@@ -189,7 +189,7 @@ pylith::faults::BruneSlipFn::initialize(const topology::Mesh& faultMesh,
       msg << "Could not find slip rate at (";
       for (int i=0; i < spaceDim; ++i)
         msg << "  " << vCoordsGlobal[i];
-      msg << ") using spatial database " << _dbFinalSlip->label() << ".";
+      msg << ") using spatial database '" << _dbFinalSlip->label() << "'.";
       throw std::runtime_error(msg.str());
     } // if
     normalizer.nondimensionalize(&_slipVertex[0], _slipVertex.size(), lengthScale);
@@ -203,7 +203,7 @@ pylith::faults::BruneSlipFn::initialize(const topology::Mesh& faultMesh,
       msg << "Could not find slip initiation time at (";
       for (int i=0; i < spaceDim; ++i)
         msg << "  " << vCoordsGlobal[i];
-      msg << ") using spatial database " << _dbSlipTime->label() << ".";
+      msg << ") using spatial database '" << _dbSlipTime->label() << "'.";
       throw std::runtime_error(msg.str());
     } // if
     normalizer.nondimensionalize(&_slipTimeVertex, 1, timeScale);
@@ -219,7 +219,7 @@ pylith::faults::BruneSlipFn::initialize(const topology::Mesh& faultMesh,
       msg << "Could not find rise time at (";
       for (int i=0; i < spaceDim; ++i)
         msg << "  " << vCoordsGlobal[i];
-      msg << ") using spatial database " << _dbRiseTime->label() << ".";
+      msg << ") using spatial database '" << _dbRiseTime->label() << "'.";
       throw std::runtime_error(msg.str());
     } // if
     normalizer.nondimensionalize(&_riseTimeVertex, 1, timeScale);

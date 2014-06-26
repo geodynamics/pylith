@@ -16,13 +16,24 @@
 # ----------------------------------------------------------------------
 #
 
+dist_noinst_DATA = \
+	README \
+	geometry.jou \
+	grav_stress-initial.spatialdb \
+	grav_stress.cfg \
+	grav_stress_finite_is2.cfg \
+	grav_stress_infin_is1.cfg \
+	grav_stress_infin_is2.cfg \
+	mat_elastic.spatialdb \
+	mat_maxwell.spatialdb \
+	mesh_tri3.exo \
+	mesh_tri3.jou \
+	pylithapp.cfg \
+	stress2spatialdb.py
+
+
 SUBDIRS = \
-	2d \
-	3d \
-	bar_shearwave \
-	meshing \
-	debugging \
-	twocells
+	output
 
 
 # End of file 
