@@ -31,8 +31,7 @@ dist_noinst_DATA = \
 	grav_stress_infin_is3.cfg \
 	mat_elastic.spatialdb \
 	mat_maxwell.spatialdb \
-	mesh_tri3.exo \
-	mesh_tri3.jou \
+	mesh.jou \
 	pylithapp.cfg \
 	stress2spatialdb.py
 
