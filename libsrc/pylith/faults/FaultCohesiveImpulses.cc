@@ -107,8 +107,7 @@ pylith::faults::FaultCohesiveImpulses::threshold(const PylithScalar value)
 { // threshold
   if (value < 0) {
     std::ostringstream msg;
-    msg << "Threshold (" << value << ") for nonzero amplitudes of impulses "
-      "must be nonnegative";
+    msg << "Threshold (" << value << ") for nonzero amplitudes of impulses must be nonnegative";
     throw std::runtime_error(msg.str());
   } // if
 
@@ -261,8 +260,7 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
 
   } else {
     std::ostringstream msg;
-    msg << "Request for unknown vertex field '" << name << "' for fault '"
-        << label() << "'.";
+    msg << "Request for unknown vertex field '" << name << "' for fault '" << label() << "'.";
     throw std::runtime_error(msg.str());
   } // else
 
@@ -356,11 +354,10 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
     int err = _dbImpulseAmp->query(&amplitudeArray[aoff], 1, &coordsVertex[0], coordsVertex.size(), cs);
     if (err) {
       std::ostringstream msg;
-      msg << "Could not find amplitude for Green's function impulses at \n" << "(";
+      msg << "Could not find amplitude for Green's function impulses at " << "(";
       for (int i = 0; i < spaceDim; ++i)
         msg << "  " << coordsVertex[i];
-      msg << ") in fault " << label() << "\n"
-          << "using spatial database '" << _dbImpulseAmp->label() << "'.";
+      msg << ") in fault " << label() << "using spatial database '" << _dbImpulseAmp->label() << "'.";
       throw std::runtime_error(msg.str());
     } // if
 

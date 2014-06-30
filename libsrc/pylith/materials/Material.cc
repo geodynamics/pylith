@@ -219,11 +219,10 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
       int err = _dbProperties->query(&propertiesQuery[0], numDBProperties, &quadPtsGlobal[index], spaceDim, cs);
       if (err) {
 	std::ostringstream msg;
-	msg << "Could not find parameters for physical properties at \n" << "(";
+	msg << "Could not find parameters for physical properties at " << "(";
 	for (int i=0; i < spaceDim; ++i)
 	  msg << "  " << quadPtsGlobal[index+i];
-	msg << ") in material " << _label << "\n"
-	    << "using spatial database '" << _dbProperties->label() << "'.";
+	msg << ") in material '" << _label << "' using spatial database '" << _dbProperties->label() << "'.";
 	throw std::runtime_error(msg.str());
       } // if
       _dbToProperties(&propertiesCell[iQuadPt*_numPropsQuadPt], propertiesQuery);
@@ -236,9 +235,7 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
 	  msg << "Could not find initial state variables at \n" << "(";
 	  for (int i=0; i < spaceDim; ++i)
 	    msg << "  " << quadPtsGlobal[index+i];
-	  msg << ") in material " << _label << "\n"
-	      << "using spatial database '" << _dbInitialState->label()
-	      << "'.";
+	  msg << ") in material '" << _label << "' using spatial database '" << _dbInitialState->label() << "'.";
 	  throw std::runtime_error(msg.str());
 	} // if
 	_dbToStateVars(&stateVarsCell[iQuadPt*_numVarsQuadPt], stateVarsQuery);
@@ -499,7 +496,7 @@ pylith::materials::Material::getField(topology::Field *field,
     case topology::FieldBase::MULTI_OTHER:
     default :
       std::ostringstream msg;
-      msg << "Bad vector field type '" << fieldType << "  for Material'." << std::endl;
+      msg << "Bad vector field type '" << fieldType << "' for Material." << std::endl;
       throw std::logic_error(msg.str());
     } // switch
   field->vectorFieldType(multiType);

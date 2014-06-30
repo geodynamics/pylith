@@ -53,8 +53,7 @@ pylith::topology::SolutionFields::solutionName(const char* name)
   map_type::const_iterator iter = _fields.find(name);
   if (iter == _fields.end()) {
     std::ostringstream msg;
-    msg << "Cannot use unknown field '" << name 
-	<< "' when setting name of solution field.";
+    msg << "Cannot use unknown field '" << name << "' when setting name of solution field.";
     throw std::runtime_error(msg.str());
   } // if
   _solutionName = name;

@@ -65,8 +65,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
         ++count;
     if (count > 0) {
       std::ostringstream msg;
-      msg << "Mesh contains " << count
-          << " vertices that are not in any cells.";
+      msg << "Mesh contains " << count << " vertices that are not in any cells.";
       throw std::runtime_error(msg.str());
     } // if
   } // check

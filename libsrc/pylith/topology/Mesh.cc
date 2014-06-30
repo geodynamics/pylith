@@ -120,8 +120,7 @@ pylith::topology::Mesh::Mesh(const Mesh& mesh,
 
   if (maxConeSize <= 0) {
     std::ostringstream msg;
-    msg << "Error while creating submesh. Submesh '" 
-	<< label << "' does not contain any cells.\n";
+    msg << "Error while creating submesh. Submesh '" << label << "' does not contain any cells.\n";
     throw std::runtime_error(msg.str());
   } // if
 
@@ -296,8 +295,7 @@ pylith::topology::Mesh::groupSize(const char *name)
   err = DMPlexHasLabel(_dmMesh, name, &hasLabel);PYLITH_CHECK_ERROR(err);
   if (!hasLabel) {
     std::ostringstream msg;
-    msg << "Cannot get size of group '" << name
-	<< "'. Group missing from mesh.";
+    msg << "Cannot get size of group '" << name << "'. Group missing from mesh.";
     throw std::runtime_error(msg.str());
   } // if
 

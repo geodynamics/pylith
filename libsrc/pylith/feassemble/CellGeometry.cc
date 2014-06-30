@@ -224,7 +224,8 @@ pylith::feassemble::CellGeometry::_orient2D(scalar_array* orientation,
   mag = sqrt(p0*p0 + p1*p1 + p2*p2);
   if (mag < 1.0e-6) {
     std::ostringstream msg;
-    msg << "Error computing orientation of cell face.\nUp direction ("
+    msg << "Error computing orientation of cell face. Cannot resolve tangential components into unambigious directions.\n"
+	<< "Up direction ("
 	<< upDir[0] << ", " << upDir[1] << ", " << upDir[2] << ") "
 	<< " cannot be parallel to the face normal ("
 	<< r0 << ", " << r1 << ", " << r2 << ").\n"
