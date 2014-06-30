@@ -152,11 +152,10 @@ pylith::friction::FrictionModel::initialize(const topology::Mesh& faultMesh,
 				   &coordsVertexGlobal[0], spaceDim, cs);
     if (err) {
       std::ostringstream msg;
-      msg << "Could not find parameters for physical properties at \n" << "(";
+      msg << "Could not find parameters for physical properties at " << "(";
       for (int i = 0; i < spaceDim; ++i)
         msg << "  " << coordsVertexGlobal[i];
-      msg << ") in friction model " << _label << "\n"
-          << "using spatial database '" << _dbProperties->label() << "'.";
+      msg << ") in friction model '" << _label << "' using spatial database '" << _dbProperties->label() << "'.";
       throw std::runtime_error(msg.str());
     } // if
     assert(propertiesVertex.size() == propertiesDBQuery.size());
@@ -214,11 +213,10 @@ pylith::friction::FrictionModel::initialize(const topology::Mesh& faultMesh,
 				       &coordsVertexGlobal[0], spaceDim, cs);
       if (err) {
         std::ostringstream msg;
-        msg << "Could not find initial state variables at \n" << "(";
+        msg << "Could not find initial state variables at " << "(";
         for (int i = 0; i < spaceDim; ++i)
           msg << "  " << coordsVertexGlobal[i];
-        msg << ") in friction model " << _label << "\n"
-            << "using spatial database '" << _dbInitialState->label() << "'.";
+        msg << ") in friction model '" << _label << "' using spatial database '" << _dbInitialState->label() << "'.";
         throw std::runtime_error(msg.str());
       } // if
       _dbToStateVars(&stateVarsVertex[0], stateVarsDBQuery);

@@ -237,7 +237,7 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
     throw std::runtime_error(msg.str());
   } catch (...) { 
     std::ostringstream msg;
-    msg << "Unknown error while opening HDF5 file " << _hdf5Filename() << ".\n";
+    msg << "Unknown error while opening HDF5 file " << _hdf5Filename() << ".";
     throw std::runtime_error(msg.str());
   } // try/catch
 
@@ -332,7 +332,7 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
   } catch (...) { 
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 
-	<< t << " to HDF5 file '" << _hdf5Filename() << "'.\n";
+	<< t << " to HDF5 file '" << _hdf5Filename() << "'.";
     throw std::runtime_error(msg.str());
   } // try/catch
 
@@ -398,7 +398,7 @@ pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
   } catch (...) { 
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 
-	<< t << " to HDF5 file '" << _hdf5Filename() << "'.\n";
+	<< t << " to HDF5 file '" << _hdf5Filename() << "'.";
     throw std::runtime_error(msg.str());
   } // try/catch
 
