@@ -16,12 +16,12 @@
 # ----------------------------------------------------------------------
 #
 
-## @file tests/3d/tet4/TestFaultsIntersect.py
+## @file tests/3d/hex8/TestFaultsIntersect.py
 ##
 ## @brief Test suite for testing pylith with shear slip.
 
 import numpy
-from TestTet4 import TestTet4
+from TestHex8 import TestHex8
 from sliponefault_soln import AnalyticalSoln
 
 # Local version of PyLithApp
@@ -44,7 +44,7 @@ def run_pylith():
   return
 
 
-class TestFaultsIntersect(TestTet4):
+class TestFaultsIntersect(TestHex8):
   """
   Test suite for testing pylith with shear slip on two faults.
   """
@@ -53,22 +53,23 @@ class TestFaultsIntersect(TestTet4):
     """
     Setup for test.
     """
-    TestTet4.setUp(self)
+    TestHex8.setUp(self)
     self.nverticesO = self.mesh['nvertices']
 
     # Fault x
-    self.mesh['nvertices'] += 50
-    self.faultMeshX = {'nvertices': 50,
+    self.mesh['nvertices'] += 55
+    self.faultMeshX = {'nvertices': 55,
                        'spaceDim': 3,
-                       'ncells': 72,
-                       'ncorners': 3}
+                       'ncells': 40,
+                       'ncorners': 4}
 
     # Fault y
-    self.mesh['nvertices'] += 2
-    self.faultMeshY = {'nvertices': 9,
+    self.mesh['nvertices'] += 4
+    self.faultMeshY = {'nvertices': 12,
                        'spaceDim': 3,
-                       'ncells': 8,
-                       'ncorners': 3}
+                       'ncells': 6,
+                       'ncorners': 4}
+
     run_pylith()
     self.outputRoot = "faultsintersect"
 
@@ -147,7 +148,7 @@ class TestFaultsIntersect(TestTet4):
     """
 
     if self.fault == "x":
-      normalDir = (+1.0, 0.0, 0.0)
+      normalDir = (-1.0, 0.0, 0.0)
       finalSlip = -2.0
       faultMesh = self.faultMeshX
     elif self.fault == "y":
