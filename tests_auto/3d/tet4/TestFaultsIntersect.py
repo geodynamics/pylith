@@ -151,7 +151,7 @@ class TestFaultsIntersect(TestTet4):
       finalSlip = -2.0
       faultMesh = self.faultMeshX
     elif self.fault == "y":
-      normalDir = (0.0,+1.0, 0.0)
+      normalDir = (0.0,-1.0, 0.0)
       finalSlip = 0.0
       faultMesh = self.faultMeshY
 

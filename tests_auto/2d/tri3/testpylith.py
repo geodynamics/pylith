@@ -45,6 +45,9 @@ def suite():
   from TestSlipTwoFaults import TestSlipTwoFaults
   suite.addTest(unittest.makeSuite(TestSlipTwoFaults))
 
+  from TestFaultsIntersect import TestFaultsIntersect
+  suite.addTest(unittest.makeSuite(TestFaultsIntersect))
+
   return suite
 
 
