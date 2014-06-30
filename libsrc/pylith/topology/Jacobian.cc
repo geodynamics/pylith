@@ -117,16 +117,16 @@ pylith::topology::Jacobian::assemble(const char* mode)
       err = MatGetRow(_matrix,r, &ncols, &cols, PETSC_NULL);PYLITH_CHECK_ERROR(err);
       if (!ncols) {
         std::ostringstream msg;
-        msg << "ERROR: Empty row " << r << " in ["<<rStart<<","<<rEnd<<")" << std::endl;
-        throw std::runtime_error(msg.str().c_str());
+        msg << "ERROR: Matrix empty row " << r << " in ["<<rStart<<","<<rEnd<<")" << std::endl;
+        throw std::runtime_error(msg.str());
       }
       for(c = 0; c < ncols; ++c) {
         if (cols[c] == r) break;
       }
       if (c == ncols) {
         std::ostringstream msg;
-        msg << "ERROR: Row " << r << " in ["<<rStart<<","<<rEnd<<") is missing diagonal element" << std::endl;
-        throw std::runtime_error(msg.str().c_str());
+        msg << "ERROR: Matrix row " << r << " in ["<<rStart<<","<<rEnd<<") is missing diagonal element" << std::endl;
+        throw std::runtime_error(msg.str());
       }
       err = MatRestoreRow(_matrix,r, &ncols, &cols, PETSC_NULL);PYLITH_CHECK_ERROR(err);
     }

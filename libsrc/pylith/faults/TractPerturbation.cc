@@ -346,8 +346,8 @@ pylith::faults::TractPerturbation::calculate(const PylithScalar t)
 	  if (err) {
 	    std::ostringstream msg;
 	    msg << "Error querying for time '" << tDim 
-		<< "' in time history database "
-		<< _dbTimeHistory->label() << ".";
+		<< "' in time history database '"
+		<< _dbTimeHistory->label() << "'.";
 	    throw std::runtime_error(msg.str());
 	  } // if
 	} // if
@@ -484,7 +484,7 @@ pylith::faults::TractPerturbation::_queryDB(const char* name,
       msg << "Error querying for '" << name << "' at (";
       for (int i=0; i < spaceDim; ++i)
         msg << "  " << coordsVertex[i];
-      msg << ") using spatial database " << db->label() << ".";
+      msg << ") using spatial database '" << db->label() << "'.";
       throw std::runtime_error(msg.str());
     } // if
     normalizer.nondimensionalize(&valueVertex[0], valueVertex.size(), scale);

@@ -80,8 +80,7 @@ pylith::topology::Fields::add(const char* name,
 
   if (hasField(name)) {
     std::ostringstream msg;
-    msg << "Could not add field '" << name
-	<< "' to fields manager, because it already exists.";
+    msg << "Could not add field '" << name << "' to fields manager, because it already exists.";
     throw std::runtime_error(msg.str());
   } // if
   
@@ -103,8 +102,7 @@ pylith::topology::Fields::add(const char* name,
 
   if (hasField(name)) {
     std::ostringstream msg;
-    msg << "Could not add field '" << name
-	<< "' to fields manager, because it already exists.";
+    msg << "Could not add field '" << name << "' to fields manager, because it already exists.";
     throw std::runtime_error(msg.str());
   } // if
   
@@ -125,8 +123,7 @@ pylith::topology::Fields::del(const char* name)
   map_type::iterator iter = _fields.find(name);
   if (iter == _fields.end()) {
     std::ostringstream msg;
-    msg << "Could not find field '" << name
-	<< "' in fields manager to delete.";
+    msg << "Could not find field '" << name << "' in fields manager to delete.";
     throw std::runtime_error(msg.str());
   } // if
   delete iter->second; iter->second = 0;
@@ -153,8 +150,7 @@ pylith::topology::Fields::get(const char* name) const
   map_type::const_iterator iter = _fields.find(name);
   if (iter == _fields.end()) {
     std::ostringstream msg;
-    msg << "Could not find field '" << name
-	<< "' in fields manager for retrieval.";
+    msg << "Could not find field '" << name << "' in fields manager for retrieval.";
     throw std::runtime_error(msg.str());
   } // if
 
@@ -171,8 +167,7 @@ pylith::topology::Fields::get(const char* name)
   map_type::iterator iter = _fields.find(name);
   if (iter == _fields.end()) {
     std::ostringstream msg;
-    msg << "Could not find field '" << name
-	<< "' in fields manager for retrieval.";
+    msg << "Could not find field '" << name << "' in fields manager for retrieval.";
     throw std::runtime_error(msg.str());
   } // if
 
@@ -189,8 +184,7 @@ pylith::topology::Fields::copyLayout(const char* name)
   map_type::const_iterator src = _fields.find(name);
   if (src == _fields.end()) {
     std::ostringstream msg;
-    msg << "Could not find field '" << name
-	<< "' in fields manager for retrieval.";
+    msg << "Could not find field '" << name << "' in fields manager for retrieval.";
     throw std::runtime_error(msg.str());
   } // if
 

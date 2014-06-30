@@ -98,16 +98,16 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
         err = DMPlexGetConeSize(dm, p, &numEdges);PYLITH_CHECK_ERROR(err);
         if (numEdges != 3) {
           std::ostringstream msg;
-          msg << "Face "<<p<<" has "<<numEdges<<" edges != 3.";
-          throw std::runtime_error(msg.str());
+          msg << "Internal error while creating fault mesh. Face "<<p<<" has "<<numEdges<<" edges != 3.";
+          throw std::logic_error(msg.str());
         }
         for (e = 0; e < numEdges; ++e) {
           err = DMPlexGetCone(dm, edges[e], &verts);PYLITH_CHECK_ERROR(err);
           err = DMPlexGetConeSize(dm, edges[e], &numVerts);PYLITH_CHECK_ERROR(err);
           if (numVerts != 2) {
             std::ostringstream msg;
-            msg << "Edge "<<edges[e]<<" has "<<numVerts<<" vertices != 2.";
-            throw std::runtime_error(msg.str());
+            msg << "Internal error while creating fault mesh. Edge "<<edges[e]<<" has "<<numVerts<<" vertices != 2.";
+            throw std::logic_error(msg.str());
           }
           err = DMPlexGetSupportSize(dm, verts[0], &supportSizeA);PYLITH_CHECK_ERROR(err);
           err = DMPlexGetSupport(dm, verts[0], &supportA);PYLITH_CHECK_ERROR(err);
@@ -129,8 +129,8 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
         }
         if (!found) {
           std::ostringstream msg;
-          msg << "Face "<<p<<" has no cross edge.";
-          throw std::runtime_error(msg.str());
+          msg << "Internal error while creating fault mesh. Face "<<p<<" has no cross edge.";
+          throw std::logic_error(msg.str());
         }
       }
     }

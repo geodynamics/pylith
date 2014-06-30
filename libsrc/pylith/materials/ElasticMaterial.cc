@@ -626,7 +626,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mes
     } // case 3
     default :
       std::ostringstream msg;
-      msg << "Bad dimension '" << dimension() << " in elastic material'." << std::endl;
+      msg << "Bad dimension '" << dimension() << "' in elastic material." << std::endl;
       throw std::logic_error(msg.str());
     } // switch
   
@@ -655,8 +655,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mes
 	msg << "Could not find initial stress at (";
 	for (int i=0; i < spaceDim; ++i)
 	  msg << "  " << quadPtsGlobal[iCoord+i];
-	msg << ") in material " << label() << "\n"
-	    << "using spatial database '" << _dbInitialStress->label() << "'.";
+	msg << ") in material '" << label() << "' using spatial database '" << _dbInitialStress->label() << "'.";
 	throw std::runtime_error(msg.str());
       } // if
     } // for
@@ -755,7 +754,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(const topology::Mes
     } // case 3
     default :
       std::ostringstream msg;
-      msg << "Bad dimension '" << dimension() << " in elastic material'." << std::endl;
+      msg << "Bad dimension '" << dimension() << "' in elastic material." << std::endl;
       throw std::logic_error(msg.str());
     } // switch
   
@@ -786,8 +785,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(const topology::Mes
 	msg << "Could not find initial strain at (";
 	for (int i=0; i < spaceDim; ++i)
 	  msg << "  " << quadPtsGlobal[iCoord+i];
-	msg << ") in material " << label() << "\n"
-	    << "using spatial database '" << _dbInitialStrain->label() << "'.";
+	msg << ") in material '" << label() << "' using spatial database '" << _dbInitialStrain->label() << "'.";
 	throw std::runtime_error(msg.str());
       } // if
     } // for

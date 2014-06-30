@@ -786,8 +786,7 @@ pylith::topology::Field::dimensionalize(void) const
   if (!const_cast<Field*>(this)->_metadata["default"].dimsOkay) {
     std::ostringstream msg;
     msg << "Cannot dimensionalize field '" << const_cast<Field*>(this)->_metadata["default"].label
-	<< "' because the flag "
-	<< "has been set to keep field nondimensional.";
+	<< "' because the flag has been set to keep field nondimensional.";
     throw std::runtime_error(msg.str());
   } // if
 
@@ -1186,7 +1185,7 @@ pylith::topology::Field::_getScatter(const char* context,
 
   if (isNewScatter && !createOk) {
     std::ostringstream msg;
-    msg << "Scatter for context '" << context << "' does not exist.";
+    msg << "Scatter for context '" << context << "' does not exist for field '" << label() << "'.";
     throw std::runtime_error(msg.str());
   } // if
   
@@ -1213,7 +1212,7 @@ pylith::topology::Field::_getScatter(const char* context) const
     _scatters.find(context);
   if (s_iter == _scatters.end()) {
     std::ostringstream msg;
-    msg << "Scatter for context '" << context << "' does not exist.";
+    msg << "Scatter for context '" << context << "' does not exist for field '" << label() << "'.";
     throw std::runtime_error(msg.str());
   } // if
   
@@ -1299,7 +1298,7 @@ pylith::topology::Field::subfieldSetDof(const char *name,
     std::ostringstream msg;
     msg << "Unknown value for DomainEnum: " << domain << "  in Field" << std::endl;
     throw std::logic_error(msg.str());
-  }
+  } // switch
   PetscSection section = NULL;
   err = DMGetDefaultSection(_dm, &section);PYLITH_CHECK_ERROR(err);assert(section);
   const int iField = _metadata[name].index;

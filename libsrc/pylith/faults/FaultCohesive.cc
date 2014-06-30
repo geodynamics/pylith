@@ -91,8 +91,7 @@ pylith::faults::FaultCohesive::numVerticesNoMesh(const topology::Mesh& mesh) con
     err = DMPlexHasLabel(dmMesh, label(), &hasLabel);PYLITH_CHECK_ERROR(err);
     if (!hasLabel && !rank) {
       std::ostringstream msg;
-      msg << "Mesh missing group of vertices '" << label()
-          << "' for fault interface condition.";
+      msg << "Mesh missing group of vertices '" << label() << "' for fault interface condition.";
       throw std::runtime_error(msg.str());
     } // if  
     err = DMPlexGetStratumSize(dmMesh, label(), 1, &nvertices);PYLITH_CHECK_ERROR(err);

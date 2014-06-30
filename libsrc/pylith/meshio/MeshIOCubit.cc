@@ -102,8 +102,7 @@ pylith::meshio::MeshIOCubit::_read(void)
       throw std::runtime_error(msg.str());
     } catch (...) {
       std::ostringstream msg;
-      msg << "Unknown error while reading Cubit Exodus file '" << _filename
-          << "'.";
+      msg << "Unknown error while reading Cubit Exodus file '" << _filename << "'.";
       throw std::runtime_error(msg.str());
     } // try/catch
   } else {

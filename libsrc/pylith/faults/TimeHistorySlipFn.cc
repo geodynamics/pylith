@@ -265,8 +265,8 @@ pylith::faults::TimeHistorySlipFn::slip(topology::Field* slip,
       if (err) {
         std::ostringstream msg;
         msg << "Error querying for time '" << relTime
-            << "' in time history database "
-            << _dbTimeHistory->label() << ".";
+            << "' in time history database '"
+            << _dbTimeHistory->label() << "'.";
         throw std::runtime_error(msg.str());
       } // if
 
