@@ -196,8 +196,7 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
     
     // Setup database for querying for initial state variables
     _dbInitialState->open();
-    _dbInitialState->queryVals(_metadata.dbStateVars(),
-			       _metadata.numDBStateVars());
+    _dbInitialState->queryVals(_metadata.dbStateVars(), _metadata.numDBStateVars());
   } // if
 
   assert(_normalizer);
