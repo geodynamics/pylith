@@ -41,5 +41,8 @@ clean-nobase_subpkgincludeHEADERS:
 
 AM_CPPFLAGS = -I$(top_srcdir)/libsrc
 
+check-local:
+	for f in $(TEST_LOGS); do printf "\n=== $$f ===\n\n"; cat $$f; done
+
 
 # End of file 
