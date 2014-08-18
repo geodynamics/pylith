@@ -24,8 +24,6 @@ SUBDIRS = data
 TESTS = testfaults.py
 dist_check_SCRIPTS = testfaults.py
 
-TESTS_ENVIRONMENT = $(PYTHON)
-
 noinst_PYTHON = \
 	TestBruneSlipFn.py \
 	TestConstRateSlipFn.py \

@@ -24,8 +24,6 @@ dist_check_SCRIPTS = \
 	testmanager.py \
 	testutils.py
 
-TESTS_ENVIRONMENT = $(PYTHON)
-
 noinst_PYTHON = \
 	TestEventLogger.py \
 	TestPetscManager.py \

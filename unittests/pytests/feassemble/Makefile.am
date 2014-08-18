@@ -24,8 +24,6 @@ SUBDIRS = data
 TESTS = testfeassemble.py
 dist_check_SCRIPTS = testfeassemble.py
 
-TESTS_ENVIRONMENT = $(PYTHON)
-
 noinst_PYTHON = \
 	TestFIATLagrange.py \
 	TestFIATSimplex.py \

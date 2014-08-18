@@ -24,8 +24,6 @@ SUBDIRS = data
 TESTS = testmeshio.py
 dist_check_SCRIPTS = testmeshio.py 
 
-TESTS_ENVIRONMENT = $(PYTHON)
-
 noinst_PYTHON = \
 	TestMeshIOAscii.py \
 	TestMeshIOCubit.py \

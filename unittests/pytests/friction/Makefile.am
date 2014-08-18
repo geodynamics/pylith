@@ -24,8 +24,6 @@ SUBDIRS = data
 TESTS = testfriction.py
 dist_check_SCRIPTS = testfriction.py
 
-TESTS_ENVIRONMENT = $(PYTHON)
-
 noinst_PYTHON = \
 	TestFrictionModel.py \
 	TestStaticFriction.py \

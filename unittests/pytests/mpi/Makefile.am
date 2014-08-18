@@ -22,8 +22,6 @@ include $(top_srcdir)/subpackage.am
 TESTS = testmpi.py
 dist_check_SCRIPTS = testmpi.py
 
-TESTS_ENVIRONMENT = $(PYTHON)
-
 noinst_PYTHON = \
 	TestCommunicator.py \
 	TestReduce.py

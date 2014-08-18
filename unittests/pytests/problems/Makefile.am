@@ -24,8 +24,6 @@ SUBDIRS = data
 TESTS = testproblems.py
 dist_check_SCRIPTS = testproblems.py
 
-TESTS_ENVIRONMENT = $(PYTHON)
-
 noinst_PYTHON = \
 	TestTimeStep.py \
 	TestTimeStepAdapt.py \

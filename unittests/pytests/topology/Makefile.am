@@ -24,14 +24,6 @@ SUBDIRS = data
 TESTS = testtopology.py
 dist_check_SCRIPTS = testtopology.py
 
-TESTS_ENVIRONMENT = $(PYTHON)
-
-#if ENABLE_TETGEN
-#  TESTS += testgensimple.py
-#  dist_check_SCRIPTS += testgensimple.py
-#endif
-
-
 noinst_PYTHON = \
 	TestMesh.py \
 	TestSubMesh.py \
@@ -41,7 +33,6 @@ noinst_PYTHON = \
 	TestSolutionFields.py \
 	TestJacobian.py \
 	TestMeshGenerator.py \
-	TestMeshGenSimple.py \
 	TestMeshImporter.py \
 	TestRefineUniform.py
 
