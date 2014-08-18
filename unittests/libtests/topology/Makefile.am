@@ -82,7 +82,7 @@ noinst_HEADERS += \
 	data/MeshDataCohesiveHex8Level1.hh \
 	data/MeshDataCohesiveHex8Level1Fault1.hh
 
-AM_CPPFLAGS = \
+AM_CPPFLAGS += \
 	$(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES) \
 	-I$(PYTHON_INCDIR) $(PYTHON_EGG_CPPFLAGS)
 

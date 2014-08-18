@@ -31,7 +31,7 @@ testutils_SOURCES = \
 noinst_HEADERS = \
 	TestEventLogger.hh
 
-AM_CPPFLAGS = $(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES)
+AM_CPPFLAGS += $(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES)
 
 testutils_LDADD = \
 	-lcppunit -ldl \

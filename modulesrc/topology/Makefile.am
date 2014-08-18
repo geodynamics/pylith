@@ -54,7 +54,7 @@ _topologymodule_la_LIBADD += \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
 
-INCLUDES += -g $(PYTHON_EGG_CPPFLAGS) -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR) $(PETSC_CC_INCLUDES)
+AM_CPPFLAGS += -g $(PYTHON_EGG_CPPFLAGS) -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR) $(PETSC_CC_INCLUDES)
 
 if ENABLE_SWIG
 $(srcdir)/topology_wrap.cxx $(srcdir)/topology.py: $(swig_sources)

@@ -55,7 +55,7 @@ _problemsmodule_la_LIBADD += \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
 
-INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR) $(PETSC_CC_INCLUDES)
+AM_CPPFLAGS += $(PYTHON_EGG_CPPFLAGS) -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR) $(PETSC_CC_INCLUDES)
 
 if ENABLE_SWIG
 $(srcdir)/problems_wrap.cxx $(srcdir)/problems.py: $(swig_sources)
