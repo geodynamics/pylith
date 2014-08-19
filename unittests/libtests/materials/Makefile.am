@@ -18,6 +18,7 @@
 
 subpackage = materials
 include $(top_srcdir)/subpackage.am
+include $(top_srcdir)/check.am
 
 SUBDIRS = data
 

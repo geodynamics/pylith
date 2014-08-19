@@ -16,6 +16,8 @@
 # ----------------------------------------------------------------------
 #
 
+include $(top_srcdir)/check.am
+
 TESTS = testpetsc.py
 
 dist_check_SCRIPTS = testpetsc.py
@@ -26,8 +28,6 @@ dist_noinst_PYTHON = \
 noinst_DATA = 
 
 noinst_TMP = 
-
-TESTS_ENVIRONMENT = $(PYTHON)
 
 
 # 'export' the input files by performing a mock install

@@ -18,6 +18,7 @@
 
 subpackage = utils
 include $(top_srcdir)/subpackage.am
+include $(top_srcdir)/check.am
 
 TESTS = testutils
 
