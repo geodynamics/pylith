@@ -27,9 +27,9 @@ testtopology_SOURCES = \
 	test_topology.cc
 
 
-INCLUDES = -I$(top_builddir)/include
+AM_CPPFLAGS = -I$(top_builddir)/include
 
-AM_CPPFLAGS = \
+AM_CPPFLAGS += \
 	$(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES) \
 	-I$(PYTHON_INCDIR) $(PYTHON_EGG_CPPFLAGS)
 

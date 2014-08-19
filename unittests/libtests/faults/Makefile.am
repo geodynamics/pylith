@@ -18,6 +18,7 @@
 
 subpackage = faults
 include $(top_srcdir)/subpackage.am
+include $(top_srcdir)/check.am
 
 SUBDIRS = data
 
@@ -211,7 +212,7 @@ noinst_HEADERS += \
 	data/CohesiveImpulsesDataTet4.hh \
 	data/CohesiveImpulsesDataHex8.hh
 
-AM_CPPFLAGS = \
+AM_CPPFLAGS += \
 	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
 	$(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES)
 

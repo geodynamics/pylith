@@ -16,15 +16,12 @@
 # ----------------------------------------------------------------------
 #
 
-subpackage = feassemble
-include $(top_srcdir)/subpackage.am
+include $(top_srcdir)/check.am
 
 SUBDIRS = data
 
 TESTS = testfeassemble.py
 dist_check_SCRIPTS = testfeassemble.py
-
-TESTS_ENVIRONMENT = $(PYTHON)
 
 noinst_PYTHON = \
 	TestFIATLagrange.py \

@@ -16,6 +16,8 @@
 # ----------------------------------------------------------------------
 #
 
+include $(top_srcdir)/check.am
+
 if ENABLE_HDF5
 TESTS = test_eqinfo.py
 endif
@@ -44,9 +46,6 @@ noinst_TMP = \
 	stats_line.py \
 	stats_tri3.py \
 	stats_quad4.py
-
-
-TESTS_ENVIRONMENT = $(PYTHON)
 
 
 # 'export' the input files by performing a mock install

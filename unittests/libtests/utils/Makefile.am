@@ -18,6 +18,7 @@
 
 subpackage = utils
 include $(top_srcdir)/subpackage.am
+include $(top_srcdir)/check.am
 
 TESTS = testutils
 
@@ -31,7 +32,7 @@ testutils_SOURCES = \
 noinst_HEADERS = \
 	TestEventLogger.hh
 
-AM_CPPFLAGS = $(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES)
+AM_CPPFLAGS += $(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES)
 
 testutils_LDADD = \
 	-lcppunit -ldl \
