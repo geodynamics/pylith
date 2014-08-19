@@ -21,7 +21,7 @@ AC_INIT([PyLith], [2.0.2], [cig-short@geodynamics.org])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
-AM_INIT_AUTOMAKE([foreign])
+AM_INIT_AUTOMAKE([foreign subdir-objects])
 
 # ----------------------------------------------------------------------
 # PYTHON
@@ -143,6 +143,8 @@ AC_PROG_INSTALL
 CIT_PATH_NEMESIS
 AM_PATH_PYTHON([2.4])
 CIT_PYTHON_SYSCONFIG
+CIT_CHECK_PYTHON_HEADER
+CIT_CHECK_PYTHON_SHARED
 
 # MPI
 AC_LANG(C++)
@@ -151,6 +153,7 @@ AC_LANG(C++)
 #CIT_CHECK_LIB_MPI
 
 # PETSC
+AC_LANG(C)
 CIT_PATH_PETSC([3.5.0])
 CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC

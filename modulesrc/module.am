@@ -16,14 +16,11 @@
 # ----------------------------------------------------------------------
 #
 
-include $(top_srcdir)/check.am
+AM_CPPFLAGS = \
+	$(PYTHON_EGG_CPPFLAGS) \
+	-I$(top_srcdir)/libsrc \
+	-I$(NUMPY_INCDIR) \
+	-I$(PYTHON_INCDIR) \
+	$(PETSC_CC_INCLUDES)
 
-TESTS = testmpi.py
-dist_check_SCRIPTS = testmpi.py
-
-noinst_PYTHON = \
-	TestCommunicator.py \
-	TestReduce.py
-
-
-# End of file 
+# End of file

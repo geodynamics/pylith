@@ -16,15 +16,12 @@
 # ----------------------------------------------------------------------
 #
 
-subpackage = friction
-include $(top_srcdir)/subpackage.am
+include $(top_srcdir)/check.am
 
 SUBDIRS = data
 
 TESTS = testfriction.py
 dist_check_SCRIPTS = testfriction.py
-
-TESTS_ENVIRONMENT = $(PYTHON)
 
 noinst_PYTHON = \
 	TestFrictionModel.py \

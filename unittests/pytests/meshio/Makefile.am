@@ -16,15 +16,12 @@
 # ----------------------------------------------------------------------
 #
 
-subpackage = meshio
-include $(top_srcdir)/subpackage.am
+include $(top_srcdir)/check.am
 
 SUBDIRS = data
 
 TESTS = testmeshio.py
 dist_check_SCRIPTS = testmeshio.py 
-
-TESTS_ENVIRONMENT = $(PYTHON)
 
 noinst_PYTHON = \
 	TestMeshIOAscii.py \

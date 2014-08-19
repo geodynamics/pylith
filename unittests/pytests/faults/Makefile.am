@@ -16,15 +16,12 @@
 # ----------------------------------------------------------------------
 #
 
-subpackage = faults
-include $(top_srcdir)/subpackage.am
+include $(top_srcdir)/check.am
 
 SUBDIRS = data
 
 TESTS = testfaults.py
 dist_check_SCRIPTS = testfaults.py
-
-TESTS_ENVIRONMENT = $(PYTHON)
 
 noinst_PYTHON = \
 	TestBruneSlipFn.py \

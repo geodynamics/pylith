@@ -16,15 +16,12 @@
 # ----------------------------------------------------------------------
 #
 
-subpackage = materials
-include $(top_srcdir)/subpackage.am
+include $(top_srcdir)/check.am
 
 SUBDIRS = data
 
 TESTS = testmaterials.py
 dist_check_SCRIPTS = testmaterials.py
-
-TESTS_ENVIRONMENT = $(PYTHON)
 
 noinst_PYTHON = \
 	TestHomogeneous.py \
