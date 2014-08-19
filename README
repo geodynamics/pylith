@@ -1,4 +1,4 @@
-We are pleased to announce release of PyLith version 2.0.2
+We are pleased to announce release of PyLith version 2.0.3
 
 Please submit bug reports via the World Wide Web at:
     https://github.com/geodynamics/pylith/issues
@@ -81,6 +81,16 @@ Buried edges of faults are handled differently in v2.0. A separate
 nodeset/pset should be created and contain the vertices on the buried
 edges of the fault. See the Section 6.4.2 of the PyLith manual for
 more information.
+
+----------------------------------------------------------------------
+Version 2.0.3
+----------------------------------------------------------------------
+
+* Bug fixes
+
+  - Updated autotools files (Makefile.am, configure.ac) for
+    compatibility with recent versions of automake (up to and including
+    v1.14.1).
 
 ----------------------------------------------------------------------
 Version 2.0.2
