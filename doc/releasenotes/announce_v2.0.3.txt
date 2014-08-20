@@ -5,13 +5,13 @@ code designed to solve dynamic elastic problems and quasi-static
 viscoelastic problems in tectonic deformation.
 
 This release provides several small updates for (1) improved
-CUBIT/Trelis compatibility, (2) building with recent versions of
-automake, and (3) additional examples from the 2014 Crustal
-Deformation Modeling Workshop tutorials.
+CUBIT/Trelis compatibility in example journal files, (2) building with
+recent versions of automake, and (3) additional examples from the 2014
+Crustal Deformation Modeling Workshop tutorials.
 
 You can download the source code and binaries from
 
-    http://geodynamics.org/cig/software/packages/short/pylith
+    http://geodynamics.org/cig/software/pylith
 
 Detailed installation instructions for the binary packages are in the
 User Manual with detailed building instructions for a few platforms in
