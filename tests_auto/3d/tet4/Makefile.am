@@ -20,7 +20,7 @@ include $(top_srcdir)/check.am
 
 TESTS = testpylith.py
 
-check_SCRIPTS = testpylith.py
+dist_check_SCRIPTS = testpylith.py
 
 dist_noinst_PYTHON = \
 	TestTet4.py \
