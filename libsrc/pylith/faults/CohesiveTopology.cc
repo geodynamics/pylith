@@ -73,7 +73,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   PetscErrorCode err;
 
   // Fix over-aggressive completion of boundary label
-  err = DMPlexGetDimension(dm, &dim);PYLITH_CHECK_ERROR(err);
+  err = DMGetDimension(dm, &dim);PYLITH_CHECK_ERROR(err);
   if (faultBdLabel && (dim > 2)) {
     PetscIS         bdIS;
     const PetscInt *bd;

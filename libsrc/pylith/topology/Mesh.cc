@@ -66,7 +66,7 @@ pylith::topology::Mesh::Mesh(const int dim,
   PetscErrorCode err;
   err = DMCreate(comm, &_dmMesh);PYLITH_CHECK_ERROR(err);
   err = DMSetType(_dmMesh, DMPLEX);PYLITH_CHECK_ERROR(err);
-  err = DMPlexSetDimension(_dmMesh, dim);PYLITH_CHECK_ERROR(err);
+  err = DMSetDimension(_dmMesh, dim);PYLITH_CHECK_ERROR(err);
   err = PetscObjectSetName((PetscObject) _dmMesh, "domain");PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;

@@ -990,8 +990,8 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
   PetscInt numExcludes = (cMax >= 0 ? 1 : 0) + (vMax >= 0 ? 1 : 0);
 
   err = DMGetDefaultSection(_dm, &section);PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetDimension(dm,  &dim);PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetDimension(_dm, &dimF);PYLITH_CHECK_ERROR(err);
+  err = DMGetDimension(dm,  &dim);PYLITH_CHECK_ERROR(err);
+  err = DMGetDimension(_dm, &dimF);PYLITH_CHECK_ERROR(err);
   err = DMPlexGetChart(dm,  &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
   err = DMPlexGetChart(_dm, &qStart, &qEnd);PYLITH_CHECK_ERROR(err);
   err = DMPlexGetSubpointMap(dm,  &subpointMap);PYLITH_CHECK_ERROR(err);
