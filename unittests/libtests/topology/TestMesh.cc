@@ -76,7 +76,7 @@ pylith::topology::TestMesh::testDMMesh(void)
   Mesh mesh(dim);
   
   PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
-  PetscErrorCode err = DMPlexGetDimension(dmMesh, &dmDim);PYLITH_CHECK_ERROR(err);
+  PetscErrorCode err = DMGetDimension(dmMesh, &dmDim);PYLITH_CHECK_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(dim, dmDim);
 
   PYLITH_METHOD_END;
