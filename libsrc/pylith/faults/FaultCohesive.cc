@@ -139,7 +139,7 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
             << "' for fault interface condition.";
         throw std::runtime_error(msg.str());
       } // if
-      err = DMPlexGetDimension(dmMesh, &dim);PYLITH_CHECK_ERROR(err);
+      err = DMGetDimension(dmMesh, &dim);PYLITH_CHECK_ERROR(err);
       err = DMPlexGetDepth(dmMesh, &depth);PYLITH_CHECK_ERROR(err);
       err = MPI_Allreduce(&depth, &gdepth, 1, MPIU_INT, MPI_MAX, mesh->comm());PYLITH_CHECK_ERROR(err);
       err = DMPlexGetLabel(dmMesh, charlabel, &groupField);PYLITH_CHECK_ERROR(err);

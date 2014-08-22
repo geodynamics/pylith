@@ -48,7 +48,7 @@ pylith::topology::MeshOps::createDMMesh(Mesh* const mesh,
   PetscDM dmMesh = NULL;
   err = DMCreate(comm, &dmMesh);PYLITH_CHECK_ERROR(err);
   err = DMSetType(dmMesh, DMPLEX);PYLITH_CHECK_ERROR(err);
-  err = DMPlexSetDimension(dmMesh, dim);PYLITH_CHECK_ERROR(err);
+  err = DMSetDimension(dmMesh, dim);PYLITH_CHECK_ERROR(err);
   mesh->dmMesh(dmMesh, label);
 
   PYLITH_METHOD_END;
