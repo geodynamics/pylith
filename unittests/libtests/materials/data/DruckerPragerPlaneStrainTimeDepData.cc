@@ -179,24 +179,24 @@ const PylithScalar pylith::materials::DruckerPragerPlaneStrainTimeDepData::_stra
 };
 
 const PylithScalar pylith::materials::DruckerPragerPlaneStrainTimeDepData::_stress[] = {
- -1.92922457e+07,
- -4.93459240e+06,
- -2.89163969e+06,
+ -1.92892468e+07,
+ -4.94969012e+06,
+ -2.88799503e+06,
   2.05547473e+06,
   2.05547473e+06,
   1.45519152e-11,
 };
 
 const PylithScalar pylith::materials::DruckerPragerPlaneStrainTimeDepData::_elasticConsts[] = {
-  6.78169280e+10,
-  3.08737531e+10,
- -2.64315493e+09,
-  1.98734119e+10,
-  2.43162760e+10,
-  1.57343177e+10,
-  8.93897377e+08,
-  1.00826339e+10,
-  3.98038772e+10,
+  6.78100809e+10,
+  3.08704115e+10,
+ -2.62248144e+09,
+  1.98700731e+10,
+  2.42954488e+10,
+  1.57192741e+10,
+  9.04234592e+08,
+  1.00751121e+10,
+  3.97562357e+10,
   3.37901525e+09,
   3.25490593e+09,
  -1.82383531e+09,
@@ -228,10 +228,10 @@ const PylithScalar pylith::materials::DruckerPragerPlaneStrainTimeDepData::_init
 
 const PylithScalar pylith::materials::DruckerPragerPlaneStrainTimeDepData::_stateVarsUpdated[] = {
   2.30000000e+04,
-  3.64658670e-05,
-  4.84291274e-05,
-  4.75397462e-05,
-  4.27919930e-05,
+  3.62995494e-05,
+  4.86649558e-05,
+  4.76695884e-05,
+  4.27110006e-05,
   5.40000000e+04,
   2.05251755e-04,
   2.16078144e-04,
