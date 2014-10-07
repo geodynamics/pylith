@@ -19,7 +19,7 @@
 AM_CPPFLAGS = -I$(top_srcdir)/libsrc
 
 
-check-local: $(TEST_LOGS)
+check-local: check-TESTS
 	for f in $(TEST_LOGS); do printf "\n=== $$f ===\n\n"; cat $$f; done
 
 
