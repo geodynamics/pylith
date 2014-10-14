@@ -45,8 +45,7 @@ namespace pylith {
        */
       static
       void distribute(pylith::topology::Mesh* const newMesh,
-		      const pylith::topology::Mesh& origMesh,
-		      const char* partitioner);
+		      const pylith::topology::Mesh& origMesh);
 
       /** Write partitioning info for distributed mesh.
        *

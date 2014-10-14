@@ -50,8 +50,7 @@ pylith::topology::Distributor::~Distributor(void)
 // Distribute mesh among processors.
 void
 pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
-					  const topology::Mesh& origMesh,
-					  const char* partitioner)
+					  const topology::Mesh& origMesh)
 { // distribute
   PYLITH_METHOD_BEGIN;
   
@@ -60,7 +59,7 @@ pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
   journal::info_t info("distributor");
 
   PetscDM newDM = NULL;
-  PetscErrorCode err = DMPlexDistribute(origMesh.dmMesh(), partitioner, 0, NULL, &newDM);PYLITH_CHECK_ERROR(err);
+  PetscErrorCode err = DMPlexDistribute(origMesh.dmMesh(), 0, NULL, &newDM);PYLITH_CHECK_ERROR(err);
   newMesh->dmMesh(newDM);
 
   PYLITH_METHOD_END;
