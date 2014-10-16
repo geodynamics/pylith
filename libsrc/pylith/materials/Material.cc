@@ -36,6 +36,8 @@
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 
+#include <petscds.h> // USES PetscDS
+
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::materials::Material::Material(const int dimension,
@@ -144,6 +146,29 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
   _properties->newSection(cellsTmp, propsFiberDim);
   _properties->allocate();
   _properties->zeroAll();
+
+  // TODO Need to decide how to manage PetscDS
+  PetscDS        prob;
+  PetscFE        fe;
+  PetscInt       dim, closureSize, vStart, vEnd, numVertices = 0;
+  PetscInt      *closure   = NULL, c;
+  PetscBool      isSimplex = PETSC_FALSE;
+  PetscErrorCode err;
+
+  err = DMGetDimension(dmMesh, &dim);PYLITH_CHECK_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
+  err = DMPlexGetTransitiveClosure(dmMesh, 0, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+  for (c = 0; c < closureSize*2; ++c) if ((closure[c] >= vStart) && (closure[c] < vEnd)) ++numVertices;
+  if (numVertices == dim+1) isSimplex = PETSC_TRUE;
+  err = DMPlexRestoreTransitiveClosure(dmMesh, 0, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+  err = PetscFECreateDefault(dmMesh, dim, propsFiberDim, isSimplex, NULL, -1, &fe);PYLITH_CHECK_ERROR(err);
+  err = PetscDSCreate(mesh.comm(), &prob);PYLITH_CHECK_ERROR(err);
+  err = PetscDSSetDiscretization(prob, 0, (PetscObject) fe);PYLITH_CHECK_ERROR(err);
+  err = PetscFEDestroy(&fe);PYLITH_CHECK_ERROR(err);
+  err = PetscDSSetUp(prob);PYLITH_CHECK_ERROR(err);
+  err = DMSetDS(_properties->dmMesh(), prob);PYLITH_CHECK_ERROR(err);
+  err = PetscDSDestroy(&prob);PYLITH_CHECK_ERROR(err);
+
   topology::VecVisitorMesh propertiesVisitor(*_properties);
   PetscScalar* propertiesArray = propertiesVisitor.localArray();
 
