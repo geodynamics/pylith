@@ -104,6 +104,7 @@ protected :
   materials::ElasticMaterial* _material; ///< Elastic material.
   Quadrature* _quadrature; ///< Quadrature information.
   spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
+  PetscBool _usePetsc;
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :

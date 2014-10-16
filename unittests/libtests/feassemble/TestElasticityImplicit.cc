@@ -41,6 +41,8 @@
 
 #include <math.h> // USES fabs()
 
+#include "petscds.h" // USES PetscDS
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityImplicit );
 
@@ -55,6 +57,7 @@ pylith::feassemble::TestElasticityImplicit::setUp(void)
   _data = 0;
   _material = 0;
   _gravityField = 0;
+  PetscErrorCode err = PetscOptionsHasName(NULL, "-use_petsc", &_usePetsc);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // setUp
@@ -167,6 +170,40 @@ pylith::feassemble::TestElasticityImplicit::testInitialize(void)
 
 // ----------------------------------------------------------------------
 // Test integrateResidual().
+static PetscInt spatialDim = 0;
+
+static void f0_zero(const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], const PetscReal x[], PetscScalar f0[])
+{
+  PetscInt d;
+  for (d = 0; d < spatialDim; ++d) f0[d] = 0.0;
+}
+
+static void f1_zero(const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], const PetscReal x[], PetscScalar f1[])
+{
+  PetscInt d;
+  for (d = 0; d < spatialDim*spatialDim; ++d) f1[d] = 0.0;
+}
+
+/* \sigma = \lambda \tr(\epsilon) I + 2 \mu \epsilon */
+static void elasticity(const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], const PetscReal x[], PetscScalar f1[])
+{
+  const PetscReal rho    = a[0];
+  const PetscReal mu     = a[1];
+  const PetscReal lambda = a[2];
+  const PetscInt  dim    = spatialDim;
+  const PetscInt  Ncomp  = spatialDim;
+  PetscReal       trace  = 0.0;
+  PetscInt        comp, d;
+
+  for (d = 0; d < dim; ++d) trace += u_x[d*dim+d];
+  for (comp = 0; comp < Ncomp; ++comp) {
+    for (d = 0; d < dim; ++d) {
+      f1[comp*dim+d] = -mu*(u_x[comp*dim+d] + u_x[d*dim+comp]);
+    }
+    f1[comp*dim+comp] -= lambda*trace;
+  }
+}
+
 void
 pylith::feassemble::TestElasticityImplicit::testIntegrateResidual(void)
 { // testIntegrateResidual
@@ -181,17 +218,30 @@ pylith::feassemble::TestElasticityImplicit::testIntegrateResidual(void)
 
   topology::Field& residual = fields.get("residual");
   const PylithScalar t = 1.0;
-  integrator.integrateResidual(residual, t, &fields);
+
+  if (!_usePetsc) {
+    integrator.integrateResidual(residual, t, &fields);
+  } else {
+    PetscDM        dmMesh = mesh.dmMesh();
+    PetscDS        prob;
+    Vec            dispTpdtVec;
+    PetscErrorCode err;
+
+    err = DMGetDimension(dmMesh, &spatialDim);PYLITH_CHECK_ERROR(err);
+    err = DMGetDS(dmMesh, &prob);PYLITH_CHECK_ERROR(err);
+    err = PetscDSSetResidual(prob, 0, f0_zero, elasticity);PYLITH_CHECK_ERROR(err);
+    err = PetscDSSetResidual(prob, 1, f0_zero, f1_zero);PYLITH_CHECK_ERROR(err);
+    err = VecDuplicate(residual.localVector(), &dispTpdtVec);PYLITH_CHECK_ERROR(err);
+    err = VecWAXPY(dispTpdtVec, 1.0, fields.get("disp(t)").localVector(), fields.get("dispIncr(t->t+dt)").localVector());PYLITH_CHECK_ERROR(err);
+    err = VecSet(residual.localVector(), 0.0);PYLITH_CHECK_ERROR(err);
+
+    err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) _material->propertiesField()->localVector());PYLITH_CHECK_ERROR(err);
+
+    err = DMPlexSNESComputeResidualFEM(dmMesh, dispTpdtVec, residual.localVector(), NULL);PYLITH_CHECK_ERROR(err);
+    err = VecDestroy(&dispTpdtVec);PYLITH_CHECK_ERROR(err);
+  }
 
   const PylithScalar* valsE = _data->valsResidual;
-
-#if 0 // DEBUGGING
-  residual.view("RESIDUAL");
-  std::cout << "EXPECTED RESIDUAL" << std::endl;
-  const int size = _data->numVertices * _data->spaceDim;
-  for (int i=0; i < size; ++i)
-    std::cout << "  " << valsE[i] << std::endl;
-#endif
 
   const PetscDM dmMesh = mesh.dmMesh();
   topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
@@ -204,6 +254,14 @@ pylith::feassemble::TestElasticityImplicit::testIntegrateResidual(void)
 
   const PylithScalar accScale = _data->lengthScale / pow(_data->timeScale, 2);
   const PylithScalar residualScale = _data->densityScale * accScale*pow(_data->lengthScale, _data->spaceDim);
+
+#if 1 // DEBUGGING
+  residual.view("RESIDUAL");
+  std::cout << "EXPECTED RESIDUAL" << std::endl;
+  const int size = _data->numVertices * _data->spaceDim;
+  for (int i=0; i < size; ++i)
+    std::cout << "  " << valsE[i]/residualScale << std::endl;
+#endif
 
   const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
   for (PetscInt v = vStart, index = 0; v < vEnd; ++v) {
@@ -344,7 +402,18 @@ pylith::feassemble::TestElasticityImplicit::_initialize(topology::Mesh* mesh,
   // Cells and vertices
   const PetscBool interpolate = PETSC_TRUE;
   PetscErrorCode err;
-  err = DMPlexCreateFromCellList(PETSC_COMM_WORLD, _data->cellDim, _data->numCells, _data->numVertices, _data->numBasis, interpolate, _data->cells, _data->spaceDim, _data->vertices, &dmMesh);PYLITH_CHECK_ERROR(err);
+
+  if (_usePetsc) {
+    PetscInt *cells;
+
+    err = PetscMalloc1(_data->numCells*_data->numBasis, &cells);PYLITH_CHECK_ERROR(err);
+    err = PetscMemcpy(cells, _data->cells, _data->numCells*_data->numBasis * sizeof(PetscInt));PYLITH_CHECK_ERROR(err);
+    for (PetscInt coff = 0; coff < _data->numCells*_data->numBasis; coff += _data->numBasis) {err = DMPlexInvertCell(_data->cellDim, _data->numBasis, &cells[coff]);PYLITH_CHECK_ERROR(err);}
+    err = DMPlexCreateFromCellList(PETSC_COMM_WORLD, _data->cellDim, _data->numCells, _data->numVertices, _data->numBasis, interpolate, cells, _data->spaceDim, _data->vertices, &dmMesh);PYLITH_CHECK_ERROR(err);
+    err = PetscFree(cells);PYLITH_CHECK_ERROR(err);
+  } else {
+    err = DMPlexCreateFromCellList(PETSC_COMM_WORLD, _data->cellDim, _data->numCells, _data->numVertices, _data->numBasis, interpolate, _data->cells, _data->spaceDim, _data->vertices, &dmMesh);PYLITH_CHECK_ERROR(err);
+  }
   mesh->dmMesh(dmMesh);
 
   // Material ids
