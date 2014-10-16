@@ -49,12 +49,15 @@ pylith::topology::Field::Field(const Mesh& mesh) :
   _metadata["default"].dimsOkay = false;
   if (mesh.dmMesh()) {
     PetscDM dm = mesh.dmMesh();assert(dm);
+    PetscDS prob = NULL;
     PetscVec coordVec = NULL;
     PetscSection s = NULL;
     PetscErrorCode err;
 
     err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
     err = DMClone(dm, &_dm);PYLITH_CHECK_ERROR(err);
+    err = DMGetDS(dm, &prob);PYLITH_CHECK_ERROR(err);
+    err = DMSetDS(_dm, prob);PYLITH_CHECK_ERROR(err);
     err = DMGetCoordinatesLocal(dm, &coordVec);PYLITH_CHECK_ERROR(err);
     if (coordVec) {
       PetscDM coordDM=NULL, newCoordDM=NULL;
@@ -935,10 +938,13 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
   } // if
 
   PetscSection section = NULL, newSection = NULL, gsection = NULL;
+  PetscDS prob = NULL;
   PetscSF sf = NULL;
 
   err = DMDestroy(&sinfo.dm);PYLITH_CHECK_ERROR(err);
   err = DMClone(_dm, &sinfo.dm);PYLITH_CHECK_ERROR(err);
+  err = DMGetDS(_dm, &prob);PYLITH_CHECK_ERROR(err);
+  err = DMSetDS(sinfo.dm, prob);PYLITH_CHECK_ERROR(err);
   err = DMGetDefaultSection(_dm, &section);PYLITH_CHECK_ERROR(err);
   err = PetscSectionClone(section, &newSection);PYLITH_CHECK_ERROR(err);
   err = DMSetDefaultSection(sinfo.dm, newSection);PYLITH_CHECK_ERROR(err);
@@ -982,6 +988,7 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
 
   PetscDM dm = mesh.dmMesh();assert(dm);
   PetscSection section = NULL, newSection = NULL, gsection = NULL, subSection = NULL;
+  PetscDS prob = NULL;
   PetscSF sf = NULL;
   PetscDMLabel subpointMap = NULL, subpointMapF = NULL;
   PetscInt dim, dimF, pStart, pEnd, qStart, qEnd, cEnd, cMax, vEnd, vMax;
@@ -1036,6 +1043,8 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
 
   err = DMDestroy(&sinfo.dm);PYLITH_CHECK_ERROR(err);
   err = DMClone(_dm, &sinfo.dm);PYLITH_CHECK_ERROR(err);
+  err = DMGetDS(_dm, &prob);PYLITH_CHECK_ERROR(err);
+  err = DMSetDS(sinfo.dm, prob);PYLITH_CHECK_ERROR(err);
   err = PetscSectionClone(section, &newSection);PYLITH_CHECK_ERROR(err);
   err = DMSetDefaultSection(sinfo.dm, newSection);PYLITH_CHECK_ERROR(err);
   err = PetscSectionDestroy(&newSection);PYLITH_CHECK_ERROR(err);
