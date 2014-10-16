@@ -64,6 +64,12 @@ typedef struct _p_ISLocalToGlobalMapping* PetscISLocalToGlobalMapping;
 /// forward declaration for PETSc DMMeshInterpolationInfo
 typedef struct _DMMeshInterpolationInfo* PetscDMMeshInterpolationInfo;
 
+/// forward declaration for PETSc DS
+typedef struct _p_PetscDS* PetscDS;
+
+/// forward declaration for PETSc FE
+typedef struct _p_PetscFE* PetscFE;
+
 
 #endif // pylith_utils_petscfwd_h
 
