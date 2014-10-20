@@ -1,4 +1,4 @@
-We are pleased to announce release of PyLith version 2.0.3
+We are pleased to announce release of PyLith version 2.1.0
 
 Please submit bug reports via the World Wide Web at:
     https://github.com/geodynamics/pylith/issues
@@ -40,6 +40,40 @@ TIPS
     this is usually an indication that something is wrong. Either the
     preconditioner is inappropriate for the type of problem you are
     solving or there is an error in the problem setup.
+
+
+======================================================================
+MIGRATING FROM VERSION 2.0 TO 2.1
+======================================================================
+
+The partitioner setting has been integrated into PETSc. As a result,
+the partitioner is set via PETSc settings, not a Distributor
+property. For example,
+
+[pylithapp.petsc]
+petscpartitioner_type = chaco ; Available options ['chaco','parmetis']
+
+
+----------------------------------------------------------------------
+Version 2.1.0
+----------------------------------------------------------------------
+
+* The partitioner is now set via a PETSc parameter.
+
+* Bug fixes
+
+  - A few bugs related to creating cohesive cells for fault
+    intersections have been fixed. Faults can now meet at T
+    intersections provided the buried edges of the faults are
+    clamped. In other words, the fault ending at the T intersection
+    has a clamped edge along the intersection. The fault ending at the
+    intersection must also come AFTER the through-going fault in the
+    list of fault interfaces.
+
+  - ADD DRUCKER-PRAGER STUFF HERE
+
+  - 
+
 
 
 ======================================================================
