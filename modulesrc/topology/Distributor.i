@@ -41,7 +41,6 @@ namespace pylith {
        *
        * @param newMesh Distributed mesh (result).
        * @param origMesh Mesh to distribute.
-       * @param partitioner Name of partitioner to use in distributing mesh.
        */
       static
       void distribute(pylith::topology::Mesh* const newMesh,
@@ -51,7 +50,6 @@ namespace pylith {
        *
        * @param writer Data writer for partition information.
        * @param mesh Distributed mesh.
-       * @param cs Coordinate system for mesh.
        */
       static
       void write(pylith::meshio::DataWriter* const writer,
