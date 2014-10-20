@@ -1357,7 +1357,7 @@ An example of setting the partitioner in a pylithapp.cfg file is:
 \end_layout
 
 \begin_layout LyX-Code
-partitioner = chaco ; Options are 'chaco' (default) and 'metis'.
+petscpartitioner = chaco ; Options are 'chaco' (default) and 'parmetis'.
 \end_layout
 
 \begin_layout Standard
