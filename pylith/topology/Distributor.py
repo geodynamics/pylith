@@ -33,7 +33,6 @@ class Distributor(PetscComponent, ModuleDistributor):
   Inventory
 
   \b Properties
-  @li \b partitioner Name of mesh partitioner {"metis", "chaco"}.
   @li \b writePartition Write partition information to file.
   
   \b Facilities
@@ -46,11 +45,6 @@ class Distributor(PetscComponent, ModuleDistributor):
 
   import pyre.inventory
     
-  partitioner = pyre.inventory.str("partitioner", default="chaco",
-                                   validator=pyre.inventory.choice(["chaco",
-                                                                    "metis"]))
-  partitioner.meta['tip'] = "Name of mesh partitioner."
-  
   writePartition = pyre.inventory.bool("write_partition", default=False)
   writePartition.meta['tip'] = "Write partition information to file."
   
@@ -80,7 +74,7 @@ class Distributor(PetscComponent, ModuleDistributor):
 
     from pylith.topology.Mesh import Mesh
     newMesh = Mesh(mesh.dimension())
-    ModuleDistributor.distribute(newMesh, mesh, self.partitioner)
+    ModuleDistributor.distribute(newMesh, mesh)
 
     #from pylith.utils.petsc import MemoryLogger
     #memoryLogger = MemoryLogger.singleton()
@@ -104,7 +98,6 @@ class Distributor(PetscComponent, ModuleDistributor):
     Set members based using inventory.
     """
     PetscComponent._configure(self)
-    self.partitioner = self.inventory.partitioner
     self.writePartition = self.inventory.writePartition
     self.dataWriter = self.inventory.dataWriter
     return

@@ -1334,35 +1334,8 @@ Distributor
 The distributor users a partitioner to compute which cells should be placed
  on each processor, computes the overlap among the processors, and then
  distributes the mesh among the processors.
+ The type of partitioner is set via PETSc settings.
  The properties and facilities of the Distributor include:
-\end_layout
-
-\begin_layout Description
-partitioner Choice of partitioner (
-\begin_inset Quotes eld
-\end_inset
-
-metis
-\begin_inset Quotes erd
-\end_inset
-
- or 
-\begin_inset Quotes eld
-\end_inset
-
-chaco
-\begin_inset Quotes erd
-\end_inset
-
-, default is 
-\begin_inset Quotes eld
-\end_inset
-
-chaco
-\begin_inset Quotes erd
-\end_inset
-
-).
 \end_layout
 
 \begin_layout Description
@@ -1376,7 +1349,21 @@ data_writer Writer for partition information (default is DataWriterVTKMesh
 \end_layout
 
 \begin_layout Standard
-ParMETIS is not included in the PyLith binaries due to licensing issues.
+An example of setting the partitioner in a pylithapp.cfg file is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.petsc]
+\end_layout
+
+\begin_layout LyX-Code
+petscpartitioner = chaco ; Options are 'chaco' (default) and 'parmetis'.
+\end_layout
+
+\begin_layout Standard
+METIS/ParMETIS are not included in the PyLith binaries due to licensing
+ issues.
+ 
 \end_layout
 
 \begin_layout Subsubsection
