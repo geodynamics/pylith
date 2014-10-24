@@ -656,14 +656,15 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
   topology::VecVisitorMesh areaVisitor(area);
   const PetscScalar* areaArray = areaVisitor.localArray();
 
-  topology::Field& dispRel = _fields->get("relative disp");
-  PetscDM dispRelDM = dispRel.dmMesh();
-  PetscSection dispRelGlobalSection = NULL;
-  PetscErrorCode err = DMGetDefaultGlobalSection(dispRelDM, &dispRelGlobalSection);PYLITH_CHECK_ERROR(err);
 
   PetscDM solnDM = fields->solution().dmMesh();
   PetscSection solnGlobalSection = NULL;
   err = DMGetDefaultGlobalSection(solnDM, &solnGlobalSection);PYLITH_CHECK_ERROR(err);
+  PetscDM lagrangeDM = NULL;
+  PetscSection lagrangeSection = NULL;
+  PetscInt lagrangeFields[1] = {1}; // :KLUDGE: Hardwired index of Lagrange constrain field.  
+  err = DMCreateSubDM(fields->solution().dmMesh(), 1, lagrangeFields, NULL, &lagrangeDM);PYLITH_CHECK_ERROR(err);
+  err = DMGetDefaultGlobalSection(lagrangeDM, &lagrangeSection);PYLITH_CHECK_ERROR(err);
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -742,14 +743,14 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
 
     // Set diagonal entries in preconditioned matrix.
     PetscInt poff = 0;
-    err = PetscSectionGetOffset(dispRelGlobalSection, v_fault, &poff);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(lagrangeSection, e_lagrange, &poff);PYLITH_CHECK_ERROR(err);
 
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       err = MatSetValue(*precondMatrix, poff+iDim, poff+iDim, precondVertexL[iDim], INSERT_VALUES);PYLITH_CHECK_ERROR(err);
     } // for
 
 #if 0 // DEBUGGING
-    std::cout << "1/P_vertex " << e_lagrange << std::endl;
+    std::cout << "1/P_vertex " << e_lagrange << ", poff: " << poff << std::endl;
     for(int iDim = 0; iDim < spaceDim; ++iDim) {
       std::cout << "  " << precondVertexL[iDim] << std::endl;
     } // for
@@ -762,6 +763,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
   } // for
   err = MatDestroy(&jacobianNP);PYLITH_CHECK_ERROR(err);
   PetscLogFlops(numVertices*spaceDim*6);
+  err = DMDestroy(&lagrangeDM);PYLITH_CHECK_ERROR(err);
 
 #if !defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
