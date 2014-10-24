@@ -659,7 +659,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
 
   PetscDM solnDM = fields->solution().dmMesh();
   PetscSection solnGlobalSection = NULL;
-  err = DMGetDefaultGlobalSection(solnDM, &solnGlobalSection);PYLITH_CHECK_ERROR(err);
+  PetscErrorCode err = DMGetDefaultGlobalSection(solnDM, &solnGlobalSection);PYLITH_CHECK_ERROR(err);
   PetscDM lagrangeDM = NULL;
   PetscSection lagrangeSection = NULL;
   PetscInt lagrangeFields[1] = {1}; // :KLUDGE: Hardwired index of Lagrange constrain field.  
