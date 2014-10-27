@@ -541,7 +541,7 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
     // Add dataset to HDF5 file, if necessary
     if (createdExternalDataset) {
       // Get cell information
-      PetscSection section = field.petscSection();assert(section);
+      PetscSection section = field.localSection();assert(section);
       PetscInt dof = 0, n, numLocalCells = 0, numCells, cellHeight, cStart, cEnd;
       PetscIS globalCellNumbers;
     

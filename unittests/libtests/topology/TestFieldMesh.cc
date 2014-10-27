@@ -75,7 +75,7 @@ pylith::topology::TestFieldMesh::testSection(void)
   Mesh mesh;
   Field field(mesh);
 
-  PetscSection section = field.petscSection();
+  PetscSection section = field.localSection();
   CPPUNIT_ASSERT(!section);
 
   PYLITH_METHOD_END;
@@ -124,14 +124,12 @@ pylith::topology::TestFieldMesh::testVectorFieldType(void)
 { // testVectorFieldType
   PYLITH_METHOD_BEGIN;
 
-  const std::string label = "default";
-
   Mesh mesh;
   _buildMesh(&mesh);
   Field field(mesh);
 
   field.vectorFieldType(FieldBase::SCALAR);
-  CPPUNIT_ASSERT_EQUAL(FieldBase::SCALAR, field._metadata[label].vectorFieldType);
+  CPPUNIT_ASSERT_EQUAL(FieldBase::SCALAR, field._metadata.vectorFieldType);
 
   PYLITH_METHOD_END;
 } // testVectorFieldType
@@ -143,8 +141,6 @@ pylith::topology::TestFieldMesh::testScale(void)
 { // testScale
   PYLITH_METHOD_BEGIN;
 
-  const std::string label = "default";
-
   Mesh mesh;
   _buildMesh(&mesh);
   Field field(mesh);
@@ -152,7 +148,7 @@ pylith::topology::TestFieldMesh::testScale(void)
   const PylithScalar scale = 2.0;
   field.scale(scale);
   const PylithScalar tolerance = 1.0e-6;
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(scale, field._metadata[label].scale, tolerance);
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(scale, field._metadata.scale, tolerance);
 
   PYLITH_METHOD_END;
 } // testScale
@@ -164,15 +160,13 @@ pylith::topology::TestFieldMesh::testAddDimensionOkay(void)
 { // testAddDimensionOkay
   PYLITH_METHOD_BEGIN;
 
-  const std::string label = "default";
-
   Mesh mesh;
   _buildMesh(&mesh);
   Field field(mesh);
 
-  CPPUNIT_ASSERT_EQUAL(false, field._metadata[label].dimsOkay);
+  CPPUNIT_ASSERT_EQUAL(false, field._metadata.dimsOkay);
   field.dimensionalizeOkay(true);
-  CPPUNIT_ASSERT_EQUAL(true, field._metadata[label].dimsOkay);
+  CPPUNIT_ASSERT_EQUAL(true, field._metadata.dimsOkay);
 
   PYLITH_METHOD_END;
 } // testAddDimensionOkay
@@ -352,7 +346,7 @@ pylith::topology::TestFieldMesh::testNewSectionPointsArray(void)
 
   // Points not int array should have a fiber dimension of zero.
   PetscInt pStart, pEnd;
-  PetscSection section = field.petscSection();CPPUNIT_ASSERT(section);
+  PetscSection section = field.localSection();CPPUNIT_ASSERT(section);
   PetscErrorCode err = PetscSectionGetChart(section, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
   for(int i = 0; i < pointsOut.size(); ++i) {
     if (pointsOut[i] >= pStart && pointsOut[i] < pEnd) {
@@ -476,7 +470,7 @@ pylith::topology::TestFieldMesh::testCloneSection(void)
   Field fieldSrc(mesh);
   { // Setup source field
     fieldSrc.newSection(Field::VERTICES_FIELD, fiberDim);
-    PetscSection section = fieldSrc.petscSection();CPPUNIT_ASSERT(section);
+    PetscSection section = fieldSrc.localSection();CPPUNIT_ASSERT(section);
     for(PetscInt v = vStart, iV = 0; v < vEnd; ++v) {
       err = PetscSectionAddConstraintDof(section, v, nconstraints[iV++]);PYLITH_CHECK_ERROR(err);
     } // for
@@ -495,7 +489,7 @@ pylith::topology::TestFieldMesh::testCloneSection(void)
   const std::string& label = "field A";
   field.label(label.c_str());
   field.cloneSection(fieldSrc);
-  PetscSection section = field.petscSection();
+  PetscSection section = field.localSection();
   PetscVec vec     = field.localVector();
   CPPUNIT_ASSERT(section);CPPUNIT_ASSERT(vec);
   for(PetscInt v = vStart, iV = 0; v < vEnd; ++v) {
@@ -532,9 +526,9 @@ pylith::topology::TestFieldMesh::testClear(void)
   
   field.clear();
 
-  CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0), field._metadata["default"].scale);
-  CPPUNIT_ASSERT_EQUAL(Field::OTHER, field._metadata["default"].vectorFieldType);
-  CPPUNIT_ASSERT_EQUAL(false, field._metadata["default"].dimsOkay);
+  CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0), field._metadata.scale);
+  CPPUNIT_ASSERT_EQUAL(Field::OTHER, field._metadata.vectorFieldType);
+  CPPUNIT_ASSERT_EQUAL(false, field._metadata.dimsOkay);
 
   PYLITH_METHOD_END;
 } // testClear
@@ -676,7 +670,7 @@ pylith::topology::TestFieldMesh::testZeroAll(void)
   // Create field and set constraint sizes
   Field field(mesh);
   field.newSection(Field::VERTICES_FIELD, fiberDim);
-  PetscSection section = field.petscSection();CPPUNIT_ASSERT(section);
+  PetscSection section = field.localSection();CPPUNIT_ASSERT(section);
   PetscErrorCode err = 0;
   PetscInt index = 0;
   for(PetscInt v = vStart, iV=0; v < vEnd; ++v) {
@@ -1420,7 +1414,7 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
       msg << "Field "<<f;
       fieldSrc.subfieldSetDof(msg.str().c_str(), Field::VERTICES_FIELD, 1);
     } // for
-    PetscSection section = fieldSrc.petscSection();CPPUNIT_ASSERT(section);
+    PetscSection section = fieldSrc.localSection();CPPUNIT_ASSERT(section);
     PetscInt iV = 0, iC = 0;
     for(PetscInt v = vStart; v < vEnd; ++v) {
       const int nconstraintsVertex = nconstraints[iV];
@@ -1446,7 +1440,7 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
     } // for
   } // Setup source field
 
-  PetscSection section = fieldSrc.petscSection();CPPUNIT_ASSERT(section);
+  PetscSection section = fieldSrc.localSection();CPPUNIT_ASSERT(section);
   PetscInt numSectionFields;
   err = PetscSectionGetNumFields(section, &numSectionFields);PYLITH_CHECK_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(numFields, numSectionFields);
@@ -1514,7 +1508,7 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
       msg << "Field "<<f;
       fieldSrc.subfieldSetDof(msg.str().c_str(), Field::VERTICES_FIELD, 1);
     } // for
-    PetscSection section = fieldSrc.petscSection();
+    PetscSection section = fieldSrc.localSection();
     CPPUNIT_ASSERT(section);
     PetscInt iV = 0, iC = 0;
     for(PetscInt v = vStart; v < vEnd; ++v) {
@@ -1544,7 +1538,7 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
   Field field(mesh);
   field.cloneSection(fieldSrc);
 
-  PetscSection section = field.petscSection();CPPUNIT_ASSERT(section);
+  PetscSection section = field.localSection();CPPUNIT_ASSERT(section);
   PetscInt numSectionFields;
   err = PetscSectionGetNumFields(section, &numSectionFields);PYLITH_CHECK_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(numFields, numSectionFields);

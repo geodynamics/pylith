@@ -1472,7 +1472,7 @@ pylith::faults::FaultCohesiveDyn::_calcTractions(topology::Field* tractions,
   const PetscScalar* orientationArray = orientationVisitor.localArray();
 
   // Allocate buffer for tractions field (if necessary).
-  if (!tractions->petscSection()) {
+  if (!tractions->localSection()) {
     const topology::Field& dispRel = _fields->get("relative disp");
     tractions->cloneSection(dispRel);
   } // if
@@ -1703,7 +1703,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
   // Get solution field
   const topology::Field& solutionDomain = fields.solution();
   PetscDM solutionDomainDM = solutionDomain.dmMesh();assert(solutionDomainDM);
-  PetscSection solutionDomainSection = solutionDomain.petscSection();assert(solutionDomainSection);
+  PetscSection solutionDomainSection = solutionDomain.localSection();assert(solutionDomainSection);
   PetscVec solutionDomainVec = solutionDomain.localVector();assert(solutionDomainVec);
   PetscSection solutionDomainGlobalSection = NULL;
   PetscScalar *solutionDomainArray = NULL;
@@ -1729,7 +1729,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
 
   // Get sensitivity solution field
   PetscDM solutionFaultDM = _fields->get("sensitivity solution").dmMesh();assert(solutionFaultDM);
-  PetscSection solutionFaultSection = _fields->get("sensitivity solution").petscSection();assert(solutionFaultSection);
+  PetscSection solutionFaultSection = _fields->get("sensitivity solution").localSection();assert(solutionFaultSection);
   PetscVec solutionFaultVec = _fields->get("sensitivity solution").localVector();assert(solutionFaultVec);
   PetscSection solutionFaultGlobalSection = NULL;
   PetscScalar* solutionFaultArray = NULL;

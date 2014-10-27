@@ -133,7 +133,7 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
     const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault    = _cohesiveVertices[iVertex].fault;
 
-    if (e_lagrange < 0) {err = PetscSectionSetConstraintDof(dispRel.petscSection(), -v_fault, spaceDim);PYLITH_CHECK_ERROR(err);}
+    if (e_lagrange < 0) {err = PetscSectionSetConstraintDof(dispRel.localSection(), -v_fault, spaceDim);PYLITH_CHECK_ERROR(err);}
   }
   dispRel.allocate();
   {
@@ -144,7 +144,7 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
       const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
       const int v_fault    = _cohesiveVertices[iVertex].fault;
 
-      if (e_lagrange < 0) {err = PetscSectionSetConstraintIndices(dispRel.petscSection(), -v_fault, ind);PYLITH_CHECK_ERROR(err);}
+      if (e_lagrange < 0) {err = PetscSectionSetConstraintIndices(dispRel.localSection(), -v_fault, ind);PYLITH_CHECK_ERROR(err);}
     }
     delete[] ind; ind = 0;
   }
@@ -170,11 +170,11 @@ pylith::faults::FaultCohesiveLagrange::setupSolnDof(topology::Field* field)
 
   assert(field);
 
-  const int indexDisp = field->subfieldMetadata("displacement").index;
-  const int indexLagrange = field->subfieldMetadata("lagrange_multiplier").index;
+  const int indexDisp = field->subfieldInfo("displacement").index;
+  const int indexLagrange = field->subfieldInfo("lagrange_multiplier").index;
 
   PetscDM dmMesh = field->dmMesh();assert(dmMesh);
-  PetscSection fieldSection  = field->petscSection();assert(fieldSection);
+  PetscSection fieldSection  = field->localSection();assert(fieldSection);
   PetscErrorCode err;
 
   assert(_quadrature);
@@ -240,7 +240,7 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(const topology::Field& 
 
   // Get sections associated with cohesive cells
   PetscDM residualDM = residual.dmMesh();assert(residualDM);
-  PetscSection residualSection = residual.petscSection();assert(residualSection);
+  PetscSection residualSection = residual.localSection();assert(residualSection);
   PetscSection residualGlobalSection = NULL;
   PetscErrorCode err = DMGetDefaultGlobalSection(residualDM, &residualGlobalSection);PYLITH_CHECK_ERROR(err);
 
@@ -391,7 +391,7 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(topology::Jacobian* jac
   const PetscScalar* areaArray = areaVisitor.localArray();
   
   PetscDM solnDM = fields->solution().dmMesh();assert(solnDM);
-  PetscSection solnSection = fields->solution().petscSection();assert(solnSection);
+  PetscSection solnSection = fields->solution().localSection();assert(solnSection);
   PetscSection solnGlobalSection = NULL;
   PetscErrorCode err = DMGetDefaultGlobalSection(solnDM, &solnGlobalSection);PYLITH_CHECK_ERROR(err);assert(solnGlobalSection);
 
@@ -656,14 +656,12 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
   topology::VecVisitorMesh areaVisitor(area);
   const PetscScalar* areaArray = areaVisitor.localArray();
 
-
-  PetscDM solnDM = fields->solution().dmMesh();
+  PetscDM solnDM = fields->solution().dmMesh();assert(solnDM);
   PetscSection solnGlobalSection = NULL;
   PetscErrorCode err = DMGetDefaultGlobalSection(solnDM, &solnGlobalSection);PYLITH_CHECK_ERROR(err);
-  PetscDM lagrangeDM = NULL;
+
+  PetscDM lagrangeDM = fields->solution().subfieldInfo("lagrange_multiplier").dm;assert(lagrangeDM);
   PetscSection lagrangeSection = NULL;
-  PetscInt lagrangeFields[1] = {1}; // :KLUDGE: Hardwired index of Lagrange constrain field.  
-  err = DMCreateSubDM(fields->solution().dmMesh(), 1, lagrangeFields, NULL, &lagrangeDM);PYLITH_CHECK_ERROR(err);
   err = DMGetDefaultGlobalSection(lagrangeDM, &lagrangeSection);PYLITH_CHECK_ERROR(err);
 
   _logger->eventEnd(setupEvent);
@@ -1795,7 +1793,7 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(topology::Field* tra
   const PetscScalar* orientationArray = orientationVisitor.localArray();
 
   // Allocate buffer for tractions field (if necessary).
-  if (!tractions->petscSection()) {
+  if (!tractions->localSection()) {
     const topology::Field& dispRel = _fields->get("relative disp");
     tractions->cloneSection(dispRel);
   } // if
