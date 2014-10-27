@@ -91,7 +91,7 @@ pylith::topology::TestFieldSubMesh::testSection(void)
   Mesh submesh(mesh, _TestFieldSubMesh::label);
   Field field(submesh);
 
-  PetscSection section = field.petscSection();
+  PetscSection section = field.localSection();
   CPPUNIT_ASSERT(section);
 
   PYLITH_METHOD_END;
@@ -257,7 +257,7 @@ pylith::topology::TestFieldSubMesh::testCloneSection(void)
   Field fieldSrc(submesh);
   { // Setup source field
     fieldSrc.newSection(Field::VERTICES_FIELD, fiberDim);
-    PetscSection section = fieldSrc.petscSection();CPPUNIT_ASSERT(section);
+    PetscSection section = fieldSrc.localSection();CPPUNIT_ASSERT(section);
     int iV=0;
     for(PetscInt v = vStart; v < vEnd; ++v) {
       err = PetscSectionAddConstraintDof(section, v, nconstraints[iV++]);PYLITH_CHECK_ERROR(err);
@@ -274,7 +274,7 @@ pylith::topology::TestFieldSubMesh::testCloneSection(void)
 
   Field field(submesh);
   field.cloneSection(fieldSrc);
-  PetscSection section = field.petscSection();CPPUNIT_ASSERT(section);
+  PetscSection section = field.localSection();CPPUNIT_ASSERT(section);
   PetscVec vec = field.localVector();CPPUNIT_ASSERT(vec);
 
   int iV = 0;
@@ -307,9 +307,9 @@ pylith::topology::TestFieldSubMesh::testClear(void)
   
   field.clear();
 
-  CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0), field._metadata["default"].scale);
-  CPPUNIT_ASSERT_EQUAL(Field::OTHER, field._metadata["default"].vectorFieldType);
-  CPPUNIT_ASSERT_EQUAL(false, field._metadata["default"].dimsOkay);
+  CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0), field._metadata.scale);
+  CPPUNIT_ASSERT_EQUAL(Field::OTHER, field._metadata.vectorFieldType);
+  CPPUNIT_ASSERT_EQUAL(false, field._metadata.dimsOkay);
 
   PYLITH_METHOD_END;
 } // testClear
