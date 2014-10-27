@@ -761,7 +761,6 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
   } // for
   err = MatDestroy(&jacobianNP);PYLITH_CHECK_ERROR(err);
   PetscLogFlops(numVertices*spaceDim*6);
-  err = DMDestroy(&lagrangeDM);PYLITH_CHECK_ERROR(err);
 
 #if !defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
