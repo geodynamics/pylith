@@ -543,9 +543,11 @@ pylith::topology::Field::cloneSection(const Field& src)
   err = PetscObjectSetName((PetscObject) _localVec,  _metadata.label.c_str());PYLITH_CHECK_ERROR(err);
     
   // Reuse scatters in clone
+  _scatters.clear();
   const scatter_map_type::const_iterator scattersEnd = src._scatters.end();
   for (scatter_map_type::const_iterator s_iter=src._scatters.begin(); s_iter != scattersEnd; ++s_iter) {
-    ScatterInfo sinfo;
+    ScatterInfo& sinfo = _scatters[s_iter->first];
+    sinfo.dm = 0;
     sinfo.vector = 0;
 
     // Copy DM
@@ -563,18 +565,19 @@ pylith::topology::Field::cloneSection(const Field& src)
       err = PetscObjectReference((PetscObject) sinfo.vector);PYLITH_CHECK_ERROR(err);
     } // if/else
     err = PetscObjectSetName((PetscObject)sinfo.vector, _metadata.label.c_str());PYLITH_CHECK_ERROR(err);
-    
-    _scatters[s_iter->first] = sinfo;
   } // for
 
   // Reuse subfields in clone
+  _subfields.clear();
   const subfields_type::const_iterator subfieldsEnd = src._subfields.end();
   for (subfields_type::const_iterator s_iter=src._subfields.begin(); s_iter != subfieldsEnd; ++s_iter) {
-    SubfieldInfo sinfo = s_iter->second;
+    SubfieldInfo& sinfo = _subfields[s_iter->first];
+    sinfo.metadata = s_iter->second.metadata;
+    sinfo.index = s_iter->second.index;
+    sinfo.dm = s_iter->second.dm;
     if (sinfo.dm) {
       err = PetscObjectReference((PetscObject) sinfo.dm);PYLITH_CHECK_ERROR(err);
     } // if
-    _subfields[s_iter->first] = sinfo;
   } // for
 
   PYLITH_METHOD_END;
@@ -746,7 +749,7 @@ pylith::topology::Field::copy(const Field& field)
   PetscErrorCode err = VecCopy(field._localVec, _localVec);PYLITH_CHECK_ERROR(err);
 
   // Update metadata
-  _metadata.label = field._metadata.label;
+  label(field._metadata.label.c_str());
   _metadata.vectorFieldType = field._metadata.vectorFieldType;
   _metadata.scale = field._metadata.scale;
 
