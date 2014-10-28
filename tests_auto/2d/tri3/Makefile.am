@@ -16,9 +16,11 @@
 # ----------------------------------------------------------------------
 #
 
+include $(top_srcdir)/check.am
+
 TESTS = testpylith.py
 
-check_SCRIPTS = testpylith.py
+dist_check_SCRIPTS = testpylith.py
 
 dist_noinst_PYTHON = \
 	TestTri3.py \
@@ -35,8 +37,7 @@ dist_noinst_PYTHON = \
 	sliponefault_soln.py \
 	TestSlipTwoFaults.py \
 	sliptwofaults_soln.py \
-	TestFaultsIntersect.py \
-	testpylith.py
+	TestFaultsIntersect.py
 
 dist_noinst_DATA = \
 	geometry.jou \
@@ -55,9 +56,6 @@ dist_noinst_DATA = \
 noinst_TMP = \
 	axial_disp.spatialdb \
 	shear_disp.spatialdb
-
-
-TESTS_ENVIRONMENT = $(PYTHON)
 
 
 # 'export' the input files by performing a mock install

@@ -66,7 +66,7 @@ pylith::topology::Mesh::Mesh(const int dim,
   PetscErrorCode err;
   err = DMCreate(comm, &_dmMesh);PYLITH_CHECK_ERROR(err);
   err = DMSetType(_dmMesh, DMPLEX);PYLITH_CHECK_ERROR(err);
-  err = DMPlexSetDimension(_dmMesh, dim);PYLITH_CHECK_ERROR(err);
+  err = DMSetDimension(_dmMesh, dim);PYLITH_CHECK_ERROR(err);
   err = PetscObjectSetName((PetscObject) _dmMesh, "domain");PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
@@ -120,8 +120,7 @@ pylith::topology::Mesh::Mesh(const Mesh& mesh,
 
   if (maxConeSize <= 0) {
     std::ostringstream msg;
-    msg << "Error while creating submesh. Submesh '" 
-	<< label << "' does not contain any cells.\n";
+    msg << "Error while creating submesh. Submesh '" << label << "' does not contain any cells.\n";
     throw std::runtime_error(msg.str());
   } // if
 
@@ -296,8 +295,7 @@ pylith::topology::Mesh::groupSize(const char *name)
   err = DMPlexHasLabel(_dmMesh, name, &hasLabel);PYLITH_CHECK_ERROR(err);
   if (!hasLabel) {
     std::ostringstream msg;
-    msg << "Cannot get size of group '" << name
-	<< "'. Group missing from mesh.";
+    msg << "Cannot get size of group '" << name << "'. Group missing from mesh.";
     throw std::runtime_error(msg.str());
   } // if
 

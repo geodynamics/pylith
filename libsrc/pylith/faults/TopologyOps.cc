@@ -128,7 +128,7 @@ pylith::faults::TopologyOps::classifyCellsDM(PetscDM dmMesh,
     classifySize = vReplaceCells.size() + vNoReplaceCells.size();
     if (classifySize > classifyTotal) {
       std::ostringstream msg;
-      msg << "Error classifying cells during creation of cohesive cells.\n"
+      msg << "Internal error classifying cells during creation of cohesive cells."
           << "  classifySize: " << classifySize << ", classifyTotal: " << classifyTotal;
       throw std::logic_error(msg.str());
     } // if

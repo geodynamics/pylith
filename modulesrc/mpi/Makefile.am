@@ -18,6 +18,7 @@
 
 subpackage = mpi
 include $(top_srcdir)/subpackage.am
+include $(top_srcdir)/modulesrc/module.am
 
 subpkgpyexec_LTLIBRARIES = _mpimodule.la
 
@@ -46,8 +47,6 @@ if NO_UNDEFINED
 _mpimodule_la_LIBADD += \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
-
-INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) $(PETSC_CC_INCLUDES)
 
 if ENABLE_SWIG
 $(srcdir)/mpi_wrap.cxx $(srcdir)/mpi.py: $(swig_sources)

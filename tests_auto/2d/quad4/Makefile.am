@@ -16,9 +16,11 @@
 # ----------------------------------------------------------------------
 #
 
+include $(top_srcdir)/check.am
+
 TESTS = testpylith.py
 
-check_SCRIPTS = testpylith.py
+dist_check_SCRIPTS = testpylith.py
 
 dist_noinst_PYTHON = \
 	TestQuad4.py \
@@ -52,8 +54,7 @@ dist_noinst_PYTHON = \
 	slipweakening_compression_soln.py \
 	slipweakening_shear_stick_soln.py \
 	slipweakening_shear_sliding_soln.py \
-	slipweakening_opening_soln.py \
-	testpylith.py
+	slipweakening_opening_soln.py
 
 dist_noinst_DATA = \
 	geometry.jou \
@@ -75,9 +76,6 @@ dist_noinst_DATA = \
 	slipweakening_shear_stick.cfg \
 	slipweakening_shear_sliding.cfg \
 	slipweakening_opening.cfg
-
-
-TESTS_ENVIRONMENT = $(PYTHON)
 
 
 # 'export' the input files by performing a mock install

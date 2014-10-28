@@ -222,7 +222,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateResidual(void)
   const int totalNumVertices = vEnd - vStart;
   const int sizeE = _data->spaceDim * totalNumVertices;
 
-  PetscSection residualSection = residual.petscSection();
+  PetscSection residualSection = residual.localSection();
   PetscVec residualVec = residual.localVector();
   PetscScalar *vals;
   PetscInt size;

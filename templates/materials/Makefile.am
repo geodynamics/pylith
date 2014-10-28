@@ -43,9 +43,7 @@ libmaterialscontrib_la_LIBADD += \
 endif
 
 AM_CPPFLAGS = $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) 
-
-INCLUDES = 
-INCLUDES += $(PETSC_CC_INCLUDES)
+AM_CPPFLAGS += $(PETSC_CC_INCLUDES)
 
 # MODULE ---------------------------------------------------------------
 
@@ -74,7 +72,7 @@ _materialscontribmodule_la_LIBADD += \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
 
-INCLUDES += -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR)
+AM_CPPFLAGS += -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR)
 
 $(srcdir)/materialscontrib_wrap.cxx $(srcdir)/materialscontrib.py: $(swig_sources)
 	$(SWIG) -Wall -c++ -python $(SWIG_FLAGS) $<

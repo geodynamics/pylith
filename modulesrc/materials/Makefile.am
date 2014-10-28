@@ -18,6 +18,7 @@
 
 subpackage = materials
 include $(top_srcdir)/subpackage.am
+include $(top_srcdir)/modulesrc/module.am
 
 subpkgpyexec_LTLIBRARIES = _materialsmodule.la
 
@@ -65,8 +66,6 @@ if NO_UNDEFINED
 _materialsmodule_la_LIBADD += \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
-
-INCLUDES += -g $(PYTHON_EGG_CPPFLAGS) -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR) $(PETSC_CC_INCLUDES)
 
 if ENABLE_SWIG
 $(srcdir)/materials_wrap.cxx $(srcdir)/materials.py: $(swig_sources)

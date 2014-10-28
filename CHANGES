@@ -2,5 +2,5 @@ See the release notes in doc/releasenotes for a summary of the changes
 to PyLith from version to version.
 
 See
-http://www.geodynamics.org/wsvn/cig/short/3D/PyLith/?op=log&rev=0&sc=0&isdir=1
+https://github.com/geodynamics/pylith/commits/master
 for the complete log of changes made to PyLith.

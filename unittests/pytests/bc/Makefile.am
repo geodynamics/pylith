@@ -16,15 +16,12 @@
 # ----------------------------------------------------------------------
 #
 
-subpackage = bc
-include $(top_srcdir)/subpackage.am
+include $(top_srcdir)/check.am
 
 SUBDIRS = data
 
 TESTS = testbc.py
 dist_check_SCRIPTS = testbc.py
-
-TESTS_ENVIRONMENT = $(PYTHON)
 
 noinst_PYTHON = \
 	TestAbsorbingDampers.py \

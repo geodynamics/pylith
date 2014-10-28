@@ -16,15 +16,12 @@
 # ----------------------------------------------------------------------
 #
 
-subpackage = problems
-include $(top_srcdir)/subpackage.am
+include $(top_srcdir)/check.am
 
 SUBDIRS = data
 
 TESTS = testproblems.py
 dist_check_SCRIPTS = testproblems.py
-
-TESTS_ENVIRONMENT = $(PYTHON)
 
 noinst_PYTHON = \
 	TestTimeStep.py \

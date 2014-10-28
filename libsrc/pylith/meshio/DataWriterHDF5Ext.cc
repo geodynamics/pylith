@@ -293,7 +293,7 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
     throw std::runtime_error(msg.str());
   } catch (...) { 
     std::ostringstream msg;
-    msg << "Unknown error while opening HDF5 file " << _filename << ".\n";
+    msg << "Unknown error while opening HDF5 file " << _filename << ".";
     throw std::runtime_error(msg.str());
   } // try/catch
 
@@ -467,7 +467,7 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
   } catch (...) { 
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 
-	<< t << " for HDF5 file '" << _filename << "'.\n";
+	<< t << " for HDF5 file '" << _filename << "'.";
     throw std::runtime_error(msg.str());
   } // try/catch
 
@@ -541,7 +541,7 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
     // Add dataset to HDF5 file, if necessary
     if (createdExternalDataset) {
       // Get cell information
-      PetscSection section = field.petscSection();assert(section);
+      PetscSection section = field.localSection();assert(section);
       PetscInt dof = 0, n, numLocalCells = 0, numCells, cellHeight, cStart, cEnd;
       PetscIS globalCellNumbers;
     
@@ -623,7 +623,7 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
   } catch (...) { 
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 
-	<< t << " for HDF5 file '" << _filename << "'.\n";
+	<< t << " for HDF5 file '" << _filename << "'.";
     throw std::runtime_error(msg.str());
   } // try/catch
 

@@ -47,7 +47,7 @@ class MeshImporter(MeshGenerator):
     ##
     ## \b Facilities
     ## @li \b reader Mesh reader.
-    ## @li \b partitioner Mesh partitioner.
+    ## @li \b distributor Mesh distributor.
     ## @li \b refiner Mesh refiner.
 
     import pyre.inventory

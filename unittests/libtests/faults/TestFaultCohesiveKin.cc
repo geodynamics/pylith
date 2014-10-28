@@ -287,7 +287,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
   const PylithScalar* valsE = _data->residual;
 
   PetscInt pStart, pEnd;
-  PetscErrorCode err = PetscSectionGetChart(residual.petscSection(), &pStart, &pEnd);CPPUNIT_ASSERT(!err);
+  PetscErrorCode err = PetscSectionGetChart(residual.localSection(), &pStart, &pEnd);CPPUNIT_ASSERT(!err);
   topology::VecVisitorMesh residualVisitor(residual);
   const PetscScalar* residualArray = residualVisitor.localArray();CPPUNIT_ASSERT(residualArray);
       
@@ -423,7 +423,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianLumped(void)
   const int spaceDim = _data->spaceDim;
 
   PetscInt pStart, pEnd;
-  PetscErrorCode err = PetscSectionGetChart(jacobian.petscSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+  PetscErrorCode err = PetscSectionGetChart(jacobian.localSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
 
   PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
   topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
@@ -497,7 +497,7 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
   //solution.view("SOLUTION AFTER ADJUSTMENT"); // DEBUGGING
 
   PetscInt pStart, pEnd;
-  PetscErrorCode err = PetscSectionGetChart(jacobian.petscSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+  PetscErrorCode err = PetscSectionGetChart(jacobian.localSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
   topology::VecVisitorMesh solutionVisitor(solution);
   const PetscScalar* solutionArray = solutionVisitor.localArray();CPPUNIT_ASSERT(solutionArray);
 
@@ -615,7 +615,7 @@ pylith::faults::TestFaultCohesiveKin::_fieldSetValues(topology::Field* field,
 
   PetscErrorCode err;
   PetscInt pStart, pEnd;
-  err = PetscSectionGetChart(field->petscSection(), &pStart, &pEnd);CPPUNIT_ASSERT(!err);
+  err = PetscSectionGetChart(field->localSection(), &pStart, &pEnd);CPPUNIT_ASSERT(!err);
 
   topology::VecVisitorMesh fieldVisitor(*field);
   PetscScalar* fieldArray = fieldVisitor.localArray();CPPUNIT_ASSERT(fieldArray);

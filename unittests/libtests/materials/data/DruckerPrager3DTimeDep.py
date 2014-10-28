@@ -278,7 +278,7 @@ class DruckerPrager3DTimeDep(ElasticMaterialApp):
                     strainPPTpdtProd)
       dFac = math.sqrt(2.0) * d
       testMult = 2.0 * ae * am * \
-                 (3.0 * alphaYieldV * meanStrainPPTpdt/am + \
+                 (3.0 * alphaYieldV * (meanStrainPPTpdt/am + meanStressInitial) + \
                   d/(math.sqrt(2.0) * ae) - betaV)/ \
                   (6.0 * alphaYieldV * alphaFlowV * ae + am)
       plasticMult = min(testMult, dFac)

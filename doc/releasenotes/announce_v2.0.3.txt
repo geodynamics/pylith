@@ -1,0 +1,111 @@
+Greetings,
+
+I am pleased to announce the release of PyLith 2.0.3, a finite-element
+code designed to solve dynamic elastic problems and quasi-static
+viscoelastic problems in tectonic deformation.
+
+This release provides several small updates for (1) improved
+CUBIT/Trelis compatibility in example journal files, (2) building with
+recent versions of automake, and (3) additional examples from the 2014
+Crustal Deformation Modeling Workshop tutorials.
+
+You can download the source code and binaries from
+
+    http://geodynamics.org/cig/software/pylith
+
+Detailed installation instructions for the binary packages are in the
+User Manual with detailed building instructions for a few platforms in
+the INSTALL file bundled with the PyLith Installer utility.
+
+
+======================================================================
+MIGRATING FROM VERSION 1.9 TO 2.0
+======================================================================
+
+Changes to various C++ objects permitted simplifying the specification
+of a number of components. The map below indicates the name changes.
+
+  CellFilterAvgMesh -> CellFilterAvg
+  DataWriterVTKMesh -> DataWriterVTK
+  DataWriterVTKSubMesh -> DataWriterVTK
+  DataWriterVTKSubSubMesh -> DataWriterVTK
+  DataWriterHDF5Mesh -> DataWriterHDF5
+  DataWriterHDF5SubMesh -> DataWriterHDF5
+  DataWriterHDF5SubSubMesh -> DataWriterHDF5
+  DataWriterHDF5ExtMesh -> DataWriterHDF5Ext
+  DataWriterHDF5ExtSubMesh -> DataWriterHDF5Ext
+  DataWriterHDF5ExtSubSubMesh -> DataWriterHDF5Ext
+
+  Running the script:
+
+    bash $PYLITH_DIR/doc/developer/update_1.9to2.0.sh
+
+  will update all .cfg files in the current directory and all
+  subdirectories with the new names (you will need to replace
+  $PYLITH_DIR with the directory containing the PyLith source code).
+
+
+PyLith allows use of the Chaco and ParMetis/Metis partitioners. The
+name of the ParMetis/Metis partitioner was changed from "parmetis" to
+"metis".
+
+  [pylithapp.mesh_generator]
+  distributor.partitioner = metis
+
+Buried edges of faults are handled differently in v2.0. A separate
+nodeset/pset should be created and contain the vertices on the buried
+edges of the fault. See the Section 6.4.2 of the PyLith manual for
+more information.
+
+======================================================================
+RELEASE NOTES
+======================================================================
+
+----------------------------------------------------------------------
+Version 2.0.3
+----------------------------------------------------------------------
+
+* Bug fixes
+
+  - Updated autotools files (Makefile.am, configure.ac) for
+    compatibility with recent versions of automake (up to and including
+    v1.14.1).
+
+----------------------------------------------------------------------
+Version 2.0.2
+----------------------------------------------------------------------
+
+* Bug fixes
+
+  - Fixed linking issue in Darwin binary distribution, primarily
+    affecting systems with OS X 10.7 and 10.8.
+
+  - Improved example journal files for CUBIT/Trelis to improve
+    compability (examples/meshing/surface_nurbs/dem).
+
+  - Updated more journal in examples so that APREPRO lines have a
+    leading '$' instead of a '#' to differentiate from comments.
+
+  - Added examples/debugging files from Crustal Deformation Modeling
+    workshop debugging tutorial.
+
+----------------------------------------------------------------------
+Version 2.0.1
+----------------------------------------------------------------------
+
+* Added example (examples/2d/gravity) for viscoelastic deformation in
+  2-D with gravitational body forces and small strain formulation.
+
+* Bug fixes
+
+  - Improved example journal files for CUBIT/Trelis to improve
+    compability. All journal files should work with CUBIT 14.1 and
+    Trelis 15.0.
+
+  - Created examples of IDless journal files in examples/2d/greensfns.
+    These files should work with all recent versions of CUBIT and
+    Trelis.
+
+  - Switched journal APREPRO lines to have leading '$' instead of '#'
+    to differentiate from comments.
+

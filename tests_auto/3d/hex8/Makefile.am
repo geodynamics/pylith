@@ -16,9 +16,11 @@
 # ----------------------------------------------------------------------
 #
 
+include $(top_srcdir)/check.am
+
 TESTS = testpylith.py
 
-check_SCRIPTS = testpylith.py
+dist_check_SCRIPTS = testpylith.py
 
 dist_noinst_PYTHON = \
 	TestHex8.py \
@@ -34,7 +36,8 @@ dist_noinst_PYTHON = \
 	sliponefault_soln.py \
 	TestSlipTwoFaults.py \
 	sliptwofaults_soln.py \
-	testpylith.py
+	TestFrictionNoSlip.py \
+	TestFrictionNoSlipHalo.py
 
 
 dist_noinst_DATA = \
@@ -47,14 +50,14 @@ dist_noinst_DATA = \
 	sheardispnoslip.cfg \
 	sheardispnosliprefine.cfg \
 	sliponefault.cfg \
-	sliptwofaults.cfg
+	sliptwofaults.cfg \
+	frictionnoslip.cfg \
+	frictionnoslip_halo.cfg
 
 noinst_TMP = \
 	shear_dispx.spatialdb \
 	shear_dispy.spatialdb \
 	shear_dispz.spatialdb
-
-TESTS_ENVIRONMENT = $(PYTHON)
 
 
 # 'export' the input files by performing a mock install

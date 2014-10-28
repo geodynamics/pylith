@@ -111,7 +111,7 @@ pylith::topology::Mesh::dimension(void) const {
 
   PetscInt dim = 0;
   if (_dmMesh) {
-    PetscErrorCode err = DMPlexGetDimension(_dmMesh, &dim);PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = DMGetDimension(_dmMesh, &dim);PYLITH_CHECK_ERROR(err);
   } // if
 
   PYLITH_METHOD_RETURN(dim);

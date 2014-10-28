@@ -18,6 +18,7 @@
 
 subpackage = problems
 include $(top_srcdir)/subpackage.am
+include $(top_srcdir)/modulesrc/module.am
 
 subpkgpyexec_LTLIBRARIES = _problemsmodule.la
 
@@ -54,8 +55,6 @@ if NO_UNDEFINED
 _problemsmodule_la_LIBADD += \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
-
-INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR) $(PETSC_CC_INCLUDES)
 
 if ENABLE_SWIG
 $(srcdir)/problems_wrap.cxx $(srcdir)/problems.py: $(swig_sources)

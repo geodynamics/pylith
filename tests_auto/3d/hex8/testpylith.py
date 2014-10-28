@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # ======================================================================
 #
@@ -44,6 +44,12 @@ def suite():
 
   from TestFaultsIntersect import TestFaultsIntersect
   suite.addTest(unittest.makeSuite(TestFaultsIntersect))
+
+  from TestFrictionNoSlip import TestFrictionNoSlip
+  suite.addTest(unittest.makeSuite(TestFrictionNoSlip))
+
+  from TestFrictionNoSlipHalo import TestFrictionNoSlipHalo
+  suite.addTest(unittest.makeSuite(TestFrictionNoSlipHalo))
 
   return suite
 

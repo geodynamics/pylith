@@ -16,14 +16,11 @@
 # ----------------------------------------------------------------------
 #
 
-include $(top_srcdir)/check.am
-
-TESTS = testmpi.py
-dist_check_SCRIPTS = testmpi.py
-
-noinst_PYTHON = \
-	TestCommunicator.py \
-	TestReduce.py
+AM_CPPFLAGS = -I$(top_srcdir)/libsrc
 
 
-# End of file 
+check-local: check-TESTS
+	for f in $(TEST_LOGS); do printf "\n=== $$f ===\n\n"; cat $$f; done
+
+
+# End of file

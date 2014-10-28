@@ -48,7 +48,7 @@ pylith::topology::MeshOps::createDMMesh(Mesh* const mesh,
   PetscDM dmMesh = NULL;
   err = DMCreate(comm, &dmMesh);PYLITH_CHECK_ERROR(err);
   err = DMSetType(dmMesh, DMPLEX);PYLITH_CHECK_ERROR(err);
-  err = DMPlexSetDimension(dmMesh, dim);PYLITH_CHECK_ERROR(err);
+  err = DMSetDimension(dmMesh, dim);PYLITH_CHECK_ERROR(err);
   mesh->dmMesh(dmMesh, label);
 
   PYLITH_METHOD_END;
@@ -166,8 +166,7 @@ pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
     assert(0 <= matIndex && matIndex < numMaterials);
     if (matCellCountsAll[matIndex] <= 0) {
       std::ostringstream msg;
-      msg << "No cells associated with material with id '" << matId
-	  << "'.";
+      msg << "No cells associated with material with id '" << matId << "'.";
       throw std::runtime_error(msg.str());
     } // if
   } // for

@@ -58,7 +58,7 @@ pylith::topology::VecVisitorMesh::initialize(const Field& field,
   clear();
 
   PetscErrorCode err;
-  PetscSection fieldSection = field.petscSection();assert(fieldSection);
+  PetscSection fieldSection = field.localSection();assert(fieldSection);
   PetscInt numFields = 0;
   err = PetscSectionGetNumFields(fieldSection, &numFields);PYLITH_CHECK_ERROR(err);
 
@@ -66,9 +66,9 @@ pylith::topology::VecVisitorMesh::initialize(const Field& field,
     _section = fieldSection;
     err = PetscObjectReference((PetscObject)_section);PYLITH_CHECK_ERROR(err);
   } else {
-    const Field::Metadata fieldMetadata = field.subfieldMetadata(subfield);
-    assert(fieldMetadata.index >= 0 && fieldMetadata.index < numFields);
-    err = PetscSectionGetField(fieldSection, fieldMetadata.index, &_section);PYLITH_CHECK_ERROR(err);
+    const int fieldIndex = field.subfieldInfo(subfield).index;
+    assert(fieldIndex >= 0 && fieldIndex < numFields);
+    err = PetscSectionGetField(fieldSection, fieldIndex, &_section);PYLITH_CHECK_ERROR(err);
   } // if/else
   _localVec = field.localVector();assert(_localVec);
 
@@ -96,10 +96,10 @@ pylith::topology::VecVisitorMesh::clear(void)
 // Get the PETSc section.
 inline
 PetscSection
-pylith::topology::VecVisitorMesh::petscSection(void) const
-{ // petscSection
+pylith::topology::VecVisitorMesh::localSection(void) const
+{ // localSection
   return _section;
-} // petscSection
+} // localSection
 
 // ----------------------------------------------------------------------
 // Get the local PETSc Vec.
@@ -237,7 +237,7 @@ pylith::topology::VecVisitorMesh::optimizeClosure(const Field& field)
 { // optimizeClosure
   PetscErrorCode err;
 
-  PetscSection fieldSection = field.petscSection();assert(fieldSection);
+  PetscSection fieldSection = field.localSection();assert(fieldSection);
   PetscDM dmMesh = field.mesh().dmMesh();assert(dmMesh);
   PetscSection indexSection = NULL;
   err = PetscSectionGetClosureIndex(fieldSection, (PetscObject) dmMesh, &indexSection, NULL);PYLITH_CHECK_ERROR(err);
@@ -261,7 +261,7 @@ pylith::topology::MatVisitorMesh::MatVisitorMesh(const PetscMat mat,
   PetscErrorCode err;
 
   _dm = field.mesh().dmMesh();assert(_dm);
-  _section = field.petscSection();assert(_section);
+  _section = field.localSection();assert(_section);
   err = DMGetPointSF(_dm, &sf);PYLITH_CHECK_ERROR(err);assert(sf);
   err = PetscSectionCreateGlobalSection(_section, sf, PETSC_FALSE, &_globalSection);PYLITH_CHECK_ERROR(err);assert(_globalSection);
 
