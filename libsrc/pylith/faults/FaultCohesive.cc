@@ -146,7 +146,15 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
       CohesiveTopology::createFault(&faultMesh, *mesh, groupField);
       PetscDMLabel faultBdLabel = NULL;
 
-      if (edge()) {err = DMPlexGetLabel(dmMesh, edge(), &faultBdLabel);PYLITH_CHECK_ERROR(err);}
+      // We do not have labels on all ranks until after distribution
+      if (strlen(edge()) > 0 && !rank) {
+	err = DMPlexGetLabel(dmMesh, edge(), &faultBdLabel);PYLITH_CHECK_ERROR(err);
+	if (!faultBdLabel) {
+	  std::ostringstream msg;
+	  msg << "Could not find nodeset/pset '" << edge() << "' marking buried edges for fault '" << label() << "'.";
+	  throw std::runtime_error(msg.str());
+	} // if
+      } // if
       CohesiveTopology::create(mesh, faultMesh, faultBdLabel, id(), *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
     } else {
       const int faultDim = 2;
