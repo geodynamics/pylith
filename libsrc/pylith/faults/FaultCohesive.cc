@@ -146,7 +146,8 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
       CohesiveTopology::createFault(&faultMesh, *mesh, groupField);
       PetscDMLabel faultBdLabel = NULL;
 
-      if (strlen(edge()) > 0) {
+      // We do not have labels on all ranks until after distribution
+      if (strlen(edge()) > 0 && !rank) {
 	err = DMPlexGetLabel(dmMesh, edge(), &faultBdLabel);PYLITH_CHECK_ERROR(err);
 	if (!faultBdLabel) {
 	  std::ostringstream msg;
