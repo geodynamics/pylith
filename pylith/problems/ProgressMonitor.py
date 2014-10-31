@@ -70,6 +70,7 @@ class ProgressMonitor(PetscComponent):
     Constructor.
     """
     PetscComponent.__init__(self, name, facility="progress_monitor")
+    self.fout = None
     return
 
 
@@ -88,17 +89,18 @@ class ProgressMonitor(PetscComponent):
       self.isMaster = True
     if self.isMaster:
       self.fout = open(self.filename, "w")
-      self.fout.write("Timestamp                   Simulation t   # timesteps   % complete   Est. completion\n")
+      self.fout.write("Timestamp                     Simulation t   % complete   Est. completion\n")
     return
 
 
   def close(self):
-    if self.isMaster:
+    if self.fout:
       self.fout.close()
+      self.fout = None
     return
 
 
-  def update(self, istep, t, tStart, tEnd):
+  def update(self, t, tStart, tEnd):
     writeUpdate = False
     if self.tPrev:
       incrCompleted = (t-self.tPrev) / (tEnd-tStart)
@@ -108,9 +110,12 @@ class ProgressMonitor(PetscComponent):
       percentComplete = (t-tStart)/(tEnd-tStart)*100.0
       tSimNorm = t.value / self.tSimScale.value
       now = datetime.datetime.now()
-      finished = self.datetimeStart + datetime.timedelta(seconds=100.0/percentComplete * ((now-self.datetimeStart).total_seconds()))
+      if percentComplete > 0.0:
+        finished = self.datetimeStart + datetime.timedelta(seconds=100.0/percentComplete * ((now-self.datetimeStart).total_seconds()))
+      else:
+        finished = "TBD"
       if self.isMaster:
-        self.fout.write("%s   %.4f*%s   %11d   %10.0f   %s\n" % (now, tSimNorm, self.tUnits, istep, percentComplete, finished))
+        self.fout.write("%s   %8.2f*%s   %10.0f   %s\n" % (now, tSimNorm, self.tUnits, percentComplete, finished))
       self.tPrev = t
     return
 

@@ -75,6 +75,9 @@ class TestApp(Script):
     from TestTimeStepAdapt import TestTimeStepAdapt
     suite.addTest(unittest.makeSuite(TestTimeStepAdapt))
 
+    from TestProgressMonitor import TestProgressMonitor
+    suite.addTest(unittest.makeSuite(TestProgressMonitor))
+
     return suite
 
 
