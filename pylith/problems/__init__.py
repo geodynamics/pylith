@@ -31,7 +31,9 @@ __all__ = ['EqDeformation',
            'TimeStep',
            'TimeStepUniform',
            'TimeStepUser',
-           'TimeStepAdapt']
+           'TimeStepAdapt',
+           'ProgressMonitor',
+]
 
 
 # End of file

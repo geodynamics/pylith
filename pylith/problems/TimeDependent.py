@@ -48,6 +48,7 @@ class TimeDependent(Problem):
     ##
     ## \b Facilities
     ## @li \b formulation Formulation for solving PDE.
+    ## @li \b progress_monitor Simple progress monitor via text file.
     ## @li \b checkpoint Checkpoint manager.
 
     import pyre.inventory
@@ -56,15 +57,15 @@ class TimeDependent(Problem):
     elasticPrestep.meta['tip'] = "Include a static calculation with elastic behavior before time stepping."
 
     from Implicit import Implicit
-    formulation = pyre.inventory.facility("formulation",
-                                          family="pde_formulation",
-                                          factory=Implicit)
+    formulation = pyre.inventory.facility("formulation", family="pde_formulation", factory=Implicit)
     formulation.meta['tip'] = "Formulation for solving PDE."
 
+    from ProgressMonitorTime import ProgressMonitorTime
+    progressMonitor = pyre.inventory.facility("progress_monitor", family="progress_monitor", factory=ProgressMonitorTime)
+    formulation.meta['tip'] = "Simple progress monitor via text file."
+
     from pylith.utils.CheckpointTimer import CheckpointTimer
-    checkpointTimer = pyre.inventory.facility("checkpoint",
-                                              family="checkpointer",
-                                              factory=CheckpointTimer)
+    checkpointTimer = pyre.inventory.facility("checkpoint", family="checkpointer", factory=CheckpointTimer)
     checkpointTimer.meta['tip'] = "Checkpoint manager."
 
 
@@ -166,12 +167,19 @@ class TimeDependent(Problem):
       material.useElasticBehavior(False)
 
 
+    if (self.formulation.getTotalTime() > self.formulation.getStartTime()):
+      self.progressMonitor.open()
+
     # Normal time loop
     t = self.formulation.getStartTime()
     timeScale = self.normalizer.timeScale()
     while t < self.formulation.getTotalTime():
-      self._eventLogger.stagePush("Prestep")
       tsec = self.normalizer.dimensionalize(t, timeScale)
+      tStart = self.normalizer.dimensionalize(self.formulation.getStartTime(), timeScale)
+      tEnd = self.normalizer.dimensionalize(self.formulation.getTotalTime(), timeScale)
+      self.progressMonitor.update(tsec, tStart, tEnd)
+
+      self._eventLogger.stagePush("Prestep")
       if 0 == comm.rank:
         self._info.log("Main time loop, current time is t=%s" % tsec)
       
@@ -204,6 +212,8 @@ class TimeDependent(Problem):
 
       # Update time
       t += dt
+
+    self.progressMonitor.close()
     return
 
 
@@ -238,6 +248,7 @@ class TimeDependent(Problem):
     Problem._configure(self)
     self.elasticPrestep = self.inventory.elasticPrestep
     self.formulation = self.inventory.formulation
+    self.progressMonitor = self.inventory.progressMonitor
     self.checkpointTimer = self.inventory.checkpointTimer
     return
 

@@ -48,6 +48,7 @@ class GreensFns(Problem):
     ##
     ## \b Facilities
     ## @li \b formulation Formulation for solving PDE.
+    ## @li \b progress_monitor Simple progress monitor via text file.
     ## @li \b checkpoint Checkpoint manager.
 
     import pyre.inventory
@@ -60,6 +61,10 @@ class GreensFns(Problem):
                                           family="pde_formulation",
                                           factory=Implicit)
     formulation.meta['tip'] = "Formulation for solving PDE."
+
+    from ProgressMonitorStep import ProgressMonitorStep
+    progressMonitor = pyre.inventory.facility("progress_monitor", family="progress_monitor", factory=ProgressMonitorStep)
+    formulation.meta['tip'] = "Simple progress monitor via text file."
 
     from pylith.utils.CheckpointTimer import CheckpointTimer
     checkpointTimer = pyre.inventory.facility("checkpoint",
@@ -152,9 +157,14 @@ class GreensFns(Problem):
       material.useElasticBehavior(True)
 
     nimpulses = self.source.numImpulses()
+    if nimpulses > 0:
+      self.progressMonitor.open()
+    
     ipulse = 0;
     dt = 1.0
     while ipulse < nimpulses:
+      self.progressMonitor.update(ipulse, 0, nimpulses)
+
       self._eventLogger.stagePush("Prestep")
       if 0 == comm.rank:
         self._info.log("Main loop, impulse %d of %d." % (ipulse+1, nimpulses))
@@ -188,6 +198,8 @@ class GreensFns(Problem):
 
       # Update time/impulse
       ipulse += 1
+
+    self.progressMonitor.close()      
     return
 
 
@@ -223,6 +235,7 @@ class GreensFns(Problem):
 
     self.faultId = self.inventory.faultId
     self.formulation = self.inventory.formulation
+    self.progressMonitor = self.inventory.progressMonitor
     self.checkpointTimer = self.inventory.checkpointTimer
     return
 
