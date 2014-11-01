@@ -34,7 +34,6 @@ class TestProgressMonitor(unittest.TestCase):
   def setUp(self):
     self.monitor = ProgressMonitor()
     self.monitor._configure()
-    self.monitor.filename = "data/progress.txt"
     return
   
 
@@ -51,14 +50,8 @@ class TestProgressMonitor(unittest.TestCase):
     """
     Test open() and close().
     """
-    import os
-    if os.path.exists(self.monitor.filename):
-        os.remove(self.monitor.filename)
     self.monitor.open()
     self.monitor.close()
-
-    self.assertTrue(os.path.isfile(self.monitor.filename))
-
     return
 
 
@@ -66,27 +59,19 @@ class TestProgressMonitor(unittest.TestCase):
     """
     Test update().
     """
-    import os
     self.monitor.open()
 
-    nlines = 1 # header
-    self.monitor.update(1.0*year, 0.0*year, 10.0*year); nlines += 1
-    self.monitor.update(1.5*year, 0.0*year, 10.0*year); nlines += 0
-    self.monitor.update(2.0*year, 0.0*year, 10.0*year); nlines += 1
-    self.monitor.update(4.0*year, 0.0*year, 10.0*year); nlines += 1
-    self.monitor.update(5.0*year, 0.0*year, 10.0*year); nlines += 1
-    self.monitor.update(6.0*year, 0.0*year, 10.0*year); nlines += 1
-    self.monitor.update(8.0*year, 0.0*year, 10.0*year); nlines += 1
-    self.monitor.update(9.0*year, 0.0*year, 10.0*year); nlines += 1
+    self.monitor.update(1.0*year, 0.0*year, 10.0*year)
+    self.monitor.update(1.5*year, 0.0*year, 10.0*year)
+    self.monitor.update(2.0*year, 0.0*year, 10.0*year)
+    self.monitor.update(4.0*year, 0.0*year, 10.0*year)
+    self.monitor.update(5.0*year, 0.0*year, 10.0*year)
+    self.monitor.update(6.0*year, 0.0*year, 10.0*year)
+    self.monitor.update(8.0*year, 0.0*year, 10.0*year)
+    self.monitor.update(9.0*year, 0.0*year, 10.0*year)
 
     self.monitor.close()
 
-    self.assertTrue(os.path.isfile(self.monitor.filename))
-    fin = open(self.monitor.filename, "r")
-    lines = fin.readlines()
-    fin.close()
-    self.assertEqual(nlines, len(lines))
-    
     return
 
 

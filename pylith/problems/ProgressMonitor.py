@@ -18,9 +18,9 @@
 
 ## @file pylith/solver/ProgressMonitor.py
 ##
-## @brief Python PyLith abstract base class for solver.
+## @brief Python PyLith abstract base class for progress monitor.
 ##
-## Factory: solver
+## Factory: progress_monitor
 
 from pylith.utils.PetscComponent import PetscComponent
 import datetime
@@ -28,9 +28,9 @@ import datetime
 # ProgressMonitor class
 class ProgressMonitor(PetscComponent):
   """
-  Python abstract base class for solver.
+  Python abstract base class for progress monitor.
 
-  Factory: solver.
+  Factory: progress_monitor.
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
@@ -45,7 +45,6 @@ class ProgressMonitor(PetscComponent):
     ##
     ## \b Properties
     ## @li \b filename Name of output file.
-    ## @li \b t_units Units for simulation time in output.
     ## @li \b update_percent Frequency of progress updates (percent).
     ##
     ## \b Facilities
@@ -53,70 +52,57 @@ class ProgressMonitor(PetscComponent):
 
     import pyre.inventory
 
-    filename = pyre.inventory.str("filename", default="progress.txt")
-    filename.meta['tip'] = "Name of output file."
-
-    tUnits = pyre.inventory.str("t_units", default="year")
-    tUnits.meta['tip'] = "Units for simulation time in output."
-
     updatePercent = pyre.inventory.float("update_percent", default=5.0)
     updatePercent.meta['tip'] = "Frequency of progress updates (percent)."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="progress_monitor"):
+  def __init__(self, name="progressmonitor"):
     """
     Constructor.
     """
     PetscComponent.__init__(self, name, facility="progress_monitor")
-    self.fout = None
+    self.isMaster = True
     return
 
 
   def open(self):
-    self.tPrev = None
+    self.prev = None
     self.datetimeStart = datetime.datetime.now()
     
-    import pyre.units
-    uparser = pyre.units.parser()
-    self.tSimScale = uparser.parse(self.tUnits)
-
     try:
       import pylith.mpi.mpi as mpi
       self.isMaster = 0 == mpi.rank()
     except:
       self.isMaster = True
     if self.isMaster:
-      self.fout = open(self.filename, "w")
-      self.fout.write("Timestamp                     Simulation t   % complete   Est. completion\n")
+      self._open()
     return
 
 
   def close(self):
-    if self.fout:
-      self.fout.close()
-      self.fout = None
+    if self.isMaster:
+      self._close()
     return
 
 
-  def update(self, t, tStart, tEnd):
+  def update(self, current, start, stop):
     writeUpdate = False
-    if self.tPrev:
-      incrCompleted = (t-self.tPrev) / (tEnd-tStart)
+    if self.prev:
+      incrCompleted = (100*(current-self.prev))/(stop-start)
     else:
       incrCompleted = 0.0
-    if not self.tPrev or incrCompleted > self.updatePercent/100.0:
-      percentComplete = (t-tStart)/(tEnd-tStart)*100.0
-      tSimNorm = t.value / self.tSimScale.value
+    if not self.prev or incrCompleted > self.updatePercent:
+      percentComplete = (100*(current-start))/(stop-start)
       now = datetime.datetime.now()
       if percentComplete > 0.0:
         finished = self.datetimeStart + datetime.timedelta(seconds=100.0/percentComplete * ((now-self.datetimeStart).total_seconds()))
       else:
         finished = "TBD"
       if self.isMaster:
-        self.fout.write("%s   %8.2f*%s   %10.0f   %s\n" % (now, tSimNorm, self.tUnits, percentComplete, finished))
-      self.tPrev = t
+        self._update(current, start, stop, now, finished, percentComplete)
+      self.prev = current
     return
 
 
@@ -128,12 +114,21 @@ class ProgressMonitor(PetscComponent):
     """
     PetscComponent._configure(self)
 
-    self.filename = self.inventory.filename
-    self.tUnits = self.inventory.tUnits
     self.updatePercent = self.inventory.updatePercent
     return
 
+  def _open(self):
+    return
 
+
+  def _close(self):
+    return
+
+
+  def _update(self, current, start, stop, now, finished, percentComplete):
+    return
+
+  
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def progress_monitor():

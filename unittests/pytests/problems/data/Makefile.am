@@ -20,7 +20,8 @@ dist_noinst_DATA = \
 	timesteps.txt
 
 noinst_TMP = \
-	progress.txt
+	progress_time.txt \
+	progress_step.txt
 
 # 'export' the input files by performing a mock install
 export_datadir = $(top_builddir)/unittests/pytests/problems/data

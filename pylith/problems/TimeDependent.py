@@ -60,8 +60,8 @@ class TimeDependent(Problem):
     formulation = pyre.inventory.facility("formulation", family="pde_formulation", factory=Implicit)
     formulation.meta['tip'] = "Formulation for solving PDE."
 
-    from ProgressMonitor import ProgressMonitor
-    progressMonitor = pyre.inventory.facility("progress_monitor", family="progress_monitor", factory=ProgressMonitor)
+    from ProgressMonitorTime import ProgressMonitorTime
+    progressMonitor = pyre.inventory.facility("progress_monitor", family="progress_monitor", factory=ProgressMonitorTime)
     formulation.meta['tip'] = "Simple progress monitor via text file."
 
     from pylith.utils.CheckpointTimer import CheckpointTimer

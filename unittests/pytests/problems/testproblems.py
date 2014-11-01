@@ -78,6 +78,12 @@ class TestApp(Script):
     from TestProgressMonitor import TestProgressMonitor
     suite.addTest(unittest.makeSuite(TestProgressMonitor))
 
+    from TestProgressMonitorTime import TestProgressMonitorTime
+    suite.addTest(unittest.makeSuite(TestProgressMonitorTime))
+
+    from TestProgressMonitorStep import TestProgressMonitorStep
+    suite.addTest(unittest.makeSuite(TestProgressMonitorStep))
+
     return suite
 
 

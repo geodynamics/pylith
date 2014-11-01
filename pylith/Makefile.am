@@ -144,6 +144,8 @@ nobase_pkgpyexec_PYTHON = \
 	problems/TimeStepUniform.py \
 	problems/TimeStepUser.py \
 	problems/ProgressMonitor.py \
+	problems/ProgressMonitorStep.py \
+	problems/ProgressMonitorTime.py \
 	topology/__init__.py \
 	topology/Distributor.py \
 	topology/Mesh.py \
