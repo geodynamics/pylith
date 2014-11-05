@@ -445,7 +445,7 @@ pylith::meshio::TestHDF5::testDatasetString(void)
   const hsize_t dims[ndims] = { nstrings };
   const char* dataE[nstrings] = {"abc", "defg", "hijkl" };
 
-  HDF5::writeDataset(h5._file, "/", "data", dataE, nstrings);
+  h5.writeDataset("/", "data", dataE, nstrings);
   h5.close();
 
   h5.open("test.h5", H5F_ACC_RDONLY);
