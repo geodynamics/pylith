@@ -273,11 +273,13 @@ public :
    * @param name Name of dataset.
    * @param sarray Array of null terminated C strings.
    * @param nstrings Size of array.
+   * @param slen Fixed length of strings.
    */
   void writeDataset(const char* parent,
 		    const char* name,
 		    const char* const* sarray,
-		    const int nstrings);
+		    const int nstrings,
+		    const int slen =64);
 
   /** Write dataset comprised of an array of strings (used with
    * external handle to HDF5 file, such as PetscHDF5Viewer).
@@ -287,13 +289,15 @@ public :
    * @param name Name of dataset.
    * @param sarray Array of null terminated C strings.
    * @param nstrings Size of array.
+   * @param slen Fixed length of strings.
    */
   static
   void writeDataset(hid_t h5,
 		    const char* parent,
 		    const char* name,
 		    const char* const* sarray,
-		    const int nstrings);
+		    const int nstrings,
+		    const int slen =64);
 
   /** Read dataset comprised of an array of strings.
    *
