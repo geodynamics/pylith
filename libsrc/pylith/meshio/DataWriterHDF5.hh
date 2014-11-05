@@ -36,6 +36,10 @@
  *   cell_fields - group
  *     CELL_FIELD (name of cell field) - dataset
  *       [ntimesteps, ncells, fiberdim]
+ *   time - dataset
+ *     [ntimesteps]
+ *   stations - dataset [optional]
+ *     [nvertices, 64]
  */
 
 #if !defined(pylith_meshio_datawriterhdf5_hh)
@@ -120,6 +124,16 @@ public :
 		      topology::Field& field,
 		      const char* label =0,
 		      const int labelId =0);
+
+  /** Write dataset with names of points to file.
+   *
+   * @param names Array with name for each point, e.g., station name.
+   * @param nunNames Number of names in array.
+   *
+   * Primarily used with OutputSolnPoints.
+   */
+  void writePointNames(const char* const* names,
+		       const int numNames);
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :

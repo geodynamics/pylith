@@ -51,10 +51,12 @@ class pylith::meshio::TestHDF5 : public CppUnit::TestFixture
   CPPUNIT_TEST( testGetGroupDatasets );
   CPPUNIT_TEST( testCreateGroup );
   CPPUNIT_TEST( testAttributeScalar );
-  CPPUNIT_TEST( testAttributeString );
   CPPUNIT_TEST( testCreateDataset );
   CPPUNIT_TEST( testDatasetChunk );
   CPPUNIT_TEST( testDatasetRawExternal );
+
+  CPPUNIT_TEST( testAttributeString );
+  CPPUNIT_TEST( testDatasetString );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -85,9 +87,6 @@ public :
   /// Test writeAttribute(scalar) and readAttribute(scalar).
   void testAttributeScalar(void);
 
-  /// Test writeAttribute(string) and readAttribute(string).
-  void testAttributeString(void);
-
   /// Test createDataset().
   void testCreateDataset(void);
 
@@ -96,6 +95,12 @@ public :
 
   /// Test createDatasetRawExternal() and updateDatasetRawExternal().
   void testDatasetRawExternal(void);
+
+  /// Test writeAttribute(string) and readAttribute(string).
+  void testAttributeString(void);
+
+  /// Test writeDataset(string) and readDataset(string).
+  void testDatasetString(void);
 
 }; // class TestHDF5
 
