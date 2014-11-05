@@ -7,7 +7,9 @@
 # coordsys component of the OutputSolnPoints object. The points will
 # be transformed into the coordinate system of the mesh before
 # interpolation.
-0.0  0.0   -500.0
-0.0  0.0  -1500.0
-0.0  0.0  -2500.0
-0.0  0.0  -3500.0
+#
+# The first column is network.station_code.
+ZZ.AAA  0.0  0.0   -500.0
+ZZ.BBB  0.0  0.0  -1500.0
+ZZ.CCC  0.0  0.0  -2500.0
+ZZ.DDD  0.0  0.0  -3500.0
