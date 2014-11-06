@@ -20,6 +20,7 @@
 
 #include "OutputSolnPoints.hh" // implementation of class methods
 
+#include "DataWriter.hh" // USES DataWriter
 #include "MeshBuilder.hh" // USES MeshBuilder
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
@@ -286,5 +287,18 @@ pylith::meshio::OutputSolnPoints::appendCellField(const PylithScalar t,
   throw std::logic_error("OutputSolnPoints::appendCellField() not implemented.");
 } // appendCellField
 
+// ----------------------------------------------------------------------
+// Write dataset with names of points to file.
+void
+pylith::meshio::OutputSolnPoints::writePointNames(const char* const* names,
+						  const int numNames)
+{ // writePointNames
+  PYLITH_METHOD_BEGIN;
+
+  assert(_writer);
+  _writer->writePointNames(names, numNames);
+
+  PYLITH_METHOD_END;
+} // writePointNames
 
 // End of file 

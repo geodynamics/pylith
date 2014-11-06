@@ -59,6 +59,7 @@ class pylith::meshio::DataWriterHDF5 : public DataWriter
 { // DataWriterHDF5
   friend class TestDataWriterHDF5Mesh; // unit testing
   friend class TestDataWriterHDF5SubMesh; // unit testing
+  friend class TestDataWriterHDF5Points; // unit testing
   friend class TestDataWriterHDF5BCMesh; // unit testing
   friend class TestDataWriterHDF5FaultMesh; // unit testing
 

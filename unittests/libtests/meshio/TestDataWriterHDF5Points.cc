@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "TestDataWriterVTKPoints.hh" // Implementation of class methods
+#include "TestDataWriterHDF5Points.hh" // Implementation of class methods
 
 #include "data/DataWriterDataPoints.hh" // USES DataWriterDataPoints
 
@@ -27,18 +27,18 @@
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/meshio/OutputSolnPoints.hh" // USES OutputSolnPoints
-#include "pylith/meshio/DataWriterVTK.hh" // USES DataWriterVTK
+#include "pylith/meshio/DataWriterHDF5.hh" // USES DataWriterHDF5
 #include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKPoints );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5Points );
 
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::meshio::TestDataWriterVTKPoints::setUp(void)
+pylith::meshio::TestDataWriterHDF5Points::setUp(void)
 { // setUp
   PYLITH_METHOD_BEGIN;
 
@@ -50,7 +50,7 @@ pylith::meshio::TestDataWriterVTKPoints::setUp(void)
 // ----------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::meshio::TestDataWriterVTKPoints::tearDown(void)
+pylith::meshio::TestDataWriterHDF5Points::tearDown(void)
 { // tearDown
   PYLITH_METHOD_BEGIN;
 
@@ -62,15 +62,13 @@ pylith::meshio::TestDataWriterVTKPoints::tearDown(void)
 // ----------------------------------------------------------------------
 // Test constructor
 void
-pylith::meshio::TestDataWriterVTKPoints::testConstructor(void)
+pylith::meshio::TestDataWriterHDF5Points::testConstructor(void)
 { // testConstructor
   PYLITH_METHOD_BEGIN;
 
-  DataWriterVTK writer;
+  DataWriterHDF5 writer;
 
   CPPUNIT_ASSERT(!writer._viewer);
-  CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
-  CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
 
   PYLITH_METHOD_END;
 } // testConstructor
@@ -78,7 +76,7 @@ pylith::meshio::TestDataWriterVTKPoints::testConstructor(void)
 // ----------------------------------------------------------------------
 // Test openTimeStep() and closeTimeStep()
 void
-pylith::meshio::TestDataWriterVTKPoints::testTimeStep(void)
+pylith::meshio::TestDataWriterHDF5Points::testTimeStep(void)
 { // testTimeStep
   PYLITH_METHOD_BEGIN;
 
@@ -86,32 +84,24 @@ pylith::meshio::TestDataWriterVTKPoints::testTimeStep(void)
   CPPUNIT_ASSERT(_data);
 
   OutputSolnPoints output;
-  DataWriterVTK writer;
+  DataWriterHDF5 writer;
   spatialdata::units::Nondimensional normalizer;
   normalizer.lengthScale(10.0);
 
   writer.filename(_data->timestepFilename);
-  writer.timeFormat(_data->timeFormat);
   output.writer(&writer);
   output.setupInterpolator(_mesh, _data->points, _data->numPoints, _data->spaceDim, normalizer);
 
   const PylithScalar t = _data->time;
   const int numTimeSteps = 1;
-  if (!_data->cellsLabel) {
-    output.open(*_mesh, numTimeSteps);
-    output.writePointNames(_data->names, _data->numPoints); // Should to nothing
-    output.openTimeStep(t, *_mesh);
-  } else {
-    const char* label = _data->cellsLabel;
-    const int id = _data->labelId;
-    output.open(*_mesh, numTimeSteps, label, id);
-    output.openTimeStep(t, *_mesh, label, id);
-  } // else
+  output.open(*_mesh, numTimeSteps);
+  output.writePointNames(_data->names, _data->numPoints);
+  output.openTimeStep(t, *_mesh);
 
   output.closeTimeStep();
   output.close();
 
-  // Nothing to check. We do not create VTK files without fields anymore.
+  checkFile(_data->timestepFilename);
 
   PYLITH_METHOD_END;
 } // testTimeStep
@@ -119,7 +109,7 @@ pylith::meshio::TestDataWriterVTKPoints::testTimeStep(void)
 // ----------------------------------------------------------------------
 // Test writeVertexField.
 void
-pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void)
+pylith::meshio::TestDataWriterHDF5Points::testWriteVertexField(void)
 { // testWriteVertexField
   PYLITH_METHOD_BEGIN;
 
@@ -127,7 +117,7 @@ pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void)
   CPPUNIT_ASSERT(_data);
 
   OutputSolnPoints output;
-  DataWriterVTK writer;
+  DataWriterHDF5 writer;
   spatialdata::units::Nondimensional normalizer;
   normalizer.lengthScale(10.0);
 
@@ -135,7 +125,6 @@ pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void)
   _createVertexFields(&vertexFields);
 
   writer.filename(_data->vertexFilename);
-  writer.timeFormat(_data->timeFormat);
   output.writer(&writer);
   output.setupInterpolator(_mesh, _data->points, _data->numPoints, _data->spaceDim, normalizer);
 
@@ -143,29 +132,17 @@ pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void)
 
   const PylithScalar t = _data->time;
   const int numTimeSteps = 1;
-  if (!_data->cellsLabel) {
-    output.open(*_mesh, numTimeSteps);
-    output.writePointNames(_data->names, _data->numPoints); // Should to nothing
-    output.openTimeStep(t, *_mesh);
-  } else {
-    const char* label = _data->cellsLabel;
-    const int id = _data->labelId;
-    output.open(*_mesh, numTimeSteps, label, id);
-    output.openTimeStep(t, *_mesh, label, id);
-  } // else
+  output.open(*_mesh, numTimeSteps);
+  output.writePointNames(_data->names, _data->numPoints);
+  output.openTimeStep(t, *_mesh);
   for (int i=0; i < nfields; ++i) {
     topology::Field& field = vertexFields.get(_data->vertexFieldsInfo[i].name);
-    // field.view("FIELD"); // DEBUGGING
     output.appendVertexField(t, field, *_mesh);
-    CPPUNIT_ASSERT(writer._wroteVertexHeader);
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
   } // for
   output.closeTimeStep();
   output.close();
-  CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
-  CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
 
-  checkFile(_data->vertexFilename, t, _data->timeFormat);
+  checkFile(_data->vertexFilename);
 
   PYLITH_METHOD_END;
 } // testWriteVertexField

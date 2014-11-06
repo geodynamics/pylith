@@ -138,6 +138,10 @@ testmeshio_SOURCES += \
 	data/DataWriterVTKDataPointsQuad4.cc \
 	data/DataWriterVTKDataPointsTet4.cc \
 	data/DataWriterVTKDataPointsHex8.cc \
+	data/DataWriterHDF5DataPointsTri3.cc \
+	data/DataWriterHDF5DataPointsQuad4.cc \
+	data/DataWriterHDF5DataPointsTet4.cc \
+	data/DataWriterHDF5DataPointsHex8.cc \
 	data/MeshData.cc \
 	data/MeshData1D.cc \
 	data/MeshData1Din3D.cc \
@@ -205,6 +209,10 @@ noinst_HEADERS += \
 	data/DataWriterVTKDataPointsQuad4.hh \
 	data/DataWriterVTKDataPointsTet4.hh \
 	data/DataWriterVTKDataPointsHex8.hh \
+	data/DataWriterHDF5DataPointsTri3.hh \
+	data/DataWriterHDF5DataPointsQuad4.hh \
+	data/DataWriterHDF5DataPointsTet4.hh \
+	data/DataWriterHDF5DataPointsHex8.hh \
 	data/MeshData.hh \
 	data/MeshData1D.hh \
 	data/MeshData1Din2D.hh \
@@ -252,6 +260,8 @@ if ENABLE_HDF5
 	TestDataWriterHDF5MatMeshCases.cc \
 	TestDataWriterHDF5SubMesh.cc \
 	TestDataWriterHDF5SubMeshCases.cc \
+	TestDataWriterHDF5Points.cc \
+	TestDataWriterHDF5PointsCases.cc \
 	TestDataWriterHDF5BCMesh.cc \
 	TestDataWriterHDF5BCMeshCases.cc \
 	TestDataWriterHDF5FaultMesh.cc \
@@ -275,6 +285,8 @@ if ENABLE_HDF5
 	TestDataWriterHDF5MatMeshCases.hh \
 	TestDataWriterHDF5SubMesh.hh \
 	TestDataWriterHDF5SubMeshCases.hh \
+	TestDataWriterHDF5Points.hh \
+	TestDataWriterHDF5PointsCases.hh \
 	TestDataWriterHDF5BCMesh.hh \
 	TestDataWriterHDF5BCMeshCases.hh \
 	TestDataWriterHDF5FaultMesh.hh \
