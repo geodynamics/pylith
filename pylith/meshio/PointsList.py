@@ -108,7 +108,7 @@ class PointsList(Component):
         
 
     points = numpy.zeros((npoints, ndims), dtype=numpy.float64)
-    stations = numpy.zeros((npoints,), dtype='S16')
+    stations = []
     ipoint = 0
     for line in lines:
       if line.startswith(self.commentDelimiter):
@@ -116,7 +116,7 @@ class PointsList(Component):
 
       fields = line.split(self.valueDelimiter)
 
-      stations[ipoint] = fields[0].strip()
+      stations.append(fields[0].strip())
       points[ipoint,:] = map(float, fields[1:])
 
       ipoint += 1

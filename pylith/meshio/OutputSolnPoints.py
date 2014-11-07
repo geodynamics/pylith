@@ -169,7 +169,7 @@ class OutputSolnPoints(OutputManager, ModuleOutputSolnPoints):
     else:
       ModuleOutputSolnPoints.open(self, mesh, nsteps)
 
-    ModuleOutputSolnPoints.writePointNames(self.stations)
+    ModuleOutputSolnPoints.writePointNames(self, self.stations)
     return
 
 
