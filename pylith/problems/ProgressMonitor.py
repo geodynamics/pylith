@@ -88,12 +88,11 @@ class ProgressMonitor(PetscComponent):
 
 
   def update(self, current, start, stop):
-    writeUpdate = False
-    if self.prev:
+    if not self.prev is None:
       incrCompleted = (100*(current-self.prev))/(stop-start)
     else:
       incrCompleted = 0.0
-    if not self.prev or incrCompleted > self.updatePercent:
+    if self.prev is None or incrCompleted > self.updatePercent:
       percentComplete = (100*(current-start))/(stop-start)
       now = datetime.datetime.now()
       if percentComplete > 0.0:
