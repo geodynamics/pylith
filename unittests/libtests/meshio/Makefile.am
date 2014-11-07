@@ -271,6 +271,8 @@ if ENABLE_HDF5
 	TestDataWriterHDF5ExtMatMeshCases.cc \
 	TestDataWriterHDF5ExtSubMesh.cc \
 	TestDataWriterHDF5ExtSubMeshCases.cc \
+	TestDataWriterHDF5ExtPoints.cc \
+	TestDataWriterHDF5ExtPointsCases.cc \
 	TestDataWriterHDF5ExtBCMesh.cc \
 	TestDataWriterHDF5ExtBCMeshCases.cc \
 	TestDataWriterHDF5ExtFaultMesh.cc \
@@ -296,6 +298,8 @@ if ENABLE_HDF5
 	TestDataWriterHDF5ExtMatMeshCases.hh \
 	TestDataWriterHDF5ExtSubMesh.hh \
 	TestDataWriterHDF5ExtSubMeshCases.hh \
+	TestDataWriterHDF5ExtPoints.hh \
+	TestDataWriterHDF5ExtPointsCases.hh \
 	TestDataWriterHDF5ExtBCMesh.hh \
 	TestDataWriterHDF5ExtBCMeshCases.hh \
 	TestDataWriterHDF5ExtFaultMesh.hh \
