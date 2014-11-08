@@ -53,12 +53,23 @@ property. For example,
 [pylithapp.petsc]
 petscpartitioner_type = chaco ; Available options ['chaco','parmetis']
 
+The points file for OutputSolnPoints must now contain station names as
+the first column.
 
 ----------------------------------------------------------------------
 Version 2.1.0
 ----------------------------------------------------------------------
 
-* The partitioner is now set via a PETSc parameter.
+* Station names are required for output at arbitrary points
+  (OutputSolnPoints) and are included in a /stations dataset in HDF5
+  files.
+
+* A progress monitor will update a text file with the progress of a
+  simulation (time in the time stepping loop or the number of impulses
+  completed) and given an estimate of when the simulation will be
+  completed.
+
+* The partitioner is now set via a PETSc parameter, petscpartitioner_type.
 
 * Bug fixes
 
@@ -71,8 +82,6 @@ Version 2.1.0
     list of fault interfaces.
 
   - ADD DRUCKER-PRAGER STUFF HERE
-
-  - 
 
 
 
