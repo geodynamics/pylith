@@ -116,6 +116,17 @@ namespace pylith {
 			  const char* label =0,
 			  const int labelId =0) = 0;
 
+      /** Write dataset with names of points to file.
+       *
+       * @param names Array with name for each point, e.g., station name.
+       * @param nunNames Number of names in array.
+       *
+       * Primarily used with OutputSolnPoints.
+       */
+      virtual
+      void writePointNames(const char* const* names,
+			   const int numNames);
+
     }; // DataWriter
 
   } // meshio

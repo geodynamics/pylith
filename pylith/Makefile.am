@@ -175,6 +175,7 @@ nobase_pkgpyexec_PYTHON = \
 	tests/__init__.py \
 	tests/PhysicalProperties.py \
 	tests/Solution.py \
+	tests/SolutionPoints.py
 	tests/StateVariables.py \
 	tests/Fault.py
 

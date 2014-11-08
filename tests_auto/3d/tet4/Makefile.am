@@ -49,6 +49,7 @@ dist_noinst_DATA = \
 	sheardispnoslip.cfg \
 	sheardispnosliprefine.cfg \
 	sliponefault.cfg \
+	points.txt \
 	sliptwofaults.cfg \
 	faultsintersect.cfg
 

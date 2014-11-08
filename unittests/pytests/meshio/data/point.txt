@@ -1,2 +1,2 @@
 # Here is a point within the volume of the hex8 mesh.
- 0.5  0.2  0.0
+ZZ.AAA  0.5  0.2  0.0

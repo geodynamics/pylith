@@ -159,7 +159,16 @@ dist_noinst_DATA = \
 	tet4_points_t10.vtk \
 	tet4_points_vertex_t10.vtk \
 	hex8_points_t10.vtk \
-	hex8_points_vertex_t10.vtk
+	hex8_points_vertex_t10.vtk \
+	tri3_points.h5 \
+	tri3_points_vertex.h5 \
+	quad4_points.h5 \
+	quad4_points_vertex.h5 \
+	tet4_points.h5 \
+	tet4_points_vertex.h5 \
+	hex8_points.h5 \
+	hex8_points_vertex.h5
+
 
 noinst_TMP =
 

@@ -57,14 +57,13 @@ class PointsList(Component):
 
   import pyre.inventory
 
-  filename = pyre.inventory.str("filename", default="", 
-                                validator=validateFilename)
+  filename = pyre.inventory.str("filename", default="", validator=validateFilename)
   filename.meta['tip'] = "Filename for list of points."
 
   commentDelimiter = pyre.inventory.str("comment_delimiter", default="#")
   commentDelimiter.meta['tip'] = "Delimiter for comments."
 
-  valueDelimiter = pyre.inventory.str("value_delimiter", default="")
+  valueDelimiter = pyre.inventory.str("value_delimiter", default=None)
   valueDelimiter.meta['tip'] = "Delimiter used to separate values."
 
 
@@ -83,17 +82,46 @@ class PointsList(Component):
     Read points from file.
     """
     import numpy
-    if len(self.valueDelimiter) == 0:
-      points = numpy.loadtxt(self.filename, comments=self.commentDelimiter)
-    else:
-      points = numpy.loadtxt(self.filename,
-                             comments=self.commentDelimiter, 
-                             delimiter=self.valueDelimiter)
-    ndims = len(points.shape)
-    if ndims == 1:
-      spaceDim = points.shape[0]
-      points = points.reshape((1,spaceDim))
-    return points
+
+    fin = open(self.filename, "r")
+    lines = fin.readlines()
+    fin.close()
+
+    npoints = 0
+    ndims = None
+    for line in lines:
+      if line.startswith(self.commentDelimiter):
+        continue
+
+      if not self.valueDelimiter:
+        fields = line.split()
+      else:
+        fields = line.split(self.valueDelimiter)
+      if ndims:
+        if len(fields) != 1+ndims:
+          raise IOError("Error occurred while reading line '%s' in points file '%s'.\n"
+                        "Expected format: station x y [z] with %d fields. Found %d fields." % \
+                        (line, self.filename, 1+ndims, len(fields)))
+      else:
+        ndims = len(fields)-1
+      npoints += 1
+        
+
+    points = numpy.zeros((npoints, ndims), dtype=numpy.float64)
+    stations = []
+    ipoint = 0
+    for line in lines:
+      if line.startswith(self.commentDelimiter):
+        continue
+
+      fields = line.split(self.valueDelimiter)
+
+      stations.append(fields[0].strip())
+      points[ipoint,:] = map(float, fields[1:])
+
+      ipoint += 1
+
+    return stations,points
   
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
