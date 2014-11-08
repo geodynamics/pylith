@@ -5209,6 +5209,14 @@ PointsList Reader
 \begin_layout Standard
 This object corresponds to a simple text file containing a list of points
  (one per line) where output is desired.
+ See 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:FileFormat:PointsList"
+
+\end_inset
+
+ for file format specifications.
  The points are specified in the coordinate system specified by OutputSolnPoints.
  The coordinates will be transformed into the coordinate system of the mesh
  prior to interpolation.
@@ -5442,7 +5450,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Layout of PyLith HDF5 file.
+General layout of a PyLith HDF5 file.
  The orange rectangles with rounded corners identify the groups and the
  blue rectangles with sharp corners identify the datasets.
  The dimensions of the data sets are shown in parentheses.
