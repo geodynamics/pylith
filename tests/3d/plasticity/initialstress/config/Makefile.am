@@ -16,9 +16,18 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	threehex8 \
-	dynamic \
-	initialstress
+dist_noinst_DATA = \
+	README \
+	runtests.sh \
+	pylithapp.cfg \
+	elastic_sshear_dt01.cfg \
+	elastic_sshear_dt02.cfg \
+	elastic_sshear_dt05.cfg \
+	elastic_sshear_dt10.cfg \
+	plastic_sshear_dt01.cfg \
+	plastic_sshear_dt02.cfg \
+	plastic_sshear_dt05.cfg \
+	plastic_sshear_dt10.cfg \
+	plot_invars.py
 
 # End of file 

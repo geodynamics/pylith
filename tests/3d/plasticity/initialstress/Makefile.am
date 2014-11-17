@@ -17,8 +17,9 @@
 #
 
 SUBDIRS = \
-	threehex8 \
-	dynamic \
-	initialstress
+	config \
+	mesh \
+	output \
+	spatialdb
 
 # End of file 

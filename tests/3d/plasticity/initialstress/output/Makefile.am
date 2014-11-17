@@ -16,9 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	threehex8 \
-	dynamic \
-	initialstress
+dist_noinst_DATA =
+
 
 # End of file 
