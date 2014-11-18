@@ -5525,6 +5525,42 @@ allow_tensile_yield
 True
 \family default
 .
+ This same criterion is used to determine whether a feasible stress state
+ is attainable in cases where 
+\family typewriter
+allow_tensile_yield
+\family default
+ is 
+\family typewriter
+False
+\family default
+.
+ If Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:114"
+
+\end_inset
+
+ yields a smaller value than Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:127"
+
+\end_inset
+
+, this implies 
+\begin_inset Formula $\sqrt{^{t+\Delta t}J_{2}^{\prime}}<0$
+\end_inset
+
+, which is not a feasible stress state (see Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:110"
+
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Standard
