@@ -346,6 +346,7 @@ AC_CONFIG_FILES([Makefile
 		tests/2d/powerlaw/Makefile
 		tests/2d/slipdir/Makefile
 		tests/2d/frictionslide/Makefile
+		tests/2d/plasticity/initialstress/Makefile
 		tests/3d/Makefile
 		tests/3d/matprops/Makefile
 		tests/3d/slipdir/Makefile
