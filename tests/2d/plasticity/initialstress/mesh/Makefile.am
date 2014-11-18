@@ -16,12 +16,9 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	maxwell \
-	powerlaw \
-	slipdir \
-	frictionslide \
-	plasticity
-
+dist_noinst_DATA = \
+	box_quad4_square.exo \
+	geometry.jou \
+	mesh_quad4_square.jou
 
 # End of file 

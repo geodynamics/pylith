@@ -16,12 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	maxwell \
-	powerlaw \
-	slipdir \
-	frictionslide \
-	plasticity
+dist_noinst_DATA =
 
 
 # End of file 

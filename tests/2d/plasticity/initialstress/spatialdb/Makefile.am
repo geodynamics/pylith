@@ -16,12 +16,11 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	maxwell \
-	powerlaw \
-	slipdir \
-	frictionslide \
-	plasticity
-
+dist_noinst_DATA = \
+	initial_stress.spatialdb \
+	initial_state.spatialdb \
+	mat_elastic.spatialdb \
+	mat_plastic.spatialdb \
+	x_velbc.spatialdb
 
 # End of file 

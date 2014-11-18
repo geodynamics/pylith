@@ -17,11 +17,9 @@
 #
 
 SUBDIRS = \
-	maxwell \
-	powerlaw \
-	slipdir \
-	frictionslide \
-	plasticity
-
+	config \
+	mesh \
+	output \
+	spatialdb
 
 # End of file 

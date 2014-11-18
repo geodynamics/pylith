@@ -1,0 +1,30 @@
+// -*- C++ -*- (tell Emacs to use C++ mode for syntax highlighting)
+//
+// This spatial database specifies the initial stresses for the model
+//
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 5 // number of state variables
+
+  // names of the stress components
+  value-names =  stress-zz-initial plastic-strain-xx plastic-strain-yy plastic-strain-xy plastic-strain-zz
+
+  value-units =  Pa None None None None // units
+
+  num-locs = 1 
+  data-dim = 0
+  space-dim = 2
+  cs-data = cartesian {
+    to-meters = 1.0
+    space-dim = 2
+  }
+}
+// Columns are
+// (1) x coordinate (m)
+// (2) y coordinate (m)
+// (3) stress-zz-initial (Pa)
+// (4) plastic-strain-xx (None)
+// (5) plastic-strain-yy (None)
+// (6) plastic-strain-xy (None)
+// (7) plastic-strain-zz (None)
+0.0 0.0  -28694308.37872443849221 0.0 0.0 0.0 0.0
