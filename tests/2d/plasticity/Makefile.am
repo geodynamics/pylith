@@ -17,11 +17,6 @@
 #
 
 SUBDIRS = \
-	maxwell \
-	powerlaw \
-	slipdir \
-	frictionslide \
-	plasticity
-
+	initialstress
 
 # End of file 

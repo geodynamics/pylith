@@ -1,0 +1,52 @@
+# ----------------------------------------------------------------------
+# Create square
+# ----------------------------------------------------------------------
+
+# Square is 10 km x 10 km
+# -5 km <= x <= 5 km
+# -5 km <= y <= 5 km
+reset
+brick x 10000 y 10000 z 10000
+create midsurface volume 1 surface 1 2
+delete volume 1
+
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+surface all size 2000
+mesh surface all
+
+# ----------------------------------------------------------------------
+# Create blocks for materials
+# ----------------------------------------------------------------------
+block 1 surface 7
+block 1 name "plastic"
+
+# ----------------------------------------------------------------------
+# Create nodesets
+# ----------------------------------------------------------------------
+group "face_xpos" add node in curve 14
+nodeset 11 group face_xpos
+nodeset 11 name "face_xpos"
+
+group "face_xneg" add node in curve 16
+nodeset 12 group face_xneg
+nodeset 12 name "face_xneg"
+
+group "face_ypos" add node in curve 15
+group "face_ypos" remove node in group face_xpos
+group "face_ypos" remove node in group face_xneg
+nodeset 13 group face_ypos
+nodeset 13 name "face_ypos"
+
+group "face_yneg" add node in curve 13
+group "face_yneg" remove node in group face_xpos
+group "face_yneg" remove node in group face_xneg
+nodeset 14 group face_yneg
+nodeset 14 name "face_yneg"
+
+
+# ----------------------------------------------------------------------
+# Export exodus file
+# ----------------------------------------------------------------------
+export mesh "mesh_quad4.exo" dimension 2 overwrite
