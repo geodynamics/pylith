@@ -2,33 +2,24 @@
 
 import numpy
 import h5py
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as pyplot
 from pyre.units.time import year
 from pyre.units.unitparser import parser
-# import pdb
 
-# pdb.set_trace()
-
-# Input files.
-elasPref = "../output/elastic_sshear_"
-plasPref = "../output/plastic_sshear_"
-elasSuff = "-elastic.h5"
-plasSuff = "-plastic.h5"
 stepSizes = ["dt01", "dt02", "dt05", "dt10"]
 
 # Time and stress/strain normalization information.
-totalTime = 20.0
 uparser = parser()
 timeUnits = uparser.parse('1.0*year').value
 strainUnits = 1.0e-6
-stressUnits = 1.0e6
+stressUnits = uparser.parse('1.0*MPa').value
 
 # Line styles.
-plasLines = ['k-', 'ro', 'bs', 'gD']
-elasLines = ['k--', 'r--', 'b--', 'g--']
+stylePlastic = ['k-', 'ro', 'bs', 'gD']
+styleElastic = ['k--', 'r--', 'b--', 'g--']
 
 #-----------------------------------------------------------------------------
-def _computeStressInvar(fileName):
+def computeStressInvar(fileName):
   """
   Function to compute second deviatoric stress invariant.
   """
@@ -69,7 +60,7 @@ def _computeStressInvar(fileName):
   return (stressInvarMean, timeYears)
 
 
-def _computeStrainInvar(fileName):
+def computeStrainInvar(fileName):
   """
   Function to compute second plastic strain invariant.
   """
@@ -112,46 +103,31 @@ def _computeStrainInvar(fileName):
 #-----------------------------------------------------------------------------
 numStepSizes = len(stepSizes)
 
-pStrainTimes = []
-pStrains = []
-pStressTimes = []
-eStressTimes = []
-pStresses = []
-eStresses = []
+pyplot.figure(1)
+ax1 = pyplot.subplot(121)
+ax2 = pyplot.subplot(122)
 
-for stepSize in range(numStepSizes):
-  eStressFile = elasPref + stepSizes[stepSize] + elasSuff
-  (eStress, eStressTime) = _computeStressInvar(eStressFile)
-  pStressFile = plasPref + stepSizes[stepSize] + plasSuff
-  (pStress, pStressTime) = _computeStressInvar(pStressFile)
-  pStrainFile = plasPref + stepSizes[stepSize] + plasSuff
-  (pStrain, pStrainTime) = _computeStrainInvar(pStrainFile)
-  pStrainTimes.append(pStrainTime)
-  pStrains.append(pStrain)
-  pStressTimes.append(pStressTime)
-  pStresses.append(pStress)
-  eStressTimes.append(eStressTime)
-  eStresses.append(eStress)
+for istep,stepSize in enumerate(stepSizes):
 
-plt.figure(1)
-plt.subplot(121)
-plt.plot(pStrainTimes[0], pStrains[0], plasLines[0],
-         pStrainTimes[1], pStrains[1], plasLines[1],
-         pStrainTimes[2], pStrains[2], plasLines[2],
-         pStrainTimes[3], pStrains[3], plasLines[3])
-plt.xlabel('Time (years)')
-plt.ylabel('Plastic strain invariant (microStrain)')
+  # Elastic
+  filename = "output/elastic_%s-statevars.h5" % stepSize
+  (stressInvarElastic, timeElastic) = computeStressInvar(filename)
 
-plt.subplot(122)
-plt.plot(pStressTimes[0], pStresses[0], plasLines[0],
-         pStressTimes[1], pStresses[1], plasLines[1],
-         pStressTimes[2], pStresses[2], plasLines[2],
-         pStressTimes[3], pStresses[3], plasLines[3],
-         eStressTimes[0], eStresses[0], elasLines[1],
-         eStressTimes[1], eStresses[1], elasLines[1],
-         eStressTimes[2], eStresses[2], elasLines[2],
-         eStressTimes[3], eStresses[3], elasLines[3])
-plt.xlabel('Time (years)')
-plt.ylabel('Stress invariant (MPa)')
+  # Plastic
+  filename = "output/plastic_%s-statevars.h5" % stepSize
+  (stressInvarPlastic, timePlastic) = computeStressInvar(filename)
+  (strainInvarPlastic, timePlastic) = computeStrainInvar(filename)
 
-plt.show()
+  ax1.plot(timePlastic, strainInvarPlastic, stylePlastic[istep])
+
+  ax2.plot(timeElastic, stressInvarElastic, styleElastic[istep],
+           timePlastic, stressInvarPlastic, stylePlastic[istep])
+
+
+ax1.set_xlabel('Time (years)')
+ax1.set_ylabel('Plastic strain invariant (microStrain)')
+
+ax2.set_xlabel('Time (years)')
+ax2.set_ylabel('Stress invariant (MPa)')
+
+pyplot.show()

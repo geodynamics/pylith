@@ -112,7 +112,7 @@ for istep, stepSize in enumerate(stepSizes):
   (strainInvarMean, time) = computeStrainInvar(filename)
   ax.plot(time, strainInvarMean, stylePlastic[istep])
 
-  ax.set_xlabel('Time (years)')
-  ax.set_ylabel('Plastic strain invariant (microStrain)')
+ax.set_xlabel('Time (years)')
+ax.set_ylabel('Plastic strain invariant (microStrain)')
 
 pyplot.show()
