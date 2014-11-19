@@ -360,6 +360,7 @@ AC_CONFIG_FILES([Makefile
 		tests/3d/plasticity/threehex8/results/Makefile
 		tests/3d/plasticity/threehex8/spatialdb/Makefile
 		tests/3d/plasticity/dynamic/Makefile
+		tests/3d/plasticity/initialstress/Makefile
 		tests/topology/Makefile
 		tests/refinefaulttip/Makefile
                 doc/Makefile
@@ -379,7 +380,6 @@ AC_CONFIG_FILES([Makefile
 		examples/2d/subduction/Makefile
 		examples/2d/subduction/output/Makefile
 		examples/2d/gravity/Makefile
-		examples/2d/gravity/output/Makefile
 		examples/2d/greensfns/Makefile
 		examples/2d/greensfns/strikeslip/Makefile
 		examples/2d/greensfns/strikeslip/output/Makefile

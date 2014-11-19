@@ -16,10 +16,24 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	config \
-	mesh \
-	output \
-	spatialdb
+dist_noinst_DATA = \
+	README \
+	runtests.sh \
+	plot_invars.py \
+	mesh.jou \
+	mesh_hex8.exo \
+	pylithapp.cfg \
+	elastic.cfg \
+	elastic_dt01.cfg \
+	elastic_dt02.cfg \
+	elastic_dt05.cfg \
+	elastic_dt10.cfg \
+	plastic.cfg \
+	plastic_dt01.cfg \
+	plastic_dt02.cfg \
+	plastic_dt05.cfg \
+	plastic_dt10.cfg \
+	simpleshear_velbc.spatialdb
+
 
 # End of file 
