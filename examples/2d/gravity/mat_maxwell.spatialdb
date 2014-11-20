@@ -3,8 +3,9 @@
 // This spatial database specifies the parameters for the continental
 // crust material, which is a linear Maxwell viscoelastic solid.
 //
-// The viscosity corresponds to a Maxwell time of 200 years.
-// Maxwell time = viscosity / shear_modulus
+// The viscosity corresponds to a Maxwell time of 5 years.
+// Maxwell time = viscosity / shear_modulus, where the shear modulus is
+// 30 GPa in this case.
 //
 #SPATIAL.ascii 1
 SimpleDB {

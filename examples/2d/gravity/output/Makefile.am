@@ -17,7 +17,8 @@
 #
 
 dist_noinst_DATA = \
-	deform_view.pvsm
+	view_deform.pvsm \
+	view_deform_unscaled.pvsm
 
 
 # End of file 
