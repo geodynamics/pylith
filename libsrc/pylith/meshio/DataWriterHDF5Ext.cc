@@ -442,7 +442,8 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
 	
         _h5->createDatasetRawExternal("/vertex_fields", field.label(), _datasetFilename(field.label()).c_str(), maxDims, ndims, scalartype);
         std::string fullName = std::string("/vertex_fields/") + field.label();
-        _h5->writeAttribute(fullName.c_str(), "vector_field_type", topology::FieldBase::vectorFieldString(field.vectorFieldType()));
+	const char* sattr = topology::FieldBase::vectorFieldString(field.vectorFieldType());
+        _h5->writeAttribute(fullName.c_str(), "vector_field_type", sattr);
       } // if
     } else {
       if (!commRank) {
@@ -541,7 +542,7 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
     // Add dataset to HDF5 file, if necessary
     if (createdExternalDataset) {
       // Get cell information
-      PetscSection section = field.petscSection();assert(section);
+      PetscSection section = field.localSection();assert(section);
       PetscInt dof = 0, n, numLocalCells = 0, numCells, cellHeight, cStart, cEnd;
       PetscIS globalCellNumbers;
     
@@ -599,8 +600,8 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
 	
         _h5->createDatasetRawExternal("/cell_fields", field.label(), _datasetFilename(field.label()).c_str(), maxDims, ndims, scalartype);
         std::string fullName = std::string("/cell_fields/") + field.label();
-        _h5->writeAttribute(fullName.c_str(), "vector_field_type",
-                            topology::FieldBase::vectorFieldString(field.vectorFieldType()));
+	const char* sattr = topology::FieldBase::vectorFieldString(field.vectorFieldType());
+        _h5->writeAttribute(fullName.c_str(), "vector_field_type", sattr);
       } // if
 
     } else {
@@ -629,6 +630,31 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
 
   PYLITH_METHOD_END;
 } // writeCellField
+
+// ----------------------------------------------------------------------
+// Write dataset with names of points to file.
+void
+pylith::meshio::DataWriterHDF5Ext::writePointNames(const char* const* names,
+						   const int numNames)
+{ // writePointNames
+  PYLITH_METHOD_BEGIN;
+
+  assert(_h5);
+
+  try {
+    _h5->writeDataset("/", "stations", names, numNames);
+  } catch (const std::exception& err) {
+    std::ostringstream msg;
+    msg << "Error while writing stations to HDF5 file '" << _hdf5Filename() << "'.\n" << err.what();
+    throw std::runtime_error(msg.str());
+  } catch (...) { 
+    std::ostringstream msg;
+    msg << "Error while writing stations to HDF5 file '" << _hdf5Filename() << "'.";
+    throw std::runtime_error(msg.str());
+  } // try/catch
+
+  PYLITH_METHOD_END;
+} // writePointNames
 
 // ----------------------------------------------------------------------
 // Generate filename for HDF5 file.

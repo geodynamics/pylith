@@ -18,6 +18,7 @@
 
 SUBDIRS = \
 	threehex8 \
-	dynamic
+	dynamic \
+	initialstress
 
 # End of file 

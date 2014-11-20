@@ -63,12 +63,10 @@ public :
 public :
 
   struct Metadata {
-    std::string label; //< Label for field.
+    std::string label; ///< Label for field.
     VectorFieldEnum vectorFieldType; ///< Type of vector field.
-    PylithScalar scale; //< Dimension scale associated with values.
-    int index; //< Index for corresponding PETSc section (subfields).
-    bool dimsOkay; //< Ok to replace nondimensionalized values 
-                   // with dimensionalized values.
+    PylithScalar scale; ///< Dimension scale associated with values.
+    bool dimsOkay; ///< Ok to replace nondimensionalized values with dimensionalized values.
   }; // Metadata
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////

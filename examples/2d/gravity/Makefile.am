@@ -18,7 +18,6 @@
 
 dist_noinst_DATA = \
 	README \
-	geometry.jou \
 	grav_stress-initial.spatialdb \
 	grav_stress.cfg \
 	grav_stress_finite_nois.cfg \
@@ -31,13 +30,8 @@ dist_noinst_DATA = \
 	grav_stress_infin_is3.cfg \
 	mat_elastic.spatialdb \
 	mat_maxwell.spatialdb \
-	mesh.jou \
 	pylithapp.cfg \
 	stress2spatialdb.py
-
-
-SUBDIRS = \
-	output
 
 
 # End of file 

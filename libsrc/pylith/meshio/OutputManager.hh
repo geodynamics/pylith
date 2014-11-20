@@ -157,21 +157,18 @@ protected :
 
   topology::Fields* _fields; ///< Buffer fields.
 
-// NOT IMPLEMENTED //////////////////////////////////////////////////////
-private :
-
-  OutputManager(const OutputManager&); ///< Not implemented.
-  const OutputManager& operator=(const OutputManager&); ///< Not implemented
-
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
-private :
-
   /// Coordinate system for output.
   spatialdata::geocoords::CoordSys* _coordsys;
 
   DataWriter* _writer; ///< Writer for data.
   VertexFilter* _vertexFilter; ///< Filter applied to vertex data.
   CellFilter* _cellFilter; ///< Filter applied to cell data.
+
+// NOT IMPLEMENTED //////////////////////////////////////////////////////
+private :
+
+  OutputManager(const OutputManager&); ///< Not implemented.
+  const OutputManager& operator=(const OutputManager&); ///< Not implemented
 
 }; // OutputManager
 

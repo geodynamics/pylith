@@ -3392,6 +3392,10 @@ elastic_preset If true, perform a static calculation with elastic behavior
 formulation Formulation for solving the partial differential equation.
 \end_layout
 
+\begin_layout Description
+progress_monitor Simple progress monitor via text file.
+\end_layout
+
 \begin_layout Standard
 An example of setting the properties and components in a .cfg file is
 \end_layout
@@ -3402,6 +3406,10 @@ An example of setting the properties and components in a .cfg file is
 
 \begin_layout LyX-Code
 formulation = pylith.problems.Implicit ; default
+\end_layout
+
+\begin_layout LyX-Code
+progres_monitor = pylith.problems.ProgressMonitorTime ; default
 \end_layout
 
 \begin_layout LyX-Code
@@ -3931,11 +3939,19 @@ reference "sec:fault:cohesive:impulses"
 \family typewriter
 GreensFns
 \family default
- properties include:
+ properties amd facilities include:
 \end_layout
 
 \begin_layout Description
 fault_id Id of fault on which to impose slip impulses.
+\end_layout
+
+\begin_layout Description
+formulation Formulation for solving the partial differential equation.
+\end_layout
+
+\begin_layout Description
+progress_monitor Simple progress monitor via text file.
 \end_layout
 
 \begin_layout Standard
@@ -3966,6 +3982,18 @@ problem = pylith.problems.GreensFns ; Change problem type from the default
 fault_id = 100 ; Default value
 \end_layout
 
+\begin_layout LyX-Code
+formulation = pylith.problems.Implicit ; default
+\end_layout
+
+\begin_layout LyX-Code
+progres_monitor = pylith.problems.ProgressMonitorTime ; default
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
 \begin_layout Standard
 
 \series bold
@@ -3986,6 +4014,121 @@ GreensFns
 FaultCohesiveImpulses
 \family default
 .
+\end_layout
+
+\begin_layout Section
+Progress Monitors
+\end_layout
+
+\begin_layout Quotation
+
+\family typewriter
+\color red
+New in v2.1.0.
+\end_layout
+
+\begin_layout Standard
+The progress monitors make it easy to monitor the general progress of long
+ simulations, especially on clusters where stdout is not always easily accessibl
+e.
+ The progress monitors update a simulation's current progress by writing
+ information to a text file.
+ The information includes time stamps, percent completed, and an estimate
+ of when the simulation will finish.
+ 
+\end_layout
+
+\begin_layout Subsection
+ProgressMonitorTime
+\end_layout
+
+\begin_layout Standard
+This is the default progress monitor for time-stepping problems.
+ The monitor calculates the percent completed based on the time at the current
+ time step and the total simulated time of the simulation, not the total
+ number of time steps (which may be unknown in simulations with adaptive
+ time stepping).
+ The 
+\family typewriter
+ProgressMonitorTime
+\family default
+ properties include:
+\end_layout
+
+\begin_layout Description
+update_percent Frequency (in percent) of progress updates.
+\end_layout
+
+\begin_layout Description
+filename Name of output file.
+\end_layout
+
+\begin_layout Description
+t_units Units for simulation time in output.
+\end_layout
+
+\begin_layout Standard
+An example of setting the properties in a .
+\family typewriter
+cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.progressmonitor]
+\end_layout
+
+\begin_layout LyX-Code
+update_percent = 5.0 ; default
+\end_layout
+
+\begin_layout LyX-Code
+filename = progress.txt ; default
+\end_layout
+
+\begin_layout LyX-Code
+t_units = year ; default
+\end_layout
+
+\begin_layout Subsection
+ProgressMonitorStep
+\end_layout
+
+\begin_layout Standard
+This is the default progress monitor for problems with a specified number
+ of steps, such as Green's function problems.
+ The monitor calculates the percent completed based on the number of steps
+ (e.g., Green's function impulses completed).
+ The ProgressMonitorStep propertiles include:
+\end_layout
+
+\begin_layout Description
+update_percent Frequency (in percent) of progress updates.
+\end_layout
+
+\begin_layout Description
+filename Name of output file.
+\end_layout
+
+\begin_layout Standard
+An example of setting the properties in a .
+\family typewriter
+cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.progressmonitor]
+\end_layout
+
+\begin_layout LyX-Code
+update_percent = 5.0 ; default
+\end_layout
+
+\begin_layout LyX-Code
+filename = progress.txt ; default
 \end_layout
 
 \begin_layout Section
@@ -5066,6 +5209,14 @@ PointsList Reader
 \begin_layout Standard
 This object corresponds to a simple text file containing a list of points
  (one per line) where output is desired.
+ See 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:FileFormat:PointsList"
+
+\end_inset
+
+ for file format specifications.
  The points are specified in the coordinate system specified by OutputSolnPoints.
  The coordinates will be transformed into the coordinate system of the mesh
  prior to interpolation.
@@ -5299,7 +5450,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Layout of PyLith HDF5 file.
+General layout of a PyLith HDF5 file.
  The orange rectangles with rounded corners identify the groups and the
  blue rectangles with sharp corners identify the datasets.
  The dimensions of the data sets are shown in parentheses.

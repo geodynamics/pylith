@@ -108,6 +108,7 @@ pylith::meshio::DataWriter::openTimeStep(const PylithScalar t,
 					 const char* label,
 					 const int labelId)
 { // openTimeStep
+  // Default: no implementation.
 } // openTimeStep
 
 // ----------------------------------------------------------------------
@@ -115,6 +116,7 @@ pylith::meshio::DataWriter::openTimeStep(const PylithScalar t,
 void
 pylith::meshio::DataWriter::closeTimeStep(void)
 { // closeTimeStep
+  // Default: no implementation.
 } // closeTimeStep
 
 // ----------------------------------------------------------------------
@@ -125,5 +127,14 @@ pylith::meshio::DataWriter::DataWriter(const DataWriter& w) :
 { // copy constructor
 } // copy constructor
 
+
+// ----------------------------------------------------------------------
+// Write dataset with names of points to file.
+void
+pylith::meshio::DataWriter::writePointNames(const char* const* names,
+					    const int numNames)
+{ // writePointNames
+  // Default: no implementation.
+} // writePointNames
 
 // End of file 

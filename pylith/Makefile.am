@@ -143,6 +143,9 @@ nobase_pkgpyexec_PYTHON = \
 	problems/TimeStepAdapt.py \
 	problems/TimeStepUniform.py \
 	problems/TimeStepUser.py \
+	problems/ProgressMonitor.py \
+	problems/ProgressMonitorStep.py \
+	problems/ProgressMonitorTime.py \
 	topology/__init__.py \
 	topology/Distributor.py \
 	topology/Mesh.py \
@@ -172,6 +175,7 @@ nobase_pkgpyexec_PYTHON = \
 	tests/__init__.py \
 	tests/PhysicalProperties.py \
 	tests/Solution.py \
+	tests/SolutionPoints.py
 	tests/StateVariables.py \
 	tests/Fault.py
 

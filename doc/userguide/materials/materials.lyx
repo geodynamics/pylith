@@ -1,5 +1,5 @@
 #LyX 2.1 created this file. For more info see http://www.lyx.org/
-\lyxformat 474
+\lyxformat 413
 \begin_document
 \begin_header
 \textclass book
@@ -10,12 +10,11 @@
 \maintain_unincluded_children false
 \language english
 \language_package default
-\inputencoding iso8859-1
+\inputencoding latin1
 \fontencoding global
 \font_roman default
 \font_sans default
 \font_typewriter default
-\font_math auto
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
@@ -32,24 +31,15 @@
 \use_hyperref false
 \papersize default
 \use_geometry true
-\use_package amsmath 1
-\use_package amssymb 1
-\use_package cancel 1
-\use_package esint 0
-\use_package mathdots 1
-\use_package mathtools 1
-\use_package mhchem 1
-\use_package stackrel 1
-\use_package stmaryrd 1
-\use_package undertilde 1
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
 \cite_engine basic
-\cite_engine_type default
-\biblio_style plain
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
 \suppress_date false
-\justification true
 \use_refstyle 0
 \index Index
 \shortcut idx
@@ -511,7 +501,7 @@ status open
 
 \begin_layout Plain Layout
 \align center
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -538,7 +528,7 @@ cell_data_fields
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="6" columns="4">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="1.5in">
 <column alignment="center" valignment="top" width="1.8in">
 <column alignment="center" valignment="top" width="1.5in">
@@ -859,7 +849,7 @@ status open
 
 \begin_layout Plain Layout
 \align center
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -876,7 +866,7 @@ Order of components in tensor state-variables for material models.
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="5" columns="4">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="1.25in">
 <column alignment="center" valignment="top" width="0.5in">
 <column alignment="center" valignment="top" width="1.25in">
@@ -1454,7 +1444,7 @@ status open
 \begin_layout Plain Layout
 \noindent
 \align center
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 Values in spatial database used as parameters in the elastic material constituti
@@ -1466,7 +1456,7 @@ ve models.
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="middle" width="0.85in">
 <column alignment="center" valignment="middle" width="2.47in">
 <row>
@@ -1926,7 +1916,7 @@ status open
 \begin_layout Plain Layout
 \noindent
 \align center
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -1943,7 +1933,7 @@ Available viscoelastic materials for PyLith.
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="7" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="2.85in">
 <column alignment="center" valignment="top" width="2.47in">
 <row>
@@ -2120,7 +2110,7 @@ status open
 \end_inset
 
 
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -2293,7 +2283,7 @@ status open
 \begin_layout Plain Layout
 \noindent
 \align center
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -2310,7 +2300,7 @@ Mathematical notation used in this section.
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="3" columns="3">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
@@ -2976,7 +2966,7 @@ status open
 \begin_layout Plain Layout
 \noindent
 \align center
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -2994,7 +2984,7 @@ Values in spatial database used as parameters in the linear Maxwell viscoelastic
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="5" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="middle" width="0.85in">
 <column alignment="center" valignment="middle" width="2.47in">
 <row>
@@ -3146,7 +3136,7 @@ status open
 \begin_layout Plain Layout
 \noindent
 \align center
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -3164,7 +3154,7 @@ Values in spatial database used as parameters in the generalized linear
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="10" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="middle" width="0.85in">
 <column alignment="center" valignment="middle" width="2.47in">
 <row>
@@ -4489,7 +4479,7 @@ status open
 \begin_layout Plain Layout
 \noindent
 \align center
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -4507,7 +4497,7 @@ Values in spatial database used as parameters in the nonlinear power-law
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="7" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="middle" width="0.85in">
 <column alignment="center" valignment="middle" width="2.47in">
 <row>
@@ -4952,7 +4942,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -4978,7 +4968,7 @@ fit_mohr_coulomb
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="4">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
@@ -5535,6 +5525,42 @@ allow_tensile_yield
 True
 \family default
 .
+ This same criterion is used to determine whether a feasible stress state
+ is attainable in cases where 
+\family typewriter
+allow_tensile_yield
+\family default
+ is 
+\family typewriter
+False
+\family default
+.
+ If Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:114"
+
+\end_inset
+
+ yields a smaller value than Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:127"
+
+\end_inset
+
+, this implies 
+\begin_inset Formula $\sqrt{^{t+\Delta t}J_{2}^{\prime}}<0$
+\end_inset
+
+, which is not a feasible stress state (see Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:110"
+
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Standard
@@ -5698,7 +5724,7 @@ status open
 
 \begin_layout Plain Layout
 \align center
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -5716,7 +5742,7 @@ c model with perfect plasticity.
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="7" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top">
 <column alignment="center" valignment="top">
 <row>
@@ -6144,7 +6170,7 @@ status open
 \begin_layout Plain Layout
 \noindent
 \align center
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 Values in spatial database for initial state variables for 3D problems.
@@ -6165,7 +6191,7 @@ reference "tab:material-model-output"
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="3" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="middle" width="0.85in">
 <column alignment="center" valignment="middle" width="2.47in">
 <row>

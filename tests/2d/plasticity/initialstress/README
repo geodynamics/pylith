@@ -1,0 +1,17 @@
+Test of Drucker-Prager plasticity using initial stresses and different
+time step sizes.
+
+A cube with initial hydrostatic pressure is subjected to simple shear
+with a given loading rate. Plastic yield should occur at t = 10 years,
+and should continue afterwards.
+
+Execute the bash script runtest.sh to run both elastic and plastic
+models with different time step sizes. The script then executes the
+plot_invars.py Python script (requires h5py, numpy, and
+matplotlib). 
+
+The left-hand plot is the second plastic strain invariant as a
+function of time (should be zero until t = 10 years). The right-hand
+plot shows the second deviatoric stress invariant for both the elastic
+and plastic cases. They should be identical until t = 10 years, at
+which point the plastic stresses will be less.

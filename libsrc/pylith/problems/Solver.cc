@@ -119,7 +119,7 @@ pylith::problems::Solver::initialize(const topology::SolutionFields& fields,
   // Make global preconditioner matrix
   PetscMat jacobianMat = jacobian.matrix();
 
-  PetscSection solutionSection = fields.solution().petscSection();assert(solutionSection);
+  PetscSection solutionSection = fields.solution().localSection();assert(solutionSection);
   PetscDM dmMesh = fields.solution().mesh().dmMesh();assert(dmMesh);
   PetscInt numFields;
   PetscErrorCode err;
@@ -162,7 +162,7 @@ pylith::problems::Solver::_createNullSpace(const topology::SolutionFields& field
   MPI_Comm comm;
   err = PetscObjectGetComm((PetscObject) dmMesh, &comm);PYLITH_CHECK_ERROR(err);
 
-  PetscSection solutionSection = fields.solution().petscSection();assert(solutionSection);
+  PetscSection solutionSection = fields.solution().localSection();assert(solutionSection);
   PetscVec solutionVec = fields.solution().localVector();assert(solutionVec);
   PetscVec solutionGlobalVec = fields.solution().globalVector();assert(solutionGlobalVec);
   MatNullSpace nullsp = NULL;    
@@ -261,7 +261,7 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
 
   PetscDM dmMesh = fields.solution().dmMesh();assert(dmMesh);
   MPI_Comm comm;
-  PetscSection solutionSection = fields.solution().petscSection();assert(solutionSection);
+  PetscSection solutionSection = fields.solution().localSection();assert(solutionSection);
   PetscVec solutionVec = fields.solution().localVector();assert(solutionVec);
   PetscVec solutionGlobalVec = fields.solution().globalVector();assert(solutionGlobalVec);
   PetscInt numFields;
@@ -284,16 +284,15 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     // and constraints exist.
 
     // Get total number of DOF associated with constraints field split
-    PetscDM lagrangeDM = NULL;
+    PetscInt nrows = 0;
     PetscSection lagrangeSection = NULL;
-    PetscInt lagrangeFields[1] = {1}, nrows, ncols;
 
     err = MatDestroy(&_jacobianPCFault);PYLITH_CHECK_ERROR(err);
-    err = DMCreateSubDM(dmMesh, 1, lagrangeFields, NULL, &lagrangeDM);PYLITH_CHECK_ERROR(err);
+
+    PetscDM lagrangeDM = fields.solution().subfieldInfo("lagrange_multiplier").dm;assert(lagrangeDM);
     err = DMGetDefaultGlobalSection(lagrangeDM, &lagrangeSection);PYLITH_CHECK_ERROR(err);
     err = PetscSectionGetStorageSize(lagrangeSection, &nrows);PYLITH_CHECK_ERROR(err);
-    ncols = nrows;
-    err = DMDestroy(&lagrangeDM);PYLITH_CHECK_ERROR(err);
+    PetscInt ncols = nrows;
 
     err = MatCreate(comm, &_jacobianPCFault);PYLITH_CHECK_ERROR(err);
     err = MatSetSizes(_jacobianPCFault, nrows, ncols, PETSC_DECIDE, PETSC_DECIDE);PYLITH_CHECK_ERROR(err);

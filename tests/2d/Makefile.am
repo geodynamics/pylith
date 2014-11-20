@@ -20,7 +20,8 @@ SUBDIRS = \
 	maxwell \
 	powerlaw \
 	slipdir \
-	frictionslide
+	frictionslide \
+	plasticity
 
 
 # End of file 

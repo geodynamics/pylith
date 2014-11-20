@@ -23,7 +23,8 @@
 pylith::meshio::DataWriterDataPoints::DataWriterDataPoints(void) :
   numPoints(0),
   spaceDim(0),
-  points(0)
+  points(0),
+  names(0)
 { // constructor
 } // constructor
 
