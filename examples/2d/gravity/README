@@ -70,7 +70,7 @@ different simulations, which should generally be performed in order:
     size is smaller than the stable time step size.
 
 The results of all the different simulations may be viewed using
-ParaView. We provide ParaView state files (output/view_deform.pvsm and
+ParaView. We provide ParaView state files (view_deform.pvsm and
 view_deform_unscaled.pvsm), which you can load in ParaView to view the
 solution over the domain. The difference in the two state files is that the
 unscaled version does not scale the velocity vectors so you can see the
