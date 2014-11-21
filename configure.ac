@@ -386,7 +386,6 @@ AC_CONFIG_FILES([Makefile
 		examples/2d/greensfns/reverse/Makefile
 		examples/2d/greensfns/reverse/output/Makefile
 		examples/bar_shearwave/Makefile
-		examples/twocells/Makefile
 		examples/bar_shearwave/hex8/Makefile
 		examples/bar_shearwave/hex8/output/Makefile
 		examples/bar_shearwave/quad4/Makefile
@@ -395,6 +394,7 @@ AC_CONFIG_FILES([Makefile
 		examples/bar_shearwave/tet4/output/Makefile
 		examples/bar_shearwave/tri3/Makefile
 		examples/bar_shearwave/tri3/output/Makefile
+		examples/twocells/Makefile
 		examples/twocells/twohex8/Makefile
 		examples/twocells/twoquad4/Makefile
 		examples/twocells/twotet4/Makefile
