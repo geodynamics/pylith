@@ -1,4 +1,4 @@
-#LyX 2.1 created this file. For more info see http://www.lyx.org/
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 413
 \begin_document
 \begin_header
@@ -21,6 +21,7 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -276,6 +277,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figs/gravity-mesh.jpg
+	lyxscale 50
 	width 4in
 
 \end_inset
@@ -607,8 +609,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Color contours of vertical displacement and velocity vectors for simulation
- 
+Contours of vertical displacement and velocity vectors for simulation 
 \family typewriter
 grav_stress_infin_nois.cfg
 \family default
@@ -660,13 +661,13 @@ db_initial_stress.iohandler.filename = grav_stress-elastic.spatialdb
 
 \begin_layout LyX-Code
 db_initial_stress.query_type = nearest
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
 
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
 [pylithapp.timedependent.materials.viscoelastic]
 \end_layout
 
@@ -740,13 +741,13 @@ db_initial_stress.iohandler.filename = grav_stress-initial.spatialdb
 
 \begin_layout LyX-Code
 db_initial_stress.query_type = linear
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
 
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
 [pylithapp.timedependent.materials.viscoelastic]
 \end_layout
 
@@ -827,6 +828,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figs/grav2d_infin_is2.jpg
+	lyxscale 50
 	width 4in
 
 \end_inset
@@ -838,8 +840,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Color contours of vertical displacement and velocity vectors for simulation
- 
+Contours of vertical displacement and velocity vectors for simulation 
 \family typewriter
 grav_stress_infin_is2.cfg
 \family default
@@ -950,8 +951,10 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Graphics
 	filename figs/grav2d-finite-is3.jpg
+	lyxscale 50
 	width 4in
 
 \end_inset
@@ -963,8 +966,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Color contours of vertical displacement and velocity vectors for simulation
- 
+Contours of vertical displacement and velocity vectors for simulation 
 \family typewriter
 grav_stress_finite_is3.cfg
 \family default
