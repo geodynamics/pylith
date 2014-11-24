@@ -95,6 +95,11 @@ Version 2.1.0
     problems that previously existed when allow_tensile_yield was set
     to False (as it should be for most quasi-static problems).
 
+  - A two-dimensional gravity example has been added, based on the
+    tutorial from the June, 2014 workshop at Stanford University.
+    The tutorial itself is in examples/2d/gravity, and a new section
+    has also been added to the manual describing the example.
+
 
 
 
