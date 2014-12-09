@@ -635,14 +635,23 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
 // Write dataset with names of points to file.
 void
 pylith::meshio::DataWriterHDF5Ext::writePointNames(const char* const* names,
-						   const int numNames)
+						   const int numNames,
+						   const topology::Mesh& mesh)
 { // writePointNames
   PYLITH_METHOD_BEGIN;
 
   assert(_h5);
 
   try {
-    _h5->writeDataset("/", "stations", names, numNames);
+    PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+    MPI_Comm comm;
+    PetscMPIInt commRank;
+    PetscErrorCode err = PetscObjectGetComm((PetscObject) dmMesh, &comm);PYLITH_CHECK_ERROR(err);
+    err = MPI_Comm_rank(comm, &commRank);PYLITH_CHECK_ERROR(err);
+
+    if (!commRank) {
+      _h5->writeDataset("/", "stations", names, numNames);
+    } // if
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing stations to HDF5 file '" << _hdf5Filename() << "'.\n" << err.what();
@@ -693,8 +702,7 @@ pylith::meshio::DataWriterHDF5Ext::_datasetFilename(const char* field) const
 // ----------------------------------------------------------------------
 // Write time stamp to file.
 void
-pylith::meshio::DataWriterHDF5Ext::_writeTimeStamp(
-						  const PylithScalar t)
+pylith::meshio::DataWriterHDF5Ext::_writeTimeStamp(const PylithScalar t)
 { // _writeTimeStamp
   PYLITH_METHOD_BEGIN;
 

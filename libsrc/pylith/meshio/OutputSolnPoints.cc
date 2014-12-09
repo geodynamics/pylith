@@ -296,7 +296,7 @@ pylith::meshio::OutputSolnPoints::writePointNames(const char* const* names,
   PYLITH_METHOD_BEGIN;
 
   assert(_writer);
-  _writer->writePointNames(names, numNames);
+  _writer->writePointNames(names, numNames, *_pointsMesh);
 
   PYLITH_METHOD_END;
 } // writePointNames

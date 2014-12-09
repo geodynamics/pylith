@@ -120,12 +120,14 @@ namespace pylith {
        *
        * @param names Array with name for each point, e.g., station name.
        * @param nunNames Number of names in array.
+       * @param mesh Finite-element mesh. 
        *
        * Primarily used with OutputSolnPoints.
        */
       virtual
       void writePointNames(const char* const* names,
-			   const int numNames);
+			   const int numNames,
+			   const pylith::topology::Mesh& mesh);
 
     }; // DataWriter
 

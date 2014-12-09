@@ -409,7 +409,8 @@ pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
 // Write dataset with names of points to file.
 void
 pylith::meshio::DataWriterHDF5::writePointNames(const char* const* names,
-						const int numNames)
+						const int numNames,
+						const topology::Mesh& mesh)
 { // writePointNames
   PYLITH_METHOD_BEGIN;
 
