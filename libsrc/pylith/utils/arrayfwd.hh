@@ -37,6 +37,7 @@
 #include <vector> // USES std::vector
 #include <valarray> // USES std::valarray
 
+#if 0
 /// Forward declaration of STL vector
 namespace std {
   // std::vector
@@ -46,6 +47,7 @@ namespace std {
   // std::valarray
   template<typename T> class valarray;
 } // std
+#endif
 
 /// Aliases 
 namespace pylith {
