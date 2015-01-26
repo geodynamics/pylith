@@ -36,7 +36,8 @@ dist_noinst_PYTHON = \
 	sliponefault_soln.py \
 	TestSlipTwoFaults.py \
 	sliptwofaults_soln.py \
-	TestFaultsIntersect.py
+	TestFaultsIntersect.py \
+	TestFaultsIntersectNoSlip.py
 
 
 dist_noinst_DATA = \
@@ -51,7 +52,8 @@ dist_noinst_DATA = \
 	sliponefault.cfg \
 	points.txt \
 	sliptwofaults.cfg \
-	faultsintersect.cfg
+	faultsintersect.cfg \
+	faultsintersectnoslip.cfg
 
 noinst_TMP = \
 	axial_dispx.spatialdb \
