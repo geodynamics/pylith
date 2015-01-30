@@ -302,13 +302,13 @@ Code Verification Benchmarks
 \end_layout
 
 \begin_layout Standard
-The CIG subversion software repository 
+The CIG GitHub software repository 
 \begin_inset Flex URL
 status collapsed
 
 \begin_layout Plain Layout
 
-http://geodynamics.org/svn/cig/short/3D/PyLith/benchmarks/trunk
+https://github.com/geodynamics/pylith_benchmarks
 \end_layout
 
 \end_inset
