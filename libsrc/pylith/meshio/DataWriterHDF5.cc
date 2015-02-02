@@ -463,7 +463,7 @@ pylith::meshio::DataWriterHDF5::_writeTimeStamp(const PylithScalar t,
   assert(_tstamp);
   PetscErrorCode err = 0;
 
-  if (0 == commRank) {
+  if (!commRank) {
     const PylithScalar tDim = t * DataWriter::_timeScale;
     err = VecSetValue(_tstamp, 0, tDim, INSERT_VALUES); PYLITH_CHECK_ERROR(err);
   } // if
