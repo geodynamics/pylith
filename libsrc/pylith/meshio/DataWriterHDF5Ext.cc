@@ -445,8 +445,7 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
 	const char* sattr = topology::FieldBase::vectorFieldString(field.vectorFieldType());
         _h5->writeAttribute(fullName.c_str(), "vector_field_type", sattr);
       } // if
-    } else {
-      if (!commRank) {
+    } else if (!commRank) {
         // Update number of time steps in external dataset info in HDF5 file.
         const int totalNumTimeSteps = DataWriter::_numTimeSteps;
         assert(totalNumTimeSteps > 0);
@@ -457,7 +456,6 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
         dims[1] = datasetInfo.numPoints;
         dims[2] = datasetInfo.fiberDim;
         _h5->extendDatasetRawExternal("/vertex_fields", field.label(), dims, ndims);
-      } // if
     } // if/else
 
   } catch (const std::exception& err) {
@@ -604,7 +602,7 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
         _h5->writeAttribute(fullName.c_str(), "vector_field_type", sattr);
       } // if
 
-    } else {
+    } else if (!commRank) {
       // Update number of time steps in external dataset info in HDF5 file.
       const int totalNumTimeSteps = DataWriter::_numTimeSteps;assert(totalNumTimeSteps > 0);
 	
