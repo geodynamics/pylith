@@ -49,10 +49,12 @@ public :
    *
    * @param newMesh Distributed mesh (result).
    * @param origMesh Mesh to distribute.
+   * @param partitionerName Name of PETSc partitioner to use in distributing mesh.
    */
   static
   void distribute(topology::Mesh* const newMesh,
-		  const topology::Mesh& origMesh);
+		  const topology::Mesh& origMesh,
+		  const char* partitionerName);
 
   /** Write partitioning info for distributed mesh.
    *
