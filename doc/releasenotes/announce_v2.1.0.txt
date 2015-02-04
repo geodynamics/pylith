@@ -19,13 +19,6 @@ the INSTALL file bundled with the PyLith Installer utility.
 MIGRATING FROM VERSION 2.0 TO 2.1
 ======================================================================
 
-The partitioner setting has been integrated into PETSc. As a result,
-the partitioner is set via PETSc settings, not a Distributor
-property. For example,
-
-[pylithapp.petsc]
-petscpartitioner_type = chaco ; Available options ['chaco','parmetis']
-
 The points file for OutputSolnPoints must now contain station names as
 the first column.
 
@@ -41,8 +34,6 @@ RELEASE NOTES
   simulation (time in the time stepping loop or the number of impulses
   completed) and given an estimate of when the simulation will be
   completed.
-
-* The partitioner is now set via a PETSc parameter, petscpartitioner_type.
 
 * Bug fixes
 
@@ -67,6 +58,10 @@ RELEASE NOTES
     new test is also described in the manual. This should prevent
     problems that previously existed when allow_tensile_yield was set
     to False (as it should be for most quasi-static problems).
+
+  - Fixed bug in DataWriterHDF5Ext associated with multiple processes
+    writing information to the HDF5 file. With external datasets the
+    HDF5 file is limited to metadata and is maintained by process 0.
 
   - A two-dimensional gravity example has been added, based on the
     tutorial from the June, 2014 workshop at Stanford University.
