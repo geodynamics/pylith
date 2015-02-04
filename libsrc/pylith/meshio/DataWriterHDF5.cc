@@ -64,8 +64,8 @@ pylith::meshio::DataWriterHDF5::deallocate(void)
   DataWriter::deallocate();
 
   PetscErrorCode err = 0;
-  err = PetscViewerDestroy(&_viewer); PYLITH_CHECK_ERROR(err);
-  err = VecDestroy(&_tstamp); PYLITH_CHECK_ERROR(err);
+  err = PetscViewerDestroy(&_viewer); PYLITH_CHECK_ERROR(err);assert(!_viewer);
+  err = VecDestroy(&_tstamp); PYLITH_CHECK_ERROR(err);assert(!_tstamp);
 
   PYLITH_METHOD_END;
 } // deallocate
@@ -252,7 +252,7 @@ pylith::meshio::DataWriterHDF5::close(void)
   PYLITH_METHOD_BEGIN;
 
   PetscErrorCode err = 0;
-  err = PetscViewerDestroy(&_viewer); PYLITH_CHECK_ERROR(err);
+  err = PetscViewerDestroy(&_viewer); PYLITH_CHECK_ERROR(err);assert(!_viewer);
   err = VecDestroy(&_tstamp); PYLITH_CHECK_ERROR(err);assert(!_tstamp);
 
   _timesteps.clear();
