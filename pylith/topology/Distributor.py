@@ -33,6 +33,7 @@ class Distributor(PetscComponent, ModuleDistributor):
   Inventory
 
   \b Properties
+  @li \b partitioner Name of mesh partitioner {"metis", "chaco"}.
   @li \b writePartition Write partition information to file.
   
   \b Facilities
@@ -45,21 +46,23 @@ class Distributor(PetscComponent, ModuleDistributor):
 
   import pyre.inventory
     
+  partitioner = pyre.inventory.str("partitioner", default="chaco", validator=pyre.inventory.choice(["chaco", "metis","parmetis"]))
+  partitioner.meta['tip'] = "Name of mesh partitioner."
+  
   writePartition = pyre.inventory.bool("write_partition", default=False)
   writePartition.meta['tip'] = "Write partition information to file."
   
   from pylith.meshio.DataWriterVTK import DataWriterVTK
-  dataWriter = pyre.inventory.facility("data_writer", factory=DataWriterVTK,
-                                       family="data_writer")
+  dataWriter = pyre.inventory.facility("data_writer", factory=DataWriterVTK, family="data_writer")
   dataWriter.meta['tip'] = "Data writer for partition information."
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="partitioner"):
+  def __init__(self, name="mesh_distributor"):
     """
     Constructor.
     """
-    PetscComponent.__init__(self, name, facility="partitioner")
+    PetscComponent.__init__(self, name, facility="mesh_distributor")
     ModuleDistributor.__init__(self)
     return
 
@@ -74,7 +77,11 @@ class Distributor(PetscComponent, ModuleDistributor):
 
     from pylith.topology.Mesh import Mesh
     newMesh = Mesh(mesh.dimension())
-    ModuleDistributor.distribute(newMesh, mesh)
+    if self.partitioner == "metis":
+      partitionerName = "parmetis"
+    else:
+      partitionerName = self.partitioner
+    ModuleDistributor.distribute(newMesh, mesh, partitionerName)
 
     #from pylith.utils.petsc import MemoryLogger
     #memoryLogger = MemoryLogger.singleton()
