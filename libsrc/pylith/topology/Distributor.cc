@@ -65,14 +65,11 @@ pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
 	 << "Partitioning mesh using PETSc '" << partitionerName << "' partitioner." << journal::endl;
   } // if
   
-
   PetscErrorCode err = 0;
-  err = PetscOptionsSetValue("-petscpartitioner_type", partitionerName);PYLITH_CHECK_ERROR(err);
-
   PetscPartitioner partitioner =  0;
   PetscDM dmOrig = origMesh.dmMesh();assert(dmOrig);
   err = DMPlexGetPartitioner(dmOrig, &partitioner);PYLITH_CHECK_ERROR(err);
-  err = PetscPartitionerSetFromOptions(partitioner);PYLITH_CHECK_ERROR(err);
+  err = PetscPartitionerSetType(partitioner, partitionerName);PYLITH_CHECK_ERROR(err);
 
   if (0 == commRank) {
     info << journal::at(__HERE__)
