@@ -46,7 +46,7 @@ class Distributor(PetscComponent, ModuleDistributor):
 
   import pyre.inventory
     
-  partitioner = pyre.inventory.str("partitioner", default="chaco", validator=pyre.inventory.choice(["chaco", "metis","parmetis"]))
+  partitioner = pyre.inventory.str("partitioner", default="chaco", validator=pyre.inventory.choice(["chaco", "metis","parmetis","simple"]))
   partitioner.meta['tip'] = "Name of mesh partitioner."
   
   writePartition = pyre.inventory.bool("write_partition", default=False)
