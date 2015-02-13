@@ -58,8 +58,7 @@ class OutputSolnPoints(OutputManager, ModuleOutputSolnPoints):
 
   import pyre.inventory
 
-  vertexDataFields = pyre.inventory.list("vertex_data_fields", 
-                                         default=["displacement"])
+  vertexDataFields = pyre.inventory.list("vertex_data_fields", default=["displacement"])
   vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
   
   from PointsList import PointsList
@@ -102,7 +101,7 @@ class OutputSolnPoints(OutputManager, ModuleOutputSolnPoints):
     OutputManager.initialize(self, normalizer)
 
     # Read points
-    points = self.reader.read()
+    self.stations,points = self.reader.read()
     
     # Convert to mesh coordinate system
     from spatialdata.geocoords.Converter import convert
@@ -158,6 +157,19 @@ class OutputSolnPoints(OutputManager, ModuleOutputSolnPoints):
     Create handle to C++ object.
     """
     ModuleOutputSolnPoints.__init__(self)
+    return
+
+
+  def _open(self, mesh, nsteps, label, labelId):
+    """
+    Call C++ open();
+    """
+    if label != None and labelId != None:
+      ModuleOutputSolnPoints.open(self, mesh, nsteps, label, labelId)
+    else:
+      ModuleOutputSolnPoints.open(self, mesh, nsteps)
+
+    ModuleOutputSolnPoints.writePointNames(self, self.stations)
     return
 
 

@@ -48,6 +48,7 @@ public:
   int numPoints; ///< Number of points for interpolation.
   int spaceDim; ///< Spatial dimension.
   PylithScalar* points; /// Points for interpolation.
+  const char* const* names; ///< Station names for points.
 
 }; // DataWriterData
 

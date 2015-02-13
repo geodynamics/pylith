@@ -27,7 +27,10 @@ noinst_PYTHON = \
 	TestTimeStep.py \
 	TestTimeStepAdapt.py \
 	TestTimeStepUniform.py \
-	TestTimeStepUser.py
+	TestTimeStepUser.py \
+	TestProgressMonitor.py \
+	TestProgressMonitorTime.py \
+	TestProgressMonitorStep.py
 
 
 # End of file 

@@ -57,6 +57,7 @@
 
 %include "typemaps.i"
 %include "../include/scalartypemaps.i"
+%include "../include/chararray.i"
 
 // Numpy interface stuff
 %{

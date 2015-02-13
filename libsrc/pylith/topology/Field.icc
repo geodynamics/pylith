@@ -22,13 +22,24 @@
 
 #include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
-// Get PetscSection.
+// Get local PetscSection.
 inline
 PetscSection
-pylith::topology::Field::petscSection(void) const {
-  PetscSection s = PETSC_NULL;
+pylith::topology::Field::localSection(void) const {
+  PetscSection s = NULL;
   if (_dm) {
     PetscErrorCode err = DMGetDefaultSection(_dm, &s);PYLITH_CHECK_ERROR(err);
+  } // if
+  return s;
+}
+
+// Get global PetscSection.
+inline
+PetscSection
+pylith::topology::Field::globalSection(void) const {
+  PetscSection s = NULL;
+  if (_dm) {
+    PetscErrorCode err = DMGetDefaultGlobalSection(_dm, &s);PYLITH_CHECK_ERROR(err);
   } // if
   return s;
 }
@@ -65,57 +76,49 @@ pylith::topology::Field::dmMesh(void) const {
 inline
 const char*
 pylith::topology::Field::label(void) const {
-  return const_cast<Field*>(this)->_metadata["default"].label.c_str();
+  return _metadata.label.c_str();
 }
 
 // Set vector field type
 inline
 void
 pylith::topology::Field::vectorFieldType(const VectorFieldEnum value) {
-  _metadata["default"].vectorFieldType = value;
+  _metadata.vectorFieldType = value;
 }
 
 // Get vector field type
 inline
 pylith::topology::Field::VectorFieldEnum
 pylith::topology::Field::vectorFieldType(void) const {
-  return const_cast<Field*>(this)->_metadata["default"].vectorFieldType;
+  return _metadata.vectorFieldType;
 }
 
 // Set scale for dimensionalizing field.
 inline
 void
 pylith::topology::Field::scale(const PylithScalar value) {
-  _metadata["default"].scale = value;
-}
-
-// Set scale for dimensionalizing field.
-inline
-void
-pylith::topology::Field::scale(const std::string& name,
-			       const PylithScalar value) {
-  _metadata[name].scale = value;
+  _metadata.scale = value;
 }
 
 // Get scale for dimensionalizing field.
 inline
 PylithScalar
 pylith::topology::Field::scale(void) const {
-  return const_cast<Field *>(this)->_metadata["default"].scale;
+  return _metadata.scale;
 }
 
 // Set flag indicating whether it is okay to dimensionalize field.
 inline
 void
 pylith::topology::Field::dimensionalizeOkay(const bool value) {
-  _metadata["default"].dimsOkay = value;
+  _metadata.dimsOkay = value;
 }
 
 // Set flag indicating whether it is okay to dimensionalize field.
 inline
 bool
 pylith::topology::Field::dimensionalizeOkay(void) const {
-  return const_cast<Field*>(this)->_metadata["default"].dimsOkay;
+  return _metadata.dimsOkay;
 }
 
 // Add two fields, storing the result in one of the fields.

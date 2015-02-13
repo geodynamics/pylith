@@ -154,7 +154,7 @@ AC_LANG(C++)
 
 # PETSC
 AC_LANG(C)
-CIT_PATH_PETSC([3.5.2])
+CIT_PATH_PETSC([3.5.3])
 CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC
 
@@ -346,6 +346,8 @@ AC_CONFIG_FILES([Makefile
 		tests/2d/powerlaw/Makefile
 		tests/2d/slipdir/Makefile
 		tests/2d/frictionslide/Makefile
+		tests/2d/plasticity/Makefile
+		tests/2d/plasticity/initialstress/Makefile
 		tests/3d/Makefile
 		tests/3d/matprops/Makefile
 		tests/3d/slipdir/Makefile
@@ -358,6 +360,7 @@ AC_CONFIG_FILES([Makefile
 		tests/3d/plasticity/threehex8/results/Makefile
 		tests/3d/plasticity/threehex8/spatialdb/Makefile
 		tests/3d/plasticity/dynamic/Makefile
+		tests/3d/plasticity/initialstress/Makefile
 		tests/topology/Makefile
 		tests/refinefaulttip/Makefile
                 doc/Makefile
@@ -377,14 +380,12 @@ AC_CONFIG_FILES([Makefile
 		examples/2d/subduction/Makefile
 		examples/2d/subduction/output/Makefile
 		examples/2d/gravity/Makefile
-		examples/2d/gravity/output/Makefile
 		examples/2d/greensfns/Makefile
 		examples/2d/greensfns/strikeslip/Makefile
 		examples/2d/greensfns/strikeslip/output/Makefile
 		examples/2d/greensfns/reverse/Makefile
 		examples/2d/greensfns/reverse/output/Makefile
 		examples/bar_shearwave/Makefile
-		examples/twocells/Makefile
 		examples/bar_shearwave/hex8/Makefile
 		examples/bar_shearwave/hex8/output/Makefile
 		examples/bar_shearwave/quad4/Makefile
@@ -393,6 +394,7 @@ AC_CONFIG_FILES([Makefile
 		examples/bar_shearwave/tet4/output/Makefile
 		examples/bar_shearwave/tri3/Makefile
 		examples/bar_shearwave/tri3/output/Makefile
+		examples/twocells/Makefile
 		examples/twocells/twohex8/Makefile
 		examples/twocells/twoquad4/Makefile
 		examples/twocells/twotet4/Makefile

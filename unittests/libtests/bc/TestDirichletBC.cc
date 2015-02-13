@@ -192,7 +192,7 @@ pylith::bc::TestDirichletBC::testSetConstraintSizes(void)
   topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
   const PetscInt numCells = cellsStratum.size();
 
-  PetscSection fieldSection = field.petscSection();CPPUNIT_ASSERT(fieldSection);
+  PetscSection fieldSection = field.localSection();CPPUNIT_ASSERT(fieldSection);
   const PetscInt offset = numCells;
 
   int iConstraint = 0;
@@ -256,7 +256,7 @@ pylith::bc::TestDirichletBC::testSetConstraints(void)
   topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
   const PetscInt numCells = cellsStratum.size();
 
-  PetscSection fieldSection = field.petscSection();CPPUNIT_ASSERT(fieldSection);
+  PetscSection fieldSection = field.localSection();CPPUNIT_ASSERT(fieldSection);
   const PetscInt offset = numCells;
 
   int iConstraint = 0;

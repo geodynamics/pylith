@@ -255,7 +255,7 @@ pylith::faults::TestFaultCohesiveImpulses::testIntegrateResidual(void)
   // Set displacement values
   topology::Field& disp = fields.get("disp(t)");
   topology::VecVisitorMesh dispVisitor(disp);
-  PetscErrorCode err = PetscSectionGetChart(disp.petscSection(), &pStart, &pEnd);CPPUNIT_ASSERT(!err);
+  PetscErrorCode err = PetscSectionGetChart(disp.localSection(), &pStart, &pEnd);CPPUNIT_ASSERT(!err);
   PetscScalar* dispArray = dispVisitor.localArray();CPPUNIT_ASSERT(dispArray);
   for (PetscInt p = pStart, iVertex = 0; p < pEnd; ++p) {
     if (dispVisitor.sectionDof(p) > 0) {

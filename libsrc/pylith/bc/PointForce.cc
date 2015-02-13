@@ -109,10 +109,8 @@ pylith::bc::PointForce::integrateResidual(const topology::Field& residual,
   PetscScalar* valueArray = valueVisitor.localArray();
 
   // Get global order
-  PetscDM dmMesh = residual.dmMesh();assert(dmMesh);
-  PetscSection globalSection = NULL;
-  PetscErrorCode err;
-  err = DMGetDefaultGlobalSection(dmMesh, &globalSection);PYLITH_CHECK_ERROR(err);
+  PetscSection globalSection = residual.globalSection();assert(globalSection);
+  PetscErrorCode err = 0;
 
   const int numPoints = _points.size();
   const int numBCDOF = _bcDOF.size();

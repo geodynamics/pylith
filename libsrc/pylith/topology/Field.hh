@@ -62,6 +62,17 @@ class pylith::topology::Field : public FieldBase
   friend class TestFieldMesh; // unit testing
   friend class TestFieldSubMesh; // unit testing
 
+// PUBLIC STRUCTS ///////////////////////////////////////////////////////
+public :
+
+  /// Subfield auxiliary information.
+  struct SubfieldInfo {
+    Metadata metadata; ///< Metadata for subfield.
+    int numComponents; ///< Number of components. 
+    int index; ///< Index of subfield in field.
+    PetscDM dm; ///< PETSc DM associated with subfield.
+  }; // SubfieldInfo
+
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
@@ -123,7 +134,7 @@ public :
    */
   const char* label(void) const;
 
-  /** Set vector field type
+  /** Set vector field type.
    *
    * @param value Type of vector field.
    */
@@ -140,13 +151,6 @@ public :
    * @param value Scale associated with field.
    */
   void scale(const PylithScalar value);
-
-  /** Set scale for dimensionalizing field.
-   *
-   * @param name Field name
-   * @param value Scale associated with field.
-   */
-  void scale(const std::string& name, const PylithScalar value);
 
   /** Get scale for dimensionalizing field.
    *
@@ -190,11 +194,17 @@ public :
    */
   bool hasSection(void) const;
 
-  /** Get PetscSection.
+  /** Get local PetscSection.
    *
    * @returns PETSc section.
    */
-  PetscSection petscSection(void) const;
+  PetscSection localSection(void) const;
+
+  /** Get global PetscSection.
+   *
+   * @returns PETSc section.
+   */
+  PetscSection globalSection(void) const;
 
   /** Get the local PETSc Vec.
    *
@@ -321,12 +331,12 @@ public :
 		      const pylith::topology::FieldBase::DomainEnum domain, 
 		      const int fiberDim);
   
-  /** Get metadata for subfield.
+  /** Get auxiliary information for subfield.
    *
-   * @param name Name of subfield.
-   * @returns Metadata for subfield.
+   * @param name Name of field.
+   * @returns Auxiliary information (including metadata) for subfield.
    */
-  const Metadata& subfieldMetadata(const char* name) const;
+  const SubfieldInfo& subfieldInfo(const char* name) const;
 
   /// Clear variables associated with section.
   void clear(void);
@@ -481,6 +491,7 @@ private :
 private :
 
   typedef std::map<std::string, ScatterInfo> scatter_map_type;
+  typedef std::map<std::string, SubfieldInfo> subfields_type;
 
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
@@ -510,16 +521,10 @@ private :
    */
   const ScatterInfo& _getScatter(const char* context) const;
 
-// PROTECTED TYPEDEFS ///////////////////////////////////////////////////
-protected :
-
-  typedef std::map<std::string, Metadata> map_type;
-  typedef std::map<std::string, int> fieldcomps_type;
-
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  map_type _metadata;
+  Metadata _metadata;
 
   const Mesh& _mesh; ///< Mesh associated with section.
   scatter_map_type _scatters; ///< Collection of scatters.
@@ -527,7 +532,7 @@ private :
   PetscDM _dm; ///< Manages the PetscSection
   PetscVec _globalVec; ///< Global PETSc vector
   PetscVec _localVec; ///< Local PETSc vector
-  fieldcomps_type _subfieldComps; ///< Map of subfields bundled together.
+  subfields_type _subfields; ///< Map of subfields bundled together.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

@@ -16,8 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-dist_noinst_DATA = \
-	deform_view.pvsm
-
+SUBDIRS = \
+	initialstress
 
 # End of file 

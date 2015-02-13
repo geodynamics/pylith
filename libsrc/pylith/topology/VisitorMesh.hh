@@ -83,7 +83,7 @@ public :
    * 
    * @returns PETSc section.
    */
-  PetscSection petscSection(void) const;
+  PetscSection localSection(void) const;
 
   /** Get the local PETSc Vec.
    * 

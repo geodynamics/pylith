@@ -294,7 +294,7 @@ pylith::meshio::DataWriterVTK::writeVertexField(const PylithScalar t,
   assert(fieldCached.sectionSize() == field.sectionSize());
   fieldCached.copy(field);
 
-  // Could check the field.petscSection() matches the default section from VecGetDM().
+  // Could check the field.localSection() matches the default section from VecGetDM().
   PetscVec fieldVec = fieldCached.localVector();assert(fieldVec);
 
   // :KLUDGE: MATT You have a note that this is not fully implemented!
@@ -339,7 +339,7 @@ pylith::meshio::DataWriterVTK::writeCellField(const PylithScalar t,
   assert(fieldCached.sectionSize() == field.sectionSize());
   fieldCached.copy(field);
 
-  // Could check the field.petscSection() matches the default section from VecGetDM().
+  // Could check the field.localSection() matches the default section from VecGetDM().
   PetscVec fieldVec = fieldCached.localVector();assert(fieldVec);
 
   // :KLUDGE: MATT You have a note that this is not fully implemented!

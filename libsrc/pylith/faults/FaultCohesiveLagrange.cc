@@ -133,7 +133,7 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
     const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault    = _cohesiveVertices[iVertex].fault;
 
-    if (e_lagrange < 0) {err = PetscSectionSetConstraintDof(dispRel.petscSection(), -v_fault, spaceDim);PYLITH_CHECK_ERROR(err);}
+    if (e_lagrange < 0) {err = PetscSectionSetConstraintDof(dispRel.localSection(), -v_fault, spaceDim);PYLITH_CHECK_ERROR(err);}
   }
   dispRel.allocate();
   {
@@ -144,7 +144,7 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
       const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
       const int v_fault    = _cohesiveVertices[iVertex].fault;
 
-      if (e_lagrange < 0) {err = PetscSectionSetConstraintIndices(dispRel.petscSection(), -v_fault, ind);PYLITH_CHECK_ERROR(err);}
+      if (e_lagrange < 0) {err = PetscSectionSetConstraintIndices(dispRel.localSection(), -v_fault, ind);PYLITH_CHECK_ERROR(err);}
     }
     delete[] ind; ind = 0;
   }
@@ -170,11 +170,11 @@ pylith::faults::FaultCohesiveLagrange::setupSolnDof(topology::Field* field)
 
   assert(field);
 
-  const int indexDisp = field->subfieldMetadata("displacement").index;
-  const int indexLagrange = field->subfieldMetadata("lagrange_multiplier").index;
+  const int indexDisp = field->subfieldInfo("displacement").index;
+  const int indexLagrange = field->subfieldInfo("lagrange_multiplier").index;
 
   PetscDM dmMesh = field->dmMesh();assert(dmMesh);
-  PetscSection fieldSection  = field->petscSection();assert(fieldSection);
+  PetscSection fieldSection  = field->localSection();assert(fieldSection);
   PetscErrorCode err;
 
   assert(_quadrature);
@@ -239,10 +239,8 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(const topology::Field& 
   const int spaceDim = _quadrature->spaceDim();
 
   // Get sections associated with cohesive cells
-  PetscDM residualDM = residual.dmMesh();assert(residualDM);
-  PetscSection residualSection = residual.petscSection();assert(residualSection);
-  PetscSection residualGlobalSection = NULL;
-  PetscErrorCode err = DMGetDefaultGlobalSection(residualDM, &residualGlobalSection);PYLITH_CHECK_ERROR(err);
+  PetscSection residualSection = residual.localSection();assert(residualSection);
+  PetscSection residualGlobalSection = residual.globalSection();assert(residualGlobalSection);
 
   topology::VecVisitorMesh residualVisitor(residual);
   PetscScalar* residualArray = residualVisitor.localArray();
@@ -285,7 +283,7 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(const topology::Field& 
 
     // Compute contribution only if Lagrange constraint is local.
     PetscInt goff  = 0;
-    err = PetscSectionGetOffset(residualGlobalSection, e_lagrange, &goff);PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = PetscSectionGetOffset(residualGlobalSection, e_lagrange, &goff);PYLITH_CHECK_ERROR(err);
     if (goff < 0)
       continue;
 
@@ -390,10 +388,8 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(topology::Jacobian* jac
   topology::VecVisitorMesh areaVisitor(area);
   const PetscScalar* areaArray = areaVisitor.localArray();
   
-  PetscDM solnDM = fields->solution().dmMesh();assert(solnDM);
-  PetscSection solnSection = fields->solution().petscSection();assert(solnSection);
-  PetscSection solnGlobalSection = NULL;
-  PetscErrorCode err = DMGetDefaultGlobalSection(solnDM, &solnGlobalSection);PYLITH_CHECK_ERROR(err);assert(solnGlobalSection);
+  PetscSection solnSection = fields->solution().localSection();assert(solnSection);
+  PetscSection solnGlobalSection = fields->solution().globalSection();assert(solnGlobalSection);
 
   // Get fault information
   PetscDM dmMesh = fields->mesh().dmMesh();assert(dmMesh);
@@ -416,6 +412,7 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(topology::Jacobian* jac
   _logger->eventBegin(computeEvent);
 #endif
 
+  PetscErrorCode err = 0;
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
@@ -545,9 +542,7 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(topology::Field* jacobi
 
   const int spaceDim  = _quadrature->spaceDim();
 
-  PetscDM jacobianDM  = jacobian->dmMesh();assert(jacobianDM);
-  PetscSection jacobianGlobalSection = NULL;
-  PetscErrorCode err = DMGetDefaultGlobalSection(jacobianDM, &jacobianGlobalSection);PYLITH_CHECK_ERROR(err);
+  PetscSection jacobianGlobalSection = jacobian->globalSection();assert(jacobianGlobalSection);
 
   topology::VecVisitorMesh jacobianVisitor(*jacobian);
   PetscScalar* jacobianArray = jacobianVisitor.localArray();
@@ -557,6 +552,7 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(topology::Field* jacobi
   _logger->eventBegin(computeEvent);
 #endif
 
+  PetscErrorCode err = 0;
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
@@ -656,14 +652,11 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
   topology::VecVisitorMesh areaVisitor(area);
   const PetscScalar* areaArray = areaVisitor.localArray();
 
-  topology::Field& dispRel = _fields->get("relative disp");
-  PetscDM dispRelDM = dispRel.dmMesh();
-  PetscSection dispRelGlobalSection = NULL;
-  PetscErrorCode err = DMGetDefaultGlobalSection(dispRelDM, &dispRelGlobalSection);PYLITH_CHECK_ERROR(err);
+  PetscSection solnGlobalSection = fields->solution().globalSection();assert(solnGlobalSection);
 
-  PetscDM solnDM = fields->solution().dmMesh();
-  PetscSection solnGlobalSection = NULL;
-  err = DMGetDefaultGlobalSection(solnDM, &solnGlobalSection);PYLITH_CHECK_ERROR(err);
+  PetscDM lagrangeDM = fields->solution().subfieldInfo("lagrange_multiplier").dm;assert(lagrangeDM);
+  PetscSection lagrangeGlobalSection = NULL;
+  PetscErrorCode err = DMGetDefaultGlobalSection(lagrangeDM, &lagrangeGlobalSection);PYLITH_CHECK_ERROR(err);
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -742,14 +735,14 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
 
     // Set diagonal entries in preconditioned matrix.
     PetscInt poff = 0;
-    err = PetscSectionGetOffset(dispRelGlobalSection, v_fault, &poff);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetOffset(lagrangeGlobalSection, e_lagrange, &poff);PYLITH_CHECK_ERROR(err);
 
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       err = MatSetValue(*precondMatrix, poff+iDim, poff+iDim, precondVertexL[iDim], INSERT_VALUES);PYLITH_CHECK_ERROR(err);
     } // for
 
 #if 0 // DEBUGGING
-    std::cout << "1/P_vertex " << e_lagrange << std::endl;
+    std::cout << "1/P_vertex " << e_lagrange << ", poff: " << poff << std::endl;
     for(int iDim = 0; iDim < spaceDim; ++iDim) {
       std::cout << "  " << precondVertexL[iDim] << std::endl;
     } // for
@@ -832,9 +825,7 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
   topology::VecVisitorMesh dispTIncrAdjVisitor(dispTIncrAdj);
   PetscScalar* dispTIncrAdjArray = dispTIncrAdjVisitor.localArray();
 
-  PetscDM jacobianDM = jacobian.dmMesh();
-  PetscSection jacobianGlobalSection = NULL;
-  PetscErrorCode err = DMGetDefaultGlobalSection(jacobianDM, &jacobianGlobalSection);PYLITH_CHECK_ERROR(err);
+  PetscSection jacobianGlobalSection = jacobian.globalSection();assert(jacobianGlobalSection);
 
   _logger->eventEnd(setupEvent);
 
@@ -842,6 +833,7 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
   _logger->eventBegin(computeEvent);
 #endif
 
+  PetscErrorCode err = 0;
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
@@ -1793,7 +1785,7 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(topology::Field* tra
   const PetscScalar* orientationArray = orientationVisitor.localArray();
 
   // Allocate buffer for tractions field (if necessary).
-  if (!tractions->petscSection()) {
+  if (!tractions->localSection()) {
     const topology::Field& dispRel = _fields->get("relative disp");
     tractions->cloneSection(dispRel);
   } // if
@@ -1903,12 +1895,10 @@ pylith::faults::FaultCohesiveLagrange::_getJacobianSubmatrixNP(PetscMat* jacobia
   assert(indicesMatToSubmat);
 
   // Get global order
-  PetscDM solutionDM = fields.solution().dmMesh();
-  PetscSection solutionGlobalSection = NULL;
+  PetscSection solutionGlobalSection = fields.solution().globalSection();assert(solutionGlobalSection);
   PetscScalar *solutionArray = NULL;
 
   PetscErrorCode err;
-  err = DMGetDefaultGlobalSection(solutionDM, &solutionGlobalSection);PYLITH_CHECK_ERROR(err);
 
   // Get Jacobian matrix
   const PetscMat jacobianMatrix = jacobian.matrix();

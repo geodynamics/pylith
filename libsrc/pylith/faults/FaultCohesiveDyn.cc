@@ -209,9 +209,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field& resid
   const int spaceDim = _quadrature->spaceDim();
 
   // Get sections associated with cohesive cells
-  PetscDM residualDM = residual.dmMesh();assert(residualDM);
-  PetscSection residualGlobalSection = NULL;
-  PetscErrorCode err = DMGetDefaultGlobalSection(residualDM, &residualGlobalSection);PYLITH_CHECK_ERROR(err);assert(residualGlobalSection);
+  PetscSection residualGlobalSection = residual.globalSection();assert(residualGlobalSection);
 
   topology::VecVisitorMesh residualVisitor(residual);
   PetscScalar* residualArray = residualVisitor.localArray();
@@ -251,6 +249,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field& resid
 #endif
 
   // Loop over fault vertices
+  PetscErrorCode err = 0;
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
@@ -548,9 +547,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
   topology::VecVisitorMesh dispTIncrVisitor(fields->get("dispIncr(t->t+dt)"));
   const PetscScalar* dispTIncrArray = dispTIncrVisitor.localArray();
 
-  PetscDM solnDM = fields->get("dispIncr(t->t+dt)").dmMesh();
-  PetscSection dispTIncrGlobalSection = NULL;
-  PetscErrorCode err = DMGetDefaultGlobalSection(solnDM, &dispTIncrGlobalSection);PYLITH_CHECK_ERROR(err);
+  PetscSection dispTIncrGlobalSection = fields->get("dispIncr(t->t+dt)").globalSection();assert(dispTIncrGlobalSection);
 
   topology::VecVisitorMesh dispTIncrAdjVisitor(fields->get("dispIncr adjust"));
   PetscScalar* dispTIncrAdjArray = dispTIncrAdjVisitor.localArray();
@@ -856,6 +853,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
   dLagrangeVisitor.initialize(_fields->get("sensitivity dLagrange"));
   dLagrangeArray = dLagrangeVisitor.localArray();
 
+  PetscErrorCode err = 0;
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_fault = _cohesiveVertices[iVertex].fault;
     const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
@@ -1116,9 +1114,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(topology::SolutionFields* con
   topology::VecVisitorMesh residualVisitor(fields->get("residual"));
   const PetscScalar* residualArray = residualVisitor.localArray();
 
-  PetscDM solnDM = fields->get("dispIncr(t->t+dt)").dmMesh();assert(solnDM);
-  PetscSection solnGlobalSection = NULL;
-  PetscErrorCode err = DMGetDefaultGlobalSection(solnDM, &solnGlobalSection);PYLITH_CHECK_ERROR(err);
+  PetscSection solnGlobalSection = fields->get("dispIncr(t->t+dt)").globalSection();assert(solnGlobalSection);
 
   constrainSolnSpace_fn_type constrainSolnSpaceFn;
   switch (spaceDim) { // switch
@@ -1145,6 +1141,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(topology::SolutionFields* con
   _logger->eventBegin(computeEvent);
 #endif
 
+  PetscErrorCode err = 0;
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
@@ -1472,7 +1469,7 @@ pylith::faults::FaultCohesiveDyn::_calcTractions(topology::Field* tractions,
   const PetscScalar* orientationArray = orientationVisitor.localArray();
 
   // Allocate buffer for tractions field (if necessary).
-  if (!tractions->petscSection()) {
+  if (!tractions->localSection()) {
     const topology::Field& dispRel = _fields->get("relative disp");
     tractions->cloneSection(dispRel);
   } // if
@@ -1702,13 +1699,10 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
 
   // Get solution field
   const topology::Field& solutionDomain = fields.solution();
-  PetscDM solutionDomainDM = solutionDomain.dmMesh();assert(solutionDomainDM);
-  PetscSection solutionDomainSection = solutionDomain.petscSection();assert(solutionDomainSection);
+  PetscSection solutionDomainSection = solutionDomain.localSection();assert(solutionDomainSection);
   PetscVec solutionDomainVec = solutionDomain.localVector();assert(solutionDomainVec);
-  PetscSection solutionDomainGlobalSection = NULL;
+  PetscSection solutionDomainGlobalSection = solutionDomain.globalSection();assert(solutionDomainGlobalSection);
   PetscScalar *solutionDomainArray = NULL;
-  assert(solutionDomainSection);assert(solutionDomainVec);
-  err = DMGetDefaultGlobalSection(solutionDomainDM, &solutionDomainGlobalSection);PYLITH_CHECK_ERROR(err);
 
   // Get cohesive cells
   PetscDM dmMesh = fields.mesh().dmMesh();assert(dmMesh);
@@ -1728,12 +1722,10 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
   PetscDM faultDMMesh = _faultMesh->dmMesh();assert(faultDMMesh);
 
   // Get sensitivity solution field
-  PetscDM solutionFaultDM = _fields->get("sensitivity solution").dmMesh();assert(solutionFaultDM);
-  PetscSection solutionFaultSection = _fields->get("sensitivity solution").petscSection();assert(solutionFaultSection);
+  PetscSection solutionFaultSection = _fields->get("sensitivity solution").localSection();assert(solutionFaultSection);
   PetscVec solutionFaultVec = _fields->get("sensitivity solution").localVector();assert(solutionFaultVec);
-  PetscSection solutionFaultGlobalSection = NULL;
+  PetscSection solutionFaultGlobalSection = _fields->get("sensitivity solution").globalSection();assert(solutionFaultGlobalSection);
   PetscScalar* solutionFaultArray = NULL;
-  err = DMGetDefaultGlobalSection(solutionFaultDM, &solutionFaultGlobalSection);PYLITH_CHECK_ERROR(err);
 
   assert(_jacobian);
   const PetscMat jacobianFaultMatrix = _jacobian->matrix();assert(jacobianFaultMatrix);
@@ -2101,10 +2093,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceNorm(const PylithScalar alp
   topology::Field& dispTIncr = fields->get("dispIncr(t->t+dt)");
   topology::VecVisitorMesh dispTIncrVisitor(dispTIncr);
   const PetscScalar* dispTIncrArray = dispTIncrVisitor.localArray();
-
-  PetscDM solnDM = dispTIncr.dmMesh();assert(solnDM);
-  PetscSection dispTIncrGlobalSection = NULL;
-  err = DMGetDefaultGlobalSection(solnDM, &dispTIncrGlobalSection);PYLITH_CHECK_ERROR(err);
+  PetscSection dispTIncrGlobalSection = dispTIncr.globalSection();assert(dispTIncrGlobalSection);
 
   bool isOpening = false;
   PylithScalar norm2 = 0.0;

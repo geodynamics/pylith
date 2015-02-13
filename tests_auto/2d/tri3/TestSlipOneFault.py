@@ -99,11 +99,38 @@ class TestSlipOneFault(TestTri3):
     return
 
 
+  def test_points_data(self):
+    """
+    Check points information.
+    """
+    if not self.checkResults:
+      return
+
+    filename = "%s-points.h5" % self.outputRoot
+    fields = ["displacement"]
+    stations = ["ZZ.AAA", "ZZ.BBB", "ZZ.CCC", "ZZ.DDD"]
+
+    from pylith.tests.SolutionPoints import check_displacements
+    check_displacements(self, filename, npoints=len(stations), spaceDim=2)
+
+    from pylith.tests.SolutionPoints import check_stations
+    check_stations(self, filename, stations)
+
+    return
+
+
   def calcDisplacements(self, vertices):
     """
     Calculate displacement field given coordinates of vertices.
     """
     return self.soln.displacement(vertices, self.nverticesO)
+
+
+  def calcDisplacementPoints(self, vertices):
+    """
+    Calculate displacement field given coordinates of vertices.
+    """
+    return self.soln.displacement(vertices)
 
 
   def calcStateVar(self, name, vertices, cells):

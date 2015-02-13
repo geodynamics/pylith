@@ -307,7 +307,7 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
 
   PetscErrorCode err;
   PetscDM amplitudeDM = amplitude.mesh().dmMesh();assert(amplitudeDM);
-  PetscSection amplitudeSection = amplitude.petscSection();assert(amplitudeSection);
+  PetscSection amplitudeSection = amplitude.localSection();assert(amplitudeSection);
   PetscSection amplitudeGlobalSection = NULL;
   PetscSF sf = NULL;
   err = DMGetPointSF(amplitudeDM, &sf);PYLITH_CHECK_ERROR(err);

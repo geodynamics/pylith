@@ -136,18 +136,6 @@ public :
 		      const void* value,
 		      hid_t datatype);
 
-  /** Read scalar attribute.
-   *
-   * @param parent Full path of parent dataset for attribute.
-   * @param name Name of attribute.
-   * @param datatype Datatype of scalar.
-   * @param value Attribute value.
-   */
-  void readAttribute(const char* parent,
-		     const char* name,
-		     void* value,
-		     hid_t datatype);
-
   /** Set string attribute.
    *
    * @param parent Full path of parent dataset for attribute.
@@ -172,11 +160,23 @@ public :
 		      const char* name,
 		      const char* value);
 
+  /** Read scalar attribute.
+   *
+   * @param parent Full path of parent dataset for attribute.
+   * @param name Name of attribute.
+   * @param datatype Datatype of scalar.
+   * @param value Attribute value.
+   */
+  void readAttribute(const char* parent,
+		     const char* name,
+		     void* value,
+		     hid_t datatype);
+
   /** Read string attribute.
    *
    * @param parent Full path of parent dataset for attribute.
    * @param name Name of attribute.
-   * @param value String value
+   * @returns value String value
    */
   std::string readAttribute(const char* parent,
 			    const char* name);
@@ -267,6 +267,47 @@ public :
 				const hsize_t* dims,
 				const int ndims);
   
+  /** Write dataset comprised of an array of strings.
+   *
+   * @param parent Full path of parent group for dataset.
+   * @param name Name of dataset.
+   * @param sarray Array of null terminated C strings.
+   * @param nstrings Size of array.
+   * @param slen Fixed length of strings.
+   */
+  void writeDataset(const char* parent,
+		    const char* name,
+		    const char* const* sarray,
+		    const int nstrings,
+		    const int slen =64);
+
+  /** Write dataset comprised of an array of strings (used with
+   * external handle to HDF5 file, such as PetscHDF5Viewer).
+   *
+   * @param h5 HDF5 file.
+   * @param parent Full path of parent group for dataset.
+   * @param name Name of dataset.
+   * @param sarray Array of null terminated C strings.
+   * @param nstrings Size of array.
+   * @param slen Fixed length of strings.
+   */
+  static
+  void writeDataset(hid_t h5,
+		    const char* parent,
+		    const char* name,
+		    const char* const* sarray,
+		    const int nstrings,
+		    const int slen =64);
+
+  /** Read dataset comprised of an array of strings.
+   *
+   * @param parent Full path of parent group for dataset.
+   * @param name Name of dataset.
+   * @returns Array of string.
+   */
+  pylith::string_vector readDataset(const char* parent,
+				    const char* name);
+
 // PRIVATE MEMBERS ------------------------------------------------------
 private :
 

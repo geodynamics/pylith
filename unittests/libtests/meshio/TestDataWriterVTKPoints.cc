@@ -99,6 +99,7 @@ pylith::meshio::TestDataWriterVTKPoints::testTimeStep(void)
   const int numTimeSteps = 1;
   if (!_data->cellsLabel) {
     output.open(*_mesh, numTimeSteps);
+    output.writePointNames(_data->names, _data->numPoints); // Should to nothing
     output.openTimeStep(t, *_mesh);
   } else {
     const char* label = _data->cellsLabel;
@@ -144,6 +145,7 @@ pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void)
   const int numTimeSteps = 1;
   if (!_data->cellsLabel) {
     output.open(*_mesh, numTimeSteps);
+    output.writePointNames(_data->names, _data->numPoints); // Should to nothing
     output.openTimeStep(t, *_mesh);
   } else {
     const char* label = _data->cellsLabel;

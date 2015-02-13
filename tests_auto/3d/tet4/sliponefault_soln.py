@@ -59,7 +59,7 @@ class AnalyticalSoln(object):
     return
 
 
-  def displacement(self, locs, nlocsO):
+  def displacement(self, locs, nlocsO=None):
     """
     Compute displacement field at locations.
     """
@@ -67,7 +67,8 @@ class AnalyticalSoln(object):
 
     disp = numpy.zeros( (1, nlocs, 3), dtype=numpy.float64)
     maskP = locs[:,0] > 0.0
-    maskP[nlocsO:nlocs] = True
+    if nlocsO:
+      maskP[nlocsO:nlocs] = True
     maskN = numpy.bitwise_and(locs[:,0] <= 0.0, ~maskP)
     disp[0,:,1] = maskN*(+1.0) + maskP*(-1.0)
     return disp

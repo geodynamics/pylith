@@ -1,0 +1,1002 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass book
+\begin_preamble
+
+\end_preamble
+\use_default_options false
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding latin1
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 0
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Tutorial-Gravity-2d"
+
+\end_inset
+
+Tutorial Using Gravity in Two Dimensions
+\end_layout
+
+\begin_layout Standard
+PyLith features discussed in this tutorial:
+\end_layout
+
+\begin_layout Itemize
+GravityField
+\end_layout
+
+\begin_layout Itemize
+Initial stresses
+\end_layout
+
+\begin_layout Itemize
+ImplicitLgDeform formulation
+\end_layout
+
+\begin_layout Itemize
+HDF5 output
+\end_layout
+
+\begin_layout Itemize
+Reading HDF5 output using h5py
+\end_layout
+
+\begin_layout Itemize
+Generating a spatial database from state variables output
+\end_layout
+
+\begin_layout Itemize
+Cubit mesh generation
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Variable mesh resolution
+\end_layout
+
+\begin_layout Itemize
+APREPRO programming language
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Static solution
+\end_layout
+
+\begin_layout Itemize
+Quasi-static solution
+\end_layout
+
+\begin_layout Itemize
+Linear triangular cells
+\end_layout
+
+\begin_layout Itemize
+Plane strain linearly elastic material
+\end_layout
+
+\begin_layout Itemize
+Plane strain Maxwell viscoelastic material
+\end_layout
+
+\begin_layout Itemize
+SimpleDB spatial database
+\end_layout
+
+\begin_layout Itemize
+ZeroDispDB spatial database
+\end_layout
+
+\begin_layout Itemize
+UniformDB spatial database
+\end_layout
+
+\begin_layout Standard
+All of the files necessary to run the examples are contained under the directory
+ 
+\family typewriter
+examples/2d/gravity.
+\end_layout
+
+\begin_layout Subsection
+Overview
+\end_layout
+
+\begin_layout Standard
+This tutorial examines the steps necessary to incorporate gravity into a
+ 2D simulation.
+ Most simulations involving gravity will also require the use of initial
+ stresses, so we also cover how to generate a set of initial stresses and
+ then convert them into spatial databases.
+ We also consider the case where we do not exactly balance the gravitational
+ stresses with initial stresses.
+ Another consideration is that most problems involving gravitational stresses
+ will require a finite strain formulation to properly update the stresses
+ for the deformed geometry.
+ We first compute the stresses for a mesh with a low density elastic block
+ 'floating' within a higher density viscoelastic material, and then use
+ these stresses in later calculations.
+ We use these stresses for both an infinitesimal strain and a finite strain
+ simulation to exactly balance the gravitational stresses.
+ We then consider the case where the initial stresses correspond to those
+ generated assuming a constant density equivalent to the viscoelastic material.
+ Since these stresses are not in equilibrium with the density contrast,
+ the block will 'float'.
+ Since the infinitesimal strain simulation does not update the body forces
+ for the deformed geometry, the elastic block will continue to float upwards
+ indefinitely, while for the finite strain formulation it will reach equilibrium.
+ Note, however, that there is a well-known instability for this sort of
+ finite strain problem (the 'drunken sailer effect', 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kaus:etal:2010"
+
+\end_inset
+
+).
+ The solution to this problem is to reduce the time step size, and this
+ is what is done for the final set of simulations involving initial stresses.
+ There are 9 simulations in total (5 infinitesimal strain problems and 4
+ finite strain problems) and there is a README file in the top-level directory
+ that explains how to perform the various simulations.
+\end_layout
+
+\begin_layout Subsection
+Mesh Description
+\end_layout
+
+\begin_layout Standard
+We use a fairly simple mesh consisting of triangular cells for all of the
+ simulations.
+ We construct the mesh in CUBIT following the same techniques used in the
+ 2D subduction zone example, except that this mesh is simpler.
+ The main driver is in the journal file 
+\family typewriter
+mesh.jou
+\family default
+.
+ It calls the journal file 
+\family typewriter
+geometry.jou
+\family default
+ to construct the geometry.
+ Discretization sizes are assigned within the elastic block and on curves
+ on the outer boundaries, and CUBIT automatically computes the sizing function
+ for the intervening space.
+ There are no faults, and only two materials (elastic block and viscoelastic
+ surrounding material.
+ The mesh shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:gravity2d-mesh"
+
+\end_inset
+
+ The journal files are documented and describe the various steps outlined
+ below.
+\end_layout
+
+\begin_layout Enumerate
+Create the geometry defining the domain.
+\end_layout
+
+\begin_layout Enumerate
+Define meshing scheme and cell sizes.
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Define a constant cell size within the elastic block.
+\end_layout
+
+\begin_layout Enumerate
+Define a constant cell size on the two external curves furthest from the
+ block.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Generate mesh.
+\end_layout
+
+\begin_layout Enumerate
+Create blocks for materials and nodesets for boundary conditions.
+\end_layout
+
+\begin_layout Enumerate
+Export mesh.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/gravity-mesh.jpg
+	lyxscale 50
+	width 4in
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Mesh used for 2d gravity simulations.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:gravity2d-mesh"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Additional Common Information
+\end_layout
+
+\begin_layout Standard
+As in the examples discussed in previous sections of these tutorials, we
+ place parameters common to the forward model and Green's function computation
+ in the 
+\family typewriter
+pylithapp.cfg
+\family default
+ file so that we do not have to duplicate them for the two procedures.
+ The settings contained in 
+\family typewriter
+pylithapp.cfg
+\family default
+ for this problem consist of:
+\end_layout
+
+\begin_layout Description
+pylithapp.journal.info Settings that control the verbosity of the output written
+ to stdout for the different components.
+\end_layout
+
+\begin_layout Description
+pylithapp.mesh_generator Settings that control mesh importing, such as the
+ importer type, the filename, and the spatial dimension of the mesh.
+\end_layout
+
+\begin_layout Description
+pylithapp.problem Settings that control the problem, such as the total time,
+ time-step size, and spatial dimension.
+ Note that we turn off the elastic prestep here, since it is only used in
+ the first simulation.
+ We also turn on gravity for the problem.
+ The 
+\family typewriter
+total_time
+\family default
+ of 
+\family typewriter
+100.0*year 
+\family default
+is used for most of the simulations.
+\end_layout
+
+\begin_layout Description
+pylithapp.problem.materials Settings that control the material type, specify
+ which material IDs are to be associated with a particular material type,
+ and give the name of the spatial database containing the physical properties
+ for the material.
+ The quadrature information is also given.
+\end_layout
+
+\begin_layout Description
+pylithapp.problem.bc Settings that control the applied boundary conditions.
+\end_layout
+
+\begin_layout Description
+pylithapp.problem.formulation.output Settings related to output of the solution
+ over the domain and subdomain.
+ We specify both displacements and velocities for the output.
+\end_layout
+
+\begin_layout Description
+pylithapp.petsc PETSc settings to use for the problem, such as the preconditioner
+ type.
+\end_layout
+
+\begin_layout Standard
+Since we do not desire an initial elastic solution prior to beginning our
+ time stepping for most simulations, we turn off the elastic prestep:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent]
+\end_layout
+
+\begin_layout LyX-Code
+elastic_prestep = False
+\end_layout
+
+\begin_layout Standard
+For two-dimensional problems involving gravity, we also need to change the
+ default gravity_dir:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent]
+\end_layout
+
+\begin_layout LyX-Code
+gravity_field = spatialdata.spatialdb.GravityField
+\end_layout
+
+\begin_layout LyX-Code
+gravity_field.gravity_dir = [0.0, -1.0, 0.0]
+\end_layout
+
+\begin_layout Subsection
+Step 1: Computation of Gravitational Stresses
+\end_layout
+
+\begin_layout Standard
+We first compute the stresses due to gravity.
+ Since there are two materials of different density, the computed stresses
+ will be more complex than a simple linear variation with depth.
+ Parameter settings that augment those in 
+\family typewriter
+pylithapp.cfg
+\family default
+ are contained in the file 
+\family typewriter
+grav_stress.cfg
+\family default
+.
+ These settings are:
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent We set 
+\family typewriter
+elastic_prestep
+\family default
+ to 
+\family typewriter
+True
+\family default
+, since we just want the elastic solution.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.formulation.time_step We set 
+\family typewriter
+total_time
+\family default
+ to 
+\family typewriter
+0.0*year
+\family default
+, since we only need the elastic solution.
+\end_layout
+
+\begin_layout Description
+pylithapp.problem.formulation.output Gives the output filenames for domain
+ output, subdomain output, and material output.
+ All output uses HDF5 format.
+\end_layout
+
+\begin_layout Standard
+We compute the gravitational stresses by typing
+\end_layout
+
+\begin_layout LyX-Code
+pylith grav_stress.cfg
+\end_layout
+
+\begin_layout Standard
+Once the problem has run, six HDF5 files will be produced.
+ The file named 
+\family typewriter
+grav_stress.h5
+\family default
+ (and the associated XDMF file) contains the solution for the entire domain,
+ and the file named 
+\family typewriter
+grav_stress-groundsurf.h5
+\family default
+ (and the associated XDMF file) contains the solution for the free surface.
+ The remaining files are the state variables and state variable info files
+ for the two materials.
+ We use the stresses in 
+\family typewriter
+grav_stress-elastic.h5
+\family default
+ and 
+\family typewriter
+grav_stress-viscoelastic.h5
+\family default
+ to produce spatial databases of initial stresses that are used in later
+ calculations.
+ To produce the spatial databases we run the 
+\family typewriter
+stress2spatialdb.py
+\family default
+ script:
+\end_layout
+
+\begin_layout LyX-Code
+./stress2spatialdb.py
+\end_layout
+
+\begin_layout Standard
+This script produces the two spatial databases 
+\family typewriter
+grav_stress-elastic.spatialdb
+\family default
+ and 
+\family typewriter
+grav_stress-viscoelastic.spatialdb
+\family default
+.
+ The initial stresses in these two databases exactly balance the gravitational
+ stresses, and thus when they are used in conjunction with gravity no deformatio
+n should occur.
+\end_layout
+
+\begin_layout Subsection
+Step 2: Infinitesimal Strain Simulation with no Initial Stresses
+\end_layout
+
+\begin_layout Standard
+In this case there are no initial stresses and we therefore expect gravity
+ to induce significant deformation.
+ The only settings that augment those in 
+\family typewriter
+pylithapp.cfg
+\family default
+ are the output settings in 
+\family typewriter
+grav_stress_infin_nois.cfg
+\family default
+:
+\end_layout
+
+\begin_layout Description
+pylithapp.problem.formulation.output Gives the output filenames for domain
+ output, subdomain output, and material output.
+ All output uses HDF5 format.
+\end_layout
+
+\begin_layout Standard
+To run the simulation we just type:
+\end_layout
+
+\begin_layout LyX-Code
+pylith grav_stress_infin_nois.cfg
+\end_layout
+
+\begin_layout Standard
+Once the simulation has completed we will have six HDF5 files analagous
+ to those produced for the first simulation.
+ In the output subdirectory there are two ParaView state files (
+\family typewriter
+view_deform.pvsm
+\family default
+ and 
+\family typewriter
+view_deform_unscaled.pvsm
+\family default
+).
+ They are nearly identical except the in the second file the velocity vectors
+ are unscaled.
+ For this simulation, the scaled velocity vectors are probably better.
+ To use either of these files, select 
+\family typewriter
+File->Load State...
+
+\family default
+ in ParaView and select the desired state file.
+ When the file dialog appears, select 
+\family typewriter
+grav_stress_infin_nois.xmf
+\family default
+, and with some adjustment of parameters we get results similar to Figure
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:grav2d-infin-nois"
+
+\end_inset
+
+.
+ Note that all displacements are negative or zero.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/grav2d_infin_nois.jpg
+	lyxscale 50
+	width 4in
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Contours of vertical displacement and velocity vectors for simulation 
+\family typewriter
+grav_stress_infin_nois.cfg
+\family default
+.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:grav2d-infin-nois"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Step 3: Infinitesimal Strain Simulation with Initial Stresses that Exactly
+ Balance Gravity
+\end_layout
+
+\begin_layout Standard
+In this simulation we use the initial stresses computed in Step 1.
+ We include the initial stresses as follows:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.elastic]
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress = spatialdata.spatialdb.SimpleDB
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress.label = Initial stress in elastic block
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress.iohandler.filename = grav_stress-elastic.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress.query_type = nearest
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+[pylithapp.timedependent.materials.viscoelastic]
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress = spatialdata.spatialdb.SimpleDB
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress.label = Initial stress in viscoelastic material
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress.iohandler.filename = grav_stress-viscoelastic.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress.query_type = nearest
+\end_layout
+
+\begin_layout Standard
+We run the simulation by typing:
+\end_layout
+
+\begin_layout LyX-Code
+pylith grav_stress_infin_is1.cfg
+\end_layout
+
+\begin_layout Standard
+When the simulation has completed we will again have six HDF5 files.
+ If we examine the displacements as for Step2, we will find virtually zero
+ displacements throughout the simulation.
+\end_layout
+
+\begin_layout Subsection
+Steps 4 and 5: Infinitesimal Strain Simulation with Initial Stresses that
+ do not Balance Gravity
+\end_layout
+
+\begin_layout Standard
+For both of these simulations we use initial stresses that are equivalent
+ to the gravitational stress due to material with a constant density of
+ the viscoelastic material.
+ These are obtained analytical by using linear interpolation on the initial
+ stresses in 
+\family typewriter
+grav_stress-initial.spatialdb
+\family default
+.
+ By doing this, the initial stresses are not in balance with the gravitational
+ stresses.
+ The residual is due to the density contrast between the two materials.
+ Thus, the elastic block should 'float' due to buoyancy.
+ We specify the initial stresses as follows:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.elastic]
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress = spatialdata.spatialdb.SimpleDB
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress.label = Initial stress in elastic block
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress.iohandler.filename = grav_stress-initial.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress.query_type = linear
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+[pylithapp.timedependent.materials.viscoelastic]
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress = spatialdata.spatialdb.SimpleDB
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress.label = Initial stress in viscoelastic material
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress.iohandler.filename = grav_stress-initial.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress.query_type = linear
+\end_layout
+
+\begin_layout Standard
+The only difference between the two simulations (
+\family typewriter
+grav_stress_infin_is2.cfg
+\family default
+ and 
+\family typewriter
+grav_stress_infin_is3.cfg
+\family default
+) is in the time step size.
+ The time step size is not really important for the infinitesimal strain
+ problems, but we include the additional simulation to provide an analog
+ for the finite strain simulations.
+ The two simulations may be run as follows:
+\end_layout
+
+\begin_layout LyX-Code
+pylith grav_stress_infin_is2.cfg
+\end_layout
+
+\begin_layout LyX-Code
+pylith grav_stress_infin_is3.cfg
+\end_layout
+
+\begin_layout Standard
+The results may be viewed in a similar manner to those for Step 2, except
+ that we need to select the correct domain output file (
+\family typewriter
+grav_stress_infin_is2.xmf
+\family default
+ or 
+\family typewriter
+grav_stress_infin_is3.xmf
+\family default
+).
+ With some adjustment of parameters, we then obtain results similar to those
+ of Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:grav2d-infin-is2"
+
+\end_inset
+
+).
+ Note the unrealistically large amount of vertical deformation.
+ This is because the infinitesimal strain formulation does not properly
+ account for the change in body forces in the deformed mesh.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/grav2d_infin_is2.jpg
+	lyxscale 50
+	width 4in
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Contours of vertical displacement and velocity vectors for simulation 
+\family typewriter
+grav_stress_infin_is2.cfg
+\family default
+.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:grav2d-infin-is2"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Steps 6-9: Finite Strain Simulations
+\end_layout
+
+\begin_layout Standard
+The finite strain simulations are exacly analagous to their infinitesimal
+ strain counterparts (Steps 2-5).
+ The only difference is that we use a large deformation formulation:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent]
+\end_layout
+
+\begin_layout LyX-Code
+formulation = pylith.problems.ImplicitLgDeform
+\end_layout
+
+\begin_layout Standard
+When we do this, the solver is automatically switched to the nonlinear solver.
+ The simulations may be run as follows:
+\end_layout
+
+\begin_layout LyX-Code
+pylith grav_stress_finite_nois.cfg
+\end_layout
+
+\begin_layout LyX-Code
+pylith grav_stress_finite_is1.cfg
+\end_layout
+
+\begin_layout LyX-Code
+pylith grav_stress_finite_is2.cfg
+\end_layout
+
+\begin_layout LyX-Code
+pylith grav_stress_finite_is3.cfg
+\end_layout
+
+\begin_layout Standard
+The results are generally analagous to those of the infinitesimal strain
+ simulations, but the vertical displacements are generally smaller.
+ We we expect that simulation grav_stress_finite_is2.cfg would provide a
+ solution that is in isostatic equilibrium; however, when we examine the
+ results (try using state file 
+\family typewriter
+view_deform_unscaled.pvsm
+\family default
+), we find that the solution is unstable.
+ This is due to the 'drunken sailor effect' 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kaus:etal:2010"
+
+\end_inset
+
+, and the solution is to reduce the time step size.
+ When we do this (
+\family typewriter
+grav_stress_finite_is3.cfg
+\family default
+), we get results similar to those of Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:grav2d-finite-is3"
+
+\end_inset
+
+.
+ Note the much smaller amount of vertical displacement compared to Figure
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:grav2d-infin-is2"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/grav2d-finite-is3.jpg
+	lyxscale 50
+	width 4in
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Contours of vertical displacement and velocity vectors for simulation 
+\family typewriter
+grav_stress_finite_is3.cfg
+\family default
+ using state file 
+\family typewriter
+view_deform_unscaled.pvsm
+\family default
+.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:grav2d-finite-is3"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

@@ -21,7 +21,7 @@
  *
  * @brief Forward declarations for PyLith array objects.
  *
- * These are generally just forward declarations for C++ STL objects.
+ * These are generally just typenames for C++ STL objects.
  *
  * For simple types (i.e., int and PylithScalar) std::valarray provides some
  * features that std::vector does not have, such as operating on the
@@ -36,16 +36,6 @@
 #include <string> // USES std::string
 #include <vector> // USES std::vector
 #include <valarray> // USES std::valarray
-
-/// Forward declaration of STL vector
-namespace std {
-  // std::vector
-  template<typename T> class allocator;
-  template<typename T, typename U> class vector;
-
-  // std::valarray
-  template<typename T> class valarray;
-} // std
 
 /// Aliases 
 namespace pylith {

@@ -90,8 +90,7 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
   numCorners = dims[1];
   delete[] dims; dims = 0;
   int cellDim = 0;
-  h5.readAttribute("/topology/cells", "cell_dim", (void*)&cellDim, 
-		  H5T_NATIVE_INT);
+  h5.readAttribute("/topology/cells", "cell_dim", (void*)&cellDim, H5T_NATIVE_INT);
   if (0 == cellDim && 1 == numCorners)
     cellType = "Polyvertex";
   else if (1 == cellDim && 2 == numCorners)
@@ -286,8 +285,7 @@ pylith::meshio::Xdmf::_getFieldMetadata(std::vector<FieldMetadata>* metadata,
       h5.getDatasetDims(&dims, &ndims, parent, fieldNames[i].c_str());
       std::string fullName = 
 	std::string(parent) + std::string("/") + fieldNames[i];
-      const std::string& vectorFieldString = 
-	h5.readAttribute(fullName.c_str(), "vector_field_type");
+      const std::string& vectorFieldString = h5.readAttribute(fullName.c_str(), "vector_field_type");
       switch(topology::FieldBase::parseVectorFieldString(vectorFieldString.c_str())) {
       case topology::FieldBase::SCALAR :
 	(*metadata)[iOffset+i].vectorFieldType = "Scalar";
@@ -329,8 +327,7 @@ pylith::meshio::Xdmf::_getFieldMetadata(std::vector<FieldMetadata>* metadata,
       h5.getDatasetDims(&dims, &ndims, parent, fieldNames[i].c_str());
       std::string fullName =
 	std::string(parent) + std::string("/") + fieldNames[i];
-      const std::string& vectorFieldString = 
-	h5.readAttribute(fullName.c_str(), "vector_field_type");
+      const std::string& vectorFieldString = h5.readAttribute(fullName.c_str(), "vector_field_type");
       switch(topology::FieldBase::parseVectorFieldString(vectorFieldString.c_str())) {
       case topology::FieldBase::SCALAR :
 	(*metadata)[iOffset+i].vectorFieldType = "Scalar";

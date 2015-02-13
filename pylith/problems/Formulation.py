@@ -568,6 +568,21 @@ class Formulation(PetscComponent, ModuleFormulation):
     return
 
 
+  def _collectNeedNewJacobian(self, flagLocal):
+    """
+    Aggregate needNewJacobian results across processors.
+    """
+    if flagLocal:
+      countLocal = 1
+    else:
+      countLocal = 0
+    import pylith.mpi.mpi as mpi
+    comm = self.mesh().comm()
+    countAll = mpi.allreduce_scalar_int(countLocal, mpi.mpi_max(), comm.handle)
+    
+    return countAll > 0
+
+
   def _reformResidual(self, t, dt):
     """
     Reform residual vector for operator.
