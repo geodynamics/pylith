@@ -249,7 +249,7 @@ Unpack the tarball.
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -xzf pylith-2.0.0-linux-i686.tgz
+$ tar -xzf pylith-2.1.0-linux-i686.tgz
 \end_layout
 
 \end_deeper
@@ -323,7 +323,7 @@ Unpack the tarball.
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -xzf pylith-2.0.0-darwin-10.6.8.tgz
+$ tar -xzf pylith-2.1.0-darwin-10.6.8.tgz
 \end_layout
 
 \end_deeper
@@ -446,11 +446,11 @@ The easiest way to verify that PyLith has been installed correctly is to
  run one or more of the examples supplied with the binary and source code.
  In the binary distribution, the examples are located in 
 \family typewriter
-src/pylith-2.0.0/examples
+src/pylith-2.1.0/examples
 \family default
  while in the source distribution, they are located in 
 \family typewriter
-pylith-2.0.0/examples
+pylith-2.1.0/examples
 \family default
 .
  Chapter 
