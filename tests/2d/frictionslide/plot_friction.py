@@ -11,7 +11,7 @@ if not sim in ['weak', 'stable']:
     raise ValueError("Unknown sim '%s'." % sim)
 
 # ======================================================================
-import tables
+import h5py
 import pylab
 import numpy
 from math import exp
@@ -72,12 +72,12 @@ muE = mu0 + a*numpy.log(slipRateE/V0) + b*numpy.log(V0*stateVarE/L)
 
 # ----------------------------------------------------------------------
 
-h5 = tables.openFile("output/ratestate_%s-fault.h5" % sim, "r")
-time = h5.root.time[:].ravel()
-slip = h5.root.vertex_fields.slip[:]
-slipRate = h5.root.vertex_fields.slip_rate[:]
-stateVar = h5.root.vertex_fields.state_variable[:]
-traction = h5.root.vertex_fields.traction[:]
+h5 = h5py.File("output/ratestate_%s-fault.h5" % sim, "r")
+time = h5['time'][:].ravel()
+slip = h5['vertex_fields/slip'][:]
+slipRate = h5['vertex_fields/slip_rate'][:]
+stateVar = h5['vertex_fields/state_variable'][:]
+traction = h5['vertex_fields/traction'][:]
 h5.close()
 
 fig = pylab.Figure()
