@@ -1050,7 +1050,7 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
   } // if
 
   err = DMDestroy(&sinfo.dm);PYLITH_CHECK_ERROR(err);
-  err = DMClone(_dm, &sinfo.dm);PYLITH_CHECK_ERROR(err);
+  err = DMClone(dm, &sinfo.dm);PYLITH_CHECK_ERROR(err);
   err = PetscSectionClone(section, &newSection);PYLITH_CHECK_ERROR(err);
   err = DMSetDefaultSection(sinfo.dm, newSection);PYLITH_CHECK_ERROR(err);
   err = PetscSectionDestroy(&newSection);PYLITH_CHECK_ERROR(err);
