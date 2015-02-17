@@ -361,7 +361,6 @@ AC_CONFIG_FILES([Makefile
 		tests/3d/plasticity/threehex8/spatialdb/Makefile
 		tests/3d/plasticity/dynamic/Makefile
 		tests/3d/plasticity/initialstress/Makefile
-		tests/topology/Makefile
 		tests/refinefaulttip/Makefile
                 doc/Makefile
 		doc/developer/Makefile
