@@ -16,10 +16,38 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	config \
-	mesh \
-	results \
-	spatialdb
+dist_noinst_DATA = \
+	geometry.jou \
+	mesh_threehex8.jou \
+	threehex8.exo \
+	elas_ng_ni_v03.cfg \
+	plas_dp1_ng_ni_v03.cfg \
+	plas_dp2_ng_ni_v03.cfg \
+	plas_dp3_ng_ni_v03.cfg \
+	plas_vm1_ng_ni_v03.cfg \
+	pylithapp.cfg \
+	visc_e10_ng_ni_v03.cfg \
+	basal_bc_3.spatialdb \
+	basal_rate_bc_0015.spatialdb \
+	basal_rate_bc_012.spatialdb \
+	basal_rate_bc_03.spatialdb \
+	initial_stress.spatialdb \
+	mat_elastic.spatialdb \
+	mat_plastic_dp1.spatialdb \
+	mat_plastic_dp2.spatialdb \
+	mat_plastic_dp3.spatialdb \
+	mat_plastic_vm1.spatialdb \
+	mat_viscous_e01.spatialdb \
+	mat_viscous_e02.spatialdb \
+	mat_viscous_e03.spatialdb \
+	mat_viscous_e04.spatialdb \
+	mat_viscous_e05.spatialdb \
+	mat_viscous_e06.spatialdb \
+	mat_viscous_e07.spatialdb \
+	mat_viscous_e08.spatialdb \
+	mat_viscous_e09.spatialdb \
+	mat_viscous_e10.spatialdb \
+	mat_viscous_e11.spatialdb \
+	mat_viscous_e12.spatialdb
 
 # End of file 
