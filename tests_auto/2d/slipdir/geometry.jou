@@ -1,0 +1,47 @@
+# ----------------------------------------------------------------------
+# Create surface using vertices
+# ----------------------------------------------------------------------
+
+reset
+${Units('si')}
+
+${domainWidth=8.0*km}
+${domainHeight=8.0*km}
+
+${xMin=-0.5*domainWidth}
+${xMax=+0.5*domainWidth}
+${yMin=-0.5*domainHeight}
+${yMax=+0.5*domainHeight}
+create vertex {xMin} {yMin} 0.0
+create vertex {xMin} {yMax} 0.0
+create vertex {xMax} {yMax}
+create vertex {xMax} {yMin}
+create surface vertex 1 2 3 4
+delete vertex all
+
+# ----------------------------------------------------------------------
+# Create interface surfaces
+# ----------------------------------------------------------------------
+
+# Fault fault aligned with x-axis
+create vertex 0.0 {yMin} 0.0
+create vertex 0.0 {yMax} 0.0
+split surface 1 across location vertex 5 location vertex 6
+
+# Fault fault aligned with y-axis
+create vertex {xMin} 0.0 0.0
+create vertex 0.0 0.0 0.0
+create vertex {xMax} 0.0 0.0
+split surface 2 across location vertex 9 location vertex 10
+split surface 3 across location vertex 10 location vertex 11
+
+# Fault fault aligned with +xy-axis
+split surface 5 across location vertex 1 location vertex 10
+split surface 6 across location vertex 10 location vertex 3
+
+# Fault fault aligned with -xy-axis
+split surface 4 across location vertex 2 location vertex 10
+split surface 7 across location vertex 10 location vertex 4
+
+delete vertex all
+

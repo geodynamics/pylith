@@ -335,6 +335,7 @@ AC_CONFIG_FILES([Makefile
 		tests_auto/2d/Makefile
 		tests_auto/2d/tri3/Makefile
 		tests_auto/2d/quad4/Makefile
+		tests_auto/2d/slipdir/Makefile
 		tests_auto/3d/Makefile
 		tests_auto/3d/tet4/Makefile
 		tests_auto/3d/hex8/Makefile
@@ -344,7 +345,6 @@ AC_CONFIG_FILES([Makefile
 		tests/2d/Makefile
 		tests/2d/maxwell/Makefile
 		tests/2d/powerlaw/Makefile
-		tests/2d/slipdir/Makefile
 		tests/2d/frictionslide/Makefile
 		tests/2d/plasticity/Makefile
 		tests/2d/plasticity/initialstress/Makefile
