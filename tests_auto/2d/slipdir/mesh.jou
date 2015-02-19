@@ -1,0 +1,84 @@
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+playback 'geometry.jou'
+
+# ----------------------------------------------------------------------
+# Set discretization size
+# ----------------------------------------------------------------------
+surface all size 500
+
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+surface all scheme trimesh
+mesh surface all
+
+# ----------------------------------------------------------------------
+# Create blocks for materials
+# ----------------------------------------------------------------------
+block 1 surface 8 to 15
+block 1 name "elastic"
+
+# ----------------------------------------------------------------------
+# Create nodeset for faults
+# ----------------------------------------------------------------------
+group "fault_x" add node in curve 10
+group "fault_x" add node in curve 15
+nodeset 10 group fault_x
+nodeset 10 name "fault_x"
+
+group "fault_y" add node in curve 12
+group "fault_y" add node in curve 13
+nodeset 11 group fault_y
+nodeset 11 name "fault_y"
+
+group "fault_xyp" add node in curve 18
+group "fault_xyp" add node in curve 19
+nodeset 12 group fault_xyp
+nodeset 12 name "fault_xyp"
+
+group "fault_xyn" add node in curve 20
+group "fault_xyn" add node in curve 21
+nodeset 13 group fault_xyn
+nodeset 13 name "fault_xyn"
+
+# ----------------------------------------------------------------------
+# Create group for boundary
+# ----------------------------------------------------------------------
+group "boundary_all" add node in curve 6
+group "boundary_all" add node in curve 7
+group "boundary_all" add node in curve 8
+group "boundary_all" add node in curve 9
+group "boundary_all" add node in curve 11
+group "boundary_all" add node in curve 14
+group "boundary_all" add node in curve 16
+group "boundary_all" add node in curve 17
+
+# ----------------------------------------------------------------------
+# Create nodeset for boundaries without faults
+# ----------------------------------------------------------------------
+group "boundary_x" add node in group boundary_all
+group "boundary_x" remove node in group fault_x
+nodeset 20 group boundary_x
+nodeset 20 name "boundary_x"
+
+group "boundary_y" add node in group boundary_all
+group "boundary_y" remove node in group fault_y
+nodeset 21 group boundary_y
+nodeset 21 name "boundary_y"
+
+group "boundary_xyp" add node in group boundary_all
+group "boundary_xyp" remove node in group fault_xyp
+nodeset 22 group boundary_xyp
+nodeset 22 name "boundary_xyp"
+
+group "boundary_xyn" add node in group boundary_all
+group "boundary_xyn" remove node in group fault_xyn
+nodeset 23 group boundary_xyn
+nodeset 23 name "boundary_xyn"
+
+# ----------------------------------------------------------------------
+# Export exodus file
+# ----------------------------------------------------------------------
+export mesh "mesh.exo" dimension 2 overwrite

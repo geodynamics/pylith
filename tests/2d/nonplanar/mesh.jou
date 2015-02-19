@@ -27,7 +27,7 @@ playback 'geometry.jou'
 # ----------------------------------------------------------------------
 surface all scheme trimesh
 curve all scheme default
-#{dx=600.0*m}
+${dx=600.0*m}
 surface all size {600*m}
 
 # ----------------------------------------------------------------------
@@ -52,6 +52,3 @@ playback 'bc.jou'
 export mesh "mesh.exo" dimension 2 overwrite
 
 # End of file
-
-
-

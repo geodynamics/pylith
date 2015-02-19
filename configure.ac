@@ -335,6 +335,7 @@ AC_CONFIG_FILES([Makefile
 		tests_auto/2d/Makefile
 		tests_auto/2d/tri3/Makefile
 		tests_auto/2d/quad4/Makefile
+		tests_auto/2d/slipdir/Makefile
 		tests_auto/3d/Makefile
 		tests_auto/3d/tet4/Makefile
 		tests_auto/3d/hex8/Makefile
@@ -344,7 +345,6 @@ AC_CONFIG_FILES([Makefile
 		tests/2d/Makefile
 		tests/2d/maxwell/Makefile
 		tests/2d/powerlaw/Makefile
-		tests/2d/slipdir/Makefile
 		tests/2d/frictionslide/Makefile
 		tests/2d/plasticity/Makefile
 		tests/2d/plasticity/initialstress/Makefile
@@ -354,15 +354,8 @@ AC_CONFIG_FILES([Makefile
 		tests/3d/cyclicfriction/Makefile
 		tests/3d/cyclicfriction/output/Makefile
 		tests/3d/plasticity/Makefile
-		tests/3d/plasticity/threehex8/Makefile
-		tests/3d/plasticity/threehex8/config/Makefile
-		tests/3d/plasticity/threehex8/mesh/Makefile
-		tests/3d/plasticity/threehex8/results/Makefile
-		tests/3d/plasticity/threehex8/spatialdb/Makefile
 		tests/3d/plasticity/dynamic/Makefile
 		tests/3d/plasticity/initialstress/Makefile
-		tests/topology/Makefile
-		tests/refinefaulttip/Makefile
                 doc/Makefile
 		doc/developer/Makefile
 		doc/install/Makefile

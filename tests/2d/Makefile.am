@@ -19,7 +19,6 @@
 SUBDIRS = \
 	maxwell \
 	powerlaw \
-	slipdir \
 	frictionslide \
 	plasticity
 

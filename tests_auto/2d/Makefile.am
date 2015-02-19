@@ -18,7 +18,8 @@
 
 SUBDIRS = \
 	quad4 \
-	tri3
+	tri3 \
+	slipdir
 
 
 # End of file 
