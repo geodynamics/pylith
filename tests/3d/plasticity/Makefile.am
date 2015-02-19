@@ -17,7 +17,6 @@
 #
 
 SUBDIRS = \
-	threehex8 \
 	dynamic \
 	initialstress
 
