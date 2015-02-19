@@ -96,7 +96,7 @@ if "3d/tet4" in targets or "all" in targets:
     run_pylith(dir, examples, nprocs=2)
     run_pylith(dir, examples, nprocs=3)
     run_pylith(dir, examples, nprocs=4)
-    run_pylith(dir, examples, nprocs=5)
+    run_pylith(dir, examples, nprocs=6)
 
 
 # ----------------------------------------------------------------------
@@ -149,7 +149,7 @@ if "2d/subduction" in targets or "all" in targets:
     run_pylith(dir, examples, nprocs=1)
     run_pylith(dir, examples, nprocs=2)
     run_pylith(dir, examples, nprocs=4)
-    run_pylith(dir, examples, nprocs=5)
+    run_pylith(dir, examples, nprocs=6)
 
 
 # ----------------------------------------------------------------------
@@ -194,6 +194,7 @@ if "2d/greensfns" in targets or "all" in targets:
     run_pylith(dir, examples, nprocs=1)
     run_pylith(dir, examples, nprocs=2)
     run_pylith(dir, examples, nprocs=4)
+    run_pylith(dir, examples, nprocs=6)
 
     dir = "2d/greensfns/reverse"
     examples = ("eqsim.cfg",
@@ -202,3 +203,4 @@ if "2d/greensfns" in targets or "all" in targets:
     run_pylith(dir, examples, nprocs=1)
     run_pylith(dir, examples, nprocs=2)
     run_pylith(dir, examples, nprocs=4)
+    run_pylith(dir, examples, nprocs=6)

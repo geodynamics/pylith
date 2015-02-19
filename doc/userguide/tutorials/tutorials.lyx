@@ -1,4 +1,4 @@
-#LyX 2.0 created this file. For more info see http://www.lyx.org/
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 413
 \begin_document
 \begin_header
@@ -21,7 +21,6 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
-
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -263,6 +262,13 @@ filename "greensfns2d/greensfns2d.lyx"
 \end_inset
 
 
+\begin_inset CommandInset include
+LatexCommand include
+filename "grav2d/grav2d.lyx"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -296,13 +302,13 @@ Code Verification Benchmarks
 \end_layout
 
 \begin_layout Standard
-The CIG subversion software repository 
+The CIG GitHub software repository 
 \begin_inset Flex URL
 status collapsed
 
 \begin_layout Plain Layout
 
-http://geodynamics.org/svn/cig/short/3D/PyLith/benchmarks/trunk
+https://github.com/geodynamics/pylith_benchmarks
 \end_layout
 
 \end_inset

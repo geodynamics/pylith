@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2014 University of California, Davis
+// Copyright (c) 2010-2015 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -146,7 +146,15 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
       CohesiveTopology::createFault(&faultMesh, *mesh, groupField);
       PetscDMLabel faultBdLabel = NULL;
 
-      if (edge()) {err = DMPlexGetLabel(dmMesh, edge(), &faultBdLabel);PYLITH_CHECK_ERROR(err);}
+      // We do not have labels on all ranks until after distribution
+      if (strlen(edge()) > 0 && !rank) {
+	err = DMPlexGetLabel(dmMesh, edge(), &faultBdLabel);PYLITH_CHECK_ERROR(err);
+	if (!faultBdLabel) {
+	  std::ostringstream msg;
+	  msg << "Could not find nodeset/pset '" << edge() << "' marking buried edges for fault '" << label() << "'.";
+	  throw std::runtime_error(msg.str());
+	} // if
+      } // if
       CohesiveTopology::create(mesh, faultMesh, faultBdLabel, id(), *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
     } else {
       const int faultDim = 2;

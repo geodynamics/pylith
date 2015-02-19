@@ -14,34 +14,45 @@ different simulations, which should generally be performed in order:
     script:
     ./stress2spatialdb.py
 
-2.  pylith grav_stress_infin_is1.cfg
+2.  pylith grav_stress_infin_nois.cfg
+    This will run a time-dependent simulation (100 years) that does not include
+    initial stresses. As a result, there is a large intitial downward movement
+    of the entire mesh at the beginning of the simulation.
+
+3.  pylith grav_stress_infin_is1.cfg
     This will run a time-dependent simulation (100 years) that uses the
     initial stresses computed in step 1 to exactly balance the imposed
     gravitational body forces. Since the stresses are in equilibrium, no
     deformation should occur. This simulation uses the default infinitesimal
     strain formulation.
 
-3.  pylith grav_stress_infin_is2.cfg
+4.  pylith grav_stress_infin_is2.cfg
     This will run a time-dependent simulation (100 years) that uses initial
     stresses computed assuming a constant density equivalent to the density
     of the viscoelastic material. The resulting stress state will reflect
     the density contrast between the block and the surrounding material.
     This simulation uses the default infinitesimal strain formulation.
 
-4.  pylith grav_stress_infin_is3.cfg
+5.  pylith grav_stress_infin_is3.cfg
     This simulation is identical to simulation #3, except that it uses a
     smaller time step size and runs for a shorter period of time. For the
     infinitesimal strain solution used here, this has no real effect on
     the solution.
 
-5.  pylith grav_stress_finite_is1.cfg
+6.  pylith grav_stress_finite_nois.cfg
+    This will run a time-dependent simulation (100 years) that does not include
+    initial stresses. As a result, there is a large intitial downward movement
+    of the entire mesh at the beginning of the simulation. This version uses a
+    finite strain formulation.
+
+7.  pylith grav_stress_finite_is1.cfg
     This will run a time-dependent simulation (100 years) that uses the
     initial stresses computed in step 1 to exactly balance the imposed
     gravitational body forces. Since the stresses are in equilibrium, no
     deformation should occur. This simulation uses a finite strain
     formulation.
 
-6.  pylith grav_stress_finite_is2.cfg
+8.  pylith grav_stress_finite_is2.cfg
     This will run a time-dependent simulation (100 years) that uses initial
     stresses computed assuming a constant density equivalent to the density
     of the viscoelastic material. The resulting stress state will reflect
@@ -52,14 +63,16 @@ different simulations, which should generally be performed in order:
     condition described by Kaus et al. (PEPI, 2010), the time step size of
     1.0 years is much too large.
 
-7.  pylith grav_stress_finite_is3.cfg
+9.  pylith grav_stress_finite_is3.cfg
     This simulation is identical to simulation #6, except that it uses a
     time step size of 0.025 years rather than 1.0 years.  According to the
     Courant condition described by Kaus et al. (PEPI, 2010), this time step
     size is smaller than the stable time step size.
 
 The results of all the different simulations may be viewed using
-ParaView. We provide a ParaView state file (output/deform_view.pvsm),
-which you can load in ParaView to view the solution over the
-domain. The visualization is intended primarily for steps 3, 4, 6, and 7,
-in which there is significant deformation.
+ParaView. We provide ParaView state files (view_deform.pvsm and
+view_deform_unscaled.pvsm), which you can load in ParaView to view the
+solution over the domain. The difference in the two state files is that the
+unscaled version does not scale the velocity vectors so you can see the
+velocity orientations for the entire simulation. The visualization is intended
+primarily for steps 4, 5, 8, and 9, in which there is significant deformation.

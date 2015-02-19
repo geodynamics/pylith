@@ -1,0 +1,23 @@
+======================================================================
+DOMAIN
+======================================================================
+
+-4 km <= x <= +4 km
+-4 km <= y <= +4 km
+
+Mesh is tri3 cells with nominal 1 km discretization size.
+
+Problems involve rigid body motion with prescribed slip of 2.0 m along
+faults.
+
+FAULTX: See faultx_soln.py
+  Fault along x-axis.
+
+FAULTY: See faulty_soln.py
+  Fault along y-axis.
+
+FAULTXYP: See faultxyp_soln.py
+  Fault along xy line.
+
+FAULTXYN: See faultxyn_soln.py
+  Fault along -xy line.

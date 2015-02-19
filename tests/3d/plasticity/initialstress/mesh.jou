@@ -1,0 +1,61 @@
+# ----------------------------------------------------------------------
+# Create block
+# ----------------------------------------------------------------------
+
+# Block is 10 km x 10 km x 10 km
+# -5 km <= x <= 5 km
+# -5 km <= y <= 5 km
+# -10 km <= z <= 0 km
+reset
+brick x 10000 y 10000 z 10000
+
+# Translate block so the top is at z=0
+volume 1 move x 0 y 0 z -5000
+
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+volume all size 2000
+mesh volume all
+
+# ----------------------------------------------------------------------
+# Create blocks for materials
+# ----------------------------------------------------------------------
+block 1 volume 1
+block 1 name "plastic"
+
+# ----------------------------------------------------------------------
+# Create nodesets
+# ----------------------------------------------------------------------
+group "face_xpos" add node in surface 6
+nodeset 11 group face_xpos
+nodeset 11 name "face_xpos"
+
+group "face_xneg" add node in surface 4
+nodeset 12 group face_xneg
+nodeset 12 name "face_xneg"
+
+group "face_ypos" add node in surface 5
+group "face_ypos" remove node in group face_xpos
+group "face_ypos" remove node in group face_xneg
+nodeset 13 group face_ypos
+nodeset 13 name "face_ypos"
+
+group "face_yneg" add node in surface 3
+group "face_yneg" remove node in group face_xpos
+group "face_yneg" remove node in group face_xneg
+nodeset 14 group face_yneg
+nodeset 14 name "face_yneg"
+
+group "face_zneg" add node in surface 2
+nodeset 15 group face_zneg
+nodeset 15 name "face_zneg"
+
+group "face_zpos" add node in surface 1
+nodeset 16 group face_zpos
+nodeset 16 name "face_zpos"
+
+# ----------------------------------------------------------------------
+# Export exodus file
+# ----------------------------------------------------------------------
+export mesh "mesh_hex8.exo" dimension 3 overwrite

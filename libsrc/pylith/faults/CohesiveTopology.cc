@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2014 University of California, Davis
+// Copyright (c) 2010-2015 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -72,6 +72,14 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   PetscInt       dim, cMax, cEnd, numCohesiveCellsOld;
   PetscErrorCode err;
 
+  // Have to remember the old number of cohesive cells
+  err = DMPlexGetHeightStratum(dm, 0, NULL, &cEnd);PYLITH_CHECK_ERROR(err);
+  err = DMPlexGetHybridBounds(dm, &cMax, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
+  numCohesiveCellsOld = cEnd - (cMax < 0 ? cEnd : cMax);
+  // Create cohesive cells
+  err = DMPlexGetSubpointMap(faultMesh.dmMesh(), &subpointMap);PYLITH_CHECK_ERROR(err);
+  err = DMLabelDuplicate(subpointMap, &label);PYLITH_CHECK_ERROR(err);
+  err = DMLabelClearStratum(label, mesh->dimension());PYLITH_CHECK_ERROR(err);
   // Fix over-aggressive completion of boundary label
   err = DMGetDimension(dm, &dim);PYLITH_CHECK_ERROR(err);
   if (faultBdLabel && (dim > 2)) {
@@ -89,7 +97,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
       // Remove faces
       if ((p >= fStart) && (p < fEnd)) {
         const PetscInt *edges,   *verts, *supportA, *supportB;
-        PetscInt        numEdges, numVerts, supportSizeA, sA, supportSizeB, sB, bval, e, s;
+        PetscInt        numEdges, numVerts, supportSizeA, sA, supportSizeB, sB, val, bval, e, s;
         PetscBool       found = PETSC_FALSE;
 
         err = DMLabelClearValue(faultBdLabel, p, 1);PYLITH_CHECK_ERROR(err);
@@ -112,14 +120,16 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
           err = DMPlexGetSupportSize(dm, verts[0], &supportSizeA);PYLITH_CHECK_ERROR(err);
           err = DMPlexGetSupport(dm, verts[0], &supportA);PYLITH_CHECK_ERROR(err);
           for (s = 0, sA = 0; s < supportSizeA; ++s) {
+            err = DMLabelGetValue(label, supportA[s], &val);PYLITH_CHECK_ERROR(err);
             err = DMLabelGetValue(faultBdLabel, supportA[s], &bval);PYLITH_CHECK_ERROR(err);
-            if (bval >= 0) ++sA;
+            if (val >= 0 && bval >= 0) ++sA;
           }
           err = DMPlexGetSupportSize(dm, verts[1], &supportSizeB);PYLITH_CHECK_ERROR(err);
           err = DMPlexGetSupport(dm, verts[1], &supportB);PYLITH_CHECK_ERROR(err);
           for (s = 0, sB = 0; s < supportSizeB; ++s) {
+            err = DMLabelGetValue(label, supportB[s], &val);PYLITH_CHECK_ERROR(err);
             err = DMLabelGetValue(faultBdLabel, supportB[s], &bval);PYLITH_CHECK_ERROR(err);
-            if (bval >= 0) ++sB;
+            if (val >= 0 && bval >= 0) ++sB;
           }
           if ((sA > 2) && (sB > 2)) {
             err = DMLabelClearValue(faultBdLabel, edges[e], 1);PYLITH_CHECK_ERROR(err);
@@ -137,14 +147,6 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     err = ISRestoreIndices(bdIS, &bd);PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&bdIS);PYLITH_CHECK_ERROR(err);
   }
-  // Have to remember the old number of cohesive cells
-  err = DMPlexGetHeightStratum(dm, 0, NULL, &cEnd);PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetHybridBounds(dm, &cMax, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
-  numCohesiveCellsOld = cEnd - (cMax < 0 ? cEnd : cMax);
-  // Create cohesive cells
-  err = DMPlexGetSubpointMap(faultMesh.dmMesh(), &subpointMap);PYLITH_CHECK_ERROR(err);
-  err = DMLabelDuplicate(subpointMap, &label);PYLITH_CHECK_ERROR(err);
-  err = DMLabelClearStratum(label, mesh->dimension());PYLITH_CHECK_ERROR(err);
   // Completes the set of cells scheduled to be replaced
   err = DMPlexLabelCohesiveComplete(dm, label, faultBdLabel, PETSC_FALSE, faultMesh.dmMesh());PYLITH_CHECK_ERROR(err);
   err = DMPlexConstructCohesiveCells(dm, label, &sdm);PYLITH_CHECK_ERROR(err);
@@ -194,6 +196,7 @@ pylith::faults::CohesiveTopology::createFaultParallel(topology::Mesh* faultMesh,
 
 
   err = DMPlexCreateCohesiveSubmesh(dmMesh, constraintCell ? PETSC_TRUE : PETSC_FALSE, labelname, materialId, &dmFaultMesh);PYLITH_CHECK_ERROR(err);
+  err = DMViewFromOptions(dmFaultMesh, "pylith_fault_", "-dm_view");PYLITH_CHECK_ERROR(err);
   err = DMPlexOrient(dmFaultMesh);PYLITH_CHECK_ERROR(err);
   std::string meshLabel = "fault_" + std::string(label);
 

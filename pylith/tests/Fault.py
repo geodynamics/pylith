@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2014 University of California, Davis
+# Copyright (c) 2010-2015 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -74,7 +74,7 @@ def check_vertex_fields(testcase, filename, mesh, fieldNames):
           print "Expected values:",valuesE
           print "Output values:",values
           print "Coordinates: ",vertices
-        testcase.assertEqual(numpy.sum(okay), nvertices)
+        testcase.assertEqual(nvertices, numpy.sum(okay))
 
   h5.close()
   return
@@ -118,7 +118,7 @@ def check_data(testcase, filename, mesh, fieldNames):
         print "Error in component %d of field '%s'." % (i, name)
         print "Expected values:",valuesE
         print "Output values:",values
-      testcase.assertEqual(numpy.sum(okay), nvertices)
+      testcase.assertEqual(nvertices, numpy.sum(okay))
   h5.close()
   return
 

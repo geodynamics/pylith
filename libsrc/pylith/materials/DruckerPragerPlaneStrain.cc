@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2014 University of California, Davis
+// Copyright (c) 2010-2015 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -1222,25 +1222,6 @@ pylith::materials::DruckerPragerPlaneStrain::_updateStateVarsElastoplastic(
   const PylithScalar yieldFunction =
     3.0 * alphaYield * trialMeanStress + stressInvar2 - beta;
 
-  if (!_allowTensileYield) {
-    const PylithScalar feasibleFunction =
-      3.0 * alphaYield * trialMeanStress + stressInvar2 - beta;
-    // If mean stress is too negative to project back to the yield surface,
-    // throw an exception.
-    if (feasibleFunction < 0.0) {
-      std::ostringstream msg;
-      msg << "Infeasible stress state - cannot project back to yield surface.\n"
-	  << "  alphaYield:       " << alphaYield << "\n"
-	  << "  alphaFlow:        " << alphaFlow << "\n"
-	  << "  beta:             " << beta << "\n"
-	  << "  trialMeanStress:  " << trialMeanStress << "\n"
-	  << "  stressInvar2:     " << stressInvar2 << "\n"
-	  << "  yieldFunction:    " << yieldFunction << "\n"
-	  << "  feasibleFunction: " << feasibleFunction << "\n";
-      throw std::runtime_error(msg.str());
-    } // if
-  } // if
-
 #if 0 // DEBUGGING
   std::cout << "Function _updateStateVarsElastoPlastic:" << std::endl;
   std::cout << "  alphaYield:       " << alphaYield << std::endl;
@@ -1268,16 +1249,28 @@ pylith::materials::DruckerPragerPlaneStrain::_updateStateVarsElastoplastic(
     const PylithScalar dFac = 1.0/(sqrt(2.0) * ae);
 
     PylithScalar plasticMult =  0.0;
+    const PylithScalar plasticMultNormal = plasticFac *
+      (meanStrainFac * (meanStrainPPTpdt/am + meanStressInitial) +
+       dFac * d - beta);
+  const PylithScalar plasticMultTensile = sqrt(2.0) * d;
     if (_allowTensileYield) {
-      plasticMult = std::min(PylithScalar(sqrt(2.0) * d),
-			     plasticFac * (meanStrainFac *
-					   (meanStrainPPTpdt/am +
-					    meanStressInitial) +
-					   dFac * d - beta));
+      plasticMult = std::min(plasticMultNormal, plasticMultTensile);
+    } else if (plasticMultNormal <= plasticMultTensile) {
+      plasticMult = plasticMultNormal;
     } else {
-      plasticMult = plasticFac *
-	(meanStrainFac * (meanStrainPPTpdt/am + meanStressInitial) +
-	 dFac * d - beta);
+      std::ostringstream msg;
+      const PylithScalar stressInvar2Comp = 0.5 *
+	(sqrt(2.0) * d - plasticMultNormal)/ae;
+      msg << "Infeasible stress state. Cannot project back to yield surface.\n"
+	  << "  alphaYield:         " << alphaYield << "\n"
+	  << "  alphaFlow:          " << alphaFlow << "\n"
+	  << "  beta:               " << beta << "\n"
+	  << "  d:                  " << d << "\n"
+	  << "  plasticMultNormal:  " << plasticMultNormal << "\n"
+	  << "  plasticMultTensile: " << plasticMultTensile << "\n"
+	  << "  yieldFunction:      " << yieldFunction << "\n"
+	  << "  stressInvar2Comp:   " << stressInvar2Comp << "\n";
+      throw std::runtime_error(msg.str());
     } // if/else
 
     const PylithScalar deltaMeanPlasticStrain = plasticMult * alphaFlow;
@@ -1292,7 +1285,8 @@ pylith::materials::DruckerPragerPlaneStrain::_updateStateVarsElastoplastic(
       } // for
     } else {
       for (int iComp=0; iComp < tensorSizePS; ++iComp) {
-	stateVars[s_plasticStrain+iComp] += diag[iComp] * deltaMeanPlasticStrain;
+	stateVars[s_plasticStrain+iComp] +=
+	  diag[iComp] * deltaMeanPlasticStrain;
       } // for
     } // if/else
     

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2014 University of California, Davis
+// Copyright (c) 2010-2015 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -109,10 +109,8 @@ pylith::bc::PointForce::integrateResidual(const topology::Field& residual,
   PetscScalar* valueArray = valueVisitor.localArray();
 
   // Get global order
-  PetscDM dmMesh = residual.dmMesh();assert(dmMesh);
-  PetscSection globalSection = NULL;
-  PetscErrorCode err;
-  err = DMGetDefaultGlobalSection(dmMesh, &globalSection);PYLITH_CHECK_ERROR(err);
+  PetscSection globalSection = residual.globalSection();assert(globalSection);
+  PetscErrorCode err = 0;
 
   const int numPoints = _points.size();
   const int numBCDOF = _bcDOF.size();

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2014 University of California, Davis
+// Copyright (c) 2010-2015 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -240,31 +240,6 @@ pylith::meshio::TestHDF5::testAttributeScalar(void)
 } // testAttributeScalar
 
 // ----------------------------------------------------------------------
-// Test writeAttribute(string) and readAttribute(string).
-void
-pylith::meshio::TestHDF5::testAttributeString(void)
-{ // testAttributeString
-  PYLITH_METHOD_BEGIN;
-
-  HDF5 h5("test.h5", H5F_ACC_TRUNC);
-
-  const hsize_t ndims = 1;
-  const hsize_t dims[ndims] = { 2 };
-  h5.createDataset("/", "data", dims, dims, ndims, H5T_NATIVE_INT);
-
-  const std::string valueE = "abcd";
-  h5.writeAttribute("/data", "mystring", valueE.c_str());
-  h5.close();
-
-  h5.open("test.h5", H5F_ACC_RDONLY);
-  std::string value = h5.readAttribute("/data", "mystring");
-  CPPUNIT_ASSERT_EQUAL(valueE, value);
-  h5.close();
-
-  PYLITH_METHOD_END;
-} // testAttributeString
-
-// ----------------------------------------------------------------------
 // Test createDataset().
 void
 pylith::meshio::TestHDF5::testCreateDataset(void)
@@ -430,6 +405,61 @@ pylith::meshio::TestHDF5::testDatasetRawExternal(void)
 
   PYLITH_METHOD_END;
 } // testDatasetRawExternal
+
+// ----------------------------------------------------------------------
+// Test writeAttribute(string) and readAttribute(string).
+void
+pylith::meshio::TestHDF5::testAttributeString(void)
+{ // testAttributeString
+  PYLITH_METHOD_BEGIN;
+
+  HDF5 h5("test.h5", H5F_ACC_TRUNC);
+
+  const hsize_t ndims = 1;
+  const hsize_t dims[ndims] = { 2 };
+  h5.createDataset("/", "data", dims, dims, ndims, H5T_NATIVE_INT);
+
+  const std::string valueE = "abcd";
+  h5.writeAttribute("/data", "mystring", valueE.c_str());
+  h5.close();
+
+  h5.open("test.h5", H5F_ACC_RDONLY);
+  std::string value = h5.readAttribute("/data", "mystring");
+  CPPUNIT_ASSERT_EQUAL(valueE, value);
+  h5.close();
+
+  PYLITH_METHOD_END;
+} // testAttributeString
+
+// ----------------------------------------------------------------------
+// Test writeDataset(string) and readDataset(string).
+void
+pylith::meshio::TestHDF5::testDatasetString(void)
+{ // testDatasetString
+  PYLITH_METHOD_BEGIN;
+
+  HDF5 h5("test.h5", H5F_ACC_TRUNC);
+
+  const hsize_t ndims = 1;
+  const size_t nstrings = 3;
+  const hsize_t dims[ndims] = { nstrings };
+  const char* dataE[nstrings] = {"abc", "defg", "hijkl" };
+
+  h5.writeDataset("/", "data", dataE, nstrings);
+  h5.close();
+
+  h5.open("test.h5", H5F_ACC_RDONLY);
+  const pylith::string_vector& data = h5.readDataset("/", "data");
+  h5.close();
+
+  CPPUNIT_ASSERT_EQUAL(nstrings, data.size());
+  for (int i=0; i < nstrings; ++i) {
+    const std::string& stringE = dataE[i];
+    CPPUNIT_ASSERT_EQUAL(stringE, data[i]);
+  } // for
+
+  PYLITH_METHOD_END;
+} // testDatasetString
 
 
 // End of file 

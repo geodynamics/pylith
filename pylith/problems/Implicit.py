@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2014 University of California, Davis
+# Copyright (c) 2010-2015 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -116,8 +116,7 @@ class Implicit(Formulation, ModuleImplicit):
     logEvent = "%sinit" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
-    from pylith.mpi.Communicator import mpi_comm_world
-    comm = mpi_comm_world()
+    comm = self.mesh().comm()
 
     self._initialize(dimension, normalizer)
 
@@ -174,8 +173,7 @@ class Implicit(Formulation, ModuleImplicit):
     """
     Hook for doing stuff before advancing time step.
     """
-    from pylith.mpi.Communicator import mpi_comm_world
-    comm = mpi_comm_world()
+    comm = self.mesh().comm()
     
     if 0 == comm.rank:
       self._info.log("Setting constraints.")
@@ -189,7 +187,7 @@ class Implicit(Formulation, ModuleImplicit):
       integrator.timeStep(dt)
       if integrator.needNewJacobian():
         needNewJacobian = True
-    if needNewJacobian:
+    if self._collectNeedNewJacobian(needNewJacobian):
       self._reformJacobian(t, dt)
 
     return
@@ -199,8 +197,7 @@ class Implicit(Formulation, ModuleImplicit):
     """
     Advance to next time step.
     """
-    from pylith.mpi.Communicator import mpi_comm_world
-    comm = mpi_comm_world()
+    comm = self.mesh().comm()
 
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
 
@@ -228,8 +225,7 @@ class Implicit(Formulation, ModuleImplicit):
     """
     Hook for doing stuff after advancing time step.
     """
-    from pylith.mpi.Communicator import mpi_comm_world
-    comm = mpi_comm_world()
+    comm = self.mesh().comm()
 
     # Update displacement field from time t to time t+dt.
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
@@ -255,8 +251,7 @@ class Implicit(Formulation, ModuleImplicit):
     """
     Hook for doing stuff before advancing time step.
     """
-    from pylith.mpi.Communicator import mpi_comm_world
-    comm = mpi_comm_world()
+    comm = self.mesh().comm()
     
     if 0 == comm.rank:
       self._info.log("Setting constraints.")
@@ -270,7 +265,7 @@ class Implicit(Formulation, ModuleImplicit):
       integrator.timeStep(dt)
       if integrator.needNewJacobian():
         needNewJacobian = True
-    if needNewJacobian:
+    if self._collectNeedNewJacobian(needNewJacobian):
       self._reformJacobian(t, dt)
 
     return

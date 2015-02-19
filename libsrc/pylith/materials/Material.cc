@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2014 University of California, Davis
+// Copyright (c) 2010-2015 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -371,7 +371,7 @@ pylith::materials::Material::getField(topology::Field *field,
       PetscInt totalFiberDimCurrentLocal = 0;
       PetscInt totalFiberDimCurrent = 0;
       if (numCells > 0) {
-	PetscSection fieldSection = field->petscSection();
+	PetscSection fieldSection = field->localSection();
 	PetscErrorCode err = PetscSectionGetDof(fieldSection, cells[0], &totalFiberDimCurrentLocal);PYLITH_CHECK_ERROR(err);
       } // if
       MPI_Allreduce((void *) &totalFiberDimCurrentLocal, (void *) &totalFiberDimCurrent, 1, MPIU_INT, MPI_MAX, field->mesh().comm());
@@ -437,7 +437,7 @@ pylith::materials::Material::getField(topology::Field *field,
       PetscInt totalFiberDimCurrentLocal = 0;
       PetscInt totalFiberDimCurrent = 0;
       if (numCells > 0) {
-	PetscSection fieldSection = field->petscSection();
+	PetscSection fieldSection = field->localSection();
 	PetscErrorCode err = PetscSectionGetDof(fieldSection, cells[0], &totalFiberDimCurrentLocal);PYLITH_CHECK_ERROR(err);
       } // if
       MPI_Allreduce((void*) &totalFiberDimCurrentLocal, (void*) &totalFiberDimCurrent, 1, MPIU_INT, MPI_MAX, field->mesh().comm());

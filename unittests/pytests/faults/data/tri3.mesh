@@ -33,6 +33,14 @@ mesh = {
     }
   }
   group = {
+    name = fault_edge
+    type = vertices
+    count = 1
+    indices = {
+      1
+    }
+  }
+  group = {
     name = output
     type = vertices
     count = 3

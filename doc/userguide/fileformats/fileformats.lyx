@@ -1938,14 +1938,6 @@ OutputSolnPoints
 \end_layout
 
 \begin_layout LyX-Code
-# This time step file specifies five time steps with the units in years.
-\end_layout
-
-\begin_layout LyX-Code
-#
-\end_layout
-
-\begin_layout LyX-Code
 # Comments are limited to complete lines.
  The default delimiter for comments
 \end_layout
@@ -1960,23 +1952,36 @@ OutputSolnPoints
 \end_layout
 
 \begin_layout LyX-Code
-1.0  -2.0   0.0
+#
 \end_layout
 
 \begin_layout LyX-Code
-2.0  -4.0  -0.1
+# The first column is the station name.
+ The coordinates of the points are given
 \end_layout
 
 \begin_layout LyX-Code
-0.0  +2.0   0.0
+# in the subsequent columns.
 \end_layout
 
 \begin_layout LyX-Code
-2.5  -0.2  -0.2 
+P0  1.0  -2.0   0.0
 \end_layout
 
 \begin_layout LyX-Code
-0.0   2.0  +0.2
+P1  2.0  -4.0  -0.1
+\end_layout
+
+\begin_layout LyX-Code
+P2  0.0  +2.0   0.0
+\end_layout
+
+\begin_layout LyX-Code
+P3  2.5  -0.2  -0.2 
+\end_layout
+
+\begin_layout LyX-Code
+P4  0.0   2.0  +0.2
 \end_layout
 
 \begin_layout Standard

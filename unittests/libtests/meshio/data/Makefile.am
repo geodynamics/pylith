@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2014 University of California, Davis
+# Copyright (c) 2010-2015 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -159,7 +159,16 @@ dist_noinst_DATA = \
 	tet4_points_t10.vtk \
 	tet4_points_vertex_t10.vtk \
 	hex8_points_t10.vtk \
-	hex8_points_vertex_t10.vtk
+	hex8_points_vertex_t10.vtk \
+	tri3_points.h5 \
+	tri3_points_vertex.h5 \
+	quad4_points.h5 \
+	quad4_points_vertex.h5 \
+	tet4_points.h5 \
+	tet4_points_vertex.h5 \
+	hex8_points.h5 \
+	hex8_points_vertex.h5
+
 
 noinst_TMP =
 

@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2014 University of California, Davis
+# Copyright (c) 2010-2015 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -17,7 +17,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith], [2.0.3], [cig-short@geodynamics.org])
+AC_INIT([PyLith], [2.1.0], [cig-short@geodynamics.org])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
@@ -141,7 +141,7 @@ AC_PROG_INSTALL
 
 # PYTHON
 CIT_PATH_NEMESIS
-AM_PATH_PYTHON([2.4])
+AM_PATH_PYTHON([2.7])
 CIT_PYTHON_SYSCONFIG
 CIT_CHECK_PYTHON_HEADER
 CIT_CHECK_PYTHON_SHARED
@@ -154,7 +154,7 @@ AC_LANG(C++)
 
 # PETSC
 AC_LANG(C)
-CIT_PATH_PETSC([3.5.2])
+CIT_PATH_PETSC([3.5.3])
 CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC
 
@@ -335,6 +335,7 @@ AC_CONFIG_FILES([Makefile
 		tests_auto/2d/Makefile
 		tests_auto/2d/tri3/Makefile
 		tests_auto/2d/quad4/Makefile
+		tests_auto/2d/slipdir/Makefile
 		tests_auto/3d/Makefile
 		tests_auto/3d/tet4/Makefile
 		tests_auto/3d/hex8/Makefile
@@ -344,22 +345,17 @@ AC_CONFIG_FILES([Makefile
 		tests/2d/Makefile
 		tests/2d/maxwell/Makefile
 		tests/2d/powerlaw/Makefile
-		tests/2d/slipdir/Makefile
 		tests/2d/frictionslide/Makefile
+		tests/2d/plasticity/Makefile
+		tests/2d/plasticity/initialstress/Makefile
 		tests/3d/Makefile
 		tests/3d/matprops/Makefile
 		tests/3d/slipdir/Makefile
 		tests/3d/cyclicfriction/Makefile
 		tests/3d/cyclicfriction/output/Makefile
 		tests/3d/plasticity/Makefile
-		tests/3d/plasticity/threehex8/Makefile
-		tests/3d/plasticity/threehex8/config/Makefile
-		tests/3d/plasticity/threehex8/mesh/Makefile
-		tests/3d/plasticity/threehex8/results/Makefile
-		tests/3d/plasticity/threehex8/spatialdb/Makefile
 		tests/3d/plasticity/dynamic/Makefile
-		tests/topology/Makefile
-		tests/refinefaulttip/Makefile
+		tests/3d/plasticity/initialstress/Makefile
                 doc/Makefile
 		doc/developer/Makefile
 		doc/install/Makefile
@@ -377,14 +373,12 @@ AC_CONFIG_FILES([Makefile
 		examples/2d/subduction/Makefile
 		examples/2d/subduction/output/Makefile
 		examples/2d/gravity/Makefile
-		examples/2d/gravity/output/Makefile
 		examples/2d/greensfns/Makefile
 		examples/2d/greensfns/strikeslip/Makefile
 		examples/2d/greensfns/strikeslip/output/Makefile
 		examples/2d/greensfns/reverse/Makefile
 		examples/2d/greensfns/reverse/output/Makefile
 		examples/bar_shearwave/Makefile
-		examples/twocells/Makefile
 		examples/bar_shearwave/hex8/Makefile
 		examples/bar_shearwave/hex8/output/Makefile
 		examples/bar_shearwave/quad4/Makefile
@@ -393,6 +387,7 @@ AC_CONFIG_FILES([Makefile
 		examples/bar_shearwave/tet4/output/Makefile
 		examples/bar_shearwave/tri3/Makefile
 		examples/bar_shearwave/tri3/output/Makefile
+		examples/twocells/Makefile
 		examples/twocells/twohex8/Makefile
 		examples/twocells/twoquad4/Makefile
 		examples/twocells/twotet4/Makefile

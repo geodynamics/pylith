@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2014 University of California, Davis
+# Copyright (c) 2010-2015 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -37,7 +37,8 @@ dist_noinst_PYTHON = \
 	TestSlipTwoFaults.py \
 	sliptwofaults_soln.py \
 	TestFrictionNoSlip.py \
-	TestFrictionNoSlipHalo.py
+	TestFrictionNoSlipHalo.py \
+	TestFaultsIntersect.py
 
 
 dist_noinst_DATA = \
@@ -52,7 +53,8 @@ dist_noinst_DATA = \
 	sliponefault.cfg \
 	sliptwofaults.cfg \
 	frictionnoslip.cfg \
-	frictionnoslip_halo.cfg
+	frictionnoslip_halo.cfg \
+	faultsintersect.cfg
 
 noinst_TMP = \
 	shear_dispx.spatialdb \

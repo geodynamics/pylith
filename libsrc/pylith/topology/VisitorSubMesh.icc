@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2014 University of California, Davis
+// Copyright (c) 2010-2015 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -56,7 +56,7 @@ pylith::topology::VecVisitorSubMesh::initialize(const SubMeshIS& submeshIS)
   _localVec = _field.localVector();assert(_localVec);
 
   PetscErrorCode err;
-  PetscSection section = _field.petscSection();assert(section);
+  PetscSection section = _field.localSection();assert(section);
   const PetscIS subpointIS = submeshIS.indexSet();
   err = PetscSectionCreateSubmeshSection(section, subpointIS, &_section);PYLITH_CHECK_ERROR(err);assert(_section);
 } // initialize
@@ -175,7 +175,7 @@ pylith::topology::MatVisitorSubMesh::MatVisitorSubMesh(const PetscMat mat,
   _dm = submeshIS.submesh().dmMesh();assert(_dm);
 
   PetscIS subpointIS = submeshIS.indexSet();
-  PetscSection section = field.petscSection();assert(section);
+  PetscSection section = field.localSection();assert(section);
   PetscSF sf = NULL;
   PetscErrorCode err;
   err = PetscSectionCreateSubmeshSection(section, subpointIS, &_subsection);PYLITH_CHECK_ERROR(err);assert(_subsection);

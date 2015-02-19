@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2014 University of California, Davis
+// Copyright (c) 2010-2015 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -157,21 +157,18 @@ protected :
 
   topology::Fields* _fields; ///< Buffer fields.
 
-// NOT IMPLEMENTED //////////////////////////////////////////////////////
-private :
-
-  OutputManager(const OutputManager&); ///< Not implemented.
-  const OutputManager& operator=(const OutputManager&); ///< Not implemented
-
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
-private :
-
   /// Coordinate system for output.
   spatialdata::geocoords::CoordSys* _coordsys;
 
   DataWriter* _writer; ///< Writer for data.
   VertexFilter* _vertexFilter; ///< Filter applied to vertex data.
   CellFilter* _cellFilter; ///< Filter applied to cell data.
+
+// NOT IMPLEMENTED //////////////////////////////////////////////////////
+private :
+
+  OutputManager(const OutputManager&); ///< Not implemented.
+  const OutputManager& operator=(const OutputManager&); ///< Not implemented
 
 }; // OutputManager
 

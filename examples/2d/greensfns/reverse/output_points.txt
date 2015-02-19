@@ -9,15 +9,17 @@
 # interpolation. Note that we place the points a small distance below
 # the ground surface to avoid placing the points exactly on the
 # boundary of the mesh.
- -55.0  -1.0e-6
- -45.0  -1.0e-6
- -35.0  -1.0e-6
- -25.0  -1.0e-6
- -15.0  -1.0e-6
-  -5.0  -1.0e-6
-  +5.0  -1.0e-6
- +15.0  -1.0e-6
- +25.0  -1.0e-6
- +35.0  -1.0e-6
- +45.0  -1.0e-6
- +55.0  -1.0e-6
+#
+# The first column is the station name.
+A  -55.0  -1.0e-6
+B  -45.0  -1.0e-6
+C  -35.0  -1.0e-6
+D  -25.0  -1.0e-6
+E  -15.0  -1.0e-6
+F   -5.0  -1.0e-6
+G   +5.0  -1.0e-6
+H  +15.0  -1.0e-6
+I  +25.0  -1.0e-6
+J  +35.0  -1.0e-6
+K  +45.0  -1.0e-6
+L  +55.0  -1.0e-6

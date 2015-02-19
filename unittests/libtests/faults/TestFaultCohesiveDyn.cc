@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2014 University of California, Davis
+// Copyright (c) 2010-2015 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -730,7 +730,7 @@ pylith::faults::TestFaultCohesiveDyn::_setFieldsJacobian(topology::Mesh* const m
   // Set displacement values
   topology::Field& disp = fields->get("disp(t)");
   topology::VecVisitorMesh dispVisitor(disp);
-  err = PetscSectionGetChart(disp.petscSection(), &pStart, &pEnd);CPPUNIT_ASSERT(!err);
+  err = PetscSectionGetChart(disp.localSection(), &pStart, &pEnd);CPPUNIT_ASSERT(!err);
   PetscScalar* dispArray = dispVisitor.localArray();CPPUNIT_ASSERT(dispArray);
   for (PetscInt p = pStart, iVertex = 0; p < pEnd; ++p) {
     if (dispVisitor.sectionDof(p) > 0) {
@@ -746,7 +746,7 @@ pylith::faults::TestFaultCohesiveDyn::_setFieldsJacobian(topology::Mesh* const m
   // Set increment values
   topology::Field& dispIncr = fields->get("dispIncr(t->t+dt)");
   topology::VecVisitorMesh dispIncrVisitor(dispIncr);
-  err = PetscSectionGetChart(dispIncr.petscSection(), &pStart, &pEnd);CPPUNIT_ASSERT(!err);
+  err = PetscSectionGetChart(dispIncr.localSection(), &pStart, &pEnd);CPPUNIT_ASSERT(!err);
   PetscScalar* dispIncrArray = dispIncrVisitor.localArray();CPPUNIT_ASSERT(dispIncrArray);
   for (PetscInt p = pStart, iVertex = 0; p < pEnd; ++p) {
     if (dispIncrVisitor.sectionDof(p) > 0) {
