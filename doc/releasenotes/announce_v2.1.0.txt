@@ -4,7 +4,7 @@ I am pleased to announce the release of PyLith 2.1.0, a finite-element
 code designed to solve dynamic elastic problems and quasi-static
 viscoelastic problems in tectonic deformation.
 
-This release provides several a few new small features and bugfixes.
+This release provides a few new minor features and bugfixes.
 
 You can download the source code and binaries from
 
@@ -46,16 +46,16 @@ RELEASE NOTES
     list of fault interfaces.
 
   - There have been two major bug fixes for Drucker-Prager plasticity,
-    for both DruckerPrager3D and DruckerPragerPlaneStrain. The first fix
-    was a missing initial pressure term for the plastic multiplier
+    for both DruckerPrager3D and DruckerPragerPlaneStrain. The first
+    fix was a missing initial pressure term for the plastic multiplier
     in the Drucker-Prager formulation. This affects plasticity
     calculations when initial stresses are used. The error has been
     corrected in the code, the manual, and the unit tests. The second
     bug was an incorrect test for tensile yield that could cause
     PyLith to exit with an error when plastic yield had not actually
     occurred. The error would only occur when the allow_tensile_yield
-    flag was set to False. This bug has been fixed in the code, and the
-    new test is also described in the manual. This should prevent
+    flag was set to False. This bug has been fixed in the code, and
+    the new test is also described in the manual. This should prevent
     problems that previously existed when allow_tensile_yield was set
     to False (as it should be for most quasi-static problems).
 
@@ -64,9 +64,9 @@ RELEASE NOTES
     HDF5 file is limited to metadata and is maintained by process 0.
 
   - A two-dimensional gravity example has been added, based on the
-    tutorial from the June, 2014 workshop at Stanford University.
-    The tutorial itself is in examples/2d/gravity, and a new section
-    has also been added to the manual describing the example.
+    tutorial from the June, 2014 workshop at Stanford University.  The
+    tutorial itself is in examples/2d/gravity, and a new section has
+    also been added to the manual describing the example.
 
-  - Fixed inconsistent fault orientation when running in parallel
-    for 2-D domains.
+  - Fixed inconsistent fault orientation when running in parallel for
+    2-D domains.
