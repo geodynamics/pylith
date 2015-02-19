@@ -7,13 +7,12 @@ for EVERY method, member, and argument to a member function.
 go in .cc files, and inline methods go in .icc files. Use an include
 directive in header files for inline methods.
 
-3. Files checked in to the repository trunk should at least compile.
+3. ALL development should be done in developer branches. Merge to the
+'next' branch for integration testing. Once testing is complete, merge
+to master. See PETSc development documentation for how we use
+branches.
 
-4. Changes to the code that fix bugs in released code should be done
-in the stable branch. Those changes are then merged into the trunk
-(this is tricky, so please notify Brad and he will do it for you).
-
-5. C++ and Python classes should have corresponding unit tests in
+4. C++ and Python classes should have corresponding unit tests in
 libtests and pytests. High-level functionality should be verified
 using a full-scale test.
 
