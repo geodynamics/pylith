@@ -71,7 +71,7 @@ RELEASE
 
     1. Clone/update a clean petsc repo (e.g., petsc_dist)
     2. packager/make_petscdist.sh PETSC_REPO knepley/pylith
-    3. mv petsc-lite-pylith.tar.gz petsc-pylith-vX.X.X.tgz
+    3. mv petsc-pylith.tar.gz petsc-pylith-vX.X.X.tgz
 
   * Package binaries
 
