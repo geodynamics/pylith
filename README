@@ -95,7 +95,7 @@ Version 2.1.0
     The tutorial itself is in examples/2d/gravity, and a new section
     has also been added to the manual describing the example.
 
-  - Fixed inconsistent of fault orientation when running in parallel
+  - Fixed inconsistent fault orientation when running in parallel
     for 2-D domains.
 
 
@@ -159,7 +159,7 @@ Version 2.0.2
     affecting systems with OS X 10.7 and 10.8.
 
   - Improved example journal files for CUBIT/Trelis to improve
-    compability (examples/meshing/surface_nurbs/dem).
+    compatibility (examples/meshing/surface_nurbs/dem).
 
   - Updated more journal in examples so that APREPRO lines have a
     leading '$' instead of a '#' to differentiate from comments.
@@ -174,7 +174,7 @@ Version 2.0.1
 * Bug fixes
 
   - Improved example journal files for CUBIT/Trelis to improve
-    compability. All journal files should work with CUBIT 14.1 and
+    compatibility. All journal files should work with CUBIT 14.1 and
     Trelis 15.0.
 
   - Created examples of IDless journal files in examples/2d/greensfns.
@@ -211,7 +211,7 @@ Version 2.0.0
 * Switched from using Subversion to Git for version control.
 
   The source code repository changed from a CIG maintained Subversion
-  repository to a Git repository at Github.com. The URL for the Git
+  repository to a Git repository at GitHub.com. The URL for the Git
   repository is https://github.com/geodynamics/pylith. The installer
   has been updated accordingly.
 

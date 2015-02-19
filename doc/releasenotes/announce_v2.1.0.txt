@@ -68,5 +68,5 @@ RELEASE NOTES
     The tutorial itself is in examples/2d/gravity, and a new section
     has also been added to the manual describing the example.
 
-  - Fixed inconsistent of fault orientation when running in parallel
+  - Fixed inconsistent fault orientation when running in parallel
     for 2-D domains.
