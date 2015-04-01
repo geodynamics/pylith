@@ -277,7 +277,7 @@ pylith::topology::MatVisitorMesh::~MatVisitorMesh(void)
 
   _dm = NULL;
   _section = NULL;
-  PetscErrorCode err = PetscSectionDestroy(&_globalSection);assert(!_globalSection);
+  PetscErrorCode err = PetscSectionDestroy(&_globalSection);PYLITH_CHECK_ERROR(err);assert(!_globalSection);
 } // destructor
 
 // ----------------------------------------------------------------------
