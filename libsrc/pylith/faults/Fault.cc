@@ -25,10 +25,10 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::faults::Fault::Fault(void) :
+  _faultMesh(0),
   _id(0),
   _label(""),
-  _edge(""),
-  _faultMesh(0)
+  _edge("")
 { // constructor
 } // constructor
 

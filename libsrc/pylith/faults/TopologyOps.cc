@@ -124,7 +124,7 @@ pylith::faults::TopologyOps::classifyCellsDM(PetscDM dmMesh,
       std::cout << "vReplaceCells.size: " << vReplaceCells.size() << std::endl;
       std::cout << "vNoReplaceCells.size: " << vNoReplaceCells.size() << std::endl;
     }
-    assert(classifySize < vReplaceCells.size() + vNoReplaceCells.size());
+    assert(size_t(classifySize) < vReplaceCells.size() + vNoReplaceCells.size());
     classifySize = vReplaceCells.size() + vNoReplaceCells.size();
     if (classifySize > classifyTotal) {
       std::ostringstream msg;
