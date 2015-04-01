@@ -93,8 +93,6 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
     up[i] = upDir[i];
   } // for
 
-  const int numCorners = _quadrature->numBasis();
-
   // Get 'surface' cells (1 dimension lower than top-level cells)
   const PetscDM dmSubMesh = _boundaryMesh->dmMesh();assert(dmSubMesh);
   topology::Stratum cellsStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
@@ -241,17 +239,19 @@ pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field& residual,
   assert(_logger);
 
   const int setupEvent = _logger->eventId("AdIR setup");
-  const int geometryEvent = _logger->eventId("AdIR geometry");
   const int computeEvent = _logger->eventId("AdIR compute");
+#if defined(DETAILED_EVENT_LOGGING)
+  const int geometryEvent = _logger->eventId("AdIR geometry");
   const int restrictEvent = _logger->eventId("AdIR restrict");
   const int updateEvent = _logger->eventId("AdIR update");
+#endif
 
   _logger->eventBegin(setupEvent);
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
   const scalar_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
+  assert(quadWts.size() == size_t(numQuadPts));
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
 
@@ -373,17 +373,19 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(const topology::Field& res
   assert(_logger);
 
   const int setupEvent = _logger->eventId("AdIR setup");
-  const int geometryEvent = _logger->eventId("AdIR geometry");
   const int computeEvent = _logger->eventId("AdIR compute");
+#if defined(DETAILED_EVENT_LOGGING)
+  const int geometryEvent = _logger->eventId("AdIR geometry");
   const int restrictEvent = _logger->eventId("AdIR restrict");
   const int updateEvent = _logger->eventId("AdIR update");
+#endif
 
   _logger->eventBegin(setupEvent);
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
   const scalar_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
+  assert(quadWts.size() == size_t(numQuadPts));
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
 
@@ -505,17 +507,19 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Jacobian* jacobian,
   assert(fields);
 
   const int setupEvent = _logger->eventId("AdIJ setup");
-  const int geometryEvent = _logger->eventId("AdIJ geometry");
   const int computeEvent = _logger->eventId("AdIJ compute");
+#if defined(DETAILED_EVENT_LOGGING)
+  const int geometryEvent = _logger->eventId("AdIJ geometry");
   const int restrictEvent = _logger->eventId("AdIJ restrict");
   const int updateEvent = _logger->eventId("AdIJ update");
+#endif
 
   _logger->eventBegin(setupEvent);
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
   const scalar_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
+  assert(quadWts.size() == size_t(numQuadPts));
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
 
@@ -638,17 +642,19 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Field* jacobian,
   assert(fields);
 
   const int setupEvent = _logger->eventId("AdIJ setup");
-  const int geometryEvent = _logger->eventId("AdIJ geometry");
   const int computeEvent = _logger->eventId("AdIJ compute");
+#if defined(DETAILED_EVENT_LOGGING)
+  const int geometryEvent = _logger->eventId("AdIJ geometry");
   const int restrictEvent = _logger->eventId("AdIJ restrict");
   const int updateEvent = _logger->eventId("AdIJ update");
+#endif
 
   _logger->eventBegin(setupEvent);
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
   const scalar_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
+  assert(quadWts.size() == size_t(numQuadPts));
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
 
