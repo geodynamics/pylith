@@ -21,7 +21,7 @@
 #include "PsetFileAscii.hh" // implementation of class methods
 
 #include "pylith/utils/array.hh" // USES scalar_array, int_array
-#include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
 #include "journal/info.h" // USES journal::info_t
 

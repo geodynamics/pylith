@@ -25,7 +25,7 @@
 #include "pylith/topology/Stratum.hh" // USES Stratum
 
 #include "pylith/utils/array.hh" // USES scalar_array, int_array
-#include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 

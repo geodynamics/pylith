@@ -22,7 +22,7 @@
 
 #include "SlipTimeFn.hh" // USES SlipTimeFn
 
-#include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 

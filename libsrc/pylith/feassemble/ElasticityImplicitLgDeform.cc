@@ -31,7 +31,7 @@
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 
-#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN

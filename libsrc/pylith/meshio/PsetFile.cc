@@ -22,7 +22,7 @@
 
 #include "PsetFileAscii.hh"
 
-#include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
 #include <fstream> // uses std::fstream
 #include <sstream> // uses std::ostringstream

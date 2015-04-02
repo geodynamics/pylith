@@ -24,7 +24,7 @@
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase enums
 #include "pylith/utils/array.hh" // USES PylithScalar_array
-#include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
 #include <string> // USES std::string
 #include <stdexcept> // USES std::runtime_error

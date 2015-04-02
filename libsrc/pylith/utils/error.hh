@@ -17,15 +17,17 @@
 //
 
 /**
- * @file libsrc/utils/error.h
+ * @file libsrc/utils/error.hh
  *
- * @brief Wrappers around PETSc error handling routines.
+ * @brief C++ wrappers around PETSc error handling routines.
  */
 
-#if !defined(pylith_utils_error_h)
-#define pylith_utils_error_h
+#if !defined(pylith_utils_error_hh)
+#define pylith_utils_error_hh
 
-#include <assert.h>
+#include <cassert>
+#include <stdexcept>
+#include <sstream>
 
 #undef __FUNCT__
 #if defined(__FUNCTION_NAME__)
@@ -42,7 +44,11 @@
 
 #define PYLITH_CHECK_ERROR(err) do {if (PetscUnlikely(err)) {PetscError(PETSC_COMM_SELF,__LINE__,PETSC_FUNCTION_NAME,__FILE__,err,PETSC_ERROR_REPEAT,0);throw std::runtime_error("Error detected while in PETSc function.");}} while(0)
 
+#define PYLITH_CHECK_ERROR_MSG(err, msg) \
+  if (err) { \
+    PetscError(PETSC_COMM_SELF,__LINE__,__FUNCT__,__FILE__,err,PETSC_ERROR_REPEAT, 0, " "); \
+    throw std::runtime_error(msg); }
 
-#endif // pylith_utils_error_h
+#endif // pylith_utils_error_hh
 
 // End of file

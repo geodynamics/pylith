@@ -22,7 +22,7 @@
 
 #include "Quadrature.hh" // USES Quadrature
 
-#include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/constdefs.h" // USES MAXSCALAR
 

@@ -29,7 +29,7 @@
 
 #include "pylith/utils/constdefs.h" // USES PYLITH_MAXSCALAR
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
-#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 
 #include <petscsnes.h> // USES PetscSNES
 

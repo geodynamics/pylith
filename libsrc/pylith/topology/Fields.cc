@@ -22,7 +22,7 @@
 
 #include "Field.hh" // USES Field
 
-#include <pylith/utils/error.h> // USES PYLITH_CHECK_ERROR
+#include <pylith/utils/error.hh> // USES PYLITH_CHECK_ERROR
 
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error

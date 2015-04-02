@@ -36,7 +36,7 @@
 #include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
 #include "pylith/utils/lapack.h" // USES LAPACKdgesvd
 
-#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB

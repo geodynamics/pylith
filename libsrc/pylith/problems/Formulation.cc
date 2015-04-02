@@ -27,7 +27,7 @@
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 
-#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 #include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------

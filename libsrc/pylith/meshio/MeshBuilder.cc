@@ -22,7 +22,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/utils/array.hh" // USES scalar_array, int_array
-#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 

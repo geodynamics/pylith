@@ -21,7 +21,7 @@
 #include "ReverseCuthillMcKee.hh" // implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 
 // ----------------------------------------------------------------------
 // Reorder vertices and cells in mesh.

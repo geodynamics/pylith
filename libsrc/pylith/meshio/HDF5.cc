@@ -20,7 +20,7 @@
 
 #include "HDF5.hh" // implementation of class methods
 
-#include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
 #include <cstring> // USES strlen()
 #include <stdexcept> // USES std::runtime_error

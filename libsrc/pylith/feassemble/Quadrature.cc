@@ -29,7 +29,7 @@
 #include "Quadrature2Din3D.hh"
 #include "Quadrature3D.hh"
 
-#include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error

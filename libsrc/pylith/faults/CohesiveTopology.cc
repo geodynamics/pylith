@@ -25,7 +25,7 @@
 
 #include <cassert> // USES assert()
 
-#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 
 // ----------------------------------------------------------------------
 void

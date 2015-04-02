@@ -26,7 +26,7 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/petscfwd.h" // USES PetscVec
-#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream

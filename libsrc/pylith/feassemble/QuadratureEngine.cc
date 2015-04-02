@@ -23,7 +23,7 @@
 #include "CellGeometry.hh" // USES CellGeometry
 #include "QuadratureRefCell.hh" // QuadratureRefCell
 
-#include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error

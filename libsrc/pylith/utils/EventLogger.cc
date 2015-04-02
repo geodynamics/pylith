@@ -20,7 +20,7 @@
 
 #include "EventLogger.hh" // Implementation of class methods
 
-#include "error.h" // USES PYLITH_METHOD_BEGIN/END
+#include "error.hh" // USES PYLITH_METHOD_BEGIN/END
 
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
