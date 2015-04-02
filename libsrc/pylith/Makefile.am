@@ -23,6 +23,7 @@ SUBDIRS = \
 	materials \
 	bc \
 	feassemble \
+	fekernels \
 	faults \
 	friction \
 	problems
@@ -84,6 +85,7 @@ libpylith_la_SOURCES = \
 	feassemble/IntegratorElasticityLgDeform.cc \
 	feassemble/ElasticityImplicitLgDeform.cc \
 	feassemble/ElasticityExplicitLgDeform.cc \
+	fekernels/elasticity.c \
 	friction/FrictionModel.cc \
 	friction/StaticFriction.cc \
 	friction/SlipWeakening.cc \

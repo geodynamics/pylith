@@ -274,6 +274,7 @@ AC_CONFIG_FILES([Makefile
 		libsrc/pylith/Makefile
 		libsrc/pylith/bc/Makefile
                 libsrc/pylith/feassemble/Makefile
+                libsrc/pylith/fekernels/Makefile
 		libsrc/pylith/faults/Makefile
 		libsrc/pylith/friction/Makefile
                 libsrc/pylith/materials/Makefile
