@@ -29,10 +29,52 @@
 #include "pylith/utils/types.hh" 
 #include "pylith/utils/error.h" 
 
+/** f0 entry function for disp/vel time evolution.
+ *
+ * @param dim Spatial dimension.
+ * @param numS Number of registered subfields in solution field [2].
+ * @param indicesS Indices of subfields in solution field [numS].
+ * @param numA Number of registered subfields in auxiliary field [0].
+ * @param indicesA Indices of subfields in auxiliary field [numA].
+ * @param sOff Offset of registered subfields in solution field [numS].
+ * @param aOff Offset of registered subfields in auxiliary field [numA]
+ * @param s Solution field with all subfields.
+ * @param s_t Time derivative of solution field.
+ * @param s_x Gradient of solution field.
+ * @param a Auxiliary field with all subfields.
+ * @param a_t Time derivative of auxiliary field.
+ * @param a_x Gradient of auxiliary field.
+ * @param x Coordinates of point evaluation.
+ * @param f0 Result [dim].
+ *
+ * @returns 0 if no errors.
+ * 
+ * Solution fields: [disp(dim), vel(dim)]
+ *
+ * Auxiliary fields: None
+ */
+PetscErrorCode
+pylith_fekernels_f0_EvolutionDispVel(const PylithInt dim,
+				     const PylithInt numS,
+				     const PylithInt indicesS[],
+				     const PylithInt numA,
+				     const PylithInt indicesA[],
+				     const PylithInt sOff[],
+				     const PylithInt aOff[],
+				     const PylithScalar s[],
+				     const PylithScalar s_t[],
+				     const PylithScalar s_x[],
+				     const PylithScalar a[],
+				     const PylithScalar a_t[],
+				     const PylithScalar a_x[],
+				     const PylithScalar x[],
+				     PylithScalar f0[]);
+
+
 /** f0 entry function for inertia and body forces.
  *
  * @param dim Spatial dimension.
- * @param numS Number of registered subfields in solution field [1].
+ * @param numS Number of registered subfields in solution field [2].
  * @param indicesS Indices of subfields in solution field [numS].
  * @param numA Number of registered subfields in auxiliary field [2].
  * @param indicesA Indices of subfields in auxiliary field [numA].
@@ -40,17 +82,16 @@
  * @param aOff Offset of registered subfields in auxiliary field [numA]
  * @param s Solution field with all subfields.
  * @param s_t Time derivative of solution field.
- * @param s_tt Second time derivative of solution field.
  * @param s_x Gradient of solution field.
  * @param a Auxiliary field with all subfields.
+ * @param a_t Time derivative of auxiliary field.
  * @param a_x Gradient of auxiliary field.
- * @param a_t Time derivative of auxiliary field. DO WE NEED THIS?
- * @param x Position for point evaluation.
+ * @param x Coordinates of point evaluation.
  * @param f0 Result [dim].
  *
  * @returns 0 if no errors.
  * 
- * Solution fields: [disp(dim)]
+ * Solution fields: [disp(dim), vel(dim)]
  *
  * Auxiliary fields: [density(1), body force(dim)]
  */
@@ -64,9 +105,9 @@ pylith_fekernels_f0_ElasticityInertia(const PylithInt dim,
 				      const PylithInt aOff[],
 				      const PylithScalar s[],
 				      const PylithScalar s_t[],
-				      const PylithScalar s_tt[],
 				      const PylithScalar s_x[],
 				      const PylithScalar a[],
+				      const PylithScalar a_t[],
 				      const PylithScalar a_x[],
 				      const PylithScalar x[],
 				      PylithScalar f0[]);
@@ -83,17 +124,16 @@ pylith_fekernels_f0_ElasticityInertia(const PylithInt dim,
  * @param aOff Offset of registered subfields in auxiliary field [numA]
  * @param s Solution field with all subfields.
  * @param s_t Time derivative of solution field.
- * @param s_tt Second time derivative of solution field.
  * @param s_x Gradient of solution field.
  * @param a Auxiliary field with all subfields.
+ * @param a_t Time derivative of auxiliary field.
  * @param a_x Gradient of auxiliary field.
- * @param a_t Time derivative of auxiliary field. DO WE NEED THIS?
- * @param x Position for point evaluation.
+ * @param x Coordinates of point evaluation.
  * @param f0 Result [dim].
  *
  * @returns 0 if no errors.
  * 
- * Solution fields: [disp(dim)]
+ * Solution fields: [disp(dim), vel(dim)]
  *
  * Auxiliary fields: [density]
  */
@@ -107,9 +147,9 @@ pylith_fekernels_f0_Inertia(const PylithInt dim,
 			    const PylithInt aOff[],
 			    const PylithScalar s[],
 			    const PylithScalar s_t[],
-			    const PylithScalar s_tt[],
 			    const PylithScalar s_x[],
 			    const PylithScalar a[],
+			    const PylithScalar a_t[],
 			    const PylithScalar a_x[],
 			    const PylithScalar x[],
 			    PylithScalar f0[]);
@@ -126,12 +166,11 @@ pylith_fekernels_f0_Inertia(const PylithInt dim,
  * @param aOff Offset of registered subfields in auxiliary field [numA]
  * @param s Solution field with all subfields.
  * @param s_t Time derivative of solution field.
- * @param s_tt Second time derivative of solution field.
  * @param s_x Gradient of solution field.
  * @param a Auxiliary field with all subfields.
+ * @param a_t Time derivative of auxiliary field.
  * @param a_x Gradient of auxiliary field.
- * @param a_t Time derivative of auxiliary field. DO WE NEED THIS?
- * @param x Position for point evaluation.
+ * @param x Coordinates of point evaluation.
  * @param f0 Result [dim].
  *
  * @returns 0 if no errors.
@@ -169,12 +208,11 @@ pylith_fekernels_f0_BodyForce(const PylithInt dim,
  * @param aOff Offset of registered subfields in auxiliary field [numA]
  * @param s Solution field with all subfields.
  * @param s_t Time derivative of solution field.
- * @param s_tt Second time derivative of solution field.
  * @param s_x Gradient of solution field.
  * @param a Auxiliary field with all subfields.
+ * @param a_t Time derivative of auxiliary field.
  * @param a_x Gradient of auxiliary field.
- * @param a_t Time derivative of auxiliary field. DO WE NEED THIS?
- * @param x Position for point evaluation.
+ * @param x Coordinates of point evaluation.
  * @param f1 Result [dim].
  *
  * @returns 0 if no errors.
@@ -193,9 +231,9 @@ pylith_fekernels_f1_IsotropicLinearElasticity3D(const PylithInt dim,
 						const PylithInt aOff[],
 						const PylithScalar s[],
 						const PylithScalar s_t[],
-						const PylithScalar s_tt[],
 						const PylithScalar s_x[],
 						const PylithScalar a[],
+						const PylithScalar a_t[],
 						const PylithScalar a_x[],
 						const PylithScalar x[],
 						PylithScalar f1[]);
@@ -212,12 +250,11 @@ pylith_fekernels_f1_IsotropicLinearElasticity3D(const PylithInt dim,
  * @param aOff Offset of registered subfields in auxiliary field [numA]
  * @param s Solution field with all subfields.
  * @param s_t Time derivative of solution field.
- * @param s_tt Second time derivative of solution field.
  * @param s_x Gradient of solution field.
  * @param a Auxiliary field with all subfields.
+ * @param a_t Time derivative of auxiliary field.
  * @param a_x Gradient of auxiliary field.
- * @param a_t Time derivative of auxiliary field. DO WE NEED THIS?
- * @param x Position for point evaluation.
+ * @param x Coordinates of point evaluation.
  * @param f1 Result [dim*dim].
  *
  * @returns 0 if no errors.
@@ -236,9 +273,9 @@ pylith_fekernels_volumetricStress_IsotropicLinearElasticity3D(const PylithInt di
 							      const PylithInt aOff[],
 							      const PylithScalar s[],
 							      const PylithScalar s_t[],
-							      const PylithScalar s_tt[],
 							      const PylithScalar s_x[],
 							      const PylithScalar a[],
+							      const PylithScalar a_t[],
 							      const PylithScalar a_x[],
 							      const PylithScalar x[],
 							      PylithScalar stress[]);
@@ -255,12 +292,11 @@ pylith_fekernels_volumetricStress_IsotropicLinearElasticity3D(const PylithInt di
  * @param aOff Offset of registered subfields in auxiliary field [numA]
  * @param s Solution field with all subfields.
  * @param s_t Time derivative of solution field.
- * @param s_tt Second time derivative of solution field.
  * @param s_x Gradient of solution field.
  * @param a Auxiliary field with all subfields.
+ * @param a_t Time derivative of auxiliary field.
  * @param a_x Gradient of auxiliary field.
- * @param a_t Time derivative of auxiliary field. DO WE NEED THIS?
- * @param x Position for point evaluation.
+ * @param x Coordinates of point evaluation.
  * @param f1 Result [dim*dim].
  *
  * @returns 0 if no errors.
@@ -279,9 +315,9 @@ pylith_fekernels_deviatoricStress_IsotropicLinearElasticity3D(const PylithInt di
 							      const PylithInt aOff[],
 							      const PylithScalar s[],
 							      const PylithScalar s_t[],
-							      const PylithScalar s_tt[],
 							      const PylithScalar s_x[],
 							      const PylithScalar a[],
+							      const PylithScalar a_t[],
 							      const PylithScalar a_x[],
 							      const PylithScalar x[],
 							      PylithScalar stress[]);
