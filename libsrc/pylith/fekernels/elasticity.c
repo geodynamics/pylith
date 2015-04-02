@@ -21,41 +21,44 @@
 #include "pylith/fekernels/elasticity.h"
 
 /* ---------------------------------------------------------------------- */
-/* Main f0 function for with inertia and body forces in 3-D.
+/* f0 entry function for inertia and body forces.
+ *
+ * QUESTION: Make a separate f0 entry function if we don't have body
+ * forces? Most dynamic simulations don't use body forces.
  *
  * Solution fields = [disp(dim)]
  * Auxiliary fields = [density(1), body force(dim)]
  */
 PetscErrorCode
-pylith_f0_ElasticityInertia(const PetscInt dim,
-			    const PetscInt numS,
-			    const PetscInt indicesS[],
-			    const PetscInt numA,
-			    const PetscInt indicesA[],
-			    const PetscInt uOff[],
-			    const PetscInt aOff[],
-			    const PetscScalar s[],
-			    const PetscScalar s_t[],
-			    const PetscScalar s_tt[],
-			    const PetscScalar s_x[],
-			    const PetscScalar a[],
-			    const PetscScalar a_x[],
-			    const PetscScalar x[],
-			    PetscScalar f0[])
+pylith_fekernels_f0_ElasticityInertia(const PylithInt dim,
+				      const PylithInt numS,
+				      const PylithInt indicesS[],
+				      const PylithInt numA,
+				      const PylithInt indicesA[],
+				      const PylithInt uOff[],
+				      const PylithInt aOff[],
+				      const PylithScalar s[],
+				      const PylithScalar s_t[],
+				      const PylithScalar s_tt[],
+				      const PylithScalar s_x[],
+				      const PylithScalar a[],
+				      const PylithScalar a_x[],
+				      const PylithScalar x[],
+				      PylithScalar f0[])
 { /* f0_ElasticityInertia */
-  const PetscInt _numS = 1;
-  const PetscInt _numA = 2;
+  const PylithInt _numS = 1;
+  const PylithInt _numA = 2;
 
-  const PetscInt i_disp = 0;
-  const PetscInt i_density = 0;
-  const PetscInt i_bodyforce = 1;
+  const PylithInt i_disp = 0;
+  const PylithInt i_density = 0;
+  const PylithInt i_bodyforce = 1;
 
   PYLITH_METHOD_BEGIN;
   assert(_numS == numS);
   assert(_numA == numA);
 
-  pylith_f0_Inertia(dim, 1, &indicesS[i_disp], 1, &indicesA[i_density], uOff, aOff, s, s_t, s_tt, s_x, a, a_x, x, f0);
-  pylith_f0_BodyForce(dim, 1, &indicesS[i_disp], 1, &indicesA[i_bodyforce], uOff, aOff, s, s_t, s_tt, s_x, a, a_x, x, f0);
+  pylith_fekernels_f0_Inertia(dim, 1, &indicesS[i_disp], 1, &indicesA[i_density], uOff, aOff, s, s_t, s_tt, s_x, a, a_x, x, f0);
+  pylith_fekernels_f0_BodyForce(dim, 1, &indicesS[i_disp], 1, &indicesA[i_bodyforce], uOff, aOff, s, s_t, s_tt, s_x, a, a_x, x, f0);
   
   PYLITH_METHOD_RETURN(0);
 } /* f0_ElasticityInertia */
@@ -68,31 +71,33 @@ pylith_f0_ElasticityInertia(const PetscInt dim,
  * Auxiliary fields = [density]
  */
 PetscErrorCode
-pylith_f0_Inertia(const PetscInt dim,
-		  const PetscInt numS,
-		  const PetscInt indicesS[],
-		  const PetscInt numA,
-		  const PetscInt indicesA[],
-		  const PetscInt uOff[],
-		  const PetscInt aOff[],
-		  const PetscScalar s[],
-		  const PetscScalar s_t[],
-		  const PetscScalar s_tt[],
-		  const PetscScalar s_x[],
-		  const PetscScalar a[],
-		  const PetscScalar a_x[],
-		  const PetscScalar x[],
-		  PetscScalar f0[])
+pylith_fekernels_f0_Inertia(const PylithInt dim,
+			    const PylithInt numS,
+			    const PylithInt indicesS[],
+			    const PylithInt numA,
+			    const PylithInt indicesA[],
+			    const PylithInt uOff[],
+			    const PylithInt aOff[],
+			    const PylithScalar s[],
+			    const PylithScalar s_t[],
+			    const PylithScalar s_tt[],
+			    const PylithScalar s_x[],
+			    const PylithScalar a[],
+			    const PylithScalar a_x[],
+			    const PylithScalar x[],
+			    PylithScalar f0[])
 { /* f0_Inertia */
-  const PetscInt _numS = 1;
-  const PetscInt _numA = 1;
-  const PetscInt i_disp = 0;
-  const PetscInt i_density = 0;
-  const PetscInt f_disp = indicesS[i_disp];
-  const PetscInt f_density = indicesA[i_density];
+  const PylithInt _numS = 1;
+  const PylithInt _numA = 1;
+  const PylithInt i_disp = 0;
+  const PylithInt i_density = 0;
+  const PylithInt f_disp = indicesS[i_disp];
+  const PylithInt f_density = indicesA[i_density];
 
-  const PetscScalar acc[] = &u_tt[uOff[f_disp]];
-  const PetscScalar density = a[aOff[f_density]];
+  const PylithScalar* acc = &s_tt[uOff[f_disp]];
+  const PylithScalar density = a[aOff[f_density]];
+
+  PylithInt i;
 
   PYLITH_METHOD_BEGIN;
   assert(_numS == numS);
@@ -113,28 +118,30 @@ pylith_f0_Inertia(const PetscInt dim,
  * Auxiliary fields = [body force(dim)]
  */
 PetscErrorCode
-pylith_f0_BodyForce(const PetscInt dim,
-		    const PetscInt numS,
-		    const PetscInt indicesS[],
-		    const PetscInt numA,
-		    const PetscInt indicesA[],
-		    const PetscInt uOff[],
-		    const PetscInt aOff[],
-		    const PetscScalar s[],
-		    const PetscScalar s_t[],
-		    const PetscScalar s_tt[],
-		    const PetscScalar s_x[],
-		    const PetscScalar a[],
-		    const PetscScalar a_x[],
-		    const PetscScalar x[],
-		    PetscScalar f0[])
+pylith_fekernels_f0_BodyForce(const PylithInt dim,
+			      const PylithInt numS,
+			      const PylithInt indicesS[],
+			      const PylithInt numA,
+			      const PylithInt indicesA[],
+			      const PylithInt uOff[],
+			      const PylithInt aOff[],
+			      const PylithScalar s[],
+			      const PylithScalar s_t[],
+			      const PylithScalar s_tt[],
+			      const PylithScalar s_x[],
+			      const PylithScalar a[],
+			      const PylithScalar a_x[],
+			      const PylithScalar x[],
+			      PylithScalar f0[])
 { /* f0_BodyForce */
-  const PetscInt _numS = 0;
-  const PetscInt _numA = 1;
-  const PetscInt i_bodyforce = 0;
-  const PetscInt f_bodyforce = indicesA[i_bodyforce];
+  const PylithInt _numS = 0;
+  const PylithInt _numA = 1;
+  const PylithInt i_bodyforce = 0;
+  const PylithInt f_bodyforce = indicesA[i_bodyforce];
 
-  const PetscScalar bodyforce[] = a[aOff[f_bodyforce]];
+  const PylithScalar* bodyforce = &a[aOff[f_bodyforce]];
+
+  PylithInt i;
 
   PYLITH_METHOD_BEGIN;
   assert(_numS == numS);
@@ -149,43 +156,50 @@ pylith_f0_BodyForce(const PetscInt dim,
 
 
 /* ---------------------------------------------------------------------- */
-/* f1 function for isotropic linear elasticity in 3-D.
+/* f1 entry function for isotropic linear elasticity in 3-D.
  *
  * Solution fields = [disp(dim)]
- * Auxiliary fields = [lambda(1), mu(1)]
+ * Auxiliary fields = [lambda(1), mu(1), initialstress(dim*dim), initialstrain(dim*dim)]
  */
 PetscErrorCode
-pylith_f1_IsotropicLinearElasticity3D(const PetscInt dim,
-				      const PetscInt numS,
-				      const PetscInt indicesS[],
-				      const PetscInt numA,
-				      const PetscInt indicesA[],
-				      const PetscInt uOff[],
-				      const PetscInt aOff[],
-				      const PetscScalar s[],
-				      const PetscScalar s_t[],
-				      const PetscScalar s_tt[],
-				      const PetscScalar s_x[],
-				      const PetscScalar a[],
-				      const PetscScalar a_x[],
-				      const PetscScalar x[],
-				      PetscScalar f1[])
+pylith_fekernels_f1_IsotropicLinearElasticity3D(const PylithInt dim,
+						const PylithInt numS,
+						const PylithInt indicesS[],
+						const PylithInt numA,
+						const PylithInt indicesA[],
+						const PylithInt uOff[],
+						const PylithInt aOff[],
+						const PylithScalar s[],
+						const PylithScalar s_t[],
+						const PylithScalar s_tt[],
+						const PylithScalar s_x[],
+						const PylithScalar a[],
+						const PylithScalar a_x[],
+						const PylithScalar x[],
+						PylithScalar f1[])
 { /* f1_IsotropicLinearElasticity3D */
-  const PetscInt _dim = 3;
-  const PetscInt _numS = 1;
-  const PetscInt _numA = 2;
+  const PylithInt _dim = 3;
+  const PylithInt _numS = 1;
+  const PylithInt _numA = 4;
 
-  const PetscInt i_disp = 0;
-  const PetscInt i_lambda = 0;
-  const PetscInt i_mu = 1;
+  const PylithInt i_disp = 0;
+  const PylithInt i_lambda = 0;
+  const PylithInt i_mu = 1;
+  const PylithInt i_istress = 2;
+  const PylithInt i_istrain = 3;
+
+  const PylithInt numAVol = 3;
+  const PylithInt indicesAVol[3] = { i_lambda, i_istress, i_istrain };
+  const PylithInt numADev = 3;
+  const PylithInt indicesADev[3] = { i_mu, i_istress, i_istrain };
 
   PYLITH_METHOD_BEGIN;
   assert(_dim == dim);
   assert(_numS == numS);
   assert(_numA == numA);
 
-  pylith_f1_IsotropicLinearElasticityVolumetricStress(dim, 1, &indicesS[i_disp], 1, &indicesA[i_lambda], uOff, aOff, s, s_t, s_tt, s_x, a, a_x, x, f1);
-  pylith_f1_IsotropicLinearElasticityDeviatoricStress(dim, 1, &indicesS[i_disp], 1, &indicesA[i_mu], uOff, aOff, s, s_t, s_tt, s_x, a, a_x, x, f1);
+  pylith_fekernels_volumetricStress_IsotropicLinearElasticity3D(dim, 1, &indicesS[i_disp], numAVol, indicesAVol, uOff, aOff, s, s_t, s_tt, s_x, a, a_x, x, f1);
+  pylith_fekernels_deviatoricStress_IsotropicLinearElasticity3D(dim, 1, &indicesS[i_disp], numADev, indicesADev, uOff, aOff, s, s_t, s_tt, s_x, a, a_x, x, f1);
   
   PYLITH_METHOD_RETURN(0);
 } /* f1_IsotropicLinearElasticity3D */
@@ -195,46 +209,58 @@ pylith_f1_IsotropicLinearElasticity3D(const PetscInt dim,
 /* Calculate volumetic stress for isotropic linear elasticity.
  *
  * Solution fields = [disp(dim)]
- * Auxiliary fields = [lambda(1)]
+ * Auxiliary fields = [lambda(1), initialstress(dim*dim), initialstrain(dim*dim)]
  */
 PetscErrorCode
-pylith_volumetricStress_IsotropicLinearElasticity(const PetscInt dim,
-						  const PetscInt numS,
-						  const PetscInt indicesS[],
-						  const PetscInt numA,
-						  const PetscInt indicesA[],
-						  const PetscInt uOff[],
-						  const PetscInt aOff[],
-						  const PetscScalar s[],
-						  const PetscScalar s_t[],
-						  const PetscScalar s_tt[],
-						  const PetscScalar s_x[],
-						  const PetscScalar a[],
-						  const PetscScalar a_x[],
-						  const PetscScalar x[],
-						  PetscScalar stress[])
-{ /* volumetricStress_IsotropicLinearElasticity */
-  const PetscInt _numS = 1;
-  const PetscInt _numA = 1;
-  const PetscInt i_disp = 0;
-  const PetscInt i_lambda = 0;
-  const PetscInt f_disp = indicesS[i_disp];
-  const PetscInt f_lambda = indicesA[i_lambda];
+pylith_fekernels_volumetricStress_IsotropicLinearElasticity3D(const PylithInt dim,
+							      const PylithInt numS,
+							      const PylithInt indicesS[],
+							      const PylithInt numA,
+							      const PylithInt indicesA[],
+							      const PylithInt uOff[],
+							      const PylithInt aOff[],
+							      const PylithScalar s[],
+							      const PylithScalar s_t[],
+							      const PylithScalar s_tt[],
+							      const PylithScalar s_x[],
+							      const PylithScalar a[],
+							      const PylithScalar a_x[],
+							      const PylithScalar x[],
+							      PylithScalar stress[])
+{ /* volumetricStress_IsotropicLinearElasticity3D */
+  const PylithInt _dim = 3;
+  const PylithInt _numS = 1;
+  const PylithInt _numA = 3;
+  const PylithInt i_disp = 0;
+  const PylithInt i_lambda = 0;
+  const PylithInt i_istress = 1;
+  const PylithInt i_istrain = 2;
+  const PylithInt f_disp = indicesS[i_disp];
+  const PylithInt f_lambda = indicesA[i_lambda];
+  const PylithInt f_istress = indicesA[i_istress];
+  const PylithInt f_istrain = indicesA[i_istrain];
 
-  const PetscScalar disp_x[] = &u_x[uOff[f_disp]];
-  const PetscScalar lambda = a[aOff[f_lambda]];
+  const PylithScalar* disp_x = &s_x[uOff[f_disp]];
+  const PylithScalar lambda = a[aOff[f_lambda]];
+  const PylithScalar* initialstress = &a[aOff[f_istress]];
+  const PylithScalar* initialstrain = &a[aOff[f_istrain]];
 
-  PetscScalar trace = 0;
+  PylithInt i;
+  PylithScalar trace = 0;
+  PylithScalar meanistress = 0;
 
   PYLITH_METHOD_BEGIN;
+  assert(_dim == dim);
   assert(_numS == numS);
   assert(_numA == numA);
 
-  for (i=0; i < dim; ++i) {
-    trace += disp_x[i];
+  for (i=0; i < _dim; ++i) {
+    trace += disp_x[i] - initialstrain[i*_dim+i];
+    meanistress += initialstress[i*_dim+i];
   } /* for */
-  for (i = 0; i < dim; ++i) {
-    stress[i*dim+i] += lambda * trace;
+  meanistress /= (PylithScalar)_dim;
+  for (i = 0; i < _dim; ++i) {
+    stress[i*_dim+i] += lambda * trace + meanistress;
   } /* for */
 
   PYLITH_METHOD_RETURN(0);
@@ -245,28 +271,63 @@ pylith_volumetricStress_IsotropicLinearElasticity(const PetscInt dim,
 /* Calculate deviatoric stress for isotropic linear elasticity.
  *
  * Solution fields = [disp(dim)]
- * Auxiliary fields = [mu(1)]
+ * Auxiliary fields = [mu(1), initialstress(dim*dim), initialstrain(dim*dim)]
  */
 PetscErrorCode
-pylith_deviatoricStress_IsotropicLinearElasticity(const PetscInt dim,
-						  const PetscInt numS,
-						  const PetscInt indicesS[],
-						  const PetscInt numA,
-						  const PetscInt indicesA[],
-						  const PetscInt uOff[],
-						  const PetscInt aOff[],
-						  const PetscScalar s[],
-						  const PetscScalar s_t[],
-						  const PetscScalar s_tt[],
-						  const PetscScalar s_x[],
-						  const PetscScalar a[],
-						  const PetscScalar a_x[],
-						  const PetscScalar x[],
-						  PetscScalar stress[])
-{ /* deviatoricStress_IsotropicLinearElasticity */
-} /* deviatoricStress_IsotropicLinearElasticity */
+pylith_fekernels_deviatoricStress_IsotropicLinearElasticity3D(const PylithInt dim,
+							      const PylithInt numS,
+							      const PylithInt indicesS[],
+							      const PylithInt numA,
+							      const PylithInt indicesA[],
+							      const PylithInt uOff[],
+							      const PylithInt aOff[],
+							      const PylithScalar s[],
+							      const PylithScalar s_t[],
+							      const PylithScalar s_tt[],
+							      const PylithScalar s_x[],
+							      const PylithScalar a[],
+							      const PylithScalar a_x[],
+							      const PylithScalar x[],
+							      PylithScalar stress[])
+{ /* deviatoricStress_IsotropicLinearElasticity3D */
+  const PylithInt _dim = 3;
+  const PylithInt _numS = 1;
+  const PylithInt _numA = 3;
+  const PylithInt i_disp = 0;
+  const PylithInt i_mu = 0;
+  const PylithInt i_istress = 1;
+  const PylithInt i_istrain = 2;
+  const PylithInt f_disp = indicesS[i_disp];
+  const PylithInt f_mu = indicesA[i_mu];
+  const PylithInt f_istress = indicesA[i_istress];
+  const PylithInt f_istrain = indicesA[i_istrain];
 
-#endif // pylith_fekernels_elasticity_h
+  const PylithScalar* disp_x = &s_x[uOff[f_disp]];
+  const PylithScalar mu = a[aOff[f_mu]];
+  const PylithScalar* initialstress = &a[aOff[f_istress]];
+  const PylithScalar* initialstrain = &a[aOff[f_istrain]];
+
+  PylithInt i, j;
+  PylithScalar meanistress = 0;
+
+  PYLITH_METHOD_BEGIN;
+  assert(_dim == dim);
+  assert(_numS == numS);
+  assert(_numA == numA);
+
+  for (i=0; i < _dim; ++i) {
+    meanistress += initialstress[i*_dim+i];
+  } /* for */
+  meanistress /= (PylithScalar)_dim;
+  for (i=0; i < _dim; ++i) {
+    for (j=0; j < _dim; ++j) {
+      stress[i*_dim+j] += mu * (disp_x[i*_dim+j] + disp_x[j*_dim+i] - initialstrain[i*_dim+j]) + initialstress[i*_dim+j];
+    } /* for */
+    stress[i*_dim+i] -= meanistress;
+  } /* for */
+
+  PYLITH_METHOD_RETURN(0);
+} /* deviatoricStress_IsotropicLinearElasticity */
 
 
 // End of file 
