@@ -63,7 +63,7 @@ pylith_fekernels_f0_EvolutionDispVel(const PylithInt dim,
   assert(s_t);
 
   for (i=0; i < dim; ++i) {
-    f0[i] += disp_t[i] - vel[i];
+    f0[i] += vel[i] - disp_t[i];
   } /* for */
 
   PYLITH_METHOD_RETURN(0);
