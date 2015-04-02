@@ -27,22 +27,22 @@
  * Auxiliary fields = None
  */
 PetscErrorCode
-pylith_fekernels_f0_ElasticityTimeEvolution(const PylithInt dim,
-					    const PylithInt numS,
-					    const PylithInt indicesS[],
-					    const PylithInt numA,
-					    const PylithInt indicesA[],
-					    const PylithInt sOff[],
-					    const PylithInt aOff[],
-					    const PylithScalar s[],
-					    const PylithScalar s_t[],
-					    const PylithScalar s_x[],
-					    const PylithScalar a[],
-					    const PylithScalar a_t[],
-					    const PylithScalar a_x[],
-					    const PylithScalar x[],
-					    PylithScalar f0[])
-{ /* f0_ElasticityTimeEvolution */
+pylith_fekernels_f0_EvolutionDispVel(const PylithInt dim,
+				     const PylithInt numS,
+				     const PylithInt indicesS[],
+				     const PylithInt numA,
+				     const PylithInt indicesA[],
+				     const PylithInt sOff[],
+				     const PylithInt aOff[],
+				     const PylithScalar s[],
+				     const PylithScalar s_t[],
+				     const PylithScalar s_x[],
+				     const PylithScalar a[],
+				     const PylithScalar a_t[],
+				     const PylithScalar a_x[],
+				     const PylithScalar x[],
+				     PylithScalar f0[])
+{ /* f0_EvolutionDispVel */
   const PylithInt _numS = 2;
   const PylithInt i_disp = 1;
   const PylithInt i_vel = 1;
@@ -67,7 +67,7 @@ pylith_fekernels_f0_ElasticityTimeEvolution(const PylithInt dim,
   } /* for */
 
   PYLITH_METHOD_RETURN(0);
-} /* f0_ElasticityTimeEvolution */
+} /* f0_EvolutionDispVel */
 					      
 
 /* ---------------------------------------------------------------------- */
