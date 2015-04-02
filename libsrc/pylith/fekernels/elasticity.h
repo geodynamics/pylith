@@ -36,7 +36,7 @@
  * @param indicesS Indices of subfields in solution field [numS].
  * @param numA Number of registered subfields in auxiliary field [2].
  * @param indicesA Indices of subfields in auxiliary field [numA].
- * @param uOff Offset of registered subfields in solution field [numS].
+ * @param sOff Offset of registered subfields in solution field [numS].
  * @param aOff Offset of registered subfields in auxiliary field [numA]
  * @param s Solution field with all subfields.
  * @param s_t Time derivative of solution field.
@@ -60,7 +60,7 @@ pylith_fekernels_f0_ElasticityInertia(const PylithInt dim,
 				      const PylithInt indicesS[],
 				      const PylithInt numA,
 				      const PylithInt indicesA[],
-				      const PylithInt uOff[],
+				      const PylithInt sOff[],
 				      const PylithInt aOff[],
 				      const PylithScalar s[],
 				      const PylithScalar s_t[],
@@ -79,7 +79,7 @@ pylith_fekernels_f0_ElasticityInertia(const PylithInt dim,
  * @param indicesS Indices of subfields in solution field [numS].
  * @param numA Number of registered subfields in auxiliary field [1].
  * @param indicesA Indices of subfields in auxiliary field [numA].
- * @param uOff Offset of registered subfields in solution field [numS].
+ * @param sOff Offset of registered subfields in solution field [numS].
  * @param aOff Offset of registered subfields in auxiliary field [numA]
  * @param s Solution field with all subfields.
  * @param s_t Time derivative of solution field.
@@ -103,7 +103,7 @@ pylith_fekernels_f0_Inertia(const PylithInt dim,
 			    const PylithInt indicesS[],
 			    const PylithInt numA,
 			    const PylithInt indicesA[],
-			    const PylithInt uOff[],
+			    const PylithInt sOff[],
 			    const PylithInt aOff[],
 			    const PylithScalar s[],
 			    const PylithScalar s_t[],
@@ -122,7 +122,7 @@ pylith_fekernels_f0_Inertia(const PylithInt dim,
  * @param indicesS Indices of subfields in solution field [numS].
  * @param numA Number of registered subfields in auxiliary field [1].
  * @param indicesA Indices of subfields in auxiliary field [numA].
- * @param uOff Offset of registered subfields in solution field [numS].
+ * @param sOff Offset of registered subfields in solution field [numS].
  * @param aOff Offset of registered subfields in auxiliary field [numA]
  * @param s Solution field with all subfields.
  * @param s_t Time derivative of solution field.
@@ -146,7 +146,7 @@ pylith_fekernels_f0_BodyForce(const PylithInt dim,
 			      const PylithInt indicesS[],
 			      const PylithInt numA,
 			      const PylithInt indicesA[],
-			      const PylithInt uOff[],
+			      const PylithInt sOff[],
 			      const PylithInt aOff[],
 			      const PylithScalar s[],
 			      const PylithScalar s_t[],
@@ -165,7 +165,7 @@ pylith_fekernels_f0_BodyForce(const PylithInt dim,
  * @param indicesS Indices of subfields in solution field [numS].
  * @param numA Number of registered subfields in auxiliary field [2].
  * @param indicesA Indices of subfields in auxiliary field [numA].
- * @param uOff Offset of registered subfields in solution field [numS].
+ * @param sOff Offset of registered subfields in solution field [numS].
  * @param aOff Offset of registered subfields in auxiliary field [numA]
  * @param s Solution field with all subfields.
  * @param s_t Time derivative of solution field.
@@ -189,7 +189,7 @@ pylith_fekernels_f1_IsotropicLinearElasticity3D(const PylithInt dim,
 						const PylithInt indicesS[],
 						const PylithInt numA,
 						const PylithInt indicesA[],
-						const PylithInt uOff[],
+						const PylithInt sOff[],
 						const PylithInt aOff[],
 						const PylithScalar s[],
 						const PylithScalar s_t[],
@@ -208,7 +208,7 @@ pylith_fekernels_f1_IsotropicLinearElasticity3D(const PylithInt dim,
  * @param indicesS Indices of subfields in solution field [numS].
  * @param numA Number of registered subfields in auxiliary field [1].
  * @param indicesA Indices of subfields in auxiliary field [numA].
- * @param uOff Offset of registered subfields in solution field [numS].
+ * @param sOff Offset of registered subfields in solution field [numS].
  * @param aOff Offset of registered subfields in auxiliary field [numA]
  * @param s Solution field with all subfields.
  * @param s_t Time derivative of solution field.
@@ -232,7 +232,7 @@ pylith_fekernels_volumetricStress_IsotropicLinearElasticity3D(const PylithInt di
 							      const PylithInt indicesS[],
 							      const PylithInt numA,
 							      const PylithInt indicesA[],
-							      const PylithInt uOff[],
+							      const PylithInt sOff[],
 							      const PylithInt aOff[],
 							      const PylithScalar s[],
 							      const PylithScalar s_t[],
@@ -251,7 +251,7 @@ pylith_fekernels_volumetricStress_IsotropicLinearElasticity3D(const PylithInt di
  * @param indicesS Indices of subfields in solution field [numS].
  * @param numA Number of registered subfields in auxiliary field [1].
  * @param indicesA Indices of subfields in auxiliary field [numA].
- * @param uOff Offset of registered subfields in solution field [numS].
+ * @param sOff Offset of registered subfields in solution field [numS].
  * @param aOff Offset of registered subfields in auxiliary field [numA]
  * @param s Solution field with all subfields.
  * @param s_t Time derivative of solution field.
@@ -275,7 +275,7 @@ pylith_fekernels_deviatoricStress_IsotropicLinearElasticity3D(const PylithInt di
 							      const PylithInt indicesS[],
 							      const PylithInt numA,
 							      const PylithInt indicesA[],
-							      const PylithInt uOff[],
+							      const PylithInt sOff[],
 							      const PylithInt aOff[],
 							      const PylithScalar s[],
 							      const PylithScalar s_t[],

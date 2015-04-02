@@ -35,7 +35,7 @@ pylith_fekernels_f0_ElasticityInertia(const PylithInt dim,
 				      const PylithInt indicesS[],
 				      const PylithInt numA,
 				      const PylithInt indicesA[],
-				      const PylithInt uOff[],
+				      const PylithInt sOff[],
 				      const PylithInt aOff[],
 				      const PylithScalar s[],
 				      const PylithScalar s_t[],
@@ -56,9 +56,11 @@ pylith_fekernels_f0_ElasticityInertia(const PylithInt dim,
   PYLITH_METHOD_BEGIN;
   assert(_numS == numS);
   assert(_numA == numA);
+  assert(indicesS);
+  assert(indicesA);
 
-  pylith_fekernels_f0_Inertia(dim, 1, &indicesS[i_disp], 1, &indicesA[i_density], uOff, aOff, s, s_t, s_tt, s_x, a, a_x, x, f0);
-  pylith_fekernels_f0_BodyForce(dim, 1, &indicesS[i_disp], 1, &indicesA[i_bodyforce], uOff, aOff, s, s_t, s_tt, s_x, a, a_x, x, f0);
+  pylith_fekernels_f0_Inertia(dim, 1, &indicesS[i_disp], 1, &indicesA[i_density], sOff, aOff, s, s_t, s_tt, s_x, a, a_x, x, f0);
+  pylith_fekernels_f0_BodyForce(dim, 1, &indicesS[i_disp], 1, &indicesA[i_bodyforce], sOff, aOff, s, s_t, s_tt, s_x, a, a_x, x, f0);
   
   PYLITH_METHOD_RETURN(0);
 } /* f0_ElasticityInertia */
@@ -76,7 +78,7 @@ pylith_fekernels_f0_Inertia(const PylithInt dim,
 			    const PylithInt indicesS[],
 			    const PylithInt numA,
 			    const PylithInt indicesA[],
-			    const PylithInt uOff[],
+			    const PylithInt sOff[],
 			    const PylithInt aOff[],
 			    const PylithScalar s[],
 			    const PylithScalar s_t[],
@@ -94,7 +96,7 @@ pylith_fekernels_f0_Inertia(const PylithInt dim,
   const PylithInt f_disp = indicesS[i_disp];
   const PylithInt f_density = indicesA[i_density];
 
-  const PylithScalar* acc = &s_tt[uOff[f_disp]];
+  const PylithScalar* acc = &s_tt[sOff[f_disp]];
   const PylithScalar density = a[aOff[f_density]];
 
   PylithInt i;
@@ -102,6 +104,13 @@ pylith_fekernels_f0_Inertia(const PylithInt dim,
   PYLITH_METHOD_BEGIN;
   assert(_numS == numS);
   assert(_numA == numA);
+  assert(indicesS);
+  assert(indicesA);
+  assert(aOff);
+  assert(sOff);
+  assert(s_tt);
+  assert(a);
+  assert(f0);
 
   for (i=0; i < dim; ++i) {
     f0[i] += acc[i]*density;
@@ -123,7 +132,7 @@ pylith_fekernels_f0_BodyForce(const PylithInt dim,
 			      const PylithInt indicesS[],
 			      const PylithInt numA,
 			      const PylithInt indicesA[],
-			      const PylithInt uOff[],
+			      const PylithInt sOff[],
 			      const PylithInt aOff[],
 			      const PylithScalar s[],
 			      const PylithScalar s_t[],
@@ -146,6 +155,10 @@ pylith_fekernels_f0_BodyForce(const PylithInt dim,
   PYLITH_METHOD_BEGIN;
   assert(_numS == numS);
   assert(_numA == numA);
+  assert(indicesA);
+  assert(aOff);
+  assert(a);
+  assert(f0);
 
   for (i=0; i < dim; ++i) {
     f0[i] -= bodyforce[i];
@@ -167,7 +180,7 @@ pylith_fekernels_f1_IsotropicLinearElasticity3D(const PylithInt dim,
 						const PylithInt indicesS[],
 						const PylithInt numA,
 						const PylithInt indicesA[],
-						const PylithInt uOff[],
+						const PylithInt sOff[],
 						const PylithInt aOff[],
 						const PylithScalar s[],
 						const PylithScalar s_t[],
@@ -197,9 +210,11 @@ pylith_fekernels_f1_IsotropicLinearElasticity3D(const PylithInt dim,
   assert(_dim == dim);
   assert(_numS == numS);
   assert(_numA == numA);
+  assert(indicesS);
+  assert(indicesA);
 
-  pylith_fekernels_volumetricStress_IsotropicLinearElasticity3D(dim, 1, &indicesS[i_disp], numAVol, indicesAVol, uOff, aOff, s, s_t, s_tt, s_x, a, a_x, x, f1);
-  pylith_fekernels_deviatoricStress_IsotropicLinearElasticity3D(dim, 1, &indicesS[i_disp], numADev, indicesADev, uOff, aOff, s, s_t, s_tt, s_x, a, a_x, x, f1);
+  pylith_fekernels_volumetricStress_IsotropicLinearElasticity3D(dim, 1, &indicesS[i_disp], numAVol, indicesAVol, sOff, aOff, s, s_t, s_tt, s_x, a, a_x, x, f1);
+  pylith_fekernels_deviatoricStress_IsotropicLinearElasticity3D(dim, 1, &indicesS[i_disp], numADev, indicesADev, sOff, aOff, s, s_t, s_tt, s_x, a, a_x, x, f1);
   
   PYLITH_METHOD_RETURN(0);
 } /* f1_IsotropicLinearElasticity3D */
@@ -210,6 +225,10 @@ pylith_fekernels_f1_IsotropicLinearElasticity3D(const PylithInt dim,
  *
  * Solution fields = [disp(dim)]
  * Auxiliary fields = [lambda(1), initialstress(dim*dim), initialstrain(dim*dim)]
+ *
+ * We compute the stress relative to a reference stress/strain state.
+ *
+ * stress_ij - initialstress_ij = lambda * (strain_kk - initialstrain_kk) * delta_ij + 2*mu * (strain_ij - initialstrain_ij)
  */
 PetscErrorCode
 pylith_fekernels_volumetricStress_IsotropicLinearElasticity3D(const PylithInt dim,
@@ -217,7 +236,7 @@ pylith_fekernels_volumetricStress_IsotropicLinearElasticity3D(const PylithInt di
 							      const PylithInt indicesS[],
 							      const PylithInt numA,
 							      const PylithInt indicesA[],
-							      const PylithInt uOff[],
+							      const PylithInt sOff[],
 							      const PylithInt aOff[],
 							      const PylithScalar s[],
 							      const PylithScalar s_t[],
@@ -240,7 +259,7 @@ pylith_fekernels_volumetricStress_IsotropicLinearElasticity3D(const PylithInt di
   const PylithInt f_istress = indicesA[i_istress];
   const PylithInt f_istrain = indicesA[i_istrain];
 
-  const PylithScalar* disp_x = &s_x[uOff[f_disp]];
+  const PylithScalar* disp_x = &s_x[sOff[f_disp]];
   const PylithScalar lambda = a[aOff[f_lambda]];
   const PylithScalar* initialstress = &a[aOff[f_istress]];
   const PylithScalar* initialstrain = &a[aOff[f_istrain]];
@@ -253,6 +272,13 @@ pylith_fekernels_volumetricStress_IsotropicLinearElasticity3D(const PylithInt di
   assert(_dim == dim);
   assert(_numS == numS);
   assert(_numA == numA);
+  assert(indicesS);
+  assert(indicesA);
+  assert(sOff);
+  assert(aOff);
+  assert(s_x);
+  assert(a);
+  assert(stress);
 
   for (i=0; i < _dim; ++i) {
     trace += disp_x[i] - initialstrain[i*_dim+i];
@@ -279,7 +305,7 @@ pylith_fekernels_deviatoricStress_IsotropicLinearElasticity3D(const PylithInt di
 							      const PylithInt indicesS[],
 							      const PylithInt numA,
 							      const PylithInt indicesA[],
-							      const PylithInt uOff[],
+							      const PylithInt sOff[],
 							      const PylithInt aOff[],
 							      const PylithScalar s[],
 							      const PylithScalar s_t[],
@@ -302,7 +328,7 @@ pylith_fekernels_deviatoricStress_IsotropicLinearElasticity3D(const PylithInt di
   const PylithInt f_istress = indicesA[i_istress];
   const PylithInt f_istrain = indicesA[i_istrain];
 
-  const PylithScalar* disp_x = &s_x[uOff[f_disp]];
+  const PylithScalar* disp_x = &s_x[sOff[f_disp]];
   const PylithScalar mu = a[aOff[f_mu]];
   const PylithScalar* initialstress = &a[aOff[f_istress]];
   const PylithScalar* initialstrain = &a[aOff[f_istrain]];
@@ -314,6 +340,13 @@ pylith_fekernels_deviatoricStress_IsotropicLinearElasticity3D(const PylithInt di
   assert(_dim == dim);
   assert(_numS == numS);
   assert(_numA == numA);
+  assert(indicesS);
+  assert(indicesA);
+  assert(sOff);
+  assert(aOff);
+  assert(s_x);
+  assert(a);
+  assert(stress);
 
   for (i=0; i < _dim; ++i) {
     meanistress += initialstress[i*_dim+i];
