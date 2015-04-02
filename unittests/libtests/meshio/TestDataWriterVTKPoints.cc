@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2014 University of California, Davis
+// Copyright (c) 2010-2015 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -99,6 +99,7 @@ pylith::meshio::TestDataWriterVTKPoints::testTimeStep(void)
   const int numTimeSteps = 1;
   if (!_data->cellsLabel) {
     output.open(*_mesh, numTimeSteps);
+    output.writePointNames(_data->names, _data->numPoints); // Should to nothing
     output.openTimeStep(t, *_mesh);
   } else {
     const char* label = _data->cellsLabel;
@@ -144,6 +145,7 @@ pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void)
   const int numTimeSteps = 1;
   if (!_data->cellsLabel) {
     output.open(*_mesh, numTimeSteps);
+    output.writePointNames(_data->names, _data->numPoints); // Should to nothing
     output.openTimeStep(t, *_mesh);
   } else {
     const char* label = _data->cellsLabel;

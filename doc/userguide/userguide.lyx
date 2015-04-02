@@ -1,4 +1,4 @@
-#LyX 2.0 created this file. For more info see http://www.lyx.org/
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 413
 \begin_document
 \begin_header
@@ -25,7 +25,6 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
-
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -136,7 +135,7 @@ PyLith User Manual
 \begin_inset Newline newline
 \end_inset
 
-Version 2.0.0
+Version 2.1.0
 \end_layout
 
 \begin_layout Date
@@ -517,7 +516,7 @@ Courant, R., K.
  Lewy (1967), On the Partial Differential Equations of Mathematical Physics,
  
 \shape italic
-IBM Jounral of Research and Development
+IBM Journal of Research and Development
 \shape default
 , 11(2), 215--234.
 \end_layout
@@ -613,6 +612,32 @@ Journal of Geophysical Research
  113
 \shape default
 , B09317, doi:10.1029/2007JB005553.
+\end_layout
+
+\begin_layout Bibliography
+\labelwidthstring Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "Kaus et al., 2010"
+key "Kaus:etal:2010"
+
+\end_inset
+
+Kaus, B.
+ J.
+ P., H.
+ Muhlhaus, and D.
+ A.
+ May (2010), A stabilization algorithm for geodynamic numerical simulations
+ with a free surface, 
+\shape italic
+Physics of the Earth and Planetary Interiors
+\shape default
+, 
+\shape italic
+181
+\shape default
+, 12-20, doi:10.1016/j.pepi.2010.04.007.
 \end_layout
 
 \begin_layout Bibliography

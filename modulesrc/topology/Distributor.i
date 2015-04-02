@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2014 University of California, Davis
+// Copyright (c) 2010-2015 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -41,17 +41,17 @@ namespace pylith {
        *
        * @param newMesh Distributed mesh (result).
        * @param origMesh Mesh to distribute.
-       * @param partitioner Name of partitioner to use in distributing mesh.
+   * @param partitionerName Name of PETSc partitioner to use in distributing mesh.
        */
       static
       void distribute(pylith::topology::Mesh* const newMesh,
-		      const pylith::topology::Mesh& origMesh);
+		      const pylith::topology::Mesh& origMesh,
+		      const char* partitionerName);
 
       /** Write partitioning info for distributed mesh.
        *
        * @param writer Data writer for partition information.
        * @param mesh Distributed mesh.
-       * @param cs Coordinate system for mesh.
        */
       static
       void write(pylith::meshio::DataWriter* const writer,

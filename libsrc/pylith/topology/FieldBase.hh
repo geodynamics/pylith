@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2014 University of California, Davis
+// Copyright (c) 2010-2015 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -63,12 +63,10 @@ public :
 public :
 
   struct Metadata {
-    std::string label; //< Label for field.
+    std::string label; ///< Label for field.
     VectorFieldEnum vectorFieldType; ///< Type of vector field.
-    PylithScalar scale; //< Dimension scale associated with values.
-    int index; //< Index for corresponding PETSc section (subfields).
-    bool dimsOkay; //< Ok to replace nondimensionalized values 
-                   // with dimensionalized values.
+    PylithScalar scale; ///< Dimension scale associated with values.
+    bool dimsOkay; ///< Ok to replace nondimensionalized values with dimensionalized values.
   }; // Metadata
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////

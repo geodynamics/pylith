@@ -8,7 +8,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2014 University of California, Davis
+# Copyright (c) 2010-2015 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -31,15 +31,24 @@ block 2 surface surf_outer
 block 2 name "outer"
 
 # ----------------------------------------------------------------------
+# Create nodeset for fault interfaces
+# ----------------------------------------------------------------------
+group "fault" add node in curve 5
+nodeset 20 group fault
+nodeset 20 name "fault"
+
+# ----------------------------------------------------------------------
 # Create nodeset for boundaries
 # ----------------------------------------------------------------------
 group "bndry_south" add node in curve 6
 group "bndry_south" add node in curve 7
+group "bndry_south" remove node in group fault
 nodeset 11 group bndry_south
 nodeset 11 name "bndry_south"
 
 group "bndry_north" add node in curve 9
 group "bndry_north" add node in curve 8
+group "bndry_north" remove node in group fault
 nodeset 12 group bndry_north
 nodeset 12 name "bndry_north"
 
@@ -51,16 +60,8 @@ group "bndry_east" add node in curve 2
 nodeset 14 group bndry_east
 nodeset 14 name "bndry_east"
 
-# ----------------------------------------------------------------------
-# Create nodeset for fault interfaces
-# ----------------------------------------------------------------------
-group "fault" add node in curve 5
-group "fault" remove node in bndry_north
-group "fault" remove node in bndry_south
-nodeset 20 group fault
-nodeset 20 name "fault"
-
 # End of file
+
 
 
 

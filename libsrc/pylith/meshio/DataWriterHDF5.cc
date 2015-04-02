@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2014 University of California, Davis
+// Copyright (c) 2010-2015 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -64,8 +64,8 @@ pylith::meshio::DataWriterHDF5::deallocate(void)
   DataWriter::deallocate();
 
   PetscErrorCode err = 0;
-  err = PetscViewerDestroy(&_viewer); PYLITH_CHECK_ERROR(err);
-  err = VecDestroy(&_tstamp); PYLITH_CHECK_ERROR(err);
+  err = PetscViewerDestroy(&_viewer); PYLITH_CHECK_ERROR(err);assert(!_viewer);
+  err = VecDestroy(&_tstamp); PYLITH_CHECK_ERROR(err);assert(!_tstamp);
 
   PYLITH_METHOD_END;
 } // deallocate
@@ -252,7 +252,7 @@ pylith::meshio::DataWriterHDF5::close(void)
   PYLITH_METHOD_BEGIN;
 
   PetscErrorCode err = 0;
-  err = PetscViewerDestroy(&_viewer); PYLITH_CHECK_ERROR(err);
+  err = PetscViewerDestroy(&_viewer); PYLITH_CHECK_ERROR(err);assert(!_viewer);
   err = VecDestroy(&_tstamp); PYLITH_CHECK_ERROR(err);assert(!_tstamp);
 
   _timesteps.clear();
@@ -319,8 +319,8 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
       err = PetscViewerHDF5GetFileId(_viewer, &h5); PYLITH_CHECK_ERROR(err);
       assert(h5 >= 0);
       std::string fullName = std::string("/vertex_fields/") + field.label();
-      HDF5::writeAttribute(h5, fullName.c_str(), "vector_field_type",
-			   topology::FieldBase::vectorFieldString(field.vectorFieldType()));
+      const char* sattr = topology::FieldBase::vectorFieldString(field.vectorFieldType());
+      HDF5::writeAttribute(h5, fullName.c_str(), "vector_field_type", sattr);
     } // if
 
   } catch (const std::exception& err) {
@@ -387,8 +387,8 @@ pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
       err = PetscViewerHDF5GetFileId(_viewer, &h5); PYLITH_CHECK_ERROR(err);
       assert(h5 >= 0);
       std::string fullName = std::string("/cell_fields/") + field.label();
-      HDF5::writeAttribute(h5, fullName.c_str(), "vector_field_type",
-			   topology::FieldBase::vectorFieldString(field.vectorFieldType()));
+      const char* sattr = topology::FieldBase::vectorFieldString(field.vectorFieldType());
+      HDF5::writeAttribute(h5, fullName.c_str(), "vector_field_type", sattr);
     } // if
   } catch (const std::exception& err) {
     std::ostringstream msg;
@@ -404,6 +404,35 @@ pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
 
   PYLITH_METHOD_END;
 } // writeCellField
+
+// ----------------------------------------------------------------------
+// Write dataset with names of points to file.
+void
+pylith::meshio::DataWriterHDF5::writePointNames(const char* const* names,
+						const int numNames,
+						const topology::Mesh& mesh)
+{ // writePointNames
+  PYLITH_METHOD_BEGIN;
+
+  assert(_viewer);
+
+  try {
+    hid_t h5 = -1;
+    PetscErrorCode err = PetscViewerHDF5GetFileId(_viewer, &h5); PYLITH_CHECK_ERROR(err);
+    assert(h5 >= 0);
+    HDF5::writeDataset(h5, "/", "stations", names, numNames);
+  } catch (const std::exception& err) {
+    std::ostringstream msg;
+    msg << "Error while writing stations to HDF5 file '" << _hdf5Filename() << "'.\n" << err.what();
+    throw std::runtime_error(msg.str());
+  } catch (...) { 
+    std::ostringstream msg;
+    msg << "Error while writing stations to HDF5 file '" << _hdf5Filename() << "'.";
+    throw std::runtime_error(msg.str());
+  } // try/catch
+
+  PYLITH_METHOD_END;
+} // writePointNames
 
 // ----------------------------------------------------------------------
 // Generate filename for HDF5 file.
@@ -434,7 +463,7 @@ pylith::meshio::DataWriterHDF5::_writeTimeStamp(const PylithScalar t,
   assert(_tstamp);
   PetscErrorCode err = 0;
 
-  if (0 == commRank) {
+  if (!commRank) {
     const PylithScalar tDim = t * DataWriter::_timeScale;
     err = VecSetValue(_tstamp, 0, tDim, INSERT_VALUES); PYLITH_CHECK_ERROR(err);
   } // if

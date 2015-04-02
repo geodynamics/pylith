@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2014 University of California, Davis
+// Copyright (c) 2010-2015 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -50,17 +50,35 @@ pylith::topology::Distributor::~Distributor(void)
 // Distribute mesh among processors.
 void
 pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
-					  const topology::Mesh& origMesh)
+					  const topology::Mesh& origMesh,
+					  const char* partitionerName)
 { // distribute
   PYLITH_METHOD_BEGIN;
   
   assert(newMesh);
   newMesh->coordsys(origMesh.coordsys());
-  journal::info_t info("distributor");
 
-  PetscDM newDM = NULL;
-  PetscErrorCode err = DMPlexDistribute(origMesh.dmMesh(), 0, NULL, &newDM);PYLITH_CHECK_ERROR(err);
-  newMesh->dmMesh(newDM);
+  journal::info_t info("mesh_distributor");
+  const int commRank = origMesh.commRank();
+  if (0 == commRank) {
+    info << journal::at(__HERE__)
+	 << "Partitioning mesh using PETSc '" << partitionerName << "' partitioner." << journal::endl;
+  } // if
+  
+  PetscErrorCode err = 0;
+  PetscPartitioner partitioner =  0;
+  PetscDM dmOrig = origMesh.dmMesh();assert(dmOrig);
+  err = DMPlexGetPartitioner(dmOrig, &partitioner);PYLITH_CHECK_ERROR(err);
+  err = PetscPartitionerSetType(partitioner, partitionerName);PYLITH_CHECK_ERROR(err);
+
+  if (0 == commRank) {
+    info << journal::at(__HERE__)
+	 << "Distributing partitioned mesh." << journal::endl;
+  } // if
+
+  PetscDM dmNew = NULL;
+  err = DMPlexDistribute(origMesh.dmMesh(), 0, NULL, &dmNew);PYLITH_CHECK_ERROR(err);
+  newMesh->dmMesh(dmNew);
 
   PYLITH_METHOD_END;
 } // distribute
@@ -73,7 +91,7 @@ pylith::topology::Distributor::write(meshio::DataWriter* const writer,
 { // write
   PYLITH_METHOD_BEGIN;
 
-  journal::info_t info("distributor");
+  journal::info_t info("mesh_distributor");
     
   const int commRank = mesh.commRank();
   if (0 == commRank) {

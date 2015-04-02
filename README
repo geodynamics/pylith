@@ -1,4 +1,4 @@
-We are pleased to announce release of PyLith version 2.0.3
+We are pleased to announce release of PyLith version 2.1.0
 
 Please submit bug reports via the World Wide Web at:
     https://github.com/geodynamics/pylith/issues
@@ -40,6 +40,63 @@ TIPS
     this is usually an indication that something is wrong. Either the
     preconditioner is inappropriate for the type of problem you are
     solving or there is an error in the problem setup.
+
+
+======================================================================
+MIGRATING FROM VERSION 2.0 TO 2.1
+======================================================================
+
+The points file for OutputSolnPoints must now contain station names as
+the first column.
+
+----------------------------------------------------------------------
+Version 2.1.0
+----------------------------------------------------------------------
+
+* Station names are required for output at arbitrary points
+  (OutputSolnPoints) and are included in a /stations dataset in HDF5
+  files.
+
+* A progress monitor will update a text file with the progress of a
+  simulation (time in the time stepping loop or the number of impulses
+  completed) and given an estimate of when the simulation will be
+  completed.
+
+* Bug fixes
+
+  - A few bugs related to creating cohesive cells for fault
+    intersections have been fixed. Faults can now meet at T
+    intersections provided the buried edges of the faults are
+    clamped. In other words, the fault ending at the T intersection
+    has a clamped edge along the intersection. The fault ending at the
+    intersection must also come AFTER the through-going fault in the
+    list of fault interfaces.
+
+  - There have been two major bug fixes for Drucker-Prager plasticity,
+    for both DruckerPrager3D and DruckerPragerPlaneStrain. The first fix
+    was a missing initial pressure term for the plastic multiplier
+    in the Drucker-Prager formulation. This affects plasticity
+    calculations when initial stresses are used. The error has been
+    corrected in the code, the manual, and the unit tests. The second
+    bug was an incorrect test for tensile yield that could cause
+    PyLith to exit with an error when plastic yield had not actually
+    occurred. The error would only occur when the allow_tensile_yield
+    flag was set to False. This bug has been fixed in the code, and the
+    new test is also described in the manual. This should prevent
+    problems that previously existed when allow_tensile_yield was set
+    to False (as it should be for most quasi-static problems).
+
+  - Fixed bug in DataWriterHDF5Ext associated with multiple processes
+    writing information to the HDF5 file. With external datasets the
+    HDF5 file is limited to metadata and is maintained by process 0.
+
+  - A two-dimensional gravity example has been added, based on the
+    tutorial from the June, 2014 workshop at Stanford University.
+    The tutorial itself is in examples/2d/gravity, and a new section
+    has also been added to the manual describing the example.
+
+  - Fixed inconsistent fault orientation when running in parallel
+    for 2-D domains.
 
 
 ======================================================================
@@ -102,7 +159,7 @@ Version 2.0.2
     affecting systems with OS X 10.7 and 10.8.
 
   - Improved example journal files for CUBIT/Trelis to improve
-    compability (examples/meshing/surface_nurbs/dem).
+    compatibility (examples/meshing/surface_nurbs/dem).
 
   - Updated more journal in examples so that APREPRO lines have a
     leading '$' instead of a '#' to differentiate from comments.
@@ -117,7 +174,7 @@ Version 2.0.1
 * Bug fixes
 
   - Improved example journal files for CUBIT/Trelis to improve
-    compability. All journal files should work with CUBIT 14.1 and
+    compatibility. All journal files should work with CUBIT 14.1 and
     Trelis 15.0.
 
   - Created examples of IDless journal files in examples/2d/greensfns.
@@ -154,7 +211,7 @@ Version 2.0.0
 * Switched from using Subversion to Git for version control.
 
   The source code repository changed from a CIG maintained Subversion
-  repository to a Git repository at Github.com. The URL for the Git
+  repository to a Git repository at GitHub.com. The URL for the Git
   repository is https://github.com/geodynamics/pylith. The installer
   has been updated accordingly.
 

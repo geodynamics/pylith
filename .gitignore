@@ -31,3 +31,11 @@ autom4te.cache
 *~
 *.pyc
 examples/*/*/output/*.vtk
+examples/2d/*/output/*.h5
+examples/2d/*/output/*.xmf
+examples/2d/*/*/output/*.h5
+examples/2d/*/*/output/*.xmf
+tests_auto/*/*/*.h5
+tests_auto/*/*/*.xmf
+tests_auto/*/*/*_disp.spatialdb
+examples/3d/hex8/output

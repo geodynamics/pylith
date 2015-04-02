@@ -8,7 +8,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2014 University of California, Davis
+# Copyright (c) 2010-2015 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -24,12 +24,12 @@ playback 'geometry.jou'
 # ----------------------------------------------------------------------
 # Set discretization size and scheme
 # ----------------------------------------------------------------------
-#{dxInner=150.0*m}
-#{dxOuter=0.75*km}
+${dxInner=150.0*m}
+${dxOuter=1.50*km}
 
 surface all scheme trimesh
 surface 23 size {dxInner}
-curve 53 59 60 size {dxOuter}
+curve 51 52 size {dxOuter}
 
 # ----------------------------------------------------------------------
 # Generate the mesh
@@ -53,19 +53,19 @@ block 1 name 'elastic'
 block 2 surface 24
 block 2 name 'viscoelastic'
 
-group "face_xpos" add node in curve 59
+group "face_xpos" add node in curve 51
 nodeset 11 group face_xpos
 nodeset 11 name "face_xpos"
 
-group "face_xneg" add node in curve 53
+group "face_xneg" add node in curve 53 48
 nodeset 12 group face_xneg
 nodeset 12 name "face_xneg"
 
-group "face_yneg" add node in curve 60
+group "face_yneg" add node in curve 52
 nodeset 13 group face_yneg
 nodeset 13 name "face_yneg"
 
-group "face_ypos" add node in curve 54 51 58
+group "face_ypos" add node in curve 56 49
 nodeset 14 group face_ypos
 nodeset 14 name "face_ypos"
 
@@ -76,7 +76,3 @@ export mesh "mesh.exo" dimension 2 overwrite
 
 
 # End of file
-
-
-
-

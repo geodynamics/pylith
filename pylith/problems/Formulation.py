@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2014 University of California, Davis
+# Copyright (c) 2010-2015 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -566,6 +566,21 @@ class Formulation(PetscComponent, ModuleFormulation):
 
     self._debug.log(resourceUsageString())
     return
+
+
+  def _collectNeedNewJacobian(self, flagLocal):
+    """
+    Aggregate needNewJacobian results across processors.
+    """
+    if flagLocal:
+      countLocal = 1
+    else:
+      countLocal = 0
+    import pylith.mpi.mpi as mpi
+    comm = self.mesh().comm()
+    countAll = mpi.allreduce_scalar_int(countLocal, mpi.mpi_max(), comm.handle)
+    
+    return countAll > 0
 
 
   def _reformResidual(self, t, dt):

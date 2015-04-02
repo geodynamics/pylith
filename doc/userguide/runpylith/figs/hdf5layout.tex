@@ -1,0 +1,60 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage{tikz}
+%\usetikzlibrary{external}
+%\tikzexternalize % activate
+
+\begin{document}
+
+\usetikzlibrary{arrows,shapes}
+\input{../../palettes/figcolors}
+
+\tikzstyle{main} = [rectangle, font={\bf},text centered,very thick]
+\tikzstyle{group} = [main, text width=8em, text centered, rounded corners=0.75em, draw=orange!80!black, top color=ltorange!50!white, bottom color=orange]
+\tikzstyle{dataset} = [main, text width=16em, draw=blue!80!black, top color=ltblue!50!white, bottom color=blue]
+\tikzstyle{attribute} = [main, draw=dkyellow!80!black, top color=yellow!50!white, bottom color=dkyellow]
+
+\tikzstyle{connect} = [very thick]
+\tikzstyle{connect-opt} = [connect, dashed]
+
+\newcommand{\dsetdims}[1]{\\{\small\tt[#1]}}
+
+\begin{tikzpicture}[node distance=15.0em]
+
+  \node (root) [group] {/};
+
+  \node (geometry) [group, right of=root] {geometry};
+  \node (vertices) [dataset, right of=geometry] {vertices \dsetdims{nvertices, dim}};
+
+  \node (topology) [group, below of=geometry, yshift=+6em] {topology};
+  \node (cells) [dataset, right of=topology] {cells \dsetdims{ncells, ncorners}};
+
+  \node (vfields) [group, below of=topology, yshift=+6em] {vertex\_fields};
+  \node (disp) [dataset, right of=vfields] {displacement \dsetdims{ntsteps, nvertices, dim}};
+  \node (vel) [dataset, below of=disp, yshift=+10.0em] {velocity \dsetdims{ntsteps, nvertices, dim}};
+
+  \node (cfields) [group, below of=vfields, yshift=+1em] {cell\_fields};
+  \node (stress) [dataset, right of=cfields] {stress \dsetdims{ntsteps, ncells, tensorsize}};
+  \node (strain) [dataset, below of=stress, yshift=+10.0em] {strain \dsetdims{ntsteps, ncells, tensorsize}};
+
+  \node (time) [dataset, below of=cfields, yshift=+1em] {time \dsetdims{ntsteps}};
+  \node (stations) [dataset, below of=time, yshift=+6em] {stations \dsetdims{nvertices, 64}};
+
+  % Connections
+  \draw[connect] (root.east) -+(6em,0)|- (geometry.west);
+  \draw[connect] (root.east) -+(6em,0)|- (topology.west);
+  \draw[connect] (root.east) -+(6em,0)|- (vfields.west);
+  \draw[connect] (root.east) -+(6em,0)|- (cfields.west);
+  \draw[connect] (root.east) -+(6em,0)|- (time.west);
+  \draw[connect-opt] (root.east) -+(6em,0)|- (stations.west);
+
+  \draw[connect] (geometry.east) to (vertices.west);
+  \draw[connect] (topology.east) to  (cells.west);
+  \draw[connect] (vfields.east) to (disp.west);
+  \draw[connect] (vfields.east) to (vel.west);
+  \draw[connect] (cfields.east) to (stress.west);
+  \draw[connect] (cfields.east) to (strain.west);
+
+
+\end{tikzpicture}
+
+\end{document}

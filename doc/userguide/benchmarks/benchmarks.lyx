@@ -115,14 +115,14 @@ scecdata.usc.edu/cvws/cgi-bin/cvws.cgi
  This suite of benchmarks permits evaluating the relative performance of
  different types of basis functions, quadrature schemes, and discretizations
  for geophysical applications.
- The files needed to run the 3D benchmarks are in the CIG SVN Repository
+ The files needed to run the 3D benchmarks are in the CIG GitHub Repository
  
 \begin_inset Flex URL
 status open
 
 \begin_layout Plain Layout
 
-geodynamics.org/svn/cig/short/3D/PyLith/benchmarks
+https://github.com/geodynamics/pylith_benchmarks
 \end_layout
 
 \end_inset

@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2014 University of California, Davis
+# Copyright (c) 2010-2015 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -74,6 +74,15 @@ class TestApp(Script):
 
     from TestTimeStepAdapt import TestTimeStepAdapt
     suite.addTest(unittest.makeSuite(TestTimeStepAdapt))
+
+    from TestProgressMonitor import TestProgressMonitor
+    suite.addTest(unittest.makeSuite(TestProgressMonitor))
+
+    from TestProgressMonitorTime import TestProgressMonitorTime
+    suite.addTest(unittest.makeSuite(TestProgressMonitorTime))
+
+    from TestProgressMonitorStep import TestProgressMonitorStep
+    suite.addTest(unittest.makeSuite(TestProgressMonitorStep))
 
     return suite
 

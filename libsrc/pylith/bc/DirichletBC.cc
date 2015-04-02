@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2014 University of California, Davis
+// Copyright (c) 2010-2015 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -89,7 +89,7 @@ pylith::bc::DirichletBC::setConstraintSizes(const topology::Field& field)
   if (0 == numFixedDOF)
     PYLITH_METHOD_END;
 
-  PetscSection section = field.petscSection();assert(section);
+  PetscSection section = field.localSection();assert(section);
   PetscInt numFields;
   PetscErrorCode err = 0;
 
@@ -133,7 +133,7 @@ pylith::bc::DirichletBC::setConstraints(const topology::Field& field)
   if (0 == numFixedDOF)
     PYLITH_METHOD_END;
 
-  PetscSection section = field.petscSection();assert(section);
+  PetscSection section = field.localSection();assert(section);
   PetscInt numFields;
   PetscErrorCode err = 0;
 

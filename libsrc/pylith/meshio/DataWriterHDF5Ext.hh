@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2014 University of California, Davis
+// Copyright (c) 2010-2015 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -54,6 +54,7 @@ class pylith::meshio::DataWriterHDF5Ext : public DataWriter
 { // DataWriterHDF5Ext
   friend class TestDataWriterHDF5ExtMesh; // unit testing
   friend class TestDataWriterHDF5ExtSubMesh; // unit testing
+  friend class TestDataWriterHDF5ExtPoints; // unit testing
   friend class TestDataWriterHDF5ExtBCMesh; // unit testing
   friend class TestDataWriterHDF5ExtFaultMesh; // unit testing
 
@@ -119,6 +120,18 @@ public :
 		      topology::Field& field,
 		      const char* label =0,
 		      const int labelId =0);
+
+  /** Write dataset with names of points to file.
+   *
+   * @param names Array with name for each point, e.g., station name.
+   * @param nunNames Number of names in array.
+   * @param mesh Finite-element mesh. 
+   *
+   * Primarily used with OutputSolnPoints.
+   */
+  void writePointNames(const char* const* names,
+		       const int numNames,
+		       const topology::Mesh& mesh);
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :

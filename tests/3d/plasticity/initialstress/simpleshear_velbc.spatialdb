@@ -1,0 +1,17 @@
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 4
+  value-names =  displacement-rate-x  displacement-rate-y  displacement-rate-z  rate-start-time
+  value-units =  m/year  m/year  m/year  year
+  num-locs = 2
+  data-dim = 1
+  space-dim = 3
+  cs-data = cartesian {
+    to-meters = 1.0e+3
+    space-dim = 3
+  }
+}
+// Columns are
+// x coordinate, y coordinate, z coordinate, displacement-rate-x, displacement-rate-y, displacement-rate-z, rate-start-time
+0.0  -5.0  0.0   0.0               0.0  0.0  0.0
+0.0   5.0  0.0   0.8888888888889   0.0  0.0  0.0
