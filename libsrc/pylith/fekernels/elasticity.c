@@ -109,11 +109,54 @@ pylith_fekernels_f0_ElasticityInertia(const PylithInt dim,
   assert(indicesS);
   assert(indicesA);
 
-  pylith_fekernels_f0_Inertia(dim, 1, &indicesS[i_vel], 1, &indicesA[i_density], sOff, aOff, s, s_t, s_x, a, a_t, a_x, x, f0);
-  pylith_fekernels_f0_BodyForce(dim, 0, NULL, 1, &indicesA[i_bodyforce], sOff, aOff, s, s_t, s_x, a, a_t, a_x, x, f0);
+  pylith_fekernels_Inertia(dim, 1, &indicesS[i_vel], 1, &indicesA[i_density], sOff, aOff, s, s_t, s_x, a, a_t, a_x, x, f0);
+  pylith_fekernels_BodyForce(dim, 0, NULL, 1, &indicesA[i_bodyforce], sOff, aOff, s, s_t, s_x, a, a_t, a_x, x, f0);
   
   PYLITH_METHOD_RETURN(0);
 } /* f0_ElasticityInertia */
+					      
+
+/* ---------------------------------------------------------------------- */
+/* f0 entry function for body forces (no inertia).
+ *
+ * QUESTION: Make a separate f0 entry function if we don't have body
+ * forces? Most dynamic simulations don't use body forces.
+ *
+ * Solution fields = [disp(dim), vel(dim)]
+ * Auxiliary fields = [body force(dim)]
+ */
+PetscErrorCode
+pylith_fekernels_f0_ElasticityBodyForce(const PylithInt dim,
+					const PylithInt numS,
+					const PylithInt indicesS[],
+					const PylithInt numA,
+					const PylithInt indicesA[],
+					const PylithInt sOff[],
+					const PylithInt aOff[],
+					const PylithScalar s[],
+					const PylithScalar s_t[],
+					const PylithScalar s_x[],
+					const PylithScalar a[],
+					const PylithScalar a_t[],
+					const PylithScalar a_x[],
+					const PylithScalar x[],
+					PylithScalar f0[])
+{ /* f0_ElasticityBodyForce */
+  const PylithInt _numS = 2;
+
+  const PylithInt _numA = 1;
+  const PylithInt i_bodyforce = 0;
+
+  PYLITH_METHOD_BEGIN;
+  assert(_numS == numS);
+  assert(_numA == numA);
+  assert(indicesS);
+  assert(indicesA);
+
+  pylith_fekernels_BodyForce(dim, 0, NULL, 1, &indicesA[i_bodyforce], sOff, aOff, s, s_t, s_x, a, a_t, a_x, x, f0);
+  
+  PYLITH_METHOD_RETURN(0);
+} /* f0_ElasticityBodyForce */
 					      
 
 /* ---------------------------------------------------------------------- */
@@ -123,22 +166,22 @@ pylith_fekernels_f0_ElasticityInertia(const PylithInt dim,
  * Auxiliary fields = [density]
  */
 PetscErrorCode
-pylith_fekernels_f0_Inertia(const PylithInt dim,
-			    const PylithInt numS,
-			    const PylithInt indicesS[],
-			    const PylithInt numA,
-			    const PylithInt indicesA[],
-			    const PylithInt sOff[],
-			    const PylithInt aOff[],
-			    const PylithScalar s[],
-			    const PylithScalar s_t[],
-			    const PylithScalar s_tt[],
-			    const PylithScalar s_x[],
-			    const PylithScalar a[],
-			    const PylithScalar a_x[],
-			    const PylithScalar x[],
-			    PylithScalar f0[])
-{ /* f0_Inertia */
+pylith_fekernels_Inertia(const PylithInt dim,
+			 const PylithInt numS,
+			 const PylithInt indicesS[],
+			 const PylithInt numA,
+			 const PylithInt indicesA[],
+			 const PylithInt sOff[],
+			 const PylithInt aOff[],
+			 const PylithScalar s[],
+			 const PylithScalar s_t[],
+			 const PylithScalar s_tt[],
+			 const PylithScalar s_x[],
+			 const PylithScalar a[],
+			 const PylithScalar a_x[],
+			 const PylithScalar x[],
+			 PylithScalar f0[])
+{ /* Inertia */
   const PylithInt _numS = 1;
   const PylithInt i_vel = 0;
   const PylithInt f_vel = indicesS[i_vel];
@@ -167,7 +210,7 @@ pylith_fekernels_f0_Inertia(const PylithInt dim,
   } /* for */
 
   PYLITH_METHOD_RETURN(0);
-} /* f0_Inertia */
+} /* Inertia */
 					      
 
 /* ---------------------------------------------------------------------- */
@@ -177,22 +220,22 @@ pylith_fekernels_f0_Inertia(const PylithInt dim,
  * Auxiliary fields = [body force(dim)]
  */
 PetscErrorCode
-pylith_fekernels_f0_BodyForce(const PylithInt dim,
-			      const PylithInt numS,
-			      const PylithInt indicesS[],
-			      const PylithInt numA,
-			      const PylithInt indicesA[],
-			      const PylithInt sOff[],
-			      const PylithInt aOff[],
-			      const PylithScalar s[],
-			      const PylithScalar s_t[],
-			      const PylithScalar s_x[],
-			      const PylithScalar a[],
-			      const PylithScalar a_t[],
-			      const PylithScalar a_x[],
-			      const PylithScalar x[],
-			      PylithScalar f0[])
-{ /* f0_BodyForce */
+pylith_fekernels_BodyForce(const PylithInt dim,
+			   const PylithInt numS,
+			   const PylithInt indicesS[],
+			   const PylithInt numA,
+			   const PylithInt indicesA[],
+			   const PylithInt sOff[],
+			   const PylithInt aOff[],
+			   const PylithScalar s[],
+			   const PylithScalar s_t[],
+			   const PylithScalar s_x[],
+			   const PylithScalar a[],
+			   const PylithScalar a_t[],
+			   const PylithScalar a_x[],
+			   const PylithScalar x[],
+			   PylithScalar f0[])
+{ /* BodyForce */
   const PylithInt _numS = 0;
 
   const PylithInt _numA = 1;
@@ -215,7 +258,7 @@ pylith_fekernels_f0_BodyForce(const PylithInt dim,
   } /* for */
 
   PYLITH_METHOD_RETURN(0);
-} /* f0_BodyForce */
+} /* BodyForce */
 
 
 /* ---------------------------------------------------------------------- */
