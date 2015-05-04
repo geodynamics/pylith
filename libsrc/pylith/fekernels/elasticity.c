@@ -459,4 +459,185 @@ pylith_fekernels_deviatoricStress_IsotropicLinearElasticity3D(const PylithInt di
 } /* deviatoricStress_IsotropicLinearElasticity */
 
 
+/* ---------------------------------------------------------------------- */
+/* f1 entry function for isotropic linear elasticity in 3-D.
+ *
+ * Solution fields = [disp(dim), vel(dim)]
+ * Auxiliary fields = [lambda(1), mu(1), initialstress(dim*dim), initialstrain(dim*dim)]
+ */
+PetscErrorCode
+pylith_fekernels_f1_IsotropicLinearElasticityPlaneStrain(const PylithInt dim,
+							 const PylithInt numS,
+							 const PylithInt numA,
+							 const PylithInt sOff[],
+							 const PylithInt aOff[],
+							 const PylithScalar s[],
+							 const PylithScalar s_t[],
+							 const PylithScalar s_x[],
+							 const PylithScalar a[],
+							 const PylithScalar a_t[],
+							 const PylithScalar a_x[],
+							 const PylithScalar x[],
+							 PylithScalar f1[])
+{ /* f1_IsotropicLinearElasticityPlaneStrain */
+  const PylithInt _dim = 2;
+
+  const PylithInt _numS = 2;
+  const PylithInt i_disp = 0;
+
+  const PylithInt _numA = 4;
+  const PylithInt i_lambda = 0;
+  const PylithInt i_mu = 1;
+  const PylithInt i_istress = 2;
+  const PylithInt i_istrain = 3;
+
+  const PylithInt numAVol = 3;
+  const PylithInt aOffVol[3] = { aOff[i_lambda], aOff[i_istress], aOff[i_istrain] };
+
+  const PylithInt numADev = 3;
+  const PylithInt aOffDev[3] = { aOff[i_mu], aOff[i_istress], aOff[i_istrain] };
+
+  PYLITH_METHOD_BEGIN;
+  assert(_dim == dim);
+  assert(_numS == numS);
+  assert(_numA == numA);
+  assert(sOff);
+  assert(aOff);
+
+  pylith_fekernels_volumetricStress_IsotropicLinearElasticityPlaneStrain(dim, 1, numAVol, &sOff[i_disp], aOffVol, s, s_t, s_x, a, a_t, a_x, x, f1);
+  pylith_fekernels_deviatoricStress_IsotropicLinearElasticityPlaneStrain(dim, 1, numADev, &sOff[i_disp], aOffDev, s, s_t, s_x, a, a_t, a_x, x, f1);
+  
+  PYLITH_METHOD_RETURN(0);
+} /* f1_IsotropicLinearElasticityPlaneStrain */
+
+
+/* ---------------------------------------------------------------------- */
+/* Calculate volumetic stress for 2-D plane strain isotropic linear elasticity.
+ *
+ * Solution fields = [disp(dim)]
+ * Auxiliary fields = [lambda(1), initialstress(dim*dim), initialstrain(dim*dim)]
+ *
+ * We compute the stress relative to a reference stress/strain state.
+ *
+ * stress_ij - initialstress_ij = lambda * (strain_kk - initialstrain_kk) * delta_ij + 2*mu * (strain_ij - initialstrain_ij)
+ */
+PetscErrorCode
+pylith_fekernels_volumetricStress_IsotropicLinearElasticityPlaneStrain(const PylithInt dim,
+								       const PylithInt numS,
+								       const PylithInt numA,
+								       const PylithInt sOff[],
+								       const PylithInt aOff[],
+								       const PylithScalar s[],
+								       const PylithScalar s_t[],
+								       const PylithScalar s_x[],
+								       const PylithScalar a[],
+								       const PylithScalar a_t[],
+								       const PylithScalar a_x[],
+								       const PylithScalar x[],
+								       PylithScalar stress[])
+{ /* volumetricStress_IsotropicLinearElasticityPlaneStrain */
+  const PylithInt _dim = 2;
+
+  const PylithInt _numS = 1;
+  const PylithInt i_disp = 0;
+  const PylithScalar* disp_x = &s_x[sOff[i_disp]];
+
+  const PylithInt _numA = 3;
+  const PylithInt i_lambda = 0;
+  const PylithInt i_istress = 1;
+  const PylithInt i_istrain = 2;
+  const PylithScalar lambda = a[aOff[i_lambda]];
+  const PylithScalar* initialstress = &a[aOff[i_istress]];
+  const PylithScalar* initialstrain = &a[aOff[i_istrain]];
+
+  PylithInt i;
+  PylithScalar trace = 0;
+  PylithScalar meanistress = 0;
+
+  PYLITH_METHOD_BEGIN;
+  assert(_dim == dim);
+  assert(_numS == numS);
+  assert(_numA == numA);
+  assert(sOff);
+  assert(aOff);
+  assert(s_x);
+  assert(a);
+  assert(stress);
+
+  for (i=0; i < _dim; ++i) {
+    trace += disp_x[i] - initialstrain[i*_dim+i];
+    meanistress += initialstress[i*_dim+i];
+  } /* for */
+  meanistress /= (PylithScalar)_dim;
+  for (i = 0; i < _dim; ++i) {
+    stress[i*_dim+i] += lambda * trace + meanistress;
+  } /* for */
+
+  PYLITH_METHOD_RETURN(0);
+} /* volumetricStress_IsotropicLinearElasticityPlaneStrain */
+
+
+/* ---------------------------------------------------------------------- */
+/* Calculate deviatoric stress for 2-D plane strain isotropic linear elasticity.
+ *
+ * Solution fields = [disp(dim)]
+ * Auxiliary fields = [mu(1), initialstress(dim*dim), initialstrain(dim*dim)]
+ */
+PetscErrorCode
+pylith_fekernels_deviatoricStress_IsotropicLinearElasticityPlaneStrain(const PylithInt dim,
+								       const PylithInt numS,
+								       const PylithInt numA,
+								       const PylithInt sOff[],
+								       const PylithInt aOff[],
+								       const PylithScalar s[],
+								       const PylithScalar s_t[],
+								       const PylithScalar s_x[],
+								       const PylithScalar a[],
+								       const PylithScalar a_t[],
+								       const PylithScalar a_x[],
+								       const PylithScalar x[],
+								       PylithScalar stress[])
+{ /* deviatoricStress_IsotropicLinearElasticityPlaneStrain */
+  const PylithInt _dim = 3;
+
+  const PylithInt _numS = 1;
+  const PylithInt i_disp = 0;
+  const PylithScalar* disp_x = &s_x[sOff[i_disp]];
+
+  const PylithInt _numA = 3;
+  const PylithInt i_mu = 0;
+  const PylithInt i_istress = 1;
+  const PylithInt i_istrain = 2;
+  const PylithScalar mu = a[aOff[i_mu]];
+  const PylithScalar* initialstress = &a[aOff[i_istress]];
+  const PylithScalar* initialstrain = &a[aOff[i_istrain]];
+
+  PylithInt i, j;
+  PylithScalar meanistress = 0;
+
+  PYLITH_METHOD_BEGIN;
+  assert(_dim == dim);
+  assert(_numS == numS);
+  assert(_numA == numA);
+  assert(sOff);
+  assert(aOff);
+  assert(s_x);
+  assert(a);
+  assert(stress);
+
+  for (i=0; i < _dim; ++i) {
+    meanistress += initialstress[i*_dim+i];
+  } /* for */
+  meanistress /= (PylithScalar)_dim;
+  for (i=0; i < _dim; ++i) {
+    for (j=0; j < _dim; ++j) {
+      stress[i*_dim+j] += mu * (disp_x[i*_dim+j] + disp_x[j*_dim+i] - initialstrain[i*_dim+j]) + initialstress[i*_dim+j];
+    } /* for */
+    stress[i*_dim+i] -= meanistress;
+  } /* for */
+
+  PYLITH_METHOD_RETURN(0);
+} /* deviatoricStress_IsotropicLinearElasticityPlaneStrain */
+
+
 // End of file 
