@@ -110,7 +110,8 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
     err = PetscObjectSetName((PetscObject) _tstamp, "time");PYLITH_CHECK_ERROR(err);
 
     err = PetscViewerHDF5Open(mesh.comm(), filename.c_str(), FILE_MODE_WRITE, &_viewer);PYLITH_CHECK_ERROR(err);
-
+    err = PetscViewerHDF5SetBaseDimension2(_viewer, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
+    
     const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();assert(cs);
 
     const char *context = DataWriter::_context.c_str();

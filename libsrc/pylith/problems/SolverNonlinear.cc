@@ -40,8 +40,8 @@
 
 // Customized line search based on PETSc code in
 // src/snes/linesearch/impls/bt/linesearchbt.c.
-#include <petsc-private/snesimpl.h>
-#include <petsc-private/linesearchimpl.h>
+#include <petsc/private/snesimpl.h>
+#include <petsc/private/linesearchimpl.h>
 
 struct PetscSNESLineSearch_BT {
   PetscReal        alpha; /* sufficient decrease parameter */
