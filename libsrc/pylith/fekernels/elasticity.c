@@ -69,11 +69,49 @@ pylith_fekernels_f0_EvolutionDispVel(const PylithInt dim,
 /* ---------------------------------------------------------------------- */
 /* f0 entry function for inertia and body forces.
  *
- * QUESTION: Make a separate f0 entry function if we don't have body
- * forces? Most dynamic simulations don't use body forces.
- *
  * Solution fields = [disp(dim), vel(dim)]
  * Auxiliary fields = [density(1), body force(dim)]
+ */
+PetscErrorCode
+pylith_fekernels_f0_ElasticityInertiaBodyForce(const PylithInt dim,
+					       const PylithInt numS,
+					       const PylithInt numA,
+					       const PylithInt sOff[],
+					       const PylithInt aOff[],
+					       const PylithScalar s[],
+					       const PylithScalar s_t[],
+					       const PylithScalar s_x[],
+					       const PylithScalar a[],
+					       const PylithScalar a_t[],
+					       const PylithScalar a_x[],
+					       const PylithScalar x[],
+					       PylithScalar f0[])
+{ /* f0_ElasticityInertia */
+  const PylithInt _numS = 2;
+  const PylithInt i_vel = 1;
+
+  const PylithInt _numA = 2;
+  const PylithInt i_density = 0;
+  const PylithInt i_bodyforce = 1;
+
+  PYLITH_METHOD_BEGIN;
+  assert(_numS == numS);
+  assert(_numA == numA);
+  assert(sOff);
+  assert(aOff);
+
+  pylith_fekernels_Inertia(dim, 1, 1, &sOff[i_vel], &aOff[i_density], s, s_t, s_x, a, a_t, a_x, x, f0);
+  pylith_fekernels_BodyForce(dim, 0, 1, NULL, &aOff[i_bodyforce], s, s_t, s_x, a, a_t, a_x, x, f0);
+  
+  PYLITH_METHOD_RETURN(0);
+} /* f0_ElasticityInertia */
+					      
+
+/* ---------------------------------------------------------------------- */
+/* f0 entry function for inertia (no body force).
+ *
+ * Solution fields = [disp(dim), vel(dim)]
+ * Auxiliary fields = [density(1)]
  */
 PetscErrorCode
 pylith_fekernels_f0_ElasticityInertia(const PylithInt dim,
@@ -93,9 +131,8 @@ pylith_fekernels_f0_ElasticityInertia(const PylithInt dim,
   const PylithInt _numS = 2;
   const PylithInt i_vel = 1;
 
-  const PylithInt _numA = 2;
+  const PylithInt _numA = 1;
   const PylithInt i_density = 0;
-  const PylithInt i_bodyforce = 1;
 
   PYLITH_METHOD_BEGIN;
   assert(_numS == numS);
@@ -104,7 +141,6 @@ pylith_fekernels_f0_ElasticityInertia(const PylithInt dim,
   assert(aOff);
 
   pylith_fekernels_Inertia(dim, 1, 1, &sOff[i_vel], &aOff[i_density], s, s_t, s_x, a, a_t, a_x, x, f0);
-  pylith_fekernels_BodyForce(dim, 0, 1, NULL, &aOff[i_bodyforce], s, s_t, s_x, a, a_t, a_x, x, f0);
   
   PYLITH_METHOD_RETURN(0);
 } /* f0_ElasticityInertia */

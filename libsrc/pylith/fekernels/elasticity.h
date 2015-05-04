@@ -90,6 +90,44 @@ pylith_fekernels_f0_EvolutionDispVel(const PylithInt dim,
  * Auxiliary fields: [density(1), body force(dim)]
  */
 PetscErrorCode
+pylith_fekernels_f0_ElasticityInertiaBodyForce(const PylithInt dim,
+					       const PylithInt numS,
+					       const PylithInt numA,
+					       const PylithInt sOff[],
+					       const PylithInt aOff[],
+					       const PylithScalar s[],
+					       const PylithScalar s_t[],
+					       const PylithScalar s_x[],
+					       const PylithScalar a[],
+					       const PylithScalar a_t[],
+					       const PylithScalar a_x[],
+					       const PylithScalar x[],
+					       PylithScalar f0[]);
+
+
+/** f0 entry function for inertia (no body force).
+ *
+ * @param dim Spatial dimension.
+ * @param numS Number of registered subfields in solution field [2].
+ * @param numA Number of registered subfields in auxiliary field [2].
+ * @param sOff Offset of registered subfields in solution field [numS].
+ * @param aOff Offset of registered subfields in auxiliary field [numA]
+ * @param s Solution field with all subfields.
+ * @param s_t Time derivative of solution field.
+ * @param s_x Gradient of solution field.
+ * @param a Auxiliary field with all subfields.
+ * @param a_t Time derivative of auxiliary field.
+ * @param a_x Gradient of auxiliary field.
+ * @param x Coordinates of point evaluation.
+ * @param f0 Result [dim].
+ *
+ * @returns 0 if no errors.
+ * 
+ * Solution fields: [disp(dim), vel(dim)]
+ *
+ * Auxiliary fields: [density(1)]
+ */
+PetscErrorCode
 pylith_fekernels_f0_ElasticityInertia(const PylithInt dim,
 				      const PylithInt numS,
 				      const PylithInt numA,
