@@ -172,20 +172,29 @@ pylith::feassemble::TestElasticityImplicit::testInitialize(void)
 // Test integrateResidual().
 static PetscInt spatialDim = 0;
 
-static void f0_zero(const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], const PetscReal x[], PetscScalar f0[])
+static void f0_zero(PetscInt dim, PetscInt Nf,
+                    const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[],
+                    const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[],
+                    PetscReal t, const PetscReal x[], PetscScalar f0[])
 {
   PetscInt d;
   for (d = 0; d < spatialDim; ++d) f0[d] = 0.0;
 }
 
-static void f1_zero(const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], const PetscReal x[], PetscScalar f1[])
+static void f1_zero(PetscInt dim, PetscInt Nf,
+                    const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[],
+                    const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[],
+                    PetscReal t, const PetscReal x[], PetscScalar f1[])
 {
   PetscInt d;
   for (d = 0; d < spatialDim*spatialDim; ++d) f1[d] = 0.0;
 }
 
 /* \sigma = \lambda \tr(\epsilon) I + 2 \mu \epsilon */
-static void elasticity(const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[], const PetscReal x[], PetscScalar f1[])
+static void elasticity(PetscInt dim, PetscInt Nf,
+                       const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[],
+                       const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[],
+                       PetscReal t, const PetscReal x[], PetscScalar f1[])
 {
   const PetscReal rho    = a[0];
   const PetscReal mu     = a[1];
