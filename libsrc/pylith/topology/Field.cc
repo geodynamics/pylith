@@ -1298,19 +1298,19 @@ pylith::topology::Field::subfieldsSetup(void)
   err = DMPlexRestoreTransitiveClosure(_dm, 0, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
   err = DMGetDS(_dm, &prob);PYLITH_CHECK_ERROR(err);
   err = DMGetDefaultSection(_dm, &section);PYLITH_CHECK_ERROR(err);assert(section);
-  err = PetscSectionSetNumFields(section, _subfieldComps.size());PYLITH_CHECK_ERROR(err);
-  err = DMSetNumFields(_dm, _subfieldComps.size());PYLITH_CHECK_ERROR(err);
-  for(std::map<std::string, int>::const_iterator f_iter = _subfieldComps.begin(); f_iter != _subfieldComps.end(); ++f_iter) {
+  err = PetscSectionSetNumFields(section, _subfields.size());PYLITH_CHECK_ERROR(err);
+  err = DMSetNumFields(_dm, _subfields.size());PYLITH_CHECK_ERROR(err);
+  for(std::map<std::string, SubfieldInfo>::const_iterator f_iter = _subfields.begin(); f_iter != _subfields.end(); ++f_iter) {
     PetscObject fobj;
-    const PetscInt index = subfieldMetadata(f_iter->first.c_str()).index;
+    const PetscInt index = f_iter->second.index;
     err = PetscSectionSetFieldName(section, index, f_iter->first.c_str());PYLITH_CHECK_ERROR(err);
-    err = PetscSectionSetFieldComponents(section, index, f_iter->second);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionSetFieldComponents(section, index, f_iter->second.numComponents);PYLITH_CHECK_ERROR(err);
     err = DMGetField(_dm, index, &fobj);PYLITH_CHECK_ERROR(err);assert(section);
     err = PetscObjectSetName(fobj, f_iter->first.c_str());PYLITH_CHECK_ERROR(err);
 
     std::string prefix = f_iter->first+"_";
     /* TODO Use 0 for components of lagrange until subsetting works correctly */
-    err = PetscFECreateDefault(_dm, dim, index ? 0 : f_iter->second, isSimplex, prefix.c_str(), -1, &fe);PYLITH_CHECK_ERROR(err);
+    err = PetscFECreateDefault(_dm, dim, index ? 0 : f_iter->second.numComponents, isSimplex, prefix.c_str(), -1, &fe);PYLITH_CHECK_ERROR(err);
     err = PetscObjectSetName((PetscObject) fe, f_iter->first.c_str());PYLITH_CHECK_ERROR(err);
     err = PetscDSSetDiscretization(prob, index, (PetscObject) fe);PYLITH_CHECK_ERROR(err);
     err = PetscFEDestroy(&fe);PYLITH_CHECK_ERROR(err);

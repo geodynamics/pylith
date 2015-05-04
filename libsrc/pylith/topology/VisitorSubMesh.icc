@@ -20,7 +20,7 @@
 #error "VisitorSubMesh.icc must be included only from VisitorSubMesh.hh"
 #else
 
-#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 
 // ----------------------------------------------------------------------
 // Default constructor.
