@@ -33,9 +33,7 @@
  *
  * @param dim Spatial dimension.
  * @param numS Number of registered subfields in solution field [2].
- * @param indicesS Indices of subfields in solution field [numS].
  * @param numA Number of registered subfields in auxiliary field [0].
- * @param indicesA Indices of subfields in auxiliary field [numA].
  * @param sOff Offset of registered subfields in solution field [numS].
  * @param aOff Offset of registered subfields in auxiliary field [numA]
  * @param s Solution field with all subfields.
@@ -56,9 +54,7 @@
 PetscErrorCode
 pylith_fekernels_f0_EvolutionDispVel(const PylithInt dim,
 				     const PylithInt numS,
-				     const PylithInt indicesS[],
 				     const PylithInt numA,
-				     const PylithInt indicesA[],
 				     const PylithInt sOff[],
 				     const PylithInt aOff[],
 				     const PylithScalar s[],
@@ -75,9 +71,7 @@ pylith_fekernels_f0_EvolutionDispVel(const PylithInt dim,
  *
  * @param dim Spatial dimension.
  * @param numS Number of registered subfields in solution field [2].
- * @param indicesS Indices of subfields in solution field [numS].
  * @param numA Number of registered subfields in auxiliary field [2].
- * @param indicesA Indices of subfields in auxiliary field [numA].
  * @param sOff Offset of registered subfields in solution field [numS].
  * @param aOff Offset of registered subfields in auxiliary field [numA]
  * @param s Solution field with all subfields.
@@ -98,9 +92,7 @@ pylith_fekernels_f0_EvolutionDispVel(const PylithInt dim,
 PetscErrorCode
 pylith_fekernels_f0_ElasticityInertia(const PylithInt dim,
 				      const PylithInt numS,
-				      const PylithInt indicesS[],
 				      const PylithInt numA,
-				      const PylithInt indicesA[],
 				      const PylithInt sOff[],
 				      const PylithInt aOff[],
 				      const PylithScalar s[],
@@ -117,9 +109,7 @@ pylith_fekernels_f0_ElasticityInertia(const PylithInt dim,
  *
  * @param dim Spatial dimension.
  * @param numS Number of registered subfields in solution field [2].
- * @param indicesS Indices of subfields in solution field [numS].
  * @param numA Number of registered subfields in auxiliary field [2].
- * @param indicesA Indices of subfields in auxiliary field [numA].
  * @param sOff Offset of registered subfields in solution field [numS].
  * @param aOff Offset of registered subfields in auxiliary field [numA]
  * @param s Solution field with all subfields.
@@ -140,9 +130,7 @@ pylith_fekernels_f0_ElasticityInertia(const PylithInt dim,
 PetscErrorCode
 pylith_fekernels_f0_ElasticityBodyForce(const PylithInt dim,
 					const PylithInt numS,
-					const PylithInt indicesS[],
 					const PylithInt numA,
-					const PylithInt indicesA[],
 					const PylithInt sOff[],
 					const PylithInt aOff[],
 					const PylithScalar s[],
@@ -159,9 +147,7 @@ pylith_fekernels_f0_ElasticityBodyForce(const PylithInt dim,
  *
  * @param dim Spatial dimension.
  * @param numS Number of registered subfields in solution field [1].
- * @param indicesS Indices of subfields in solution field [numS].
  * @param numA Number of registered subfields in auxiliary field [1].
- * @param indicesA Indices of subfields in auxiliary field [numA].
  * @param sOff Offset of registered subfields in solution field [numS].
  * @param aOff Offset of registered subfields in auxiliary field [numA]
  * @param s Solution field with all subfields.
@@ -182,9 +168,7 @@ pylith_fekernels_f0_ElasticityBodyForce(const PylithInt dim,
 PetscErrorCode
 pylith_fekernels_Inertia(const PylithInt dim,
 			 const PylithInt numS,
-			 const PylithInt indicesS[],
 			 const PylithInt numA,
-			 const PylithInt indicesA[],
 			 const PylithInt sOff[],
 			 const PylithInt aOff[],
 			 const PylithScalar s[],
@@ -201,9 +185,7 @@ pylith_fekernels_Inertia(const PylithInt dim,
  *
  * @param dim Spatial dimension.
  * @param numS Number of registered subfields in solution field [0].
- * @param indicesS Indices of subfields in solution field [numS].
  * @param numA Number of registered subfields in auxiliary field [1].
- * @param indicesA Indices of subfields in auxiliary field [numA].
  * @param sOff Offset of registered subfields in solution field [numS].
  * @param aOff Offset of registered subfields in auxiliary field [numA]
  * @param s Solution field with all subfields.
@@ -224,9 +206,7 @@ pylith_fekernels_Inertia(const PylithInt dim,
 PetscErrorCode
 pylith_fekernels_BodyForce(const PylithInt dim,
 			   const PylithInt numS,
-			   const PylithInt indicesS[],
 			   const PylithInt numA,
-			   const PylithInt indicesA[],
 			   const PylithInt sOff[],
 			   const PylithInt aOff[],
 			   const PylithScalar s[],
@@ -243,9 +223,7 @@ pylith_fekernels_BodyForce(const PylithInt dim,
  *
  * @param dim Spatial dimension [3].
  * @param numS Number of registered subfields in solution field [1].
- * @param indicesS Indices of subfields in solution field [numS].
  * @param numA Number of registered subfields in auxiliary field [2].
- * @param indicesA Indices of subfields in auxiliary field [numA].
  * @param sOff Offset of registered subfields in solution field [numS].
  * @param aOff Offset of registered subfields in auxiliary field [numA]
  * @param s Solution field with all subfields.
@@ -266,9 +244,7 @@ pylith_fekernels_BodyForce(const PylithInt dim,
 PetscErrorCode
 pylith_fekernels_f1_IsotropicLinearElasticity3D(const PylithInt dim,
 						const PylithInt numS,
-						const PylithInt indicesS[],
 						const PylithInt numA,
-						const PylithInt indicesA[],
 						const PylithInt sOff[],
 						const PylithInt aOff[],
 						const PylithScalar s[],
@@ -285,9 +261,7 @@ pylith_fekernels_f1_IsotropicLinearElasticity3D(const PylithInt dim,
  *
  * @param dim Spatial dimension.
  * @param numS Number of registered subfields in solution field [1].
- * @param indicesS Indices of subfields in solution field [numS].
  * @param numA Number of registered subfields in auxiliary field [1].
- * @param indicesA Indices of subfields in auxiliary field [numA].
  * @param sOff Offset of registered subfields in solution field [numS].
  * @param aOff Offset of registered subfields in auxiliary field [numA]
  * @param s Solution field with all subfields.
@@ -308,9 +282,7 @@ pylith_fekernels_f1_IsotropicLinearElasticity3D(const PylithInt dim,
 PetscErrorCode
 pylith_fekernels_volumetricStress_IsotropicLinearElasticity3D(const PylithInt dim,
 							      const PylithInt numS,
-							      const PylithInt indicesS[],
 							      const PylithInt numA,
-							      const PylithInt indicesA[],
 							      const PylithInt sOff[],
 							      const PylithInt aOff[],
 							      const PylithScalar s[],
@@ -327,9 +299,7 @@ pylith_fekernels_volumetricStress_IsotropicLinearElasticity3D(const PylithInt di
  *
  * @param dim Spatial dimension.
  * @param numS Number of registered subfields in solution field [1].
- * @param indicesS Indices of subfields in solution field [numS].
  * @param numA Number of registered subfields in auxiliary field [1].
- * @param indicesA Indices of subfields in auxiliary field [numA].
  * @param sOff Offset of registered subfields in solution field [numS].
  * @param aOff Offset of registered subfields in auxiliary field [numA]
  * @param s Solution field with all subfields.
@@ -350,9 +320,7 @@ pylith_fekernels_volumetricStress_IsotropicLinearElasticity3D(const PylithInt di
 PetscErrorCode
 pylith_fekernels_deviatoricStress_IsotropicLinearElasticity3D(const PylithInt dim,
 							      const PylithInt numS,
-							      const PylithInt indicesS[],
 							      const PylithInt numA,
-							      const PylithInt indicesA[],
 							      const PylithInt sOff[],
 							      const PylithInt aOff[],
 							      const PylithScalar s[],
