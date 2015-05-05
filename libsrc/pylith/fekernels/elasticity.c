@@ -801,7 +801,7 @@ pylith_fekernels_g3_uu_IsotropicLinearElasticityPlaneStrain(const PylithInt dim,
 
      0: g1111 = C1111 = \lambda + 2 mu
      1: g1112 = C1112 = 0
-     2: g1121 = C2111 = 0
+     2: g1121 = C1211 = 0
      3: g1122 = C1212 = 2 \mu
   
      4; g1211 = C1121 = 0
