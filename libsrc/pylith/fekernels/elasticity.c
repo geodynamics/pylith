@@ -600,15 +600,15 @@ pylith_fekernels_g3_uu_IsotropicLinearElasticity3D(const PylithInt dim,
     54: g2000 = C3111 symmetry C1113
     55: g2001 = C3112 symmetry C1213
     56: g2002 = C3113 symmetry C1313
-    57: g2010 = C3211
-    58: g2011 = C3212
-    59: g2012 = C3213
-    60: g2020 = C3311
-    61: g2021 = C3312
-    62: g2022 = C3313
+    57: g2010 = C3211 symmetry C1123
+    58: g2011 = C3212 symmetry C1223
+    59: g2012 = C3213 symmetry C1323
+    60: g2020 = C3311 symmetry C1133
+    61: g2021 = C3312 symmetry C1233
+    62: g2022 = C3313 symmetry C1333
  
-    63: g2100 = C3121
-    64: g1201 = C3121
+    63: g2100 = C3121 symmetry C1213
+    64: g1201 = C3121 symmetry C1213
     65: g2102 = C3122
     66: g2110 = C3221
     67: g2111 = C3222
@@ -628,16 +628,6 @@ pylith_fekernels_g3_uu_IsotropicLinearElasticity3D(const PylithInt dim,
     80: g2222 = C3333
   
   */
-
-  const PylithReal C1111 = lambda2mu;
-  const PylithReal C2222 = lambda2mu;
-  const PylithReal C3333 = lambda2mu;
-  const PylithReal C1122 = lambda;
-  const PylithReal C1133 = lambda;
-  const PylithReal C2233 = lambda;
-  const PylithReal C1212 = mu2;
-  const PylithReal C2323 = mu2;
-  const PylithReal C1313 = mu2;
 
   g3[ 0] += C1111; /* g0000 */
   g3[ 4] += C1212; /* g0011 */
