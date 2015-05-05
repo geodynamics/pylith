@@ -71,6 +71,8 @@ pylith_fekernels_f0_EvolutionDispVel(const PylithInt dim,
  *
  * Solution fields = [disp(dim), vel(dim)]
  * Auxiliary fields = None
+ *
+ * \int_V \vec{\phi}_v \cdot \left(  \vec{v} - \frac{\partial \vec{u}}{\partial t} \right) \, dV
  */
 PetscErrorCode
 pylith_fekernels_g0_vv_EvolutionDispVel(const PylithInt dim,
@@ -110,6 +112,8 @@ pylith_fekernels_g0_vv_EvolutionDispVel(const PylithInt dim,
  *
  * Solution fields = [disp(dim), vel(dim)]
  * Auxiliary fields = None
+ *
+ * \int_V \vec{\phi}_v \cdot \left(  \vec{v} - \frac{\partial \vec{u}}{\partial t} \right) \, dV
  */
 PetscErrorCode
 pylith_fekernels_g0_vu_EvolutionDispVel(const PylithInt dim,
