@@ -796,17 +796,41 @@ pylith_fekernels_g3_uu_IsotropicLinearElasticityPlaneStrain(const PylithInt dim,
   assert(_numA == numA);
   assert(aOff);
 
-  g3[0] = lambda2mu; // C1111
-  g3[1] = lambda; // C1122
-  g3[2] = 0; // C1112
+  /*
+    g(f,g,df,dg) = C(f,df,g,dg)
 
-  g3[3] = lambda; // C2211
-  g3[4] = lambda2mu; // C2222
-  g3[5] = 0; // C2212
+     0: g1111 = C1111 = \lambda + 2 mu
+     1: g1112 = C1112 = 0
+     2: g1121 = C2111 = 0
+     3: g1122 = C1212 = 2 \mu
+  
+     4; g1211 = C1121 = 0
+     5: g1212 = C1122 = \lambda
+     6: g1221 = C1221 = 2 \mu
+     7: g1222 = C1222 = 0
+  
+     8: g2111 = C2111 = 0
+     9: g2112 = C2112 = 2 \mu
+    10: g2121 = C2211 = \lambda
+    11: g2122 = C2212 = 0
+  
+    12: g2211 = C2121 = 2 \mu
+    13: g2212 = C2122 = 0
+    14: g2221 = C2221 = 0
+    15: g2222 = C2222 = \lambda + 2 \mu
+  */
 
-  g3[6] = 0; // C1211
-  g3[7] = 0; // C1222
-  g3[8] = mu2; // C1212
+  g3[ 0] = lambda2mu; // C1111
+  g3[ 3] = mu2; // C1212
+
+  g3[ 5] = lambda; // C1122
+  g3[ 6] = mu2; // C1221
+
+  g3[ 9] = mu2; // C2112
+  g3[10] = lambda; // C2211
+  
+  g3[12] = mu2; // C2121
+  g3[15] = lambda2mu; // C2222
   
   PYLITH_METHOD_RETURN(0);
 } /* g3_uu_IsotropicLinearElasticityPlaneStrain */
