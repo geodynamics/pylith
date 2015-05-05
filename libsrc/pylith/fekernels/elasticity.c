@@ -67,6 +67,84 @@ pylith_fekernels_f0_EvolutionDispVel(const PylithInt dim,
 					      
 
 /* ---------------------------------------------------------------------- */
+/* g0_vv entry function for time evolution of elasticity.
+ *
+ * Solution fields = [disp(dim), vel(dim)]
+ * Auxiliary fields = None
+ */
+PetscErrorCode
+pylith_fekernels_g0_vv_EvolutionDispVel(const PylithInt dim,
+					const PylithInt numS,
+					const PylithInt numA,
+					const PylithInt sOff[],
+					const PylithInt aOff[],
+					const PylithScalar s[],
+					const PylithScalar s_t[],
+					const PylithScalar s_x[],
+					const PylithScalar a[],
+					const PylithScalar a_t[],
+					const PylithScalar a_x[],
+					const PylithScalar x[],
+					PylithScalar g0[])
+{ /* g0_vv_EvolutionDispVel */
+  const PylithInt _numS = 2;
+
+  const PylithInt _numA = 0;
+
+  PylithInt i;
+
+  PYLITH_METHOD_BEGIN;
+  assert(_numS == numS);
+  assert(_numA == numA);
+
+  for (i=0; i < dim; ++i) {
+    g0[i*dim+i] += +1.0;
+  } /* for */
+
+  PYLITH_METHOD_RETURN(0);
+} /* g0_vv_EvolutionDispVel */
+					      
+
+/* ---------------------------------------------------------------------- */
+/* g0_vu entry function for time evolution of elasticity.
+ *
+ * Solution fields = [disp(dim), vel(dim)]
+ * Auxiliary fields = None
+ */
+PetscErrorCode
+pylith_fekernels_g0_vu_EvolutionDispVel(const PylithInt dim,
+					const PylithInt numS,
+					const PylithInt numA,
+					const PylithInt sOff[],
+					const PylithInt aOff[],
+					const PylithScalar s[],
+					const PylithScalar s_t[],
+					const PylithScalar s_x[],
+					const PylithScalar a[],
+					const PylithScalar a_t[],
+					const PylithScalar a_x[],
+					const PylithScalar x[],
+					PylithScalar g0[])
+{ /* g0_uv_EvolutionDispVel */
+  const PylithInt _numS = 2;
+
+  const PylithInt _numA = 0;
+
+  PylithInt i;
+
+  PYLITH_METHOD_BEGIN;
+  assert(_numS == numS);
+  assert(_numA == numA);
+
+  for (i=0; i < dim; ++i) {
+    g0[i*dim+i] += -1.0;
+  } /* for */
+
+  PYLITH_METHOD_RETURN(0);
+} /* g0_vu_EvolutionDispVel */
+					      
+
+/* ---------------------------------------------------------------------- */
 /* f0 entry function for inertia and body forces.
  *
  * Solution fields = [disp(dim), vel(dim)]
@@ -149,9 +227,6 @@ pylith_fekernels_f0_ElasticityInertia(const PylithInt dim,
 /* ---------------------------------------------------------------------- */
 /* f0 entry function for body forces (no inertia).
  *
- * QUESTION: Make a separate f0 entry function if we don't have body
- * forces? Most dynamic simulations don't use body forces.
- *
  * Solution fields = [disp(dim), vel(dim)]
  * Auxiliary fields = [body force(dim)]
  */
@@ -184,6 +259,48 @@ pylith_fekernels_f0_ElasticityBodyForce(const PylithInt dim,
   
   PYLITH_METHOD_RETURN(0);
 } /* f0_ElasticityBodyForce */
+					      
+
+/* ---------------------------------------------------------------------- */
+/* g0_uv entry function for inertia.
+ *
+ * Solution fields = [disp(dim), vel(dim)]
+ * Auxiliary fields = [density(1)]
+ */
+PetscErrorCode
+pylith_fekernels_g0_uv_ElasticityInertia(const PylithInt dim,
+					 const PylithInt numS,
+					 const PylithInt numA,
+					 const PylithInt sOff[],
+					 const PylithInt aOff[],
+					 const PylithScalar s[],
+					 const PylithScalar s_t[],
+					 const PylithScalar s_x[],
+					 const PylithScalar a[],
+					 const PylithScalar a_t[],
+					 const PylithScalar a_x[],
+					 const PylithScalar x[],
+					 PylithScalar g0[])
+{ /* g0_uv_ElasticityInertia */
+  const PylithInt _numS = 2;
+
+  const PylithInt _numA = 0;
+  const PylithInt i_density = 0;
+  const PylithScalar density = a[aOff[i_density]];
+
+  PylithInt i;
+
+  PYLITH_METHOD_BEGIN;
+  assert(_numS == numS);
+  assert(_numA == numA);
+  assert(aOff);
+
+  for (i=0; i < dim; ++i) {
+    g0[i*dim+i] += density;
+  } /* for */
+
+  PYLITH_METHOD_RETURN(0);
+} /* g0_uv_ElasticityInertia */
 					      
 
 /* ---------------------------------------------------------------------- */
@@ -331,6 +448,92 @@ pylith_fekernels_f1_IsotropicLinearElasticity3D(const PylithInt dim,
 
 
 /* ---------------------------------------------------------------------- */
+/* g3_uu entry function for isotropic linear elasticity in 3-D.
+ *
+ * Solution fields = [disp(dim), vel(dim)]
+ * Auxiliary fields = [lambda(1), mu(1)]
+ */
+PetscErrorCode
+pylith_fekernels_g3_uu_IsotropicLinearElasticity3D(const PylithInt dim,
+						   const PylithInt numS,
+						   const PylithInt numA,
+						   const PylithInt sOff[],
+						   const PylithInt aOff[],
+						   const PylithScalar s[],
+						   const PylithScalar s_t[],
+						   const PylithScalar s_x[],
+						   const PylithScalar a[],
+						   const PylithScalar a_t[],
+						   const PylithScalar a_x[],
+						   const PylithScalar x[],
+						   PylithScalar g3[])
+{ /* g3_uu_IsotropicLinearElasticity3D */
+  const PylithInt _dim = 3;
+
+  const PylithInt _numS = 2;
+
+  const PylithInt _numA = 2;
+  const PylithInt i_lambda = 0;
+  const PylithInt i_mu = 1;
+
+  const PylithScalar lambda = a[aOff[i_lambda]];
+  const PylithScalar mu = a[aOff[i_mu]];
+  const PylithScalar mu2 = 2.0*mu;
+  const PylithScalar lambda2mu = lambda + mu2;
+
+  PYLITH_METHOD_BEGIN;
+  assert(_dim == dim);
+  assert(_numS == numS);
+  assert(_numA == numA);
+  assert(aOff);
+
+  g3[ 0] = lambda2mu; // C1111
+  g3[ 1] = lambda; // C1122
+  g3[ 2] = lambda; // C1133
+  g3[ 3] = 0; // C1112
+  g3[ 4] = 0; // C1123
+  g3[ 5] = 0; // C1113
+
+  g3[ 6] = lambda; // C2211
+  g3[ 7] = lambda2mu; // C2222
+  g3[ 8] = lambda; // C2233
+  g3[ 9] = 0; // C2212
+  g3[10] = 0; // C2223
+  g3[11] = 0; // C2213
+
+  g3[12] = lambda; // C3311
+  g3[13] = lambda; // C3322
+  g3[14] = lambda2mu; // C3333
+  g3[15] = 0; // C3312
+  g3[16] = 0; // C3323
+  g3[17] = 0; // C3313
+
+  g3[18] = 0; // C1211
+  g3[19] = 0; // C1222
+  g3[20] = 0; // C1233
+  g3[21] = mu2; // C1212
+  g3[22] = 0; // C1223
+  g3[23] = 0; // C1213
+
+  g3[24] = 0; // C2311
+  g3[25] = 0; // C2322
+  g3[26] = 0; // C2333
+  g3[27] = 0; // C2312
+  g3[28] = mu2; // C2323
+  g3[29] = 0; // C2313
+
+  g3[30] = 0; // C1311
+  g3[31] = 0; // C1322
+  g3[32] = 0; // C1333
+  g3[33] = 0; // C1312
+  g3[34] = 0; // C1323
+  g3[35] = mu2; // C1313
+  
+  PYLITH_METHOD_RETURN(0);
+} /* g3_uu_IsotropicLinearElasticity3D */
+
+
+/* ---------------------------------------------------------------------- */
 /* Calculate volumetic stress for isotropic linear elasticity.
  *
  * Solution fields = [disp(dim)]
@@ -460,7 +663,7 @@ pylith_fekernels_deviatoricStress_IsotropicLinearElasticity3D(const PylithInt di
 
 
 /* ---------------------------------------------------------------------- */
-/* f1 entry function for isotropic linear elasticity in 3-D.
+/* f1 entry function for 2-D plane strain isotropic linear elasticity.
  *
  * Solution fields = [disp(dim), vel(dim)]
  * Auxiliary fields = [lambda(1), mu(1), initialstress(dim*dim), initialstrain(dim*dim)]
@@ -509,6 +712,63 @@ pylith_fekernels_f1_IsotropicLinearElasticityPlaneStrain(const PylithInt dim,
   
   PYLITH_METHOD_RETURN(0);
 } /* f1_IsotropicLinearElasticityPlaneStrain */
+
+
+/* ---------------------------------------------------------------------- */
+/* g3_uu entry function for 2-D plane strain isotropic linear elasticity.
+ *
+ * Solution fields = [disp(dim), vel(dim)]
+ * Auxiliary fields = [lambda(1), mu(1)]
+ */
+PetscErrorCode
+pylith_fekernels_g3_uu_IsotropicLinearElasticityPlaneStrain(const PylithInt dim,
+							 const PylithInt numS,
+							 const PylithInt numA,
+							 const PylithInt sOff[],
+							 const PylithInt aOff[],
+							 const PylithScalar s[],
+							 const PylithScalar s_t[],
+							 const PylithScalar s_x[],
+							 const PylithScalar a[],
+							 const PylithScalar a_t[],
+							 const PylithScalar a_x[],
+							 const PylithScalar x[],
+							 PylithScalar g3[])
+{ /* g3_uu_IsotropicLinearElasticityPlaneStrain */
+  const PylithInt _dim = 2;
+
+  const PylithInt _numS = 2;
+
+  const PylithInt _numA = 4;
+  const PylithInt i_lambda = 0;
+  const PylithInt i_mu = 1;
+
+  const PylithScalar lambda = a[aOff[i_lambda]];
+  const PylithScalar mu = a[aOff[i_mu]];
+
+  const PylithScalar mu2 = 2.0 * mu;
+  const PylithScalar lambda2mu = lambda + mu2;
+   
+  PYLITH_METHOD_BEGIN;
+  assert(_dim == dim);
+  assert(_numS == numS);
+  assert(_numA == numA);
+  assert(aOff);
+
+  g3[0] = lambda2mu; // C1111
+  g3[1] = lambda; // C1122
+  g3[2] = 0; // C1112
+
+  g3[3] = lambda; // C2211
+  g3[4] = lambda2mu; // C2222
+  g3[5] = 0; // C2212
+
+  g3[6] = 0; // C1211
+  g3[7] = 0; // C1222
+  g3[8] = mu2; // C1212
+  
+  PYLITH_METHOD_RETURN(0);
+} /* g3_uu_IsotropicLinearElasticityPlaneStrain */
 
 
 /* ---------------------------------------------------------------------- */
@@ -640,4 +900,4 @@ pylith_fekernels_deviatoricStress_IsotropicLinearElasticityPlaneStrain(const Pyl
 } /* deviatoricStress_IsotropicLinearElasticityPlaneStrain */
 
 
-// End of file 
+/* End of file */
