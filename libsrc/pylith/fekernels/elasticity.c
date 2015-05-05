@@ -540,7 +540,7 @@ pylith_fekernels_g3_uu_IsotropicLinearElasticity3D(const PylithInt dim,
      0: g0000 = C1111
      1: g0001 = C1112
      2: g0002 = C1113
-     3: g0010 = C1211
+     3: g0010 = C1211 symmetry C1112
      4: g0011 = C1212
      5: g0012 = C1213
      6: g0020 = C1311 symmetry C1113
@@ -608,23 +608,23 @@ pylith_fekernels_g3_uu_IsotropicLinearElasticity3D(const PylithInt dim,
     62: g2022 = C3313 symmetry C1333
  
     63: g2100 = C3121 symmetry C1213
-    64: g1201 = C3121 symmetry C1213
-    65: g2102 = C3122
-    66: g2110 = C3221
-    67: g2111 = C3222
-    68: g2112 = C3223
-    69: g2120 = C3321
-    70: g2121 = C3322
-    71: g2122 = C3323
+    64: g2101 = C3122 symmetry C1322
+    65: g2102 = C3123 symmetry C1323
+    66: g2110 = C3221 symmetry C1223
+    67: g2111 = C3222 symmetry C2223
+    68: g2112 = C3223 symmetry C2323
+    69: g2120 = C3321 symmetry C1233
+    70: g2121 = C3322 symmetry C2233
+    71: g2122 = C3323 symmetry C2333
   
-    72: g2200 = C3131
-    73: g2201 = C3132
-    74: g2202 = C3133
-    75: g2210 = C3231
-    76: g2211 = C3232
-    77: g2212 = C3233
-    78: g2220 = C3331
-    79: g2221 = C3332
+    72: g2200 = C3131 symmetry C1313
+    73: g2201 = C3132 symmetry C1323
+    74: g2202 = C3133 symmetry C1333
+    75: g2210 = C3231 symmetry C1323
+    76: g2211 = C3232 symmetry C2323
+    77: g2212 = C3233 symmetry C2333
+    78: g2220 = C3331 symmetry C1333
+    79: g2221 = C3332 symmetry C2333
     80: g2222 = C3333
   
   */
