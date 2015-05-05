@@ -494,6 +494,7 @@ pylith_fekernels_g3_uu_IsotropicLinearElasticity3D(const PylithInt dim,
 						   const PylithScalar a_t[],
 						   const PylithScalar a_x[],
 						   const PylithReal t,
+						   const PylithReal utshift,
 						   const PylithScalar x[],
 						   PylithScalar g3[]);
 					      
@@ -654,6 +655,7 @@ pylith_fekernels_g3_uu_IsotropicLinearElasticityPlaneStrain(const PylithInt dim,
 							    const PylithScalar a_t[],
 							    const PylithScalar a_x[],
 							    const PylithReal t,
+							    const PylithReal utshift,
 							    const PylithScalar x[],
 							    PylithScalar g3[]);
 					      
