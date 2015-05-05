@@ -28,6 +28,7 @@
 #include "petsc.h"
 
 typedef PetscScalar PylithScalar;
+typedef PetscReal PylithReal;
 typedef PetscInt PylithInt;
 
 #endif // pylith_utils_pylithtypes_h

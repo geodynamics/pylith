@@ -20,6 +20,13 @@
 
 #include "pylith/fekernels/elasticity.h"
 
+/* ====================================================================== 
+ * Kernels for displacement/velocity.
+ *
+ * \int_V \vec{\phi}_v \cdot \left(  \vec{v} - \frac{\partial \vec{u}}{\partial t} \right) \, dV
+ * ====================================================================== 
+ */
+
 /* ---------------------------------------------------------------------- */
 /* f0 entry function for time evolution of elasticity.
  *
@@ -27,20 +34,21 @@
  * Auxiliary fields = None
  */
 PetscErrorCode
-pylith_fekernels_f0_EvolutionDispVel(const PylithInt dim,
-				     const PylithInt numS,
-				     const PylithInt numA,
-				     const PylithInt sOff[],
-				     const PylithInt aOff[],
-				     const PylithScalar s[],
-				     const PylithScalar s_t[],
-				     const PylithScalar s_x[],
-				     const PylithScalar a[],
-				     const PylithScalar a_t[],
-				     const PylithScalar a_x[],
-				     const PylithScalar x[],
-				     PylithScalar f0[])
-{ /* f0_EvolutionDispVel */
+pylith_fekernels_f0_DispVel(const PylithInt dim,
+			    const PylithInt numS,
+			    const PylithInt numA,
+			    const PylithInt sOff[],
+			    const PylithInt aOff[],
+			    const PylithScalar s[],
+			    const PylithScalar s_t[],
+			    const PylithScalar s_x[],
+			    const PylithScalar a[],
+			    const PylithScalar a_t[],
+			    const PylithScalar a_x[],
+			    const PylithReal t,
+			    const PylithScalar x[],
+			    PylithScalar f0[])
+{ /* f0_DispVel */
   const PylithInt _numS = 2;
   const PylithInt i_disp = 0;
   const PylithInt i_vel = 1;
@@ -63,7 +71,7 @@ pylith_fekernels_f0_EvolutionDispVel(const PylithInt dim,
   } /* for */
 
   PYLITH_METHOD_RETURN(0);
-} /* f0_EvolutionDispVel */
+} /* f0_DispVel */
 					      
 
 /* ---------------------------------------------------------------------- */
@@ -71,24 +79,24 @@ pylith_fekernels_f0_EvolutionDispVel(const PylithInt dim,
  *
  * Solution fields = [disp(dim), vel(dim)]
  * Auxiliary fields = None
- *
- * \int_V \vec{\phi}_v \cdot \left(  \vec{v} - \frac{\partial \vec{u}}{\partial t} \right) \, dV
  */
 PetscErrorCode
-pylith_fekernels_g0_vv_EvolutionDispVel(const PylithInt dim,
-					const PylithInt numS,
-					const PylithInt numA,
-					const PylithInt sOff[],
-					const PylithInt aOff[],
-					const PylithScalar s[],
-					const PylithScalar s_t[],
-					const PylithScalar s_x[],
-					const PylithScalar a[],
-					const PylithScalar a_t[],
-					const PylithScalar a_x[],
-					const PylithScalar x[],
-					PylithScalar g0[])
-{ /* g0_vv_EvolutionDispVel */
+pylith_fekernels_g0_vv_DispVel(const PylithInt dim,
+			       const PylithInt numS,
+			       const PylithInt numA,
+			       const PylithInt sOff[],
+			       const PylithInt aOff[],
+			       const PylithScalar s[],
+			       const PylithScalar s_t[],
+			       const PylithScalar s_x[],
+			       const PylithScalar a[],
+			       const PylithScalar a_t[],
+			       const PylithScalar a_x[],
+			       const PylithReal t,
+			       const PylithReal utshift,
+			       const PylithScalar x[],
+			       PylithScalar g0[])
+{ /* g0_vv_DispVel */
   const PylithInt _numS = 2;
 
   const PylithInt _numA = 0;
@@ -104,7 +112,7 @@ pylith_fekernels_g0_vv_EvolutionDispVel(const PylithInt dim,
   } /* for */
 
   PYLITH_METHOD_RETURN(0);
-} /* g0_vv_EvolutionDispVel */
+} /* g0_vv_DispVel */
 					      
 
 /* ---------------------------------------------------------------------- */
@@ -112,24 +120,24 @@ pylith_fekernels_g0_vv_EvolutionDispVel(const PylithInt dim,
  *
  * Solution fields = [disp(dim), vel(dim)]
  * Auxiliary fields = None
- *
- * \int_V \vec{\phi}_v \cdot \left(  \vec{v} - \frac{\partial \vec{u}}{\partial t} \right) \, dV
  */
 PetscErrorCode
-pylith_fekernels_g0_vu_EvolutionDispVel(const PylithInt dim,
-					const PylithInt numS,
-					const PylithInt numA,
-					const PylithInt sOff[],
-					const PylithInt aOff[],
-					const PylithScalar s[],
-					const PylithScalar s_t[],
-					const PylithScalar s_x[],
-					const PylithScalar a[],
-					const PylithScalar a_t[],
-					const PylithScalar a_x[],
-					const PylithScalar x[],
-					PylithScalar g0[])
-{ /* g0_uv_EvolutionDispVel */
+pylith_fekernels_g0_vu_DispVel(const PylithInt dim,
+			       const PylithInt numS,
+			       const PylithInt numA,
+			       const PylithInt sOff[],
+			       const PylithInt aOff[],
+			       const PylithScalar s[],
+			       const PylithScalar s_t[],
+			       const PylithScalar s_x[],
+			       const PylithScalar a[],
+			       const PylithScalar a_t[],
+			       const PylithScalar a_x[],
+			       const PylithReal t,
+			       const PylithReal utshift,
+			       const PylithScalar x[],
+			       PylithScalar g0[])
+{ /* g0_uv_DispVel */
   const PylithInt _numS = 2;
 
   const PylithInt _numA = 0;
@@ -141,12 +149,19 @@ pylith_fekernels_g0_vu_EvolutionDispVel(const PylithInt dim,
   assert(_numA == numA);
 
   for (i=0; i < dim; ++i) {
-    g0[i*dim+i] += -1.0;
+    g0[i*dim+i] += -utshift;
   } /* for */
 
   PYLITH_METHOD_RETURN(0);
-} /* g0_vu_EvolutionDispVel */
+} /* g0_vu_DispVel */
 					      
+
+/* ====================================================================== 
+ * Kernels for inertia and body foces.
+ *
+ * \int_V \vec{\phi}_u \cdot \left( \rho \frac{\partial \vec{v}}{\partial t} - \vec{f} \right) \, dV
+ * ====================================================================== 
+ */
 
 /* ---------------------------------------------------------------------- */
 /* f0 entry function for inertia and body forces.
@@ -166,6 +181,7 @@ pylith_fekernels_f0_ElasticityInertiaBodyForce(const PylithInt dim,
 					       const PylithScalar a[],
 					       const PylithScalar a_t[],
 					       const PylithScalar a_x[],
+					       const PylithReal t,
 					       const PylithScalar x[],
 					       PylithScalar f0[])
 { /* f0_ElasticityInertia */
@@ -182,8 +198,8 @@ pylith_fekernels_f0_ElasticityInertiaBodyForce(const PylithInt dim,
   assert(sOff);
   assert(aOff);
 
-  pylith_fekernels_Inertia(dim, 1, 1, &sOff[i_vel], &aOff[i_density], s, s_t, s_x, a, a_t, a_x, x, f0);
-  pylith_fekernels_BodyForce(dim, 0, 1, NULL, &aOff[i_bodyforce], s, s_t, s_x, a, a_t, a_x, x, f0);
+  pylith_fekernels_Inertia(dim, 1, 1, &sOff[i_vel], &aOff[i_density], s, s_t, s_x, a, a_t, a_x, t, x, f0);
+  pylith_fekernels_BodyForce(dim, 0, 1, NULL, &aOff[i_bodyforce], s, s_t, s_x, a, a_t, a_x, t, x, f0);
   
   PYLITH_METHOD_RETURN(0);
 } /* f0_ElasticityInertia */
@@ -207,6 +223,7 @@ pylith_fekernels_f0_ElasticityInertia(const PylithInt dim,
 				      const PylithScalar a[],
 				      const PylithScalar a_t[],
 				      const PylithScalar a_x[],
+				      const PylithReal t,
 				      const PylithScalar x[],
 				      PylithScalar f0[])
 { /* f0_ElasticityInertia */
@@ -222,7 +239,7 @@ pylith_fekernels_f0_ElasticityInertia(const PylithInt dim,
   assert(sOff);
   assert(aOff);
 
-  pylith_fekernels_Inertia(dim, 1, 1, &sOff[i_vel], &aOff[i_density], s, s_t, s_x, a, a_t, a_x, x, f0);
+  pylith_fekernels_Inertia(dim, 1, 1, &sOff[i_vel], &aOff[i_density], s, s_t, s_x, a, a_t, a_x, t, x, f0);
   
   PYLITH_METHOD_RETURN(0);
 } /* f0_ElasticityInertia */
@@ -246,6 +263,7 @@ pylith_fekernels_f0_ElasticityBodyForce(const PylithInt dim,
 					const PylithScalar a[],
 					const PylithScalar a_t[],
 					const PylithScalar a_x[],
+					const PylithReal t,
 					const PylithScalar x[],
 					PylithScalar f0[])
 { /* f0_ElasticityBodyForce */
@@ -259,7 +277,7 @@ pylith_fekernels_f0_ElasticityBodyForce(const PylithInt dim,
   assert(_numA == numA);
   assert(aOff);
 
-  pylith_fekernels_BodyForce(dim, 0, 1, NULL, &aOff[i_bodyforce], s, s_t, s_x, a, a_t, a_x, x, f0);
+  pylith_fekernels_BodyForce(dim, 0, 1, NULL, &aOff[i_bodyforce], s, s_t, s_x, a, a_t, a_x, t, x, f0);
   
   PYLITH_METHOD_RETURN(0);
 } /* f0_ElasticityBodyForce */
@@ -283,6 +301,8 @@ pylith_fekernels_g0_uv_ElasticityInertia(const PylithInt dim,
 					 const PylithScalar a[],
 					 const PylithScalar a_t[],
 					 const PylithScalar a_x[],
+					 const PylithReal t,
+					 const PylithReal utshift,
 					 const PylithScalar x[],
 					 PylithScalar g0[])
 { /* g0_uv_ElasticityInertia */
@@ -300,7 +320,7 @@ pylith_fekernels_g0_uv_ElasticityInertia(const PylithInt dim,
   assert(aOff);
 
   for (i=0; i < dim; ++i) {
-    g0[i*dim+i] += density;
+    g0[i*dim+i] += density*utshift;
   } /* for */
 
   PYLITH_METHOD_RETURN(0);
@@ -325,6 +345,7 @@ pylith_fekernels_Inertia(const PylithInt dim,
 			 const PylithScalar s_x[],
 			 const PylithScalar a[],
 			 const PylithScalar a_x[],
+			 const PylithReal t,
 			 const PylithScalar x[],
 			 PylithScalar f0[])
 { /* Inertia */
@@ -373,6 +394,7 @@ pylith_fekernels_BodyForce(const PylithInt dim,
 			   const PylithScalar a[],
 			   const PylithScalar a_t[],
 			   const PylithScalar a_x[],
+			   const PylithReal t,
 			   const PylithScalar x[],
 			   PylithScalar f0[])
 { /* BodyForce */
@@ -399,6 +421,13 @@ pylith_fekernels_BodyForce(const PylithInt dim,
 } /* BodyForce */
 
 
+/* ====================================================================== 
+ * Kernels for stress.
+ *
+ * \int_V \nabla \vec{\phi}_u : \tensor{\sigma} \, dV
+ * ====================================================================== 
+ */
+
 /* ---------------------------------------------------------------------- */
 /* f1 entry function for isotropic linear elasticity in 3-D.
  *
@@ -417,6 +446,7 @@ pylith_fekernels_f1_IsotropicLinearElasticity3D(const PylithInt dim,
 						const PylithScalar a[],
 						const PylithScalar a_t[],
 						const PylithScalar a_x[],
+						const PylithReal t,
 						const PylithScalar x[],
 						PylithScalar f1[])
 { /* f1_IsotropicLinearElasticity3D */
@@ -444,8 +474,8 @@ pylith_fekernels_f1_IsotropicLinearElasticity3D(const PylithInt dim,
   assert(sOff);
   assert(aOff);
 
-  pylith_fekernels_volumetricStress_IsotropicLinearElasticity3D(dim, 1, numAVol, &sOff[i_disp], aOffVol, s, s_t, s_x, a, a_t, a_x, x, f1);
-  pylith_fekernels_deviatoricStress_IsotropicLinearElasticity3D(dim, 1, numADev, &sOff[i_disp], aOffDev, s, s_t, s_x, a, a_t, a_x, x, f1);
+  pylith_fekernels_volumetricStress_IsotropicLinearElasticity3D(dim, 1, numAVol, &sOff[i_disp], aOffVol, s, s_t, s_x, a, a_t, a_x, t, x, f1);
+  pylith_fekernels_deviatoricStress_IsotropicLinearElasticity3D(dim, 1, numADev, &sOff[i_disp], aOffDev, s, s_t, s_x, a, a_t, a_x, t, x, f1);
   
   PYLITH_METHOD_RETURN(0);
 } /* f1_IsotropicLinearElasticity3D */
@@ -469,6 +499,7 @@ pylith_fekernels_g3_uu_IsotropicLinearElasticity3D(const PylithInt dim,
 						   const PylithScalar a[],
 						   const PylithScalar a_t[],
 						   const PylithScalar a_x[],
+						   const PylithReal t,
 						   const PylithScalar x[],
 						   PylithScalar g3[])
 { /* g3_uu_IsotropicLinearElasticity3D */
@@ -559,6 +590,7 @@ pylith_fekernels_volumetricStress_IsotropicLinearElasticity3D(const PylithInt di
 							      const PylithScalar a[],
 							      const PylithScalar a_t[],
 							      const PylithScalar a_x[],
+							      const PylithReal t,
 							      const PylithScalar x[],
 							      PylithScalar stress[])
 { /* volumetricStress_IsotropicLinearElasticity3D */
@@ -621,6 +653,7 @@ pylith_fekernels_deviatoricStress_IsotropicLinearElasticity3D(const PylithInt di
 							      const PylithScalar a[],
 							      const PylithScalar a_t[],
 							      const PylithScalar a_x[],
+							      const PylithReal t,
 							      const PylithScalar x[],
 							      PylithScalar stress[])
 { /* deviatoricStress_IsotropicLinearElasticity3D */
@@ -684,6 +717,7 @@ pylith_fekernels_f1_IsotropicLinearElasticityPlaneStrain(const PylithInt dim,
 							 const PylithScalar a[],
 							 const PylithScalar a_t[],
 							 const PylithScalar a_x[],
+							 const PylithReal t,
 							 const PylithScalar x[],
 							 PylithScalar f1[])
 { /* f1_IsotropicLinearElasticityPlaneStrain */
@@ -711,8 +745,8 @@ pylith_fekernels_f1_IsotropicLinearElasticityPlaneStrain(const PylithInt dim,
   assert(sOff);
   assert(aOff);
 
-  pylith_fekernels_volumetricStress_IsotropicLinearElasticityPlaneStrain(dim, 1, numAVol, &sOff[i_disp], aOffVol, s, s_t, s_x, a, a_t, a_x, x, f1);
-  pylith_fekernels_deviatoricStress_IsotropicLinearElasticityPlaneStrain(dim, 1, numADev, &sOff[i_disp], aOffDev, s, s_t, s_x, a, a_t, a_x, x, f1);
+  pylith_fekernels_volumetricStress_IsotropicLinearElasticityPlaneStrain(dim, 1, numAVol, &sOff[i_disp], aOffVol, s, s_t, s_x, a, a_t, a_x, t, x, f1);
+  pylith_fekernels_deviatoricStress_IsotropicLinearElasticityPlaneStrain(dim, 1, numADev, &sOff[i_disp], aOffDev, s, s_t, s_x, a, a_t, a_x, t, x, f1);
   
   PYLITH_METHOD_RETURN(0);
 } /* f1_IsotropicLinearElasticityPlaneStrain */
@@ -726,18 +760,19 @@ pylith_fekernels_f1_IsotropicLinearElasticityPlaneStrain(const PylithInt dim,
  */
 PetscErrorCode
 pylith_fekernels_g3_uu_IsotropicLinearElasticityPlaneStrain(const PylithInt dim,
-							 const PylithInt numS,
-							 const PylithInt numA,
-							 const PylithInt sOff[],
-							 const PylithInt aOff[],
-							 const PylithScalar s[],
-							 const PylithScalar s_t[],
-							 const PylithScalar s_x[],
-							 const PylithScalar a[],
-							 const PylithScalar a_t[],
-							 const PylithScalar a_x[],
-							 const PylithScalar x[],
-							 PylithScalar g3[])
+							    const PylithInt numS,
+							    const PylithInt numA,
+							    const PylithInt sOff[],
+							    const PylithInt aOff[],
+							    const PylithScalar s[],
+							    const PylithScalar s_t[],
+							    const PylithScalar s_x[],
+							    const PylithScalar a[],
+							    const PylithScalar a_t[],
+							    const PylithScalar a_x[],
+							    const PylithReal t,
+							    const PylithScalar x[],
+							    PylithScalar g3[])
 { /* g3_uu_IsotropicLinearElasticityPlaneStrain */
   const PylithInt _dim = 2;
 
@@ -797,6 +832,7 @@ pylith_fekernels_volumetricStress_IsotropicLinearElasticityPlaneStrain(const Pyl
 								       const PylithScalar a[],
 								       const PylithScalar a_t[],
 								       const PylithScalar a_x[],
+								       const PylithReal t,
 								       const PylithScalar x[],
 								       PylithScalar stress[])
 { /* volumetricStress_IsotropicLinearElasticityPlaneStrain */
@@ -859,6 +895,7 @@ pylith_fekernels_deviatoricStress_IsotropicLinearElasticityPlaneStrain(const Pyl
 								       const PylithScalar a[],
 								       const PylithScalar a_t[],
 								       const PylithScalar a_x[],
+								       const PylithReal t,
 								       const PylithScalar x[],
 								       PylithScalar stress[])
 { /* deviatoricStress_IsotropicLinearElasticityPlaneStrain */
