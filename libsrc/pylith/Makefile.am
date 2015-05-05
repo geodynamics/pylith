@@ -78,6 +78,7 @@ libpylith_la_SOURCES = \
 	feassemble/Quadrature3D.cc \
 	feassemble/Integrator.cc \
 	feassemble/IntegratorElasticity.cc \
+	feassemble/IntegratorPointwise.cc \
 	feassemble/ElasticityImplicit.cc \
 	feassemble/ElasticityExplicit.cc \
 	feassemble/ElasticityExplicitTri3.cc \
