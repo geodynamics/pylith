@@ -34,6 +34,7 @@ subpkginclude_HEADERS = \
 	Integrator.icc \
 	IntegratorElasticity.hh \
 	IntegratorElasticityLgDeform.hh \
+	IntegratorPointwise.hh \
 	GeometryLine2D.hh \
 	GeometryLine3D.hh \
 	GeometryTri2D.hh \

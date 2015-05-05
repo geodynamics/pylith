@@ -52,6 +52,8 @@ namespace pylith {
     class Constraint;
     class Integrator;
 
+    class IntegratorPointwise;
+
     class IntegratorElasticity;
     class ElasticityImplicit;
     class ElasticityExplicit;
