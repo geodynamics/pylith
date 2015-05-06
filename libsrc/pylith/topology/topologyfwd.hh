@@ -45,6 +45,8 @@ namespace pylith {
     class VecVisitorMesh;
     class VecVisitorSubMesh;
 
+    class Discretization;
+
     class SolutionFields;
 
     class Jacobian;
