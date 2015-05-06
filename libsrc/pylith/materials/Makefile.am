@@ -51,6 +51,9 @@ subpkginclude_HEADERS = \
 	ViscoelasticMaxwell.hh \
 	EffectiveStress.hh \
 	EffectiveStress.icc \
+	MaterialNew.hh \
+	MaterialNew.icc \
+	IsotropicLinearElasticityPlaneStrain.hh \
 	materialsfwd.hh
 
 

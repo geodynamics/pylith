@@ -330,7 +330,6 @@ pylith::topology::Field::newSection(const int_array& points,
 { // newSection
   PYLITH_METHOD_BEGIN;
 
-  typedef PetscInt point_type;
   PetscErrorCode err;
 
   // Clear memory
@@ -427,7 +426,6 @@ pylith::topology::Field::newSection(const DomainEnum domain,
 
   // Changing this because cells/vertices are numbered differently in the new scheme
   assert(_dm);
-  PetscSection s = NULL;
   PetscInt pStart, pEnd;
   PetscErrorCode err;
 
@@ -1360,6 +1358,18 @@ pylith::topology::Field::subfieldSetDof(const char *name,
 
   PYLITH_METHOD_END;
 } // subfieldSetDof
+
+// ----------------------------------------------------------------------
+// Does field have given auxiliary subfield?
+bool
+pylith::topology::Field::hasSubfield(const char* name) const
+{ // hasSubfield
+  PYLITH_METHOD_BEGIN;
+
+  subfields_type::const_iterator iter = _subfields.find(name);
+  PYLITH_METHOD_RETURN(_subfields.end() != iter);
+} // hasSubfield
+
 
 // ----------------------------------------------------------------------
 // Get metadata for subfield.

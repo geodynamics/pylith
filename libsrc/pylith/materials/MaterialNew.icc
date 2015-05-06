@@ -31,7 +31,7 @@ pylith::materials::MaterialNew::dimension(void) const {
 inline
 void
 pylith::materials::MaterialNew::dbAuxFields(spatialdata::spatialdb::SpatialDB* value) {
-  _dbProperties = value;
+  _dbAuxFields = value;
 }
 
 // Set identifier of material.
@@ -61,29 +61,6 @@ const char*
 pylith::materials::MaterialNew::label(void) const {
   return _label.c_str();
 }
-
-// Get flag indicating whether Jacobian matrix must be reformed for
-// current state.
-inline
-bool
-pylith::materials::MaterialNew::needNewJacobian(void) const {
-  return _needNewJacobian;
-} // needNewJacobian
-
-// Reset flag indicating whether Jacobian matrix must be reformed for
-// current state.
-inline
-void
-pylith::materials::MaterialNew::resetNeedNewJacobian(void) {
-  _needNewJacobian = false;
-} // resetNeedNewJacobian
-
-// Check whether material generates a symmetric Jacobian.
-inline
-bool
-pylith::materials::MaterialNew::isJacobianSymmetric(void) const {
-  return _isJacobianSymmetric;
-} // isJacobianSymmetric
 
 
 // End of file 

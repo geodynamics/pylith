@@ -39,13 +39,9 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::materials::Material::Material(const int dimension) :
-  _auxFields(0),
-  _normalizer(new spatialdata::units::Nondimensional),
+pylith::materials::MaterialNew::MaterialNew(const int dimension) :
   _materialIS(0),
   _dimension(dimension),
-  _needNewJacobian(false),
-  _isJacobianSymmetric(true),
   _dbAuxFields(0),
   _id(0),
   _label("")
@@ -54,7 +50,7 @@ pylith::materials::Material::Material(const int dimension) :
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::materials::Material::~Material(void)
+pylith::materials::MaterialNew::~MaterialNew(void)
 { // destructor
   deallocate();
 } // destructor
@@ -62,14 +58,11 @@ pylith::materials::Material::~Material(void)
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::materials::Material::deallocate(void)
+pylith::materials::MaterialNew::deallocate(void)
 { // deallocate
   PYLITH_METHOD_BEGIN;
 
-  delete _normalizer; _normalizer = 0;
   delete _materialIS; _materialIS = 0;
-  delete _properties; _properties = 0;
-  delete _stateVars; _stateVars = 0;
 
   _dbAuxFields = 0; // :TODO: Use shared pointer.
 
@@ -77,34 +70,11 @@ pylith::materials::Material::deallocate(void)
 } // deallocate
   
 // ----------------------------------------------------------------------
-// Set scales used to nondimensionalize physical properties.
-void
-pylith::materials::Material::normalizer(const spatialdata::units::Nondimensional& dim)
-{ // normalizer
-  PYLITH_METHOD_BEGIN;
-
-  if (!_normalizer)
-    _normalizer = new spatialdata::units::Nondimensional(dim);
-  else
-    *_normalizer = dim;
-
-  PYLITH_METHOD_END;
-} // normalizer
-
-// ----------------------------------------------------------------------
 // Get physical property parameters and initial state (if used) from database.
 void
-pylith::materials::Material::initialize(const topology::Mesh& mesh)
+pylith::materials::MaterialNew::initialize(const topology::Mesh& mesh)
 { // initialize
   PYLITH_METHOD_BEGIN;
-
-  // Get quadrature information
-#if 0
-  const int numQuadPts = quadrature->numQuadPts();
-  const int numBasis = quadrature->numBasis();
-  const int numCorners = quadrature->refGeometry().numCorners();
-  const int spaceDim = quadrature->spaceDim();
-#endif
 
   // Get cells associated with material
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
@@ -113,47 +83,19 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh)
   const PetscInt numCells = _materialIS->size();
   const PetscInt* cells = _materialIS->points();
 
-  const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();assert(cs);
-
   delete _auxFields; _auxFields = new topology::Field(mesh);assert(_auxFields);
   _auxFields->label("auxiliary fields");
-  const int fieldsSize = 0;
-  int_array cellsTmp(cells, numCells);
 
+  // :TODO: Update setup of auxiliary field
+#if 0
+  int_array cellsTmp(cells, numCells);
   _auxFields->newSection(cellsTmp, propsFiberDim);
   _auxFields->allocate();
   _auxFields->zeroAll();
-
-  // TODO Need to decide how to manage PetscDS
-  PetscDS        prob;
-  PetscFE        fe;
-  PetscInt       dim, closureSize, vStart, vEnd, numVertices = 0;
-  PetscInt      *closure   = NULL, c;
-  PetscBool      isSimplex = PETSC_FALSE;
-  PetscErrorCode err;
-
-  err = DMGetDimension(dmMesh, &dim);PYLITH_CHECK_ERROR(err);
-
-  // BEGIN REFACTOR THIS
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetTransitiveClosure(dmMesh, 0, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-  for (c = 0; c < closureSize*2; ++c) if ((closure[c] >= vStart) && (closure[c] < vEnd)) ++numVertices;
-  if (numVertices == dim+1) isSimplex = PETSC_TRUE;
-  err = DMPlexRestoreTransitiveClosure(dmMesh, 0, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-  // END REFACTOR THIS
-
-  // :MATT: Need some comments here to explain what this is doing. 
-  // :MATT: Why do we need fiberDim?
-  err = PetscFECreateDefault(dmMesh, dim, fiberDim, isSimplex, NULL, -1, &fe);PYLITH_CHECK_ERROR(err);
-  err = PetscDSCreate(mesh.comm(), &prob);PYLITH_CHECK_ERROR(err);
-  err = PetscDSSetDiscretization(prob, 0, (PetscObject) fe);PYLITH_CHECK_ERROR(err);
-  err = PetscFEDestroy(&fe);PYLITH_CHECK_ERROR(err);
-  err = PetscDSSetUp(prob);PYLITH_CHECK_ERROR(err);
-  err = DMSetDS(_auxFields->dmMesh(), prob);PYLITH_CHECK_ERROR(err);
-  err = PetscDSDestroy(&prob);PYLITH_CHECK_ERROR(err);
+#endif
 
   if (_dbAuxFields) {
-    _inittializeAuxFieldsDB(mesh);
+    _initializeAuxFieldsFromDB();
   } else { // else
     assert(0);
     throw std::logic_error("Unknown case for setting up auxiliary fields.");
@@ -164,42 +106,35 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh)
 
 
 // ----------------------------------------------------------------------
-// Check whether material has a given auxilirary field.
-bool
-pylith::materials::Material::hasAuxField(const char* name)
-{ // hasAuxField
-  PYLITH_METHOD_BEGIN;
-
-  assert(_auxFields);
-
-  PYLITH_METHOD_RETURN(_auxFields->hasSubfield(name));
-} // hasAuxField
-
-
-// ----------------------------------------------------------------------
-// Get auxiliary field.
-void
-pylith::materials::Material::getAuxField(topology::Field *field,
-					 const char* name) const
-{ // getAuxField
-  PYLITH_METHOD_BEGIN;
-
-  assert(field);
-  assert(_auxFields);
-
-  _auxFields->copySubfield(*field, name);
-
-  PYLITH_METHOD_END;
-} // getAuxField
-  
-// ----------------------------------------------------------------------
 // Initialize auxiliary fields using spatial database.
 void
-pylith::materials::_initializeAuxFieldsDB(void)
+pylith::materials::MaterialNew::_initializeAuxFieldsFromDB(void)
 { // _initializeAuxFields
   PYLITH_METHOD_BEGIN;
 
   assert(_dbAuxFields);
+  
+  /* :TODO: Redo this function to look like:
+
+  void (*matFuncs[1])(const PetscReal x[], PetscScalar *u, void *ctx) = {nu_2d};
+  Vec            nu;
+  PetscErrorCode ierr;
+
+  PetscFunctionBegin;
+  ierr = DMCreateLocalVector(dmAux, &nu);CHKERRQ(ierr);
+  ierr = DMPlexProjectFunctionLocal(dmAux, matFuncs, NULL, INSERT_ALL_VALUES, nu);CHKERRQ(ierr);
+  ierr = PetscObjectCompose((PetscObject) dm, "A", (PetscObject) nu);CHKERRQ(ierr);
+  ierr = VecDestroy(&nu);CHKERRQ(ierr);
+
+void nu_2d(const PetscReal x[], PetscScalar *u, void *ctx)
+{
+  *u = x[0] + x[1];
+}
+
+  */
+  
+#if 0 // OBSOLETE
+  const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();assert(cs);
 
   topology::VecVisitorMesh auxFieldsVisitor(*_auxFields);
   PetscScalar* auxFieldsArray = auxFieldsVisitor.localArray();
@@ -263,6 +198,8 @@ pylith::materials::_initializeAuxFieldsDB(void)
 
   // Close databases
   _dbAuxFields->close();
+
+#endif
 
 
   PYLITH_METHOD_END;

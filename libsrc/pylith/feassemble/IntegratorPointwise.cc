@@ -20,9 +20,6 @@
 
 #include "IntegratorPointwise.hh" // implementation of class methods
 
-#include "Quadrature.hh" // USES Quadrature
-#include "CellGeometry.hh" // USES CellGeometry
-
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
@@ -45,7 +42,8 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::feassemble::IntegratorPointwise::IntegratorPointwise(void)
+pylith::feassemble::IntegratorPointwise::IntegratorPointwise(void) :
+  _auxFields(0)
 { // constructor
 } // constructor
 
@@ -64,6 +62,11 @@ pylith::feassemble::IntegratorPointwise::deallocate(void)
   PYLITH_METHOD_BEGIN;
 
   Integrator::deallocate();
+  delete _auxFields; _auxFields = 0;
+
+  PetscErrorCode err;
+  err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
+  err = DMDestroy(&_dmAux);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // deallocate
@@ -75,21 +78,38 @@ pylith::feassemble::IntegratorPointwise::auxFields() const
 { // auxFields
   PYLITH_METHOD_BEGIN;
 
-  PYLITH_METHOD_RETURN(*_fieldsAux);
+  PYLITH_METHOD_RETURN(*_auxFields);
 } // auxFields
 
 // ----------------------------------------------------------------------
-// Determine whether we need to recompute the Jacobian.
+// Check whether material has a given auxilirary field.
 bool
-pylith::feassemble::IntegratorPointwise::needNewJacobian(void)
-{ // needNewJacobian
+pylith::feassemble::IntegratorPointwise::hasAuxField(const char* name)
+{ // hasAuxField
   PYLITH_METHOD_BEGIN;
 
-  if (!_needNewJacobian)
-    _needNewJacobian = true;
-  PYLITH_METHOD_RETURN(_needNewJacobian);
-} // needNewJacobian
+  assert(_auxFields);
 
+  PYLITH_METHOD_RETURN(_auxFields->hasSubfield(name));
+} // hasAuxField
+
+
+// ----------------------------------------------------------------------
+// Get auxiliary field.
+void
+pylith::feassemble::IntegratorPointwise::getAuxField(topology::Field *field,
+						     const char* name) const
+{ // getAuxField
+  PYLITH_METHOD_BEGIN;
+
+  assert(field);
+  assert(_auxFields);
+
+  _auxFields->copySubfield(*field, name);
+
+  PYLITH_METHOD_END;
+} // getAuxField
+  
 // ----------------------------------------------------------------------
 // Initialize integrator.
 void
@@ -101,60 +121,13 @@ pylith::feassemble::IntegratorPointwise::initialize(const topology::Mesh& mesh)
 
   _initializeLogger();
 
-  // Compute geometry for quadrature operations.
-  _quadrature->initializeGeometry();
-
   // Optimize coordinate retrieval in closure
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
   topology::CoordsVisitor::optimizeClosure(dmMesh);
 
-  _isJacobianSymmetric = false;
-
-  // Set up gravity field database for querying
-  if (_gravityField) {
-    const int spaceDim = _quadrature->spaceDim();
-    _gravityField->open();
-    if (1 == spaceDim){
-      const char* queryNames[] = { "x"};
-      _gravityField->queryVals(queryNames, spaceDim);
-    } else if (2 == spaceDim){
-      const char* queryNames[] = { "x", "y"};
-      _gravityField->queryVals(queryNames, spaceDim);
-    } else if (3 == spaceDim){
-      const char* queryNames[] = { "x", "y", "z"};
-      _gravityField->queryVals(queryNames, spaceDim);
-    } else {
-      std::cerr << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
-      assert(0);
-      throw std::logic_error("Bad spatial dimension in IntegratorPointwise.");
-    } // else
-  } // if
-
   PYLITH_METHOD_END;
 } // initialize
   
-// ----------------------------------------------------------------------
-// Set time step for advancing from time t to time t+dt.
-void
-pylith::feassemble::IntegratorPointwise::timeStep(const PylithScalar dt)
-{ // timeStep
-  PYLITH_METHOD_BEGIN;
-
-  _dt = dt;
-
-  PYLITH_METHOD_END;
-} // timeStep
-
-// ----------------------------------------------------------------------
-// Get stable time step for advancing from time t to time t+dt.
-PylithScalar
-pylith::feassemble::IntegratorPointwise::stableTimeStep(const topology::Mesh& mesh) const
-{ // stableTimeStep
-  PYLITH_METHOD_BEGIN;
-
-  PYLITH_METHOD_RETURN(0.0);
-} // stableTimeStep
-
 // ----------------------------------------------------------------------
 // Update state variables as needed.
 void
@@ -240,18 +213,6 @@ pylith::feassemble::IntegratorPointwise::verifyConfiguration(const topology::Mes
   PYLITH_METHOD_BEGIN;
 
   assert(_quadrature);
-
-  const int dimension = mesh.dimension();
-
-  // check compatibility of mesh and quadrature scheme
-  if (_quadrature->cellDim() != dimension) {
-    std::ostringstream msg;
-    msg << "Quadrature is incompatible with cells'.\n"
-	<< "Dimension of mesh: " << dimension
-	<< ", dimension of quadrature: " << _quadrature->cellDim()
-	<< ".";
-    throw std::runtime_error(msg.str());
-  } // if
 
 #if 0
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);

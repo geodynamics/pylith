@@ -29,12 +29,9 @@
 // Include directives ---------------------------------------------------
 #include "feassemblefwd.hh" // forward declarations
 
-#include "pylith/topology/topologyfwd.hh" // HOLDSA Field
-#include "pylith/materials/materialsfwd.hh" // HOLDSA Material
-
 #include "Integrator.hh" // ISA Integrator
 
-#include "pylith/utils/arrayfwd.hh" // USES std::vector, scalar_array
+#include "pylith/topology/topologyfwd.hh" // HOLDSA Field
 
 // IntegratorPointwise -------------------------------------------------
 /** @brief General operations for implicit and explicit
@@ -61,17 +58,27 @@ public :
   virtual
   void deallocate(void);
 
-  /** Determine whether we need to recompute the Jacobian.
-   *
-   * @returns True if Jacobian needs to be recomputed, false otherwise.
-   */
-  bool needNewJacobian(void);
-
   /** Get auxiliary fields.
    *
    * @return field Field over material.
    */
   const topology::Field& auxFields() const;
+
+  /** Check whether material has a given auxiliary field.
+   *
+   * @param name Name of field.
+   *
+   * @returns True if material has auxiliary field, false otherwise.
+   */
+  bool hasAuxField(const char* name);
+
+  /** Get auxiliary field.
+   *
+   * @param field Field over material.
+   * @param name Name of field to retrieve.
+   */
+  void getAuxField(topology::Field *field,
+		   const char* name) const;
 
   /** Initialize integrator.
    *
@@ -95,21 +102,6 @@ public :
   virtual
   void verifyConfiguration(const topology::Mesh& mesh) const;
   
-  /** Set time step for advancing from time t to time t+dt.
-   *
-   * @param dt Time step
-   */
-  void timeStep(const PylithScalar dt);
-
-  /** Get stable time step for advancing from time t to time t+dt.
-   *
-   * Default is current time step.
-   *
-   * @param mesh Finite-element mesh.
-   * @returns Time step
-   */
-  PylithScalar stableTimeStep(const topology::Mesh& mesh) const;
-
   /** Integrate residual part of RHS for 3-D finite elements.
    * Includes gravity and element internal force contribution.
    *
@@ -161,7 +153,7 @@ protected :
   PetscDM _dm;
 
   /// Auxiliary fields for this problem
-  topology::Field *_fieldsAux;
+  topology::Field *_auxFields;
 
   /// The DM for auxiliary fields
   PetscDM _dmAux;

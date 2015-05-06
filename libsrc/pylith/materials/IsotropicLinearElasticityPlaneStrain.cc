@@ -20,10 +20,12 @@
 
 #include "IsotropicLinearElasticityPlaneStrain.hh" // implementation of object methods
 
+#include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
+
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::materials::IsotropicLinearElasticityPlaneStrain::IsotropicLinearElasticityPlaneStrain(void) :
-  Material(2)
+  MaterialNew(2)
 { // constructor
 } // constructor
 
@@ -54,23 +56,29 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::useBodyForce(const bool
 void
 pylith::materials::IsotropicLinearElasticityPlaneStrain::preinitialize(void)
 { // preinitialize
-  // Set db values
+  // Set db values.
   // :TODO: ADD STUFF HERE, values depend on _useInertia, _useBodyForce
   
-  // Set auxiliary fields
+  // Set subfields in auxiliary fields.
   // :TODO: ADD STUFF HERE, values depend on _useInertia, _useBodyForce
+
+  // Set _isJacobianSymmetric
 } // preinitialize
 
 // ----------------------------------------------------------------------
 // Set residual and Jacobian kernels.
 void
-pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernels(const PetscDS prob) const
+pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernels(const topology::Field& field,
+								       const PetscDS prob) const
 { // _setFEKernels
-  const PetscInt disp = 0; // :KLUDGE: These need to come from the problem!!!!!
-  const PetscInt vel = 1;
+  const topology::Field::SubfieldInfo& dispInfo = field.subfieldInfo("disp");
+  const topology::Field::SubfieldInfo& velInfo = field.subfieldInfo("vel");
+  const PetscInt disp = dispInfo.index;
+  const PetscInt vel = velInfo.index;
 
   // :TODO: Select kernels based on _useIneria and _useBodyForce
 
+#if 0
   // Residual kernels
   const PetscPointResFunc f0_disp = NULL;
   const PetscPointResFunc f1_disp = NULL;
@@ -101,6 +109,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernels(const Pet
   err = PetscDSSetJacobian(prob, disp, vel, g0_dispvel, g1_dispvel, g2_dispvel, g3_dispvel);PYLITH_CHECK_ERROR(err);
   err = PetscDSSetJacobian(prob, vel, disp, g0_veldisp, g1_veldisp, g2_veldisp, g3_veldisp);PYLITH_CHECK_ERROR(err);
   err = PetscDSSetJacobian(prob, vel, vel, g0_velvel, g1_velvel, g2_velvel, g3_velvel);PYLITH_CHECK_ERROR(err);
+#endif
 
 } // _setFEKernels
 

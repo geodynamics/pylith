@@ -27,11 +27,9 @@
 // Include directives ---------------------------------------------------
 #include "materialsfwd.hh" // forward declarations
 
-#include "pylith/feassemble/IntegratorPointWise.hh" // ISA IntegratorPointWise
+#include "pylith/feassemble/IntegratorPointwise.hh" // ISA IntegratorPointwise
 
-#include "pylith/topology/topologyfwd.hh" // forward declarations
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // forward declarations
-#include "spatialdata/units/unitsfwd.hh" // forward declarations
 
 #include <string> // HASA std::string
 
@@ -41,7 +39,7 @@
  * Interface definition for a material. 
  */
 
-class pylith::materials::MaterialNew : public pylith::feassemble::IntegratorPointWise
+class pylith::materials::MaterialNew : public pylith::feassemble::IntegratorPointwise
 { // class Material
   friend class TestMaterialNew; // unit testing
 
@@ -52,11 +50,11 @@ public :
    *
    * @param dimension Spatial dimension associated with material.
    */
-  Material(const int dimension);
+  MaterialNew(const int dimension);
 
   /// Destructor.
   virtual
-  ~Material(void);
+  ~MaterialNew(void);
 
   /// Deallocate PETSc and local data structures.
   virtual
@@ -92,51 +90,12 @@ public :
    */
   const char* label(void) const;
 
-  /** Set scales used to nondimensionalize physical properties.
-   *
-   * @param dim Nondimensionalizer
-   */
-  void normalizer(const spatialdata::units::Nondimensional& dim);
-
   /** Initialize material. Setup auxiliary fields.
    *
    * @param mesh Finite-element mesh.
    */
   void initialize(const topology::Mesh& mesh);
   
-  /** Get flag indicating whether Jacobian matrix must be reformed for
-   * current state.
-   *
-   * @returns True if Jacobian matrix must be reformed, false otherwise.
-   */
-  bool needNewJacobian(void) const;
-
-   /** Check whether material generates a symmetric Jacobian.
-    *
-    * @returns True if material generates symmetric Jacobian.
-    */
-   bool isJacobianSymmetric(void) const;
-
-  /// Reset flag indicating whether Jacobian matrix must be reformed for
-  /// current state.
-  void resetNeedNewJacobian(void);
-
-  /** Check whether material has a given auxiliary field.
-   *
-   * @param name Name of field.
-   *
-   * @returns True if material has auxiliary field, false otherwise.
-   */
-  bool hasAuxField(const char* name);
-
-  /** Get auxiliary field.
-   *
-   * @param field Field over material.
-   * @param name Name of field to retrieve.
-   */
-  void getAuxField(topology::Field *field,
-		   const char* name) const;
-
   /** Set spatial database for auxiliary fields.
    *
    * @param value Pointer to database.
@@ -147,14 +106,32 @@ public :
 protected :
 
   /// Initialize auxiliary fields using spatial database.
-  void _initializeAuxFieldsDB(void);   
+  void _initializeAuxFieldsFromDB(void);   
 
+  /** Nondimensionalize auxiliary fields. Nondimensionalization is
+   * done in place (no copy).
+   *
+   * @param values Array of values.
+   * @param nvalues Number of values.
+   */
+  void _nondimAuxFields(PylithScalar const values[],
+			const int nvalues) const;
+
+  /** Dimensionalize auxiliary fields. Dimensionalization is done in
+   * place (no copy).
+   *
+   * @param values Array of values.
+   * @param nvalues Number of values.
+   */
+  void _dimAuxFields(PylithScalar const values[],
+		     const int nvalues) const;
+
+  /** Compute properties from values in spatial database.
+   *
   // --------------------------------------------------------------------
   // These methods should be implemented by every constitutive model.
   // --------------------------------------------------------------------
 
-  /** Compute properties from values in spatial database.
-   *
    * @param auxValues Array of auxiliary values.
    * @param numAuxValues Number of auxiliary values.
    * @param dbValues Array of database values.
@@ -164,39 +141,12 @@ protected :
 		      const int numAuxValues,
 		      const scalar_array& dbValues) = 0;
 
-  /** Nondimensionalize auxiliary fields. Nondimensionalization is
-   * done in place (no copy).
-   *
-   * @param values Array of values.
-   * @param nvalues Number of values.
-   */
-  virtual
-  void _nondimAuxFields(PylithScalar const values[],
-			const int nvalues) const = 0;
-
-  /** Dimensionalize auxiliary fields. Dimensionalization is done in
-   * place (no copy).
-   *
-   * @param values Array of values.
-   * @param nvalues Number of values.
-   */
-  virtual
-  void _dimAuxFields(PylithScalar const values[],
-		     const int nvalues) const = 0;
-
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
-  /// Field containing physical properties of material.
-  topology::Field* _auxFields;
-
-  spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer
-  
   topology::StratumIS* _materialIS; ///< Index set for material cells.
 
   const int _dimension; ///< Spatial dimension of material.
-  bool _needNewJacobian; ///< True if need to reform Jacobian, false otherwise.
-  bool _isJacobianSymmetric; ///< True if Jacobian is symmetric;
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

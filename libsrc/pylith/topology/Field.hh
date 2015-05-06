@@ -332,6 +332,13 @@ public :
 		      const pylith::topology::FieldBase::DomainEnum domain, 
 		      const int fiberDim);
   
+  /** Does field have given auxiliary subfield?
+   *
+   * @param name Name of subfield.
+   * @returns True if field has given auxiliary subfield.
+   */
+  bool hasSubfield(const char* name) const;
+
   /** Get auxiliary information for subfield.
    *
    * @param name Name of field.

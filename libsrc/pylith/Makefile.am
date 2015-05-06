@@ -110,6 +110,8 @@ libpylith_la_SOURCES = \
 	materials/PowerLawPlaneStrain.cc \
 	materials/DruckerPrager3D.cc \
 	materials/DruckerPragerPlaneStrain.cc \
+	materials/MaterialNew.cc \
+	materials/IsotropicLinearElasticityPlaneStrain.cc \
 	meshio/BinaryIO.cc \
 	meshio/GMVFile.cc \
 	meshio/GMVFileAscii.cc \
