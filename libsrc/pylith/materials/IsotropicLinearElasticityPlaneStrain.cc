@@ -22,6 +22,10 @@
 
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
 
+#include "pylith/fekernels/elasticity.h" // USES fekernels
+
+#include "petscds.h"
+
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::materials::IsotropicLinearElasticityPlaneStrain::IsotropicLinearElasticityPlaneStrain(void) :
@@ -78,33 +82,38 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernels(const top
 
   // :TODO: Select kernels based on _useIneria and _useBodyForce
 
+  PetscErrorCode err;
+
 #if 0
+  // :TODO: Wait for Matt to update PetscPointFunc prototype to include number of auxiliary fields
+  // :TODO: Wait for Matt to update PetscPointJac prototype to include number of auxiliary fields
+
   // Residual kernels
-  const PetscPointResFunc f0_disp = NULL;
-  const PetscPointResFunc f1_disp = NULL;
+  const PetscPointFunc f0_disp = NULL;
+  const PetscPointFunc f1_disp = NULL;
   err = PetscDSSetResidual(prob, disp, f0_disp, f1_disp);PYLITH_CHECK_ERROR(err);
 
-  const PetscPointResFunc f0_vel = NULL;
-  const PetscPointResFunc f1_vel = NULL;
+  const PetscPointFunc f0_vel = NULL;
+  const PetscPointFunc f1_vel = NULL;
   err = PetscDSSetResidual(prob, vel, f0_vel, f1_vel);PYLITH_CHECK_ERROR(err);
 
   // Jacobian kernels
-  const PetscPointJacFunc g0_dispdisp = NULL;
-  const PetscPointJacFunc g1_dispdisp = NULL;
-  const PetscPointJacFunc g2_dispdisp = NULL;
-  const PetscPointJacFunc g3_dispdisp = NULL;
-  const PetscPointJacFunc g0_dispvel = NULL;
-  const PetscPointJacFunc g1_dispvel = NULL;
-  const PetscPointJacFunc g2_dispvel = NULL;
-  const PetscPointJacFunc g3_dispvel = NULL;
-  const PetscPointJacFunc g0_veldisp = NULL;
-  const PetscPointJacFunc g1_veldisp = NULL;
-  const PetscPointJacFunc g2_veldisp = NULL;
-  const PetscPointJacFunc g3_veldisp = NULL;
-  const PetscPointJacFunc g0_velvel = NULL;
-  const PetscPointJacFunc g1_velvel = NULL;
-  const PetscPointJacFunc g2_velvel = NULL;
-  const PetscPointJacFunc g3_velvel = NULL;
+  const PetscPointJac g0_dispdisp = NULL;
+  const PetscPointJac g1_dispdisp = NULL;
+  const PetscPointJac g2_dispdisp = NULL;
+  const PetscPointJac g3_dispdisp = NULL;
+  const PetscPointJac g0_dispvel = NULL;
+  const PetscPointJac g1_dispvel = NULL;
+  const PetscPointJac g2_dispvel = NULL;
+  const PetscPointJac g3_dispvel = NULL;
+  const PetscPointJac g0_veldisp = NULL;
+  const PetscPointJac g1_veldisp = NULL;
+  const PetscPointJac g2_veldisp = NULL;
+  const PetscPointJac g3_veldisp = NULL;
+  const PetscPointJac g0_velvel = NULL;
+  const PetscPointJac g1_velvel = NULL;
+  const PetscPointJac g2_velvel = NULL;
+  const PetscPointJac g3_velvel = NULL;
   err = PetscDSSetJacobian(prob, disp, disp, g0_dispdisp, g1_dispdisp, g2_dispdisp, g3_dispdisp);PYLITH_CHECK_ERROR(err);
   err = PetscDSSetJacobian(prob, disp, vel, g0_dispvel, g1_dispvel, g2_dispvel, g3_dispvel);PYLITH_CHECK_ERROR(err);
   err = PetscDSSetJacobian(prob, vel, disp, g0_veldisp, g1_veldisp, g2_veldisp, g3_veldisp);PYLITH_CHECK_ERROR(err);
