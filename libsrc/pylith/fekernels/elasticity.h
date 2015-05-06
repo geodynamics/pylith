@@ -54,13 +54,11 @@
  * @param x Coordinates of point evaluation.
  * @param f0 Result [dim].
  *
- * @returns 0 if no errors.
- * 
  * Solution fields: [disp(dim), vel(dim)]
  *
  * Auxiliary fields: None
  */
-PetscErrorCode
+void
 pylith_fekernels_f0_DispVel(const PylithInt dim,
 			    const PylithInt numS,
 			    const PylithInt numA,
@@ -95,13 +93,11 @@ pylith_fekernels_f0_DispVel(const PylithInt dim,
  * @param x Coordinates of point evaluation.
  * @param g0 Result [dim*dim].
  *
- * @returns 0 if no errors.
- * 
  * Solution fields: [disp(dim), vel(dim)]
  *
  * Auxiliary fields: None
  */
-PetscErrorCode
+void
 pylith_fekernels_g0_vv_DispVel(const PylithInt dim,
 			       const PylithInt numS,
 			       const PylithInt numA,
@@ -137,13 +133,11 @@ pylith_fekernels_g0_vv_DispVel(const PylithInt dim,
  * @param x Coordinates of point evaluation.
  * @param g0 Result [dim*dim].
  *
- * @returns 0 if no errors.
- * 
  * Solution fields: [disp(dim), vel(dim)]
  *
  * Auxiliary fields: None
  */
-PetscErrorCode
+void
 pylith_fekernels_g0_vu_DispVel(const PylithInt dim,
 			       const PylithInt numS,
 			       const PylithInt numA,
@@ -185,13 +179,11 @@ pylith_fekernels_g0_vu_DispVel(const PylithInt dim,
  * @param x Coordinates of point evaluation.
  * @param f0 Result [dim].
  *
- * @returns 0 if no errors.
- * 
  * Solution fields: [disp(dim), vel(dim)]
  *
  * Auxiliary fields: [density(1), body force(dim)]
  */
-PetscErrorCode
+void
 pylith_fekernels_f0_ElasticityInertiaBodyForce(const PylithInt dim,
 					       const PylithInt numS,
 					       const PylithInt numA,
@@ -225,13 +217,11 @@ pylith_fekernels_f0_ElasticityInertiaBodyForce(const PylithInt dim,
  * @param x Coordinates of point evaluation.
  * @param f0 Result [dim].
  *
- * @returns 0 if no errors.
- * 
  * Solution fields: [disp(dim), vel(dim)]
  *
  * Auxiliary fields: [density(1)]
  */
-PetscErrorCode
+void
 pylith_fekernels_f0_ElasticityInertia(const PylithInt dim,
 				      const PylithInt numS,
 				      const PylithInt numA,
@@ -265,13 +255,11 @@ pylith_fekernels_f0_ElasticityInertia(const PylithInt dim,
  * @param x Coordinates of point evaluation.
  * @param f0 Result [dim].
  *
- * @returns 0 if no errors.
- * 
  * Solution fields: [disp(dim), vel(dim)]
  *
  * Auxiliary fields: [body force(dim)]
  */
-PetscErrorCode
+void
 pylith_fekernels_f0_ElasticityBodyForce(const PylithInt dim,
 					const PylithInt numS,
 					const PylithInt numA,
@@ -306,13 +294,11 @@ pylith_fekernels_f0_ElasticityBodyForce(const PylithInt dim,
  * @param x Coordinates of point evaluation.
  * @param f0 Result [dim].
  *
- * @returns 0 if no errors.
- * 
  * Solution fields: [disp(dim), vel(dim)]
  *
  * Auxiliary fields: [density(1)]
  */
-PetscErrorCode
+void
 pylith_fekernels_g0_uv_ElasticityInertia(const PylithInt dim,
 					 const PylithInt numS,
 					 const PylithInt numA,
@@ -347,13 +333,11 @@ pylith_fekernels_g0_uv_ElasticityInertia(const PylithInt dim,
  * @param x Coordinates of point evaluation.
  * @param f0 Result [dim].
  *
- * @returns 0 if no errors.
- * 
  * Solution fields: [disp(dim), vel(dim)]
  *
  * Auxiliary fields: [density]
  */
-PetscErrorCode
+void
 pylith_fekernels_Inertia(const PylithInt dim,
 			 const PylithInt numS,
 			 const PylithInt numA,
@@ -387,13 +371,11 @@ pylith_fekernels_Inertia(const PylithInt dim,
  * @param x Coordinates of point evaluation.
  * @param f0 Result [dim].
  *
- * @returns 0 if no errors.
- * 
  * Solution fields: NONE
  *
  * Auxiliary fields: [body force(dim)]
  */
-PetscErrorCode
+void
 pylith_fekernels_BodyForce(const PylithInt dim,
 			   const PylithInt numS,
 			   const PylithInt numA,
@@ -434,13 +416,11 @@ pylith_fekernels_BodyForce(const PylithInt dim,
  * @param x Coordinates of point evaluation.
  * @param f1 Result [dim].
  *
- * @returns 0 if no errors.
- * 
  * Solution fields: [disp(dim)]
  *
  * Auxiliary fields: [lambda(1), mu(1)]
  */
-PetscErrorCode
+void
 pylith_fekernels_f1_IsotropicLinearElasticity3D(const PylithInt dim,
 						const PylithInt numS,
 						const PylithInt numA,
@@ -475,13 +455,11 @@ pylith_fekernels_f1_IsotropicLinearElasticity3D(const PylithInt dim,
  * @param x Coordinates of point evaluation.
  * @param g3 Result [dim*dim*dim*dim].
  *
- * @returns 0 if no errors.
- * 
  * Solution fields: [disp(dim)]
  *
  * Auxiliary fields: [lambda(1), mu(1), initialstress(dim*dim), initialstrain(dim*dim)]
  */
-PetscErrorCode
+void
 pylith_fekernels_g3_uu_IsotropicLinearElasticity3D(const PylithInt dim,
 						   const PylithInt numS,
 						   const PylithInt numA,
@@ -516,13 +494,11 @@ pylith_fekernels_g3_uu_IsotropicLinearElasticity3D(const PylithInt dim,
  * @param x Coordinates of point evaluation.
  * @param f1 Result [dim*dim].
  *
- * @returns 0 if no errors.
- * 
  * Solution fields: [disp(dim)]
  *
  * Auxiliary fields: [lambda(1), initialstress(dim*dim), initialstrain(dim*dim)]
  */
-PetscErrorCode
+void
 pylith_fekernels_volumetricStress_IsotropicLinearElasticity3D(const PylithInt dim,
 							      const PylithInt numS,
 							      const PylithInt numA,
@@ -556,13 +532,11 @@ pylith_fekernels_volumetricStress_IsotropicLinearElasticity3D(const PylithInt di
  * @param x Coordinates of point evaluation.
  * @param f1 Result [dim*dim].
  *
- * @returns 0 if no errors.
- * 
  * Solution fields: [disp(dim)]
  *
  * Auxiliary fields: [mu(1), initialstress(dim*dim), initialstrain(dim*dim)]
  */
-PetscErrorCode
+void
 pylith_fekernels_deviatoricStress_IsotropicLinearElasticity3D(const PylithInt dim,
 							      const PylithInt numS,
 							      const PylithInt numA,
@@ -595,13 +569,11 @@ pylith_fekernels_deviatoricStress_IsotropicLinearElasticity3D(const PylithInt di
  * @param x Coordinates of point evaluation.
  * @param f1 Result [dim].
  *
- * @returns 0 if no errors.
- * 
  * Solution fields: [disp(dim)]
  *
  * Auxiliary fields: [lambda(1), mu(1), initialstress(dim*dim), initialstrain(dim*dim)]
  */
-PetscErrorCode
+void
 pylith_fekernels_f1_IsotropicLinearElasticityPlaneStrain(const PylithInt dim,
 							 const PylithInt numS,
 							 const PylithInt numA,
@@ -636,13 +608,11 @@ pylith_fekernels_f1_IsotropicLinearElasticityPlaneStrain(const PylithInt dim,
  * @param x Coordinates of point evaluation.
  * @param g3 Result [dim*dim*dim*dim].
  *
- * @returns 0 if no errors.
- * 
  * Solution fields: [disp(dim)]
  *
  * Auxiliary fields: [lambda(1), mu(1)]
  */
-PetscErrorCode
+void
 pylith_fekernels_g3_uu_IsotropicLinearElasticityPlaneStrain(const PylithInt dim,
 							    const PylithInt numS,
 							    const PylithInt numA,
@@ -677,13 +647,11 @@ pylith_fekernels_g3_uu_IsotropicLinearElasticityPlaneStrain(const PylithInt dim,
  * @param x Coordinates of point evaluation.
  * @param f1 Result [dim*dim].
  *
- * @returns 0 if no errors.
- * 
  * Solution fields: [disp(dim)]
  *
  * Auxiliary fields: [lambda(1), initialstress(dim*dim), initialstrain(dim*dim)]
  */
-PetscErrorCode
+void
 pylith_fekernels_volumetricStress_IsotropicLinearElasticityPlaneStrain(const PylithInt dim,
 								       const PylithInt numS,
 								       const PylithInt numA,
@@ -717,13 +685,11 @@ pylith_fekernels_volumetricStress_IsotropicLinearElasticityPlaneStrain(const Pyl
  * @param x Coordinates of point evaluation.
  * @param f1 Result [dim*dim].
  *
- * @returns 0 if no errors.
- * 
  * Solution fields: [disp(dim)]
  *
  * Auxiliary fields: [mu(1), initialstress(dim*dim), initialstrain(dim*dim)]
  */
-PetscErrorCode
+void
 pylith_fekernels_deviatoricStress_IsotropicLinearElasticityPlaneStrain(const PylithInt dim,
 								       const PylithInt numS,
 								       const PylithInt numA,
@@ -763,13 +729,11 @@ pylith_fekernels_deviatoricStress_IsotropicLinearElasticityPlaneStrain(const Pyl
  * @param x Coordinates of point evaluation.
  * @param f0 Result [dim].
  *
- * @returns 0 if no errors.
- * 
  * Solution fields: [disp(dim), pres]
  *
  * Auxiliary fields: [lambda, mu]
  */
-PetscErrorCode
+void
 pylith_fekernels_f0_IncompressPIntegral(const PylithInt dim,
 					const PylithInt numS,
 					const PylithInt numA,
@@ -803,13 +767,11 @@ pylith_fekernels_f0_IncompressPIntegral(const PylithInt dim,
  * @param x Coordinates of point evaluation.
  * @param g0 Result [dim*dim].
  *
- * @returns 0 if no errors.
- * 
  * Solution fields: [disp(dim), pres]
  *
  * Auxiliary fields: [lambda, mu]
  */
-PetscErrorCode
+void
 pylith_fekernels_g0_vv_IncompressPIntegral(const PylithInt dim,
 					   const PylithInt numS,
 					   const PylithInt numA,
@@ -845,13 +807,11 @@ pylith_fekernels_g0_vv_IncompressPIntegral(const PylithInt dim,
  * @param x Coordinates of point evaluation.
  * @param g0 Result [dim*dim].
  *
- * @returns 0 if no errors.
- * 
  * Solution fields: [disp(dim), pres]
  *
  * Auxiliary fields: None
  */
-PetscErrorCode
+void
 pylith_fekernels_g2_vu_IncompressPIntegral(const PylithInt dim,
 					   const PylithInt numS,
 					   const PylithInt numA,
@@ -894,13 +854,11 @@ pylith_fekernels_g2_vu_IncompressPIntegral(const PylithInt dim,
  * @param x Coordinates of point evaluation.
  * @param f0 Result [dim].
  *
- * @returns 0 if no errors.
- * 
  * Solution fields: [disp(dim), pres]
  *
  * Auxiliary fields: [bodyforce(dim)]
  */
-PetscErrorCode
+void
 pylith_fekernels_f0_IncompressUIntegral(const PylithInt dim,
 					const PylithInt numS,
 					const PylithInt numA,
@@ -933,13 +891,11 @@ pylith_fekernels_f0_IncompressUIntegral(const PylithInt dim,
  * @param x Coordinates of point evaluation.
  * @param f0 Result [dim].
  *
- * @returns 0 if no errors.
- * 
  * Solution fields: [disp(dim), pres]
  *
  * Auxiliary fields: [lambda(1), mu(1), initialstress(dim*dim), initialstrain(dim*dim)]
  */
-PetscErrorCode
+void
 pylith_fekernels_f1_IncompressUIntegralPlaneStrain(const PylithInt dim,
 						   const PylithInt numS,
 						   const PylithInt numA,
@@ -972,13 +928,11 @@ pylith_fekernels_f1_IncompressUIntegralPlaneStrain(const PylithInt dim,
  * @param x Coordinates of point evaluation.
  * @param stress Result [dim*dim].
  *
- * @returns 0 if no errors.
- * 
  * Solution fields: [disp(dim), pres]
  *
  * Auxiliary fields: [mu(1), initialstress(dim*dim), initialstrain(dim*dim)]
  */
-PetscErrorCode
+void
 pylith_fekernels_deviatoricStress_IsotropicLinearElasticityIncompressPlaneStrain(const PylithInt dim,
 						   const PylithInt numS,
 						   const PylithInt numA,
