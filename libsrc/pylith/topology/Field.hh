@@ -68,6 +68,7 @@ public :
   /// Subfield auxiliary information.
   struct SubfieldInfo {
     Metadata metadata; ///< Metadata for subfield.
+    Discretization fe; ///< Discretization for subfield.
     int numComponents; ///< Number of components. 
     int index; ///< Index of subfield in field.
     PetscDM dm; ///< PETSc DM associated with subfield.

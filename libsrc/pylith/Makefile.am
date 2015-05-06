@@ -142,6 +142,7 @@ libpylith_la_SOURCES = \
 	topology/Mesh.cc \
 	topology/MeshOps.cc \
 	topology/Field.cc \
+	topology/FieldOps.cc \
 	topology/Fields.cc \
 	topology/SolutionFields.cc \
 	topology/Distributor.cc \

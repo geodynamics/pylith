@@ -69,6 +69,12 @@ public :
     bool dimsOkay; ///< Ok to replace nondimensionalized values with dimensionalized values.
   }; // Metadata
 
+  struct Discretization {
+    int basisOrder; ///< Order of basis functions.
+    int quadOrder; ///< Order of quadrature scheme.
+    bool isBasisContinuous; ///< Is basis continuous?
+  }; // Metadata
+
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
