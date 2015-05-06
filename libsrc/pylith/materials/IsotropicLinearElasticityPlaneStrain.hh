@@ -50,13 +50,13 @@ public :
    *
    * @param value Flag indicating to include inertial term.
    */
-  void useInertia(const bool value =false);
+  void useInertia(const bool value);
 
   /** Include body force?
    *
    * @param value Flag indicating to include body force term.
    */
-  void useBodyForce(const bool value =false);
+  void useBodyForce(const bool value);
 
   /// Preinitialize material. Set names/sizes of auxiliary fields.
   void preinitialize(void);

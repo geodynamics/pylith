@@ -29,7 +29,9 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::materials::IsotropicLinearElasticityPlaneStrain::IsotropicLinearElasticityPlaneStrain(void) :
-  MaterialNew(2)
+  MaterialNew(2),
+  _useInertia(false),
+  _useBodyForce(false)
 { // constructor
 } // constructor
 
