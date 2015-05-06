@@ -78,6 +78,8 @@ pylith::feassemble::IntegratorPointwise::auxFields() const
 { // auxFields
   PYLITH_METHOD_BEGIN;
 
+  assert(_auxFields);
+
   PYLITH_METHOD_RETURN(*_auxFields);
 } // auxFields
 
