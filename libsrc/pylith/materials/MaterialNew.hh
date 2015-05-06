@@ -36,7 +36,17 @@
 // Material -------------------------------------------------------------
 /** @brief C++ abstract base class for Material object.
  *
- * Interface definition for a material. 
+ * Interface definition for a material. A material encapsulates both
+ * the rheology as well as the governing equation.
+ *
+ * An individual material must abide by specific rules for the
+ * interface, especially the order of the fields in the solution.
+ *
+ * Elasticity:
+ *   + displacement, [velocity, Lagrange multipliers]
+ *
+ * Incompressible elasticity
+ *   + displacement, pressure, [velocity, Lagrange multipliers]
  */
 
 class pylith::materials::MaterialNew : public pylith::feassemble::IntegratorPointwise
@@ -139,7 +149,7 @@ protected :
   virtual
   void _dbToAuxFields(PylithScalar const auxValues[],
 		      const int numAuxValues,
-		      const scalar_array& dbValues) = 0;
+		      const scalar_array& dbValues) const = 0;
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :

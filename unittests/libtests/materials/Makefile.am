@@ -44,6 +44,7 @@ testmaterials_SOURCES = \
 	TestDruckerPrager3D.cc \
 	TestDruckerPragerPlaneStrain.cc \
 	TestEffectiveStress.cc \
+	TestIsotropicLinearElasticityPlaneStrain.cc \
 	test_materials.cc
 
 
@@ -63,7 +64,8 @@ noinst_HEADERS = \
 	TestPowerLawPlaneStrain.hh \
 	TestDruckerPrager3D.hh \
 	TestDruckerPragerPlaneStrain.hh \
-	TestEffectiveStress.hh
+	TestEffectiveStress.hh \
+	TestIsotropicLinearElasticityPlaneStrain.hh
 
 # Source files associated with testing data
 testmaterials_SOURCES += \
