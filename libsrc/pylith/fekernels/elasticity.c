@@ -1050,5 +1050,343 @@ pylith_fekernels_deviatoricStress_IsotropicLinearElasticityPlaneStrain(const Pyl
   PYLITH_METHOD_RETURN(0);
 } /* deviatoricStress_IsotropicLinearElasticityPlaneStrain */
 
+/* ====================================================================== 
+ * Kernels for incompressibility volume integral.
+ *
+ * \int_V \phi_p \left( \epsilon_v + \frac{p}{K} \right) \, dV
+ * ====================================================================== 
+ */
+
+/* ---------------------------------------------------------------------- */
+/* f0 entry function for incompressibility volume integral.
+ *
+ * Solution fields = [disp(dim), pres]
+ * Auxiliary fields = [lambda, mu]
+ */
+PetscErrorCode
+pylith_fekernels_f0_IncompressPIntegral(const PylithInt dim,
+					const PylithInt numS,
+					const PylithInt numA,
+					const PylithInt sOff[],
+					const PylithInt aOff[],
+					const PylithScalar s[],
+					const PylithScalar s_t[],
+					const PylithScalar s_x[],
+					const PylithScalar a[],
+					const PylithScalar a_t[],
+					const PylithScalar a_x[],
+					const PylithReal t,
+					const PylithScalar x[],
+					PylithScalar f0[])
+{ /* f0_IncompressPIntegral */
+  const PylithInt _numS = 2;
+  const PylithInt i_disp = 0;
+  const PylithInt i_pres = 1;
+  const PylithScalar* disp_x = &s_x[sOff[i_disp]];
+  const PylithScalar* pres = &s[sOff[i_pres]];
+
+  const PylithInt _numA = 2;
+  const PylithInt i_lambda = 0;
+  const PylithInt i_mu = 1;
+  const PylithScalar lambda = a[aOff[i_lambda]];
+  const PylithScalar mu = a[aOff[i_mu]];
+
+  const PylithScalar bulkModulus = lambda + 2.0 * mu/3.0;
+
+  PylithInt i;
+  PylithScalar volStrain = 0;
+
+  PYLITH_METHOD_BEGIN;
+  assert(_numS == numS);
+  assert(_numA == numA);
+  assert(sOff);
+  assert(s);
+  assert(s_x);
+
+  for (i=0; i < dim; ++i) {
+    volStrain += disp_x[i];
+  } /* for */
+
+  f0[0] += volStrain + pres[0]/bulkModulus;
+
+  PYLITH_METHOD_RETURN(0);
+} /* f0_IncompressPIntegral */
+					      
+
+/* ---------------------------------------------------------------------- */
+/* g0_vv entry function for incompressibility volume integral.
+ *
+ * Solution fields = [disp(dim), pres]
+ * Auxiliary fields = [lambda, mu]
+ */
+PetscErrorCode
+pylith_fekernels_g0_vv_IncompressPIntegral(const PylithInt dim,
+					   const PylithInt numS,
+					   const PylithInt numA,
+					   const PylithInt sOff[],
+					   const PylithInt aOff[],
+					   const PylithScalar s[],
+					   const PylithScalar s_t[],
+					   const PylithScalar s_x[],
+					   const PylithScalar a[],
+					   const PylithScalar a_t[],
+					   const PylithScalar a_x[],
+					   const PylithReal t,
+					   const PylithReal utshift,
+					   const PylithScalar x[],
+					   PylithScalar g0[])
+{ /* g0_vv_IncompressPIntegral */
+  const PylithInt _numS = 2;
+
+  const PylithInt _numA = 2;
+  const PylithInt i_lambda = 0;
+  const PylithInt i_mu = 1;
+  const PylithScalar lambda = a[aOff[i_lambda]];
+  const PylithScalar mu = a[aOff[i_mu]];
+
+  const PylithScalar bulkModulus = lambda + 2.0 * mu/3.0;
+
+  PYLITH_METHOD_BEGIN;
+  assert(_numS == numS);
+  assert(_numA == numA);
+
+  g0[0] += 1.0/bulkModulus;
+
+  PYLITH_METHOD_RETURN(0);
+} /* g0_vv_IncompressPIntegral */
+					      
+
+/* ---------------------------------------------------------------------- */
+/* g2_vu entry function for incompressibility volume integral.
+ *
+ * Solution fields = [disp(dim), pres]
+ * Auxiliary fields = None
+ */
+PetscErrorCode
+pylith_fekernels_g2_vu_IncompressPIntegral(const PylithInt dim,
+					   const PylithInt numS,
+					   const PylithInt numA,
+					   const PylithInt sOff[],
+					   const PylithInt aOff[],
+					   const PylithScalar s[],
+					   const PylithScalar s_t[],
+					   const PylithScalar s_x[],
+					   const PylithScalar a[],
+					   const PylithScalar a_t[],
+					   const PylithScalar a_x[],
+					   const PylithReal t,
+					   const PylithReal utshift,
+					   const PylithScalar x[],
+					   PylithScalar g2[])
+{ /* g2_vu_IncompressPIntegral */
+  const PylithInt _numS = 2;
+
+  const PylithInt _numA = 0;
+
+  PylithInt i;
+
+  PYLITH_METHOD_BEGIN;
+  assert(_numS == numS);
+  assert(_numA == numA);
+
+  for (i=0; i < dim; ++i) {
+    g2[i] += 1.0;
+  } /* for */
+
+  PYLITH_METHOD_RETURN(0);
+} /* g2_vu_IncompressPIntegral */
+					      
+					      
+
+/* ====================================================================== 
+ * Kernels for incompressible elasticity volume integral.
+ *
+ * \int_V \tensor{S}:\nabla \vec{\phi}_u \, dV - \int_V \vec{\phi}_u \cdot
+ * \left( \vec{f} - \vec{\nabla} p\right) \, dV
+ * ====================================================================== 
+ */
+
+/* ---------------------------------------------------------------------- */
+/* f0 entry function for grad(p) and body forces.
+ *
+ * Solution fields = [disp(dim), pres]
+ * Auxiliary fields = [body force(dim)]
+ */
+PetscErrorCode
+pylith_fekernels_f0_IncompressUIntegral(const PylithInt dim,
+					const PylithInt numS,
+					const PylithInt numA,
+					const PylithInt sOff[],
+					const PylithInt aOff[],
+					const PylithScalar s[],
+					const PylithScalar s_t[],
+					const PylithScalar s_x[],
+					const PylithScalar a[],
+					const PylithScalar a_t[],
+					const PylithScalar a_x[],
+					const PylithReal t,
+					const PylithScalar x[],
+					PylithScalar f0[])
+{ /* f0_IncompressUIntegral */
+  const PylithInt _numS = 2;
+  const PylithInt i_pres = 1;
+  const PylithScalar* pres_x = &s_x[sOff[i_pres]];
+
+  const PylithInt _numA = 1;
+  const PylithInt i_bodyforce = 0;
+
+  PylithInt i;
+
+  PYLITH_METHOD_BEGIN;
+  assert(_numS == numS);
+  assert(_numA == numA);
+  assert(sOff);
+  assert(aOff);
+
+  pylith_fekernels_BodyForce(dim, 0, 1, NULL, &aOff[i_bodyforce], s, s_t, s_x, a, a_t, a_x, t, x, f0);
+
+  for (i=0; i < dim; ++i) {
+    f0[i] += pres_x[i];
+  } /* for */
+  
+  PYLITH_METHOD_RETURN(0);
+} /* f0_IncompressUIntegral */
+
+
+/* ---------------------------------------------------------------------- */
+/* f1 entry function for 2-D plane strain incompressible isotropic linear elasticity.
+ *
+ * Solution fields = [disp(dim), pres]
+ * Auxiliary fields = [lambda(1), mu(1), initialstress(dim*dim), initialstrain(dim*dim)]
+ */
+PetscErrorCode
+pylith_fekernels_f1_IncompressUIntegralPlaneStrain(const PylithInt dim,
+						   const PylithInt numS,
+						   const PylithInt numA,
+						   const PylithInt sOff[],
+						   const PylithInt aOff[],
+						   const PylithScalar s[],
+						   const PylithScalar s_t[],
+						   const PylithScalar s_x[],
+						   const PylithScalar a[],
+						   const PylithScalar a_t[],
+						   const PylithScalar a_x[],
+						   const PylithReal t,
+						   const PylithScalar x[],
+						   PylithScalar f1[])
+{ /* f1_IncompressUIntegralPlaneStrain */
+  const PylithInt _dim = 2;
+
+  const PylithInt _numS = 2;
+  const PylithInt i_disp = 0;
+
+  const PylithInt _numA = 4;
+  const PylithInt i_lambda = 0;
+  const PylithInt i_mu = 1;
+  const PylithInt i_istress = 2;
+  const PylithInt i_istrain = 3;
+
+  const PylithInt numAVol = 3;
+  const PylithInt aOffVol[3] = { aOff[i_lambda], aOff[i_istress], aOff[i_istrain] };
+
+  const PylithInt numADev = 3;
+  const PylithInt aOffDev[3] = { aOff[i_mu], aOff[i_istress], aOff[i_istrain] };
+
+  PYLITH_METHOD_BEGIN;
+  assert(_dim == dim);
+  assert(_numS == numS);
+  assert(_numA == numA);
+  assert(sOff);
+  assert(aOff);
+
+  // NOTE:  At present, only the deviatoric initial strains and stresses are being used.
+  // Not sure at present how to incorporate the volumetric parts.
+  pylith_fekernels_deviatoricStress_IsotropicLinearElasticityIncompressPlaneStrain(dim, 1, numADev, &sOff[i_disp], aOffDev, s, s_t, s_x, a, a_t, a_x, t, x, f1);
+  
+  PYLITH_METHOD_RETURN(0);
+} /* f1_IncompressUIntegralPlaneStrain */
+
+
+/* ---------------------------------------------------------------------- */
+/* Calculate deviatoric stress for 2-D plane strain incompressible isotropic linear elasticity.
+ *
+ * Solution fields = [disp(dim)]
+ * Auxiliary fields = [mu(1), initialstress(dim*dim), initialstrain(dim*dim)]
+ */
+PetscErrorCode
+pylith_fekernels_deviatoricStress_IsotropicLinearElasticityIncompressPlaneStrain(const PylithInt dim,
+								       const PylithInt numS,
+								       const PylithInt numA,
+								       const PylithInt sOff[],
+								       const PylithInt aOff[],
+								       const PylithScalar s[],
+								       const PylithScalar s_t[],
+								       const PylithScalar s_x[],
+								       const PylithScalar a[],
+								       const PylithScalar a_t[],
+								       const PylithScalar a_x[],
+								       const PylithReal t,
+								       const PylithScalar x[],
+								       PylithScalar stress[])
+{ /* deviatoricStress_IsotropicLinearElasticityIncompressPlaneStrain */
+  const PylithInt _dim = 2;
+
+  const PylithInt _numS = 1;
+  const PylithInt i_disp = 0;
+  const PylithScalar* disp_x = &s_x[sOff[i_disp]];
+
+  const PylithInt _numA = 3;
+  const PylithInt i_mu = 0;
+  const PylithInt i_istress = 1;
+  const PylithInt i_istrain = 2;
+  const PylithScalar mu = a[aOff[i_mu]];
+  const PylithScalar* initialstress = &a[aOff[i_istress]];
+  const PylithScalar* initialstrain = &a[aOff[i_istrain]];
+
+  PylithInt i, j;
+  PylithScalar meanistress = 0;
+  PylithScalar meanistrain = 0;
+  PylithScalar meanstrain = 0;
+  PylithScalar devistrain[_dim*_dim];
+  PylithScalar devstrain[_dim*_dim];
+
+  PYLITH_METHOD_BEGIN;
+  assert(_dim == dim);
+  assert(_numS == numS);
+  assert(_numA == numA);
+  assert(sOff);
+  assert(aOff);
+  assert(s_x);
+  assert(a);
+  assert(stress);
+
+  // Need to make sure whether all the decomposition into deviatoric parts is necessary.
+  for (i=0; i < _dim; ++i) {
+    meanistress += initialstress[i*_dim+i];
+    meanistrain += initialstrain[i*_dim+i];
+    meanstrain += disp_x[i];
+  } /* for */
+  meanistress /= (PylithScalar)_dim;
+  meanistrain /= (PylithScalar)_dim;
+  meanstrain /= (PylithScalar)_dim;
+  for (i=0; i < _dim; ++i) {
+    for (j=0; j < _dim; ++j) {
+      devistrain[i*_dim+j] = initialstrain[i*_dim+j];
+      devstrain[i*_dim+j] = 0.5 * (disp_x[i*_dim+j] + disp_x[j*dim+i]);
+    } /* for */
+    devistrain[i*_dim+i] -= meanistrain;
+    devstrain[i*_dim+i] -= meanstrain;
+  } /* for */
+  
+  for (i=0; i < _dim; ++i) {
+    for (j=0; j < _dim; ++j) {
+      stress[i*_dim+j] += mu * (devstrain[i*_dim+j] - devistrain[i*_dim+j]) + initialstress[i*_dim+j];
+    } /* for */
+    stress[i*_dim+i] -= meanistress;
+  } /* for */
+
+  PYLITH_METHOD_RETURN(0);
+} /* deviatoricStress_IsotropicLinearElasticityIncompressPlaneStrain */
+
 
 /* End of file */
