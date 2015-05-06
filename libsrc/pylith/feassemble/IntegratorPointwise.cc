@@ -332,8 +332,6 @@ pylith::feassemble::IntegratorPointwise::integrateResidual(const topology::Field
 #endif
   err = VecDuplicate(residual.localVector(), &dispTpdtVec);PYLITH_CHECK_ERROR(err);
   err = VecWAXPY(dispTpdtVec, 1.0, fields->get("disp(t)").localVector(), fields->get("dispIncr(t->t+dt)").localVector());PYLITH_CHECK_ERROR(err);
-  /* Should this initialization be done here? */
-  err = VecSet(residual.localVector(), 0.0);PYLITH_CHECK_ERROR(err);
   /* The Equations object will have the auxiliary fields */
 #if 0
   err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) _material->propertiesField()->localVector());PYLITH_CHECK_ERROR(err);
@@ -379,8 +377,6 @@ pylith::feassemble::IntegratorPointwise::integrateJacobian(topology::Jacobian* j
 #endif
   err = VecDuplicate(fields->get("disp(t)").localVector(), &dispTpdtVec);PYLITH_CHECK_ERROR(err);
   err = VecWAXPY(dispTpdtVec, 1.0, fields->get("disp(t)").localVector(), fields->get("dispIncr(t->t+dt)").localVector());PYLITH_CHECK_ERROR(err);
-  /* Should this initialization be done here? */
-  err = MatZeroEntries(jacobianMat);PYLITH_CHECK_ERROR(err);
   /* The Equations object will have the auxiliary fields */
 #if 0
   err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) _material->propertiesField()->localVector());PYLITH_CHECK_ERROR(err);
