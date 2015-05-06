@@ -67,6 +67,12 @@ public :
    */
   bool needNewJacobian(void);
 
+  /** Get auxiliary fields.
+   *
+   * @return field Field over material.
+   */
+  const topology::Field& auxFields() const;
+
   /** Initialize integrator.
    *
    * @param mesh Finite-element mesh.
@@ -150,6 +156,15 @@ protected :
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
+
+  /// The DM for solution fields
+  PetscDM _dm;
+
+  /// Auxiliary fields for this problem
+  topology::Field *_fieldsAux;
+
+  /// The DM for auxiliary fields
+  PetscDM _dmAux;
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

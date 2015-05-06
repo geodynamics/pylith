@@ -69,6 +69,16 @@ pylith::feassemble::IntegratorPointwise::deallocate(void)
 } // deallocate
 
 // ----------------------------------------------------------------------
+// Return auxiliary fields for this problem
+const pylith::topology::Field&
+pylith::feassemble::IntegratorPointwise::auxFields() const
+{ // auxFields
+  PYLITH_METHOD_BEGIN;
+
+  PYLITH_METHOD_RETURN(*_fieldsAux);
+} // auxFields
+
+// ----------------------------------------------------------------------
 // Determine whether we need to recompute the Jacobian.
 bool
 pylith::feassemble::IntegratorPointwise::needNewJacobian(void)
@@ -318,31 +328,23 @@ pylith::feassemble::IntegratorPointwise::integrateResidual(const topology::Field
   assert(_logger);
   assert(fields);
 
-  PetscDM        dmMesh = fields->mesh().dmMesh();
+  PetscDM        dmMesh = _dm; /* MUST match dm in 'fields' */
   PetscDS        prob;
   Vec            dispTpdtVec;
   PetscErrorCode err;
 
-  err = DMGetDS(dmMesh, &prob);PYLITH_CHECK_ERROR(err);
-  /* We are going to have an Equations object with these pointwise functions, maybe containing a DS */
+  // Pointwise function have been set in DS
   // :TODO: call _setFEKernels from initialize()
-#if 0
-  err = PetscDSSetResidual(prob, 0, f0_zero, elasticity);PYLITH_CHECK_ERROR(err);
-  err = PetscDSSetResidual(prob, 1, f0_zero, f1_zero);PYLITH_CHECK_ERROR(err);
-#endif
+  err = DMGetDS(dmMesh, &prob);PYLITH_CHECK_ERROR(err);
+  // Create full solution
   err = VecDuplicate(residual.localVector(), &dispTpdtVec);PYLITH_CHECK_ERROR(err);
   err = VecWAXPY(dispTpdtVec, 1.0, fields->get("disp(t)").localVector(), fields->get("dispIncr(t->t+dt)").localVector());PYLITH_CHECK_ERROR(err);
-  /* The Equations object will have the auxiliary fields */
-#if 0
-  err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) _material->propertiesField()->localVector());PYLITH_CHECK_ERROR(err);
-#endif
-  /* Compute the local residual */
+  // Get auxiliary data
+  err = PetscObjectCompose((PetscObject) dmMesh, "dmAux", (PetscObject) _dmAux);PYLITH_CHECK_ERROR(err);
+  err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) auxFields().localVector());PYLITH_CHECK_ERROR(err);
+  // Compute the local residual
   err = DMPlexSNESComputeResidualFEM(dmMesh, dispTpdtVec, residual.localVector(), NULL);PYLITH_CHECK_ERROR(err);
   err = VecDestroy(&dispTpdtVec);PYLITH_CHECK_ERROR(err);
-
-  assert(_normalizer);
-  const PylithScalar lengthScale = _normalizer->lengthScale();
-  const PylithScalar gravityScale = _normalizer->pressureScale() / (_normalizer->lengthScale() * _normalizer->densityScale());
 
   PYLITH_METHOD_END;
 } // integrateResidual
@@ -360,28 +362,22 @@ pylith::feassemble::IntegratorPointwise::integrateJacobian(topology::Jacobian* j
   assert(jacobian);
   assert(fields);
 
-  PetscDM        dmMesh = fields->mesh().dmMesh();
+  PetscDM        dmMesh = _dm; /* MUST match dm in 'fields' */
   PetscDS        prob;
   const PetscMat jacobianMat = jacobian->matrix();assert(jacobianMat);
   Vec            dispTpdtVec;
   PetscErrorCode err;
 
-  err = DMGetDS(dmMesh, &prob);PYLITH_CHECK_ERROR(err);
-  /* We are going to have an Equations object with these pointwise functions, maybe containing a DS */
+  // Pointwise function have been set in DS
   // :TODO: call _setFEKernels from initialize()
-#if 0
-  err = PetscDSSetJacobian(prob, 0, 0, NULL, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
-  err = PetscDSSetJacobian(prob, 0, 1, NULL, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
-  err = PetscDSSetJacobian(prob, 1, 0, NULL, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
-  err = PetscDSSetJacobian(prob, 1, 1, NULL, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
-#endif
+  err = DMGetDS(dmMesh, &prob);PYLITH_CHECK_ERROR(err);
+  // Create full solution
   err = VecDuplicate(fields->get("disp(t)").localVector(), &dispTpdtVec);PYLITH_CHECK_ERROR(err);
   err = VecWAXPY(dispTpdtVec, 1.0, fields->get("disp(t)").localVector(), fields->get("dispIncr(t->t+dt)").localVector());PYLITH_CHECK_ERROR(err);
-  /* The Equations object will have the auxiliary fields */
-#if 0
-  err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) _material->propertiesField()->localVector());PYLITH_CHECK_ERROR(err);
-#endif
-  /* Compute the local residual */
+  // Get auxiliary data
+  err = PetscObjectCompose((PetscObject) dmMesh, "dmAux", (PetscObject) _dmAux);PYLITH_CHECK_ERROR(err);
+  err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) auxFields().localVector());PYLITH_CHECK_ERROR(err);
+  // Compute the local Jacobian
   err = DMPlexSNESComputeJacobianFEM(dmMesh, dispTpdtVec, jacobianMat, jacobianMat, NULL);PYLITH_CHECK_ERROR(err);
   err = VecDestroy(&dispTpdtVec);PYLITH_CHECK_ERROR(err);
 
