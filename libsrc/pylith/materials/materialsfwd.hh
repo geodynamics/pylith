@@ -54,6 +54,13 @@ namespace pylith {
     class EffectiveStress;
     class ViscoelasticMaxwell;
 
+
+
+    // New stuff
+    class MaterialNew;
+    
+    class IsotropicLinearElasticityPlaneStrain;
+
   } // materials
 } // pylith
 

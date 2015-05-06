@@ -100,10 +100,6 @@ pylith::feassemble::IntegratorPointwise::initialize(const topology::Mesh& mesh)
 
   _isJacobianSymmetric = false;
 
-  // Allocate vectors and matrices for cell values.
-  _initCellVector();
-  _initCellMatrix();
-
   // Set up gravity field database for querying
   if (_gravityField) {
     const int spaceDim = _quadrature->spaceDim();
@@ -329,6 +325,7 @@ pylith::feassemble::IntegratorPointwise::integrateResidual(const topology::Field
 
   err = DMGetDS(dmMesh, &prob);PYLITH_CHECK_ERROR(err);
   /* We are going to have an Equations object with these pointwise functions, maybe containing a DS */
+  // :TODO: call _setFEKernels from initialize()
 #if 0
   err = PetscDSSetResidual(prob, 0, f0_zero, elasticity);PYLITH_CHECK_ERROR(err);
   err = PetscDSSetResidual(prob, 1, f0_zero, f1_zero);PYLITH_CHECK_ERROR(err);
@@ -373,6 +370,7 @@ pylith::feassemble::IntegratorPointwise::integrateJacobian(topology::Jacobian* j
 
   err = DMGetDS(dmMesh, &prob);PYLITH_CHECK_ERROR(err);
   /* We are going to have an Equations object with these pointwise functions, maybe containing a DS */
+  // :TODO: call _setFEKernels from initialize()
 #if 0
   err = PetscDSSetJacobian(prob, 0, 0, NULL, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
   err = PetscDSSetJacobian(prob, 0, 1, NULL, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);

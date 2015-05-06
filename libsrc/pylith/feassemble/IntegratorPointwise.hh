@@ -139,6 +139,15 @@ protected :
   /// Initialize logger.
   void _initializeLogger(void);
 
+  /** Set residual and Jacobian kernels.
+   *
+   * @param prob PETSc discretization object.
+   */
+  virtual
+  void
+  _setFEKernels(const PetscDS prob) const = 0;
+
+
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
