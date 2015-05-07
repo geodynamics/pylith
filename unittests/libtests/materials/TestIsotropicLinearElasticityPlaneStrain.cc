@@ -36,7 +36,7 @@ void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::setUp(void)
 { // setUp
   _material = new IsotropicLinearElasticityPlaneStrain();
-  //_data = NULL;
+  _data = NULL;
 } // setUp
 
 
