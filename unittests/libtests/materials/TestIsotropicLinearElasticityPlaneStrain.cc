@@ -24,6 +24,9 @@
 
 #include "pylith/materials/IsotropicLinearElasticityPlaneStrain.hh" // USES IsotropicLinearElasticityPlaneStrain
 
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestIsotropicLinearElasticityPlaneStrain );
 
@@ -33,10 +36,7 @@ void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::setUp(void)
 { // setUp
   _material = new IsotropicLinearElasticityPlaneStrain();
-#if 0
-  _data = new IsotropicLinearElasticityPlaneStrainData();
-  setupNormalizer();
-#endif
+  //_data = NULL;
 } // setUp
 
 
@@ -45,7 +45,17 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::setUp(void)
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testUseInertia(void)
 { // testUseInertia
-  CPPUNIT_ASSERT(false);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_material);
+
+  const bool flag = false; // default
+  CPPUNIT_ASSERT_EQUAL(flag, _material->_useInertia);
+
+  _material->useInertia(!flag);
+  CPPUNIT_ASSERT_EQUAL(!flag, _material->_useInertia);
+
+  PYLITH_METHOD_END;
 } // testUseInertia
 
 
@@ -54,7 +64,17 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testUseInertia(void
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testUseBodyForce(void)
 { // testUseBodyForce
-  CPPUNIT_ASSERT(false);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_material);
+
+  const bool flag = false; // default
+  CPPUNIT_ASSERT_EQUAL(flag, _material->_useBodyForce);
+
+  _material->useBodyForce(!flag);
+  CPPUNIT_ASSERT_EQUAL(!flag, _material->_useBodyForce);
+
+  PYLITH_METHOD_END;
 } // testUseBodyForce
 
 
@@ -63,7 +83,17 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testUseBodyForce(vo
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testPreinitialize(void)
 { // testPreinitialize
-  CPPUNIT_ASSERT(false);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_material);
+
+  // Call preinitialize()
+  // :TODO: ADD MORE HERE
+  
+  // Check result
+  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+
+  PYLITH_METHOD_END;
 } // testPreinitialize
 
 
@@ -72,7 +102,17 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testPreinitialize(v
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_setFEKernels(void)
 { // test_setFEKernels
-  CPPUNIT_ASSERT(false);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_material);
+
+  // Call _setFEKernels()
+  // :TODO: ADD MORE HERE
+
+  // Check result
+  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+
+  PYLITH_METHOD_END;
 } // test_setFEKernels
 
 
@@ -81,7 +121,17 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_setFEKernels(v
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_dbToAuxFields(void)
 { // test_dbToAuxFields
-  CPPUNIT_ASSERT(false);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_material);
+
+  // Call _dbToAuxFields()
+  // :TODO: ADD MORE HERE
+
+  // Check result
+  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+
+  PYLITH_METHOD_END;
 } // test_dbToAuxFields
 
 
@@ -93,7 +143,18 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_dbToAuxFields(
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testAuxFields(void)
 { // testAuxFields
-  CPPUNIT_ASSERT(false);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_material);
+#if 0
+  // Call auxFields()
+  const topology::Field& auxFields = _material->auxFields();
+#endif
+
+  // Check result
+  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+
+  PYLITH_METHOD_END;
 } // testAuxFields
 
 
@@ -102,7 +163,19 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testAuxFields(void)
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testHasAuxField(void)
 { // testHasAuxField
-  CPPUNIT_ASSERT(false);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_material);
+
+#if 0
+  CPPUNIT_ASSERT(_material->hasAuxField("density"));
+  CPPUNIT_ASSERT(_material->hasAuxField("mu"));
+  CPPUNIT_ASSERT(_material->hasAuxField("lambda"));
+
+  CPPUNIT_ASSERT(!_material->hasAuxField("abc"));
+#endif
+
+  PYLITH_METHOD_END;
 } // testHaxAuxField
 
 
@@ -111,7 +184,20 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testHasAuxField(voi
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(void)
 { // testGetAuxField
-  CPPUNIT_ASSERT(false);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_material);
+
+  // Call getAuxField()
+#if 0
+  topology::Field density;
+  _material->getAuxField(&density, "density");
+#endif
+
+  // Check result
+  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+
+  PYLITH_METHOD_END;
 } // testGetAuxField
 
 
@@ -120,7 +206,11 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testNormalizer(void)
 { // testNormalizer
-  CPPUNIT_ASSERT(false);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+
+  PYLITH_METHOD_END;
 } // testNormalizer
 
 
@@ -129,7 +219,17 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testNormalizer(void
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testIsJacobianSymmetric(void)
 { // testIsJacobianSymmetric
-  CPPUNIT_ASSERT(false);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_material);
+
+  const bool flag = false; // default
+  CPPUNIT_ASSERT_EQUAL(flag, _material->isJacobianSymmetric());
+
+  // :TODO: ADD MORE HERE
+  // Does flag change based on settings?
+
+  PYLITH_METHOD_END;
 } // testIsJacobianSymmetric
 
 
@@ -138,7 +238,17 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testIsJacobianSymme
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testVerifyConfiguration(void)
 { // testVerifyConfiguration
-  CPPUNIT_ASSERT(false);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_material);
+
+  // Call verifyConfiguration()
+  // :TODO: ADD MORE HERE
+
+  // Check result
+  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+
+  PYLITH_METHOD_END;
 } // testVerifyConfiguration
 
 
@@ -147,7 +257,12 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testVerifyConfigura
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testInitialize(void)
 { // testInitialize
-  CPPUNIT_ASSERT(false);
+  PYLITH_METHOD_BEGIN;
+
+  // Call 
+  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+
+  PYLITH_METHOD_END;
 } // testInitialize
 
 
@@ -156,7 +271,11 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testInitialize(void
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testIntegrateResidual(void)
 { // testIntegrateResidual
-  CPPUNIT_ASSERT(false);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+
+  PYLITH_METHOD_END;
 } // testIntegrateResidual
 
 
@@ -165,7 +284,11 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testIntegrateResidu
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testIntegrateJacobian(void)
 { // testIntegrateJacobian
-  CPPUNIT_ASSERT(false);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+
+  PYLITH_METHOD_END;
 } // testIntegrateJacobian
 
 // MaterialNew ========================================
@@ -175,7 +298,11 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testIntegrateJacobi
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testDimension(void)
 { // testDimension
-  CPPUNIT_ASSERT(false);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+
+  PYLITH_METHOD_END;
 } // testDimension
 
 
@@ -184,7 +311,11 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testDimension(void)
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testId(void)
 { // testId
-  CPPUNIT_ASSERT(false);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+
+  PYLITH_METHOD_END;
 } // testId
 
 
@@ -193,7 +324,11 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testId(void)
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testLabel(void)
 { // testLabel
-  CPPUNIT_ASSERT(false);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+
+  PYLITH_METHOD_END;
 } // testLabel
 
 
@@ -202,7 +337,11 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testLabel(void)
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testDBAuxFields(void)
 { // testDBAuxFields
-  CPPUNIT_ASSERT(false);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+
+  PYLITH_METHOD_END;
 } // testDBAuxFields
 
 
@@ -211,7 +350,11 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testDBAuxFields(voi
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_initializeAuxFieldsFromDB(void)
 { // test_initializeAuxFieldsFromDB
-  CPPUNIT_ASSERT(false);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+
+  PYLITH_METHOD_END;
 } // test_initializeAuxFieldsFromDB
 
 
@@ -220,7 +363,11 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_initializeAuxF
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_nondimAuxFields(void)
 { // test_nondimAuxFields
-  CPPUNIT_ASSERT(false);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+
+  PYLITH_METHOD_END;
 } // test_nondimAuxFields
 
 
@@ -229,7 +376,11 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_nondimAuxField
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_dimAuxFields(void)
 { // test_dimAuxFields
-  CPPUNIT_ASSERT(false);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+
+  PYLITH_METHOD_END;
 } // test_dimAuxFields
 
 

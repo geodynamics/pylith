@@ -152,8 +152,8 @@ public :
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
-  MaterialNew* _material; ///< Object for testing
-  //MaterialData* _data; ///< Data for testing
+  IsotropicLinearElasticityPlaneStrain* _material; ///< Object for testing
+  //MaterialNewData* _data; ///< Data for testing
 
 }; // class TestIsotropicLinearElasticityPlaneStrain
 
