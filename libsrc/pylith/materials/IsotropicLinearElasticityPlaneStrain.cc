@@ -22,7 +22,9 @@
 
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
 
+extern "C" {
 #include "pylith/fekernels/elasticity.h" // USES fekernels
+}
 
 #include "petscds.h"
 
