@@ -16,11 +16,11 @@
 // ======================================================================
 //
 
-#if !defined(pylith_materials_materialnewdata_hh)
-#define pylith_materials_materialnewdata_hh
+#if !defined(pylith_materials_isotropiclinearelasticityplanestraindata_hh)
+#define pylith_materials_isotropiclinearelasticityplanestraindata_hh
 
 #include "pylith/utils/types.hh" // HASA PylithScalar
-#include "pylith/topology/Field.hh" // HASA Field::Discretization
+#include "pylith/topology/FieldBase.hh" // HASA FieldBase::Discretization
 
 namespace pylith {
   namespace materials {
