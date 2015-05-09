@@ -20,7 +20,7 @@
 #define pylith_materials_isotropiclinearelasticityplanestraindata_hh
 
 #include "pylith/utils/types.hh" // HASA PylithScalar
-#include "pylith/topology/FieldBase.hh" // HASA FieldBase::Discretization
+#include "pylith/topology/Field.hh" // HASA FieldBase::Discretization
 
 namespace pylith {
   namespace materials {

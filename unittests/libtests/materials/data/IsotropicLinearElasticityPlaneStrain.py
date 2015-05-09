@@ -61,7 +61,7 @@ class ElasticityApp(CppData):
     self._addScalar("bool", "_useBodyForce", self.useBodyForce, "%s")
 
     self._addScalar("int", "_numSolnFields", len(self.discretizations), "%d")
-    #self._addStructArray("topology::FieldBase::Discretization", "discretizations", self.discretizations, self.discretizationOrder)
+    #self._addStructArray("topology::Field::Discretization", "discretizations", self.discretizations, self.discretizationOrder)
 
     self._addScalar("PylithScalar", "_lengthScale", self.lengthScale, "%16.8e")
     self._addScalar("PylithScalar", "_timeScale", self.timeScale, "%16.8e")
