@@ -58,8 +58,11 @@ public :
    */
   void useBodyForce(const bool value);
 
-  /// Preinitialize material. Set names/sizes of auxiliary fields.
-  void preinitialize(void);
+  /** Preinitialize material. Set names/sizes of auxiliary fields.
+   *
+   * @param mesh Finite-element mesh.
+   */
+  void preinitialize(const topology::Mesh& mesh);
  
 
   // PROTECTED METHODS //////////////////////////////////////////////////

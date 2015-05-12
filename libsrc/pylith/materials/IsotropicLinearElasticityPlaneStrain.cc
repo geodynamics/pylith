@@ -22,6 +22,8 @@
 
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
 
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+
 extern "C" {
 #include "pylith/fekernels/elasticity.h" // USES fekernels
 }
@@ -35,6 +37,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::IsotropicLinearElastici
   _useInertia(false),
   _useBodyForce(false)
 { // constructor
+  _isJacobianSymmetric = true;
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -49,6 +52,11 @@ void
 pylith::materials::IsotropicLinearElasticityPlaneStrain::useInertia(const bool value)
 { // useInertia
   _useInertia = value;
+  if (_useInertia) {
+    _isJacobianSymmetric = false; 
+  } else {
+    _isJacobianSymmetric = true;
+  } // if/else
 } // useInertia
 
 // ----------------------------------------------------------------------
@@ -62,15 +70,29 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::useBodyForce(const bool
 // ----------------------------------------------------------------------
 // Preinitialize material. Set names/sizes of auxiliary fields.
 void
-pylith::materials::IsotropicLinearElasticityPlaneStrain::preinitialize(void)
+pylith::materials::IsotropicLinearElasticityPlaneStrain::preinitialize(const topology::Mesh& mesh)
 { // preinitialize
+  
+  
+
   // Set db values.
   // :TODO: ADD STUFF HERE, values depend on _useInertia, _useBodyForce
   
   // Set subfields in auxiliary fields.
-  // :TODO: ADD STUFF HERE, values depend on _useInertia, _useBodyForce
+  assert(_normalizer);
+  const PylithReal densityScale = _normalizer->densityScale();
+  const PylithReal pressureScale = _normalizer->pressureScale();
+  const PylithReal lengthScale = _normalizer->lengthScale();
+  const PylithReal timeScale = _normalizer->timeScale();
+  const PylithReal forceScale = densityScale * lengthScale / (timeScale * timeScale);
 
-  // Set _isJacobianSymmetric
+  delete _auxFields; _auxFields = new topology::Field(mesh);assert(_auxFields);
+  _auxFields->subfieldAdd("density", 1, topology::Field::SCALAR, densityScale);
+  _auxFields->subfieldAdd("mu", 1, topology::Field::SCALAR, pressureScale);
+  _auxFields->subfieldAdd("lambda", 1, topology::Field::SCALAR, pressureScale);
+  if (_useBodyForce) {
+    _auxFields->subfieldAdd("body_force", dimension(), topology::Field::VECTOR, forceScale);
+  } // if
 } // preinitialize
 
 // ----------------------------------------------------------------------
@@ -83,8 +105,6 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernels(const top
   const topology::Field::SubfieldInfo& velInfo = field.subfieldInfo("vel");
   const PetscInt disp = dispInfo.index;
   const PetscInt vel = velInfo.index;
-
-  // :TODO: Select kernels based on _useIneria and _useBodyForce
 
   PetscErrorCode err;
 
