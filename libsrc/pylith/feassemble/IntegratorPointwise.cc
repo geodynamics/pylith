@@ -43,7 +43,9 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::IntegratorPointwise::IntegratorPointwise(void) :
-  _auxFields(0)
+  _dm(NULL),
+  _auxFields(NULL),
+  _dmAux(NULL)
 { // constructor
 } // constructor
 
