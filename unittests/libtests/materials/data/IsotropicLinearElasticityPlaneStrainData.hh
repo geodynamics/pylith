@@ -22,6 +22,8 @@
 #include "pylith/utils/types.hh" // HASA PylithScalar
 #include "pylith/topology/Field.hh" // HASA FieldBase::Discretization
 
+#include "petscds.h" // USES PetscPointFunc, PetsPointJac
+
 namespace pylith {
   namespace materials {
      class IsotropicLinearElasticityPlaneStrainData;
@@ -46,12 +48,18 @@ public:
   // Test input data
 
   char* filenameMesh; ///< Name of file with ASCII mesh.
-  
+  char* label; ///< Material label.
+  int id; ///< Material id.
+  int dimension; ///< Dimension of material.
+
   bool useInertia; ///< Test uses inertia.
   bool useBodyForce; ///< Test uses body force.
 
   int numSolnFields; ///< Number of solution fields.
   topology::Field::Discretization* discretizations; ///< Discretizations for solution fields.
+
+  PetscPointFunc* residualKernels;
+  PetscPointJac* jacobianKernels;
 
   // :TODO: Add input data for integrateResidual(), integrateJacobian(), updateStateVars()
   // :TODO: Add auxiliary field data

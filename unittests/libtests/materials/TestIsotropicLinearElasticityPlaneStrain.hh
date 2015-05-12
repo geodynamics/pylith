@@ -30,6 +30,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "pylith/materials/materialsfwd.hh" // forward declarations
+#include "pylith/topology/topologyfwd.hh" // forward declarations
 
 /// Namespace for pylith package
 namespace pylith {
@@ -82,7 +83,11 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain : public CppUn
 public :
 
   /// Setup testing data.
+  virtual
   void setUp(void);
+
+  /// Deallocate testing data.
+  void tearDown(void);
 
   /// Test dimension().
   void testDimension(void);
@@ -151,11 +156,18 @@ public :
   /// Test _dimAuxFields().
   void test_dimAuxFields(void);
 
+  /// Initialize test data.
+  void _initialize(void);
+
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
-  IsotropicLinearElasticityPlaneStrain* _material; ///< Object for testing
-  IsotropicLinearElasticityPlaneStrainData* _data; ///< Data for testing
+  IsotropicLinearElasticityPlaneStrain* _material; ///< Object for testing.
+  IsotropicLinearElasticityPlaneStrainData* _data; ///< Data for testing.
+
+  // MaterialNew
+  topology::Mesh* _mesh; ///< Finite-element mesh.
+
 
 }; // class TestIsotropicLinearElasticityPlaneStrain
 

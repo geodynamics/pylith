@@ -20,15 +20,21 @@
 
 #include "TestIsotropicLinearElasticityPlaneStrain.hh" // Implementation of class methods
 
-//#include "data/IsotropicLinearElasticityPlaneStrainData.hh" // USES IsotropicLinearElasticityPlaneStrainData
+#include "data/IsotropicLinearElasticityPlaneStrainData.hh" // USES IsotropicLinearElasticityPlaneStrainData
 
 #include "pylith/materials/IsotropicLinearElasticityPlaneStrain.hh" // USES IsotropicLinearElasticityPlaneStrain
 
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
-// ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestIsotropicLinearElasticityPlaneStrain );
+#include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
+#include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -37,7 +43,19 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::setUp(void)
 { // setUp
   _material = new IsotropicLinearElasticityPlaneStrain();
   _data = NULL;
+  _mesh = new topology::Mesh();
 } // setUp
+
+
+// ----------------------------------------------------------------------
+// Deallocate testing data.
+void
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::tearDown(void)
+{ // tearDown
+  delete _material; _material = NULL;
+  delete _data; _data = NULL;
+  delete _mesh; _mesh = NULL;
+} // tearDown
 
 
 // ----------------------------------------------------------------------
@@ -88,7 +106,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testPreinitialize(v
   CPPUNIT_ASSERT(_material);
 
   // Call preinitialize()
-  // :TODO: ADD MORE HERE
+  _material->preinitialize();
   
   // Check result
   CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
@@ -107,7 +125,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_setFEKernels(v
   CPPUNIT_ASSERT(_material);
 
   // Call _setFEKernels()
-  // :TODO: ADD MORE HERE
+  // _material->_setFEKernels(solnField, prob);
 
   // Check result
   CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
@@ -300,7 +318,9 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testDimension(void)
 { // testDimension
   PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+  CPPUNIT_ASSERT(_material);
+  CPPUNIT_ASSERT(_data);
+  CPPUNIT_ASSERT_EQUAL(_data->dimension, _material->dimension());
 
   PYLITH_METHOD_END;
 } // testDimension
@@ -313,7 +333,9 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testId(void)
 { // testId
   PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+  CPPUNIT_ASSERT(_material);
+  CPPUNIT_ASSERT(_data);
+  CPPUNIT_ASSERT_EQUAL(_data->id, _material->id());
 
   PYLITH_METHOD_END;
 } // testId
@@ -326,7 +348,9 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testLabel(void)
 { // testLabel
   PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+  CPPUNIT_ASSERT(_material);
+  CPPUNIT_ASSERT(_data);
+  CPPUNIT_ASSERT_EQUAL(std::string(_data->label), std::string(_material->label()));
 
   PYLITH_METHOD_END;
 } // testLabel
@@ -382,6 +406,44 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_dimAuxFields(v
 
   PYLITH_METHOD_END;
 } // test_dimAuxFields
+
+
+// ----------------------------------------------------------------------
+// Initialize test data.
+void
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_initialize(void)
+{ // _initialize
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_material);
+  CPPUNIT_ASSERT(_data);
+
+  meshio::MeshIOAscii iohandler;
+  iohandler.filename(_data->filenameMesh);
+  iohandler.read(_mesh);CPPUNIT_ASSERT(_mesh);
+
+  // Setup coordinates.
+  spatialdata::geocoords::CSCart cs;
+  cs.setSpaceDim(_mesh->dimension());
+  cs.initialize();
+  _mesh->coordsys(&cs);
+
+  // Setup scales.
+  spatialdata::units::Nondimensional normalizer;
+  normalizer.lengthScale(_data->lengthScale);
+  normalizer.pressureScale(_data->pressureScale);
+  normalizer.timeScale(_data->timeScale);
+  normalizer.densityScale(_data->densityScale);
+  topology::MeshOps::nondimensionalize(_mesh, normalizer);
+
+  _material->id(_data->id);
+  _material->label(_data->label);
+  _material->useInertia(_data->useInertia);
+  _material->useBodyForce(_data->useBodyForce);
+  _material->normalizer(normalizer);
+
+  PYLITH_METHOD_END;
+} // _initialize
 
 
 // End of file 

@@ -23,10 +23,10 @@
 
 import numpy
 
-from pylith.utils.CppDataNew import CppData
+from pylith.tests.CppTestData import CppTestData
 
 # ElasticityApp class
-class ElasticityApp(CppData):
+class ElasticityApp(CppTestData):
   """
   Python application for generating C++ data files for testing C++
   elasticity objects.
@@ -34,31 +34,59 @@ class ElasticityApp(CppData):
   
   # Metadata
   dimension = 2
+  cincludes = ["pylith/fekernels/elasticity.h"]
   
   # Test input data
 
+  filenameMesh = "data/tri3.mesh"
+  materialId = 0
+  materialLabel = "IsotropicLinearElascitity"
+
   useInertia = False
   useBodyForce = False
-
-  filenameMesh = "data/tri3.mesh"
+  residualKernels = [
+    "NULL", # f0
+    "pylith_fekernels_f1_IsotropicLinearElasticityPlaneStrain" # f1
+  ]
+  jacobianKernels = [
+    "NULL", # g0
+    "NULL", # g1
+    "NULL", # g2
+    "pylith_fekernels_g3_uu_IsotropicLinearElasticityPlaneStrain", # g3
+  ]
   
   discretizationOrder = ["basisOrder", "quadOrder", "isContinuous"]
   discretizations = [
       {"basisOrder": 1, "quadOrder": 1, "isBasisContinuous": True}, # displacement
   ]
   
-  lengthScale = 0
-  timeScale = 0
-  pressureScale = 0
-  densityScale = 0
+  lengthScale = 1000.0
+  timeScale = 2.0
+  pressureScale = 2.25e+10
+  velScale = lengthScale / timeScale
+  densityScale = pressureScale / velScale**2
+
+
+  def __init__(self):
+    CppTestData.__init__(self, "pylith.materials", "IsotropicLinearElasticityPlaneStrainData_Tri3", "IsotropicLinearElasticityPlaneStrainData")
+    import os.path
+    self.creator = os.path.relpath(__file__)
+    return
 
 
   def _collect(self):
     self.numSolnFields = len(self.discretizations)
 
     self._addScalar("char*", "_filenameMesh", self.filenameMesh, "\"%s\"")
+    self._addScalar("char*", "_label", self.materialLabel, "\"%s\"")
+    self._addScalar("int", "_id", self.materialId, "%d")
+    self._addScalar("int", "_dimension", self.dimension, "%d")
+
     self._addScalar("bool", "_useInertia", self.useInertia, "%s")
     self._addScalar("bool", "_useBodyForce", self.useBodyForce, "%s")
+
+    self._addArray("PetscPointFunc", "_residualKernels", self.residualKernels, "  %s")
+    self._addArray("PetscPointJac", "_jacobianKernels", self.jacobianKernels, "  %s")
 
     self._addScalar("int", "_numSolnFields", len(self.discretizations), "%d")
     #self._addStructArray("topology::Field::Discretization", "discretizations", self.discretizations, self.discretizationOrder)
@@ -72,20 +100,9 @@ class ElasticityApp(CppData):
 
 
 # ======================================================================
-if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument("--namespace", action="store", dest="namespace", required=True)
-    parser.add_argument("--objname", action="store", dest="objname", required=True)
-    parser.add_argument("--parent", action="store", dest="parent")
-    parser.add_argument("--header", action="store", dest="header", default="header.hh")
-
-    args = parser.parse_args()
-
-    app = ElasticityApp(args.namespace, args.objname, args.parent, args.header)
-    app.creator = __file__
-    app.run()
+def generate():
+  app = ElasticityApp()
+  app.run()
 
   
 # End of file 

@@ -22,20 +22,23 @@
 // Constructor
 pylith::materials::IsotropicLinearElasticityPlaneStrainData::IsotropicLinearElasticityPlaneStrainData(void) :
   filenameMesh(0),
+  label(NULL),
+  id(0),
+  dimension(0),
   useInertia(false),
   useBodyForce(false),
   numSolnFields(0),
   discretizations(NULL),
+  residualKernels(NULL),
+  jacobianKernels(NULL),
   numAuxFields(0),
   auxSubfields(NULL),
   auxFields(NULL),
-  lengthScale(1.0e+3),
-  timeScale(2.0),
-  pressureScale(2.25e+10),
+  lengthScale(0),
+  timeScale(0),
+  pressureScale(0),
   densityScale(0)
 { // constructor
-  const PylithScalar velScale = lengthScale / timeScale;
-  densityScale = pressureScale / (velScale*velScale);
 } // constructor
 
 
