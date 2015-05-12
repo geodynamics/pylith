@@ -106,7 +106,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testPreinitialize(v
   CPPUNIT_ASSERT(_material);
 
   // Call preinitialize()
-  _material->preinitialize();
+  _material->preinitialize(*_mesh);
   
   // Check result
   CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
