@@ -163,7 +163,6 @@ nobase_pkgpyexec_PYTHON = \
 	utils/__init__.py \
 	utils/CheckpointTimer.py \
 	utils/CppData.py \
-	utils/CppDataNew.py \
 	utils/EmptyBin.py \
 	utils/EventLogger.py \
 	utils/NullComponent.py \
@@ -174,6 +173,7 @@ nobase_pkgpyexec_PYTHON = \
 	utils/profiling.py \
 	utils/testarray.py \
 	tests/__init__.py \
+	tests/CppTestData.py \
 	tests/PhysicalProperties.py \
 	tests/Solution.py \
 	tests/SolutionPoints.py \

@@ -16,7 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/utils/CppData.py
+## @file pylith/testing/CppTestData.py
 ##
 ## @brief Python object to create C++ object holding test data.
 ##
@@ -29,20 +29,22 @@
 
 import numpy
 
-# CppData class
-class CppData(object):
+# CppTestData class
+class CppTestData(object):
   """
   Python object to create C++ object holding test data.
   """
   scalars = []
   arrays = []
+  includes = []
+  cincludes = []
 
 
   def __init__(self, namespace, objname, parent=None, header="header.hh"):
     """
     Constructor.
     """
-    self.namespace = namespace.split(",")
+    self.namespace = namespace.split(".")
     self.objname = objname
     self.parent = parent
     self.creator = "Unknown"
@@ -52,6 +54,7 @@ class CppData(object):
 
 
   def run(self):
+    print "Generating test data for %s via %s." % (".".join(self.namespace+[self.objname]), self.creator)
     self._compute()
     self._collect()
     self._write()
@@ -90,7 +93,7 @@ class CppData(object):
     return
 
 
-  def _addArray(self, vtype, name, values, format, ncols):
+  def _addArray(self, vtype, name, values, format, ncols=1):
     """
     Add array to object's members.
     """
@@ -102,6 +105,13 @@ class CppData(object):
     self.arrays.append(data)
     return
 
+
+  def _addIncludes(self, includes, externc=False):
+    if externc:
+      self.cincludes = includes
+    else:
+      self.includes = includes
+    return
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
@@ -190,6 +200,17 @@ class CppData(object):
     self._insertHeader(fileOut)
 
     fileOut.write("#include \"%s.hh\"\n" % self.objname)
+    fileOut.write("\n")
+
+    # Write headers
+    if len(self.cincludes) > 0:
+      fileOut.write("extern \"C\" {\n")
+    for header in self.cincludes:
+      fileOut.write("#include \"%s\"\n" % header)
+    if len(self.cincludes) > 0:
+      fileOut.write("}\n")
+    for header in self.includes:
+      fileOut.write("#include \"%s\"\n" % header)
     fileOut.write("\n")
 
     # Write scalar information
