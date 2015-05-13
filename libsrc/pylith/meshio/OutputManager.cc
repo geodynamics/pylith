@@ -33,11 +33,11 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::OutputManager::OutputManager(void) :
+  _fields(0),
   _coordsys(0),
   _writer(0),
   _vertexFilter(0),
-  _cellFilter(0),
-  _fields(0)
+  _cellFilter(0)
 { // constructor
 } // constructor
 

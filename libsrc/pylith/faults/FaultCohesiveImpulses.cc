@@ -203,12 +203,9 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
   assert(_fields);
 
   const int cohesiveDim = _faultMesh->dimension();
-  const int spaceDim = _quadrature->spaceDim();
 
   const topology::Field& orientation = _fields->get("orientation");
 
-  PylithScalar scale = 0.0;
-  int fiberDim = 0;
   if (0 == strcasecmp("slip", name)) {
     const topology::Field& dispRel = _fields->get("relative disp");
     _allocateBufferVectorField();

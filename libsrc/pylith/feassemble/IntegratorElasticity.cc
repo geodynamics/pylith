@@ -470,8 +470,6 @@ pylith::feassemble::IntegratorElasticity::_allocateTensorField(const topology::M
   int_array cellsTmp(cells, numCells);
 
   const int numQuadPts = _quadrature->numQuadPts();
-  const int numBasis = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
   const int tensorSize = _material->tensorSize();
   
   if (!_outputFields->hasField("buffer (tensor)")) {
@@ -504,7 +502,6 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(topology::Field
   const int cellDim = _quadrature->cellDim();
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
-  const int numCorners = _quadrature->refGeometry().numCorners();
   const int spaceDim = _quadrature->spaceDim();
   const int tensorSize = _material->tensorSize();
   totalStrain_fn_type calcTotalStrainFn;
@@ -587,11 +584,8 @@ pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(topology::Field*
   assert(_quadrature);
   assert(_material);
 
-  const int cellDim = _quadrature->cellDim();
-  const int numQuadPts = _quadrature->numQuadPts();
-  const int numBasis = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
-  const int tensorSize = _material->tensorSize();
+  const size_t numQuadPts = _quadrature->numQuadPts();
+  const size_t tensorSize = _material->tensorSize();
   
   // Allocate arrays for cell data.
   const int tensorCellSize = numQuadPts*tensorSize;
@@ -649,7 +643,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual2D(const scalar_arr
   
   assert(_quadrature->spaceDim() == spaceDim);
   assert(_quadrature->cellDim() == cellDim);
-  assert(quadWts.size() == numQuadPts);
+  assert(quadWts.size() == size_t(numQuadPts));
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     const int iQs = iQuad*stressSize;
@@ -688,7 +682,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual3D(const scalar_arr
   
   assert(_quadrature->spaceDim() == spaceDim);
   assert(_quadrature->cellDim() == cellDim);
-  assert(quadWts.size() == numQuadPts);
+  assert(quadWts.size() == size_t(numQuadPts));
   
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     const int iQs = iQuad * stressSize;
@@ -733,7 +727,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian2D(const scalar_arr
   
   assert(_quadrature->spaceDim() == spaceDim);
   assert(_quadrature->cellDim() == cellDim);
-  assert(quadWts.size() == numQuadPts);
+  assert(quadWts.size() == size_t(numQuadPts));
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad];
@@ -801,7 +795,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian3D(const scalar_arr
   
   assert(_quadrature->spaceDim() == spaceDim);
   assert(_quadrature->cellDim() == cellDim);
-  assert(quadWts.size() == numQuadPts);
+  assert(quadWts.size() == size_t(numQuadPts));
 
   // Compute Jacobian for consistent tangent matrix
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
@@ -927,7 +921,7 @@ pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D(scalar_array* strai
   const int dim = 2;
   const int strainSize = 3;
 
-  assert(basisDeriv.size() == numQuadPts*numBasis*dim);
+  assert(basisDeriv.size() == size_t(numQuadPts*numBasis*dim));
   assert(dim == spaceDim);
 
   (*strain) = 0.0;
@@ -954,7 +948,7 @@ pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D(scalar_array* strai
   const int dim = 3;
   const int strainSize = 6;
 
-  assert(basisDeriv.size() == numQuadPts*numBasis*dim);
+  assert(basisDeriv.size() == size_t(numQuadPts*numBasis*dim));
   assert(dim == spaceDim);
 
   (*strain) = 0.0;

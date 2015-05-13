@@ -336,7 +336,7 @@ pylith::friction::FrictionModel::retrievePropsStateVars(const int point)
       _propsStateVarsVertex[iOff] = stateVarArray[off+d];
     } // for
   } // for
-  assert(_propsStateVarsVertex.size() == iOff);
+  assert(_propsStateVarsVertex.size() == size_t(iOff));
 
   PYLITH_METHOD_END;
 } // retrievePropsStateVars
@@ -353,7 +353,7 @@ pylith::friction::FrictionModel::calcFriction(const PylithScalar t,
 
   assert(_fieldsPropsStateVars);
 
-  assert(_propsFiberDim+_varsFiberDim == _propsStateVarsVertex.size());
+  assert(size_t(_propsFiberDim+_varsFiberDim) == _propsStateVarsVertex.size());
   const PylithScalar* propertiesVertex = &_propsStateVarsVertex[0];
   const PylithScalar* stateVarsVertex = (_varsFiberDim > 0) ?
     &_propsStateVarsVertex[_propsFiberDim] : 0;
@@ -377,7 +377,7 @@ pylith::friction::FrictionModel::calcFrictionDeriv(const PylithScalar t,
 
   assert(_fieldsPropsStateVars);
 
-  assert(_propsFiberDim+_varsFiberDim == _propsStateVarsVertex.size());
+  assert(size_t(_propsFiberDim+_varsFiberDim) == _propsStateVarsVertex.size());
   const PylithScalar* propertiesVertex = &_propsStateVarsVertex[0];
   const PylithScalar* stateVarsVertex = (_varsFiberDim > 0) ?
     &_propsStateVarsVertex[_propsFiberDim] : 0;
@@ -437,7 +437,7 @@ pylith::friction::FrictionModel::updateStateVars(const PylithScalar t,
       stateVarArray[off+d] = _propsStateVarsVertex[iOff];
     } // for
   } // for
-  assert(_propsStateVarsVertex.size() == iOff);
+  assert(_propsStateVarsVertex.size() == size_t(iOff));
 
   PYLITH_METHOD_END;
 } // updateStateVars

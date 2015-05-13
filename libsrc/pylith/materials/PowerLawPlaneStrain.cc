@@ -906,7 +906,6 @@ pylith::materials::PowerLawPlaneStrain::_calcElasticConstsViscoelastic(
   const PylithScalar mu2 = 2.0 * mu;
   const PylithScalar bulkModulus = lambda + mu2/3.0;
   const PylithScalar ae = 1.0/mu2;
-  const PylithScalar diagg[tensorSizePS] = { 1.0, 1.0, 1.0, 0.0 };
     
   // Need to figure out how time integration parameter alpha is going to be
   // specified.  It should probably be specified in the problem definition and
@@ -937,7 +936,6 @@ pylith::materials::PowerLawPlaneStrain::_calcElasticConstsViscoelastic(
   /// Values for current time step
   const PylithScalar meanStrainTpdt = (totalStrain[0] + totalStrain[1])/3.0 -
     meanStrainInitial;
-  const PylithScalar meanStressTpdt = 3.0 * bulkModulus * meanStrainTpdt;
   
   // Note that I use the initial strain rather than the deviatoric initial
   // strain since otherwise the initial mean strain would get used twice.
@@ -1087,7 +1085,6 @@ pylith::materials::PowerLawPlaneStrain::_updateStateVarsElastic(
   assert(_PowerLawPlaneStrain::tensorSize == initialStrainSize);
 
   const int tensorSize = 3;
-  const int tensorSizePS = 4;
   const PylithScalar lambda = properties[p_lambda];
   const PylithScalar stressZZInitial = stateVars[s_stressZZInitial];
 
@@ -1141,9 +1138,6 @@ pylith::materials::PowerLawPlaneStrain::_updateStateVarsViscoelastic(
   assert(0 != initialStrain);
   assert(_PowerLawPlaneStrain::tensorSize == initialStrainSize);
 
-  const int stressSize = _tensorSize;
-
-  const int tensorSize = _tensorSize;
   const int tensorSizePS = 4;
 
   // For now, we are duplicating the functionality of _calcStressViscoelastic,
@@ -1270,7 +1264,6 @@ pylith::materials::PowerLawPlaneStrain::_updateStateVarsViscoelastic(
   const PylithScalar factor2 = timeFac * gammaTau;
   PylithScalar devStressTpdt = 0.0;
   PylithScalar devStressTau = 0.0;
-  PylithScalar deltaVisStrain = 0.0;
 
   for (int iComp=0; iComp < tensorSizePS; ++iComp) {
     devStressTpdt = factor1 *

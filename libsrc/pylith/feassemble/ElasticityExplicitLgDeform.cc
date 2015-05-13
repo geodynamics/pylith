@@ -141,21 +141,15 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(const topology
   assert(fields);
 
   const int setupEvent = _logger->eventId("ElIR setup");
-  const int geometryEvent = _logger->eventId("ElIR geometry");
   const int computeEvent = _logger->eventId("ElIR compute");
-  const int restrictEvent = _logger->eventId("ElIR restrict");
-  const int stateVarsEvent = _logger->eventId("ElIR stateVars");
-  const int stressEvent = _logger->eventId("ElIR stress");
-  const int updateEvent = _logger->eventId("ElIR update");
 
   _logger->eventBegin(setupEvent);
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
   const scalar_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
+  assert(quadWts.size() == size_t(numQuadPts));
   const int numBasis = _quadrature->numBasis();
-  const int numCorners = _quadrature->refGeometry().numCorners();
   const int spaceDim = _quadrature->spaceDim();
   const int cellDim = _quadrature->cellDim();
   const int tensorSize = _material->tensorSize();
@@ -361,23 +355,17 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(topology::Fiel
   assert(fields);
 
   const int setupEvent = _logger->eventId("ElIJ setup");
-  const int geometryEvent = _logger->eventId("ElIJ geometry");
   const int computeEvent = _logger->eventId("ElIJ compute");
-  const int restrictEvent = _logger->eventId("ElIJ restrict");
-  const int stateVarsEvent = _logger->eventId("ElIJ stateVars");
-  const int updateEvent = _logger->eventId("ElIJ update");
 
   _logger->eventBegin(setupEvent);
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
   const scalar_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
+  assert(quadWts.size() == size_t(numQuadPts));
   const int numBasis = _quadrature->numBasis();
-  const int numCorners = _quadrature->refGeometry().numCorners();
   const int spaceDim = _quadrature->spaceDim();
   const int cellDim = _quadrature->cellDim();
-  const int tensorSize = _material->tensorSize();
   if (cellDim != spaceDim)
     throw std::logic_error("Don't know how to integrate elasticity " \
 			   "contribution to Jacobian matrix for cells with " \

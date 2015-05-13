@@ -363,7 +363,7 @@ pylith::meshio::MeshIOCubit::_orientCells(int_array* const cells,
   PYLITH_METHOD_BEGIN;
 
   assert(cells);
-  assert(cells->size() == numCells*numCorners);
+  assert(cells->size() == size_t(numCells*numCorners));
 
   if (2 == meshDim && 4 == numCorners) { // QUAD4
     ; // do nothing

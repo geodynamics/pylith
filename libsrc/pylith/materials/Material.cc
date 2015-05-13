@@ -123,7 +123,6 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
   // Get quadrature information
   const int numQuadPts = quadrature->numQuadPts();
   const int numBasis = quadrature->numBasis();
-  const int numCorners = quadrature->refGeometry().numCorners();
   const int spaceDim = quadrature->spaceDim();
 
   // Get cells associated with material

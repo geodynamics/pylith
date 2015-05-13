@@ -37,12 +37,12 @@ pylith::materials::Metadata::Metadata(const ParamDescription* props,
 				      const int numDBVars) :
   _properties(0),
   _stateVars(0),
-  _numDBProperties(numDBProps),
   _dbProperties(dbProps),
+  _dbStateVars(dbVars),
   _numProperties(numProps),
   _numStateVars(numVars),
-  _numDBStateVars(numDBVars),
-  _dbStateVars(dbVars)
+  _numDBProperties(numDBProps),
+  _numDBStateVars(numDBVars)
 { // constructor
   if (numProps > 0) {
     assert(props);

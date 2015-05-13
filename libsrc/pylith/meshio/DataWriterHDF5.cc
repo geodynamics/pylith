@@ -113,7 +113,6 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
 
     const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();assert(cs);
 
-    const char *context = DataWriter::_context.c_str();
     PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
     PetscDM dmCoord = NULL;
     PetscVec coordinates = NULL; 
@@ -142,7 +141,7 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
 #endif
     err = PetscViewerHDF5PopGroup(_viewer); PYLITH_CHECK_ERROR(err);
 
-    PetscInt vStart, vEnd, cellHeight, cStart, cEnd, cMax, dof, conesSize, numCorners, numCornersLocal = 0;
+    PetscInt vStart, vEnd, cellHeight, cStart, cEnd, cMax, conesSize, numCorners, numCornersLocal = 0;
 
     err = DMPlexGetVTKCellHeight(dmMesh, &cellHeight);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);

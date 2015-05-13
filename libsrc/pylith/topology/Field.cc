@@ -325,7 +325,6 @@ pylith::topology::Field::newSection(const int_array& points,
 { // newSection
   PYLITH_METHOD_BEGIN;
 
-  typedef PetscInt point_type;
   PetscErrorCode err;
 
   // Clear memory
@@ -422,7 +421,6 @@ pylith::topology::Field::newSection(const DomainEnum domain,
 
   // Changing this because cells/vertices are numbered differently in the new scheme
   assert(_dm);
-  PetscSection s = NULL;
   PetscInt pStart, pEnd;
   PetscErrorCode err;
 

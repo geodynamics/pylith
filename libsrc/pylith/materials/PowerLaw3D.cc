@@ -946,7 +946,6 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
   const PylithScalar mu2 = 2.0 * mu;
   const PylithScalar bulkModulus = lambda + mu2/3.0;
   const PylithScalar ae = 1.0/mu2;
-  const PylithScalar diag[tensorSize] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
     
   // Need to figure out how time integration parameter alpha is going to be
   // specified.  It should probably be specified in the problem definition and
@@ -982,7 +981,6 @@ pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic(
   const PylithScalar e22 = totalStrain[1];
   const PylithScalar e33 = totalStrain[2];
   const PylithScalar meanStrainTpdt = (e11 + e22 + e33)/3.0 - meanStrainInitial;
-  const PylithScalar meanStressTpdt = 3.0 * bulkModulus * meanStrainTpdt;
   
   // Note that I use the initial strain rather than the deviatoric initial
   // strain since otherwise the initial mean strain would get used twice.
@@ -1225,8 +1223,6 @@ pylith::materials::PowerLaw3D::_updateStateVarsViscoelastic(
   assert(0 != initialStrain);
   assert(_PowerLaw3D::tensorSize == initialStrainSize);
 
-  const int stressSize = _tensorSize;
-
   const int tensorSize = 6;
   assert(_tensorSize == tensorSize);
 
@@ -1361,7 +1357,6 @@ pylith::materials::PowerLaw3D::_updateStateVarsViscoelastic(
   const PylithScalar factor2 = timeFac * gammaTau;
   PylithScalar devStressTpdt = 0.0;
   PylithScalar devStressTau = 0.0;
-  PylithScalar deltaVisStrain = 0.0;
 
   for (int iComp=0; iComp < tensorSize; ++iComp) {
     devStressTpdt = factor1 *
