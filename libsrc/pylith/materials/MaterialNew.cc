@@ -108,23 +108,5 @@ pylith::materials::MaterialNew::initialize(const topology::Mesh& mesh)
   PYLITH_METHOD_END;
 } // initialize
 
-  /* :TODO: Redo this function to look like:
-
-  void (*matFuncs[1])(const PetscReal x[], PetscScalar *u, void *ctx) = {nu_2d};
-  Vec            nu;
-  PetscErrorCode ierr;
-
-  PetscFunctionBegin;
-  ierr = DMCreateLocalVector(dmAux, &nu);CHKERRQ(ierr);
-  ierr = DMPlexProjectFunctionLocal(dmAux, matFuncs, NULL, INSERT_ALL_VALUES, nu);CHKERRQ(ierr);
-  ierr = PetscObjectCompose((PetscObject) dm, "A", (PetscObject) nu);CHKERRQ(ierr);
-  ierr = VecDestroy(&nu);CHKERRQ(ierr);
-
-void nu_2d(const PetscReal x[], PetscScalar *u, void *ctx)
-{
-  *u = x[0] + x[1];
-}
-  */
-
 
 // End of file 

@@ -113,6 +113,7 @@ pylith::topology::FieldQuery::queryDB(Field* field,
     const PetscDM dm = field->dmMesh();
     const PetscVec fieldVec = field->localVector();
     err = DMPlexProjectFunctionLocal(dm, fns, (void**)&contexts, INSERT_ALL_VALUES, fieldVec);PYLITH_CHECK_ERROR(err);
+    //err = PetscObjectCompose((PetscObject) dm, "A", (PetscObject) fieldVec);CHKERRQ(ierr); // :MATT: Which dm is this? Do we need this?
 
     delete[] fns; fns = NULL;
     delete[] contexts; contexts = NULL;
