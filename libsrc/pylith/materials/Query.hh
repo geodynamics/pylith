@@ -38,6 +38,17 @@ class pylith::materials::Query
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
+  /** Query for density in 2-D.
+   *
+   * @param x Coordinates (nondimensioned) of point location for query.
+   * @param values Array of values to be returned.
+   * @param context Query context.
+   */
+  static
+  void dbQueryDensity2D(const PetscReal x[],
+			PetscScalar* values,
+			void* context);
+
   /** Query for shear modulus, $\mu$, in 2-D.
    *
    * @param x Coordinates (nondimensioned) of point location for query.
@@ -48,6 +59,28 @@ public :
   void dbQueryMu2D(const PetscReal x[],
 		   PetscScalar* values,
 		   void* context);
+
+  /** Query for Lame's constant, $\lambda, in 2-D.
+   *
+   * @param x Coordinates (nondimensioned) of point location for query.
+   * @param values Array of values to be returned.
+   * @param context Query context.
+   */
+  static
+  void dbQueryLambda2D(const PetscReal x[],
+		       PetscScalar* values,
+		       void* context);
+
+  /** Query for body force vector in 2-D.
+   *
+   * @param x Coordinates (nondimensioned) of point location for query.
+   * @param values Array of values to be returned.
+   * @param context Query context.
+   */
+  static
+  void dbQueryBodyForce2D(const PetscReal x[],
+			  PetscScalar* values,
+			  void* context);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

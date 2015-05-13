@@ -96,11 +96,11 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::preinitialize(const top
 
   // Order does not matter.
   delete _auxFieldsQuery; _auxFieldsQuery = new topology::FieldQuery();assert(_auxFieldsQuery);
-  //_auxFieldsQuery->setQuery("density", pylith_materials_dbQueryDensity2D);
+  _auxFieldsQuery->setQuery("density", pylith::materials::Query::dbQueryDensity2D);
   _auxFieldsQuery->setQuery("mu", pylith::materials::Query::dbQueryMu2D);
-  //_auxFieldsQuery.setQuery("lambda", pylith_materials_dbQueryLambda2D);
+  _auxFieldsQuery->setQuery("lambda", pylith::materials::Query::dbQueryLambda2D);
   if (_useBodyForce) {
-    //_auxFieldsQuery.setQuery("body_force", pylith_materials_dbQueryBodyForce2D);
+    _auxFieldsQuery->setQuery("body_force", pylith::materials::Query::dbQueryBodyForce2D);
   } // if
 
   PYLITH_METHOD_END;
