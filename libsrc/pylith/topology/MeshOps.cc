@@ -62,7 +62,7 @@ pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
 { // nondimensionalize
   PYLITH_METHOD_BEGIN;
 
-  PetscVec coordVec, coordDimVec;
+  PetscVec coordVec;
   const PylithScalar lengthScale = normalizer.lengthScale();
   PetscErrorCode err;
 

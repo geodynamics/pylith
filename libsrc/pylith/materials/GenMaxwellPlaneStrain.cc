@@ -750,7 +750,6 @@ pylith::materials::GenMaxwellPlaneStrain::_updateStateVarsElastic(
 
   // Initialize all viscous strains to deviatoric elastic strains.
   PylithScalar devStrain = 0.0;
-  PylithScalar shearRatio = 0.0;
   for (int iComp=0; iComp < 4; ++iComp) {
     devStrain = strainTpdt[iComp] - diag[iComp] * meanStrainTpdt;
     // Maxwell model 1
@@ -893,7 +892,6 @@ pylith::materials::GenMaxwellPlaneStrain::_computeStateVars(
   assert(0 != initialStrain);
   assert(_GenMaxwellPlaneStrain::tensorSize == initialStrainSize);
 
-  const int tensorSize = _tensorSize;
   const int numMaxwellModels = _GenMaxwellPlaneStrain::numMaxwellModels;
 
   const PylithScalar muRatio[numMaxwellModels] = {

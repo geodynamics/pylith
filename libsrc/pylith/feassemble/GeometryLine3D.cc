@@ -118,7 +118,7 @@ pylith::feassemble::GeometryLine3D::jacobian(scalar_array* jacobian,
 	 this->numCorners()+1 == numVertices); // quadratic
   assert(this->spaceDim() == spaceDim);
   assert(this->cellDim() == cellDim);
-  assert(spaceDim*cellDim == jacobian->size());
+  assert(size_t(spaceDim*cellDim) == jacobian->size());
 
   const PylithScalar x0 = vertices[0];
   const PylithScalar y0 = vertices[1];

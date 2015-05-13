@@ -90,8 +90,8 @@ pylith::topology::StratumIS::StratumIS(const PetscDM dmMesh,
 				       const int id,
 				       const bool includeOnlyCells) :
   _indexSet(0),
-  _points(0),
-  _size(0)
+  _size(0),
+  _points(0)
 { // constructor
   assert(dmMesh);
   PetscErrorCode err;

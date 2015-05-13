@@ -86,7 +86,6 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
   const PylithScalar timeScale = _getNormalizer().timeScale();
   const PylithScalar rateScale = valueScale / timeScale;
 
-  const int numPoints = _points.size();
   const int numBCDOF = _bcDOF.size();
   char** valueNames = (numBCDOF > 0) ? new char*[numBCDOF] : 0;
   char** rateNames = (numBCDOF > 0) ? new char*[numBCDOF] : 0;
@@ -412,7 +411,6 @@ pylith::bc::TimeDependentPoints::_calculateValueIncr(const PylithScalar t0,
   
   topology::Field* initialField = (_dbInitial) ? &_parameters->get("initial") : 0;
   topology::VecVisitorMesh* initialVisitor = (initialField) ? new topology::VecVisitorMesh(*initialField) : 0;
-  PetscScalar* initialArray = (initialVisitor) ? initialVisitor->localArray() : NULL;
 
   topology::Field* rateField = (_dbRate) ? &_parameters->get("rate") : 0;
   topology::VecVisitorMesh* rateVisitor = (rateField) ? new topology::VecVisitorMesh(*rateField) : 0;

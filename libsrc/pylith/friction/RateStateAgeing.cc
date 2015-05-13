@@ -363,8 +363,6 @@ pylith::friction::RateStateAgeing::_calcFrictionDeriv(const PylithScalar t,
     const PylithScalar slipRateLinear = _linearSlipRate;
 
     const PylithScalar a = properties[p_a];
-    const PylithScalar b = properties[p_b];
-    const PylithScalar slipRate0 = properties[p_slipRate0];
 
     if (slipRate >= slipRateLinear) {
       frictionDeriv = -normalTraction * a / (slipRate * _dt);

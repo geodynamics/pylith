@@ -240,7 +240,6 @@ pylith::materials::ElasticPlaneStrain::_calcStress(PylithScalar* const stress,
   assert(0 != initialStrain);
   assert(_ElasticPlaneStrain::tensorSize == initialStrainSize);
 
-  const PylithScalar density = properties[p_density];
   const PylithScalar mu = properties[p_mu];
   const PylithScalar lambda = properties[p_lambda];
 
@@ -287,7 +286,6 @@ pylith::materials::ElasticPlaneStrain::_calcElasticConsts(PylithScalar* const el
   assert(0 != initialStrain);
   assert(_ElasticPlaneStrain::tensorSize == initialStrainSize);
  
-  const PylithScalar density = properties[p_density];
   const PylithScalar mu = properties[p_mu];
   const PylithScalar lambda = properties[p_lambda];
 

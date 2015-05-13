@@ -62,11 +62,11 @@
 // Default constructor.
 pylith::faults::FaultCohesiveDyn::FaultCohesiveDyn(void) :
   _zeroTolerance(1.0e-10),
-  _openFreeSurf(true),
   _tractPerturbation(0),
   _friction(0),
   _jacobian(0),
-  _ksp(0)
+  _ksp(0),
+  _openFreeSurf(true)
 { // constructor
 } // constructor
 
@@ -198,10 +198,12 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field& resid
   //                 +\tensor{N}_{n^-} \cdot \vec{u}_{n^-} dS
 
   const int setupEvent = _logger->eventId("FaIR setup");
-  const int geometryEvent = _logger->eventId("FaIR geometry");
   const int computeEvent = _logger->eventId("FaIR compute");
+#if defined(DETAILED_EVENT_LOGGING)
+  const int geometryEvent = _logger->eventId("FaIR geometry");
   const int restrictEvent = _logger->eventId("FaIR restrict");
   const int updateEvent = _logger->eventId("FaIR update");
+#endif
 
   _logger->eventBegin(setupEvent);
 
@@ -414,8 +416,6 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(const PylithScalar t,
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
-    const int v_negative = _cohesiveVertices[iVertex].negative;
-    const int v_positive = _cohesiveVertices[iVertex].positive;
 
     // Skip clamped vertices
     if (e_lagrange < 0) {
@@ -534,7 +534,6 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
   scalar_array slipTpdtVertex(spaceDim);
   scalar_array slipRateVertex(spaceDim);
   topology::VecVisitorMesh dispRelVisitor(_fields->get("relative disp"));
-  PetscScalar* dispRelArray = dispRelVisitor.localArray();
 
   topology::VecVisitorMesh orientationVisitor(_fields->get("orientation"));
   const PetscScalar* orientationArray = orientationVisitor.localArray();
@@ -636,7 +635,6 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
       slipTpdtVertex[indexN] = 0.0;
     } // if
 
-    PylithScalar dSlipVertexNormal = 0.0;
     PylithScalar dTractionTpdtVertexNormal = 0.0;
     if (slipTpdtVertex[indexN]*tractionTpdtVertex[indexN] < 0.0) {
 #if 0 // DEBUGGING
@@ -655,7 +653,6 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
         tractionTpdtVertex[indexN] = 0.0;
       } else {
         // traction is bigger, so force slip back to zero
-        dSlipVertexNormal = -slipTpdtVertex[indexN];
         slipTpdtVertex[indexN] = 0.0;
       } // if/else
     } // if
@@ -667,7 +664,6 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
 		<< ", tractionNormal: " << tractionTpdtVertex[indexN]
 		<< std::endl;
 #endif
-      dSlipVertexNormal = -slipTpdtVertex[indexN];
       slipTpdtVertex[indexN] = 0.0;
     } // if
 
@@ -874,7 +870,6 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
     assert(spaceDim == sensDispRelVisitor.sectionDof(v_fault));
 
     // Get current relative displacement for updating.
-    const PetscInt droff = dispRelVisitor.sectionOffset(v_fault);
     assert(spaceDim == dispRelVisitor.sectionDof(v_fault));
 
     // Get orientation.
@@ -1063,10 +1058,12 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(topology::SolutionFields* con
   //            du_j = -A_j^-1 C_kj^T dlk
 
   const int setupEvent = _logger->eventId("FaAS setup");
-  const int geometryEvent = _logger->eventId("FaAS geometry");
   const int computeEvent = _logger->eventId("FaAS compute");
+#if defined(DETAILED_EVENT_LOGGING)
+  const int geometryEvent = _logger->eventId("FaAS geometry");
   const int restrictEvent = _logger->eventId("FaAS restrict");
   const int updateEvent = _logger->eventId("FaAS update");
+#endif
 
   _logger->eventBegin(setupEvent);
 
@@ -1363,12 +1360,9 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
   assert(_friction);
 
   const int cohesiveDim = _faultMesh->dimension();
-  const int spaceDim = _quadrature->spaceDim();
 
   const topology::Field& orientation = _fields->get("orientation");
 
-  PylithScalar scale = 0.0;
-  int fiberDim = 0;
   if (0 == strcasecmp("slip", name)) {
     const topology::Field& dispRel = _fields->get("relative disp");
     _allocateBufferVectorField();
@@ -1609,8 +1603,6 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
   assert(_fields);
   assert(_quadrature);
 
-  const int spaceDim = _quadrature->spaceDim();
-
   // Setup fields involved in sensitivity solve.
   if (!_fields->hasField("sensitivity solution")) {
     _fields->add("sensitivity solution", "sensitivity_soln");
@@ -1702,7 +1694,6 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
   PetscSection solutionDomainSection = solutionDomain.localSection();assert(solutionDomainSection);
   PetscVec solutionDomainVec = solutionDomain.localVector();assert(solutionDomainVec);
   PetscSection solutionDomainGlobalSection = solutionDomain.globalSection();assert(solutionDomainGlobalSection);
-  PetscScalar *solutionDomainArray = NULL;
 
   // Get cohesive cells
   PetscDM dmMesh = fields.mesh().dmMesh();assert(dmMesh);
@@ -1725,8 +1716,6 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
   PetscSection solutionFaultSection = _fields->get("sensitivity solution").localSection();assert(solutionFaultSection);
   PetscVec solutionFaultVec = _fields->get("sensitivity solution").localVector();assert(solutionFaultVec);
   PetscSection solutionFaultGlobalSection = _fields->get("sensitivity solution").globalSection();assert(solutionFaultGlobalSection);
-  PetscScalar* solutionFaultArray = NULL;
-
   assert(_jacobian);
   const PetscMat jacobianFaultMatrix = _jacobian->matrix();assert(jacobianFaultMatrix);
 
@@ -1847,7 +1836,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negative
   const PylithScalar signFault = (negativeSide) ?  1.0 : -1.0;
 
   // Get cell information
-  const int numQuadPts = _quadrature->numQuadPts();
+  const size_t numQuadPts = _quadrature->numQuadPts();
   const scalar_array& quadWts = _quadrature->quadWts();
   assert(quadWts.size() == numQuadPts);
   const int spaceDim = _quadrature->spaceDim();
@@ -1860,7 +1849,6 @@ pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negative
   topology::Stratum cellsStratum(faultDMMesh, topology::Stratum::HEIGHT, 1);
   const PetscInt cStart = cellsStratum.begin();
   const PetscInt cEnd = cellsStratum.end();
-  const PetscInt numCells = cellsStratum.size();
 
   // Get sections
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
@@ -1890,7 +1878,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negative
     // Compute product of basis functions.
     // Want values summed over quadrature points
     basisProducts = 0.0;
-    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+    for (size_t iQuad=0; iQuad < numQuadPts; ++iQuad) {
       const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad];
 
       for(int iBasis = 0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
@@ -1972,7 +1960,6 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateSoln(const bool negativeSide
   assert(_quadrature);
 
   const int spaceDim = _quadrature->spaceDim();
-  PetscErrorCode err;
 
   topology::VecVisitorMesh solutionVisitor(_fields->get("sensitivity solution"));
   const PetscScalar* solutionArray = solutionVisitor.localArray();

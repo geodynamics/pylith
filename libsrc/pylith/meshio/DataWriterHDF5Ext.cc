@@ -101,7 +101,6 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
 
   try {
     DataWriter::open(mesh, numTimeSteps, label, labelId);
-    const char* context = DataWriter::_context.c_str();
 
     PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
     MPI_Comm comm;
@@ -185,7 +184,7 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
     // Write cells
 
     // Account for censored cells
-    PetscInt cellHeight, cStart, cEnd, cMax, dof, conesSize, numCells, numCorners, numCornersLocal = 0;
+    PetscInt cellHeight, cStart, cEnd, cMax, conesSize, numCells, numCorners, numCornersLocal = 0;
     err = DMPlexGetVTKCellHeight(dmMesh, &cellHeight);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetHeightStratum(dmMesh, cellHeight, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetHybridBounds(dmMesh, &cMax, PETSC_NULL, PETSC_NULL, PETSC_NULL);PYLITH_CHECK_ERROR(err);
@@ -541,7 +540,7 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
     if (createdExternalDataset) {
       // Get cell information
       PetscSection section = field.localSection();assert(section);
-      PetscInt dof = 0, n, numLocalCells = 0, numCells, cellHeight, cStart, cEnd;
+      PetscInt dof = 0, numLocalCells = 0, numCells, cellHeight, cStart, cEnd;
       PetscIS globalCellNumbers;
     
       err = DMPlexGetVTKCellHeight(dmMesh, &cellHeight);PYLITH_CHECK_ERROR(err);

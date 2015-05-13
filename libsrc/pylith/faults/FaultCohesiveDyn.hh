@@ -279,11 +279,6 @@ private :
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
-  /// Flag to control whether to continue to impose initial tractions
-  /// on the fault surface when it opens. If it is a frictional
-  /// contact, then it should be a free surface.
-  bool _openFreeSurf;
-
   /// Minimum resolvable value accounting for roundoff errors
   PylithScalar _zeroTolerance;
 
@@ -297,6 +292,11 @@ private :
   topology::Jacobian* _jacobian;
 
   PetscKSP _ksp; ///< PETSc KSP linear solver for sensitivity problem.
+
+  /// Flag to control whether to continue to impose initial tractions
+  /// on the fault surface when it opens. If it is a frictional
+  /// contact, then it should be a free surface.
+  bool _openFreeSurf;
 
 // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
