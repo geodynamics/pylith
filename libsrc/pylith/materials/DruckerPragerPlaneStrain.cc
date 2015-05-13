@@ -159,11 +159,11 @@ pylith::materials::DruckerPragerPlaneStrain::DruckerPragerPlaneStrain(void) :
 			   _DruckerPragerPlaneStrain::numStateVars,
 			   _DruckerPragerPlaneStrain::dbStateVars,
 			   _DruckerPragerPlaneStrain::numDBStateVars)),
-  _fitMohrCoulomb(MOHR_COULOMB_INSCRIBED),
-  _allowTensileYield(false),
   _calcElasticConstsFn(0),
   _calcStressFn(0),
-  _updateStateVarsFn(0)
+  _updateStateVarsFn(0),
+  _fitMohrCoulomb(MOHR_COULOMB_INSCRIBED),
+  _allowTensileYield(false)
 { // constructor
   useElasticBehavior(false);
 } // constructor
@@ -1142,12 +1142,9 @@ pylith::materials::DruckerPragerPlaneStrain::_updateStateVarsElastoplastic(
   assert(initialStrain);
   assert(_DruckerPragerPlaneStrain::tensorSize == initialStrainSize);
 
-  const int stressSize = _tensorSize;
-
   // For now, we are duplicating the functionality of _calcStressElastoplastic,
   // since otherwise we would have to redo a lot of calculations.
 
-  const int tensorSize = _tensorSize;
   const int tensorSizePS = 4;
   const PylithScalar mu = properties[p_mu];
   const PylithScalar lambda = properties[p_lambda];

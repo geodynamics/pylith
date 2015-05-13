@@ -36,9 +36,9 @@ pylith::problems::Formulation::Formulation(void) :
   _t(0.0),
   _dt(0.0),
   _jacobian(0),
+  _customConstraintPCMat(0),
   _jacobianLumped(0),
   _fields(0),
-  _customConstraintPCMat(0),
   _isJacobianSymmetric(false),
   _splitFields(false)
 { // constructor

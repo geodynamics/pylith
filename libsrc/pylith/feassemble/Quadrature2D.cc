@@ -65,9 +65,7 @@ pylith::feassemble::Quadrature2D::computeGeometry(const PylithScalar* coordinate
   const int numBasis = _quadRefCell.numBasis();
 
   const scalar_array& basis = _quadRefCell.basis();
-  const scalar_array& quadPtsRef = _quadRefCell.quadPtsRef();
   const scalar_array& basisDerivRef = _quadRefCell.basisDerivRef();
-  const CellGeometry& geometry = _quadRefCell.refGeometry();
 
   assert(_quadRefCell.cellDim() == cellDim);
   assert(_quadRefCell.spaceDim() == spaceDim);

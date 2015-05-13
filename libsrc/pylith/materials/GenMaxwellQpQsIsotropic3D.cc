@@ -740,11 +740,9 @@ pylith::materials::GenMaxwellQpQsIsotropic3D::_calcElasticConstsViscoelastic(
   assert(_GenMaxwellQpQsIsotropic3D::tensorSize == _tensorSize);
 
   const int numMaxwellModels = _GenMaxwellQpQsIsotropic3D::numMaxwellModels;
-  const int tensorSize = _GenMaxwellQpQsIsotropic3D::tensorSize;
 
   const PylithScalar mu = properties[p_muEff];
   const PylithScalar bulkModulus = properties[p_kEff];
-  const PylithScalar mu2 = 2.0 * mu;
 
   // Compute viscous contribution. (deviatoric + mean)
   PylithScalar elasFracShear = 1.0;  // deviatoric (shear) component

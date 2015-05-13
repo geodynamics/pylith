@@ -103,9 +103,9 @@ pylith::meshio::GMVFileAscii::read(scalar_array* coordinates,
       _readMaterials(fin, materialIds, *numVertices, *numCells);
   } // while
 
-  assert(coordinates->size() == (*numVertices) * (*spaceDim));
-  assert(cells->size() == (*numCells) * (*numCorners));
-  assert(materialIds->size() == *numCells);
+  assert(coordinates->size() == size_t((*numVertices) * (*spaceDim)));
+  assert(cells->size() == size_t((*numCells) * (*numCorners)));
+  assert(materialIds->size() == size_t(*numCells));
 
   PYLITH_METHOD_END;
 } // read
@@ -124,9 +124,9 @@ pylith::meshio::GMVFileAscii::write(const scalar_array& coordinates,
 { // write
   PYLITH_METHOD_BEGIN;
 
-  assert(coordinates.size() == numVertices * spaceDim);
-  assert(cells.size() == numCells * numCorners);
-  assert(materialIds.size() == numCells);
+  assert(coordinates.size() == size_t(numVertices * spaceDim));
+  assert(cells.size() == size_t(numCells * numCorners));
+  assert(materialIds.size() == size_t(numCells));
 
 #if 0 // NOT YET IMPLEMENTED
   _writeHeader();

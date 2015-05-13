@@ -142,8 +142,8 @@ private :
   const Field& _field;
 
   PetscDM _dm; ///< Cached PETSc dm for submesh.
-  PetscVec _localVec; ///< Cached local PETSc Vec.
   PetscSection _section; ///< Cached PETSc subsection.
+  PetscVec _localVec; ///< Cached local PETSc Vec.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

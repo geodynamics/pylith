@@ -802,7 +802,6 @@ pylith::materials::GenMaxwellIsotropic3D::_updateStateVarsElastic(
 
   // Initialize all viscous strains to deviatoric elastic strains.
   PylithScalar devStrain = 0.0;
-  PylithScalar shearRatio = 0.0;
   for (int iComp=0; iComp < tensorSize; ++iComp) {
     devStrain = strainTpdt[iComp] - diag[iComp] * meanStrainTpdt;
     // Maxwell model 1

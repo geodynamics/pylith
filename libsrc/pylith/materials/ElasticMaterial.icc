@@ -162,14 +162,14 @@ inline
 const pylith::scalar_array&
 pylith::materials::ElasticMaterial::calcDensity(void)
 { // calcDensity
-  const int numQuadPts = _numQuadPts;
-  const int numPropsQuadPt = _numPropsQuadPt;
-  const int numVarsQuadPt = _numVarsQuadPt;
+  const size_t numQuadPts = _numQuadPts;
+  const size_t numPropsQuadPt = _numPropsQuadPt;
+  const size_t numVarsQuadPt = _numVarsQuadPt;
   assert(_propertiesCell.size() == numQuadPts*numPropsQuadPt);
   assert(_stateVarsCell.size() == numQuadPts*numVarsQuadPt);
   assert(_densityCell.size() == numQuadPts*1);
 
-  for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
+  for (size_t iQuad=0; iQuad < numQuadPts; ++iQuad)
     _calcDensity(&_densityCell[iQuad],
      &_propertiesCell[iQuad*numPropsQuadPt], numPropsQuadPt,
      &_stateVarsCell[iQuad*numVarsQuadPt], numVarsQuadPt);

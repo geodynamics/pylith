@@ -58,7 +58,7 @@ pylith::meshio::OutputSolnPoints::deallocate(void)
   OutputManager::deallocate();
 
   if (_interpolator) {
-    PetscErrorCode err = err = DMInterpolationDestroy(&_interpolator);PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = DMInterpolationDestroy(&_interpolator);PYLITH_CHECK_ERROR(err);
   } // if
 
   _mesh = 0; // :TODO: Use shared pointer

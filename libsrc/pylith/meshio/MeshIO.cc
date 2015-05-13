@@ -181,8 +181,6 @@ pylith::meshio::MeshIO::_getCells(int_array* cells,
 
   PetscIS globalVertexNumbers = NULL;
   const PetscInt* gvertex = NULL;
-  const PetscInt* cone = NULL;
-  PetscInt coneSize = 0, v = 0, count = 0;
   PetscErrorCode err = 0;
 
   err = DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers);PYLITH_CHECK_ERROR(err);
@@ -214,7 +212,6 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
   PYLITH_METHOD_BEGIN;
 
   assert(_mesh);
-  PetscErrorCode err;
 
   if (!_mesh->commRank()) {
     PetscDM dmMesh = _mesh->dmMesh();assert(dmMesh);
@@ -222,7 +219,7 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
     const PetscInt cStart = cellsStratum.begin();
     const PetscInt cEnd = cellsStratum.end();
 
-    if (cellsStratum.size() != materialIds.size()) {
+    if (size_t(cellsStratum.size()) != materialIds.size()) {
       std::ostringstream msg;
       msg << "Mismatch in size of materials identifier array ("
           << materialIds.size() << ") and number of cells in mesh ("<< (cEnd - cStart) << ").";

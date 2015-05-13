@@ -119,12 +119,8 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
   dispRel.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim); // :TODO: Update?
 
   topology::SubMeshIS faultMeshIS(*_faultMesh);
-  const PetscInt numPoints = faultMeshIS.size();
-  const PetscInt* points = faultMeshIS.points();
 
   topology::Stratum verticesStratum(faultDMMesh, topology::Stratum::DEPTH, 0);
-  const PetscInt vStart = verticesStratum.begin();
-  const PetscInt vEnd = verticesStratum.end();
 
   const int numVertices = _cohesiveVertices.size();
   PetscErrorCode err;
@@ -228,10 +224,12 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(const topology::Field& 
   //                 +\tensor{N}_{n^-} \cdot \vec{u}_{n^-} dS
 
   const int setupEvent = _logger->eventId("FaIR setup");
-  const int geometryEvent = _logger->eventId("FaIR geometry");
   const int computeEvent = _logger->eventId("FaIR compute");
+#if defined(DETAILED_EVENT_LOGGING)
+  const int geometryEvent = _logger->eventId("FaIR geometry");
   const int restrictEvent = _logger->eventId("FaIR restrict");
   const int updateEvent = _logger->eventId("FaIR update");
+#endif
 
   _logger->eventBegin(setupEvent);
 
@@ -370,10 +368,12 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(topology::Jacobian* jac
   assert(_logger);
 
   const int setupEvent = _logger->eventId("FaIJ setup");
-  const int geometryEvent = _logger->eventId("FaIJ geometry");
   const int computeEvent = _logger->eventId("FaIJ compute");
+#if defined(DETAILED_EVENT_LOGGING)
+  const int geometryEvent = _logger->eventId("FaIJ geometry");
   const int restrictEvent = _logger->eventId("FaIJ restrict");
   const int updateEvent = _logger->eventId("FaIJ update");
+#endif
 
   _logger->eventBegin(setupEvent);
 
@@ -528,10 +528,12 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(topology::Field* jacobi
   assert(_logger);
 
   const int setupEvent = _logger->eventId("FaIJ setup");
-  const int geometryEvent = _logger->eventId("FaIJ geometry");
   const int computeEvent = _logger->eventId("FaIJ compute");
+#if defined(DETAILED_EVENT_LOGGING)
+  const int geometryEvent = _logger->eventId("FaIJ geometry");
   const int restrictEvent = _logger->eventId("FaIJ restrict");
   const int updateEvent = _logger->eventId("FaIJ update");
+#endif
 
   _logger->eventBegin(setupEvent);
 
@@ -626,8 +628,10 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
 
   const int setupEvent = _logger->eventId("FaPr setup");
   const int computeEvent = _logger->eventId("FaPr compute");
+#if defined(DETAILED_EVENT_LOGGING)
   const int restrictEvent = _logger->eventId("FaPr restrict");
   const int updateEvent = _logger->eventId("FaPr update");
+#endif
 
   _logger->eventBegin(setupEvent);
 
@@ -796,9 +800,11 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
   //                     \tensor{L}_p^T \cdot d\vec{l}_p
 
   const int setupEvent = _logger->eventId("FaAS setup");
-  const int geometryEvent = _logger->eventId("FaAS geometry");
   const int computeEvent = _logger->eventId("FaAS compute");
+#if defined(DETAILED_EVENT_LOGGING)
+  const int geometryEvent = _logger->eventId("FaAS geometry");
   const int restrictEvent = _logger->eventId("FaAS restrict");
+#endif
 
   _logger->eventBegin(setupEvent);
 
@@ -1051,7 +1057,7 @@ pylith::faults::FaultCohesiveLagrange::checkConstraints(const topology::Field& s
   topology::VecVisitorMesh solutionVisitor(solution);
 
   const int numVertices = _cohesiveVertices.size();
-  PetscInt fiberDim = 0, numConstraints = 0;
+  PetscInt numConstraints = 0;
   for (int iVertex = 0; iVertex < numVertices; ++iVertex) {
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int e_lagrange = _cohesiveVertices[iVertex].lagrange;
@@ -1105,7 +1111,6 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
 
   // Get domain edges (Lagrange multiplier DOF)
   topology::Stratum edgeStratum(dmMesh, topology::Stratum::DEPTH, 1);
-  const PetscInt eStart = edgeStratum.begin();
   const PetscInt eEnd = edgeStratum.end();
   PetscInt eMax;
   err = DMPlexGetHybridBounds(dmMesh, NULL, NULL, &eMax, NULL);PYLITH_CHECK_ERROR(err);
@@ -1195,7 +1200,7 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
     } // for
     err = DMPlexRestoreTransitiveClosure(dmMesh, cohesiveCells[iCell], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
   } // for
-  assert(index == _cohesiveVertices.size());
+  assert(size_t(index) == _cohesiveVertices.size());
 
   PYLITH_METHOD_END;
 } // _initializeCohesiveInfo
@@ -1396,7 +1401,6 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
   const scalar_array& verticesRef = cellGeometry.vertices();
   const int jacobianSize = (cohesiveDim > 0) ? spaceDim * cohesiveDim : 1;
-  const scalar_array& quadWts = _quadrature->quadWts();
   scalar_array jacobian(jacobianSize);
   PylithScalar jacobianDet = 0;
 
@@ -1586,7 +1590,6 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
     MPI_Allreduce(&flipLocal, &flipGlobal, 1, MPI_INT, MPI_SUM, comm);
     
     const int ishear = 0;
-    const int inormal = 2;
     if (flipGlobal > 0) { // flip in any processor wants to flip
       // Flip shear direction
       for(PetscInt v = vStart; v < vEnd; ++v) {
@@ -1646,9 +1649,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
     int flipGlobal = 0;
     MPI_Allreduce(&flipLocal, &flipGlobal, 1, MPI_INT, MPI_SUM, comm);
 
-    const int istrike = 0;
     const int idip = 3;
-    const int inormal = 6;
     if (flipGlobal > 0) { // flip in any processor wants to flip
       // Flip dip direction
       for(PetscInt v = vStart; v < vEnd; ++v) {
@@ -1687,20 +1688,15 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
   // :TODO: Update for higher order?
 
   // Containers for area information
-  const int cellDim = _quadrature->cellDim();
   const int numBasis = _quadrature->numBasis();
   const int numQuadPts = _quadrature->numQuadPts();
   const int spaceDim = _quadrature->spaceDim();
-  const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
   const scalar_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
-  PylithScalar jacobianDet = 0;
+  assert(quadWts.size() == size_t(numQuadPts));
 
   // Get vertices in fault mesh.
   PetscDM faultDMMesh = _faultMesh->dmMesh();assert(faultDMMesh);
   topology::Stratum verticesStratum(faultDMMesh, topology::Stratum::DEPTH, 0);
-  const PetscInt vStart = verticesStratum.begin();
-  const PetscInt vEnd = verticesStratum.end();
 
   topology::Stratum cellsStratum(faultDMMesh, topology::Stratum::HEIGHT, 1);
   const PetscInt cStart = cellsStratum.begin();
@@ -1793,8 +1789,6 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(topology::Field* tra
 
   topology::VecVisitorMesh tractionsVisitor(*tractions);
   PetscScalar* tractionsArray = tractionsVisitor.localArray();
-
-  const PylithScalar pressureScale = tractions->scale();
 
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
@@ -1896,7 +1890,6 @@ pylith::faults::FaultCohesiveLagrange::_getJacobianSubmatrixNP(PetscMat* jacobia
 
   // Get global order
   PetscSection solutionGlobalSection = fields.solution().globalSection();assert(solutionGlobalSection);
-  PetscScalar *solutionArray = NULL;
 
   PetscErrorCode err;
 

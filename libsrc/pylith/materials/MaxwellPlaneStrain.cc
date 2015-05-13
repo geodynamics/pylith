@@ -431,11 +431,8 @@ pylith::materials::MaxwellPlaneStrain::_calcStressViscoelastic(
   assert(0 != initialStrain);
   assert(_MaxwellPlaneStrain::tensorSize == initialStrainSize);
 
-  const int tensorSize = _MaxwellPlaneStrain::tensorSize;
-
   const PylithScalar mu = properties[p_mu];
   const PylithScalar lambda = properties[p_lambda];
-  const PylithScalar maxwellTime = properties[p_maxwellTime];
   const PylithScalar stressZZInitial = stateVars[s_stressZZInitial];
 
   const PylithScalar mu2 = 2.0 * mu;
@@ -609,9 +606,6 @@ pylith::materials::MaxwellPlaneStrain::_updateStateVarsElastic(
   assert(0 != initialStrain);
   assert(_MaxwellPlaneStrain::tensorSize == initialStrainSize);
 
-  const int tensorSize = _tensorSize;
-  const PylithScalar maxwellTime = properties[p_maxwellTime];
-
   const PylithScalar strainTpdt[] = {totalStrain[0] - initialStrain[0],
 			       totalStrain[1] - initialStrain[1],
 			       0.0,
@@ -746,7 +740,6 @@ pylith::materials::MaxwellPlaneStrain::_computeStateVars(
   assert(0 != initialStrain);
   assert(_MaxwellPlaneStrain::tensorSize == initialStrainSize);
 
-  const int tensorSize = _tensorSize;
   const PylithScalar maxwellTime = properties[p_maxwellTime];
 
   const PylithScalar strainTpdt[] = {totalStrain[0],

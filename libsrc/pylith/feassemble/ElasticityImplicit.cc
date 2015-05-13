@@ -121,19 +121,21 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(const topology::Field&
   assert(fields);
 
   const int setupEvent = _logger->eventId("ElIR setup");
-  const int geometryEvent = _logger->eventId("ElIR geometry");
   const int computeEvent = _logger->eventId("ElIR compute");
+#if defined(DETAILED_EVENT_LOGGING)
+  const int geometryEvent = _logger->eventId("ElIR geometry");
   const int restrictEvent = _logger->eventId("ElIR restrict");
   const int stateVarsEvent = _logger->eventId("ElIR stateVars");
   const int stressEvent = _logger->eventId("ElIR stress");
   const int updateEvent = _logger->eventId("ElIR update");
+#endif
 
   _logger->eventBegin(setupEvent);
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
   const scalar_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
+  assert(quadWts.size() == size_t(numQuadPts));
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
   const int cellDim = _quadrature->cellDim();
@@ -291,20 +293,15 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(topology::Jacobian* ja
   assert(fields);
 
   const int setupEvent = _logger->eventId("ElIJ setup");
-  const int geometryEvent = _logger->eventId("ElIJ geometry");
   const int computeEvent = _logger->eventId("ElIJ compute");
-  const int restrictEvent = _logger->eventId("ElIJ restrict");
-  const int stateVarsEvent = _logger->eventId("ElIJ stateVars");
-  const int updateEvent = _logger->eventId("ElIJ update");
 
   _logger->eventBegin(setupEvent);
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
   const scalar_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
+  assert(quadWts.size() == size_t(numQuadPts));
   const int numBasis = _quadrature->numBasis();
-  const int numCorners = _quadrature->refGeometry().numCorners();
   const int spaceDim = _quadrature->spaceDim();
   const int cellDim = _quadrature->cellDim();
   const int tensorSize = _material->tensorSize();
@@ -384,9 +381,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(topology::Jacobian* ja
     dispIncrVisitor.getClosure(&dispIncrCell, cell);
 
     // Get cell geometry information that depends on cell
-    const scalar_array& basis = _quadrature->basis();
     const scalar_array& basisDeriv = _quadrature->basisDeriv();
-    const scalar_array& jacobianDet = _quadrature->jacobianDet();
 
     // Compute current estimate of displacement at time t+dt using solution increment.
     for(PetscInt i = 0, dispSize = dispCell.size(); i < dispSize; ++i) {
@@ -409,8 +404,10 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(topology::Jacobian* ja
       PylithScalar *elemMat = new PylithScalar[n*n];
       PylithScalar *svalues = new PylithScalar[n];
       PylithScalar *work    = new PylithScalar[lwork];
+#if 0
       PylithScalar minSV = 0;
       PylithScalar maxSV = 0;
+#endif
       PylithScalar sdummy = 0;
 
       const int n2 = n*n;
@@ -421,9 +418,9 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(topology::Jacobian* ja
 		    &lwork, &lierr);
       if (lierr)
         throw std::runtime_error("Lapack SVD failed");
+#if 0
       minSV = svalues[n-7];
       maxSV = svalues[0];
-#if 0
       std::cout << "Element " << cell << std::endl;
       for(int i = 0; i < n; ++i)
         std::cout << "    sV["<<i<<"] = " << svalues[i] << std::endl;

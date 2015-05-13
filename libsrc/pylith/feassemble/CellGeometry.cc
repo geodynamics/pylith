@@ -168,8 +168,8 @@ pylith::feassemble::CellGeometry::_orient1D(scalar_array* orientation,
   const int jacobianSize = 2;
   assert(jacobianSize == jacobian.size());
 
-  // cellDim is 1
-  const int spaceDim = 2;
+  // cellDim = 1
+  // spaceDim = 2;
 
   const PylithScalar j1 = jacobian[0];
   const PylithScalar j2 = jacobian[1];
@@ -195,8 +195,8 @@ pylith::feassemble::CellGeometry::_orient2D(scalar_array* orientation,
   assert(jacobianSize == jacobian.size());
   assert(3 == upDir.size());
 
-  const int cellDim = 2;
-  const int spaceDim = 3;
+  // const int cellDim = 2;
+  // const int spaceDim = 3;
 
   const PylithScalar j00 = jacobian[0];
   const PylithScalar j01 = jacobian[1];

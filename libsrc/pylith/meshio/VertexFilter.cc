@@ -51,6 +51,7 @@ pylith::meshio::VertexFilter::VertexFilter(const VertexFilter& f)
 const pylith::meshio::VertexFilter&
 pylith::meshio::VertexFilter::operator=(const VertexFilter& f)
 { // operator=
+  return f;
 } // operator=
 
 

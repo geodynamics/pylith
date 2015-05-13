@@ -157,7 +157,6 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
       } // if
       CohesiveTopology::create(mesh, faultMesh, faultBdLabel, id(), *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
     } else {
-      const int faultDim = 2;
       assert(3 == mesh->dimension());
       throw std::logic_error("Support for UCD fault files no longer implemented."); 
     } // if/else

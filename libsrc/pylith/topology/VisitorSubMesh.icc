@@ -70,7 +70,7 @@ pylith::topology::VecVisitorSubMesh::clear(void)
   PetscErrorCode err = 0;
 
   if (_section) {
-    err = PetscSectionDestroy(&_section);assert(!_section);
+    err = PetscSectionDestroy(&_section);PYLITH_CHECK_ERROR(err);assert(!_section);
   } // if
 
   _dm = NULL;
@@ -194,9 +194,9 @@ pylith::topology::MatVisitorSubMesh::~MatVisitorSubMesh(void)
   clear();
   
   PetscErrorCode err;
-  err = PetscSectionDestroy(&_subsection);assert(!_subsection);
-  err = PetscSectionDestroy(&_globalSubsection);assert(!_globalSubsection);
-  err = PetscSectionDestroy(&_globalSection);assert(!_globalSection);
+  err = PetscSectionDestroy(&_subsection);PYLITH_CHECK_ERROR(err);assert(!_subsection);
+  err = PetscSectionDestroy(&_globalSubsection);PYLITH_CHECK_ERROR(err);assert(!_globalSubsection);
+  err = PetscSectionDestroy(&_globalSection);PYLITH_CHECK_ERROR(err);assert(!_globalSection);
 } // destructor
 
 // ----------------------------------------------------------------------

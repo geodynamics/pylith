@@ -212,7 +212,6 @@ pylith::faults::LiuCosSlipFn::initialize(const topology::Mesh& faultMesh,
     _slipTimeVertex += originTime;
 
     // Rise time
-    const PetscInt rtoff = riseTimeVisitor.sectionOffset(v);
     assert(1 == riseTimeVisitor.sectionDof(v));
     err = _dbRiseTime->query(&_riseTimeVertex, 1, &vCoordsGlobal[0], vCoordsGlobal.size(), cs);
     if (err) {

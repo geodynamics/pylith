@@ -141,22 +141,20 @@ pylith::feassemble::ElasticityExplicitTri3::integrateResidual(const topology::Fi
 { // integrateResidual
   PYLITH_METHOD_BEGIN;
 
-  /// Member prototype for _elasticityResidualXD()
-  typedef void (pylith::feassemble::ElasticityExplicitTri3::*elasticityResidual_fn_type)
-    (const scalar_array&);
-
   assert(_quadrature);
   assert(_material);
   assert(_logger);
   assert(fields);
 
   const int setupEvent = _logger->eventId("ElIR setup");
-  const int geometryEvent = _logger->eventId("ElIR geometry");
   const int computeEvent = _logger->eventId("ElIR compute");
+#if defined(DETAILED_EVENT_LOGGING)
+  const int geometryEvent = _logger->eventId("ElIR geometry");
   const int restrictEvent = _logger->eventId("ElIR restrict");
   const int stateVarsEvent = _logger->eventId("ElIR stateVars");
   const int stressEvent = _logger->eventId("ElIR stress");
   const int updateEvent = _logger->eventId("ElIR update");
+#endif
 
   _logger->eventBegin(setupEvent);
 
@@ -415,11 +413,13 @@ pylith::feassemble::ElasticityExplicitTri3::integrateJacobian(topology::Field* j
   assert(fields);
 
   const int setupEvent = _logger->eventId("ElIJ setup");
-  const int geometryEvent = _logger->eventId("ElIJ geometry");
   const int computeEvent = _logger->eventId("ElIJ compute");
+#if defined(DETAILED_EVENT_LOGGING)
+  const int geometryEvent = _logger->eventId("ElIJ geometry");
   const int restrictEvent = _logger->eventId("ElIJ restrict");
   const int stateVarsEvent = _logger->eventId("ElIJ stateVars");
   const int updateEvent = _logger->eventId("ElIJ update");
+#endif
 
   _logger->eventBegin(setupEvent);
 
@@ -430,7 +430,6 @@ pylith::feassemble::ElasticityExplicitTri3::integrateJacobian(topology::Field* j
   assert(_material->tensorSize() == _tensorSize);
   const int spaceDim = _spaceDim;
   const int cellDim = _cellDim;
-  const int numBasis = _numBasis;
   const int numCorners = _numCorners;
   if (cellDim != spaceDim)
     throw std::logic_error("Don't know how to integrate elasticity " \

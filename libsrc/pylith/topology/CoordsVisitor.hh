@@ -119,8 +119,8 @@ public :
 private :
 
   const PetscDM _dm; ///< Cached PETSc dm for mesh.
-  PetscVec _localVec; ///< Cached local PETSc Vec.
   PetscSection _section; ///< Cached PETSc section.
+  PetscVec _localVec; ///< Cached local PETSc Vec.
   PetscScalar* _localArray; ///< Cached local array.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////

@@ -45,7 +45,7 @@ pylith::meshio::HDF5::HDF5(const char* filename,
 { // constructor
   PYLITH_METHOD_BEGIN;
 
-  if (H5F_ACC_TRUNC == mode) {
+  if (hid_t(H5F_ACC_TRUNC) == mode) {
     _file = H5Fcreate(filename, mode, H5P_DEFAULT, H5P_DEFAULT);
     if (_file < 0) {
       std::ostringstream msg;
@@ -86,7 +86,7 @@ pylith::meshio::HDF5::open(const char* filename,
     throw std::runtime_error("HDF5 file already open.");
   } // if
 
-  if (H5F_ACC_TRUNC == mode) {
+  if (hid_t(H5F_ACC_TRUNC) == mode) {
     _file = H5Fcreate(filename, mode, H5P_DEFAULT, H5P_DEFAULT);
     if (_file < 0) {
       std::ostringstream msg;
@@ -282,9 +282,7 @@ pylith::meshio::HDF5::getGroupDatasets(string_vector* names,
     names->resize(gsize);
     for (int i=0, index=0; i < gsize; ++i) {
       char buffer[256];
-      ssize_t namelen = 
-	H5Lget_name_by_idx(group, ".", H5_INDEX_NAME, H5_ITER_NATIVE,
-			   i, buffer, 256, H5P_DEFAULT);
+      ssize_t namelen = H5Lget_name_by_idx(group, ".", H5_INDEX_NAME, H5_ITER_NATIVE, i, buffer, 256, H5P_DEFAULT);assert(namelen > 0);
       (*names)[index++] = buffer;
     } // for
     
@@ -1153,7 +1151,7 @@ pylith::meshio::HDF5::writeDataset(hid_t h5,
 
     // Create the dataspace
     const int ndims = 1;
-    hsize_t dims[ndims] = { nstrings };
+    hsize_t dims[ndims]; dims[0] = nstrings;
     hid_t dataspace = H5Screate_simple(ndims, dims, NULL);
     if (dataspace < 0)
       throw std::runtime_error("Could not create dataspace.");

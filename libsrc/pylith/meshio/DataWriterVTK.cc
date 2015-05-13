@@ -370,7 +370,7 @@ pylith::meshio::DataWriterVTK::_vtkFilename(const PylithScalar t) const
     char sbuffer[256];
     sprintf(sbuffer, _timeFormat.c_str(), t/_timeConstant);
     std::string timestamp(sbuffer);
-    const int pos = timestamp.find(".");
+    const size_t pos = timestamp.find(".");
     if (pos > 0 && pos != timestamp.length())
       timestamp.erase(pos, 1);
     filename

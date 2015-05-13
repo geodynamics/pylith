@@ -35,7 +35,7 @@ pylith::utils::TestArray::check(const PylithScalar* valuesE,
   assert( (0 == nvalues && 0 == valuesE) ||
 	  (0 < nvalues && 0 != valuesE) );
 
-  if (nvalues != values.size()) {
+  if (size_t(nvalues) != values.size()) {
     std::cerr << "Array size mismatch, expected: " << nvalues
 	      << " actual: " << values.size() << std::endl;
     return false;

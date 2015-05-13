@@ -261,8 +261,6 @@ pylith::faults::TractPerturbation::calculate(const PylithScalar t)
 
   assert(_parameters);
 
-  const PylithScalar timeScale = _timeScale;
-
   // Get vertices.
   PetscDM dmMesh = _parameters->mesh().dmMesh();assert(dmMesh);
   topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);

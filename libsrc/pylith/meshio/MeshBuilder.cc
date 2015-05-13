@@ -50,7 +50,6 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
   assert(coordinates);
   MPI_Comm comm  = mesh->comm();
   PetscInt dim  = meshDim;
-  PetscMPIInt commRank = mesh->commRank();
   PetscErrorCode err;
 
   { // Check to make sure every vertex is in at least one cell.

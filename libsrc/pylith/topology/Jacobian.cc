@@ -38,10 +38,6 @@ pylith::topology::Jacobian::Jacobian(const Field& field,
 
   PetscDM dmMesh = field.dmMesh();assert(dmMesh);
 
-  // Set blockFlag to -1 if okay to set block size equal to fiber
-  // dimension, otherwise use a block size of 1.
-  const int blockFlag = (blockOkay) ? -1 : 1;
-
   const char* msg = "Could not create PETSc sparse matrix associated with system Jacobian.";
   PetscErrorCode err = DMCreateMatrix(dmMesh, &_matrix);PYLITH_CHECK_ERROR_MSG(err, msg);
 
@@ -221,7 +217,7 @@ pylith::topology::Jacobian::verifySymmetry(void) const
       const int indexJI = nrows*iCol+iRow;
       const PylithScalar valIJ = vals[indexIJ];
       const PylithScalar valJI = vals[indexJI];
-      if (fabs(valIJ) > 1.0)
+      if (fabs(valIJ) > 1.0) {
         if (fabs(1.0 - valJI/valIJ) > tolerance) {
           std::cerr << "Mismatch: " 
                     << "(" << iRow << ", " << iCol << ") = " << valIJ
@@ -229,7 +225,7 @@ pylith::topology::Jacobian::verifySymmetry(void) const
                     << std::endl;
           isSymmetric = false;
         } // if
-      else
+      } else {
         if (fabs(valJI - valIJ) > tolerance) {
           std::cerr << "Mismatch: " 
                     << "(" << iRow << ", " << iCol << ") = " << valIJ
@@ -237,6 +233,7 @@ pylith::topology::Jacobian::verifySymmetry(void) const
                     << std::endl;
           isSymmetric = false;
         } // if
+      } // if/else
     } // for
   err = MatDestroy(&matDense);PYLITH_CHECK_ERROR(err);
   err = MatDestroy(&matSparseAIJ);PYLITH_CHECK_ERROR(err);

@@ -103,7 +103,7 @@ pylith::bc::Neumann::integrateResidual(const topology::Field& residual,
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
   const scalar_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
+  assert(quadWts.size() == size_t(numQuadPts));
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
 
@@ -401,7 +401,6 @@ pylith::bc::Neumann::_queryDB(const char* name,
   const PetscInt cStart = cellsStratum.begin();
   const PetscInt cEnd = cellsStratum.end();
 
-  const int cellDim = _quadrature->cellDim() > 0 ? _quadrature->cellDim() : 1;
   const int numBasis = _quadrature->numBasis();
   const int numQuadPts = _quadrature->numQuadPts();
   const int spaceDim = _quadrature->spaceDim();
@@ -683,7 +682,6 @@ pylith::bc::Neumann::_calculateValue(const PylithScalar t)
     if (_dbChange) {
       assert(changeVisitor);
       const PetscInt coff = changeVisitor->sectionOffset(c);
-      const PetscInt cdof = changeVisitor->sectionDof(c);
       assert(changeTimeField);
       const PetscInt ctoff = changeTimeVisitor->sectionOffset(c);
       assert(numQuadPts == changeTimeVisitor->sectionDof(c));

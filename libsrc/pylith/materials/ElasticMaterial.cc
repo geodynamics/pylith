@@ -114,8 +114,8 @@ pylith::materials::ElasticMaterial::retrievePropsAndVars(const int cell)
 
   const int propertiesSize = _numQuadPts*_numPropsQuadPt;
   const int stateVarsSize = _numQuadPts*_numVarsQuadPt;
-  assert(_propertiesCell.size() == propertiesSize);
-  assert(_stateVarsCell.size() == stateVarsSize);
+  assert(_propertiesCell.size() == size_t(propertiesSize));
+  assert(_stateVarsCell.size() == size_t(stateVarsSize));
 
   topology::VecVisitorMesh propertiesVisitor(*_properties);
   PetscScalar* propertiesArray = propertiesVisitor.localArray();
@@ -140,7 +140,7 @@ pylith::materials::ElasticMaterial::retrievePropsAndVars(const int cell)
   if (_initialFields) {
     if (_initialFields->hasField("initial stress")) {
       const int stressSize = _numQuadPts*_tensorSize;
-      assert(_initialStressCell.size() == stressSize);
+      assert(_initialStressCell.size() == size_t(stressSize));
       topology::Field& stressField = _initialFields->get("initial stress");
       topology::VecVisitorMesh stressVisitor(stressField);
       PetscScalar* stressArray = stressVisitor.localArray();
@@ -152,7 +152,7 @@ pylith::materials::ElasticMaterial::retrievePropsAndVars(const int cell)
     } // if
     if (_initialFields->hasField("initial strain")) {
       const int strainSize = _numQuadPts*_tensorSize;
-      assert(_initialStrainCell.size() == strainSize);
+      assert(_initialStrainCell.size() == size_t(strainSize));
       topology::Field& strainField = _initialFields->get("initial strain");
       topology::VecVisitorMesh strainVisitor(strainField);
       PetscScalar* strainArray = strainVisitor.localArray();
@@ -177,14 +177,13 @@ pylith::materials::ElasticMaterial::calcStress(const scalar_array& totalStrain,
 
   const int numQuadPts = _numQuadPts;
   const int numPropsQuadPt = _numPropsQuadPt;
-  const int tensorSize = _tensorSize;
   const int numVarsQuadPt = _numVarsQuadPt;
-  assert(_propertiesCell.size() == numQuadPts*numPropsQuadPt);
-  assert(_stateVarsCell.size() == numQuadPts*numVarsQuadPt);
-  assert(_stressCell.size() == numQuadPts*_tensorSize);
-  assert(_initialStressCell.size() == numQuadPts*_tensorSize);
-  assert(_initialStrainCell.size() == numQuadPts*_tensorSize);
-  assert(totalStrain.size() == numQuadPts*_tensorSize);
+  assert(_propertiesCell.size() == size_t(numQuadPts*numPropsQuadPt));
+  assert(_stateVarsCell.size() == size_t(numQuadPts*numVarsQuadPt));
+  assert(_stressCell.size() == size_t(numQuadPts*_tensorSize));
+  assert(_initialStressCell.size() == size_t(numQuadPts*_tensorSize));
+  assert(_initialStrainCell.size() == size_t(numQuadPts*_tensorSize));
+  assert(totalStrain.size() == size_t(numQuadPts*_tensorSize));
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
     _calcStress(&_stressCell[iQuad*_tensorSize], _tensorSize,
@@ -207,14 +206,13 @@ pylith::materials::ElasticMaterial::calcDerivElastic(const scalar_array& totalSt
 
   const int numQuadPts = _numQuadPts;
   const int numPropsQuadPt = _numPropsQuadPt;
-  const int tensorSize = _tensorSize;
   const int numVarsQuadPt = _numVarsQuadPt;
-  assert(_propertiesCell.size() == numQuadPts*numPropsQuadPt);
-  assert(_stateVarsCell.size() == numQuadPts*numVarsQuadPt);
-  assert(_elasticConstsCell.size() == numQuadPts*_numElasticConsts);
-  assert(_initialStressCell.size() == numQuadPts*_tensorSize);
-  assert(_initialStrainCell.size() == numQuadPts*_tensorSize);
-  assert(totalStrain.size() == numQuadPts*_tensorSize);
+  assert(_propertiesCell.size() == size_t(numQuadPts*numPropsQuadPt));
+  assert(_stateVarsCell.size() == size_t(numQuadPts*numVarsQuadPt));
+  assert(_elasticConstsCell.size() == size_t(numQuadPts*_numElasticConsts));
+  assert(_initialStressCell.size() == size_t(numQuadPts*_tensorSize));
+  assert(_initialStrainCell.size() == size_t(numQuadPts*_tensorSize));
+  assert(totalStrain.size() == size_t(numQuadPts*_tensorSize));
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
     _calcElasticConsts(&_elasticConstsCell[iQuad*_numElasticConsts], 
@@ -239,13 +237,12 @@ pylith::materials::ElasticMaterial::updateStateVars(const scalar_array& totalStr
 
   const int numQuadPts = _numQuadPts;
   const int numPropsQuadPt = _numPropsQuadPt;
-  const int tensorSize = _tensorSize;
   const int numVarsQuadPt = _numVarsQuadPt;
-  assert(_propertiesCell.size() == numQuadPts*numPropsQuadPt);
-  assert(_stateVarsCell.size() == numQuadPts*numVarsQuadPt);
-  assert(_initialStressCell.size() == numQuadPts*_tensorSize);
-  assert(_initialStrainCell.size() == numQuadPts*_tensorSize);
-  assert(totalStrain.size() == numQuadPts*_tensorSize);
+  assert(_propertiesCell.size() == size_t(numQuadPts*numPropsQuadPt));
+  assert(_stateVarsCell.size() == size_t(numQuadPts*numVarsQuadPt));
+  assert(_initialStressCell.size() == size_t(numQuadPts*_tensorSize));
+  assert(_initialStrainCell.size() == size_t(numQuadPts*_tensorSize));
+  assert(totalStrain.size() == size_t(numQuadPts*_tensorSize));
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
     _updateStateVars(&_stateVarsCell[iQuad*numVarsQuadPt], numVarsQuadPt,
@@ -277,13 +274,12 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh&
 
   const int numQuadPts = _numQuadPts;
   const int numPropsQuadPt = _numPropsQuadPt;
-  const int tensorSize = _tensorSize;
   const int numVarsQuadPt = _numVarsQuadPt;
-  assert(_propertiesCell.size() == numQuadPts*numPropsQuadPt);
-  assert(_stateVarsCell.size() == numQuadPts*numVarsQuadPt);
-  assert(_elasticConstsCell.size() == numQuadPts*_numElasticConsts);
-  assert(_initialStressCell.size() == numQuadPts*_tensorSize);
-  assert(_initialStrainCell.size() == numQuadPts*_tensorSize);
+  assert(_propertiesCell.size() == size_t(numQuadPts*numPropsQuadPt));
+  assert(_stateVarsCell.size() == size_t(numQuadPts*numVarsQuadPt));
+  assert(_elasticConstsCell.size() == size_t(numQuadPts*_numElasticConsts));
+  assert(_initialStressCell.size() == size_t(numQuadPts*_tensorSize));
+  assert(_initialStrainCell.size() == size_t(numQuadPts*_tensorSize));
 
   // Get cells associated with material
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
@@ -369,13 +365,12 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
 
   const int numQuadPts = _numQuadPts;
   const int numPropsQuadPt = _numPropsQuadPt;
-  const int tensorSize = _tensorSize;
   const int numVarsQuadPt = _numVarsQuadPt;
-  assert(_propertiesCell.size() == numQuadPts*numPropsQuadPt);
-  assert(_stateVarsCell.size() == numQuadPts*numVarsQuadPt);
-  assert(_elasticConstsCell.size() == numQuadPts*_numElasticConsts);
-  assert(_initialStressCell.size() == numQuadPts*_tensorSize);
-  assert(_initialStrainCell.size() == numQuadPts*_tensorSize);
+  assert(_propertiesCell.size() == size_t(numQuadPts*numPropsQuadPt));
+  assert(_stateVarsCell.size() == size_t(numQuadPts*numVarsQuadPt));
+  assert(_elasticConstsCell.size() == size_t(numQuadPts*_numElasticConsts));
+  assert(_initialStressCell.size() == size_t(numQuadPts*_tensorSize));
+  assert(_initialStrainCell.size() == size_t(numQuadPts*_tensorSize));
 
   // Get cells associated with material
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
@@ -415,7 +410,6 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
 
   const int spaceDim = quadrature->spaceDim();
   const int numBasis = quadrature->numBasis();
-  const int numCorners = quadrature->refGeometry().numCorners();
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
@@ -567,7 +561,6 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mes
   const int numQuadPts = quadrature->numQuadPts();
   const int spaceDim = quadrature->spaceDim();
   const int numBasis = quadrature->numBasis();
-  const int numCorners = quadrature->refGeometry().numCorners();
 
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();assert(cs);
 
@@ -695,7 +688,6 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(const topology::Mes
   const int numQuadPts = quadrature->numQuadPts();
   const int spaceDim = quadrature->spaceDim();
   const int numBasis = quadrature->numBasis();
-  const int numCorners = quadrature->refGeometry().numCorners();
 
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();assert(cs);
 
@@ -760,7 +752,6 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(const topology::Mes
   
   assert(_normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
-  const PylithScalar pressureScale = _normalizer->pressureScale();
     
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
