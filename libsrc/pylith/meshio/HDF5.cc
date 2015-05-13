@@ -282,6 +282,7 @@ pylith::meshio::HDF5::getGroupDatasets(string_vector* names,
     names->resize(gsize);
     for (int i=0, index=0; i < gsize; ++i) {
       char buffer[256];
+      ssize_t namelen = H5Lget_name_by_idx(group, ".", H5_INDEX_NAME, H5_ITER_NATIVE, i, buffer, 256, H5P_DEFAULT);assert(namelen > 0);
       (*names)[index++] = buffer;
     } // for
     
