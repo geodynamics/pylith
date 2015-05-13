@@ -30,8 +30,8 @@ pylith::materials::MaterialNew::dimension(void) const {
 // Set database for auxiliary fields.
 inline
 void
-pylith::materials::MaterialNew::dbAuxFields(spatialdata::spatialdb::SpatialDB* value) {
-  _dbAuxFields = value;
+pylith::materials::MaterialNew::auxFieldsDB(spatialdata::spatialdb::SpatialDB* value) {
+  _auxFieldsDB = value;
 }
 
 // Set identifier of material.

@@ -77,34 +77,6 @@ protected :
   _setFEKernels(const topology::Field& field,
 		const PetscDS prob) const;
 
-  /** Compute properties from values in spatial database.
-   *
-   * @param auxValues Array of auxiliary values.
-   * @param numAuxValues Number of auxiliary values.
-   * @param dbValues Array of database values.
-   */
-  void _dbToAuxFields(PylithScalar const auxValues[],
-		      const int numAuxValues,
-		      const scalar_array& dbValues) const;
-  
-  /** Nondimensionalize auxiliary fields. Nondimensionalization is
-   * done in place (no copy).
-   *
-   * @param values Array of values.
-   * @param nvalues Number of values.
-   */
-  void _nondimAuxFields(PylithScalar const values[],
-			const int nvalues) const;
-  
-  /** Dimensionalize auxiliary fields. Dimensionalization is done in
-   * place (no copy).
-   *
-   * @param values Array of values.
-   * @param nvalues Number of values.
-   */
-  void _dimAuxFields(PylithScalar const values[],
-		     const int nvalues) const;
-
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 

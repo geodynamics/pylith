@@ -59,6 +59,8 @@ namespace pylith {
     
     class IsotropicLinearElasticityPlaneStrain;
 
+    class Query;
+
   } // materials
 } // pylith
 

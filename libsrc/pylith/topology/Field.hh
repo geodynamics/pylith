@@ -59,6 +59,8 @@
  */
 class pylith::topology::Field : public FieldBase
 { // Field
+  friend class FieldQuery; // Fill field using data.
+
   friend class TestFieldMesh; // unit testing
   friend class TestFieldSubMesh; // unit testing
 
@@ -537,9 +539,9 @@ private :
   const Mesh& _mesh; ///< Mesh associated with section.
   scatter_map_type _scatters; ///< Collection of scatters.
 
-  PetscDM _dm; ///< Manages the PetscSection
-  PetscVec _globalVec; ///< Global PETSc vector
-  PetscVec _localVec; ///< Local PETSc vector
+  PetscDM _dm; ///< Manages the PetscSection.
+  PetscVec _globalVec; ///< Global PETSc vector.
+  PetscVec _localVec; ///< Local PETSc vector.
   subfields_type _subfields; ///< Map of subfields bundled together.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////

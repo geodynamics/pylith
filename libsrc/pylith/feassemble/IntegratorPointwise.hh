@@ -150,14 +150,8 @@ protected :
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
-  /// The DM for solution fields
-  PetscDM _dm;
-
   /// Auxiliary fields for this problem
   topology::Field *_auxFields;
-
-  /// The DM for auxiliary fields
-  PetscDM _dmAux;
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

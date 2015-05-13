@@ -54,6 +54,7 @@ subpkginclude_HEADERS = \
 	MaterialNew.hh \
 	MaterialNew.icc \
 	IsotropicLinearElasticityPlaneStrain.hh \
+	Query.hh \
 	materialsfwd.hh
 
 

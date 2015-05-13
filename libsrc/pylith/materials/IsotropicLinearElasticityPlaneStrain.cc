@@ -20,7 +20,10 @@
 
 #include "IsotropicLinearElasticityPlaneStrain.hh" // implementation of object methods
 
+#include "pylith/materials/Query.hh" // USES Query
+
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
+#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -72,12 +75,8 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::useBodyForce(const bool
 void
 pylith::materials::IsotropicLinearElasticityPlaneStrain::preinitialize(const topology::Mesh& mesh)
 { // preinitialize
-  
-  
+  PYLITH_METHOD_BEGIN;
 
-  // Set db values.
-  // :TODO: ADD STUFF HERE, values depend on _useInertia, _useBodyForce
-  
   // Set subfields in auxiliary fields.
   assert(_normalizer);
   const PylithReal densityScale = _normalizer->densityScale();
@@ -86,6 +85,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::preinitialize(const top
   const PylithReal timeScale = _normalizer->timeScale();
   const PylithReal forceScale = densityScale * lengthScale / (timeScale * timeScale);
 
+  // IMPORTANT: The order here must match the order of the auxiliary fields in the FE kernels.
   delete _auxFields; _auxFields = new topology::Field(mesh);assert(_auxFields);
   _auxFields->subfieldAdd("density", 1, topology::Field::SCALAR, densityScale);
   _auxFields->subfieldAdd("mu", 1, topology::Field::SCALAR, pressureScale);
@@ -93,6 +93,17 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::preinitialize(const top
   if (_useBodyForce) {
     _auxFields->subfieldAdd("body_force", dimension(), topology::Field::VECTOR, forceScale);
   } // if
+
+  // Order does not matter.
+  delete _auxFieldsQuery; _auxFieldsQuery = new topology::FieldQuery();assert(_auxFieldsQuery);
+  //_auxFieldsQuery->setQuery("density", pylith_materials_dbQueryDensity2D);
+  _auxFieldsQuery->setQuery("mu", pylith::materials::Query::dbQueryMu2D);
+  //_auxFieldsQuery.setQuery("lambda", pylith_materials_dbQueryLambda2D);
+  if (_useBodyForce) {
+    //_auxFieldsQuery.setQuery("body_force", pylith_materials_dbQueryBodyForce2D);
+  } // if
+
+  PYLITH_METHOD_END;
 } // preinitialize
 
 // ----------------------------------------------------------------------
@@ -101,6 +112,8 @@ void
 pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernels(const topology::Field& field,
 								       const PetscDS prob) const
 { // _setFEKernels
+  PYLITH_METHOD_BEGIN;
+
   const topology::Field::SubfieldInfo& dispInfo = field.subfieldInfo("disp");
   const topology::Field::SubfieldInfo& velInfo = field.subfieldInfo("vel");
   const PetscInt disp = dispInfo.index;
@@ -141,39 +154,8 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernels(const top
   err = PetscDSSetJacobian(prob, vel, disp, g0_veldisp, g1_veldisp, g2_veldisp, g3_veldisp);PYLITH_CHECK_ERROR(err);
   err = PetscDSSetJacobian(prob, vel, vel, g0_velvel, g1_velvel, g2_velvel, g3_velvel);PYLITH_CHECK_ERROR(err);
 
+  PYLITH_METHOD_END;
 } // _setFEKernels
-
-// ----------------------------------------------------------------------
-// Compute properties from values in spatial database.
-void
-pylith::materials::IsotropicLinearElasticityPlaneStrain::_dbToAuxFields(PylithScalar const auxValues[],
-									const int numAuxValues,
-									const scalar_array& dbValues) const
-{ // _dbToAuxFields
-  // :TODO: ADD STUFF HERE, values depend on _useInertia, _useBodyForce
-} // _dbToaAuxFields
-  
-// ----------------------------------------------------------------------
-// Nondimensionalize auxiliary fields. Nondimensionalization is done
-// in place (no copy).
-void
-pylith::materials::IsotropicLinearElasticityPlaneStrain::_nondimAuxFields(PylithScalar const values[],
-									  const int nvalues) const
-{ // _nondimAuxFields
-  // :TODO: ADD STUFF HERE, use scales in _auxFields
-  // Can we move this to Material?
-} // _nondimAuxFields
-  
-// ----------------------------------------------------------------------
-// Dimensionalize auxiliary fields. Dimensionalization is done in
-// place (no copy).
-void
-pylith::materials::IsotropicLinearElasticityPlaneStrain::_dimAuxFields(PylithScalar const values[],
-								       const int nvalues) const
-{ // _dimAuxFields
-  // :TODO: ADD STUFF HERE, use scales in _auxFields
-  // Can we move this to Material?
-} // _dimAuxFields
 
 
 // End of file 

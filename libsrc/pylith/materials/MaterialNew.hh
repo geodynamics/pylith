@@ -110,60 +110,24 @@ public :
    *
    * @param value Pointer to database.
    */
-  void dbAuxFields(spatialdata::spatialdb::SpatialDB* value);
-
-  // PROTECTED METHODS //////////////////////////////////////////////////
-protected :
-
-  /// Initialize auxiliary fields using spatial database.
-  void _initializeAuxFieldsFromDB(void);   
-
-  /** Nondimensionalize auxiliary fields. Nondimensionalization is
-   * done in place (no copy).
-   *
-   * @param values Array of values.
-   * @param nvalues Number of values.
-   */
-  void _nondimAuxFields(PylithScalar const values[],
-			const int nvalues) const;
-
-  /** Dimensionalize auxiliary fields. Dimensionalization is done in
-   * place (no copy).
-   *
-   * @param values Array of values.
-   * @param nvalues Number of values.
-   */
-  void _dimAuxFields(PylithScalar const values[],
-		     const int nvalues) const;
-
-  /** Compute properties from values in spatial database.
-   *
-  // --------------------------------------------------------------------
-  // These methods should be implemented by every constitutive model.
-  // --------------------------------------------------------------------
-
-   * @param auxValues Array of auxiliary values.
-   * @param numAuxValues Number of auxiliary values.
-   * @param dbValues Array of database values.
-   */
-  virtual
-  void _dbToAuxFields(PylithScalar const auxValues[],
-		      const int numAuxValues,
-		      const scalar_array& dbValues) const = 0;
+  void auxFieldsDB(spatialdata::spatialdb::SpatialDB* value);
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
   topology::StratumIS* _materialIS; ///< Index set for material cells.
 
-  const int _dimension; ///< Spatial dimension of material.
+  /// Database of values for auxiliary fields.
+  spatialdata::spatialdb::SpatialDB* _auxFieldsDB;
+
+  /// Set auxiliary fields via query.
+  topology::FieldQuery* _auxFieldsQuery;
+
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
-  /// Database of parameters for physical properties of material.
-  spatialdata::spatialdb::SpatialDB* _dbAuxFields;
-
+  const int _dimension; ///< Spatial dimension of material.
   int _id; ///< Material identifier.
   std::string _label; ///< Label of material.
 

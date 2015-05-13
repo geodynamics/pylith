@@ -112,6 +112,7 @@ libpylith_la_SOURCES = \
 	materials/DruckerPragerPlaneStrain.cc \
 	materials/MaterialNew.cc \
 	materials/IsotropicLinearElasticityPlaneStrain.cc \
+	materials/Query.cc \
 	meshio/BinaryIO.cc \
 	meshio/GMVFile.cc \
 	meshio/GMVFileAscii.cc \
@@ -145,6 +146,7 @@ libpylith_la_SOURCES = \
 	topology/MeshOps.cc \
 	topology/Field.cc \
 	topology/FieldOps.cc \
+	topology/FieldQuery.cc \
 	topology/Fields.cc \
 	topology/SolutionFields.cc \
 	topology/Distributor.cc \
