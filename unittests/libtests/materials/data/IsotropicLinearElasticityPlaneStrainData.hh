@@ -56,7 +56,7 @@ public:
   bool useBodyForce; ///< Test uses body force.
 
   int numSolnFields; ///< Number of solution fields.
-  topology::Field::Discretization* discretizations; ///< Discretizations for solution fields.
+  topology::Field::DiscretizeInfo* discretizations; ///< Discretizations for solution fields.
 
   PetscPointFunc* residualKernels;
   PetscPointJac* jacobianKernels;

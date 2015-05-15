@@ -27,6 +27,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
@@ -97,22 +98,23 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testUseBodyForce(vo
 
 
 // ----------------------------------------------------------------------
-// Test preinitialize().
+// Test auxFieldsSetup().
 void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testPreinitialize(void)
-{ // testPreinitialize
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup(void)
+{ // test_auxFieldsSetup
   PYLITH_METHOD_BEGIN;
 
   CPPUNIT_ASSERT(_material);
-
-  // Call preinitialize()
-  _material->preinitialize(*_mesh);
+  CPPUNIT_ASSERT(_mesh);
+  delete _material->_auxFields; _material->_auxFields = new topology::Field(*_mesh);CPPUNIT_ASSERT(_material->_auxFields);
+  delete _material->_auxFieldsQuery; _material->_auxFieldsQuery = new topology::FieldQuery();CPPUNIT_ASSERT(_material->_auxFieldsQuery);
+  _material->_auxFieldsSetup();
   
   // Check result
   CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
 
   PYLITH_METHOD_END;
-} // testPreinitialize
+} // test_auxFieldsSetup
 
 
 // ----------------------------------------------------------------------
@@ -132,25 +134,6 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_setFEKernels(v
 
   PYLITH_METHOD_END;
 } // test_setFEKernels
-
-
-// ----------------------------------------------------------------------
-// Test _dbToAuxFields().
-void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_dbToAuxFields(void)
-{ // test_dbToAuxFields
-  PYLITH_METHOD_BEGIN;
-
-  CPPUNIT_ASSERT(_material);
-
-  // Call _dbToAuxFields()
-  // :TODO: ADD MORE HERE
-
-  // Check result
-  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
-
-  PYLITH_METHOD_END;
-} // test_dbToAuxFields
 
 
 // IntegratorPointwise ========================================
@@ -225,8 +208,14 @@ void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testNormalizer(void)
 { // testNormalizer
   PYLITH_METHOD_BEGIN;
+  
+  spatialdata::units::Nondimensional normalizer;
+  const double scale = 5.0;
+  normalizer.lengthScale(scale);
 
-  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+  CPPUNIT_ASSERT(_material);
+  _material->normalizer(normalizer);
+  CPPUNIT_ASSERT_EQUAL(scale, _material->_normalizer->lengthScale());
 
   PYLITH_METHOD_END;
 } // testNormalizer
@@ -241,11 +230,11 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testIsJacobianSymme
 
   CPPUNIT_ASSERT(_material);
 
-  const bool flag = false; // default
+  const bool flag = true; // default
   CPPUNIT_ASSERT_EQUAL(flag, _material->isJacobianSymmetric());
 
-  // :TODO: ADD MORE HERE
-  // Does flag change based on settings?
+  _material->useInertia(true);
+  CPPUNIT_ASSERT_EQUAL(false, _material->isJacobianSymmetric());
 
   PYLITH_METHOD_END;
 } // testIsJacobianSymmetric
@@ -268,20 +257,6 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testVerifyConfigura
 
   PYLITH_METHOD_END;
 } // testVerifyConfiguration
-
-
-// ----------------------------------------------------------------------
-// Test initialize().
-void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testInitialize(void)
-{ // testInitialize
-  PYLITH_METHOD_BEGIN;
-
-  // Call 
-  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
-
-  PYLITH_METHOD_END;
-} // testInitialize
 
 
 // ----------------------------------------------------------------------
@@ -357,62 +332,95 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testLabel(void)
 
 
 // ----------------------------------------------------------------------
-// Test dbAuxFields().
+// Test initialize().
 void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testDBAuxFields(void)
-{ // testDBAuxFields
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testInitialize(void)
+{ // testInitialize
   PYLITH_METHOD_BEGIN;
+
+  // Call initialize()
+  CPPUNIT_ASSERT(_material);
+  CPPUNIT_ASSERT(_mesh);
 
   CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
 
   PYLITH_METHOD_END;
-} // testDBAuxFields
+} // testInitialize
 
 
 // ----------------------------------------------------------------------
-// Test _initializeAuxFieldsFromDB().
+// Test auxFieldsDB().
 void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_initializeAuxFieldsFromDB(void)
-{ // test_initializeAuxFieldsFromDB
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testAuxFieldsDB(void)
+{ // testAuxFieldsDB
   PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+  const std::string label = "test db";
+  spatialdata::spatialdb::SimpleDB db;
+  db.label(label.c_str());
+
+  CPPUNIT_ASSERT(_material);
+  _material->auxFieldsDB(&db);
+
+  CPPUNIT_ASSERT(_material->_auxFieldsDB);
+  CPPUNIT_ASSERT_EQUAL(label, std::string(_material->_auxFieldsDB->label()));
 
   PYLITH_METHOD_END;
-} // test_initializeAuxFieldsFromDB
+} // testAuxFieldsDB
 
 
 // ----------------------------------------------------------------------
-// Test _nondimAuxFields().
+// Test discretization().
 void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_nondimAuxFields(void)
-{ // test_nondimAuxFields
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testDiscretization(void)
+{ // testDiscretization
   PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+  const topology::FieldBase::DiscretizeInfo infoDefault = {-1, -1, true};
+  const topology::FieldBase::DiscretizeInfo infoA = {1, 2, false};
+  const topology::FieldBase::DiscretizeInfo infoB = {2, 2, true};
+  
+  CPPUNIT_ASSERT(_material);
+  _material->discretization("A", infoA);
+  _material->discretization("B", infoB);
+
+  { // A
+    const topology::FieldBase::DiscretizeInfo& test = _material->discretization("A");
+    CPPUNIT_ASSERT_EQUAL(test.basisOrder, infoA.basisOrder);
+    CPPUNIT_ASSERT_EQUAL(test.quadOrder, infoA.quadOrder);
+    CPPUNIT_ASSERT_EQUAL(test.isBasisContinuous, infoA.isBasisContinuous);
+  } // A
+
+  { // B
+    const topology::FieldBase::DiscretizeInfo& test = _material->discretization("B");
+    CPPUNIT_ASSERT_EQUAL(test.basisOrder, infoB.basisOrder);
+    CPPUNIT_ASSERT_EQUAL(test.quadOrder, infoB.quadOrder);
+    CPPUNIT_ASSERT_EQUAL(test.isBasisContinuous, infoB.isBasisContinuous);
+  } // B
+
+  { // C (default)
+    const topology::FieldBase::DiscretizeInfo& test = _material->discretization("C");
+    CPPUNIT_ASSERT_EQUAL(test.basisOrder, infoDefault.basisOrder);
+    CPPUNIT_ASSERT_EQUAL(test.quadOrder, infoDefault.quadOrder);
+    CPPUNIT_ASSERT_EQUAL(test.isBasisContinuous, infoDefault.isBasisContinuous);
+  } // C (default)
+
+  { // default
+    const topology::FieldBase::DiscretizeInfo& test = _material->discretization("default");
+    CPPUNIT_ASSERT_EQUAL(test.basisOrder, infoDefault.basisOrder);
+    CPPUNIT_ASSERT_EQUAL(test.quadOrder, infoDefault.quadOrder);
+    CPPUNIT_ASSERT_EQUAL(test.isBasisContinuous, infoDefault.isBasisContinuous);
+  } // default
 
   PYLITH_METHOD_END;
-} // test_nondimAuxFields
-
-
-// ----------------------------------------------------------------------
-// Test _dimAuxFields().
-void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_dimAuxFields(void)
-{ // test_dimAuxFields
-  PYLITH_METHOD_BEGIN;
-
-  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
-
-  PYLITH_METHOD_END;
-} // test_dimAuxFields
+} // testDiscretization
 
 
 // ----------------------------------------------------------------------
 // Initialize test data.
 void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_initialize(void)
-{ // _initialize
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_initializeMin(void)
+{ // _initializeMin
   PYLITH_METHOD_BEGIN;
 
   CPPUNIT_ASSERT(_material);
@@ -443,7 +451,32 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_initialize(void)
   _material->normalizer(normalizer);
 
   PYLITH_METHOD_END;
-} // _initialize
+} // _initializeMin
+
+
+// ----------------------------------------------------------------------
+// Initialize test data.
+void
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_initializeFull(void)
+{ // _initializeFull
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_material);
+  CPPUNIT_ASSERT(_data);
+
+  _initializeMin();
+
+  // Set auxiliary fields spatial database.
+
+  // Create solution field.
+
+#if 0 // Need to set spatial database
+  _material->initialize(*_mesh);
+#endif  
+
+
+  PYLITH_METHOD_END;
+} // _initializeFull
 
 
 // End of file 

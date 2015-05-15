@@ -35,7 +35,7 @@ namespace pylith {
       void setUp(void) {
 	TestIsotropicLinearElasticityPlaneStrain::setUp();
 	_data = new IsotropicLinearElasticityPlaneStrainData_Tri3();
-	_initialize();
+	_initializeMin();
       } // setUp
 
     }; // TestIsotropicLinearElasticityPlaneStrain_Tri3

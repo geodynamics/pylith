@@ -50,10 +50,8 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain : public CppUn
 
   CPPUNIT_TEST( testUseInertia );
   CPPUNIT_TEST( testUseBodyForce );
-
-  CPPUNIT_TEST( testPreinitialize );
+  CPPUNIT_TEST( test_auxFieldsSetup );
   CPPUNIT_TEST( test_setFEKernels );
-  CPPUNIT_TEST( test_dbToAuxFields );
 
   // Move to TestIntegratorPointwise
   CPPUNIT_TEST( testAuxFields );
@@ -63,7 +61,7 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain : public CppUn
   CPPUNIT_TEST( testIsJacobianSymmetric );
 
   CPPUNIT_TEST( testVerifyConfiguration );
-  CPPUNIT_TEST( testInitialize );
+  //CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testIntegrateResidual );
   CPPUNIT_TEST( testIntegrateJacobian );
 
@@ -71,11 +69,9 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain : public CppUn
   CPPUNIT_TEST( testDimension );
   CPPUNIT_TEST( testId );
   CPPUNIT_TEST( testLabel );
-  CPPUNIT_TEST( testDBAuxFields );
-
-  CPPUNIT_TEST( test_initializeAuxFieldsFromDB );
-  CPPUNIT_TEST( test_nondimAuxFields );
-  CPPUNIT_TEST( test_dimAuxFields );
+  CPPUNIT_TEST( testInitialize );
+  CPPUNIT_TEST( testAuxFieldsDB );
+  CPPUNIT_TEST( testDiscretization );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -89,29 +85,17 @@ public :
   /// Deallocate testing data.
   void tearDown(void);
 
-  /// Test dimension().
-  void testDimension(void);
-
-  /// Test id().
-  void testId(void);
-
-  /// Test label().
-  void testLabel(void);
-
   /// Test useInertia().
   void testUseInertia(void);
 
   /// Test useBodyForce().
   void testUseBodyForce(void);
 
-  /// Test preinitialize().
-  void testPreinitialize(void);
+  /// Test _auxFieldsSetup().
+  void test_auxFieldsSetup(void);
 
   /// Test _setFEKernels().
   void test_setFEKernels(void);
-
-  /// Test _dbToAuxFields().
-  void test_dbToAuxFields(void);
 
   // IntegratorPointwise
 
@@ -133,9 +117,6 @@ public :
   /// Test verifyConfiguration().
   void testVerifyConfiguration(void);
 
-  /// Test initialize().
-  void testInitialize(void);
-
   /// Test integrateResidual().
   void testIntegrateResidual(void);
 
@@ -144,20 +125,29 @@ public :
 
   // MaterialNew
 
-  /// Test dbAuxFields().
-  void testDBAuxFields(void);
+  /// Test dimension().
+  void testDimension(void);
 
-  /// Test _initializeAuxFieldsFromDB().
-  void test_initializeAuxFieldsFromDB(void);
+  /// Test id().
+  void testId(void);
 
-  /// Test _nondimAuxFields().
-  void test_nondimAuxFields(void);
+  /// Test label().
+  void testLabel(void);
 
-  /// Test _dimAuxFields().
-  void test_dimAuxFields(void);
+  /// Test initialize().
+  void testInitialize(void);
 
-  /// Initialize test data.
-  void _initialize(void);
+  /// Test auxFieldsDB().
+  void testAuxFieldsDB(void);
+
+  /// Test discretization().
+  void testDiscretization(void);
+
+  /// Do minimum initialization of material.
+  void _initializeMin(void);
+
+  /// Do full initialization of material.
+  void _initializeFull(void);
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
