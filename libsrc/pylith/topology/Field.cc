@@ -628,10 +628,8 @@ pylith::topology::Field::allocate(void)
   PetscSection s = NULL;
   PetscErrorCode err;
 
-  if (_dm) {
-    err = DMGetDefaultSection(_dm, &s);PYLITH_CHECK_ERROR(err);
-  } // if
-  assert(s);
+  err = DMGetDefaultSection(_dm, &s);PYLITH_CHECK_ERROR(err);assert(s);
+  err = DMSetDefaultGlobalSection(_dm, NULL);PYLITH_CHECK_ERROR(err);
   err = PetscSectionSetUp(s);PYLITH_CHECK_ERROR(err);
 
   err = VecDestroy(&_globalVec);PYLITH_CHECK_ERROR(err);
