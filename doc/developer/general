@@ -16,3 +16,7 @@ branches.
 libtests and pytests. High-level functionality should be verified
 using a full-scale test.
 
+  a. Check for memory errors using valgrind and the leakcheck target.
+
+  b. With gcc, you can check test coverage using gcov/lcov. See notes
+  in unittests/libtests/*/Makefile.am for make targets and notes.
