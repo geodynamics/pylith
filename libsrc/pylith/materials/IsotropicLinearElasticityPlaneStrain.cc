@@ -105,50 +105,57 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_auxFieldsSetup(void)
 // ----------------------------------------------------------------------
 // Set residual and Jacobian kernels.
 void
-pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernels(const topology::Field& field,
-								       const PetscDS prob) const
+pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernels(const topology::Field& field) const
 { // _setFEKernels
   PYLITH_METHOD_BEGIN;
 
-  const topology::Field::SubfieldInfo& dispInfo = field.subfieldInfo("displacement");
-  const topology::Field::SubfieldInfo& velInfo = field.subfieldInfo("velocity");
-  const PetscInt disp = dispInfo.index;
-  const PetscInt vel = velInfo.index;
+  const PetscInt i_disp = field.subfieldInfo("displacement").index;
+  const PetscInt i_vel = (_useInertia) ? field.subfieldInfo("velocity").index : -1;
 
   PetscErrorCode err;
+
+  const PetscDM dm = field.dmMesh();assert(dm);
+  PetscDS prob = NULL;
+  err = DMGetDS(dm, &prob);PYLITH_CHECK_ERROR(err);
 
   // Residual kernels
   const PetscPointFunc f0_disp = (_useInertia && _useBodyForce) ? pylith_fekernels_f0_ElasticityInertiaBodyForce : 
     (_useInertia) ? pylith_fekernels_f0_ElasticityInertia : 
     (_useBodyForce) ? pylith_fekernels_f0_ElasticityBodyForce : NULL;
   const PetscPointFunc f1_disp = pylith_fekernels_f1_IsotropicLinearElasticityPlaneStrain;
-  err = PetscDSSetResidual(prob, disp, f0_disp, f1_disp);PYLITH_CHECK_ERROR(err);
+  err = PetscDSSetResidual(prob, i_disp, f0_disp, f1_disp);PYLITH_CHECK_ERROR(err);
 
-  const PetscPointFunc f0_vel = (_useInertia) ? pylith_fekernels_f0_DispVel : NULL;
-  const PetscPointFunc f1_vel = NULL;
-  err = PetscDSSetResidual(prob, vel, f0_vel, f1_vel);PYLITH_CHECK_ERROR(err);
+  if (_useInertia) {
+    const PetscPointFunc f0_vel = pylith_fekernels_f0_DispVel;
+    const PetscPointFunc f1_vel = NULL;
+    err = PetscDSSetResidual(prob, i_vel, f0_vel, f1_vel);PYLITH_CHECK_ERROR(err);
+  } // if
 
   // Jacobian kernels
   const PetscPointJac g0_dispdisp = NULL;
   const PetscPointJac g1_dispdisp = NULL;
   const PetscPointJac g2_dispdisp = NULL;
   const PetscPointJac g3_dispdisp = pylith_fekernels_g3_uu_IsotropicLinearElasticityPlaneStrain;
-  const PetscPointJac g0_dispvel = (_useInertia) ? pylith_fekernels_g0_uv_ElasticityInertia : NULL;
-  const PetscPointJac g1_dispvel = NULL;
-  const PetscPointJac g2_dispvel = NULL;
-  const PetscPointJac g3_dispvel = NULL;
-  const PetscPointJac g0_veldisp = (_useInertia) ? pylith_fekernels_g0_vu_DispVel : NULL;
-  const PetscPointJac g1_veldisp = NULL;
-  const PetscPointJac g2_veldisp = NULL;
-  const PetscPointJac g3_veldisp = NULL;
-  const PetscPointJac g0_velvel = (_useInertia) ? pylith_fekernels_g0_vv_DispVel : NULL;
-  const PetscPointJac g1_velvel = NULL;
-  const PetscPointJac g2_velvel = NULL;
-  const PetscPointJac g3_velvel = NULL;
-  err = PetscDSSetJacobian(prob, disp, disp, g0_dispdisp, g1_dispdisp, g2_dispdisp, g3_dispdisp);PYLITH_CHECK_ERROR(err);
-  err = PetscDSSetJacobian(prob, disp, vel, g0_dispvel, g1_dispvel, g2_dispvel, g3_dispvel);PYLITH_CHECK_ERROR(err);
-  err = PetscDSSetJacobian(prob, vel, disp, g0_veldisp, g1_veldisp, g2_veldisp, g3_veldisp);PYLITH_CHECK_ERROR(err);
-  err = PetscDSSetJacobian(prob, vel, vel, g0_velvel, g1_velvel, g2_velvel, g3_velvel);PYLITH_CHECK_ERROR(err);
+  err = PetscDSSetJacobian(prob, i_disp, i_disp, g0_dispdisp, g1_dispdisp, g2_dispdisp, g3_dispdisp);PYLITH_CHECK_ERROR(err);
+  
+  if (_useInertia) {
+    const PetscPointJac g0_dispvel = pylith_fekernels_g0_uv_ElasticityInertia;
+    const PetscPointJac g1_dispvel = NULL;
+    const PetscPointJac g2_dispvel = NULL;
+    const PetscPointJac g3_dispvel = NULL;
+    const PetscPointJac g0_veldisp = pylith_fekernels_g0_vu_DispVel;
+    const PetscPointJac g1_veldisp = NULL;
+    const PetscPointJac g2_veldisp = NULL;
+    const PetscPointJac g3_veldisp = NULL;
+    const PetscPointJac g0_velvel = pylith_fekernels_g0_vv_DispVel;
+    const PetscPointJac g1_velvel = NULL;
+    const PetscPointJac g2_velvel = NULL;
+    const PetscPointJac g3_velvel = NULL;
+    
+    err = PetscDSSetJacobian(prob, i_disp, i_vel, g0_dispvel, g1_dispvel, g2_dispvel, g3_dispvel);PYLITH_CHECK_ERROR(err);
+    err = PetscDSSetJacobian(prob, i_vel, i_disp, g0_veldisp, g1_veldisp, g2_veldisp, g3_veldisp);PYLITH_CHECK_ERROR(err);
+    err = PetscDSSetJacobian(prob, i_vel, i_vel, g0_velvel, g1_velvel, g2_velvel, g3_velvel);PYLITH_CHECK_ERROR(err);
+  } // if
 
   PYLITH_METHOD_END;
 } // _setFEKernels

@@ -67,11 +67,9 @@ protected :
   /** Set residual and Jacobian kernels.
    *
    * @param field Solution field.
-   * @param prob PETSc discretization object.
    */
   void
-  _setFEKernels(const topology::Field& field,
-		const PetscDS prob) const;
+  _setFEKernels(const topology::Field& field) const;
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
