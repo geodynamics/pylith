@@ -20,13 +20,11 @@
 
 #include "IsotropicLinearElasticityPlaneStrain.hh" // implementation of object methods
 
-#include "pylith/materials/Query.hh" // USES Query
-
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
-
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
+#include "pylith/materials/Query.hh" // USES Query
 extern "C" {
 #include "pylith/fekernels/elasticity.h" // USES fekernels
 }
@@ -73,7 +71,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::useBodyForce(const bool
 // ----------------------------------------------------------------------
 // Preinitialize material. Set names/sizes of auxiliary fields.
 void
-pylith::materials::IsotropicLinearElasticityPlaneStrain::preinitialize(const topology::Mesh& mesh)
+pylith::materials::IsotropicLinearElasticityPlaneStrain::_auxFieldsSetup(void)
 { // preinitialize
   PYLITH_METHOD_BEGIN;
 
@@ -85,22 +83,20 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::preinitialize(const top
   const PylithReal timeScale = _normalizer->timeScale();
   const PylithReal forceScale = densityScale * lengthScale / (timeScale * timeScale);
 
-  // IMPORTANT: The order here must match the order of the auxiliary fields in the FE kernels.
-  delete _auxFields; _auxFields = new topology::Field(mesh);assert(_auxFields);
-  _auxFields->subfieldAdd("density", 1, topology::Field::SCALAR, densityScale);
-  _auxFields->subfieldAdd("mu", 1, topology::Field::SCALAR, pressureScale);
-  _auxFields->subfieldAdd("lambda", 1, topology::Field::SCALAR, pressureScale);
+  // :ATTENTION: The order here must match the order of the auxiliary fields in the FE kernels.
+  _auxFields->subfieldAdd("density", 1, topology::Field::SCALAR, this->discretization("density"), densityScale);
+  _auxFields->subfieldAdd("mu", 1, topology::Field::SCALAR, this->discretization("mu"), pressureScale);
+  _auxFields->subfieldAdd("lambda", 1, topology::Field::SCALAR, this->discretization("lambda"), pressureScale);
   if (_useBodyForce) {
-    _auxFields->subfieldAdd("body_force", dimension(), topology::Field::VECTOR, forceScale);
+    _auxFields->subfieldAdd("body force", dimension(), topology::Field::VECTOR, this->discretization("body force"), forceScale);
   } // if
 
   // Order does not matter.
-  delete _auxFieldsQuery; _auxFieldsQuery = new topology::FieldQuery();assert(_auxFieldsQuery);
   _auxFieldsQuery->setQuery("density", pylith::materials::Query::dbQueryDensity2D);
   _auxFieldsQuery->setQuery("mu", pylith::materials::Query::dbQueryMu2D);
   _auxFieldsQuery->setQuery("lambda", pylith::materials::Query::dbQueryLambda2D);
   if (_useBodyForce) {
-    _auxFieldsQuery->setQuery("body_force", pylith::materials::Query::dbQueryBodyForce2D);
+    _auxFieldsQuery->setQuery("body force", pylith::materials::Query::dbQueryBodyForce2D);
   } // if
 
   PYLITH_METHOD_END;
@@ -114,8 +110,8 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernels(const top
 { // _setFEKernels
   PYLITH_METHOD_BEGIN;
 
-  const topology::Field::SubfieldInfo& dispInfo = field.subfieldInfo("disp");
-  const topology::Field::SubfieldInfo& velInfo = field.subfieldInfo("vel");
+  const topology::Field::SubfieldInfo& dispInfo = field.subfieldInfo("displacement");
+  const topology::Field::SubfieldInfo& velInfo = field.subfieldInfo("velocity");
   const PetscInt disp = dispInfo.index;
   const PetscInt vel = velInfo.index;
 

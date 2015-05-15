@@ -48,6 +48,8 @@ pylith::materials::MaterialNew::MaterialNew(const int dimension) :
   _id(0),
   _label("")
 { // constructor
+  const topology::FieldBase::DiscretizeInfo defaultInfo = {-1, -1, true};
+  _auxFieldsFEInfo["default"] = defaultInfo;
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -83,19 +85,14 @@ pylith::materials::MaterialNew::initialize(const topology::Mesh& mesh)
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
   const bool includeOnlyCells = true;
   delete _materialIS; _materialIS = new topology::StratumIS(dmMesh, "material-id", _id, includeOnlyCells);assert(_materialIS);
-  //const PetscInt numCells = _materialIS->size();
-  //const PetscInt* cells = _materialIS->points();
 
   delete _auxFields; _auxFields = new topology::Field(mesh);assert(_auxFields);
-  _auxFields->label("auxiliary fields");
-
-  // :TODO: Update setup of auxiliary field
-#if 0
-  int_array cellsTmp(cells, numCells);
-  _auxFields->newSection(cellsTmp, propsFiberDim);
+  delete _auxFieldsQuery; _auxFieldsQuery = new topology::FieldQuery();assert(_auxFieldsQuery);
+  _auxFields->label("auxiliary_fields");
+  _auxFieldsSetup();
+  _auxFields->subfieldsSetup();
   _auxFields->allocate();
   _auxFields->zeroAll();
-#endif
 
   if (_auxFieldsDB) {
     assert(_normalizer);
@@ -107,6 +104,37 @@ pylith::materials::MaterialNew::initialize(const topology::Mesh& mesh)
 
   PYLITH_METHOD_END;
 } // initialize
+
+
+// ----------------------------------------------------------------------
+// Set discretization information for subfield.
+void
+pylith::materials::MaterialNew::discretization(const char* name,
+					       const pylith::topology::FieldBase::DiscretizeInfo& feInfo)
+{ // discretization
+  _auxFieldsFEInfo[name] = feInfo;
+} // discretization
+
+
+// ----------------------------------------------------------------------
+// Get discretization information for subfield.
+const pylith::topology::FieldBase::DiscretizeInfo& 
+pylith::materials::MaterialNew::discretization(const char* name) const
+{ // discretization
+  PYLITH_METHOD_BEGIN;
+
+  discretizations_type::const_iterator iter = _auxFieldsFEInfo.find(name);
+  if (iter != _auxFieldsFEInfo.end()) {
+    PYLITH_METHOD_RETURN(iter->second);
+  } else { // not found so try default
+    iter = _auxFieldsFEInfo.find("default");
+    if (iter == _auxFieldsFEInfo.end()) {
+      throw std::logic_error("Default discretization not set for auxiliary fields.");
+    } // if
+  } // if/else
+
+  PYLITH_METHOD_RETURN(iter->second); // default
+} // discretization
 
 
 // End of file 

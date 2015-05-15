@@ -65,15 +65,15 @@ public :
   struct Metadata {
     std::string label; ///< Label for field.
     VectorFieldEnum vectorFieldType; ///< Type of vector field.
-    PylithScalar scale; ///< Dimension scale associated with values.
+    PylithReal scale; ///< Dimension scale associated with values.
     bool dimsOkay; ///< Ok to replace nondimensionalized values with dimensionalized values.
   }; // Metadata
 
-  struct Discretization {
+  struct DiscretizeInfo {
     int basisOrder; ///< Order of basis functions.
     int quadOrder; ///< Order of quadrature scheme.
     bool isBasisContinuous; ///< Is basis continuous?
-  }; // Metadata
+  }; // DiscInfo
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :

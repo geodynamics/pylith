@@ -29,8 +29,9 @@
 // ----------------------------------------------------------------------
 // Create PetscFE object for discretization.
 PetscFE
-pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
+pylith::topology::FieldOps::createFE(const FieldBase::DiscretizeInfo& feinfo,
 				     const PetscDM dm,
+				     const bool isSimplex,
 				     const int numComponents)
 { // createFE
   PYLITH_METHOD_BEGIN;
@@ -45,23 +46,6 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
   int dim = 0;
   err = DMGetDimension(dm, &dim);PYLITH_CHECK_ERROR(err);
 
-  // Determine type of cell in mesh.
-  PetscBool isSimplex = PETSC_FALSE;
-  PetscInt closureSize, vStart, vEnd;
-  PetscInt* closure = NULL;
-  err = DMPlexGetDepthStratum(dm, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetTransitiveClosure(dm, 0, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-  PetscInt numVertices = 0;
-  for (PetscInt c = 0; c < closureSize*2; c+=2) {
-    if ((closure[c] >= vStart) && (closure[c] < vEnd)) {
-      ++numVertices;
-    } // if
-  } // for
-  if (numVertices == dim+1) {
-    isSimplex = PETSC_TRUE;
-  } // if
-  err = DMPlexRestoreTransitiveClosure(dm, 0, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-
   // Create space 
   PetscSpace space = NULL;
   err = PetscSpaceCreate(PetscObjectComm((PetscObject) dm), &space);PYLITH_CHECK_ERROR(err);
@@ -73,7 +57,7 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
   PetscDualSpace dualspace = NULL;
   PetscDM dmCell = NULL;
   err = PetscDualSpaceCreate(PetscObjectComm((PetscObject) dm), &dualspace);PYLITH_CHECK_ERROR(err);
-  err = PetscDualSpaceCreateReferenceCell(dualspace, dim, isSimplex, &dmCell);PYLITH_CHECK_ERROR(err);
+  err = PetscDualSpaceCreateReferenceCell(dualspace, dim, isSimplex ? PETSC_TRUE : PETSC_FALSE, &dmCell);PYLITH_CHECK_ERROR(err);
   err = PetscDualSpaceSetDM(dualspace, dmCell);PYLITH_CHECK_ERROR(err);
   err = DMDestroy(&dmCell);PYLITH_CHECK_ERROR(err);
   err = PetscDualSpaceSetOrder(dualspace, basisOrder);PYLITH_CHECK_ERROR(err);

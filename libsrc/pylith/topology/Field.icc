@@ -96,13 +96,13 @@ pylith::topology::Field::vectorFieldType(void) const {
 // Set scale for dimensionalizing field.
 inline
 void
-pylith::topology::Field::scale(const PylithScalar value) {
+pylith::topology::Field::scale(const PylithReal value) {
   _metadata.scale = value;
 }
 
 // Get scale for dimensionalizing field.
 inline
-PylithScalar
+PylithReal
 pylith::topology::Field::scale(void) const {
   return _metadata.scale;
 }

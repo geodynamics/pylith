@@ -58,16 +58,12 @@ public :
    */
   void useBodyForce(const bool value);
 
-  /** Preinitialize material. Set names/sizes of auxiliary fields.
-   *
-   * @param mesh Finite-element mesh.
-   */
-  void preinitialize(const topology::Mesh& mesh);
- 
-
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
+  /// Setup auxiliary subfields (discretization and query fns).
+  void _auxFieldsSetup(void);
+ 
   /** Set residual and Jacobian kernels.
    *
    * @param field Solution field.

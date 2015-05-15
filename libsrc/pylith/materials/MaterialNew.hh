@@ -29,8 +29,11 @@
 
 #include "pylith/feassemble/IntegratorPointwise.hh" // ISA IntegratorPointwise
 
+#include "pylith/topology/FieldBase.hh" // HASA FieldBase::DiscretizeInfo
+
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // forward declarations
 
+#include <map> // HOLDSA std::map
 #include <string> // HASA std::string
 
 // Material -------------------------------------------------------------
@@ -112,6 +115,35 @@ public :
    */
   void auxFieldsDB(spatialdata::spatialdb::SpatialDB* value);
 
+  /** Set discretization information for subfield.
+   *
+   * @param name Name of subfield.
+   * @feInfo Discretization information for subfield.
+   */
+  void discretization(const char* name,
+		      const pylith::topology::FieldBase::DiscretizeInfo& feInfo);
+
+  /** Get discretization information for subfield.
+   *
+   * @param name Name of subfield.
+   * @return Discretization information for subfield. If
+   * discretization information was not set, then use "default".
+   */
+  const pylith::topology::FieldBase::DiscretizeInfo& discretization(const char* name) const;
+
+  // PROTECTED METHODS //////////////////////////////////////////////////
+protected :
+
+  /// Setup auxiliary subfields (discretization and query fns).
+  virtual
+  void _auxFieldsSetup(void) = 0;
+
+
+  // PROTECTED TYPEDEFS /////////////////////////////////////////////////
+protected :
+
+  typedef std::map<std::string, pylith::topology::FieldBase::DiscretizeInfo> discretizations_type;
+
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
@@ -123,6 +155,8 @@ protected :
   /// Set auxiliary fields via query.
   topology::FieldQuery* _auxFieldsQuery;
 
+  /// Map from auxiliary field to discretization.
+  discretizations_type _auxFieldsFEInfo;
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

@@ -70,7 +70,7 @@ public :
   /// Subfield auxiliary information.
   struct SubfieldInfo {
     Metadata metadata; ///< Metadata for subfield.
-    Discretization fe; ///< Discretization for subfield.
+    DiscretizeInfo fe; ///< Discretization information for subfield.
     int numComponents; ///< Number of components. 
     int index; ///< Index of subfield in field.
     PetscDM dm; ///< PETSc DM associated with subfield.
@@ -153,13 +153,13 @@ public :
    *
    * @param value Scale associated with field.
    */
-  void scale(const PylithScalar value);
+  void scale(const PylithReal value);
 
   /** Get scale for dimensionalizing field.
    *
    * @returns Scale associated with field.
    */
-  PylithScalar scale(void) const;
+  PylithReal scale(void) const;
 
   /** Set flag indicating whether it is okay to dimensionalize field.
    *
@@ -309,12 +309,14 @@ public :
    * @param name Name of subfield.
    * @param numComponents Number of components in subfield.
    * @param fieldType Type of vector field.
+   * @param feInfo Discretization info for subfield.
    * @param scale Scale for dimensionalizing field.
    */
   void subfieldAdd(const char *name, 
 		   int numComponents,
 		   const VectorFieldEnum fieldType,
-		   const PylithScalar scale =1.0);
+		   const DiscretizeInfo& feInfo,
+		   const PylithReal scale =1.0);
   
   /** Setup sections for subfields.
    *

@@ -44,6 +44,7 @@ public :
    *
    * @param feinfo Discretization information for field.
    * @param dm PetscDM for finite-element mesh.
+   * @param isSimplex True if mesh contains simplex cells.
    * @param numComponents Number of components in field.
    *
    * @returns PetscFE object.
@@ -60,8 +61,9 @@ public :
    *     - number of components
    */
   static
-  PetscFE createFE(const FieldBase::Discretization& feinfo,
+  PetscFE createFE(const FieldBase::DiscretizeInfo& feinfo,
 		   const PetscDM dm,
+		   const bool isSimplex,
 		   const int numComponents);
 
 

@@ -21,6 +21,7 @@
 #include "Field.hh" // implementation of class methods
 
 #include "Mesh.hh" // USES Mesh
+#include "FieldOps.hh" // USES FieldOps
 
 #include "petscds.h" // USES PetscDS
 
@@ -1251,7 +1252,8 @@ void
 pylith::topology::Field::subfieldAdd(const char *name,
 				     int numComponents,
 				     const VectorFieldEnum fieldType,
-				     const PylithScalar scale)
+				     const DiscretizeInfo& feInfo,
+				     const PylithReal scale)
 { // subfieldAdd
   PYLITH_METHOD_BEGIN;
 
@@ -1264,6 +1266,7 @@ pylith::topology::Field::subfieldAdd(const char *name,
   info.metadata.scale = scale;
   info.metadata.dimsOkay = false;
   info.numComponents = numComponents;
+  info.fe = feInfo; // Discretization information.
   info.index = _subfields.size(); // Indices match order added.
   info.dm = NULL;
   _subfields[name] = info;
@@ -1280,37 +1283,28 @@ pylith::topology::Field::subfieldsSetup(void)
   assert(_dm);
 
   // Setup section now that we know the total number of sub-fields and components.
-  PetscInt       dim, closureSize, vStart, vEnd, numVertices = 0;
-  PetscDS        prob      = NULL;
-  PetscFE        fe        = NULL;
-  PetscSection   section   = NULL;
-  PetscInt      *closure   = NULL, c;
-  PetscBool      isSimplex = PETSC_FALSE;
+  PetscDS prob = NULL;
+  PetscSection section = NULL;
   PetscErrorCode err;
 
-  err = DMGetDimension(_dm, &dim);PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetDepthStratum(_dm, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetTransitiveClosure(_dm, 0, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-  for (c = 0; c < closureSize*2; ++c) if ((closure[c] >= vStart) && (closure[c] < vEnd)) ++numVertices;
-  if (numVertices == dim+1) isSimplex = PETSC_TRUE;
-  err = DMPlexRestoreTransitiveClosure(_dm, 0, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+  const PylithInt numSubfields = _subfields.size();
   err = DMGetDS(_dm, &prob);PYLITH_CHECK_ERROR(err);
   err = DMGetDefaultSection(_dm, &section);PYLITH_CHECK_ERROR(err);assert(section);
-  err = PetscSectionSetNumFields(section, _subfields.size());PYLITH_CHECK_ERROR(err);
-  err = DMSetNumFields(_dm, _subfields.size());PYLITH_CHECK_ERROR(err);
-  for(std::map<std::string, SubfieldInfo>::const_iterator f_iter = _subfields.begin(); f_iter != _subfields.end(); ++f_iter) {
-    PetscObject fobj;
-    const PetscInt index = f_iter->second.index;
-    err = PetscSectionSetFieldName(section, index, f_iter->first.c_str());PYLITH_CHECK_ERROR(err);
-    err = PetscSectionSetFieldComponents(section, index, f_iter->second.numComponents);PYLITH_CHECK_ERROR(err);
-    err = DMGetField(_dm, index, &fobj);PYLITH_CHECK_ERROR(err);assert(section);
-    err = PetscObjectSetName(fobj, f_iter->first.c_str());PYLITH_CHECK_ERROR(err);
+  err = PetscSectionSetNumFields(section, numSubfields);PYLITH_CHECK_ERROR(err);
+  err = DMSetNumFields(_dm, numSubfields);PYLITH_CHECK_ERROR(err);
 
-    std::string prefix = f_iter->first+"_";
-    /* TODO Use 0 for components of lagrange until subsetting works correctly */
-    err = PetscFECreateDefault(_dm, dim, index ? 0 : f_iter->second.numComponents, isSimplex, prefix.c_str(), -1, &fe);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectSetName((PetscObject) fe, f_iter->first.c_str());PYLITH_CHECK_ERROR(err);
-    err = PetscDSSetDiscretization(prob, index, (PetscObject) fe);PYLITH_CHECK_ERROR(err);
+  for(subfields_type::const_iterator s_iter = _subfields.begin(); s_iter != _subfields.end(); ++s_iter) {
+    PetscObject sobj;
+    const char* sname = s_iter->first.c_str();
+    const SubfieldInfo& sinfo = s_iter->second;
+    err = PetscSectionSetFieldName(section, sinfo.index, sname);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionSetFieldComponents(section, sinfo.index, sinfo.numComponents);PYLITH_CHECK_ERROR(err);
+    err = DMGetField(_dm, sinfo.index, &sobj);PYLITH_CHECK_ERROR(err);assert(section);
+    err = PetscObjectSetName(sobj, sname);PYLITH_CHECK_ERROR(err);
+
+    PetscFE fe = FieldOps::createFE(sinfo.fe, _dm, _mesh.isSimplex(), sinfo.numComponents);
+    err = PetscObjectSetName((PetscObject) fe, sname);PYLITH_CHECK_ERROR(err);
+    err = PetscDSSetDiscretization(prob, sinfo.index, (PetscObject) fe);PYLITH_CHECK_ERROR(err);
     err = PetscFEDestroy(&fe);PYLITH_CHECK_ERROR(err);
   } // for
   err = PetscDSSetUp(prob);PYLITH_CHECK_ERROR(err);
