@@ -84,13 +84,6 @@ pylith::topology::MeshOps::checkTopology(const Mesh& mesh)
 { // checkTopology
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
 
-  const int cellDim = mesh.dimension();
-  const int numCorners = mesh.numCorners();
-  PetscBool isSimplexMesh = PETSC_TRUE;
-  if ((cellDim == 2 && numCorners == 4) ||
-      (cellDim == 3 && numCorners == 8)) {
-    isSimplexMesh = PETSC_FALSE;
-  } // if
   DMLabel subpointMap;
   PetscErrorCode ierr = DMPlexGetSubpointMap(dmMesh, &subpointMap);PYLITH_CHECK_ERROR(ierr);
   PetscInt cellHeight = subpointMap ? 1 : 0;
@@ -99,8 +92,38 @@ pylith::topology::MeshOps::checkTopology(const Mesh& mesh)
   err = DMViewFromOptions(dmMesh, "pylith_check_", "-dm_view");PYLITH_CHECK_ERROR(err);
   err = DMPlexCheckSymmetry(dmMesh);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh associated with symmetry of adjacency information.");
 
-  err = DMPlexCheckSkeleton(dmMesh, isSimplexMesh, cellHeight);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh cells.");
+  err = DMPlexCheckSkeleton(dmMesh, mesh.isSimplex() ? PETSC_TRUE : PETSC_FALSE, cellHeight);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh cells.");
 } // checkTopology
+
+
+// ----------------------------------------------------------------------
+bool
+pylith::topology::MeshOps::isSimplexMesh(const Mesh& mesh)
+{ // isSimplexMesh
+  PYLITH_METHOD_BEGIN;
+
+  bool isSimplex = false;
+
+  const PetscDM dm = mesh.dmMesh();
+  PetscInt closureSize, vStart, vEnd;
+  PetscInt* closure = NULL;
+  PetscErrorCode err;
+  const int dim = mesh.dimension();
+  err = DMPlexGetDepthStratum(dm, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
+  err = DMPlexGetTransitiveClosure(dm, 0, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+  PetscInt numVertices = 0;
+  for (PetscInt c = 0; c < closureSize*2; c+=2) {
+    if ((closure[c] >= vStart) && (closure[c] < vEnd)) {
+      ++numVertices;
+    } // if
+  } // for
+  if (numVertices == dim+1) {
+    isSimplex = PETSC_TRUE;
+  } // if
+  err = DMPlexRestoreTransitiveClosure(dm, 0, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+  
+  PYLITH_METHOD_RETURN(isSimplex);
+} // isSimplexMesh
 
 
 // ----------------------------------------------------------------------

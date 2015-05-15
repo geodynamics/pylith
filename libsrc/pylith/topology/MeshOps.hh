@@ -68,6 +68,13 @@ public :
   static
   void checkTopology(const Mesh& mesh);
 
+  /** Determine is mesh contains simplex cells (i.e., line, tri, tet).
+   * 
+   * @returns True if mesh contains simplex cells.
+   */
+  static
+  bool isSimplexMesh(const Mesh& mesh);
+
   /** Check to make sure material id of every cell matches the id of
    *  one of the materials.
    *

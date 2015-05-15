@@ -31,22 +31,6 @@ pylith::topology::Mesh::dmMesh(void) const {
 }
 
 // ----------------------------------------------------------------------
-// Set DMPlex mesh.
-inline
-void
-pylith::topology::Mesh::dmMesh(PetscDM dm,
-			       const char* label) {
-  PYLITH_METHOD_BEGIN;
-
-  PetscErrorCode err;
-  err = DMDestroy(&_dmMesh);PYLITH_CHECK_ERROR(err);
-  _dmMesh = dm;
-  err = PetscObjectSetName((PetscObject) _dmMesh, label);PYLITH_CHECK_ERROR(err);
-
-  PYLITH_METHOD_END;
-}
-
-// ----------------------------------------------------------------------
 // Get point type sizes.
 inline
 void
@@ -176,6 +160,15 @@ pylith::topology::Mesh::numCells(void) const {
   } // if
 
   PYLITH_METHOD_RETURN(ncells);
+}
+
+
+// ----------------------------------------------------------------------
+// Is mesh composed of simplex cells?
+inline
+bool
+pylith::topology::Mesh::isSimplex(void) const {
+  return _isSimplex;
 }
 
 #endif

@@ -59,7 +59,8 @@ pylith::topology::Mesh::Mesh(const int dim,
   _numLagrangeVertices(0),
   _coordsys(0),
   _debug(false),
-  _isSubMesh(false)
+  _isSubMesh(false),
+  _isSimplex(true)
 { // constructor
   PYLITH_METHOD_BEGIN;
 
@@ -160,6 +161,23 @@ pylith::topology::Mesh::deallocate(void)
   PYLITH_METHOD_END;
 } // deallocate
   
+// ----------------------------------------------------------------------
+// Set DMPlex mesh.
+void
+pylith::topology::Mesh::dmMesh(PetscDM dm,
+			       const char* label) {
+  PYLITH_METHOD_BEGIN;
+
+  PetscErrorCode err;
+  err = DMDestroy(&_dmMesh);PYLITH_CHECK_ERROR(err);
+  _dmMesh = dm;
+  err = PetscObjectSetName((PetscObject) _dmMesh, label);PYLITH_CHECK_ERROR(err);
+
+  _isSimplex = MeshOps::isSimplexMesh(*this);
+
+  PYLITH_METHOD_END;
+}
+
 // ----------------------------------------------------------------------
 // Set coordinate system.
 void

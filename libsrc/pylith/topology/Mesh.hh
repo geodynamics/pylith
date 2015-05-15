@@ -162,6 +162,12 @@ public :
    */
   int numCells(void) const;
 
+  /** Is mesh composed of simplex cells?
+   *
+   * @returns Number of cells in mesh.
+   */
+  bool isSimplex(void) const;
+
   /** Get MPI communicator associated with mesh.
    *
    * @returns MPI communicator.
@@ -214,6 +220,7 @@ private :
   spatialdata::geocoords::CoordSys* _coordsys; ///< Coordinate system.
   bool _debug; ///< Debugging flag for mesh.
   const bool _isSubMesh; ///< True if mesh is a submesh of another mesh.
+  bool _isSimplex; ///< True if mesh has simplex cells (line, tri, tet).
   
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
