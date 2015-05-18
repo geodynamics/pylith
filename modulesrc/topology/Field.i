@@ -163,6 +163,7 @@ namespace pylith {
       void subfieldAdd(const char *name, 
 		       int numComponents,
 		       const VectorFieldEnum fieldType,
+		       const DiscretizeInfo& feInfo,
 		       const PylithScalar scale =1.0);
 
       /** Setup sections for subfields.

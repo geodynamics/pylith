@@ -47,6 +47,15 @@ namespace pylith {
 	CELLS_FIELD=1, ///< FieldBase over cells.
       }; // DomainEnum
 
+// PUBLIC STRUCTS ///////////////////////////////////////////////////////
+public :
+
+  struct DiscretizeInfo {
+    int basisOrder; ///< Order of basis functions.
+    int quadOrder; ///< Order of quadrature scheme.
+    bool isBasisContinuous; ///< Is basis continuous?
+  }; // DiscInfo
+
       // PUBLIC MEMBERS /////////////////////////////////////////////////
     public :
 
