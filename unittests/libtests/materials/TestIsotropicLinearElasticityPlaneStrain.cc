@@ -339,8 +339,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testInitialize(void
   PYLITH_METHOD_BEGIN;
 
   // Call initialize()
-  CPPUNIT_ASSERT(_material);
-  CPPUNIT_ASSERT(_mesh);
+  _initializeFull();
 
   CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
 
@@ -463,16 +462,27 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_initializeFull(voi
 
   CPPUNIT_ASSERT(_material);
   CPPUNIT_ASSERT(_data);
+  CPPUNIT_ASSERT(_mesh);
 
   _initializeMin();
 
   // Set auxiliary fields spatial database.
+  delete _db; _db = new spatialdata::spatialdb::SimpleDB;CPPUNIT_ASSERT(_db);
+  spatialdata::spatialdb::SimpleIOAscii dbIO;
+  dbIO.filename(_data->filenameAuxFieldsDB);
+  _db->ioHandler(&dbIO);
+  _material->auxFieldsDB(_db);
 
   // Create solution field.
+  delete _solution; _solution = new pylith::topology::Field(*_mesh);
+  CPPUNIT_ASSERT(_data->discretizations);
+  _solution->subfieldAdd("displacement", _data->dimension, topology::Field::VECTOR, _data->discretizations[0], _data->lengthScale);
+  if (_data->useInertia) {
+    const PylithReal velocityScale = _data->lengthScale / _data->timeScale;
+    _solution->subfieldAdd("velocity", _data->dimension, topology::Field::VECTOR, _data->discretizations[1], velocityScale);
+  } // if
 
-#if 0 // Need to set spatial database
   _material->initialize(*_mesh);
-#endif  
 
 
   PYLITH_METHOD_END;

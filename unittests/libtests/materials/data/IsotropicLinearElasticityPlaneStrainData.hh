@@ -58,6 +58,8 @@ public:
   int numSolnFields; ///< Number of solution fields.
   topology::Field::DiscretizeInfo* discretizations; ///< Discretizations for solution fields.
 
+  char* filenameAuxFieldsDB; ///< Name of file with data for auxFieldsDB.
+
   PetscPointFunc* residualKernels;
   PetscPointJac* jacobianKernels;
 
@@ -73,18 +75,14 @@ public:
 
   // :TODO: Add spatial database values for testing _dbToAuxFields()
 
-  // :TODO: Add data for _nondimAuxFields(), _dimAuxFields().
-  // :TODO: Add dimensionalized auxiliary field data.
-  // :TODO: Add nondimensionalized auxiliary field data.
-
   // :TODO: Add verified data for integrateResidual(), integrateJacobian(), updateStateVars()
   // :TODO: Add residual data
   // :TODO: Add Jacobian data
 
-  PylithScalar lengthScale; ///< Length scale for nondimensionalization.
-  PylithScalar timeScale; ///< Time scale for nondimensionalization.
-  PylithScalar pressureScale; ///< Pressure scale for nondimensionalization.
-  PylithScalar densityScale; ///< Density scale for nondimensionalization.
+  PylithReal lengthScale; ///< Length scale for nondimensionalization.
+  PylithReal timeScale; ///< Time scale for nondimensionalization.
+  PylithReal pressureScale; ///< Pressure scale for nondimensionalization.
+  PylithReal densityScale; ///< Density scale for nondimensionalization.
 
 };
 

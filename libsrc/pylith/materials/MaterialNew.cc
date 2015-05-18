@@ -93,6 +93,7 @@ pylith::materials::MaterialNew::initialize(const topology::Mesh& mesh)
   _auxFields->subfieldsSetup();
   _auxFields->allocate();
   _auxFields->zeroAll();
+  _auxFields->view("AUX FIELDS"); // :TEMPORARY: Debugging
 
   if (_auxFieldsDB) {
     assert(_normalizer);

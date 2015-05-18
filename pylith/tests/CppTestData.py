@@ -178,7 +178,7 @@ class CppTestData(object):
       if array['values'] is None:
         fileOut.write("  static const %s* %s;\n\n" % (array['type'], array['name']))
       else:
-        fileOut.write("  static const %s %s[];\n\n" % (array['type'], array['name']))
+        fileOut.write("  static const %s %s[%d];\n\n" % (array['type'], array['name'], len(array['values'])))
 
     # Write class closing
     fileOut.write("};\n\n")
@@ -228,8 +228,8 @@ class CppTestData(object):
         cppformat = "const %s* %s::%s::%s = NULL;\n\n"
         fileOut.write(cppformat % (array['type'], "::".join(self.namespace), self.objname, array['name']))
       else:
-        cppformat = "const %s %s::%s::%s[] = {\n"
-        fileOut.write(cppformat % (array['type'], "::".join(self.namespace), self.objname, array['name']))
+        cppformat = "const %s %s::%s::%s[%d] = {\n"
+        fileOut.write(cppformat % (array['type'], "::".join(self.namespace), self.objname, array['name'], len(array['values'])))
         icol = 0
         for value in numpy.ravel(array['values']):
           cppformat = "%s," % array['format']

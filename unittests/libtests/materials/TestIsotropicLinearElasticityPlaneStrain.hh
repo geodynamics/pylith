@@ -32,6 +32,8 @@
 #include "pylith/materials/materialsfwd.hh" // forward declarations
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 
+#include "spatialdata/spatialdb/SpatialDB.hh" // HOLDSA SpatialDB
+
 /// Namespace for pylith package
 namespace pylith {
   namespace materials {
@@ -157,7 +159,8 @@ protected :
 
   // MaterialNew
   topology::Mesh* _mesh; ///< Finite-element mesh.
-
+  topology::Field* _solution; ///< Solution field
+  spatialdata::spatialdb::SimpleDB* _db; ///< Spatial database with data for auxiliary fields.
 
 }; // class TestIsotropicLinearElasticityPlaneStrain
 

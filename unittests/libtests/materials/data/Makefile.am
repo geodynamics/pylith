@@ -20,7 +20,8 @@ dist_noinst_DATA = \
 	matinitialize.spatialdb \
 	matstress.spatialdb \
 	matstrain.spatialdb \
-	tri3.mesh
+	tri3.mesh \
+	mat_elastic.spatialdb
 
 noinst_TMP =
 

@@ -55,11 +55,12 @@ class ElasticityApp(CppTestData):
     "pylith_fekernels_g3_uu_IsotropicLinearElasticityPlaneStrain", # g3
   ]
   
-  discretizationOrder = ["basisOrder", "quadOrder", "isContinuous"]
-  discretizations = [
-      {"basisOrder": 1, "quadOrder": 1, "isBasisContinuous": True}, # displacement
+  discretizations = [ # basisOrder, quadOrder, isBasisContinuous
+      "{1, 1, true}", # displacement
   ]
   
+  filenameAuxFieldsDB = "data/matinitialize.spatialdb"
+
   lengthScale = 1000.0
   timeScale = 2.0
   pressureScale = 2.25e+10
@@ -88,13 +89,16 @@ class ElasticityApp(CppTestData):
     self._addArray("PetscPointFunc", "_residualKernels", self.residualKernels, "  %s")
     self._addArray("PetscPointJac", "_jacobianKernels", self.jacobianKernels, "  %s")
 
-    self._addScalar("int", "_numSolnFields", len(self.discretizations), "%d")
-    #self._addStructArray("topology::Field::DiscretizeInfo", "discretizations", self.discretizations, self.discretizationOrder)
+    self._addScalar("char*", "_filenameAuxFieldsDB", self.filenameAuxFieldsDB, "\"%s\"")
 
-    self._addScalar("PylithScalar", "_lengthScale", self.lengthScale, "%16.8e")
-    self._addScalar("PylithScalar", "_timeScale", self.timeScale, "%16.8e")
-    self._addScalar("PylithScalar", "_densityScale", self.densityScale, "%16.8e")
-    self._addScalar("PylithScalar", "_pressureScale", self.pressureScale, "%16.8e")
+
+    self._addScalar("int", "_numSolnFields", len(self.discretizations), "%d")
+    self._addArray("pylith::topology::Field::DiscretizeInfo", "_discretizations", self.discretizations, "  %s")
+
+    self._addScalar("PylithReal", "_lengthScale", self.lengthScale, "%16.8e")
+    self._addScalar("PylithReal", "_timeScale", self.timeScale, "%16.8e")
+    self._addScalar("PylithReal", "_densityScale", self.densityScale, "%16.8e")
+    self._addScalar("PylithReal", "_pressureScale", self.pressureScale, "%16.8e")
 
     return
 

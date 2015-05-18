@@ -29,6 +29,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrainData::IsotropicLinearElas
   useBodyForce(false),
   numSolnFields(0),
   discretizations(NULL),
+  filenameAuxFieldsDB(NULL),
   residualKernels(NULL),
   jacobianKernels(NULL),
   numAuxFields(0),
