@@ -932,6 +932,10 @@ pylith::materials::TestElasticMaterial::_initialize(topology::Mesh* mesh,
   
   material->initialize(*mesh, &quadrature);
 
+  material->dbProperties(NULL); // Falling out of scope
+  material->dbInitialStress(NULL);
+  material->dbInitialStrain(NULL);
+
   PYLITH_METHOD_END;
 } // _initialize
 
