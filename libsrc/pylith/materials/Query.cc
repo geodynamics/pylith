@@ -23,6 +23,7 @@
 #include "pylith/topology/FieldQuery.hh" // USES DBQueryContext
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
+#include <iostream>
 // ----------------------------------------------------------------------
 // Query spatial database for density in 2-D.
 void
@@ -68,6 +69,7 @@ pylith::materials::Query::dbQueryDensity2D(const PetscReal x[],
     for (int i=0; i < _dim; ++i)
       msg << "  " << xDim[i];
     msg << ") in using spatial database '" << queryctx->db->label() << "'.";
+    std::cout << "MSG: "<< msg.str() << std::endl;
     throw std::runtime_error(msg.str());
   } // if
   
