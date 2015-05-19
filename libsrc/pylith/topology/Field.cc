@@ -71,6 +71,8 @@ pylith::topology::Field::Field(const Mesh& mesh) :
       err = PetscSectionDestroy(&newCoordSection);PYLITH_CHECK_ERROR(err);
       err = DMSetCoordinatesLocal(_dm, coordVec);PYLITH_CHECK_ERROR(err);
     } // if
+
+    // :TEMPORARY: These 3 lines go away once we have everything converted to using PetscDS.
     err = PetscSectionCreate(mesh.comm(), &s);PYLITH_CHECK_ERROR(err);
     err = DMSetDefaultSection(_dm, s);PYLITH_CHECK_ERROR(err);
     err = PetscSectionDestroy(&s);PYLITH_CHECK_ERROR(err);
@@ -1285,21 +1287,14 @@ pylith::topology::Field::subfieldsSetup(void)
   PetscSection section = NULL;
   PetscErrorCode err;
 
-  const PylithInt numSubfields = _subfields.size();
   err = DMGetDS(_dm, &prob);PYLITH_CHECK_ERROR(err);
-  //err = DMGetDefaultSection(_dm, &section);PYLITH_CHECK_ERROR(err);assert(section);
-  // MATT: I should not need to do this, somewhere the default section is getting set
-  err = DMSetDefaultSection(_dm, NULL);PYLITH_CHECK_ERROR(err);
+  err = DMSetDefaultSection(_dm, NULL);PYLITH_CHECK_ERROR(err); // :TEMPORARY: Remove when using PetscDS for all fields.
+  err = DMGetDefaultSection(_dm, &section);PYLITH_CHECK_ERROR(err);assert(section);
   err = DMSetNumFields(_dm, _subfields.size());PYLITH_CHECK_ERROR(err);
 
   for(subfields_type::const_iterator s_iter = _subfields.begin(); s_iter != _subfields.end(); ++s_iter) {
-    PetscObject sobj;
     const char* sname = s_iter->first.c_str();
     const SubfieldInfo& sinfo = s_iter->second;
-    //err = PetscSectionSetFieldName(section, sinfo.index, sname);PYLITH_CHECK_ERROR(err);
-    //err = PetscSectionSetFieldComponents(section, sinfo.index, sinfo.numComponents);PYLITH_CHECK_ERROR(err);
-    err = DMGetField(_dm, sinfo.index, &sobj);PYLITH_CHECK_ERROR(err);assert(sobj);
-    err = PetscObjectSetName(sobj, sname);PYLITH_CHECK_ERROR(err);
 
     PetscFE fe = FieldOps::createFE(sinfo.fe, _dm, _mesh.isSimplex(), sinfo.numComponents);
     err = PetscObjectSetName((PetscObject) fe, sname);PYLITH_CHECK_ERROR(err);
