@@ -45,6 +45,8 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::setUp(void)
   _material = new IsotropicLinearElasticityPlaneStrain();
   _data = NULL;
   _mesh = new topology::Mesh();
+  _solution = NULL;
+  _db = NULL;
 } // setUp
 
 
@@ -53,9 +55,11 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::setUp(void)
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::tearDown(void)
 { // tearDown
+  delete _solution; _solution = NULL;
   delete _material; _material = NULL;
   delete _data; _data = NULL;
   delete _mesh; _mesh = NULL;
+  delete _db; _db = NULL;
 } // tearDown
 
 
@@ -483,7 +487,6 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_initializeFull(voi
   } // if
 
   _material->initialize(*_mesh);
-
 
   PYLITH_METHOD_END;
 } // _initializeFull
