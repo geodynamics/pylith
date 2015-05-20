@@ -78,8 +78,15 @@ public :
    * @param subfield Name of subfield.
    * @param fn Query function to use for subfield.
    */
-  void setQuery(const char* subfield,
-		const queryfn_type fn);
+  void queryFn(const char* subfield,
+	       const queryfn_type fn);
+
+  /** Get query function for subfield.
+   *
+   * @param subfield Name of subfield.
+   * @return Query function used for subfield.
+   */
+  const queryfn_type queryFn(const char* subfield) const;
 
   /** Query spatial database to set values in field.
    *

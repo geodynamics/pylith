@@ -57,8 +57,8 @@ pylith::topology::FieldQuery::deallocate(void)
 // ----------------------------------------------------------------------
 // Set query function for subfield.
 void
-pylith::topology::FieldQuery::setQuery(const char* subfield,
-				       const queryfn_type fn)
+pylith::topology::FieldQuery::queryFn(const char* subfield,
+				      const queryfn_type fn)
 { // setQuery
   PYLITH_METHOD_BEGIN;
 
@@ -68,6 +68,25 @@ pylith::topology::FieldQuery::setQuery(const char* subfield,
   _queryFns[subfield] = fn;
 
   PYLITH_METHOD_END;
+} // setQuery
+
+
+// ----------------------------------------------------------------------
+// Set query function for subfield.
+const pylith::topology::FieldQuery::queryfn_type
+pylith::topology::FieldQuery::queryFn(const char* subfield) const
+{ // setQuery
+  PYLITH_METHOD_BEGIN;
+
+  assert(subfield);
+  const queryfn_map_type::const_iterator& iter = _queryFns.find(subfield);
+  if (iter == _queryFns.end()) {
+    std::ostringstream msg;
+    msg << "Could not find query function for subfield '" << subfield << "'." << std::endl;
+    throw std::logic_error(msg.str());
+  } // if
+
+  PYLITH_METHOD_RETURN(*iter->second);
 } // setQuery
 
 

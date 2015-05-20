@@ -92,11 +92,11 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_auxFieldsSetup(void)
   } // if
 
   // Order does not matter.
-  _auxFieldsQuery->setQuery("density", pylith::materials::Query::dbQueryDensity2D);
-  _auxFieldsQuery->setQuery("mu", pylith::materials::Query::dbQueryMu2D);
-  _auxFieldsQuery->setQuery("lambda", pylith::materials::Query::dbQueryLambda2D);
+  _auxFieldsQuery->queryFn("density", pylith::materials::Query::dbQueryDensity2D);
+  _auxFieldsQuery->queryFn("mu", pylith::materials::Query::dbQueryMu2D);
+  _auxFieldsQuery->queryFn("lambda", pylith::materials::Query::dbQueryLambda2D);
   if (_useBodyForce) {
-    _auxFieldsQuery->setQuery("body force", pylith::materials::Query::dbQueryBodyForce2D);
+    _auxFieldsQuery->queryFn("body force", pylith::materials::Query::dbQueryBodyForce2D);
   } // if
 
   PYLITH_METHOD_END;
