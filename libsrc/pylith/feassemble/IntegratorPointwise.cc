@@ -216,41 +216,6 @@ pylith::feassemble::IntegratorPointwise::verifyConfiguration(const topology::Mes
 { // verifyConfiguration
   PYLITH_METHOD_BEGIN;
 
-  assert(_quadrature);
-
-#if 0
-  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-  const bool includeOnlyCells = true;
-  topology::StratumIS materialIS(dmMesh, "material-id", _material->id(), includeOnlyCells);
-  const PetscInt* cells = NULL /*materialIS.points()*/;
-  const PetscInt numCells = 0 /*materialIS.size()*/;
-
-  const int numCorners = _quadrature->refGeometry().numCorners();
-  PetscInt vStart, vEnd;
-  PetscErrorCode err;
-
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
-  for(PetscInt c = 0; c < numCells; ++c) {
-    const PetscInt cell = cells[c];
-    PetscInt cellNumCorners = 0, closureSize, *closure = NULL;
-
-    err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-    for (PetscInt cl = 0; cl < closureSize*2; cl += 2) {
-      if ((closure[cl] >= vStart) && (closure[cl] < vEnd)) ++cellNumCorners;
-    }
-    err = DMPlexRestoreTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-    if (numCorners != cellNumCorners) {
-      std::ostringstream msg;
-      msg << "Quadrature is incompatible with cell in material '"
-	  << _material->label() << "'.\n"
-	  << "Cell " << cell << " has " << cellNumCorners
-	  << " vertices but quadrature reference cell has "
-	  << numCorners << " vertices.";
-      throw std::runtime_error(msg.str());
-    } // if
-  } // for
-#endif
-
   PYLITH_METHOD_END;
 } // verifyConfiguration
 
