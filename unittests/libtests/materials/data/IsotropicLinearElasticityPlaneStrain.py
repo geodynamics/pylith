@@ -55,17 +55,18 @@ class ElasticityApp(CppTestData):
     "pylith_fekernels_g3_uu_IsotropicLinearElasticityPlaneStrain", # g3
   ]
   
-  discretizations = [ # basisOrder, quadOrder, isBasisContinuous
-      "{1, 1, true}", # displacement
-  ]
-  
-  filenameAuxFieldsDB = "data/matinitialize.spatialdb"
-
   lengthScale = 1000.0
   timeScale = 2.0
   pressureScale = 2.25e+10
   velScale = lengthScale / timeScale
   densityScale = pressureScale / velScale**2
+
+  discretizations = [ # basisOrder, quadOrder, isBasisContinuous
+      "{1, 1, true}", # displacement
+  ]
+  
+  filenameAuxFieldsDB = "data/matinitialize.spatialdb"
+  auxFields = [2500.0/densityScale, 2.25e+10/pressureScale, 2.25e+10/pressureScale]
 
 
   def __init__(self):
@@ -94,6 +95,8 @@ class ElasticityApp(CppTestData):
 
     self._addScalar("int", "_numSolnFields", len(self.discretizations), "%d")
     self._addArray("pylith::topology::Field::DiscretizeInfo", "_discretizations", self.discretizations, "  %s")
+
+    self._addArray("PylithScalar", "_auxFieldsFromDB", self.auxFields, "%16.8e")
 
     self._addScalar("PylithReal", "_lengthScale", self.lengthScale, "%16.8e")
     self._addScalar("PylithReal", "_timeScale", self.timeScale, "%16.8e")

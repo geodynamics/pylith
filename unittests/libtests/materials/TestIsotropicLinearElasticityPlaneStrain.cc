@@ -23,6 +23,7 @@
 #include "data/IsotropicLinearElasticityPlaneStrainData.hh" // USES IsotropicLinearElasticityPlaneStrainData
 
 #include "pylith/materials/IsotropicLinearElasticityPlaneStrain.hh" // USES IsotropicLinearElasticityPlaneStrain
+#include "pylith/materials/Query.hh" // USES Query
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
@@ -110,12 +111,72 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
 
   CPPUNIT_ASSERT(_material);
   CPPUNIT_ASSERT(_mesh);
+  CPPUNIT_ASSERT(_data);
   delete _material->_auxFields; _material->_auxFields = new topology::Field(*_mesh);CPPUNIT_ASSERT(_material->_auxFields);
   delete _material->_auxFieldsQuery; _material->_auxFieldsQuery = new topology::FieldQuery();CPPUNIT_ASSERT(_material->_auxFieldsQuery);
   _material->_auxFieldsSetup();
   
-  // Check result
-  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+  // Check discretizations
+  { // density
+    const char* label = "density";
+    const pylith::topology::Field::SubfieldInfo& info = _material->_auxFields->subfieldInfo(label);
+    CPPUNIT_ASSERT_EQUAL(1, info.numComponents);
+    CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
+    CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.metadata.vectorFieldType);
+    CPPUNIT_ASSERT_EQUAL(_data->densityScale, info.metadata.scale);
+    CPPUNIT_ASSERT_EQUAL(false, info.metadata.dimsOkay);
+    CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
+    CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+    CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
+  } // density
+
+  { // mu
+    const char* label = "mu";
+    const pylith::topology::Field::SubfieldInfo& info = _material->_auxFields->subfieldInfo(label);
+    CPPUNIT_ASSERT_EQUAL(1, info.numComponents);
+    CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
+    CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.metadata.vectorFieldType);
+    CPPUNIT_ASSERT_EQUAL(_data->pressureScale, info.metadata.scale);
+    CPPUNIT_ASSERT_EQUAL(false, info.metadata.dimsOkay);
+    CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
+    CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+    CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
+  } // mu
+
+  { // lambda
+    const char* label = "lambda";
+    const pylith::topology::Field::SubfieldInfo& info = _material->_auxFields->subfieldInfo(label);
+    CPPUNIT_ASSERT_EQUAL(1, info.numComponents);
+    CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
+    CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.metadata.vectorFieldType);
+    CPPUNIT_ASSERT_EQUAL(_data->pressureScale, info.metadata.scale);
+    CPPUNIT_ASSERT_EQUAL(false, info.metadata.dimsOkay);
+    CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
+    CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+    CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
+  } // lambda
+
+  if (_data->useBodyForce) { // body force
+    const char* label = "body force";
+    const PylithReal forceScale = _data->densityScale * _data->lengthScale / (_data->timeScale * _data->timeScale);
+    const pylith::topology::Field::SubfieldInfo& info = _material->_auxFields->subfieldInfo(label);
+    CPPUNIT_ASSERT_EQUAL(_data->dimension, info.numComponents);
+    CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
+    CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::VECTOR, info.metadata.vectorFieldType);
+    CPPUNIT_ASSERT_EQUAL(forceScale, info.metadata.scale);
+    CPPUNIT_ASSERT_EQUAL(false, info.metadata.dimsOkay);
+    CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
+    CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+    CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
+  } // body force
+
+  // Check queries
+  CPPUNIT_ASSERT_EQUAL(&Query::dbQueryDensity2D, _material->_auxFieldsQuery->queryFn("density"));
+  CPPUNIT_ASSERT_EQUAL(&Query::dbQueryMu2D, _material->_auxFieldsQuery->queryFn("mu"));
+  CPPUNIT_ASSERT_EQUAL(&Query::dbQueryLambda2D, _material->_auxFieldsQuery->queryFn("lambda"));
+  if (_data->useBodyForce) {
+    CPPUNIT_ASSERT_EQUAL(&Query::dbQueryBodyForce2D, _material->_auxFieldsQuery->queryFn("body force"));
+  } // if
 
   PYLITH_METHOD_END;
 } // test_auxFieldsSetup
@@ -128,10 +189,12 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_setFEKernels(v
 { // test_setFEKernels
   PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(_material);
+  _initializeFull();
 
   // Call _setFEKernels()
-  // _material->_setFEKernels(solnField, prob);
+  CPPUNIT_ASSERT(_material);
+  CPPUNIT_ASSERT(_solution);
+  _material->_setFEKernels(*_solution);
 
   // Check result
   CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
@@ -150,13 +213,17 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testAuxFields(void)
 { // testAuxFields
   PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(_material);
-#if 0
+  _initializeFull();
+
   // Call auxFields()
-  const topology::Field& auxFields = _material->auxFields();
-#endif
+  CPPUNIT_ASSERT(_material);
+  const pylith::topology::Field& auxFields = _material->auxFields();
+
+  _material->_auxFields->view("AUX FIELDS"); // :TEMPORARY: Debugging
 
   // Check result
+  CPPUNIT_ASSERT_EQUAL(std::string("auxiliary fields"), std::string(auxFields.label()));
+  CPPUNIT_ASSERT_EQUAL(_data->dimension, auxFields.spaceDim());
   CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
 
   PYLITH_METHOD_END;
@@ -170,15 +237,14 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testHasAuxField(voi
 { // testHasAuxField
   PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(_material);
+  _initializeFull();
 
-#if 0
+  CPPUNIT_ASSERT(_material);
   CPPUNIT_ASSERT(_material->hasAuxField("density"));
   CPPUNIT_ASSERT(_material->hasAuxField("mu"));
   CPPUNIT_ASSERT(_material->hasAuxField("lambda"));
 
   CPPUNIT_ASSERT(!_material->hasAuxField("abc"));
-#endif
 
   PYLITH_METHOD_END;
 } // testHaxAuxField
@@ -191,14 +257,15 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
 { // testGetAuxField
   PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(_material);
+  _initializeFull();
 
   // Call getAuxField()
-#if 0
-  topology::Field density;
+  CPPUNIT_ASSERT(_material);
+  CPPUNIT_ASSERT(_mesh);
+  pylith::topology::Field density(*_mesh);
   _material->getAuxField(&density, "density");
-#endif
 
+  density.view("DENSITY");
   // Check result
   CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
 
@@ -487,6 +554,9 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_initializeFull(voi
     const PylithReal velocityScale = _data->lengthScale / _data->timeScale;
     _solution->subfieldAdd("velocity", _data->dimension, topology::Field::VECTOR, _data->discretizations[1], velocityScale);
   } // if
+  _solution->subfieldsSetup();
+  _solution->allocate();
+  _solution->zeroAll();
 
   _material->initialize(*_mesh);
 
