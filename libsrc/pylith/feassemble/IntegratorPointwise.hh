@@ -62,7 +62,7 @@ public :
    *
    * @return field Field over material.
    */
-  const topology::Field& auxFields() const;
+  const topology::Field& auxFields(void) const;
 
   /** Check whether material has a given auxiliary field.
    *

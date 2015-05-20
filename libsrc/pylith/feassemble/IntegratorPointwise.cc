@@ -70,7 +70,7 @@ pylith::feassemble::IntegratorPointwise::deallocate(void)
 // ----------------------------------------------------------------------
 // Return auxiliary fields for this problem
 const pylith::topology::Field&
-pylith::feassemble::IntegratorPointwise::auxFields() const
+pylith::feassemble::IntegratorPointwise::auxFields(void) const
 { // auxFields
   PYLITH_METHOD_BEGIN;
 
@@ -95,7 +95,7 @@ pylith::feassemble::IntegratorPointwise::hasAuxField(const char* name)
 // ----------------------------------------------------------------------
 // Get auxiliary field.
 void
-pylith::feassemble::IntegratorPointwise::getAuxField(topology::Field *field,
+pylith::feassemble::IntegratorPointwise::getAuxField(pylith::topology::Field *field,
 						     const char* name) const
 { // getAuxField
   PYLITH_METHOD_BEGIN;
@@ -103,7 +103,7 @@ pylith::feassemble::IntegratorPointwise::getAuxField(topology::Field *field,
   assert(field);
   assert(_auxFields);
 
-  _auxFields->copySubfield(*field, name);
+  field->copySubfield(*_auxFields, name);
 
   PYLITH_METHOD_END;
 } // getAuxField
