@@ -811,26 +811,8 @@ pylith::topology::Field::dimensionalize(void) const
     throw std::runtime_error(msg.str());
   } // if
 
-  spatialdata::units::Nondimensional normalizer;
   assert(_localVec);
-  PetscSection section = NULL;
-  PetscScalar *array = NULL;
-  PetscInt pStart, pEnd;
-  PetscErrorCode err;
-
-  err = DMGetDefaultSection(_dm, &section);PYLITH_CHECK_ERROR(err);
-  err = PetscSectionGetChart(section, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
-  err = VecGetArray(_localVec, &array);PYLITH_CHECK_ERROR(err);
-  for(PetscInt p = pStart; p < pEnd; ++p) {
-    PetscInt dof, off;
-
-    err = PetscSectionGetDof(section, p, &dof);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionGetOffset(section, p, &off);PYLITH_CHECK_ERROR(err);
-    if (dof) {
-      normalizer.dimensionalize(&array[off], dof, _metadata.scale);
-    }
-  }
-  err = VecRestoreArray(_localVec, &array);PYLITH_CHECK_ERROR(err);
+  PetscErrorCode err = VecScale(_localVec, _metadata.scale);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // dimensionalize
