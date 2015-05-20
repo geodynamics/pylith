@@ -47,7 +47,7 @@ class pylith::topology::FieldQuery
 public :
 
   /// Function prototype for query functions.
-  typedef void (*queryfn_type)(const PetscReal[], PetscScalar*, void*);
+  typedef PetscErrorCode (*queryfn_type)(PetscInt, const PetscReal[], PetscInt, PetscScalar*, void*);
 
 // PUBLIC STRUCT ////////////////////////////////////////////////////////
 public :

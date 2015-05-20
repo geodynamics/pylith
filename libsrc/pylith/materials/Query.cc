@@ -23,26 +23,24 @@
 #include "pylith/topology/FieldQuery.hh" // USES DBQueryContext
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
-#include <iostream>
 // ----------------------------------------------------------------------
 // Query spatial database for density in 2-D.
-void
-pylith::materials::Query::dbQueryDensity2D(const PetscReal x[],
+PetscErrorCode
+pylith::materials::Query::dbQueryDensity2D(PetscInt dim,
+					   const PetscReal x[],
+					   PetscInt nvalues,
 					   PetscScalar* values,
 					   void* context)
 { // dbQueryDensity2D
   PYLITH_METHOD_BEGIN;
 
   const int _dim = 2;
-  const int _numComps = 1;
-
-  const int dim = _dim; // :KLUDGE: TEMPORARY hardwiring size
-  const int numComps = _numComps; // :KLUDGE: TEMPORARY hardwiring size
+  const int _nvalues = 1;
 
   assert(x);
   assert(values);
   assert(context);
-  assert(_numComps == numComps);
+  assert(_nvalues == nvalues);
   assert(_dim == dim);
 
   const pylith::topology::FieldQuery::DBQueryContext* queryctx = (pylith::topology::FieldQuery::DBQueryContext*)context;assert(queryctx);
@@ -69,47 +67,47 @@ pylith::materials::Query::dbQueryDensity2D(const PetscReal x[],
     for (int i=0; i < _dim; ++i)
       msg << "  " << xDim[i];
     msg << ") in using spatial database '" << queryctx->db->label() << "'.";
-    std::cout << "MSG: "<< msg.str() << std::endl;
-    throw std::runtime_error(msg.str());
+    (*PetscErrorPrintf)(msg.str().c_str());
+    PYLITH_METHOD_RETURN(1);
   } // if
   
   const PylithReal density = dbValues[i_density];
-
+  
   if (density <= 0) {
     std::ostringstream msg;
     msg << "Found negative density (" << density << ") at location (";
     for (int i=0; i < _dim; ++i)
       msg << "  " << xDim[i];
     msg << ") in spatial database '" << queryctx->db->label() << "'.";
-    throw std::runtime_error(msg.str());
+    (*PetscErrorPrintf)(msg.str().c_str());
+    PYLITH_METHOD_RETURN(1);
   } // if
 
   assert(queryctx->valueScale > 0);
   values[0] = density / queryctx->valueScale;
 
-  PYLITH_METHOD_END;
+  PYLITH_METHOD_RETURN(0);
 } // dbQueryDensity2D
 
 
 // ----------------------------------------------------------------------
 // Query spatial database for shear modulus, $\mu$, in 2-D.
-void
-pylith::materials::Query::dbQueryMu2D(const PetscReal x[],
+PetscErrorCode
+pylith::materials::Query::dbQueryMu2D(PetscInt dim,
+				      const PetscReal x[],
+				      PetscInt nvalues,
 				      PetscScalar* values,
 				      void* context)
 { // dbQueryMu2D
   PYLITH_METHOD_BEGIN;
 
   const int _dim = 2;
-  const int _numComps = 1;
-
-  const int dim = _dim; // :KLUDGE: TEMPORARY hardwiring size
-  const int numComps = _numComps; // :KLUDGE: TEMPORARY hardwiring size
+  const int _nvalues = 1;
 
   assert(x);
   assert(values);
   assert(context);
-  assert(_numComps == numComps);
+  assert(_nvalues == nvalues);
   assert(_dim == dim);
 
   const pylith::topology::FieldQuery::DBQueryContext* queryctx = (pylith::topology::FieldQuery::DBQueryContext*)context;assert(queryctx);
@@ -137,12 +135,13 @@ pylith::materials::Query::dbQueryMu2D(const PetscReal x[],
     for (int i=0; i < _dim; ++i)
       msg << "  " << xDim[i];
     msg << ") in using spatial database '" << queryctx->db->label() << "'.";
-    throw std::runtime_error(msg.str());
+    (*PetscErrorPrintf)(msg.str().c_str());
+    PYLITH_METHOD_RETURN(1);
   } // if
   
   const PylithReal density = dbValues[i_density];
   const PylithReal vs = dbValues[i_vs];
-
+  
   if (density <= 0) {
     std::ostringstream msg;
     msg << "Found negative density (" << density << ") at location (";
@@ -157,36 +156,36 @@ pylith::materials::Query::dbQueryMu2D(const PetscReal x[],
     for (int i=0; i < _dim; ++i)
       msg << "  " << xDim[i];
     msg << ") in spatial database '" << queryctx->db->label() << "'.";
-    throw std::runtime_error(msg.str());
+    (*PetscErrorPrintf)(msg.str().c_str());
+    PYLITH_METHOD_RETURN(1);
   } // if
-
+  
   const PylithReal mu = density * vs * vs;assert(mu > 0);
   assert(queryctx->valueScale > 0);
   values[0] = mu / queryctx->valueScale;
-
-  PYLITH_METHOD_END;
+  
+  PYLITH_METHOD_RETURN(0);
 } // dbQueryMu2D
-
-
+ 
+ 
 // ----------------------------------------------------------------------
 // Query spatial database for Lame's constant, $\lambda$, in 2-D.
-void
-pylith::materials::Query::dbQueryLambda2D(const PetscReal x[],
+PetscErrorCode
+pylith::materials::Query::dbQueryLambda2D(PetscInt dim,
+					  const PetscReal x[],
+					  PetscInt nvalues,
 					  PetscScalar* values,
 					  void* context)
 { // dbQueryLambda2D
   PYLITH_METHOD_BEGIN;
 
   const int _dim = 2;
-  const int _numComps = 1;
-
-  const int dim = _dim; // :KLUDGE: TEMPORARY hardwiring size
-  const int numComps = _numComps; // :KLUDGE: TEMPORARY hardwiring size
+  const int _nvalues = 1;
 
   assert(x);
   assert(values);
   assert(context);
-  assert(_numComps == numComps);
+  assert(_nvalues == nvalues);
   assert(_dim == dim);
 
   const pylith::topology::FieldQuery::DBQueryContext* queryctx = (pylith::topology::FieldQuery::DBQueryContext*)context;assert(queryctx);
@@ -215,7 +214,8 @@ pylith::materials::Query::dbQueryLambda2D(const PetscReal x[],
     for (int i=0; i < _dim; ++i)
       msg << "  " << xDim[i];
     msg << ") in using spatial database '" << queryctx->db->label() << "'.";
-    throw std::runtime_error(msg.str());
+    (*PetscErrorPrintf)(msg.str().c_str());
+    PYLITH_METHOD_RETURN(1);
   } // if
   
   const PylithReal density = dbValues[i_density];
@@ -228,7 +228,8 @@ pylith::materials::Query::dbQueryLambda2D(const PetscReal x[],
     for (int i=0; i < _dim; ++i)
       msg << "  " << xDim[i];
     msg << ") in spatial database '" << queryctx->db->label() << "'.";
-    throw std::runtime_error(msg.str());
+    (*PetscErrorPrintf)(msg.str().c_str());
+    PYLITH_METHOD_RETURN(1);
   } // if
   if (vs <= 0) {
     std::ostringstream msg;
@@ -236,7 +237,8 @@ pylith::materials::Query::dbQueryLambda2D(const PetscReal x[],
     for (int i=0; i < _dim; ++i)
       msg << "  " << xDim[i];
     msg << ") in spatial database '" << queryctx->db->label() << "'.";
-    throw std::runtime_error(msg.str());
+    (*PetscErrorPrintf)(msg.str().c_str());
+    PYLITH_METHOD_RETURN(1);
   } // if
   if (vp <= 0) {
     std::ostringstream msg;
@@ -244,7 +246,8 @@ pylith::materials::Query::dbQueryLambda2D(const PetscReal x[],
     for (int i=0; i < _dim; ++i)
       msg << "  " << xDim[i];
     msg << ") in spatial database '" << queryctx->db->label() << "'.";
-    throw std::runtime_error(msg.str());
+    (*PetscErrorPrintf)(msg.str().c_str());
+    PYLITH_METHOD_RETURN(1);
   } // if
 
   const PylithReal mu = density * vs * vs;assert(mu > 0);
@@ -252,29 +255,28 @@ pylith::materials::Query::dbQueryLambda2D(const PetscReal x[],
   assert(queryctx->valueScale > 0);
   values[0] = lambda / queryctx->valueScale;
 
-  PYLITH_METHOD_END;
+  PYLITH_METHOD_RETURN(0);
 } // dbQueryLambda2D
 
 
 // ----------------------------------------------------------------------
 // Query spatial database for body force vector in 2-D.
-void
-pylith::materials::Query::dbQueryBodyForce2D(const PetscReal x[],
+PetscErrorCode
+pylith::materials::Query::dbQueryBodyForce2D(PetscInt dim,
+					     const PetscReal x[],
+					     PetscInt nvalues,
 					     PetscScalar* values,
 					     void* context)
 { // dbQueryMu
   PYLITH_METHOD_BEGIN;
 
   const int _dim = 2;
-  const int _numComps = _dim;
-
-  const int dim = _dim; // :KLUDGE: TEMPORARY hardwiring size
-  const int numComps = _numComps; // :KLUDGE: TEMPORARY hardwiring size
+  const int _nvalues = _dim;
 
   assert(x);
   assert(values);
   assert(context);
-  assert(_numComps == numComps);
+  assert(_nvalues == nvalues);
   assert(_dim == dim);
 
   const pylith::topology::FieldQuery::DBQueryContext* queryctx = (pylith::topology::FieldQuery::DBQueryContext*)context;assert(queryctx);
@@ -302,7 +304,8 @@ pylith::materials::Query::dbQueryBodyForce2D(const PetscReal x[],
     for (int i=0; i < _dim; ++i)
       msg << "  " << xDim[i];
     msg << ") in using spatial database '" << queryctx->db->label() << "'.";
-    throw std::runtime_error(msg.str());
+    (*PetscErrorPrintf)(msg.str().c_str());
+    PYLITH_METHOD_RETURN(1);
   } // if
   
   const PylithReal fx = dbValues[i_fx];
@@ -312,7 +315,7 @@ pylith::materials::Query::dbQueryBodyForce2D(const PetscReal x[],
   values[0] = fx / queryctx->valueScale;
   values[1] = fy / queryctx->valueScale;
 
-  PYLITH_METHOD_END;
+  PYLITH_METHOD_RETURN(0);
 } // dbQueryBodyForce2D
 
 

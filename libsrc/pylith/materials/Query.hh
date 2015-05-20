@@ -40,47 +40,63 @@ public :
 
   /** Query for density in 2-D.
    *
+   * @param dim Spatial dimension.
    * @param x Coordinates (nondimensioned) of point location for query.
+   * @param nvalues Size of values array.
    * @param values Array of values to be returned.
    * @param context Query context.
    */
   static
-  void dbQueryDensity2D(const PetscReal x[],
-			PetscScalar* values,
-			void* context);
+  PetscErrorCode dbQueryDensity2D(PetscInt dim,
+				  const PetscReal x[],
+				  PetscInt nvalues,
+				  PetscScalar* values,
+				  void* context);
 
   /** Query for shear modulus, $\mu$, in 2-D.
    *
+   * @param dim Spatial dimension.
    * @param x Coordinates (nondimensioned) of point location for query.
+   * @param nvalues Size of values array.
    * @param values Array of values to be returned.
    * @param context Query context.
    */
   static
-  void dbQueryMu2D(const PetscReal x[],
-		   PetscScalar* values,
-		   void* context);
+  PetscErrorCode dbQueryMu2D(PetscInt dim,
+			     const PetscReal x[],
+			     PetscInt nvalues,
+			     PetscScalar* values,
+			     void* context);
 
   /** Query for Lame's constant, $\lambda, in 2-D.
    *
+   * @param dim Spatial dimension.
    * @param x Coordinates (nondimensioned) of point location for query.
+   * @param nvalues Size of values array.
    * @param values Array of values to be returned.
    * @param context Query context.
    */
   static
-  void dbQueryLambda2D(const PetscReal x[],
-		       PetscScalar* values,
-		       void* context);
+  PetscErrorCode dbQueryLambda2D(PetscInt dim,
+				  const PetscReal x[],
+				  PetscInt nvalues,
+				  PetscScalar* values,
+				 void* context);
 
   /** Query for body force vector in 2-D.
    *
+   * @param dim Spatial dimension.
    * @param x Coordinates (nondimensioned) of point location for query.
+   * @param nvalues Size of values array.
    * @param values Array of values to be returned.
    * @param context Query context.
    */
   static
-  void dbQueryBodyForce2D(const PetscReal x[],
-			  PetscScalar* values,
-			  void* context);
+  PetscErrorCode dbQueryBodyForce2D(PetscInt dim,
+				    const PetscReal x[],
+				    PetscInt nvalues,
+				    PetscScalar* values,
+				    void* context);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
