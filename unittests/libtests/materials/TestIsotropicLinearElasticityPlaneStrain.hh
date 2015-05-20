@@ -56,7 +56,6 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain : public CppUn
   CPPUNIT_TEST( test_setFEKernels );
 
   // Move to TestIntegratorPointwise
-  CPPUNIT_TEST( testAuxFields );
   CPPUNIT_TEST( testHasAuxField );
   CPPUNIT_TEST( testGetAuxField );
   CPPUNIT_TEST( testNormalizer );

@@ -197,37 +197,13 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_setFEKernels(v
   _material->_setFEKernels(*_solution);
 
   // Check result
-  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+  CPPUNIT_ASSERT_MESSAGE("Test incomplete.", false); // :TODO: ADD MORE HERE
 
   PYLITH_METHOD_END;
 } // test_setFEKernels
 
 
 // IntegratorPointwise ========================================
-
-
-// ----------------------------------------------------------------------
-// Test auxFields().
-void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testAuxFields(void)
-{ // testAuxFields
-  PYLITH_METHOD_BEGIN;
-
-  _initializeFull();
-
-  // Call auxFields()
-  CPPUNIT_ASSERT(_material);
-  const pylith::topology::Field& auxFields = _material->auxFields();
-
-  _material->_auxFields->view("AUX FIELDS"); // :TEMPORARY: Debugging
-
-  // Check result
-  CPPUNIT_ASSERT_EQUAL(std::string("auxiliary fields"), std::string(auxFields.label()));
-  CPPUNIT_ASSERT_EQUAL(_data->dimension, auxFields.spaceDim());
-  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
-
-  PYLITH_METHOD_END;
-} // testAuxFields
 
 
 // ----------------------------------------------------------------------
@@ -267,7 +243,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
 
   density.view("DENSITY");
   // Check result
-  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+  CPPUNIT_ASSERT_MESSAGE("Test incomplete.", false); // :TODO: ADD MORE HERE
 
   PYLITH_METHOD_END;
 } // testGetAuxField
@@ -320,11 +296,14 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testVerifyConfigura
 
   CPPUNIT_ASSERT(_material);
 
-  // Call verifyConfiguration()
-  // :TODO: ADD MORE HERE
+  _initializeMin();
 
-  // Check result
-  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+  // Call verifyConfiguration()
+  CPPUNIT_ASSERT(_material);
+  CPPUNIT_ASSERT(_mesh);
+  _material->verifyConfiguration(*_mesh);
+
+  // Nothing to test.
 
   PYLITH_METHOD_END;
 } // testVerifyConfiguration
@@ -337,7 +316,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testIntegrateResidu
 { // testIntegrateResidual
   PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+  CPPUNIT_ASSERT_MESSAGE("Test incomplete.", false); // :TODO: ADD MORE HERE
 
   PYLITH_METHOD_END;
 } // testIntegrateResidual
@@ -350,7 +329,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testIntegrateJacobi
 { // testIntegrateJacobian
   PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+  CPPUNIT_ASSERT_MESSAGE("Test incomplete.", false); // :TODO: ADD MORE HERE
 
   PYLITH_METHOD_END;
 } // testIntegrateJacobian
@@ -412,7 +391,16 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testInitialize(void
   // Call initialize()
   _initializeFull();
 
-  CPPUNIT_ASSERT(false); // :TODO: ADD MORE HERE
+  CPPUNIT_ASSERT(_material);
+  const pylith::topology::Field& auxFields = _material->auxFields();
+
+  _material->_auxFields->view("AUX FIELDS"); // :TEMPORARY: Debugging
+
+  // Check result
+  CPPUNIT_ASSERT_EQUAL(std::string("auxiliary fields"), std::string(auxFields.label()));
+  CPPUNIT_ASSERT_EQUAL(_data->dimension, auxFields.spaceDim());
+  CPPUNIT_ASSERT_MESSAGE("Test incomplete.", false); // :TODO: ADD MORE HERE
+
 
   PYLITH_METHOD_END;
 } // testInitialize
