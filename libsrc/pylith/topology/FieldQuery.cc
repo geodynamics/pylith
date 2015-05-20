@@ -83,51 +83,47 @@ pylith::topology::FieldQuery::queryDB(Field* field,
   assert(field);
   assert(db);
 
-  // Create contexts and funcs
+  // Create contexts and funcs. Need to put contexts into an array of
+  // pointers, since Petsc function doesn't know the size of the
+  // context.
   const Field::subfields_type& subfields = field->_subfields;
   const unsigned size = subfields.size();
   assert(_queryFns.size() == size);
   queryfn_type* fns = (size > 0) ? new queryfn_type[size] : NULL;
   DBQueryContext* contexts = (size > 0) ? new DBQueryContext[size] : NULL;
-  
-  try {
-    int i=0;
-    for (Field::subfields_type::const_iterator iter=subfields.begin(); iter != subfields.end(); ++iter, ++i) {
-      const std::string& name = iter->first;
-      if (_queryFns.find(name) == _queryFns.end()) { // if
-	std::ostringstream msg;
-	msg << "FieldQuery for field '" << field->label() << "' missing query function for subfield '" << name << "'";
-	throw std::logic_error(msg.str());
-      } // if/else
-      fns[i] = _queryFns[name];
-      contexts[i].db = db;
-      contexts[i].cs = field->mesh().coordsys();
-      contexts[i].lengthScale = lengthScale;
-      contexts[i].valueScale = iter->second.metadata.scale;
-    } // for
+  DBQueryContext** contextPtrs = (size > 0) ? new DBQueryContext*[size] : NULL;
 
+  int i=0;
+  for (Field::subfields_type::const_iterator iter=subfields.begin(); iter != subfields.end(); ++iter, ++i) {
+    const std::string& name = iter->first;
+    if (_queryFns.find(name) == _queryFns.end()) { // if
+      std::ostringstream msg;
+      msg << "FieldQuery for field '" << field->label() << "' missing query function for subfield '" << name << "'";
+      throw std::logic_error(msg.str());
+    } // if/else
+    fns[i] = _queryFns[name];
+    contexts[i].db = db;
+    contexts[i].cs = field->mesh().coordsys();
+    contexts[i].lengthScale = lengthScale;
+    contexts[i].valueScale = iter->second.metadata.scale;
+    contextPtrs[i] = &contexts[i];
+  } // for
+  
     // Open spatial database.
-    db->open();
+  db->open();
   
-    PetscErrorCode err = 0;
-    const PetscDM dm = field->dmMesh();
-    const PetscVec fieldVec = field->localVector();
-    err = DMPlexProjectFunctionLocal(dm, fns, (void**)&contexts, INSERT_ALL_VALUES, fieldVec);PYLITH_CHECK_ERROR(err);
-    //err = PetscObjectCompose((PetscObject) dm, "A", (PetscObject) fieldVec);CHKERRQ(ierr); // :MATT: Which dm is this? Do we need this?
-
-    delete[] fns; fns = NULL;
-    delete[] contexts; contexts = NULL;
-    
-    // Close spatial database.
-    db->close();
-  } catch (...) {
-    delete[] fns; fns = NULL;
-    delete[] contexts; contexts = NULL;
-
-    db->close();
-
-    throw;
-  } // catch
+  PetscErrorCode err = 0;
+  const PetscDM dm = field->dmMesh();
+  const PetscVec fieldVec = field->localVector();
+  err = DMPlexProjectFunctionLocal(dm, fns, (void**)contextPtrs, INSERT_ALL_VALUES, fieldVec);PYLITH_CHECK_ERROR(err);
+  //err = PetscObjectCompose((PetscObject) dm, "A", (PetscObject) fieldVec);CHKERRQ(ierr); // :MATT: Which dm is this? Do we need this?
+  
+  delete[] fns; fns = NULL;
+  delete[] contexts; contexts = NULL;
+  delete[] contextPtrs; contextPtrs = NULL;
+  
+  // Close spatial database.
+  db->close();
 
   PYLITH_METHOD_END;
 } // queryDB
