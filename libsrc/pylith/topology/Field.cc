@@ -1284,12 +1284,10 @@ pylith::topology::Field::subfieldsSetup(void)
 
   // Setup section now that we know the total number of sub-fields and components.
   PetscDS prob = NULL;
-  PetscSection section = NULL;
   PetscErrorCode err;
 
   err = DMGetDS(_dm, &prob);PYLITH_CHECK_ERROR(err);
   err = DMSetDefaultSection(_dm, NULL);PYLITH_CHECK_ERROR(err); // :TEMPORARY: Remove when using PetscDS for all fields.
-  err = DMGetDefaultSection(_dm, &section);PYLITH_CHECK_ERROR(err);assert(section);
   err = DMSetNumFields(_dm, _subfields.size());PYLITH_CHECK_ERROR(err);
 
   for(subfields_type::const_iterator s_iter = _subfields.begin(); s_iter != _subfields.end(); ++s_iter) {
