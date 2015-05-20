@@ -476,6 +476,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_initializeFull(voi
   dbIO.filename(_data->filenameAuxFieldsDB);
   _db->ioHandler(&dbIO);
   _db->label("IsotropicLinearElasciticityPlaneStrain auxiliary fields");
+  _db->queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
   _material->auxFieldsDB(_db);
 
   // Create solution field.
