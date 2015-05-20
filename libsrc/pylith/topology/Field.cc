@@ -630,8 +630,8 @@ pylith::topology::Field::allocate(void)
   PetscSection s = NULL;
   PetscErrorCode err;
 
-  err = DMGetDefaultSection(_dm, &s);PYLITH_CHECK_ERROR(err);assert(s);
-  err = DMSetDefaultGlobalSection(_dm, NULL);PYLITH_CHECK_ERROR(err);
+  err = DMGetDefaultSection(_dm, &s);PYLITH_CHECK_ERROR(err);assert(s); // Creates local section
+  err = DMSetDefaultGlobalSection(_dm, NULL);PYLITH_CHECK_ERROR(err); // Creates global section
   err = PetscSectionSetUp(s);PYLITH_CHECK_ERROR(err);
 
   err = VecDestroy(&_globalVec);PYLITH_CHECK_ERROR(err);
@@ -1311,6 +1311,8 @@ pylith::topology::Field::subfieldSetDof(const char *name,
 					int fiberDim)
 { // subfieldSetDof
   PYLITH_METHOD_BEGIN;
+
+  // :TEMPORARY: Obsolete when using PetscDS
 
   PetscInt pStart, pEnd;
   PetscErrorCode err;
