@@ -93,7 +93,6 @@ pylith::materials::MaterialNew::initialize(const topology::Mesh& mesh)
   _auxFields->subfieldsSetup();
   _auxFields->allocate();
   _auxFields->zeroAll();
-  _auxFields->view("AUX FIELDS"); // :TEMPORARY: Debugging
 
   if (_auxFieldsDB) {
     assert(_normalizer);
@@ -102,6 +101,8 @@ pylith::materials::MaterialNew::initialize(const topology::Mesh& mesh)
     assert(0);
     throw std::logic_error("Unknown case for setting up auxiliary fields.");
   } // if/else
+
+  _auxFields->view("AUX FIELDS"); // :TEMPORARY: Debugging
 
   PYLITH_METHOD_END;
 } // initialize
