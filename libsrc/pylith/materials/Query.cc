@@ -251,7 +251,7 @@ pylith::materials::Query::dbQueryLambda2D(PetscInt dim,
   } // if
 
   const PylithReal mu = density * vs * vs;assert(mu > 0);
-  const PylithReal lambda = density * vs * vs - 2.0*mu;
+  const PylithReal lambda = density * vp * vp - 2.0*mu;
   assert(queryctx->valueScale > 0);
   values[0] = lambda / queryctx->valueScale;
 
