@@ -88,7 +88,7 @@ pylith::materials::MaterialNew::initialize(const topology::Mesh& mesh)
 
   delete _auxFields; _auxFields = new topology::Field(mesh);assert(_auxFields);
   delete _auxFieldsQuery; _auxFieldsQuery = new topology::FieldQuery();assert(_auxFieldsQuery);
-  _auxFields->label("auxiliary_fields");
+  _auxFields->label("auxiliary fields");
   _auxFieldsSetup();
   _auxFields->subfieldsSetup();
   _auxFields->allocate();
@@ -101,8 +101,6 @@ pylith::materials::MaterialNew::initialize(const topology::Mesh& mesh)
     assert(0);
     throw std::logic_error("Unknown case for setting up auxiliary fields.");
   } // if/else
-
-  _auxFields->view("AUX FIELDS"); // :TEMPORARY: Debugging
 
   PYLITH_METHOD_END;
 } // initialize
