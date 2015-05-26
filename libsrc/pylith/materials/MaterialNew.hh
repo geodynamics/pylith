@@ -105,9 +105,9 @@ public :
 
   /** Initialize material. Setup auxiliary fields.
    *
-   * @param mesh Finite-element mesh.
+   * @param field Solution field.
    */
-  void initialize(const topology::Mesh& mesh);
+  void initialize(const pylith::topology::Field& field);
   
   /** Set spatial database for auxiliary fields.
    *

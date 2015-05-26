@@ -139,10 +139,10 @@ protected :
 
   /** Set residual and Jacobian kernels.
    *
-   * @param field Solution field.
+   * @param solution Solution field.
    */
   virtual
-  void _setFEKernels(const topology::Field& field) const = 0;
+  void _setFEKernels(const topology::Field& solution) const = 0;
 
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////

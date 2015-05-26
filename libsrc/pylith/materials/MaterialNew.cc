@@ -77,11 +77,12 @@ pylith::materials::MaterialNew::deallocate(void)
 // ----------------------------------------------------------------------
 // Get physical property parameters and initial state (if used) from database.
 void
-pylith::materials::MaterialNew::initialize(const topology::Mesh& mesh)
+pylith::materials::MaterialNew::initialize(const pylith::topology::Field& solution)
 { // initialize
   PYLITH_METHOD_BEGIN;
 
   // Get cells associated with material
+  const pylith::topology::Mesh& mesh = solution.mesh();
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
   const bool includeOnlyCells = true;
   delete _materialIS; _materialIS = new topology::StratumIS(dmMesh, "material-id", _id, includeOnlyCells);assert(_materialIS);
@@ -101,6 +102,9 @@ pylith::materials::MaterialNew::initialize(const topology::Mesh& mesh)
     assert(0);
     throw std::logic_error("Unknown case for setting up auxiliary fields.");
   } // if/else
+
+  // Set finite-element kernels
+  _setFEKernels(solution);
 
   PYLITH_METHOD_END;
 } // initialize
