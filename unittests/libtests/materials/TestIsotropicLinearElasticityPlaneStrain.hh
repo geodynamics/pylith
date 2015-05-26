@@ -53,7 +53,8 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain : public CppUn
   CPPUNIT_TEST( testUseInertia );
   CPPUNIT_TEST( testUseBodyForce );
   CPPUNIT_TEST( test_auxFieldsSetup );
-  CPPUNIT_TEST( test_setFEKernels );
+  CPPUNIT_TEST( test_setFEKernels ); // part of initialize()
+  CPPUNIT_TEST( testAuxFields ); // part of initialize()
 
   // Move to TestIntegratorPointwise
   CPPUNIT_TEST( testHasAuxField );
@@ -62,7 +63,6 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain : public CppUn
   CPPUNIT_TEST( testIsJacobianSymmetric );
 
   CPPUNIT_TEST( testVerifyConfiguration );
-  //CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testIntegrateResidual );
   CPPUNIT_TEST( testIntegrateJacobian );
 
@@ -70,7 +70,6 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain : public CppUn
   CPPUNIT_TEST( testDimension );
   CPPUNIT_TEST( testId );
   CPPUNIT_TEST( testLabel );
-  CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testAuxFieldsDB );
   CPPUNIT_TEST( testDiscretization );
 
@@ -98,10 +97,10 @@ public :
   /// Test _setFEKernels().
   void test_setFEKernels(void);
 
-  // IntegratorPointwise
-
   /// Test auxFields().
   void testAuxFields(void);
+
+  // IntegratorPointwise
 
   /// Test hasAuxField().
   void testHasAuxField(void);
@@ -134,9 +133,6 @@ public :
 
   /// Test label().
   void testLabel(void);
-
-  /// Test initialize().
-  void testInitialize(void);
 
   /// Test auxFieldsDB().
   void testAuxFieldsDB(void);
