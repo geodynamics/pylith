@@ -113,7 +113,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
   CPPUNIT_ASSERT(_mesh);
   CPPUNIT_ASSERT(_data);
   delete _material->_auxFields; _material->_auxFields = new topology::Field(*_mesh);CPPUNIT_ASSERT(_material->_auxFields);
-  delete _material->_auxFieldsQuery; _material->_auxFieldsQuery = new topology::FieldQuery();CPPUNIT_ASSERT(_material->_auxFieldsQuery);
+  delete _material->_auxFieldsQuery; _material->_auxFieldsQuery = new topology::FieldQuery(*_material->_auxFields);CPPUNIT_ASSERT(_material->_auxFieldsQuery);
   _material->_auxFieldsSetup();
   
   // Check discretizations
@@ -205,6 +205,8 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testAuxFields(void)
 { // testAuxFields
   PYLITH_METHOD_BEGIN;
 
+  CPPUNIT_ASSERT(_data);
+
   // Call initialize()
   _initializeFull(); // includes setting up auxFields
 
@@ -216,8 +218,18 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testAuxFields(void)
   // Check result
   CPPUNIT_ASSERT_EQUAL(std::string("auxiliary fields"), std::string(auxFields.label()));
   CPPUNIT_ASSERT_EQUAL(_data->dimension, auxFields.spaceDim());
+#if 1
+  PylithReal norm = 0.0;
+  const PetscDM dm = auxFields.dmMesh();CPPUNIT_ASSERT(dm);
+  pylith::topology::FieldQuery* query = _material->_auxFieldsQuery;
+  query->openDB(_db, _data->lengthScale);
+  PetscErrorCode err = DMPlexComputeL2Diff(dm, query->functions(), (void**)query->contextPtrs(), auxFields.globalVector(), &norm);PYLITH_CHECK_ERROR(err);
+  query->closeDB(_db);
+  const PylithReal tolerance = 1.0e-6;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
+#else
   CPPUNIT_ASSERT_MESSAGE("Test incomplete.", false); // :TODO: ADD MORE HERE
-
+#endif
 
   PYLITH_METHOD_END;
 } // testAuxFields

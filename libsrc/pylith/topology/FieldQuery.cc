@@ -30,7 +30,11 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::topology::FieldQuery::FieldQuery(void)
+pylith::topology::FieldQuery::FieldQuery(const Field& field) :
+  _field(field),
+  _functions(NULL),
+  _contexts(NULL),
+  _contextPtrs(NULL)
 { // constructor
 } // constructor
 
@@ -48,6 +52,10 @@ pylith::topology::FieldQuery::deallocate(void)
 { // deallocate
   PYLITH_METHOD_BEGIN;
 
+  delete[] _functions; _functions = NULL;
+  delete[] _contexts; _contexts = NULL;
+  delete[] _contextPtrs; _contextPtrs = NULL;
+  
   _queryFns.clear();
 
   PYLITH_METHOD_END;
@@ -91,55 +99,97 @@ pylith::topology::FieldQuery::queryFn(const char* subfield) const
 
 
 // ----------------------------------------------------------------------
+// Get array of query functions.
+pylith::topology::FieldQuery::queryfn_type*
+pylith::topology::FieldQuery::functions(void) const
+{ // functions
+  return _functions;
+} // functions
+ 
+
+// ----------------------------------------------------------------------
+// Get array of pointers to contexts.
+const pylith::topology::FieldQuery::DBQueryContext* const*
+pylith::topology::FieldQuery::contextPtrs(void) const
+{ // contextPtrs
+  return _contextPtrs;
+} // contextPtrs
+
+
+// ----------------------------------------------------------------------
 // Query spatial database to set values in field.
 void
-pylith::topology::FieldQuery::queryDB(Field* field,
-				      spatialdata::spatialdb::SpatialDB* db,
-				      const PylithReal lengthScale)
-{ // queryDB
+pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
+				     const PylithReal lengthScale)
+{ // openDB
   PYLITH_METHOD_BEGIN;
   
-  assert(field);
   assert(db);
 
   // Create contexts and funcs. Need to put contexts into an array of
   // pointers, since Petsc function doesn't know the size of the
   // context.
-  const Field::subfields_type& subfields = field->_subfields;
+  const Field::subfields_type& subfields = _field._subfields;
   const unsigned size = subfields.size();
   assert(_queryFns.size() == size);
-  queryfn_type* fns = (size > 0) ? new queryfn_type[size] : NULL;
-  DBQueryContext* contexts = (size > 0) ? new DBQueryContext[size] : NULL;
-  DBQueryContext** contextPtrs = (size > 0) ? new DBQueryContext*[size] : NULL;
+  delete[] _functions; _functions = (size > 0) ? new queryfn_type[size] : NULL;
+  delete[] _contexts; _contexts = (size > 0) ? new DBQueryContext[size] : NULL;
+  delete[] _contextPtrs; _contextPtrs = (size > 0) ? new DBQueryContext*[size] : NULL;
 
   int i=0;
   for (Field::subfields_type::const_iterator iter=subfields.begin(); iter != subfields.end(); ++iter, ++i) {
     const std::string& name = iter->first;
     if (_queryFns.find(name) == _queryFns.end()) { // if
       std::ostringstream msg;
-      msg << "FieldQuery for field '" << field->label() << "' missing query function for subfield '" << name << "'";
+      msg << "FieldQuery for field '" << _field.label() << "' missing query function for subfield '" << name << "'";
       throw std::logic_error(msg.str());
     } // if/else
-    fns[i] = _queryFns[name];
-    contexts[i].db = db;
-    contexts[i].cs = field->mesh().coordsys();
-    contexts[i].lengthScale = lengthScale;
-    contexts[i].valueScale = iter->second.metadata.scale;
-    contextPtrs[i] = &contexts[i];
+    _functions[i] = _queryFns[name];
+
+    _contexts[i].db = db;
+    _contexts[i].cs = _field.mesh().coordsys();
+    _contexts[i].lengthScale = lengthScale;
+    _contexts[i].valueScale = iter->second.metadata.scale;
+
+    _contextPtrs[i] = &_contexts[i];
   } // for
   
     // Open spatial database.
   db->open();
   
+  PYLITH_METHOD_END;
+} // openDB
+
+
+// ----------------------------------------------------------------------
+// Query spatial database to set values in field.
+void
+pylith::topology::FieldQuery::queryDB(void)
+{ // queryDB
+  PYLITH_METHOD_BEGIN;
+  
   PetscErrorCode err = 0;
-  const PetscDM dm = field->dmMesh();
-  const PetscVec fieldVec = field->localVector();
-  err = DMPlexProjectFunctionLocal(dm, fns, (void**)contextPtrs, INSERT_ALL_VALUES, fieldVec);PYLITH_CHECK_ERROR(err);
+  const PetscDM dm = _field.dmMesh();
+  const PetscVec fieldVec = _field.localVector();
+  err = DMPlexProjectFunctionLocal(dm, _functions, (void**)_contextPtrs, INSERT_ALL_VALUES, fieldVec);PYLITH_CHECK_ERROR(err);
   //err = PetscObjectCompose((PetscObject) dm, "A", (PetscObject) fieldVec);CHKERRQ(ierr); // :MATT: Which dm is this? Do we need this?
   
-  delete[] fns; fns = NULL;
-  delete[] contexts; contexts = NULL;
-  delete[] contextPtrs; contextPtrs = NULL;
+  PYLITH_METHOD_END;
+} // queryDB
+
+
+// ----------------------------------------------------------------------
+// Query spatial database to set values in field.
+void
+pylith::topology::FieldQuery::closeDB(spatialdata::spatialdb::SpatialDB* db)
+{ // queryDB
+  PYLITH_METHOD_BEGIN;
+  
+  assert(db);
+
+  delete[] _functions; _functions = NULL;
+  delete[] _contexts; _contexts = NULL;
+  delete[] _contextPtrs; _contextPtrs = NULL;
   
   // Close spatial database.
   db->close();

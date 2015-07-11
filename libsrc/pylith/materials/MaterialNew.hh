@@ -153,7 +153,7 @@ protected :
   spatialdata::spatialdb::SpatialDB* _auxFieldsDB;
 
   /// Set auxiliary fields via query.
-  topology::FieldQuery* _auxFieldsQuery;
+  pylith::topology::FieldQuery* _auxFieldsQuery;
 
   /// Map from auxiliary field to discretization.
   discretizations_type _auxFieldsFEInfo;

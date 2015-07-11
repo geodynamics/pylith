@@ -64,8 +64,11 @@ public :
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
-  /// Default constructor.
-  FieldQuery(void);
+  /** Default constructor.
+   *
+   * @param field Field associated with query.
+   */
+  FieldQuery(const Field& field);
 
   /// Destructor.
   ~FieldQuery(void);
@@ -88,16 +91,30 @@ public :
    */
   const queryfn_type queryFn(const char* subfield) const;
 
-  /** Query spatial database to set values in field.
+  /// Get array of query functions.
+  queryfn_type* functions(void) const;
+ 
+  /// Get array of pointers to contexts.
+  const DBQueryContext* const* contextPtrs(void) const;
+
+  /** Open spatial database query for setting values in field.
    *
-   * @param field Field to set.
    * @param db Spatial database to query.
    * @param lengthScale Length scale for dimensionalization of
    * location coordinates.
    */
-  void queryDB(Field* field,
-	       spatialdata::spatialdb::SpatialDB* db,
-	       const PylithReal lengthScale);
+  void openDB(spatialdata::spatialdb::SpatialDB* db,
+	      const PylithReal lengthScale);
+  
+
+  /// Query spatial database to set values in field.
+  void queryDB(void);
+  
+  /** Close spatial database query for setting values in field.
+   *
+   * @param db Spatial database to query.
+   */
+  void closeDB(spatialdata::spatialdb::SpatialDB* db);
   
 
 // PRIVATE TYPEDEFS /////////////////////////////////////////////////////
@@ -109,7 +126,13 @@ private :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
+  const pylith::topology::Field& _field; ///< Field associated with query.
+
   queryfn_map_type _queryFns;
+
+  queryfn_type* _functions; ///< Functions implementing queries.
+  DBQueryContext* _contexts; ///< Contexts for performing query for each subfield.
+  DBQueryContext** _contextPtrs; ///< Array of pointers to contexts.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

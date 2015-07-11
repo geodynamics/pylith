@@ -88,7 +88,7 @@ pylith::materials::MaterialNew::initialize(const pylith::topology::Field& soluti
   delete _materialIS; _materialIS = new topology::StratumIS(dmMesh, "material-id", _id, includeOnlyCells);assert(_materialIS);
 
   delete _auxFields; _auxFields = new topology::Field(mesh);assert(_auxFields);
-  delete _auxFieldsQuery; _auxFieldsQuery = new topology::FieldQuery();assert(_auxFieldsQuery);
+  delete _auxFieldsQuery; _auxFieldsQuery = new topology::FieldQuery(*_auxFields);assert(_auxFieldsQuery);
   _auxFields->label("auxiliary fields");
   _auxFieldsSetup();
   _auxFields->subfieldsSetup();
@@ -97,7 +97,9 @@ pylith::materials::MaterialNew::initialize(const pylith::topology::Field& soluti
 
   if (_auxFieldsDB) {
     assert(_normalizer);
-    _auxFieldsQuery->queryDB(_auxFields, _auxFieldsDB, _normalizer->lengthScale());
+    _auxFieldsQuery->openDB(_auxFieldsDB, _normalizer->lengthScale());
+    _auxFieldsQuery->queryDB();
+    _auxFieldsQuery->closeDB(_auxFieldsDB);
   } else { // else
     assert(0);
     throw std::logic_error("Unknown case for setting up auxiliary fields.");
