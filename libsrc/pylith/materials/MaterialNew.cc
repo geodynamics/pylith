@@ -104,6 +104,7 @@ pylith::materials::MaterialNew::initialize(const pylith::topology::Field& soluti
     assert(0);
     throw std::logic_error("Unknown case for setting up auxiliary fields.");
   } // if/else
+  _auxFields->complete();
 
   // Set finite-element kernels
   _setFEKernels(solution);
