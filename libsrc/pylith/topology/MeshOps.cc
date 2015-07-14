@@ -89,7 +89,7 @@ pylith::topology::MeshOps::checkTopology(const Mesh& mesh)
   PetscInt cellHeight = subpointMap ? 1 : 0;
 
   PetscErrorCode err;
-  err = DMViewFromOptions(dmMesh, "pylith_check_", "-dm_view");PYLITH_CHECK_ERROR(err);
+  err = DMViewFromOptions(dmMesh, NULL, "-pylith_check_dm_view");PYLITH_CHECK_ERROR(err);
   err = DMPlexCheckSymmetry(dmMesh);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh associated with symmetry of adjacency information.");
 
   err = DMPlexCheckSkeleton(dmMesh, mesh.isSimplex() ? PETSC_TRUE : PETSC_FALSE, cellHeight);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh cells.");
