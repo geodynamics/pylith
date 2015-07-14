@@ -71,7 +71,7 @@ pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
   // There does not seem to be an advantage to calling nondimensionalize()
   err = VecScale(coordVec, 1.0/lengthScale);PYLITH_CHECK_ERROR(err);
   err = DMPlexSetScale(dmMesh, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
-  err = DMViewFromOptions(dmMesh, "pylith_final_", "-dm_view");PYLITH_CHECK_ERROR(err);
+  err = DMViewFromOptions(dmMesh, NULL, "-pylith_final_view");PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // nondimensionalize
