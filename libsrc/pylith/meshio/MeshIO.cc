@@ -81,7 +81,7 @@ pylith::meshio::MeshIO::read(topology::Mesh* mesh)
   // Check mesh consistency
   topology::MeshOps::checkTopology(*_mesh);
   // Respond to PETSc diagnostic output
-  PetscErrorCode err = DMViewFromOptions(_mesh->dmMesh(), "pylith_", "-dm_view");PYLITH_CHECK_ERROR(err);
+  PetscErrorCode err = DMViewFromOptions(_mesh->dmMesh(), NULL, "-pylith_dm_view");PYLITH_CHECK_ERROR(err);
 
   _mesh = 0;
 
