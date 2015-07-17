@@ -196,7 +196,7 @@ pylith::faults::CohesiveTopology::createFaultParallel(topology::Mesh* faultMesh,
 
 
   err = DMPlexCreateCohesiveSubmesh(dmMesh, constraintCell ? PETSC_TRUE : PETSC_FALSE, labelname, materialId, &dmFaultMesh);PYLITH_CHECK_ERROR(err);
-  err = DMViewFromOptions(dmFaultMesh, "pylith_fault_", "-dm_view");PYLITH_CHECK_ERROR(err);
+  err = DMViewFromOptions(dmFaultMesh, NULL, "-pylith_fault_dm_view");PYLITH_CHECK_ERROR(err);
   err = DMPlexOrient(dmFaultMesh);PYLITH_CHECK_ERROR(err);
   std::string meshLabel = "fault_" + std::string(label);
 

@@ -71,7 +71,7 @@ pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
   // There does not seem to be an advantage to calling nondimensionalize()
   err = VecScale(coordVec, 1.0/lengthScale);PYLITH_CHECK_ERROR(err);
   err = DMPlexSetScale(dmMesh, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
-  err = DMViewFromOptions(dmMesh, "pylith_final_", "-dm_view");PYLITH_CHECK_ERROR(err);
+  err = DMViewFromOptions(dmMesh, NULL, "-pylith_nondim_dm_view");PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // nondimensionalize
@@ -96,7 +96,7 @@ pylith::topology::MeshOps::checkTopology(const Mesh& mesh)
   PetscInt cellHeight = subpointMap ? 1 : 0;
 
   PetscErrorCode err;
-  err = DMViewFromOptions(dmMesh, "pylith_check_", "-dm_view");PYLITH_CHECK_ERROR(err);
+  err = DMViewFromOptions(dmMesh, NULL, "-pylith_checktopo_dm_view");PYLITH_CHECK_ERROR(err);
   err = DMPlexCheckSymmetry(dmMesh);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh associated with symmetry of adjacency information.");
 
   err = DMPlexCheckSkeleton(dmMesh, isSimplexMesh, cellHeight);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh cells.");
