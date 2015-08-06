@@ -98,6 +98,14 @@ Step 4. Friction controlled afterslip
     pylith step04.cfg
 
 
+Step 5. Initial stresses from gravity (infinitesimal strain, linear solver)
+Step 6. Verify equilibrium of initial stresses + relaxation (infinitesimal strain, linear solver) [nonlinear solver]
+  Expect very little shear stress, axial stress should be nearly equal
+Step 7. Viscoelastic relaxation from coseismic slip (infinitesimal strain, linear solver)
+Step 8. Verify equilibrium of initial stresses + relaxation (small strain, nonlinear solver)
+  Expect very little shear stress, axial stress should be nearly equal
+Step 9. Viscoelastic relaxation from coseismic slip (small strain, nonlinear solver)
+
 Suggestions variations
 
   The list below includes some suggested modifications to the problem
