@@ -27,8 +27,9 @@ for material in materials:
   vertices = h5['geometry/vertices'][:]
   cells = numpy.array(h5['topology/cells'][:], dtype=numpy.int)
   stress = h5['cell_fields/stress'][0,:,:]
-  if "mantleX" in material:
-    stressZZ = h5['cell_fields/stress_zz_initial'][0,:,0]
+  strain = h5['cell_fields/total_strain'][0,:,:]
+  if "mantle" in material:
+    strainViscous = h5['cell_fields/viscous_strain'][0,:,:]
   h5.close()
 
   # Get cell centers for output.
@@ -51,32 +52,37 @@ for material in materials:
              'data': stress[:,2]},
           ]
 
-  if "mantleX" in material:
-    zeros = numpy.zeros(stressZZ.shape[0], dtype=numpy.float64)
+  if "mantle" in material:
+    density = 4000.0
+    vs = 5600.0
+    vp = 10000.0
+    modulus_mu = density*vs**2
+    modulus_lambda = density*vp**2 - 2.0*modulus_mu
+    stressZZ = modulus_lambda * (strain[:,0] + strain[:,1])
     values += [{'name': "stress-zz-initial",
                 'units': "Pa",
                 'data': stressZZ},
                {'name': "total-strain-xx",
                 'units': "None",
-                'data': zeros},
+                'data': strainViscous[:,0]},
                {'name': "total-strain-yy",
                 'units': "None",
-                'data': zeros},
+                'data': strainViscous[:,1]},
                {'name': "total-strain-xy",
                 'units': "None",
-                'data': zeros},
+                'data': strainViscous[:,3]},
                {'name': "viscous-strain-xx",
                 'units': "None",
-                'data': zeros},
+                'data': strainViscous[:,0]},
                {'name': "viscous-strain-yy",
                 'units': "None",
-                'data': zeros},
-               {'name': "viscous-strain-xy",
-                'units': "None",
-                'data': zeros},
+                'data': strainViscous[:,1]},
                {'name': "viscous-strain-zz",
                 'units': "None",
-                'data': zeros},
+                'data': strainViscous[:,2]},
+               {'name': "viscous-strain-xy",
+                'units': "None",
+                'data': strainViscous[:,3]},
           ]
 
   writer.write({'points': cellCenters,
