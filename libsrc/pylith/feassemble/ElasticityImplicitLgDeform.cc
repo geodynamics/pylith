@@ -31,11 +31,12 @@
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 
-#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
 #include "pylith/utils/lapack.h" // USES LAPACKdgesvd
+
+#include "pylith/utils/error.h" // USES PYLITH_CHECK_ERROR
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
@@ -87,6 +88,8 @@ pylith::feassemble::ElasticityImplicitLgDeform::timeStep(const PylithScalar dt)
   _dt = dt;
   if (_material)
     _material->timeStep(_dt);
+
+  PYLITH_METHOD_END;
 } // timeStep
 
 // ----------------------------------------------------------------------
@@ -141,15 +144,11 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
   totalStrain_fn_type calcTotalStrainFn;
   elasticityResidual_fn_type elasticityResidualFn;
   if (2 == cellDim) {
-    elasticityResidualFn = 
-      &pylith::feassemble::ElasticityImplicitLgDeform::_elasticityResidual2D;
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain2D;
+    elasticityResidualFn = &pylith::feassemble::ElasticityImplicitLgDeform::_elasticityResidual2D;
+    calcTotalStrainFn = &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain2D;
   } else if (3 == cellDim) {
-    elasticityResidualFn = 
-      &pylith::feassemble::ElasticityImplicitLgDeform::_elasticityResidual3D;
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain3D;
+    elasticityResidualFn = &pylith::feassemble::ElasticityImplicitLgDeform::_elasticityResidual3D;
+    calcTotalStrainFn = &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain3D;
   } else {
     assert(false);
     throw std::logic_error("Unsupported cell dimension in ElasticityImplicit::integrateJacobian().");
@@ -161,6 +160,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
   scalar_array dispTpdtCell(numBasis*spaceDim);
   scalar_array deformCell(numQuadPts*spaceDim*spaceDim);
   scalar_array strainCell(numQuadPts*tensorSize);
+  strainCell = 0.0;
   scalar_array gravVec(spaceDim);
   scalar_array quadPtsGlobal(numQuadPts*spaceDim);
 
@@ -187,9 +187,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
 
   assert(_normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
-  const PylithScalar gravityScale = 
-    _normalizer->pressureScale() / (_normalizer->lengthScale() *
-				    _normalizer->densityScale());
+  const PylithScalar gravityScale = _normalizer->pressureScale() / (_normalizer->lengthScale() * _normalizer->densityScale());
 
   _logger->eventEnd(setupEvent);
   _logger->eventBegin(computeEvent);
@@ -337,6 +335,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(topology::Jaco
   scalar_array dispTpdtCell(numBasis*spaceDim);
   scalar_array deformCell(numQuadPts*spaceDim*spaceDim);
   scalar_array strainCell(numQuadPts*tensorSize);
+  strainCell = 0.0;
   scalar_array stressCell(numQuadPts*tensorSize);
 
   // Get cell information
@@ -400,8 +399,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(topology::Jaco
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
 
     // Get "elasticity" matrix at quadrature points for this cell
-    const scalar_array& elasticConsts = 
-      _material->calcDerivElastic(strainCell);
+    const scalar_array& elasticConsts = _material->calcDerivElastic(strainCell);
 
     // Get Second Priola-Kirchoff stress tensor
     const scalar_array& stressCell = _material->calcStress(strainCell, true);
@@ -447,10 +445,10 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(topology::Jaco
     jacobianVisitor.setClosure(&_cellMatrix[0], _cellMatrix.size(), cell, ADD_VALUES);
   } // for
 
-  _logger->eventEnd(computeEvent);
-
   _needNewJacobian = false;
   _material->resetNeedNewJacobian();
+
+  _logger->eventEnd(computeEvent);
 
   PYLITH_METHOD_END;
 } // integrateJacobian

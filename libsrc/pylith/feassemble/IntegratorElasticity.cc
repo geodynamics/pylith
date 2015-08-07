@@ -651,9 +651,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual2D(const scalar_arr
     const PylithScalar s11 = stress[iQs  ];
     const PylithScalar s22 = stress[iQs+1];
     const PylithScalar s12 = stress[iQs+2];
-    for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
-	 iBasis < numBasis;
-	 ++iBasis) {
+    for (int iBasis=0, iQ=iQuad*numBasis*spaceDim; iBasis < numBasis; ++iBasis) {
       const int iBlock = iBasis*spaceDim;
       const PylithScalar N1 = wt*basisDeriv[iQ+iBlock  ];
       const PylithScalar N2 = wt*basisDeriv[iQ+iBlock+1];

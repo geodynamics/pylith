@@ -57,8 +57,10 @@ pylith::feassemble::IntegratorElasticityLgDeform::~IntegratorElasticityLgDeform(
 bool
 pylith::feassemble::IntegratorElasticityLgDeform::needNewJacobian(void)
 { // needNewJacobian
+  PYLITH_METHOD_BEGIN;
+
   _needNewJacobian = IntegratorElasticity::needNewJacobian();
-  return _needNewJacobian;
+  PYLITH_METHOD_RETURN(_needNewJacobian);
 } // needNewJacobian
 
 // ----------------------------------------------------------------------
@@ -75,7 +77,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::updateStateVars(const PylithSc
 
   // No need to update state vars if material doesn't have any.
   if (!_material->hasStateVars())
-    return;
+    PYLITH_METHOD_END;
 
   // Get cell information that doesn't depend on particular cell
   const int cellDim = _quadrature->cellDim();
@@ -108,7 +110,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::updateStateVars(const PylithSc
   const PetscInt numCells = _materialIS->size();
 
   scalar_array dispCell(numBasis*spaceDim);
-  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
+  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"), "displacement");
   dispVisitor.optimizeClosure();
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
@@ -186,7 +188,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(topolog
 
   // Setup field visitors.
   scalar_array dispCell(numBasis*spaceDim);
-  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
+  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"), "displacement");
   dispVisitor.optimizeClosure();
 
   topology::VecVisitorMesh fieldVisitor(*field);
@@ -269,23 +271,15 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual2D(const sc
       l22 += basisDeriv[iQ+kB+1] * disp[kB+1];
     } // for
 
-    for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
-	 iBasis < numBasis;
-	 ++iBasis) {
+    for (int iBasis=0, iQ=iQuad*numBasis*spaceDim; iBasis < numBasis; ++iBasis) {
       const int iB = iBasis*spaceDim;
       const PylithScalar Nip = basisDeriv[iQ+iB  ];
       const PylithScalar Niq = basisDeriv[iQ+iB+1];
 
       // Generated using Maxima (see jacobian2d_lgdeform.wxm)
-      _cellVector[iB  ] -= 
-	wt*(l12*Niq*s22 + 
-	    ((l11+1)*Niq+l12*Nip)*s12 + 
-	    (l11+1)*Nip*s11);
+      _cellVector[iB  ] -= wt*(l12*Niq*s22 + ((l11+1)*Niq+l12*Nip)*s12 + (l11+1)*Nip*s11);
 
-      _cellVector[iB+1] -=
-	wt*((l22+1)*Niq*s22 + 
-	    (l21*Niq+(l22+1)*Nip)*s12 + 
-	    l21*Nip*s11);
+      _cellVector[iB+1] -= wt*((l22+1)*Niq*s22 + (l21*Niq+(l22+1)*Nip)*s12 + l21*Nip*s11);
     } // for
   } // for
   PetscLogFlops(numQuadPts*(1+numBasis*(numBasis*8+14)));
@@ -341,38 +335,18 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual3D(const sc
       l33 += basisDeriv[iQ+kB+2] * disp[kB+2];
     } // for
     
-    for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
-	 iBasis < numBasis;
-	 ++iBasis) {
+    for (int iBasis=0, iQ=iQuad*numBasis*spaceDim; iBasis < numBasis; ++iBasis) {
       const int iB = iBasis*spaceDim;
       const PylithScalar Nip = basisDeriv[iQ+iB  ];
       const PylithScalar Niq = basisDeriv[iQ+iB+1];
       const PylithScalar Nir = basisDeriv[iQ+iB+2];
 
       // Generated using Maxima (see jacobian3d_lgdeform.wxm)
-      _cellVector[iB  ] -= 
-	wt*(l13*Nir*s33 + 
-	    (l12*Nir+l13*Niq)*s23 + 
-	    l12*Niq*s22 + 
-	    ((l11+1)*Nir + l13*Nip)*s13 + 
-	    ((l11+1)*Niq+l12*Nip)*s12 + 
-	    (l11+1)*Nip*s11);
+      _cellVector[iB  ] -= wt*(l13*Nir*s33 + (l12*Nir+l13*Niq)*s23 + l12*Niq*s22 + ((l11+1)*Nir + l13*Nip)*s13 + ((l11+1)*Niq+l12*Nip)*s12 + (l11+1)*Nip*s11);
 
-      _cellVector[iB+1] -=
-	wt*(l23*Nir*s33 + 
-	    ((l22+1)*Nir+l23*Niq)*s23 + 
-	    (l22+1)*Niq*s22 + 
-	    (l21*Nir+l23*Nip)*s13 + 
-	    (l21*Niq+(l22+1)*Nip)*s12 + 
-	    l21*Nip*s11);
+      _cellVector[iB+1] -= wt*(l23*Nir*s33 + ((l22+1)*Nir+l23*Niq)*s23 + (l22+1)*Niq*s22 + (l21*Nir+l23*Nip)*s13 + (l21*Niq+(l22+1)*Nip)*s12 + l21*Nip*s11);
 
-      _cellVector[iB+2] -=
-	wt*((l33+1)*Nir*s33 + 
-	    (l32*Nir+(l33+1)*Niq)*s23 + 
-	    l32*Niq*s22 + 
-	    (l31*Nir+(l33+1)*Nip)*s13 + 
-	    (l31*Niq+l32*Nip)*s12 + 
-	    l31*Nip*s11);
+      _cellVector[iB+2] -= wt*((l33+1)*Nir*s33 + (l32*Nir+(l33+1)*Niq)*s23 + l32*Niq*s22 + (l31*Nir+(l33+1)*Nip)*s13 + (l31*Niq+l32*Nip)*s12 + l31*Nip*s11);
     } // for
   } // for
   PetscLogFlops(numQuadPts*(1+numBasis*(numBasis*18+3*27)));
