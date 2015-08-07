@@ -98,13 +98,16 @@ Step 4. Friction controlled afterslip
     pylith step04.cfg
 
 
-Steps 5 & 6: infinitesimal strain, linear solver
-Steps 7 & 8: small strain, nonlinear solver
+Steps 5-7: infinitesimal strain, linear solver
+Steps 8-9: small strain, nonlinear solver
 
 
-Step 5 & 7: Gravitational body forces + relaxation
+Step 5: Gravitational body forces
+Steps 6 & 8: Relaxtion
   sigma_xx and sigma_yy become equal
-Step 6 & 8: Coseismic slip + relaxation
+  No elastic prestep
+  Carry forward state variables from Step 5
+Step 7 & 9: Coseismic slip + relaxation
   No elastic prestep
   Carry forward state variables from Steps 5 & 7
 
