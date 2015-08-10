@@ -180,7 +180,7 @@ pylith::topology::MatVisitorSubMesh::MatVisitorSubMesh(const PetscMat mat,
   PetscErrorCode err;
   err = PetscSectionCreateSubmeshSection(section, subpointIS, &_subsection);PYLITH_CHECK_ERROR(err);assert(_subsection);
   err = DMGetPointSF(_dm, &sf);PYLITH_CHECK_ERROR(err);assert(sf);
-  err = PetscSectionCreateGlobalSection(section, sf, PETSC_FALSE, &_globalSection);PYLITH_CHECK_ERROR(err);assert(_globalSection);
+  err = PetscSectionCreateGlobalSection(section, sf, PETSC_FALSE, PETSC_FALSE, &_globalSection);PYLITH_CHECK_ERROR(err);assert(_globalSection);
   err = PetscSectionCreateSubmeshSection(_globalSection, subpointIS, &_globalSubsection);PYLITH_CHECK_ERROR(err);assert(_globalSubsection);
 
   initialize();
