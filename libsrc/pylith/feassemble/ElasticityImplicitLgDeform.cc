@@ -182,7 +182,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
   topology::VecVisitorMesh residualVisitor(residual, "displacement");
   residualVisitor.optimizeClosure();
 
-  scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
+  scalar_array coordsCell(numBasis*spaceDim); // :KLUDGE: numBasis to numCorners after switching to higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
   assert(_normalizer);
@@ -222,6 +222,9 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
       dispTpdtCell[i] = dispCell[i] + dispIncrCell[i];
     } // for
 
+    // Compute deformation tensor
+    _calcDeformation(&deformCell, basisDeriv, &coordsCell[0], &dispTpdtCell[0], numBasis, numQuadPts, spaceDim);
+
     // Compute body force vector if gravity is being used.
     if (_gravityField) {
       const spatialdata::geocoords::CoordSys* cs = fields->mesh().coordsys();assert(cs);
@@ -240,7 +243,16 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
 	  throw std::runtime_error("Unable to get gravity vector for point.");
 	} // if
 	_normalizer->nondimensionalize(&gravVec[0], gravVec.size(), gravityScale);
-	const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
+
+	// Compute determinant of deformation tensor.
+	PylithScalar deformDet = 1.0;
+	const int deformSize = spaceDim * spaceDim;
+	const int iDeform = iQuad*deformSize;
+	if (2 == spaceDim) {
+	  deformDet = deformCell[iDeform+0]*deformCell[iDeform+3] - deformCell[iDeform+1]*deformCell[iDeform+2];
+	} // if
+
+	const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad] / deformDet;
 	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
 	  const PylithScalar valI = wt*basis[iQ+iBasis];
 	  for (int iDim=0; iDim < spaceDim; ++iDim) {
@@ -253,7 +265,6 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
 
     // Compute B(transpose) * sigma, first computing deformation
     // tensor and strains
-    _calcDeformation(&deformCell, basisDeriv, &coordsCell[0], &dispTpdtCell[0], numBasis, numQuadPts, spaceDim);
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
     const scalar_array& stressCell = _material->calcStress(strainCell, true);
 
@@ -299,9 +310,9 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(topology::Jaco
   _logger->eventBegin(setupEvent);
 
   // Get cell geometry information that doesn't depend on cell
-  const size_t numQuadPts = _quadrature->numQuadPts();
+  const int numQuadPts = _quadrature->numQuadPts();
   const scalar_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
+  assert(quadWts.size() == size_t(numQuadPts));
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
   const int cellDim = _quadrature->cellDim();
@@ -353,7 +364,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(topology::Jaco
   topology::VecVisitorMesh dispIncrVisitor(fields->get("dispIncr(t->t+dt)"), "displacement");
   dispIncrVisitor.optimizeClosure();
 
-  scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
+  scalar_array coordsCell(numBasis*spaceDim); // :KLUDGE: numBasis to numCorners after switching to higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
   // Get sparse matrix
@@ -375,7 +386,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(topology::Jaco
     coordsVisitor.getClosure(&coordsCell, cell);
     _quadrature->computeGeometry(&coordsCell[0], coordsCell.size(), cell);
 
-    // Get state variables for cell.
+    // Get physical properties and state variables for cell.
     _material->retrievePropsAndVars(cell);
 
     // Reset element matrix to zero
