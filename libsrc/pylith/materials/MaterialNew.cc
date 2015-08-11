@@ -148,6 +148,7 @@ pylith::materials::MaterialNew::discretization(const char* name) const
 } // discretization
 
 
+extern PetscErrorCode DMPlexComputeResidual_Internal(DM dm, PetscInt cStart, PetscInt cEnd, PetscReal time, Vec locX, Vec locX_t, Vec locF, void *user);
 // ----------------------------------------------------------------------
 void
 pylith::materials::MaterialNew::integrateResidual(const topology::Field& residual,
@@ -164,10 +165,12 @@ pylith::materials::MaterialNew::integrateResidual(const topology::Field& residua
 
   PetscDS prob = NULL;
   PetscVec dispTpdtVec = NULL;
+  PetscInt cStart = 0, cEnd = 0;
   PetscErrorCode err;
 
   PetscDM dmMesh = fields->get("dispIncr(t->t+dt)").dmMesh();
   PetscDM dmAux = _auxFields->dmMesh();
+  PetscDMLabel label;
 
   // Pointwise function have been set in DS
   err = DMGetDS(dmMesh, &prob);PYLITH_CHECK_ERROR(err);
@@ -181,12 +184,9 @@ pylith::materials::MaterialNew::integrateResidual(const topology::Field& residua
   err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) auxFields().localVector());PYLITH_CHECK_ERROR(err);
 
   // Compute the local residual
-#if 0  
-  //getStratumBounds(), filter out things other than cells
+  err = DMPlexGetLabel(dmMesh, "material-id", &label);PYLITH_CHECK_ERROR(err);
+  err = DMLabelGetStratumBounds(label, id(), &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
   err = DMPlexComputeResidual_Internal(dmMesh, cStart, cEnd, PETSC_MIN_REAL, dispTpdtVec, NULL, residual.localVector(), NULL);PYLITH_CHECK_ERROR(err);
-#else
-  err = DMPlexSNESComputeResidualFEM(dmMesh, dispTpdtVec, residual.localVector(), NULL);PYLITH_CHECK_ERROR(err);
-#endif
   err = VecDestroy(&dispTpdtVec);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
