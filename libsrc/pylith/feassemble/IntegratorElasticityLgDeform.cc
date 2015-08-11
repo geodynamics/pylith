@@ -114,6 +114,8 @@ pylith::feassemble::IntegratorElasticityLgDeform::updateStateVars(const PylithSc
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
+  _material->createPropsAndVarsVisitors();
+
   // Loop over cells
   for (PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
@@ -122,6 +124,9 @@ pylith::feassemble::IntegratorElasticityLgDeform::updateStateVars(const PylithSc
     coordsVisitor.getClosure(&coordsCell, cell);
     _quadrature->computeGeometry(&coordsCell[0], coordsCell.size(), cell);
     const scalar_array& basisDeriv = _quadrature->basisDeriv();
+
+    // Get physical properties and state variables for cell.
+    _material->retrievePropsAndVars(cell);
 
     dispVisitor.getClosure(&dispCell, cell);
   
@@ -134,6 +139,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::updateStateVars(const PylithSc
     // Update material state
     _material->updateStateVars(strainCell, cell);
   } // for
+  _material->destroyPropsAndVarsVisitors();
 
   PYLITH_METHOD_END;
 } // updateStateVars
@@ -195,6 +201,8 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(topolog
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
+  _material->createPropsAndVarsVisitors();
+
   // Loop over cells
   for (PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
@@ -228,6 +236,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(topolog
       } // for
     } // else
   } // for
+  _material->destroyPropsAndVarsVisitors();
 
   PYLITH_METHOD_END;
 } // _calcStrainStressField
