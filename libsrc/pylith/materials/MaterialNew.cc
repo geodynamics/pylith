@@ -23,6 +23,8 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // HOLDSA Field
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
+#include "pylith/topology/SolutionFields.hh" // USES SolutionFields
+#include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/Stratum.hh" // USES StratumIS
@@ -84,6 +86,8 @@ pylith::materials::MaterialNew::initialize(const pylith::topology::Field& soluti
   // Get cells associated with material
   const pylith::topology::Mesh& mesh = solution.mesh();
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+  topology::CoordsVisitor::optimizeClosure(dmMesh);
+  
   const bool includeOnlyCells = true;
   delete _materialIS; _materialIS = new topology::StratumIS(dmMesh, "material-id", _id, includeOnlyCells);assert(_materialIS);
 
@@ -143,5 +147,91 @@ pylith::materials::MaterialNew::discretization(const char* name) const
   PYLITH_METHOD_RETURN(iter->second); // default
 } // discretization
 
+
+// ----------------------------------------------------------------------
+void
+pylith::materials::MaterialNew::integrateResidual(const topology::Field& residual,
+							  const PylithScalar t,
+							  topology::SolutionFields* const fields)
+{ // integrateResidual
+  PYLITH_METHOD_BEGIN;
+
+  assert(_logger);
+  assert(fields);
+
+  assert(fields);
+  assert(_auxFields);
+
+  PetscDS prob = NULL;
+  PetscVec dispTpdtVec = NULL;
+  PetscErrorCode err;
+
+  PetscDM dmMesh = fields->get("dispIncr(t->t+dt)").dmMesh();
+  PetscDM dmAux = _auxFields->dmMesh();
+
+  // Pointwise function have been set in DS
+  err = DMGetDS(dmMesh, &prob);PYLITH_CHECK_ERROR(err);
+
+  // Create full solution
+  err = VecDuplicate(residual.localVector(), &dispTpdtVec);PYLITH_CHECK_ERROR(err);
+  err = VecWAXPY(dispTpdtVec, 1.0, fields->get("disp(t)").localVector(), fields->get("dispIncr(t->t+dt)").localVector());PYLITH_CHECK_ERROR(err);
+
+  // Get auxiliary data
+  err = PetscObjectCompose((PetscObject) dmMesh, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
+  err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) auxFields().localVector());PYLITH_CHECK_ERROR(err);
+
+  // Compute the local residual
+#if 0  
+  //getStratumBounds(), filter out things other than cells
+  err = DMPlexComputeResidual_Internal(dmMesh, cStart, cEnd, PETSC_MIN_REAL, dispTpdtVec, NULL, residual.localVector(), NULL);PYLITH_CHECK_ERROR(err);
+#else
+  err = DMPlexSNESComputeResidualFEM(dmMesh, dispTpdtVec, residual.localVector(), NULL);PYLITH_CHECK_ERROR(err);
+#endif
+  err = VecDestroy(&dispTpdtVec);PYLITH_CHECK_ERROR(err);
+
+  PYLITH_METHOD_END;
+} // integrateResidual
+
+// ----------------------------------------------------------------------
+// Compute stiffness matrix.
+void
+pylith::materials::MaterialNew::integrateJacobian(topology::Jacobian* jacobian,
+							  const PylithScalar t,
+							  topology::SolutionFields* fields)
+{ // integrateJacobian
+  PYLITH_METHOD_BEGIN;
+
+  assert(_logger);
+  assert(jacobian);
+  assert(fields);
+
+  PetscDS prob = NULL;
+  PetscVec dispTpdtVec = NULL;
+  PetscErrorCode err;
+
+  const PetscMat jacobianMat = jacobian->matrix();assert(jacobianMat);
+  const topology::Field& solnField = fields->get("dispIncr(t->t+dt)");
+  PetscDM dmMesh = solnField.dmMesh();
+  PetscDM dmAux = _auxFields->dmMesh();
+
+  // Pointwise function have been set in DS
+  err = DMGetDS(dmMesh, &prob);PYLITH_CHECK_ERROR(err);
+
+  // Create full solution
+  err = VecDuplicate(fields->get("disp(t)").localVector(), &dispTpdtVec);PYLITH_CHECK_ERROR(err);
+  err = VecWAXPY(dispTpdtVec, 1.0, fields->get("disp(t)").localVector(), solnField.localVector());PYLITH_CHECK_ERROR(err);
+
+  // Get auxiliary data
+  err = PetscObjectCompose((PetscObject) dmMesh, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
+  err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) auxFields().localVector());PYLITH_CHECK_ERROR(err);
+
+  // Compute the local Jacobian
+  err = DMPlexSNESComputeJacobianFEM(dmMesh, dispTpdtVec, jacobianMat, jacobianMat, NULL);PYLITH_CHECK_ERROR(err);
+  err = VecDestroy(&dispTpdtVec);PYLITH_CHECK_ERROR(err);
+
+  _needNewJacobian = false;
+
+  PYLITH_METHOD_END;
+} // integrateJacobian
 
 // End of file 

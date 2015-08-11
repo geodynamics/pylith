@@ -80,12 +80,6 @@ public :
   void getAuxField(topology::Field *field,
 		   const char* name) const;
 
-  /** Initialize integrator.
-   *
-   * @param mesh Finite-element mesh.
-   */
-  void initialize(const topology::Mesh& mesh);
-  
   /** Update state variables as needed.
    *
    * @param t Current time
@@ -102,40 +96,8 @@ public :
   virtual
   void verifyConfiguration(const topology::Mesh& mesh) const;
   
-  /** Integrate residual part of RHS for 3-D finite elements.
-   * Includes gravity and element internal force contribution.
-   *
-   * We assume that the effects of boundary conditions are already
-   * included in the residual (tractions, concentrated nodal forces,
-   * and contributions to internal force vector due to
-   * displacement/velocity BC).  This routine computes the additional
-   * external loads due to body forces plus the
-   * element internal forces for the current stress state.
-   *
-   * @param residual Field containing values for residual
-   * @param t Current time
-   * @param fields Solution fields
-   */
-  void integrateResidual(const topology::Field& residual,
-			 const PylithScalar t,
-			 topology::SolutionFields* const fields);
-
-  /** Integrate contributions to Jacobian matrix (A) associated with
-   * operator.
-   *
-   * @param jacobian Sparse matrix for Jacobian of system.
-   * @param t Current time
-   * @param fields Solution fields
-   */
-  void integrateJacobian(topology::Jacobian* jacobian,
-			 const PylithScalar t,
-			 topology::SolutionFields* const fields);
-
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
-
-  /// Initialize logger.
-  void _initializeLogger(void);
 
   /** Set residual and Jacobian kernels.
    *
