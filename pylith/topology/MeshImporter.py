@@ -52,7 +52,7 @@ class MeshImporter(MeshGenerator):
 
     import pyre.inventory
 
-    reorderMesh = pyre.inventory.bool("reorder_mesh", default=False)
+    reorderMesh = pyre.inventory.bool("reorder_mesh", default=True)
     reorderMesh.meta['tip'] = "Reorder mesh using reverse Cuthill-McKee."
 
     from pylith.meshio.MeshIOAscii import MeshIOAscii
