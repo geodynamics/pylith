@@ -85,14 +85,6 @@ protected :
 			      const char* name,
 			      topology::SolutionFields* const fields);
 
-  /** Integrate elasticity term in residual for 1-D cells.
-   *
-   * @param stress Stress tensor for cell at quadrature points.
-   * @param disp Displacement field at cell's DOF.
-   */
-  void _elasticityResidual1D(const scalar_array& stress,
-			     const scalar_array& disp);
-
   /** Integrate elasticity term in residual for 2-D cells.
    *
    * @param stress Stress tensor for cell at quadrature points.
@@ -107,16 +99,6 @@ protected :
    * @param disp Displacement field at cell's DOF.
    */
   void _elasticityResidual3D(const scalar_array& stress,
-			     const scalar_array& disp);
-
-  /** Integrate elasticity term in Jacobian for 1-D cells.
-   *
-   * @param elasticConsts Matrix of elasticity constants at quadrature points.
-   * @param stress Stress tensor for cell at quadrature points.
-   * @param disp Displacement field at cell's DOF.
-   */
-  void _elasticityJacobian1D(const scalar_array& elasticConsts,
-			     const scalar_array& stress,
 			     const scalar_array& disp);
 
   /** Integrate elasticity term in Jacobian for 2-D cells.

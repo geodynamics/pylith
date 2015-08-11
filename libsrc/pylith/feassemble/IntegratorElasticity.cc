@@ -207,9 +207,12 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(const PylithScalar t,
   scalar_array coordsCell(numCorners*spaceDim);
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
+  _material->createPropsAndVarsVisitors();
+
   // Loop over cells
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
+
     // Retrieve geometry information for current cell
     coordsVisitor.getClosure(&coordsCell, cell);
     _quadrature->computeGeometry(&coordsCell[0], coordsCell.size(), cell);
@@ -227,6 +230,7 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(const PylithScalar t,
     // Update material state
     _material->updateStateVars(strainCell, cell);
   } // for
+  _material->destroyPropsAndVarsVisitors();
 
   PYLITH_METHOD_END;
 } // updateStateVars
@@ -540,6 +544,8 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(topology::Field
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
+  _material->createPropsAndVarsVisitors();
+
   // Loop over cells
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
@@ -570,6 +576,7 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(topology::Field
       } // for
     } // else
   } // for
+  _material->destroyPropsAndVarsVisitors();
 
   PYLITH_METHOD_END;
 } // _calcStrainStressField
@@ -604,6 +611,8 @@ pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(topology::Field*
   topology::VecVisitorMesh fieldVisitor(*field);
   PetscScalar* fieldArray = fieldVisitor.localArray();
 
+  _material->createPropsAndVarsVisitors();
+
   // Loop over cells
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
@@ -622,6 +631,7 @@ pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(topology::Field*
     } // for
 
   } // for
+  _material->destroyPropsAndVarsVisitors();
 
   PYLITH_METHOD_END;
 } // _calcStressFromStrain

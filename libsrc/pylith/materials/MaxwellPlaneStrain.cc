@@ -475,7 +475,13 @@ pylith::materials::MaxwellPlaneStrain::_calcStressViscoelastic(
   stress[1] = meanStressTpdt + mu2 * (_viscousStrain[1] - devStrainInitial[1]);
   stress[2] = mu2 * (_viscousStrain[3] - devStrainInitial[2]);
 
-  //std::cout << "CALCSTRESS, viscousStrain:"; for(int i=0;i<4;++i) {std::cout << " " << _viscousStrain[i]; } std::cout << std::endl;
+#if 0
+  std::cout << "CALCSTRESS, viscousStrain:"; for(int i=0;i<4;++i) {std::cout << " " << _viscousStrain[i]; } std::cout << std::endl;
+  std::cout << "CALCSTRESS, totalStrain:"; for(int i=0;i<3;++i) {std::cout << " " << totalStrain[i]; } std::cout << std::endl;
+  std::cout << "CALCSTRESS, meanStrain: " << meanStrainTpdt << std::endl;
+  std::cout << "CALCSTRESS, meanStress: " << meanStressTpdt << std::endl;
+  std::cout << "CALCSTRESS, stress:"; for(int i=0;i<3;++i) {std::cout << " " << stress[i]; } std::cout << std::endl;
+#endif
 
   PetscLogFlops(30);
 } // _calcStressViscoelastic
@@ -618,11 +624,11 @@ pylith::materials::MaxwellPlaneStrain::_updateStateVarsElastic(
 
   const PylithScalar meanStrainTpdt = (strainTpdt[0] + strainTpdt[1]) / 3.0;
 
-  const PylithScalar diag[] = { 1.0, 1.0, 1.0, 0.0 };
+  const PylithScalar diag[4] = { 1.0, 1.0, 1.0, 0.0 };
 
   stateVars[s_totalStrain] = totalStrain[0];
-  stateVars[s_totalStrain + 1] = totalStrain[1];
-  stateVars[s_totalStrain + 2] = totalStrain[2];
+  stateVars[s_totalStrain+1] = totalStrain[1];
+  stateVars[s_totalStrain+2] = totalStrain[2];
 
   for (int iComp=0; iComp < 4; ++iComp) {
     stateVars[s_viscousStrain + iComp] = strainTpdt[iComp] - diag[iComp] * meanStrainTpdt;

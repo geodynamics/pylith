@@ -79,6 +79,7 @@ public :
    *
    * @returns True if Jacobian needs to be recomputed, false otherwise.
    */
+  virtual
   bool needNewJacobian(void);
 
   /** Initialize integrator.
@@ -93,6 +94,7 @@ public :
    * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
+  virtual
   void updateStateVars(const PylithScalar t,
 		       topology::SolutionFields* const fields);
 
@@ -150,30 +152,33 @@ protected :
    */
   virtual
   void _calcStressFromStrain(topology::Field* field);
-			      
 
   /** Integrate elasticity term in residual for 2-D cells.
    *
    * @param stress Stress tensor for cell at quadrature points.
    */
+  virtual
   void _elasticityResidual2D(const scalar_array& stress);
 
   /** Integrate elasticity term in residual for 3-D cells.
    *
    * @param stress Stress tensor for cell at quadrature points.
    */
+  virtual
   void _elasticityResidual3D(const scalar_array& stress);
 
   /** Integrate elasticity term in Jacobian for 2-D cells.
    *
    * @param elasticConsts Matrix of elasticity constants at quadrature points.
    */
+  virtual
   void _elasticityJacobian2D(const scalar_array& elasticConsts);
 
   /** Integrate elasticity term in Jacobian for 3-D cells.
    *
    * @param elasticConsts Matrix of elasticity constants at quadrature points.
    */
+  virtual
   void _elasticityJacobian3D(const scalar_array& elasticConsts);
 
   /** Compute total strain in at quadrature points of a cell.
