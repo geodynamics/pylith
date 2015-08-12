@@ -148,7 +148,7 @@ pylith::materials::MaterialNew::discretization(const char* name) const
 } // discretization
 
 
-extern PetscErrorCode DMPlexComputeResidual_Internal(DM dm, PetscInt cStart, PetscInt cEnd, PetscReal time, Vec locX, Vec locX_t, Vec locF, void *user);
+extern "C" PetscErrorCode DMPlexComputeResidual_Internal(DM dm, PetscInt cStart, PetscInt cEnd, PetscReal time, Vec locX, Vec locX_t, Vec locF, void *user);
 // ----------------------------------------------------------------------
 void
 pylith::materials::MaterialNew::integrateResidual(const topology::Field& residual,
