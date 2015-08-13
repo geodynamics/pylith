@@ -103,6 +103,7 @@ class ProgressMonitorTime(ProgressMonitor):
   def _update(self, t, tStart, tEnd, now, finished, percentComplete):
     tSimNorm = t.value / self.tSimScale.value
     self.fout.write("%s   %8.2f*%s   %10.0f   %s\n" % (now, tSimNorm, self.tUnits, percentComplete, finished))
+    self.fout.flush()
     return
 
 
