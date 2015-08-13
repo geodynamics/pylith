@@ -957,7 +957,7 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
   err = DMSetDefaultSection(sinfo.dm, newSection);PYLITH_CHECK_ERROR(err);
   err = PetscSectionDestroy(&newSection);PYLITH_CHECK_ERROR(err);
   err = DMGetPointSF(sinfo.dm, &sf);PYLITH_CHECK_ERROR(err);
-  err = PetscSectionCreateGlobalSection(section, sf, PETSC_TRUE, &gsection);PYLITH_CHECK_ERROR(err);
+  err = PetscSectionCreateGlobalSection(section, sf, PETSC_TRUE, PETSC_FALSE, &gsection);PYLITH_CHECK_ERROR(err);
   err = DMSetDefaultGlobalSection(sinfo.dm, gsection);PYLITH_CHECK_ERROR(err);
   err = PetscSectionDestroy(&gsection);PYLITH_CHECK_ERROR(err);
   err = VecDestroy(&sinfo.vector);PYLITH_CHECK_ERROR(err);

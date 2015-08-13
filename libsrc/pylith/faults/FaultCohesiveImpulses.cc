@@ -308,7 +308,7 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
   PetscSection amplitudeGlobalSection = NULL;
   PetscSF sf = NULL;
   err = DMGetPointSF(amplitudeDM, &sf);PYLITH_CHECK_ERROR(err);
-  err = PetscSectionCreateGlobalSection(amplitudeSection, sf, PETSC_TRUE, &amplitudeGlobalSection);PYLITH_CHECK_ERROR(err);
+  err = PetscSectionCreateGlobalSection(amplitudeSection, sf, PETSC_TRUE, PETSC_FALSE, &amplitudeGlobalSection);PYLITH_CHECK_ERROR(err);
 
   scalar_array coordsVertex(spaceDim);
   PetscDM faultDMMesh = _faultMesh->dmMesh();assert(faultDMMesh);
