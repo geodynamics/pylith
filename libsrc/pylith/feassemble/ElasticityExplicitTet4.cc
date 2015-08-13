@@ -215,6 +215,8 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(const topology::Fi
   scalar_array coordsCell(numCorners*spaceDim);
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
+  _material->createPropsAndVarsVisitors();
+
   assert(_normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
   const PylithScalar gravityScale = _normalizer->pressureScale() / (_normalizer->lengthScale() * _normalizer->densityScale());
@@ -413,6 +415,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(const topology::Fi
     _logger->eventEnd(updateEvent);
 #endif
   } // for
+  _material->destroyPropsAndVarsVisitors();
 
 #if !defined(DETAILED_EVENT_LOGGING)
   PetscLogFlops(numCells*(2 + numBasis*spaceDim*2 + 196+84));
@@ -489,6 +492,8 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(topology::Field* j
   topology::VecVisitorMesh jacobianVisitor(*jacobian, "displacement");
   // Don't optimize closure since we compute the Jacobian only once.
 
+  _material->createPropsAndVarsVisitors();
+
   scalar_array coordsCell(numCorners*spaceDim);
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
@@ -536,6 +541,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(topology::Field* j
     _logger->eventEnd(updateEvent);
 #endif
   } // for
+  _material->destroyPropsAndVarsVisitors();
 
 #if !defined(DETAILED_EVENT_LOGGING)
   PetscLogFlops(numCells*3);

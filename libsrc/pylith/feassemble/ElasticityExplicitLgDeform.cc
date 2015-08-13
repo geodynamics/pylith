@@ -215,6 +215,8 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(const topology
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
+  _material->createPropsAndVarsVisitors();
+
   assert(_normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
   const PylithScalar gravityScale = _normalizer->pressureScale() / (_normalizer->lengthScale() * _normalizer->densityScale());
@@ -320,6 +322,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(const topology
     // Assemble cell contribution into field
     residualVisitor.setClosure(&_cellVector[0], _cellVector.size(), cell, ADD_VALUES);
   } // for
+  _material->destroyPropsAndVarsVisitors();
 
   _logger->eventEnd(computeEvent);
 
@@ -390,6 +393,8 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(topology::Fiel
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
+  _material->createPropsAndVarsVisitors();
+
   _logger->eventEnd(setupEvent);
   _logger->eventBegin(computeEvent);
 
@@ -442,6 +447,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(topology::Fiel
     // Assemble cell contribution into lumped matrix.
     jacobianVisitor.setClosure(&_cellVector[0], _cellVector.size(), cell, ADD_VALUES);
   } // for
+  _material->destroyPropsAndVarsVisitors();
 
   _needNewJacobian = false;
   _material->resetNeedNewJacobian();
