@@ -282,11 +282,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
     residualVisitor.setClosure(&_cellVector[0], _cellVector.size(), cell, ADD_VALUES);
   } // for
   _material->destroyPropsAndVarsVisitors();
-<<<<<<< HEAD
   
-=======
-
->>>>>>> master
   _logger->eventEnd(computeEvent);
 
   PYLITH_METHOD_END;
