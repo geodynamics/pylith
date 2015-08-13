@@ -191,6 +191,8 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
+  _material->createPropsAndVarsVisitors();
+
   assert(_normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
   const PylithScalar gravityScale = 
@@ -276,7 +278,8 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
     // Assemble cell contribution into field
     residualVisitor.setClosure(&_cellVector[0], _cellVector.size(), cell, ADD_VALUES);
   } // for
-  
+  _material->destroyPropsAndVarsVisitors();
+
   _logger->eventEnd(computeEvent);
 
   PYLITH_METHOD_END;
@@ -367,6 +370,8 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(topology::Jaco
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
+  _material->createPropsAndVarsVisitors();
+
   // Get sparse matrix
   const PetscMat jacobianMat = jacobian->matrix();assert(jacobianMat);
   topology::MatVisitorMesh jacobianVisitor(jacobianMat, fields->get("disp(t)"));
@@ -456,6 +461,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(topology::Jaco
     // Assemble cell contribution into PETSc matrix.
     jacobianVisitor.setClosure(&_cellMatrix[0], _cellMatrix.size(), cell, ADD_VALUES);
   } // for
+  _material->destroyPropsAndVarsVisitors();
 
   _logger->eventEnd(computeEvent);
 
