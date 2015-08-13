@@ -50,7 +50,12 @@ pylith::materials::ElasticMaterial::ElasticMaterial(const int dimension,
   _dbInitialStrain(0),
   _initialFields(0),
   _numQuadPts(0),
-  _numElasticConsts(numElasticConsts)
+  _numElasticConsts(numElasticConsts),
+  _numElasticConsts(numElasticConsts),
+  _propertiesVisitor(0),
+  _stateVarsVisitor(0),
+  _stressVisitor(0),
+  _strainVisitor(0)
 { // constructor
 } // constructor
 
@@ -70,6 +75,11 @@ pylith::materials::ElasticMaterial::deallocate(void)
 
   Material::deallocate();
   delete _initialFields; _initialFields = 0;
+
+  delete _propertiesVisitor; _propertiesVisitor = 0;
+  delete _stateVarsVisitor; _stateVarsVisitor = 0;
+  delete _stressVisitor; _stressVisitor = 0;
+  delete _strainVisitor; _strainVisitor = 0;
 
   _dbInitialStress = 0; // :TODO: Use shared pointer.
   _dbInitialStrain = 0; // :TODO: Use shared pointer.
@@ -103,6 +113,52 @@ pylith::materials::ElasticMaterial::initialize(const topology::Mesh& mesh,
 } // initialize
 
 // ----------------------------------------------------------------------
+void
+pylith::materials::ElasticMaterial::createPropsAndVarsVisitors(void)
+{ // createPropsAndVarsVisitors
+  PYLITH_METHOD_BEGIN;
+
+  assert(_properties);
+  assert(_stateVars);
+
+  delete _propertiesVisitor; _propertiesVisitor = new pylith::topology::VecVisitorMesh(*_properties);assert(_propertiesVisitor);
+  _propertiesVisitor->optimizeClosure();
+  if (hasStateVars()) {
+    delete _stateVarsVisitor; _stateVarsVisitor = new pylith::topology::VecVisitorMesh(*_stateVars);assert(_stateVarsVisitor);
+    _stateVarsVisitor->optimizeClosure();
+  } // if
+
+  if (_initialFields) {
+    if (_initialFields->hasField("initial stress")) {
+      pylith::topology::Field& stressField = _initialFields->get("initial stress");
+      delete _stressVisitor; _stressVisitor = new pylith::topology::VecVisitorMesh(stressField);assert(_stressVisitor);
+      _stressVisitor->optimizeClosure();
+    } // if
+    if (_initialFields->hasField("initial strain")) {
+      topology::Field& strainField = _initialFields->get("initial strain");
+      delete _strainVisitor; _strainVisitor = new pylith::topology::VecVisitorMesh(strainField);assert(_strainVisitor);
+      _strainVisitor->optimizeClosure();
+    } // if
+  } // if
+
+  PYLITH_METHOD_END;
+} // createPropsAndVarsVisitors
+
+// ----------------------------------------------------------------------
+void
+pylith::materials::ElasticMaterial::destroyPropsAndVarsVisitors(void)
+{ // destoryPropsAndVarsVisitors
+  PYLITH_METHOD_BEGIN;
+
+  delete _propertiesVisitor; _propertiesVisitor = 0;
+  delete _stateVarsVisitor; _stateVarsVisitor = 0;
+  delete _stressVisitor; _stressVisitor = 0;
+  delete _strainVisitor; _strainVisitor = 0;
+
+  PYLITH_METHOD_END;
+} // destroyPropsAndVarsVisitors
+
+// ----------------------------------------------------------------------
 // Retrieve parameters for physical properties and state variables for cell.
 void
 pylith::materials::ElasticMaterial::retrievePropsAndVars(const int cell)
@@ -114,22 +170,22 @@ pylith::materials::ElasticMaterial::retrievePropsAndVars(const int cell)
 
   const int propertiesSize = _numQuadPts*_numPropsQuadPt;
   const int stateVarsSize = _numQuadPts*_numVarsQuadPt;
-  assert(_propertiesCell.size() == propertiesSize);
-  assert(_stateVarsCell.size() == stateVarsSize);
+  assert(_propertiesCell.size() == size_t(propertiesSize));
+  assert(_stateVarsCell.size() == size_t(stateVarsSize));
 
-  topology::VecVisitorMesh propertiesVisitor(*_properties);
-  PetscScalar* propertiesArray = propertiesVisitor.localArray();
-  const PetscInt poff = propertiesVisitor.sectionOffset(cell);
-  assert(propertiesSize == propertiesVisitor.sectionDof(cell));
+  assert(_propertiesVisitor);
+  PetscScalar* propertiesArray = _propertiesVisitor->localArray();
+  const PetscInt poff = _propertiesVisitor->sectionOffset(cell);
+  assert(propertiesSize == _propertiesVisitor->sectionDof(cell));
   for(PetscInt d = 0; d < propertiesSize; ++d) {
     _propertiesCell[d] = propertiesArray[poff+d];
   } // for
 
   if (hasStateVars()) {
-    topology::VecVisitorMesh stateVarsVisitor(*_stateVars);
-    PetscScalar* stateVarsArray = stateVarsVisitor.localArray();
-    const PetscInt soff = stateVarsVisitor.sectionOffset(cell);
-    assert(stateVarsSize == stateVarsVisitor.sectionDof(cell));
+    assert(_stateVarsVisitor);
+    PetscScalar* stateVarsArray = _stateVarsVisitor->localArray();
+    const PetscInt soff = _stateVarsVisitor->sectionOffset(cell);
+    assert(stateVarsSize == _stateVarsVisitor->sectionDof(cell));
     for(PetscInt d = 0; d < stateVarsSize; ++d) {
       _stateVarsCell[d] = stateVarsArray[soff+d];
     } // for
@@ -140,24 +196,22 @@ pylith::materials::ElasticMaterial::retrievePropsAndVars(const int cell)
   if (_initialFields) {
     if (_initialFields->hasField("initial stress")) {
       const int stressSize = _numQuadPts*_tensorSize;
-      assert(_initialStressCell.size() == stressSize);
-      topology::Field& stressField = _initialFields->get("initial stress");
-      topology::VecVisitorMesh stressVisitor(stressField);
-      PetscScalar* stressArray = stressVisitor.localArray();
-      const PetscInt ioff = stressVisitor.sectionOffset(cell);
-      assert(stressSize == stressVisitor.sectionDof(cell));
+      assert(_initialStressCell.size() == size_t(stressSize));
+      assert(_stressVisitor);
+      PetscScalar* stressArray = _stressVisitor->localArray();
+      const PetscInt ioff = _stressVisitor->sectionOffset(cell);
+      assert(stressSize == _stressVisitor->sectionDof(cell));
       for(PetscInt d = 0; d < stressSize; ++d) {
 	_initialStressCell[d] = stressArray[ioff+d];
       } // for
     } // if
     if (_initialFields->hasField("initial strain")) {
       const int strainSize = _numQuadPts*_tensorSize;
-      assert(_initialStrainCell.size() == strainSize);
-      topology::Field& strainField = _initialFields->get("initial strain");
-      topology::VecVisitorMesh strainVisitor(strainField);
-      PetscScalar* strainArray = strainVisitor.localArray();
-      const PetscInt ioff = strainVisitor.sectionOffset(cell);
-      assert(strainSize == strainVisitor.sectionDof(cell));
+      assert(_initialStrainCell.size() == size_t(strainSize));
+      assert(_strainVisitor);
+      PetscScalar* strainArray = _strainVisitor->localArray();
+      const PetscInt ioff = _strainVisitor->sectionOffset(cell);
+      assert(strainSize == _strainVisitor->sectionDof(cell));
       for(PetscInt d = 0; d < strainSize; ++d) {
 	_initialStrainCell[d] = strainArray[ioff+d];
       } // for
