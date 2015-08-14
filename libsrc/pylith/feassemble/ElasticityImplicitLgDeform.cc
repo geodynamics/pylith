@@ -224,9 +224,6 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
       dispTpdtCell[i] = dispCell[i] + dispIncrCell[i];
     } // for
 
-    // Compute deformation tensor
-    _calcDeformation(&deformCell, basisDeriv, &coordsCell[0], &dispTpdtCell[0], numBasis, numQuadPts, spaceDim);
-
     // Compute body force vector if gravity is being used.
     if (_gravityField) {
       const spatialdata::geocoords::CoordSys* cs = fields->mesh().coordsys();assert(cs);
@@ -246,15 +243,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
 	} // if
 	_normalizer->nondimensionalize(&gravVec[0], gravVec.size(), gravityScale);
 
-	// Compute determinant of deformation tensor.
-	PylithScalar deformDet = 1.0;
-	const int deformSize = spaceDim * spaceDim;
-	const int iDeform = iQuad*deformSize;
-	if (2 == spaceDim) {
-	  deformDet = deformCell[iDeform+0]*deformCell[iDeform+3] - deformCell[iDeform+1]*deformCell[iDeform+2];
-	} // if
-
-	const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad] / deformDet;
+	const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
 	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
 	  const PylithScalar valI = wt*basis[iQ+iBasis];
 	  for (int iDim=0; iDim < spaceDim; ++iDim) {
@@ -267,6 +256,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
 
     // Compute B(transpose) * sigma, first computing deformation
     // tensor and strains
+    _calcDeformation(&deformCell, basisDeriv, &coordsCell[0], &dispTpdtCell[0], numBasis, numQuadPts, spaceDim);
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
     const scalar_array& stressCell = _material->calcStress(strainCell, true);
 
