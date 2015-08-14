@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 """
-This script creates an initial stress spatial database from output stress
-results.
+This script creates a spatial database for the initial stress and state variables.
 """
 
 material = "oceanmantle"
@@ -15,7 +14,7 @@ cs = CSCart()
 cs._configure()
 cs.setSpaceDim(2)
 
-filenameH5 = "output/step05-%s.h5" % material
+filenameH5 = "output/grav_static-%s.h5" % material
 filenameDB = "grav_statevars-%s.spatialdb" % material
 
 # Open HDF5 file and get coordinates, cells, and stress.
@@ -77,7 +76,7 @@ if True:
               'data': strainViscous[:,1]},
              {'name': "viscous-strain-zz",
               'units': "None",
-              'data': zeros},
+              'data': strainViscous[:,2]},
              {'name': "viscous-strain-xy",
               'units': "None",
               'data': strainViscous[:,3]},
@@ -88,3 +87,4 @@ writer.write({'points': cellCenters,
               'data_dim': 0,
               'values': values})
 
+# End of file
