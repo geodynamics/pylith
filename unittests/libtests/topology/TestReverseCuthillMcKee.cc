@@ -275,7 +275,7 @@ pylith::topology::TestReverseCuthillMcKee::_testReorder(const char* filename,
   PetscInt bandwidth = 0;
   err = MatComputeBandwidth(jacobian.matrix(), 0.0, &bandwidth);PYLITH_CHECK_ERROR(err);
 
-  CPPUNIT_ASSERT(bandwidth < bandwidthOrig);
+  CPPUNIT_ASSERT(bandwidth <= bandwidthOrig);
 
   PYLITH_METHOD_END;
 } // _testReorder
