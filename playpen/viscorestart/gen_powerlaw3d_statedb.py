@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 """
-This script creates a spatial database for the initial stress and state variables.
+This script creates a spatial database for the initial stress and state
+variables for a Power-law 3D material.
 """
 
-material = "oceanmantle"
+material = "powerlaw3d-oceanmantle"
 
 import numpy
 import h5py
@@ -12,9 +13,9 @@ from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
 from spatialdata.geocoords.CSCart import CSCart
 cs = CSCart()
 cs._configure()
-cs.setSpaceDim(2)
+cs.setSpaceDim(3)
 
-filenameH5 = "output/grav_static-%s.h5" % material
+filenameH5 = "output/grav_static_%s.h5" % material
 filenameDB = "grav_statevars-%s.spatialdb" % material
 
 # Open HDF5 file and get coordinates, cells, and stress.
@@ -41,30 +42,39 @@ values = [{'name': "stress-xx",
           {'name': "stress-yy",
            'units': "Pa",
            'data': stress[:,1]},
-          {'name': "stress-xy",
+          {'name': "stress-zz",
            'units': "Pa",
            'data': stress[:,2]},
+          {'name': "stress-xy",
+           'units': "Pa",
+           'data': stress[:,3]},
+          {'name': "stress-yz",
+           'units': "Pa",
+           'data': stress[:,4]},
+          {'name': "stress-xz",
+           'units': "Pa",
+           'data': stress[:,5]},
         ]
 
 #if "mantle" in material:
 if True:
-  density = 4000.0
-  vs = 5600.0
-  vp = 10000.0
-  modulus_mu = density*vs**2
-  modulus_lambda = density*vp**2 - 2.0*modulus_mu
-  stressZZ = modulus_lambda * (strain[:,0] + strain[:,1])
-  zeros = numpy.zeros(stressZZ.shape)
-  values += [{'name': "stress-zz-initial",
-              'units': "Pa",
-              'data': stressZZ},
-             {'name': "total-strain-xx",
+  zeros = numpy.zeros(stress[:,0].shape)
+  values += [{'name': "total-strain-xx",
               'units': "None",
               'data': zeros},
              {'name': "total-strain-yy",
               'units': "None",
               'data': zeros},
+             {'name': "total-strain-zz",
+              'units': "None",
+              'data': zeros},
              {'name': "total-strain-xy",
+              'units': "None",
+              'data': zeros},
+             {'name': "total-strain-yz",
+              'units': "None",
+              'data': zeros},
+             {'name': "total-strain-xz",
               'units': "None",
               'data': zeros},
 
@@ -80,6 +90,12 @@ if True:
              {'name': "viscous-strain-xy",
               'units': "None",
               'data': strainViscous[:,3]},
+             {'name': "viscous-strain-yz",
+              'units': "None",
+              'data': strainViscous[:,4]},
+             {'name': "viscous-strain-xz",
+              'units': "None",
+              'data': strainViscous[:,5]},
         ]
 
 writer.write({'points': cellCenters,
