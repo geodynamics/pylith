@@ -103,6 +103,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::stableTimeStep(const topology::M
   PYLITH_METHOD_RETURN(_material->stableTimeStepImplicit(mesh));
 } // stableTimeStep
 
+#include <iostream>
 // ----------------------------------------------------------------------
 // Integrate constributions to residual term (r) for operator.
 void
@@ -159,9 +160,11 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
   scalar_array dispTIncrCell(numBasis*spaceDim);
   scalar_array dispTpdtCell(numBasis*spaceDim);
   scalar_array deformCell(numQuadPts*spaceDim*spaceDim);
+  scalar_array deformInv(spaceDim*spaceDim);
   scalar_array strainCell(numQuadPts*tensorSize);
   strainCell = 0.0;
   scalar_array gravVec(spaceDim);
+  scalar_array gravVec0(spaceDim);
   scalar_array quadPtsGlobal(numQuadPts*spaceDim);
 
   // Get cell information
@@ -224,6 +227,9 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
       dispTpdtCell[i] = dispCell[i] + dispIncrCell[i];
     } // for
 
+    // Calculate deformation gradient
+    _calcDeformation(&deformCell, basisDeriv, &coordsCell[0], &dispTpdtCell[0], numBasis, numQuadPts, spaceDim);
+
     // Compute body force vector if gravity is being used.
     if (_gravityField) {
       const spatialdata::geocoords::CoordSys* cs = fields->mesh().coordsys();assert(cs);
@@ -243,11 +249,38 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
 	} // if
 	_normalizer->nondimensionalize(&gravVec[0], gravVec.size(), gravityScale);
 
+	// Transform gravity vector (acting on deformed configuration) to original configuration
+	// g(0) = inv(X)*g(t)
+	// Compute inverse of deformation gradient
+	if (spaceDim == 2) {
+	  const PylithScalar* deformQ = &deformCell[iQuad*spaceDim*spaceDim];
+	  const PylithScalar deformDet = deformCell[0]*deformCell[3] - deformCell[1]*deformCell[2];
+	  deformInv[0] =  deformQ[3] / deformDet;
+	  deformInv[1] = -deformQ[1] / deformDet;
+	  deformInv[2] = -deformQ[2] / deformDet;
+	  deformInv[3] =  deformQ[0] / deformDet;
+	  gravVec0[0] = deformInv[0]*gravVec[0] + deformInv[1]*gravVec[1];
+	  gravVec0[1] = deformInv[2]*gravVec[0] + deformInv[3]*gravVec[1];
+#if 0 // DEBUGGING
+	  std::cout << "Cell: " << cell << ", iQuad: " << iQuad << std::endl;
+	  std::cout << "  density: " << density[iQuad] << std::endl;
+	  std::cout << "  deformCell: "; for (int z=0;z<spaceDim*spaceDim; ++z) {std::cout << " " << deformCell[iQuad*spaceDim*spaceDim+z];}; std::cout << std::endl;
+	  std::cout << "  deformInv: "; for (int z=0;z<spaceDim*spaceDim; ++z) {std::cout << " " << deformInv[z];}; std::cout << std::endl;
+	  std::cout << "  gravVec0: " << gravVec0[0] << ", " << gravVec0[1] << std::endl;
+#endif
+	} else if (spaceDim == 3) {
+	  assert(0);
+	  throw std::logic_error("Not implemented.");
+	} else {
+	  assert(0);
+	  throw std::logic_error("Invalid space dimension.");
+	} // if/else
+
 	const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
 	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
 	  const PylithScalar valI = wt*basis[iQ+iBasis];
 	  for (int iDim=0; iDim < spaceDim; ++iDim) {
-	    _cellVector[iBasis*spaceDim+iDim] += valI*gravVec[iDim];
+	    _cellVector[iBasis*spaceDim+iDim] += valI*gravVec0[iDim];
 	  } // for
 	} // for
       } // for
@@ -256,7 +289,6 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
 
     // Compute B(transpose) * sigma, first computing deformation
     // tensor and strains
-    _calcDeformation(&deformCell, basisDeriv, &coordsCell[0], &dispTpdtCell[0], numBasis, numQuadPts, spaceDim);
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
     const scalar_array& stressCell = _material->calcStress(strainCell, true);
 
