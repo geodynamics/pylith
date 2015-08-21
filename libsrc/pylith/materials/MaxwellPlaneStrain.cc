@@ -402,7 +402,6 @@ pylith::materials::MaxwellPlaneStrain::_calcStressElastic(
 #if 0
 #include <iostream>
 #endif
-//#define ADD_DEVSTRESS_INITIAL // Charles's code (no deformation with initial stress from gravity)
 // ----------------------------------------------------------------------
 // Compute stress tensor at location from properties as a viscoelastic
 // material.
@@ -450,13 +449,6 @@ pylith::materials::MaxwellPlaneStrain::_calcStressViscoelastic(
     initialStrain[1] - meanStrainInitial,
     initialStrain[2]
   };
-#if defined(ADD_DEVSTRESS_INITIAL)
-  const PylithScalar devStressInitial[3] = {
-    initialStress[0] - meanStressInitial,
-    initialStress[1] - meanStressInitial,
-    initialStress[2]
-  };
-#endif
 
   // Mean stress and strain for t + dt
   const PylithScalar meanStrainTpdt = (totalStrain[0] + totalStrain[1]) / 3.0;
@@ -474,15 +466,9 @@ pylith::materials::MaxwellPlaneStrain::_calcStressViscoelastic(
   } // else
 
   // Compute new stresses
-#if defined(ADD_DEVSTRESS_INITIAL)
-  stress[0] = meanStressTpdt + mu2 * (_viscousStrain[0] - devStrainInitial[0]) + devStressInitial[0];
-  stress[1] = meanStressTpdt + mu2 * (_viscousStrain[1] - devStrainInitial[1]) + devStressInitial[1];
-  stress[2] = mu2 * (_viscousStrain[3] - devStrainInitial[2]) + devStressInitial[2];
-#else
   stress[0] = meanStressTpdt + mu2 * (_viscousStrain[0] - devStrainInitial[0]);
   stress[1] = meanStressTpdt + mu2 * (_viscousStrain[1] - devStrainInitial[1]);
   stress[2] = mu2 * (_viscousStrain[3] - devStrainInitial[2]);
-#endif
 
 #if 0
   std::cout << "CALCSTRESS, viscousStrain:"; for(int i=0;i<4;++i) {std::cout << " " << _viscousStrain[i]; } std::cout << std::endl;

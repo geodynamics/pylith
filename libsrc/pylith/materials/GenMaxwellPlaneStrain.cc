@@ -535,9 +535,6 @@ pylith::materials::GenMaxwellPlaneStrain::_calcStressViscoelastic(
   const PylithScalar devStrainInitial[] = {initialStrain[0] - meanStrainInitial,
 				     initialStrain[1] - meanStrainInitial,
 				     initialStrain[2]};
-  const PylithScalar devStressInitial[] = {initialStress[0] - meanStressInitial,
-				     initialStress[1] - meanStressInitial,
-				     initialStress[2]};
 
   // Mean stress and strain for t + dt
   const PylithScalar meanStrainTpdt = (totalStrain[0] + totalStrain[1]) / 3.0;
@@ -584,7 +581,7 @@ pylith::materials::GenMaxwellPlaneStrain::_calcStressViscoelastic(
 	_viscousStrain[4 * model + visIndex[iComp]];
     } // for
 
-    devStressTpdt = mu2 * devStressTpdt + devStressInitial[iComp];
+    devStressTpdt = mu2 * devStressTpdt;
     stress[iComp] = diag[iComp] * meanStressTpdt + devStressTpdt;
   } // for
 

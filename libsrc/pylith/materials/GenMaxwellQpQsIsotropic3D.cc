@@ -617,6 +617,7 @@ pylith::materials::GenMaxwellQpQsIsotropic3D::_calcStressViscoelastic(
   const PylithScalar meanStressTpdt = 3.0 * bulkModulus * meanStrain;
   
   // Compute stresses (mean + deviatoric)
+  // Need to determine whether initial stresses are being handled properly here.
   assert(6 == tensorSize);
   const PylithScalar diag[6] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
   for (int i=0; i < tensorSize; ++i) {
