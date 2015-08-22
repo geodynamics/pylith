@@ -11,8 +11,8 @@ SimpleDB {
   num-values = 4
   value-names =  density vs vp viscosity
   value-units =  kg/m**3  m/s  m/s Pa*s
-  num-locs = 2
-  data-dim = 1
+  num-locs = 1
+  data-dim = 0
   space-dim = 2
   cs-data = cartesian {
     to-meters = 1.0
@@ -26,5 +26,4 @@ SimpleDB {
 // (4) vs (m/s)
 // (5) vp (m/s)
 // (6) viscosity (Pa-s)
--1.0e+3  0.0  2000.0  3000.0        15297.058540778355   5.68037e+19
-+1.0e+3  0.0  3000.0  2449.4897420  12489.995996796797   5.68037e+19
+0.0  0.0  2500.0  3000.0        15297.058540778355   5.68037e+19
