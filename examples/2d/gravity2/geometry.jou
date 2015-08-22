@@ -1,0 +1,32 @@
+# ----------------------------------------------------------------------
+# Set units to SI.
+# ----------------------------------------------------------------------
+${Units('si')}
+
+# ----------------------------------------------------------------------
+# Create surface using vertices
+# ----------------------------------------------------------------------
+
+# Block is 200 km x 100 km with uniform topography slope.
+# -100 km <= x <= 100 km 
+# -100 km <= y <= 0 m
+reset
+${offset=0.01*km}
+create vertex {-100.0*km} {-100.0*km}  0.0
+create vertex {-100.0*km}   {+offset}  0.0
+create vertex {+100.0*km}   {-offset}  0.0
+create vertex {+100.0*km} {-100.0*km}  0.0
+create surface vertex 1 2 3 4
+delete vertex all
+
+# ----------------------------------------------------------------------
+# Create interface surfaces
+# ----------------------------------------------------------------------
+
+# Constant thickness crust
+create vertex {-100.0*km} {-20.0*km+offset}  0.0
+create vertex {+100.0*km} {-20.0*km-offset}  0.0
+split surface 1 across location vertex 5 location vertex 6
+
+delete vertex all
+
