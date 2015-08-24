@@ -34,9 +34,9 @@ for materialNum in range(len(materials)):
   staticArgs = meshCfg + "grav_static_" + material + ".cfg"
   staticLog = "grav_static_" + material + ".log"
   runPyLith(staticArgs, staticLog)
-  subprocess.call("gen_" + material + "_statedb.py", shell=True)
+  subprocess.call("./gen_" + material + "_statedb.py", shell=True)
   restartArgs = meshCfg + "grav_restart_" + material + ".cfg"
   restartLog = "grav_restart_" + material + ".log"
   runPyLith(restartArgs, restartLog)
-  subprocess.call("check_" + material + "_restart.py", shell=True)
+  subprocess.call("./check_" + material + "_restart.py", shell=True)
     
