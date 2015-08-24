@@ -4,7 +4,7 @@ This script creates a spatial database for the initial stress and state
 variables for a Generalized Maxwell plane strain material.
 """
 
-material = "genmaxps-oceanmantle"
+material = "genmaxps"
 
 import numpy
 import h5py
@@ -15,7 +15,7 @@ cs = CSCart()
 cs._configure()
 cs.setSpaceDim(2)
 
-filenameH5 = "output/grav_static_%s.h5" % material
+filenameH5 = "output/grav_static_%s-visco.h5" % material
 filenameDB = "grav_statevars-%s.spatialdb" % material
 
 # Open HDF5 file and get coordinates, cells, and stress.
