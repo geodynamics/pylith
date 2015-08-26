@@ -4,7 +4,7 @@ This script creates a spatial database for the initial stress and state
 variables for a Power-law plane strain material.
 """
 
-material = "powerlawps-oceanmantle"
+material = "powerlawps"
 
 import numpy
 import h5py
@@ -15,7 +15,7 @@ cs = CSCart()
 cs._configure()
 cs.setSpaceDim(2)
 
-filenameH5 = "output/grav_static_%s.h5" % material
+filenameH5 = "output/grav_static_%s-visco.h5" % material
 filenameDB = "grav_statevars-%s.spatialdb" % material
 
 # Open HDF5 file and get coordinates, cells, and stress.
@@ -23,6 +23,7 @@ h5 = h5py.File(filenameH5, "r")
 vertices = h5['geometry/vertices'][:]
 cells = numpy.array(h5['topology/cells'][:], dtype=numpy.int)
 stress = h5['cell_fields/stress'][0,:,:]
+stress4 = h5['cell_fields/stress4'][0,:,:]
 strain = h5['cell_fields/total_strain'][0,:,:]
 strainViscous = h5['cell_fields/viscous_strain'][0,:,:]
 h5.close()
@@ -68,6 +69,19 @@ if True:
              {'name': "total-strain-xy",
               'units': "None",
               'data': zeros},
+
+             {'name': "stress4-xx",
+              'units': "Pa",
+              'data': stress4[:,0]},
+             {'name': "stress4-yy",
+              'units': "Pa",
+              'data': stress4[:,1]},
+             {'name': "stress4-zz",
+              'units': "Pa",
+              'data': stress4[:,2]},
+             {'name': "stress4-xy",
+              'units': "Pa",
+              'data': stress4[:,3]},
 
              {'name': "viscous-strain-xx",
               'units': "None",

@@ -1,18 +1,18 @@
 #!/usr/bin/env python
 
-material = "oceanmantle"
+material = "powerlawps"
 
 import numpy
 import h5py
 
-filename = "output/grav_static-%s.h5" % material
+filename = "output/grav_static_%s-visco.h5" % material
 h5 = h5py.File(filename, "r")
 stressA = h5['cell_fields/stress'][:]
 strainA = h5['cell_fields/total_strain'][:]
 strainViscousA = h5['cell_fields/viscous_strain'][:]
 h5.close()
 
-filename = "output/grav_restart-%s.h5" % material
+filename = "output/grav_restart_%s-visco.h5" % material
 h5 = h5py.File(filename, "r")
 stressB = h5['cell_fields/stress'][:]
 strainB = h5['cell_fields/total_strain'][:]
