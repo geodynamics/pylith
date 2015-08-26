@@ -73,6 +73,7 @@ class TestProgressMonitorStep(unittest.TestCase):
     self.monitor.update(1, 1, 100); nlines += 1
     self.monitor.update(2, 1, 100); nlines += 0
     self.monitor.update(3, 1, 100); nlines += 0
+    self.monitor.update(6, 1, 100); nlines += 1
     self.monitor.update(10, 1, 100); nlines += 1
     self.monitor.update(12, 1, 100); nlines += 0
     self.monitor.update(20, 1, 100); nlines += 1
