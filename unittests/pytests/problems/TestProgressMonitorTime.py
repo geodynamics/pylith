@@ -70,8 +70,10 @@ class TestProgressMonitorTime(unittest.TestCase):
     self.monitor.open()
 
     nlines = 1 # header
+    self.monitor.update(0.0*year, 0.0*year, 10.0*year); nlines += 1
+    self.monitor.update(0.5*year, 0.0*year, 10.0*year); nlines += 1
     self.monitor.update(1.0*year, 0.0*year, 10.0*year); nlines += 1
-    self.monitor.update(1.5*year, 0.0*year, 10.0*year); nlines += 0
+    self.monitor.update(1.1*year, 0.0*year, 10.0*year); nlines += 0
     self.monitor.update(2.0*year, 0.0*year, 10.0*year); nlines += 1
     self.monitor.update(4.0*year, 0.0*year, 10.0*year); nlines += 1
     self.monitor.update(5.0*year, 0.0*year, 10.0*year); nlines += 1
