@@ -159,6 +159,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(topolog
   assert(_material);
 
   const bool calcStress = (0 == strcasecmp(name, "stress")) ? true : false;
+  const bool calcCauchyStress = (0 == strcasecmp(name, "cauchy_stress")) ? true : false;
     
   // Get cell information that doesn't depend on particular cell
   const int cellDim = _quadrature->cellDim();
@@ -182,9 +183,11 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(topolog
   const int tensorCellSize = numQuadPts*tensorSize;
   scalar_array strainCell(tensorCellSize);
   scalar_array stressCell(tensorCellSize);
+  scalar_array stressCauchyCell(tensorCellSize);
   deformCell = 0.0;
   strainCell = 0.0;
   stressCell = 0.0;
+  stressCauchyCell = 0.0;
 
   // Get cell information
   PetscDM dmMesh = fields->mesh().dmMesh();assert(dmMesh);
@@ -233,15 +236,113 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(topolog
       _material->retrievePropsAndVars(cell);
       stressCell = _material->calcStress(strainCell);
 
-      for (int i=0; i < tensorCellSize; ++i) {
-	fieldArray[off+i] = stressCell[i];
-      } // for
+      if (calcCauchyStress) {
+	if (2 == spaceDim) {
+	  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+	    const PylithScalar* X = &deformCell[iQuad*spaceDim*spaceDim];
+	    const PylithScalar detX = X[0]*X[3] - X[1]*X[2];
+	    
+	    // Stress
+	    // i=0, j=0, index=0
+	    // i=1, j=1, index=1
+	    // i=0, j=1, index=2
+
+	    // Deformation gradient
+	    // i=0, j=0, index=0
+	    // i=0, j=1, index=1
+	    // i=1, j=0, index=2
+	    // i=1, j=1, index=3
+
+	    stressCauchyCell[iQuad*tensorSize+0] = (X[0]*X[0]*stressCell[0] +
+						    X[0]*X[1]*stressCell[2] +
+						    X[1]*X[0]*stressCell[2] +
+						    X[1]*X[1]*stressCell[1]) / detX;
+	    stressCauchyCell[iQuad*tensorSize+1] = (X[2]*X[2]*stressCell[0] +
+						    X[2]*X[3]*stressCell[2] +
+						    X[3]*X[2]*stressCell[2] +
+						    X[3]*X[3]*stressCell[1]) / detX;
+	    stressCauchyCell[iQuad*tensorSize+2] = (X[0]*X[2]*stressCell[0] +
+						    X[0]*X[3]*stressCell[2] +
+						    X[1]*X[2]*stressCell[2] +
+						    X[1]*X[3]*stressCell[1]) / detX;
+	  } // for
+	} else if (3 == spaceDim) {
+	  assert(0);
+	} // if/else
+	for (int i=0; i < tensorCellSize; ++i) {
+	  fieldArray[off+i] = stressCauchyCell[i];
+	} // for
+      } else {
+	for (int i=0; i < tensorCellSize; ++i) {
+	  fieldArray[off+i] = stressCell[i];
+	} // for
+      } // if
     } // else
   } // for
   _material->destroyPropsAndVarsVisitors();
 
   PYLITH_METHOD_END;
 } // _calcStrainStressField
+
+// ----------------------------------------------------------------------
+void
+  pylith::feassemble::IntegratorElasticityLgDeform::_calcStressFromStrain(topology::Field* field,
+									  const char* name)
+{ // _calcStressFromStrain
+  PYLITH_METHOD_BEGIN;
+
+  assert(field);
+  assert(_quadrature);
+  assert(_material);
+  assert(0 == strcasecmp("stress", name) || 0 == strcasecmp("cauchy_stress", name));
+  const bool calcCauchyStress = (0 == strcasecmp(name, "cauchy_stress")) ? true : false;
+
+  const size_t numQuadPts = _quadrature->numQuadPts();
+  const size_t tensorSize = _material->tensorSize();
+  
+  // Allocate arrays for cell data.
+  const int tensorCellSize = numQuadPts*tensorSize;
+  scalar_array strainCell(tensorCellSize);
+  strainCell = 0.0;
+  scalar_array stressCell(tensorCellSize);
+  stressCell = 0.0;
+
+  // Get cell information
+  PetscDM dmMesh = field->mesh().dmMesh();assert(dmMesh);
+  assert(_materialIS);
+  const PetscInt* cells = _materialIS->points();
+  const PetscInt numCells = _materialIS->size();
+
+  // Setup visitors.
+  topology::VecVisitorMesh fieldVisitor(*field);
+  PetscScalar* fieldArray = fieldVisitor.localArray();
+
+  _material->createPropsAndVarsVisitors();
+
+  // Loop over cells
+  for(PetscInt c = 0; c < numCells; ++c) {
+    const PetscInt cell = cells[c];
+
+    const PetscInt off = fieldVisitor.sectionOffset(cell);
+    assert(tensorCellSize == fieldVisitor.sectionDof(cell));
+    for (int i=0; i < tensorCellSize; ++i) {
+      strainCell[i] = fieldArray[off+i];
+    } // for
+
+    _material->retrievePropsAndVars(cell);
+    stressCell = _material->calcStress(strainCell);
+
+    // ADD STUFF HERE
+
+    for (int i=0; i < tensorCellSize; ++i) {
+      fieldArray[off+i] = stressCell[i];
+    } // for
+
+  } // for
+  _material->destroyPropsAndVarsVisitors();
+
+  PYLITH_METHOD_END;
+} // _calcStressFromStrain
 
 // ----------------------------------------------------------------------
 // Integrate elasticity term in residual for 2-D cells.

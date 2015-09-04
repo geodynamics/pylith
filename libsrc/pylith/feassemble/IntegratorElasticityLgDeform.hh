@@ -78,12 +78,21 @@ protected :
   /** Calculate stress or strain field from solution field.
    *
    * @param field Field in which to store stress or strain.
-   * @param name Name of field to compute ('total-strain' or 'stress')
+   * @param name Name of field to compute ['total_strain', 'stress', 'cauchy_stress'].
    * @param fields Manager for solution fields.
    */
   void _calcStrainStressField(topology::Field* field,
 			      const char* name,
 			      topology::SolutionFields* const fields);
+
+  /** Calculate stress field from total strain field. Stress field
+   * replaces strain field in section.
+   *
+   * @param field Field in which to store stress.
+   * @param name Name of stress tensor ['stress', 'cauchy_stress'].
+   */
+  void _calcStressFromStrain(topology::Field* field,
+			     const char* name);
 
   /** Integrate elasticity term in residual for 2-D cells.
    *
