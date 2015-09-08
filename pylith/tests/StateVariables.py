@@ -60,7 +60,7 @@ def check_state_variables(testcase, filename, mesh, stateVarNames):
     testcase.assertEqual(ncompsE, ncomps)
 
     scale = 1.0
-    if name == "stress":
+    if name == "stress" or name == "cauchy_stress":
       scale *= normalizer.pressureScale().value
 
     for istep in xrange(nsteps):

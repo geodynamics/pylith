@@ -50,7 +50,7 @@ class GenMaxwellPlaneStrain(ElasticMaterial, ModuleGenMaxwellPlaneStrain):
            {'info': ["mu", "lambda", "density", "stable_dt_implicit", "stable_dt_explicit",
                      "shear_ratio", "maxwell_time"],
             'data': ["stress_zz_initial",
-                     "total_strain", "stress",
+                     "total_strain", "stress", "cauchy_stress",
                      "viscous_strain_1", 
                      "viscous_strain_2", 
                      "viscous_strain_3",

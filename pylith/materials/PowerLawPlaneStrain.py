@@ -49,7 +49,7 @@ class PowerLawPlaneStrain(ElasticMaterial, ModulePowerLawPlaneStrain):
            {'info': ["mu", "lambda", "density", "stable_dt_implicit", "stable_dt_explicit",
                      "reference_strain_rate", "reference_stress",
                      "power_law_exponent"],
-            'data': ["total_strain", "stress",
+            'data': ["total_strain", "stress", "cauchy_stress",
                      "stress_zz_initial", "stress4", "viscous_strain"]}}
     self._loggingPrefix = "MaPL2D "
     return

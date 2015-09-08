@@ -52,7 +52,7 @@ class GenMaxwellQpQsIsotropic3D(ElasticMaterial, ModuleGenMaxwellQpQsIsotropic3D
                      "bulk_ratio",
                      "maxwell_time_shear",
                      "maxwell_time_bulk"],
-            'data': ["total_strain", "stress",
+            'data': ["total_strain", "stress", "cauchy_stress",
                      "viscous_deviatoric_strain", 
                      "viscous_mean_strain", 
                      ]}}
