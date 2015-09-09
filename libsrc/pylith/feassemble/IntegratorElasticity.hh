@@ -145,16 +145,6 @@ protected :
 			      const char* name,
 			      topology::SolutionFields* const fields);
 
-  /** Calculate stress field from total strain field. Stress field
-   * replaces strain field in section.
-   *
-   * @param field Field in which to store stress.
-   * @param name Name of stress tensor ['stress', 'cauchy_stress'].
-   */
-  virtual
-  void _calcStressFromStrain(topology::Field* field,
-			     const char* name);
-
   /** Integrate elasticity term in residual for 2-D cells.
    *
    * @param stress Stress tensor for cell at quadrature points.

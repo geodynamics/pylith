@@ -158,8 +158,9 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(topolog
   assert(_quadrature);
   assert(_material);
 
-  const bool calcStress = (0 == strcasecmp(name, "stress")) ? true : false;
+  const bool calcStress = (0 == strcasecmp(name, "stress") || 0 == strcasecmp(name, "cauchy_stress")) ? true : false;
   const bool calcCauchyStress = (0 == strcasecmp(name, "cauchy_stress")) ? true : false;
+
     
   // Get cell information that doesn't depend on particular cell
   const int cellDim = _quadrature->cellDim();
@@ -238,36 +239,9 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(topolog
 
       if (calcCauchyStress) {
 	if (2 == spaceDim) {
-	  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-	    const PylithScalar* X = &deformCell[iQuad*spaceDim*spaceDim];
-	    const PylithScalar detX = X[0]*X[3] - X[1]*X[2];
-	    
-	    // Stress
-	    // i=0, j=0, index=0
-	    // i=1, j=1, index=1
-	    // i=0, j=1, index=2
-
-	    // Deformation gradient
-	    // i=0, j=0, index=0
-	    // i=0, j=1, index=1
-	    // i=1, j=0, index=2
-	    // i=1, j=1, index=3
-
-	    stressCauchyCell[iQuad*tensorSize+0] = (X[0]*X[0]*stressCell[0] +
-						    X[0]*X[1]*stressCell[2] +
-						    X[1]*X[0]*stressCell[2] +
-						    X[1]*X[1]*stressCell[1]) / detX;
-	    stressCauchyCell[iQuad*tensorSize+1] = (X[2]*X[2]*stressCell[0] +
-						    X[2]*X[3]*stressCell[2] +
-						    X[3]*X[2]*stressCell[2] +
-						    X[3]*X[3]*stressCell[1]) / detX;
-	    stressCauchyCell[iQuad*tensorSize+2] = (X[0]*X[2]*stressCell[0] +
-						    X[0]*X[3]*stressCell[2] +
-						    X[1]*X[2]*stressCell[2] +
-						    X[1]*X[3]*stressCell[1]) / detX;
-	  } // for
+	  _calcCauchyStress2D(&stressCauchyCell, stressCell, deformCell, numQuadPts);
 	} else if (3 == spaceDim) {
-	  assert(0);
+	  _calcCauchyStress3D(&stressCauchyCell, stressCell, deformCell, numQuadPts);
 	} // if/else
 	for (int i=0; i < tensorCellSize; ++i) {
 	  fieldArray[off+i] = stressCauchyCell[i];
@@ -276,73 +250,13 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(topolog
 	for (int i=0; i < tensorCellSize; ++i) {
 	  fieldArray[off+i] = stressCell[i];
 	} // for
-      } // if
+      } // if/else
     } // else
   } // for
   _material->destroyPropsAndVarsVisitors();
 
   PYLITH_METHOD_END;
 } // _calcStrainStressField
-
-// ----------------------------------------------------------------------
-void
-  pylith::feassemble::IntegratorElasticityLgDeform::_calcStressFromStrain(topology::Field* field,
-									  const char* name)
-{ // _calcStressFromStrain
-  PYLITH_METHOD_BEGIN;
-
-  assert(field);
-  assert(_quadrature);
-  assert(_material);
-  assert(0 == strcasecmp("stress", name) || 0 == strcasecmp("cauchy_stress", name));
-  const bool calcCauchyStress = (0 == strcasecmp(name, "cauchy_stress")) ? true : false;
-
-  const size_t numQuadPts = _quadrature->numQuadPts();
-  const size_t tensorSize = _material->tensorSize();
-  
-  // Allocate arrays for cell data.
-  const int tensorCellSize = numQuadPts*tensorSize;
-  scalar_array strainCell(tensorCellSize);
-  strainCell = 0.0;
-  scalar_array stressCell(tensorCellSize);
-  stressCell = 0.0;
-
-  // Get cell information
-  PetscDM dmMesh = field->mesh().dmMesh();assert(dmMesh);
-  assert(_materialIS);
-  const PetscInt* cells = _materialIS->points();
-  const PetscInt numCells = _materialIS->size();
-
-  // Setup visitors.
-  topology::VecVisitorMesh fieldVisitor(*field);
-  PetscScalar* fieldArray = fieldVisitor.localArray();
-
-  _material->createPropsAndVarsVisitors();
-
-  // Loop over cells
-  for(PetscInt c = 0; c < numCells; ++c) {
-    const PetscInt cell = cells[c];
-
-    const PetscInt off = fieldVisitor.sectionOffset(cell);
-    assert(tensorCellSize == fieldVisitor.sectionDof(cell));
-    for (int i=0; i < tensorCellSize; ++i) {
-      strainCell[i] = fieldArray[off+i];
-    } // for
-
-    _material->retrievePropsAndVars(cell);
-    stressCell = _material->calcStress(strainCell);
-
-    // ADD STUFF HERE
-
-    for (int i=0; i < tensorCellSize; ++i) {
-      fieldArray[off+i] = stressCell[i];
-    } // for
-
-  } // for
-  _material->destroyPropsAndVarsVisitors();
-
-  PYLITH_METHOD_END;
-} // _calcStressFromStrain
 
 // ----------------------------------------------------------------------
 // Integrate elasticity term in residual for 2-D cells.
@@ -1174,6 +1088,189 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcDeformation(scalar_array*
 	  (*deform)[iQuad*deformSize+indexD] += basisDeriv[iQ+iBasis*dim+jDim] * (vertices[iBasis*dim+iDim] + disp[iBasis*dim+iDim]);
 
 } // _calcDeformation
-  
+
+
+// ----------------------------------------------------------------------
+// Calculate 2-D Cauchy stress from 2nd Piola-Kirchoff stress.
+void
+pylith::feassemble::IntegratorElasticityLgDeform::_calcCauchyStress2D(scalar_array* cauchyStress,
+								      const scalar_array& stress,
+								      const scalar_array& deform,
+								      const int numQuadPts)
+{ // _calcCauchyStress2D
+  PYLITH_METHOD_BEGIN;
+
+  const int spaceDim = 2;
+  const int tensorSize = 3;
+
+  assert(cauchyStress);
+  assert(stress.size() == size_t(numQuadPts*tensorSize));
+  assert(cauchyStress->size() == stress.size());
+  assert(deform.size() == size_t(numQuadPts*spaceDim*spaceDim));
+
+  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+
+    const PylithScalar* X = &deform[iQuad*spaceDim*spaceDim];
+    const PylithScalar detX = X[0]*X[3] - X[1]*X[2];
+	    
+    // Stress
+    // i=0, j=0, index=0
+    // i=1, j=1, index=1
+    // i=0, j=1, index=2
+    
+    // Deformation gradient
+    // i=0, j=0, index=0
+    // i=0, j=1, index=1
+    // i=1, j=0, index=2
+    // i=1, j=1, index=3
+    
+    // S00
+    (*cauchyStress)[iQuad*tensorSize+0] =
+      (X[0]*X[0]*stress[0] +
+       X[0]*X[1]*stress[2] +
+       X[1]*X[0]*stress[2] +
+       X[1]*X[1]*stress[1]) / detX;
+    
+    // S01
+    (*cauchyStress)[iQuad*tensorSize+2] =
+      (X[0]*X[2]*stress[0] +
+       X[0]*X[3]*stress[2] +
+       X[1]*X[2]*stress[2] +
+       X[1]*X[3]*stress[1]) / detX;
+    
+    // S11
+    (*cauchyStress)[iQuad*tensorSize+1] =
+      (X[2]*X[2]*stress[0] +
+       X[2]*X[3]*stress[2] +
+       X[3]*X[2]*stress[2] +
+       X[3]*X[3]*stress[1]) / detX;
+
+  } // for
+
+  PYLITH_METHOD_END;
+} // _calcCauchySterss2D
+
+
+// ----------------------------------------------------------------------
+// Calculate 3-D Cauchy stress from 2nd Piola-Kirchoff stress.
+void
+pylith::feassemble::IntegratorElasticityLgDeform::_calcCauchyStress3D(scalar_array* cauchyStress,
+								      const scalar_array& stress,
+								      const scalar_array& deform,
+								      const int numQuadPts)
+{ // _calcCauchyStress3D
+  PYLITH_METHOD_BEGIN;
+
+  const int spaceDim = 3;
+  const int tensorSize = 5;
+
+  assert(cauchyStress);
+  assert(stress.size() == size_t(numQuadPts*tensorSize));
+  assert(cauchyStress->size() == stress.size());
+  assert(deform.size() == size_t(numQuadPts*spaceDim*spaceDim));
+
+  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+    const PylithScalar* X = &deform[iQuad*spaceDim*spaceDim];
+    const PylithScalar detX = 
+        X[0] * (X[4]*X[8] - X[5]*X[7])
+      - X[1] * (X[5]*X[6] - X[3]*X[8])
+      + X[2] * (X[3]*X[7] - X[4]*X[6]);
+    
+    // Stress
+    // i=0, j=0, index=0
+    // i=1, j=1, index=1
+    // i=2, j=2, index=2
+    // i=0, j=1, index=3
+    // i=1, j=2, index=4
+    // i=0, j=2, index=5
+    
+    // Deformation gradient
+    // i=0, j=0, index=0
+    // i=0, j=1, index=1
+    // i=0, j=2, index=2
+    // i=1, j=0, index=3
+    // i=1, j=1, index=4
+    // i=1, j=2, index=5
+    // i=2, j=0, index=6
+    // i=2, j=1, index=7
+    // i=2, j=2, index=8
+    
+    // S00
+    (*cauchyStress)[iQuad*tensorSize+0] = 
+      (X[0]*X[0]*stress[0] +
+       X[0]*X[1]*stress[3] +
+       X[0]*X[2]*stress[5] +
+       X[1]*X[0]*stress[3] +
+       X[1]*X[1]*stress[1] +
+       X[1]*X[2]*stress[4] +
+       X[2]*X[0]*stress[5] +
+       X[2]*X[1]*stress[4] +
+       X[2]*X[2]*stress[2]) / detX;
+
+    // S01
+    (*cauchyStress)[iQuad*tensorSize+3] = 
+      (X[0]*X[3]*stress[0] +
+       X[0]*X[4]*stress[3] +
+       X[0]*X[5]*stress[5] +
+       X[1]*X[3]*stress[3] +
+       X[1]*X[4]*stress[1] +
+       X[1]*X[5]*stress[4] +
+       X[2]*X[3]*stress[5] +
+       X[2]*X[4]*stress[4] +
+       X[2]*X[5]*stress[2]) / detX;
+
+    // S02
+    (*cauchyStress)[iQuad*tensorSize+5] = 
+      (X[0]*X[6]*stress[0] +
+       X[0]*X[7]*stress[3] +
+       X[0]*X[8]*stress[5] +
+       X[1]*X[6]*stress[3] +
+       X[1]*X[7]*stress[1] +
+       X[1]*X[8]*stress[4] +
+       X[2]*X[6]*stress[5] +
+       X[2]*X[7]*stress[4] +
+       X[2]*X[8]*stress[2]) / detX;
+
+    // S11
+    (*cauchyStress)[iQuad*tensorSize+1] = 
+      (X[3]*X[3]*stress[0] +
+       X[3]*X[4]*stress[3] +
+       X[3]*X[5]*stress[5] +
+       X[4]*X[3]*stress[3] +
+       X[4]*X[4]*stress[1] +
+       X[4]*X[5]*stress[4] +
+       X[5]*X[3]*stress[5] +
+       X[5]*X[4]*stress[4] +
+       X[5]*X[5]*stress[2]) / detX;
+
+    // S12
+    (*cauchyStress)[iQuad*tensorSize+4] = 
+      (X[3]*X[6]*stress[0] +
+       X[3]*X[7]*stress[3] +
+       X[3]*X[8]*stress[5] +
+       X[4]*X[6]*stress[3] +
+       X[4]*X[7]*stress[1] +
+       X[4]*X[8]*stress[4] +
+       X[5]*X[6]*stress[5] +
+       X[5]*X[7]*stress[4] +
+       X[5]*X[8]*stress[2]) / detX;
+
+    // S22
+    (*cauchyStress)[iQuad*tensorSize+2] = 
+      (X[6]*X[6]*stress[0] +
+       X[6]*X[7]*stress[3] +
+       X[6]*X[8]*stress[5] +
+       X[7]*X[6]*stress[3] +
+       X[7]*X[7]*stress[1] +
+       X[7]*X[8]*stress[4] +
+       X[8]*X[6]*stress[5] +
+       X[8]*X[7]*stress[4] +
+       X[8]*X[8]*stress[2]) / detX;
+    
+  } // for
+
+  PYLITH_METHOD_END;
+} // _calcCauchyStress3D
+
 
 // End of file 

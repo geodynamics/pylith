@@ -85,15 +85,6 @@ protected :
 			      const char* name,
 			      topology::SolutionFields* const fields);
 
-  /** Calculate stress field from total strain field. Stress field
-   * replaces strain field in section.
-   *
-   * @param field Field in which to store stress.
-   * @param name Name of stress tensor ['stress', 'cauchy_stress'].
-   */
-  void _calcStressFromStrain(topology::Field* field,
-			     const char* name);
-
   /** Integrate elasticity term in residual for 2-D cells.
    *
    * @param stress Stress tensor for cell at quadrature points.
@@ -185,6 +176,32 @@ protected :
 			const int numQuadPts,
 			const int dim);
   
+  /** Calculate 2-D Cauchy stress from 2nd Piloa-Kirchoff stress.
+   *
+   * @param cauchyStress Cauchy stress for cell at quadrature points.
+   * @param stress 2nd Piloa-Kirchoff stress for cell at quadrature points.
+   * @param deform Deformation gradient tensor for cell at quadrature points.
+   * @param numQuadPts Number of quadrature points.
+   */
+  static
+  void _calcCauchyStress2D(scalar_array* cauchyStress,
+			   const scalar_array& stress,
+			   const scalar_array& deform,
+			   const int numQuadPts);
+
+  /** Calculate 3-D Cauchy stress from 2nd Piloa-Kirchoff stress.
+   *
+   * @param cauchyStress Cauchy stress for cell at quadrature points.
+   * @param stress 2nd Piloa-Kirchoff stress for cell at quadrature points.
+   * @param deform Deformation gradient tensor for cell at quadrature points.
+   * @param numQuadPts Number of quadrature points.
+   */
+  static
+  void _calcCauchyStress3D(scalar_array* cauchyStress,
+			   const scalar_array& stress,
+			   const scalar_array& deform,
+			   const int numQuadPts);
+
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
