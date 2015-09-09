@@ -45,14 +45,14 @@ def getData(sim):
             'cauchy_stress': stressCauchy}
 
 # ======================================================================
-prob = "extension"
+prob = "compression_gravity"
 
 # Gravity
-sim = "%s_gravity" % prob
+sim = "%s" % prob
 dataF = getData(sim)
 
 # No-gravity
-sim = "%s" % prob
+sim = "%s_inf" % prob
 dataI = getData(sim)
 
 import pylab
@@ -66,15 +66,15 @@ pylab.plot(dataF['time_pt'], dataF['vel'][:,1], 'r-',
 
 pylab.subplot(2,2,3)
 icell = 0
-pylab.plot(dataF['time_cell'], dataF['stress'][:,icell,0], 'r-', 
+pylab.plot(dataF['time_cell'], dataF['stress'][:,icell,0], 'r:', 
            dataF['time_cell'], dataF['cauchy_stress'][:,icell,0], 'g-', 
-           dataI['time_cell'], dataI['stress'][:,icell,0], 'b--',
+           dataI['time_cell'], dataI['stress'][:,icell,0], 'b:',
            dataI['time_cell'], dataI['cauchy_stress'][:,icell,0], 'm--')
 
 pylab.subplot(2,2,4)
-pylab.plot(dataF['time_cell'], dataF['stress'][:,icell,1], 'r-', 
+pylab.plot(dataF['time_cell'], dataF['stress'][:,icell,1], 'r:', 
            dataF['time_cell'], dataF['cauchy_stress'][:,icell,1], 'g-', 
-           dataI['time_cell'], dataI['stress'][:,icell,1], 'b--',
+           dataI['time_cell'], dataI['stress'][:,icell,1], 'b:',
            dataI['time_cell'], dataI['cauchy_stress'][:,icell,1], 'm--')
 
 pylab.show()
