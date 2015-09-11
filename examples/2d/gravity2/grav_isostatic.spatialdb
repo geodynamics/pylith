@@ -7,7 +7,7 @@ SimpleDB {
   num-values = 11
   value-names =  stress-xx  stress-yy  stress-xy  stress-zz-initial  total-strain-xx  total-strain-yy  total-strain-xy  viscous-strain-xx  viscous-strain-yy  viscous-strain-zz  viscous-strain-xy
   value-units =  GPa  GPa  GPa  GPa  None  None  None  None  None  None  None
-  num-locs = 2
+  num-locs = 3
   data-dim = 1
   space-dim = 2
   cs-data = cartesian {
@@ -15,5 +15,6 @@ SimpleDB {
     space-dim = 2
   }
 }
+0.0    1.0    0.0         0.0        0.0   0.0         0.0  0.0  0.0    0.0  0.0  0.0  0.0
 0.0    0.0    0.0         0.0        0.0   0.0         0.0  0.0  0.0    0.0  0.0  0.0  0.0
 0.0 -100.0   -2.4516625  -2.4516625  0.0  -2.4516625   0.0  0.0  0.0    0.0  0.0  0.0  0.0

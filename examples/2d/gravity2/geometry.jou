@@ -11,22 +11,28 @@ ${Units('si')}
 # -100 km <= x <= 100 km 
 # -100 km <= y <= 0 m
 reset
-${offset=0.01*km}
+${topoH=1.0*km}
+${topoL=20.0*km}
 create vertex {-100.0*km} {-100.0*km}  0.0
-create vertex {-100.0*km}   {+offset}  0.0
-create vertex {+100.0*km}   {-offset}  0.0
+create vertex {-100.0*km} {-0.0*km}  0.0
+create vertex {-0.5*topoL} {0.0*km}  0.0
+create vertex {0.0*km} {topoH}  0.0
+create vertex {+0.5*topoL} {0.0*km}  0.0
+create vertex {+100.0*km} {0.0*km}  0.0
 create vertex {+100.0*km} {-100.0*km}  0.0
-create surface vertex 1 2 3 4
+create surface vertex 1 2 3 4 5 6 7
 delete vertex all
 
 # ----------------------------------------------------------------------
 # Create interface surfaces
 # ----------------------------------------------------------------------
+${crustD=30.0*km}
 
 # Constant thickness crust
-create vertex {-100.0*km} {-20.0*km+offset}  0.0
-create vertex {+100.0*km} {-20.0*km-offset}  0.0
-split surface 1 across location vertex 5 location vertex 6
+create vertex {-100.0*km} {-crustD}  0.0
+create vertex {+100.0*km} {-crustD}  0.0
+split surface 1 across location vertex 8 location vertex 9
 
 delete vertex all
+
 
