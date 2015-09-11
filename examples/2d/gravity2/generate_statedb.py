@@ -15,6 +15,30 @@ cs = CSCart()
 cs._configure()
 cs.setSpaceDim(2)
 
+# Basis functions for quad4 cell evaluated at quadrature points. Use
+# to compute coordinate of quadrature points in each cell from
+# coordinates of vertices.
+qpts = numpy.array([[ 0.62200847,  0.16666667,  0.0446582,   0.16666667],
+                    [ 0.16666667,  0.62200847,  0.16666667,  0.0446582 ],
+                    [ 0.16666667,  0.0446582,   0.16666667,  0.62200847],
+                    [ 0.0446582,   0.16666667,  0.62200847,  0.16666667]], dtype=numpy.float64)
+
+
+def calcQuadCoords(vertices, cells, qpts):
+  """Compute coordinates of quadrature points."""
+  nqpts = qpts.shape[0]
+  ncells = cells.shape[0]
+  spaceDim = vertices.shape[1]
+
+  quadCoords = numpy.zeros((ncells, nqpts, spaceDim), dtype=numpy.float64)
+  cellCoords = vertices[cells,:]
+  for iDim in xrange(spaceDim):
+    quadCoords[:,:,iDim] = numpy.dot(cellCoords[:,:,iDim], qpts)
+
+  quadCoords = quadCoords.reshape((ncells*nqpts, spaceDim))
+  return quadCoords
+
+
 for material in materials:
 
   filenameH5 = "output/topo_inf-%s.h5" % material
@@ -25,13 +49,18 @@ for material in materials:
   vertices = h5['geometry/vertices'][:]
   cells = numpy.array(h5['topology/cells'][:], dtype=numpy.int)
   stress = h5['cell_fields/cauchy_stress'][-1,:,:]
-  strain = h5['cell_fields/total_strain'][-1,:,:]
+  if "mantle" in material:
+    vstrain = h5['cell_fields/viscous_strain'][-1,:,:]
   h5.close()
   
-  # Get cell centers for output.
-  cellCoords = vertices[cells,:]
-  cellCenters = numpy.mean(cellCoords, axis=1)
+  # Compute coordinates of quadrature points.
+  quadCoords = calcQuadCoords(vertices, cells, qpts)
   
+  nqpts = qpts.shape[0]
+  ncells = cells.shape[0]
+  nvalues = stress.shape[1]/nqpts
+  stress = stress.reshape((ncells*nqpts, nvalues))
+
   # Create writer for spatial database file
   writer = SimpleIOAscii()
   writer.inventory.filename = filenameDB
@@ -49,6 +78,8 @@ for material in materials:
           ]
   
   if "mantle" in material:
+    nvalues = vstrain.shape[1]/nqpts
+    vstrain = vstrain.reshape((ncells*nqpts, nvalues))
     stressZZ = 0.5*(stress[:,0] + stress[:,1])
     zeros = numpy.zeros(stressZZ.shape)
     values += [{'name': "stress-zz-initial",
@@ -66,19 +97,19 @@ for material in materials:
                
                {'name': "viscous-strain-xx",
               'units': "None",
-                'data': zeros},
+                'data': vstrain[:,0]},
                {'name': "viscous-strain-yy",
                 'units': "None",
-                'data': zeros},
+                'data': vstrain[:,1]},
                {'name': "viscous-strain-zz",
                 'units': "None",
-                'data': zeros},
+                'data': vstrain[:,2]},
                {'name': "viscous-strain-xy",
                 'units': "None",
-                'data': zeros},
+                'data': vstrain[:,3]},
              ]
 
-  writer.write({'points': cellCenters,
+  writer.write({'points': quadCoords,
                 'coordsys': cs,
                 'data_dim': 2,
                 'values': values})
