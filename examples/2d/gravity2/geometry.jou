@@ -1,3 +1,22 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2015 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+# WARNING: This file uses surface/curve ids from CUBIT 14.9. These may need to be
+# updated for other versions of CUBIT and Trelis. Most of these are at the end
+# of this file.
+#
 # ----------------------------------------------------------------------
 # Set units to SI.
 # ----------------------------------------------------------------------
@@ -13,26 +32,72 @@ ${Units('si')}
 reset
 ${topoH=1.0*km}
 ${topoL=20.0*km}
-create vertex {-100.0*km} {-100.0*km}  0.0
-create vertex {-100.0*km} {-0.0*km}  0.0
+${domainW=200.0*km}
+${domainH=100.0*km}
+create vertex {-0.5*domainW} {-domainH}  0.0
+${idVSbegin=Id("vertex")}
+create vertex {-0.5*domainW} {-0.0*km}  0.0
 create vertex {-0.5*topoL} {0.0*km}  0.0
 create vertex {0.0*km} {topoH}  0.0
 create vertex {+0.5*topoL} {0.0*km}  0.0
-create vertex {+100.0*km} {0.0*km}  0.0
-create vertex {+100.0*km} {-100.0*km}  0.0
-create surface vertex 1 2 3 4 5 6 7
-delete vertex all
+${idVT=Id("vertex")}
+create vertex {+0.5*domainW} {0.0*km}  0.0
+create vertex {+0.5*domainW} {-domainH}  0.0
+${idVSend=Id("vertex")}
+create surface vertex {idVSbegin} to {idVSend}
 
 # ----------------------------------------------------------------------
-# Create interface surfaces
+# Create fault surfaces
+# ----------------------------------------------------------------------
+${faultDip=45.0}
+${faultWidth=40.0*km}
+create vertex {+0.5*topoL-sind(faultDip)*domainH} {-domainH}  0.0
+${idVF=Id("vertex")}
+split surface 1 across location vertex {idVT} location vertex {idVF}
+
+# ----------------------------------------------------------------------
+# Create material interface surfaces
 # ----------------------------------------------------------------------
 ${crustD=30.0*km}
 
 # Constant thickness crust
-create vertex {-100.0*km} {-crustD}  0.0
-create vertex {+100.0*km} {-crustD}  0.0
-split surface 1 across location vertex 8 location vertex 9
+create vertex {-0.5*domainW} {-crustD}  0.0
+${idVM1=Id("vertex")}
+create vertex {+0.5*domainW} {-crustD}  0.0
+${idVM2=Id("vertex")}
+split surface 2 across location vertex {idVM1} location vertex {idVM2}
+split surface 3 across location vertex {idVM1} location vertex {idVM2}
+
+# Split fault surface
+create vertex {+0.5*topoL-sind(faultDip)*faultWidth} {-cosd(faultDisp)*faultWidth}  0.0
+${idVF=Id("vertex")}
+# WARNING: Curve id may need updating for various versions of CUBIT/Trelis.
+split curve 15  at vertex {idVF}  from vertex
+
+# ----------------------------------------------------------------------
+# Name geometric entities for use in meshing.
+# ----------------------------------------------------------------------
+surface 6 name "s_crust_xneg"
+surface 4 name "s_crust_xpos"
+surface 7 name "s_mantle_xneg"
+surface 5 name "s_mantle_xpos"
+
+curve 17 name "c_crust_xneg"
+curve 18 name "c_mantle_xneg"
+curve 13 name "c_crust_xpos"
+curve 14 name "c_mantle_xpos"
+curve 10 name "c_bottom_xneg"
+curve 9 name "c_bottom_xpos"
+curve 2 name "c_topo_xneg"
+curve 3 name "c_topo_slope1"
+curve 4 name "c_topo_slope2"
+curve 5 name "c_topo_xpos"
+
+
+curve 12 name "c_fault_crust"
+curve 20 name "c_fault_mantle"
 
 delete vertex all
+
 
 

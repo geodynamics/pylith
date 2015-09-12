@@ -1,3 +1,17 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2015 University of California, Davis
+#
+# See COPYING for license information.
+#
 # ----------------------------------------------------------------------
 # Generate geometry
 # ----------------------------------------------------------------------
@@ -11,48 +25,57 @@ surface all size {2.0*km}
 # ----------------------------------------------------------------------
 # Generate the mesh
 # ----------------------------------------------------------------------
-#surface all scheme trimesh
+surface all scheme pave
 mesh surface all
 
 # ----------------------------------------------------------------------
 # Create blocks for materials
 # ----------------------------------------------------------------------
-block 1 surface 2
+block 1 surface s_crust_xneg s_crust_xpos
 block 1 name "crust"
 
-block 2 surface 3
+block 2 surface s_mantle_xneg s_mantle_xpos
 block 2 name "mantle"
+
+# ----------------------------------------------------------------------
+# Create nodeset for fault
+# ----------------------------------------------------------------------
+group "edge_fault" add node in curve c_fault_crust
+group "edge_fault" add node in curve c_fault_mantle
+nodeset 10 group edge_fault
+nodeset 10 name "edge fault"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +x edge
 # ----------------------------------------------------------------------
-group "edge_xpos" add node in curve 10
-group "edge_xpos" add node in curve 11
+group "edge_xpos" add node in curve c_crust_xpos
+group "edge_xpos" add node in curve c_mantle_xpos
 nodeset 20 group edge_xpos
 nodeset 20 name "edge xpos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -x edge
 # ----------------------------------------------------------------------
-group "edge_xneg" add node in curve 9
-group "edge_xneg" add node in curve 12
+group "edge_xneg" add node in curve c_crust_xneg
+group "edge_xneg" add node in curve c_mantle_xneg
 nodeset 21 group edge_xneg
 nodeset 21 name "edge xneg"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +y edge
 # ----------------------------------------------------------------------
-group "edge_ypos" add node in curve  2
-group "edge_ypos" add node in curve  3
-group "edge_ypos" add node in curve  4
-group "edge_ypos" add node in curve  5
+group "edge_ypos" add node in curve  c_topo_xneg
+group "edge_ypos" add node in curve  c_topo_slope1
+group "edge_ypos" add node in curve  c_topo_slope2
+group "edge_ypos" add node in curve  c_topo_xpos
 nodeset 22 group edge_ypos
 nodeset 22 name "edge ypos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -y edge
 # ----------------------------------------------------------------------
-group "edge_yneg" add node in curve  7
+group "edge_yneg" add node in curve  c_bottom_xneg
+group "edge_yneg" add node in curve  c_bottom_xpos
 nodeset 23 group edge_yneg
 nodeset 23 name "edge yneg"
 
@@ -60,6 +83,7 @@ nodeset 23 name "edge yneg"
 # Export exodus file
 # ----------------------------------------------------------------------
 export mesh "mesh.exo" dimension 2 overwrite
+
 
 
 
