@@ -17,7 +17,7 @@
 #
 
 AC_PREREQ(2.59)
-AC_INIT([frictioncontrib], [0.0.1], [cig-short@geodynamics.org])
+AC_INIT([frictioncontrib], [0.0.2], [cig-short@geodynamics.org])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_MACRO_DIR([./m4])
@@ -40,17 +40,23 @@ AC_SUBST(AM_LDFLAGS)
 AC_PROG_INSTALL
 
 # PYTHON
-AM_PATH_PYTHON([2.3])
+AM_PATH_PYTHON([2.7])
 CIT_PYTHON_SYSCONFIG
+CIT_CHECK_PYTHON_HEADER
+CIT_CHECK_PYTHON_SHARED
 
 # SWIG
 CIT_NUMPY_PYTHON_MODULE
 CIT_NUMPY_INCDIR
 AC_PROG_SWIG(1.3.33)
 
+# MPI
+AC_LANG(C++)
+CIT_HEADER_MPI
+
 # PETSC (dictates precision)
 AC_LANG(C++)
-CIT_PATH_PETSC([3.4.1])
+CIT_PATH_PETSC([3.6.1])
 CIT_HEADER_PETSC
 
 # PYLITH
