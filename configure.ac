@@ -104,17 +104,6 @@ AC_ARG_ENABLE([cuda],
 	[enable_cuda=no])
 AM_CONDITIONAL([ENABLE_CUDA], [test "$enable_cuda" = yes])
 
-# MEMORY LOGGING
-AC_ARG_ENABLE([memory_logging],
-    [AC_HELP_STRING([--enable-memory-logging],
-        [enable memory logging @<:@default=no@:>@])],
-	[if test "$enableval" = yes ; then 
-	  enable_memory_logging=yes
-	  CPPFLAGS="-DALE_MEM_LOGGING $CPPFLAGS"; export CPPFLAGS
-         else enable_memory_logging=no; fi],
-	[enable_memory_logging=no])
-AM_CONDITIONAL([ENABLE_MEMORY_LOGGING], [test "$enable_memory_logging" = yes])
-
 # DOCUMENTATION w/doxygen
 AC_ARG_ENABLE([documentation],
     [AC_HELP_STRING([--enable-documentation],
@@ -149,7 +138,7 @@ CIT_CHECK_PYTHON_SHARED
 # MPI
 AC_LANG(C++)
 #CIT_PROG_MPICXX
-#CIT_HEADER_MPI
+CIT_HEADER_MPI
 #CIT_CHECK_LIB_MPI
 
 # PETSC
