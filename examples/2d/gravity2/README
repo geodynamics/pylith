@@ -1,0 +1,6 @@
+pylith initialstress.cfg
+
+generate_statedb.py
+
+pylith postseismic_infinitesimal.cfg
+pylith postseismic_finite.cfg
