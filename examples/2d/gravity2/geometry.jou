@@ -93,11 +93,13 @@ curve 3 name "c_topo_slope1"
 curve 4 name "c_topo_slope2"
 curve 5 name "c_topo_xpos"
 
-
 curve 12 name "c_fault_crust"
 curve 20 name "c_fault_mantle"
 
+vertex 16 name "v_fault_tip"
+
 delete vertex all
+
 
 
 
