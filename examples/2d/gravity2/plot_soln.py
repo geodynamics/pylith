@@ -46,36 +46,24 @@ def getData(sim):
             'stress': stress}
 
 # ======================================================================
-geom = "topo"
-
-# Finite strain
-sim = "%s_inf" % geom
-dataF = getData(sim)
-
-# Infinitesimal strain
-sim = "%s_inf" % geom
-dataI = getData(sim)
+sim = "initialstress"
+data = getData(sim)
 
 import pylab
 pylab.subplot(2,2,1)
-pylab.plot(dataF['time_pt'], dataF['disp'][:,1], 'r-', 
-           dataI['time_pt'], dataI['disp'][:,1], 'b--')
+pylab.plot(data['time_pt'], data['disp'][:,1], 'r-')
+pylab.xlabel('Time (year)')
+pylab.ylabel('Displacement (m)')
 
 pylab.subplot(2,2,2)
-pylab.plot(dataF['time_pt'], dataF['vel'][:,1], 'r-', 
-           dataI['time_pt'], dataI['vel'][:,1], 'b--')
+pylab.plot(data['time_pt'], data['vel'][:,1], 'r-')
+pylab.xlabel('Time (year)')
+pylab.ylabel('Velocity (m/s)')
 
 pylab.subplot(2,2,3)
-pylab.plot(dataF['time_cell'], dataF['vstrain'][:,:], 'r-', 
-           dataI['time_cell'], dataI['vstrain'][:,:], 'b--')
-
-pylab.subplot(2,2,4)
-def stressDiff(data):
-    return (data['stress'][:,1] - data['stress'][:,0]) / data['stress'][:,1]
-stressDiffF = stressDiff(dataF)
-stressDiffI = stressDiff(dataI)
-pylab.plot(dataF['stress'][:,0], dataF['cell_centers'][:,1], 'r.', 
-           dataI['stress'][:,0], dataI['cell_centers'][:,1], 'bx')
+pylab.plot(data['time_cell'], data['vstrain'][:,:], 'r-')
+pylab.xlabel('Time (year)')
+pylab.ylabel('Viscous Strain')
 
 pylab.show()
 

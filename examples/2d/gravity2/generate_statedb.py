@@ -41,7 +41,7 @@ def calcQuadCoords(vertices, cells, qpts):
 
 for material in materials:
 
-  filenameH5 = "output/topo_inf-%s.h5" % material
+  filenameH5 = "output/initialstress-%s.h5" % material
   filenameDB = "grav_statevars-%s.spatialdb" % material
 
   # Open HDF5 file and get coordinates, cells, and stress.
