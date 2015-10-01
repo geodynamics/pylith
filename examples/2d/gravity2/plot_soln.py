@@ -46,22 +46,29 @@ def getData(sim):
             'stress': stress}
 
 # ======================================================================
-sim = "initialstress"
-data = getData(sim)
+sim = "initialstress_lowg"
+dataA = getData(sim)
+
+sim = "initialstress_lowg"
+dataB = getData(sim)
 
 import pylab
 pylab.subplot(2,2,1)
-pylab.plot(data['time_pt'], data['disp'][:,1], 'r-')
+pylab.plot(dataA['time_pt'][0:100], dataA['disp'][0:100,1]/dataB['disp'][0:100,1], 'r-')
+#pylab.plot(dataA['time_pt'], dataA['disp'][:,1], 'r-',
+#           dataB['time_pt'], dataB['disp'][:,1], 'b--')
 pylab.xlabel('Time (year)')
 pylab.ylabel('Displacement (m)')
 
 pylab.subplot(2,2,2)
-pylab.plot(data['time_pt'], data['vel'][:,1], 'r-')
+pylab.plot(dataA['time_pt'], dataA['vel'][:,:], 'r-',
+           dataB['time_pt'], dataB['vel'][:,:], 'b--')
 pylab.xlabel('Time (year)')
 pylab.ylabel('Velocity (m/s)')
 
 pylab.subplot(2,2,3)
-pylab.plot(data['time_cell'], data['vstrain'][:,:], 'r-')
+pylab.plot(dataA['time_cell'], dataA['vstrain'][:,:], 'r-',
+           dataB['time_cell'], dataB['vstrain'][:,:], 'b--',)
 pylab.xlabel('Time (year)')
 pylab.ylabel('Viscous Strain')
 

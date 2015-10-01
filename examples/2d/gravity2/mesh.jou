@@ -85,11 +85,15 @@ nodeset 23 group boundary_yneg
 nodeset 23 name "boundary yneg"
 
 # ----------------------------------------------------------------------
+# Create nodeset for buried edges
+# ----------------------------------------------------------------------
+group "boundary_buried" add node in group boundary_xpos
+group "boundary_buried" add node in group boundary_xneg
+group "boundary_buried" add node in group boundary_yneg
+nodeset 30 group boundary_buried
+nodeset 30 name "boundary buried"
+
+# ----------------------------------------------------------------------
 # Export exodus file
 # ----------------------------------------------------------------------
 export mesh "mesh.exo" dimension 2 overwrite
-
-
-
-
-
