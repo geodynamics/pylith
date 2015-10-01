@@ -89,7 +89,7 @@ class ProblemNew(PetscComponent):
     from pylith.utils.EmptyBin import EmptyBin
 
     dimension = pyre.inventory.int("dimension", default=3,
-                                   validator=pyre.inventory.choice([1,2,3]))
+                                   validator=pyre.inventory.choice([2,3]))
     dimension.meta['tip'] = "Spatial dimension of problem space."
 
     solver = pyre.inventory.str("solver", default="linear", validator=pyre.inventory.choice(["linear", "nonlinear"]))
