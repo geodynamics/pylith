@@ -241,8 +241,8 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
 { // reformJacobian
   PYLITH_METHOD_BEGIN;
 
-  assert(0 != _jacobian);
-  assert(0 != _fields);
+  assert(_jacobian);
+  assert(_fields);
 
   // Update section view of field.
   if (tmpSolutionVec) {

@@ -200,7 +200,9 @@ pylith::materials::TestElasticMaterial::testRetrievePropsAndVars(void)
   const PetscInt numCells = materialIS.size();
   PetscInt cell = cells[0];
 
+  material.createPropsAndVarsVisitors();
   material.retrievePropsAndVars(cell);
+  material.destroyPropsAndVarsVisitors();
 
   const PylithScalar tolerance = 1.0e-06;
   const int tensorSize = material._tensorSize;
@@ -268,7 +270,9 @@ pylith::materials::TestElasticMaterial::testCalcDensity(void)
   const PetscInt numCells = materialIS.size();
   PetscInt cell = cells[0];
 
+  material.createPropsAndVarsVisitors();
   material.retrievePropsAndVars(cell);
+  material.destroyPropsAndVarsVisitors();
   const scalar_array& density = material.calcDensity();
 
   const int tensorSize = material._tensorSize;
@@ -311,7 +315,9 @@ pylith::materials::TestElasticMaterial::testCalcStress(void)
   // Setup total strain
   scalar_array strain(data.strain, numQuadPts*tensorSize);
 
+  material.createPropsAndVarsVisitors();
   material.retrievePropsAndVars(cell);
+  material.destroyPropsAndVarsVisitors();
   const scalar_array& stress = material.calcStress(strain);
 
   const PylithScalar* stressE = data.stress;
@@ -351,7 +357,9 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
   // Setup total strain
   scalar_array strain(data.strain, numQuadPts*tensorSize);
 
+  material.createPropsAndVarsVisitors();
   material.retrievePropsAndVars(cell);
+  material.destroyPropsAndVarsVisitors();
   const scalar_array& elasticConsts = material.calcDerivElastic(strain);
 
   int numElasticConsts = 0;
@@ -419,7 +427,9 @@ pylith::materials::TestElasticMaterial::testStableTimeStepImplicit(void)
   const PetscInt numCells = materialIS.size();
   PetscInt cell = cells[0];
 
+  material.createPropsAndVarsVisitors();
   material.retrievePropsAndVars(cell);
+  material.destroyPropsAndVarsVisitors();
   const PylithScalar dt = material.stableTimeStepImplicit(mesh);
 
   const PylithScalar tolerance = 1.0e-06;
@@ -482,7 +492,9 @@ pylith::materials::TestElasticMaterial::testStableTimeStepExplicit(void)
 			quadWts, numQuadPts,
 			spaceDim);
 
+  material.createPropsAndVarsVisitors();
   material.retrievePropsAndVars(cell);
+  material.destroyPropsAndVarsVisitors();
   const PylithScalar dt = material.stableTimeStepExplicit(mesh, &quadrature);
 
   const PylithScalar tolerance = 1.0e-06;
