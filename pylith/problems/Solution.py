@@ -129,10 +129,25 @@ class Solution(PetscComponent):
     return
   
 
-  def initialize(self):
+  def initialize(self, constraints, integrators):
     """
+    Setup solution field.
     """
-    raise NotImplementedError, "initialize() not implemented."
+    solution = Field()
+    for subfield in self.subfields:
+      solution.subfieldAdd(subfield.label, subfield.ncomponents, subfield.vectorFieldType, subfield.scale)
+    solution.subfieldsSetup()
+    solution.setupSolnChart()
+
+    for constraint in constraints:
+      constraint.setConstraintSizes(solution)
+    solution.allocate()
+    solution.zeroAll()
+    for constraint in self.constraints:
+      constraint.setConstraints(solution)
+    for integrator in self.integrators:
+      integrator.checkConstraints(solution)
+
     return
 
 

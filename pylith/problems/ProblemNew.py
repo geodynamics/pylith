@@ -88,45 +88,32 @@ class ProblemNew(PetscComponent):
     import pyre.inventory
     from pylith.utils.EmptyBin import EmptyBin
 
-    dimension = pyre.inventory.int("dimension", default=3,
-                                   validator=pyre.inventory.choice([2,3]))
+    dimension = pyre.inventory.int("dimension", default=3, validator=pyre.inventory.choice([2,3]))
     dimension.meta['tip'] = "Spatial dimension of problem space."
 
     solver = pyre.inventory.str("solver", default="linear", validator=pyre.inventory.choice(["linear", "nonlinear"]))
     solver.meta['tip'] = "Type of solver to use ['linear', 'nonlinear']."
 
     from Solution import Solution
-    solution = pyre.inventory.facility("solution",
-                                         family="solution",
-                                         factory=Solution)
+    solution = pyre.inventory.facility("solution", family="solution", factory=Solution)
     solution.meta['tip'] = "Solution field for problem."
 
     from spatialdata.units.NondimElasticQuasistatic import NondimElasticQuasistatic
-    normalizer = pyre.inventory.facility("normalizer",
-                                         family="nondimensional",
-                                         factory=NondimElasticQuasistatic)
+    normalizer = pyre.inventory.facility("normalizer", family="nondimensional", factory=NondimElasticQuasistatic)
     normalizer.meta['tip'] = "Nondimensionalizer for problem."
 
     from pylith.materials.Homogeneous import Homogeneous
-    materials = pyre.inventory.facilityArray("materials",
-                                             itemFactory=materialFactory,
-                                             factory=Homogeneous)
+    materials = pyre.inventory.facilityArray("materials", itemFactory=materialFactory, factory=Homogeneous)
     materials.meta['tip'] = "Materials in problem."
 
-    bc = pyre.inventory.facilityArray("bc",
-                                      itemFactory=bcFactory,
-                                      factory=EmptyBin)
+    bc = pyre.inventory.facilityArray("bc", itemFactory=bcFactory, factory=EmptyBin)
     bc.meta['tip'] = "Boundary conditions."
 
-    interfaces = pyre.inventory.facilityArray("interfaces",
-                                              itemFactory=faultFactory,
-                                              factory=EmptyBin)
+    interfaces = pyre.inventory.facilityArray("interfaces", itemFactory=faultFactory, factory=EmptyBin)
     interfaces.meta['tip'] = "Interior surfaces with constraints or " \
                              "constitutive models."
 
-    gravityField = pyre.inventory.facility("gravity_field",
-                                          family="spatial_database",
-                                          factory=NullComponent)
+    gravityField = pyre.inventory.facility("gravity_field", family="spatial_database", factory=NullComponent)
     gravityField.meta['tip'] = "Database used for gravity field."
 
   
@@ -250,6 +237,18 @@ class ProblemNew(PetscComponent):
       self.gravityField = None
     else:
       self.gravityField = self.inventory.gravityField
+    return
+
+
+  def _initializeSolution(self):
+    """
+    Initialize solution field.
+    """
+
+    return
+
+
+  def _initializeJacobian(self):
     return
 
 
