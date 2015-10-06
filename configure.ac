@@ -196,9 +196,10 @@ fi
 
 # HDF5
 if test "$enable_hdf5" = "yes" ; then
-  CIT_HDF5_HEADER
-  CIT_HDF5_LIB
-  CIT_HDF5_LIB_PARALLEL
+  AX_LIB_HDF5([parallel])
+  if test "$with_hdf5" = "no"; then
+    AC_MSG_ERROR([HDF5 library not found; try --with-hdf5=<path>])
+  fi
 fi
 
 # Full-scale testing with h5py
