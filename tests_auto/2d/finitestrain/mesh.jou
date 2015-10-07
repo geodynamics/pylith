@@ -1,0 +1,64 @@
+# ----------------------------------------------------------------------
+# Create surface using vertices
+# ----------------------------------------------------------------------
+# Block is 2000m x 1000m
+# -1000 m <= x <= 1000 m 
+#     0 m <= y <= 1000 m
+reset
+create vertex -1000.0     0.0 0.0
+create vertex -1000.0 +1000.0 0.0
+create vertex +1000.0 +1000.0 0.0
+create vertex +1000.0     0.0 0.0
+create surface vertex 1 2 3 4
+delete vertex all
+
+# ----------------------------------------------------------------------
+# Set discretization size
+# ----------------------------------------------------------------------
+surface all size 200
+
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+surface all scheme submap
+mesh surface all
+
+# ----------------------------------------------------------------------
+# Create blocks for materials
+# ----------------------------------------------------------------------
+block 1 surface 1 
+block 1 name "elastic"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +x edge
+# ----------------------------------------------------------------------
+group "edge_xpos" add node in curve 3
+nodeset 20 group edge_xpos
+nodeset 20 name "edge xpos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -x edge
+# ----------------------------------------------------------------------
+group "edge_xneg" add node in curve 1
+nodeset 21 group edge_xneg
+nodeset 21 name "edge xneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +y edge
+# ----------------------------------------------------------------------
+group "edge_ypos" add node in curve  2
+nodeset 22 group edge_ypos
+nodeset 22 name "edge ypos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -y edge
+# ----------------------------------------------------------------------
+group "edge_yneg" add node in curve  4
+nodeset 23 group edge_yneg
+nodeset 23 name "edge yneg"
+
+# ----------------------------------------------------------------------
+# Export exodus file
+# ----------------------------------------------------------------------
+export mesh "mesh_dx200.exo" dimension 2 overwrite
+
