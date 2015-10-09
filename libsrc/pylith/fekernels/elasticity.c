@@ -549,7 +549,7 @@ pylith_fekernels_g3_uu_IsotropicLinearElasticity3D(const PylithInt dim,
   assert(aOff);
 
   /*
-    g(f,g,df,dg) = C(f,df,g,dg)
+    g(i,j,di,dj) = C(i,di,j,dj)
 
      0: g0000 = C1111
      1: g0001 = C1112
