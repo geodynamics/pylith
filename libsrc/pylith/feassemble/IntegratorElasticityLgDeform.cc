@@ -287,15 +287,17 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual2D(const sc
     PylithScalar l12 = 0.0;
     PylithScalar l21 = 0.0;
     PylithScalar l22 = 0.0;
-    for (int kBasis=0; kBasis < numBasis; ++kBasis) {
-      const int kB = kBasis*spaceDim;
-      l11 += basisDeriv[iQ+kB  ] * disp[kB  ];
-      l12 += basisDeriv[iQ+kB+1] * disp[kB  ];
-      l21 += basisDeriv[iQ+kB  ] * disp[kB+1];
-      l22 += basisDeriv[iQ+kB+1] * disp[kB+1];
+    for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+      const int iB = iBasis*spaceDim;
+      const PylithScalar Nip = basisDeriv[iQ+iB  ];
+      const PylithScalar Niq = basisDeriv[iQ+iB+1];
+      l11 += Nip * disp[iB  ];
+      l12 += Niq * disp[iB  ];
+      l21 += Nip * disp[iB+1];
+      l22 += Niq * disp[iB+1];
     } // for
 
-    for (int iBasis=0, iQ=iQuad*numBasis*spaceDim; iBasis < numBasis; ++iBasis) {
+    for (int iBasis=0; iBasis < numBasis; ++iBasis) {
       const int iB = iBasis*spaceDim;
       const PylithScalar Nip = basisDeriv[iQ+iB  ];
       const PylithScalar Niq = basisDeriv[iQ+iB+1];
