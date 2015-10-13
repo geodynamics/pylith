@@ -371,13 +371,12 @@ pylith::meshio::DataWriterVTK::_vtkFilename(const PylithScalar t) const
     sprintf(sbuffer, _timeFormat.c_str(), t/_timeConstant);
     std::string timestamp(sbuffer);
     const size_t pos = timestamp.find(".");
-    if (pos > 0 && pos != timestamp.length())
+    if (pos != std::string::npos) {
       timestamp.erase(pos, 1);
-    filename
-      << std::string(_filename, 0, indexExt) << "_t" << timestamp << ".vtk";
+    } // if
+    filename << std::string(_filename, 0, indexExt) << "_t" << timestamp << ".vtk";
   } else
-    filename
-      << std::string(_filename, 0, indexExt) << "_info.vtk";
+    filename << std::string(_filename, 0, indexExt) << "_info.vtk";
 
   PYLITH_METHOD_RETURN(std::string(filename.str()));
 } // _vtkFilename
