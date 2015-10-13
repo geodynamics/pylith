@@ -1,3 +1,11 @@
+/GPATH
+/GRTAGS
+/GSYMS
+/GTAGS
+/templates/friction/frictioncontrib.py
+/templates/friction/frictioncontrib_wrap.cxx
+/templates/materials/materialscontrib.py
+/templates/materials/materialscontrib_wrap.cxx
 /doc/userguide/userguide.pdf
 modulesrc/bc/bc.py
 modulesrc/bc/bc_wrap.cxx
