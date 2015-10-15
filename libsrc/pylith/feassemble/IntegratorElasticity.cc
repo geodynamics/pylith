@@ -595,11 +595,11 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual2D(const scalar_arr
     const PylithScalar s12 = stress[iQs+2];
     for (int iBasis=0, iQ=iQuad*numBasis*spaceDim; iBasis < numBasis; ++iBasis) {
       const int iBlock = iBasis*spaceDim;
-      const PylithScalar N1 = wt*basisDeriv[iQ+iBlock  ];
-      const PylithScalar N2 = wt*basisDeriv[iQ+iBlock+1];
+      const PylithScalar Nip = wt*basisDeriv[iQ+iBlock  ];
+      const PylithScalar Niq = wt*basisDeriv[iQ+iBlock+1];
 
-      _cellVector[iBlock  ] -= N1*s11 + N2*s12;
-      _cellVector[iBlock+1] -= N1*s12 + N2*s22;
+      _cellVector[iBlock  ] -= Nip*s11 + Niq*s12;
+      _cellVector[iBlock+1] -= Nip*s12 + Niq*s22;
     } // for
   } // for
   PetscLogFlops(numQuadPts*(1+numBasis*(8+2+9)));
@@ -672,21 +672,20 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian2D(const scalar_arr
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad];
     // tau_ij = C_ijkl * e_kl
-    //        = C_ijlk * 0.5 (u_k,l + u_l,k)
+    //        = C_ijkl * 0.5 (u_k,l + u_l,k)
     //        = 0.5 * C_ijkl * (u_k,l + u_l,k)
     // divide C_ijkl by 2 if k != l
-    const PylithScalar C1111 = elasticConsts[iQuad*numConsts+0];
-    const PylithScalar C1122 = elasticConsts[iQuad*numConsts+1];
-    const PylithScalar C1112 = elasticConsts[iQuad*numConsts+2]/2.0;
-    const PylithScalar C2211 = elasticConsts[iQuad*numConsts+3];
-    const PylithScalar C2222 = elasticConsts[iQuad*numConsts+4];
-    const PylithScalar C2212 = elasticConsts[iQuad*numConsts+5]/2.0;
-    const PylithScalar C1211 = elasticConsts[iQuad*numConsts+6];
-    const PylithScalar C1222 = elasticConsts[iQuad*numConsts+7];
-    const PylithScalar C1212 = elasticConsts[iQuad*numConsts+8]/2.0;
-    for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
-	 iBasis < numBasis;
-	 ++iBasis) {
+    const int iC = iQuad*numConsts;
+    const PylithScalar C1111 = elasticConsts[iC+0];
+    const PylithScalar C1122 = elasticConsts[iC+1];
+    const PylithScalar C1112 = elasticConsts[iC+2] / 2.0; // 2*mu -> mu
+    const PylithScalar C2211 = elasticConsts[iC+3];
+    const PylithScalar C2222 = elasticConsts[iC+4];
+    const PylithScalar C2212 = elasticConsts[iC+5] / 2.0;
+    const PylithScalar C1211 = elasticConsts[iC+6];
+    const PylithScalar C1222 = elasticConsts[iC+7];
+    const PylithScalar C1212 = elasticConsts[iC+8] / 2.0;
+    for (int iBasis=0, iQ=iQuad*numBasis*spaceDim; iBasis < numBasis; ++iBasis) {
       const PylithScalar Ni1 = wt*basisDeriv[iQ+iBasis*spaceDim  ];
       const PylithScalar Ni2 = wt*basisDeriv[iQ+iBasis*spaceDim+1];
       const int iBlock = (iBasis*spaceDim  ) * (numBasis*spaceDim);
