@@ -46,17 +46,16 @@ def getData(sim):
             'stress': stress}
 
 # ======================================================================
-sim = "initialstress_lowg"
+sim = "initialstress"
 dataA = getData(sim)
 
-sim = "initialstress_lowg"
+sim = "initialstress"
 dataB = getData(sim)
 
 import pylab
 pylab.subplot(2,2,1)
-pylab.plot(dataA['time_pt'][0:100], dataA['disp'][0:100,1]/dataB['disp'][0:100,1], 'r-')
-#pylab.plot(dataA['time_pt'], dataA['disp'][:,1], 'r-',
-#           dataB['time_pt'], dataB['disp'][:,1], 'b--')
+pylab.plot(dataA['time_pt'], dataA['disp'][:,1], 'r-',
+           dataB['time_pt'], dataB['disp'][:,1], 'b--')
 pylab.xlabel('Time (year)')
 pylab.ylabel('Displacement (m)')
 
