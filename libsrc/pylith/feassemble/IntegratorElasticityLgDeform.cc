@@ -289,26 +289,23 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual2D(const sc
     PylithScalar l22 = 0.0;
     for (int iBasis=0; iBasis < numBasis; ++iBasis) {
       const int iB = iBasis*spaceDim;
-      const PylithScalar Nip = basisDeriv[iQ+iB  ];
-      const PylithScalar Niq = basisDeriv[iQ+iB+1];
-      l11 += Nip * disp[iB  ];
-      l12 += Niq * disp[iB  ];
-      l21 += Nip * disp[iB+1];
-      l22 += Niq * disp[iB+1];
+      l11 += basisDeriv[iQ+iB  ] * disp[iB  ];
+      l12 += basisDeriv[iQ+iB+1] * disp[iB  ];
+      l21 += basisDeriv[iQ+iB  ] * disp[iB+1];
+      l22 += basisDeriv[iQ+iB+1] * disp[iB+1];
     } // for
 
-    for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+    for (int iBasis=0, iQ=iQuad*numBasis*spaceDim; iBasis < numBasis; ++iBasis) {
       const int iB = iBasis*spaceDim;
-      const PylithScalar Nip = basisDeriv[iQ+iB  ];
-      const PylithScalar Niq = basisDeriv[iQ+iB+1];
+      const PylithScalar Nip = wt*basisDeriv[iQ+iB  ];
+      const PylithScalar Niq = wt*basisDeriv[iQ+iB+1];
 
       // Generated using Maxima (see jacobian2d_lgdeform.wxm)
-      _cellVector[iB  ] -= wt*(l12*Niq*s22 + ((l11+1)*Niq+l12*Nip)*s12 + (l11+1)*Nip*s11);
-
-      _cellVector[iB+1] -= wt*((l22+1)*Niq*s22 + (l21*Niq+(l22+1)*Nip)*s12 + l21*Nip*s11);
+      _cellVector[iB  ] -= (1+l11)*Nip*s11 + l12*Niq*s22 + ((1+l11)*Niq + l12*Nip)*s12;
+      _cellVector[iB+1] -= l21*Nip*s11 + (1+l22)*Niq*s22 + (l21*Niq + (1+l22)*Nip)*s12;
     } // for
   } // for
-  PetscLogFlops(numQuadPts*(1+numBasis*(numBasis*8+14)));
+  PetscLogFlops(numQuadPts*(1+numBasis*(10+26)));
 } // _elasticityResidual2D
 
 // ----------------------------------------------------------------------
@@ -361,21 +358,41 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual3D(const sc
       l33 += basisDeriv[iQ+kB+2] * disp[kB+2];
     } // for
     
-    for (int iBasis=0, iQ=iQuad*numBasis*spaceDim; iBasis < numBasis; ++iBasis) {
+    for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
+	 iBasis < numBasis;
+	 ++iBasis) {
       const int iB = iBasis*spaceDim;
       const PylithScalar Nip = basisDeriv[iQ+iB  ];
       const PylithScalar Niq = basisDeriv[iQ+iB+1];
       const PylithScalar Nir = basisDeriv[iQ+iB+2];
 
       // Generated using Maxima (see jacobian3d_lgdeform.wxm)
-      _cellVector[iB  ] -= wt*(l13*Nir*s33 + (l12*Nir+l13*Niq)*s23 + l12*Niq*s22 + ((l11+1)*Nir + l13*Nip)*s13 + ((l11+1)*Niq+l12*Nip)*s12 + (l11+1)*Nip*s11);
+      _cellVector[iB  ] -= 
+	wt*(l13*Nir*s33 + 
+	    (l12*Nir+l13*Niq)*s23 + 
+	    l12*Niq*s22 + 
+	    ((l11+1)*Nir + l13*Nip)*s13 + 
+	    ((l11+1)*Niq+l12*Nip)*s12 + 
+	    (l11+1)*Nip*s11);
 
-      _cellVector[iB+1] -= wt*(l23*Nir*s33 + ((l22+1)*Nir+l23*Niq)*s23 + (l22+1)*Niq*s22 + (l21*Nir+l23*Nip)*s13 + (l21*Niq+(l22+1)*Nip)*s12 + l21*Nip*s11);
+      _cellVector[iB+1] -=
+	wt*(l23*Nir*s33 + 
+	    ((l22+1)*Nir+l23*Niq)*s23 + 
+	    (l22+1)*Niq*s22 + 
+	    (l21*Nir+l23*Nip)*s13 + 
+	    (l21*Niq+(l22+1)*Nip)*s12 + 
+	    l21*Nip*s11);
 
-      _cellVector[iB+2] -= wt*((l33+1)*Nir*s33 + (l32*Nir+(l33+1)*Niq)*s23 + l32*Niq*s22 + (l31*Nir+(l33+1)*Nip)*s13 + (l31*Niq+l32*Nip)*s12 + l31*Nip*s11);
+      _cellVector[iB+2] -=
+	wt*((l33+1)*Nir*s33 + 
+	    (l32*Nir+(l33+1)*Niq)*s23 + 
+	    l32*Niq*s22 + 
+	    (l31*Nir+(l33+1)*Nip)*s13 + 
+	    (l31*Niq+l32*Nip)*s12 + 
+	    l31*Nip*s11);
     } // for
   } // for
-  PetscLogFlops(numQuadPts*(1+numBasis*(numBasis*18+3*27)));
+  PetscLogFlops(numQuadPts*(1+numBasis*(18+3*27)));
 } // _elasticityResidual3D
 
 // ----------------------------------------------------------------------
@@ -425,21 +442,20 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian2D(const sc
     PylithScalar l12 = 0.0;
     PylithScalar l21 = 0.0;
     PylithScalar l22 = 0.0;
-    for (int kBasis=0; kBasis < numBasis; ++kBasis) {
-      const int kB = kBasis*spaceDim;
-      l11 += basisDeriv[iQ+kB  ] * disp[kB  ];
-      l12 += basisDeriv[iQ+kB+1] * disp[kB  ];
-      l21 += basisDeriv[iQ+kB  ] * disp[kB+1];
-      l22 += basisDeriv[iQ+kB+1] * disp[kB+1];
+    for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+      const int iB = iBasis*spaceDim;
+      l11 += basisDeriv[iQ+iB  ] * disp[iB  ];
+      l12 += basisDeriv[iQ+iB+1] * disp[iB  ];
+      l21 += basisDeriv[iQ+iB  ] * disp[iB+1];
+      l22 += basisDeriv[iQ+iB+1] * disp[iB+1];
     } // for
 
-    for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
-	 iBasis < numBasis;
-	 ++iBasis) {
+    for (int iBasis=0, iQ=iQuad*numBasis*spaceDim; iBasis < numBasis; ++iBasis) {
       const int iB = iBasis*spaceDim;
       const PylithScalar Nip = wt*basisDeriv[iQ+iB  ];
       const PylithScalar Niq = wt*basisDeriv[iQ+iB+1];
-      const int iBlock = (iB) * (numBasis*spaceDim);
+
+      const int iBlock  = (iB  ) * (numBasis*spaceDim);
       const int iBlock1 = (iB+1) * (numBasis*spaceDim);
 
       for (int jBasis=0; jBasis < numBasis; ++jBasis) {
@@ -458,6 +474,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian2D(const sc
 	  (l11+1)*Nip*(l12*Njq*C1122 + 
 		       ((l11+1)*Njq+l12*Njp)*C1112 + 
 		       (l11+1)*Njp*C1111);
+
 	const PylithScalar Ki0j1 =
 	  l12*Niq*((l22+1.0)*Njq*C2222 + 
 		   (l21*Njq+(l22+1.0)*Njp)*C2212 + 
@@ -468,6 +485,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian2D(const sc
 	  (l11+1.0)*Nip*((l22+1.0)*Njq*C1122 + 
 		       (l21*Njq+(l22+1.0)*Njp)*C1112 + 
 		       l21*Njp*C1111);
+
 	const PylithScalar Ki1j0 =
 	  (l22+1.0)*Niq*(l12*Njq*C2222 + 
 		       ((l11+1.0)*Njq+l12*Njp)*C2212 + 
@@ -478,6 +496,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian2D(const sc
 	  l21*Nip*(l12*Njq*C1122 + 
 		   ((l11+1.0)*Njq+l12*Njp)*C1112 + 
 		   (l11+1.0)*Njp*C1111);
+
 	const PylithScalar Ki1j1 =
 	  (l22+1.0)*Niq*((l22+1.0)*Njq*C2222 + 
 		       (l21*Njq+(l22+1.0)*Njp)*C2212 + 
@@ -488,8 +507,8 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian2D(const sc
 	  l21*Nip*((l22+1.0)*Njq*C1122 + 
 		   (l21*Njq+(l22+1.0)*Njp)*C1112 + 
 		   l21*Njp*C1111);
-	const PylithScalar Knl = 
-	  (Nip*s11 + Niq*s12)*Njp + (Nip*s12 + Niq*s22)*Njq;
+
+	const PylithScalar Knl = (Njp*s11 + Njq*s12)*Nip + (Njp*s12 + Njq*s22)*Niq;
 
 	const int jBlock = (jB);
 	const int jBlock1 = (jB+1);
@@ -1080,14 +1099,28 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcDeformation(scalar_array*
 
   assert(basisDeriv.size() == size_t(numQuadPts*numBasis*dim));
 
+  // Xij = d(x_i+u_i)/d(x_j)
+  //
+  // x_i + u_i = Nb * (x^b_i + u^b_i)
+  //
+  /// Xij = dNb/dxj * (x^b_i + u^b_i)
+
   const int deformSize = dim*dim;
 
   (*deform) = 0.0;
-  for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
-    for (int iBasis=0, iQ=iQuad*numBasis*dim; iBasis < numBasis; ++iBasis)
-      for (int iDim=0, indexD=0; iDim < dim; ++iDim)
-	for (int jDim=0; jDim < dim; ++jDim, ++indexD)
-	  (*deform)[iQuad*deformSize+indexD] += basisDeriv[iQ+iBasis*dim+jDim] * (vertices[iBasis*dim+iDim] + disp[iBasis*dim+iDim]);
+  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+    for (int iBasis=0, iQ=iQuad*numBasis*dim; iBasis < numBasis; ++iBasis) {
+      for (int iDim=0, indexD=0; iDim < dim; ++iDim) {
+	for (int jDim=0; jDim < dim; ++jDim, ++indexD) {
+	  const int iB = iBasis*dim;
+	  (*deform)[iQuad*deformSize+indexD] += basisDeriv[iQ+iB+jDim] * disp[iB+iDim];
+	} // for
+      } // for
+    } // for
+    for (int iDim=0; iDim < dim; ++iDim) {
+      (*deform)[iQuad*deformSize+iDim*dim+iDim] += 1.0;
+    } // for
+  } // for
 
 } // _calcDeformation
 
