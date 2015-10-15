@@ -68,9 +68,9 @@ pylith::feassemble::TestIntegratorElasticityLgDeform::testCalcDeformation2D(void
     // ux(x,y) = 0.5
     // uy(x,y) = 0.2
     const PylithScalar disp[numBasis*dim] = {
-      0.5, 0.2,
-      0.5, 0.2,
-      0.5, 0.2,
+      5.0, -3.0,
+      5.0, -3.0,
+      5.0, -3.0,
     };
     const PylithScalar deformE[size] = {
       1.0, 0.0,   0.0, 1.0,
@@ -80,25 +80,27 @@ pylith::feassemble::TestIntegratorElasticityLgDeform::testCalcDeformation2D(void
     IntegratorElasticityLgDeform::_calcDeformation(&deform, basisDeriv, vertices, disp, numBasis, numQuadPts, dim);
     
     CPPUNIT_ASSERT_EQUAL(size, int(deform.size()));
-    for (int i=0; i < size; ++i)
+    for (int i=0; i < size; ++i) {
+      std::cout << "deform["<<i<<"]: " << deformE[i] << "  " << deform[i] << std::endl;
       CPPUNIT_ASSERT_DOUBLES_EQUAL(deformE[i], deform[i], tolerance);
+    }
   } // Rigid body translation
 
   { // Rigid body translation + rotation
-    // ux(x,y) = 0.5 + cos(theta)*x + sin(theta)*y - x0
-    // uy(x,y) = 0.2 - sin(theta)*x + cos(theta)*y - y0
-    // theta = pi/6
+    // ux(x,y) =  5.0 + cos(theta)*x + sin(theta)*y - x0
+    // uy(x,y) = -3.0 - sin(theta)*x + cos(theta)*y - y0
+    // theta = 0.45*pi
     const PylithScalar pi = 4.0*atan(1.0);
-    const PylithScalar theta = pi / 6.0;
+    const PylithScalar theta = 0.45*pi;
     const PylithScalar disp[numBasis*dim] = {
-      0.5+cos(theta)*1.0+sin(theta)*0.0-1.0,
-      0.2-sin(theta)*1.0+cos(theta)*0.0-0.0,
+       5.0+cos(theta)*1.0+sin(theta)*0.0-1.0,
+      -3.0-sin(theta)*1.0+cos(theta)*0.0-0.0,
 
-      0.5+cos(theta)*0.0+sin(theta)*1.0-0.0,
-      0.2-sin(theta)*0.0+cos(theta)*1.0-1.0,
+       5.0+cos(theta)*0.0+sin(theta)*1.0-0.0,
+      -3.0-sin(theta)*0.0+cos(theta)*1.0-1.0,
 
-      0.5+cos(theta)*0.0+sin(theta)*0.0-0.0,
-      0.2-sin(theta)*0.0+cos(theta)*0.0-0.0,
+       5.0+cos(theta)*0.0+sin(theta)*0.0-0.0,
+      -3.0-sin(theta)*0.0+cos(theta)*0.0-0.0,
     };
     const PylithScalar deformE[size] = {
       cos(theta), sin(theta), -sin(theta), cos(theta),
@@ -108,17 +110,19 @@ pylith::feassemble::TestIntegratorElasticityLgDeform::testCalcDeformation2D(void
     IntegratorElasticityLgDeform::_calcDeformation(&deform, basisDeriv, vertices, disp, numBasis, numQuadPts, dim);
     
     CPPUNIT_ASSERT_EQUAL(size, int(deform.size()));
-    for (int i=0; i < size; ++i)
+    for (int i=0; i < size; ++i) {
+      std::cout << "deform["<<i<<"]: " << deformE[i] << "  " << deform[i] << std::endl;
       CPPUNIT_ASSERT_DOUBLES_EQUAL(deformE[i], deform[i], tolerance);
+    } // for
   } // Rigid body translation + rotation
 
   { // Uniform strain
     // Let ux(x,y) = +0.4 + 0.3*x + 0.8*y
     // Ley uy(x,y) = -2.0 + 0.5*x - 0.2*y
     const PylithScalar disp[numBasis*dim] = {
-      0.7, -1.5,
-      1.2, -2.2,
-      0.4, -2.0
+      +0.4 + 0.3*1.0 + 0.8*0.0,   -2.0 + 0.5*1.0 - 0.2*0.0,
+      +0.4 + 0.3*0.0 + 0.8*1.0,   -2.0 + 0.5*0.0 - 0.2*1.0,
+      +0.4 + 0.3*0.0 + 0.8*0.0,   -2.0 + 0.5*0.0 - 0.2*0.0,
     };
     const PylithScalar deformE[size] = {
       1.3, 0.8,   0.5, 0.8,
@@ -128,8 +132,10 @@ pylith::feassemble::TestIntegratorElasticityLgDeform::testCalcDeformation2D(void
     IntegratorElasticityLgDeform::_calcDeformation(&deform, basisDeriv, vertices, disp, numBasis, numQuadPts, dim);
     
     CPPUNIT_ASSERT_EQUAL(size, int(deform.size()));
-    for (int i=0; i < size; ++i)
+    for (int i=0; i < size; ++i) {
+      std::cout << "deform["<<i<<"]: " << deformE[i] << "  " << deform[i] << std::endl;
       CPPUNIT_ASSERT_DOUBLES_EQUAL(deformE[i], deform[i], tolerance);
+    } // for
   } // Uniform strain
 
   PYLITH_METHOD_END;
