@@ -1,5 +1,5 @@
 /* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
-/* [ Created with wxMaxima version 0.8.2 ] */
+/* [ Created with wxMaxima version 13.04.2 ] */
 
 /* [wxMaxima: input   start ] */
 Bnli: matrix([Nip,0,0],
@@ -42,34 +42,54 @@ x: transpose(Bnli) . S . Bnlj;
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
-Bi: matrix([Nip*(1+l11), l21*Nip, l31*Nip],
-[l12*Niq,(1+l22)*Niq, l32*Niq],
-[l13*Nir, l23*Nir, (1+l33)*Nir],
-[(1+l11)*Niq+l12*Nip,(1+l22)*Nip+l21*Niq,l31*Niq+l32*Nip],
-[l12*Nir+l13*Niq, (1+l22)*Nir+l23*Niq, (1+l33)*Niq+l32*Nir],
-[(1+l11)*Nir+l13*Nip, l21*Nir+l23*Nip, (1+l33)*Nip+l31*Nir]);
+string(x);
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
-Bj: matrix([Njp*(1+l11), l21*Njp, l31*Njp],
-[l12*Njq,(1+l22)*Njq, l32*Njq],
-[l13*Njr, l23*Njr, (1+l33)*Njr],
-[(1+l11)*Njq+l12*Njp,(1+l22)*Njp+l21*Njq,l31*Njq+l32*Njp],
-[l12*Njr+l13*Njq, (1+l22)*Njr+l23*Njq, (1+l33)*Njq+l32*Njr],
-[(1+l11)*Njr+l13*Njp, l21*Njr+l23*Njp, (1+l33)*Njp+l31*Njr]);
+Bi0: matrix([Nip, 0, 0], [0, Niq, 0], [0, 0, Nir], [Niq,Nip, 0], [0, Nir, Niq], [Nir, 0, Nip]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Bi1: matrix([l11*Nip, l21*Nip, l31*Nip], [l12*Niq, l22*Niq, l32*Niq], [l13*Nir, l23*Nir, l33*Nir],
+[l11*Niq+l12*Nip, l21*Niq+l22*Nip, l31*Niq+l32*Nip],
+[l12*Nir+l13*Niq, l22*Nir+l23*Niq, l32*Nir+l33*Niq],
+[l11*Nir+l13*Nip, l21*Nir+l23*Nip, l31*Nir+l33*Nip]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Bi: Bi0 + Bi1;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Bj0: matrix([Njp, 0, 0], [0, Njq, 0], [0, 0, Njr], [Njq,Njp, 0], [0, Njr, Njq], [Njr, 0, Njp]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Bj1: matrix([l11*Njp, l21*Njp, l31*Njp], [l12*Njq, l22*Njq, l32*Njq], [l13*Njr, l23*Njr, l33*Njr],
+[l11*Njq+l12*Njp, l21*Njq+l22*Njp, l31*Njq+l32*Njp],
+[l12*Njr+l13*Njq, l22*Njr+l23*Njq, l32*Njr+l33*Njq],
+[l11*Njr+l13*Njp, l21*Njr+l23*Njp, l31*Njr+l33*Njp]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Bj: Bj0 + Bj1;
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
 C: matrix([C1111, C1122, C1133, C1112, C1123, C1113],
-[C1122, C2222, C2233, C2212, C2223, C2213],
-[C1133, C2233, C3333, C3312, C3323, C3313],
-[C1112, C2212, C3312, C1212, C1223, C1213],
-[C1123, C2223, C3323, C1223, C2323, C2313],
-[C1113, C2213, C3313, C1213, C2313, C1313]);
+[C2211, C2222, C2233, C2212, C2223, C2213],
+[C3311, C3322, C3333, C3312, C3323, C3313],
+[C1211, C1222, C1233, C1212, C1223, C1213],
+[C2311, C2322, C2333, C2312, C2323, C2313],
+[C1311, C1322, C1333, C1312, C1323, C1313]);
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
 y: transpose(Bi) . C . Bj;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+string(y);
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
@@ -78,6 +98,10 @@ Svec: matrix([s11,s22,s33,s12,s23,s13]);
 
 /* [wxMaxima: input   start ] */
 r: transpose(Bi) . transpose(Svec);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+string(r);
 /* [wxMaxima: input   end   ] */
 
 /* Maxima can't load/batch files which end with a comment! */
