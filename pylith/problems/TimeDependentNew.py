@@ -145,14 +145,9 @@ class TimeDependentNew(ProblemNew, ModuleTimeDependent):
         self._info.log("")
       self._eventLogger.stagePush("Initialize")
 
-    if (self.totalTime > 0.0*year)
-      self.progressMonitor.open()
-
     ModuleTimeDependent.create(self)
     ModuleTimeDependent.initialize()
     ModuleTimeDependent.solve()
-    
-    self.progressMonitor.close()
     return
 
 
@@ -191,8 +186,6 @@ class TimeDependentNew(ProblemNew, ModuleTimeDependent):
     ModuleTimeDependent.duration(self.inventory.totalTime)
 
     self.initializer = self.inventory.initializer
-    self.progressMonitor = self.inventory.progressMonitor
-    self.checkpointTimer = self.inventory.checkpointTimer
     return
 
 
