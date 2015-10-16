@@ -104,5 +104,13 @@ r: transpose(Bi) . transpose(Svec);
 string(r);
 /* [wxMaxima: input   end   ] */
 
+/* [wxMaxima: input   start ] */
+X: matrix([x0, x1, x2], [x3, x4, x5], [x6, x7, x8]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+strain: 0.5*(transpose(X) . X - matrix([1,0,0],[0,1,0],[0,0,1]));
+/* [wxMaxima: input   end   ] */
+
 /* Maxima can't load/batch files which end with a comment! */
 "Created with wxMaxima"$
