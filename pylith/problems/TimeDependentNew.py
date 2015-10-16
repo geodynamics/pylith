@@ -101,7 +101,7 @@ class TimeDependentNew(ProblemNew, ModuleTimeDependent):
       self._info.log("Pre-initializing problem.")
     import weakref
     self.mesh = weakref.ref(mesh)
-    ProblemNew.initialize(self, mesh)
+    ProblemNew.preinitialize(self, mesh)
     return
 
 
@@ -139,15 +139,11 @@ class TimeDependentNew(ProblemNew, ModuleTimeDependent):
       self._info.log("Solving problem.")
     self.checkpointTimer.toplevel = app # Set handle for saving state
     
-    # Elastic prestep
+    # Pre-problem initialization
     if self.initializer:
       if 0 == comm.rank:
         self._info.log("")
       self._eventLogger.stagePush("Initialize")
-
-      t = self.formulation.getStartTime()
-      dt = self.formulation.getTimeStep()
-      t -= dt
 
     if (self.totalTime > 0.0*year)
       self.progressMonitor.open()

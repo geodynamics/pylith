@@ -100,9 +100,7 @@ class Solution(PetscComponent):
 
     import pyre.inventory
 
-    subfields = pyre.inventory.facilityArray("subfields",
-                                             itemFactory=subfieldFactory,
-                                             factory=OneField)
+    subfields = pyre.inventory.facilityArray("subfields", itemFactory=subfieldFactory, factory=OneField)
     subfields.meta['tip'] = "Subfields in solution."
 
 
@@ -139,13 +137,13 @@ class Solution(PetscComponent):
     solution.subfieldsSetup()
     solution.setupSolnChart()
 
-    for constraint in constraints:
+    for constraint in constraints.components():
       constraint.setConstraintSizes(solution)
     solution.allocate()
     solution.zeroAll()
-    for constraint in self.constraints:
+    for constraint in self.constraints.components():
       constraint.setConstraints(solution)
-    for integrator in self.integrators:
+    for integrator in self.integrators.components():
       integrator.checkConstraints(solution)
 
     return

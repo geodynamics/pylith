@@ -194,8 +194,10 @@ class ProblemNew(PetscComponent):
     Initialize integrators for each element family (material/quadrature,
     bc/quadrature, etc.).
     """
-    raise NotImplementedError, "initialize() not implemented."
+    solution.initialize(self.constraints, self.integrators)
+    ModuleProblem.solution(self, solution)
     return
+
 
   def run(self, app):
     """

@@ -46,6 +46,11 @@ public :
     NONLINEAR, // Nonlinear solver.
   }; // ProblemType
 
+  enum FormulationTypeEnum {
+    IMPLICIT, // Implicit time stepping.
+    EXPLICIT, // Explicit time stepping.
+  }; // FormulationTypeEnum
+
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
@@ -114,7 +119,19 @@ public :
    */
   void solve(void);
   
-  /** Reform residual for RHS, G(t,u).
+  /** Perform operations before advancing solution one time step.
+   *
+   * Set constraints, etc.
+   */
+  void prestep(void);
+
+  /** Perform Perform operations after advancing solution one time step.
+   *
+   * Update state variables, output.
+   */
+  void poststep(void);
+
+  /** Callback static method for reforming residual for RHS, G(t,u).
    *
    * @param ts PETSc time stepper.
    * @param t Current time.
@@ -129,7 +146,7 @@ public :
 				   PetscVec residualVec,
 				   void* context);
   
-  /* Reform Jacobian for RHS, Jacobian of G(t,u).
+  /* Callback static method for reforming Jacobian for RHS, Jacobian of G(t,u).
    *
    * @param ts PETSc time stepper.
    * @param t Current time.
@@ -146,28 +163,48 @@ public :
 				   PetscMat precondMat,
 				   void* context);
 
-  /** Callback method for operations before advancing solution one time step.
+  /** Callback static method for reforming residual for LHS, F(t,u,\dot{u}).
+   *
+   * @param ts PETSc time stepper.
+   * @param t Current time.
+   * @param solutionVec PetscVec for solution.
+   * @param residualvec PetscVec for residual.
+   * @param context User context (TimeDependent).
+   */
+  static
+  PetscErrorCode reformLHSResidual(PetscTS ts,
+				   PetscReal t,
+				   PetscVec solutionVec,
+				   PetscVec residualVec,
+				   void* context);
+  
+  /* Callback static method for reforming Jacobian for LHS, Jacobian of F(t,u,\dot{u}).
+   *
+   * @param ts PETSc time stepper.
+   * @param t Current time.
+   * @param solution PetscVec for solution.
+   * @param jacobianMat Jacobian matrix.
+   * @param precondMat Preconditioner matrix.
+   * @param context User context (TimeDependent).
+   */
+  static
+  PetscErrorCode reformLHSJacobian(PetscTS ts,
+				   PetscReal t,
+				   PetscVec solutionVec,
+				   PetscMat jacobianMat,
+				   PetscMat precondMat,
+				   void* context);
+
+  /** Callback static method for operations before advancing solution one time step.
    */
   static
   PetscErrorCode prestep(PetscTS ts);
 
-  /** Callback method for operations after advancing solution one time step.
+  /** Callback static method for operations after advancing solution one time step.
    */
   static
   PetscErrorCode poststep(PetscTS ts);
   
-  /** Perform operations before advancing solution one time step.
-   *
-   * Set constraints, etc.
-   */
-  void prestep(void);
-
-  /** Perform Perform operations after advancing solution one time step.
-   *
-   * Update state variables, output.
-   */
-  void poststep(void);
-
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
@@ -176,6 +213,7 @@ private :
   PetscReal _totalTime; ///< Total time (duration) of problem.
   PetscTS _ts; ///< PETSc time stepper.
   ProblemTypeEnum _problemType; ///< Problem (solver) type.
+  FormulationTypeEnum _formulationType; ///< Type of time stepping.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

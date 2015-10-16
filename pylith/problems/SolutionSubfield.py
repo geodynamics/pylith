@@ -57,6 +57,8 @@ class SolutionSubfield(PetscComponent):
     ##
     ## \b Properties
     ## @li \b components Number of components.
+    ## @li \b vector_field_type Type of vector field ['scalar','vector','tensor'].
+    ## @li \b scale Nondimensional scale for field.
     ## @li \b basis_order Order of basis functions.
     ## @li \b quad_order Order of numerical quadrature.
     ## @li \b basis_continuous Is basis continuous?
@@ -71,6 +73,11 @@ class SolutionSubfield(PetscComponent):
 
     components = pyre.inventory.int("components", default=3)
     components.meta['tip'] = "Number of components."
+
+    vectorFieldType = pyre.inventory.str("vector_field_type", default="vector", validator=pyre.inventory.choice(["scalar","vector","tensor"]))
+    vectorFieldType.meta['tip'] = "Type of vector field ['scalar','vector','tensor']."
+
+    # :TODO: Scale for field. Use Pyre units to make this scale in terms of nondimensional scales (pressure, length, time, etc).
 
     basisOrder = pyre.inventory.int("basis_order", default=1)
     basisOrder.meta['tip'] = "Order of basis functions."
