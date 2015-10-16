@@ -38,9 +38,9 @@ pylith::feassemble::TestIntegratorElasticityLgDeform::testCalcDeformation2D(void
 { // testCalcDeformation2D
   PYLITH_METHOD_BEGIN;
 
-  // N0 = x
-  // N1 = y
-  // N2 = 1 - x - y
+  // N0 = x-0.5
+  // N1 = y+0.6
+  // N2 = 0.9 - x - y
   // dN0/dx = +1.0, dN0/dy =  0.0
   // dN1/dx =  0.0, dN1/dy = +1.0
   // dN2/dx = -1.0, dN2/dy = -1.0
@@ -48,15 +48,14 @@ pylith::feassemble::TestIntegratorElasticityLgDeform::testCalcDeformation2D(void
   const int numBasis = 3;
   const int numQuadPts = 2;
   const PylithScalar vertices[numBasis*dim] = {
-    1.0, 0.0,
-    0.0, 1.0, 
-    0.0, 0.0,
+    1.5, -0.6,
+    0.5,  0.4, 
+    0.5, -0.6,
   };
   const PylithScalar basisDerivVals[numQuadPts*numBasis*dim] = {
     +1.0,  0.0,   0.0, +1.0,   -1.0, -1.0,
     +1.0,  0.0,   0.0, +1.0,   -1.0, -1.0
   };
-  const int tensorSize = 3;
 
   const int size = numQuadPts * dim*dim;
   scalar_array deform(size);    
@@ -65,8 +64,8 @@ pylith::feassemble::TestIntegratorElasticityLgDeform::testCalcDeformation2D(void
   const PylithScalar tolerance = 1.0e-06;
 
   { // Rigid body translation
-    // ux(x,y) = 0.5
-    // uy(x,y) = 0.2
+    // ux(x,y) =  5.0
+    // uy(x,y) = -3.0
     const PylithScalar disp[numBasis*dim] = {
       5.0, -3.0,
       5.0, -3.0,
@@ -81,7 +80,6 @@ pylith::feassemble::TestIntegratorElasticityLgDeform::testCalcDeformation2D(void
     
     CPPUNIT_ASSERT_EQUAL(size, int(deform.size()));
     for (int i=0; i < size; ++i) {
-      std::cout << "deform["<<i<<"]: " << deformE[i] << "  " << deform[i] << std::endl;
       CPPUNIT_ASSERT_DOUBLES_EQUAL(deformE[i], deform[i], tolerance);
     }
   } // Rigid body translation
@@ -93,14 +91,14 @@ pylith::feassemble::TestIntegratorElasticityLgDeform::testCalcDeformation2D(void
     const PylithScalar pi = 4.0*atan(1.0);
     const PylithScalar theta = 0.45*pi;
     const PylithScalar disp[numBasis*dim] = {
-       5.0+cos(theta)*1.0+sin(theta)*0.0-1.0,
-      -3.0-sin(theta)*1.0+cos(theta)*0.0-0.0,
+       5.0+cos(theta)*1.5+sin(theta)*-0.6-1.0,
+      -3.0-sin(theta)*1.5+cos(theta)*-0.6-0.0,
 
-       5.0+cos(theta)*0.0+sin(theta)*1.0-0.0,
-      -3.0-sin(theta)*0.0+cos(theta)*1.0-1.0,
+       5.0+cos(theta)*0.5+sin(theta)*0.4-0.0,
+      -3.0-sin(theta)*0.5+cos(theta)*0.4-1.0,
 
-       5.0+cos(theta)*0.0+sin(theta)*0.0-0.0,
-      -3.0-sin(theta)*0.0+cos(theta)*0.0-0.0,
+       5.0+cos(theta)*0.5+sin(theta)*-0.6-0.0,
+      -3.0-sin(theta)*0.5+cos(theta)*-0.6-0.0,
     };
     const PylithScalar deformE[size] = {
       cos(theta), sin(theta), -sin(theta), cos(theta),
@@ -111,7 +109,6 @@ pylith::feassemble::TestIntegratorElasticityLgDeform::testCalcDeformation2D(void
     
     CPPUNIT_ASSERT_EQUAL(size, int(deform.size()));
     for (int i=0; i < size; ++i) {
-      std::cout << "deform["<<i<<"]: " << deformE[i] << "  " << deform[i] << std::endl;
       CPPUNIT_ASSERT_DOUBLES_EQUAL(deformE[i], deform[i], tolerance);
     } // for
   } // Rigid body translation + rotation
@@ -120,9 +117,9 @@ pylith::feassemble::TestIntegratorElasticityLgDeform::testCalcDeformation2D(void
     // Let ux(x,y) = +0.4 + 0.3*x + 0.8*y
     // Ley uy(x,y) = -2.0 + 0.5*x - 0.2*y
     const PylithScalar disp[numBasis*dim] = {
-      +0.4 + 0.3*1.0 + 0.8*0.0,   -2.0 + 0.5*1.0 - 0.2*0.0,
-      +0.4 + 0.3*0.0 + 0.8*1.0,   -2.0 + 0.5*0.0 - 0.2*1.0,
-      +0.4 + 0.3*0.0 + 0.8*0.0,   -2.0 + 0.5*0.0 - 0.2*0.0,
+      +0.4 + 0.3*1.5 + 0.8*-0.6,   -2.0 + 0.5*1.5 - 0.2*-0.6,
+      +0.4 + 0.3*0.5 + 0.8*0.4,    -2.0 + 0.5*0.5 - 0.2*0.4,
+      +0.4 + 0.3*0.5 + 0.8*-0.6,   -2.0 + 0.5*0.5 - 0.2*-0.6,
     };
     const PylithScalar deformE[size] = {
       1.3, 0.8,   0.5, 0.8,
@@ -133,7 +130,6 @@ pylith::feassemble::TestIntegratorElasticityLgDeform::testCalcDeformation2D(void
     
     CPPUNIT_ASSERT_EQUAL(size, int(deform.size()));
     for (int i=0; i < size; ++i) {
-      std::cout << "deform["<<i<<"]: " << deformE[i] << "  " << deform[i] << std::endl;
       CPPUNIT_ASSERT_DOUBLES_EQUAL(deformE[i], deform[i], tolerance);
     } // for
   } // Uniform strain
@@ -187,7 +183,6 @@ pylith::feassemble::TestIntegratorElasticityLgDeform::testCalcDeformation3D(void
     +0.125, +0.125, +0.125,
     -0.125, +0.125, +0.125,
   };
-  const int tensorSize = 3;
 
   const int size = numQuadPts * dim*dim;
   scalar_array deform(size);    
