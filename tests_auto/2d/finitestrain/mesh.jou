@@ -3,19 +3,19 @@
 # ----------------------------------------------------------------------
 # Block is 2000m x 1000m
 # -1000 m <= x <= 1000 m 
-#     0 m <= y <= 1000 m
+# -1000 m <= y <= 0 m
 reset
+create vertex -1000.0 -1000.0 0.0
 create vertex -1000.0     0.0 0.0
-create vertex -1000.0 +1000.0 0.0
-create vertex +1000.0 +1000.0 0.0
 create vertex +1000.0     0.0 0.0
+create vertex +1000.0 -1000.0 0.0
 create surface vertex 1 2 3 4
 delete vertex all
 
 # ----------------------------------------------------------------------
 # Set discretization size
 # ----------------------------------------------------------------------
-surface all size 200
+surface all size 500.0
 
 # ----------------------------------------------------------------------
 # Generate the mesh
@@ -58,7 +58,16 @@ nodeset 23 group edge_yneg
 nodeset 23 name "edge yneg"
 
 # ----------------------------------------------------------------------
+# Create nodeset for +x,-x,-y edges
+# ----------------------------------------------------------------------
+group "buried_edges" add node in group edge_xpos
+group "buried_edges" add node in group edge_xneg
+group "buried_edges" add node in group edge_yneg
+nodeset 24 group buried_edges
+nodeset 24 name "buried_edges"
+
+# ----------------------------------------------------------------------
 # Export exodus file
 # ----------------------------------------------------------------------
-export mesh "mesh_dx200.exo" dimension 2 overwrite
+export mesh "mesh_dx500.exo" dimension 2 overwrite
 
