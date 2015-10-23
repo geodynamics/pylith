@@ -47,11 +47,6 @@ pylith::feassemble::TestIntegratorElasticityLgDeform::testCalcDeformation2D(void
   const int dim = 2;
   const int numBasis = 3;
   const int numQuadPts = 2;
-  const PylithScalar vertices[numBasis*dim] = {
-    1.5, -0.6,
-    0.5,  0.4, 
-    0.5, -0.6,
-  };
   const PylithScalar basisDerivVals[numQuadPts*numBasis*dim] = {
     +1.0,  0.0,   0.0, +1.0,   -1.0, -1.0,
     +1.0,  0.0,   0.0, +1.0,   -1.0, -1.0
@@ -76,7 +71,7 @@ pylith::feassemble::TestIntegratorElasticityLgDeform::testCalcDeformation2D(void
       1.0, 0.0,   0.0, 1.0,
     };
     
-    IntegratorElasticityLgDeform::_calcDeformation(&deform, basisDeriv, vertices, disp, numBasis, numQuadPts, dim);
+    IntegratorElasticityLgDeform::_calcDeformation(&deform, basisDeriv, disp, numBasis, numQuadPts, dim);
     
     CPPUNIT_ASSERT_EQUAL(size, int(deform.size()));
     for (int i=0; i < size; ++i) {
@@ -105,7 +100,7 @@ pylith::feassemble::TestIntegratorElasticityLgDeform::testCalcDeformation2D(void
       cos(theta), sin(theta), -sin(theta), cos(theta),
     };
     
-    IntegratorElasticityLgDeform::_calcDeformation(&deform, basisDeriv, vertices, disp, numBasis, numQuadPts, dim);
+    IntegratorElasticityLgDeform::_calcDeformation(&deform, basisDeriv, disp, numBasis, numQuadPts, dim);
     
     CPPUNIT_ASSERT_EQUAL(size, int(deform.size()));
     for (int i=0; i < size; ++i) {
@@ -126,7 +121,7 @@ pylith::feassemble::TestIntegratorElasticityLgDeform::testCalcDeformation2D(void
       1.3, 0.8,   0.5, 0.8,
     };
     
-    IntegratorElasticityLgDeform::_calcDeformation(&deform, basisDeriv, vertices, disp, numBasis, numQuadPts, dim);
+    IntegratorElasticityLgDeform::_calcDeformation(&deform, basisDeriv, disp, numBasis, numQuadPts, dim);
     
     CPPUNIT_ASSERT_EQUAL(size, int(deform.size()));
     for (int i=0; i < size; ++i) {
@@ -208,7 +203,7 @@ pylith::feassemble::TestIntegratorElasticityLgDeform::testCalcDeformation3D(void
       1.0, 0.0, 0.0,   0.0, 1.0, 0.0,  0.0, 0.0, 1.0,
     };
     
-    IntegratorElasticityLgDeform::_calcDeformation(&deform, basisDeriv, vertices, disp, numBasis, numQuadPts, dim);
+    IntegratorElasticityLgDeform::_calcDeformation(&deform, basisDeriv, disp, numBasis, numQuadPts, dim);
     
     CPPUNIT_ASSERT_EQUAL(size, int(deform.size()));
     for (int i=0; i < size; ++i)
@@ -259,7 +254,7 @@ pylith::feassemble::TestIntegratorElasticityLgDeform::testCalcDeformation3D(void
       0.8, -0.9, 0.9,
     };
     
-    IntegratorElasticityLgDeform::_calcDeformation(&deform, basisDeriv, vertices, disp, numBasis, numQuadPts, dim);
+    IntegratorElasticityLgDeform::_calcDeformation(&deform, basisDeriv, disp, numBasis, numQuadPts, dim);
     
     CPPUNIT_ASSERT_EQUAL(size, int(deform.size()));
     for (int i=0; i < size; ++i)

@@ -225,7 +225,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
     } // for
 
     // Calculate deformation gradient
-    _calcDeformation(&deformCell, basisDeriv, &coordsCell[0], &dispTpdtCell[0], numBasis, numQuadPts, spaceDim);
+    _calcDeformation(&deformCell, basisDeriv, &dispTpdtCell[0], numBasis, numQuadPts, spaceDim);
 
     // Compute body force vector if gravity is being used.
     if (_gravityField) {
@@ -403,7 +403,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(topology::Jaco
     } // for
       
     // Compute deformation tensor, strains, and stresses
-    _calcDeformation(&deformCell, basisDeriv, &coordsCell[0], &dispTpdtCell[0], numBasis, numQuadPts, spaceDim);
+    _calcDeformation(&deformCell, basisDeriv, &dispTpdtCell[0], numBasis, numQuadPts, spaceDim);
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
 
     // Get "elasticity" matrix at quadrature points for this cell

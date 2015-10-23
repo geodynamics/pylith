@@ -313,7 +313,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(const topology
     } // for
 
     // Compute B(transpose) * sigma, first computing strains
-    _calcDeformation(&deformCell, basisDeriv, &coordsCell[0], &dispAdjCell[0], numBasis, numQuadPts, spaceDim);
+    _calcDeformation(&deformCell, basisDeriv, &dispAdjCell[0], numBasis, numQuadPts, spaceDim);
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
     const scalar_array& stressCell = _material->calcStress(strainCell, true);
 

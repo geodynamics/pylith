@@ -157,20 +157,18 @@ protected :
 			  const scalar_array& deform,
 			  const int numQuadPts);
 
-  /** Calculate deformation tensor.
+  /** Calculate deformation gradient tensor.
    *
-   * @param deform Deformation tensor for cell at quadrature points.
-   * @param basisDeriv Derivatives of basis functions at quadrature points.
-   * @param vertices Coordinates of vertices in reference cell.
-   * @param disp Displacements of DOF of cell.
-   * @param numBasis Number of basis functions for cell.
-   * @param numQuadPts Number of quadrature points.
-   * @param dim Dimension of cell.
+   * @param[out] deform Deformation tensor for cell at quadrature points.
+   * @param[in] basisDeriv Derivatives of basis functions at quadrature points.
+   * @param[in] disp Displacements of DOF of cell.
+   * @param[in] numBasis Number of basis functions for cell.
+   * @param[in] numQuadPts Number of quadrature points.
+   * @param[in] dim Dimension of cell.
    */
   static
   void _calcDeformation(scalar_array* deform,
 			const scalar_array& basisDeriv,
-			const PylithScalar* vertices,
 			const PylithScalar* disp,
 			const int numBasis,
 			const int numQuadPts,

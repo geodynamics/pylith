@@ -133,7 +133,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::updateStateVars(const PylithSc
     dispVisitor.getClosure(&dispCell, cell);
   
     // Compute deformation tensor.
-    _calcDeformation(&deformCell, basisDeriv, &coordsCell[0], &dispCell[0], numBasis, numQuadPts, spaceDim);
+    _calcDeformation(&deformCell, basisDeriv, &dispCell[0], numBasis, numQuadPts, spaceDim);
 
     // Compute strains
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
@@ -222,7 +222,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(topolog
     dispVisitor.getClosure(&dispCell, cell);
 
     // Compute deformation tensor.
-    _calcDeformation(&deformCell, basisDeriv, &coordsCell[0], &dispCell[0], numBasis, numQuadPts, spaceDim);
+    _calcDeformation(&deformCell, basisDeriv, &dispCell[0], numBasis, numQuadPts, spaceDim);
 
     // Compute strains
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
@@ -276,12 +276,39 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual2D(const sc
   assert(quadWts.size() == size_t(numQuadPts));
   const int stressSize = 3;
 
+#if 1
+  // Compute deformation gradient tensor.
+  scalar_array deform(numQuadPts*spaceDim*spaceDim);
+  _calcDeformation(&deform, basisDeriv, &disp[0], numBasis, numQuadPts, spaceDim);
+#endif
+
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     const int iQ = iQuad*numBasis*spaceDim;
     const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad];
     const PylithScalar s11 = stress[iQuad*stressSize+0];
     const PylithScalar s22 = stress[iQuad*stressSize+1];
     const PylithScalar s12 = stress[iQuad*stressSize+2];
+
+
+#if 1
+    // Convert second Piola-Kirchoff stress, S, to first Piola-Kirchoff stress, P
+    // 
+    // P = S X^t, Pij = Sik Xjk
+    const int iD = iQuad*spaceDim*spaceDim;
+    const PylithScalar p11 = s11*deform[iD  ] + s12*deform[iD+1];
+    const PylithScalar p12 = s11*deform[iD+2] + s12*deform[iD+3];
+    const PylithScalar p21 = s12*deform[iD  ] + s22*deform[iD+1];
+    const PylithScalar p22 = s12*deform[iD+2] + s22*deform[iD+3];
+
+    for (int iBasis=0, iQ=iQuad*numBasis*spaceDim; iBasis < numBasis; ++iBasis) {
+      const int iB = iBasis*spaceDim;
+      const PylithScalar Nip = wt*basisDeriv[iQ+iB  ];
+      const PylithScalar Niq = wt*basisDeriv[iQ+iB+1];
+    
+      _cellVector[iB  ] -= Nip*p11 + Niq*p21;
+      _cellVector[iB+1] -= Nip*p12 + Niq*p22;
+#else
+
 
     PylithScalar l11 = 0.0;
     PylithScalar l12 = 0.0;
@@ -303,6 +330,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual2D(const sc
       // Generated using Maxima (see jacobian2d_lgdeform.wxm)
       _cellVector[iB  ] -= (1+l11)*Nip*s11 + l12*Niq*s22 + ((1+l11)*Niq + l12*Nip)*s12;
       _cellVector[iB+1] -= l21*Nip*s11 + (1+l22)*Niq*s22 + (l21*Niq + (1+l22)*Nip)*s12;
+#endif
     } // for
   } // for
 
@@ -443,7 +471,6 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian2D(const sc
 	const PylithScalar Njp = basisDeriv[iQ+jB  ];
 	const PylithScalar Njq = basisDeriv[iQ+jB+1];
 
-	// Generated using Maxima (see jacobian2d_lgdeform.wxm)
 	const PylithScalar Ki0j0 = 
 	  l12*Niq*(l12*Njq*C2222 + 
 		   ((l11+1)*Njq+l12*Njp)*C2212 + 
@@ -488,7 +515,11 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian2D(const sc
 		   (l21*Njq+(l22+1.0)*Njp)*C1112 + 
 		   l21*Njp*C1111);
 
+#if 0
+	const PylithScalar Knl = 0.0;
+#else
 	const PylithScalar Knl = (Njp*s11 + Njq*s12)*Nip + (Njp*s12 + Njq*s22)*Niq;
+#endif
 
 	const int jBlock = (jB);
 	const int jBlock1 = (jB+1);
@@ -991,7 +1022,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain2D(scalar_arra
 								     const int numQuadPts)
 { // _calcTotalStrain2D
   // Green-Lagrange strain tensor = 1/2 ( X^T X - I )
-  // X: deformation tensor
+  // X: deformation gradient tensor
   // I: identity matrix
 
   assert(strain);
@@ -1025,7 +1056,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain3D(scalar_arra
 								     const int numQuadPts)
 { // _calcTotalStrain3D
   // Green-Lagrange strain tensor = 1/2 ( X^T X - I )
-  // X: deformation tensor
+  // X: deformation gradient tensor
   // I: identity matrix
 
   assert(strain);
@@ -1071,7 +1102,6 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain3D(scalar_arra
 void 
 pylith::feassemble::IntegratorElasticityLgDeform::_calcDeformation(scalar_array* deform,
 								   const scalar_array& basisDeriv,
-								   const PylithScalar* vertices,
 								   const PylithScalar* disp,
 								   const int numBasis,
 								   const int numQuadPts,
@@ -1081,11 +1111,11 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcDeformation(scalar_array*
 
   assert(basisDeriv.size() == size_t(numQuadPts*numBasis*dim));
 
-  // Xij = d(x_i+u_i)/d(x_j)
+  // Xij = d(u_i)/d(x_j) + delta_ij
   //
-  // x_i + u_i = Nb * (x^b_i + u^b_i)
+  // u_i = Nb * u^b_i
   //
-  /// Xij = dNb/dxj * (x^b_i + u^b_i)
+  /// Xij = dNb/dxj * u^b_i + delta_ij
 
   const int deformSize = dim*dim;
 
