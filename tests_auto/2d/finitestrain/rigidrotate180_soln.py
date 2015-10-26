@@ -77,8 +77,8 @@ class AnalyticalSoln(object):
     x = locs[:,0]
     y = locs[:,1]
     theta = theta_d/180.0*pi
-    disp[0,:,0] =  (x-x0)*cos(theta) + (y-y0)*sin(theta) - (x-x0)
-    disp[0,:,1] = -(x-x0)*sin(theta) + (y-y0)*cos(theta) - (y-y0)
+    disp[0,:,0] = x0 + (x-x0)*cos(theta) + (y-y0)*sin(theta) - x
+    disp[0,:,1] = y0 - (x-x0)*sin(theta) + (y-y0)*cos(theta) - y
     return disp
 
 
