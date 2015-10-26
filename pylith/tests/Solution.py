@@ -48,11 +48,18 @@ def check_displacements(testcase, filename, mesh):
   testcase.assertEqual(nverticesE, nvertices)
   testcase.assertEqual(ncompsE, ncomps)
 
+  from spatialdata.units.NondimElasticQuasistatic import NondimElasticQuasistatic
+  normalizer = NondimElasticQuasistatic()
+  normalizer._configure()
+
+  scale = 1.0
+  scale *= normalizer.lengthScale().value
+
   for istep in xrange(nsteps):
     for icomp in xrange(ncomps):
 
       mask = numpy.abs(dispE[istep,:,icomp]) > toleranceAbsMask
-      diff = numpy.abs(disp[istep,:,icomp] - dispE[istep,:,icomp])
+      diff = numpy.abs(disp[istep,:,icomp] - dispE[istep,:,icomp]) / scale
       diffR = numpy.abs(1.0 - disp[istep,:,icomp] / dispE[istep,:,icomp])  
       okay = ~mask * (diff < tolerance) + mask * (diffR < tolerance)
       if numpy.sum(okay) != nvertices:
