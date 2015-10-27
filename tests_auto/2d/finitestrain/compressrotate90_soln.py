@@ -23,13 +23,13 @@
 ## Axial compression in the x-direction + 90 degree CCW rigid body rotation.
 ##
 ## Compression
-## Ux1 =  -0.2*(x-x0)
-## Uy1 = -lambda/(lambda+2*mu) * -0.2*(x-x0)
+## Ux1 =  ex*(x-x0)
+## Uy1 = ey*(y-y0)
 ## x1 = x + Ux1
 ## y1 = y + Uy1
 ##
-## Ux2 =  (x1-xr)*cos(theta) + (y1-yr)*sin(theta) - (x1-xr)
-## Uy2 = -(x1-xr)*sin(theta) + (y1-yr)*cos(theta) - (y1-yr)
+## Ux2 = xr + (x1-xr)*cos(theta) + (y1-yr)*sin(theta) - x
+## Uy2 = yr - (x1-xr)*sin(theta) + (y1-yr)*cos(theta) - y
 ##
 ## Dirichlet boundaries on -x, +x, and -y edges.
 
@@ -44,7 +44,9 @@ p_mu = p_density*p_vs**2
 p_lambda = p_density*p_vp**2 - 2*p_mu
 
 # Uniform strain field
-exx = -0.2
+ex = -0.2
+ey = -0.08
+exx = ex +0.5*ex*ex
 eyy = -p_lambda/(p_lambda+2*p_mu)*exx
 ezz = 0.0
 exy = 0.0
