@@ -45,9 +45,10 @@ p_lambda = p_density*p_vp**2 - 2*p_mu
 
 # Uniform strain field
 ex = -0.2
-ey = -0.08
-exx = ex +0.5*ex*ex
+exx = ex + 0.5*ex*ex
 eyy = -p_lambda/(p_lambda+2*p_mu)*exx
+ey = -1+(1.0+2.0*eyy)**0.5
+
 ezz = 0.0
 exy = 0.0
 
@@ -57,14 +58,15 @@ syy = p_lambda*(exx+eyy+ezz) + 2.0*p_mu*eyy
 szz = p_lambda*(exx+eyy+ezz) + 2.0*p_mu*ezz
 sxy = 2.0*p_mu*exy
 
-theta_d = -90.0
+theta_d = -45.0
 x0 = 0.0
 y0 = -500.0
 xr = -1000.0
 yr = 0.0
 
+#print ex,ey
 #print exx,eyy,exy,ezz
-#print -exx*p_lambda/(p_lambda+2*p_mu)
+#print sxx, syy, sxy
 
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
@@ -76,10 +78,14 @@ class AnalyticalSoln(object):
     from math import pi,cos,sin
     theta = theta_d / 180.0*pi
     self.R = numpy.array([[cos(theta), sin(theta)], [-sin(theta), cos(theta)]])
+    self.U = numpy.array([[1.0+ex, 0], [0, 1.0+ey]])
     return
 
-  def _rotate(self, m1):
-    m2 = numpy.dot(numpy.dot(self.R, m1), self.R.transpose())
+  def _transform(self, m1):
+    import numpy.linalg
+    X = numpy.dot(self.R, self.U)
+    detX = numpy.linalg.det(X)
+    m2 = numpy.dot(numpy.dot(X, m1), X.transpose()) / detX
     return m2
 
 
@@ -92,8 +98,8 @@ class AnalyticalSoln(object):
     from math import pi,cos,sin
     x = locs[:,0]
     y = locs[:,1]
-    ux1 = exx*(x-x0)
-    uy1 = -p_lambda/(p_lambda+2*p_mu) * exx*(y-y0)
+    ux1 = ex*(x-x0)
+    uy1 = ey*(y-y0)
     x1 = x + ux1
     y1 = y + uy1
     theta = theta_d / 180.0*pi
@@ -124,8 +130,21 @@ class AnalyticalSoln(object):
     """
     (npts, dim) = locs.shape
 
+    stress = numpy.zeros( (1, npts, 3), dtype=numpy.float64)
+    stress[0,:,0] = sxx
+    stress[0,:,1] = syy
+    stress[0,:,2] = sxy
+    return stress
+
+
+  def cauchy_stress(self, locs):
+    """
+    Compute stress field at locations.
+    """
+    (npts, dim) = locs.shape
+
     stress1 = numpy.array([[sxx, sxy], [sxy, syy]])
-    stress2 = self._rotate(stress1)
+    stress2 = self._transform(stress1)
 
     stress = numpy.zeros( (1, npts, 3), dtype=numpy.float64)
     stress[0,:,0] = stress2[0,0]

@@ -46,7 +46,8 @@ def check_state_variables(testcase, filename, mesh, stateVarNames):
   normalizer._configure()
 
   # Check state variables
-  tolerance = 1.0e-6
+  toleranceAbsMask = 1.0e-4
+  tolerance = 2.0e-5
 
   for name in stateVarNames:
     valuesE = testcase.calcStateVar(name, vertices, cells)
@@ -67,12 +68,17 @@ def check_state_variables(testcase, filename, mesh, stateVarNames):
       for icomp in xrange(ncomps):
         ratio = numpy.abs(1.0 - values[istep,:,icomp]/valuesE[istep,:,icomp])
         diff = numpy.abs(values[istep,:,icomp] - valuesE[istep,:,icomp]) / scale
-        mask = valuesE[istep,:,icomp] != 0.0
+        mask = numpy.abs(valuesE[istep,:,icomp]) > toleranceAbsMask
         okay = mask*(ratio < tolerance) + ~mask*(diff < tolerance)
         if numpy.sum(okay) != ncells:
           print "Error in component %d of state variable '%s' at time step %d." % (icomp, name, istep)
           print "Expected values:",valuesE
           print "Output values:",values
+          print "Expected values (not okay): ",valuesE[istep,~okay,icomp]
+          print "Computed values (not okay): ",values[istep,~okay,icomp]
+          print "Relative diff (not okay): ",diff[~okay]
+          print "Ratio (not okay): ",ratio[~okay]
+
         testcase.assertEqual(ncells, numpy.sum(okay))
 
   h5.close()

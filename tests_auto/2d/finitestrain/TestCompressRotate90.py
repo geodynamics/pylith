@@ -85,6 +85,8 @@ class TestCompressRotate90(TestQuad4):
       stateVar = self.soln.strain(pts)
     elif name == "stress":
       stateVar = self.soln.stress(pts)
+    elif name == "cauchy_stress":
+      stateVar = self.soln.cauchy_stress(pts)
     else:
       raise ValueError("Unknown state variable '%s'." % name)
 

@@ -39,6 +39,7 @@
 #include <strings.h> // USES strcasecmp()
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
+#include <iostream> // USES std::cerr
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -1014,6 +1015,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian3D(const sc
   PetscLogFlops(numQuadPts*(1+numBasis*(3+numBasis*(6*26+9))));
 } // _elasticityJacobian3D
 
+#include <iostream>
 // ----------------------------------------------------------------------
 // Calculate Green-Lagrange strain tensor at quadrature points of a 2-D cell.
 void 
@@ -1033,9 +1035,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain2D(scalar_arra
   assert(deform.size() == size_t(numQuadPts*deformSize));
   assert(strain->size() == size_t(numQuadPts*strainSize));
 
-  for (int iQuad=0, iDeform=0, iStrain=0;
-       iQuad < numQuadPts;
-       ++iQuad, iDeform+=deformSize, iStrain+=strainSize) {
+  for (int iQuad=0, iDeform=0, iStrain=0; iQuad < numQuadPts; ++iQuad, iDeform+=deformSize, iStrain+=strainSize) {
     (*strain)[iStrain  ] =
       0.5 * (deform[iDeform  ]*deform[iDeform  ] + 
 	     deform[iDeform+2]*deform[iDeform+2] - 1.0);
@@ -1133,6 +1133,34 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcDeformation(scalar_array*
       (*deform)[iQuad*deformSize+iDim*dim+iDim] += 1.0;
     } // for
   } // for
+
+#if 1 // DEBUGGING
+  // Make sure deformation gradient has positive Jacobian.
+  switch (dim) {
+  case 2: {
+    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {    
+      const PylithScalar* X = &(*deform)[iQuad*deformSize];
+      const PylithScalar det = X[0]*X[3] - X[2]*X[1];
+      if (det < 0.0) {
+	std::cerr << "WARNING: Determinant of deformation gradient (" << det << ") is negative.\n";
+	for (int iB=0; iB < numBasis; ++iB) {
+	  std::cerr << "iBasis: " << iB << ", disp: ";
+	  for (int iD=0; iD < dim; ++iD) {
+	    std::cerr << " " << disp[iB*dim+iD];
+	  } // for
+	  std::cerr << std::endl;
+	} // for
+      } // if
+    } // for
+    break;
+  }
+  case 3: {
+    break;
+  }
+  default:
+    assert(0);
+  }
+#endif
 
 } // _calcDeformation
 

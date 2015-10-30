@@ -97,7 +97,7 @@ class TestQuad4(unittest.TestCase):
     filename = "output/%s-statevars.h5" % self.outputRoot
 
     from pylith.tests.StateVariables import check_state_variables
-    stateVars = ["total_strain", "stress"]
+    stateVars = ["total_strain", "stress", "cauchy_stress"]
     check_state_variables(self, filename, self.mesh, stateVars)
 
     return
