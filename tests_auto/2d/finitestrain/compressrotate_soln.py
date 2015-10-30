@@ -44,7 +44,7 @@ p_mu = p_density*p_vs**2
 p_lambda = p_density*p_vp**2 - 2*p_mu
 
 # Uniform strain field
-ex = -0.2
+ex = -0.04
 exx = ex + 0.5*ex*ex
 eyy = -p_lambda/(p_lambda+2*p_mu)*exx
 ey = -1+(1.0+2.0*eyy)**0.5
@@ -58,7 +58,7 @@ syy = p_lambda*(exx+eyy+ezz) + 2.0*p_mu*eyy
 szz = p_lambda*(exx+eyy+ezz) + 2.0*p_mu*ezz
 sxy = 2.0*p_mu*exy
 
-theta_d = -45.0
+theta_d = -5.0
 x0 = 0.0
 y0 = -500.0
 xr = -1000.0

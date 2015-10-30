@@ -34,9 +34,9 @@ class TestQuad4(unittest.TestCase):
     """
     Setup for tests.
     """
-    self.mesh = {'ncells': 8,
+    self.mesh = {'ncells': 50,
                  'ncorners': 4,
-                 'nvertices': 15,
+                 'nvertices': 66,
                  'spaceDim': 2,
                  'tensorSize': 3}
 

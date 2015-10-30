@@ -15,7 +15,7 @@ delete vertex all
 # ----------------------------------------------------------------------
 # Set discretization size
 # ----------------------------------------------------------------------
-surface all size 500.0
+surface all size 200.0
 
 # ----------------------------------------------------------------------
 # Generate the mesh
@@ -69,5 +69,5 @@ nodeset 24 name "buried_edges"
 # ----------------------------------------------------------------------
 # Export exodus file
 # ----------------------------------------------------------------------
-export mesh "mesh_dx500.exo" dimension 2 overwrite
+export mesh "mesh.exo" dimension 2 overwrite
 

@@ -41,8 +41,9 @@ class GenerateDB(object):
     Generate the database.
     """
     # Domain
-    x = numpy.arange(-1000.0, 1000.1, 500.0)
-    y = numpy.arange(-1000.0, 0.1, 500.0)
+    dx = 200.0
+    x = numpy.arange(-1000.0, 1000.1, dx)
+    y = numpy.arange(-1000.0, 0.1, dx)
     nptsx = x.shape[0]
     nptsy = y.shape[0]
 

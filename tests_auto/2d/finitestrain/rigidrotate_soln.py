@@ -50,7 +50,7 @@ ezz = 1.0/(2*p_mu) * (szz - p_lambda/(3*p_lambda+2*p_mu) * (sxx+syy+szz))
 
 exy = 1.0/(2*p_mu) * (sxy)
 
-theta_d = 30.0
+theta_d = 5.0
 x0 = -1000.0
 y0 = 0.0
 
