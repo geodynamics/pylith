@@ -16,7 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file tests/2d/quad4/rigidrotate180_soln.py
+## @file tests/2d/quad4/rigidrotate_soln.py
 ##
 ## @brief Analytical solution to rigid body rotation problem.
 

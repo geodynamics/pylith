@@ -57,7 +57,7 @@ class TestQuad4(unittest.TestCase):
     ncells= self.mesh['ncells']
 
     filename = "output/%s-statevars_info.h5" % self.outputRoot
-    from rigidrotate180_soln import p_mu,p_lambda,p_density
+    from rigidrotate_soln import p_mu,p_lambda,p_density
 
     propMu =  p_mu*numpy.ones( (1, ncells, 1), dtype=numpy.float64)
     propLambda = p_lambda*numpy.ones( (1, ncells, 1), dtype=numpy.float64)

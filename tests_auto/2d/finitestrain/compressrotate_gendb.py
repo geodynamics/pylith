@@ -16,7 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file tests/2d/quad4/compressrotate90_gendb.py
+## @file tests/2d/quad4/compressrotate_gendb.py
 ##
 ## @brief Python script to generate spatial database with displacement
 ## boundary conditions for the compression + rigid body rotation test.
@@ -52,7 +52,7 @@ class GenerateDB(object):
     xy[:,0] = numpy.ravel(xx)
     xy[:,1] = numpy.ravel(numpy.transpose(yy))
 
-    from compressrotate90_soln import AnalyticalSoln
+    from compressrotate_soln import AnalyticalSoln
     soln = AnalyticalSoln()
     disp = soln.displacement(xy)
 
@@ -72,7 +72,7 @@ class GenerateDB(object):
 
     from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
     io = SimpleIOAscii()
-    io.inventory.filename = "compressrotate90_disp.spatialdb"
+    io.inventory.filename = "compressrotate_disp.spatialdb"
     io._configure()
     io.write(data)
     return

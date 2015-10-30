@@ -16,21 +16,20 @@
 # ----------------------------------------------------------------------
 #
 
-## @file tests/2d/quad4/TestCompressRotate90.py
+## @file tests/2d/quad4/TestRigidRotate.py
 ##
-## @brief Test suite for testing pylith with compression and 90 degree
-## CCW rigid body rotation.
+## @brief Test suite for testing pylith with 2-D rigid body rotation.
 
 import numpy
 from TestQuad4 import TestQuad4
 
-from compressrotate90_soln import AnalyticalSoln
+from rigidrotate_soln import AnalyticalSoln
 
 # Local version of PyLithApp
 from pylith.apps.PyLithApp import PyLithApp
 class RotateApp(PyLithApp):
   def __init__(self):
-    PyLithApp.__init__(self, name="compressrotate90")
+    PyLithApp.__init__(self, name="rigidrotate")
     return
 
 
@@ -41,7 +40,7 @@ def run_pylith():
   """
   if not "done" in dir(run_pylith):
     # Generate spatial databases
-    from compressrotate90_gendb import GenerateDB
+    from rigidrotate_gendb import GenerateDB
     db = GenerateDB()
     db.run()
 
@@ -52,7 +51,7 @@ def run_pylith():
   return
 
 
-class TestCompressRotate90(TestQuad4):
+class TestRigidRotate(TestQuad4):
   """
   Test suite for testing pylith with 2-D rigid body rotation.
   """
@@ -63,7 +62,7 @@ class TestCompressRotate90(TestQuad4):
     """
     TestQuad4.setUp(self)
     run_pylith()
-    self.outputRoot = "compressrotate90"
+    self.outputRoot = "rigidrotate"
     self.soln = AnalyticalSoln()
     return
 
@@ -83,10 +82,8 @@ class TestCompressRotate90(TestQuad4):
     pts = numpy.zeros( (ncells, 2), dtype=numpy.float64)
     if name == "total_strain":
       stateVar = self.soln.strain(pts)
-    elif name == "stress":
+    elif name == "stress" or name == "cauchy_stress":
       stateVar = self.soln.stress(pts)
-    elif name == "cauchy_stress":
-      stateVar = self.soln.cauchy_stress(pts)
     else:
       raise ValueError("Unknown state variable '%s'." % name)
 
@@ -96,7 +93,7 @@ class TestCompressRotate90(TestQuad4):
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
   import unittest
-  from TestCompressRotate90 import TestCompressRotate90 as Tester
+  from TestRigidRotate import TestRigidRotate as Tester
 
   suite = unittest.TestSuite()
   suite.addTest(unittest.makeSuite(Tester))

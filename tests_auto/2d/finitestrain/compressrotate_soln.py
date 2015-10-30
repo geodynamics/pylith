@@ -16,7 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file tests/2d/quad4/compressrotate90_soln.py
+## @file tests/2d/quad4/compressrotate_soln.py
 ##
 ## @brief Analytical solution to compress and rigid body rotation.
 
