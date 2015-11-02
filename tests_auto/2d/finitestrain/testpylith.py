@@ -30,6 +30,9 @@ def suite():
   from TestCompressRotate import TestCompressRotate
   suite.addTest(unittest.makeSuite(TestCompressRotate))
 
+  from TestRotateRotate import TestRotateRotate
+  suite.addTest(unittest.makeSuite(TestRotateRotate))
+
   return suite
 
 
