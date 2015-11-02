@@ -29,22 +29,27 @@ dist_noinst_PYTHON = \
 	rigidrotate_gendb.py \
 	TestCompressRotate.py \
 	compressrotate_soln.py \
-	compressrotate_gendb.py
+	compressrotate_gendb.py \
+	TestShearRotate.py \
+	shearrotate_soln.py \
+	shearrotate_gendb.py
 
 dist_noinst_DATA = \
 	mesh.jou \
 	mesh.exo \
 	matprops.spatialdb \
 	rigidrotate.cfg \
-	compressrotate.cfg
+	compressrotate.cfg \
+	shearrotate.cfg
 
 noinst_TMP = \
 	rigidrotate_disp.spatialdb \
-	compressrotate_disp.spatialdb
+	compressrotate_disp.spatialdb \
+	shearrotate_disp.spatialdb
 
 
 # 'export' the input files by performing a mock install
-export_datadir = $(top_builddir)/tests_auto/2d/tri3
+export_datadir = $(top_builddir)/tests_auto/2d/finitestrain
 export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
 	for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
 
