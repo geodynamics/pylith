@@ -20,11 +20,11 @@
 ##
 ## @brief Analytical solution to compress and rigid body rotation.
 
-## Axial compression in the x-direction + 90 degree CCW rigid body rotation.
+## Axial shearing in the x-direction + CCW rigid body rotation.
 ##
-## Compression
-## Ux1 =  ex*(x-x0)
-## Uy1 = ey*(y-y0)
+## Shearing
+## Ux1 =  eo*(y-y0)
+## Uy1 = eo*(x-x0)
 ## x1 = x + Ux1
 ## y1 = y + Uy1
 ##
@@ -44,13 +44,11 @@ p_mu = p_density*p_vs**2
 p_lambda = p_density*p_vp**2 - 2*p_mu
 
 # Uniform strain field
-ex = -0.04
-exx = ex + 0.5*ex*ex
-eyy = -p_lambda/(p_lambda+2*p_mu)*exx
-ey = -1+(1.0+2.0*eyy)**0.5
-
+e0 = 0.04
+exx = 0.5*e0*e0
+eyy = 0.5*e0*e0
+exy = e0
 ezz = 0.0
-exy = 0.0
 
 # Uniform stress field (plane strain) in undeformed (original) configuration
 sxx = p_lambda*(exx+eyy+ezz) + 2.0*p_mu*exx
@@ -58,13 +56,13 @@ syy = p_lambda*(exx+eyy+ezz) + 2.0*p_mu*eyy
 szz = p_lambda*(exx+eyy+ezz) + 2.0*p_mu*ezz
 sxy = 2.0*p_mu*exy
 
-theta_d = -2.0
+theta_d = -20.0
 x0 = 0.0
 y0 = -500.0
 xr = -1000.0
 yr = 0.0
 
-#print ex,ey
+#print e0
 #print exx,eyy,exy,ezz
 #print sxx, syy, sxy
 
@@ -78,7 +76,7 @@ class AnalyticalSoln(object):
     from math import pi,cos,sin
     theta = theta_d / 180.0*pi
     self.R = numpy.array([[cos(theta), sin(theta)], [-sin(theta), cos(theta)]])
-    self.U = numpy.array([[1.0+ex, 0], [0, 1.0+ey]])
+    self.U = numpy.array([[1.0, e0], [e0, 1.0]])
     return
 
   def _transform(self, m1):
@@ -98,8 +96,8 @@ class AnalyticalSoln(object):
     from math import pi,cos,sin
     x = locs[:,0]
     y = locs[:,1]
-    ux1 = ex*(x-x0)
-    uy1 = ey*(y-y0)
+    ux1 = e0*(y-y0)
+    uy1 = e0*(x-x0)
     x1 = x + ux1
     y1 = y + uy1
     theta = theta_d / 180.0*pi

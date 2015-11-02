@@ -23,7 +23,7 @@
 import numpy
 from TestQuad4 import TestQuad4
 
-from rigidrotate_soln import AnalyticalSoln
+from rigidrotate_soln import AnalyticalSoln,p_mu
 
 # Local version of PyLithApp
 from pylith.apps.PyLithApp import PyLithApp
@@ -88,6 +88,22 @@ class TestRigidRotate(TestQuad4):
       raise ValueError("Unknown state variable '%s'." % name)
 
     return stateVar
+
+
+  def getValueScale(self, name):
+    """
+    Get scale for value.
+    """
+    if name == "total_strain":
+      scale = 1.0
+    elif name == "stress":
+      scale = p_mu
+    elif name == "cauchy_stress":
+      scale = p_mu
+    else:
+      raise ValueError("Unknown variable '%s'." % name)
+
+    return scale
 
 
 # ----------------------------------------------------------------------

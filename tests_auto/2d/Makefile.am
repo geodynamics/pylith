@@ -19,7 +19,8 @@
 SUBDIRS = \
 	quad4 \
 	tri3 \
-	slipdir
+	slipdir \
+	finitestrain
 
 
 # End of file 

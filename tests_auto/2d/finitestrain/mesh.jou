@@ -67,6 +67,16 @@ nodeset 24 group buried_edges
 nodeset 24 name "buried_edges"
 
 # ----------------------------------------------------------------------
+# Create nodeset for all edges
+# ----------------------------------------------------------------------
+group "all_edges" add node in group edge_xpos
+group "all_edges" add node in group edge_xneg
+group "all_edges" add node in group edge_ypos
+group "all_edges" add node in group edge_yneg
+nodeset 25 group all_edges
+nodeset 25 name "all_edges"
+
+# ----------------------------------------------------------------------
 # Export exodus file
 # ----------------------------------------------------------------------
 export mesh "mesh.exo" dimension 2 overwrite

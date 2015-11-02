@@ -16,21 +16,21 @@
 # ----------------------------------------------------------------------
 #
 
-## @file tests/2d/quad4/TestCompressRotate.py
+## @file tests/2d/quad4/TestShearRotate.py
 ##
-## @brief Test suite for testing pylith with compression and 90 degree
+## @brief Test suite for testing pylith with shear and 90 degree
 ## CCW rigid body rotation.
 
 import numpy
 from TestQuad4 import TestQuad4
 
-from compressrotate_soln import AnalyticalSoln,ex,p_mu
+from shearrotate_soln import AnalyticalSoln,e0,p_mu
 
 # Local version of PyLithApp
 from pylith.apps.PyLithApp import PyLithApp
 class RotateApp(PyLithApp):
   def __init__(self):
-    PyLithApp.__init__(self, name="compressrotate")
+    PyLithApp.__init__(self, name="shearrotate")
     return
 
 
@@ -41,7 +41,7 @@ def run_pylith():
   """
   if not "done" in dir(run_pylith):
     # Generate spatial databases
-    from compressrotate_gendb import GenerateDB
+    from shearrotate_gendb import GenerateDB
     db = GenerateDB()
     db.run()
 
@@ -52,7 +52,7 @@ def run_pylith():
   return
 
 
-class TestCompressRotate(TestQuad4):
+class TestShearRotate(TestQuad4):
   """
   Test suite for testing pylith with 2-D rigid body rotation.
   """
@@ -63,7 +63,7 @@ class TestCompressRotate(TestQuad4):
     """
     TestQuad4.setUp(self)
     run_pylith()
-    self.outputRoot = "compressrotate"
+    self.outputRoot = "shearrotate"
     self.soln = AnalyticalSoln()
     return
 
@@ -89,7 +89,6 @@ class TestCompressRotate(TestQuad4):
       stateVar = self.soln.cauchy_stress(pts)
     else:
       raise ValueError("Unknown state variable '%s'." % name)
-
     return stateVar
 
 
@@ -98,11 +97,11 @@ class TestCompressRotate(TestQuad4):
     Get scale for value.
     """
     if name == "total_strain":
-      scale = ex
+      scale = e0
     elif name == "stress":
-      scale = ex*p_mu
+      scale = e0*p_mu
     elif name == "cauchy_stress":
-      scale = ex*p_mu
+      scale = e0*p_mu
     else:
       raise ValueError("Unknown variable '%s'." % name)
 
@@ -112,7 +111,7 @@ class TestCompressRotate(TestQuad4):
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
   import unittest
-  from TestCompressRotate import TestCompressRotate as Tester
+  from TestShearRotate import TestShearRotate as Tester
 
   suite = unittest.TestSuite()
   suite.addTest(unittest.makeSuite(Tester))
