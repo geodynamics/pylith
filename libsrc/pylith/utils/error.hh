@@ -25,6 +25,8 @@
 #if !defined(pylith_utils_error_hh)
 #define pylith_utils_error_hh
 
+#include "petsc.h"
+
 #include <cassert>
 #include <stdexcept>
 #include <sstream>

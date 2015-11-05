@@ -66,7 +66,7 @@ public :
    * @param integratorArray Array of integrators.
    * @param numIntegrators Number of integrators.
    */
-  void integrators(feassemble::Integrator* integratorArray[] ,
+  void integrators(feassemble::IntegratorPointwise* integratorArray[] ,
 		   const int numIntegrators);
   
   /** Set handles to constraints.
@@ -89,55 +89,73 @@ public :
   virtual
   void initialize(void);
 
-  /** Reform RHS residual, G(t,u).
+  /** Compute RHS residual, G(t,u).
    *
-   * @param residual Residual field, G(t,u).
-   * @param t Current time.
-   * @param solution Solution field.
+   * @param[in] t Current time.
+   * @param[in] dt Current time step.
+   * @param[in] solutionVec PETSc Vec with current trial solution.
+   * @param[out] residualVec PETSc Vec for residual.
    */
-  void reformRHSResidual(pylith::topology::Field* residual,
-			 const PetscReal t,
-			 const pylith::topology::Field& solution);
+  void computeRHSResidual(const PetscReal t,
+			  const PetscReal dt,
+			  PetscVec solutionVec,
+			  PetscVec residualVec);
   
-  /* Reform RHS Jacobian for G(t,u).
+  /* Compute RHS Jacobian for G(t,u).
    *
-   * @param jacobian Jacobian matrix.
-   * @param t Current time.
-   * @param solution Solution field.
+   * @param[in] t Current time.
+   * @param[in] dt Current time step.
+   * @param[in] solutionVec PETSc Vec with current trial solution.
+   * @param[out] jacobianMat PETSc Mat for Jacobian. 
+   * @param[out] precondMat PETSc Mat for preconditioner for Jacobian. 
    */
-  void reformRHSJacobian(pylith::topology::Jacobian* jacobian,
-			 const PetscReal t,
-			 const pylith::topology::Field& solution);
+  void computeRHSJacobian(const PylithReal t,
+			  const PylithReal dt,
+			  PetscVec solutionVec,
+			  PetscMat jacobianMat,
+			  PetscMat precondMat);
 
-  /** Reform LHS residual, F(t,u,\dot{u}).
+  /** Compute LHS residual, F(t,u,\dot{u}).
    *
-   * @param residual Residual field, F(t,u,\dot{u}).
    * @param t Current time.
-   * @param solution Solution field.
+   * @param dt Current time step.
+   * @param solutionVec PETSc Vec with current trial solution.
+   * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
+   * @param residualVec PETSc Vec for residual.
    */
-  void reformLHSResidual(pylith::topology::Field* residual,
-			 const PetscReal t,
-			 const pylith::topology::Field& solution);
+  void computeLHSResidual(const PetscReal t,
+			  const PetscReal dt,
+			  PetscVec solutionVec,
+			  PetscVec solutionDotVec,
+			  PetscVec residualVec);
   
-  /* Reform LHS Jacobian for F(t,u,\dot{u}) for implicit time stepping.
+  /* Compute LHS Jacobian for F(t,u,\dot{u}) for implicit time stepping.
    *
-   * @param jacobian Jacobian matrix.
-   * @param t Current time.
-   * @param solution Solution field.
+   * @param[in] t Current time.
+   * @param[in] dt Current time step.
+   * @param[in] tshift Scale for time derivative.
+   * @param[in] solutionVec PETSc Vec with current trial solution.
+   * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
+   * @param[out] jacobianMat PETSc Mat for Jacobian. 
+   * @param[out] precondMat PETSc Mat for preconditioner for Jacobian. 
    */
-  void reformLHSJacobianImplicit(pylith::topology::Jacobian* jacobian,
-				 const PetscReal t,
-				 const pylith::topology::Field& solution);
+  void computeLHSJacobianImplicit(const PylithReal t,
+				  const PylithReal dt,
+				  const PylithReal tshift,
+				  PetscVec solutionVec,
+				  PetscVec solutionDotVec,
+				  PetscMat jacobianMat,
+				  PetscMat precondMat);
 
-  /* Reform LHS Jacobian for F(t,u,\dot{u}) for explicit time stepping.
+  /* Compute LHS Jacobian for F(t,u,\dot{u}) for explicit time stepping.
    *
-   * @param jacobian Jacobian matrix.
-   * @param t Current time.
-   * @param solution Solution field.
+   * @param[in] t Current time.
+   * @param[in] dt Current time step.
+   * @param[in] solutionVec PETSc Vec with current trial solution.
    */
-  void reformLHSJacobianExplicit(pylith::topology::Jacobian* jacobian,
-				 const PetscReal t,
-				 const pylith::topology::Field& solution);
+  void computeLHSJacobianExplicit(const PylithReal t,
+				  const PylithReal dt,
+				  PetscVec solutionVec);
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
@@ -148,7 +166,7 @@ protected :
   pylith::topology::Jacobian* _jacobianRHS; ///< Handle to Jacobian for RHS, G(t,u).
   pylith::topology::Jacobian* _jacobianLHS; ///< Handle to Jacobian for LHS, F(t,u,\dot{u}).
 
-  std::vector<pylith::feassemble::Integrator*> _integrators; ///< Array of integrators.
+  std::vector<pylith::feassemble::IntegratorPointwise*> _integrators; ///< Array of integrators.
   std::vector<pylith::feassemble::Constraint*> _constraints; ///< Array of constraints.
 
   PetscMat _customConstraintPCMat; ///< Custom PETSc preconditioning matrix for constraints.

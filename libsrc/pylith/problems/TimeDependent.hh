@@ -99,6 +99,18 @@ public :
    */
   PetscReal totalTime(void) const;
 
+  /** Set maximum number of time steps.
+   *
+   * @param value Maximum number of time steps.
+   */
+  void maxTimeSteps(const PetscInt value);
+
+  /** Get maximum number of time steps.
+   *
+   * @returns Maximum number of time steps.
+   */
+  PetscInt maxTimeSteps(void) const;
+
   /** Set initial time step for problem.
    *
    * @param value Initial time step (nondimensional).
@@ -113,7 +125,8 @@ public :
 
   /** Initialize.
    */
-  void initialize(void);
+  void initialize(pylith::topology::Field* solution,
+		  pylith::topology::Jacobian* jacobianRHS);
   
   /** Solve time dependent problem.
    */
@@ -131,7 +144,7 @@ public :
    */
   void poststep(void);
 
-  /** Callback static method for reforming residual for RHS, G(t,u).
+  /** Callback static method for computing residual for RHS, G(t,u).
    *
    * @param ts PETSc time stepper.
    * @param t Current time.
@@ -140,13 +153,13 @@ public :
    * @param context User context (TimeDependent).
    */
   static
-  PetscErrorCode reformRHSResidual(PetscTS ts,
-				   PetscReal t,
-				   PetscVec solutionVec,
-				   PetscVec residualVec,
-				   void* context);
+  PetscErrorCode computeRHSResidual(PetscTS ts,
+				    PetscReal t,
+				    PetscVec solutionVec,
+				    PetscVec residualVec,
+				    void* context);
   
-  /* Callback static method for reforming Jacobian for RHS, Jacobian of G(t,u).
+  /* Callback static method for computing Jacobian for RHS, Jacobian of G(t,u).
    *
    * @param ts PETSc time stepper.
    * @param t Current time.
@@ -156,29 +169,31 @@ public :
    * @param context User context (TimeDependent).
    */
   static
-  PetscErrorCode reformRHSJacobian(PetscTS ts,
-				   PetscReal t,
-				   PetscVec solutionVec,
-				   PetscMat jacobianMat,
-				   PetscMat precondMat,
-				   void* context);
+  PetscErrorCode computeRHSJacobian(PetscTS ts,
+				    PetscReal t,
+				    PetscVec solutionVec,
+				    PetscMat jacobianMat,
+				    PetscMat precondMat,
+				    void* context);
 
-  /** Callback static method for reforming residual for LHS, F(t,u,\dot{u}).
+  /** Callback static method for computing residual for LHS, F(t,u,\dot{u}).
    *
    * @param ts PETSc time stepper.
    * @param t Current time.
    * @param solutionVec PetscVec for solution.
+   * @param solutionDotVec PetscVec for time derivative of solution.
    * @param residualvec PetscVec for residual.
    * @param context User context (TimeDependent).
    */
   static
-  PetscErrorCode reformLHSResidual(PetscTS ts,
-				   PetscReal t,
-				   PetscVec solutionVec,
-				   PetscVec residualVec,
-				   void* context);
+  PetscErrorCode computeLHSResidual(PetscTS ts,
+				    PetscReal t,
+				    PetscVec solutionVec,
+				    PetscVec solutionDotVec,
+				    PetscVec residualVec,
+				    void* context);
   
-  /* Callback static method for reforming Jacobian for LHS, Jacobian of F(t,u,\dot{u}).
+  /* Callback static method for computing Jacobian for LHS, Jacobian of F(t,u,\dot{u}).
    *
    * @param ts PETSc time stepper.
    * @param t Current time.
@@ -188,12 +203,14 @@ public :
    * @param context User context (TimeDependent).
    */
   static
-  PetscErrorCode reformLHSJacobian(PetscTS ts,
-				   PetscReal t,
-				   PetscVec solutionVec,
-				   PetscMat jacobianMat,
-				   PetscMat precondMat,
-				   void* context);
+  PetscErrorCode computeLHSJacobian(PetscTS ts,
+				    PetscReal t,
+				    PetscVec solutionVec,
+				    PetscVec solutionDotVec,
+				    PetscReal tshift,
+				    PetscMat jacobianMat,
+				    PetscMat precondMat,
+				    void* context);
 
   /** Callback static method for operations before advancing solution one time step.
    */
@@ -211,6 +228,7 @@ private :
   PetscReal _startTime; ///< Starting time.
   PetscReal _dtInitial; ///< Initial time step.
   PetscReal _totalTime; ///< Total time (duration) of problem.
+  PetscInt _maxTimeSteps; ///< Maximum number of time steps for problem.
   PetscTS _ts; ///< PETSc time stepper.
   ProblemTypeEnum _problemType; ///< Problem (solver) type.
   FormulationTypeEnum _formulationType; ///< Type of time stepping.

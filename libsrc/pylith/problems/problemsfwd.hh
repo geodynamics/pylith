@@ -34,6 +34,9 @@ namespace pylith {
     class Implicit;
     class Explicit;
 
+    class Problem;
+    class TimeDependent;
+
     class Solver;
     class SolverLinear;
     class SolverNonlinear;

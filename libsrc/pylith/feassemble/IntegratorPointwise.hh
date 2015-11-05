@@ -37,7 +37,7 @@
 /** @brief General operations for implicit and explicit
  * time integration of equations defined by pointwise functions.
  */
-class pylith::feassemble::IntegratorPointwise : public Integrator
+class pylith::feassemble::IntegratorPointwise
 { // IntegratorPointwise
   friend class TestIntegratorPointwise; // unit testing
 
@@ -96,6 +96,96 @@ public :
   virtual
   void verifyConfiguration(const topology::Mesh& mesh) const;
   
+  /** Initialize integrator.
+   *
+   * @param mesh Finite-element mesh.
+   */
+  virtual
+  void initialize(const topology::Mesh& mesh);
+
+  /** Compute RHS residual for G(t,u).
+   *
+   * @param[out] residual Residual field.
+   * @param[in] t Current time.
+   * @param[in] dt Current time step.
+   * @param[in] solution Current trial solution.
+   */
+  void computeRHSResidual(pylith::topology::Field* residual,
+			  const PylithReal t,
+			  const PylithReal dt,
+			  const pylith::topology::Field& solution);
+
+  /** Compute RHS Jacobian for G(t,u).
+   *
+   * @param[out] jacobian Jacobian sparse matrix.
+   * @param[in] t Current time.
+   * @param[in] dt Current time step.
+   * @param[in] solution Current trial solution.
+   */
+  void computeRHSJacobian(pylith::topology::Jacobian* jacobian,
+			  const PylithReal t,
+			  const PylithReal dt,
+			  const pylith::topology::Field& solution);
+
+  /** Compute preconditioner for RHS Jacobian for G(t,u).
+   *
+   * @param[out] precondMat Preconditioner sparse matrix.
+   * @param[inout] jacobian Jacobian sparse matrix.
+   * @param[in] t Current time.
+   * @param[in] dt Current time step.
+   * @param[in] solution Current trial solution.
+   */
+  void computeRHSPreconditioner(PetscMat* precondMat,
+				pylith::topology::Jacobian* jacobian,
+				const PylithReal t,
+				const PylithReal dt,
+				const pylith::topology::Field& solution);
+
+  /** Compute LHS residual for F(t,u,\dot{u}).
+   *
+   * @param[out] residual Residual field.
+   * @param[in] t Current time.
+   * @param[in] dt Current time step.
+   * @param[in] solution Current trial solution.
+   */
+  void computeLHSResidual(pylith::topology::Field* residual,
+			  const PylithReal t,
+			  const PylithReal dt,
+			  const pylith::topology::Field& solution);
+
+  /** Compute LHS Jacobian for F(t,u,\dot{u}).
+   *
+   * @param[out] jacobian Jacobian sparse matrix.
+   * @param[in] t Current time.
+   * @param[in] dt Current time step.
+   * @param[in] solution Current trial solution.
+   */
+  void computeLHSJacobian(pylith::topology::Jacobian* jacobian,
+			  const PylithReal t,
+			  const PylithReal dt,
+			  const pylith::topology::Field& solution);
+
+
+  /** Compute preconditioner for RHS Jacobian for F(t,u,\dot{u]).
+   *
+   * @param[out] precondMat Preconditioner sparse matrix.
+   * @param[inout] jacobian Jacobian sparse matrix.
+   * @param[in] t Current time.
+   * @param[in] dt Current time step.
+   * @param[in] solution Current trial solution.
+   */
+  void computeLHSPreconditioner(PetscMat* precondMat,
+				pylith::topology::Jacobian* jacobian,
+				const PylithReal t,
+				const PylithReal dt,
+				const pylith::topology::Field& solution);
+
+  /** Update state variables as needed.
+   *
+   * @param solution Solution field.
+   */
+  void updateStateVars(const pylith::topology::Field& solution);
+
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 

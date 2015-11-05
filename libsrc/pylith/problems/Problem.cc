@@ -23,9 +23,8 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 
-#include "pylith/feassemble/Integrator.hh" // USES Integrator
+#include "pylith/feassemble/IntegratorPointwise.hh" // USES IntegratorPointwise
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
-#include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 #include <cassert> // USES assert()
@@ -62,7 +61,7 @@ pylith::problems::Problem::deallocate(void)
   delete _residualRHS; _residualRHS = 0;
   delete _residualLHS; _residualLHS = 0;
   delete _jacobianRHS; _jacobianRHS = 0;
-  delete _jacobianLHS; _jacoibianLHS = 0;
+  delete _jacobianLHS; _jacobianLHS = 0;
 
 #if 0   // :KLUDGE: Assume Solver deallocates matrix.
   PetscErrorCode err = 0;
@@ -80,7 +79,7 @@ pylith::problems::Problem::deallocate(void)
 // ----------------------------------------------------------------------
 // Set integrators over the mesh.
 void
-pylith::problems::Problem::integrators(pylith::feassemble::Integrator* integratorArray[],
+pylith::problems::Problem::integrators(pylith::feassemble::IntegratorPointwise* integratorArray[],
 				       const int numIntegrators)
 { // integrators
   assert( (!integratorArray && 0 == numIntegrators) || (integratorArray && 0 < numIntegrators) );
@@ -119,13 +118,13 @@ pylith::problems::Problem::customPCMatrix(PetscMat& mat)
 } // preconditioner
 
 // ----------------------------------------------------------------------
-// Reform RHS residual for G(t,u).
+// Compute RHS residual for G(t,u).
 void
-pylith::problems::Problem::reformRHSResidual(const PylithReal t,
-					     const PylithReal dt,
-					     PetscVec solutionVec,
-					     PetscVec residualVec)
-{ // reformRHSResidual
+pylith::problems::Problem::computeRHSResidual(const PylithReal t,
+					      const PylithReal dt,
+					      PetscVec solutionVec,
+					      PetscVec residualVec)
+{ // computeRHSResidual
   PYLITH_METHOD_BEGIN;
 
   assert(residualVec);
@@ -143,32 +142,33 @@ pylith::problems::Problem::reformRHSResidual(const PylithReal t,
   const size_t numIntegrators = _integrators.size();
   assert(numIntegrators > 0); // must have at least 1 integrator
   for (size_t i=0; i < numIntegrators; ++i) {
-    _integrators[i]->integrateResidual(_residualRHS, t, dt, *_solution);
+    _integrators[i]->computeRHSResidual(_residualRHS, t, dt, *_solution);
   } // for
 
   // Update PETSc view of residual
   PetscErrorCode err;
-  err = DMLocalToGlobalBegin(_dm, _residualRHS->localVec(), ADD_VALUES, residualVec);PYLITH_CHECK_ERROR(err);
-  err = DMLocalToGlobalEnd(_dm, _residualRHS->localVec(), ADD_VALUES, residualVec);PYLITH_CHECK_ERROR(err);
+  PetscDM dmMesh = _residualRHS->dmMesh();
+  err = DMLocalToGlobalBegin(dmMesh, _residualRHS->localVector(), ADD_VALUES, residualVec);PYLITH_CHECK_ERROR(err);
+  err = DMLocalToGlobalEnd(dmMesh, _residualRHS->localVector(), ADD_VALUES, residualVec);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
-} // reformRHSResidual
+} // computeRHSResidual
 
 // ----------------------------------------------------------------------
-// Reform RHS Jacobian for G(t,u).
+// Compute RHS Jacobian for G(t,u).
 void
-pylith::problems::Problem::reformRHSJacobian(const PylithReal t,
-					     const PylithReal dt,
-					     PetscVec solutionVec,
-					     PetscMat jacobianMat,
-					     PetscMat precondMat)
-{ // reformRHSJacobian
+pylith::problems::Problem::computeRHSJacobian(const PylithReal t,
+					      const PylithReal dt,
+					      PetscVec solutionVec,
+					      PetscMat jacobianMat,
+					      PetscMat precondMat)
+{ // computeRHSJacobian
   PYLITH_METHOD_BEGIN;
 
   assert(_jacobianRHS);
   assert(_solution);
 
-  // :KLUDGE: Should add check to see if we need to reform Jacobian
+  // :KLUDGE: Should add check to see if we need to compute Jacobian
 
   // Update PyLith view of the solution.
   _solution->scatterGlobalToLocal(solutionVec);
@@ -179,7 +179,7 @@ pylith::problems::Problem::reformRHSJacobian(const PylithReal t,
   // Sum Jacobian contributions across integrators.
   const size_t numIntegrators = _integrators.size();
   for (size_t i=0; i < numIntegrators; ++i) {
-    _integrators[i]->integrateRHSJacobian(_jacobianRHS, t, dt, *_solution);
+    _integrators[i]->computeRHSJacobian(_jacobianRHS, t, dt, *_solution);
   } // for
   
   // Assemble jacobian.
@@ -188,7 +188,7 @@ pylith::problems::Problem::reformRHSJacobian(const PylithReal t,
   if (_customConstraintPCMat) {
     // Recalculate preconditioner.
     for (size_t i=0; i < numIntegrators; ++i) {
-      _integrators[i]->integrateRHSPreconditioner(&_customConstraintPCMat, _jacobianRHS, *_solution);
+      _integrators[i]->computeRHSPreconditioner(&_customConstraintPCMat, _jacobianRHS, t, dt, *_solution);
     } // for
 
     MatAssemblyBegin(_customConstraintPCMat, MAT_FINAL_ASSEMBLY);
@@ -201,17 +201,18 @@ pylith::problems::Problem::reformRHSJacobian(const PylithReal t,
   } // if
 
   PYLITH_METHOD_END;
-} // reformRHSJacobian
+} // computeRHSJacobian
 
 
 // ----------------------------------------------------------------------
-// Reform LHS residual for F(t,u,\dot{u}).
+// Compute LHS residual for F(t,u,\dot{u}).
 void
-pylith::problems::Problem::reformLHSResidual(const PylithReal t,
-					     const PylithReal dt,
-					     PetscVec solutionVec,
-					     PetscVec residualVec)
-{ // reformLHSResidual
+pylith::problems::Problem::computeLHSResidual(const PylithReal t,
+					      const PylithReal dt,
+					      PetscVec solutionVec,
+					      PetscVec solutionDotVec,
+					      PetscVec residualVec)
+{ // computeLHSResidual
   PYLITH_METHOD_BEGIN;
 
   assert(residualVec);
@@ -228,31 +229,34 @@ pylith::problems::Problem::reformLHSResidual(const PylithReal t,
   const int numIntegrators = _integrators.size();
   assert(numIntegrators > 0); // must have at least 1 integrator
   for (int i=0; i < numIntegrators; ++i) {
-    _integrators[i]->integrateResidual(_residualLHS, t, dt, *_solution);
+    _integrators[i]->computeLHSResidual(_residualLHS, t, dt, *_solution);
   } // for
 
   // Update PETSc view of residual
   PetscErrorCode err;
-  err = DMLocalToGlobalBegin(_dm, _residualLHS->localVec(), ADD_VALUES, residualVec);PYLITH_CHECK_ERROR(err);
-  err = DMLocalToGlobalEnd(_dm, _residualLHS->localVec(), ADD_VALUES, residualVec);PYLITH_CHECK_ERROR(err);
+  PetscDM dmMesh = _residualRHS->dmMesh();
+  err = DMLocalToGlobalBegin(dmMesh, _residualLHS->localVector(), ADD_VALUES, residualVec);PYLITH_CHECK_ERROR(err);
+  err = DMLocalToGlobalEnd(dmMesh, _residualLHS->localVector(), ADD_VALUES, residualVec);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
-} // reformLHSResidual
+} // computeLHSResidual
 
 
 // ----------------------------------------------------------------------
-// Reform LHS Jacobian for F(t,u,\dot{u}) for implicit time stepping.
+// Compute LHS Jacobian for F(t,u,\dot{u}) for implicit time stepping.
 void
-pylith::problems::Problem::reformLHSJacobianImplicit(const PylithReal t,
-						     const PylithReal dt,
-						     PetscVec solutionVec,
-						     PetscMat jacobianMat,
-						     PetscMat precondMat)
-{ // reformLHSJacobianImplicit
+pylith::problems::Problem::computeLHSJacobianImplicit(const PylithReal t,
+						      const PylithReal dt,
+						      const PylithReal tshift,
+						      PetscVec solutionVec,
+						      PetscVec solutionDotVec,
+						      PetscMat jacobianMat,
+						      PetscMat precondMat)
+{ // computeLHSJacobianImplicit
   assert(_jacobianLHS);
   assert(_solution);
 
-  // :KLUDGE: Should add check to see if we need to reform Jacobian
+  // :KLUDGE: Should add check to see if we need to compute Jacobian
 
   // Update PyLith view of the solution.
   _solution->scatterGlobalToLocal(solutionVec);
@@ -263,7 +267,7 @@ pylith::problems::Problem::reformLHSJacobianImplicit(const PylithReal t,
   // Sum Jacobian contributions across integrators.
   const size_t numIntegrators = _integrators.size();
   for (size_t i=0; i < numIntegrators; ++i) {
-    _integrators[i]->integrateLHSJacobian(_jacobianLHS, t, dt, *_solution);
+    _integrators[i]->computeLHSJacobian(_jacobianLHS, t, dt, *_solution);
   } // for
   
   // Assemble jacobian.
@@ -272,7 +276,7 @@ pylith::problems::Problem::reformLHSJacobianImplicit(const PylithReal t,
   if (_customConstraintPCMat) {
     // Recalculate preconditioner.
     for (size_t i=0; i < numIntegrators; ++i) {
-      _integrators[i]->integrateLHSPreconditioner(&_customConstraintPCMat, _jacobianLHS, *_solution);
+      _integrators[i]->computeLHSPreconditioner(&_customConstraintPCMat, _jacobianLHS, t, dt, *_solution);
     } // for
 
     MatAssemblyBegin(_customConstraintPCMat, MAT_FINAL_ASSEMBLY);
@@ -284,21 +288,19 @@ pylith::problems::Problem::reformLHSJacobianImplicit(const PylithReal t,
 #endif
   } // if
 
-} // reformLHSJacobianImplicit
+} // computeLHSJacobianImplicit
 
 // ----------------------------------------------------------------------
-// Reform LHS Jacobian for F(t,u,\dot{u}) for explicit time stepping.
+// Compute LHS Jacobian for F(t,u,\dot{u}) for explicit time stepping.
 void
-pylith::problems::Problem::reformLHSJacobianExplicit(const PylithReal t,
-						     const PylithReal dt,
-						     PetscVec solutionVec,
-						     PetscMat jacobianMat,
-						     PetscMat precondMat)
-{ // reformLHSJacobianExplicit
+pylith::problems::Problem::computeLHSJacobianExplicit(const PylithReal t,
+						      const PylithReal dt,
+						      PetscVec solutionVec)
+{ // computeLHSJacobianExplicit
   assert(_jacobianLHS);
   assert(_solution);
 
-  // :KLUDGE: Should add check to see if we need to reform Jacobian
+  // :KLUDGE: Should add check to see if we need to compute Jacobian
 
   // Update PyLith view of the solution.
   _solution->scatterGlobalToLocal(solutionVec);
@@ -309,12 +311,12 @@ pylith::problems::Problem::reformLHSJacobianExplicit(const PylithReal t,
   // Sum Jacobian contributions across integrators.
   const size_t numIntegrators = _integrators.size();
   for (size_t i=0; i < numIntegrators; ++i) {
-    _integrators[i]->integrateLHSJacobian(_jacobianLHS, t, dt, *_solution);
+    _integrators[i]->computeLHSJacobian(_jacobianLHS, t, dt, *_solution);
   } // for
   
   // Assemble jacobian.
   _jacobianLHS->assemble("final_assembly");
 
-} // reformLHSJacobianExplicit
+} // computeLHSJacobianExplicit
 
 // End of file 
