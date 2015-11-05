@@ -17,14 +17,14 @@
 //
 
 /**
- * @file unittests/libtests/materials/TestIostropicLinearElasticityPlaneStrain.hh
+ * @file unittests/libtests/materials/TestIsotropicLinearElasticityPlaneStrain.hh
  *
- * @brief C++ TestIostropicLinearElasticityPlaneStrain object
+ * @brief C++ TestIsotropicLinearElasticityPlaneStrain object
  *
- * C++ unit testing for IostropicLinearElasticityPlaneStrain.
+ * C++ unit testing for IsotropicLinearElasticityPlaneStrain.
  */
 
-#if !defined(pylith_materials_testisitropiclinearelasticityplanestrain_hh)
+#if !defined(pylith_materials_testisotropiclinearelasticityplanestrain_hh)
 #define pylith_materials_testisotropiclinearelasticityplanestrain_hh
 
 #include <cppunit/extensions/HelperMacros.h>
