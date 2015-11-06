@@ -144,7 +144,7 @@ public :
    */
   void poststep(void);
 
-  /** Callback static method for computing residual for RHS, G(t,u).
+  /** Callback static method for computing residual for RHS, G(t,s).
    *
    * @param ts PETSc time stepper.
    * @param t Current time.
@@ -159,7 +159,7 @@ public :
 				    PetscVec residualVec,
 				    void* context);
   
-  /* Callback static method for computing Jacobian for RHS, Jacobian of G(t,u).
+  /* Callback static method for computing Jacobian for RHS, Jacobian of G(t,s).
    *
    * @param ts PETSc time stepper.
    * @param t Current time.
@@ -176,7 +176,7 @@ public :
 				    PetscMat precondMat,
 				    void* context);
 
-  /** Callback static method for computing residual for LHS, F(t,u,\dot{u}).
+  /** Callback static method for computing residual for LHS, F(t,s,\dot{s}).
    *
    * @param ts PETSc time stepper.
    * @param t Current time.
@@ -193,7 +193,7 @@ public :
 				    PetscVec residualVec,
 				    void* context);
   
-  /* Callback static method for computing Jacobian for LHS, Jacobian of F(t,u,\dot{u}).
+  /* Callback static method for computing Jacobian for LHS, Jacobian of F(t,s,\dot{s}).
    *
    * @param ts PETSc time stepper.
    * @param t Current time.

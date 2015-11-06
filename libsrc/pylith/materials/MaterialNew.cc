@@ -40,6 +40,9 @@
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 
+extern "C" PetscErrorCode DMPlexComputeResidual_Internal(DM dm, PetscInt cStart, PetscInt cEnd, PetscReal time, Vec locX, Vec locX_t, Vec locF, void *user);
+
+
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::materials::MaterialNew::MaterialNew(const int dimension) :
@@ -68,10 +71,8 @@ pylith::materials::MaterialNew::deallocate(void)
 { // deallocate
   PYLITH_METHOD_BEGIN;
 
+  IntegratorPointwise::deallocate();
   delete _materialIS; _materialIS = NULL;
-  delete _auxFieldsQuery; _auxFieldsQuery = NULL;
-
-  _auxFieldsDB = 0; // :TODO: Use shared pointer.
 
   PYLITH_METHOD_END;
 } // deallocate
@@ -110,95 +111,164 @@ pylith::materials::MaterialNew::initialize(const pylith::topology::Field& soluti
   } // if/else
   _auxFields->complete();
 
-  // Set finite-element kernels
-  _setFEKernels(solution);
-
   PYLITH_METHOD_END;
 } // initialize
 
 
 // ----------------------------------------------------------------------
-// Set discretization information for subfield.
+// Compute RHS residual for G(t,s).
 void
-pylith::materials::MaterialNew::discretization(const char* name,
-					       const pylith::topology::FieldBase::DiscretizeInfo& feInfo)
-{ // discretization
-  _auxFieldsFEInfo[name] = feInfo;
-} // discretization
+pylith::materials::MaterialNew::computeRHSResidual(pylith::topology::Field* residual,
+						   const PylithReal t,
+						   const PylithReal dt,
+						   const pylith::topology::Field& solution)
+{ // computeRHSResidual
+  PYLITH_METHOD_BEGIN;
+
+  _setFEKernelsRHSResidual(solution);
+  _computeResidual(residual, t, dt, solution);
+
+  PYLITH_METHOD_END;
+} // computeRHSResidual
 
 
 // ----------------------------------------------------------------------
-// Get discretization information for subfield.
-const pylith::topology::FieldBase::DiscretizeInfo& 
-pylith::materials::MaterialNew::discretization(const char* name) const
-{ // discretization
-  PYLITH_METHOD_BEGIN;
-
-  discretizations_type::const_iterator iter = _auxFieldsFEInfo.find(name);
-  if (iter != _auxFieldsFEInfo.end()) {
-    PYLITH_METHOD_RETURN(iter->second);
-  } else { // not found so try default
-    iter = _auxFieldsFEInfo.find("default");
-    if (iter == _auxFieldsFEInfo.end()) {
-      throw std::logic_error("Default discretization not set for auxiliary fields.");
-    } // if
-  } // if/else
-
-  PYLITH_METHOD_RETURN(iter->second); // default
-} // discretization
-
-
-extern "C" PetscErrorCode DMPlexComputeResidual_Internal(DM dm, PetscInt cStart, PetscInt cEnd, PetscReal time, Vec locX, Vec locX_t, Vec locF, void *user);
-// ----------------------------------------------------------------------
+// Compute RHS Jacobian for G(t,s).
 void
-pylith::materials::MaterialNew::integrateResidual(const topology::Field& residual,
-							  const PylithScalar t,
-							  topology::SolutionFields* const fields)
-{ // integrateResidual
+pylith::materials::MaterialNew::computeRHSJacobian(pylith::topology::Jacobian* jacobian,
+						   const PylithReal t,
+						   const PylithReal dt,
+						   const pylith::topology::Field& solution)
+{ // computeRHSJacobian
   PYLITH_METHOD_BEGIN;
 
-  assert(_logger);
-  assert(fields);
+  _setFEKernelsRHSJacobian(solution);
+  _computeJacobian(jacobian, t, dt, solution);
 
-  assert(fields);
+  PYLITH_METHOD_END;
+} // computeRHSJacobian
+
+
+// ----------------------------------------------------------------------
+// Compute preconditioner for RHS Jacobian for G(t,s).
+void
+pylith::materials::MaterialNew::computeRHSPreconditioner(PetscMat* precondMat,
+							 pylith::topology::Jacobian* jacobian,
+							 const PylithReal t,
+							 const PylithReal dt,
+							 const pylith::topology::Field& solution)
+{ // computeRHSPreconditioner
+  PYLITH_METHOD_BEGIN;
+
+  assert(precondMat);
+  assert(jacobian);
+  assert(_auxFields);
+
+  throw std::logic_error(":TODO: Stuff goes here.");
+
+  PYLITH_METHOD_END;
+} // computeRHSPreconditioner
+
+
+// ----------------------------------------------------------------------
+// Compute LHS residual for F(t,s,\dot{s}).
+void
+pylith::materials::MaterialNew::computeLHSResidual(pylith::topology::Field* residual,
+						   const PylithReal t,
+						   const PylithReal dt,
+						   const pylith::topology::Field& solution)
+{ // computeLHSResidual
+  PYLITH_METHOD_BEGIN;
+
+  _setFEKernelsLHSResidual(solution);
+  _computeResidual(residual, t, dt, solution);
+
+  PYLITH_METHOD_END;
+} // computeLHSResidual
+
+// ----------------------------------------------------------------------
+// Compute LHS Jacobian for F(t,s,\dot{s}).
+void
+pylith::materials::MaterialNew::computeLHSJacobian(pylith::topology::Jacobian* jacobian,
+						   const PylithReal t,
+						   const PylithReal dt,
+						   const pylith::topology::Field& solution)
+{ // computeLHSJacobian
+  PYLITH_METHOD_BEGIN;
+
+  _setFEKernelsLHSJacobian(solution);
+  _computeJacobian(jacobian, t, dt, solution);
+
+  PYLITH_METHOD_END;
+} // computeLHSJacobian
+
+
+// ----------------------------------------------------------------------
+// Compute preconditioner for RHS Jacobian for F(t,s,\dot{u]).
+void
+pylith::materials::MaterialNew::computeLHSPreconditioner(PetscMat* precondMat,
+							 pylith::topology::Jacobian* jacobian,
+							 const PylithReal t,
+							 const PylithReal dt,
+							 const pylith::topology::Field& solution)
+{ // computeLHSPreconditioner
+  PYLITH_METHOD_BEGIN;
+
+  assert(precondMat);
+  assert(jacobian);
+  assert(_auxFields);
+
+  throw std::logic_error(":TODO: Stuff goes here.");
+
+  PYLITH_METHOD_END;
+} // computeLHSPreconditioner
+
+
+// ----------------------------------------------------------------------
+// Compute residual using current kernels.
+void
+pylith::materials::MaterialNew::_computeResidual(pylith::topology::Field* residual,
+						 const PylithReal t,
+						 const PylithReal dt,
+						 const pylith::topology::Field& solution)
+{ // _computeResidual
+  PYLITH_METHOD_BEGIN;
+
+  assert(residual);
   assert(_auxFields);
 
   PetscDS prob = NULL;
-  PetscVec dispTpdtVec = NULL;
   PetscInt cStart = 0, cEnd = 0;
   PetscErrorCode err;
 
-  PetscDM dmMesh = fields->get("dispIncr(t->t+dt)").dmMesh();
+  PetscDM dmMesh = solution.dmMesh();
   PetscDM dmAux = _auxFields->dmMesh();
   PetscDMLabel label;
 
   // Pointwise function have been set in DS
   err = DMGetDS(dmMesh, &prob);PYLITH_CHECK_ERROR(err);
 
-  // Create full solution
-  err = VecDuplicate(residual.localVector(), &dispTpdtVec);PYLITH_CHECK_ERROR(err);
-  err = VecWAXPY(dispTpdtVec, 1.0, fields->get("disp(t)").localVector(), fields->get("dispIncr(t->t+dt)").localVector());PYLITH_CHECK_ERROR(err);
-
   // Get auxiliary data
   err = PetscObjectCompose((PetscObject) dmMesh, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
-  err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) auxFields().localVector());PYLITH_CHECK_ERROR(err);
+  err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) _auxFields->localVector());PYLITH_CHECK_ERROR(err);
 
   // Compute the local residual
   err = DMPlexGetLabel(dmMesh, "material-id", &label);PYLITH_CHECK_ERROR(err);
   err = DMLabelGetStratumBounds(label, id(), &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-  err = DMPlexComputeResidual_Internal(dmMesh, cStart, cEnd, PETSC_MIN_REAL, dispTpdtVec, NULL, residual.localVector(), NULL);PYLITH_CHECK_ERROR(err);
-  err = VecDestroy(&dispTpdtVec);PYLITH_CHECK_ERROR(err);
+  err = DMPlexComputeResidual_Internal(dmMesh, cStart, cEnd, PETSC_MIN_REAL, solution.localVector(), NULL, residual.localVector(), NULL);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
-} // integrateResidual
+} // _computeResidual
+  
 
 // ----------------------------------------------------------------------
-// Compute stiffness matrix.
+// Compute Jacobian using current kernels.
 void
-pylith::materials::MaterialNew::integrateJacobian(topology::Jacobian* jacobian,
-							  const PylithScalar t,
-							  topology::SolutionFields* fields)
-{ // integrateJacobian
+pylith::materials::MaterialNew::computeJacobian(pylith::topology::Jacobian* jacobian,
+						const PylithReal t,
+						const PylithReal dt,
+						const pylith::topology::Field& solution)
+{ // computeJacobian
   PYLITH_METHOD_BEGIN;
 
   assert(_logger);
@@ -206,32 +276,26 @@ pylith::materials::MaterialNew::integrateJacobian(topology::Jacobian* jacobian,
   assert(fields);
 
   PetscDS prob = NULL;
-  PetscVec dispTpdtVec = NULL;
   PetscErrorCode err;
 
   const PetscMat jacobianMat = jacobian->matrix();assert(jacobianMat);
-  const topology::Field& solnField = fields->get("dispIncr(t->t+dt)");
-  PetscDM dmMesh = solnField.dmMesh();
+  PetscDM dmMesh = solution.dmMesh();
   PetscDM dmAux = _auxFields->dmMesh();
 
   // Pointwise function have been set in DS
   err = DMGetDS(dmMesh, &prob);PYLITH_CHECK_ERROR(err);
-
-  // Create full solution
-  err = VecDuplicate(fields->get("disp(t)").localVector(), &dispTpdtVec);PYLITH_CHECK_ERROR(err);
-  err = VecWAXPY(dispTpdtVec, 1.0, fields->get("disp(t)").localVector(), solnField.localVector());PYLITH_CHECK_ERROR(err);
 
   // Get auxiliary data
   err = PetscObjectCompose((PetscObject) dmMesh, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
   err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) auxFields().localVector());PYLITH_CHECK_ERROR(err);
 
   // Compute the local Jacobian
-  err = DMPlexSNESComputeJacobianFEM(dmMesh, dispTpdtVec, jacobianMat, jacobianMat, NULL);PYLITH_CHECK_ERROR(err);
-  err = VecDestroy(&dispTpdtVec);PYLITH_CHECK_ERROR(err);
+  err = DMPlexSNESComputeJacobianFEM(dmMesh, solution.localVector(), jacobianMat, jacobianMat, NULL);PYLITH_CHECK_ERROR(err);
 
   _needNewJacobian = false;
 
   PYLITH_METHOD_END;
-} // integrateJacobian
+} // computeJacobian
+
 
 // End of file 

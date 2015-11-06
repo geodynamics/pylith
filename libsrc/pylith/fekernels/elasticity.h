@@ -18,6 +18,17 @@
 
 /** @file libsrc/fekernels/elasticity.h
  *
+ * We cast the governing equation in the form:
+ *
+ * F(t,s,\dot{s}) = G(t,s).
+ *
+ * Using the finite-element method, we manipulate the weak form into
+ * integrals over the domain with the form,
+ *
+ * \int_\Omega \vec{\phi} \cdot \vec{f}_0(t,s,\dot{s}) + 
+ *   \nabla \vec{\phi} : \tensor{f}_1(t,s,\dot{s}) \, d\Omega, =
+ *   \int_\Omega \vec{\phi} \cdot \vec{g}_0(t,s) + 
+ *   \nabla \vec{\phi} : \tensor{g}_1(t,s) \, d\Omega,
  */
 
 #if !defined(pylith_fekernels_elasticity_h)
@@ -33,11 +44,25 @@
 /* ====================================================================== 
  * Kernels for displacement/velocity.
  *
- * \int_V \vec{\phi}_v \cdot \left(  \vec{v} - \frac{\partial \vec{u}}{\partial t} \right) \, dV
+ * \int_V \vec{\phi}_v \cdot \left( \frac{\partial \vec{u}(t)}{\partial t} \right) \, dV = 
+ *   \int_V \vec{\phi}_v \cdot \vec{v}(t) \, dV.
+ *
+ * LHS
+ * 
+ * \vec{f0} = \frac{\partial \vec{u}(t)}{\partial t}
+ *
+ * \tensor{f1} = \tensor{0}
+ *
+ * RHS
+ *
+ * \vec{g0} = \vec{v}(t)
+ *
+ * \tensor{g1} = \tensor{0}
+ *
  * ====================================================================== 
  */
 
-/** f0 entry function for disp/vel.
+/** f0 function for disp/vel.
  *
  * @param dim Spatial dimension.
  * @param numS Number of registered subfields in solution field [2].
@@ -77,6 +102,48 @@ pylith_fekernels_f0_DispVel(const PylithInt dim,
 			    const PylithReal t,
 			    const PylithScalar x[],
 			    PylithScalar f0[]);
+
+
+/** g0 function for disp/vel.
+ *
+ * @param dim Spatial dimension.
+ * @param numS Number of registered subfields in solution field [2].
+ * @param numA Number of registered subfields in auxiliary field [0].
+ * @param sOff Offset of registered subfields in solution field [numS].
+ * @param sOff_x Offset of registered subfields in gradient of the solution field [numS].
+ * @param s Solution field with all subfields.
+ * @param s_t Time derivative of solution field.
+ * @param s_x Gradient of solution field.
+ * @param aOff Offset of registered subfields in auxiliary field [numA]
+ * @param aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
+ * @param a Auxiliary field with all subfields.
+ * @param a_t Time derivative of auxiliary field.
+ * @param a_x Gradient of auxiliary field.
+ * @param t Time for residual evaluation.
+ * @param x Coordinates of point evaluation.
+ * @param f0 Result [dim].
+ *
+ * Solution fields: [disp(dim), vel(dim)]
+ *
+ * Auxiliary fields: None
+ */
+void
+pylith_fekernels_g0_DispVel(const PylithInt dim,
+			    const PylithInt numS,
+			    const PylithInt numA,
+			    const PylithInt sOff[],
+			    const PylithInt sOff_x[],
+			    const PylithScalar s[],
+			    const PylithScalar s_t[],
+			    const PylithScalar s_x[],
+			    const PylithInt aOff[],
+			    const PylithInt aOff_x[],
+			    const PylithScalar a[],
+			    const PylithScalar a_t[],
+			    const PylithScalar a_x[],
+			    const PylithReal t,
+			    const PylithScalar x[],
+			    PylithScalar g0[]);
 
 
 /** g0_vv entry function for disp/vel time evolution.

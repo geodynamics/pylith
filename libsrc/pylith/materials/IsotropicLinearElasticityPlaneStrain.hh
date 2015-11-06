@@ -64,12 +64,38 @@ protected :
   /// Setup auxiliary subfields (discretization and query fns).
   void _auxFieldsSetup(void);
  
-  /** Set residual and Jacobian kernels.
+  /** Set kernels for RHS residual G(t,u).
    *
-   * @param field Solution field.
+   * @param[in] solution Solution field.
    */
-  void
-  _setFEKernels(const topology::Field& field) const;
+  void _setFEKernelsRHSResidual(const topology::Field& solution) const;
+
+  /** Set kernels for RHS Jacobian G(t,u).
+   *
+   * @param[in] solution Solution field.
+   */
+  void _setFEKernelsRHSJacobian(const topology::Field& solution) const ;
+
+  /** Set kernels for LHS residual F(t,u,\dot{u}).
+   *
+   * @param[in] solution Solution field.
+   */
+  void _setFEKernelsLHSResidual(const topology::Field& solution) const;
+
+
+  /** Set kernels for LHS Jacobian F(t,u,\dot{u}) when implicit time-stepping.
+   *
+   * @param[in] solution Solution field.
+   */
+  void _setFEKernelsLHSJacobianImplicit(const topology::Field& solution) const;
+
+
+  /** Set kernels for LHS Jacobian F(t,u,\dot{u}) when explicit time-stepping.
+   *
+   * @param[in] solution Solution field.
+   */
+  void _setFEKernelsLHSJacobianExplicit(const topology::Field& solution) const;
+
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

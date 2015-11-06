@@ -118,7 +118,7 @@ pylith::problems::Problem::customPCMatrix(PetscMat& mat)
 } // preconditioner
 
 // ----------------------------------------------------------------------
-// Compute RHS residual for G(t,u).
+// Compute RHS residual for G(t,s).
 void
 pylith::problems::Problem::computeRHSResidual(const PylithReal t,
 					      const PylithReal dt,
@@ -155,7 +155,7 @@ pylith::problems::Problem::computeRHSResidual(const PylithReal t,
 } // computeRHSResidual
 
 // ----------------------------------------------------------------------
-// Compute RHS Jacobian for G(t,u).
+// Compute RHS Jacobian for G(t,s).
 void
 pylith::problems::Problem::computeRHSJacobian(const PylithReal t,
 					      const PylithReal dt,
@@ -205,7 +205,7 @@ pylith::problems::Problem::computeRHSJacobian(const PylithReal t,
 
 
 // ----------------------------------------------------------------------
-// Compute LHS residual for F(t,u,\dot{u}).
+// Compute LHS residual for F(t,s,\dot{s}).
 void
 pylith::problems::Problem::computeLHSResidual(const PylithReal t,
 					      const PylithReal dt,
@@ -243,7 +243,7 @@ pylith::problems::Problem::computeLHSResidual(const PylithReal t,
 
 
 // ----------------------------------------------------------------------
-// Compute LHS Jacobian for F(t,u,\dot{u}) for implicit time stepping.
+// Compute LHS Jacobian for F(t,s,\dot{s}) for implicit time stepping.
 void
 pylith::problems::Problem::computeLHSJacobianImplicit(const PylithReal t,
 						      const PylithReal dt,
@@ -267,7 +267,7 @@ pylith::problems::Problem::computeLHSJacobianImplicit(const PylithReal t,
   // Sum Jacobian contributions across integrators.
   const size_t numIntegrators = _integrators.size();
   for (size_t i=0; i < numIntegrators; ++i) {
-    _integrators[i]->computeLHSJacobian(_jacobianLHS, t, dt, *_solution);
+    _integrators[i]->computeLHSJacobianImplicit(_jacobianLHS, t, dt, *_solution);
   } // for
   
   // Assemble jacobian.
@@ -291,7 +291,7 @@ pylith::problems::Problem::computeLHSJacobianImplicit(const PylithReal t,
 } // computeLHSJacobianImplicit
 
 // ----------------------------------------------------------------------
-// Compute LHS Jacobian for F(t,u,\dot{u}) for explicit time stepping.
+// Compute LHS Jacobian for F(t,s,\dot{s}) for explicit time stepping.
 void
 pylith::problems::Problem::computeLHSJacobianExplicit(const PylithReal t,
 						      const PylithReal dt,
@@ -311,7 +311,7 @@ pylith::problems::Problem::computeLHSJacobianExplicit(const PylithReal t,
   // Sum Jacobian contributions across integrators.
   const size_t numIntegrators = _integrators.size();
   for (size_t i=0; i < numIntegrators; ++i) {
-    _integrators[i]->computeLHSJacobian(_jacobianLHS, t, dt, *_solution);
+    _integrators[i]->computeLHSJacobianExplicit(_jacobianLHS, t, dt, *_solution);
   } // for
   
   // Assemble jacobian.

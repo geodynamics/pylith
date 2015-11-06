@@ -66,7 +66,7 @@ public :
 
   /** Check whether material has a given auxiliary field.
    *
-   * @param name Name of field.
+   * @param[in] name Name of field.
    *
    * @returns True if material has auxiliary field, false otherwise.
    */
@@ -74,34 +74,54 @@ public :
 
   /** Get auxiliary field.
    *
-   * @param field Field over material.
-   * @param name Name of field to retrieve.
+   * @param[in] field Field over material.
+   * @param[in] name Name of field to retrieve.
    */
   void getAuxField(topology::Field *field,
 		   const char* name) const;
 
-  /** Update state variables as needed.
+  /** Set spatial database for auxiliary fields.
    *
-   * @param t Current time
-   * @param fields Solution fields
-   * @param mesh Finite-element mesh
+   * @param[in] value Pointer to database.
    */
-  void updateStateVars(const PylithScalar t,
-		       topology::SolutionFields* const fields);
+  void auxFieldsDB(spatialdata::spatialdb::SpatialDB* value);
+
+  /** Set discretization information for auxiliary subfield.
+   *
+   * @param[in] name Name of auxiliary subfield.
+   * @feInfo Discretization information for subfield.
+   */
+  void auxFieldDiscretization(const char* name,
+			      const pylith::topology::FieldBase::DiscretizeInfo& feInfo);
+
+  /** Get discretization information for auxiliary subfield.
+   *
+   * @param[in] name Name of subfield.
+   * @return Discretization information for auxiliary subfield. If
+   * discretization information was not set, then use "default".
+   */
+  const pylith::topology::FieldBase::DiscretizeInfo& auxFieldDiscretization(const char* name) const;
 
   /** Verify configuration is acceptable.
    *
-   * @param mesh Finite-element mesh
+   * @param[in] mesh Finite-element mesh
    */
   virtual
   void verifyConfiguration(const topology::Mesh& mesh) const;
   
-  /** Initialize integrator.
+  /** Verify constraints are acceptable.
    *
-   * @param mesh Finite-element mesh.
+   * @param field Solution field.
    */
   virtual
-  void initialize(const topology::Mesh& mesh);
+  void checkConstraints(const topology::Field& solution) const;
+
+  /** Initialize integrator.
+   *
+   * @param[in] solution Solution field (layout).
+   */
+  virtual
+  void initialize(const pylith::topology::Field& solution) = 0;
 
   /** Compute RHS residual for G(t,u).
    *
@@ -110,10 +130,11 @@ public :
    * @param[in] dt Current time step.
    * @param[in] solution Current trial solution.
    */
+  virtual
   void computeRHSResidual(pylith::topology::Field* residual,
 			  const PylithReal t,
 			  const PylithReal dt,
-			  const pylith::topology::Field& solution);
+			  const pylith::topology::Field& solution) = 0;
 
   /** Compute RHS Jacobian for G(t,u).
    *
@@ -122,10 +143,11 @@ public :
    * @param[in] dt Current time step.
    * @param[in] solution Current trial solution.
    */
+  virtual
   void computeRHSJacobian(pylith::topology::Jacobian* jacobian,
 			  const PylithReal t,
 			  const PylithReal dt,
-			  const pylith::topology::Field& solution);
+			  const pylith::topology::Field& solution) = 0;
 
   /** Compute preconditioner for RHS Jacobian for G(t,u).
    *
@@ -135,11 +157,12 @@ public :
    * @param[in] dt Current time step.
    * @param[in] solution Current trial solution.
    */
+  virtual
   void computeRHSPreconditioner(PetscMat* precondMat,
 				pylith::topology::Jacobian* jacobian,
 				const PylithReal t,
 				const PylithReal dt,
-				const pylith::topology::Field& solution);
+				const pylith::topology::Field& solution) = 0;
 
   /** Compute LHS residual for F(t,u,\dot{u}).
    *
@@ -148,22 +171,38 @@ public :
    * @param[in] dt Current time step.
    * @param[in] solution Current trial solution.
    */
+  virtual
   void computeLHSResidual(pylith::topology::Field* residual,
 			  const PylithReal t,
 			  const PylithReal dt,
-			  const pylith::topology::Field& solution);
+			  const pylith::topology::Field& solution) = 0;
 
-  /** Compute LHS Jacobian for F(t,u,\dot{u}).
+  /** Compute LHS Jacobian for F(t,u,\dot{u}) with implicit time-stepping.
    *
    * @param[out] jacobian Jacobian sparse matrix.
    * @param[in] t Current time.
    * @param[in] dt Current time step.
    * @param[in] solution Current trial solution.
    */
-  void computeLHSJacobian(pylith::topology::Jacobian* jacobian,
-			  const PylithReal t,
-			  const PylithReal dt,
-			  const pylith::topology::Field& solution);
+  virtual
+  void computeLHSJacobianImplicit(pylith::topology::Jacobian* jacobian,
+				  const PylithReal t,
+				  const PylithReal dt,
+				  const pylith::topology::Field& solution) = 0;
+
+
+  /** Compute LHS Jacobian for F(t,u,\dot{u}) with explicit time-stepping.
+   *
+   * @param[out] jacobian Jacobian sparse matrix.
+   * @param[in] t Current time.
+   * @param[in] dt Current time step.
+   * @param[in] solution Current trial solution.
+   */
+  virtual
+  void computeLHSJacobianExplicit(pylith::topology::Jacobian* jacobian,
+				  const PylithReal t,
+				  const PylithReal dt,
+				  const pylith::topology::Field& solution) = 0;
 
 
   /** Compute preconditioner for RHS Jacobian for F(t,u,\dot{u]).
@@ -174,34 +213,48 @@ public :
    * @param[in] dt Current time step.
    * @param[in] solution Current trial solution.
    */
+  virtual
   void computeLHSPreconditioner(PetscMat* precondMat,
 				pylith::topology::Jacobian* jacobian,
 				const PylithReal t,
 				const PylithReal dt,
-				const pylith::topology::Field& solution);
+				const pylith::topology::Field& solution) = 0;
 
   /** Update state variables as needed.
    *
-   * @param solution Solution field.
+   * @param[in] solution Solution field.
    */
+  virtual
   void updateStateVars(const pylith::topology::Field& solution);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 
-  /** Set residual and Jacobian kernels.
-   *
-   * @param solution Solution field.
-   */
-  virtual
-  void _setFEKernels(const topology::Field& solution) const = 0;
-
-
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
+  spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer.
+  utils::EventLogger* _logger; ///< Event logger.
+
   /// Auxiliary fields for this problem
   topology::Field *_auxFields;
+
+  /// Database of values for auxiliary fields.
+  spatialdata::spatialdb::SpatialDB* _auxFieldsDB;
+
+  /// Set auxiliary fields via query.
+  pylith::topology::FieldQuery* _auxFieldsQuery;
+
+  /// Map from auxiliary field to discretization.
+  discretizations_type _auxFieldsFEInfo;
+
+  /// True if we need to recompute Jacobian for operator, false otherwise.
+  /// Default is false;
+  bool _needNewJacobian;
+
+  /// True if we need to compute velocity field, false otherwise.
+  /// Default is false;
+  bool _isJacobianSymmetric;
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

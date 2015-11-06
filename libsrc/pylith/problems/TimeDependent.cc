@@ -312,7 +312,7 @@ pylith::problems::TimeDependent::poststep(void)
 
 
 // ----------------------------------------------------------------------
-// Callback static method for computeing residual for RHS, G(t,u).
+// Callback static method for computeing residual for RHS, G(t,s).
 PetscErrorCode
 pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
 						    PetscReal t,
@@ -329,7 +329,7 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
   pylith::problems::TimeDependent* problem = (pylith::problems::TimeDependent*)context;
   problem->Problem::computeRHSResidual(t, dt, solutionVec, residualVec);
 
-  // If explicit time stepping, multiply RHS, G(t,u), by M^{-1}
+  // If explicit time stepping, multiply RHS, G(t,s), by M^{-1}
   if (EXPLICIT == problem->_formulationType) {
     assert(problem->_jacobianLHS);
 
@@ -348,7 +348,7 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
 
   
 // ----------------------------------------------------------------------
-// Callback static method for computeing Jacobian for RHS, Jacobian of G(t,u).
+// Callback static method for computeing Jacobian for RHS, Jacobian of G(t,s).
 PetscErrorCode
 pylith::problems::TimeDependent::computeRHSJacobian(PetscTS ts,
 						    PetscReal t,
@@ -370,7 +370,7 @@ pylith::problems::TimeDependent::computeRHSJacobian(PetscTS ts,
 } // computeRHSJacobian
 
 // ----------------------------------------------------------------------
-// Callback static method for computeing residual for LHS, F(t,u,\dot{u}).
+// Callback static method for computeing residual for LHS, F(t,s,\dot{s}).
 PetscErrorCode
 pylith::problems::TimeDependent::computeLHSResidual(PetscTS ts,
 						    PetscReal t,
@@ -393,7 +393,7 @@ pylith::problems::TimeDependent::computeLHSResidual(PetscTS ts,
 
   
 // ----------------------------------------------------------------------
-// Callback static method for computeing Jacobian for LHS, Jacobian of F(t,u,\dot{u}).
+// Callback static method for computeing Jacobian for LHS, Jacobian of F(t,s,\dot{s}).
 PetscErrorCode
 pylith::problems::TimeDependent::computeLHSJacobian(PetscTS ts,
 						    PetscReal t,

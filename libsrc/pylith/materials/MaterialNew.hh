@@ -105,67 +105,177 @@ public :
 
   /** Initialize material. Setup auxiliary fields.
    *
-   * @param field Solution field.
+   * @param solution Solution field.
    */
-  void initialize(const pylith::topology::Field& field);
+  void initialize(const pylith::topology::Field& solution);
   
-  /** Set spatial database for auxiliary fields.
+  /** Compute RHS residual for G(t,s).
    *
-   * @param value Pointer to database.
+   * @param[out] residual Residual field.
+   * @param[in] t Current time.
+   * @param[in] dt Current time step.
+   * @param[in] solution Current trial solution.
    */
-  void auxFieldsDB(spatialdata::spatialdb::SpatialDB* value);
+  void computeRHSResidual(pylith::topology::Field* residual,
+			  const PylithReal t,
+			  const PylithReal dt,
+			  const pylith::topology::Field& solution);
 
-  /** Set discretization information for subfield.
+  /** Compute RHS Jacobian for G(t,s).
    *
-   * @param name Name of subfield.
-   * @feInfo Discretization information for subfield.
+   * @param[out] jacobian Jacobian sparse matrix.
+   * @param[in] t Current time.
+   * @param[in] dt Current time step.
+   * @param[in] solution Current trial solution.
    */
-  void discretization(const char* name,
-		      const pylith::topology::FieldBase::DiscretizeInfo& feInfo);
+  void computeRHSJacobian(pylith::topology::Jacobian* jacobian,
+			  const PylithReal t,
+			  const PylithReal dt,
+			  const pylith::topology::Field& solution);
 
-  /** Get discretization information for subfield.
+  /** Compute preconditioner for RHS Jacobian for G(t,s).
    *
-   * @param name Name of subfield.
-   * @return Discretization information for subfield. If
-   * discretization information was not set, then use "default".
+   * @param[out] precondMat Preconditioner sparse matrix.
+   * @param[inout] jacobian Jacobian sparse matrix.
+   * @param[in] t Current time.
+   * @param[in] dt Current time step.
+   * @param[in] solution Current trial solution.
    */
-  const pylith::topology::FieldBase::DiscretizeInfo& discretization(const char* name) const;
+  void computeRHSPreconditioner(PetscMat* precondMat,
+				pylith::topology::Jacobian* jacobian,
+				const PylithReal t,
+				const PylithReal dt,
+				const pylith::topology::Field& solution);
 
-  /** Integrate residual part of RHS for 3-D finite elements.
-   * Includes gravity and element internal force contribution.
+  /** Compute LHS residual for F(t,s,\dot{s}).
    *
-   * We assume that the effects of boundary conditions are already
-   * included in the residual (tractions, concentrated nodal forces,
-   * and contributions to internal force vector due to
-   * displacement/velocity BC).  This routine computes the additional
-   * external loads due to body forces plus the
-   * element internal forces for the current stress state.
-   *
-   * @param residual Field containing values for residual
-   * @param t Current time
-   * @param fields Solution fields
+   * @param[out] residual Residual field.
+   * @param[in] t Current time.
+   * @param[in] dt Current time step.
+   * @param[in] solution Current trial solution.
    */
-  void integrateResidual(const topology::Field& residual,
-			 const PylithScalar t,
-			 topology::SolutionFields* const fields);
+  void computeLHSResidual(pylith::topology::Field* residual,
+			  const PylithReal t,
+			  const PylithReal dt,
+			  const pylith::topology::Field& solution);
 
-  /** Integrate contributions to Jacobian matrix (A) associated with
-   * operator.
+  /** Compute LHS Jacobian for F(t,s,\dot{s}) with implicit time-stepping.
    *
-   * @param jacobian Sparse matrix for Jacobian of system.
-   * @param t Current time
-   * @param fields Solution fields
+   * @param[out] jacobian Jacobian sparse matrix.
+   * @param[in] t Current time.
+   * @param[in] dt Current time step.
+   * @param[in] solution Current trial solution.
    */
-  void integrateJacobian(topology::Jacobian* jacobian,
-			 const PylithScalar t,
-			 topology::SolutionFields* const fields);
+  void computeLHSJacobianImplicit(pylith::topology::Jacobian* jacobian,
+				  const PylithReal t,
+				  const PylithReal dt,
+				  const pylith::topology::Field& solution);
+
+
+  /** Compute LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
+   *
+   * @param[out] jacobian Jacobian sparse matrix.
+   * @param[in] t Current time.
+   * @param[in] dt Current time step.
+   * @param[in] solution Current trial solution.
+   */
+  void computeLHSJacobianExplicit(pylith::topology::Jacobian* jacobian,
+				  const PylithReal t,
+				  const PylithReal dt,
+				  const pylith::topology::Field& solution);
+
+
+  /** Compute preconditioner for RHS Jacobian for F(t,s,\dot{u]).
+   *
+   * @param[out] precondMat Preconditioner sparse matrix.
+   * @param[inout] jacobian Jacobian sparse matrix.
+   * @param[in] t Current time.
+   * @param[in] dt Current time step.
+   * @param[in] solution Current trial solution.
+   */
+  void computeLHSPreconditioner(PetscMat* precondMat,
+				pylith::topology::Jacobian* jacobian,
+				const PylithReal t,
+				const PylithReal dt,
+				const pylith::topology::Field& solution);
+
+  /** Update state variables as needed.
+   *
+   * @param[in] solution Solution field.
+   */
+  virtual
+  void updateStateVars(const pylith::topology::Field& solution);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
+  /* Compute residual using current kernels.
+   *
+   * @param[out] residual Residual field.
+   * @param[in] t Current time.
+   * @param[in] dt Current time step.
+   * @param[in] solution Current trial solution.
+   */
+  void _computeResidual(pylith::topology::Field* residual,
+			const PylithReal t,
+			const PylithReal dt,
+			const pylith::topology::Field& solution);
+  
+  /* Compute Jacobian using current kernels.
+   *
+   * @param[out] jacobian Jacobian sparse matrix.
+   * @param[in] t Current time.
+   * @param[in] dt Current time step.
+   * @param[in] solution Current trial solution.
+   */
+  void _computeJacobian(pylith::topology::Jacobian* jacobian,
+			const PylithReal t,
+			const PylithReal dt,
+			const pylith::topology::Field& solution);
+  
   /// Setup auxiliary subfields (discretization and query fns).
   virtual
   void _auxFieldsSetup(void) = 0;
+
+
+  /** Set kernels for RHS residual G(t,s).
+   *
+   * @param solution Solution field.
+   */
+  virtual
+  void _setFEKernelsRHSResidual(const topology::Field& solution) const = 0;
+
+
+  /** Set kernels for RHS Jacobian G(t,s).
+   *
+   * @param solution Solution field.
+   */
+  virtual
+  void _setFEKernelsRHSJacobian(const topology::Field& solution) const = 0;
+
+
+  /** Set kernels for LHS residual F(t,s,\dot{s}).
+   *
+   * @param solution Solution field.
+   */
+  virtual
+  void _setFEKernelsLHSResidual(const topology::Field& solution) const = 0;
+
+
+  /** Set kernels for LHS Jacobian F(t,s,\dot{s}) when implicit time-stepping.
+   *
+   * @param solution Solution field.
+   */
+  virtual
+  void _setFEKernelsLHSJacobianImplicit(const topology::Field& solution) const = 0;
+
+
+  /** Set kernels for LHS Jacobian F(t,s,\dot{s}) when explicit time-stepping.
+   *
+   * @param solution Solution field.
+   */
+  virtual
+  void _setFEKernelsLHSJacobianExplicit(const topology::Field& solution) const = 0;
 
 
   // PROTECTED TYPEDEFS /////////////////////////////////////////////////
@@ -177,15 +287,6 @@ protected :
 protected :
 
   topology::StratumIS* _materialIS; ///< Index set for material cells.
-
-  /// Database of values for auxiliary fields.
-  spatialdata::spatialdb::SpatialDB* _auxFieldsDB;
-
-  /// Set auxiliary fields via query.
-  pylith::topology::FieldQuery* _auxFieldsQuery;
-
-  /// Map from auxiliary field to discretization.
-  discretizations_type _auxFieldsFEInfo;
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

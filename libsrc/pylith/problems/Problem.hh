@@ -39,10 +39,10 @@
 // Problem ----------------------------------------------------------
 /** Reform the Jacobian and residual for the problem.
  *
- * We cast the problem in terms of F(t,u,du/dt) = G(t,u), u(t0) = u0.
+ * We cast the problem in terms of F(t,s,\dot{s}) = G(t,s), s(t0) = s0.
  *
  * In PETSc time stepping (TS) notation, G is the RHS, and F is the I
- * function.
+ * function (which we call the LHS).
  *
  */
 class pylith::problems::Problem
@@ -89,7 +89,7 @@ public :
   virtual
   void initialize(void);
 
-  /** Compute RHS residual, G(t,u).
+  /** Compute RHS residual, G(t,s).
    *
    * @param[in] t Current time.
    * @param[in] dt Current time step.
@@ -101,7 +101,7 @@ public :
 			  PetscVec solutionVec,
 			  PetscVec residualVec);
   
-  /* Compute RHS Jacobian for G(t,u).
+  /* Compute RHS Jacobian for G(t,s).
    *
    * @param[in] t Current time.
    * @param[in] dt Current time step.
@@ -115,7 +115,7 @@ public :
 			  PetscMat jacobianMat,
 			  PetscMat precondMat);
 
-  /** Compute LHS residual, F(t,u,\dot{u}).
+  /** Compute LHS residual, F(t,s,\dot{s}).
    *
    * @param t Current time.
    * @param dt Current time step.
@@ -129,7 +129,7 @@ public :
 			  PetscVec solutionDotVec,
 			  PetscVec residualVec);
   
-  /* Compute LHS Jacobian for F(t,u,\dot{u}) for implicit time stepping.
+  /* Compute LHS Jacobian for F(t,s,\dot{s}) for implicit time stepping.
    *
    * @param[in] t Current time.
    * @param[in] dt Current time step.
@@ -147,7 +147,7 @@ public :
 				  PetscMat jacobianMat,
 				  PetscMat precondMat);
 
-  /* Compute LHS Jacobian for F(t,u,\dot{u}) for explicit time stepping.
+  /* Compute LHS Jacobian for F(t,s,\dot{s}) for explicit time stepping.
    *
    * @param[in] t Current time.
    * @param[in] dt Current time step.
@@ -161,10 +161,10 @@ public :
 protected :
 
   pylith::topology::Field* _solution; ///< Handle to solution field.
-  pylith::topology::Field* _residualRHS; ///< Handle to residual field for RHS, G(t,u).
-  pylith::topology::Field* _residualLHS; ///< Handle to residual field for LHS, F(t,u,\dot{u}).
-  pylith::topology::Jacobian* _jacobianRHS; ///< Handle to Jacobian for RHS, G(t,u).
-  pylith::topology::Jacobian* _jacobianLHS; ///< Handle to Jacobian for LHS, F(t,u,\dot{u}).
+  pylith::topology::Field* _residualRHS; ///< Handle to residual field for RHS, G(t,s).
+  pylith::topology::Field* _residualLHS; ///< Handle to residual field for LHS, F(t,s,\dot{s}).
+  pylith::topology::Jacobian* _jacobianRHS; ///< Handle to Jacobian for RHS, G(t,s).
+  pylith::topology::Jacobian* _jacobianLHS; ///< Handle to Jacobian for LHS, F(t,s,\dot{s}).
 
   std::vector<pylith::feassemble::IntegratorPointwise*> _integrators; ///< Array of integrators.
   std::vector<pylith::feassemble::Constraint*> _constraints; ///< Array of constraints.

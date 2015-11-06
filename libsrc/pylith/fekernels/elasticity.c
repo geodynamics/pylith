@@ -54,9 +54,7 @@ pylith_fekernels_f0_DispVel(const PylithInt dim,
 { /* f0_DispVel */
   const PylithInt _numS = 2;
   const PylithInt i_disp = 0;
-  const PylithInt i_vel = 1;
   const PylithScalar* disp_t = &s_t[sOff[i_disp]];
-  const PylithScalar* vel = &s[sOff[i_vel]];
 
   const PylithInt _numA = 0;
 
@@ -69,9 +67,52 @@ pylith_fekernels_f0_DispVel(const PylithInt dim,
   assert(s_t);
 
   for (i=0; i < dim; ++i) {
-    f0[i] += vel[i] - disp_t[i];
+    f0[i] += disp_t[i];
   } /* for */
 } /* f0_DispVel */
+					      
+
+/* ---------------------------------------------------------------------- */
+/* g0 entry function for time evolution of elasticity.
+ *
+ * Solution fields = [disp(dim), vel(dim)]
+ * Auxiliary fields = None
+ */
+void
+pylith_fekernels_g0_DispVel(const PylithInt dim,
+			    const PylithInt numS,
+			    const PylithInt numA,
+			    const PylithInt sOff[],
+			    const PylithInt sOff_x[],
+			    const PylithScalar s[],
+			    const PylithScalar s_t[],
+			    const PylithScalar s_x[],
+			    const PylithInt aOff[],
+			    const PylithInt aOff_x[],
+			    const PylithScalar a[],
+			    const PylithScalar a_t[],
+			    const PylithScalar a_x[],
+			    const PylithReal t,
+			    const PylithScalar x[],
+			    PylithScalar f0[])
+{ /* g0_DispVel */
+  const PylithInt _numS = 2;
+  const PylithInt i_vel = 1;
+  const PylithScalar* vel = &s[sOff[i_vel]];
+
+  const PylithInt _numA = 0;
+
+  PylithInt i;
+
+  assert(_numS == numS);
+  assert(_numA == numA);
+  assert(sOff);
+  assert(s);
+
+  for (i=0; i < dim; ++i) {
+    f0[i] += vel[i];
+  } /* for */
+} /* g0_DispVel */
 					      
 
 /* ---------------------------------------------------------------------- */
