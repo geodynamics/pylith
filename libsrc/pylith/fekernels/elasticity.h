@@ -42,27 +42,37 @@
 #include "pylith/utils/error.h" 
 
 /* ====================================================================== 
- * Kernels for displacement/velocity.
+ * Kernels for displacement/velocity equation.
+ *
+ * Solution fields: [disp(dim), vel(dim)]
+ *
+ * Auxiliary fields: None
  *
  * \int_V \vec{\phi}_v \cdot \left( \frac{\partial \vec{u}(t)}{\partial t} \right) \, dV = 
  *   \int_V \vec{\phi}_v \cdot \vec{v}(t) \, dV.
  *
- * LHS
+ * LHS Residual
  * 
- * \vec{f0} = \frac{\partial \vec{u}(t)}{\partial t}
+ * f0_DispVel: \vec{f0} = \frac{\partial \vec{u}(t)}{\partial t}
  *
- * \tensor{f1} = \tensor{0}
+ * RHS Residual
  *
- * RHS
+ * g0_DispVel: \vec{g0} = \vec{v}(t)
  *
- * \vec{g0} = \vec{v}(t)
+ * LHS Jacobian
  *
- * \tensor{g1} = \tensor{0}
+ * Jf0_veldisp_DispVelImplicit: tshift
+ *
+ * Jf0_veldisp_DispVelExplicit: 0
+ *
+ * RHS Jacobian
+ *
+ * Jg0_velvel_DispVel: +1.0
  *
  * ====================================================================== 
  */
 
-/** f0 function for disp/vel.
+/** f0 function for disp/vel equation.
  *
  * @param dim Spatial dimension.
  * @param numS Number of registered subfields in solution field [2].
@@ -80,10 +90,6 @@
  * @param t Time for residual evaluation.
  * @param x Coordinates of point evaluation.
  * @param f0 Result [dim].
- *
- * Solution fields: [disp(dim), vel(dim)]
- *
- * Auxiliary fields: None
  */
 void
 pylith_fekernels_f0_DispVel(const PylithInt dim,
@@ -104,7 +110,7 @@ pylith_fekernels_f0_DispVel(const PylithInt dim,
 			    PylithScalar f0[]);
 
 
-/** g0 function for disp/vel.
+/** g0 function for disp/vel equation.
  *
  * @param dim Spatial dimension.
  * @param numS Number of registered subfields in solution field [2].
@@ -122,10 +128,6 @@ pylith_fekernels_f0_DispVel(const PylithInt dim,
  * @param t Time for residual evaluation.
  * @param x Coordinates of point evaluation.
  * @param f0 Result [dim].
- *
- * Solution fields: [disp(dim), vel(dim)]
- *
- * Auxiliary fields: None
  */
 void
 pylith_fekernels_g0_DispVel(const PylithInt dim,
@@ -146,7 +148,7 @@ pylith_fekernels_g0_DispVel(const PylithInt dim,
 			    PylithScalar g0[]);
 
 
-/** g0_vv entry function for disp/vel time evolution.
+/** Jf0 function for disp/velocity equation with implicit time-stepping.
  *
  * @param dim Spatial dimension.
  * @param numS Number of registered subfields in solution field [2].
@@ -165,32 +167,27 @@ pylith_fekernels_g0_DispVel(const PylithInt dim,
  * @param utshift Coefficient for dF/ds_t term in Jacobian.
  * @param x Coordinates of point evaluation.
  * @param g0 Result [dim*dim].
- *
- * Solution fields: [disp(dim), vel(dim)]
- *
- * Auxiliary fields: None
  */
 void
-pylith_fekernels_g0_vv_DispVel(const PylithInt dim,
-			       const PylithInt numS,
-			       const PylithInt numA,
-			       const PylithInt sOff[],
-			       const PylithInt sOff_x[],
-			       const PylithScalar s[],
-			       const PylithScalar s_t[],
-			       const PylithScalar s_x[],
-			       const PylithInt aOff[],
-			       const PylithInt aOff_x[],
-			       const PylithScalar a[],
-			       const PylithScalar a_t[],
-			       const PylithScalar a_x[],
-			       const PylithReal t,
-			       const PylithReal utshift,
-			       const PylithScalar x[],
-			       PylithScalar g0[]);
+pylith_fekernels_Jf0_veldisp_DispVelImplicit(const PylithInt dim,
+					     const PylithInt numS,
+					     const PylithInt numA,
+					     const PylithInt sOff[],
+					     const PylithInt sOff_x[],
+					     const PylithScalar s[],
+					     const PylithScalar s_t[],
+					     const PylithScalar s_x[],
+					     const PylithInt aOff[],
+					     const PylithInt aOff_x[],
+					     const PylithScalar a[],
+					     const PylithScalar a_t[],
+					     const PylithScalar a_x[],
+					     const PylithReal t,
+					     const PylithReal utshift,
+					     const PylithScalar x[],
+					     PylithScalar Jf0[]);
 
-
-/** g0_vu entry function for disp/vel time evolution.
+/** Jf0 function for disp/velocity equation with explicit time-stepping.
  *
  * @param dim Spatial dimension.
  * @param numS Number of registered subfields in solution field [2].
@@ -209,39 +206,133 @@ pylith_fekernels_g0_vv_DispVel(const PylithInt dim,
  * @param utshift Coefficient for dF/ds_t term in Jacobian.
  * @param x Coordinates of point evaluation.
  * @param g0 Result [dim*dim].
- *
- * Solution fields: [disp(dim), vel(dim)]
- *
- * Auxiliary fields: None
  */
 void
-pylith_fekernels_g0_vu_DispVel(const PylithInt dim,
-			       const PylithInt numS,
-			       const PylithInt numA,
-			       const PylithInt sOff[],
-			       const PylithInt sOff_x[],
-			       const PylithScalar s[],
-			       const PylithScalar s_t[],
-			       const PylithScalar s_x[],
-			       const PylithInt aOff[],
-			       const PylithInt aOff_x[],
-			       const PylithScalar a[],
-			       const PylithScalar a_t[],
-			       const PylithScalar a_x[],
-			       const PylithReal t,
-			       const PylithReal utshift,
-			       const PylithScalar x[],
-			       PylithScalar g0[]);
+pylith_fekernels_Jf0_veldisp_DispVelExplicit(const PylithInt dim,
+					     const PylithInt numS,
+					     const PylithInt numA,
+					     const PylithInt sOff[],
+					     const PylithInt sOff_x[],
+					     const PylithScalar s[],
+					     const PylithScalar s_t[],
+					     const PylithScalar s_x[],
+					     const PylithInt aOff[],
+					     const PylithInt aOff_x[],
+					     const PylithScalar a[],
+					     const PylithScalar a_t[],
+					     const PylithScalar a_x[],
+					     const PylithReal t,
+					     const PylithReal utshift,
+					     const PylithScalar x[],
+					     PylithScalar Jf0[]);
+
+
+/** Jg0 function for disp/velocity equation.
+ *
+ * @param dim Spatial dimension.
+ * @param numS Number of registered subfields in solution field [2].
+ * @param numA Number of registered subfields in auxiliary field [0].
+ * @param sOff Offset of registered subfields in solution field [numS].
+ * @param sOff_x Offset of registered subfields in gradient of the solution field [numS].
+ * @param s Solution field with all subfields.
+ * @param s_t Time derivative of solution field.
+ * @param s_x Gradient of solution field.
+ * @param aOff Offset of registered subfields in auxiliary field [numA]
+ * @param aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
+ * @param a Auxiliary field with all subfields.
+ * @param a_t Time derivative of auxiliary field.
+ * @param a_x Gradient of auxiliary field.
+ * @param t Time for residual evaluation.
+ * @param utshift Coefficient for dF/ds_t term in Jacobian.
+ * @param x Coordinates of point evaluation.
+ * @param g0 Result [dim*dim].
+ */
+void
+pylith_fekernels_Jg0_velvel_DispVel(const PylithInt dim,
+				    const PylithInt numS,
+				    const PylithInt numA,
+				    const PylithInt sOff[],
+				    const PylithInt sOff_x[],
+				    const PylithScalar s[],
+				    const PylithScalar s_t[],
+				    const PylithScalar s_x[],
+				    const PylithInt aOff[],
+				    const PylithInt aOff_x[],
+				    const PylithScalar a[],
+				    const PylithScalar a_t[],
+				    const PylithScalar a_x[],
+				    const PylithReal t,
+				    const PylithReal utshift,
+				    const PylithScalar x[],
+				    PylithScalar Jg0[]);
 
 
 /* ====================================================================== 
- * Kernels for inertia and body foces.
+ * Generic elasticity kernels for inertia and body forces.
  *
- * \int_V \vec{\phi}_u \cdot \left( \rho \frac{\partial \vec{v}}{\partial t} - \vec{f} \right) \, dV
+ * Solution fields: [disp(dim), vel(dim)]
+ *
+ * Auxiliary fields: [density(1), ..., body_force(dim,optional)]
+ *
+ * \int_V \vec{\phi}_u \cdot \left( \rho \frac{\partial \vec{v}(t)}{\partial t} \right) \, dV =
+ *   \int_V \vec{\phi}_u \cdot \vec{f}(t) - \nabla \vec{\phi}_u : \tensor{\sigma}(\vec{u}) \, dV + 
+ *   \int_{S_\tau} \vec{\phi}_u \cdot \vec{\tau}(t) \, dS.
+ *
+ * Note: Ignore stress term because it depends on the constitutive model.
+ *
+ * LHS Residual
+ * 
+ * f0_Elasticity: \vec{f0} = \rho \frac{\partial \vec{v}(t)}{\partial t}
+ *
+ * RHS Residual
+ *
+ * g0_Elasticity: \vec{g0} = \vec{f}(t)
+ *
+
+Jf0_dispdisp_ElasticityExplicit
+Jf0_dispdisp_ElasticityImplicit
  * ====================================================================== 
  */
 
-/** f0 entry function for inertia and body forces.
+/** f0 function for generic elasticity terms (inertia and body force).
+ *
+ * @param dim Spatial dimension.
+ * @param numS Number of registered subfields in solution field [2].
+ * @param numA Number of registered subfields in auxiliary field [2].
+ * @param sOff Offset of registered subfields in solution field [numS].
+ * @param sOff_x Offset of registered subfields in gradient of the solution field [numS].
+ * @param s Solution field with all subfields.
+ * @param s_t Time derivative of solution field.
+ * @param s_x Gradient of solution field.
+ * @param aOff Offset of registered subfields in auxiliary field [numA]
+ * @param aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
+ * @param a Auxiliary field with all subfields.
+ * @param a_t Time derivative of auxiliary field.
+ * @param a_x Gradient of auxiliary field.
+ * @param t Time for residual evaluation.
+ * @param x Coordinates of point evaluation.
+ * @param f0 Result [dim].
+ */
+void
+pylith_fekernels_f0_Elasticity(const PylithInt dim,
+			       const PylithInt numS,
+			       const PylithInt numA,
+			       const PylithInt sOff[],
+			       const PylithInt sOff_x[],
+			       const PylithScalar s[],
+			       const PylithScalar s_t[],
+			       const PylithScalar s_x[],
+			       const PylithInt aOff[],
+			       const PylithInt aOff_x[],
+			       const PylithScalar a[],
+			       const PylithScalar a_t[],
+			       const PylithScalar a_x[],
+			       const PylithReal t,
+			       const PylithScalar x[],
+			       PylithScalar f0[]);
+
+
+/** g0 function for generic elasticity terms (inertia and body force).
  *
  * @param dim Spatial dimension.
  * @param numS Number of registered subfields in solution field [2].
@@ -262,243 +353,36 @@ pylith_fekernels_g0_vu_DispVel(const PylithInt dim,
  *
  * Solution fields: [disp(dim), vel(dim)]
  *
- * Auxiliary fields: [density(1), body force(dim)]
+ * Auxiliary fields: [density(1), mu(1), lambda(1), body force(dim)]
  */
 void
-pylith_fekernels_f0_ElasticityInertiaBodyForce(const PylithInt dim,
-					       const PylithInt numS,
-					       const PylithInt numA,
-					       const PylithInt sOff[],
-					       const PylithInt sOff_x[],
-					       const PylithScalar s[],
-					       const PylithScalar s_t[],
-					       const PylithScalar s_x[],
-					       const PylithInt aOff[],
-					       const PylithInt aOff_x[],
-					       const PylithScalar a[],
-					       const PylithScalar a_t[],
-					       const PylithScalar a_x[],
-					       const PylithReal t,
-					       const PylithScalar x[],
-					       PylithScalar f0[]);
-
-
-/** f0 entry function for inertia (no body force).
- *
- * @param dim Spatial dimension.
- * @param numS Number of registered subfields in solution field [2].
- * @param numA Number of registered subfields in auxiliary field [2].
- * @param sOff Offset of registered subfields in solution field [numS].
- * @param sOff_x Offset of registered subfields in gradient of the solution field [numS].
- * @param s Solution field with all subfields.
- * @param s_t Time derivative of solution field.
- * @param s_x Gradient of solution field.
- * @param aOff Offset of registered subfields in auxiliary field [numA]
- * @param aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
- * @param a Auxiliary field with all subfields.
- * @param a_t Time derivative of auxiliary field.
- * @param a_x Gradient of auxiliary field.
- * @param t Time for residual evaluation.
- * @param x Coordinates of point evaluation.
- * @param f0 Result [dim].
- *
- * Solution fields: [disp(dim), vel(dim)]
- *
- * Auxiliary fields: [density(1)]
- */
-void
-pylith_fekernels_f0_ElasticityInertia(const PylithInt dim,
-				      const PylithInt numS,
-				      const PylithInt numA,
-				      const PylithInt sOff[],
-				      const PylithInt sOff_x[],
-				      const PylithScalar s[],
-				      const PylithScalar s_t[],
-				      const PylithScalar s_x[],
-				      const PylithInt aOff[],
-				      const PylithInt aOff_x[],
-				      const PylithScalar a[],
-				      const PylithScalar a_t[],
-				      const PylithScalar a_x[],
-				      const PylithReal t,
-				      const PylithScalar x[],
-				      PylithScalar f0[]);
-
-
-/** f0 entry function for body forces (no inertia).
- *
- * @param dim Spatial dimension.
- * @param numS Number of registered subfields in solution field [2].
- * @param numA Number of registered subfields in auxiliary field [2].
- * @param sOff Offset of registered subfields in solution field [numS].
- * @param sOff_x Offset of registered subfields in gradient of the solution field [numS].
- * @param s Solution field with all subfields.
- * @param s_t Time derivative of solution field.
- * @param s_x Gradient of solution field.
- * @param aOff Offset of registered subfields in auxiliary field [numA]
- * @param aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
- * @param a Auxiliary field with all subfields.
- * @param a_t Time derivative of auxiliary field.
- * @param a_x Gradient of auxiliary field.
- * @param t Time for residual evaluation.
- * @param x Coordinates of point evaluation.
- * @param f0 Result [dim].
- *
- * Solution fields: [disp(dim), vel(dim)]
- *
- * Auxiliary fields: [body force(dim)]
- */
-void
-pylith_fekernels_f0_ElasticityBodyForce(const PylithInt dim,
-					const PylithInt numS,
-					const PylithInt numA,
-					const PylithInt sOff[],
-					const PylithInt sOff_x[],
-					const PylithScalar s[],
-					const PylithScalar s_t[],
-					const PylithScalar s_x[],
-					const PylithInt aOff[],
-					const PylithInt aOff_x[],
-					const PylithScalar a[],
-					const PylithScalar a_t[],
-					const PylithScalar a_x[],
-					const PylithReal t,
-					const PylithScalar x[],
-					PylithScalar f0[]);
-
-
-/** g0_uv entry function for inertia.
- *
- * @param dim Spatial dimension.
- * @param numS Number of registered subfields in solution field [2].
- * @param numA Number of registered subfields in auxiliary field [2].
- * @param sOff Offset of registered subfields in solution field [numS].
- * @param sOff_x Offset of registered subfields in gradient of the solution field [numS].
- * @param s Solution field with all subfields.
- * @param s_t Time derivative of solution field.
- * @param s_x Gradient of solution field.
- * @param aOff Offset of registered subfields in auxiliary field [numA]
- * @param aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
- * @param a Auxiliary field with all subfields.
- * @param a_t Time derivative of auxiliary field.
- * @param a_x Gradient of auxiliary field.
- * @param t Time for residual evaluation.
- * @param utshift Coefficient for dF/ds_t term in Jacobian.
- * @param x Coordinates of point evaluation.
- * @param f0 Result [dim].
- *
- * Solution fields: [disp(dim), vel(dim)]
- *
- * Auxiliary fields: [density(1)]
- */
-void
-pylith_fekernels_g0_uv_ElasticityInertia(const PylithInt dim,
-					 const PylithInt numS,
-					 const PylithInt numA,
-					 const PylithInt sOff[],
-					 const PylithInt sOff_x[],
-					 const PylithScalar s[],
-					 const PylithScalar s_t[],
-					 const PylithScalar s_x[],
-					 const PylithInt aOff[],
-					 const PylithInt aOff_x[],
-					 const PylithScalar a[],
-					 const PylithScalar a_t[],
-					 const PylithScalar a_x[],
-					 const PylithReal t,
-					 const PylithReal utshift,
-					 const PylithScalar x[],
-					 PylithScalar g0[]);
-
-
-/** Function for inertia.
- *
- * @param dim Spatial dimension.
- * @param numS Number of registered subfields in solution field [1].
- * @param numA Number of registered subfields in auxiliary field [1].
- * @param sOff Offset of registered subfields in solution field [numS].
- * @param sOff_x Offset of registered subfields in gradient of the solution field [numS].
- * @param s Solution field with all subfields.
- * @param s_t Time derivative of solution field.
- * @param s_x Gradient of solution field.
- * @param aOff Offset of registered subfields in auxiliary field [numA]
- * @param aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
- * @param a Auxiliary field with all subfields.
- * @param a_t Time derivative of auxiliary field.
- * @param a_x Gradient of auxiliary field.
- * @param t Time for residual evaluation.
- * @param x Coordinates of point evaluation.
- * @param f0 Result [dim].
- *
- * Solution fields: [disp(dim), vel(dim)]
- *
- * Auxiliary fields: [density]
- */
-void
-pylith_fekernels_Inertia(const PylithInt dim,
-			 const PylithInt numS,
-			 const PylithInt numA,
-			 const PylithInt sOff[],
-			 const PylithInt sOff_x[],
-			 const PylithScalar s[],
-			 const PylithScalar s_t[],
-			 const PylithScalar s_x[],
-			 const PylithInt aOff[],
-			 const PylithInt aOff_x[],
-			 const PylithScalar a[],
-			 const PylithScalar a_t[],
-			 const PylithScalar a_x[],
-			 const PylithReal t,
-			 const PylithScalar x[],
-			 PylithScalar f0[]);
-					      
-
-/** Function for body force.
- *
- * @param dim Spatial dimension.
- * @param numS Number of registered subfields in solution field [0].
- * @param numA Number of registered subfields in auxiliary field [1].
- * @param sOff Offset of registered subfields in solution field [numS].
- * @param sOff_x Offset of registered subfields in gradient of the solution field [numS].
- * @param s Solution field with all subfields.
- * @param s_t Time derivative of solution field.
- * @param s_x Gradient of solution field.
- * @param aOff Offset of registered subfields in auxiliary field [numA]
- * @param aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
- * @param a Auxiliary field with all subfields.
- * @param a_t Time derivative of auxiliary field.
- * @param a_x Gradient of auxiliary field.
- * @param t Time for residual evaluation.
- * @param x Coordinates of point evaluation.
- * @param f0 Result [dim].
- *
- * Solution fields: NONE
- *
- * Auxiliary fields: [body force(dim)]
- */
-void
-pylith_fekernels_BodyForce(const PylithInt dim,
-			   const PylithInt numS,
-			   const PylithInt numA,
-			   const PylithInt sOff[],
-			   const PylithInt sOff_x[],
-			   const PylithScalar s[],
-			   const PylithScalar s_t[],
-			   const PylithScalar s_x[],
-			   const PylithInt aOff[],
-			   const PylithInt aOff_x[],
-			   const PylithScalar a[],
-			   const PylithScalar a_t[],
-			   const PylithScalar a_x[],
-			   const PylithReal t,
-			   const PylithScalar x[],
-			   PylithScalar f0[]);
+pylith_fekernels_g0_Elasticity(const PylithInt dim,
+			       const PylithInt numS,
+			       const PylithInt numA,
+			       const PylithInt sOff[],
+			       const PylithInt sOff_x[],
+			       const PylithScalar s[],
+			       const PylithScalar s_t[],
+			       const PylithScalar s_x[],
+			       const PylithInt aOff[],
+			       const PylithInt aOff_x[],
+			       const PylithScalar a[],
+			       const PylithScalar a_t[],
+			       const PylithScalar a_x[],
+			       const PylithReal t,
+			       const PylithScalar x[],
+			       PylithScalar g0[]);
 
 
 /* ====================================================================== 
  * Kernels for stress.
  *
  * \int_V \nabla \vec{\phi}_u : \tensor{\sigma} \, dV
+
+g1_IsotropicLinearElasticityPlaneStrain
+
+Jg3_dispdisp_IsotropicLinearElasticityPlaneStrain
+
  * ====================================================================== 
  */
 

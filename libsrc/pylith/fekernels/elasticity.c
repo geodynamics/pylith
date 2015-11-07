@@ -23,16 +23,17 @@
 /* ====================================================================== 
  * Kernels for displacement/velocity.
  *
- * \int_V \vec{\phi}_v \cdot \left(  \vec{v} -
- * \frac{\partial \vec{u}}{\partial t} \right) \, dV
+ * Solution fields = [disp(dim), vel(dim)]
+ * Auxiliary fields = None
+ *
+ * \int_V \vec{\phi}_v \cdot \left( \frac{\partial \vec{u}(t)}{\partial t} \right) \, dV = 
+ *   \int_V \vec{\phi}_v \cdot \vec{v}(t) \, dV.
+ *
  * ====================================================================== 
  */
 
 /* ---------------------------------------------------------------------- */
-/* f0 entry function for time evolution of elasticity.
- *
- * Solution fields = [disp(dim), vel(dim)]
- * Auxiliary fields = None
+/* f0 entry function for disp/velocity equation.
  */
 void
 pylith_fekernels_f0_DispVel(const PylithInt dim,
@@ -56,15 +57,13 @@ pylith_fekernels_f0_DispVel(const PylithInt dim,
   const PylithInt i_disp = 0;
   const PylithScalar* disp_t = &s_t[sOff[i_disp]];
 
-  const PylithInt _numA = 0;
-
   PylithInt i;
 
   assert(_numS == numS);
-  assert(_numA == numA);
   assert(sOff);
   assert(s);
   assert(s_t);
+  assert(f0);
 
   for (i=0; i < dim; ++i) {
     f0[i] += disp_t[i];
@@ -73,10 +72,7 @@ pylith_fekernels_f0_DispVel(const PylithInt dim,
 					      
 
 /* ---------------------------------------------------------------------- */
-/* g0 entry function for time evolution of elasticity.
- *
- * Solution fields = [disp(dim), vel(dim)]
- * Auxiliary fields = None
+/* g0 function for disp/velocity equation.
  */
 void
 pylith_fekernels_g0_DispVel(const PylithInt dim,
@@ -94,379 +90,220 @@ pylith_fekernels_g0_DispVel(const PylithInt dim,
 			    const PylithScalar a_x[],
 			    const PylithReal t,
 			    const PylithScalar x[],
-			    PylithScalar f0[])
+			    PylithScalar g0[])
 { /* g0_DispVel */
   const PylithInt _numS = 2;
   const PylithInt i_vel = 1;
   const PylithScalar* vel = &s[sOff[i_vel]];
 
-  const PylithInt _numA = 0;
-
   PylithInt i;
 
   assert(_numS == numS);
-  assert(_numA == numA);
   assert(sOff);
   assert(s);
+  assert(g0);
 
   for (i=0; i < dim; ++i) {
-    f0[i] += vel[i];
+    g0[i] += vel[i];
   } /* for */
 } /* g0_DispVel */
 					      
 
 /* ---------------------------------------------------------------------- */
-/* g0_vv entry function for time evolution of elasticity.
- *
- * Solution fields = [disp(dim), vel(dim)]
- * Auxiliary fields = None
+/* Jf0 function for disp/velocity equation with implicit time-stepping.
  */
 void
-pylith_fekernels_g0_vv_DispVel(const PylithInt dim,
-			       const PylithInt numS,
-			       const PylithInt numA,
-			       const PylithInt sOff[],
-			       const PylithInt sOff_x[],
-			       const PylithScalar s[],
-			       const PylithScalar s_t[],
-			       const PylithScalar s_x[],
-			       const PylithInt aOff[],
-			       const PylithInt aOff_x[],
-			       const PylithScalar a[],
-			       const PylithScalar a_t[],
-			       const PylithScalar a_x[],
-			       const PylithReal t,
-			       const PylithReal utshift,
-			       const PylithScalar x[],
-			       PylithScalar g0[])
-{ /* g0_vv_DispVel */
+pylith_fekernels_Jf0_veldisp_DispVelImplicit(const PylithInt dim,
+					     const PylithInt numS,
+					     const PylithInt numA,
+					     const PylithInt sOff[],
+					     const PylithInt sOff_x[],
+					     const PylithScalar s[],
+					     const PylithScalar s_t[],
+					     const PylithScalar s_x[],
+					     const PylithInt aOff[],
+					     const PylithInt aOff_x[],
+					     const PylithScalar a[],
+					     const PylithScalar a_t[],
+					     const PylithScalar a_x[],
+					     const PylithReal t,
+					     const PylithReal utshift,
+					     const PylithScalar x[],
+					     PylithScalar Jf0[])
+{ /* Jf0_veldisp_DispVelImplicit */
   const PylithInt _numS = 2;
-
-  const PylithInt _numA = 0;
 
   PylithInt i;
 
   assert(_numS == numS);
-  assert(_numA == numA);
 
   for (i=0; i < dim; ++i) {
-    g0[i*dim+i] += +1.0;
+    Jf0[i*dim+i] += utshift;
   } /* for */
-} /* g0_vv_DispVel */
+} /* Jf0_veldisp_DispVelImplicit */
 					      
 
 /* ---------------------------------------------------------------------- */
-/* g0_vu entry function for time evolution of elasticity.
+/* Jf0 function for disp/velocity equation with explicit time-stepping.
+ */
+void
+pylith_fekernels_Jf0_veldisp_DispVelExplicit(const PylithInt dim,
+					     const PylithInt numS,
+					     const PylithInt numA,
+					     const PylithInt sOff[],
+					     const PylithInt sOff_x[],
+					     const PylithScalar s[],
+					     const PylithScalar s_t[],
+					     const PylithScalar s_x[],
+					     const PylithInt aOff[],
+					     const PylithInt aOff_x[],
+					     const PylithScalar a[],
+					     const PylithScalar a_t[],
+					     const PylithScalar a_x[],
+					     const PylithReal t,
+					     const PylithReal utshift,
+					     const PylithScalar x[],
+					     PylithScalar Jf0[])
+{ /* Jf0_veldisp_DispVelImplicit */
+  const PylithInt _numS = 2;
+
+  PylithInt i;
+
+  assert(_numS == numS);
+
+  for (i=0; i < dim; ++i) {
+    Jf0[i*dim+i] += 0.0;
+  } /* for */
+} /* Jf0_veldisp_DispVelExplicit */
+					      
+
+/* ---------------------------------------------------------------------- */
+/* Jg0 function for disp/velocity equation.
  *
  * Solution fields = [disp(dim), vel(dim)]
  * Auxiliary fields = None
  */
 void
-pylith_fekernels_g0_vu_DispVel(const PylithInt dim,
-			       const PylithInt numS,
-			       const PylithInt numA,
-			       const PylithInt sOff[],
-			       const PylithInt sOff_x[],
-			       const PylithScalar s[],
-			       const PylithScalar s_t[],
-			       const PylithScalar s_x[],
-			       const PylithInt aOff[],
-			       const PylithInt aOff_x[],
-			       const PylithScalar a[],
-			       const PylithScalar a_t[],
-			       const PylithScalar a_x[],
-			       const PylithReal t,
-			       const PylithReal utshift,
-			       const PylithScalar x[],
-			       PylithScalar g0[])
-{ /* g0_uv_DispVel */
+pylith_fekernels_Jg0_velvel_DispVel(const PylithInt dim,
+				    const PylithInt numS,
+				    const PylithInt numA,
+				    const PylithInt sOff[],
+				    const PylithInt sOff_x[],
+				    const PylithScalar s[],
+				    const PylithScalar s_t[],
+				    const PylithScalar s_x[],
+				    const PylithInt aOff[],
+				    const PylithInt aOff_x[],
+				    const PylithScalar a[],
+				    const PylithScalar a_t[],
+				    const PylithScalar a_x[],
+				    const PylithReal t,
+				    const PylithReal utshift,
+				    const PylithScalar x[],
+				    PylithScalar Jg0[])
+{ /* Jg0_velvel_DispVel */
   const PylithInt _numS = 2;
-
-  const PylithInt _numA = 0;
 
   PylithInt i;
 
   assert(_numS == numS);
-  assert(_numA == numA);
 
   for (i=0; i < dim; ++i) {
-    g0[i*dim+i] += -utshift;
+    Jg0[i*dim+i] += 1.0;
   } /* for */
-} /* g0_vu_DispVel */
+} /* Jg0_velvel_DispVel */
 					      
 
 /* ====================================================================== 
- * Kernels for inertia and body foces.
+ * Generic elasticity kernels for inertia and body forces.
  *
- * \int_V \vec{\phi}_u \cdot \left( \rho \frac{\partial \vec{v}}{\partial t} -
- * \vec{f} \right) \, dV
+ * Solution fields: [disp(dim), vel(dim)]
+ *
+ * Auxiliary fields: [density(1), body_force(dim), ...]
+ *
+ * \int_V \vec{\phi}_u \cdot \left( \rho \frac{\partial \vec{v}(t)}{\partial t} \right) \, dV =
+ *   \int_V \vec{\phi}_u \cdot \vec{f}(t) - \nabla \vec{\phi}_u : \tensor{\sigma}(\vec{u}) \, dV + 
+ *   \int_{S_\tau} \vec{\phi}_u \cdot \vec{\tau}(t) \, dS.
+ *
+ * Note: Ignore stress term because it depends on the constitutive model.
+ *
  * ====================================================================== 
  */
 
 /* ---------------------------------------------------------------------- */
-/* f0 entry function for inertia and body forces.
- *
- * Solution fields = [disp(dim), vel(dim)]
- * Auxiliary fields = [density(1), body force(dim)]
+/* f0 function for generic elasticity terms (inertia and body forces).
  */
 void
-pylith_fekernels_f0_ElasticityInertiaBodyForce(const PylithInt dim,
-					       const PylithInt numS,
-					       const PylithInt numA,
-					       const PylithInt sOff[],
-					       const PylithInt sOff_x[],
-					       const PylithScalar s[],
-					       const PylithScalar s_t[],
-					       const PylithScalar s_x[],
-					       const PylithInt aOff[],
-					       const PylithInt aOff_x[],
-					       const PylithScalar a[],
-					       const PylithScalar a_t[],
-					       const PylithScalar a_x[],
-					       const PylithReal t,
-					       const PylithScalar x[],
-					       PylithScalar f0[])
-{ /* f0_ElasticityInertia */
+pylith_fekernels_f0_Elasticity(const PylithInt dim,
+			       const PylithInt numS,
+			       const PylithInt numA,
+			       const PylithInt sOff[],
+			       const PylithInt sOff_x[],
+			       const PylithScalar s[],
+			       const PylithScalar s_t[],
+			       const PylithScalar s_x[],
+			       const PylithInt aOff[],
+			       const PylithInt aOff_x[],
+			       const PylithScalar a[],
+			       const PylithScalar a_t[],
+			       const PylithScalar a_x[],
+			       const PylithReal t,
+			       const PylithScalar x[],
+			       PylithScalar f0[])
+{ /* f0_Elasticity */
   const PylithInt _numS = 2;
   const PylithInt i_vel = 1;
+  const PylithScalar* vel_t = &s_t[sOff[i_vel]]; /* acc */
 
   const PylithInt _numA = 2;
   const PylithInt i_density = 0;
-  const PylithInt i_bodyforce = 1;
-
-  assert(_numS == numS);
-  assert(_numA == numA);
-  assert(sOff);
-  assert(sOff_x);
-  assert(aOff);
-  assert(aOff_x);
-
-  pylith_fekernels_Inertia(dim, 1, 1, &sOff[i_vel], &sOff_x[i_vel], s, s_t, s_x,
-			   &aOff[i_density], &aOff_x[i_density], a, a_t, a_x, t,
-			   x, f0);
-  pylith_fekernels_BodyForce(dim, 0, 1, NULL, NULL, s, s_t, s_x,
-			     &aOff[i_bodyforce], &aOff_x[i_bodyforce], a, a_t,
-			     a_x, t, x, f0);
-} /* f0_ElasticityInertia */
-					      
-
-/* ---------------------------------------------------------------------- */
-/* f0 entry function for inertia (no body force).
- *
- * Solution fields = [disp(dim), vel(dim)]
- * Auxiliary fields = [density(1)]
- */
-void
-pylith_fekernels_f0_ElasticityInertia(const PylithInt dim,
-				      const PylithInt numS,
-				      const PylithInt numA,
-				      const PylithInt sOff[],
-				      const PylithInt sOff_x[],
-				      const PylithScalar s[],
-				      const PylithScalar s_t[],
-				      const PylithScalar s_x[],
-				      const PylithInt aOff[],
-				      const PylithInt aOff_x[],
-				      const PylithScalar a[],
-				      const PylithScalar a_t[],
-				      const PylithScalar a_x[],
-				      const PylithReal t,
-				      const PylithScalar x[],
-				      PylithScalar f0[])
-{ /* f0_ElasticityInertia */
-  const PylithInt _numS = 2;
-  const PylithInt i_vel = 1;
-
-  const PylithInt _numA = 1;
-  const PylithInt i_density = 0;
-
-  assert(_numS == numS);
-  assert(_numA == numA);
-  assert(sOff);
-  assert(sOff_x);
-  assert(aOff);
-  assert(aOff_x);
-
-  pylith_fekernels_Inertia(dim, 1, 1, &sOff[i_vel], &sOff_x[i_vel], s, s_t, s_x,
-			   &aOff[i_density], &aOff_x[i_density], a, a_t, a_x, t,
-			   x, f0);
-} /* f0_ElasticityInertia */
-					      
-
-/* ---------------------------------------------------------------------- */
-/* f0 entry function for body forces (no inertia).
- *
- * Solution fields = [disp(dim), vel(dim)]
- * Auxiliary fields = [body force(dim)]
- */
-void
-pylith_fekernels_f0_ElasticityBodyForce(const PylithInt dim,
-					const PylithInt numS,
-					const PylithInt numA,
-					const PylithInt sOff[],
-					const PylithInt sOff_x[],
-					const PylithScalar s[],
-					const PylithScalar s_t[],
-					const PylithScalar s_x[],
-					const PylithInt aOff[],
-					const PylithInt aOff_x[],
-					const PylithScalar a[],
-					const PylithScalar a_t[],
-					const PylithScalar a_x[],
-					const PylithReal t,
-					const PylithScalar x[],
-					PylithScalar f0[])
-{ /* f0_ElasticityBodyForce */
-  const PylithInt _numS = 2;
-
-  const PylithInt _numA = 1;
-  const PylithInt i_bodyforce = 0;
-
-  assert(_numS == numS);
-  assert(_numA == numA);
-  assert(aOff);
-  assert(aOff_x);
-
-  pylith_fekernels_BodyForce(dim, 0, 1, NULL, NULL, s, s_t, s_x,
-			     &aOff[i_bodyforce], &aOff_x[i_bodyforce], a, a_t,
-			     a_x, t, x, f0);
-} /* f0_ElasticityBodyForce */
-					      
-
-/* ---------------------------------------------------------------------- */
-/* g0_uv entry function for inertia.
- *
- * Solution fields = [disp(dim), vel(dim)]
- * Auxiliary fields = [density(1)]
- */
-void
-pylith_fekernels_g0_uv_ElasticityInertia(const PylithInt dim,
-					 const PylithInt numS,
-					 const PylithInt numA,
-					 const PylithInt sOff[],
-					 const PylithInt sOff_x[],
-					 const PylithScalar s[],
-					 const PylithScalar s_t[],
-					 const PylithScalar s_x[],
-					 const PylithInt aOff[],
-					 const PylithInt aOff_x[],
-					 const PylithScalar a[],
-					 const PylithScalar a_t[],
-					 const PylithScalar a_x[],
-					 const PylithReal t,
-					 const PylithReal utshift,
-					 const PylithScalar x[],
-					 PylithScalar g0[])
-{ /* g0_uv_ElasticityInertia */
-  const PylithInt _numS = 2;
-
-  const PylithInt _numA = 0;
-  const PylithInt i_density = 0;
   const PylithScalar density = a[aOff[i_density]];
 
-  PylithInt i;
-
   assert(_numS == numS);
-  assert(_numA == numA);
-  assert(aOff);
-
-  for (i=0; i < dim; ++i) {
-    g0[i*dim+i] += density*utshift;
-  } /* for */
-} /* g0_uv_ElasticityInertia */
-					      
-
-/* ---------------------------------------------------------------------- */
-/* f0 function for inertia.
- *
- * Solution fields = [vel(dim)]
- * Auxiliary fields = [density]
- */
-void
-pylith_fekernels_Inertia(const PylithInt dim,
-			 const PylithInt numS,
-			 const PylithInt numA,
-			 const PylithInt sOff[],
-			 const PylithInt sOff_x[],
-			 const PylithScalar s[],
-			 const PylithScalar s_t[],
-			 const PylithScalar s_x[],
-			 const PylithInt aOff[],
-			 const PylithInt aOff_x[],
-			 const PylithScalar a[],
-			 const PylithScalar a_t[],
-			 const PylithScalar a_x[],
-			 const PylithReal t,
-			 const PylithScalar x[],
-			 PylithScalar f0[])
-{ /* Inertia */
-  const PylithInt _numS = 1;
-  const PylithInt i_vel = 0;
-  const PylithScalar* acc = &s_t[sOff[i_vel]];
-
-  const PylithInt _numA = 1;
-  const PylithInt i_density = 0;
-  const PylithScalar density = a[aOff[i_density]];
-
-  PylithInt i;
-
-  assert(_numS == numS);
-  assert(_numA == numA);
+  assert(_numA <= numA);
   assert(sOff);
   assert(aOff);
-  assert(s_t);
-  assert(a);
-  assert(f0);
 
   for (i=0; i < dim; ++i) {
-    f0[i] += acc[i]*density;
+    f0[i] += vel_t[i] * density;
   } /* for */
-} /* Inertia */
+} /* f0_Elasticity */
 					      
 
 /* ---------------------------------------------------------------------- */
-/* f0 function for body force.
- *
- * Solution fields = NONE
- * Auxiliary fields = [body force(dim)]
+/* g0 function for generic elasticity terms (inertia and body forces).
  */
 void
-pylith_fekernels_BodyForce(const PylithInt dim,
-			   const PylithInt numS,
-			   const PylithInt numA,
-			   const PylithInt sOff[],
-			   const PylithInt sOff_x[],
-			   const PylithScalar s[],
-			   const PylithScalar s_t[],
-			   const PylithScalar s_x[],
-			   const PylithInt aOff[],
-			   const PylithInt aOff_x[],
-			   const PylithScalar a[],
-			   const PylithScalar a_t[],
-			   const PylithScalar a_x[],
-			   const PylithReal t,
-			   const PylithScalar x[],
-			   PylithScalar f0[])
-{ /* BodyForce */
-  const PylithInt _numS = 0;
+pylith_fekernels_g0_Elasticity(const PylithInt dim,
+			       const PylithInt numS,
+			       const PylithInt numA,
+			       const PylithInt sOff[],
+			       const PylithInt sOff_x[],
+			       const PylithScalar s[],
+			       const PylithScalar s_t[],
+			       const PylithScalar s_x[],
+			       const PylithInt aOff[],
+			       const PylithInt aOff_x[],
+			       const PylithScalar a[],
+			       const PylithScalar a_t[],
+			       const PylithScalar a_x[],
+			       const PylithReal t,
+			       const PylithScalar x[],
+			       PylithScalar g0[])
+{ /* g0_Elasticity */
+  const PylithInt _numS = 2;
 
-  const PylithInt _numA = 1;
-  const PylithInt i_bodyforce = 0;
-  const PylithScalar* bodyforce = &a[aOff[i_bodyforce]];
-
-  PylithInt i;
+  const PylithInt i_bodyforce = numA-1;
+  const PylithScalar bodyforce = a[aOff[i_bodyforce]];
 
   assert(_numS == numS);
-  assert(_numA == numA);
   assert(aOff);
-  assert(a);
-  assert(f0);
 
   for (i=0; i < dim; ++i) {
-    f0[i] -= bodyforce[i];
+    g0[i] += bodyforce[i];
   } /* for */
-} /* BodyForce */
-
+} /* g0_Elasticity */
+					      
 
 /* ====================================================================== 
  * Kernels for stress.
