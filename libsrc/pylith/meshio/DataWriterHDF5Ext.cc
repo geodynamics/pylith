@@ -187,7 +187,7 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
     PetscInt cellHeight, cStart, cEnd, cMax, conesSize, numCells, numCorners, numCornersLocal = 0;
     err = DMPlexGetVTKCellHeight(dmMesh, &cellHeight);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetHeightStratum(dmMesh, cellHeight, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetHybridBounds(dmMesh, &cMax, PETSC_NULL, PETSC_NULL, PETSC_NULL);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetHybridBounds(dmMesh, &cMax, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
     if (cMax >= 0) {
       cEnd = PetscMin(cEnd, cMax);
     } // if
@@ -400,7 +400,7 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
       err = VecGetDM(vector, &dm);PYLITH_CHECK_ERROR(err);assert(dm);
       err = DMGetDefaultSection(dm, &section);PYLITH_CHECK_ERROR(err);assert(section);
 
-      err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, PETSC_NULL);PYLITH_CHECK_ERROR(err);
+      err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, NULL);PYLITH_CHECK_ERROR(err);
       err = DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers);PYLITH_CHECK_ERROR(err);
       err = ISGetLocalSize(globalVertexNumbers, &n);PYLITH_CHECK_ERROR(err);
       if (n > 0) {

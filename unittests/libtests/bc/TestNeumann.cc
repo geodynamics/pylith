@@ -192,7 +192,7 @@ pylith::bc::TestNeumann::testInitialize(void)
   PetscErrorCode err = 0;
   for (PetscInt c = cStart; c < cEnd; ++c) {
     PetscInt  vertices[32];
-    PetscInt *closure = PETSC_NULL;
+    PetscInt *closure = NULL;
     PetscInt  closureSize, numCorners = 0;
 
     err = DMPlexGetTransitiveClosure(subMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);

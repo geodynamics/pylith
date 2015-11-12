@@ -43,7 +43,7 @@ main(int argc,
   try {
     // Initialize PETSc
     PetscErrorCode err = PetscInitialize(&argc, &argv,
-					 PETSC_NULL, PETSC_NULL);
+					 NULL, NULL);
     CHKERRQ(err);
     err = PetscLogBegin(); CHKERRQ(err);
 

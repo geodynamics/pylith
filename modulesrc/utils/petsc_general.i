@@ -24,7 +24,7 @@
 	     char** argv)
   { // initialize
     PetscErrorCode err = 
-      PetscInitialize(&argc, &argv, PETSC_NULL, PETSC_NULL); CHKERRQ(err);
+      PetscInitialize(&argc, &argv, NULL, NULL); CHKERRQ(err);
     return 0;
   } // initialize
 %} // inline
@@ -47,7 +47,7 @@
   optionsSetValue(const char* name,
 		  const char* value)
   { // optionsSetValue
-    PetscErrorCode err = PetscOptionsSetValue(name, value); CHKERRQ(err);
+    PetscErrorCode err = PetscOptionsSetValue(NULL, name, value); CHKERRQ(err);
     return 0;
   } // optionsSetValue
 %} // inline
@@ -60,7 +60,7 @@
   { // optionsHasName
     PetscBool hasName = PetscBool(0);
     PetscErrorCode err =
-      PetscOptionsHasName(PETSC_NULL, name, &hasName);
+      PetscOptionsHasName(NULL, NULL, name, &hasName);
 
     return (hasName) ? true : false;
   } // optionsHasName

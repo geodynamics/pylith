@@ -147,7 +147,7 @@ pylith::problems::SolverNonlinear::solve(topology::Field* solution,
   PetscErrorCode err = 0;
   const PetscVec solutionVec = solution->globalVector();
 
-  err = SNESSolve(_snes, PETSC_NULL, solutionVec); PYLITH_CHECK_ERROR(err);
+  err = SNESSolve(_snes, NULL, solutionVec); PYLITH_CHECK_ERROR(err);
   
   _logger->eventEnd(solveEvent);
   _logger->eventBegin(scatterEvent);
