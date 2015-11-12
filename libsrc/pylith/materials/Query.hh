@@ -48,6 +48,7 @@ public :
    */
   static
   PetscErrorCode dbQueryDensity2D(PetscInt dim,
+                  PetscReal time,
 				  const PetscReal x[],
 				  PetscInt nvalues,
 				  PetscScalar* values,
@@ -63,6 +64,7 @@ public :
    */
   static
   PetscErrorCode dbQueryMu2D(PetscInt dim,
+                 PetscReal time,
 			     const PetscReal x[],
 			     PetscInt nvalues,
 			     PetscScalar* values,
@@ -78,10 +80,11 @@ public :
    */
   static
   PetscErrorCode dbQueryLambda2D(PetscInt dim,
+                  PetscReal time,
 				  const PetscReal x[],
 				  PetscInt nvalues,
 				  PetscScalar* values,
-				 void* context);
+                  void* context);
 
   /** Query for body force vector in 2-D.
    *
@@ -93,6 +96,7 @@ public :
    */
   static
   PetscErrorCode dbQueryBodyForce2D(PetscInt dim,
+                    PetscReal time,
 				    const PetscReal x[],
 				    PetscInt nvalues,
 				    PetscScalar* values,

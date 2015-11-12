@@ -27,6 +27,7 @@
 // Query spatial database for density in 2-D.
 PetscErrorCode
 pylith::materials::Query::dbQueryDensity2D(PetscInt dim,
+                       PetscReal time,
 					   const PetscReal x[],
 					   PetscInt nvalues,
 					   PetscScalar* values,
@@ -94,6 +95,7 @@ pylith::materials::Query::dbQueryDensity2D(PetscInt dim,
 // Query spatial database for shear modulus, $\mu$, in 2-D.
 PetscErrorCode
 pylith::materials::Query::dbQueryMu2D(PetscInt dim,
+                      PetscReal time,
 				      const PetscReal x[],
 				      PetscInt nvalues,
 				      PetscScalar* values,
@@ -172,6 +174,7 @@ pylith::materials::Query::dbQueryMu2D(PetscInt dim,
 // Query spatial database for Lame's constant, $\lambda$, in 2-D.
 PetscErrorCode
 pylith::materials::Query::dbQueryLambda2D(PetscInt dim,
+                      PetscReal time,
 					  const PetscReal x[],
 					  PetscInt nvalues,
 					  PetscScalar* values,
@@ -263,6 +266,7 @@ pylith::materials::Query::dbQueryLambda2D(PetscInt dim,
 // Query spatial database for body force vector in 2-D.
 PetscErrorCode
 pylith::materials::Query::dbQueryBodyForce2D(PetscInt dim,
+                         PetscReal time,
 					     const PetscReal x[],
 					     PetscInt nvalues,
 					     PetscScalar* values,
