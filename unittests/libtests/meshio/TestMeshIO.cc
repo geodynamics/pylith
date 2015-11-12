@@ -189,7 +189,7 @@ pylith::meshio::TestMeshIO::_checkVals(const MeshData& data)
   const int offset = numCells;
   PetscErrorCode err = 0;
   for(PetscInt c = cStart, index = 0; c < cEnd; ++c) {
-    PetscInt *closure = PETSC_NULL;
+    PetscInt *closure = NULL;
     PetscInt  closureSize, numCorners = 0;
 
     err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);

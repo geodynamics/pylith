@@ -785,7 +785,7 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   CPPUNIT_ASSERT_EQUAL(data.numCells, cellsStratum.size());
   for (PetscInt c = cStart, cell = 0, i = 0; c < cEnd; ++c, ++cell) {
     PetscInt vertices[32];
-    PetscInt *closure = PETSC_NULL;
+    PetscInt *closure = NULL;
     PetscInt closureSize, numCorners = 0;
 
     err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);

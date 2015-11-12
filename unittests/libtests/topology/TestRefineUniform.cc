@@ -253,7 +253,7 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data,
   PetscErrorCode err;
   // Normal cells
   for(PetscInt c = cStart, index = 0; c < data.numCells; ++c) {
-    PetscInt *closure = PETSC_NULL;
+    PetscInt *closure = NULL;
     PetscInt closureSize, numCorners = 0;
 
     err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
@@ -270,7 +270,7 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data,
 
   // Cohesive cells
   for (PetscInt c = data.numCells, index = 0; c < cEnd; ++c) {
-    PetscInt *closure = PETSC_NULL;
+    PetscInt *closure = NULL;
     PetscInt closureSize, numCorners = 0;
 
     err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
