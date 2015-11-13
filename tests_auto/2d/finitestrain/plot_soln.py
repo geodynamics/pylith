@@ -3,7 +3,7 @@ import numpy
 
 def getData(sim):
 
-    filename = "%s-domain.h5" % sim
+    filename = "output/%s-domain.h5" % sim
     h5 = h5py.File(filename, "r")
     vertices = h5['geometry/vertices'][:]
     disp = h5['vertex_fields/displacement'][:]
@@ -17,7 +17,7 @@ def getData(sim):
     dispPt = disp[:,ipt,:]
     velPt = vel[:,ipt,:]
 
-    filename = "%s-statevars.h5" % sim
+    filename = "output/%s-statevars.h5" % sim
     h5 = h5py.File(filename, "r")
     vertices = h5['geometry/vertices'][:]
     cells = numpy.array(h5['topology/cells'][:], dtype=numpy.int)
@@ -31,7 +31,6 @@ def getData(sim):
     target = (-500.0, 500.0)
     dist = (cellCenters[:,0]-target[0])**2 + (cellCenters[:,1]-target[1])**2
     icell = numpy.argmin(dist)
-    print icell
 
     from pyre.units.time import year
     timePt /= year.value
@@ -45,45 +44,67 @@ def getData(sim):
             'cauchy_stress': stressCauchy[:,icell,:]}
 
 # ======================================================================
-prob = "compression"
+prob = "extension"
+
+length = 2000.0
+width = 0.5*length
+p_vs = 3000.0
+p_vp = 5196.152422706632
+p_density = 2500.0
+
+p_mu = p_density*p_vs**2
+p_lambda = p_density*p_vp**2 - 2*p_mu
+
+x0 = 0.0
+y0 = -width
+x = 0.0
+y = 0.0
+
+if prob == "compression":
+    vx = -1.0
+else:
+    vx = +1.0
+t = numpy.arange(0.0, 999.01, 1.0)
+ex = vx*t / (0.5*length)
+ux = ex*(x-x0)
+Exx = ex+0.5*ex**2
+Eyy = -p_lambda/(p_lambda+2*p_mu)*Exx
+ey = -1 + (1 + 2*Eyy)**0.5
+uy = ey*(y-y0)
+Sxx = p_lambda*(Exx+Eyy) + 2.0*p_mu*Exx
+Syy = p_lambda*(Exx+Eyy) + 2.0*p_mu*Eyy
 
 # Elastic
-sim = "%s_dx250" % prob
-dataF = getData(sim)
+sim = "%s" % prob
+dataS = getData(sim)
 
-# Viscoelastic
-sim = "%s_dx200" % prob
-dataI = getData(sim)
 
 import pylab
 pylab.subplot(2,2,1)
-pylab.plot(dataF['time_pt'], dataF['disp'][:,1], 'r-', 
-           dataI['time_pt'], dataI['disp'][:,1], 'b--')
+pylab.plot(t, uy, 'k-',
+           dataS['time_pt'], dataS['disp'][:,1], 'r--')
 pylab.xlabel("Time (year)")
 pylab.xlabel("Displacement (m)")
 pylab.title("Displacement at top center")
 
 pylab.subplot(2,2,2)
-pylab.plot(dataF['time_pt'], dataF['vel'][:,1], 'r-', 
-           dataI['time_pt'], dataI['vel'][:,1], 'b--')
+pylab.plot(dataS['time_pt'], dataS['vel'][:,1], 'r--')
 pylab.xlabel("Time (year)")
 pylab.xlabel("Velocity (m/s)")
 pylab.title("Velocity at top center")
 
 pylab.subplot(2,2,3)
-pylab.plot(dataF['time_cell'], dataF['stress'][:,0], 'r:', 
-           dataF['time_cell'], dataF['cauchy_stress'][:,0], 'g-', 
-           dataI['time_cell'], dataI['stress'][:,0], 'b:',
-           dataI['time_cell'], dataI['cauchy_stress'][:,0], 'm--')
+pylab.plot(t, Sxx, 'k-',
+           dataS['time_cell'], dataS['stress'][:,0], 'r--', 
+           dataS['time_cell'], dataS['cauchy_stress'][:,0], 'g:')
 pylab.xlabel("Time (year)")
 pylab.ylabel("Stress_xx (Pa)")
 pylab.title("Stress at mid-depth at left quarter point")
 
 pylab.subplot(2,2,4)
-pylab.plot(dataF['time_cell'], dataF['stress'][:,1], 'r:', 
-           dataF['time_cell'], dataF['cauchy_stress'][:,1], 'g-', 
-           dataI['time_cell'], dataI['stress'][:,1], 'b:',
-           dataI['time_cell'], dataI['cauchy_stress'][:,1], 'm--')
+pylab.plot(t, Syy, 'k-',
+           dataS['time_cell'], dataS['stress'][:,1], 'r--', 
+           dataS['time_cell'], dataS['cauchy_stress'][:,1], 'g:')
 pylab.xlabel("Time (year)")
 pylab.ylabel("Stress_yy (Pa)")
 pylab.title("Stress at mid-depth at left quarter point")
