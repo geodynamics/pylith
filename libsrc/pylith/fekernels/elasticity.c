@@ -259,6 +259,8 @@ pylith_fekernels_f0_Elasticity(const PylithInt dim,
   const PylithInt i_density = 0;
   const PylithScalar density = a[aOff[i_density]];
 
+  PylithInt i;
+
   assert(_numS == numS);
   assert(_numA <= numA);
   assert(sOff);
@@ -294,7 +296,9 @@ pylith_fekernels_g0_Elasticity(const PylithInt dim,
   const PylithInt _numS = 2;
 
   const PylithInt i_bodyforce = numA-1;
-  const PylithScalar bodyforce = a[aOff[i_bodyforce]];
+  const PylithScalar* bodyforce = &a[aOff[i_bodyforce]];
+
+  PylithInt i;
 
   assert(_numS == numS);
   assert(aOff);
@@ -1092,49 +1096,6 @@ pylith_fekernels_g2_vu_IncomprPIntegral(const PylithInt dim,
  */
 
 /* ---------------------------------------------------------------------- */
-/* f0 entry function for body forces.
- *
- * Solution fields = [disp(dim), pres]
- * Auxiliary fields = [body force(dim)]
- */
-void
-pylith_fekernels_f0_IncomprUIntegral(const PylithInt dim,
-				     const PylithInt numS,
-				     const PylithInt numA,
-				     const PylithInt sOff[],
-				     const PylithInt sOff_x[],
-				     const PylithScalar s[],
-				     const PylithScalar s_t[],
-				     const PylithScalar s_x[],
-				     const PylithInt aOff[],
-				     const PylithInt aOff_x[],
-				     const PylithScalar a[],
-				     const PylithScalar a_t[],
-				     const PylithScalar a_x[],
-				     const PylithReal t,
-				     const PylithScalar x[],
-				     PylithScalar f0[])
-{ /* f0_IncomprUIntegral */
-  const PylithInt _numS = 2;
-
-  const PylithInt _numA = 1;
-  const PylithInt i_bodyforce = 0;
-
-  PylithInt i;
-
-  assert(_numS == numS);
-  assert(_numA == numA);
-  assert(aOff);
-  assert(aOff_x);
-
-  pylith_fekernels_BodyForce(dim, 0, 1, NULL, NULL, s, s_t, s_x,
-			     &aOff[i_bodyforce], &aOff_x[i_bodyforce],
-			     a, a_t, a_x, t, x, f0);
-
-} /* f0_IncomprUIntegral */
-
-
-/* ---------------------------------------------------------------------- */
 /* f1 entry function for 2-D plane strain incompressible isotropic linear
  * elasticity.
  *
@@ -1165,7 +1126,6 @@ pylith_fekernels_f1_IncomprUIntegralPlaneStrain(const PylithInt dim,
   const PylithInt _numS = 2;
   const PylithInt i_disp = 0;
   const PylithInt i_pres = 1;
-  const PylithScalar* disp_x = &s_x[sOff[i_disp]];
   const PylithScalar pres = s[sOff[i_pres]];
 
   const PylithInt _numA = 4;
@@ -1231,7 +1191,6 @@ pylith_fekernels_f1_IncomprUIntegral3D(const PylithInt dim,
   const PylithInt _numS = 2;
   const PylithInt i_disp = 0;
   const PylithInt i_pres = 1;
-  const PylithScalar* disp_x = &s_x[sOff[i_disp]];
   const PylithScalar pres = s[sOff[i_pres]];
 
   const PylithInt _numA = 4;

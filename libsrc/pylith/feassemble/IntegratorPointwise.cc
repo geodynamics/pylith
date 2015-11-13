@@ -26,6 +26,7 @@
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
+#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -40,7 +41,11 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::IntegratorPointwise::IntegratorPointwise(void) :
-  _auxFields(NULL)
+  _normalizer(0),
+  _logger(0),
+  _auxFields(0),
+  _auxFieldsDB(0),
+  _auxFieldsQuery(0)
 { // constructor
 } // constructor
 
@@ -58,6 +63,8 @@ pylith::feassemble::IntegratorPointwise::deallocate(void)
 { // deallocate
   PYLITH_METHOD_BEGIN;
 
+  delete _normalizer; _normalizer = 0;
+  delete _logger; _logger = 0;
   delete _auxFields; _auxFields = 0;
   delete _auxFieldsQuery; _auxFieldsQuery = NULL;
 
@@ -109,10 +116,17 @@ pylith::feassemble::IntegratorPointwise::getAuxField(pylith::topology::Field *fi
 
   
 // ----------------------------------------------------------------------
+// Set database for auxiliary fields.
+void
+pylith::feassemble::IntegratorPointwise::auxFieldsDB(spatialdata::spatialdb::SpatialDB* value) {
+  _auxFieldsDB = value;
+}
+
+// ----------------------------------------------------------------------
 // Set discretization information for auxiliary subfield.
 void
-pylith::feassemble::IntegratorPointwise::discretization(const char* name,
-							const pylith::topology::FieldBase::DiscretizeInfo& feInfo)
+pylith::feassemble::IntegratorPointwise::auxFieldDiscretization(const char* name,
+								const pylith::topology::FieldBase::DiscretizeInfo& feInfo)
 { // discretization
   _auxFieldsFEInfo[name] = feInfo;
 } // discretization
@@ -121,7 +135,7 @@ pylith::feassemble::IntegratorPointwise::discretization(const char* name,
 // ----------------------------------------------------------------------
 // Get discretization information for auxiliary subfield.
 const pylith::topology::FieldBase::DiscretizeInfo& 
-pylith::feassemble::IntegratorPointwise::discretization(const char* name) const
+pylith::feassemble::IntegratorPointwise::auxFieldDiscretization(const char* name) const
 { // discretization
   PYLITH_METHOD_BEGIN;
 

@@ -33,7 +33,6 @@
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // forward declarations
 
-#include <map> // HOLDSA std::map
 #include <string> // HASA std::string
 
 // Material -------------------------------------------------------------
@@ -277,11 +276,6 @@ protected :
   virtual
   void _setFEKernelsLHSJacobianExplicit(const topology::Field& solution) const = 0;
 
-
-  // PROTECTED TYPEDEFS /////////////////////////////////////////////////
-protected :
-
-  typedef std::map<std::string, pylith::topology::FieldBase::DiscretizeInfo> discretizations_type;
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :

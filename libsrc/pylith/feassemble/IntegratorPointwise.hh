@@ -31,7 +31,11 @@
 
 #include "Integrator.hh" // ISA Integrator
 
+#include "pylith/topology/FieldBase.hh" // USES FieldBase
+
 #include "pylith/topology/topologyfwd.hh" // HOLDSA Field
+
+#include <map> // HOLDSA std::map
 
 // IntegratorPointwise -------------------------------------------------
 /** @brief General operations for implicit and explicit
@@ -227,8 +231,10 @@ public :
   virtual
   void updateStateVars(const pylith::topology::Field& solution);
 
-// PROTECTED METHODS ////////////////////////////////////////////////////
+  // PROTECTED TYPEDEFS /////////////////////////////////////////////////
 protected :
+
+  typedef std::map<std::string, pylith::topology::FieldBase::DiscretizeInfo> discretizations_type;
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :

@@ -47,8 +47,6 @@ extern "C" PetscErrorCode DMPlexComputeResidual_Internal(DM dm, PetscInt cStart,
 // Default constructor.
 pylith::materials::MaterialNew::MaterialNew(const int dimension) :
   _materialIS(NULL),
-  _auxFieldsDB(NULL),
-  _auxFieldsQuery(NULL),
   _dimension(dimension),
   _id(0),
   _label("")
@@ -189,18 +187,35 @@ pylith::materials::MaterialNew::computeLHSResidual(pylith::topology::Field* resi
 // ----------------------------------------------------------------------
 // Compute LHS Jacobian for F(t,s,\dot{s}).
 void
-pylith::materials::MaterialNew::computeLHSJacobian(pylith::topology::Jacobian* jacobian,
-						   const PylithReal t,
-						   const PylithReal dt,
-						   const pylith::topology::Field& solution)
-{ // computeLHSJacobian
+pylith::materials::MaterialNew::computeLHSJacobianImplicit(pylith::topology::Jacobian* jacobian,
+							   const PylithReal t,
+							   const PylithReal dt,
+							   const pylith::topology::Field& solution)
+{ // computeLHSJacobianImplicit
   PYLITH_METHOD_BEGIN;
 
-  _setFEKernelsLHSJacobian(solution);
+  _setFEKernelsLHSJacobianImplicit(solution);
   _computeJacobian(jacobian, t, dt, solution);
 
   PYLITH_METHOD_END;
-} // computeLHSJacobian
+} // computeLHSJacobianImplicit
+
+
+// ----------------------------------------------------------------------
+// Compute LHS Jacobian for F(t,s,\dot{s}).
+void
+pylith::materials::MaterialNew::computeLHSJacobianExplicit(pylith::topology::Jacobian* jacobian,
+							   const PylithReal t,
+							   const PylithReal dt,
+							   const pylith::topology::Field& solution)
+{ // computeLHSJacobianExplicit
+  PYLITH_METHOD_BEGIN;
+
+  _setFEKernelsLHSJacobianExplicit(solution);
+  _computeJacobian(jacobian, t, dt, solution);
+
+  PYLITH_METHOD_END;
+} // computeLHSJacobianExplicit
 
 
 // ----------------------------------------------------------------------
@@ -255,7 +270,7 @@ pylith::materials::MaterialNew::_computeResidual(pylith::topology::Field* residu
   // Compute the local residual
   err = DMPlexGetLabel(dmMesh, "material-id", &label);PYLITH_CHECK_ERROR(err);
   err = DMLabelGetStratumBounds(label, id(), &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-  err = DMPlexComputeResidual_Internal(dmMesh, cStart, cEnd, PETSC_MIN_REAL, solution.localVector(), NULL, residual.localVector(), NULL);PYLITH_CHECK_ERROR(err);
+  err = DMPlexComputeResidual_Internal(dmMesh, cStart, cEnd, PETSC_MIN_REAL, solution.localVector(), NULL, residual->localVector(), NULL);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // _computeResidual
@@ -264,16 +279,15 @@ pylith::materials::MaterialNew::_computeResidual(pylith::topology::Field* residu
 // ----------------------------------------------------------------------
 // Compute Jacobian using current kernels.
 void
-pylith::materials::MaterialNew::computeJacobian(pylith::topology::Jacobian* jacobian,
-						const PylithReal t,
-						const PylithReal dt,
-						const pylith::topology::Field& solution)
-{ // computeJacobian
+pylith::materials::MaterialNew::_computeJacobian(pylith::topology::Jacobian* jacobian,
+						 const PylithReal t,
+						 const PylithReal dt,
+						 const pylith::topology::Field& solution)
+{ // _computeJacobian
   PYLITH_METHOD_BEGIN;
 
   assert(_logger);
   assert(jacobian);
-  assert(fields);
 
   PetscDS prob = NULL;
   PetscErrorCode err;
@@ -295,7 +309,7 @@ pylith::materials::MaterialNew::computeJacobian(pylith::topology::Jacobian* jaco
   _needNewJacobian = false;
 
   PYLITH_METHOD_END;
-} // computeJacobian
+} // _computeJacobian
 
 
 // End of file 
