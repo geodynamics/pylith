@@ -165,6 +165,8 @@ protected :
   pylith::topology::Field* _residualLHS; ///< Handle to residual field for LHS, F(t,s,\dot{s}).
   pylith::topology::Jacobian* _jacobianRHS; ///< Handle to Jacobian for RHS, G(t,s).
   pylith::topology::Jacobian* _jacobianLHS; ///< Handle to Jacobian for LHS, F(t,s,\dot{s}).
+  pylith::topology::Jacobian* _preconditionerRHS; ///< Handle to Jacobian preconditioner for RHS, G(t,s).
+  pylith::topology::Jacobian* _preconditionerLHS; ///< Handle to Jacobian preconditioner for LHS, F(t,s,\dot{s}).
 
   std::vector<pylith::feassemble::IntegratorPointwise*> _integrators; ///< Array of integrators.
   std::vector<pylith::feassemble::Constraint*> _constraints; ///< Array of constraints.

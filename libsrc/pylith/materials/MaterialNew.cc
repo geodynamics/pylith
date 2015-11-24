@@ -134,6 +134,7 @@ pylith::materials::MaterialNew::computeRHSResidual(pylith::topology::Field* resi
 // Compute RHS Jacobian for G(t,s).
 void
 pylith::materials::MaterialNew::computeRHSJacobian(pylith::topology::Jacobian* jacobian,
+						   pylith::topology::Jacobian* preconditioner,
 						   const PylithReal t,
 						   const PylithReal dt,
 						   const pylith::topology::Field& solution)
@@ -141,31 +142,10 @@ pylith::materials::MaterialNew::computeRHSJacobian(pylith::topology::Jacobian* j
   PYLITH_METHOD_BEGIN;
 
   _setFEKernelsRHSJacobian(solution);
-  _computeJacobian(jacobian, t, dt, solution);
+  _computeJacobian(jacobian, preconditioner, t, dt, solution);
 
   PYLITH_METHOD_END;
 } // computeRHSJacobian
-
-
-// ----------------------------------------------------------------------
-// Compute preconditioner for RHS Jacobian for G(t,s).
-void
-pylith::materials::MaterialNew::computeRHSPreconditioner(PetscMat* precondMat,
-							 pylith::topology::Jacobian* jacobian,
-							 const PylithReal t,
-							 const PylithReal dt,
-							 const pylith::topology::Field& solution)
-{ // computeRHSPreconditioner
-  PYLITH_METHOD_BEGIN;
-
-  assert(precondMat);
-  assert(jacobian);
-  assert(_auxFields);
-
-  throw std::logic_error(":TODO: Stuff goes here.");
-
-  PYLITH_METHOD_END;
-} // computeRHSPreconditioner
 
 
 // ----------------------------------------------------------------------
@@ -188,6 +168,7 @@ pylith::materials::MaterialNew::computeLHSResidual(pylith::topology::Field* resi
 // Compute LHS Jacobian for F(t,s,\dot{s}).
 void
 pylith::materials::MaterialNew::computeLHSJacobianImplicit(pylith::topology::Jacobian* jacobian,
+							   pylith::topology::Jacobian* preconditioner,
 							   const PylithReal t,
 							   const PylithReal dt,
 							   const pylith::topology::Field& solution)
@@ -195,7 +176,7 @@ pylith::materials::MaterialNew::computeLHSJacobianImplicit(pylith::topology::Jac
   PYLITH_METHOD_BEGIN;
 
   _setFEKernelsLHSJacobianImplicit(solution);
-  _computeJacobian(jacobian, t, dt, solution);
+  _computeJacobian(jacobian, preconditioner, t, dt, solution);
 
   PYLITH_METHOD_END;
 } // computeLHSJacobianImplicit
@@ -205,6 +186,7 @@ pylith::materials::MaterialNew::computeLHSJacobianImplicit(pylith::topology::Jac
 // Compute LHS Jacobian for F(t,s,\dot{s}).
 void
 pylith::materials::MaterialNew::computeLHSJacobianExplicit(pylith::topology::Jacobian* jacobian,
+							   pylith::topology::Jacobian* preconditioner,
 							   const PylithReal t,
 							   const PylithReal dt,
 							   const pylith::topology::Field& solution)
@@ -212,31 +194,10 @@ pylith::materials::MaterialNew::computeLHSJacobianExplicit(pylith::topology::Jac
   PYLITH_METHOD_BEGIN;
 
   _setFEKernelsLHSJacobianExplicit(solution);
-  _computeJacobian(jacobian, t, dt, solution);
+  _computeJacobian(jacobian, preconditioner, t, dt, solution);
 
   PYLITH_METHOD_END;
 } // computeLHSJacobianExplicit
-
-
-// ----------------------------------------------------------------------
-// Compute preconditioner for RHS Jacobian for F(t,s,\dot{u]).
-void
-pylith::materials::MaterialNew::computeLHSPreconditioner(PetscMat* precondMat,
-							 pylith::topology::Jacobian* jacobian,
-							 const PylithReal t,
-							 const PylithReal dt,
-							 const pylith::topology::Field& solution)
-{ // computeLHSPreconditioner
-  PYLITH_METHOD_BEGIN;
-
-  assert(precondMat);
-  assert(jacobian);
-  assert(_auxFields);
-
-  throw std::logic_error(":TODO: Stuff goes here.");
-
-  PYLITH_METHOD_END;
-} // computeLHSPreconditioner
 
 
 // ----------------------------------------------------------------------
@@ -280,6 +241,7 @@ pylith::materials::MaterialNew::_computeResidual(pylith::topology::Field* residu
 // Compute Jacobian using current kernels.
 void
 pylith::materials::MaterialNew::_computeJacobian(pylith::topology::Jacobian* jacobian,
+						 pylith::topology::Jacobian* preconditioner,
 						 const PylithReal t,
 						 const PylithReal dt,
 						 const pylith::topology::Field& solution)
@@ -293,6 +255,7 @@ pylith::materials::MaterialNew::_computeJacobian(pylith::topology::Jacobian* jac
   PetscErrorCode err;
 
   const PetscMat jacobianMat = jacobian->matrix();assert(jacobianMat);
+  const PetscMat precondMat = preconditioner->matrix();assert(precondMat);
   PetscDM dmMesh = solution.dmMesh();
   PetscDM dmAux = _auxFields->dmMesh();
 
@@ -304,7 +267,7 @@ pylith::materials::MaterialNew::_computeJacobian(pylith::topology::Jacobian* jac
   err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) auxFields().localVector());PYLITH_CHECK_ERROR(err);
 
   // Compute the local Jacobian
-  err = DMPlexSNESComputeJacobianFEM(dmMesh, solution.localVector(), jacobianMat, jacobianMat, NULL);PYLITH_CHECK_ERROR(err);
+  err = DMPlexSNESComputeJacobianFEM(dmMesh, solution.localVector(), jacobianMat, precondMat, NULL);PYLITH_CHECK_ERROR(err);
 
   _needNewJacobian = false;
 

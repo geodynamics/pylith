@@ -37,6 +37,8 @@ pylith::problems::Problem::Problem(void) :
   _residualLHS(0),
   _jacobianRHS(0),
   _jacobianLHS(0),
+  _preconditionerRHS(0),
+  _preconditionerLHS(0),
   _integrators(0),
   _constraints(0),
   _customConstraintPCMat(0)
@@ -62,6 +64,8 @@ pylith::problems::Problem::deallocate(void)
   delete _residualLHS; _residualLHS = 0;
   delete _jacobianRHS; _jacobianRHS = 0;
   delete _jacobianLHS; _jacobianLHS = 0;
+  delete _preconditionerRHS; _preconditionerRHS = 0;
+  delete _preconditionerLHS; _preconditionerLHS = 0;
 
 #if 0   // :KLUDGE: Assume Solver deallocates matrix.
   PetscErrorCode err = 0;
@@ -179,12 +183,13 @@ pylith::problems::Problem::computeRHSJacobian(const PylithReal t,
   // Sum Jacobian contributions across integrators.
   const size_t numIntegrators = _integrators.size();
   for (size_t i=0; i < numIntegrators; ++i) {
-    _integrators[i]->computeRHSJacobian(_jacobianRHS, t, dt, *_solution);
+    _integrators[i]->computeRHSJacobian(_jacobianRHS, _preconditionerRHS, t, dt, *_solution);
   } // for
   
   // Assemble jacobian.
   _jacobianRHS->assemble("final_assembly");
 
+#if 0 // FIX THIS
   if (_customConstraintPCMat) {
     // Recalculate preconditioner.
     for (size_t i=0; i < numIntegrators; ++i) {
@@ -199,6 +204,7 @@ pylith::problems::Problem::computeRHSJacobian(const PylithReal t,
     MatView(_customConstraintPCMat, PETSC_VIEWER_STDOUT_WORLD);
 #endif
   } // if
+#endif
 
   PYLITH_METHOD_END;
 } // computeRHSJacobian
@@ -253,6 +259,8 @@ pylith::problems::Problem::computeLHSJacobianImplicit(const PylithReal t,
 						      PetscMat jacobianMat,
 						      PetscMat precondMat)
 { // computeLHSJacobianImplicit
+  PYLITH_METHOD_BEGIN;
+
   assert(_jacobianLHS);
   assert(_solution);
 
@@ -267,12 +275,13 @@ pylith::problems::Problem::computeLHSJacobianImplicit(const PylithReal t,
   // Sum Jacobian contributions across integrators.
   const size_t numIntegrators = _integrators.size();
   for (size_t i=0; i < numIntegrators; ++i) {
-    _integrators[i]->computeLHSJacobianImplicit(_jacobianLHS, t, dt, *_solution);
+    _integrators[i]->computeLHSJacobianImplicit(_jacobianLHS, _preconditionerLHS, t, dt, *_solution);
   } // for
   
   // Assemble jacobian.
   _jacobianLHS->assemble("final_assembly");
 
+#if 0 // FIX THIS
   if (_customConstraintPCMat) {
     // Recalculate preconditioner.
     for (size_t i=0; i < numIntegrators; ++i) {
@@ -287,7 +296,9 @@ pylith::problems::Problem::computeLHSJacobianImplicit(const PylithReal t,
     MatView(_customConstraintPCMat, PETSC_VIEWER_STDOUT_WORLD);
 #endif
   } // if
+#endif
 
+  PYLITH_METHOD_END;
 } // computeLHSJacobianImplicit
 
 // ----------------------------------------------------------------------
@@ -297,6 +308,8 @@ pylith::problems::Problem::computeLHSJacobianExplicit(const PylithReal t,
 						      const PylithReal dt,
 						      PetscVec solutionVec)
 { // computeLHSJacobianExplicit
+  PYLITH_METHOD_BEGIN;
+
   assert(_jacobianLHS);
   assert(_solution);
 
@@ -311,12 +324,13 @@ pylith::problems::Problem::computeLHSJacobianExplicit(const PylithReal t,
   // Sum Jacobian contributions across integrators.
   const size_t numIntegrators = _integrators.size();
   for (size_t i=0; i < numIntegrators; ++i) {
-    _integrators[i]->computeLHSJacobianExplicit(_jacobianLHS, t, dt, *_solution);
+    _integrators[i]->computeLHSJacobianExplicit(_jacobianLHS, _preconditionerLHS, t, dt, *_solution);
   } // for
   
   // Assemble jacobian.
   _jacobianLHS->assemble("final_assembly");
 
+  PYLITH_METHOD_END;
 } // computeLHSJacobianExplicit
 
 // End of file 

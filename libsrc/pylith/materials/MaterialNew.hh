@@ -120,31 +120,19 @@ public :
 			  const PylithReal dt,
 			  const pylith::topology::Field& solution);
 
-  /** Compute RHS Jacobian for G(t,s).
+  /** Compute RHS Jacobian and preconditioner for G(t,s).
    *
    * @param[out] jacobian Jacobian sparse matrix.
+   * @param[out] preconditioner Jacobian preconditioning sparse matrix.
    * @param[in] t Current time.
    * @param[in] dt Current time step.
    * @param[in] solution Current trial solution.
    */
   void computeRHSJacobian(pylith::topology::Jacobian* jacobian,
+			  pylith::topology::Jacobian* preconditioner,
 			  const PylithReal t,
 			  const PylithReal dt,
 			  const pylith::topology::Field& solution);
-
-  /** Compute preconditioner for RHS Jacobian for G(t,s).
-   *
-   * @param[out] precondMat Preconditioner sparse matrix.
-   * @param[inout] jacobian Jacobian sparse matrix.
-   * @param[in] t Current time.
-   * @param[in] dt Current time step.
-   * @param[in] solution Current trial solution.
-   */
-  void computeRHSPreconditioner(PetscMat* precondMat,
-				pylith::topology::Jacobian* jacobian,
-				const PylithReal t,
-				const PylithReal dt,
-				const pylith::topology::Field& solution);
 
   /** Compute LHS residual for F(t,s,\dot{s}).
    *
@@ -161,11 +149,13 @@ public :
   /** Compute LHS Jacobian for F(t,s,\dot{s}) with implicit time-stepping.
    *
    * @param[out] jacobian Jacobian sparse matrix.
+   * @param[out] preconditioner Jacobian preconditioning sparse matrix.
    * @param[in] t Current time.
    * @param[in] dt Current time step.
    * @param[in] solution Current trial solution.
    */
   void computeLHSJacobianImplicit(pylith::topology::Jacobian* jacobian,
+				  pylith::topology::Jacobian* preconditioner,
 				  const PylithReal t,
 				  const PylithReal dt,
 				  const pylith::topology::Field& solution);
@@ -174,29 +164,17 @@ public :
   /** Compute LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
    *
    * @param[out] jacobian Jacobian sparse matrix.
+   * @param[out] preconditioner Jacobian preconditioning sparse matrix.
    * @param[in] t Current time.
    * @param[in] dt Current time step.
    * @param[in] solution Current trial solution.
    */
   void computeLHSJacobianExplicit(pylith::topology::Jacobian* jacobian,
+				  pylith::topology::Jacobian* preconditioner,
 				  const PylithReal t,
 				  const PylithReal dt,
 				  const pylith::topology::Field& solution);
 
-
-  /** Compute preconditioner for RHS Jacobian for F(t,s,\dot{u]).
-   *
-   * @param[out] precondMat Preconditioner sparse matrix.
-   * @param[inout] jacobian Jacobian sparse matrix.
-   * @param[in] t Current time.
-   * @param[in] dt Current time step.
-   * @param[in] solution Current trial solution.
-   */
-  void computeLHSPreconditioner(PetscMat* precondMat,
-				pylith::topology::Jacobian* jacobian,
-				const PylithReal t,
-				const PylithReal dt,
-				const pylith::topology::Field& solution);
 
   /** Update state variables as needed.
    *
@@ -223,11 +201,13 @@ protected :
   /* Compute Jacobian using current kernels.
    *
    * @param[out] jacobian Jacobian sparse matrix.
+   * @param[out] preconditioner Jacobian preconditioning sparse matrix.
    * @param[in] t Current time.
    * @param[in] dt Current time step.
    * @param[in] solution Current trial solution.
    */
   void _computeJacobian(pylith::topology::Jacobian* jacobian,
+			pylith::topology::Jacobian* preconditioner,
 			const PylithReal t,
 			const PylithReal dt,
 			const pylith::topology::Field& solution);
@@ -235,7 +215,6 @@ protected :
   /// Setup auxiliary subfields (discretization and query fns).
   virtual
   void _auxFieldsSetup(void) = 0;
-
 
   /** Set kernels for RHS residual G(t,s).
    *
