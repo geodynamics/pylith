@@ -122,6 +122,13 @@ pylith::problems::Problem::customPCMatrix(PetscMat& mat)
 } // preconditioner
 
 // ----------------------------------------------------------------------
+// Initialize.
+void
+pylith::problems::Problem::initialize(void)
+{ // initialize
+} // initialize
+
+// ----------------------------------------------------------------------
 // Compute RHS residual for G(t,s).
 void
 pylith::problems::Problem::computeRHSResidual(const PylithReal t,

@@ -220,10 +220,11 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testAuxFields(void)
   CPPUNIT_ASSERT_EQUAL(_data->dimension, auxFields.spaceDim());
 #if 1
   PylithReal norm = 0.0;
+  PylithReal t = 0.0;
   const PetscDM dm = auxFields.dmMesh();CPPUNIT_ASSERT(dm);
   pylith::topology::FieldQuery* query = _material->_auxFieldsQuery;
   query->openDB(_db, _data->lengthScale);
-  PetscErrorCode err = DMPlexComputeL2Diff(dm, query->functions(), (void**)query->contextPtrs(), auxFields.globalVector(), &norm);PYLITH_CHECK_ERROR(err);
+  PetscErrorCode err = DMPlexComputeL2Diff(dm, t, query->functions(), (void**)query->contextPtrs(), auxFields.globalVector(), &norm);PYLITH_CHECK_ERROR(err);
   query->closeDB(_db);
   const PylithReal tolerance = 1.0e-6;
   CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
@@ -446,32 +447,32 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testDiscretization(
   const topology::FieldBase::DiscretizeInfo infoB = {2, 2, true};
   
   CPPUNIT_ASSERT(_material);
-  _material->discretization("A", infoA);
-  _material->discretization("B", infoB);
+  _material->auxFieldDiscretization("A", infoA);
+  _material->auxFieldDiscretization("B", infoB);
 
   { // A
-    const topology::FieldBase::DiscretizeInfo& test = _material->discretization("A");
+    const topology::FieldBase::DiscretizeInfo& test = _material->auxFieldDiscretization("A");
     CPPUNIT_ASSERT_EQUAL(test.basisOrder, infoA.basisOrder);
     CPPUNIT_ASSERT_EQUAL(test.quadOrder, infoA.quadOrder);
     CPPUNIT_ASSERT_EQUAL(test.isBasisContinuous, infoA.isBasisContinuous);
   } // A
 
   { // B
-    const topology::FieldBase::DiscretizeInfo& test = _material->discretization("B");
+    const topology::FieldBase::DiscretizeInfo& test = _material->auxFieldDiscretization("B");
     CPPUNIT_ASSERT_EQUAL(test.basisOrder, infoB.basisOrder);
     CPPUNIT_ASSERT_EQUAL(test.quadOrder, infoB.quadOrder);
     CPPUNIT_ASSERT_EQUAL(test.isBasisContinuous, infoB.isBasisContinuous);
   } // B
 
   { // C (default)
-    const topology::FieldBase::DiscretizeInfo& test = _material->discretization("C");
+    const topology::FieldBase::DiscretizeInfo& test = _material->auxFieldDiscretization("C");
     CPPUNIT_ASSERT_EQUAL(test.basisOrder, infoDefault.basisOrder);
     CPPUNIT_ASSERT_EQUAL(test.quadOrder, infoDefault.quadOrder);
     CPPUNIT_ASSERT_EQUAL(test.isBasisContinuous, infoDefault.isBasisContinuous);
   } // C (default)
 
   { // default
-    const topology::FieldBase::DiscretizeInfo& test = _material->discretization("default");
+    const topology::FieldBase::DiscretizeInfo& test = _material->auxFieldDiscretization("default");
     CPPUNIT_ASSERT_EQUAL(test.basisOrder, infoDefault.basisOrder);
     CPPUNIT_ASSERT_EQUAL(test.quadOrder, infoDefault.quadOrder);
     CPPUNIT_ASSERT_EQUAL(test.isBasisContinuous, infoDefault.isBasisContinuous);

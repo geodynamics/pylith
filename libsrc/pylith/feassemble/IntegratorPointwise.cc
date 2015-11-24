@@ -133,6 +133,20 @@ pylith::feassemble::IntegratorPointwise::auxFieldDiscretization(const char* name
 
 
 // ----------------------------------------------------------------------
+// Check whether Jacobian needs to be recomputed.
+bool
+pylith::feassemble::IntegratorPointwise::needNewJacobian(void) const {
+  return _needNewJacobian;
+} // needNewJacobian
+
+// ----------------------------------------------------------------------
+// Check whether integrator needs velocity.
+bool
+pylith::feassemble::IntegratorPointwise::isJacobianSymmetric(void) const {
+  return _isJacobianSymmetric;
+} // needsVelocity
+
+// ----------------------------------------------------------------------
 // Get discretization information for auxiliary subfield.
 const pylith::topology::FieldBase::DiscretizeInfo& 
 pylith::feassemble::IntegratorPointwise::auxFieldDiscretization(const char* name) const
@@ -165,12 +179,33 @@ pylith::feassemble::IntegratorPointwise::verifyConfiguration(const pylith::topol
 
 
 // ----------------------------------------------------------------------
+// Verify constraints are acceptable.
+void
+pylith::feassemble::IntegratorPointwise::checkConstraints(const topology::Field& solution) const
+{ // checkConstraints
+  PYLITH_METHOD_BEGIN;
+
+  PYLITH_METHOD_END;
+} // checkConstraints
+
+// ----------------------------------------------------------------------
+// Set manager of scales used to nondimensionalize problem.
+void
+pylith::feassemble::IntegratorPointwise::normalizer(const spatialdata::units::Nondimensional& dim)
+{ // normalizer
+  if (0 == _normalizer)
+    _normalizer = new spatialdata::units::Nondimensional(dim);
+  else
+    *_normalizer = dim;
+} // normalizer
+
+
+// ----------------------------------------------------------------------
 // Update state variables as needed.
 void
 pylith::feassemble::IntegratorPointwise::updateStateVars(const pylith::topology::Field& solution)
 { // updateState
   PYLITH_METHOD_BEGIN;
-
 
   PYLITH_METHOD_END;
 } // updateStateVars

@@ -201,6 +201,18 @@ pylith::materials::MaterialNew::computeLHSJacobianExplicit(pylith::topology::Jac
 
 
 // ----------------------------------------------------------------------
+// Update state variables as needed.
+void
+pylith::materials::MaterialNew::updateStateVars(const pylith::topology::Field& solution)
+{ // updateStateVars
+  PYLITH_METHOD_BEGIN;
+
+  throw std::logic_error("MaterialNew::updateStateVars() not implemented");
+
+  PYLITH_METHOD_END;
+} // updateStateVars
+
+// ----------------------------------------------------------------------
 // Compute residual using current kernels.
 void
 pylith::materials::MaterialNew::_computeResidual(pylith::topology::Field* residual,

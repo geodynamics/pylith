@@ -180,7 +180,6 @@ public :
    *
    * @param[in] solution Solution field.
    */
-  virtual
   void updateStateVars(const pylith::topology::Field& solution);
 
   // PROTECTED METHODS //////////////////////////////////////////////////

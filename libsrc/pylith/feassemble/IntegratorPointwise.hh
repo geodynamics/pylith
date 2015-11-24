@@ -106,6 +106,20 @@ public :
    */
   const pylith::topology::FieldBase::DiscretizeInfo& auxFieldDiscretization(const char* name) const;
 
+  /** Check whether Jacobian needs to be recomputed.
+   *
+   * @returns True if Jacobian needs to be recomputed, false otherwise.
+   */
+  virtual
+  bool needNewJacobian(void) const;
+
+  /** Check whether integrator generates a symmetric Jacobian.
+   *
+   * @returns True if integrator generates symmetric Jacobian.
+   */
+  virtual
+  bool isJacobianSymmetric(void) const;
+
   /** Verify configuration is acceptable.
    *
    * @param[in] mesh Finite-element mesh
@@ -119,6 +133,12 @@ public :
    */
   virtual
   void checkConstraints(const topology::Field& solution) const;
+
+  /** Set manager of scales used to nondimensionalize problem.
+   *
+   * @param dim Nondimensionalizer.
+   */
+  void normalizer(const spatialdata::units::Nondimensional& dim);
 
   /** Initialize integrator.
    *
