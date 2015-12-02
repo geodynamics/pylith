@@ -211,11 +211,23 @@ protected :
 			const PylithReal dt,
 			const pylith::topology::Field& solution);
   
-  /// Setup auxiliary subfields (discretization and query fns).
+  /** Setup auxiliary subfields (discretization and query fns).
+   * 
+   * Create subfields in auxiliary fields (includes name of the field,
+   * vector field type, discretization, and scale for
+   * nondimensionalization) and set query functions for filling them
+   * from a spatial database.
+   *
+   * @attention The order of the calls to subfieldAdd() must match the
+   * order of the auxiliary fields in the FE kernels.
+   */
   virtual
   void _auxFieldsSetup(void) = 0;
 
   /** Set kernels for RHS residual G(t,s).
+   *
+   * Potentially, there are g0 and g1 kernels for each equation. If no
+   * kernel is needed, then set the kernel function to NULL.
    *
    * @param solution Solution field.
    */
@@ -225,6 +237,15 @@ protected :
 
   /** Set kernels for RHS Jacobian G(t,s).
    *
+   * Potentially, there are Jg0, Jg1, Jg2, and Jg3 kernels for each
+   * combination of equations. If no kernel is needed, then set the
+   * kernel function to NULL.
+   *
+   * - Jg0(ifield, jfield)
+   * - Jg1(ifield, jfield, jdim)
+   * - Jg2(ifield, jfield, idim)
+   * - Jg3(ifield, jfield, idim, jdim)
+   *
    * @param solution Solution field.
    */
   virtual
@@ -232,6 +253,9 @@ protected :
 
 
   /** Set kernels for LHS residual F(t,s,\dot{s}).
+   *
+   * Potentially, there are f0 and f1 kernels for each equation. If no
+   * kernel is needed, then set the kernel function to NULL.
    *
    * @param solution Solution field.
    */
@@ -241,6 +265,11 @@ protected :
 
   /** Set kernels for LHS Jacobian F(t,s,\dot{s}) when implicit time-stepping.
    *
+   * - Jf0(ifield, jfield)
+   * - Jf1(ifield, jfield, jdim)
+   * - Jf2(ifield, jfield, idim)
+   * - Jf3(ifield, jfield, idim, jdim)
+   *
    * @param solution Solution field.
    */
   virtual
@@ -248,6 +277,11 @@ protected :
 
 
   /** Set kernels for LHS Jacobian F(t,s,\dot{s}) when explicit time-stepping.
+   *
+   * - Jf0(ifield, jfield)
+   * - Jf1(ifield, jfield, jdim)
+   * - Jf2(ifield, jfield, idim)
+   * - Jf3(ifield, jfield, idim, jdim)
    *
    * @param solution Solution field.
    */
