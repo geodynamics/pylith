@@ -20,7 +20,9 @@ subpackage = fekernels
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
-	elasticity.h 
+	dispvel.h \
+	elasticity.h \
+	linearelasticityplanestrain.h
 
 noinst_HEADERS =
 

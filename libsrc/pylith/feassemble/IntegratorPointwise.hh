@@ -120,6 +120,12 @@ public :
   virtual
   bool isJacobianSymmetric(void) const;
 
+  /** Set manager of scales used to nondimensionalize problem.
+   *
+   * @param dim Nondimensionalizer.
+   */
+  void normalizer(const spatialdata::units::Nondimensional& dim);
+
   /** Verify configuration is acceptable.
    *
    * @param[in] mesh Finite-element mesh
@@ -133,12 +139,6 @@ public :
    */
   virtual
   void checkConstraints(const topology::Field& solution) const;
-
-  /** Set manager of scales used to nondimensionalize problem.
-   *
-   * @param dim Nondimensionalizer.
-   */
-  void normalizer(const spatialdata::units::Nondimensional& dim);
 
   /** Initialize integrator.
    *

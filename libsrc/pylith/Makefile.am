@@ -86,7 +86,9 @@ libpylith_la_SOURCES = \
 	feassemble/IntegratorElasticityLgDeform.cc \
 	feassemble/ElasticityImplicitLgDeform.cc \
 	feassemble/ElasticityExplicitLgDeform.cc \
+	fekernels/dispvel.c \
 	fekernels/elasticity.c \
+	fekernels/linearelasticityplanestrain.c \
 	friction/FrictionModel.cc \
 	friction/StaticFriction.cc \
 	friction/SlipWeakening.cc \
