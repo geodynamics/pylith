@@ -85,19 +85,18 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_auxFieldsSetup(void)
   const PylithReal timeScale = _normalizer->timeScale();
   const PylithReal forceScale = densityScale * lengthScale / (timeScale * timeScale);
 
-  // :ATTENTION: The order here must match the order of the auxiliary fields in the FE kernels.
+  // :ATTENTION: The order for subfieldAdd() must match the order of the auxiliary fields in the FE kernels.
   _auxFields->subfieldAdd("density", 1, topology::Field::SCALAR, this->auxFieldDiscretization("density"), densityScale);
+  _auxFieldsQuery->queryFn("density", pylith::materials::Query::dbQueryDensity2D);
+
   _auxFields->subfieldAdd("mu", 1, topology::Field::SCALAR, this->auxFieldDiscretization("mu"), pressureScale);
+  _auxFieldsQuery->queryFn("mu", pylith::materials::Query::dbQueryMu2D);
+
   _auxFields->subfieldAdd("lambda", 1, topology::Field::SCALAR, this->auxFieldDiscretization("lambda"), pressureScale);
+  _auxFieldsQuery->queryFn("lambda", pylith::materials::Query::dbQueryLambda2D);
+
   if (_useBodyForce) {
     _auxFields->subfieldAdd("body force", dimension(), topology::Field::VECTOR, this->auxFieldDiscretization("body force"), forceScale);
-  } // if
-
-  // Order does not matter.
-  _auxFieldsQuery->queryFn("density", pylith::materials::Query::dbQueryDensity2D);
-  _auxFieldsQuery->queryFn("mu", pylith::materials::Query::dbQueryMu2D);
-  _auxFieldsQuery->queryFn("lambda", pylith::materials::Query::dbQueryLambda2D);
-  if (_useBodyForce) {
     _auxFieldsQuery->queryFn("body force", pylith::materials::Query::dbQueryBodyForce2D);
   } // if
 
