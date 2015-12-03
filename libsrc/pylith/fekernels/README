@@ -1,0 +1,9 @@
+Naming conventions:
+
+Everything starts with pylith_fekernels
+Next is equation, e.g., DispVel, IsotropicLinearElasticityPlaneStrain, etc.
+Next is kernel, e.g., f0, f1, g0, g1, Jf0, etc.
+Next is specificity, e.g., what is the kernel coupling (e.g., uv), or
+different cases (e.g., initstate).
+Finally, if kernel is specific for implicit or explicit, put that.
+
