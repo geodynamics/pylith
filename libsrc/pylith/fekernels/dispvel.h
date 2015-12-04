@@ -23,7 +23,7 @@
  *
  * Solution fields: [disp(dim), vel(dim)]
  *
- * Auxiliary fields: None
+ * Auxiliary fields: [...] (not used)
  *
  * \int_V \vec{\phi}_v \cdot \left( \frac{\partial \vec{u}(t)}{\partial t} \right) \, dV = 
  *   \int_V \vec{\phi}_v \cdot \vec{v}(t) \, dV.
