@@ -246,7 +246,10 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0_uv_implicit(const Pyli
 								      const PylithReal t,
 								      const PylithReal utshift,
 								      const PylithScalar x[],
-								      PylithScalar Jf0[]);
+								      PylithScalar Jf0[])
+{ /* IsotropicLinearElasticityPlaneStrain_Jf0_uv_implicit */
+  assert(0);
+} /* IsotropicLinearElasticityPlaneStrain_Jf0_uv_implicit */
 
 
 /** Jf0 function for isotropoc linear elasticity plane strain with explicit time stepping.
@@ -270,68 +273,28 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0_uv_implicit(const Pyli
  * @param f0 Result [dim*dim].
  */
 void
-pylith_fekernels__IsotropicLinearElasticityPlaneStrain_Jf0_uvExplicit(const PylithInt dim,
-									  const PylithInt numS,
-									  const PylithInt numA,
-									  const PylithInt sOff[],
-									  const PylithInt sOff_x[],
-									  const PylithScalar s[],
-									  const PylithScalar s_t[],
-									  const PylithScalar s_x[],
-									  const PylithInt aOff[],
-									  const PylithInt aOff_x[],
-									  const PylithScalar a[],
-									  const PylithScalar a_t[],
-									  const PylithScalar a_x[],
-									  const PylithReal t,
-									  const PylithReal utshift,
-									  const PylithScalar x[],
-									  PylithScalar Jf0[]);
+pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0_uv_explicit(const PylithInt dim,
+								       const PylithInt numS,
+								       const PylithInt numA,
+								       const PylithInt sOff[],
+								       const PylithInt sOff_x[],
+								       const PylithScalar s[],
+								       const PylithScalar s_t[],
+								       const PylithScalar s_x[],
+								       const PylithInt aOff[],
+								       const PylithInt aOff_x[],
+								       const PylithScalar a[],
+								       const PylithScalar a_t[],
+								       const PylithScalar a_x[],
+								       const PylithReal t,
+								       const PylithReal utshift,
+								       const PylithScalar x[],
+								       PylithScalar Jf0[])
+{ /* IsotropicLinearElasticityPlaneStrain_Jf0_uv_explicit */
+  assert(0);
+} /* IsotropicLinearElasticityPlaneStrain_Jf0_uv_explicit*/
 
 
-/** g3_uu entry function for 2-D plane strain isotropic linear elasticity.
- *
- * @param dim Spatial dimension [3].
- * @param numS Number of registered subfields in solution field [1].
- * @param numA Number of registered subfields in auxiliary field [2].
- * @param sOff Offset of registered subfields in solution field [numS].
- * @param sOff_x Offset of registered subfields in gradient of the solution field [numS].
- * @param s Solution field with all subfields.
- * @param s_t Time derivative of solution field.
- * @param s_x Gradient of solution field.
- * @param aOff Offset of registered subfields in auxiliary field [numA]
- * @param aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
- * @param a Auxiliary field with all subfields.
- * @param a_t Time derivative of auxiliary field.
- * @param a_x Gradient of auxiliary field.
- * @param t Time for residual evaluation.
- * @param utshift Coefficient for dF/ds_t term in Jacobian.
- * @param x Coordinates of point evaluation.
- * @param g3 Result [dim*dim*dim*dim].
- *
- * Solution fields: [disp(dim)]
- *
- * Auxiliary fields: [lambda(1), mu(1)]
- */
-void
-pylith_fekernels_g3_uu_IsotropicLinearElasticityPlaneStrain(const PylithInt dim,
-							    const PylithInt numS,
-							    const PylithInt numA,
-							    const PylithInt sOff[],
-							    const PylithInt sOff_x[],
-							    const PylithScalar s[],
-							    const PylithScalar s_t[],
-							    const PylithScalar s_x[],
-							    const PylithInt aOff[],
-							    const PylithInt aOff_x[],
-							    const PylithScalar a[],
-							    const PylithScalar a_t[],
-							    const PylithScalar a_x[],
-							    const PylithReal t,
-							    const PylithReal utshift,
-							    const PylithScalar x[],
-							    PylithScalar g3[]);
-					      
 /* ---------------------------------------------------------------------- */
 /* g3_uu entry function for 2-D plane strain isotropic linear elasticity.
  */
