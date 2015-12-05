@@ -147,7 +147,7 @@ pylith_fekernels_DispVel_Jf0_vu_implicit(const PylithInt dim,
 /* Jf0 function for disp/velocity equation with explicit time-stepping.
  */
 void
-pylith_fekernels_dispvel_Jf0_vu_explicit(const PylithInt dim,
+pylith_fekernels_DispVel_Jf0_vu_explicit(const PylithInt dim,
 					 const PylithInt numS,
 					 const PylithInt numA,
 					 const PylithInt sOff[],
@@ -184,7 +184,7 @@ pylith_fekernels_dispvel_Jf0_vu_explicit(const PylithInt dim,
  * Auxiliary fields = None
  */
 void
-pylith_fekernels_dispvel_Jg0_vv(const PylithInt dim,
+pylith_fekernels_DispVel_Jg0_vv(const PylithInt dim,
 				const PylithInt numS,
 				const PylithInt numA,
 				const PylithInt sOff[],

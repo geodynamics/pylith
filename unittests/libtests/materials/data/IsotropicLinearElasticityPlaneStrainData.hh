@@ -60,24 +60,11 @@ public:
 
   char* filenameAuxFieldsDB; ///< Name of file with data for auxFieldsDB.
 
-  PetscPointFunc* residualKernels;
-  PetscPointJac* jacobianKernels;
-
-  // :TODO: Add input data for integrateResidual(), integrateJacobian(), updateStateVars()
-  // :TODO: Add auxiliary field data
-  // :TODO: Add solution field data
-
-  // Verified data
-
-  int numAuxFields; ///< Number of subfields in auxiliary field.
-  topology::Field::SubfieldInfo* auxSubfields; ///< Subfields in auxiliary field.
-  PylithScalar* auxFields; ///< Array of auxiliary field data.
-
-  // :TODO: Add spatial database values for testing _dbToAuxFields()
-
-  // :TODO: Add verified data for integrateResidual(), integrateJacobian(), updateStateVars()
-  // :TODO: Add residual data
-  // :TODO: Add Jacobian data
+  PetscPointFunc** kernelsRHSResidual; ///< FE kernels for RHS residual, G(t,s).
+  PetscPointJac*** kernelsRHSJacobian; ///< FE kernels for RHS Jacobian, G(t,s).
+  PetscPointFunc** kernelsLHSResidual; ///< FE kernels for LHS residual, F(t,s,\dot{s}).
+  PetscPointJac*** kernelsLHSJacobianImplicit; ///< FE kernels for LHS Jacobian, F(t,s,\dot{s}) with implicit time-stepping.
+  PetscPointJac*** kernelsLHSJacobianExplicit;///< FE kernels for LHS Jacobian, F(t,s,\dot{s}) with expicit time-stepping.
 
   PylithReal lengthScale; ///< Length scale for nondimensionalization.
   PylithReal timeScale; ///< Time scale for nondimensionalization.

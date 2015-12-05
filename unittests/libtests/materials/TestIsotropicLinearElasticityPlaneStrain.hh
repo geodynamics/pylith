@@ -50,28 +50,40 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain : public CppUn
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestIsotropicLinearElasticityPlaneStrain );
 
+  // IsotropicLinearElasticityPlaneStrain
   CPPUNIT_TEST( testUseInertia );
   CPPUNIT_TEST( testUseBodyForce );
   CPPUNIT_TEST( test_auxFieldsSetup );
-  CPPUNIT_TEST( test_setFEKernels ); // part of initialize()
-  CPPUNIT_TEST( testAuxFields ); // part of initialize()
+  CPPUNIT_TEST( test_setFEKernelsRHSResidual );
+  CPPUNIT_TEST( test_setFEKernelsRHSJacobian );
+  CPPUNIT_TEST( test_setFEKernelsLHSResidual );
+  CPPUNIT_TEST( test_setFEKernelsLHSJacobianImplicit );
+  CPPUNIT_TEST( test_setFEKernelsLHSJacobianExplicit );
 
   // Move to TestIntegratorPointwise
   CPPUNIT_TEST( testHasAuxField );
   CPPUNIT_TEST( testGetAuxField );
+  CPPUNIT_TEST( testAuxFieldsDiscretization );
+  CPPUNIT_TEST( testAuxFieldsDB );
   CPPUNIT_TEST( testNormalizer );
   CPPUNIT_TEST( testIsJacobianSymmetric );
 
   CPPUNIT_TEST( testVerifyConfiguration );
-  CPPUNIT_TEST( testIntegrateResidual );
-  CPPUNIT_TEST( testIntegrateJacobian );
+  CPPUNIT_TEST( testCheckConstraints );
+
 
   // Move to TestMaterialNew
   CPPUNIT_TEST( testDimension );
   CPPUNIT_TEST( testId );
   CPPUNIT_TEST( testLabel );
-  CPPUNIT_TEST( testAuxFieldsDB );
-  CPPUNIT_TEST( testDiscretization );
+  CPPUNIT_TEST( testInitialize );
+
+  CPPUNIT_TEST( testComputeRHSResidual );
+  CPPUNIT_TEST( testComputeRHSJacobian );
+  CPPUNIT_TEST( testComputeLHSResidual );
+  CPPUNIT_TEST( testComputeLHSJacobianImplicit );
+  CPPUNIT_TEST( testComputeLHSJacobianExplicit );
+  CPPUNIT_TEST( testUpdateStateVars );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -94,11 +106,20 @@ public :
   /// Test _auxFieldsSetup().
   void test_auxFieldsSetup(void);
 
-  /// Test _setFEKernels().
-  void test_setFEKernels(void);
+  /// Test _setFEKernelsRHSResidual().
+  void test_setFEKernelsRHSResidual(void);
 
-  /// Test auxFields().
-  void testAuxFields(void);
+  /// Test _setFEKernelsRHSJacobian().
+  void test_setFEKernelsRHSJacobian(void);
+
+  /// Test _setFEKernelsLHSResidual().
+  void test_setFEKernelsLHSResidual(void);
+
+  /// Test _setFEKernelsLHSJacobianImplicit().
+  void test_setFEKernelsLHSJacobianImplicit(void);
+
+  /// Test _setFEKernelsLHSJacobianExplicit().
+  void test_setFEKernelsLHSJacobianExplicit(void);
 
   // IntegratorPointwise
 
@@ -107,6 +128,12 @@ public :
 
   /// Test getAuxField().
   void testGetAuxField(void);
+
+  /// Test auxFieldsDiscretization().
+  void testAuxFieldsDiscretization(void);
+
+  /// Test auxFieldsDB().
+  void testAuxFieldsDB(void);
 
   /// Test normalizer().
   void testNormalizer(void);
@@ -117,11 +144,8 @@ public :
   /// Test verifyConfiguration().
   void testVerifyConfiguration(void);
 
-  /// Test integrateResidual().
-  void testIntegrateResidual(void);
-
-  /// Test integrateJacobian().
-  void testIntegrateJacobian(void);
+  /// Test checkConstraints().
+  void testCheckConstraints(void);
 
   // MaterialNew
 
@@ -134,16 +158,34 @@ public :
   /// Test label().
   void testLabel(void);
 
-  /// Test auxFieldsDB().
-  void testAuxFieldsDB(void);
+  /// Test initialize().
+  void testInitialize(void);
 
-  /// Test discretization().
-  void testDiscretization(void);
+  /// Test computeRHSResidual().
+  void testComputeRHSResidual(void);
 
-  /// Do minimum initialization of material.
+  /// Test computeRHSJacobian().
+  void testComputeRHSJacobian(void);
+
+  /// Test computeLHSResidual().
+  void testComputeLHSResidual(void);
+
+  /// Test computeLHSJacobianImplicit().
+  void testComputeLHSJacobianImplicit(void);
+
+  /// Test computeLHSJacobianExplicit().
+  void testComputeLHSJacobianExplicit(void);
+
+  /// Test updateStateVars().
+  void testUpdateStateVars(void);
+
+  // PROTECTED METHODS //////////////////////////////////////////////////
+public :
+
+  /// Do minimal initilaization of test data.
   void _initializeMin(void);
 
-  /// Do full initialization of material.
+  /// Do full initilaization of test data.
   void _initializeFull(void);
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////

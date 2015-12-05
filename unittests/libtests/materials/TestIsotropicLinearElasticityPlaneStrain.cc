@@ -170,7 +170,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
     CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
   } // body force
 
-  // Check queries
+  // Make sure DB query functions are set correctly.
   CPPUNIT_ASSERT_EQUAL(&Query::dbQueryDensity2D, _material->_auxFieldsQuery->queryFn("density"));
   CPPUNIT_ASSERT_EQUAL(&Query::dbQueryMu2D, _material->_auxFieldsQuery->queryFn("mu"));
   CPPUNIT_ASSERT_EQUAL(&Query::dbQueryLambda2D, _material->_auxFieldsQuery->queryFn("lambda"));
@@ -183,57 +183,175 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
 
 
 // ----------------------------------------------------------------------
-// Test _setFEKernels().
+// Test _setFEKernelsRHSResidual().
 void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_setFEKernels(void)
-{ // test_setFEKernels
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_setFEKernelsRHSResidual(void)
+{ // test_setFEKernelsRHSResidual
   PYLITH_METHOD_BEGIN;
 
-  _initializeFull(); // includes setting FE kernels
+  _initializeFull();
 
-  // Check result
-  CPPUNIT_ASSERT_MESSAGE("Test incomplete.", false); // :TODO: ADD MORE HERE
+  CPPUNIT_ASSERT(_solution);
+  CPPUNIT_ASSERT(_material);
+  _material->_setFEKernelsRHSResidual(*_solution);
+
+  PetscDS prob = NULL;
+  PetscErrorCode err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);
+
+  const int numSolnFields = _data->numSolnFields;
+  for (int iField=0; iField < numSolnFields; ++iField) {
+    const PetscPointFunc* kernels = _data->kernelsRHSResidual[iField];
+    PetscPointFunc g0 = NULL;
+    PetscPointFunc g1 = NULL;
+    err = PetscDSGetResidual(prob, iField, &g0, &g1);CPPUNIT_ASSERT(!err);
+    CPPUNIT_ASSERT_EQUAL(kernels[0], g0);
+    CPPUNIT_ASSERT_EQUAL(kernels[1], g1);
+  } // for
 
   PYLITH_METHOD_END;
-} // test_setFEKernels
+} // test_setFEKernelsRHSResidual
 
 
 // ----------------------------------------------------------------------
-// Test auxFields().
+// Test _setFEKernelsRHSJacobian().
 void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testAuxFields(void)
-{ // testAuxFields
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_setFEKernelsRHSJacobian(void)
+{ // test_setFEKernelsRHSJacobian
   PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(_data);
+  _initializeFull();
 
-  // Call initialize()
-  _initializeFull(); // includes setting up auxFields
-
+  CPPUNIT_ASSERT(_solution);
   CPPUNIT_ASSERT(_material);
-  const pylith::topology::Field& auxFields = _material->auxFields();
+  _material->_setFEKernelsRHSJacobian(*_solution);
 
-  _material->_auxFields->view("AUX FIELDS"); // :TEMPORARY: Debugging
+  PetscDS prob = NULL;
+  PetscErrorCode err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);
 
-  // Check result
-  CPPUNIT_ASSERT_EQUAL(std::string("auxiliary fields"), std::string(auxFields.label()));
-  CPPUNIT_ASSERT_EQUAL(_data->dimension, auxFields.spaceDim());
-#if 1
-  PylithReal norm = 0.0;
-  PylithReal t = 0.0;
-  const PetscDM dm = auxFields.dmMesh();CPPUNIT_ASSERT(dm);
-  pylith::topology::FieldQuery* query = _material->_auxFieldsQuery;
-  query->openDB(_db, _data->lengthScale);
-  PetscErrorCode err = DMPlexComputeL2Diff(dm, t, query->functions(), (void**)query->contextPtrs(), auxFields.globalVector(), &norm);PYLITH_CHECK_ERROR(err);
-  query->closeDB(_db);
-  const PylithReal tolerance = 1.0e-6;
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
-#else
-  CPPUNIT_ASSERT_MESSAGE("Test incomplete.", false); // :TODO: ADD MORE HERE
-#endif
+  const int numSolnFields = _data->numSolnFields;
+  for (int iField=0; iField < numSolnFields; ++iField) {
+    for (int jField=0; jField < numSolnFields; ++jField) {
+      const PetscPointJac* kernels = _data->kernelsRHSJacobian[iField][jField];
+      PetscPointJac Jg0 = NULL;
+      PetscPointJac Jg1 = NULL;
+      PetscPointJac Jg2 = NULL;
+      PetscPointJac Jg3 = NULL;
+      err = PetscDSGetJacobian(prob, iField, jField, &Jg0, &Jg1, &Jg2, &Jg3);CPPUNIT_ASSERT(!err);
+      CPPUNIT_ASSERT_EQUAL(kernels[0], Jg0);
+      CPPUNIT_ASSERT_EQUAL(kernels[1], Jg1);
+      CPPUNIT_ASSERT_EQUAL(kernels[2], Jg2);
+      CPPUNIT_ASSERT_EQUAL(kernels[3], Jg3);
+    } // for
+  } // for
+  
+  PYLITH_METHOD_END;
+} // test_setFEKernelsRHSJacobian
+
+
+// ----------------------------------------------------------------------
+// Test _setFEKernelsLHSResidual().
+void
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_setFEKernelsLHSResidual(void)
+{ // test_setFEKernelsLHSResidual
+  PYLITH_METHOD_BEGIN;
+
+  _initializeFull();
+
+  CPPUNIT_ASSERT(_solution);
+  CPPUNIT_ASSERT(_material);
+  _material->_setFEKernelsLHSResidual(*_solution);
+
+  PetscDS prob = NULL;
+  PetscErrorCode err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);
+
+  const int numSolnFields = _data->numSolnFields;
+  for (int iField=0; iField < numSolnFields; ++iField) {
+    const PetscPointFunc* kernels = _data->kernelsLHSResidual[iField];
+    PetscPointFunc f0 = NULL;
+    PetscPointFunc f1 = NULL;
+    err = PetscDSGetResidual(prob, iField, &f0, &f1);CPPUNIT_ASSERT(!err);
+    CPPUNIT_ASSERT_EQUAL(kernels[0], f0);
+    CPPUNIT_ASSERT_EQUAL(kernels[1], f1);
+  } // for
 
   PYLITH_METHOD_END;
-} // testAuxFields
+} // test_setFEKernelsLHSResidual
+
+
+// ----------------------------------------------------------------------
+// Test _setFEKernelsLHSJacobianImplicit().
+void
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_setFEKernelsLHSJacobianImplicit(void)
+{ // test_setFEKernelsLHSJacobianImplicit
+  PYLITH_METHOD_BEGIN;
+
+  _initializeFull();
+
+  CPPUNIT_ASSERT(_solution);
+  CPPUNIT_ASSERT(_material);
+  _material->_setFEKernelsRHSResidual(*_solution);
+
+  PetscDS prob = NULL;
+  PetscErrorCode err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);
+
+  const int numSolnFields = _data->numSolnFields;
+  // LHS Jacobian implicit
+  for (int iField=0; iField < numSolnFields; ++iField) {
+    for (int jField=0; jField < numSolnFields; ++jField) {
+      const PetscPointJac* kernels = _data->kernelsLHSJacobianImplicit[iField][jField];
+      PetscPointJac Jf0 = NULL;
+      PetscPointJac Jf1 = NULL;
+      PetscPointJac Jf2 = NULL;
+      PetscPointJac Jf3 = NULL;
+      err = PetscDSGetJacobian(prob, iField, jField, &Jf0, &Jf1, &Jf2, &Jf3);CPPUNIT_ASSERT(!err);
+      CPPUNIT_ASSERT_EQUAL(kernels[0], Jf0);
+      CPPUNIT_ASSERT_EQUAL(kernels[1], Jf1);
+      CPPUNIT_ASSERT_EQUAL(kernels[2], Jf2);
+      CPPUNIT_ASSERT_EQUAL(kernels[3], Jf3);
+    } // for
+  } // for
+  
+
+  PYLITH_METHOD_END;
+} // test_setFEKernelsLHSJacobianImplicit
+
+
+// ----------------------------------------------------------------------
+// Test _setFEKernelsLHSJacobianExplicit().
+void
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_setFEKernelsLHSJacobianExplicit(void)
+{ // test_setFEKernelsLHSJacobianExplicit
+  PYLITH_METHOD_BEGIN;
+
+  _initializeFull();
+
+  CPPUNIT_ASSERT(_solution);
+  CPPUNIT_ASSERT(_material);
+  _material->_setFEKernelsRHSResidual(*_solution);
+
+  PetscDS prob = NULL;
+  PetscErrorCode err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);
+
+  const int numSolnFields = _data->numSolnFields;
+  // LHS Jacobian implicit
+  for (int iField=0; iField < numSolnFields; ++iField) {
+    for (int jField=0; jField < numSolnFields; ++jField) {
+      const PetscPointJac* kernels = _data->kernelsLHSJacobianExplicit[iField][jField];
+      PetscPointJac Jf0 = NULL;
+      PetscPointJac Jf1 = NULL;
+      PetscPointJac Jf2 = NULL;
+      PetscPointJac Jf3 = NULL;
+      err = PetscDSGetJacobian(prob, iField, jField, &Jf0, &Jf1, &Jf2, &Jf3);CPPUNIT_ASSERT(!err);
+      CPPUNIT_ASSERT_EQUAL(kernels[0], Jf0);
+      CPPUNIT_ASSERT_EQUAL(kernels[1], Jf1);
+      CPPUNIT_ASSERT_EQUAL(kernels[2], Jf2);
+      CPPUNIT_ASSERT_EQUAL(kernels[3], Jf3);
+    } // for
+  } // for
+  
+
+  PYLITH_METHOD_END;
+} // test_setFEKernelsLHSJacobianExplicit
 
 
 // IntegratorPointwise ========================================
@@ -280,6 +398,74 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
 
   PYLITH_METHOD_END;
 } // testGetAuxField
+
+
+// ----------------------------------------------------------------------
+// Test auxFieldDiscretization().
+void
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testAuxFieldsDiscretization(void)
+{ // testAuxFieldsDiscretization
+  PYLITH_METHOD_BEGIN;
+
+  const topology::FieldBase::DiscretizeInfo infoDefault = {-1, -1, true};
+  const topology::FieldBase::DiscretizeInfo infoA = {1, 2, false};
+  const topology::FieldBase::DiscretizeInfo infoB = {2, 2, true};
+  
+  CPPUNIT_ASSERT(_material);
+  _material->auxFieldDiscretization("A", infoA);
+  _material->auxFieldDiscretization("B", infoB);
+
+  { // A
+    const topology::FieldBase::DiscretizeInfo& test = _material->auxFieldDiscretization("A");
+    CPPUNIT_ASSERT_EQUAL(test.basisOrder, infoA.basisOrder);
+    CPPUNIT_ASSERT_EQUAL(test.quadOrder, infoA.quadOrder);
+    CPPUNIT_ASSERT_EQUAL(test.isBasisContinuous, infoA.isBasisContinuous);
+  } // A
+
+  { // B
+    const topology::FieldBase::DiscretizeInfo& test = _material->auxFieldDiscretization("B");
+    CPPUNIT_ASSERT_EQUAL(test.basisOrder, infoB.basisOrder);
+    CPPUNIT_ASSERT_EQUAL(test.quadOrder, infoB.quadOrder);
+    CPPUNIT_ASSERT_EQUAL(test.isBasisContinuous, infoB.isBasisContinuous);
+  } // B
+
+  { // C (default)
+    const topology::FieldBase::DiscretizeInfo& test = _material->auxFieldDiscretization("C");
+    CPPUNIT_ASSERT_EQUAL(test.basisOrder, infoDefault.basisOrder);
+    CPPUNIT_ASSERT_EQUAL(test.quadOrder, infoDefault.quadOrder);
+    CPPUNIT_ASSERT_EQUAL(test.isBasisContinuous, infoDefault.isBasisContinuous);
+  } // C (default)
+
+  { // default
+    const topology::FieldBase::DiscretizeInfo& test = _material->auxFieldDiscretization("default");
+    CPPUNIT_ASSERT_EQUAL(test.basisOrder, infoDefault.basisOrder);
+    CPPUNIT_ASSERT_EQUAL(test.quadOrder, infoDefault.quadOrder);
+    CPPUNIT_ASSERT_EQUAL(test.isBasisContinuous, infoDefault.isBasisContinuous);
+  } // default
+
+  PYLITH_METHOD_END;
+} // testAuxFieldsDiscretization
+
+
+// ----------------------------------------------------------------------
+// Test auxFieldsDB().
+void
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testAuxFieldsDB(void)
+{ // testAuxFieldsDB
+  PYLITH_METHOD_BEGIN;
+
+  const std::string label = "test db";
+  spatialdata::spatialdb::SimpleDB db;
+  db.label(label.c_str());
+
+  CPPUNIT_ASSERT(_material);
+  _material->auxFieldsDB(&db);
+
+  CPPUNIT_ASSERT(_material->_auxFieldsDB);
+  CPPUNIT_ASSERT_EQUAL(label, std::string(_material->_auxFieldsDB->label()));
+
+  PYLITH_METHOD_END;
+} // testAuxFieldsDB
 
 
 // ----------------------------------------------------------------------
@@ -343,29 +529,26 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testVerifyConfigura
 
 
 // ----------------------------------------------------------------------
-// Test integrateResidual().
+// Test checkConstraints().
 void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testIntegrateResidual(void)
-{ // testIntegrateResidual
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testCheckConstraints(void)
+{ // testCheckConstraints
   PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT_MESSAGE("Test incomplete.", false); // :TODO: ADD MORE HERE
+  CPPUNIT_ASSERT(_material);
+
+  _initializeFull();
+
+  // Call checkConstraints()
+  CPPUNIT_ASSERT(_material);
+  CPPUNIT_ASSERT(_mesh);
+  _material->checkConstraints(*_mesh);
+
+  // Nothing to test.
 
   PYLITH_METHOD_END;
-} // testIntegrateResidual
+} // testVerifyConfiguration
 
-
-// ----------------------------------------------------------------------
-// Test integrateJacobian().
-void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testIntegrateJacobian(void)
-{ // testIntegrateJacobian
-  PYLITH_METHOD_BEGIN;
-
-  CPPUNIT_ASSERT_MESSAGE("Test incomplete.", false); // :TODO: ADD MORE HERE
-
-  PYLITH_METHOD_END;
-} // testIntegrateJacobian
 
 // MaterialNew ========================================
 
@@ -415,75 +598,120 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testLabel(void)
 
 
 // ----------------------------------------------------------------------
-// Test auxFieldsDB().
+// Test initialize().
 void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testAuxFieldsDB(void)
-{ // testAuxFieldsDB
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testInitialize(void)
+{ // testInitialize
   PYLITH_METHOD_BEGIN;
 
-  const std::string label = "test db";
-  spatialdata::spatialdb::SimpleDB db;
-  db.label(label.c_str());
+  CPPUNIT_ASSERT(_data);
+
+  // Call initialize()
+  _initializeFull(); // includes setting up auxFields
 
   CPPUNIT_ASSERT(_material);
-  _material->auxFieldsDB(&db);
+  const pylith::topology::Field& auxFields = _material->auxFields();
 
-  CPPUNIT_ASSERT(_material->_auxFieldsDB);
-  CPPUNIT_ASSERT_EQUAL(label, std::string(_material->_auxFieldsDB->label()));
+  _material->_auxFields->view("AUX FIELDS"); // :DEBUGGING:
+
+  // Check result
+  CPPUNIT_ASSERT_EQUAL(std::string("auxiliary fields"), std::string(auxFields.label()));
+  CPPUNIT_ASSERT_EQUAL(_data->dimension, auxFields.spaceDim());
+
+  PylithReal norm = 0.0;
+  PylithReal t = 0.0;
+  const PetscDM dm = auxFields.dmMesh();CPPUNIT_ASSERT(dm);
+  pylith::topology::FieldQuery* query = _material->_auxFieldsQuery;
+  query->openDB(_db, _data->lengthScale);
+  PetscErrorCode err = DMPlexComputeL2Diff(dm, t, query->functions(), (void**)query->contextPtrs(), auxFields.globalVector(), &norm);PYLITH_CHECK_ERROR(err);
+  query->closeDB(_db);
+  const PylithReal tolerance = 1.0e-6;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
 
   PYLITH_METHOD_END;
-} // testAuxFieldsDB
+} // testInitialize
 
 
 // ----------------------------------------------------------------------
-// Test discretization().
+// Test computeRHSResidual().
 void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testDiscretization(void)
-{ // testDiscretization
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeRHSResidual(void)
+{ // testComputeRHSResidual
   PYLITH_METHOD_BEGIN;
 
-  const topology::FieldBase::DiscretizeInfo infoDefault = {-1, -1, true};
-  const topology::FieldBase::DiscretizeInfo infoA = {1, 2, false};
-  const topology::FieldBase::DiscretizeInfo infoB = {2, 2, true};
-  
-  CPPUNIT_ASSERT(_material);
-  _material->auxFieldDiscretization("A", infoA);
-  _material->auxFieldDiscretization("B", infoB);
-
-  { // A
-    const topology::FieldBase::DiscretizeInfo& test = _material->auxFieldDiscretization("A");
-    CPPUNIT_ASSERT_EQUAL(test.basisOrder, infoA.basisOrder);
-    CPPUNIT_ASSERT_EQUAL(test.quadOrder, infoA.quadOrder);
-    CPPUNIT_ASSERT_EQUAL(test.isBasisContinuous, infoA.isBasisContinuous);
-  } // A
-
-  { // B
-    const topology::FieldBase::DiscretizeInfo& test = _material->auxFieldDiscretization("B");
-    CPPUNIT_ASSERT_EQUAL(test.basisOrder, infoB.basisOrder);
-    CPPUNIT_ASSERT_EQUAL(test.quadOrder, infoB.quadOrder);
-    CPPUNIT_ASSERT_EQUAL(test.isBasisContinuous, infoB.isBasisContinuous);
-  } // B
-
-  { // C (default)
-    const topology::FieldBase::DiscretizeInfo& test = _material->auxFieldDiscretization("C");
-    CPPUNIT_ASSERT_EQUAL(test.basisOrder, infoDefault.basisOrder);
-    CPPUNIT_ASSERT_EQUAL(test.quadOrder, infoDefault.quadOrder);
-    CPPUNIT_ASSERT_EQUAL(test.isBasisContinuous, infoDefault.isBasisContinuous);
-  } // C (default)
-
-  { // default
-    const topology::FieldBase::DiscretizeInfo& test = _material->auxFieldDiscretization("default");
-    CPPUNIT_ASSERT_EQUAL(test.basisOrder, infoDefault.basisOrder);
-    CPPUNIT_ASSERT_EQUAL(test.quadOrder, infoDefault.quadOrder);
-    CPPUNIT_ASSERT_EQUAL(test.isBasisContinuous, infoDefault.isBasisContinuous);
-  } // default
+  CPPUNIT_ASSERT_MESSAGE("Test not implemented.", false); // :TODO: ADD MORE HERE
 
   PYLITH_METHOD_END;
-} // testDiscretization
+} // testComputeRHSResidual
 
 
 // ----------------------------------------------------------------------
-// Initialize test data.
+// Test computeRHSJacobian().
+void
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeRHSJacobian(void)
+{ // testComputeRHSJacobian
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT_MESSAGE("Test not implemented.", false); // :TODO: ADD MORE HERE
+
+  PYLITH_METHOD_END;
+} // testComputeRHSJacobian
+
+
+// ----------------------------------------------------------------------
+// Test computeLHSResidual().
+void
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeLHSResidual(void)
+{ // testComputeLHSResidual
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT_MESSAGE("Test not implemented.", false); // :TODO: ADD MORE HERE
+
+  PYLITH_METHOD_END;
+} // testComputeLHSResidual
+
+
+// ----------------------------------------------------------------------
+// Test computeLHSJacobianImplicit().
+void
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeLHSJacobianImplicit(void)
+{ // testComputeLHSJacobianImplicit
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT_MESSAGE("Test not implemented.", false); // :TODO: ADD MORE HERE
+
+  PYLITH_METHOD_END;
+} // testComputeLHSJacobianImplicit
+
+
+// ----------------------------------------------------------------------
+// Test computeLHSJacobianExplicit().
+void
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeLHSJacobianExplicit(void)
+{ // testComputeLHSJacobianExplicit
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT_MESSAGE("Test not implemented.", false); // :TODO: ADD MORE HERE
+
+  PYLITH_METHOD_END;
+} // testComputeLHSJacobianExplicit
+
+
+// ----------------------------------------------------------------------
+// Test updateStateVars().
+void
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testUpdateStateVars(void)
+{ // testUpdateStateVars
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT_MESSAGE("Test not implemented.", false); // :TODO: ADD MORE HERE
+
+  PYLITH_METHOD_END;  
+} // testUpdateStateVars
+
+
+// ----------------------------------------------------------------------
+// Do minimal initilaization of test data.
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_initializeMin(void)
 { // _initializeMin
@@ -521,7 +749,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_initializeMin(void
 
 
 // ----------------------------------------------------------------------
-// Initialize test data.
+// Complete initilaization of test data.
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_initializeFull(void)
 { // _initializeFull
@@ -546,10 +774,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_initializeFull(voi
   delete _solution; _solution = new pylith::topology::Field(*_mesh);
   CPPUNIT_ASSERT(_data->discretizations);
   _solution->subfieldAdd("displacement", _data->dimension, topology::Field::VECTOR, _data->discretizations[0], _data->lengthScale);
-  if (_data->useInertia) {
-    const PylithReal velocityScale = _data->lengthScale / _data->timeScale;
-    _solution->subfieldAdd("velocity", _data->dimension, topology::Field::VECTOR, _data->discretizations[1], velocityScale);
-  } // if
+  _solution->subfieldAdd("velocity", _data->dimension, topology::Field::VECTOR, _data->discretizations[1], _data->lengthScale / _data->timeScale);
   _solution->subfieldsSetup();
   _solution->allocate();
   _solution->zeroAll();

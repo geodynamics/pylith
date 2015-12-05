@@ -26,9 +26,9 @@
 
 #include "pylith/materials/Query.hh" // USES Query
 extern "C" {
-#include "pylith/fekernels/dispvel.h" // USES fekernels
-#include "pylith/fekernels/elasticity.h" // USES fekernels
-#include "pylith/fekernels/linearelasticityplanestrain.h" // USES fekernels
+#include "pylith/fekernels/dispvel.h" // USES DispVel kernels
+#include "pylith/fekernels/elasticity.h" // USES Elasticity kernels
+#include "pylith/fekernels/linearelasticityplanestrain.h" // USES IsotropicLinearElasticityPlaneStrain kernels
 }
 
 #include "petscds.h"
