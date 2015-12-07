@@ -74,7 +74,7 @@ const PetscPointJac pylith::materials::IsotropicLinearElasticityPlaneStrainData_
 const PetscPointFunc pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_kernelsLHSResidual[2*2] = 
   {
     // displacement
-    pylith_fekernels_IsotropicLinearElasticityPlaneStrain_f0,
+    NULL,
     NULL,
     // velocity
     pylith_fekernels_DispVel_f0,
