@@ -37,124 +37,96 @@ const pylith::topology::Field::DiscretizeInfo pylith::materials::IsotropicLinear
   {1, 1, true},
 };
 
-const PetscPointFunc pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_kernelsRHSResidual[2][2] =
+const PetscPointFunc pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_kernelsRHSResidual[2*2] =
   {
-    { // displacement
-      NULL,
-      pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1,
-    },
-    { // velocity
-      pylith_fekernels_DispVel_g0,
-      NULL,
-    },
+    // displacement
+    NULL,
+    pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1,
+    // velocity
+    pylith_fekernels_DispVel_g0,
+    NULL,
   };
 
-const PetscPointJac pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_kernelsRHSJacobian[2][2][4] = 
+const PetscPointJac pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_kernelsRHSJacobian[2*2*4] = 
   {
-    {
-      { // disp/disp
-	NULL,
-	NULL,
-	NULL,
-	pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3_uu,
-      },
-      { // disp/vel
-	NULL,
-	NULL,
-	NULL,
-	NULL,
-      },
-    },
-    {
-      { // vel/disp
-	NULL,
-	NULL,
-	NULL,
-	NULL,
-      },
-      { // vel/vel
-	pylith_fekernels_DispVel_Jg0_vv,
-	NULL,
-	NULL,
-	NULL,
-      },
-    },
+    // disp/disp
+    NULL,
+    NULL,
+    NULL,
+    pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3_uu,
+    // disp/vel
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    // vel/disp
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    // vel/vel
+    pylith_fekernels_DispVel_Jg0_vv,
+    NULL,
+    NULL,
+    NULL,
 };
 
-const PetscPointFunc pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_kernelsLHSResidual[2][2] = 
+const PetscPointFunc pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_kernelsLHSResidual[2*2] = 
   {
-    { // displacement
-      pylith_fekernels_IsotropicLinearElasticityPlaneStrain_f0,
-      NULL,
-    },
-    { // velocity
-      pylith_fekernels_DispVel_f0,
-      NULL,
-    },
+    // displacement
+    pylith_fekernels_IsotropicLinearElasticityPlaneStrain_f0,
+    NULL,
+    // velocity
+    pylith_fekernels_DispVel_f0,
+    NULL,
   };
 
-const PetscPointJac pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_kernelsLHSJacobianImplicit[2][2][4] = 
+const PetscPointJac pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_kernelsLHSJacobianImplicit[2*2*4] = 
   {
-    {
-      { // disp/disp
-	NULL,
-	NULL,
-	NULL,
-	NULL,
-      },
-      { // disp/vel
-	NULL,
-	NULL,
-	NULL,
-	NULL,
-      },
-    },
-    {
-      { // vel/disp
-	pylith_fekernels_DispVel_Jf0_vu_implicit,
-	NULL,
-	NULL,
-	NULL,
-      },
-      { // vel/vel
-	NULL,
-	NULL,
-	NULL,
-	NULL,
-      },
-    },
-};
-const PetscPointJac pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_kernelsLHSJacobianExplicit[2][2][4] = 
+    // disp/disp
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    // disp/vel
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    // vel/disp
+    pylith_fekernels_DispVel_Jf0_vu_implicit,
+    NULL,
+    NULL,
+    NULL,
+    // vel/vel
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+  };
+const PetscPointJac pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_kernelsLHSJacobianExplicit[2*2*4] = 
   {
-    {
-      { // disp/disp
-	NULL,
-	NULL,
-	NULL,
-	NULL,
-      },
-      { // disp/vel
-	NULL,
-	NULL,
-	NULL,
-	NULL,
-      },
-    },
-    {
-      { // vel/disp
-	pylith_fekernels_DispVel_Jf0_vu_explicit,
-	NULL,
-	NULL,
-	NULL,
-      },
-      { // vel/vel
-	NULL,
-	NULL,
-	NULL,
-	NULL,
-      },
-    },
-};
+    // disp/disp
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    // disp/vel
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    // vel/disp
+    pylith_fekernels_DispVel_Jf0_vu_explicit,
+    NULL,
+    NULL,
+    NULL,
+    // vel/vel
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+  };
 
 const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_filenameAuxFieldsDB = "data/matinitialize.spatialdb";
 
@@ -179,11 +151,11 @@ pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::IsotropicLinea
 
   filenameAuxFieldsDB = const_cast<char*>(_filenameAuxFieldsDB);
 
-  kernelsRHSResidual = (PetscPointFunc**) _kernelsRHSResidual;
-  kernelsRHSJacobian = (PetscPointJac***) _kernelsRHSJacobian;
-  kernelsLHSResidual = (PetscPointFunc**) _kernelsLHSResidual;
-  kernelsLHSJacobianImplicit = (PetscPointJac***) _kernelsLHSJacobianImplicit;
-  kernelsLHSJacobianExplicit = (PetscPointJac***) _kernelsLHSJacobianExplicit;
+  kernelsRHSResidual = const_cast<PetscPointFunc*>(_kernelsRHSResidual);
+  kernelsRHSJacobian = const_cast<PetscPointJac*>(_kernelsRHSJacobian);
+  kernelsLHSResidual = const_cast<PetscPointFunc*>( _kernelsLHSResidual);
+  kernelsLHSJacobianImplicit = const_cast<PetscPointJac*>(_kernelsLHSJacobianImplicit);
+  kernelsLHSJacobianExplicit = const_cast<PetscPointJac*>( _kernelsLHSJacobianExplicit);
 
   lengthScale = _lengthScale;
   timeScale = _timeScale;

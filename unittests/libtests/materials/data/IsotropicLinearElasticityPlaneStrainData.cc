@@ -18,6 +18,10 @@
 
 #include "IsotropicLinearElasticityPlaneStrainData.hh"
 
+
+const int pylith::materials::IsotropicLinearElasticityPlaneStrainData::numKernelsResidual = 2;
+const int pylith::materials::IsotropicLinearElasticityPlaneStrainData::numKernelsJacobian = 4;
+
 // ----------------------------------------------------------------------
 // Constructor
 pylith::materials::IsotropicLinearElasticityPlaneStrainData::IsotropicLinearElasticityPlaneStrainData(void) :

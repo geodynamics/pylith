@@ -60,11 +60,13 @@ public:
 
   char* filenameAuxFieldsDB; ///< Name of file with data for auxFieldsDB.
 
-  PetscPointFunc** kernelsRHSResidual; ///< FE kernels for RHS residual, G(t,s).
-  PetscPointJac*** kernelsRHSJacobian; ///< FE kernels for RHS Jacobian, G(t,s).
-  PetscPointFunc** kernelsLHSResidual; ///< FE kernels for LHS residual, F(t,s,\dot{s}).
-  PetscPointJac*** kernelsLHSJacobianImplicit; ///< FE kernels for LHS Jacobian, F(t,s,\dot{s}) with implicit time-stepping.
-  PetscPointJac*** kernelsLHSJacobianExplicit;///< FE kernels for LHS Jacobian, F(t,s,\dot{s}) with expicit time-stepping.
+  static const int numKernelsResidual;
+  static const int numKernelsJacobian;
+  PetscPointFunc* kernelsRHSResidual; ///< FE kernels for RHS residual, G(t,s).
+  PetscPointJac* kernelsRHSJacobian; ///< FE kernels for RHS Jacobian, G(t,s).
+  PetscPointFunc* kernelsLHSResidual; ///< FE kernels for LHS residual, F(t,s,\dot{s}).
+  PetscPointJac* kernelsLHSJacobianImplicit; ///< FE kernels for LHS Jacobian, F(t,s,\dot{s}) with implicit time-stepping.
+  PetscPointJac* kernelsLHSJacobianExplicit;///< FE kernels for LHS Jacobian, F(t,s,\dot{s}) with expicit time-stepping.
 
   PylithReal lengthScale; ///< Length scale for nondimensionalization.
   PylithReal timeScale; ///< Time scale for nondimensionalization.

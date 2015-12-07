@@ -53,11 +53,11 @@ private:
 
   static const char* _filenameAuxFieldsDB;
 
-  static const PetscPointFunc _kernelsRHSResidual[2][2];
-  static const PetscPointJac _kernelsRHSJacobian[2][2][4];
-  static const PetscPointFunc _kernelsLHSResidual[2][2];
-  static const PetscPointJac _kernelsLHSJacobianImplicit[2][2][4];
-  static const PetscPointJac _kernelsLHSJacobianExplicit[2][2][4];
+  static const PetscPointFunc _kernelsRHSResidual[2*2];
+  static const PetscPointJac _kernelsRHSJacobian[2*2*4];
+  static const PetscPointFunc _kernelsLHSResidual[2*2];
+  static const PetscPointJac _kernelsLHSJacobianImplicit[2*2*4];
+  static const PetscPointJac _kernelsLHSJacobianExplicit[2*2*4];
 
   static const PylithReal _lengthScale;
   static const PylithReal _timeScale;

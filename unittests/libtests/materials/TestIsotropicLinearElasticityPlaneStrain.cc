@@ -196,16 +196,19 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_setFEKernelsRH
   _material->_setFEKernelsRHSResidual(*_solution);
 
   PetscDS prob = NULL;
-  PetscErrorCode err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);
+  PetscErrorCode err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);CPPUNIT_ASSERT(prob);
 
   const int numSolnFields = _data->numSolnFields;
+  const int numFieldKernels = _data->numKernelsResidual;
   for (int iField=0; iField < numSolnFields; ++iField) {
-    const PetscPointFunc* kernels = _data->kernelsRHSResidual[iField];
+    const int indexK = iField*numFieldKernels;
+
+    const PetscPointFunc* kernelsE = _data->kernelsRHSResidual;CPPUNIT_ASSERT(kernelsE);
     PetscPointFunc g0 = NULL;
     PetscPointFunc g1 = NULL;
     err = PetscDSGetResidual(prob, iField, &g0, &g1);CPPUNIT_ASSERT(!err);
-    CPPUNIT_ASSERT_EQUAL(kernels[0], g0);
-    CPPUNIT_ASSERT_EQUAL(kernels[1], g1);
+    CPPUNIT_ASSERT(kernelsE[indexK+0] == g0);
+    CPPUNIT_ASSERT(kernelsE[indexK+1] == g1);
   } // for
 
   PYLITH_METHOD_END;
@@ -226,21 +229,24 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_setFEKernelsRH
   _material->_setFEKernelsRHSJacobian(*_solution);
 
   PetscDS prob = NULL;
-  PetscErrorCode err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);
+  PetscErrorCode err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);CPPUNIT_ASSERT(prob);
 
   const int numSolnFields = _data->numSolnFields;
+  const int numFieldKernels = _data->numKernelsJacobian;
   for (int iField=0; iField < numSolnFields; ++iField) {
     for (int jField=0; jField < numSolnFields; ++jField) {
-      const PetscPointJac* kernels = _data->kernelsRHSJacobian[iField][jField];
+      const int indexK = iField*numSolnFields*numFieldKernels + jField*numFieldKernels;
+ 
+      const PetscPointJac* kernelsE = _data->kernelsRHSJacobian;CPPUNIT_ASSERT(kernelsE);
       PetscPointJac Jg0 = NULL;
       PetscPointJac Jg1 = NULL;
       PetscPointJac Jg2 = NULL;
       PetscPointJac Jg3 = NULL;
       err = PetscDSGetJacobian(prob, iField, jField, &Jg0, &Jg1, &Jg2, &Jg3);CPPUNIT_ASSERT(!err);
-      CPPUNIT_ASSERT_EQUAL(kernels[0], Jg0);
-      CPPUNIT_ASSERT_EQUAL(kernels[1], Jg1);
-      CPPUNIT_ASSERT_EQUAL(kernels[2], Jg2);
-      CPPUNIT_ASSERT_EQUAL(kernels[3], Jg3);
+      CPPUNIT_ASSERT(kernelsE[indexK+0] == Jg0);
+      CPPUNIT_ASSERT(kernelsE[indexK+1] == Jg1);
+      CPPUNIT_ASSERT(kernelsE[indexK+2] == Jg2);
+      CPPUNIT_ASSERT(kernelsE[indexK+3] == Jg3);
     } // for
   } // for
   
@@ -262,16 +268,19 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_setFEKernelsLH
   _material->_setFEKernelsLHSResidual(*_solution);
 
   PetscDS prob = NULL;
-  PetscErrorCode err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);
+  PetscErrorCode err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);CPPUNIT_ASSERT(prob);
 
   const int numSolnFields = _data->numSolnFields;
+  const int numFieldKernels = _data->numKernelsResidual;
   for (int iField=0; iField < numSolnFields; ++iField) {
-    const PetscPointFunc* kernels = _data->kernelsLHSResidual[iField];
+    const int indexK = iField*numFieldKernels;
+
+    const PetscPointFunc* kernelsE = _data->kernelsLHSResidual;CPPUNIT_ASSERT(kernelsE);
     PetscPointFunc f0 = NULL;
     PetscPointFunc f1 = NULL;
     err = PetscDSGetResidual(prob, iField, &f0, &f1);CPPUNIT_ASSERT(!err);
-    CPPUNIT_ASSERT_EQUAL(kernels[0], f0);
-    CPPUNIT_ASSERT_EQUAL(kernels[1], f1);
+    CPPUNIT_ASSERT(kernelsE[indexK+0] == f0);
+    CPPUNIT_ASSERT(kernelsE[indexK+1] == f1);
   } // for
 
   PYLITH_METHOD_END;
@@ -292,26 +301,27 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_setFEKernelsLH
   _material->_setFEKernelsRHSResidual(*_solution);
 
   PetscDS prob = NULL;
-  PetscErrorCode err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);
+  PetscErrorCode err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);CPPUNIT_ASSERT(prob);
 
   const int numSolnFields = _data->numSolnFields;
-  // LHS Jacobian implicit
+  const int numFieldKernels = _data->numKernelsJacobian;
   for (int iField=0; iField < numSolnFields; ++iField) {
     for (int jField=0; jField < numSolnFields; ++jField) {
-      const PetscPointJac* kernels = _data->kernelsLHSJacobianImplicit[iField][jField];
+      const int indexK = iField*numSolnFields*numFieldKernels + jField*numFieldKernels;
+
+      const PetscPointJac* kernelsE = _data->kernelsLHSJacobianImplicit;CPPUNIT_ASSERT(kernelsE);
       PetscPointJac Jf0 = NULL;
       PetscPointJac Jf1 = NULL;
       PetscPointJac Jf2 = NULL;
       PetscPointJac Jf3 = NULL;
       err = PetscDSGetJacobian(prob, iField, jField, &Jf0, &Jf1, &Jf2, &Jf3);CPPUNIT_ASSERT(!err);
-      CPPUNIT_ASSERT_EQUAL(kernels[0], Jf0);
-      CPPUNIT_ASSERT_EQUAL(kernels[1], Jf1);
-      CPPUNIT_ASSERT_EQUAL(kernels[2], Jf2);
-      CPPUNIT_ASSERT_EQUAL(kernels[3], Jf3);
+      CPPUNIT_ASSERT(kernelsE[indexK+0] == Jf0);
+      CPPUNIT_ASSERT(kernelsE[indexK+1] == Jf1);
+      CPPUNIT_ASSERT(kernelsE[indexK+2] == Jf2);
+      CPPUNIT_ASSERT(kernelsE[indexK+3] == Jf3);
     } // for
   } // for
   
-
   PYLITH_METHOD_END;
 } // test_setFEKernelsLHSJacobianImplicit
 
@@ -330,26 +340,27 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_setFEKernelsLH
   _material->_setFEKernelsRHSResidual(*_solution);
 
   PetscDS prob = NULL;
-  PetscErrorCode err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);
+  PetscErrorCode err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);CPPUNIT_ASSERT(prob);
 
   const int numSolnFields = _data->numSolnFields;
-  // LHS Jacobian implicit
+  const int numFieldKernels = _data->numKernelsJacobian;
   for (int iField=0; iField < numSolnFields; ++iField) {
     for (int jField=0; jField < numSolnFields; ++jField) {
-      const PetscPointJac* kernels = _data->kernelsLHSJacobianExplicit[iField][jField];
+      const int indexK = iField*numSolnFields*numFieldKernels + jField*numFieldKernels;
+
+      const PetscPointJac* kernelsE = _data->kernelsLHSJacobianExplicit;CPPUNIT_ASSERT(kernelsE);
       PetscPointJac Jf0 = NULL;
       PetscPointJac Jf1 = NULL;
       PetscPointJac Jf2 = NULL;
       PetscPointJac Jf3 = NULL;
       err = PetscDSGetJacobian(prob, iField, jField, &Jf0, &Jf1, &Jf2, &Jf3);CPPUNIT_ASSERT(!err);
-      CPPUNIT_ASSERT_EQUAL(kernels[0], Jf0);
-      CPPUNIT_ASSERT_EQUAL(kernels[1], Jf1);
-      CPPUNIT_ASSERT_EQUAL(kernels[2], Jf2);
-      CPPUNIT_ASSERT_EQUAL(kernels[3], Jf3);
+      CPPUNIT_ASSERT(kernelsE[indexK+0] == Jf0);
+      CPPUNIT_ASSERT(kernelsE[indexK+1] == Jf1);
+      CPPUNIT_ASSERT(kernelsE[indexK+2] == Jf2);
+      CPPUNIT_ASSERT(kernelsE[indexK+3] == Jf3);
     } // for
   } // for
   
-
   PYLITH_METHOD_END;
 } // test_setFEKernelsLHSJacobianExplicit
 
