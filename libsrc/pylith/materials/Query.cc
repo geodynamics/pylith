@@ -26,11 +26,11 @@
 // ----------------------------------------------------------------------
 // Query spatial database for density in 2-D.
 PetscErrorCode
-pylith::materials::Query::dbQueryDensity2D(PetscInt dim,
-                       PetscReal time,
-					   const PetscReal x[],
-					   PetscInt nvalues,
-					   PetscScalar* values,
+pylith::materials::Query::dbQueryDensity2D(PylithInt dim,
+					   PylithReal t,
+					   const PylithReal x[],
+					   PylithInt nvalues,
+					   PylithScalar* values,
 					   void* context)
 { // dbQueryDensity2D
   PYLITH_METHOD_BEGIN;
@@ -94,11 +94,11 @@ pylith::materials::Query::dbQueryDensity2D(PetscInt dim,
 // ----------------------------------------------------------------------
 // Query spatial database for shear modulus, $\mu$, in 2-D.
 PetscErrorCode
-pylith::materials::Query::dbQueryMu2D(PetscInt dim,
-                      PetscReal time,
-				      const PetscReal x[],
-				      PetscInt nvalues,
-				      PetscScalar* values,
+pylith::materials::Query::dbQueryMu2D(PylithInt dim,
+				      PylithReal t,
+				      const PylithReal x[],
+				      PylithInt nvalues,
+				      PylithScalar* values,
 				      void* context)
 { // dbQueryMu2D
   PYLITH_METHOD_BEGIN;
@@ -173,11 +173,11 @@ pylith::materials::Query::dbQueryMu2D(PetscInt dim,
 // ----------------------------------------------------------------------
 // Query spatial database for Lame's constant, $\lambda$, in 2-D.
 PetscErrorCode
-pylith::materials::Query::dbQueryLambda2D(PetscInt dim,
-                      PetscReal time,
-					  const PetscReal x[],
-					  PetscInt nvalues,
-					  PetscScalar* values,
+pylith::materials::Query::dbQueryLambda2D(PylithInt dim,
+					  PylithReal t,
+					  const PylithReal x[],
+					  PylithInt nvalues,
+					  PylithScalar* values,
 					  void* context)
 { // dbQueryLambda2D
   PYLITH_METHOD_BEGIN;
@@ -265,11 +265,11 @@ pylith::materials::Query::dbQueryLambda2D(PetscInt dim,
 // ----------------------------------------------------------------------
 // Query spatial database for body force vector in 2-D.
 PetscErrorCode
-pylith::materials::Query::dbQueryBodyForce2D(PetscInt dim,
-                         PetscReal time,
-					     const PetscReal x[],
-					     PetscInt nvalues,
-					     PetscScalar* values,
+pylith::materials::Query::dbQueryBodyForce2D(PylithInt dim,
+					     PylithReal t,
+					     const PylithReal x[],
+					     PylithInt nvalues,
+					     PylithScalar* values,
 					     void* context)
 { // dbQueryMu
   PYLITH_METHOD_BEGIN;

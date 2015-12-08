@@ -171,11 +171,11 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
   } // body force
 
   // Make sure DB query functions are set correctly.
-  CPPUNIT_ASSERT_EQUAL(&Query::dbQueryDensity2D, _material->_auxFieldsQuery->queryFn("density"));
-  CPPUNIT_ASSERT_EQUAL(&Query::dbQueryMu2D, _material->_auxFieldsQuery->queryFn("mu"));
-  CPPUNIT_ASSERT_EQUAL(&Query::dbQueryLambda2D, _material->_auxFieldsQuery->queryFn("lambda"));
+  CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryDensity2D, _material->_auxFieldsQuery->queryFn("density"));
+  CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryMu2D, _material->_auxFieldsQuery->queryFn("mu"));
+  CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryLambda2D, _material->_auxFieldsQuery->queryFn("lambda"));
   if (_data->useBodyForce) {
-    CPPUNIT_ASSERT_EQUAL(&Query::dbQueryBodyForce2D, _material->_auxFieldsQuery->queryFn("body force"));
+    CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryBodyForce2D, _material->_auxFieldsQuery->queryFn("body force"));
   } // if
 
   PYLITH_METHOD_END;
@@ -298,7 +298,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_setFEKernelsLH
 
   CPPUNIT_ASSERT(_solution);
   CPPUNIT_ASSERT(_material);
-  _material->_setFEKernelsRHSResidual(*_solution);
+  _material->_setFEKernelsLHSJacobianImplicit(*_solution);
 
   PetscDS prob = NULL;
   PetscErrorCode err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);CPPUNIT_ASSERT(prob);
@@ -337,7 +337,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_setFEKernelsLH
 
   CPPUNIT_ASSERT(_solution);
   CPPUNIT_ASSERT(_material);
-  _material->_setFEKernelsRHSResidual(*_solution);
+  _material->_setFEKernelsLHSJacobianExplicit(*_solution);
 
   PetscDS prob = NULL;
   PetscErrorCode err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);CPPUNIT_ASSERT(prob);
@@ -404,8 +404,22 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
   _material->getAuxField(&density, "density");
 
   density.view("DENSITY");
+
   // Check result
-  CPPUNIT_ASSERT_MESSAGE("Test incomplete.", false); // :TODO: ADD MORE HERE
+  CPPUNIT_ASSERT_EQUAL(std::string("density"), std::string(density.label()));
+  CPPUNIT_ASSERT_EQUAL(_data->dimension, density.spaceDim());
+
+  PylithReal norm = 0.0;
+  PylithReal t = 0.0;
+  const PetscDM dm = density.dmMesh();CPPUNIT_ASSERT(dm);
+
+  const pylith::topology::FieldQuery::queryfn_type queryFunctions[1] = { pylith::materials::Query::dbQueryDensity2D };
+  const pylith::topology::FieldQuery::DBQueryContext queryContexts[1] = { _db };
+  const pylith::topology::FieldQuery::DBQueryContext* queryContextPtrs[1] = { &queryContexts[0] };
+  
+  PetscErrorCode err = DMPlexComputeL2Diff(dm, t, (pylith::topology::FieldQuery::queryfn_type*)queryFunctions, (void**)queryContextPtrs, density.globalVector(), &norm);PYLITH_CHECK_ERROR(err);
+  const PylithReal tolerance = 1.0e-6;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
 
   PYLITH_METHOD_END;
 } // testGetAuxField
@@ -615,17 +629,16 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testInitialize(void
 { // testInitialize
   PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(_data);
-
   // Call initialize()
   _initializeFull(); // includes setting up auxFields
 
   CPPUNIT_ASSERT(_material);
   const pylith::topology::Field& auxFields = _material->auxFields();
 
-  _material->_auxFields->view("AUX FIELDS"); // :DEBUGGING:
+  //_material->_auxFields->view("AUX FIELDS"); // :DEBUGGING:
 
   // Check result
+  CPPUNIT_ASSERT(_data);
   CPPUNIT_ASSERT_EQUAL(std::string("auxiliary fields"), std::string(auxFields.label()));
   CPPUNIT_ASSERT_EQUAL(_data->dimension, auxFields.spaceDim());
 
@@ -634,6 +647,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testInitialize(void
   const PetscDM dm = auxFields.dmMesh();CPPUNIT_ASSERT(dm);
   pylith::topology::FieldQuery* query = _material->_auxFieldsQuery;
   query->openDB(_db, _data->lengthScale);
+
   PetscErrorCode err = DMPlexComputeL2Diff(dm, t, query->functions(), (void**)query->contextPtrs(), auxFields.globalVector(), &norm);PYLITH_CHECK_ERROR(err);
   query->closeDB(_db);
   const PylithReal tolerance = 1.0e-6;
@@ -646,14 +660,54 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testInitialize(void
 // ----------------------------------------------------------------------
 // Test computeRHSResidual().
 void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeRHSResidual(void)
-{ // testComputeRHSResidual
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeResidual(void)
+{ // testComputeResidual
   PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT_MESSAGE("Test not implemented.", false); // :TODO: ADD MORE HERE
+  // Call initialize()
+  _initializeFull(); // includes setting up auxFields
+
+  CPPUNIT_ASSERT(_mesh);
+  pylith::topology::Field residualRHS(*_mesh);
+  residualRHS.cloneSection(*_solution);
+  residualRHS.label("residual RHS");
+  residualRHS.allocate();
+  residualRHS.zeroAll();
+
+  pylith::topology::Field residualLHS(*_mesh);
+  residualLHS.cloneSection(*_solution);
+  residualLHS.label("residual LHS");
+  residualLHS.allocate();
+  residualLHS.zeroAll();
+
+  pylith::topology::Field residual(*_mesh);
+  residual.cloneSection(*_solution);
+  residual.label("residual");
+  residual.allocate();
+  residual.zeroAll();
+
+  pylith::topology::FieldQuery querySoln(*_solution);
+  querySoln.queryFn("displacement", _data->querySolutionDisplacement);
+  querySoln.queryFn("velocity", _data->querySolutionVelocity);
+  querySoln.openDB(_db, _data->lengthScale);
+  querySoln.queryDB();
+  querySoln.closeDB(_db);
+
+  CPPUNIT_ASSERT(_material);
+  PylithReal t = 0.0;
+  PylithReal dt = 0.01;
+  _material->computeRHSResidual(&residualRHS, t, dt, *_solution);
+  _material->computeLHSResidual(&residualLHS, t, dt, *_solution);
+
+  PetscErrorCode err = VecWAXPY(residual.globalVector(), -1.0, residualLHS.globalVector(), residualRHS.globalVector());CPPUNIT_ASSERT(err);
+
+  PylithReal norm = 0.0;
+  err = VecNorm(residual.globalVector(), NORM_2, &norm);CPPUNIT_ASSERT(!err);
+  const PylithReal tolerance = 1.0e-6;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
 
   PYLITH_METHOD_END;
-} // testComputeRHSResidual
+} // testComputeResidual
 
 
 // ----------------------------------------------------------------------
@@ -667,19 +721,6 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeRHSJacob
 
   PYLITH_METHOD_END;
 } // testComputeRHSJacobian
-
-
-// ----------------------------------------------------------------------
-// Test computeLHSResidual().
-void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeLHSResidual(void)
-{ // testComputeLHSResidual
-  PYLITH_METHOD_BEGIN;
-
-  CPPUNIT_ASSERT_MESSAGE("Test not implemented.", false); // :TODO: ADD MORE HERE
-
-  PYLITH_METHOD_END;
-} // testComputeLHSResidual
 
 
 // ----------------------------------------------------------------------

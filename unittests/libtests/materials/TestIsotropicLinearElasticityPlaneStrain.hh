@@ -78,9 +78,8 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain : public CppUn
   CPPUNIT_TEST( testLabel );
   CPPUNIT_TEST( testInitialize );
 
-  CPPUNIT_TEST( testComputeRHSResidual );
+  CPPUNIT_TEST( testComputeResidual );
   CPPUNIT_TEST( testComputeRHSJacobian );
-  CPPUNIT_TEST( testComputeLHSResidual );
   CPPUNIT_TEST( testComputeLHSJacobianImplicit );
   CPPUNIT_TEST( testComputeLHSJacobianExplicit );
   CPPUNIT_TEST( testUpdateStateVars );
@@ -161,14 +160,11 @@ public :
   /// Test initialize().
   void testInitialize(void);
 
-  /// Test computeRHSResidual().
-  void testComputeRHSResidual(void);
+  /// Test computeRHSResidual(), computeLHSResidual().
+  void testComputeResidual(void);
 
   /// Test computeRHSJacobian().
   void testComputeRHSJacobian(void);
-
-  /// Test computeLHSResidual().
-  void testComputeLHSResidual(void);
 
   /// Test computeLHSJacobianImplicit().
   void testComputeLHSJacobianImplicit(void);

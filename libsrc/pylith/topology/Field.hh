@@ -296,7 +296,7 @@ public :
    * structures to be reused across multiple fields, reducing memory
    * usage.
    *
-   * @param sec Field defining layout.
+   * @param src Field defining layout.
    *
    * @note Don't forget to call label(), especially if reusing a field.
    */

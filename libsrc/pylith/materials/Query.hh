@@ -40,66 +40,74 @@ public :
 
   /** Query for density in 2-D.
    *
-   * @param dim Spatial dimension.
-   * @param x Coordinates (nondimensioned) of point location for query.
-   * @param nvalues Size of values array.
-   * @param values Array of values to be returned.
-   * @param context Query context.
+   * @param[in] dim Spatial dimension.
+   * @param[in] t Current time.
+   * @param[in] x Coordinates (nondimensioned) of point location for query.
+   * @param[in] nvalues Size of values array.
+   * @param[out] values Array of values to be returned.
+   * @param[in] context Query context.
+   * @returns PETSc error code (0 for success).
    */
   static
-  PetscErrorCode dbQueryDensity2D(PetscInt dim,
-                  PetscReal time,
-				  const PetscReal x[],
-				  PetscInt nvalues,
-				  PetscScalar* values,
+  PetscErrorCode dbQueryDensity2D(PylithInt dim,
+				  PylithReal t,
+				  const PylithReal x[],
+				  PylithInt nvalues,
+				  PylithScalar* values,
 				  void* context);
 
   /** Query for shear modulus, $\mu$, in 2-D.
    *
-   * @param dim Spatial dimension.
-   * @param x Coordinates (nondimensioned) of point location for query.
-   * @param nvalues Size of values array.
-   * @param values Array of values to be returned.
-   * @param context Query context.
+   * @param[in] dim Spatial dimension.
+   * @param[in] t Current time.
+   * @param[in] x Coordinates (nondimensioned) of point location for query.
+   * @param[in] nvalues Size of values array.
+   * @param[out] values Array of values to be returned.
+   * @param[in] context Query context.
+   * @returns PETSc error code (0 for success).
    */
   static
-  PetscErrorCode dbQueryMu2D(PetscInt dim,
-                 PetscReal time,
-			     const PetscReal x[],
-			     PetscInt nvalues,
-			     PetscScalar* values,
+  PetscErrorCode dbQueryMu2D(PylithInt dim,
+			     PylithReal t,
+			     const PylithReal x[],
+			     PylithInt nvalues,
+			     PylithScalar* values,
 			     void* context);
 
   /** Query for Lame's constant, $\lambda, in 2-D.
    *
-   * @param dim Spatial dimension.
-   * @param x Coordinates (nondimensioned) of point location for query.
-   * @param nvalues Size of values array.
-   * @param values Array of values to be returned.
-   * @param context Query context.
+   * @param[in] dim Spatial dimension.
+   * @param[in] t Current time.
+   * @param[in] x Coordinates (nondimensioned) of point location for query.
+   * @param[in] nvalues Size of values array.
+   * @param[out] values Array of values to be returned.
+   * @param[in] context Query context.
+   * @returns PETSc error code (0 for success).
    */
   static
-  PetscErrorCode dbQueryLambda2D(PetscInt dim,
-                  PetscReal time,
-				  const PetscReal x[],
-				  PetscInt nvalues,
-				  PetscScalar* values,
-                  void* context);
+  PetscErrorCode dbQueryLambda2D(PylithInt dim,
+				 PylithReal t,
+				 const PylithReal x[],
+				 PylithInt nvalues,
+				 PylithScalar* values,
+				 void* context);
 
   /** Query for body force vector in 2-D.
    *
-   * @param dim Spatial dimension.
-   * @param x Coordinates (nondimensioned) of point location for query.
-   * @param nvalues Size of values array.
-   * @param values Array of values to be returned.
-   * @param context Query context.
+   * @param[in] dim Spatial dimension.
+   * @param[in] t Current time.
+   * @param[in] x Coordinates (nondimensioned) of point location for query.
+   * @param[in] nvalues Size of values array.
+   * @param[out] values Array of values to be returned.
+   * @param[in] context Query context.
+   * @returns PETSc error code (0 for success).
    */
   static
-  PetscErrorCode dbQueryBodyForce2D(PetscInt dim,
-                    PetscReal time,
-				    const PetscReal x[],
-				    PetscInt nvalues,
-				    PetscScalar* values,
+  PetscErrorCode dbQueryBodyForce2D(PylithInt dim,
+				    PylithReal t,
+				    const PylithReal x[],
+				    PylithInt nvalues,
+				    PylithScalar* values,
 				    void* context);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////

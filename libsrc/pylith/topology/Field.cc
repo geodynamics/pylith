@@ -1376,7 +1376,7 @@ pylith::topology::Field::copySubfield(const Field& field,
   // Check compatibility of sections
   const int srcSize = field.chartSize();
   const int dstSize = chartSize();
-  if (dstSize < srcSize) {
+  if (dstSize != srcSize) {
     _extractSubfield(field, name);
   } // if
   assert(_localVec && field._localVec);
@@ -1446,6 +1446,9 @@ pylith::topology::Field::_extractSubfield(const Field& field,
   } // if/else
   err = ISDestroy(&subfieldIS);PYLITH_CHECK_ERROR(err);
   
+  this->subfieldAdd(subfieldInfo.metadata.label.c_str(), subfieldInfo.numComponents, subfieldInfo.metadata.vectorFieldType, subfieldInfo.fe, subfieldInfo.metadata.scale);
+  this->subfieldsSetup();
+
   err = DMCreateLocalVector(_dm, &_localVec);PYLITH_CHECK_ERROR(err);
   err = DMCreateGlobalVector(_dm, &_globalVec);PYLITH_CHECK_ERROR(err);
 

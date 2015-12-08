@@ -44,6 +44,9 @@ pylith::materials::IsotropicLinearElasticityPlaneStrainData::IsotropicLinearElas
   kernelsLHSJacobianImplicit(NULL),
   kernelsLHSJacobianExplicit(NULL),
 
+  querySolutionDisplacement(NULL),
+  querySolutionVelocity(NULL),
+
   lengthScale(0),
   timeScale(0),
   pressureScale(0),
