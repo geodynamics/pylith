@@ -46,7 +46,7 @@ main(int argc,
     // Initialize PETSc
     PetscErrorCode err = PetscInitialize(&argc, &argv, NULL, NULL);CHKERRQ(err);
 #if defined(MALLOC_DUMP)
-    err = PetscOptionsSetValue("-malloc_dump", "");CHKERRQ(err);
+    err = PetscOptionsSetValue(NULL, "-malloc_dump", "");CHKERRQ(err);
 #endif
 
     // Initialize Python
