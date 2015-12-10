@@ -79,7 +79,7 @@ class Solver(PetscComponent):
     if self.useCUDA:
       # Set vec_type for CUDA, if it has not already been set.
       from pylith.utils.petsc import optionsSetValue, optionsHasName
-      if not optionsHasName("-vec_type"):
+      if not optionsHasName("-vec_type", 0):
         optionsSetValue("-vec_type", "cusp")
     return
 
