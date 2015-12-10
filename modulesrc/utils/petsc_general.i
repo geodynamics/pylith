@@ -61,7 +61,7 @@
   { // optionsHasName
     PetscBool hasName = PetscBool(0);
     PetscErrorCode err =
-      PetscOptionsHasName(NULL, name, pre, &hasName);
+      PetscOptionsHasName(NULL, pre, name, &hasName);
 
     return (hasName) ? true : false;
   } // optionsHasName
