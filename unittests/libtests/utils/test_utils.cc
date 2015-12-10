@@ -38,7 +38,7 @@ main(int argc,
   try {
     // Initialize PETSc
     PetscErrorCode err = PetscInitialize(&argc, &argv, NULL, NULL);CHKERRQ(err);
-    err = PetscOptionsSetValue("-malloc_dump", "");CHKERRQ(err);
+    err = PetscOptionsSetValue(NULL, "-malloc_dump", "");CHKERRQ(err);
 
     // Create event manager and test controller
     CppUnit::TestResult controller;
