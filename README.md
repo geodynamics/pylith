@@ -39,5 +39,5 @@ and volcanoes.
 ## Authors
 
 * Brad Aagaard, Earthquake Science Center, USGS, USA
-* Matthew Knepley, Rice University, USA
-* Charles Williams, GNS Science, New Zealand, 
+* Matthew Knepley, Computational and Applied Mathematics, Rice University, USA
+* Charles Williams, Tectonophysics, GNS Science, New Zealand
