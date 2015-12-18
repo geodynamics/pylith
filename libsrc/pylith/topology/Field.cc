@@ -52,19 +52,7 @@ pylith::topology::Field::Field(const Mesh& mesh) :
 
     err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
     err = DMClone(dm, &_dm);PYLITH_CHECK_ERROR(err);
-    err = DMGetCoordinatesLocal(dm, &coordVec);PYLITH_CHECK_ERROR(err);
-    if (coordVec) {
-      PetscDM coordDM=NULL, newCoordDM=NULL;
-      PetscSection coordSection=NULL, newCoordSection=NULL;
 
-      err = DMGetCoordinateDM(dm, &coordDM);PYLITH_CHECK_ERROR(err);
-      err = DMGetCoordinateDM(_dm, &newCoordDM);PYLITH_CHECK_ERROR(err);
-      err = DMGetDefaultSection(coordDM, &coordSection);PYLITH_CHECK_ERROR(err);
-      err = PetscSectionClone(coordSection, &newCoordSection);PYLITH_CHECK_ERROR(err);
-      err = DMSetDefaultSection(newCoordDM, newCoordSection);PYLITH_CHECK_ERROR(err);
-      err = PetscSectionDestroy(&newCoordSection);PYLITH_CHECK_ERROR(err);
-      err = DMSetCoordinatesLocal(_dm, coordVec);PYLITH_CHECK_ERROR(err);
-    } // if
     err = PetscSectionCreate(mesh.comm(), &s);PYLITH_CHECK_ERROR(err);
     err = DMSetDefaultSection(_dm, s);PYLITH_CHECK_ERROR(err);
     err = PetscSectionDestroy(&s);PYLITH_CHECK_ERROR(err);
