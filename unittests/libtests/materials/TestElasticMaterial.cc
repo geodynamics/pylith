@@ -908,7 +908,7 @@ pylith::materials::TestElasticMaterial::_initialize(topology::Mesh* mesh,
   PetscErrorCode err = 0;
 
   assert(dmMesh);
-  err = DMPlexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);PYLITH_CHECK_ERROR(err);
+  err = DMGetStratumIS(dmMesh, "material-id", materialId, &cellIS);PYLITH_CHECK_ERROR(err);
   err = ISGetSize(cellIS, &numCells);PYLITH_CHECK_ERROR(err);
   err = ISGetIndices(cellIS, &cells);PYLITH_CHECK_ERROR(err);
 

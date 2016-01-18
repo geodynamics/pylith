@@ -314,7 +314,7 @@ pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
 
   const int numPoints = _TestSubMesh::groupSize;
   for(PetscInt i = 0; i < numPoints; ++i) {
-    err = DMPlexSetLabelValue(dmMesh, _TestSubMesh::label, ncells+_TestSubMesh::groupVertices[i], 1);PYLITH_CHECK_ERROR(err);
+    err = DMSetLabelValue(dmMesh, _TestSubMesh::label, ncells+_TestSubMesh::groupVertices[i], 1);PYLITH_CHECK_ERROR(err);
   } // for
 
   PYLITH_METHOD_END;

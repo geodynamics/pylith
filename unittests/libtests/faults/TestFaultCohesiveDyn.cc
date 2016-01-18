@@ -656,7 +656,7 @@ pylith::faults::TestFaultCohesiveDyn::_initialize(topology::Mesh* const mesh,
 
   PetscInt labelSize;
   PetscErrorCode err;
-  err = DMPlexGetStratumSize(mesh->dmMesh(), _data->label, 1, &labelSize);PYLITH_CHECK_ERROR(err);
+  err = DMGetStratumSize(mesh->dmMesh(), _data->label, 1, &labelSize);PYLITH_CHECK_ERROR(err);
 
   PetscInt firstFaultVertex = 0;
   PetscInt firstLagrangeVertex = labelSize;

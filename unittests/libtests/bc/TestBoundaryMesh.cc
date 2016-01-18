@@ -139,7 +139,7 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
   PetscInt firstFaultVertex = 0;
   PetscInt firstLagrangeVertex, firstFaultCell;
 
-  err = DMPlexGetStratumSize(mesh.dmMesh(), _data->faultLabel, 1, &firstLagrangeVertex);PYLITH_CHECK_ERROR(err);
+  err = DMGetStratumSize(mesh.dmMesh(), _data->faultLabel, 1, &firstLagrangeVertex);PYLITH_CHECK_ERROR(err);
   firstFaultCell = firstLagrangeVertex;
   fault.label(_data->faultLabel);
   fault.id(_data->faultId);

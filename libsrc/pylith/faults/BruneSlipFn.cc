@@ -164,7 +164,7 @@ pylith::faults::BruneSlipFn::initialize(const topology::Mesh& faultMesh,
 
   PetscDM faultDMMesh = faultMesh.dmMesh();assert(faultDMMesh);
   PetscDMLabel clamped = NULL;
-  PetscErrorCode err = DMPlexGetLabel(faultDMMesh, "clamped", &clamped);PYLITH_CHECK_ERROR(err);
+  PetscErrorCode err = DMGetLabel(faultDMMesh, "clamped", &clamped);PYLITH_CHECK_ERROR(err);
 
   _slipVertex.resize(spaceDim);
   for (PetscInt v = vStart; v < vEnd; ++v) {
@@ -274,7 +274,7 @@ pylith::faults::BruneSlipFn::slip(topology::Field* slip,
   DMLabel clamped = NULL;
   PetscErrorCode err;
 
-  err = DMPlexGetLabel(dmMesh, "clamped", &clamped);PYLITH_CHECK_ERROR(err);
+  err = DMGetLabel(dmMesh, "clamped", &clamped);PYLITH_CHECK_ERROR(err);
   const int spaceDim = _slipVertex.size();
   for (PetscInt v = vStart; v < vEnd; ++v) {
     if (FaultCohesiveLagrange::isClampedVertex(clamped, v)) {

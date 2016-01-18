@@ -103,26 +103,26 @@ pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
   PetscInt cStart, cEnd;
   err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
   for(PetscInt c = cStart; c < cEnd; ++c) {
-    err = DMPlexSetLabelValue(dmMesh, "material-id", c, data.materialIds[c-cStart]);PYLITH_CHECK_ERROR(err);
+    err = DMSetLabelValue(dmMesh, "material-id", c, data.materialIds[c-cStart]);PYLITH_CHECK_ERROR(err);
   } // for
 
   // Groups
   for (int iGroup=0, index=0; iGroup < data.numGroups; ++iGroup) {
-    err = DMPlexCreateLabel(dmMesh, data.groupNames[iGroup]);PYLITH_CHECK_ERROR(err);
+    err = DMCreateLabel(dmMesh, data.groupNames[iGroup]);PYLITH_CHECK_ERROR(err);
 
     MeshIO::GroupPtType type;
     const int numPoints = data.groupSizes[iGroup];
     if (0 == strcasecmp("cell", data.groupTypes[iGroup])) {
       type = MeshIO::CELL;
       for(int i=0; i < numPoints; ++i, ++index) {
-        err = DMPlexSetLabelValue(dmMesh, data.groupNames[iGroup], data.groups[index], 1);PYLITH_CHECK_ERROR(err);
+        err = DMSetLabelValue(dmMesh, data.groupNames[iGroup], data.groups[index], 1);PYLITH_CHECK_ERROR(err);
       } // for
     } else if (0 == strcasecmp("vertex", data.groupTypes[iGroup])) {
       type = MeshIO::VERTEX;
       PetscInt numCells;
       err = DMPlexGetHeightStratum(dmMesh, 0, NULL, &numCells);PYLITH_CHECK_ERROR(err);
       for(int i=0; i < numPoints; ++i, ++index) {
-        err = DMPlexSetLabelValue(dmMesh, data.groupNames[iGroup], data.groups[index]+numCells, 1);PYLITH_CHECK_ERROR(err);
+        err = DMSetLabelValue(dmMesh, data.groupNames[iGroup], data.groups[index]+numCells, 1);PYLITH_CHECK_ERROR(err);
       } // for
     } else
       throw std::logic_error("Could not parse group type.");
@@ -210,14 +210,14 @@ pylith::meshio::TestMeshIO::_checkVals(const MeshData& data)
   // check materials
   PetscInt matId = 0;
   for(PetscInt c = cStart; c < cEnd; ++c) {
-    err = DMPlexGetLabelValue(dmMesh, "material-id", c, &matId);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabelValue(dmMesh, "material-id", c, &matId);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(data.materialIds[c-cStart], matId);
   } // for
 
   // Check groups
   PetscInt numGroups, pStart, pEnd;
   err = DMPlexGetChart(dmMesh, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetNumLabels(dmMesh, &numGroups);PYLITH_CHECK_ERROR(err);
+  err = DMGetNumLabels(dmMesh, &numGroups);PYLITH_CHECK_ERROR(err);
   numGroups -= 2; // Remove depth and material labels.
   CPPUNIT_ASSERT_EQUAL(data.numGroups, numGroups);
   PetscInt index  = 0;
@@ -225,12 +225,12 @@ pylith::meshio::TestMeshIO::_checkVals(const MeshData& data)
     const char *name = NULL;
     PetscInt firstPoint = 0;
 
-    err = DMPlexGetLabelName(dmMesh, iLabel, &name);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabelName(dmMesh, iLabel, &name);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(std::string(data.groupNames[iGroup]), std::string(name));
     for(PetscInt p = pStart; p < pEnd; ++p) {
       PetscInt val;
 
-      err = DMPlexGetLabelValue(dmMesh, name, p, &val);PYLITH_CHECK_ERROR(err);
+      err = DMGetLabelValue(dmMesh, name, p, &val);PYLITH_CHECK_ERROR(err);
       if (val >= 0) {
         firstPoint = p;
         break;
@@ -239,11 +239,11 @@ pylith::meshio::TestMeshIO::_checkVals(const MeshData& data)
     std::string groupType = (firstPoint >= cStart && firstPoint < cEnd) ? "cell" : "vertex";
     CPPUNIT_ASSERT_EQUAL(std::string(data.groupTypes[iGroup]), groupType);
     PetscInt numPoints, numVertices = 0;
-    err = DMPlexGetStratumSize(dmMesh, name, 1, &numPoints);PYLITH_CHECK_ERROR(err);
+    err = DMGetStratumSize(dmMesh, name, 1, &numPoints);PYLITH_CHECK_ERROR(err);
     PetscIS pointIS = NULL;
     const PetscInt *points = NULL;
     const PetscInt offset = ("vertex" == groupType) ? numCells : 0;
-    err = DMPlexGetStratumIS(dmMesh, name, 1, &pointIS);PYLITH_CHECK_ERROR(err);
+    err = DMGetStratumIS(dmMesh, name, 1, &pointIS);PYLITH_CHECK_ERROR(err);
     err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
     for(PetscInt p = 0; p < numPoints; ++p) {
       const PetscInt pStart = ("vertex" == groupType) ? vStart : cStart;

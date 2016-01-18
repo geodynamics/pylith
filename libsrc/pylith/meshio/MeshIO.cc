@@ -227,7 +227,7 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
     } // if
     PetscErrorCode err = 0;
     for(PetscInt c = cStart; c < cEnd; ++c) {
-      err = DMPlexSetLabelValue(dmMesh, "material-id", c, materialIds[c-cStart]);PYLITH_CHECK_ERROR(err);
+      err = DMSetLabelValue(dmMesh, "material-id", c, materialIds[c-cStart]);PYLITH_CHECK_ERROR(err);
     } // for
   } // if
 
@@ -253,7 +253,7 @@ pylith::meshio::MeshIO::_getMaterials(int_array* materialIds) const
   PetscErrorCode err = 0;
   PetscInt matId = 0;
   for(PetscInt c = cStart, index = 0; c < cEnd; ++c) {
-    err = DMPlexGetLabelValue(dmMesh, "material-id", c, &matId);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabelValue(dmMesh, "material-id", c, &matId);PYLITH_CHECK_ERROR(err);
     (*materialIds)[index++] = matId;
   } // for
 
@@ -276,8 +276,8 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
   DMLabel        label;
   PetscErrorCode err;
 
-  err = DMPlexCreateLabel(dmMesh, name.c_str());PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetLabel(dmMesh, name.c_str(), &label);PYLITH_CHECK_ERROR(err);
+  err = DMCreateLabel(dmMesh, name.c_str());PYLITH_CHECK_ERROR(err);
+  err = DMGetLabel(dmMesh, name.c_str(), &label);PYLITH_CHECK_ERROR(err);
   if (CELL == type) {
     for(PetscInt p = 0; p < numPoints; ++p) {
       err = DMLabelSetValue(label, points[p], 1);PYLITH_CHECK_ERROR(err);
@@ -346,13 +346,13 @@ pylith::meshio::MeshIO::_getGroupNames(string_vector* names) const
   PetscDM dmMesh = _mesh->dmMesh();assert(dmMesh);
   PetscInt numGroups = 0;
   PetscErrorCode err = 0;
-  err = DMPlexGetNumLabels(dmMesh, &numGroups);PYLITH_CHECK_ERROR(err);
+  err = DMGetNumLabels(dmMesh, &numGroups);PYLITH_CHECK_ERROR(err);
   numGroups -= 2; // Remove depth and material labels.
   names->resize(numGroups);
 
   for (int iGroup=0, iLabel=numGroups-1; iGroup < numGroups; ++iGroup, --iLabel) {
     const char* namestr = NULL;
-    err = DMPlexGetLabelName(dmMesh, iLabel, &namestr);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabelName(dmMesh, iLabel, &namestr);PYLITH_CHECK_ERROR(err);
     (*names)[iGroup] = namestr;
   } // for
 
@@ -385,11 +385,11 @@ pylith::meshio::MeshIO::_getGroup(int_array* points,
   PetscIS groupIS = NULL;
   const PetscInt* groupIndices = NULL;
   PetscErrorCode err;
-  err = DMPlexGetStratumIS(dmMesh, name, 1, &groupIS);PYLITH_CHECK_ERROR(err);
+  err = DMGetStratumIS(dmMesh, name, 1, &groupIS);PYLITH_CHECK_ERROR(err);
   err = ISGetIndices(groupIS, &groupIndices);PYLITH_CHECK_ERROR(err);
 
   PetscInt totalSize;
-  err = DMPlexGetStratumSize(dmMesh, name, 1, &totalSize);PYLITH_CHECK_ERROR(err);
+  err = DMGetStratumSize(dmMesh, name, 1, &totalSize);PYLITH_CHECK_ERROR(err);
 
   *groupType = VERTEX;
   if (totalSize > 0 && (groupIndices[0] >= cStart && groupIndices[0] < cEnd)) {

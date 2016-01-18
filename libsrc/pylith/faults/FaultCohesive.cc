@@ -88,13 +88,13 @@ pylith::faults::FaultCohesive::numVerticesNoMesh(const topology::Mesh& mesh) con
     assert(std::string("") != label());
     // We do not have labels on all ranks until after distribution
     err = MPI_Comm_rank(PetscObjectComm((PetscObject) dmMesh), &rank);PYLITH_CHECK_ERROR(err);
-    err = DMPlexHasLabel(dmMesh, label(), &hasLabel);PYLITH_CHECK_ERROR(err);
+    err = DMHasLabel(dmMesh, label(), &hasLabel);PYLITH_CHECK_ERROR(err);
     if (!hasLabel && !rank) {
       std::ostringstream msg;
       msg << "Mesh missing group of vertices '" << label() << "' for fault interface condition.";
       throw std::runtime_error(msg.str());
     } // if  
-    err = DMPlexGetStratumSize(dmMesh, label(), 1, &nvertices);PYLITH_CHECK_ERROR(err);
+    err = DMGetStratumSize(dmMesh, label(), 1, &nvertices);PYLITH_CHECK_ERROR(err);
   } else {
     assert(3 == mesh.dimension());
     nvertices = -1;
@@ -132,7 +132,7 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
       PetscErrorCode err;
       // We do not have labels on all ranks until after distribution
       err = MPI_Comm_rank(PetscObjectComm((PetscObject) dmMesh), &rank);PYLITH_CHECK_ERROR(err);
-      err = DMPlexHasLabel(dmMesh, charlabel, &hasLabel);PYLITH_CHECK_ERROR(err);
+      err = DMHasLabel(dmMesh, charlabel, &hasLabel);PYLITH_CHECK_ERROR(err);
       if (!hasLabel && !rank) {
         std::ostringstream msg;
         msg << "Mesh missing group of vertices '" << label()
@@ -142,13 +142,13 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
       err = DMGetDimension(dmMesh, &dim);PYLITH_CHECK_ERROR(err);
       err = DMPlexGetDepth(dmMesh, &depth);PYLITH_CHECK_ERROR(err);
       err = MPI_Allreduce(&depth, &gdepth, 1, MPIU_INT, MPI_MAX, mesh->comm());PYLITH_CHECK_ERROR(err);
-      err = DMPlexGetLabel(dmMesh, charlabel, &groupField);PYLITH_CHECK_ERROR(err);
+      err = DMGetLabel(dmMesh, charlabel, &groupField);PYLITH_CHECK_ERROR(err);
       CohesiveTopology::createFault(&faultMesh, *mesh, groupField);
       PetscDMLabel faultBdLabel = NULL;
 
       // We do not have labels on all ranks until after distribution
       if (strlen(edge()) > 0 && !rank) {
-	err = DMPlexGetLabel(dmMesh, edge(), &faultBdLabel);PYLITH_CHECK_ERROR(err);
+	err = DMGetLabel(dmMesh, edge(), &faultBdLabel);PYLITH_CHECK_ERROR(err);
 	if (!faultBdLabel) {
 	  std::ostringstream msg;
 	  msg << "Could not find nodeset/pset '" << edge() << "' marking buried edges for fault '" << label() << "'.";
