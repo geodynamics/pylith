@@ -1414,7 +1414,10 @@ pylith::topology::Field::_extractSubfield(const Field& field,
   indicesSubfield[0] = subfieldIndex;
   err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
   if (subfieldInfo.dm) {
+    PetscSection s;
     err = DMClone(subfieldInfo.dm, &_dm);PYLITH_CHECK_ERROR(err);assert(_dm);
+    err = DMGetDefaultSection(subfieldInfo.dm, &s);PYLITH_CHECK_ERROR(err);
+    err = DMSetDefaultSection(_dm, s);PYLITH_CHECK_ERROR(err);
   } else {
     err = DMCreateSubDM(field.dmMesh(), numSubfields, indicesSubfield, &subfieldIS, &_dm);PYLITH_CHECK_ERROR(err);assert(_dm);
   } // if/else
