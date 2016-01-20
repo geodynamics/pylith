@@ -56,8 +56,6 @@ pylith::topology::Field::Field(const Mesh& mesh) :
 
     err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
     err = DMClone(dm, &_dm);PYLITH_CHECK_ERROR(err);
-    err = DMGetDS(dm, &prob);PYLITH_CHECK_ERROR(err);
-    err = DMSetDS(_dm, prob);PYLITH_CHECK_ERROR(err);
     err = DMGetCoordinatesLocal(dm, &coordVec);PYLITH_CHECK_ERROR(err);
     if (coordVec) {
       PetscDM coordDM=NULL, newCoordDM=NULL;
