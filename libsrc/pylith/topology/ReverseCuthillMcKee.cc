@@ -35,7 +35,7 @@ pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh)
   PetscDM dmNew = NULL;
   PetscErrorCode err;
 
-  err = DMPlexGetLabel(dmOrig, "material-id", &label);PYLITH_CHECK_ERROR(err);
+  err = DMGetLabel(dmOrig, "material-id", &label);PYLITH_CHECK_ERROR(err);
   err = DMPlexGetOrdering(dmOrig, MATORDERINGRCM, label, &permutation);PYLITH_CHECK_ERROR(err);
   err = DMPlexPermute(dmOrig, permutation, &dmNew);PYLITH_CHECK_ERROR(err);
   err = ISDestroy(&permutation);PYLITH_CHECK_ERROR(err);

@@ -172,7 +172,7 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
       conesSize = 0;
       for(PetscInt cell = cStart; cell < cEnd; ++cell) {
         PetscInt value;
-        err = DMPlexGetLabelValue(dmMesh, label, cell, &value);PYLITH_CHECK_ERROR(err);
+        err = DMGetLabelValue(dmMesh, label, cell, &value);PYLITH_CHECK_ERROR(err);
         if (value == labelId)
 	  ++conesSize;
       } // for
@@ -201,7 +201,7 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
 
       if (label) {
         PetscInt value;
-        err = DMPlexGetLabelValue(dmMesh, label, cell, &value);PYLITH_CHECK_ERROR(err);
+        err = DMGetLabelValue(dmMesh, label, cell, &value);PYLITH_CHECK_ERROR(err);
         if (value != labelId) continue;
       } // if
 

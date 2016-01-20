@@ -241,7 +241,7 @@ pylith::materials::MaterialNew::_computeResidual(pylith::topology::Field* residu
   err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) _auxFields->localVector());PYLITH_CHECK_ERROR(err);
 
   // Compute the local residual
-  err = DMPlexGetLabel(dmMesh, "material-id", &label);PYLITH_CHECK_ERROR(err);
+  err = DMGetLabel(dmMesh, "material-id", &label);PYLITH_CHECK_ERROR(err);
   err = DMLabelGetStratumBounds(label, id(), &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
   err = DMPlexComputeResidual_Internal(dmMesh, cStart, cEnd, PETSC_MIN_REAL, solution.localVector(), NULL, residual->localVector(), NULL);PYLITH_CHECK_ERROR(err);
 

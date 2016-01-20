@@ -154,7 +154,7 @@ pylith::faults::TimeHistorySlipFn::initialize(const topology::Mesh& faultMesh,
 
   PetscDM faultDMMesh = faultMesh.dmMesh();assert(faultDMMesh);
   PetscDMLabel clamped = NULL;
-  PetscErrorCode err = DMPlexGetLabel(faultDMMesh, "clamped", &clamped);PYLITH_CHECK_ERROR(err);
+  PetscErrorCode err = DMGetLabel(faultDMMesh, "clamped", &clamped);PYLITH_CHECK_ERROR(err);
 
   _slipVertex.resize(spaceDim);
   for(PetscInt v = vStart; v < vEnd; ++v) {

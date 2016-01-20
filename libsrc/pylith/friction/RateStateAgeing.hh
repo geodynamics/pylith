@@ -34,7 +34,7 @@
  */
 
 #if !defined(pylith_friction_ratestateageing_hh)
-#define pylith_friction_rateStateAgeing_hh
+#define pylith_friction_ratestateageing_hh
 
 // Include directives ---------------------------------------------------
 #include "FrictionModel.hh" // ISA FrictionModel

@@ -272,7 +272,7 @@ pylith::feassemble::TestElasticityImplicitLgDeform::_initialize(topology::Mesh* 
   PetscInt cStart, cEnd;
   err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
   for(PetscInt c = cStart; c < cEnd; ++c) {
-    err = DMPlexSetLabelValue(dmMesh, "material-id", c, _data->matId);PYLITH_CHECK_ERROR(err);
+    err = DMSetLabelValue(dmMesh, "material-id", c, _data->matId);PYLITH_CHECK_ERROR(err);
   } // for
 
   // Setup quadrature

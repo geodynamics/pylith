@@ -953,7 +953,7 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
 
   // Check for fault groups
   PetscBool hasLabel;
-  err = DMPlexHasLabel(dmMesh, label(), &hasLabel);PYLITH_CHECK_ERROR(err);
+  err = DMHasLabel(dmMesh, label(), &hasLabel);PYLITH_CHECK_ERROR(err);
   if (!hasLabel) {
     std::ostringstream msg;
     msg << "Mesh missing group of vertices '" << label() << " defining fault.";
@@ -962,7 +962,7 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
 
   if (strlen(edge()) > 0) {
     PetscBool hasLabel;
-    PetscErrorCode err = DMPlexHasLabel(dmMesh, edge(), &hasLabel);PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = DMHasLabel(dmMesh, edge(), &hasLabel);PYLITH_CHECK_ERROR(err);
     if (!hasLabel) {
       std::ostringstream msg;
       msg << "Mesh missing group of vertices '" << edge() << "' defining buried edges of fault.";
@@ -1172,7 +1172,7 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
           indexMap[e_lagrange] = index; // add index to map
           ++index;
         } // if
-        err = DMPlexSetLabelValue(faultDMMesh, "clamped", v_fault, 1);PYLITH_CHECK_ERROR(err);
+        err = DMSetLabelValue(faultDMMesh, "clamped", v_fault, 1);PYLITH_CHECK_ERROR(err);
         continue;
       }
       const PetscInt v_negative = cone[0];

@@ -96,12 +96,12 @@ pylith::topology::StratumIS::StratumIS(const PetscDM dmMesh,
   assert(dmMesh);
   PetscErrorCode err;
   if (!includeOnlyCells) {
-    err = DMPlexGetStratumIS(dmMesh, label, id, &_indexSet);PYLITH_CHECK_ERROR(err);assert(_indexSet);
+    err = DMGetStratumIS(dmMesh, label, id, &_indexSet);PYLITH_CHECK_ERROR(err);assert(_indexSet);
   } else {
     PetscIS pointsIS = NULL;
     PetscInt numPoints = 0;
     const PetscInt* points = NULL;
-    err = DMPlexGetStratumIS(dmMesh, label, id, &pointsIS);PYLITH_CHECK_ERROR(err);
+    err = DMGetStratumIS(dmMesh, label, id, &pointsIS);PYLITH_CHECK_ERROR(err);
     if (pointsIS) {
       err = ISGetSize(pointsIS, &numPoints);PYLITH_CHECK_ERROR(err);assert(numPoints >= 0);
       err = ISGetIndices(pointsIS, &points);PYLITH_CHECK_ERROR(err);assert(!numPoints || points);
