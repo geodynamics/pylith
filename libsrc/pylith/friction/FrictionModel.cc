@@ -194,7 +194,7 @@ pylith::friction::FrictionModel::initialize(const topology::Mesh& faultMesh,
     _dbInitialState->queryVals(_metadata.dbStateVars(), _metadata.numDBStateVars());
     
     PetscDMLabel clamped = NULL;
-    PetscErrorCode err = DMPlexGetLabel(faultDMMesh, "clamped", &clamped);PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = DMGetLabel(faultDMMesh, "clamped", &clamped);PYLITH_CHECK_ERROR(err);
 
     for(PetscInt v = vStart; v < vEnd; ++v) {
       if (faults::FaultCohesiveLagrange::isClampedVertex(clamped, v)) {

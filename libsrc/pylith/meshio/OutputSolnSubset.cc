@@ -72,7 +72,7 @@ pylith::meshio::OutputSolnSubset::verifyConfiguration(const topology::Mesh& mesh
 
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
   PetscBool hasLabel = PETSC_FALSE;
-  PetscErrorCode err = DMPlexHasLabel(dmMesh, _label.c_str(), &hasLabel);PYLITH_CHECK_ERROR(err);
+  PetscErrorCode err = DMHasLabel(dmMesh, _label.c_str(), &hasLabel);PYLITH_CHECK_ERROR(err);
   if (!hasLabel) {
     std::ostringstream msg;
     msg << "Mesh missing group of vertices '" << _label

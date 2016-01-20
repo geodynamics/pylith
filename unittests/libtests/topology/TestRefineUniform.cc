@@ -289,7 +289,7 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data,
   PetscInt matId = 0;
   PetscInt matIdSum = 0; // Use sum of material ids as simple checksum.
   for(PetscInt c = cStart; c < cEnd; ++c) {
-    err = DMPlexGetLabelValue(dmMesh, "material-id", c, &matId);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabelValue(dmMesh, "material-id", c, &matId);PYLITH_CHECK_ERROR(err);
     matIdSum += matId;
   } // for
   CPPUNIT_ASSERT_EQUAL(data.matIdSum, matIdSum);
@@ -297,7 +297,7 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data,
   // Check groups
   PetscInt numGroups, pStart, pEnd;
   err = DMPlexGetChart(dmMesh, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetNumLabels(dmMesh, &numGroups);PYLITH_CHECK_ERROR(err);
+  err = DMGetNumLabels(dmMesh, &numGroups);PYLITH_CHECK_ERROR(err);
   PetscInt index  = 0;
   for(PetscInt iGroup = 0; iGroup < data.numGroups; ++iGroup) {
     // Omit depth, vtk, ghost and material-id labels
@@ -308,7 +308,7 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data,
     PetscInt firstPoint = 0;
 
     while (iLabel < numGroups) {
-      err = DMPlexGetLabelName(dmMesh, iLabel, &name);PYLITH_CHECK_ERROR(err);
+      err = DMGetLabelName(dmMesh, iLabel, &name);PYLITH_CHECK_ERROR(err);
       if (0 == strcmp(data.groupNames[iGroup], name)) {
         foundLabel = true;
         break;
@@ -320,7 +320,7 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data,
 
     for(PetscInt p = pStart; p < pEnd; ++p) {
       PetscInt val;
-      err = DMPlexGetLabelValue(dmMesh, name, p, &val);PYLITH_CHECK_ERROR(err);
+      err = DMGetLabelValue(dmMesh, name, p, &val);PYLITH_CHECK_ERROR(err);
       if (val >= 0) {
         firstPoint = p;
         break;
@@ -329,11 +329,11 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data,
     std::string groupType = (firstPoint >= cStart && firstPoint < cEnd) ? "cell" : "vertex";
     CPPUNIT_ASSERT_EQUAL(std::string(data.groupTypes[iGroup]), groupType);
     PetscInt numPoints;
-    err = DMPlexGetStratumSize(dmMesh, name, 1, &numPoints);PYLITH_CHECK_ERROR(err);
+    err = DMGetStratumSize(dmMesh, name, 1, &numPoints);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(data.groupSizes[iGroup], numPoints);
     PetscIS pointIS = NULL;
     const PetscInt *points = NULL;
-    err = DMPlexGetStratumIS(dmMesh, name, 1, &pointIS);PYLITH_CHECK_ERROR(err);
+    err = DMGetStratumIS(dmMesh, name, 1, &pointIS);PYLITH_CHECK_ERROR(err);
     err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
     if (groupType == std::string("vertex")) {
       for (PetscInt p = 0; p < numPoints; ++p) {

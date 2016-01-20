@@ -204,17 +204,17 @@ pylith::topology::TestReverseCuthillMcKee::_testReorder(const char* filename,
   // Check groups
   PetscInt numGroupsE, numGroups, pStart, pEnd;
   PetscErrorCode err;
-  err = DMPlexGetNumLabels(dmOrig, &numGroupsE);PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetNumLabels(dmMesh, &numGroups);PYLITH_CHECK_ERROR(err);
+  err = DMGetNumLabels(dmOrig, &numGroupsE);PYLITH_CHECK_ERROR(err);
+  err = DMGetNumLabels(dmMesh, &numGroups);PYLITH_CHECK_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(numGroupsE, numGroups);
 
   for (PetscInt iGroup = 0; iGroup < numGroups; ++iGroup) {
     const char *name = NULL;
-    err = DMPlexGetLabelName(dmMesh, iGroup, &name);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabelName(dmMesh, iGroup, &name);PYLITH_CHECK_ERROR(err);
 
     PetscInt numPointsE, numPoints;
-    err = DMPlexGetStratumSize(dmOrig, name, 1, &numPointsE);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetStratumSize(dmMesh, name, 1, &numPoints);PYLITH_CHECK_ERROR(err);
+    err = DMGetStratumSize(dmOrig, name, 1, &numPointsE);PYLITH_CHECK_ERROR(err);
+    err = DMGetStratumSize(dmMesh, name, 1, &numPoints);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(numPointsE, numPoints);
   } // for
 

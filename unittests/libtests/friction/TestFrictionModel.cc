@@ -927,7 +927,7 @@ pylith::friction::TestFrictionModel::_initialize(topology::Mesh* mesh,
   const char* label = "fault";
 
   PetscInt labelSize;
-  PetscErrorCode err = DMPlexGetStratumSize(mesh->dmMesh(), label, 1, &labelSize);PYLITH_CHECK_ERROR(err);
+  PetscErrorCode err = DMGetStratumSize(mesh->dmMesh(), label, 1, &labelSize);PYLITH_CHECK_ERROR(err);
 
   PetscInt firstFaultVertex    = 0;
   PetscInt firstLagrangeVertex = labelSize;

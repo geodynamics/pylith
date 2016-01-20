@@ -129,7 +129,7 @@ pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
   const PetscInt cEnd = cellsStratum.end();
 
   PetscDMLabel materialsLabel = NULL;
-  err = DMPlexGetLabel(dmMesh, "material-id", &materialsLabel);PYLITH_CHECK_ERROR(err);assert(materialsLabel);
+  err = DMGetLabel(dmMesh, "material-id", &materialsLabel);PYLITH_CHECK_ERROR(err);assert(materialsLabel);
 
   int *matBegin = materialIds;
   int *matEnd = materialIds + numMaterials;
@@ -187,7 +187,7 @@ pylith::topology::MeshOps::numMaterialCells(const Mesh& mesh,
   PetscInt ncells = 0;
 
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-  PetscErrorCode err = DMPlexGetStratumSize(dmMesh, "material-id", materialId, &ncells);PYLITH_CHECK_ERROR(err);
+  PetscErrorCode err = DMGetStratumSize(dmMesh, "material-id", materialId, &ncells);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_RETURN(ncells);
 } // numMaterialCells
