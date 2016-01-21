@@ -96,8 +96,8 @@ pylith::topology::Field::Field(const Mesh& mesh,
   _metadata = metadata;
   err = DMCreateLocalVector(_dm, &_localVec);PYLITH_CHECK_ERROR(err);
   err = DMCreateGlobalVector(_dm, &_globalVec);PYLITH_CHECK_ERROR(err);
-  err = PetscObjectSetName((PetscObject) _globalVec, _metadata.label.c_str());PYLITH_CHECK_ERROR(err);
   err = PetscObjectSetName((PetscObject) _localVec,  _metadata.label.c_str());PYLITH_CHECK_ERROR(err);
+  err = PetscObjectSetName((PetscObject) _globalVec, _metadata.label.c_str());PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // constructor
@@ -123,8 +123,8 @@ pylith::topology::Field::Field(const Mesh& mesh,
   _metadata = metadata;
   err = DMCreateLocalVector(_dm, &_localVec);PYLITH_CHECK_ERROR(err);
   err = DMCreateGlobalVector(_dm, &_globalVec);PYLITH_CHECK_ERROR(err);
-  err = PetscObjectSetName((PetscObject) _globalVec, _metadata.label.c_str());PYLITH_CHECK_ERROR(err);
   err = PetscObjectSetName((PetscObject) _localVec,  _metadata.label.c_str());PYLITH_CHECK_ERROR(err);
+  err = PetscObjectSetName((PetscObject) _globalVec, _metadata.label.c_str());PYLITH_CHECK_ERROR(err);
   err = VecCopy(localVec, _localVec);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
@@ -1451,6 +1451,8 @@ pylith::topology::Field::_extractSubfield(const Field& field,
 
   err = DMCreateLocalVector(_dm, &_localVec);PYLITH_CHECK_ERROR(err);
   err = DMCreateGlobalVector(_dm, &_globalVec);PYLITH_CHECK_ERROR(err);
+  err = PetscObjectSetName((PetscObject) _localVec,  _metadata.label.c_str());PYLITH_CHECK_ERROR(err);
+  err = PetscObjectSetName((PetscObject) _globalVec, _metadata.label.c_str());PYLITH_CHECK_ERROR(err);
 
   // Setup section
   const PetscSection& fieldSection = field.localSection();
