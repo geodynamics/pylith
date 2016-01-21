@@ -1467,6 +1467,7 @@ pylith::topology::Field::_extractSubfield(const Field& field,
     err = PetscSectionGetFieldDof(fieldSection, p, subfieldIndex, &dof);PYLITH_CHECK_ERROR(err);
     if (dof > 0) {
       err = PetscSectionSetDof(subfieldSection, p, dof);PYLITH_CHECK_ERROR(err);
+      err = PetscSectionSetFieldDof(subfieldSection, p, 0, dof);PYLITH_CHECK_ERROR(err);
 
       err = PetscSectionGetFieldConstraintDof(fieldSection, p, subfieldIndex, &dof);PYLITH_CHECK_ERROR(err);
       err = PetscSectionSetConstraintDof(subfieldSection, p, dof);PYLITH_CHECK_ERROR(err);
