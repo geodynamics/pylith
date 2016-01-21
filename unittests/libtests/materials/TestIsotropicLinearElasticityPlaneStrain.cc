@@ -402,33 +402,38 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
   CPPUNIT_ASSERT(_mesh);
   pylith::topology::Field density(*_mesh);
   _material->getAuxField(&density, "density");
+  density.complete(); // Needed to populate global vector.
 
-  density.view("DENSITY");
+  //density.view("DENSITY"); // DEBUGGING
 
   // Check result
   CPPUNIT_ASSERT_EQUAL(std::string("density"), std::string(density.label()));
   CPPUNIT_ASSERT_EQUAL(_data->dimension, density.spaceDim());
 
-  PylithReal norm = 0.0;
-  PylithReal t = 0.0;
-  const PetscDM dm = density.dmMesh();CPPUNIT_ASSERT(dm);
+  const pylith::topology::FieldQuery::queryfn_type queryFunctions[1] = { 
+    pylith::materials::Query::dbQueryDensity2D,
+  };
+  const pylith::topology::FieldQuery::DBQueryContext dbContext = {
+    _db,
+    _mesh->coordsys(),
+    _data->lengthScale,
+    _data->densityScale,
+  };
+  const pylith::topology::FieldQuery::DBQueryContext* queryContextPtrs[1] = { 
+    &dbContext,
+  };
 
-  const pylith::topology::FieldQuery::queryfn_type queryFunctions[1] = { pylith::materials::Query::dbQueryDensity2D };
-  const pylith::topology::FieldQuery::DBQueryContext queryContexts[1] = { _db };
-  const pylith::topology::FieldQuery::DBQueryContext* queryContextPtrs[1] = { &queryContexts[0] };
-
-#if 0  
   pylith::topology::FieldQuery* query = _material->_auxFieldsQuery;
   query->openDB(_db, _data->lengthScale);
 
+  PylithReal norm = 0.0;
+  PylithReal t = 0.0;
+  const PetscDM dm = density.dmMesh();CPPUNIT_ASSERT(dm);
   PetscErrorCode err = DMPlexComputeL2Diff(dm, t, (pylith::topology::FieldQuery::queryfn_type*)queryFunctions, (void**)queryContextPtrs, density.globalVector(), &norm);CPPUNIT_ASSERT(!err);
   query->closeDB(_db);
 
   const PylithReal tolerance = 1.0e-6;
   CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
-#else
-  CPPUNIT_ASSERT_MESSAGE("Test not implemented.", false); // :TODO: ADD MORE HERE
-#endif
 
   PYLITH_METHOD_END;
 } // testGetAuxField
@@ -695,7 +700,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeResidual
   residual.allocate();
   residual.zeroAll();
 
-#if 0 // TEMPORARY
+#if 1 // TEMPORARY
   pylith::topology::FieldQuery querySoln(*_solution);
   querySoln.queryFn("displacement", _data->querySolutionDisplacement);
   querySoln.queryFn("velocity", _data->querySolutionVelocity);
