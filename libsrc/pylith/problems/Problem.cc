@@ -33,6 +33,7 @@
 // Constructor
 pylith::problems::Problem::Problem(void) :
   _solution(0),
+  _solutionDot(0),
   _residualRHS(0),
   _residualLHS(0),
   _jacobianRHS(0),
@@ -60,6 +61,7 @@ pylith::problems::Problem::deallocate(void)
   PYLITH_METHOD_BEGIN;
 
   _solution = 0; // Held by Python. :KLUDGE: :TODO: Use shared pointer.
+  _solutionDot = 0; // Held by Python. :KLUDGE: :TODO: Use shared pointer.
   delete _residualRHS; _residualRHS = 0;
   delete _residualLHS; _residualLHS = 0;
   delete _jacobianRHS; _jacobianRHS = 0;
@@ -235,6 +237,10 @@ pylith::problems::Problem::computeLHSResidual(const PylithReal t,
   assert(_solution);
   _solution->scatterGlobalToLocal(solutionVec);
 
+  assert(solutionDotVec);
+  assert(_solutionDot);
+  _solutionDot->scatterGlobalToLocal(solutionDotVec);
+
   // Set residual to zero.
   _residualLHS->zeroAll();
   
@@ -242,7 +248,7 @@ pylith::problems::Problem::computeLHSResidual(const PylithReal t,
   const int numIntegrators = _integrators.size();
   assert(numIntegrators > 0); // must have at least 1 integrator
   for (int i=0; i < numIntegrators; ++i) {
-    _integrators[i]->computeLHSResidual(_residualLHS, t, dt, *_solution);
+    _integrators[i]->computeLHSResidual(_residualLHS, t, dt, *_solution, *_solutionDot);
   } // for
 
   // Update PETSc view of residual
@@ -270,11 +276,13 @@ pylith::problems::Problem::computeLHSJacobianImplicit(const PylithReal t,
 
   assert(_jacobianLHS);
   assert(_solution);
+  assert(_solutionDot);
 
   // :KLUDGE: Should add check to see if we need to compute Jacobian
 
   // Update PyLith view of the solution.
   _solution->scatterGlobalToLocal(solutionVec);
+  _solutionDot->scatterGlobalToLocal(solutionDotVec);
 
   // Set jacobian to zero.
   _jacobianLHS->zero();
@@ -282,7 +290,7 @@ pylith::problems::Problem::computeLHSJacobianImplicit(const PylithReal t,
   // Sum Jacobian contributions across integrators.
   const size_t numIntegrators = _integrators.size();
   for (size_t i=0; i < numIntegrators; ++i) {
-    _integrators[i]->computeLHSJacobianImplicit(_jacobianLHS, _preconditionerLHS, t, dt, *_solution);
+    _integrators[i]->computeLHSJacobianImplicit(_jacobianLHS, _preconditionerLHS, t, dt, *_solution, *_solutionDot);
   } // for
   
   // Assemble jacobian.
@@ -292,7 +300,7 @@ pylith::problems::Problem::computeLHSJacobianImplicit(const PylithReal t,
   if (_customConstraintPCMat) {
     // Recalculate preconditioner.
     for (size_t i=0; i < numIntegrators; ++i) {
-      _integrators[i]->computeLHSPreconditioner(&_customConstraintPCMat, _jacobianLHS, t, dt, *_solution);
+      _integrators[i]->computeLHSPreconditioner(&_customConstraintPCMat, _jacobianLHS, t, dt, *_solution, *_solutionDot);
     } // for
 
     MatAssemblyBegin(_customConstraintPCMat, MAT_FINAL_ASSEMBLY);
@@ -313,17 +321,20 @@ pylith::problems::Problem::computeLHSJacobianImplicit(const PylithReal t,
 void
 pylith::problems::Problem::computeLHSJacobianExplicit(const PylithReal t,
 						      const PylithReal dt,
-						      PetscVec solutionVec)
+						      PetscVec solutionVec,
+						      PetscVec solutionDotVec)
 { // computeLHSJacobianExplicit
   PYLITH_METHOD_BEGIN;
 
   assert(_jacobianLHS);
   assert(_solution);
+  assert(_solutionDot);
 
   // :KLUDGE: Should add check to see if we need to compute Jacobian
 
   // Update PyLith view of the solution.
   _solution->scatterGlobalToLocal(solutionVec);
+  _solutionDot->scatterGlobalToLocal(solutionDotVec);
   
   // Set jacobian to zero.
   _jacobianLHS->zero();
@@ -331,7 +342,7 @@ pylith::problems::Problem::computeLHSJacobianExplicit(const PylithReal t,
   // Sum Jacobian contributions across integrators.
   const size_t numIntegrators = _integrators.size();
   for (size_t i=0; i < numIntegrators; ++i) {
-    _integrators[i]->computeLHSJacobianExplicit(_jacobianLHS, _preconditionerLHS, t, dt, *_solution);
+    _integrators[i]->computeLHSJacobianExplicit(_jacobianLHS, _preconditionerLHS, t, dt, *_solution, *_solutionDot);
   } // for
   
   // Assemble jacobian.

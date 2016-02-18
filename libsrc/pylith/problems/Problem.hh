@@ -152,15 +152,18 @@ public :
    * @param[in] t Current time.
    * @param[in] dt Current time step.
    * @param[in] solutionVec PETSc Vec with current trial solution.
+   * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
    */
   void computeLHSJacobianExplicit(const PylithReal t,
 				  const PylithReal dt,
-				  PetscVec solutionVec);
+				  PetscVec solutionVec,
+				  PetscVec solutionDotVec);
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
   pylith::topology::Field* _solution; ///< Handle to solution field.
+  pylith::topology::Field* _solutionDot; ///< Handle to time derivative of solution field.
   pylith::topology::Field* _residualRHS; ///< Handle to residual field for RHS, G(t,s).
   pylith::topology::Field* _residualLHS; ///< Handle to residual field for LHS, F(t,s,\dot{s}).
   pylith::topology::Jacobian* _jacobianRHS; ///< Handle to Jacobian for RHS, G(t,s).

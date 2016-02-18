@@ -124,7 +124,8 @@ pylith::materials::MaterialNew::computeRHSResidual(pylith::topology::Field* resi
   PYLITH_METHOD_BEGIN;
 
   _setFEKernelsRHSResidual(solution);
-  _computeResidual(residual, t, dt, solution);
+  pylith::topology::Field solutionDotNull(solution.mesh()); // :KLUDGE: fake field to satisfy general interface to _computeResidual()
+  _computeResidual(residual, t, dt, solution, solutionDotNull);
 
   PYLITH_METHOD_END;
 } // computeRHSResidual
@@ -142,7 +143,8 @@ pylith::materials::MaterialNew::computeRHSJacobian(pylith::topology::Jacobian* j
   PYLITH_METHOD_BEGIN;
 
   _setFEKernelsRHSJacobian(solution);
-  _computeJacobian(jacobian, preconditioner, t, dt, solution);
+  pylith::topology::Field solutionDotNull(solution.mesh()); // :KLUDGE: fake field to satisfy general interface to _computeResidual()
+  _computeJacobian(jacobian, preconditioner, t, dt, solution, solutionDotNull);
 
   PYLITH_METHOD_END;
 } // computeRHSJacobian
@@ -154,12 +156,13 @@ void
 pylith::materials::MaterialNew::computeLHSResidual(pylith::topology::Field* residual,
 						   const PylithReal t,
 						   const PylithReal dt,
-						   const pylith::topology::Field& solution)
+						   const pylith::topology::Field& solution,
+						   const pylith::topology::Field& solutionDot)
 { // computeLHSResidual
   PYLITH_METHOD_BEGIN;
 
   _setFEKernelsLHSResidual(solution);
-  _computeResidual(residual, t, dt, solution);
+  _computeResidual(residual, t, dt, solution, solutionDot);
 
   PYLITH_METHOD_END;
 } // computeLHSResidual
@@ -171,12 +174,13 @@ pylith::materials::MaterialNew::computeLHSJacobianImplicit(pylith::topology::Jac
 							   pylith::topology::Jacobian* preconditioner,
 							   const PylithReal t,
 							   const PylithReal dt,
-							   const pylith::topology::Field& solution)
+							   const pylith::topology::Field& solution,
+							   const pylith::topology::Field& solutionDot)
 { // computeLHSJacobianImplicit
   PYLITH_METHOD_BEGIN;
 
   _setFEKernelsLHSJacobianImplicit(solution);
-  _computeJacobian(jacobian, preconditioner, t, dt, solution);
+  _computeJacobian(jacobian, preconditioner, t, dt, solution, solutionDot);
 
   PYLITH_METHOD_END;
 } // computeLHSJacobianImplicit
@@ -189,12 +193,13 @@ pylith::materials::MaterialNew::computeLHSJacobianExplicit(pylith::topology::Jac
 							   pylith::topology::Jacobian* preconditioner,
 							   const PylithReal t,
 							   const PylithReal dt,
-							   const pylith::topology::Field& solution)
+							   const pylith::topology::Field& solution,
+							   const pylith::topology::Field& solutionDot)
 { // computeLHSJacobianExplicit
   PYLITH_METHOD_BEGIN;
 
   _setFEKernelsLHSJacobianExplicit(solution);
-  _computeJacobian(jacobian, preconditioner, t, dt, solution);
+  _computeJacobian(jacobian, preconditioner, t, dt, solution, solutionDot);
 
   PYLITH_METHOD_END;
 } // computeLHSJacobianExplicit
@@ -218,7 +223,8 @@ void
 pylith::materials::MaterialNew::_computeResidual(pylith::topology::Field* residual,
 						 const PylithReal t,
 						 const PylithReal dt,
-						 const pylith::topology::Field& solution)
+						 const pylith::topology::Field& solution,
+						 const pylith::topology::Field& solutionDot)
 { // _computeResidual
   PYLITH_METHOD_BEGIN;
 
@@ -243,7 +249,7 @@ pylith::materials::MaterialNew::_computeResidual(pylith::topology::Field* residu
   // Compute the local residual
   err = DMGetLabel(dmMesh, "material-id", &label);PYLITH_CHECK_ERROR(err);
   err = DMLabelGetStratumBounds(label, id(), &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-  err = DMPlexComputeResidual_Internal(dmMesh, cStart, cEnd, PETSC_MIN_REAL, solution.localVector(), NULL, residual->localVector(), NULL);PYLITH_CHECK_ERROR(err);
+  err = DMPlexComputeResidual_Internal(dmMesh, cStart, cEnd, PETSC_MIN_REAL, solution.localVector(), solutionDot.localVector(), residual->localVector(), NULL);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // _computeResidual
@@ -256,7 +262,8 @@ pylith::materials::MaterialNew::_computeJacobian(pylith::topology::Jacobian* jac
 						 pylith::topology::Jacobian* preconditioner,
 						 const PylithReal t,
 						 const PylithReal dt,
-						 const pylith::topology::Field& solution)
+						 const pylith::topology::Field& solution,
+						 const pylith::topology::Field& solutionDot)
 { // _computeJacobian
   PYLITH_METHOD_BEGIN;
 

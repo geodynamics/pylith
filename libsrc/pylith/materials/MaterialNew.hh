@@ -140,11 +140,13 @@ public :
    * @param[in] t Current time.
    * @param[in] dt Current time step.
    * @param[in] solution Current trial solution.
+   * @param[in] solutionDot Time derivative of current trial solution.
    */
   void computeLHSResidual(pylith::topology::Field* residual,
 			  const PylithReal t,
 			  const PylithReal dt,
-			  const pylith::topology::Field& solution);
+			  const pylith::topology::Field& solution,
+			  const pylith::topology::Field& solutionDot);
 
   /** Compute LHS Jacobian for F(t,s,\dot{s}) with implicit time-stepping.
    *
@@ -153,12 +155,14 @@ public :
    * @param[in] t Current time.
    * @param[in] dt Current time step.
    * @param[in] solution Current trial solution.
+   * @param[in] solutionDot Time derivative of current trial solution.
    */
   void computeLHSJacobianImplicit(pylith::topology::Jacobian* jacobian,
 				  pylith::topology::Jacobian* preconditioner,
 				  const PylithReal t,
 				  const PylithReal dt,
-				  const pylith::topology::Field& solution);
+				  const pylith::topology::Field& solution,
+				  const pylith::topology::Field& solutionDot);
 
 
   /** Compute LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
@@ -168,12 +172,14 @@ public :
    * @param[in] t Current time.
    * @param[in] dt Current time step.
    * @param[in] solution Current trial solution.
+   * @param[in] solutionDot Time derivative of current trial solution.
    */
   void computeLHSJacobianExplicit(pylith::topology::Jacobian* jacobian,
 				  pylith::topology::Jacobian* preconditioner,
 				  const PylithReal t,
 				  const PylithReal dt,
-				  const pylith::topology::Field& solution);
+				  const pylith::topology::Field& solution,
+				  const pylith::topology::Field& solutionDot);
 
 
   /** Update state variables as needed.
@@ -191,11 +197,13 @@ protected :
    * @param[in] t Current time.
    * @param[in] dt Current time step.
    * @param[in] solution Current trial solution.
+   * @param[in] solutionDot Time derivative of current trial solution.
    */
   void _computeResidual(pylith::topology::Field* residual,
 			const PylithReal t,
 			const PylithReal dt,
-			const pylith::topology::Field& solution);
+			const pylith::topology::Field& solution,
+			const pylith::topology::Field& solutionDot);
   
   /* Compute Jacobian using current kernels.
    *
@@ -204,12 +212,14 @@ protected :
    * @param[in] t Current time.
    * @param[in] dt Current time step.
    * @param[in] solution Current trial solution.
+   * @param[in] solutionDot Time derivative of current trial solution.
    */
   void _computeJacobian(pylith::topology::Jacobian* jacobian,
 			pylith::topology::Jacobian* preconditioner,
 			const PylithReal t,
 			const PylithReal dt,
-			const pylith::topology::Field& solution);
+			const pylith::topology::Field& solution,
+			const pylith::topology::Field& solutionDot);
   
   /** Setup auxiliary subfields (discretization and query fns).
    * 
