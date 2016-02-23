@@ -198,7 +198,7 @@ pylith::problems::Problem::computeRHSJacobian(const PylithReal t,
   // Assemble jacobian.
   _jacobianRHS->assemble("final_assembly");
 
-#if 0 // FIX THIS
+#if 0 // :OBSOLETE: This is here only for reference until we get the Jacobian stuff working.
   if (_customConstraintPCMat) {
     // Recalculate preconditioner.
     for (size_t i=0; i < numIntegrators; ++i) {
@@ -278,7 +278,7 @@ pylith::problems::Problem::computeLHSJacobianImplicit(const PylithReal t,
   assert(_solution);
   assert(_solutionDot);
 
-  // :KLUDGE: Should add check to see if we need to compute Jacobian
+  // :KLUDGE: :TODO: Should add check to see if we need to compute Jacobian
 
   // Update PyLith view of the solution.
   _solution->scatterGlobalToLocal(solutionVec);
@@ -290,17 +290,17 @@ pylith::problems::Problem::computeLHSJacobianImplicit(const PylithReal t,
   // Sum Jacobian contributions across integrators.
   const size_t numIntegrators = _integrators.size();
   for (size_t i=0; i < numIntegrators; ++i) {
-    _integrators[i]->computeLHSJacobianImplicit(_jacobianLHS, _preconditionerLHS, t, dt, *_solution, *_solutionDot);
+    _integrators[i]->computeLHSJacobianImplicit(_jacobianLHS, _preconditionerLHS, t, dt, tshift, *_solution, *_solutionDot);
   } // for
   
   // Assemble jacobian.
   _jacobianLHS->assemble("final_assembly");
 
-#if 0 // FIX THIS
+#if 0 // :OBSOLETE: This is here only for reference until we get the Jacobian stuff working.
   if (_customConstraintPCMat) {
     // Recalculate preconditioner.
     for (size_t i=0; i < numIntegrators; ++i) {
-      _integrators[i]->computeLHSPreconditioner(&_customConstraintPCMat, _jacobianLHS, t, dt, *_solution, *_solutionDot);
+      _integrators[i]->computeLHSPreconditioner(&_customConstraintPCMat, _jacobianLHS, t, dt, tshift, *_solution, *_solutionDot);
     } // for
 
     MatAssemblyBegin(_customConstraintPCMat, MAT_FINAL_ASSEMBLY);
@@ -321,6 +321,7 @@ pylith::problems::Problem::computeLHSJacobianImplicit(const PylithReal t,
 void
 pylith::problems::Problem::computeLHSJacobianExplicit(const PylithReal t,
 						      const PylithReal dt,
+						      const PylithReal tshift,
 						      PetscVec solutionVec,
 						      PetscVec solutionDotVec)
 { // computeLHSJacobianExplicit
@@ -330,7 +331,7 @@ pylith::problems::Problem::computeLHSJacobianExplicit(const PylithReal t,
   assert(_solution);
   assert(_solutionDot);
 
-  // :KLUDGE: Should add check to see if we need to compute Jacobian
+  // :KLUDGE: :TODO: Should add check to see if we need to compute Jacobian
 
   // Update PyLith view of the solution.
   _solution->scatterGlobalToLocal(solutionVec);
@@ -342,7 +343,7 @@ pylith::problems::Problem::computeLHSJacobianExplicit(const PylithReal t,
   // Sum Jacobian contributions across integrators.
   const size_t numIntegrators = _integrators.size();
   for (size_t i=0; i < numIntegrators; ++i) {
-    _integrators[i]->computeLHSJacobianExplicit(_jacobianLHS, _preconditionerLHS, t, dt, *_solution, *_solutionDot);
+    _integrators[i]->computeLHSJacobianExplicit(_jacobianLHS, _preconditionerLHS, t, dt, tshift, *_solution, *_solutionDot);
   } // for
   
   // Assemble jacobian.

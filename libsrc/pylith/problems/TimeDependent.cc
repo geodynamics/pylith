@@ -333,9 +333,10 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
   if (EXPLICIT == problem->_formulationType) {
     assert(problem->_jacobianLHS);
 
-    // :KLUDGE: Should add check to see if we need to compute Jacobian
+    // :KLUDGE: :TODO: Should add check to see if we need to compute Jacobian
     const PetscVec solutionDotVec = NULL; // :KLUDGE: We don't have the solutionDotVec from PetscTS!
-    problem->Problem::computeLHSJacobianExplicit(t, dt, solutionVec, solutionDotVec);
+    const PylithReal tshift = 0.0; // :KLUDGE: We don't have the tshift from PetscTS!
+    problem->Problem::computeLHSJacobianExplicit(t, dt, tshift, solutionVec, solutionDotVec);
 
     PetscVec jacobianDiag = NULL;
     err = VecDuplicate(residualVec, &jacobianDiag);

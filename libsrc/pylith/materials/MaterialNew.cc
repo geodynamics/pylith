@@ -41,6 +41,7 @@
 #include <sstream> // USES std::ostringstream
 
 extern "C" PetscErrorCode DMPlexComputeResidual_Internal(DM dm, PetscInt cStart, PetscInt cEnd, PetscReal time, Vec locX, Vec locX_t, Vec locF, void *user);
+extern "C" PetscErrorCode DMPlexComputeJacobian_Internal(DM dm, PetscInt cStart, PetscInt cEnd, PetscReal t, PetscReal X_tShift, Vec X, Vec X_t, Mat Jac, Mat JacP,void *user);
 
 
 // ----------------------------------------------------------------------
@@ -144,7 +145,8 @@ pylith::materials::MaterialNew::computeRHSJacobian(pylith::topology::Jacobian* j
 
   _setFEKernelsRHSJacobian(solution);
   pylith::topology::Field solutionDotNull(solution.mesh()); // :KLUDGE: fake field to satisfy general interface to _computeResidual()
-  _computeJacobian(jacobian, preconditioner, t, dt, solution, solutionDotNull);
+  const PylithReal tshift = 0.0; // No dependence on time derivative of solution in RHS, so shift isn't applicable.
+  _computeJacobian(jacobian, preconditioner, t, dt, tshift, solution, solutionDotNull);
 
   PYLITH_METHOD_END;
 } // computeRHSJacobian
@@ -174,13 +176,14 @@ pylith::materials::MaterialNew::computeLHSJacobianImplicit(pylith::topology::Jac
 							   pylith::topology::Jacobian* preconditioner,
 							   const PylithReal t,
 							   const PylithReal dt,
+							   const PylithReal tshift,
 							   const pylith::topology::Field& solution,
 							   const pylith::topology::Field& solutionDot)
 { // computeLHSJacobianImplicit
   PYLITH_METHOD_BEGIN;
 
   _setFEKernelsLHSJacobianImplicit(solution);
-  _computeJacobian(jacobian, preconditioner, t, dt, solution, solutionDot);
+  _computeJacobian(jacobian, preconditioner, t, dt, tshift, solution, solutionDot);
 
   PYLITH_METHOD_END;
 } // computeLHSJacobianImplicit
@@ -193,13 +196,14 @@ pylith::materials::MaterialNew::computeLHSJacobianExplicit(pylith::topology::Jac
 							   pylith::topology::Jacobian* preconditioner,
 							   const PylithReal t,
 							   const PylithReal dt,
+							   const PylithReal tshift,
 							   const pylith::topology::Field& solution,
 							   const pylith::topology::Field& solutionDot)
 { // computeLHSJacobianExplicit
   PYLITH_METHOD_BEGIN;
 
   _setFEKernelsLHSJacobianExplicit(solution);
-  _computeJacobian(jacobian, preconditioner, t, dt, solution, solutionDot);
+  _computeJacobian(jacobian, preconditioner, t, dt, tshift, solution, solutionDot);
 
   PYLITH_METHOD_END;
 } // computeLHSJacobianExplicit
@@ -237,7 +241,7 @@ pylith::materials::MaterialNew::_computeResidual(pylith::topology::Field* residu
 
   PetscDM dmMesh = solution.dmMesh();
   PetscDM dmAux = _auxFields->dmMesh();
-  PetscDMLabel label;
+  PetscDMLabel dmLabel;
 
   // Pointwise function have been set in DS
   err = DMGetDS(dmMesh, &prob);PYLITH_CHECK_ERROR(err);
@@ -247,8 +251,8 @@ pylith::materials::MaterialNew::_computeResidual(pylith::topology::Field* residu
   err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) _auxFields->localVector());PYLITH_CHECK_ERROR(err);
 
   // Compute the local residual
-  err = DMGetLabel(dmMesh, "material-id", &label);PYLITH_CHECK_ERROR(err);
-  err = DMLabelGetStratumBounds(label, id(), &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+  err = DMGetLabel(dmMesh, "material-id", &dmLabel);PYLITH_CHECK_ERROR(err);
+  err = DMLabelGetStratumBounds(dmLabel, id(), &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
   err = DMPlexComputeResidual_Internal(dmMesh, cStart, cEnd, PETSC_MIN_REAL, solution.localVector(), solutionDot.localVector(), residual->localVector(), NULL);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
@@ -262,6 +266,7 @@ pylith::materials::MaterialNew::_computeJacobian(pylith::topology::Jacobian* jac
 						 pylith::topology::Jacobian* preconditioner,
 						 const PylithReal t,
 						 const PylithReal dt,
+						 const PylithReal tshift,
 						 const pylith::topology::Field& solution,
 						 const pylith::topology::Field& solutionDot)
 { // _computeJacobian
@@ -271,12 +276,14 @@ pylith::materials::MaterialNew::_computeJacobian(pylith::topology::Jacobian* jac
   assert(jacobian);
 
   PetscDS prob = NULL;
+  PetscInt cStart = 0, cEnd = 0;
   PetscErrorCode err;
 
   const PetscMat jacobianMat = jacobian->matrix();assert(jacobianMat);
   const PetscMat precondMat = preconditioner->matrix();assert(precondMat);
   PetscDM dmMesh = solution.dmMesh();
   PetscDM dmAux = _auxFields->dmMesh();
+  PetscDMLabel dmLabel;
 
   // Pointwise function have been set in DS
   err = DMGetDS(dmMesh, &prob);PYLITH_CHECK_ERROR(err);
@@ -286,7 +293,9 @@ pylith::materials::MaterialNew::_computeJacobian(pylith::topology::Jacobian* jac
   err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) auxFields().localVector());PYLITH_CHECK_ERROR(err);
 
   // Compute the local Jacobian
-  err = DMPlexSNESComputeJacobianFEM(dmMesh, solution.localVector(), jacobianMat, precondMat, NULL);PYLITH_CHECK_ERROR(err);
+  err = DMGetLabel(dmMesh, "material-id", &dmLabel);PYLITH_CHECK_ERROR(err);
+  err = DMLabelGetStratumBounds(dmLabel, id(), &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+  err = DMPlexComputeJacobian_Internal(dmMesh, cStart, cEnd, t, tshift, solution.localVector(), solutionDot.localVector(), jacobianMat, precondMat, NULL);PYLITH_CHECK_ERROR(err);
 
   _needNewJacobian = false;
 
