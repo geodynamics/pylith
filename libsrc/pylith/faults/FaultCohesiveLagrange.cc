@@ -1424,9 +1424,12 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   topology::Field& orientation = _fields->get("orientation");
   const topology::Field& dispRel = _fields->get("relative disp");
   topology::FieldBase::DiscretizeInfo feInfo = {1, 1, true};
-  if (spaceDim > 1) orientation.subfieldAdd("strike_dir", spaceDim, topology::Field::VECTOR, feInfo);
-  if (spaceDim > 2) orientation.subfieldAdd("dip_dir", spaceDim, topology::Field::VECTOR, feInfo);
-  orientation.subfieldAdd("normal_dir", spaceDim, topology::Field::VECTOR, feInfo);
+  const char* strikeComponents[3] = {"strike_dir_x", "strike_dir_y", "strike_dir_z"};
+  const char* dipComponents[3] = {"dip_dir_x", "dip_dir_y", "dip_dir_z"};
+  const char* normalComponents[3] = {"normal_dir_x", "normal_dir_y", "normal_dir_z"};
+  if (spaceDim > 1) orientation.subfieldAdd("strike_dir", strikeComponents, spaceDim, topology::Field::VECTOR, feInfo);
+  if (spaceDim > 2) orientation.subfieldAdd("dip_dir", dipComponents, spaceDim, topology::Field::VECTOR, feInfo);
+  orientation.subfieldAdd("normal_dir", normalComponents, spaceDim, topology::Field::VECTOR, feInfo);
   orientation.subfieldsSetup();
   orientation.newSection(dispRel, orientationSize);
   // Create components for along-strike, up-dip, and normal directions

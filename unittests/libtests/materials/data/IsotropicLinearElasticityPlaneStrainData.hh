@@ -70,6 +70,7 @@ public:
   PetscPointJac* kernelsLHSJacobianExplicit;///< FE kernels for LHS Jacobian, F(t,s,\dot{s}) with expicit time-stepping.
 
   pylith::topology::FieldQuery::queryfn_type querySolutionDisplacement; ///< Query fn for displacement field satisfying F(t,s,\dot{s} = G(t,s).
+  pylith::topology::FieldQuery::queryfn_type querySolutionDisplacementDot; ///< Query fn for time derivative of displacement field satisfying F(t,s,\dot{s} = G(t,s).
   pylith::topology::FieldQuery::queryfn_type querySolutionVelocity; ///< Query fn for velocity field satisfying F(t,s,\dot{s} = G(t,s).
 
   PylithReal lengthScale; ///< Length scale for nondimensionalization.

@@ -29,6 +29,8 @@
 // Include directives ---------------------------------------------------
 #include "topologyfwd.hh" // forward declarations
 
+#include "pylith/utils/array.hh" // HASA string_vector
+
 #include <string> // USES std::string
 
 // FieldBase ------------------------------------------------------------
@@ -59,6 +61,12 @@ public :
     FACES_FIELD=3, ///< FieldBase over faces.
   }; // DomainEnum
 
+// PUBLIC TYPEDEF ///////////////////////////////////////////////////////
+public :
+
+  /// Function prototype for validator functions.
+  typedef const char* (*validatorfn_type)(const PylithReal);
+
 // PUBLIC STRUCTS ///////////////////////////////////////////////////////
 public :
 
@@ -67,6 +75,8 @@ public :
     VectorFieldEnum vectorFieldType; ///< Type of vector field.
     PylithReal scale; ///< Dimension scale associated with values.
     bool dimsOkay; ///< Ok to replace nondimensionalized values with dimensionalized values.
+    pylith::string_vector componentNames; ///< Names of components.
+    validatorfn_type validator; ///< Validator for values in field;
   }; // Metadata
 
   struct DiscretizeInfo {
@@ -98,6 +108,15 @@ public :
   static
   VectorFieldEnum
   parseVectorFieldString(const char* value);
+
+  /** Validator for positive values.
+   *
+   * @param[in] value Value to validate.
+   * @returns Error message if not positive, NULL otherwise.
+   */
+  static
+  const char* validatorPositive(const PylithReal value);
+
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

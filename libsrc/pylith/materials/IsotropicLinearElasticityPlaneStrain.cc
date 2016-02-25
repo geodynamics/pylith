@@ -86,18 +86,22 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_auxFieldsSetup(void)
   const PylithReal forceScale = densityScale * lengthScale / (timeScale * timeScale);
 
   // :ATTENTION: The order for subfieldAdd() must match the order of the auxiliary fields in the FE kernels.
-  _auxFields->subfieldAdd("density", 1, topology::Field::SCALAR, this->auxFieldDiscretization("density"), densityScale);
-  _auxFieldsQuery->queryFn("density", pylith::materials::Query::dbQueryDensity2D);
+  const char* densityComponents[1] = {"density"};
+  _auxFields->subfieldAdd("density", densityComponents, 1, pylith::topology::Field::SCALAR, this->auxFieldDiscretization("density"), densityScale, pylith::topology::Field::validatorPositive);
+  _auxFieldsQuery->queryFn("density", pylith::topology::FieldQuery::dbQueryGeneric);
 
-  _auxFields->subfieldAdd("mu", 1, topology::Field::SCALAR, this->auxFieldDiscretization("mu"), pressureScale);
+  const char* muComponents[1] = {"mu"};
+  _auxFields->subfieldAdd("mu", muComponents, 1, topology::Field::SCALAR, this->auxFieldDiscretization("mu"), pressureScale);
   _auxFieldsQuery->queryFn("mu", pylith::materials::Query::dbQueryMu2D);
 
-  _auxFields->subfieldAdd("lambda", 1, topology::Field::SCALAR, this->auxFieldDiscretization("lambda"), pressureScale);
+  const char* lambdaComponents[1] = {"lambda"};
+  _auxFields->subfieldAdd("lambda", lambdaComponents, 1, topology::Field::SCALAR, this->auxFieldDiscretization("lambda"), pressureScale);
   _auxFieldsQuery->queryFn("lambda", pylith::materials::Query::dbQueryLambda2D);
 
   if (_useBodyForce) {
-    _auxFields->subfieldAdd("body force", dimension(), topology::Field::VECTOR, this->auxFieldDiscretization("body force"), forceScale);
-    _auxFieldsQuery->queryFn("body force", pylith::materials::Query::dbQueryBodyForce2D);
+    const char* components[3] = {"body_force_x", "body_force_y", "body_force_z"}; // In 2-D only the first two will be used.
+    _auxFields->subfieldAdd("body force", components, dimension(), topology::Field::VECTOR, this->auxFieldDiscretization("body force"), forceScale);
+    _auxFieldsQuery->queryFn("body force", pylith::topology::FieldQuery::dbQueryGeneric);
   } // if
 
   PYLITH_METHOD_END;

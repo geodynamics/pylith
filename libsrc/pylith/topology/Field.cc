@@ -1229,10 +1229,12 @@ pylith::topology::Field::_getScatter(const char* context) const
 // Experimental
 void
 pylith::topology::Field::subfieldAdd(const char *name,
+				     const char* components[],
 				     int numComponents,
 				     const VectorFieldEnum fieldType,
 				     const DiscretizeInfo& feInfo,
-				     const PylithReal scale)
+				     const PylithReal scale,
+				     const validatorfn_type validator)
 { // subfieldAdd
   PYLITH_METHOD_BEGIN;
 
@@ -1244,6 +1246,11 @@ pylith::topology::Field::subfieldAdd(const char *name,
   info.metadata.vectorFieldType = fieldType;
   info.metadata.scale = scale;
   info.metadata.dimsOkay = false;
+  info.metadata.componentNames.resize(numComponents);
+  for (int i=0; i < numComponents; ++i) {
+    info.metadata.componentNames[i] = components[i];
+  } // for
+  info.metadata.validator = validator;
   info.numComponents = numComponents;
   info.fe = feInfo; // Discretization information.
   info.index = _subfields.size(); // Indices match order added.
@@ -1446,7 +1453,13 @@ pylith::topology::Field::_extractSubfield(const Field& field,
   } // if/else
   err = ISDestroy(&subfieldIS);PYLITH_CHECK_ERROR(err);
   
-  this->subfieldAdd(subfieldInfo.metadata.label.c_str(), subfieldInfo.numComponents, subfieldInfo.metadata.vectorFieldType, subfieldInfo.fe, subfieldInfo.metadata.scale);
+  const char** componentNames = (subfieldInfo.numComponents > 0) ? new const char*[subfieldInfo.numComponents] : 0;
+  for (int i=0; i < subfieldInfo.numComponents; ++i) {
+    componentNames[i] = subfieldInfo.metadata.componentNames[i].c_str();
+  } // for
+  this->subfieldAdd(subfieldInfo.metadata.label.c_str(), componentNames, subfieldInfo.numComponents, subfieldInfo.metadata.vectorFieldType, subfieldInfo.fe, subfieldInfo.metadata.scale, subfieldInfo.metadata.validator);
+  delete[] componentNames; componentNames = 0;
+
   this->subfieldsSetup();
 
   err = DMCreateLocalVector(_dm, &_localVec);PYLITH_CHECK_ERROR(err);

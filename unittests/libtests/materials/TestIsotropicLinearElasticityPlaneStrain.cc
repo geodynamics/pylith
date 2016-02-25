@@ -47,6 +47,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::setUp(void)
   _data = NULL;
   _mesh = new topology::Mesh();
   _solution = NULL;
+  _solutionDot = NULL;
   _db = NULL;
 } // setUp
 
@@ -57,6 +58,7 @@ void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::tearDown(void)
 { // tearDown
   delete _solution; _solution = NULL;
+  delete _solutionDot; _solutionDot = NULL;
   delete _material; _material = NULL;
   delete _data; _data = NULL;
   delete _mesh; _mesh = NULL;
@@ -704,6 +706,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeResidual
   pylith::topology::FieldQuery querySoln(*_solution);
   querySoln.queryFn("displacement", _data->querySolutionDisplacement);
   querySoln.queryFn("velocity", _data->querySolutionVelocity);
+  querySoln.queryFn("displacement_t", _data->querySolutionDisplacementDot);
   querySoln.openDB(_db, _data->lengthScale);
   querySoln.queryDB();
   querySoln.closeDB(_db);
@@ -714,7 +717,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeResidual
   PylithReal t = 0.0;
   PylithReal dt = 0.01;
   _material->computeRHSResidual(&residualRHS, t, dt, *_solution);
-  _material->computeLHSResidual(&residualLHS, t, dt, *_solution);
+  _material->computeLHSResidual(&residualLHS, t, dt, *_solution, *_solutionDot);
 
   PetscErrorCode err = VecWAXPY(residual.globalVector(), -1.0, residualLHS.globalVector(), residualRHS.globalVector());CPPUNIT_ASSERT(!err);
 
@@ -845,12 +848,22 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_initializeFull(voi
 
   // Create solution field.
   delete _solution; _solution = new pylith::topology::Field(*_mesh);
+  _solution->label("solution");
   CPPUNIT_ASSERT(_data->discretizations);
   _solution->subfieldAdd("displacement", _data->dimension, topology::Field::VECTOR, _data->discretizations[0], _data->lengthScale);
   _solution->subfieldAdd("velocity", _data->dimension, topology::Field::VECTOR, _data->discretizations[1], _data->lengthScale / _data->timeScale);
   _solution->subfieldsSetup();
   _solution->allocate();
   _solution->zeroAll();
+
+  delete _solutionDot; _solutionDot = new pylith::topology::Field(*_mesh);
+  _solution->label("solution_dot");
+  CPPUNIT_ASSERT(_data->discretizations);
+  _solutionDot->subfieldAdd("displacement_dot", _data->dimension, topology::Field::VECTOR, _data->discretizations[0], _data->lengthScale / _data->timeScale);
+  _solutionDot->subfieldAdd("velocity_dot", _data->dimension, topology::Field::VECTOR, _data->discretizations[1], _data->lengthScale / (_data->timeScale*_data->timeScale));
+  _solutionDot->subfieldsSetup();
+  _solutionDot->allocate();
+  _solutionDot->zeroAll();
 
   CPPUNIT_ASSERT(_solution);
   _material->initialize(*_solution);

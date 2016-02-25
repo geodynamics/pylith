@@ -158,6 +158,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::IsotropicLinea
   kernelsLHSJacobianExplicit = const_cast<PetscPointJac*>( _kernelsLHSJacobianExplicit);
 
   querySolutionDisplacement = _querySolutionDisplacement;
+  querySolutionDisplacementDot = _querySolutionDisplacementDot;
   querySolutionVelocity = _querySolutionVelocity;
 
   lengthScale = _lengthScale;
@@ -235,8 +236,158 @@ pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_querySolution
 { // _querySolutionVelocity
   PYLITH_METHOD_BEGIN;
 
+  const int _dim = 2;
+  const int _nvalues = _dim;
+
+  assert(x);
+  assert(values);
+  assert(context);
+  assert(_nvalues == nvalues);
+  assert(_dim == dim);
+
+  const pylith::topology::FieldQuery::DBQueryContext* queryctx = (pylith::topology::FieldQuery::DBQueryContext*)context;assert(queryctx);
+
+  // Tell database which values we want.
+  const int numDBValues = _dim;
+  PylithReal dbValues[numDBValues];
+  const char* dbValueNames[numDBValues] = {"velocity-x", "velocity-y"};
+  queryctx->db->queryVals(dbValueNames, numDBValues);
+
+  // Dimensionalize query location coordinates.
+  assert(queryctx->lengthScale > 0);
+  double xDim[_dim];
+  for (int i=0; i < _dim; ++i) {
+    xDim[i] = x[i] * queryctx->lengthScale;
+  } // for
+
+  assert(queryctx->cs);
+  const int err = queryctx->db->query(dbValues, numDBValues, xDim, _dim, queryctx->cs);
+  if (err) {
+    std::ostringstream msg;
+    msg << "Could not find velocity field at (";
+    for (int i=0; i < _dim; ++i)
+      msg << "  " << xDim[i];
+    msg << ") in using spatial database '" << queryctx->db->label() << "'.";
+    (*PetscErrorPrintf)(msg.str().c_str());
+    PYLITH_METHOD_RETURN(1);
+  } // if
+  
+  for (int i=0; i < _dim; ++i) {
+    values[i] = dbValues[i] / queryctx->valueScale;
+  } // for
+
   PYLITH_METHOD_RETURN(0);
 } // _querySolutionVelocity
+
+
+// Function for computing displacement solution to match LHS and RHS residual functions.
+PetscErrorCode
+pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_querySolutionDisplacementDot(PylithInt dim, 
+												PylithReal t, 
+												const PylithReal x[],
+												PylithInt nvalues,
+												PylithScalar* values, 
+												void* context)
+{ // _querySolutionDisplacementDot
+  PYLITH_METHOD_BEGIN;
+
+  const int _dim = 2;
+  const int _nvalues = _dim;
+
+  assert(x);
+  assert(values);
+  assert(context);
+  assert(_nvalues == nvalues);
+  assert(_dim == dim);
+
+  const pylith::topology::FieldQuery::DBQueryContext* queryctx = (pylith::topology::FieldQuery::DBQueryContext*)context;assert(queryctx);
+
+  // Tell database which values we want.
+  const int numDBValues = _dim;
+  PylithReal dbValues[numDBValues];
+  const char* dbValueNames[numDBValues] = {"displacement-dot-x", "displacement-dot-y"};
+  queryctx->db->queryVals(dbValueNames, numDBValues);
+
+  // Dimensionalize query location coordinates.
+  assert(queryctx->lengthScale > 0);
+  double xDim[_dim];
+  for (int i=0; i < _dim; ++i) {
+    xDim[i] = x[i] * queryctx->lengthScale;
+  } // for
+
+  assert(queryctx->cs);
+  const int err = queryctx->db->query(dbValues, numDBValues, xDim, _dim, queryctx->cs);
+  if (err) {
+    std::ostringstream msg;
+    msg << "Could not find time derivative of displacement field at (";
+    for (int i=0; i < _dim; ++i)
+      msg << "  " << xDim[i];
+    msg << ") in using spatial database '" << queryctx->db->label() << "'.";
+    (*PetscErrorPrintf)(msg.str().c_str());
+    PYLITH_METHOD_RETURN(1);
+  } // if
+  
+  for (int i=0; i < _dim; ++i) {
+    values[i] = dbValues[i] / queryctx->valueScale;
+  } // for
+
+  PYLITH_METHOD_RETURN(0);
+} // _querySolutionDisplacementDot
+
+
+// Function for computing time derivative of velocity solution to match LHS and RHS residual functions.
+PetscErrorCode
+pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_querySolutionVelocityDot(PylithInt dim, 
+											    PylithReal t, 
+											    const PylithReal x[],
+											    PylithInt nvalues,
+											    PylithScalar* values, 
+											    void* context)
+{ // _querySolutionVelocityDot
+  PYLITH_METHOD_BEGIN;
+
+  const int _dim = 2;
+  const int _nvalues = _dim;
+
+  assert(x);
+  assert(values);
+  assert(context);
+  assert(_nvalues == nvalues);
+  assert(_dim == dim);
+
+  const pylith::topology::FieldQuery::DBQueryContext* queryctx = (pylith::topology::FieldQuery::DBQueryContext*)context;assert(queryctx);
+
+  // Tell database which values we want.
+  const int numDBValues = _dim;
+  PylithReal dbValues[numDBValues];
+  const char* dbValueNames[numDBValues] = {"velocity-dot-x", "velocity-dot-y"};
+  queryctx->db->queryVals(dbValueNames, numDBValues);
+
+  // Dimensionalize query location coordinates.
+  assert(queryctx->lengthScale > 0);
+  double xDim[_dim];
+  for (int i=0; i < _dim; ++i) {
+    xDim[i] = x[i] * queryctx->lengthScale;
+  } // for
+
+  assert(queryctx->cs);
+  const int err = queryctx->db->query(dbValues, numDBValues, xDim, _dim, queryctx->cs);
+  if (err) {
+    std::ostringstream msg;
+    msg << "Could not find time derivative of velocity field at (";
+    for (int i=0; i < _dim; ++i)
+      msg << "  " << xDim[i];
+    msg << ") in using spatial database '" << queryctx->db->label() << "'.";
+    (*PetscErrorPrintf)(msg.str().c_str());
+    PYLITH_METHOD_RETURN(1);
+  } // if
+  
+  for (int i=0; i < _dim; ++i) {
+    values[i] = dbValues[i] / queryctx->valueScale;
+  } // for
+
+  PYLITH_METHOD_RETURN(0);
+} // _querySolutionVelocityDot
 
 
 // End of file

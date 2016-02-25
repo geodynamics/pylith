@@ -28,6 +28,8 @@
 // Include directives ---------------------------------------------------
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 
+#include "pylith/topology/FieldBase.hh" // HASA validatorfn_type
+
 #include <map> // HOLDSA std::map
 #include <string> // USES std::string
 
@@ -58,7 +60,10 @@ public :
     const spatialdata::geocoords::CoordSys* cs; ///< Coordinate system of point locations.
     PylithReal lengthScale; ///< Length scale for dimensionalizing coordinates.
     PylithReal valueScale; ///< Scale for dimensionalizing values for subfield.
-  }; // dbQueryStruct
+    std::string description; ///< Name of value;
+    pylith::string_vector componentNames; ///< Names of components to query (optional).
+    pylith::topology::FieldBase::validatorfn_type validator; ///< Function to validate values (optional).
+  }; // DBQueryStruct
   
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
@@ -76,10 +81,10 @@ public :
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
 
-  /** Set query function for subfield.
+  /** Set query function information for subfield.
    *
-   * @param subfield Name of subfield.
-   * @param fn Query function to use for subfield.
+   * @param[in] subfield Name of subfield.
+   * @param[in] fn Query function to use for subfield.
    */
   void queryFn(const char* subfield,
 	       const queryfn_type fn);
@@ -116,6 +121,35 @@ public :
    */
   void closeDB(spatialdata::spatialdb::SpatialDB* db);
   
+  
+  /** Generic query of values from spatial database.
+   *
+   * Includes nondimensionalization but no conversion of values.
+   *
+   * @param[in] dim Spatial dimension.
+   * @param[in] t Current time.
+   * @param[in] x Coordinates (nondimensioned) of point location for query.
+   * @param[in] nvalues Size of values array.
+   * @param[out] values Array of values to be returned.
+   * @param[in] context Query context.
+   * @returns PETSc error code (0 for success).
+   */
+  static
+  PetscErrorCode dbQueryGeneric(PylithInt dim,
+				PylithReal t,
+				const PylithReal x[],
+				PylithInt nvalues,
+				PylithScalar* values,
+				void* context);
+  
+  /** Validator for positive values.
+   *
+   * @param[in] value Value to validate.
+   * @returns Error message if not positive, NULL otherwise.
+   */
+  static
+  const char* validatorPositive(const PylithReal value);
+
 
 // PRIVATE TYPEDEFS /////////////////////////////////////////////////////
 private :
