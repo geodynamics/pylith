@@ -25,12 +25,10 @@
 import numpy
 
 
-#points = numpy.array([[-4.0, -4.0],
-#                      [-4.0, +4.0],
-#                      [+4.0, -4.0],
-#                      [+4.0, +4.0]], dtype=numpy.float64)
-points = numpy.array([[-0.5, 0.0],
-                      [+0.5, 0.0]], dtype=numpy.float64)
+points = numpy.array([[-4.0, -4.0],
+                      [-4.0, +4.0],
+                      [+4.0, -4.0],
+                      [+4.0, +4.0]], dtype=numpy.float64)
 
 exx = 0.1
 eyy = 0.2
@@ -72,11 +70,11 @@ class GenerateApp(object):
     # Create writer for spatial database file
     from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
     writer = SimpleIOAscii()
-    writer.inventory.filename = "matinitialize.spatialdb"
+    writer.inventory.filename = "isotropiclinearelasticityplanestrain_tri3.spatialdb"
     writer._configure()
     writer.write({'points': points,
                   'coordsys': cs,
-                  'data_dim': 1,
+                  'data_dim': 2,
                   'values': [{'name': "vs", 'units': "m/s", 'data': vs},
                              {'name': "vp", 'units': "m/s", 'data': vp},
                              {'name': "density", 'units': "kg/m**3", 'data': density},

@@ -128,7 +128,7 @@ const PetscPointJac pylith::materials::IsotropicLinearElasticityPlaneStrainData_
     NULL,
   };
 
-const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_filenameAuxFieldsDB = "data/matinitialize.spatialdb";
+const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_filenameAuxFieldsDB = "data/isotropiclinearelasticityplanestrain_tri3.spatialdb";
 
 const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_lengthScale =   1.00000000e+03;
 const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_timeScale =   2.00000000e+00;
