@@ -26,7 +26,7 @@ extern "C" {
 
 const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_filenameMesh = "data/tri3.mesh";
 const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_label = "IsotropicLinearElascitity";
-const int pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_id = 0;
+const int pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_id = 24;
 const int pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_dimension = 2;
 
 const bool pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_useInertia = false;
@@ -128,7 +128,7 @@ const PetscPointJac pylith::materials::IsotropicLinearElasticityPlaneStrainData_
     NULL,
   };
 
-const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_filenameAuxFieldsDB = "data/matinitialize.spatialdb";
+const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_filenameAuxFieldsDB = "data/isotropiclinearelasticityplanestrain_tri3.spatialdb";
 
 const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_lengthScale =   1.00000000e+03;
 const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_timeScale =   2.00000000e+00;
@@ -157,9 +157,6 @@ pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::IsotropicLinea
   kernelsLHSJacobianImplicit = const_cast<PetscPointJac*>(_kernelsLHSJacobianImplicit);
   kernelsLHSJacobianExplicit = const_cast<PetscPointJac*>( _kernelsLHSJacobianExplicit);
 
-  querySolutionDisplacement = _querySolutionDisplacement;
-  querySolutionVelocity = _querySolutionVelocity;
-
   lengthScale = _lengthScale;
   timeScale = _timeScale;
   densityScale = _densityScale;
@@ -169,74 +166,6 @@ pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::IsotropicLinea
 pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::~IsotropicLinearElasticityPlaneStrainData_Tri3(void)
 {}
 
-// Function for computing displacement solution to match LHS and RHS residual functions.
-PetscErrorCode
-pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_querySolutionDisplacement(PylithInt dim, 
-											     PylithReal t, 
-											     const PylithReal x[],
-											     PylithInt nvalues,
-											     PylithScalar* values, 
-											     void* context)
-{ // _querySolutionDisplacement
-  PYLITH_METHOD_BEGIN;
-
-  const int _dim = 2;
-  const int _nvalues = _dim;
-
-  assert(x);
-  assert(values);
-  assert(context);
-  assert(_nvalues == nvalues);
-  assert(_dim == dim);
-
-  const pylith::topology::FieldQuery::DBQueryContext* queryctx = (pylith::topology::FieldQuery::DBQueryContext*)context;assert(queryctx);
-
-  // Tell database which values we want.
-  const int numDBValues = _dim;
-  PylithReal dbValues[numDBValues];
-  const char* dbValueNames[numDBValues] = {"displacement-x", "displacement-y"};
-  queryctx->db->queryVals(dbValueNames, numDBValues);
-
-  // Dimensionalize query location coordinates.
-  assert(queryctx->lengthScale > 0);
-  double xDim[_dim];
-  for (int i=0; i < _dim; ++i) {
-    xDim[i] = x[i] * queryctx->lengthScale;
-  } // for
-
-  assert(queryctx->cs);
-  const int err = queryctx->db->query(dbValues, numDBValues, xDim, _dim, queryctx->cs);
-  if (err) {
-    std::ostringstream msg;
-    msg << "Could not find displacement field at (";
-    for (int i=0; i < _dim; ++i)
-      msg << "  " << xDim[i];
-    msg << ") in using spatial database '" << queryctx->db->label() << "'.";
-    (*PetscErrorPrintf)(msg.str().c_str());
-    PYLITH_METHOD_RETURN(1);
-  } // if
-  
-  for (int i=0; i < _dim; ++i) {
-    values[i] = dbValues[i] / queryctx->valueScale;
-  } // for
-
-  PYLITH_METHOD_RETURN(0);
-} // _querySolutionDisplacement
-
-
-// Function for computing velocity solution to match LHS and RHS residual functions.
-PetscErrorCode
-pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_querySolutionVelocity(PylithInt dim, 
-											 PylithReal t, 
-											 const PylithReal x[],
-											 PylithInt nvalues,
-											 PylithScalar* values, 
-											 void* context)
-{ // _querySolutionVelocity
-  PYLITH_METHOD_BEGIN;
-
-  PYLITH_METHOD_RETURN(0);
-} // _querySolutionVelocity
 
 
 // End of file

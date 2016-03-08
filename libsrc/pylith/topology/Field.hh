@@ -307,16 +307,19 @@ public :
    * Should be followed by calls to subfieldsSetup() and subfieldSetDof().
    *
    * @param name Name of subfield.
+   * @param components Names of components in subfield.
    * @param numComponents Number of components in subfield.
    * @param fieldType Type of vector field.
    * @param feInfo Discretization info for subfield.
    * @param scale Scale for dimensionalizing field.
    */
   void subfieldAdd(const char *name, 
+		   const char* components[],
 		   int numComponents,
 		   const VectorFieldEnum fieldType,
 		   const DiscretizeInfo& feInfo,
-		   const PylithReal scale =1.0);
+		   const PylithReal scale =1.0,
+		   const validatorfn_type validator=NULL);
   
   /** Setup sections for subfields.
    *

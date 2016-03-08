@@ -192,7 +192,8 @@ protected :
 
   // MaterialNew
   topology::Mesh* _mesh; ///< Finite-element mesh.
-  topology::Field* _solution; ///< Solution field
+  topology::Field* _solution; ///< Solution field.
+  topology::Field* _solutionDot; ///< Time derivative of solution field.
   spatialdata::spatialdb::SimpleDB* _db; ///< Spatial database with data for auxiliary fields.
 
 }; // class TestIsotropicLinearElasticityPlaneStrain

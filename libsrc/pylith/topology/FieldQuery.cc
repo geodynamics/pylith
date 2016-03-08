@@ -63,7 +63,7 @@ pylith::topology::FieldQuery::deallocate(void)
 
  
 // ----------------------------------------------------------------------
-// Set query function for subfield.
+// Set query function information for subfield.
 void
 pylith::topology::FieldQuery::queryFn(const char* subfield,
 				      const queryfn_type fn)
@@ -80,7 +80,7 @@ pylith::topology::FieldQuery::queryFn(const char* subfield,
 
 
 // ----------------------------------------------------------------------
-// Set query function for subfield.
+// Get query function information for subfield.
 const pylith::topology::FieldQuery::queryfn_type
 pylith::topology::FieldQuery::queryFn(const char* subfield) const
 { // setQuery
@@ -149,7 +149,12 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
     _contexts[i].db = db;
     _contexts[i].cs = _field.mesh().coordsys();
     _contexts[i].lengthScale = lengthScale;
-    _contexts[i].valueScale = iter->second.metadata.scale;
+
+    const pylith::topology::Field::Metadata& metadata = iter->second.metadata;
+    _contexts[i].valueScale = metadata.scale;
+    _contexts[i].description = metadata.label;
+    _contexts[i].componentNames = metadata.componentNames;
+    _contexts[i].validator = metadata.validator;
 
     _contextPtrs[i] = &_contexts[i];
   } // for
@@ -197,6 +202,95 @@ pylith::topology::FieldQuery::closeDB(spatialdata::spatialdb::SpatialDB* db)
 
   PYLITH_METHOD_END;
 } // queryDB
+
+
+// ----------------------------------------------------------------------
+// Generic query of values from spatial database.
+PetscErrorCode
+pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
+					     PylithReal t,
+					     const PylithReal x[],
+					     PylithInt nvalues,
+					     PylithScalar* values,
+					     void* context)
+{ // dbQueryPositive
+  PYLITH_METHOD_BEGIN;
+
+  assert(x);
+  assert(values);
+  assert(context);
+
+  const pylith::topology::FieldQuery::DBQueryContext* queryctx = (pylith::topology::FieldQuery::DBQueryContext*)context;assert(queryctx);
+
+  const int numQueryValues = queryctx->componentNames.size();
+  assert(numQueryValues == nvalues);
+
+  // Tell database which values we want.
+  const char** queryValueNames = (numQueryValues > 0) ? new const char*[numQueryValues] : 0;
+  for (int i=0; i < numQueryValues; ++i) {
+    queryValueNames[i] = queryctx->componentNames[i].c_str();
+  } // for
+  queryctx->db->queryVals(queryValueNames, numQueryValues);
+
+  // Dimensionalize query location coordinates.
+  assert(queryctx->lengthScale > 0);
+  double xDim[3];
+  for (int i=0; i < dim; ++i) {
+    xDim[i] = x[i] * queryctx->lengthScale;
+  } // for
+
+  // Query database.
+  assert(queryctx->cs);
+  const int err = queryctx->db->query(values, nvalues, xDim, dim, queryctx->cs);
+
+  if (err) {
+    std::ostringstream msg;
+    msg << "Could not find " << queryctx->description << " at (";
+    for (int i=0; i < dim; ++i)
+      msg << "  " << xDim[i];
+    msg << ") in spatial database '" << queryctx->db->label() << "'.";
+    (*PetscErrorPrintf)(msg.str().c_str());
+    delete[] queryValueNames; queryValueNames = 0;
+    PYLITH_METHOD_RETURN(1);
+  } // if
+
+  // Validate if validator function was specified.
+  if (queryctx->validator) {
+    for (int i=0; i < nvalues; ++i) {
+      const std::string& invalidMsg = queryctx->validator(values[i]);
+      if (invalidMsg.length() > 0) {
+	std::ostringstream msg;
+	msg << "Found invalid " << queryValueNames[i] << " (" << values[i] << ") at location (";
+	for (int i=0; i < dim; ++i)
+	  msg << "  " << xDim[i];
+	msg << ") in spatial database '" << queryctx->db->label() << "'. ";
+	msg << invalidMsg;
+	(*PetscErrorPrintf)(msg.str().c_str());
+	
+	delete[] queryValueNames; queryValueNames = 0;
+	PYLITH_METHOD_RETURN(1);
+      } // if
+    } // for
+  } // if
+
+  // Nondimensionalize values
+  assert(queryctx->valueScale > 0);
+  for (int i=0; i < nvalues; ++i) {
+    values[i] /= queryctx->valueScale;
+  } // for
+
+  delete[] queryValueNames; queryValueNames = 0;
+
+  PYLITH_METHOD_RETURN(0);
+} // dbQueryGeneric
+
+
+// ----------------------------------------------------------------------
+const char*
+pylith::topology::FieldQuery::validatorPositive(const PylithReal value)
+{ // validatorPositive
+  return (value > 0.0) ? "" : "Value must be positive.";
+} // validatorPositive
 
 
 // End of file 
