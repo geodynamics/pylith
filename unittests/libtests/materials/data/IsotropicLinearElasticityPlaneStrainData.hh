@@ -21,7 +21,6 @@
 
 #include "pylith/utils/types.hh" // HASA PylithScalar
 #include "pylith/topology/Field.hh" // HASA FieldBase::Discretization
-#include "pylith/topology/FieldQuery.hh" // HASA FieldQuery::queryfn_type
 
 #include "petscds.h" // USES PetscPointFunc, PetsPointJac
 
@@ -68,10 +67,6 @@ public:
   PetscPointFunc* kernelsLHSResidual; ///< FE kernels for LHS residual, F(t,s,\dot{s}).
   PetscPointJac* kernelsLHSJacobianImplicit; ///< FE kernels for LHS Jacobian, F(t,s,\dot{s}) with implicit time-stepping.
   PetscPointJac* kernelsLHSJacobianExplicit;///< FE kernels for LHS Jacobian, F(t,s,\dot{s}) with expicit time-stepping.
-
-  pylith::topology::FieldQuery::queryfn_type querySolutionDisplacement; ///< Query fn for displacement field satisfying F(t,s,\dot{s} = G(t,s).
-  pylith::topology::FieldQuery::queryfn_type querySolutionDisplacementDot; ///< Query fn for time derivative of displacement field satisfying F(t,s,\dot{s} = G(t,s).
-  pylith::topology::FieldQuery::queryfn_type querySolutionVelocity; ///< Query fn for velocity field satisfying F(t,s,\dot{s} = G(t,s).
 
   PylithReal lengthScale; ///< Length scale for nondimensionalization.
   PylithReal timeScale; ///< Time scale for nondimensionalization.

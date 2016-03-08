@@ -704,9 +704,12 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeResidual
 
 #if 1 // TEMPORARY
   pylith::topology::FieldQuery querySoln(*_solution);
-  querySoln.queryFn("displacement", _data->querySolutionDisplacement);
-  querySoln.queryFn("velocity", _data->querySolutionVelocity);
-  querySoln.queryFn("displacement_t", _data->querySolutionDisplacementDot);
+  querySoln.queryFn("displacement", pylith::topology::FieldQuery::dbQueryGeneric);
+  querySoln.queryFn("velocity", pylith::topology::FieldQuery::dbQueryGeneric);
+  /*
+  querySoln.queryFn("displacement_dot", pylith::topology::FieldQuery::dbQueryGeneric);
+  querySoln.queryFn("velocity_dot", pylith::topology::FieldQuery::dbQueryGeneric);
+  */
   querySoln.openDB(_db, _data->lengthScale);
   querySoln.queryDB();
   querySoln.closeDB(_db);
@@ -850,8 +853,10 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_initializeFull(voi
   delete _solution; _solution = new pylith::topology::Field(*_mesh);
   _solution->label("solution");
   CPPUNIT_ASSERT(_data->discretizations);
-  _solution->subfieldAdd("displacement", _data->dimension, topology::Field::VECTOR, _data->discretizations[0], _data->lengthScale);
-  _solution->subfieldAdd("velocity", _data->dimension, topology::Field::VECTOR, _data->discretizations[1], _data->lengthScale / _data->timeScale);
+  const char* componentsDisp[2] = {"displacement_x", "displacement_y"};
+  const char* componentsVel[2] = {"velocity_x", "velocity_y"};
+  _solution->subfieldAdd("displacement", componentsDisp, _data->dimension, topology::Field::VECTOR, _data->discretizations[0], _data->lengthScale);
+  _solution->subfieldAdd("velocity", componentsVel, _data->dimension, topology::Field::VECTOR, _data->discretizations[1], _data->lengthScale / _data->timeScale);
   _solution->subfieldsSetup();
   _solution->allocate();
   _solution->zeroAll();
@@ -859,8 +864,10 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_initializeFull(voi
   delete _solutionDot; _solutionDot = new pylith::topology::Field(*_mesh);
   _solution->label("solution_dot");
   CPPUNIT_ASSERT(_data->discretizations);
-  _solutionDot->subfieldAdd("displacement_dot", _data->dimension, topology::Field::VECTOR, _data->discretizations[0], _data->lengthScale / _data->timeScale);
-  _solutionDot->subfieldAdd("velocity_dot", _data->dimension, topology::Field::VECTOR, _data->discretizations[1], _data->lengthScale / (_data->timeScale*_data->timeScale));
+  const char* componentsDispDot[2] = {"displacement_dot_x", "displacement_dot_y"};
+  const char* componentsVelDot[2] = {"velocity_dot_x", "velocity_dot_y"};
+  _solutionDot->subfieldAdd("displacement_dot", componentsDispDot, _data->dimension, topology::Field::VECTOR, _data->discretizations[0], _data->lengthScale / _data->timeScale);
+  _solutionDot->subfieldAdd("velocity_dot", componentsVelDot, _data->dimension, topology::Field::VECTOR, _data->discretizations[1], _data->lengthScale / (_data->timeScale*_data->timeScale));
   _solutionDot->subfieldsSetup();
   _solutionDot->allocate();
   _solutionDot->zeroAll();

@@ -87,7 +87,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_auxFieldsSetup(void)
 
   // :ATTENTION: The order for subfieldAdd() must match the order of the auxiliary fields in the FE kernels.
   const char* densityComponents[1] = {"density"};
-  _auxFields->subfieldAdd("density", densityComponents, 1, pylith::topology::Field::SCALAR, this->auxFieldDiscretization("density"), densityScale, pylith::topology::Field::validatorPositive);
+  _auxFields->subfieldAdd("density", densityComponents, 1, pylith::topology::Field::SCALAR, this->auxFieldDiscretization("density"), densityScale, pylith::topology::FieldQuery::validatorPositive);
   _auxFieldsQuery->queryFn("density", pylith::topology::FieldQuery::dbQueryGeneric);
 
   const char* muComponents[1] = {"mu"};

@@ -38,60 +38,6 @@ public:
   /// Destructor
   ~IsotropicLinearElasticityPlaneStrainData_Tri3(void);
 
-  /** Function for computing displacement solution to match LHS and RHS residual functions.
-   *
-   * @param[in] dim Spatial dimension.
-   * @param[in] t Current time.
-   * @param[in] x Coordinates (nondimensioned) of point location for query.
-   * @param[in] nvalues Size of values array.
-   * @param[out] values Array of values to be returned.
-   * @param[in] context Query context.
-   * @returns PETSc error code (0 for success).
-   */
-  static
-  PetscErrorCode _querySolutionDisplacement(PylithInt dim, 
-					    PylithReal t, 
-					    const PylithReal x[],
-					    PylithInt nvalues,
-					    PylithScalar* values, 
-					    void* context);
-
-  /** Function for computing time derivative of displacement solution to match LHS and RHS residual functions.
-   *
-   * @param[in] dim Spatial dimension.
-   * @param[in] t Current time.
-   * @param[in] x Coordinates (nondimensioned) of point location for query.
-   * @param[in] nvalues Size of values array.
-   * @param[out] values Array of values to be returned.
-   * @param[in] context Query context.
-   * @returns PETSc error code (0 for success).
-   */
-  static
-  PetscErrorCode _querySolutionDisplacementDot(PylithInt dim, 
-					       PylithReal t, 
-					       const PylithReal x[],
-					       PylithInt nvalues,
-					       PylithScalar* values, 
-					       void* context);
-
-  /** Function for computing velocity solution to match LHS and RHS residual functions.
-   *
-   * @param[in] dim Spatial dimension.
-   * @param[in] t Current time.
-   * @param[in] x Coordinates (nondimensioned) of point location for query.
-   * @param[in] nvalues Size of values array.
-   * @param[out] values Array of values to be returned.
-   * @param[in] context Query context.
-   * @returns PETSc error code (0 for success).
-   */
-  static
-  PetscErrorCode _querySolutionVelocity(PylithInt dim, 
-					PylithReal t, 
-					const PylithReal x[],
-					PylithInt nvalues,
-					PylithScalar* values, 
-					void* context);
-
 private:
 
   static const char* _filenameMesh;

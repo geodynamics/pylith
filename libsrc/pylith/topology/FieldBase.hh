@@ -109,15 +109,6 @@ public :
   VectorFieldEnum
   parseVectorFieldString(const char* value);
 
-  /** Validator for positive values.
-   *
-   * @param[in] value Value to validate.
-   * @returns Error message if not positive, NULL otherwise.
-   */
-  static
-  const char* validatorPositive(const PylithReal value);
-
-
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
