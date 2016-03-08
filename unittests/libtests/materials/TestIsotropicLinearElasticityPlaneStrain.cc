@@ -173,7 +173,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
   } // body force
 
   // Make sure DB query functions are set correctly.
-  CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryDensity2D, _material->_auxFieldsQuery->queryFn("density"));
+  CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _material->_auxFieldsQuery->queryFn("density"));
   CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryMu2D, _material->_auxFieldsQuery->queryFn("mu"));
   CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryLambda2D, _material->_auxFieldsQuery->queryFn("lambda"));
   if (_data->useBodyForce) {
