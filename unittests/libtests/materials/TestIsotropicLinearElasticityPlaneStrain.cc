@@ -725,13 +725,9 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeResidual
   _material->computeRHSResidual(&residualRHS, t, dt, *_solution);
   _material->computeLHSResidual(&residualLHS, t, dt, *_solution, *_solutionDot);
 
+  // Scatter local to global.
   residualRHS.complete();
   residualLHS.complete();
-
-  std::cout << "RHS local vector" << std::endl;
-  VecView(residualRHS.localVector(), PETSC_VIEWER_STDOUT_WORLD);
-  std::cout << "RHS global vector" << std::endl;
-  VecView(residualRHS.globalVector(), PETSC_VIEWER_STDOUT_WORLD);
 
   PetscErrorCode err = VecWAXPY(residual.globalVector(), -1.0, residualLHS.globalVector(), residualRHS.globalVector());CPPUNIT_ASSERT(!err);
 
