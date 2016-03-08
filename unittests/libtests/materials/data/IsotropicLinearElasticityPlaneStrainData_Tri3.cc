@@ -33,8 +33,19 @@ const bool pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_us
 const bool pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_useBodyForce = false;
 
 const int pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_numSolnFields = 1;
-const pylith::topology::Field::DiscretizeInfo pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_discretizations[1] = {
-  {1, 1, true},
+const pylith::topology::Field::DiscretizeInfo pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_solnDiscretizations[2] = {
+  {1, 2, true}, // displacement (basisOrder, num1DQuadPts, basisContinuous)
+  {1, 2, true}, // velocity
+};
+
+const int pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_numAuxFields = 3;
+const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_auxFields[3] = {
+  "density", "mu", "lambda",
+};
+const pylith::topology::Field::DiscretizeInfo pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_auxDiscretizations[3] = {
+  {0, 2, true}, // density
+  {0, 2, true}, // mu
+  {0, 2, true}, // lambda
 };
 
 const PetscPointFunc pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_kernelsRHSResidual[2*2] =
@@ -147,7 +158,11 @@ pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::IsotropicLinea
   useBodyForce = _useBodyForce;
 
   numSolnFields = _numSolnFields;
-  discretizations = const_cast<pylith::topology::Field::DiscretizeInfo*>(_discretizations);
+  solnDiscretizations = const_cast<pylith::topology::Field::DiscretizeInfo*>(_solnDiscretizations);
+
+  numAuxFields = _numAuxFields;
+  auxFields = const_cast<char**>(_auxFields);
+  auxDiscretizations = const_cast<pylith::topology::Field::DiscretizeInfo*>(_auxDiscretizations);
 
   filenameAuxFieldsDB = const_cast<char*>(_filenameAuxFieldsDB);
 

@@ -49,7 +49,11 @@ private:
   static const bool _useBodyForce;
 
   static const int _numSolnFields;
-  static const pylith::topology::Field::DiscretizeInfo _discretizations[1];
+  static const pylith::topology::Field::DiscretizeInfo _solnDiscretizations[2];
+
+  static const int _numAuxFields;
+  static const char* _auxFields[3];
+  static const pylith::topology::Field::DiscretizeInfo _auxDiscretizations[3];
 
   static const char* _filenameAuxFieldsDB;
 

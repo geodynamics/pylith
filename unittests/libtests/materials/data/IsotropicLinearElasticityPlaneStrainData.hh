@@ -56,8 +56,12 @@ public:
   bool useBodyForce; ///< Test uses body force.
 
   int numSolnFields; ///< Number of solution fields.
-  topology::Field::DiscretizeInfo* discretizations; ///< Discretizations for solution fields.
+  topology::Field::DiscretizeInfo* solnDiscretizations; ///< Discretizations for solution fields.
 
+  int numAuxFields; ///< Number of auxiliary fields.
+  char** auxFields; ///< Names of auxiliary fields.
+  topology::Field::DiscretizeInfo* auxDiscretizations; ///< Discretizations for auxiliary fields.
+  
   char* filenameAuxFieldsDB; ///< Name of file with data for auxFieldsDB.
 
   static const int numKernelsResidual;
