@@ -26,7 +26,7 @@ extern "C" {
 
 const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_filenameMesh = "data/tri3.mesh";
 const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_label = "IsotropicLinearElascitity";
-const int pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_id = 0;
+const int pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_id = 24;
 const int pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_dimension = 2;
 
 const bool pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_useInertia = false;

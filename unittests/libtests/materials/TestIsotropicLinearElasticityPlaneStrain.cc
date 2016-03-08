@@ -706,21 +706,32 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeResidual
   pylith::topology::FieldQuery querySoln(*_solution);
   querySoln.queryFn("displacement", pylith::topology::FieldQuery::dbQueryGeneric);
   querySoln.queryFn("velocity", pylith::topology::FieldQuery::dbQueryGeneric);
-  /*
-  querySoln.queryFn("displacement_dot", pylith::topology::FieldQuery::dbQueryGeneric);
-  querySoln.queryFn("velocity_dot", pylith::topology::FieldQuery::dbQueryGeneric);
-  */
   querySoln.openDB(_db, _data->lengthScale);
   querySoln.queryDB();
   querySoln.closeDB(_db);
-
   _solution->view("SOLUTION");
+
+  pylith::topology::FieldQuery querySolnDot(*_solutionDot);
+  querySolnDot.queryFn("displacement_dot", pylith::topology::FieldQuery::dbQueryGeneric);
+  querySolnDot.queryFn("velocity_dot", pylith::topology::FieldQuery::dbQueryGeneric);
+  querySolnDot.openDB(_db, _data->lengthScale);
+  querySolnDot.queryDB();
+  querySolnDot.closeDB(_db);
+  _solutionDot->view("SOLUTION DOT");
   
   CPPUNIT_ASSERT(_material);
-  PylithReal t = 0.0;
+  PylithReal t = 1.0;
   PylithReal dt = 0.01;
   _material->computeRHSResidual(&residualRHS, t, dt, *_solution);
   _material->computeLHSResidual(&residualLHS, t, dt, *_solution, *_solutionDot);
+
+  residualRHS.complete();
+  residualLHS.complete();
+
+  std::cout << "RHS local vector" << std::endl;
+  VecView(residualRHS.localVector(), PETSC_VIEWER_STDOUT_WORLD);
+  std::cout << "RHS global vector" << std::endl;
+  VecView(residualRHS.globalVector(), PETSC_VIEWER_STDOUT_WORLD);
 
   PetscErrorCode err = VecWAXPY(residual.globalVector(), -1.0, residualLHS.globalVector(), residualRHS.globalVector());CPPUNIT_ASSERT(!err);
 
