@@ -1,8 +1,8 @@
 #SPATIAL.ascii 1
 SimpleDB {
-  num-values = 7
-  value-names =  density vs vp  displacement_x  displacement_y  velocity_x  velocity_y
-  value-units = kg/m**3  m/s  m/s  m  m  m/s  m/s
+  num-values = 11
+  value-names =  density vs vp  displacement_x  displacement_y  velocity_x  velocity_y  displacement_dot_x  displacement_dot_y   velocity_dot_x velocity_dot_y
+  value-units = kg/m**3  m/s  m/s  m  m  m/s  m/s  m/s  m/s m/s**2 m/s**2
   num-locs = 2
   data-dim = 1
   space-dim = 2
@@ -11,5 +11,5 @@ SimpleDB {
     space-dim = 2
   }
 }
--0.5  0.0  2500.0  3000.0  5196.15242  0.0  0.0  0.0  0.0
-+0.5  0.0  2000.0  1200.0  2078.46097  0.0  0.0  0.0  0.0
+-0.5  0.0  2500.0  3000.0  5196.15242  0.1  0.3  0.5  0.7  0.0  0.0  0.0  0.0
++0.5  0.0  2000.0  1200.0  2078.46097  0.2  0.4  0.6  0.8  0.0  0.0  0.0  0.0
