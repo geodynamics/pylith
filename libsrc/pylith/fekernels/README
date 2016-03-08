@@ -21,3 +21,7 @@ where:
 Additional suffixes, such as "_initstate", should be appended to the
 function names to designate specific cases, such as the presence of
 additional auxiliary fields for initial stress and initial strain.
+
+Examples of equations:
+pylith_fekernels_IsotropicLinearElasticityPlaneStrain
+pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain
