@@ -854,10 +854,36 @@ pylith::topology::Field::view(const char* label) const
       throw std::logic_error(msg.str());
     } // switch
 
-  std::cout << "Viewing field '" << _metadata.label << "' "<< label << ".\n"
-	    << "  vector field type: " << vecFieldString << "\n"
+  std::cout << "Viewing field '" << _metadata.label << "' "<< label << ".\n";
+  const int ncomps = _metadata.componentNames.size();
+  if (ncomps > 0) {
+    std::cout << "  Components:";
+    for (int i=0; i < ncomps; ++i) {
+      std::cout << " " << _metadata.componentNames[i];
+    } // for
+    std::cout << "\n";
+  } // if
+  if (_subfields.size() > 0) {
+    std::cout << "  Subfields:\n";
+    for(subfields_type::const_iterator s_iter = _subfields.begin(); s_iter != _subfields.end(); ++s_iter) {
+      const char* sname = s_iter->first.c_str();
+      const SubfieldInfo& sinfo = s_iter->second;
+      std::cout << "    Subfield " << sname;
+      const int nscomps = sinfo.numComponents;
+      if (nscomps > 0) {
+	std::cout << ", Components:";
+	for (int i=0; i < ncomps; ++i) {
+	  std::cout << " " << sinfo.metadata.componentNames[i];
+	} // for
+	std::cout << "\n";
+      } // if
+    } // for
+  } // if
+
+  std::cout << "  vector field type: " << vecFieldString << "\n"
 	    << "  scale: " << _metadata.scale << "\n"
 	    << "  dimensionalize flag: " << _metadata.dimsOkay << std::endl;
+
   if (_dm) {
     PetscSection   section = NULL;
     PetscMPIInt    numProcs, rank;

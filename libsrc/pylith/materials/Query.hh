@@ -38,24 +38,6 @@ class pylith::materials::Query
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
-  /** Query for density in 2-D.
-   *
-   * @param[in] dim Spatial dimension.
-   * @param[in] t Current time.
-   * @param[in] x Coordinates (nondimensioned) of point location for query.
-   * @param[in] nvalues Size of values array.
-   * @param[out] values Array of values to be returned.
-   * @param[in] context Query context.
-   * @returns PETSc error code (0 for success).
-   */
-  static
-  PetscErrorCode dbQueryDensity2D(PylithInt dim,
-				  PylithReal t,
-				  const PylithReal x[],
-				  PylithInt nvalues,
-				  PylithScalar* values,
-				  void* context);
-
   /** Query for shear modulus, $\mu$, in 2-D.
    *
    * @param[in] dim Spatial dimension.
@@ -91,24 +73,6 @@ public :
 				 PylithInt nvalues,
 				 PylithScalar* values,
 				 void* context);
-
-  /** Query for body force vector in 2-D.
-   *
-   * @param[in] dim Spatial dimension.
-   * @param[in] t Current time.
-   * @param[in] x Coordinates (nondimensioned) of point location for query.
-   * @param[in] nvalues Size of values array.
-   * @param[out] values Array of values to be returned.
-   * @param[in] context Query context.
-   * @returns PETSc error code (0 for success).
-   */
-  static
-  PetscErrorCode dbQueryBodyForce2D(PylithInt dim,
-				    PylithReal t,
-				    const PylithReal x[],
-				    PylithInt nvalues,
-				    PylithScalar* values,
-				    void* context);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

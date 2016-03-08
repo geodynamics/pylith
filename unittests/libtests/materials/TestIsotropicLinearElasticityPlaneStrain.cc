@@ -177,7 +177,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
   CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryMu2D, _material->_auxFieldsQuery->queryFn("mu"));
   CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryLambda2D, _material->_auxFieldsQuery->queryFn("lambda"));
   if (_data->useBodyForce) {
-    CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryBodyForce2D, _material->_auxFieldsQuery->queryFn("body force"));
+    CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _material->_auxFieldsQuery->queryFn("body force"));
   } // if
 
   PYLITH_METHOD_END;
@@ -412,30 +412,19 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
   CPPUNIT_ASSERT_EQUAL(std::string("density"), std::string(density.label()));
   CPPUNIT_ASSERT_EQUAL(_data->dimension, density.spaceDim());
 
-  const pylith::topology::FieldQuery::queryfn_type queryFunctions[1] = { 
-    pylith::materials::Query::dbQueryDensity2D,
-  };
-  const pylith::topology::FieldQuery::DBQueryContext dbContext = {
-    _db,
-    _mesh->coordsys(),
-    _data->lengthScale,
-    _data->densityScale,
-  };
-  const pylith::topology::FieldQuery::DBQueryContext* queryContextPtrs[1] = { 
-    &dbContext,
-  };
-
-  pylith::topology::FieldQuery* query = _material->_auxFieldsQuery;
-  query->openDB(_db, _data->lengthScale);
+  pylith::topology::FieldQuery queryDensity(density);
+  queryDensity.queryFn("density", pylith::topology::FieldQuery::dbQueryGeneric);
+  queryDensity.openDB(_db, _data->lengthScale);
 
   PylithReal norm = 0.0;
   PylithReal t = 0.0;
   const PetscDM dm = density.dmMesh();CPPUNIT_ASSERT(dm);
-  PetscErrorCode err = DMPlexComputeL2Diff(dm, t, (pylith::topology::FieldQuery::queryfn_type*)queryFunctions, (void**)queryContextPtrs, density.globalVector(), &norm);CPPUNIT_ASSERT(!err);
-  query->closeDB(_db);
+  PetscErrorCode err = DMPlexComputeL2Diff(dm, t, queryDensity.functions(), (void**)queryDensity.contextPtrs(), density.globalVector(), &norm);CPPUNIT_ASSERT(!err);
+  queryDensity.closeDB(_db);
 
   const PylithReal tolerance = 1.0e-6;
   CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
+
 
   PYLITH_METHOD_END;
 } // testGetAuxField
