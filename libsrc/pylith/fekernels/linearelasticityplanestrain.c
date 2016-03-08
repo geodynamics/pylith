@@ -378,7 +378,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3_uu(const PylithInt dim
 /* ---------------------------------------------------------------------- */
 /* Calculate volumetric stress for 2-D plane strain isotropic linear elasticity WITHOUT initial stress and initial strain.
  *
- * volStress_ij = lambda * strain_kk * delta_ij
+ * -volStress_ij = -lambda * strain_kk * delta_ij
  */
 void
 pylith_fekernels_IsotropicLinearElasticityPlaneStrain_volumetricStress(const PylithInt dim,
@@ -420,11 +420,11 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_volumetricStress(const Pyl
   assert(a);
   assert(stress);
 
-  for (i=0; i < _dim; ++i) {
-    strainTrace += disp_x[i];
+  for (i = 0; i < _dim; ++i) {
+    strainTrace += disp_x[i*_dim+i];
   } /* for */
   for (i = 0; i < _dim; ++i) {
-    stress[i*_dim+i] += lambda * strainTrace;
+    stress[i*_dim+i] -= lambda * strainTrace;
   } /* for */
 } /* volumetricStress_IsotropicLinearElasticityPlaneStrain */
 
@@ -434,7 +434,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_volumetricStress(const Pyl
  *
  * We compute the stress relative to a reference stress/strain state.
  *
- * volStress_ij - meanInitialStress_ij = lambda * (strain_kk - initialstrain_kk) * delta_ij
+ * -volStress_ij + meanInitialStress_ij = -lambda * (strain_kk + initialstrain_kk) * delta_ij
  */
 void
 pylith_fekernels_IsotropicLinearElasticityPlaneStrain_volumetricStress_initstate(const PylithInt dim,
@@ -482,12 +482,12 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_volumetricStress_initstate
   assert(stress);
 
   for (i=0; i < _dim; ++i) {
-    strainTrace += disp_x[i] - initialstrain[i*_dim+i];
+    strainTrace += disp_x[i*_dim+i] - initialstrain[i*_dim+i];
     meanistress += initialstress[i*_dim+i];
   } /* for */
   meanistress /= (PylithScalar)_dim;
   for (i = 0; i < _dim; ++i) {
-    stress[i*_dim+i] += lambda * strainTrace + meanistress;
+    stress[i*_dim+i] -= lambda * strainTrace + meanistress;
   } /* for */
 } /* IsotropicLinearElasticityPlaneStrain_initState_volumetricStress */
 
@@ -496,7 +496,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_volumetricStress_initstate
 /* Calculate deviatoric stress for 2-D plane strain isotropic linear
  * elasticity WITHOUT initial stress and strain.
  *
- * devStress_ij = 2.0*mu * strain_ij
+ * -devStress_ij = -2.0*mu * strain_ij
  */
 void
 pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress(const PylithInt dim,
@@ -539,7 +539,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress(const Pyl
 
   for (i=0; i < _dim; ++i) {
     for (j=0; j < _dim; ++j) {
-      stress[i*_dim+j] += mu * (disp_x[i*_dim+j] + disp_x[j*_dim+i]);
+      stress[i*_dim+j] -= mu * (disp_x[i*_dim+j] + disp_x[j*_dim+i]);
     } /* for */
   } /* for */
 } /* IsotropicLinearElasticityPlaneStrain_deviatoricStress */
@@ -549,7 +549,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress(const Pyl
 /* Calculate deviatoric stress for 2-D plane strain isotropic linear
  * elasticity WITH initial stress and initial strain.
  *
- * devStress_ij - (initialStress_ij - meanInitialStress_ij * delta_ij) = 2.0*mu * (strain_ij - initialstrain_ij)
+ * -devStress_ij + (initialStress_ij + meanInitialStress_ij * delta_ij) = -2.0*mu * (strain_ij + initialstrain_ij)
  */
 void
 pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress_initstate(const PylithInt dim,
@@ -601,9 +601,9 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress_initstate
   meanistress /= (PylithScalar)_dim;
   for (i=0; i < _dim; ++i) {
     for (j=0; j < _dim; ++j) {
-      stress[i*_dim+j] += mu * (disp_x[i*_dim+j] + disp_x[j*_dim+i] - initialstrain[i*_dim+j]) + initialstress[i*_dim+j];
+      stress[i*_dim+j] -= mu * (disp_x[i*_dim+j] + disp_x[j*_dim+i] - initialstrain[i*_dim+j]) + initialstress[i*_dim+j];
     } /* for */
-    stress[i*_dim+i] -= meanistress;
+    stress[i*_dim+i] += meanistress;
   } /* for */
 } /* deviatoricStress_IsotropicLinearElasticityPlaneStrain_initstate */
 
