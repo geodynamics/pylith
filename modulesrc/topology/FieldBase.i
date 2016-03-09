@@ -47,14 +47,20 @@ namespace pylith {
 	CELLS_FIELD=1, ///< FieldBase over cells.
       }; // DomainEnum
 
-// PUBLIC STRUCTS ///////////////////////////////////////////////////////
-public :
+      // PUBLIC TYPEDEF /////////////////////////////////////////////////
+    public :
 
-  struct DiscretizeInfo {
-    int basisOrder; ///< Order of basis functions.
-    int quadOrder; ///< Order of quadrature scheme.
-    bool isBasisContinuous; ///< Is basis continuous?
-  }; // DiscInfo
+      /// Function prototype for validator functions.
+      typedef const char* (*validatorfn_type)(const PylithReal);
+
+      // PUBLIC STRUCTS /////////////////////////////////////////////////
+    public :
+
+      struct DiscretizeInfo {
+	int basisOrder; ///< Order of basis functions.
+	int quadOrder; ///< Order of quadrature scheme.
+	bool isBasisContinuous; ///< Is basis continuous?
+      }; // DiscInfo
 
       // PUBLIC MEMBERS /////////////////////////////////////////////////
     public :
