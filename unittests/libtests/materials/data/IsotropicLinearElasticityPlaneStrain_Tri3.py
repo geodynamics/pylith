@@ -26,8 +26,9 @@ import numpy
 
 
 points = numpy.array([[-4.0, -4.0],
+                      [-4.0, +4.0],
                       [+4.0, -4.0],
-                      [-4.0, +4.0]], dtype=numpy.float64)
+                      [+4.0, +4.0]], dtype=numpy.float64)
 
 exx = 0.1
 eyy = 0.2

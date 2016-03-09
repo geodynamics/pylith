@@ -691,7 +691,6 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeResidual
   residual.allocate();
   residual.zeroAll();
 
-#if 1 // TEMPORARY
   pylith::topology::FieldQuery querySoln(*_solution);
   querySoln.queryFn("displacement", pylith::topology::FieldQuery::dbQueryGeneric);
   querySoln.queryFn("velocity", pylith::topology::FieldQuery::dbQueryGeneric);
@@ -718,15 +717,15 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeResidual
   residualRHS.complete();
   residualLHS.complete();
 
+  residualRHS.view("RESIDUAL RHS");
+  residualLHS.view("RESIDUAL LHS");
+
   PetscErrorCode err = VecWAXPY(residual.globalVector(), -1.0, residualLHS.globalVector(), residualRHS.globalVector());CPPUNIT_ASSERT(!err);
 
   PylithReal norm = 0.0;
   err = VecNorm(residual.globalVector(), NORM_2, &norm);CPPUNIT_ASSERT(!err);
   const PylithReal tolerance = 1.0e-6;
   CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
-#else
-  CPPUNIT_ASSERT_MESSAGE("Test not implemented.", false); // TEMPORARY
-#endif
 
   
   PYLITH_METHOD_END;

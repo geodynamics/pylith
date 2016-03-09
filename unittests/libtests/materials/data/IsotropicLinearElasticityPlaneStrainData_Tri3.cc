@@ -24,7 +24,7 @@ extern "C" {
 #include "pylith/fekernels/linearelasticityplanestrain.h" // USES IsotropicLinearElasticityPlaneStrain kernels
 }
 
-const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_filenameMesh = "data/tri3.mesh";
+const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_filenameMesh = "data/tri3_small.mesh";
 const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_label = "IsotropicLinearElascitity";
 const int pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_id = 24;
 const int pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_dimension = 2;
@@ -34,8 +34,8 @@ const bool pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_us
 
 const int pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_numSolnFields = 1;
 const pylith::topology::Field::DiscretizeInfo pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_solnDiscretizations[2] = {
-  {1, 2, true}, // displacement (basisOrder, num1DQuadPts, basisContinuous)
-  {1, 2, true}, // velocity
+  {2, 2, true}, // displacement (basisOrder, num1DQuadPts, basisContinuous)
+  {2, 2, true}, // velocity
 };
 
 const int pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_numAuxFields = 3;
@@ -43,9 +43,9 @@ const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_a
   "density", "mu", "lambda",
 };
 const pylith::topology::Field::DiscretizeInfo pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_auxDiscretizations[3] = {
-  {0, 2, true}, // density
-  {0, 2, true}, // mu
-  {0, 2, true}, // lambda
+  {1, 2, true}, // density
+  {1, 2, true}, // mu
+  {1, 2, true}, // lambda
 };
 
 const PetscPointFunc pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_kernelsRHSResidual[2*2] =
