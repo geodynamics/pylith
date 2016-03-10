@@ -25,22 +25,28 @@ const int pylith::materials::IsotropicLinearElasticityPlaneStrainData::numKernel
 // ----------------------------------------------------------------------
 // Constructor
 pylith::materials::IsotropicLinearElasticityPlaneStrainData::IsotropicLinearElasticityPlaneStrainData(void) :
-  filenameMesh(0),
-  label(NULL),
-  id(0),
-  dimension(0),
+  meshFilename(0),
+  materialLabel(NULL),
+  materialId(0),
+  boundaryLabel(NULL),
 
-  useInertia(false),
-  useBodyForce(false),
+  lengthScale(0),
+  timeScale(0),
+  pressureScale(0),
+  densityScale(0),
 
-  numSolnFields(0),
+  t(0.0),
+  dt(0.0),
+  
   solnDiscretizations(NULL),
 
   numAuxFields(0),
   auxFields(NULL),
   auxDiscretizations(NULL),
-
   filenameAuxFieldsDB(NULL),
+
+  dimension(0),
+  numSolnFields(0),
 
   kernelsRHSResidual(NULL),
   kernelsRHSJacobian(NULL),
@@ -48,10 +54,9 @@ pylith::materials::IsotropicLinearElasticityPlaneStrainData::IsotropicLinearElas
   kernelsLHSJacobianImplicit(NULL),
   kernelsLHSJacobianExplicit(NULL),
 
-  lengthScale(0),
-  timeScale(0),
-  pressureScale(0),
-  densityScale(0)
+  useInertia(false),
+  useBodyForce(false)
+
 { // constructor
 } // constructor
 

@@ -45,24 +45,30 @@ public :
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
-  // Test input data
+  // GENERAL, VALUES DEPEND ON TEST CASE
+  char* meshFilename; ///< Name of file with ASCII mesh.
+  char* materialLabel; ///< Label defining cells associated with material.
+  int materialId; ///< Material id.
+  char* boundaryLabel; ///< Group defining domain boundary.
 
-  char* filenameMesh; ///< Name of file with ASCII mesh.
-  char* label; ///< Material label.
-  int id; ///< Material id.
-  int dimension; ///< Dimension of material.
+  PylithReal lengthScale; ///< Length scale for nondimensionalization.
+  PylithReal timeScale; ///< Time scale for nondimensionalization.
+  PylithReal pressureScale; ///< Pressure scale for nondimensionalization.
+  PylithReal densityScale; ///< Density scale for nondimensionalization.
 
-  bool useInertia; ///< Test uses inertia.
-  bool useBodyForce; ///< Test uses body force.
-
-  int numSolnFields; ///< Number of solution fields.
+  PylithReal t; ///< Time in simulation.
+  PylithReal dt; ///< Time step in simulation.
+  
   topology::Field::DiscretizeInfo* solnDiscretizations; ///< Discretizations for solution fields.
 
   int numAuxFields; ///< Number of auxiliary fields.
   char** auxFields; ///< Names of auxiliary fields.
-  topology::Field::DiscretizeInfo* auxDiscretizations; ///< Discretizations for auxiliary fields.
-  
+  topology::Field::DiscretizeInfo* auxDiscretizations; ///< Discretizations for auxiliary fields.  
   char* filenameAuxFieldsDB; ///< Name of file with data for auxFieldsDB.
+
+  // GENERAL, VALUES DEPEND ONLY ON MATERIAL
+  int dimension; ///< Dimension of material.
+  int numSolnFields; ///< Number of solution fields.
 
   static const int numKernelsResidual;
   static const int numKernelsJacobian;
@@ -72,10 +78,10 @@ public:
   PetscPointJac* kernelsLHSJacobianImplicit; ///< FE kernels for LHS Jacobian, F(t,s,\dot{s}) with implicit time-stepping.
   PetscPointJac* kernelsLHSJacobianExplicit;///< FE kernels for LHS Jacobian, F(t,s,\dot{s}) with expicit time-stepping.
 
-  PylithReal lengthScale; ///< Length scale for nondimensionalization.
-  PylithReal timeScale; ///< Time scale for nondimensionalization.
-  PylithReal pressureScale; ///< Pressure scale for nondimensionalization.
-  PylithReal densityScale; ///< Density scale for nondimensionalization.
+  
+  // SPECIFIC TO MATERIAL, VALUES DEPEND ON TEST CASE
+  bool useInertia; ///< Test uses inertia.
+  bool useBodyForce; ///< Test uses body force.
 
 };
 

@@ -55,4 +55,13 @@ mesh = {
             13   24
     }
   }
+  group = {
+    type = vertices
+    name = boundary
+    count = 8
+    indices = {
+      0  1  2  5  6  9 10 11
+    }
+  }
+  
 }

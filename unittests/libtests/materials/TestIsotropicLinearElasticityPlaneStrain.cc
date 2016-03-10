@@ -606,7 +606,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testId(void)
 
   CPPUNIT_ASSERT(_material);
   CPPUNIT_ASSERT(_data);
-  CPPUNIT_ASSERT_EQUAL(_data->id, _material->id());
+  CPPUNIT_ASSERT_EQUAL(_data->materialId, _material->id());
 
   PYLITH_METHOD_END;
 } // testId
@@ -621,7 +621,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testLabel(void)
 
   CPPUNIT_ASSERT(_material);
   CPPUNIT_ASSERT(_data);
-  CPPUNIT_ASSERT_EQUAL(std::string(_data->label), std::string(_material->label()));
+  CPPUNIT_ASSERT_EQUAL(std::string(_data->materialLabel), std::string(_material->label()));
 
   PYLITH_METHOD_END;
 } // testLabel
@@ -708,8 +708,8 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeResidual
   _solutionDot->view("SOLUTION DOT");
   
   CPPUNIT_ASSERT(_material);
-  PylithReal t = 1.0;
-  PylithReal dt = 0.01;
+  PylithReal t = _data->t;
+  PylithReal dt = _data->dt;
   _material->computeRHSResidual(&residualRHS, t, dt, *_solution);
   _material->computeLHSResidual(&residualLHS, t, dt, *_solution, *_solutionDot);
 
@@ -795,7 +795,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_initializeMin(void
   CPPUNIT_ASSERT(_data);
 
   meshio::MeshIOAscii iohandler;
-  iohandler.filename(_data->filenameMesh);
+  iohandler.filename(_data->meshFilename);
   iohandler.read(_mesh);CPPUNIT_ASSERT(_mesh);
 
   // Setup coordinates.
@@ -812,8 +812,8 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_initializeMin(void
   normalizer.densityScale(_data->densityScale);
   topology::MeshOps::nondimensionalize(_mesh, normalizer);
 
-  _material->id(_data->id);
-  _material->label(_data->label);
+  _material->id(_data->materialId);
+  _material->label(_data->materialLabel);
   _material->useInertia(_data->useInertia);
   _material->useBodyForce(_data->useBodyForce);
   _material->normalizer(normalizer);

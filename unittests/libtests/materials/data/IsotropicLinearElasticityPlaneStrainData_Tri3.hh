@@ -40,22 +40,28 @@ public:
 
 private:
 
-  static const char* _filenameMesh;
-  static const char* _label;
-  static const int _id;
-  static const int _dimension;
+  static const char* _meshFilename;
+  static const char* _materialLabel;
+  static const int _materialId;
+  static const char* _boundaryLabel;
 
-  static const bool _useInertia;
-  static const bool _useBodyForce;
+  static const PylithReal _lengthScale;
+  static const PylithReal _timeScale;
+  static const PylithReal _densityScale;
+  static const PylithReal _pressureScale;
 
-  static const int _numSolnFields;
+  static const PylithReal _t;
+  static const PylithReal _dt;
+  
   static const pylith::topology::Field::DiscretizeInfo _solnDiscretizations[2];
 
   static const int _numAuxFields;
   static const char* _auxFields[3];
   static const pylith::topology::Field::DiscretizeInfo _auxDiscretizations[3];
-
   static const char* _filenameAuxFieldsDB;
+
+  static const int _dimension;
+  static const int _numSolnFields;
 
   static const PetscPointFunc _kernelsRHSResidual[2*2];
   static const PetscPointJac _kernelsRHSJacobian[2*2*4];
@@ -63,10 +69,8 @@ private:
   static const PetscPointJac _kernelsLHSJacobianImplicit[2*2*4];
   static const PetscPointJac _kernelsLHSJacobianExplicit[2*2*4];
 
-  static const PylithReal _lengthScale;
-  static const PylithReal _timeScale;
-  static const PylithReal _densityScale;
-  static const PylithReal _pressureScale;
+  static const bool _useInertia;
+  static const bool _useBodyForce;
 
 };
 

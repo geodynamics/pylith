@@ -24,18 +24,22 @@ extern "C" {
 #include "pylith/fekernels/linearelasticityplanestrain.h" // USES IsotropicLinearElasticityPlaneStrain kernels
 }
 
-const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_filenameMesh = "data/tri3_small.mesh";
-const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_label = "IsotropicLinearElascitity";
-const int pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_id = 24;
-const int pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_dimension = 2;
+const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_meshFilename = "data/tri3_small.mesh";
+const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_materialLabel = "IsotropicLinearElascitity";
+const int pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_materialId = 24;
+const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_boundaryLabel = "boundary";
 
-const bool pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_useInertia = false;
-const bool pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_useBodyForce = false;
+const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_lengthScale =   1.00000000e+03;
+const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_timeScale =   2.00000000e+00;
+const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_densityScale =   9.00000000e+04;
+const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_pressureScale =   2.25000000e+10;
 
-const int pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_numSolnFields = 1;
+const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_t = 1.0;
+const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_dt = 0.01;
+
 const pylith::topology::Field::DiscretizeInfo pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_solnDiscretizations[2] = {
-  {2, 2, true}, // displacement (basisOrder, num1DQuadPts, basisContinuous)
-  {2, 2, true}, // velocity
+  {1, 1, true}, // displacement
+  {1, 1, true}, // velocity
 };
 
 const int pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_numAuxFields = 3;
@@ -43,10 +47,13 @@ const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_a
   "density", "mu", "lambda",
 };
 const pylith::topology::Field::DiscretizeInfo pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_auxDiscretizations[3] = {
-  {1, 2, true}, // density
-  {1, 2, true}, // mu
-  {1, 2, true}, // lambda
+  {0, 1, true}, // density
+  {0, 1, true}, // mu
+  {0, 1, true}, // lambda
 };
+
+const int pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_dimension = 2;
+const int pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_numSolnFields = 1;
 
 const PetscPointFunc pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_kernelsRHSResidual[2*2] =
   {
@@ -141,30 +148,34 @@ const PetscPointJac pylith::materials::IsotropicLinearElasticityPlaneStrainData_
 
 const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_filenameAuxFieldsDB = "data/isotropiclinearelasticityplanestrain_tri3.spatialdb";
 
-const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_lengthScale =   1.00000000e+03;
-const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_timeScale =   2.00000000e+00;
-const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_densityScale =   9.00000000e+04;
-const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_pressureScale =   2.25000000e+10;
+const bool pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_useInertia = false;
+const bool pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_useBodyForce = false;
+
 
 
 pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::IsotropicLinearElasticityPlaneStrainData_Tri3(void)
 { // constructor
-  filenameMesh = const_cast<char*>(_filenameMesh);
-  label = const_cast<char*>(_label);
-  id = _id;
-  dimension = _dimension;
+  meshFilename = const_cast<char*>(_meshFilename);
+  materialLabel = const_cast<char*>(_materialLabel);
+  materialId = _materialId;
 
-  useInertia = _useInertia;
-  useBodyForce = _useBodyForce;
+  lengthScale = _lengthScale;
+  timeScale = _timeScale;
+  densityScale = _densityScale;
+  pressureScale = _pressureScale;
 
-  numSolnFields = _numSolnFields;
+  t = _t;
+  dt = _dt;
+  
   solnDiscretizations = const_cast<pylith::topology::Field::DiscretizeInfo*>(_solnDiscretizations);
 
   numAuxFields = _numAuxFields;
   auxFields = const_cast<char**>(_auxFields);
   auxDiscretizations = const_cast<pylith::topology::Field::DiscretizeInfo*>(_auxDiscretizations);
-
   filenameAuxFieldsDB = const_cast<char*>(_filenameAuxFieldsDB);
+
+  dimension = _dimension;
+  numSolnFields = _numSolnFields;
 
   kernelsRHSResidual = const_cast<PetscPointFunc*>(_kernelsRHSResidual);
   kernelsRHSJacobian = const_cast<PetscPointJac*>(_kernelsRHSJacobian);
@@ -172,10 +183,9 @@ pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::IsotropicLinea
   kernelsLHSJacobianImplicit = const_cast<PetscPointJac*>(_kernelsLHSJacobianImplicit);
   kernelsLHSJacobianExplicit = const_cast<PetscPointJac*>( _kernelsLHSJacobianExplicit);
 
-  lengthScale = _lengthScale;
-  timeScale = _timeScale;
-  densityScale = _densityScale;
-  pressureScale = _pressureScale;
+  useInertia = _useInertia;
+  useBodyForce = _useBodyForce;
+
 } // constructor
 
 pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::~IsotropicLinearElasticityPlaneStrainData_Tri3(void)
