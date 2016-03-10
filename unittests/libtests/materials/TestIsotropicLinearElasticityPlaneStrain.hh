@@ -184,6 +184,9 @@ public :
   /// Do full initilaization of test data.
   void _initializeFull(void);
 
+  /// Set field to zero on the boundary.
+  void _zeroBoundary(const pylith::topology::Field& field);
+
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 

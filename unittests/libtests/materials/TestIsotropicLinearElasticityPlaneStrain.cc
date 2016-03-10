@@ -28,6 +28,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
@@ -697,7 +698,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeResidual
   querySoln.openDB(_db, _data->lengthScale);
   querySoln.queryDB();
   querySoln.closeDB(_db);
-  _solution->view("SOLUTION");
+  //_solution->view("SOLUTION"); // DEBUGGING
 
   pylith::topology::FieldQuery querySolnDot(*_solutionDot);
   querySolnDot.queryFn("displacement_dot", pylith::topology::FieldQuery::dbQueryGeneric);
@@ -705,7 +706,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeResidual
   querySolnDot.openDB(_db, _data->lengthScale);
   querySolnDot.queryDB();
   querySolnDot.closeDB(_db);
-  _solutionDot->view("SOLUTION DOT");
+  //_solutionDot->view("SOLUTION DOT"); // DEBUGGING
   
   CPPUNIT_ASSERT(_material);
   PylithReal t = _data->t;
@@ -713,20 +714,23 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeResidual
   _material->computeRHSResidual(&residualRHS, t, dt, *_solution);
   _material->computeLHSResidual(&residualLHS, t, dt, *_solution, *_solutionDot);
 
+  _zeroBoundary(residualRHS);
+  _zeroBoundary(residualLHS);
+
   // Scatter local to global.
   residualRHS.complete();
   residualLHS.complete();
 
-  residualRHS.view("RESIDUAL RHS");
-  residualLHS.view("RESIDUAL LHS");
-
   PetscErrorCode err = VecWAXPY(residual.globalVector(), -1.0, residualLHS.globalVector(), residualRHS.globalVector());CPPUNIT_ASSERT(!err);
+  
+  //residualRHS.view("RESIDUAL RHS"); // DEBUGGING
+  //residualLHS.view("RESIDUAL LHS"); // DEBUGGING
 
   PylithReal norm = 0.0;
   err = VecNorm(residual.globalVector(), NORM_2, &norm);CPPUNIT_ASSERT(!err);
   const PylithReal tolerance = 1.0e-6;
   CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
-
+  CPPUNIT_ASSERT(norm > 0.0); // Norm exactly equal to zero almost certainly means test is satisfied trivially.
   
   PYLITH_METHOD_END;
 } // testComputeResidual
@@ -876,6 +880,51 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_initializeFull(voi
 
   PYLITH_METHOD_END;
 } // _initializeFull
+
+
+// ----------------------------------------------------------------------
+// Set field to zero on the boundary.
+void
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_zeroBoundary(const pylith::topology::Field& field)
+{ // _zeroBoundary
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_data);
+  CPPUNIT_ASSERT(_data->boundaryLabel);
+
+  PetscDM dmMesh = field.mesh().dmMesh();CPPUNIT_ASSERT(dmMesh);
+  PetscDMLabel label = NULL;
+  PetscIS pointIS = NULL;
+  const PetscInt *points;
+  PetscInt numPoints = 0;
+  PetscBool hasLabel = PETSC_FALSE;
+  PetscErrorCode err;
+  err = DMHasLabel(dmMesh, _data->boundaryLabel, &hasLabel);CPPUNIT_ASSERT(!err);CPPUNIT_ASSERT(hasLabel);
+  err = DMGetLabel(dmMesh, _data->boundaryLabel, &label);CPPUNIT_ASSERT(!err);
+  err = DMLabelGetStratumIS(label, 1, &pointIS);CPPUNIT_ASSERT(!err);CPPUNIT_ASSERT(pointIS);
+  err = ISGetLocalSize(pointIS, &numPoints);CPPUNIT_ASSERT(!err);
+  err = ISGetIndices(pointIS, &points);CPPUNIT_ASSERT(!err);
+
+  pylith::topology::VecVisitorMesh fieldVisitor(field);
+  PylithScalar* fieldArray = fieldVisitor.localArray();CPPUNIT_ASSERT(fieldArray);
+
+  for (PetscInt p = 0; p < numPoints; ++p) {
+    const PetscInt p_bc = points[p];
+
+    const PylithInt off = fieldVisitor.sectionOffset(p_bc);
+    const PylithInt dof = fieldVisitor.sectionDof(p_bc);
+    for (PylithInt i=0; i < dof; ++i) {
+      fieldArray[off+i] = 0.0;
+    } // for
+  } // for
+
+  err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
+  err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
+
+  PYLITH_METHOD_END;
+} // _zeroBoundary
+
+
 
 
 // End of file 

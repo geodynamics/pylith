@@ -158,6 +158,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::IsotropicLinea
   meshFilename = const_cast<char*>(_meshFilename);
   materialLabel = const_cast<char*>(_materialLabel);
   materialId = _materialId;
+  boundaryLabel = const_cast<char*>(_boundaryLabel);
 
   lengthScale = _lengthScale;
   timeScale = _timeScale;
