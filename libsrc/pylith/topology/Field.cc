@@ -872,7 +872,7 @@ pylith::topology::Field::view(const char* label) const
       const int nscomps = sinfo.numComponents;
       if (nscomps > 0) {
 	std::cout << ", Components:";
-	for (int i=0; i < ncomps; ++i) {
+	for (int i=0; i < nscomps; ++i) {
 	  std::cout << " " << sinfo.metadata.componentNames[i];
 	} // for
       } // if

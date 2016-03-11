@@ -60,11 +60,13 @@ public:
   PylithReal dt; ///< Time step in simulation.
   
   topology::Field::DiscretizeInfo* solnDiscretizations; ///< Discretizations for solution fields.
+  char* soln1DBFilename; ///< Name of file with data for solution1.
+  char* soln2DBFilename; ///< Name of file with data for solution2.
 
   int numAuxFields; ///< Number of auxiliary fields.
   char** auxFields; ///< Names of auxiliary fields.
   topology::Field::DiscretizeInfo* auxDiscretizations; ///< Discretizations for auxiliary fields.  
-  char* filenameAuxFieldsDB; ///< Name of file with data for auxFieldsDB.
+  char* auxDBFilename; ///< Name of file with data for auxFieldsDB.
 
   // GENERAL, VALUES DEPEND ONLY ON MATERIAL
   int dimension; ///< Dimension of material.

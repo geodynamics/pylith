@@ -54,11 +54,13 @@ private:
   static const PylithReal _dt;
   
   static const pylith::topology::Field::DiscretizeInfo _solnDiscretizations[2];
-
+  static const char* _soln1DBFilename;
+  static const char* _soln2DBFilename;
+  
   static const int _numAuxFields;
   static const char* _auxFields[3];
   static const pylith::topology::Field::DiscretizeInfo _auxDiscretizations[3];
-  static const char* _filenameAuxFieldsDB;
+  static const char* _auxDBFilename;
 
   static const int _dimension;
   static const int _numSolnFields;

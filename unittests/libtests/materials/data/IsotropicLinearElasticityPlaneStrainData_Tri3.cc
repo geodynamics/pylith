@@ -41,6 +41,8 @@ const pylith::topology::Field::DiscretizeInfo pylith::materials::IsotropicLinear
   {1, 1, true}, // displacement
   {1, 1, true}, // velocity
 };
+const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_soln1DBFilename = "data/isotropiclinearelasticityplanestrain_tri3.spatialdb";
+const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_soln2DBFilename = "data/isotropiclinearelasticityplanestrain_tri3.spatialdb";
 
 const int pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_numAuxFields = 3;
 const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_auxFields[3] = {
@@ -146,7 +148,7 @@ const PetscPointJac pylith::materials::IsotropicLinearElasticityPlaneStrainData_
     NULL,
   };
 
-const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_filenameAuxFieldsDB = "data/isotropiclinearelasticityplanestrain_tri3.spatialdb";
+const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_auxDBFilename = "data/isotropiclinearelasticityplanestrain_tri3.spatialdb";
 
 const bool pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_useInertia = false;
 const bool pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_useBodyForce = false;
@@ -169,11 +171,13 @@ pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::IsotropicLinea
   dt = _dt;
   
   solnDiscretizations = const_cast<pylith::topology::Field::DiscretizeInfo*>(_solnDiscretizations);
-
+  soln1DBFilename = const_cast<char*>(_soln1DBFilename);
+  soln2DBFilename = const_cast<char*>(_soln2DBFilename);
+  
   numAuxFields = _numAuxFields;
   auxFields = const_cast<char**>(_auxFields);
   auxDiscretizations = const_cast<pylith::topology::Field::DiscretizeInfo*>(_auxDiscretizations);
-  filenameAuxFieldsDB = const_cast<char*>(_filenameAuxFieldsDB);
+  auxDBFilename = const_cast<char*>(_auxDBFilename);
 
   dimension = _dimension;
   numSolnFields = _numSolnFields;

@@ -184,8 +184,11 @@ public :
   /// Do full initilaization of test data.
   void _initializeFull(void);
 
-  /// Set field to zero on the boundary.
-  void _zeroBoundary(const pylith::topology::Field& field);
+  /** Set field to zero on the boundary.
+   *
+   * @param[out] field Field in which to set boundary values to zero.
+   */
+  void _zeroBoundary(pylith::topology::Field* field);
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
@@ -195,9 +198,13 @@ protected :
 
   // MaterialNew
   topology::Mesh* _mesh; ///< Finite-element mesh.
-  topology::Field* _solution; ///< Solution field.
-  topology::Field* _solutionDot; ///< Time derivative of solution field.
-  spatialdata::spatialdb::SimpleDB* _db; ///< Spatial database with data for auxiliary fields.
+  topology::Field* _solution1; ///< Solution field.
+  topology::Field* _solution2; ///< Solution field.
+  topology::Field* _solution1Dot; ///< Time derivative of solution field.
+  topology::Field* _solution2Dot; ///< Time derivative of solution field.
+  spatialdata::spatialdb::SimpleDB* _auxDB; ///< Spatial database with data for auxiliary fields.
+  spatialdata::spatialdb::SimpleDB* _soln1DB; ///< Spatial database with data for solution 1.
+  spatialdata::spatialdb::SimpleDB* _soln2DB; ///< Spatial database with data for solution 2.
 
 }; // class TestIsotropicLinearElasticityPlaneStrain
 
