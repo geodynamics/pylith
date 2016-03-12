@@ -576,7 +576,12 @@ pylith::topology::Field::cloneSection(const Field& src)
   for (subfields_type::const_iterator s_iter=src._subfields.begin(); s_iter != subfieldsEnd; ++s_iter) {
     SubfieldInfo& sinfo = _subfields[s_iter->first];
     sinfo.metadata = s_iter->second.metadata;
+    sinfo.numComponents = s_iter->second.numComponents;
     sinfo.index = s_iter->second.index;
+
+    sinfo.fe = s_iter->second.fe;
+    // :BRAD: START HERE discretization (PetscFE) appears to be missing
+    
     sinfo.dm = s_iter->second.dm;
     if (sinfo.dm) {
       err = PetscObjectReference((PetscObject) sinfo.dm);PYLITH_CHECK_ERROR(err);
