@@ -573,6 +573,8 @@ pylith::topology::Field::cloneSection(const Field& src)
   // Reuse subfields in clone
   _subfields.clear();
   const subfields_type::const_iterator subfieldsEnd = src._subfields.end();
+  PetscDS prob = NULL;
+  err = DMGetDS(_dm, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
   for (subfields_type::const_iterator s_iter=src._subfields.begin(); s_iter != subfieldsEnd; ++s_iter) {
     SubfieldInfo& sinfo = _subfields[s_iter->first];
     sinfo.metadata = s_iter->second.metadata;
@@ -580,8 +582,11 @@ pylith::topology::Field::cloneSection(const Field& src)
     sinfo.index = s_iter->second.index;
 
     sinfo.fe = s_iter->second.fe;
-    // :BRAD: START HERE discretization (PetscFE) appears to be missing
-    
+    PetscFE fe = FieldOps::createFE(sinfo.fe, _dm, _mesh.isSimplex(), sinfo.numComponents);assert(fe);
+    err = PetscObjectSetName((PetscObject) fe, s_iter->first.c_str());PYLITH_CHECK_ERROR(err);
+    err = PetscDSSetDiscretization(prob, sinfo.index, (PetscObject) fe);PYLITH_CHECK_ERROR(err);
+    err = PetscFEDestroy(&fe);PYLITH_CHECK_ERROR(err);
+                                                  
     sinfo.dm = s_iter->second.dm;
     if (sinfo.dm) {
       err = PetscObjectReference((PetscObject) sinfo.dm);PYLITH_CHECK_ERROR(err);
@@ -1311,7 +1316,7 @@ pylith::topology::Field::subfieldsSetup(void)
     const char* sname = s_iter->first.c_str();
     const SubfieldInfo& sinfo = s_iter->second;
 
-    PetscFE fe = FieldOps::createFE(sinfo.fe, _dm, _mesh.isSimplex(), sinfo.numComponents);
+    PetscFE fe = FieldOps::createFE(sinfo.fe, _dm, _mesh.isSimplex(), sinfo.numComponents);assert(fe);
     err = PetscObjectSetName((PetscObject) fe, sname);PYLITH_CHECK_ERROR(err);
     err = PetscDSSetDiscretization(prob, sinfo.index, (PetscObject) fe);PYLITH_CHECK_ERROR(err);
     err = PetscFEDestroy(&fe);PYLITH_CHECK_ERROR(err);
