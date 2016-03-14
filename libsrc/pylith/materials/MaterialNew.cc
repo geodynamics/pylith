@@ -272,8 +272,8 @@ pylith::materials::MaterialNew::_computeJacobian(pylith::topology::Jacobian* jac
 { // _computeJacobian
   PYLITH_METHOD_BEGIN;
 
-  assert(_logger);
   assert(jacobian);
+  assert(preconditioner);
 
   PetscDS prob = NULL;
   PetscInt cStart = 0, cEnd = 0;
