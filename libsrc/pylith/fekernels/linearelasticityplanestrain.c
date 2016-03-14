@@ -321,7 +321,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3_uu(const PylithInt dim
 
   const PylithInt _numS = 2;
 
-  const PylithInt _numA = 4;
+  const PylithInt _numA = 3;
   const PylithInt i_lambda = 1;
   const PylithInt i_mu = 0;
 
@@ -338,7 +338,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3_uu(const PylithInt dim
 
   assert(_dim == dim);
   assert(_numS == numS);
-  assert(_numA == numA);
+  assert(_numA >= numA);
   assert(aOff);
 
   /* j(f,g,df,dg) = C(f,df,g,dg)
