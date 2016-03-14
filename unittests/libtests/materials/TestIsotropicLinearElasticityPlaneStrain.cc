@@ -760,7 +760,6 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeRHSJacob
   PylithReal t = _data->t;
   PylithReal dt = _data->dt;
   _material->computeRHSResidual(&residual1, t, dt, *_solution1);
-#if 0
   _material->computeRHSResidual(&residual2, t, dt, *_solution2);
 
   // Scatter local to global.
@@ -782,13 +781,14 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeRHSJacob
   err = VecZeroEntries(solnIncrVec);CPPUNIT_ASSERT(!err);
   err = VecWAXPY(solnIncrVec, -1.0, _solution1->globalVector(), _solution2->globalVector());CPPUNIT_ASSERT(!err);
   
-  //residualRHS.view("RESIDUAL RHS"); // DEBUGGING
-  //residualLHS.view("RESIDUAL LHS"); // DEBUGGING
+  //residual1.view("RESIDUAL RHS"); // DEBUGGING
+  //residual2.view("RESIDUAL LHS"); // DEBUGGING
 
   // Compute Jacobian
-  pylith::topology::Jacobian jacobian(*_mesh);
-  pylith::topology::Jacobian preconditioner(*_mesh);
+  pylith::topology::Jacobian jacobian(*_solution1);
+  pylith::topology::Jacobian preconditioner(*_solution1);
   _material->computeRHSJacobian(&jacobian, &preconditioner, t, dt, *_solution1);
+  CPPUNIT_ASSERT_EQUAL(false, _material->needNewJacobian());
   jacobian.assemble("final_assembly");
   preconditioner.assemble("final_assembly");
 
@@ -808,9 +808,6 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeRHSJacob
   const PylithReal tolerance = 1.0e-6;
   CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
   CPPUNIT_ASSERT(norm > 0.0); // Norm exactly equal to zero almost certainly means test is satisfied trivially.
-#else
-  CPPUNIT_ASSERT_MESSAGE("Test not implemented.", false); // :TODO: ADD MORE HERE
-#endif
   
   PYLITH_METHOD_END;
 } // testComputeRHSJacobian
@@ -949,7 +946,6 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_initializeFull(voi
   _solution2->label("solution2");
   _solution2->allocate();
   _solution2->zeroAll();
-  //_solution2->view("SOLUTION 2"); // DEBUGGING
 
   delete _soln2DB; _soln2DB = new spatialdata::spatialdb::SimpleDB;CPPUNIT_ASSERT(_soln2DB);
   CPPUNIT_ASSERT(_data->soln2DBFilename);
@@ -958,7 +954,6 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_initializeFull(voi
   _soln2DB->label("IsotropicLinearElasciticityPlaneStrain solution2 database");
   _soln2DB->queryType(spatialdata::spatialdb::SimpleDB::LINEAR);
 
-#if 0
   pylith::topology::FieldQuery querySoln2(*_solution2);
   querySoln2.queryFn("displacement", pylith::topology::FieldQuery::dbQueryGeneric);
   querySoln2.queryFn("velocity", pylith::topology::FieldQuery::dbQueryGeneric);
@@ -966,7 +961,6 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_initializeFull(voi
   querySoln2.queryDB();
   querySoln2.closeDB(_soln2DB);
   //_solution2->view("SOLUTION 2"); // DEBUGGING
-#endif
   
   delete _solution1Dot; _solution1Dot = new pylith::topology::Field(*_mesh);
   _solution1->label("solution1_dot");
