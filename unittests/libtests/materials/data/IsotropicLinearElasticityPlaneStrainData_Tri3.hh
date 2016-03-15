@@ -50,7 +50,8 @@ private:
   static const PylithReal _densityScale;
   static const PylithReal _pressureScale;
 
-  static const PylithReal _t;
+  static const PylithReal _t1;
+  static const PylithReal _t2;
   static const PylithReal _dt;
   
   static const pylith::topology::Field::DiscretizeInfo _solnDiscretizations[2];

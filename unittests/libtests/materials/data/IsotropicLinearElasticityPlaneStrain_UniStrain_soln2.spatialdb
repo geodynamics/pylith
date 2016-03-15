@@ -1,0 +1,17 @@
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values =      8
+  value-names =  displacement_x  displacement_y  velocity_x  velocity_y  displacement_dot_x  displacement_dot_y  velocity_dot_x  velocity_dot_y
+  value-units =  m  m  m/s  m/s  m/s  m/s  m/s**2  m/s**2
+  num-locs =      4
+  data-dim =    2
+  space-dim =    2
+  cs-data = cartesian {
+  to-meters = 1
+  space-dim = 2
+}
+}
+ -4.000000e+00 -4.000000e+00 -1.800000e+00 -2.040000e+00  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00
+ -4.000000e+00  4.000000e+00  8.400000e-01 -6.000000e-01  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00
+  4.000000e+00 -4.000000e+00 -8.400000e-01  6.000000e-01  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00
+  4.000000e+00  4.000000e+00  1.800000e+00  2.040000e+00  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00

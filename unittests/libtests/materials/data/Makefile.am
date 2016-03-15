@@ -23,7 +23,9 @@ dist_noinst_DATA = \
 	tri3.mesh \
 	tri3_small.mesh \
 	mat_elastic.spatialdb \
-        isotropiclinearelasticityplanestrain_tri3.spatialdb
+        IsotropicLinearElasticityPlaneStrain_UniStrain_aux.spatialdb \
+        IsotropicLinearElasticityPlaneStrain_UniStrain_soln1.spatialdb \
+        IsotropicLinearElasticityPlaneStrain_UniStrain_soln2.spatialdb
 
 noinst_TMP =
 

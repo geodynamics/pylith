@@ -35,7 +35,8 @@ pylith::materials::IsotropicLinearElasticityPlaneStrainData::IsotropicLinearElas
   pressureScale(0),
   densityScale(0),
 
-  t(0.0),
+  t1(0.0),
+  t2(0.0),
   dt(0.0),
   
   solnDiscretizations(NULL),

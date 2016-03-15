@@ -56,7 +56,8 @@ public:
   PylithReal pressureScale; ///< Pressure scale for nondimensionalization.
   PylithReal densityScale; ///< Density scale for nondimensionalization.
 
-  PylithReal t; ///< Time in simulation.
+  PylithReal t1; ///< Time for solution1 in simulation.
+  PylithReal t2; ///< Time for solution2 in simulation.
   PylithReal dt; ///< Time step in simulation.
   
   topology::Field::DiscretizeInfo* solnDiscretizations; ///< Discretizations for solution fields.

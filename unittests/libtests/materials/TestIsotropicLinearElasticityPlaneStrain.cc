@@ -427,7 +427,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
   queryDensity.openDB(_auxDB, _data->lengthScale);
 
   PylithReal norm = 0.0;
-  PylithReal t = _data->t;
+  const PylithReal t = _data->t1;
   const PetscDM dm = density.dmMesh();CPPUNIT_ASSERT(dm);
   PetscErrorCode err = DMPlexComputeL2Diff(dm, t, queryDensity.functions(), (void**)queryDensity.contextPtrs(), density.globalVector(), &norm);CPPUNIT_ASSERT(!err);
   queryDensity.closeDB(_auxDB);
@@ -696,8 +696,8 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeResidual
   residualLHS.zeroAll();
 
   CPPUNIT_ASSERT(_material);
-  PylithReal t = _data->t;
-  PylithReal dt = _data->dt;
+  const PylithReal t = _data->t1;
+  const PylithReal dt = _data->dt;
   _material->computeRHSResidual(&residualRHS, t, dt, *_solution1);
   _material->computeLHSResidual(&residualLHS, t, dt, *_solution1, *_solution1Dot);
 
@@ -757,10 +757,11 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeRHSJacob
   residual2.zeroAll();
 
   CPPUNIT_ASSERT(_material);
-  PylithReal t = _data->t;
-  PylithReal dt = _data->dt;
-  _material->computeRHSResidual(&residual1, t, dt, *_solution1);
-  _material->computeRHSResidual(&residual2, t, dt, *_solution2);
+  const PylithReal t1 = _data->t1;
+  const PylithReal t2 = _data->t2;
+  const PylithReal dt = _data->dt;
+  _material->computeRHSResidual(&residual1, t1, dt, *_solution1);
+  _material->computeRHSResidual(&residual2, t2, dt, *_solution2);
 
   // Scatter local to global.
   _solution1->complete();
@@ -787,7 +788,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeRHSJacob
   // Compute Jacobian
   pylith::topology::Jacobian jacobian(*_solution1);
   pylith::topology::Jacobian preconditioner(*_solution1);
-  _material->computeRHSJacobian(&jacobian, &preconditioner, t, dt, *_solution1);
+  _material->computeRHSJacobian(&jacobian, &preconditioner, t1, dt, *_solution1);
   CPPUNIT_ASSERT_EQUAL(false, _material->needNewJacobian());
   jacobian.assemble("final_assembly");
   preconditioner.assemble("final_assembly");
@@ -799,6 +800,13 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeRHSJacob
   err = VecScale(solnIncrVec, -1.0);CPPUNIT_ASSERT(!err);
   err = MatMultAdd(jacobian.matrix(), solnIncrVec, residualVec, resultVec);CPPUNIT_ASSERT(!err);
   
+  std::cout << "SOLN INCR" << std::endl;
+  VecView(solnIncrVec, PETSC_VIEWER_STDOUT_SELF);
+  std::cout << "F2-F1" << std::endl;
+  VecView(residualVec, PETSC_VIEWER_STDOUT_SELF);
+  std::cout << "RESULT" << std::endl;
+  VecView(resultVec, PETSC_VIEWER_STDOUT_SELF);
+
   PylithReal norm = 0.0;
   err = VecNorm(resultVec, NORM_2, &norm);CPPUNIT_ASSERT(!err);
   err = VecDestroy(&resultVec);CPPUNIT_ASSERT(!err);

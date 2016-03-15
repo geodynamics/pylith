@@ -24,18 +24,15 @@
 
 import numpy
 
+from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
+from spatialdata.geocoords.CSCart import CSCart
 
 points = numpy.array([[-4.0, -4.0],
                       [-4.0, +4.0],
                       [+4.0, -4.0],
                       [+4.0, +4.0]], dtype=numpy.float64)
 
-exx = 0.1
-eyy = 0.2
-exy = 0.3
-
 npts = points.shape[0]
-
 
 density = 2500.0*numpy.ones((npts,))
 vs = 3000.0*numpy.ones((npts,))
@@ -44,33 +41,20 @@ modulus_mu = density*vs**2
 modulus_lambda = density*vp**2 - 2.0*modulus_mu
 
 # Create coordinate system for spatial database
-from spatialdata.geocoords.CSCart import CSCart
 cs = CSCart()
 cs._configure()
 cs.setSpaceDim(2)
 
-
-
-# GenerateApp class
-class GenerateApp(object):
+# Auxiliary Fields
+class AuxFields(object):
   """
-  Python application for generating spatial database for residual calculation.
+  Python class for generation spatial database with auxiliary fields.
   """
 
-
-  def generateResidualDB(self):
-    disp = numpy.zeros((npts, 2))
-    vel = numpy.zeros(disp.shape)
-    disp[:,0] = exx*points[:,0] + exy*points[:,1]
-    disp[:,1] = exy*points[:,0] + eyy*points[:,1]
-  
-    disp_dot = numpy.zeros(disp.shape)
-    vel_dot = numpy.zeros(vel.shape)
-
-    # Create writer for spatial database file
-    from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
+  @staticmethod
+  def generate():
     writer = SimpleIOAscii()
-    writer.inventory.filename = "isotropiclinearelasticityplanestrain_tri3.spatialdb"
+    writer.inventory.filename = "IsotropicLinearElasticityPlaneStrain_UniStrain_aux.spatialdb"
     writer._configure()
     writer.write({'points': points,
                   'coordsys': cs,
@@ -78,7 +62,81 @@ class GenerateApp(object):
                   'values': [{'name': "vs", 'units': "m/s", 'data': vs},
                              {'name': "vp", 'units': "m/s", 'data': vp},
                              {'name': "density", 'units': "kg/m**3", 'data': density},
-                             {'name': "displacement_x", 'units': "m", 'data': disp[:,0]},
+                           ]}
+               )
+
+
+# Solution @ t1
+class Solution1(object):
+  """
+  Python class for generation spatial database with solution at t1.
+  """
+  exx = 0.1
+  eyy = 0.2
+  exy = 0.3
+  t = 1.0
+
+  @staticmethod
+  def generate():
+
+    disp = numpy.zeros((npts, 2))
+    vel = numpy.zeros(disp.shape)
+    disp[:,0] = Solution1.exx*points[:,0] + Solution1.exy*points[:,1]
+    disp[:,1] = Solution1.exy*points[:,0] + Solution1.eyy*points[:,1]
+  
+    disp_dot = numpy.zeros(disp.shape)
+    vel_dot = numpy.zeros(vel.shape)
+
+    # Create writer for spatial database file
+    writer = SimpleIOAscii()
+    writer.inventory.filename = "IsotropicLinearElasticityPlaneStrain_UniStrain_soln1.spatialdb"
+    writer._configure()
+    writer.write({'points': points,
+                  'coordsys': cs,
+                  'data_dim': 2,
+                  'values': [{'name': "displacement_x", 'units': "m", 'data': disp[:,0]},
+                             {'name': "displacement_y", 'units': "m", 'data': disp[:,1]},
+                             {'name': "velocity_x", 'units': "m/s", 'data': vel[:,0]},
+                             {'name': "velocity_y", 'units': "m/s", 'data': vel[:,1]},
+                             {'name': "displacement_dot_x", 'units': "m/s", 'data': disp_dot[:,0]},
+                             {'name': "displacement_dot_y", 'units': "m/s", 'data': disp_dot[:,1]},
+                             {'name': "velocity_dot_x", 'units': "m/s**2", 'data': vel_dot[:,0]},
+                             {'name': "velocity_dot_y", 'units': "m/s**2", 'data': vel_dot[:,1]},
+                           ]}
+               )
+    
+    return
+
+
+# Solution @ t2
+class Solution2(object):
+  """
+  Python class for generation spatial database with solution at t2.
+  """
+  exx = 0.12
+  eyy = 0.18
+  exy = 0.33
+  t = 1.05
+
+  @staticmethod
+  def generate():
+
+    disp = numpy.zeros((npts, 2))
+    vel = numpy.zeros(disp.shape)
+    disp[:,0] = Solution2.exx*points[:,0] + Solution2.exy*points[:,1]
+    disp[:,1] = Solution2.exy*points[:,0] + Solution2.eyy*points[:,1]
+  
+    disp_dot = numpy.zeros(disp.shape)
+    vel_dot = numpy.zeros(vel.shape)
+
+    # Create writer for spatial database file
+    writer = SimpleIOAscii()
+    writer.inventory.filename = "IsotropicLinearElasticityPlaneStrain_UniStrain_soln2.spatialdb"
+    writer._configure()
+    writer.write({'points': points,
+                  'coordsys': cs,
+                  'data_dim': 2,
+                  'values': [{'name': "displacement_x", 'units': "m", 'data': disp[:,0]},
                              {'name': "displacement_y", 'units': "m", 'data': disp[:,1]},
                              {'name': "velocity_x", 'units': "m/s", 'data': vel[:,0]},
                              {'name': "velocity_y", 'units': "m/s", 'data': vel[:,1]},
@@ -94,8 +152,9 @@ class GenerateApp(object):
 
 # ======================================================================
 def generate():
-  app = GenerateApp()
-  app.generateResidualDB()
+  AuxFields.generate()
+  Solution1.generate()
+  Solution2.generate()
 
 
 # MAIN /////////////////////////////////////////////////////////////////

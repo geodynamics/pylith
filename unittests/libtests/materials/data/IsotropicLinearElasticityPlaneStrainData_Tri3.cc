@@ -34,15 +34,16 @@ const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri
 const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_densityScale =   9.00000000e+04;
 const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_pressureScale =   2.25000000e+10;
 
-const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_t = 1.0;
+const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_t1 = 1.0;
+const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_t2 = 1.05;
 const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_dt = 0.01;
 
 const pylith::topology::Field::DiscretizeInfo pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_solnDiscretizations[2] = {
   {1, 1, true}, // displacement
   {1, 1, true}, // velocity
 };
-const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_soln1DBFilename = "data/isotropiclinearelasticityplanestrain_tri3.spatialdb";
-const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_soln2DBFilename = "data/isotropiclinearelasticityplanestrain_tri3.spatialdb";
+const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_soln1DBFilename = "data/IsotropicLinearElasticityPlaneStrain_UniStrain_soln1.spatialdb";
+const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_soln2DBFilename = "data/IsotropicLinearElasticityPlaneStrain_UniStrain_soln2.spatialdb";
 
 const int pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_numAuxFields = 3;
 const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_auxFields[3] = {
@@ -148,7 +149,7 @@ const PetscPointJac pylith::materials::IsotropicLinearElasticityPlaneStrainData_
     NULL,
   };
 
-const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_auxDBFilename = "data/isotropiclinearelasticityplanestrain_tri3.spatialdb";
+const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_auxDBFilename = "data/IsotropicLinearElasticityPlaneStrain_UniStrain_aux.spatialdb";
 
 const bool pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_useInertia = false;
 const bool pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_useBodyForce = false;
@@ -167,7 +168,8 @@ pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::IsotropicLinea
   densityScale = _densityScale;
   pressureScale = _pressureScale;
 
-  t = _t;
+  t1 = _t1;
+  t2 = _t2;
   dt = _dt;
   
   solnDiscretizations = const_cast<pylith::topology::Field::DiscretizeInfo*>(_solnDiscretizations);
