@@ -89,7 +89,7 @@ class Solution1(object):
 
     # Create writer for spatial database file
     writer = SimpleIOAscii()
-    writer.inventory.filename = "IsotropicLinearElasticityPlaneStrain_UniStrain_soln1.spatialdb"
+    writer.inventory.filename = "IsotropicLinearElasticityPlaneStrain_UniStrain_soln.spatialdb"
     writer._configure()
     writer.write({'points': points,
                   'coordsys': cs,
@@ -111,27 +111,34 @@ class Solution1(object):
 # Solution @ t2
 class Solution2(object):
   """
-  Python class for generation spatial database with solution at t2.
+  Python class for generation spatial database with test solution
+  field at t2 (not a solution to the problem).
   """
-  exx = 0.12
-  eyy = 0.18
-  exy = 0.33
-  t = 1.05
 
   @staticmethod
   def generate():
+    import numpy
+    x = numpy.arange(-4.0, 4.01, 0.1, dtype=numpy.float64)
+    y = numpy.arange(-4.0, 4.01, 0.1, dtype=numpy.float64)
+    numX = x.shape[0]
+    numY = y.shape[0]
+    points = numpy.zeros((numX*numY,2), dtype=numpy.float64)
+    npts = numX*numY
+    for iY in xrange(numY):
+      points[iY*numX:(iY+1)*numX,0] = x
+      points[iY*numX:(iY+1)*numX,1] = y[iY]
 
-    disp = numpy.zeros((npts, 2))
+    import numpy.random
+    disp = 0.1*(numpy.random.rand(npts,2)-0.5)
     vel = numpy.zeros(disp.shape)
-    disp[:,0] = Solution2.exx*points[:,0] + Solution2.exy*points[:,1]
-    disp[:,1] = Solution2.exy*points[:,0] + Solution2.eyy*points[:,1]
+    print points
   
     disp_dot = numpy.zeros(disp.shape)
     vel_dot = numpy.zeros(vel.shape)
 
     # Create writer for spatial database file
     writer = SimpleIOAscii()
-    writer.inventory.filename = "IsotropicLinearElasticityPlaneStrain_UniStrain_soln2.spatialdb"
+    writer.inventory.filename = "IsotropicLinearElasticityPlaneStrain_Random_soln.spatialdb"
     writer._configure()
     writer.write({'points': points,
                   'coordsys': cs,

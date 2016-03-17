@@ -42,8 +42,8 @@ const pylith::topology::Field::DiscretizeInfo pylith::materials::IsotropicLinear
   {1, 1, true}, // displacement
   {1, 1, true}, // velocity
 };
-const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_soln1DBFilename = "data/IsotropicLinearElasticityPlaneStrain_UniStrain_soln1.spatialdb";
-const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_soln2DBFilename = "data/IsotropicLinearElasticityPlaneStrain_UniStrain_soln2.spatialdb";
+const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_soln1DBFilename = "data/IsotropicLinearElasticityPlaneStrain_UniStrain_soln.spatialdb";
+const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_soln2DBFilename = "data/IsotropicLinearElasticityPlaneStrain_Random_soln.spatialdb";
 
 const int pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_numAuxFields = 3;
 const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_auxFields[3] = {
