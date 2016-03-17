@@ -764,8 +764,10 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeRHSJacob
   _material->computeRHSResidual(&residual2, t2, dt, *_solution2);
 
   // Scatter local to global.
-  _solution1->complete();
-  _solution2->complete();
+  _solution1->createScatter(_solution1->mesh());
+  _solution2->createScatter(_solution2->mesh());
+  _solution1->scatterLocalToGlobal();
+  _solution2->scatterLocalToGlobal();
   residual1.complete();
   residual2.complete();
 
