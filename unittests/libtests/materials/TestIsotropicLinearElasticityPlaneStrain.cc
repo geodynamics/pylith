@@ -737,7 +737,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeRHSJacob
 
   /*
     Create linear problem (MMS) with two solutions, s_1 and s_2.
-    Check that J(s_1)*(s_2 - s_1) = G(s_2) - G(s_1).
+    Check that Jg(s_1)*(s_2 - s_1) = G(s_2) - G(s_1).
   */
   
   // Call initialize()
@@ -769,7 +769,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeRHSJacob
   residual1.complete();
   residual2.complete();
 
-  // Check that J(s_1)*(s_2 - s_1) = F(s_2) - F(s_1).
+  // Check that J(s_1)*(s_2 - s_1) = G(s_2) - G(s_1).
 
   PetscVec residualVec = NULL;
   PetscErrorCode err;
@@ -787,11 +787,10 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeRHSJacob
 
   // Compute Jacobian
   pylith::topology::Jacobian jacobian(*_solution1);
-  pylith::topology::Jacobian preconditioner(*_solution1);
-  _material->computeRHSJacobian(&jacobian, &preconditioner, t1, dt, *_solution1);
+  pylith::topology::Jacobian* preconditioner = &jacobian; // Use Jacobian == preconditioner.
+  _material->computeRHSJacobian(&jacobian, preconditioner, t1, dt, *_solution1);
   CPPUNIT_ASSERT_EQUAL(false, _material->needNewJacobian());
   jacobian.assemble("final_assembly");
-  preconditioner.assemble("final_assembly");
 
   // result = J*(-solnIncr) + residual
   PetscVec resultVec = NULL;
