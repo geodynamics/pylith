@@ -35,8 +35,8 @@ points = numpy.array([[-4.0, -4.0],
 npts = points.shape[0]
 
 density = 2500.0*numpy.ones((npts,))
-vs = 3000.0*numpy.ones((npts,))
-vp = 3**0.5*vs*numpy.ones((npts,))
+vs = 1.0e-12*3000.0*numpy.ones((npts,))
+vp = 3**0.5*3000.0*numpy.ones((npts,))
 modulus_mu = density*vs**2
 modulus_lambda = density*vp**2 - 2.0*modulus_mu
 
