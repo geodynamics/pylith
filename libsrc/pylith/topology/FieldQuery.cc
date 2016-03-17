@@ -144,19 +144,22 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
       msg << "FieldQuery for field '" << _field.label() << "' missing query function for subfield '" << name << "'";
       throw std::logic_error(msg.str());
     } // if/else
-    _functions[i] = _queryFns[name];
+    const PylithInt index = iter->second.index;
+    assert(size_t(index) < subfields.size());
 
-    _contexts[i].db = db;
-    _contexts[i].cs = _field.mesh().coordsys();
-    _contexts[i].lengthScale = lengthScale;
+    _functions[index] = _queryFns[name];
+
+    _contexts[index].db = db;
+    _contexts[index].cs = _field.mesh().coordsys();
+    _contexts[index].lengthScale = lengthScale;
 
     const pylith::topology::Field::Metadata& metadata = iter->second.metadata;
-    _contexts[i].valueScale = metadata.scale;
-    _contexts[i].description = metadata.label;
-    _contexts[i].componentNames = metadata.componentNames;
-    _contexts[i].validator = metadata.validator;
+    _contexts[index].valueScale = metadata.scale;
+    _contexts[index].description = metadata.label;
+    _contexts[index].componentNames = metadata.componentNames;
+    _contexts[index].validator = metadata.validator;
 
-    _contextPtrs[i] = &_contexts[i];
+    _contextPtrs[index] = &_contexts[index];
   } // for
   
     // Open spatial database.

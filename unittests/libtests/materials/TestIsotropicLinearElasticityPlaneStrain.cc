@@ -409,31 +409,62 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
 
   _initializeFull();
 
-  // Call getAuxField()
   CPPUNIT_ASSERT(_material);
   CPPUNIT_ASSERT(_mesh);
-  pylith::topology::Field density(*_mesh);
-  _material->getAuxField(&density, "density");
-  density.complete(); // Needed to populate global vector.
 
-  //density.view("DENSITY"); // DEBUGGING
+  { // Test getting density field.
+    pylith::topology::Field density(*_mesh);
+    _material->getAuxField(&density, "density");
 
-  // Check result
-  CPPUNIT_ASSERT_EQUAL(std::string("density"), std::string(density.label()));
-  CPPUNIT_ASSERT_EQUAL(_data->dimension, density.spaceDim());
+    density.createScatter(density.mesh()); // Populate global vector.
+    density.scatterLocalToGlobal();
 
-  pylith::topology::FieldQuery queryDensity(density);
-  queryDensity.queryFn("density", pylith::topology::FieldQuery::dbQueryGeneric);
-  queryDensity.openDB(_auxDB, _data->lengthScale);
+    //density.view("DENSITY"); // DEBUGGING
 
-  PylithReal norm = 0.0;
-  const PylithReal t = _data->t1;
-  const PetscDM dm = density.dmMesh();CPPUNIT_ASSERT(dm);
-  PetscErrorCode err = DMPlexComputeL2Diff(dm, t, queryDensity.functions(), (void**)queryDensity.contextPtrs(), density.globalVector(), &norm);CPPUNIT_ASSERT(!err);
-  queryDensity.closeDB(_auxDB);
+    // Check result
+    CPPUNIT_ASSERT_EQUAL(std::string("density"), std::string(density.label()));
+    CPPUNIT_ASSERT_EQUAL(_data->dimension, density.spaceDim());
 
-  const PylithReal tolerance = 1.0e-6;
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
+    pylith::topology::FieldQuery queryDensity(density);
+    queryDensity.queryFn("density", pylith::topology::FieldQuery::dbQueryGeneric);
+    queryDensity.openDB(_auxDB, _data->lengthScale);
+
+    PylithReal norm = 0.0;
+    const PylithReal t = _data->t1;
+    const PetscDM dm = density.dmMesh();CPPUNIT_ASSERT(dm);
+    PetscErrorCode err = DMPlexComputeL2Diff(dm, t, queryDensity.functions(), (void**)queryDensity.contextPtrs(), density.globalVector(), &norm);CPPUNIT_ASSERT(!err);
+    queryDensity.closeDB(_auxDB);
+
+    const PylithReal tolerance = 1.0e-6;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
+  } // Test getting density field
+
+  { // Test getting lambda field.
+    pylith::topology::Field lambda(*_mesh);
+    _material->getAuxField(&lambda, "lambda");
+
+    lambda.createScatter(lambda.mesh()); // Populate global vector.
+    lambda.scatterLocalToGlobal();
+
+    //lambda.view("LAMBDA"); // DEBUGGING
+
+    // Check result
+    CPPUNIT_ASSERT_EQUAL(std::string("lambda"), std::string(lambda.label()));
+    CPPUNIT_ASSERT_EQUAL(_data->dimension, lambda.spaceDim());
+
+    pylith::topology::FieldQuery queryLambda(lambda);
+    queryLambda.queryFn("lambda", pylith::materials::Query::dbQueryLambda2D);
+    queryLambda.openDB(_auxDB, _data->lengthScale);
+
+    PylithReal norm = 0.0;
+    const PylithReal t = _data->t1;
+    const PetscDM dm = lambda.dmMesh();CPPUNIT_ASSERT(dm);
+    PetscErrorCode err = DMPlexComputeL2Diff(dm, t, queryLambda.functions(), (void**)queryLambda.contextPtrs(), lambda.globalVector(), &norm);CPPUNIT_ASSERT(!err);
+    queryLambda.closeDB(_auxDB);
+
+    const PylithReal tolerance = 1.0e-6;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
+  } // Test getting lambda field
 
 
   PYLITH_METHOD_END;

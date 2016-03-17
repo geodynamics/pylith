@@ -322,8 +322,8 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3_uu(const PylithInt dim
   const PylithInt _numS = 2;
 
   const PylithInt _numA = 3;
-  const PylithInt i_lambda = 1;
-  const PylithInt i_mu = 0;
+  const PylithInt i_lambda = 2;
+  const PylithInt i_mu = 1;
 
   const PylithScalar lambda = a[aOff[i_lambda]];
   const PylithScalar mu = a[aOff[i_mu]];
@@ -335,6 +335,8 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3_uu(const PylithInt dim
   const PylithReal C2222 = lambda2mu;
   const PylithReal C1122 = lambda;
   const PylithReal C1212 = mu2;
+
+  PetscInt i, j;
 
   assert(_dim == dim);
   assert(_numS == numS);
@@ -349,13 +351,13 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3_uu(const PylithInt dim
      5: j0101 = C1122
 
      2: j0010 = C1211
-     3: j0011 = C1212
-     6: j0110 = C1221, symmetry C1212
+     3: j0011 = C1212 // ZERO
+     6: j0110 = C1221, symmetry C1212 // ZERO
      7: j0111 = C1222
   
      8: j1000 = C2111
-     9: j1001 = C2112, symmetry C1212
-    12: j1100 = C2121, symmetry C1212
+     9: j1001 = C2112, symmetry C1212 // ZERO
+    12: j1100 = C2121, symmetry C1212 // ZERO
     13: j1101 = C2122, symmetry C1222
 
     10: j1010 = C2211, symmetry C1122
@@ -372,6 +374,15 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3_uu(const PylithInt dim
   Jg3[10] += C1122; /* j1010, C2211 */
   Jg3[12] += C1212; /* j1100, C2121 */
   Jg3[15] += C2222; /* j1111 */
+
+  printf("Jacobian\n");
+  for (i=0; i < _dim*_dim; ++i) {
+    for (j=0; j < _dim*_dim; ++j) {
+      printf(" %12.6e", Jg3[i*_dim*_dim+j]);
+    } /* for */
+    printf("\n");
+  } /* for */
+  
 } /* IsotropicLinearElasticityPlaneStrain_Jg3_uu */
 
 
