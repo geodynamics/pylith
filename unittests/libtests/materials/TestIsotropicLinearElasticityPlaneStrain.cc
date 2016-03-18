@@ -787,6 +787,11 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeRHSJacob
   residual2.allocate();
   residual2.zeroAll();
 
+#if 0 // DEBUGGING
+  PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2");
+  DMSetFromOptions(_solution1->dmMesh());
+#endif
+
   CPPUNIT_ASSERT(_material);
   const PylithReal t1 = _data->t1;
   const PylithReal t2 = _data->t2;
@@ -831,13 +836,15 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeRHSJacob
   err = VecZeroEntries(resultVec);CPPUNIT_ASSERT(!err);
   err = VecScale(solnIncrVec, -1.0);CPPUNIT_ASSERT(!err);
   err = MatMultAdd(jacobian.matrix(), solnIncrVec, residualVec, resultVec);CPPUNIT_ASSERT(!err);
-  
+
+#if 0 // DEBUGGING  
   std::cout << "SOLN INCR" << std::endl;
   VecView(solnIncrVec, PETSC_VIEWER_STDOUT_SELF);
   std::cout << "F2-F1" << std::endl;
   VecView(residualVec, PETSC_VIEWER_STDOUT_SELF);
   std::cout << "RESULT" << std::endl;
   VecView(resultVec, PETSC_VIEWER_STDOUT_SELF);
+#endif
 
   PylithReal norm = 0.0;
   err = VecNorm(resultVec, NORM_2, &norm);CPPUNIT_ASSERT(!err);
