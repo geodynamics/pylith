@@ -1,0 +1,32 @@
+mesh = {
+  dimension = 2
+  use-index-zero = true
+  vertices = {
+    dimension = 2
+    count = 3
+    coordinates = {
+             0     -1.0  -1.0
+             1     +1.0  -1.0
+             2     -1.0  +1.0
+    }
+  }
+  cells = {
+    count = 1
+    num-corners = 3
+    simplices = {
+             0       0  1  2
+    }
+    material-ids = {
+             0   24
+    }
+  }
+  group = {
+    type = vertices
+    name = boundary
+    count = 3
+    indices = {
+      0  1  2
+    }
+  }
+  
+}
