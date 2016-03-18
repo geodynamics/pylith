@@ -21,6 +21,7 @@ dist_noinst_DATA = \
 	matstress.spatialdb \
 	matstrain.spatialdb \
 	tri3.mesh \
+	tri3_onecell.mesh \
 	tri3_small.mesh \
 	mat_elastic.spatialdb \
         IsotropicLinearElasticityPlaneStrain_UniStrain_aux.spatialdb \

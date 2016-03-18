@@ -35,7 +35,7 @@ points = numpy.array([[-4.0, -4.0],
 npts = points.shape[0]
 
 density = 2500.0*numpy.ones((npts,))
-vs = 1.0e-12*3000.0*numpy.ones((npts,))
+vs = 3000.0*numpy.ones((npts,))
 vp = 3**0.5*3000.0*numpy.ones((npts,))
 modulus_mu = density*vs**2
 modulus_lambda = density*vp**2 - 2.0*modulus_mu
@@ -62,8 +62,7 @@ class AuxFields(object):
                   'values': [{'name': "vs", 'units': "m/s", 'data': vs},
                              {'name': "vp", 'units': "m/s", 'data': vp},
                              {'name': "density", 'units': "kg/m**3", 'data': density},
-                           ]}
-               )
+                           ]})
 
 
 # Solution @ t1
@@ -102,8 +101,7 @@ class Solution1(object):
                              {'name': "displacement_dot_y", 'units': "m/s", 'data': disp_dot[:,1]},
                              {'name': "velocity_dot_x", 'units': "m/s**2", 'data': vel_dot[:,0]},
                              {'name': "velocity_dot_y", 'units': "m/s**2", 'data': vel_dot[:,1]},
-                           ]}
-               )
+                           ]})
     
     return
 
@@ -118,8 +116,8 @@ class Solution2(object):
   @staticmethod
   def generate():
     import numpy
-    x = numpy.arange(-4.0, 4.01, 0.1, dtype=numpy.float64)
-    y = numpy.arange(-4.0, 4.01, 0.1, dtype=numpy.float64)
+    x = numpy.arange(-4.0, 4.01, 0.5, dtype=numpy.float64)
+    y = numpy.arange(-4.0, 4.01, 0.5, dtype=numpy.float64)
     numX = x.shape[0]
     numY = y.shape[0]
     points = numpy.zeros((numX*numY,2), dtype=numpy.float64)
@@ -131,7 +129,6 @@ class Solution2(object):
     import numpy.random
     disp = 0.1*(numpy.random.rand(npts,2)-0.5)
     vel = numpy.zeros(disp.shape)
-    print points
   
     disp_dot = numpy.zeros(disp.shape)
     vel_dot = numpy.zeros(vel.shape)
@@ -151,8 +148,7 @@ class Solution2(object):
                              {'name': "displacement_dot_y", 'units': "m/s", 'data': disp_dot[:,1]},
                              {'name': "velocity_dot_x", 'units': "m/s**2", 'data': vel_dot[:,0]},
                              {'name': "velocity_dot_y", 'units': "m/s**2", 'data': vel_dot[:,1]},
-                           ]}
-               )
+                           ]})
     
     return
 
