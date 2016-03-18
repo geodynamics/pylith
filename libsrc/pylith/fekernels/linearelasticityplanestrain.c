@@ -51,14 +51,14 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_f0(const PylithInt dim,
 { /* IsotropicLinearElasticityPlaneStrain_f0 */
   const PylithInt _dim = 2;
 
-  const PylithInt _numS = 2;
+  const PylithInt _numS = 2; /* Number passed on to f0_inertia. */
 
-  const PylithInt _numA = 1;
+  const PylithInt _numA = 1; /* Number passed on to f0_inertia. */
   const PylithInt i_density = 0;
 
   assert(_dim == dim);
-  assert(_numS == numS);
-  assert(_numA <= numA);
+  assert(2 == numS);
+  assert(3 == numA || 4 == numA);
   assert(aOff);
   assert(aOff_x);
 
@@ -95,8 +95,8 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g0(const PylithInt dim,
   const PylithInt i_bodyforce = 3;
 
   assert(_dim == dim);
-  assert(_numS == numS);
-  assert(_numA <= numA);
+  assert(2 == numS);
+  assert(4 == numA);
   assert(aOff);
   assert(aOff_x);
 
@@ -328,15 +328,12 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3_uu(const PylithInt dim
   const PylithScalar lambda = a[aOff[i_lambda]];
   const PylithScalar mu = a[aOff[i_mu]];
 
-  const PylithScalar mu2 = 2.0 * mu;
-  const PylithScalar lambda2mu = lambda + mu2;
+  const PylithScalar lambda2mu = lambda + 2.0*mu;
    
   const PylithReal C1111 = lambda2mu;
   const PylithReal C2222 = lambda2mu;
   const PylithReal C1122 = lambda;
-  const PylithReal C1212 = mu2;
-
-  PetscInt i, j;
+  const PylithReal C1212 = mu;
 
   assert(_dim == dim);
   assert(_numS == numS);
@@ -346,43 +343,35 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3_uu(const PylithInt dim
   /* j(f,g,df,dg) = C(f,df,g,dg)
 
      0: j0000 = C1111
-     1: j0001 = C1112
-     4: j0100 = C1121, symmetry C1112
+     1: j0001 = C1112 = 0
+     4: j0100 = C1121, symmetry C1112 = 0
      5: j0101 = C1122
 
-     2: j0010 = C1211
-     3: j0011 = C1212 // ZERO
-     6: j0110 = C1221, symmetry C1212 // ZERO
-     7: j0111 = C1222
+     2: j0010 = C1211 = 0
+     3: j0011 = C1212
+     6: j0110 = C1221, symmetry C1212
+     7: j0111 = C1222 = 0
   
-     8: j1000 = C2111
-     9: j1001 = C2112, symmetry C1212 // ZERO
-    12: j1100 = C2121, symmetry C1212 // ZERO
-    13: j1101 = C2122, symmetry C1222
+     8: j1000 = C2111 = 0
+     9: j1001 = C2112, symmetry C1212 
+    12: j1100 = C2121, symmetry C1212
+    13: j1101 = C2122, symmetry C1222 = 0
 
     10: j1010 = C2211, symmetry C1122
-    11: j1011 = C2212, symmetry C1222
-    14: j1110 = C2221, symmetry C1222
+    11: j1011 = C2212, symmetry C1222 = 0
+    14: j1110 = C2221, symmetry C1222 = 0
     15: j1111 = C2222
   */
 
-  Jg3[ 0] += C1111; /* j0000 */
-  Jg3[ 3] += C1212; /* j0011 */
-  Jg3[ 5] += C1122; /* j0101 */
-  Jg3[ 6] += C1212; /* j0110, C1221 */
-  Jg3[ 9] += C1212; /* j1001, C2112 */
-  Jg3[10] += C1122; /* j1010, C2211 */
-  Jg3[12] += C1212; /* j1100, C2121 */
-  Jg3[15] += C2222; /* j1111 */
+  Jg3[ 0] -= C1111; /* j0000 */
+  Jg3[ 3] -= C1212; /* j0011 */
+  Jg3[ 5] -= C1122; /* j0101 */
+  Jg3[ 6] -= C1212; /* j0110, C1221 */
+  Jg3[ 9] -= C1212; /* j1001, C2112 */
+  Jg3[10] -= C1122; /* j1010, C2211 */
+  Jg3[12] -= C1212; /* j1100, C2121 */
+  Jg3[15] -= C2222; /* j1111 */
 
-  printf("Jacobian\n");
-  for (i=0; i < _dim*_dim; ++i) {
-    for (j=0; j < _dim*_dim; ++j) {
-      printf(" %12.6e", Jg3[i*_dim*_dim+j]);
-    } /* for */
-    printf("\n");
-  } /* for */
-  
 } /* IsotropicLinearElasticityPlaneStrain_Jg3_uu */
 
 
