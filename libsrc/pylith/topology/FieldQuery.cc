@@ -180,7 +180,7 @@ pylith::topology::FieldQuery::queryDB(void)
   PetscReal dummyTime = 0.0;
   const PetscDM dm = _field.dmMesh();
   const PetscVec fieldVec = _field.localVector();
-  err = DMPlexProjectFunctionLocal(dm, dummyTime, _functions, (void**)_contextPtrs, INSERT_ALL_VALUES, fieldVec);PYLITH_CHECK_ERROR(err);
+  err = DMProjectFunctionLocal(dm, dummyTime, _functions, (void**)_contextPtrs, INSERT_ALL_VALUES, fieldVec);PYLITH_CHECK_ERROR(err);
   //err = PetscObjectCompose((PetscObject) dm, "A", (PetscObject) fieldVec);CHKERRQ(ierr); // :MATT: Which dm is this? Do we need this?
   
   PYLITH_METHOD_END;
