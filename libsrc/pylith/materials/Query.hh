@@ -38,7 +38,7 @@ class pylith::materials::Query
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
-  /** Query for shear modulus, $\mu$, in 2-D.
+  /** Query in 2-D for Vs, Vp, and density to determine shear modulus.
    *
    * @param[in] dim Spatial dimension.
    * @param[in] t Current time.
@@ -49,14 +49,14 @@ public :
    * @returns PETSc error code (0 for success).
    */
   static
-  PetscErrorCode dbQueryMu2D(PylithInt dim,
-			     PylithReal t,
-			     const PylithReal x[],
-			     PylithInt nvalues,
-			     PylithScalar* values,
-			     void* context);
+  PetscErrorCode dbQueryShearModulus2D(PylithInt dim,
+				       PylithReal t,
+				       const PylithReal x[],
+				       PylithInt nvalues,
+				       PylithScalar* values,
+				       void* context);
 
-  /** Query for Lame's constant, $\lambda, in 2-D.
+  /** Query in 2-D for Vs, Vp, and density to determine bulk modulus.
    *
    * @param[in] dim Spatial dimension.
    * @param[in] t Current time.
@@ -67,12 +67,12 @@ public :
    * @returns PETSc error code (0 for success).
    */
   static
-  PetscErrorCode dbQueryLambda2D(PylithInt dim,
-				 PylithReal t,
-				 const PylithReal x[],
-				 PylithInt nvalues,
-				 PylithScalar* values,
-				 void* context);
+  PetscErrorCode dbQueryBulkModulus2D(PylithInt dim,
+				      PylithReal t,
+				      const PylithReal x[],
+				      PylithInt nvalues,
+				      PylithScalar* values,
+				      void* context);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

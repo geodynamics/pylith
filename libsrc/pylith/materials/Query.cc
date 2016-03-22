@@ -24,15 +24,15 @@
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END, PYLITH_SET_ERROR
 
 // ----------------------------------------------------------------------
-// Query spatial database for shear modulus, $\mu$, in 2-D.
+// Query in 2-D for Vs, Vp, and density to determine shear modulus.
 PetscErrorCode
-pylith::materials::Query::dbQueryMu2D(PylithInt dim,
-				      PylithReal t,
-				      const PylithReal x[],
-				      PylithInt nvalues,
-				      PylithScalar* values,
-				      void* context)
-{ // dbQueryMu2D
+pylith::materials::Query::dbQueryShearModulus2D(PylithInt dim,
+						PylithReal t,
+						const PylithReal x[],
+						PylithInt nvalues,
+						PylithScalar* values,
+						void* context)
+{ // dbQueryShearModulus2D
   PYLITH_METHOD_BEGIN;
 
   const int _dim = 2;
@@ -99,24 +99,24 @@ pylith::materials::Query::dbQueryMu2D(PylithInt dim,
     PYLITH_METHOD_RETURN(1);
   } // if
   
-  const PylithReal mu = density * vs * vs;assert(mu > 0);
+  const PylithReal shearModulus = density * vs * vs;assert(shearModulus > 0);
   assert(queryctx->valueScale > 0);
-  values[0] = mu / queryctx->valueScale;
+  values[0] = shearModulus / queryctx->valueScale;
   
   PYLITH_METHOD_RETURN(0);
-} // dbQueryMu2D
+} // dbQueryShearModulus2D
  
  
 // ----------------------------------------------------------------------
-// Query spatial database for Lame's constant, $\lambda$, in 2-D.
+// Query in 2-D for Vs, Vp, and density to determine bulk modulus.
 PetscErrorCode
-pylith::materials::Query::dbQueryLambda2D(PylithInt dim,
-					  PylithReal t,
-					  const PylithReal x[],
-					  PylithInt nvalues,
-					  PylithScalar* values,
-					  void* context)
-{ // dbQueryLambda2D
+pylith::materials::Query::dbQueryBulkModulus2D(PylithInt dim,
+					       PylithReal t,
+					       const PylithReal x[],
+					       PylithInt nvalues,
+					       PylithScalar* values,
+					       void* context)
+{ // dbQueryBulkModulus2D
   PYLITH_METHOD_BEGIN;
 
   const int _dim = 2;
@@ -191,13 +191,12 @@ pylith::materials::Query::dbQueryLambda2D(PylithInt dim,
     PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
   } // if
 
-  const PylithReal mu = density * vs * vs;assert(mu > 0);
-  const PylithReal lambda = density * vp * vp - 2.0*mu;
+  const PylithReal bulkModulus = density*(vp*vp - 4.0/3.0*vs*vs);assert(bulkModulus > 0.0);
   assert(queryctx->valueScale > 0);
-  values[0] = lambda / queryctx->valueScale;
+  values[0] = bulkModulus / queryctx->valueScale;
 
   PYLITH_METHOD_RETURN(0);
-} // dbQueryLambda2D
+} // dbQueryBulkModulus2D
 
 
 // End of file

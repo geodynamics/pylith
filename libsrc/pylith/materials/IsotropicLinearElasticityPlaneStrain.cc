@@ -91,15 +91,15 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_auxFieldsSetup(void)
   _auxFields->subfieldAdd("density", densityComponents, 1, pylith::topology::Field::SCALAR, this->auxFieldDiscretization("density"), densityScale, pylith::topology::FieldQuery::validatorPositive);
   _auxFieldsQuery->queryFn("density", pylith::topology::FieldQuery::dbQueryGeneric);
 
-  // Field 1: mu
-  const char* muComponents[1] = {"mu"};
-  _auxFields->subfieldAdd("mu", muComponents, 1, topology::Field::SCALAR, this->auxFieldDiscretization("mu"), pressureScale);
-  _auxFieldsQuery->queryFn("mu", pylith::materials::Query::dbQueryMu2D);
+  // Field 1: shearModulus
+  const char* shearModulusComponents[1] = {"shear_modulus"};
+  _auxFields->subfieldAdd("shear_modulus", shearModulusComponents, 1, topology::Field::SCALAR, this->auxFieldDiscretization("shear_modulus"), pressureScale);
+  _auxFieldsQuery->queryFn("shear_modulus", pylith::materials::Query::dbQueryShearModulus2D);
 
-  // Field 2: lambda
-  const char* lambdaComponents[1] = {"lambda"};
-  _auxFields->subfieldAdd("lambda", lambdaComponents, 1, topology::Field::SCALAR, this->auxFieldDiscretization("lambda"), pressureScale);
-  _auxFieldsQuery->queryFn("lambda", pylith::materials::Query::dbQueryLambda2D);
+  // Field 2: bulkModulus
+  const char* bulkModulusComponents[1] = {"bulk_modulus"};
+  _auxFields->subfieldAdd("bulk_modulus", bulkModulusComponents, 1, topology::Field::SCALAR, this->auxFieldDiscretization("bulk_modulus"), pressureScale);
+  _auxFieldsQuery->queryFn("bulk_modulus", pylith::materials::Query::dbQueryBulkModulus2D);
 
   // Field 3: body force
   if (_useBodyForce) {

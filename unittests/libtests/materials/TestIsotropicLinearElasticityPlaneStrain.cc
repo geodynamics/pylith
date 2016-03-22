@@ -142,8 +142,8 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
     CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
   } // density
 
-  { // mu
-    const char* label = "mu";
+  { // shearModulus
+    const char* label = "shaer_modulus";
     const pylith::topology::Field::SubfieldInfo& info = _material->_auxFields->subfieldInfo(label);
     CPPUNIT_ASSERT_EQUAL(1, info.numComponents);
     CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
@@ -153,10 +153,10 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
     CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
     CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
     CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-  } // mu
+  } // shearModulus
 
-  { // lambda
-    const char* label = "lambda";
+  { // bulkModulus
+    const char* label = "bulk_modulus";
     const pylith::topology::Field::SubfieldInfo& info = _material->_auxFields->subfieldInfo(label);
     CPPUNIT_ASSERT_EQUAL(1, info.numComponents);
     CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
@@ -166,7 +166,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
     CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
     CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
     CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-  } // lambda
+  } // bulkModulus
 
   if (_data->useBodyForce) { // body force
     const char* label = "body force";
@@ -184,8 +184,8 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
 
   // Make sure DB query functions are set correctly.
   CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _material->_auxFieldsQuery->queryFn("density"));
-  CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryMu2D, _material->_auxFieldsQuery->queryFn("mu"));
-  CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryLambda2D, _material->_auxFieldsQuery->queryFn("lambda"));
+  CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryShearModulus2D, _material->_auxFieldsQuery->queryFn("shear_modulus"));
+  CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryBulkModulus2D, _material->_auxFieldsQuery->queryFn("bulk_modulus"));
   if (_data->useBodyForce) {
     CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _material->_auxFieldsQuery->queryFn("body force"));
   } // if
@@ -391,8 +391,8 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testHasAuxField(voi
 
   CPPUNIT_ASSERT(_material);
   CPPUNIT_ASSERT(_material->hasAuxField("density"));
-  CPPUNIT_ASSERT(_material->hasAuxField("mu"));
-  CPPUNIT_ASSERT(_material->hasAuxField("lambda"));
+  CPPUNIT_ASSERT(_material->hasAuxField("shear_modulus"));
+  CPPUNIT_ASSERT(_material->hasAuxField("bulk_modulus"));
 
   CPPUNIT_ASSERT(!_material->hasAuxField("abc"));
 
@@ -432,39 +432,39 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
     PylithReal norm = 0.0;
     const PylithReal t = _data->t1;
     const PetscDM dm = density.dmMesh();CPPUNIT_ASSERT(dm);
-    PetscErrorCode err = DMPlexComputeL2Diff(dm, t, queryDensity.functions(), (void**)queryDensity.contextPtrs(), density.globalVector(), &norm);CPPUNIT_ASSERT(!err);
+    PetscErrorCode err = DMComputeL2Diff(dm, t, queryDensity.functions(), (void**)queryDensity.contextPtrs(), density.globalVector(), &norm);CPPUNIT_ASSERT(!err);
     queryDensity.closeDB(_auxDB);
 
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
   } // Test getting density field
 
-  { // Test getting lambda field.
-    pylith::topology::Field lambda(*_mesh);
-    _material->getAuxField(&lambda, "lambda");
+  { // Test getting bulkModulus field.
+    pylith::topology::Field bulkModulus(*_mesh);
+    _material->getAuxField(&bulkModulus, "bulk_modulus");
 
-    lambda.createScatter(lambda.mesh()); // Populate global vector.
-    lambda.scatterLocalToGlobal();
+    bulkModulus.createScatter(bulkModulus.mesh()); // Populate global vector.
+    bulkModulus.scatterLocalToGlobal();
 
-    //lambda.view("LAMBDA"); // DEBUGGING
+    //bulkModulus.view("BULK MODULUS"); // DEBUGGING
 
     // Check result
-    CPPUNIT_ASSERT_EQUAL(std::string("lambda"), std::string(lambda.label()));
-    CPPUNIT_ASSERT_EQUAL(_data->dimension, lambda.spaceDim());
+    CPPUNIT_ASSERT_EQUAL(std::string("bulk_modulus"), std::string(bulkModulus.label()));
+    CPPUNIT_ASSERT_EQUAL(_data->dimension, bulkModulus.spaceDim());
 
-    pylith::topology::FieldQuery queryLambda(lambda);
-    queryLambda.queryFn("lambda", pylith::materials::Query::dbQueryLambda2D);
-    queryLambda.openDB(_auxDB, _data->lengthScale);
+    pylith::topology::FieldQuery queryBulkModulus(bulkModulus);
+    queryBulkModulus.queryFn("bulk_modulus", pylith::materials::Query::dbQueryBulkModulus2D);
+    queryBulkModulus.openDB(_auxDB, _data->lengthScale);
 
     PylithReal norm = 0.0;
     const PylithReal t = _data->t1;
-    const PetscDM dm = lambda.dmMesh();CPPUNIT_ASSERT(dm);
-    PetscErrorCode err = DMPlexComputeL2Diff(dm, t, queryLambda.functions(), (void**)queryLambda.contextPtrs(), lambda.globalVector(), &norm);CPPUNIT_ASSERT(!err);
-    queryLambda.closeDB(_auxDB);
+    const PetscDM dm = bulkModulus.dmMesh();CPPUNIT_ASSERT(dm);
+    PetscErrorCode err = DMComputeL2Diff(dm, t, queryBulkModulus.functions(), (void**)queryBulkModulus.contextPtrs(), bulkModulus.globalVector(), &norm);CPPUNIT_ASSERT(!err);
+    queryBulkModulus.closeDB(_auxDB);
 
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
-  } // Test getting lambda field
+  } // Test getting bulkModulus field
 
 
   PYLITH_METHOD_END;
@@ -694,7 +694,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testInitialize(void
   pylith::topology::FieldQuery* query = _material->_auxFieldsQuery;
   query->openDB(_auxDB, _data->lengthScale);
 
-  PetscErrorCode err = DMPlexComputeL2Diff(dm, t, query->functions(), (void**)query->contextPtrs(), auxFields.globalVector(), &norm);CPPUNIT_ASSERT(!err);
+  PetscErrorCode err = DMComputeL2Diff(dm, t, query->functions(), (void**)query->contextPtrs(), auxFields.globalVector(), &norm);CPPUNIT_ASSERT(!err);
   query->closeDB(_auxDB);
   const PylithReal tolerance = 1.0e-6;
   CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
