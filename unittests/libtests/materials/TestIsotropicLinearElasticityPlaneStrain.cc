@@ -143,7 +143,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
   } // density
 
   { // shearModulus
-    const char* label = "shaer_modulus";
+    const char* label = "shear_modulus";
     const pylith::topology::Field::SubfieldInfo& info = _material->_auxFields->subfieldInfo(label);
     CPPUNIT_ASSERT_EQUAL(1, info.numComponents);
     CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
