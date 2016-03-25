@@ -31,7 +31,7 @@ const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_b
 
 const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_lengthScale =   1.00000000e+03;
 const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_timeScale =   2.00000000e+00;
-const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_densityScale =   9.00000000e+04;
+const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_densityScale =   3.00000000e+03;
 const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_pressureScale =   2.25000000e+10;
 
 const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_t1 = 1.0;

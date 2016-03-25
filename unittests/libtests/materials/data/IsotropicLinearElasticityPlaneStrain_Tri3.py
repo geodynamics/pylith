@@ -71,7 +71,7 @@ class Solution1(object):
   Python class for generation spatial database with solution at t1.
   """
   exx = 0.1
-  eyy = 0.2
+  eyy = 0.25
   exy = 0.3
   t = 1.0
 
