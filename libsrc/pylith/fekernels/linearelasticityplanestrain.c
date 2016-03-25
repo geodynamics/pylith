@@ -307,10 +307,6 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0_uv_explicit(const Pyli
  * Isotropic:
  *  C_ijkl = bulkModulus * delta_ij * delta_kl + shearModulus * (delta_ik*delta_jl + delta_il*delta*jk - 2/3*delta_ij*delta_kl)
  */
-
-
-
- */
 void
 pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3_uu(const PylithInt dim,
 							     const PylithInt numS,
