@@ -295,6 +295,21 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0_uv_explicit(const Pyli
 
 /* ---------------------------------------------------------------------- */
 /* g3_uu entry function for 2-D plane strain isotropic linear elasticity.
+ *
+ * stress_ij = C_ijkl strain_kl
+ *
+ * stress_11 = C1111 strain_11 + C1122 strain_22, C1111=lambda+2mu, C1122=lambda.
+ *
+ * stress_12 = C1212 strain_12 + C1221 strain_21. C1212 = C1221 from symmetry, so C1212 = C1221 = shearModulus.
+ *
+ * For reference:
+ *
+ * Isotropic:
+ *  C_ijkl = bulkModulus * delta_ij * delta_kl + shearModulus * (delta_ik*delta_jl + delta_il*delta*jk - 2/3*delta_ij*delta_kl)
+ */
+
+
+
  */
 void
 pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3_uu(const PylithInt dim,
@@ -325,7 +340,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3_uu(const PylithInt dim
 
   const PylithScalar lambda = bulkModulus - 2.0/3.0*shearModulus;
   const PylithScalar lambda2mu = lambda + 2.0*shearModulus;
-   
+
   const PylithReal C1111 = lambda2mu;
   const PylithReal C2222 = lambda2mu;
   const PylithReal C1122 = lambda;
