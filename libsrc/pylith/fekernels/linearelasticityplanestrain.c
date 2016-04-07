@@ -289,7 +289,18 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0_uv_explicit(const Pyli
 								       const PylithScalar x[],
 								       PylithScalar Jf0[])
 { /* IsotropicLinearElasticityPlaneStrain_Jf0_uv_explicit */
-  assert(0);
+  const PylithInt _dim = 2;
+  const PylithInt _numA = 3;
+  const PylithInt i_density = 0;
+  const PylithInt i_bulkmodulus = 1;
+  const PylithScalar bulkModulus = a[aOff[i_bulkmodulus]];
+  const PylithScalar density = a[aOff[i_density]];
+  PylithInt i;
+   
+  for (i = 0; i < dim; ++i) {
+    Jf0[i*_dim+i] += utshift * density;
+  } /* for */
+  
 } /* IsotropicLinearElasticityPlaneStrain_Jf0_uv_explicit*/
 
 
@@ -689,7 +700,7 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_f0(
   const PylithInt _sOff_x[2] = {sOff_x[i_disp], sOff_x[i_vel]};
 
   pylith_fekernels_Elasticity_f0_inertia(_dim, _numS, _numA, _sOff, _sOff_x, s, s_t, s_x, &aOff[i_density], &aOff_x[i_density], a, a_t, a_x, t, x, f0);
-} /* pylith_fekernels_IsotropicLinearElasticityIncompPlaneStrain_f0 */
+} /* pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_f0 */
 
 
 /* ---------------------------------------------------------------------- */
@@ -864,7 +875,7 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1_initstate(
  * Auxiliary fields: [density(1), shearModulus(1), bulkModulus[1], ...]
  */
 void
-pylith_fekernels_IsotropicIncompLinearElasticityPlaneStrain_Jg3_uu(
+pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg3_uu(
 					const PylithInt dim,
 					const PylithInt numS,
 					const PylithInt numA,
@@ -882,7 +893,7 @@ pylith_fekernels_IsotropicIncompLinearElasticityPlaneStrain_Jg3_uu(
 					const PylithReal utshift,
 					const PylithScalar x[],
 					PylithScalar Jg3[])
-{ /* pylith_fekernels_IsotropicIncompLinearElasticityPlaneStrain_Jg3_uu */
+{ /* pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg3_uu */
   const PylithInt _dim = 2;
 
   const PylithInt i_shearModulus = 1;
@@ -929,18 +940,18 @@ pylith_fekernels_IsotropicIncompLinearElasticityPlaneStrain_Jg3_uu(
   Jg3[10] -= C1122; /* g1010, C2211 */
   Jg3[12] -= C1212; /* g1100, C2121 */
   Jg3[15] -= C2222; /* g1111 */
-} /* pylith_fekernels_IsotropicIncompLinearElasticityPlaneStrain_Jg3_uu */
+} /* pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg3_uu */
 					      
 
 /* ---------------------------------------------------------------------- */
-/* g2_uv entry function for 2-D plane strain incompressible isotropic linear
+/* g2_up entry function for 2-D plane strain incompressible isotropic linear
  * elasticity.
  *
  * Solution fields = [disp(dim), vel(dim), pres]
  * Auxiliary fields = [density, shearModulus, bulkModulus, ...]
  */
 void
-pylith_fekernels_IsotropicIncompLinearElasticityPlaneStrain_Jg2_up(
+pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg2_up(
 					const PylithInt dim,
 					const PylithInt numS,
 					const PylithInt numA,
@@ -958,7 +969,7 @@ pylith_fekernels_IsotropicIncompLinearElasticityPlaneStrain_Jg2_up(
 					const PylithReal utshift,
 					const PylithScalar x[],
 					PylithScalar Jg2[])
-{ /* pylith_fekernels_IsotropicIncompLinearElasticityPlaneStrain_Jg2_up */
+{ /* pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg2_up */
   const PylithInt _dim = 2;
 
   PylithInt i;
@@ -969,5 +980,7 @@ pylith_fekernels_IsotropicIncompLinearElasticityPlaneStrain_Jg2_up(
   for (i=0; i < _dim; ++i) {
     Jg2[i*_dim+i] += 1.0;
   } /* for */
-} /* pylith_fekernels_IsotropicIncompLinearElasticityPlaneStrain_Jg2_up */
+} /* pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg2_up */
 
+
+/* End of file */

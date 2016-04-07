@@ -58,6 +58,7 @@ namespace pylith {
     class MaterialNew;
     
     class IsotropicLinearElasticityPlaneStrain;
+    class IsotropicLinearIncompElasticityPlaneStrain;
 
     class Query;
 

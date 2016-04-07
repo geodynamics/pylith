@@ -89,6 +89,7 @@ libpylith_la_SOURCES = \
 	fekernels/dispvel.c \
 	fekernels/elasticity.c \
 	fekernels/linearelasticityplanestrain.c \
+	fekernels/pressure.c \
 	friction/FrictionModel.cc \
 	friction/StaticFriction.cc \
 	friction/SlipWeakening.cc \
@@ -114,6 +115,7 @@ libpylith_la_SOURCES = \
 	materials/DruckerPragerPlaneStrain.cc \
 	materials/MaterialNew.cc \
 	materials/IsotropicLinearElasticityPlaneStrain.cc \
+	materials/IsotropicLinearIncompElasticityPlaneStrain.cc \
 	materials/Query.cc \
 	meshio/BinaryIO.cc \
 	meshio/GMVFile.cc \

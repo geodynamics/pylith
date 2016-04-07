@@ -709,6 +709,7 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg3_uu(
 						const PylithScalar a_t[],
 						const PylithScalar a_x[],
 						const PylithReal t,
+						const PylithReal utshift,
 						const PylithScalar x[],
 						PylithScalar Jg3[]);
 
@@ -752,6 +753,7 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg2_up(
 						const PylithScalar a_t[],
 						const PylithScalar a_x[],
 						const PylithReal t,
+						const PylithReal utshift,
 						const PylithScalar x[],
 						PylithScalar Jg2[]);
 

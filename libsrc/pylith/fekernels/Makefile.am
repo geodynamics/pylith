@@ -22,7 +22,8 @@ include $(top_srcdir)/subpackage.am
 subpkginclude_HEADERS = \
 	dispvel.h \
 	elasticity.h \
-	linearelasticityplanestrain.h
+	linearelasticityplanestrain.h \
+	pressure.h
 
 noinst_HEADERS =
 
