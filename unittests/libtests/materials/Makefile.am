@@ -44,8 +44,10 @@ testmaterials_SOURCES = \
 	TestDruckerPrager3D.cc \
 	TestDruckerPragerPlaneStrain.cc \
 	TestEffectiveStress.cc \
+	TestMaterialNew_Data.cc \
 	TestIsotropicLinearElasticityPlaneStrain.cc \
-	TestIsotropicLinearElasticityPlaneStrainCases.cc \
+	TestIsotropicLinearElasticityPlaneStrain_Cases.cc \
+	TestIsotropicLinearElasticityPlaneStrain_Data.cc \
 	test_materials.cc
 
 
@@ -66,7 +68,9 @@ noinst_HEADERS = \
 	TestDruckerPrager3D.hh \
 	TestDruckerPragerPlaneStrain.hh \
 	TestEffectiveStress.hh \
-	TestIsotropicLinearElasticityPlaneStrain.hh
+	TestMaterialNew_Data.hh \
+	TestIsotropicLinearElasticityPlaneStrain.hh \
+	TestIsotropicLinearElasticityPlaneStrain_Data.hh
 
 # Source files associated with testing data
 testmaterials_SOURCES += \
@@ -92,9 +96,7 @@ testmaterials_SOURCES += \
 	data/DruckerPrager3DElasticData.cc \
 	data/DruckerPrager3DTimeDepData.cc \
 	data/DruckerPragerPlaneStrainElasticData.cc \
-	data/DruckerPragerPlaneStrainTimeDepData.cc \
-	data/IsotropicLinearElasticityPlaneStrainData.cc \
-	data/IsotropicLinearElasticityPlaneStrainData_Tri3.cc
+	data/DruckerPragerPlaneStrainTimeDepData.cc
 
 
 noinst_HEADERS += \
@@ -121,8 +123,6 @@ noinst_HEADERS += \
 	data/DruckerPrager3DTimeDepData.hh \
 	data/DruckerPragerPlaneStrainElasticData.hh \
 	data/DruckerPragerPlaneStrainTimeDepData.hh \
-	data/IsotropicLinearElasticityPlaneStrainData.hh \
-	data/IsotropicLinearElasticityPlaneStrainData_Tri3.hh \
 	data/header.hh
 
 AM_CPPFLAGS += \

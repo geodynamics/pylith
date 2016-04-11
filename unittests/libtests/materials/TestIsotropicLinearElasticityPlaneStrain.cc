@@ -20,7 +20,7 @@
 
 #include "TestIsotropicLinearElasticityPlaneStrain.hh" // Implementation of class methods
 
-#include "data/IsotropicLinearElasticityPlaneStrainData.hh" // USES IsotropicLinearElasticityPlaneStrainData
+#include "TestIsotropicLinearElasticityPlaneStrain_Data.hh" // USES IsotropicLinearElasticityPlaneStrainData
 
 #include "pylith/materials/IsotropicLinearElasticityPlaneStrain.hh" // USES IsotropicLinearElasticityPlaneStrain
 #include "pylith/materials/Query.hh" // USES Query
@@ -139,6 +139,8 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
   CPPUNIT_ASSERT(_material);
   CPPUNIT_ASSERT(_mesh);
   CPPUNIT_ASSERT(_data);
+  TestIsotropicLinearElasticityPlaneStrain_Data* _dataMaterial = dynamic_cast<TestIsotropicLinearElasticityPlaneStrain_Data*>(_data);CPPUNIT_ASSERT(_dataMaterial);
+
   delete _material->_auxFields; _material->_auxFields = new topology::Field(*_mesh);CPPUNIT_ASSERT(_material->_auxFields);
   delete _material->_auxFieldsQuery; _material->_auxFieldsQuery = new topology::FieldQuery(*_material->_auxFields);CPPUNIT_ASSERT(_material->_auxFieldsQuery);
   _material->_auxFieldsSetup();
@@ -183,7 +185,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
     CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
   } // bulkModulus
 
-  if (_data->useBodyForce) { // body force
+  if (_dataMaterial->useBodyForce) { // body force
     const char* label = "body force";
     const PylithReal forceScale = _data->densityScale * _data->lengthScale / (_data->timeScale * _data->timeScale);
     const pylith::topology::Field::SubfieldInfo& info = _material->_auxFields->subfieldInfo(label);
@@ -201,7 +203,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
   CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _material->_auxFieldsQuery->queryFn("density"));
   CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryShearModulus2D, _material->_auxFieldsQuery->queryFn("shear_modulus"));
   CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryBulkModulus2D, _material->_auxFieldsQuery->queryFn("bulk_modulus"));
-  if (_data->useBodyForce) {
+  if (_dataMaterial->useBodyForce) {
     CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _material->_auxFieldsQuery->queryFn("body force"));
   } // if
 
@@ -445,7 +447,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
     queryDensity.openDB(_auxDB, _data->lengthScale);
 
     PylithReal norm = 0.0;
-    const PylithReal t = _data->t1;
+    const PylithReal t = _data->t;
     const PetscDM dm = density.dmMesh();CPPUNIT_ASSERT(dm);
     PetscErrorCode err = DMComputeL2Diff(dm, t, queryDensity.functions(), (void**)queryDensity.contextPtrs(), density.globalVector(), &norm);CPPUNIT_ASSERT(!err);
     queryDensity.closeDB(_auxDB);
@@ -472,7 +474,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
     queryBulkModulus.openDB(_auxDB, _data->lengthScale);
 
     PylithReal norm = 0.0;
-    const PylithReal t = _data->t1;
+    const PylithReal t = _data->t;
     const PetscDM dm = bulkModulus.dmMesh();CPPUNIT_ASSERT(dm);
     PetscErrorCode err = DMComputeL2Diff(dm, t, queryBulkModulus.functions(), (void**)queryBulkModulus.contextPtrs(), bulkModulus.globalVector(), &norm);CPPUNIT_ASSERT(!err);
     queryBulkModulus.closeDB(_auxDB);
@@ -742,7 +744,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeResidual
   residualLHS.zeroAll();
 
   CPPUNIT_ASSERT(_material);
-  const PylithReal t = _data->t1;
+  const PylithReal t = _data->t;
   const PylithReal dt = _data->dt;
   _material->computeRHSResidual(&residualRHS, t, dt, *_solution1);
   _material->computeLHSResidual(&residualLHS, t, dt, *_solution1, *_solution1Dot);
@@ -808,11 +810,10 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeRHSJacob
 #endif
 
   CPPUNIT_ASSERT(_material);
-  const PylithReal t1 = _data->t1;
-  const PylithReal t2 = _data->t2;
+  const PylithReal t = _data->t;
   const PylithReal dt = _data->dt;
-  _material->computeRHSResidual(&residual1, t1, dt, *_solution1);
-  _material->computeRHSResidual(&residual2, t2, dt, *_solution2);
+  _material->computeRHSResidual(&residual1, t, dt, *_solution1);
+  _material->computeRHSResidual(&residual2, t, dt, *_solution2);
 
   // Scatter local to global.
   _solution1->createScatter(_solution1->mesh());
@@ -841,7 +842,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeRHSJacob
   // Compute Jacobian
   pylith::topology::Jacobian jacobian(*_solution1);
   pylith::topology::Jacobian* preconditioner = &jacobian; // Use Jacobian == preconditioner.
-  _material->computeRHSJacobian(&jacobian, preconditioner, t1, dt, *_solution1);
+  _material->computeRHSJacobian(&jacobian, preconditioner, t, dt, *_solution1);
   CPPUNIT_ASSERT_EQUAL(false, _material->needNewJacobian());
   jacobian.assemble("final_assembly");
 
@@ -917,12 +918,11 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeLHSJacob
 #endif
 
   CPPUNIT_ASSERT(_material);
-  const PylithReal t1 = _data->t1;
-  const PylithReal t2 = _data->t2;
+  const PylithReal t = _data->t;
   const PylithReal dt = _data->dt;
   const PylithReal tshift = _data->tshift;
-  _material->computeLHSResidual(&residual1, t1, dt, *_solution1, *_solution1Dot);
-  _material->computeLHSResidual(&residual2, t2, dt, *_solution2, *_solution2Dot);
+  _material->computeLHSResidual(&residual1, t, dt, *_solution1, *_solution1Dot);
+  _material->computeLHSResidual(&residual2, t, dt, *_solution2, *_solution2Dot);
 
   // Scatter local to global.
   _solution1->createScatter(_solution1->mesh());
@@ -951,7 +951,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeLHSJacob
   // Compute Jacobian
   pylith::topology::Jacobian jacobian(*_solution1);
   pylith::topology::Jacobian* preconditioner = &jacobian; // Use Jacobian == preconditioner.
-  _material->computeLHSJacobianImplicit(&jacobian, preconditioner, t1, dt, tshift, *_solution1, *_solution1Dot);
+  _material->computeLHSJacobianImplicit(&jacobian, preconditioner, t, dt, tshift, *_solution1, *_solution1Dot);
   CPPUNIT_ASSERT_EQUAL(false, _material->needNewJacobian());
   jacobian.assemble("final_assembly");
 
@@ -1042,8 +1042,6 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_initializeMin(void
 
   _material->id(_data->materialId);
   _material->label(_data->materialLabel);
-  _material->useInertia(_data->useInertia);
-  _material->useBodyForce(_data->useBodyForce);
   _material->normalizer(normalizer);
 
   PYLITH_METHOD_END;

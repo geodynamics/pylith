@@ -16,8 +16,8 @@
 // ======================================================================
 //
 
-#if !defined(pylith_materials_isotropiclinearelasticityplanestraindata_hh)
-#define pylith_materials_isotropiclinearelasticityplanestraindata_hh
+#if !defined(pylith_materials_testmaterialnew_data_hh)
+#define pylith_materials_testmaterialnew_data_hh
 
 #include "pylith/utils/types.hh" // HASA PylithScalar
 #include "pylith/topology/Field.hh" // HASA FieldBase::Discretization
@@ -26,49 +26,48 @@
 
 namespace pylith {
   namespace materials {
-     class IsotropicLinearElasticityPlaneStrainData;
+     class TestMaterialNew_Data;
   } // pylith
 } // materials
 
-class pylith::materials::IsotropicLinearElasticityPlaneStrainData
+class pylith::materials::TestMaterialNew_Data
 {
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
   
   /// Constructor
-  IsotropicLinearElasticityPlaneStrainData(void);
+  TestMaterialNew_Data(void);
 
   /// Destructor
-  ~IsotropicLinearElasticityPlaneStrainData(void);
+  ~TestMaterialNew_Data(void);
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
   // GENERAL, VALUES DEPEND ON TEST CASE
-  char* meshFilename; ///< Name of file with ASCII mesh.
-  char* materialLabel; ///< Label defining cells associated with material.
+  const char* meshFilename; ///< Name of file with ASCII mesh.
+  const char* materialLabel; ///< Label defining cells associated with material.
   int materialId; ///< Material id.
-  char* boundaryLabel; ///< Group defining domain boundary.
+  const char* boundaryLabel; ///< Group defining domain boundary.
 
   PylithReal lengthScale; ///< Length scale for nondimensionalization.
   PylithReal timeScale; ///< Time scale for nondimensionalization.
   PylithReal pressureScale; ///< Pressure scale for nondimensionalization.
   PylithReal densityScale; ///< Density scale for nondimensionalization.
 
-  PylithReal t1; ///< Time for solution1 in simulation.
-  PylithReal t2; ///< Time for solution2 in simulation.
+  PylithReal t; ///< Time for solution in simulation.
   PylithReal dt; ///< Time step in simulation.
   PylithReal tshift; ///< Time shift for LHS Jacobian.
   
   topology::Field::DiscretizeInfo* solnDiscretizations; ///< Discretizations for solution fields.
-  char* solnDBFilename; ///< Name of file with data for solution.
-  char* pertDBFilename; ///< Name of file with data for perturbation.
+  const char* solnDBFilename; ///< Name of file with data for solution.
+  const char* pertDBFilename; ///< Name of file with data for perturbation.
 
   int numAuxFields; ///< Number of auxiliary fields.
-  char** auxFields; ///< Names of auxiliary fields.
+  const char** auxFields; ///< Names of auxiliary fields.
   topology::Field::DiscretizeInfo* auxDiscretizations; ///< Discretizations for auxiliary fields.  
-  char* auxDBFilename; ///< Name of file with data for auxFieldsDB.
+  const char* auxDBFilename; ///< Name of file with data for auxFieldsDB.
 
   // GENERAL, VALUES DEPEND ONLY ON MATERIAL
   int dimension; ///< Dimension of material.
@@ -81,14 +80,9 @@ public:
   PetscPointFunc* kernelsLHSResidual; ///< FE kernels for LHS residual, F(t,s,\dot{s}).
   PetscPointJac* kernelsLHSJacobianImplicit; ///< FE kernels for LHS Jacobian, F(t,s,\dot{s}) with implicit time-stepping.
   PetscPointJac* kernelsLHSJacobianExplicit;///< FE kernels for LHS Jacobian, F(t,s,\dot{s}) with expicit time-stepping.
-
   
-  // SPECIFIC TO MATERIAL, VALUES DEPEND ON TEST CASE
-  bool useInertia; ///< Test uses inertia.
-  bool useBodyForce; ///< Test uses body force.
-
 };
 
-#endif // pylith_materials_materialdata_hh
+#endif // pylith_materials_testmaterialnew_data_hh
 
 // End of file

@@ -16,7 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file unittests/libtests/materials/data/IsotropicLinearElasticityPlaneStrain_Tri3.py
+## @file unittests/libtests/materials/data/IsotropicLinearElasticityPlaneStrain_UniStrain.py
 
 ## @brief Python application for generating spatial database files for
 ## testing IsotropicLinearElasticityPlaneStrain via Method of

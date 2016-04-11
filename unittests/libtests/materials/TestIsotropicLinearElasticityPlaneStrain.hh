@@ -39,7 +39,7 @@ namespace pylith {
   namespace materials {
     class TestIsotropicLinearElasticityPlaneStrain;
 
-    class IsotropicLinearElasticityPlaneStrainData;
+    class TestIsotropicLinearElasticityPlaneStrain_Data;
   } // materials
 } // pylith
 
@@ -208,7 +208,7 @@ public :
 protected :
 
   IsotropicLinearElasticityPlaneStrain* _material; ///< Object for testing.
-  IsotropicLinearElasticityPlaneStrainData* _data; ///< Data for testing.
+  TestIsotropicLinearElasticityPlaneStrain_Data* _data; ///< Data for testing.
 
   // TestMaterialNew
   topology::Mesh* _mesh; ///< Finite-element mesh.

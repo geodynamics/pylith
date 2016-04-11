@@ -16,15 +16,15 @@
 // ======================================================================
 //
 
-#include "IsotropicLinearElasticityPlaneStrainData.hh"
+#include "TestMaterialNew_Data.hh"
 
-
-const int pylith::materials::IsotropicLinearElasticityPlaneStrainData::numKernelsResidual = 2;
-const int pylith::materials::IsotropicLinearElasticityPlaneStrainData::numKernelsJacobian = 4;
+// ----------------------------------------------------------------------
+const int pylith::materials::TestMaterialNew_Data::numKernelsResidual = 2;
+const int pylith::materials::TestMaterialNew_Data::numKernelsJacobian = 4;
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::materials::IsotropicLinearElasticityPlaneStrainData::IsotropicLinearElasticityPlaneStrainData(void) :
+pylith::materials::TestMaterialNew_Data::TestMaterialNew_Data(void) :
   meshFilename(0),
   materialLabel(NULL),
   materialId(0),
@@ -35,8 +35,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrainData::IsotropicLinearElas
   pressureScale(0),
   densityScale(0),
 
-  t1(0.0),
-  t2(0.0),
+  t(0.0),
   dt(0.0),
   tshift(0.0),
   
@@ -56,10 +55,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrainData::IsotropicLinearElas
   kernelsRHSJacobian(NULL),
   kernelsLHSResidual(NULL),
   kernelsLHSJacobianImplicit(NULL),
-  kernelsLHSJacobianExplicit(NULL),
-
-  useInertia(false),
-  useBodyForce(false)
+  kernelsLHSJacobianExplicit(NULL)
 
 { // constructor
 } // constructor
@@ -67,7 +63,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrainData::IsotropicLinearElas
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::materials::IsotropicLinearElasticityPlaneStrainData::~IsotropicLinearElasticityPlaneStrainData(void)
+pylith::materials::TestMaterialNew_Data::~TestMaterialNew_Data(void)
 { // destructor
 } // destructor
 
