@@ -38,16 +38,19 @@ extern "C" {
 pylith::materials::IsotropicLinearElasticityPlaneStrain::IsotropicLinearElasticityPlaneStrain(void) :
   MaterialNew(2),
   _useInertia(false),
-  _useBodyForce(false)
+  _useBodyForce(false),
+  _useInitialState(false)
 { // constructor
   _isJacobianSymmetric = true;
 } // constructor
+
 
 // ----------------------------------------------------------------------
 // Destructor.
 pylith::materials::IsotropicLinearElasticityPlaneStrain::~IsotropicLinearElasticityPlaneStrain(void)
 { // destructor
 } // destructor
+
 
 // ----------------------------------------------------------------------
 // Include inertia?
@@ -62,6 +65,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::useInertia(const bool v
   } // if/else
 } // useInertia
 
+
 // ----------------------------------------------------------------------
 // Include body force?
 void
@@ -69,6 +73,17 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::useBodyForce(const bool
 { // useBodyForce
   _useBodyForce = value;
 } // useBodyForce
+
+
+// ----------------------------------------------------------------------
+// Use initial (reference) stress and strain in computation of stress
+// and strain?
+void
+pylith::materials::IsotropicLinearElasticityPlaneStrain::useInitialState(const bool value)
+{ // useInitialState
+  _useInitialState = value;
+} // useInitialState
+
 
 // ----------------------------------------------------------------------
 // Preinitialize material. Set names/sizes of auxiliary fields.
@@ -103,9 +118,23 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_auxFieldsSetup(void)
 
   // Field 3: body force
   if (_useBodyForce) {
-    const char* components[3] = {"body_force_x", "body_force_y", "body_force_z"}; // In 2-D only the first two will be used.
-    _auxFields->subfieldAdd("body force", components, dimension(), topology::Field::VECTOR, this->auxFieldDiscretization("body force"), forceScale);
-    _auxFieldsQuery->queryFn("body force", pylith::topology::FieldQuery::dbQueryGeneric);
+    assert(2 == dimension());
+    const char* components[2] = {"body_force_x", "body_force_y"};
+    _auxFields->subfieldAdd("body_force", components, dimension(), topology::Field::VECTOR, this->auxFieldDiscretization("body_force"), forceScale);
+    _auxFieldsQuery->queryFn("body_force", pylith::topology::FieldQuery::dbQueryGeneric);
+  } // if
+
+  // Fields 4 and 5: initial stress and initial strain
+  if (_useInitialState) {
+    const PylithInt stressSize = 4;
+    const char* componentsStress[stressSize] = {"stress_xx", "stress_yy", "stress_xy", "stress_zz"};
+    _auxFields->subfieldAdd("initial_stress", componentsStress, stressSize, topology::Field::OTHER, this->auxFieldDiscretization("initial_stress"), pressureScale);
+    _auxFieldsQuery->queryFn("initial_stress", pylith::topology::FieldQuery::dbQueryGeneric);
+
+    const PylithInt strainSize = 4;
+    const char* componentsStrain[strainSize] = {"strain_xx", "strain_yy", "strain_xy", "strain_zz"};
+    _auxFields->subfieldAdd("initial_strain", componentsStress, stressSize, topology::Field::OTHER, this->auxFieldDiscretization("initial_strain"), 1.0);
+    _auxFieldsQuery->queryFn("initial_strain", pylith::topology::FieldQuery::dbQueryGeneric);
   } // if
 
   PYLITH_METHOD_END;
@@ -123,7 +152,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSResidua
 
   // Displacement
   const PetscPointFunc g0_u = (_useBodyForce) ? pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g0 : NULL;
-  const PetscPointFunc g1_u = pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1;
+  const PetscPointFunc g1_u = (!_useInitialState) ? pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1 : pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1_initstate;
 
   // Velocity
   const PetscPointFunc g0_v = pylith_fekernels_DispVel_g0;

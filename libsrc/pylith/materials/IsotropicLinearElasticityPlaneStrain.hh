@@ -48,15 +48,22 @@ public :
 
   /** Include inertia?
    *
-   * @param value Flag indicating to include inertial term.
+   * @param[in] value Flag indicating to include inertial term.
    */
   void useInertia(const bool value);
 
   /** Include body force?
    *
-   * @param value Flag indicating to include body force term.
+   * @param[in] value Flag indicating to include body force term.
    */
   void useBodyForce(const bool value);
+
+  /** Use initial (reference) stress and strain in computation of
+   * stress and strain?
+   *
+   * @param[in] value Flag indicating to include initial stress and strain.
+   */
+  void useInitialState(const bool value);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -102,6 +109,7 @@ private :
 
   bool _useInertia; ///< Flag to include inertial term.
   bool _useBodyForce; ///< Flag to include body force term.
+  bool _useInitialState; ///< Flag to use initial stress and strain.
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
