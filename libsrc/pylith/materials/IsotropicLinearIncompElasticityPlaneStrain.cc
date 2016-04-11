@@ -40,7 +40,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::IsotropicLinearIn
   MaterialNew(2),
   _useInertia(false),
   _useBodyForce(false),
-  _useInitialStressStrain(false)
+  _useInitialState(false)
 { // constructor
   _isJacobianSymmetric = true;
 } // constructor
@@ -75,10 +75,10 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::useBodyForce(cons
 // ----------------------------------------------------------------------
 // Include initial stress/strain?
 void
-pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::useInitialStressStrain(const bool value)
-{ // useInitialStressStrain
-  _useInitialStressStrain = value;
-} // useInitialStressStrain
+pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::useInitialState(const bool value)
+{ // useInitialState
+  _useInitialState = value;
+} // useInitialState
 
 // ----------------------------------------------------------------------
 // Preinitialize material. Set names/sizes of auxiliary fields.
@@ -94,7 +94,6 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_auxFieldsSetup(v
   const PylithReal lengthScale = _normalizer->lengthScale();
   const PylithReal timeScale = _normalizer->timeScale();
   const PylithReal forceScale = densityScale * lengthScale / (timeScale * timeScale);
-  const PylithReal strainScale = 1.0;
 
   // :ATTENTION: The order for subfieldAdd() must match the order of the auxiliary fields in the FE kernels.
   // Field 0: density
@@ -120,14 +119,16 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_auxFieldsSetup(v
   } // if
 
   // Fields 4 and 5: initial stress and strain
-  if (_useInitialStressStrain) {
-    const char* initialStressComponents[4] = {"initial_stress_11", "initial_stress_22", "initial_stress_12", "initial_stress_33"};
-    _auxFields->subfieldAdd("initial stress", initialStressComponents, 4, topology::Field::OTHER, this->auxFieldDiscretization("initial stress"), pressureScale);
-    _auxFieldsQuery->queryFn("initial stress", pylith::topology::FieldQuery::dbQueryGeneric);
+  if (_useInitialState) {
+    const PylithInt stressSize = 4;
+    const char* componentsStress[stressSize] = {"stress_xx", "stress_yy", "stress_xy", "stress_zz"};
+    _auxFields->subfieldAdd("initial_stress", componentsStress, stressSize, topology::Field::OTHER, this->auxFieldDiscretization("initial_stress"), pressureScale);
+    _auxFieldsQuery->queryFn("initial_stress", pylith::topology::FieldQuery::dbQueryGeneric);
 
-    const char* initialStrainComponents[4] = {"initial_strain_11", "initial_strain_22", "initial_strain_12", "initial_strain_33"};
-    _auxFields->subfieldAdd("initial strain", initialStrainComponents, 4, topology::Field::OTHER, this->auxFieldDiscretization("initial strain"), strainScale);
-    _auxFieldsQuery->queryFn("initial strain", pylith::topology::FieldQuery::dbQueryGeneric);
+    const PylithInt strainSize = 4;
+    const char* componentsStrain[strainSize] = {"strain_xx", "strain_yy", "strain_xy", "strain_zz"};
+    _auxFields->subfieldAdd("initial_strain", componentsStrain, strainSize, topology::Field::OTHER, this->auxFieldDiscretization("initial_strain"), 1.0);
+    _auxFieldsQuery->queryFn("initial_strain", pylith::topology::FieldQuery::dbQueryGeneric);
   } // if
 
   PYLITH_METHOD_END;
@@ -146,7 +147,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsRHSR
 
   // Displacement
   const PetscPointFunc g0_u = (_useBodyForce) ? pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g0 : NULL;
-  const PetscPointFunc g1_u = (_useInitialStressStrain) ? pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1 : pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1_initstate;
+  const PetscPointFunc g1_u = (_useInitialState) ? pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1 : pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1_initstate;
 
   // Velocity
   const PetscPointFunc g0_v = pylith_fekernels_DispVel_g0;
@@ -292,7 +293,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsLHSJ
   const PetscPointJac Jf2_uu = NULL;
   const PetscPointJac Jf3_uu = NULL;
   
-  const PetscPointJac Jf0_uv = (_useInertia) ? pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0_uv_explicit : NULL;
+  const PetscPointJac Jf0_uv = (_useInertia) ? pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0_uv_implicit : NULL;
   const PetscPointJac Jf1_uv = NULL;
   const PetscPointJac Jf2_uv = NULL;
   const PetscPointJac Jf3_uv = NULL;
