@@ -53,8 +53,6 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::setUp(void)
   _solution1Dot = NULL;
   _solution2Dot = NULL;
   _auxDB = NULL;
-  _soln1DB = NULL;
-  _soln2DB = NULL;
 } // setUp
 
 
@@ -71,8 +69,6 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::tearDown(void)
   delete _data; _data = NULL;
   delete _mesh; _mesh = NULL;
   delete _auxDB; _auxDB = NULL;
-  delete _soln1DB; _soln1DB = NULL;
-  delete _soln2DB; _soln2DB = NULL;
 } // tearDown
 
 
@@ -112,6 +108,25 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testUseBodyForce(vo
 
   PYLITH_METHOD_END;
 } // testUseBodyForce
+
+
+// ----------------------------------------------------------------------
+// Test useInitialState().
+void
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testUseInitialState(void)
+{ // testUseInitialState
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_material);
+
+  const bool flag = false; // default
+  CPPUNIT_ASSERT_EQUAL(flag, _material->_useInitialState);
+
+  _material->useInitialState(!flag);
+  CPPUNIT_ASSERT_EQUAL(!flag, _material->_useInitialState);
+
+  PYLITH_METHOD_END;
+} // testUseInitialState
 
 
 // ----------------------------------------------------------------------
@@ -807,6 +822,9 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeRHSJacob
   residual1.complete();
   residual2.complete();
 
+  //residual1.view("RESIDUAL 1 RHS"); // DEBUGGING
+  //residual2.view("RESIDUAL 1 RHS"); // DEBUGGING
+
   // Check that J(s_1)*(s_2 - s_1) = G(s_2) - G(s_1).
 
   PetscVec residualVec = NULL;
@@ -820,13 +838,120 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeRHSJacob
   err = VecZeroEntries(solnIncrVec);CPPUNIT_ASSERT(!err);
   err = VecWAXPY(solnIncrVec, -1.0, _solution1->globalVector(), _solution2->globalVector());CPPUNIT_ASSERT(!err);
   
-  //residual1.view("RESIDUAL RHS"); // DEBUGGING
-  //residual2.view("RESIDUAL LHS"); // DEBUGGING
-
   // Compute Jacobian
   pylith::topology::Jacobian jacobian(*_solution1);
   pylith::topology::Jacobian* preconditioner = &jacobian; // Use Jacobian == preconditioner.
   _material->computeRHSJacobian(&jacobian, preconditioner, t1, dt, *_solution1);
+  CPPUNIT_ASSERT_EQUAL(false, _material->needNewJacobian());
+  jacobian.assemble("final_assembly");
+
+  // result = Jg*(-solnIncr) + residual
+  PetscVec resultVec = NULL;
+  err = VecDuplicate(_solution1->globalVector(), &resultVec);CPPUNIT_ASSERT(!err);
+  err = VecZeroEntries(resultVec);CPPUNIT_ASSERT(!err);
+  err = VecScale(solnIncrVec, -1.0);CPPUNIT_ASSERT(!err);
+
+#if 0 // DEBUGGING
+  PetscVec tmpVec = NULL;
+  err = VecDuplicate(_solution1->globalVector(), &tmpVec);CPPUNIT_ASSERT(!err);
+  err = VecZeroEntries(tmpVec);CPPUNIT_ASSERT(!err);
+  err = MatMultAdd(jacobian.matrix(), solnIncrVec, tmpVec, resultVec);CPPUNIT_ASSERT(!err);
+#else
+  err = MatMultAdd(jacobian.matrix(), solnIncrVec, residualVec, resultVec);CPPUNIT_ASSERT(!err);
+#endif
+
+#if 0 // DEBUGGING  
+  std::cout << "SOLN INCR" << std::endl;
+  VecView(solnIncrVec, PETSC_VIEWER_STDOUT_SELF);
+  std::cout << "G2-G1" << std::endl;
+  VecView(residualVec, PETSC_VIEWER_STDOUT_SELF);
+  std::cout << "RESULT" << std::endl;
+  VecView(resultVec, PETSC_VIEWER_STDOUT_SELF);
+#endif
+
+  PylithReal norm = 0.0;
+  err = VecNorm(resultVec, NORM_2, &norm);CPPUNIT_ASSERT(!err);
+  err = VecDestroy(&resultVec);CPPUNIT_ASSERT(!err);
+  err = VecDestroy(&solnIncrVec);CPPUNIT_ASSERT(!err);
+  err = VecDestroy(&residualVec);CPPUNIT_ASSERT(!err);
+
+  const PylithReal tolerance = 1.0e-6;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
+  CPPUNIT_ASSERT(norm > 0.0); // Norm exactly equal to zero almost certainly means test is satisfied trivially.
+  
+  PYLITH_METHOD_END;
+} // testComputeRHSJacobian
+
+
+// ----------------------------------------------------------------------
+// Test computeLHSJacobianImplicit().
+void
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeLHSJacobianImplicit(void)
+{ // testComputeLHSJacobianImplicit
+  PYLITH_METHOD_BEGIN;
+
+  /*
+    Create linear problem (MMS) with two solutions, s_1 and s_2.
+    Check that Jf(s_1)*(s_2 - s_1) = F(s_2) - F(s_1).
+  */
+  
+  // Call initialize()
+  _initializeFull(); // includes setting up auxFields
+
+  CPPUNIT_ASSERT(_mesh);
+  pylith::topology::Field residual1(*_mesh);
+  residual1.cloneSection(*_solution1);
+  residual1.label("residual1");
+  residual1.allocate();
+  residual1.zeroAll();
+
+  pylith::topology::Field residual2(*_mesh);
+  residual2.cloneSection(*_solution2);
+  residual2.label("residual2");
+  residual2.allocate();
+  residual2.zeroAll();
+
+#if 0 // DEBUGGING
+  PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2");
+  DMSetFromOptions(_solution1->dmMesh());
+#endif
+
+  CPPUNIT_ASSERT(_material);
+  const PylithReal t1 = _data->t1;
+  const PylithReal t2 = _data->t2;
+  const PylithReal dt = _data->dt;
+  const PylithReal tshift = _data->tshift;
+  _material->computeLHSResidual(&residual1, t1, dt, *_solution1, *_solution1Dot);
+  _material->computeLHSResidual(&residual2, t2, dt, *_solution2, *_solution2Dot);
+
+  // Scatter local to global.
+  _solution1->createScatter(_solution1->mesh());
+  _solution2->createScatter(_solution2->mesh());
+  _solution1->scatterLocalToGlobal();
+  _solution2->scatterLocalToGlobal();
+  residual1.complete();
+  residual2.complete();
+
+  // Check that Jf(s_1)*(s_2 - s_1) = F(s_2) - F(s_1).
+
+  //residual1.view("RESIDUAL 1 LHS"); // DEBUGGING
+  //residual2.view("RESIDUAL 2 LHS"); // DEBUGGING
+
+  PetscVec residualVec = NULL;
+  PetscErrorCode err;
+  err = VecDuplicate(residual1.globalVector(), &residualVec);CPPUNIT_ASSERT(!err);
+  err = VecZeroEntries(residualVec);CPPUNIT_ASSERT(!err);
+  err = VecWAXPY(residualVec, -1.0, residual1.globalVector(), residual2.globalVector());CPPUNIT_ASSERT(!err);
+
+  PetscVec solnIncrVec = NULL;
+  err = VecDuplicate(_solution1->globalVector(), &solnIncrVec);CPPUNIT_ASSERT(!err);
+  err = VecZeroEntries(solnIncrVec);CPPUNIT_ASSERT(!err);
+  err = VecWAXPY(solnIncrVec, -1.0, _solution1->globalVector(), _solution2->globalVector());CPPUNIT_ASSERT(!err);
+  
+  // Compute Jacobian
+  pylith::topology::Jacobian jacobian(*_solution1);
+  pylith::topology::Jacobian* preconditioner = &jacobian; // Use Jacobian == preconditioner.
+  _material->computeLHSJacobianImplicit(&jacobian, preconditioner, t1, dt, tshift, *_solution1, *_solution1Dot);
   CPPUNIT_ASSERT_EQUAL(false, _material->needNewJacobian());
   jacobian.assemble("final_assembly");
 
@@ -856,19 +981,6 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeRHSJacob
   CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
   CPPUNIT_ASSERT(norm > 0.0); // Norm exactly equal to zero almost certainly means test is satisfied trivially.
   
-  PYLITH_METHOD_END;
-} // testComputeRHSJacobian
-
-
-// ----------------------------------------------------------------------
-// Test computeLHSJacobianImplicit().
-void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testComputeLHSJacobianImplicit(void)
-{ // testComputeLHSJacobianImplicit
-  PYLITH_METHOD_BEGIN;
-
-  CPPUNIT_ASSERT_MESSAGE("Test not implemented.", false); // :TODO: ADD MORE HERE
-
   PYLITH_METHOD_END;
 } // testComputeLHSJacobianImplicit
 
@@ -961,80 +1073,101 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_initializeFull(voi
   _auxDB->queryType(spatialdata::spatialdb::SimpleDB::LINEAR);
   _material->auxFieldsDB(_auxDB);
 
-  // Create solution field.
+  for (int i=0; i < _data->numAuxFields; ++i) {
+    _material->auxFieldDiscretization(_data->auxFields[i], _data->auxDiscretizations[i]);
+  } // for
+
+  
+  // Create solution field 1.
+  CPPUNIT_ASSERT(_data->solnDBFilename);
+  bool isClone = false;
+
   delete _solution1; _solution1 = new pylith::topology::Field(*_mesh);
   _solution1->label("solution1");
-  CPPUNIT_ASSERT(_data->solnDiscretizations);
-  const char* componentsDisp[2] = {"displacement_x", "displacement_y"};
-  const char* componentsVel[2] = {"velocity_x", "velocity_y"};
-  _solution1->subfieldAdd("displacement", componentsDisp, _data->dimension, topology::Field::VECTOR, _data->solnDiscretizations[0], _data->lengthScale);
-  _solution1->subfieldAdd("velocity", componentsVel, _data->dimension, topology::Field::VECTOR, _data->solnDiscretizations[1], _data->lengthScale / _data->timeScale);
-  _solution1->subfieldsSetup();
-  _solution1->allocate();
-  _solution1->zeroAll();
+  _setupSolutionField(_solution1, _data->solnDBFilename, isClone);
 
-  delete _soln1DB; _soln1DB = new spatialdata::spatialdb::SimpleDB;CPPUNIT_ASSERT(_soln1DB);
-  CPPUNIT_ASSERT(_data->soln1DBFilename);
-  dbIO.filename(_data->soln1DBFilename);
-  _soln1DB->ioHandler(&dbIO);
-  _soln1DB->label("IsotropicLinearElasciticityPlaneStrain solution1 database");
-  _soln1DB->queryType(spatialdata::spatialdb::SimpleDB::LINEAR);
+  // Create time derivative of solution field 1.
+  delete _solution1Dot; _solution1Dot = new pylith::topology::Field(*_mesh);
+  _solution1Dot->label("solution1_dot");
+  _setupSolutionField(_solution1Dot, _data->solnDBFilename);
 
-  pylith::topology::FieldQuery querySoln1(*_solution1);
-  querySoln1.queryFn("displacement", pylith::topology::FieldQuery::dbQueryGeneric);
-  querySoln1.queryFn("velocity", pylith::topology::FieldQuery::dbQueryGeneric);
-  querySoln1.openDB(_soln1DB, _data->lengthScale);
-  querySoln1.queryDB();
-  querySoln1.closeDB(_soln1DB);
-  //_solution1->view("SOLUTION 1"); // DEBUGGING
+  // Create solution field 2; solution 2 = solution 1 + perturbation
+  CPPUNIT_ASSERT(_data->pertDBFilename);
+  isClone = true;
 
   delete _solution2; _solution2 = new pylith::topology::Field(*_mesh);
   _solution2->cloneSection(*_solution1);
   _solution2->label("solution2");
-  _solution2->allocate();
-  _solution2->zeroAll();
+  _setupSolutionField(_solution2, _data->pertDBFilename, isClone);
+  *_solution2 += (*_solution1);
 
-  delete _soln2DB; _soln2DB = new spatialdata::spatialdb::SimpleDB;CPPUNIT_ASSERT(_soln2DB);
-  CPPUNIT_ASSERT(_data->soln2DBFilename);
-  dbIO.filename(_data->soln2DBFilename);
-  _soln2DB->ioHandler(&dbIO);
-  _soln2DB->label("IsotropicLinearElasciticityPlaneStrain solution2 database");
-  _soln2DB->queryType(spatialdata::spatialdb::SimpleDB::LINEAR);
-
-  pylith::topology::FieldQuery querySoln2(*_solution2);
-  querySoln2.queryFn("displacement", pylith::topology::FieldQuery::dbQueryGeneric);
-  querySoln2.queryFn("velocity", pylith::topology::FieldQuery::dbQueryGeneric);
-  querySoln2.openDB(_soln2DB, _data->lengthScale);
-  querySoln2.queryDB();
-  querySoln2.closeDB(_soln2DB);
-  //_solution2->view("SOLUTION 2"); // DEBUGGING
-  
-  delete _solution1Dot; _solution1Dot = new pylith::topology::Field(*_mesh);
-  _solution1->label("solution1_dot");
-  CPPUNIT_ASSERT(_data->solnDiscretizations);
-  const char* componentsDispDot[2] = {"displacement_dot_x", "displacement_dot_y"};
-  const char* componentsVelDot[2] = {"velocity_dot_x", "velocity_dot_y"};
-  _solution1Dot->subfieldAdd("displacement_dot", componentsDispDot, _data->dimension, topology::Field::VECTOR, _data->solnDiscretizations[0], _data->lengthScale / _data->timeScale);
-  _solution1Dot->subfieldAdd("velocity_dot", componentsVelDot, _data->dimension, topology::Field::VECTOR, _data->solnDiscretizations[1], _data->lengthScale / (_data->timeScale*_data->timeScale));
-  _solution1Dot->subfieldsSetup();
-  _solution1Dot->allocate();
-  _solution1Dot->zeroAll();
-
+  // Create time derivative of solution field 2.
   delete _solution2Dot; _solution2Dot = new pylith::topology::Field(*_mesh);
   _solution2Dot->cloneSection(*_solution1Dot);
-  _solution2Dot->label("solution2");
-  _solution2Dot->allocate();
-  _solution2Dot->zeroAll();
-
-  for (int i=0; i < _data->numAuxFields; ++i) {
-    _material->auxFieldDiscretization(_data->auxFields[i], _data->auxDiscretizations[i]);
-  } // for
+  _solution2Dot->label("solution2_dot");
+  _setupSolutionField(_solution2Dot, _data->pertDBFilename, isClone);
+  *_solution2Dot += (*_solution1Dot);
 
   CPPUNIT_ASSERT(_solution1);
   _material->initialize(*_solution1);
 
   PYLITH_METHOD_END;
 } // _initializeFull
+
+
+// ----------------------------------------------------------------------
+// Setup and populate solution field.
+void
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_setupSolutionField(pylith::topology::Field* field,
+										 const char* dbFilename,
+										 const bool isClone)
+{ // _setupSolutionField
+  CPPUNIT_ASSERT(field);
+  CPPUNIT_ASSERT(dbFilename);
+
+  // Create subfields.
+  const bool isDot = strstr(field->label(), "dot") != NULL;
+  std::string subfields[2];
+  if (isDot) {
+    subfields[0] = "displacement_dot";
+    subfields[1] = "velocity_dot";
+  } else {
+    subfields[0] = "displacement";
+    subfields[1] = "velocity";
+  } // if/else
+ 
+  if (!isClone) {
+    CPPUNIT_ASSERT(_data->solnDiscretizations);
+    if (isDot) {
+      const char* componentsDisp[2] = {"displacement_dot_x", "displacement_dot_y"};
+      const char* componentsVel[2] = {"velocity_dot_x", "velocity_dot_y"};
+      field->subfieldAdd(subfields[0].c_str(), componentsDisp, _data->dimension, topology::Field::VECTOR, _data->solnDiscretizations[0], _data->lengthScale);
+      field->subfieldAdd(subfields[1].c_str(), componentsVel, _data->dimension, topology::Field::VECTOR, _data->solnDiscretizations[1], _data->lengthScale / _data->timeScale);
+    } else {
+      const char* componentsDisp[2] = {"displacement_x", "displacement_y"};
+      const char* componentsVel[2] = {"velocity_x", "velocity_y"};
+      field->subfieldAdd(subfields[0].c_str(), componentsDisp, _data->dimension, topology::Field::VECTOR, _data->solnDiscretizations[0], _data->lengthScale);
+      field->subfieldAdd(subfields[1].c_str(), componentsVel, _data->dimension, topology::Field::VECTOR, _data->solnDiscretizations[1], _data->lengthScale / _data->timeScale);
+    } // if/else
+    field->subfieldsSetup();
+  } // if
+  field->allocate();
+  field->zeroAll();
+
+  spatialdata::spatialdb::SimpleDB fieldDB;
+  spatialdata::spatialdb::SimpleIOAscii dbIO;
+  dbIO.filename(dbFilename);
+  fieldDB.ioHandler(&dbIO);
+  fieldDB.label("IsotropicLinearElasciticityPlaneStrain solution database");
+  fieldDB.queryType(spatialdata::spatialdb::SimpleDB::LINEAR);
+
+  pylith::topology::FieldQuery queryField(*field);
+  queryField.queryFn(subfields[0].c_str(), pylith::topology::FieldQuery::dbQueryGeneric);
+  queryField.queryFn(subfields[1].c_str(), pylith::topology::FieldQuery::dbQueryGeneric);
+  queryField.openDB(&fieldDB, _data->lengthScale);
+  queryField.queryDB();
+  queryField.closeDB(&fieldDB);
+} // _setupSolutionField
 
 
 // ----------------------------------------------------------------------

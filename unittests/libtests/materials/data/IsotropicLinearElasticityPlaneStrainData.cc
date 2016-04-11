@@ -38,10 +38,11 @@ pylith::materials::IsotropicLinearElasticityPlaneStrainData::IsotropicLinearElas
   t1(0.0),
   t2(0.0),
   dt(0.0),
+  tshift(0.0),
   
   solnDiscretizations(NULL),
-  soln1DBFilename(NULL),
-  soln2DBFilename(NULL),
+  solnDBFilename(NULL),
+  pertDBFilename(NULL),
 
   numAuxFields(0),
   auxFields(NULL),

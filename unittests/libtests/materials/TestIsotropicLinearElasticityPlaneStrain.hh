@@ -53,6 +53,7 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain : public CppUn
   // IsotropicLinearElasticityPlaneStrain
   CPPUNIT_TEST( testUseInertia );
   CPPUNIT_TEST( testUseBodyForce );
+  CPPUNIT_TEST( testUseInitialState );
   CPPUNIT_TEST( test_auxFieldsSetup );
   CPPUNIT_TEST( test_setFEKernelsRHSResidual );
   CPPUNIT_TEST( test_setFEKernelsRHSJacobian );
@@ -101,6 +102,9 @@ public :
 
   /// Test useBodyForce().
   void testUseBodyForce(void);
+
+  /// Test useInitialState().
+  void testUseInitialState(void);
 
   /// Test _auxFieldsSetup().
   void test_auxFieldsSetup(void);
@@ -184,6 +188,16 @@ public :
   /// Do full initilaization of test data.
   void _initializeFull(void);
 
+  /** Setup and populate solution field.
+   *
+   * @param[out] field Solution field to setup and populate.
+   * @param[in] dbFilename Filename for spatial database with values for field.
+   * @param[in] isClone True if field is a clone (don't need full setup).
+   */
+  void _setupSolutionField(pylith::topology::Field* field,
+			   const char* dbFilename,
+			   const bool isClone =false);
+
   /** Set field to zero on the boundary.
    *
    * @param[out] field Field in which to set boundary values to zero.
@@ -196,15 +210,13 @@ protected :
   IsotropicLinearElasticityPlaneStrain* _material; ///< Object for testing.
   IsotropicLinearElasticityPlaneStrainData* _data; ///< Data for testing.
 
-  // MaterialNew
+  // TestMaterialNew
   topology::Mesh* _mesh; ///< Finite-element mesh.
   topology::Field* _solution1; ///< Solution field.
   topology::Field* _solution2; ///< Solution field.
   topology::Field* _solution1Dot; ///< Time derivative of solution field.
   topology::Field* _solution2Dot; ///< Time derivative of solution field.
   spatialdata::spatialdb::SimpleDB* _auxDB; ///< Spatial database with data for auxiliary fields.
-  spatialdata::spatialdb::SimpleDB* _soln1DB; ///< Spatial database with data for solution 1.
-  spatialdata::spatialdb::SimpleDB* _soln2DB; ///< Spatial database with data for solution 2.
 
 }; // class TestIsotropicLinearElasticityPlaneStrain
 

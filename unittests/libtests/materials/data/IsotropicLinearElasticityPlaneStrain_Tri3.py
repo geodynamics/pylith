@@ -27,32 +27,24 @@ import numpy
 from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
 from spatialdata.geocoords.CSCart import CSCart
 
-points = numpy.array([[-4.0, -4.0],
-                      [-4.0, +4.0],
-                      [+4.0, -4.0],
-                      [+4.0, +4.0]], dtype=numpy.float64)
+points = numpy.array([[-4.0e+3, -4.0e+3],
+                      [-4.0e+3, +4.0e+3],
+                      [+4.0e+3, -4.0e+3],
+                      [+4.0e+3, +4.0e+3]], dtype=numpy.float64)
 
 npts = points.shape[0]
 
 density = 2500.0*numpy.ones((npts,))
 vs = 3000.0*numpy.ones((npts,))
 vp = 3**0.5*3000.0*numpy.ones((npts,))
-modulus_mu = density*vs**2
-modulus_lambda = density*vp**2 - 2.0*modulus_mu
 
 # Create coordinate system for spatial database
 cs = CSCart()
 cs._configure()
 cs.setSpaceDim(2)
 
-# Auxiliary Fields
-class AuxFields(object):
-  """
-  Python class for generation spatial database with auxiliary fields.
-  """
-
-  @staticmethod
-  def generate():
+# ----------------------------------------------------------------------
+def generateAuxFields():
     writer = SimpleIOAscii()
     writer.inventory.filename = "IsotropicLinearElasticityPlaneStrain_UniStrain_aux.spatialdb"
     writer._configure()
@@ -63,27 +55,34 @@ class AuxFields(object):
                              {'name': "vp", 'units': "m/s", 'data': vp},
                              {'name': "density", 'units': "kg/m**3", 'data': density},
                            ]})
+    return
 
 
-# Solution @ t1
-class Solution1(object):
-  """
-  Python class for generation spatial database with solution at t1.
-  """
-  exx = 0.1
-  eyy = 0.25
-  exy = 0.3
-  t = 1.0
-
-  @staticmethod
-  def generate():
-
+# ----------------------------------------------------------------------
+def generateSolution():
+    exx0 = 0.1
+    eyy0 = 0.25
+    exy0 = 0.3
+    
+    exxR = 0.4
+    eyyR = 0.7
+    exyR = -0.2
+    
+    t = 0.1
+    exx = exx0 + exxR*t
+    eyy = eyy0 + eyyR*t
+    exy = exy0 + exyR*t
     disp = numpy.zeros((npts, 2))
+    disp[:,0] = exx*points[:,0] + exy*points[:,1]
+    disp[:,1] = exy*points[:,0] + eyy*points[:,1]
+
     vel = numpy.zeros(disp.shape)
-    disp[:,0] = Solution1.exx*points[:,0] + Solution1.exy*points[:,1]
-    disp[:,1] = Solution1.exy*points[:,0] + Solution1.eyy*points[:,1]
-  
-    disp_dot = numpy.zeros(disp.shape)
+    vel[:,0] = exxR*points[:,0] + exyR*points[:,1]
+    vel[:,1] = exyR*points[:,0] + eyyR*points[:,1]
+    vel *= 0.0 # :TEMPORARY: :KLUDGE:
+
+    disp_dot = vel
+
     vel_dot = numpy.zeros(vel.shape)
 
     # Create writer for spatial database file
@@ -106,36 +105,32 @@ class Solution1(object):
     return
 
 
-# Solution @ t2
-class Solution2(object):
-  """
-  Python class for generation spatial database with test solution
-  field at t2 (not a solution to the problem).
-  """
+# ----------------------------------------------------------------------
+def generatePerturbation():
+    dt = 0.05
 
-  @staticmethod
-  def generate():
-    import numpy
-    x = numpy.arange(-4.0, 4.01, 0.5, dtype=numpy.float64)
-    y = numpy.arange(-4.0, 4.01, 0.5, dtype=numpy.float64)
+    x = numpy.arange(-4.0e+3, 4.01e+3, 0.5e+3, dtype=numpy.float64)
+    y = numpy.arange(-4.0e+3, 4.01e+3, 0.5e+3, dtype=numpy.float64)
     numX = x.shape[0]
     numY = y.shape[0]
     points = numpy.zeros((numX*numY,2), dtype=numpy.float64)
     npts = numX*numY
     for iY in xrange(numY):
-      points[iY*numX:(iY+1)*numX,0] = x
-      points[iY*numX:(iY+1)*numX,1] = y[iY]
+        points[iY*numX:(iY+1)*numX,0] = x
+        points[iY*numX:(iY+1)*numX,1] = y[iY]
 
-    import numpy.random
     disp = 0.1*(numpy.random.rand(npts,2)-0.5)
-    vel = numpy.zeros(disp.shape)
+
+    vel = 1.0/dt * disp
+    vel *= 0.0 # :TEMPORARY: :KLUDGE:
   
-    disp_dot = numpy.zeros(disp.shape)
+    disp_dot = vel
+
     vel_dot = numpy.zeros(vel.shape)
 
     # Create writer for spatial database file
     writer = SimpleIOAscii()
-    writer.inventory.filename = "IsotropicLinearElasticityPlaneStrain_Random_soln.spatialdb"
+    writer.inventory.filename = "IsotropicLinearElasticityPlaneStrain_UniStrain_pert.spatialdb"
     writer._configure()
     writer.write({'points': points,
                   'coordsys': cs,
@@ -155,13 +150,13 @@ class Solution2(object):
 
 # ======================================================================
 def generate():
-  AuxFields.generate()
-  Solution1.generate()
-  Solution2.generate()
+    generateAuxFields()
+    generateSolution()
+    generatePerturbation()
 
 
 # MAIN /////////////////////////////////////////////////////////////////
 if __name__ == "__main__":
-  generate()
+    generate()
   
 # End of file 

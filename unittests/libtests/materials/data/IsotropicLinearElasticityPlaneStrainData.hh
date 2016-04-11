@@ -59,10 +59,11 @@ public:
   PylithReal t1; ///< Time for solution1 in simulation.
   PylithReal t2; ///< Time for solution2 in simulation.
   PylithReal dt; ///< Time step in simulation.
+  PylithReal tshift; ///< Time shift for LHS Jacobian.
   
   topology::Field::DiscretizeInfo* solnDiscretizations; ///< Discretizations for solution fields.
-  char* soln1DBFilename; ///< Name of file with data for solution1.
-  char* soln2DBFilename; ///< Name of file with data for solution2.
+  char* solnDBFilename; ///< Name of file with data for solution.
+  char* pertDBFilename; ///< Name of file with data for perturbation.
 
   int numAuxFields; ///< Number of auxiliary fields.
   char** auxFields; ///< Names of auxiliary fields.

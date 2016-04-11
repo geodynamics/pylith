@@ -26,7 +26,7 @@ dist_noinst_DATA = \
 	mat_elastic.spatialdb \
         IsotropicLinearElasticityPlaneStrain_UniStrain_aux.spatialdb \
         IsotropicLinearElasticityPlaneStrain_UniStrain_soln.spatialdb \
-        IsotropicLinearElasticityPlaneStrain_Random_soln.spatialdb
+        IsotropicLinearElasticityPlaneStrain_UniStrain_pert.spatialdb
 
 noinst_TMP =
 

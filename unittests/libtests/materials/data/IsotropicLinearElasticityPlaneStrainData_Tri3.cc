@@ -36,14 +36,15 @@ const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri
 
 const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_t1 = 1.0;
 const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_t2 = 1.05;
-const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_dt = 0.01;
+const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_dt = 0.05;
+const PylithReal pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_tshift = 1.0/0.05;
 
 const pylith::topology::Field::DiscretizeInfo pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_solnDiscretizations[2] = {
   {1, 1, true}, // displacement
   {1, 1, true}, // velocity
 };
-const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_soln1DBFilename = "data/IsotropicLinearElasticityPlaneStrain_UniStrain_soln.spatialdb";
-const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_soln2DBFilename = "data/IsotropicLinearElasticityPlaneStrain_Random_soln.spatialdb";
+const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_solnDBFilename = "data/IsotropicLinearElasticityPlaneStrain_UniStrain_soln.spatialdb";
+const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_pertDBFilename = "data/IsotropicLinearElasticityPlaneStrain_UniStrain_pert.spatialdb";
 
 const int pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_numAuxFields = 3;
 const char* pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::_auxFields[3] = {
@@ -171,10 +172,11 @@ pylith::materials::IsotropicLinearElasticityPlaneStrainData_Tri3::IsotropicLinea
   t1 = _t1;
   t2 = _t2;
   dt = _dt;
+  tshift = _tshift;
   
   solnDiscretizations = const_cast<pylith::topology::Field::DiscretizeInfo*>(_solnDiscretizations);
-  soln1DBFilename = const_cast<char*>(_soln1DBFilename);
-  soln2DBFilename = const_cast<char*>(_soln2DBFilename);
+  solnDBFilename = const_cast<char*>(_solnDBFilename);
+  pertDBFilename = const_cast<char*>(_pertDBFilename);
   
   numAuxFields = _numAuxFields;
   auxFields = const_cast<char**>(_auxFields);
