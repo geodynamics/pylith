@@ -812,7 +812,7 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1(
  * with initial stress and strain.
  *
  * Solution fields:  [disp(dim), vel(dim), pres]
- * Auxiliary fields: [density(1), shearModulus(1), bulkModulus(1), ..., initialstress(dim*dim), initialstrain(dim*dim)]
+ * Auxiliary fields: [density(1), shearModulus(1), bulkModulus(1), ..., initialstress(4), initialstrain(4)]
  */
 void
 pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1_initstate(
