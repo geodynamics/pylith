@@ -134,12 +134,13 @@ pylith_fekernels_DispVel_Jf0_vu_implicit(const PylithInt dim,
 { /* Jf0_vu_implicit */
   const PylithInt _numS = 2;
 
-  const PylithInt i_disp = 0;
-  const PylithInt i_vel = 1;
-  
+  PylithInt i;
+
   assert(_numS == numS);
 
-  Jf0[i_vel*_numS+i_disp] += utshift;
+  for (i=0; i < dim; ++i) {
+    Jf0[i*dim+i] += utshift;
+  } /* for */
 } /* Jf0_vu_implicit */
 					      
 
