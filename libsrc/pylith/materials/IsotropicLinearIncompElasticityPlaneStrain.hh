@@ -62,7 +62,7 @@ public :
    *
    * @param value Flag indicating to include initial stress/strain.
    */
-  void useInitialStressStrain(const bool value);
+  void useInitialState(const bool value);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -108,7 +108,7 @@ private :
 
   bool _useInertia; ///< Flag to include inertial term.
   bool _useBodyForce; ///< Flag to include body force term.
-  bool _useInitialStressStrain; ///< Flag to include initial stress/strain.
+  bool _useInitialState; ///< Flag to include initial stress/strain.
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
