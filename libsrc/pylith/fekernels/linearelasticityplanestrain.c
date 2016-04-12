@@ -89,9 +89,9 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g0(const PylithInt dim,
 { /* IsotropicLinearElasticityPlaneStrain_g0 */
   const PylithInt _dim = 2;
 
-  const PylithInt _numS = 2;
+  const PylithInt _numS = 2; /* Number passed on to g0_bodyforce. */
 
-  const PylithInt _numA = 1;
+  const PylithInt _numA = 1; /* Number passed on to g0_bodyforce. */
   const PylithInt i_bodyforce = 3;
 
   assert(_dim == dim);
@@ -141,6 +141,9 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1(const PylithInt dim,
   const PylithInt aOffDev[1] = { aOff[i_shearModulus] };
   const PylithInt aOffDev_x[1] = { aOff_x[i_shearModulus] };
 
+  PylithScalar stress[4] = {0.0, 0.0, 0.0, 0.0};
+  PylithInt i;
+
   assert(_dim == dim);
   assert(2 == numS);
   assert(3 == numA || 4 == numA);
@@ -149,8 +152,12 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1(const PylithInt dim,
   assert(aOff);
   assert(aOff_x);
 
-  pylith_fekernels_IsotropicLinearElasticityPlaneStrain_meanStress(_dim, _numS, numAMean, &sOff[i_disp], &sOff_x[i_disp], s, s_t, s_x, aOffMean, aOffMean_x, a, a_t, a_x, t, x, g1);
-  pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress(_dim, _numS, numADev, &sOff[i_disp], &sOff_x[i_disp], s, s_t, s_x, aOffDev, aOffDev_x, a, a_t, a_x, t, x, g1);
+  pylith_fekernels_IsotropicLinearElasticityPlaneStrain_meanStress(_dim, _numS, numAMean, &sOff[i_disp], &sOff_x[i_disp], s, s_t, s_x, aOffMean, aOffMean_x, a, a_t, a_x, t, x, stress);
+  pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress(_dim, _numS, numADev, &sOff[i_disp], &sOff_x[i_disp], s, s_t, s_x, aOffDev, aOffDev_x, a, a_t, a_x, t, x, stress);
+
+  for (i=0; i < _dim*_dim; ++i) {
+    g1[i] -= stress[i];
+  } /* for */
 } /* IsotropicLinearElasticityPlaneStrain_g1 */
 
 
@@ -193,6 +200,9 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1_initstate(const PylithI
   const PylithInt aOffDev[3] = { aOff[i_shearModulus], aOff[i_istress], aOff[i_istrain] };
   const PylithInt aOffDev_x[3] = { aOff_x[i_shearModulus], aOff_x[i_istress], aOff_x[i_istrain] };
 
+  PylithScalar stress[4] = {0.0, 0.0, 0.0, 0.0};
+  PylithInt i;
+
   assert(_dim == dim);
   assert(2 == numS);
   assert(5 == numA || 6 == numA);
@@ -201,8 +211,12 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1_initstate(const PylithI
   assert(aOff);
   assert(aOff_x);
 
-  pylith_fekernels_IsotropicLinearElasticityPlaneStrain_meanStress_initstate(_dim, _numS, numAMean, &sOff[i_disp], &sOff_x[i_disp], s, s_t, s_x, aOffMean, aOffMean_x, a, a_t, a_x, t, x, g1);
-  pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress_initstate(_dim, _numS, numADev, &sOff[i_disp], &sOff_x[i_disp], s, s_t, s_x, aOffDev, aOffDev_x, a, a_t, a_x, t, x, g1);
+  pylith_fekernels_IsotropicLinearElasticityPlaneStrain_meanStress_initstate(_dim, _numS, numAMean, &sOff[i_disp], &sOff_x[i_disp], s, s_t, s_x, aOffMean, aOffMean_x, a, a_t, a_x, t, x, stress);
+  pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress_initstate(_dim, _numS, numADev, &sOff[i_disp], &sOff_x[i_disp], s, s_t, s_x, aOffDev, aOffDev_x, a, a_t, a_x, t, x, stress);
+
+  for (i=0; i < _dim*_dim; ++i) {
+    g1[i] -= stress[i];
+  } /* for */
 } /* IsotropicLinearElasticityPlaneStrain_g1_initstate */
 
 
@@ -246,10 +260,25 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0_uv_implicit(const Pyli
 								      const PylithScalar x[],
 								      PylithScalar Jf0[])
 { /* IsotropicLinearElasticityPlaneStrain_Jf0_uv_implicit */
-  assert(0);
+  const PylithInt _dim = 2;
+
+  const PylithInt i_density = 0;
+  const PylithScalar density = a[aOff[i_density]];
+  PylithInt i;
+   
+  assert(_dim == dim);
+  assert(2 == numS);
+  assert(3 <= numA);
+  assert(aOff);
+  assert(a);
+
+  for (i = 0; i < dim; ++i) {
+    Jf0[i*_dim+i] += utshift * density;
+  } /* for */
 } /* IsotropicLinearElasticityPlaneStrain_Jf0_uv_implicit */
 
 
+/* ---------------------------------------------------------------------- */
 /** Jf0 function for isotropoc linear elasticity plane strain with explicit time stepping.
  *
  * @param dim Spatial dimension.
@@ -290,15 +319,19 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0_uv_explicit(const Pyli
 								       PylithScalar Jf0[])
 { /* IsotropicLinearElasticityPlaneStrain_Jf0_uv_explicit */
   const PylithInt _dim = 2;
-  const PylithInt _numA = 3;
+
   const PylithInt i_density = 0;
-  const PylithInt i_bulkmodulus = 1;
-  const PylithScalar bulkModulus = a[aOff[i_bulkmodulus]];
   const PylithScalar density = a[aOff[i_density]];
   PylithInt i;
    
+  assert(_dim == dim);
+  assert(2 == numS);
+  assert(3 <= numA);
+  assert(aOff);
+  assert(a);
+
   for (i = 0; i < dim; ++i) {
-    Jf0[i*_dim+i] += utshift * density;
+    Jf0[i*_dim+i] += density;
   } /* for */
   
 } /* IsotropicLinearElasticityPlaneStrain_Jf0_uv_explicit*/
@@ -396,12 +429,12 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3_uu(const PylithInt dim
 
 
 /* ---------------------------------------------------------------------- */
-/* Calculate mean stress contribution to f1 for 2-D plane strain
- * isotropic linear elasticity WITHOUT initial stress and strain.
+/* Calculate mean stress for 2-D plane strain isotropic linear
+ * elasticity WITHOUT initial stress and strain.
  *
  * meanStress = bulkModulus * strain_kk
  *
- * f1 = -meanStress * delta_ij
+ * stress += meanStress * delta_ij
  */
 void
 pylith_fekernels_IsotropicLinearElasticityPlaneStrain_meanStress(const PylithInt dim,
@@ -419,7 +452,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_meanStress(const PylithInt
 								 const PylithScalar a_x[],
 								 const PylithReal t,
 								 const PylithScalar x[],
-								 PylithScalar f1[])
+								 PylithScalar stress[])
 { /* IsotropicLinearElasticityPlaneStrain_meanStress */
   const PylithInt _dim = 2;
 
@@ -438,26 +471,26 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_meanStress(const PylithInt
   assert(aOff);
   assert(s_x);
   assert(a);
-  assert(f1);
+  assert(stress);
 
   const PylithReal strainTrace = disp_x[0*_dim+0] + disp_x[1*_dim+1];
   const PylithReal meanStress = bulkModulus * strainTrace;
    
   for (i = 0; i < _dim; ++i) {
-    f1[i*_dim+i] -= meanStress;
+    stress[i*_dim+i] += meanStress;
   } /* for */
 } /* IsotropicLinearElasticityPlaneStrain_meanStress */
 
 
 /* ---------------------------------------------------------------------- */
-/* Calculate mean stress contribution to f1 for 2-D plane strain
- * isotropic linear elasticity WITH initial stress and initial strain.
+/* Calculate mean stress for 2-D plane strain isotropic linear
+ * elasticity WITH initial stress and initial strain.
  *
  * We compute the stress relative to a reference stress/strain state.
  *
  * meanStress = meanInitialStress + bulkModulus * (strain_kk - initialstrain_kk)
  *
- * f1 = -meanStress * delta_ij
+ * stress += meanStress * delta_ij
  */
 void
 pylith_fekernels_IsotropicLinearElasticityPlaneStrain_meanStress_initstate(const PylithInt dim,
@@ -475,7 +508,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_meanStress_initstate(const
 									   const PylithScalar a_x[],
 									   const PylithReal t,
 									   const PylithScalar x[],
-									   PylithScalar f1[])
+									   PylithScalar stress[])
 { /* IsotropicLinearElasticityPlaneStrain_meanStress_initstate */
   const PylithInt _dim = 2;
 
@@ -498,7 +531,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_meanStress_initstate(const
   assert(aOff);
   assert(s_x);
   assert(a);
-  assert(f1);
+  assert(stress);
 
   const PylithReal strainTrace = disp_x[0*_dim+0] + disp_x[1*_dim+1];
   const PylithReal initialstrainTrace = initialstrain[0] + initialstrain[1] + initialstrain[3];
@@ -507,7 +540,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_meanStress_initstate(const
   const PylithReal meanStress = meanistress + bulkModulus * (strainTrace - initialstrainTrace);
   
   for (i = 0; i < _dim; ++i) {
-    f1[i*_dim+i] -= meanStress;
+    stress[i*_dim+i] += meanStress;
   } /* for */
 } /* IsotropicLinearElasticityPlaneStrain_meanStress_initstate */
 
@@ -523,8 +556,6 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_meanStress_initstate(const
  *
  * i!=j
  * devStress_ij = 2*shearModulus*strain_ij
- *
- * f1 = -devStress_ij
  */
 void
 pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress(const PylithInt dim,
@@ -542,7 +573,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress(const Pyl
 								       const PylithScalar a_x[],
 								       const PylithReal t,
 								       const PylithScalar x[],
-								       PylithScalar f1[])
+								       PylithScalar stress[])
 { /* IsotropicLinearElasticityPlaneStrain_deviatoricStress */
   const PylithInt _dim = 2;
 
@@ -559,7 +590,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress(const Pyl
   assert(aOff);
   assert(s_x);
   assert(a);
-  assert(f1);
+  assert(stress);
 
   const PylithReal strainTrace = disp_x[0*_dim+0] + disp_x[1*_dim+1];
   const PylithReal traceTerm = -2.0/3.0*shearModulus * strainTrace;
@@ -569,10 +600,10 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress(const Pyl
   const PylithScalar sigma_22 = twomu*disp_x[1*_dim+1] + traceTerm;
   const PylithScalar sigma_12 = shearModulus * (disp_x[0*_dim+1] + disp_x[1*_dim+0]);
 
-  f1[0*_dim+0] -= sigma_11;
-  f1[1*_dim+1] -= sigma_22;
-  f1[0*_dim+1] -= sigma_12;
-  f1[1*_dim+0] -= sigma_12;
+  stress[0*_dim+0] += sigma_11;
+  stress[1*_dim+1] += sigma_22;
+  stress[0*_dim+1] += sigma_12;
+  stress[1*_dim+0] += sigma_12;
 } /* IsotropicLinearElasticityPlaneStrain_deviatoricStress */
 
 
@@ -587,8 +618,6 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress(const Pyl
  *
  * i!=j
  * devStress_ij = initialstress_ij + 2*shearModulus*(strain_ij - initialstrain_ij)
- *
- * f1 = -devStress_ij
  */
 void
 pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress_initstate(const PylithInt dim,
@@ -606,7 +635,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress_initstate
 										 const PylithScalar a_x[],
 										 const PylithReal t,
 										 const PylithScalar x[],
-										 PylithScalar f1[])
+										 PylithScalar stress[])
 { /* deviatoricStress_IsotropicLinearElasticityPlaneStrain_initstate */
   const PylithInt _dim = 2;
 
@@ -627,7 +656,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress_initstate
   assert(aOff);
   assert(s_x);
   assert(a);
-  assert(f1);
+  assert(stress);
 
   const PylithReal strainTrace = disp_x[0*_dim+0] + disp_x[1*_dim+1];
   const PylithReal initialstrainTrace = initialstrain[0] + initialstrain[1] + initialstrain[2];
@@ -639,10 +668,10 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress_initstate
   const PylithScalar sigma_22 = initialstress[1] - meanistress + twomu*(disp_x[1*_dim+1]-initialstrain[1]) + traceTerm;
   const PylithScalar sigma_12 = initialstress[2] + twomu * (0.5*(disp_x[0*_dim+1] + disp_x[1*_dim+0]) - initialstrain[2]);
 
-  f1[0*_dim+0] -= sigma_11;
-  f1[1*_dim+1] -= sigma_22;
-  f1[0*_dim+1] -= sigma_12;
-  f1[1*_dim+0] -= sigma_12;
+  stress[0*_dim+0] += sigma_11;
+  stress[1*_dim+1] += sigma_22;
+  stress[0*_dim+1] += sigma_12;
+  stress[1*_dim+0] += sigma_12;
 
 } /* deviatoricStress_IsotropicLinearElasticityPlaneStrain_initstate */
 
@@ -651,7 +680,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress_initstate
  * Kernels for incompressible elasticity.
  *
  * Solution fields:  [disp(dim), vel(dim), pres(1)]
- * Auxiliary fields: [density(1), shearModulus(1), bulkModulus(1), bodyforce(dim), initialstrain(dim*dim), initialstress(dim*dim)]
+ * Auxiliary fields: [density(1), shearModulus(1), bulkModulus(1), bodyforce(dim), initialstrain(4), initialstress(4)]
  *
  * ====================================================================== 
  */
@@ -662,23 +691,22 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress_initstate
  * Auxiliary fields: [density(1), ...]
  */
 void
-pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_f0(
-						const PylithInt dim,
-						const PylithInt numS,
-						const PylithInt numA,
-						const PylithInt sOff[],
-						const PylithInt sOff_x[],
-						const PylithScalar s[],
-						const PylithScalar s_t[],
-						const PylithScalar s_x[],
-						const PylithInt aOff[],
-						const PylithInt aOff_x[],
-						const PylithScalar a[],
-						const PylithScalar a_t[],
-						const PylithScalar a_x[],
-						const PylithReal t,
-						const PylithScalar x[],
-						PylithScalar f0[])
+pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_f0(const PylithInt dim,
+							       const PylithInt numS,
+							       const PylithInt numA,
+							       const PylithInt sOff[],
+							       const PylithInt sOff_x[],
+							       const PylithScalar s[],
+							       const PylithScalar s_t[],
+							       const PylithScalar s_x[],
+							       const PylithInt aOff[],
+							       const PylithInt aOff_x[],
+							       const PylithScalar a[],
+							       const PylithScalar a_t[],
+							       const PylithScalar a_x[],
+							       const PylithReal t,
+							       const PylithScalar x[],
+							       PylithScalar f0[])
 { /* pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_f0 */
   const PylithInt _dim = 2;
 
@@ -706,27 +734,26 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_f0(
 /* ---------------------------------------------------------------------- */
 /** g0 function for isotropic linear incompressible elasticity plane strain.
  *
- * Solution fields:  [disp(dim), vel(dim)]
+ * Solution fields:  [disp(dim), vel(dim), pres(1)]
  * Auxiliary fields: [density(1), shearModulus(1), bulkModulus(1), bodyforce(dim), ...]
  */
 void
-pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g0(
-						const PylithInt dim,
-						const PylithInt numS,
-						const PylithInt numA,
-						const PylithInt sOff[],
-						const PylithInt sOff_x[],
-						const PylithScalar s[],
-						const PylithScalar s_t[],
-						const PylithScalar s_x[],
-						const PylithInt aOff[],
-						const PylithInt aOff_x[],
-						const PylithScalar a[],
-						const PylithScalar a_t[],
-						const PylithScalar a_x[],
-						const PylithReal t,
-						const PylithScalar x[],
-						PylithScalar g0[])
+pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g0(const PylithInt dim,
+							       const PylithInt numS,
+							       const PylithInt numA,
+							       const PylithInt sOff[],
+							       const PylithInt sOff_x[],
+							       const PylithScalar s[],
+							       const PylithScalar s_t[],
+							       const PylithScalar s_x[],
+							       const PylithInt aOff[],
+							       const PylithInt aOff_x[],
+							       const PylithScalar a[],
+							       const PylithScalar a_t[],
+							       const PylithScalar a_x[],
+							       const PylithReal t,
+							       const PylithScalar x[],
+							       PylithScalar g0[])
 { /* pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g0 */
   const PylithInt _dim = 2;
 
@@ -754,27 +781,26 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g0(
 /** g1 function for isotropic linear incompressible elasticity plane
  * strain WITHOUT initial stress and strain.
  *
- * Solution fields: [disp(dim), vel(dim), pres]
+ * Solution fields: [disp(dim), vel(dim), pres(1)]
  * Auxiliary fields: [density(1), shearModulus(1), bulkModulus(1), ...]
  */
 void
-pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1(
-						const PylithInt dim,
-						const PylithInt numS,
-						const PylithInt numA,
-						const PylithInt sOff[],
-						const PylithInt sOff_x[],
-						const PylithScalar s[],
-						const PylithScalar s_t[],
-						const PylithScalar s_x[],
-						const PylithInt aOff[],
-						const PylithInt aOff_x[],
-						const PylithScalar a[],
-						const PylithScalar a_t[],
-						const PylithScalar a_x[],
-						const PylithReal t,
-						const PylithScalar x[],
-						PylithScalar g1[])
+pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1(const PylithInt dim,
+							       const PylithInt numS,
+							       const PylithInt numA,
+							       const PylithInt sOff[],
+							       const PylithInt sOff_x[],
+							       const PylithScalar s[],
+							       const PylithScalar s_t[],
+							       const PylithScalar s_x[],
+							       const PylithInt aOff[],
+							       const PylithInt aOff_x[],
+							       const PylithScalar a[],
+							       const PylithScalar a_t[],
+							       const PylithScalar a_x[],
+							       const PylithReal t,
+							       const PylithScalar x[],
+							       PylithScalar g1[])
 { /* pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1 */
   const PylithInt _dim = 2;
 
@@ -790,6 +816,7 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1(
   const PylithInt aOffDev_x[1] = { aOff_x[i_shearModulus] };
 
   PylithInt i;
+  PylithScalar stress[4] = {0.0,0.0, 0.0, 0.0};
 
   assert(_dim == dim);
   assert(3 == numS);
@@ -799,8 +826,11 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1(
   assert(aOff);
   assert(aOff_x);
 
-  pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress(_dim, _numS, numADev, &sOff[i_disp], &sOff_x[i_disp], s, s_t, s_x, aOffDev, aOffDev_x, a, a_t, a_x, t, x, g1);
+  pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress(_dim, _numS, numADev, &sOff[i_disp], &sOff_x[i_disp], s, s_t, s_x, aOffDev, aOffDev_x, a, a_t, a_x, t, x, stress);
 
+  for (i=0; i < _dim*_dim; ++i) {
+    g1[i] -= stress[i];
+  } /* for */
   for (i=0; i < _dim; ++i) {
     g1[i*_dim+i] += pres;
   } /* for */
@@ -815,23 +845,22 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1(
  * Auxiliary fields: [density(1), shearModulus(1), bulkModulus(1), ..., initialstress(4), initialstrain(4)]
  */
 void
-pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1_initstate(
-						const PylithInt dim,
-						const PylithInt numS,
-						const PylithInt numA,
-						const PylithInt sOff[],
-						const PylithInt sOff_x[],
-						const PylithScalar s[],
-						const PylithScalar s_t[],
-						const PylithScalar s_x[],
-						const PylithInt aOff[],
-						const PylithInt aOff_x[],
-						const PylithScalar a[],
-						const PylithScalar a_t[],
-						const PylithScalar a_x[],
-						const PylithReal t,
-						const PylithScalar x[],
-						PylithScalar g1[])
+pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1_initstate(const PylithInt dim,
+									 const PylithInt numS,
+									 const PylithInt numA,
+									 const PylithInt sOff[],
+									 const PylithInt sOff_x[],
+									 const PylithScalar s[],
+									 const PylithScalar s_t[],
+									 const PylithScalar s_x[],
+									 const PylithInt aOff[],
+									 const PylithInt aOff_x[],
+									 const PylithScalar a[],
+									 const PylithScalar a_t[],
+									 const PylithScalar a_x[],
+									 const PylithReal t,
+									 const PylithScalar x[],
+									 PylithScalar g1[])
 { /* IsotropicLinearIncompElasticityPlaneStrain_g1_initstate */
   const PylithInt _dim = 2;
 
@@ -843,13 +872,18 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1_initstate(
   const PylithInt i_shearModulus = 1;
   const PylithInt i_istress = numA-2;
   const PylithInt i_istrain = numA-1;
+  const PylithScalar* initialstress = &a[aOff[i_istress]]; /* sigma_11, sigma_22, sigma_12, sigma_33 */
 
   const PylithScalar pres = s[sOff[i_pres]];
 
   const PylithInt aOffDev[3] = { aOff[i_shearModulus], aOff[i_istress], aOff[i_istrain] };
   const PylithInt aOffDev_x[3] = { aOff_x[i_shearModulus], aOff_x[i_istress], aOff_x[i_istrain] };
 
+  const PylithReal meanistress = (initialstress[0] + initialstress[1] + initialstress[3]) / 3.0;
+  const PylithScalar meanstress = meanistress - pres;
+
   PylithInt i;
+  PylithScalar stress[4] = {0.0,0.0, 0.0, 0.0};
 
   assert(_dim == dim);
   assert(3 == numS);
@@ -859,10 +893,13 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1_initstate(
   assert(aOff);
   assert(aOff_x);
 
-  pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress_initstate(_dim, _numS, numADev, &sOff[i_disp], &sOff_x[i_disp], s, s_t, s_x, aOffDev, aOffDev_x, a, a_t, a_x, t, x, g1);
+  pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress_initstate(_dim, _numS, numADev, &sOff[i_disp], &sOff_x[i_disp], s, s_t, s_x, aOffDev, aOffDev_x, a, a_t, a_x, t, x, stress);
 
+  for (i=0; i < _dim*_dim; ++i) {
+    g1[i] -= stress[i];
+  } /* for */
   for (i=0; i < _dim; ++i) {
-    g1[i*_dim+i] += pres;
+    g1[i*_dim+i] += pres - meanstress;
   } /* for */
 } /* IsotropicLinearIncompElasticityPlaneStrain_g1_initstate */
 
@@ -875,24 +912,23 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1_initstate(
  * Auxiliary fields: [density(1), shearModulus(1), bulkModulus[1], ...]
  */
 void
-pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg3_uu(
-					const PylithInt dim,
-					const PylithInt numS,
-					const PylithInt numA,
-					const PylithInt sOff[],
-					const PylithInt sOff_x[],
-					const PylithScalar s[],
-					const PylithScalar s_t[],
-					const PylithScalar s_x[],
-					const PylithInt aOff[],
-					const PylithInt aOff_x[],
-					const PylithScalar a[],
-					const PylithScalar a_t[],
-					const PylithScalar a_x[],
-					const PylithReal t,
-					const PylithReal utshift,
-					const PylithScalar x[],
-					PylithScalar Jg3[])
+pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg3_uu(const PylithInt dim,
+								   const PylithInt numS,
+								   const PylithInt numA,
+								   const PylithInt sOff[],
+								   const PylithInt sOff_x[],
+								   const PylithScalar s[],
+								   const PylithScalar s_t[],
+								   const PylithScalar s_x[],
+								   const PylithInt aOff[],
+								   const PylithInt aOff_x[],
+								   const PylithScalar a[],
+								   const PylithScalar a_t[],
+								   const PylithScalar a_x[],
+								   const PylithReal t,
+								   const PylithReal utshift,
+								   const PylithScalar x[],
+								   PylithScalar Jg3[])
 { /* pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg3_uu */
   const PylithInt _dim = 2;
 
@@ -951,29 +987,29 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg3_uu(
  * Auxiliary fields = [density, shearModulus, bulkModulus, ...]
  */
 void
-pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg2_up(
-					const PylithInt dim,
-					const PylithInt numS,
-					const PylithInt numA,
-					const PylithInt sOff[],
-					const PylithInt sOff_x[],
-					const PylithScalar s[],
-					const PylithScalar s_t[],
-					const PylithScalar s_x[],
-					const PylithInt aOff[],
-					const PylithInt aOff_x[],
-					const PylithScalar a[],
-					const PylithScalar a_t[],
-					const PylithScalar a_x[],
-					const PylithReal t,
-					const PylithReal utshift,
-					const PylithScalar x[],
-					PylithScalar Jg2[])
+pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg2_up(const PylithInt dim,
+								   const PylithInt numS,
+								   const PylithInt numA,
+								   const PylithInt sOff[],
+								   const PylithInt sOff_x[],
+								   const PylithScalar s[],
+								   const PylithScalar s_t[],
+								   const PylithScalar s_x[],
+								   const PylithInt aOff[],
+								   const PylithInt aOff_x[],
+								   const PylithScalar a[],
+								   const PylithScalar a_t[],
+								   const PylithScalar a_x[],
+								   const PylithReal t,
+								   const PylithReal utshift,
+								   const PylithScalar x[],
+								   PylithScalar Jg2[])
 { /* pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg2_up */
   const PylithInt _dim = 2;
 
   PylithInt i;
 
+  assert(2 == _dim);
   assert(3 == numS);
   assert(3 <= numA);
 

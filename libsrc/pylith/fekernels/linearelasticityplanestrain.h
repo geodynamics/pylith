@@ -28,8 +28,8 @@
  * - 1: mu(1)
  * - 2: lambda(1)
  * - 3: bodyforce(2,optional)
- * - 4: initialstress(4,optional)
- * - 5: initialstrain(4,optional)
+ * - 4: initialstress(4,optional) (stress_xx, stress_yy, stress_xy, stress_zz)
+ * - 5: initialstrain(4,optional) (strain_xx, strain_yy, strain_xy, strain_zz)
  *
  * \int_V \vec{\phi}_u \cdot \left( \rho \frac{\partial \vec{v}(t)}{\partial t} \right) \, dV =
  *   \int_V \vec{\phi}_u \cdot \vec{f}(t) - \nabla \vec{\phi}_u : \tensor{\sigma}(\vec{u}) \, dV + 
@@ -174,7 +174,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1(const PylithInt dim,
 /** g1 function for isotropic linear elasticity plane strain WITH initial stress and initial strain.
  *
  * Solution fields: [disp(dim), vel(dim)]
- * Auxiliary fields: [density(1), mu(1), lambda(1), ..., initialstress(dim*dim), initialstrain(dim*dim)]
+ * Auxiliary fields: [density(1), mu(1), lambda(1), ..., initialstress(4), initialstrain(4)]
  *
  * @param[in] dim Spatial dimension.
  * @param[in] numS Number of registered subfields in solution field [2].
@@ -230,7 +230,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1_initstate(const PylithI
  * @param[in] t Time for residual evaluation.
  * @param[in] utshift Coefficient for dF/ds_t term in Jacobian.
  * @param[in] x Coordinates of point evaluation.
- * @param[in] f0 Result [dim*dim].
+ * @param[in] Jf0 Result [dim*dim].
  */
 void
 pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0_uv_implicit(const PylithInt dim,
@@ -270,7 +270,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0_uv_implicit(const Pyli
  * @param[in] t Time for residual evaluation.
  * @param[in] utshift Coefficient for dF/ds_t term in Jacobian.
  * @param[in] x Coordinates of point evaluation.
- * @param[in] f0 Result [dim*dim].
+ * @param[in] Jf0 Result [dim*dim].
  */
 void
 pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0_uv_explicit(const PylithInt dim,
@@ -309,7 +309,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0_uv_explicit(const Pyli
  * @param[in] t Time for residual evaluation.
  * @param[in] utshift Coefficient for dF/ds_t term in Jacobian.
  * @param[in] x Coordinates of point evaluation.
- * @param[in] g3 Result [dim*dim*dim*dim].
+ * @param[in] Jg3 Result [dim*dim*dim*dim].
  */
 void
 pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3_uu(const PylithInt dim,
@@ -331,8 +331,8 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3_uu(const PylithInt dim
 							     PylithScalar Jg3[]);
 					      
 
-/** Calculate mean stress contribution to f1 for 2-D plane strain
- * isotropic linear elasticity WITHOUT initial stress and strain.
+/** Calculate mean stress for 2-D plane strain isotropic linear
+ * elasticity WITHOUT initial stress and strain.
  *
  * Solution fields: [disp(dim)]
  * Auxiliary fields: [bulk_modulus(1)]
@@ -352,7 +352,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3_uu(const PylithInt dim
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
- * @param[in] f1 Result [dim*dim].
+ * @param[out] stress Result [dim*dim].
  */
 void
 pylith_fekernels_IsotropicLinearElasticityPlaneStrain_meanStress(const PylithInt dim,
@@ -370,14 +370,14 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_meanStress(const PylithInt
 								 const PylithScalar a_x[],
 								 const PylithReal t,
 								 const PylithScalar x[],
-								 PylithScalar f1[]);
+								 PylithScalar stress[]);
 
 
-/** Calculate mean stress contribution to f1 for 2-D plane strain
- * isotropic linear elasticity WITH initial stress and initial strain.
+/** Calculate mean stress for 2-D plane strain isotropic linear
+ * elasticity WITH initial stress and initial strain.
  *
  * Solution fields: [disp(dim)]
- * Auxiliary fields: [bulk_modulus(1), initialstress(dim*dim), initialstrain(dim*dim)]
+ * Auxiliary fields: [bulk_modulus(1), initialstress(4), initialstrain(4)]
  *
  * @param[in] dim Spatial dimension.
  * @param[in] numS Number of registered subfields in solution field [1].
@@ -394,10 +394,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_meanStress(const PylithInt
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
- * @param[in] f1 Result [dim*dim].
- *
- * Solution fields: [disp(dim)]
- *
+ * @param[out] stress Result [dim*dim].
  */
 void
 pylith_fekernels_IsotropicLinearElasticityPlaneStrain_meanStress_initstate(const PylithInt dim,
@@ -415,13 +412,13 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_meanStress_initstate(const
 									   const PylithScalar a_x[],
 									   const PylithReal t,
 									   const PylithScalar x[],
-									   PylithScalar f1[]);
+									   PylithScalar stress[]);
 
 
-/** Calculate deviatoric stress contribution to f1 for 2-D plane strain isotropic linear elasticity.
+/** Calculate deviatoric stress for 2-D plane strain isotropic linear elasticity.
  *
  * Solution fields: [disp(dim)]
- * Auxiliary fields: [mu(1)]
+ * Auxiliary fields: [shear_modulus(1)]
  *
  * @param[in] dim Spatial dimension.
  * @param[in] numS Number of registered subfields in solution field [1].
@@ -438,7 +435,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_meanStress_initstate(const
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
- * @param[in] f1 Result [dim*dim].
+ * @param[out] stress Result [dim*dim].
  */
 void
 pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress(const PylithInt dim,
@@ -456,13 +453,14 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress(const Pyl
 								       const PylithScalar a_x[],
 								       const PylithReal t,
 								       const PylithScalar x[],
-								       PylithScalar f1[]);
+								       PylithScalar stress[]);
 
 
-/** Calculate deviatoric stress contribution to f1 for 2-D plane strain isotropic linear elasticity.
+/** Calculate deviatoric stress for 2-D plane strain isotropic linear
+ * elasticity with initial stress and strain.
  *
  * Solution fields: [disp(dim)]
- * Auxiliary fields: [mu(1), initialstress(dim*dim), initialstrain(dim*dim)]
+ * Auxiliary fields: [shear_modulus(1), initialstress(4), initialstrain(4)]
  *
  * @param[in] dim Spatial dimension.
  * @param[in] numS Number of registered subfields in solution field [1].
@@ -479,7 +477,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress(const Pyl
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
- * @param[in] f1 Result [dim*dim].
+ * @param[out] stress Result [dim*dim].
  *
  */
 void
@@ -498,12 +496,12 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress_initstate
 										 const PylithScalar a_x[],
 										 const PylithReal t,
 										 const PylithScalar x[],
-										 PylithScalar f1[]);
+										 PylithScalar stress[]);
 
 
 /** f0 function for isotropic linear incompressible elasticity plane strain.
  *
- * Solution fields: [disp(dim), vel(dim)]
+ * Solution fields: [disp(dim), vel(dim),pres(1)]
  * Auxiliary fields: [density(1), ...]
  *
  * @param[in] dim Spatial dimension.
@@ -524,28 +522,27 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress_initstate
  * @param[out] f0 [dim].
  */
 void
-pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_f0(
-						const PylithInt dim,
-						const PylithInt numS,
-						const PylithInt numA,
-						const PylithInt sOff[],
-						const PylithInt sOff_x[],
-						const PylithScalar s[],
-						const PylithScalar s_t[],
-						const PylithScalar s_x[],
-						const PylithInt aOff[],
-						const PylithInt aOff_x[],
-						const PylithScalar a[],
-						const PylithScalar a_t[],
-						const PylithScalar a_x[],
-						const PylithReal t,
-						const PylithScalar x[],
-						PylithScalar f0[]);
+pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_f0(const PylithInt dim,
+							       const PylithInt numS,
+							       const PylithInt numA,
+							       const PylithInt sOff[],
+							       const PylithInt sOff_x[],
+							       const PylithScalar s[],
+							       const PylithScalar s_t[],
+							       const PylithScalar s_x[],
+							       const PylithInt aOff[],
+							       const PylithInt aOff_x[],
+							       const PylithScalar a[],
+							       const PylithScalar a_t[],
+							       const PylithScalar a_x[],
+							       const PylithReal t,
+							       const PylithScalar x[],
+							       PylithScalar f0[]);
 
 
 /** g0 function for isotropic linear incompressible elasticity plane strain.
  *
- * Solution fields: [disp(dim), vel(dim)]
+ * Solution fields: [disp(dim), vel(dim),pres(1)]
  * Auxiliary fields: [bodyforce(dim), ...]
  *
  * @param[in] dim Spatial dimension.
@@ -563,32 +560,31 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_f0(
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
- * @param[out] f0 [dim].
+ * @param[out] g0 [dim].
  */
 void
-pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g0(
-						const PylithInt dim,
-						const PylithInt numS,
-						const PylithInt numA,
-						const PylithInt sOff[],
-						const PylithInt sOff_x[],
-						const PylithScalar s[],
-						const PylithScalar s_t[],
-						const PylithScalar s_x[],
-						const PylithInt aOff[],
-						const PylithInt aOff_x[],
-						const PylithScalar a[],
-						const PylithScalar a_t[],
-						const PylithScalar a_x[],
-						const PylithReal t,
-						const PylithScalar x[],
-						PylithScalar g0[]);
+pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g0(const PylithInt dim,
+							       const PylithInt numS,
+							       const PylithInt numA,
+							       const PylithInt sOff[],
+							       const PylithInt sOff_x[],
+							       const PylithScalar s[],
+							       const PylithScalar s_t[],
+							       const PylithScalar s_x[],
+							       const PylithInt aOff[],
+							       const PylithInt aOff_x[],
+							       const PylithScalar a[],
+							       const PylithScalar a_t[],
+							       const PylithScalar a_x[],
+							       const PylithReal t,
+							       const PylithScalar x[],
+							       PylithScalar g0[]);
 
 
 /** g1 function for isotropic linear incompressible elasticity plane strain.
  *
- * Solution fields: [disp(dim), vel(dim), pres]
- * Auxiliary fields: [mu(1), ...]
+ * Solution fields: [disp(dim), vel(dim), pres(1)]
+ * Auxiliary fields: [shear_modulus(1), ...]
  *
  * @param[in] dim Spatial dimension.
  * @param[in] numS Number of registered subfields in solution field [3].
@@ -605,33 +601,32 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g0(
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
- * @param[out] g1 [dim].
+ * @param[out] g1 [dim*dim].
  */
 void
-pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1(
-						const PylithInt dim,
-						const PylithInt numS,
-						const PylithInt numA,
-						const PylithInt sOff[],
-						const PylithInt sOff_x[],
-						const PylithScalar s[],
-						const PylithScalar s_t[],
-						const PylithScalar s_x[],
-						const PylithInt aOff[],
-						const PylithInt aOff_x[],
-						const PylithScalar a[],
-						const PylithScalar a_t[],
-						const PylithScalar a_x[],
-						const PylithReal t,
-						const PylithScalar x[],
-						PylithScalar g1[]);
+pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1(const PylithInt dim,
+							       const PylithInt numS,
+							       const PylithInt numA,
+							       const PylithInt sOff[],
+							       const PylithInt sOff_x[],
+							       const PylithScalar s[],
+							       const PylithScalar s_t[],
+							       const PylithScalar s_x[],
+							       const PylithInt aOff[],
+							       const PylithInt aOff_x[],
+							       const PylithScalar a[],
+							       const PylithScalar a_t[],
+							       const PylithScalar a_x[],
+							       const PylithReal t,
+							       const PylithScalar x[],
+							       PylithScalar g1[]);
 
 
 /** g1 function for isotropic linear incompressible elasticity plane strain.
  * with initial stress and strain.
  *
- * Solution fields: [disp(dim), vel(dim)]
- * Auxiliary fields: [mu(1), initstress(dim*dim), initstrain(dim*dim)]
+ * Solution fields: [disp(dim), vel(dim), pres(1)]
+ * Auxiliary fields: [shear_modulus(1), initstress(4), initstrain(4)]
  *
  * @param[in] dim Spatial dimension.
  * @param[in] numS Number of registered subfields in solution field [3].
@@ -648,33 +643,32 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1(
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
- * @param[out] f0 [dim].
+ * @param[out] g1 [dim*dim].
  */
 void
-pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1_initstate(
-						const PylithInt dim,
-						const PylithInt numS,
-						const PylithInt numA,
-						const PylithInt sOff[],
-						const PylithInt sOff_x[],
-						const PylithScalar s[],
-						const PylithScalar s_t[],
-						const PylithScalar s_x[],
-						const PylithInt aOff[],
-						const PylithInt aOff_x[],
-						const PylithScalar a[],
-						const PylithScalar a_t[],
-						const PylithScalar a_x[],
-						const PylithReal t,
-						const PylithScalar x[],
-						PylithScalar g1[]);
+pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1_initstate(const PylithInt dim,
+									 const PylithInt numS,
+									 const PylithInt numA,
+									 const PylithInt sOff[],
+									 const PylithInt sOff_x[],
+									 const PylithScalar s[],
+									 const PylithScalar s_t[],
+									 const PylithScalar s_x[],
+									 const PylithInt aOff[],
+									 const PylithInt aOff_x[],
+									 const PylithScalar a[],
+									 const PylithScalar a_t[],
+									 const PylithScalar a_x[],
+									 const PylithReal t,
+									 const PylithScalar x[],
+									 PylithScalar g1[]);
 
 
 /** g3_uu entry function for isotropic linear incompressible elasticity plane
  * strain.
  *
- * Solution fields: [disp(dim), vel(dim), pres]
- * Auxiliary fields: [mu(1)]
+ * Solution fields: [disp(dim), vel(dim), pres(1)]
+ * Auxiliary fields: [shear_modulus(1)]
  *
  * @param[in] dim Spatial dimension.
  * @param[in] numS Number of registered subfields in solution field [3].
@@ -691,33 +685,32 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1_initstate(
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
- * @param[out] f0 [dim].
+ * @param[out] Jg3 [dim*dim*dim*dim].
  */
 void
-pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg3_uu(
-						const PylithInt dim,
-						const PylithInt numS,
-						const PylithInt numA,
-						const PylithInt sOff[],
-						const PylithInt sOff_x[],
-						const PylithScalar s[],
-						const PylithScalar s_t[],
-						const PylithScalar s_x[],
-						const PylithInt aOff[],
-						const PylithInt aOff_x[],
-						const PylithScalar a[],
-						const PylithScalar a_t[],
-						const PylithScalar a_x[],
-						const PylithReal t,
-						const PylithReal utshift,
-						const PylithScalar x[],
-						PylithScalar Jg3[]);
+pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg3_uu(const PylithInt dim,
+								   const PylithInt numS,
+								   const PylithInt numA,
+								   const PylithInt sOff[],
+								   const PylithInt sOff_x[],
+								   const PylithScalar s[],
+								   const PylithScalar s_t[],
+								   const PylithScalar s_x[],
+								   const PylithInt aOff[],
+								   const PylithInt aOff_x[],
+								   const PylithScalar a[],
+								   const PylithScalar a_t[],
+								   const PylithScalar a_x[],
+								   const PylithReal t,
+								   const PylithReal utshift,
+								   const PylithScalar x[],
+								   PylithScalar Jg3[]);
 
 
 /** g2_up entry function for isotropic linear incompressible elasticity plane
  * strain.
  *
- * Solution fields: [disp(dim), vel(dim), pres]
+ * Solution fields: [disp(dim), vel(dim), pres(1)]
  * Auxiliary fields: None
  *
  * @param[in] dim Spatial dimension.
@@ -735,27 +728,26 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg3_uu(
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
- * @param[out] Jg2 [dim].
+ * @param[out] Jg2 [dim*1*dim].
  */
 void
-pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg2_up(
-						const PylithInt dim,
-						const PylithInt numS,
-						const PylithInt numA,
-						const PylithInt sOff[],
-						const PylithInt sOff_x[],
-						const PylithScalar s[],
-						const PylithScalar s_t[],
-						const PylithScalar s_x[],
-						const PylithInt aOff[],
-						const PylithInt aOff_x[],
-						const PylithScalar a[],
-						const PylithScalar a_t[],
-						const PylithScalar a_x[],
-						const PylithReal t,
-						const PylithReal utshift,
-						const PylithScalar x[],
-						PylithScalar Jg2[]);
+pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg2_up(const PylithInt dim,
+								   const PylithInt numS,
+								   const PylithInt numA,
+								   const PylithInt sOff[],
+								   const PylithInt sOff_x[],
+								   const PylithScalar s[],
+								   const PylithScalar s_t[],
+								   const PylithScalar s_x[],
+								   const PylithInt aOff[],
+								   const PylithInt aOff_x[],
+								   const PylithScalar a[],
+								   const PylithScalar a_t[],
+								   const PylithScalar a_x[],
+								   const PylithReal t,
+								   const PylithReal utshift,
+								   const PylithScalar x[],
+								   PylithScalar Jg2[]);
 
 
 #endif /* pylith_fekernels_linearelasticityplanestrain_h */
