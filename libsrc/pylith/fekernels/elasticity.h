@@ -143,7 +143,7 @@ pylith_fekernels_Elasticity_g0_bodyforce(const PylithInt dim,
  * @param[in] t Time for residual evaluation.
  * @param[in] utshift Coefficient for dF/ds_t term in Jacobian.
  * @param[in] x Coordinates of point evaluation.
- * @param[out] f0 [dim*dim].
+ * @param[out] Jf0 [dim*dim].
  */
 void
 pylith_fekernels_Elasticity_Jf0_uv_inertiaimplicit(const PylithInt dim,
@@ -187,7 +187,7 @@ pylith_fekernels_Elasticity_Jf0_uv_inertiaimplicit(const PylithInt dim,
  * @param[in] t Time for residual evaluation.
  * @param[in] utshift Coefficient for dF/ds_t term in Jacobian.
  * @param[in] x Coordinates of point evaluation.
- * @param[out] f0 [dim*dim].
+ * @param[out] Jf0 [dim*dim].
  */
 void
 pylith_fekernels_Elasticity_Jf0_uv_inertiaexplicit(const PylithInt dim,
@@ -209,4 +209,5 @@ pylith_fekernels_Elasticity_Jf0_uv_inertiaexplicit(const PylithInt dim,
 						   PylithScalar Jf0[]);
 
 #endif /* pylith_fekernels_elasticity_h */
+
 /* End of file */
