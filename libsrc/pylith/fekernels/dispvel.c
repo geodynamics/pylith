@@ -173,7 +173,7 @@ pylith_fekernels_DispVel_Jf0_vu_explicit(const PylithInt dim,
   assert(_numS == numS);
 
   for (i=0; i < dim; ++i) {
-    Jf0[i*dim+i] += 0.0;
+    Jf0[i*dim+i] += 1.0;
   } /* for */
 } /* Jf0_vu_explicit */
 					      
