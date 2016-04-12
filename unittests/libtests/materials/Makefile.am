@@ -44,6 +44,7 @@ testmaterials_SOURCES = \
 	TestDruckerPrager3D.cc \
 	TestDruckerPragerPlaneStrain.cc \
 	TestEffectiveStress.cc \
+	TestMaterialNew.cc \
 	TestMaterialNew_Data.cc \
 	TestIsotropicLinearElasticityPlaneStrain.cc \
 	TestIsotropicLinearElasticityPlaneStrain_Cases.cc \
@@ -68,6 +69,7 @@ noinst_HEADERS = \
 	TestDruckerPrager3D.hh \
 	TestDruckerPragerPlaneStrain.hh \
 	TestEffectiveStress.hh \
+	TestMaterialNew.hh \
 	TestMaterialNew_Data.hh \
 	TestIsotropicLinearElasticityPlaneStrain.hh \
 	TestIsotropicLinearElasticityPlaneStrain_Data.hh
