@@ -229,14 +229,14 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsRHSJ
   PetscDS prob = NULL;
   PetscErrorCode err = DMGetDS(dm, &prob);PYLITH_CHECK_ERROR(err);
   err = PetscDSSetJacobian(prob, i_disp, i_disp, Jg0_uu, Jg1_uu, Jg2_uu, Jg3_uu);PYLITH_CHECK_ERROR(err);
-  err = PetscDSSetJacobian(prob, i_disp, i_vel,  Jg0_uv, Jg1_uv, Jg2_uv, Jg3_uv);PYLITH_CHECK_ERROR(err);
-  err = PetscDSSetJacobian(prob, i_disp, i_pres,  Jg0_up, Jg1_up, Jg2_up, Jg3_up);PYLITH_CHECK_ERROR(err);
-  err = PetscDSSetJacobian(prob, i_vel,  i_disp, Jg0_vu, Jg1_vu, Jg2_vu, Jg3_vu);PYLITH_CHECK_ERROR(err);
-  err = PetscDSSetJacobian(prob, i_vel,  i_vel,  Jg0_vv, Jg1_vv, Jg2_vv, Jg3_vv);PYLITH_CHECK_ERROR(err);
-  err = PetscDSSetJacobian(prob, i_vel,  i_pres, Jg0_vp, Jg1_vp, Jg2_vp, Jg3_vp);PYLITH_CHECK_ERROR(err);
-  err = PetscDSSetJacobian(prob, i_pres,  i_disp, Jg0_pu, Jg1_pu, Jg2_pu, Jg3_pu);PYLITH_CHECK_ERROR(err);
-  err = PetscDSSetJacobian(prob, i_pres,  i_vel,  Jg0_vp, Jg1_vp, Jg2_vp, Jg3_vp);PYLITH_CHECK_ERROR(err);
-  err = PetscDSSetJacobian(prob, i_pres,  i_pres, Jg0_pp, Jg1_pp, Jg2_pp, Jg3_pp);PYLITH_CHECK_ERROR(err);
+  err = PetscDSSetJacobian(prob, i_disp,  i_vel, Jg0_uv, Jg1_uv, Jg2_uv, Jg3_uv);PYLITH_CHECK_ERROR(err);
+  err = PetscDSSetJacobian(prob, i_disp, i_pres, Jg0_up, Jg1_up, Jg2_up, Jg3_up);PYLITH_CHECK_ERROR(err);
+  err = PetscDSSetJacobian(prob,  i_vel, i_disp, Jg0_vu, Jg1_vu, Jg2_vu, Jg3_vu);PYLITH_CHECK_ERROR(err);
+  err = PetscDSSetJacobian(prob,  i_vel,  i_vel, Jg0_vv, Jg1_vv, Jg2_vv, Jg3_vv);PYLITH_CHECK_ERROR(err);
+  err = PetscDSSetJacobian(prob,  i_vel, i_pres, Jg0_vp, Jg1_vp, Jg2_vp, Jg3_vp);PYLITH_CHECK_ERROR(err);
+  err = PetscDSSetJacobian(prob, i_pres, i_disp, Jg0_pu, Jg1_pu, Jg2_pu, Jg3_pu);PYLITH_CHECK_ERROR(err);
+  err = PetscDSSetJacobian(prob, i_pres,  i_vel, Jg0_pv, Jg1_pv, Jg2_pv, Jg3_pv);PYLITH_CHECK_ERROR(err);
+  err = PetscDSSetJacobian(prob, i_pres, i_pres, Jg0_pp, Jg1_pp, Jg2_pp, Jg3_pp);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // _setFEKernelsRHSJacobian
