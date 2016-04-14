@@ -37,23 +37,23 @@
 /* f0 entry function for disp/velocity equation.
  */
 void
-pylith_fekernels_DispVel_f0(const PylithInt dim,
-			    const PylithInt numS,
-			    const PylithInt numA,
-			    const PylithInt sOff[],
-			    const PylithInt sOff_x[],
-			    const PylithScalar s[],
-			    const PylithScalar s_t[],
-			    const PylithScalar s_x[],
-			    const PylithInt aOff[],
-			    const PylithInt aOff_x[],
-			    const PylithScalar a[],
-			    const PylithScalar a_t[],
-			    const PylithScalar a_x[],
-			    const PylithReal t,
-			    const PylithScalar x[],
-			    PylithScalar f0[])
-{ /* f0 */
+pylith_fekernels_DispVel_f0u(const PylithInt dim,
+			     const PylithInt numS,
+			     const PylithInt numA,
+			     const PylithInt sOff[],
+			     const PylithInt sOff_x[],
+			     const PylithScalar s[],
+			     const PylithScalar s_t[],
+			     const PylithScalar s_x[],
+			     const PylithInt aOff[],
+			     const PylithInt aOff_x[],
+			     const PylithScalar a[],
+			     const PylithScalar a_t[],
+			     const PylithScalar a_x[],
+			     const PylithReal t,
+			     const PylithScalar x[],
+			     PylithScalar f0[])
+{ /* f0u */
   const PylithInt _numS = 2;
   const PylithInt i_disp = 0;
   const PylithScalar* disp_t = &s_t[sOff[i_disp]];
@@ -69,30 +69,30 @@ pylith_fekernels_DispVel_f0(const PylithInt dim,
   for (i=0; i < dim; ++i) {
     f0[i] += disp_t[i];
   } /* for */
-} /* f0 */
+} /* f0u */
 					      
 
 /* ---------------------------------------------------------------------- */
 /* g0 function for disp/velocity equation.
  */
 void
-pylith_fekernels_DispVel_g0(const PylithInt dim,
-			    const PylithInt numS,
-			    const PylithInt numA,
-			    const PylithInt sOff[],
-			    const PylithInt sOff_x[],
-			    const PylithScalar s[],
-			    const PylithScalar s_t[],
-			    const PylithScalar s_x[],
-			    const PylithInt aOff[],
-			    const PylithInt aOff_x[],
-			    const PylithScalar a[],
-			    const PylithScalar a_t[],
-			    const PylithScalar a_x[],
-			    const PylithReal t,
-			    const PylithScalar x[],
-			    PylithScalar g0[])
-{ /* g0 */
+pylith_fekernels_DispVel_g0u(const PylithInt dim,
+			     const PylithInt numS,
+			     const PylithInt numA,
+			     const PylithInt sOff[],
+			     const PylithInt sOff_x[],
+			     const PylithScalar s[],
+			     const PylithScalar s_t[],
+			     const PylithScalar s_x[],
+			     const PylithInt aOff[],
+			     const PylithInt aOff_x[],
+			     const PylithScalar a[],
+			     const PylithScalar a_t[],
+			     const PylithScalar a_x[],
+			     const PylithReal t,
+			     const PylithScalar x[],
+			     PylithScalar g0[])
+{ /* g0u */
   const PylithInt _numS = 2;
   const PylithInt i_vel = 1;
   const PylithScalar* vel = &s[sOff[i_vel]];
@@ -107,31 +107,31 @@ pylith_fekernels_DispVel_g0(const PylithInt dim,
   for (i=0; i < dim; ++i) {
     g0[i] += vel[i];
   } /* for */
-} /* g0 */
+} /* g0u */
 					      
 
 /* ---------------------------------------------------------------------- */
 /* Jf0 function for disp/velocity equation with implicit time-stepping.
  */
 void
-pylith_fekernels_DispVel_Jf0_vu_implicit(const PylithInt dim,
-					 const PylithInt numS,
-					 const PylithInt numA,
-					 const PylithInt sOff[],
-					 const PylithInt sOff_x[],
-					 const PylithScalar s[],
-					 const PylithScalar s_t[],
-					 const PylithScalar s_x[],
-					 const PylithInt aOff[],
-					 const PylithInt aOff_x[],
-					 const PylithScalar a[],
-					 const PylithScalar a_t[],
-					 const PylithScalar a_x[],
-					 const PylithReal t,
-					 const PylithReal utshift,
-					 const PylithScalar x[],
-					 PylithScalar Jf0[])
-{ /* Jf0_vu_implicit */
+pylith_fekernels_DispVel_Jf0uu_implicit(const PylithInt dim,
+					const PylithInt numS,
+					const PylithInt numA,
+					const PylithInt sOff[],
+					const PylithInt sOff_x[],
+					const PylithScalar s[],
+					const PylithScalar s_t[],
+					const PylithScalar s_x[],
+					const PylithInt aOff[],
+					const PylithInt aOff_x[],
+					const PylithScalar a[],
+					const PylithScalar a_t[],
+					const PylithScalar a_x[],
+					const PylithReal t,
+					const PylithReal utshift,
+					const PylithScalar x[],
+					PylithScalar Jf0[])
+{ /* Jf0uu_implicit */
   const PylithInt _numS = 2;
 
   PylithInt i;
@@ -141,31 +141,31 @@ pylith_fekernels_DispVel_Jf0_vu_implicit(const PylithInt dim,
   for (i=0; i < dim; ++i) {
     Jf0[i*dim+i] += utshift;
   } /* for */
-} /* Jf0_vu_implicit */
+} /* Jf0uu_implicit */
 					      
 
 /* ---------------------------------------------------------------------- */
 /* Jf0 function for disp/velocity equation with explicit time-stepping.
  */
 void
-pylith_fekernels_DispVel_Jf0_vu_explicit(const PylithInt dim,
-					 const PylithInt numS,
-					 const PylithInt numA,
-					 const PylithInt sOff[],
-					 const PylithInt sOff_x[],
-					 const PylithScalar s[],
-					 const PylithScalar s_t[],
-					 const PylithScalar s_x[],
-					 const PylithInt aOff[],
-					 const PylithInt aOff_x[],
-					 const PylithScalar a[],
-					 const PylithScalar a_t[],
-					 const PylithScalar a_x[],
-					 const PylithReal t,
-					 const PylithReal utshift,
-					 const PylithScalar x[],
-					 PylithScalar Jf0[])
-{ /* Jf0_vu_explicit */
+pylith_fekernels_DispVel_Jf0uu_explicit(const PylithInt dim,
+					const PylithInt numS,
+					const PylithInt numA,
+					const PylithInt sOff[],
+					const PylithInt sOff_x[],
+					const PylithScalar s[],
+					const PylithScalar s_t[],
+					const PylithScalar s_x[],
+					const PylithInt aOff[],
+					const PylithInt aOff_x[],
+					const PylithScalar a[],
+					const PylithScalar a_t[],
+					const PylithScalar a_x[],
+					const PylithReal t,
+					const PylithReal utshift,
+					const PylithScalar x[],
+					PylithScalar Jf0[])
+{ /* Jf0uu_explicit */
   const PylithInt _numS = 2;
 
   PylithInt i;
@@ -175,7 +175,7 @@ pylith_fekernels_DispVel_Jf0_vu_explicit(const PylithInt dim,
   for (i=0; i < dim; ++i) {
     Jf0[i*dim+i] += 1.0;
   } /* for */
-} /* Jf0_vu_explicit */
+} /* Jf0uu_explicit */
 					      
 
 /* ---------------------------------------------------------------------- */
@@ -185,24 +185,24 @@ pylith_fekernels_DispVel_Jf0_vu_explicit(const PylithInt dim,
  * Auxiliary fields = None
  */
 void
-pylith_fekernels_DispVel_Jg0_vv(const PylithInt dim,
-				const PylithInt numS,
-				const PylithInt numA,
-				const PylithInt sOff[],
-				const PylithInt sOff_x[],
-				const PylithScalar s[],
-				const PylithScalar s_t[],
-				const PylithScalar s_x[],
-				const PylithInt aOff[],
-				const PylithInt aOff_x[],
-				const PylithScalar a[],
-				const PylithScalar a_t[],
-				const PylithScalar a_x[],
-				const PylithReal t,
-				const PylithReal utshift,
-				const PylithScalar x[],
-				PylithScalar Jg0[])
-{ /* Jg0_vv */
+pylith_fekernels_DispVel_Jg0uv(const PylithInt dim,
+			       const PylithInt numS,
+			       const PylithInt numA,
+			       const PylithInt sOff[],
+			       const PylithInt sOff_x[],
+			       const PylithScalar s[],
+			       const PylithScalar s_t[],
+			       const PylithScalar s_x[],
+			       const PylithInt aOff[],
+			       const PylithInt aOff_x[],
+			       const PylithScalar a[],
+			       const PylithScalar a_t[],
+			       const PylithScalar a_x[],
+			       const PylithReal t,
+			       const PylithReal utshift,
+			       const PylithScalar x[],
+			       PylithScalar Jg0[])
+{ /* Jg0uv */
   const PylithInt _numS = 2;
 
   PylithInt i;
@@ -212,6 +212,6 @@ pylith_fekernels_DispVel_Jg0_vv(const PylithInt dim,
   for (i=0; i < dim; ++i) {
     Jg0[i*dim+i] += 1.0;
   } /* for */
-} /* Jg0_vv */
+} /* Jg0uv */
 					      
 

@@ -69,22 +69,22 @@
  * @param g0 Result [dim].
  */
 void
-pylith_fekernels_Pressure_g0(const PylithInt dim,
-			     const PylithInt numS,
-			     const PylithInt numA,
-			     const PylithInt sOff[],
-			     const PylithInt sOff_x[],
-			     const PylithScalar s[],
-			     const PylithScalar s_t[],
-			     const PylithScalar s_x[],
-			     const PylithInt aOff[],
-			     const PylithInt aOff_x[],
-			     const PylithScalar a[],
-			     const PylithScalar a_t[],
-			     const PylithScalar a_x[],
-			     const PylithReal t,
-			     const PylithScalar x[],
-			     PylithScalar g0[]);
+pylith_fekernels_Pressure_g0p(const PylithInt dim,
+			      const PylithInt numS,
+			      const PylithInt numA,
+			      const PylithInt sOff[],
+			      const PylithInt sOff_x[],
+			      const PylithScalar s[],
+			      const PylithScalar s_t[],
+			      const PylithScalar s_x[],
+			      const PylithInt aOff[],
+			      const PylithInt aOff_x[],
+			      const PylithScalar a[],
+			      const PylithScalar a_t[],
+			      const PylithScalar a_x[],
+			      const PylithReal t,
+			      const PylithScalar x[],
+			      PylithScalar g0[]);
 
 
 /** Jg0 function for pressure equation.
@@ -108,23 +108,23 @@ pylith_fekernels_Pressure_g0(const PylithInt dim,
  * @param g0 Result [dim*dim].
  */
 void
-pylith_fekernels_Pressure_Jg0_pp(const PylithInt dim,
-				 const PylithInt numS,
-				 const PylithInt numA,
-				 const PylithInt sOff[],
-				 const PylithInt sOff_x[],
-				 const PylithScalar s[],
-				 const PylithScalar s_t[],
-				 const PylithScalar s_x[],
-				 const PylithInt aOff[],
-				 const PylithInt aOff_x[],
-				 const PylithScalar a[],
-				 const PylithScalar a_t[],
-				 const PylithScalar a_x[],
-				 const PylithReal t,
-				 const PylithReal utshift,
-				 const PylithScalar x[],
-				 PylithScalar Jg0[]);
+pylith_fekernels_Pressure_Jg0pp(const PylithInt dim,
+				const PylithInt numS,
+				const PylithInt numA,
+				const PylithInt sOff[],
+				const PylithInt sOff_x[],
+				const PylithScalar s[],
+				const PylithScalar s_t[],
+				const PylithScalar s_x[],
+				const PylithInt aOff[],
+				const PylithInt aOff_x[],
+				const PylithScalar a[],
+				const PylithScalar a_t[],
+				const PylithScalar a_x[],
+				const PylithReal t,
+				const PylithReal utshift,
+				const PylithScalar x[],
+				PylithScalar Jg0[]);
 
 
 #endif /* pylith_fekernels_pressure_h */

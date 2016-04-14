@@ -38,21 +38,21 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain_Data::TestIsotropicL
 
   // RHS Residual (nfields*2)
   // disp
-  _kernelsRHSResidual[0*2+0] = NULL;
-  _kernelsRHSResidual[0*2+1] = pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1;
+  _kernelsRHSResidual[0*2+0] = pylith_fekernels_DispVel_g0u;
+  _kernelsRHSResidual[0*2+1] = NULL;
   // vel
-  _kernelsRHSResidual[1*2+0] = pylith_fekernels_DispVel_g0;
-  _kernelsRHSResidual[1*2+1] = NULL;
+  _kernelsRHSResidual[1*2+0] = NULL;
+  _kernelsRHSResidual[1*2+1] = pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v;
 
   // RHS Jacobian (nfields*nfields*4)
   // disp/disp
   _kernelsRHSJacobian[(0*2+0)*4+0] = NULL;
   _kernelsRHSJacobian[(0*2+0)*4+1] = NULL;
   _kernelsRHSJacobian[(0*2+0)*4+2] = NULL;
-  _kernelsRHSJacobian[(0*2+0)*4+3] = pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3_uu;
+  _kernelsRHSJacobian[(0*2+0)*4+3] = NULL;
 
   // disp/vel
-  _kernelsRHSJacobian[(0*2+1)*4+0] = NULL;
+  _kernelsRHSJacobian[(0*2+1)*4+0] = pylith_fekernels_DispVel_Jg0uv;
   _kernelsRHSJacobian[(0*2+1)*4+1] = NULL;
   _kernelsRHSJacobian[(0*2+1)*4+2] = NULL;
   _kernelsRHSJacobian[(0*2+1)*4+3] = NULL;
@@ -61,23 +61,25 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain_Data::TestIsotropicL
   _kernelsRHSJacobian[(1*2+0)*4+0] = NULL;
   _kernelsRHSJacobian[(1*2+0)*4+1] = NULL;
   _kernelsRHSJacobian[(1*2+0)*4+2] = NULL;
-  _kernelsRHSJacobian[(1*2+0)*4+3] = NULL;
+  _kernelsRHSJacobian[(1*2+0)*4+3] = pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3vu;
 
   // vel/vel
-  _kernelsRHSJacobian[(1*2+1)*4+0] = pylith_fekernels_DispVel_Jg0_vv;
+  _kernelsRHSJacobian[(1*2+1)*4+0] = NULL;
   _kernelsRHSJacobian[(1*2+1)*4+1] = NULL;
   _kernelsRHSJacobian[(1*2+1)*4+2] = NULL;
   _kernelsRHSJacobian[(1*2+1)*4+3] = NULL;
 
   // LHS Residual (nfields*2)
-  _kernelsLHSResidual[0*2+0] = NULL;
+  // disp
+  _kernelsLHSResidual[0*2+0] = pylith_fekernels_DispVel_f0u;
   _kernelsLHSResidual[0*2+1] = NULL;
-  _kernelsLHSResidual[1*2+0] = pylith_fekernels_DispVel_f0;
+  // vel
+  _kernelsLHSResidual[1*2+0] = NULL;
   _kernelsLHSResidual[1*2+1] = NULL;
 
   // LHS Jacobian Implicit (nfields*nfields*4)
   // disp/disp
-  _kernelsLHSJacobianImplicit[(0*2+0)*4+0] = NULL;
+  _kernelsLHSJacobianImplicit[(0*2+0)*4+0] = pylith_fekernels_DispVel_Jf0uu_implicit;
   _kernelsLHSJacobianImplicit[(0*2+0)*4+1] = NULL;
   _kernelsLHSJacobianImplicit[(0*2+0)*4+2] = NULL;
   _kernelsLHSJacobianImplicit[(0*2+0)*4+3] = NULL;
@@ -89,7 +91,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain_Data::TestIsotropicL
   _kernelsLHSJacobianImplicit[(0*2+1)*4+3] = NULL;
 
   // vel/disp
-  _kernelsLHSJacobianImplicit[(1*2+0)*4+0] = pylith_fekernels_DispVel_Jf0_vu_implicit;
+  _kernelsLHSJacobianImplicit[(1*2+0)*4+0] = NULL;
   _kernelsLHSJacobianImplicit[(1*2+0)*4+1] = NULL;
   _kernelsLHSJacobianImplicit[(1*2+0)*4+2] = NULL;
   _kernelsLHSJacobianImplicit[(1*2+0)*4+3] = NULL;
@@ -102,7 +104,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain_Data::TestIsotropicL
 
   // LHS Jacobian Explicit (nfields*nfields*4)
   // disp/disp
-  _kernelsLHSJacobianExplicit[(0*2+0)*4+0] = NULL;
+  _kernelsLHSJacobianExplicit[(0*2+0)*4+0] = pylith_fekernels_DispVel_Jf0uu_explicit;
   _kernelsLHSJacobianExplicit[(0*2+0)*4+1] = NULL;
   _kernelsLHSJacobianExplicit[(0*2+0)*4+2] = NULL;
   _kernelsLHSJacobianExplicit[(0*2+0)*4+3] = NULL;
@@ -114,7 +116,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain_Data::TestIsotropicL
   _kernelsLHSJacobianExplicit[(0*2+1)*4+3] = NULL;
 
   // vel/disp
-  _kernelsLHSJacobianExplicit[(1*2+0)*4+0] = pylith_fekernels_DispVel_Jf0_vu_explicit;
+  _kernelsLHSJacobianExplicit[(1*2+0)*4+0] = NULL;
   _kernelsLHSJacobianExplicit[(1*2+0)*4+1] = NULL;
   _kernelsLHSJacobianExplicit[(1*2+0)*4+2] = NULL;
   _kernelsLHSJacobianExplicit[(1*2+0)*4+3] = NULL;

@@ -71,22 +71,22 @@
  * @param[out] f0 [dim].
  */
 void
-pylith_fekernels_IsotropicLinearElasticityPlaneStrain_f0(const PylithInt dim,
-							 const PylithInt numS,
-							 const PylithInt numA,
-							 const PylithInt sOff[],
-							 const PylithInt sOff_x[],
-							 const PylithScalar s[],
-							 const PylithScalar s_t[],
-							 const PylithScalar s_x[],
-							 const PylithInt aOff[],
-							 const PylithInt aOff_x[],
-							 const PylithScalar a[],
-							 const PylithScalar a_t[],
-							 const PylithScalar a_x[],
-							 const PylithReal t,
-							 const PylithScalar x[],
-							 PylithScalar f0[]);
+pylith_fekernels_IsotropicLinearElasticityPlaneStrain_f0v(const PylithInt dim,
+							  const PylithInt numS,
+							  const PylithInt numA,
+							  const PylithInt sOff[],
+							  const PylithInt sOff_x[],
+							  const PylithScalar s[],
+							  const PylithScalar s_t[],
+							  const PylithScalar s_x[],
+							  const PylithInt aOff[],
+							  const PylithInt aOff_x[],
+							  const PylithScalar a[],
+							  const PylithScalar a_t[],
+							  const PylithScalar a_x[],
+							  const PylithReal t,
+							  const PylithScalar x[],
+							  PylithScalar f0[]);
 
 
 /** g0 function for isotropic linear elasticity plane strain.
@@ -112,22 +112,22 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_f0(const PylithInt dim,
  * @param[out] g0 [dim].
  */
 void
-pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g0(const PylithInt dim,
-							 const PylithInt numS,
-							 const PylithInt numA,
-							 const PylithInt sOff[],
-							 const PylithInt sOff_x[],
-							 const PylithScalar s[],
-							 const PylithScalar s_t[],
-							 const PylithScalar s_x[],
-							 const PylithInt aOff[],
-							 const PylithInt aOff_x[],
-							 const PylithScalar a[],
-							 const PylithScalar a_t[],
-							 const PylithScalar a_x[],
-							 const PylithReal t,
-							 const PylithScalar x[],
-							 PylithScalar g0[]);
+pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g0v(const PylithInt dim,
+							  const PylithInt numS,
+							  const PylithInt numA,
+							  const PylithInt sOff[],
+							  const PylithInt sOff_x[],
+							  const PylithScalar s[],
+							  const PylithScalar s_t[],
+							  const PylithScalar s_x[],
+							  const PylithInt aOff[],
+							  const PylithInt aOff_x[],
+							  const PylithScalar a[],
+							  const PylithScalar a_t[],
+							  const PylithScalar a_x[],
+							  const PylithReal t,
+							  const PylithScalar x[],
+							  PylithScalar g0[]);
 
 
 /** g1 function for isotropic linear elasticity plane strain WITHOUT initial stress and initial strain.
@@ -153,22 +153,22 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g0(const PylithInt dim,
  * @param[out] g1 [dim*dim].
  */
 void
-pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1(const PylithInt dim,
-							 const PylithInt numS,
-							 const PylithInt numA,
-							 const PylithInt sOff[],
-							 const PylithInt sOff_x[],
-							 const PylithScalar s[],
-							 const PylithScalar s_t[],
-							 const PylithScalar s_x[],
-							 const PylithInt aOff[],
-							 const PylithInt aOff_x[],
-							 const PylithScalar a[],
-							 const PylithScalar a_t[],
-							 const PylithScalar a_x[],
-							 const PylithReal t,
-							 const PylithScalar x[],
-							 PylithScalar g1[]);
+pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v(const PylithInt dim,
+							  const PylithInt numS,
+							  const PylithInt numA,
+							  const PylithInt sOff[],
+							  const PylithInt sOff_x[],
+							  const PylithScalar s[],
+							  const PylithScalar s_t[],
+							  const PylithScalar s_x[],
+							  const PylithInt aOff[],
+							  const PylithInt aOff_x[],
+							  const PylithScalar a[],
+							  const PylithScalar a_t[],
+							  const PylithScalar a_x[],
+							  const PylithReal t,
+							  const PylithScalar x[],
+							  PylithScalar g1[]);
 
 
 /** g1 function for isotropic linear elasticity plane strain WITH initial stress and initial strain.
@@ -194,22 +194,22 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1(const PylithInt dim,
  * @param[out] g1 [dim*dim].
  */
 void
-pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1_initstate(const PylithInt dim,
-								   const PylithInt numS,
-								   const PylithInt numA,
-								   const PylithInt sOff[],
-								   const PylithInt sOff_x[],
-								   const PylithScalar s[],
-								   const PylithScalar s_t[],
-								   const PylithScalar s_x[],
-								   const PylithInt aOff[],
-								   const PylithInt aOff_x[],
-								   const PylithScalar a[],
-								   const PylithScalar a_t[],
-								   const PylithScalar a_x[],
-								   const PylithReal t,
-								   const PylithScalar x[],
-								   PylithScalar g1[]);
+pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v_initstate(const PylithInt dim,
+								    const PylithInt numS,
+								    const PylithInt numA,
+								    const PylithInt sOff[],
+								    const PylithInt sOff_x[],
+								    const PylithScalar s[],
+								    const PylithScalar s_t[],
+								    const PylithScalar s_x[],
+								    const PylithInt aOff[],
+								    const PylithInt aOff_x[],
+								    const PylithScalar a[],
+								    const PylithScalar a_t[],
+								    const PylithScalar a_x[],
+								    const PylithReal t,
+								    const PylithScalar x[],
+								    PylithScalar g1[]);
 
 
 /** Jf0 function for isotropoc linear elasticity plane strain with implicit time stepping.
@@ -233,23 +233,23 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1_initstate(const PylithI
  * @param[in] Jf0 Result [dim*dim].
  */
 void
-pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0_uv_implicit(const PylithInt dim,
-								      const PylithInt numS,
-								      const PylithInt numA,
-								      const PylithInt sOff[],
-								      const PylithInt sOff_x[],
-								      const PylithScalar s[],
-								      const PylithScalar s_t[],
-								      const PylithScalar s_x[],
-								      const PylithInt aOff[],
-								      const PylithInt aOff_x[],
-								      const PylithScalar a[],
-								      const PylithScalar a_t[],
-								      const PylithScalar a_x[],
-								      const PylithReal t,
-								      const PylithReal utshift,
-								      const PylithScalar x[],
-								      PylithScalar Jf0[]);
+pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0vv_implicit(const PylithInt dim,
+								     const PylithInt numS,
+								     const PylithInt numA,
+								     const PylithInt sOff[],
+								     const PylithInt sOff_x[],
+								     const PylithScalar s[],
+								     const PylithScalar s_t[],
+								     const PylithScalar s_x[],
+								     const PylithInt aOff[],
+								     const PylithInt aOff_x[],
+								     const PylithScalar a[],
+								     const PylithScalar a_t[],
+								     const PylithScalar a_x[],
+								     const PylithReal t,
+								     const PylithReal utshift,
+								     const PylithScalar x[],
+								     PylithScalar Jf0[]);
 
 
 /** Jf0 function for isotropoc linear elasticity plane strain with explicit time stepping.
@@ -273,23 +273,23 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0_uv_implicit(const Pyli
  * @param[in] Jf0 Result [dim*dim].
  */
 void
-pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0_uv_explicit(const PylithInt dim,
-								      const PylithInt numS,
-								      const PylithInt numA,
-								      const PylithInt sOff[],
-								      const PylithInt sOff_x[],
-								      const PylithScalar s[],
-								      const PylithScalar s_t[],
-								      const PylithScalar s_x[],
-								      const PylithInt aOff[],
-								      const PylithInt aOff_x[],
-								      const PylithScalar a[],
-								      const PylithScalar a_t[],
-								      const PylithScalar a_x[],
-								      const PylithReal t,
-								      const PylithReal utshift,
-								      const PylithScalar x[],
-								      PylithScalar Jf0[]);
+pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0vv_explicit(const PylithInt dim,
+								     const PylithInt numS,
+								     const PylithInt numA,
+								     const PylithInt sOff[],
+								     const PylithInt sOff_x[],
+								     const PylithScalar s[],
+								     const PylithScalar s_t[],
+								     const PylithScalar s_x[],
+								     const PylithInt aOff[],
+								     const PylithInt aOff_x[],
+								     const PylithScalar a[],
+								     const PylithScalar a_t[],
+								     const PylithScalar a_x[],
+								     const PylithReal t,
+								     const PylithReal utshift,
+								     const PylithScalar x[],
+								     PylithScalar Jf0[]);
 
 /** g3_uu entry function for 2-D plane strain isotropic linear elasticity.
  *
@@ -312,23 +312,23 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0_uv_explicit(const Pyli
  * @param[in] Jg3 Result [dim*dim*dim*dim].
  */
 void
-pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3_uu(const PylithInt dim,
-							     const PylithInt numS,
-							     const PylithInt numA,
-							     const PylithInt sOff[],
-							     const PylithInt sOff_x[],
-							     const PylithScalar s[],
-							     const PylithScalar s_t[],
-							     const PylithScalar s_x[],
-							     const PylithInt aOff[],
-							     const PylithInt aOff_x[],
-							     const PylithScalar a[],
-							     const PylithScalar a_t[],
-							     const PylithScalar a_x[],
-							     const PylithReal t,
-							     const PylithReal utshift,
-							     const PylithScalar x[],
-							     PylithScalar Jg3[]);
+pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3vu(const PylithInt dim,
+							    const PylithInt numS,
+							    const PylithInt numA,
+							    const PylithInt sOff[],
+							    const PylithInt sOff_x[],
+							    const PylithScalar s[],
+							    const PylithScalar s_t[],
+							    const PylithScalar s_x[],
+							    const PylithInt aOff[],
+							    const PylithInt aOff_x[],
+							    const PylithScalar a[],
+							    const PylithScalar a_t[],
+							    const PylithScalar a_x[],
+							    const PylithReal t,
+							    const PylithReal utshift,
+							    const PylithScalar x[],
+							    PylithScalar Jg3[]);
 					      
 
 /** Calculate mean stress for 2-D plane strain isotropic linear
@@ -522,22 +522,22 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_deviatoricStress_initstate
  * @param[out] f0 [dim].
  */
 void
-pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_f0(const PylithInt dim,
-							       const PylithInt numS,
-							       const PylithInt numA,
-							       const PylithInt sOff[],
-							       const PylithInt sOff_x[],
-							       const PylithScalar s[],
-							       const PylithScalar s_t[],
-							       const PylithScalar s_x[],
-							       const PylithInt aOff[],
-							       const PylithInt aOff_x[],
-							       const PylithScalar a[],
-							       const PylithScalar a_t[],
-							       const PylithScalar a_x[],
-							       const PylithReal t,
-							       const PylithScalar x[],
-							       PylithScalar f0[]);
+pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_f0v(const PylithInt dim,
+								const PylithInt numS,
+								const PylithInt numA,
+								const PylithInt sOff[],
+								const PylithInt sOff_x[],
+								const PylithScalar s[],
+								const PylithScalar s_t[],
+								const PylithScalar s_x[],
+								const PylithInt aOff[],
+								const PylithInt aOff_x[],
+								const PylithScalar a[],
+								const PylithScalar a_t[],
+								const PylithScalar a_x[],
+								const PylithReal t,
+								const PylithScalar x[],
+								PylithScalar f0[]);
 
 
 /** g0 function for isotropic linear incompressible elasticity plane strain.
@@ -563,22 +563,22 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_f0(const PylithInt d
  * @param[out] g0 [dim].
  */
 void
-pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g0(const PylithInt dim,
-							       const PylithInt numS,
-							       const PylithInt numA,
-							       const PylithInt sOff[],
-							       const PylithInt sOff_x[],
-							       const PylithScalar s[],
-							       const PylithScalar s_t[],
-							       const PylithScalar s_x[],
-							       const PylithInt aOff[],
-							       const PylithInt aOff_x[],
-							       const PylithScalar a[],
-							       const PylithScalar a_t[],
-							       const PylithScalar a_x[],
-							       const PylithReal t,
-							       const PylithScalar x[],
-							       PylithScalar g0[]);
+pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g0v(const PylithInt dim,
+								const PylithInt numS,
+								const PylithInt numA,
+								const PylithInt sOff[],
+								const PylithInt sOff_x[],
+								const PylithScalar s[],
+								const PylithScalar s_t[],
+								const PylithScalar s_x[],
+								const PylithInt aOff[],
+								const PylithInt aOff_x[],
+								const PylithScalar a[],
+								const PylithScalar a_t[],
+								const PylithScalar a_x[],
+								const PylithReal t,
+								const PylithScalar x[],
+								PylithScalar g0[]);
 
 
 /** g1 function for isotropic linear incompressible elasticity plane strain.
@@ -604,22 +604,22 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g0(const PylithInt d
  * @param[out] g1 [dim*dim].
  */
 void
-pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1(const PylithInt dim,
-							       const PylithInt numS,
-							       const PylithInt numA,
-							       const PylithInt sOff[],
-							       const PylithInt sOff_x[],
-							       const PylithScalar s[],
-							       const PylithScalar s_t[],
-							       const PylithScalar s_x[],
-							       const PylithInt aOff[],
-							       const PylithInt aOff_x[],
-							       const PylithScalar a[],
-							       const PylithScalar a_t[],
-							       const PylithScalar a_x[],
-							       const PylithReal t,
-							       const PylithScalar x[],
-							       PylithScalar g1[]);
+pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1v(const PylithInt dim,
+								const PylithInt numS,
+								const PylithInt numA,
+								const PylithInt sOff[],
+								const PylithInt sOff_x[],
+								const PylithScalar s[],
+								const PylithScalar s_t[],
+								const PylithScalar s_x[],
+								const PylithInt aOff[],
+								const PylithInt aOff_x[],
+								const PylithScalar a[],
+								const PylithScalar a_t[],
+								const PylithScalar a_x[],
+								const PylithReal t,
+								const PylithScalar x[],
+								PylithScalar g1[]);
 
 
 /** g1 function for isotropic linear incompressible elasticity plane strain.
@@ -646,22 +646,22 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1(const PylithInt d
  * @param[out] g1 [dim*dim].
  */
 void
-pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1_initstate(const PylithInt dim,
-									 const PylithInt numS,
-									 const PylithInt numA,
-									 const PylithInt sOff[],
-									 const PylithInt sOff_x[],
-									 const PylithScalar s[],
-									 const PylithScalar s_t[],
-									 const PylithScalar s_x[],
-									 const PylithInt aOff[],
-									 const PylithInt aOff_x[],
-									 const PylithScalar a[],
-									 const PylithScalar a_t[],
-									 const PylithScalar a_x[],
-									 const PylithReal t,
-									 const PylithScalar x[],
-									 PylithScalar g1[]);
+pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1v_initstate(const PylithInt dim,
+									  const PylithInt numS,
+									  const PylithInt numA,
+									  const PylithInt sOff[],
+									  const PylithInt sOff_x[],
+									  const PylithScalar s[],
+									  const PylithScalar s_t[],
+									  const PylithScalar s_x[],
+									  const PylithInt aOff[],
+									  const PylithInt aOff_x[],
+									  const PylithScalar a[],
+									  const PylithScalar a_t[],
+									  const PylithScalar a_x[],
+									  const PylithReal t,
+									  const PylithScalar x[],
+									  PylithScalar g1[]);
 
 
 /** g3_uu entry function for isotropic linear incompressible elasticity plane
@@ -688,23 +688,23 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1_initstate(const P
  * @param[out] Jg3 [dim*dim*dim*dim].
  */
 void
-pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg3_uu(const PylithInt dim,
-								   const PylithInt numS,
-								   const PylithInt numA,
-								   const PylithInt sOff[],
-								   const PylithInt sOff_x[],
-								   const PylithScalar s[],
-								   const PylithScalar s_t[],
-								   const PylithScalar s_x[],
-								   const PylithInt aOff[],
-								   const PylithInt aOff_x[],
-								   const PylithScalar a[],
-								   const PylithScalar a_t[],
-								   const PylithScalar a_x[],
-								   const PylithReal t,
-								   const PylithReal utshift,
-								   const PylithScalar x[],
-								   PylithScalar Jg3[]);
+pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg3vu(const PylithInt dim,
+								  const PylithInt numS,
+								  const PylithInt numA,
+								  const PylithInt sOff[],
+								  const PylithInt sOff_x[],
+								  const PylithScalar s[],
+								  const PylithScalar s_t[],
+								  const PylithScalar s_x[],
+								  const PylithInt aOff[],
+								  const PylithInt aOff_x[],
+								  const PylithScalar a[],
+								  const PylithScalar a_t[],
+								  const PylithScalar a_x[],
+								  const PylithReal t,
+								  const PylithReal utshift,
+								  const PylithScalar x[],
+								  PylithScalar Jg3[]);
 
 
 /** g2_up entry function for isotropic linear incompressible elasticity plane
@@ -731,23 +731,23 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg3_uu(const PylithI
  * @param[out] Jg2 [dim*1*dim].
  */
 void
-pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg2_up(const PylithInt dim,
-								   const PylithInt numS,
-								   const PylithInt numA,
-								   const PylithInt sOff[],
-								   const PylithInt sOff_x[],
-								   const PylithScalar s[],
-								   const PylithScalar s_t[],
-								   const PylithScalar s_x[],
-								   const PylithInt aOff[],
-								   const PylithInt aOff_x[],
-								   const PylithScalar a[],
-								   const PylithScalar a_t[],
-								   const PylithScalar a_x[],
-								   const PylithReal t,
-								   const PylithReal utshift,
-								   const PylithScalar x[],
-								   PylithScalar Jg2[]);
+pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg2vp(const PylithInt dim,
+								  const PylithInt numS,
+								  const PylithInt numA,
+								  const PylithInt sOff[],
+								  const PylithInt sOff_x[],
+								  const PylithScalar s[],
+								  const PylithScalar s_t[],
+								  const PylithScalar s_x[],
+								  const PylithInt aOff[],
+								  const PylithInt aOff_x[],
+								  const PylithScalar a[],
+								  const PylithScalar a_t[],
+								  const PylithScalar a_x[],
+								  const PylithReal t,
+								  const PylithReal utshift,
+								  const PylithScalar x[],
+								  PylithScalar Jg2[]);
 
 
 #endif /* pylith_fekernels_linearelasticityplanestrain_h */

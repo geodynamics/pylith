@@ -79,22 +79,22 @@
  * @param f0 Result [dim].
  */
 void
-pylith_fekernels_DispVel_f0(const PylithInt dim,
-			    const PylithInt numS,
-			    const PylithInt numA,
-			    const PylithInt sOff[],
-			    const PylithInt sOff_x[],
-			    const PylithScalar s[],
-			    const PylithScalar s_t[],
-			    const PylithScalar s_x[],
-			    const PylithInt aOff[],
-			    const PylithInt aOff_x[],
-			    const PylithScalar a[],
-			    const PylithScalar a_t[],
-			    const PylithScalar a_x[],
-			    const PylithReal t,
-			    const PylithScalar x[],
-			    PylithScalar f0[]);
+pylith_fekernels_DispVel_f0u(const PylithInt dim,
+			     const PylithInt numS,
+			     const PylithInt numA,
+			     const PylithInt sOff[],
+			     const PylithInt sOff_x[],
+			     const PylithScalar s[],
+			     const PylithScalar s_t[],
+			     const PylithScalar s_x[],
+			     const PylithInt aOff[],
+			     const PylithInt aOff_x[],
+			     const PylithScalar a[],
+			     const PylithScalar a_t[],
+			     const PylithScalar a_x[],
+			     const PylithReal t,
+			     const PylithScalar x[],
+			     PylithScalar f0[]);
 
 
 /** g0 function for disp/vel equation.
@@ -117,22 +117,22 @@ pylith_fekernels_DispVel_f0(const PylithInt dim,
  * @param f0 Result [dim].
  */
 void
-pylith_fekernels_DispVel_g0(const PylithInt dim,
-			    const PylithInt numS,
-			    const PylithInt numA,
-			    const PylithInt sOff[],
-			    const PylithInt sOff_x[],
-			    const PylithScalar s[],
-			    const PylithScalar s_t[],
-			    const PylithScalar s_x[],
-			    const PylithInt aOff[],
-			    const PylithInt aOff_x[],
-			    const PylithScalar a[],
-			    const PylithScalar a_t[],
-			    const PylithScalar a_x[],
-			    const PylithReal t,
-			    const PylithScalar x[],
-			    PylithScalar g0[]);
+pylith_fekernels_DispVel_g0u(const PylithInt dim,
+			     const PylithInt numS,
+			     const PylithInt numA,
+			     const PylithInt sOff[],
+			     const PylithInt sOff_x[],
+			     const PylithScalar s[],
+			     const PylithScalar s_t[],
+			     const PylithScalar s_x[],
+			     const PylithInt aOff[],
+			     const PylithInt aOff_x[],
+			     const PylithScalar a[],
+			     const PylithScalar a_t[],
+			     const PylithScalar a_x[],
+			     const PylithReal t,
+			     const PylithScalar x[],
+			     PylithScalar g0[]);
 
 
 /** Jf0 function for disp/velocity equation with implicit time-stepping.
@@ -156,23 +156,23 @@ pylith_fekernels_DispVel_g0(const PylithInt dim,
  * @param g0 Result [dim*dim].
  */
 void
-pylith_fekernels_DispVel_Jf0_vu_implicit(const PylithInt dim,
-					 const PylithInt numS,
-					 const PylithInt numA,
-					 const PylithInt sOff[],
-					 const PylithInt sOff_x[],
-					 const PylithScalar s[],
-					 const PylithScalar s_t[],
-					 const PylithScalar s_x[],
-					 const PylithInt aOff[],
-					 const PylithInt aOff_x[],
-					 const PylithScalar a[],
-					 const PylithScalar a_t[],
-					 const PylithScalar a_x[],
-					 const PylithReal t,
-					 const PylithReal utshift,
-					 const PylithScalar x[],
-					 PylithScalar Jf0[]);
+pylith_fekernels_DispVel_Jf0uu_implicit(const PylithInt dim,
+					const PylithInt numS,
+					const PylithInt numA,
+					const PylithInt sOff[],
+					const PylithInt sOff_x[],
+					const PylithScalar s[],
+					const PylithScalar s_t[],
+					const PylithScalar s_x[],
+					const PylithInt aOff[],
+					const PylithInt aOff_x[],
+					const PylithScalar a[],
+					const PylithScalar a_t[],
+					const PylithScalar a_x[],
+					const PylithReal t,
+					const PylithReal utshift,
+					const PylithScalar x[],
+					PylithScalar Jf0[]);
 
 /** Jf0 function for disp/velocity equation with explicit time-stepping.
  *
@@ -195,23 +195,23 @@ pylith_fekernels_DispVel_Jf0_vu_implicit(const PylithInt dim,
  * @param g0 Result [dim*dim].
  */
 void
-pylith_fekernels_DispVel_Jf0_vu_explicit(const PylithInt dim,
-					 const PylithInt numS,
-					 const PylithInt numA,
-					 const PylithInt sOff[],
-					 const PylithInt sOff_x[],
-					 const PylithScalar s[],
-					 const PylithScalar s_t[],
-					 const PylithScalar s_x[],
-					 const PylithInt aOff[],
-					 const PylithInt aOff_x[],
-					 const PylithScalar a[],
-					 const PylithScalar a_t[],
-					 const PylithScalar a_x[],
-					 const PylithReal t,
-					 const PylithReal utshift,
-					 const PylithScalar x[],
-					 PylithScalar Jf0[]);
+pylith_fekernels_DispVel_Jf0uu_explicit(const PylithInt dim,
+					const PylithInt numS,
+					const PylithInt numA,
+					const PylithInt sOff[],
+					const PylithInt sOff_x[],
+					const PylithScalar s[],
+					const PylithScalar s_t[],
+					const PylithScalar s_x[],
+					const PylithInt aOff[],
+					const PylithInt aOff_x[],
+					const PylithScalar a[],
+					const PylithScalar a_t[],
+					const PylithScalar a_x[],
+					const PylithReal t,
+					const PylithReal utshift,
+					const PylithScalar x[],
+					PylithScalar Jf0[]);
 
 
 /** Jg0 function for disp/velocity equation.
@@ -235,23 +235,23 @@ pylith_fekernels_DispVel_Jf0_vu_explicit(const PylithInt dim,
  * @param g0 Result [dim*dim].
  */
 void
-pylith_fekernels_DispVel_Jg0_vv(const PylithInt dim,
-				const PylithInt numS,
-				const PylithInt numA,
-				const PylithInt sOff[],
-				const PylithInt sOff_x[],
-				const PylithScalar s[],
-				const PylithScalar s_t[],
-				const PylithScalar s_x[],
-				const PylithInt aOff[],
-				const PylithInt aOff_x[],
-				const PylithScalar a[],
-				const PylithScalar a_t[],
-				const PylithScalar a_x[],
-				const PylithReal t,
-				const PylithReal utshift,
-				const PylithScalar x[],
-				PylithScalar Jg0[]);
+pylith_fekernels_DispVel_Jg0uv(const PylithInt dim,
+			       const PylithInt numS,
+			       const PylithInt numA,
+			       const PylithInt sOff[],
+			       const PylithInt sOff_x[],
+			       const PylithScalar s[],
+			       const PylithScalar s_t[],
+			       const PylithScalar s_x[],
+			       const PylithInt aOff[],
+			       const PylithInt aOff_x[],
+			       const PylithScalar a[],
+			       const PylithScalar a_t[],
+			       const PylithScalar a_x[],
+			       const PylithReal t,
+			       const PylithReal utshift,
+			       const PylithScalar x[],
+			       PylithScalar Jg0[]);
 
 
 #endif /* pylith_fekernels_dispvel_h */

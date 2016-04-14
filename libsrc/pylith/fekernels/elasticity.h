@@ -63,22 +63,22 @@
  * @param[out] f0 [dim].
  */
 void
-pylith_fekernels_Elasticity_f0_inertia(const PylithInt dim,
-				       const PylithInt numS,
-				       const PylithInt numA,
-				       const PylithInt sOff[],
-				       const PylithInt sOff_x[],
-				       const PylithScalar s[],
-				       const PylithScalar s_t[],
-				       const PylithScalar s_x[],
-				       const PylithInt aOff[],
-				       const PylithInt aOff_x[],
-				       const PylithScalar a[],
-				       const PylithScalar a_t[],
-				       const PylithScalar a_x[],
-				       const PylithReal t,
-				       const PylithScalar x[],
-				       PylithScalar f0[]);
+pylith_fekernels_Elasticity_f0v_inertia(const PylithInt dim,
+					const PylithInt numS,
+					const PylithInt numA,
+					const PylithInt sOff[],
+					const PylithInt sOff_x[],
+					const PylithScalar s[],
+					const PylithScalar s_t[],
+					const PylithScalar s_x[],
+					const PylithInt aOff[],
+					const PylithInt aOff_x[],
+					const PylithScalar a[],
+					const PylithScalar a_t[],
+					const PylithScalar a_x[],
+					const PylithReal t,
+					const PylithScalar x[],
+					PylithScalar f0[]);
 
 
 /** g0 function for generic elasticity terms (body force).
@@ -105,22 +105,22 @@ pylith_fekernels_Elasticity_f0_inertia(const PylithInt dim,
  * @param[out] g0 [dim].
  */
 void
-pylith_fekernels_Elasticity_g0_bodyforce(const PylithInt dim,
-					 const PylithInt numS,
-					 const PylithInt numA,
-					 const PylithInt sOff[],
-					 const PylithInt sOff_x[],
-					 const PylithScalar s[],
-					 const PylithScalar s_t[],
-					 const PylithScalar s_x[],
-					 const PylithInt aOff[],
-					 const PylithInt aOff_x[],
-					 const PylithScalar a[],
-					 const PylithScalar a_t[],
-					 const PylithScalar a_x[],
-					 const PylithReal t,
-					 const PylithScalar x[],
-					 PylithScalar g0[]);
+pylith_fekernels_Elasticity_g0v_bodyforce(const PylithInt dim,
+					  const PylithInt numS,
+					  const PylithInt numA,
+					  const PylithInt sOff[],
+					  const PylithInt sOff_x[],
+					  const PylithScalar s[],
+					  const PylithScalar s_t[],
+					  const PylithScalar s_x[],
+					  const PylithInt aOff[],
+					  const PylithInt aOff_x[],
+					  const PylithScalar a[],
+					  const PylithScalar a_t[],
+					  const PylithScalar a_x[],
+					  const PylithReal t,
+					  const PylithScalar x[],
+					  PylithScalar g0[]);
 
 
 /** Jf0 function for generic elasticity terms (inertia) with implicit time stepping.
@@ -146,23 +146,23 @@ pylith_fekernels_Elasticity_g0_bodyforce(const PylithInt dim,
  * @param[out] Jf0 [dim*dim].
  */
 void
-pylith_fekernels_Elasticity_Jf0_uv_inertiaimplicit(const PylithInt dim,
-						   const PylithInt numS,
-						   const PylithInt numA,
-						   const PylithInt sOff[],
-						   const PylithInt sOff_x[],
-						   const PylithScalar s[],
-						   const PylithScalar s_t[],
-						   const PylithScalar s_x[],
-						   const PylithInt aOff[],
-						   const PylithInt aOff_x[],
-						   const PylithScalar a[],
-						   const PylithScalar a_t[],
-						   const PylithScalar a_x[],
-						   const PylithReal t,
-						   const PylithReal utshift,
-						   const PylithScalar x[],
-						   PylithScalar Jf0[]);
+pylith_fekernels_Elasticity_Jf0vv_inertiaimplicit(const PylithInt dim,
+						  const PylithInt numS,
+						  const PylithInt numA,
+						  const PylithInt sOff[],
+						  const PylithInt sOff_x[],
+						  const PylithScalar s[],
+						  const PylithScalar s_t[],
+						  const PylithScalar s_x[],
+						  const PylithInt aOff[],
+						  const PylithInt aOff_x[],
+						  const PylithScalar a[],
+						  const PylithScalar a_t[],
+						  const PylithScalar a_x[],
+						  const PylithReal t,
+						  const PylithReal utshift,
+						  const PylithScalar x[],
+						  PylithScalar Jf0[]);
 
 
 
@@ -190,23 +190,23 @@ pylith_fekernels_Elasticity_Jf0_uv_inertiaimplicit(const PylithInt dim,
  * @param[out] Jf0 [dim*dim].
  */
 void
-pylith_fekernels_Elasticity_Jf0_uv_inertiaexplicit(const PylithInt dim,
-						   const PylithInt numS,
-						   const PylithInt numA,
-						   const PylithInt sOff[],
-						   const PylithInt sOff_x[],
-						   const PylithScalar s[],
-						   const PylithScalar s_t[],
-						   const PylithScalar s_x[],
-						   const PylithInt aOff[],
-						   const PylithInt aOff_x[],
-						   const PylithScalar a[],
-						   const PylithScalar a_t[],
-						   const PylithScalar a_x[],
-						   const PylithReal t,
-						   const PylithReal utshift,
+pylith_fekernels_Elasticity_Jf0vv_inertiaexplicit(const PylithInt dim,
+						  const PylithInt numS,
+						  const PylithInt numA,
+						  const PylithInt sOff[],
+						  const PylithInt sOff_x[],
+						  const PylithScalar s[],
+						  const PylithScalar s_t[],
+						  const PylithScalar s_x[],
+						  const PylithInt aOff[],
+						  const PylithInt aOff_x[],
+						  const PylithScalar a[],
+						  const PylithScalar a_t[],
+						  const PylithScalar a_x[],
+						  const PylithReal t,
+						  const PylithReal utshift,
 						   const PylithScalar x[],
-						   PylithScalar Jf0[]);
+						  PylithScalar Jf0[]);
 
 #endif /* pylith_fekernels_elasticity_h */
 
