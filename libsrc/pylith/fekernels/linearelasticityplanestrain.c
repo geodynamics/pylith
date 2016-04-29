@@ -272,7 +272,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0vv_implicit(const Pylit
   assert(aOff);
   assert(a);
 
-  for (i = 0; i < dim; ++i) {
+  for (i = 0; i < _dim; ++i) {
     Jf0[i*_dim+i] += utshift * density;
   } /* for */
 } /* IsotropicLinearElasticityPlaneStrain_Jf0vv_implicit */
@@ -330,7 +330,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0vv_explicit(const Pylit
   assert(aOff);
   assert(a);
 
-  for (i = 0; i < dim; ++i) {
+  for (i = 0; i < _dim; ++i) {
     Jf0[i*_dim+i] += density;
   } /* for */
   
