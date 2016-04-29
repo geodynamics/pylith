@@ -342,6 +342,9 @@ pylith::materials::MaterialNew::_computeJacobianInverseLumped(pylith::topology::
   err = DMLabelGetStratumBounds(dmLabel, id(), &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
 #if 0 // NOT YET IMPLEMENTED IN petsc-dev knepley/pylith
   err = DMPlexComputeJacobianAction_Internal(dmMesh, cStart, cEnd, t, tshift, vecRowSum, NULL, vecRowSum, jacobian->localVector(), NULL);PYLITH_CHECK_ERROR(err);
+
+  // Compute the Jacobian inverse.
+  err = VecReciprocal(jacobian->localVector());PYLITH_CHECK_ERROR(err);
 #endif
 
   PYLITH_METHOD_END;
