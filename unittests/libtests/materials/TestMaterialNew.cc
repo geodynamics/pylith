@@ -617,7 +617,7 @@ pylith::materials::TestMaterialNew::testComputeRHSJacobian(void)
   pylith::topology::Jacobian jacobian(*_solution1);
   pylith::topology::Jacobian* preconditioner = &jacobian; // Use Jacobian == preconditioner.
   material->computeRHSJacobian(&jacobian, preconditioner, t, dt, *_solution1);
-  CPPUNIT_ASSERT_EQUAL(false, material->needNewJacobian());
+  CPPUNIT_ASSERT_EQUAL(false, material->needNewRHSJacobian());
   jacobian.assemble("final_assembly");
 
   // result = Jg*(-solnIncr) + residual
@@ -728,7 +728,7 @@ pylith::materials::TestMaterialNew::testComputeLHSJacobianImplicit(void)
   pylith::topology::Jacobian jacobian(*_solution1);
   pylith::topology::Jacobian* preconditioner = &jacobian; // Use Jacobian == preconditioner.
   material->computeLHSJacobianImplicit(&jacobian, preconditioner, t, dt, tshift, *_solution1, *_solution1Dot);
-  CPPUNIT_ASSERT_EQUAL(false, material->needNewJacobian());
+  CPPUNIT_ASSERT_EQUAL(false, material->needNewLHSJacobian());
   jacobian.assemble("final_assembly");
 
   // result = J*(-solnIncr) + residual

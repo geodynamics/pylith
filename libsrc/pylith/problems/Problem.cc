@@ -38,6 +38,7 @@ pylith::problems::Problem::Problem(void) :
   _residualLHS(0),
   _jacobianRHS(0),
   _jacobianLHS(0),
+  _jacobianLHSLumpedInverse(0),
   _preconditionerRHS(0),
   _preconditionerLHS(0),
   _integrators(0),
@@ -66,18 +67,9 @@ pylith::problems::Problem::deallocate(void)
   delete _residualLHS; _residualLHS = 0;
   delete _jacobianRHS; _jacobianRHS = 0;
   delete _jacobianLHS; _jacobianLHS = 0;
+  delete _jacobianLHSLumpedInverse; _jacobianLHSLumpedInverse = 0;
   delete _preconditionerRHS; _preconditionerRHS = 0;
   delete _preconditionerLHS; _preconditionerLHS = 0;
-
-#if 0   // :KLUDGE: Assume Solver deallocates matrix.
-  PetscErrorCode err = 0;
-  if (_customConstraintPCMat) {
-    err = PetscObjectDereference((PetscObject) _customConstraintPCMat);PYLITH_CHECK_ERROR(err);
-    _customConstraintPCMat = 0;
-  } // if
-#else
-  _customConstraintPCMat = 0;
-#endif
 
   PYLITH_METHOD_END;
 } // deallocate
@@ -111,19 +103,6 @@ pylith::problems::Problem::constraints(pylith::feassemble::Constraint* constrain
 } // constraints
   
 // ----------------------------------------------------------------------
-// Set handle to preconditioner.
-void
-pylith::problems::Problem::customPCMatrix(PetscMat& mat)
-{ // preconditioner
-  _customConstraintPCMat = mat;
-
-#if 0 // :KLUDGE: Assume solver deallocates matrix
-  PetscErrorCode err = 0;
-  err = PetscObjectReference((PetscObject) mat); PYLITH_CHECK_ERROR(err);
-#endif
-} // preconditioner
-
-// ----------------------------------------------------------------------
 // Initialize.
 void
 pylith::problems::Problem::initialize(void)
@@ -141,8 +120,8 @@ pylith::problems::Problem::computeRHSResidual(const PylithReal t,
   PYLITH_METHOD_BEGIN;
 
   assert(residualVec);
-  assert(_residualRHS);
   assert(solutionVec);
+  assert(_residualRHS);
   assert(_solution);
 
   // Update PyLith view of the solution.
@@ -197,23 +176,6 @@ pylith::problems::Problem::computeRHSJacobian(const PylithReal t,
   
   // Assemble jacobian.
   _jacobianRHS->assemble("final_assembly");
-
-#if 0 // :OBSOLETE: This is here only for reference until we get the Jacobian stuff working.
-  if (_customConstraintPCMat) {
-    // Recalculate preconditioner.
-    for (size_t i=0; i < numIntegrators; ++i) {
-      _integrators[i]->computeRHSPreconditioner(&_customConstraintPCMat, _jacobianRHS, t, dt, *_solution);
-    } // for
-
-    MatAssemblyBegin(_customConstraintPCMat, MAT_FINAL_ASSEMBLY);
-    MatAssemblyEnd(_customConstraintPCMat, MAT_FINAL_ASSEMBLY);
-
-#if 0 // debugging
-    std::cout << "Preconditioner Matrix" << std::endl;
-    MatView(_customConstraintPCMat, PETSC_VIEWER_STDOUT_WORLD);
-#endif
-  } // if
-#endif
 
   PYLITH_METHOD_END;
 } // computeRHSJacobian
@@ -296,34 +258,17 @@ pylith::problems::Problem::computeLHSJacobianImplicit(const PylithReal t,
   // Assemble jacobian.
   _jacobianLHS->assemble("final_assembly");
 
-#if 0 // :OBSOLETE: This is here only for reference until we get the Jacobian stuff working.
-  if (_customConstraintPCMat) {
-    // Recalculate preconditioner.
-    for (size_t i=0; i < numIntegrators; ++i) {
-      _integrators[i]->computeLHSPreconditioner(&_customConstraintPCMat, _jacobianLHS, t, dt, tshift, *_solution, *_solutionDot);
-    } // for
-
-    MatAssemblyBegin(_customConstraintPCMat, MAT_FINAL_ASSEMBLY);
-    MatAssemblyEnd(_customConstraintPCMat, MAT_FINAL_ASSEMBLY);
-
-#if 0 // debugging
-    std::cout << "Preconditioner Matrix" << std::endl;
-    MatView(_customConstraintPCMat, PETSC_VIEWER_STDOUT_WORLD);
-#endif
-  } // if
-#endif
-
   PYLITH_METHOD_END;
 } // computeLHSJacobianImplicit
 
 // ----------------------------------------------------------------------
 // Compute LHS Jacobian for F(t,s,\dot{s}) for explicit time stepping.
 void
-pylith::problems::Problem::computeLHSJacobianExplicit(const PylithReal t,
-						      const PylithReal dt,
-						      const PylithReal tshift,
-						      PetscVec solutionVec,
-						      PetscVec solutionDotVec)
+pylith::problems::Problem::computeLHSJacobianInverseExplicit(const PylithReal t,
+							     const PylithReal dt,
+							     const PylithReal tshift,
+							     PetscVec solutionVec,
+							     PetscVec solutionDotVec)
 { // computeLHSJacobianExplicit
   PYLITH_METHOD_BEGIN;
 
@@ -338,16 +283,15 @@ pylith::problems::Problem::computeLHSJacobianExplicit(const PylithReal t,
   _solutionDot->scatterGlobalToLocal(solutionDotVec);
   
   // Set jacobian to zero.
-  _jacobianLHS->zero();
+  _jacobianLHSLumpedInverse->zeroAll();
 
   // Sum Jacobian contributions across integrators.
   const size_t numIntegrators = _integrators.size();
   for (size_t i=0; i < numIntegrators; ++i) {
-    _integrators[i]->computeLHSJacobianExplicit(_jacobianLHS, _preconditionerLHS, t, dt, tshift, *_solution, *_solutionDot);
+    _integrators[i]->computeLHSJacobianInverseExplicit(_jacobianLHSLumpedInverse, t, dt, tshift, *_solution, *_solutionDot);
   } // for
   
-  // Assemble jacobian.
-  _jacobianLHS->assemble("final_assembly");
+  // DO NOT assemble jacobian. We will multiple J^{-1} by the RHS residual and THEN assemble.
 
   PYLITH_METHOD_END;
 } // computeLHSJacobianExplicit

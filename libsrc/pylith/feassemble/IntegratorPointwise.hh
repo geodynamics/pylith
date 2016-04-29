@@ -106,12 +106,19 @@ public :
    */
   const pylith::topology::FieldBase::DiscretizeInfo& auxFieldDiscretization(const char* name) const;
 
-  /** Check whether Jacobian needs to be recomputed.
+  /** Check whether RHS Jacobian needs to be recomputed.
    *
    * @returns True if Jacobian needs to be recomputed, false otherwise.
    */
   virtual
-  bool needNewJacobian(void) const;
+  bool needNewRHSJacobian(void) const;
+
+  /** Check whether LHS Jacobian needs to be recomputed.
+   *
+   * @returns True if Jacobian needs to be recomputed, false otherwise.
+   */
+  virtual
+  bool needNewLHSJacobian(void) const;
 
   /** Check whether integrator generates a symmetric Jacobian.
    *
@@ -210,10 +217,9 @@ public :
 				  const pylith::topology::Field& solutionDot) = 0;
 
 
-  /** Compute LHS Jacobian and preconditioner for F(t,u,\dot{u}) with explicit time-stepping.
+  /** Compute inverse of lumped LHS Jacobian for F(t,u,\dot{u}) with explicit time-stepping.
    *
    * @param[out] jacobian Jacobian sparse matrix.
-   * @param[out] preconditioner Jacobian preconditioning sparse matrix.
    * @param[in] t Current time.
    * @param[in] dt Current time step.
    * @param[in] tshift Scale for time derivative.
@@ -221,13 +227,12 @@ public :
    * @param[in] solutionDot Time derivative of current trial solution.
    */
   virtual
-  void computeLHSJacobianExplicit(pylith::topology::Jacobian* jacobian,
-				  pylith::topology::Jacobian* preconditioner,
-				  const PylithReal t,
-				  const PylithReal dt,
-				  const PylithReal tshift,
-				  const pylith::topology::Field& solution,
-				  const pylith::topology::Field& solutionDot) = 0;
+  void computeLHSJacobianInverseExplicit(pylith::topology::Field* jacobian,
+					 const PylithReal t,
+					 const PylithReal dt,
+					 const PylithReal tshift,
+					 const pylith::topology::Field& solution,
+					 const pylith::topology::Field& solutionDot) = 0;
 
 
   /** Update state variables as needed.
@@ -262,7 +267,8 @@ protected :
 
   /// True if we need to recompute Jacobian for operator, false otherwise.
   /// Default is false;
-  bool _needNewJacobian;
+  bool _needNewRHSJacobian;
+  bool _needNewLHSJacobian;
 
   /// True if we need to compute velocity field, false otherwise.
   /// Default is false;

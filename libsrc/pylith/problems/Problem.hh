@@ -77,12 +77,6 @@ public :
   void constraints(feassemble::Constraint* constraintArray[] ,
 		   const int numConstraints);
   
-  /** Set handle to preconditioner.
-   *
-   * @param pc PETSc preconditioner.
-   */
-  void customPCMatrix(PetscMat& mat);
-
   /** Initialize.
    *
    */
@@ -147,7 +141,7 @@ public :
 				  PetscMat jacobianMat,
 				  PetscMat precondMat);
 
-  /* Compute LHS Jacobian for F(t,s,\dot{s}) for explicit time stepping.
+  /* Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) for explicit time stepping.
    *
    * @param[in] t Current time.
    * @param[in] dt Current time step.
@@ -155,11 +149,11 @@ public :
    * @param[in] solutionVec PETSc Vec with current trial solution.
    * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
    */
-  void computeLHSJacobianExplicit(const PylithReal t,
-				  const PylithReal dt,
-				  const PylithReal tshift,
-				  PetscVec solutionVec,
-				  PetscVec solutionDotVec);
+  void computeLHSJacobianInverseExplicit(const PylithReal t,
+					 const PylithReal dt,
+					 const PylithReal tshift,
+					 PetscVec solutionVec,
+					 PetscVec solutionDotVec);
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
@@ -170,6 +164,7 @@ protected :
   pylith::topology::Field* _residualLHS; ///< Handle to residual field for LHS, F(t,s,\dot{s}).
   pylith::topology::Jacobian* _jacobianRHS; ///< Handle to Jacobian for RHS, G(t,s).
   pylith::topology::Jacobian* _jacobianLHS; ///< Handle to Jacobian for LHS, F(t,s,\dot{s}).
+  pylith::topology::Field* _jacobianLHSLumpedInverse; ///< Handle to inverse lumped Jacobian for LHS, F(t,s,\dot{s}).
   pylith::topology::Jacobian* _preconditionerRHS; ///< Handle to Jacobian preconditioner for RHS, G(t,s).
   pylith::topology::Jacobian* _preconditionerLHS; ///< Handle to Jacobian preconditioner for LHS, F(t,s,\dot{s}).
 

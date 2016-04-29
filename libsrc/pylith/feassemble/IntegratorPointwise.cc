@@ -45,7 +45,10 @@ pylith::feassemble::IntegratorPointwise::IntegratorPointwise(void) :
   _logger(0),
   _auxFields(0),
   _auxFieldsDB(0),
-  _auxFieldsQuery(0)
+  _auxFieldsQuery(0),
+  _needNewRHSJacobian(true),
+  _needNewLHSJacobian(true),
+  _isJacobianSymmetric(false)
 { // constructor
 } // constructor
 
@@ -133,18 +136,25 @@ pylith::feassemble::IntegratorPointwise::auxFieldDiscretization(const char* name
 
 
 // ----------------------------------------------------------------------
-// Check whether Jacobian needs to be recomputed.
+// Check whether RHS Jacobian needs to be recomputed.
 bool
-pylith::feassemble::IntegratorPointwise::needNewJacobian(void) const {
-  return _needNewJacobian;
-} // needNewJacobian
+pylith::feassemble::IntegratorPointwise::needNewRHSJacobian(void) const {
+  return _needNewRHSJacobian;
+} // needNewRHSJacobian
 
 // ----------------------------------------------------------------------
-// Check whether integrator needs velocity.
+// Check whether LHS Jacobian needs to be recomputed.
+bool
+pylith::feassemble::IntegratorPointwise::needNewLHSJacobian(void) const {
+  return _needNewLHSJacobian;
+} // needNewLHSJacobian
+
+// ----------------------------------------------------------------------
+// Check whether Jacobian is symmetric.
 bool
 pylith::feassemble::IntegratorPointwise::isJacobianSymmetric(void) const {
   return _isJacobianSymmetric;
-} // needsVelocity
+} // isJacobianSymmetric
 
 // ----------------------------------------------------------------------
 // Get discretization information for auxiliary subfield.

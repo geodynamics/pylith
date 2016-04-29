@@ -175,9 +175,9 @@ protected :
 
   PylithScalar _t; ///< Current time (nondimensional).
   PylithScalar _dt; ///< Current time step (nondimensional).
-  topology::Jacobian* _jacobian; ///< Handle to Jacobian of system.
+  pylith::topology::Jacobian* _jacobian; ///< Handle to Jacobian of system.
   PetscMat _customConstraintPCMat; ///< Custom PETSc preconditioning matrix for constraints.
-  topology::Field* _jacobianLumped; ///< Handle to lumped Jacobian of system.
+  pylith::topology::Field* _jacobianLumped; ///< Handle to lumped Jacobian of system.
   topology::SolutionFields* _fields; ///< Handle to solution fields for system.
 
   std::vector<feassemble::Integrator*> _integrators; ///< Array of integrators.

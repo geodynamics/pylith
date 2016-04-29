@@ -167,23 +167,21 @@ public :
 				  const pylith::topology::Field& solutionDot);
 
 
-  /** Compute LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
+  /** Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
    *
    * @param[out] jacobian Jacobian sparse matrix.
-   * @param[out] preconditioner Jacobian preconditioning sparse matrix.
    * @param[in] t Current time.
    * @param[in] dt Current time step.
    * @param[in] tshift Scale for time derivative.
    * @param[in] solution Current trial solution.
    * @param[in] solutionDot Time derivative of current trial solution.
    */
-  void computeLHSJacobianExplicit(pylith::topology::Jacobian* jacobian,
-				  pylith::topology::Jacobian* preconditioner,
-				  const PylithReal t,
-				  const PylithReal dt,
-				  const PylithReal tshift,
-				  const pylith::topology::Field& solution,
-				  const pylith::topology::Field& solutionDot);
+  void computeLHSJacobianInverseExplicit(pylith::topology::Field* jacobian,
+					 const PylithReal t,
+					 const PylithReal dt,
+					 const PylithReal tshift,
+					 const pylith::topology::Field& solution,
+					 const pylith::topology::Field& solutionDot);
 
 
   /** Update state variables as needed.
@@ -226,6 +224,22 @@ protected :
 			const PylithReal tshift,
 			const pylith::topology::Field& solution,
 			const pylith::topology::Field& solutionDot);
+  
+  /* Compute inverse of lumped Jacobian using current kernels.
+   *
+   * @param[out] jacobian Jacobian sparse matrix.
+   * @param[in] t Current time.
+   * @param[in] dt Current time step.
+   * @param[in] tshift Scale for time derivative.
+   * @param[in] solution Current trial solution.
+   * @param[in] solutionDot Time derivative of current trial solution.
+   */
+  void _computeJacobianInverseLumped(pylith::topology::Field* jacobian,
+				     const PylithReal t,
+				     const PylithReal dt,
+				     const PylithReal tshift,
+				     const pylith::topology::Field& solution,
+				     const pylith::topology::Field& solutionDot);
   
   /** Setup auxiliary subfields (discretization and query fns).
    * 

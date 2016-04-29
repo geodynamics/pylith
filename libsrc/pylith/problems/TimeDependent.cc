@@ -234,6 +234,8 @@ pylith::problems::TimeDependent::initialize(pylith::topology::Field* solution,
 
   PetscMat precondMatrix = NULL; // :KLUDGE: :TODO: Finish this.
 
+  // :TODO: Use of _jacobianLHS and _jacobianRHS should be optimized.
+
   // Set callbacks.
   err = TSSetPreStep(_ts, prestep);PYLITH_CHECK_ERROR(err);
   err = TSSetPostStep(_ts, poststep);PYLITH_CHECK_ERROR(err);
@@ -331,18 +333,14 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
 
   // If explicit time stepping, multiply RHS, G(t,s), by M^{-1}
   if (EXPLICIT == problem->_formulationType) {
-    assert(problem->_jacobianLHS);
+    assert(problem->_jacobianLHSLumpedInverse);
 
     // :KLUDGE: :TODO: Should add check to see if we need to compute Jacobian
     const PetscVec solutionDotVec = NULL; // :KLUDGE: We don't have the solutionDotVec from PetscTS!
     const PylithReal tshift = 0.0; // :KLUDGE: We don't have the tshift from PetscTS!
-    problem->Problem::computeLHSJacobianExplicit(t, dt, tshift, solutionVec, solutionDotVec);
+    problem->Problem::computeLHSJacobianInverseExplicit(t, dt, tshift, solutionVec, solutionDotVec);
 
-    PetscVec jacobianDiag = NULL;
-    err = VecDuplicate(residualVec, &jacobianDiag);
-    err = MatGetDiagonal(problem->_jacobianLHS->matrix(), jacobianDiag);PYLITH_CHECK_ERROR(err);
-    err = VecReciprocal(jacobianDiag);PYLITH_CHECK_ERROR(err);
-    err = VecPointwiseMult(residualVec, jacobianDiag, residualVec);PYLITH_CHECK_ERROR(err);
+    err = VecPointwiseMult(residualVec, problem->_jacobianLHSLumpedInverse->localVector(), residualVec);PYLITH_CHECK_ERROR(err);
   } // if
 
   PYLITH_METHOD_RETURN(0);
