@@ -70,7 +70,7 @@ class pylith::materials::TestMaterialNew : public CppUnit::TestFixture
   CPPUNIT_TEST( testComputeResidual );
   CPPUNIT_TEST( testComputeRHSJacobian );
   CPPUNIT_TEST( testComputeLHSJacobianImplicit );
-  CPPUNIT_TEST( testComputeLHSJacobianExplicit );
+  CPPUNIT_TEST( testComputeLHSJacobianInverseExplicit );
   CPPUNIT_TEST( testUpdateStateVars );
 
   CPPUNIT_TEST_SUITE_END();
@@ -139,8 +139,8 @@ public :
   /// Test computeLHSJacobianImplicit().
   void testComputeLHSJacobianImplicit(void);
 
-  /// Test computeLHSJacobianExplicit().
-  void testComputeLHSJacobianExplicit(void);
+  /// Test computeLHSJacobianInverseExplicit().
+  void testComputeLHSJacobianInverseExplicit(void);
 
   /// Test updateStateVars().
   void testUpdateStateVars(void);

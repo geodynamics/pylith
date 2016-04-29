@@ -555,10 +555,9 @@ pylith::materials::TestMaterialNew::testComputeRHSJacobian(void)
 { // testComputeRHSJacobian
   PYLITH_METHOD_BEGIN;
 
-  /*
-    Create linear problem (MMS) with two solutions, s_1 and s_2.
-    Check that Jg(s_1)*(s_2 - s_1) = G(s_2) - G(s_1).
-  */
+  // Create linear problem (MMS) with two solutions, s_1 and s_2.
+  //
+  // Check that Jg(s_1)*(s_2 - s_1) = G(s_2) - G(s_1).
   
   // Call initialize()
   _initializeFull(); // includes setting up auxFields
@@ -625,15 +624,7 @@ pylith::materials::TestMaterialNew::testComputeRHSJacobian(void)
   err = VecDuplicate(_solution1->globalVector(), &resultVec);CPPUNIT_ASSERT(!err);
   err = VecZeroEntries(resultVec);CPPUNIT_ASSERT(!err);
   err = VecScale(solnIncrVec, -1.0);CPPUNIT_ASSERT(!err);
-
-#if 0 // DEBUGGING
-  PetscVec tmpVec = NULL;
-  err = VecDuplicate(_solution1->globalVector(), &tmpVec);CPPUNIT_ASSERT(!err);
-  err = VecZeroEntries(tmpVec);CPPUNIT_ASSERT(!err);
-  err = MatMultAdd(jacobian.matrix(), solnIncrVec, tmpVec, resultVec);CPPUNIT_ASSERT(!err);
-#else
   err = MatMultAdd(jacobian.matrix(), solnIncrVec, residualVec, resultVec);CPPUNIT_ASSERT(!err);
-#endif
 
 #if 0 // DEBUGGING  
   std::cout << "SOLN INCR" << std::endl;
@@ -665,10 +656,9 @@ pylith::materials::TestMaterialNew::testComputeLHSJacobianImplicit(void)
 { // testComputeLHSJacobianImplicit
   PYLITH_METHOD_BEGIN;
 
-  /*
-    Create linear problem (MMS) with two solutions, s_1 and s_2.
-    Check that Jf(s_1)*(s_2 - s_1) = F(s_2) - F(s_1).
-  */
+  // Create linear problem (MMS) with two solutions, s_1 and s_2.
+  //
+  // Check that Jf(s_1)*(s_2 - s_1) = F(s_2) - F(s_1).
   
   // Call initialize()
   _initializeFull(); // includes setting up auxFields
@@ -730,6 +720,7 @@ pylith::materials::TestMaterialNew::testComputeLHSJacobianImplicit(void)
   material->computeLHSJacobianImplicit(&jacobian, preconditioner, t, dt, tshift, *_solution1, *_solution1Dot);
   CPPUNIT_ASSERT_EQUAL(false, material->needNewLHSJacobian());
   jacobian.assemble("final_assembly");
+  jacobian.view();
 
   // result = J*(-solnIncr) + residual
   PetscVec resultVec = NULL;
@@ -782,14 +773,14 @@ pylith::materials::TestMaterialNew::_data(void)
 // ----------------------------------------------------------------------
 // Test computeLHSJacobianExplicit().
 void
-pylith::materials::TestMaterialNew::testComputeLHSJacobianExplicit(void)
-{ // testComputeLHSJacobianExplicit
+pylith::materials::TestMaterialNew::testComputeLHSJacobianInverseExplicit(void)
+{ // testComputeLHSJacobianInverseExplicit
   PYLITH_METHOD_BEGIN;
 
   CPPUNIT_ASSERT_MESSAGE("Test not implemented.", false); // :TODO: ADD MORE HERE
 
   PYLITH_METHOD_END;
-} // testComputeLHSJacobianExplicit
+} // testComputeLHSJacobianInverseExplicit
 
 
 // ----------------------------------------------------------------------
