@@ -935,9 +935,9 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg3vu(const PylithIn
   const PylithInt i_shearModulus = 1;
   const PylithScalar shearModulus = a[aOff[i_shearModulus]];
 
-  const PylithReal C1111 = 5.0 * shearModulus/3.0;
-  const PylithReal C2222 = C1111;
-  const PylithReal C1122 = -shearModulus/3.0;
+  const PylithReal C1111 = 4.0 / 3.0 * shearModulus;
+  const PylithReal C2222 =  C1111;
+  const PylithReal C1122 = -2.0 / 3.0 * shearModulus;
   const PylithReal C1212 = shearModulus;
 
   assert(_dim == dim);
@@ -945,7 +945,7 @@ pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jg3vu(const PylithIn
   assert(3 <= numA);
   assert(aOff);
 
-  /* g(f,g,df,dg) = C^{\prime}(f,df,g,dg) - \frac{1}{6}C^{\prime}(f,df,h,h) \delta(g,dg)
+  /* g(f,g,df,dg) = C^{dev}(f,df,g,dg)
 
      0: g0000 = C1111
      1: g0001 = C1112
