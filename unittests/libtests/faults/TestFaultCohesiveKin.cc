@@ -193,7 +193,7 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
 
   // Check cohesive vertex info; permit different order of vertices.
   PetscDMLabel clamped = NULL;
-  err = DMPlexGetLabel(dmMesh, "clamped", &clamped);PYLITH_CHECK_ERROR(err);
+  err = DMGetLabel(dmMesh, "clamped", &clamped);PYLITH_CHECK_ERROR(err);
 
   const int numFaultVertices = _data->numFaultVertices;
   CPPUNIT_ASSERT_EQUAL(numFaultVertices, int(fault._cohesiveVertices.size()));
@@ -342,7 +342,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
 
   PetscInt numClampedVertices = 0;
-  PetscErrorCode err = DMPlexGetLabelSize(fault._faultMesh->dmMesh(), "clamped", &numClampedVertices);PYLITH_CHECK_ERROR(err);
+  PetscErrorCode err = DMGetLabelSize(fault._faultMesh->dmMesh(), "clamped", &numClampedVertices);PYLITH_CHECK_ERROR(err);
 
   CPPUNIT_ASSERT(_data->jacobian);
   const int numDOF = verticesStratum.size() + _data->numFaultVertices - numClampedVertices;
@@ -718,7 +718,7 @@ pylith::faults::TestFaultCohesiveKin::_initialize(topology::Mesh* const mesh,
   PetscInt firstFaultVertex = 0;
   PetscInt firstLagrangeVertex = 0;
   PetscDM dmMesh = mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
-  PetscErrorCode err = DMPlexGetStratumSize(dmMesh, _data->label, 1, &firstLagrangeVertex);PYLITH_CHECK_ERROR(err);
+  PetscErrorCode err = DMGetStratumSize(dmMesh, _data->label, 1, &firstLagrangeVertex);PYLITH_CHECK_ERROR(err);
   PetscInt firstFaultCell = firstLagrangeVertex + firstLagrangeVertex;
   
   fault->adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);

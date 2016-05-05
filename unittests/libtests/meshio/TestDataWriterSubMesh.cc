@@ -92,7 +92,7 @@ pylith::meshio::TestDataWriterSubMesh::_initialize(void)
     const bool useLagrangeConstraints = true;
     PetscInt firstFaultVertex = 0;
     PetscInt firstLagrangeVertex = 0, firstFaultCell = 0;
-    PetscErrorCode err = DMPlexGetStratumSize(_mesh->dmMesh(), _data->faultLabel, 1, &firstLagrangeVertex);PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = DMGetStratumSize(_mesh->dmMesh(), _data->faultLabel, 1, &firstLagrangeVertex);PYLITH_CHECK_ERROR(err);
     firstFaultCell = firstLagrangeVertex;
     if (useLagrangeConstraints) {
       firstFaultCell += firstLagrangeVertex;

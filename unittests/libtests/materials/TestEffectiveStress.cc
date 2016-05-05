@@ -41,9 +41,9 @@ namespace pylith {
 	PylithScalar effStressDerivFunc(const PylithScalar x) {
 	  return 1.0;
 	};
-	PylithScalar effStressFuncDerivFunc(PylithScalar* f,
-				      PylithScalar* df,
-				      const PylithScalar x) {
+	void effStressFuncDerivFunc(PylithScalar* f,
+				    PylithScalar* df,
+				    const PylithScalar x) {
 	  *f = effStressFunc(x);
 	  *df = effStressDerivFunc(x);
 	};
@@ -66,9 +66,9 @@ namespace pylith {
 	PylithScalar effStressDerivFunc(const PylithScalar x) {
 	  return -2*1.0/9.0e+3*(x+2.0e+4);
 	};
-	PylithScalar effStressFuncDerivFunc(PylithScalar* f,
-				      PylithScalar* df,
-				      const PylithScalar x) {
+	void effStressFuncDerivFunc(PylithScalar* f,
+				    PylithScalar* df,
+				    const PylithScalar x) {
 	  *f = effStressFunc(x);
 	  *df = effStressDerivFunc(x);
 	};
@@ -91,9 +91,9 @@ namespace pylith {
 	PylithScalar effStressDerivFunc(const PylithScalar x) {
 	  return 3.0*pow(x - 4.0, 2);
 	};
-	PylithScalar effStressFuncDerivFunc(PylithScalar* f,
-				      PylithScalar* df,
-				      const PylithScalar x) {
+	void effStressFuncDerivFunc(PylithScalar* f,
+				    PylithScalar* df,
+				    const PylithScalar x) {
 	  *f = effStressFunc(x);
 	  *df = effStressDerivFunc(x);
 	};

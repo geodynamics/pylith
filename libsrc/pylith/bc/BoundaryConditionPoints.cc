@@ -75,7 +75,7 @@ pylith::bc::BoundaryConditionPoints::_getPoints(const topology::Mesh& mesh)
   PetscInt numPoints = 0, vStart = 0, vEnd = 0, numVertices = 0;
   PetscBool hasLabel = PETSC_FALSE;
   PetscErrorCode err;
-  err = DMPlexHasLabel(dmMesh, _label.c_str(), &hasLabel);PYLITH_CHECK_ERROR(err);
+  err = DMHasLabel(dmMesh, _label.c_str(), &hasLabel);PYLITH_CHECK_ERROR(err);
   if (!hasLabel) {
     std::ostringstream msg;
     msg << "Could not find group of points '" << _label << "' in mesh.";
@@ -83,7 +83,7 @@ pylith::bc::BoundaryConditionPoints::_getPoints(const topology::Mesh& mesh)
   } // if
 
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetLabel(dmMesh, _label.c_str(), &label);PYLITH_CHECK_ERROR(err);
+  err = DMGetLabel(dmMesh, _label.c_str(), &label);PYLITH_CHECK_ERROR(err);
   err = DMLabelGetStratumIS(label, 1, &pointIS);PYLITH_CHECK_ERROR(err);
   if (pointIS) {
     err = ISGetLocalSize(pointIS, &numPoints);PYLITH_CHECK_ERROR(err);

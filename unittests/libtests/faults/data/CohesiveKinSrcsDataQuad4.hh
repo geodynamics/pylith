@@ -17,7 +17,7 @@
 //
 
 #if !defined(pylith_faults_cohesivekinsrcsdataquad4_hh)
-#define pylith_faults_cohesivekindatasrcsquad4_hh
+#define pylith_faults_cohesivekinsrcsdataquad4_hh
 
 #include "CohesiveKinData.hh"
 
