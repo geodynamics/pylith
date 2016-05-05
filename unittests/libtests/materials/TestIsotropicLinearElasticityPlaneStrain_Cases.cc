@@ -42,7 +42,11 @@ namespace pylith {
 	const bool useInitialState = false;	
 	_mydata = new TestIsotropicLinearElasticityPlaneStrain_Data(useInertia, useBodyForce, useInitialState);CPPUNIT_ASSERT(_mydata);
 
+#if 1 // TEMPORARY (debugging)
 	_mydata->meshFilename = "data/tri3_small.mesh";
+#else
+	_mydata->meshFilename = "data/tri3_onecell.mesh";
+#endif
 	_mydata-> materialLabel = "IsotropicLinearElascitity";
 	_mydata->materialId = 24;
 	_mydata->boundaryLabel = "boundary";
@@ -58,7 +62,7 @@ namespace pylith {
 
 	_mydata->t = 1.0;
 	_mydata->dt = 0.05;
-	_mydata->tshift = 1.0/0.05;
+	_mydata->tshift = 1.0 / _mydata->dt;
 
 	static const pylith::topology::Field::DiscretizeInfo _solnDiscretizations[2] = {
 	  {1, 1, true}, // disp
