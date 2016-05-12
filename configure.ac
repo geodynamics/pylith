@@ -114,8 +114,9 @@ AM_CONDITIONAL([ENABLE_DOCUMENTATION], [test "$enable_documentation" = yes])
 
 # ----------------------------------------------------------------------
 # C/C++/libtool/install
-AC_PROG_CXX
 AC_PROG_CC
+AC_PROG_CXX
+AC_PROG_CXXCPP
 AC_DISABLE_STATIC
 
 AC_PROG_LIBTOOL
@@ -143,7 +144,7 @@ CIT_HEADER_MPI
 
 # PETSC
 AC_LANG(C)
-CIT_PATH_PETSC([3.6.3])
+CIT_PATH_PETSC([3.7.0])
 CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC
 
@@ -170,6 +171,8 @@ fi
 
 # CUBIT (netcdf)
 if test "$enable_cubit" = "yes" ; then
+  AC_REQUIRE_CPP
+  AC_LANG(C++)
   CIT_NETCDF_HEADER
   CIT_NETCDF_LIB
 fi
@@ -196,6 +199,8 @@ fi
 
 # HDF5
 if test "$enable_hdf5" = "yes" ; then
+  AC_REQUIRE_CPP
+  AC_LANG(C++)
   CIT_HDF5_HEADER
   CIT_HDF5_LIB
   CIT_HDF5_LIB_PARALLEL
@@ -204,7 +209,7 @@ fi
 # Full-scale testing with h5py
 if test "$enable_full_testing" = yes ; then
   AM_PATH_PYTHON
-   AC_MSG_CHECKING(for python module h5py for full scale testing)
+  AC_MSG_CHECKING(for python module h5py for full scale testing)
   $PYTHON -c "import h5py" 2>/dev/null   
   if test $? == 0; then
     AC_MSG_RESULT([found h5py, enabling full scale testing])
@@ -224,6 +229,8 @@ if test "$enable_cuda" = "yes" ; then
 fi
 
 # PROJ4
+AC_REQUIRE_CPP
+AC_LANG(C)
 CIT_PROJ4_HEADER
 CIT_PROJ4_LIB
 
@@ -235,6 +242,8 @@ PYTHON_EGG_CPPFLAGS="-I$p"
 AC_SUBST(PYTHON_EGG_CPPFLAGS)
 
 # SPATIALDATA
+AC_REQUIRE_CPP
+AC_LANG(C++)
 CIT_SPATIALDATA_HEADER
 CIT_SPATIALDATA_LIB
 CIT_PYTHON_MODULE([spatialdata],[1.9.3])
