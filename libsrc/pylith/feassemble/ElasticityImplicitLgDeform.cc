@@ -195,67 +195,6 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
   _logger->eventEnd(setupEvent);
   _logger->eventBegin(computeEvent);
 
-#if 0 // TEMPORARY SETTING SOLUTION
-  // Set displacement increment to analytical solution to verify residual calculation.
-  //
-  // Ux1 =  ex*(x-x0)
-  // Uy1 = ey*(y-y0)
-  // x1 = x + Ux1
-  // y1 = y + Uy1
-  //
-  // Ux2 = xr + (x1-xr)*cos(theta) + (y1-yr)*sin(theta) - x
-  // Uy2 = yr - (x1-xr)*sin(theta) + (y1-yr)*cos(theta) - y
-
-  { // DEBUGGING
-    PetscScalar* coordsArray = coordsVisitor.localArray();
-    PetscScalar* dispIncrArray = dispIncrVisitor.localArray();
-    
-    topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
-    const PetscInt vStart = verticesStratum.begin();
-    const PetscInt vEnd = verticesStratum.end();
-    
-    const PylithScalar p_density = 2500.0;
-    const PylithScalar p_vs = 3000.0;
-    const PylithScalar p_vp = 5291.502622129181;
-
-    const PylithScalar p_mu = p_density*p_vs*p_vs;
-    const PylithScalar p_lambda = p_density*p_vp*p_vp - 2*p_mu;
-
-    // Uniform strain field
-    const PylithScalar ex = -0.2;
-    const PylithScalar exx = ex + 0.5*ex*ex;
-    const PylithScalar eyy = -p_lambda/(p_lambda+2*p_mu)*exx;
-    const PylithScalar ey = -1+sqrt(1.0+2.0*eyy); // eyy = ey + 0.5*ey**2
-    const PylithScalar ezz = 0.0;
-    const PylithScalar exy = 0.0;
-
-    const PylithScalar theta_d = -0.0;
-    const PylithScalar x0 = 0.0;
-    const PylithScalar y0 = -500.0;
-    const PylithScalar xr = -1000.0;
-    const PylithScalar yr = 0.0;
-    const PylithScalar theta = theta_d/180.0*M_PI;
-
-    for (PetscInt v=vStart; v < vEnd; ++v) {
-      const int c_dof = coordsVisitor.sectionOffset(v);
-      const int d_dof = dispIncrVisitor.sectionOffset(v);
-      
-      const PylithScalar x = coordsArray[c_dof  ]*lengthScale;
-      const PylithScalar y = coordsArray[c_dof+1]*lengthScale;
-      
-      const PylithScalar ux1 = ex*(x-x0);
-      const PylithScalar uy1 = ey*(y-y0);
-      const PylithScalar x1 = x + ux1;
-      const PylithScalar y1 = y + uy1;
-      const PylithScalar ux2 = xr + (x1-xr)*cos(theta) + (y1-yr)*sin(theta) - x;
-      const PylithScalar uy2 = yr - (x1-xr)*sin(theta) + (y1-yr)*cos(theta) - y;
-
-      dispIncrArray[d_dof  ] = ux2 / lengthScale;
-      dispIncrArray[d_dof+1] = uy2 / lengthScale;
-    } // for
-  } // DEBUGGING
-#endif
-
   // Loop over cells
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
