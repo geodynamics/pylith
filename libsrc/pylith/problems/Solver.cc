@@ -168,6 +168,7 @@ pylith::problems::Solver::_createNullSpace(const topology::SolutionFields& field
   MatNullSpace nullsp = NULL;    
   PetscSection coordinateSection = NULL;
   PetscVec coordinateVec = NULL;
+  PetscReal norm = 0.0;
   PetscInt vStart, vEnd;
   PetscVec mode[6];
   
@@ -214,7 +215,12 @@ pylith::problems::Solver::_createNullSpace(const topology::SolutionFields& field
       err = DMLocalToGlobalEnd(dmMesh, solutionVec, INSERT_VALUES, mode[d]);PYLITH_CHECK_ERROR(err);
     } // for
     for(int i = 0; i < spaceDim; ++i) {
-      err = VecNormalize(mode[i], NULL);PYLITH_CHECK_ERROR(err);
+      err = VecNormalize(mode[i], &norm);PYLITH_CHECK_ERROR(err);
+      if (norm == 0.0) {
+        std::ostringstream msg;
+        msg << "Invalid null space vector "<<i<<" has zero norm.";
+        throw std::runtime_error(msg.str());
+      }
     } // for
     // Orthonormalize system
     for(int i = spaceDim; i < m; ++i) {
@@ -225,7 +231,12 @@ pylith::problems::Solver::_createNullSpace(const topology::SolutionFields& field
         dots[j] *= -1.0;
       } // for
       err = VecMAXPY(mode[i], i, dots, mode);PYLITH_CHECK_ERROR(err);
-      err = VecNormalize(mode[i], NULL);PYLITH_CHECK_ERROR(err);
+      err = VecNormalize(mode[i], &norm);PYLITH_CHECK_ERROR(err);
+      if (norm == 0.0) {
+        std::ostringstream msg;
+        msg << "Invalid null space vector "<<i<<" has zero norm.";
+        throw std::runtime_error(msg.str());
+      }
     } // for
     err = MatNullSpaceCreate(comm, PETSC_FALSE, m, mode, &nullsp);PYLITH_CHECK_ERROR(err);
     for(int i = 0; i< m; ++i) {
