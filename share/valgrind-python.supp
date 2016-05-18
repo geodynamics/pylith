@@ -87,3 +87,105 @@
    fun:_ZN11spatialdata5units6ParserC1Ev
    ...
 }
+
+## Manually added suppressions
+
+{
+   Python garbage collection/PyEval_EvalCodeEx
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:_PyObject_GC_Malloc
+   fun:_PyObject_GC_NewVar
+   fun:PyFrame_New
+   fun:PyEval_EvalCodeEx
+}
+
+{
+   Python garbage collection/PyEval_EvalFrameEx
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:_PyObject_GC_Malloc
+   fun:_PyObject_GC_NewVar
+   fun:PyFrame_New
+   fun:PyEval_EvalFrameEx
+}
+
+{
+   LEAK/ompi_mpi_finalize
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:ompi_mpi_finalize
+   fun:PetscFinalize
+   fun:main
+}
+
+{
+   LEAK/calloc,PMPI_Comm_dup
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:calloc
+   fun:mca_coll_base_comm_select
+   fun:ompi_comm_activate
+   fun:ompi_comm_dup_with_info
+   fun:PMPI_Comm_dup
+}
+
+{
+   LEAK/malloc,PMPI_Comm_dup
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   ...
+   fun:mca_coll_base_comm_select
+   fun:ompi_comm_activate
+   fun:ompi_comm_dup_with_info
+   fun:PMPI_Comm_dup
+}
+
+{
+   LEAK/PMPI_Init_thread
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+}
+
+{
+   HDF5Chunk/Use of uninitialised value of size 8
+   Memcheck:Value8
+   fun:H5D__chunk_lookup
+   fun:H5D__link_chunk_collective_io
+   fun:H5D__chunk_collective_write
+   fun:H5D__pre_write
+   fun:H5Dwrite
+   fun:VecView_MPI_HDF5
+   fun:VecView_Seq
+}
+
+{
+   LEAK/PMPI_Keyval_create
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:ompi_attr_create_keyval_impl
+   fun:ompi_attr_create_keyval
+   fun:PMPI_Keyval_create
+}
+
+{
+   LEAK/PMPI_File_open
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:*
+   fun:check_one_component
+   fun:mca_io_base_file_select
+   fun:ompi_file_open
+   fun:PMPI_File_open
+}
