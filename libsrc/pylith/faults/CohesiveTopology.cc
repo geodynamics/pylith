@@ -48,7 +48,7 @@ pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
   if (groupField) {err = DMLabelGetName(groupField, &groupName);PYLITH_CHECK_ERROR(err);}
   err = DMPlexCreateSubmesh(dmMesh, groupField, 1, &subdm);PYLITH_CHECK_ERROR(err);
   // Check that no cell have all vertices on the fault
-  {
+  if (groupField) {
     IS              subpointIS;
     const PetscInt *dmpoints;
     PetscInt        defaultValue, cStart, cEnd, vStart, vEnd;
@@ -70,7 +70,7 @@ pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
         if ((closure[cl] < vStart) || (closure[cl] >= vEnd)) continue;
         err = DMLabelGetValue(groupField, closure[cl], &value);PYLITH_CHECK_ERROR(err);
         if (value == defaultValue) {invalidCell = PETSC_FALSE; break;}
-      }
+      } // for
       err = DMPlexRestoreTransitiveClosure(dmMesh, dmpoints[c], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
       if (invalidCell) {
         std::ostringstream msg;
@@ -79,11 +79,11 @@ pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
 	err = ISDestroy(&subpointIS);PYLITH_CHECK_ERROR(err);
 	err = DMDestroy(&subdm);PYLITH_CHECK_ERROR(err);
         throw std::runtime_error(msg.str());
-      }
-    }
+      } // if
+    } // for
     err = ISRestoreIndices(subpointIS, &dmpoints);PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&subpointIS);PYLITH_CHECK_ERROR(err);
-  }
+  } // if
   err = DMPlexOrient(subdm);PYLITH_CHECK_ERROR(err);
 
   std::string submeshLabel = "fault_" + std::string(groupName);
