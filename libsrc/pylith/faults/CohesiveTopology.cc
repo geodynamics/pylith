@@ -47,6 +47,43 @@ pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
 
   if (groupField) {err = DMLabelGetName(groupField, &groupName);PYLITH_CHECK_ERROR(err);}
   err = DMPlexCreateSubmesh(dmMesh, groupField, 1, &subdm);PYLITH_CHECK_ERROR(err);
+  // Check that no cell have all vertices on the fault
+  {
+    IS              subpointIS;
+    const PetscInt *dmpoints;
+    PetscInt        defaultValue, cStart, cEnd, vStart, vEnd;
+
+    err = DMLabelGetDefaultValue(groupField, &defaultValue);PYLITH_CHECK_ERROR(err);
+    err = DMPlexCreateSubpointIS(subdm, &subpointIS);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetHeightStratum(subdm, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(subpointIS, &dmpoints);PYLITH_CHECK_ERROR(err);
+    for (PetscInt c = cStart; c < cEnd; ++c) {
+      PetscBool invalidCell = PETSC_TRUE;
+      PetscInt *closure     = NULL;
+      PetscInt  closureSize;
+
+      err = DMPlexGetTransitiveClosure(dmMesh, dmpoints[c], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+      for (PetscInt cl = 0; cl < closureSize*2; cl += 2) {
+        PetscInt value = 0;
+
+        if ((closure[cl] < vStart) || (closure[cl] >= vEnd)) continue;
+        err = DMLabelGetValue(groupField, closure[cl], &value);PYLITH_CHECK_ERROR(err);
+        if (value == defaultValue) {invalidCell = PETSC_FALSE; break;}
+      }
+      err = DMPlexRestoreTransitiveClosure(dmMesh, dmpoints[c], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+      if (invalidCell) {
+        std::ostringstream msg;
+	msg << "Ambiguous fault surface. Cell "<<dmpoints[c]<<" has all of its vertices on the fault.";
+	err = ISRestoreIndices(subpointIS, &dmpoints);PYLITH_CHECK_ERROR(err);
+	err = ISDestroy(&subpointIS);PYLITH_CHECK_ERROR(err);
+	err = DMDestroy(&subdm);PYLITH_CHECK_ERROR(err);
+        throw std::runtime_error(msg.str());
+      }
+    }
+    err = ISRestoreIndices(subpointIS, &dmpoints);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&subpointIS);PYLITH_CHECK_ERROR(err);
+  }
   err = DMPlexOrient(subdm);PYLITH_CHECK_ERROR(err);
 
   std::string submeshLabel = "fault_" + std::string(groupName);
