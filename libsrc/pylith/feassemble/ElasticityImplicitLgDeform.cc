@@ -107,10 +107,9 @@ pylith::feassemble::ElasticityImplicitLgDeform::stableTimeStep(const topology::M
 // ----------------------------------------------------------------------
 // Integrate constributions to residual term (r) for operator.
 void
-pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
-			  const topology::Field& residual,
-			  const PylithScalar t,
-			  topology::SolutionFields* const fields)
+pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(const topology::Field& residual,
+								  const PylithScalar t,
+								  topology::SolutionFields* const fields)
 { // integrateResidual
   PYLITH_METHOD_BEGIN;
 
@@ -196,7 +195,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
   _logger->eventBegin(computeEvent);
 
   // Loop over cells
-  for(PetscInt c = 0; c < numCells; ++c) {
+  for (PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
 
     // Compute geometry information for current cell
@@ -218,17 +217,6 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
     const scalar_array& basisDeriv = _quadrature->basisDeriv();
     const scalar_array& jacobianDet = _quadrature->jacobianDet();
     const scalar_array& quadPtsNondim = _quadrature->quadPts();
-
-    // Compute current estimate of displacement at time t+dt using
-    // solution increment.
-    for(PetscInt i = 0, dispSize = dispCell.size(); i < dispSize; ++i) {
-      dispTpdtCell[i] = dispCell[i] + dispIncrCell[i];
-    } // for
-
-    // Calculate deformation gradient
-    _calcDeformation(&deformCell, basisDeriv, &dispTpdtCell[0], numBasis, numQuadPts, spaceDim);
-
-    //std::cout << "Cell " << c << ", deformation gradient" << std::endl; for (int iQ=0; iQ < numQuadPts; ++iQ) { std::cout << "Quad Pt " << iQ; for(int i=0; i < spaceDim*spaceDim; ++i) { std::cout << " " << deformCell[iQ*spaceDim*spaceDim+i]; } std::cout << std::endl; }
 
     // Compute body force vector if gravity is being used.
     if (_gravityField) {
@@ -260,21 +248,18 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
       PetscLogFlops(numQuadPts*(2+numBasis*(1+2*spaceDim)));
     } // if
 
-    // Compute B(transpose) * sigma, first computing deformation
-    // tensor and strains
+    // Compute current estimate of displacement at time t+dt using solution increment.
+    for(PetscInt i = 0, dispSize = dispCell.size(); i < dispSize; ++i) {
+      dispTpdtCell[i] = dispCell[i] + dispIncrCell[i];
+    } // for
+
+    // Compute B(transpose) * sigma, first computing deformation tensor and strains
+    _calcDeformation(&deformCell, basisDeriv, &dispTpdtCell[0], numBasis, numQuadPts, spaceDim);
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
     const scalar_array& stressCell = _material->calcStress(strainCell, true);
 
-    //std::cout << "Stress" << std::endl; for (int iQ=0; iQ < numQuadPts; ++iQ) { std::cout << "Quad Pt " << iQ; for(int i=0; i < tensorSize; ++i) { std::cout << " " << stressCell[iQ*tensorSize+i]; } std::cout << std::endl; }
-
     CALL_MEMBER_FN(*this, elasticityResidualFn)(stressCell, dispTpdtCell);
 
-#if 0 // DEBUGGING
-    std::cout << "Updating residual for cell " << c << std::endl;
-    for(int i = 0; i < numBasis*spaceDim; ++i) {
-      std::cout << "  v["<<i<<"]: " << _cellVector[i] << std::endl;
-    }
-#endif
     // Assemble cell contribution into field
     residualVisitor.setClosure(&_cellVector[0], _cellVector.size(), cell, ADD_VALUES);
   } // for

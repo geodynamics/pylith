@@ -231,7 +231,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(const topology
   _logger->eventBegin(computeEvent);
 
   // Loop over cells
-  for(PetscInt c = 0; c < numCells; ++c) {
+  for (PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
 
     // Compute geometry information for current cell
