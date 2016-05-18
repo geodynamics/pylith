@@ -66,6 +66,8 @@ class SolverNonlinear(Solver, ModuleSolverNonlinear):
     Set members based using inventory.
     """
     Solver._configure(self)
+
+    ModuleSolverNonlinear.skipNullSpaceCreation(self, not self.createNullSpace)
     return
 
 

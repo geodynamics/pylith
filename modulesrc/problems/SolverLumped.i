@@ -25,7 +25,7 @@
 namespace pylith {
   namespace problems {
 
-    class SolverLumped
+    class SolverLumped : public Solver
     { // SolverLumped
 
       // PUBLIC MEMBERS /////////////////////////////////////////////////

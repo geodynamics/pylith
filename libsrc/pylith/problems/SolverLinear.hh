@@ -38,7 +38,7 @@
  * (KS) iterative methods and preconditioners (P).
  */
 
-class pylith::problems::SolverLinear : Solver
+class pylith::problems::SolverLinear : public Solver
 { // SolverLinear
   friend class TestSolverLinear; // unit testing
 

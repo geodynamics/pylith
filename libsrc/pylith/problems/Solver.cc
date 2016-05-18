@@ -72,7 +72,8 @@ pylith::problems::Solver::Solver(void) :
   _formulation(0),
   _logger(0),
   _jacobianPC(0),
-  _jacobianPCFault(0)
+  _jacobianPCFault(0),
+  _skipNullSpaceCreation(false)
 { // constructor
 } // constructor
 
@@ -103,7 +104,21 @@ pylith::problems::Solver::deallocate(void)
 
   PYLITH_METHOD_END;
 } // deallocate
-  
+
+
+// ----------------------------------------------------------------------
+// Set flag signaling to skip null space creation.
+void
+pylith::problems::Solver::skipNullSpaceCreation(const bool value)
+{ // skipNullSpaceCreation
+  PYLITH_METHOD_BEGIN;
+
+  _skipNullSpaceCreation = value;
+
+  PYLITH_METHOD_END;
+} // skipNullSpaceCreation
+
+
 // ----------------------------------------------------------------------
 // Initialize solver.
 void
@@ -145,7 +160,6 @@ pylith::problems::Solver::initialize(const topology::SolutionFields& fields,
   PYLITH_METHOD_END;
 } // initialize
 
-
 // ----------------------------------------------------------------------
 // Create null space.
 void
@@ -176,7 +190,17 @@ pylith::problems::Solver::_createNullSpace(const topology::SolutionFields& field
   err = DMGetCoordinateSection(dmMesh, &coordinateSection);PYLITH_CHECK_ERROR(err);assert(coordinateSection);
   err = DMGetCoordinatesLocal(dmMesh, &coordinateVec);PYLITH_CHECK_ERROR(err);assert(coordinateVec);
   if (spaceDim > 1) {
-    const int m = (spaceDim * (spaceDim + 1)) / 2;
+    const int m = (spaceDim * (spaceDim + 1)) / 2;assert(m > 0 && m <= 6);
+
+    // Check size of solution section against expected size of null space
+    PylithInt numDofUnconstrained = 0;
+    err = PetscSectionGetConstrainedStorageSize(solutionSection, &numDofUnconstrained);
+    if (m > numDofUnconstrained) {
+      std::ostringstream msg;
+      msg << "Number of unconstrained DOF (" << numDofUnconstrained << ") is less than the size of the expected null space (" << m << ") for a " << spaceDim << "-D problem.";
+      throw std::runtime_error(msg.str());
+    } // if
+
     for(int i = 0; i < m; ++i) {
       err = VecDuplicate(solutionGlobalVec, &mode[i]);PYLITH_CHECK_ERROR(err);
       // This is necessary to avoid circular references when we compose this MatNullSpace with a field in the DM
