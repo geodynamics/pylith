@@ -28,6 +28,7 @@ dist_noinst_DATA = \
 	tri3f.mesh \
 	tri3g.mesh \
 	tri3h.mesh \
+	tri3i.mesh \
 	tri3_finalslip.spatialdb \
 	tri3_finalslipB.spatialdb \
 	tri3_sliptime.spatialdb \

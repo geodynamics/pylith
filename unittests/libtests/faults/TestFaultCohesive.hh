@@ -56,6 +56,7 @@ class pylith::faults::TestFaultCohesive : public CppUnit::TestFixture
   CPPUNIT_TEST( testAdjustTopologyTri3f );
   CPPUNIT_TEST( testAdjustTopologyTri3g );
   CPPUNIT_TEST( testAdjustTopologyTri3h );
+  CPPUNIT_TEST( testAdjustTopologyTri3i );
   CPPUNIT_TEST( testAdjustTopologyQuad4 );
   CPPUNIT_TEST( testAdjustTopologyQuad4b );
   CPPUNIT_TEST( testAdjustTopologyQuad4c );
@@ -122,6 +123,9 @@ public :
 
   /// Test adjustTopology() with 2-D triangular element (embedded fault, 2 cohesive cells).
   void testAdjustTopologyTri3h(void);
+
+  /// Test adjustTopology() with 2-D triangular element (cell with all nodes on fault).
+  void testAdjustTopologyTri3i(void);
 
   /// Test adjustTopology() with 2-D quadrilateral element.
   void testAdjustTopologyQuad4(void);
