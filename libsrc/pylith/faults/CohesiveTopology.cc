@@ -74,7 +74,10 @@ pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
       err = DMPlexRestoreTransitiveClosure(dmMesh, dmpoints[c], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
       if (invalidCell) {
         std::ostringstream msg;
-        msg << "Invalid cell "<<dmpoints[c]<<" has all its vertices on the fault.";
+	msg << "Ambiguous fault surface. Cell "<<dmpoints[c]<<" has all of its vertices on the fault.";
+	err = ISRestoreIndices(subpointIS, &dmpoints);PYLITH_CHECK_ERROR(err);
+	err = ISDestroy(&subpointIS);PYLITH_CHECK_ERROR(err);
+	err = DMDestroy(&subdm);PYLITH_CHECK_ERROR(err);
         throw std::runtime_error(msg.str());
       }
     }

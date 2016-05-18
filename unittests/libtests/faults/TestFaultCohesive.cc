@@ -181,6 +181,22 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTri3h(void)
 } // testAdjustTopologyTri3h
 
 // ----------------------------------------------------------------------
+#include "data/CohesiveDataTri3i.hh" // USES CohesiveDataTri3i
+
+// Test adjustTopology() with 2-D triangular element (vertex on fault).
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyTri3i(void)
+{ // testAdjustTopologyTri3i
+  PYLITH_METHOD_BEGIN;
+
+  CohesiveDataTri3i data;
+  FaultCohesiveTract fault;
+  CPPUNIT_ASSERT_THROW(_testAdjustTopology(&fault, data), std::runtime_error);
+
+  PYLITH_METHOD_END;
+} // testAdjustTopologyTri3i
+
+// ----------------------------------------------------------------------
 #include "data/CohesiveDataQuad4.hh" // USES CohesiveDataQuad4
 
 // Test adjustTopology() with 2-D quadrilateral element.
