@@ -46,10 +46,10 @@ def getData(sim):
             'stress': stress}
 
 # ======================================================================
-sim = "initialstress"
+sim = "postseismic_infstrain"
 dataA = getData(sim)
 
-sim = "initialstress"
+sim = "postseismic_finstrain"
 dataB = getData(sim)
 
 import pylab
@@ -70,6 +70,12 @@ pylab.plot(dataA['time_cell'], dataA['vstrain'][:,:], 'r-',
            dataB['time_cell'], dataB['vstrain'][:,:], 'b--',)
 pylab.xlabel('Time (year)')
 pylab.ylabel('Viscous Strain')
+
+#pylab.subplot(2,2,4)
+#pylab.plot(dataA['time_cell'], dataA['stress'][:,:], 'r-',
+#           dataB['time_cell'], dataB['stress'][:,:], 'b--',)
+#pylab.xlabel('Time (year)')
+#pylab.ylabel('Stress')
 
 pylab.show()
 

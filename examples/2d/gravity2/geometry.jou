@@ -26,20 +26,17 @@ ${Units('si')}
 # Create surface using vertices
 # ----------------------------------------------------------------------
 
-# Block is 200 km x 100 km with uniform topography slope.
+# Block is 200 km x 100 km.
 # -100 km <= x <= 100 km 
 # -100 km <= y <= 0 m
 reset
-${topoH=1.0*km}
-${topoL=20.0*km}
+${faultX=10.0*km}
 ${domainW=200.0*km}
 ${domainH=100.0*km}
 create vertex {-0.5*domainW} {-domainH}  0.0
 ${idVSbegin=Id("vertex")}
 create vertex {-0.5*domainW} {-0.0*km}  0.0
-create vertex {-0.5*topoL} {0.0*km}  0.0
-create vertex {0.0*km} {topoH}  0.0
-create vertex {+0.5*topoL} {0.0*km}  0.0
+create vertex {faultX} {0.0*km}  0.0
 ${idVT=Id("vertex")}
 create vertex {+0.5*domainW} {0.0*km}  0.0
 create vertex {+0.5*domainW} {-domainH}  0.0
@@ -51,7 +48,7 @@ create surface vertex {idVSbegin} to {idVSend}
 # ----------------------------------------------------------------------
 ${faultDip=45.0}
 ${faultWidth=40.0*km}
-create vertex {+0.5*topoL-sind(faultDip)*domainH} {-domainH}  0.0
+create vertex {faultX-sind(faultDip)*domainH} {-domainH}  0.0
 ${idVF=Id("vertex")}
 split surface 1 across location vertex {idVT} location vertex {idVF}
 
@@ -69,10 +66,10 @@ split surface 2 across location vertex {idVM1} location vertex {idVM2}
 split surface 3 across location vertex {idVM1} location vertex {idVM2}
 
 # Split fault surface
-create vertex {+0.5*topoL-sind(faultDip)*faultWidth} {-cosd(faultDisp)*faultWidth}  0.0
+create vertex {faultX-sind(faultDip)*faultWidth} {-cosd(faultDisp)*faultWidth}  0.0
 ${idVF=Id("vertex")}
 # WARNING: Curve id may need updating for various versions of CUBIT/Trelis.
-split curve 15  at vertex {idVF}  from vertex
+split curve 13  at vertex {idVF}  from vertex
 
 # ----------------------------------------------------------------------
 # Name geometric entities for use in meshing.
@@ -82,24 +79,17 @@ surface 4 name "s_crust_xpos"
 surface 7 name "s_mantle_xneg"
 surface 5 name "s_mantle_xpos"
 
-curve 17 name "c_crust_xneg"
-curve 18 name "c_mantle_xneg"
-curve 13 name "c_crust_xpos"
-curve 14 name "c_mantle_xpos"
-curve 10 name "c_bottom_xneg"
-curve 9 name "c_bottom_xpos"
+curve 15 name "c_crust_xneg"
+curve 16 name "c_mantle_xneg"
+curve 11 name "c_crust_xpos"
+curve 12 name "c_mantle_xpos"
+curve 8 name "c_bottom_xneg"
+curve 7 name "c_bottom_xpos"
 curve 2 name "c_topo_xneg"
-curve 3 name "c_topo_slope1"
-curve 4 name "c_topo_slope2"
-curve 5 name "c_topo_xpos"
+curve 3 name "c_topo_xpos"
 
-curve 12 name "c_fault_crust"
-curve 20 name "c_fault_mantle"
-
-vertex 16 name "v_fault_tip"
+curve 10 name "c_fault_crust"
+curve 18 name "c_fault_mantle"
+curve 17 name "c_fault_ext"
 
 delete vertex all
-
-
-
-
