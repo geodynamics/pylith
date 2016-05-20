@@ -5,6 +5,8 @@ The main features of this example are:
   * gravitational body forces in 2-D
   * small strain formulation (large rigid body motions and small strains)
   * viscoelastic relaxation with a linear Maxwell model
+  * direct solver in simulations without a fault
+  * iterative solver with custom preconditioner for a fault
 
 Problem Setup
 
@@ -68,7 +70,21 @@ Step 3. Gravitational body forces, finite strain, and initial stresses
     pylith gravity_isostatic.cfg
 
 
-Step 4. Postseismic relaxation with infinitesimal strain.
+Step 4. Gravitational body forces, finite strain, initial stresses,
+  and local density variation.
+
+  This simulation adds a local density variation in the elastic layer
+  to the problem considered in Step 3. Near the origin, the density is
+  reduced in a semi-circular region, roughly approximating a
+  sedimentary basin. In this region, the initial stresses do not
+  satisfy the governing equation and the solution evolves to a steady
+  state.
+
+  Run the simulation via the following command:
+    pylith gravity_vardensity.cfg
+
+
+Step 5. Postseismic relaxation with infinitesimal strain.
 
   We impose slip on the reverse fault within the elastic layer and
   compute the postseismic deformation associated with relaxation in
@@ -78,7 +94,7 @@ Step 4. Postseismic relaxation with infinitesimal strain.
     pylith postseismic.cfg postseismic_infstrain.cfg
 
 
-Step 5. Postseismic relaxation with finite strain.
+Step 6. Postseismic relaxation with finite strain.
 
   We impose slip on the reverse fault within the elastic layer and
   compute the postseismic deformation associated with relaxation in
@@ -102,8 +118,6 @@ Suggested variations
   * In Step 4, extend the earthquake slip into the viscoelastic layer?
     How does this affect the postseismic deformation?
 
-  * In Step 3, add topography or a lateral density perturbation to the
-    elastic layer. As you increase the duration of the simulation, does
-    the solution approach a steady-state solution? How does this
-    solution differ from original problem, which does not have
-    topography or lateral variations in density?
+  * In Step 3, add topography or increase the size/amplitude of the
+    local density perturbation to the elastic layer. How does this
+    solution differ from Step 4?
