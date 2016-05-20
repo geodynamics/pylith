@@ -3,6 +3,7 @@ gravitational body forces and the small strain formulation.
 
 The main features of this example are:
   * gravitational body forces in 2-D
+  * initial stresses and state variables
   * small strain formulation (large rigid body motions and small strains)
   * viscoelastic relaxation with a linear Maxwell model
   * direct solver in simulations without a fault
