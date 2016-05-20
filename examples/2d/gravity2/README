@@ -1,6 +1,109 @@
-pylith initialstress.cfg
+The suite of examples in this directory illustrate the use of
+gravitational body forces and the small strain formulation.
 
-generate_statedb.py
+The main features of this example are:
+  * gravitational body forces in 2-D
+  * small strain formulation (large rigid body motions and small strains)
+  * viscoelastic relaxation with a linear Maxwell model
 
-pylith postseismic_infinitesimal.cfg
-pylith postseismic_finite.cfg
+Problem Setup
+
+The geometry of the problem is a 200km-wide by 100km-deep domain with
+a flat ground surface. We use a 30km-thick elastic layer over a linear
+Maxwell viscoelastic half-space to approximate the crust and mantle. A
+reverse fault dipping 45 degrees cuts through the elastic layer and
+extends in the top portion of the viscoelastic layer. Gravitational
+body forces act in the vertical direction. We apply roller Dirichlet
+boundary conditions to constrain the displacement normal to the
+boundary.
+
+We discretize the domain using quadrilateral cells with a nominal cell
+size of 2.0km. The general parameters are included in the
+pylithapp.cfg file, which will be read by default.
+
+
+Mesh generation (optional)
+
+  NOTE: The result of this step will overwrite the included file
+        mesh.exo. You may want to copy/rename this file so that
+        you have a backup copy in case you have difficulty running
+        CUBIT/Trelis.
+
+  Start CUBIT and play the journal file "mesh.jou". We highly
+  recommend that you study the contents of the journal files to
+  understand the mesh generation process.
+
+
+Step 1. Gravitational body forces and infinitesimal strain
+
+  This simulation does not use initial stresses, so the gravitational
+  body forces cause the domain to compress in the vertical
+  direction. The shear stresses in the mantle relax, so that the
+  solution trends towards sigma_xx == sigma_yy.
+
+  Run the simulation via the following command:
+    pylith gravity_infstrain.cfg
+
+
+Step 2. Gravitational body forces and finite strain
+
+  This simulation does not use initial stresses, so the gravitational
+  body forces cause the domain to compress in the vertical
+  direction. The shear stresses in the mantle relax, so that the
+  solution trends towards sigma_xx == sigma_yy.
+
+  Run the simulation via the following command:
+    pylith gravity_finstrain.cfg
+
+
+Step 3. Gravitational body forces, finite strain, and initial stresses
+
+  This simulation uses depth-dependent initial stresses that satisfy
+  the governing equations. As a result, there is zero
+  deformation. This simulation uses a static simulation to demonstrate
+  that no deformation results when the initial stresses satisfy the
+  governing equations.
+
+  Run the simulation via the following command:
+    pylith gravity_isostatic.cfg
+
+
+Step 4. Postseismic relaxation with infinitesimal strain.
+
+  We impose slip on the reverse fault within the elastic layer and
+  compute the postseismic deformation associated with relaxation in
+  the mantle. The solution
+
+  Run the simulation via the following command:
+    pylith postseismic.cfg postseismic_infstrain.cfg
+
+
+Step 5. Postseismic relaxation with finite strain.
+
+  We impose slip on the reverse fault within the elastic layer and
+  compute the postseismic deformation associated with relaxation in
+  the mantle.
+
+  Run the simulation via the following command:
+    pylith postseismic.cfg postseismic_infstrain.cfg
+
+
+Suggested variations
+
+  The list below includes some suggested modifications to the suite of
+  examples that will allow you to become more familiar with some of
+  the subtle issues that arise when dealing with gravitational body
+  forces and finite strain.
+
+  * Change the cells from quadrilaterals to triangles. How does this
+    affect the solution? Can you identify any differences in the
+    numerical accuracy?
+
+  * In Step 4, extend the earthquake slip into the viscoelastic layer?
+    How does this affect the postseismic deformation?
+
+  * In Step 3, add topography or a lateral density perturbation to the
+    elastic layer. As you increase the duration of the simulation, does
+    the solution approach a steady-state solution? How does this
+    solution differ from original problem, which does not have
+    topography or lateral variations in density?
