@@ -6,9 +6,11 @@
 import os
 import sys
 import subprocess
+# import pdb
+# pdb.set_trace()
 
-materials = ["maxps", "genmaxps", "powerlawps",
-             "max3d", "genmax3d", "powerlaw3d"]
+materials = ["maxps", "genmaxps", "powerlawps", "dpps",
+             "max3d", "genmax3d", "powerlaw3d", "dp3d"]
 
 if len(sys.argv) != 1:
   raise ValueError("usage: run_all.py")
@@ -29,7 +31,7 @@ for materialNum in range(len(materials)):
   material = materials[materialNum]
   print "Testing material %s:" % material
   meshCfg = "quad.cfg "
-  if (materialNum > 2):
+  if (materialNum > 3):
     meshCfg = "hex.cfg "
   staticArgs = meshCfg + "grav_static_" + material + ".cfg"
   staticLog = "grav_static_" + material + ".log"
