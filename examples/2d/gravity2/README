@@ -1,7 +1,7 @@
-The suite of examples in this directory illustrate the use of
-gravitational body forces and the small strain formulation.
+The examples in this directory illustrate the use of gravitational
+body forces and the small strain formulation.
 
-The main features of this example are:
+The main features of these examples are:
   * gravitational body forces in 2-D
   * initial stresses and state variables
   * small strain formulation (large rigid body motions and small strains)
@@ -15,7 +15,7 @@ The geometry of the problem is a 200km-wide by 100km-deep domain with
 a flat ground surface. We use a 30km-thick elastic layer over a linear
 Maxwell viscoelastic half-space to approximate the crust and mantle. A
 reverse fault dipping 45 degrees cuts through the elastic layer and
-extends in the top portion of the viscoelastic layer. Gravitational
+extends into the top portion of the viscoelastic layer. Gravitational
 body forces act in the vertical direction. We apply roller Dirichlet
 boundary conditions to constrain the displacement normal to the
 boundary.
@@ -35,6 +35,14 @@ Mesh generation (optional)
   Start CUBIT and play the journal file "mesh.jou". We highly
   recommend that you study the contents of the journal files to
   understand the mesh generation process.
+
+Steps 1-4 illustrate the differences between infinitesimal and finite
+strain with gravitational body forces and with and without initial
+stresses.
+
+Steps 5-8 illustrate the differences between infinitesimal and finite
+strain and with and without gravitatinal body forces for postseismic
+relaxation following an earthquake with reverse slip.
 
 
 Step 1. Gravitational body forces and infinitesimal strain
@@ -68,7 +76,7 @@ Step 3. Gravitational body forces, finite strain, and initial stresses
   governing equations.
 
   Run the simulation via the following command:
-    pylith gravity_isostatic.cfg
+    pylith gravity_initialstress.cfg gravity_isostatic.cfg
 
 
 Step 4. Gravitational body forces, finite strain, initial stresses,
@@ -82,10 +90,33 @@ Step 4. Gravitational body forces, finite strain, initial stresses,
   state.
 
   Run the simulation via the following command:
-    pylith gravity_vardensity.cfg
+    pylith gravity_initialstress.cfg gravity_vardensity.cfg
 
 
-Step 5. Postseismic relaxation with infinitesimal strain.
+Step 5. Postseismic relaxation with infinitesimal strain and without
+  gravitational body forces..
+
+  We impose slip on the reverse fault within the elastic layer and
+  compute the postseismic deformation associated with relaxation in
+  the mantle. We do not include gravitational body forces.
+
+  Run the simulation via the following command:
+    pylith postseismic.cfg nogravity.cfg postseismic_infstrain.cfg
+
+
+Step 6. Postseismic relaxation with finite strain and without
+  gravitational body forces.
+
+  We impose slip on the reverse fault within the elastic layer and
+  compute the postseismic deformation associated with relaxation in
+  the mantle.
+
+  Run the simulation via the following command:
+    pylith postseismic.cfg nogravity.cfg postseismic_infstrain.cfg
+
+
+Step 7. Postseismic relaxation with infinitesimal strain and
+  gravitational body forces.
 
   We impose slip on the reverse fault within the elastic layer and
   compute the postseismic deformation associated with relaxation in
@@ -95,7 +126,8 @@ Step 5. Postseismic relaxation with infinitesimal strain.
     pylith postseismic.cfg postseismic_infstrain.cfg
 
 
-Step 6. Postseismic relaxation with finite strain.
+Step 8. Postseismic relaxation with finite strain and gravitational
+  body forces.
 
   We impose slip on the reverse fault within the elastic layer and
   compute the postseismic deformation associated with relaxation in
