@@ -41,7 +41,7 @@ strain with gravitational body forces and with and without initial
 stresses.
 
 Steps 5-8 illustrate the differences between infinitesimal and finite
-strain and with and without gravitatinal body forces for postseismic
+strain and with and without gravitational body forces for postseismic
 relaxation following an earthquake with reverse slip.
 
 
@@ -76,7 +76,7 @@ Step 3. Gravitational body forces, finite strain, and initial stresses
   governing equations.
 
   Run the simulation via the following command:
-    pylith gravity_initialstress.cfg gravity_isostatic.cfg
+    pylith gravity_initstress.cfg gravity_isostatic.cfg
 
 
 Step 4. Gravitational body forces, finite strain, initial stresses,
@@ -90,7 +90,7 @@ Step 4. Gravitational body forces, finite strain, initial stresses,
   state.
 
   Run the simulation via the following command:
-    pylith gravity_initialstress.cfg gravity_vardensity.cfg
+    pylith gravity_initstress.cfg gravity_vardensity.cfg
 
 
 Step 5. Postseismic relaxation with infinitesimal strain and without
@@ -101,7 +101,7 @@ Step 5. Postseismic relaxation with infinitesimal strain and without
   the mantle. We do not include gravitational body forces.
 
   Run the simulation via the following command:
-    pylith postseismic.cfg nogravity.cfg postseismic_infstrain.cfg
+    pylith postseismic.cfg nogravity.cfg postseismic_infstrain_nograv.cfg
 
 
 Step 6. Postseismic relaxation with finite strain and without
@@ -112,7 +112,7 @@ Step 6. Postseismic relaxation with finite strain and without
   the mantle.
 
   Run the simulation via the following command:
-    pylith postseismic.cfg nogravity.cfg postseismic_infstrain.cfg
+    pylith postseismic.cfg nogravity.cfg postseismic_finstrain_nograv.cfg
 
 
 Step 7. Postseismic relaxation with infinitesimal strain and
@@ -123,7 +123,7 @@ Step 7. Postseismic relaxation with infinitesimal strain and
   the mantle. The solution
 
   Run the simulation via the following command:
-    pylith postseismic.cfg postseismic_infstrain.cfg
+    pylith postseismic.cfg gravity_initstress.cfg postseismic_infstrain.cfg
 
 
 Step 8. Postseismic relaxation with finite strain and gravitational
@@ -134,7 +134,7 @@ Step 8. Postseismic relaxation with finite strain and gravitational
   the mantle.
 
   Run the simulation via the following command:
-    pylith postseismic.cfg postseismic_infstrain.cfg
+    pylith postseismic.cfg gravity_initstress.cfg postseismic_finstrain.cfg
 
 
 Suggested variations
