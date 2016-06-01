@@ -13,9 +13,9 @@
 # See COPYING for license information.
 #
 # ----------------------------------------------------------------------
-# WARNING: This file uses surface/curve ids from CUBIT 14.9. These may need to be
-# updated for other versions of CUBIT and Trelis. Most of these are at the end
-# of this file.
+# WARNING: This file uses surface/curve ids from CUBIT 15.1. These may
+# need to be updated for other versions of CUBIT and Trelis. Most of
+# these are at the end of this file.
 #
 # ----------------------------------------------------------------------
 # Set units to SI.

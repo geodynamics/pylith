@@ -8,6 +8,7 @@ The main features of these examples are:
   * viscoelastic relaxation with a linear Maxwell model
   * direct solver in simulations without a fault
   * iterative solver with custom preconditioner for a fault
+  * spatial database with irregular distribution of points in 2-D
 
 Problem Setup
 
