@@ -11,7 +11,7 @@ def getData(sim):
     timePt = h5['time'][:,0,0]
     h5.close()
 
-    target = (0.0e+3, 1.0e+3)
+    target = (0.0, 0.0)
     dist = (vertices[:,0]-target[0])**2 + (vertices[:,1]-target[1])**2
     ipt = numpy.argmin(dist)
     dispPt = disp[:,ipt,:]
@@ -22,16 +22,17 @@ def getData(sim):
     vertices = h5['geometry/vertices'][:]
     cells = numpy.array(h5['topology/cells'][:], dtype=numpy.int)
     vstrain = h5['cell_fields/viscous_strain'][:]
-    stress = h5['cell_fields/cauchy_stress'][-1,:,:]
+    stress = h5['cell_fields/cauchy_stress'][:,:,:]
     timeCell = h5['time'][:,0,0]
     h5.close()
 
     cellCoords = vertices[cells,:]
     cellCenters = numpy.mean(cellCoords, axis=1)
-    target = (-75.0e+3, -50e+3)
+    target = (-50.0e+3, -50e+3)
     dist = (cellCenters[:,0]-target[0])**2 + (cellCenters[:,1]-target[1])**2
     icell = numpy.argmin(dist)
     vstrainCell = vstrain[:,icell,:]
+    stressCell = stress[:,icell,:]
 
     from pyre.units.time import year
     timePt /= year.value
@@ -43,13 +44,13 @@ def getData(sim):
             'time_cell': timeCell,
             'vstrain': vstrainCell, 
             'cell_centers': cellCenters,
-            'stress': stress}
+            'stress': stressCell}
 
 # ======================================================================
-sim = "postseismic_infstrain"
+sim = "postseismic_infstrain_nograv"
 dataA = getData(sim)
 
-sim = "postseismic_finstrain"
+sim = "postseismic_finstrain_nograv"
 dataB = getData(sim)
 
 import pylab
@@ -71,11 +72,11 @@ pylab.plot(dataA['time_cell'], dataA['vstrain'][:,:], 'r-',
 pylab.xlabel('Time (year)')
 pylab.ylabel('Viscous Strain')
 
-#pylab.subplot(2,2,4)
-#pylab.plot(dataA['time_cell'], dataA['stress'][:,:], 'r-',
-#           dataB['time_cell'], dataB['stress'][:,:], 'b--',)
-#pylab.xlabel('Time (year)')
-#pylab.ylabel('Stress')
+pylab.subplot(2,2,4)
+pylab.plot(dataA['time_cell'], dataA['stress'][:,2], 'r-',
+           dataB['time_cell'], dataB['stress'][:,2], 'b--',)
+pylab.xlabel('Time (year)')
+pylab.ylabel('Stress_xy')
 
 pylab.show()
 
