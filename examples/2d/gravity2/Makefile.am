@@ -24,15 +24,20 @@ dist_noinst_DATA = \
 	mesh.exo \
 	matprops_unidensity.spatialdb \
 	matprops_vardensity.spatialdb \
+	eqslip.spatialdb \
+	gravity_isostatic.spatialdb \
 	gravity_infstrain.cfg \
 	gravity_finstrain.cfg \
+	gravity_initstress.cfg \
 	gravity_isostatic.cfg \
-	gravity_isostatic.spatialdb \
-	gravity_vardensity.spatialdb \
+	gravity_vardensity.cfg \
+	nogravity.cfg \
 	postseismic.cfg \
+	postseismic_infstrain_nograv.cfg \
+	postseismic_finstrain_nograv.cfg \
 	postseismic_infstrain.cfg \
 	postseismic_finstrain.cfg \
-	eqslip.spatialdb
+	plot_soln.py
 
 
 # End of file 
