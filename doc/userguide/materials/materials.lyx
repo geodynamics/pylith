@@ -674,7 +674,7 @@ total_strain,
 \begin_layout Plain Layout
 
 \family typewriter
-stress, cauchy_stress viscous_strain
+stress, cauchy_stress, viscous_strain
 \end_layout
 
 \end_inset
@@ -885,7 +885,7 @@ Order of components in tensor state-variables for material models.
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="6" columns="4">
+<lyxtabular version="3" rows="5" columns="4">
 <features rotate="0" tabularvalignment="middle">
 <column alignment="center" valignment="top" width="1.25in">
 <column alignment="center" valignment="top" width="0.5in">
@@ -1021,84 +1021,7 @@ total_strain
 \begin_layout Plain Layout
 
 \family typewriter
-stress
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\sigma_{xx}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\sigma_{xx}$
-\end_inset
-
-, 
-\begin_inset Formula $\sigma_{yy}$
-\end_inset
-
-, 
-\begin_inset Formula $\sigma_{xy}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\sigma_{xx}$
-\end_inset
-
-, 
-\begin_inset Formula $\sigma_{yy}$
-\end_inset
-
-, 
-\begin_inset Formula $\sigma_{zz}$
-\end_inset
-
-, 
-\begin_inset Formula $\sigma_{xy}$
-\end_inset
-
-, 
-\begin_inset Formula $\sigma_{yz}$
-\end_inset
-
-, 
-\begin_inset Formula $\sigma_{xz}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family typewriter
-cauchy_stress
+stress, cauchy_stress
 \end_layout
 
 \end_inset
@@ -2070,9 +1993,9 @@ db_initial_stress
 \begin_layout Plain Layout
 
 \family typewriter
-stress-xx, stress-yy
+stress-xx, 
 \family default
-, etc.
+etc.
 \end_layout
 
 \end_inset
@@ -2105,9 +2028,9 @@ db_initial_strain
 \begin_layout Plain Layout
 
 \family typewriter
-total-strain-xx, total-strain-yy
+total-strain-xx, 
 \family default
-, etc.
+etc.
 \end_layout
 
 \end_inset
@@ -3746,9 +3669,9 @@ db_initial_stress
 \begin_layout Plain Layout
 
 \family typewriter
-stress-xx, stress-yy
+stress-xx, 
 \family default
-, etc.
+etc.
 \end_layout
 
 \end_inset
@@ -3781,9 +3704,9 @@ db_initial_strain
 \begin_layout Plain Layout
 
 \family typewriter
-total-strain-xx, total-strain-yy
+total-strain-xx, 
 \family default
-, etc.
+etc.
 \end_layout
 
 \end_inset
@@ -3816,9 +3739,9 @@ db_initial_state
 \begin_layout Plain Layout
 
 \family typewriter
-viscous-strain-xx, viscous-strain-yy
+viscous-strain-xx, 
 \family default
-, etc.
+etc.
 \end_layout
 
 \end_inset
@@ -4280,9 +4203,9 @@ db_initial_stress
 \begin_layout Plain Layout
 
 \family typewriter
-stress-xx, stress-yy
+stress-xx, 
 \family default
-, etc.
+etc.
 \end_layout
 
 \end_inset
@@ -4315,9 +4238,9 @@ db_initial_strain
 \begin_layout Plain Layout
 
 \family typewriter
-total-strain-xx, total-strain-yy
+total-strain-xx, 
 \family default
-, etc.
+etc.
 \end_layout
 
 \end_inset
@@ -4333,7 +4256,7 @@ Initial strain components
 </cell>
 </row>
 <row>
-<cell multirow="3" alignment="left" valignment="middle" topline="true" leftline="true" usebox="none">
+<cell multirow="3" alignment="left" valignment="middle" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -4350,9 +4273,9 @@ db_initial_state
 \begin_layout Plain Layout
 
 \family typewriter
-viscous-strain-1-xx, viscous-strain-1-yy
+viscous-strain-1-xx, 
 \family default
-, etc.
+etc.
 \end_layout
 
 \end_inset
@@ -4383,9 +4306,9 @@ Initial viscous strain components for Maxwell model 1
 \begin_layout Plain Layout
 
 \family typewriter
-viscous-strain-2-xx, viscous-strain-2-yy
+viscous-strain-2-xx, 
 \family default
-, etc.
+etc.
 \end_layout
 
 \end_inset
@@ -4416,9 +4339,9 @@ Initial viscous strain components for Maxwell model 2
 \begin_layout Plain Layout
 
 \family typewriter
-viscous-strain-3-xx, viscous-strain-3-yy
+viscous-strain-3-xx, 
 \family default
-, etc.
+etc.
 \end_layout
 
 \end_inset
@@ -5823,9 +5746,9 @@ db_initial_stress
 \begin_layout Plain Layout
 
 \family typewriter
-stress-xx, stress-yy
+stress-xx, 
 \family default
-, etc.
+etc.
 \end_layout
 
 \end_inset
@@ -5858,9 +5781,9 @@ db_initial_strain
 \begin_layout Plain Layout
 
 \family typewriter
-total-strain-xx, total-strain-yy
+total-strain-xx, 
 \family default
-, etc.
+etc.
 \end_layout
 
 \end_inset
@@ -5893,9 +5816,9 @@ db_initial_state
 \begin_layout Plain Layout
 
 \family typewriter
-viscous-strain-xx, viscous-strain-yy
+viscous-strain-xx, 
 \family default
-, etc.
+etc.
 \end_layout
 
 \end_inset
@@ -7277,9 +7200,9 @@ db_initial_stress
 \begin_layout Plain Layout
 
 \family typewriter
-stress-xx, stress-yy
+stress-xx, 
 \family default
-, etc.
+etc.
 \end_layout
 
 \end_inset
@@ -7312,9 +7235,9 @@ db_initial_strain
 \begin_layout Plain Layout
 
 \family typewriter
-total-strain-xx, total-strain-yy
+total-strain-xx, 
 \family default
-, etc.
+etc.
 \end_layout
 
 \end_inset
@@ -7347,9 +7270,9 @@ db_initial_state
 \begin_layout Plain Layout
 
 \family typewriter
-plastic-strain-xx, plastic-strain-yy
+plastic-strain-xx, 
 \family default
-, etc.
+etc.
 \end_layout
 
 \end_inset
