@@ -1667,8 +1667,7 @@ In some crustal deformation problems sufficient deformation may occur that
  This is often the case for problems when one wants to include the effects
  of gravitational body forces and deformation on the overburden pressure.
  In such cases we want to account for both rigid body motion and small strains.
- The elasticity formulation in PyLith for small strains uses the Green-Lagrange
- strain tensor and the Second Piola-Kirchhoff stress tensor as is based
+ We use a total Lagrangian formulation (undeformed configuration) based
  on the one presented by Bathe 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -1677,8 +1676,30 @@ key "Bathe:1995"
 \end_inset
 
 .
- The Green-Lagrange strain provides a measure of the strain relative to
- the original, undeformed configuration.
+\end_layout
+
+\begin_layout Standard
+Starting from the governing equation, written for the deformed configuration
+ (denoted by the subscript 
+\begin_inset Formula $t$
+\end_inset
+
+), we have
+\begin_inset Formula 
+\begin{equation}
+-\int_{V_{t}}\underline{\sigma}:\nabla\overrightarrow{\phi}\: dV_{t}+\int_{S_{T}}\overrightarrow{T_{t}}\cdot\overrightarrow{\phi}\, dS_{t}+\int_{Vt}\overrightarrow{f_{t}}\cdot\overrightarrow{\phi}\, dV_{t}-\int_{Vt}\rho_{t}\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV_{t}=0.
+\end{equation}
+
+\end_inset
+
+For the total Lagrangian formulation we want to transform these integrals
+ over the deformed configuration to integrals over the undeformed configuration.
+ We require that the deformed and undeformed configurations use the same
+ coordinate system (origin and orientation).
+ make the assumption that In order to transform the quantities from the
+ deformed configuration to the undeformed configuration, we make use of
+ the deformation The Green-Lagrange strain provides a measure of the strain
+ relative to the original, undeformed configuration.
 \begin_inset Formula 
 \begin{gather}
 \varepsilon_{ij}=\frac{1}{2}(u_{i,j}+u_{j,i}+u_{k,i}u_{k,j}),\text{ or}\\
@@ -1692,7 +1713,7 @@ and
 \begin_inset Formula $X_{ij}$
 \end_inset
 
- is the deformation tensor.
+ is the deformation gradient tensor.
  The Second Piola-Kirchhoff stress tensor, 
 \begin_inset Formula $S_{ij}$
 \end_inset
@@ -1709,71 +1730,12 @@ S_{ij}=C_{ijkl}\varepsilon_{kl},
 
 \end_inset
 
-in the same manner as in the infinitesimal strain formulation.
+in the same manner as the Cauchy stress is related to the linear terms of
+ the Green-Lagrange strain in the infinitesimal strain formulation.
 \end_layout
 
 \begin_layout Standard
-The elasticity integral in the finite-element formulation includes additional
- terms when we account for small strains.
- Recognizing the similarity between the weighting function and an increment
- in strain in the infinitesimal formulation (many finite-element texts derive
- the finite-element formulation for elasticity using the Principle of Virtual
- Work), we replace 
-\begin_inset Formula $\int_{V}\sigma_{ij}\phi_{i,j}\: dV$
-\end_inset
-
- with 
-\begin_inset Formula $\int_{V}S_{ij}\delta\varepsilon_{ij}\: dV$
-\end_inset
-
- in equation 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:elasticity:integral"
-
-\end_inset
-
-, where 
-\begin_inset Formula $\delta\varepsilon_{ij}$
-\end_inset
-
- is the 
-\begin_inset Quotes eld
-\end_inset
-
-virtual
-\begin_inset Quotes erd
-\end_inset
-
- strain.
- Using the definition of the Green-Lagrangian strain, we have
-\begin_inset Formula 
-\begin{equation}
-\int_{V}S_{ij}\delta\varepsilon_{ij}\: dV=\int_{V}\frac{1}{2}S_{ij}(\delta u_{i,j}+\delta u_{j,i}+u_{k,i}\delta u_{k,j}+u_{k,j}\delta u_{k,i})\: dV.
-\end{equation}
-
-\end_inset
-
-Writing the displacements in terms of the basis functions and forcing the
- terms associated with the arbitrary weighting function (
-\begin_inset Quotes eld
-\end_inset
-
-virtual
-\begin_inset Quotes erd
-\end_inset
-
- strain) to zero yields the elastic term in the residual,
-\begin_inset Formula 
-\begin{equation}
-r_{i}^{n}=\int_{V}S_{ij}(N_{,i}^{n}+(\sum_{m}a_{k}^{m}N_{,j}^{m})N_{,i}^{n})\: dV.
-\end{equation}
-
-\end_inset
-
-Thus, we have one additional term (the second term) compared with the residual
- for infinitesimal strains.
- Just as in the infinitesimal formulation, we evaluate the integral over
+Just as in the infinitesimal formulation, we evaluate the integral over
  the volume using numerical quadrature with sums over the quadrature points
  of each cell.
 \end_layout
