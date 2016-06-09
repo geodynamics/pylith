@@ -138,6 +138,22 @@ Step 8. Postseismic relaxation with finite strain and gravitational
     pylith postseismic.cfg gravity_initstress.cfg postseismic_finstrain.cfg
 
 
+Step 9. Postseismic relaxation with finite strain, gravitational
+  body forces, and variable density.
+
+  We impose slip on the reverse fault within the elastic layer and
+  compute the postseismic deformation associated with relaxation in
+  the mantle. For the initial state variables (stresses and viscous
+  strains), we use the values from the final time step of the
+  simulation in Step 4.
+
+  i. Generate the spatial databases for the initial stresses and strains:
+    generate_statedb.py
+
+  ii. Run the simulation via the following command:
+    pylith postseismic.cfg gravity_initstress.cfg postseismic_vardensity.cfg
+
+
 Suggested variations
 
   The list below includes some suggested modifications to the suite of

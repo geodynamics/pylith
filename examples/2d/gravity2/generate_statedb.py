@@ -4,6 +4,7 @@ This script creates a spatial database for the initial stress and state
 variables for a Maxwell plane strain material.
 """
 
+sim = "gravity_finstrain"
 materials = ["crust","mantle"]
 
 import numpy
@@ -33,24 +34,27 @@ def calcQuadCoords(vertices, cells, qpts):
   quadCoords = numpy.zeros((ncells, nqpts, spaceDim), dtype=numpy.float64)
   cellCoords = vertices[cells,:]
   for iDim in xrange(spaceDim):
-    quadCoords[:,:,iDim] = numpy.dot(cellCoords[:,:,iDim], qpts)
+    quadCoords[:,:,iDim] = numpy.dot(cellCoords[:,:,iDim], qpts.transpose())
 
   quadCoords = quadCoords.reshape((ncells*nqpts, spaceDim))
   return quadCoords
 
-
 for material in materials:
 
-  filenameH5 = "output/initialstress-%s.h5" % material
-  filenameDB = "grav_statevars-%s.spatialdb" % material
+  filenameH5 = "output/%s-%s.h5" % (sim, material)
+  filenameDB = "%s_statevars-%s.spatialdb" % (sim, material)
 
   # Open HDF5 file and get coordinates, cells, and stress.
   h5 = h5py.File(filenameH5, "r")
   vertices = h5['geometry/vertices'][:]
   cells = numpy.array(h5['topology/cells'][:], dtype=numpy.int)
-  stress = h5['cell_fields/cauchy_stress'][-1,:,:]
   if "mantle" in material:
+    stress = h5['cell_fields/stress'][-1,:,:]
     vstrain = h5['cell_fields/viscous_strain'][-1,:,:]
+  elif "crust" in material:
+    stress = h5['cell_fields/cauchy_stress'][-1,:,:]
+  else:
+    raise ValueError("Unknown material '%s'." % material)
   h5.close()
   
   # Compute coordinates of quadrature points.
@@ -58,7 +62,15 @@ for material in materials:
   
   nqpts = qpts.shape[0]
   ncells = cells.shape[0]
-  nvalues = stress.shape[1]/nqpts
+  nvalues = stress.shape[1]/nqpts  
+
+  # Check to make sure output included all quadrature points (CellFilterAvg was not used).
+  if stress.shape[1] == 3:
+    raise ValueError("Found %d stress values for each cell. Expected 12 stress values (stress_xx, stress_yy, and stress_xy at 4 quadrature points) for each cell. Turn off CellFilterAvg in pylithapp.cfg." % stress.shape[1])
+
+  if stress.shape[1] != nqpts*3:
+    raise ValueError("Found %d stress values for each cell. Expected 12 stress values (stress_xx, stress_yy, and stress_xy at 4 quadrature points) for each cell. Did you turn off CellFilterAvg in pylithapp.cfg?" % stress.shape[1])
+
   stress = stress.reshape((ncells*nqpts, nvalues))
 
   # Create writer for spatial database file
@@ -80,7 +92,7 @@ for material in materials:
   if "mantle" in material:
     nvalues = vstrain.shape[1]/nqpts
     vstrain = vstrain.reshape((ncells*nqpts, nvalues))
-    stressZZ = 0.5*(stress[:,0] + stress[:,1])
+    stressZZ = 0.5*(stress[:,0]+stress[:,1])
     zeros = numpy.zeros(stressZZ.shape)
     values += [{'name': "stress-zz-initial",
               'units': "Pa",

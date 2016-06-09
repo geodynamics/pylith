@@ -47,10 +47,10 @@ def getData(sim):
             'stress': stressCell}
 
 # ======================================================================
-sim = "postseismic_infstrain_nograv"
+sim = "postseismic_vardensity"
 dataA = getData(sim)
 
-sim = "postseismic_finstrain_nograv"
+sim = "postseismic_finstrain"
 dataB = getData(sim)
 
 import pylab
