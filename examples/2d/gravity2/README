@@ -37,11 +37,11 @@ Mesh generation (optional)
   recommend that you study the contents of the journal files to
   understand the mesh generation process.
 
-Steps 1-4 illustrate the differences between infinitesimal and finite
-strain with gravitational body forces and with and without initial
-stresses.
+Steps 1-3 illustrate issues that arise when using gravitational body
+forces and setting up initial conditions for simulations for such
+cases.
 
-Steps 5-8 illustrate the differences between infinitesimal and finite
+Steps 4-8 illustrate the differences between infinitesimal and finite
 strain and with and without gravitational body forces for postseismic
 relaxation following an earthquake with reverse slip.
 
@@ -51,36 +51,29 @@ Step 1. Gravitational body forces and infinitesimal strain
   This simulation does not use initial stresses, so the gravitational
   body forces cause the domain to compress in the vertical
   direction. The shear stresses in the mantle relax, so that the
-  solution trends towards sigma_xx == sigma_yy.
+  solution in the mantle trends towards stress_xx == stress_yy. The
+  crust is elastic, so stress_xx is not close to stress_yy;
+  consequently, this does not yield a realistic stress state.
 
   Run the simulation via the following command:
     pylith gravity_infstrain.cfg
 
 
-Step 2. Gravitational body forces and finite strain
-
-  This simulation does not use initial stresses, so the gravitational
-  body forces cause the domain to compress in the vertical
-  direction. The shear stresses in the mantle relax, so that the
-  solution trends towards sigma_xx == sigma_yy.
-
-  Run the simulation via the following command:
-    pylith gravity_finstrain.cfg
-
-
-Step 3. Gravitational body forces, finite strain, and initial stresses
+Step 2. Gravitational body forces, infinitesimal strain, and initial stresses
 
   This simulation uses depth-dependent initial stresses that satisfy
-  the governing equations. As a result, there is zero
-  deformation. This simulation uses a static simulation to demonstrate
-  that no deformation results when the initial stresses satisfy the
-  governing equations.
+  the governing equations. As a result, there is zero deformation. In
+  practice, there would be no need to run such a simulation, because
+  the initial stresses give us the stress state produced in the
+  simulation. In Steps 3-7, we use these initial stresses to give us
+  equilibrium or near-equilibrium conditions at the beginning of a
+  simulation.
 
   Run the simulation via the following command:
     pylith gravity_initstress.cfg gravity_isostatic.cfg
 
 
-Step 4. Gravitational body forces, finite strain, initial stresses,
+Step 3. Gravitational body forces, infinitesimal strain, initial stresses,
   and local density variation.
 
   This simulation adds a local density variation in the elastic layer
@@ -94,58 +87,60 @@ Step 4. Gravitational body forces, finite strain, initial stresses,
     pylith gravity_initstress.cfg gravity_vardensity.cfg
 
 
-Step 5. Postseismic relaxation with infinitesimal strain and without
-  gravitational body forces..
+Step 4. Postseismic relaxation with infinitesimal strain and without
+  gravitational body forces.
 
   We impose slip on the reverse fault within the elastic layer and
   compute the postseismic deformation associated with relaxation in
-  the mantle. We do not include gravitational body forces.
+  the mantle. We do not include gravitational body forces. The
+  earthquake is imposed at 50 years into the simulation so that any
+  pre-earthquake deformation trends are clear.
 
   Run the simulation via the following command:
     pylith postseismic.cfg nogravity.cfg postseismic_infstrain_nograv.cfg
 
 
-Step 6. Postseismic relaxation with finite strain and without
+Step 5. Postseismic relaxation with finite strain and without
   gravitational body forces.
 
-  We impose slip on the reverse fault within the elastic layer and
-  compute the postseismic deformation associated with relaxation in
-  the mantle.
+  Same as Step 4 but with finite strain.
 
   Run the simulation via the following command:
     pylith postseismic.cfg nogravity.cfg postseismic_finstrain_nograv.cfg
 
 
-Step 7. Postseismic relaxation with infinitesimal strain and
+Step 6. Postseismic relaxation with infinitesimal strain and
   gravitational body forces.
 
-  We impose slip on the reverse fault within the elastic layer and
-  compute the postseismic deformation associated with relaxation in
-  the mantle. The solution
+  Same as Step 4 but with gravitational body forces.
 
   Run the simulation via the following command:
     pylith postseismic.cfg gravity_initstress.cfg postseismic_infstrain.cfg
 
 
-Step 8. Postseismic relaxation with finite strain and gravitational
+Step 7. Postseismic relaxation with finite strain and gravitational
   body forces.
 
-  We impose slip on the reverse fault within the elastic layer and
-  compute the postseismic deformation associated with relaxation in
-  the mantle.
+  Same as Step 5 but with gravitational body forces; same as Step 6
+  but with finite strain.
 
   Run the simulation via the following command:
     pylith postseismic.cfg gravity_initstress.cfg postseismic_finstrain.cfg
 
 
-Step 9. Postseismic relaxation with finite strain, gravitational
+Step 8. Postseismic relaxation with finite strain, gravitational
   body forces, and variable density.
 
-  We impose slip on the reverse fault within the elastic layer and
-  compute the postseismic deformation associated with relaxation in
-  the mantle. For the initial state variables (stresses and viscous
-  strains), we use the values from the final time step of the
-  simulation in Step 4.
+  Same as Step 7 but with the spatial variation in density in Step
+  3. We use the output from Step 3 to generate near-equilibrium
+  initial conditions. We want to impose the initial stresses at each
+  quadrature point, so we rerun Step 3 and turn off the averaging of
+  values over the quadrature points in the cell data output.
+
+  i. Edit pyithapp.cfg and comment out the CellFilterAvg lines.
+
+  ii. Rerun Step 3:
+    pylith gravity_initstress.cfg gravity_vardensity.cfg
 
   i. Generate the spatial databases for the initial stresses and strains:
     generate_statedb.py
@@ -165,9 +160,9 @@ Suggested variations
     affect the solution? Can you identify any differences in the
     numerical accuracy?
 
-  * In Step 4, extend the earthquake slip into the viscoelastic layer?
+  * Extend the earthquake slip into the viscoelastic layer?
     How does this affect the postseismic deformation?
 
   * In Step 3, add topography or increase the size/amplitude of the
     local density perturbation to the elastic layer. How does this
-    solution differ from Step 4?
+    solution affect the results and postseismic deformation in Step 8?
