@@ -4,7 +4,7 @@ This script creates a spatial database for the initial stress and state
 variables for a Maxwell plane strain material.
 """
 
-sim = "gravity_finstrain"
+sim = "gravity_vardensity"
 materials = ["crust","mantle"]
 
 import numpy
@@ -18,7 +18,8 @@ cs.setSpaceDim(2)
 
 # Basis functions for quad4 cell evaluated at quadrature points. Use
 # to compute coordinate of quadrature points in each cell from
-# coordinates of vertices.
+# coordinates of vertices. Note the order must correspond to the order
+# of the data at the quadrature points in the output.
 qpts = numpy.array([[ 0.62200847,  0.16666667,  0.0446582,   0.16666667],
                     [ 0.16666667,  0.62200847,  0.16666667,  0.0446582 ],
                     [ 0.16666667,  0.0446582,   0.16666667,  0.62200847],
@@ -47,14 +48,11 @@ for material in materials:
   # Open HDF5 file and get coordinates, cells, and stress.
   h5 = h5py.File(filenameH5, "r")
   vertices = h5['geometry/vertices'][:]
+  tindex = -1
   cells = numpy.array(h5['topology/cells'][:], dtype=numpy.int)
+  stress = h5['cell_fields/stress'][tindex,:,:]
   if "mantle" in material:
-    stress = h5['cell_fields/stress'][-1,:,:]
-    vstrain = h5['cell_fields/viscous_strain'][-1,:,:]
-  elif "crust" in material:
-    stress = h5['cell_fields/cauchy_stress'][-1,:,:]
-  else:
-    raise ValueError("Unknown material '%s'." % material)
+    vstrain = h5['cell_fields/viscous_strain'][tindex,:,:]
   h5.close()
   
   # Compute coordinates of quadrature points.
