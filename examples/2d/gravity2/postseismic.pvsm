@@ -21687,10 +21687,10 @@
     </Proxy>
     <Proxy group="sources" type="XdmfReader" id="4732" servers="1">
       <Property name="FileNameInfo" id="4732.FileNameInfo" number_of_elements="1">
-        <Element index="0" value="/Users/charlesw/cig/source/pylith/examples/2d/gravity2/output/postseismic_finstrain-groundsurf.xmf"/>
+        <Element index="0" value="output/postseismic_finstrain-groundsurf.xmf"/>
       </Property>
       <Property name="FileNames" id="4732.FileNames" number_of_elements="1">
-        <Element index="0" value="/Users/charlesw/cig/source/pylith/examples/2d/gravity2/output/postseismic_finstrain-groundsurf.xmf"/>
+        <Element index="0" value="output/postseismic_finstrain-groundsurf.xmf"/>
         <Domain name="files" id="4732.FileNames.files"/>
       </Property>
       <Property name="TimestepValues" id="4732.TimestepValues" number_of_elements="200">
@@ -22747,10 +22747,10 @@
     </Proxy>
     <Proxy group="sources" type="XdmfReader" id="4754" servers="1">
       <Property name="FileNameInfo" id="4754.FileNameInfo" number_of_elements="1">
-        <Element index="0" value="/Users/charlesw/cig/source/pylith/examples/2d/gravity2/output/postseismic_finstrain_nograv-groundsurf.xmf"/>
+        <Element index="0" value="output/postseismic_finstrain_nograv-groundsurf.xmf"/>
       </Property>
       <Property name="FileNames" id="4754.FileNames" number_of_elements="1">
-        <Element index="0" value="/Users/charlesw/cig/source/pylith/examples/2d/gravity2/output/postseismic_finstrain_nograv-groundsurf.xmf"/>
+        <Element index="0" value="output/postseismic_finstrain_nograv-groundsurf.xmf"/>
         <Domain name="files" id="4754.FileNames.files"/>
       </Property>
       <Property name="TimestepValues" id="4754.TimestepValues" number_of_elements="200">
@@ -23807,10 +23807,10 @@
     </Proxy>
     <Proxy group="sources" type="XdmfReader" id="4776" servers="1">
       <Property name="FileNameInfo" id="4776.FileNameInfo" number_of_elements="1">
-        <Element index="0" value="/Users/charlesw/cig/source/pylith/examples/2d/gravity2/output/postseismic_infstrain-groundsurf.xmf"/>
+        <Element index="0" value="output/postseismic_infstrain-groundsurf.xmf"/>
       </Property>
       <Property name="FileNames" id="4776.FileNames" number_of_elements="1">
-        <Element index="0" value="/Users/charlesw/cig/source/pylith/examples/2d/gravity2/output/postseismic_infstrain-groundsurf.xmf"/>
+        <Element index="0" value="output/postseismic_infstrain-groundsurf.xmf"/>
         <Domain name="files" id="4776.FileNames.files"/>
       </Property>
       <Property name="TimestepValues" id="4776.TimestepValues" number_of_elements="200">
@@ -24867,10 +24867,10 @@
     </Proxy>
     <Proxy group="sources" type="XdmfReader" id="4798" servers="1">
       <Property name="FileNameInfo" id="4798.FileNameInfo" number_of_elements="1">
-        <Element index="0" value="/Users/charlesw/cig/source/pylith/examples/2d/gravity2/output/postseismic_infstrain_nograv-groundsurf.xmf"/>
+        <Element index="0" value="output/postseismic_infstrain_nograv-groundsurf.xmf"/>
       </Property>
       <Property name="FileNames" id="4798.FileNames" number_of_elements="1">
-        <Element index="0" value="/Users/charlesw/cig/source/pylith/examples/2d/gravity2/output/postseismic_infstrain_nograv-groundsurf.xmf"/>
+        <Element index="0" value="output/postseismic_infstrain_nograv-groundsurf.xmf"/>
         <Domain name="files" id="4798.FileNames.files"/>
       </Property>
       <Property name="TimestepValues" id="4798.TimestepValues" number_of_elements="200">
