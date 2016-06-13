@@ -835,6 +835,26 @@ reference "sub:Tutorial-twoquad4-traction"
  for a tutorial that uses Neumann boundary conditions.
 \end_layout
 
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\color inherit
+ 
+\series default
+In the small (finite) strain formulation, we assume that the normal and
+ shear tractions are prescribed in terms of the undeformed configuration
+ as described in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Small-Strain-Formulation"
+
+\end_inset
+
+.
+\end_layout
+
 \begin_layout Subsubsection
 Neumann Boundary Condition Parameters
 \end_layout
