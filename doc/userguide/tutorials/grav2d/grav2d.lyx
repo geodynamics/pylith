@@ -943,7 +943,25 @@ pylith gravity_initstress.cfg gravity_vardensity.cfg
 \end_layout
 
 \begin_layout Standard
-We use the Python script 
+This will change how the values appear in ParaView output.
+ Because the output data fields contain the values at multiple points within
+ a cell, PyLith does not label them as tensor components; instead, it simply
+ numbers the values 0..N.
+ For the stress tensor components, values 0, 1, and 2 are the 
+\begin_inset Formula $\sigma_{\mathit{xx}}$
+\end_inset
+
+, 
+\begin_inset Formula $\sigma_{\mathit{yy}}$
+\end_inset
+
+, and 
+\begin_inset Formula $\sigma_{\mathit{xy}}$
+\end_inset
+
+ values at the first quadrature point; values 3, 4, and 5 correspond to
+ the values at the second quadrature point, etc.
+ We use the Python script 
 \family typewriter
 generate_statedb.py
 \family default
