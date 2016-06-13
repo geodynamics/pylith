@@ -1714,7 +1714,7 @@ and
 \end_inset
 
  is the deformation gradient tensor.
- The Second Piola-Kirchhoff stress tensor, 
+ The second Piola-Kirchhoff stress tensor, 
 \begin_inset Formula $S_{ij}$
 \end_inset
 

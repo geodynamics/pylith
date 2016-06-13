@@ -1550,7 +1550,7 @@ stress
 \family default
  field available for output.
  For the infinitesimal strain formulation this is the Cauchy stress tensor;
- for the finite strain formulation, this is the Second Piola-Kirchoff stress
+ for the finite strain formulation, this is the second Piola-Kirchoff stress
  tensor.
  The user may also explicitly request output of the Cauchy stress tensor
  (
@@ -1563,8 +1563,8 @@ cauchy_stress
 stress
 \family default
  field when using the infinitesimal strain formulation.
- Although the Second Piloa-Kirchoff stress tensor has little physical meaning,
- the Second Piloa-Kirchoff stress tensor (not the Cauchy stress tensor)
+ Although the second Piola-Kirchoff stress tensor has little physical meaning,
+ the second Piola-Kirchoff stress tensor (not the Cauchy stress tensor)
  values should be specified in the initial stress database when using the
  finite strain formulation.
  See Section 
@@ -1575,7 +1575,7 @@ reference "sec:Small-Strain-Formulation"
 \end_inset
 
  for a discussion of the relationship between the Cauchy stress tensor and
- the Second Piola-Kirchhoff stress tensor.
+ the second Piola-Kirchhoff stress tensor.
 \end_layout
 
 \begin_layout Subsection
