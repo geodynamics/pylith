@@ -1,5 +1,5 @@
-#LyX 2.1 created this file. For more info see http://www.lyx.org/
-\lyxformat 474
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
 \begin_document
 \begin_header
 \textclass book
@@ -10,18 +10,18 @@
 \maintain_unincluded_children false
 \language english
 \language_package default
-\inputencoding iso8859-1
+\inputencoding latin1
 \fontencoding global
 \font_roman default
 \font_sans default
 \font_typewriter default
-\font_math auto
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -32,24 +32,15 @@
 \use_hyperref false
 \papersize default
 \use_geometry true
-\use_package amsmath 1
-\use_package amssymb 1
-\use_package cancel 1
-\use_package esint 0
-\use_package mathdots 1
-\use_package mathtools 1
-\use_package mhchem 1
-\use_package stackrel 1
-\use_package stmaryrd 1
-\use_package undertilde 1
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
 \cite_engine basic
-\cite_engine_type default
-\biblio_style plain
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
 \suppress_date false
-\justification true
 \use_refstyle 0
 \index Index
 \shortcut idx
@@ -521,7 +512,7 @@ status open
 
 \begin_layout Plain Layout
 \align center
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -548,7 +539,7 @@ cell_data_fields
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="6" columns="4">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="1.5in">
 <column alignment="center" valignment="top" width="1.8in">
 <column alignment="center" valignment="top" width="1.5in">
@@ -869,7 +860,7 @@ status open
 
 \begin_layout Plain Layout
 \align center
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -886,7 +877,7 @@ Order of components in tensor state-variables for material models.
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="5" columns="4">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="1.25in">
 <column alignment="center" valignment="top" width="0.5in">
 <column alignment="center" valignment="top" width="1.25in">
@@ -1427,7 +1418,7 @@ status open
 \begin_layout Plain Layout
 \noindent
 \align center
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 Values in spatial database for initial state variables for 3D problems.
@@ -1448,7 +1439,7 @@ reference "tab:material-model-output"
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="3" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="center" valignment="middle" width="0.85in">
 <column alignment="center" valignment="middle" width="2.47in">
 <row>
@@ -1534,11 +1525,11 @@ total-strain-xx, total-strain-yy, total-strain-zz, total-strain-xy, total-strain
 \end_layout
 
 \begin_layout Subsection
-Cauchy stresses
+Cauchy Stress Tensor and Second Piola-Kirchoff Stress Tensor
 \end_layout
 
 \begin_layout Standard
-Note the presence of Cauchy stresses in Tables 
+In outputting the stress tensor (see Tables 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:material-model-output"
@@ -1552,32 +1543,39 @@ reference "tab:material-model-statevars"
 
 \end_inset
 
- above.
- For infinitesimal strain problems, the Cauchy stresses are identical to
- the normal stress output, and there is no need to make use of them.
- For finite strain problems (see Section 
+), the tensor used internally in the formulation of the governing equation
+ is the 
+\family typewriter
+stress
+\family default
+ field available for output.
+ For the infinitesimal strain formulation this is the Cauchy stress tensor;
+ for the finite strain formulation, this is the Second Piola-Kirchoff stress
+ tensor.
+ The user may also explicitly request output of the Cauchy stress tensor
+ (
+\family typewriter
+cauchy_stress
+\family default
+ field).
+ Obviously, this is identical to the 
+\family typewriter
+stress
+\family default
+ field when using the infinitesimal strain formulation.
+ Although the Second Piloa-Kirchoff stress tensor has little physical meaning,
+ the Second Piloa-Kirchoff stress tensor (not the Cauchy stress tensor)
+ values should be specified in the initial stress database when using the
+ finite strain formulation.
+ See Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Small-Strain-Formulation"
 
 \end_inset
 
-), the stresses used in the computation are the Second Piola-Kirchhoff stress,
- and these are the values contained in the normal stress output.
- The Second Piola-Kirchhoff stress has little physical meaning, and is not
- generally useful.
- In this case, it is more useful to output the Cauchy stress, which is the
- stress tensor computed over the deformed configuration.
- See 
-\begin_inset CommandInset href
-LatexCommand href
-name "Relations between Cauchy stress and second P-K stress"
-target "https://en.wikipedia.org/wiki/Stress_measures#Relations_between_Cauchy_stress_and_second_P-K_stress"
-
-\end_inset
-
- for a description of the relations between Cauchy stress and the Second
- Piola-Kirchhoff stress.
+ for a discussion of the relationship between the Cauchy stress tensor and
+ the Second Piola-Kirchhoff stress tensor.
 \end_layout
 
 \begin_layout Subsection
@@ -1813,7 +1811,7 @@ status open
 \begin_layout Plain Layout
 \noindent
 \align center
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 Values in spatial databases for the elastic material constitutive models.
@@ -1829,10 +1827,10 @@ Values in spatial databases for the elastic material constitutive models.
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="6" columns="3">
-<features rotate="0" tabularvalignment="middle">
-<column alignment="left" valignment="top">
-<column alignment="left" valignment="top">
-<column alignment="left" valignment="top">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
 <row>
 <cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
@@ -2402,7 +2400,7 @@ status open
 \begin_layout Plain Layout
 \noindent
 \align center
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -2419,7 +2417,7 @@ Available viscoelastic materials for PyLith.
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="7" columns="2">
-<features rotate="0" tabularvalignment="middle">
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="2.85in">
 <column alignment="center" valignment="top" width="2.47in">
 <row>
@@ -2596,7 +2594,7 @@ status open
 \end_inset
 
 
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -2769,7 +2767,7 @@ status open
 \begin_layout Plain Layout
 \noindent
 \align center
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -2786,10 +2784,10 @@ Mathematical notation used in this section.
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="3" columns="3">
-<features rotate="0" tabularvalignment="middle">
-<column alignment="center" valignment="top">
-<column alignment="center" valignment="top">
-<column alignment="center" valignment="top">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
 <row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
@@ -3452,7 +3450,7 @@ status open
 \begin_layout Plain Layout
 \noindent
 \align center
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -3470,10 +3468,10 @@ Values in spatial databases for the linear Maxwell viscoelastic material
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="9" columns="3">
-<features rotate="0" tabularvalignment="middle">
-<column alignment="left" valignment="top">
-<column alignment="left" valignment="top">
-<column alignment="left" valignment="top">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
 <row>
 <cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
@@ -3811,7 +3809,7 @@ status open
 \begin_layout Plain Layout
 \noindent
 \align center
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -3829,10 +3827,10 @@ Values in spatial database used as parameters in the generalized linear
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="16" columns="3">
-<features rotate="0" tabularvalignment="middle">
-<column alignment="left" valignment="top">
-<column alignment="left" valignment="top">
-<column alignment="left" valignment="top">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
 <row>
 <cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
@@ -5459,7 +5457,7 @@ status open
 \begin_layout Plain Layout
 \noindent
 \align center
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -5477,10 +5475,10 @@ Values in spatial database used as parameters in the nonlinear power-law
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="11" columns="3">
-<features rotate="0" tabularvalignment="middle">
-<column alignment="left" valignment="top">
-<column alignment="left" valignment="top">
-<column alignment="left" valignment="top">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
 <row>
 <cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
@@ -6131,7 +6129,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -6157,11 +6155,11 @@ fit_mohr_coulomb
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="4">
-<features rotate="0" tabularvalignment="middle">
-<column alignment="center" valignment="top">
-<column alignment="center" valignment="top">
-<column alignment="center" valignment="top">
-<column alignment="center" valignment="top">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
 <row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
@@ -6913,7 +6911,7 @@ status open
 
 \begin_layout Plain Layout
 \align center
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
@@ -6931,10 +6929,10 @@ c model with perfect plasticity.
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="11" columns="3">
-<features rotate="0" tabularvalignment="middle">
-<column alignment="left" valignment="top">
-<column alignment="left" valignment="top">
-<column alignment="left" valignment="top">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
 <row>
 <cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
