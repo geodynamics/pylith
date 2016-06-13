@@ -143,6 +143,13 @@ All of the files necessary to run the examples are contained under the directory
  
 \family typewriter
 examples/2d/gravity.
+ 
+\family default
+The directory also contains a 
+\family typewriter
+README
+\family default
+ file that describes the simulations and how to run them.
 \end_layout
 
 \begin_layout Subsection
@@ -156,16 +163,15 @@ This tutorial illustrates concepts related to using gravitational body forces
  body forces and using them in a simulation of postseismic deformation with
  the small strain formulation.
  We examine the differences between simulations with and without gravitational
- body forces and infinitesimal versus small strain formulations.
- 
+ body forces and the infinitesimal versus small strain formulation.
 \end_layout
 
 \begin_layout Standard
 Steps 1-3 illustrate issues that arise when using gravitational body forces
- and setting up initial conditions for simulations for such cases.
+ and how to achieve realistic stress states.
  Steps 4-8 illustrate the differences between infinitesimal and finite strain
- and with and without gravitational body forces for postseismic relaxation
- following an earthquake with reverse slip.
+ with and without gravitational body forces for postseismic relaxation following
+ an earthquake with reverse slip.
 \end_layout
 
 \begin_layout Subsection
@@ -239,7 +245,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/gravity-mesh.jpg
+	filename figs/mesh.png
 	lyxscale 50
 	width 4in
 
@@ -252,7 +258,8 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Mesh used for 2d gravity simulations.
+Mesh used for 2d gravity simulations with a 30 km thick elastic crust over
+ a 70 km thick linear Maxwell viscoelastic layer.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:examples:gravity:2d:mesh"
@@ -347,9 +354,7 @@ pylithapp.petsc PETSc settings to use for the problem, such as the preconditione
 
 \begin_layout Standard
 Since we do not desire an initial elastic solution prior to beginning our
- time stepping for most simulations, we turn off the elastic prestep.
- We also turn on the use of the nonlinear solver, which is required for
- simulations using the small strain formulation:
+ time stepping for the simulations, we turn off the elastic prestep:
 \end_layout
 
 \begin_layout LyX-Code
@@ -360,13 +365,13 @@ Since we do not desire an initial elastic solution prior to beginning our
 elastic_prestep = False
 \end_layout
 
-\begin_layout LyX-Code
-formulation.solver = pylith.problems.SolverNonlinear
-\end_layout
-
 \begin_layout Standard
 For two-dimensional problems involving gravity, we also need to change the
- default gravity_dir:
+ default 
+\family typewriter
+gravity_dir
+\family default
+:
 \end_layout
 
 \begin_layout LyX-Code
@@ -386,8 +391,9 @@ Step 1: Gravitational Body Forces and Infinitesimal Strain
 \end_layout
 
 \begin_layout Standard
-This simulation does not use initial stresses, so the gravitational body
- forces cause the domain to compress in the vertical direction.
+This simulation applies gravitational body forces to a domain without any
+ initial conditions, so the gravitational body forces cause the domain to
+ compress in the vertical direction.
  The shear stresses in the mantle relax, so that the solution in the mantle
  trends towards 
 \begin_inset Formula $\sigma_{xx}=\sigma_{yy}$
@@ -398,8 +404,13 @@ This simulation does not use initial stresses, so the gravitational body
 \begin_inset Formula $\sigma_{xx}\neq\sigma_{\mathit{yy}}$
 \end_inset
 
-; consequently, this simulation does not yield a stress state consistent
- with that observed in nature.
+.
+ In the earth's crust we generally observe 
+\begin_inset Formula $\sigma_{\mathit{xx}}\approx\sigma_{\mathit{yy}}$
+\end_inset
+
+, so this simulation does not yield a stress state consistent with that
+ observed in nature.
  The file 
 \family typewriter
 gravity_infstrain.cfg
@@ -428,11 +439,23 @@ pylith gravity_infstrain.cfg
 The simulation produces HDF5 (and corresponding XDMF) files with the output
  of the displacements on the ground surface and the entire domain, and the
  state variables for the crust and mantle.
- Loading the state variables for the crust and mantle into ParaView via
- the XDMF files (output/gravity_infstrain-crust.h5 and output/gravity_infstrain-m
-antle.h5) illustrates how the axial stresses are not equal; we would like
- gravitational body forces to yield nearly axial stresses consistent with
- the overburden pressure.
+ Note that the output files contain both cauchy_stress and stress fields.
+ For problems using the infinitesimal strain formulation, these are identical.
+ For the small strain formulation, the stress field corresponds to the second
+ Piola-Kirchoff stress tensor, which does not have the physical meaning
+ associated with the Cauchy stress.
+ Loading the axial stress fields for the crust and mantle into ParaView
+ via the XDMF files (
+\family typewriter
+output/gravity_infstrain-crust.xmf
+\family default
+ and 
+\family typewriter
+output/gravity_infstrain-mantle.xmf
+\family default
+) illustrates how the axial stresses are not equal.
+ We would like gravitational body forces to yield nearly axial stresses
+ consistent with the overburden pressure observed in nature.
  
 \end_layout
 
@@ -446,8 +469,8 @@ This simulation uses depth-dependent initial stresses that satisfy the governing
  As a result, there is zero deformation.
  In practice, there would be no need to run such a simulation, because the
  initial stresses give us the stress state produced in the simulation.
- In Steps 3-7, we use these initial stresses to give us equilibrium or near-equi
-librium conditions at the beginning of a postseismic deformation simulation.
+ In Steps 3-7, we use these initial stresses as initial conditions for postseism
+ic deformation simulations.
  Because we reuse the initial stress parameter settings in multiple simulations,
  we place them in their own parameter file, 
 \family typewriter
@@ -476,18 +499,86 @@ This simulation adds a local density variation in the elastic layer to the
  problem considered in Step 2.
  Near the origin, the density is reduced in a semi-circular region with
  a radius of 5.0 km, roughly approximating a sedimentary basin.
- In this region the initial stresses do not satisfy the governing equation
- and the solution evolves to a steady state.
- The initial stress state is a close approximation to the equilibrium state,
+ In this example, we focus on the workflow and use a coarse mesh so we are
+ not concerned with the fact that our mesh with a discretization size of
+ 2.0 km does a poor job of resolving this density variation; in a real research
+ problem we would use a finer mesh in the low density region.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:examples:gravity:2d:vardensity:density"
+
+\end_inset
+
+shows the spatial variation in density, including the contrast in density
+ between the mantle and crust and the circular low density region around
+ the origin.
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/gravity_vardensity-density.png
+	lyxscale 50
+	width 4in
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Spatial variation in density in the finite element mesh.
+ The mantle has a uniform density of 3400 kg/m
+\begin_inset Formula $^{3}$
+\end_inset
+
+ and the crust has a uniform density of 2500 kg/m
+\begin_inset Formula $^{3}$
+\end_inset
+
+ except near the origin where we impose a low density semi-circular region.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:examples:gravity:2d:vardensity:density"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The initial stress state is a close approximation to the equilibrium state,
  so there is little deformation.
  The mantle relaxes corresponding to the viscous strains and shear stresses
- approaching zero.
- The shear stress associated with the lateral density variation is limited
- to the crust.
- This simulation serves as an example of how to use initial stresses from
- vertically layered material properties in computing a equilibrium or steady
- state stress state associated with gravitational body forces and lateral
- density variations or topography.
+ approaching zero; shear stress associated with the lateral density variation
+ becomes confined to the crust.
+ In the region with the lower density, the initial stresses do not satisfy
+ the governing equation and the solution slowly evolves towards a steady
+ state.
+ This slow asymptotic evolution presents some difficulties with using the
+ output of this simulation (which has not reached the equilibrium state)
+ as a starting point in other simulations, as we will see in Step 8.
+ Nevertheless, this simulation serves as an example of how to use initial
+ stresses from vertically layered material properties in computing a equilibrium
+ or steady state stress state associated with gravitational body forces
+ and lateral density variations or topography.
 \end_layout
 
 \begin_layout Standard
@@ -518,7 +609,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/gravity-mesh.jpg
+	filename figs/gravity_vardensity-shearstress.png
 	lyxscale 50
 	width 4in
 
@@ -561,8 +652,10 @@ Step 4: Postseismic Relaxation with Infinitesimal Strain
 We impose slip on the reverse fault within the elastic layer and compute
  the postseismic deformation associated with relaxation in the mantle.
  We do not include gravitational body forces.
- The earthquake is imposed at 50 years into the simulation so that any pre-earth
-quake deformation trends are clear.
+ The earthquake slip is 2.0 m above a depth of 15 km and tapers linearly
+ to zero at a depth of 20 km.
+ We impose the earthquake at time 0.0 years, but use a start time of -100
+ years so that any pre-earthquake deformation trends are clear.
  We use one parameter file (
 \family typewriter
 nogravity.cfg
@@ -585,6 +678,60 @@ We run the simulation using:
 
 \begin_layout LyX-Code
 pylith postseismic.cfg nogravity.cfg postseismic_infstrain_nograv.cfg
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:examples:gravity:2d:postseismc:infstrain:disp"
+
+\end_inset
+
+ shows the vertical displacement field at the end of the simulation.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/postseismic_infstrain_nograv-disp.png
+	lyxscale 50
+	width 4in
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Vertical displacement at the end of the postseismic deformation simulation
+ (t=4000 years).
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:examples:gravity:2d:postseismc:infstrain:disp"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -648,7 +795,8 @@ With the infinitesimal strain formulation and linearly material behavior,
 \end_layout
 
 \begin_layout Subsection
-Step 7: Postseismic Relaxation Finite Strain and Gravitational Body Forces
+Step 7: Postseismic Relaxation with Finite Strain and Gravitational Body
+ Forces
 \end_layout
 
 \begin_layout Standard
@@ -691,6 +839,10 @@ File
 \end_inset
 
 Load State
+\begin_inset Formula $\rightarrow$
+\end_inset
+
+postseismic.pvsm
 \family default
 ), you should not need to update the locations of the filenames.
  If you start ParaView from a dock or other directory, you will need to
@@ -702,8 +854,8 @@ reference "fig:examples:gravity:2d:postseismic:groundsurf"
 
 \end_inset
 
- shows the ground deformation at time 2000 years into the simulation using
- the state file.
+ shows the ground deformation 2550 years after the earthquake using the
+ state file.
 \end_layout
 
 \begin_layout Standard
@@ -715,7 +867,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/gravity-mesh.jpg
+	filename figs/postseismic_dispcmp.png
 	lyxscale 50
 	width 4in
 
@@ -728,9 +880,12 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Shear stress in the crust (linearly elastic) and mantle (linear Maxwell
- viscoelastic) associated gravitational body forces and a low density region
- forces.
+Displacement field on the ground surface after 2550 years of postseismic
+ deformation in Step 4 (Infinitesimal strain without gravity), Step 5 (Finite
+ strain without gravity), Step 6 (Infinitesimal strain with gravity), and
+ 7 (Finite strain with gravity).
+ The displacement fields for Steps 4-6 are essentially identical.
+ 
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:examples:gravity:2d:postseismic:groundsurf"
@@ -762,8 +917,11 @@ We use the output of Step 3 to create realistic initial stresses for this
  using CellFilterAvg.
  For initial stresses consistent with the state of the simulation at the
  end of Step 3, we want the stresses at each of the quadrature points.
- So our first step is to modify the pylithapp.cfg file and comment out the
- lines with the CellFilterAvg settings:
+ So our first step is to modify the 
+\family typewriter
+pylithapp.cfg
+\family default
+ file by commenting out the lines with the CellFilterAvg settings:
 \end_layout
 
 \begin_layout LyX-Code
@@ -806,7 +964,7 @@ pylith postseismic.cfg gravity_initstress.cfg postseismic_vardensity.cfg
 \end_layout
 
 \begin_layout Standard
-In the 50 years before the earthquake, it is clear that there is some ongoing
+In the 100 years before the earthquake, it is clear that there is some ongoing
  deformation associated with the relaxation of the mantle.
  Immediately following the earthquake the postseismic deformation signal
  is stronger at most locations, but as it decays the ongoing deformation
@@ -818,17 +976,82 @@ In the 50 years before the earthquake, it is clear that there is some ongoing
  This contamination by the initial conditions can be avoided with initial
  stress conditions at equilibrium as we did in Step 7.
  However, this is much more difficult to obtain for complex lateral variations
- in density or topography.
- 
+ in density or topography.Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:examples:gravity:2d:postseismic:vardensity:shearstress"
+
+\end_inset
+
+ shows the ground deformation at time 2000 years into the simulation using
+ the state file.
 \end_layout
 
 \begin_layout Standard
-With the infinitesimal strain formulation and linearly material behavior,
- the initial stress state of equal axial stresses does not alter the response.
- We obtain a displacement field and shear stresses identical to that in
- Step 4.
- The axial stresses are the superposition of the initial stresses and those
- from the postseismic deformation.
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/postseismic_vardensity-shearstress.png
+	lyxscale 50
+	width 4in
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Cauchy shear stress at the end of the simulation of postseismic deformation
+ with variable density in the crust.
+ We saturate the color scale at 
+\begin_inset Formula $\pm$
+\end_inset
+
+1 MPa to show the evidence of viscoelastic relaxation (near zero shear stress)
+ in the mantle.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:examples:gravity:2d:postseismic:vardensity:shearstress"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Exercises
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+README
+\family default
+ file in 
+\family typewriter
+examples/2d/gravity
+\family default
+ includes some suggetions of additional simulations to run to further explore
+ some of the issues discussed in this suite of examples.
 \end_layout
 
 \end_body
