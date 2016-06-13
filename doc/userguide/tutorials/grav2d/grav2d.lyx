@@ -74,7 +74,7 @@ name "sec:Tutorial-Gravity-2d"
 
 \end_inset
 
-Tutorial Using Gravity in Two Dimensions
+Tutorial Using Gravity and Finite Strain in Two Dimensions
 \end_layout
 
 \begin_layout Standard
@@ -82,7 +82,7 @@ PyLith features discussed in this tutorial:
 \end_layout
 
 \begin_layout Itemize
-GravityField
+Gravitational body forces (GravityField)
 \end_layout
 
 \begin_layout Itemize
@@ -90,37 +90,24 @@ Initial stresses
 \end_layout
 
 \begin_layout Itemize
-ImplicitLgDeform formulation
+Finite (or small) strain (ImplicitLgDeform)
 \end_layout
 
 \begin_layout Itemize
-HDF5 output
+Direct solver in simulations without a fault
 \end_layout
 
 \begin_layout Itemize
-Reading HDF5 output using h5py
+Iterative solver with custom fault preconditioner for a fault
 \end_layout
 
 \begin_layout Itemize
-Generating a spatial database from state variables output
+Generating a spatial database using h5py from state variables output in
+ HDF5 files
 \end_layout
 
 \begin_layout Itemize
 Cubit mesh generation
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Variable mesh resolution
-\end_layout
-
-\begin_layout Itemize
-APREPRO programming language
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-Static solution
 \end_layout
 
 \begin_layout Itemize
@@ -128,7 +115,7 @@ Quasi-static solution
 \end_layout
 
 \begin_layout Itemize
-Linear triangular cells
+Linear quadrilateral cells
 \end_layout
 
 \begin_layout Itemize
@@ -163,51 +150,43 @@ Overview
 \end_layout
 
 \begin_layout Standard
-This tutorial examines the steps necessary to incorporate gravity into a
- 2D simulation.
- Most simulations involving gravity will also require the use of initial
- stresses, so we also cover how to generate a set of initial stresses and
- then convert them into spatial databases.
- We also consider the case where we do not exactly balance the gravitational
- stresses with initial stresses.
- Another consideration is that most problems involving gravitational stresses
- will require a finite strain formulation to properly update the stresses
- for the deformed geometry.
- We first compute the stresses for a mesh with a low density elastic block
- 'floating' within a higher density viscoelastic material, and then use
- these stresses in later calculations.
- We use these stresses for both an infinitesimal strain and a finite strain
- simulation to exactly balance the gravitational stresses.
- We then consider the case where the initial stresses correspond to those
- generated assuming a constant density equivalent to the viscoelastic material.
- Since these stresses are not in equilibrium with the density contrast,
- the block will 'float'.
- Since the infinitesimal strain simulation does not update the body forces
- for the deformed geometry, the elastic block will continue to float upwards
- indefinitely, while for the finite strain formulation it will reach equilibrium.
- Note, however, that there is a well-known instability for this sort of
- finite strain problem (the 'drunken sailer effect', 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Kaus:etal:2010"
-
-\end_inset
-
-).
- The solution to this problem is to reduce the time step size, and this
- is what is done for the final set of simulations involving initial stresses.
- There are 9 simulations in total (5 infinitesimal strain problems and 4
- finite strain problems) and there is a README file in the top-level directory
- that explains how to perform the various simulations.
-\end_layout
-
-\begin_layout Subsection
-Mesh Description
+This tutorial illustrates concepts related to using gravitational body forces
+ and finite (or small) strain.
+ We focus on setting up initial conditions consistent with gravitational
+ body forces and using them in a simulation of postseismic deformation with
+ the small strain formulation.
+ We examine the differences between simulations with and without gravitational
+ body forces and infinitesimal versus small strain formulations.
+ 
 \end_layout
 
 \begin_layout Standard
-We use a fairly simple mesh consisting of triangular cells for all of the
- simulations.
+Steps 1-3 illustrate issues that arise when using gravitational body forces
+ and setting up initial conditions for simulations for such cases.
+ Steps 4-8 illustrate the differences between infinitesimal and finite strain
+ and with and without gravitational body forces for postseismic relaxation
+ following an earthquake with reverse slip.
+\end_layout
+
+\begin_layout Subsection
+Problem Description
+\end_layout
+
+\begin_layout Standard
+The geometry of the problem is a 200km-wide by 100km-deep domain with a
+ flat ground surface.
+ We use a 30km-thick elastic layer over a linear Maxwell viscoelastic half-space
+ to approximate the crust and mantle.
+ A reverse fault dipping 45 degrees cuts through the elastic layer and extends
+ into the top portion of the viscoelastic layer.
+ Gravitational body forces act in the vertical direction.
+ We apply roller Dirichlet boundary conditions to constrain the displacement
+ normal to the boundary.
+\end_layout
+
+\begin_layout Standard
+We discretize the domain using quadrilateral cells with a nominal cell size
+ of 2.0 km.
  We construct the mesh in CUBIT following the same techniques used in the
  2D subduction zone example, except that this mesh is simpler.
  The main driver is in the journal file 
@@ -220,15 +199,10 @@ mesh.jou
 geometry.jou
 \family default
  to construct the geometry.
- Discretization sizes are assigned within the elastic block and on curves
- on the outer boundaries, and CUBIT automatically computes the sizing function
- for the intervening space.
- There are no faults, and only two materials (elastic block and viscoelastic
- surrounding material.
  The mesh shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:gravity2d-mesh"
+reference "fig:examples:gravity:2d:mesh"
 
 \end_inset
 
@@ -241,22 +215,11 @@ Create the geometry defining the domain.
 \end_layout
 
 \begin_layout Enumerate
-Define meshing scheme and cell sizes.
-\end_layout
-
-\begin_deeper
-\begin_layout Enumerate
-Define a constant cell size within the elastic block.
+Set the meshing scheme and cell size.
 \end_layout
 
 \begin_layout Enumerate
-Define a constant cell size on the two external curves furthest from the
- block.
-\end_layout
-
-\end_deeper
-\begin_layout Enumerate
-Generate mesh.
+Generate the mesh.
 \end_layout
 
 \begin_layout Enumerate
@@ -264,7 +227,7 @@ Create blocks for materials and nodesets for boundary conditions.
 \end_layout
 
 \begin_layout Enumerate
-Export mesh.
+Export the mesh.
 \end_layout
 
 \begin_layout Standard
@@ -292,7 +255,7 @@ status open
 Mesh used for 2d gravity simulations.
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:gravity2d-mesh"
+name "fig:examples:gravity:2d:mesh"
 
 \end_inset
 
@@ -315,12 +278,14 @@ Additional Common Information
 
 \begin_layout Standard
 As in the examples discussed in previous sections of these tutorials, we
- place parameters common to the forward model and Green's function computation
- in the 
+ place parameters common to all of the simulations in the 
 \family typewriter
 pylithapp.cfg
 \family default
- file so that we do not have to duplicate them for the two procedures.
+ file so that we do not have to duplicate them in each simulation parameter
+ file.
+ In some cases we do override the values of parameters in simulation specific
+ parameter files.
  The settings contained in 
 \family typewriter
 pylithapp.cfg
@@ -350,7 +315,7 @@ total_time
 \family default
  of 
 \family typewriter
-100.0*year 
+2000.0*year 
 \family default
 is used for most of the simulations.
 \end_layout
@@ -364,7 +329,9 @@ pylithapp.problem.materials Settings that control the material type, specify
 \end_layout
 
 \begin_layout Description
-pylithapp.problem.bc Settings that control the applied boundary conditions.
+pylithapp.problem.bc We apply Dirichlet roller boundary conditions (pin displaceme
+nt perpendicular to the boundary) on the lateral sides and bottom of the
+ domain.
 \end_layout
 
 \begin_layout Description
@@ -380,7 +347,9 @@ pylithapp.petsc PETSc settings to use for the problem, such as the preconditione
 
 \begin_layout Standard
 Since we do not desire an initial elastic solution prior to beginning our
- time stepping for most simulations, we turn off the elastic prestep:
+ time stepping for most simulations, we turn off the elastic prestep.
+ We also turn on the use of the nonlinear solver, which is required for
+ simulations using the small strain formulation:
 \end_layout
 
 \begin_layout LyX-Code
@@ -389,6 +358,10 @@ Since we do not desire an initial elastic solution prior to beginning our
 
 \begin_layout LyX-Code
 elastic_prestep = False
+\end_layout
+
+\begin_layout LyX-Code
+formulation.solver = pylith.problems.SolverNonlinear
 \end_layout
 
 \begin_layout Standard
@@ -409,228 +382,88 @@ gravity_field.gravity_dir = [0.0, -1.0, 0.0]
 \end_layout
 
 \begin_layout Subsection
-Step 1: Computation of Gravitational Stresses
+Step 1: Gravitational Body Forces and Infinitesimal Strain
 \end_layout
 
 \begin_layout Standard
-We first compute the stresses due to gravity.
- Since there are two materials of different density, the computed stresses
- will be more complex than a simple linear variation with depth.
- Parameter settings that augment those in 
+This simulation does not use initial stresses, so the gravitational body
+ forces cause the domain to compress in the vertical direction.
+ The shear stresses in the mantle relax, so that the solution in the mantle
+ trends towards 
+\begin_inset Formula $\sigma_{xx}=\sigma_{yy}$
+\end_inset
+
+.
+ The crust is elastic and compressible, so 
+\begin_inset Formula $\sigma_{xx}\neq\sigma_{\mathit{yy}}$
+\end_inset
+
+; consequently, this simulation does not yield a stress state consistent
+ with that observed in nature.
+ The file 
+\family typewriter
+gravity_infstrain.cfg
+\family default
+ contains the simulation specific parameter settings that augment those
+ in 
 \family typewriter
 pylithapp.cfg
 \family default
- are contained in the file 
-\family typewriter
-grav_stress.cfg
-\family default
 .
- These settings are:
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent We set 
-\family typewriter
-elastic_prestep
-\family default
- to 
-\family typewriter
-True
-\family default
-, since we just want the elastic solution.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.formulation.time_step We set 
-\family typewriter
-total_time
-\family default
- to 
-\family typewriter
-0.0*year
-\family default
-, since we only need the elastic solution.
-\end_layout
-
-\begin_layout Description
-pylithapp.problem.formulation.output Gives the output filenames for domain
- output, subdomain output, and material output.
- All output uses HDF5 format.
+ In addition to the filenames for the HDF5 ouput we also set the filename
+ for the progress monitor.
+ You can look at this file during the simulation to monitor the progress
+ and get an estimate of when the simulation will finish.
 \end_layout
 
 \begin_layout Standard
-We compute the gravitational stresses by typing
+We run the simulation using:
 \end_layout
 
 \begin_layout LyX-Code
-pylith grav_stress.cfg
+pylith gravity_infstrain.cfg
 \end_layout
 
 \begin_layout Standard
-Once the problem has run, six HDF5 files will be produced.
- The file named 
-\family typewriter
-grav_stress.h5
-\family default
- (and the associated XDMF file) contains the solution for the entire domain,
- and the file named 
-\family typewriter
-grav_stress-groundsurf.h5
-\family default
- (and the associated XDMF file) contains the solution for the free surface.
- The remaining files are the state variables and state variable info files
- for the two materials.
- We use the stresses in 
-\family typewriter
-grav_stress-elastic.h5
-\family default
- and 
-\family typewriter
-grav_stress-viscoelastic.h5
-\family default
- to produce spatial databases of initial stresses that are used in later
- calculations.
- To produce the spatial databases we run the 
-\family typewriter
-stress2spatialdb.py
-\family default
- script:
-\end_layout
-
-\begin_layout LyX-Code
-./stress2spatialdb.py
-\end_layout
-
-\begin_layout Standard
-This script produces the two spatial databases 
-\family typewriter
-grav_stress-elastic.spatialdb
-\family default
- and 
-\family typewriter
-grav_stress-viscoelastic.spatialdb
-\family default
-.
- The initial stresses in these two databases exactly balance the gravitational
- stresses, and thus when they are used in conjunction with gravity no deformatio
-n should occur.
+The simulation produces HDF5 (and corresponding XDMF) files with the output
+ of the displacements on the ground surface and the entire domain, and the
+ state variables for the crust and mantle.
+ Loading the state variables for the crust and mantle into ParaView via
+ the XDMF files (output/gravity_infstrain-crust.h5 and output/gravity_infstrain-m
+antle.h5) illustrates how the axial stresses are not equal; we would like
+ gravitational body forces to yield nearly axial stresses consistent with
+ the overburden pressure.
+ 
 \end_layout
 
 \begin_layout Subsection
-Step 2: Infinitesimal Strain Simulation with no Initial Stresses
+Step 2: Gravitational Body Forces, Infinitesimal Strain, and Initial Stresses
 \end_layout
 
 \begin_layout Standard
-In this case there are no initial stresses and we therefore expect gravity
- to induce significant deformation.
- The only settings that augment those in 
+This simulation uses depth-dependent initial stresses that satisfy the governing
+ equations.
+ As a result, there is zero deformation.
+ In practice, there would be no need to run such a simulation, because the
+ initial stresses give us the stress state produced in the simulation.
+ In Steps 3-7, we use these initial stresses to give us equilibrium or near-equi
+librium conditions at the beginning of a postseismic deformation simulation.
+ Because we reuse the initial stress parameter settings in multiple simulations,
+ we place them in their own parameter file, 
 \family typewriter
-pylithapp.cfg
+gravity_initstress.cfg
 \family default
- are the output settings in 
-\family typewriter
-grav_stress_infin_nois.cfg
-\family default
-:
-\end_layout
-
-\begin_layout Description
-pylithapp.problem.formulation.output Gives the output filenames for domain
- output, subdomain output, and material output.
- All output uses HDF5 format.
+.
+ As in Step 1, the simulation specific parameter file contains the filenames
+ for the output.
 \end_layout
 
 \begin_layout Standard
-To run the simulation we just type:
+We run the simulation using:
 \end_layout
 
 \begin_layout LyX-Code
-pylith grav_stress_infin_nois.cfg
-\end_layout
-
-\begin_layout Standard
-Once the simulation has completed we will have six HDF5 files analagous
- to those produced for the first simulation.
- In the output subdirectory there are two ParaView state files (
-\family typewriter
-view_deform.pvsm
-\family default
- and 
-\family typewriter
-view_deform_unscaled.pvsm
-\family default
-).
- They are nearly identical except the in the second file the velocity vectors
- are unscaled.
- For this simulation, the scaled velocity vectors are probably better.
- To use either of these files, select 
-\family typewriter
-File->Load State...
-
-\family default
- in ParaView and select the desired state file.
- When the file dialog appears, select 
-\family typewriter
-grav_stress_infin_nois.xmf
-\family default
-, and with some adjustment of parameters we get results similar to Figure
- 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:grav2d-infin-nois"
-
-\end_inset
-
-.
- Note that all displacements are negative or zero.
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename figs/grav2d_infin_nois.jpg
-	lyxscale 50
-	width 4in
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Contours of vertical displacement and velocity vectors for simulation 
-\family typewriter
-grav_stress_infin_nois.cfg
-\family default
-.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:grav2d-infin-nois"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+pylith gravity_initstress.cfg gravity_isostatic.cfg
 \end_layout
 
 \begin_layout Subsection
@@ -639,186 +472,44 @@ Step 3: Infinitesimal Strain Simulation with Initial Stresses that Exactly
 \end_layout
 
 \begin_layout Standard
-In this simulation we use the initial stresses computed in Step 1.
- We include the initial stresses as follows:
-\end_layout
-
-\begin_layout LyX-Code
-[pylithapp.timedependent.materials.elastic]
-\end_layout
-
-\begin_layout LyX-Code
-db_initial_stress = spatialdata.spatialdb.SimpleDB
-\end_layout
-
-\begin_layout LyX-Code
-db_initial_stress.label = Initial stress in elastic block
-\end_layout
-
-\begin_layout LyX-Code
-db_initial_stress.iohandler.filename = grav_stress-elastic.spatialdb
-\end_layout
-
-\begin_layout LyX-Code
-db_initial_stress.query_type = nearest
-\begin_inset Newline newline
-\end_inset
-
-
-\begin_inset Newline newline
-\end_inset
-
-[pylithapp.timedependent.materials.viscoelastic]
-\end_layout
-
-\begin_layout LyX-Code
-db_initial_stress = spatialdata.spatialdb.SimpleDB
-\end_layout
-
-\begin_layout LyX-Code
-db_initial_stress.label = Initial stress in viscoelastic material
-\end_layout
-
-\begin_layout LyX-Code
-db_initial_stress.iohandler.filename = grav_stress-viscoelastic.spatialdb
-\end_layout
-
-\begin_layout LyX-Code
-db_initial_stress.query_type = nearest
+This simulation adds a local density variation in the elastic layer to the
+ problem considered in Step 2.
+ Near the origin, the density is reduced in a semi-circular region with
+ a radius of 5.0 km, roughly approximating a sedimentary basin.
+ In this region the initial stresses do not satisfy the governing equation
+ and the solution evolves to a steady state.
+ The initial stress state is a close approximation to the equilibrium state,
+ so there is little deformation.
+ The mantle relaxes corresponding to the viscous strains and shear stresses
+ approaching zero.
+ The shear stress associated with the lateral density variation is limited
+ to the crust.
+ This simulation serves as an example of how to use initial stresses from
+ vertically layered material properties in computing a equilibrium or steady
+ state stress state associated with gravitational body forces and lateral
+ density variations or topography.
 \end_layout
 
 \begin_layout Standard
-We run the simulation by typing:
+We run the simulation using:
 \end_layout
 
 \begin_layout LyX-Code
-pylith grav_stress_infin_is1.cfg
+pylith gravity_initstress.cfg gravity_vardensity.cfg
 \end_layout
 
 \begin_layout Standard
-When the simulation has completed we will again have six HDF5 files.
- If we examine the displacements as for Step2, we will find virtually zero
- displacements throughout the simulation.
-\end_layout
-
-\begin_layout Subsection
-Steps 4 and 5: Infinitesimal Strain Simulation with Initial Stresses that
- do not Balance Gravity
-\end_layout
-
-\begin_layout Standard
-For both of these simulations we use initial stresses that are equivalent
- to the gravitational stress due to material with a constant density of
- the viscoelastic material.
- These are obtained analytical by using linear interpolation on the initial
- stresses in 
-\family typewriter
-grav_stress-initial.spatialdb
-\family default
-.
- By doing this, the initial stresses are not in balance with the gravitational
- stresses.
- The residual is due to the density contrast between the two materials.
- Thus, the elastic block should 'float' due to buoyancy.
- We specify the initial stresses as follows:
-\end_layout
-
-\begin_layout LyX-Code
-[pylithapp.timedependent.materials.elastic]
-\end_layout
-
-\begin_layout LyX-Code
-db_initial_stress = spatialdata.spatialdb.SimpleDB
-\end_layout
-
-\begin_layout LyX-Code
-db_initial_stress.label = Initial stress in elastic block
-\end_layout
-
-\begin_layout LyX-Code
-db_initial_stress.iohandler.filename = grav_stress-initial.spatialdb
-\end_layout
-
-\begin_layout LyX-Code
-db_initial_stress.query_type = linear
-\begin_inset Newline newline
-\end_inset
-
-
-\begin_inset Newline newline
-\end_inset
-
-[pylithapp.timedependent.materials.viscoelastic]
-\end_layout
-
-\begin_layout LyX-Code
-db_initial_stress = spatialdata.spatialdb.SimpleDB
-\end_layout
-
-\begin_layout LyX-Code
-db_initial_stress.label = Initial stress in viscoelastic material
-\end_layout
-
-\begin_layout LyX-Code
-db_initial_stress.iohandler.filename = grav_stress-initial.spatialdb
-\end_layout
-
-\begin_layout LyX-Code
-db_initial_stress.query_type = linear
-\end_layout
-
-\begin_layout Standard
-The only difference between the two simulations (
-\family typewriter
-grav_stress_infin_is2.cfg
-\family default
- and 
-\family typewriter
-grav_stress_infin_is3.cfg
-\family default
-) is in the time step size.
- The time step size is not really important for the infinitesimal strain
- problems, but we include the additional simulation to provide an analog
- for the finite strain simulations.
- The two simulations may be run as follows:
-\end_layout
-
-\begin_layout LyX-Code
-pylith grav_stress_infin_is2.cfg
-\end_layout
-
-\begin_layout LyX-Code
-pylith grav_stress_infin_is3.cfg
-\end_layout
-
-\begin_layout Standard
-The results may be viewed in a similar manner to those for Step 2, except
- that we need to select the correct domain output file (
-\family typewriter
-grav_stress_infin_is2.xmf
-\family default
- or 
-\family typewriter
-grav_stress_infin_is3.xmf
-\family default
-).
- With some adjustment of parameters, we then obtain results similar to those
- of Figure 
+Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:grav2d-infin-is2"
+reference "fig:examples:gravity:2d:vardensity:stress"
 
 \end_inset
 
-).
- Note the unrealistically large amount of vertical deformation.
- This is because the infinitesimal strain formulation does not properly
- account for the change in body forces in the deformed mesh.
+ shows the shear stress field at the end of the simulation.
 \end_layout
 
 \begin_layout Standard
-\noindent
-\align center
 \begin_inset Float figure
 wide false
 sideways false
@@ -827,7 +518,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/grav2d_infin_is2.jpg
+	filename figs/gravity-mesh.jpg
 	lyxscale 50
 	width 4in
 
@@ -840,14 +531,12 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Contours of vertical displacement and velocity vectors for simulation 
-\family typewriter
-grav_stress_infin_is2.cfg
-\family default
-.
+Shear stress in the crust (linearly elastic) and mantle (linear Maxwell
+ viscoelastic) associated gravitational body forces and a low density region
+ forces.
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:grav2d-infin-is2"
+name "fig:examples:gravity:2d:vardensity:stress"
 
 \end_inset
 
@@ -865,13 +554,45 @@ name "fig:grav2d-infin-is2"
 \end_layout
 
 \begin_layout Subsection
-Steps 6-9: Finite Strain Simulations
+Step 4: Postseismic Relaxation with Infinitesimal Strain
 \end_layout
 
 \begin_layout Standard
-The finite strain simulations are exacly analagous to their infinitesimal
- strain counterparts (Steps 2-5).
- The only difference is that we use a large deformation formulation:
+We impose slip on the reverse fault within the elastic layer and compute
+ the postseismic deformation associated with relaxation in the mantle.
+ We do not include gravitational body forces.
+ The earthquake is imposed at 50 years into the simulation so that any pre-earth
+quake deformation trends are clear.
+ We use one parameter file (
+\family typewriter
+nogravity.cfg
+\family default
+) to turn off gravity (by setting the gravitional acceleration to zero)
+ and another parameter file (
+\family typewriter
+postseismic.cfg
+\family default
+) for the earthquake related parameters.
+ Note that we change the preconditioner to the algebraic multigrid preconditione
+r for the elastic block and the custom fault preconditioner for the Lagrange
+ multipliers.
+ 
+\end_layout
+
+\begin_layout Standard
+We run the simulation using:
+\end_layout
+
+\begin_layout LyX-Code
+pylith postseismic.cfg nogravity.cfg postseismic_infstrain_nograv.cfg
+\end_layout
+
+\begin_layout Subsection
+Step 5: Postseismic Relaxation with Finite Strain
+\end_layout
+
+\begin_layout Standard
+This simulation is the same as Step 4, but we use the finite strain formulation.:
 \end_layout
 
 \begin_layout LyX-Code
@@ -883,65 +604,106 @@ formulation = pylith.problems.ImplicitLgDeform
 \end_layout
 
 \begin_layout Standard
-When we do this, the solver is automatically switched to the nonlinear solver.
- The simulations may be run as follows:
+When we use the finite strain formulation, the solver is automatically switched
+ to the nonlinear solver.
+ We run the simulation using:
 \end_layout
 
 \begin_layout LyX-Code
-pylith grav_stress_finite_nois.cfg
-\end_layout
-
-\begin_layout LyX-Code
-pylith grav_stress_finite_is1.cfg
-\end_layout
-
-\begin_layout LyX-Code
-pylith grav_stress_finite_is2.cfg
-\end_layout
-
-\begin_layout LyX-Code
-pylith grav_stress_finite_is3.cfg
+pylith postseismic.cfg nogravity.cfg postseismic_finstrain_nograv.cfg
 \end_layout
 
 \begin_layout Standard
-The results are generally analagous to those of the infinitesimal strain
- simulations, but the vertical displacements are generally smaller.
- We we expect that simulation grav_stress_finite_is2.cfg would provide a
- solution that is in isostatic equilibrium; however, when we examine the
- results (try using state file 
-\family typewriter
-view_deform_unscaled.pvsm
-\family default
-), we find that the solution is unstable.
- This is due to the 'drunken sailor effect' 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Kaus:etal:2010"
+The results are nearly identical to those with infinitesimal strain.
+\end_layout
 
-\end_inset
+\begin_layout Subsection
+Step 6: Postseismic Relaxation with Infinitesimal Strain and Gravitational
+ Body Forces
+\end_layout
 
-, and the solution is to reduce the time step size.
- When we do this (
-\family typewriter
-grav_stress_finite_is3.cfg
-\family default
-), we get results similar to those of Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:grav2d-finite-is3"
-
-\end_inset
-
-.
- Note the much smaller amount of vertical displacement compared to Figure
+\begin_layout Standard
+This simulation is the same as Step 4, but we include gravitational body
+ forces.
+ We use initial stresses that satisfy the governing equations, so our initial
+ conditions are axial stresses equal to the overburden pressure.
  
+\end_layout
+
+\begin_layout Standard
+We run the simulation using:
+\end_layout
+
+\begin_layout LyX-Code
+pylith postseismic.cfg postseismic_infstrain.cfg
+\end_layout
+
+\begin_layout Standard
+With the infinitesimal strain formulation and linearly material behavior,
+ the initial stress state of equal axial stresses does not alter the response.
+ We obtain a displacement field and shear stresses identical to that in
+ Step 4.
+ The axial stresses are the superposition of the initial stresses and those
+ from the postseismic deformation.
+\end_layout
+
+\begin_layout Subsection
+Step 7: Postseismic Relaxation Finite Strain and Gravitational Body Forces
+\end_layout
+
+\begin_layout Standard
+This simulation is the same as Step 5, but we include gravitational body
+ forces; this is also the same as Step 6, but with finite strain.
+\end_layout
+
+\begin_layout Standard
+We run the simulation using:
+\end_layout
+
+\begin_layout LyX-Code
+pylith postseismic.cfg postseismic_finstrain.cfg
+\end_layout
+
+\begin_layout Standard
+The finite strain formulation accounts for the redistribution of gravitational
+ body forces as the domain deforms during the postseismic response.
+ As a result, the displacement field differs from that in Steps 4-6.
+ To see this difference, we have created a ParaView state file to view the
+ ground surface deformation from the output of Steps 4-7.
+ After running all four simulations, open ParaView and load the state file
+ 
+\family typewriter
+postseismic.pvsm
+\family default
+.
+ If you start ParaView from the 
+\family typewriter
+examples/2d/gravity
+\family default
+ directory (
+\family typewriter
+PATH_TO_PARAVIEW/bin/paraview
+\family default
+, 
+\family typewriter
+File
+\begin_inset Formula $\rightarrow$
+\end_inset
+
+Load State
+\family default
+), you should not need to update the locations of the filenames.
+ If you start ParaView from a dock or other directory, you will need to
+ set the relative or absolute paths to the output files.
+ Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:grav2d-infin-is2"
+reference "fig:examples:gravity:2d:postseismic:groundsurf"
 
 \end_inset
 
-.
+ shows the ground deformation at time 2000 years into the simulation using
+ the state file.
 \end_layout
 
 \begin_layout Standard
@@ -953,7 +715,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/grav2d-finite-is3.jpg
+	filename figs/gravity-mesh.jpg
 	lyxscale 50
 	width 4in
 
@@ -966,18 +728,12 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Contours of vertical displacement and velocity vectors for simulation 
-\family typewriter
-grav_stress_finite_is3.cfg
-\family default
- using state file 
-\family typewriter
-view_deform_unscaled.pvsm
-\family default
-.
+Shear stress in the crust (linearly elastic) and mantle (linear Maxwell
+ viscoelastic) associated gravitational body forces and a low density region
+ forces.
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:grav2d-finite-is3"
+name "fig:examples:gravity:2d:postseismic:groundsurf"
 
 \end_inset
 
@@ -989,13 +745,90 @@ name "fig:grav2d-finite-is3"
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Step 8: Postseismic Relaxation with Finite Strain, Gravitational Body Forces,
+ and Variable Density
+\end_layout
+
+\begin_layout Standard
+We use the output of Step 3 to create realistic initial stresses for this
+ simulation of postseismic deformation with variable density.
+ In Step 3 we average the stresses over the quadrature points within a cell
+ using CellFilterAvg.
+ For initial stresses consistent with the state of the simulation at the
+ end of Step 3, we want the stresses at each of the quadrature points.
+ So our first step is to modify the pylithapp.cfg file and comment out the
+ lines with the CellFilterAvg settings:
+\end_layout
+
+\begin_layout LyX-Code
+# Comment this out for if rerunning Step 3 to get initial conditions for
+ Step 8.
+\end_layout
+
+\begin_layout LyX-Code
+#cell_filter = pylith.meshio.CellFilterAvg
+\end_layout
+
+\begin_layout Standard
+for both the crust and mantle.
+ Next we rerun Step 3 using
+\end_layout
+
+\begin_layout LyX-Code
+pylith gravity_initstress.cfg gravity_vardensity.cfg
+\end_layout
+
+\begin_layout Standard
+We use the Python script 
+\family typewriter
+generate_statedb.py
+\family default
+ to generate the spatial databases with the initial stresses from the output
+ of Step 3:
+\end_layout
+
+\begin_layout LyX-Code
+./generate_statedb.py
+\end_layout
+
+\begin_layout Standard
+Finally, we run the simulation of the postseismic deformation using
+\end_layout
+
+\begin_layout LyX-Code
+pylith postseismic.cfg gravity_initstress.cfg postseismic_vardensity.cfg
+\end_layout
+
+\begin_layout Standard
+In the 50 years before the earthquake, it is clear that there is some ongoing
+ deformation associated with the relaxation of the mantle.
+ Immediately following the earthquake the postseismic deformation signal
+ is stronger at most locations, but as it decays the ongoing deformation
+ associated with the gravitational body forces and variable density become
+ evident again.
+ This ongoing deformation is most obvious in the displacement and velocity
+ fields.
+ The postseismic deformation is much more dominant for the stress field.
+ This contamination by the initial conditions can be avoided with initial
+ stress conditions at equilibrium as we did in Step 7.
+ However, this is much more difficult to obtain for complex lateral variations
+ in density or topography.
+ 
+\end_layout
+
+\begin_layout Standard
+With the infinitesimal strain formulation and linearly material behavior,
+ the initial stress state of equal axial stresses does not alter the response.
+ We obtain a displacement field and shear stresses identical to that in
+ Step 4.
+ The axial stresses are the superposition of the initial stresses and those
+ from the postseismic deformation.
 \end_layout
 
 \end_body
