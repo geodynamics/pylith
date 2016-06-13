@@ -77,7 +77,7 @@ Step 3. Gravitational body forces, infinitesimal strain, initial stresses,
   and local density variation.
 
   This simulation adds a local density variation in the elastic layer
-  to the problem considered in Step 3. Near the origin, the density is
+  to the problem considered in Step 2. Near the origin, the density is
   reduced in a semi-circular region, roughly approximating a
   sedimentary basin. In this region, the initial stresses do not
   satisfy the governing equation and the solution evolves to a steady
