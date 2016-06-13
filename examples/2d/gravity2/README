@@ -142,10 +142,12 @@ Step 8. Postseismic relaxation with finite strain, gravitational
   ii. Rerun Step 3:
     pylith gravity_initstress.cfg gravity_vardensity.cfg
 
-  i. Generate the spatial databases for the initial stresses and strains:
+  iii. Generate the spatial databases for the initial stresses and strains:
     generate_statedb.py
 
-  ii. Run the simulation via the following command:
+  iv. Edit pylithapp.cfg again, and uncomment the CellFilterAvg lines.
+
+  v. Run the simulation via the following command:
     pylith postseismic.cfg gravity_initstress.cfg postseismic_vardensity.cfg
 
 
@@ -166,3 +168,8 @@ Suggested variations
   * In Step 3, add topography or increase the size/amplitude of the
     local density perturbation to the elastic layer. How does this
     solution affect the results and postseismic deformation in Step 8?
+
+  * For Step 8, we used an infinitesimal strain formulation to generate
+    state variables for a finite strain problem, which may influence our
+    results. What happens when we use a finite strain formulation to
+    generate our initial state variables?
