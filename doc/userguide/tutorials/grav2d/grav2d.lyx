@@ -1,5 +1,5 @@
-#LyX 2.0 created this file. For more info see http://www.lyx.org/
-\lyxformat 413
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
 \begin_document
 \begin_header
 \textclass book
@@ -10,18 +10,18 @@
 \maintain_unincluded_children false
 \language english
 \language_package default
-\inputencoding latin1
+\inputencoding iso8859-1
 \fontencoding global
 \font_roman default
 \font_sans default
 \font_typewriter default
+\font_math auto
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
-
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -32,15 +32,24 @@
 \use_hyperref false
 \papersize default
 \use_geometry true
-\use_amsmath 0
-\use_esint 0
-\use_mhchem 1
-\use_mathdots 1
+\use_package amsmath 0
+\use_package amssymb 0
+\use_package cancel 1
+\use_package esint 0
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
 \cite_engine basic
+\cite_engine_type default
+\biblio_style plain
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
 \suppress_date false
+\justification true
 \use_refstyle 0
 \index Index
 \shortcut idx
@@ -255,7 +264,7 @@ status open
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Mesh used for 2d gravity simulations with a 30 km thick elastic crust over
@@ -490,8 +499,8 @@ pylith gravity_initstress.cfg gravity_isostatic.cfg
 \end_layout
 
 \begin_layout Subsection
-Step 3: Infinitesimal Strain Simulation with Initial Stresses that Exactly
- Balance Gravity
+Step 3: Infinitesimal Strain Simulation with Initial Stresses and a Local
+ Density Variation
 \end_layout
 
 \begin_layout Standard
@@ -531,7 +540,7 @@ status open
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Spatial variation in density in the finite element mesh.
@@ -564,7 +573,8 @@ name "fig:examples:gravity:2d:vardensity:density"
 \end_layout
 
 \begin_layout Standard
-The initial stress state is a close approximation to the equilibrium state,
+We use the same initial stress state as for the previous two examples.
+ The initial stress state is a close approximation to the equilibrium state,
  so there is little deformation.
  The mantle relaxes corresponding to the viscous strains and shear stresses
  approaching zero; shear stress associated with the lateral density variation
@@ -576,8 +586,8 @@ The initial stress state is a close approximation to the equilibrium state,
  output of this simulation (which has not reached the equilibrium state)
  as a starting point in other simulations, as we will see in Step 8.
  Nevertheless, this simulation serves as an example of how to use initial
- stresses from vertically layered material properties in computing a equilibrium
- or steady state stress state associated with gravitational body forces
+ stresses from vertically layered material properties in computing an equilibriu
+m or steady state stress state associated with gravitational body forces
  and lateral density variations or topography.
 \end_layout
 
@@ -619,7 +629,7 @@ status open
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Shear stress in the crust (linearly elastic) and mantle (linear Maxwell
@@ -710,7 +720,7 @@ status open
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Vertical displacement at the end of the postseismic deformation simulation
@@ -877,7 +887,7 @@ status open
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Displacement field on the ground surface after 2550 years of postseismic
@@ -974,7 +984,16 @@ generate_statedb.py
 \end_layout
 
 \begin_layout Standard
-Finally, we run the simulation of the postseismic deformation using
+After generating the initial state variables, we uncomment the 
+\family typewriter
+cell_filter
+\family default
+ lines in 
+\family typewriter
+pylithapp.cfg
+\family default
+ to allow easier visualization of Step 8 results.
+ Finally, we run the simulation of the postseismic deformation using
 \end_layout
 
 \begin_layout LyX-Code
@@ -994,7 +1013,8 @@ In the 100 years before the earthquake, it is clear that there is some ongoing
  This contamination by the initial conditions can be avoided with initial
  stress conditions at equilibrium as we did in Step 7.
  However, this is much more difficult to obtain for complex lateral variations
- in density or topography.Figure 
+ in density or topography.
+ Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:examples:gravity:2d:postseismic:vardensity:shearstress"
@@ -1003,6 +1023,12 @@ reference "fig:examples:gravity:2d:postseismic:vardensity:shearstress"
 
  shows the ground deformation at time 2000 years into the simulation using
  the state file.
+ Note that there is actually an incompatibility in our initial state variables,
+ since they were generated using an infinitesimal strain formulation.
+ Technically, we should have generated these using a finite strain formulation,
+ but in the present version of PyLith, which only uses linear cells, convergence
+ of the finite strain formulation for gravitational problems is problematic.
+ This difficulty should be eliminated once higher-order cells are available.
 \end_layout
 
 \begin_layout Standard
@@ -1024,7 +1050,7 @@ status open
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Cauchy shear stress at the end of the simulation of postseismic deformation
