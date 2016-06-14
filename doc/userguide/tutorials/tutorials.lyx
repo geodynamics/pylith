@@ -1,4 +1,4 @@
-#LyX 2.1 created this file. For more info see http://www.lyx.org/
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 413
 \begin_document
 \begin_header
@@ -21,6 +21,7 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -317,8 +318,9 @@ https://github.com/geodynamics/pylith_benchmarks
  The benchmarks do not include the mesh files because they are so large;
  instead they include the CUBIT journal files that can be used to generate
  the meshes.
- The input files in the repository are updated for PyLith v2.0.0, so you will
- need to modify them if you use another version of PyLith.
+ Most, but not all, of the input files in the repository are updated for
+ PyLith v2.0.0, so you will need to modify them if you use another version
+ of PyLith.
 \end_layout
 
 \end_body

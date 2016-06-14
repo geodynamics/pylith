@@ -34,7 +34,7 @@
 /** @brief Object for using simple solver to solver system with lumped Jacobian.
  */
 
-class pylith::problems::SolverLumped : Solver
+class pylith::problems::SolverLumped : public Solver
 { // SolverLumped
   friend class TestSolverLumped; // unit testing
 

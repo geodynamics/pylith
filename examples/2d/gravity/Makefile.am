@@ -18,20 +18,26 @@
 
 dist_noinst_DATA = \
 	README \
-	grav_stress-initial.spatialdb \
-	grav_stress.cfg \
-	grav_stress_finite_nois.cfg \
-	grav_stress_finite_is1.cfg \
-	grav_stress_finite_is2.cfg \
-	grav_stress_finite_is3.cfg \
-	grav_stress_infin_nois.cfg \
-	grav_stress_infin_is1.cfg \
-	grav_stress_infin_is2.cfg \
-	grav_stress_infin_is3.cfg \
-	mat_elastic.spatialdb \
-	mat_maxwell.spatialdb \
+	geometry.jou \
+	mesh.jou \
+	mesh.exo \
+	matprops_unidensity.spatialdb \
+	matprops_vardensity.spatialdb \
+	eqslip.spatialdb \
+	gravity_isostatic.spatialdb \
 	pylithapp.cfg \
-	stress2spatialdb.py
+	gravity_infstrain.cfg \
+	gravity_initstress.cfg \
+	gravity_isostatic.cfg \
+	gravity_vardensity.cfg \
+	nogravity.cfg \
+	postseismic.cfg \
+	postseismic_infstrain_nograv.cfg \
+	postseismic_finstrain_nograv.cfg \
+	postseismic_infstrain.cfg \
+	postseismic_finstrain.cfg \
+	postseismic_vardensity.cfg \
+	plot_soln.py
 
 
 # End of file 

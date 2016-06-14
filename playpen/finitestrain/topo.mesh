@@ -1,0 +1,72 @@
+// Finite-element mesh with one quad4 cells.
+//
+//
+//  1 ----- 3 ----- 5
+//  |       |       |
+//  |       |       |
+//  |       |       |
+//  0 ----- 2 ----- 4
+//
+// Each edge has a length of 2.0.
+//
+mesh = {
+  dimension = 2
+  use-index-zero = true
+  vertices = {
+    dimension = 2
+    count = 6
+    coordinates = {
+             0     -2.0e+3 -1.0e+3
+             1     -2.0e+3  1.1e+3
+             2      0.0e+3 -1.0e+3
+             3      0.0e+3  1.0e+3
+             4     +2.0e+3 -1.0e+3
+             5     +2.0e+3  0.9e+3
+    }
+  }
+
+  cells = {
+    count = 2
+    num-corners = 4
+    simplices = {
+             0       0  2  3  1
+             1       2  4  5  3
+    }
+    material-ids = {
+             0   0
+             1   0
+    }
+  }
+
+  group = {
+    name = y_neg
+    type = vertices
+    count = 3
+    indices = {
+      0
+      2
+      4
+    }
+  }
+
+  group = {
+    name = x_neg
+    type = vertices
+    count = 2
+    indices = {
+      0
+      1
+    }
+  }
+
+  group = {
+    name = x_pos
+    type = vertices
+    count = 2
+    indices = {
+      4
+      5
+    }
+  }
+
+}

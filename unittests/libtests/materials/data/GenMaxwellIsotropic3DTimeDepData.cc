@@ -344,18 +344,18 @@ const PylithScalar pylith::materials::GenMaxwellIsotropic3DTimeDepData::_strain[
 };
 
 const PylithScalar pylith::materials::GenMaxwellIsotropic3DTimeDepData::_stress[] = {
-  1.73628741e+07,
+  1.73638741e+07,
   2.22970000e+07,
-  2.72311259e+07,
-  1.99361456e+07,
-  2.48702715e+07,
-  2.98043974e+07,
-  1.98292020e+06,
+  2.72301259e+07,
+  1.99121456e+07,
+  2.48452715e+07,
+  2.97783974e+07,
+  1.98392020e+06,
   2.61520000e+06,
-  3.24747980e+06,
-  2.55607698e+06,
-  3.18835678e+06,
-  3.82063657e+06,
+  3.24647980e+06,
+  2.50207698e+06,
+  3.13335678e+06,
+  3.76463657e+06,
 };
 
 const PylithScalar pylith::materials::GenMaxwellIsotropic3DTimeDepData::_elasticConsts[] = {

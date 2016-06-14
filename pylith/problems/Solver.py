@@ -60,6 +60,9 @@ class Solver(PetscComponent):
 
     import pyre.inventory
 
+    createNullSpace = pyre.inventory.bool("create_null_space", default=True)
+    createNullSpace.meta['tip'] = "Create solution null space. Changing this setting should only be necessary for test problems with fewer DOF than the null space."
+
     useCUDA = pyre.inventory.bool("use_cuda", default=False,
                                   validator=validateUseCUDA)
     useCUDA.meta['tip'] = "Enable use of CUDA for finite-element integrations."
@@ -93,6 +96,7 @@ class Solver(PetscComponent):
     PetscComponent._configure(self)
 
     self.useCUDA = self.inventory.useCUDA
+    self.createNullSpace = self.inventory.createNullSpace
     return
 
 

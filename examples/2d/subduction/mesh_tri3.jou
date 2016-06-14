@@ -48,15 +48,6 @@ curve slabtop scheme bias fine size {dx} factor {bias_factor} start vertex 74
 curve slabbot@B scheme bias fine size {1.0*dx} factor {bias_factor} start vertex 76
 curve slabbot scheme bias fine size {1.0*dx} factor {bias_factor} start vertex 77
 
-# Set bias on boundaries (use constant size)
-${dx_edge=30.0*km}
-#curve edgewest size {dx_edge}
-#curve edgewest@A size {dx_edge}
-#curve edgeeast size {dx_edge}
-#curve edgeeast@A size {dx_edge}
-#curve edgebot size {dx_edge}
-#curve edgebot@A size {dx_edge}
-
 # ----------------------------------------------------------------------
 # Generate the mesh
 # ----------------------------------------------------------------------

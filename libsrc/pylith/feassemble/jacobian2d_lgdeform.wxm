@@ -1,11 +1,18 @@
 /* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
-/* [ Created with wxMaxima version 0.8.2 ] */
+/* [ Created with wxMaxima version 13.04.2 ] */
 
 /* [wxMaxima: input   start ] */
-Bnl: matrix([N11,0,N21,0,N31,0],
-[N12,0,N22,0,N32,0],
-[0,N11,0,N21,0,N31],
-[0,N12,0,N22,0,N32]);
+Binl: matrix([Nip,0],
+[Niq,0],
+[0,Nip],
+[0,Niq]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Bjnl: matrix([Njp,0],
+[Njq,0],
+[0,Njp],
+[0,Njq]);
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
@@ -16,29 +23,53 @@ S: matrix([S11,S12,0,0],
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
-x: transpose(Bnl) . S . Bnl;
+Knl: transpose(Binl) . S . Bjnl;
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
-Bi: matrix([Nip*(1+l11), l21*Nip],
-[l12*Niq,(1+l22)*Niq],
-[(1+l11)*Niq+l12*Nip,(1+l22)*Nip+l21*Niq]);
+string(Knl);
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
-Bj: matrix([Njp*(1+l11), l21*Njp],
-[l12*Njq,(1+l22)*Njq],
-[(1+l11)*Njq+l12*Njp,(1+l22)*Njp+l21*Njq]);
+Bi0: matrix([Nip, 0], [0, Niq], [Niq, Nip]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Bi1: matrix([Nip*l11, l21*Nip],
+[l12*Niq,l22*Niq],
+[l11*Niq+l12*Nip,l22*Nip+l21*Niq]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Bi: Bi0+Bi1;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Bj0: matrix([Njp, 0], [0, Njq], [Njq, Njp]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Bj1: matrix([Njp*l11, l21*Njp],
+[l12*Njq,l22*Njq],
+[l11*Njq+l12*Njp,l22*Njp+l21*Njq]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Bj: Bj0+Bj1;
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
 C: matrix([C1111, C1122, C1112],
-[C1122, C2222, C2212],
-[C1112, C2212, C1212]);
+[C2211, C2222, C2212],
+[C1211, C1222, C1212]);
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
-y: transpose(Bi) . C . Bj;
+Kl: transpose(Bi) . C . Bj;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+string(Kl);
 /* [wxMaxima: input   end   ] */
 
 /* [wxMaxima: input   start ] */
@@ -47,6 +78,18 @@ Svec: matrix([s11, s22, s12]);
 
 /* [wxMaxima: input   start ] */
 r: transpose(Bi) . transpose(Svec);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+string(r);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+X: matrix([x0, x1], [x2, x3]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+strain: 0.5*(transpose(X) . X - matrix([1,0],[0,1]));
 /* [wxMaxima: input   end   ] */
 
 /* Maxima can't load/batch files which end with a comment! */

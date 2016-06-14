@@ -46,7 +46,7 @@ class ElasticIsotropic3D(ElasticMaterial, ModuleElasticIsotropic3D):
             'data': []},
          'cell': \
            {'info': ["mu", "lambda", "density", "stable_dt_implicit", "stable_dt_explicit",],
-            'data': ["total_strain", "stress"]}}
+            'data': ["total_strain", "stress", "cauchy_stress"]}}
     self._loggingPrefix = "MaEl3D "
     return
 
