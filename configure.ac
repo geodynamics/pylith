@@ -17,7 +17,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith], [2.1.0], [cig-short@geodynamics.org])
+AC_INIT([PyLith], [2.1.2], [cig-short@geodynamics.org])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
@@ -360,7 +360,6 @@ AC_CONFIG_FILES([Makefile
 		doc/refguide/Makefile
 		doc/releasenotes/Makefile
 		doc/userguide/Makefile
-		doc/presentations/Makefile
 		examples/Makefile
 		examples/3d/Makefile
 		examples/3d/tet4/Makefile
