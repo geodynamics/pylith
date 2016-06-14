@@ -1,5 +1,5 @@
-#LyX 2.1 created this file. For more info see http://www.lyx.org/
-\lyxformat 474
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
 \begin_document
 \begin_header
 \textclass book
@@ -10,18 +10,18 @@
 \maintain_unincluded_children false
 \language english
 \language_package default
-\inputencoding iso8859-1
+\inputencoding latin1
 \fontencoding global
 \font_roman default
 \font_sans default
 \font_typewriter default
-\font_math auto
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -32,24 +32,15 @@
 \use_hyperref false
 \papersize default
 \use_geometry true
-\use_package amsmath 0
-\use_package amssymb 0
-\use_package cancel 1
-\use_package esint 0
-\use_package mathdots 1
-\use_package mathtools 1
-\use_package mhchem 1
-\use_package stackrel 1
-\use_package stmaryrd 1
-\use_package undertilde 1
+\use_amsmath 0
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
 \cite_engine basic
-\cite_engine_type default
-\biblio_style plain
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
 \suppress_date false
-\justification true
 \use_refstyle 0
 \index Index
 \shortcut idx
@@ -264,7 +255,7 @@ status open
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 Mesh used for 2d gravity simulations with a 30 km thick elastic crust over
@@ -540,7 +531,7 @@ status open
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 Spatial variation in density in the finite element mesh.
@@ -629,7 +620,7 @@ status open
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 Shear stress in the crust (linearly elastic) and mantle (linear Maxwell
@@ -720,7 +711,7 @@ status open
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 Vertical displacement at the end of the postseismic deformation simulation
@@ -887,7 +878,7 @@ status open
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 Displacement field on the ground surface after 2550 years of postseismic
@@ -927,7 +918,13 @@ We use the output of Step 3 to create realistic initial stresses for this
  using CellFilterAvg.
  For initial stresses consistent with the state of the simulation at the
  end of Step 3, we want the stresses at each of the quadrature points.
- So our first step is to modify the 
+ Note that Step 3 uses the infintesimal strain formulation and for Step
+ 8 we will use a finite strain formulation; any inconsistencies in using
+ the output from a simulation with one strain formulation as the input in
+ a simulation for another strain formulation are very small given that we
+ start Step 8 from an undeformed state so that the Cauchy stresses are very
+ close to the second Pioloa-Kirchoff stresses.
+ Our first step is to modify the 
 \family typewriter
 pylithapp.cfg
 \family default
@@ -1023,12 +1020,7 @@ reference "fig:examples:gravity:2d:postseismic:vardensity:shearstress"
 
  shows the ground deformation at time 2000 years into the simulation using
  the state file.
- Note that there is actually an incompatibility in our initial state variables,
- since they were generated using an infinitesimal strain formulation.
- Technically, we should have generated these using a finite strain formulation,
- but in the present version of PyLith, which only uses linear cells, convergence
- of the finite strain formulation for gravitational problems is problematic.
- This difficulty should be eliminated once higher-order cells are available.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -1050,7 +1042,7 @@ status open
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption Standard
+\begin_inset Caption
 
 \begin_layout Plain Layout
 Cauchy shear stress at the end of the simulation of postseismic deformation
