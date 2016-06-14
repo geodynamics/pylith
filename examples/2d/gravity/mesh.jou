@@ -13,61 +13,84 @@
 # See COPYING for license information.
 #
 # ----------------------------------------------------------------------
-# Create tri3 mesh at 100m resolution.
-# ----------------------------------------------------------------------
-
-# ----------------------------------------------------------------------
 # Generate geometry
 # ----------------------------------------------------------------------
 playback 'geometry.jou'
 
 # ----------------------------------------------------------------------
-# Set discretization size and scheme
+# Set discretization size
 # ----------------------------------------------------------------------
-${dxInner=150.0*m}
-${dxOuter=1.50*km}
-
-surface all scheme trimesh
-surface 23 size {dxInner}
-curve 51 52 size {dxOuter}
+surface all size {2.0*km}
 
 # ----------------------------------------------------------------------
 # Generate the mesh
 # ----------------------------------------------------------------------
+surface all scheme pave
 mesh surface all
 
 # ----------------------------------------------------------------------
 # Smooth mesh to improve quality
 # ----------------------------------------------------------------------
-surface all smooth scheme condition number beta 1.2 cpu 10
-smooth surface all
-
-surface all smooth scheme condition number beta 1.1 cpu 10
+surface all smooth scheme condition number beta 1.3 cpu 10
 smooth surface all
 
 # ----------------------------------------------------------------------
-# Setup boundary conditions.
+# Create blocks for materials
 # ----------------------------------------------------------------------
-block 1 surface 23
-block 1 name 'elastic'
-block 2 surface 24
-block 2 name 'viscoelastic'
+block 1 surface s_crust_xneg s_crust_xpos
+block 1 name "crust"
 
-group "face_xpos" add node in curve 51
-nodeset 11 group face_xpos
-nodeset 11 name "face_xpos"
+block 2 surface s_mantle_xneg s_mantle_xpos
+block 2 name "mantle"
 
-group "face_xneg" add node in curve 53 48
-nodeset 12 group face_xneg
-nodeset 12 name "face_xneg"
+# ----------------------------------------------------------------------
+# Create nodeset for fault
+# ----------------------------------------------------------------------
+group "fault" add node in curve c_fault_crust
+group "fault" add node in curve c_fault_mantle
+nodeset 10 group fault
+nodeset 10 name "fault"
 
-group "face_yneg" add node in curve 52
-nodeset 13 group face_yneg
-nodeset 13 name "face_yneg"
+# buried edge
+group "faultedge_top" add node in c_fault_mantle
+group "faultedge_bot" add node in c_fault_ext
+group "faultedge" intersect faultedge_top with faultedge_bot
+delete group faultedge_bot
+delete group faultedge_top
+nodeset 11 group faultedge
+nodeset 11 name "faultedge"
 
-group "face_ypos" add node in curve 56 49
-nodeset 14 group face_ypos
-nodeset 14 name "face_ypos"
+# ----------------------------------------------------------------------
+# Create nodeset for +x edge
+# ----------------------------------------------------------------------
+group "boundary_xpos" add node in curve c_crust_xpos
+group "boundary_xpos" add node in curve c_mantle_xpos
+nodeset 20 group boundary_xpos
+nodeset 20 name "boundary xpos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -x edge
+# ----------------------------------------------------------------------
+group "boundary_xneg" add node in curve c_crust_xneg
+group "boundary_xneg" add node in curve c_mantle_xneg
+nodeset 21 group boundary_xneg
+nodeset 21 name "boundary xneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +y edge
+# ----------------------------------------------------------------------
+group "boundary_ypos" add node in curve  c_topo_xneg
+group "boundary_ypos" add node in curve  c_topo_xpos
+nodeset 22 group boundary_ypos
+nodeset 22 name "boundary ypos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -y edge
+# ----------------------------------------------------------------------
+group "boundary_yneg" add node in curve  c_bottom_xneg
+group "boundary_yneg" add node in curve  c_bottom_xpos
+nodeset 23 group boundary_yneg
+nodeset 23 name "boundary yneg"
 
 # ----------------------------------------------------------------------
 # Export exodus file
@@ -75,4 +98,3 @@ nodeset 14 name "face_ypos"
 export mesh "mesh.exo" dimension 2 overwrite
 
 
-# End of file

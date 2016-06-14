@@ -121,7 +121,7 @@ class TestShearDispFriction(TestTri3):
     pts = numpy.zeros( (ncells, 3), dtype=numpy.float64)
     if name == "total_strain":
       stateVar = self.soln.strain(pts)
-    elif name == "stress":
+    elif name == "stress" or name == "cauchy_stress":
       stateVar = self.soln.stress(pts)
     else:
       raise ValueError("Unknown state variable '%s'." % name)

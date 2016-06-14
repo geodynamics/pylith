@@ -63,6 +63,17 @@ public :
   virtual
   void deallocate(void);
   
+  /** Set flag signaling to skip null space creation.
+   *
+   * This flag can be used to skip creating the null space in very
+   * small problems in which the number of DOF is less than the size
+   * of the null space, and the problem does not contain a null space.
+   *
+   * @param[in] value True to skip creating null space.
+   */
+  void skipNullSpaceCreation(const bool value);
+
+
   /** Initialize solver.
    *
    * @param fields Solution fields.
@@ -70,10 +81,9 @@ public :
    * @param formulation Formulation of system of equations.
    */
   virtual
-  void
-  initialize(const topology::SolutionFields& fields,
-	     const topology::Jacobian& jacobian,
-	     Formulation* const formulation);
+  void initialize(const topology::SolutionFields& fields,
+		  const topology::Jacobian& jacobian,
+		  Formulation* const formulation);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
@@ -82,8 +92,7 @@ protected :
    *
    * @param fields Solution fields.
    */
-  void
-  _createNullSpace(const topology::SolutionFields& fields);
+  void _createNullSpace(const topology::SolutionFields& fields);
 
   /** Setup preconditioner for preconditioning using split fields.
    *
@@ -92,12 +101,11 @@ protected :
    * @param jacobian System Jacobian matrix.
    * @param fields Solution fields.
    */
-  void
-  _setupFieldSplit(PetscPC* const pc,
-		   Formulation* const formulation,
-		   const topology::Jacobian& jacobian,
-		   const topology::SolutionFields& fields);
-
+  void _setupFieldSplit(PetscPC* const pc,
+			Formulation* const formulation,
+			const topology::Jacobian& jacobian,
+			const topology::SolutionFields& fields);
+  
   /** :MATT: :TODO: DOCUMENT THIS.
    */
   static
@@ -113,6 +121,7 @@ protected :
   PetscMat _jacobianPC; ///< Global preconditioning matrix.
   PetscMat _jacobianPCFault; ///< Preconditioning matrix for Lagrange constraints.
   FaultPreconCtx _ctx; ///< Context for preconditioning matrix for Lagrange constraints.
+  bool _skipNullSpaceCreation; ///< Skip creating the null space (useful for very small problems with no null space).
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

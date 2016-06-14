@@ -250,8 +250,7 @@ class MaxwellIsotropic3DTimeDep(ElasticMaterialApp):
       viscousStrainTpdt[iComp] = expFac * viscousStrainT[iComp] + \
                                  dqV * (devStrainTpdt - devStrainT)
       devStressTpdt = elasFac * \
-                      (viscousStrainTpdt[iComp] - devStrainInitial[iComp]) + \
-                      devStressInitial[iComp]
+                      (viscousStrainTpdt[iComp] - devStrainInitial[iComp])
       stressTpdt[iComp] = diag[iComp] * meanStressTpdt + devStressTpdt
       
     return stressTpdt, viscousStrainTpdt

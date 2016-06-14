@@ -1,0 +1,61 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 13.04.2 ] */
+
+/* [wxMaxima: input   start ] */
+ux(x) := ex*(x-x0);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+uy(y) := ey*(y-y0);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+ux1(x,y) := xr + (x+ux(x)-xr)*cos(theta) + (y+uy(y)-yr)*sin(theta) - x;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+uy1(x,y) := yr - (x+ux(x)-xr)*sin(theta) + (y+uy(y)-yr)*cos(theta) - y;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+uxx : diff(ux1(x,y),x,1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+uxy : diff(ux1(x,y),y,1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+uyx : diff(uy1(x,y),x,1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+uyy : diff(uy1(x,y),y,1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Exx : 0.5*(uxx+uxx+uxx*uxx+uyx*uyx);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+trigsimp(Exx);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Eyy : 0.5*(uyy+uyy+uxy*uxy+uyy*uyy);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+trigsimp(Eyy);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+Exy : 0.5*(uxy+uyx+uxx*uxy+uyx*uyy);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+trigsimp(Exy);
+/* [wxMaxima: input   end   ] */
+
+/* Maxima can't load/batch files which end with a comment! */
+"Created with wxMaxima"$

@@ -290,7 +290,7 @@ pylith::materials::MaxwellPlaneStrain::_dbToStateVars(
 					PylithScalar* const stateValues,
 					const scalar_array& dbValues)
 { // _dbToStateVars
-  assert(0 != stateValues);
+  assert(stateValues);
   const int numDBValues = dbValues.size();
   assert(_MaxwellPlaneStrain::numDBStateVars == numDBValues);
 
@@ -399,6 +399,9 @@ pylith::materials::MaxwellPlaneStrain::_calcStressElastic(
   PetscLogFlops(14);
 } // _calcStressElastic
 
+#if 0
+#include <iostream>
+#endif
 // ----------------------------------------------------------------------
 // Compute stress tensor at location from properties as a viscoelastic
 // material.
@@ -440,19 +443,16 @@ pylith::materials::MaxwellPlaneStrain::_calcStressViscoelastic(
 
   // Initial stress and strain values
   const PylithScalar meanStrainInitial = (initialStrain[0] + initialStrain[1]) / 3.0;
-  const PylithScalar meanStressInitial = (initialStress[0] + initialStress[1] +
-				    stressZZInitial) / 3.0;
-  const PylithScalar devStrainInitial[] = {initialStrain[0] - meanStrainInitial,
-				     initialStrain[1] - meanStrainInitial,
-				     initialStrain[2]};
-  const PylithScalar devStressInitial[] = {initialStress[0] - meanStressInitial,
-				     initialStress[1] - meanStressInitial,
-				     initialStress[2]};
+  const PylithScalar meanStressInitial = (initialStress[0] + initialStress[1] + stressZZInitial) / 3.0;
+  const PylithScalar devStrainInitial[3] = {
+    initialStrain[0] - meanStrainInitial,
+    initialStrain[1] - meanStrainInitial,
+    initialStrain[2]
+  };
 
   // Mean stress and strain for t + dt
   const PylithScalar meanStrainTpdt = (totalStrain[0] + totalStrain[1]) / 3.0;
-  const PylithScalar meanStressTpdt = 3.0 * bulkModulus *
-    (meanStrainTpdt - meanStrainInitial) + meanStressInitial;
+  const PylithScalar meanStressTpdt = 3.0 * bulkModulus * (meanStrainTpdt - meanStrainInitial) + meanStressInitial;
 
   // Get viscous strains
   if (computeStateVars) {
@@ -462,17 +462,21 @@ pylith::materials::MaxwellPlaneStrain::_calcStressViscoelastic(
 		      initialStress, initialStressSize,
 		      initialStrain, initialStrainSize);
   } else {
-    memcpy(&_viscousStrain[0], &stateVars[s_viscousStrain],
-	   4 * sizeof(PylithScalar));
+    memcpy(&_viscousStrain[0], &stateVars[s_viscousStrain], 4*sizeof(PylithScalar));
   } // else
 
   // Compute new stresses
-  stress[0] = meanStressTpdt + mu2 * (_viscousStrain[0] - devStrainInitial[0]) +
-    devStressInitial[0];
-  stress[1] = meanStressTpdt + mu2 * (_viscousStrain[1] - devStrainInitial[1]) +
-    devStressInitial[1];
-  stress[2] = mu2 * (_viscousStrain[3] - devStrainInitial[2]) +
-    devStressInitial[2];
+  stress[0] = meanStressTpdt + mu2 * (_viscousStrain[0] - devStrainInitial[0]);
+  stress[1] = meanStressTpdt + mu2 * (_viscousStrain[1] - devStrainInitial[1]);
+  stress[2] = mu2 * (_viscousStrain[3] - devStrainInitial[2]);
+
+#if 0
+  std::cout << "CALCSTRESS, viscousStrain:"; for(int i=0;i<4;++i) {std::cout << " " << _viscousStrain[i]; } std::cout << std::endl;
+  std::cout << "CALCSTRESS, totalStrain:"; for(int i=0;i<3;++i) {std::cout << " " << totalStrain[i]; } std::cout << std::endl;
+  std::cout << "CALCSTRESS, meanStrain: " << meanStrainTpdt << std::endl;
+  std::cout << "CALCSTRESS, meanStress: " << meanStressTpdt << std::endl;
+  std::cout << "CALCSTRESS, stress:"; for(int i=0;i<3;++i) {std::cout << " " << stress[i]; } std::cout << std::endl;
+#endif
 
   PetscLogFlops(30);
 } // _calcStressViscoelastic
@@ -606,22 +610,23 @@ pylith::materials::MaxwellPlaneStrain::_updateStateVarsElastic(
   assert(0 != initialStrain);
   assert(_MaxwellPlaneStrain::tensorSize == initialStrainSize);
 
-  const PylithScalar strainTpdt[] = {totalStrain[0] - initialStrain[0],
-			       totalStrain[1] - initialStrain[1],
-			       0.0,
-			       totalStrain[2] - initialStrain[2]};
+  const PylithScalar strainTpdt[4] = {
+    totalStrain[0] - initialStrain[0],
+    totalStrain[1] - initialStrain[1],
+    0.0,
+    totalStrain[2] - initialStrain[2]
+  };
 
-  const PylithScalar meanStrainTpdt = (strainTpdt[0] + strainTpdt[1])/3.0;
+  const PylithScalar meanStrainTpdt = (strainTpdt[0] + strainTpdt[1]) / 3.0;
 
-  const PylithScalar diag[] = { 1.0, 1.0, 1.0, 0.0 };
+  const PylithScalar diag[4] = { 1.0, 1.0, 1.0, 0.0 };
 
   stateVars[s_totalStrain] = totalStrain[0];
-  stateVars[s_totalStrain + 1] = totalStrain[1];
-  stateVars[s_totalStrain + 2] = totalStrain[2];
+  stateVars[s_totalStrain+1] = totalStrain[1];
+  stateVars[s_totalStrain+2] = totalStrain[2];
 
   for (int iComp=0; iComp < 4; ++iComp) {
-    stateVars[s_viscousStrain + iComp] =
-      strainTpdt[iComp] - diag[iComp] * meanStrainTpdt;
+    stateVars[s_viscousStrain + iComp] = strainTpdt[iComp] - diag[iComp] * meanStrainTpdt;
   } // for
   PetscLogFlops(13);
 
@@ -667,6 +672,9 @@ pylith::materials::MaxwellPlaneStrain::_updateStateVarsViscoelastic(
   memcpy(&stateVars[s_viscousStrain], &_viscousStrain[0], 4 * sizeof(PylithScalar));
 
   _needNewJacobian = false;
+
+  //std::cout << "STATEVARS, viscousStrain:"; for(int i=0;i<4;++i) {std::cout << " " << stateVars[s_viscousStrain+i]; } std::cout << std::endl;
+
 
 } // _updateStateVarsViscoelastic
 
@@ -729,30 +737,34 @@ pylith::materials::MaxwellPlaneStrain::_computeStateVars(
 					 const PylithScalar* initialStrain,
 					 const int initialStrainSize)
 { // _computeStateVars
-  assert(0 != stateVars);
+  assert(stateVars);
   assert(_numVarsQuadPt == numStateVars);
-  assert(0 != properties);
+  assert(properties);
   assert(_numPropsQuadPt == numProperties);
-  assert(0 != totalStrain);
+  assert(totalStrain);
   assert(_MaxwellPlaneStrain::tensorSize == strainSize);
-  assert(0 != initialStress);
+  assert(initialStress);
   assert(_MaxwellPlaneStrain::tensorSize == initialStressSize);
-  assert(0 != initialStrain);
+  assert(initialStrain);
   assert(_MaxwellPlaneStrain::tensorSize == initialStrainSize);
 
   const PylithScalar maxwellTime = properties[p_maxwellTime];
 
-  const PylithScalar strainTpdt[] = {totalStrain[0],
-			       totalStrain[1],
-			       0.0,
-			       totalStrain[2]};
-  const PylithScalar strainT[] = {stateVars[s_totalStrain+0],
-			    stateVars[s_totalStrain+1],
-			    0.0,
-			    stateVars[s_totalStrain+2]};
+  const PylithScalar strainTpdt[4] = {
+    totalStrain[0],
+    totalStrain[1],
+    0.0,
+    totalStrain[2]
+  };
+  const PylithScalar strainT[4] = {
+    stateVars[s_totalStrain+0],
+    stateVars[s_totalStrain+1],
+    0.0,
+    stateVars[s_totalStrain+2]
+  };
   
-  const PylithScalar meanStrainTpdt = (strainTpdt[0] + strainTpdt[1])/3.0;
-  const PylithScalar meanStrainT = (strainT[0] + strainT[1])/3.0;
+  const PylithScalar meanStrainTpdt = (strainTpdt[0] + strainTpdt[1]) / 3.0;
+  const PylithScalar meanStrainT = (strainT[0] + strainT[1]) / 3.0;
 
   const PylithScalar diag[] = { 1.0, 1.0, 1.0, 0.0 };
 
@@ -766,8 +778,7 @@ pylith::materials::MaxwellPlaneStrain::_computeStateVars(
   for (int iComp=0; iComp < 4; ++iComp) {
     devStrainTpdt = strainTpdt[iComp] - diag[iComp] * meanStrainTpdt;
     devStrainT = strainT[iComp] - diag[iComp] * meanStrainT;
-    _viscousStrain[iComp] = expFac * stateVars[s_viscousStrain+iComp] +
-      dq * (devStrainTpdt - devStrainT);
+    _viscousStrain[iComp] = expFac * stateVars[s_viscousStrain+iComp] + dq * (devStrainTpdt - devStrainT);
   } // for
 
   PetscLogFlops(39);

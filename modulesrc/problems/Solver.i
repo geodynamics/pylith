@@ -42,6 +42,16 @@ namespace pylith {
       virtual
       void deallocate(void);
   
+      /** Set flag signaling to skip null space creation.
+       *
+       * This flag can be used to skip creating the null space in very
+       * small problems in which the number of DOF is less than the size
+       * of the null space, and the problem does not contain a null space.
+       *
+       * @param[in] value True to skip creating null space.
+       */
+      void skipNullSpaceCreation(const bool value);
+
       /** Initialize solver.
        *
        * @param fields Solution fields.
@@ -49,10 +59,9 @@ namespace pylith {
        * @param formulation Formulation of system of equations.
        */
       virtual
-      void
-      initialize(const pylith::topology::SolutionFields& fields,
-		 const pylith::topology::Jacobian& jacobian,
-		 Formulation* const formulation);
+      void initialize(const pylith::topology::SolutionFields& fields,
+		      const pylith::topology::Jacobian& jacobian,
+		      Formulation* const formulation);
 
     }; // Solver
 

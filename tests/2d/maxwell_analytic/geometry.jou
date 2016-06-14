@@ -1,0 +1,15 @@
+# ----------------------------------------------------------------------
+# Create surface using vertices
+# ----------------------------------------------------------------------
+
+# Block is 8000m x 8000m
+# -4000 m <= x <= 4000 m 
+# -4000 m <= y <= 4000 m
+reset
+create vertex -4000.0 -4000.0 0.0
+create vertex -4000.0 +4000.0 0.0
+create vertex +4000.0 +4000.0 0.0
+create vertex +4000.0 -4000.0 0.0
+create surface vertex 1 2 3 4
+delete vertex all
+

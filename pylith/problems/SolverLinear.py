@@ -73,6 +73,8 @@ class SolverLinear(Solver, ModuleSolverLinear):
     Set members based using inventory.
     """
     Solver._configure(self)
+
+    ModuleSolverLinear.skipNullSpaceCreation(self, not self.createNullSpace)
     return
 
 

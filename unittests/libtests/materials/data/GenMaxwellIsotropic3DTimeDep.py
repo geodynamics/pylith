@@ -295,7 +295,7 @@ class GenMaxwellIsotropic3DTimeDep(ElasticMaterialApp):
                                             viscousStrainT[model, iComp] + \
                                             dqV[model] * deltaStrain
           devStressTpdt += shearRatioV[model] * viscousStrainTpdt[model, iComp]
-      devStressTpdt = elasFac * devStressTpdt + devStressInitial[iComp]
+      devStressTpdt = elasFac * devStressTpdt
       stressTpdt[iComp] = diag[iComp] * meanStressTpdt + devStressTpdt
     
     return stressTpdt, viscousStrainTpdt

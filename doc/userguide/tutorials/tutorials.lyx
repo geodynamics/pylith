@@ -355,8 +355,9 @@ https://github.com/geodynamics/pylith_benchmarks
  The benchmarks do not include the mesh files because they are so large;
  instead they include the CUBIT journal files that can be used to generate
  the meshes.
- The input files in the repository are updated for PyLith v2.0.0, so you will
- need to modify them if you use another version of PyLith.
+ Most, but not all, of the input files in the repository are updated for
+ PyLith v2.0.0, so you will need to modify them if you use another version
+ of PyLith.
 \end_layout
 
 \end_body
