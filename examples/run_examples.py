@@ -204,3 +204,25 @@ if "2d/greensfns" in targets or "all" in targets:
     run_pylith(dir, examples, nprocs=2)
     run_pylith(dir, examples, nprocs=4)
     run_pylith(dir, examples, nprocs=6)
+
+# ----------------------------------------------------------------------
+if "2d/gravity" in targets or "all" in targets:
+    dir = "2d/gravity"
+    examples = ("gravity_infstrain.cfg",
+                "gravity_initstress.cfg gravity_isostatic.cfg",
+                "gravity_initstress.cfg gravity_vardensity.cfg",
+            )
+    # Direct solver, so use only 1 proc
+    run_pylith(dir, examples, nprocs=1)
+
+    examples = ("postseismic.cfg nogravity.cfg postseismic_infstrain_nograv.cfg",
+                "postseismic.cfg nogravity.cfg postseismic_finstrain_nograv.cfg",
+                "postseismic.cfg gravity_initstress.cfg postseismic_infstrain.cfg",
+                "postseismic.cfg gravity_initstress.cfg postseismic_finstrain.cfg",
+                )
+    run_pylith(dir, examples, nprocs=1)
+    run_pylith(dir, examples, nprocs=2)
+    run_pylith(dir, examples, nprocs=4)
+
+
+# End of file
