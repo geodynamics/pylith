@@ -18,7 +18,6 @@
 
 dist_noinst_DATA = \
 	README \
-	pylithapp.cfg \
 	geometry.jou \
 	mesh.jou \
 	mesh.exo \
@@ -26,8 +25,8 @@ dist_noinst_DATA = \
 	matprops_vardensity.spatialdb \
 	eqslip.spatialdb \
 	gravity_isostatic.spatialdb \
+	pylithapp.cfg \
 	gravity_infstrain.cfg \
-	gravity_finstrain.cfg \
 	gravity_initstress.cfg \
 	gravity_isostatic.cfg \
 	gravity_vardensity.cfg \
@@ -37,6 +36,7 @@ dist_noinst_DATA = \
 	postseismic_finstrain_nograv.cfg \
 	postseismic_infstrain.cfg \
 	postseismic_finstrain.cfg \
+	postseismic_vardensity.cfg \
 	plot_soln.py
 
 
