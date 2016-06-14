@@ -1651,7 +1651,7 @@ reference "sec:absorbing:boundaries"
 \end_layout
 
 \begin_layout Section
-Small Strain Formulation
+Small (Finite) Strain Formulation
 \begin_inset CommandInset label
 LatexCommand label
 name "sec:Small-Strain-Formulation"
@@ -1665,10 +1665,10 @@ name "sec:Small-Strain-Formulation"
 In some crustal deformation problems sufficient deformation may occur that
  the assumptions associated with infinitesimal strains no longer hold.
  This is often the case for problems when one wants to include the effects
- of gravitational body forces and deformation on the overburden pressure.
+ of gravitational body forces on vertical deformation.
  In such cases we want to account for both rigid body motion and small strains.
- We use a total Lagrangian formulation (undeformed configuration) based
- on the one presented by Bathe 
+ We use a total Lagrangian formulation (quantities are associated with the
+ undeformed configuration) based on the one presented by Bathe 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Bathe:1995"
@@ -1687,7 +1687,7 @@ Starting from the governing equation, written for the deformed configuration
 ), we have
 \begin_inset Formula 
 \begin{equation}
--\int_{V_{t}}\underline{\sigma}:\nabla\overrightarrow{\phi}\: dV_{t}+\int_{S_{T}}\overrightarrow{T_{t}}\cdot\overrightarrow{\phi}\, dS_{t}+\int_{Vt}\overrightarrow{f_{t}}\cdot\overrightarrow{\phi}\, dV_{t}-\int_{Vt}\rho_{t}\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV_{t}=0.
+\int(\nabla_{t}\cdot\underline{\sigma})\cdot\vec{\phi}\: dV_{t}+\int_{Vt}\overrightarrow{f_{t}}\cdot\overrightarrow{\phi}\, dV_{t}-\int_{Vt}\rho_{t}\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV_{t}=0.\label{eq:governing:equation:deformed}
 \end{equation}
 
 \end_inset
@@ -1696,48 +1696,115 @@ For the total Lagrangian formulation we want to transform these integrals
  over the deformed configuration to integrals over the undeformed configuration.
  We require that the deformed and undeformed configurations use the same
  coordinate system (origin and orientation).
- make the assumption that In order to transform the quantities from the
- deformed configuration to the undeformed configuration, we make use of
- the deformation The Green-Lagrange strain provides a measure of the strain
- relative to the original, undeformed configuration.
+ Conservation of mass requires that 
+\begin_inset Formula $\rho\, dV_{t}=\rho_{0}\, dV_{0}$
+\end_inset
+
+.
+ We define the body force as a force per unit volume that does not depend
+ on the configuration, which leads to 
+\begin_inset Formula $\vec{f}_{t}\, dV_{t}=\vec{f}_{0}\, dV_{0}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The Green-Lagrange strain provides a measure of the strain relative to the
+ original, undeformed configuration.
 \begin_inset Formula 
 \begin{gather}
-\varepsilon_{ij}=\frac{1}{2}(u_{i,j}+u_{j,i}+u_{k,i}u_{k,j}),\text{ or}\\
-\varepsilon_{ij}=X_{ji}X_{ij}-\delta_{ij},\text{ where}\\
-X_{ij}=x_{i,j}(t)=\frac{\partial}{\partial x_{j}}(x_{i}(0)+u_{i}(t)),
+\underline{\epsilon}=\frac{1}{2}(\nabla u_{i,j}+(\nabla u)^{T}+u_{k,i}u_{k,j}),\text{ or}\\
+\underline{\epsilon}=\underline{X}_{0}^{T}\underline{\, X}_{0}-\underline{I},\text{ where}\\
+\underline{X_{0}}=\frac{\partial}{\partial x_{j}}(\vec{x}(0)+\vec{u}(t)),
 \end{gather}
 
 \end_inset
 
 and 
-\begin_inset Formula $X_{ij}$
+\begin_inset Formula $\underline{X}$
 \end_inset
 
  is the deformation gradient tensor.
  The second Piola-Kirchhoff stress tensor, 
-\begin_inset Formula $S_{ij}$
+\begin_inset Formula $\underline{S}$
 \end_inset
 
-, is related to the Green-Lagrange strain tensor through the elasticity
- constants,
+, is the work conjugate of the Green-Lagrange strain tensor.
+ As a result, they are related through the elasticity constants,
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-S_{ij}=C_{ijkl}\varepsilon_{kl},
+\underline{S}=\underline{C\,}\underline{\varepsilon},
 \end{equation}
 
 \end_inset
 
-in the same manner as the Cauchy stress is related to the linear terms of
- the Green-Lagrange strain in the infinitesimal strain formulation.
+in the same manner as the Cauchy stress is related to the infinitesimal
+ strain.
+ The Cauchy stress is related to the second Piola-Kirchoff stress through
+ the deformation gradient tensor,
+\begin_inset Formula 
+\begin{equation}
+\underline{\sigma}=\frac{1}{|\underline{X}_{0}|}\underline{\, X}_{0}\,\underline{S\,}\underline{X}_{0}^{T},
+\end{equation}
+
+\end_inset
+
+ where 
+\begin_inset Formula $\mathit{det}(\underline{X}_{0})=|\underline{X}_{0}|$
+\end_inset
+
+.
+ Additionally, the first Piola-Kirhoff stress is define to be 
+\begin_inset Formula 
+\begin{equation}
+\underline{P}=\underline{S\,}\underline{X}_{0}^{T}.
+\end{equation}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-Just as in the infinitesimal formulation, we evaluate the integral over
- the volume using numerical quadrature with sums over the quadrature points
- of each cell.
+Applying the divergence theorem, making use of the fact that 
+\begin_inset Formula $dV_{t}=|\underline{X}_{0}|\, dV_{0}$
+\end_inset
+
+, and recognizing that the gradient in the deformed configuration is related
+ to the gradient in the undeformed configuration through the deformation
+ gradient tensor, we can show that
+\begin_inset Formula 
+\begin{equation}
+\int_{V_{t}}\nabla_{t}\cdot\underline{\sigma}\cdot\vec{\phi}\: dV_{t}=-\int_{V_{0}}\underline{P}:\nabla\overrightarrow{\phi}\, dV_{0}+\int_{S_{0}}\overrightarrow{T_{0}}\cdot\overrightarrow{\phi}\, dS_{0},
+\end{equation}
+
+\end_inset
+
+where we assume the the tractions on the boundary do not depend on the configura
+tion.
+ That is, the normal and share traction components are defined in terms
+ of the undeformed configuration.
+ Incorporating the other relationships between the underformed and deformed
+ configurations allows us to rewrite Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:governing:equation:deformed"
+
+\end_inset
+
+ in the undeformed configuration,
+\begin_inset Formula 
+\[
+-\int_{V_{0}}\underline{P}:\nabla\overrightarrow{\phi}\, dV_{0}+\int_{S_{0}}\overrightarrow{T_{0}}\cdot\overrightarrow{\phi}\, dS_{0}+\int_{V_{0}}\overrightarrow{f_{0}}\cdot\overrightarrow{\phi}\, dV_{0}-\int_{V_{0}}\rho_{0}\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV_{0}=0.
+\]
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection

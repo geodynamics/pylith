@@ -1567,7 +1567,7 @@ stress
  the second Piola-Kirchoff stress tensor (not the Cauchy stress tensor)
  values should be specified in the initial stress database when using the
  finite strain formulation.
- See Section 
+ See section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Small-Strain-Formulation"
@@ -1679,7 +1679,7 @@ where
 
 \begin_layout Standard
 The stable time step is used in all three of the time stepping schemes used
- by PyLith (see Subsection 
+ by PyLith (see section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Time-Stepping"
