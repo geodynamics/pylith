@@ -16,7 +16,7 @@ Version 2.1.2
 * Bugfixes for finite-strain formulation.
 
   + Added output of the Cauchy stresses (cauchy_stress). The second
-    Pioloa-Kirchoff stresses are output via the stress field.
+    Piola-Kirchoff stresses are output via the stress field.
 
   + Material properties and state variables were not retrieved
     properly when updating state variables.
