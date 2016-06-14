@@ -209,6 +209,15 @@ Fixed Trilinos/ML configuration and code so that it can be built without
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+The 
+\family typewriter
+CHANGES
+\family default
+ file in the top-level source directory contains a summary of features and
+ bugfixes for each release.
+\end_layout
+
 \begin_layout Section
 History
 \end_layout
