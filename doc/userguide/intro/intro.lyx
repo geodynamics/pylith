@@ -196,7 +196,7 @@ PETSc
 
 \begin_deeper
 \begin_layout Itemize
-Updated to PETSc v3.7.1 (
+Updated to PETSc v3.7.2 (
 \family typewriter
 knepley/pylith
 \family default

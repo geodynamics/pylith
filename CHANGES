@@ -49,7 +49,7 @@ Version 2.1.2
 
 * PETSc
 
-  + Updated to PETSc v3.7.1 (knepley/pylith branch).
+  + Updated to PETSc v3.7.2 (knepley/pylith branch).
 
   + Fixed Trilinos/ML configuration and code so that it can be built
     without a Fortran compiler.
