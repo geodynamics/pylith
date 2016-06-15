@@ -289,13 +289,14 @@ def rewriteScripts(pl, prefix, opSys):
     else:
         relative = "#!/usr/bin/env %s"
     absolute = "#!" + prefix + "/bin/"
+    absoluteAlt = absolute.replace("PyLith-binary","PyLith-binary-packaging")
     
     for script in pl.scripts:
         s = open(script, "r")
         lines = s.readlines()
         s.close()
         shebang = lines[0]
-        if shebang.startswith(absolute):
+        if shebang.startswith(absolute) or shebang.startswith(absoluteAlt):
             interpreter = shebang[len(absolute):]
             shebang = relative % interpreter
             s = open(script, "w")
