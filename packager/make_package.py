@@ -297,7 +297,10 @@ def rewriteScripts(pl, prefix, opSys):
         s.close()
         shebang = lines[0]
         if shebang.startswith(absolute) or shebang.startswith(absoluteAlt):
-            interpreter = shebang[len(absolute):]
+            if shebang.startswith(absolute):
+                interpreter = shebang[len(absolute):]
+            elif shebang.startswith(absoluteAlt):
+                interpreter = shebang[len(absoluteAlt):]
             shebang = relative % interpreter
             s = open(script, "w")
             s.write(shebang)
