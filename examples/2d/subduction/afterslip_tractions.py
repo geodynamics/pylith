@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # This python script extracts the changes in fault tractions from
 # step01 and combines them with background depth-dependent fault
 # tractions to create initial fault tractions to drive frictional
