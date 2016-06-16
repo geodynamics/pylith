@@ -52,6 +52,7 @@ curve slabbot scheme bias fine size {1.0*dx} factor {bias_factor} start vertex 7
 # Generate the mesh
 # ----------------------------------------------------------------------
 #preview mesh surface all
+# New command in CUBIT 15.x and Trelis 16.x
 trimesher surface gradation {bias_factor}
 mesh surface all
 
