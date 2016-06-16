@@ -299,6 +299,43 @@ README files in the subdirectories for more detailed descriptions of these
 \end_layout
 
 \begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:debugging:examples"
+
+\end_inset
+
+Debugging Examples
+\end_layout
+
+\begin_layout Standard
+The directory 
+\family typewriter
+examples/debugging
+\family default
+ contains a few examples to practice debugging a variety of user errors
+ in parameters files and problem setup.
+ The files with the errors corrected are in 
+\family typewriter
+examples/debugging/correct
+\family default
+.
+ Step-by-step corrections are discussed in the Debugging PyLith Simulations
+ sessions of the 2014 and 2015 PyLith tutorials (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+wiki.geodynamics.org/software:pylith:start
+\end_layout
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Subsection
 Code Verification Benchmarks
 \end_layout
 

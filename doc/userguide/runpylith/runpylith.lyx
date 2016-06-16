@@ -1873,8 +1873,7 @@ Warning:
  
 \series default
 \color none
-These settings are only available if you build PETSc with Fortran enabled
- and the ML package.
+These settings are only available if you build PETSc with the ML package.
  These features are included in the PyLith binary packages.
 \end_layout
 
@@ -3189,82 +3188,6 @@ fs_fieldsplit_lagrange_multiplier_ksp_type = gmres
 
 \begin_layout LyX-Code
 fs_fieldsplit_lagrange_multiplier_ksp_rtol = 1.0e-11
-\end_layout
-
-\begin_layout Subsubsection
-PETSc Solvers and nVidia GPUs
-\end_layout
-
-\begin_layout Standard
-The development version of PETSc contains some support for using PETSc solvers
- and nVidia GPUs via CUDA.
- Building PETSc requires some additional dependencies as described in 
-\begin_inset Flex URL
-status collapsed
-
-\begin_layout Plain Layout
-
-http://www.mcs.anl.gov/petsc/documentation/installation.html#CUDA
-\end_layout
-
-\end_inset
-
-.
- Additionally, PyLith must be configured with the 
-\family typewriter
---enable-cuda
-\family default
- option.
- See the PyLith Installer documentation for how to enable support for CUDA
- when building PETSc and PyLith with the installer (the installer does not
- install CUDA or cusp).
-\end_layout
-
-\begin_layout Quote
-
-\series bold
-\color red
-Warning:
-\color inherit
- 
-\series default
-\color none
-Development of PETSc solvers leveraging nVidia GPUs to accelerate the computatio
-ns is still a work in progress.
- This feature requires building PETSc and PyLith from source after installing
- CUDA and the development version of cusp.
- If your GPU only supports single-precision floating point operations, then
- PETSc must be built with single precision and without support for ML and
- ParMetis/Metis.
-\end_layout
-
-\begin_layout Standard
-Solver and preconditioning options are relatively limited when using CUDA.
- CUDA works with the Additive Schwarz preconditioner and GMRES linear solver.
- Enabling use of CUDA with the PETSc solver involves just one setting:
-\end_layout
-
-\begin_layout LyX-Code
-[pylithapp.problem.formulation.solver]
-\begin_inset Newline newline
-\end_inset
-
-use_cuda = True
-\end_layout
-
-\begin_layout Standard
-If the matrix type and vector types have not already been set, this will
- set matrix type and vector types to 
-\family typewriter
-aijcusp
-\family default
- and 
-\family typewriter
-cusp
-\family default
-, respectively, to indicate to PETSc that CUDA should be used by the solver.
- If they have already been set to a value, then the values will not be changed
- even if they are incompatible with using CUDA.
 \end_layout
 
 \begin_layout Section
@@ -5953,7 +5876,7 @@ This error occurs when trying to use the 32-bit linux binary on some 64-bit
 \begin_layout Enumerate
 Go to the 
 \family typewriter
-lib/python2.6/site-packages
+lib/python2.7/site-packages
 \family default
  directory.
 \end_layout
@@ -5961,7 +5884,7 @@ lib/python2.6/site-packages
 \begin_layout Enumerate
 Unzip 
 \family typewriter
-merlin-1.7-py2.6.egg
+merlin-1.8-py2.7.egg
 \family default
  (if it is a file and not a directory).
 \end_layout
@@ -5982,12 +5905,12 @@ __init__.py
 \begin_layout Enumerate
 If 
 \family typewriter
-merlin-1.7-py2.6.egg
+merlin-1.8-py2.7.egg
 \family default
  is a file, rezip merlin.
  Go to the site-packages directory and enter "
 \family typewriter
-zip -r merlin-1.7-py2.6.egg merlin
+zip -r merlin-1.8-py2.7.egg merlin
 \family default
 ".
 \end_layout

@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -17,7 +17,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith], [2.1.0], [cig-short@geodynamics.org])
+AC_INIT([PyLith], [2.1.2], [cig-short@geodynamics.org])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
@@ -144,7 +144,7 @@ CIT_HEADER_MPI
 
 # PETSC
 AC_LANG(C)
-CIT_PATH_PETSC([3.7.1])
+CIT_PATH_PETSC([3.7.2])
 CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC
 
@@ -246,7 +246,7 @@ AC_REQUIRE_CPP
 AC_LANG(C++)
 CIT_SPATIALDATA_HEADER
 CIT_SPATIALDATA_LIB
-CIT_PYTHON_MODULE([spatialdata],[1.9.3])
+CIT_PYTHON_MODULE([spatialdata],[1.9.6])
 
 # DOXYGEN
 if test "$enable_documentation" = "yes" ; then
@@ -361,7 +361,6 @@ AC_CONFIG_FILES([Makefile
 		doc/refguide/Makefile
 		doc/releasenotes/Makefile
 		doc/userguide/Makefile
-		doc/presentations/Makefile
 		examples/Makefile
 		examples/3d/Makefile
 		examples/3d/tet4/Makefile

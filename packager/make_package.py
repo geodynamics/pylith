@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -289,14 +289,18 @@ def rewriteScripts(pl, prefix, opSys):
     else:
         relative = "#!/usr/bin/env %s"
     absolute = "#!" + prefix + "/bin/"
+    absoluteAlt = absolute.replace("PyLith-binary-packaging","PyLith-binary")
     
     for script in pl.scripts:
         s = open(script, "r")
         lines = s.readlines()
         s.close()
         shebang = lines[0]
-        if shebang.startswith(absolute):
-            interpreter = shebang[len(absolute):]
+        if shebang.startswith(absolute) or shebang.startswith(absoluteAlt):
+            if shebang.startswith(absolute):
+                interpreter = shebang[len(absolute):]
+            elif shebang.startswith(absoluteAlt):
+                interpreter = shebang[len(absoluteAlt):]
             shebang = relative % interpreter
             s = open(script, "w")
             s.write(shebang)
