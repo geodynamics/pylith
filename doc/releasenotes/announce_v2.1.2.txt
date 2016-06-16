@@ -1,0 +1,68 @@
+Greetings,
+
+I am pleased to announce the release of PyLith 2.1.2, a finite-element
+code designed to solve dynamic elastic problems and quasi-static
+viscoelastic problems in tectonic deformation.
+
+This release provides a few new minor features and bugfixes.
+
+You can download the source code and binaries from
+
+    http://geodynamics.org/cig/software/pylith
+
+Detailed installation instructions for the binary packages are in the
+User Manual with detailed building instructions for a few platforms in
+the INSTALL file bundled with the PyLith Installer utility.
+
+
+======================================================================
+MIGRATING FROM VERSION 2.0 TO 2.1
+======================================================================
+
+The points file for OutputSolnPoints must now contain station names as
+the first column.
+
+======================================================================
+RELEASE NOTES
+======================================================================
+
+* Bugfixes for finite-strain formulation.
+
+  + Added output of the Cauchy stresses (cauchy_stress). The second
+    Pioloa-Kirchoff stresses are output via the stress field.
+
+  + Material properties and state variables were not retrieved
+    properly when updating state variables.
+
+* Bugfixes for setting initial stress and state variables for
+  viscoelastic materials. The deviatoric stress state is carried
+  forward using the state variables, so the initial deviatoric stress
+  should not be considered when computing the stresses.
+
+* Created new examples showing how to use gravity, initial stress, and
+  finite-strain in 2-D (examples/2d/gravity).
+
+* Reintroduced check (that had been inadvertently removed in v2.x) for
+  ambiguous description of fault surface based on groups of vertices
+  defining faces of cells.
+
+* Flush the output of the progress monitor so progress reports are
+  updated promptly.
+
+* Updates to the user manual.
+
+  + Added section on the debugging examples covered in recent
+    tutorials.
+
+  + Added tables describing the spatial database values for each
+    material.
+
+  + Included a more complete discussion of the finite-strain
+    formulation.
+
+* PETSc
+
+  + Updated to PETSc v3.7.1 (knepley/pylith branch).
+
+  + Fixed Trilinos/ML configuration and code so that it can be built
+    without a Fortran compiler.

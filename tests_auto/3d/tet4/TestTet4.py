@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -105,7 +105,7 @@ class TestTet4(unittest.TestCase):
       filename = "%s-%s.h5" % (self.outputRoot, material)
 
       from pylith.tests.StateVariables import check_state_variables
-      stateVars = ["total_strain", "stress"]
+      stateVars = ["total_strain", "stress", "cauchy_stress"]
       check_state_variables(self, filename, self.mesh, stateVars)
 
     return

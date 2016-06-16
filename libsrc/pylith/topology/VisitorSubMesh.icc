@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -70,7 +70,7 @@ pylith::topology::VecVisitorSubMesh::clear(void)
   PetscErrorCode err = 0;
 
   if (_section) {
-    err = PetscSectionDestroy(&_section);assert(!_section);
+    err = PetscSectionDestroy(&_section);PYLITH_CHECK_ERROR(err);assert(!_section);
   } // if
 
   _dm = NULL;
@@ -180,7 +180,7 @@ pylith::topology::MatVisitorSubMesh::MatVisitorSubMesh(const PetscMat mat,
   PetscErrorCode err;
   err = PetscSectionCreateSubmeshSection(section, subpointIS, &_subsection);PYLITH_CHECK_ERROR(err);assert(_subsection);
   err = DMGetPointSF(_dm, &sf);PYLITH_CHECK_ERROR(err);assert(sf);
-  err = PetscSectionCreateGlobalSection(section, sf, PETSC_FALSE, &_globalSection);PYLITH_CHECK_ERROR(err);assert(_globalSection);
+  err = PetscSectionCreateGlobalSection(section, sf, PETSC_FALSE, PETSC_FALSE, &_globalSection);PYLITH_CHECK_ERROR(err);assert(_globalSection);
   err = PetscSectionCreateSubmeshSection(_globalSection, subpointIS, &_globalSubsection);PYLITH_CHECK_ERROR(err);assert(_globalSubsection);
 
   initialize();
@@ -194,9 +194,9 @@ pylith::topology::MatVisitorSubMesh::~MatVisitorSubMesh(void)
   clear();
   
   PetscErrorCode err;
-  err = PetscSectionDestroy(&_subsection);assert(!_subsection);
-  err = PetscSectionDestroy(&_globalSubsection);assert(!_globalSubsection);
-  err = PetscSectionDestroy(&_globalSection);assert(!_globalSection);
+  err = PetscSectionDestroy(&_subsection);PYLITH_CHECK_ERROR(err);assert(!_subsection);
+  err = PetscSectionDestroy(&_globalSubsection);PYLITH_CHECK_ERROR(err);assert(!_globalSubsection);
+  err = PetscSectionDestroy(&_globalSection);PYLITH_CHECK_ERROR(err);assert(!_globalSection);
 } // destructor
 
 // ----------------------------------------------------------------------

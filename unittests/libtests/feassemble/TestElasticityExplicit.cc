@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -387,7 +387,7 @@ pylith::feassemble::TestElasticityExplicit::_initialize(topology::Mesh* mesh,
   PetscInt cStart, cEnd, c;
   err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
   for(PetscInt c = cStart; c < cEnd; ++c) {
-    err = DMPlexSetLabelValue(dmMesh, "material-id", c, _data->matId);PYLITH_CHECK_ERROR(err);
+    err = DMSetLabelValue(dmMesh, "material-id", c, _data->matId);PYLITH_CHECK_ERROR(err);
   } // for
 
   // Setup quadrature

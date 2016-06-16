@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -165,7 +165,7 @@ pylith::faults::LiuCosSlipFn::initialize(const topology::Mesh& faultMesh,
 
   PetscDM faultDMMesh = faultMesh.dmMesh();assert(faultDMMesh);
   PetscDMLabel clamped = NULL;
-  PetscErrorCode err = DMPlexGetLabel(faultDMMesh, "clamped", &clamped);PYLITH_CHECK_ERROR(err);
+  PetscErrorCode err = DMGetLabel(faultDMMesh, "clamped", &clamped);PYLITH_CHECK_ERROR(err);
 
   _slipVertex.resize(spaceDim);
   for(PetscInt v = vStart; v < vEnd; ++v) {
@@ -212,7 +212,6 @@ pylith::faults::LiuCosSlipFn::initialize(const topology::Mesh& faultMesh,
     _slipTimeVertex += originTime;
 
     // Rise time
-    const PetscInt rtoff = riseTimeVisitor.sectionOffset(v);
     assert(1 == riseTimeVisitor.sectionDof(v));
     err = _dbRiseTime->query(&_riseTimeVertex, 1, &vCoordsGlobal[0], vCoordsGlobal.size(), cs);
     if (err) {

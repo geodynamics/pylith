@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -96,7 +96,7 @@ pylith::topology::Mesh::Mesh(const Mesh& mesh,
   PetscErrorCode err;
 
   PetscBool hasLabel = PETSC_FALSE;
-  err = DMPlexHasLabel(dmMesh, label, &hasLabel);PYLITH_CHECK_ERROR(err);
+  err = DMHasLabel(dmMesh, label, &hasLabel);PYLITH_CHECK_ERROR(err);
   if (!hasLabel) {
     std::ostringstream msg;
     msg << "Could not find group of points '" << label << "' in PETSc DM mesh.";
@@ -110,7 +110,7 @@ pylith::topology::Mesh::Mesh(const Mesh& mesh,
 
   /* TODO: Add creation of pointSF for submesh */
   DMLabel l;
-  err = DMPlexGetLabel(dmMesh, label, &l);PYLITH_CHECK_ERROR(err);
+  err = DMGetLabel(dmMesh, label, &l);PYLITH_CHECK_ERROR(err);
   err = DMPlexCreateSubmesh(dmMesh, l, 1, &_dmMesh);PYLITH_CHECK_ERROR(err);
 
   PetscInt maxConeSizeLocal = 0, maxConeSize = 0;
@@ -229,7 +229,7 @@ pylith::topology::Mesh::view(const char* viewOption) const
     optionname  << "-" << label << "_dm_view";
 
     err = DMSetOptionsPrefix(_dmMesh, optionprefix.str().c_str());PYLITH_CHECK_ERROR(err);
-    err = PetscOptionsSetValue(optionname.str().c_str(), viewOption);PYLITH_CHECK_ERROR(err);
+    err = PetscOptionsSetValue(NULL, optionname.str().c_str(), viewOption);PYLITH_CHECK_ERROR(err);
     err = DMViewFromOptions(_dmMesh, NULL, "-dm_view");PYLITH_CHECK_ERROR(err);
 
   } else {
@@ -256,13 +256,13 @@ pylith::topology::Mesh::groups(int* numNames,
     PetscErrorCode err = 0;
 
     PetscInt numLabels = 0;
-    err = DMPlexGetNumLabels(_dmMesh, &numLabels);PYLITH_CHECK_ERROR(err);
+    err = DMGetNumLabels(_dmMesh, &numLabels);PYLITH_CHECK_ERROR(err);
 
     *numNames = numLabels;
     *names = new char*[numLabels];
     for (int iLabel=0; iLabel < numLabels; ++iLabel) {
       const char* namestr = NULL;
-      err = DMPlexGetLabelName(_dmMesh, iLabel, &namestr);PYLITH_CHECK_ERROR(err);
+      err = DMGetLabelName(_dmMesh, iLabel, &namestr);PYLITH_CHECK_ERROR(err);
       // Must return char* that SWIG can deallocate.
       const char len = strlen(namestr);
       char* newName = 0;
@@ -292,7 +292,7 @@ pylith::topology::Mesh::groupSize(const char *name)
   PetscErrorCode err = 0;
 
   PetscBool hasLabel = PETSC_FALSE;
-  err = DMPlexHasLabel(_dmMesh, name, &hasLabel);PYLITH_CHECK_ERROR(err);
+  err = DMHasLabel(_dmMesh, name, &hasLabel);PYLITH_CHECK_ERROR(err);
   if (!hasLabel) {
     std::ostringstream msg;
     msg << "Cannot get size of group '" << name << "'. Group missing from mesh.";
@@ -300,7 +300,7 @@ pylith::topology::Mesh::groupSize(const char *name)
   } // if
 
   PetscInt size = 0;
-  err = DMPlexGetLabelSize(_dmMesh, name, &size);PYLITH_CHECK_ERROR(err);
+  err = DMGetLabelSize(_dmMesh, name, &size);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_RETURN(size);
 } // groupSize

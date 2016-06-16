@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -52,19 +52,7 @@ pylith::topology::Field::Field(const Mesh& mesh) :
 
     err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
     err = DMClone(dm, &_dm);PYLITH_CHECK_ERROR(err);
-    err = DMGetCoordinatesLocal(dm, &coordVec);PYLITH_CHECK_ERROR(err);
-    if (coordVec) {
-      PetscDM coordDM=NULL, newCoordDM=NULL;
-      PetscSection coordSection=NULL, newCoordSection=NULL;
 
-      err = DMGetCoordinateDM(dm, &coordDM);PYLITH_CHECK_ERROR(err);
-      err = DMGetCoordinateDM(_dm, &newCoordDM);PYLITH_CHECK_ERROR(err);
-      err = DMGetDefaultSection(coordDM, &coordSection);PYLITH_CHECK_ERROR(err);
-      err = PetscSectionClone(coordSection, &newCoordSection);PYLITH_CHECK_ERROR(err);
-      err = DMSetDefaultSection(newCoordDM, newCoordSection);PYLITH_CHECK_ERROR(err);
-      err = PetscSectionDestroy(&newCoordSection);PYLITH_CHECK_ERROR(err);
-      err = DMSetCoordinatesLocal(_dm, coordVec);PYLITH_CHECK_ERROR(err);
-    } // if
     err = PetscSectionCreate(mesh.comm(), &s);PYLITH_CHECK_ERROR(err);
     err = DMSetDefaultSection(_dm, s);PYLITH_CHECK_ERROR(err);
     err = PetscSectionDestroy(&s);PYLITH_CHECK_ERROR(err);
@@ -325,7 +313,6 @@ pylith::topology::Field::newSection(const int_array& points,
 { // newSection
   PYLITH_METHOD_BEGIN;
 
-  typedef PetscInt point_type;
   PetscErrorCode err;
 
   // Clear memory
@@ -422,7 +409,6 @@ pylith::topology::Field::newSection(const DomainEnum domain,
 
   // Changing this because cells/vertices are numbered differently in the new scheme
   assert(_dm);
-  PetscSection s = NULL;
   PetscInt pStart, pEnd;
   PetscErrorCode err;
 
@@ -959,7 +945,7 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
   err = DMSetDefaultSection(sinfo.dm, newSection);PYLITH_CHECK_ERROR(err);
   err = PetscSectionDestroy(&newSection);PYLITH_CHECK_ERROR(err);
   err = DMGetPointSF(sinfo.dm, &sf);PYLITH_CHECK_ERROR(err);
-  err = PetscSectionCreateGlobalSection(section, sf, PETSC_TRUE, &gsection);PYLITH_CHECK_ERROR(err);
+  err = PetscSectionCreateGlobalSection(section, sf, PETSC_TRUE, PETSC_FALSE, &gsection);PYLITH_CHECK_ERROR(err);
   err = DMSetDefaultGlobalSection(sinfo.dm, gsection);PYLITH_CHECK_ERROR(err);
   err = PetscSectionDestroy(&gsection);PYLITH_CHECK_ERROR(err);
   err = VecDestroy(&sinfo.vector);PYLITH_CHECK_ERROR(err);
@@ -1060,7 +1046,7 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
   } else {
     DMLabel label;
 
-    err = DMPlexGetLabel(sinfo.dm, labelName.c_str(), &label);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(sinfo.dm, labelName.c_str(), &label);PYLITH_CHECK_ERROR(err);
     err = PetscSectionCreateGlobalSectionLabel(section, sf, PETSC_TRUE, label, labelValue, &gsection);PYLITH_CHECK_ERROR(err);
   } // if/else
   err = DMSetDefaultGlobalSection(sinfo.dm, gsection);PYLITH_CHECK_ERROR(err);
@@ -1428,7 +1414,10 @@ pylith::topology::Field::_extractSubfield(const Field& field,
   indicesSubfield[0] = subfieldIndex;
   err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
   if (subfieldInfo.dm) {
+    PetscSection s;
     err = DMClone(subfieldInfo.dm, &_dm);PYLITH_CHECK_ERROR(err);assert(_dm);
+    err = DMGetDefaultSection(subfieldInfo.dm, &s);PYLITH_CHECK_ERROR(err);
+    err = DMSetDefaultSection(_dm, s);PYLITH_CHECK_ERROR(err);
   } else {
     err = DMCreateSubDM(field.dmMesh(), numSubfields, indicesSubfield, &subfieldIS, &_dm);PYLITH_CHECK_ERROR(err);assert(_dm);
   } // if/else

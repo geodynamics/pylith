@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -62,7 +62,7 @@ pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
 { // nondimensionalize
   PYLITH_METHOD_BEGIN;
 
-  PetscVec coordVec, coordDimVec;
+  PetscVec coordVec;
   const PylithScalar lengthScale = normalizer.lengthScale();
   PetscErrorCode err;
 
@@ -71,7 +71,7 @@ pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
   // There does not seem to be an advantage to calling nondimensionalize()
   err = VecScale(coordVec, 1.0/lengthScale);PYLITH_CHECK_ERROR(err);
   err = DMPlexSetScale(dmMesh, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
-  err = DMViewFromOptions(dmMesh, "pylith_final_", "-dm_view");PYLITH_CHECK_ERROR(err);
+  err = DMViewFromOptions(dmMesh, NULL, "-pylith_nondim_dm_view");PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // nondimensionalize
@@ -96,7 +96,7 @@ pylith::topology::MeshOps::checkTopology(const Mesh& mesh)
   PetscInt cellHeight = subpointMap ? 1 : 0;
 
   PetscErrorCode err;
-  err = DMViewFromOptions(dmMesh, "pylith_check_", "-dm_view");PYLITH_CHECK_ERROR(err);
+  err = DMViewFromOptions(dmMesh, NULL, "-pylith_checktopo_dm_view");PYLITH_CHECK_ERROR(err);
   err = DMPlexCheckSymmetry(dmMesh);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh associated with symmetry of adjacency information.");
 
   err = DMPlexCheckSkeleton(dmMesh, isSimplexMesh, cellHeight);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh cells.");
@@ -129,7 +129,7 @@ pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
   const PetscInt cEnd = cellsStratum.end();
 
   PetscDMLabel materialsLabel = NULL;
-  err = DMPlexGetLabel(dmMesh, "material-id", &materialsLabel);PYLITH_CHECK_ERROR(err);assert(materialsLabel);
+  err = DMGetLabel(dmMesh, "material-id", &materialsLabel);PYLITH_CHECK_ERROR(err);assert(materialsLabel);
 
   int *matBegin = materialIds;
   int *matEnd = materialIds + numMaterials;
@@ -187,7 +187,7 @@ pylith::topology::MeshOps::numMaterialCells(const Mesh& mesh,
   PetscInt ncells = 0;
 
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-  PetscErrorCode err = DMPlexGetStratumSize(dmMesh, "material-id", materialId, &ncells);PYLITH_CHECK_ERROR(err);
+  PetscErrorCode err = DMGetStratumSize(dmMesh, "material-id", materialId, &ncells);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_RETURN(ncells);
 } // numMaterialCells

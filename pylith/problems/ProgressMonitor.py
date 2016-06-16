@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2014 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -68,7 +68,7 @@ class ProgressMonitor(PetscComponent):
 
 
   def open(self):
-    self.prev = None
+    self.iupdate = None
     self.datetimeStart = datetime.datetime.now()
     
     try:
@@ -88,12 +88,12 @@ class ProgressMonitor(PetscComponent):
 
 
   def update(self, current, start, stop):
-    if not self.prev is None:
-      incrCompleted = (100*(current-self.prev))/(stop-start)
-    else:
-      incrCompleted = 0.0
-    if self.prev is None or incrCompleted > self.updatePercent:
+    if not self.iupdate is None:
       percentComplete = (100*(current-start))/(stop-start)
+    else:
+      self.iupdate = 0
+      percentComplete = 0.0
+    if percentComplete >= self.iupdate*self.updatePercent:
       now = datetime.datetime.now()
       if percentComplete > 0.0:
         finished = self.datetimeStart + datetime.timedelta(seconds=100.0/percentComplete * ((now-self.datetimeStart).total_seconds()))
@@ -101,7 +101,7 @@ class ProgressMonitor(PetscComponent):
         finished = "TBD"
       if self.isMaster:
         self._update(current, start, stop, now, finished, percentComplete)
-      self.prev = current
+      self.iupdate += 1
     return
 
 

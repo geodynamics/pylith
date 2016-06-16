@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -656,7 +656,7 @@ pylith::faults::TestFaultCohesiveDyn::_initialize(topology::Mesh* const mesh,
 
   PetscInt labelSize;
   PetscErrorCode err;
-  err = DMPlexGetStratumSize(mesh->dmMesh(), _data->label, 1, &labelSize);PYLITH_CHECK_ERROR(err);
+  err = DMGetStratumSize(mesh->dmMesh(), _data->label, 1, &labelSize);PYLITH_CHECK_ERROR(err);
 
   PetscInt firstFaultVertex = 0;
   PetscInt firstLagrangeVertex = labelSize;

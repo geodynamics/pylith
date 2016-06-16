@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -146,21 +146,22 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(const topology::Field&
   assert(fields);
 
   const int setupEvent = _logger->eventId("ElIR setup");
-  const int geometryEvent = _logger->eventId("ElIR geometry");
   const int computeEvent = _logger->eventId("ElIR compute");
+#if defined(DETAILED_EVENT_LOGGING)
+  const int geometryEvent = _logger->eventId("ElIR geometry");
   const int restrictEvent = _logger->eventId("ElIR restrict");
   const int stateVarsEvent = _logger->eventId("ElIR stateVars");
   const int stressEvent = _logger->eventId("ElIR stress");
   const int updateEvent = _logger->eventId("ElIR update");
+#endif
 
   _logger->eventBegin(setupEvent);
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
   const scalar_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
+  assert(quadWts.size() == size_t(numQuadPts));
   const int numBasis = _quadrature->numBasis();
-  const int numCorners = _quadrature->refGeometry().numCorners();
   const int spaceDim = _quadrature->spaceDim();
   const int cellDim = _quadrature->cellDim();
   const int tensorSize = _material->tensorSize();
@@ -225,6 +226,8 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(const topology::Field&
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
+
+  _material->createPropsAndVarsVisitors();
 
   assert(_normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
@@ -368,6 +371,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(const topology::Field&
     _logger->eventEnd(updateEvent);
 #endif
   } // for
+  _material->destroyPropsAndVarsVisitors();
 
 #if !defined(DETAILED_EVENT_LOGGING)
   PetscLogFlops(numCells*numQuadPts*(4+numBasis*3));
@@ -406,20 +410,21 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(topology::Field* jacob
   assert(fields);
 
   const int setupEvent = _logger->eventId("ElIJ setup");
-  const int geometryEvent = _logger->eventId("ElIJ geometry");
   const int computeEvent = _logger->eventId("ElIJ compute");
+#if defined(DETAILED_EVENT_LOGGING)
+  const int geometryEvent = _logger->eventId("ElIJ geometry");
   const int restrictEvent = _logger->eventId("ElIJ restrict");
   const int stateVarsEvent = _logger->eventId("ElIJ stateVars");
   const int updateEvent = _logger->eventId("ElIJ update");
+#endif
 
   _logger->eventBegin(setupEvent);
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
   const scalar_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
+  assert(quadWts.size() == size_t(numQuadPts));
   const int numBasis = _quadrature->numBasis();
-  const int numCorners = _quadrature->refGeometry().numCorners();
   const int spaceDim = _quadrature->spaceDim();
   const int cellDim = _quadrature->cellDim();
   if (cellDim != spaceDim)
@@ -443,6 +448,8 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(topology::Field* jacob
 
   topology::VecVisitorMesh jacobianVisitor(*jacobian, "displacement");
   // Don't optimize closure since we compute the Jacobian only once.
+
+  _material->createPropsAndVarsVisitors();
 
   scalar_array coordsCell(numBasis*spaceDim); // :KLUDGE: numBasis to numCorners after switching to higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
@@ -518,6 +525,7 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(topology::Field* jacob
     _logger->eventEnd(updateEvent);
 #endif
   } // for
+  _material->destroyPropsAndVarsVisitors();
 
 #if !defined(DETAILED_EVENT_LOGGING)
   PetscLogFlops(numCells*(numQuadPts*(4 + numBasis*3) + numBasis*spaceDim));

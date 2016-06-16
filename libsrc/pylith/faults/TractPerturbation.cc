@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -260,8 +260,6 @@ pylith::faults::TractPerturbation::calculate(const PylithScalar t)
   PYLITH_METHOD_BEGIN;
 
   assert(_parameters);
-
-  const PylithScalar timeScale = _timeScale;
 
   // Get vertices.
   PetscDM dmMesh = _parameters->mesh().dmMesh();assert(dmMesh);

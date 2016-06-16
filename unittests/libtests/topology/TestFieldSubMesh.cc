@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -1036,7 +1036,7 @@ pylith::topology::TestFieldSubMesh::_buildMesh(Mesh* mesh)
 
   const int numPoints = _TestFieldSubMesh::groupSize;
   for(PetscInt i = 0; i < numPoints; ++i) {
-    err = DMPlexSetLabelValue(dmMesh, _TestFieldSubMesh::label, ncells+_TestFieldSubMesh::groupVertices[i], 1);PYLITH_CHECK_ERROR(err);
+    err = DMSetLabelValue(dmMesh, _TestFieldSubMesh::label, ncells+_TestFieldSubMesh::groupVertices[i], 1);PYLITH_CHECK_ERROR(err);
   } // for
 
   spatialdata::geocoords::CSCart cs;

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -142,8 +142,8 @@ private :
   const Field& _field;
 
   PetscDM _dm; ///< Cached PETSc dm for submesh.
-  PetscVec _localVec; ///< Cached local PETSc Vec.
   PetscSection _section; ///< Cached PETSc subsection.
+  PetscVec _localVec; ///< Cached local PETSc Vec.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

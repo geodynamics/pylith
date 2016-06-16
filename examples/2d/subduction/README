@@ -97,7 +97,6 @@ Step 4. Friction controlled afterslip
   Run the simulation via the following command:
     pylith step04.cfg
 
-
 Suggestions variations
 
   The list below includes some suggested modifications to the problem

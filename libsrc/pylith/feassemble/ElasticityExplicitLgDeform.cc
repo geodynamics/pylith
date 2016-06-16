@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -141,21 +141,15 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(const topology
   assert(fields);
 
   const int setupEvent = _logger->eventId("ElIR setup");
-  const int geometryEvent = _logger->eventId("ElIR geometry");
   const int computeEvent = _logger->eventId("ElIR compute");
-  const int restrictEvent = _logger->eventId("ElIR restrict");
-  const int stateVarsEvent = _logger->eventId("ElIR stateVars");
-  const int stressEvent = _logger->eventId("ElIR stress");
-  const int updateEvent = _logger->eventId("ElIR update");
 
   _logger->eventBegin(setupEvent);
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
   const scalar_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
+  assert(quadWts.size() == size_t(numQuadPts));
   const int numBasis = _quadrature->numBasis();
-  const int numCorners = _quadrature->refGeometry().numCorners();
   const int spaceDim = _quadrature->spaceDim();
   const int cellDim = _quadrature->cellDim();
   const int tensorSize = _material->tensorSize();
@@ -221,6 +215,8 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(const topology
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
 
+  _material->createPropsAndVarsVisitors();
+
   assert(_normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
   const PylithScalar gravityScale = _normalizer->pressureScale() / (_normalizer->lengthScale() * _normalizer->densityScale());
@@ -235,7 +231,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(const topology
   _logger->eventBegin(computeEvent);
 
   // Loop over cells
-  for(PetscInt c = 0; c < numCells; ++c) {
+  for (PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
 
     // Compute geometry information for current cell
@@ -317,7 +313,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(const topology
     } // for
 
     // Compute B(transpose) * sigma, first computing strains
-    _calcDeformation(&deformCell, basisDeriv, &coordsCell[0], &dispAdjCell[0], numBasis, numQuadPts, spaceDim);
+    _calcDeformation(&deformCell, basisDeriv, &dispAdjCell[0], numBasis, numQuadPts, spaceDim);
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
     const scalar_array& stressCell = _material->calcStress(strainCell, true);
 
@@ -326,6 +322,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(const topology
     // Assemble cell contribution into field
     residualVisitor.setClosure(&_cellVector[0], _cellVector.size(), cell, ADD_VALUES);
   } // for
+  _material->destroyPropsAndVarsVisitors();
 
   _logger->eventEnd(computeEvent);
 
@@ -361,23 +358,17 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(topology::Fiel
   assert(fields);
 
   const int setupEvent = _logger->eventId("ElIJ setup");
-  const int geometryEvent = _logger->eventId("ElIJ geometry");
   const int computeEvent = _logger->eventId("ElIJ compute");
-  const int restrictEvent = _logger->eventId("ElIJ restrict");
-  const int stateVarsEvent = _logger->eventId("ElIJ stateVars");
-  const int updateEvent = _logger->eventId("ElIJ update");
 
   _logger->eventBegin(setupEvent);
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
   const scalar_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
+  assert(quadWts.size() == size_t(numQuadPts));
   const int numBasis = _quadrature->numBasis();
-  const int numCorners = _quadrature->refGeometry().numCorners();
   const int spaceDim = _quadrature->spaceDim();
   const int cellDim = _quadrature->cellDim();
-  const int tensorSize = _material->tensorSize();
   if (cellDim != spaceDim)
     throw std::logic_error("Don't know how to integrate elasticity " \
 			   "contribution to Jacobian matrix for cells with " \
@@ -401,6 +392,8 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(topology::Fiel
 
   scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
   topology::CoordsVisitor coordsVisitor(dmMesh);
+
+  _material->createPropsAndVarsVisitors();
 
   _logger->eventEnd(setupEvent);
   _logger->eventBegin(computeEvent);
@@ -454,6 +447,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(topology::Fiel
     // Assemble cell contribution into lumped matrix.
     jacobianVisitor.setClosure(&_cellVector[0], _cellVector.size(), cell, ADD_VALUES);
   } // for
+  _material->destroyPropsAndVarsVisitors();
 
   _needNewJacobian = false;
   _material->resetNeedNewJacobian();

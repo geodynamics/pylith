@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -78,20 +78,12 @@ protected :
   /** Calculate stress or strain field from solution field.
    *
    * @param field Field in which to store stress or strain.
-   * @param name Name of field to compute ('total-strain' or 'stress')
+   * @param name Name of field to compute ['total_strain', 'stress', 'cauchy_stress'].
    * @param fields Manager for solution fields.
    */
   void _calcStrainStressField(topology::Field* field,
 			      const char* name,
 			      topology::SolutionFields* const fields);
-
-  /** Integrate elasticity term in residual for 1-D cells.
-   *
-   * @param stress Stress tensor for cell at quadrature points.
-   * @param disp Displacement field at cell's DOF.
-   */
-  void _elasticityResidual1D(const scalar_array& stress,
-			     const scalar_array& disp);
 
   /** Integrate elasticity term in residual for 2-D cells.
    *
@@ -107,16 +99,6 @@ protected :
    * @param disp Displacement field at cell's DOF.
    */
   void _elasticityResidual3D(const scalar_array& stress,
-			     const scalar_array& disp);
-
-  /** Integrate elasticity term in Jacobian for 1-D cells.
-   *
-   * @param elasticConsts Matrix of elasticity constants at quadrature points.
-   * @param stress Stress tensor for cell at quadrature points.
-   * @param disp Displacement field at cell's DOF.
-   */
-  void _elasticityJacobian1D(const scalar_array& elasticConsts,
-			     const scalar_array& stress,
 			     const scalar_array& disp);
 
   /** Integrate elasticity term in Jacobian for 2-D cells.
@@ -175,25 +157,49 @@ protected :
 			  const scalar_array& deform,
 			  const int numQuadPts);
 
-  /** Calculate deformation tensor.
+  /** Calculate deformation gradient tensor.
    *
-   * @param deform Deformation tensor for cell at quadrature points.
-   * @param basisDeriv Derivatives of basis functions at quadrature points.
-   * @param vertices Coordinates of vertices in reference cell.
-   * @param disp Displacements of DOF of cell.
-   * @param numBasis Number of basis functions for cell.
-   * @param numQuadPts Number of quadrature points.
-   * @param dim Dimension of cell.
+   * @param[out] deform Deformation tensor for cell at quadrature points.
+   * @param[in] basisDeriv Derivatives of basis functions at quadrature points.
+   * @param[in] disp Displacements of DOF of cell.
+   * @param[in] numBasis Number of basis functions for cell.
+   * @param[in] numQuadPts Number of quadrature points.
+   * @param[in] dim Dimension of cell.
    */
   static
   void _calcDeformation(scalar_array* deform,
 			const scalar_array& basisDeriv,
-			const PylithScalar* vertices,
 			const PylithScalar* disp,
 			const int numBasis,
 			const int numQuadPts,
 			const int dim);
   
+  /** Calculate 2-D Cauchy stress from 2nd Piloa-Kirchoff stress.
+   *
+   * @param cauchyStress Cauchy stress for cell at quadrature points.
+   * @param stress 2nd Piloa-Kirchoff stress for cell at quadrature points.
+   * @param deform Deformation gradient tensor for cell at quadrature points.
+   * @param numQuadPts Number of quadrature points.
+   */
+  static
+  void _calcCauchyStress2D(scalar_array* cauchyStress,
+			   const scalar_array& stress,
+			   const scalar_array& deform,
+			   const int numQuadPts);
+
+  /** Calculate 3-D Cauchy stress from 2nd Piloa-Kirchoff stress.
+   *
+   * @param cauchyStress Cauchy stress for cell at quadrature points.
+   * @param stress 2nd Piloa-Kirchoff stress for cell at quadrature points.
+   * @param deform Deformation gradient tensor for cell at quadrature points.
+   * @param numQuadPts Number of quadrature points.
+   */
+  static
+  void _calcCauchyStress3D(scalar_array* cauchyStress,
+			   const scalar_array& stress,
+			   const scalar_array& deform,
+			   const int numQuadPts);
+
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 

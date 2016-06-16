@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -79,6 +79,7 @@ public :
    *
    * @returns True if Jacobian needs to be recomputed, false otherwise.
    */
+  virtual
   bool needNewJacobian(void);
 
   /** Initialize integrator.
@@ -93,6 +94,7 @@ public :
    * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
+  virtual
   void updateStateVars(const PylithScalar t,
 		       topology::SolutionFields* const fields);
 
@@ -135,7 +137,7 @@ protected :
   /** Calculate stress or strain field from solution field.
    *
    * @param field Field in which to store stress or strain.
-   * @param name Name of field to compute ('total-strain' or 'stress')
+   * @param name Name of field to compute ['total_strain', 'stress', 'cauchy_stress'].
    * @param fields Manager for solution fields.
    */
   virtual
@@ -143,37 +145,32 @@ protected :
 			      const char* name,
 			      topology::SolutionFields* const fields);
 
-  /** Calculate stress field from total strain field. Stress field
-   * replaces strain field in section.
-   *
-   * @param field Field in which to store stress.
-   */
-  virtual
-  void _calcStressFromStrain(topology::Field* field);
-			      
-
   /** Integrate elasticity term in residual for 2-D cells.
    *
    * @param stress Stress tensor for cell at quadrature points.
    */
+  virtual
   void _elasticityResidual2D(const scalar_array& stress);
 
   /** Integrate elasticity term in residual for 3-D cells.
    *
    * @param stress Stress tensor for cell at quadrature points.
    */
+  virtual
   void _elasticityResidual3D(const scalar_array& stress);
 
   /** Integrate elasticity term in Jacobian for 2-D cells.
    *
    * @param elasticConsts Matrix of elasticity constants at quadrature points.
    */
+  virtual
   void _elasticityJacobian2D(const scalar_array& elasticConsts);
 
   /** Integrate elasticity term in Jacobian for 3-D cells.
    *
    * @param elasticConsts Matrix of elasticity constants at quadrature points.
    */
+  virtual
   void _elasticityJacobian3D(const scalar_array& elasticConsts);
 
   /** Compute total strain in at quadrature points of a cell.

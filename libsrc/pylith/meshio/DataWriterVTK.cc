@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -207,8 +207,8 @@ pylith::meshio::DataWriterVTK::openTimeStep(const PylithScalar t,
     const PetscInt* cells = cellsIS.points();
     DMLabel label;
 
-    err = DMPlexCreateLabel(_dm, "vtk");PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetLabel(_dm, "vtk", &label);PYLITH_CHECK_ERROR(err);
+    err = DMCreateLabel(_dm, "vtk");PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(_dm, "vtk", &label);PYLITH_CHECK_ERROR(err);
     err = DMLabelClearStratum(label, 1);PYLITH_CHECK_ERROR(err);
     for (PetscInt c=0; c < ncells; ++c) {
       err = DMLabelSetValue(label, cells[c], 1);PYLITH_CHECK_ERROR(err);
@@ -252,10 +252,10 @@ pylith::meshio::DataWriterVTK::closeTimeStep(void)
   if (_isOpenTimeStep) {
     assert(_dm);
     PetscBool hasLabel = PETSC_FALSE;
-    err = DMPlexHasLabel(_dm, "vtk", &hasLabel);PYLITH_CHECK_ERROR(err);
+    err = DMHasLabel(_dm, "vtk", &hasLabel);PYLITH_CHECK_ERROR(err);
     if (hasLabel) {
-      err = DMPlexClearLabelStratum(_dm, "vtk", 1);PYLITH_CHECK_ERROR(err);
-      err = DMPlexClearLabelStratum(_dm, "vtk", 2);PYLITH_CHECK_ERROR(err);
+      err = DMClearLabelStratum(_dm, "vtk", 1);PYLITH_CHECK_ERROR(err);
+      err = DMClearLabelStratum(_dm, "vtk", 2);PYLITH_CHECK_ERROR(err);
     } // if
   } // if
 
@@ -370,14 +370,13 @@ pylith::meshio::DataWriterVTK::_vtkFilename(const PylithScalar t) const
     char sbuffer[256];
     sprintf(sbuffer, _timeFormat.c_str(), t/_timeConstant);
     std::string timestamp(sbuffer);
-    const int pos = timestamp.find(".");
-    if (pos > 0 && pos != timestamp.length())
+    const size_t pos = timestamp.find(".");
+    if (pos != std::string::npos) {
       timestamp.erase(pos, 1);
-    filename
-      << std::string(_filename, 0, indexExt) << "_t" << timestamp << ".vtk";
+    } // if
+    filename << std::string(_filename, 0, indexExt) << "_t" << timestamp << ".vtk";
   } else
-    filename
-      << std::string(_filename, 0, indexExt) << "_info.vtk";
+    filename << std::string(_filename, 0, indexExt) << "_info.vtk";
 
   PYLITH_METHOD_RETURN(std::string(filename.str()));
 } // _vtkFilename

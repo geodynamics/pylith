@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -47,6 +47,43 @@ pylith::faults::CohesiveTopology::createFault(topology::Mesh* faultMesh,
 
   if (groupField) {err = DMLabelGetName(groupField, &groupName);PYLITH_CHECK_ERROR(err);}
   err = DMPlexCreateSubmesh(dmMesh, groupField, 1, &subdm);PYLITH_CHECK_ERROR(err);
+  // Check that no cell have all vertices on the fault
+  if (groupField) {
+    IS              subpointIS;
+    const PetscInt *dmpoints;
+    PetscInt        defaultValue, cStart, cEnd, vStart, vEnd;
+
+    err = DMLabelGetDefaultValue(groupField, &defaultValue);PYLITH_CHECK_ERROR(err);
+    err = DMPlexCreateSubpointIS(subdm, &subpointIS);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetHeightStratum(subdm, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(subpointIS, &dmpoints);PYLITH_CHECK_ERROR(err);
+    for (PetscInt c = cStart; c < cEnd; ++c) {
+      PetscBool invalidCell = PETSC_TRUE;
+      PetscInt *closure     = NULL;
+      PetscInt  closureSize;
+
+      err = DMPlexGetTransitiveClosure(dmMesh, dmpoints[c], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+      for (PetscInt cl = 0; cl < closureSize*2; cl += 2) {
+        PetscInt value = 0;
+
+        if ((closure[cl] < vStart) || (closure[cl] >= vEnd)) continue;
+        err = DMLabelGetValue(groupField, closure[cl], &value);PYLITH_CHECK_ERROR(err);
+        if (value == defaultValue) {invalidCell = PETSC_FALSE; break;}
+      } // for
+      err = DMPlexRestoreTransitiveClosure(dmMesh, dmpoints[c], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+      if (invalidCell) {
+        std::ostringstream msg;
+	msg << "Ambiguous fault surface. Cell "<<dmpoints[c]<<" has all of its vertices on the fault.";
+	err = ISRestoreIndices(subpointIS, &dmpoints);PYLITH_CHECK_ERROR(err);
+	err = ISDestroy(&subpointIS);PYLITH_CHECK_ERROR(err);
+	err = DMDestroy(&subdm);PYLITH_CHECK_ERROR(err);
+        throw std::runtime_error(msg.str());
+      } // if
+    } // for
+    err = ISRestoreIndices(subpointIS, &dmpoints);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&subpointIS);PYLITH_CHECK_ERROR(err);
+  } // if
   err = DMPlexOrient(subdm);PYLITH_CHECK_ERROR(err);
 
   std::string submeshLabel = "fault_" + std::string(groupName);
@@ -151,7 +188,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   err = DMPlexLabelCohesiveComplete(dm, label, faultBdLabel, PETSC_FALSE, faultMesh.dmMesh());PYLITH_CHECK_ERROR(err);
   err = DMPlexConstructCohesiveCells(dm, label, &sdm);PYLITH_CHECK_ERROR(err);
 
-  err = DMPlexGetLabel(sdm, "material-id", &mlabel);PYLITH_CHECK_ERROR(err);
+  err = DMGetLabel(sdm, "material-id", &mlabel);PYLITH_CHECK_ERROR(err);
   if (mlabel) {
     err = DMPlexGetHeightStratum(sdm, 0, NULL, &cEnd);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetHybridBounds(sdm, &cMax, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
@@ -196,7 +233,7 @@ pylith::faults::CohesiveTopology::createFaultParallel(topology::Mesh* faultMesh,
 
 
   err = DMPlexCreateCohesiveSubmesh(dmMesh, constraintCell ? PETSC_TRUE : PETSC_FALSE, labelname, materialId, &dmFaultMesh);PYLITH_CHECK_ERROR(err);
-  err = DMViewFromOptions(dmFaultMesh, "pylith_fault_", "-dm_view");PYLITH_CHECK_ERROR(err);
+  err = DMViewFromOptions(dmFaultMesh, NULL, "-pylith_fault_dm_view");PYLITH_CHECK_ERROR(err);
   err = DMPlexOrient(dmFaultMesh);PYLITH_CHECK_ERROR(err);
   std::string meshLabel = "fault_" + std::string(label);
 

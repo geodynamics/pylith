@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -41,9 +41,9 @@ namespace pylith {
 	PylithScalar effStressDerivFunc(const PylithScalar x) {
 	  return 1.0;
 	};
-	PylithScalar effStressFuncDerivFunc(PylithScalar* f,
-				      PylithScalar* df,
-				      const PylithScalar x) {
+	void effStressFuncDerivFunc(PylithScalar* f,
+				    PylithScalar* df,
+				    const PylithScalar x) {
 	  *f = effStressFunc(x);
 	  *df = effStressDerivFunc(x);
 	};
@@ -66,9 +66,9 @@ namespace pylith {
 	PylithScalar effStressDerivFunc(const PylithScalar x) {
 	  return -2*1.0/9.0e+3*(x+2.0e+4);
 	};
-	PylithScalar effStressFuncDerivFunc(PylithScalar* f,
-				      PylithScalar* df,
-				      const PylithScalar x) {
+	void effStressFuncDerivFunc(PylithScalar* f,
+				    PylithScalar* df,
+				    const PylithScalar x) {
 	  *f = effStressFunc(x);
 	  *df = effStressDerivFunc(x);
 	};
@@ -91,9 +91,9 @@ namespace pylith {
 	PylithScalar effStressDerivFunc(const PylithScalar x) {
 	  return 3.0*pow(x - 4.0, 2);
 	};
-	PylithScalar effStressFuncDerivFunc(PylithScalar* f,
-				      PylithScalar* df,
-				      const PylithScalar x) {
+	void effStressFuncDerivFunc(PylithScalar* f,
+				    PylithScalar* df,
+				    const PylithScalar x) {
 	  *f = effStressFunc(x);
 	  *df = effStressDerivFunc(x);
 	};

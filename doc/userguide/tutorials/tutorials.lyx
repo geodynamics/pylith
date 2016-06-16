@@ -1,4 +1,4 @@
-#LyX 2.1 created this file. For more info see http://www.lyx.org/
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 413
 \begin_document
 \begin_header
@@ -21,6 +21,7 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -298,6 +299,43 @@ README files in the subdirectories for more detailed descriptions of these
 \end_layout
 
 \begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:debugging:examples"
+
+\end_inset
+
+Debugging Examples
+\end_layout
+
+\begin_layout Standard
+The directory 
+\family typewriter
+examples/debugging
+\family default
+ contains a few examples to practice debugging a variety of user errors
+ in parameters files and problem setup.
+ The files with the errors corrected are in 
+\family typewriter
+examples/debugging/correct
+\family default
+.
+ Step-by-step corrections are discussed in the Debugging PyLith Simulations
+ sessions of the 2014 and 2015 PyLith tutorials (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+wiki.geodynamics.org/software:pylith:start
+\end_layout
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Subsection
 Code Verification Benchmarks
 \end_layout
 
@@ -317,8 +355,9 @@ https://github.com/geodynamics/pylith_benchmarks
  The benchmarks do not include the mesh files because they are so large;
  instead they include the CUBIT journal files that can be used to generate
  the meshes.
- The input files in the repository are updated for PyLith v2.0.0, so you will
- need to modify them if you use another version of PyLith.
+ Most, but not all, of the input files in the repository are updated for
+ PyLith v2.0.0, so you will need to modify them if you use another version
+ of PyLith.
 \end_layout
 
 \end_body

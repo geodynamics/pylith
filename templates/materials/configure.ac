@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2013 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -48,9 +48,13 @@ CIT_NUMPY_PYTHON_MODULE
 CIT_NUMPY_INCDIR
 AC_PROG_SWIG(1.3.33)
 
+# MPI
+AC_LANG(C++)
+CIT_HEADER_MPI
+
 # PETSC (dictates precision)
 AC_LANG(C++)
-CIT_PATH_PETSC([3.4.1])
+CIT_PATH_PETSC([3.6.1])
 CIT_HEADER_PETSC
 
 # PYLITH

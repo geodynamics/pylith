@@ -186,8 +186,8 @@ Installation of Binary Executable
 \end_layout
 
 \begin_layout Standard
-Binary executables are available for Linux, Mac OS X (Intel 10.6+), and Windows
- from the PyLith web page 
+Binary executables are available for Linux, Mac OS X (Intel 10.10+), and
+ Windows from the PyLith web page 
 \begin_inset Flex URL
 status collapsed
 
@@ -249,7 +249,7 @@ Unpack the tarball.
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -xzf pylith-2.1.0-linux-i686.tgz
+$ tar -xzf pylith-2.1.2-linux-i686.tgz
 \end_layout
 
 \end_deeper
@@ -323,7 +323,7 @@ Unpack the tarball.
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -xzf pylith-2.1.0-darwin-10.6.8.tgz
+$ tar -xzf pylith-2.1.2-darwin-10.10.5.tgz
 \end_layout
 
 \end_deeper
@@ -393,8 +393,8 @@ reference "fig:pylith-dependencies"
  are not used across all of the packages on which PyLith depends.
  This is usually not an issue with Linux distributions, such as Fedora,
  Ubuntu, and Debian that have good quality control; it can be an issue with
- Darwin package managers, such as Fink and MacPorts, where there is limited
- enforcement of consistency across packages.
+ Darwin package managers, such as Fink, MacPorts, and Homebrew, where there
+ is limited enforcement of consistency across packages.
  Nevertheless, PyLith can be built on most systems provided the instructions
  are followed carefully.
  PyLith is developed and tested on Linux and Mac OS X.
@@ -446,11 +446,11 @@ The easiest way to verify that PyLith has been installed correctly is to
  run one or more of the examples supplied with the binary and source code.
  In the binary distribution, the examples are located in 
 \family typewriter
-src/pylith-2.1.0/examples
+src/pylith-2.1.2/examples
 \family default
  while in the source distribution, they are located in 
 \family typewriter
-pylith-2.1.0/examples
+pylith-2.1.2/examples
 \family default
 .
  Chapter 

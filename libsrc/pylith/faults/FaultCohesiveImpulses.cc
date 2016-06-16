@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -203,12 +203,9 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
   assert(_fields);
 
   const int cohesiveDim = _faultMesh->dimension();
-  const int spaceDim = _quadrature->spaceDim();
 
   const topology::Field& orientation = _fields->get("orientation");
 
-  PylithScalar scale = 0.0;
-  int fiberDim = 0;
   if (0 == strcasecmp("slip", name)) {
     const topology::Field& dispRel = _fields->get("relative disp");
     _allocateBufferVectorField();
@@ -311,7 +308,7 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
   PetscSection amplitudeGlobalSection = NULL;
   PetscSF sf = NULL;
   err = DMGetPointSF(amplitudeDM, &sf);PYLITH_CHECK_ERROR(err);
-  err = PetscSectionCreateGlobalSection(amplitudeSection, sf, PETSC_TRUE, &amplitudeGlobalSection);PYLITH_CHECK_ERROR(err);
+  err = PetscSectionCreateGlobalSection(amplitudeSection, sf, PETSC_TRUE, PETSC_FALSE, &amplitudeGlobalSection);PYLITH_CHECK_ERROR(err);
 
   scalar_array coordsVertex(spaceDim);
   PetscDM faultDMMesh = _faultMesh->dmMesh();assert(faultDMMesh);

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -172,15 +172,12 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
   assert(_fields);
 
   const int cohesiveDim = _faultMesh->dimension();
-  const int spaceDim = _quadrature->spaceDim();
 
   const topology::Field& orientation = _fields->get("orientation");
 
   const int slipStrLen = strlen("final_slip");
   const int timeStrLen = strlen("slip_time");
 
-  PylithScalar scale = 0.0;
-  int fiberDim = 0;
   if (0 == strcasecmp("slip", name)) {
     const topology::Field& dispRel = _fields->get("relative disp");
     _allocateBufferVectorField();

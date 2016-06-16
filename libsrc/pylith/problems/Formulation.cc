@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -36,9 +36,9 @@ pylith::problems::Formulation::Formulation(void) :
   _t(0.0),
   _dt(0.0),
   _jacobian(0),
+  _customConstraintPCMat(0),
   _jacobianLumped(0),
   _fields(0),
-  _customConstraintPCMat(0),
   _isJacobianSymmetric(false),
   _splitFields(false)
 { // constructor
@@ -241,8 +241,8 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
 { // reformJacobian
   PYLITH_METHOD_BEGIN;
 
-  assert(0 != _jacobian);
-  assert(0 != _fields);
+  assert(_jacobian);
+  assert(_fields);
 
   // Update section view of field.
   if (tmpSolutionVec) {

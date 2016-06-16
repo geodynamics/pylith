@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -110,10 +110,10 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
     err = PetscObjectSetName((PetscObject) _tstamp, "time");PYLITH_CHECK_ERROR(err);
 
     err = PetscViewerHDF5Open(mesh.comm(), filename.c_str(), FILE_MODE_WRITE, &_viewer);PYLITH_CHECK_ERROR(err);
-
+    err = PetscViewerHDF5SetBaseDimension2(_viewer, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
+    
     const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();assert(cs);
 
-    const char *context = DataWriter::_context.c_str();
     PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
     PetscDM dmCoord = NULL;
     PetscVec coordinates = NULL; 
@@ -142,7 +142,7 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
 #endif
     err = PetscViewerHDF5PopGroup(_viewer); PYLITH_CHECK_ERROR(err);
 
-    PetscInt vStart, vEnd, cellHeight, cStart, cEnd, cMax, dof, conesSize, numCorners, numCornersLocal = 0;
+    PetscInt vStart, vEnd, cellHeight, cStart, cEnd, cMax, conesSize, numCorners, numCornersLocal = 0;
 
     err = DMPlexGetVTKCellHeight(dmMesh, &cellHeight);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
@@ -172,7 +172,7 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
       conesSize = 0;
       for(PetscInt cell = cStart; cell < cEnd; ++cell) {
         PetscInt value;
-        err = DMPlexGetLabelValue(dmMesh, label, cell, &value);PYLITH_CHECK_ERROR(err);
+        err = DMGetLabelValue(dmMesh, label, cell, &value);PYLITH_CHECK_ERROR(err);
         if (value == labelId)
 	  ++conesSize;
       } // for
@@ -201,7 +201,7 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
 
       if (label) {
         PetscInt value;
-        err = DMPlexGetLabelValue(dmMesh, label, cell, &value);PYLITH_CHECK_ERROR(err);
+        err = DMGetLabelValue(dmMesh, label, cell, &value);PYLITH_CHECK_ERROR(err);
         if (value != labelId) continue;
       } // if
 

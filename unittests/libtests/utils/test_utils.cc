@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -38,7 +38,7 @@ main(int argc,
   try {
     // Initialize PETSc
     PetscErrorCode err = PetscInitialize(&argc, &argv, NULL, NULL);CHKERRQ(err);
-    err = PetscOptionsSetValue("-malloc_dump", "");CHKERRQ(err);
+    err = PetscOptionsSetValue(NULL, "-malloc_dump", "");CHKERRQ(err);
 
     // Create event manager and test controller
     CppUnit::TestResult controller;

@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -17,7 +17,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith], [2.1.0], [cig-short@geodynamics.org])
+AC_INIT([PyLith], [2.1.2], [cig-short@geodynamics.org])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
@@ -104,17 +104,6 @@ AC_ARG_ENABLE([cuda],
 	[enable_cuda=no])
 AM_CONDITIONAL([ENABLE_CUDA], [test "$enable_cuda" = yes])
 
-# MEMORY LOGGING
-AC_ARG_ENABLE([memory_logging],
-    [AC_HELP_STRING([--enable-memory-logging],
-        [enable memory logging @<:@default=no@:>@])],
-	[if test "$enableval" = yes ; then 
-	  enable_memory_logging=yes
-	  CPPFLAGS="-DALE_MEM_LOGGING $CPPFLAGS"; export CPPFLAGS
-         else enable_memory_logging=no; fi],
-	[enable_memory_logging=no])
-AM_CONDITIONAL([ENABLE_MEMORY_LOGGING], [test "$enable_memory_logging" = yes])
-
 # DOCUMENTATION w/doxygen
 AC_ARG_ENABLE([documentation],
     [AC_HELP_STRING([--enable-documentation],
@@ -125,8 +114,9 @@ AM_CONDITIONAL([ENABLE_DOCUMENTATION], [test "$enable_documentation" = yes])
 
 # ----------------------------------------------------------------------
 # C/C++/libtool/install
-AC_PROG_CXX
 AC_PROG_CC
+AC_PROG_CXX
+AC_PROG_CXXCPP
 AC_DISABLE_STATIC
 
 AC_PROG_LIBTOOL
@@ -149,12 +139,12 @@ CIT_CHECK_PYTHON_SHARED
 # MPI
 AC_LANG(C++)
 #CIT_PROG_MPICXX
-#CIT_HEADER_MPI
+CIT_HEADER_MPI
 #CIT_CHECK_LIB_MPI
 
 # PETSC
 AC_LANG(C)
-CIT_PATH_PETSC([3.5.3])
+CIT_PATH_PETSC([3.7.2])
 CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC
 
@@ -181,6 +171,8 @@ fi
 
 # CUBIT (netcdf)
 if test "$enable_cubit" = "yes" ; then
+  AC_REQUIRE_CPP
+  AC_LANG(C++)
   CIT_NETCDF_HEADER
   CIT_NETCDF_LIB
 fi
@@ -207,6 +199,8 @@ fi
 
 # HDF5
 if test "$enable_hdf5" = "yes" ; then
+  AC_REQUIRE_CPP
+  AC_LANG(C++)
   CIT_HDF5_HEADER
   CIT_HDF5_LIB
   CIT_HDF5_LIB_PARALLEL
@@ -215,7 +209,7 @@ fi
 # Full-scale testing with h5py
 if test "$enable_full_testing" = yes ; then
   AM_PATH_PYTHON
-   AC_MSG_CHECKING(for python module h5py for full scale testing)
+  AC_MSG_CHECKING(for python module h5py for full scale testing)
   $PYTHON -c "import h5py" 2>/dev/null   
   if test $? == 0; then
     AC_MSG_RESULT([found h5py, enabling full scale testing])
@@ -235,6 +229,8 @@ if test "$enable_cuda" = "yes" ; then
 fi
 
 # PROJ4
+AC_REQUIRE_CPP
+AC_LANG(C)
 CIT_PROJ4_HEADER
 CIT_PROJ4_LIB
 
@@ -246,9 +242,11 @@ PYTHON_EGG_CPPFLAGS="-I$p"
 AC_SUBST(PYTHON_EGG_CPPFLAGS)
 
 # SPATIALDATA
+AC_REQUIRE_CPP
+AC_LANG(C++)
 CIT_SPATIALDATA_HEADER
 CIT_SPATIALDATA_LIB
-CIT_PYTHON_MODULE([spatialdata],[1.9.3])
+CIT_PYTHON_MODULE([spatialdata],[1.9.6])
 
 # DOXYGEN
 if test "$enable_documentation" = "yes" ; then
@@ -336,6 +334,7 @@ AC_CONFIG_FILES([Makefile
 		tests_auto/2d/tri3/Makefile
 		tests_auto/2d/quad4/Makefile
 		tests_auto/2d/slipdir/Makefile
+		tests_auto/2d/finitestrain/Makefile
 		tests_auto/3d/Makefile
 		tests_auto/3d/tet4/Makefile
 		tests_auto/3d/hex8/Makefile
@@ -362,7 +361,6 @@ AC_CONFIG_FILES([Makefile
 		doc/refguide/Makefile
 		doc/releasenotes/Makefile
 		doc/userguide/Makefile
-		doc/presentations/Makefile
 		examples/Makefile
 		examples/3d/Makefile
 		examples/3d/tet4/Makefile

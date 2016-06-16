@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -43,13 +43,13 @@ pylith::faults::TestFaultMesh::createFaultMesh(topology::Mesh* faultMesh,
     const bool useLagrangeConstraints = true;
     PetscDM dmMesh = mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
     
-    err = DMPlexGetStratumSize(dmMesh, faultLabel, 1, &firstLagrangeVertex);PYLITH_CHECK_ERROR(err);
+    err = DMGetStratumSize(dmMesh, faultLabel, 1, &firstLagrangeVertex);PYLITH_CHECK_ERROR(err);
     firstFaultCell = firstLagrangeVertex;
     if (useLagrangeConstraints) {
       firstFaultCell += firstLagrangeVertex;
     } // if
     err = DMPlexGetDepth(dmMesh, &depth);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetLabel(dmMesh, faultLabel, &groupField);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmMesh, faultLabel, &groupField);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT(groupField);
     CohesiveTopology::createFault(faultMesh, *mesh, groupField);
     CohesiveTopology::create(mesh, *faultMesh, NULL, faultId, firstFaultVertex, firstLagrangeVertex, firstFaultCell, useLagrangeConstraints);

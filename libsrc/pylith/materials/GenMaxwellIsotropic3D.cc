@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -515,12 +515,6 @@ pylith::materials::GenMaxwellIsotropic3D::_calcStressViscoelastic(
 				     initialStrain[3],
 				     initialStrain[4],
 				     initialStrain[5]};
-  const PylithScalar devStressInitial[] = {initialStress[0] - meanStressInitial,
-				     initialStress[1] - meanStressInitial,
-				     initialStress[2] - meanStressInitial,
-				     initialStress[3],
-				     initialStress[4],
-				     initialStress[5]};
   // :TODO: Need to determine how to incorporate state variables
   // Mean stress and strain for time t + dt
   const PylithScalar meanStrainTpdt = (totalStrain[0] +
@@ -569,7 +563,7 @@ pylith::materials::GenMaxwellIsotropic3D::_calcStressViscoelastic(
 	_viscousStrain[model * tensorSize+iComp];
     } // for
 
-    devStressTpdt = mu2 * devStressTpdt + devStressInitial[iComp];
+    devStressTpdt = mu2 * devStressTpdt;
     stress[iComp] = diag[iComp] * meanStressTpdt + devStressTpdt;
   } // for
 
@@ -802,7 +796,6 @@ pylith::materials::GenMaxwellIsotropic3D::_updateStateVarsElastic(
 
   // Initialize all viscous strains to deviatoric elastic strains.
   PylithScalar devStrain = 0.0;
-  PylithScalar shearRatio = 0.0;
   for (int iComp=0; iComp < tensorSize; ++iComp) {
     devStrain = strainTpdt[iComp] - diag[iComp] * meanStrainTpdt;
     // Maxwell model 1

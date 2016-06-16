@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -72,7 +72,8 @@ pylith::problems::Solver::Solver(void) :
   _formulation(0),
   _logger(0),
   _jacobianPC(0),
-  _jacobianPCFault(0)
+  _jacobianPCFault(0),
+  _skipNullSpaceCreation(false)
 { // constructor
 } // constructor
 
@@ -103,7 +104,21 @@ pylith::problems::Solver::deallocate(void)
 
   PYLITH_METHOD_END;
 } // deallocate
-  
+
+
+// ----------------------------------------------------------------------
+// Set flag signaling to skip null space creation.
+void
+pylith::problems::Solver::skipNullSpaceCreation(const bool value)
+{ // skipNullSpaceCreation
+  PYLITH_METHOD_BEGIN;
+
+  _skipNullSpaceCreation = value;
+
+  PYLITH_METHOD_END;
+} // skipNullSpaceCreation
+
+
 // ----------------------------------------------------------------------
 // Initialize solver.
 void
@@ -145,7 +160,6 @@ pylith::problems::Solver::initialize(const topology::SolutionFields& fields,
   PYLITH_METHOD_END;
 } // initialize
 
-
 // ----------------------------------------------------------------------
 // Create null space.
 void
@@ -168,6 +182,7 @@ pylith::problems::Solver::_createNullSpace(const topology::SolutionFields& field
   MatNullSpace nullsp = NULL;    
   PetscSection coordinateSection = NULL;
   PetscVec coordinateVec = NULL;
+  PetscReal norm = 0.0;
   PetscInt vStart, vEnd;
   PetscVec mode[6];
   
@@ -175,7 +190,17 @@ pylith::problems::Solver::_createNullSpace(const topology::SolutionFields& field
   err = DMGetCoordinateSection(dmMesh, &coordinateSection);PYLITH_CHECK_ERROR(err);assert(coordinateSection);
   err = DMGetCoordinatesLocal(dmMesh, &coordinateVec);PYLITH_CHECK_ERROR(err);assert(coordinateVec);
   if (spaceDim > 1) {
-    const int m = (spaceDim * (spaceDim + 1)) / 2;
+    const int m = (spaceDim * (spaceDim + 1)) / 2;assert(m > 0 && m <= 6);
+
+    // Check size of solution section against expected size of null space
+    PylithInt numDofUnconstrained = 0;
+    err = PetscSectionGetConstrainedStorageSize(solutionSection, &numDofUnconstrained);
+    if (m > numDofUnconstrained) {
+      std::ostringstream msg;
+      msg << "Number of unconstrained DOF (" << numDofUnconstrained << ") is less than the size of the expected null space (" << m << ") for a " << spaceDim << "-D problem.";
+      throw std::runtime_error(msg.str());
+    } // if
+
     for(int i = 0; i < m; ++i) {
       err = VecDuplicate(solutionGlobalVec, &mode[i]);PYLITH_CHECK_ERROR(err);
       // This is necessary to avoid circular references when we compose this MatNullSpace with a field in the DM
@@ -214,7 +239,12 @@ pylith::problems::Solver::_createNullSpace(const topology::SolutionFields& field
       err = DMLocalToGlobalEnd(dmMesh, solutionVec, INSERT_VALUES, mode[d]);PYLITH_CHECK_ERROR(err);
     } // for
     for(int i = 0; i < spaceDim; ++i) {
-      err = VecNormalize(mode[i], NULL);PYLITH_CHECK_ERROR(err);
+      err = VecNormalize(mode[i], &norm);PYLITH_CHECK_ERROR(err);
+      if (norm == 0.0) {
+        std::ostringstream msg;
+        msg << "Invalid null space vector "<<i<<" has zero norm.";
+        throw std::runtime_error(msg.str());
+      }
     } // for
     // Orthonormalize system
     for(int i = spaceDim; i < m; ++i) {
@@ -225,7 +255,12 @@ pylith::problems::Solver::_createNullSpace(const topology::SolutionFields& field
         dots[j] *= -1.0;
       } // for
       err = VecMAXPY(mode[i], i, dots, mode);PYLITH_CHECK_ERROR(err);
-      err = VecNormalize(mode[i], NULL);PYLITH_CHECK_ERROR(err);
+      err = VecNormalize(mode[i], &norm);PYLITH_CHECK_ERROR(err);
+      if (norm == 0.0) {
+        std::ostringstream msg;
+        msg << "Invalid null space vector "<<i<<" has zero norm.";
+        throw std::runtime_error(msg.str());
+      }
     } // for
     err = MatNullSpaceCreate(comm, PETSC_FALSE, m, mode, &nullsp);PYLITH_CHECK_ERROR(err);
     for(int i = 0; i< m; ++i) {

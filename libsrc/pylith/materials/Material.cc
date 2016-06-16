@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -123,7 +123,6 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
   // Get quadrature information
   const int numQuadPts = quadrature->numQuadPts();
   const int numBasis = quadrature->numBasis();
-  const int numCorners = quadrature->refGeometry().numCorners();
   const int spaceDim = quadrature->spaceDim();
 
   // Get cells associated with material

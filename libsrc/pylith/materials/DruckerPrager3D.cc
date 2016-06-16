@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -153,11 +153,11 @@ pylith::materials::DruckerPrager3D::DruckerPrager3D(void) :
 			   _DruckerPrager3D::numStateVars,
 			   _DruckerPrager3D::dbStateVars,
 			   _DruckerPrager3D::numDBStateVars)),
-  _fitMohrCoulomb(MOHR_COULOMB_INSCRIBED),
-  _allowTensileYield(false),
   _calcElasticConstsFn(0),
   _calcStressFn(0),
-  _updateStateVarsFn(0)
+  _updateStateVarsFn(0),
+  _fitMohrCoulomb(MOHR_COULOMB_INSCRIBED),
+  _allowTensileYield(false)
 { // constructor
   useElasticBehavior(false);
 } // constructor
@@ -1171,8 +1171,6 @@ pylith::materials::DruckerPrager3D::_updateStateVarsElastoplastic(
   assert(_DruckerPrager3D::tensorSize == initialStressSize);
   assert(0 != initialStrain);
   assert(_DruckerPrager3D::tensorSize == initialStrainSize);
-
-  const int stressSize = _tensorSize;
 
   // For now, we are duplicating the functionality of _calcStressElastoplastic,
   // since otherwise we would have to redo a lot of calculations.

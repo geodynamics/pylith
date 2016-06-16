@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -407,7 +407,6 @@ pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
 
   const PylithScalar mu = properties[p_mu];
   const PylithScalar lambda = properties[p_lambda];
-  const PylithScalar maxwellTime = properties[p_maxwellTime];
 
   const PylithScalar mu2 = 2.0 * mu;
   const PylithScalar bulkModulus = lambda + mu2 / 3.0;
@@ -425,12 +424,6 @@ pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
 				     initialStrain[3],
 				     initialStrain[4],
 				     initialStrain[5]};
-  const PylithScalar devStressInitial[] = {initialStress[0] - meanStressInitial,
-				     initialStress[1] - meanStressInitial,
-				     initialStress[2] - meanStressInitial,
-				     initialStress[3],
-				     initialStress[4],
-				     initialStress[5]};
 
   // :TODO: Need to determine how to incorporate state variables
   const PylithScalar meanStrainTpdt = (totalStrain[0] +
@@ -457,8 +450,7 @@ pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
   PylithScalar devStressTpdt = 0.0;
 
   for (int iComp=0; iComp < tensorSize; ++iComp) {
-    devStressTpdt = mu2 * (_viscousStrain[iComp] - devStrainInitial[iComp]) +
-      devStressInitial[iComp];
+    devStressTpdt = mu2 * (_viscousStrain[iComp] - devStrainInitial[iComp]);
 
     stress[iComp] = diag[iComp] * meanStressTpdt + devStressTpdt;
   } // for
@@ -651,7 +643,6 @@ pylith::materials::MaxwellIsotropic3D::_updateStateVarsElastic(
   assert(_MaxwellIsotropic3D::tensorSize == initialStrainSize);
 
   const int tensorSize = _tensorSize;
-  const PylithScalar maxwellTime = properties[p_maxwellTime];
 
   const PylithScalar strainTpdt[] = {totalStrain[0] - initialStrain[0],
 			       totalStrain[1] - initialStrain[1],
@@ -797,9 +788,6 @@ pylith::materials::MaxwellIsotropic3D::_computeStateVars(
   const PylithScalar e11 = totalStrain[0];
   const PylithScalar e22 = totalStrain[1];
   const PylithScalar e33 = totalStrain[2];
-  const PylithScalar e12 = totalStrain[3];
-  const PylithScalar e23 = totalStrain[4];
-  const PylithScalar e13 = totalStrain[5];
   
   const PylithScalar meanStrainTpdt = (e11 + e22 + e33) / 3.0;
 

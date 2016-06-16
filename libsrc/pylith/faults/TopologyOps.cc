@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -124,7 +124,7 @@ pylith::faults::TopologyOps::classifyCellsDM(PetscDM dmMesh,
       std::cout << "vReplaceCells.size: " << vReplaceCells.size() << std::endl;
       std::cout << "vNoReplaceCells.size: " << vNoReplaceCells.size() << std::endl;
     }
-    assert(classifySize < vReplaceCells.size() + vNoReplaceCells.size());
+    assert(size_t(classifySize) < vReplaceCells.size() + vNoReplaceCells.size());
     classifySize = vReplaceCells.size() + vNoReplaceCells.size();
     if (classifySize > classifyTotal) {
       std::ostringstream msg;

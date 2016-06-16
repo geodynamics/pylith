@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -35,7 +35,7 @@ pylith::utils::TestArray::check(const PylithScalar* valuesE,
   assert( (0 == nvalues && 0 == valuesE) ||
 	  (0 < nvalues && 0 != valuesE) );
 
-  if (nvalues != values.size()) {
+  if (size_t(nvalues) != values.size()) {
     std::cerr << "Array size mismatch, expected: " << nvalues
 	      << " actual: " << values.size() << std::endl;
     return false;

@@ -8,7 +8,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -71,9 +71,9 @@ delete volume {idV}
 # Create fault (yz plane) at x = 0.0
 split surface {idS} across location position 0 0 0 location position {-blockHeight/tand(faultDipAngle)} {-blockHeight} 0
 
-# curve 17 name "fault_extended"
-curve ( at -40000 -40000 0 ordinal 1 ordered ) name "fault_extended"
-split curve fault_extended at position {-faultWidth*cosd(faultDipAngle)} {-faultWidth*sind(faultDipAngle)} 0
+# curve 17 name "fault_tmp"
+curve ( at -40000 -40000 0 ordinal 1 ordered ) name "fault_tmp"
+split curve fault_tmp at position {-faultWidth*cosd(faultDipAngle)} {-faultWidth*sind(faultDipAngle)} 0
 
 # ----------------------------------------------------------------------
 # Name curves
@@ -129,3 +129,4 @@ vertex ( at -85606.6 -80000 0 ordinal 1 ordered ) name "vertex_bot_xneg"
 
 
 # End of file
+

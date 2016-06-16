@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -49,7 +49,7 @@ class GenMaxwellIsotropic3D(ElasticMaterial, ModuleGenMaxwellIsotropic3D):
          'cell': \
            {'info': ["mu", "lambda", "density", "stable_dt_implicit", "stable_dt_explicit",
                      "shear_ratio", "maxwell_time"],
-            'data': ["total_strain", "stress",
+            'data': ["total_strain", "stress", "cauchy_stress",
                      "viscous_strain_1", 
                      "viscous_strain_2", 
                      "viscous_strain_3",

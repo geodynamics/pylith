@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -140,7 +140,6 @@ pylith::meshio::MeshIOAscii::_read(void)
 	} else if (0 == strcasecmp(token.c_str(), "group")) {
 	  std::string name;
 	  GroupPtType type;
-	  int numPoints = 0;
 	  int_array points;
 
 	  if (!builtMesh)
@@ -335,8 +334,6 @@ pylith::meshio::MeshIOAscii::_readCells(spatialdata::utils::LineParser& parser,
   assert(numCells);
   assert(numCorners);
 
-  int dimension = 0;
-
   std::string token;
   std::istringstream buffer;
   const int maxIgnore = 1024;
@@ -441,9 +438,9 @@ pylith::meshio::MeshIOAscii::_writeCells(std::ostream& fileout) const
   // Write material identifiers
   int_array materialIds;
   _getMaterials(&materialIds);
-  assert(numCells == materialIds.size());
+  assert(size_t(numCells) == materialIds.size());
   fileout << "    material-ids = {\n";
-  for(int iCell=0, i=0; iCell < numCells; ++iCell) {
+  for(int iCell=0; iCell < numCells; ++iCell) {
     fileout << "      " << std::setw(8) << iCell;
     fileout << std::setw(4) << materialIds[iCell] << "\n";
   } // for

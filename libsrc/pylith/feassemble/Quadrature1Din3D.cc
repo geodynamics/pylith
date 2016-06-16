@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -65,9 +65,7 @@ pylith::feassemble::Quadrature1Din3D::computeGeometry(const PylithScalar* coordi
   const int numBasis = _quadRefCell.numBasis();
 
   const scalar_array& basis = _quadRefCell.basis();
-  const scalar_array& quadPtsRef = _quadRefCell.quadPtsRef();
   const scalar_array& basisDerivRef = _quadRefCell.basisDerivRef();
-  const CellGeometry& geometry = _quadRefCell.refGeometry();
 
   assert(_quadRefCell.cellDim() == cellDim);
   assert(_quadRefCell.spaceDim() == spaceDim);

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -284,11 +284,11 @@ const PylithScalar pylith::materials::GenMaxwellPlaneStrainTimeDepData::_strain[
 
 const PylithScalar pylith::materials::GenMaxwellPlaneStrainTimeDepData::_stress[] = {
   8.26999455e+06,
-  8.72927873e+06,
-  6.46662036e+06,
+  8.72827873e+06,
+  6.44262036e+06,
   4.28170011e+06,
-  4.33799464e+06,
-  2.49387045e+06,
+  4.33699464e+06,
+  2.43987045e+06,
 };
 
 const PylithScalar pylith::materials::GenMaxwellPlaneStrainTimeDepData::_elasticConsts[] = {

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -33,11 +33,11 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::OutputManager::OutputManager(void) :
+  _fields(0),
   _coordsys(0),
   _writer(0),
   _vertexFilter(0),
-  _cellFilter(0),
-  _fields(0)
+  _cellFilter(0)
 { // constructor
 } // constructor
 

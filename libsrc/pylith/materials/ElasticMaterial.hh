@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -80,6 +80,12 @@ public :
   void initialize(const topology::Mesh& mesh,
 		  feassemble::Quadrature* quadrature);
   
+  /// Create visitors for properties and state variables.
+  void createPropsAndVarsVisitors(void);
+
+  /// Destroy visitors for properties and state variables.
+  void destroyPropsAndVarsVisitors(void);
+
   /** Retrieve parameters for physical properties and state variables
    * for cell.
    *
@@ -514,6 +520,11 @@ private :
 
   int _numQuadPts; ///< Number of quadrature points
   const int _numElasticConsts; ///< Number of elastic constants.
+
+  pylith::topology::VecVisitorMesh* _propertiesVisitor; ///< Visitor for properties field.
+  pylith::topology::VecVisitorMesh* _stateVarsVisitor; ///< Visitor for stateVars field.
+  pylith::topology::VecVisitorMesh* _stressVisitor; ///< Visitor for initial stress field.
+  pylith::topology::VecVisitorMesh* _strainVisitor; ///< Visitor for initial strain field.
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

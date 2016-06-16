@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -42,7 +42,7 @@ main(int argc,
     // Initialize PETSc
     PetscErrorCode err = PetscInitialize(&argc, &argv, NULL, NULL);CHKERRQ(err);
 #if defined(MALLOC_DUMP)
-    err = PetscOptionsSetValue("-malloc_dump", "");CHKERRQ(err);
+    err = PetscOptionsSetValue(NULL, "-malloc_dump", "");CHKERRQ(err);
 #endif
 
     // Initialize Python (to eliminate need to initialize when

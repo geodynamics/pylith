@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -240,7 +240,6 @@ pylith::materials::ElasticPlaneStrain::_calcStress(PylithScalar* const stress,
   assert(0 != initialStrain);
   assert(_ElasticPlaneStrain::tensorSize == initialStrainSize);
 
-  const PylithScalar density = properties[p_density];
   const PylithScalar mu = properties[p_mu];
   const PylithScalar lambda = properties[p_lambda];
 
@@ -287,7 +286,6 @@ pylith::materials::ElasticPlaneStrain::_calcElasticConsts(PylithScalar* const el
   assert(0 != initialStrain);
   assert(_ElasticPlaneStrain::tensorSize == initialStrainSize);
  
-  const PylithScalar density = properties[p_density];
   const PylithScalar mu = properties[p_mu];
   const PylithScalar lambda = properties[p_lambda];
 

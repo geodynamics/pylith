@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -194,7 +194,7 @@ pylith::friction::FrictionModel::initialize(const topology::Mesh& faultMesh,
     _dbInitialState->queryVals(_metadata.dbStateVars(), _metadata.numDBStateVars());
     
     PetscDMLabel clamped = NULL;
-    PetscErrorCode err = DMPlexGetLabel(faultDMMesh, "clamped", &clamped);PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = DMGetLabel(faultDMMesh, "clamped", &clamped);PYLITH_CHECK_ERROR(err);
 
     for(PetscInt v = vStart; v < vEnd; ++v) {
       if (faults::FaultCohesiveLagrange::isClampedVertex(clamped, v)) {
@@ -336,7 +336,7 @@ pylith::friction::FrictionModel::retrievePropsStateVars(const int point)
       _propsStateVarsVertex[iOff] = stateVarArray[off+d];
     } // for
   } // for
-  assert(_propsStateVarsVertex.size() == iOff);
+  assert(_propsStateVarsVertex.size() == size_t(iOff));
 
   PYLITH_METHOD_END;
 } // retrievePropsStateVars
@@ -353,7 +353,7 @@ pylith::friction::FrictionModel::calcFriction(const PylithScalar t,
 
   assert(_fieldsPropsStateVars);
 
-  assert(_propsFiberDim+_varsFiberDim == _propsStateVarsVertex.size());
+  assert(size_t(_propsFiberDim+_varsFiberDim) == _propsStateVarsVertex.size());
   const PylithScalar* propertiesVertex = &_propsStateVarsVertex[0];
   const PylithScalar* stateVarsVertex = (_varsFiberDim > 0) ?
     &_propsStateVarsVertex[_propsFiberDim] : 0;
@@ -377,7 +377,7 @@ pylith::friction::FrictionModel::calcFrictionDeriv(const PylithScalar t,
 
   assert(_fieldsPropsStateVars);
 
-  assert(_propsFiberDim+_varsFiberDim == _propsStateVarsVertex.size());
+  assert(size_t(_propsFiberDim+_varsFiberDim) == _propsStateVarsVertex.size());
   const PylithScalar* propertiesVertex = &_propsStateVarsVertex[0];
   const PylithScalar* stateVarsVertex = (_varsFiberDim > 0) ?
     &_propsStateVarsVertex[_propsFiberDim] : 0;
@@ -437,7 +437,7 @@ pylith::friction::FrictionModel::updateStateVars(const PylithScalar t,
       stateVarArray[off+d] = _propsStateVarsVertex[iOff];
     } // for
   } // for
-  assert(_propsStateVarsVertex.size() == iOff);
+  assert(_propsStateVarsVertex.size() == size_t(iOff));
 
   PYLITH_METHOD_END;
 } // updateStateVars

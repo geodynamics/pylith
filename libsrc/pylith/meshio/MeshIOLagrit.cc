@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -139,7 +139,7 @@ pylith::meshio::MeshIOLagrit::_orientCellsAscii(int_array* const cells,
   PYLITH_METHOD_BEGIN;
 
   assert(cells);
-  assert(cells->size() == numCells*numCorners);
+  assert(cells->size() == size_t(numCells*numCorners));
 
   if (3 == meshDim && 4 == numCorners) // TET
     for (int iCell=0; iCell < numCells; ++iCell) {
@@ -165,7 +165,7 @@ pylith::meshio::MeshIOLagrit::_orientCellsBinary(int_array* const cells,
   PYLITH_METHOD_BEGIN;
 
   assert(cells);
-  assert(cells->size() == numCells*numCorners);
+  assert(cells->size() == size_t(numCells*numCorners));
 
   if (3 == meshDim && 4 == numCorners)  // TET
     ; // do nothing
