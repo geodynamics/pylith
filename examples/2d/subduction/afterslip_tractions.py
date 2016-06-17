@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 
 # This python script extracts the changes in fault tractions from
 # step01 and combines them with background depth-dependent fault
