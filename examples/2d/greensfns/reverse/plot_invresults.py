@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 """
 This script generates a set of line plots comparing the predicted solution to
 the true solution.
