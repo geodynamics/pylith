@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 """
 This script generates a plot showing slip or fault tractions.
 """

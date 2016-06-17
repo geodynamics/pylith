@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 """
 This is an extremely simple example showing how to set up an inversion
 using PyLith-generated Green's functions. In this simple example,
