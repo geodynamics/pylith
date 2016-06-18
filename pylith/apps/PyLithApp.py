@@ -146,7 +146,25 @@ class PyLithApp(PetscApplication):
       self.perfLogger.show()
 
     return
-  
+
+
+  def version(self):
+    import platform
+    pythonVersion = platform.python_version()
+    pythonCompiler = platform.python_compiler()
+    uname = platform.uname()
+    unameStr = " ".join((uname[0], uname[2], uname[4]))
+
+    #import pylith.utils.version as versionModule
+    #pylithVersion = versionModule.getVersion()
+    pylithVersion = "2.1.2"
+
+    msg = "Running PyLith %s on %s.\n" % (pylithVersion, unameStr)
+    msg += "  Python %s compiled with %s." % (pythonVersion, pythonCompiler)
+    print(msg)
+    return
+    return
+
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
