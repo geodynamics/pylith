@@ -22,6 +22,7 @@
 // Header files for module C++ code
 %{
 #include "pylith/utils/EventLogger.hh"
+#include "pylith/utils/Version.hh"
 #include "pylith/utils/TestArray.hh"
 #include "pylith/utils/constdefs.h"
 
@@ -53,6 +54,7 @@ import_array();
 // Interfaces
 %include "pylith_general.i"
 %include "EventLogger.i"
+%include "Version.i"
 %include "TestArray.i"
 %include "constdefs.i"
 

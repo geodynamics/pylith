@@ -155,10 +155,14 @@ class PyLithApp(PetscApplication):
     uname = platform.uname()
     unameStr = " ".join((uname[0], uname[2], uname[4]))
 
-    #import pylith.utils.version as versionModule
-    #pylithVersion = versionModule.getVersion()
-    pylithVersion = "2.1.2"
+    import pylith.utils.utils as utils
+    pylithVersion = utils.Version.version()
 
+    # git describe
+    # git log -1 --pretty=format:%H
+    # git log -1 --pretty=format:%ci
+    # git rev-parse --abbrev-ref HEAD
+    
     msg = "Running PyLith %s on %s.\n" % (pylithVersion, unameStr)
     msg += "  Python %s compiled with %s." % (pythonVersion, pythonCompiler)
     print(msg)

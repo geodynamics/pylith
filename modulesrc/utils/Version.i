@@ -16,30 +16,37 @@
 // ======================================================================
 //
 
-/** @file libsrc/utils/utilsfwd.hh
+/**
+ * @file modulesrc/utils/Version.hh
  *
- * @brief Forward declarations for PyLith utils objects.
- *
- * Including this header file eliminates the need to use separate
- * forward declarations.
+ * @brief C++ object for PyLith version information.
  */
-
-#if !defined(pylith_utils_utilsfwd_hh)
-#define pylith_utils_utilsfwd_hh
 
 namespace pylith {
   namespace utils {
 
-    class EventLogger;
-    class Version;
-    
-    class TestArray;
+    class pylith::utils::Version
+    { // Version
+
+      // PUBLIC MEMBERS ///////////////////////////////////////////////////////
+    public :
+
+      /// Default constructor.
+      Version(void);
+      
+      /// Default destrictor.
+      ~Version(void);
+
+      /** Get Pylith version number.
+       *
+       * @returns PyLith version numer.
+       */
+      static 
+	const char* version(void);
+
+    }; // Version
 
   } // utils
 } // pylith
-
-
-#endif // pylith_utils_utilsfwd_hh
-
 
 // End of file 
