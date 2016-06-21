@@ -149,7 +149,27 @@ class PyLithApp(PetscApplication):
 
 
   def version(self):
+    def getPyPkgVer(name):
+      import os
+      m = None
+      location = None
+      version = None
+      try:
+        m = __import__(name)
+        location = os.path.split(m.__file__)[0]
+        version = m.__version__
+      except AttributeError:
+        if m is None:
+          version = "not found"
+          location = "--"
+        if version is None:
+          version = "unknown"
+        if location is None:
+          location = "unknown"
+      return (version, location)
+    
     import platform
+    import sys
     pythonVersion = platform.python_version()
     pythonCompiler = platform.python_compiler()
     uname = platform.uname()
@@ -158,15 +178,21 @@ class PyLithApp(PetscApplication):
     import pylith.utils.utils as utils
     pylithVersion = utils.Version.version()
 
+    # Version information
+    msg = "Running PyLith %s on %s.\n" % (pylithVersion, unameStr)
     # git describe
     # git log -1 --pretty=format:%H
     # git log -1 --pretty=format:%ci
     # git rev-parse --abbrev-ref HEAD
-    
-    msg = "Running PyLith %s on %s.\n" % (pylithVersion, unameStr)
-    msg += "  Python %s compiled with %s." % (pythonVersion, pythonCompiler)
+
+    # Package information
+    msg += "  Python %s compiled with %s from %s.\n" % (pythonVersion, pythonCompiler, sys.executable)
+
+    pkgs = ("numpy","spatialdata","FIAT","h5py","netCDF4","pyre")
+    for pkg in pkgs:
+      ver,loc = getPyPkgVer(pkg)
+      msg += "    %s %s from %s.\n" % (pkg, ver, loc)
     print(msg)
-    return
     return
 
 
