@@ -31,7 +31,8 @@ namespace pylith {
   namespace utils {
 
     class EventLogger;
-    class Version;
+    class PylithVersion;
+    class PetscVersion;
     
     class TestArray;
 

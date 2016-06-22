@@ -262,6 +262,25 @@ fi
 # Check whether compiler sets variable with function names.
 CIT_FUNCTIONSTRING
 
+# VERSION
+cit_builddir=`pwd`
+cd $srcdir
+AC_CHECK_FILE([.git/config], [[
+PYLITH_RELEASE_VERSION=0
+eval PYLITH_GIT_REVISION=`git describe`
+eval PYLITH_GIT_HASH=`git log -1 --pretty=format:%H`
+eval PYLITH_GIT_DATE=\"`git log -1 --pretty=format:%ci`\"
+eval PYLITH_GIT_BRANCH=`git rev-parse --abbrev-ref HEAD`
+]],[[
+PYLITH_RELEASE_VERSION=0
+]])
+cd $cit_builddir
+AC_DEFINE_UNQUOTED([PYLITH_RELEASE_VERSION], [$PYLITH_RELEASE_VERSION], [Define if source is from PyLith release.])
+AC_DEFINE_UNQUOTED([PYLITH_GIT_REVISION], ["$PYLITH_GIT_REVISION"], [Define git revision commit for PyLith source.])
+AC_DEFINE_UNQUOTED([PYLITH_GIT_HASH], ["$PYLITH_GIT_HASH"], [Define GIT hash for PyLith source.])
+AC_DEFINE_UNQUOTED([PYLITH_GIT_DATE], ["$PYLITH_GIT_DATE"], [Define date of GIT commit for PyLith source.])
+AC_DEFINE_UNQUOTED([PYLITH_GIT_BRANCH], ["$PYLITH_GIT_BRANCH"], [Define GIT branch for PyLith source.])
+
 # ENDIANNESS
 AC_C_BIGENDIAN
 

@@ -41,6 +41,8 @@ petsc_swig_generated = \
 utils_swig_sources = \
 	utils.i \
 	pylith_general.i \
+	PylithVersion.i \
+	PetscVersion.i \
 	EventLogger.i \
 	TestArray.i \
 	constdefs.i

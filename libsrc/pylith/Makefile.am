@@ -145,7 +145,8 @@ libpylith_la_SOURCES = \
 	topology/ReverseCuthillMcKee.cc \
 	topology/RefineUniform.cc \
 	utils/EventLogger.cc \
-	utils/Version.cc \
+	utils/PylithVersion.cc \
+	utils/PetscVersion.cc \
 	utils/TestArray.cc
 
 

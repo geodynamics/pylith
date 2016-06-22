@@ -168,30 +168,39 @@ class PyLithApp(PetscApplication):
           location = "unknown"
       return (version, location)
     
-    import platform
     import sys
+    import platform
     pythonVersion = platform.python_version()
     pythonCompiler = platform.python_compiler()
     uname = platform.uname()
     unameStr = " ".join((uname[0], uname[2], uname[4]))
+    msg = "Running PyLith on %s.\n" % unameStr
 
     import pylith.utils.utils as utils
-    pylithVersion = utils.Version.version()
-
-    # Version information
-    msg = "Running PyLith %s on %s.\n" % (pylithVersion, unameStr)
-    # git describe
-    # git log -1 --pretty=format:%H
-    # git log -1 --pretty=format:%ci
-    # git rev-parse --abbrev-ref HEAD
+    # PyLith version information
+    v = utils.PylithVersion()
+    if v.isRelease():
+        msg += "    Release v%s.\n" % (v.version(),)
+    else:
+        msg += "    Configured on %s, GIT branch: %s, revision: %s, hash: %s.\n" % (v.gitDate(), v.gitBranch(), v.gitRevision(), v.gitHash(),)
+    msg += "\n"
+        
+    # PETSc version information
+    v = utils.PetscVersion()
+    if v.isRelease():
+        msg += "    PETSc release v%s.\n" % (v.version(),)
+    else:
+        msg += "    PETSc configured on %s, GIT branch: %s, revision: %s.\n" % (v.gitDate(), v.gitBranch(), v.gitRevision(),)
+    msg += "        PETSC_DIR: %s, PETSC_ARCH: %s\n" % (v.petscDir(), v.petscArch(),)
+    msg += "\n"
 
     # Package information
-    msg += "  Python %s compiled with %s from %s.\n" % (pythonVersion, pythonCompiler, sys.executable)
+    msg += "    Python %s compiled with %s from %s.\n" % (pythonVersion, pythonCompiler, sys.executable)
 
     pkgs = ("numpy","spatialdata","FIAT","h5py","netCDF4","pyre")
     for pkg in pkgs:
       ver,loc = getPyPkgVer(pkg)
-      msg += "    %s %s from %s.\n" % (pkg, ver, loc)
+      msg += "        %s %s from %s.\n" % (pkg, ver, loc)
     print(msg)
     return
 

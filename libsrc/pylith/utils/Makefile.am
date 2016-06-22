@@ -22,7 +22,8 @@ include $(top_srcdir)/subpackage.am
 subpkginclude_HEADERS = \
 	EventLogger.hh \
 	EventLogger.icc \
-	Version.hh \
+	PylithVersion.hh \
+	PetscVersion.hh \
 	TestArray.hh \
 	array.hh \
 	arrayfwd.hh \
