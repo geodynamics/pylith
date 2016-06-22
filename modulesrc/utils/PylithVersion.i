@@ -25,7 +25,7 @@
 namespace pylith {
   namespace utils {
 
-    class pylith::utils::PylithVersion
+    class PylithVersion
     { // PylithVersion
 
       // PUBLIC MEMBERS ///////////////////////////////////////////////////////

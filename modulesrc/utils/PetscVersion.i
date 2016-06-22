@@ -25,7 +25,7 @@
 namespace pylith {
   namespace utils {
 
-    class pylith::utils::PetscVersion
+    class PetscVersion
     { // PetscVersion
 
       // PUBLIC MEMBERS ///////////////////////////////////////////////////////
