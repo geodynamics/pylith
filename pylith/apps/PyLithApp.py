@@ -194,6 +194,15 @@ class PyLithApp(PetscApplication):
     msg += "        PETSC_DIR: %s, PETSC_ARCH: %s\n" % (v.petscDir(), v.petscArch(),)
     msg += "\n"
 
+    # Spatialdata version information
+    import spatialdata.utils.utils as utils
+    v = utils.SpatialdataVersion()
+    if v.isRelease():
+        msg += "    Spatialdata release v%s.\n" % (v.version(),)
+    else:
+        msg += "    Spatialdata configured on %s, GIT branch: %s, revision: %s.\n" % (v.gitDate(), v.gitBranch(), v.gitRevision(),)
+    msg += "\n"
+
     # Package information
     msg += "    Python %s compiled with %s from %s.\n" % (pythonVersion, pythonCompiler, sys.executable)
 
