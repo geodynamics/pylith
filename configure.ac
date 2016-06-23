@@ -171,10 +171,7 @@ fi
 
 # CUBIT (netcdf)
 if test "$enable_cubit" = "yes" ; then
-  AC_REQUIRE_CPP
-  AC_LANG(C++)
-  CIT_NETCDF_HEADER
-  CIT_NETCDF_LIB
+  AX_LIB_NETCDF4()
 fi
 
 # TETGEN

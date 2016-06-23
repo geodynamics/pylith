@@ -26,7 +26,7 @@
 
 // :KLUDGE: Prevent NetCDF from definining MPI types
 #define MPI_INCLUDED
-#include <netcdfcpp.h> // USES netcdf
+#include <netcdf.h> // USES netcdf
 
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
@@ -93,11 +93,10 @@ pylith::meshio::ExodusII::open(void)
 
   close();
 
-  _file = new NcFile(_filename.c_str());
-  if (!_file->is_valid()) {
+  const int err = nc_open(_filename.c_str(), NC_NOWRITE, &_file);
+  if (err != NC_NOERR) {
     std::ostringstream msg;
-    msg << "Could not open ExodusII file '" << _filename
-	<< "' for reading.\n";
+    msg << "Could not open ExodusII file '" << _filename << "' for reading.\n";
     throw std::runtime_error(msg.str());
   } // if
 
@@ -111,9 +110,14 @@ pylith::meshio::ExodusII::close(void)
 { // close
   PYLITH_METHOD_BEGIN;
 
-  if (_file)
-    _file->close();
-  delete _file; _file = 0;
+  if (_file) {
+    int err = nc_close(_file);_file=0;
+    if (err != NC_NOERR) {
+      std::ostringstream msg;
+      msg << "Could not close ExodusII file '" << _filename << "'.\n";
+      throw std::runtime_error(msg.str());
+    } // if
+  } // if
 
   PYLITH_METHOD_END;
 } // close
@@ -121,23 +125,25 @@ pylith::meshio::ExodusII::close(void)
 // ----------------------------------------------------------------------
 // Check if Cubit Exodus file constains dimension.
 bool
-pylith::meshio::ExodusII::hasDim(const char* name) const
+pylith::meshio::ExodusII::hasDim(const char* name,
+				 int* id) const
 { // hasDim
   PYLITH_METHOD_BEGIN;
 
   assert(_file);
 
   bool found = false;
-  
-  const int ndims = _file->num_dims();
-  for (int i=0; i < ndims; ++i) {
-    NcDim* dim = _file->get_dim(i);
-    assert(dim);
-    if (0 == strcmp(dim->name(), name)) {
-      found = true;
-      break;
+
+  int i = -1;
+  int err = nc_inq_dimid(_file, name, &i);
+  if (err == NC_NOERR) {
+    found = true;
+    if (id) {
+      *id = i;
     } // if
-  } // for
+  } else if (id) {
+    *id = -1;
+  } // if/else
   
   PYLITH_METHOD_RETURN(found);
 } // hasDim
@@ -145,7 +151,8 @@ pylith::meshio::ExodusII::hasDim(const char* name) const
 // ----------------------------------------------------------------------
 // Check if Cubit Exodus file constains attribute.
 bool
-pylith::meshio::ExodusII::hasAtt(const char* name) const
+pylith::meshio::ExodusII::hasAtt(const char* name,
+				 int* id) const
 { // hasAtt
   PYLITH_METHOD_BEGIN;
 
@@ -153,17 +160,16 @@ pylith::meshio::ExodusII::hasAtt(const char* name) const
 
   bool found = false;
 
-  const int natts = _file->num_atts();
-  for (int i=0; i < natts; ++i) {
-    NcAtt* att = _file->get_att(i);
-    assert(att);
-    if (0 == strcmp(att->name(), name)) {
-      found = true;
-      delete att; att = 0;
-      break;
+  int i = -1;
+  int err = nc_inq_attid(_file, NC_GLOBAL, name, &i);
+  if (err == NC_NOERR) {
+    found = true;
+    if (id) {
+      *id = i;
     } // if
-    delete att; att = 0;
-  } // for
+  } else if (id) {
+    *id = -1;
+  } // if/else
   
   PYLITH_METHOD_RETURN(found);
 } // hasAtt
@@ -171,7 +177,8 @@ pylith::meshio::ExodusII::hasAtt(const char* name) const
 // ----------------------------------------------------------------------
 // Check if Cubit Exodus file constains variable.
 bool
-pylith::meshio::ExodusII::hasVar(const char* name) const
+pylith::meshio::ExodusII::hasVar(const char* name,
+				 int* id) const
 { // hasVar
   PYLITH_METHOD_BEGIN;
 
@@ -179,15 +186,16 @@ pylith::meshio::ExodusII::hasVar(const char* name) const
 
   bool found = false;
 
-  const int nvars = _file->num_vars();
-  for (int i=0; i < nvars; ++i) {
-    NcVar* var = _file->get_var(i);
-    assert(var);
-    if (0 == strcmp(var->name(), name)) {
-      found = true;
-      break;
+  int i = -1;
+  int err = nc_inq_varid(_file, name, &i);
+  if (err == NC_NOERR) {
+    found = true;
+    if (id) {
+      *id = i;
     } // if
-  } // for
+  } else if(id) {
+    *id = -1;
+  } // if/else
 
   PYLITH_METHOD_RETURN(found);
 } // hasVar
@@ -201,15 +209,22 @@ pylith::meshio::ExodusII::getDim(const char* name) const
 
   assert(_file);
 
-  if (!hasDim(name)) {
+  int id = -1;
+  if (!hasDim(name, &id)) {
     std::ostringstream msg;
     msg << "Missing dimension '" << name << "'.";
     throw std::runtime_error(msg.str());
   } // if
+
+  size_t dimSize = 0;
+  int err = nc_inq_dimlen(_file, id, &dimSize);
+  if (err != NC_NOERR) {
+    std::ostringstream msg;
+    msg << "Could not get dimension '" << name << "'.";
+    throw std::runtime_error(msg.str());
+  } // if
   
-  NcDim* dim = _file->get_dim(name);
-  assert(dim);
-  PYLITH_METHOD_RETURN(dim->size());
+  PYLITH_METHOD_RETURN(dimSize);
 } // getDim
 
 // ----------------------------------------------------------------------
@@ -225,37 +240,58 @@ pylith::meshio::ExodusII::getVar(PylithScalar* values,
   assert(_file);
   assert(values);
 
-  if (!hasVar(name)) {
+  int vid = -1;
+  if (!hasVar(name, &vid)) {
     std::ostringstream msg;
     msg << "Missing real variable '" << name << "'.";
     throw std::runtime_error(msg.str());
   } // if
 
-  NcVar* var = _file->get_var(name);
-  assert(var);
-  if (ndims != var->num_dims()) {
+  int vndims = 0;
+  int err = nc_inq_varndims(_file, vid, &vndims);
+  if (ndims != vndims) {
     std::ostringstream msg;
     msg << "Expecting " << ndims << " dimensions for variable '" << name
-	<< "' but variable only has " << var->num_dims() << " dimensions.";
+	<< "' but variable only has " << vndims << " dimensions.";
+    throw std::runtime_error(msg.str());
+  } // if
+
+  int* dimIds = (ndims > 0) ? new int[ndims] : 0;
+  err = nc_inq_vardimid(_file, vid, dimIds);
+  if (err != NC_NOERR) {
+    delete[] dimIds; dimIds = 0;
+    std::ostringstream msg;
+    msg << "Could not get dimensions for variable '" << name << "'.";
     throw std::runtime_error(msg.str());
   } // if
   
   for (int iDim=0; iDim < ndims; ++iDim) {
-    NcDim* d = var->get_dim(iDim);
-    assert(d);
-    if (dims[iDim] != d->size()) {
+    size_t dimSize = 0;
+    err = nc_inq_dimlen(_file, dimIds[iDim], &dimSize);
+    if (err != NC_NOERR) {
+      delete[] dimIds; dimIds = 0;
+      std::ostringstream msg;
+      msg << "Could not get dimension '" << iDim << "' for variable '" << name << "'.";
+      throw std::runtime_error(msg.str());
+    } // if
+    if (dims[iDim] != dimSize) {
+      delete[] dimIds; dimIds = 0;
       std::ostringstream msg;
       msg << "Expecting dimension " << iDim << " of variable '" << name
-	  << "' to be " << dims[iDim] << ", but dimension is " << d->size()
+	  << "' to be " << dims[iDim] << ", but dimension is " << dimSize
 	  << ".";
       throw std::runtime_error(msg.str());
     } // if
   } // for
+  delete[] dimIds; dimIds = 0;
 
-  long* counts = var->edges();
-  bool ok = var->get(values, counts);
-  delete[] counts; counts = 0;
-  if (!ok) {
+  if (sizeof(PylithScalar) == sizeof(double)) {
+    err = nc_get_var_double(_file, vid, values);
+  } else {
+    assert(0);
+    throw std::logic_error("Unknown size of PylithScalar in ExodusII::getVar().");
+  } // if/else
+  if (err != NC_NOERR) {
     std::ostringstream msg;
     msg << "Coult not get values for variable '" << name << ".";
     throw std::runtime_error(msg.str());
@@ -277,37 +313,53 @@ pylith::meshio::ExodusII::getVar(int* values,
   assert(_file);
   assert(values);
 
-  if (!hasVar(name)) {
+  int vid = -1;
+  if (!hasVar(name, &vid)) {
     std::ostringstream msg;
     msg << "Missing integer variable '" << name << "'.";
     throw std::runtime_error(msg.str());
   } // if
 
-  NcVar* var = _file->get_var(name);
-  assert(var);
-  if (ndims != var->num_dims()) {
+  int vndims = 0;
+  int err = nc_inq_varndims(_file, vid, &vndims);
+  if (ndims != vndims) {
     std::ostringstream msg;
     msg << "Expecting " << ndims << " dimensions for variable '" << name
-	<< "' but variable only has " << var->num_dims() << " dimensions.";
+	<< "' but variable only has " << vndims << " dimensions.";
+    throw std::runtime_error(msg.str());
+  } // if
+
+  int* dimIds = (ndims > 0) ? new int[ndims] : 0;
+  err = nc_inq_vardimid(_file, vid, dimIds);
+  if (err != NC_NOERR) {
+    delete[] dimIds; dimIds = 0;
+    std::ostringstream msg;
+    msg << "Could not get dimensions for variable '" << name << "'.";
     throw std::runtime_error(msg.str());
   } // if
   
   for (int iDim=0; iDim < ndims; ++iDim) {
-    NcDim* d = var->get_dim(iDim);
-    assert(d);
-    if (dims[iDim] != d->size()) {
+    size_t dimSize = 0;
+    err = nc_inq_dimlen(_file, dimIds[iDim], &dimSize);
+    if (err != NC_NOERR) {
+      delete[] dimIds; dimIds = 0;
+      std::ostringstream msg;
+      msg << "Could not get dimension '" << iDim << "' for variable '" << name << "'.";
+      throw std::runtime_error(msg.str());
+    } // if
+    if (dims[iDim] != dimSize) {
+      delete[] dimIds; dimIds = 0;
       std::ostringstream msg;
       msg << "Expecting dimension " << iDim << " of variable '" << name
-	  << "' to be " << dims[iDim]<< ", but dimension is " << d->size()
+	  << "' to be " << dims[iDim] << ", but dimension is " << dimSize
 	  << ".";
       throw std::runtime_error(msg.str());
     } // if
   } // for
+  delete[] dimIds; dimIds = 0;
 
-  long* counts = var->edges();
-  bool ok = var->get(values, counts);
-  delete[] counts; counts = 0;
-  if (!ok) {
+  err = nc_get_var_int(_file, vid, values);
+  if (err != NC_NOERR) {
     std::ostringstream msg;
     msg << "Coult not get values for variable '" << name << ".";
     throw std::runtime_error(msg.str());
@@ -328,29 +380,63 @@ pylith::meshio::ExodusII::getVar(string_vector* values,
   assert(_file);
   assert(values);
   
-  if (!hasVar(name)) {
+  int vid = -1;
+  if (!hasVar(name, &vid)) {
     std::ostringstream msg;
     msg << "Missing string variable '" << name << "'.";
     throw std::runtime_error(msg.str());
   } // if
 
-  NcVar* var = _file->get_var(name);
-  assert(var);
-
-  if (var->num_dims() != 2) {
+  int vndims = 0;
+  const int ndims = 2;
+  int err = nc_inq_varndims(_file, vid, &vndims);
+  if (ndims != vndims) {
     std::ostringstream msg;
-    msg << "Expecting 2 dimensions for variable '" << name
-	<< "' but variable only has " << var->num_dims() << " dimensions.";
+    msg << "Expecting " << ndims << " dimensions for variable '" << name
+	<< "' but variable only has " << vndims << " dimensions.";
     throw std::runtime_error(msg.str());
   } // if
 
-  long* counts = var->edges();
-  const int bufferSize = counts[1];
+  int dimIds[ndims];
+  err = nc_inq_vardimid(_file, vid, dimIds);
+  if (err != NC_NOERR) {
+    std::ostringstream msg;
+    msg << "Could not get dimensions for variable '" << name << "'.";
+    throw std::runtime_error(msg.str());
+  } // if
+
+  int iDim = 0;
+  size_t dimSize = 0;
+  err = nc_inq_dimlen(_file, dimIds[0], &dimSize);
+  if (err != NC_NOERR) {
+    std::ostringstream msg;
+    msg << "Could not get dimension '" << iDim << "' for variable '" << name << "'.";
+    throw std::runtime_error(msg.str());
+  } // if
+  if (dim != dimSize) {
+    std::ostringstream msg;
+    msg << "Expecting dimension " << iDim << " of variable '" << name
+	<< "' to be " << dim << ", but dimension is " << dimSize
+	<< ".";
+    throw std::runtime_error(msg.str());
+  } // if
+
+  iDim = 1;
+  err = nc_inq_dimlen(_file, dimIds[1], &dimSize);
+  if (err != NC_NOERR) {
+    std::ostringstream msg;
+    msg << "Could not get dimension '" << iDim << "' for variable '" << name << "'.";
+    throw std::runtime_error(msg.str());
+  } // if
+  const int bufferSize = dimSize;
   char* buffer = (bufferSize > 0) ? new char[bufferSize] : 0;
+  size_t indices[2] = { 0, 0 };
+  size_t chunk[2] = { 1, bufferSize };
   for (int i=0; i < dim; ++i) {
-    var->set_cur(i);
-    bool ok = var->get(buffer, 1, bufferSize, 0, 0, 0);
-    if (!ok) {
+    indices[0] = i;
+    err = nc_get_vara_text(_file, vid, indices, chunk, buffer);
+    if (err != NC_NOERR) {
+      delete[] buffer; buffer = 0;
       std::ostringstream msg;
       msg << "Could not read string in variable '" << name << "'.";
       throw std::runtime_error(msg.str());
@@ -359,7 +445,6 @@ pylith::meshio::ExodusII::getVar(string_vector* values,
     //std::cout << "GROUP: '" << (*values)[i] << "'." << std::endl;
   } // for
   delete[] buffer; buffer = 0;
-  delete[] counts; counts = 0;
 
   PYLITH_METHOD_END;
 } // getVar
