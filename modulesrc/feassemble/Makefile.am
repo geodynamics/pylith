@@ -62,7 +62,7 @@ _feassemblemodule_la_LIBADD = \
 	-lspatialdata \
 	$(PETSC_LIB)
 if ENABLE_CUBIT
-  _feassemblemodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
+  _feassemblemodule_la_LIBADD += -lnetcdf
 endif
 if NO_UNDEFINED
 _feassemblemodule_la_LIBADD += \
