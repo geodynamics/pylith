@@ -158,10 +158,10 @@ class PyLithApp(PetscApplication):
         m = __import__(name)
         location = os.path.split(m.__file__)[0]
         version = m.__version__
+      except ImportError:
+        version = "not found"
+        location = "--"
       except AttributeError:
-        if m is None:
-          version = "not found"
-          location = "--"
         if version is None:
           version = "unknown"
         if location is None:
