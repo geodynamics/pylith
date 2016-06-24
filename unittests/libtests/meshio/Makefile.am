@@ -248,7 +248,7 @@ if ENABLE_CUBIT
   noinst_HEADERS += \
 	TestExodusII.hh \
 	TestMeshIOCubit.hh
-  testmeshio_LDADD += -lnetcdf_c++ -lnetcdf
+  testmeshio_LDADD += -lnetcdf
 endif
 
 if ENABLE_HDF5

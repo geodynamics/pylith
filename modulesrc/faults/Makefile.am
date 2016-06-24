@@ -59,7 +59,7 @@ _faultsmodule_la_LIBADD = \
 	-lspatialdata \
 	$(PETSC_LIB)
 if ENABLE_CUBIT
-  _faultsmodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
+  _faultsmodule_la_LIBADD += -lnetcdf
 endif
 if NO_UNDEFINED
 _faultsmodule_la_LIBADD += \

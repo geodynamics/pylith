@@ -49,7 +49,7 @@ _problemsmodule_la_LIBADD = \
 	-lspatialdata \
 	$(PETSC_LIB)
 if ENABLE_CUBIT
-  _problemsmodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
+  _problemsmodule_la_LIBADD += -lnetcdf
 endif
 if NO_UNDEFINED
 _problemsmodule_la_LIBADD += \

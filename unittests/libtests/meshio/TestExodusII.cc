@@ -81,8 +81,11 @@ pylith::meshio::TestExodusII::testHasDim(void)
 
   ExodusII exofile("data/twotri3_13.0.exo");
 
-  CPPUNIT_ASSERT(exofile.hasDim("num_dim"));
-  CPPUNIT_ASSERT(!exofile.hasDim("abcdefghijklm"));
+  int id = -1;
+  CPPUNIT_ASSERT(exofile.hasDim("num_dim", &id));
+  CPPUNIT_ASSERT(id >= 0);
+  CPPUNIT_ASSERT(!exofile.hasDim("abcdefghijklm", &id));
+  CPPUNIT_ASSERT(-1 == id);
 
   PYLITH_METHOD_END;
 } // testHasDim
@@ -96,8 +99,11 @@ pylith::meshio::TestExodusII::testHasAtt(void)
 
   ExodusII exofile("data/twotri3_13.0.exo");
 
-  CPPUNIT_ASSERT(exofile.hasAtt("version"));
-  CPPUNIT_ASSERT(!exofile.hasAtt("abcdefghijklm"));
+  int id = -1;
+  CPPUNIT_ASSERT(exofile.hasAtt("version", &id));
+  CPPUNIT_ASSERT(id >= 0);
+  CPPUNIT_ASSERT(!exofile.hasAtt("abcdefghijklm", &id));
+  CPPUNIT_ASSERT(-1 == id);
 
   PYLITH_METHOD_END;
 } // testHasAtt
@@ -111,8 +117,11 @@ pylith::meshio::TestExodusII::testHasVar(void)
 
   ExodusII exofile("data/twotri3_13.0.exo");
 
-  CPPUNIT_ASSERT(exofile.hasVar("connect1"));
-  CPPUNIT_ASSERT(!exofile.hasVar("abcdefghijklm"));
+  int id = -1;
+  CPPUNIT_ASSERT(exofile.hasVar("connect1", &id));
+  CPPUNIT_ASSERT(id >= 0);
+  CPPUNIT_ASSERT(!exofile.hasVar("abcdefghijklm", &id));
+  CPPUNIT_ASSERT(-1 == id);
 
   PYLITH_METHOD_END;
 } // testHasVar
