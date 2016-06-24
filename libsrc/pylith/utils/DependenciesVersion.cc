@@ -18,10 +18,10 @@
 
 #include <portinfo>
 
-#include "PetscVersion.hh" // Implementation of class methods
+#include "DependenciesVersion.hh" // Implementation of class methods
 
 #include "mpi.h"
-#include "H5public.h"
+#include "H5pubconf.h"
 
 // ----------------------------------------------------------------------
 #if defined(MPICH_VERSION)
@@ -43,10 +43,10 @@ const char* pylith::utils::DependenciesVersion::_netcdfVersion = NETCDF4_VERSION
 const char* pylith::utils::DependenciesVersion::_netcdfVersion = "unknown";
 #endif
 
-#if defined(H5_VERS_INFO)
-const char* pylith::utils::DependenciesVersion::_hdf5Version = H5_VERS_INFO;
+#if defined(H5_VERSION)
+const char* pylith::utils::DependenciesVersion::_hdf5Version = H5_VERSION;
 #else
-const char* pylith::utils::DependenciesVersion::_hdf5Version = H5_VERS_INFO;
+const char* pylith::utils::DependenciesVersion::_hdf5Version = H5_VERSION;
 #endif
 
 // ----------------------------------------------------------------------

@@ -43,6 +43,7 @@ utils_swig_sources = \
 	pylith_general.i \
 	PylithVersion.i \
 	PetscVersion.i \
+	DependenciesVersion.i \
 	EventLogger.i \
 	TestArray.i \
 	constdefs.i

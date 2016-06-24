@@ -185,7 +185,7 @@ class PyLithApp(PetscApplication):
         msg += "    Configured on %s, GIT branch: %s, revision: %s, hash: %s.\n" % (v.gitDate(), v.gitBranch(), v.gitRevision(), v.gitHash(),)
     msg += "\n"
         
-    # PETSc version information
+    # PETSc
     v = utils.PetscVersion()
     if v.isRelease():
         msg += "    PETSc release v%s.\n" % (v.version(),)
@@ -194,7 +194,14 @@ class PyLithApp(PetscApplication):
     msg += "        PETSC_DIR: %s, PETSC_ARCH: %s\n" % (v.petscDir(), v.petscArch(),)
     msg += "\n"
 
-    # Spatialdata version information
+    # Other dependencies
+    v = utils.DependenciesVersion()
+    msg += "    MPI implementation: %s, version: %s.\n" % (v.mpiImplementation(), v.mpiVersion())
+    msg += "    HDF5 version: %s.\n" % (v.hdf5Version())
+    msg += "    NetCDF4 version: %s.\n" % (v.netcdfVersion())
+    msg += "\n"
+    
+    # Spatialdata
     import spatialdata.utils.utils as utils
     v = utils.SpatialdataVersion()
     if v.isRelease():
@@ -203,7 +210,7 @@ class PyLithApp(PetscApplication):
         msg += "    Spatialdata configured on %s, GIT branch: %s, revision: %s.\n" % (v.gitDate(), v.gitBranch(), v.gitRevision(),)
     msg += "\n"
 
-    # Package information
+    # Python
     msg += "    Python %s compiled with %s from %s.\n" % (pythonVersion, pythonCompiler, sys.executable)
 
     pkgs = ("numpy","spatialdata","FIAT","h5py","netCDF4","pyre")
