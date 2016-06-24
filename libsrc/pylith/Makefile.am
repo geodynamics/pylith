@@ -147,6 +147,7 @@ libpylith_la_SOURCES = \
 	utils/EventLogger.cc \
 	utils/PylithVersion.cc \
 	utils/PetscVersion.cc \
+	utils/DependenciesVersion.cc \
 	utils/TestArray.cc
 
 

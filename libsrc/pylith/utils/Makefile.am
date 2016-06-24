@@ -24,6 +24,7 @@ subpkginclude_HEADERS = \
 	EventLogger.icc \
 	PylithVersion.hh \
 	PetscVersion.hh \
+	DependenciesVersion.hh \
 	TestArray.hh \
 	array.hh \
 	arrayfwd.hh \
