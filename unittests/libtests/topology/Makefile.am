@@ -94,7 +94,7 @@ testtopology_LDADD = \
 	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
 if ENABLE_CUBIT
-  testtopology_LDADD += -lnetcdf_c++ -lnetcdf
+  testtopology_LDADD += -lnetcdf
 endif
 
 noinst_tmp = \

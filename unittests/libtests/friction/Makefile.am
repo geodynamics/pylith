@@ -81,7 +81,7 @@ testfriction_LDADD = \
 	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
 if ENABLE_CUBIT
-  testfriction_LDADD += -lnetcdf_c++ -lnetcdf
+  testfriction_LDADD += -lnetcdf
 endif
 
 

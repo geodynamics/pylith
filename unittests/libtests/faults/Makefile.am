@@ -228,7 +228,7 @@ testfaults_LDADD = \
 	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
 if ENABLE_CUBIT
-  testfaults_LDADD += -lnetcdf_c++ -lnetcdf
+  testfaults_LDADD += -lnetcdf
 endif
 
 

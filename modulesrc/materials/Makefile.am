@@ -60,7 +60,7 @@ _materialsmodule_la_LIBADD = \
 	-lspatialdata \
 	$(PETSC_LIB)
 if ENABLE_CUBIT
-  _materialsmodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
+  _materialsmodule_la_LIBADD += -lnetcdf
 endif
 if NO_UNDEFINED
 _materialsmodule_la_LIBADD += \

@@ -17,7 +17,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith], [2.1.2], [cig-short@geodynamics.org])
+AC_INIT([PyLith], [2.1.3], [cig-short@geodynamics.org])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
@@ -171,10 +171,7 @@ fi
 
 # CUBIT (netcdf)
 if test "$enable_cubit" = "yes" ; then
-  AC_REQUIRE_CPP
-  AC_LANG(C++)
-  CIT_NETCDF_HEADER
-  CIT_NETCDF_LIB
+  AX_LIB_NETCDF4()
 fi
 
 # TETGEN

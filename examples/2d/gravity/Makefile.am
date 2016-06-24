@@ -37,7 +37,9 @@ dist_noinst_DATA = \
 	postseismic_infstrain.cfg \
 	postseismic_finstrain.cfg \
 	postseismic_vardensity.cfg \
-	plot_soln.py
+	plot_soln.py \
+	generate_statedb.py \
+	postseismic.pvsm
 
 
 # End of file 

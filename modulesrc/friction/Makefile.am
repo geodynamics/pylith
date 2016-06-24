@@ -52,7 +52,7 @@ _frictionmodule_la_LIBADD = \
 	-lspatialdata \
 	$(PETSC_LIB)
 if ENABLE_CUBIT
-  _frictionmodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
+  _frictionmodule_la_LIBADD += -lnetcdf
 endif
 if NO_UNDEFINED
 _frictionmodule_la_LIBADD += \

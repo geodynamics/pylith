@@ -178,7 +178,7 @@ if ENABLE_CUBIT
   libpylith_la_SOURCES += \
 	meshio/ExodusII.cc \
 	meshio/MeshIOCubit.cc
-  libpylith_la_LIBADD += -lnetcdf_c++ -lnetcdf
+  libpylith_la_LIBADD += -lnetcdf
 endif
 
 
