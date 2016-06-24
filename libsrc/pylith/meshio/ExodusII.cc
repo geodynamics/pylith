@@ -274,7 +274,7 @@ pylith::meshio::ExodusII::getVar(PylithScalar* values,
       msg << "Could not get dimension '" << iDim << "' for variable '" << name << "'.";
       throw std::runtime_error(msg.str());
     } // if
-    if (dims[iDim] != dimSize) {
+    if (size_t(dims[iDim]) != dimSize) {
       delete[] dimIds; dimIds = 0;
       std::ostringstream msg;
       msg << "Expecting dimension " << iDim << " of variable '" << name
@@ -347,7 +347,7 @@ pylith::meshio::ExodusII::getVar(int* values,
       msg << "Could not get dimension '" << iDim << "' for variable '" << name << "'.";
       throw std::runtime_error(msg.str());
     } // if
-    if (dims[iDim] != dimSize) {
+    if (size_t(dims[iDim]) != dimSize) {
       delete[] dimIds; dimIds = 0;
       std::ostringstream msg;
       msg << "Expecting dimension " << iDim << " of variable '" << name
@@ -413,7 +413,7 @@ pylith::meshio::ExodusII::getVar(string_vector* values,
     msg << "Could not get dimension '" << iDim << "' for variable '" << name << "'.";
     throw std::runtime_error(msg.str());
   } // if
-  if (dim != dimSize) {
+  if (size_t(dim) != dimSize) {
     std::ostringstream msg;
     msg << "Expecting dimension " << iDim << " of variable '" << name
 	<< "' to be " << dim << ", but dimension is " << dimSize
@@ -428,7 +428,7 @@ pylith::meshio::ExodusII::getVar(string_vector* values,
     msg << "Could not get dimension '" << iDim << "' for variable '" << name << "'.";
     throw std::runtime_error(msg.str());
   } // if
-  const int bufferSize = dimSize;
+  const size_t bufferSize = dimSize;
   char* buffer = (bufferSize > 0) ? new char[bufferSize] : 0;
   size_t indices[2] = { 0, 0 };
   size_t chunk[2] = { 1, bufferSize };
