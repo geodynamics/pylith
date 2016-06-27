@@ -196,7 +196,7 @@ class PyLithApp(PetscApplication):
 
     # Other dependencies
     v = utils.DependenciesVersion()
-    msg += "    MPI implementation: %s, version: %s.\n" % (v.mpiImplementation(), v.mpiVersion())
+    msg += "    MPI standard: %s, implementation: %s, version: %s.\n" % (v.mpiStandard(), v.mpiImplementation(), v.mpiVersion())
     msg += "    HDF5 version: %s.\n" % (v.hdf5Version())
     msg += "    NetCDF4 version: %s.\n" % (v.netcdfVersion())
     msg += "\n"

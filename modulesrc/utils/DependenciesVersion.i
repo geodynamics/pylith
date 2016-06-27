@@ -51,6 +51,13 @@ namespace pylith {
       static
       const char* mpiImplementation(void);
       
+      /** Get MPI standard version info.
+       *
+       * @returns MPI standard version info.
+       */
+      static
+      const char* mpiStandard(void);
+
       /** Get NetCDF version number.
        *
        * @returns NetCDF version number.

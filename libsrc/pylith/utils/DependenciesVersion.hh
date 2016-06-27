@@ -58,6 +58,13 @@ public :
   static
   const char* mpiImplementation(void);
 
+  /** Get MPI standard version info.
+   *
+   * @returns MPI standard version info.
+   */
+  static
+  const char* mpiStandard(void);
+
   /** Get NetCDF version number.
    *
    * @returns NetCDF version number.
@@ -83,6 +90,7 @@ private :
 
   static const char* _mpiImplementation; ///< MPI implementation
   static const char* _mpiVersion; ///< MPI version number.
+  static const char* _mpiStandard; ///< MPI standard version number.
 
   static const char* _netcdfVersion; ///< NetCDF version number.
  
