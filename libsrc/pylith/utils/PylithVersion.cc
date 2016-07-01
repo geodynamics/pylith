@@ -22,7 +22,7 @@
 
 // ----------------------------------------------------------------------
 const bool pylith::utils::PylithVersion::_isRelease = int(PYLITH_RELEASE_VERSION);
-const char* pylith::utils::PylithVersion::_version = PACKAGE_VERSION;
+const char* pylith::utils::PylithVersion::_version = PYLITH_VERSION;
 const char* pylith::utils::PylithVersion::_gitBranch = PYLITH_GIT_BRANCH;
 const char* pylith::utils::PylithVersion::_gitRevision = PYLITH_GIT_REVISION;
 const char* pylith::utils::PylithVersion::_gitDate = PYLITH_GIT_DATE;
