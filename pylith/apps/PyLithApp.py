@@ -208,6 +208,7 @@ class PyLithApp(PetscApplication):
         msg += "    Spatialdata release v%s.\n" % (v.version(),)
     else:
         msg += "    Spatialdata configured on %s, GIT branch: %s, revision: %s.\n" % (v.gitDate(), v.gitBranch(), v.gitRevision(),)
+    msg += "    Proj.4 version: %s.\n" % (v.projVersion(),)
     msg += "\n"
 
     # Python
