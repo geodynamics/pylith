@@ -27,6 +27,9 @@ check_PROGRAMS = testutils
 # Primary source files
 testutils_SOURCES = \
 	TestEventLogger.cc \
+	TestPylithVersion.cc \
+	TestPetscVersion.cc \
+	TestDependenciesVersion.cc \
 	test_utils.cc
 
 noinst_HEADERS = \
