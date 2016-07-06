@@ -69,6 +69,15 @@ class TestApp(Script):
     from TestEventLogger import TestEventLogger
     suite.addTest(unittest.makeSuite(TestEventLogger))
 
+    from TestPylithVersion import TestPylithVersion
+    suite.addTest(unittest.makeSuite(TestPylithVersion))
+
+    from TestPetscVersion import TestPetscVersion
+    suite.addTest(unittest.makeSuite(TestPetscVersion))
+
+    from TestDependenciesVersion import TestDependenciesVersion
+    suite.addTest(unittest.makeSuite(TestDependenciesVersion))
+
     from TestConstants import TestConstants
     suite.addTest(unittest.makeSuite(TestConstants))
 

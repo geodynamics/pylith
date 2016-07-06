@@ -259,6 +259,10 @@ fi
 # Check whether compiler sets variable with function names.
 CIT_FUNCTIONSTRING
 
+# VERSION
+CIG_PKG_GIT(PYLITH)
+AC_DEFINE_UNQUOTED([PYLITH_VERSION], ["$PACKAGE_VERSION"], [Define PyLith version])
+
 # ENDIANNESS
 AC_C_BIGENDIAN
 

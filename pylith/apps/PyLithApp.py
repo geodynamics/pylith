@@ -146,7 +146,81 @@ class PyLithApp(PetscApplication):
       self.perfLogger.show()
 
     return
-  
+
+
+  def version(self):
+    def getPyPkgVer(name):
+      import os
+      m = None
+      location = None
+      version = None
+      try:
+        m = __import__(name)
+        location = os.path.split(m.__file__)[0]
+        version = m.__version__
+      except ImportError:
+        version = "not found"
+        location = "--"
+      except AttributeError:
+        if version is None:
+          version = "unknown"
+        if location is None:
+          location = "unknown"
+      return (version, location)
+    
+    import sys
+    import platform
+    pythonVersion = platform.python_version()
+    pythonCompiler = platform.python_compiler()
+    uname = platform.uname()
+    unameStr = " ".join((uname[0], uname[2], uname[4]))
+    msg = "Running PyLith on %s.\n" % unameStr
+
+    import pylith.utils.utils as utils
+    # PyLith version information
+    v = utils.PylithVersion()
+    if v.isRelease():
+        msg += "    Release v%s.\n" % (v.version(),)
+    else:
+        msg += "    Configured on %s, GIT branch: %s, revision: %s, hash: %s.\n" % (v.gitDate(), v.gitBranch(), v.gitRevision(), v.gitHash(),)
+    msg += "\n"
+        
+    # PETSc
+    v = utils.PetscVersion()
+    if v.isRelease():
+        msg += "    PETSc release v%s.\n" % (v.version(),)
+    else:
+        msg += "    PETSc configured on %s, GIT branch: %s, revision: %s.\n" % (v.gitDate(), v.gitBranch(), v.gitRevision(),)
+    msg += "        PETSC_DIR: %s, PETSC_ARCH: %s\n" % (v.petscDir(), v.petscArch(),)
+    msg += "\n"
+
+    # Other dependencies
+    v = utils.DependenciesVersion()
+    msg += "    MPI standard: %s, implementation: %s, version: %s.\n" % (v.mpiStandard(), v.mpiImplementation(), v.mpiVersion())
+    msg += "    HDF5 version: %s.\n" % (v.hdf5Version())
+    msg += "    NetCDF4 version: %s.\n" % (v.netcdfVersion())
+    msg += "\n"
+    
+    # Spatialdata
+    import spatialdata.utils.utils as utils
+    v = utils.SpatialdataVersion()
+    if v.isRelease():
+        msg += "    Spatialdata release v%s.\n" % (v.version(),)
+    else:
+        msg += "    Spatialdata configured on %s, GIT branch: %s, revision: %s.\n" % (v.gitDate(), v.gitBranch(), v.gitRevision(),)
+    msg += "    Proj.4 version: %s.\n" % (v.projVersion(),)
+    msg += "\n"
+
+    # Python
+    msg += "    Python %s compiled with %s from %s.\n" % (pythonVersion, pythonCompiler, sys.executable)
+
+    pkgs = ("numpy","spatialdata","FIAT","h5py","netCDF4","pyre")
+    for pkg in pkgs:
+      ver,loc = getPyPkgVer(pkg)
+      msg += "        %s %s from %s.\n" % (pkg, ver, loc)
+    print(msg)
+    return
+
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
