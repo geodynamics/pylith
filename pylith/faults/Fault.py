@@ -166,7 +166,6 @@ class Fault(PetscComponent, ModuleFault):
     self._eventLogger.eventBegin(logEvent)
 
     self.faultQuadrature.initialize()
-    print "updir:",self.upDir
     ModuleFault.initialize(self, self.mesh(), self.upDir)
 
     if None != self.output:
