@@ -1499,7 +1499,7 @@ label = group A
 \end_layout
 
 \begin_layout LyX-Code
-bc_dof = [2] ; fixed displacement in z direction
+bc_dof = [2] ; force in z direction
 \end_layout
 
 \begin_layout LyX-Code
