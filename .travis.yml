@@ -13,6 +13,21 @@ matrix:
 git:
   depth: 200
 
+# Dependencies installed as packages
+addons:
+  apt:
+    packages:
+      - cmake
+      - python-setuptools
+      - libcppunit-dev
+      - libopenmpi-dev
+      - openmpi-common
+      - openmpi-bin
+      - proj-bin
+      - proj-data
+      - libproj-dev
+      - swig
+
 # Install dependencies cached on CIG server
 install:
   - if [ ! -f ${DEPS_DIR}/include/proj_api.h ]; then travis/dependencies.sh build; else echo "Using cached dependencies."; fi
