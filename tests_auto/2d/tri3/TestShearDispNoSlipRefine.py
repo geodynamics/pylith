@@ -58,7 +58,7 @@ class TestShearDispNoSlipRefine(TestTri3):
                       'spaceDim': 2,
                       'ncells': 2*2,
                       'ncorners': 2}
-    run_pylith(ShearApp, GenerateDB)
+    run_pylith(ShearApp, GenerateDB, nprocs=3)
     self.outputRoot = "sheardispnosliprefine"
 
     self.soln = AnalyticalSoln()
