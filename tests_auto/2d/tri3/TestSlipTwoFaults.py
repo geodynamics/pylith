@@ -21,6 +21,9 @@
 ## @brief Test suite for testing pylith with shear slip.
 
 import numpy
+
+from pylith.tests import run_pylith
+
 from TestTri3 import TestTri3
 from sliptwofaults_soln import AnalyticalSoln
 
@@ -30,18 +33,6 @@ class SlipTwoFaultsApp(PyLithApp):
   def __init__(self):
     PyLithApp.__init__(self, name="sliptwofaults")
     return
-
-
-# Helper function to run PyLith
-def run_pylith():
-  """
-  Run pylith.
-  """
-  if not "dtwo" in dir(run_pylith):
-    app = SlipTwoFaultsApp()
-    run_pylith.dtwo = True # Put before run() so only called once
-    app.run()
-  return
 
 
 class TestSlipTwoFaults(TestTri3):
@@ -60,7 +51,7 @@ class TestSlipTwoFaults(TestTri3):
                       'spaceDim': 2,
                       'ncells': 8,
                       'ncorners': 2}
-    run_pylith()
+    run_pylith(SlipTwoFaultsApp)
     self.outputRoot = "sliptwofaults"
 
     self.soln = AnalyticalSoln()
