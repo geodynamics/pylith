@@ -50,19 +50,27 @@ def check_displacements(testcase, filename, npoints, spaceDim):
 
   for istep in xrange(nsteps):
     for icomp in xrange(ncomps):
+      okay = numpy.zeros((nvertices,))
 
-      mask = numpy.abs(dispE[istep,:,icomp]) > toleranceAbsMask
-      diff = numpy.abs(disp[istep,:,icomp] - dispE[istep,:,icomp])
-      diffR = numpy.abs(1.0 - disp[istep,:,icomp] / dispE[istep,:,icomp])  
-      okay = ~mask * (diff < tolerance) + mask * (diffR < tolerance)
+      maskR = numpy.abs(dispE[istep,:,icomp]) > toleranceAbsMask
+      ratio = numpy.abs(1.0 - disp[istep,maskR,icomp] / dispE[istep,maskR,icomp])
+      if len(ratio) > 0:
+        okay[maskR] = ratio < tolerance
+
+      maskD = ~maskR
+      diff = numpy.abs(disp[istep,maskD,icomp] - dispE[istep,maskD,icomp])
+      if len(diff) > 0:
+        okay[maskD] = diff < tolerance
+
       if numpy.sum(okay) != nvertices:
         print "Error in component %d of displacement field at time step %d." % (icomp, istep)
         print "Expected values: ",dispE[istep,:,:]
         print "Output values: ",disp[istep,:,:]
         print "Expected values (not okay): ",dispE[istep,~okay,icomp]
         print "Computed values (not okay): ",disp[istep,~okay,icomp]
-        print "Relative diff (not okay): ",diffR[~okay]
+        print "Relative diff (not okay): ",diff[~okay]
         print "Coordinates (not okay): ",vertices[~okay,:]
+        h5.close()
       testcase.assertEqual(nvertices, numpy.sum(okay))    
     
   h5.close()

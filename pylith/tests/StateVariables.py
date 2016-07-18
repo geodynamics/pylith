@@ -67,8 +67,18 @@ def check_state_variables(testcase, filename, mesh, stateVarNames):
       
     for istep in xrange(nsteps):
       for icomp in xrange(ncomps):
-        diff = numpy.abs(values[istep,:,icomp] - valuesE[istep,:,icomp]) / scale
-        okay = diff < tolerance
+        okay = numpy.zeros((ncells,))
+
+        maskR = numpy.abs(valuesE[istep,:,icomp]) > tolerance
+        ratio = numpy.abs(1.0 - values[istep,maskR,icomp] / values[istep,maskR,icomp])
+        if len(ratio) > 0:
+          okay[maskR] = ratio < tolerance
+
+        maskD = ~maskR
+        diff = numpy.abs(values[istep,maskD,icomp] - valuesE[istep,maskD,icomp]) / scale
+        if len(diff) > 0:
+          okay[maskD] = diff < tolerance
+
         if numpy.sum(okay) != ncells:
           print "Error in component %d of state variable '%s' at time step %d." % (icomp, name, istep)
           print "Expected values:",valuesE
@@ -77,7 +87,7 @@ def check_state_variables(testcase, filename, mesh, stateVarNames):
           print "Output values (not okay): ",values[istep,~okay,icomp]
           print "Scaled diff (not okay): ",diff[~okay]
           print "Scale",scale
-
+          h5.close()
         testcase.assertEqual(ncells, numpy.sum(okay))
 
   h5.close()

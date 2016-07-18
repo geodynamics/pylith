@@ -65,15 +65,27 @@ def check_vertex_fields(testcase, filename, mesh, fieldNames):
 
     for istep in xrange(nsteps):
       for idim in xrange(dim):
-        ratio = numpy.abs(1.0 - values[istep,:,idim]/valuesE[istep,:,idim])
-        diff = numpy.abs(values[istep,:,idim] - valuesE[istep,:,idim]) / scale
-        mask = valuesE[istep,:,idim] != 0.0
-        okay = mask*(ratio < tolerance) + ~mask*(diff < tolerance)
+        okay = numpy.zeros((nvertices,))
+
+        maskR = numpy.abs(valuesE[istep,:,idim]) > 0.0
+        ratio = numpy.abs(1.0 - values[istep,maskR,idim]/valuesE[istep,maskR,idim])
+        if len(ratio) > 0:
+          okay[maskR] = ratio < tolerance
+
+        maskD = ~maskR
+        diff = numpy.abs(values[istep,maskD,idim] - valuesE[istep,maskD,idim]) / scale
+        if len(diff) > 0:
+          okay[maskD] = diff < tolerance
+
         if numpy.sum(okay) != nvertices:
           print "Error in component %d of field '%s' for timestep %d." % (idim, name, istep)
           print "Expected values:",valuesE
           print "Output values:",values
-          print "Coordinates: ",vertices
+          print "Expected values (not okay): ",valuesE[istep,~okay,icomp]
+          print "Computed values (not okay): ",values[istep,~okay,icomp]
+          print "Relative diff (not okay): ",diff[~okay]
+          print "Coordinates (not okay): ",vertices[~okay,:]
+          h5.close()
         testcase.assertEqual(nvertices, numpy.sum(okay))
 
   h5.close()
