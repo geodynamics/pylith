@@ -43,7 +43,7 @@ def run_pylith(appClass, dbClass=None, nprocs=1):
   """
   Helper function to generate spatial databases and run PyLith.
   """
-  if not "done" in dir(run_pylith):
+  if not str(appClass) in dir(run_pylith):
     if not dbClass is None:
       # Generate spatial databases
       db = dbClass()
@@ -55,7 +55,7 @@ def run_pylith(appClass, dbClass=None, nprocs=1):
 
     app = appClass()
     app.nodes = min(nprocs, maxprocs)
-    run_pylith.done = True # Put before run() so only called once
+    setattr(run_pylith, str(appClass), True)
     app.run()
   return
 
