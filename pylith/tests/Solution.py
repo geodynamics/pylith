@@ -57,7 +57,7 @@ def check_displacements(testcase, filename, mesh):
 
   for istep in xrange(nsteps):
     for icomp in xrange(ncomps):
-      okay = numpy.zeros((nvertices,))
+      okay = numpy.zeros((nvertices,), dtype=numpy.bool)
 
       maskR = numpy.abs(dispE[istep,:,icomp]) > toleranceAbsMask
       ratio = numpy.abs(1.0 - disp[istep,maskR,icomp] / dispE[istep,maskR,icomp])

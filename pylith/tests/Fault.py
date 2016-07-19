@@ -65,7 +65,7 @@ def check_vertex_fields(testcase, filename, mesh, fieldNames):
 
     for istep in xrange(nsteps):
       for idim in xrange(dim):
-        okay = numpy.zeros((nvertices,))
+        okay = numpy.zeros((nvertices,), dtype=numpy.bool)
 
         maskR = numpy.abs(valuesE[istep,:,idim]) > 0.0
         ratio = numpy.abs(1.0 - values[istep,maskR,idim]/valuesE[istep,maskR,idim])

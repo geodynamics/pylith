@@ -67,7 +67,7 @@ def check_state_variables(testcase, filename, mesh, stateVarNames):
       
     for istep in xrange(nsteps):
       for icomp in xrange(ncomps):
-        okay = numpy.zeros((ncells,))
+        okay = numpy.zeros((ncells,), dtype=numpy.bool)
 
         maskR = numpy.abs(valuesE[istep,:,icomp]) > tolerance
         ratio = numpy.abs(1.0 - values[istep,maskR,icomp] / values[istep,maskR,icomp])
