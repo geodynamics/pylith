@@ -56,7 +56,7 @@ syy = p_lambda*(exx+eyy+ezz) + 2.0*p_mu*eyy
 szz = p_lambda*(exx+eyy+ezz) + 2.0*p_mu*ezz
 sxy = 2.0*p_mu*exy
 
-theta_d = -20.0
+theta_d = -4.0
 x0 = 0.0
 y0 = -500.0
 xr = -1000.0
