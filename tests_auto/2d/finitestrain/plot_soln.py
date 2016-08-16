@@ -49,7 +49,7 @@ prob = "extension"
 length = 2000.0
 width = 0.5*length
 p_vs = 3000.0
-p_vp = 5196.152422706632
+p_vp = 5291.502622129181
 p_density = 2500.0
 
 p_mu = p_density*p_vs**2

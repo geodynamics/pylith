@@ -21,6 +21,9 @@
 ## @brief Test suite for testing pylith with shear slip.
 
 import numpy
+
+from pylith.tests import run_pylith
+
 from TestHex8 import TestHex8
 from sliponefault_soln import AnalyticalSoln
 
@@ -30,18 +33,6 @@ class FaultsIntersectApp(PyLithApp):
   def __init__(self):
     PyLithApp.__init__(self, name="faultsintersect")
     return
-
-
-# Helper function to run PyLith
-def run_pylith():
-  """
-  Run pylith.
-  """
-  if not "done" in dir(run_pylith):
-    app = FaultsIntersectApp()
-    run_pylith.done = True # Put before run() so only called once
-    app.run()
-  return
 
 
 class TestFaultsIntersect(TestHex8):
@@ -70,7 +61,7 @@ class TestFaultsIntersect(TestHex8):
                        'ncells': 6,
                        'ncorners': 4}
 
-    run_pylith()
+    run_pylith(FaultsIntersectApp)
     self.outputRoot = "faultsintersect"
 
     self.soln = AnalyticalSoln()

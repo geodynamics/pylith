@@ -22,9 +22,12 @@
 ## CCW rigid body rotation.
 
 import numpy
-from TestQuad4 import TestQuad4
 
+from pylith.tests import run_pylith
+
+from TestQuad4 import TestQuad4
 from shearrotate_soln import AnalyticalSoln,e0,p_mu
+from shearrotate_gendb import GenerateDB
 
 # Local version of PyLithApp
 from pylith.apps.PyLithApp import PyLithApp
@@ -32,24 +35,6 @@ class RotateApp(PyLithApp):
   def __init__(self):
     PyLithApp.__init__(self, name="shearrotate")
     return
-
-
-# Helper function to run PyLith
-def run_pylith():
-  """
-  Run pylith.
-  """
-  if not "done" in dir(run_pylith):
-    # Generate spatial databases
-    from shearrotate_gendb import GenerateDB
-    db = GenerateDB()
-    db.run()
-
-    # Run PyLith
-    app = RotateApp()
-    app.run()
-    run_pylith.done = True
-  return
 
 
 class TestShearRotate(TestQuad4):
@@ -62,7 +47,7 @@ class TestShearRotate(TestQuad4):
     Setup for test.
     """
     TestQuad4.setUp(self)
-    run_pylith()
+    run_pylith(RotateApp, GenerateDB)
     self.outputRoot = "shearrotate"
     self.soln = AnalyticalSoln()
     return

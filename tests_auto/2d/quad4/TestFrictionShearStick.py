@@ -21,6 +21,9 @@
 ## @brief Test suite for testing pylith with 2-D shear stick with friction.
 
 import numpy
+
+from pylith.tests import run_pylith
+
 from TestQuad4 import TestQuad4
 from friction_shear_stick_soln import AnalyticalSoln
 
@@ -32,19 +35,6 @@ class ShearStickApp(PyLithApp):
   def __init__(self):
     PyLithApp.__init__(self, name="friction_shear_stick")
     return
-
-
-# Helper function to run PyLith
-def run_pylith():
-  """
-  Run pylith.
-  """
-  if not "done" in dir(run_pylith):
-    # Run PyLith
-    app = ShearStickApp()
-    app.run()
-    run_pylith.done = True
-  return
 
 
 class TestFrictionShearStick(TestQuad4):
@@ -64,7 +54,7 @@ class TestFrictionShearStick(TestQuad4):
                       'ncells': 8,
                       'ncorners': 2}
 
-    run_pylith()
+    run_pylith(ShearStickApp)
     self.outputRoot = "friction_shear_stick"
     self.soln = AnalyticalSoln()
     return

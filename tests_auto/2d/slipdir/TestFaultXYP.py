@@ -22,9 +22,12 @@
 ## aligned with x-axis.
 
 import numpy
+
+from pylith.tests import run_pylith
+
 from TestTri3 import TestTri3
-from solution import SolnFaultXYP as AnalyticalSoln
-from genspatialdb import GenDBFaultXYP as GenerateDB
+from solution import SolnFaultXYP
+from genspatialdb import GenDBFaultXYP
 
 # Local version of PyLithApp
 from pylith.apps.PyLithApp import PyLithApp
@@ -32,23 +35,6 @@ class FaultXYPApp(PyLithApp):
   def __init__(self):
     PyLithApp.__init__(self, name="faultxyp")
     return
-
-
-# Helper function to run PyLith
-def run_pylith():
-  """
-  Run pylith.
-  """
-  if not "done" in dir(run_pylith):
-    # Generate spatial databases
-    db = GenerateDB()
-    db.run()
-
-    # Run PyLith
-    app = FaultXYPApp()
-    run_pylith.done = True # Put before run() so only called once
-    app.run()
-  return
 
 
 class TestFaultXYP(TestTri3):
@@ -61,11 +47,11 @@ class TestFaultXYP(TestTri3):
     Setup for test.
     """
     TestTri3.setUp(self)
-    run_pylith()
+    run_pylith(FaultXYPApp, GenDBFaultXYP, nprocs=3)
     self.mesh['nvertices'] += 23
     self.outputRoot = "faultxyp"
 
-    self.soln = AnalyticalSoln()
+    self.soln = SolnFaultXYP()
     return
 
 

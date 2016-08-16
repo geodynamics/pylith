@@ -42,7 +42,9 @@ class TestEqInfo(unittest.TestCase):
              ]
 
     statsE.avgslip = statsE.potency / (statsE.ruparea + 1.0e-30)
-    statsE.mommag = 2.0/3.0*(numpy.log10(statsE.moment) - 9.05)
+    mask = statsE.moment > 0.0
+    statsE.mommag = -1.0e+30*numpy.ones(statsE.moment.shape)
+    statsE.mommag[mask] = 2.0/3.0*(numpy.log10(statsE.moment[mask]) - 9.05)
 
     for attr in attrs:
       valuesE = statsE.__getattribute__(attr)
@@ -61,6 +63,19 @@ class TestEqInfo(unittest.TestCase):
           self.assertAlmostEqual(valueE, value, places=6, msg=msg)
         
     return
+
+
+# ----------------------------------------------------------------------
+def run_eqinfo(appClass):
+  """
+  Helper function to run pylith_eqinfo.
+  """
+  if not str(appClass) in dir(run_eqinfo):
+    app = appClass()
+    setattr(run_eqinfo, str(appClass), True)
+    app.run()
+
+  return
 
 
 # End of file

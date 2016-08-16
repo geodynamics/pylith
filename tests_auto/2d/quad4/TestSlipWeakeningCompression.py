@@ -21,6 +21,9 @@
 ## @brief Test suite for testing pylith with 2-D axial compression with slipweakening.
 
 import numpy
+
+from pylith.tests import run_pylith
+
 from TestQuad4 import TestQuad4
 from slipweakening_compression_soln import AnalyticalSoln
 
@@ -32,19 +35,6 @@ class SWCompressionApp(PyLithApp):
   def __init__(self):
     PyLithApp.__init__(self, name="slipweakening_compression")
     return
-
-
-# Helper function to run PyLith
-def run_pylith():
-  """
-  Run pylith.
-  """
-  if not "done" in dir(run_pylith):
-    # Run PyLith
-    app = SWCompressionApp()
-    app.run()
-    run_pylith.done = True
-  return
 
 
 class TestSlipWeakeningCompression(TestQuad4):
@@ -64,7 +54,7 @@ class TestSlipWeakeningCompression(TestQuad4):
                       'ncells': 8,
                       'ncorners': 2}
 
-    run_pylith()
+    run_pylith(SWCompressionApp)
     self.outputRoot = "slipweakening_compression"
     self.soln = AnalyticalSoln()
     return
