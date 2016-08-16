@@ -21,6 +21,9 @@
 ## @brief Test suite for testing pylith with fault slip.
 
 import numpy
+
+from pylith.tests import run_pylith
+
 from TestQuad4 import TestQuad4
 from dislocation_soln import AnalyticalSoln
 
@@ -33,19 +36,6 @@ class LocalApp(PyLithApp):
   def __init__(self):
     PyLithApp.__init__(self, name="dislocation")
     return
-
-
-# Helper function to run PyLith
-def run_pylith():
-  """
-  Run pylith.
-  """
-  if not "done" in dir(run_pylith):
-    # Run PyLith
-    run_pylith.done = True
-    app = LocalApp()
-    app.run()
-  return
 
 
 # ----------------------------------------------------------------------
@@ -66,7 +56,7 @@ class TestDislocation(TestQuad4):
                       'ncells': 8,
                       'ncorners': 2}
 
-    run_pylith()
+    run_pylith(LocalApp)
     self.outputRoot = "dislocation"
     self.soln = AnalyticalSoln()
 
@@ -170,19 +160,6 @@ class LocalApp2(PyLithApp):
     return
 
 
-# Helper function to run PyLith
-def run_pylith2():
-  """
-  Run pylith.
-  """
-  if not "done" in dir(run_pylith2):
-    # Run PyLith
-    run_pylith2.done = True
-    app = LocalApp2()
-    app.run()
-  return
-
-
 # ----------------------------------------------------------------------
 class TestDislocation2(TestDislocation):
   """
@@ -201,7 +178,7 @@ class TestDislocation2(TestDislocation):
                       'ncells': 8,
                       'ncorners': 2}
 
-    run_pylith2()
+    run_pylith(LocalApp2, nprocs=2)
     self.outputRoot = "dislocation_np2"
     self.soln = AnalyticalSoln()
 
