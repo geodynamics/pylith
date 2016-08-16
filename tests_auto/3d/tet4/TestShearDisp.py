@@ -21,8 +21,12 @@
 ## @brief Test suite for testing pylith with 3-D shear extension.
 
 import numpy
+
+from pylith.tests import run_pylith
+
 from TestTet4 import TestTet4
 from sheardisp_soln import AnalyticalSoln
+from sheardisp_gendb import GenerateDB
 
 # Local version of PyLithApp
 from pylith.apps.PyLithApp import PyLithApp
@@ -30,24 +34,6 @@ class ShearApp(PyLithApp):
   def __init__(self):
     PyLithApp.__init__(self, name="sheardisp")
     return
-
-
-# Helper function to run PyLith
-def run_pylith():
-  """
-  Run pylith.
-  """
-  if not "done" in dir(run_pylith):
-    # Generate spatial databases
-    from sheardisp_gendb import GenerateDB
-    db = GenerateDB()
-    db.run()
-
-    # Run PyLith
-    app = ShearApp()
-    run_pylith.done = True # Put before run() so only called once
-    app.run()
-  return
 
 
 class TestShearDisp(TestTet4):
@@ -60,7 +46,7 @@ class TestShearDisp(TestTet4):
     Setup for test.
     """
     TestTet4.setUp(self)
-    run_pylith()
+    run_pylith(ShearApp, GenerateDB)
     self.outputRoot = "sheardisp"
 
     self.soln = AnalyticalSoln()

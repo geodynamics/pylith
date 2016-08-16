@@ -81,9 +81,8 @@ def check_vertex_fields(testcase, filename, mesh, fieldNames):
           print "Error in component %d of field '%s' for timestep %d." % (idim, name, istep)
           print "Expected values:",valuesE
           print "Output values:",values
-          print "Expected values (not okay): ",valuesE[istep,~okay,icomp]
-          print "Computed values (not okay): ",values[istep,~okay,icomp]
-          print "Relative diff (not okay): ",diff[~okay]
+          print "Expected values (not okay): ",valuesE[istep,~okay,idim]
+          print "Computed values (not okay): ",values[istep,~okay,idim]
           print "Coordinates (not okay): ",vertices[~okay,:]
           h5.close()
         testcase.assertEqual(nvertices, numpy.sum(okay))
