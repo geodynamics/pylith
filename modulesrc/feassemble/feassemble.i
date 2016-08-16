@@ -40,9 +40,6 @@
 #include "pylith/feassemble/ElasticityExplicitTet4.hh"
 #include "pylith/feassemble/ElasticityImplicitLgDeform.hh"
 #include "pylith/feassemble/ElasticityExplicitLgDeform.hh"
-#if defined(ENABLE_CUDA)
-#include "pylith/feassemble/ElasticityImplicitCUDA.hh"
-#endif
 
 %}
 
@@ -88,9 +85,6 @@ import_array();
 %include "IntegratorElasticityLgDeform.i"
 %include "ElasticityImplicitLgDeform.i"
 %include "ElasticityExplicitLgDeform.i"
-#if defined(ENABLE_CUDA)
-%include "ElasticityImplicitCUDA.i"
-#endif
 
 // End of file
 

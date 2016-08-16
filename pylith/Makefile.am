@@ -190,14 +190,5 @@ if ENABLE_HDF5
 	meshio/Xdmf.py
 endif
 
-if ENABLE_CUDA
-  nobase_pkgpyexec_PYTHON += \
-	feassemble/ElasticityImplicitCUDA.py
-endif
-
-if ENABLE_TETGEN
-  nobase_pkgpyexec_PYTHON += topology/MeshGenSimple.py
-endif
-
 
 # End of file 
