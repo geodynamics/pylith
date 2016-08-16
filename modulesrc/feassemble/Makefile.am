@@ -45,8 +45,7 @@ swig_sources = \
 	ElasticityExplicitTet4.i \
 	IntegratorElasticityLgDeform.i \
 	ElasticityImplicitLgDeform.i \
-	ElasticityExplicitLgDeform.i \
-	ElasticityImplicitCUDA.i
+	ElasticityExplicitLgDeform.i
 
 swig_generated = \
 	feassemble_wrap.cxx \

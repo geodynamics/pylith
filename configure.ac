@@ -67,17 +67,6 @@ AC_ARG_ENABLE([cubit],
 AM_CONDITIONAL([ENABLE_CUBIT], [test "$enable_cubit" = yes])
 AC_SUBST(PYLITH_SWIG_CPPFLAGS)
 
-# PETSc w/TetGen
-AC_ARG_ENABLE([tetgen],
-    [AC_HELP_STRING([--enable-tetgen],
-        [enable generating simple meshes w/TetGen via PETSc @<:@default=no@:>@])],
-	[if test "$enableval" = yes ; then 
-	  enable_tetgen=yes
-	  CPPFLAGS="-DENABLE_TETGEN $CPPFLAGS"; export CPPFLAGS
-        else enable_tetgen=no; fi],
-	[enable_tetgen=no])
-AM_CONDITIONAL([ENABLE_TETGEN], [test "$enable_tetgen" = yes])
-
 # PETSc w/HDF5
 AC_ARG_ENABLE([hdf5],
     [AC_HELP_STRING([--enable-hdf5],
@@ -92,21 +81,9 @@ if test "$enable_hdf5" = "yes"; then
 fi
 AM_CONDITIONAL([ENABLE_HDF5], [test "$enable_hdf5" = yes])
 
-# CUDA
-AC_ARG_ENABLE([cuda],
-    [AC_HELP_STRING([--enable-cuda],
-        [enable use of CUDA @<:@default=no@:>@])],
-	[if test "$enable_cuda" = yes; then
-          enable_cuda=yes
-          CPPFLAGS="-DENABLE_CUDA $CPPFLAGS"; export CPPFLAGS
-	  PYLITH_SWIG_CPPFLAGS="-DENABLE_CUDA $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS
-          else enable_cuda=no; fi],
-	[enable_cuda=no])
-AM_CONDITIONAL([ENABLE_CUDA], [test "$enable_cuda" = yes])
-
 # DOCUMENTATION w/doxygen
 AC_ARG_ENABLE([documentation],
-    [AC_HELP_STRING([--enable-documentation],
+    [AC_HELP_STRING([--enable-api-documentation],
         [enable building HTML documentation (requires doxygen) @<:@default=no@:>@])],
 	[if test "$enableval" = yes ; then enable_documentation=yes; else enable_documentation=no; fi],
 	[enable_documentation=no])
