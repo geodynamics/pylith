@@ -22,8 +22,10 @@
 ## large deformations in 2-D.
 
 import numpy
-from TestQuad4 import TestQuad4
 
+from pylith.tests import run_pylith
+
+from TestQuad4 import TestQuad4
 from lgdeformtraction_soln import AnalyticalSoln
 
 # Local version of PyLithApp
@@ -32,19 +34,6 @@ class TractionApp(PyLithApp):
   def __init__(self):
     PyLithApp.__init__(self, name="lgdeformtraction")
     return
-
-
-# Helper function to run PyLith
-def run_pylith():
-  """
-  Run pylith.
-  """
-  if not "done" in dir(run_pylith):
-    # Run PyLith
-    app = TractionApp()
-    app.run()
-    run_pylith.done = True
-  return
 
 
 class TestTraction(TestQuad4):
@@ -57,7 +46,7 @@ class TestTraction(TestQuad4):
     Setup for test.
     """
     TestQuad4.setUp(self)
-    run_pylith()
+    run_pylith(TractionApp)
     self.outputRoot = "lgdeformtraction"
     self.soln = AnalyticalSoln()
     return
@@ -89,7 +78,7 @@ class TestTraction(TestQuad4):
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
   import unittest
-  from TestLgDeformTraction import TestLgDeformTraction as Tester
+  from TestLgDeformTraction import TestTraction as Tester
 
   suite = unittest.TestSuite()
   suite.addTest(unittest.makeSuite(Tester))
