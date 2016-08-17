@@ -250,10 +250,22 @@ class PyLithApp(PetscApplication):
           "3. Send the *entire* error message, not just what you think is important (entire log is best).\n" \
           "\n" \
           "Description and help for PyLithApp component:\n"
-    
-    print(msg)
+    if self.inventory.usage:
+      print(msg)
 
     PetscApplication.showHelp(self)
+
+    msg = "\nExamples using step01.cfg in directory examples/3d/hex8):\n" \
+          "1. List components and properties for a given component (--help)\n" \
+          "  pylith step01.cfg --problem.bc.z_neg.help\n" \
+          "\n" \
+          "2. List components of a given component (--help-components)\n" \
+          "  pylith step01.cfg --problem.bc.z_neg.help-components\n" \
+          "\n" \
+          "3. List properties of a given component (--help-properties)\n" \
+          "  pylith step01.cfg --problem.bc.z_neg.help-properties\n"
+    if self.inventory.usage:
+      print(msg)
     return
 
 
