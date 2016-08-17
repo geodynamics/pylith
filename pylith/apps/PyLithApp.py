@@ -222,6 +222,41 @@ class PyLithApp(PetscApplication):
     return
 
 
+  def showHelp(self):
+    msg = "Before you ask for help, consult the PyLith user manual and try to debug on your own.\n" \
+          "\n" \
+          "Helpful Resources:\n" \
+          "* User manual (https://geodynamics.org/cig/software/pylith/)\n" \
+          "* PyLith Tutorials (https://wiki.geodynamics.org/software:pylith:start)\n" \
+          "* pylithinfo script\n" \
+          "    Running pylithinfo --verbose [-o pylith_parameters.txt] [PyLith args]\n" \
+          "    will dump all parameters with descriptions to pylith_parameters.txt.\n" \
+          "\n" \
+          "For quasi-static simulations, use the following solver settings to make sure the linear and nonlinear solvers are converging:\n" \
+          "[pylithapp.petsc]\n" \
+          "ksp_converged_reason = true\n" \
+          "ksp_error_if_not_converged = true\n" \
+          "snes_converged_reason = true\n" \
+          "snes_error_if_not_converged = true\n" \
+          "\n" \
+          "If you still need help, send an email to cig-short@geodynamics.org with the following info:\n" \
+          "\n" \
+          "1. Describe what you are trying to do\n" \
+          "  a. Overview of the problem and boundary conditions (diagrams are very helpful)\n" \
+          "  b. 2-D or 3-D\n" \
+          "  c. Cell type (tri, quad, hex, or tet)\n" \
+          "  d. Type of fault: prescribed slip or spontaneous rupture\n" \
+          "2. Include the output of running 'pylith --version'\n" \
+          "3. Send the *entire* error message, not just what you think is important (entire log is best).\n" \
+          "\n" \
+          "Description and help for PyLithApp component:\n"
+    
+    print(msg)
+
+    PetscApplication.showHelp(self)
+    return
+
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
