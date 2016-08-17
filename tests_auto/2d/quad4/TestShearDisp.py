@@ -46,7 +46,7 @@ class TestShearDisp(TestQuad4):
     Setup for test.
     """
     TestQuad4.setUp(self)
-    run_pylith(ShearApp)
+    run_pylith(ShearApp, GenerateDB)
     self.outputRoot = "sheardisp"
     self.soln = AnalyticalSoln()
     return
