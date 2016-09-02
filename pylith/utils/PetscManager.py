@@ -77,6 +77,14 @@ class PetscManager(Component):
     return
   
 
+  def setOption(self, name, value):
+    """
+    Set option after PETSc initialization.
+    """
+    petsc.optionsSetValue(name, value)
+    return
+
+
   def updateConfiguration(self, registry):
     """
     Update Pyre configuration.

@@ -63,10 +63,11 @@ class PetscApplication(Application):
     self.petsc.initialize()
 
     if self.inventory.includeCitations:
-      self.petsc.PetscOptionsSetValue("-citations", "")
-      citations = self._citations()
-      for citation in citations:
-        self.petsc.citationsRegister(citation)
+      self.petsc.setOption("-citations", "")
+
+      from pylith.utils.petsc import citationsRegister
+      for entry in self.citations():
+        citationsRegister(entry)
 
     try:
 
@@ -110,6 +111,13 @@ class PetscApplication(Application):
     return
 
 
+  def citations(self):
+    """
+    Register BibTeX entries for citing software.
+    """
+    return []
+
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
@@ -126,13 +134,6 @@ class PetscApplication(Application):
     Deallocate locally managed data structures.
     """
     return    
-
-
-  def _citations(self):
-    """
-    Register BibTeX entries for citing software.
-    """
-    return []
 
 
 # End of file 

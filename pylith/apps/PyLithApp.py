@@ -39,7 +39,7 @@ class PyLithApp(PetscApplication):
     ## Python object for managing PyLithApp facilities and properties.
     ##
     ## \b Properties
-    ## @li \b initialize_only Stop simulation after initializing problem.
+    ## @li \b initialize-only Stop simulation after initializing problem.
     ##
     ## \b Facilities
     ## @li \b mesher Generates or imports the computational mesh.
@@ -48,7 +48,7 @@ class PyLithApp(PetscApplication):
 
     import pyre.inventory
 
-    initializeOnly = pyre.inventory.bool("initialize_only", default=False)
+    initializeOnly = pyre.inventory.bool("initialize-only", default=False)
     initializeOnly.meta['tip'] = "Stop simulation after initializing problem."
 
     from pylith.topology.MeshImporter import MeshImporter
@@ -72,7 +72,7 @@ class PyLithApp(PetscApplication):
     typos.meta['tip'] = "Specifies the handling of unknown properties and " \
         "facilities"
 
-    pdbOn = pyre.inventory.bool("start_python_debugger", default=False)
+    pdbOn = pyre.inventory.bool("start-python-debugger", default=False)
     pdbOn.meta['tip'] = "Start python debugger at beginning of main()."
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -221,15 +221,47 @@ class PyLithApp(PetscApplication):
     msg += "\n"
 
     # Citation information
-    msg += "Please cite the following publications (shown in BibTeX format) in publications you " \
-           "write discussing simulations run with this version of PyLith:\n\n"
-    for citation in self._citations():
+    msg += "If you publish results based on computations with PyLith please cite the following:\n" \
+           "(use --include-citations during your simulations to display a list specific to your computation):\n\n"
+    for citation in self.citations():
       msg += citation + "\n"
 
     print(msg)
     return
 
     
+  def citations(self):
+    import pylith.utils.utils as utils
+    v = utils.PylithVersion()
+    verNum = v.version()
+    verYear = 2016
+
+    manual = ("@Manual{PyLith:manual,\n"
+              "  title        = {PyLith User Manual, Version %s},\n"
+              "  author       = {Aagaard, B. and Knepley, M. and Williams, C.},\n"
+              "  organization = {Computational Infrastructure for Geodynamics (CIG)},\n"
+              "  address      = {University of California, Davis},\n"
+              "  year         = {%d},\n"
+              "  note         = {http://www.geodynamics.org/cig/software/pylith/pylith\_manual-%s.pdf}\n"
+              "}\n" % (verNum, verYear, verNum)
+            )
+    
+    faultRup = ("@Article{Aagaard:Knepley:Williams:JGR:2013,\n"
+                "  author   = {Aagaard, B.~T. and Knepley, M.~G. and Wiliams, C.~A.},\n"
+                "  title    = {A domain decomposition approach to implementing fault slip "
+                "in finite-element models of quasi-static and dynamic crustal deformation},\n"
+                "  journal  = {Journal of Geophysical Research Solid Earth},\n"
+                "  year     = {2013},\n"
+                "  volume   = {118},\n"
+                "  pages    = {3059--3079},\n"
+                "  doi      = {10.1002/jgrb.50217}\n"
+                "}\n"
+              )
+
+    entries = (manual, faultRup)
+    return entries
+    
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
@@ -260,38 +292,6 @@ class PyLithApp(PetscApplication):
     self._eventLogger = logger
     return
   
-
-  def _citations(self):
-    import pylith.utils.utils as utils
-    v = utils.PylithVersion()
-    verNum = v.version()
-    verYear = 2016
-
-    manual = ("@Manual{PyLith:manual,\n"
-              "title = 	 {PyLith User Manual, Version %s},\n"
-              "author =  {Aagaard, B. and Knepley, M. and Williams, C.},\n"
-              "organization = {Computational Infrastructure for Geodynamics (CIG)},\n"
-              "address = {University of California, Davis},\n"
-              "year = 	 {%d},\n"
-              "note =    {http://www.geodynamics.org/cig/software/pylith/pylith\_manual-%s.pdf}\n"
-              "}\n" % (verNum, verYear, verNum)
-            )
-    
-    faultRup = ("@Article{Aagaard:Knepley:Williams:JGR:2013,\n"
-                "author = 	 {Aagaard, B.~T. and Knepley, M.~G. and Wiliams, C.~A.},\n"
-                "title = 	 {A domain decomposition approach to implementing fault slip "
-                "in finite-element models of quasi-static and dynamic crustal deformation},\n"
-                "journal = 	 Journal of Geophysical Research Solid Earth, ,\n"
-                "year = 	 {2013},\n"
-                "volume = 	 {118},\n"
-                "pages =     {3059--3079},\n"
-                "doi =       {10.1002/jgrb.50217}\n"
-                "}\n"
-              )
-
-    entries = (manual, faultRup)
-    return entries
-    
 
 # ======================================================================
 # Local version of InfoApp that only configures itself. Workaround for
