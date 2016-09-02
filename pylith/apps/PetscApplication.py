@@ -42,6 +42,9 @@ class PetscApplication(Application):
   petsc = pyre.inventory.facility("petsc", family="petsc_manager", factory=PetscManager)
   petsc.meta['tip'] = "Manager for PETSc options."
 
+  includeCitations = pyre.inventory.bool("include-citations", default=False)
+  includeCitations.meta['tip'] = "At end of simulation, display information on how to cite PyLith and components used."
+    
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -58,6 +61,12 @@ class PetscApplication(Application):
     Run the application in parallel on the compute nodes.
     """
     self.petsc.initialize()
+
+    if self.inventory.includeCitations:
+      self.petsc.PetscOptionsSetValue("-citations", "")
+      citations = self._citations()
+      for citation in citations:
+        self.petsc.citationsRegister(citation)
 
     try:
 
@@ -117,6 +126,13 @@ class PetscApplication(Application):
     Deallocate locally managed data structures.
     """
     return    
+
+
+  def _citations(self):
+    """
+    Register BibTeX entries for citing software.
+    """
+    return []
 
 
 # End of file 
