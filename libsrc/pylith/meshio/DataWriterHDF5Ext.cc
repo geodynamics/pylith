@@ -181,6 +181,41 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
       _h5->createDatasetRawExternal("/geometry", "vertices", filenameVertices.c_str(), dims, ndims, scalartype);
     } // if
     
+    // If 2-D, write zero vector for z coordinate and z component in vectors
+    if (2 == cs->spaceDim()) {
+      const char* label = "zero";
+      const std::string& filenameZero = _datasetFilename(label);
+      err = PetscViewerBinaryOpen(comm, filenameZero.c_str(), FILE_MODE_WRITE, &binaryViewer);PYLITH_CHECK_ERROR(err);
+      err = PetscViewerBinarySetSkipHeader(binaryViewer, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
+      topology::Field zeroField(mesh);
+      zeroField.newSection(coordinatesField, 1);
+      zeroField.allocate();
+      zeroField.zeroAll();
+      zeroField.label(label);
+      zeroField.vectorFieldType(topology::FieldBase::SCALAR);
+      zeroField.createScatterWithBC(mesh, "", 0, label);
+      zeroField.scatterLocalToGlobal(label);
+
+      PetscVec zeroVector = zeroField.vector(label);assert(zeroVector);
+      err = PetscObjectTypeCompare((PetscObject) zeroVector, VECSEQ, &isseq);PYLITH_CHECK_ERROR(err);
+      if (isseq) {err = VecView_Seq(zeroVector, binaryViewer);PYLITH_CHECK_ERROR(err);}
+      else       {err = VecView_MPI(zeroVector, binaryViewer);PYLITH_CHECK_ERROR(err);}
+
+      err = PetscViewerDestroy(&binaryViewer); PYLITH_CHECK_ERROR(err);
+
+      // Create external dataset for coordinates    
+      if (!commRank) {
+	const hsize_t ndims = 2;
+	hsize_t dims[ndims];
+	dims[0] = numVertices;
+	dims[1] = 1;
+	_h5->createDatasetRawExternal("/geometry", label, filenameZero.c_str(), dims, ndims, scalartype);
+      } // if
+
+      const char* sattr = topology::FieldBase::vectorFieldString(zeroField.vectorFieldType());
+      _h5->writeAttribute("geometry/zero", "vector_field_type", sattr);
+    } // if
+
     // Write cells
 
     // Account for censored cells

@@ -26,6 +26,8 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+
 #include "petscviewerhdf5.h"
 
 #include <cassert> // USES assert()
@@ -140,6 +142,31 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
     if (isseq) {err = VecView_Seq(coordVector, _viewer);PYLITH_CHECK_ERROR(err);}
     else       {err = VecView_MPI(coordVector, _viewer);PYLITH_CHECK_ERROR(err);}
 #endif
+
+    // If 2-D, write zero vector for z coordinate and z component in vectors
+    if (2 == cs->spaceDim()) {
+      err = PetscViewerHDF5PushGroup(_viewer, "/geometry");PYLITH_CHECK_ERROR(err);
+      const char* label = "zero";
+      topology::Field zeroField(mesh);
+      zeroField.newSection(coordinatesField, 1);
+      zeroField.allocate();
+      zeroField.zeroAll();
+      zeroField.label(label);
+      zeroField.vectorFieldType(topology::FieldBase::SCALAR);
+      zeroField.createScatterWithBC(mesh, "", 0, label);
+      zeroField.scatterLocalToGlobal(label);
+
+      PetscVec zeroVector = zeroField.vector(label);assert(zeroVector);
+      err = PetscObjectTypeCompare((PetscObject) zeroVector, VECSEQ, &isseq);PYLITH_CHECK_ERROR(err);
+      if (isseq) {err = VecView_Seq(zeroVector, _viewer);PYLITH_CHECK_ERROR(err);}
+      else       {err = VecView_MPI(zeroVector, _viewer);PYLITH_CHECK_ERROR(err);}
+
+      hid_t h5 = -1;
+      err = PetscViewerHDF5GetFileId(_viewer, &h5); PYLITH_CHECK_ERROR(err);
+      assert(h5 >= 0);
+      const char* sattr = topology::FieldBase::vectorFieldString(zeroField.vectorFieldType());
+      HDF5::writeAttribute(h5, "/geometry/zero", "vector_field_type", sattr);
+    } // if
     err = PetscViewerHDF5PopGroup(_viewer); PYLITH_CHECK_ERROR(err);
 
     PetscInt vStart, vEnd, cellHeight, cStart, cEnd, cMax, conesSize, numCorners, numCornersLocal = 0;
