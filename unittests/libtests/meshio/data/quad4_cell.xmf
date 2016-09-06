@@ -5,208 +5,125 @@
 
 <Xdmf>
   <Domain Name="domain">
-    <DataItem Name="cells"
-	      ItemType="Uniform"
-	      Format="HDF"
-	      NumberType="Float" Precision="8"
-	      Dimensions="2 4">
+    <DataItem Name="cells" ItemType="Uniform" Format="HDF" NumberType="Float" Precision="8" Dimensions="2 4">
       &HeavyData;:/topology/cells
     </DataItem>
-    <DataItem Name="vertices"
-	      Format="HDF"
-	      Dimensions="6 2">
-      &HeavyData;:/geometry/vertices
+    <DataItem Name="vertices" ItemType="Function" Dimensions="6 3" Function="JOIN($0, $1, $2)">
+      <DataItem Name="verticesX" ItemType="Hyperslab" Type="HyperSlab" Dimensions="6 1">
+        <DataItem Dimensions="3 2" Format="XML">
+          0 0   1 1   6 1
+        </DataItem>
+        <DataItem Dimensions="6 1" Format="HDF">
+          &HeavyData;:/geometry/vertices
+        </DataItem>
+      </DataItem>
+      <DataItem Name="verticesY" ItemType="Hyperslab" Type="HyperSlab" Dimensions="6 1">
+        <DataItem Dimensions="3 2" Format="XML">
+          0 1   1 1   6 1
+        </DataItem>
+        <DataItem Dimensions="6 1" Format="HDF">
+          &HeavyData;:/geometry/vertices
+        </DataItem>
+      </DataItem>
+      <DataItem Name="verticesZ" ItemType="Uniform" Dimensions="6 1" Format="HDF">
+        &HeavyData;:/zero/vertex_zero
+      </DataItem>
     </DataItem>
     <!-- ============================================================ -->
     <Grid Name="domain" GridType="Uniform">
-	<Topology
-	   TopologyType="Quadrilateral"
-	   NumberOfElements="2">
-	  <DataItem Reference="XML">
-	    /Xdmf/Domain/DataItem[@Name="cells"]
-	  </DataItem>
-	</Topology>
-	<Geometry GeometryType="XY">
-	  <DataItem Reference="XML">
-	    /Xdmf/Domain/DataItem[@Name="vertices"]
-	  </DataItem>
-	</Geometry>
-	<Attribute
-	   Name="other_0"
-	   Type="Scalar"
-	   Center="Cell">
-          <DataItem ItemType="HyperSlab"
-		    Dimensions="1 2 1"
-		    Type="HyperSlab">
-            <DataItem
-	       Dimensions="3 3"
-	       Format="XML">
-              0 0 0
-              1 1 1
-              1 2 1
-	    </DataItem>
-	    <DataItem
-	       DataType="Float" Precision="8"
-	       Dimensions="1 2 2"
-	       Format="HDF">
-	      &HeavyData;:/cell_fields/other
-	    </DataItem>
-	  </DataItem>
-	</Attribute>
-	<Attribute
-	   Name="other_1"
-	   Type="Scalar"
-	   Center="Cell">
-          <DataItem ItemType="HyperSlab"
-		    Dimensions="1 2 1"
-		    Type="HyperSlab">
-            <DataItem
-	       Dimensions="3 3"
-	       Format="XML">
-              0 0 1
-              1 1 1
-              1 2 1
-	    </DataItem>
-	    <DataItem
-	       DataType="Float" Precision="8"
-	       Dimensions="1 2 2"
-	       Format="HDF">
-	      &HeavyData;:/cell_fields/other
-	    </DataItem>
-	  </DataItem>
-	</Attribute>
-	<Attribute
-	   Name="pressure"
-	   Type="Scalar"
-	   Center="Cell">
-          <DataItem ItemType="HyperSlab"
-		    Dimensions="1 2 1"
-		    Type="HyperSlab">
-            <DataItem
-	       Dimensions="3 3"
-	       Format="XML">
-              0 0 0
-              1 1 1
-              1 2 1
-	    </DataItem>
-	    <DataItem
-	       DataType="Float" Precision="8"
-	       Dimensions="1 2 1"
-	       Format="HDF">
-	      &HeavyData;:/cell_fields/pressure
-	    </DataItem>
-	  </DataItem>
-	</Attribute>
-	<Attribute
-	   Name="stress_xx"
-	   Type="Scalar"
-	   Center="Cell">
-          <DataItem ItemType="HyperSlab"
-		    Dimensions="1 2 1"
-		    Type="HyperSlab">
-            <DataItem
-	       Dimensions="3 3"
-	       Format="XML">
-              0 0 0
-              1 1 1
-              1 2 1
-	    </DataItem>
-	    <DataItem
-	       DataType="Float" Precision="8"
-	       Dimensions="1 2 3"
-	       Format="HDF">
-	      &HeavyData;:/cell_fields/stress
-	    </DataItem>
-	  </DataItem>
-	</Attribute>
-	<Attribute
-	   Name="stress_yy"
-	   Type="Scalar"
-	   Center="Cell">
-          <DataItem ItemType="HyperSlab"
-		    Dimensions="1 2 1"
-		    Type="HyperSlab">
-            <DataItem
-	       Dimensions="3 3"
-	       Format="XML">
-              0 0 1
-              1 1 1
-              1 2 1
-	    </DataItem>
-	    <DataItem
-	       DataType="Float" Precision="8"
-	       Dimensions="1 2 3"
-	       Format="HDF">
-	      &HeavyData;:/cell_fields/stress
-	    </DataItem>
-	  </DataItem>
-	</Attribute>
-	<Attribute
-	   Name="stress_xy"
-	   Type="Scalar"
-	   Center="Cell">
-          <DataItem ItemType="HyperSlab"
-		    Dimensions="1 2 1"
-		    Type="HyperSlab">
-            <DataItem
-	       Dimensions="3 3"
-	       Format="XML">
-              0 0 2
-              1 1 1
-              1 2 1
-	    </DataItem>
-	    <DataItem
-	       DataType="Float" Precision="8"
-	       Dimensions="1 2 3"
-	       Format="HDF">
-	      &HeavyData;:/cell_fields/stress
-	    </DataItem>
-	  </DataItem>
-	</Attribute>
-	<Attribute
-	   Name="traction_x"
-	   Type="Scalar"
-	   Center="Cell">
-          <DataItem ItemType="HyperSlab"
-		    Dimensions="1 2 1"
-		    Type="HyperSlab">
-            <DataItem
-	       Dimensions="3 3"
-	       Format="XML">
-              0 0 0
-              1 1 1
-              1 2 1
-	    </DataItem>
-	    <DataItem
-	       DataType="Float" Precision="8"
-	       Dimensions="1 2 2"
-	       Format="HDF">
-	      &HeavyData;:/cell_fields/traction
-	    </DataItem>
-	  </DataItem>
-	</Attribute>
-	<Attribute
-	   Name="traction_y"
-	   Type="Scalar"
-	   Center="Cell">
-          <DataItem ItemType="HyperSlab"
-		    Dimensions="1 2 1"
-		    Type="HyperSlab">
-            <DataItem
-	       Dimensions="3 3"
-	       Format="XML">
-              0 0 1
-              1 1 1
-              1 2 1
-	    </DataItem>
-	    <DataItem
-	       DataType="Float" Precision="8"
-	       Dimensions="1 2 2"
-	       Format="HDF">
-	      &HeavyData;:/cell_fields/traction
-	    </DataItem>
-	  </DataItem>
-	</Attribute>
+      <Topology TopologyType="Quadrilateral" NumberOfElements="2">
+        <DataItem Reference="XML">
+          /Xdmf/Domain/DataItem[@Name="cells"]
+        </DataItem>
+      </Topology>
+      <Geometry GeometryType="XYZ">
+        <DataItem Reference="XML">
+          /Xdmf/Domain/DataItem[@Name="vertices"]
+        </DataItem>
+      </Geometry>
+      <Attribute Name="other_0" Type="Scalar" Center="Cell">
+        <DataItem ItemType="HyperSlab" Dimensions="1 2 1" Type="HyperSlab">
+          <DataItem Dimensions="3 3" Format="XML">
+            0 0 0    1 1 1    1 2 1
+          </DataItem>
+          <DataItem DataType="Float" Precision="8" Dimensions="1 2 2" Format="HDF">
+            &HeavyData;:/cell_fields/other
+          </DataItem>
+        </DataItem>
+      </Attribute>
+      <Attribute Name="other_1" Type="Scalar" Center="Cell">
+        <DataItem ItemType="HyperSlab" Dimensions="1 2 1" Type="HyperSlab">
+          <DataItem Dimensions="3 3" Format="XML">
+            0 0 1    1 1 1    1 2 1
+          </DataItem>
+          <DataItem DataType="Float" Precision="8" Dimensions="1 2 2" Format="HDF">
+            &HeavyData;:/cell_fields/other
+          </DataItem>
+        </DataItem>
+      </Attribute>
+      <Attribute Name="pressure" Type="Scalar" Center="Cell">
+        <DataItem ItemType="HyperSlab" Dimensions="1 2 1" Type="HyperSlab">
+          <DataItem Dimensions="3 3" Format="XML">
+            0 0 0    1 1 1    1 2 1
+          </DataItem>
+          <DataItem DataType="Float" Precision="8" Dimensions="1 2 1" Format="HDF">
+            &HeavyData;:/cell_fields/pressure
+          </DataItem>
+        </DataItem>
+      </Attribute>
+      <Attribute Name="stress_xx" Type="Scalar" Center="Cell">
+        <DataItem ItemType="HyperSlab" Dimensions="1 2 1" Type="HyperSlab">
+          <DataItem Dimensions="3 3" Format="XML">
+            0 0 0    1 1 1    1 2 1
+          </DataItem>
+          <DataItem DataType="Float" Precision="8" Dimensions="1 2 3" Format="HDF">
+            &HeavyData;:/cell_fields/stress
+          </DataItem>
+        </DataItem>
+      </Attribute>
+      <Attribute Name="stress_yy" Type="Scalar" Center="Cell">
+        <DataItem ItemType="HyperSlab" Dimensions="1 2 1" Type="HyperSlab">
+          <DataItem Dimensions="3 3" Format="XML">
+            0 0 1    1 1 1    1 2 1
+          </DataItem>
+          <DataItem DataType="Float" Precision="8" Dimensions="1 2 3" Format="HDF">
+            &HeavyData;:/cell_fields/stress
+          </DataItem>
+        </DataItem>
+      </Attribute>
+      <Attribute Name="stress_xy" Type="Scalar" Center="Cell">
+        <DataItem ItemType="HyperSlab" Dimensions="1 2 1" Type="HyperSlab">
+          <DataItem Dimensions="3 3" Format="XML">
+            0 0 2    1 1 1    1 2 1
+          </DataItem>
+          <DataItem DataType="Float" Precision="8" Dimensions="1 2 3" Format="HDF">
+            &HeavyData;:/cell_fields/stress
+          </DataItem>
+        </DataItem>
+      </Attribute>
+      <Attribute Name="traction" Type="Vector" Center="Cell">
+        <DataItem ItemType="Function" Dimensions="6 3" Function="JOIN($0, $1, $2)">
+          <DataItem ItemType="HyperSlab" Dimensions="2 1" Type="HyperSlab">
+            <DataItem Dimensions="3 3" Format="XML">
+              0 0 0    1 1 1    1 2 1
+            </DataItem>
+            <DataItem DataType="Float" Precision="8" Dimensions="1 2 2" Format="HDF">
+              &HeavyData;:/cell_fields/traction
+            </DataItem>
+          </DataItem>
+          <DataItem ItemType="HyperSlab" Dimensions="2 1" Type="HyperSlab">
+            <DataItem Dimensions="3 3" Format="XML">
+              0 0 1    1 1 1    1 2 1
+            </DataItem>
+            <DataItem DataType="Float" Precision="8" Dimensions="1 2 2" Format="HDF">
+              &HeavyData;:/cell_fields/traction
+            </DataItem>
+          </DataItem>
+          <DataItem ItemType="Uniform" Dimensions="2 1" Format="HDF">
+            &HeavyData;:/zero/cell_zero
+          </DataItem>
+        </DataItem>
+      </Attribute>
     </Grid>
   </Domain>
 </Xdmf>
