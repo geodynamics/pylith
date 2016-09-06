@@ -142,31 +142,6 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
     if (isseq) {err = VecView_Seq(coordVector, _viewer);PYLITH_CHECK_ERROR(err);}
     else       {err = VecView_MPI(coordVector, _viewer);PYLITH_CHECK_ERROR(err);}
 #endif
-
-    // If 2-D, write zero vector for z coordinate and z component in vectors
-    if (2 == cs->spaceDim()) {
-      err = PetscViewerHDF5PushGroup(_viewer, "/geometry");PYLITH_CHECK_ERROR(err);
-      const char* label = "zero";
-      topology::Field zeroField(mesh);
-      zeroField.newSection(coordinatesField, 1);
-      zeroField.allocate();
-      zeroField.zeroAll();
-      zeroField.label(label);
-      zeroField.vectorFieldType(topology::FieldBase::SCALAR);
-      zeroField.createScatterWithBC(mesh, "", 0, label);
-      zeroField.scatterLocalToGlobal(label);
-
-      PetscVec zeroVector = zeroField.vector(label);assert(zeroVector);
-      err = PetscObjectTypeCompare((PetscObject) zeroVector, VECSEQ, &isseq);PYLITH_CHECK_ERROR(err);
-      if (isseq) {err = VecView_Seq(zeroVector, _viewer);PYLITH_CHECK_ERROR(err);}
-      else       {err = VecView_MPI(zeroVector, _viewer);PYLITH_CHECK_ERROR(err);}
-
-      hid_t h5 = -1;
-      err = PetscViewerHDF5GetFileId(_viewer, &h5); PYLITH_CHECK_ERROR(err);
-      assert(h5 >= 0);
-      const char* sattr = topology::FieldBase::vectorFieldString(zeroField.vectorFieldType());
-      HDF5::writeAttribute(h5, "/geometry/zero", "vector_field_type", sattr);
-    } // if
     err = PetscViewerHDF5PopGroup(_viewer); PYLITH_CHECK_ERROR(err);
 
     PetscInt vStart, vEnd, cellHeight, cStart, cEnd, cMax, conesSize, numCorners, numCornersLocal = 0;
@@ -258,6 +233,44 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
     assert(h5 >= 0);
     const int cellDim = mesh.dimension();
     HDF5::writeAttribute(h5, "/topology/cells", "cell_dim", (void*)&cellDim, H5T_NATIVE_INT);
+
+    // If 2-D, write zero vector for z components
+    if (2 == cs->spaceDim()) {
+      err = PetscViewerHDF5PushGroup(_viewer, "/zero");PYLITH_CHECK_ERROR(err);
+
+      const char* vlabel = "vertex_zero";
+      topology::Field vzeroField(mesh);
+      vzeroField.newSection(coordinatesField, 1);
+      vzeroField.allocate();
+      vzeroField.zeroAll();
+      vzeroField.label(vlabel);
+      vzeroField.vectorFieldType(topology::FieldBase::SCALAR);
+      vzeroField.createScatterWithBC(mesh, "", 0, vlabel);
+      vzeroField.scatterLocalToGlobal(vlabel);
+
+      PetscVec vzeroVector = vzeroField.vector(vlabel);assert(vzeroVector);
+      err = PetscObjectTypeCompare((PetscObject) vzeroVector, VECSEQ, &isseq);PYLITH_CHECK_ERROR(err);
+      if (isseq) {err = VecView_Seq(vzeroVector, _viewer);PYLITH_CHECK_ERROR(err);}
+      else       {err = VecView_MPI(vzeroVector, _viewer);PYLITH_CHECK_ERROR(err);}
+
+      const char* clabel = "cell_zero";
+      topology::Field czeroField(mesh);
+      czeroField.newSection(cStart, cEnd, 1);
+      czeroField.allocate();
+      czeroField.zeroAll();
+      czeroField.label(clabel);
+      czeroField.vectorFieldType(topology::FieldBase::SCALAR);
+      czeroField.createScatterWithBC(mesh, "", 0, clabel);
+      czeroField.scatterLocalToGlobal(clabel);
+
+      PetscVec czeroVector = czeroField.vector(clabel);assert(czeroVector);
+      err = PetscObjectTypeCompare((PetscObject) czeroVector, VECSEQ, &isseq);PYLITH_CHECK_ERROR(err);
+      if (isseq) {err = VecView_Seq(czeroVector, _viewer);PYLITH_CHECK_ERROR(err);}
+      else       {err = VecView_MPI(czeroVector, _viewer);PYLITH_CHECK_ERROR(err);}
+
+    err = PetscViewerHDF5PopGroup(_viewer); PYLITH_CHECK_ERROR(err);
+    } // if
+
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while opening HDF5 file " << _hdf5Filename() << ".\n" << err.what();
