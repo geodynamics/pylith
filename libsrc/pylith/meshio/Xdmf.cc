@@ -386,11 +386,7 @@ pylith::meshio::Xdmf::_writeDomainCells(const int numCells,
 
   assert(_file.is_open() && _file.good());
   _file
-    << "    <DataItem Name=\"cells\"\n"
-    << "	      ItemType=\"Uniform\"\n"
-    << "	      Format=\"HDF\"\n" 
-    << "	      NumberType=\"Float\" Precision=\"8\"\n"
-    << "	      Dimensions=\"" << numCells << " " << numCorners << "\">\n"
+    << "    <DataItem Name=\"cells\" ItemType=\"Uniform\" Format=\"HDF\" NumberType=\"Float\" Precision=\"8\" Dimensions=\"" << numCells << " " << numCorners << "\">\n"
     << "      &HeavyData;:/topology/cells\n"
     << "    </DataItem>\n";
 
@@ -407,12 +403,37 @@ pylith::meshio::Xdmf::_writeDomainVertices(const int numVertices,
 
   assert(_file.is_open() && _file.good());
 
-  _file
-    << "    <DataItem Name=\"vertices\"\n"
-    << "	      Format=\"HDF\"\n"
-    << "	      Dimensions=\"" << numVertices << " " << spaceDim << "\">\n"
-    << "      &HeavyData;:/geometry/vertices\n"
-    << "    </DataItem>\n";
+  if (3 == spaceDim) {
+    _file
+      << "    <DataItem Name=\"vertices\" ItemType=\"Uniform\" Format=\"HDF\" Dimensions=\"" << numVertices << " " << spaceDim << "\">\n"
+      << "      &HeavyData;:/geometry/vertices\n"
+      << "    </DataItem>\n";
+  } else if (2 == spaceDim) {
+    // Form vector with 3 components using x and y components provided in /geometry/vertices and z component in /geometry/zero.
+    _file
+      << "    <DataItem Name=\"vertices\" ItemType=\"Function\" Dimensions=\"" << numVertices << " 3\" Function=\"JOIN($0, $1, $2)\">\n"
+      << "      <DataItem Name=\"verticesX\" ItemType=\"Hyperslab\" Type=\"HyperSlab\" Dimensions=\"" << numVertices << " 1\">\n"
+      << "        <DataItem Dimensions=\"3 2\" Format=\"XML\">\n"
+      << "          0 0   1 1   " << numVertices << " 1\n"
+      << "        </DataItem>\n"
+      << "        <DataItem Dimensions=\"" << numVertices << " 1\" Format=\"HDF\">\n"
+      << "          &HeavyData;:/geometry/vertices\n"
+      << "        </DataItem>\n"
+      << "      </DataItem>\n"
+      << "      <DataItem Name=\"verticesY\" ItemType=\"Hyperslab\" Type=\"HyperSlab\" Dimensions=\"" << numVertices << " 1\">\n"
+      << "        <DataItem Dimensions=\"3 2\" Format=\"XML\">\n"
+      << "          0 1   1 1   " << numVertices << " 1\n"
+      << "        </DataItem>\n"
+      << "        <DataItem Dimensions=\"" << numVertices << " 1\" Format=\"HDF\">\n"
+      << "          &HeavyData;:/geometry/vertices\n"
+      << "        </DataItem>\n"
+      << "      </DataItem>\n"
+      << "      <DataItem Name=\"verticesZ\" ItemType=\"Uniform\" Dimensions=\"" << numVertices << " 1\" Format=\"HDF\">\n"
+      << "        &HeavyData;:/geometry/zero\n"
+      << "      </DataItem>\n"
+      << "    </DataItem>\n";
+  } else {
+  } // if/else
 
   PYLITH_METHOD_END;
 } // _writeDomainVertices
@@ -453,9 +474,7 @@ pylith::meshio::Xdmf::_writeGridTopology(const char* cellType,
   assert(_file.is_open() && _file.good());
 
   _file
-    << "	<Topology\n"
-    << "	   TopologyType=\"" << cellType << "\"\n"
-    << "	   NumberOfElements=\"" << numCells << "\">\n"
+    << "	<Topology TopologyType=\"" << cellType << "\" NumberOfElements=\"" << numCells << "\">\n"
     << "	  <DataItem Reference=\"XML\">\n"
     << "	    /Xdmf/Domain/DataItem[@Name=\"cells\"]\n"
     << "	  </DataItem>\n"
@@ -474,10 +493,8 @@ pylith::meshio::Xdmf::_writeGridGeometry(const int spaceDim)
   assert(_file.is_open() && _file.good());
   assert(2 == spaceDim || 3 == spaceDim);
 
-  const char* geomType = (spaceDim == 3) ? "XYZ" : "XY";
-
   _file
-    << "	<Geometry GeometryType=\"" << geomType << "\">\n"
+    << "	<Geometry GeometryType=\"XYZ\">\n"
     << "	  <DataItem Reference=\"XML\">\n"
     << "	    /Xdmf/Domain/DataItem[@Name=\"vertices\"]\n"
     << "	  </DataItem>\n"
@@ -509,30 +526,15 @@ pylith::meshio::Xdmf::_writeGridAttribute(const FieldMetadata& metadata,
   } // if/else
 
   _file
-    << "	<Attribute\n"
-    << "	   Name=\"" << metadata.name << "\"\n"
-    << "	   Type=\"" << metadata.vectorFieldType << "\"\n"
-    << "	   Center=\"" << metadata.domain << "\">\n"
-    << "          <DataItem ItemType=\"HyperSlab\"\n"
-    << "		    Dimensions=\"1 "
-    << metadata.numPoints
-    << " " << metadata.fiberDim << "\"\n"
-    << "		    Type=\"HyperSlab\">\n"
-    << "            <DataItem\n"
-    << "	       Dimensions=\"3 3\"\n"
-    << "	       Format=\"XML\">\n"
-    << "              " << iTime << " 0 0\n"
-    << "              1 1 1\n"
-    << "              1 "
-    << metadata.numPoints
-    << " " << metadata.fiberDim << "\n"
+    << "	<Attribute Name=\"" << metadata.name << "\" Type=\"" << metadata.vectorFieldType << "\" Center=\"" << metadata.domain << "\">\n"
+    << "          <DataItem ItemType=\"HyperSlab\" Dimensions=\"1 " << metadata.numPoints << " " << metadata.fiberDim << "\" Type=\"HyperSlab\">\n"
+    << "            <DataItem Dimensions=\"3 3\" Format=\"XML\">\n"
+    << "              " << iTime << " 0 0"
+    << "    1 1 1"
+    << "    1 " << metadata.numPoints << " " << metadata.fiberDim << "\n"
     << "	    </DataItem>\n"
-    << "	    <DataItem\n"
-    << "	       DataType=\"Float\" Precision=\"8\"\n"
-    << "	       Dimensions=\""
-    << metadata.numTimeSteps
-    << " " << metadata.numPoints
-    << " " << metadata.fiberDim << "\"\n"
+    << "	    <DataItem DataType=\"Float\" Precision=\"8\" Dimensions=\""
+    << metadata.numTimeSteps << " " << metadata.numPoints << " " << metadata.fiberDim << "\""
     << "	       Format=\"HDF\">\n"
     << "	      &HeavyData;:" << h5FullName << "\n"
     << "	    </DataItem>\n"
@@ -662,34 +664,15 @@ pylith::meshio::Xdmf::_writeGridAttributeComponent(const FieldMetadata& metadata
   } // else
     
   _file
-    << "	<Attribute\n"
-    << "	   Name=\"" << componentName << "\"\n"
-    << "	   Type=\"Scalar\"\n"
-    << "	   Center=\"" << metadata.domain << "\">\n"
-    << "          <DataItem ItemType=\"HyperSlab\"\n"
-    << "		    Dimensions=\"1 "
-    << metadata.numPoints
-    << " 1\"\n"
-    << "		    Type=\"HyperSlab\">\n"
-    << "            <DataItem\n"
-    << "	       Dimensions=\"3 3\"\n"
-    << "	       Format=\"XML\">\n"
-    << "              "
-    << iTime
-    << " 0 "
-    << component << "\n"
-    << "              1 1 1\n"
-    << "              1 "
-    << metadata.numPoints
-    << " 1\n"
+    << "	<Attribute Name=\"" << componentName << "\" Type=\"Scalar\" Center=\"" << metadata.domain << "\">\n"
+    << "          <DataItem ItemType=\"HyperSlab\" Dimensions=\"1 " << metadata.numPoints << " 1\" Type=\"HyperSlab\">\n"
+    << "            <DataItem Dimensions=\"3 3\" Format=\"XML\">\n"
+    << "              " << iTime << " 0 " << component
+    << "    1 1 1"
+    << "    1 " << metadata.numPoints << " 1\n"
     << "	    </DataItem>\n"
-    << "	    <DataItem\n"
-    << "	       DataType=\"Float\" Precision=\"8\"\n"
-    << "	       Dimensions=\""
-    << metadata.numTimeSteps
-    << " " << metadata.numPoints
-    << " " << metadata.fiberDim << "\"\n"
-    << "	       Format=\"HDF\">\n"
+    << "	    <DataItem DataType=\"Float\" Precision=\"8\" Dimensions=\""
+    << metadata.numTimeSteps << " " << metadata.numPoints << " " << metadata.fiberDim << "\"" << " Format=\"HDF\">\n"
     << "	      &HeavyData;:" << h5FullName << "\n"
     << "	    </DataItem>\n"
     << "	  </DataItem>\n"
