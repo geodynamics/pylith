@@ -129,19 +129,18 @@ private :
   void _writeGridTopology(const char* cellType,
 			  const int numCells);
 
-  /** Write Grid geometry.
-   *
-   * @param spaceDim Spatial dimension.
-   */
-  void _writeGridGeometry(const int spaceDim);
+  /// Write Grid geometry.
+  void _writeGridGeometry(void);
 
   /** Write grid attribute.
    * 
    * @param metadata Metadata for field.
    * @param iTime Index of time step.
+   * @param spaceDim Spatial dimension.
    */
   void _writeGridAttribute(const FieldMetadata& metadata,
-			   const int iTime);
+			   const int iTime,
+			   const int spaceDim);
 
   /** Write grid attribute as single component (for 2-D vector).
    * 
