@@ -36,11 +36,8 @@ noinst_HEADERS = \
 libmaterialscontrib_la_LDFLAGS = $(AM_LDFLAGS)
 
 libmaterialscontrib_la_LIBADD = \
-	-lpylith
-if NO_UNDEFINED
-libmaterialscontrib_la_LIBADD += \
+	-lpylith \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
-endif
 
 AM_CPPFLAGS = $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) 
 AM_CPPFLAGS += $(PETSC_CC_INCLUDES)
@@ -66,11 +63,8 @@ _materialscontribmodule_la_LDFLAGS = -module -avoid-version \
 
 dist__materialscontribmodule_la_SOURCES = $(swig_sources) $(swig_generated)
 
-_materialscontribmodule_la_LIBADD = libmaterialscontrib.la
-if NO_UNDEFINED
-_materialscontribmodule_la_LIBADD += \
+_materialscontribmodule_la_LIBADD = libmaterialscontrib.la \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
-endif
 
 AM_CPPFLAGS += -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR)
 

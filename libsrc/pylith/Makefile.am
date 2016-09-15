@@ -154,11 +154,8 @@ libpylith_la_SOURCES = \
 libpylith_la_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 libpylith_la_LIBADD = \
 	-lspatialdata \
-	$(PETSC_LIB)
-if NO_UNDEFINED
-libpylith_la_LIBADD += \
+	$(PETSC_LIB) \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
-endif
 
 AM_CPPFLAGS = -I$(top_srcdir)/libsrc
 AM_CPPFLAGS += $(PETSC_CC_INCLUDES)
