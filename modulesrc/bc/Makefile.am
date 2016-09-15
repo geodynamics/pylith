@@ -52,13 +52,10 @@ dist__bcmodule_la_SOURCES = $(swig_sources) $(swig_generated)
 _bcmodule_la_LIBADD = \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
-	$(PETSC_LIB)
+	$(PETSC_LIB) \
+	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 if ENABLE_CUBIT
   _bcmodule_la_LIBADD += -lnetcdf
-endif
-if NO_UNDEFINED
-_bcmodule_la_LIBADD += \
-	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
 
 if ENABLE_SWIG

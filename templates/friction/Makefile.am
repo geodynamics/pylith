@@ -36,11 +36,8 @@ noinst_HEADERS = \
 libfrictioncontrib_la_LDFLAGS = $(AM_LDFLAGS)
 
 libfrictioncontrib_la_LIBADD = \
-	-lpylith
-if NO_UNDEFINED
-libfrictioncontrib_la_LIBADD += \
+	-lpylith \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
-endif
 
 AM_CPPFLAGS = $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) 
 AM_CPPFLAGS += $(PETSC_CC_INCLUDES)
@@ -66,11 +63,8 @@ _frictioncontribmodule_la_LDFLAGS = -module -avoid-version \
 
 dist__frictioncontribmodule_la_SOURCES = $(swig_sources) $(swig_generated)
 
-_frictioncontribmodule_la_LIBADD = libfrictioncontrib.la
-if NO_UNDEFINED
-_frictioncontribmodule_la_LIBADD += \
+_frictioncontribmodule_la_LIBADD = libfrictioncontrib.la \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
-endif
 
 AM_CPPFLAGS += -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR)
 
