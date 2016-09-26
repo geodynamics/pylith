@@ -1199,7 +1199,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcCauchyStress3D(scalar_arr
   PYLITH_METHOD_BEGIN;
 
   const int spaceDim = 3;
-  const int tensorSize = 5;
+  const int tensorSize = 6;
 
   assert(cauchyStress);
   assert(stress.size() == size_t(numQuadPts*tensorSize));
