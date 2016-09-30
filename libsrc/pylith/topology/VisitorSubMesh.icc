@@ -194,9 +194,9 @@ pylith::topology::MatVisitorSubMesh::~MatVisitorSubMesh(void)
   clear();
   
   PetscErrorCode err;
-  err = PetscSectionDestroy(&_subsection);PYLITH_CHECK_ERROR(err);assert(!_subsection);
-  err = PetscSectionDestroy(&_globalSubsection);PYLITH_CHECK_ERROR(err);assert(!_globalSubsection);
-  err = PetscSectionDestroy(&_globalSection);PYLITH_CHECK_ERROR(err);assert(!_globalSection);
+  err = PetscSectionDestroy(&_subsection);PYLITH_CHECK_ERROR_NOTHROW(err);assert(!_subsection);
+  err = PetscSectionDestroy(&_globalSubsection);PYLITH_CHECK_ERROR_NOTHROW(err);assert(!_globalSubsection);
+  err = PetscSectionDestroy(&_globalSection);PYLITH_CHECK_ERROR_NOTHROW(err);assert(!_globalSection);
 } // destructor
 
 // ----------------------------------------------------------------------
