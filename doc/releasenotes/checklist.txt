@@ -9,6 +9,8 @@ TESTING
   * Run valgrind on unit tests (make leakcheck)
 
   * Run all examples.
+    ./run_examples.py >& log
+    grep -e RUNNING -e abort log
 
   * Run benchmarks.
 
