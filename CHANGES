@@ -32,6 +32,8 @@ Version 2.1.4
 
 * Fixed typos in manual for gravity and point forces.
 
+* Added integration with Travis for automated testing.
+
 ----------------------------------------------------------------------
 Version 2.1.3
 ----------------------------------------------------------------------
