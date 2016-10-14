@@ -5341,26 +5341,13 @@ Note:
  
 \series default
 The Xdmf format supports representation of two- and three-dimensional coordinate
-s of points, scalar vector field types, and three-dimensional vector and
- tensor vector field types but not two-dimensional vector or tensor vector
- field types.
- As a result, we separate the components of two-dimensional vector and tensor
- vector field objects and add the component as a suffix to the name of the
- field.
- The vector can be reconstructed within ParaView using the Calculator (see
- Section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:Tutorial-Subduction"
-
-\end_inset
-
- for an example).
- Accessing the datasets in the HDF5 files using tools such as h5py (included
- with the PyLith binary and installed by default with the PyLith Installer)
- and PyTables with visualization through MayaVi circumvents this problem,
- but requires writing Python scripts and a deeper knowledge of the visualization
- interface.
+s of points, scalar fields, and three-dimensional vector and tensor fields
+ but not two-dimensional vector or tensor fields.
+ Consequently, for two-dimensional vector fields we build a three-component
+ vector from the two-component vector (x and y components) and a separate
+ zero scalar field (z component).
+ For tensor fields, we create a scalar field for each of the tensor components,
+ adding the component as a suffix to the name of the field.
 \end_layout
 
 \begin_layout Standard

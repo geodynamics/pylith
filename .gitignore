@@ -46,4 +46,6 @@ examples/2d/*/*/output/*.xmf
 tests_auto/*/*/*.h5
 tests_auto/*/*/*.xmf
 tests_auto/*/*/*_disp.spatialdb
+tests_auto/*/*/output
+tests_auto/*/*/output
 examples/3d/hex8/output

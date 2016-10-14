@@ -1,0 +1,79 @@
+# ----------------------------------------------------------------------
+# Create surface using vertices
+# ----------------------------------------------------------------------
+# Block is 2km x 0.2km x 1km
+# -1000 m <= x <= 1000 m 
+# -100 m <= y <= 100 m
+# -1000 m <= z <= 0 m
+reset
+brick x 2000 y 200 z 1000
+
+# Translate block so the top is at z=0
+volume 1 move x 0 y 0 z -500
+
+# ----------------------------------------------------------------------
+# Set discretization size
+# ----------------------------------------------------------------------
+surface all size 200.0
+
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+surface all scheme map
+mesh volume all
+
+# ----------------------------------------------------------------------
+# Create blocks for materials
+# ----------------------------------------------------------------------
+block 1 volume 1 
+block 1 name "elastic"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +x surf
+# ----------------------------------------------------------------------
+group "surf_xpos" add node in surface 6
+nodeset 20 group surf_xpos
+nodeset 20 name "surf xpos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -x surf
+# ----------------------------------------------------------------------
+group "surf_xneg" add node in surface 4
+nodeset 21 group surf_xneg
+nodeset 21 name "surf xneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +y surf
+# ----------------------------------------------------------------------
+group "surf_ypos" add node in surface 5
+nodeset 22 group surf_ypos
+nodeset 22 name "surf ypos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -y surf
+# ----------------------------------------------------------------------
+group "surf_yneg" add node in surface 3
+nodeset 23 group surf_yneg
+nodeset 23 name "surf yneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +z surf
+# ----------------------------------------------------------------------
+group "surf_zpos" add node in surface 1
+nodeset 24 group surf_zpos
+nodeset 24 name "surf zpos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -z surf
+# ----------------------------------------------------------------------
+group "surf_zneg" add node in surface 2
+nodeset 25 group surf_zneg
+nodeset 25 name "surf zneg"
+
+
+# ----------------------------------------------------------------------
+# Export exodus file
+# ----------------------------------------------------------------------
+export mesh "mesh.exo" dimension 3 overwrite
+
+
