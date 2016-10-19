@@ -28,7 +28,11 @@
 #define PYLITH_PETSC_VERSION STR(PETSC_VERSION_MAJOR) "." STR(PETSC_VERSION_MINOR) "." STR(PETSC_VERSION_SUBMINOR)
 const bool pylith::utils::PetscVersion::_isRelease = PETSC_VERSION_RELEASE;
 const char* pylith::utils::PetscVersion::_version = PYLITH_PETSC_VERSION;
+#if defined(PETSC_VERSION_BRANCH_GIT)
 const char* pylith::utils::PetscVersion::_gitBranch = PETSC_VERSION_BRANCH_GIT;
+#else
+const char* pylith::utils::PetscVersion::_gitBranch = "branch-not-available";
+#endif
 const char* pylith::utils::PetscVersion::_gitRevision = PETSC_VERSION_GIT;
 const char* pylith::utils::PetscVersion::_gitDate = PETSC_VERSION_DATE_GIT;
 const char* pylith::utils::PetscVersion::_petscDir = PETSC_DIR;
