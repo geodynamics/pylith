@@ -30,7 +30,7 @@ addons:
 
 # Install dependencies cached on CIG server
 install:
-  - if [ ! -f ${DEPS_DIR}/include/proj_api.h ]; then travis/dependencies.sh build; else echo "Using cached dependencies."; fi
+  - if [ ! -f ${DEPS_DIR}/bin/nemesis ]; then travis/dependencies.sh build; else echo "Using cached dependencies."; fi
   - ls -R ${DEPS_DIR}
 
 script: 

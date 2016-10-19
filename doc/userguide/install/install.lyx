@@ -89,7 +89,9 @@ Installation and Getting Help
 \begin_layout Standard
 Installation of PyLith on a desktop or laptop machine is, in most cases,
  very easy.
- Binary packages have been created for the most common platforms: Linux,
+ Binary packages have been created for Linux and Mac OS X platforms.
+ You can also run PyLith inside a Docker container, which provides a virtual
+ Linux environment on any platform that Docker supports, including Linux,
  Mac OS X, and Windows.
  Installation of PyLith on other operating systems -- or installation on
  a cluster -- requires building the software from the source code, which
@@ -186,8 +188,8 @@ Installation of Binary Executable
 \end_layout
 
 \begin_layout Standard
-Binary executables are available for Linux, Mac OS X (Intel 10.10+), and
- Windows from the PyLith web page 
+Binary executables are available for Linux and Mac OS X (Intel 10.10+) from
+ the PyLith web page 
 \begin_inset Flex URL
 status collapsed
 
@@ -249,7 +251,7 @@ Unpack the tarball.
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -xzf pylith-2.1.3-linux-i686.tgz
+$ tar -xzf pylith-2.1.4-linux-i686.tgz
 \end_layout
 
 \end_deeper
@@ -323,7 +325,7 @@ Unpack the tarball.
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -xzf pylith-2.1.3-darwin-10.10.5.tgz
+$ tar -xzf pylith-2.1.4-darwin-10.10.5.tgz
 \end_layout
 
 \end_deeper
@@ -348,27 +350,211 @@ $ source setup.sh
 \end_layout
 
 \end_deeper
-\begin_layout Subsection
-Windows
+\begin_layout Section
+Installation of PyLith Docker Container
 \end_layout
 
-\begin_layout Enumerate
-Download the Windows installer from the PyLith web page 
+\begin_layout Standard
+Docker containers provide a self-contained virtual environment that are
+ a smaller, simpler alternative to a virtual machine.
+ The PyLith Docker container provides a Debian Linux environment with a
+ pre-built PyLith executable.
+ These instructions are also available on the PyLith wiki (
 \begin_inset Flex URL
 status collapsed
 
 \begin_layout Plain Layout
 
-geodynamics.org/cig/software/packages/short/pylith/
+https://wiki.geodynamics.org/software:pylith:docker
 \end_layout
 
 \end_inset
 
- and save it to your desktop.
+).
+\end_layout
+
+\begin_layout Subsection
+Setup (first time only)
 \end_layout
 
 \begin_layout Enumerate
-Run the installer.
+Install Docker (See 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://www.docker.com/products/docker
+\end_layout
+
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Enumerate
+Create container to store persistent user data
+\begin_inset Newline newline
+\end_inset
+
+This container, called pylith-data, will hold a directory where all your
+ user data can be stored for use with PyLith within Docker.
+ The data can persist for different versions of PyLith; that is, you can
+ update to a newer version of PyLith and your user data will still be available.
+ This directory is not directly accessible from your host computer.
+ However, you can copy files to/from your host filesystem using “docker
+ cp” (see below).
+\end_layout
+
+\begin_layout LyX-Code
+$ docker create --name pylith-data geodynamics/pylith-data
+\end_layout
+
+\begin_layout Subsection
+Run Unix shell within Docker to use PyLith.
+\end_layout
+
+\begin_layout LyX-Code
+$ docker run -ti --volumes-from pylith-data geodynamics/pylith
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+Hint
+\series default
+: Within the container, you will probably want to copy the examples from
+ the pylith-VERSION directory to the data directory, which is the persistent
+ storage.
+\end_layout
+
+\begin_layout LyX-Code
+$ cp -R ~/pylith-VERSION/examples ~/data
+\end_layout
+
+\begin_layout Subsubsection
+Using Docker containers
+\end_layout
+
+\begin_layout Itemize
+To 
+\begin_inset Quotes eld
+\end_inset
+
+pause
+\begin_inset Quotes erd
+\end_inset
+
+ a container: 
+\family typewriter
+Control-p Control-q
+\end_layout
+
+\begin_layout Itemize
+To attach to a 
+\begin_inset Quotes eld
+\end_inset
+
+paused
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+running
+\begin_inset Quotes erd
+\end_inset
+
+ container.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Get the container id
+\end_layout
+
+\begin_layout LyX-Code
+$ docker ps
+\end_layout
+
+\begin_layout Itemize
+Attach to the container
+\end_layout
+
+\begin_layout LyX-Code
+$ docker attach CONTAINER_ID
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+Copy data to/from persistent storage volume.
+\end_layout
+
+\begin_layout Standard
+These commands are run on the local host outside the container, not inside
+ the Docker container.
+\end_layout
+
+\begin_layout Subsubsection
+Copy data FROM persistent storage volume TO local host
+\end_layout
+
+\begin_layout LyX-Code
+$ docker cp pylith-data:/data/pylith-user/PATH/FILENAME LOCAL_PATH
+\end_layout
+
+\begin_layout Subsubsection
+Copy data FROM local host TO persistent storage volume
+\end_layout
+
+\begin_layout LyX-Code
+$ docker cp LOCAL_PATH pylith-data:/data/pylith-user/PATH/
+\end_layout
+
+\begin_layout Subsection
+Docker Quick Reference
+\end_layout
+
+\begin_layout Itemize
+List local docker images
+\end_layout
+
+\begin_layout LyX-Code
+$ docker images
+\end_layout
+
+\begin_layout Itemize
+List all docker containers
+\end_layout
+
+\begin_layout LyX-Code
+$ docker ps -a
+\end_layout
+
+\begin_layout Itemize
+List running docker containers
+\end_layout
+
+\begin_layout LyX-Code
+$ docker ps
+\end_layout
+
+\begin_layout Itemize
+Remove docker container
+\end_layout
+
+\begin_layout LyX-Code
+$ docker rm CONTAINER_ID
+\end_layout
+
+\begin_layout Itemize
+Remove docker image
+\end_layout
+
+\begin_layout LyX-Code
+$ docker rmi IMAGE_ID
 \end_layout
 
 \begin_layout Section
@@ -446,11 +632,11 @@ The easiest way to verify that PyLith has been installed correctly is to
  run one or more of the examples supplied with the binary and source code.
  In the binary distribution, the examples are located in 
 \family typewriter
-src/pylith-2.1.3/examples
+src/pylith-2.1.4/examples
 \family default
  while in the source distribution, they are located in 
 \family typewriter
-pylith-2.1.3/examples
+pylith-2.1.4/examples
 \family default
 .
  Chapter 
@@ -485,57 +671,78 @@ If you run PyLith if a directory without any input, you will get the error
 \end_layout
 
 \begin_layout LyX-Code
-Traceback (most recent call last):
-\end_layout
-
-\begin_layout LyX-Code
-...
-\end_layout
-
-\begin_layout LyX-Code
-ValueError: Filename for ASCII input mesh not specified.
+>> {default}::  
 \begin_inset Newline newline
 \end_inset
 
-
+-- pyre.inventory(error)  
 \begin_inset Newline newline
 \end_inset
 
-PyLith runs some minimum validation on the input before even
-\end_layout
-
-\begin_layout LyX-Code
-displaying help information.
- To test PyLith, run an example as 
-\end_layout
-
-\begin_layout LyX-Code
-discussed in the manual.
+-- meshimporter.meshioascii.filename <- ''  
 \begin_inset Newline newline
 \end_inset
 
-
+-- Filename for ASCII input mesh not specified.
+  To test PyLith, run an example as discussed in the manual.
+  
 \begin_inset Newline newline
 \end_inset
 
-Backtrace - Component meshioascii, reader
-\end_layout
+>> {default}::  
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
-Backtrace - Component meshimporter, mesh_generator
-\end_layout
+-- pyre.inventory(error)  
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
-Backtrace - Component pylithapp 
+-- timedependent.homogeneous.elasticisotropic3d.label <- ''  
+\begin_inset Newline newline
+\end_inset
+
+-- Descriptive label for material not specified.
+  
+\begin_inset Newline newline
+\end_inset
+
+>> {default}::  
+\begin_inset Newline newline
+\end_inset
+
+-- pyre.inventory(error)  
+\begin_inset Newline newline
+\end_inset
+
+-- timedependent.homogeneous.elasticisotropic3d.simpledb.label <- ''  
+\begin_inset Newline newline
+\end_inset
+
+-- Descriptive label for spatial database not specified.
+  
+\begin_inset Newline newline
+\end_inset
+
+>> {default}::  
+\begin_inset Newline newline
+\end_inset
+
+-- pyre.inventory(error)  
+\begin_inset Newline newline
+\end_inset
+
+-- timedependent.homogeneous.elasticisotropic3d.simpledb.simpleioascii.filename
+ <- ''  
+\begin_inset Newline newline
+\end_inset
+
+-- Filename for spatial database not specified.
+ pylithapp: configuration error(s)  
 \end_layout
 
 \begin_layout Standard
-This indicates that 
-\family typewriter
-pylithapp.mesh_generator.reader
-\family default
- component, which is a MeshIOAscii object, is missing an the filename for
- an ASCII input mesh.
+This indicates that a number of default settings must be set in order to
+ run PyLith, including setting the filename for the finite-element mesh.
 \end_layout
 
 \begin_layout Section

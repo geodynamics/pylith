@@ -8970,7 +8970,7 @@ Gravity is turned off by default.
 \end_layout
 
 \begin_layout LyX-Code
-use_gravity = true
+gravity_field = spatialdata.spatialdb.GravityField
 \end_layout
 
 \begin_layout Standard
@@ -9000,10 +9000,17 @@ gravity_dir = [0, -1, 0]
 \end_layout
 
 \begin_layout Standard
-An example problem using gravity is described in Section 
+Examples using gravity are described in Sections 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Tutorial-3d-hex8-gravity"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Tutorial-Gravity-2d"
 
 \end_inset
 

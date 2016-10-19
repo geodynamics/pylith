@@ -476,6 +476,14 @@ Using the Command Line
 \end_layout
 
 \begin_layout Standard
+The 
+\family typewriter
+--help
+\family default
+ command line argument displays links to useful resources for learning PyLith.
+\end_layout
+
+\begin_layout Standard
 Pyre uses the following syntax to change properties from the command line.
  To change the value of a property of a component, use:
 \end_layout
@@ -511,31 +519,7 @@ Each facility has a default component attached to it.
 \begin_layout Standard
 PyLith's command-line arguments can control Pyre and PyLith properties and
  facilities, MPI settings, and PETSc settings.
- You can get more information on the available options by typing
-\end_layout
-
-\begin_layout LyX-Code
-
-\family typewriter
-$ pylith --help
-\end_layout
-
-\begin_layout Quote
-
-\series bold
-\color red
-Warning:
-\color inherit
- 
-\series default
-\color none
-This only works if the input passes the minimum validation tests.
- Running PyLith in a directory without any input will fail the validation
- step due to a missing mesh input file.
-\end_layout
-
-\begin_layout Standard
-All PyLith-related properties are associated with the 
+ All PyLith-related properties are associated with the 
 \family typewriter
 pylithapp
 \family default
@@ -640,7 +624,7 @@ We strongly recommend that you use
 .cfg
 \family default
  files for your work.
- The files are syntax-colored in the vim editor.
+ The files are syntax-highlighted in the vim editor.
 \end_layout
 
 \begin_layout Subsubsection
@@ -765,6 +749,22 @@ the current directory (
 \family default
 ), for local overrides.
  
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Warning
+\series default
+\color inherit
+: The Pyre framework will search these directories for .cfg files matching
+ the names of components (for example, 
+\family typewriter
+timedependent.cfg, faultcohesivekin.cfg, greensfns.cfg, pointforce.cfg
+\family default
+, etc) and attempt to assign all parameters in those files to the respective
+ component.
 \end_layout
 
 \begin_layout Standard
@@ -1213,8 +1213,11 @@ Reordering the mesh so that vertices and cells connected topologically also
 
 \begin_layout Quote
 
+\series bold
 \color red
-Note:
+Warning
+\series default
+:
 \color inherit
  The coordinate system associated with the mesh must be a Cartesian coordinate
  system.
@@ -1324,6 +1327,17 @@ record_header_32bt Flag indicating FORTRAN record header is 32-bit (default
 
 \begin_layout Description
 coordsys Coordinate system associated with mesh.
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Warning
+\series default
+\color inherit
+: The PyLith developers have not used LaGriT since around 2008 and the most
+ recent release appears to have been in 2010.
 \end_layout
 
 \begin_layout Subsubsection
@@ -1990,7 +2004,7 @@ Description
 \begin_layout Plain Layout
 
 \family typewriter
-log_summary
+log_view
 \end_layout
 
 \end_inset
@@ -3592,7 +3606,7 @@ reference "sub:Stable-time-step"
  step.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Quote
 
 \series bold
 \color red
@@ -3917,7 +3931,7 @@ progres_monitor = pylith.problems.ProgressMonitorTime ; default
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Quote
 
 \series bold
 \color red
@@ -5716,9 +5730,9 @@ pylithinfo
 \begin_layout Itemize
 Use the 
 \family typewriter
---petsc.log_summary
+--petsc.log_
 \family default
-, 
+view, 
 \family typewriter
 --petsc.ksp_monitor
 \family default
