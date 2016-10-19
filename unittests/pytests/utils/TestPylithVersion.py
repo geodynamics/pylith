@@ -41,7 +41,9 @@ class TestPylithVersion(unittest.TestCase):
     else:
       # Check that revision is of the form v2.1.3-16-g9323114
       import re
-      match = re.search("v[0-9]+\.[0-9]+\.[0-9]+-[0-9]+-g[0-9,a-z]+", revision)
+      match = re.search("v[0-9]+\.[0-9]+\.[0-9]+", revision)
+      if match is None:
+        match = re.search("v[0-9]+\.[0-9]+\.[0-9]+-[0-9]+-g[0-9,a-z]+", revision)
       self.failIf(match is None)
     return
 
