@@ -33,7 +33,10 @@ testutils_SOURCES = \
 	test_utils.cc
 
 noinst_HEADERS = \
-	TestEventLogger.hh
+	TestEventLogger.hh \
+	TestPylithVersion.hh \
+	TestPetscVersion.hh \
+	TestDependenciesVersion.hh
 
 AM_CPPFLAGS += $(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES)
 
