@@ -55,6 +55,8 @@ def run_pylith(appClass, dbClass=None, nprocs=1):
 
     app = appClass()
     app.nodes = min(nprocs, maxprocs)
+    if app.nodes != nprocs:
+      print("WARNING: Detected %d CPUs. Reducing number of processes from %d to %d." % (maxprocs, nprocs, maxprocs))
     setattr(run_pylith, str(appClass), True)
     app.run()
   return
