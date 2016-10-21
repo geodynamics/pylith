@@ -325,7 +325,7 @@ Unpack the tarball.
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -xzf pylith-2.1.4-darwin-10.10.5.tgz
+$ tar -xzf pylith-2.1.4-darwin-10.11.6.tgz
 \end_layout
 
 \end_deeper
