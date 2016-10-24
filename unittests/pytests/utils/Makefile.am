@@ -27,6 +27,9 @@ noinst_PYTHON = \
 	TestEventLogger.py \
 	TestPetscManager.py \
 	TestConstants.py \
+	TestDependenciesVersion.py \
+	TestPetscVersion.py \
+	TestPylithVersion.py \
 	TestPylith.py
 
 

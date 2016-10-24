@@ -21,8 +21,12 @@
 ## @brief Test suite for testing pylith with 2-D axial extension.
 
 import numpy
+
+from pylith.tests import run_pylith
+
 from TestTri3 import TestTri3
 from axialdisp_soln import AnalyticalSoln
+from axialdisp_gendb import GenerateDB
 
 # Local version of PyLithApp
 from pylith.apps.PyLithApp import PyLithApp
@@ -30,24 +34,6 @@ class AxialApp(PyLithApp):
   def __init__(self):
     PyLithApp.__init__(self, name="axialdisp")
     return
-
-
-# Helper function to run PyLith
-def run_pylith():
-  """
-  Run pylith.
-  """
-  if not "done" in dir(run_pylith):
-    # Generate spatial databases
-    from axialdisp_gendb import GenerateDB
-    db = GenerateDB()
-    db.run()
-
-    # Run PyLith
-    app = AxialApp()
-    run_pylith.done = True # Put before run() so only called once
-    app.run()
-  return
 
 
 class TestAxialDisp(TestTri3):
@@ -60,7 +46,7 @@ class TestAxialDisp(TestTri3):
     Setup for test.
     """
     TestTri3.setUp(self)
-    run_pylith()
+    run_pylith(AxialApp, GenerateDB)
     self.outputRoot = "axialdisp"
 
     self.soln = AnalyticalSoln()

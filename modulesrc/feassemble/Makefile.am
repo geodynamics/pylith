@@ -45,8 +45,7 @@ swig_sources = \
 	ElasticityExplicitTet4.i \
 	IntegratorElasticityLgDeform.i \
 	ElasticityImplicitLgDeform.i \
-	ElasticityExplicitLgDeform.i \
-	ElasticityImplicitCUDA.i
+	ElasticityExplicitLgDeform.i
 
 swig_generated = \
 	feassemble_wrap.cxx \
@@ -60,13 +59,10 @@ dist__feassemblemodule_la_SOURCES = $(swig_sources) $(swig_generated)
 _feassemblemodule_la_LIBADD = \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
-	$(PETSC_LIB)
-if ENABLE_CUBIT
-  _feassemblemodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
-endif
-if NO_UNDEFINED
-_feassemblemodule_la_LIBADD += \
+	$(PETSC_LIB) \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
+if ENABLE_CUBIT
+  _feassemblemodule_la_LIBADD += -lnetcdf
 endif
 
 if ENABLE_SWIG

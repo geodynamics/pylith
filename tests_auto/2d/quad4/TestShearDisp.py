@@ -21,9 +21,12 @@
 ## @brief Test suite for testing pylith with 2-D shear.
 
 import numpy
-from TestQuad4 import TestQuad4
 
+from pylith.tests import run_pylith
+
+from TestQuad4 import TestQuad4
 from sheardisp_soln import AnalyticalSoln
+from sheardisp_gendb import GenerateDB
 
 # Local version of PyLithApp
 from pylith.apps.PyLithApp import PyLithApp
@@ -31,24 +34,6 @@ class ShearApp(PyLithApp):
   def __init__(self):
     PyLithApp.__init__(self, name="sheardisp")
     return
-
-
-# Helper function to run PyLith
-def run_pylith():
-  """
-  Run pylith.
-  """
-  if not "done" in dir(run_pylith):
-    # Generate spatial databases
-    from sheardisp_gendb import GenerateDB
-    db = GenerateDB()
-    db.run()
-
-    # Run PyLith
-    app = ShearApp()
-    app.run()
-    run_pylith.done = True
-  return
 
 
 class TestShearDisp(TestQuad4):
@@ -61,7 +46,7 @@ class TestShearDisp(TestQuad4):
     Setup for test.
     """
     TestQuad4.setUp(self)
-    run_pylith()
+    run_pylith(ShearApp, GenerateDB)
     self.outputRoot = "sheardisp"
     self.soln = AnalyticalSoln()
     return

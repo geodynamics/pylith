@@ -23,8 +23,7 @@
   initialize(int argc,
 	     char** argv)
   { // initialize
-    PetscErrorCode err = 
-      PetscInitialize(&argc, &argv, NULL, NULL); CHKERRQ(err);
+    PetscErrorCode err = PetscInitialize(&argc, &argv, NULL, NULL);CHKERRQ(err);
     return 0;
   } // initialize
 %} // inline
@@ -35,7 +34,7 @@
   int
   finalize(void)
   { // finalize
-    PetscErrorCode err = PetscFinalize(); CHKERRQ(err);
+    PetscErrorCode err = PetscFinalize();CHKERRQ(err);
     return 0;
   } // finalize
 %} // inline
@@ -47,7 +46,7 @@
   optionsSetValue(const char* name,
 		  const char* value)
   { // optionsSetValue
-    PetscErrorCode err = PetscOptionsSetValue(NULL, name, value); CHKERRQ(err);
+    PetscErrorCode err = PetscOptionsSetValue(NULL, name, value);CHKERRQ(err);
     return 0;
   } // optionsSetValue
 %} // inline
@@ -60,11 +59,24 @@
 		   const char* pre)
   { // optionsHasName
     PetscBool hasName = PetscBool(0);
-    PetscErrorCode err =
-      PetscOptionsHasName(NULL, pre, name, &hasName);
+    PetscErrorCode err = PetscOptionsHasName(NULL, pre, name, &hasName);CHKERRQ(err);
 
     return (hasName) ? true : false;
   } // optionsHasName
+%} // inline
+
+
+// ----------------------------------------------------------------------
+// PetscCitationsRegister
+%inline %{
+  int
+    citationsRegister(const char* entry)
+  { // citationsRegister
+    PetscBool set = PetscBool(PETSC_FALSE);
+    PetscErrorCode err = PetscCitationsRegister(entry, &set);CHKERRQ(err);
+
+    return 0;
+  } // citationsRegister
 %} // inline
 
 

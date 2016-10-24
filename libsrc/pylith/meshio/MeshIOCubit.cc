@@ -158,7 +158,7 @@ pylith::meshio::MeshIOCubit::_readVertices(ExodusII& exofile,
   info << journal::at(__HERE__)
        << "Reading " << *numVertices << " vertices." << journal::endl;
 
-  if (exofile.hasVar("coord")) {
+  if (exofile.hasVar("coord", NULL)) {
     const int ndims = 2;
     int dims[2];
     dims[0] = *numDims;

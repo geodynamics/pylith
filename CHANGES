@@ -10,6 +10,31 @@ The points file for OutputSolnPoints must now contain station names as
 the first column.
 
 ----------------------------------------------------------------------
+Version 2.1.4
+----------------------------------------------------------------------
+
+* Added --version command line argument to display version information
+  for PyLith and its dependencies.
+
+* Improved information displayed with the --help command line
+  argument.
+
+* Added --include-citations command line argument to display
+  publications to cite when publishing results from computations using
+  PyLith. General PyLith references are also displayed with the
+  --version command line argument.
+
+* Allow use of NetCDF versions greater than 4.1.3. Switch from using
+  C++ API to C API.
+
+* Fixed bug in Pythia associated with validation of parameters being
+  done before help could be displayed.
+
+* Fixed typos in manual for gravity and point forces.
+
+* Added integration with Travis for automated testing.
+
+----------------------------------------------------------------------
 Version 2.1.3
 ----------------------------------------------------------------------
 

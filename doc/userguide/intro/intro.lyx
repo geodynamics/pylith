@@ -83,132 +83,50 @@ PyLith is a multi-scale simulation software package for earthquake physics.
 \end_layout
 
 \begin_layout Section
-New in PyLith Version 2.1.3
+New in PyLith Version 2.1.4
 \end_layout
 
 \begin_layout Itemize
-Bugfixes for finite-strain formulation.
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Added output of the Cauchy stresses (
+Added -
 \family typewriter
-cauchy_stress
+-version
 \family default
-).
- The second Pioloa-Kirchoff stresses are output via the 
+ command line argument to display version information for PyLith and its
+ dependencies.
+\end_layout
+
+\begin_layout Itemize
+Improved information displayed with the 
 \family typewriter
-stress
+--help
 \family default
- field.
+ command line argument.
 \end_layout
 
 \begin_layout Itemize
-Material properties and state variables were not retrieved properly when
- updating state variables.
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-Bugfixes for setting initial stress and state variables for viscoelastic
- materials.
- The deviatoric stress state is carried forward using the state variables,
- so the initial deviatoric stress should not be considered when computing
- the stresses.
-\end_layout
-
-\begin_layout Itemize
-Created new examples showing how to use gravity, initial stress, and finite-stra
-in in 2-D (
+Added --include-citations command line argument to display publications
+ to cite when publishing results from computations using PyLith.
+ General PyLith references are also displayed with the 
 \family typewriter
-examples/2d/gravity
+--version
 \family default
-, see Section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:Tutorial-Gravity-2d"
-
-\end_inset
-
-).
+ command line argument.
 \end_layout
 
 \begin_layout Itemize
-Reintroduced check (that had been inadvertently removed in v2.x) for ambiguous
- description of fault surface based on groups of vertices defining faces
- of cells.
- 
+Allow use of NetCDF versions greater than 4.1.3.
+ Switch from using C++ API to C API.
 \end_layout
 
 \begin_layout Itemize
-Flush the output of the progress monitor so progress reports are updated
- promptly.
+Fixed bug in Pythia associated with validation of parameters being done
+ before help could be displayed.
 \end_layout
 
 \begin_layout Itemize
-Updates to the user manual.
+Fixed typos in manual for gravity and point forces.
 \end_layout
 
-\begin_deeper
-\begin_layout Itemize
-Added Section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:debugging:examples"
-
-\end_inset
-
- on the debugging examples covered in recent tutorials.
-\end_layout
-
-\begin_layout Itemize
-Added tables describing the spatial database values for each material.
-\end_layout
-
-\begin_layout Itemize
-Included a more complete discussion of the finite-strain formulation.
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-PyLith Installer
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Added ability to install autotools and setuptools.
-\end_layout
-
-\begin_layout Itemize
-Patched versions of NetCDF and HDF5 used by the installer for improved portabili
-ty.
-\end_layout
-
-\begin_layout Itemize
-Improved documentation and description of versions for dependencies.
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-PETSc
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Updated to PETSc v3.7.2 (
-\family typewriter
-knepley/pylith
-\family default
- branch).
-\end_layout
-
-\begin_layout Itemize
-Fixed Trilinos/ML configuration and code so that it can be built without
- a Fortran compiler.
-\end_layout
-
-\end_deeper
 \begin_layout Standard
 The 
 \family typewriter

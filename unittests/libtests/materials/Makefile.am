@@ -132,7 +132,7 @@ testmaterials_LDADD = \
 	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
 if ENABLE_CUBIT
-  testmaterials_LDADD += -lnetcdf_c++ -lnetcdf
+  testmaterials_LDADD += -lnetcdf
 endif
 
 

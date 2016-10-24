@@ -22,7 +22,7 @@
 
 import numpy
 
-from TestEqInfo import TestEqInfo
+from TestEqInfo import TestEqInfo, run_eqinfo
 
 
 # Local version of EqInfoApp
@@ -31,18 +31,6 @@ class Quad4App(EqInfoApp):
   def __init__(self):
     EqInfoApp.__init__(self, name="quad4")
     return
-
-
-# Helper function to run pylith_eqinfo.
-def run_eqinfo():
-  """
-  Run pylith_eqinfo.
-  """
-  if not "done" in dir(run_eqinfo):
-    app = Quad4App()
-    app.run()
-    run_eqinfo.done = True
-  return
 
 
 class TestEqInfoQuad4(TestEqInfo):
@@ -54,7 +42,7 @@ class TestEqInfoQuad4(TestEqInfo):
     """
     Setup for test.
     """
-    run_eqinfo()
+    run_eqinfo(Quad4App)
     return
 
 

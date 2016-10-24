@@ -69,7 +69,7 @@ pylith::topology::TestMeshOps::testNondimensionalize(void)
   const PylithScalar lengthScale = 2.0;
   const int spaceDim = 2;
   const int numVertices = 4;
-  const int coordinates[numVertices*spaceDim] = { 
+  const PylithScalar coordinates[numVertices*spaceDim] = { 
     -1.0, 0.0,
     0.0, -1.0,
     0.0, 1.0,

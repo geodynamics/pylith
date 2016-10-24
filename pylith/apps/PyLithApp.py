@@ -39,7 +39,7 @@ class PyLithApp(PetscApplication):
     ## Python object for managing PyLithApp facilities and properties.
     ##
     ## \b Properties
-    ## @li \b initialize_only Stop simulation after initializing problem.
+    ## @li \b initialize-only Stop simulation after initializing problem.
     ##
     ## \b Facilities
     ## @li \b mesher Generates or imports the computational mesh.
@@ -48,7 +48,7 @@ class PyLithApp(PetscApplication):
 
     import pyre.inventory
 
-    initializeOnly = pyre.inventory.bool("initialize_only", default=False)
+    initializeOnly = pyre.inventory.bool("initialize-only", default=False)
     initializeOnly.meta['tip'] = "Stop simulation after initializing problem."
 
     from pylith.topology.MeshImporter import MeshImporter
@@ -71,8 +71,8 @@ class PyLithApp(PetscApplication):
                                validator=pyre.inventory.choice(['relaxed', 'strict', 'pedantic']))
     typos.meta['tip'] = "Specifies the handling of unknown properties and " \
         "facilities"
-    
-    pdbOn = pyre.inventory.bool("start_python_debugger", default=False)
+
+    pdbOn = pyre.inventory.bool("start-python-debugger", default=False)
     pdbOn.meta['tip'] = "Start python debugger at beginning of main()."
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -93,7 +93,7 @@ class PyLithApp(PetscApplication):
     if self.pdbOn:
           import pdb
           pdb.set_trace()
-        
+
     from pylith.mpi.Communicator import mpi_comm_world
     comm = mpi_comm_world()
     if 0 == comm.rank:
@@ -146,7 +146,173 @@ class PyLithApp(PetscApplication):
       self.perfLogger.show()
 
     return
-  
+
+
+  def version(self):
+    def getPyPkgVer(name):
+      import os
+      m = None
+      location = None
+      version = None
+      try:
+        m = __import__(name)
+        location = os.path.split(m.__file__)[0]
+        version = m.__version__
+      except ImportError:
+        version = "not found"
+        location = "--"
+      except AttributeError:
+        if version is None:
+          version = "unknown"
+        if location is None:
+          location = "unknown"
+      return (version, location)
+    
+    import sys
+    import platform
+    pythonVersion = platform.python_version()
+    pythonCompiler = platform.python_compiler()
+    uname = platform.uname()
+    unameStr = " ".join((uname[0], uname[2], uname[4]))
+    msg = "Running PyLith on %s.\n" % unameStr
+
+    import pylith.utils.utils as utils
+    # PyLith version information
+    v = utils.PylithVersion()
+    if v.isRelease():
+        msg += "    Release v%s.\n" % (v.version(),)
+    else:
+        msg += "    Configured on %s, GIT branch: %s, revision: %s, hash: %s.\n" % (v.gitDate(), v.gitBranch(), v.gitRevision(), v.gitHash(),)
+    msg += "\n"
+        
+    # PETSc
+    v = utils.PetscVersion()
+    if v.isRelease():
+        msg += "    PETSc release v%s.\n" % (v.version(),)
+    else:
+        msg += "    PETSc configured on %s, GIT branch: %s, revision: %s.\n" % (v.gitDate(), v.gitBranch(), v.gitRevision(),)
+    msg += "        PETSC_DIR: %s, PETSC_ARCH: %s\n" % (v.petscDir(), v.petscArch(),)
+    msg += "\n"
+
+    # Other dependencies
+    v = utils.DependenciesVersion()
+    msg += "    MPI standard: %s, implementation: %s, version: %s.\n" % (v.mpiStandard(), v.mpiImplementation(), v.mpiVersion())
+    msg += "    HDF5 version: %s.\n" % (v.hdf5Version())
+    msg += "    NetCDF4 version: %s.\n" % (v.netcdfVersion())
+    msg += "\n"
+    
+    # Spatialdata
+    import spatialdata.utils.utils as utils
+    v = utils.SpatialdataVersion()
+    if v.isRelease():
+        msg += "    Spatialdata release v%s.\n" % (v.version(),)
+    else:
+        msg += "    Spatialdata configured on %s, GIT branch: %s, revision: %s.\n" % (v.gitDate(), v.gitBranch(), v.gitRevision(),)
+    msg += "    Proj.4 version: %s.\n" % (v.projVersion(),)
+    msg += "\n"
+
+    # Python
+    msg += "    Python %s compiled with %s from %s.\n" % (pythonVersion, pythonCompiler, sys.executable)
+
+    pkgs = ("numpy","spatialdata","FIAT","h5py","netCDF4","pyre")
+    for pkg in pkgs:
+      ver,loc = getPyPkgVer(pkg)
+      msg += "        %s %s from %s.\n" % (pkg, ver, loc)
+    msg += "\n"
+
+    # Citation information
+    msg += "If you publish results based on computations with PyLith please cite the following:\n" \
+           "(use --include-citations during your simulations to display a list specific to your computation):\n\n"
+    for citation in self.citations():
+      msg += citation + "\n"
+
+    print(msg)
+    return
+
+    
+  def citations(self):
+    import pylith.utils.utils as utils
+    v = utils.PylithVersion()
+    verNum = v.version()
+    verYear = 2016
+
+    manual = ("@Manual{PyLith:manual,\n"
+              "  title        = {PyLith User Manual, Version %s},\n"
+              "  author       = {Aagaard, B. and Knepley, M. and Williams, C.},\n"
+              "  organization = {Computational Infrastructure for Geodynamics (CIG)},\n"
+              "  address      = {University of California, Davis},\n"
+              "  year         = {%d},\n"
+              "  note         = {http://www.geodynamics.org/cig/software/pylith/pylith\_manual-%s.pdf}\n"
+              "}\n" % (verNum, verYear, verNum)
+            )
+    
+    faultRup = ("@Article{Aagaard:Knepley:Williams:JGR:2013,\n"
+                "  author   = {Aagaard, B.~T. and Knepley, M.~G. and Wiliams, C.~A.},\n"
+                "  title    = {A domain decomposition approach to implementing fault slip "
+                "in finite-element models of quasi-static and dynamic crustal deformation},\n"
+                "  journal  = {Journal of Geophysical Research Solid Earth},\n"
+                "  year     = {2013},\n"
+                "  volume   = {118},\n"
+                "  pages    = {3059--3079},\n"
+                "  doi      = {10.1002/jgrb.50217}\n"
+                "}\n"
+              )
+
+    entries = (manual, faultRup)
+    return entries
+    
+
+  def showHelp(self):
+    msg = (
+      "Before you ask for help, consult the PyLith user manual and try to debug on your own.\n"
+      "You will likely find other useful information while making progress on your original issue.\n"
+      "\n"
+      "Helpful Resources:\n"
+      "* User manual (https://geodynamics.org/cig/software/pylith/)\n"
+      "* PyLith Tutorials (https://wiki.geodynamics.org/software:pylith:start)\n"
+      "* pylithinfo script\n"
+      "    Running pylithinfo --verbose [-o pylith_parameters.txt] [PyLith args]\n"
+      "    will dump all parameters with descriptions to pylith_parameters.txt.\n"
+      "\n"
+      "For quasi-static simulations, use the following solver settings to make sure the linear and nonlinear solvers are converging:\n"
+      "[pylithapp.petsc]\n"
+      "ksp_converged_reason = true\n"
+      "ksp_error_if_not_converged = true\n"
+      "snes_converged_reason = true\n"
+      "snes_error_if_not_converged = true\n"
+      "\n"
+      "If you still need help, send an email to cig-short@geodynamics.org with the following info:\n"
+      "\n"
+      "1. Describe what you are trying to do\n"
+      "  a. Overview of the problem and boundary conditions (diagrams are very helpful)\n"
+      "  b. 2-D or 3-D\n"
+      "  c. Cell type (tri, quad, hex, or tet)\n"
+      "  d. Type of fault: prescribed slip or spontaneous rupture\n"
+      "2. Include the output of running 'pylith --version'\n"
+      "3. Send the *entire* error message, not just what you think is important (entire log is best).\n"
+      "\n"
+      "Description and help for PyLithApp component:\n"
+    )
+    if self.inventory.usage:
+      print(msg)
+
+    PetscApplication.showHelp(self)
+
+    msg = (
+      "\nExamples using step01.cfg in directory examples/3d/hex8):\n"
+      "1. List components and properties for a given component (--help)\n"
+      "  pylith step01.cfg --problem.bc.z_neg.help\n"
+      "\n"
+      "2. List components of a given component (--help-components)\n"
+      "  pylith step01.cfg --problem.bc.z_neg.help-components\n"
+      "\n"
+      "3. List properties of a given component (--help-properties)\n"
+      "  pylith step01.cfg --problem.bc.z_neg.help-properties\n"
+    )
+    if self.inventory.usage:
+      print(msg)
+    return
+
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 

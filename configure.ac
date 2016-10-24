@@ -17,7 +17,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith], [2.1.3], [cig-short@geodynamics.org])
+AC_INIT([PyLith], [2.1.4], [cig-short@geodynamics.org])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
@@ -67,17 +67,6 @@ AC_ARG_ENABLE([cubit],
 AM_CONDITIONAL([ENABLE_CUBIT], [test "$enable_cubit" = yes])
 AC_SUBST(PYLITH_SWIG_CPPFLAGS)
 
-# PETSc w/TetGen
-AC_ARG_ENABLE([tetgen],
-    [AC_HELP_STRING([--enable-tetgen],
-        [enable generating simple meshes w/TetGen via PETSc @<:@default=no@:>@])],
-	[if test "$enableval" = yes ; then 
-	  enable_tetgen=yes
-	  CPPFLAGS="-DENABLE_TETGEN $CPPFLAGS"; export CPPFLAGS
-        else enable_tetgen=no; fi],
-	[enable_tetgen=no])
-AM_CONDITIONAL([ENABLE_TETGEN], [test "$enable_tetgen" = yes])
-
 # PETSc w/HDF5
 AC_ARG_ENABLE([hdf5],
     [AC_HELP_STRING([--enable-hdf5],
@@ -92,21 +81,9 @@ if test "$enable_hdf5" = "yes"; then
 fi
 AM_CONDITIONAL([ENABLE_HDF5], [test "$enable_hdf5" = yes])
 
-# CUDA
-AC_ARG_ENABLE([cuda],
-    [AC_HELP_STRING([--enable-cuda],
-        [enable use of CUDA @<:@default=no@:>@])],
-	[if test "$enable_cuda" = yes; then
-          enable_cuda=yes
-          CPPFLAGS="-DENABLE_CUDA $CPPFLAGS"; export CPPFLAGS
-	  PYLITH_SWIG_CPPFLAGS="-DENABLE_CUDA $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS
-          else enable_cuda=no; fi],
-	[enable_cuda=no])
-AM_CONDITIONAL([ENABLE_CUDA], [test "$enable_cuda" = yes])
-
 # DOCUMENTATION w/doxygen
 AC_ARG_ENABLE([documentation],
-    [AC_HELP_STRING([--enable-documentation],
+    [AC_HELP_STRING([--enable-api-documentation],
         [enable building HTML documentation (requires doxygen) @<:@default=no@:>@])],
 	[if test "$enableval" = yes ; then enable_documentation=yes; else enable_documentation=no; fi],
 	[enable_documentation=no])
@@ -120,13 +97,6 @@ AC_PROG_CXXCPP
 AC_DISABLE_STATIC
 
 AC_PROG_LIBTOOL
-if test "$allow_undefined_flag" = unsupported; then
-    # See issue119.
-    AM_LDFLAGS="-no-undefined $AM_LDFLAGS"
-fi
-AM_CONDITIONAL([NO_UNDEFINED], [test "$allow_undefined_flag" = unsupported])
-AC_SUBST(AM_LDFLAGS)
-
 AC_PROG_INSTALL
 
 # PYTHON
@@ -171,10 +141,7 @@ fi
 
 # CUBIT (netcdf)
 if test "$enable_cubit" = "yes" ; then
-  AC_REQUIRE_CPP
-  AC_LANG(C++)
-  CIT_NETCDF_HEADER
-  CIT_NETCDF_LIB
+  AX_LIB_NETCDF4()
 fi
 
 # TETGEN
@@ -261,6 +228,10 @@ fi
 
 # Check whether compiler sets variable with function names.
 CIT_FUNCTIONSTRING
+
+# VERSION
+CIG_PKG_GIT(PYLITH)
+AC_DEFINE_UNQUOTED([PYLITH_VERSION], ["$PACKAGE_VERSION"], [Define PyLith version])
 
 # ENDIANNESS
 AC_C_BIGENDIAN

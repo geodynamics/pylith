@@ -42,11 +42,8 @@ dist__mpimodule_la_SOURCES = $(swig_sources) $(swig_generated)
 _mpimodule_la_LIBADD = \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
-	$(PETSC_LIB)
-if NO_UNDEFINED
-_mpimodule_la_LIBADD += \
+	$(PETSC_LIB) \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
-endif
 
 if ENABLE_SWIG
 $(srcdir)/mpi_wrap.cxx $(srcdir)/mpi.py: $(swig_sources)

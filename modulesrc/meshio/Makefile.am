@@ -52,13 +52,10 @@ dist__meshiomodule_la_SOURCES = $(swig_sources) $(swig_generated)
 _meshiomodule_la_LIBADD = \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
-	$(PETSC_LIB)
-if ENABLE_CUBIT
-  _meshiomodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
-endif
-if NO_UNDEFINED
-_meshiomodule_la_LIBADD += \
+	$(PETSC_LIB) \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
+if ENABLE_CUBIT
+  _meshiomodule_la_LIBADD += -lnetcdf
 endif
 
 if ENABLE_SWIG

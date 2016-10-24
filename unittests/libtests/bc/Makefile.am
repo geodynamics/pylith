@@ -143,7 +143,7 @@ testbc_LDADD = \
 	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
 if ENABLE_CUBIT
-  testbc_LDADD += -lnetcdf_c++ -lnetcdf
+  testbc_LDADD += -lnetcdf
 endif
 
 

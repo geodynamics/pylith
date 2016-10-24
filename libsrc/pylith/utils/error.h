@@ -44,6 +44,8 @@
 
 #define PYLITH_CHECK_ERROR(err) do {if (PetscUnlikely(err)) {PetscError(PETSC_COMM_SELF,__LINE__,PETSC_FUNCTION_NAME,__FILE__,err,PETSC_ERROR_REPEAT,0);throw std::runtime_error("Error detected while in PETSc function.");}} while(0)
 
+#define PYLITH_CHECK_ERROR_NOTHROW(err) do {if (PetscUnlikely(err)) {PetscError(PETSC_COMM_SELF,__LINE__,PETSC_FUNCTION_NAME,__FILE__,err,PETSC_ERROR_REPEAT,0);}} while(0)
+
 #define PYLITH_CHECK_ERROR_MSG(err, msg) \
   if (err) { \
     PetscError(PETSC_COMM_SELF,__LINE__,__FUNCT__,__FILE__,err,PETSC_ERROR_REPEAT, 0, " "); \

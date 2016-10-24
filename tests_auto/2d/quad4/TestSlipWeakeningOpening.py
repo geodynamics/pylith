@@ -21,6 +21,9 @@
 ## @brief Test suite for testing pylith with 2-D opening with slipweakening.
 
 import numpy
+
+from pylith.tests import run_pylith
+
 from TestQuad4 import TestQuad4
 from slipweakening_opening_soln import AnalyticalSoln
 
@@ -32,19 +35,6 @@ class SWOpeningApp(PyLithApp):
   def __init__(self):
     PyLithApp.__init__(self, name="slipweakening_opening")
     return
-
-
-# Helper function to run PyLith
-def run_pylith():
-  """
-  Run pylith.
-  """
-  if not "done" in dir(run_pylith):
-    # Run PyLith
-    app = SWOpeningApp()
-    app.run()
-    run_pylith.done = True
-  return
 
 
 class TestSlipWeakeningOpening(TestQuad4):
@@ -64,7 +54,7 @@ class TestSlipWeakeningOpening(TestQuad4):
                       'ncells': 8,
                       'ncorners': 2}
 
-    run_pylith()
+    run_pylith(SWOpeningApp)
     self.outputRoot = "slipweakening_opening"
     self.soln = AnalyticalSoln()
     return

@@ -21,6 +21,9 @@
 ## @brief Test suite for testing pylith with 2-D shear stick with slipweakening.
 
 import numpy
+
+from pylith.tests import run_pylith
+
 from TestQuad4 import TestQuad4
 from slipweakening_shear_stick_soln import AnalyticalSoln
 
@@ -32,19 +35,6 @@ class SWShearStickApp(PyLithApp):
   def __init__(self):
     PyLithApp.__init__(self, name="slipweakening_shear_stick")
     return
-
-
-# Helper function to run PyLith
-def run_pylith():
-  """
-  Run pylith.
-  """
-  if not "done" in dir(run_pylith):
-    # Run PyLith
-    app = SWShearStickApp()
-    app.run()
-    run_pylith.done = True
-  return
 
 
 class TestSlipWeakeningShearStick(TestQuad4):
@@ -64,7 +54,7 @@ class TestSlipWeakeningShearStick(TestQuad4):
                       'ncells': 8,
                       'ncorners': 2}
 
-    run_pylith()
+    run_pylith(SWShearStickApp)
     self.outputRoot = "slipweakening_shear_stick"
     self.soln = AnalyticalSoln()
     return
@@ -188,7 +178,7 @@ class TestSlipWeakeningShearStick(TestQuad4):
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
   import unittest
-  from TestSlipWeakeninShearStick import TestSlipWeakeningShearStick as Tester
+  from TestSlipWeakeningShearStick import TestSlipWeakeningShearStick as Tester
 
   suite = unittest.TestSuite()
   suite.addTest(unittest.makeSuite(Tester))

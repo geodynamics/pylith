@@ -45,16 +45,32 @@ def check_properties(testcase, filename, mesh, properties):
   tolerance = 1.0e-6
 
   for name in properties.keys():
-    propertyE = properties[name]
-    property = h5['cell_fields/%s' % name][:]
-    ratio = numpy.abs(1.0 - property[:]/propertyE[:,0])
-    diff = numpy.abs(property[:] - propertyE[:,0])
-    mask = propertyE[:,0] != 0.0
-    okay = mask*(ratio < tolerance) + ~mask*(diff < tolerance)
+    istep = 0
+    icomp = 0
+
+    propertyE = properties[name][istep,:,icomp]
+    property = h5['cell_fields/%s' % name][istep,:,icomp]
+
+    okay = numpy.zeros((ncells,), dtype=numpy.bool)
+
+    maskR = numpy.abs(propertyE > tolerance)
+    ratio = numpy.abs(1.0 - property[maskR]/propertyE[maskR])
+    if len(ratio) > 0:
+      okay[maskR] = ratio < tolerance
+
+    maskD = ~maskR
+    diff = numpy.abs(property[maskD] - propertyE[maskD])
+    if len(diff) > 0:
+      okay[maskD] = diff < tolerance
+
     if numpy.sum(okay) != ncells:
       print "Error in values for physical property '%s'." % name
       print "Expected values:",propertyE
       print "Output values:",property
+      print "Expected values (not okay): ",propertyE[~okay]
+      print "Computed values (not okay): ",property[~okay]
+      print "Coordinates (not okay): ",vertices[~okay,:]
+      h5.close()
     testcase.assertEqual(ncells, numpy.sum(okay))
 
   h5.close()
