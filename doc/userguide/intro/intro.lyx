@@ -83,6 +83,60 @@ PyLith is a multi-scale simulation software package for earthquake physics.
 \end_layout
 
 \begin_layout Section
+New in PyLith Version 2.1.4
+\end_layout
+
+\begin_layout Itemize
+Added -
+\family typewriter
+-version
+\family default
+ command line argument to display version information for PyLith and its
+ dependencies.
+\end_layout
+
+\begin_layout Itemize
+Improved information displayed with the 
+\family typewriter
+--help
+\family default
+ command line argument.
+\end_layout
+
+\begin_layout Itemize
+Added --include-citations command line argument to display publications
+ to cite when publishing results from computations using PyLith.
+ General PyLith references are also displayed with the 
+\family typewriter
+--version
+\family default
+ command line argument.
+\end_layout
+
+\begin_layout Itemize
+Allow use of NetCDF versions greater than 4.1.3.
+ Switch from using C++ API to C API.
+\end_layout
+
+\begin_layout Itemize
+Fixed bug in Pythia associated with validation of parameters being done
+ before help could be displayed.
+\end_layout
+
+\begin_layout Itemize
+Fixed typos in manual for gravity and point forces.
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+CHANGES
+\family default
+ file in the top-level source directory contains a summary of features and
+ bugfixes for each release.
+\end_layout
+
+\begin_layout Section
 History
 \end_layout
 

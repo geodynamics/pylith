@@ -120,13 +120,31 @@ geodynamics.org
  It is essential that you recognize these individuals in the normal scientific
  practice by citing the appropriate peer-reviewed papers and making appropriate
  acknowledgments in talks and publications.
- The following peer-reviewed paper discussed the development of PyLith:
+ The preferred way to generate the list of publications (in BibTeX format)
+ to cite is to run your simulations with the 
+\family typewriter
+--include-citations
+\family default
+ command line argument, or equivalently, the 
+\family typewriter
+--petsc.citations
+\family default
+ command line argument.
+ The 
+\family typewriter
+--help-citations
+\family default
+ command line argument will generate the BibTeX entries for the references
+ mentioned below.
+\end_layout
+
+\begin_layout Standard
+The following peer-reviewed paper discussed the development of PyLith:
 \end_layout
 
 \begin_layout Itemize
 Aagaard, B.
- T.,
- M.
+ T., M.
  G.
  Knepley, and C.
  A.
@@ -144,20 +162,18 @@ To cite this manual, use:
 \end_layout
 
 \begin_layout Itemize
-Aagaard, B., S.
- Kientz, M.
- Knepley, L.
- Strand, and C.
- Williams (2013), 
+Aagaard, B., M.
+ Knepley, C.
+ Williams (2016), 
 \emph on
-PyLith User Manual, Version 2.1.0.
+PyLith User Manual, Version 2.1.4.
 
 \emph default
  Davis, CA: Computational Infrastructure of Geodynamics.
 \begin_inset Newline newline
 \end_inset
 
-URL: geodynamics.org/cig/software/pylith/pylith_manual-2.1.0.pdf
+URL: geodynamics.org/cig/software/pylith/pylith_manual-2.1.4.pdf
 \end_layout
 
 \begin_layout Section

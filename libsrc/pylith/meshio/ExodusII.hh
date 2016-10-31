@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -33,8 +33,6 @@
 #include <string> // HASA std::string
 
 // Forward declarations -------------------------------------------------
-/// C++ input/output manager for CUBIT Exodus II files.
-class NcFile; // netcdf file
 
 // ExodusII ----------------------------------------------------------
 class pylith::meshio::ExodusII
@@ -77,26 +75,32 @@ public :
   /// Close file.
   void close(void);
     
-  /** Check if file constains dimension.
+  /** Check if file contains dimension.
    *
-   * @param name Name of dimension.
-   * @returns True if file contains variable, false otherwise.
+   * @param[in] name Name of dimension.
+   * @param[out] Id of dimension if found, -1 otherwise.
+   * @returns True if file contains dimension, false otherwise.
    */
-  bool hasDim(const char* name) const;
+  bool hasDim(const char* name,
+	      int* id) const;
 
-  /** Check if file constains attribute.
+  /** Check if file contains attribute.
    *
-   * @param name Name of attribute.
-   * @returns True if file contains variable, false otherwise.
+   * @param[in] name Name of attribute.
+   * @param[out] Id of attribute if found, -1 otherwise.
+   * @returns True if file contains attribute, false otherwise.
    */
-  bool hasAtt(const char* name) const;
+  bool hasAtt(const char* name,
+	      int* id) const;
   
-  /** Check if file constains variable.
+  /** Check if file contains variable.
    *
-   * @param name Name of variable.
+   * @param[in] name Name of variable.
+   * @param[out] Id of variable if found, -1 otherwise.
    * @returns True if file contains variable, false otherwise.
    */
-  bool hasVar(const char* name) const;
+  bool hasVar(const char* name,
+	      int* id) const;
 
   /** Get dimension from file.
    *
@@ -143,7 +147,7 @@ public :
 private :
 
   std::string _filename; ///< Name of file
-  NcFile* _file; ///< ExodusII file
+  int _file; ///< ExodusII file
 
 }; // ExodusII
 

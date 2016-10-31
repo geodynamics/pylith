@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -295,7 +295,7 @@ class GenMaxwellIsotropic3DTimeDep(ElasticMaterialApp):
                                             viscousStrainT[model, iComp] + \
                                             dqV[model] * deltaStrain
           devStressTpdt += shearRatioV[model] * viscousStrainTpdt[model, iComp]
-      devStressTpdt = elasFac * devStressTpdt + devStressInitial[iComp]
+      devStressTpdt = elasFac * devStressTpdt
       stressTpdt[iComp] = diag[iComp] * meanStressTpdt + devStressTpdt
     
     return stressTpdt, viscousStrainTpdt

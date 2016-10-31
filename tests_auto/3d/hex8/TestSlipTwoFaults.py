@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -21,6 +21,9 @@
 ## @brief Test suite for testing pylith with shear slip.
 
 import numpy
+
+from pylith.tests import run_pylith
+
 from TestHex8 import TestHex8
 from sliptwofaults_soln import AnalyticalSoln
 
@@ -30,18 +33,6 @@ class SlipTwoFaultsApp(PyLithApp):
   def __init__(self):
     PyLithApp.__init__(self, name="sliptwofaults")
     return
-
-
-# Helper function to run PyLith
-def run_pylith():
-  """
-  Run pylith.
-  """
-  if not "dtwo" in dir(run_pylith):
-    app = SlipTwoFaultsApp()
-    run_pylith.dtwo = True # Put before run() so only called once
-    app.run()
-  return
 
 
 class TestSlipTwoFaults(TestHex8):
@@ -60,7 +51,7 @@ class TestSlipTwoFaults(TestHex8):
                       'spaceDim': 3,
                       'ncells': 40,
                       'ncorners': 4}
-    run_pylith()
+    run_pylith(SlipTwoFaultsApp)
     self.outputRoot = "sliptwofaults"
 
     self.soln = AnalyticalSoln()

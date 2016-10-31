@@ -29,11 +29,15 @@ nodeset 100 name "subd_fault"
 # ----------------------------------------------------------------------
 group "splay_fault" add node in surface 30
 
-# We must remove the nodes that are already contained in the subduction interface.
-group "splay_fault" remove node in group subd_fault
-
 nodeset 101 group splay_fault
 nodeset 101 name "splay_fault"
+
+# We need to add a nodeset to define the buried edge of the fault,
+# which also intersects the subduction fault.
+group "splay_fault_edge" add node in curve 57
+
+nodeset 102 group splay_fault_edge
+nodeset 102 name "splay_fault_edge"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +x face
@@ -99,6 +103,7 @@ nodeset 15 name "face zpos"
 
 
 # End of file
+
 
 
 

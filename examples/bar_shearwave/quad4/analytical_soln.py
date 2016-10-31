@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Compute the analytical steady-state solution.
 #
 # The shear traction on the fault is balanced by the shear traction

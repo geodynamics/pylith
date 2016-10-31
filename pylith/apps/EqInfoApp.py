@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -52,7 +52,9 @@ class RuptureStats(object):
 
   def recalculate(self):
     self.avgslip = self.potency / (self.ruparea + 1.0e-30)
-    self.mommag = 2.0/3.0*(numpy.log10(self.moment) - 9.05)
+    self.mommag = -1.0e+30*numpy.ones(self.moment.shape)
+    mask = self.moment > 0.0
+    self.mommag[mask] = 2.0/3.0*(numpy.log10(self.moment[mask]) - 9.05)
     return
 
 

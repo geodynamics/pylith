@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -68,6 +68,15 @@ class TestApp(Script):
 
     from TestEventLogger import TestEventLogger
     suite.addTest(unittest.makeSuite(TestEventLogger))
+
+    from TestPylithVersion import TestPylithVersion
+    suite.addTest(unittest.makeSuite(TestPylithVersion))
+
+    from TestPetscVersion import TestPetscVersion
+    suite.addTest(unittest.makeSuite(TestPetscVersion))
+
+    from TestDependenciesVersion import TestDependenciesVersion
+    suite.addTest(unittest.makeSuite(TestDependenciesVersion))
 
     from TestConstants import TestConstants
     suite.addTest(unittest.makeSuite(TestConstants))

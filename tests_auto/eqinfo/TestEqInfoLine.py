@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -22,7 +22,7 @@
 
 import numpy
 
-from TestEqInfo import TestEqInfo
+from TestEqInfo import TestEqInfo, run_eqinfo
 
 
 # Local version of EqInfoApp
@@ -31,18 +31,6 @@ class LineApp(EqInfoApp):
   def __init__(self):
     EqInfoApp.__init__(self, name="line")
     return
-
-
-# Helper function to run pylith_eqinfo.
-def run_eqinfo():
-  """
-  Run pylith_eqinfo.
-  """
-  if not "done" in dir(run_eqinfo):
-    app = LineApp()
-    app.run()
-    run_eqinfo.done = True
-  return
 
 
 class TestEqInfoLine(TestEqInfo):
@@ -54,7 +42,7 @@ class TestEqInfoLine(TestEqInfo):
     """
     Setup for test.
     """
-    run_eqinfo()
+    run_eqinfo(LineApp)
     return
 
 

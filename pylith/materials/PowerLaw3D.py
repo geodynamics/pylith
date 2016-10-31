@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -49,7 +49,7 @@ class PowerLaw3D(ElasticMaterial, ModulePowerLaw3D):
            {'info': ["mu", "lambda", "density", "stable_dt_implicit", "stable_dt_explicit",
                      "reference_strain_rate", "reference_stress",
                      "power_law_exponent"],
-            'data': ["total_strain", "stress", "viscous_strain"]}}
+            'data': ["total_strain", "stress", "cauchy_stress", "viscous_strain"]}}
     self._loggingPrefix = "MaPL3D "
     return
 

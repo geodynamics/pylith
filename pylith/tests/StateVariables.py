@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -41,12 +41,8 @@ def check_state_variables(testcase, filename, mesh, stateVarNames):
   testcase.assertEqual(mesh['nvertices'], nvertices)
   testcase.assertEqual(mesh['spaceDim'], spaceDim)
 
-  from spatialdata.units.NondimElasticQuasistatic import NondimElasticQuasistatic
-  normalizer = NondimElasticQuasistatic()
-  normalizer._configure()
-
   # Check state variables
-  tolerance = 1.0e-6
+  tolerance = 2.0e-5
 
   for name in stateVarNames:
     valuesE = testcase.calcStateVar(name, vertices, cells)
@@ -59,20 +55,39 @@ def check_state_variables(testcase, filename, mesh, stateVarNames):
     testcase.assertEqual(ncellsE, ncells)
     testcase.assertEqual(ncompsE, ncomps)
 
-    scale = 1.0
-    if name == "stress":
-      scale *= normalizer.pressureScale().value
-
+    if "getValueScale" in dir(testcase):
+      scale = testcase.getValueScale(name)
+    else:
+      if name == "total_strain":
+        scale = 1.0
+      elif name == "stress" or name == "cauchy_stress":
+        scale = 1.0e+9
+      else:
+        scale = 1.0
+      
     for istep in xrange(nsteps):
       for icomp in xrange(ncomps):
-        ratio = numpy.abs(1.0 - values[istep,:,icomp]/valuesE[istep,:,icomp])
-        diff = numpy.abs(values[istep,:,icomp] - valuesE[istep,:,icomp]) / scale
-        mask = valuesE[istep,:,icomp] != 0.0
-        okay = mask*(ratio < tolerance) + ~mask*(diff < tolerance)
+        okay = numpy.zeros((ncells,), dtype=numpy.bool)
+
+        maskR = numpy.abs(valuesE[istep,:,icomp]) > tolerance
+        ratio = numpy.abs(1.0 - values[istep,maskR,icomp] / values[istep,maskR,icomp])
+        if len(ratio) > 0:
+          okay[maskR] = ratio < tolerance
+
+        maskD = ~maskR
+        diff = numpy.abs(values[istep,maskD,icomp] - valuesE[istep,maskD,icomp]) / scale
+        if len(diff) > 0:
+          okay[maskD] = diff < tolerance
+
         if numpy.sum(okay) != ncells:
           print "Error in component %d of state variable '%s' at time step %d." % (icomp, name, istep)
           print "Expected values:",valuesE
           print "Output values:",values
+          print "Expected values (not okay): ",valuesE[istep,~okay,icomp]
+          print "Output values (not okay): ",values[istep,~okay,icomp]
+          print "Scaled diff (not okay): ",diff[~okay]
+          print "Scale",scale
+          h5.close()
         testcase.assertEqual(ncells, numpy.sum(okay))
 
   h5.close()

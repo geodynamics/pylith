@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -275,16 +275,10 @@ class MaxwellPlaneStrainTimeDep(ElasticMaterialApp):
                         expFac * viscousStrainT[3] + \
                         dqV * (devStrainTpdt12 - devStrainT12)]
 
-    devStressTpdt11 = elasFac * \
-                      (viscousStrainTpdt[0] - devStrainInitial[0]) + \
-                      devStressInitial[0]
-    devStressTpdt22 = elasFac * \
-                      (viscousStrainTpdt[1] - devStrainInitial[1]) + \
-                      devStressInitial[1]
+    devStressTpdt11 = elasFac * (viscousStrainTpdt[0] - devStrainInitial[0])
+    devStressTpdt22 = elasFac * (viscousStrainTpdt[1] - devStrainInitial[1])
     devStressTpdt33 = elasFac * viscousStrainTpdt[2] + stateVars[0]
-    devStressTpdt12 = elasFac * \
-                      (viscousStrainTpdt[3] - devStrainInitial[2]) + \
-                      devStressInitial[2]
+    devStressTpdt12 = elasFac * (viscousStrainTpdt[3] - devStrainInitial[2])
 
     stressTpdt = [meanStressTpdt + devStressTpdt11,
                   meanStressTpdt + devStressTpdt22,

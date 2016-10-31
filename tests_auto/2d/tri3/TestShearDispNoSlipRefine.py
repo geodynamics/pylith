@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -22,8 +22,12 @@
 ## fault slip.
 
 import numpy
+
+from pylith.tests import run_pylith
+
 from TestTri3 import TestTri3
 from sheardisp_soln import AnalyticalSoln
+from sheardisp_gendb import GenerateDB
 
 # Local version of PyLithApp
 from pylith.apps.PyLithApp import PyLithApp
@@ -31,24 +35,6 @@ class ShearApp(PyLithApp):
   def __init__(self):
     PyLithApp.__init__(self, name="sheardispnosliprefine")
     return
-
-
-# Helper function to run PyLith
-def run_pylith():
-  """
-  Run pylith.
-  """
-  if not "done" in dir(run_pylith):
-    # Generate spatial databases
-    from sheardisp_gendb import GenerateDB
-    db = GenerateDB()
-    db.run()
-
-    # Run PyLith
-    app = ShearApp()
-    run_pylith.done = True # Put before run() so only called once
-    app.run()
-  return
 
 
 class TestShearDispNoSlipRefine(TestTri3):
@@ -72,7 +58,7 @@ class TestShearDispNoSlipRefine(TestTri3):
                       'spaceDim': 2,
                       'ncells': 2*2,
                       'ncorners': 2}
-    run_pylith()
+    run_pylith(ShearApp, GenerateDB, nprocs=3)
     self.outputRoot = "sheardispnosliprefine"
 
     self.soln = AnalyticalSoln()
@@ -126,7 +112,7 @@ class TestShearDispNoSlipRefine(TestTri3):
     pts = numpy.zeros( (ncells, 3), dtype=numpy.float64)
     if name == "total_strain":
       stateVar = self.soln.strain(pts)
-    elif name == "stress":
+    elif name == "stress" or name == "cauchy_stress":
       stateVar = self.soln.stress(pts)
     else:
       raise ValueError("Unknown state variable '%s'." % name)

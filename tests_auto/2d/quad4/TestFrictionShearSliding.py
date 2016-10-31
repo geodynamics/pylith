@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -21,6 +21,9 @@
 ## @brief Test suite for testing pylith with 2-D shear sliding with friction.
 
 import numpy
+
+from pylith.tests import run_pylith
+
 from TestQuad4 import TestQuad4
 from friction_shear_sliding_soln import AnalyticalSoln
 
@@ -32,19 +35,6 @@ class ShearSlidingApp(PyLithApp):
   def __init__(self):
     PyLithApp.__init__(self, name="friction_shear_sliding")
     return
-
-
-# Helper function to run PyLith
-def run_pylith():
-  """
-  Run pylith.
-  """
-  if not "done" in dir(run_pylith):
-    # Run PyLith
-    app = ShearSlidingApp()
-    app.run()
-    run_pylith.done = True
-  return
 
 
 class TestFrictionShearSliding(TestQuad4):
@@ -64,7 +54,7 @@ class TestFrictionShearSliding(TestQuad4):
                       'ncells': 8,
                       'ncorners': 2}
 
-    run_pylith()
+    run_pylith(ShearSlidingApp)
     self.outputRoot = "friction_shear_sliding"
     self.soln = AnalyticalSoln()
     return

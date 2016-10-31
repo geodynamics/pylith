@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -49,11 +49,8 @@ dist__topologymodule_la_SOURCES = $(swig_sources) $(swig_generated)
 _topologymodule_la_LIBADD = \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
-	$(PETSC_LIB)
-if NO_UNDEFINED
-_topologymodule_la_LIBADD += \
+	$(PETSC_LIB) \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
-endif
 
 if ENABLE_SWIG
 $(srcdir)/topology_wrap.cxx $(srcdir)/topology.py: $(swig_sources)

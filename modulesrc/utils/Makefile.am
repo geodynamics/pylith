@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -41,6 +41,9 @@ petsc_swig_generated = \
 utils_swig_sources = \
 	utils.i \
 	pylith_general.i \
+	PylithVersion.i \
+	PetscVersion.i \
+	DependenciesVersion.i \
 	EventLogger.i \
 	TestArray.i \
 	constdefs.i
@@ -62,11 +65,8 @@ dist__petscmodule_la_SOURCES = $(petsc_swig_sources) $(petsc_swig_generated)
 _petscmodule_la_LIBADD = \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
-	$(PETSC_LIB)
-if NO_UNDEFINED
-_petscmodule_la_LIBADD += \
+	$(PETSC_LIB) \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
-endif
 
 # utils module
 _utilsmodule_la_LDFLAGS = -module -avoid-version \
@@ -77,11 +77,8 @@ dist__utilsmodule_la_SOURCES = $(utils_swig_sources) $(utils_swig_generated)
 _utilsmodule_la_LIBADD = \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
-	$(PETSC_LIB)
-if NO_UNDEFINED
-_utilsmodule_la_LIBADD += \
+	$(PETSC_LIB) \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
-endif
 
 if ENABLE_SWIG
 $(srcdir)/petsc_wrap.cxx $(srcdir)/petsc.py: $(petsc_swig_sources)

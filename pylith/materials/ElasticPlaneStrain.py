@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -48,7 +48,7 @@ class ElasticPlaneStrain(ElasticMaterial, ModuleElasticPlaneStrain):
             'data': []},
          'cell': \
            {'info': ["mu", "lambda", "density", "stable_dt_implicit", "stable_dt_explicit",],
-            'data': ["total_strain", "stress"]}}
+            'data': ["total_strain", "stress", "cauchy_stress"]}}
     self._loggingPrefix = "MaPlSn "
     return
 

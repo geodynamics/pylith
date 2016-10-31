@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -31,9 +31,7 @@ dist_noinst_PYTHON = \
 	sheardisp_soln.py \
 	sheardisp_gendb.py \
 	TestDislocation.py \
-	TestDislocationTwoFaults.py \
 	dislocation_soln.py \
-	dislocation2_soln.py \
 	TestLgDeformRigidBody.py \
 	rigidbody_soln.py \
 	rigidbody_gendb.py \
@@ -65,7 +63,6 @@ dist_noinst_DATA = \
 	sheardisp.cfg \
 	dislocation.cfg \
 	dislocation_np2.cfg \
-	dislocation2.cfg \
 	lgdeformrigidbody.cfg \
 	lgdeformtraction.cfg \
 	friction_compression.cfg \

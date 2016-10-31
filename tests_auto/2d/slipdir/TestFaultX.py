@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -22,9 +22,12 @@
 ## aligned with x-axis.
 
 import numpy
+
+from pylith.tests import run_pylith
+
 from TestTri3 import TestTri3
-from solution import SolnFaultX as AnalyticalSoln
-from genspatialdb import GenDBFaultX as GenerateDB
+from solution import SolnFaultX
+from genspatialdb import GenDBFaultX
 
 # Local version of PyLithApp
 from pylith.apps.PyLithApp import PyLithApp
@@ -32,23 +35,6 @@ class FaultXApp(PyLithApp):
   def __init__(self):
     PyLithApp.__init__(self, name="faultx")
     return
-
-
-# Helper function to run PyLith
-def run_pylith():
-  """
-  Run pylith.
-  """
-  if not "done" in dir(run_pylith):
-    # Generate spatial databases
-    db = GenerateDB()
-    db.run()
-
-    # Run PyLith
-    app = FaultXApp()
-    run_pylith.done = True # Put before run() so only called once
-    app.run()
-  return
 
 
 class TestFaultX(TestTri3):
@@ -61,11 +47,11 @@ class TestFaultX(TestTri3):
     Setup for test.
     """
     TestTri3.setUp(self)
-    run_pylith()
+    run_pylith(FaultXApp, GenDBFaultX, nprocs=5)
     self.mesh['nvertices'] += 17
     self.outputRoot = "faultx"
 
-    self.soln = AnalyticalSoln()
+    self.soln = SolnFaultX()
     return
 
 

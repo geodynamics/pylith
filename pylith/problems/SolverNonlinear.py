@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -66,6 +66,8 @@ class SolverNonlinear(Solver, ModuleSolverNonlinear):
     Set members based using inventory.
     """
     Solver._configure(self)
+
+    ModuleSolverNonlinear.skipNullSpaceCreation(self, not self.createNullSpace)
     return
 
 

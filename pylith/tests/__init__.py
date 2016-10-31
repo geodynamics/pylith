@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -23,6 +23,7 @@ __all__ = ['PhysicalProperties',
            ]
 
 
+# ----------------------------------------------------------------------
 def has_h5py():
   if not "flag" in dir(has_h5py):
     try:
@@ -35,6 +36,30 @@ def has_h5py():
       print "         in order to enable verification of output."
       has_h5py.flag = False
   return has_h5py.flag
+
+
+# ----------------------------------------------------------------------
+def run_pylith(appClass, dbClass=None, nprocs=1):
+  """
+  Helper function to generate spatial databases and run PyLith.
+  """
+  if not str(appClass) in dir(run_pylith):
+    if not dbClass is None:
+      # Generate spatial databases
+      db = dbClass()
+      db.run()
+
+    # Run PyLith, limiting number of processes to number of local CPUs.
+    import multiprocessing
+    maxprocs = multiprocessing.cpu_count()
+
+    app = appClass()
+    app.nodes = min(nprocs, maxprocs)
+    if app.nodes != nprocs:
+      print("WARNING: Detected %d CPUs. Reducing number of processes from %d to %d." % (maxprocs, nprocs, maxprocs))
+    setattr(run_pylith, str(appClass), True)
+    app.run()
+  return
 
 
 # End of file

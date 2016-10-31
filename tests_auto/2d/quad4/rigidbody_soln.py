@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -63,7 +63,7 @@ class AnalyticalSoln(object):
     u0 = 200.0
     v0 = 300.0
     from math import pi
-    theta = -25.0/180.0*pi
+    theta = -2.50/180.0*pi
 
     (npts, dim) = locs.shape
     disp = numpy.zeros( (1, npts, 2), dtype=numpy.float64)

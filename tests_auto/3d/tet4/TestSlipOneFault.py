@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -21,6 +21,9 @@
 ## @brief Test suite for testing pylith with shear slip.
 
 import numpy
+
+from pylith.tests import run_pylith
+
 from TestTet4 import TestTet4
 from sliponefault_soln import AnalyticalSoln
 
@@ -30,18 +33,6 @@ class SlipOneFaultApp(PyLithApp):
   def __init__(self):
     PyLithApp.__init__(self, name="sliponefault")
     return
-
-
-# Helper function to run PyLith
-def run_pylith():
-  """
-  Run pylith.
-  """
-  if not "done" in dir(run_pylith):
-    app = SlipOneFaultApp()
-    run_pylith.done = True # Put before run() so only called once
-    app.run()
-  return
 
 
 class TestSlipOneFault(TestTet4):
@@ -60,7 +51,7 @@ class TestSlipOneFault(TestTet4):
                       'spaceDim': 3,
                       'ncells': 72,
                       'ncorners': 3}
-    run_pylith()
+    run_pylith(SlipOneFaultApp)
     self.outputRoot = "sliponefault"
 
     self.soln = AnalyticalSoln()
@@ -141,7 +132,7 @@ class TestSlipOneFault(TestTet4):
     pts = numpy.zeros( (ncells, 3), dtype=numpy.float64)
     if name == "total_strain":
       stateVar = self.soln.strain(pts)
-    elif name == "stress":
+    elif name == "stress" or name == "cauchy_stress":
       stateVar = self.soln.stress(pts)
     else:
       raise ValueError("Unknown state variable '%s'." % name)

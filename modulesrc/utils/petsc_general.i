@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -63,6 +63,20 @@
 
     return (hasName) ? true : false;
   } // optionsHasName
+%} // inline
+
+
+// ----------------------------------------------------------------------
+// PetscCitationsRegister
+%inline %{
+  int
+    citationsRegister(const char* entry)
+  { // citationsRegister
+    PetscBool set = PetscBool(PETSC_FALSE);
+    PetscErrorCode err = PetscCitationsRegister(entry, &set);CHKERRQ(err);
+
+    return 0;
+  } // citationsRegister
 %} // inline
 
 

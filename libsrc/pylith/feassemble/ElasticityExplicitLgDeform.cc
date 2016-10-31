@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -231,7 +231,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(const topology
   _logger->eventBegin(computeEvent);
 
   // Loop over cells
-  for(PetscInt c = 0; c < numCells; ++c) {
+  for (PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
 
     // Compute geometry information for current cell
@@ -313,7 +313,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(const topology
     } // for
 
     // Compute B(transpose) * sigma, first computing strains
-    _calcDeformation(&deformCell, basisDeriv, &coordsCell[0], &dispAdjCell[0], numBasis, numQuadPts, spaceDim);
+    _calcDeformation(&deformCell, basisDeriv, &dispAdjCell[0], numBasis, numQuadPts, spaceDim);
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
     const scalar_array& stressCell = _material->calcStress(strainCell, true);
 

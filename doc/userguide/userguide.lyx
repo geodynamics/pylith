@@ -1,4 +1,4 @@
-#LyX 2.1 created this file. For more info see http://www.lyx.org/
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 413
 \begin_document
 \begin_header
@@ -25,6 +25,7 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -135,7 +136,7 @@ PyLith User Manual
 \begin_inset Newline newline
 \end_inset
 
-Version 2.1.0
+Version 2.1.4
 \end_layout
 
 \begin_layout Date

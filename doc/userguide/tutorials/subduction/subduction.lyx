@@ -704,17 +704,7 @@ reference "fig:tutorial:subduction:step01"
 
 , which was created using ParaView, displays the magnitude of the displacement
  field with the deformation exaggerated by a factor of 1000.
- We construct a three-dimensional displacement vector from the two-dimensional
- displacement components using the Calculator with the expression
-\end_layout
-
-\begin_layout LyX-Code
-displacement_x*iHat + displacement_y*jHat
-\end_layout
-
-\begin_layout Standard
-where we select the displacement components from the Scalars drop-down menu
- and the iHat, jHat, and kHat values from the Calculator buttons.
+ 
 \end_layout
 
 \begin_layout Standard

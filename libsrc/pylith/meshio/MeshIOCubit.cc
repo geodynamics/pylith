@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -158,7 +158,7 @@ pylith::meshio::MeshIOCubit::_readVertices(ExodusII& exofile,
   info << journal::at(__HERE__)
        << "Reading " << *numVertices << " vertices." << journal::endl;
 
-  if (exofile.hasVar("coord")) {
+  if (exofile.hasVar("coord", NULL)) {
     const int ndims = 2;
     int dims[2];
     dims[0] = *numDims;

@@ -10,6 +10,93 @@ The points file for OutputSolnPoints must now contain station names as
 the first column.
 
 ----------------------------------------------------------------------
+Version 2.1.4
+----------------------------------------------------------------------
+
+* Added --version command line argument to display version information
+  for PyLith and its dependencies.
+
+* Improved information displayed with the --help command line
+  argument.
+
+* Added --include-citations command line argument to display
+  publications to cite when publishing results from computations using
+  PyLith. General PyLith references are also displayed with the
+  --version command line argument.
+
+* Allow use of NetCDF versions greater than 4.1.3. Switch from using
+  C++ API to C API.
+
+* Fixed bug in Pythia associated with validation of parameters being
+  done before help could be displayed.
+
+* Fixed typos in manual for gravity and point forces.
+
+* Added integration with Travis for automated testing.
+
+----------------------------------------------------------------------
+Version 2.1.3
+----------------------------------------------------------------------
+
+* Add generate_statedb.py and postseismic.pvsm files missing from
+  examples/2d/gravity.
+
+* Update handling of fault intersection when creating boundary
+  condition nodesets in examples/meshing/surface_nurbs/subduction.
+
+* Fixes to Darwin binary package.
+
+  + Fix linking of netCDF4 Python module.
+
+  + Fix linking and executable mode permissions for Python scripts in
+    binary by using nemesis so relative links are valid.
+
+----------------------------------------------------------------------
+Version 2.1.2
+----------------------------------------------------------------------
+
+* Bugfixes for finite-strain formulation.
+
+  + Added output of the Cauchy stresses (cauchy_stress). The second
+    Piola-Kirchoff stresses are output via the stress field.
+
+  + Material properties and state variables were not retrieved
+    properly when updating state variables.
+
+* Bugfixes for setting initial stress and state variables for
+  viscoelastic materials. The deviatoric stress state is carried
+  forward using the state variables, so the initial deviatoric stress
+  should not be considered when computing the stresses.
+
+* Created new examples showing how to use gravity, initial stress, and
+  finite-strain in 2-D (examples/2d/gravity).
+
+* Reintroduced check (that had been inadvertently removed in v2.x) for
+  ambiguous description of fault surface based on groups of vertices
+  defining faces of cells.
+
+* Flush the output of the progress monitor so progress reports are
+  updated promptly.
+
+* Updates to the user manual.
+
+  + Added section on the debugging examples covered in recent
+    tutorials.
+
+  + Added tables describing the spatial database values for each
+    material.
+
+  + Included a more complete discussion of the finite-strain
+    formulation.
+
+* PETSc
+
+  + Updated to PETSc v3.7.2 (knepley/pylith branch).
+
+  + Fixed Trilinos/ML configuration and code so that it can be built
+    without a Fortran compiler.
+
+----------------------------------------------------------------------
 Version 2.1.0
 ----------------------------------------------------------------------
 

@@ -1,0 +1,51 @@
+Greetings,
+
+I am pleased to announce the release of PyLith 2.1.4, a finite-element
+code designed to solve dynamic elastic problems and quasi-static
+viscoelastic problems in tectonic deformation.
+
+This release provides a few new minor features and bugfixes.
+
+You can download the source code and binaries from
+
+    http://geodynamics.org/cig/software/pylith
+
+Detailed installation instructions for the binary packages are in the
+User Manual with detailed building instructions for a few platforms in
+the INSTALL file bundled with the PyLith Installer utility. We also
+offer a Docker image
+(https://wiki.geodynamics.org/software:pylith:docker) for running
+PyLith within a portable, virtual Linux environment.
+
+
+======================================================================
+MIGRATING FROM VERSION 2.0 TO 2.1
+======================================================================
+
+The points file for OutputSolnPoints must now contain station names as
+the first column.
+
+======================================================================
+RELEASE NOTES
+======================================================================
+
+* Added --version command line argument to display version information
+  for PyLith and its dependencies.
+
+* Improved information displayed with the --help command line
+  argument.
+
+* Added --include-citations command line argument to display
+  publications to cite when publishing results from computations using
+  PyLith. General PyLith references are also displayed with the
+  --version command line argument.
+
+* Allow use of NetCDF versions greater than 4.1.3. Switch from using
+  C++ API to C API.
+
+* Fixed bug in Pythia associated with validation of parameters being
+  done before help could be displayed.
+
+* Fixed typos in manual for gravity and point forces.
+
+* Added integration with Travis for automated testing.

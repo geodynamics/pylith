@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -21,9 +21,12 @@
 ## @brief Test suite for testing pylith with 2-D axial extension.
 
 import numpy
-from TestQuad4 import TestQuad4
 
+from pylith.tests import run_pylith
+
+from TestQuad4 import TestQuad4
 from axialdisp_soln import AnalyticalSoln
+from axialdisp_gendb import GenerateDB
 
 # Local version of PyLithApp
 from pylith.apps.PyLithApp import PyLithApp
@@ -31,24 +34,6 @@ class AxialApp(PyLithApp):
   def __init__(self):
     PyLithApp.__init__(self, name="axialdisp")
     return
-
-
-# Helper function to run PyLith
-def run_pylith():
-  """
-  Run pylith.
-  """
-  if not "done" in dir(run_pylith):
-    # Generate spatial databases
-    from axialdisp_gendb import GenerateDB
-    db = GenerateDB()
-    db.run()
-
-    # Run PyLith
-    app = AxialApp()
-    app.run()
-    run_pylith.done = True
-  return
 
 
 class TestAxialDisp(TestQuad4):
@@ -61,7 +46,7 @@ class TestAxialDisp(TestQuad4):
     Setup for test.
     """
     TestQuad4.setUp(self)
-    run_pylith()
+    run_pylith(AxialApp, GenerateDB)
     self.outputRoot = "axialdisp"
     self.soln = AnalyticalSoln()
     return

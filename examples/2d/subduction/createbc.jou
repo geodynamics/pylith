@@ -8,7 +8,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -72,7 +72,7 @@ nodeset 10 group groundsurf
 nodeset 10 name "groundsurf"
 
 # ----------------------------------------------------------------------
-# Create nodeset for west boundary
+# Create nodesets for west boundary
 # ----------------------------------------------------------------------
 group "bndry_west" add node in curve edgewest
 group "bndry_west" add node in curve edgewest@A
@@ -80,33 +80,38 @@ group "bndry_west" remove node in group fault_slabtop
 nodeset 11 group bndry_west
 nodeset 11 name "bndry_west"
 
+group "bndry_west_incslab" add node in curve edgewest
+group "bndry_west_incslab" add node in curve edgewest@A
+nodeset 12 group bndry_west_incslab
+nodeset 12 name "bndry_west_incslab"
+
 # ----------------------------------------------------------------------
 # Create nodeset for east boundary
 # ----------------------------------------------------------------------
 # Crust
 group "bndry_east_crust" add node in curve edgeeast
-nodeset 12 group bndry_east_crust
-nodeset 12 name "bndry_east_crust"
+nodeset 13 group bndry_east_crust
+nodeset 13 name "bndry_east_crust"
 
 # Mantle
 group "bndry_east_mantle" add node in curve edgeeast@A
 group "bndry_east_mantle" remove node in group fault_slabbot
-nodeset 13 group bndry_east_mantle
-nodeset 13 name "bndry_east_mantle"
+nodeset 14 group bndry_east_mantle
+nodeset 14 name "bndry_east_mantle"
 
 # ----------------------------------------------------------------------
 # Create nodesets for bottom boundary
 # ----------------------------------------------------------------------
 # Slab (oceanic crust)
 group "bndry_bot_slab" add node in curve edgebot
-nodeset 14 group bndry_bot_slab
-nodeset 14 name "bndry_bot_slab"
+nodeset 15 group bndry_bot_slab
+nodeset 15 name "bndry_bot_slab"
 
 # Mantle
 group "bndry_bot_mantle" add node in curve edgebot@A
 group "bndry_bot_mantle" remove node in group fault_slabbot
-nodeset 15 group bndry_bot_mantle
-nodeset 15 name "bndry_bot_mantle"
+nodeset 16 group bndry_bot_mantle
+nodeset 16 name "bndry_bot_mantle"
 
 
 # End of file

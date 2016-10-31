@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -93,8 +93,7 @@ class Fault(PetscComponent, ModuleFault):
   faultEdge = pyre.inventory.str("edge", default="")
   faultEdge.meta['tip'] = "Label identifier for fault edge."
   
-  upDir = pyre.inventory.list("up_dir", default=[0, 0, 1],
-                              validator=validateDir)
+  upDir = pyre.inventory.list("up_dir", default=[0.0, 0.0, 1.0], validator=validateDir)
   upDir.meta['tip'] = "Up-dip or up direction " \
       "(perpendicular to along-strike and not collinear " \
       "with fault normal; applies to fault surfaces " \
@@ -233,18 +232,13 @@ class Fault(PetscComponent, ModuleFault):
     """
     Setup members using inventory.
     """
-    try:
-      PetscComponent._configure(self)
-      self.faultQuadrature = self.inventory.faultQuadrature
-      self.upDir = map(float, self.inventory.upDir)
-      ModuleFault.id(self, self.inventory.matId)
-      ModuleFault.label(self, self.inventory.faultLabel)
-      ModuleFault.edge(self, self.inventory.faultEdge)
-      self.perfLogger = self.inventory.perfLogger
-    except ValueError, err:
-      aliases = ", ".join(self.aliases)
-      raise ValueError("Error while configuring fault "
-                       "(%s):\n%s" % (aliases, err.message))
+    PetscComponent._configure(self)
+    self.faultQuadrature = self.inventory.faultQuadrature
+    self.upDir = map(float, self.inventory.upDir)
+    ModuleFault.id(self, self.inventory.matId)
+    ModuleFault.label(self, self.inventory.faultLabel)
+    ModuleFault.edge(self, self.inventory.faultEdge)
+    self.perfLogger = self.inventory.perfLogger
     return
 
   

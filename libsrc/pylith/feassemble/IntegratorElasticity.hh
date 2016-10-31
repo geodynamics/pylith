@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -137,21 +137,13 @@ protected :
   /** Calculate stress or strain field from solution field.
    *
    * @param field Field in which to store stress or strain.
-   * @param name Name of field to compute ('total-strain' or 'stress')
+   * @param name Name of field to compute ['total_strain', 'stress', 'cauchy_stress'].
    * @param fields Manager for solution fields.
    */
   virtual
   void _calcStrainStressField(topology::Field* field,
 			      const char* name,
 			      topology::SolutionFields* const fields);
-
-  /** Calculate stress field from total strain field. Stress field
-   * replaces strain field in section.
-   *
-   * @param field Field in which to store stress.
-   */
-  virtual
-  void _calcStressFromStrain(topology::Field* field);
 
   /** Integrate elasticity term in residual for 2-D cells.
    *

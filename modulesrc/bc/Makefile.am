@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -52,13 +52,10 @@ dist__bcmodule_la_SOURCES = $(swig_sources) $(swig_generated)
 _bcmodule_la_LIBADD = \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
-	$(PETSC_LIB)
-if ENABLE_CUBIT
-  _bcmodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
-endif
-if NO_UNDEFINED
-_bcmodule_la_LIBADD += \
+	$(PETSC_LIB) \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
+if ENABLE_CUBIT
+  _bcmodule_la_LIBADD += -lnetcdf
 endif
 
 if ENABLE_SWIG

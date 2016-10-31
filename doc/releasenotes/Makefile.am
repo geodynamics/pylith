@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -30,7 +30,18 @@ EXTRA_DIST = \
 	announce_v1.5.2.txt \
 	announce_v1.6.0.txt \
 	announce_v1.6.1.txt \
-	announce_v1.6.2.txt
+	announce_v1.6.2.txt \
+	announce_v1.6.3.txt \
+	announce_v1.7.0.txt \
+	announce_v1.7.1.txt \
+	announce_v1.8.0.txt \
+	announce_v1.9.0.txt \
+	announce_v2.0.0.txt \
+	announce_v2.0.1.txt \
+	announce_v2.0.3.txt \
+	announce_v2.1.0.txt \
+	announce_v2.1.2.txt \
+	announce_v2.1.3.txt
 
 
 # End of file 

@@ -8,7 +8,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -46,8 +46,7 @@ mesh volume all
 # ----------------------------------------------------------------------
 ${condnum=2.0}
 ${loop(4)}
-cleanup volume all
-volume all smooth scheme condition number beta {condnum} cpu 10
+volume all smooth scheme condition number beta {condnum} cpu 2
 smooth volume all
 ${condnum=condnum-0.1}
 ${endloop}
@@ -59,6 +58,7 @@ export mesh "mesh_size_spatialdb.exo" dimension 3 overwrite
 
 
 # End of file
+
 
 
 

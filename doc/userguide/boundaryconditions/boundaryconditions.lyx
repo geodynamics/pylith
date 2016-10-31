@@ -835,6 +835,26 @@ reference "sub:Tutorial-twoquad4-traction"
  for a tutorial that uses Neumann boundary conditions.
 \end_layout
 
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\color inherit
+ 
+\series default
+In the small (finite) strain formulation, we assume that the normal and
+ shear tractions are prescribed in terms of the undeformed configuration
+ as described in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Small-Strain-Formulation"
+
+\end_inset
+
+.
+\end_layout
+
 \begin_layout Subsubsection
 Neumann Boundary Condition Parameters
 \end_layout
@@ -1479,7 +1499,7 @@ label = group A
 \end_layout
 
 \begin_layout LyX-Code
-bc_dof = [2] ; fixed displacement in z direction
+bc_dof = [2] ; force in z direction
 \end_layout
 
 \begin_layout LyX-Code
@@ -2272,6 +2292,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figs/cohesivecell.pdf
+	width 6.25in
 
 \end_inset
 
@@ -2305,12 +2326,76 @@ name "fig:fault:cohesive:cells"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/faultEdge.pdf
+	width 4in
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Example of how faults with buried edges must be described with two sets
+ of vertices.
+ All of the vertices on the fault are included in the 
+\family typewriter
+fault
+\family default
+ group; the subset of vertices along the buried edges are included in the
+ 
+\family typewriter
+fault_edge
+\family default
+ group.
+ In 2-D the fault edges are just a single vertex as shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:fault:cohesive:cells"
+
+\end_inset
+
+(a).
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:fault:fault_edge"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
 For faults that have buried edges, splitting the mesh apart and inserting
  the cohesive cells becomes complex at the buried edges due to the ambiguity
  of defining where the fault ends and how to insert the cohesive cell.
  In PyLith v2.0.0 we have changed how the buried edges of the fault are managed.
  An additional group of fault nodes is specified (e.g., via a nodeset from
- CUBIT) that marks the buried edges of the fault.
+ CUBIT) that marks the buried edges of the fault (see Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:fault:fault_edge"
+
+\end_inset
+
+).
  This allows the cohesive cell insertion algorithm to adjust the topology
  so that cohseive cells are inserted up to the buried edge of the fault
  but no additional degrees of freedom are added on the fault edge.
@@ -8885,7 +8970,7 @@ Gravity is turned off by default.
 \end_layout
 
 \begin_layout LyX-Code
-use_gravity = true
+gravity_field = spatialdata.spatialdb.GravityField
 \end_layout
 
 \begin_layout Standard
@@ -8915,10 +9000,17 @@ gravity_dir = [0, -1, 0]
 \end_layout
 
 \begin_layout Standard
-An example problem using gravity is described in Section 
+Examples using gravity are described in Sections 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Tutorial-3d-hex8-gravity"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Tutorial-Gravity-2d"
 
 \end_inset
 

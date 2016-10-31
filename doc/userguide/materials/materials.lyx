@@ -1,4 +1,4 @@
-#LyX 2.1 created this file. For more info see http://www.lyx.org/
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 413
 \begin_document
 \begin_header
@@ -21,6 +21,7 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -220,8 +221,18 @@ s of the bulk constitutive model (default is a SimpleDB).
 \end_layout
 
 \begin_layout Description
+db_initial_stress Spatial database specifying the spatial variation in the
+ initial stress (default is none).
+\end_layout
+
+\begin_layout Description
+db_initial_strain Spatial database specifying the spatial variation in the
+ initial strain (default is none).
+\end_layout
+
+\begin_layout Description
 db_initial_state Spatial database specifying the spatial variation in the
- initial variables (default is none).
+ other initial state variables (default is none).
 \end_layout
 
 \begin_layout Description
@@ -606,7 +617,7 @@ mu, lambda, density
 \begin_layout Plain Layout
 
 \family typewriter
-total_strain, stress
+total_strain, stress, cauchy_stress
 \end_layout
 
 \end_inset
@@ -654,7 +665,7 @@ total_strain,
 \begin_layout Plain Layout
 
 \family typewriter
-stress, viscous_strain
+stress, cauchy_stress, viscous_strain
 \end_layout
 
 \end_inset
@@ -708,7 +719,7 @@ maxwell_time
 \begin_layout Plain Layout
 
 \family typewriter
-total_strain, stress, viscous_strain_1,
+total_strain, stress, cauchy_stress, viscous_strain_1,
 \begin_inset Newline newline
 \end_inset
 
@@ -770,7 +781,7 @@ power_law_exponent
 \begin_layout Plain Layout
 
 \family typewriter
-total_strain, stress, viscous_strain
+total_strain, stress, cauchy_stress, viscous_strain
 \end_layout
 
 \end_inset
@@ -816,7 +827,7 @@ mu, lambda, density, alpha_yield
 \begin_layout Plain Layout
 
 \family typewriter
-total_strain, stress, plastic_strain
+total_strain, stress, cauchy_stress, plastic_strain
 \end_layout
 
 \end_inset
@@ -922,6 +933,8 @@ State Variable
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 total_strain
 \end_layout
 
@@ -997,7 +1010,9 @@ total_strain
 \begin_inset Text
 
 \begin_layout Plain Layout
-stress
+
+\family typewriter
+stress, cauchy_stress
 \end_layout
 
 \end_inset
@@ -1072,6 +1087,8 @@ stress
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 viscous_strain, plastic_strain
 \end_layout
 
@@ -1151,6 +1168,8 @@ viscous_strain, plastic_strain
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 stress4
 \end_layout
 
@@ -1209,6 +1228,354 @@ stress4
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Initial-State-Variables"
+
+\end_inset
+
+Initial State Variables
+\end_layout
+
+\begin_layout Standard
+In many problems of interest, the state variables describing a material
+ model may already have nonzero values prior to the application of any boundary
+ conditions.
+ For problems in geophysics, the most common example is a problem that includes
+ the effects of gravitational body forces.
+ In the real earth, rocks were emplaced and formed under the influence of
+ gravity.
+ When performing numerical simulations, however, it is not possible to represent
+ the entire time history of rock emplacement.
+ Instead, gravity must be ``turned on'' at the beginning of the simulation.
+ Unfortunately, this results in unrealistic amounts of deformation at the
+ beginning of a simulation.
+ An alternative is to provide initial state variables for the region under
+ consideration.
+ This allows the specification of a set of state variables that is consistent
+ with the prior application of gravitational body forces.
+ In a more general sense, initial values for state variables may be used
+ to provide values that are consistent with any set of conditions that occurred
+ prior to the beginning of a simulation.
+ The current release of PyLith allows the specification of initial stresses,
+ strains, and state variables for all materials; however, not all of the
+ initial state variables are presently used.
+ For example, 
+\family typewriter
+cauchy_stress
+\family default
+ is available as a state variable for all materials, but specifying an initial
+ value would not make sense for most problems.
+\end_layout
+
+\begin_layout Subsubsection
+Specification of Initial State Variables
+\end_layout
+
+\begin_layout Standard
+State variables are specific to a given material, so initial values for
+ state variables are specified as part of the material description.
+ The default is that no initial state variables are specified.
+ In computing the elastic prestep, appropriate values for the state variables
+ are set; otherwise the state variables are set to zero.
+ To override this behavior, specify a spatial database for the initial stress,
+ strain, and/or state variables as in the example from the tutorial in Section
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Tutorial-3d-hex8"
+
+\end_inset
+
+:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.elastic]
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress = spatialdata.spatialdb.SimpleDB
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress.iohandler.filename = initial_stress.spatialdb
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\color inherit
+ 
+\series default
+Using the elastic prestep with initial state variables will generally lead
+ to the state variables being ignored (the initial out of plane stress is
+ the exception), because the elastic prestep will set the state variables
+ based on the elastic solution.
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\color inherit
+ 
+\series default
+Currently, PyLith assumes initial displacements and velocities of zero,
+ so any initial strain and state variables should be consistent with these
+ initial conditions.
+ This limitation will be removed in future releases.
+\end_layout
+
+\begin_layout Standard
+As mentioned in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:ViscoelasticFormulations"
+
+\end_inset
+
+, plane strain problems do not include the out-of-plane stress component
+ (
+\begin_inset Formula $\sigma_{zz}$
+\end_inset
+
+), and an additional state variable (
+\family typewriter
+stress-zz-initial
+\family default
+) is provided for all two-dimensional viscoelastic and elastoplastic models.
+ To completely specify the initial stresses, the user must provide two spatial
+ databases: an initial stress database that includes the three 2D stress
+ components (
+\begin_inset Formula $\sigma_{xx},\:\sigma_{yy},\:\sigma_{xy}$
+\end_inset
+
+) and an additional database containing the out of plane stress and initial
+ values for all other state variables for the given material.
+ The complete initial stress field may then be defined in the 
+\family typewriter
+.cfg
+\family default
+ file as:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.materials.powerlaw]
+\end_layout
+
+\begin_layout LyX-Code
+# First specify initial 2D stresses
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress = spatialdata.spatialdb.SimpleDB
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress.label = 2D initial stress
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_stress.iohandler.filename = inititial_stress_2d.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+# Now specify out-of-plane initial stresses (and all other state variables)
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_state = spatialdata.spatialdb.SimpleDB
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_state.label = Out of plane strain initial stress
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_state.iohandler.filename = initial_state_2d.spatialdb
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Values in spatial database for initial state variables for 3D problems.
+ 2D problems use only the relevant values.
+ Note that initial stress and strain are available for all material models.
+ Some models have additional state variables (Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:material-model-output"
+
+\end_inset
+
+) and initial values for these may also be provided.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="middle" width="0.85in">
+<column alignment="center" valignment="middle" width="2.47in">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+State Variable
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\align center
+
+\series bold
+Values in Spatial Database
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+initial stress
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+stress-xx, stress-yy, stress-zz, stress-xy, stress-yz, stress-xz
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+initial strain
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+total-strain-xx, total-strain-yy, total-strain-zz, total-strain-xy, total-strain
+-yz, total-strain-xz
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Cauchy Stress Tensor and Second Piola-Kirchoff Stress Tensor
+\end_layout
+
+\begin_layout Standard
+In outputting the stress tensor (see Tables 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:material-model-output"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:material-model-statevars"
+
+\end_inset
+
+), the tensor used internally in the formulation of the governing equation
+ is the 
+\family typewriter
+stress
+\family default
+ field available for output.
+ For the infinitesimal strain formulation this is the Cauchy stress tensor;
+ for the finite strain formulation, this is the second Piola-Kirchoff stress
+ tensor.
+ The user may also explicitly request output of the Cauchy stress tensor
+ (
+\family typewriter
+cauchy_stress
+\family default
+ field).
+ Obviously, this is identical to the 
+\family typewriter
+stress
+\family default
+ field when using the infinitesimal strain formulation.
+ Although the second Piola-Kirchoff stress tensor has little physical meaning,
+ the second Piola-Kirchoff stress tensor (not the Cauchy stress tensor)
+ values should be specified in the initial stress database when using the
+ finite strain formulation.
+ See section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Small-Strain-Formulation"
+
+\end_inset
+
+ for a discussion of the relationship between the Cauchy stress tensor and
+ the second Piola-Kirchhoff stress tensor.
 \end_layout
 
 \begin_layout Subsection
@@ -1312,7 +1679,7 @@ where
 
 \begin_layout Standard
 The stable time step is used in all three of the time stepping schemes used
- by PyLith (see Subsection 
+ by PyLith (see section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Time-Stepping"
@@ -1447,48 +1814,86 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Values in spatial database used as parameters in the elastic material constituti
-ve models.
+Values in spatial databases for the elastic material constitutive models.
 \end_layout
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="4" columns="2">
+<lyxtabular version="3" rows="6" columns="3">
 <features tabularvalignment="middle">
-<column alignment="center" valignment="middle" width="0.85in">
-<column alignment="center" valignment="middle" width="2.47in">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \series bold
-Parameter
+Spatial database
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-\align center
 
 \series bold
-Name in Spatial Database
+Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Description
 \end_layout
 
 \end_inset
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell multirow="3" alignment="left" valignment="middle" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
+db_properties
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+vp
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Compressional wave speed, 
 \begin_inset Formula $v_{p}$
 \end_inset
 
@@ -1497,23 +1902,33 @@ Name in Spatial Database
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+</row>
+<row>
+<cell multirow="4" alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \family typewriter
-Vp
+vs
 \end_layout
 
 \end_inset
 </cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+Shear wave speed, 
 \begin_inset Formula $v_{s}$
 \end_inset
 
@@ -1522,23 +1937,33 @@ Vp
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+</row>
+<row>
+<cell multirow="4" alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \family typewriter
-Vs
+density
 \end_layout
 
 \end_inset
 </cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+Density, 
 \begin_inset Formula $\rho$
 \end_inset
 
@@ -1547,13 +1972,72 @@ Vs
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \family typewriter
-density
+db_initial_stress
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+stress-xx, 
+\family default
+etc.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial stress components
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+db_initial_strain
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+total-strain-xx, 
+\family default
+etc.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial strain components
 \end_layout
 
 \end_inset
@@ -2301,9 +2785,9 @@ Mathematical notation used in this section.
 \begin_inset Tabular
 <lyxtabular version="3" rows="3" columns="3">
 <features tabularvalignment="middle">
-<column alignment="center" valignment="top">
-<column alignment="center" valignment="top">
-<column alignment="center" valignment="top">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
 <row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
@@ -2975,48 +3459,82 @@ name "tab:linearMaxwell"
 
 \end_inset
 
-Values in spatial database used as parameters in the linear Maxwell viscoelastic
- material constitutive model.
+Values in spatial databases for the linear Maxwell viscoelastic material
+ constitutive model.
 \end_layout
 
 \end_inset
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="5" columns="2">
+<lyxtabular version="3" rows="9" columns="3">
 <features tabularvalignment="middle">
-<column alignment="center" valignment="middle" width="0.85in">
-<column alignment="center" valignment="middle" width="2.47in">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \series bold
-Parameter
+Spatial database
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-\align center
 
 \series bold
-Name in Spatial Database
+Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Description
 \end_layout
 
 \end_inset
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell multirow="3" alignment="left" valignment="middle" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
+db_properties
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+vp
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Compressional wave speed, 
 \begin_inset Formula $v_{p}$
 \end_inset
 
@@ -3025,23 +3543,33 @@ Name in Spatial Database
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+</row>
+<row>
+<cell multirow="4" alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \family typewriter
-Vp
+vs
 \end_layout
 
 \end_inset
 </cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+Shear wave speed, 
 \begin_inset Formula $v_{s}$
 \end_inset
 
@@ -3050,32 +3578,18 @@ Vp
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family typewriter
-Vs
-\end_layout
-
-\end_inset
-</cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell multirow="4" alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $\rho$
-\end_inset
-
 
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3086,12 +3600,46 @@ density
 
 \end_inset
 </cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+Density, 
+\begin_inset Formula $\rho$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+viscosity
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Viscosity, 
 \begin_inset Formula $\eta$
 \end_inset
 
@@ -3100,13 +3648,138 @@ density
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \family typewriter
-viscosity
+db_initial_stress
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+stress-xx, 
+\family default
+etc.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial stress components
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+db_initial_strain
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+total-strain-xx, 
+\family default
+etc.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial strain components
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+db_initial_state
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+viscous-strain-xx, 
+\family default
+etc.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial viscous strain components
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+stress-zz-initial
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial out-of-plane stress (2D only)
 \end_layout
 
 \end_inset
@@ -3153,40 +3826,74 @@ Values in spatial database used as parameters in the generalized linear
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="10" columns="2">
+<lyxtabular version="3" rows="16" columns="3">
 <features tabularvalignment="middle">
-<column alignment="center" valignment="middle" width="0.85in">
-<column alignment="center" valignment="middle" width="2.47in">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \series bold
-Parameter
+Spatial database
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-\align center
 
 \series bold
-Name in Spatial Database
+Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Description
 \end_layout
 
 \end_inset
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell multirow="3" alignment="left" valignment="middle" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
+db_properties
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+vp
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Compressional wave speed, 
 \begin_inset Formula $v_{p}$
 \end_inset
 
@@ -3195,23 +3902,33 @@ Name in Spatial Database
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+</row>
+<row>
+<cell multirow="4" alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \family typewriter
-Vp
+vs
 \end_layout
 
 \end_inset
 </cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+Shear wave speed, 
 \begin_inset Formula $v_{s}$
 \end_inset
 
@@ -3220,32 +3937,18 @@ Vp
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family typewriter
-Vs
-\end_layout
-
-\end_inset
-</cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell multirow="4" alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $\rho$
-\end_inset
-
 
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3256,13 +3959,12 @@ density
 
 \end_inset
 </cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $\mu_{1}$
+Density, 
+\begin_inset Formula $\rho$
 \end_inset
 
 
@@ -3270,7 +3972,18 @@ density
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3281,13 +3994,12 @@ shear-ratio-1
 
 \end_inset
 </cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $\mu_{2}$
+Shear ratio for Maxwell model 1, 
+\begin_inset Formula $\mu_{1}/\mu_{tot}$
 \end_inset
 
 
@@ -3295,7 +4007,18 @@ shear-ratio-1
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3306,13 +4029,12 @@ shear-ratio-2
 
 \end_inset
 </cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $\mu_{3}$
+Shear ratio for Maxwell model 2, 
+\begin_inset Formula $\mu_{2}/\mu_{tot}$
 \end_inset
 
 
@@ -3320,7 +4042,18 @@ shear-ratio-2
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3331,13 +4064,12 @@ shear-ratio-3
 
 \end_inset
 </cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $\eta_{1}$
+Shear ratio for Maxwell model 3, 
+\begin_inset Formula $\mu_{3}/\mu_{tot}$
 \end_inset
 
 
@@ -3345,7 +4077,18 @@ shear-ratio-3
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3356,13 +4099,12 @@ viscosity-1
 
 \end_inset
 </cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $\eta_{2}$
+Viscosity for Maxwell model 1, 
+\begin_inset Formula $\eta_{1}$
 \end_inset
 
 
@@ -3370,7 +4112,18 @@ viscosity-1
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3381,12 +4134,46 @@ viscosity-2
 
 \end_inset
 </cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+Viscosity for Maxwell model 2, 
+\begin_inset Formula $\eta_{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+viscosity-3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Viscosity for Maxwell model 3, 
 \begin_inset Formula $\eta_{3}$
 \end_inset
 
@@ -3395,13 +4182,204 @@ viscosity-2
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \family typewriter
-viscosity-3
+db_initial_stress
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+stress-xx, 
+\family default
+etc.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial stress components
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+db_initial_strain
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+total-strain-xx, 
+\family default
+etc.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial strain components
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+db_initial_state
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+viscous-strain-1-xx, 
+\family default
+etc.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial viscous strain components for Maxwell model 1
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+viscous-strain-2-xx, 
+\family default
+etc.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial viscous strain components for Maxwell model 2
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+viscous-strain-3-xx, 
+\family default
+etc.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial viscous strain components for Maxwell model 3
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+stress-zz-initial
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial out-of-plane stress (2D only)
 \end_layout
 
 \end_inset
@@ -4496,40 +5474,74 @@ Values in spatial database used as parameters in the nonlinear power-law
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="7" columns="2">
+<lyxtabular version="3" rows="11" columns="3">
 <features tabularvalignment="middle">
-<column alignment="center" valignment="middle" width="0.85in">
-<column alignment="center" valignment="middle" width="2.47in">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \series bold
-Parameter
+Spatial database
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-\align center
 
 \series bold
-Name in Spatial Database
+Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Description
 \end_layout
 
 \end_inset
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell multirow="3" alignment="left" valignment="middle" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
+db_properties
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+vp
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Compressional wave speed, 
 \begin_inset Formula $v_{p}$
 \end_inset
 
@@ -4538,23 +5550,33 @@ Name in Spatial Database
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+</row>
+<row>
+<cell multirow="4" alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \family typewriter
-Vp
+vs
 \end_layout
 
 \end_inset
 </cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+Shear wave speed, 
 \begin_inset Formula $v_{s}$
 \end_inset
 
@@ -4563,32 +5585,18 @@ Vp
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family typewriter
-Vs
-\end_layout
-
-\end_inset
-</cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell multirow="4" alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $\rho$
-\end_inset
-
 
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -4599,13 +5607,12 @@ density
 
 \end_inset
 </cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $\dot{e}_{0}$
+Density, 
+\begin_inset Formula $\rho$
 \end_inset
 
 
@@ -4613,7 +5620,18 @@ density
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -4624,13 +5642,12 @@ reference-strain-rate
 
 \end_inset
 </cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $S_{0}$
+Reference strain rate, 
+\begin_inset Formula $\dot{e}_{0}$
 \end_inset
 
 
@@ -4638,7 +5655,18 @@ reference-strain-rate
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -4649,12 +5677,46 @@ reference-stress
 
 \end_inset
 </cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+Reference stress, 
+\begin_inset Formula $S_{0}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+power-law-exponent
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Power-law exponent, 
 \begin_inset Formula $n$
 \end_inset
 
@@ -4663,13 +5725,138 @@ reference-stress
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \family typewriter
-power-law-exponent
+db_initial_stress
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+stress-xx, 
+\family default
+etc.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial stress components
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+db_initial_strain
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+total-strain-xx, 
+\family default
+etc.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial strain components
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+db_initial_state
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+viscous-strain-xx, 
+\family default
+etc.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial viscous strain components
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+stress-zz-initial
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial out-of-plane stress (2D only)
 \end_layout
 
 \end_inset
@@ -4969,10 +6156,10 @@ fit_mohr_coulomb
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="4">
 <features tabularvalignment="middle">
-<column alignment="center" valignment="top">
-<column alignment="center" valignment="top">
-<column alignment="center" valignment="top">
-<column alignment="center" valignment="top">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
 <row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
@@ -5741,48 +6928,59 @@ c model with perfect plasticity.
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="7" columns="2">
+<lyxtabular version="3" rows="11" columns="3">
 <features tabularvalignment="middle">
-<column alignment="center" valignment="top">
-<column alignment="center" valignment="top">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \series bold
-Parameter
+Spatial database
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \series bold
-Name in Spatial Database
+Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Description
 \end_layout
 
 \end_inset
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell multirow="3" alignment="left" valignment="middle" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $v_{p}$
-\end_inset
 
-
+\family typewriter
+db_properties
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -5793,13 +6991,12 @@ vp
 
 \end_inset
 </cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $v_{s}$
+Compressional wave speed, 
+\begin_inset Formula $v_{p}$
 \end_inset
 
 
@@ -5807,7 +7004,18 @@ vp
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+</row>
+<row>
+<cell multirow="4" alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -5818,13 +7026,12 @@ vs
 
 \end_inset
 </cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $\rho$
+Shear wave speed, 
+\begin_inset Formula $v_{s}$
 \end_inset
 
 
@@ -5832,7 +7039,18 @@ vs
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+</row>
+<row>
+<cell multirow="4" alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -5843,13 +7061,12 @@ density
 
 \end_inset
 </cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $\phi$
+Density, 
+\begin_inset Formula $\rho$
 \end_inset
 
 
@@ -5857,7 +7074,18 @@ density
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -5868,13 +7096,12 @@ friction-angle
 
 \end_inset
 </cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $\bar{c}$
+Friction angle, 
+\begin_inset Formula $\phi$
 \end_inset
 
 
@@ -5882,7 +7109,18 @@ friction-angle
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -5893,12 +7131,46 @@ cohesion
 
 \end_inset
 </cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+Cohesion, 
+\begin_inset Formula $\bar{c}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+dilatation-angle
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Dilatation angle, 
 \begin_inset Formula $\psi$
 \end_inset
 
@@ -5907,13 +7179,138 @@ cohesion
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \family typewriter
-dilatation-angle
+db_initial_stress
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+stress-xx, 
+\family default
+etc.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial stress components
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+db_initial_strain
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+total-strain-xx, 
+\family default
+etc.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial strain components
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+db_initial_state
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+plastic-strain-xx, 
+\family default
+etc.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial plastic strain components
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+stress-zz-initial
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial out-of-plane stress (2D only)
 \end_layout
 
 \end_inset
@@ -5981,298 +7378,6 @@ fit_mohr_coulomb = inscribed ; default
 
 \begin_layout LyX-Code
 allow_tensile_yield = False ; default
-\end_layout
-
-\begin_layout Section
-\begin_inset CommandInset label
-LatexCommand label
-name "sec:Initial-State-Variables"
-
-\end_inset
-
-Initial State Variables
-\end_layout
-
-\begin_layout Standard
-In many problems of interest, the state variables describing a material
- model may already have nonzero values prior to the application of any boundary
- conditions.
- For problems in geophysics, the most common example is a problem that includes
- the effects of gravitational body forces.
- In the real earth, rocks were emplaced and formed under the influence of
- gravity.
- When performing numerical simulations, however, it is not possible to represent
- the entire time history of rock emplacement.
- Instead, gravity must be ``turned on'' at the beginning of the simulation.
- Unfortunately, this results in unrealistic amounts of deformation at the
- beginning of a simulation.
- An alternative is to provide initial state variables for the region under
- consideration.
- This allows the specification of a set of state variables that is consistent
- with the prior application of gravitational body forces.
- In a more general sense, initial values for state variables may be used
- to provide values that are consistent with any set of conditions that occurred
- prior to the beginning of a simulation.
- The current release of PyLith allows the specification of initial stresses,
- strains, and state variables for all materials; however, the initial state
- variables are not presently used.
- The reason for this is that the present version of PyLith always performs
- an elastic solution prior to performing the time-dependent solution, and
- the state variables are not used in the elastic solution.
- In future versions of PyLith, the solution of the elastic problem will
- be optional, so that initial state variables may be used.
-\end_layout
-
-\begin_layout Subsection
-Specification of Initial State Variables
-\end_layout
-
-\begin_layout Standard
-State variables are specific to a given material, so initial values for
- state variables are specified as part of the material description.
- The default is that no initial state variables are specified.
- In computing the elastic prestep, appropriate values for the state variables
- are set; otherwise the state variables are set to zero.
- To override this behavior, specify a spatial database for the initial stress,
- strain, and/or state variables as in the example from the tutorial in Section
- 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:Tutorial-3d-hex8"
-
-\end_inset
-
-:
-\end_layout
-
-\begin_layout LyX-Code
-[pylithapp.timedependent.materials.elastic]
-\end_layout
-
-\begin_layout LyX-Code
-db_initial_stress = spatialdata.spatialdb.SimpleDB
-\end_layout
-
-\begin_layout LyX-Code
-db_initial_stress.iohandler.filename = initial_stress.spatialdb
-\end_layout
-
-\begin_layout Quote
-
-\series bold
-\color red
-Warning:
-\color inherit
- 
-\series default
-Using the elastic prestep with initial state variables will generally lead
- to the state variables being ignored (the initial out of plane stress is
- the exception), because the elastic prestep will set the state variables
- based on the elastic solution.
-\end_layout
-
-\begin_layout Quote
-
-\series bold
-\color red
-Warning:
-\color inherit
- 
-\series default
-Currently, PyLith assumes initial displacements and velocities of zero,
- so any initial strain and state variables should be consistent with these
- initial conditions.
- This limitation will be removed in future releases.
-\end_layout
-
-\begin_layout Standard
-As mentioned in section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:ViscoelasticFormulations"
-
-\end_inset
-
-, plane strain problems do not include the out-of-plane stress component
- (
-\begin_inset Formula $\sigma_{zz}$
-\end_inset
-
-), and an additional state variable (
-\family typewriter
-stress-zz-initial
-\family default
-) is provided for all two-dimensional viscoelastic and elastoplastic models.
- To completely specify the initial stresses, the user must provide two spatial
- databases: an initial stress database that includes the three 2D stress
- components (
-\begin_inset Formula $\sigma_{xx},\:\sigma_{yy},\:\sigma_{xy}$
-\end_inset
-
-) and an additional database containing the out of plane stress and initial
- values for all other state variables for the given material.
- The complete initial stress field may then be defined in the 
-\family typewriter
-.cfg
-\family default
- file as:
-\end_layout
-
-\begin_layout LyX-Code
-[pylithapp.problem.materials.powerlaw]
-\end_layout
-
-\begin_layout LyX-Code
-# First specify initial 2D stresses
-\end_layout
-
-\begin_layout LyX-Code
-db_initial_stress = spatialdata.spatialdb.SimpleDB
-\end_layout
-
-\begin_layout LyX-Code
-db_initial_stress.label = 2D initial stress
-\end_layout
-
-\begin_layout LyX-Code
-db_initial_stress.iohandler.filename = inititial_stress_2d.spatialdb
-\end_layout
-
-\begin_layout LyX-Code
-
-\end_layout
-
-\begin_layout LyX-Code
-# Now specify out-of-plane initial stresses (and all other state variables)
-\end_layout
-
-\begin_layout LyX-Code
-db_initial_state = spatialdata.spatialdb.SimpleDB
-\end_layout
-
-\begin_layout LyX-Code
-db_initial_state.label = Out of plane strain initial stress
-\end_layout
-
-\begin_layout LyX-Code
-db_initial_state.iohandler.filename = initial_state_2d.spatialdb
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Float table
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Values in spatial database for initial state variables for 3D problems.
- 2D problems use only the relevant values.
- Note that initial stress and strain are available for all material models.
- Some models have additional state variables (Table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:material-model-output"
-
-\end_inset
-
-) and initial values for these may also be provided.
-\end_layout
-
-\end_inset
-
-
-\begin_inset Tabular
-<lyxtabular version="3" rows="3" columns="2">
-<features tabularvalignment="middle">
-<column alignment="center" valignment="middle" width="0.85in">
-<column alignment="center" valignment="middle" width="2.47in">
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\series bold
-State Variable
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\align center
-
-\series bold
-Values in Spatial Database
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-initial stress
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family typewriter
-stress-xx, stress-yy, stress-zz, stress-xy, stress-yz, stress-xz
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-initial strain
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family typewriter
-strain-xx, strain-yy, strain-zz, strain-xy, strain-yz, strain-xz
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \end_body

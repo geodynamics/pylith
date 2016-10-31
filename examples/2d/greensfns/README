@@ -92,7 +92,7 @@ Step 4.  Plot the true and predicted slip values (**requires matplotlib**).
   forward simulation.  If you have matplotlib installed, you can run
   this script by typing:
 
-    plot_invresults.py --solution=output/eqsim-fault.h5 --predicted=output/slip_inverted.txt
+    ./plot_invresults.py --solution=output/eqsim-fault.h5 --predicted=output/slip_inverted.txt
 
   This will display a matplotlib window with the true solution in
   black and the predicted solution corresponding to different values

@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2015 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -32,10 +32,8 @@ def validateFilename(value):
   Validate filename.
   """
   if 0 == len(value):
-    msg = "Filename for ASCII input mesh not specified.\n\n" + \
-        "PyLith runs some minimum validation on the input before even\n" + \
-        "displaying help information. To test PyLith, run an example as\n" +\
-        "discussed in the manual.\n"
+    msg = "Filename for ASCII input mesh not specified.  " + \
+          "To test PyLith, run an example as discussed in the manual."
     raise ValueError(msg)
   return value
 

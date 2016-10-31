@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -617,6 +617,7 @@ pylith::materials::GenMaxwellQpQsIsotropic3D::_calcStressViscoelastic(
   const PylithScalar meanStressTpdt = 3.0 * bulkModulus * meanStrain;
   
   // Compute stresses (mean + deviatoric)
+  // Need to determine whether initial stresses are being handled properly here.
   assert(6 == tensorSize);
   const PylithScalar diag[6] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
   for (int i=0; i < tensorSize; ++i) {
