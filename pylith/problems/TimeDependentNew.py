@@ -45,7 +45,7 @@ class TimeDependentNew(ProblemNew, ModuleTimeDependent):
     ## Python object for managing TimeDependentNew facilities and properties.
     ##
     ## \b Properties
-    ## @li \b elastic_prestep Include a static calculation with elastic behavior before time stepping.
+    ## @li None
     ##
     ## \b Facilities
     ## @li \b initializer Problem initializer. 
