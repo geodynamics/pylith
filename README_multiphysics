@@ -1,0 +1,152 @@
+======================================================================
+Python
+======================================================================
+
+apps
+
+    PyLithApp
+
+problems
+
+    ProblemNew
+    TimeDependentNew
+        db_initialconditions :TODO: :DISCUSS:
+    Solution
+    SolutionSubfield
+
+    --TODO--
+    ProgressMonitor
+    GreensFnsStatic
+
+    --LONG TERM--
+    GreensFnsReciprocity
+
+bc
+
+    BoundaryCondition
+    AbsorbingDampers
+    Neumann
+    PointForce
+    ZeroDisp
+
+    --TODO--
+    Dirichlet
+    DirichletPoints
+    
+
+materials
+
+    --TODO--
+    MaterialNew
+        db_properties
+        db_initialconditions :TODO: :DISCUSS:
+
+faults
+
+    --TODO--
+    Fault
+    FaultCohesive
+    FaultCohesiveKin
+    FaultCohesiveDyn
+        db_properties
+        db_initialconditions
+
+    EqKinSrc
+    SlipTimeFn
+    StepSlipFn
+    ConstRateSlipFn
+    LiuCosSlipFn
+    BruneSlipFn
+    TimeHistorySlipFn
+
+    TractPerturbation
+
+======================================================================
+C++
+======================================================================
+
+problems
+
+    Problem
+    TimeDependent
+
+    --TODO--
+    ProgressMonitor
+
+topology
+
+    Mesh
+    MeshOps
+    FieldBase
+    Field
+    FieldQuery
+    Distributor
+    RefineUniform
+    ReverseCuthillMcKee
+
+    Jacobian?
+    CoordsVisitor?
+    VisitorMesh?
+    VisitorSubMesh?
+    Stratum?
+
+feassemble
+
+    IntegratorPointwise
+
+materials
+
+    MateiralNew
+    Query
+    IsotropicLinearElasticityPlaneStrain
+
+    --incomplete--
+    IsotropicLinearIncompElasticityPlaneStrain
+
+
+fekernels
+
+    dispvel
+    elasticity
+    linearelasticity
+    linearelasticityplanestrain
+    pressure
+
+bc
+
+    --TODO--
+    Dirichlet
+    DirichletPoints
+    Neumann
+    AbsorbingDampers
+    PointForce
+
+faults
+
+    --TODO--
+    FaultCohesive
+    FaultCohesiveKin
+    FaultCohesiveDyn
+    FaultCohesiveImpulses
+
+======================================================================
+Program flow
+======================================================================
+
+PyLithApp.main()
+
+    create/import mesh
+
+    Problem.preinitialize()
+    Problem.verifyConfiguration()
+    Problem.initialize()
+
+    Problem.run()
+        + TimeDependent.run()
+            C++ TimeDependent.create()
+            C++ TimeDependent.initialize()
+            C++ TimeDependnet.solve()
+    
+    problem.finalize()
+
+    
