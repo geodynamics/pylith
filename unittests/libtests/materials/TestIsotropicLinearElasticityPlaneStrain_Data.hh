@@ -36,7 +36,7 @@ public :
   /// Constructor
   TestIsotropicLinearElasticityPlaneStrain_Data(const bool useInertia,
 						const bool useBodyForce,
-						const bool useInitialState);
+						const bool useReferenceState);
 
   /// Destructor
   ~TestIsotropicLinearElasticityPlaneStrain_Data(void);
@@ -54,7 +54,7 @@ public:
 
   bool useInertia; ///< Flag indicating test case uses inertia.
   bool useBodyForce; ///< Flag indicating test case uses body force.
-  bool useInitialState; ///< Flag indicating test case uses initial state.
+  bool useReferenceState; ///< Flag indicating test case uses reference state.
 
 };
 

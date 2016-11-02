@@ -28,10 +28,10 @@ extern "C" {
 // Constructor
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain_Data::TestIsotropicLinearElasticityPlaneStrain_Data(const bool withInertia,
 												      const bool withBodyForce,
-												      const bool withInitialState) :
+												      const bool withReferenceState) :
   useInertia(withInertia),
   useBodyForce(withBodyForce),
-  useInitialState(withInitialState)
+  useReferenceState(withReferenceState)
 { // constructor
   dimension = 2;
   numSolnFields = 2;

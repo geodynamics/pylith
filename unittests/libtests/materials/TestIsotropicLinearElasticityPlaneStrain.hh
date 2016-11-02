@@ -48,7 +48,7 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain : public TestM
   // Tests specific to this materials parameters.
   CPPUNIT_TEST( testUseInertia );
   CPPUNIT_TEST( testUseBodyForce );
-  CPPUNIT_TEST( testUseInitialState );
+  CPPUNIT_TEST( testUseReferenceState );
 
   // Tests that explicitly depend on how details of this material.
   CPPUNIT_TEST( test_auxFieldsSetup );
@@ -72,8 +72,8 @@ public :
   /// Test useBodyForce().
   void testUseBodyForce(void);
 
-  /// Test useInitialState().
-  void testUseInitialState(void);
+  /// Test useReferenceState().
+  void testUseReferenceState(void);
 
   /// Test _auxFieldsSetup().
   void test_auxFieldsSetup(void);

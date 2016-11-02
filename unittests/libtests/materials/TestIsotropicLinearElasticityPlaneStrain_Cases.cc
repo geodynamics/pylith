@@ -39,8 +39,8 @@ namespace pylith {
 
 	const bool useInertia = false;
 	const bool useBodyForce = false;
-	const bool useInitialState = false;	
-	_mydata = new TestIsotropicLinearElasticityPlaneStrain_Data(useInertia, useBodyForce, useInitialState);CPPUNIT_ASSERT(_mydata);
+	const bool useReferenceState = false;	
+	_mydata = new TestIsotropicLinearElasticityPlaneStrain_Data(useInertia, useBodyForce, useReferenceState);CPPUNIT_ASSERT(_mydata);
 
 #if 1 // TEMPORARY (debugging)
 	_mydata->meshFilename = "data/tri3_small.mesh";

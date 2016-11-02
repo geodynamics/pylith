@@ -58,12 +58,12 @@ public :
    */
   void useBodyForce(const bool value);
 
-  /** Use initial (reference) stress and strain in computation of
-   * stress and strain?
+  /** Use reference stress and strain in computation of stress and
+   * strain?
    *
-   * @param[in] value Flag indicating to include initial stress and strain.
+   * @param[in] value Flag indicating to include reference stress and strain.
    */
-  void useInitialState(const bool value);
+  void useReferenceState(const bool value);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -109,7 +109,7 @@ private :
 
   bool _useInertia; ///< Flag to include inertial term.
   bool _useBodyForce; ///< Flag to include body force term.
-  bool _useInitialState; ///< Flag to use initial stress and strain.
+  bool _useReferenceState; ///< Flag to use reference stress and strain.
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

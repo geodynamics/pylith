@@ -39,7 +39,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::IsotropicLinearElastici
   MaterialNew(2),
   _useInertia(false),
   _useBodyForce(false),
-  _useInitialState(false)
+  _useReferenceState(false)
 { // constructor
   _isJacobianSymmetric = true;
 } // constructor
@@ -76,13 +76,13 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::useBodyForce(const bool
 
 
 // ----------------------------------------------------------------------
-// Use initial (reference) stress and strain in computation of stress
-// and strain?
+// Use reference stress and strain in computation of stress and
+// strain?
 void
-pylith::materials::IsotropicLinearElasticityPlaneStrain::useInitialState(const bool value)
-{ // useInitialState
-  _useInitialState = value;
-} // useInitialState
+pylith::materials::IsotropicLinearElasticityPlaneStrain::useReferenceState(const bool value)
+{ // useReferenceState
+  _useReferenceState = value;
+} // useReferenceState
 
 
 // ----------------------------------------------------------------------
@@ -127,17 +127,17 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_auxFieldsSetup(void)
     _auxFieldsQuery->queryFn("body_force", pylith::topology::FieldQuery::dbQueryGeneric);
   } // if
 
-  // Fields 4 and 5: initial stress and initial strain
-  if (_useInitialState) {
+  // Fields 4 and 5: reference stress and reference strain
+  if (_useReferenceState) {
     const PylithInt stressSize = 4;
     const char* componentsStress[stressSize] = {"stress_xx", "stress_yy", "stress_xy", "stress_zz"};
-    _auxFields->subfieldAdd("initial_stress", componentsStress, stressSize, topology::Field::OTHER, this->auxFieldDiscretization("initial_stress"), pressureScale);
-    _auxFieldsQuery->queryFn("initial_stress", pylith::topology::FieldQuery::dbQueryGeneric);
+    _auxFields->subfieldAdd("reference_stress", componentsStress, stressSize, topology::Field::OTHER, this->auxFieldDiscretization("reference_stress"), pressureScale);
+    _auxFieldsQuery->queryFn("reference_stress", pylith::topology::FieldQuery::dbQueryGeneric);
 
     const PylithInt strainSize = 4;
     const char* componentsStrain[strainSize] = {"strain_xx", "strain_yy", "strain_xy", "strain_zz"};
-    _auxFields->subfieldAdd("initial_strain", componentsStress, stressSize, topology::Field::OTHER, this->auxFieldDiscretization("initial_strain"), 1.0);
-    _auxFieldsQuery->queryFn("initial_strain", pylith::topology::FieldQuery::dbQueryGeneric);
+    _auxFields->subfieldAdd("reference_strain", componentsStrain, strainSize, topology::Field::OTHER, this->auxFieldDiscretization("reference_strain"), 1.0);
+    _auxFieldsQuery->queryFn("reference_strain", pylith::topology::FieldQuery::dbQueryGeneric);
   } // if
 
   PYLITH_METHOD_END;
@@ -159,7 +159,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSResidua
 
   // Velocity
   const PetscPointFunc g0v = (_useBodyForce) ? pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g0v : NULL;
-  const PetscPointFunc g1v = (!_useInitialState) ? pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v : pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v_initstate;
+  const PetscPointFunc g1v = (!_useReferenceState) ? pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v : pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v_initstate;
 
   const PetscDM dm = solution.dmMesh();assert(dm);
   PetscDS prob = NULL;

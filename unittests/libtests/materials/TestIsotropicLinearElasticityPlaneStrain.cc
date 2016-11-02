@@ -95,22 +95,22 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testUseBodyForce(vo
 
 
 // ----------------------------------------------------------------------
-// Test useInitialState().
+// Test useReferenceState().
 void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testUseInitialState(void)
-{ // testUseInitialState
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testUseReferenceState(void)
+{ // testUseReferenceState
   PYLITH_METHOD_BEGIN;
 
   CPPUNIT_ASSERT(_mymaterial);
 
   const bool flag = false; // default
-  CPPUNIT_ASSERT_EQUAL(flag, _mymaterial->_useInitialState);
+  CPPUNIT_ASSERT_EQUAL(flag, _mymaterial->_useReferenceState);
 
-  _mymaterial->useInitialState(!flag);
-  CPPUNIT_ASSERT_EQUAL(!flag, _mymaterial->_useInitialState);
+  _mymaterial->useReferenceState(!flag);
+  CPPUNIT_ASSERT_EQUAL(!flag, _mymaterial->_useReferenceState);
 
   PYLITH_METHOD_END;
-} // testUseInitialState
+} // testUseReferenceState
 
 
 // ----------------------------------------------------------------------
@@ -142,7 +142,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
     CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
   } // density
 
-  { // shearModulus
+  { // shear modulus
     const char* label = "shear_modulus";
     const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxFields->subfieldInfo(label);
     CPPUNIT_ASSERT_EQUAL(1, info.numComponents);
@@ -153,9 +153,9 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
     CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
     CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
     CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-  } // shearModulus
+  } // shear modulus
 
-  { // bulkModulus
+  { // bulk modulus
     const char* label = "bulk_modulus";
     const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxFields->subfieldInfo(label);
     CPPUNIT_ASSERT_EQUAL(1, info.numComponents);
@@ -166,7 +166,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
     CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
     CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
     CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-  } // bulkModulus
+  } // bulk modulus
 
   if (_mydata->useBodyForce) { // body force
     const char* label = "body_force";
@@ -182,8 +182,8 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
     CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
   } // body force
 
-  if (_mydata->useInitialState) { // initial stress and strain
-    const char* label = "initial_stress";
+  if (_mydata->useReferenceState) { // reference stress and strain
+    const char* label = "reference_stress";
     const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxFields->subfieldInfo(label);
     CPPUNIT_ASSERT_EQUAL(4, info.numComponents);
     CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
@@ -193,10 +193,10 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
     CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
     CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
     CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-  } // body force
+  } // reference stress
 
-  if (_mydata->useInitialState) { // initial stress and strain
-    const char* label = "initial_strain";
+  if (_mydata->useReferenceState) { // referece stress and strain
+    const char* label = "reference_strain";
     const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxFields->subfieldInfo(label);
     CPPUNIT_ASSERT_EQUAL(4, info.numComponents);
     CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
@@ -206,7 +206,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
     CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
     CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
     CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-  } // body force
+  } // reference strain
 
   // Make sure DB query functions are set correctly.
   CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _mymaterial->_auxFieldsQuery->queryFn("density"));
@@ -215,9 +215,9 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
   if (_mydata->useBodyForce) {
     CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _mymaterial->_auxFieldsQuery->queryFn("body_force"));
   } // if
-  if (_mydata->useInitialState) {
-    CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _mymaterial->_auxFieldsQuery->queryFn("initial_stress"));
-    CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _mymaterial->_auxFieldsQuery->queryFn("initial_strain"));
+  if (_mydata->useReferenceState) {
+    CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _mymaterial->_auxFieldsQuery->queryFn("reference_stress"));
+    CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _mymaterial->_auxFieldsQuery->queryFn("reference_strain"));
   } // if
 
   PYLITH_METHOD_END;
@@ -290,8 +290,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
   } // Test getting bulkModulus field
 
-
-  // :TODO: Add test of getting initial stress
+  std::cout << " :TODO: Add test for getting reference stress/strain. " << std::endl;
 
   PYLITH_METHOD_END;
 } // testGetAuxField
