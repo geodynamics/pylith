@@ -97,7 +97,7 @@ public :
   void write(const char* filename,
              const MPI_Comm comm);
 
-  /// Verify symmetry of matrix. For debugger purposes only.
+  /// Verify symmetry of matrix. For debugging purposes only.
   void verifySymmetry(void) const;
 
   /** Get flag indicating if sparse matrix values have been
