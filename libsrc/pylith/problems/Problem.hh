@@ -63,16 +63,16 @@ public :
 
   /** Set handles to integrators.
    *
-   * @param integratorArray Array of integrators.
-   * @param numIntegrators Number of integrators.
+   * @param[in] integratorArray Array of integrators.
+   * @param[in] numIntegrators Number of integrators.
    */
   void integrators(feassemble::IntegratorPointwise* integratorArray[] ,
 		   const int numIntegrators);
   
   /** Set handles to constraints.
    *
-   * @param constraintArray Array of constraints.
-   * @param numContraints Number of constraints.
+   * @param[in] constraintArray Array of constraints.
+   * @param[in] numContraints Number of constraints.
    */
   void constraints(feassemble::Constraint* constraintArray[] ,
 		   const int numConstraints);
@@ -111,11 +111,11 @@ public :
 
   /** Compute LHS residual, F(t,s,\dot{s}).
    *
-   * @param t Current time.
-   * @param dt Current time step.
-   * @param solutionVec PETSc Vec with current trial solution.
+   * @param[in] t Current time.
+   * @param[in] dt Current time step.
+   * @param[in] solutionVec PETSc Vec with current trial solution.
    * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
-   * @param residualVec PETSc Vec for residual.
+   * @param[in] residualVec PETSc Vec for residual.
    */
   void computeLHSResidual(const PetscReal t,
 			  const PetscReal dt,
@@ -160,19 +160,16 @@ protected :
 
   pylith::topology::Field* _solution; ///< Handle to solution field.
   pylith::topology::Field* _solutionDot; ///< Handle to time derivative of solution field.
-  pylith::topology::Field* _residualRHS; ///< Handle to residual field for RHS, G(t,s).
-  pylith::topology::Field* _residualLHS; ///< Handle to residual field for LHS, F(t,s,\dot{s}).
-  pylith::topology::Jacobian* _jacobianRHS; ///< Handle to Jacobian for RHS, G(t,s).
-  pylith::topology::Jacobian* _jacobianLHS; ///< Handle to Jacobian for LHS, F(t,s,\dot{s}).
-  pylith::topology::Field* _jacobianLHSLumpedInverse; ///< Handle to inverse lumped Jacobian for LHS, F(t,s,\dot{s}).
-  pylith::topology::Jacobian* _preconditionerRHS; ///< Handle to Jacobian preconditioner for RHS, G(t,s).
-  pylith::topology::Jacobian* _preconditionerLHS; ///< Handle to Jacobian preconditioner for LHS, F(t,s,\dot{s}).
+  pylith::topology::Field* _residual; ///< Handle to residual field.
+  pylith::topology::Jacobian* _jacobian; ///< Handle to Jacobian.
+  pylith::topology::Field* _jacobianLumpedInverse; ///< Handle to inverse lumped Jacobian.
+  pylith::topology::Jacobian* _preconditioner; ///< Handle to Jacobian preconditioner.
 
   std::vector<pylith::feassemble::IntegratorPointwise*> _integrators; ///< Array of integrators.
   std::vector<pylith::feassemble::Constraint*> _constraints; ///< Array of constraints.
 
-  PetscMat _customConstraintPCMat; ///< Custom PETSc preconditioning matrix for constraints.
-  bool _useCustomConstraintPC; ///< True if using custom preconditioner for Lagrange constraints.
+  PetscMat _preconditionerConstraintsMat; ///< Custom PETSc preconditioning matrix for constraints.
+  bool _usePreconditionerConstraints; ///< True if using custom preconditioner for Lagrange constraints.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

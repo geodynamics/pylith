@@ -27,6 +27,9 @@
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+
+#include "journal/debug.h" // USES journal::debug_t
+
 #include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
@@ -34,16 +37,13 @@
 pylith::problems::Problem::Problem(void) :
   _solution(0),
   _solutionDot(0),
-  _residualRHS(0),
-  _residualLHS(0),
-  _jacobianRHS(0),
-  _jacobianLHS(0),
-  _jacobianLHSLumpedInverse(0),
-  _preconditionerRHS(0),
-  _preconditionerLHS(0),
+  _residual(0),
+  _jacobian(0),
+  _jacobianLumpedInverse(0),
+  _preconditioner(0),
   _integrators(0),
   _constraints(0),
-  _customConstraintPCMat(0)
+  _preconditionerConstraintsMat(0)
 { // constructor
 } // constructor
 
@@ -63,13 +63,10 @@ pylith::problems::Problem::deallocate(void)
 
   _solution = 0; // Held by Python. :KLUDGE: :TODO: Use shared pointer.
   _solutionDot = 0; // Held by Python. :KLUDGE: :TODO: Use shared pointer.
-  delete _residualRHS; _residualRHS = 0;
-  delete _residualLHS; _residualLHS = 0;
-  delete _jacobianRHS; _jacobianRHS = 0;
-  delete _jacobianLHS; _jacobianLHS = 0;
-  delete _jacobianLHSLumpedInverse; _jacobianLHSLumpedInverse = 0;
-  delete _preconditionerRHS; _preconditionerRHS = 0;
-  delete _preconditionerLHS; _preconditionerLHS = 0;
+  delete _residual; _residual = 0;
+  delete _jacobian; _jacobian = 0;
+  delete _jacobianLumpedInverse; _jacobianLumpedInverse = 0;
+  delete _preconditioner; _preconditioner = 0;
 
   PYLITH_METHOD_END;
 } // deallocate
@@ -119,29 +116,30 @@ pylith::problems::Problem::computeRHSResidual(const PylithReal t,
 { // computeRHSResidual
   PYLITH_METHOD_BEGIN;
 
+  journal::debug_t debug("problem");
+  debug << journal::at(__HERE__)
+	<< "Problem::computeRHSResidual(t="<<t<<", dt="<<dt<<", solutionVec="<<solutionVec<<", residualVec="<<residualVec<<")" << journal::endl;
+
   assert(residualVec);
   assert(solutionVec);
-  assert(_residualRHS);
+  assert(_residual);
   assert(_solution);
 
   // Update PyLith view of the solution.
   _solution->scatterGlobalToLocal(solutionVec);
 
-  // Set residual to zero.
-  _residualRHS->zeroAll();
-  
   // Sum residual contributions across integrators.
   const size_t numIntegrators = _integrators.size();
   assert(numIntegrators > 0); // must have at least 1 integrator
   for (size_t i=0; i < numIntegrators; ++i) {
-    _integrators[i]->computeRHSResidual(_residualRHS, t, dt, *_solution);
+    _integrators[i]->computeRHSResidual(_residual, t, dt, *_solution);
   } // for
 
   // Update PETSc view of residual
   PetscErrorCode err;
-  PetscDM dmMesh = _residualRHS->dmMesh();
-  err = DMLocalToGlobalBegin(dmMesh, _residualRHS->localVector(), ADD_VALUES, residualVec);PYLITH_CHECK_ERROR(err);
-  err = DMLocalToGlobalEnd(dmMesh, _residualRHS->localVector(), ADD_VALUES, residualVec);PYLITH_CHECK_ERROR(err);
+  PetscDM dmMesh = _residual->dmMesh();
+  err = DMLocalToGlobalBegin(dmMesh, _residual->localVector(), ADD_VALUES, residualVec);PYLITH_CHECK_ERROR(err);
+  err = DMLocalToGlobalEnd(dmMesh, _residual->localVector(), ADD_VALUES, residualVec);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // computeRHSResidual
@@ -157,7 +155,11 @@ pylith::problems::Problem::computeRHSJacobian(const PylithReal t,
 { // computeRHSJacobian
   PYLITH_METHOD_BEGIN;
 
-  assert(_jacobianRHS);
+  journal::debug_t debug("problem");
+  debug << journal::at(__HERE__)
+	<< "Problem::computeRHSJacobian(t="<<t<<", dt="<<dt<<", solutionVec="<<solutionVec<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<")" << journal::endl;
+
+  assert(_jacobian);
   assert(_solution);
 
   // :KLUDGE: Should add check to see if we need to compute Jacobian
@@ -165,18 +167,12 @@ pylith::problems::Problem::computeRHSJacobian(const PylithReal t,
   // Update PyLith view of the solution.
   _solution->scatterGlobalToLocal(solutionVec);
 
-  // Set jacobian to zero.
-  _jacobianRHS->zero();
-
   // Sum Jacobian contributions across integrators.
   const size_t numIntegrators = _integrators.size();
   for (size_t i=0; i < numIntegrators; ++i) {
-    _integrators[i]->computeRHSJacobian(_jacobianRHS, _preconditionerRHS, t, dt, *_solution);
+    _integrators[i]->computeRHSJacobian(_jacobian, _preconditioner, t, dt, *_solution);
   } // for
   
-  // Assemble jacobian.
-  _jacobianRHS->assemble("final_assembly");
-
   PYLITH_METHOD_END;
 } // computeRHSJacobian
 
@@ -192,8 +188,12 @@ pylith::problems::Problem::computeLHSResidual(const PylithReal t,
 { // computeLHSResidual
   PYLITH_METHOD_BEGIN;
 
+  journal::debug_t debug("problem");
+  debug << journal::at(__HERE__)
+	<< "Problem::computeLHSResidual(t="<<t<<", dt="<<dt<<", solutionVec="<<solutionVec<<", solutionDotVec"<<solutionDotVec<<", residualVec="<<residualVec<<")" << journal::endl;
+
   assert(residualVec);
-  assert(_residualLHS);
+  assert(_residual);
 
   assert(solutionVec);
   assert(_solution);
@@ -203,21 +203,18 @@ pylith::problems::Problem::computeLHSResidual(const PylithReal t,
   assert(_solutionDot);
   _solutionDot->scatterGlobalToLocal(solutionDotVec);
 
-  // Set residual to zero.
-  _residualLHS->zeroAll();
-  
   // Sum residual across integrators.
   const int numIntegrators = _integrators.size();
   assert(numIntegrators > 0); // must have at least 1 integrator
   for (int i=0; i < numIntegrators; ++i) {
-    _integrators[i]->computeLHSResidual(_residualLHS, t, dt, *_solution, *_solutionDot);
+    _integrators[i]->computeLHSResidual(_residual, t, dt, *_solution, *_solutionDot);
   } // for
 
   // Update PETSc view of residual
   PetscErrorCode err;
-  PetscDM dmMesh = _residualRHS->dmMesh();
-  err = DMLocalToGlobalBegin(dmMesh, _residualLHS->localVector(), ADD_VALUES, residualVec);PYLITH_CHECK_ERROR(err);
-  err = DMLocalToGlobalEnd(dmMesh, _residualLHS->localVector(), ADD_VALUES, residualVec);PYLITH_CHECK_ERROR(err);
+  PetscDM dmMesh = _residual->dmMesh();
+  err = DMLocalToGlobalBegin(dmMesh, _residual->localVector(), ADD_VALUES, residualVec);PYLITH_CHECK_ERROR(err);
+  err = DMLocalToGlobalEnd(dmMesh, _residual->localVector(), ADD_VALUES, residualVec);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // computeLHSResidual
@@ -236,7 +233,10 @@ pylith::problems::Problem::computeLHSJacobianImplicit(const PylithReal t,
 { // computeLHSJacobianImplicit
   PYLITH_METHOD_BEGIN;
 
-  assert(_jacobianLHS);
+  journal::debug_t debug("problem");
+  debug << journal::at(__HERE__)
+	<< "Problem::computeLHSJacobianImplicit(t="<<t<<", dt="<<dt<<", tshift="<<tshift<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<")" << journal::endl;
+  assert(_jacobian);
   assert(_solution);
   assert(_solutionDot);
 
@@ -246,18 +246,12 @@ pylith::problems::Problem::computeLHSJacobianImplicit(const PylithReal t,
   _solution->scatterGlobalToLocal(solutionVec);
   _solutionDot->scatterGlobalToLocal(solutionDotVec);
 
-  // Set jacobian to zero.
-  _jacobianLHS->zero();
-
   // Sum Jacobian contributions across integrators.
   const size_t numIntegrators = _integrators.size();
   for (size_t i=0; i < numIntegrators; ++i) {
-    _integrators[i]->computeLHSJacobianImplicit(_jacobianLHS, _preconditionerLHS, t, dt, tshift, *_solution, *_solutionDot);
+    _integrators[i]->computeLHSJacobianImplicit(_jacobian, _preconditioner, t, dt, tshift, *_solution, *_solutionDot);
   } // for
   
-  // Assemble jacobian.
-  _jacobianLHS->assemble("final_assembly");
-
   PYLITH_METHOD_END;
 } // computeLHSJacobianImplicit
 
@@ -272,7 +266,7 @@ pylith::problems::Problem::computeLHSJacobianInverseExplicit(const PylithReal t,
 { // computeLHSJacobianExplicit
   PYLITH_METHOD_BEGIN;
 
-  assert(_jacobianLHS);
+  assert(_jacobian);
   assert(_solution);
   assert(_solutionDot);
 
@@ -283,12 +277,12 @@ pylith::problems::Problem::computeLHSJacobianInverseExplicit(const PylithReal t,
   _solutionDot->scatterGlobalToLocal(solutionDotVec);
   
   // Set jacobian to zero.
-  _jacobianLHSLumpedInverse->zeroAll();
+  _jacobianLumpedInverse->zeroAll();
 
   // Sum Jacobian contributions across integrators.
   const size_t numIntegrators = _integrators.size();
   for (size_t i=0; i < numIntegrators; ++i) {
-    _integrators[i]->computeLHSJacobianInverseExplicit(_jacobianLHSLumpedInverse, t, dt, tshift, *_solution, *_solutionDot);
+    _integrators[i]->computeLHSJacobianInverseExplicit(_jacobianLumpedInverse, t, dt, tshift, *_solution, *_solutionDot);
   } // for
   
   // DO NOT assemble jacobian. We will multiple J^{-1} by the RHS residual and THEN assemble.

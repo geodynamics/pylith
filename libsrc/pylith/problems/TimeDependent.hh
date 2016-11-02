@@ -65,7 +65,7 @@ public :
 
   /** Set problem type.
    *
-   * @param value Problem type.
+   * @param[in] value Problem type.
    */
   void problemType(const ProblemTypeEnum value);
 
@@ -77,7 +77,7 @@ public :
 
   /** Set start time for problem.
    *
-   * @param value Start time (nondimensional).
+   * @param[in] value Start time (nondimensional).
    */
   void startTime(const PetscReal value);
 
@@ -89,7 +89,7 @@ public :
 
   /** Set total time for problem.
    *
-   * @param value Total time (nondimensional).
+   * @param[in] value Total time (nondimensional).
    */
   void totalTime(const PetscReal value);
 
@@ -101,7 +101,7 @@ public :
 
   /** Set maximum number of time steps.
    *
-   * @param value Maximum number of time steps.
+   * @param[in] value Maximum number of time steps.
    */
   void maxTimeSteps(const PetscInt value);
 
@@ -113,7 +113,7 @@ public :
 
   /** Set initial time step for problem.
    *
-   * @param value Initial time step (nondimensional).
+   * @param[in] value Initial time step (nondimensional).
    */
   void dtInitial(const PetscReal value);
 
@@ -124,9 +124,12 @@ public :
   PetscReal dtInitial(void) const;
 
   /** Initialize.
+   *
+   * @param[in] solution Solution field.
+   * @param[in] jacobiab System Jacobian.
    */
   void initialize(pylith::topology::Field* solution,
-		  pylith::topology::Jacobian* jacobianRHS);
+		  pylith::topology::Jacobian* jacobian);
   
   /** Solve time dependent problem.
    */
@@ -146,11 +149,11 @@ public :
 
   /** Callback static method for computing residual for RHS, G(t,s).
    *
-   * @param ts PETSc time stepper.
-   * @param t Current time.
-   * @param solutionVec PetscVec for solution.
-   * @param residualvec PetscVec for residual.
-   * @param context User context (TimeDependent).
+   * @param[in] ts PETSc time stepper.
+   * @param[in] t Current time.
+   * @param[in] solutionVec PetscVec for solution.
+   * @param[out] residualvec PetscVec for residual.
+   * @param[in] context User context (TimeDependent).
    */
   static
   PetscErrorCode computeRHSResidual(PetscTS ts,
@@ -161,12 +164,12 @@ public :
   
   /* Callback static method for computing Jacobian for RHS, Jacobian of G(t,s).
    *
-   * @param ts PETSc time stepper.
-   * @param t Current time.
-   * @param solution PetscVec for solution.
-   * @param jacobianMat Jacobian matrix.
-   * @param precondMat Preconditioner matrix.
-   * @param context User context (TimeDependent).
+   * @param[in] ts PETSc time stepper.
+   * @param[in] t Current time.
+   * @param[in] solution PetscVec for solution.
+   * @param[out] jacobianMat Jacobian matrix.
+   * @param[out] precondMat Preconditioner matrix.
+   * @param[in] context User context (TimeDependent).
    */
   static
   PetscErrorCode computeRHSJacobian(PetscTS ts,
@@ -178,12 +181,12 @@ public :
 
   /** Callback static method for computing residual for LHS, F(t,s,\dot{s}).
    *
-   * @param ts PETSc time stepper.
-   * @param t Current time.
-   * @param solutionVec PetscVec for solution.
-   * @param solutionDotVec PetscVec for time derivative of solution.
-   * @param residualvec PetscVec for residual.
-   * @param context User context (TimeDependent).
+   * @param[in] ts PETSc time stepper.
+   * @param[in] t Current time.
+   * @param[in] solutionVec PetscVec for solution.
+   * @param[in] solutionDotVec PetscVec for time derivative of solution.
+   * @param[out] residualvec PetscVec for residual.
+   * @param[in] context User context (TimeDependent).
    */
   static
   PetscErrorCode computeLHSResidual(PetscTS ts,
@@ -195,12 +198,12 @@ public :
   
   /* Callback static method for computing Jacobian for LHS, Jacobian of F(t,s,\dot{s}).
    *
-   * @param ts PETSc time stepper.
-   * @param t Current time.
-   * @param solution PetscVec for solution.
-   * @param jacobianMat Jacobian matrix.
-   * @param precondMat Preconditioner matrix.
-   * @param context User context (TimeDependent).
+   * @param[in] ts PETSc time stepper.
+   * @param[in] t Current time.
+   * @param[in] solution PetscVec for solution.
+   * @param[out] jacobianMat Jacobian matrix.
+   * @param[out] precondMat Preconditioner matrix.
+   * @param[in] context User context (TimeDependent).
    */
   static
   PetscErrorCode computeLHSJacobian(PetscTS ts,
