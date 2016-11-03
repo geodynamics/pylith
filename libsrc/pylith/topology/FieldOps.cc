@@ -85,6 +85,7 @@ pylith::topology::FieldOps::createFE(const FieldBase::DiscretizeInfo& feinfo,
     err = PetscDTGaussTensorQuadrature(dim, quadOrder, -1.0, 1.0, &quadrature);PYLITH_CHECK_ERROR(err);
   }
   err = PetscFESetQuadrature(fe, quadrature);PYLITH_CHECK_ERROR(err);
+  err = PetscFESetFaceQuadrature(fe, quadrature);PYLITH_CHECK_ERROR(err);
   err = PetscQuadratureDestroy(&quadrature);PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_RETURN(fe);
