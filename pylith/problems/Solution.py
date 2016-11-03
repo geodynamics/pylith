@@ -24,45 +24,6 @@
 
 from pylith.utils.PetscComponent import PetscComponent
 
-# OneField class
-class OneField(PetscComponent):
-  """
-  Python subfields container with one subfield.
-  """
-
-  # INVENTORY //////////////////////////////////////////////////////////
-
-  class Inventory(PetscComponent.Inventory):
-    """
-    Python object for managing on OneField facilities and properties.
-    """
-    
-    ## @class Inventory
-    ## Python object for managing Homogeneous facilities and properties.
-    ##
-    ## \b Properties
-    ## @li None
-    ##
-    ## \b Facilities
-    ## @li \b subfield Subfield in solution.
-
-    import pyre.inventory
-
-    from SolutionSubfield import SolutionSubfield
-    subfield = pyre.inventory.facility("subfield", family="subfield", factory=Subfield)
-    subfield.meta['tip'] = "Subfield in solution."
-
-
-  # PUBLIC METHODS /////////////////////////////////////////////////////
-
-  def __init__(self, name="onefield"):
-    """
-    Constructor.
-    """
-    PetscComponent.__init__(self, name, facility="onefield")
-    return
-
-
 # ITEM FACTORIES ///////////////////////////////////////////////////////
 
 def subfieldFactory(name):
@@ -70,11 +31,11 @@ def subfieldFactory(name):
   Factory for subfield items.
   """
   from pyre.inventory import facility
-  from pylith.problems.SolutionSubfield import SolutionSubfield
-  return facility(name, family="subfield", factory=SolutionSubfield)
+  from pylith.topology.Subfield import Subfield
+  return facility(name, family="subfield", factory=Subfield)
 
 
-# Solution class
+# Solution class =======================================================
 class Solution(PetscComponent):
   """
   Python solution field for problem.
@@ -100,7 +61,8 @@ class Solution(PetscComponent):
 
     import pyre.inventory
 
-    subfields = pyre.inventory.facilityArray("subfields", itemFactory=subfieldFactory, factory=OneField)
+    from SolnDisp import SolnDisp
+    subfields = pyre.inventory.facilityArray("subfields", itemFactory=subfieldFactory, factory=SolnDisp)
     subfields.meta['tip'] = "Subfields in solution."
 
 
@@ -117,6 +79,10 @@ class Solution(PetscComponent):
   def preinitialize(self, mesh):
     """
     """
+    solution = Field()
+    for subfield in self.subfields.components():
+      solution.subfieldAdd(subfield.label, subfield.ncomponents, subfield.vectorFieldType, subfield.scale)
+    solution.subfieldsSetup()
     return
 
 
@@ -131,10 +97,6 @@ class Solution(PetscComponent):
     """
     Setup solution field.
     """
-    solution = Field()
-    for subfield in self.subfields:
-      solution.subfieldAdd(subfield.label, subfield.ncomponents, subfield.vectorFieldType, subfield.scale)
-    solution.subfieldsSetup()
     solution.setupSolnChart()
 
     for constraint in constraints.components():

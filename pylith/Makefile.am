@@ -146,10 +146,19 @@ nobase_pkgpyexec_PYTHON = \
 	problems/ProgressMonitor.py \
 	problems/ProgressMonitorStep.py \
 	problems/ProgressMonitorTime.py \
+	problems/Solution.py \
+	problems/SolnDisp.py \
+	problems/SolnVel.py \
+	problems/SubfieldDisplacement.py \
+	problems/SubfieldVelocity.py \
+	problems/SubfieldPressure.py \
+	problems/SubfieldTemperature.py \
+	problems/SubfieldLagrangeFault.py \
 	topology/__init__.py \
 	topology/Distributor.py \
 	topology/Mesh.py \
 	topology/Field.py \
+	topology/Subfield.py \
 	topology/Fields.py \
 	topology/SolutionFields.py \
 	topology/Jacobian.py \

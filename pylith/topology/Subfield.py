@@ -16,11 +16,12 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/problems/SolutionSubfield.py
+## @file pylith/topology/Subfield.py
 ##
-## @brief Python solution field for problem.
+## @brief Python object for defining attributes of a subfield within a
+## field.
 ##
-## Factory: solution.
+## Factory: subfield.
 
 from pylith.utils.PetscComponent import PetscComponent
 
@@ -37,28 +38,26 @@ def validateName(value):
   return value
 
 
-# SolutionSubfield class
-class SolutionSubfield(PetscComponent):
+# Subfield class
+class Subfield(PetscComponent):
   """
-  Python subfield in solution.
+  Python object for defining attributes of a subfield within a field.
 
-  Factory: solution.
+  Factory: subfield.
   """
   
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(PetscComponent.Inventory):
     """
-    Python object for managing SolutionSubfield facilities and properties.
+    Python object for managing Subfield facilities and properties.
     """
 
     ## @class Inventory
-    ## Python object for managing SolutionSubfield facilities and properties.
+    ## Python object for managing Subfield facilities and properties.
     ##
     ## \b Properties
-    ## @li \b components Number of components.
-    ## @li \b vector_field_type Type of vector field ['scalar','vector','tensor'].
-    ## @li \b scale Nondimensional scale for field.
+    ## @li \b name Name for subfield.
     ## @li \b basis_order Order of basis functions.
     ## @li \b quad_order Order of numerical quadrature.
     ## @li \b basis_continuous Is basis continuous?
@@ -70,14 +69,6 @@ class SolutionSubfield(PetscComponent):
     
     name = pyre.inventory.str("name", default="", validator=validateName)
     name.meta['tip'] = "Name for subfield."
-
-    components = pyre.inventory.int("components", default=3)
-    components.meta['tip'] = "Number of components."
-
-    vectorFieldType = pyre.inventory.str("vector_field_type", default="vector", validator=pyre.inventory.choice(["scalar","vector","tensor"]))
-    vectorFieldType.meta['tip'] = "Type of vector field ['scalar','vector','tensor']."
-
-    # :TODO: Scale for field. Use Pyre units to make this scale in terms of nondimensional scales (pressure, length, time, etc).
 
     basisOrder = pyre.inventory.int("basis_order", default=1)
     basisOrder.meta['tip'] = "Order of basis functions."
@@ -91,11 +82,24 @@ class SolutionSubfield(PetscComponent):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="solution"):
+  def __init__(self, name="subfield"):
     """
     Constructor.
     """
-    PetscComponent.__init__(self, name, facility="solution")
+    PetscComponent.__init__(self, name, facility="subfield")
+
+    # Set in derived class initialize().
+    self.ncomponents = None
+    self.vectorFieldType = None
+    self.scale = None
+    return
+
+
+  def initialize(self, normalizer, spaceDim):
+    """
+    Initialize subfield metadata.
+    """
+    raise NotImplementedError("Implement in derived class.")
     return
 
 
@@ -107,7 +111,6 @@ class SolutionSubfield(PetscComponent):
     """
     PetscComponent._configure(self)
     self.name = self.inventory.name
-    self.components = self.inventory.components
     self.basisOrder = self.inventory.basisOrder
     self.quadOrder = self.inventory.quadOrder
     self.basisContinous = self.inventory.basisContinuous
@@ -118,9 +121,9 @@ class SolutionSubfield(PetscComponent):
 
 def subfield():
   """
-  Factory associated with SolutionSubfield.
+  Factory associated with Subfield.
   """
-  return SolutionSubfield()
+  return Subfield()
 
 
 # End of file 
