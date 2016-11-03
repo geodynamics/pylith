@@ -11,8 +11,23 @@ problems
     ProblemNew
     TimeDependentNew
         db_initialconditions :TODO: :DISCUSS:
+
+    --in progress--
     Solution
-    SolutionSubfield
+    --Subfield containers--
+    solution.subfields = pylith.problems.SolnDisp
+    solution.subfields.displacement.basis_order = 1
+        SolnDisp
+        SolnDispLagrange
+        SolnDispVel
+        SolnDispVelLagrange
+        SolnDispPres
+        SolnDispPresLagrange
+    SolnSubfield [children hardwire vectorFieldType, compute ncomponents and scale]
+    SolnSubfieldDisplacement
+    SolnSubfieldVelocity
+    SolnSubfieldPressure
+    SolnSubfieldTemperature
 
     --TODO--
     ProgressMonitor
@@ -84,7 +99,7 @@ topology
     RefineUniform
     ReverseCuthillMcKee
 
-    Jacobian?
+    Jacobian? :DISCUSS: There is so little beyond a PetscMat in this object that we should probably delete this and set the matrix type via PETSc. Should we do the same thing for the residual?
     CoordsVisitor?
     VisitorMesh?
     VisitorSubMesh?
