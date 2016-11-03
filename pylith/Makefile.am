@@ -148,7 +148,7 @@ nobase_pkgpyexec_PYTHON = \
 	problems/ProgressMonitorTime.py \
 	problems/Solution.py \
 	problems/SolnDisp.py \
-	problems/SolnVel.py \
+	problems/SolnDispVel.py \
 	problems/SubfieldDisplacement.py \
 	problems/SubfieldVelocity.py \
 	problems/SubfieldPressure.py \
