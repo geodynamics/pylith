@@ -47,8 +47,7 @@ pylith::feassemble::IntegratorPointwise::IntegratorPointwise(void) :
   _auxFieldsDB(0),
   _auxFieldsQuery(0),
   _needNewRHSJacobian(true),
-  _needNewLHSJacobian(true),
-  _isJacobianSymmetric(false)
+  _needNewLHSJacobian(true)
 { // constructor
 } // constructor
 
@@ -148,13 +147,6 @@ bool
 pylith::feassemble::IntegratorPointwise::needNewLHSJacobian(void) const {
   return _needNewLHSJacobian;
 } // needNewLHSJacobian
-
-// ----------------------------------------------------------------------
-// Check whether Jacobian is symmetric.
-bool
-pylith::feassemble::IntegratorPointwise::isJacobianSymmetric(void) const {
-  return _isJacobianSymmetric;
-} // isJacobianSymmetric
 
 // ----------------------------------------------------------------------
 // Get discretization information for auxiliary subfield.

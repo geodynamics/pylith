@@ -53,7 +53,6 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain : public TestM
   // Tests that explicitly depend on how details of this material.
   CPPUNIT_TEST( test_auxFieldsSetup );
   CPPUNIT_TEST( testGetAuxField );
-  CPPUNIT_TEST( testIsJacobianSymmetric );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -80,9 +79,6 @@ public :
 
   /// Test getAuxField().
   void testGetAuxField(void);
-
-  /// Test IsJacobianSymmetric().
-  void testIsJacobianSymmetric(void);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 public :

@@ -126,10 +126,8 @@ public :
   /** Initialize.
    *
    * @param[in] solution Solution field.
-   * @param[in] jacobiab System Jacobian.
    */
-  void initialize(pylith::topology::Field* solution,
-		  pylith::topology::Jacobian* jacobian);
+  void initialize(pylith::topology::Field* solution);
   
   /** Solve time dependent problem.
    */

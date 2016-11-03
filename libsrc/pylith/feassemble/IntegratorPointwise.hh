@@ -34,6 +34,7 @@
 #include "pylith/topology/FieldBase.hh" // USES FieldBase
 
 #include "pylith/topology/topologyfwd.hh" // HOLDSA Field
+#include "pylith/utils/petscfwd.h" // USES PetscMat, PetscVec
 
 #include <map> // HOLDSA std::map
 
@@ -120,13 +121,6 @@ public :
   virtual
   bool needNewLHSJacobian(void) const;
 
-  /** Check whether integrator generates a symmetric Jacobian.
-   *
-   * @returns True if integrator generates symmetric Jacobian.
-   */
-  virtual
-  bool isJacobianSymmetric(void) const;
-
   /** Set manager of scales used to nondimensionalize problem.
    *
    * @param dim Nondimensionalizer.
@@ -154,90 +148,86 @@ public :
   virtual
   void initialize(const pylith::topology::Field& solution) = 0;
 
-  /** Compute RHS residual for G(t,u).
+  /** Compute RHS residual for G(t,s).
    *
-   * @param[out] residual Residual field.
+   * @param[out] residualVec PETSc Vec for residual field.
    * @param[in] t Current time.
    * @param[in] dt Current time step.
-   * @param[in] solution Current trial solution.
+   * @param[in] solution Field with current trial solution.
    */
   virtual
-  void computeRHSResidual(pylith::topology::Field* residual,
+  void computeRHSResidual(PetscVec residualVec,
 			  const PylithReal t,
 			  const PylithReal dt,
 			  const pylith::topology::Field& solution) = 0;
 
-  /** Compute RHS Jacobian and preconditioner for G(t,u).
+  /** Compute RHS Jacobian and preconditioner for G(t,s).
    *
-   * @param[out] jacobian Jacobian sparse matrix.
-   * @param[out] preconditioner Jacobian preconditioning sparse matrix.
+   * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
+   * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
    * @param[in] t Current time.
    * @param[in] dt Current time step.
-   * @param[in] solution Current trial solution.
+   * @param[in] solution Field with current trial solution.
    */
   virtual
-  void computeRHSJacobian(pylith::topology::Jacobian* jacobian,
-			  pylith::topology::Jacobian* preconditioner,
+  void computeRHSJacobian(PetscMat jacobianMat,
+			  PetscMat preconMat,
 			  const PylithReal t,
 			  const PylithReal dt,
 			  const pylith::topology::Field& solution) = 0;
 
-  /** Compute LHS residual for F(t,u,\dot{u}).
+  /** Compute LHS residual for F(t,s,\dot{s}).
    *
-   * @param[out] residual Residual field.
+   * @param[out] residualVec PETSc Vec for residual field.
    * @param[in] t Current time.
    * @param[in] dt Current time step.
-   * @param[in] solution Current trial solution.
-   * @param[in] solutionDot Time derivative of current trial solution.
+   * @param[in] solution Field with current trial solution.
+   * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
    */
   virtual
-  void computeLHSResidual(pylith::topology::Field* residual,
+  void computeLHSResidual(PetscVec residualVec,
 			  const PylithReal t,
 			  const PylithReal dt,
 			  const pylith::topology::Field& solution,
-			  const pylith::topology::Field& solutionDot) = 0;
+			  PetscVec solutionDotVec) = 0;
 
-  /** Compute LHS Jacobian and preconditioner for F(t,u,\dot{u}) with implicit time-stepping.
+  /** Compute LHS Jacobian and preconditioner for F(t,s,\dot{s}) with implicit time-stepping.
    *
-   * @param[out] jacobian Jacobian sparse matrix.
-   * @param[out] preconditioner Jacobian preconditioning sparse matrix.
+   * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
+   * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
    * @param[in] t Current time.
    * @param[in] dt Current time step.
    * @param[in] tshift Scale for time derivative.
-   * @param[in] solution Current trial solution.
-   * @param[in] solutionDot Time derivative of current trial solution.
+   * @param[in] solution Field with current trial solution.
+   * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
    */
   virtual
-  void computeLHSJacobianImplicit(pylith::topology::Jacobian* jacobian,
-				  pylith::topology::Jacobian* preconditioner,
+  void computeLHSJacobianImplicit(PetscMat jacobianMat,
+				  PetscMat precondMat,
 				  const PylithReal t,
 				  const PylithReal dt,
 				  const PylithReal tshift,
 				  const pylith::topology::Field& solution,
-				  const pylith::topology::Field& solutionDot) = 0;
+				  PetscVec solutionDotVec) = 0;
 
 
-  /** Compute inverse of lumped LHS Jacobian for F(t,u,\dot{u}) with explicit time-stepping.
+  /** Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
    *
-   * @param[out] jacobian Jacobian sparse matrix.
+   * @param[out] jacobianInv Inverse of lumped Jacobian as a field.
    * @param[in] t Current time.
    * @param[in] dt Current time step.
-   * @param[in] tshift Scale for time derivative.
-   * @param[in] solution Current trial solution.
-   * @param[in] solutionDot Time derivative of current trial solution.
+   * @param[in] solution Field with current trial solution.
    */
   virtual
-  void computeLHSJacobianInverseExplicit(pylith::topology::Field* jacobian,
-					 const PylithReal t,
-					 const PylithReal dt,
-					 const PylithReal tshift,
-					 const pylith::topology::Field& solution,
-					 const pylith::topology::Field& solutionDot) = 0;
+  void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
+				   const PylithReal t,
+				   const PylithReal dt,
+				   const pylith::topology::Field& solution) = 0;
 
 
   /** Update state variables as needed.
    *
-   * @param[in] solution Solution field.
+   * @param[in] solution Field with current trial solution.
    */
   virtual
   void updateStateVars(const pylith::topology::Field& solution);
@@ -269,10 +259,6 @@ protected :
   /// Default is false;
   bool _needNewRHSJacobian;
   bool _needNewLHSJacobian;
-
-  /// True if we need to compute velocity field, false otherwise.
-  /// Default is false;
-  bool _isJacobianSymmetric;
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

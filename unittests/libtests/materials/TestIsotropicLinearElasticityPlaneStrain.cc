@@ -297,25 +297,6 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
 
 
 // ----------------------------------------------------------------------
-// Test IsJacobianSymmetric().
-void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testIsJacobianSymmetric(void)
-{ // testIsJacobianSymmetric
-  PYLITH_METHOD_BEGIN;
-
-  CPPUNIT_ASSERT(_mymaterial);
-
-  const bool flag = true; // default
-  CPPUNIT_ASSERT_EQUAL(flag, _mymaterial->isJacobianSymmetric());
-
-  _mymaterial->useInertia(true);
-  CPPUNIT_ASSERT_EQUAL(false, _mymaterial->isJacobianSymmetric());
-
-  PYLITH_METHOD_END;
-} // testIsJacobianSymmetric
-
-
-// ----------------------------------------------------------------------
 // Get material.
 pylith::materials::MaterialNew*
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_material(void)

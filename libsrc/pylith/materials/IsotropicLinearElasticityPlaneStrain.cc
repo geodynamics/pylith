@@ -41,7 +41,6 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::IsotropicLinearElastici
   _useBodyForce(false),
   _useReferenceState(false)
 { // constructor
-  _isJacobianSymmetric = true;
 } // constructor
 
 
@@ -58,11 +57,6 @@ void
 pylith::materials::IsotropicLinearElasticityPlaneStrain::useInertia(const bool value)
 { // useInertia
   _useInertia = value;
-  if (_useInertia) {
-    _isJacobianSymmetric = false; 
-  } else {
-    _isJacobianSymmetric = true;
-  } // if/else
 } // useInertia
 
 

@@ -85,91 +85,80 @@ public :
 
   /** Compute RHS residual, G(t,s).
    *
+   * @param[out] residualVec PETSc Vec for residual.
    * @param[in] t Current time.
    * @param[in] dt Current time step.
    * @param[in] solutionVec PETSc Vec with current trial solution.
-   * @param[out] residualVec PETSc Vec for residual.
    */
-  void computeRHSResidual(const PetscReal t,
+  void computeRHSResidual(PetscVec residualVec,
+			  const PetscReal t,
 			  const PetscReal dt,
-			  PetscVec solutionVec,
-			  PetscVec residualVec);
+			  PetscVec solutionVec);
   
   /* Compute RHS Jacobian for G(t,s).
    *
+   * @param[out] jacobianMat PETSc Mat for Jacobian. 
+   * @param[out] precondMat PETSc Mat for preconditioner for Jacobian. 
    * @param[in] t Current time.
    * @param[in] dt Current time step.
    * @param[in] solutionVec PETSc Vec with current trial solution.
-   * @param[out] jacobianMat PETSc Mat for Jacobian. 
-   * @param[out] precondMat PETSc Mat for preconditioner for Jacobian. 
    */
-  void computeRHSJacobian(const PylithReal t,
+  void computeRHSJacobian(PetscMat jacobianMat,
+			  PetscMat precondMat,
+			  const PylithReal t,
 			  const PylithReal dt,
-			  PetscVec solutionVec,
-			  PetscMat jacobianMat,
-			  PetscMat precondMat);
+			  PetscVec solutionVec);
 
   /** Compute LHS residual, F(t,s,\dot{s}).
    *
+   * @param[out] residualVec PETSc Vec for residual.
    * @param[in] t Current time.
    * @param[in] dt Current time step.
    * @param[in] solutionVec PETSc Vec with current trial solution.
    * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
-   * @param[in] residualVec PETSc Vec for residual.
    */
-  void computeLHSResidual(const PetscReal t,
+  void computeLHSResidual(PetscVec residualVec,
+			  const PetscReal t,
 			  const PetscReal dt,
 			  PetscVec solutionVec,
-			  PetscVec solutionDotVec,
-			  PetscVec residualVec);
+			  PetscVec solutionDotVec);
   
   /* Compute LHS Jacobian for F(t,s,\dot{s}) for implicit time stepping.
    *
+   * @param[out] jacobianMat PETSc Mat for Jacobian. 
+   * @param[out] precondMat PETSc Mat for preconditioner for Jacobian. 
    * @param[in] t Current time.
    * @param[in] dt Current time step.
    * @param[in] tshift Scale for time derivative.
    * @param[in] solutionVec PETSc Vec with current trial solution.
    * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
-   * @param[out] jacobianMat PETSc Mat for Jacobian. 
-   * @param[out] precondMat PETSc Mat for preconditioner for Jacobian. 
    */
-  void computeLHSJacobianImplicit(const PylithReal t,
+  void computeLHSJacobianImplicit(PetscMat jacobianMat,
+				  PetscMat precondMat,
+				  const PylithReal t,
 				  const PylithReal dt,
 				  const PylithReal tshift,
 				  PetscVec solutionVec,
-				  PetscVec solutionDotVec,
-				  PetscMat jacobianMat,
-				  PetscMat precondMat);
+				  PetscVec solutionDotVec);
 
   /* Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) for explicit time stepping.
    *
    * @param[in] t Current time.
    * @param[in] dt Current time step.
-   * @param[in] tshift Scale for time derivative.
    * @param[in] solutionVec PETSc Vec with current trial solution.
-   * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
    */
-  void computeLHSJacobianInverseExplicit(const PylithReal t,
-					 const PylithReal dt,
-					 const PylithReal tshift,
-					 PetscVec solutionVec,
-					 PetscVec solutionDotVec);
+  void computeLHSJacobianLumpedInv(const PylithReal t,
+				   const PylithReal dt,
+				   PetscVec solutionVec);
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
   pylith::topology::Field* _solution; ///< Handle to solution field.
-  pylith::topology::Field* _solutionDot; ///< Handle to time derivative of solution field.
-  pylith::topology::Field* _residual; ///< Handle to residual field.
-  pylith::topology::Jacobian* _jacobian; ///< Handle to Jacobian.
-  pylith::topology::Field* _jacobianLumpedInverse; ///< Handle to inverse lumped Jacobian.
-  pylith::topology::Jacobian* _preconditioner; ///< Handle to Jacobian preconditioner.
+  pylith::topology::Field* _jacobianLHSLumpedInv; ///< Handle to inverse lumped Jacobian.
 
   std::vector<pylith::feassemble::IntegratorPointwise*> _integrators; ///< Array of integrators.
   std::vector<pylith::feassemble::Constraint*> _constraints; ///< Array of constraints.
-
-  PetscMat _preconditionerConstraintsMat; ///< Custom PETSc preconditioning matrix for constraints.
-  bool _usePreconditionerConstraints; ///< True if using custom preconditioner for Lagrange constraints.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
