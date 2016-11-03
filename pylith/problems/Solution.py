@@ -76,13 +76,15 @@ class Solution(PetscComponent):
     return
 
 
-  def preinitialize(self, mesh):
+  def preinitialize(self, normalizer, spaceDim):
     """
     """
-    solution = Field()
+    #from pylith.topology.Field import Field
+    #solution = Field(mesh)
     for subfield in self.subfields.components():
-      solution.subfieldAdd(subfield.label, subfield.ncomponents, subfield.vectorFieldType, subfield.scale)
-    solution.subfieldsSetup()
+      subfield.initialize(normalizer, spaceDim)
+      #solution.subfieldAdd(subfield.label, subfield.ncomponents, subfield.vectorFieldType, subfield.scale)
+    #solution.subfieldsSetup()
     return
 
 
@@ -100,11 +102,9 @@ class Solution(PetscComponent):
     solution.setupSolnChart()
 
     for constraint in constraints.components():
-      constraint.setConstraintSizes(solution)
+      constraint.setConstraints(solution)
     solution.allocate()
     solution.zeroAll()
-    for constraint in self.constraints.components():
-      constraint.setConstraints(solution)
     for integrator in self.integrators.components():
       integrator.checkConstraints(solution)
 

@@ -27,6 +27,7 @@ problems
     SubfieldVelocity
     SubfieldPressure
     SubfieldTemperature
+    SubfieldLagrangeFault
 
     --TODO--
     ProgressMonitor

@@ -16,23 +16,24 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/problems/SolnDispVel.py
+## @file pylith/problems/SolnDispLagrange.py
 ##
-## @brief Python subfields container with displacement and velocity subfields.
+## @brief Python subfields container with displacement and fault
+## Lagrange multiplier subfields.
 
 from pylith.utils.PetscComponent import PetscComponent
 
-# SolnDispVel class
-class SolnDispVel(PetscComponent):
+# SolnDispLagrange class
+class SolnDispLagrange(PetscComponent):
   """
-  Python subfields container with displacement and velocity subfields.
+  Python subfields container with displacement and fault Lagrange multiplier subfields.
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(PetscComponent.Inventory):
     """
-    Python object for managing SolnDispVel facilities and properties.
+    Python object for managing SolnDispLagrange facilities and properties.
     """
     
     ## @class Inventory
@@ -43,7 +44,7 @@ class SolnDispVel(PetscComponent):
     ##
     ## \b Facilities
     ## @li \b displacement Displacement subfield.
-    ## @li \b velocity Velocity subfield.
+    ## @li \b lagrange_fault Fault Lagrange multiplier subfield.
 
     import pyre.inventory
 
@@ -51,14 +52,14 @@ class SolnDispVel(PetscComponent):
     displacement = pyre.inventory.facility("displacement", family="subfield", factory=SubfieldDisplacement)
     displacement.meta['tip'] = "Displacement subfield."
 
-    from SubfieldVelocity import SubfieldVelocity
-    velocity = pyre.inventory.facility("velocity", family="subfield", factory=SubfieldVelocity)
-    velocity.meta['tip'] = "Velocity subfield."
+    from SubfieldLagrangeFault import SubfieldLagrangeFault
+    lagrangeFault = pyre.inventory.facility("lagrange_fault", family="subfield", factory=SubfieldLagrangeFault)
+    lagrangeFault.meta['tip'] = "Fault Lagrange multiplier subfield."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="solndispvel"):
+  def __init__(self, name="solndisplagrange"):
     """
     Constructor.
     """
@@ -69,17 +70,17 @@ class SolnDispVel(PetscComponent):
   def _configure(self):
     PetscComponent._configure(self)
     self.displacement = self.inventory.displacement
-    self.velocity = self.inventory.velocity
+    self.lagrangeFault = self.inventory.lagrangeFault
     return
 
 
   def components(self):
     """
     Order of facilities in Inventory is ambiguous, so overwrite
-    components() to insure order is [displacement, velocity].
+    components() to insure order is [displacement, lagrange_fault].
 
     """
-    return [self.inventory.displacement, self.inventory.velocity]
+    return [self.inventory.displacement, self.inventory.lagrangeFault]
 
 
 # End of file 

@@ -24,6 +24,8 @@ TESTS = testproblems.py
 dist_check_SCRIPTS = testproblems.py
 
 noinst_PYTHON = \
+	TestSolution.py \
+	TestSolutionSubfields.py \
 	TestTimeStep.py \
 	TestTimeStepAdapt.py \
 	TestTimeStepUniform.py \

@@ -63,6 +63,12 @@ class TestApp(Script):
 
     suite = unittest.TestSuite()
 
+    from TestSolutionSubfields import TestSolutionSubfields
+    suite.addTest(unittest.makeSuite(TestSolutionSubfields))
+
+    from TestSolution import TestSolution
+    suite.addTest(unittest.makeSuite(TestSolution))
+
     from TestTimeStep import TestTimeStep
     suite.addTest(unittest.makeSuite(TestTimeStep))
 
