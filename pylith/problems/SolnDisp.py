@@ -48,7 +48,7 @@ class SolnDisp(PetscComponent):
 
     from SubfieldDisplacement import SubfieldDisplacement
     displacement = pyre.inventory.facility("displacement", family="subfield", factory=SubfieldDisplacement)
-    displacement.meta['tip'] = "Displacement field."
+    displacement.meta['tip'] = "Displacement subfield."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -58,6 +58,12 @@ class SolnDisp(PetscComponent):
     Constructor.
     """
     PetscComponent.__init__(self, name, facility="subfields")
+    return
+
+
+  def _configure(self):
+    PetscComponent._configure(self)
+    self.displacement = self.inventory.displacement
     return
 
 

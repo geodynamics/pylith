@@ -16,34 +16,38 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/problems/SolnDispVel.py
+## @file pylith/problems/SolnDispPres.py
 ##
-## @brief Python subfields container with displacement and velocity subfields.
+## @brief Python subfields container with displacement, pressure, and
+## fault Lagrange multiplier subfields.
 
 from pylith.utils.PetscComponent import PetscComponent
 
-# SolnDispVel class
-class SolnDispVel(PetscComponent):
+# SolnDispPresLagrange class
+class SolnDispPresLagrange(PetscComponent):
   """
-  Python subfields container with displacement and velocity subfields.
+  Python subfields container with displacement, pressure, and fault
+  Lagrange multiplier subfields.
+
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(PetscComponent.Inventory):
     """
-    Python object for managing SolnDispVel facilities and properties.
+    Python object for managing SolnDispPresLagrange facilities and properties.
     """
     
     ## @class Inventory
-    ## Python object for managing Homogeneous facilities and properties.
+    ## Python object for managing SolnDispPresLagrange facilities and properties.
     ##
     ## \b Properties
     ## @li None
     ##
     ## \b Facilities
     ## @li \b displacement Displacement subfield.
-    ## @li \b velocity Velocity subfield.
+    ## @li \b pressure Pressure subfield.
+    ## @li \b lagrange_fault Fault Lagrange multiplier subfield.
 
     import pyre.inventory
 
@@ -51,14 +55,18 @@ class SolnDispVel(PetscComponent):
     displacement = pyre.inventory.facility("displacement", family="subfield", factory=SubfieldDisplacement)
     displacement.meta['tip'] = "Displacement subfield."
 
-    from SubfieldVelocity import SubfieldVelocity
-    velocity = pyre.inventory.facility("velocity", family="subfield", factory=SubfieldVelocity)
-    velocity.meta['tip'] = "Velocity subfield."
+    from SubfieldPressure import SubfieldPressure
+    pressure = pyre.inventory.facility("pressure", family="subfield", factory=SubfieldPressure)
+    pressure.meta['tip'] = "Pressure subfield."
+
+    from SubfieldLagrangeFault import SubfieldLagrangeFault
+    lagrangeFault = pyre.inventory.facility("lagrange_fault", family="subfield", factory=SubfieldLagrangeFault)
+    lagrangeFault.meta['tip'] = "Fault Lagrange multiplier subfield."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="solndispvel"):
+  def __init__(self, name="solndisppres"):
     """
     Constructor.
     """
@@ -69,17 +77,18 @@ class SolnDispVel(PetscComponent):
   def _configure(self):
     PetscComponent._configure(self)
     self.displacement = self.inventory.displacement
-    self.velocity = self.inventory.velocity
+    self.pressure = self.inventory.pressure
+    self.lagrangeFault = self.inventory.lagrangeFault
     return
 
 
   def components(self):
     """
     Order of facilities in Inventory is ambiguous, so overwrite
-    components() to insure order is [displacement, velocity].
+    components() to insure order is [displacement, pressure, lagrange_fault].
 
     """
-    return [self.inventory.displacement, self.inventory.velocity]
+    return [self.inventory.displacement, self.inventory.pressure, self.inventory.lagrangeFault]
 
 
 # End of file 

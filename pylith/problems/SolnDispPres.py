@@ -16,23 +16,23 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/problems/SolnDispVel.py
+## @file pylith/problems/SolnDispPres.py
 ##
-## @brief Python subfields container with displacement and velocity subfields.
+## @brief Python subfields container with displacement and pressure subfields.
 
 from pylith.utils.PetscComponent import PetscComponent
 
-# SolnDispVel class
-class SolnDispVel(PetscComponent):
+# SolnDispPres class
+class SolnDispPres(PetscComponent):
   """
-  Python subfields container with displacement and velocity subfields.
+  Python subfields container with displacement and pressure subfields.
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(PetscComponent.Inventory):
     """
-    Python object for managing SolnDispVel facilities and properties.
+    Python object for managing SolnDispPres facilities and properties.
     """
     
     ## @class Inventory
@@ -43,7 +43,7 @@ class SolnDispVel(PetscComponent):
     ##
     ## \b Facilities
     ## @li \b displacement Displacement subfield.
-    ## @li \b velocity Velocity subfield.
+    ## @li \b pressure Pressure subfield.
 
     import pyre.inventory
 
@@ -51,14 +51,14 @@ class SolnDispVel(PetscComponent):
     displacement = pyre.inventory.facility("displacement", family="subfield", factory=SubfieldDisplacement)
     displacement.meta['tip'] = "Displacement subfield."
 
-    from SubfieldVelocity import SubfieldVelocity
-    velocity = pyre.inventory.facility("velocity", family="subfield", factory=SubfieldVelocity)
-    velocity.meta['tip'] = "Velocity subfield."
+    from SubfieldPressure import SubfieldPressure
+    pressure = pyre.inventory.facility("pressure", family="subfield", factory=SubfieldPressure)
+    pressure.meta['tip'] = "Pressure subfield."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="solndispvel"):
+  def __init__(self, name="solndisppres"):
     """
     Constructor.
     """
@@ -69,17 +69,17 @@ class SolnDispVel(PetscComponent):
   def _configure(self):
     PetscComponent._configure(self)
     self.displacement = self.inventory.displacement
-    self.velocity = self.inventory.velocity
+    self.pressure = self.inventory.pressure
     return
 
 
   def components(self):
     """
     Order of facilities in Inventory is ambiguous, so overwrite
-    components() to insure order is [displacement, velocity].
+    components() to insure order is [displacement, pressure].
 
     """
-    return [self.inventory.displacement, self.inventory.velocity]
+    return [self.inventory.displacement, self.inventory.pressure]
 
 
 # End of file 
