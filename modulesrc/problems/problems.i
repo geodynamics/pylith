@@ -26,6 +26,9 @@
 #include "pylith/topology/topologyfwd.hh" // USES Mesh
 #include "pylith/feassemble/feassemblefwd.hh" // USES Integrator
 
+#include "pylith/problems/Problem.hh"
+#include "pylith/problems/TimeDependent.hh"
+
 #include "pylith/problems/Formulation.hh"
 #include "pylith/problems/Explicit.hh"
 #include "pylith/problems/Implicit.hh"
@@ -49,6 +52,8 @@
 %include "../include/scalartypemaps.i"
 
 // Interfaces
+%include "Problem.i"
+%include "TimeDependent.i"
 %include "Formulation.i"
 %include "Explicit.i"
 %include "Implicit.i"
@@ -59,4 +64,3 @@
 
 
 // End of file
-

@@ -49,6 +49,15 @@ class pylith::problems::Problem
 { // Problem
   friend class TestProblem; // unit testing
 
+// PUBLIC ENUM //////////////////////////////////////////////////////////
+public :
+
+  enum SolverTypeEnum {
+    LINEAR, // Linear solver.
+    NONLINEAR, // Nonlinear solver.
+  }; // SolverType
+
+
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
@@ -56,27 +65,40 @@ public :
   Problem(void);
 
   /// Destructor
+  virtual
   ~Problem(void);
 
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
+
+  /** Set solver type.
+   *
+   * @param[in] value Solver type.
+   */
+  void solverType(const SolverTypeEnum value);
+
+  /** Get solver type.
+   *
+   * @returns Solver type.
+   */
+  SolverTypeEnum solverType(void) const;
 
   /** Set handles to integrators.
    *
    * @param[in] integratorArray Array of integrators.
    * @param[in] numIntegrators Number of integrators.
    */
-  void integrators(feassemble::IntegratorPointwise* integratorArray[] ,
+  void integrators(pylith::feassemble::IntegratorPointwise* integratorArray[] ,
 		   const int numIntegrators);
-  
+
   /** Set handles to constraints.
    *
    * @param[in] constraintArray Array of constraints.
    * @param[in] numContraints Number of constraints.
    */
-  void constraints(feassemble::Constraint* constraintArray[] ,
+  void constraints(pylith::feassemble::Constraint* constraintArray[] ,
 		   const int numConstraints);
-  
+
   /** Initialize.
    *
    */
@@ -94,11 +116,11 @@ public :
 			  const PetscReal t,
 			  const PetscReal dt,
 			  PetscVec solutionVec);
-  
+
   /* Compute RHS Jacobian for G(t,s).
    *
-   * @param[out] jacobianMat PETSc Mat for Jacobian. 
-   * @param[out] precondMat PETSc Mat for preconditioner for Jacobian. 
+   * @param[out] jacobianMat PETSc Mat for Jacobian.
+   * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
    * @param[in] t Current time.
    * @param[in] dt Current time step.
    * @param[in] solutionVec PETSc Vec with current trial solution.
@@ -122,11 +144,11 @@ public :
 			  const PetscReal dt,
 			  PetscVec solutionVec,
 			  PetscVec solutionDotVec);
-  
+
   /* Compute LHS Jacobian for F(t,s,\dot{s}) for implicit time stepping.
    *
-   * @param[out] jacobianMat PETSc Mat for Jacobian. 
-   * @param[out] precondMat PETSc Mat for preconditioner for Jacobian. 
+   * @param[out] jacobianMat PETSc Mat for Jacobian.
+   * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
    * @param[in] t Current time.
    * @param[in] dt Current time step.
    * @param[in] tshift Scale for time derivative.
@@ -159,6 +181,7 @@ protected :
 
   std::vector<pylith::feassemble::IntegratorPointwise*> _integrators; ///< Array of integrators.
   std::vector<pylith::feassemble::Constraint*> _constraints; ///< Array of constraints.
+  SolverTypeEnum _solverType; ///< Problem (solver) type.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
@@ -171,4 +194,4 @@ private :
 #endif // pylith_problems_problem_hh
 
 
-// End of file 
+// End of file

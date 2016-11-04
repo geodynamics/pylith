@@ -38,7 +38,8 @@ pylith::problems::Problem::Problem(void) :
   _solution(0),
   _jacobianLHSLumpedInv(0),
   _integrators(0),
-  _constraints(0)
+  _constraints(0),
+  _solverType(LINEAR)
 { // constructor
 } // constructor
 
@@ -62,6 +63,22 @@ pylith::problems::Problem::deallocate(void)
   PYLITH_METHOD_END;
 } // deallocate
   
+// ----------------------------------------------------------------------
+// Set problem type.
+void
+pylith::problems::Problem::solverType(const SolverTypeEnum value)
+{ // solverType
+  _solverType = value;
+} // solverType
+
+// ----------------------------------------------------------------------
+// Get problem type.
+pylith::problems::Problem::SolverTypeEnum
+pylith::problems::Problem::solverType(void) const
+{ // solverType
+  return _solverType;
+} // solverType
+
 // ----------------------------------------------------------------------
 // Set integrators over the mesh.
 void

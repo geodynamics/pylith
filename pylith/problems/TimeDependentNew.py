@@ -33,7 +33,7 @@ class TimeDependentNew(ProblemNew, ModuleTimeDependent):
 
   Factory: problem.
   """
-  
+
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(ProblemNew.Inventory):
@@ -48,7 +48,7 @@ class TimeDependentNew(ProblemNew, ModuleTimeDependent):
     ## @li None
     ##
     ## \b Facilities
-    ## @li \b initializer Problem initializer. 
+    ## @li \b initializer Problem initializer.
     ## @li \b progress_monitor Simple progress monitor via text file.
     ## @li \b checkpoint Checkpoint manager.
 
@@ -64,12 +64,9 @@ class TimeDependentNew(ProblemNew, ModuleTimeDependent):
     totalTime = pyre.inventory.dimensional("total_time", default=0.0*year, validator=pyre.inventory.greaterEqual(0.0*year))
     totalTime.meta['tip'] = "Time duration of problem."
 
-    initializer = pyre.inventory.facility("setup", family="initializer", factory=NullComponent)
-    initializer.meta['tip'] = "Problem initializer."
-
     from ProgressMonitorTime import ProgressMonitorTime
     progressMonitor = pyre.inventory.facility("progress_monitor", family="progress_monitor", factory=ProgressMonitorTime)
-    formulation.meta['tip'] = "Simple progress monitor via text file."
+    progressMonitor.meta['tip'] = "Simple progress monitor via text file."
 
     from pylith.utils.CheckpointTimer import CheckpointTimer
     checkpointTimer = pyre.inventory.facility("checkpoint", family="checkpointer", factory=CheckpointTimer)
@@ -96,7 +93,7 @@ class TimeDependentNew(ProblemNew, ModuleTimeDependent):
     self._setupLogging()
     from pylith.mpi.Communicator import mpi_comm_world
     comm = mpi_comm_world()
-    
+
     if 0 == comm.rank:
       self._info.log("Pre-initializing problem.")
     import weakref
@@ -111,7 +108,7 @@ class TimeDependentNew(ProblemNew, ModuleTimeDependent):
     """
     ProblemNew.verifyConfiguration(self)
     return
-  
+
 
   def initialize(self):
     """
@@ -138,7 +135,7 @@ class TimeDependentNew(ProblemNew, ModuleTimeDependent):
     if 0 == comm.rank:
       self._info.log("Solving problem.")
     self.checkpointTimer.toplevel = app # Set handle for saving state
-    
+
     # Pre-problem initialization
     if self.initializer:
       if 0 == comm.rank:
@@ -164,14 +161,14 @@ class TimeDependentNew(ProblemNew, ModuleTimeDependent):
     Save problem state for restart.
     """
     ProblemNew.checkpoint()
-    
+
     # Save state of this object
     raise NotImplementedError, "TimeDependentNew::checkpoint() not implemented."
-  
+
     # Save state of children
     self.formulation.checkpoint()
     return
-  
+
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
@@ -180,12 +177,10 @@ class TimeDependentNew(ProblemNew, ModuleTimeDependent):
     Set members based using inventory.
     """
     ProblemNew._configure(self)
-    ModuleTimeDependent.solver(self.inventory.solver)
-    ModuleTimeDependent.initialTime(self.inventory.startTime)
-    ModuleTimeDependent.timestep(self.inventory.timeStep)
-    ModuleTimeDependent.duration(self.inventory.totalTime)
-
-    self.initializer = self.inventory.initializer
+    ModuleTimeDependent.solverType(self, self.solverType)
+    ModuleTimeDependent.startTime(self, self.inventory.startTime.value)
+    ModuleTimeDependent.dtInitial(self, self.inventory.dtInitial.value)
+    ModuleTimeDependent.totalTime(self, self.inventory.totalTime.value)
     return
 
 
@@ -198,4 +193,4 @@ def problem():
   return TimeDependentNew()
 
 
-# End of file 
+# End of file

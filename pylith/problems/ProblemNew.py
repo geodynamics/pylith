@@ -24,6 +24,7 @@
 
 from pylith.utils.PetscComponent import PetscComponent
 from pylith.utils.NullComponent import NullComponent
+from problems import Problem as ModuleProblem
 
 # ITEM FACTORIES ///////////////////////////////////////////////////////
 
@@ -55,13 +56,13 @@ def faultFactory(name):
 
 
 # ProblemNew class
-class ProblemNew(PetscComponent):
+class ProblemNew(PetscComponent, ModuleProblem):
   """
   Python abstract base class for crustal dynamics problems.
 
   Factory: problem.
   """
-  
+
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(PetscComponent.Inventory):
@@ -91,8 +92,8 @@ class ProblemNew(PetscComponent):
     dimension = pyre.inventory.int("dimension", default=3, validator=pyre.inventory.choice([2,3]))
     dimension.meta['tip'] = "Spatial dimension of problem space."
 
-    solver = pyre.inventory.str("solver", default="linear", validator=pyre.inventory.choice(["linear", "nonlinear"]))
-    solver.meta['tip'] = "Type of solver to use ['linear', 'nonlinear']."
+    solverType = pyre.inventory.str("solver", default="linear", validator=pyre.inventory.choice(["linear", "nonlinear"]))
+    solverType.meta['tip'] = "Type of solver to use ['linear', 'nonlinear']."
 
     from Solution import Solution
     solution = pyre.inventory.facility("solution", family="solution", factory=Solution)
@@ -116,7 +117,7 @@ class ProblemNew(PetscComponent):
     gravityField = pyre.inventory.facility("gravity_field", family="spatial_database", factory=NullComponent)
     gravityField.meta['tip'] = "Database used for gravity field."
 
-  
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -134,7 +135,8 @@ class ProblemNew(PetscComponent):
     Setup integrators for each element family (material/quadrature,
     bc/quadrature, etc.).
     """
-    raise NotImplementedError, "initialize() not implemented."
+
+    solution.preinitialize(mesh, self.normalizer)
     return
 
 
@@ -172,7 +174,7 @@ class ProblemNew(PetscComponent):
             "Material id values must be unique." % \
             (material.label(), materialIds[material.id()], material.id())
       materialIds[material.id()] = material.label()
-    
+
     for interface in self.interfaces.components():
       if interface.id() in materialIds.keys():
         raise ValueError, \
@@ -187,7 +189,7 @@ class ProblemNew(PetscComponent):
     self.mesh().checkMaterialIds(idValues)
 
     return
-  
+
 
   def initialize(self):
     """
@@ -221,7 +223,7 @@ class ProblemNew(PetscComponent):
     """
     raise NotImplementedError, "checkpoint() not implemented."
     return
-  
+
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
@@ -230,6 +232,14 @@ class ProblemNew(PetscComponent):
     Set members based using inventory.
     """
     PetscComponent._configure(self)
+
+    if self.inventory.solverType == "linear":
+        self.solverType = ModuleProblem.LINEAR
+    elif self.inventory.solverType == "nonlinear":
+        self.solverType = ModuleProblem.NONLINEAR
+    else:
+        raise ValueError("Unknown solver type '%s'." % self.solverType)
+
     self.normalizer = self.inventory.normalizer
     self.dimension = self.inventory.dimension
     self.materials = self.inventory.materials
@@ -268,7 +278,7 @@ class ProblemNew(PetscComponent):
 
     self._eventLogger = logger
     return
-  
+
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
@@ -279,4 +289,4 @@ def problem():
   return ProblemNew()
 
 
-# End of file 
+# End of file

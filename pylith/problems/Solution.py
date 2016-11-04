@@ -35,6 +35,15 @@ def subfieldFactory(name):
   return facility(name, family="subfield", factory=Subfield)
 
 
+def outputFactory(name):
+  """
+  Factory for output items.
+  """
+  from pyre.inventory import facility
+  from pylith.meshio.OutputSoln import OutputSoln
+  return facility(name, family="output_manager", factory=OutputSoln)
+
+
 # Solution class =======================================================
 class Solution(PetscComponent):
   """
@@ -42,7 +51,7 @@ class Solution(PetscComponent):
 
   Factory: solution.
   """
-  
+
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(PetscComponent.Inventory):
@@ -65,6 +74,10 @@ class Solution(PetscComponent):
     subfields = pyre.inventory.facilityArray("subfields", itemFactory=subfieldFactory, factory=SolnDisp)
     subfields.meta['tip'] = "Subfields in solution."
 
+    from pylith.meshio.SingleOutput import SingleOutput
+    output = pyre.inventory.facilityArray("output", itemFactory=outputFactory, factory=SingleOutput)
+    output.meta['tip'] = "Output managers for solution."
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -76,15 +89,16 @@ class Solution(PetscComponent):
     return
 
 
-  def preinitialize(self, normalizer, spaceDim):
+  def preinitialize(self, mesh, normalizer):
     """
     """
-    #from pylith.topology.Field import Field
-    #solution = Field(mesh)
+    from pylith.topology.Field import Field
+    solution = Field(mesh)
+    spaceDim = mesh.coordsys().spaceDim
     for subfield in self.subfields.components():
       subfield.initialize(normalizer, spaceDim)
-      #solution.subfieldAdd(subfield.label, subfield.ncomponents, subfield.vectorFieldType, subfield.scale)
-    #solution.subfieldsSetup()
+      solution.subfieldAdd(subfield.label, subfield.ncomponents, subfield.vectorFieldType, subfield.scale)
+    solution.subfieldsSetup()
     return
 
 
@@ -93,7 +107,7 @@ class Solution(PetscComponent):
     Verify compatibility of configuration.
     """
     return
-  
+
 
   def initialize(self, constraints, integrators):
     """
@@ -131,4 +145,4 @@ def solution():
   return Solution()
 
 
-# End of file 
+# End of file

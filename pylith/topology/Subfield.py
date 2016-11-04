@@ -45,7 +45,7 @@ class Subfield(PetscComponent):
 
   Factory: subfield.
   """
-  
+
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(PetscComponent.Inventory):
@@ -66,7 +66,7 @@ class Subfield(PetscComponent):
     ## @li None
 
     import pyre.inventory
-    
+
     name = pyre.inventory.str("name", default="", validator=validateName)
     name.meta['tip'] = "Name for subfield."
 
@@ -126,4 +126,4 @@ def subfield():
   return Subfield()
 
 
-# End of file 
+# End of file

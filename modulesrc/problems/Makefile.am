@@ -26,6 +26,8 @@ subpkgpyexec_PYTHON = problems.py
 
 swig_sources = \
 	problems.i \
+	Problem.i \
+	TimeDependent.i \
 	Formulation.i \
 	Explicit.i \
 	Implicit.i \
@@ -64,4 +66,4 @@ MAINTAINERCLEANFILES = \
 	$(srcdir)/problems.py
 
 
-# End of file 
+# End of file

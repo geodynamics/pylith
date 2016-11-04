@@ -133,11 +133,13 @@ nobase_pkgpyexec_PYTHON = \
 	problems/Implicit.py \
 	problems/ImplicitLgDeform.py \
 	problems/Problem.py \
+	problems/ProblemNew.py \
 	problems/Solver.py \
 	problems/SolverLinear.py \
 	problems/SolverNonlinear.py \
 	problems/SolverLumped.py \
 	problems/TimeDependent.py \
+	problems/TimeDependentNew.py \
 	problems/GreensFns.py \
 	problems/TimeStep.py \
 	problems/TimeStepAdapt.py \
@@ -205,4 +207,4 @@ if ENABLE_HDF5
 endif
 
 
-# End of file 
+# End of file

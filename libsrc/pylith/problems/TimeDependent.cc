@@ -60,32 +60,16 @@ pylith::problems::TimeDependent::deallocate(void)
 } // deallocate
 
 // ----------------------------------------------------------------------
-// Set problem type.
-void
-pylith::problems::TimeDependent::problemType(const ProblemTypeEnum value)
-{ // problemType
-  _problemType = value;
-} // problemType
-
-// ----------------------------------------------------------------------
-// Get problem type.
-pylith::problems::TimeDependent::ProblemTypeEnum
-pylith::problems::TimeDependent::problemType(void) const
-{ // problemType
-  return _problemType;
-} // problemType
-
-// ----------------------------------------------------------------------
 // Set start time for problem.
 void
-pylith::problems::TimeDependent::startTime(const PetscReal value)
+pylith::problems::TimeDependent::startTime(const double value)
 { // startTime
   _startTime = value;
 } // startTime
 
 // ----------------------------------------------------------------------
 // Get start time for problem.
-PetscReal
+double
 pylith::problems::TimeDependent::startTime(void) const
 { // startTime
   return _startTime;
@@ -94,7 +78,7 @@ pylith::problems::TimeDependent::startTime(void) const
 // ----------------------------------------------------------------------
 // Set total time for problem.
 void
-pylith::problems::TimeDependent::totalTime(const PetscReal value)
+pylith::problems::TimeDependent::totalTime(const double value)
 { // totalTime
   PYLITH_METHOD_BEGIN;
 
@@ -110,7 +94,7 @@ pylith::problems::TimeDependent::totalTime(const PetscReal value)
 
 // ----------------------------------------------------------------------
 // Get total time for problem.
-PetscReal
+double
 pylith::problems::TimeDependent::totalTime(void) const
 { // totalTime
   return _totalTime;
@@ -119,7 +103,7 @@ pylith::problems::TimeDependent::totalTime(void) const
 // ----------------------------------------------------------------------
 // Set maximum number of time steps.
 void
-pylith::problems::TimeDependent::maxTimeSteps(const PetscInt value)
+pylith::problems::TimeDependent::maxTimeSteps(const size_t value)
 { // maxTimeSteps
   PYLITH_METHOD_BEGIN;
 
@@ -130,12 +114,12 @@ pylith::problems::TimeDependent::maxTimeSteps(const PetscInt value)
   } // if
   _maxTimeSteps = value;
 
-  PYLITH_METHOD_END;  
+  PYLITH_METHOD_END;
 } // maxTimeSteps
 
 // ----------------------------------------------------------------------
 // Get maximum number of time steps.
-PetscInt
+size_t
 pylith::problems::TimeDependent::maxTimeSteps(void) const
 { // maxTimeSteps
   return _maxTimeSteps;
@@ -144,7 +128,7 @@ pylith::problems::TimeDependent::maxTimeSteps(void) const
 // ----------------------------------------------------------------------
 // Set initial time step for problem.
 void
-pylith::problems::TimeDependent::dtInitial(const PetscReal value)
+pylith::problems::TimeDependent::dtInitial(const double value)
 { // dtInitial
   PYLITH_METHOD_BEGIN;
 
@@ -214,9 +198,9 @@ pylith::problems::TimeDependent::initialize(pylith::topology::Field* solution)
     assert(0);
     throw std::logic_error("Unknown PETSc time stepping equation type.");
   } // switch
-    
+
   // Set time stepping paramters.
-  switch (_problemType) {
+  switch (this->solverType()) {
   case LINEAR:
     err = TSSetProblemType(_ts, TS_LINEAR);PYLITH_CHECK_ERROR(err);
     break;
@@ -238,7 +222,7 @@ pylith::problems::TimeDependent::initialize(pylith::topology::Field* solution)
   err = TSSetPostStep(_ts, poststep);PYLITH_CHECK_ERROR(err);
   err = TSSetRHSJacobian(_ts, NULL, NULL, computeRHSJacobian, (void*)this);PYLITH_CHECK_ERROR(err);
   err = TSSetRHSFunction(_ts, NULL, computeRHSResidual, (void*)this);PYLITH_CHECK_ERROR(err);
-  
+
   if (IMPLICIT == _formulationType) {
     err = TSSetIFunction(_ts, NULL, computeLHSResidual, (void*)this);PYLITH_CHECK_ERROR(err);
     err = TSSetIJacobian(_ts, NULL, NULL, computeLHSJacobian, (void*)this);PYLITH_CHECK_ERROR(err);
@@ -311,7 +295,7 @@ pylith::problems::TimeDependent::poststep(void)
   journal::debug_t debug("problem");
   debug << journal::at(__HERE__)
 	<< "TimeDependent::poststep()" << journal::endl;
-  
+
   // Get current solution.
   // :QUESTION: :MATT: What time does this solution correspond to?
   PetscVec solutionVec = NULL;
@@ -352,7 +336,7 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
   journal::debug_t debug("problem");
   debug << journal::at(__HERE__)
 	<< "TimeDependent::computeRHSResidual(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", residualVec="<<residualVec<<", context="<<context<<")" << journal::endl;
-  
+
   // Get current time step.
   PylithReal dt;
   PetscErrorCode err = TSGetTimeStep(ts, &dt);PYLITH_CHECK_ERROR(err);
@@ -373,7 +357,7 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
   PYLITH_METHOD_RETURN(0);
 } // computeRHSResidual
 
-  
+
 // ----------------------------------------------------------------------
 // Callback static method for computeing Jacobian for RHS, Jacobian of G(t,s).
 PetscErrorCode
@@ -415,7 +399,7 @@ pylith::problems::TimeDependent::computeLHSResidual(PetscTS ts,
   journal::debug_t debug("problem");
   debug << journal::at(__HERE__)
 	<< "TimeDependent::computeLHSResidual(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", residualVec="<<residualVec<<", context="<<context<<")" << journal::endl;
-  
+
   // Get current time step.
   PylithReal dt;
   PetscErrorCode err = TSGetTimeStep(ts, &dt);PYLITH_CHECK_ERROR(err);
@@ -426,7 +410,7 @@ pylith::problems::TimeDependent::computeLHSResidual(PetscTS ts,
   PYLITH_METHOD_RETURN(0);
 } // computeLHSResidual
 
-  
+
 // ----------------------------------------------------------------------
 // Callback static method for computeing Jacobian for LHS, Jacobian of F(t,s,\dot{s}).
 PetscErrorCode

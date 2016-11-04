@@ -41,11 +41,6 @@ class pylith::problems::TimeDependent : public Problem
 // PUBLIC ENUM //////////////////////////////////////////////////////////
 public :
 
-  enum ProblemTypeEnum {
-    LINEAR, // Linear solver.
-    NONLINEAR, // Nonlinear solver.
-  }; // ProblemType
-
   enum FormulationTypeEnum {
     IMPLICIT, // Implicit time stepping.
     EXPLICIT, // Explicit time stepping.
@@ -63,76 +58,64 @@ public :
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
 
-  /** Set problem type.
-   *
-   * @param[in] value Problem type.
-   */
-  void problemType(const ProblemTypeEnum value);
-
-  /** Get problem type.
-   *
-   * @returns Problem type.
-   */
-  ProblemTypeEnum problemType(void) const;
-
   /** Set start time for problem.
    *
    * @param[in] value Start time (nondimensional).
    */
-  void startTime(const PetscReal value);
+  void startTime(const double value);
 
   /** Get start time for problem.
    *
    * @returns Start time (nondimensional).
    */
-  PetscReal startTime(void) const;
+  double startTime(void) const;
 
   /** Set total time for problem.
    *
    * @param[in] value Total time (nondimensional).
    */
-  void totalTime(const PetscReal value);
+  void totalTime(const double value);
 
   /** Get total time for problem.
    *
    * @returns Total time (nondimensional).
    */
-  PetscReal totalTime(void) const;
+  double totalTime(void) const;
 
   /** Set maximum number of time steps.
    *
    * @param[in] value Maximum number of time steps.
    */
-  void maxTimeSteps(const PetscInt value);
+  void maxTimeSteps(const size_t value);
 
   /** Get maximum number of time steps.
    *
    * @returns Maximum number of time steps.
    */
-  PetscInt maxTimeSteps(void) const;
+  size_t maxTimeSteps(void) const;
 
   /** Set initial time step for problem.
    *
    * @param[in] value Initial time step (nondimensional).
    */
-  void dtInitial(const PetscReal value);
+  void dtInitial(const double value);
 
   /** Get initial time step for problem.
    *
    * @returns Initial time step (nondimensional).
    */
-  PetscReal dtInitial(void) const;
+  double dtInitial(void) const;
 
   /** Initialize.
    *
    * @param[in] solution Solution field.
    */
   void initialize(pylith::topology::Field* solution);
-  
+
   /** Solve time dependent problem.
    */
   void solve(void);
-  
+
   /** Perform operations before advancing solution one time step.
    *
    * Set constraints, etc.
@@ -159,7 +142,7 @@ public :
 				    PetscVec solutionVec,
 				    PetscVec residualVec,
 				    void* context);
-  
+
   /* Callback static method for computing Jacobian for RHS, Jacobian of G(t,s).
    *
    * @param[in] ts PETSc time stepper.
@@ -193,7 +176,7 @@ public :
 				    PetscVec solutionDotVec,
 				    PetscVec residualVec,
 				    void* context);
-  
+
   /* Callback static method for computing Jacobian for LHS, Jacobian of F(t,s,\dot{s}).
    *
    * @param[in] ts PETSc time stepper.
@@ -222,16 +205,15 @@ public :
    */
   static
   PetscErrorCode poststep(PetscTS ts);
-  
+
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  PetscReal _startTime; ///< Starting time.
-  PetscReal _dtInitial; ///< Initial time step.
-  PetscReal _totalTime; ///< Total time (duration) of problem.
-  PetscInt _maxTimeSteps; ///< Maximum number of time steps for problem.
+  double _startTime; ///< Starting time.
+  double _dtInitial; ///< Initial time step.
+  double _totalTime; ///< Total time (duration) of problem.
+  size_t _maxTimeSteps; ///< Maximum number of time steps for problem.
   PetscTS _ts; ///< PETSc time stepper.
-  ProblemTypeEnum _problemType; ///< Problem (solver) type.
   FormulationTypeEnum _formulationType; ///< Type of time stepping.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
@@ -245,4 +227,4 @@ private :
 #endif // pylith_problems_timedependent_hh
 
 
-// End of file 
+// End of file

@@ -61,7 +61,7 @@ class Problem(PetscComponent):
 
   Factory: problem.
   """
-  
+
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(PetscComponent.Inventory):
@@ -86,39 +86,27 @@ class Problem(PetscComponent):
     import pyre.inventory
     from pylith.utils.EmptyBin import EmptyBin
 
-    dimension = pyre.inventory.int("dimension", default=3,
-                                   validator=pyre.inventory.choice([1,2,3]))
+    dimension = pyre.inventory.int("dimension", default=3, validator=pyre.inventory.choice([1,2,3]))
     dimension.meta['tip'] = "Spatial dimension of problem space."
 
     from spatialdata.units.NondimElasticQuasistatic import NondimElasticQuasistatic
-    normalizer = pyre.inventory.facility("normalizer",
-                                         family="nondimensional",
-                                         factory=NondimElasticQuasistatic)
+    normalizer = pyre.inventory.facility("normalizer", family="nondimensional", factory=NondimElasticQuasistatic)
     normalizer.meta['tip'] = "Nondimensionalizer for problem."
 
     from pylith.materials.Homogeneous import Homogeneous
-    materials = pyre.inventory.facilityArray("materials",
-                                             itemFactory=materialFactory,
-                                             factory=Homogeneous)
+    materials = pyre.inventory.facilityArray("materials", itemFactory=materialFactory, factory=Homogeneous)
     materials.meta['tip'] = "Materials in problem."
 
-    bc = pyre.inventory.facilityArray("bc",
-                                      itemFactory=bcFactory,
-                                      factory=EmptyBin)
+    bc = pyre.inventory.facilityArray("bc", itemFactory=bcFactory, factory=EmptyBin)
     bc.meta['tip'] = "Boundary conditions."
 
-    interfaces = pyre.inventory.facilityArray("interfaces",
-                                              itemFactory=faultFactory,
-                                              factory=EmptyBin)
-    interfaces.meta['tip'] = "Interior surfaces with constraints or " \
-                             "constitutive models."
+    interfaces = pyre.inventory.facilityArray("interfaces", itemFactory=faultFactory, factory=EmptyBin)
+    interfaces.meta['tip'] = "Interior surfaces with constraints or constitutive models."
 
-    gravityField = pyre.inventory.facility("gravity_field",
-                                          family="spatial_database",
-                                          factory=NullComponent)
+    gravityField = pyre.inventory.facility("gravity_field", family="spatial_database", factory=NullComponent)
     gravityField.meta['tip'] = "Database used for gravity field."
 
-  
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -174,7 +162,7 @@ class Problem(PetscComponent):
             "Material id values must be unique." % \
             (material.label(), materialIds[material.id()], material.id())
       materialIds[material.id()] = material.label()
-    
+
     for interface in self.interfaces.components():
       if interface.id() in materialIds.keys():
         raise ValueError, \
@@ -189,7 +177,7 @@ class Problem(PetscComponent):
     self.mesh().checkMaterialIds(idValues)
 
     return
-  
+
 
   def initialize(self):
     """
@@ -221,7 +209,7 @@ class Problem(PetscComponent):
     """
     raise NotImplementedError, "checkpoint() not implemented."
     return
-  
+
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
@@ -256,7 +244,7 @@ class Problem(PetscComponent):
 
     self._eventLogger = logger
     return
-  
+
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
@@ -267,4 +255,4 @@ def problem():
   return Problem()
 
 
-# End of file 
+# End of file
