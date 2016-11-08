@@ -24,7 +24,7 @@
 namespace pylith {
   namespace materials {
 
-    class MaterialNew
+    class MaterialNew : public pylith::feassemble::IntegratorPointwise
     { // class MaterialNew
 
       // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -80,6 +80,85 @@ namespace pylith {
        */
       void initialize(const pylith::topology::Field& solution);
       
+      /** Compute RHS residual for G(t,s).
+       *
+       * @param[out] residualVec PETSc Vec for residual field.
+       * @param[in] t Current time.
+       * @param[in] dt Current time step.
+       * @param[in] solution Field with current trial solution.
+       */
+      void computeRHSResidual(PetscVec residualVec,
+			      const PylithReal t,
+			      const PylithReal dt,
+			      const pylith::topology::Field& solution);
+      
+      /** Compute RHS Jacobian and preconditioner for G(t,s).
+       *
+       * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
+       * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
+       * @param[in] t Current time.
+       * @param[in] dt Current time step.
+       * @param[in] solution Field with current trial solution.
+       */
+      void computeRHSJacobian(PetscMat jacobianMat,
+			      PetscMat preconMat,
+			      const PylithReal t,
+			      const PylithReal dt,
+			      const pylith::topology::Field& solution);
+      
+      /** Compute LHS residual for F(t,s,\dot{s}).
+       *
+       * @param[out] residualVec PETSc Vec for residual field.
+       * @param[in] t Current time.
+       * @param[in] dt Current time step.
+       * @param[in] solution Field with current trial solution.
+       * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
+       */
+      void computeLHSResidual(PetscVec residualVec,
+			      const PylithReal t,
+			      const PylithReal dt,
+			      const pylith::topology::Field& solution,
+			      PetscVec solutionDotVec);
+      
+      /** Compute LHS Jacobian and preconditioner for F(t,s,\dot{s}) with implicit time-stepping.
+       *
+       * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
+       * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
+       * @param[in] t Current time.
+       * @param[in] dt Current time step.
+       * @param[in] tshift Scale for time derivative.
+       * @param[in] solution Field with current trial solution.
+       * @param[in] solutionDotVec PETSc Vec with time derivative of current trial solution.
+       */
+      void computeLHSJacobianImplicit(PetscMat jacobianMat,
+				      PetscMat precondMat,
+				      const PylithReal t,
+				      const PylithReal dt,
+				      const PylithReal tshift,
+				      const pylith::topology::Field& solution,
+				      PetscVec solutionDotVec);
+      
+      
+      /** Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
+       *
+       * @param[out] jacobian Inverse of lumped Jacobian as a field.
+       * @param[in] t Current time.
+       * @param[in] dt Current time step.
+       * @param[in] solution Field with current trial solution.
+       */
+      void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
+				       const PylithReal t,
+				       const PylithReal dt,
+				       const pylith::topology::Field& solution);
+
+
+      /** Update state variables as needed.
+       *
+       * @param[in] solution Field with current trial solution.
+       */
+      void updateStateVars(const pylith::topology::Field& solution);
+
+
       // PROTECTED METHODS //////////////////////////////////////////////////
     protected:
 

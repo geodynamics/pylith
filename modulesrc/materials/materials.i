@@ -40,6 +40,7 @@
 #include "pylith/materials/DruckerPrager3D.hh"
 #include "pylith/materials/DruckerPragerPlaneStrain.hh"
 
+#include "pylith/feassemble/IntegratorPointwise.hh"
 #include "pylith/materials/IsotropicLinearElasticityPlaneStrain.hh"
 
 #include "pylith/utils/arrayfwd.hh"
@@ -82,6 +83,7 @@ import_array();
 %include "DruckerPrager3D.i"
 %include "DruckerPragerPlaneStrain.i"
 
+%include "../feassemble/IntegratorPointwise.i"
 %include "MaterialNew.i"
 %include "IsotropicLinearElasticityPlaneStrain.i"
 

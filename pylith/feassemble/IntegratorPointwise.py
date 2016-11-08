@@ -21,10 +21,9 @@
 ## @brief Python abstract base class for pointwise integrators.
 
 from pylith.utils.PetscComponent import PetscComponent
-from .feassemble import IntegratorPointwise as ModuleIntegrator
 
 # IntegratorPointwise class
-class IntegratorPointwise(PetscComponent, ModuleIntegrator):
+class IntegratorPointwise(PetscComponent):
   """
   Python abstract base class for pointwise integrators.
 
@@ -88,7 +87,7 @@ class IntegratorPointwise(PetscComponent, ModuleIntegrator):
     """
     try:
       PetscComponent._configure(self)
-      ModuleIntegrator.auxFieldsDB(self, self.inventory.auxFieldsDB)
+      self.auxFieldsDB(self.inventory.auxFieldsDB)
 
     except ValueError, err:
       aliases = ", ".join(self.aliases)

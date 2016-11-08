@@ -24,7 +24,6 @@
 ## Factory: material
 
 from pylith.feassemble.IntegratorPointwise import IntegratorPointwise
-from .materials import MaterialNew as ModuleMaterial
 
 # Validator for label
 def validateLabel(value):
@@ -37,7 +36,7 @@ def validateLabel(value):
 
 
 # MaterialNew class
-class MaterialNew(IntegratorPointwise, ModuleMaterial):
+class MaterialNew(IntegratorPointwise):
   """
   Python material property manager.
 
@@ -104,8 +103,8 @@ class MaterialNew(IntegratorPointwise, ModuleMaterial):
     """
     try:
       IntegratorPointwise._configure(self)
-      ModuleMaterial.id(self, self.inventory.id)
-      ModuleMaterial.label(self.inventory.label)
+      self.id(self.inventory.id)
+      self.label(self.inventory.label)
 
     except ValueError, err:
       aliases = ", ".join(self.aliases)
