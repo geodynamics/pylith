@@ -65,6 +65,7 @@ nobase_pkgpyexec_PYTHON = \
 	feassemble/ReferenceCell.py \
 	feassemble/Quadrature.py \
 	feassemble/CellGeometry.py \
+	feassemble/IntegratorPointwise.py \
 	friction/__init__.py \
 	friction/FrictionModel.py \
 	friction/StaticFriction.py \

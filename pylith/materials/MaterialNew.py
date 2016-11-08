@@ -23,7 +23,8 @@
 ##
 ## Factory: material
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.feassemble.IntegratorPointwise import IntegratorPointwise
+from .materials import MaterialNew as ModuleMaterial
 
 # Validator for label
 def validateLabel(value):
@@ -36,7 +37,7 @@ def validateLabel(value):
 
 
 # MaterialNew class
-class MaterialNew(PetscComponent):
+class MaterialNew(IntegratorPointwise, ModuleMaterial):
   """
   Python material property manager.
 
@@ -45,7 +46,7 @@ class MaterialNew(PetscComponent):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(PetscComponent.Inventory):
+  class Inventory(IntegratorPointwise.Inventory):
     """
     Python object for managing MaterialNew facilities and properties.
     """
@@ -58,8 +59,7 @@ class MaterialNew(PetscComponent):
     ## @li \b label Descriptive label for material.
     ##
     ## \b Facilities
-    ## @li \b auxiliary_fields Discretization of auxiliary fields associated with material.
-    ## @li \b db_auxiliary_fields Database for auxiliary fields associated with material.
+    ## @li None
 
     import pyre.inventory
 
@@ -69,44 +69,14 @@ class MaterialNew(PetscComponent):
     label = pyre.inventory.str("label", default="", validator=validateLabel)
     label.meta['tip'] = "Descriptive label for material."
 
-    from pylith.topology.AuxSubfield import subfieldFactory
-    from pylith.utils.EmptyBin import EmptyBin
-    auxFields = pyre.inventory.facilityArray("auxiliary_fields", itemFactory=subfieldFactory, factory=EmptyBin)
-    auxFields.meta['tip'] = "Discretization of physical properties and state variables."
-
-    from spatialdata.spatialdb.SimpleDB import SimpleDB
-    auxFieldsDB = pyre.inventory.facility("db_auxiliary_fields", family="spatial_database", factory=SimpleDB)
-    auxFieldsDB.meta['tip'] = "Database for physical property parameters."
-
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="material"):
     """
     Constructor.
     """
-    PetscComponent.__init__(self, name, facility="material")
-    self._createModuleObj()
+    IntegratorPointwise.__init__(self, name)
     self.output = None
-    return
-
-
-  def preinitialize(self, mesh):
-    """
-    Do pre-initialization setup.
-    """
-    self._setupLogging()
-    import weakref
-    self.mesh = weakref.ref(mesh)
-    from pylith.topology.topology import MeshOps_numMaterialCells
-    self.ncells = MeshOps_numMaterialCells(mesh, self.id())
-    return
-
-
-  def verifyConfiguration(self):
-    """
-    Verify compatibility of configuration.
-    """
-    logEvent = "%sverify" % self._loggingPrefix
     return
 
 
@@ -133,27 +103,15 @@ class MaterialNew(PetscComponent):
     Setup members using inventory.
     """
     try:
-      PetscComponent._configure(self)
-      self.id(self.inventory.id)
-      self.label(self.inventory.label)
-      self.auxFieldsDB(self.inventory.auxFieldsDB)
-      from pylith.utils.NullComponent import NullComponent
-      if not isinstance(self.inventory.dbReferenceState, NullComponent):
-        self.dbReferenceState(self.inventory.dbReferenceState)
+      IntegratorPointwise._configure(self)
+      ModuleMaterial.id(self, self.inventory.id)
+      ModuleMaterial.label(self.inventory.label)
 
     except ValueError, err:
       aliases = ", ".join(self.aliases)
       raise ValueError("Error while configuring material "
                        "(%s):\n%s" % (aliases, err.message))
     return
-
-
-  def _createModuleObj(self):
-    """
-    Call constructor for module object for access to C++ object.
-    """
-    raise NotImplementedError, \
-          "Please implement _createModuleOb() in derived class."
 
 
   def _setupLogging(self):

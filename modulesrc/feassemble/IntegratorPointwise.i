@@ -1,53 +1,31 @@
 // -*- C++ -*-
 //
-// ======================================================================
+// ----------------------------------------------------------------------
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, Rice University
+// Matthew G. Knepley, University of Chicago
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2015 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
-// ======================================================================
+// ----------------------------------------------------------------------
 //
 
-/**
- * @file libsrc/feassemble/IntegratorPointwise.hh
+/** @file modulesrc/feassemble/IntegratorPointwise.i
  *
- * @brief Object containing operations for implicit and explicit
- * time integration of the equations defined by pointwise functions.
+ * @brief Python interface to C++ abstract IntegratorPointwise object.
  */
 
-#if !defined(pylith_feassemble_integratorpointwise_hh)
-#define pylith_feassemble_integratorpointwise_hh
+namespace pylith {
+namespace feassemble {
 
-// Include directives ---------------------------------------------------
-#include "feassemblefwd.hh" // forward declarations
-
-#include "Integrator.hh" // ISA Integrator
-
-#include "pylith/topology/FieldBase.hh" // USES FieldBase
-
-#include "pylith/topology/topologyfwd.hh" // HOLDSA Field
-#include "pylith/utils/petscfwd.h" // USES PetscMat, PetscVec
-
-#include <map> // HOLDSA std::map
-
-// IntegratorPointwise -------------------------------------------------
-/** @brief General operations for implicit and explicit
- * time integration of equations defined by pointwise functions.
- */
-class pylith::feassemble::IntegratorPointwise
-{ // IntegratorPointwise
-friend class TestIntegratorPointwise;   // unit testing
-
-// PUBLIC TYPEDEFS //////////////////////////////////////////////////////
-public:
+class IntegratorPointwise
+{     // IntegratorPointwise
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
@@ -82,7 +60,7 @@ bool hasAuxField(const char* name);
  * @param[in] field Field over material.
  * @param[in] name Name of field to retrieve.
  */
-void getAuxField(pylith::topology::Field *field,
+  void getAuxField(pylith::topology::Field *field,
                  const char* name) const;
 
 /** Set spatial database for auxiliary fields.
@@ -232,46 +210,11 @@ void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
 virtual
 void updateStateVars(const pylith::topology::Field& solution);
 
-// PROTECTED TYPEDEFS /////////////////////////////////////////////////
-protected:
 
-typedef std::map<std::string, pylith::topology::FieldBase::DiscretizeInfo> discretizations_type;
+};     // IntegratorPointwise
 
-// PROTECTED MEMBERS ////////////////////////////////////////////////////
-protected:
-
-spatialdata::units::Nondimensional* _normalizer;   ///< Nondimensionalizer.
-utils::EventLogger* _logger;   ///< Event logger.
-
-/// Auxiliary fields for this problem
-pylith::topology::Field *_auxFields;
-
-/// Database of values for auxiliary fields.
-spatialdata::spatialdb::SpatialDB* _auxFieldsDB;
-
-/// Set auxiliary fields via query.
-pylith::topology::FieldQuery* _auxFieldsQuery;
-
-/// Map from auxiliary field to discretization.
-discretizations_type _auxFieldsFEInfo;
-
-/// True if we need to recompute Jacobian for operator, false otherwise.
-/// Default is false;
-bool _needNewRHSJacobian;
-bool _needNewLHSJacobian;
-
-// NOT IMPLEMENTED //////////////////////////////////////////////////////
-private:
-
-/// Not implemented.
-IntegratorPointwise(const IntegratorPointwise&);
-
-/// Not implemented
-const IntegratorPointwise& operator=(const IntegratorPointwise&);
-
-}; // IntegratorPointwise
-
-#endif // pylith_feassemble_integratorpointwise_hh
+}   // feassemble
+} // pylith
 
 
 // End of file

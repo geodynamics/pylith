@@ -1,5 +1,3 @@
-// -*- C++ -*-
-//
 // ======================================================================
 //
 // Brad T. Aagaard, U.S. Geological Survey
@@ -41,6 +39,8 @@
 #include "pylith/feassemble/ElasticityImplicitLgDeform.hh"
 #include "pylith/feassemble/ElasticityExplicitLgDeform.hh"
 
+#include "pylith/topology/Field.hh"
+#include "pylith/feassemble/IntegratorPointwise.hh"
 %}
 
 %include "exception.i"
@@ -50,7 +50,7 @@
   } catch (const std::exception& err) {
     SWIG_exception(SWIG_RuntimeError, err.what());
   } // try/catch
- } // exception
+}  // exception
 
 %include "typemaps.i"
 %include "../include/scalartypemaps.i"
@@ -86,5 +86,6 @@ import_array();
 %include "ElasticityImplicitLgDeform.i"
 %include "ElasticityExplicitLgDeform.i"
 
-// End of file
+%include "IntegratorPointwise.i"
 
+// End of file
