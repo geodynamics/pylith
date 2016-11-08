@@ -68,6 +68,10 @@ class MaterialNew(IntegratorPointwise):
     label = pyre.inventory.str("label", default="", validator=validateLabel)
     label.meta['tip'] = "Descriptive label for material."
 
+    from pylith.meshio.OutputMatElastic import OutputMatElastic
+    output = pyre.inventory.facility("output", family="output_manager", factory=OutputMatElastic)
+    output.meta['tip'] = "Output manager for elastic material information."
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="material"):
