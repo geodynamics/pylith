@@ -89,6 +89,9 @@ nobase_pkgpyexec_PYTHON = \
 	materials/PowerLawPlaneStrain.py \
 	materials/DruckerPrager3D.py \
 	materials/DruckerPragerPlaneStrain.py \
+	materials/MaterialNew.py \
+	materials/IsotropicLinearElasticityPlaneStrain.py \
+	materials/AuxFieldsIsotropicLinearElasticity.py \
 	meshio/__init__.py \
 	meshio/CellFilter.py \
 	meshio/CellFilterAvg.py \
@@ -149,6 +152,7 @@ nobase_pkgpyexec_PYTHON = \
 	problems/ProgressMonitorStep.py \
 	problems/ProgressMonitorTime.py \
 	problems/Solution.py \
+	problems/SolutionSubfield.py \
 	problems/SolnDisp.py \
 	problems/SolnDispLagrange.py \
 	problems/SolnDispVel.py \
@@ -164,9 +168,9 @@ nobase_pkgpyexec_PYTHON = \
 	topology/Distributor.py \
 	topology/Mesh.py \
 	topology/Field.py \
-	topology/Subfield.py \
 	topology/Fields.py \
 	topology/SolutionFields.py \
+	topology/AuxSubfield.py \
 	topology/Jacobian.py \
 	topology/JacobianViewer.py \
 	topology/MeshGenerator.py \

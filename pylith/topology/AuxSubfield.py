@@ -16,50 +16,36 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/topology/Subfield.py
+## @file pylith/topology/AuxSubfield.py
 ##
 ## @brief Python object for defining attributes of a subfield within a
 ## field.
 ##
 ## Factory: subfield.
 
-from pylith.utils.PetscComponent import PetscComponent
+from pyre.components.Component import Component
 
-# Validator for name
-def validateName(value):
+# AuxSubfield class
+class AuxSubfield(Component):
   """
-  Validate name of subfield.
-  """
-  if 0 == len(value):
-    raise ValueError("Name of subfield not specified.")
-  import re
-  if re.search(r"\s", value):
-    raise ValueError("Name of subfield cannot contain whitespace.")
-  return value
+  Python object for defining discretization of an auxiliary subfield.
 
-
-# Subfield class
-class Subfield(PetscComponent):
-  """
-  Python object for defining attributes of a subfield within a field.
-
-  Factory: subfield.
+  Factory: auxiliary_subfield.
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(PetscComponent.Inventory):
+  class Inventory(Component.Inventory):
     """
-    Python object for managing Subfield facilities and properties.
+    Python object for managing AuxSubfield facilities and properties.
     """
 
     ## @class Inventory
-    ## Python object for managing Subfield facilities and properties.
+    ## Python object for managing AuxSubfield facilities and properties.
     ##
     ## \b Properties
-    ## @li \b name Name for subfield.
     ## @li \b basis_order Order of basis functions.
-    ## @li \b quad_order Order of numerical quadrature.
+    ## @li \b quadrature_order Order of numerical quadrature.
     ## @li \b basis_continuous Is basis continuous?
     ##
     ## \b Facilities
@@ -67,13 +53,10 @@ class Subfield(PetscComponent):
 
     import pyre.inventory
 
-    name = pyre.inventory.str("name", default="", validator=validateName)
-    name.meta['tip'] = "Name for subfield."
-
     basisOrder = pyre.inventory.int("basis_order", default=1)
     basisOrder.meta['tip'] = "Order of basis functions."
 
-    quadOrder = pyre.inventory.int("quad_order", default=1)
+    quadOrder = pyre.inventory.int("quadrature_order", default=1)
     quadOrder.meta['tip'] = "Order of numerical quadrature."
 
     basisContinuous = pyre.inventory.bool("basis_continous", default=True)
@@ -82,24 +65,12 @@ class Subfield(PetscComponent):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="subfield"):
+  def __init__(self, name="auxsubfield"):
     """
     Constructor.
     """
-    PetscComponent.__init__(self, name, facility="subfield")
+    Component.__init__(self, name, facility="auxsubfield")
 
-    # Set in derived class initialize().
-    self.ncomponents = None
-    self.vectorFieldType = None
-    self.scale = None
-    return
-
-
-  def initialize(self, normalizer, spaceDim):
-    """
-    Initialize subfield metadata.
-    """
-    raise NotImplementedError("Implement in derived class.")
     return
 
 
@@ -109,21 +80,31 @@ class Subfield(PetscComponent):
     """
     Set members based using inventory.
     """
-    PetscComponent._configure(self)
-    self.name = self.inventory.name
+    Component._configure(self)
     self.basisOrder = self.inventory.basisOrder
     self.quadOrder = self.inventory.quadOrder
     self.basisContinous = self.inventory.basisContinuous
     return
 
 
+# ITEM FACTORIES ///////////////////////////////////////////////////////
+
+def subfieldFactory(name):
+  """
+  Factory for subfield items.
+  """
+  from pyre.inventory import facility
+  from pylith.topology.AuxSubfield import AuxSubfield
+  return facility(name, family="auxiliary_subfield", factory=AuxSubfield)
+
+
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def subfield():
+def auxiliary_subfield():
   """
-  Factory associated with Subfield.
+  Factory associated with AuxSubfield.
   """
-  return Subfield()
+  return AuxSubfield()
 
 
 # End of file

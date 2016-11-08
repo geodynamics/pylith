@@ -22,15 +22,38 @@
 ##
 ## Factory: subfield.
 
-from pylith.topology.Subfield import Subfield
+from pylith.problems.SolutionSubfield import SolutionSubfield
 
 # SubfieldDisplacement class
-class SubfieldDisplacement(Subfield):
+class SubfieldDisplacement(SolutionSubfield):
   """
   Python object for displacement subfield.
 
   Factory: subfield.
   """
+
+  # INVENTORY //////////////////////////////////////////////////////////
+
+  class Inventory(SolutionSubfield.Inventory):
+    """
+    Python object for managing SubfieldDisplacement facilities and properties.
+    """
+
+    ## @class Inventory
+    ## Python object for managing SubfieldDisplacement facilities and properties.
+    ##
+    ## \b Properties
+    ## @li \b name Name for subfield.
+    ##
+    ## \b Facilities
+    ## @li None
+
+    import pyre.inventory
+
+    from .SolutionSubfield import validateName
+    name = pyre.inventory.str("name", default="displacement", validator=validateName)
+    name.meta['tip'] = "Name for subfield."
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -38,7 +61,7 @@ class SubfieldDisplacement(Subfield):
     """
     Constructor.
     """
-    Subfield.__init__(self, name)
+    SolutionSubfield.__init__(self, name)
     return
 
 
@@ -55,7 +78,7 @@ class SubfieldDisplacement(Subfield):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def subfield():
+def soln_subfield():
   """
   Factory associated with SubfieldDisplacement.
   """

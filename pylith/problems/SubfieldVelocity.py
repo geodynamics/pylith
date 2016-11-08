@@ -22,15 +22,38 @@
 ##
 ## Factory: subfield.
 
-from pylith.topology.Subfield import Subfield
+from .SolutionSubfield import SolutionSubfield
 
 # SubfieldVelocity class
-class SubfieldVelocity(Subfield):
+class SubfieldVelocity(SolutionSubfield):
   """
   Python object for velocity subfield.
 
   Factory: subfield.
   """
+
+  # INVENTORY //////////////////////////////////////////////////////////
+
+  class Inventory(SolutionSubfield.Inventory):
+      """
+      Python object for managing SubfieldVelocity facilities and properties.
+      """
+
+    ## @class Inventory
+    ## Python object for managing SubfieldVelocity facilities and properties.
+    ##
+    ## \b Properties
+    ## @li \b name Name for subfield.
+    ##
+    ## \b Facilities
+    ## @li None
+
+    import pyre.inventory
+
+    from .SolutionSubfield import validateName
+    name = pyre.inventory.str("name", default="velocity", validator=validateName)
+    name.meta['tip'] = "Name for subfield."
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -38,7 +61,7 @@ class SubfieldVelocity(Subfield):
     """
     Constructor.
     """
-    Subfield.__init__(self, name)
+    SolutionSubfield.__init__(self, name)
     return
 
 
@@ -55,11 +78,11 @@ class SubfieldVelocity(Subfield):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def subfield():
+def soln_subfield():
   """
   Factory associated with SubfieldVelocity.
   """
   return SubfieldVelocity()
 
 
-# End of file 
+# End of file

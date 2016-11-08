@@ -22,15 +22,38 @@
 ##
 ## Factory: subfield.
 
-from pylith.topology.Subfield import Subfield
+from .SolutionSubfield import SolutionSubfield
 
 # SubfieldLagrangeFault class
-class SubfieldLagrangeFault(Subfield):
+class SubfieldLagrangeFault(SolutionSubfield):
   """
   Python object for fault Lagrange multipliers subfield.
 
   Factory: subfield.
   """
+
+  # INVENTORY //////////////////////////////////////////////////////////
+
+  class Inventory(SolutionSubfield.Inventory):
+    """
+    Python object for managing SubfieldLagrangeFault facilities and properties.
+    """
+
+    ## @class Inventory
+    ## Python object for managing SubfieldLagrangeFault facilities and properties.
+    ##
+    ## \b Properties
+    ## @li \b name Name for subfield.
+    ##
+    ## \b Facilities
+    ## @li None
+
+    import pyre.inventory
+
+    from .SolutionSubfield import validateName
+    name = pyre.inventory.str("name", default="lagrange_multiplier_fault", validator=validateName)
+    name.meta['tip'] = "Name for subfield."
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -38,7 +61,7 @@ class SubfieldLagrangeFault(Subfield):
     """
     Constructor.
     """
-    Subfield.__init__(self, name)
+    SolutionSubfield.__init__(self, name)
     return
 
 
@@ -55,11 +78,11 @@ class SubfieldLagrangeFault(Subfield):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def subfield():
+def soln_subfield():
   """
   Factory associated with SubfieldLagrangeFault.
   """
   return SubfieldLagrangeFault()
 
 
-# End of file 
+# End of file

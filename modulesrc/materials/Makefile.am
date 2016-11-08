@@ -39,12 +39,15 @@ swig_sources = \
 	PowerLaw3D.i \
 	PowerLawPlaneStrain.i \
 	DruckerPrager3D.i \
-	DruckerPragerPlaneStrain.i
+	DruckerPragerPlaneStrain.i \
+	MaterialNew.i \
+	IsotropicLinearElasticityPlaneStrain.i
 
 swigincludedir = $(pkgdatadir)/swig/$(subpackage)
 swiginclude_HEADERS = \
 	Material.i \
-	ElasticMaterial.i
+	ElasticMaterial.i \
+	MaterialNew.i
 
 swig_generated = \
 	materials_wrap.cxx \

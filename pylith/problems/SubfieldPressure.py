@@ -22,15 +22,38 @@
 ##
 ## Factory: subfield.
 
-from pylith.topology.Subfield import Subfield
+from .SolutionSubfield import SolutionSubfield
 
 # SubfieldPressure class
-class SubfieldPressure(Subfield):
+class SubfieldPressure(SolutionSubfield):
   """
   Python object for pressure subfield.
 
   Factory: subfield.
   """
+
+  # INVENTORY //////////////////////////////////////////////////////////
+
+  class Inventory(SolutionSubfield.Inventory):
+      """
+      Python object for managing SubfieldPressure facilities and properties.
+      """
+
+    ## @class Inventory
+    ## Python object for managing SubfieldPressure facilities and properties.
+    ##
+    ## \b Properties
+    ## @li \b name Name for subfield.
+    ##
+    ## \b Facilities
+    ## @li None
+
+    import pyre.inventory
+
+    from .SolutionSubfield import validateName
+    name = pyre.inventory.str("name", default="pressure", validator=validateName)
+    name.meta['tip'] = "Name for subfield."
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -38,7 +61,7 @@ class SubfieldPressure(Subfield):
     """
     Constructor.
     """
-    Subfield.__init__(self, name)
+    SolutionSubfield.__init__(self, name)
     return
 
 
@@ -55,11 +78,11 @@ class SubfieldPressure(Subfield):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def subfield():
+def soln_subfield():
   """
   Factory associated with SubfieldPressure.
   """
   return SubfieldPressure()
 
 
-# End of file 
+# End of file

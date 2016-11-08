@@ -16,16 +16,10 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/materials/Material.py
+## @file pylith/materials/MaterialNew.py
 ##
 ## @brief Python abstract base class for managing physical properties
 ## and state variables of a material.
-##
-## This implementation of a material associates both physical
-## properties and a quadrature scheme with the material. Thus,
-## applying different quadrature schemes within a region with the same
-## physical property database requires two "materials", which can use
-## the same database.
 ##
 ## Factory: material
 
@@ -41,25 +35,21 @@ def validateLabel(value):
   return value
 
 
-# Material class
-class Material(PetscComponent):
+# MaterialNew class
+class MaterialNew(PetscComponent):
   """
   Python material property manager.
 
-  This implementation of a material associates both physical
-  properties and a quadrature scheme with the material. Thus, applying
-  different quadrature schemes within a region with the same physical
-  property database requires two 'materials', which can use the same
-  database.
+  Factory: material
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(PetscComponent.Inventory):
     """
-    Python object for managing Material facilities and properties.
+    Python object for managing MaterialNew facilities and properties.
     """
-    
+
     ## @class Inventory
     ## Python object for managing Material facilities and properties.
     ##
@@ -68,9 +58,8 @@ class Material(PetscComponent):
     ## @li \b label Descriptive label for material.
     ##
     ## \b Facilities
-    ## @li \b db_properties Database of material property parameters
-    ## @li \b quadrature Quadrature object for numerical integration
-    ## @li \b db_initial_state Database for initial state.
+    ## @li \b auxiliary_fields Discretization of auxiliary fields associated with material.
+    ## @li \b db_auxiliary_fields Database for auxiliary fields associated with material.
 
     import pyre.inventory
 
@@ -80,29 +69,15 @@ class Material(PetscComponent):
     label = pyre.inventory.str("label", default="", validator=validateLabel)
     label.meta['tip'] = "Descriptive label for material."
 
+    from pylith.topology.AuxSubfield import subfieldFactory
+    from pylith.utils.EmptyBin import EmptyBin
+    auxFields = pyre.inventory.facilityArray("auxiliary_fields", itemFactory=subfieldFactory, factory=EmptyBin)
+    auxFields.meta['tip'] = "Discretization of physical properties and state variables."
+
     from spatialdata.spatialdb.SimpleDB import SimpleDB
-    dbProperties = pyre.inventory.facility("db_properties",
-                                           family="spatial_database",
-                                           factory=SimpleDB)
-    dbProperties.meta['tip'] = "Database for physical property parameters."
+    auxFieldsDB = pyre.inventory.facility("db_auxiliary_fields", family="spatial_database", factory=SimpleDB)
+    auxFieldsDB.meta['tip'] = "Database for physical property parameters."
 
-    from pylith.utils.NullComponent import NullComponent
-    dbInitialState = pyre.inventory.facility("db_initial_state",
-                                           family="spatial_database",
-                                           factory=NullComponent)
-    dbInitialState.meta['tip'] = "Database for initial state variables."
-
-    from pylith.feassemble.Quadrature import Quadrature
-    quadrature = pyre.inventory.facility("quadrature", factory=Quadrature)
-    quadrature.meta['tip'] = "Quadrature object for numerical integration."
-
-
-    from pylith.perf.MemoryLogger import MemoryLogger
-    perfLogger = pyre.inventory.facility("perf_logger", family="perf_logger",
-                                         factory=MemoryLogger)
-    perfLogger.meta['tip'] = "Performance and memory logging."
-
-  
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="material"):
@@ -122,7 +97,6 @@ class Material(PetscComponent):
     self._setupLogging()
     import weakref
     self.mesh = weakref.ref(mesh)
-    self.quadrature.preinitialize(mesh.coordsys().spaceDim())
     from pylith.topology.topology import MeshOps_numMaterialCells
     self.ncells = MeshOps_numMaterialCells(mesh, self.id())
     return
@@ -133,29 +107,8 @@ class Material(PetscComponent):
     Verify compatibility of configuration.
     """
     logEvent = "%sverify" % self._loggingPrefix
-    self._eventLogger.eventBegin(logEvent)
-
-    if self.quadrature.cellDim() != self.mesh().dimension() or \
-       self.quadrature.spaceDim() != self.mesh().coordsys().spaceDim() or \
-       self.quadrature.cell.numCorners != self.mesh().numCorners():
-        raise ValueError, \
-              "Quadrature scheme for material '%s' and mesh are incompatible.\n" \
-              "  Quadrature reference cell:\n" \
-              "    dimension: %d\n" \
-              "    spatial dimension: %d\n" \
-              "    number of corners: %d\n" \
-              "  Mesh cells:\n" \
-              "    dimension: %d\n" \
-              "    spatial dimension: %d\n" \
-              "    number of corners: %d" % \
-              (self.label(),
-               self.quadrature.cellDim(), self.quadrature.spaceDim(),
-               self.quadrature.cell.numCorners, 
-               self.mesh().dimension(), self.mesh().coordsys().spaceDim(),
-               self.mesh().numCorners())
-    self._eventLogger.eventEnd(logEvent)
     return
-  
+
 
   def finalize(self):
     """
@@ -163,7 +116,6 @@ class Material(PetscComponent):
     """
     if not self.output is None:
       self.output.finalize()
-    self._modelMemoryUse()
     return
 
 
@@ -184,36 +136,24 @@ class Material(PetscComponent):
       PetscComponent._configure(self)
       self.id(self.inventory.id)
       self.label(self.inventory.label)
-      self.dbProperties(self.inventory.dbProperties)
+      self.auxFieldsDB(self.inventory.auxFieldsDB)
       from pylith.utils.NullComponent import NullComponent
-      if not isinstance(self.inventory.dbInitialState, NullComponent):
-        self.dbInitialState(self.inventory.dbInitialState)
+      if not isinstance(self.inventory.dbReferenceState, NullComponent):
+        self.dbReferenceState(self.inventory.dbReferenceState)
 
-      self.quadrature = self.inventory.quadrature
-      self.perfLogger = self.inventory.perfLogger
     except ValueError, err:
       aliases = ", ".join(self.aliases)
       raise ValueError("Error while configuring material "
                        "(%s):\n%s" % (aliases, err.message))
     return
 
-  
+
   def _createModuleObj(self):
     """
     Call constructor for module object for access to C++ object.
     """
     raise NotImplementedError, \
           "Please implement _createModuleOb() in derived class."
-
-
-  def _modelMemoryUse(self):
-    """
-    Model allocated memory.
-    """
-    self.perfLogger.logMaterial('Materials', self)
-    self.perfLogger.logField('Materials', self.propertiesField())
-    self.perfLogger.logField('Materials', self.stateVarsField())
-    return
 
 
   def _setupLogging(self):
@@ -235,6 +175,6 @@ class Material(PetscComponent):
 
     self._eventLogger = logger
     return
-  
 
-# End of file 
+
+# End of file

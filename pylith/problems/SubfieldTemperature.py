@@ -22,15 +22,38 @@
 ##
 ## Factory: subfield.
 
-from pylith.topology.Subfield import Subfield
+from .SolutionSubfield import SolutionSubfield
 
 # SubfieldTemperature class
-class SubfieldTemperature(Subfield):
+class SubfieldTemperature(SolutionSubfield):
   """
   Python object for temperature subfield.
 
   Factory: subfield.
   """
+
+  # INVENTORY //////////////////////////////////////////////////////////
+
+  class Inventory(SolutionSubfield.Inventory):
+      """
+      Python object for managing SubfieldTemperature facilities and properties.
+      """
+
+    ## @class Inventory
+    ## Python object for managing SubfieldTemperature facilities and properties.
+    ##
+    ## \b Properties
+    ## @li \b name Name for subfield.
+    ##
+    ## \b Facilities
+    ## @li None
+
+    import pyre.inventory
+
+    from .SolutionSubfield import validateName
+    name = pyre.inventory.str("name", default="temperature", validator=validateName)
+    name.meta['tip'] = "Name for subfield."
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -38,7 +61,7 @@ class SubfieldTemperature(Subfield):
     """
     Constructor.
     """
-    Subfield.__init__(self, name)
+    SolutionSubfield.__init__(self, name)
     return
 
 
@@ -55,11 +78,11 @@ class SubfieldTemperature(Subfield):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def subfield():
+def soln_subfield():
   """
   Factory associated with SubfieldTemperature.
   """
   return SubfieldTemperature()
 
 
-# End of file 
+# End of file

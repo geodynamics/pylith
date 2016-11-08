@@ -52,15 +52,15 @@ class SolnDispVelLagrange(PetscComponent):
     import pyre.inventory
 
     from SubfieldDisplacement import SubfieldDisplacement
-    displacement = pyre.inventory.facility("displacement", family="subfield", factory=SubfieldDisplacement)
+    displacement = pyre.inventory.facility("displacement", family="soln_subfield", factory=SubfieldDisplacement)
     displacement.meta['tip'] = "Displacement subfield."
 
     from SubfieldVelocity import SubfieldVelocity
-    velocity = pyre.inventory.facility("velocity", family="subfield", factory=SubfieldVelocity)
+    velocity = pyre.inventory.facility("velocity", family="soln_subfield", factory=SubfieldVelocity)
     velocity.meta['tip'] = "Velocity subfield."
 
     from SubfieldLagrangeFault import SubfieldLagrangeFault
-    lagrangeFault = pyre.inventory.facility("lagrange_fault", family="subfield", factory=SubfieldLagrangeFault)
+    lagrangeFault = pyre.inventory.facility("lagrange_fault", family="soln_subfield", factory=SubfieldLagrangeFault)
     lagrangeFault.meta['tip'] = "Fault Lagrange multiplier subfield."
 
 
@@ -70,7 +70,7 @@ class SolnDispVelLagrange(PetscComponent):
     """
     Constructor.
     """
-    PetscComponent.__init__(self, name, facility="subfields")
+    PetscComponent.__init__(self, name, facility="soln_subfields")
     return
 
 

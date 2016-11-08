@@ -26,15 +26,6 @@ from pylith.utils.PetscComponent import PetscComponent
 
 # ITEM FACTORIES ///////////////////////////////////////////////////////
 
-def subfieldFactory(name):
-  """
-  Factory for subfield items.
-  """
-  from pyre.inventory import facility
-  from pylith.topology.Subfield import Subfield
-  return facility(name, family="subfield", factory=Subfield)
-
-
 def outputFactory(name):
   """
   Factory for output items.
@@ -71,6 +62,7 @@ class Solution(PetscComponent):
     import pyre.inventory
 
     from SolnDisp import SolnDisp
+    from .SolutionSubfield import subfieldFactory
     subfields = pyre.inventory.facilityArray("subfields", itemFactory=subfieldFactory, factory=SolnDisp)
     subfields.meta['tip'] = "Subfields in solution."
 
