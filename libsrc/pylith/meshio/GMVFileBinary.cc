@@ -46,7 +46,7 @@ pylith::meshio::GMVFileBinary::GMVFileBinary(const char* filename,
 } // constructor
 
 // ----------------------------------------------------------------------
-// Default destructor 
+// Default destructor
 pylith::meshio::GMVFileBinary::~GMVFileBinary(void)
 { // destructor
 } // destructor
@@ -76,7 +76,7 @@ pylith::meshio::GMVFileBinary::read(scalar_array* coordinates,
 
   *meshDim = 3;
 
-  journal::info_t info("gmvfile");
+  journal::info_t info("meshio");
 
   std::ifstream fin(_filename.c_str(), std::ios::in | std::ios::binary);
   if (!(fin.is_open() && fin.good())) {
@@ -86,7 +86,7 @@ pylith::meshio::GMVFileBinary::read(scalar_array* coordinates,
       << "' for reading.";
     throw std::runtime_error(msg.str());
   } // if
-    
+
   info << journal::at(__HERE__)
        << "Reading binary GMV file '" << _filename << "'." << journal::endl;
 
@@ -178,7 +178,7 @@ pylith::meshio::GMVFileBinary::_readVertices(std::ifstream& fin,
 
   *spaceDim = 3;
 
-  journal::info_t info("gmvfile");
+  journal::info_t info("meshio");
 
   fin.read((char*) numVertices, sizeof(int));
   if (_flipEndian)
@@ -199,7 +199,7 @@ pylith::meshio::GMVFileBinary::_readVertices(std::ifstream& fin,
   for (int iDim=0, i=0; iDim < *spaceDim; ++iDim)
     for (int iVertex=0; iVertex < *numVertices; ++iVertex)
       (*coordinates)[iVertex*(*spaceDim)+iDim] = buffer[i++];
-  
+
   info << journal::at(__HERE__)
        << "Done." << journal::endl;
 
@@ -219,7 +219,7 @@ pylith::meshio::GMVFileBinary::_readCells(std::ifstream& fin,
   assert(numCells);
   assert(numCorners);
 
-  journal::info_t info("gmvfile");
+  journal::info_t info("meshio");
 
   fin.read((char*) numCells, sizeof(int));
   if (_flipEndian)
@@ -239,7 +239,7 @@ pylith::meshio::GMVFileBinary::_readCells(std::ifstream& fin,
     if (*numCorners) {
       if (cellStringCur != cellString) {
 	std::ostringstream msg;
-	msg 
+	msg
 	  << "Mutiple element types not supported. Found element types '"
 	  << cellString << "' and '" << cellStringCur << "' in GMV file '"
 	  << _filename << "'.";
@@ -251,15 +251,15 @@ pylith::meshio::GMVFileBinary::_readCells(std::ifstream& fin,
       *numCorners = numCornersCur;
       cells->resize((*numCells) * (*numCorners));
     } // if/else
-    fin.read((char*) &(*cells)[iCell*numCornersCur], 
+    fin.read((char*) &(*cells)[iCell*numCornersCur],
 	     sizeof(int)*numCornersCur);
   } // for
   if (_flipEndian)
-    BinaryIO::swapByteOrder((char*) &(*cells)[0], 
+    BinaryIO::swapByteOrder((char*) &(*cells)[0],
 			    (*numCells)*(*numCorners), sizeof(int));
 
   *cells -= 1; // use zero base
-  
+
   info << journal::at(__HERE__)
        << "Done." << journal::endl;
 
@@ -274,10 +274,10 @@ pylith::meshio::GMVFileBinary::_readVariables(std::ifstream& fin,
 { // _readVariables
   PYLITH_METHOD_BEGIN;
 
-  journal::info_t info("gmvfile");
+  journal::info_t info("meshio");
   info << journal::at(__HERE__)
        << "Reading variables..." << journal::endl;
-  
+
   const int varNameLen = 8;
   std::string varName = BinaryIO::readString(fin, varNameLen);
   while("endvars" != varName && !fin.eof() && fin.good()) {
@@ -309,7 +309,7 @@ pylith::meshio::GMVFileBinary::_readFlags(std::ifstream& fin,
 { // _readFlags
   PYLITH_METHOD_BEGIN;
 
-  journal::info_t info("gmvfile");
+  journal::info_t info("meshio");
   info << journal::at(__HERE__)
        << "Reading flags..." << journal::endl;
 
@@ -337,7 +337,7 @@ pylith::meshio::GMVFileBinary::_readFlags(std::ifstream& fin,
     } // else
     varName = BinaryIO::readString(fin, varNameLen);
   } // while
-  
+
   info << journal::at(__HERE__)
        << "Done." << journal::endl;
 
@@ -355,7 +355,7 @@ pylith::meshio::GMVFileBinary::_readMaterials(std::ifstream& fin,
 
   assert(materialIds);
 
-  journal::info_t info("gmvfile");
+  journal::info_t info("meshio");
   info << journal::at(__HERE__)
        << "Reading materials..." << journal::endl;
 
@@ -391,4 +391,4 @@ pylith::meshio::GMVFileBinary::_readMaterials(std::ifstream& fin,
 } // _readMaterials
 
 
-// End of file 
+// End of file

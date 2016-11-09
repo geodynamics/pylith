@@ -43,7 +43,7 @@ pylith::meshio::PsetFileAscii::PsetFileAscii(const char* filename) :
 } // constructor
 
 // ----------------------------------------------------------------------
-// Default destructor 
+// Default destructor
 pylith::meshio::PsetFileAscii::~PsetFileAscii(void)
 { // destructor
 } // destructor
@@ -57,7 +57,7 @@ pylith::meshio::PsetFileAscii::read(std::vector<Pset>* groups)
 
   assert(groups);
 
-  journal::info_t info("psetfile");
+  journal::info_t info("meshio");
 
   std::ifstream fin(_filename.c_str(), std::ios::in);
   if (!(fin.is_open() && fin.good())) {
@@ -67,7 +67,7 @@ pylith::meshio::PsetFileAscii::read(std::vector<Pset>* groups)
       << "' for reading.";
     throw std::runtime_error(msg.str());
   } // if
-    
+
   info << journal::at(__HERE__)
        << "Reading ASCII Pset file '" << _filename << "'." << journal::endl;
 
@@ -94,7 +94,7 @@ pylith::meshio::PsetFileAscii::write(const std::vector<Pset>& groups)
 { // write
   PYLITH_METHOD_BEGIN;
 
-  journal::info_t info("psetfile");
+  journal::info_t info("meshio");
 
   std::ofstream fout(_filename.c_str(), std::ios::out);
   if (!(fout.is_open() && fout.good())) {
@@ -104,7 +104,7 @@ pylith::meshio::PsetFileAscii::write(const std::vector<Pset>& groups)
       << "' for writing.";
     throw std::runtime_error(msg.str());
   } // if
-    
+
   info << journal::at(__HERE__)
        << "Writing ASCII Pset file '" << _filename << "'." << journal::endl;
 
@@ -164,7 +164,7 @@ pylith::meshio::PsetFileAscii::_readPset(std::ifstream& fin,
 
   assert(group);
 
-  journal::info_t info("psetfile");
+  journal::info_t info("meshio");
 
   int size = 0;
   fin >> group->name >> group->id >> size;
@@ -191,7 +191,7 @@ pylith::meshio::PsetFileAscii::_writePset(std::ofstream& fout,
 { // _writePset
   PYLITH_METHOD_BEGIN;
 
-  journal::info_t info("psetfile");
+  journal::info_t info("meshio");
   const int size = group.points.size();
 
   info << journal::at(__HERE__)
@@ -216,4 +216,4 @@ pylith::meshio::PsetFileAscii::_writePset(std::ofstream& fout,
 } // _writePset
 
 
-// End of file 
+// End of file
