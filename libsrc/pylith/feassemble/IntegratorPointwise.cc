@@ -33,6 +33,8 @@
 #include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
+#include "journal/debug.h" // USES journal::debug_t
+
 #include <strings.h> // USES strcasecmp()
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
@@ -41,13 +43,13 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::IntegratorPointwise::IntegratorPointwise(void) :
-  _normalizer(0),
-  _logger(0),
-  _auxFields(0),
-  _auxFieldsDB(0),
-  _auxFieldsQuery(0),
-  _needNewRHSJacobian(true),
-  _needNewLHSJacobian(true)
+    _normalizer(0),
+    _logger(0),
+    _auxFields(0),
+    _auxFieldsDB(0),
+    _auxFieldsQuery(0),
+    _needNewRHSJacobian(true),
+    _needNewLHSJacobian(true)
 { // constructor
 } // constructor
 
@@ -55,24 +57,24 @@ pylith::feassemble::IntegratorPointwise::IntegratorPointwise(void) :
 // Destructor
 pylith::feassemble::IntegratorPointwise::~IntegratorPointwise(void)
 { // destructor
-  deallocate();
+    deallocate();
 } // destructor
-  
+
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::feassemble::IntegratorPointwise::deallocate(void)
 { // deallocate
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  delete _normalizer; _normalizer = 0;
-  delete _logger; _logger = 0;
-  delete _auxFields; _auxFields = 0;
-  delete _auxFieldsQuery; _auxFieldsQuery = NULL;
+    delete _normalizer; _normalizer = 0;
+    delete _logger; _logger = 0;
+    delete _auxFields; _auxFields = 0;
+    delete _auxFieldsQuery; _auxFieldsQuery = NULL;
 
-  _auxFieldsDB = 0; // :TODO: Use shared pointer.
+    _auxFieldsDB = 0; // :TODO: Use shared pointer.
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // deallocate
 
 // ----------------------------------------------------------------------
@@ -80,11 +82,11 @@ pylith::feassemble::IntegratorPointwise::deallocate(void)
 const pylith::topology::Field&
 pylith::feassemble::IntegratorPointwise::auxFields(void) const
 { // auxFields
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  assert(_auxFields);
+    assert(_auxFields);
 
-  PYLITH_METHOD_RETURN(*_auxFields);
+    PYLITH_METHOD_RETURN(*_auxFields);
 } // auxFields
 
 // ----------------------------------------------------------------------
@@ -92,11 +94,11 @@ pylith::feassemble::IntegratorPointwise::auxFields(void) const
 bool
 pylith::feassemble::IntegratorPointwise::hasAuxField(const char* name)
 { // hasAuxField
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  assert(_auxFields);
+    assert(_auxFields);
 
-  PYLITH_METHOD_RETURN(_auxFields->hasSubfield(name));
+    PYLITH_METHOD_RETURN(_auxFields->hasSubfield(name));
 } // hasAuxField
 
 
@@ -104,33 +106,41 @@ pylith::feassemble::IntegratorPointwise::hasAuxField(const char* name)
 // Get auxiliary field.
 void
 pylith::feassemble::IntegratorPointwise::getAuxField(pylith::topology::Field *field,
-						     const char* name) const
+                                                     const char* name) const
 { // getAuxField
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  assert(field);
-  assert(_auxFields);
+    journal::debug_t debug("integrator");
+    debug << journal::at(__HERE__)
+          << "IntegratorPointwise::getAuxField(field="<<field<<", name="<<name<<")" << journal::endl;
 
-  field->copySubfield(*_auxFields, name);
+    assert(field);
+    assert(_auxFields);
 
-  PYLITH_METHOD_END;
+    field->copySubfield(*_auxFields, name);
+
+    PYLITH_METHOD_END;
 } // getAuxField
 
-  
+
 // ----------------------------------------------------------------------
 // Set database for auxiliary fields.
 void
 pylith::feassemble::IntegratorPointwise::auxFieldsDB(spatialdata::spatialdb::SpatialDB* value) {
-  _auxFieldsDB = value;
+    _auxFieldsDB = value;
 }
 
 // ----------------------------------------------------------------------
 // Set discretization information for auxiliary subfield.
 void
 pylith::feassemble::IntegratorPointwise::auxFieldDiscretization(const char* name,
-								const pylith::topology::FieldBase::DiscretizeInfo& feInfo)
+                                                                const pylith::topology::FieldBase::DiscretizeInfo& feInfo)
 { // discretization
-  _auxFieldsFEInfo[name] = feInfo;
+    journal::debug_t debug("integrator");
+    debug << journal::at(__HERE__)
+          << "IntegratorPointwise::auxFieldDiscretization(name="<<name<<", feInfo="<<&feInfo<<")" << journal::endl;
+
+    _auxFieldsFEInfo[name] = feInfo;
 } // discretization
 
 
@@ -138,34 +148,34 @@ pylith::feassemble::IntegratorPointwise::auxFieldDiscretization(const char* name
 // Check whether RHS Jacobian needs to be recomputed.
 bool
 pylith::feassemble::IntegratorPointwise::needNewRHSJacobian(void) const {
-  return _needNewRHSJacobian;
+    return _needNewRHSJacobian;
 } // needNewRHSJacobian
 
 // ----------------------------------------------------------------------
 // Check whether LHS Jacobian needs to be recomputed.
 bool
 pylith::feassemble::IntegratorPointwise::needNewLHSJacobian(void) const {
-  return _needNewLHSJacobian;
+    return _needNewLHSJacobian;
 } // needNewLHSJacobian
 
 // ----------------------------------------------------------------------
 // Get discretization information for auxiliary subfield.
-const pylith::topology::FieldBase::DiscretizeInfo& 
+const pylith::topology::FieldBase::DiscretizeInfo&
 pylith::feassemble::IntegratorPointwise::auxFieldDiscretization(const char* name) const
 { // discretization
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  discretizations_type::const_iterator iter = _auxFieldsFEInfo.find(name);
-  if (iter != _auxFieldsFEInfo.end()) {
-    PYLITH_METHOD_RETURN(iter->second);
-  } else { // not found so try default
-    iter = _auxFieldsFEInfo.find("default");
-    if (iter == _auxFieldsFEInfo.end()) {
-      throw std::logic_error("Default discretization not set for auxiliary fields.");
-    } // if
-  } // if/else
+    discretizations_type::const_iterator iter = _auxFieldsFEInfo.find(name);
+    if (iter != _auxFieldsFEInfo.end()) {
+        PYLITH_METHOD_RETURN(iter->second);
+    } else { // not found so try default
+        iter = _auxFieldsFEInfo.find("default");
+        if (iter == _auxFieldsFEInfo.end()) {
+            throw std::logic_error("Default discretization not set for auxiliary fields.");
+        } // if
+    } // if/else
 
-  PYLITH_METHOD_RETURN(iter->second); // default
+    PYLITH_METHOD_RETURN(iter->second); // default
 } // discretization
 
 
@@ -174,9 +184,13 @@ pylith::feassemble::IntegratorPointwise::auxFieldDiscretization(const char* name
 void
 pylith::feassemble::IntegratorPointwise::verifyConfiguration(const pylith::topology::Mesh& mesh) const
 { // verifyConfiguration
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  PYLITH_METHOD_END;
+    journal::debug_t debug("integrator");
+    debug << journal::at(__HERE__)
+          << "IntegratorPointwise::verifyConfiguration(mesh) empty implementation." << journal::endl;
+
+    PYLITH_METHOD_END;
 } // verifyConfiguration
 
 
@@ -185,9 +199,13 @@ pylith::feassemble::IntegratorPointwise::verifyConfiguration(const pylith::topol
 void
 pylith::feassemble::IntegratorPointwise::checkConstraints(const topology::Field& solution) const
 { // checkConstraints
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  PYLITH_METHOD_END;
+    journal::debug_t debug("integrator");
+    debug << journal::at(__HERE__)
+          << "IntegratorPointwise::checkConstraints(mesh) empty implementation." << journal::endl;
+
+    PYLITH_METHOD_END;
 } // checkConstraints
 
 // ----------------------------------------------------------------------
@@ -195,10 +213,14 @@ pylith::feassemble::IntegratorPointwise::checkConstraints(const topology::Field&
 void
 pylith::feassemble::IntegratorPointwise::normalizer(const spatialdata::units::Nondimensional& dim)
 { // normalizer
-  if (0 == _normalizer)
-    _normalizer = new spatialdata::units::Nondimensional(dim);
-  else
-    *_normalizer = dim;
+    journal::debug_t debug("integrator");
+    debug << journal::at(__HERE__)
+          << "IntegratorPointwise::normalizer(dim="<<&dim<<")" << journal::endl;
+
+    if (0 == _normalizer)
+        _normalizer = new spatialdata::units::Nondimensional(dim);
+    else
+        *_normalizer = dim;
 } // normalizer
 
 
@@ -207,11 +229,15 @@ pylith::feassemble::IntegratorPointwise::normalizer(const spatialdata::units::No
 void
 pylith::feassemble::IntegratorPointwise::updateStateVars(const pylith::topology::Field& solution)
 { // updateState
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  PYLITH_METHOD_END;
+    journal::debug_t debug("integrator");
+    debug << journal::at(__HERE__)
+          << "IntegratorPointwise::updateStateVars(solution) empty implementation." << journal::endl;
+
+    PYLITH_METHOD_END;
 } // updateStateVars
 
 
 
-// End of file 
+// End of file
