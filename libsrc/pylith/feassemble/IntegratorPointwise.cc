@@ -22,23 +22,16 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/Jacobian.hh" // USES Jacobian
-#include "pylith/topology/Stratum.hh" // USES Stratum
-#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
-#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-#include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include "journal/debug.h" // USES journal::debug_t
 
-#include <strings.h> // USES strcasecmp()
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
-#include <iostream> // USES std::cerr
 
 // ----------------------------------------------------------------------
 // Constructor

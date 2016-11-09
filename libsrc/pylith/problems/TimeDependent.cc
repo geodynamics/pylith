@@ -180,9 +180,9 @@ pylith::problems::TimeDependent::initialize(pylith::topology::Field* solution)
     PYLITH_METHOD_BEGIN;
 
     journal::debug_t debug("problem");
-    journal::error_t error("problem");
     debug << journal::at(__HERE__)
           << "TimeDependent::initialize(solution="<<solution<< ")" << journal::endl;
+    journal::error_t error("problem");
 
     assert(solution);
 

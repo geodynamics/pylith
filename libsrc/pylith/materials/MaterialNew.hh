@@ -29,9 +29,7 @@
 
 #include "pylith/feassemble/IntegratorPointwise.hh" // ISA IntegratorPointwise
 
-#include "pylith/topology/FieldBase.hh" // HASA FieldBase::DiscretizeInfo
-
-#include "spatialdata/spatialdb/spatialdbfwd.hh" // forward declarations
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // HASA GravityField
 
 #include <string> // HASA std::string
 
@@ -101,6 +99,12 @@ void label(const char* value);
  * @returns Label of material
  */
 const char* label(void) const;
+
+/** Set gravity field.
+ *
+ * @param g Gravity field.
+ */
+void gravityField(spatialdata::spatialdb::GravityField* const gravityField);
 
 /** Initialize material. Setup auxiliary fields.
  *
@@ -310,6 +314,7 @@ private:
 const int _dimension;   ///< Spatial dimension of material.
 int _id;   ///< Material identifier.
 std::string _label;   ///< Label of material.
+spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
 
 // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:

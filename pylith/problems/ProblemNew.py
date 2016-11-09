@@ -25,6 +25,7 @@
 from pylith.utils.PetscComponent import PetscComponent
 from pylith.utils.NullComponent import NullComponent
 from problems import Problem as ModuleProblem
+from pylith.meshio.OutputSoln import OutputSoln
 
 # ITEM FACTORIES ///////////////////////////////////////////////////////
 
@@ -53,6 +54,14 @@ def faultFactory(name):
   from pyre.inventory import facility
   from pylith.faults.FaultCohesiveKin import FaultCohesiveKin
   return facility(name, family="fault", factory=FaultCohesiveKin)
+
+
+def outputFactory(name):
+  """
+  Factory for output items.
+  """
+  from pyre.inventory import facility
+  return facility(name, family="output_manager", factory=OutputSoln)
 
 
 # ProblemNew class
@@ -111,8 +120,11 @@ class ProblemNew(PetscComponent, ModuleProblem):
     bc.meta['tip'] = "Boundary conditions."
 
     interfaces = pyre.inventory.facilityArray("interfaces", itemFactory=faultFactory, factory=EmptyBin)
-    interfaces.meta['tip'] = "Interior surfaces with constraints or " \
-                             "constitutive models."
+    interfaces.meta['tip'] = "Interior surfaces with constraints or constitutive models."
+
+    from pylith.meshio.SingleOutput import SingleOutput
+    output = pyre.inventory.facilityArray("solution_output", itemFactory=outputFactory, factory=SingleOutput)
+    output.meta['tip'] = "Output managers for solution."
 
     gravityField = pyre.inventory.facility("gravity_field", family="spatial_database", factory=NullComponent)
     gravityField.meta['tip'] = "Database used for gravity field."
@@ -132,11 +144,13 @@ class ProblemNew(PetscComponent, ModuleProblem):
 
   def preinitialize(self, mesh):
     """
-    Setup integrators for each element family (material/quadrature,
-    bc/quadrature, etc.).
+    Do minimal initialization.
     """
+    # Do minimal setup of solution.
+    self.solution.preinitialize(mesh, self.normalizer)
 
-    solution.preinitialize(mesh, self.normalizer)
+    # Setup integrators and constraints.
+    self._setIntegratorsConstraints()
     return
 
 
@@ -148,56 +162,21 @@ class ProblemNew(PetscComponent, ModuleProblem):
     comm = mpi_comm_world()
     if 0 == comm.rank:
       self._info.log("Verifying compatibility of problem configuration.")
-    if self.dimension != self.mesh().dimension():
-      raise ValueError, \
-            "Spatial dimension of problem is '%d' but mesh contains cells " \
-            "for spatial dimension '%d'." % \
-            (self.dimension, self.mesh().dimension())
 
-    if self.dimension != self.mesh().coordsys().spaceDim():
-      raise ValueError, \
-            "Spatial dimension of problem is '%d' but mesh coordinate system " \
-            "is  for spatial dimension '%d'." % \
-            (self.dimension, self.mesh().coordsys().spaceDim())
-
-    # Check to make sure ids of materials and interfaces are unique
-    materialIds = {}
-    for material in self.materials.components():
-      if material.quadrature.spaceDim() != self.dimension:
-        raise ValueError, \
-              "Spatial dimension of problem is '%d' but quadrature " \
-              "for material '%s' is for spatial dimension '%d'." % \
-              (self.dimension, material.label(), material.quadrature.spaceDim())
-      if material.id() in materialIds.keys():
-        raise ValueError, \
-            "ID values for materials '%s' and '%s' are both '%d'. " \
-            "Material id values must be unique." % \
-            (material.label(), materialIds[material.id()], material.id())
-      materialIds[material.id()] = material.label()
-
-    for interface in self.interfaces.components():
-      if interface.id() in materialIds.keys():
-        raise ValueError, \
-            "ID values for material '%s' and interface '%s' are both '%d'. " \
-            "Material and interface id values must be unique." % \
-            (materialIds[interface.id()], interface.label(), interface.id())
-      materialIds[interface.id()] = interface.label()
-
-    # Check to make sure material-id for each cell matches the id of a material
-    import numpy
-    idValues = numpy.array(materialIds.keys(), dtype=numpy.int32)
-    self.mesh().checkMaterialIds(idValues)
-
+    ModuleProblem.verifyConfiguration(self)
     return
 
 
   def initialize(self):
     """
-    Initialize integrators for each element family (material/quadrature,
-    bc/quadrature, etc.).
+    Initialize integrators and constraints.
     """
-    solution.initialize(self.constraints, self.integrators)
-    ModuleProblem.solution(self, solution)
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+    if 0 == comm.rank:
+      self._info.log("Initializing problem.")
+
+    ModuleProblem.initialize(self)
     return
 
 
@@ -249,7 +228,36 @@ class ProblemNew(PetscComponent, ModuleProblem):
       self.gravityField = None
     else:
       self.gravityField = self.inventory.gravityField
+
+    ModuleProblem.solverType(self, self.solverType)
     return
+
+
+  def _setIntegratorsConstraints(self):
+      integrators = []
+      constraints = []
+
+      for material in self.materials.compoments():
+          if not implementsIntegrator(material):
+              raise TypeError("Material '%s' fails integrator implementation test." % material.name)
+          integrators.append(material)
+
+      for interface in self.interfaces.components():
+          if not implementsIntegrator(interface):
+              raise TypeError("Interface '%s' fails integrator implementation test." % interface.name)
+          integrators.append(interface)
+
+      for bc in self.bc.components():
+          if implementsIntegrator(bc):
+              integrators.append(bc)
+          elif implementsConstraint(bc):
+              integrators.append(bc)
+          else:
+              raise TypeError("Unable to classsify bc '%s' into an in integrator or constraint." % bc)
+
+      ModuleProblem.integrators(self, integrators)
+      ModuleProblem.constraints(self, constraints)
+      return
 
 
   def _initializeSolution(self):
@@ -257,10 +265,6 @@ class ProblemNew(PetscComponent, ModuleProblem):
     Initialize solution field.
     """
 
-    return
-
-
-  def _initializeJacobian(self):
     return
 
 

@@ -120,6 +120,65 @@ pylith::problems::Problem::constraints(pylith::feassemble::Constraint* constrain
 } // constraints
 
 // ----------------------------------------------------------------------
+// Do minimal initialization.
+void
+pylith::problems::Problem::preinitialize(const pylith::topology::Mesh& mesh)
+{ // preinitialize
+  // :TODO: Convert from Python.
+  /*
+     if self.dimension != self.mesh().dimension():
+     raise ValueError, \
+          "Spatial dimension of problem is '%d' but mesh contains cells for spatial dimension '%d'." %
+          (self.dimension, self.mesh().dimension())
+
+     if self.dimension != self.mesh().coordsys().spaceDim():
+     raise ValueError, \
+          "Spatial dimension of problem is '%d' but mesh coordinate system is for spatial dimension '%d'." % \
+          (self.dimension, self.mesh().coordsys().spaceDim())
+
+   # Check to make sure ids of materials and interfaces are unique
+     materialIds = {}
+     for material in self.materials.components():
+     if material.id() in materialIds.keys():
+      raise ValueError, \
+          "ID values for materials '%s' and '%s' are both '%d'. " \
+          "Material id values must be unique." % \
+          (material.label(), materialIds[material.id()], material.id())
+     materialIds[material.id()] = material.label()
+
+     for interface in self.interfaces.components():
+     if interface.id() in materialIds.keys():
+      raise ValueError, \
+          "ID values for material '%s' and interface '%s' are both '%d'. " \
+          "Material and interface id values must be unique." % \
+          (materialIds[interface.id()], interface.label(), interface.id())
+     materialIds[interface.id()] = interface.label()
+
+   # Check to make sure material-id for each cell matches the id of a material
+     import numpy
+     idValues = numpy.array(materialIds.keys(), dtype=numpy.int32)
+     self.mesh().checkMaterialIds(idValues)
+
+   # Check to make sure materials are compatible with solution.
+     for material in self.materials.components():
+      material.verifyConfiguration(self.solution)
+
+     for interface in self.interfaces.components():
+      interface.verifyConfiguration(self.solution)
+
+     for bc in self.bc.components():
+      bc.verifyConfiguration(self.solution)
+   */
+} // preinitialize
+
+// ----------------------------------------------------------------------
+// Verify configuration.
+void
+pylith::problems::Problem::verifyConfiguration(void)
+{ // verifyConfiguration
+} // verifyConfiguration
+
+// ----------------------------------------------------------------------
 // Initialize.
 void
 pylith::problems::Problem::initialize(void)
