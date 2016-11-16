@@ -16,126 +16,118 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/materials/MaterialNew.py
+# @file pylith/materials/MaterialNew.py
 ##
-## @brief Python abstract base class for managing physical properties
-## and state variables of a material.
+# @brief Python abstract base class for managing physical properties
+# and state variables of a material.
 ##
-## Factory: material
+# Factory: material
 
 from pylith.feassemble.IntegratorPointwise import IntegratorPointwise
 
 # Validator for label
+
+
 def validateLabel(value):
-  """
-  Validate descriptive label.
-  """
-  if 0 == len(value):
-    raise ValueError("Descriptive label for material not specified.")
-  return value
+    """
+    Validate descriptive label.
+    """
+    if 0 == len(value):
+        raise ValueError("Descriptive label for material not specified.")
+    return value
 
 
 # MaterialNew class
 class MaterialNew(IntegratorPointwise):
-  """
-  Python material property manager.
-
-  Factory: material
-  """
-
-  # INVENTORY //////////////////////////////////////////////////////////
-
-  class Inventory(IntegratorPointwise.Inventory):
     """
-    Python object for managing MaterialNew facilities and properties.
+    Python material property manager.
+
+    Factory: material
     """
 
-    ## @class Inventory
-    ## Python object for managing Material facilities and properties.
-    ##
-    ## \b Properties
-    ## @li \b id Material identifier (from mesh generator)
-    ## @li \b label Descriptive label for material.
-    ##
-    ## \b Facilities
-    ## @li None
+    # INVENTORY //////////////////////////////////////////////////////////
 
-    import pyre.inventory
+    class Inventory(IntegratorPointwise.Inventory):
+        """
+        Python object for managing MaterialNew facilities and properties.
+        """
 
-    id = pyre.inventory.int("id", default=0)
-    id.meta['tip'] = "Material identifier (from mesh generator)."
+        # @class Inventory
+        # Python object for managing Material facilities and properties.
+        ##
+        # \b Properties
+        # @li \b id Material identifier (from mesh generator)
+        # @li \b label Descriptive label for material.
+        ##
+        # \b Facilities
+        # @li None
 
-    label = pyre.inventory.str("label", default="", validator=validateLabel)
-    label.meta['tip'] = "Descriptive label for material."
+        import pyre.inventory
 
-    from pylith.meshio.OutputMatElastic import OutputMatElastic
-    output = pyre.inventory.facility("output", family="output_manager", factory=OutputMatElastic)
-    output.meta['tip'] = "Output manager for elastic material information."
+        id = pyre.inventory.int("id", default=0)
+        id.meta['tip'] = "Material identifier (from mesh generator)."
 
-  # PUBLIC METHODS /////////////////////////////////////////////////////
+        label = pyre.inventory.str("label", default="", validator=validateLabel)
+        label.meta['tip'] = "Descriptive label for material."
 
-  def __init__(self, name="material"):
-    """
-    Constructor.
-    """
-    IntegratorPointwise.__init__(self, name)
-    self.output = None
-    return
+        from pylith.meshio.OutputMatElastic import OutputMatElastic
+        output = pyre.inventory.facility("output", family="output_manager", factory=OutputMatElastic)
+        output.meta['tip'] = "Output manager for elastic material information."
 
+    # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def finalize(self):
-    """
-    Cleanup.
-    """
-    if not self.output is None:
-      self.output.finalize()
-    return
+    def __init__(self, name="material"):
+        """
+        Constructor.
+        """
+        IntegratorPointwise.__init__(self, name)
+        self.output = None
+        return
 
+    def finalize(self):
+        """
+        Cleanup.
+        """
+        if not self.output is None:
+            self.output.finalize()
+        return
 
-  def getDataMesh(self):
-    """
-    Get mesh associated with data fields.
-    """
-    return (self.mesh(), "material-id", self.id())
+    # PRIVATE METHODS ////////////////////////////////////////////////////
 
+    def _configure(self):
+        """
+        Setup members using inventory.
+        """
+        try:
+            IntegratorPointwise._configure(self)
+            self.id(self.inventory.id)
+            self.label(self.inventory.label)
 
-  # PRIVATE METHODS ////////////////////////////////////////////////////
+        except ValueError, err:
+            aliases = ", ".join(self.aliases)
+            raise ValueError("Error while configuring material "
+                             "(%s):\n%s" % (aliases, err.message))
+        return
 
-  def _configure(self):
-    """
-    Setup members using inventory.
-    """
-    try:
-      IntegratorPointwise._configure(self)
-      self.id(self.inventory.id)
-      self.label(self.inventory.label)
+    def _setupLogging(self):
+        """
+        Setup event logging.
+        """
+        if None == self._loggingPrefix:
+            self._loggingPrefix = ""
 
-    except ValueError, err:
-      aliases = ", ".join(self.aliases)
-      raise ValueError("Error while configuring material "
-                       "(%s):\n%s" % (aliases, err.message))
-    return
+        from pylith.utils.EventLogger import EventLogger
+        logger = EventLogger()
+        logger.className("FE Material")
+        logger.initialize()
 
+        events = ["verify",
+                  "init"]
+        for event in events:
+            logger.registerEvent("%s%s" % (self._loggingPrefix, event))
 
-  def _setupLogging(self):
-    """
-    Setup event logging.
-    """
-    if None == self._loggingPrefix:
-      self._loggingPrefix = ""
-
-    from pylith.utils.EventLogger import EventLogger
-    logger = EventLogger()
-    logger.className("FE Material")
-    logger.initialize()
-
-    events = ["verify",
-              "init"]
-    for event in events:
-      logger.registerEvent("%s%s" % (self._loggingPrefix, event))
-
-    self._eventLogger = logger
-    return
+        self._eventLogger = logger
+        return
 
 
 # End of file

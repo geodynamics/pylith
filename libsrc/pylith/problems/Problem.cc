@@ -24,7 +24,9 @@
 #include "pylith/topology/Field.hh" // USES Field
 
 #include "pylith/feassemble/IntegratorPointwise.hh" // USES IntegratorPointwise
+//#include "pylith/feassemble/ConstraintPointwise.hh" // USES ConstraintPointwise
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
+#include "pylith/topology/MeshOps.hh" // USES MeshOps
 
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 
@@ -39,6 +41,7 @@ pylith::problems::Problem::Problem(void) :
     _jacobianLHSLumpedInv(0),
     _integrators(0),
     _constraints(0),
+    _outputs(0),
     _solverType(LINEAR)
 { // constructor
 } // constructor
@@ -89,6 +92,8 @@ void
 pylith::problems::Problem::integrators(pylith::feassemble::IntegratorPointwise* integratorArray[],
                                        const int numIntegrators)
 { // integrators
+    PYLITH_METHOD_BEGIN;
+
     journal::debug_t debug("problem");
     debug << journal::at(__HERE__)
           << "Problem::integrators("<<integratorArray<<", numIntegrators="<<numIntegrators<<")" << journal::endl;
@@ -99,6 +104,8 @@ pylith::problems::Problem::integrators(pylith::feassemble::IntegratorPointwise* 
     for (int i=0; i < numIntegrators; ++i) {
         _integrators[i] = integratorArray[i];
     } // for
+
+    PYLITH_METHOD_END;
 } // integrators
 
 // ----------------------------------------------------------------------
@@ -107,6 +114,8 @@ void
 pylith::problems::Problem::constraints(pylith::feassemble::Constraint* constraintArray[],
                                        const int numConstraints)
 { // constraints
+    PYLITH_METHOD_BEGIN;
+
     journal::debug_t debug("problem");
     debug << journal::at(__HERE__)
           << "Problem::constraints("<<constraintArray<<", numConstraints="<<numConstraints<<")" << journal::endl;
@@ -117,72 +126,83 @@ pylith::problems::Problem::constraints(pylith::feassemble::Constraint* constrain
     for (int i=0; i < numConstraints; ++i) {
         _constraints[i] = constraintArray[i];
     } // for
+
+    PYLITH_METHOD_END;
 } // constraints
+
+// ----------------------------------------------------------------------
+// Set constraints over the mesh.
+void
+pylith::problems::Problem::outputs(pylith::meshio::OutputManager* outputArray[],
+                                   const int numOutputs)
+{ // outputs
+    PYLITH_METHOD_BEGIN;
+
+    journal::debug_t debug("problem");
+    debug << journal::at(__HERE__)
+          << "Problem::output("<<outputArray<<", numOutputs="<<numOutputs<<")" << journal::endl;
+
+    assert( (!outputArray && 0 == numOutputs) || (outputArray && 0 < numOutputs) );
+
+    _outputs.resize(numOutputs);
+    for (int i=0; i < numOutputs; ++i) {
+        _outputs[i] = outputArray[i];
+    } // for
+
+    PYLITH_METHOD_END;
+} // outputs
+
 
 // ----------------------------------------------------------------------
 // Do minimal initialization.
 void
 pylith::problems::Problem::preinitialize(const pylith::topology::Mesh& mesh)
 { // preinitialize
-  // :TODO: Convert from Python.
-  /*
-     if self.dimension != self.mesh().dimension():
-     raise ValueError, \
-          "Spatial dimension of problem is '%d' but mesh contains cells for spatial dimension '%d'." %
-          (self.dimension, self.mesh().dimension())
+    PYLITH_METHOD_BEGIN;
 
-     if self.dimension != self.mesh().coordsys().spaceDim():
-     raise ValueError, \
-          "Spatial dimension of problem is '%d' but mesh coordinate system is for spatial dimension '%d'." % \
-          (self.dimension, self.mesh().coordsys().spaceDim())
-
-   # Check to make sure ids of materials and interfaces are unique
-     materialIds = {}
-     for material in self.materials.components():
-     if material.id() in materialIds.keys():
-      raise ValueError, \
-          "ID values for materials '%s' and '%s' are both '%d'. " \
-          "Material id values must be unique." % \
-          (material.label(), materialIds[material.id()], material.id())
-     materialIds[material.id()] = material.label()
-
-     for interface in self.interfaces.components():
-     if interface.id() in materialIds.keys():
-      raise ValueError, \
-          "ID values for material '%s' and interface '%s' are both '%d'. " \
-          "Material and interface id values must be unique." % \
-          (materialIds[interface.id()], interface.label(), interface.id())
-     materialIds[interface.id()] = interface.label()
-
-   # Check to make sure material-id for each cell matches the id of a material
-     import numpy
-     idValues = numpy.array(materialIds.keys(), dtype=numpy.int32)
-     self.mesh().checkMaterialIds(idValues)
-
-   # Check to make sure materials are compatible with solution.
-     for material in self.materials.components():
-      material.verifyConfiguration(self.solution)
-
-     for interface in self.interfaces.components():
-      interface.verifyConfiguration(self.solution)
-
-     for bc in self.bc.components():
-      bc.verifyConfiguration(self.solution)
-   */
+    PYLITH_METHOD_END;
 } // preinitialize
 
 // ----------------------------------------------------------------------
 // Verify configuration.
 void
-pylith::problems::Problem::verifyConfiguration(void)
+pylith::problems::Problem::verifyConfiguration(int* const materialIds,
+                                               const int numMaterials)
 { // verifyConfiguration
-} // verifyConfiguration
+    PYLITH_METHOD_BEGIN;
+
+    journal::debug_t debug("problem");
+    debug << journal::at(__HERE__)
+          << "Problem::verifyConfiguration(materialIds="<<materialIds<<", numMaterials="<<numMaterials<<")" << journal::endl;
+
+    // Check to make sure material-id for each cell matches the id of a material.
+    pylith::topology::MeshOps::checkMaterialIds(_solution->mesh(), materialIds, numMaterials);
+
+    // Check to make sure integrators are compatible with the solution.
+    const size_t numIntegrators = _integrators.size();
+    for (size_t i=0; i < numIntegrators; ++i) {
+        _integrators[i]->verifyConfiguration(*_solution);
+    }
+
+/* // :TODO: Implement this.
+    // Check to make sure constraints are compatible with the solution.
+    const size_t numConstraints = _constraints.size();
+    for (size_t i=0; i < numConstraints; ++i) {
+        _constraints[i]->verifyConfiguration(*_solution);
+    }
+ */
+
+    PYLITH_METHOD_END;
+}  // verifyConfiguration
 
 // ----------------------------------------------------------------------
 // Initialize.
 void
 pylith::problems::Problem::initialize(void)
 { // initialize
+    PYLITH_METHOD_BEGIN;
+
+    PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------

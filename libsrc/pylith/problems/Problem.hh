@@ -28,8 +28,9 @@
 // Include directives ---------------------------------------------------
 #include "problemsfwd.hh" // forward declarations
 
-#include "pylith/feassemble/feassemblefwd.hh" // USES Integrator
+#include "pylith/feassemble/feassemblefwd.hh" // HASA Integrator, Constraint
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
+#include "pylith/meshio/meshiofwd.hh" // HASA OutputManager
 
 #include "pylith/utils/petscfwd.h" // USES PetscVec, PetscMat
 
@@ -99,6 +100,14 @@ void integrators(pylith::feassemble::IntegratorPointwise* integratorArray[],
 void constraints(pylith::feassemble::Constraint* constraintArray[],
                  const int numConstraints);
 
+/** Set handles to solution outputs.
+ *
+ * @param[in] outputArray Array of solution outputs.
+ * @param[in] numOutputs Number of solution outputs.
+ */
+void outputs(pylith::meshio::OutputManager* outputArray[],
+             const int numOutputs);
+
 /** Do minimal initialization.
  *
  * @param mesh Finite-element mesh.
@@ -108,9 +117,13 @@ void preinitialize(const pylith::topology::Mesh& mesh);
 
 /** Verify configuration.
  *
+ * @param[in] materialIds Array of material ids.
+ * @param[in] numMaterials Size of array (number of materials).
+ *
  */
 virtual
-void verifyConfiguration(void);
+void verifyConfiguration(int* const materialIds,
+                         const int numMaterials);
 
 /** Initialize.
  *
@@ -194,6 +207,7 @@ pylith::topology::Field* _jacobianLHSLumpedInv;   ///< Handle to inverse lumped 
 
 std::vector<pylith::feassemble::IntegratorPointwise*> _integrators;   ///< Array of integrators.
 std::vector<pylith::feassemble::Constraint*> _constraints;   ///< Array of constraints.
+std::vector<pylith::meshio::OutputManager*> _outputs; ///< Array of solution output managers.
 SolverTypeEnum _solverType;   ///< Problem (solver) type.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////

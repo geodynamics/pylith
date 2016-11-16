@@ -16,181 +16,155 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/problems/TimeDependentNew.py
+# @file pylith/problems/TimeDependentNew.py
 ##
-## @brief Python class for time dependent crustal
-## dynamics problems.
+# @brief Python class for time dependent crustal
+# dynamics problems.
 ##
-## Factory: problem.
+# Factory: problem.
 
 from ProblemNew import ProblemNew
 from problems import TimeDependent as ModuleTimeDependent
 
 # TimeDependentNew class
+
+
 class TimeDependentNew(ProblemNew, ModuleTimeDependent):
-  """
-  Python class for time dependent crustal dynamics problems.
-
-  Factory: problem.
-  """
-
-  # INVENTORY //////////////////////////////////////////////////////////
-
-  class Inventory(ProblemNew.Inventory):
     """
-    Python object for managing TimeDependentNew facilities and properties.
+    Python class for time dependent crustal dynamics problems.
+
+    Factory: problem.
     """
 
-    ## @class Inventory
-    ## Python object for managing TimeDependentNew facilities and properties.
-    ##
-    ## \b Properties
-    ## @li None
-    ##
-    ## \b Facilities
-    ## @li \b initializer Problem initializer.
-    ## @li \b progress_monitor Simple progress monitor via text file.
-    ## @li \b checkpoint Checkpoint manager.
+    # INVENTORY //////////////////////////////////////////////////////////
 
-    import pyre.inventory
-    from pyre.units.time import year
+    class Inventory(ProblemNew.Inventory):
+        """
+        Python object for managing TimeDependentNew facilities and properties.
+        """
 
-    dtInitial = pyre.inventory.dimensional("initial_dt", default=1.0*year, validator=pyre.inventory.greater(0.0*year))
-    dtInitial.meta['tip'] = "Initial time step."
+        # @class Inventory
+        # Python object for managing TimeDependentNew facilities and properties.
+        ##
+        # \b Properties
+        # @li \b initial_dt Initial time step.
+        # @li \b start_time Start time for problem.
+        # @li \b total_time Time duration of problem.
+        # @li \b max_timesteps Maximum number of time steps.
+        ##
+        # \b Facilities
+        # @li \b initializer Problem initializer.
+        # @li \b progress_monitor Simple progress monitor via text file.
 
-    startTime = pyre.inventory.dimensional("start_time", default=0.0*year)
-    startTime.meta['tip'] = "Start time for problem."
+        import pyre.inventory
+        from pyre.units.time import year
 
-    totalTime = pyre.inventory.dimensional("total_time", default=0.0*year, validator=pyre.inventory.greaterEqual(0.0*year))
-    totalTime.meta['tip'] = "Time duration of problem."
+        dtInitial = pyre.inventory.dimensional("initial_dt", default=1.0 * year, validator=pyre.inventory.greater(0.0 * year))
+        dtInitial.meta['tip'] = "Initial time step."
 
-    from ProgressMonitorTime import ProgressMonitorTime
-    progressMonitor = pyre.inventory.facility("progress_monitor", family="progress_monitor", factory=ProgressMonitorTime)
-    progressMonitor.meta['tip'] = "Simple progress monitor via text file."
+        startTime = pyre.inventory.dimensional("start_time", default=0.0 * year)
+        startTime.meta['tip'] = "Start time for problem."
 
-    from pylith.utils.CheckpointTimer import CheckpointTimer
-    checkpointTimer = pyre.inventory.facility("checkpoint", family="checkpointer", factory=CheckpointTimer)
-    checkpointTimer.meta['tip'] = "Checkpoint manager."
+        totalTime = pyre.inventory.dimensional("total_time", default=0.0 * year, validator=pyre.inventory.greaterEqual(0.0 * year))
+        totalTime.meta['tip'] = "Time duration of problem."
 
+        maxTimeSteps = pyre.inventory.int("max_timesteps", default=20000, validator=pyre.inventory.greater(0))
+        maxTimeSteps.meta['tip'] = "Maximum number of time steps."
 
-  # PUBLIC METHODS /////////////////////////////////////////////////////
+        from ProgressMonitorTime import ProgressMonitorTime
+        progressMonitor = pyre.inventory.facility("progress_monitor", family="progress_monitor", factory=ProgressMonitorTime)
+        progressMonitor.meta['tip'] = "Simple progress monitor via text file."
 
-  def __init__(self, name="timedependent"):
-    """
-    Constructor.
-    """
-    ProblemNew.__init__(self, name)
-    ModuleTimeDependent.__init__(self)
-    self._loggingPrefix = "PrTD "
-    return
+    # PUBLIC METHODS /////////////////////////////////////////////////////
 
+    def __init__(self, name="timedependent"):
+        """
+        Constructor.
+        """
+        ProblemNew.__init__(self, name)
+        ModuleTimeDependent.__init__(self)
+        self._loggingPrefix = "PrTD "
+        return
 
-  def preinitialize(self, mesh):
-    """
-    Setup integrators for each element family (material/quadrature,
-    bc/quadrature, etc.).
-    """
-    self._setupLogging()
-    from pylith.mpi.Communicator import mpi_comm_world
-    comm = mpi_comm_world()
+    def preinitialize(self, mesh):
+        """
+        Setup integrators for each element family (material/quadrature,
+        bc/quadrature, etc.).
+        """
+        self._setupLogging()
+        from pylith.mpi.Communicator import mpi_comm_world
+        comm = mpi_comm_world()
 
-    if 0 == comm.rank:
-      self._info.log("Pre-initializing problem.")
-    import weakref
-    self.mesh = weakref.ref(mesh)
-    ProblemNew.preinitialize(self, mesh)
-    return
+        if 0 == comm.rank:
+            self._info.log("Pre-initializing problem.")
+        import weakref
+        self.mesh = weakref.ref(mesh)
+        ProblemNew.preinitialize(self, mesh)
+        return
 
+    def verifyConfiguration(self):
+        """
+        Verify compatibility of configuration.
+        """
+        ProblemNew.verifyConfiguration(self)
+        return
 
-  def verifyConfiguration(self):
-    """
-    Verify compatibility of configuration.
-    """
-    ProblemNew.verifyConfiguration(self)
-    return
+    def initialize(self):
+        """
+        Setup integrators for each element family (material/quadrature,
+        bc/quadrature, etc.).
+        """
+        from pylith.mpi.Communicator import mpi_comm_world
+        comm = mpi_comm_world()
 
+        if 0 == comm.rank:
+            self._info.log("Initializing problem.")
+        ProblemNew.initialize(self)
+        return
 
-  def initialize(self):
-    """
-    Setup integrators for each element family (material/quadrature,
-    bc/quadrature, etc.).
-    """
-    from pylith.mpi.Communicator import mpi_comm_world
-    comm = mpi_comm_world()
+    def run(self, app):
+        """
+        Solve time dependent problem.
+        """
+        from pylith.mpi.Communicator import mpi_comm_world
+        comm = mpi_comm_world()
 
-    if 0 == comm.rank:
-      self._info.log("Initializing problem.")
-    self.checkpointTimer.initialize(self.normalizer)
-    ProblemNew.initialize(self)
-    return
+        if 0 == comm.rank:
+            self._info.log("Solving problem.")
+        self.checkpointTimer.toplevel = app  # Set handle for saving state
 
+        ModuleTimeDependent.create(self)
+        ModuleTimeDependent.initialize()
+        ModuleTimeDependent.solve()
+        return
 
-  def run(self, app):
-    """
-    Solve time dependent problem.
-    """
-    from pylith.mpi.Communicator import mpi_comm_world
-    comm = mpi_comm_world()
+    def finalize(self):
+        """
+        Cleanup after running problem.
+        """
+        return
 
-    if 0 == comm.rank:
-      self._info.log("Solving problem.")
-    self.checkpointTimer.toplevel = app # Set handle for saving state
+    # PRIVATE METHODS ////////////////////////////////////////////////////
 
-    # Pre-problem initialization
-    if self.initializer:
-      if 0 == comm.rank:
-        self._info.log("")
-      self._eventLogger.stagePush("Initialize")
-
-    ModuleTimeDependent.create(self)
-    ModuleTimeDependent.initialize()
-    ModuleTimeDependent.solve()
-    return
-
-
-  def finalize(self):
-    """
-    Cleanup after running problem.
-    """
-    self.formulation.finalize()
-    return
-
-
-  def checkpoint(self):
-    """
-    Save problem state for restart.
-    """
-    ProblemNew.checkpoint()
-
-    # Save state of this object
-    raise NotImplementedError, "TimeDependentNew::checkpoint() not implemented."
-
-    # Save state of children
-    self.formulation.checkpoint()
-    return
-
-
-  # PRIVATE METHODS ////////////////////////////////////////////////////
-
-  def _configure(self):
-    """
-    Set members based using inventory.
-    """
-    ProblemNew._configure(self)
-    ModuleTimeDependent.solverType(self, self.solverType)
-    ModuleTimeDependent.startTime(self, self.inventory.startTime.value)
-    ModuleTimeDependent.dtInitial(self, self.inventory.dtInitial.value)
-    ModuleTimeDependent.totalTime(self, self.inventory.totalTime.value)
-    return
+    def _configure(self):
+        """
+        Set members based using inventory.
+        """
+        ProblemNew._configure(self)
+        ModuleTimeDependent.startTime(self, self.inventory.startTime.value)
+        ModuleTimeDependent.dtInitial(self, self.inventory.dtInitial.value)
+        ModuleTimeDependent.totalTime(self, self.inventory.totalTime.value)
+        ModuleTimeDependent.maxTimeSteps(self, self.inventory.maxTimeSteps)
+        return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def problem():
-  """
-  Factory associated with TimeDependentNew.
-  """
-  return TimeDependentNew()
+    """
+    Factory associated with TimeDependentNew.
+    """
+    return TimeDependentNew()
 
 
 # End of file

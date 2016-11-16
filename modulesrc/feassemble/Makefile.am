@@ -45,7 +45,8 @@ swig_sources = \
 	ElasticityExplicitTet4.i \
 	IntegratorElasticityLgDeform.i \
 	ElasticityImplicitLgDeform.i \
-	ElasticityExplicitLgDeform.i
+	ElasticityExplicitLgDeform.i \
+	IntegratorPointwise.i
 
 swig_generated = \
 	feassemble_wrap.cxx \
@@ -76,4 +77,4 @@ MAINTAINERCLEANFILES = \
 	$(srcdir)/feassemble.py
 
 
-# End of file 
+# End of file

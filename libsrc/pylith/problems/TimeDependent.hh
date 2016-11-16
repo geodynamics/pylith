@@ -106,11 +106,8 @@ void dtInitial(const double value);
  */
 double dtInitial(void) const;
 
-/** Initialize.
- *
- * @param[in] solution Solution field.
- */
-void initialize(pylith::topology::Field* solution);
+/// Initialize.
+void initialize(void);
 
 /** Solve time dependent problem.
  */

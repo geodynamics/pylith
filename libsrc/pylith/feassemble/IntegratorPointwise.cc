@@ -175,31 +175,17 @@ pylith::feassemble::IntegratorPointwise::auxFieldDiscretization(const char* name
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
-pylith::feassemble::IntegratorPointwise::verifyConfiguration(const pylith::topology::Mesh& mesh) const
+pylith::feassemble::IntegratorPointwise::verifyConfiguration(const pylith::topology::Field& solution) const
 { // verifyConfiguration
     PYLITH_METHOD_BEGIN;
 
     journal::debug_t debug("integrator");
     debug << journal::at(__HERE__)
-          << "IntegratorPointwise::verifyConfiguration(mesh) empty implementation." << journal::endl;
+          << "IntegratorPointwise::verifyConfiguration(solution="<<solution.label()<<") empty implementation." << journal::endl;
 
     PYLITH_METHOD_END;
 } // verifyConfiguration
 
-
-// ----------------------------------------------------------------------
-// Verify constraints are acceptable.
-void
-pylith::feassemble::IntegratorPointwise::checkConstraints(const topology::Field& solution) const
-{ // checkConstraints
-    PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug("integrator");
-    debug << journal::at(__HERE__)
-          << "IntegratorPointwise::checkConstraints(mesh) empty implementation." << journal::endl;
-
-    PYLITH_METHOD_END;
-} // checkConstraints
 
 // ----------------------------------------------------------------------
 // Set manager of scales used to nondimensionalize problem.

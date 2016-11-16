@@ -60,7 +60,7 @@ bool hasAuxField(const char* name);
  * @param[in] field Field over material.
  * @param[in] name Name of field to retrieve.
  */
-  void getAuxField(pylith::topology::Field *field,
+void getAuxField(pylith::topology::Field *field,
                  const char* name) const;
 
 /** Set spatial database for auxiliary fields.
@@ -107,17 +107,10 @@ void normalizer(const spatialdata::units::Nondimensional& dim);
 
 /** Verify configuration is acceptable.
  *
- * @param[in] mesh Finite-element mesh
+ * @param[in] solution Solution field.
  */
 virtual
-void verifyConfiguration(const pylith::topology::Mesh& mesh) const;
-
-/** Verify constraints are acceptable.
- *
- * @param field Solution field.
- */
-virtual
-void checkConstraints(const pylith::topology::Field& solution) const;
+void verifyConfiguration(const pylith::topology::Field& solution) const;
 
 /** Initialize integrator.
  *

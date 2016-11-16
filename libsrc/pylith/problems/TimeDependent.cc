@@ -175,21 +175,21 @@ pylith::problems::TimeDependent::dtInitial(void) const
 // ----------------------------------------------------------------------
 // Initialize.
 void
-pylith::problems::TimeDependent::initialize(pylith::topology::Field* solution)
+pylith::problems::TimeDependent::initialize(void)
 { // initialize
     PYLITH_METHOD_BEGIN;
 
+    Problem::initialize();
+
     journal::debug_t debug("problem");
     debug << journal::at(__HERE__)
-          << "TimeDependent::initialize(solution="<<solution<< ")" << journal::endl;
+          << "TimeDependent::initialize()" << journal::endl;
     journal::error_t error("problem");
 
-    assert(solution);
-
-    _solution = solution;
+    assert(_solution);
 
     PetscErrorCode err = TSDestroy(&_ts); PYLITH_CHECK_ERROR(err); assert(!_ts);
-    const pylith::topology::Mesh& mesh = solution->mesh();
+    const pylith::topology::Mesh& mesh = _solution->mesh();
     err = TSCreate(mesh.comm(), &_ts); PYLITH_CHECK_ERROR(err); assert(_ts);
     err = TSSetFromOptions(_ts); PYLITH_CHECK_ERROR(err);
 

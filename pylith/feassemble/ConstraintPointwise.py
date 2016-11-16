@@ -16,36 +16,14 @@
 # ----------------------------------------------------------------------
 #
 
-# @file pylith/feassemble/Constraint.py
+# @file pylith/feassemble/ConstraintPointwise.py
 ##
 # @brief Python abstract base class for constraints on operator
 # actions with finite-elements.
 
 
-def implementsConstraint(obj):
-    """
-    Check whether object implements a constraint.
-    """
-    result = True
-    available = dir(obj)
-    required = ["preinitialize",
-                "verifyConfiguration",
-                "initialize",
-                "setConstraintSizes",
-                "setConstraints",
-                "setField",
-                "poststep",
-                "writeData",
-                "finalize"]
-    for attr in required:
-        if not attr in available:
-            result = False
-            break
-    return result
-
-
-# Constraint class
-class Constraint(object):
+# ConstraintPointwise class
+class ConstraintPointwise(object):
     """
     Python abstract base class for constraints on operator
     actions with finite-elements.
@@ -63,18 +41,19 @@ class Constraint(object):
         """
         Setup constraint.
         """
+
         self._setupLogging()
         return
 
-    def poststep(self, t, dt, fields):
+    def verifyConfiguration(self):
         """
-        Hook for doing stuff after advancing time step.
+        Verify configuration.
         """
         return
 
-    def writeData(self, t, fields):
+    def initialize(self):
         """
-        Write data at time t.
+        Initialize constraints.
         """
         return
 
@@ -99,12 +78,6 @@ class Constraint(object):
         logger.initialize()
 
         events = ["verify",
-                  "init",
-                  "setSizes",
-                  "constraints",
-                  "setField",
-                  "poststep",
-                  "write",
                   "finalize"]
         for event in events:
             logger.registerEvent("%s%s" % (self._loggingPrefix, event))
