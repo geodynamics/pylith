@@ -64,8 +64,8 @@ class MaterialNew(IntegratorPointwise):
 
         import pyre.inventory
 
-        id = pyre.inventory.int("id", default=0)
-        id.meta['tip'] = "Material identifier (from mesh generator)."
+        materialId = pyre.inventory.int("id", default=0)
+        materialId.meta['tip'] = "Material identifier (from mesh generator)."
 
         label = pyre.inventory.str("label", default="", validator=validateLabel)
         label.meta['tip'] = "Descriptive label for material."
@@ -84,14 +84,6 @@ class MaterialNew(IntegratorPointwise):
         self.output = None
         return
 
-    def finalize(self):
-        """
-        Cleanup.
-        """
-        if not self.output is None:
-            self.output.finalize()
-        return
-
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
@@ -100,13 +92,12 @@ class MaterialNew(IntegratorPointwise):
         """
         try:
             IntegratorPointwise._configure(self)
-            self.id(self.inventory.id)
+            self.id(self.inventory.materialId)
             self.label(self.inventory.label)
 
         except ValueError, err:
             aliases = ", ".join(self.aliases)
-            raise ValueError("Error while configuring material "
-                             "(%s):\n%s" % (aliases, err.message))
+            raise ValueError("Error while configuring material (%s):\n%s" % (aliases, err.message))
         return
 
     def _setupLogging(self):

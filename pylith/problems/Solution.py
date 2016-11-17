@@ -75,7 +75,6 @@ class Solution(PetscComponent):
         for subfield in self.subfields.components():
             subfield.initialize(normalizer, spaceDim)
             ncomponents = len(subfield.componentNames)
-            print subfield.fieldName, subfield.componentNames, ncomponents, subfield.vectorFieldType, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous, subfield.scale.value
             self.field.subfieldAdd(subfield.fieldName, subfield.componentNames, subfield.vectorFieldType, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous, subfield.scale.value)
         self.field.subfieldsSetup()
         return

@@ -16,9 +16,9 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/problems/__init__.py
+# @file pylith/problems/__init__.py
 ##
-## @brief Python PyLith crustal dynamics problems module initialization
+# @brief Python PyLith crustal dynamics problems module initialization
 
 __all__ = ['EqDeformation',
            'Explicit',
@@ -33,7 +33,22 @@ __all__ = ['EqDeformation',
            'TimeStepUser',
            'TimeStepAdapt',
            'ProgressMonitor',
-]
+           'ProblemNew',
+           'TimeDependentNew',
+           'Solution',
+           'SolutionSubfield',
+           'SubfieldDisplacement',
+           'SubfieldLagrangeFault',
+           'SubfieldPressure',
+           'SubfieldTemperature',
+           'SubfieldVelocity',
+           'SolnDisp',
+           'SolnDispLagrange',
+           'SolnDispPres',
+           'SolnDispPresLagrange',
+           'SolnDispVel',
+           'SolnDispVelLagrange',
+           ]
 
 
 # End of file

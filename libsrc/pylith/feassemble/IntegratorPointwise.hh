@@ -127,6 +127,12 @@ bool needNewLHSJacobian(void) const;
  */
 void normalizer(const spatialdata::units::Nondimensional& dim);
 
+/** Set gravity field.
+ *
+ * @param g Gravity field.
+ */
+void gravityField(spatialdata::spatialdb::GravityField* const g);
+
 /** Verify configuration is acceptable.
  *
  * @param[in] solution Solution field.
@@ -234,6 +240,7 @@ typedef std::map<std::string, pylith::topology::FieldBase::DiscretizeInfo> discr
 protected:
 
 spatialdata::units::Nondimensional* _normalizer;   ///< Nondimensionalizer.
+spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
 utils::EventLogger* _logger;   ///< Event logger.
 
 /// Auxiliary fields for this problem

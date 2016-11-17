@@ -37,6 +37,7 @@
 // Constructor
 pylith::feassemble::IntegratorPointwise::IntegratorPointwise(void) :
     _normalizer(0),
+    _gravityField(0),
     _logger(0),
     _auxFields(0),
     _auxFieldsDB(0),
@@ -63,8 +64,9 @@ pylith::feassemble::IntegratorPointwise::deallocate(void)
     delete _normalizer; _normalizer = 0;
     delete _logger; _logger = 0;
     delete _auxFields; _auxFields = 0;
-    delete _auxFieldsQuery; _auxFieldsQuery = NULL;
+    delete _auxFieldsQuery; _auxFieldsQuery = 0;
 
+    _gravityField = 0; // :TODO: Use shared points.
     _auxFieldsDB = 0; // :TODO: Use shared pointer.
 
     PYLITH_METHOD_END;
@@ -196,11 +198,21 @@ pylith::feassemble::IntegratorPointwise::normalizer(const spatialdata::units::No
     debug << journal::at(__HERE__)
           << "IntegratorPointwise::normalizer(dim="<<&dim<<")" << journal::endl;
 
-    if (0 == _normalizer)
+    if (0 == _normalizer) {
         _normalizer = new spatialdata::units::Nondimensional(dim);
-    else
+    } else {
         *_normalizer = dim;
+    } // if/else
 } // normalizer
+
+
+// ----------------------------------------------------------------------
+// Set gravity field.
+void
+pylith::feassemble::IntegratorPointwise::gravityField(spatialdata::spatialdb::GravityField* const g)
+{ // gravityField
+    _gravityField = g;
+} // gravityField
 
 
 // ----------------------------------------------------------------------

@@ -22,7 +22,7 @@
 ##
 # Factory: subfield.
 
-from pylith.problems.SolutionSubfield import SolutionSubfield
+from .SolutionSubfield import SolutionSubfield
 
 # SubfieldDisplacement class
 

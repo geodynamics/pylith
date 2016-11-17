@@ -31,6 +31,8 @@
 #include "pylith/feassemble/feassemblefwd.hh" // HASA Integrator, Constraint
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 #include "pylith/meshio/meshiofwd.hh" // HASA OutputManager
+#include "spatialdata/units/unitsfwd.hh" // HASA Nondimensional
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // HASA GravityField
 
 #include "pylith/utils/petscfwd.h" // USES PetscVec, PetscMat
 
@@ -83,6 +85,18 @@ void solverType(const SolverTypeEnum value);
  * @returns Solver type.
  */
 SolverTypeEnum solverType(void) const;
+
+/** Set manager of scales used to nondimensionalize problem.
+ *
+ * @param dim Nondimensionalizer.
+ */
+void normalizer(const spatialdata::units::Nondimensional& dim);
+
+/** Set gravity field.
+ *
+ * @param g Gravity field.
+ */
+void gravityField(spatialdata::spatialdb::GravityField* const g);
 
 /** Set handles to integrators.
  *
@@ -205,6 +219,8 @@ protected:
 pylith::topology::Field* _solution;   ///< Handle to solution field.
 pylith::topology::Field* _jacobianLHSLumpedInv;   ///< Handle to inverse lumped Jacobian.
 
+spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalization of scales.
+spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
 std::vector<pylith::feassemble::IntegratorPointwise*> _integrators;   ///< Array of integrators.
 std::vector<pylith::feassemble::Constraint*> _constraints;   ///< Array of constraints.
 std::vector<pylith::meshio::OutputManager*> _outputs; ///< Array of solution output managers.

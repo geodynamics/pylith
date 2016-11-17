@@ -62,6 +62,18 @@ void solverType(const SolverTypeEnum value);
  */
 SolverTypeEnum solverType(void) const;
 
+/** Set manager of scales used to nondimensionalize problem.
+ *
+ * @param dim Nondimensionalizer.
+ */
+void normalizer(const spatialdata::units::Nondimensional& dim);
+
+/** Set gravity field.
+ *
+ * @param g Gravity field.
+ */
+void gravityField(spatialdata::spatialdb::GravityField* const g);
+
 /** Set handles to integrators.
  *
  * @param[in] integratorArray Array of integrators.

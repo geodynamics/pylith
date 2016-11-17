@@ -91,8 +91,7 @@ class IntegratorPointwise(PetscComponent):
 
         except ValueError, err:
             aliases = ", ".join(self.aliases)
-            raise ValueError("Error while configuring material "
-                             "(%s):\n%s" % (aliases, err.message))
+            raise ValueError("Error while configuring material (%s):\n%s" % (aliases, err.message))
         return
 
     def _createModuleObj(self):

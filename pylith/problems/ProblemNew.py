@@ -24,7 +24,7 @@
 
 from pylith.utils.PetscComponent import PetscComponent
 from pylith.utils.NullComponent import NullComponent
-from problems import Problem as ModuleProblem
+from .problems import Problem as ModuleProblem
 from pylith.meshio.OutputSoln import OutputSoln
 from pylith.feassemble.IntegratorPointwise import IntegratorPointwise
 from pylith.feassemble.ConstraintPointwise import ConstraintPointwise
@@ -152,6 +152,8 @@ class ProblemNew(PetscComponent, ModuleProblem):
 
         # Set solution outputs.
         self._setSolutionOutputs()
+
+        ModuleProblem.preinitialize(mesh)
         return
 
     def verifyConfiguration(self):
@@ -241,8 +243,10 @@ class ProblemNew(PetscComponent, ModuleProblem):
             self.gravityField = None
         else:
             self.gravityField = self.inventory.gravityField
+            ModuleProblem.gravityField(self, self.gravityField)
 
         ModuleProblem.solverType(self, self.solverType)
+        ModuleProblem.normalizer(self, self.normalizer)
         return
 
     def _setIntegratorsConstraints(self):

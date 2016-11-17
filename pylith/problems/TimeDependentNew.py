@@ -23,8 +23,8 @@
 ##
 # Factory: problem.
 
-from ProblemNew import ProblemNew
-from problems import TimeDependent as ModuleTimeDependent
+from .ProblemNew import ProblemNew
+from .problems import TimeDependent as ModuleTimeDependent
 
 # TimeDependentNew class
 

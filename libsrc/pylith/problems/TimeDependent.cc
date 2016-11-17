@@ -32,6 +32,7 @@
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 #include "journal/debug.h" // USES journal::debug_t
 #include "journal/error.h" // USES journal::error_t
+#include "journal/warning.h" // USES journal::warning_t
 #include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
@@ -185,6 +186,7 @@ pylith::problems::TimeDependent::initialize(void)
     debug << journal::at(__HERE__)
           << "TimeDependent::initialize()" << journal::endl;
     journal::error_t error("problem");
+    journal::warning_t warning("problem"); // TEMPORARY
 
     assert(_solution);
 
@@ -253,7 +255,10 @@ pylith::problems::TimeDependent::initialize(void)
     err = TSSetDuration(_ts, _maxTimeSteps, _totalTime); PYLITH_CHECK_ERROR(err);
 
     // Set initial solution.
+    warning << journal::at(__HERE__)
+            << "TimeDependent::initialize() missing setting initial solution." << journal::endl;
     // :TODO: Set initial conditions.
+
     debug << journal::at(__HERE__)
           << "Setting PetscTS initial conditions from solution global Vector." << journal::endl;
     err = TSSetSolution(_ts, _solution->globalVector()); PYLITH_CHECK_ERROR(err);
@@ -271,10 +276,19 @@ pylith::problems::TimeDependent::initialize(void)
               << "Setting PetscTS callbacks computeLHSJacobian(), and computeLHSFunction()." << journal::endl;
         err = TSSetIFunction(_ts, NULL, computeLHSResidual, (void*)this); PYLITH_CHECK_ERROR(err);
         err = TSSetIJacobian(_ts, NULL, NULL, computeLHSJacobian, (void*)this); PYLITH_CHECK_ERROR(err);
-    }     // if
+    } // if
 
     // Setup time stepper.
     err = TSSetUp(_ts); PYLITH_CHECK_ERROR(err);
+
+    // Setup field to hold inverse of lumped LHS Jacobian (if explicit).
+    if (EXPLICIT == _formulationType) {
+        debug << journal::at(__HERE__)
+              << "Setting up field for inverse of lumped LHS Jacobian." << journal::endl;
+
+        delete _jacobianLHSLumpedInv; _jacobianLHSLumpedInv = new pylith::topology::Field(_solution->mesh()); assert(_jacobianLHSLumpedInv);
+        _jacobianLHSLumpedInv->cloneSection(*_solution);
+    } // if
 
     PYLITH_METHOD_END;
 } // initialize

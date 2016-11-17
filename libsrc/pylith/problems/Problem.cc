@@ -28,9 +28,12 @@
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 
 #include "journal/debug.h" // USES journal::debug_t
+#include "journal/warning.h" // USES journal::warning_t
 
 #include <cassert> // USES assert()
 
@@ -39,6 +42,7 @@
 pylith::problems::Problem::Problem(void) :
     _solution(0),
     _jacobianLHSLumpedInv(0),
+    _normalizer(0),
     _integrators(0),
     _constraints(0),
     _outputs(0),
@@ -62,6 +66,7 @@ pylith::problems::Problem::deallocate(void)
 
     _solution = 0; // Held by Python. :KLUDGE: :TODO: Use shared pointer.
     delete _jacobianLHSLumpedInv; _jacobianLHSLumpedInv = 0;
+    delete _normalizer; _normalizer = 0;
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -85,6 +90,30 @@ pylith::problems::Problem::solverType(void) const
 { // solverType
     return _solverType;
 } // solverType
+
+// ----------------------------------------------------------------------
+// Set manager of scales used to nondimensionalize problem.
+void
+pylith::problems::Problem::normalizer(const spatialdata::units::Nondimensional& dim)
+{ // normalizer
+    journal::debug_t debug("problem");
+    debug << journal::at(__HERE__)
+          << "Problem::normalizer(dim="<<&dim<<")" << journal::endl;
+
+    if (!_normalizer) {
+        _normalizer = new spatialdata::units::Nondimensional(dim);
+    } else {
+        *_normalizer = dim;
+    } // if/else
+} // normalizer
+
+// ----------------------------------------------------------------------
+// Set gravity field.
+void
+pylith::problems::Problem::gravityField(spatialdata::spatialdb::GravityField* const g)
+{ // gravityField
+    _gravityField = g;
+} // gravityField
 
 // ----------------------------------------------------------------------
 // Set integrators over the mesh.
@@ -160,6 +189,19 @@ pylith::problems::Problem::preinitialize(const pylith::topology::Mesh& mesh)
 { // preinitialize
     PYLITH_METHOD_BEGIN;
 
+    journal::debug_t debug("problem");
+    debug << journal::at(__HERE__)
+          << "Problem::preinitialzie(mesh="<<&mesh<<")" << journal::endl;
+
+    assert(_normalizer);
+
+    const size_t numIntegrators = _integrators.size();
+    for (size_t i=0; i < numIntegrators; ++i) {
+        assert(_integrators[i]);
+        _integrators[i]->normalizer(*_normalizer);
+        _integrators[i]->gravityField(_gravityField);
+    } // for
+
     PYLITH_METHOD_END;
 } // preinitialize
 
@@ -182,8 +224,11 @@ pylith::problems::Problem::verifyConfiguration(int* const materialIds,
     const size_t numIntegrators = _integrators.size();
     for (size_t i=0; i < numIntegrators; ++i) {
         _integrators[i]->verifyConfiguration(*_solution);
-    }
+    } // for
 
+    journal::warning_t warning("problem");
+    warning << journal::at(__HERE__)
+            << "Problem::verifyConfiguration() missing verification of constraints." << journal::endl;
 /* // :TODO: Implement this.
     // Check to make sure constraints are compatible with the solution.
     const size_t numConstraints = _constraints.size();
@@ -202,14 +247,27 @@ pylith::problems::Problem::initialize(void)
 { // initialize
     PYLITH_METHOD_BEGIN;
 
-/*
-    for constraint in constraints.components():
-        constraint.setConstraints(solution)
-    solution.allocate()
-    solution.zeroAll()
-    for integrator in self.integrators.components():
-        integrator.checkConstraints(solution)
- */
+    journal::debug_t debug("problem");
+    debug << journal::at(__HERE__)
+          << "Problem::initialize()" << journal::endl;
+
+    assert(_solution);
+
+    // Initialize integrators.
+    const size_t numIntegrators = _integrators.size();
+    for (size_t i=0; i < numIntegrators; ++i) {
+        assert(_integrators[i]);
+        _integrators[i]->initialize(*_solution);
+    } // for
+
+    // Initilaize constraints.
+    journal::warning_t warning("problem");
+    warning << journal::at(__HERE__)
+            << "Problem::initialize() missing initialization of constraints." << journal::endl;
+
+    // Initialize solution field.
+    _solution->allocate();
+    _solution->zeroAll();
 
     PYLITH_METHOD_END;
 } // initialize
