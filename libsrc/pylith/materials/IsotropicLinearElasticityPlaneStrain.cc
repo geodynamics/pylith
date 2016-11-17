@@ -118,24 +118,28 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_auxFieldsSetup(void)
     // :ATTENTION: The order for subfieldAdd() must match the order of the auxiliary fields in the FE kernels.
     // Field 0: density
     const char* densityComponents[1] = {"density"};
-    _auxFields->subfieldAdd("density", densityComponents, 1, pylith::topology::Field::SCALAR, this->auxFieldDiscretization("density"), densityScale, pylith::topology::FieldQuery::validatorPositive);
+    const pylith::topology::Field::DiscretizeInfo& densityFEInfo = this->auxFieldDiscretization("density");
+    _auxFields->subfieldAdd("density", densityComponents, 1, pylith::topology::Field::SCALAR, densityFEInfo.basisOrder, densityFEInfo.quadOrder, densityFEInfo.isBasisContinuous, densityScale, pylith::topology::FieldQuery::validatorPositive);
     _auxFieldsQuery->queryFn("density", pylith::topology::FieldQuery::dbQueryGeneric);
 
     // Field 1: shearModulus
     const char* shearModulusComponents[1] = {"shear_modulus"};
-    _auxFields->subfieldAdd("shear_modulus", shearModulusComponents, 1, topology::Field::SCALAR, this->auxFieldDiscretization("shear_modulus"), pressureScale);
+    const pylith::topology::Field::DiscretizeInfo& shearModulusFEInfo = this->auxFieldDiscretization("shear_modulus");
+    _auxFields->subfieldAdd("shear_modulus", shearModulusComponents, 1, topology::Field::SCALAR, shearModulusFEInfo.basisOrder, shearModulusFEInfo.quadOrder, shearModulusFEInfo.isBasisContinuous, pressureScale);
     _auxFieldsQuery->queryFn("shear_modulus", pylith::materials::Query::dbQueryShearModulus2D);
 
     // Field 2: bulkModulus
     const char* bulkModulusComponents[1] = {"bulk_modulus"};
-    _auxFields->subfieldAdd("bulk_modulus", bulkModulusComponents, 1, topology::Field::SCALAR, this->auxFieldDiscretization("bulk_modulus"), pressureScale);
+    const pylith::topology::Field::DiscretizeInfo& bulkModulusFEInfo = this->auxFieldDiscretization("bulk_modulus");
+    _auxFields->subfieldAdd("bulk_modulus", bulkModulusComponents, 1, topology::Field::SCALAR, bulkModulusFEInfo.basisOrder, bulkModulusFEInfo.quadOrder, bulkModulusFEInfo.isBasisContinuous, pressureScale);
     _auxFieldsQuery->queryFn("bulk_modulus", pylith::materials::Query::dbQueryBulkModulus2D);
 
     // Field 3: body force
     if (_useBodyForce) {
         assert(2 == dimension());
         const char* components[2] = {"body_force_x", "body_force_y"};
-        _auxFields->subfieldAdd("body_force", components, dimension(), topology::Field::VECTOR, this->auxFieldDiscretization("body_force"), forceScale);
+        const pylith::topology::Field::DiscretizeInfo& bodyForceFEInfo = this->auxFieldDiscretization("body_force");
+        _auxFields->subfieldAdd("body_force", components, dimension(), topology::Field::VECTOR, bodyForceFEInfo.basisOrder, bodyForceFEInfo.quadOrder, bodyForceFEInfo.isBasisContinuous, forceScale);
         _auxFieldsQuery->queryFn("body_force", pylith::topology::FieldQuery::dbQueryGeneric);
     } // if
 
@@ -143,12 +147,14 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_auxFieldsSetup(void)
     if (_useReferenceState) {
         const PylithInt stressSize = 4;
         const char* componentsStress[stressSize] = {"stress_xx", "stress_yy", "stress_xy", "stress_zz"};
-        _auxFields->subfieldAdd("reference_stress", componentsStress, stressSize, topology::Field::OTHER, this->auxFieldDiscretization("reference_stress"), pressureScale);
+        const pylith::topology::Field::DiscretizeInfo& stressFEInfo = this->auxFieldDiscretization("reference_stress");
+        _auxFields->subfieldAdd("reference_stress", componentsStress, stressSize, topology::Field::OTHER, stressFEInfo.basisOrder, stressFEInfo.quadOrder, stressFEInfo.isBasisContinuous, pressureScale);
         _auxFieldsQuery->queryFn("reference_stress", pylith::topology::FieldQuery::dbQueryGeneric);
 
         const PylithInt strainSize = 4;
         const char* componentsStrain[strainSize] = {"strain_xx", "strain_yy", "strain_xy", "strain_zz"};
-        _auxFields->subfieldAdd("reference_strain", componentsStrain, strainSize, topology::Field::OTHER, this->auxFieldDiscretization("reference_strain"), 1.0);
+        const pylith::topology::Field::DiscretizeInfo& strainFEInfo = this->auxFieldDiscretization("reference_strain");
+        _auxFields->subfieldAdd("reference_strain", componentsStrain, strainSize, topology::Field::OTHER, strainFEInfo.basisOrder, strainFEInfo.quadOrder, strainFEInfo.isBasisContinuous, 1.0);
         _auxFieldsQuery->queryFn("reference_strain", pylith::topology::FieldQuery::dbQueryGeneric);
     } // if
 

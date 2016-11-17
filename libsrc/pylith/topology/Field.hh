@@ -59,501 +59,505 @@
  */
 class pylith::topology::Field : public FieldBase
 { // Field
-  friend class FieldQuery; // Fill field using data.
+friend class FieldQuery;   // Fill field using data.
 
-  friend class TestFieldMesh; // unit testing
-  friend class TestFieldSubMesh; // unit testing
+friend class TestFieldMesh;   // unit testing
+friend class TestFieldSubMesh;   // unit testing
 
 // PUBLIC STRUCTS ///////////////////////////////////////////////////////
-public :
+public:
 
-  /// Subfield auxiliary information.
-  struct SubfieldInfo {
+/// Subfield auxiliary information.
+struct SubfieldInfo {
     Metadata metadata; ///< Metadata for subfield.
     DiscretizeInfo fe; ///< Discretization information for subfield.
-    int numComponents; ///< Number of components. 
+    int numComponents; ///< Number of components.
     int index; ///< Index of subfield in field.
     PetscDM dm; ///< PETSc DM associated with subfield.
-  }; // SubfieldInfo
+};   // SubfieldInfo
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public :
+public:
 
-  /** Default constructor.
-   *
-   * @param mesh Finite-element mesh.
-   */
-  Field(const Mesh& mesh);
+/** Default constructor.
+ *
+ * @param mesh Finite-element mesh.
+ */
+Field(const Mesh& mesh);
 
-  /** Constructor with mesh, DM, and metadata
-   *
-   * @param mesh Finite-element mesh.
-   * @param dm PETSc dm for field.
-   * @param meteadata Field metadata.
-   */
-  Field(const Mesh& mesh, 
-	PetscDM dm,
-	const Metadata& metadata);
+/** Constructor with mesh, DM, and metadata
+ *
+ * @param mesh Finite-element mesh.
+ * @param dm PETSc dm for field.
+ * @param meteadata Field metadata.
+ */
+Field(const Mesh& mesh,
+      PetscDM dm,
+      const Metadata& metadata);
 
-  /** Constructor with mesh, PETSc DM, local data, and metadata.
-   *
-   * @param mesh Finite-element mesh.
-   * @param dm PETSc DM for field.
-   * @param localVec PETSc Vec with local data for field.
-   * @param meteadata Field metadata.
-   */
-  Field(const Mesh& mesh, 
-	PetscDM dm,
-	PetscVec localVec,
-	const Metadata& metadata);
+/** Constructor with mesh, PETSc DM, local data, and metadata.
+ *
+ * @param mesh Finite-element mesh.
+ * @param dm PETSc DM for field.
+ * @param localVec PETSc Vec with local data for field.
+ * @param meteadata Field metadata.
+ */
+Field(const Mesh& mesh,
+      PetscDM dm,
+      PetscVec localVec,
+      const Metadata& metadata);
 
-  /// Destructor.
-  ~Field(void);
+/// Destructor.
+~Field(void);
 
-  /// Deallocate PETSc and local data structures.
-  void deallocate(void);
-  
-  /** Get mesh associated with field.
-   *
-   * @returns Finite-element mesh.
-   */
-  const Mesh& mesh(void) const;
+/// Deallocate PETSc and local data structures.
+void deallocate(void);
 
-  /** Get PETSc DM associated with field.
-   *
-   * @returns PETSc DM
-   */
-  PetscDM dmMesh(void) const;
+/** Get mesh associated with field.
+ *
+ * @returns Finite-element mesh.
+ */
+const Mesh& mesh(void) const;
 
-  /** Set label for field.
-   *
-   * @param value Label for field.
-   */
-  void label(const char* value);
+/** Get PETSc DM associated with field.
+ *
+ * @returns PETSc DM
+ */
+PetscDM dmMesh(void) const;
 
-  /** Get label for field.
-   *
-   * @returns Label for field.
-   */
-  const char* label(void) const;
+/** Set label for field.
+ *
+ * @param value Label for field.
+ */
+void label(const char* value);
 
-  /** Set vector field type.
-   *
-   * @param value Type of vector field.
-   */
-  void vectorFieldType(const VectorFieldEnum value);
+/** Get label for field.
+ *
+ * @returns Label for field.
+ */
+const char* label(void) const;
 
-  /** Get vector field type
-   *
-   * @returns Type of vector field.
-   */
-  VectorFieldEnum vectorFieldType(void) const;
+/** Set vector field type.
+ *
+ * @param value Type of vector field.
+ */
+void vectorFieldType(const VectorFieldEnum value);
 
-  /** Set scale for dimensionalizing field.
-   *
-   * @param value Scale associated with field.
-   */
-  void scale(const PylithReal value);
+/** Get vector field type
+ *
+ * @returns Type of vector field.
+ */
+VectorFieldEnum vectorFieldType(void) const;
 
-  /** Get scale for dimensionalizing field.
-   *
-   * @returns Scale associated with field.
-   */
-  PylithReal scale(void) const;
+/** Set scale for dimensionalizing field.
+ *
+ * @param value Scale associated with field.
+ */
+void scale(const PylithReal value);
 
-  /** Set flag indicating whether it is okay to dimensionalize field.
-   *
-   * @param value True if it is okay to dimensionalize field.
-   */
-  void dimensionalizeOkay(const bool value);
+/** Get scale for dimensionalizing field.
+ *
+ * @returns Scale associated with field.
+ */
+PylithReal scale(void) const;
 
-  /** Set flag indicating whether it is okay to dimensionalize field.
-   *
-   * @param value True if it is okay to dimensionalize field.
-   */
-  bool dimensionalizeOkay(void) const;
+/** Set flag indicating whether it is okay to dimensionalize field.
+ *
+ * @param value True if it is okay to dimensionalize field.
+ */
+void dimensionalizeOkay(const bool value);
 
-  /** Get spatial dimension of domain.
-   *
-   * @returns Spatial dimension of domain.
-   */
-  int spaceDim(void) const;
+/** Set flag indicating whether it is okay to dimensionalize field.
+ *
+ * @param value True if it is okay to dimensionalize field.
+ */
+bool dimensionalizeOkay(void) const;
 
-  /** Get the number of points in the chart.
-   *
-   * @returns the chart size.
-   */
-  int chartSize(void) const;
+/** Get spatial dimension of domain.
+ *
+ * @returns Spatial dimension of domain.
+ */
+int spaceDim(void) const;
 
-  /** Get the number of degrees of freedom.
-   *
-   * @returns the number of degrees of freedom.
-   */
-  int sectionSize(void) const;
+/** Get the number of points in the chart.
+ *
+ * @returns the chart size.
+ */
+int chartSize(void) const;
 
-  /** Has section been setup?
-   *
-   * @returns True if section has been setup.
-   */
-  bool hasSection(void) const;
+/** Get the number of degrees of freedom.
+ *
+ * @returns the number of degrees of freedom.
+ */
+int sectionSize(void) const;
 
-  /** Get local PetscSection.
-   *
-   * @returns PETSc section.
-   */
-  PetscSection localSection(void) const;
+/** Has section been setup?
+ *
+ * @returns True if section has been setup.
+ */
+bool hasSection(void) const;
 
-  /** Get global PetscSection.
-   *
-   * @returns PETSc section.
-   */
-  PetscSection globalSection(void) const;
+/** Get local PetscSection.
+ *
+ * @returns PETSc section.
+ */
+PetscSection localSection(void) const;
 
-  /** Get the local PETSc Vec.
-   *
-   * @returns PETSc Vec object.
-   */
-  PetscVec localVector(void) const;
+/** Get global PetscSection.
+ *
+ * @returns PETSc section.
+ */
+PetscSection globalSection(void) const;
 
-  /** Get the global PETSc Vec.
-   *
-   * @returns PETSc Vec object.
-   */
-  PetscVec globalVector(void) const;
+/** Get the local PETSc Vec.
+ *
+ * @returns PETSc Vec object.
+ */
+PetscVec localVector(void) const;
 
-  /// Set chart for solution.
-  void setupSolnChart(void);
+/** Get the global PETSc Vec.
+ *
+ * @returns PETSc Vec object.
+ */
+PetscVec globalVector(void) const;
 
-  /** Set default DOF for solution.
-   *
-   * @param fiberDim Total number of components in solution.
-   * @param subfieldName Name of subfield for DOF.
-   */
-  void setupSolnDof(const int fiberDim,
-		    const char* subfieldName ="displacement");
+/// Set chart for solution.
+void setupSolnChart(void);
 
-  /** Create PETSc section and set chart and fiber dimesion for a list
-   * of points.
-   *
-   * @param pStart First point
-   * @param pEnd Upper bound for points
-   * @param dim Fiber dimension for section.
-   *
-   * @note Don't forget to call label(), especially if reusing a field.
-   */
-  void newSection(const PetscInt pStart,
-		  const PetscInt pEnd,
-		  const int fiberDim);
+/** Set default DOF for solution.
+ *
+ * @param fiberDim Total number of components in solution.
+ * @param subfieldName Name of subfield for DOF.
+ */
+void setupSolnDof(const int fiberDim,
+                  const char* subfieldName ="displacement");
 
-  /** Create PETSc section and set chart and fiber dimesion for a list
-   * of points.
-   *
-   * @param points Points over which to define section.
-   * @param dim Fiber dimension for section.
-   *
-   * @note Don't forget to call label(), especially if reusing a field.
-   */
-  void newSection(const int_array& points,
-                  const int fiberDim);
+/** Create PETSc section and set chart and fiber dimesion for a list
+ * of points.
+ *
+ * @param pStart First point
+ * @param pEnd Upper bound for points
+ * @param dim Fiber dimension for section.
+ *
+ * @note Don't forget to call label(), especially if reusing a field.
+ */
+void newSection(const PetscInt pStart,
+                const PetscInt pEnd,
+                const int fiberDim);
 
-  /** Create PETSc section and set chart and fiber dimesion for a list
-   * of points.
-   *
-   * @param points Points over which to define section.
-   * @param num The number of points
-   * @param dim Fiber dimension for section.
-   *
-   * @note Don't forget to call label(), especially if reusing a field.
-   */
-  void newSection(const PetscInt *points,
-                  const PetscInt num,
-                  const int fiberDim);
+/** Create PETSc section and set chart and fiber dimesion for a list
+ * of points.
+ *
+ * @param points Points over which to define section.
+ * @param dim Fiber dimension for section.
+ *
+ * @note Don't forget to call label(), especially if reusing a field.
+ */
+void newSection(const int_array& points,
+                const int fiberDim);
 
-  /** Create PETSc section and set chart and fiber dimesion.
-   *
-   * @param domain Type of points over which to define section.
-   * @param dim Fiber dimension for section.
-   * @param stratum Stratum depth (for vertices) and height (for cells).
-   *
-   * @note Don't forget to call label(), especially if reusing a field.
-   */
-  void newSection(const DomainEnum domain,
-		  const int fiberDim,
-		  const int stratum =0);
+/** Create PETSc section and set chart and fiber dimesion for a list
+ * of points.
+ *
+ * @param points Points over which to define section.
+ * @param num The number of points
+ * @param dim Fiber dimension for section.
+ *
+ * @note Don't forget to call label(), especially if reusing a field.
+ */
+void newSection(const PetscInt *points,
+                const PetscInt num,
+                const int fiberDim);
 
-  /** Create section using src field as template with given fiber dimension.
-   *
-   * @param sec Field defining layout.
-   * @param fiberDim Fiber dimension.
-   *
-   * @note Don't forget to call label(), especially if reusing a field.
-   */
-  void newSection(const Field& src,
-		  const int fiberDim);
+/** Create PETSc section and set chart and fiber dimesion.
+ *
+ * @param domain Type of points over which to define section.
+ * @param dim Fiber dimension for section.
+ * @param stratum Stratum depth (for vertices) and height (for cells).
+ *
+ * @note Don't forget to call label(), especially if reusing a field.
+ */
+void newSection(const DomainEnum domain,
+                const int fiberDim,
+                const int stratum =0);
 
-  /** Create section with same layout (fiber dimension and
-   * constraints) as another section. This allows the layout data
-   * structures to be reused across multiple fields, reducing memory
-   * usage.
-   *
-   * @param src Field defining layout.
-   *
-   * @note Don't forget to call label(), especially if reusing a field.
-   */
-  void cloneSection(const Field& src);
+/** Create section using src field as template with given fiber dimension.
+ *
+ * @param sec Field defining layout.
+ * @param fiberDim Fiber dimension.
+ *
+ * @note Don't forget to call label(), especially if reusing a field.
+ */
+void newSection(const Field& src,
+                const int fiberDim);
 
-  /** Add subfield to current field.
-   *
-   * Should be followed by calls to subfieldsSetup() and subfieldSetDof().
-   *
-   * @param name Name of subfield.
-   * @param components Names of components in subfield.
-   * @param numComponents Number of components in subfield.
-   * @param fieldType Type of vector field.
-   * @param feInfo Discretization info for subfield.
-   * @param scale Scale for dimensionalizing field.
-   */
-  void subfieldAdd(const char *name, 
-		   const char* components[],
-		   int numComponents,
-		   const VectorFieldEnum fieldType,
-		   const DiscretizeInfo& feInfo,
-		   const PylithReal scale =1.0,
-		   const validatorfn_type validator=NULL);
-  
-  /** Setup sections for subfields.
-   *
-   * Should be preceded by calls to subfieldAdd() and followed by calls to subfieldSetDof().
-   */
-  void subfieldsSetup(void);
-  
-  /** Convenience method for setting number of DOF (fiberdim) for subfield at points.
-   *
-   * Should be preceded by calls to subfieldAdd() and subfieldsSetup().
-   *
-   * @param name Name of subfield.
-   * @param domain Point classification for subfield.
-   * @param fiberDim Number of subfield components per point.
-   */
-  void subfieldSetDof(const char *name, 
-		      const pylith::topology::FieldBase::DomainEnum domain, 
-		      const int fiberDim);
-  
-  /** Does field have given auxiliary subfield?
-   *
-   * @param name Name of subfield.
-   * @returns True if field has given auxiliary subfield.
-   */
-  bool hasSubfield(const char* name) const;
+/** Create section with same layout (fiber dimension and
+ * constraints) as another section. This allows the layout data
+ * structures to be reused across multiple fields, reducing memory
+ * usage.
+ *
+ * @param src Field defining layout.
+ *
+ * @note Don't forget to call label(), especially if reusing a field.
+ */
+void cloneSection(const Field& src);
 
-  /** Get auxiliary information for subfield.
-   *
-   * @param name Name of field.
-   * @returns Auxiliary information (including metadata) for subfield.
-   */
-  const SubfieldInfo& subfieldInfo(const char* name) const;
+/** Add subfield to current field.
+ *
+ * Should be followed by calls to subfieldsSetup() and subfieldSetDof().
+ *
+ * @param[in] name Name of subfield.
+ * @param[in] components Names of components in subfield.
+ * @param[in] numComponents Number of components in subfield.
+ * @param[in] fieldType Type of vector field.
+ * @param[in] basisOrder Polynomial order for basis.
+ * @param[in] quadOrder Order of quadrature rule.
+ * @param[in] isBasisContinuous True if basis is continuous.
+ * @param[in] scale Scale for dimensionalizing field.
+ */
+void subfieldAdd(const char *name,
+                 const char* components[],
+                 const int numComponents,
+                 const VectorFieldEnum fieldType,
+                 const int basisOrder,
+                 const int quadOrder,
+                 const bool isBasisContinuous,
+                 const PylithReal scale =1.0,
+                 const validatorfn_type validator=NULL);
 
-  /// Clear variables associated with section.
-  void clear(void);
+/** Setup sections for subfields.
+ *
+ * Should be preceded by calls to subfieldAdd() and followed by calls to subfieldSetDof().
+ */
+void subfieldsSetup(void);
 
-  /// Allocate field.
-  void allocate(void);
+/** Convenience method for setting number of DOF (fiberdim) for subfield at points.
+ *
+ * Should be preceded by calls to subfieldAdd() and subfieldsSetup().
+ *
+ * @param name Name of subfield.
+ * @param domain Point classification for subfield.
+ * @param fiberDim Number of subfield components per point.
+ */
+void subfieldSetDof(const char *name,
+                    const pylith::topology::FieldBase::DomainEnum domain,
+                    const int fiberDim);
 
-  /// Zero section values (does not zero constrained values).
-  void zero(void);
+/** Does field have given auxiliary subfield?
+ *
+ * @param name Name of subfield.
+ * @returns True if field has given auxiliary subfield.
+ */
+bool hasSubfield(const char* name) const;
 
-  /// Zero section values (including constrained values).
-  void zeroAll(void);
+/** Get auxiliary information for subfield.
+ *
+ * @param name Name of field.
+ * @returns Auxiliary information (including metadata) for subfield.
+ */
+const SubfieldInfo& subfieldInfo(const char* name) const;
 
-  /// Complete section by assembling across processors.
-  void complete(void);
+/// Clear variables associated with section.
+void clear(void);
 
-  /** Copy field values and metadata.
-   *
-   * @param field Field to copy.
-   */
-  void copy(const Field& field);
+/// Allocate field.
+void allocate(void);
 
-  /** Copy subfield values and its metadata to field;
-   *
-   * @param field Field to copy from.
-   * @param name Name of subfield to copy.
-   */
-  void copySubfield(const Field& field,
-		    const char* name);
+/// Zero section values (does not zero constrained values).
+void zero(void);
 
-  /** Add two fields, storing the result in one of the fields.
-   *
-   * @param field Field to add.
-   */
-  Field& operator+=(const Field& field);
+/// Zero section values (including constrained values).
+void zeroAll(void);
 
-  /** Add two fields, storing the result in one of the fields.
-   *
-   * @param field Field to add.
-   */
-  void add(const Field& field);
+/// Complete section by assembling across processors.
+void complete(void);
 
-  /** Dimensionalize field. Throws runtime_error if field is not
-   * allowed to be dimensionalized.
-   */
-  void dimensionalize(void) const;
+/** Copy field values and metadata.
+ *
+ * @param field Field to copy.
+ */
+void copy(const Field& field);
 
-  /** Print field to standard out.
-   *
-   * @param label Label for output.
-   */
-  void view(const char* label) const;
+/** Copy subfield values and its metadata to field;
+ *
+ * @param field Field to copy from.
+ * @param name Name of subfield to copy.
+ */
+void copySubfield(const Field& field,
+                  const char* name);
 
-  /** Create PETSc vector scatter for field. This is used to transfer
-   * information from the "global" PETSc vector view to the "local"
-   * PETSc section view. The PETSc vector does not contain constrained
-   * DOF. Use createScatterWithBC() to include the constrained DOF in
-   * the PETSc vector.
-   *
-   * @param mesh Mesh associated with scatter.
-   * @param context Label for context associated with vector.
-   */
-  void createScatter(const Mesh& mesh,
-		     const char* context ="");
+/** Add two fields, storing the result in one of the fields.
+ *
+ * @param field Field to add.
+ */
+Field& operator+=(const Field& field);
 
+/** Add two fields, storing the result in one of the fields.
+ *
+ * @param field Field to add.
+ */
+void add(const Field& field);
 
-  /** Create PETSc vector scatter for field. This is used to transfer
-   * information from the "global" PETSc vector view to the "local"
-   * PETSc section view. The PETSc vector includes constrained
-   * DOF. Use createScatter() if constrained DOF should be omitted
-   * from the PETSc vector.
-   *
-   * @param mesh Mesh associated with scatter.
-   * @param context Label for context associated with vector.
-   */
-  void createScatterWithBC(const Mesh& mesh,
-			   const char* context ="");
+/** Dimensionalize field. Throws runtime_error if field is not
+ * allowed to be dimensionalized.
+ */
+void dimensionalize(void) const;
+
+/** Print field to standard out.
+ *
+ * @param label Label for output.
+ */
+void view(const char* label) const;
+
+/** Create PETSc vector scatter for field. This is used to transfer
+ * information from the "global" PETSc vector view to the "local"
+ * PETSc section view. The PETSc vector does not contain constrained
+ * DOF. Use createScatterWithBC() to include the constrained DOF in
+ * the PETSc vector.
+ *
+ * @param mesh Mesh associated with scatter.
+ * @param context Label for context associated with vector.
+ */
+void createScatter(const Mesh& mesh,
+                   const char* context ="");
 
 
-  /** Create PETSc vector scatter for field. This is used to transfer
-   * information from the "global" PETSc vector view to the "local"
-   * PETSc section view. The PETSc vector includes constrained
-   * DOF. Use createScatter() if constrained DOF should be omitted
-   * from the PETSc vector.
-   *
-   * @param mesh Mesh associated with scatter.
-   * @param labelName The name of the label defining the point set, or PETSC_NULL
-   * @param labelValue The label stratum defining the point set
-   * @param context Label for context associated with vector.
-   */
-  void createScatterWithBC(const Mesh& mesh,
-                           const std::string& labelName,
-                           PetscInt labelValue,
-                           const char* context ="");
+/** Create PETSc vector scatter for field. This is used to transfer
+ * information from the "global" PETSc vector view to the "local"
+ * PETSc section view. The PETSc vector includes constrained
+ * DOF. Use createScatter() if constrained DOF should be omitted
+ * from the PETSc vector.
+ *
+ * @param mesh Mesh associated with scatter.
+ * @param context Label for context associated with vector.
+ */
+void createScatterWithBC(const Mesh& mesh,
+                         const char* context ="");
 
-  /** Get PETSc vector associated with field.
-   *
-   * @param context Label for context associated with vector.
-   * @returns PETSc vector.
-   */
-  PetscVec vector(const char* context ="");
 
-  /** Get PETSc vector associated with field.
-   *
-   * @param context Label for context associated with vector.
-   * @returns PETSc vector.
-   */
-  const PetscVec vector(const char* context ="") const;
+/** Create PETSc vector scatter for field. This is used to transfer
+ * information from the "global" PETSc vector view to the "local"
+ * PETSc section view. The PETSc vector includes constrained
+ * DOF. Use createScatter() if constrained DOF should be omitted
+ * from the PETSc vector.
+ *
+ * @param mesh Mesh associated with scatter.
+ * @param labelName The name of the label defining the point set, or PETSC_NULL
+ * @param labelValue The label stratum defining the point set
+ * @param context Label for context associated with vector.
+ */
+void createScatterWithBC(const Mesh& mesh,
+                         const std::string& labelName,
+                         PetscInt labelValue,
+                         const char* context ="");
 
-  /** Scatter section information across processors to update the
-   * global view of the field.
-   *
-   * @param context Label for context associated with vector.
-   */
-  void scatterLocalToGlobal(const char* context ="") const;
+/** Get PETSc vector associated with field.
+ *
+ * @param context Label for context associated with vector.
+ * @returns PETSc vector.
+ */
+PetscVec vector(const char* context ="");
 
-  /** Scatter section information across processors to update the
-   * global view of the field.
-   *
-   * @param vector PETSc vector to update.
-   * @param context Label for context associated with vector.
-   */
-  void scatterLocalToGlobal(const PetscVec vector,
-			    const char* context ="") const;
+/** Get PETSc vector associated with field.
+ *
+ * @param context Label for context associated with vector.
+ * @returns PETSc vector.
+ */
+const PetscVec vector(const char* context ="") const;
 
-  /** Scatter global information across processors to update the local
-   * view of the field.
-   *
-   * @param context Label for context associated with vector.
-   */
-  void scatterGlobalToLocal(const char* context ="") const;
+/** Scatter section information across processors to update the
+ * global view of the field.
+ *
+ * @param context Label for context associated with vector.
+ */
+void scatterLocalToGlobal(const char* context ="") const;
 
-  /** Scatter global information across processors to update the local
-   * view of the field.
-   *
-   * @param vector PETSc vector used in update.
-   * @param context Label for context associated with vector.
-   */
-  void scatterGlobalToLocal(const PetscVec vector,
-			    const char* context ="") const;
+/** Scatter section information across processors to update the
+ * global view of the field.
+ *
+ * @param vector PETSc vector to update.
+ * @param context Label for context associated with vector.
+ */
+void scatterLocalToGlobal(const PetscVec vector,
+                          const char* context ="") const;
+
+/** Scatter global information across processors to update the local
+ * view of the field.
+ *
+ * @param context Label for context associated with vector.
+ */
+void scatterGlobalToLocal(const char* context ="") const;
+
+/** Scatter global information across processors to update the local
+ * view of the field.
+ *
+ * @param vector PETSc vector used in update.
+ * @param context Label for context associated with vector.
+ */
+void scatterGlobalToLocal(const PetscVec vector,
+                          const char* context ="") const;
 
 // PRIVATE STRUCTS //////////////////////////////////////////////////////
-private :
+private:
 
-  /// Data structures used in scattering to/from PETSc Vecs.
-  struct ScatterInfo {
+/// Data structures used in scattering to/from PETSc Vecs.
+struct ScatterInfo {
     PetscDM dm; ///< PETSc DM defining the communication pattern
     PetscVec vector; ///< PETSc vector associated with field.
-  }; // ScatterInfo
+};   // ScatterInfo
 
 // PRIVATE TYPEDEFS /////////////////////////////////////////////////////
-private :
+private:
 
-  typedef std::map<std::string, ScatterInfo> scatter_map_type;
-  typedef std::map<std::string, SubfieldInfo> subfields_type;
+typedef std::map<std::string, ScatterInfo> scatter_map_type;
+typedef std::map<std::string, SubfieldInfo> subfields_type;
 
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
-private :
+private:
 
-  /** Setup field to hold values extract from subfield of another field.
-   *
-   * @param field Field to copy from.
-   * @param name Name of subfield.
-   */
-  void _extractSubfield(const Field& field,
-			const char* name);
+/** Setup field to hold values extract from subfield of another field.
+ *
+ * @param field Field to copy from.
+ * @param name Name of subfield.
+ */
+void _extractSubfield(const Field& field,
+                      const char* name);
 
-  /** Get scatter for given context.
-   *
-   * @param context Context for scatter.
-   * @param createOk If true, okay to create new scatter for
-   * context, if false will throw std::runtime_error if scatter for
-   * context doesn't already exist.
-   */
-  ScatterInfo& _getScatter(const char* context,
-			   const bool createOk =false);
+/** Get scatter for given context.
+ *
+ * @param context Context for scatter.
+ * @param createOk If true, okay to create new scatter for
+ * context, if false will throw std::runtime_error if scatter for
+ * context doesn't already exist.
+ */
+ScatterInfo& _getScatter(const char* context,
+                         const bool createOk =false);
 
-  /** Get scatter for given context.
-   *
-   * @param context Context for scatter.
-   */
-  const ScatterInfo& _getScatter(const char* context) const;
+/** Get scatter for given context.
+ *
+ * @param context Context for scatter.
+ */
+const ScatterInfo& _getScatter(const char* context) const;
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private :
+private:
 
-  Metadata _metadata;
+Metadata _metadata;
 
-  const Mesh& _mesh; ///< Mesh associated with section.
-  scatter_map_type _scatters; ///< Collection of scatters.
+const Mesh& _mesh;   ///< Mesh associated with section.
+scatter_map_type _scatters;   ///< Collection of scatters.
 
-  PetscDM _dm; ///< Manages the PetscSection.
-  PetscVec _globalVec; ///< Global PETSc vector.
-  PetscVec _localVec; ///< Local PETSc vector.
-  subfields_type _subfields; ///< Map of subfields bundled together.
+PetscDM _dm;   ///< Manages the PetscSection.
+PetscVec _globalVec;   ///< Global PETSc vector.
+PetscVec _localVec;   ///< Local PETSc vector.
+subfields_type _subfields;   ///< Map of subfields bundled together.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
-private :
+private:
 
-  Field(const Field&); ///< Not implemented
-  const Field& operator=(const Field&); ///< Not implemented
+Field(const Field&);   ///< Not implemented
+const Field& operator=(const Field&);   ///< Not implemented
 
 }; // Field
 
@@ -562,4 +566,4 @@ private :
 #endif // pylith_topology_field_hh
 
 
-// End of file 
+// End of file

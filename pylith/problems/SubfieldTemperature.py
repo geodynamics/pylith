@@ -16,15 +16,17 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/problems/SubfieldTemperature.py
+# @file pylith/problems/SubfieldTemperature.py
 ##
-## @brief Python object for temperature subfield.
+# @brief Python object for temperature subfield.
 ##
-## Factory: subfield.
+# Factory: subfield.
 
 from .SolutionSubfield import SolutionSubfield
 
 # SubfieldTemperature class
+
+
 class SubfieldTemperature(SolutionSubfield):
   """
   Python object for temperature subfield.
@@ -39,20 +41,20 @@ class SubfieldTemperature(SolutionSubfield):
       Python object for managing SubfieldTemperature facilities and properties.
       """
 
-    ## @class Inventory
-    ## Python object for managing SubfieldTemperature facilities and properties.
+    # @class Inventory
+    # Python object for managing SubfieldTemperature facilities and properties.
     ##
-    ## \b Properties
-    ## @li \b name Name for subfield.
+    # \b Properties
+    # @li \b name Name for subfield.
     ##
-    ## \b Facilities
-    ## @li None
+    # \b Facilities
+    # @li None
 
     import pyre.inventory
 
     from .SolutionSubfield import validateName
-    name = pyre.inventory.str("name", default="temperature", validator=validateName)
-    name.meta['tip'] = "Name for subfield."
+    fieldName = pyre.inventory.str("name", default="temperature", validator=validateName)
+    fieldName.meta['tip'] = "Name for subfield."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -71,8 +73,8 @@ class SubfieldTemperature(SolutionSubfield):
     """
     from pylith.topology.Field import Field
     self.vectorFieldType = Field.SCALAR
-    self.ncomponents = 1
     self.scale = normalizer.temperatureScale()
+    self._setComponents(spaceDim)
     return
 
 

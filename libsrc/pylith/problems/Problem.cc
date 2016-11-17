@@ -202,6 +202,15 @@ pylith::problems::Problem::initialize(void)
 { // initialize
     PYLITH_METHOD_BEGIN;
 
+/*
+    for constraint in constraints.components():
+        constraint.setConstraints(solution)
+    solution.allocate()
+    solution.zeroAll()
+    for integrator in self.integrators.components():
+        integrator.checkConstraints(solution)
+ */
+
     PYLITH_METHOD_END;
 } // initialize
 

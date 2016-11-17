@@ -16,73 +16,74 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/problems/SubfieldDisplacement.py
+# @file pylith/problems/SubfieldDisplacement.py
 ##
-## @brief Python object for displacement subfield.
+# @brief Python object for displacement subfield.
 ##
-## Factory: subfield.
+# Factory: subfield.
 
 from pylith.problems.SolutionSubfield import SolutionSubfield
 
 # SubfieldDisplacement class
+
+
 class SubfieldDisplacement(SolutionSubfield):
-  """
-  Python object for displacement subfield.
-
-  Factory: subfield.
-  """
-
-  # INVENTORY //////////////////////////////////////////////////////////
-
-  class Inventory(SolutionSubfield.Inventory):
     """
-    Python object for managing SubfieldDisplacement facilities and properties.
+    Python object for displacement subfield.
+
+    Factory: subfield.
     """
 
-    ## @class Inventory
-    ## Python object for managing SubfieldDisplacement facilities and properties.
-    ##
-    ## \b Properties
-    ## @li \b name Name for subfield.
-    ##
-    ## \b Facilities
-    ## @li None
+    # INVENTORY //////////////////////////////////////////////////////////
 
-    import pyre.inventory
+    class Inventory(SolutionSubfield.Inventory):
+        """
+        Python object for managing SubfieldDisplacement facilities and properties.
+        """
 
-    from .SolutionSubfield import validateName
-    name = pyre.inventory.str("name", default="displacement", validator=validateName)
-    name.meta['tip'] = "Name for subfield."
+        # @class Inventory
+        # Python object for managing SubfieldDisplacement facilities and properties.
+        ##
+        # \b Properties
+        # @li \b name Name for subfield.
+        ##
+        # \b Facilities
+        # @li None
 
+        import pyre.inventory
 
-  # PUBLIC METHODS /////////////////////////////////////////////////////
+        from .SolutionSubfield import validateName
+        fieldName = pyre.inventory.str("name", default="displacement", validator=validateName)
+        fieldName.meta['tip'] = "Name for subfield."
 
-  def __init__(self, name="subfielddisplacement"):
-    """
-    Constructor.
-    """
-    SolutionSubfield.__init__(self, name)
-    return
+    # PUBLIC METHODS /////////////////////////////////////////////////////
 
+    def __init__(self, name="subfielddisplacement"):
+        """
+        Constructor.
+        """
+        SolutionSubfield.__init__(self, name)
+        return
 
-  def initialize(self, normalizer, spaceDim):
-    """
-    Initialize subfield metadata.
-    """
-    from pylith.topology.Field import Field
-    self.vectorFieldType = Field.VECTOR
-    self.ncomponents = spaceDim
-    self.scale = normalizer.lengthScale()
-    return
+    def initialize(self, normalizer, spaceDim):
+        """
+        Initialize subfield metadata.
+        """
+        from pylith.topology.Field import Field
+        self.vectorFieldType = Field.VECTOR
+        self.scale = normalizer.lengthScale()
+        print spaceDim
+        self._setComponents(spaceDim)
+        return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def soln_subfield():
-  """
-  Factory associated with SubfieldDisplacement.
-  """
-  return SubfieldDisplacement()
+    """
+    Factory associated with SubfieldDisplacement.
+    """
+    return SubfieldDisplacement()
 
 
 # End of file

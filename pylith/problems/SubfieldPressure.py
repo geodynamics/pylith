@@ -16,15 +16,17 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/problems/SubfieldPressure.py
+# @file pylith/problems/SubfieldPressure.py
 ##
-## @brief Python object for pressure subfield.
+# @brief Python object for pressure subfield.
 ##
-## Factory: subfield.
+# Factory: subfield.
 
 from .SolutionSubfield import SolutionSubfield
 
 # SubfieldPressure class
+
+
 class SubfieldPressure(SolutionSubfield):
   """
   Python object for pressure subfield.
@@ -39,20 +41,20 @@ class SubfieldPressure(SolutionSubfield):
       Python object for managing SubfieldPressure facilities and properties.
       """
 
-    ## @class Inventory
-    ## Python object for managing SubfieldPressure facilities and properties.
+    # @class Inventory
+    # Python object for managing SubfieldPressure facilities and properties.
     ##
-    ## \b Properties
-    ## @li \b name Name for subfield.
+    # \b Properties
+    # @li \b name Name for subfield.
     ##
-    ## \b Facilities
-    ## @li None
+    # \b Facilities
+    # @li None
 
     import pyre.inventory
 
     from .SolutionSubfield import validateName
-    name = pyre.inventory.str("name", default="pressure", validator=validateName)
-    name.meta['tip'] = "Name for subfield."
+    fieldName = pyre.inventory.str("name", default="pressure", validator=validateName)
+    fieldName.meta['tip'] = "Name for subfield."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -71,8 +73,8 @@ class SubfieldPressure(SolutionSubfield):
     """
     from pylith.topology.Field import Field
     self.vectorFieldType = Field.SCALAR
-    self.ncomponents = 1
     self.scale = normalizer.pressureScale()
+    self._setComponents(spaceDim)
     return
 
 

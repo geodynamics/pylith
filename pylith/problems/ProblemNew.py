@@ -145,6 +145,7 @@ class ProblemNew(PetscComponent, ModuleProblem):
         """
         # Do minimal setup of solution.
         self.solution.preinitialize(mesh, self.normalizer)
+        ModuleProblem.solution(self.solution.field)
 
         # Set integrators and constraints.
         self._setIntegratorsConstraints()
@@ -230,6 +231,7 @@ class ProblemNew(PetscComponent, ModuleProblem):
         else:
             raise ValueError("Unknown solver type '%s'." % self.solverType)
 
+        self.solution = self.inventory.solution
         self.normalizer = self.inventory.normalizer
         self.materials = self.inventory.materials
         self.bc = self.inventory.bc

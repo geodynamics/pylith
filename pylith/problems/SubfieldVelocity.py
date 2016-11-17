@@ -16,15 +16,17 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/problems/SubfieldVelocity.py
+# @file pylith/problems/SubfieldVelocity.py
 ##
-## @brief Python object for velocity subfield.
+# @brief Python object for velocity subfield.
 ##
-## Factory: subfield.
+# Factory: subfield.
 
 from .SolutionSubfield import SolutionSubfield
 
 # SubfieldVelocity class
+
+
 class SubfieldVelocity(SolutionSubfield):
   """
   Python object for velocity subfield.
@@ -39,20 +41,20 @@ class SubfieldVelocity(SolutionSubfield):
       Python object for managing SubfieldVelocity facilities and properties.
       """
 
-    ## @class Inventory
-    ## Python object for managing SubfieldVelocity facilities and properties.
+    # @class Inventory
+    # Python object for managing SubfieldVelocity facilities and properties.
     ##
-    ## \b Properties
-    ## @li \b name Name for subfield.
+    # \b Properties
+    # @li \b name Name for subfield.
     ##
-    ## \b Facilities
-    ## @li None
+    # \b Facilities
+    # @li None
 
     import pyre.inventory
 
     from .SolutionSubfield import validateName
-    name = pyre.inventory.str("name", default="velocity", validator=validateName)
-    name.meta['tip'] = "Name for subfield."
+    fieldName = pyre.inventory.str("name", default="velocity", validator=validateName)
+    fieldName.meta['tip'] = "Name for subfield."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -71,8 +73,8 @@ class SubfieldVelocity(SolutionSubfield):
     """
     from pylith.topology.Field import Field
     self.vectorFieldType = Field.VECTOR
-    self.ncomponents = spaceDim
     self.scale = normalizer.lengthScale()/normalizer.timeScale()
+    self._setComponents(spaceDim)
     return
 
 

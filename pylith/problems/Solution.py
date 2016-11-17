@@ -16,110 +16,88 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/problems/Solution.py
+# @file pylith/problems/Solution.py
 ##
-## @brief Python solution field for problem.
+# @brief Python solution field for problem.
 ##
-## Factory: solution.
+# Factory: solution.
 
 from pylith.utils.PetscComponent import PetscComponent
 
 # Solution class =======================================================
+
+
 class Solution(PetscComponent):
-  """
-  Python solution field for problem.
-
-  Factory: solution.
-  """
-
-  # INVENTORY //////////////////////////////////////////////////////////
-
-  class Inventory(PetscComponent.Inventory):
     """
-    Python object for managing Solution facilities and properties.
+    Python solution field for problem.
+
+    Factory: solution.
     """
 
-    ## @class Inventory
-    ## Python object for managing Solution facilities and properties.
-    ##
-    ## \b Properties
-    ## @li None
-    ##
-    ## \b Facilities
-    ## @li \b subfields Subfields in solution.
+    # INVENTORY //////////////////////////////////////////////////////////
 
-    import pyre.inventory
+    class Inventory(PetscComponent.Inventory):
+        """
+        Python object for managing Solution facilities and properties.
+        """
 
-    from SolnDisp import SolnDisp
-    from .SolutionSubfield import subfieldFactory
-    subfields = pyre.inventory.facilityArray("subfields", itemFactory=subfieldFactory, factory=SolnDisp)
-    subfields.meta['tip'] = "Subfields in solution."
+        # @class Inventory
+        # Python object for managing Solution facilities and properties.
+        ##
+        # \b Properties
+        # @li None
+        ##
+        # \b Facilities
+        # @li \b subfields Subfields in solution.
 
+        import pyre.inventory
 
-  # PUBLIC METHODS /////////////////////////////////////////////////////
+        from .SolnDisp import SolnDisp
+        from .SolutionSubfield import subfieldFactory
+        subfields = pyre.inventory.facilityArray("subfields", itemFactory=subfieldFactory, factory=SolnDisp)
+        subfields.meta['tip'] = "Subfields in solution."
 
-  def __init__(self, name="solution"):
-    """
-    Constructor.
-    """
-    PetscComponent.__init__(self, name, facility="solution")
-    return
+    # PUBLIC METHODS /////////////////////////////////////////////////////
 
+    def __init__(self, name="solution"):
+        """
+        Constructor.
+        """
+        PetscComponent.__init__(self, name, facility="solution")
+        return
 
-  def preinitialize(self, mesh, normalizer):
-    """
-    """
-    from pylith.topology.Field import Field
-    self.solution = Field(mesh)
-    spaceDim = mesh.coordsys().spaceDim
-    for subfield in self.subfields.components():
-      subfield.initialize(normalizer, spaceDim)
-      self.solution.subfieldAdd(subfield.label, subfield.ncomponents, subfield.vectorFieldType, subfield.scale)
-    self.solution.subfieldsSetup()
-    return
+    def preinitialize(self, mesh, normalizer):
+        """
+        """
+        from pylith.topology.Field import Field
+        self.field = Field(mesh)
+        spaceDim = mesh.coordsys().spaceDim()
+        for subfield in self.subfields.components():
+            subfield.initialize(normalizer, spaceDim)
+            ncomponents = len(subfield.componentNames)
+            print subfield.fieldName, subfield.componentNames, ncomponents, subfield.vectorFieldType, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous, subfield.scale.value
+            self.field.subfieldAdd(subfield.fieldName, subfield.componentNames, subfield.vectorFieldType, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous, subfield.scale.value)
+        self.field.subfieldsSetup()
+        return
 
+    # PRIVATE METHODS ////////////////////////////////////////////////////
 
-  def verifyConfiguration(self):
-    """
-    Verify compatibility of configuration.
-    """
-    return
-
-
-  def initialize(self, constraints, integrators):
-    """
-    Setup solution field.
-    """
-    solution.setupSolnChart()
-
-    for constraint in constraints.components():
-      constraint.setConstraints(solution)
-    solution.allocate()
-    solution.zeroAll()
-    for integrator in self.integrators.components():
-      integrator.checkConstraints(solution)
-
-    return
-
-
-  # PRIVATE METHODS ////////////////////////////////////////////////////
-
-  def _configure(self):
-    """
-    Set members based using inventory.
-    """
-    PetscComponent._configure(self)
-    self.subfields = self.inventory.subfields
-    return
+    def _configure(self):
+        """
+        Set members based using inventory.
+        """
+        PetscComponent._configure(self)
+        self.subfields = self.inventory.subfields
+        return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def solution():
-  """
-  Factory associated with Solution.
-  """
-  return Solution()
+    """
+    Factory associated with Solution.
+    """
+    return Solution()
 
 
 # End of file

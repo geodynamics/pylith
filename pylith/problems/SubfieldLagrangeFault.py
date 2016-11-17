@@ -16,73 +16,73 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/problems/SubfieldLagrangeFault.py
+# @file pylith/problems/SubfieldLagrangeFault.py
 ##
-## @brief Python object for fault Lagrange multipliers subfield.
+# @brief Python object for fault Lagrange multipliers subfield.
 ##
-## Factory: subfield.
+# Factory: subfield.
 
 from .SolutionSubfield import SolutionSubfield
 
 # SubfieldLagrangeFault class
+
+
 class SubfieldLagrangeFault(SolutionSubfield):
-  """
-  Python object for fault Lagrange multipliers subfield.
-
-  Factory: subfield.
-  """
-
-  # INVENTORY //////////////////////////////////////////////////////////
-
-  class Inventory(SolutionSubfield.Inventory):
     """
-    Python object for managing SubfieldLagrangeFault facilities and properties.
+    Python object for fault Lagrange multipliers subfield.
+
+    Factory: subfield.
     """
 
-    ## @class Inventory
-    ## Python object for managing SubfieldLagrangeFault facilities and properties.
-    ##
-    ## \b Properties
-    ## @li \b name Name for subfield.
-    ##
-    ## \b Facilities
-    ## @li None
+    # INVENTORY //////////////////////////////////////////////////////////
 
-    import pyre.inventory
+    class Inventory(SolutionSubfield.Inventory):
+        """
+        Python object for managing SubfieldLagrangeFault facilities and properties.
+        """
 
-    from .SolutionSubfield import validateName
-    name = pyre.inventory.str("name", default="lagrange_multiplier_fault", validator=validateName)
-    name.meta['tip'] = "Name for subfield."
+        # @class Inventory
+        # Python object for managing SubfieldLagrangeFault facilities and properties.
+        ##
+        # \b Properties
+        # @li \b name Name for subfield.
+        ##
+        # \b Facilities
+        # @li None
 
+        import pyre.inventory
 
-  # PUBLIC METHODS /////////////////////////////////////////////////////
+        from .SolutionSubfield import validateName
+        fieldName = pyre.inventory.str("name", default="lagrange_multiplier_fault", validator=validateName)
+        fieldName.meta['tip'] = "Name for subfield."
 
-  def __init__(self, name="subfieldlagrangefault"):
-    """
-    Constructor.
-    """
-    SolutionSubfield.__init__(self, name)
-    return
+    # PUBLIC METHODS /////////////////////////////////////////////////////
 
+    def __init__(self, name="subfieldlagrangefault"):
+        """
+        Constructor.
+        """
+        SolutionSubfield.__init__(self, name)
+        return
 
-  def initialize(self, normalizer, spaceDim):
-    """
-    Initialize subfield metadata.
-    """
-    from pylith.topology.Field import Field
-    self.vectorFieldType = Field.VECTOR
-    self.ncomponents = spaceDim
-    self.scale = normalizer.pressureScale()
-    return
+    def initialize(self, normalizer, spaceDim):
+        """
+        Initialize subfield metadata.
+        """
+        from pylith.topology.Field import Field
+        self.vectorFieldType = Field.VECTOR
+        self.scale = normalizer.pressureScale()
+        self._setComponents(spaceDim)
+        return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def soln_subfield():
-  """
-  Factory associated with SubfieldLagrangeFault.
-  """
-  return SubfieldLagrangeFault()
+    """
+    Factory associated with SubfieldLagrangeFault.
+    """
+    return SubfieldLagrangeFault()
 
 
 # End of file
