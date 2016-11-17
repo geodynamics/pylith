@@ -395,26 +395,6 @@ pylith::materials::TestMaterialNew::testVerifyConfiguration(void)
 
 
 // ----------------------------------------------------------------------
-// Test checkConstraints().
-void
-pylith::materials::TestMaterialNew::testCheckConstraints(void)
-{ // testCheckConstraints
-    PYLITH_METHOD_BEGIN;
-
-    _initializeFull();
-
-    // Call checkConstraints()
-    MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
-    CPPUNIT_ASSERT(_mesh);
-    material->checkConstraints(*_mesh);
-
-    // Nothing to test.
-
-    PYLITH_METHOD_END;
-} // testCheckConstraints
-
-
-// ----------------------------------------------------------------------
 // Test dimension().
 void
 pylith::materials::TestMaterialNew::testDimension(void)

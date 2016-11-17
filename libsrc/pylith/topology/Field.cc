@@ -1271,7 +1271,7 @@ pylith::topology::Field::subfieldAdd(const char *name,
                                      const int basisOrder,
                                      const int quadOrder,
                                      const bool isBasisContinuous,
-                                     const PylithReal scale,
+                                     const double scale,
                                      const validatorfn_type validator)
 { // subfieldAdd
     PYLITH_METHOD_BEGIN;

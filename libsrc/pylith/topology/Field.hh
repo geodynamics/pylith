@@ -322,7 +322,7 @@ void subfieldAdd(const char *name,
                  const int basisOrder,
                  const int quadOrder,
                  const bool isBasisContinuous,
-                 const PylithReal scale =1.0,
+                 const double scale =1.0,
                  const validatorfn_type validator=NULL);
 
 /** Setup sections for subfields.
