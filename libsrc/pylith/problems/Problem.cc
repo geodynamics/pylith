@@ -116,6 +116,14 @@ pylith::problems::Problem::gravityField(spatialdata::spatialdb::GravityField* co
 } // gravityField
 
 // ----------------------------------------------------------------------
+// Set solution field.
+void
+pylith::problems::Problem::solution(pylith::topology::Field* field)
+{ // solution
+    _solution = field;
+} // solution
+
+// ----------------------------------------------------------------------
 // Set integrators over the mesh.
 void
 pylith::problems::Problem::integrators(pylith::feassemble::IntegratorPointwise* integratorArray[],

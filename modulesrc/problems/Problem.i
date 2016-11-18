@@ -74,6 +74,12 @@ void normalizer(const spatialdata::units::Nondimensional& dim);
  */
 void gravityField(spatialdata::spatialdb::GravityField* const g);
 
+/** Set solution field.
+ *
+ * @param[in] field Solution field.
+ */
+void solution(pylith::topology::Field* field);
+
 /** Set handles to integrators.
  *
  * @param[in] integratorArray Array of integrators.

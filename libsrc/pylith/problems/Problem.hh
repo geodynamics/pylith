@@ -88,15 +88,21 @@ SolverTypeEnum solverType(void) const;
 
 /** Set manager of scales used to nondimensionalize problem.
  *
- * @param dim Nondimensionalizer.
+ * @param[in] dim Nondimensionalizer.
  */
 void normalizer(const spatialdata::units::Nondimensional& dim);
 
 /** Set gravity field.
- *
- * @param g Gravity field.
+   *Pr
+ * @param[in] g Gravity field.
  */
 void gravityField(spatialdata::spatialdb::GravityField* const g);
+
+/** Set solution field.
+ *
+ * @param[in] field Solution field.
+ */
+void solution(pylith::topology::Field* field);
 
 /** Set handles to integrators.
  *

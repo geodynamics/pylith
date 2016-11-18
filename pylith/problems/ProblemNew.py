@@ -145,7 +145,7 @@ class ProblemNew(PetscComponent, ModuleProblem):
         """
         # Do minimal setup of solution.
         self.solution.preinitialize(mesh, self.normalizer)
-        ModuleProblem.solution(self.solution.field)
+        ModuleProblem.solution(self, self.solution.field)
 
         # Set integrators and constraints.
         self._setIntegratorsConstraints()
@@ -253,7 +253,7 @@ class ProblemNew(PetscComponent, ModuleProblem):
         integrators = []
         constraints = []
 
-        for material in self.materials.compoments():
+        for material in self.materials.components():
             if not isinstance(material, IntegratorPointwise):
                 raise TypeError("Material '%s' fails integrator implementation test." % material.name)
             integrators.append(material)
@@ -269,7 +269,7 @@ class ProblemNew(PetscComponent, ModuleProblem):
             elif isinstance(bc, ConstraintPointwise):
                 constraints.append(bc)
             else:
-                raise TypeError("Unable to classsify bc '%s' into an in integrator or constraint." % bc)
+                raise TypeError("Unable to classify bc '%s' into an in integrator or constraint." % bc)
 
         ModuleProblem.integrators(self, integrators)
         ModuleProblem.constraints(self, constraints)
