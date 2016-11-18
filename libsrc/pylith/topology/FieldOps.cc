@@ -39,6 +39,7 @@ pylith::topology::FieldOps::createFE(const FieldBase::DiscretizeInfo& feinfo,
     const int basisOrder = PetscMax(feinfo.basisOrder, 0);
     const int quadOrder = PetscMax(feinfo.quadOrder > 0 ? feinfo.quadOrder : basisOrder, 1);
     const PetscBool basisContinuity = feinfo.isBasisContinuous ? PETSC_TRUE : PETSC_FALSE;
+    const PetscBool useTensor = isSimplex ? PETSC_FALSE : PETSC_TRUE;
 
     PetscErrorCode err;
 
@@ -50,7 +51,7 @@ pylith::topology::FieldOps::createFE(const FieldBase::DiscretizeInfo& feinfo,
     PetscSpace space = NULL;
     err = PetscSpaceCreate(PetscObjectComm((PetscObject) dm), &space); PYLITH_CHECK_ERROR(err); assert(space);
     err = PetscSpaceSetType(space, PETSCSPACEPOLYNOMIAL); PYLITH_CHECK_ERROR(err);
-    err = PetscSpacePolynomialSetTensor(space, isSimplex ? PETSC_FALSE : PETSC_TRUE); PYLITH_CHECK_ERROR(err);
+    err = PetscSpacePolynomialSetTensor(space, useTensor); PYLITH_CHECK_ERROR(err);
     err = PetscSpacePolynomialSetNumVariables(space, dim); PYLITH_CHECK_ERROR(err);
     err = PetscSpaceSetOrder(space, basisOrder);
     err = PetscSpaceSetUp(space); PYLITH_CHECK_ERROR(err);
@@ -63,6 +64,7 @@ pylith::topology::FieldOps::createFE(const FieldBase::DiscretizeInfo& feinfo,
     err = PetscDualSpaceSetDM(dualspace, dmCell); PYLITH_CHECK_ERROR(err);
     err = DMDestroy(&dmCell); PYLITH_CHECK_ERROR(err);
     err = PetscDualSpaceSetType(dualspace, PETSCDUALSPACELAGRANGE); PYLITH_CHECK_ERROR(err);
+    err = PetscDualSpaceLagrangeSetTensor(dualspace, useTensor); PYLITH_CHECK_ERROR(err);
     err = PetscDualSpaceSetOrder(dualspace, basisOrder); PYLITH_CHECK_ERROR(err);
     err = PetscDualSpaceLagrangeSetContinuity(dualspace, basisContinuity);
     err = PetscDualSpaceSetUp(dualspace); PYLITH_CHECK_ERROR(err);
