@@ -67,6 +67,15 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::useInertia(const bool v
 
 
 // ----------------------------------------------------------------------
+// Include inertia?
+bool
+pylith::materials::IsotropicLinearElasticityPlaneStrain::useInertia(void) const
+{ // useInertia
+    return _useInertia;
+} // useInertia
+
+
+// ----------------------------------------------------------------------
 // Include body force?
 void
 pylith::materials::IsotropicLinearElasticityPlaneStrain::useBodyForce(const bool value)
@@ -76,6 +85,15 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::useBodyForce(const bool
           << "IsotropicLinearElasticityPlaneStrain::useBodyForce(value="<<value<<")" << journal::endl;
 
     _useBodyForce = value;
+} // useBodyForce
+
+
+// ----------------------------------------------------------------------
+// Include body force?
+bool
+pylith::materials::IsotropicLinearElasticityPlaneStrain::useBodyForce(void) const
+{ // useBodyForce
+    return _useBodyForce;
 } // useBodyForce
 
 
@@ -90,6 +108,16 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::useReferenceState(const
           << "IsotropicLinearElasticityPlaneStrain::useReferenceState="<<value<<")" << journal::endl;
 
     _useReferenceState = value;
+} // useReferenceState
+
+
+// ----------------------------------------------------------------------
+// Use reference stress and strain in computation of stress and
+// strain?
+bool
+pylith::materials::IsotropicLinearElasticityPlaneStrain::useReferenceState(void) const
+{ // useReferenceState
+    return _useReferenceState;
 } // useReferenceState
 
 
