@@ -28,50 +28,51 @@
 #define pylith_feassemble_feassemblefwd_hh
 
 namespace pylith {
-  namespace feassemble {
+    namespace feassemble {
 
-    class CellGeometry;
-    class GeometryLine2D;
-    class GeometryLine3D;
-    class GeometryTri2D;
-    class GeometryTri3D;
-    class GeometryQuad2D;
-    class GeometryQuad3D;
-    class GeometryTet3D;
-    class GeometryHex3D;
+        class CellGeometry;
+        class GeometryLine2D;
+        class GeometryLine3D;
+        class GeometryTri2D;
+        class GeometryTri3D;
+        class GeometryQuad2D;
+        class GeometryQuad3D;
+        class GeometryTet3D;
+        class GeometryHex3D;
 
-    class Quadrature;
-    class QuadratureRefCell;
-    class QuadratureEngine;
-    class Quadrature1Din2D;
-    class Quadrature1Din3D;
-    class Quadrature2D;
-    class Quadrature2Din3D;
-    class Quadrature3D;
+        class Quadrature;
+        class QuadratureRefCell;
+        class QuadratureEngine;
+        class Quadrature1Din2D;
+        class Quadrature1Din3D;
+        class Quadrature2D;
+        class Quadrature2Din3D;
+        class Quadrature3D;
 
-    class Constraint;
-    class Integrator;
+        class Constraint;
+        class Integrator;
 
-    class IntegratorPointwise;
+        class IntegratorElasticity;
+        class ElasticityImplicit;
+        class ElasticityExplicit;
 
-    class IntegratorElasticity;
-    class ElasticityImplicit;
-    class ElasticityExplicit;
+        class ElasticityExplicitTet4;
+        class ElasticityExplicitTri3;
 
-    class ElasticityExplicitTet4;
-    class ElasticityExplicitTri3;
+        class IntegratorElasticityLgDeform;
+        class ElasticityImplicitLgDeform;
+        class ElasticityExplicitLgDeform;
 
-    class IntegratorElasticityLgDeform;
-    class ElasticityImplicitLgDeform;
-    class ElasticityExplicitLgDeform;
+        class ElasticityImplicitCUDA;
 
-    class ElasticityImplicitCUDA;
+        class IntegratorPointwise;
+        class ConstraintPointwise;
 
-  } // feassemble
+    } // feassemble
 } // pylith
 
 
 #endif // pylith_feassemble_feassemblefwd_hh
 
 
-// End of file 
+// End of file

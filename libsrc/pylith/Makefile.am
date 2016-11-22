@@ -78,7 +78,6 @@ libpylith_la_SOURCES = \
 	feassemble/Quadrature3D.cc \
 	feassemble/Integrator.cc \
 	feassemble/IntegratorElasticity.cc \
-	feassemble/IntegratorPointwise.cc \
 	feassemble/ElasticityImplicit.cc \
 	feassemble/ElasticityExplicit.cc \
 	feassemble/ElasticityExplicitTri3.cc \
@@ -86,6 +85,8 @@ libpylith_la_SOURCES = \
 	feassemble/IntegratorElasticityLgDeform.cc \
 	feassemble/ElasticityImplicitLgDeform.cc \
 	feassemble/ElasticityExplicitLgDeform.cc \
+	feassemble/IntegratorPointwise.cc \
+	feassemble/ConstraintPointwise.cc \
 	fekernels/dispvel.c \
 	fekernels/elasticity.c \
 	fekernels/linearelasticityplanestrain.c \
@@ -193,4 +194,4 @@ if ENABLE_CUBIT
 endif
 
 
-# End of file 
+# End of file

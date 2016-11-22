@@ -35,6 +35,7 @@ subpkginclude_HEADERS = \
 	IntegratorElasticity.hh \
 	IntegratorElasticityLgDeform.hh \
 	IntegratorPointwise.hh \
+	ConstraintPointwise.hh \
 	GeometryLine2D.hh \
 	GeometryLine3D.hh \
 	GeometryTri2D.hh \
@@ -72,4 +73,4 @@ dist_noinst_DATA = \
 	tet4_elasticity.wxm
 
 
-# End of file 
+# End of file
