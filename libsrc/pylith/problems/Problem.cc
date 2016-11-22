@@ -24,7 +24,7 @@
 #include "pylith/topology/Field.hh" // USES Field
 
 #include "pylith/feassemble/IntegratorPointwise.hh" // USES IntegratorPointwise
-//#include "pylith/feassemble/ConstraintPointwise.hh" // USES ConstraintPointwise
+#include "pylith/feassemble/ConstraintPointwise.hh" // USES ConstraintPointwise
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 
@@ -148,7 +148,7 @@ pylith::problems::Problem::integrators(pylith::feassemble::IntegratorPointwise* 
 // ----------------------------------------------------------------------
 // Set constraints over the mesh.
 void
-pylith::problems::Problem::constraints(pylith::feassemble::Constraint* constraintArray[],
+pylith::problems::Problem::constraints(pylith::feassemble::ConstraintPointwise* constraintArray[],
                                        const int numConstraints)
 { // constraints
     PYLITH_METHOD_BEGIN;
@@ -210,6 +210,12 @@ pylith::problems::Problem::preinitialize(const pylith::topology::Mesh& mesh)
         _integrators[i]->gravityField(_gravityField);
     } // for
 
+    const size_t numConstraints = _constraints.size();
+    for (size_t i=0; i < numConstraints; ++i) {
+        assert(_constraints[i]);
+        _constraints[i]->normalizer(*_normalizer);
+    } // for
+
     PYLITH_METHOD_END;
 } // preinitialize
 
@@ -231,19 +237,16 @@ pylith::problems::Problem::verifyConfiguration(int* const materialIds,
     // Check to make sure integrators are compatible with the solution.
     const size_t numIntegrators = _integrators.size();
     for (size_t i=0; i < numIntegrators; ++i) {
+        assert(_integrators[i]);
         _integrators[i]->verifyConfiguration(*_solution);
     } // for
 
-    journal::warning_t warning("problem");
-    warning << journal::at(__HERE__)
-            << "Problem::verifyConfiguration() missing verification of constraints." << journal::endl;
-/* // :TODO: Implement this.
     // Check to make sure constraints are compatible with the solution.
     const size_t numConstraints = _constraints.size();
     for (size_t i=0; i < numConstraints; ++i) {
+        assert(_constraints[i]);
         _constraints[i]->verifyConfiguration(*_solution);
-    }
- */
+    } // for
 
     PYLITH_METHOD_END;
 }  // verifyConfiguration
@@ -268,10 +271,12 @@ pylith::problems::Problem::initialize(void)
         _integrators[i]->initialize(*_solution);
     } // for
 
-    // Initilaize constraints.
-    journal::warning_t warning("problem");
-    warning << journal::at(__HERE__)
-            << "Problem::initialize() missing initialization of constraints." << journal::endl;
+    // Initialize constraints.
+    const size_t numConstraints = _constraints.size();
+    for (size_t i=0; i < numConstraints; ++i) {
+        assert(_constraints[i]);
+        _constraints[i]->initialize(*_solution);
+    } // for
 
     // Initialize solution field.
     _solution->allocate();

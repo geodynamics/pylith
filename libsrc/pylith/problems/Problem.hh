@@ -28,7 +28,7 @@
 // Include directives ---------------------------------------------------
 #include "problemsfwd.hh" // forward declarations
 
-#include "pylith/feassemble/feassemblefwd.hh" // HASA Integrator, Constraint
+#include "pylith/feassemble/feassemblefwd.hh" // HASA IntegratorPointwise, ConstraintPointwise
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 #include "pylith/meshio/meshiofwd.hh" // HASA OutputManager
 #include "spatialdata/units/unitsfwd.hh" // HASA Nondimensional
@@ -117,7 +117,7 @@ void integrators(pylith::feassemble::IntegratorPointwise* integratorArray[],
  * @param[in] constraintArray Array of constraints.
  * @param[in] numContraints Number of constraints.
  */
-void constraints(pylith::feassemble::Constraint* constraintArray[],
+void constraints(pylith::feassemble::ConstraintPointwise* constraintArray[],
                  const int numConstraints);
 
 /** Set handles to solution outputs.
@@ -228,7 +228,7 @@ pylith::topology::Field* _jacobianLHSLumpedInv;   ///< Handle to inverse lumped 
 spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalization of scales.
 spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
 std::vector<pylith::feassemble::IntegratorPointwise*> _integrators;   ///< Array of integrators.
-std::vector<pylith::feassemble::Constraint*> _constraints;   ///< Array of constraints.
+std::vector<pylith::feassemble::ConstraintPointwise*> _constraints;   ///< Array of constraints.
 std::vector<pylith::meshio::OutputManager*> _outputs; ///< Array of solution output managers.
 SolverTypeEnum _solverType;   ///< Problem (solver) type.
 
