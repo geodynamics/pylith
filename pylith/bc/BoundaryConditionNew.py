@@ -16,65 +16,75 @@
 # ----------------------------------------------------------------------
 #
 
-# @file pylith/feassemble/IntegratorPointwise.py
+# @file pylith/bc/BoundaryConditionNew.py
 ##
-# @brief Python abstract base class for pointwise integrators.
+# @brief Python abstract base class for managing a boundary condition.
+##
+# This implementation of a boundary condition applies to a single
+# boundary of an domain.
+##
+# Factory: boundary_condition
 
 from pylith.utils.PetscComponent import PetscComponent
+from .bc import BoundaryConditionNew as ModuleBoundaryConditionNew
 
-# IntegratorPointwise class
+# Validator for label
 
 
-class IntegratorPointwise(PetscComponent):
+def validateLabel(value):
     """
-    Python abstract base class for pointwise integrators.
+    Validate label for group/nodeset/pset.
+    """
+    if 0 == len(value):
+        raise ValueError("Label for boundary condition group/nodeset/pset in mesh not specified.")
+    return value
 
-    Factory: material
+
+# BoundaryConditionNew class
+class BoundaryConditionNew(PetscComponent, ModuleBoundaryConditionNew):
+    """
+    Python abstract base class for managing a boundary condition.
+
+    This implementation of a boundary condition applies to a single
+    face of an domain.
+
+    Factory: boundary_condition
     """
 
     # INVENTORY //////////////////////////////////////////////////////////
 
     class Inventory(PetscComponent.Inventory):
         """
-        Python object for managing IntegratorPointwise facilities and properties.
+        Python object for managing BoundaryConditionNew facilities and properties.
         """
 
         # @class Inventory
-        # Python object for managing IntegratorPointwise facilities and properties.
+        # Python object for managing BoundaryConditionNew facilities and properties.
         ##
         # \b Properties
-        # @li None
+        # @li \b label Label identifier for boundary.
         ##
         # \b Facilities
-        # @li \b auxiliary_fields Discretization of auxiliary fields associated with material.
-        # @li \b db_auxiliary_fields Database for auxiliary fields associated with material.
 
         import pyre.inventory
 
-        from pylith.topology.AuxSubfield import subfieldFactory
-        from pylith.utils.EmptyBin import EmptyBin
-        auxFields = pyre.inventory.facilityArray("auxiliary_fields", itemFactory=subfieldFactory, factory=EmptyBin)
-        auxFields.meta['tip'] = "Discretization of physical properties and state variables."
-
-        from spatialdata.spatialdb.SimpleDB import SimpleDB
-        auxFieldsDB = pyre.inventory.facility("db_auxiliary_fields", family="spatial_database", factory=SimpleDB)
-        auxFieldsDB.meta['tip'] = "Database for physical property parameters."
+        label = pyre.inventory.str("label", default="", validator=validateLabel)
+        label.meta['tip'] = "Label identifier for boundary."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="integratorpointwise"):
+    def __init__(self, name="boundarycondition"):
         """
         Constructor.
         """
-        PetscComponent.__init__(self, name, facility="integrator")
+        PetscComponent.__init__(self, name, facility="boundary_condition")
         self._createModuleObj()
         return
 
     def preinitialize(self, mesh):
         """
-        Do pre-initialization setup.
+        Setup boundary condition.
         """
-        self._setupLogging()
         import weakref
         self.mesh = weakref.ref(mesh)
         return
@@ -87,11 +97,12 @@ class IntegratorPointwise(PetscComponent):
         """
         try:
             PetscComponent._configure(self)
-            self.auxFieldsDB(self.inventory.auxFieldsDB)
-
+            ModuleBoundaryConditionNew.label(self, self.inventory.label)
         except ValueError, err:
             aliases = ", ".join(self.aliases)
-            raise ValueError("Error while configuring integrator (%s):\n%s" % (aliases, err.message))
+            raise ValueError("Error while configuring boundary condition "
+                             "(%s):\n%s" % (aliases, err.message))
+
         return
 
     def _createModuleObj(self):
@@ -99,7 +110,7 @@ class IntegratorPointwise(PetscComponent):
         Call constructor for module object for access to C++ object.
         """
         raise NotImplementedError, \
-            "Please implement _createModuleOb() in derived class."
+            "Please implement _createModuleObj() in derived class."
 
 
 # End of file
