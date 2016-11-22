@@ -36,7 +36,7 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::IntegratorPointwise::IntegratorPointwise(void) :
-    _normalizer(0),
+    _normalizer(new spatialdata::units::Nondimensional),
     _gravityField(0),
     _logger(0),
     _auxFields(0),

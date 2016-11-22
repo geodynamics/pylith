@@ -79,7 +79,7 @@ bool hasAuxField(const char* name);
 
 /** Get auxiliary field.
  *
- * @param[in] field Field over material.
+ * @param[out] field Field over material.
  * @param[in] name Name of field to retrieve.
  */
 void getAuxField(pylith::topology::Field *field,
