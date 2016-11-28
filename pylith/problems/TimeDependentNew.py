@@ -99,6 +99,12 @@ class TimeDependentNew(ProblemNew, ModuleTimeDependent):
             self._info.log("Pre-initializing problem.")
         import weakref
         self.mesh = weakref.ref(mesh)
+
+        ModuleTimeDependent.startTime(self, self.inventory.startTime.value)
+        ModuleTimeDependent.dtInitial(self, self.inventory.dtInitial.value)
+        ModuleTimeDependent.totalTime(self, self.inventory.totalTime.value)
+        ModuleTimeDependent.maxTimeSteps(self, self.inventory.maxTimeSteps)
+
         ProblemNew.preinitialize(self, mesh)
         return
 
@@ -151,10 +157,10 @@ class TimeDependentNew(ProblemNew, ModuleTimeDependent):
         Set members based using inventory.
         """
         ProblemNew._configure(self)
-        ModuleTimeDependent.startTime(self, self.inventory.startTime.value)
-        ModuleTimeDependent.dtInitial(self, self.inventory.dtInitial.value)
-        ModuleTimeDependent.totalTime(self, self.inventory.totalTime.value)
-        ModuleTimeDependent.maxTimeSteps(self, self.inventory.maxTimeSteps)
+        self.startTime = self.inventory.startTime
+        self.dtInitial = self.inventory.dtInitial
+        self.totalTime = self.inventory.totalTime
+        self.maxTimeSteps = self.inventory.maxTimeSteps
         return
 
 

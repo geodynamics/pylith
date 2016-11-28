@@ -77,6 +77,8 @@ class IntegratorPointwise(PetscComponent):
         self._setupLogging()
         import weakref
         self.mesh = weakref.ref(mesh)
+
+        self.auxFieldsDB(self.inventory.auxFieldsDB)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -87,7 +89,6 @@ class IntegratorPointwise(PetscComponent):
         """
         try:
             PetscComponent._configure(self)
-            self.auxFieldsDB(self.inventory.auxFieldsDB)
 
         except ValueError, err:
             aliases = ", ".join(self.aliases)

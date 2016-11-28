@@ -84,6 +84,13 @@ class MaterialNew(IntegratorPointwise):
         self.output = None
         return
 
+    def preinitialize(self, mesh):
+        IntegratorPointwise.preinitialize(self)
+
+        self.id(self.materialId)
+        self.label(self.label)
+        return
+
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
@@ -92,8 +99,8 @@ class MaterialNew(IntegratorPointwise):
         """
         try:
             IntegratorPointwise._configure(self)
-            self.id(self.inventory.materialId)
-            self.label(self.inventory.label)
+            self.materialId = self.inventory.materialId
+            self.label = self.inventory.label
 
         except ValueError, err:
             aliases = ", ".join(self.aliases)

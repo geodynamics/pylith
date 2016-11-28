@@ -41,6 +41,9 @@ libpylith_la_SOURCES = \
 	bc/Neumann.cc \
 	bc/AbsorbingDampers.cc \
 	bc/PointForce.cc \
+	bc/BoundaryConditionNew.cc \
+	bc/DirichletNew.cc \
+	bc/DirichletTimeDependent.cc \
 	faults/Fault.cc \
 	faults/TopologyOps.cc \
 	faults/CohesiveTopology.cc \

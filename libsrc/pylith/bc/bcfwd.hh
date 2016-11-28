@@ -28,26 +28,30 @@
 #define pylith_bc_bcfwd_hh
 
 namespace pylith {
-  namespace bc {
+    namespace bc {
 
-    class BoundaryCondition;
-    class BoundaryConditionPoints;
-    class BCIntegratorSubMesh;
-    class TimeDependent;
-    class TimeDependentPoints;
-    class TimeDependentSubMesh;
-    class DirichletBC;
-    class DirichletBoundary;
-    class Neumann;
-    class Neumann_NEW;
-    class AbsorbingDampers;
-    class PointForce;
+        class BoundaryCondition;
+        class BoundaryConditionPoints;
+        class BCIntegratorSubMesh;
+        class TimeDependent;
+        class TimeDependentPoints;
+        class TimeDependentSubMesh;
+        class DirichletBC;
+        class DirichletBoundary;
+        class Neumann;
+        class Neumann_NEW;
+        class AbsorbingDampers;
+        class PointForce;
 
-  } // bc
+        class BoundaryConditionNew;
+        class DirichletNew;
+        class DirichletTimeDependent;
+
+    } // bc
 } // pylith
 
 
 #endif // pylith_bc_bcfwd_hh
 
 
-// End of file 
+// End of file

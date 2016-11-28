@@ -80,6 +80,14 @@ class IsotropicLinearElasticityPlaneStrain(MaterialNew, ModuleMaterial):
         MaterialNew.__init__(self, name)
         return
 
+    def preinitialize(self, mesh):
+        MaterialNew.preinitialize(self, mesh)
+
+        ModuleMaterial.useInertia(self, self.inventory.useInertia)
+        ModuleMaterial.useBodyForce(self, self.inventory.useBodyForce)
+        ModuleMaterial.useReferenceState(self, self.inventory.useReferenceState)
+        return
+
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
@@ -88,9 +96,9 @@ class IsotropicLinearElasticityPlaneStrain(MaterialNew, ModuleMaterial):
         """
         try:
             MaterialNew._configure(self)
-            ModuleMaterial.useInertia(self, self.inventory.useInertia)
-            ModuleMaterial.useBodyForce(self, self.inventory.useBodyForce)
-            ModuleMaterial.useReferenceState(self, self.inventory.useReferenceState)
+            self.useInertia = self.inventory.useInertia
+            self.useBodyForce = self.inventory.useBodyForce
+            self.useReferenceState = self.inventory.useReferenceState
 
         except ValueError, err:
             aliases = ", ".join(self.aliases)

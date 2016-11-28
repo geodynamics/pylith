@@ -143,9 +143,24 @@ class ProblemNew(PetscComponent, ModuleProblem):
         """
         Do minimal initialization.
         """
+        ModuleProblem.solverType(self, self.solverType)
+        ModuleProblem.normalizer(self, self.normalizer)
+
         # Do minimal setup of solution.
         self.solution.preinitialize(mesh, self.normalizer)
         ModuleProblem.solution(self, self.solution.field)
+
+        # Preinitialize materials
+        for material in self.materials.components():
+            material.preinitialize(mesh)
+
+        # Preinitialize BC
+        for bc in self.bc.components():
+            bc.preinitialize(mesh)
+
+        # Preinitialize interfaces
+        for interface in self.interfaces.components():
+            interface.preinitialize(mesh)
 
         # Set integrators and constraints.
         self._setIntegratorsConstraints()
@@ -245,8 +260,6 @@ class ProblemNew(PetscComponent, ModuleProblem):
             self.gravityField = self.inventory.gravityField
             ModuleProblem.gravityField(self, self.gravityField)
 
-        ModuleProblem.solverType(self, self.solverType)
-        ModuleProblem.normalizer(self, self.normalizer)
         return
 
     def _setIntegratorsConstraints(self):

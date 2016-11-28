@@ -120,10 +120,14 @@ void auxFieldsDB(spatialdata::spatialdb::SpatialDB* value);
 /** Set discretization information for auxiliary subfield.
  *
  * @param[in] name Name of auxiliary subfield.
- * @feInfo Discretization information for subfield.
+ * @param[in] basisOrder Polynomial order for basis.
+ * @param[in] quadOrder Order of quadrature rule.
+ * @param[in] isBasisContinuous True if basis is continuous.
  */
 void auxFieldDiscretization(const char* name,
-                            const pylith::topology::FieldBase::DiscretizeInfo& feInfo);
+                            const int basisOrder,
+                            const int quadOrder,
+                            const bool isBasisContinuous);
 
 /** Get discretization information for auxiliary subfield.
  *

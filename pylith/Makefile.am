@@ -32,6 +32,9 @@ nobase_pkgpyexec_PYTHON = \
 	bc/TimeDependent.py \
 	bc/TimeDependentPoints.py \
 	bc/ZeroDispDB.py \
+	bc/BoundaryConditionNew.py \
+	bc/DirichletNew.py \
+	bc/DirichletTimeDependent.py \
 	faults/__init__.py \
 	faults/BruneSlipFn.py \
 	faults/ConstRateSlipFn.py \

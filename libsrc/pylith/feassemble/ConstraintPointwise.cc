@@ -190,13 +190,40 @@ pylith::feassemble::ConstraintPointwise::auxFieldsDB(spatialdata::spatialdb::Spa
 // Set discretization information for auxiliary subfield.
 void
 pylith::feassemble::ConstraintPointwise::auxFieldDiscretization(const char* name,
-                                                                const pylith::topology::FieldBase::DiscretizeInfo& feInfo)
+                                                                const int basisOrder,
+                                                                const int quadOrder,
+                                                                const bool isBasisContinuous)
 { // discretization
     journal::debug_t debug("constraint");
     debug << journal::at(__HERE__)
-          << "ConstraintPointwise::auxFieldDiscretization(name="<<name<<", feInfo="<<&feInfo<<")" << journal::endl;
+          << "ConstraintPointwise::auxFieldDiscretization(name="<<name<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<")" << journal::endl;
 
+    pylith::topology::FieldBase::DiscretizeInfo feInfo;
+    feInfo.basisOrder = basisOrder;
+    feInfo.quadOrder = quadOrder;
+    feInfo.isBasisContinuous = isBasisContinuous;
     _auxFieldsFEInfo[name] = feInfo;
+} // discretization
+
+
+// ----------------------------------------------------------------------
+// Get discretization information for auxiliary subfield.
+const pylith::topology::FieldBase::DiscretizeInfo&
+pylith::feassemble::ConstraintPointwise::auxFieldDiscretization(const char* name) const
+{ // discretization
+    PYLITH_METHOD_BEGIN;
+
+    discretizations_type::const_iterator iter = _auxFieldsFEInfo.find(name);
+    if (iter != _auxFieldsFEInfo.end()) {
+        PYLITH_METHOD_RETURN(iter->second);
+    } else { // not found so try default
+        iter = _auxFieldsFEInfo.find("default");
+        if (iter == _auxFieldsFEInfo.end()) {
+            throw std::logic_error("Default discretization not set for auxiliary fields.");
+        } // if
+    } // if/else
+
+    PYLITH_METHOD_RETURN(iter->second); // default
 } // discretization
 
 

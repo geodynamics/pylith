@@ -129,29 +129,21 @@ pylith::feassemble::IntegratorPointwise::auxFieldsDB(spatialdata::spatialdb::Spa
 // Set discretization information for auxiliary subfield.
 void
 pylith::feassemble::IntegratorPointwise::auxFieldDiscretization(const char* name,
-                                                                const pylith::topology::FieldBase::DiscretizeInfo& feInfo)
+                                                                const int basisOrder,
+                                                                const int quadOrder,
+                                                                const bool isBasisContinuous)
 { // discretization
     journal::debug_t debug("integrator");
     debug << journal::at(__HERE__)
-          << "IntegratorPointwise::auxFieldDiscretization(name="<<name<<", feInfo="<<&feInfo<<")" << journal::endl;
+          << "IntegratorPointwise::auxFieldDiscretization(name="<<name<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<")" << journal::endl;
 
+    pylith::topology::FieldBase::DiscretizeInfo feInfo;
+    feInfo.basisOrder = basisOrder;
+    feInfo.quadOrder = quadOrder;
+    feInfo.isBasisContinuous = isBasisContinuous;
     _auxFieldsFEInfo[name] = feInfo;
 } // discretization
 
-
-// ----------------------------------------------------------------------
-// Check whether RHS Jacobian needs to be recomputed.
-bool
-pylith::feassemble::IntegratorPointwise::needNewRHSJacobian(void) const {
-    return _needNewRHSJacobian;
-} // needNewRHSJacobian
-
-// ----------------------------------------------------------------------
-// Check whether LHS Jacobian needs to be recomputed.
-bool
-pylith::feassemble::IntegratorPointwise::needNewLHSJacobian(void) const {
-    return _needNewLHSJacobian;
-} // needNewLHSJacobian
 
 // ----------------------------------------------------------------------
 // Get discretization information for auxiliary subfield.
@@ -173,6 +165,20 @@ pylith::feassemble::IntegratorPointwise::auxFieldDiscretization(const char* name
     PYLITH_METHOD_RETURN(iter->second); // default
 } // discretization
 
+
+// ----------------------------------------------------------------------
+// Check whether RHS Jacobian needs to be recomputed.
+bool
+pylith::feassemble::IntegratorPointwise::needNewRHSJacobian(void) const {
+    return _needNewRHSJacobian;
+} // needNewRHSJacobian
+
+// ----------------------------------------------------------------------
+// Check whether LHS Jacobian needs to be recomputed.
+bool
+pylith::feassemble::IntegratorPointwise::needNewLHSJacobian(void) const {
+    return _needNewLHSJacobian;
+} // needNewLHSJacobian
 
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.

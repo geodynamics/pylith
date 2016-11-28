@@ -29,7 +29,7 @@ from pylith.feassemble.ConstraintPointwise import ConstraintPointwise
 # DirichletNew class
 
 
-class DirichletNew(BoundaryCondition,
+class DirichletNew(BoundaryConditionNew,
                    ConstraintPointwise):
     """
     Python object for managing a Dirichlet (prescribed values)
@@ -44,7 +44,7 @@ class DirichletNew(BoundaryCondition,
         """
         Constructor.
         """
-        BoundaryCondition.__init__(self, name)
+        BoundaryConditionNew.__init__(self, name)
         ConstraintPointwise.__init__(self, name)
         return
 
@@ -52,7 +52,7 @@ class DirichletNew(BoundaryCondition,
         """
         Do pre-initialization setup.
         """
-        BoundaryCondition.preinitialize(self, mesh)
+        BoundaryConditionNew.preinitialize(self, mesh)
         Constraint.preinitialize(self, mesh)
         return
 
@@ -63,7 +63,7 @@ class DirichletNew(BoundaryCondition,
         Setup members using inventory.
         """
         try:
-            BoundaryCondition._configure(self)
+            BoundaryConditionNew._configure(self)
             ConstraintPointwise._configure(self)
         except ValueError, err:
             aliases = ", ".join(self.aliases)

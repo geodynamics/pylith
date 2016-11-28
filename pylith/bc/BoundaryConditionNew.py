@@ -87,6 +87,8 @@ class BoundaryConditionNew(PetscComponent, ModuleBoundaryConditionNew):
         """
         import weakref
         self.mesh = weakref.ref(mesh)
+
+        ModuleBoundaryConditionNew.label(self, self.label)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -97,7 +99,7 @@ class BoundaryConditionNew(PetscComponent, ModuleBoundaryConditionNew):
         """
         try:
             PetscComponent._configure(self)
-            ModuleBoundaryConditionNew.label(self, self.inventory.label)
+            self.label = self.inventory.label
         except ValueError, err:
             aliases = ", ".join(self.aliases)
             raise ValueError("Error while configuring boundary condition "

@@ -40,6 +40,7 @@ swig_sources = \
 	PowerLawPlaneStrain.i \
 	DruckerPrager3D.i \
 	DruckerPragerPlaneStrain.i \
+	../feassemble/IntegratorPointwise.i \
 	MaterialNew.i \
 	IsotropicLinearElasticityPlaneStrain.i
 
@@ -78,4 +79,4 @@ MAINTAINERCLEANFILES = \
 	$(srcdir)/materials.py
 
 
-# End of file 
+# End of file

@@ -38,7 +38,12 @@ swig_sources = \
 	PointForce.i \
 	../feassemble/Constraint.i \
 	../feassemble/Quadrature.i \
-	../feassemble/Integrator.i
+	../feassemble/Integrator.i \
+	../feassemble/ConstraintPointwise.i \
+	../feassemble/IntegratorPointwise.i \
+	BoundaryConditionNew.i \
+	DirichletNew.i \
+	DirichletTimeDependent.i
 
 swig_generated = \
 	bc_wrap.cxx \
@@ -69,4 +74,4 @@ MAINTAINERCLEANFILES = \
 	$(srcdir)/bc.py
 
 
-# End of file 
+# End of file

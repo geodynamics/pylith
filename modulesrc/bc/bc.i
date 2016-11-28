@@ -1,5 +1,3 @@
-// -*- C++ -*-
-//
 // ======================================================================
 //
 // Brad T. Aagaard, U.S. Geological Survey
@@ -31,16 +29,22 @@
 #include "pylith/bc/AbsorbingDampers.hh"
 #include "pylith/bc/Neumann.hh"
 #include "pylith/bc/PointForce.hh"
+
+#include "pylith/feassemble/ConstraintPointwise.hh"
+#include "pylith/feassemble/IntegratorPointwise.hh"
+#include "pylith/bc/BoundaryConditionNew.hh"
+#include "pylith/bc/DirichletNew.hh"
+#include "pylith/bc/DirichletTimeDependent.hh"
 %}
 
 %include "exception.i"
 %exception {
-  try {
-    $action
-  } catch (const std::exception& err) {
-    SWIG_exception(SWIG_RuntimeError, err.what());
-  } // try/catch
- } // exception
+    try {
+        $action
+    } catch (const std::exception& err) {
+        SWIG_exception(SWIG_RuntimeError, err.what());
+    } // try/catch
+}  // exception
 
 %include "typemaps.i"
 %include "../include/scalartypemaps.i"
@@ -51,7 +55,7 @@
 %}
 %include "../include/numpy.i"
 %init %{
-import_array();
+    import_array();
 %}
 
 // Interfaces
@@ -69,5 +73,13 @@ import_array();
 %include "Neumann.i"
 %include "PointForce.i"
 
-// End of file
+%include "../feassemble/ConstraintPointwise.i" // ISA Constraint
+%include "../feassemble/IntegratorPointwise.i" // ISA Integrator
 
+%include "BoundaryConditionNew.i"
+%include "DirichletNew.i"
+%include "DirichletTimeDependent.i"
+
+
+
+// End of file

@@ -58,13 +58,13 @@ class DirichletTimeDependent(DirichletNew,
 
         import pyre.inventory
 
-        useInitial = pyre.property.bool("use_initial", default=True)
+        useInitial = pyre.inventory.bool("use_initial", default=True)
         useInitial.meta['tip'] = "Use initial term in time-dependent expression."
 
-        useRate = pyre.property.bool("use_rate", default=False)
+        useRate = pyre.inventory.bool("use_rate", default=False)
         useRate.meta['tip'] = "Use rate term in time-dependent expression."
 
-        useTimeHistory = pyre.property.bool("use_time_history", default=False)
+        useTimeHistory = pyre.inventory.bool("use_time_history", default=False)
         useTimeHistory.meta['tip'] = "Use time history term in time-dependent expression."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -81,6 +81,10 @@ class DirichletTimeDependent(DirichletNew,
         Do pre-initialization setup.
         """
         DirichletNew.preinitialize(self, mesh)
+
+        ModuleDirichletTimeDependent.useInitial(self, self.useInitial)
+        ModuleDirichletTimeDependent.useRate(self, self.useRate)
+        ModuleDirichletTimeDependent.useTimeHistory(self, self.useTimeHistory)
         return
 
     def verifyConfiguration(self):
@@ -90,7 +94,7 @@ class DirichletTimeDependent(DirichletNew,
         logEvent = "%sverify" % self._loggingPrefix
         self._eventLogger.eventBegin(logEvent)
 
-        BoundaryCondition.verifyConfiguration(self, self.mesh())
+        DirichletNew.verifyConfiguration(self, self.mesh())
         spaceDim = self.mesh().coordsys().spaceDim()
         for d in self.bcDOF:
             if d < 0 or d >= spaceDim:
@@ -107,7 +111,7 @@ class DirichletTimeDependent(DirichletNew,
         Setup members using inventory.
         """
         try:
-            Dirhcletnew._configure(self)
+            DirichletNew._configure(self)
         except ValueError, err:
             aliases = ", ".join(self.aliases)
             raise ValueError("Error while configuring Dirichlet boundary condition "

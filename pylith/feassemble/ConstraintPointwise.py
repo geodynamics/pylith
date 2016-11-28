@@ -21,6 +21,8 @@
 # @brief Python abstract base class for constraints on operator
 # actions with finite-elements.
 
+from pylith.utils.PetscComponent import PetscComponent
+
 
 def validateDOF(value):
     """
@@ -40,7 +42,7 @@ def validateDOF(value):
 
 
 # ConstraintPointwise class
-class ConstraintPointwise(object):
+class ConstraintPointwise(PetscComponent):
     """
     Python abstract base class for constraints on operator
     actions with finite-elements.
@@ -66,7 +68,7 @@ class ConstraintPointwise(object):
 
         import pyre.inventory
 
-        field = pyre.property.str("field", default="displacement")
+        field = pyre.inventory.str("field", default="displacement")
         field.meta['tip'] = "Field to constrain."
 
         constrainedDOF = pyre.inventory.list("constrained_dof", default=[], validator=validateDOF)

@@ -39,9 +39,12 @@ subpkginclude_HEADERS = \
 	Neumann.icc \
 	PointForce.hh \
 	PointForce.icc \
+	BoundaryConditionNew.hh \
+	DirichletNew.hh \
+	DirichletTimeDependent.hh \
 	bcfwd.hh
 
 noinst_HEADERS =
 
 
-# End of file 
+# End of file

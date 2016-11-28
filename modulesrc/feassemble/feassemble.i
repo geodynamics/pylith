@@ -41,6 +41,7 @@
 
 #include "pylith/topology/Field.hh"
 #include "pylith/feassemble/IntegratorPointwise.hh"
+#include "pylith/feassemble/ConstraintPointwise.hh"
 %}
 
 %include "exception.i"
@@ -87,5 +88,6 @@ import_array();
 %include "ElasticityExplicitLgDeform.i"
 
 %include "IntegratorPointwise.i"
+%include "ConstraintPointwise.i"
 
 // End of file
