@@ -28,20 +28,21 @@
 #define pylith_utils_utilsfwd_hh
 
 namespace pylith {
-  namespace utils {
+    namespace utils {
 
-    class EventLogger;
-    class PylithVersion;
-    class PetscVersion;
-    class DependenciesVersion;
-    
-    class TestArray;
+        class EventLogger;
+        class JournalingComponent;
+        class PylithVersion;
+        class PetscVersion;
+        class DependenciesVersion;
 
-  } // utils
+        class TestArray;
+
+    } // utils
 } // pylith
 
 
 #endif // pylith_utils_utilsfwd_hh
 
 
-// End of file 
+// End of file

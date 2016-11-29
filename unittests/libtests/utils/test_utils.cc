@@ -29,44 +29,50 @@
 
 #include <stdlib.h> // USES abort()
 
+#include <Python.h>
+
 int
 main(int argc,
      char* argv[])
 { // main
-  CppUnit::TestResultCollector result;
+    CppUnit::TestResultCollector result;
 
-  try {
-    // Initialize PETSc
-    PetscErrorCode err = PetscInitialize(&argc, &argv, NULL, NULL);CHKERRQ(err);
-    err = PetscOptionsSetValue(NULL, "-malloc_dump", "");CHKERRQ(err);
+    try {
+        // Initialize PETSc
+        PetscErrorCode err = PetscInitialize(&argc, &argv, NULL, NULL); CHKERRQ(err);
+        err = PetscOptionsSetValue(NULL, "-malloc_dump", ""); CHKERRQ(err);
 
-    // Create event manager and test controller
-    CppUnit::TestResult controller;
+        Py_Initialize();
 
-    // Add listener to collect test results
-    controller.addListener(&result);
+        // Create event manager and test controller
+        CppUnit::TestResult controller;
 
-    // Add listener to show progress as tests run
-    CppUnit::BriefTestProgressListener progress;
-    controller.addListener(&progress);
+        // Add listener to collect test results
+        controller.addListener(&result);
 
-    // Add top suite to test runner
-    CppUnit::TestRunner runner;
-    runner.addTest(CppUnit::TestFactoryRegistry::getRegistry().makeTest());
-    runner.run(controller);
+        // Add listener to show progress as tests run
+        CppUnit::BriefTestProgressListener progress;
+        controller.addListener(&progress);
 
-    // Print tests
-    CppUnit::TextOutputter outputter(&result, std::cerr);
-    outputter.write();
+        // Add top suite to test runner
+        CppUnit::TestRunner runner;
+        runner.addTest(CppUnit::TestFactoryRegistry::getRegistry().makeTest());
+        runner.run(controller);
 
-    // Finalize PETSc
-    err = PetscFinalize();
-    CHKERRQ(err);
-  } catch (...) {
-    abort();
-  } // catch
+        // Print tests
+        CppUnit::TextOutputter outputter(&result, std::cerr);
+        outputter.write();
 
-  return (result.wasSuccessful() ? 0 : 1);
+        Py_Finalize();
+
+        // Finalize PETSc
+        err = PetscFinalize();
+        CHKERRQ(err);
+    } catch (...) {
+        abort();
+    } // catch
+
+    return (result.wasSuccessful() ? 0 : 1);
 } // main
 
 
