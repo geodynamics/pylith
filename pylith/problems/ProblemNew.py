@@ -143,6 +143,11 @@ class ProblemNew(PetscComponent, ModuleProblem):
         """
         Do minimal initialization.
         """
+        from pylith.mpi.Communicator import mpi_comm_world
+        comm = mpi_comm_world()
+        if 0 == comm.rank:
+            self._info.log("Performing minimal initialization before verifying configuration.")
+
         ModuleProblem.solverType(self, self.solverType)
         ModuleProblem.normalizer(self, self.normalizer)
 
