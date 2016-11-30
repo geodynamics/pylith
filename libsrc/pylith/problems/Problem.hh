@@ -28,6 +28,8 @@
 // Include directives ---------------------------------------------------
 #include "problemsfwd.hh" // forward declarations
 
+#include "pylith/utils/JournalingComponent.hh" // ISA JournalingComponent
+
 #include "pylith/feassemble/feassemblefwd.hh" // HASA IntegratorPointwise, ConstraintPointwise
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 #include "pylith/meshio/meshiofwd.hh" // HASA OutputManager
@@ -48,7 +50,7 @@
  * function (which we call the LHS).
  *
  */
-class pylith::problems::Problem
+class pylith::problems::Problem : public pylith::utils::JournalingComponent
 { // Problem
 friend class TestProblem;   // unit testing
 
@@ -64,7 +66,7 @@ enum SolverTypeEnum {
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
-/// Constructor
+//. Constructor
 Problem(void);
 
 /// Destructor

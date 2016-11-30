@@ -31,15 +31,13 @@
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
-
-#include "journal/debug.h" // USES journal::debug_t
-#include "journal/warning.h" // USES journal::warning_t
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 #include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::problems::Problem::Problem(void) :
+pylith::problems::Problem::Problem() :
     _solution(0),
     _jacobianLHSLumpedInv(0),
     _normalizer(0),
@@ -76,9 +74,7 @@ pylith::problems::Problem::deallocate(void)
 void
 pylith::problems::Problem::solverType(const SolverTypeEnum value)
 { // solverType
-    journal::debug_t debug("problem");
-    debug << journal::at(__HERE__)
-          << "Problem::solverType(value="<<value<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("Problem::solverType(value="<<value<<")");
 
     _solverType = value;
 } // solverType
@@ -96,9 +92,7 @@ pylith::problems::Problem::solverType(void) const
 void
 pylith::problems::Problem::normalizer(const spatialdata::units::Nondimensional& dim)
 { // normalizer
-    journal::debug_t debug("problem");
-    debug << journal::at(__HERE__)
-          << "Problem::normalizer(dim="<<&dim<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("Problem::normalizer(dim="<<&dim<<")");
 
     if (!_normalizer) {
         _normalizer = new spatialdata::units::Nondimensional(dim);
@@ -130,10 +124,7 @@ pylith::problems::Problem::integrators(pylith::feassemble::IntegratorPointwise* 
                                        const int numIntegrators)
 { // integrators
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug("problem");
-    debug << journal::at(__HERE__)
-          << "Problem::integrators("<<integratorArray<<", numIntegrators="<<numIntegrators<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("Problem::integrators("<<integratorArray<<", numIntegrators="<<numIntegrators<<")");
 
     assert( (!integratorArray && 0 == numIntegrators) || (integratorArray && 0 < numIntegrators) );
 
@@ -152,10 +143,7 @@ pylith::problems::Problem::constraints(pylith::feassemble::ConstraintPointwise* 
                                        const int numConstraints)
 { // constraints
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug("problem");
-    debug << journal::at(__HERE__)
-          << "Problem::constraints("<<constraintArray<<", numConstraints="<<numConstraints<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("Problem::constraints("<<constraintArray<<", numConstraints="<<numConstraints<<")");
 
     assert( (!constraintArray && 0 == numConstraints) || (constraintArray && 0 < numConstraints) );
 
@@ -174,10 +162,7 @@ pylith::problems::Problem::outputs(pylith::meshio::OutputManager* outputArray[],
                                    const int numOutputs)
 { // outputs
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug("problem");
-    debug << journal::at(__HERE__)
-          << "Problem::output("<<outputArray<<", numOutputs="<<numOutputs<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("Problem::output("<<outputArray<<", numOutputs="<<numOutputs<<")");
 
     assert( (!outputArray && 0 == numOutputs) || (outputArray && 0 < numOutputs) );
 
@@ -196,10 +181,7 @@ void
 pylith::problems::Problem::preinitialize(const pylith::topology::Mesh& mesh)
 { // preinitialize
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug("problem");
-    debug << journal::at(__HERE__)
-          << "Problem::preinitialzie(mesh="<<&mesh<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("Problem::preinitialzie(mesh="<<&mesh<<")");
 
     assert(_normalizer);
 
@@ -226,10 +208,7 @@ pylith::problems::Problem::verifyConfiguration(int* const materialIds,
                                                const int numMaterials)
 { // verifyConfiguration
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug("problem");
-    debug << journal::at(__HERE__)
-          << "Problem::verifyConfiguration(materialIds="<<materialIds<<", numMaterials="<<numMaterials<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("Problem::verifyConfiguration(materialIds="<<materialIds<<", numMaterials="<<numMaterials<<")");
 
     // Check to make sure material-id for each cell matches the id of a material.
     pylith::topology::MeshOps::checkMaterialIds(_solution->mesh(), materialIds, numMaterials);
@@ -257,10 +236,7 @@ void
 pylith::problems::Problem::initialize(void)
 { // initialize
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug("problem");
-    debug << journal::at(__HERE__)
-          << "Problem::initialize()" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("Problem::initialize()");
 
     assert(_solution);
 
@@ -294,10 +270,7 @@ pylith::problems::Problem::computeRHSResidual(PetscVec residualVec,
                                               PetscVec solutionVec)
 { // computeRHSResidual
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug("problem");
-    debug << journal::at(__HERE__)
-          << "Problem::computeRHSResidual(t="<<t<<", dt="<<dt<<", solutionVec="<<solutionVec<<", residualVec="<<residualVec<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("Problem::computeRHSResidual(t="<<t<<", dt="<<dt<<", solutionVec="<<solutionVec<<", residualVec="<<residualVec<<")");
 
     assert(residualVec);
     assert(solutionVec);
@@ -326,10 +299,7 @@ pylith::problems::Problem::computeRHSJacobian(PetscMat jacobianMat,
                                               PetscVec solutionVec)
 { // computeRHSJacobian
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug("problem");
-    debug << journal::at(__HERE__)
-          << "Problem::computeRHSJacobian(t="<<t<<", dt="<<dt<<", solutionVec="<<solutionVec<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("Problem::computeRHSJacobian(t="<<t<<", dt="<<dt<<", solutionVec="<<solutionVec<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<")");
 
     // :KLUDGE: Should add check to see if we need to compute Jacobian
 
@@ -357,10 +327,7 @@ pylith::problems::Problem::computeLHSResidual(PetscVec residualVec,
                                               PetscVec solutionDotVec)
 { // computeLHSResidual
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug("problem");
-    debug << journal::at(__HERE__)
-          << "Problem::computeLHSResidual(t="<<t<<", dt="<<dt<<", solutionVec="<<solutionVec<<", solutionDotVec"<<solutionDotVec<<", residualVec="<<residualVec<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("Problem::computeLHSResidual(t="<<t<<", dt="<<dt<<", solutionVec="<<solutionVec<<", solutionDotVec"<<solutionDotVec<<", residualVec="<<residualVec<<")");
 
     assert(residualVec);
     assert(solutionVec);
@@ -393,10 +360,7 @@ pylith::problems::Problem::computeLHSJacobianImplicit(PetscMat jacobianMat,
                                                       PetscVec solutionDotVec)
 { // computeLHSJacobianImplicit
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug("problem");
-    debug << journal::at(__HERE__)
-          << "Problem::computeLHSJacobianImplicit(t="<<t<<", dt="<<dt<<", tshift="<<tshift<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("Problem::computeLHSJacobianImplicit(t="<<t<<", dt="<<dt<<", tshift="<<tshift<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<")");
 
     // :KLUDGE: :TODO: Should add check to see if we need to compute Jacobian
 
@@ -421,10 +385,7 @@ pylith::problems::Problem::computeLHSJacobianLumpedInv(const PylithReal t,
                                                        PetscVec solutionVec)
 { // computeLHSJacobianLumpedInv
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug("problem");
-    debug << journal::at(__HERE__)
-          << "Problem::computeLHSJacobianLumpedInv(t="<<t<<", dt="<<dt<<", solutionVec="<<solutionVec<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("Problem::computeLHSJacobianLumpedInv(t="<<t<<", dt="<<dt<<", solutionVec="<<solutionVec<<")");
 
     // :KLUDGE: :TODO: Should add check to see if we need to compute Jacobian
 

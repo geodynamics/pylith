@@ -30,10 +30,11 @@
 #include "petscts.h" // USES PetscTS
 
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
-#include "journal/debug.h" // USES journal::debug_t
-#include "journal/error.h" // USES journal::error_t
-#include "journal/warning.h" // USES journal::warning_t
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 #include <cassert> // USES assert()
+
+// ----------------------------------------------------------------------
+const char* pylith::problems::TimeDependent::_journal = "timedependent";
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -45,6 +46,8 @@ pylith::problems::TimeDependent::TimeDependent(void) :
     _ts(0),
     _formulationType(IMPLICIT)
 { // constructor
+    JournalingComponent::name(_journal);
+    //JournalingComponent::initialize();
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -71,9 +74,7 @@ pylith::problems::TimeDependent::deallocate(void)
 void
 pylith::problems::TimeDependent::startTime(const double value)
 { // startTime
-    journal::debug_t debug("problem");
-    debug << journal::at(__HERE__)
-          << "TimeDependent::startTime(value="<<value<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("TimeDependent::startTime(value="<<value<<")");
 
     _startTime = value;
 } // startTime
@@ -92,10 +93,7 @@ void
 pylith::problems::TimeDependent::totalTime(const double value)
 { // totalTime
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug("problem");
-    debug << journal::at(__HERE__)
-          << "TimeDependent::totalTime(value="<<value<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("TimeDependent::totalTime(value="<<value<<")");
 
     if (value < 0.0) {
         std::ostringstream msg;
@@ -121,10 +119,7 @@ void
 pylith::problems::TimeDependent::maxTimeSteps(const size_t value)
 { // maxTimeSteps
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug("problem");
-    debug << journal::at(__HERE__)
-          << "TimeDependent::maxTimeSteps(value="<<value<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("TimeDependent::maxTimeSteps(value="<<value<<")");
 
     if (value <= 0) {
         std::ostringstream msg;
@@ -150,10 +145,7 @@ void
 pylith::problems::TimeDependent::dtInitial(const double value)
 { // dtInitial
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug("problem");
-    debug << journal::at(__HERE__)
-          << "TimeDependent::dtInitial(value="<<value<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("TimeDependent::dtInitial(value="<<value<<")");
 
     if (value < 0.0) {
         std::ostringstream msg;
@@ -179,14 +171,9 @@ void
 pylith::problems::TimeDependent::initialize(void)
 { // initialize
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("TimeDependent::initialize()");
 
     Problem::initialize();
-
-    journal::debug_t debug("problem");
-    debug << journal::at(__HERE__)
-          << "TimeDependent::initialize()" << journal::endl;
-    journal::error_t error("problem");
-    journal::warning_t warning("problem"); // TEMPORARY
 
     assert(_solution);
 
@@ -199,8 +186,7 @@ pylith::problems::TimeDependent::initialize(void)
     err = TSGetEquationType(_ts, &eqType); PYLITH_CHECK_ERROR(err);
     switch (eqType) {
     case TS_EQ_UNSPECIFIED: {
-        error << journal::at(__HERE__)
-              << "Unrecognized time stepping equation type for PETSc time stepping object." << journal::endl;
+        PYLITH_JOURNAL_ERROR("Unrecognized time stepping equation type for PETSc time stepping object.");
         throw std::logic_error("Unrecognized time stepping equation type for PETSc time stepping object.");
         break;
     }     // unspecified
@@ -210,8 +196,7 @@ pylith::problems::TimeDependent::initialize(void)
     case TS_EQ_DAE_SEMI_EXPLICIT_INDEX2:
     case TS_EQ_DAE_SEMI_EXPLICIT_INDEX3:
     case TS_EQ_DAE_SEMI_EXPLICIT_INDEXHI:
-        debug <<  journal::at(__HERE__)
-              << "Recognized PetscTS as explicit time stepping." << journal::endl;
+        PYLITH_JOURNAL_DEBUG("Recognized PetscTS as explicit time stepping.");
         _formulationType = EXPLICIT;
         break;
     case TS_EQ_IMPLICIT:
@@ -220,60 +205,48 @@ pylith::problems::TimeDependent::initialize(void)
     case TS_EQ_DAE_IMPLICIT_INDEX2:
     case TS_EQ_DAE_IMPLICIT_INDEX3:
     case TS_EQ_DAE_IMPLICIT_INDEXHI:
-        debug <<  journal::at(__HERE__)
-              << "Recognized PetscTS as implicit time stepping." << journal::endl;
+        PYLITH_JOURNAL_DEBUG("Recognized PetscTS as implicit time stepping.");
         _formulationType = IMPLICIT;
         break;
-    default: {
-    }     // default
-        error << journal::at(__HERE__)
-              << "Unknown PETSc time stepping equation type." << journal::endl;
+    default:
+        PYLITH_JOURNAL_DEBUG("Unknown PETSc time stepping equation type.");
         throw std::logic_error("Unknown PETSc time stepping equation type.");
     }     // switch
 
     // Set time stepping paramters.
     switch (this->solverType()) {
     case LINEAR:
-        debug << journal::at(__HERE__)
-              << "Setting PetscTS problem type to 'linear'." << journal::endl;
+        PYLITH_JOURNAL_DEBUG("Setting PetscTS problem type to 'linear'.");
         err = TSSetProblemType(_ts, TS_LINEAR); PYLITH_CHECK_ERROR(err);
         break;
     case NONLINEAR:
-        debug << journal::at(__HERE__)
-              << "Setting PetscTS problem type to 'nonlinear'." << journal::endl;
+        PYLITH_JOURNAL_DEBUG("Setting PetscTS problem type to 'nonlinear'.");
         err = TSSetProblemType(_ts, TS_NONLINEAR); PYLITH_CHECK_ERROR(err);
         break;
     default:
-        error << journal::at(__HERE__)
-              << "Unknown problem type." << journal::endl;
-        assert(0);
+        PYLITH_JOURNAL_ERROR("Unknown problem type.");
         throw std::logic_error("Unknown problem type.");
     }     // switch
-    debug << journal::at(__HERE__)
-          << "Setting PetscTS parameters: dtInitial="<<_dtInitial<<", startTime="<<_startTime<<"maxTimeSteps="<<_maxTimeSteps<<", totalTime="<<_totalTime<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("Setting PetscTS parameters: dtInitial="<<_dtInitial<<", startTime="<<_startTime<<"maxTimeSteps="<<_maxTimeSteps<<", totalTime="<<_totalTime);
     err = TSSetInitialTimeStep(_ts, _dtInitial, _startTime); PYLITH_CHECK_ERROR(err);
     err = TSSetDuration(_ts, _maxTimeSteps, _totalTime); PYLITH_CHECK_ERROR(err);
 
     // Set initial solution.
-    warning << journal::at(__HERE__)
-            << "TimeDependent::initialize() missing setting initial solution." << journal::endl;
+    PYLITH_JOURNAL_WARNING("TimeDependent::initialize() missing setting initial solution.");
     // :TODO: Set initial conditions.
 
-    debug << journal::at(__HERE__)
-          << "Setting PetscTS initial conditions from solution global Vector." << journal::endl;
+    PYLITH_JOURNAL_DEBUG("Setting PetscTS initial conditions from solution global Vector.");
     err = TSSetSolution(_ts, _solution->globalVector()); PYLITH_CHECK_ERROR(err);
 
     // Set callbacks.
-    debug << journal::at(__HERE__)
-          << "Setting PetscTS callbacks prestep(), poststep(), computeRHSJacobian(), and computeRHSFunction()." << journal::endl;
+    PYLITH_JOURNAL_DEBUG("Setting PetscTS callbacks prestep(), poststep(), computeRHSJacobian(), and computeRHSFunction().");
     err = TSSetPreStep(_ts, prestep); PYLITH_CHECK_ERROR(err);
     err = TSSetPostStep(_ts, poststep); PYLITH_CHECK_ERROR(err);
     err = TSSetRHSJacobian(_ts, NULL, NULL, computeRHSJacobian, (void*)this); PYLITH_CHECK_ERROR(err);
     err = TSSetRHSFunction(_ts, NULL, computeRHSResidual, (void*)this); PYLITH_CHECK_ERROR(err);
 
     if (IMPLICIT == _formulationType) {
-        debug << journal::at(__HERE__)
-              << "Setting PetscTS callbacks computeLHSJacobian(), and computeLHSFunction()." << journal::endl;
+        PYLITH_JOURNAL_DEBUG("Setting PetscTS callbacks computeLHSJacobian(), and computeLHSFunction().");
         err = TSSetIFunction(_ts, NULL, computeLHSResidual, (void*)this); PYLITH_CHECK_ERROR(err);
         err = TSSetIJacobian(_ts, NULL, NULL, computeLHSJacobian, (void*)this); PYLITH_CHECK_ERROR(err);
     } // if
@@ -283,8 +256,7 @@ pylith::problems::TimeDependent::initialize(void)
 
     // Setup field to hold inverse of lumped LHS Jacobian (if explicit).
     if (EXPLICIT == _formulationType) {
-        debug << journal::at(__HERE__)
-              << "Setting up field for inverse of lumped LHS Jacobian." << journal::endl;
+        PYLITH_JOURNAL_DEBUG("Setting up field for inverse of lumped LHS Jacobian.");
 
         delete _jacobianLHSLumpedInv; _jacobianLHSLumpedInv = new pylith::topology::Field(_solution->mesh()); assert(_jacobianLHSLumpedInv);
         _jacobianLHSLumpedInv->cloneSection(*_solution);
@@ -299,10 +271,7 @@ void
 pylith::problems::TimeDependent::solve(void)
 { // solve
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug("problem");
-    debug << journal::at(__HERE__)
-          << "TimeDependent::solve()" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("TimeDependent::solve()");
 
     PetscErrorCode err = TSSolve(_ts, NULL); PYLITH_CHECK_ERROR(err);
 
@@ -316,10 +285,7 @@ void
 pylith::problems::TimeDependent::prestep(void)
 { // prestep
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug("problem");
-    debug << journal::at(__HERE__)
-          << "TimeDependent::prestep()" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("TimeDependent::prestep()");
 
     // Get time and time step
     PetscErrorCode err;
@@ -328,10 +294,8 @@ pylith::problems::TimeDependent::prestep(void)
     err = TSGetTimeStep(_ts, &dt); PYLITH_CHECK_ERROR(err);
     err = TSGetTime(_ts, &t);
 
-    journal::error_t error("problem");
-    error << journal::at(__HERE__)
-          << "TimeDependent::prestep() missing setting of constraints; "
-          << "Constraint object missing setAuxFields(t, dt)." << journal::endl;
+    PYLITH_JOURNAL_ERROR("TimeDependent::prestep() missing setting of constraints; "
+                         "Constraint object missing setAuxFields(t, dt).");
 
     // Set constraints.
 #if 0 // :KLUDGE: :TODO: Implement this.
@@ -350,10 +314,7 @@ void
 pylith::problems::TimeDependent::poststep(void)
 { // poststep
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug("problem");
-    debug << journal::at(__HERE__)
-          << "TimeDependent::poststep()" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("TimeDependent::poststep()");
 
     // Get current solution.
     // :QUESTION: :MATT: What time does this solution correspond to?
@@ -371,9 +332,7 @@ pylith::problems::TimeDependent::poststep(void)
         _integrators[i]->updateStateVars(*_solution);
     }     // for
 
-    journal::error_t error("problem");
-    error << journal::at(__HERE__)
-          << "TimeDependent::poststep() missing output." << journal::endl;
+    PYLITH_JOURNAL_ERROR("TimeDependent::poststep() missing output.");
 
     // :TODO: Output [this is output at whatever time the solution corresponds to.]
 
@@ -392,7 +351,7 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
 { // computeRHSResidual
     PYLITH_METHOD_BEGIN;
 
-    journal::debug_t debug("problem");
+    journal::debug_t debug(_journal);
     debug << journal::at(__HERE__)
           << "TimeDependent::computeRHSResidual(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", residualVec="<<residualVec<<", context="<<context<<")" << journal::endl;
 
@@ -429,7 +388,7 @@ pylith::problems::TimeDependent::computeRHSJacobian(PetscTS ts,
 { // computeRHSJacobian
     PYLITH_METHOD_BEGIN;
 
-    journal::debug_t debug("problem");
+    journal::debug_t debug(_journal);
     debug << journal::at(__HERE__)
           << "TimeDependent::computeRHSJacobian(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", context="<<context<<")" << journal::endl;
 
@@ -455,7 +414,7 @@ pylith::problems::TimeDependent::computeLHSResidual(PetscTS ts,
 { // computeLHSResidual
     PYLITH_METHOD_BEGIN;
 
-    journal::debug_t debug("problem");
+    journal::debug_t debug(_journal);
     debug << journal::at(__HERE__)
           << "TimeDependent::computeLHSResidual(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", residualVec="<<residualVec<<", context="<<context<<")" << journal::endl;
 
@@ -484,7 +443,7 @@ pylith::problems::TimeDependent::computeLHSJacobian(PetscTS ts,
 { // computeLHSJacobian
     PYLITH_METHOD_BEGIN;
 
-    journal::debug_t debug("problem");
+    journal::debug_t debug(_journal);
     debug << journal::at(__HERE__)
           << "TimeDependent::computeLHSJacobian(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", tshift="<<tshift<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", context="<<context<<")" << journal::endl;
 
@@ -506,7 +465,7 @@ pylith::problems::TimeDependent::prestep(PetscTS ts)
 { // prestep
     PYLITH_METHOD_BEGIN;
 
-    journal::debug_t debug("problem");
+    journal::debug_t debug(_journal);
     debug << journal::at(__HERE__)
           << "TimeDependent::prestep(ts="<<ts<<")" << journal::endl;
 
@@ -525,7 +484,7 @@ pylith::problems::TimeDependent::poststep(PetscTS ts)
 { // poststep
     PYLITH_METHOD_BEGIN;
 
-    journal::debug_t debug("problem");
+    journal::debug_t debug(_journal);
     debug << journal::at(__HERE__)
           << "TimeDependent::poststep(ts="<<ts<<")" << journal::endl;
 
