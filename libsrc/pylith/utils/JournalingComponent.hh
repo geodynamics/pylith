@@ -36,9 +36,11 @@
 namespace journal {
     class SeverityDebug;
     class SeverityInfo;
+    class SeverityWarning;
     class SeverityError;
     typedef SeverityDebug debug_t;
     typedef SeverityInfo info_t;
+    typedef SeverityWarning warning_t;
     typedef SeverityError error_t;
 } // journal
 
@@ -83,9 +85,15 @@ journal::debug_t& debug(void);
 
 /** Get info journal.
  *
- * @returns Debugging journal.
+ * @returns Info journal.
  */
 journal::info_t& info(void);
+
+/** Get warning journal.
+ *
+ * @returns Warning journal.
+ */
+journal::warning_t& warning(void);
 
 /** Get error journal.
  *
@@ -98,6 +106,7 @@ protected:
 
 journal::debug_t* _debug;     ///< Debugging journal.
 journal::info_t* _info;     ///< Info journal.
+journal::warning_t* _warning; ///< Warning journal.
 journal::error_t* _error;     ///< Error journal.
 
 // PRIVATE METHODS //////////////////////////////////////////////////////

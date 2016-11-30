@@ -37,6 +37,7 @@ pylith::utils::TestJournalingComponent::testConstructor(void)
     CPPUNIT_ASSERT_EQUAL(std::string(""), journals._name);
     CPPUNIT_ASSERT(!journals._debug);
     CPPUNIT_ASSERT(!journals._info);
+    CPPUNIT_ASSERT(!journals._warning);
     CPPUNIT_ASSERT(!journals._error);
 } // testConstructor
 
@@ -65,6 +66,7 @@ pylith::utils::TestJournalingComponent::testInitialize(void)
 
     CPPUNIT_ASSERT(journals._debug);
     CPPUNIT_ASSERT(journals._info);
+    CPPUNIT_ASSERT(journals._warning);
     CPPUNIT_ASSERT(journals._error);
 } // testInitialize
 
@@ -83,6 +85,9 @@ pylith::utils::TestJournalingComponent::testAccessors(void)
     journal::info_t& info = journals.info();
     info << journal::at(__HERE__) << "CORRECT: This is a info message." << journal::endl;
 
+    journal::warning_t& warning = journals.warning();
+    warning << journal::at(__HERE__) << "CORRECT: This is a warning message." << journal::endl;
+
     journal::error_t& error = journals.error();
     error << journal::at(__HERE__) << "CORRECT: This is a error message." << journal::endl;
 
@@ -98,6 +103,9 @@ public:
 
             info().activate();
             PYLITH_JOURNAL_INFO("CORRECT: This is an info mesasge.");
+
+            warning().activate();
+            PYLITH_JOURNAL_WARNING("CORRECT: This is a warning mesasge.");
 
             PYLITH_JOURNAL_ERROR("CORRECT: This is an error mesage.");
         } // testJournals

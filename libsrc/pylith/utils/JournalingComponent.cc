@@ -22,6 +22,7 @@
 
 #include "journal/debug.h"
 #include "journal/info.h"
+#include "journal/warning.h"
 #include "journal/error.h"
 
 #include <cassert> // USES assert()
@@ -32,6 +33,7 @@
 pylith::utils::JournalingComponent::JournalingComponent(void) :
     _debug(0),
     _info(0),
+    _warning(0),
     _error(0),
     _name("")
 { // constructor
@@ -46,6 +48,7 @@ pylith::utils::JournalingComponent::~JournalingComponent(void)
 { // destructor
     delete _debug; _debug = 0;
     delete _info; _info = 0;
+    delete _warning; _warning = 0;
     delete _error; _error = 0;
 } // destructor
 
@@ -82,6 +85,7 @@ pylith::utils::JournalingComponent::initialize(void)
 
     delete _debug; _debug = new journal::debug_t(_name); assert(_debug);
     delete _info; _info = new journal::info_t(_name); assert(_info);
+    delete _warning; _warning = new journal::warning_t(_name); assert(_warning);
     delete _error; _error = new journal::error_t(_name); assert(_error);
 } // initialize
 
@@ -102,6 +106,15 @@ pylith::utils::JournalingComponent::info(void)
     assert(_info);
     return *_info;
 } // info
+
+// ----------------------------------------------------------------------
+// Get warning journal.
+journal::warning_t&
+pylith::utils::JournalingComponent::warning(void)
+{ // warning
+    assert(_warning);
+    return *_warning;
+} // warning
 
 // ----------------------------------------------------------------------
 // Get error journal.
