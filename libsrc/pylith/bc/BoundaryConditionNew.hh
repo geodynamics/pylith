@@ -51,13 +51,13 @@ virtual
 virtual
 void deallocate(void);
 
-/** Set label of boundary condition surface.
+/** Set mesh label associated with boundary condition surface.
  *
  * @param[in] value Label of surface (from mesh generator).
  */
 void label(const char* value);
 
-/** Get label of boundary condition surface.
+/** Get mesh label associated with boundary condition surface.
  *
  * @returns Label of surface (from mesh generator).
  */

@@ -48,12 +48,12 @@ pylith::bc::BoundaryConditionNew::deallocate(void)
 
 
 // ----------------------------------------------------------------------
-// Set name of boundary condition surface.
+// Set mesh label associated with boundary condition surface.
 void
 pylith::bc::BoundaryConditionNew::label(const char* value)
 { // label
     if (strlen(value) == 0) {
-        throw std::runtime_error("Empty strig given for boundary condition label.");
+        throw std::runtime_error("Empty string given for boundary condition label.");
     } // if
 
     _label = value;
@@ -61,7 +61,7 @@ pylith::bc::BoundaryConditionNew::label(const char* value)
 
 
 // ----------------------------------------------------------------------
-// Get label of boundary condition surface.
+// Get mesh label associated with boundary condition surface.
 const char*
 pylith::bc::BoundaryConditionNew::label(void) const
 { // Label
