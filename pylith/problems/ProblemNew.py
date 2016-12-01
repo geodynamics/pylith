@@ -292,8 +292,6 @@ class ProblemNew(PetscComponent, ModuleProblem):
             else:
                 raise TypeError("Unable to classify bc '%s' into an in integrator or constraint." % bc)
 
-        import pdb
-        pdb.set_trace()
         ModuleProblem.integrators(self, integrators)
         ModuleProblem.constraints(self, constraints)
         return
