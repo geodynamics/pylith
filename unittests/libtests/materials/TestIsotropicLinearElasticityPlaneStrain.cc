@@ -28,6 +28,7 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/journals.hh" // USES JournalingComponent
 
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
@@ -39,8 +40,12 @@ void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::setUp(void)
 { // setUp
     TestMaterialNew::setUp();
-    _mymaterial = new IsotropicLinearElasticityPlaneStrain();
+    _mymaterial = new IsotropicLinearElasticityPlaneStrain(); CPPUNIT_ASSERT(_mymaterial);
     _mydata = NULL;
+
+    const char* journal = _mymaterial->JournalingComponent::name();
+    journal::debug_t debug(journal);
+    debug.activate();
 } // setUp
 
 

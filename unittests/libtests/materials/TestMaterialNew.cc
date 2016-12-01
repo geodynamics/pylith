@@ -52,9 +52,6 @@ pylith::materials::TestMaterialNew::setUp(void)
     _solution1Dot = NULL;
     _solution2Dot = NULL;
     _auxDB = NULL;
-
-    journal::debug_t debug("material");
-    debug.activate();
 } // setUp
 
 
@@ -299,8 +296,8 @@ pylith::materials::TestMaterialNew::testAuxFieldsDiscretization(void)
     const topology::FieldBase::DiscretizeInfo infoB = {2, 2, true};
 
     MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
-    material->auxFieldDiscretization("A", infoA);
-    material->auxFieldDiscretization("B", infoB);
+    material->auxFieldDiscretization("A", infoA.basisOrder, infoA.quadOrder, infoA.isBasisContinuous);
+    material->auxFieldDiscretization("B", infoB.basisOrder, infoB.quadOrder, infoB.isBasisContinuous);
 
     { // A
         const topology::FieldBase::DiscretizeInfo& test = material->auxFieldDiscretization("A");
@@ -850,7 +847,8 @@ pylith::materials::TestMaterialNew::_initializeFull(void)
     material->auxFieldsDB(_auxDB);
 
     for (int i=0; i < data->numAuxFields; ++i) {
-        material->auxFieldDiscretization(data->auxFields[i], data->auxDiscretizations[i]);
+        const pylith::topology::FieldBase::DiscretizeInfo& info = data->auxDiscretizations[i];
+        material->auxFieldDiscretization(data->auxFields[i], info.basisOrder, info.quadOrder, info.isBasisContinuous);
     } // for
 
 
