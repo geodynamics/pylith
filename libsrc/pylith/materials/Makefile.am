@@ -52,7 +52,6 @@ subpkginclude_HEADERS = \
 	EffectiveStress.hh \
 	EffectiveStress.icc \
 	MaterialNew.hh \
-	MaterialNew.icc \
 	IsotropicLinearElasticityPlaneStrain.hh \
 	IsotropicLinearIncompElasticityPlaneStrain.hh \
 	Query.hh \
@@ -62,4 +61,4 @@ subpkginclude_HEADERS = \
 noinst_HEADERS =
 
 
-# End of file 
+# End of file

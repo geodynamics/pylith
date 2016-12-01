@@ -29,12 +29,15 @@
 // Include directives ---------------------------------------------------
 #include "feassemblefwd.hh" // forward declarations
 
-#include "Integrator.hh" // ISA Integrator
+#include "pylith/utils/JournalingComponent.hh" // ISA JournalingComponent
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase
 
 #include "pylith/topology/topologyfwd.hh" // HOLDSA Field
 #include "pylith/utils/petscfwd.h" // USES PetscMat, PetscVec
+
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // HASA spatialdb
+#include "spatialdata/units/unitsfwd.hh" // HASA Nondimensional
 
 #include <map> // HOLDSA std::map
 
@@ -42,7 +45,7 @@
 /** @brief General operations for implicit and explicit
  * time integration of equations defined by pointwise functions.
  */
-class pylith::feassemble::IntegratorPointwise
+class pylith::feassemble::IntegratorPointwise : public pylith::utils::JournalingComponent
 { // IntegratorPointwise
 friend class TestIntegratorPointwise;   // unit testing
 

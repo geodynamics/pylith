@@ -68,13 +68,21 @@ class Solution(PetscComponent):
 
     def preinitialize(self, mesh, normalizer):
         """
+        Do minimal initialization of solution.
         """
+        from pylith.mpi.Communicator import mpi_comm_world
+        comm = mpi_comm_world()
+        if 0 == comm.rank:
+            self._info.log("Performing minimal initialization of solution.")
+
         from pylith.topology.Field import Field
         self.field = Field(mesh)
         spaceDim = mesh.coordsys().spaceDim()
         for subfield in self.subfields.components():
             subfield.initialize(normalizer, spaceDim)
             ncomponents = len(subfield.componentNames)
+            if 0 == comm.rank:
+                self._debug.log("Adding subfield '%s' with components %s to solution." % (subfield.fieldName, subfield.componentNames))
             self.field.subfieldAdd(subfield.fieldName, subfield.componentNames, subfield.vectorFieldType, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous, subfield.scale.value)
         self.field.subfieldsSetup()
         return

@@ -109,7 +109,7 @@ void _auxFieldsSetup(void);
  *
  * @param solution Solution field.
  */
-void _setFEKernelsConstraint(const topology::Field& solution) const;
+void _setFEKernelsConstraint(const topology::Field& solution);
 
 
 // PROTECTED MEMBERS //////////////////////////////////////////////////

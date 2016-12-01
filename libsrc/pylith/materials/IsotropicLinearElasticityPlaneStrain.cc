@@ -31,9 +31,12 @@ extern "C" {
 #include "pylith/fekernels/linearelasticityplanestrain.h" // USES IsotropicLinearElasticityPlaneStrain kernels
 }
 
-#include "journal/debug.h" // USES journal::debug_t
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 #include "petscds.h"
+
+// ----------------------------------------------------------------------
+const char* pylith::materials::IsotropicLinearElasticityPlaneStrain::_journal = "isotropiclinearelasticityplanestrain";
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -43,6 +46,8 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::IsotropicLinearElastici
     _useBodyForce(false),
     _useReferenceState(false)
 { // constructor
+    JournalingComponent::name(_journal);
+    JournalingComponent::initialize();
 } // constructor
 
 
@@ -58,9 +63,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::~IsotropicLinearElastic
 void
 pylith::materials::IsotropicLinearElasticityPlaneStrain::useInertia(const bool value)
 { // useInertia
-    journal::debug_t debug("material");
-    debug << journal::at(__HERE__)
-          << "IsotropicLinearElasticityPlaneStrain::useInertia(value="<<value<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("useInertia(value="<<value<<")");
 
     _useInertia = value;
 } // useInertia
@@ -80,9 +83,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::useInertia(void) const
 void
 pylith::materials::IsotropicLinearElasticityPlaneStrain::useBodyForce(const bool value)
 { // useBodyForce
-    journal::debug_t debug("material");
-    debug << journal::at(__HERE__)
-          << "IsotropicLinearElasticityPlaneStrain::useBodyForce(value="<<value<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("useBodyForce(value="<<value<<")");
 
     _useBodyForce = value;
 } // useBodyForce
@@ -103,9 +104,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::useBodyForce(void) cons
 void
 pylith::materials::IsotropicLinearElasticityPlaneStrain::useReferenceState(const bool value)
 { // useReferenceState
-    journal::debug_t debug("material");
-    debug << journal::at(__HERE__)
-          << "IsotropicLinearElasticityPlaneStrain::useReferenceState="<<value<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("useReferenceState="<<value<<")");
 
     _useReferenceState = value;
 } // useReferenceState
@@ -127,13 +126,9 @@ void
 pylith::materials::IsotropicLinearElasticityPlaneStrain::_auxFieldsSetup(void)
 { // _auxFieldsSetup
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_auxFieldsSetup()");
 
-    journal::debug_t debug("material");
-    debug << journal::at(__HERE__)
-          << "IsotropicLinearElasticityPlaneStrain::_auxFieldsSetup()" << journal::endl;
-
-    // :TODO: Add auxiliary field for gravitational acceleration vector.
-    // Will need flag as well.
+    PYLITH_JOURNAL_ERROR(":TODO: Add auxiliary field for gravitational acceleration vector");
 
     // Set subfields in auxiliary fields.
     assert(_normalizer);
@@ -192,13 +187,10 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_auxFieldsSetup(void)
 // ----------------------------------------------------------------------
 // Set kernels for RHS residual G(t,s).
 void
-pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSResidual(const topology::Field& solution) const
+pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSResidual(const topology::Field& solution)
 { // _setFEKernelsRHSResidual
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug("material");
-    debug << journal::at(__HERE__)
-          << "IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSResidual(solution="<<solution.label()<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("_setFEKernelsRHSResidual(solution="<<solution.label()<<")");
 
     const PetscInt i_disp = solution.subfieldInfo("displacement").index;
     const PetscInt i_vel = solution.subfieldInfo("velocity").index;
@@ -224,13 +216,10 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSResidua
 // ----------------------------------------------------------------------
 // Set kernels for RHS Jacobian G(t,s).
 void
-pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSJacobian(const topology::Field& solution) const
+pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSJacobian(const topology::Field& solution)
 { // _setFEKernelsRHSJacobian
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug("material");
-    debug << journal::at(__HERE__)
-          << "IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSJacobian(solution="<<solution.label()<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("_setFEKernelsRHSJacobian(solution="<<solution.label()<<")");
 
     const PetscInt i_disp = solution.subfieldInfo("displacement").index;
     const PetscInt i_vel = solution.subfieldInfo("velocity").index;
@@ -271,13 +260,10 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSJacobia
 // ----------------------------------------------------------------------
 // Set kernels for LHS residual F(t,s,\dot{s}).
 void
-pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSResidual(const topology::Field& solution) const
+pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSResidual(const topology::Field& solution)
 { // _setFEKernelsLHSResidual
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug("material");
-    debug << journal::at(__HERE__)
-          << "IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSResidual(solution="<<solution.label()<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("_setFEKernelsLHSResidual(solution="<<solution.label()<<")");
 
     const PetscInt i_disp = solution.subfieldInfo("displacement").index;
     const PetscInt i_vel = solution.subfieldInfo("velocity").index;
@@ -303,13 +289,10 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSResidua
 // ----------------------------------------------------------------------
 // Set kernels for LHS Jacobian F(t,s,\dot{s}).
 void
-pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSJacobianImplicit(const topology::Field& solution) const
+pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSJacobianImplicit(const topology::Field& solution)
 { // _setFEKernelsLHSJacobianImplicit
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug("material");
-    debug << journal::at(__HERE__)
-          << "IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSJacobianImplicit(solution="<<solution.label()<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("_setFEKernelsLHSJacobianImplicit(solution="<<solution.label()<<")");
 
     const PetscInt i_disp = solution.subfieldInfo("displacement").index;
     const PetscInt i_vel = solution.subfieldInfo("velocity").index;
@@ -350,13 +333,10 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSJacobia
 // ----------------------------------------------------------------------
 // Set kernels for LHS Jacobian F(t,s,\dot{s}).
 void
-pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSJacobianExplicit(const topology::Field& solution) const
+pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSJacobianExplicit(const topology::Field& solution)
 { // _setFEKernelsLHSJacobianExplicit
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug("material");
-    debug << journal::at(__HERE__)
-          << "IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSJacobianExplicit(solution="<<solution.label()<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("_setFEKernelsLHSJacobianExplicit(solution="<<solution.label()<<")");
 
     const PetscInt i_disp = solution.subfieldInfo("displacement").index;
     const PetscInt i_vel = solution.subfieldInfo("velocity").index;

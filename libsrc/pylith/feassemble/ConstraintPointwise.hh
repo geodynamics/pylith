@@ -28,6 +28,8 @@
 // Include directives ---------------------------------------------------
 #include "feassemblefwd.hh"
 
+#include "pylith/utils/JournalingComponent.hh" // ISA JournalingComponent
+
 #include "pylith/topology/topologyfwd.hh" // HOLDSA Field
 #include "pylith/utils/utilsfwd.hh" // HOLDSA Logger
 #include "pylith/utils/array.hh" // HASA int_array
@@ -42,7 +44,7 @@
 // ConstraintPointwise---------------------------------------------------
 /** @brief Abstract base class for defining constraints on boundaries.
  */
-class pylith::feassemble::ConstraintPointwise
+class pylith::feassemble::ConstraintPointwise : public pylith::utils::JournalingComponent
 { // class ConstraintPointwise
 friend class TestConstraintPointwise;   // unit testing
 
@@ -109,7 +111,7 @@ bool hasAuxField(const char* name);
  * @param[in] name Name of field to retrieve.
  */
 void getAuxField(pylith::topology::Field *field,
-                 const char* name) const;
+                 const char* name);
 
 /** Set spatial database for auxiliary fields.
  *

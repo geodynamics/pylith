@@ -112,6 +112,9 @@ class DirichletTimeDependent(DirichletNew,
         """
         try:
             DirichletNew._configure(self)
+            self.useInitial = self.inventory.useInitial
+            self.useRate = self.inventory.useRate
+            self.useTimeHistory = self.inventory.useTimeHistory
         except ValueError, err:
             aliases = ", ".join(self.aliases)
             raise ValueError("Error while configuring Dirichlet boundary condition "
@@ -122,7 +125,8 @@ class DirichletTimeDependent(DirichletNew,
         """
         Create handle to corresponding C++ object.
         """
-        ModuleDirichletTimeDependent.__init__(self)
+        if not hasattr(self, "this"):
+            ModuleDirichletTimeDependent.__init__(self)
         return
 
 # FACTORIES ////////////////////////////////////////////////////////////

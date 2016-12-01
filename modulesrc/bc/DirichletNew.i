@@ -24,7 +24,9 @@
 namespace pylith {
     namespace bc {
 
-        class DirichletNew : public pylith::feassemble::ConstraintPointwise
+        class DirichletNew :
+  	public BoundaryConditionNew,
+	public pylith::feassemble::ConstraintPointwise
         { // class DirichletNew
 
         // PUBLIC METHODS /////////////////////////////////////////////////
@@ -70,7 +72,8 @@ protected:
          * @param solution Solution field.
          */
         virtual
-        void _setFEKernelsConstraint(const topology::Field& solution) const = 0;
+        void _setFEKernelsConstraint(const topology::Field& solution) = 0;
+        
         }; // class DirichletNew
 
     } // bc

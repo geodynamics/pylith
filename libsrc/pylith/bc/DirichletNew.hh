@@ -82,7 +82,7 @@ void _auxFieldsSetup(void) = 0;
  * @param solution Solution field.
  */
 virtual
-void _setFEKernelsConstraint(const topology::Field& solution) const = 0;
+void _setFEKernelsConstraint(const topology::Field& solution) = 0;
 
 
 // PRIVATE MEMBERS ////////////////////////////////////////////////////

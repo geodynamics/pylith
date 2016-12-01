@@ -24,6 +24,7 @@
 # Factory: material
 
 from pylith.feassemble.IntegratorPointwise import IntegratorPointwise
+from .materials import MaterialNew as ModuleMaterial
 
 # Validator for label
 
@@ -38,7 +39,8 @@ def validateLabel(value):
 
 
 # MaterialNew class
-class MaterialNew(IntegratorPointwise):
+class MaterialNew(IntegratorPointwise,
+                  ModuleMaterial):
     """
     Python material property manager.
 
@@ -81,14 +83,18 @@ class MaterialNew(IntegratorPointwise):
         Constructor.
         """
         IntegratorPointwise.__init__(self, name)
-        self.output = None
         return
 
     def preinitialize(self, mesh):
-        IntegratorPointwise.preinitialize(self)
+        from pylith.mpi.Communicator import mpi_comm_world
+        comm = mpi_comm_world()
+        if 0 == comm.rank:
+            self._info.log("Performing minimal initialization of material '%s'" % self.label)
+        IntegratorPointwise.preinitialize(self, mesh)
 
-        self.id(self.materialId)
-        self.label(self.label)
+        ModuleMaterial.id(self, self.materialId)
+        ModuleMaterial.label(self, self.label)
+        print ":TODO: @brad MaterialNew.preinitialize() Pass output manager to C++."
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -101,31 +107,11 @@ class MaterialNew(IntegratorPointwise):
             IntegratorPointwise._configure(self)
             self.materialId = self.inventory.materialId
             self.label = self.inventory.label
+            self.output = self.inventory.output
 
         except ValueError, err:
             aliases = ", ".join(self.aliases)
             raise ValueError("Error while configuring material (%s):\n%s" % (aliases, err.message))
         return
-
-    def _setupLogging(self):
-        """
-        Setup event logging.
-        """
-        if None == self._loggingPrefix:
-            self._loggingPrefix = ""
-
-        from pylith.utils.EventLogger import EventLogger
-        logger = EventLogger()
-        logger.className("FE Material")
-        logger.initialize()
-
-        events = ["verify",
-                  "init"]
-        for event in events:
-            logger.registerEvent("%s%s" % (self._loggingPrefix, event))
-
-        self._eventLogger = logger
-        return
-
 
 # End of file

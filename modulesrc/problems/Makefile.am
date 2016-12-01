@@ -34,7 +34,8 @@ swig_sources = \
 	Solver.i \
 	SolverLinear.i \
 	SolverNonlinear.i \
-	SolverLumped.i
+	SolverLumped.i \
+	../utils/JournalingComponent.i
 
 
 swig_generated = \

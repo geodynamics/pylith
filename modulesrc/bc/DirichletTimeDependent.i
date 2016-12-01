@@ -97,7 +97,7 @@ protected:
          *
          * @param solution Solution field.
          */
-        void _setFEKernelsConstraint(const topology::Field& solution) const;
+        void _setFEKernelsConstraint(const topology::Field& solution);
 
 
         }; // class DirichletTimeDependent

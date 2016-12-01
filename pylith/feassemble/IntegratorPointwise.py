@@ -21,11 +21,13 @@
 # @brief Python abstract base class for pointwise integrators.
 
 from pylith.utils.PetscComponent import PetscComponent
+from .feassemble import IntegratorPointwise as ModuleIntegrator
 
 # IntegratorPointwise class
 
 
-class IntegratorPointwise(PetscComponent):
+class IntegratorPointwise(PetscComponent,
+                          ModuleIntegrator):
     """
     Python abstract base class for pointwise integrators.
 
@@ -74,11 +76,11 @@ class IntegratorPointwise(PetscComponent):
         """
         Do pre-initialization setup.
         """
-        self._setupLogging()
         import weakref
         self.mesh = weakref.ref(mesh)
 
-        self.auxFieldsDB(self.inventory.auxFieldsDB)
+        ModuleIntegrator.auxFieldsDB(self, self.auxFieldsDB)
+        print ":TODO: @brad IntegratorPointwise.preinitialize() Pass auxiliary fields discretization to C++."
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -89,6 +91,8 @@ class IntegratorPointwise(PetscComponent):
         """
         try:
             PetscComponent._configure(self)
+            self.auxFields = self.inventory.auxFields
+            self.auxFieldsDB = self.inventory.auxFieldsDB
 
         except ValueError, err:
             aliases = ", ".join(self.aliases)

@@ -39,7 +39,6 @@
 #include "pylith/feassemble/ElasticityImplicitLgDeform.hh"
 #include "pylith/feassemble/ElasticityExplicitLgDeform.hh"
 
-#include "pylith/topology/Field.hh"
 #include "pylith/feassemble/IntegratorPointwise.hh"
 #include "pylith/feassemble/ConstraintPointwise.hh"
 %}
@@ -87,6 +86,7 @@ import_array();
 %include "ElasticityImplicitLgDeform.i"
 %include "ElasticityExplicitLgDeform.i"
 
+%include "../utils/JournalingComponent.i"
 %include "IntegratorPointwise.i"
 %include "ConstraintPointwise.i"
 

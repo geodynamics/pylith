@@ -362,7 +362,7 @@ pylith::problems::Problem::computeLHSJacobianImplicit(PetscMat jacobianMat,
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("Problem::computeLHSJacobianImplicit(t="<<t<<", dt="<<dt<<", tshift="<<tshift<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<")");
 
-    // :KLUDGE: :TODO: Should add check to see if we need to compute Jacobian
+    PYLITH_JOURNAL_ERROR(":TODO: @brad Check to see if we need to compute Jacobian.");
 
     // Update PyLith view of the solution.
     assert(_solution);
@@ -387,7 +387,7 @@ pylith::problems::Problem::computeLHSJacobianLumpedInv(const PylithReal t,
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("Problem::computeLHSJacobianLumpedInv(t="<<t<<", dt="<<dt<<", solutionVec="<<solutionVec<<")");
 
-    // :KLUDGE: :TODO: Should add check to see if we need to compute Jacobian
+    PYLITH_JOURNAL_ERROR(":TODO: @brad Check to see if we need to compute Jacobian.");
 
     // Set jacobian to zero.
     assert(_jacobianLHSLumpedInv);

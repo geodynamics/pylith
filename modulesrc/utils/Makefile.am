@@ -45,6 +45,7 @@ utils_swig_sources = \
 	PetscVersion.i \
 	DependenciesVersion.i \
 	EventLogger.i \
+	JournalingComponent.i \
 	TestArray.i \
 	constdefs.i
 
@@ -96,4 +97,4 @@ MAINTAINERCLEANFILES = \
 	$(srcdir)/utils.py
 
 
-# End of file 
+# End of file

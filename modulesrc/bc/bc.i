@@ -30,8 +30,6 @@
 #include "pylith/bc/Neumann.hh"
 #include "pylith/bc/PointForce.hh"
 
-#include "pylith/feassemble/ConstraintPointwise.hh"
-#include "pylith/feassemble/IntegratorPointwise.hh"
 #include "pylith/bc/BoundaryConditionNew.hh"
 #include "pylith/bc/DirichletNew.hh"
 #include "pylith/bc/DirichletTimeDependent.hh"
@@ -73,8 +71,9 @@
 %include "Neumann.i"
 %include "PointForce.i"
 
+%include "../utils/JournalingComponent.i"
 %include "../feassemble/ConstraintPointwise.i" // ISA Constraint
-%include "../feassemble/IntegratorPointwise.i" // ISA Integrator
+//%include "../feassemble/IntegratorPointwise.i" // ISA Integrator
 
 %include "BoundaryConditionNew.i"
 %include "DirichletNew.i"

@@ -94,33 +94,33 @@ void _auxFieldsSetup(void);
  *
  * @param[in] solution Solution field.
  */
-void _setFEKernelsRHSResidual(const topology::Field& solution) const;
+void _setFEKernelsRHSResidual(const topology::Field& solution);
 
 /** Set kernels for RHS Jacobian G(t,u).
  *
  * @param[in] solution Solution field.
  */
-void _setFEKernelsRHSJacobian(const topology::Field& solution) const;
+void _setFEKernelsRHSJacobian(const topology::Field& solution);
 
 /** Set kernels for LHS residual F(t,u,\dot{u}).
  *
  * @param[in] solution Solution field.
  */
-void _setFEKernelsLHSResidual(const topology::Field& solution) const;
+void _setFEKernelsLHSResidual(const topology::Field& solution);
 
 
 /** Set kernels for LHS Jacobian F(t,u,\dot{u}) when implicit time-stepping.
  *
  * @param[in] solution Solution field.
  */
-void _setFEKernelsLHSJacobianImplicit(const topology::Field& solution) const;
+void _setFEKernelsLHSJacobianImplicit(const topology::Field& solution);
 
 
 /** Set kernels for LHS Jacobian F(t,u,\dot{u}) when explicit time-stepping.
  *
  * @param[in] solution Solution field.
  */
-void _setFEKernelsLHSJacobianExplicit(const topology::Field& solution) const;
+void _setFEKernelsLHSJacobianExplicit(const topology::Field& solution);
 
 
 // PRIVATE MEMBERS ////////////////////////////////////////////////////
@@ -129,6 +129,8 @@ private:
 bool _useInertia;   ///< Flag to include inertial term.
 bool _useBodyForce;   ///< Flag to include body force term.
 bool _useReferenceState;   ///< Flag to use reference stress and strain.
+
+static const char* _journal; ///< Name for journals.
 
 // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:

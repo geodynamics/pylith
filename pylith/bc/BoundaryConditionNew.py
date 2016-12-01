@@ -26,7 +26,7 @@
 # Factory: boundary_condition
 
 from pylith.utils.PetscComponent import PetscComponent
-from .bc import BoundaryConditionNew as ModuleBoundaryConditionNew
+from .bc import BoundaryConditionNew as ModuleBoundaryCondition
 
 # Validator for label
 
@@ -41,7 +41,8 @@ def validateLabel(value):
 
 
 # BoundaryConditionNew class
-class BoundaryConditionNew(PetscComponent, ModuleBoundaryConditionNew):
+class BoundaryConditionNew(PetscComponent,
+                           ModuleBoundaryCondition):
     """
     Python abstract base class for managing a boundary condition.
 
@@ -88,7 +89,7 @@ class BoundaryConditionNew(PetscComponent, ModuleBoundaryConditionNew):
         import weakref
         self.mesh = weakref.ref(mesh)
 
-        ModuleBoundaryConditionNew.label(self, self.label)
+        ModuleBoundaryCondition.label(self, self.label)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -100,7 +101,7 @@ class BoundaryConditionNew(PetscComponent, ModuleBoundaryConditionNew):
         try:
             PetscComponent._configure(self)
             self.label = self.inventory.label
-        except ValueError, err:
+        except ValueError as err:
             aliases = ", ".join(self.aliases)
             raise ValueError("Error while configuring boundary condition "
                              "(%s):\n%s" % (aliases, err.message))

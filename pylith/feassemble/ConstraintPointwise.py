@@ -22,6 +22,9 @@
 # actions with finite-elements.
 
 from pylith.utils.PetscComponent import PetscComponent
+from .feassemble import ConstraintPointwise as ModuleConstraint
+
+import numpy
 
 
 def validateDOF(value):
@@ -42,7 +45,8 @@ def validateDOF(value):
 
 
 # ConstraintPointwise class
-class ConstraintPointwise(PetscComponent):
+class ConstraintPointwise(PetscComponent,
+                          ModuleConstraint):
     """
     Python abstract base class for constraints on operator
     actions with finite-elements.
@@ -89,12 +93,18 @@ class ConstraintPointwise(PetscComponent):
         """
         Constructor.
         """
+        PetscComponent.__init__(self, name, facility="constraint")
+        self._createModuleObj()
         return
 
     def preinitialize(self, mesh):
         """
         Setup constraint.
         """
+        ModuleConstraint.field(self, self.field)
+        ModuleConstraint.constrainedDOF(self, numpy.array(self.constrainedDOF, dtype=numpy.int32))
+        ModuleConstraint.auxFieldsDB(self, self.inventory.auxFieldsDB)
+        print ":TODO: @brad ConstraintPointwise.preinitialize() Pass auxiliary fields discretization to C++."
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -105,7 +115,10 @@ class ConstraintPointwise(PetscComponent):
         """
         try:
             PetscComponent._configure(self)
-            self.auxFieldsDB(self.inventory.auxFieldsDB)
+            self.field = self.inventory.field
+            self.constrainedDOF = self.inventory.constrainedDOF
+            self.auxFields = self.inventory.auxFields
+            self.auxFieldsDB = self.inventory.auxFieldsDB
 
         except ValueError, err:
             aliases = ", ".join(self.aliases)

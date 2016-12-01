@@ -23,8 +23,9 @@
 # Factory: problem.
 
 from pylith.utils.PetscComponent import PetscComponent
-from pylith.utils.NullComponent import NullComponent
 from .problems import Problem as ModuleProblem
+
+from pylith.utils.NullComponent import NullComponent
 from pylith.meshio.OutputSoln import OutputSoln
 from pylith.feassemble.IntegratorPointwise import IntegratorPointwise
 from pylith.feassemble.ConstraintPointwise import ConstraintPointwise
@@ -156,6 +157,8 @@ class ProblemNew(PetscComponent, ModuleProblem):
         ModuleProblem.solution(self, self.solution.field)
 
         # Preinitialize materials
+        if 0 == comm.rank:
+            self._debug.log("PrePerforming minimal initialization before verifying configuration.")
         for material in self.materials.components():
             material.preinitialize(mesh)
 
@@ -289,6 +292,8 @@ class ProblemNew(PetscComponent, ModuleProblem):
             else:
                 raise TypeError("Unable to classify bc '%s' into an in integrator or constraint." % bc)
 
+        import pdb
+        pdb.set_trace()
         ModuleProblem.integrators(self, integrators)
         ModuleProblem.constraints(self, constraints)
         return

@@ -26,11 +26,12 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
-#include "journal/debug.h" // USES journal::debug_t
 
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
@@ -107,17 +108,17 @@ pylith::feassemble::ConstraintPointwise::constrainedDOF(const int* flags,
                                                         const int size)
 { // constrainedDOF
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("constrainedDOF(flags="<<flags<<", size="<<size<<")");
 
-    journal::debug_t debug("constraint");
-    debug << journal::at(__HERE__)
-          << "ConstraintPointwise::constrainedDOF(flags="<<flags<<", size="<<size<<")" << journal::endl;
-
-    if (size > 0) {
-        assert(flags);
-    } // if
+    assert((size > 0 && flags) || (!size && !flags));
 
     _constrainedDOF.resize(size);
     for (int i=0; i < size; ++i) {
+      if (flags[i] < 0 || flags[i] > 2) {
+	std::ostringstream msg;
+	msg << "Constrained DOF out of range (" << flags[i] << ". DOF must be in range [0,2].";
+	throw std::runtime_error(msg.str());
+      } // if
         _constrainedDOF[i] = flags[i];
     } // for
 
@@ -162,13 +163,10 @@ pylith::feassemble::ConstraintPointwise::hasAuxField(const char* name)
 // Get auxiliary field.
 void
 pylith::feassemble::ConstraintPointwise::getAuxField(pylith::topology::Field *field,
-                                                     const char* name) const
+                                                     const char* name)
 { // getAuxField
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug("constraint");
-    debug << journal::at(__HERE__)
-          << "ConstraintPointwise::getAuxField(field="<<field<<", name="<<name<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("getAuxField(field="<<field<<", name="<<name<<")");
 
     assert(field);
     assert(_auxFields);
@@ -194,9 +192,7 @@ pylith::feassemble::ConstraintPointwise::auxFieldDiscretization(const char* name
                                                                 const int quadOrder,
                                                                 const bool isBasisContinuous)
 { // discretization
-    journal::debug_t debug("constraint");
-    debug << journal::at(__HERE__)
-          << "ConstraintPointwise::auxFieldDiscretization(name="<<name<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<")" << journal::endl;
+  PYLITH_JOURNAL_DEBUG("auxFieldDiscretization(name="<<name<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<")");
 
     pylith::topology::FieldBase::DiscretizeInfo feInfo;
     feInfo.basisOrder = basisOrder;
@@ -232,9 +228,7 @@ pylith::feassemble::ConstraintPointwise::auxFieldDiscretization(const char* name
 void
 pylith::feassemble::ConstraintPointwise::normalizer(const spatialdata::units::Nondimensional& dim)
 { // normalizer
-    journal::debug_t debug("constraint");
-    debug << journal::at(__HERE__)
-          << "ConstraintPointwise::normalizer(dim="<<&dim<<")" << journal::endl;
+  PYLITH_JOURNAL_DEBUG("normalizer(dim="<<&dim<<")");
 
     if (!_normalizer) {
         _normalizer = new spatialdata::units::Nondimensional(dim);
@@ -264,7 +258,7 @@ pylith::feassemble::ConstraintPointwise::verifyConfiguration(const pylith::topol
 void
 pylith::feassemble::ConstraintPointwise::prestep(const double t)
 { // prestep
-
+  // Default is to do nothing.
 } // prestep
 
 

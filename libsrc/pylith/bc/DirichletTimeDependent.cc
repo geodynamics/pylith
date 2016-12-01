@@ -20,9 +20,10 @@
 
 #include "DirichletTimeDependent.hh" // implementation of object methods
 
-#include "journal/debug.h" // USES debug_t
+#include "pylith/topology/Field.hh" // USES Field
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
@@ -35,6 +36,8 @@ pylith::bc::DirichletTimeDependent::DirichletTimeDependent(void) :
     _useRate(false),
     _useTimeHistory(false)
 { // constructor
+  JournalingComponent::name("dirichlettimedependent");
+  JournalingComponent::initialize();
 } // constructor
 
 
@@ -64,9 +67,7 @@ pylith::bc::DirichletTimeDependent::deallocate(void)
 void
 pylith::bc::DirichletTimeDependent::useInitial(const bool value)
 { // useInitial
-    journal::debug_t debug("constraint");
-    debug << journal::at(__HERE__)
-          << "DirichletTimeDependent::useInitial(value="<<value<<")" << journal::endl;
+  PYLITH_JOURNAL_DEBUG("useInitial(value="<<value<<")");
 
     _useInitial = value;
 } // useInitial
@@ -86,9 +87,7 @@ pylith::bc::DirichletTimeDependent::useInitial(void) const
 void
 pylith::bc::DirichletTimeDependent::useRate(const bool value)
 { // useRate
-    journal::debug_t debug("constraint");
-    debug << journal::at(__HERE__)
-          << "DirichletTimeDependent::useRate(value="<<value<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("useRate(value="<<value<<")");
 
     _useRate = value;
 } // useRate
@@ -108,9 +107,7 @@ pylith::bc::DirichletTimeDependent::useRate(void) const
 void
 pylith::bc::DirichletTimeDependent::useTimeHistory(const bool value)
 { // useTimeHistory
-    journal::debug_t debug("constraint");
-    debug << journal::at(__HERE__)
-          << "DirichletTimeDependent::useTimeHistory(value="<<value<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("useTimeHistory(value="<<value<<")");
 
     _useTimeHistory = value;
 } // useTimeHistory
@@ -130,20 +127,20 @@ pylith::bc::DirichletTimeDependent::useTimeHistory(void) const
 void
 pylith::bc::DirichletTimeDependent::_auxFieldsSetup(void)
 { // _auxFieldsSetup
-    journal::debug_t debug("constraint");
-    debug << journal::at(__HERE__)
-          << "DirichletTimeDependent::_auxFieldsSetup()" << journal::endl;
+  PYLITH_JOURNAL_DEBUG("_auxFieldsSetup()");
+
+  PYLITH_JOURNAL_ERROR(":TODO: @brad Implement _auxFieldsSetup().");
 }     // _auxFieldsSetup
 
 
 // ----------------------------------------------------------------------
 // Set kernels for RHS residual G(t,s).
 void
-pylith::bc::DirichletTimeDependent::_setFEKernelsConstraint(const topology::Field& solution) const
+pylith::bc::DirichletTimeDependent::_setFEKernelsConstraint(const topology::Field& solution)
 { // _setFEKernelsConstraint
-    journal::debug_t debug("constraint");
-    debug << journal::at(__HERE__)
-          << "DirichletTimeDependent::_setFEKernelsConstraint()" << journal::endl;
+  PYLITH_JOURNAL_DEBUG("setFEKernelsConstraint(solution="<<solution.label()<<")");
+
+  PYLITH_JOURNAL_ERROR(":TODO: @brad Implement _setFEKernelsConstraint().");
 } // _setFEKernelsConstraint
 
 // End of file

@@ -24,7 +24,7 @@
 namespace pylith {
     namespace feassemble {
 
-        class ConstraintPointwise
+        class ConstraintPointwise : public pylith::utils::JournalingComponent
         { // class ConstraintPointwise
 
         // PUBLIC METHODS /////////////////////////////////////////////////
@@ -61,14 +61,19 @@ public:
          * @param[in] dof Array of indices for constrained degrees of freedom.
          * @param[in] size Size of array
          */
-        void constrainedDOF(const int* flags,
-                            const int size);
+	  %apply(int* INPLACE_ARRAY1, int DIM1) {
+	   (const int* flags,
+	    const int size)
+	     };
+	 void constrainedDOF(const int* flags,
+			     const int size);
+	 %clear(const int* flags, const int size);
 
         /** Get indices of constrained degrees of freedom.
          *
          * @returns Array of indices for constrained degrees of freedom.
          */
-        const pylith::int_array& constrainedDOF(void) const;
+	const pylith::int_array& constrainedDOF(void) const;
 
         /** Get auxiliary fields.
          *
@@ -90,7 +95,7 @@ public:
          * @param[in] name Name of field to retrieve.
          */
         void getAuxField(pylith::topology::Field *field,
-                         const char* name) const;
+                         const char* name);
 
         /** Set spatial database for auxiliary fields.
          *

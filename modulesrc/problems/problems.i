@@ -26,9 +26,6 @@
 #include "pylith/topology/topologyfwd.hh" // USES Mesh
 #include "pylith/feassemble/feassemblefwd.hh" // USES Integrator
 
-#include "pylith/problems/Problem.hh"
-#include "pylith/problems/TimeDependent.hh"
-
 #include "pylith/problems/Formulation.hh"
 #include "pylith/problems/Explicit.hh"
 #include "pylith/problems/Implicit.hh"
@@ -36,6 +33,9 @@
 #include "pylith/problems/SolverLinear.hh"
 #include "pylith/problems/SolverNonlinear.hh"
 #include "pylith/problems/SolverLumped.hh"
+
+#include "pylith/problems/Problem.hh"
+#include "pylith/problems/TimeDependent.hh"
 %}
 
 %include "exception.i"
@@ -49,11 +49,10 @@
 
 %include "typemaps.i"
 %include "../include/integratorarray.i"
+%include "../include/constraintarray.i"
 %include "../include/scalartypemaps.i"
 
 // Interfaces
-%include "Problem.i"
-%include "TimeDependent.i"
 %include "Formulation.i"
 %include "Explicit.i"
 %include "Implicit.i"
@@ -62,5 +61,8 @@
 %include "SolverNonlinear.i"
 %include "SolverLumped.i"
 
+%include "../utils/JournalingComponent.i"
+%include "Problem.i"
+%include "TimeDependent.i"
 
 // End of file

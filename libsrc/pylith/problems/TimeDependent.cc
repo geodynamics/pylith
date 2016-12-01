@@ -47,7 +47,7 @@ pylith::problems::TimeDependent::TimeDependent(void) :
     _formulationType(IMPLICIT)
 { // constructor
     JournalingComponent::name(_journal);
-    //JournalingComponent::initialize();
+    JournalingComponent::initialize();
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -232,7 +232,7 @@ pylith::problems::TimeDependent::initialize(void)
     err = TSSetDuration(_ts, _maxTimeSteps, _totalTime); PYLITH_CHECK_ERROR(err);
 
     // Set initial solution.
-    PYLITH_JOURNAL_WARNING("TimeDependent::initialize() missing setting initial solution.");
+    PYLITH_JOURNAL_ERROR(":TODO: @brad Implement setting initial solution.");
     // :TODO: Set initial conditions.
 
     PYLITH_JOURNAL_DEBUG("Setting PetscTS initial conditions from solution global Vector.");
@@ -294,9 +294,7 @@ pylith::problems::TimeDependent::prestep(void)
     err = TSGetTimeStep(_ts, &dt); PYLITH_CHECK_ERROR(err);
     err = TSGetTime(_ts, &t);
 
-    PYLITH_JOURNAL_ERROR("TimeDependent::prestep() missing setting of constraints; "
-                         "Constraint object missing setAuxFields(t, dt).");
-
+    PYLITH_JOURNAL_ERROR(":TODO: @brad Implement setting time history auxiliary field for constraints.");
     // Set constraints.
 #if 0 // :KLUDGE: :TODO: Implement this.
     const size_t numConstraints = _constraints.size();
@@ -332,8 +330,7 @@ pylith::problems::TimeDependent::poststep(void)
         _integrators[i]->updateStateVars(*_solution);
     }     // for
 
-    PYLITH_JOURNAL_ERROR("TimeDependent::poststep() missing output.");
-
+    PYLITH_JOURNAL_ERROR(":TODO: @brad Implement output in poststep().");
     // :TODO: Output [this is output at whatever time the solution corresponds to.]
 
     PYLITH_METHOD_END;
@@ -365,7 +362,8 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
     // If explicit time stepping, multiply RHS, G(t,s), by M^{-1}
     if (EXPLICIT == problem->_formulationType) {
 
-        // :KLUDGE: :TODO: Should add check to see if we need to compute Jacobian
+        debug << journal::at(__HERE__)
+              << ":TODO: @brad Check to see if we need to compute Jacobian." << journal::endl;
         problem->Problem::computeLHSJacobianLumpedInv(t, dt, solutionVec);
 
         assert(problem->_jacobianLHSLumpedInv);
