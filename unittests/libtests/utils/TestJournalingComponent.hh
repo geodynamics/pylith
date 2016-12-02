@@ -45,8 +45,6 @@ CPPUNIT_TEST_SUITE( TestJournalingComponent );
 
 CPPUNIT_TEST( testConstructor );
 CPPUNIT_TEST( testName );
-CPPUNIT_TEST( testInitialize );
-CPPUNIT_TEST( testAccessors );
 CPPUNIT_TEST( testJournals );
 
 CPPUNIT_TEST_SUITE_END();
@@ -59,12 +57,6 @@ void testConstructor(void);
 
 /// Test name().
 void testName(void);
-
-/// Test initialize().
-void testInitialize(void);
-
-/// Test accessors debug(), info(), error().
-void testAccessors(void);
 
 /// Test PYLITH_JOURNAL_DEBUG(), PYLITH_JOURNAL_INFO(), PYLITH_JOURNAL_ERROR().
 void testJournals(void);

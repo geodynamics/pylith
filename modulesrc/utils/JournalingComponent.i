@@ -50,33 +50,6 @@ public:
          */
         const char* name(void) const;
 
-        /// Setup journaling..
-        void initialize(void);
-
-        /** Get debug journal.
-         *
-         * @returns Debugging journal.
-         */
-        journal::debug_t& debug(void);
-
-        /** Get info journal.
-         *
-         * @returns Info journal.
-         */
-        journal::info_t& info(void);
-
-        /** Get warning journal.
-         *
-         * @returns Warning journal.
-         */
-        journal::warning_t& warning(void);
-
-        /** Get error journal.
-         *
-         * @returns Error journal.
-         */
-        journal::error_t& error(void);
-
         }; // JournalingComponent
 
     } // utils

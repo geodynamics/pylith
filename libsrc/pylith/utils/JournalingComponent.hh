@@ -32,18 +32,6 @@
 
 #include <string> // HASA std::string
 
-// Forward declarations
-namespace journal {
-    class SeverityDebug;
-    class SeverityInfo;
-    class SeverityWarning;
-    class SeverityError;
-    typedef SeverityDebug debug_t;
-    typedef SeverityInfo info_t;
-    typedef SeverityWarning warning_t;
-    typedef SeverityError error_t;
-} // journal
-
 // JournalingComponent ----------------------------------------------------------
 /** @brief C++ object for managing Pyre journals.
  *
@@ -73,41 +61,6 @@ void name(const char* value);
  * @returns Name of journal.
  */
 const char* name(void) const;
-
-/// Setup journaling..
-void initialize(void);
-
-/** Get debug journal.
- *
- * @returns Debugging journal.
- */
-journal::debug_t& debug(void);
-
-/** Get info journal.
- *
- * @returns Info journal.
- */
-journal::info_t& info(void);
-
-/** Get warning journal.
- *
- * @returns Warning journal.
- */
-journal::warning_t& warning(void);
-
-/** Get error journal.
- *
- * @returns Error journal.
- */
-journal::error_t& error(void);
-
-// PROTECTED METHODS ////////////////////////////////////////////////////
-protected:
-
-journal::debug_t* _debug;     ///< Debugging journal.
-journal::info_t* _info;     ///< Info journal.
-journal::warning_t* _warning; ///< Warning journal.
-journal::error_t* _error;     ///< Error journal.
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private:

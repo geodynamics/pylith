@@ -35,10 +35,6 @@ pylith::utils::TestJournalingComponent::testConstructor(void)
     JournalingComponent journals;
 
     CPPUNIT_ASSERT_EQUAL(std::string(""), journals._name);
-    CPPUNIT_ASSERT(!journals._debug);
-    CPPUNIT_ASSERT(!journals._info);
-    CPPUNIT_ASSERT(!journals._warning);
-    CPPUNIT_ASSERT(!journals._error);
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -54,59 +50,14 @@ pylith::utils::TestJournalingComponent::testName(void)
     CPPUNIT_ASSERT_EQUAL(name, std::string(journals.name()));
 } // testName
 
-// ----------------------------------------------------------------------
-// Test initialize().
-void
-pylith::utils::TestJournalingComponent::testInitialize(void)
-{ // testInitialize
-    JournalingComponent journals;
-    journals.name("my class");
-
-    journals.initialize();
-
-    CPPUNIT_ASSERT(journals._debug);
-    CPPUNIT_ASSERT(journals._info);
-    CPPUNIT_ASSERT(journals._warning);
-    CPPUNIT_ASSERT(journals._error);
-} // testInitialize
-
-// ----------------------------------------------------------------------
-// Test debug(), info(), error().
-void
-pylith::utils::TestJournalingComponent::testAccessors(void)
-{ // testAccessors
-    JournalingComponent journals;
-    journals.name("TestJournalingComponent");
-    journals.initialize();
-
-    journal::debug_t& debug = journals.debug();
-    debug << journal::at(__HERE__) << "CORRECT: This is a debug message." << journal::endl;
-
-    journal::info_t& info = journals.info();
-    info << journal::at(__HERE__) << "CORRECT: This is a info message." << journal::endl;
-
-    journal::warning_t& warning = journals.warning();
-    warning << journal::at(__HERE__) << "CORRECT: This is a warning message." << journal::endl;
-
-    journal::error_t& error = journals.error();
-    error << journal::at(__HERE__) << "CORRECT: This is a error message." << journal::endl;
-
-} // testAccessors
-
 namespace pylith {
     namespace utils {
         class TestJournals : public JournalingComponent {
 public:
         void test(void) {
-            debug().activate();
             PYLITH_JOURNAL_DEBUG("CORRECT: This is a debug message.");
-
-            info().activate();
             PYLITH_JOURNAL_INFO("CORRECT: This is an info mesasge.");
-
-            warning().activate();
             PYLITH_JOURNAL_WARNING("CORRECT: This is a warning mesasge.");
-
             PYLITH_JOURNAL_ERROR("CORRECT: This is an error mesage.");
         } // testJournals
 
@@ -119,9 +70,14 @@ public:
 void
 pylith::utils::TestJournalingComponent::testJournals(void)
 { // testJournals
+    const char* name = "test";
+    journal::info_t info(name); info.activate();
+    journal::debug_t debug(name); debug.activate();
+    journal::warning_t warning(name); warning.activate();
+    journal::error_t error(name); error.activate();
+
     TestJournals journals;
     journals.name("test");
-    journals.initialize();
     journals.test();
 } // testJournals
 

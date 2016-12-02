@@ -30,39 +30,29 @@
 #include "journal/warning.h"
 #include "journal/error.h"
 
-#include <cassert> // USES assert()
-
 
 #define PYLITH_JOURNAL_DEBUG(msg) \
     do { \
-        if (!_debug) { \
-            JournalingComponent::initialize(); assert(_debug); \
-        } \
-        *_debug << journal::at(__HERE__) << msg << journal::endl; \
+        journal::debug_t debug(JournalingComponent::name()); \
+        debug << journal::at(__HERE__) << msg << journal::endl; \
     } while(0)
 
 #define PYLITH_JOURNAL_INFO(msg) \
     do { \
-        if (!_info) { \
-            JournalingComponent::initialize(); assert(_info); \
-        } \
-        *_info << journal::at(__HERE__) << msg << journal::endl; \
+        journal::info_t info(JournalingComponent::name()); \
+        info << journal::at(__HERE__) << msg << journal::endl; \
     } while(0)
 
 #define PYLITH_JOURNAL_WARNING(msg) \
     do { \
-        if (!_warning) { \
-            JournalingComponent::initialize(); assert(_warning); \
-        } \
-        *_warning << journal::at(__HERE__) << msg << journal::endl; \
+        journal::warning_t warning(JournalingComponent::name()); \
+        warning << journal::at(__HERE__) << msg << journal::endl; \
     } while(0)
 
 #define PYLITH_JOURNAL_ERROR(msg) \
     do { \
-        if (!_error) { \
-            JournalingComponent::initialize(); assert(_error); \
-        } \
-        *_error << journal::at(__HERE__) << msg << journal::endl; \
+        journal::error_t error(JournalingComponent::name()); \
+        error << journal::at(__HERE__) << msg << journal::endl; \
     } while(0)
 
 #endif // pylith_utils_journals_hh
