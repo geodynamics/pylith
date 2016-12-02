@@ -17,7 +17,7 @@ mesh surface all
 # ----------------------------------------------------------------------
 # Create blocks for materials
 # ----------------------------------------------------------------------
-block 1 surface 3 4 5 
+block 1 surface 3 4 5
 block 1 name "elastic"
 
 # ----------------------------------------------------------------------
@@ -36,14 +36,14 @@ nodeset 11 name "fault_x2"
 # ----------------------------------------------------------------------
 group "edge_xpos" add node in curve 3
 nodeset 20 group edge_xpos
-nodeset 20 name "edge xpos"
+nodeset 20 name "edge_xpos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -x edge
 # ----------------------------------------------------------------------
 group "edge_xneg" add node in curve 1
 nodeset 21 group edge_xneg
-nodeset 21 name "edge xneg"
+nodeset 21 name "edge_xneg"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +y edge
@@ -52,7 +52,7 @@ group "edge_ypos" add node in curve  8
 group "edge_ypos" add node in curve 11
 group "edge_ypos" add node in curve 14
 nodeset 22 group edge_ypos
-nodeset 22 name "edge ypos"
+nodeset 22 name "edge_ypos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -y edge
@@ -61,7 +61,7 @@ group "edge_yneg" add node in curve  9
 group "edge_yneg" add node in curve 12
 group "edge_yneg" add node in curve 13
 nodeset 23 group edge_yneg
-nodeset 23 name "edge yneg"
+nodeset 23 name "edge_yneg"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -y edge w/o overlap with fault
@@ -69,10 +69,10 @@ nodeset 23 name "edge yneg"
 group "edge_yneg_nofault" add node in edge_yneg
 group "edge_yneg_nofault" remove node in fault_x
 nodeset 24 group edge_yneg_nofault
-nodeset 24 name "edge yneg nofault"
+nodeset 24 name "edge_yneg_nofault"
 
 # ----------------------------------------------------------------------
 # Export exodus file
 # ----------------------------------------------------------------------
-export mesh "mesh.exo" dimension 2 overwrite
+export mesh "mesh_quad4.exo" dimension 2 overwrite
 
