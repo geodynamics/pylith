@@ -271,6 +271,7 @@ pylith::problems::TimeDependent::initialize(void)
     PYLITH_JOURNAL_DEBUG("Setting PetscTS initial conditions from solution global Vector.");
     err = TSSetSolution(_ts, _solution->globalVector()); PYLITH_CHECK_ERROR(err);
 
+
     // Set callbacks.
     PYLITH_JOURNAL_DEBUG("Setting PetscTS callbacks prestep(), poststep(), computeRHSJacobian(), and computeRHSFunction().");
     err = TSSetPreStep(_ts, prestep); PYLITH_CHECK_ERROR(err);

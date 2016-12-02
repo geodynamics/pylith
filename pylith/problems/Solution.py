@@ -98,6 +98,10 @@ class Solution(PetscComponent):
         return
 
 
+    def _cleanup(self):
+        self.field.deallocate()
+
+
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def solution():
