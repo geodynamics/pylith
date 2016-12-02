@@ -47,7 +47,6 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::IsotropicLinearElastici
     _useReferenceState(false)
 { // constructor
     JournalingComponent::name(_journal);
-    JournalingComponent::initialize();
 } // constructor
 
 
@@ -187,7 +186,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_auxFieldsSetup(void)
 // ----------------------------------------------------------------------
 // Set kernels for RHS residual G(t,s).
 void
-pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSResidual(const topology::Field& solution)
+pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSResidual(const topology::Field& solution) const
 { // _setFEKernelsRHSResidual
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("_setFEKernelsRHSResidual(solution="<<solution.label()<<")");
@@ -216,7 +215,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSResidua
 // ----------------------------------------------------------------------
 // Set kernels for RHS Jacobian G(t,s).
 void
-pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSJacobian(const topology::Field& solution)
+pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSJacobian(const topology::Field& solution) const
 { // _setFEKernelsRHSJacobian
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("_setFEKernelsRHSJacobian(solution="<<solution.label()<<")");
@@ -260,7 +259,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSJacobia
 // ----------------------------------------------------------------------
 // Set kernels for LHS residual F(t,s,\dot{s}).
 void
-pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSResidual(const topology::Field& solution)
+pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSResidual(const topology::Field& solution) const
 { // _setFEKernelsLHSResidual
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("_setFEKernelsLHSResidual(solution="<<solution.label()<<")");
@@ -289,7 +288,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSResidua
 // ----------------------------------------------------------------------
 // Set kernels for LHS Jacobian F(t,s,\dot{s}).
 void
-pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSJacobianImplicit(const topology::Field& solution)
+pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSJacobianImplicit(const topology::Field& solution) const
 { // _setFEKernelsLHSJacobianImplicit
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("_setFEKernelsLHSJacobianImplicit(solution="<<solution.label()<<")");
@@ -333,7 +332,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSJacobia
 // ----------------------------------------------------------------------
 // Set kernels for LHS Jacobian F(t,s,\dot{s}).
 void
-pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSJacobianExplicit(const topology::Field& solution)
+pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSJacobianExplicit(const topology::Field& solution) const
 { // _setFEKernelsLHSJacobianExplicit
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("_setFEKernelsLHSJacobianExplicit(solution="<<solution.label()<<")");

@@ -35,7 +35,7 @@
   } // nondimensionalize
 %}
 
-%apply(int* IN_ARRAY1, int DIM1) {
+%apply(int* INPLACE_ARRAY1, int DIM1) {
   (int* const materialIds, const int numMaterials)
   };
 %inline %{
@@ -51,7 +51,7 @@
   MeshOps_checkMaterialIds(const pylith::topology::Mesh& mesh,
 			   int* const materialIds,
 			   const int numMaterials) {
-    pylith::topology::MeshOps::checkMaterialIds(mesh, 
+    pylith::topology::MeshOps::checkMaterialIds(mesh,
 						materialIds, numMaterials);
   } // checkMaterialIds
 %}
@@ -59,10 +59,10 @@
 
 %inline %{
   int
-  MeshOps_numMaterialCells(const pylith::topology::Mesh& mesh, 
+  MeshOps_numMaterialCells(const pylith::topology::Mesh& mesh,
 			   int materialId) {
     return pylith::topology::MeshOps::numMaterialCells(mesh, materialId);
   } // numMaterialCells
 %}
 
-// End of file 
+// End of file

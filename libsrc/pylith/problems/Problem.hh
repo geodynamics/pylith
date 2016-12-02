@@ -145,7 +145,7 @@ void preinitialize(const pylith::topology::Mesh& mesh);
  */
 virtual
 void verifyConfiguration(int* const materialIds,
-                         const int numMaterials);
+                         const int numMaterials) const;
 
 /** Initialize.
  *

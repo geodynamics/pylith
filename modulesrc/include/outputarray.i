@@ -17,38 +17,38 @@
 //
 
 // ----------------------------------------------------------------------
-// List of mesh constraints.
-%typemap(in) (pylith::feassemble::ConstraintPointwise* constraintArray[],
-	      const int numConstraints)
+// List of output managers.
+%typemap(in) (pylith::meshio::OutputManager* outputArray[],
+	      const int numOutputs)
 {
   // Check to make sure input is a list.
   if (PyList_Check($input)) {
     const int size = PyList_Size($input);
     $2 = size;
-    $1 = (size > 0) ? new pylith::feassemble::ConstraintPointwise*[size] : 0;
+    $1 = (size > 0) ? new pylith::meshio::OutputManager*[size] : 0;
     for (int i = 0; i < size; i++) {
       PyObject* s = PyList_GetItem($input,i);
-      pylith::feassemble::ConstraintPointwise* constraint = 0;
-      int err = SWIG_ConvertPtr(s, (void**) &constraint,
-				$descriptor(pylith::feassemble::ConstraintPointwise*),
+      pylith::meshio::OutputManager* output = 0;
+      int err = SWIG_ConvertPtr(s, (void**) &output,
+				$descriptor(pylith::meshio::OutputManager*),
 				0);
       if (SWIG_IsOK(err))
-	$1[i] = (pylith::feassemble::ConstraintPointwise*) constraint;
+	$1[i] = (pylith::meshio::OutputManager*) output;
       else {
-	PyErr_SetString(PyExc_TypeError, "List must contain constraints.");
+	PyErr_SetString(PyExc_TypeError, "List must contain output managers.");
 	delete[] $1;
 	return NULL;
       } // if
     } // for
   } else {
-    PyErr_SetString(PyExc_TypeError, "Expected list of constraints.");
+    PyErr_SetString(PyExc_TypeError, "Expected list of output managers.");
     return NULL;
   } // if/else
-} // typemap(in) [List of constraints.]
+} // typemap(in) [List of output managers.]
 
 // This cleans up the array we malloc'd before the function call
-%typemap(freearg) (pylith::feassemble::ConstraintPointwise* constraintArray[],
-		   const int numConstraints) {
+%typemap(freearg) (pylith::meshio::OutputManager* outputArray[],
+		   const int numOutputs) {
   delete[] $1;
 }
 

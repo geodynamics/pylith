@@ -47,7 +47,6 @@ pylith::problems::TimeDependent::TimeDependent(void) :
     _formulationType(IMPLICIT)
 { // constructor
     JournalingComponent::name(_journal);
-    JournalingComponent::initialize();
 } // constructor
 
 // ----------------------------------------------------------------------

@@ -50,7 +50,17 @@
 %include "typemaps.i"
 %include "../include/integratorarray.i"
 %include "../include/constraintarray.i"
+%include "../include/outputarray.i"
 %include "../include/scalartypemaps.i"
+
+// Numpy interface stuff
+%{
+#define SWIG_FILE_WITH_INIT
+%}
+%include "../include/numpy.i"
+%init %{
+    import_array();
+%}
 
 // Interfaces
 %include "Formulation.i"

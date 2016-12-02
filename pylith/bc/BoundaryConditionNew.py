@@ -86,9 +86,6 @@ class BoundaryConditionNew(PetscComponent,
         """
         Setup boundary condition.
         """
-        import weakref
-        self.mesh = weakref.ref(mesh)
-
         ModuleBoundaryCondition.label(self, self.label)
         return
 

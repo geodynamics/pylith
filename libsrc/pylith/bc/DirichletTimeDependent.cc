@@ -36,8 +36,7 @@ pylith::bc::DirichletTimeDependent::DirichletTimeDependent(void) :
     _useRate(false),
     _useTimeHistory(false)
 { // constructor
-  JournalingComponent::name("dirichlettimedependent");
-  JournalingComponent::initialize();
+    JournalingComponent::name("dirichlettimedependent");
 } // constructor
 
 
@@ -67,7 +66,7 @@ pylith::bc::DirichletTimeDependent::deallocate(void)
 void
 pylith::bc::DirichletTimeDependent::useInitial(const bool value)
 { // useInitial
-  PYLITH_JOURNAL_DEBUG("useInitial(value="<<value<<")");
+    PYLITH_JOURNAL_DEBUG("useInitial(value="<<value<<")");
 
     _useInitial = value;
 } // useInitial
@@ -127,9 +126,9 @@ pylith::bc::DirichletTimeDependent::useTimeHistory(void) const
 void
 pylith::bc::DirichletTimeDependent::_auxFieldsSetup(void)
 { // _auxFieldsSetup
-  PYLITH_JOURNAL_DEBUG("_auxFieldsSetup()");
+    PYLITH_JOURNAL_DEBUG("_auxFieldsSetup()");
 
-  PYLITH_JOURNAL_ERROR(":TODO: @brad Implement _auxFieldsSetup().");
+    PYLITH_JOURNAL_ERROR(":TODO: @brad Implement _auxFieldsSetup().");
 }     // _auxFieldsSetup
 
 
@@ -138,9 +137,9 @@ pylith::bc::DirichletTimeDependent::_auxFieldsSetup(void)
 void
 pylith::bc::DirichletTimeDependent::_setFEKernelsConstraint(const topology::Field& solution)
 { // _setFEKernelsConstraint
-  PYLITH_JOURNAL_DEBUG("setFEKernelsConstraint(solution="<<solution.label()<<")");
+    PYLITH_JOURNAL_DEBUG("setFEKernelsConstraint(solution="<<solution.label()<<")");
 
-  PYLITH_JOURNAL_ERROR(":TODO: @brad Implement _setFEKernelsConstraint().");
+    PYLITH_JOURNAL_ERROR(":TODO: @brad Implement _setFEKernelsConstraint().");
 } // _setFEKernelsConstraint
 
 // End of file

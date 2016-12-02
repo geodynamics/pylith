@@ -76,9 +76,6 @@ class IntegratorPointwise(PetscComponent,
         """
         Do pre-initialization setup.
         """
-        import weakref
-        self.mesh = weakref.ref(mesh)
-
         ModuleIntegrator.auxFieldsDB(self, self.auxFieldsDB)
         print ":TODO: @brad IntegratorPointwise.preinitialize() Pass auxiliary fields discretization to C++."
         return

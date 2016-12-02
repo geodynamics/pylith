@@ -94,33 +94,33 @@ void _auxFieldsSetup(void);
  *
  * @param[in] solution Solution field.
  */
-void _setFEKernelsRHSResidual(const topology::Field& solution);
+void _setFEKernelsRHSResidual(const topology::Field& solution) const;
 
 /** Set kernels for RHS Jacobian G(t,u).
  *
  * @param[in] solution Solution field.
  */
-void _setFEKernelsRHSJacobian(const topology::Field& solution);
+void _setFEKernelsRHSJacobian(const topology::Field& solution) const;
 
 /** Set kernels for LHS residual F(t,u,\dot{u}).
  *
  * @param[in] solution Solution field.
  */
-void _setFEKernelsLHSResidual(const topology::Field& solution);
+void _setFEKernelsLHSResidual(const topology::Field& solution) const;
 
 
 /** Set kernels for LHS Jacobian F(t,u,\dot{u}) when implicit time-stepping.
  *
  * @param[in] solution Solution field.
  */
-void _setFEKernelsLHSJacobianImplicit(const topology::Field& solution);
+void _setFEKernelsLHSJacobianImplicit(const topology::Field& solution) const;
 
 
 /** Set kernels for LHS Jacobian F(t,u,\dot{u}) when explicit time-stepping.
  *
  * @param[in] solution Solution field.
  */
-void _setFEKernelsLHSJacobianExplicit(const topology::Field& solution);
+void _setFEKernelsLHSJacobianExplicit(const topology::Field& solution) const;
 
 
 // PRIVATE MEMBERS ////////////////////////////////////////////////////

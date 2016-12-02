@@ -114,11 +114,11 @@ pylith::feassemble::ConstraintPointwise::constrainedDOF(const int* flags,
 
     _constrainedDOF.resize(size);
     for (int i=0; i < size; ++i) {
-      if (flags[i] < 0 || flags[i] > 2) {
-	std::ostringstream msg;
-	msg << "Constrained DOF out of range (" << flags[i] << ". DOF must be in range [0,2].";
-	throw std::runtime_error(msg.str());
-      } // if
+        if (flags[i] < 0 || flags[i] > 2) {
+            std::ostringstream msg;
+            msg << "Constrained DOF out of range (" << flags[i] << ". DOF must be in range [0,2].";
+            throw std::runtime_error(msg.str());
+        } // if
         _constrainedDOF[i] = flags[i];
     } // for
 
@@ -163,7 +163,7 @@ pylith::feassemble::ConstraintPointwise::hasAuxField(const char* name)
 // Get auxiliary field.
 void
 pylith::feassemble::ConstraintPointwise::getAuxField(pylith::topology::Field *field,
-                                                     const char* name)
+                                                     const char* name) const
 { // getAuxField
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("getAuxField(field="<<field<<", name="<<name<<")");
@@ -192,7 +192,7 @@ pylith::feassemble::ConstraintPointwise::auxFieldDiscretization(const char* name
                                                                 const int quadOrder,
                                                                 const bool isBasisContinuous)
 { // discretization
-  PYLITH_JOURNAL_DEBUG("auxFieldDiscretization(name="<<name<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<")");
+    PYLITH_JOURNAL_DEBUG("auxFieldDiscretization(name="<<name<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<")");
 
     pylith::topology::FieldBase::DiscretizeInfo feInfo;
     feInfo.basisOrder = basisOrder;
@@ -228,7 +228,7 @@ pylith::feassemble::ConstraintPointwise::auxFieldDiscretization(const char* name
 void
 pylith::feassemble::ConstraintPointwise::normalizer(const spatialdata::units::Nondimensional& dim)
 { // normalizer
-  PYLITH_JOURNAL_DEBUG("normalizer(dim="<<&dim<<")");
+    PYLITH_JOURNAL_DEBUG("normalizer(dim="<<&dim<<")");
 
     if (!_normalizer) {
         _normalizer = new spatialdata::units::Nondimensional(dim);
@@ -244,10 +244,9 @@ void
 pylith::feassemble::ConstraintPointwise::verifyConfiguration(const pylith::topology::Field& solution) const
 { // verifyConfiguration
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
 
-    journal::debug_t debug("constraint");
-    debug << journal::at(__HERE__)
-          << "ConstraintPointwise::verifyConfiguration(solution="<<solution.label()<<") empty implementation." << journal::endl;
+    PYLITH_JOURNAL_ERROR(":TODO: @brad Implement verifyConfiguration().");
 
     PYLITH_METHOD_END;
 } // verifyConfiguration

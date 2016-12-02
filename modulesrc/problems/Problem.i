@@ -117,9 +117,13 @@ public:
          * @param[in] numMaterials Size of array (number of materials).
          *
          */
+         %apply(int* INPLACE_ARRAY1, int DIM1) {
+           (int* const materialIds, const int numMaterials)
+           };
         virtual
         void verifyConfiguration(int* const materialIds,
                                  const int numMaterials);
+        %clear(int* const materialIds, const int numMaterials);
 
         /** Initialize.
          *

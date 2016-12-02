@@ -205,10 +205,12 @@ pylith::problems::Problem::preinitialize(const pylith::topology::Mesh& mesh)
 // Verify configuration.
 void
 pylith::problems::Problem::verifyConfiguration(int* const materialIds,
-                                               const int numMaterials)
+                                               const int numMaterials) const
 { // verifyConfiguration
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("Problem::verifyConfiguration(materialIds="<<materialIds<<", numMaterials="<<numMaterials<<")");
+
+    assert(_solution);
 
     // Check to make sure material-id for each cell matches the id of a material.
     pylith::topology::MeshOps::checkMaterialIds(_solution->mesh(), materialIds, numMaterials);

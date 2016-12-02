@@ -111,7 +111,7 @@ bool hasAuxField(const char* name);
  * @param[in] name Name of field to retrieve.
  */
 void getAuxField(pylith::topology::Field *field,
-                 const char* name);
+                 const char* name) const;
 
 /** Set spatial database for auxiliary fields.
  *

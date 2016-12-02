@@ -27,8 +27,7 @@
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
-
-#include "journal/debug.h" // USES journal::debug_t
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
@@ -104,10 +103,7 @@ pylith::feassemble::IntegratorPointwise::getAuxField(pylith::topology::Field *fi
                                                      const char* name) const
 { // getAuxField
     PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug("integrator");
-    debug << journal::at(__HERE__)
-          << "IntegratorPointwise::getAuxField(field="<<field<<", name="<<name<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("getAuxField(field="<<field<<", name="<<name<<")");
 
     assert(field);
     assert(_auxFields);
@@ -133,15 +129,16 @@ pylith::feassemble::IntegratorPointwise::auxFieldDiscretization(const char* name
                                                                 const int quadOrder,
                                                                 const bool isBasisContinuous)
 { // discretization
-    journal::debug_t debug("integrator");
-    debug << journal::at(__HERE__)
-          << "IntegratorPointwise::auxFieldDiscretization(name="<<name<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<")" << journal::endl;
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("auxFieldDiscretization(name="<<name<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<")");
 
     pylith::topology::FieldBase::DiscretizeInfo feInfo;
     feInfo.basisOrder = basisOrder;
     feInfo.quadOrder = quadOrder;
     feInfo.isBasisContinuous = isBasisContinuous;
     _auxFieldsFEInfo[name] = feInfo;
+
+    PYLITH_METHOD_END;
 } // discretization
 
 
@@ -186,10 +183,9 @@ void
 pylith::feassemble::IntegratorPointwise::verifyConfiguration(const pylith::topology::Field& solution) const
 { // verifyConfiguration
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
 
-    journal::debug_t debug("integrator");
-    debug << journal::at(__HERE__)
-          << "IntegratorPointwise::verifyConfiguration(solution="<<solution.label()<<") empty implementation." << journal::endl;
+    PYLITH_JOURNAL_ERROR(":TODO: @brad Implement verifyConfiguration().");
 
     PYLITH_METHOD_END;
 } // verifyConfiguration
@@ -200,9 +196,7 @@ pylith::feassemble::IntegratorPointwise::verifyConfiguration(const pylith::topol
 void
 pylith::feassemble::IntegratorPointwise::normalizer(const spatialdata::units::Nondimensional& dim)
 { // normalizer
-    journal::debug_t debug("integrator");
-    debug << journal::at(__HERE__)
-          << "IntegratorPointwise::normalizer(dim="<<&dim<<")" << journal::endl;
+    PYLITH_JOURNAL_DEBUG("IntegratorPointwise::normalizer(dim="<<&dim<<")");
 
     if (0 == _normalizer) {
         _normalizer = new spatialdata::units::Nondimensional(dim);
@@ -227,14 +221,12 @@ void
 pylith::feassemble::IntegratorPointwise::updateStateVars(const pylith::topology::Field& solution)
 { // updateState
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("updateStateVars(solution="<<solution.label()<<")");
 
-    journal::debug_t debug("integrator");
-    debug << journal::at(__HERE__)
-          << "IntegratorPointwise::updateStateVars(solution) empty implementation." << journal::endl;
+    PYLITH_JOURNAL_ERROR(":TODO: @brad Implement updateStateVars().");
 
     PYLITH_METHOD_END;
 } // updateStateVars
-
 
 
 // End of file

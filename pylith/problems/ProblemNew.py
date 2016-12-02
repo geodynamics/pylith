@@ -176,7 +176,7 @@ class ProblemNew(PetscComponent, ModuleProblem):
         # Set solution outputs.
         self._setSolutionOutputs()
 
-        ModuleProblem.preinitialize(mesh)
+        ModuleProblem.preinitialize(self, mesh)
         return
 
     def verifyConfiguration(self):
@@ -193,8 +193,8 @@ class ProblemNew(PetscComponent, ModuleProblem):
         for material in self.materials.components():
             if material.id() in materialIds.keys():
                 raise ValueError("ID values for materials '%s' and '%s' are both '%d'. Material id values must be unique." %
-                                 (material.label(), materialIds[material.id()], material.id()))
-            materialIds[material.id()] = material.label()
+                                 (material.label, materialIds[material.materialId], material.materialId))
+            materialIds[material.materialId] = material.label
 
         for interface in self.interfaces.components():
             if interface.id() in materialIds.keys():
@@ -205,7 +205,7 @@ class ProblemNew(PetscComponent, ModuleProblem):
         # Check to make sure material-id for each cell matches the id of a material
         import numpy
         idValues = numpy.array(materialIds.keys(), dtype=numpy.int32)
-        ModuleProblem.verifyConfiguration(idValues)
+        ModuleProblem.verifyConfiguration(self, idValues)
         return
 
     def initialize(self):
@@ -297,10 +297,7 @@ class ProblemNew(PetscComponent, ModuleProblem):
         return
 
     def _setSolutionOutputs(self):
-        outputs = []
-        for output in self.outputs.components():
-            outputs.append(output)
-        ModuleProblem.outputs(self, outputs)
+        ModuleProblem.outputs(self, self.outputs.components())
         return
 
     def _setupLogging(self):

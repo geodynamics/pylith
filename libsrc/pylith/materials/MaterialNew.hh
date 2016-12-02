@@ -247,7 +247,7 @@ void _auxFieldsSetup(void) = 0;
  * @param solution Solution field.
  */
 virtual
-void _setFEKernelsRHSResidual(const topology::Field& solution) = 0;
+void _setFEKernelsRHSResidual(const topology::Field& solution) const = 0;
 
 
 /** Set kernels for RHS Jacobian G(t,s).
@@ -264,7 +264,7 @@ void _setFEKernelsRHSResidual(const topology::Field& solution) = 0;
  * @param solution Solution field.
  */
 virtual
-void _setFEKernelsRHSJacobian(const topology::Field& solution) = 0;
+void _setFEKernelsRHSJacobian(const topology::Field& solution) const = 0;
 
 
 /** Set kernels for LHS residual F(t,s,\dot{s}).
@@ -275,7 +275,7 @@ void _setFEKernelsRHSJacobian(const topology::Field& solution) = 0;
  * @param solution Solution field.
  */
 virtual
-void _setFEKernelsLHSResidual(const topology::Field& solution) = 0;
+void _setFEKernelsLHSResidual(const topology::Field& solution) const = 0;
 
 
 /** Set kernels for LHS Jacobian F(t,s,\dot{s}) when implicit time-stepping.
@@ -288,7 +288,7 @@ void _setFEKernelsLHSResidual(const topology::Field& solution) = 0;
  * @param solution Solution field.
  */
 virtual
-void _setFEKernelsLHSJacobianImplicit(const topology::Field& solution) = 0;
+void _setFEKernelsLHSJacobianImplicit(const topology::Field& solution) const = 0;
 
 
 /** Set kernels for LHS Jacobian F(t,s,\dot{s}) when explicit time-stepping.
@@ -301,7 +301,7 @@ void _setFEKernelsLHSJacobianImplicit(const topology::Field& solution) = 0;
  * @param solution Solution field.
  */
 virtual
-void _setFEKernelsLHSJacobianExplicit(const topology::Field& solution) = 0;
+void _setFEKernelsLHSJacobianExplicit(const topology::Field& solution) const = 0;
 
 
 // PROTECTED MEMBERS //////////////////////////////////////////////////

@@ -61,7 +61,7 @@ public:
          * @param[in] dof Array of indices for constrained degrees of freedom.
          * @param[in] size Size of array
          */
-	  %apply(int* INPLACE_ARRAY1, int DIM1) {
+	  %apply(int* IN_ARRAY1, int DIM1) {
 	   (const int* flags,
 	    const int size)
 	     };
@@ -95,7 +95,7 @@ public:
          * @param[in] name Name of field to retrieve.
          */
         void getAuxField(pylith::topology::Field *field,
-                         const char* name);
+                         const char* name) const;
 
         /** Set spatial database for auxiliary fields.
          *
