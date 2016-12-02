@@ -137,11 +137,9 @@ class TimeDependentNew(ProblemNew, ModuleTimeDependent):
 
         if 0 == comm.rank:
             self._info.log("Solving problem.")
-        self.checkpointTimer.toplevel = app  # Set handle for saving state
 
-        ModuleTimeDependent.create(self)
-        ModuleTimeDependent.initialize()
-        ModuleTimeDependent.solve()
+        ModuleTimeDependent.initialize(self)
+        ModuleTimeDependent.solve(self)
         return
 
     def finalize(self):
