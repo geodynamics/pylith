@@ -16,95 +16,95 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/topology/AuxSubfield.py
+# @file pylith/topology/AuxSubfield.py
 ##
-## @brief Python object for defining attributes of a subfield within a
-## field.
+# @brief Python object for defining attributes of a subfield within a
+# field.
 ##
-## Factory: subfield.
+# Factory: subfield.
 
 from pyre.components.Component import Component
 
 # AuxSubfield class
+
+
 class AuxSubfield(Component):
-  """
-  Python object for defining discretization of an auxiliary subfield.
-
-  Factory: auxiliary_subfield.
-  """
-
-  # INVENTORY //////////////////////////////////////////////////////////
-
-  class Inventory(Component.Inventory):
     """
-    Python object for managing AuxSubfield facilities and properties.
+    Python object for defining discretization of an auxiliary subfield.
+
+    Factory: auxiliary_subfield.
     """
 
-    ## @class Inventory
-    ## Python object for managing AuxSubfield facilities and properties.
-    ##
-    ## \b Properties
-    ## @li \b basis_order Order of basis functions.
-    ## @li \b quadrature_order Order of numerical quadrature.
-    ## @li \b basis_continuous Is basis continuous?
-    ##
-    ## \b Facilities
-    ## @li None
+    # INVENTORY //////////////////////////////////////////////////////////
 
-    import pyre.inventory
+    class Inventory(Component.Inventory):
+        """
+        Python object for managing AuxSubfield facilities and properties.
+        """
 
-    basisOrder = pyre.inventory.int("basis_order", default=1)
-    basisOrder.meta['tip'] = "Order of basis functions."
+        # @class Inventory
+        # Python object for managing AuxSubfield facilities and properties.
+        ##
+        # \b Properties
+        # @li \b basis_order Order of basis functions.
+        # @li \b quadrature_order Order of numerical quadrature.
+        # @li \b basis_continuous Is basis continuous?
+        ##
+        # \b Facilities
+        # @li None
 
-    quadOrder = pyre.inventory.int("quadrature_order", default=1)
-    quadOrder.meta['tip'] = "Order of numerical quadrature."
+        import pyre.inventory
 
-    basisContinuous = pyre.inventory.bool("basis_continous", default=True)
-    basisContinuous.meta['tip'] = "Is basis continuous?"
+        basisOrder = pyre.inventory.int("basis_order", default=1)
+        basisOrder.meta['tip'] = "Order of basis functions."
 
+        quadOrder = pyre.inventory.int("quadrature_order", default=1)
+        quadOrder.meta['tip'] = "Order of numerical quadrature."
 
-  # PUBLIC METHODS /////////////////////////////////////////////////////
+        isBasisContinuous = pyre.inventory.bool("is_basis_continous", default=True)
+        isBasisContinuous.meta['tip'] = "Is basis continuous?"
 
-  def __init__(self, name="auxsubfield"):
-    """
-    Constructor.
-    """
-    Component.__init__(self, name, facility="auxsubfield")
+    # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    return
+    def __init__(self, name="auxsubfield"):
+        """
+        Constructor.
+        """
+        Component.__init__(self, name, facility="auxsubfield")
 
+        return
 
-  # PRIVATE METHODS ////////////////////////////////////////////////////
+    # PRIVATE METHODS ////////////////////////////////////////////////////
 
-  def _configure(self):
-    """
-    Set members based using inventory.
-    """
-    Component._configure(self)
-    self.basisOrder = self.inventory.basisOrder
-    self.quadOrder = self.inventory.quadOrder
-    self.basisContinous = self.inventory.basisContinuous
-    return
+    def _configure(self):
+        """
+        Set members based using inventory.
+        """
+        Component._configure(self)
+        self.basisOrder = self.inventory.basisOrder
+        self.quadOrder = self.inventory.quadOrder
+        self.isBasisContinuous = self.inventory.isBasisContinuous
+        return
 
 
 # ITEM FACTORIES ///////////////////////////////////////////////////////
 
 def subfieldFactory(name):
-  """
-  Factory for subfield items.
-  """
-  from pyre.inventory import facility
-  from pylith.topology.AuxSubfield import AuxSubfield
-  return facility(name, family="auxiliary_subfield", factory=AuxSubfield)
+    """
+    Factory for subfield items.
+    """
+    from pyre.inventory import facility
+    from pylith.topology.AuxSubfield import AuxSubfield
+    return facility(name, family="auxiliary_subfield", factory=AuxSubfield)
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def auxiliary_subfield():
-  """
-  Factory associated with AuxSubfield.
-  """
-  return AuxSubfield()
+    """
+    Factory associated with AuxSubfield.
+    """
+    return AuxSubfield()
 
 
 # End of file
