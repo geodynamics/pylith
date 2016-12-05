@@ -149,6 +149,7 @@ class ProblemNew(PetscComponent, ModuleProblem):
         if 0 == comm.rank:
             self._info.log("Performing minimal initialization before verifying configuration.")
 
+        ModuleProblem.identifier(self, self.aliases[-1])
         ModuleProblem.solverType(self, self.solverType)
         ModuleProblem.normalizer(self, self.normalizer)
 
@@ -157,8 +158,6 @@ class ProblemNew(PetscComponent, ModuleProblem):
         ModuleProblem.solution(self, self.solution.field)
 
         # Preinitialize materials
-        if 0 == comm.rank:
-            self._debug.log("PrePerforming minimal initialization before verifying configuration.")
         for material in self.materials.components():
             material.preinitialize(mesh)
 
