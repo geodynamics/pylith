@@ -83,9 +83,10 @@ class IsotropicLinearElasticityPlaneStrain(MaterialNew, ModuleMaterial):
     def preinitialize(self, mesh):
         MaterialNew.preinitialize(self, mesh)
 
-        ModuleMaterial.useInertia(self, self.inventory.useInertia)
-        ModuleMaterial.useBodyForce(self, self.inventory.useBodyForce)
-        ModuleMaterial.useReferenceState(self, self.inventory.useReferenceState)
+        ModuleMaterial.useInertia(self, self.useInertia)
+        ModuleMaterial.useBodyForce(self, self.useBodyForce)
+        ModuleMaterial.useReferenceState(self, self.useReferenceState)
+
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

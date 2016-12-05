@@ -77,7 +77,10 @@ class IntegratorPointwise(PetscComponent,
         Do pre-initialization setup.
         """
         ModuleIntegrator.auxFieldsDB(self, self.auxFieldsDB)
-        print ":TODO: @brad IntegratorPointwise.preinitialize() Pass auxiliary fields discretization to C++."
+
+        for subfield in self.auxFields.components():
+            fieldName = subfield.aliases[-1]
+            ModuleIntegrator.auxFieldDiscretization(self, fieldName, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
