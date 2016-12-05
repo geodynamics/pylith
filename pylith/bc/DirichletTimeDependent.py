@@ -67,6 +67,11 @@ class DirichletTimeDependent(DirichletNew,
         useTimeHistory = pyre.inventory.bool("use_time_history", default=False)
         useTimeHistory.meta['tip'] = "Use time history term in time-dependent expression."
 
+        from .AuxFieldsTimeDependent import AuxFieldsTimeDependent
+        from pylith.topology.AuxSubfield import subfieldFactory
+        auxFields = pyre.inventory.facilityArray("auxiliary_fields", itemFactory=subfieldFactory, factory=AuxFieldsTimeDependent)
+        auxFields.meta['tip'] = "Discretization of constraint parameters."
+
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="dirichlettimedependent"):
@@ -80,6 +85,11 @@ class DirichletTimeDependent(DirichletNew,
         """
         Do pre-initialization setup.
         """
+        from pylith.mpi.Communicator import mpi_comm_world
+        comm = mpi_comm_world()
+        if 0 == comm.rank:
+            self._info.log("Performing minimal initialization of time-dependent Dirichlet boundary condition '%s'." % self.aliases[-1])
+
         DirichletNew.preinitialize(self, mesh)
 
         ModuleDirichletTimeDependent.useInitial(self, self.useInitial)

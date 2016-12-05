@@ -101,10 +101,14 @@ class ConstraintPointwise(PetscComponent,
         """
         Setup constraint.
         """
+        ModuleConstraint.identifier(self, self.aliases[-1])
         ModuleConstraint.field(self, self.field)
         ModuleConstraint.constrainedDOF(self, numpy.array(self.constrainedDOF, dtype=numpy.int32))
         ModuleConstraint.auxFieldsDB(self, self.inventory.auxFieldsDB)
-        print ":TODO: @brad ConstraintPointwise.preinitialize() Pass auxiliary fields discretization to C++."
+
+        for subfield in self.auxFields.components():
+            fieldName = subfield.aliases[-1]
+            ModuleConstraint.auxFieldDiscretization(self, fieldName, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

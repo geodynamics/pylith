@@ -100,6 +100,7 @@ class TimeDependentNew(ProblemNew, ModuleTimeDependent):
         import weakref
         self.mesh = weakref.ref(mesh)
 
+        ModuleTimeDependent.identifier(self, self.aliases[-1])
         ModuleTimeDependent.startTime(self, self.inventory.startTime.value)
         ModuleTimeDependent.dtInitial(self, self.inventory.dtInitial.value)
         ModuleTimeDependent.totalTime(self, self.inventory.totalTime.value)
