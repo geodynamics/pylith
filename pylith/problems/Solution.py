@@ -81,9 +81,10 @@ class Solution(PetscComponent):
         for subfield in self.subfields.components():
             subfield.initialize(normalizer, spaceDim)
             ncomponents = len(subfield.componentNames)
+            fieldName = subfield.aliases[-1]
             if 0 == comm.rank:
-                self._debug.log("Adding subfield '%s' with components %s to solution." % (subfield.fieldName, subfield.componentNames))
-            self.field.subfieldAdd(subfield.fieldName, subfield.componentNames, subfield.vectorFieldType, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous, subfield.scale.value)
+                self._debug.log("Adding subfield '%s' as '%s' with components %s to solution." % (fieldName, subfield.fieldName, subfield.componentNames))
+            self.field.subfieldAdd(fieldName, subfield.componentNames, subfield.vectorFieldType, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous, subfield.scale.value)
         self.field.subfieldsSetup()
         return
 
@@ -96,7 +97,6 @@ class Solution(PetscComponent):
         PetscComponent._configure(self)
         self.subfields = self.inventory.subfields
         return
-
 
     def _cleanup(self):
         self.field.deallocate()
