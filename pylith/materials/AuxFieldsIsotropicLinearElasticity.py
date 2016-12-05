@@ -47,8 +47,12 @@ class AuxFieldsIsotropicLinearElasticity(PetscComponent):
         ##
         # \b Facilities
         # @li \b density Density subfield.
-        # @li \b bulk_modulus Bulk modulus subfield.
         # @li \b shear_modulus Shear modulus subfield.
+        # @li \b bulk_modulus Bulk modulus subfield.
+        # @li \b body_force Body force.
+        # @li \b reference_stress Reference stress subfield.
+        # @li \b references_strain Reference strain.
+        # @li \b gravitational_acceleration Gravitational acceleration subfield.
 
         import pyre.inventory
 

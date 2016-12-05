@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 #
 # ----------------------------------------------------------------------
 #
@@ -81,6 +80,11 @@ class IsotropicLinearElasticityPlaneStrain(MaterialNew, ModuleMaterial):
         return
 
     def preinitialize(self, mesh):
+        from pylith.mpi.Communicator import mpi_comm_world
+        comm = mpi_comm_world()
+        if 0 == comm.rank:
+            self._info.log("Performing minimal initialization of material '%s'" % self.aliases[-1])
+
         MaterialNew.preinitialize(self, mesh)
 
         ModuleMaterial.useInertia(self, self.useInertia)

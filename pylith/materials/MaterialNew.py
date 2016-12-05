@@ -86,10 +86,6 @@ class MaterialNew(IntegratorPointwise,
         return
 
     def preinitialize(self, mesh):
-        from pylith.mpi.Communicator import mpi_comm_world
-        comm = mpi_comm_world()
-        if 0 == comm.rank:
-            self._info.log("Performing minimal initialization of material '%s'" % self.label)
         IntegratorPointwise.preinitialize(self, mesh)
 
         ModuleMaterial.id(self, self.materialId)
