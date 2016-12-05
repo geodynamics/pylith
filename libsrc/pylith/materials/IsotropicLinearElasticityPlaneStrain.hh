@@ -84,6 +84,12 @@ void useReferenceState(const bool value);
  */
 bool useReferenceState(void) const;
 
+/** Verify configuration is acceptable.
+ *
+ * @param[in] solution Solution field.
+ */
+void verifyConfiguration(const pylith::topology::Field& solution) const;
+
 // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
 

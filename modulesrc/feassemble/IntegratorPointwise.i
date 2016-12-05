@@ -114,7 +114,7 @@ public:
          * @param[in] solution Solution field.
          */
         virtual
-        void verifyConfiguration(const pylith::topology::Field& solution) const;
+        void verifyConfiguration(const pylith::topology::Field& solution) const = 0;
 
         /** Initialize integrator.
          *

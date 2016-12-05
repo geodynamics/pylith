@@ -178,20 +178,6 @@ pylith::feassemble::IntegratorPointwise::needNewLHSJacobian(void) const {
 } // needNewLHSJacobian
 
 // ----------------------------------------------------------------------
-// Verify configuration is acceptable.
-void
-pylith::feassemble::IntegratorPointwise::verifyConfiguration(const pylith::topology::Field& solution) const
-{ // verifyConfiguration
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
-
-    PYLITH_JOURNAL_ERROR(":TODO: @brad Implement verifyConfiguration().");
-
-    PYLITH_METHOD_END;
-} // verifyConfiguration
-
-
-// ----------------------------------------------------------------------
 // Set manager of scales used to nondimensionalize problem.
 void
 pylith::feassemble::IntegratorPointwise::normalizer(const spatialdata::units::Nondimensional& dim)

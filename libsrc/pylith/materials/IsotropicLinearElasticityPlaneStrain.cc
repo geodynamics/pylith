@@ -120,6 +120,26 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::useReferenceState(void)
 
 
 // ----------------------------------------------------------------------
+// Verify configuration is acceptable.
+void
+pylith::materials::IsotropicLinearElasticityPlaneStrain::verifyConfiguration(const pylith::topology::Field& solution) const
+{ // verifyConfiguration
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
+
+    // Verify solution contains expected fields.
+    if (!solution.hasSubfield("displacement")) {
+        throw std::runtime_error("Cannot find 'displacement' field in solution; required for material 'IsotropicLinearElasticityPlaneStrain'.");
+    } // if
+    if (_useInertia && !solution.hasSubfield("velocity")) {
+        throw std::runtime_error("Cannot find 'velocity' field in solution; required for material 'IsotropicLinearElasticityPlaneStrain' with inertia.");
+    } // if
+
+    PYLITH_METHOD_END;
+} // verifyConfiguration
+
+
+// ----------------------------------------------------------------------
 // Preinitialize material. Set names/sizes of auxiliary fields.
 void
 pylith::materials::IsotropicLinearElasticityPlaneStrain::_auxFieldsSetup(void)
