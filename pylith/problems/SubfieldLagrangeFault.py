@@ -75,8 +75,17 @@ class SubfieldLagrangeFault(SolutionSubfield):
         self._setComponents(spaceDim)
         return
 
+    # PRIVATE METHODS ////////////////////////////////////////////////////
+
+    def _configure(self):
+        """
+        Set members based using inventory.
+        """
+        SolutionSubfield._configure(self)
+        return
 
 # FACTORIES ////////////////////////////////////////////////////////////
+
 
 def soln_subfield():
     """
