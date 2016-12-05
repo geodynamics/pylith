@@ -17,40 +17,52 @@
 //
 
 /**
- * @file modulesrc/utils/JournalingComponent.i
+ * @file modulesrc/utils/PyreComponent.i
  *
- * @brief Python interface to C++ JournalingComponent.
+ * @brief Python interface to C++ PyreComponent.
  */
 
 
 namespace pylith {
     namespace utils {
 
-        class JournalingComponent
-        { // JournalingComponent
+        class PyreComponent
+        { // PyreComponent
 
         // PUBLIC MEMBERS /////////////////////////////////////////////////
 public:
 
         /// Constructor
-        JournalingComponent(void);
+        PyreComponent(void);
 
         /// Destructor
-        ~JournalingComponent(void);
+        ~PyreComponent(void);
 
-        /** Set name of journal.
+        /** Set name of component.
          *
-         * @param value Name of journal.
+         * @param value Name of component.
          */
         void name(const char* value);
 
-        /** Get name of journal.
+        /** Get name of component.
          *
-         * @returns Name of journal.
+         * @returns Name of component.
          */
         const char* name(void) const;
 
-        }; // JournalingComponent
+        /** Set component identifier (identifies object in component hierarchy).
+         *
+         * @param value Component identifier.
+         */
+        void identifier(const char* value);
+
+        /** Get component identifier (identifies object in component hierarchy).
+         *
+         * @returns Component identifier.
+         */
+        const char* identifier(void) const;
+
+        }; // PyreComponent
 
     } // utils
 } // pylith

@@ -52,11 +52,6 @@ class DirichletNew(BoundaryConditionNew,
         """
         Do pre-initialization setup.
         """
-        from pylith.mpi.Communicator import mpi_comm_world
-        comm = mpi_comm_world()
-        if 0 == comm.rank:
-            self._info.log("Performing minimal initialization of Dirichlet BC with label '%s'." % self.label)
-
         BoundaryConditionNew.preinitialize(self, mesh)
         ConstraintPointwise.preinitialize(self, mesh)
         return

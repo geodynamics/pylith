@@ -36,7 +36,7 @@ extern "C" {
 #include "petscds.h"
 
 // ----------------------------------------------------------------------
-const char* pylith::materials::IsotropicLinearElasticityPlaneStrain::_journal = "isotropiclinearelasticityplanestrain";
+const char* pylith::materials::IsotropicLinearElasticityPlaneStrain::_pyreComponent = "isotropiclinearelasticityplanestrain";
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -46,7 +46,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::IsotropicLinearElastici
     _useBodyForce(false),
     _useReferenceState(false)
 { // constructor
-    JournalingComponent::name(_journal);
+    PyreComponent::name(_pyreComponent);
 } // constructor
 
 

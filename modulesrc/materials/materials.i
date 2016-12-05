@@ -81,7 +81,7 @@ import_array();
 %include "DruckerPrager3D.i"
 %include "DruckerPragerPlaneStrain.i"
 
-%include "../utils/JournalingComponent.i"
+%include "../utils/PyreComponent.i"
 %include "../feassemble/IntegratorPointwise.i"
 %include "MaterialNew.i"
 %include "IsotropicLinearElasticityPlaneStrain.i"

@@ -28,7 +28,7 @@
 // Include directives ---------------------------------------------------
 #include "problemsfwd.hh" // forward declarations
 
-#include "pylith/utils/JournalingComponent.hh" // ISA JournalingComponent
+#include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
 #include "pylith/feassemble/feassemblefwd.hh" // HASA IntegratorPointwise, ConstraintPointwise
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
@@ -50,7 +50,7 @@
  * function (which we call the LHS).
  *
  */
-class pylith::problems::Problem : public pylith::utils::JournalingComponent
+class pylith::problems::Problem : public pylith::utils::PyreComponent
 { // Problem
 friend class TestProblem;   // unit testing
 

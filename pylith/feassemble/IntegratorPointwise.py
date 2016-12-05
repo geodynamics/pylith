@@ -76,6 +76,7 @@ class IntegratorPointwise(PetscComponent,
         """
         Do pre-initialization setup.
         """
+        ModuleIntegrator.identifier(self, self.aliases[-1])
         ModuleIntegrator.auxFieldsDB(self, self.auxFieldsDB)
 
         for subfield in self.auxFields.components():

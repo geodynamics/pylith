@@ -196,7 +196,7 @@ pylith::feassemble::IntegratorPointwise::verifyConfiguration(const pylith::topol
 void
 pylith::feassemble::IntegratorPointwise::normalizer(const spatialdata::units::Nondimensional& dim)
 { // normalizer
-    PYLITH_JOURNAL_DEBUG("IntegratorPointwise::normalizer(dim="<<&dim<<")");
+    PYLITH_JOURNAL_DEBUG("normalizer(dim="<<&dim<<")");
 
     if (0 == _normalizer) {
         _normalizer = new spatialdata::units::Nondimensional(dim);

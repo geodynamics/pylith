@@ -26,8 +26,6 @@ subpkgpyexec_PYTHON = problems.py
 
 swig_sources = \
 	problems.i \
-	Problem.i \
-	TimeDependent.i \
 	Formulation.i \
 	Explicit.i \
 	Implicit.i \
@@ -35,7 +33,9 @@ swig_sources = \
 	SolverLinear.i \
 	SolverNonlinear.i \
 	SolverLumped.i \
-	../utils/JournalingComponent.i
+	../utils/PyreComponent.i \
+	Problem.i \
+	TimeDependent.i
 
 
 swig_generated = \

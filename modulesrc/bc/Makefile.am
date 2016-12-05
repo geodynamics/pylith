@@ -39,6 +39,7 @@ swig_sources = \
 	../feassemble/Constraint.i \
 	../feassemble/Quadrature.i \
 	../feassemble/Integrator.i \
+	../utils/PyreComponent.i \
 	../feassemble/ConstraintPointwise.i \
 	../feassemble/IntegratorPointwise.i \
 	BoundaryConditionNew.i \

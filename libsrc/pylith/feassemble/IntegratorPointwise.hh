@@ -29,7 +29,7 @@
 // Include directives ---------------------------------------------------
 #include "feassemblefwd.hh" // forward declarations
 
-#include "pylith/utils/JournalingComponent.hh" // ISA JournalingComponent
+#include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase
 
@@ -45,7 +45,7 @@
 /** @brief General operations for implicit and explicit
  * time integration of equations defined by pointwise functions.
  */
-class pylith::feassemble::IntegratorPointwise : public pylith::utils::JournalingComponent
+class pylith::feassemble::IntegratorPointwise : public pylith::utils::PyreComponent
 { // IntegratorPointwise
 friend class TestIntegratorPointwise;   // unit testing
 
@@ -249,6 +249,7 @@ protected:
 spatialdata::units::Nondimensional* _normalizer;   ///< Nondimensionalizer.
 spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
 utils::EventLogger* _logger;   ///< Event logger.
+std::string _nameInHierarchy; ///< Name in component hierarchy.
 
 /// Auxiliary fields for this problem
 pylith::topology::Field *_auxFields;
@@ -261,6 +262,7 @@ pylith::topology::FieldQuery* _auxFieldsQuery;
 
 /// Map from auxiliary field to discretization.
 discretizations_type _auxFieldsFEInfo;
+
 
 /// True if we need to recompute Jacobian for operator, false otherwise.
 /// Default is false;

@@ -18,41 +18,57 @@
 
 #include <portinfo>
 
-#include "TestJournalingComponent.hh" // Implementation of class methods
+#include "TestPyreComponent.hh" // Implementation of class methods
 
-#include "pylith/utils/JournalingComponent.hh" // USES JournalingComponent
+#include "pylith/utils/PyreComponent.hh" // USES PyreComponent
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::utils::TestJournalingComponent );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::utils::TestPyreComponent );
 
 // ----------------------------------------------------------------------
 // Test constructor.
 void
-pylith::utils::TestJournalingComponent::testConstructor(void)
+pylith::utils::TestPyreComponent::testConstructor(void)
 { // testConstructor
-    JournalingComponent journals;
+    PyreComponent component;
 
-    CPPUNIT_ASSERT_EQUAL(std::string(""), journals._name);
+    CPPUNIT_ASSERT_EQUAL(std::string(""), component._name);
 } // testConstructor
 
 // ----------------------------------------------------------------------
 // Test name().
 void
-pylith::utils::TestJournalingComponent::testName(void)
+pylith::utils::TestPyreComponent::testName(void)
 { // testName
-    JournalingComponent journals;
-    CPPUNIT_ASSERT_EQUAL(std::string(""), std::string(journals.name()));
+    PyreComponent component;
+    CPPUNIT_ASSERT_EQUAL(std::string(""), std::string(component.name()));
 
     const std::string& name = "my name";
-    journals.name(name.c_str());
-    CPPUNIT_ASSERT_EQUAL(name, std::string(journals.name()));
+    component.name(name.c_str());
+    CPPUNIT_ASSERT_EQUAL(name, std::string(component.name()));
 } // testName
 
+// ----------------------------------------------------------------------
+// Test identifier().
+void
+pylith::utils::TestPyreComponent::testIdentifier(void)
+{ // testIdentifier
+    PyreComponent component;
+    component.name("my component");
+    CPPUNIT_ASSERT_EQUAL(std::string("unknown"), std::string(component._identifier));
+
+    const std::string& identifier = "my identifier";
+    component.identifier(identifier.c_str());
+    CPPUNIT_ASSERT_EQUAL(identifier, std::string(component.identifier()));
+} // testIdentifier
+
+// ----------------------------------------------------------------------
+// Test PYLITH_JOURNAL_*.
 namespace pylith {
     namespace utils {
-        class TestJournals : public JournalingComponent {
+        class TestJournals : public PyreComponent {
 public:
         void test(void) {
             PYLITH_JOURNAL_DEBUG("CORRECT: This is a debug message.");
@@ -65,10 +81,8 @@ public:
     } // utils
 } // pylith
 
-// ----------------------------------------------------------------------
-// Test PYLITH_JOURNAL_*.
 void
-pylith::utils::TestJournalingComponent::testJournals(void)
+pylith::utils::TestPyreComponent::testJournals(void)
 { // testJournals
     const char* name = "test";
     journal::info_t info(name); info.activate();
@@ -78,6 +92,7 @@ pylith::utils::TestJournalingComponent::testJournals(void)
 
     TestJournals journals;
     journals.name("test");
+    journals.identifier("TestJournals");
     journals.test();
 } // testJournals
 

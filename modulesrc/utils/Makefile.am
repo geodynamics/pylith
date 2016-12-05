@@ -45,7 +45,7 @@ utils_swig_sources = \
 	PetscVersion.i \
 	DependenciesVersion.i \
 	EventLogger.i \
-	JournalingComponent.i \
+	PyreComponent.i \
 	TestArray.i \
 	constdefs.i
 

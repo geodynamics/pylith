@@ -24,7 +24,7 @@
 namespace pylith {
     namespace feassemble {
 
-        class IntegratorPointwise : public pylith::utils::JournalingComponent
+        class IntegratorPointwise : public pylith::utils::PyreComponent
         { // IntegratorPointwise
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////

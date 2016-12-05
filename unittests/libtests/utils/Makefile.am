@@ -27,7 +27,7 @@ check_PROGRAMS = testutils
 # Primary source files
 testutils_SOURCES = \
 	TestEventLogger.cc \
-	TestJournalingComponent.cc \
+	TestPyreComponent.cc \
 	TestPylithVersion.cc \
 	TestPetscVersion.cc \
 	TestDependenciesVersion.cc \
@@ -35,7 +35,7 @@ testutils_SOURCES = \
 
 noinst_HEADERS = \
 	TestEventLogger.hh \
-	TestJournalingComponent.hh \
+	TestPyreComponent.hh \
 	TestPylithVersion.hh \
 	TestPetscVersion.hh \
 	TestDependenciesVersion.hh

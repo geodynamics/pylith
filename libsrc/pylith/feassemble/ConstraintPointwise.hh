@@ -28,7 +28,7 @@
 // Include directives ---------------------------------------------------
 #include "feassemblefwd.hh"
 
-#include "pylith/utils/JournalingComponent.hh" // ISA JournalingComponent
+#include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
 #include "pylith/topology/topologyfwd.hh" // HOLDSA Field
 #include "pylith/utils/utilsfwd.hh" // HOLDSA Logger
@@ -44,7 +44,7 @@
 // ConstraintPointwise---------------------------------------------------
 /** @brief Abstract base class for defining constraints on boundaries.
  */
-class pylith::feassemble::ConstraintPointwise : public pylith::utils::JournalingComponent
+class pylith::feassemble::ConstraintPointwise : public pylith::utils::PyreComponent
 { // class ConstraintPointwise
 friend class TestConstraintPointwise;   // unit testing
 

@@ -25,7 +25,7 @@
 namespace pylith {
     namespace problems {
 
-        class Problem : public pylith::utils::JournalingComponent
+        class Problem : public pylith::utils::PyreComponent
          { // Problem
 
 // PUBLIC ENUM ////////////////////////////////////////////////////

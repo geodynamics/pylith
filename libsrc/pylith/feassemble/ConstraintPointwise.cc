@@ -116,7 +116,9 @@ pylith::feassemble::ConstraintPointwise::constrainedDOF(const int* flags,
     for (int i=0; i < size; ++i) {
         if (flags[i] < 0 || flags[i] > 2) {
             std::ostringstream msg;
-            msg << "Constrained DOF out of range (" << flags[i] << ". DOF must be in range [0,2].";
+            msg << "Constrained DOF '" << flags[i] << "' out of range"
+                << " in component '" << PyreComponent::identifier() << "'"
+                << ". DOF must be in range [0,2].";
             throw std::runtime_error(msg.str());
         } // if
         _constrainedDOF[i] = flags[i];
@@ -246,7 +248,26 @@ pylith::feassemble::ConstraintPointwise::verifyConfiguration(const pylith::topol
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
 
-    PYLITH_JOURNAL_ERROR(":TODO: @brad Implement verifyConfiguration().");
+    if (!solution.hasSubfield(_field.c_str())) {
+        std::ostringstream msg;
+        msg << "Cannot constrain field '"<< _field
+            << "' in component '" << PyreComponent::identifier() << "'"
+            << "; field is not in solution.";
+        throw std::runtime_error(msg.str());
+    } // if
+
+    const topology::Field::SubfieldInfo& info = solution.subfieldInfo(_field.c_str());
+    const int numComponents = info.numComponents;
+    const int numConstrained = _constrainedDOF.size();
+    for (int iConstrained=0; iConstrained < numConstrained; ++iConstrained) {
+        if (_constrainedDOF[iConstrained] >= numComponents) {
+            std::ostringstream msg;
+            msg << "Cannot constrain degree of freedom '" << _constrainedDOF[iConstrained] << "'"
+                << " in component '" << PyreComponent::identifier() << "'"
+                << "; solution field '" << _field << "' contains only " << numComponents << " components.";
+            throw std::runtime_error(msg.str());
+        } // if
+    } // for
 
     PYLITH_METHOD_END;
 } // verifyConfiguration

@@ -30,13 +30,16 @@
 #include <sstream> // USES std::ostringstream
 
 // ----------------------------------------------------------------------
+const char* pylith::bc::DirichletTimeDependent::_pyreComponent = "dirichlettimedependent";
+
+// ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::DirichletTimeDependent::DirichletTimeDependent(void) :
     _useInitial(true),
     _useRate(false),
     _useTimeHistory(false)
 { // constructor
-    JournalingComponent::name("dirichlettimedependent");
+    PyreComponent::name(_pyreComponent);
 } // constructor
 
 

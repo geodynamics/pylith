@@ -48,7 +48,7 @@ swig_sources = \
 	ElasticityExplicitLgDeform.i \
 	IntegratorPointwise.i \
 	ConstraintPointwise.i \
-	../utils/JournalingComponent.i
+	../utils/PyreComponent.i
 
 swig_generated = \
 	feassemble_wrap.cxx \

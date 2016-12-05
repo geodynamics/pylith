@@ -115,9 +115,10 @@ void _setFEKernelsConstraint(const topology::Field& solution);
 // PROTECTED MEMBERS //////////////////////////////////////////////////
 private:
 
-bool _useInitial;
-bool _useRate;
-bool _useTimeHistory;
+bool _useInitial; ///< Use initial value term.
+bool _useRate; ///< Use rate term.
+bool _useTimeHistory; ///< Use time history term.
+static const char* _pyreComponent; ///< Name of Pyre component.
 
 // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:

@@ -22,7 +22,7 @@
 // Header files for module C++ code
 %{
 #include "pylith/utils/EventLogger.hh"
-#include "pylith/utils/JournalingComponent.hh"
+#include "pylith/utils/PyreComponent.hh"
 #include "pylith/utils/PylithVersion.hh"
 #include "pylith/utils/PetscVersion.hh"
 #include "pylith/utils/DependenciesVersion.hh"
@@ -57,7 +57,7 @@ import_array();
 // Interfaces
 %include "pylith_general.i"
 %include "EventLogger.i"
-%include "JournalingComponent.i"
+%include "PyreComponent.i"
 %include "PylithVersion.i"
 %include "PetscVersion.i"
 %include "DependenciesVersion.i"

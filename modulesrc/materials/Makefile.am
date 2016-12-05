@@ -40,6 +40,7 @@ swig_sources = \
 	PowerLawPlaneStrain.i \
 	DruckerPrager3D.i \
 	DruckerPragerPlaneStrain.i \
+	../utils/PyreComponent.i \
 	../feassemble/IntegratorPointwise.i \
 	MaterialNew.i \
 	IsotropicLinearElasticityPlaneStrain.i

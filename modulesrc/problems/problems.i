@@ -71,7 +71,7 @@
 %include "SolverNonlinear.i"
 %include "SolverLumped.i"
 
-%include "../utils/JournalingComponent.i"
+%include "../utils/PyreComponent.i"
 %include "Problem.i"
 %include "TimeDependent.i"
 

@@ -86,7 +86,7 @@ import_array();
 %include "ElasticityImplicitLgDeform.i"
 %include "ElasticityExplicitLgDeform.i"
 
-%include "../utils/JournalingComponent.i"
+%include "../utils/PyreComponent.i"
 %include "IntegratorPointwise.i"
 %include "ConstraintPointwise.i"
 

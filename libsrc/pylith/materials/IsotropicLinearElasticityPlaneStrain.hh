@@ -130,7 +130,7 @@ bool _useInertia;   ///< Flag to include inertial term.
 bool _useBodyForce;   ///< Flag to include body force term.
 bool _useReferenceState;   ///< Flag to use reference stress and strain.
 
-static const char* _journal; ///< Name for journals.
+static const char* _pyreComponent; ///< Name of Pyre component.
 
 // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:

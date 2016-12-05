@@ -213,7 +213,7 @@ size_t _maxTimeSteps;   ///< Maximum number of time steps for problem.
 PetscTS _ts;   ///< PETSc time stepper.
 FormulationTypeEnum _formulationType;   ///< Type of time stepping.
 
-static const char* _journal; ///< Name for journals.
+static const char* _pyreComponent; ///< Name of Pyre component.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:

@@ -71,7 +71,7 @@
 %include "Neumann.i"
 %include "PointForce.i"
 
-%include "../utils/JournalingComponent.i"
+%include "../utils/PyreComponent.i"
 %include "../feassemble/ConstraintPointwise.i" // ISA Constraint
 //%include "../feassemble/IntegratorPointwise.i" // ISA Integrator
 

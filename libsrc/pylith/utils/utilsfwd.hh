@@ -31,7 +31,7 @@ namespace pylith {
     namespace utils {
 
         class EventLogger;
-        class JournalingComponent;
+        class PyreComponent;
         class PylithVersion;
         class PetscVersion;
         class DependenciesVersion;
