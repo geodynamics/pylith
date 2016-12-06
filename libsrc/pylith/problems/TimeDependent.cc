@@ -182,6 +182,7 @@ pylith::problems::TimeDependent::initialize(void)
     err = TSSetType(_ts, TSBEULER); PYLITH_CHECK_ERROR(err); // Backward Euler is default time stepping method.
     err = TSSetExactFinalTime(_ts, TS_EXACTFINALTIME_STEPOVER); PYLITH_CHECK_ERROR(err); // Ok to step over final time.
     err = TSSetFromOptions(_ts); PYLITH_CHECK_ERROR(err);
+    err = TSSetApplicationContext(_ts, (void*)this); PYLITH_CHECK_ERROR(err);
 
     #if 0
     TSEquationType eqType = TS_EQ_UNSPECIFIED;
@@ -261,14 +262,14 @@ pylith::problems::TimeDependent::initialize(void)
         throw std::logic_error("Unknown problem type.");
     }     // switch
     PYLITH_JOURNAL_DEBUG("Setting PetscTS parameters: dtInitial="<<_dtInitial<<", startTime="<<_startTime<<"maxTimeSteps="<<_maxTimeSteps<<", totalTime="<<_totalTime);
-    err = TSSetInitialTimeStep(_ts, _dtInitial, _startTime); PYLITH_CHECK_ERROR(err);
+    err = TSSetInitialTimeStep(_ts, _startTime, _dtInitial); PYLITH_CHECK_ERROR(err);
     err = TSSetDuration(_ts, _maxTimeSteps, _totalTime); PYLITH_CHECK_ERROR(err);
 
     // Set initial solution.
     PYLITH_JOURNAL_ERROR(":TODO: @brad Implement setting initial solution.");
     // :TODO: Set initial conditions.
 
-    PYLITH_JOURNAL_DEBUG("Setting PetscTS initial conditions from solution global Vector.");
+    PYLITH_JOURNAL_DEBUG("Setting PetscTS initial conditions using global vector for solution.");
     err = TSSetSolution(_ts, _solution->globalVector()); PYLITH_CHECK_ERROR(err);
 
 
@@ -295,6 +296,8 @@ pylith::problems::TimeDependent::initialize(void)
         delete _jacobianLHSLumpedInv; _jacobianLHSLumpedInv = new pylith::topology::Field(_solution->mesh()); assert(_jacobianLHSLumpedInv);
         _jacobianLHSLumpedInv->cloneSection(*_solution);
     } // if
+
+    _solution->createScatter(_solution->mesh());
 
     PYLITH_METHOD_END;
 } // initialize
@@ -502,7 +505,7 @@ pylith::problems::TimeDependent::prestep(PetscTS ts)
           << "prestep(ts="<<ts<<")" << journal::endl;
 
     TimeDependent* problem = NULL;
-    PetscErrorCode err = TSGetApplicationContext(ts, (void*)problem); PYLITH_CHECK_ERROR(err); assert(problem);
+    PetscErrorCode err = TSGetApplicationContext(ts, (void*)&problem); PYLITH_CHECK_ERROR(err); assert(problem);
     problem->prestep();
 
     PYLITH_METHOD_RETURN(0);
