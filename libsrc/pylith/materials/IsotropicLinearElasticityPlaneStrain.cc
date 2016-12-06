@@ -158,6 +158,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_auxFieldsSetup(void)
     const PylithReal forceScale = densityScale * lengthScale / (timeScale * timeScale);
 
     // :ATTENTION: The order for subfieldAdd() must match the order of the auxiliary fields in the FE kernels.
+
     // Field 0: density
     const char* densityComponents[1] = {"density"};
     const pylith::topology::Field::DiscretizeInfo& densityFEInfo = this->auxFieldDiscretization("density");
@@ -211,22 +212,33 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSResidua
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("_setFEKernelsRHSResidual(solution="<<solution.label()<<")");
 
-    const PetscInt i_disp = solution.subfieldInfo("displacement").index;
-    const PetscInt i_vel = solution.subfieldInfo("velocity").index;
-
-    // Displacement
-    const PetscPointFunc g0u = pylith_fekernels_DispVel_g0u;
-    const PetscPointFunc g1u = NULL;
-
-    // Velocity
-    const PetscPointFunc g0v = (_useBodyForce) ? pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g0v : NULL;
-    const PetscPointFunc g1v = (!_useReferenceState) ? pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v : pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v_initstate;
-
     const PetscDM dm = solution.dmMesh(); assert(dm);
     PetscDS prob = NULL;
     PetscErrorCode err = DMGetDS(dm, &prob); PYLITH_CHECK_ERROR(err);
-    err = PetscDSSetResidual(prob, i_disp, g0u, g1u); PYLITH_CHECK_ERROR(err);
-    err = PetscDSSetResidual(prob, i_vel,  g0v, g1v); PYLITH_CHECK_ERROR(err);
+
+    const PetscInt i_disp = solution.subfieldInfo("displacement").index;
+
+    if (!solution.hasSubfield("velocity")) {
+        // Displacement
+        const PetscPointFunc g0u = (_useBodyForce) ? pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g0v : NULL;
+        const PetscPointFunc g1u = (!_useReferenceState) ? pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v : pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v_initstate;
+
+        err = PetscDSSetResidual(prob, i_disp, g0u, g1u); PYLITH_CHECK_ERROR(err);
+    } else {
+        const PetscInt i_vel = solution.subfieldInfo("velocity").index;
+
+        // Displacement
+        const PetscPointFunc g0u = pylith_fekernels_DispVel_g0u;
+        const PetscPointFunc g1u = NULL;
+
+        // Velocity
+        const PetscPointFunc g0v = (_useBodyForce) ? pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g0v : NULL;
+        const PetscPointFunc g1v = (!_useReferenceState) ? pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v : pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v_initstate;
+
+        err = PetscDSSetResidual(prob, i_disp, g0u, g1u); PYLITH_CHECK_ERROR(err);
+        err = PetscDSSetResidual(prob, i_vel,  g0v, g1v); PYLITH_CHECK_ERROR(err);
+    } // if/else
+
 
     PYLITH_METHOD_END;
 } // _setFEKernelsRHSResidual
@@ -240,37 +252,49 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSJacobia
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("_setFEKernelsRHSJacobian(solution="<<solution.label()<<")");
 
-    const PetscInt i_disp = solution.subfieldInfo("displacement").index;
-    const PetscInt i_vel = solution.subfieldInfo("velocity").index;
-
-    // Jacobian kernels
-    const PetscPointJac Jg0uu = NULL;
-    const PetscPointJac Jg1uu = NULL;
-    const PetscPointJac Jg2uu = NULL;
-    const PetscPointJac Jg3uu = NULL;
-
-    const PetscPointJac Jg0uv = pylith_fekernels_DispVel_Jg0uv;
-    const PetscPointJac Jg1uv = NULL;
-    const PetscPointJac Jg2uv = NULL;
-    const PetscPointJac Jg3uv = NULL;
-
-    const PetscPointJac Jg0vu = NULL;
-    const PetscPointJac Jg1vu = NULL;
-    const PetscPointJac Jg2vu = NULL;
-    const PetscPointJac Jg3vu = pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3vu;
-
-    const PetscPointJac Jg0vv = NULL;
-    const PetscPointJac Jg1vv = NULL;
-    const PetscPointJac Jg2vv = NULL;
-    const PetscPointJac Jg3vv = NULL;
-
     const PetscDM dm = solution.dmMesh(); assert(dm);
     PetscDS prob = NULL;
     PetscErrorCode err = DMGetDS(dm, &prob); PYLITH_CHECK_ERROR(err);
-    err = PetscDSSetJacobian(prob, i_disp, i_disp, Jg0uu, Jg1uu, Jg2uu, Jg3uu); PYLITH_CHECK_ERROR(err);
-    err = PetscDSSetJacobian(prob, i_disp, i_vel,  Jg0uv, Jg1uv, Jg2uv, Jg3uv); PYLITH_CHECK_ERROR(err);
-    err = PetscDSSetJacobian(prob, i_vel,  i_disp, Jg0vu, Jg1vu, Jg2vu, Jg3vu); PYLITH_CHECK_ERROR(err);
-    err = PetscDSSetJacobian(prob, i_vel,  i_vel,  Jg0vv, Jg1vv, Jg2vv, Jg3vv); PYLITH_CHECK_ERROR(err);
+
+    const PetscInt i_disp = solution.subfieldInfo("displacement").index;
+
+    if (!solution.hasSubfield("velocity")) {
+        const PetscPointJac Jg0uu = NULL;
+        const PetscPointJac Jg1uu = NULL;
+        const PetscPointJac Jg2uu = NULL;
+        const PetscPointJac Jg3uu = pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3vu;
+
+        err = PetscDSSetJacobian(prob, i_disp, i_disp, Jg0uu, Jg1uu, Jg2uu, Jg3uu); PYLITH_CHECK_ERROR(err);
+    } else {
+        const PetscInt i_vel = solution.subfieldInfo("velocity").index;
+
+        // Jacobian kernels
+        const PetscPointJac Jg0uu = NULL;
+        const PetscPointJac Jg1uu = NULL;
+        const PetscPointJac Jg2uu = NULL;
+        const PetscPointJac Jg3uu = NULL;
+
+        const PetscPointJac Jg0uv = pylith_fekernels_DispVel_Jg0uv;
+        const PetscPointJac Jg1uv = NULL;
+        const PetscPointJac Jg2uv = NULL;
+        const PetscPointJac Jg3uv = NULL;
+
+        const PetscPointJac Jg0vu = NULL;
+        const PetscPointJac Jg1vu = NULL;
+        const PetscPointJac Jg2vu = NULL;
+        const PetscPointJac Jg3vu = pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3vu;
+
+        const PetscPointJac Jg0vv = NULL;
+        const PetscPointJac Jg1vv = NULL;
+        const PetscPointJac Jg2vv = NULL;
+        const PetscPointJac Jg3vv = NULL;
+
+        err = PetscDSSetJacobian(prob, i_disp, i_disp, Jg0uu, Jg1uu, Jg2uu, Jg3uu); PYLITH_CHECK_ERROR(err);
+        err = PetscDSSetJacobian(prob, i_disp, i_vel,  Jg0uv, Jg1uv, Jg2uv, Jg3uv); PYLITH_CHECK_ERROR(err);
+        err = PetscDSSetJacobian(prob, i_vel,  i_disp, Jg0vu, Jg1vu, Jg2vu, Jg3vu); PYLITH_CHECK_ERROR(err);
+        err = PetscDSSetJacobian(prob, i_vel,  i_vel,  Jg0vv, Jg1vv, Jg2vv, Jg3vv); PYLITH_CHECK_ERROR(err);
+
+    } // if/else
 
     PYLITH_METHOD_END;
 } // _setFEKernelsRHSJacobian
@@ -284,22 +308,28 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSResidua
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("_setFEKernelsLHSResidual(solution="<<solution.label()<<")");
 
-    const PetscInt i_disp = solution.subfieldInfo("displacement").index;
-    const PetscInt i_vel = solution.subfieldInfo("velocity").index;
-
-    // Displacement
-    const PetscPointFunc f0u = pylith_fekernels_DispVel_f0u;
-    const PetscPointFunc f1u = NULL;
-
-    // Velocity
-    const PetscPointFunc f0v = (_useInertia) ? pylith_fekernels_IsotropicLinearElasticityPlaneStrain_f0v : NULL;
-    const PetscPointFunc f1v = NULL;
-
     const PetscDM dm = solution.dmMesh(); assert(dm);
     PetscDS prob = NULL;
     PetscErrorCode err = DMGetDS(dm, &prob); PYLITH_CHECK_ERROR(err);
-    err = PetscDSSetResidual(prob, i_disp, f0u, f1u); PYLITH_CHECK_ERROR(err);
-    err = PetscDSSetResidual(prob, i_vel,  f0v, f1v); PYLITH_CHECK_ERROR(err);
+
+    const PetscInt i_disp = solution.subfieldInfo("displacement").index;
+
+    if (!solution.hasSubfield("velocity")) {
+        // F(t,s,\dot{s}) = \vec{0}.
+    } else {
+        const PetscInt i_vel = solution.subfieldInfo("velocity").index;
+
+        // Displacement
+        const PetscPointFunc f0u = pylith_fekernels_DispVel_f0u;
+        const PetscPointFunc f1u = NULL;
+
+        // Velocity
+        const PetscPointFunc f0v = (_useInertia) ? pylith_fekernels_IsotropicLinearElasticityPlaneStrain_f0v : NULL;
+        const PetscPointFunc f1v = NULL;
+
+        err = PetscDSSetResidual(prob, i_disp, f0u, f1u); PYLITH_CHECK_ERROR(err);
+        err = PetscDSSetResidual(prob, i_vel,  f0v, f1v); PYLITH_CHECK_ERROR(err);
+    } // if/else
 
     PYLITH_METHOD_END;
 } // _setFEKernelsLHSResidual
@@ -313,37 +343,43 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSJacobia
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("_setFEKernelsLHSJacobianImplicit(solution="<<solution.label()<<")");
 
-    const PetscInt i_disp = solution.subfieldInfo("displacement").index;
-    const PetscInt i_vel = solution.subfieldInfo("velocity").index;
-
-    // Jacobian kernels
-    const PetscPointJac Jf0uu = pylith_fekernels_DispVel_Jf0uu_implicit;
-    const PetscPointJac Jf1uu = NULL;
-    const PetscPointJac Jf2uu = NULL;
-    const PetscPointJac Jf3uu = NULL;
-
-    const PetscPointJac Jf0uv = NULL;
-    const PetscPointJac Jf1uv = NULL;
-    const PetscPointJac Jf2uv = NULL;
-    const PetscPointJac Jf3uv = NULL;
-
-    const PetscPointJac Jf0vu = NULL;
-    const PetscPointJac Jf1vu = NULL;
-    const PetscPointJac Jf2vu = NULL;
-    const PetscPointJac Jf3vu = NULL;
-
-    const PetscPointJac Jf0vv = (_useInertia) ? pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0vv_implicit : NULL;
-    const PetscPointJac Jf1vv = NULL;
-    const PetscPointJac Jf2vv = NULL;
-    const PetscPointJac Jf3vv = NULL;
-
     const PetscDM dm = solution.dmMesh(); assert(dm);
     PetscDS prob = NULL;
     PetscErrorCode err = DMGetDS(dm, &prob); PYLITH_CHECK_ERROR(err);
-    err = PetscDSSetJacobian(prob, i_disp, i_disp, Jf0uu, Jf1uu, Jf2uu, Jf3uu); PYLITH_CHECK_ERROR(err);
-    err = PetscDSSetJacobian(prob, i_disp, i_vel,  Jf0uv, Jf1uv, Jf2uv, Jf3uv); PYLITH_CHECK_ERROR(err);
-    err = PetscDSSetJacobian(prob, i_vel,  i_disp, Jf0vu, Jf1vu, Jf2vu, Jf3vu); PYLITH_CHECK_ERROR(err);
-    err = PetscDSSetJacobian(prob, i_vel,  i_vel,  Jf0vv, Jf1vv, Jf2vv, Jf3vv); PYLITH_CHECK_ERROR(err);
+
+    const PetscInt i_disp = solution.subfieldInfo("displacement").index;
+
+    if (!solution.hasSubfield("velocity")) {
+        // F(t,s,\dot{s}) = \vec{0}.
+    } else {
+        const PetscInt i_vel = solution.subfieldInfo("velocity").index;
+
+        // Jacobian kernels
+        const PetscPointJac Jf0uu = pylith_fekernels_DispVel_Jf0uu_implicit;
+        const PetscPointJac Jf1uu = NULL;
+        const PetscPointJac Jf2uu = NULL;
+        const PetscPointJac Jf3uu = NULL;
+
+        const PetscPointJac Jf0uv = NULL;
+        const PetscPointJac Jf1uv = NULL;
+        const PetscPointJac Jf2uv = NULL;
+        const PetscPointJac Jf3uv = NULL;
+
+        const PetscPointJac Jf0vu = NULL;
+        const PetscPointJac Jf1vu = NULL;
+        const PetscPointJac Jf2vu = NULL;
+        const PetscPointJac Jf3vu = NULL;
+
+        const PetscPointJac Jf0vv = (_useInertia) ? pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0vv_implicit : NULL;
+        const PetscPointJac Jf1vv = NULL;
+        const PetscPointJac Jf2vv = NULL;
+        const PetscPointJac Jf3vv = NULL;
+
+        err = PetscDSSetJacobian(prob, i_disp, i_disp, Jf0uu, Jf1uu, Jf2uu, Jf3uu); PYLITH_CHECK_ERROR(err);
+        err = PetscDSSetJacobian(prob, i_disp, i_vel,  Jf0uv, Jf1uv, Jf2uv, Jf3uv); PYLITH_CHECK_ERROR(err);
+        err = PetscDSSetJacobian(prob, i_vel,  i_disp, Jf0vu, Jf1vu, Jf2vu, Jf3vu); PYLITH_CHECK_ERROR(err);
+        err = PetscDSSetJacobian(prob, i_vel,  i_vel,  Jf0vv, Jf1vv, Jf2vv, Jf3vv); PYLITH_CHECK_ERROR(err);
+    }
 
     PYLITH_METHOD_END;
 } // _setFEKernelsRHSJacobianImplicit
