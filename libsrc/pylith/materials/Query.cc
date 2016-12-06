@@ -73,7 +73,7 @@ pylith::materials::Query::dbQueryShearModulus2D(PylithInt dim,
         msg << "Could not find density and Vs at (";
         for (int i=0; i < _dim; ++i)
             msg << "  " << xDim[i];
-        msg << ") in using spatial database '" << queryctx->db->label() << "'.";
+        msg << ") using spatial database '" << queryctx->db->label() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
     } // if
 
@@ -156,7 +156,7 @@ pylith::materials::Query::dbQueryBulkModulus2D(PylithInt dim,
         msg << "Could not find density, Vs, and Vp at (";
         for (int i=0; i < _dim; ++i)
             msg << "  " << xDim[i];
-        msg << ") in using spatial database '" << queryctx->db->label() << "'.";
+        msg << ") using spatial database '" << queryctx->db->label() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
     } // if
 
