@@ -350,7 +350,13 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSJacobia
     const PetscInt i_disp = solution.subfieldInfo("displacement").index;
 
     if (!solution.hasSubfield("velocity")) {
-        // F(t,s,\dot{s}) = \vec{0}.
+        // Jacobian kernels
+        const PetscPointJac Jf0uu = pylith_fekernels_DispVel_Jf0uu_zero;
+        const PetscPointJac Jf1uu = NULL;
+        const PetscPointJac Jf2uu = NULL;
+        const PetscPointJac Jf3uu = NULL;
+
+        err = PetscDSSetJacobian(prob, i_disp, i_disp, Jf0uu, Jf1uu, Jf2uu, Jf3uu); PYLITH_CHECK_ERROR(err);
     } else {
         const PetscInt i_vel = solution.subfieldInfo("velocity").index;
 
