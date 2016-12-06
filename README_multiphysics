@@ -38,16 +38,17 @@ problems
 
 bc
 
-    BoundaryCondition
-    AbsorbingDampers
-    Neumann
-    PointForce
-    ZeroDisp
+    BoundaryConditionNew
+    ZeroDispDB
+    DirichletNew
+    DirichletTimeDependent
 
     --TODO--
-    Dirichlet
-    DirichletPoints
-    
+    DirichletPoints?
+    AbsorbingDampersNew
+    NeumannNew
+    PointForceNew
+
 
 materials
 
@@ -60,7 +61,7 @@ materials
         PropsElastic
         PropsMaxwellViscoelastic
         PropsGenMaxwellViscoelastic
-	PropsPowerlawViscoelastic
+	    PropsPowerlawViscoelastic
         PropsDruckerPrager
         PropsPoroelastic
 
@@ -174,7 +175,5 @@ PyLithApp.main()
             C++ TimeDependent.create()
             C++ TimeDependent.initialize()
             C++ TimeDependnet.solve()
-    
-    problem.finalize()
 
-    
+    problem.finalize()
