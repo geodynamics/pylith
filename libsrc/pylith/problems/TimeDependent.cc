@@ -524,7 +524,7 @@ pylith::problems::TimeDependent::poststep(PetscTS ts)
           << "poststep(ts="<<ts<<")" << journal::endl;
 
     TimeDependent* problem = NULL;
-    PetscErrorCode err = TSGetApplicationContext(ts, (void*)problem); PYLITH_CHECK_ERROR(err); assert(problem);
+    PetscErrorCode err = TSGetApplicationContext(ts, (void*)&problem); PYLITH_CHECK_ERROR(err); assert(problem);
     problem->poststep();
 
     PYLITH_METHOD_RETURN(0);
