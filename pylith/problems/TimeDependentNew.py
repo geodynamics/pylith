@@ -65,7 +65,7 @@ class TimeDependentNew(ProblemNew, ModuleTimeDependent):
         startTime = pyre.inventory.dimensional("start_time", default=0.0 * year)
         startTime.meta['tip'] = "Start time for problem."
 
-        totalTime = pyre.inventory.dimensional("total_time", default=0.0 * year, validator=pyre.inventory.greaterEqual(0.0 * year))
+        totalTime = pyre.inventory.dimensional("total_time", default=0.1 * year, validator=pyre.inventory.greaterEqual(0.0 * year))
         totalTime.meta['tip'] = "Time duration of problem."
 
         maxTimeSteps = pyre.inventory.int("max_timesteps", default=20000, validator=pyre.inventory.greater(0))
