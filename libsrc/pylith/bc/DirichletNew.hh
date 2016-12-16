@@ -86,9 +86,11 @@ void _setFEKernelsConstraint(const topology::Field& solution) = 0;
 
 
 // PRIVATE MEMBERS ////////////////////////////////////////////////////
-private:
+protected:
 
 pylith::topology::Mesh* _boundaryMesh;   ///< Boundary mesh.
+int _spaceDim; ///< Spatial dimension of domain.
+pylith::topology::FieldBase::VectorFieldEnum _vectorFieldType; ///< Vector field type of constrainted field.
 
 // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:

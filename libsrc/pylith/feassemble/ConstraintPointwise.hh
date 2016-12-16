@@ -177,7 +177,6 @@ protected:
 spatialdata::units::Nondimensional* _normalizer;   ///< Nondimensionalizer.
 std::string _field; ///< Name of solution field to constrain.
 int_array _constrainedDOF; ///< List of constrained degrees of freedom at each location.
-pylith::utils::EventLogger* _logger;   ///< Event logger.
 
 /// Auxiliary fields for this problem
 pylith::topology::Field *_auxFields;
@@ -191,6 +190,7 @@ pylith::topology::FieldQuery* _auxFieldsQuery;
 /// Map from auxiliary field to discretization.
 discretizations_type _auxFieldsFEInfo;
 
+pylith::utils::EventLogger* _logger;   ///< Event logger.
 
 // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:

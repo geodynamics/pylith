@@ -27,6 +27,10 @@
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
+extern "C" {
+    #include "pylith/fekernels/timedependentbc.h"
+}
+
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
@@ -139,62 +143,66 @@ pylith::bc::DirichletTimeDependent::_auxFieldsSetup(void)
     const PylithReal lengthScale = _normalizer->lengthScale();
     const PylithReal timeScale = _normalizer->timeScale();
     const PylithReal velocityScale = lengthScale / timeScale;
-    const size_t numDOFConstrained = _constrainedDOF.size();
+
+    // :ASSUMPTION: Constrained field is a scalar or vector field.
+    const bool isVector = _vectorFieldType == pylith::topology::Field::VECTOR;
+    const int numComponents = (isVector) ? _spaceDim : 1;
 
     // :ATTENTION: The order for subfieldAdd() must match the order of the auxiliary fields in the FE kernels.
 
     // Initial amplitude
     if (_useInitial) {
-        const char* allCompNames[3] = {"initial_amplitude_x", "initial_amplitude_y", "initial_amplitude_z"};
-        const char** constrainedCompNames = (numDOFConstrained) ? new const char*[numDOFConstrained] : NULL;
-        for (size_t i=0; i < numDOFConstrained; ++i) {
-            constrainedCompNames[i] = allCompNames[_constrainedDOF[i]];
-        } // for
         const pylith::topology::Field::DiscretizeInfo& initialAmplitudeFEInfo = this->auxFieldDiscretization("initial_amplitude");
-        _auxFields->subfieldAdd("initial_amplitude", constrainedCompNames, numDOFConstrained, pylith::topology::Field::OTHER, initialAmplitudeFEInfo.basisOrder, initialAmplitudeFEInfo.quadOrder, initialAmplitudeFEInfo.isBasisContinuous, lengthScale);
+        if (isVector) {
+            const char* componentNames[3] = {"initial_amplitude_x", "initial_amplitude_y", "initial_amplitude_z"};
+            _auxFields->subfieldAdd("initial_amplitude", componentNames, numComponents, _vectorFieldType, initialAmplitudeFEInfo.basisOrder, initialAmplitudeFEInfo.quadOrder, initialAmplitudeFEInfo.isBasisContinuous, lengthScale);
+        } else {
+            const char* componentNames[1] = {"initial_amplitude"};
+            _auxFields->subfieldAdd("initial_amplitude", componentNames, numComponents, _vectorFieldType, initialAmplitudeFEInfo.basisOrder, initialAmplitudeFEInfo.quadOrder, initialAmplitudeFEInfo.isBasisContinuous, lengthScale);
+        } // if/else
         _auxFieldsQuery->queryFn("initial_amplitude", pylith::topology::FieldQuery::dbQueryGeneric);
-        delete[] constrainedCompNames; constrainedCompNames = NULL;
     } // if
 
 
     // Rate amplitude and start time.
     if (_useRate) {
-        const char* allCompNames[3] = {"rate_amplitude_x", "rate_amplitude_y", "rate_amplitude_z"};
-        const char** constrainedCompNames = (numDOFConstrained) ? new const char*[numDOFConstrained] : NULL;
-        for (size_t i=0; i < numDOFConstrained; ++i) {
-            constrainedCompNames[i] = allCompNames[_constrainedDOF[i]];
-        } // for
         const pylith::topology::Field::DiscretizeInfo& rateAmplitudeFEInfo = this->auxFieldDiscretization("rate_amplitude");
-        _auxFields->subfieldAdd("rate_amplitude", constrainedCompNames, numDOFConstrained, pylith::topology::Field::OTHER, rateAmplitudeFEInfo.basisOrder, rateAmplitudeFEInfo.quadOrder, rateAmplitudeFEInfo.isBasisContinuous, velocityScale);
+        if (isVector) {
+            const char* componentNames[3] = {"rate_amplitude_x", "rate_amplitude_y", "rate_amplitude_z"};
+            _auxFields->subfieldAdd("rate_amplitude", componentNames, numComponents, _vectorFieldType, rateAmplitudeFEInfo.basisOrder, rateAmplitudeFEInfo.quadOrder, rateAmplitudeFEInfo.isBasisContinuous, velocityScale);
+        } else {
+            const char* componentNames[1] = {"rate_amplitude"};
+            _auxFields->subfieldAdd("rate_amplitude", componentNames, numComponents, _vectorFieldType, rateAmplitudeFEInfo.basisOrder, rateAmplitudeFEInfo.quadOrder, rateAmplitudeFEInfo.isBasisContinuous, velocityScale);
+        } // if/else
         _auxFieldsQuery->queryFn("rate_amplitude", pylith::topology::FieldQuery::dbQueryGeneric);
-        delete[] constrainedCompNames; constrainedCompNames = NULL;
 
-        const char* rateStartNames[1] = {"rate_start"};
+        const char* startNames[1] = {"rate_start"};
         const pylith::topology::Field::DiscretizeInfo& rateStartFEInfo = this->auxFieldDiscretization("rate_start");
-        _auxFields->subfieldAdd("rate_start", rateStartNames, 1, pylith::topology::Field::SCALAR, rateStartFEInfo.basisOrder, rateStartFEInfo.quadOrder, rateStartFEInfo.isBasisContinuous, timeScale);
+        _auxFields->subfieldAdd("rate_start", startNames, 1, pylith::topology::Field::SCALAR, rateStartFEInfo.basisOrder, rateStartFEInfo.quadOrder, rateStartFEInfo.isBasisContinuous, timeScale);
         _auxFieldsQuery->queryFn("rate_start", pylith::topology::FieldQuery::dbQueryGeneric);
     } // if
 
 
     // Time history amplitude and start time.
     if (_useTimeHistory) {
-        const char* allCompNames[3] = {"time_history_amplitude_x", "time_history_amplitude_y", "time_history_amplitude_z"};
-        const char** constrainedCompNames = (numDOFConstrained) ? new const char*[numDOFConstrained] : NULL;
-        for (size_t i=0; i < numDOFConstrained; ++i) {
-            constrainedCompNames[i] = allCompNames[_constrainedDOF[i]];
-        } // for
         const pylith::topology::Field::DiscretizeInfo& timeHistoryAmplitudeFEInfo = this->auxFieldDiscretization("time_history_amplitude");
-        _auxFields->subfieldAdd("time_history_amplitude", constrainedCompNames, numDOFConstrained, pylith::topology::Field::OTHER, timeHistoryAmplitudeFEInfo.basisOrder, timeHistoryAmplitudeFEInfo.quadOrder, timeHistoryAmplitudeFEInfo.isBasisContinuous, lengthScale);
+        if (isVector) {
+            const char* componentNames[3] = {"time_history_amplitude_x", "time_history_amplitude_y", "time_history_amplitude_z"};
+            _auxFields->subfieldAdd("time_history_amplitude", componentNames, numComponents, _vectorFieldType, timeHistoryAmplitudeFEInfo.basisOrder, timeHistoryAmplitudeFEInfo.quadOrder, timeHistoryAmplitudeFEInfo.isBasisContinuous, lengthScale);
+        } else {
+            const char* componentNames[1] = {"time_history_amplitude"};
+            _auxFields->subfieldAdd("time_history_amplitude", componentNames, numComponents, _vectorFieldType, timeHistoryAmplitudeFEInfo.basisOrder, timeHistoryAmplitudeFEInfo.quadOrder, timeHistoryAmplitudeFEInfo.isBasisContinuous, lengthScale);
+        } // if/else
         _auxFieldsQuery->queryFn("time_history_amplitude", pylith::topology::FieldQuery::dbQueryGeneric);
-        delete[] constrainedCompNames; constrainedCompNames = NULL;
 
-        const char* timeHistoryStartNames[1] = {"time_history_start"};
+        const char* startNames[1] = {"time_history_start"};
         const pylith::topology::Field::DiscretizeInfo& timeHistoryStartFEInfo = this->auxFieldDiscretization("time_history_start");
-        _auxFields->subfieldAdd("time_history_start", timeHistoryStartNames, 1, pylith::topology::Field::SCALAR, timeHistoryStartFEInfo.basisOrder, timeHistoryStartFEInfo.quadOrder, timeHistoryStartFEInfo.isBasisContinuous, timeScale);
+        _auxFields->subfieldAdd("time_history_start", startNames, 1, pylith::topology::Field::SCALAR, timeHistoryStartFEInfo.basisOrder, timeHistoryStartFEInfo.quadOrder, timeHistoryStartFEInfo.isBasisContinuous, timeScale);
         _auxFieldsQuery->queryFn("time_history_start", pylith::topology::FieldQuery::dbQueryGeneric);
 
-        const char* timeHistoryValueNames[1] = {"time_history_value"};
-        _auxFields->subfieldAdd("time_history_value", timeHistoryValueNames, 1, pylith::topology::Field::SCALAR, timeHistoryAmplitudeFEInfo.basisOrder, timeHistoryAmplitudeFEInfo.quadOrder, timeHistoryAmplitudeFEInfo.isBasisContinuous, 1.0);
+        // Field to hold value from query of time history database.
+        const char* valueNames[1] = {"time_history_value"};
+        _auxFields->subfieldAdd("time_history_value", valueNames, 1, pylith::topology::Field::SCALAR, timeHistoryAmplitudeFEInfo.basisOrder, timeHistoryAmplitudeFEInfo.quadOrder, timeHistoryAmplitudeFEInfo.isBasisContinuous, 1.0);
         _auxFieldsQuery->queryFn("time_history_value", NULL);
     } // if
 
@@ -208,9 +216,56 @@ pylith::bc::DirichletTimeDependent::_auxFieldsSetup(void)
 void
 pylith::bc::DirichletTimeDependent::_setFEKernelsConstraint(const topology::Field& solution)
 { // _setFEKernelsConstraint
-    PYLITH_JOURNAL_DEBUG("setFEKernelsConstraint(solution="<<solution.label()<<")");
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_setFEKernelsConstraint(solution="<<solution.label()<<")");
 
-    PYLITH_JOURNAL_ERROR(":TODO: @brad Implement _setFEKernelsConstraint().");
+    const PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
+    PetscDS prob = NULL;
+    PetscErrorCode err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err);
+
+    const bool isScalarField = _vectorFieldType == pylith::topology::Field::SCALAR;
+
+    PetscPointFunc bcKernel = NULL;
+    const int bitInitial = _useInitial ? 0x1 : 0x0;
+    const int bitRate = _useRate ? 0x2 : 0x0;
+    const int bitTimeHistory = _useTimeHistory ? 0x4 : 0x0;
+    const int bitUse = bitInitial | bitRate | bitTimeHistory;
+    switch (bitUse) {
+    case 0x1:
+        bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_initial_scalar : pylith_fekernels_TimeDependentBC_initial_vector;
+        break;
+    case 0x2:
+        bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_rate_scalar : pylith_fekernels_TimeDependentBC_rate_vector;
+        break;
+    case 0x4:
+        bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_timeHistory_scalar : pylith_fekernels_TimeDependentBC_timeHistory_vector;
+        break;
+    case 0x3:
+        bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_initialRate_scalar : pylith_fekernels_TimeDependentBC_initialRate_vector;
+        break;
+    case 0x5:
+        bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_initialTimeHistory_scalar : pylith_fekernels_TimeDependentBC_initialTimeHistory_vector;
+        break;
+    case 0x6:
+        bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_rateTimeHistory_scalar : pylith_fekernels_TimeDependentBC_rateTimeHistory_vector;
+        break;
+    case 0x7:
+        bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_initialRateTimeHistory_scalar : pylith_fekernels_TimeDependentBC_initialRateTimeHistory_vector;
+        break;
+    case 0x0:
+        PYLITH_JOURNAL_WARNING("Dirichlet BC provides no constraints.");
+        break;
+    default:
+        PYLITH_JOURNAL_ERROR("Unknown combination of flags for Dirichlet BC terms (useInitial="<<_useInitial<<", useRate="<<_useRate<<", useTimeHistory="<<_useTimeHistory<<").");
+        throw std::logic_error("Unknown combination of flags for Dirichlet BC terms.");
+    } // switch
+
+    void* context = NULL;
+    const int labelId = 1;
+    const int fieldIndex = solution.subfieldInfo(_field.c_str()).index;
+    err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL_FIELD, _label.c_str(), _label.c_str(), fieldIndex, _constrainedDOF.size(), &_constrainedDOF[0], (void (*)())bcKernel, 1, &labelId, context); PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_END;
 } // _setFEKernelsConstraint
 
 // End of file

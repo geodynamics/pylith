@@ -29,6 +29,7 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
@@ -40,10 +41,11 @@
 // Default constructor.
 pylith::feassemble::ConstraintPointwise::ConstraintPointwise(void) :
     _normalizer(new spatialdata::units::Nondimensional),
-    _logger(0),
+    _field(""),
     _auxFields(0),
     _auxFieldsDB(0),
-    _auxFieldsQuery(0)
+    _auxFieldsQuery(0),
+    _logger(0)
 { // constructor
 } // constructor
 

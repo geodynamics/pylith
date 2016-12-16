@@ -38,7 +38,9 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::DirichletNew::DirichletNew(void) :
-    _boundaryMesh(0)
+    _boundaryMesh(0),
+    _spaceDim(0),
+    _vectorFieldType(pylith::topology::FieldBase::OTHER)
 { // constructor
 } // constructor
 
@@ -69,11 +71,18 @@ void
 pylith::bc::DirichletNew::initialize(const pylith::topology::Field& solution)
 { // initialize
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("initialize(solution="<<solution.label()<<")");
+
+    const spatialdata::geocoords::CoordSys* cs = solution.mesh().coordsys(); assert(cs);
+    _spaceDim = cs->spaceDim();
+    const topology::Field::SubfieldInfo& info = solution.subfieldInfo(_field.c_str());
+    _vectorFieldType = info.metadata.vectorFieldType;
+
+    _setFEKernelsConstraint(solution);
 
     _boundaryMesh = new topology::Mesh(solution.mesh(), _label.c_str()); assert(_boundaryMesh);
-
-    PetscDM dmMesh = _boundaryMesh->dmMesh(); assert(dmMesh);
-    topology::CoordsVisitor::optimizeClosure(dmMesh);
+    PetscDM dmBoundary = _boundaryMesh->dmMesh(); assert(dmBoundary);
+    topology::CoordsVisitor::optimizeClosure(dmBoundary);
 
     delete _auxFields; _auxFields = new topology::Field(*_boundaryMesh); assert(_auxFields);
     delete _auxFieldsQuery; _auxFieldsQuery = new topology::FieldQuery(*_auxFields); assert(_auxFieldsQuery);
@@ -92,8 +101,7 @@ pylith::bc::DirichletNew::initialize(const pylith::topology::Field& solution)
         PYLITH_JOURNAL_ERROR("Unknown case for setting up auxiliary fields.");
         throw std::logic_error("Unknown case for setting up auxiliary fields.");
     } // if/else
-    _auxFields->complete();
-
+    _auxFields->scatterLocalToGlobal();
 
     PYLITH_METHOD_END;
 } // initialize

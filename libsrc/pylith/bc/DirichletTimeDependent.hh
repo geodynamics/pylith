@@ -33,7 +33,7 @@
 /** @brief Dirichlet (prescribed values at degrees of freedom) boundary
  * condition with a time-depdnent expression.
  *
- * f(x,t) = f_0(x) + \dot{f}_0(x)*(t-t_0(x)) + f_1(x)*a(t-t_1(x)).
+ * f(x,t) = f_0(x) + \dot{f}_1(x)*(t-t_1(x)) + f_2(x)*a(t-t_2(x)).
  */
 class pylith::bc::DirichletTimeDependent : public DirichletNew
 { // class DirichletTimeDependent
