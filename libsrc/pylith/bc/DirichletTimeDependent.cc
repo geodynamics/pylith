@@ -21,6 +21,8 @@
 #include "DirichletTimeDependent.hh" // implementation of object methods
 
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
@@ -129,9 +131,75 @@ pylith::bc::DirichletTimeDependent::useTimeHistory(void) const
 void
 pylith::bc::DirichletTimeDependent::_auxFieldsSetup(void)
 { // _auxFieldsSetup
+    PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("_auxFieldsSetup()");
 
-    PYLITH_JOURNAL_ERROR(":TODO: @brad Implement _auxFieldsSetup().");
+    // Set subfields in auxiliary fields.
+    assert(_normalizer);
+    const PylithReal lengthScale = _normalizer->lengthScale();
+    const PylithReal timeScale = _normalizer->timeScale();
+    const PylithReal velocityScale = lengthScale / timeScale;
+    const size_t numDOFConstrained = _constrainedDOF.size();
+
+    // :ATTENTION: The order for subfieldAdd() must match the order of the auxiliary fields in the FE kernels.
+
+    // Initial amplitude
+    if (_useInitial) {
+        const char* allCompNames[3] = {"initial_amplitude_x", "initial_amplitude_y", "initial_amplitude_z"};
+        const char** constrainedCompNames = (numDOFConstrained) ? new const char*[numDOFConstrained] : NULL;
+        for (size_t i=0; i < numDOFConstrained; ++i) {
+            constrainedCompNames[i] = allCompNames[_constrainedDOF[i]];
+        } // for
+        const pylith::topology::Field::DiscretizeInfo& initialAmplitudeFEInfo = this->auxFieldDiscretization("initial_amplitude");
+        _auxFields->subfieldAdd("initial_amplitude", constrainedCompNames, numDOFConstrained, pylith::topology::Field::OTHER, initialAmplitudeFEInfo.basisOrder, initialAmplitudeFEInfo.quadOrder, initialAmplitudeFEInfo.isBasisContinuous, lengthScale);
+        _auxFieldsQuery->queryFn("initial_amplitude", pylith::topology::FieldQuery::dbQueryGeneric);
+        delete[] constrainedCompNames; constrainedCompNames = NULL;
+    } // if
+
+
+    // Rate amplitude and start time.
+    if (_useRate) {
+        const char* allCompNames[3] = {"rate_amplitude_x", "rate_amplitude_y", "rate_amplitude_z"};
+        const char** constrainedCompNames = (numDOFConstrained) ? new const char*[numDOFConstrained] : NULL;
+        for (size_t i=0; i < numDOFConstrained; ++i) {
+            constrainedCompNames[i] = allCompNames[_constrainedDOF[i]];
+        } // for
+        const pylith::topology::Field::DiscretizeInfo& rateAmplitudeFEInfo = this->auxFieldDiscretization("rate_amplitude");
+        _auxFields->subfieldAdd("rate_amplitude", constrainedCompNames, numDOFConstrained, pylith::topology::Field::OTHER, rateAmplitudeFEInfo.basisOrder, rateAmplitudeFEInfo.quadOrder, rateAmplitudeFEInfo.isBasisContinuous, velocityScale);
+        _auxFieldsQuery->queryFn("rate_amplitude", pylith::topology::FieldQuery::dbQueryGeneric);
+        delete[] constrainedCompNames; constrainedCompNames = NULL;
+
+        const char* rateStartNames[1] = {"rate_start"};
+        const pylith::topology::Field::DiscretizeInfo& rateStartFEInfo = this->auxFieldDiscretization("rate_start");
+        _auxFields->subfieldAdd("rate_start", rateStartNames, 1, pylith::topology::Field::SCALAR, rateStartFEInfo.basisOrder, rateStartFEInfo.quadOrder, rateStartFEInfo.isBasisContinuous, timeScale);
+        _auxFieldsQuery->queryFn("rate_start", pylith::topology::FieldQuery::dbQueryGeneric);
+    } // if
+
+
+    // Time history amplitude and start time.
+    if (_useTimeHistory) {
+        const char* allCompNames[3] = {"time_history_amplitude_x", "time_history_amplitude_y", "time_history_amplitude_z"};
+        const char** constrainedCompNames = (numDOFConstrained) ? new const char*[numDOFConstrained] : NULL;
+        for (size_t i=0; i < numDOFConstrained; ++i) {
+            constrainedCompNames[i] = allCompNames[_constrainedDOF[i]];
+        } // for
+        const pylith::topology::Field::DiscretizeInfo& timeHistoryAmplitudeFEInfo = this->auxFieldDiscretization("time_history_amplitude");
+        _auxFields->subfieldAdd("time_history_amplitude", constrainedCompNames, numDOFConstrained, pylith::topology::Field::OTHER, timeHistoryAmplitudeFEInfo.basisOrder, timeHistoryAmplitudeFEInfo.quadOrder, timeHistoryAmplitudeFEInfo.isBasisContinuous, lengthScale);
+        _auxFieldsQuery->queryFn("time_history_amplitude", pylith::topology::FieldQuery::dbQueryGeneric);
+        delete[] constrainedCompNames; constrainedCompNames = NULL;
+
+        const char* timeHistoryStartNames[1] = {"time_history_start"};
+        const pylith::topology::Field::DiscretizeInfo& timeHistoryStartFEInfo = this->auxFieldDiscretization("time_history_start");
+        _auxFields->subfieldAdd("time_history_start", timeHistoryStartNames, 1, pylith::topology::Field::SCALAR, timeHistoryStartFEInfo.basisOrder, timeHistoryStartFEInfo.quadOrder, timeHistoryStartFEInfo.isBasisContinuous, timeScale);
+        _auxFieldsQuery->queryFn("time_history_start", pylith::topology::FieldQuery::dbQueryGeneric);
+
+        const char* timeHistoryValueNames[1] = {"time_history_value"};
+        _auxFields->subfieldAdd("time_history_value", timeHistoryValueNames, 1, pylith::topology::Field::SCALAR, timeHistoryAmplitudeFEInfo.basisOrder, timeHistoryAmplitudeFEInfo.quadOrder, timeHistoryAmplitudeFEInfo.isBasisContinuous, 1.0);
+        _auxFieldsQuery->queryFn("time_history_value", NULL);
+    } // if
+
+
+    PYLITH_METHOD_END;
 }     // _auxFieldsSetup
 
 
