@@ -23,11 +23,12 @@ subpkginclude_HEADERS = \
 	dispvel.h \
 	elasticity.h \
 	linearelasticityplanestrain.h \
-	pressure.h
+	pressure.h \
+	timedependentbc.h
 
 noinst_HEADERS =
 
-dist_noinst_DATA = 
+dist_noinst_DATA =
 
 
-# End of file 
+# End of file

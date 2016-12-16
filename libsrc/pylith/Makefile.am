@@ -94,6 +94,7 @@ libpylith_la_SOURCES = \
 	fekernels/elasticity.c \
 	fekernels/linearelasticityplanestrain.c \
 	fekernels/pressure.c \
+	fekernels/timedependentbc.c \
 	friction/FrictionModel.cc \
 	friction/StaticFriction.cc \
 	friction/SlipWeakening.cc \
