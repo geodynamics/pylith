@@ -101,6 +101,7 @@ pylith::bc::DirichletNew::initialize(const pylith::topology::Field& solution)
         PYLITH_JOURNAL_ERROR("Unknown case for setting up auxiliary fields.");
         throw std::logic_error("Unknown case for setting up auxiliary fields.");
     } // if/else
+    _auxFields->createScatter(*_boundaryMesh);
     _auxFields->scatterLocalToGlobal();
 
     PYLITH_METHOD_END;
