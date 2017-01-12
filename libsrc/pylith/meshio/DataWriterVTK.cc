@@ -316,7 +316,6 @@ pylith::meshio::DataWriterVTK::writeCellField(const PylithScalar t,
 
   assert(_dm && _dm == field.mesh().dmMesh());
   assert(_isOpen && _isOpenTimeStep);
-#if 0
   // Cache cell field since PETSc writer collects all fields and
   // then writes file. Caching the field locally allows the output
   // manager to reuse fields as buffers.
@@ -343,7 +342,6 @@ pylith::meshio::DataWriterVTK::writeCellField(const PylithScalar t,
   PetscViewerVTKFieldType ft = fieldCached.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_CELL_FIELD : PETSC_VTK_CELL_VECTOR_FIELD;
   PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) _dm, DMPlexVTKWriteAll, ft, (PetscObject) fieldVec); PYLITH_CHECK_ERROR(err);
   err = PetscObjectReference((PetscObject) fieldVec);PYLITH_CHECK_ERROR(err); // Viewer destroys Vec
-#endif
   
   _wroteCellHeader = true;
 
