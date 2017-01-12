@@ -16,78 +16,80 @@
 # ======================================================================
 #
 
-## @file unittests/utils/testutils.py
+# @file unittests/utils/testutils.py
 
-## @brief Python application for testing utils code.
+# @brief Python application for testing utils code.
 
 from pyre.applications.Script import Script
 
 import unittest
 
+
 class TestApp(Script):
-  """
-  Test application.
-  """
-
-  # PUBLIC METHODS /////////////////////////////////////////////////////
-
-  def __init__(self, name="testapp"):
     """
-    Constructor.
-    """
-    Script.__init__(self, name)
-    return
-
-
-  def main(self):
-    """
-    Run the application.
-    """
-    from pylith.utils.PetscManager import PetscManager
-    petsc = PetscManager()
-    petsc.options = [("malloc_dump", "true")]
-    petsc.initialize()
-
-    unittest.TextTestRunner(verbosity=2).run(self._suite())
-
-    petsc.finalize()
-    return
-
-
-  # PRIVATE METHODS ////////////////////////////////////////////////////
-
-  def _suite(self):
-    """
-    Setup the test suite.
+    Test application.
     """
 
-    suite = unittest.TestSuite()
+    # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    from TestPylith import TestPylith
-    suite.addTest(unittest.makeSuite(TestPylith))
+    def __init__(self, name="testapp"):
+        """
+        Constructor.
+        """
+        Script.__init__(self, name)
+        return
 
-    from TestEventLogger import TestEventLogger
-    suite.addTest(unittest.makeSuite(TestEventLogger))
+    def main(self):
+        """
+        Run the application.
+        """
+        from pylith.utils.PetscManager import PetscManager
+        petsc = PetscManager()
+        petsc.options = [("malloc_dump", "true")]
+        petsc.initialize()
 
-    from TestPylithVersion import TestPylithVersion
-    suite.addTest(unittest.makeSuite(TestPylithVersion))
+        unittest.TextTestRunner(verbosity=2).run(self._suite())
 
-    from TestPetscVersion import TestPetscVersion
-    suite.addTest(unittest.makeSuite(TestPetscVersion))
+        petsc.finalize()
+        return
 
-    from TestDependenciesVersion import TestDependenciesVersion
-    suite.addTest(unittest.makeSuite(TestDependenciesVersion))
+    # PRIVATE METHODS ////////////////////////////////////////////////////
 
-    from TestConstants import TestConstants
-    suite.addTest(unittest.makeSuite(TestConstants))
+    def _suite(self):
+        """
+        Setup the test suite.
+        """
 
-    return suite
+        suite = unittest.TestSuite()
+
+        from TestPylith import TestPylith
+        suite.addTest(unittest.makeSuite(TestPylith))
+
+        from TestEventLogger import TestEventLogger
+        suite.addTest(unittest.makeSuite(TestEventLogger))
+
+        from TestPylithVersion import TestPylithVersion
+        suite.addTest(unittest.makeSuite(TestPylithVersion))
+
+        from TestPetscVersion import TestPetscVersion
+        suite.addTest(unittest.makeSuite(TestPetscVersion))
+
+        from TestDependenciesVersion import TestDependenciesVersion
+        suite.addTest(unittest.makeSuite(TestDependenciesVersion))
+
+        from TestCollectVersionInfo import TestCollectVersionInfo
+        suite.addTest(unittest.makeSuite(TestCollectVersionInfo))
+
+        from TestConstants import TestConstants
+        suite.addTest(unittest.makeSuite(TestConstants))
+
+        return suite
 
 
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
-  app = TestApp()
-  app.run()
+    app = TestApp()
+    app.run()
 
 
-# End of file 
+# End of file

@@ -169,6 +169,7 @@ nobase_pkgpyexec_PYTHON = \
 	utils/PetscComponent.py \
 	utils/PetscManager.py \
 	utils/VTKDataReader.py \
+	utils/CollectVersionInfo.py \
 	utils/importing.py \
 	utils/profiling.py \
 	utils/testarray.py \
@@ -191,4 +192,4 @@ if ENABLE_HDF5
 endif
 
 
-# End of file 
+# End of file

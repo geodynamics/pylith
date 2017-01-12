@@ -30,7 +30,8 @@ noinst_PYTHON = \
 	TestDependenciesVersion.py \
 	TestPetscVersion.py \
 	TestPylithVersion.py \
+	TestCollectVersionInfo.py \
 	TestPylith.py
 
 
-# End of file 
+# End of file
