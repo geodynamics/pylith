@@ -18,7 +18,8 @@
 
 # @file pylith/utils/CollectVersionInfo.py
 ##
-# @brief Python CollectVersionInfo object that is an empty component.
+# @brief Python CollectVersionInfo object to collect version infofmation for PyLith
+# and its dependencies.
 
 from pyre.components.Component import Component
 

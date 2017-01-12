@@ -1,0 +1,99 @@
+#!/usr/bin/env python
+#
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2016 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+#
+
+# @file pylith/utils/DumpParametersJson.py
+##
+# @brief Python DumpParameters object for dumping PyLith parameter information to a JSON file.
+
+from .DumpParameters import DumpParameters
+
+# DumpParameters class
+
+
+class DumpParametersJson(DumpParameters):
+    """
+    Python DumpParameters object for dumping PyLith parameter information to a JSON file.
+    """
+
+    # INVENTORY //////////////////////////////////////////////////////////
+
+    class Inventory(DumpParameters.Inventory):
+        """
+        Python object for managing DumpParametersJson facilities and properties.
+        """
+
+        # @class Inventory
+        # Python object for managing DumpParametersJson facilities and properties.
+        #
+        # \b Properties
+        # @li \b filename Name of file written with parameters.
+        # @li \b style Style of JSON file [compact, normal].
+        # @li \b indent Number of spaces to indent, use negative number for no newlines.
+        #
+        # \b Facilities
+        # @li Nones
+
+        import pyre.inventory
+
+        filename = pyre.inventory.str("filename", default="pylith_parameters.json")
+        filename.meta["tip"] = "Name of file written with parameters."
+
+        style = pyre.inventory.str("style", default="normal", validator=pyre.inventory.choice(["normal", "compact"]))
+        style.meta['tip'] = "Style of JSON file [compact, normal]."
+
+        indent = pyre.inventory.int("indent", default=4)
+        indent.meta['tip'] = "Nmber of spaces to indent, use a negative number for no newlines."
+
+    # PUBLIC METHODS /////////////////////////////////////////////////////
+
+    def __init__(self, name="dumpparametersjson"):
+        """
+        Constructor.
+        """
+        DumpParameters.__init__(self, name)
+        return
+
+    def write(self):
+        """
+        Write parameters to JSON file.
+        """
+        with open(self.filename, "w") as fout:
+            import json
+            if self.style == "compact":
+                indent = None
+                separators = (",", ":")
+            elif self.style == "normal":
+                indent = self.indent
+                separators = (",", ": ")
+            else:
+                raise ValueError("Unknown JSON style '%s'." % self.style)
+
+            json.dump(self.info, fout, indent=indent, separators=separators)
+        return
+
+    # PRIVATE METHODS ////////////////////////////////////////////////////
+
+    def _configure(self):
+        DumpParameters._configure(self)
+        self.filename = self.inventory.filename
+        self.indent = self.inventory.indent
+        self.style = self.inventory.style
+        return
+
+
+# End of file

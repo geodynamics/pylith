@@ -170,6 +170,9 @@ nobase_pkgpyexec_PYTHON = \
 	utils/PetscManager.py \
 	utils/VTKDataReader.py \
 	utils/CollectVersionInfo.py \
+	utils/DumpParameters.py \
+	utils/DumpParametersAscii.py \
+	utils/DumpParametersJson.py \
 	utils/importing.py \
 	utils/profiling.py \
 	utils/testarray.py \
