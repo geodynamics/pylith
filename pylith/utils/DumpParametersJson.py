@@ -68,10 +68,13 @@ class DumpParametersJson(DumpParameters):
         DumpParameters.__init__(self, name)
         return
 
-    def write(self):
+    def write(self, app):
         """
         Write parameters to JSON file.
         """
+        if self.info is None:
+            self.collect(app)
+
         with open(self.filename, "w") as fout:
             import json
             if self.style == "compact":
@@ -89,11 +92,23 @@ class DumpParametersJson(DumpParameters):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
+        """
+        Configure object.
+        """
         DumpParameters._configure(self)
         self.filename = self.inventory.filename
         self.indent = self.inventory.indent
         self.style = self.inventory.style
         return
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+
+def dump_parameters():
+    """
+    Factory associated with DumpParametersJson.
+    """
+    return DumpParametersJson()
 
 
 # End of file

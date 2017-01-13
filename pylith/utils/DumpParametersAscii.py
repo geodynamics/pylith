@@ -68,10 +68,13 @@ class DumpParametersAscii(DumpParameters):
         DumpParameters.__init__(self, name)
         return
 
-    def write(self):
+    def write(self, app):
         """
         Write parameters to ASCII file.
         """
+        if self.info is None:
+            self.collect(app)
+
         parameters = self.info["parameters"]
         with open(self.filename, "w") as fout:
             from .CollectVersionInfo import CollectVersionInfo
@@ -87,6 +90,9 @@ class DumpParametersAscii(DumpParameters):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
+        """
+        Configure object.
+        """
         DumpParameters._configure(self)
         self.filename = self.inventory.filename
         self.indent = self.inventory.indent
@@ -95,9 +101,14 @@ class DumpParametersAscii(DumpParameters):
         return
 
     def _writeComponent(self, fout, obj, depth):
+        """
+        Write component parameters to file.
+        """
         indent = self.tab * depth
         for (key, item) in obj["properties"].items():
-            fout.write("\n%s%s (%s) = %s\n" % (indent, key, item["type"], item["value"]))
+            if self.verbose:
+                fout.write("\n")
+            fout.write("%s%s (%s) = %s\n" % (indent, key, item["type"], item["value"]))
             if self.verbose:
                 indent2 = indent + self.tab
                 fout.write("%sDescription: %s\n" % (indent2, item["description"]))
@@ -113,5 +124,14 @@ class DumpParametersAscii(DumpParameters):
 
             self._writeComponent(fout, item, depth + 1)
         return
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+
+def dump_parameters():
+    """
+    Factory associated with DumpParametersAscii.
+    """
+    return DumpParametersAscii()
 
 # End of file

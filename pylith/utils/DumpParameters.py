@@ -17,7 +17,7 @@
 #
 
 # @file pylith/utils/DumpParameters.py
-##
+#
 # @brief Python DumpParameters object for dumping PyLith parameter information to a file.
 
 from pyre.components.Component import Component
@@ -37,6 +37,14 @@ class DumpParameters(Component):
         Constructor.
         """
         Component.__init__(self, name="dumpparamters", facility="dumpparameters")
+        self.info = None
+        return
+
+    def write(self, app):
+        """
+        Write parameters to ASCII file.
+        """
+        # Do nothing
         return
 
     def collect(self, app):
@@ -61,6 +69,9 @@ class DumpParameters(Component):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _getPropertiesComponents(self, obj):
+        """
+        Get objects properties and components.
+        """
         propertyNames = obj.inventory.propertyNames()
         propertyNames.sort()
 
@@ -117,5 +128,13 @@ class DumpParameters(Component):
             }
         return (properties, facilities)
 
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def dump_parameters():
+    """
+    Factory associated with DumpParameters.
+    """
+    return DumpParameters()
 
 # End of file
