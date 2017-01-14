@@ -56,13 +56,11 @@ class DumpParameters(Component):
         self.info = CollectVersionInfo.asDict()
         self.info["timestamp"] = datetime.datetime.now().isoformat()
         (properties, components) = self._getPropertiesComponents(app)
-        self.info["parameters"] = {
-            "application": {
-                "name": app.name,
-                "class": str(app),
-                "properties": properties,
-                "components": components,
-            }
+        self.info["application"] = {
+            "name": app.name,
+            "class": str(app),
+            "properties": properties,
+            "components": components,
         }
         return
 
