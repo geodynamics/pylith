@@ -89,6 +89,9 @@ class CollectVersionInfo(Component):
         # NetCDF
         s += "NetCDF version: %(version)s\n" % version["netcdf"]
 
+        # Proj
+        s += "Proj version: %(version)s\n" % version["proj"]
+
         # Python
         s += "\nPython\n" \
             "    v%(version)s of %(implementation)s compiled with %(compiler)s\n" % version["python"]
@@ -137,6 +140,7 @@ class CollectVersionInfo(Component):
             "hdf5": cls._collectVersionHDF5(),
             "netcdf": cls._collectVersionNetCDF(),
             "spatialdata": cls._collectVersionSpatialdata(),
+            "proj": cls._collectVersionProj(),
         }
         return info
 
@@ -236,6 +240,15 @@ class CollectVersionInfo(Component):
         v = utils.DependenciesVersion()
         info = {
             "version": v.netcdfVersion(),
+        }
+        return info
+
+    @staticmethod
+    def _collectVersionProj():
+        import spatialdata.utils.utils as utils
+        v = utils.SpatialdataVersion()
+        info = {
+            "version": v.projVersion(),
         }
         return info
 
