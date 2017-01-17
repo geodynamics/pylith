@@ -50,31 +50,31 @@ class PyLithApp(PetscApplication):
 
         import pyre.inventory
 
+        pdbOn = pyre.inventory.bool("start-python-debugger", default=False)
+        pdbOn.meta['tip'] = "Start python debugger at beginning of main()."
+
+        typos = pyre.inventory.str("typos", default="pedantic", validator=pyre.inventory.choice(['relaxed', 'strict', 'pedantic']))
+        typos.meta['tip'] = "Specifies the handling of unknown properties and facilities"
+
         initializeOnly = pyre.inventory.bool("initialize-only", default=False)
         initializeOnly.meta['tip'] = "Stop simulation after initializing problem."
 
+        from pylith.utils.DumpParametersJson import DumpParametersJson
+        parameters = pyre.inventory.facility("dump_parameters", family="dump_parameters", factory=DumpParametersJson)
+        parameters.meta['tip'] = "Dump parameters used and version information to file."
+
         from pylith.topology.MeshImporter import MeshImporter
-        mesher = pyre.inventory.facility("mesh_generator", family="mesh_generator",
-                                         factory=MeshImporter)
+        mesher = pyre.inventory.facility("mesh_generator", family="mesh_generator", factory=MeshImporter)
         mesher.meta['tip'] = "Generates or imports the computational mesh."
 
         from pylith.problems.TimeDependent import TimeDependent
-        problem = pyre.inventory.facility("problem", family="problem",
-                                          factory=TimeDependent)
+        problem = pyre.inventory.facility("problem", family="problem", factory=TimeDependent)
         problem.meta['tip'] = "Computational problem to solve."
 
         from pylith.perf.MemoryLogger import MemoryLogger
-        perfLogger = pyre.inventory.facility("perf_logger", family="perf_logger",
-                                             factory=MemoryLogger)
+        perfLogger = pyre.inventory.facility("perf_logger", family="perf_logger", factory=MemoryLogger)
         perfLogger.meta['tip'] = "Performance and memory logging."
 
-        typos = pyre.inventory.str("typos", default="pedantic",
-                                   validator=pyre.inventory.choice(['relaxed', 'strict', 'pedantic']))
-        typos.meta['tip'] = "Specifies the handling of unknown properties and " \
-            "facilities"
-
-        pdbOn = pyre.inventory.bool("start-python-debugger", default=False)
-        pdbOn.meta['tip'] = "Start python debugger at beginning of main()."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -93,6 +93,9 @@ class PyLithApp(PetscApplication):
         if self.pdbOn:
             import pdb
             pdb.set_trace()
+
+        # Dump parameters and version information
+        self.parameters.write(self)
 
         from pylith.mpi.Communicator import mpi_comm_world
         comm = mpi_comm_world()
@@ -250,12 +253,13 @@ class PyLithApp(PetscApplication):
         Setup members using inventory.
         """
         PetscApplication._configure(self)
+        self.typos = self.inventory.typos
+        self.pdbOn = self.inventory.pdbOn
         self.initializeOnly = self.inventory.initializeOnly
+        self.parameters = self.inventory.parameters
         self.mesher = self.inventory.mesher
         self.problem = self.inventory.problem
         self.perfLogger = self.inventory.perfLogger
-        self.typos = self.inventory.typos
-        self.pdbOn = self.inventory.pdbOn
 
         import journal
         self._debug = journal.debug(self.name)

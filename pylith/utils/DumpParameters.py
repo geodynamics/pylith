@@ -32,7 +32,7 @@ class DumpParameters(Component):
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name):
+    def __init__(self, name="dumpparameters"):
         """
         Constructor.
         """

@@ -75,16 +75,16 @@ class DumpParametersAscii(DumpParameters):
         if self.info is None:
             self.collect(app)
 
-        parameters = self.info["parameters"]
+        parameters = self.info["application"]
         with open(self.filename, "w") as fout:
             from .CollectVersionInfo import CollectVersionInfo
             import datetime
             now = datetime.datetime.now()
-            fout.write("Generated %s\n\n" % now.strftime("%A, %d. %B %Y %I:%M%p"))
+            fout.write("Generated %s\n\n" % now.strftime("%A, %d %B %Y %I:%M%p"))
             fout.write(CollectVersionInfo.asString())
-            fout.write("\nApplication: %(name)s %(class)s\n" % parameters["application"])
+            fout.write("\nApplication: %(name)s %(class)s\n" % parameters)
             depth = 0
-            self._writeComponent(fout, parameters["application"], depth + 1)
+            self._writeComponent(fout, parameters, depth + 1)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
