@@ -28,165 +28,63 @@
 
 # ======================================================================
 class ParametersApp(object):
-  """
-  Application for printing current PyLith parameters to a text file.
-  """
-
-  # PUBLIC METHODS /////////////////////////////////////////////////////
-
-  def __init__(self, name="pylithinfo"):
     """
-    Constructor.
+    Application for printing current PyLith parameters to a text file.
     """
-    self.verbose = False
-    self.filename = "pylith_parameters.txt"
-    self.pylith_args = ""
-    self._tab = "   "
-    self._printPropertyFn = self._printPropertyBasic
-    self._printFacilityFn = self._printFacilityBasic
-    return
 
+    # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def main(self, *args, **kwds):
-    """
-    Main entry point for application.
-    """
-    from pylith.apps.PyLithApp import InfoApp
-    targetapp = InfoApp(self.pylith_args)
-    targetapp.run(*args, **kwds)
+    def __init__(self, name="pylithinfo"):
+        """
+        Constructor.
+        """
+        self.format = "json"
+        self.verbose = False
+        self.filename = "pylith_parameters.json"
+        self.pylith_args = ""
+        return
 
-    if self.verbose:
-      self._printPropertyFn = self._printPropertyVerbose
-      self._printFacilityFn = self._printFacilityVerbose
-    else:
-      self._printPropertyFn = self._printPropertyBasic
-      self._printFacilityFn = self._printFacilityBasic
+    def main(self, *args, **kwds):
+        """
+        Main entry point for application.
+        """
+        from pylith.apps.PyLithApp import InfoApp
+        targetapp = InfoApp(self.pylith_args)
+        targetapp.run(*args, **kwds)
 
-    depth = 0
-    fout = open(self.filename, "w")
-    fout.write("Application: %s %s\n" % (targetapp.name, targetapp))
-    self._printParams(fout, targetapp, depth+1)
-    fout.close()
-    return
+        dumper = None
+        if self.format == "json":
+            from pylith.utils.DumpParametersJson import DumpParametersJson
+            dumper = DumpParametersJson()
+        elif self.format == "ascii":
+            from pylith.utils.DumpParametersAscii import DumpParametersAscii
+            dumper = DumpParametersAscii()
+            dumper.inventory.verbose = self.verbose
+        dumper.inventory.filename = self.filename
+        dumper._configure()
 
-
-  # PRIVATE METHODS ////////////////////////////////////////////////////
-
-  def _printParams(self, fout, obj, depth):
-    """
-    Print objects parameters to fout.
-    """
-    propertyNames = obj.inventory.propertyNames()
-    facilityNames = obj.inventory.facilityNames()
-
-    propertiesOmit = ["help", 
-                      "help-components",
-                      "help-persistence",
-                      "help-properties",
-                      "typos",
-                      ]
-    facilitiesOmit = ["weaver",
-                      ]
-
-    propertyNames.sort()
-    facilityNames.sort()
-
-    for name in propertyNames:
-      if name in facilityNames or name in propertiesOmit:
-        continue
-      trait = obj.inventory.getTrait(name)
-      descriptor = obj.inventory.getTraitDescriptor(name)
-      self._printPropertyFn(fout, name, trait, descriptor, depth)
-    for name in facilityNames:
-      if name in facilitiesOmit:
-        continue
-      trait = obj.inventory.getTrait(name)
-      descriptor = obj.inventory.getTraitDescriptor(name)
-      self._printFacilityFn(fout, name, trait, descriptor, depth)
-    return
-
-
-  def _printPropertyBasic(self, fout, name, trait, descriptor, depth):
-    """
-    Print property name, type, and value.
-    """
-    indent = self._tab*depth
-    fout.write("%s%s (%s) = %s\n" % \
-                 (indent, name, trait.type, descriptor.value))
-    return
-
-
-  def _printFacilityBasic(self, fout, name, trait, descriptor, depth):
-    """
-    Print facility name, type, and value.
-    """
-    indent = self._tab*depth
-    fout.write("%s%s = %s (%s)\n" % \
-                 (indent, name, descriptor.value.name, descriptor.value))
-    self._printParams(fout, descriptor.value, depth+1)
-    return
-
-
-  def _printPropertyVerbose(self, fout, name, trait, descriptor, depth):
-    """
-    Print property, name, type, value, description, and location set.
-    """
-    indent = self._tab*depth
-    fout.write("\n%s%s (%s) = %s\n" % \
-                 (indent, name, trait.type, descriptor.value))    
-
-    indent += self._tab
-    try:
-      description = trait.meta['tip']
-    except KeyError:
-      description = "No description available."
-    fout.write("%sDescription: %s\n" % (indent, description))
-    fout.write("%sSet from: %s\n" % (indent, descriptor.locator))
-    return
-
-
-  def _printFacilityVerbose(self, fout, name, trait, descriptor, depth):
-    """
-    Print facility name, type, value, description, and location set.
-    """
-    indent = self._tab*depth
-    fout.write("\n%s%s = %s (%s)\n" % \
-                 (indent, name, descriptor.value.name, descriptor.value))
-
-    indent += self._tab
-    try:
-      description = trait.meta['tip']
-    except KeyError:
-      description = "No description available."
-    fout.write("%sDescription: %s\n" % (indent, description))
-    fout.write("%sSet from: %s\n" % (indent, descriptor.locator))
-    fout.write("%sConfigurable as: %s\n" % \
-                 (indent, ", ".join(descriptor.value.aliases)))
-    
-    self._printParams(fout, descriptor.value, depth+1)
-    return
-
+        dumper.write(targetapp)
+        return
 
 # ----------------------------------------------------------------------
 if __name__ == "__main__":
 
-  usage = "%prog [options] [PyLith args]"
-  from optparse import OptionParser
-  parser = OptionParser(usage=usage)
-  parser.add_option("-v", "--verbose", dest="verbose",
-                    action="store_true", default=False,
-                    help="Print verbose output.")
-  parser.add_option("-o", "--fileout", dest="filename",
-                    type="string", metavar="FILE",
-                    help="Write to FILE. [pylith_parameters.txt]",
-                    default="pylith_parameters.txt")
-  (options, args) = parser.parse_args()
+    description = "Configure PyLith simulation and dump parameters to a file."
+    addInfo = "Also include any normal PyLith command line arguments, like .cfg files."
 
-  app = ParametersApp()
-  app.verbose = options.verbose
-  app.filename = options.filename
-  app.pylith_args = args
-  app.main()
+    import argparse
+    parser = argparse.ArgumentParser(description=description, epilog=addInfo)
+    parser.add_argument("--verbose-false", action="store_false", dest="verbose", help="Don't include description, location, and aliases in output.")
+    parser.add_argument("--format", action="store", dest="format", default="json", help="Format of output file.", choices=("ascii", "json"))
+    parser.add_argument("--filename", action="store", dest="filename", default="pylith_parameters.json", help="Name of output file")
+    args, extraArgs = parser.parse_known_args()
+
+    app = ParametersApp()
+    app.format = args.format
+    app.verbose = args.verbose
+    app.filename = args.filename
+    app.pylith_args = extraArgs
+    app.main()
 
 
-# End of file 
+# End of file

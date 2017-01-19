@@ -218,12 +218,12 @@ pylith::meshio::DataWriterVTK::openTimeStep(const PylithScalar t,
 
   err = PetscViewerCreate(mesh.comm(), &_viewer);PYLITH_CHECK_ERROR(err);
   err = PetscViewerSetType(_viewer, PETSCVIEWERVTK);PYLITH_CHECK_ERROR(err);
-  err = PetscViewerSetFormat(_viewer, PETSC_VIEWER_ASCII_VTK);PYLITH_CHECK_ERROR(err);
+  err = PetscViewerPushFormat(_viewer, PETSC_VIEWER_ASCII_VTK);PYLITH_CHECK_ERROR(err);
   err = PetscViewerFileSetName(_viewer, filename.c_str());PYLITH_CHECK_ERROR(err);
   
   // Increment reference count on mesh DM, because the viewer destroys the DM.
   assert(_dm);
-  err = PetscObjectReference((PetscObject) _dm);PYLITH_CHECK_ERROR(err);
+  //err = PetscObjectReference((PetscObject) _dm);PYLITH_CHECK_ERROR(err);
   
   _isOpenTimeStep = true;
 
@@ -242,12 +242,6 @@ pylith::meshio::DataWriterVTK::closeTimeStep(void)
   // Destroy the viewer (which also writes the file).
   err = PetscViewerDestroy(&_viewer);PYLITH_CHECK_ERROR(err);
 
-  // Account for possibility that no fields were written, so viewer doesn't have handle to DM.
-  if (_isOpenTimeStep && !_wroteVertexHeader && !_wroteCellHeader) {
-    // No fields written, so must manually dereference the mesh DM.
-    err = PetscObjectDereference((PetscObject) _dm);PYLITH_CHECK_ERROR(err);
-  } // if
-  
   // Remove label
   if (_isOpenTimeStep) {
     assert(_dm);
@@ -322,7 +316,6 @@ pylith::meshio::DataWriterVTK::writeCellField(const PylithScalar t,
 
   assert(_dm && _dm == field.mesh().dmMesh());
   assert(_isOpen && _isOpenTimeStep);
-
   // Cache cell field since PETSc writer collects all fields and
   // then writes file. Caching the field locally allows the output
   // manager to reuse fields as buffers.
