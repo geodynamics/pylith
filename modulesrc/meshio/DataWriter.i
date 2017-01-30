@@ -119,14 +119,12 @@ namespace pylith {
       /** Write dataset with names of points to file.
        *
        * @param names Array with name for each point, e.g., station name.
-       * @param nunNames Number of names in array.
        * @param mesh Finite-element mesh. 
        *
        * Primarily used with OutputSolnPoints.
        */
       virtual
-      void writePointNames(const char* const* names,
-			   const int numNames,
+      void writePointNames(const pylith::string_vector& names,
 			   const pylith::topology::Mesh& mesh);
 
     }; // DataWriter

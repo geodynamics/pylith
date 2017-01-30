@@ -30,18 +30,25 @@ const PylithScalar pylith::meshio::OutputSolnPointsDataTri3::_points[] = {
    0.001, 0.75, // edge
    0.999, 0.0, // vertex
 };
+const char* pylith::meshio::OutputSolnPointsDataTri3::_names[5] = {
+    "AA",
+    "BB",
+    "CC",
+    "DD",
+    "EE",
+};
 
 const int pylith::meshio::OutputSolnPointsDataTri3::_numVertices = 4;
 const int pylith::meshio::OutputSolnPointsDataTri3::_fiberDim = 1;
 
-const PylithScalar pylith::meshio::OutputSolnPointsDataTri3::_field[] = {
+const PylithScalar pylith::meshio::OutputSolnPointsDataTri3::_field[4] = {
   1.0,
   1.1,
   1.2,
   1.3,
 };
 
-const PylithScalar pylith::meshio::OutputSolnPointsDataTri3::_fieldInterp[] = {
+const PylithScalar pylith::meshio::OutputSolnPointsDataTri3::_fieldInterp[5] = {
   0.0,
   0.0,
   0.0,
@@ -57,6 +64,7 @@ pylith::meshio::OutputSolnPointsDataTri3::OutputSolnPointsDataTri3(void)
   spaceDim = _spaceDim;
   numPoints = _numPoints;
   points = const_cast<PylithScalar*>(_points);
+  names = const_cast<const char**>(_names);
 
   numVertices = _numVertices;
   fiberDim = _fiberDim;

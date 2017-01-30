@@ -30,11 +30,18 @@ const PylithScalar pylith::meshio::OutputSolnPointsDataTet4::_points[] = {
    0.001, 0.75, 0.0001, // edge
    0.999, 0.0, 0.0, // vertex
 };
+const char* pylith::meshio::OutputSolnPointsDataTet4::_names[5] = {
+    "AA",
+    "BB",
+    "CC",
+    "DD",
+    "EE",
+};
 
 const int pylith::meshio::OutputSolnPointsDataTet4::_numVertices = 5;
 const int pylith::meshio::OutputSolnPointsDataTet4::_fiberDim = 2;
 
-const PylithScalar pylith::meshio::OutputSolnPointsDataTet4::_field[] = {
+const PylithScalar pylith::meshio::OutputSolnPointsDataTet4::_field[10] = {
   1.0, 2.5,
   1.1, 2.4,
   1.2, 2.3,
@@ -42,7 +49,7 @@ const PylithScalar pylith::meshio::OutputSolnPointsDataTet4::_field[] = {
   1.4, 2.1,
 };
 
-const PylithScalar pylith::meshio::OutputSolnPointsDataTet4::_fieldInterp[] = {
+const PylithScalar pylith::meshio::OutputSolnPointsDataTet4::_fieldInterp[10] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -58,6 +65,7 @@ pylith::meshio::OutputSolnPointsDataTet4::OutputSolnPointsDataTet4(void)
   spaceDim = _spaceDim;
   numPoints = _numPoints;
   points = const_cast<PylithScalar*>(_points);
+  names = const_cast<const char**>(_names);
 
   numVertices = _numVertices;
   fiberDim = _fiberDim;

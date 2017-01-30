@@ -29,11 +29,17 @@ const PylithScalar pylith::meshio::OutputSolnPointsDataHex8::_points[12] = {
   0.001, 0.75, -0.0,// edge
   0.999, 0.0, 0.0, // vertex
 };
+const char* pylith::meshio::OutputSolnPointsDataHex8::_names[4] = {
+    "AA",
+    "BB",
+    "CC",
+    "DD",
+};
 
 const int pylith::meshio::OutputSolnPointsDataHex8::_numVertices = 12;
 const int pylith::meshio::OutputSolnPointsDataHex8::_fiberDim = 1;
 
-const PylithScalar pylith::meshio::OutputSolnPointsDataHex8::_field[] = { 
+const PylithScalar pylith::meshio::OutputSolnPointsDataHex8::_field[12] = { 
   1.0,
   1.1,
   1.2,
@@ -48,7 +54,7 @@ const PylithScalar pylith::meshio::OutputSolnPointsDataHex8::_field[] = {
   2.1,
 };
 
-const PylithScalar pylith::meshio::OutputSolnPointsDataHex8::_fieldInterp[] = {
+const PylithScalar pylith::meshio::OutputSolnPointsDataHex8::_fieldInterp[4] = {
   0.0,
   0.0,
   0.0,
@@ -63,7 +69,8 @@ pylith::meshio::OutputSolnPointsDataHex8::OutputSolnPointsDataHex8(void)
   spaceDim = _spaceDim;
   numPoints = _numPoints;
   points = const_cast<PylithScalar*>(_points);
-
+  names = const_cast<const char**>(_names);
+  
   numVertices = _numVertices;
   fiberDim = _fiberDim;
   field = const_cast<PylithScalar*>(_field);
