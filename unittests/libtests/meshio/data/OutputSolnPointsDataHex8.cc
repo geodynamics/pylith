@@ -36,31 +36,11 @@ const char* pylith::meshio::OutputSolnPointsDataHex8::_names[4] = {
     "DD",
 };
 
-const int pylith::meshio::OutputSolnPointsDataHex8::_numVertices = 12;
 const int pylith::meshio::OutputSolnPointsDataHex8::_fiberDim = 1;
 
-const PylithScalar pylith::meshio::OutputSolnPointsDataHex8::_field[12] = { 
-  1.0,
-  1.1,
-  1.2,
-  1.3,
-  1.4,
-  1.5,
-  1.6,
-  1.7,
-  1.8,
-  1.9,
-  2.0,
-  2.1,
+const PylithScalar pylith::meshio::OutputSolnPointsDataHex8::_coefs[1*3] = { 
+    -3.0, 6.0, 12.0,
 };
-
-const PylithScalar pylith::meshio::OutputSolnPointsDataHex8::_fieldInterp[4] = {
-  0.0,
-  0.0,
-  0.0,
-  0.0,
-};
-
 
 // ----------------------------------------------------------------------
 pylith::meshio::OutputSolnPointsDataHex8::OutputSolnPointsDataHex8(void)
@@ -71,11 +51,8 @@ pylith::meshio::OutputSolnPointsDataHex8::OutputSolnPointsDataHex8(void)
   points = const_cast<PylithScalar*>(_points);
   names = const_cast<const char**>(_names);
   
-  numVertices = _numVertices;
   fiberDim = _fiberDim;
-  field = const_cast<PylithScalar*>(_field);
-
-  fieldInterp = const_cast<PylithScalar*>(_fieldInterp);
+  coefs = const_cast<PylithScalar*>(_coefs);
 
 } // constructor
 

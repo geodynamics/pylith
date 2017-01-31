@@ -48,20 +48,14 @@ char* meshFilename;   ///< Filename for input mesh
 //@{
 int spaceDim;   ///< Number of dimensions in vertex coordinates
 int numPoints;   ///< Number of points.
-PylithScalar* points;   ///< Coordinates of points.
+PylithScalar* points;   ///< Coordinates of points [numPoints*spaceDim].
 const char** names;   ///< Names of points (e.g., station names).
 //@}
 
-/// @name Input data.
+/// @name Field data.
 //@{
-int numVertices;
 int fiberDim;
-PylithScalar* field;   ///< Field over mesh.
-//@}
-
-/// @name Calculated values.
-//@{
-PylithScalar* fieldInterp;   ///< Field interpolate to points.
+PylithScalar* coefs;   ///< Polynomial coefficients [fiberDim*spaceDim] for computing field.
 //@}
 
 };

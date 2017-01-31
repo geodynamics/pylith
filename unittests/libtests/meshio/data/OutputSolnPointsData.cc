@@ -26,10 +26,8 @@ pylith::meshio::OutputSolnPointsData::OutputSolnPointsData(void) :
     numPoints(0),
     points(0),
     names(0),
-    numVertices(0),
     fiberDim(0),
-    field(0),
-    fieldInterp(0)
+    coefs(0)
 { // constructor
 } // constructor
 

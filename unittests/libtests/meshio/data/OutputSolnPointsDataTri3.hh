@@ -49,10 +49,8 @@ private:
     static const PylithScalar _points[]; ///< Coordinates of points.
     static const char* _names[]; /// Names of stations.
 
-    static const int _numVertices; ///< Number of points in mesh.
     static const int _fiberDim; ///< Fiber dimension of field.
-    static const PylithScalar _field[]; ///< Field over mesh.
-    static const PylithScalar _fieldInterp[]; ///< Field interpolated to points.
+    static const PylithScalar _coefs[]; ///< Polynomial coefficients for field.
 
 };
 

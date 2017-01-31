@@ -42,28 +42,12 @@ const char* pylith::meshio::OutputSolnPointsDataQuad4::_names[7] = {
     "GG",
 };
 
-const int pylith::meshio::OutputSolnPointsDataQuad4::_numVertices = 6;
 const int pylith::meshio::OutputSolnPointsDataQuad4::_fiberDim = 3;
 
-const PylithScalar pylith::meshio::OutputSolnPointsDataQuad4::_field[18] = {
-  1.0, 2.1, 3.2,
-  1.1, 2.0, 3.3,
-  1.2, 1.9, 3.4,
-  1.3, 1.8, 3.5,
-  1.4, 1.7, 3.6,
-  1.5, 1.6, 3.7,
+const PylithScalar pylith::meshio::OutputSolnPointsDataQuad4::_coefs[3*2] = {
+    2.0, -3.0, 10.0,
+    -1.0, 6.0, 13.0,
 };
-
-const PylithScalar pylith::meshio::OutputSolnPointsDataQuad4::_fieldInterp[21] = {
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-};
-
 
 // ----------------------------------------------------------------------
 pylith::meshio::OutputSolnPointsDataQuad4::OutputSolnPointsDataQuad4(void)
@@ -74,11 +58,8 @@ pylith::meshio::OutputSolnPointsDataQuad4::OutputSolnPointsDataQuad4(void)
   points = const_cast<PylithScalar*>(_points);
   names = const_cast<const char**>(_names);
 
-  numVertices = _numVertices;
   fiberDim = _fiberDim;
-  field = const_cast<PylithScalar*>(_field);
-
-  fieldInterp = const_cast<PylithScalar*>(_fieldInterp);
+  coefs = const_cast<PylithScalar*>(_coefs);
 
 } // constructor
 

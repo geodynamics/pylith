@@ -29,6 +29,8 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
+#include "pylith/topology/topologyfwd.hh" // USES Field
+
 /// Namespace for pylith package
 namespace pylith {
   namespace meshio {
@@ -105,6 +107,14 @@ private :
    * @param data Test data.
    */
   void _testInterpolate(const OutputSolnPointsData& data);
+
+  /** Compute values of field at vertices in mesh.
+   *
+   * @param field Field to hold values.
+   * @param data Test data.
+   */
+  void _calcField(pylith::topology::Field* field,
+		  const OutputSolnPointsData& data);
 
 }; // class TestOutputSolnPoints
 
