@@ -19,23 +19,31 @@
 #include "OutputSolnPointsDataTri3.hh"
 
 const char* pylith::meshio::OutputSolnPointsDataTri3::_meshFilename =
-  "data/tri3.mesh";
+  "data/mesh_tri3.exo";
 
 const int pylith::meshio::OutputSolnPointsDataTri3::_spaceDim = 2;
-const int pylith::meshio::OutputSolnPointsDataTri3::_numPoints = 5;
-const PylithScalar pylith::meshio::OutputSolnPointsDataTri3::_points[] = {
-   0.1, 0.4, // interior points
-  -0.2, 0.3,
-   0.3, 0.1,
-   0.001, 0.75, // edge
-   0.999, 0.0, // vertex
+const int pylith::meshio::OutputSolnPointsDataTri3::_numPoints = 9;
+const PylithScalar pylith::meshio::OutputSolnPointsDataTri3::_points[9*2] = {
+    97.16316825,   421.37654702, // random interior points
+    -1563.74874936, -3404.05692152,
+     -695.88887916, -1040.46076016,
+     -148.63433749, -2994.98857429,
+    -3769.33953777,  2270.48242702,
+     1440.63801728, -2212.39736902,
+    -1162.09140595,  1542.16123633,
+    -4000.0, 500.0, // edge
+    +4000.0, -4000.0, // vertex
 };
-const char* pylith::meshio::OutputSolnPointsDataTri3::_names[5] = {
+const char* pylith::meshio::OutputSolnPointsDataTri3::_names[9] = {
     "AA",
     "BB",
     "CC",
     "DD",
     "EE",
+    "FF",
+    "GG",
+    "HH",
+    "II",
 };
 
 const int pylith::meshio::OutputSolnPointsDataTri3::_fiberDim = 1;

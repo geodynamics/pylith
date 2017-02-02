@@ -160,14 +160,14 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
     topology::MeshOps::nondimensionalize(_pointsMesh, normalizer);
 
 #if 0 // DEBUGGING
-    _pointsMesh->view("POINTS MESH");
+    _pointsMesh->view("::ascii_info_detail");
 #endif
 
     if (!_fields) {
         _fields = new topology::Fields(*_pointsMesh); assert(_fields);
     } // if
 
-    // Copy station names. :TODO: Reorder to match output.
+    // Copy station names. :TODO: Reorder to match output (pointsLocal).
     _stations.resize(numNames);
     for (int i=0; i < numNames; ++i) {
 	_stations[i] = names[i];

@@ -1,0 +1,102 @@
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+playback 'mesh_geometry3d.jou'
+
+# ----------------------------------------------------------------------
+# Set discretization size
+# ----------------------------------------------------------------------
+volume all size 10000.0
+
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+volume all scheme tetmesh
+mesh volume all
+
+volume all smooth scheme condition number beta 1.7 cpu 10
+smooth volume all
+
+# ----------------------------------------------------------------------
+# Create blocks for materials
+# ----------------------------------------------------------------------
+block 1 volume elastic_xpos elastic_xneg
+block 1 name "elastic"
+block 2 volume visco_xpos visco_xneg
+block 2 name "viscoelastic"
+
+# ----------------------------------------------------------------------
+# Create nodesets for faults
+# ----------------------------------------------------------------------
+group "fault" add node in surface fault_surface_x
+group "fault" add node in surface fault_surface_x@A
+nodeset 10 group fault
+nodeset 10 name "fault"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +x face
+# ----------------------------------------------------------------------
+group "face_xpos" add node in surface 20
+group "face_xpos" add node in surface 28
+nodeset 20 group face_xpos
+nodeset 20 name "face_xpos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -x face
+# ----------------------------------------------------------------------
+group "face_xneg" add node in surface 30
+group "face_xneg" add node in surface 38
+nodeset 21 group face_xneg
+nodeset 21 name "face_xneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +y face
+# ----------------------------------------------------------------------
+group "face_ypos" add node in surface 35
+group "face_ypos" add node in surface 27
+group "face_ypos" add node in surface 21
+group "face_ypos" add node in surface 33
+nodeset 22 group face_ypos
+nodeset 22 name "face_ypos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -y face
+# ----------------------------------------------------------------------
+group "face_yneg" add node in surface 31
+group "face_yneg" add node in surface 23
+group "face_yneg" add node in surface 25
+group "face_yneg" add node in surface 37
+nodeset 23 group face_yneg
+nodeset 23 name "face_yneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +z face
+# ----------------------------------------------------------------------
+group "face_zpos" add node in surface 17
+group "face_zpos" add node in surface 10
+nodeset 24 group face_zpos
+nodeset 24 name "face_zpos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -z face
+# ----------------------------------------------------------------------
+group "face_zneg" add node in surface 16
+group "face_zneg" add node in surface 12
+nodeset 25 group face_zneg
+nodeset 25 name "face_zneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -z face w/out fault
+# ----------------------------------------------------------------------
+group "face_zneg_nofault" add node in face_zneg
+group "face_zneg_nofault" remove node in fault_x_thru
+nodeset 26 group face_zneg_nofault
+nodeset 26 name "face_zneg_nofault"
+
+# ----------------------------------------------------------------------
+# Export exodus file
+# ----------------------------------------------------------------------
+export mesh "mesh_tet4.exo" dimension 3 overwrite
+
+
+

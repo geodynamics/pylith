@@ -27,7 +27,7 @@
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VisitorMesh
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
-#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/meshio/MeshIOCubit.hh" // USES MeshIOCubit
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -204,7 +204,7 @@ pylith::meshio::TestOutputSolnPoints::_testSetupInterpolator(const OutputSolnPoi
     cs.setSpaceDim(spaceDim);
     cs.initialize();
     mesh.coordsys(&cs);
-    MeshIOAscii iohandler;
+    MeshIOCubit iohandler;
     iohandler.filename(data.meshFilename);
     iohandler.read(&mesh);
 
@@ -266,7 +266,7 @@ pylith::meshio::TestOutputSolnPoints::_testInterpolate(const OutputSolnPointsDat
     cs.setSpaceDim(spaceDim);
     cs.initialize();
     mesh.coordsys(&cs);
-    MeshIOAscii iohandler;
+    MeshIOCubit iohandler;
     iohandler.filename(data.meshFilename);
     iohandler.read(&mesh);
 
@@ -378,7 +378,6 @@ pylith::meshio::TestOutputSolnPoints::_calcField(pylith::topology::Field* field,
 	    fieldArray[foff+d] = value;
 	} // for
     } // for
-    field->view("FIELD");
 
 PYLITH_METHOD_END;
 } // _calcField
