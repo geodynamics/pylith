@@ -29,6 +29,7 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
 #include "petscviewerhdf5.h"
+#include <mpi.h> // USES MPI routines
 
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -38,6 +39,10 @@ extern "C" {
 extern PetscErrorCode VecView_Seq(Vec, PetscViewer);
 extern PetscErrorCode VecView_MPI(Vec, PetscViewer);
 }
+
+#if H5_VERS_MAJOR == 1 && H5_VERS_MINOR >= 8
+#define PYLITH_HDF5_USE_API_18
+#endif
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -455,29 +460,136 @@ pylith::meshio::DataWriterHDF5::writePointNames(const pylith::string_vector& nam
 
     assert(_viewer);
 
-    const size_t numNames = names.size();
-    const char** namesCString = (numNames > 0) ? new const char*[numNames] : NULL;
-
+    int* numNamesArray = NULL;
+    char* namesFixedLength = NULL;
     try {
+	// Put station names into array of fixed length strings
+	// (numNames*maxStringLegnth) on each process, and then write
+	// collectively.
+	int mpierr;
+	MPI_Comm comm = mesh.comm();
+	const int commRank = mesh.commRank();
+	int nprocs = 0;
+	mpierr = MPI_Comm_size(comm, &nprocs);assert(MPI_SUCCESS == mpierr);
+
+	// Number of names on each process.
+	const int numNamesLocal = names.size();
+	numNamesArray = (nprocs > 0) ? new int[nprocs] : NULL;
+	mpierr = MPI_Allgather(&numNamesLocal, 1, MPI_INT, numNamesArray, 1, MPI_INT, comm);assert(MPI_SUCCESS == mpierr);
+	int numNames = 0;
+	for (int i=0; i < nprocs; ++i) {
+	    numNames += numNamesArray[i];
+	} // for
+
+	// Get maximum string length.
+	int maxStringLengthLocal = 0;
+	int maxStringLength = 0;
+	for (int i=0; i < numNamesLocal; ++i) {
+	    maxStringLengthLocal = std::max(maxStringLengthLocal, int(names[i].length()));
+	} // for
+	maxStringLengthLocal += 1; // add space for null terminator.
+	mpierr = MPI_Allreduce(&maxStringLengthLocal, &maxStringLength, 1, MPI_INT, MPI_MAX, comm);assert(MPI_SUCCESS == mpierr);
+
+	namesFixedLength = (numNamesLocal*maxStringLength > 0) ? new char[numNamesLocal*maxStringLength] : NULL;
+	for (int i=0; i < numNamesLocal; ++i) {
+	    const int index = i*maxStringLength;
+	    strncpy(&namesFixedLength[index], names[i].c_str(), maxStringLength-1);
+	    namesFixedLength[index+maxStringLength-1] = '\0';
+	    // Fill remaining portion of string with null characters.
+	    for (int j=names[i].length(); j < maxStringLength; ++j) {
+		namesFixedLength[index+j] = '\0';
+	    } // for
+	} // for
+
         hid_t h5 = -1;
-        PetscErrorCode err = PetscViewerHDF5GetFileId(_viewer, &h5); PYLITH_CHECK_ERROR(err);
+        PetscErrorCode petscerr = PetscViewerHDF5GetFileId(_viewer, &h5); PYLITH_CHECK_ERROR(petscerr);
         assert(h5 >= 0);
+	const char* parent = "/";
+	const char* name = "stations";
 
-        for (size_t i=0; i < numNames; ++i) {
-            namesCString[i] = names[i].c_str();
-        } // for
+	// Open group
+#if defined(PYLITH_HDF5_USE_API_18)
+	hid_t group = H5Gopen2(h5, parent, H5P_DEFAULT);
+#else
+	hid_t group = H5Gopen(h5, parent);
+#endif
+	if (group < 0) 
+	    throw std::runtime_error("Could not open group.");
 
-        HDF5::writeDataset(h5, "/", "stations", namesCString, numNames);
+	hid_t datatype = H5Tcopy(H5T_C_S1);
+	if (datatype < 0) 
+	    throw std::runtime_error("Could not create datatype.");
+	herr_t err = H5Tset_size(datatype, maxStringLength);
+	if (err < 0) 
+	    throw std::runtime_error("Could not set size of datatype.");
 
-        delete[] namesCString; namesCString = NULL;
+	// Create the filespace
+	const int ndims = 1;
+	hsize_t dims[ndims]; 
+	dims[0] = numNames;
+	hid_t filespace = H5Screate_simple(ndims, dims, NULL);
+	if (filespace < 0)
+	    throw std::runtime_error("Could not create filespace.");
+
+#if defined(PYLITH_HDF5_USE_API_18)
+	hid_t dataset = H5Dcreate2(group, name, datatype, filespace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+#else
+	hid_t dataset = H5Dcreate(group, name, datatype, filespace, H5P_DEFAULT);
+#endif
+	if (dataset < 0) throw std::runtime_error("Could not create dataset.");
+	err = H5Sclose(filespace);
+	if (err < 0) throw std::runtime_error("Could not close filespace.");
+
+	// Create the memspace
+	dims[0] = numNamesLocal;
+	hid_t memspace = H5Screate_simple(ndims, dims, NULL);
+	if (memspace < 0) throw std::runtime_error("Could not create memspace.");
+
+	hid_t dataspace = H5Dget_space(dataset);
+	if (dataspace < 0) throw std::runtime_error("Could not get dataspace.");
+	hsize_t offset[1];
+	for (int i=0; i < commRank; ++i) {
+	    offset[0] += numNamesArray[i];
+	} // for
+	hsize_t count[1];
+	count[0] = numNamesLocal;
+	err = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
+	if (err < 0) throw std::runtime_error("Could not select hyperslab.");
+
+	hid_t property = H5Pcreate(H5P_DATASET_XFER);
+	if (property < 0)
+	    throw std::runtime_error("Could not create property.");
+	H5Pset_dxpl_mpio(property, H5FD_MPIO_COLLECTIVE);
+      
+	err = H5Dwrite(dataset, datatype, memspace, dataspace, property, namesFixedLength);
+	if (err < 0) throw std::runtime_error("Could not write dataset.");
+
+	err = H5Sclose(memspace);
+	if (err < 0) throw std::runtime_error("Could not close memspace.");
+	err = H5Sclose(dataspace);
+	if (err < 0) throw std::runtime_error("Could not close dataspace.");
+	err = H5Pclose(property);
+	if (err < 0) throw std::runtime_error("Could not close property.");
+	err = H5Dclose(dataset);
+	if (err < 0) throw std::runtime_error("Could not close dataset.");
+	err = H5Tclose(datatype);
+	if (err < 0) throw std::runtime_error("Could not close datatype.");
+
+	err = H5Gclose(group);
+	if (err < 0) throw std::runtime_error("Could not close group.");
+
+        delete[] numNamesArray; numNamesArray = NULL;
+	delete[] namesFixedLength; namesFixedLength = NULL;
     } catch (const std::exception& err) {
-        delete[] namesCString; namesCString = NULL;
+        delete[] numNamesArray; numNamesArray = NULL;
+	delete[] namesFixedLength; namesFixedLength = NULL;
 
         std::ostringstream msg;
         msg << "Error while writing stations to HDF5 file '" << _hdf5Filename() << "'.\n" << err.what();
         throw std::runtime_error(msg.str());
     } catch (...) {
-        delete[] namesCString; namesCString = NULL;
+        delete[] numNamesArray; numNamesArray = NULL;
+	delete[] namesFixedLength; namesFixedLength = NULL;
 
         std::ostringstream msg;
         msg << "Error while writing stations to HDF5 file '" << _hdf5Filename() << "'.";
