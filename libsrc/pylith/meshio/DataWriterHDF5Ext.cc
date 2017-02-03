@@ -29,6 +29,8 @@
 
 #include "spatialdata/geocoords/CoordSys.hh" /// USES CoordSys
 
+#include <mpi.h> // USES MPI routines
+
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
@@ -288,7 +290,7 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
 
         // If 2-D, write zero vector for z coordinate and z component in vectors
         if (2 == cs->spaceDim()) {
-            _h5->createGroup("/zero");
+            if (!commRank) _h5->createGroup("/zero");
             const char* vlabel = "vertex_zero";
             const std::string& vfilenameZero = _datasetFilename(vlabel);
             err = PetscViewerBinaryOpen(comm, vfilenameZero.c_str(), FILE_MODE_WRITE, &binaryViewer); PYLITH_CHECK_ERROR(err);
@@ -700,32 +702,66 @@ pylith::meshio::DataWriterHDF5Ext::writePointNames(const pylith::string_vector& 
 
     assert(_h5);
 
-    const size_t numNames = names.size();
-    const char** namesCString = (numNames > 0) ? new const char*[numNames] : NULL;
-
     try {
-        PetscDM dmMesh = mesh.dmMesh(); assert(dmMesh);
-        MPI_Comm comm;
-        PetscMPIInt commRank;
-        PetscErrorCode err = PetscObjectGetComm((PetscObject) dmMesh, &comm); PYLITH_CHECK_ERROR(err);
-        err = MPI_Comm_rank(comm, &commRank); PYLITH_CHECK_ERROR(err);
+	// Put station names into array of fixed length strings
+	// (numNames*maxStringLegnth) on each process, and then gather
+	// onto root process for writing in serial to HDF5.
+	int mpierr;
+	MPI_Comm comm = mesh.comm();
+	const int commRank = mesh.commRank();
+	const int commRoot = 0;
+	int nprocs = 0;
+	mpierr = MPI_Comm_size(comm, &nprocs);assert(MPI_SUCCESS == mpierr);
 
-        for (size_t i=0; i < numNames; ++i) {
-            namesCString[i] = names[i].c_str();
-        } // for
+	// Number of names on each process.
+	const int numNamesLocal = names.size();
+	int_array numNamesArray(nprocs);
+	mpierr = MPI_Allgather(&numNamesLocal, 1, MPI_INT, &numNamesArray[0], 1, MPI_INT, comm);assert(MPI_SUCCESS == mpierr);
+	const int numNames = numNamesArray.sum();
+
+	// Get maximum string length.
+	int maxStringLengthLocal = 0;
+	int maxStringLength = 0;
+	for (int i=0; i < numNamesLocal; ++i) {
+	    maxStringLengthLocal = std::max(maxStringLengthLocal, int(names[i].length()));
+	} // for
+	maxStringLengthLocal += 1; // add space for null terminator.
+	mpierr = MPI_Allreduce(&maxStringLengthLocal, &maxStringLength, 1, MPI_INT, MPI_MAX, comm);assert(MPI_SUCCESS == mpierr);
+
+	char_array namesFixedLengthLocal(numNamesLocal*maxStringLength);
+	for (int i=0; i < numNamesLocal; ++i) {
+	    const int index = i*maxStringLength;
+	    strncpy(&namesFixedLengthLocal[index], names[i].c_str(), maxStringLength-1);
+	    namesFixedLengthLocal[index+maxStringLength-1] = '\0';
+	    // Fill remaining portion of string with null characters.
+	    for (int j=names[i].length(); j < maxStringLength; ++j) {
+		namesFixedLengthLocal[index+j] = '\0';
+	    } // for
+	} // for
+
+	char_array namesFixedLength;
+	if (!commRank) namesFixedLength.resize(numNames*maxStringLength);
+	// Convert numNames array from number of names to total size of names array.
+	numNamesArray *= maxStringLength;
+	int_array offsets;
+	if (!commRank) {
+	    offsets.resize(nprocs);
+	    offsets[0] = 0;
+	    for (int i=1; i < nprocs; ++i) {
+		offsets[i] = offsets[i-1] + numNamesArray[i-1];
+	    } // for
+	} // if
+	mpierr = MPI_Gatherv(&namesFixedLengthLocal[0], numNamesLocal*maxStringLength, MPI_CHAR, &namesFixedLength[0], &numNamesArray[0], &offsets[0], MPI_CHAR, commRoot, comm);
 
         if (!commRank) {
-            _h5->writeDataset("/", "stations", namesCString, numNames);
+	    _h5->writeDataset("/", "stations", &namesFixedLength[0], numNames, maxStringLength);
         } // if
 
-        delete[] namesCString; namesCString = NULL;
     } catch (const std::exception& err) {
-        delete[] namesCString; namesCString = NULL;
         std::ostringstream msg;
         msg << "Error while writing stations to HDF5 file '" << _hdf5Filename() << "'.\n" << err.what();
         throw std::runtime_error(msg.str());
     } catch (...) {
-        delete[] namesCString; namesCString = NULL;
         std::ostringstream msg;
         msg << "Error while writing stations to HDF5 file '" << _hdf5Filename() << "'.";
         throw std::runtime_error(msg.str());
