@@ -137,7 +137,7 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
     const int numPointsLocal = _interpolator->n;
     PylithScalar* pointsLocal = NULL;
     err = VecGetArray(_interpolator->coords, &pointsLocal); PYLITH_CHECK_ERROR(err);
-    scalar_array pointsArray(numPointsLocal*spaceDim);
+    scalar_array pointsArray(numPointsLocal*spaceDim); // Array of vertex coordinates for local mesh.
     const int sizeLocal = numPointsLocal*spaceDim;
     for (int i=0; i < sizeLocal; ++i) {
         // Must scale by length scale because we gave interpolator nondimensioned coordinates
@@ -168,9 +168,20 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
     } // if
 
     // Copy station names. :TODO: Reorder to match output (pointsLocal).
-    _stations.resize(numNames);
-    for (int i=0; i < numNames; ++i) {
-	_stations[i] = names[i];
+    _stations.resize(numPointsLocal);
+    for (int iLocal=0; iLocal < numPointsLocal; ++iLocal) {
+	// Find point in array of points to get index for station name.
+	for (int iAll=0; iAll < numPoints; ++iAll) {
+	    const PylithScalar tolerance = 1.0e-6;
+	    PylithScalar dist = 0.0;
+	    for (int iDim=0; iDim < spaceDim; ++iDim) {
+		dist += pow(points[iAll*spaceDim+iDim] - pointsArray[iLocal*spaceDim+iDim], 2);
+	    } // for
+	    if (sqrt(dist) < tolerance) {
+		_stations[iLocal] = names[iAll];
+		break;
+	    } // if
+	} // for
     } // for
 
     PYLITH_METHOD_END;
