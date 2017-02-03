@@ -460,7 +460,6 @@ pylith::meshio::DataWriterHDF5::writePointNames(const pylith::string_vector& nam
 
     assert(_viewer);
 
-    int* numNamesArray = NULL;
     char* namesFixedLength = NULL;
     try {
 	// Put station names into array of fixed length strings
@@ -474,12 +473,9 @@ pylith::meshio::DataWriterHDF5::writePointNames(const pylith::string_vector& nam
 
 	// Number of names on each process.
 	const int numNamesLocal = names.size();
-	numNamesArray = (nprocs > 0) ? new int[nprocs] : NULL;
-	mpierr = MPI_Allgather(&numNamesLocal, 1, MPI_INT, numNamesArray, 1, MPI_INT, comm);assert(MPI_SUCCESS == mpierr);
-	int numNames = 0;
-	for (int i=0; i < nprocs; ++i) {
-	    numNames += numNamesArray[i];
-	} // for
+	int_array numNamesArray(nprocs);
+	mpierr = MPI_Allgather(&numNamesLocal, 1, MPI_INT, &numNamesArray[0], 1, MPI_INT, comm);assert(MPI_SUCCESS == mpierr);
+	const int numNames = numNamesArray.sum();
 
 	// Get maximum string length.
 	int maxStringLengthLocal = 0;
@@ -578,17 +574,14 @@ pylith::meshio::DataWriterHDF5::writePointNames(const pylith::string_vector& nam
 	err = H5Gclose(group);
 	if (err < 0) throw std::runtime_error("Could not close group.");
 
-        delete[] numNamesArray; numNamesArray = NULL;
 	delete[] namesFixedLength; namesFixedLength = NULL;
     } catch (const std::exception& err) {
-        delete[] numNamesArray; numNamesArray = NULL;
 	delete[] namesFixedLength; namesFixedLength = NULL;
 
         std::ostringstream msg;
         msg << "Error while writing stations to HDF5 file '" << _hdf5Filename() << "'.\n" << err.what();
         throw std::runtime_error(msg.str());
     } catch (...) {
-        delete[] numNamesArray; numNamesArray = NULL;
 	delete[] namesFixedLength; namesFixedLength = NULL;
 
         std::ostringstream msg;
