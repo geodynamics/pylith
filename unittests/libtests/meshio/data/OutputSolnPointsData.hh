@@ -22,46 +22,41 @@
 #include "pylith/utils/types.hh" // HASA PylithScalar
 
 namespace pylith {
-  namespace meshio {
-     class OutputSolnPointsData;
-  } // pylith
+    namespace meshio {
+        class OutputSolnPointsData;
+    } // pylith
 } // meshio
 
 class pylith::meshio::OutputSolnPointsData
 {
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
-public :
-  
-  /// Constructor
-  OutputSolnPointsData(void);
+public:
 
-  /// Destructor
-  ~OutputSolnPointsData(void);
+/// Constructor
+OutputSolnPointsData(void);
+
+/// Destructor
+~OutputSolnPointsData(void);
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
-  char* meshFilename; ///< Filename for input mesh
+char* meshFilename;   ///< Filename for input mesh
 
-  /// @name Point information.
-  //@{
-  int spaceDim; ///< Number of dimensions in vertex coordinates
-  int numPoints; ///< Number of points.
-  PylithScalar* points; ///< Coordinates of points.
-  //@}
+/// @name Point information.
+//@{
+int spaceDim;   ///< Number of dimensions in vertex coordinates
+int numPoints;   ///< Number of points.
+PylithScalar* points;   ///< Coordinates of points [numPoints*spaceDim].
+const char** names;   ///< Names of points (e.g., station names).
+//@}
 
-  /// @name Input data.
-  //@{
-  int numVertices;
-  int fiberDim;
-  PylithScalar* field; ///< Field over mesh.
-  //@}
-
-  /// @name Calculated values.
-  //@{
-  PylithScalar* fieldInterp; ///< Field interpolate to points.
-  //@}
+/// @name Field data.
+//@{
+int fiberDim;
+PylithScalar* coefs;   ///< Polynomial coefficients [fiberDim*spaceDim] for computing field.
+//@}
 
 };
 

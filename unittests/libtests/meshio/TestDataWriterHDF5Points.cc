@@ -40,11 +40,11 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5Points );
 void
 pylith::meshio::TestDataWriterHDF5Points::setUp(void)
 { // setUp
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  TestDataWriterPoints::setUp();
+    TestDataWriterPoints::setUp();
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -52,11 +52,11 @@ pylith::meshio::TestDataWriterHDF5Points::setUp(void)
 void
 pylith::meshio::TestDataWriterHDF5Points::tearDown(void)
 { // tearDown
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  TestDataWriterPoints::tearDown();
+    TestDataWriterPoints::tearDown();
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // tearDown
 
 // ----------------------------------------------------------------------
@@ -64,13 +64,13 @@ pylith::meshio::TestDataWriterHDF5Points::tearDown(void)
 void
 pylith::meshio::TestDataWriterHDF5Points::testConstructor(void)
 { // testConstructor
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  DataWriterHDF5 writer;
+    DataWriterHDF5 writer;
 
-  CPPUNIT_ASSERT(!writer._viewer);
+    CPPUNIT_ASSERT(!writer._viewer);
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -78,32 +78,32 @@ pylith::meshio::TestDataWriterHDF5Points::testConstructor(void)
 void
 pylith::meshio::TestDataWriterHDF5Points::testTimeStep(void)
 { // testTimeStep
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(_mesh);
-  CPPUNIT_ASSERT(_data);
+    CPPUNIT_ASSERT(_mesh);
+    CPPUNIT_ASSERT(_data);
 
-  OutputSolnPoints output;
-  DataWriterHDF5 writer;
-  spatialdata::units::Nondimensional normalizer;
-  normalizer.lengthScale(10.0);
+    OutputSolnPoints output;
+    DataWriterHDF5 writer;
+    spatialdata::units::Nondimensional normalizer;
+    normalizer.lengthScale(10.0);
 
-  writer.filename(_data->timestepFilename);
-  output.writer(&writer);
-  output.setupInterpolator(_mesh, _data->points, _data->numPoints, _data->spaceDim, normalizer);
+    writer.filename(_data->timestepFilename);
+    output.writer(&writer);
+    output.setupInterpolator(_mesh, _data->points, _data->numPoints, _data->spaceDim, _data->names, _data->numPoints, normalizer);
 
-  const PylithScalar t = _data->time;
-  const int numTimeSteps = 1;
-  output.open(*_mesh, numTimeSteps);
-  output.writePointNames(_data->names, _data->numPoints);
-  output.openTimeStep(t, *_mesh);
+    const PylithScalar t = _data->time;
+    const int numTimeSteps = 1;
+    output.open(*_mesh, numTimeSteps);
+    output.writePointNames();
+    output.openTimeStep(t, *_mesh);
 
-  output.closeTimeStep();
-  output.close();
+    output.closeTimeStep();
+    output.close();
 
-  checkFile(_data->timestepFilename);
+    checkFile(_data->timestepFilename);
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testTimeStep
 
 // ----------------------------------------------------------------------
@@ -111,41 +111,41 @@ pylith::meshio::TestDataWriterHDF5Points::testTimeStep(void)
 void
 pylith::meshio::TestDataWriterHDF5Points::testWriteVertexField(void)
 { // testWriteVertexField
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(_mesh);
-  CPPUNIT_ASSERT(_data);
+    CPPUNIT_ASSERT(_mesh);
+    CPPUNIT_ASSERT(_data);
 
-  OutputSolnPoints output;
-  DataWriterHDF5 writer;
-  spatialdata::units::Nondimensional normalizer;
-  normalizer.lengthScale(10.0);
+    OutputSolnPoints output;
+    DataWriterHDF5 writer;
+    spatialdata::units::Nondimensional normalizer;
+    normalizer.lengthScale(10.0);
 
-  topology::Fields vertexFields(*_mesh);
-  _createVertexFields(&vertexFields);
+    topology::Fields vertexFields(*_mesh);
+    _createVertexFields(&vertexFields);
 
-  writer.filename(_data->vertexFilename);
-  output.writer(&writer);
-  output.setupInterpolator(_mesh, _data->points, _data->numPoints, _data->spaceDim, normalizer);
+    writer.filename(_data->vertexFilename);
+    output.writer(&writer);
+    output.setupInterpolator(_mesh, _data->points, _data->numPoints, _data->spaceDim, _data->names, _data->numPoints, normalizer);
 
-  const int nfields = _data->numVertexFields;
+    const int nfields = _data->numVertexFields;
 
-  const PylithScalar t = _data->time;
-  const int numTimeSteps = 1;
-  output.open(*_mesh, numTimeSteps);
-  output.writePointNames(_data->names, _data->numPoints);
-  output.openTimeStep(t, *_mesh);
-  for (int i=0; i < nfields; ++i) {
-    topology::Field& field = vertexFields.get(_data->vertexFieldsInfo[i].name);
-    output.appendVertexField(t, field, *_mesh);
-  } // for
-  output.closeTimeStep();
-  output.close();
+    const PylithScalar t = _data->time;
+    const int numTimeSteps = 1;
+    output.open(*_mesh, numTimeSteps);
+    output.writePointNames();
+    output.openTimeStep(t, *_mesh);
+    for (int i=0; i < nfields; ++i) {
+        topology::Field& field = vertexFields.get(_data->vertexFieldsInfo[i].name);
+        output.appendVertexField(t, field, *_mesh);
+    } // for
+    output.closeTimeStep();
+    output.close();
 
-  checkFile(_data->vertexFilename);
+    checkFile(_data->vertexFilename);
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testWriteVertexField
 
 
-// End of file 
+// End of file

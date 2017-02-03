@@ -128,6 +128,12 @@ const PylithScalar pylith::meshio::DataWriterVTKDataPointsHex8::_points[4*3] = {
   -0.00000001, 0.0, 0.99999999,
    0.99999999, 0.99999999, -0.99999999,
 };
+const char* pylith::meshio::DataWriterVTKDataPointsHex8::_names[4] = {
+    "AA",
+    "BB",
+    "CC",
+    "DD",
+};
 
 
 pylith::meshio::DataWriterVTKDataPointsHex8::DataWriterVTKDataPointsHex8(void)
@@ -153,6 +159,7 @@ pylith::meshio::DataWriterVTKDataPointsHex8::DataWriterVTKDataPointsHex8(void)
   numPoints = _numPoints;
   spaceDim = _spaceDim;
   points = const_cast<PylithScalar*>(_points);
+  names = const_cast<const char**>(_names);
 } // constructor
 
 
