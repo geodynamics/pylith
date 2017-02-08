@@ -543,7 +543,7 @@ pylith::meshio::DataWriterHDF5::writePointNames(const pylith::string_vector& nam
 
 	hid_t dataspace = H5Dget_space(dataset);
 	if (dataspace < 0) throw std::runtime_error("Could not get dataspace.");
-	hsize_t offset[1];
+	hsize_t offset[1] = {0};
 	for (int i=0; i < commRank; ++i) {
 	    offset[0] += numNamesArray[i];
 	} // for
