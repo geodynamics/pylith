@@ -130,7 +130,7 @@ CIT_PYTHON_MODULE([FIAT],[0.9.9])
 
 # SWIG
 if test "$enable_swig" = "yes" ; then
-  AC_PROG_SWIG(1.3.33)
+  AC_PROG_SWIG([2.0.4],[3.0.2])
 fi
 
 # CPPUNIT
