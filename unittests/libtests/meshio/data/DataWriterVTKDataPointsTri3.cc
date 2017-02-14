@@ -87,6 +87,11 @@ const PylithScalar pylith::meshio::DataWriterVTKDataPointsTri3::_points[3*2] = {
   0.0000001, 0.0,
   0.9999999, 0.0,
 };
+const char* pylith::meshio::DataWriterVTKDataPointsTri3::_names[3] = {
+    "AA",
+    "BB",
+    "CC",
+};
 
 
 pylith::meshio::DataWriterVTKDataPointsTri3::DataWriterVTKDataPointsTri3(void)
@@ -112,6 +117,7 @@ pylith::meshio::DataWriterVTKDataPointsTri3::DataWriterVTKDataPointsTri3(void)
   numPoints = _numPoints;
   spaceDim = _spaceDim;
   points = const_cast<PylithScalar*>(_points);
+  names = const_cast<const char**>(_names);
 } // constructor
 
 

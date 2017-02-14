@@ -35,6 +35,10 @@ dist_noinst_DATA = \
 	twohex8_12.2.exo \
 	twohex8_13.0.exo \
 	mesh2D_comments.txt \
+	mesh_tri3.exo \
+	mesh_quad4.exo \
+	mesh_tet4.exo \
+	mesh_hex8.exo \
 	tri3.mesh \
 	tri3_vertex_t10.vtk \
 	tri3_cell_t10.vtk \

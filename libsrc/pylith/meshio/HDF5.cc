@@ -1109,6 +1109,55 @@ void
 pylith::meshio::HDF5::writeDataset(const char* parent,
 				   const char* name,
 				   const char* const* sarray,
+				   const int nstrings)
+{ // writeDataset
+  PYLITH_METHOD_BEGIN;
+
+  int slen = 0;
+  for (int i=0; i < nstrings; ++i) {
+      slen = std::max(slen, int(strlen(sarray[i])));
+  } // for
+  slen += 1; // add space for null terminator.
+
+  char* strfixedlen = NULL;
+  try {
+      strfixedlen = (nstrings*slen > 0) ? new char[nstrings*slen] : 0;
+      for (int i=0; i < nstrings; ++i) {
+	  const int index = i*slen;
+	  strncpy(&strfixedlen[index], sarray[i], slen-1);
+	  strfixedlen[index+slen-1] = '\0';
+	  // Fill rest of string with null.
+	  for (int j=strlen(sarray[i]); j < slen; ++j) {
+	      strfixedlen[index+j] = '\0';
+	  } // for
+      } // for
+
+      HDF5::writeDataset(_file, parent, name, strfixedlen, nstrings, slen);
+
+      delete[] strfixedlen; strfixedlen = NULL;
+  } catch (const std::exception& err) {
+      delete[] strfixedlen; strfixedlen = NULL;
+
+      std::ostringstream msg;
+      msg << "Error occurred while writing dataset '" << parent << "/" << name << "':\n" << err.what();
+      throw std::runtime_error(msg.str());
+  } catch (...) {
+      delete[] strfixedlen; strfixedlen = NULL;
+
+      std::ostringstream msg;
+      msg << "Unknown error occurred while writing dataset '" << name << "'.";
+      throw std::runtime_error(msg.str());
+  } // try/catch
+
+  PYLITH_METHOD_END;
+} // writeDataset
+
+// ----------------------------------------------------------------------
+// Write dataset comprised of an array of strings.
+void
+pylith::meshio::HDF5::writeDataset(const char* parent,
+				   const char* name,
+				   const char* sarray,
 				   const int nstrings,
 				   const int slen)
 { // writeDataset
@@ -1125,7 +1174,7 @@ void
 pylith::meshio::HDF5::writeDataset(hid_t h5,
 				   const char* parent,
 				   const char* name,
-				   const char* const* sarray,
+				   const char* sarray,
 				   const int nstrings,
 				   const int slen)
 { // writeDataset
@@ -1138,7 +1187,6 @@ pylith::meshio::HDF5::writeDataset(hid_t h5,
   assert(nstrings > 0);
   assert(slen > 0);
 
-  char* strfixedlen = 0;
   try {
     // Open group
 #if defined(PYLITH_HDF5_USE_API_18)
@@ -1146,32 +1194,18 @@ pylith::meshio::HDF5::writeDataset(hid_t h5,
 #else
     hid_t group = H5Gopen(h5, parent);
 #endif
-    if (group < 0) 
-      throw std::runtime_error("Could not open group.");
+    if (group < 0) throw std::runtime_error("Could not open group.");
 
     // Create the dataspace
     const int ndims = 1;
     hsize_t dims[ndims]; dims[0] = nstrings;
     hid_t dataspace = H5Screate_simple(ndims, dims, NULL);
-    if (dataspace < 0)
-      throw std::runtime_error("Could not create dataspace.");
+    if (dataspace < 0) throw std::runtime_error("Could not create dataspace.");
       
     hid_t datatype = H5Tcopy(H5T_C_S1);
-    if (datatype < 0) 
-      throw std::runtime_error("Could not create datatype.");
+    if (datatype < 0) throw std::runtime_error("Could not create datatype.");
     herr_t err = H5Tset_size(datatype, slen);
-    if (err < 0) 
-      throw std::runtime_error("Could not set size of datatype.");
-
-    strfixedlen = (nstrings*slen > 0) ? new char[nstrings*slen] : 0;
-    for (int i=0; i < nstrings; ++i) {
-      const int index = i*slen;
-      strncpy(&strfixedlen[index], sarray[i], slen-1);
-      strfixedlen[index+slen-1] = '\0';
-      for (int j=strlen(sarray[i]); j < slen; ++j) {
-	  strfixedlen[index+j] = '\0';
-	} // for
-    } // for
+    if (err < 0) throw std::runtime_error("Could not set size of datatype.");
 
 #if defined(PYLITH_HDF5_USE_API_18)
     hid_t dataset = H5Dcreate2(group, name, datatype, dataspace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
@@ -1181,38 +1215,26 @@ pylith::meshio::HDF5::writeDataset(hid_t h5,
     if (dataset < 0) 
       throw std::runtime_error("Could not create dataset.");
 
-    err = H5Dwrite(dataset, datatype, H5S_ALL, H5S_ALL, H5P_DEFAULT, strfixedlen);
-    delete[] strfixedlen; strfixedlen = 0;
-    if (err < 0)
-      throw std::runtime_error("Could not write dataset.");
+    err = H5Dwrite(dataset, datatype, H5S_ALL, H5S_ALL, H5P_DEFAULT, sarray);
+    if (err < 0) throw std::runtime_error("Could not write dataset.");
 
     err = H5Dclose(dataset);
-    if (err < 0)
-      throw std::runtime_error("Could not close dataset.");
+    if (err < 0) throw std::runtime_error("Could not close dataset.");
 
     err = H5Tclose(datatype);
-    if (err < 0) 
-      throw std::runtime_error("Could not close datatype.");
+    if (err < 0) throw std::runtime_error("Could not close datatype.");
 
     err = H5Sclose(dataspace);
-    if (err < 0) 
-      throw std::runtime_error("Could not close dataspace.");
+    if (err < 0) throw std::runtime_error("Could not close dataspace.");
 
     err = H5Gclose(group);
-    if (err < 0) 
-      throw std::runtime_error("Could not close group.");
+    if (err < 0) throw std::runtime_error("Could not close group.");
 
   } catch (const std::exception& err) {
-    delete[] strfixedlen; strfixedlen = 0;
-
     std::ostringstream msg;
-    msg << "Error occurred while creating dataset '"
-	<< parent << "/" << name << "':\n"
-	<< err.what();
+    msg << "Error occurred while creating dataset '" << parent << "/" << name << "':\n" << err.what();
     throw std::runtime_error(msg.str());
   } catch (...) {
-    delete[] strfixedlen; strfixedlen = 0;
-
     std::ostringstream msg;
     msg << "Unknown error occurred while writing dataset '" << name << "'.";
     throw std::runtime_error(msg.str());

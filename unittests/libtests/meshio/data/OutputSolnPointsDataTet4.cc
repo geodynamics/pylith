@@ -19,37 +19,42 @@
 #include "OutputSolnPointsDataTet4.hh"
 
 const char* pylith::meshio::OutputSolnPointsDataTet4::_meshFilename =
-  "data/tet4.mesh";
+  "data/mesh_tet4.exo";
 
 const int pylith::meshio::OutputSolnPointsDataTet4::_spaceDim = 3;
-const int pylith::meshio::OutputSolnPointsDataTet4::_numPoints = 5;
-const PylithScalar pylith::meshio::OutputSolnPointsDataTet4::_points[] = {
-   0.1, 0.4, 0.1, // interior points
-  -0.2, 0.3, 0.2,
-   0.3, 0.1, -0.0,
-   0.001, 0.75, 0.0001, // edge
-   0.999, 0.0, 0.0, // vertex
+const int pylith::meshio::OutputSolnPointsDataTet4::_numPoints = 10;
+const PylithScalar pylith::meshio::OutputSolnPointsDataTet4::_points[10*3] = {
+    // random interior points
+    -6000.15881915,  -3580.23292515, -31990.60993758,
+    -13360.21306575, -15520.37170445, -10060.94019049,
+    -13700.63488871, -22720.9494787, -3190.61843645,
+    15800.48184977,  17340.62982775, -2650.08094591,
+    15750.68552586,  24000.35915383, -16020.69611792,
+    -7060.50564414,   9380.7932739, -27110.94878431,
+    -17110.06012685,  32450.33022291, -27920.33736877,
+    -22060.4290158 ,  38590.77984257, -11200.16910736,
+    -40000.0, +40000.0, -2300.0, // edge
+    +40000.0, -40000.0, +0.0, // vertex
+};
+const char* pylith::meshio::OutputSolnPointsDataTet4::_names[10] = {
+    "AA",
+    "BB",
+    "CC",
+    "DD",
+    "EE",
+    "FF",
+    "GG",
+    "HH",
+    "II",
+    "JJ",
 };
 
-const int pylith::meshio::OutputSolnPointsDataTet4::_numVertices = 5;
 const int pylith::meshio::OutputSolnPointsDataTet4::_fiberDim = 2;
 
-const PylithScalar pylith::meshio::OutputSolnPointsDataTet4::_field[] = {
-  1.0, 2.5,
-  1.1, 2.4,
-  1.2, 2.3,
-  1.3, 2.2,
-  1.4, 2.1,
+const PylithScalar pylith::meshio::OutputSolnPointsDataTet4::_coefs[2*3] = {
+    2.0, -3.0, 10.0,
+    5.0, 5.0, -8.0,
 };
-
-const PylithScalar pylith::meshio::OutputSolnPointsDataTet4::_fieldInterp[] = {
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-};
-
 
 // ----------------------------------------------------------------------
 pylith::meshio::OutputSolnPointsDataTet4::OutputSolnPointsDataTet4(void)
@@ -58,12 +63,10 @@ pylith::meshio::OutputSolnPointsDataTet4::OutputSolnPointsDataTet4(void)
   spaceDim = _spaceDim;
   numPoints = _numPoints;
   points = const_cast<PylithScalar*>(_points);
+  names = const_cast<const char**>(_names);
 
-  numVertices = _numVertices;
   fiberDim = _fiberDim;
-  field = const_cast<PylithScalar*>(_field);
-
-  fieldInterp = const_cast<PylithScalar*>(_fieldInterp);
+  coefs = const_cast<PylithScalar*>(_coefs);
 
 } // constructor
 
