@@ -24,8 +24,7 @@
 #include "pylith/topology/Field.hh" // USES Field
 
 #include "pylith/feassemble/IntegratorPointwise.hh" // USES IntegratorPointwise
-#include "pylith/feassemble/Constraint.hh" // USES Constraint
-#include "pylith/topology/Jacobian.hh" // USES Jacobian
+#include "pylith/feassemble/ConstraintPointwise.hh" // USES ConstraintPointwise
 
 #include "petscts.h" // USES PetscTS
 
@@ -261,7 +260,7 @@ pylith::problems::TimeDependent::initialize(void)
         PYLITH_JOURNAL_ERROR("Unknown problem type.");
         throw std::logic_error("Unknown problem type.");
     }     // switch
-    PYLITH_JOURNAL_DEBUG("Setting PetscTS parameters: dtInitial="<<_dtInitial<<", startTime="<<_startTime<<"maxTimeSteps="<<_maxTimeSteps<<", totalTime="<<_totalTime);
+    PYLITH_JOURNAL_DEBUG("Setting PetscTS parameters: dtInitial="<<_dtInitial<<", startTime="<<_startTime<<", maxTimeSteps="<<_maxTimeSteps<<", totalTime="<<_totalTime);
     err = TSSetInitialTimeStep(_ts, _startTime, _dtInitial); PYLITH_CHECK_ERROR(err);
     err = TSSetDuration(_ts, _maxTimeSteps, _totalTime); PYLITH_CHECK_ERROR(err);
 
@@ -331,14 +330,17 @@ pylith::problems::TimeDependent::prestep(void)
     err = TSGetTimeStep(_ts, &dt); PYLITH_CHECK_ERROR(err);
     err = TSGetTime(_ts, &t);
 
-    PYLITH_JOURNAL_ERROR(":TODO: @brad Implement setting time history auxiliary field for constraints.");
-    // Set constraints.
-#if 0 // :KLUDGE: :TODO: Implement this.
+    // Prepare constraints for a new time step.
     const size_t numConstraints = _constraints.size();
     for (size_t i=0; i < numConstraints; ++i) {
-        _constraints[i]->setAuxFields(t, dt);
-    }     // for
-#endif
+        _constraints[i]->prestep(t, dt);
+    } // for
+
+    // Prepare integrators for a new time step.
+    const size_t numIntegrators = _integrators.size();
+    for (size_t i=0; i < numIntegrators; ++i) {
+        _integrators[i]->prestep(t, dt);
+    } // for
 
     PYLITH_METHOD_END;
 } // prestep

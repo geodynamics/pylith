@@ -162,9 +162,11 @@ void initialize(const pylith::topology::Field& solution) = 0;
 /** Update auxiliary fields at beginning of time step.
  *
  * @param[in] t Current time.
+ * @param[in] dt Current time step.
  */
 virtual
-void prestep(const double t);
+void prestep(const double t,
+             const double dt);
 
 // PROTECTED TYPEDEFS /////////////////////////////////////////////////
 protected:

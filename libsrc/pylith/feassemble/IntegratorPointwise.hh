@@ -154,6 +154,15 @@ void verifyConfiguration(const pylith::topology::Field& solution) const = 0;
 virtual
 void initialize(const pylith::topology::Field& solution) = 0;
 
+/** Update auxiliary fields at beginning of time step.
+ *
+ * @param[in] t Current time.
+ * @param[in] dt Current time step.
+ */
+virtual
+void prestep(const double t,
+             const double dt);
+
 /** Compute RHS residual for G(t,s).
  *
  * @param[out] residualVec PETSc Vec for residual field.

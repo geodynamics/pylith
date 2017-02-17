@@ -215,4 +215,14 @@ pylith::feassemble::IntegratorPointwise::updateStateVars(const pylith::topology:
 } // updateStateVars
 
 
+// ----------------------------------------------------------------------
+// Update auxiliary fields at beginning of time step.
+void
+pylith::feassemble::IntegratorPointwise::prestep(const double t,
+                                                 const double dt)
+{ // prestep
+  // Default is to do nothing.
+} // prestep
+
+
 // End of file

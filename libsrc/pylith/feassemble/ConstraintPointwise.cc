@@ -278,7 +278,8 @@ pylith::feassemble::ConstraintPointwise::verifyConfiguration(const pylith::topol
 // ----------------------------------------------------------------------
 // Update auxiliary fields at beginning of time step.
 void
-pylith::feassemble::ConstraintPointwise::prestep(const double t)
+pylith::feassemble::ConstraintPointwise::prestep(const double t,
+                                                 const double dt)
 { // prestep
   // Default is to do nothing.
 } // prestep
