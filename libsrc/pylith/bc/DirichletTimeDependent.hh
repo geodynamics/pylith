@@ -34,6 +34,17 @@
  * condition with a time-depdnent expression.
  *
  * f(x,t) = f_0(x) + \dot{f}_1(x)*(t-t_1(x)) + f_2(x)*a(t-t_2(x)).
+ *
+ * Auxiliary fields:
+ *     if _useInitial
+ *         initial amplitude (scalar or vector) f_0(x)
+ *    if _useRate
+ *        rate amplitude (scalar or vector) \dot{f}_1(x)
+ *        rate start (scalar) t_1(x)
+ *    if _useTimeHistory
+ *        time history amplitude (scalar or vector) f_2(x)
+ *        time history start (scalar) t_2(x)
+ *        time history value (scalar) a(t-t_2(x))
  */
 class pylith::bc::DirichletTimeDependent : public DirichletNew
 { // class DirichletTimeDependent
