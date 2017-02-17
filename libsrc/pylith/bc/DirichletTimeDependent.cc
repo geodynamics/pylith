@@ -41,6 +41,7 @@ const char* pylith::bc::DirichletTimeDependent::_pyreComponent = "dirichlettimed
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::DirichletTimeDependent::DirichletTimeDependent(void) :
+    _dbTimeHistory(NULL),
     _useInitial(true),
     _useRate(false),
     _useTimeHistory(false)
@@ -65,10 +66,28 @@ pylith::bc::DirichletTimeDependent::deallocate(void)
     PYLITH_METHOD_BEGIN;
 
     DirichletNew::deallocate();
+    _dbTimeHistory = NULL; // :KLUDGE: Use shared pointer.
 
     PYLITH_METHOD_END;
 } // deallocate
 
+
+// ----------------------------------------------------------------------
+// Set time history database.
+void
+pylith::bc::DirichletTimeDependent::dbTimeHistory(spatialdata::spatialdb::TimeHistory* th)
+{ // dbTimeHistory
+    _dbTimeHistory = th;
+} // dbTimeHistory
+
+
+// ----------------------------------------------------------------------
+// Get time history database.
+const spatialdata::spatialdb::TimeHistory*
+pylith::bc::DirichletTimeDependent::dbTimeHistory(void)
+{ // dbTimeHistory
+    return _dbTimeHistory;
+} // dbTimeHistory
 
 // ----------------------------------------------------------------------
 // Use initial value term in time history expression.
@@ -128,6 +147,52 @@ pylith::bc::DirichletTimeDependent::useTimeHistory(void) const
 { // useTimeHistory
     return _useTimeHistory;
 } // useTimeHistory
+
+
+// ----------------------------------------------------------------------
+// Update auxiliary fields at beginning of time step.
+void
+pylith::bc::DirichletTimeDependent::prestep(const double t,
+                                            const double dt)
+{ // prestep
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_prestep(t="<<t<<", dt="<<dt<<")");
+
+    if (_useTimeHistory) {
+#if 1
+        PYLITH_JOURNAL_ERROR(":TODO: @brad Finish implementing DirichletTimeDependent::prestep(t, dt).");
+#else
+        asesrt(_normalizer);
+        const PylithScalar timeScale = _normalizer->timeScale();
+
+        // Loop over points.
+        for (/* :TODO: STUFF GOES HERE*/) {
+            // Get starting time.
+            // :TODO: STUFF GOES HERE
+
+            PylithScalar tStart = 0 .0; // :TODO: Unpack value from auxiliary field.
+
+            // Query time history for amplitude.
+            const PylithScalar tRel = t - tStart;
+            PylithScalar amplitude = 0.0;
+            if (tRel >= 0.0) {
+                PylithScalar tDim = tRel * timeScale;
+                const int err = _dbTimeHistory->query(&amplitude, tDim);
+                if (err) {
+                    std::ostringstream msg;
+                    msg << "Error querying for time '" << tDim << "' in time history database '" << _dbTimeHistory->label() << "'.";
+                    throw std::runtime_error(msg.str());
+                } // if
+            } // if
+              // :TODO: Update amplitude value in auxiliary field.
+
+        } // for
+#endif
+
+    } // if
+
+    PYLITH_METHOD_END;
+} // prestep
 
 
 // ----------------------------------------------------------------------

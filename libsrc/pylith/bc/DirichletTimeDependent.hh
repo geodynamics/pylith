@@ -51,6 +51,18 @@ DirichletTimeDependent(void);
 /// Deallocate PETSc and local data structures.
 void deallocate(void);
 
+/** Set time history database.
+ *
+ * @param[in] db Time history database.
+ */
+void dbTimeHistory(spatialdata::spatialdb::TimeHistory* th);
+
+/** Get time history database.
+ *
+ * @preturns Time history database.
+ */
+const spatialdata::spatialdb::TimeHistory* dbTimeHistory(void);
+
 /** Use initial value term in time history expression.
  *
  * @param[in] value True if using initial value term in expression.
@@ -87,6 +99,14 @@ void useTimeHistory(const bool value);
  */
 bool useTimeHistory(void) const;
 
+/** Update auxiliary fields at beginning of time step.
+ *
+ * @param[in] t Current time.
+ * @param[in] dt Current time step.
+ */
+void prestep(const double t,
+             const double dt);
+
 // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
 
@@ -115,9 +135,12 @@ void _setFEKernelsConstraint(const topology::Field& solution);
 // PROTECTED MEMBERS //////////////////////////////////////////////////
 private:
 
+spatialdata::spatialdb::TimeHistory* _dbTimeHistory;
+
 bool _useInitial; ///< Use initial value term.
 bool _useRate; ///< Use rate term.
 bool _useTimeHistory; ///< Use time history term.
+
 static const char* _pyreComponent; ///< Name of Pyre component.
 
 // NOT IMPLEMENTED ////////////////////////////////////////////////////

@@ -25,6 +25,7 @@
 
 from .DirichletNew import DirichletNew
 from .bc import DirichletTimeDependent as ModuleDirichletTimeDependent
+from pylith.utils.NullComponent import NullComponent
 
 # DirichletTimeDependent class
 
@@ -67,6 +68,9 @@ class DirichletTimeDependent(DirichletNew,
         useTimeHistory = pyre.inventory.bool("use_time_history", default=False)
         useTimeHistory.meta['tip'] = "Use time history term in time-dependent expression."
 
+        dbTimeHistory = pyre.inventory.facility("time_history", factory=NullComponent, family="temporal_database")
+        dbTimeHistory.meta['tip'] = "Time history with normalized amplitude as a function of time."
+
         from .AuxFieldsTimeDependent import AuxFieldsTimeDependent
         from pylith.topology.AuxSubfield import subfieldFactory
         auxFields = pyre.inventory.facilityArray("auxiliary_fields", itemFactory=subfieldFactory, factory=AuxFieldsTimeDependent)
@@ -95,6 +99,8 @@ class DirichletTimeDependent(DirichletNew,
         ModuleDirichletTimeDependent.useInitial(self, self.useInitial)
         ModuleDirichletTimeDependent.useRate(self, self.useRate)
         ModuleDirichletTimeDependent.useTimeHistory(self, self.useTimeHistory)
+        if not isinstance(self.dbTimeHistory, NullComponent):
+            ModuleDirichletTimeDependent.dbTimeHistory(self.dbTimeHistory)
         return
 
     def verifyConfiguration(self):
@@ -108,8 +114,8 @@ class DirichletTimeDependent(DirichletNew,
         spaceDim = self.mesh().coordsys().spaceDim()
         for d in self.bcDOF:
             if d < 0 or d >= spaceDim:
-                raise ValueError("Attempting to constrain DOF (%d) that doesn't exist. Space dimension is %d." %
-                                 (d, spaceDim))
+                raise ValueError("Attempting to constrain DOF (%d) that doesn't exist for time-dependent Dirichlet boundary condition '%s'. Space dimension is %d." %
+                                 (d, self.aliases[-1], spaceDim))
 
         self._eventLogger.eventEnd(logEvent)
         return
@@ -121,13 +127,19 @@ class DirichletTimeDependent(DirichletNew,
         Setup members using inventory.
         """
         try:
+            if self.inventory.useTimeHistory and isinstance(self.inventory.dbTimeHistory, NullComponent):
+                raise ValueError("Missing time history database for time-dependent Dirichlet boundary condition '%s'." % self.aliases[-1])
+            if not self.inventory.useTimeHistory and not isinstance(self.inventory.dbTimeHistory, NullComponent):
+                self._warning.log("Ignoring time history database setting for time-dependent Dirichlet boundary condition '%s'." % self.aliases[-1])
+
             DirichletNew._configure(self)
             self.useInitial = self.inventory.useInitial
             self.useRate = self.inventory.useRate
             self.useTimeHistory = self.inventory.useTimeHistory
+            self.dbTimeHistory = self.inventory.dbTimeHistory
         except ValueError, err:
             aliases = ", ".join(self.aliases)
-            raise ValueError("Error while configuring Dirichlet boundary condition "
+            raise ValueError("Error while configuring time-dependent Dirichlet boundary condition "
                              "(%s):\n%s" % (aliases, err.message))
         return
 
