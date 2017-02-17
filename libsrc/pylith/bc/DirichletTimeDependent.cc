@@ -22,6 +22,9 @@
 
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
+
+#include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
@@ -159,35 +162,54 @@ pylith::bc::DirichletTimeDependent::prestep(const double t,
     PYLITH_JOURNAL_DEBUG("_prestep(t="<<t<<", dt="<<dt<<")");
 
     if (_useTimeHistory) {
-#if 1
-        PYLITH_JOURNAL_ERROR(":TODO: @brad Finish implementing DirichletTimeDependent::prestep(t, dt).");
-#else
-        asesrt(_normalizer);
+        assert(_normalizer);
+        assert(_auxFields);
+
         const PylithScalar timeScale = _normalizer->timeScale();
 
-        // Loop over points.
-        for (/* :TODO: STUFF GOES HERE*/) {
-            // Get starting time.
-            // :TODO: STUFF GOES HERE
+        PetscErrorCode err;
 
-            PylithScalar tStart = 0 .0; // :TODO: Unpack value from auxiliary field.
+        PetscSection auxFieldsSection = _auxFields->localSection(); assert(auxFieldsSection);
+        PetscInt pStart=0, pEnd=0;
+        err = PetscSectionGetChart(auxFieldsSection, &pStart, &pEnd); PYLITH_CHECK_ERROR(err);
+        pylith::topology::VecVisitorMesh auxFieldsVisitor(*_auxFields);
+        PetscScalar* auxFieldsArray = auxFieldsVisitor.localArray(); assert(auxFieldsArray);
 
-            // Query time history for amplitude.
+        // Compute offset of time history subfields in auxiliary field.
+        // :ASSUMPTION: Constrained field is a scalar or vector field.
+        const PetscInt numComponents = (_vectorFieldType == pylith::topology::Field::VECTOR) ? _spaceDim : 1;
+        PetscInt offTH = 0;
+        if (_useInitial) offTH += numComponents;
+        if (_useRate) offTH += numComponents + 1;
+        const PetscInt offStartTime = offTH + numComponents;
+        const PetscInt offValue = offStartTime + 1;
+
+        // Loop over all points in section.
+        for (PetscInt p=pStart; p < pEnd; ++p) {
+            // Skip points without values in section.
+            if (!auxFieldsVisitor.sectionDof(p)) continue;
+
+            // Get offset for point.
+            const PetscInt off = auxFieldsVisitor.sectionOffset(p);
+
+            // Get starting time and compute relative time for point.
+            const PylithScalar tStart = auxFieldsArray[off+offStartTime];
             const PylithScalar tRel = t - tStart;
-            PylithScalar amplitude = 0.0;
+
+            // Query time history for value (normalized amplitude).
+            PylithScalar value = 0.0;
             if (tRel >= 0.0) {
                 PylithScalar tDim = tRel * timeScale;
-                const int err = _dbTimeHistory->query(&amplitude, tDim);
+                const int err = _dbTimeHistory->query(&value, tDim);
                 if (err) {
                     std::ostringstream msg;
                     msg << "Error querying for time '" << tDim << "' in time history database '" << _dbTimeHistory->label() << "'.";
                     throw std::runtime_error(msg.str());
                 } // if
             } // if
-              // :TODO: Update amplitude value in auxiliary field.
-
+              // Update value (normalized amplitude) in auxiliary field.
+            auxFieldsArray[off+offValue] = value;
         } // for
-#endif
 
     } // if
 
