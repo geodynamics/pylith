@@ -118,14 +118,8 @@ class TimeDependentNew(ProblemNew, ModuleTimeDependent):
 
     def initialize(self):
         """
-        Setup integrators for each element family (material/quadrature,
-        bc/quadrature, etc.).
+        Initialize the constraints, integrators, output managers, etc.
         """
-        from pylith.mpi.Communicator import mpi_comm_world
-        comm = mpi_comm_world()
-
-        if 0 == comm.rank:
-            self._info.log("Initializing problem.")
         ProblemNew.initialize(self)
         return
 
@@ -139,7 +133,6 @@ class TimeDependentNew(ProblemNew, ModuleTimeDependent):
         if 0 == comm.rank:
             self._info.log("Solving problem.")
 
-        ModuleTimeDependent.initialize(self)
         ModuleTimeDependent.solve(self)
         return
 
