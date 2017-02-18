@@ -103,6 +103,11 @@
 \setcounter{tocdepth}{3}
 
 % ------------------------------------------------------------------
+% Figures
+% automatic centering
+\g@addto@macro\@floatboxreset\centering
+
+% ------------------------------------------------------------------
 % Macros
 \usetikzlibrary{shadows.blur}
 % Warning
@@ -116,7 +121,7 @@
         bottom color=red!5,
         rounded corners=1em,
         blur shadow={shadow blur steps=5}
-      ]{\raisebox{1em}{{\LARGE\danger} {\bf Warning}}\\ #1};
+      ]{\raisebox{1em}{{\LARGE\bomb} {\bf Warning}}\\ #1};
     \end{tikzpicture}\end{center}}
 %
 % Tip
@@ -144,7 +149,7 @@
         bottom color=blue!5,
         rounded corners=1em,
         blur shadow={shadow blur steps=5}
-      ]{\raisebox{1em}{{\LARGE\ding{234}} {\bf Important}}\\ #1};
+      ]{\raisebox{1em}{{\LARGE\danger} {\bf Important}}\\ #1};
     \end{tikzpicture}\end{center}}
 
 % New feature
@@ -177,6 +182,7 @@
     language=bash,%
     frame=single,%
     basicstyle=\small\ttfamily,%
+    morekeywords={$},%
     commentstyle=\itshape\color{orange},
 }}{}
 \lstnewenvironment{cfg}{\lstset{language=cfg}}{}
