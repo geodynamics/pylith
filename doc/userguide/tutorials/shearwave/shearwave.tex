@@ -1,0 +1,38 @@
+
+\section{Shear Wave in a Bar}
+
+This suite of examples focuses on the dynamics of a shear wave propagating
+down an 8 km-long bar with a 400 m-wide cross-section. Motion is limited
+to shear deformation by fixing the longitudinal degree of freedom.
+For each cell type (tri3, quad4, tet4, and hex8) we generate a shear
+wave using a kinematic fault rupture with simultaneous slip over the
+fault surface, which we place at the center of the bar. The discretization
+size is 200 m in all cases. The slip-time histories follow the integral
+of Brune's far-field time function with slip initiating at 0.1 s,
+a left-lateral final slip of 1.0 m, and a rise time of 2.0 s. The
+shear wave speed in the bar is 1.0 km/s, so the shear wave reaches
+each end of the bar at 4.1 s. Absorbing boundaries on the ends of
+the bar prevent significant reflections. The bar comes to a rest with
+a static offset.
+
+\begin{figure}
+\begin{centering}
+\includegraphics{tutorials/shearwave/figs/bar}
+\par\end{centering}
+
+\caption{Domain for shear wave propagation in a 8.0 km bar with 400 m cross-section.
+We generate a shear wave via slip on a fault located in the middle
+of the bar while limiting deformation to the transverse direction.\label{fig:shearwave:domain}}
+\end{figure}
+
+
+For the bar discretized with quad4 cells we also consider the fault
+subjected to frictional sliding controlled by static friction, linear
+slip-weakening friction, and rate- and state-friction. We use initial
+tractions applied to the fault to drive the dislocation and generate
+the shear wave. Because the fault tractions are constant in time,
+they continue to drive the motion even after the shear wave reaches
+the absorbing boundary, leading to a steady state solution with uniform
+shear deformation in the bar and a constant slip rate on the fault. 
+
+\input{tutorials/shearwave/tri3.tex}\input{tutorials/shearwave/tet4.tex}\input{tutorials/shearwave/hex8.tex}\input{tutorials/shearwave/quad4.tex}

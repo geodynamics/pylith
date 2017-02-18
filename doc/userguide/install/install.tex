@@ -1,0 +1,449 @@
+
+\chapter{\label{cha:Installation-and-Getting}Installation and Getting Help}
+
+Installation of PyLith on a desktop or laptop machine is, in most
+cases, very easy. Binary packages have been created for Linux and
+Mac OS X platforms. You can also run PyLith inside a Docker container,
+which provides a virtual Linux environment on any platform that Docker
+supports, including Linux, Mac OS X, and Windows. Installation of
+PyLith on other operating systems -- or installation on a cluster
+-- requires building the software from the source code, which can
+be difficult for inexperienced users. We have created a small utility
+called PyLith Installer that makes installing PyLith and all of its
+dependencies from source much easier. Help is available from both
+a CIG mailing list and the Github issue tracking system \url{https://github.com/geodynamics/pylith/issues}.
+
+
+\section{\label{sec:Getting-Help-and}Getting Help and Reporting Bugs}
+
+The CIG Short-Term Crustal Dynamics Mailing List \url{cig-short@geodynamics.org}
+is dedicated to CIG issues associated with short-term crustal dynamics,
+including the use of PyLith. You can subscribe to the mailing list
+and view messages at cig-short Mailing List \url{geodynamics.org/cig/lists/cig-short}. 
+
+CIG uses \texttt{Github} for source control and bug tracking. If you
+find a bug in PyLith, please submit a bug report to the Github issue
+tracking system for PyLith \url{https://github.com/geodynamics/pylith/issues}.
+Of course, it is helpful to first check to see if someone else already
+submitted a report related to the issue; one of the CIG developers
+may have posted a work around to the problem. You can reply to a current
+issue by clicking on the issue title. To submit a new issue, click
+on the \textsf{New Issue} button.
+
+
+\section{Installation of Binary Executable}
+
+Binary executables are available for Linux and Mac OS X (Intel 10.10+)
+from the PyLith web page \url{geodynamics.org/cig/software/packages/short/pylith/}.
+
+
+\subsection{Linux}
+\begin{enumerate}
+\item Open a terminal window and change to the directory where you want
+to place the distribution.
+
+\begin{lyxcode}
+\$~cd~\$HOME
+
+\$~mkdir~pylith
+
+\$~cd~pylith
+\end{lyxcode}
+\item Download the Linux tarball from the PyLith web page \url{geodynamics.org/cig/software/packages/short/pylith/},
+and save it to the desired location, e.g., \texttt{\$HOME/pylith}.
+\item Unpack the tarball.
+
+\begin{lyxcode}
+\$~tar~-xzf~pylith-2.1.4-linux-i686.tgz
+\end{lyxcode}
+\item Set environment variables. The provided \texttt{setup.sh} script only
+works if you are using bash shell. If you are using a different shell,
+you will need to alter how the environment variables are set in \texttt{setup.sh}.
+
+\begin{lyxcode}
+\$~source~setup.sh
+\end{lyxcode}
+\end{enumerate}
+
+\subsection{Mac OS X}
+\begin{enumerate}
+\item Open a terminal window and change to the directory where you want
+to place the distribution.
+
+\begin{lyxcode}
+\$~cd~\$HOME
+
+\$~mkdir~pylith
+
+\$~cd~pylith
+\end{lyxcode}
+\item Download the Darwin tarball from the PyLith web page \url{geodynamics.org/cig/software/packages/short/pylith/}
+and save it to the desired location, e.g., \texttt{\$HOME/pylith}.
+\item Unpack the tarball. 
+
+\begin{lyxcode}
+\$~tar~-xzf~pylith-2.1.4-darwin-10.11.6.tgz
+\end{lyxcode}
+\item Set environment variables. The provided \texttt{setup.sh} script only
+works if you are using bash shell. If you are using a different shell,
+you will need to alter how the environment variables are set in \texttt{setup.sh}.
+
+\begin{lyxcode}
+\$~source~setup.sh
+\end{lyxcode}
+\end{enumerate}
+
+\section{Installation of PyLith Docker Container}
+
+Docker containers provide a self-contained virtual environment that
+are a smaller, simpler alternative to a virtual machine. The PyLith
+Docker container provides a Debian Linux environment with a pre-built
+PyLith executable. These instructions are also available on the PyLith
+wiki (\url{https://wiki.geodynamics.org/software:pylith:docker}).
+
+
+\subsection{Setup (first time only)}
+\begin{enumerate}
+\item Install Docker (See \url{https://www.docker.com/products/docker})
+\item Create container to store persistent user data\\
+This container, called pylith-data, will hold a directory where all
+your user data can be stored for use with PyLith within Docker. The
+data can persist for different versions of PyLith; that is, you can
+update to a newer version of PyLith and your user data will still
+be available. This directory is not directly accessible from your
+host computer. However, you can copy files to/from your host filesystem
+using \textquotedblleft{}docker cp\textquotedblright{} (see below).\end{enumerate}
+\begin{lyxcode}
+\$~docker~create~-{}-name~pylith-data~geodynamics/pylith-data
+\end{lyxcode}
+
+\subsection{Run Unix shell within Docker to use PyLith.}
+\begin{lyxcode}
+\$~docker~run~-ti~-{}-volumes-from~pylith-data~geodynamics/pylith\end{lyxcode}
+\begin{quote}
+\textbf{Hint}: Within the container, you will probably want to copy
+the examples from the pylith-VERSION directory to the data directory,
+which is the persistent storage.\end{quote}
+\begin{lyxcode}
+\$~cp~-R~\textasciitilde{}/pylith-VERSION/examples~\textasciitilde{}/data
+\end{lyxcode}
+
+\subsubsection{Using Docker containers}
+\begin{itemize}
+\item To ``pause'' a container: \texttt{Control-p Control-q}
+\item To attach to a ``paused'' or ``running'' container.
+
+\begin{itemize}
+\item Get the container id\end{itemize}
+\begin{lyxcode}
+\$~docker~ps\end{lyxcode}
+\begin{itemize}
+\item Attach to the container\end{itemize}
+\begin{lyxcode}
+\$~docker~attach~CONTAINER\_ID
+\end{lyxcode}
+\end{itemize}
+
+\subsection{Copy data to/from persistent storage volume.}
+
+These commands are run on the local host outside the container, not
+inside the Docker container.
+
+
+\subsubsection{Copy data FROM persistent storage volume TO local host}
+\begin{lyxcode}
+\$~docker~cp~pylith-data:/data/pylith-user/PATH/FILENAME~LOCAL\_PATH
+\end{lyxcode}
+
+\subsubsection{Copy data FROM local host TO persistent storage volume}
+\begin{lyxcode}
+\$~docker~cp~LOCAL\_PATH~pylith-data:/data/pylith-user/PATH/
+\end{lyxcode}
+
+\subsection{Docker Quick Reference}
+\begin{itemize}
+\item List local docker images\end{itemize}
+\begin{lyxcode}
+\$~docker~images\end{lyxcode}
+\begin{itemize}
+\item List all docker containers\end{itemize}
+\begin{lyxcode}
+\$~docker~ps~-a\end{lyxcode}
+\begin{itemize}
+\item List running docker containers\end{itemize}
+\begin{lyxcode}
+\$~docker~ps\end{lyxcode}
+\begin{itemize}
+\item Remove docker container\end{itemize}
+\begin{lyxcode}
+\$~docker~rm~CONTAINER\_ID\end{lyxcode}
+\begin{itemize}
+\item Remove docker image\end{itemize}
+\begin{lyxcode}
+\$~docker~rmi~IMAGE\_ID
+\end{lyxcode}
+
+\section{Installation from Source}
+
+PyLith depends on a number of other packages (see Figure \ref{fig:pylith-dependencies}).
+This complicates building the software from the source code. In many
+cases some of the packages required by PyLith are available as binary
+packages. On the one hand, using the binary packages removes the burden
+of configuring, building, and installing these packages, but that
+can come with its own host of complications if consistent compiler
+and configuration settings are not used across all of the packages
+on which PyLith depends. This is usually not an issue with Linux distributions,
+such as Fedora, Ubuntu, and Debian that have good quality control;
+it can be an issue with Darwin package managers, such as Fink, MacPorts,
+and Homebrew, where there is limited enforcement of consistency across
+packages. Nevertheless, PyLith can be built on most systems provided
+the instructions are followed carefully. PyLith is developed and tested
+on Linux and Mac OS X.
+
+A small utility, PyLith Installer, removes most of the obstacles in
+building PyLith and its dependencies from source. For each package
+this utility downloads the source code, configures it, builds it,
+and installs it. This insures that the versions of the dependencies
+are consistent with PyLith and that the proper configure arguments
+are used. The minimum requirements for using the PyLith installer
+are a C compiler, \texttt{tar}, and \texttt{wget} or \texttt{curl}.
+Detailed instructions for how to install PyLith using the installer
+are included in the installer distribution, which is available from
+the PyLith web page \url{geodynamics.org/cig/software/packages/short/pylith/}.
+
+
+\section{Verifying PyLith is Installed Correctly}
+
+The easiest way to verify that PyLith has been installed correctly
+is to run one or more of the examples supplied with the binary and
+source code. In the binary distribution, the examples are located
+in \texttt{src/pylith-2.1.4/examples} while in the source distribution,
+they are located in \texttt{pylith-2.1.4/examples}. Chapter \ref{cha:Tutorials}
+discusses how to run and visualize the results for the examples. To
+run the example discussed in Section \ref{sec:Tutorial-3d-hex8-static}:
+\begin{lyxcode}
+\$~cd~examples/3d/hex8~\\
+\$~pylith~step01.cfg
+\end{lyxcode}
+If you run PyLith if a directory without any input, you will get the
+error message:
+\begin{lyxcode}
+>\textcompwordmark{}>~\{default\}::~~~\\
+-{}-~pyre.inventory(error)~~~\\
+-{}-~meshimporter.meshioascii.filename~<-~''~~~\\
+-{}-~Filename~for~ASCII~input~mesh~not~specified.~~To~test~PyLith,~run~an~example~as~discussed~in~the~manual.~~~\\
+>\textcompwordmark{}>~\{default\}::~~~\\
+-{}-~pyre.inventory(error)~~~\\
+-{}-~timedependent.homogeneous.elasticisotropic3d.label~<-~''~~~\\
+-{}-~Descriptive~label~for~material~not~specified.~~~\\
+>\textcompwordmark{}>~\{default\}::~~~\\
+-{}-~pyre.inventory(error)~~~\\
+-{}-~timedependent.homogeneous.elasticisotropic3d.simpledb.label~<-~''~~~\\
+-{}-~Descriptive~label~for~spatial~database~not~specified.~~~\\
+>\textcompwordmark{}>~\{default\}::~~~\\
+-{}-~pyre.inventory(error)~~~\\
+-{}-~timedependent.homogeneous.elasticisotropic3d.simpledb.simpleioascii.filename~<-~''~~~\\
+-{}-~Filename~for~spatial~database~not~specified.~pylithapp:~configuration~error(s)~~
+\end{lyxcode}
+This indicates that a number of default settings must be set in order
+to run PyLith, including setting the filename for the finite-element
+mesh.
+
+
+\section{Configuration on a Cluster}
+
+If you are installing PyLith on a cluster with a batch system, you
+can configure Pyre such that the \texttt{pylith} command automatically
+submits jobs to the batch queue. Pyre contains support for the LSF,
+PBS, SGE, and Globus batch systems.
+
+The command to submit a batch job depends upon the particular batch
+system used. Further, the command used in a batch script to launch
+an MPI program varies from one cluster to the next. This command can
+vary between two clusters, even if the clusters use the same batch
+system! On some systems, \texttt{mpirun} is invoked directly from
+the batch script. On others, a special wrapper is used instead.
+
+Properly configured, Pyre can handle job submissions automatically,
+insulating users from the details of the batch system and the site
+configuration. This feature has the most value when the system administrator
+installs a global Pyre configuration file on the cluster (under \texttt{/etc/pythia-0.8}),
+for the benefit of all users and all Pyre-based applications.
+
+
+\subsection{\label{sub:Launchers-and-Schedulers}Launchers and Schedulers}
+
+If you have used one of the batch systems, you will know that the
+batch system requires you to write a script to launch a job. Fortunately,
+launching a parallel PyLith job is simplified by Pyre's \texttt{launcher}
+and \texttt{scheduler} facilities. Many properties associated with
+\texttt{launcher} and \texttt{scheduler} are pertinent to the cluster
+you are on, and are best customized in a configuration file. Your
+personal PyLith configuration file (\texttt{\textasciitilde{}/.pyre/pylithapp/pylithapp.cfg})
+is suitable for this purpose. On a cluster, the ideal setup is to
+install a system-wide configuration file under \texttt{/etc/pythia-0.8},
+for the benefit of all users.
+
+Pyre's \texttt{scheduler} facility is used to specify the type of
+batch system you are using (if any):
+\begin{lyxcode}
+{[}pylithapp{]}
+
+scheduler~=~lsf
+\end{lyxcode}
+The valid values for \texttt{scheduler} are \texttt{lsf}, \texttt{pbs},
+\texttt{globus}, and \texttt{none}.
+
+Pyre's \texttt{launcher} facility is used to specify which MPI implementation
+you are using:
+\begin{lyxcode}
+{[}pylithapp{]}
+
+launcher~=~mpich
+\end{lyxcode}
+The valid values for \texttt{launcher} include \texttt{mpich} and
+\texttt{lam-mpi}.
+
+You may find the \texttt{dry} option useful while debugging the \texttt{launcher}
+and \texttt{scheduler} configuration. To debug the scheduler configuration,
+use the \texttt{-{}-scheduler.dry} option:
+\begin{lyxcode}
+\$~pylith~-{}-scheduler.dry
+\end{lyxcode}
+This option will cause PyLith to perform a ``dry run,'' dumping the
+batch script to the console, instead of actually submitting it for
+execution (the output is only meaningful if you're using a batch system).
+Likewise, to debug the launcher configuration, use the \texttt{-{}-launcher.dry}
+option:
+\begin{lyxcode}
+\$~pylith~-{}-launcher.dry
+\end{lyxcode}
+This option will cause PyLith to print the \texttt{mpirun} command,
+instead of actually executing it. (If you're using a batch system,
+a job will be submitted for execution; when it runs, PyLith will simply
+print the \texttt{mpirun} command, and the job will immediately terminate.)
+
+
+\subsection{Running without a Batch System}
+
+On a cluster without a batch system, you need to explicitly specify
+the machines on which the job will run. Supposing the machines on
+your cluster are named n001, n002, \ldots{}, etc., but you want to
+run the job on machines n001, n003, n004, and n005 (maybe n002 is
+down for the moment). To run an example, create a file named \texttt{mymachines.cfg}
+which specifies the machines to use:
+\begin{lyxcode}
+{[}pylithapp.launcher{]}
+
+nodegen~=~n\%03d
+
+nodelist~=~{[}1,3-5{]}
+\end{lyxcode}
+The \texttt{nodegen} property is a printf-style format string, used
+in conjunction with \texttt{nodelist} to generate the list of machine
+names. The \texttt{nodelist} property is a comma-separated list of
+machine names in square brackets.
+
+Now, invoke the following:
+\begin{lyxcode}
+\$~pylith~example.cfg~mymachines.cfg
+\end{lyxcode}
+This strategy gives you the flexibility to create an assortment of
+\texttt{.cfg} files (with one \texttt{.cfg} file for each machine
+list) which can be easily paired with different parameter files.
+
+If your machine list does not change often, you may find it more convenient
+to specify default values for \texttt{nodegen} and \texttt{nodelist}
+in \texttt{\textasciitilde{}/.pyre/pylithapp/pylithapp.cfg} (which
+is read automatically). Then, you can run any simulation with no additional
+arguments:
+\begin{lyxcode}
+\$~pylith~example.cfg\end{lyxcode}
+\begin{quote}
+\textbf{\textcolor{red}{Warning:}}\textbf{ }This assumes your machine
+list has enough nodes for the simulation in question.
+\end{quote}
+You will notice that a machine file \texttt{mpirun.nodes} is generated.
+It will contain a list of the nodes where PyLith has run.
+
+
+\subsection{Using a Batch System}
+
+Many clusters use some implementation of a PBS (e.g., TORQUE/Maui)
+or LSF batch system. The examples below illustrate use of some of
+the more important settings. You may need to make use of more options
+or adjust these to submit jobs on various cluster. These settings
+are usually placed in \texttt{\textasciitilde{}/.pyre/pylithapp/pylithapp.cfg}
+or in a system-wide configuration file. They can be overridden on
+the command line, where one typically specifies the number of compute
+nodes and number of processes per compute node, the job name, and
+the allotted time for the job:
+\begin{lyxcode}
+\$~pylith~example1.cfg~-{}-job.queue=debug~\textbackslash{}
+
+~~~~-{}-job.name=example1~-{}-job.stdout=example1.log~-{}-job.stderr=example1.err~\textbackslash{}
+
+~~~~-{}-job.walltime=5{*}minute~\textbackslash{}
+
+~~~~-{}-nodes=4
+\end{lyxcode}
+Note that the values for nodes is equal to the number of compute nodes
+times the number of processes (usually the number of cores) requested
+per compute node. Specifying the number of processes per compute node
+depends on the batch system. For more information on configuring Pyre
+for your batch system, see CIG's Pythia page \url{geodynamics.org/cig/software/packages/cs/pythia}.
+
+
+\subsubsection{LSF Batch System}
+\begin{lyxcode}
+{[}pylithapp{]}
+
+scheduler~=~lsf~~~~;~the~type~of~batch~system
+
+
+
+{[}pylithapp.lsf{]}
+
+bsub-options~=~{[}-a~mpich\_gm{]}~~~~;~special~options~for~'bsub'
+
+
+
+{[}pylithapp.launcher{]}
+
+command~=~mpirun.lsf~~~~;~'mpirun'~command~to~use~on~our~cluster
+
+
+
+{[}pylithapp.job{]}
+
+queue~=~normal~~~~;~default~queue~for~jobs
+\end{lyxcode}
+
+\subsubsection{PBS Batch System}
+\begin{lyxcode}
+{[}pylithapp{]}
+
+scheduler~=~pbs~~~~~;~the~type~of~batch~system
+
+
+
+{[}pylithapp.pbs{]}
+
+shell~=~/bin/bash~~~~~;~submit~the~job~using~a~bash~shell~script
+
+
+
+\#~Export~all~environment~variables~to~the~batch~job
+
+\#~Send~email~to~johndoe@mydomain.org~when~the~job~begins,~ends,~or~aborts
+
+qsub-options~=~-V~-m~bea~-M~johndoe@mydomain.org
+
+
+
+{[}pylithapp.launcher{]}
+
+command~=~mpirun~-np~\$\{nodes\}~-machinefile~\$\{PBS\_NODEFILE\}
+\end{lyxcode}
+For most PBS batch systems you can specify 4 processes per compute
+node via the command line argument \texttt{-{}-scheduler.ppn=4}.

@@ -1,0 +1,947 @@
+
+\subsection{\label{sec:Tutorial-3d-hex8-quasistatic}Quasi-Static Examples}
+
+PyLith features discussed in this tutorial:
+\begin{itemize}
+\item Quasi-static solution
+\item Formatting timestamps of VTK output files
+\item HDF5 output
+\item Output of velocity field
+\item Dirichlet displacement and velocity boundary conditions
+\item Neumann traction boundary conditions and time-varying tractions
+\item UniformDB spatial database
+\item CompositeDB spatial database
+\item Quasi-static fault rupture and fault creep
+\item Multiple kinematic fault ruptures
+\item Specifying more than one material
+\item Nonlinear solver
+\item Maxwell linear viscoelastic material
+\item Power-law viscoelastic material
+\item Drucker-Prager elastoplastic material
+\item Adaptive time stepping
+\end{itemize}
+
+\subsubsection{Overview}
+
+This set of examples describes a set of quasi-static problems for
+PyLith. These quasi-static problems primarily demonstrate the usage
+of time-dependent boundary conditions and fault slip, as well as different
+rheologies. Some of the examples also demonstrate the usage of the
+nonlinear solver, which is required by the nonlinear rheologies (power-law
+viscoelastic and Drucker-Prager elastoplastic). Some of the examples
+also demonstrate the usage of HDF5 output, which is an alternative
+to the default VTK output. All of the examples are contained in the
+directory \texttt{examples/3d/hex8}, and the corresponding \texttt{.cfg}
+files are \texttt{step04.cfg}, \texttt{step05.cfg}, \texttt{step06.cfg},
+\texttt{step07.cfg}, \texttt{step08.cfg}, and \texttt{step09.cfg}.
+Each example may be run as follows:
+\begin{lyxcode}
+pylith~stepXX.cfg
+\end{lyxcode}
+This will cause PyLith to read the default parameters in \texttt{pylithapp.cfg},
+and then override or augment them with the additional parameters in
+the \texttt{stepXX.cfg} file. Each \texttt{.cfg} file is extensively
+documented, to provide detailed information on the various parameters.
+
+
+\subsubsection{Step04 - Pure Dirichlet Velocity Boundary Conditions}
+
+The \texttt{step04.cfg} file defines a problem with x-displacements
+fixed at zero on the positive and negative x-faces while velocity
+boundary conditions are applied in the y-directions on the same faces,
+yielding a left-lateral sense of movement. The bottom (negative z)
+boundary is held fixed in the z-direction. We also use a Maxwell viscoelastic
+material for the lower crust, and the simulation is run for 200 years
+using a constant time-step size of 20 years. The default time stepping
+behavior is \texttt{TimeStepUniform}. We retain that behavior for
+this problem and provide the total simulation time and the time-step
+size:
+\begin{lyxcode}
+\#~Change~the~total~simulation~time~to~200~years,~and~use~a~constant~time
+
+\#~step~size~of~20~years.
+
+{[}pylithapp.timedependent.implicit.time\_step{]}
+
+total\_time~=~200.0{*}year
+
+dt~=~20.0{*}year~
+\end{lyxcode}
+We then change the material type of the lower crust, provide a spatial
+database from which to obtain the material properties (using the default
+\texttt{SimpleDB}), and request additional output information for
+the material:
+\begin{lyxcode}
+\#~Change~material~type~of~lower~crust~to~Maxwell~viscoelastic.
+
+{[}pylithapp.timedependent{]}
+
+materials.lower\_crust~=~pylith.materials.MaxwellIsotropic3D~\\
+~\\
+
+
+\#~Provide~a~spatial~database~from~which~to~obtain~property~values.
+
+\#~Since~there~are~additional~properties~and~state~variables~for~the~Maxwell
+
+\#~model,~we~explicitly~request~that~they~be~output.~Properties~are~named~in
+
+\#~cell\_info\_fields~and~state~variables~are~named~in~cell\_data\_fields.
+
+{[}pylithapp.timedependent.materials.lower\_crust{]}
+
+db\_properties.iohandler.filename~=~spatialdb/mat\_maxwell.spatialdb
+
+output.cell\_info\_fields~=~{[}density,mu,lambda,maxwell\_time{]}
+
+output.cell\_data\_fields~=~{[}total\_strain,stress,viscous\_strain{]}
+\end{lyxcode}
+Note that the default \texttt{output.cell\_info\_fields} are those
+corresponding to an elastic material (\texttt{density}, \texttt{mu},
+\texttt{lambda}), and the default \texttt{output.cell\_data\_fields}
+are \texttt{total\_strain} and \texttt{stress}. For materials other
+than elastic, there are generally additional material properties and
+state variables, and the appropriate additional fields must be specifically
+requested for each material type.
+
+This example has no displacements in the elastic solution (t = 0),
+so we retain the default \texttt{ZeroDispDB} for all instances of
+\texttt{db\_initial}. To apply the velocity boundary conditions, we
+must specify \texttt{db\_rate}, which is zero by default. We use a
+\texttt{UniformDB} to assign the velocities:
+\begin{lyxcode}
+\#~+x~face
+
+{[}pylithapp.timedependent.bc.x\_pos{]}
+
+bc\_dof~=~{[}0,~1{]}
+
+label~=~face\_xpos
+
+db\_initial.label~=~Dirichlet~BC~on~+x
+
+db\_rate~=~spatialdata.spatialdb.UniformDB
+
+db\_rate.label~=~Dirichlet~rate~BC~on~+x
+
+db\_rate.values~=~{[}displacement-rate-x,displacement-rate-y,rate-start-time{]}
+
+db\_rate.data~=~{[}0.0{*}cm/year,1.0{*}cm/year,0.0{*}year{]}~\\
+~\\
+
+
+\#~-x~face
+
+{[}pylithapp.timedependent.bc.x\_neg{]}
+
+bc\_dof~=~{[}0,~1{]}
+
+label~=~face\_xneg
+
+db\_initial.label~=~Dirichlet~BC~on~-x
+
+db\_rate~=~spatialdata.spatialdb.UniformDB
+
+db\_rate.label~=~Dirichlet~rate~BC~on~+x
+
+db\_rate.values~=~{[}displacement-rate-x,displacement-rate-y,rate-start-time{]}
+
+db\_rate.data~=~{[}0.0{*}cm/year,-1.0{*}cm/year,0.0{*}year{]}
+\end{lyxcode}
+Note that \texttt{db\_rate} requires a start time, which allows the
+condition to be applied at any time during the simulation. For this
+example, we start the velocity boundary conditions at t = 0.
+
+Finally, we must provide information on VTK output. This is slightly
+more complicated than the static case, because we must decide the
+frequency with which output occurs for each output manager. We also
+assign a more user-friendly format to the output file time stamp,
+and we request that the time stamp is in units of 1 year (rather than
+the default value of seconds):
+\begin{lyxcode}
+\#~Give~basename~for~VTK~domain~output~of~solution~over~domain.
+
+{[}pylithapp.problem.formulation.output.domain{]}
+
+\#~We~specify~that~output~occurs~in~terms~of~a~given~time~frequency,~and
+
+\#~ask~for~output~every~40~years.~The~time~stamps~of~the~output~files~are
+
+\#~in~years~(rather~than~the~default~of~seconds),~and~we~give~a~format~for
+
+\#~the~time~stamp.
+
+output\_freq~=~time\_step
+
+time\_step~=~40.0{*}year
+
+writer.filename~=~output/step04.vtk
+
+writer.time\_format~=~\%04.0f
+
+writer.time\_constant~=~1.0{*}year~\\
+~\\
+
+
+\#~Give~basename~for~VTK~domain~output~of~solution~over~ground~surface.
+
+{[}pylithapp.problem.formulation.output.subdomain{]}
+
+\#~Name~of~nodeset~for~ground~surface.
+
+label~=~face\_zpos
+
+\#~We~keep~the~default~output~frequency~behavior~(skip~every~n~steps),~and
+
+\#~ask~to~skip~0~steps~between~output,~so~that~we~get~output~every~time~step.
+
+skip~=~0
+
+writer.filename~=~output/step04-groundsurf.vtk
+
+writer.time\_format~=~\%04.0f
+
+writer.time\_constant~=~1.0{*}year
+\end{lyxcode}
+We provide similar output information for the two materials (\texttt{upper\_crust}
+and \texttt{lower\_crust}). Note that for the domain output, we requested
+output in terms of a given time frequency, while for the subdomain
+we requested output in terms of number of time steps. When we have
+run the simulation, the output VTK files will be contained in \texttt{examples/3d/hex8/output}
+(all with a prefix of \texttt{step04}). Results using ParaView are
+shown in Figure \ref{fig:step04-displ-t200}.
+
+\begin{figure}
+\begin{centering}
+\includegraphics[width=10cm]{tutorials/3dhex8/figs/step04-displ-t200}
+\par\end{centering}
+
+\caption{Displacement field for example step04 at t = 200 years visualized
+using ParaView. The mesh has been distorted by the computed displacements
+(magnified by 500), and the vectors show the computed displacements.\label{fig:step04-displ-t200}}
+\end{figure}
+
+
+
+\subsubsection{Step05 - Time-Varying Dirichlet and Neumann Boundary Conditions}
+
+The \texttt{step05.cfg} file describes a problem with time-varying
+Dirichlet and Neumann boundary conditions. The example is similar
+to example step04, with a few important differences:
+\begin{itemize}
+\item The Dirichlet boundary conditions on the negative x-face include an
+initial displacement (applied in the elastic solution), as well as
+a constant velocity.
+\item Neumann (traction) boundary conditions are applied in the negative
+x-direction on the positive x-face, giving a compressive stress. An
+initial traction is applied in the elastic solution, and then at t
+= 100 years it begins decreasing linearly until it reaches zero at
+the end of the simulation (t = 200 years).
+\end{itemize}
+We again use a Maxwell viscoelastic material for the lower crust.
+
+For the boundary conditions, we must first change the boundary condition
+type for the positive x-face from the default Dirichlet to Neumann:
+\begin{lyxcode}
+\#~+x~face~-{}-~first~change~bc~type~to~Neumann
+
+{[}pylithapp.timedependent.bc{]}
+
+x\_pos~=~pylith.bc.Neumann~
+\end{lyxcode}
+We provide quadrature information for this face as we did for example
+step02. We then use a \texttt{UniformDB} for both the initial tractions
+as well as the traction rates. We provide a start time of 100 years
+for the traction rates, and use a rate of 0.01 MPa/year, so that by
+the end of 200 years we have completely cancelled the initial traction
+of -1 MPa:
+\begin{lyxcode}
+{[}pylithapp.timedependent.bc.x\_pos{]}
+
+\#~First~specify~a~UniformDB~for~the~initial~tractions,~along~with~the~values.
+
+db\_initial~=~spatialdata.spatialdb.UniformDB
+
+db\_initial.label~=~Neumann~BC~on~+x
+
+db\_initial.values~=~{[}traction-shear-horiz,traction-shear-vert,traction-normal{]}
+
+db\_initial.data~=~{[}0.0{*}MPa,0.0{*}MPa,-1.0{*}MPa{]}~\\
+~\\
+
+
+\#~Provide~information~on~traction~rates.
+
+db\_rate~=~spatialdata.spatialdb.UniformDB
+
+db\_rate.label~=~Neumann~rate~BC~on~+x
+
+db\_rate.values~=~{[}traction-rate-shear-horiz,traction-rate-shear-vert,~\\
+traction-rate-normal,rate-start-time{]}
+
+db\_rate.data~=~{[}0.0{*}MPa/year,0.0{*}MPa/year,0.01{*}MPa/year,100.0{*}year{]}
+\end{lyxcode}
+The boundary conditions on the negative x-face are analogous, but
+we are instead using Dirichlet boundary conditions, and the initial
+displacement is in the same direction as the applied velocities:
+\begin{lyxcode}
+\#~-x~face
+
+{[}pylithapp.timedependent.bc.x\_neg{]}
+
+bc\_dof~=~{[}0,~1{]}
+
+label~=~face\_xneg~\\
+~\\
+
+
+\#~Initial~displacements.
+
+db\_initial~=~spatialdata.spatialdb.UniformDB
+
+db\_initial.label~=~Dirichlet~BC~on~-x
+
+db\_initial.values~=~{[}displacement-x,displacement-y{]}
+
+db\_initial.data~=~{[}0.0{*}cm,-0.5{*}cm{]}~\\
+~\\
+
+
+\#~Velocities.
+
+db\_rate~=~spatialdata.spatialdb.UniformDB
+
+db\_rate.label~=~Dirichlet~rate~BC~on~-x
+
+db\_rate.values~=~{[}displacement-rate-x,displacement-rate-y,rate-start-time{]}
+
+db\_rate.data~=~{[}0.0{*}cm/year,-1.0{*}cm/year,0.0{*}year{]}
+\end{lyxcode}
+The boundary conditions on the negative z-face are supplied in the
+same manner as for example step04. When we have run the simulation,
+the output VTK files will be contained in \texttt{examples/3d/hex8/output}
+(all with a prefix of \texttt{step05}). Results using ParaView are
+shown in Figure \ref{fig:step05-displ-t40}.
+\begin{figure}
+\centering{}\includegraphics[width=10cm]{tutorials/3dhex8/figs/step05-displ-t40}\caption{Displacement field for example step05 at t = 40 years visualized using
+ParaView. The mesh has been distorted by the computed displacements
+(magnified by 500), and the vectors show the computed displacements.\label{fig:step05-displ-t40}.}
+\end{figure}
+
+
+
+\subsubsection{Step06 - Dirichlet Boundary Conditions with Time-Dependent Kinematic
+Fault Slip}
+
+The \texttt{step06.cfg} file defines a problem with Dirichlet (displacement)
+boundary conditions corresponding to zero x- and y-displacements applied
+on the negative and positive x-faces and a vertical fault that includes
+multiple earthquake ruptures as well as steady fault creep. The upper
+(locked) portion of the fault has 4 m of left-lateral slip every 200
+years, while the lower (creeping) portion of the fault slips at a
+steady rate of 2 cm/year. The problem bears some similarity to the
+strike-slip fault model of Savage and Prescott \cite{Savage:Prescott:1978},
+except that the fault creep extends through the viscoelastic portion
+of the domain, and the far-field displacement boundary conditions
+are held fixed.
+
+In this example and the remainder of the examples in this section,
+we change the time stepping behavior from the default \texttt{TimeStepUniform}
+to \texttt{TimeStepAdapt}. For adaptive time stepping, we provide
+the maximum permissible time-step size, along with a stability factor.
+The stability factor controls the time-step size relative to the stable
+time-step size provided by the different materials in the model. A
+\texttt{stability\_factor} of 1.0 means we should use the stable time-step
+size, while a \texttt{stability\_factor} greater than 1.0 means we
+want to use a smaller time-step size. A \texttt{stability\_factor}
+less than 1.0 allows time-step sizes greater than the stable time-step
+size, which may provide inaccurate results. The adaptive time stepping
+information is provided as:
+\begin{lyxcode}
+\#~Change~time~stepping~algorithm~from~uniform~time~step,~to~adaptive
+
+\#~time~stepping.
+
+time\_step~=~pylith.problems.TimeStepAdapt~\\
+~\\
+
+
+\#~Change~the~total~simulation~time~to~700~years,~and~set~the~maximum~time
+
+\#~step~size~to~10~years.
+
+{[}pylithapp.timedependent.implicit.time\_step{]}
+
+total\_time~=~700.0{*}year
+
+max\_dt~=~10.0{*}year
+
+stability\_factor~=~1.0~;~use~time~step~equal~to~stable~value~from~materials
+\end{lyxcode}
+In this example and the remainder of the examples in this section,
+we also make use of HDF5 output rather than the default VTK output.
+HDF5 output is a new feature beginning with PyLith version 1.6, and
+it is much more efficient with the additional advantage that multiple
+time steps can be contained in a single file. PyLith also produces
+Xdmf files describing the contents of the HDF5 files, which allows
+the files to be read easily by applications such as ParaView. Since
+VTK output is still the default, we must change the value from the
+default. Also note that the filename suffix is \texttt{.h5}:
+\begin{lyxcode}
+\#~Give~basename~for~output~of~solution~over~domain.
+
+{[}pylithapp.problem.formulation.output.domain{]}
+
+\#~We~specify~that~output~occurs~in~terms~of~a~given~time~frequency,~and
+
+\#~ask~for~output~every~50~years.
+
+output\_freq~=~time\_step
+
+time\_step~=~50.0{*}year~\\
+~\\
+
+
+\#~We~are~using~HDF5~output~so~we~must~change~the~default~writer.
+
+writer~=~pylith.meshio.DataWriterHDF5
+
+writer.filename~=~output/step06.h5~~
+\end{lyxcode}
+Note that we no longer need the \texttt{writer.time\_format} or \texttt{writer.time\_constant}
+properties, since all time steps are contained in a single file. The
+HDF5 writer does not have these properties, so if we attempt to define
+them an error will result.
+
+We also set the writer for other output as well, since it is not the
+default. For subdomain output we use:
+\begin{lyxcode}
+\#~Give~basename~for~output~of~solution~over~ground~surface.
+
+{[}pylithapp.problem.formulation.output.subdomain{]}
+
+\#~Name~of~nodeset~for~ground~surface.
+
+label~=~face\_zpos~\\
+~\\
+
+
+\#~We~keep~the~default~output~frequency~behavior~(skip~every~n~steps),~and
+
+\#~ask~to~skip~0~steps~between~output,~so~that~we~get~output~every~time~step.
+
+\#~We~again~switch~the~writer~to~produce~HDF5~output.
+
+skip~=~0
+
+writer~=~pylith.meshio.DataWriterHDF5
+
+writer.filename~=~output/step06-groundsurf.h5~~
+\end{lyxcode}
+For fault output we use:
+\begin{lyxcode}
+\#~Give~basename~for~fault~rupture~output.
+
+{[}pylithapp.problem.interfaces.fault.output{]}
+
+\#~We~keep~the~default~output~frequency~behavior~(skip~every~n~steps),~and
+
+\#~ask~to~skip~0~steps~between~output,~so~that~we~get~output~every~time~step.
+
+\#~We~again~switch~the~writer~to~produce~HDF5~output.
+
+skip~=~0
+
+writer~=~pylith.meshio.DataWriterHDF5
+
+writer.filename~=~output/step06-fault.h5
+\end{lyxcode}
+Due to the simplicity of the boundary conditions, we are able to use
+the default \texttt{ZeroDispBC} for the positive and negative x-faces,
+as well as the negative z-face. As for example step03, we define a
+fault interface, we identify the nodeset corresponding to the fault,
+and we provide quadrature information for the fault. We then define
+an array of earthquake sources and provide an origin time for each:
+\begin{lyxcode}
+{[}pylithapp.timedependent.interfaces.fault{]}
+
+\#~Set~earthquake~sources~to~an~array~consisting~of~creep~and~3~ruptures.
+
+eq\_srcs~=~{[}creep,one,two,three{]}
+
+eq\_srcs.creep.origin\_time~=~00.0{*}year
+
+eq\_srcs.one.origin\_time~=~200.0{*}year
+
+eq\_srcs.two.origin\_time~=~400.0{*}year
+
+eq\_srcs.three.origin\_time~=~600.0{*}year
+\end{lyxcode}
+Note that the creep begins at t = 0 years, while the ruptures (\texttt{one},
+\texttt{two}, \texttt{three}) occur at regular intervals of 200 years.
+We retain the default \texttt{StepSlipFn} for the ruptures. Each of
+the ruptures has the same amount of slip, and slip occurs simultaneously
+for the entire rupture region, so we can use the same \texttt{SimpleDB}
+files providing slip and slip time for each rupture:
+\begin{lyxcode}
+\#~Define~slip~and~origin~time~for~first~rupture.
+
+{[}pylithapp.timedependent.interfaces.fault.eq\_srcs.one.slip\_function{]}
+
+slip.iohandler.filename~=~spatialdb/finalslip\_rupture.spatialdb
+
+slip\_time.iohandler.filename~=~spatialdb/sliptime.spatialdb~\\
+~\\
+
+
+\#~Define~slip~and~origin~time~for~second~rupture.
+
+{[}pylithapp.timedependent.interfaces.fault.eq\_srcs.two.slip\_function{]}
+
+slip.iohandler.filename~=~spatialdb/finalslip\_rupture.spatialdb
+
+slip\_time.iohandler.filename~=~spatialdb/sliptime.spatialdb~\\
+~\\
+
+
+\#~Define~slip~and~origin~time~for~third~rupture.
+
+{[}pylithapp.timedependent.interfaces.fault.eq\_srcs.three.slip\_function{]}
+
+slip.iohandler.filename~=~spatialdb/finalslip\_rupture.spatialdb
+
+slip\_time.iohandler.filename~=~spatialdb/sliptime.spatialdb
+\end{lyxcode}
+For the creep source, we change the slip function to \texttt{ConstRateSlipFn},
+and we use a \texttt{SimpleDB} for both the slip time and the slip
+rate:
+\begin{lyxcode}
+\#~Define~slip~rate~and~origin~time~for~fault~creep.
+
+{[}pylithapp.timedependent.interfaces.fault.eq\_srcs.creep{]}
+
+slip\_function~=~pylith.faults.ConstRateSlipFn
+
+slip\_function.slip\_rate.iohandler.filename~=~spatialdb/sliprate\_creep.spatialdb
+
+slip\_function.slip\_time.iohandler.filename~=~spatialdb/sliptime.spatialdb
+\end{lyxcode}
+For all earthquake sources we provide both an \texttt{origin\_time}
+and a \texttt{slip\_function.slip\_time}. The first provides the starting
+time for the entire earthquake source, while the second provides any
+spatial variation in the slip time with respect to the \texttt{origin\_time}
+(if any). Since there are multiple earthquake sources of different
+types, there are a number of additional fault information fields available
+for output. We add these additional fields' output to the fault information
+file:
+\begin{lyxcode}
+{[}pylithapp.timedependent.interfaces.fault{]}
+
+output.vertex\_info\_fields~=~{[}normal\_dir,strike\_dir,dip\_dir,final\_slip\_creep,~\\
+final\_slip\_one,final\_slip\_two,final\_slip\_three,slip\_time\_creep,slip\_time\_one,~\\
+slip\_time\_two,slip\_time\_three{]}
+\end{lyxcode}
+This additional information will be contained in file \texttt{step06-fault\_info.h5}.
+It will contain final slip information for each earthquake source
+along with slip time information. When we have run the simulation,
+the output HDF5 and Xdmf files will be contained in \texttt{examples/3d/hex8/output}
+(all with a prefix of \texttt{step06}). To open the files in ParaView,
+the Xdmf (\texttt{.xmf}) files should be opened, as these files describe
+the HDF5 data structure. Results using ParaView are shown in Figure
+\ref{fig:step06-displ-t300}.
+\begin{figure}
+\centering{}\includegraphics[width=10cm]{tutorials/3dhex8/figs/step06-displ-t300}\caption{Displacement field for example step06 at t = 300 years visualized
+using ParaView. The mesh has been distorted by the computed displacements
+(magnified by 500), and the vectors show the computed displacements.\label{fig:step06-displ-t300}.}
+\end{figure}
+
+
+
+\subsubsection{Step07 - Dirichlet Velocity Boundary Conditions with Time-Dependent
+Kinematic Fault Slip}
+
+In step07 we add velocity boundary conditions in the positive and
+negative y-directions on the positive and negative x-faces, so that
+the external boundaries keep pace with the average fault slip. This
+problem is nearly identical to the strike-slip fault model of Savage
+and Prescott \cite{Savage:Prescott:1978}, except that the fault creep
+extends through the viscoelastic portion of the domain.
+
+We use the default \texttt{ZeroDispBC} for the initial displacements
+on the positive and negative x-faces, as well as the negative z-face.
+For the velocities on the positive and negative x-faces, we use a
+\texttt{UniformDB}:
+\begin{lyxcode}
+\#~+x~face
+
+{[}pylithapp.timedependent.bc.x\_pos{]}
+
+bc\_dof~=~{[}0,~1{]}
+
+label~=~face\_xpos
+
+db\_initial.label~=~Dirichlet~BC~on~+x
+
+db\_rate~=~spatialdata.spatialdb.UniformDB
+
+db\_rate.label~=~Dirichlet~rate~BC~on~+x
+
+db\_rate.values~=~{[}displacement-rate-x,displacement-rate-y,rate-start-time{]}
+
+db\_rate.data~=~{[}0.0{*}cm/year,1.0{*}cm/year,0.0{*}year{]}~\\
+~\\
+
+
+\#~-x~face
+
+{[}pylithapp.timedependent.bc.x\_neg{]}
+
+bc\_dof~=~{[}0,~1{]}
+
+label~=~face\_xneg
+
+db\_initial.label~=~Dirichlet~BC~on~-x
+
+db\_rate~=~spatialdata.spatialdb.UniformDB
+
+db\_rate.label~=~Dirichlet~rate~BC~on~+x
+
+db\_rate.values~=~{[}displacement-rate-x,displacement-rate-y,rate-start-time{]}
+
+db\_rate.data~=~{[}0.0{*}cm/year,-1.0{*}cm/year,0.0{*}year{]}
+\end{lyxcode}
+The fault definition information is identical to example \texttt{step06}.
+In previous examples, we have just used the default output for the
+domain and subdomain (ground surface), which includes the displacements.
+In many cases, it is also useful to include the velocities. PyLith
+provides this information, computing the velocities for the current
+time step as the difference between the current displacements and
+the displacements from the previous time step, divided by the time-step
+size. This is more accurate than computing the velocities from the
+displacement field output that has been decimated in time. We can
+obtain this information by explicitly requesting it in \texttt{vertex\_data\_fields}:
+\begin{lyxcode}
+\#~Give~basename~for~output~of~solution~over~domain.~\\
+{[}pylithapp.problem.formulation.output.domain{]}
+
+\#~We~specify~that~output~occurs~in~terms~of~a~given~time~frequency,~and
+
+\#~ask~for~output~every~50~years.
+
+\#~We~also~request~velocity~output~in~addition~to~displacements.~\\
+vertex\_data\_fields~=~{[}displacement,velocity{]}
+
+output\_freq~=~time\_step
+
+time\_step~=~50.0{*}year~\\
+~\\
+
+
+\#~We~are~using~HDF5~output~so~we~must~change~the~default~writer.
+
+writer~=~pylith.meshio.DataWriterHDF5
+
+writer.filename~=~output/step07.h5~\\
+~\\
+
+
+\#~Give~basename~for~output~of~solution~over~ground~surface.
+
+{[}pylithapp.problem.formulation.output.subdomain{]}
+
+\#~Name~of~nodeset~for~ground~surface.
+
+label~=~face\_zpos~\\
+~\\
+
+
+\#~We~also~request~velocity~output~in~addition~to~displacements.
+
+vertex\_data\_fields~=~{[}displacement,velocity{]}
+
+\#~We~keep~the~default~output~frequency~behavior~(skip~every~n~steps),~and
+
+\#~ask~to~skip~0~steps~between~output,~so~that~we~get~output~every~time~step.
+
+skip~=~0~\\
+~\\
+
+
+\#~We~again~switch~the~writer~to~produce~HDF5~output.
+
+writer~=~pylith.meshio.DataWriterHDF5
+
+writer.filename~=~output/step07-groundsurf.h5
+\end{lyxcode}
+When we have run the simulation, the output HDF5 and Xdmf files will
+be contained in \texttt{examples/3d/hex8/output} (all with a prefix
+of \texttt{step07}). As for example step06, make sure to open the
+\texttt{.xmf} files rather than the \texttt{.h5} files. Results using
+ParaView are shown in Figure \ref{fig:step07-displ-vel-t300}.
+\begin{figure}
+\centering{}\includegraphics[width=10cm]{tutorials/3dhex8/figs/step07-displ-vel-t300}\caption{Displacement field (color contours) and velocity field (vectors) for
+example step07 at t = 300 years visualized using ParaView. The mesh
+has been distorted by the computed displacements (magnified by 500),
+and the vectors show the computed velocities.\label{fig:step07-displ-vel-t300}}
+\end{figure}
+
+
+
+\subsubsection{Step08 - Dirichlet Velocity Boundary Conditions with Time-Dependent
+Kinematic Fault Slip and Power-Law Rheology\label{sub:Tutorial-Step08-Power-law}}
+
+The \texttt{step08.cfg} file defines a problem that is identical to
+example step07, except the the lower crust is composed of a power-law
+viscoelastic material. Since the material behavior is now nonlinear,
+we must use the nonlinear solver:
+\begin{lyxcode}
+{[}pylithapp.timedependent{]}
+
+\#~For~this~problem~we~must~switch~to~a~nonlinear~solver.
+
+implicit.solver~=~pylith.problems.SolverNonlinear
+\end{lyxcode}
+Although we have not discussed the PyLith PETSc settings previously,
+note that the use of the nonlinear solver may require additional options
+if we wish to override the defaults. These settings are contained
+in \texttt{pylithapp.cfg}:
+\begin{lyxcode}
+{[}pylithapp.petsc{]}
+
+\#~Nonlinear~solver~monitoring~options.
+
+snes\_rtol~=~1.0e-8
+
+snes\_atol~=~1.0e-12
+
+snes\_max\_it~=~100
+
+snes\_monitor~=~true
+
+snes\_view~=~true
+
+snes\_converged\_reason~=~true
+\end{lyxcode}
+These settings are ignored unless we are using the nonlinear solver.
+
+When setting the physical properties for the power-law material in
+PyLith, the parameters (see Section \ref{sub:Power-Law-Maxwell-Viscoelastic})
+do not generally correspond to the values provided in laboratory results.
+PyLith includes a utility code, \texttt{powerlaw\_gendb.py}, to simplify
+the process of using laboratory results with PyLith. This utility
+code is installed in the same location as PyLith. An example of how
+to use it is in \texttt{examples/3d/hex8/spatialdb/powerlaw}. The
+user must provide a spatial database defining the spatial distribution
+of laboratory-derived parameters (contained in \texttt{powerlaw\_params.}~\linebreak{}
+\texttt{spatialdb}), another spatial database defining the temperature
+field in degrees K (contained in \texttt{temperature.spatialdb}),
+and a set of points for which values are desired (\texttt{powerlaw\_points.txt}).
+The parameters for the code are defined in \texttt{powerlaw\_gendb.cfg}.
+The properties expected by PyLith are \texttt{reference\_strain\_rate},
+\texttt{reference\_stress}, and \texttt{power\_law\_exponent}. The
+user must specify either \texttt{reference\_strain\_rate} or \texttt{reference\_stress}
+so that \texttt{powerlaw\_gendb.py} can compute the other property.
+Default values of 1.0e-6 1/s and 1 MPa are provided. In this example,
+the same database was used for all parameters, and a separate database
+was used to define the temperature distribution. In practice, the
+user can provide any desired thermal model to provide the spatial
+database for the temperature. In this example, a simple 1D (vertically-varying)
+distribution was used. The utility code can be used by simply executing
+it from the \texttt{examples/3d/hex8/spatialdb/powerlaw} directory:
+\begin{lyxcode}
+powerlaw\_gendb.py
+\end{lyxcode}
+This code will automatically read the parameters in \texttt{powerlaw\_gendb.cfg}
+in creating the file\\
+ \texttt{examples/3d/hex8/spatialdb/mat\_powerlaw.spatialdb}.
+
+We first change the material type of the lower crust to \texttt{PowerLaw3D}:
+\begin{lyxcode}
+\#~Change~material~type~of~lower~crust~to~power-law~viscoelastic.
+
+{[}pylithapp.timedependent{]}
+
+materials.lower\_crust~=~pylith.materials.PowerLaw3D
+\end{lyxcode}
+In many cases, it is useful to obtain the material properties from
+two different sources. For example, the elastic properties may come
+from a seismic velocity model while the viscous properties may be
+derived from a thermal model. In such a case we can use a \texttt{CompositeDB},
+which allows a different spatial database to be used for a subset
+of the properties. We do this as follows:
+\begin{lyxcode}
+\#~Provide~a~spatial~database~from~which~to~obtain~property~values.
+
+\#~In~this~case,~we~prefer~to~obtain~the~power-law~properties~from~one
+
+\#~database~and~the~elastic~properties~from~another~database,~so~we~use
+
+\#~a~CompositeDB.~Each~part~of~the~CompositeDB~is~a~SimpleDB.
+
+{[}pylithapp.timedependent.materials.lower\_crust{]}
+
+db\_properties~=~spatialdata.spatialdb.CompositeDB
+
+db\_properties.db\_A~=~spatialdata.spatialdb.SimpleDB
+
+db\_properties.db\_B~=~spatialdata.spatialdb.SimpleDB
+\end{lyxcode}
+We must define the properties that come from each spatial database
+and then provide the database parameters:
+\begin{lyxcode}
+{\small{}\#~Provide~the~values~to~be~obtained~from~each~database~and~the~database}{\small \par}
+
+{\small{}\#~name.}{\small \par}
+
+{\small{}{[}pylithapp.timedependent.materials.lower\_crust.db\_properties{]}}{\small \par}
+
+{\small{}values\_A~=~{[}density,vs,vp{]}~~~;~Elastic~properties.}{\small \par}
+
+{\small{}db\_A.label~=~Elastic~properties}{\small \par}
+
+{\small{}db\_A.iohandler.filename~=~spatialdb/mat\_elastic.spatialdb}{\small \par}
+
+{\small{}values\_B~=~{[}reference-stress,reference-strain-rate,power-law-exponent{]}~~~;~Power-law~properties.}{\small \par}
+
+{\small{}db\_B.label~=~Power-law~properties}{\small \par}
+
+{\small{}db\_B.iohandler.filename~=~spatialdb/mat\_powerlaw.spatialdb}{\small \par}
+\end{lyxcode}
+The \texttt{PowerLaw3D} material has additional properties and state
+variables with respect to the default \texttt{ElasticIsotropic3D}
+material, so we request that these properties be written to the \texttt{lower\_crust}
+material files:
+\begin{lyxcode}
+\#~Since~there~are~additional~properties~and~state~variables~for~the
+
+\#~power-law~model,~we~explicitly~request~that~they~be~output.~Properties~are
+
+\#~named~in~cell\_info\_fields~and~state~variables~are~named~in
+
+\#~cell\_data\_fields.
+
+{[}pylithapp.timedependent.materials.lower\_crust{]}
+
+output.cell\_info\_fields~=~{[}density,mu,lambda,reference\_strain\_rate,reference\_stress,~\\
+power\_law\_exponent{]}
+
+output.cell\_data\_fields~=~{[}total\_strain,stress,viscous\_strain{]}
+\end{lyxcode}
+When we have run the simulation, the output HDF5 and Xdmf files will
+be contained in \texttt{examples/3d/hex8/output} (all with a prefix
+of \texttt{step08}). Results using ParaView are shown in Figure \ref{fig:step08-strain-displ-t150}.
+\begin{figure}
+\centering{}\includegraphics[width=10cm]{tutorials/3dhex8/figs/step08-strain-displ-t150}\caption{The XY-component of strain (color contours) and displacement field
+(vectors) for example step08 at t = 150 years visualized using ParaView.
+For this visualization, we loaded both the \texttt{step08-lower\_crust.xmf}
+and \texttt{step08-upper\_crust.xmf} files to contour the strain field,
+and superimposed on it the displacement field vectors from \texttt{step08.xmf}.\label{fig:step08-strain-displ-t150}}
+\end{figure}
+
+
+
+\subsubsection{Step09 - Dirichlet Velocity Boundary Conditions with Time-Dependent
+Kinematic Fault Slip and Drucker-Prager Elastoplastic Rheology}
+
+In this example we use a Drucker-Prager elastoplastic rheology in
+the lower crust. As in example step08, the material behavior is nonlinear
+so we again use the nonlinear solver. The material is elastoplastic,
+there is no inherent time-dependent response and the stable time-step
+size for the material depends on the loading conditions. To avoid
+this, we set the maximum time-step size to 5 years rather than the
+value of 10 years used in example \texttt{step08}:
+\begin{lyxcode}
+\#~Change~the~total~simulation~time~to~700~years,~and~set~the~maximum~time
+
+\#~step~size~to~5~years.
+
+{[}pylithapp.timedependent.implicit.time\_step{]}
+
+total\_time~=~700.0{*}year
+
+max\_dt~=~5.0{*}year
+
+stability\_factor~=~1.0~;~use~time~step~equal~to~stable~value~from~materials
+
+\#~For~this~problem~we~set~adapt\_skip~to~zero~so~that~the~time~step~size~is
+
+\#~readjusted~every~time~step.
+
+adapt\_skip~=~0
+\end{lyxcode}
+We change the material type of the lower crust to \texttt{DruckerPrager3D},
+and we again use a \texttt{CompositeDB} to assign the material properties:
+\begin{lyxcode}
+\#~Change~material~type~of~lower~crust~to~Drucker-Prager.
+
+{[}pylithapp.timedependent{]}
+
+materials.lower\_crust~=~pylith.materials.DruckerPrager3D
+
+
+
+\#~Provide~a~spatial~database~from~which~to~obtain~property~values.
+
+\#~In~this~case,~we~prefer~to~obtain~the~Drucker-Prager~properties~from~one
+
+\#~database~and~the~elastic~properties~from~another~database,~so~we~use
+
+\#~a~CompositeDB.~Each~part~of~the~CompositeDB~is~a~SimpleDB.
+
+{[}pylithapp.timedependent.materials.lower\_crust{]}
+
+db\_properties~=~spatialdata.spatialdb.CompositeDB
+
+db\_properties.db\_A~=~spatialdata.spatialdb.SimpleDB
+
+db\_properties.db\_B~=~spatialdata.spatialdb.SimpleDB
+\end{lyxcode}
+As for the step08 example, we first define the properties that come
+from each spatial database and then provide the database filename:
+\begin{lyxcode}
+\#~Provide~the~values~to~be~obtained~from~each~database~and~the~database
+
+\#~name.
+
+{[}pylithapp.timedependent.materials.lower\_crust.db\_properties{]}
+
+values\_A~=~{[}density,vs,vp{]}~~~;~Elastic~properties.
+
+db\_A.label~=~Elastic~properties
+
+db\_A.iohandler.filename~=~spatialdb/mat\_elastic.spatialdb
+
+values\_B~=~{[}friction-angle,cohesion,dilatation-angle{]}~~~;~Drucker-Prager~properties.
+
+db\_B.label~=~Drucker-Prager~properties
+
+db\_B.iohandler.filename~=~spatialdb/mat\_druckerprager.spatialdb
+\end{lyxcode}
+We also request output of the properties and state variables that
+are unique to the \texttt{DruckerPrager3D} material:
+\begin{lyxcode}
+\#~Since~there~are~additional~properties~and~state~variables~for~the
+
+\#~Drucker-Prager~model,~we~explicitly~request~that~they~be~output.
+
+\#~Properties~are~named~in~cell\_info\_fields~and~state~variables~are~named~in
+
+\#~cell\_data\_fields.
+
+{[}pylithapp.timedependent.materials.lower\_crust{]}
+
+output.cell\_info\_fields~=~{[}density,mu,lambda,alpha\_yield,beta,alpha\_flow{]}
+
+output.cell\_data\_fields~=~{[}total\_strain,stress,plastic\_strain{]}
+\end{lyxcode}
+When we have run the simulation, the output HDF5 and Xdmf files will
+be contained in \texttt{examples/3d/hex8/output} (all with a prefix
+of \texttt{step09}). Results using ParaView are shown in Figure \ref{fig:step09-strain-displ-t150}.
+\begin{figure}
+\centering{}\includegraphics[width=10cm]{tutorials/3dhex8/figs/step08-strain-displ-t150}\caption{The XY-component of strain (color contours) and displacement field
+(vectors) for example step09 at t = 150 years visualized using ParaView.
+For this visualization, we loaded both the \texttt{step09-lower\_crust.xmf}
+and \texttt{step09-upper\_crust.xmf} files to contour the strain field,
+and superimposed on it the displacement field vectors from \texttt{step09.xmf}.\label{fig:step09-strain-displ-t150}}
+\end{figure}
+

@@ -1,0 +1,79 @@
+
+\chapter{\label{cha:Tutorials}Tutorials}
+
+
+\section{Overview}
+
+Each tutorial is a self-contained lesson in how to use PyLith. The
+tutorials increase in degree of complexity from one to the next.
+
+
+\subsection{Prerequisites}
+
+Before you begin any of the tutorials, you will need to install PyLith
+following the instructions in Chapter~\ref{cha:Installation-and-Getting}.
+For more complex tutorials, you will also need either CUBIT \url{cubit.sandia.gov}
+or LaGriT \url{meshing.lanl.gov} mesh generation software to create
+the meshes. If you do not wish to create your own mesh at this time,
+the meshes are also provided as part of the tutorial. The ParaView
+\url{www.paraview.org} visualization package may be used to view
+simulation results. ParaView 3 includes built-in documentation that
+is accessed by clicking on the Help menu item. Some additional documentation
+is available on the ParaView Wiki site \url{paraview.org/Wiki/ParaView}.
+You may use other visualization software, but some adaption from what
+is described here will be necessary. Furthermore, you can complete
+a subset of the tutorial using files provided (as described below),
+skipping the steps for which you do not have the proper software packages
+installed.
+
+
+\subsubsection{Input Files}
+
+The files needed to work through the tutorials are found in the \texttt{examples}
+directory under the top-level PyLith directory. There are five examples
+in \texttt{examples/twocells}, each consisting of just two cells (elements).
+These very simple examples make use of PyLith mesh ASCII format to
+define the mesh. This format is useful for understanding the basics
+of how PyLith works, since it is easy to create these files by hand.
+More complex problems, such as those found in \texttt{examples/3d},
+use external mesh generation software to create the meshes. All of
+the files used in the example problems are extensively documented
+with comments.
+
+\input{tutorials/twocells/twotri3.tex} \input{tutorials/twocells/twoquad4.tex}
+\input{tutorials/twocells/twotet4.tex}\input{tutorials/twocells/twohex8.tex}\input{tutorials/twocells/twotet4-geoproj.tex}\input{tutorials/3dtet4/3dtet4.tex}\input{tutorials/3dhex8/3dhex8.tex}\input{tutorials/subduction/subduction.tex}\input{tutorials/shearwave/shearwave.tex}\input{tutorials/greensfns2d/greensfns2d.tex}\include{tutorials/grav2d/grav2d}
+
+
+\section{Additional Examples}
+
+
+\subsection{CUBIT Meshing Examples}
+
+The directory \texttt{examples/meshing} contains several examples
+of using CUBIT to construct finite-element meshes for complex geometry.
+This includes features such as constructing nonplanar fault geometry
+from contours, constructing topography from a DEM, and merging sheet
+bodies (surfaces). A separate examples discusses defining the discretization
+size using a vertex field in an Exodus-II file. See the \texttt{README
+files in the subdirectories for more detailed descriptions of these
+examples.}
+
+
+\subsection{\label{sub:debugging:examples}Debugging Examples}
+
+The directory \texttt{examples/debugging} contains a few examples
+to practice debugging a variety of user errors in parameters files
+and problem setup. The files with the errors corrected are in \texttt{examples/debugging/correct}.
+Step-by-step corrections are discussed in the Debugging PyLith Simulations
+sessions of the 2014 and 2015 PyLith tutorials (\url{wiki.geodynamics.org/software:pylith:start}).
+
+
+\subsection{Code Verification Benchmarks}
+
+The CIG GitHub software repository \url{https://github.com/geodynamics/pylith_benchmarks}
+contains input files for a number of community benchmarks. The benchmarks
+do not include the mesh files because they are so large; instead they
+include the CUBIT journal files that can be used to generate the meshes.
+Most, but not all, of the input files in the repository are updated
+for PyLith v2.0.0, so you will need to modify them if you use another
+version of PyLith.
