@@ -1,5 +1,6 @@
 
-\section{\label{sec:benchmarks:strikeslip}Strike-Slip Benchmark}
+\section{Strike-Slip Benchmark}
+\label{sec:benchmarks:strikeslip}
 
 This benchmark problem computes the viscoelastic (Maxwell) relaxation
 of stresses from a single, finite, strike-slip earthquake in 3D without
@@ -11,9 +12,6 @@ in the y direction. We can use the analytical solution of \cite{Okada:1992}
 both to apply the boundary conditions and to compare against the numerically-computed
 elastic solution.
 
-
-
-
 \subsection{Problem Description}
 
 Figure \ref{fig:benchmark:strikeslip:geometry} shows the geometry
@@ -21,7 +19,7 @@ of the strike-slip fault (red surface) embedded in the cube consisting
 of an elastic material (yellow block) over a Maxwell viscoelastic
 material (blue block). 
 \begin{description}
-\item [{Domain}] The domain spans the region
+\item [Domain] The domain spans the region
 \begin{gather*}
 0\leq x\leq24\ km,\\
 0\leq y\leq24\ km,\\
@@ -29,11 +27,11 @@ material (blue block).
 \end{gather*}
 The top (elastic) layer occupies the region $-12\ km\ \leq z\leq0$
 and the bottom (viscoelastic) layer occupies the region $-24\ km\ \leq z\leq-12\ km$.
-\item [{Material~properties}] The material is a Poisson solid with a shear
+\item [Material~properties] The material is a Poisson solid with a shear
 modulus of 30 GPa. The domain is modeled using an elastic isotropic
 material for the top layer and a Maxwell viscoelastic material for
 the bottom layer. The bottom layer has a viscosity of 1.0e+18 Pa-s.
-\item [{Fault}] The fault is a vertical, right-lateral strike-slip fault.
+\item [Fault] The fault is a vertical, right-lateral strike-slip fault.
 The strike is parallel to the y-direction at the center of the model:
 \begin{gather*}
 x=12\ km,\\
@@ -46,7 +44,7 @@ z = -16 km. The tapered region is the light red portion of the fault
 surface in Figure \ref{fig:benchmark:strikeslip:geometry}. In the
 region where the two tapers overlap, each slip value is the minimum
 of the two tapers (so that the taper remains linear).
-\item [{Boundary~conditions}] Bottom and side displacements are set to
+\item [Boundary~conditions] Bottom and side displacements are set to
 the elastic analytical solution, and the top of the model is a free
 surface. There are two exceptions to these applied boundary conditions.
 The first is on the y=0 plane, where y-displacements are left free
@@ -54,54 +52,53 @@ to preserve symmetry, and the x- and z-displacements are set to zero.
 The second is along the line segment between (12, 0, -24) and (12,
 24, -24), where the analytical solution blows up in some cases. Along
 this line segment, all three displacement components are left free.
-\item [{Discretization}] The model is discretized with nominal spatial
+\item [Discretization] The model is discretized with nominal spatial
 resolutions of 1000 m, 500 m, and 250 m.
-\item [{Basis~functions}] We use trilinear hexahedral cells and linear
+\item [Basis~functions] We use trilinear hexahedral cells and linear
 tetrahedral cells.
-\item [{Solution}] We compute the error in the elastic solution and compare
+\item [Solution] We compute the error in the elastic solution and compare
 the solution over the domain after 0, 1, 5, and 10 years.
 \end{description}
-\noindent \begin{center}
-\begin{figure}[H]
-\begin{centering}
-\includegraphics[scale=0.33]{benchmarks/strikeslip/figs/geometry}
-\par\end{centering}
 
-\caption{Geometry of strike-slip benchmark problem.\label{fig:benchmark:strikeslip:geometry}}
+\begin{figure}[htbp]
+   \includegraphics[scale=0.33]{benchmarks/figs/strikeslip_geometry}
+   \caption{Geometry of strike-slip benchmark problem.}
+   \label{fig:benchmark:strikeslip:geometry}
 \end{figure}
-
-\par\end{center}
 
 
 \subsection{Running the Benchmark}
 
-After checking out the benchmark files from the CIG SVN repository,
-change to the \texttt{quasistatic/strikeslip} directory. Decompress
-the gzipped files in the meshes and parameters directories,
-\begin{lyxcode}
-gunzip~meshes/{*}.gz~parameters/{*}.gz
-\end{lyxcode}
-Change to the parameters directory. Each benchmark uses three \texttt{.cfg}
-files: \texttt{pylithapp.cfg}, a mesher related file (\texttt{strikeslip\_cubit.cfg}
-or \texttt{strikeslip\_lagrit.cfg}), and a resolution and cell related
-file (e.g., \texttt{strikeslip\_hex8\_1000m.cfg}). A few examples
-of running the benchmarks (elastic solution only) are
-\begin{lyxcode}
-pylith~strikeslip\_cubit.cfg~strikeslip\_hex8\_1000m.cfg
+Each benchmark uses three {\tt .cfg} files in the parameters
+directory: {\tt pylithapp.cfg}, a mesher related file ({\tt
+  strikeslip\_cubit.cfg} or {\tt strikeslip\_lagrit.cfg}), and a
+resolution and cell related file (e.g., {\tt
+  strikeslip\_hex8\_1000m.cfg}).
 
-pylith~strikeslip\_cubit.cfg~strikeslip\_hex8\_0500m.cfg
+\begin{shell}
+# Checkout the benchmark files from the CIG Git repository.
+$ git clone https://github.com/geodynamics/pylith_benchmarks.git
+# Change to the quasistatic/sceccrustdeform/strikeslip directory.
+$ cd quasistatic/sceccrustdeform/strikeslip
+# Decompress the gzipped files in the meshes and parameters
+directories.
+$ gunzip meshes/*.gz parameters/*.gz
+# Change to the parameters directory.
+$ cd parameters
+# Examples of running static (elastic solution only) cases.
+$ pylith strikeslip_cubit.cfg strikeslip_hex8_1000m.cfg
+$ pylith strikeslip_cubit.cfg strikeslip_hex8_0500m.cfg
+$ pylith strikeslip_cubit.cfg strikeslip_tet4_1000m.cfg
+# Append timedep.cfg to run the time-dependent (viscoelastic cases).
+$ pylith strikeslip_cubit.cfg strikeslip_hex8_1000m.cfg timedep.cfg
+$ pylith strikeslip_cubit.cfg strikeslip_hex8_0500m.cfg timedep.cfg
+$ pylith strikeslip_cubit.cfg strikeslip_tet4_1000m.cfg timedep.cfg
+\end{shell}
 
-pylith~strikeslip\_lagrit.cfg~strikeslip\_tet4\_1000m.cfg
-\end{lyxcode}
-To run the time-dependent (viscoelastic) problem, it is necessary
-to append \texttt{timedep.cfg} to the above commands, for example
-\begin{lyxcode}
-pylith~strikeslip\_cubit.cfg~strikeslip\_hex8\_1000m.cfg~timedep.cfg
-\end{lyxcode}
-This will run the problem for 10 years, using a time-step size of
-0.1 years, and results will be output for each year. The benchmarks
-at resolutions of 1000 m, 500 m, and 250 m require  approximately
-150 MB, 960 MB, and 8 GB, respectively.
+This will run the problem for 10 years, using a time-step size of 0.1
+years, and results will be output for each year. The benchmarks at
+resolutions of 1000 m, 500 m, and 250 m require approximately 150 MB,
+960 MB, and 8 GB, respectively.
 
 
 \subsection{Benchmark Results}
@@ -116,15 +113,11 @@ cell types. This provides practical information about what cell types
 and resolutions are required to achieve a given level of accuracy
 with the shortest runtime.
 
-\begin{figure}
-\begin{centering}
-\includegraphics[scale=0.33]{benchmarks/strikeslip/figs/soln}
-\par\end{centering}
-
-\caption{Displacement field for strike-slip benchmark problem.\label{fig:benchmark:strikeslip:solution}}
+\begin{figure}[htbp]
+  \includegraphics[scale=0.33]{benchmarks/figs/strikeslip_soln}
+  \caption{Displacement field for strike-slip benchmark problem.}
+  \label{fig:benchmark:strikeslip:solution}
 \end{figure}
-
-
 
 \subsubsection{Solution Accuracy}
 
@@ -168,97 +161,61 @@ is smaller than that for the tetrahedral cells. Both sets of cell
 types and basis functions provide the same rate of convergence as
 shown in Figure \vref{fig:benchmark:strikeslip:convergence}.
 
-\noindent \begin{center}
-\begin{figure}[H]
-\begin{centering}
-\includegraphics[scale=0.33]{benchmarks/strikeslip/figs/error_tet4_1000m}
-\par\end{centering}
-
-\caption{Local error for strike-slip benchmark problem with tetrahedral cells
-and linear basis functions with a uniform discretization size of 1000
-m.\label{fig:benchmark:strikeslip:tet4:1000m}}
+\begin{figure}[htbp]
+  \includegraphics[scale=0.33]{benchmarks/figs/strikeslip_error_tet4_1000m}
+  \caption{Local error for strike-slip benchmark problem with
+    tetrahedral cells and linear basis functions with a uniform
+    discretization size of 1000 m.}
+  \label{fig:benchmark:strikeslip:tet4:1000m}
 \end{figure}
 
-\par\end{center}
-
-\noindent \begin{center}
-\begin{figure}[H]
-\begin{centering}
-\includegraphics[scale=0.33]{benchmarks/strikeslip/figs/error_hex8_1000m}
-\par\end{centering}
-
-\caption{Local error for strike-slip benchmark problem with hexahedral cells
-and trilinear basis functions with a uniform discretization size of
-1000 m.\label{fig:benchmark:strikeslip:hex8:1000m}}
+\begin{figure}[htbp]
+  \includegraphics[scale=0.33]{benchmarks/figs/strikeslip_error_hex8_1000m}
+  \caption{Local error for strike-slip benchmark problem with
+    hexahedral cells and trilinear basis functions with a uniform
+    discretization size of 1000 m.}
+\label{fig:benchmark:strikeslip:hex8:1000m}
 \end{figure}
 
-\par\end{center}
-
-\noindent \begin{center}
-\begin{figure}[H]
-\begin{centering}
-\includegraphics[scale=0.33]{benchmarks/strikeslip/figs/error_tet4_0500m}
-\par\end{centering}
-
-\caption{Local error for strike-slip benchmark problem with tetrahedral cells
-and linear basis functions with a uniform discretization size of 500
-m.\label{fig:benchmark:strikeslip:tet4:500m}}
+\begin{figure}[htbp]
+  \includegraphics[scale=0.33]{benchmarks/figs/strikeslip_error_tet4_0500m}
+  \caption{Local error for strike-slip benchmark problem with
+    tetrahedral cells and linear basis functions with a uniform
+    discretization size of 500 m.}
+\label{fig:benchmark:strikeslip:tet4:500m}
 \end{figure}
 
-\par\end{center}
-
-\noindent \begin{center}
-\begin{figure}
-\begin{centering}
-\includegraphics[scale=0.33]{benchmarks/strikeslip/figs/error_hex8_0500m}
-\par\end{centering}
-
-\caption{Local error for strike-slip benchmark problem with hexahedral cells
-and trilinear basis functions with a uniform discretization size of
-500 m.\label{fig:benchmark:strikeslip:hex8:500m}}
+\begin{figure}[htbp]
+  \includegraphics[scale=0.33]{benchmarks/figs/strikeslip_error_hex8_0500m}
+  \caption{Local error for strike-slip benchmark problem with
+    hexahedral cells and trilinear basis functions with a uniform
+    discretization size of 500 m.}
+  \label{fig:benchmark:strikeslip:hex8:500m}
 \end{figure}
 
-\par\end{center}
-
-\noindent \begin{center}
-\begin{figure}[H]
-\begin{centering}
-\includegraphics[scale=0.33]{benchmarks/strikeslip/figs/error_tet4_0250m}
-\par\end{centering}
-
-\caption{Local error for strike-slip benchmark problem with tetrahedral cells
-and linear basis functions with a uniform discretization size of 250
-m.\label{fig:benchmark:strikeslip:tet4:250m}}
+\begin{figure}[htbp]
+  \includegraphics[scale=0.33]{benchmarks/figs/strikeslip_error_tet4_0250m}
+  \caption{Local error for strike-slip benchmark problem with
+    tetrahedral cells and linear basis functions with a uniform
+    discretization size of 250 m.}
+  \label{fig:benchmark:strikeslip:tet4:250m}
 \end{figure}
 
-\par\end{center}
-
-\noindent \begin{center}
-\begin{figure}[H]
-\begin{centering}
-\includegraphics[scale=0.33]{benchmarks/strikeslip/figs/error_hex8_0250m}
-\par\end{centering}
-
-\caption{Local error for strike-slip benchmark problem with hexahedral cells
-and trilinear basis functions with a uniform discretization size of
-250 m.\label{fig:benchmark:strikeslip:hex8:250m}}
+\begin{figure}[htbp]
+  \includegraphics[scale=0.33]{benchmarks/figs/strikeslip_error_hex8_0250m}
+  \caption{Local error for strike-slip benchmark problem with
+    hexahedral cells and trilinear basis functions with a uniform
+    discretization size of 250 m.}
+  \label{fig:benchmark:strikeslip:hex8:250m}
 \end{figure}
 
-\par\end{center}
-
-\noindent \begin{center}
-\begin{figure}[H]
-\begin{centering}
-\includegraphics[scale=0.33]{benchmarks/strikeslip/figs/convergence}
-\par\end{centering}
-
-\caption{Convergence rate for the strike-slip benchmark problem with tetrahedral
-cells and linear basis functions and with hexahedral cells with trilinear
-basis functions.\label{fig:benchmark:strikeslip:convergence}}
+\begin{figure}[htbp]
+  \includegraphics[scale=0.33]{benchmarks/figs/strikeslip_convergence}
+  \caption{Convergence rate for the strike-slip benchmark problem with
+    tetrahedral cells and linear basis functions and with hexahedral
+    cells with trilinear basis functions.}
+  \label{fig:benchmark:strikeslip:convergence}
 \end{figure}
-
-\par\end{center}
-
 
 \subsubsection{Performance}
 
@@ -277,19 +234,16 @@ As a result, the runtime for the simulations with hexahedral cells
 is significantly less than that for the tetrahedral cells at the same
 resolution. 
 
-\noindent \begin{center}
-\begin{figure}[H]
-\begin{centering}
-\includegraphics[scale=0.5]{benchmarks/strikeslip/figs/summary}
-\par\end{centering}
-
-\caption{Summary of performance of PyLith for the six simulations of the strike-slip
-benchmark. For a given discretization size, hexahedral cells with
-trilinear basis functions provide greater accuracy with a shorter
-runtime compared with tetrahedral cells and linear basis functions.\label{fig:benchmark:strikeslip:summary}}
+\begin{figure}[htbp]
+  \includegraphics[scale=0.5]{benchmarks/figs/strikeslip_summary}
+  \caption{Summary of performance of PyLith for the six simulations of
+    the strike-slip benchmark. For a given discretization size,
+    hexahedral cells with trilinear basis functions provide greater
+    accuracy with a shorter runtime compared with tetrahedral cells
+    and linear basis
+    functions.}
+  \label{fig:benchmark:strikeslip:summary}
 \end{figure}
-
-\par\end{center}
 
 Figure \vref{fig:benchmark:strikeslip:scaling} compares the runtime
 for the benchmark (elastic solution only) at 500 m resolution for
@@ -309,19 +263,18 @@ approximately linear slope of 0.7. S linear decrease with a slope
 of 1 would indicate strong scaling, which is rarely achieved in real
 applications.
 
-\noindent \begin{center}
-\begin{figure}[H]
-\begin{centering}
-\includegraphics[scale=0.75]{benchmarks/strikeslip/figs/scaling}
-\par\end{centering}
-
-\caption{Parallel performance of PyLith for the strike-slip benchmark problem
-with tetrahedral cells and linear basis functions with a uniform discretization
-size of 500 m. The total runtime (total) and the runtime to compute
-the Jacobian and residual and solve the system (compute) are shown.
-The compute runtime decreases with a slope of about 0.7; a linear
-decrease with a slope of 1 would indicate strong scaling,  which is
-rarely achieved in any real application. \label{fig:benchmark:strikeslip:scaling}}
+\begin{figure}[htbp]
+  \includegraphics[scale=0.75]{benchmarks/figs/strikeslip_scaling}
+  \caption{Parallel performance of PyLith for the strike-slip
+    benchmark problem with tetrahedral cells and linear basis
+    functions with a uniform discretization size of 500 m. The total
+    runtime (total) and the runtime to compute the Jacobian and
+    residual and solve the system (compute) are shown.  The compute
+    runtime decreases with a slope of about 0.7; a linear decrease
+    with a slope of 1 would indicate strong scaling, which is rarely
+    achieved in any real
+    application.}
+  \label{fig:benchmark:strikeslip:scaling}
 \end{figure}
 
-\par\end{center}
+% End of file

@@ -1,5 +1,5 @@
-
-\section{\label{sec:benchmarks:savageprescott}Savage and Prescott Benchmark}
+\section{Savage and Prescott Benchmark}
+\label{sec:benchmarks:savageprescott}
 
 This benchmark problem computes the viscoelastic (Maxwell) relaxation
 of stresses from repeated infinite, strike-slip earthquakes in 3D
@@ -57,12 +57,12 @@ however, such meshes typically do not provide accurate solutions since
 the resolution is too coarse in the region of interest. For that reason,
 we also tested meshes where the mesh resolution decreases away from
 the center. In the problem description that follows, we will focus
-on the hexahedral mesh with finer discretization near the fault \linebreak{}
-(\texttt{meshes/hex8\_6.7km.exo.gz}), which provides a good match
+on the hexahedral mesh with finer discretization near the fault
+({\tt meshes/hex8\_6.7km.exo.gz}), which provides a good match
 with the analytical solution. It will first be necessary to gunzip
 this mesh so that it may be used by PyLith.
 \begin{description}
-\item [{Domain}] The domain for this mesh spans the region
+\item [Domain] The domain for this mesh spans the region
 \begin{gather*}
 -1000\leq x\leq1000\ km,\\
 -500\leq y\leq500\ km,\\
@@ -70,13 +70,13 @@ this mesh so that it may be used by PyLith.
 \end{gather*}
 The top (elastic) layer occupies the region $-40\ km\ \leq z\leq0$
 and the bottom (viscoelastic) layer occupies the region $-400\ km\ \leq z\leq-40\ km$.
-\item [{Material~properties}] The material is a Poisson solid with a shear
+\item [Material~properties] The material is a Poisson solid with a shear
 modulus ($\mu$) of 30 GPa. The domain is modeled using an elastic
 isotropic material for the top layer and a Maxwell viscoelastic material
 for the bottom layer. The bottom layer has a viscosity ($\eta$) of
 2.36682e+19 Pa-s, yielding a relaxation time ($2\eta/\mu$) of 50
 years.
-\item [{Fault}] The fault is a vertical, left-lateral strike-slip fault.
+\item [Fault] The fault is a vertical, left-lateral strike-slip fault.
 The strike is parallel to the y-direction at the center of the model:
 \begin{gather*}
 x=0\ km,\\
@@ -89,63 +89,63 @@ extends from $-40\: km\leq z\leq0$. Along the line where the two
 sections coincide ($z=-20\: km$), half of the coseismic displacement
 and half of the steady creep is applied (see \texttt{finalslip.spatialdb}
 and \texttt{creeprate.spatialdb}).
-\item [{Boundary~conditions}] On the bottom boundary, vertical displacements
+\item [Boundary~conditions] On the bottom boundary, vertical displacements
 are set to zero, while on the y-boundaries the x-displacements are
 set to zero. On the x-boundaries, the x-displacements are set to zero,
 while constant velocities of +/- 1 cm/yr are applied in the y-direction,
 giving a relative plate motion of 2 cm/year.
-\item [{Discretization}] For the nonuniform hexahedral mesh, the resolution
+\item [Discretization] For the nonuniform hexahedral mesh, the resolution
 at the outer boundaries is 20 km. An inner region is then put through
 one level of refinement, so that near the center of the mesh the resolution
 is 6.7 km. All meshes were generated with CUBIT.
-\item [{Basis~functions}] We use trilinear hexahedral cells.
-\item [{Solution}] We compute the surface displacements and compare these
+\item [Basis~functions] We use trilinear hexahedral cells.
+\item [Solution] We compute the surface displacements and compare these
 to the analytical solution in Figure \ref{fig:benchmark:savageprescott:solution}.
 \end{description}
-\noindent \begin{center}
-\begin{figure}[H]
-\begin{centering}
-\includegraphics[scale=0.33]{benchmarks/savageprescott/figs/model_descript}
-\par\end{centering}
 
-\caption{Problem description for the Savage and Prescott strike-slip benchmark
-problem.\label{fig:benchmark:savageprescott:geometry}}
+\begin{figure}[htbp]
+  \includegraphics[scale=0.33]{benchmarks/figs/savageprescott_diagram}
+  \caption{Problem description for the Savage and Prescott strike-slip
+    benchmark problem.}
+  \label{fig:benchmark:savageprescott:geometry}
 \end{figure}
-
-\par\end{center}
 
 
 \subsection{Running the Benchmark}
 
-After checking out the benchmark files from the CIG SVN repository,
-change to the \texttt{meshes} directory. Decompress the gzipped files
-in the \texttt{mesh} directory,
-\begin{lyxcode}
-gunzip~{*}.gz
-\end{lyxcode}
-Alternatively, simply gunzip the mesh you want to use. There are a
-number of \texttt{.cfg} files corresponding to the different meshes,
-as well as a \texttt{pylithapp.cfg} file defining parameters common
-to all problems. Each problem uses four \texttt{.cfg} files: \texttt{pylithapp.cfg},
-\texttt{fieldsplit.cfg} (algrebraic multigrid preconditioner), a cell-specific
-file (e.g., \texttt{hex8.cfg}), and a resolution specific file (e.g.,
-hex8\_6.7km.cfg). You can then run the problem by typing
-\begin{lyxcode}
-pylith~hex8.cfg~hex8\_6.7km.cfg~fieldsplit.cfg
-\end{lyxcode}
-This will run the problem for 10 earthquake cycles of 200 years each,
+There are a number of {\tt .cfg} files corresponding to the
+different meshes, as well as a {\tt pylithapp.cfg} file defining
+parameters common to all problems. Each problem uses four
+{\tt .cfg} files: {\tt pylithapp.cfg}, {\tt fieldsplit.cfg}
+(algrebraic multigrid preconditioner), a cell-specific file (e.g.,
+{\tt hex8.cfg}), and a resolution specific file (e.g.,
+hex8\_6.7km.cfg).
+
+\begin{shell}
+# If you have not do so already, checkout the benchmarks from the CIG Git repository.
+$ git clone https://github.com/geodynamics/pylith_benchmarks.git
+# Change to the quasistatic/sceccrustdeform/savageprescott directory.
+$ cd quasistatic/sceccrustdeform/savageprescott
+# Decompress the gzipped files in the meshes directory.
+$ gunzip meshes/*.gz
+# Run one of the simulations.
+$ pylith hex8.cfg hex8_6.7km.cfg fieldsplit.cfg
+\end{shell}
+
+Each simulation uses 10 earthquake cycles of 200 years each,
 using a time-step size of 10 years, for a total simulation time of
 2000 years. Ground surface output occurs every 10 years, while all
 other outputs occur every 50 years.
 
-Once the problem has run, results will be placed in the \texttt{output}
-directory. These results may be viewed directly with a package such
-as ParaView; however, to compare results to the analytical solution,
-some postprocessing is required. First, generate the analytical results
-by running the \texttt{calc\_analytic.py} script. This will produce
-files with displacements and velocities (\texttt{analytic\_disp.txt}
-and \texttt{analytic\_vel.txt}) in the \texttt{output} directory that
-are easy to use with a plotting package, such as matplotlib or Matlab.
+Once the problem has run, results will be placed in the {\tt output}
+directory. These results may be viewed directly using 3-D
+visualization software such as ParaView; however, to compare results
+to the analytical solution, some postprocessing is required. First,
+generate the analytical results by running the {\tt calc\_analytic.py}
+script. This will produce files with displacements and velocities
+({\tt analytic\_disp.txt} and {\tt analytic\_vel.txt}) in the {\tt
+  output} directory that are easy to use with a plotting package, such
+as matplotlib or Matlab.
 
 
 \subsection{Benchmark Results}
@@ -163,13 +163,12 @@ the region of interest. Also note that the agreement between analytical
 and numerical solutions is poor for early earthquake cycles, due to
 the differences in simulating the problem, as noted above.
 
-\begin{figure}
-\begin{centering}
-\includegraphics[scale=0.66]{benchmarks/savageprescott/figs/soln_profiles}
-\par\end{centering}
-
-\caption{Displacement profiles perpendicular to the fault for a PyLith simulation
-with hex8 cells and the analytical solution for earthquake cycle 10.
-\label{fig:benchmark:savageprescott:solution}}
+\begin{figure}[htbp]
+  \includegraphics[scale=0.66]{benchmarks/figs/savageprescott_soln_profiles}
+  \caption{Displacement profiles perpendicular to the fault for a
+    PyLith simulation with hex8 cells and the analytical solution for
+    earthquake cycle 10.}
+  \label{fig:benchmark:savageprescott:solution}
 \end{figure}
 
+% End of file
