@@ -32,10 +32,12 @@
 \RequirePackage{calc}
 \RequirePackage{tikz}
 
+%\RequirePackage{url}
 \RequirePackage[%
   unicode=true,%
   pdfusetitle,%
-  bookmarks=true,
+  pdftex,%
+  bookmarks=true,%
   bookmarksnumbered=false,%
   bookmarksopen=false,%
   breaklinks=true,%
@@ -164,6 +166,10 @@
       ]{\bf New in #1};
     \end{tikzpicture}}
 %
+% file, directory
+\newcommand{\filename}[1]{{\tt #1}}
+\newcommand{\commandline}[1]{{\tt #1}}
+
 % ------------------------------------------------------------------
 % Code blocks
 % .cfg
@@ -182,7 +188,7 @@
     language=bash,%
     frame=single,%
     basicstyle=\small\ttfamily,%
-    morekeywords={$},%
+    morekeywords={$$},%
     commentstyle=\itshape\color{orange},
 }}{}
 \lstnewenvironment{cfg}{\lstset{language=cfg}}{}

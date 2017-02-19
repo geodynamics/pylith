@@ -20,10 +20,46 @@ those who modify the source code. Users who modify the source are
 likely to have familiarity with scripting, software installation,
 and programming, but are not necessarily professional programmers.
 
+\section{Conventions}
+
+\warning{This is a warning.}
+\important{This is something important.}
+\tip{This is a tip, helpful hint, or suggestion.}
+
+For features recently added to PyLith, we show the version number when
+they were added.\newfeature{v2.1.4}
+
+\subsection{Command Line Arguments}
+
+Exmaple of a command line argument: \commandline{-{}-help}.
+
+\subsection{Filenames and Directories}
+
+Example of filenames and directories: \filename{pylith}, \filename{/usr/local}.
+
+\subsection{Unix Shell Commands}
+
+Commands entered into a Unix shell (i.e., terminal) are shown in a
+box. Comments are delimited by the \# character. We use 
+{\tt \$\$} to indicate the bash shell prompt.
+\begin{shell}
+# This is a comment.
+$$ ls -l
+\end{shell}
+
+\subsection{Excerpts of cfg Files}
+
+Exmaple of an excerpt from a \filename{.cfg} file:
+\begin{cfg}
+# This is a comment.
+<h>[pylithapp.problem]</h>
+<p>timestep</p> = 2.0*s ; Time step comment.
+<f>bc</f> = [x_pos, x_neg]
+\end{cfg}
 
 \section{Citation}
 
-The Computational Infrastructure for Geodynamics (CIG) \url{geodynamics.org}
+The Computational Infrastructure for Geodynamics (CIG) (\url{geodynamics.org})
 is making this source code available to you at no cost in hopes that
 the software will enhance your research in geophysics. A number of
 individuals have contributed a significant portion of their careers
@@ -32,9 +68,9 @@ recognize these individuals in the normal scientific practice by citing
 the appropriate peer-reviewed papers and making appropriate acknowledgments
 in talks and publications. The preferred way to generate the list
 of publications (in Bib\TeX{} format) to cite is to run your simulations
-with the \texttt{-{}-include-citations} command line argument, or
-equivalently, the \texttt{-{}-petsc.citations} command line argument.
-The \texttt{-{}-help-citations} command line argument will generate
+with the \commandline{-{}-include-citations} command line argument, or
+equivalently, the \commandline{-{}-petsc.citations} command line argument.
+The \commandline{-{}-help-citations} command line argument will generate
 the Bib\TeX{} entries for the references mentioned below.
 
 The following peer-reviewed paper discussed the development of PyLith:
