@@ -167,9 +167,9 @@
     \end{tikzpicture}}
 %
 % file, directory
-\newcommand{\filename}[1]{{\tt #1}}
-\newcommand{\commandline}[1]{{\tt #1}}
-\newcommand{\object}[1]{{\sf #1}}
+\newcommand{\filename}[1]{{\ttfamily #1}}
+\newcommand{\commandline}[1]{{\ttfamily #1}}
+\newcommand{\object}[1]{{\sffamily #1}}
 
 % ------------------------------------------------------------------
 % Code blocks
