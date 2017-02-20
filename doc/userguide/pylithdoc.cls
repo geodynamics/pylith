@@ -183,6 +183,7 @@
   moredelim=[is][\color{purple}\bfseries]{<p>}{</p>},
   moredelim=[is][\color{blue}\bfseries]{<f>}{</f>},
 }
+\lstnewenvironment{cfg}{\lstset{language=cfg}}{}
 %
 % shell  
 \lstnewenvironment{shell}{\lstset{%
@@ -192,13 +193,14 @@
     morekeywords={$$},%
     commentstyle=\itshape\color{orange},
 }}{}
-\lstnewenvironment{cfg}{\lstset{language=cfg}}{}
 
 % ------------------------------------------------------------------
 % Lists
 % Pyre inventory
-\newcommand{\property}[2]{\item[\ttfamily\bfseries\color{purple}#1]{#2}}
-\newcommand{\facility}[2]{\item[\ttfamily\bfseries\color{blue}#1]{#2}}
+\newcommand{\property}[1]{{\ttfamily\bfseries\color{purple}#1}}
+\newcommand{\facility}[1]{{\ttfamily\bfseries\color{blue}#1}}
+\newcommand{\propertyitem}[2]{\item[\property{#1}]{#2}}
+\newcommand{\facilityitem}[2]{\item[\facility{#1}]{#2}}
 \newenvironment{inventory}{%
   \begin{list}{}{%
       \setlength{\topsep}{0em}%
