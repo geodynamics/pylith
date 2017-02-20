@@ -1,28 +1,31 @@
 
 \chapter{Running PyLith}
 
-Figure \ref{fig:pylith:workflow} shows the workflow for running PyLith.
+Figure \vref{fig:pylith:workflow} shows the workflow for running PyLith.
 There are essentially three main inputs needed to run a problem with
 PyLith:
 \begin{enumerate}
-\item Mesh information. This includes the topology of the finite-element
-mesh (coordinates of vertices and how the vertices are connected into
-cells), a material identifier for each cell, and sets of vertices
-associated with boundary conditions, faults, and output (for subsets
-of the mesh). This information can be provided using the PyLith mesh
-ASCII format (see Chapter \ref{cha:Tutorials} for examples and Section
-\ref{sec:MeshIOAscii} for the format specification) or by importing
-the information from the LaGriT or CUBIT meshing packages (see Chapter
-\ref{cha:Tutorials} for examples).
-\item A set of parameters describing the problem. These parameters describe
-the type of problem to be run, solver information, time-stepping information,
-boundary conditions, materials, etc. This information can be provided
-from the command-line or by using a \texttt{.cfg.}
-\item Databases specifying the material property values and boundary condition
-values to be used. Arbitrarily complex spatial variations in boundary
-and fault conditions and material properties may be given in the spatial
-database (see Chapter \ref{cha:Tutorials} for examples and Appendix
-\ref{sec:Spatialdata:SimpleIOAscii} for the format specification).
+\item Mesh information. This includes the topology of the
+  finite-element mesh (coordinates of vertices and how the vertices
+  are connected into cells), a material identifier for each cell, and
+  sets of vertices associated with boundary conditions, faults, and
+  output (for subsets of the mesh). This information can be provided
+  using the PyLith mesh ASCII format (see Chapter \vref{sec:examples}
+  for examples and Section \vref{sec:MeshIOAscii} for the format
+  specification) or by importing the information from the LaGriT or
+  CUBIT meshing packages (see Chapter \vref{src:examples} for
+  examples).
+\item A set of parameters describing the problem. These parameters
+  describe the type of problem to be run, solver information,
+  time-stepping information, boundary conditions, materials, etc. This
+  information can be provided from the command-line or by using a
+  \filename{.cfg.}
+\item Databases specifying the material property values and boundary
+  condition values to be used. Arbitrarily complex spatial variations
+  in boundary and fault conditions and material properties may be
+  given in the spatial database (see Chapter \vref{sec:examples} for
+  examples and Appendix \vref{sec:spatialdata:SimpleIOAscii} for the
+  format specification).
 \end{enumerate}
 PyLith writes solution information, such as solution fields and state
 variables, to either VTK files or HDF5/Xdmf files. ParaView and Visit
@@ -30,279 +33,249 @@ can read both types of files. Post-processing of output is generally
 performed using HDF5 files accessed via a Python script and the h5py
 package or a Matlab script.
 
-\noindent \begin{center}
-\begin{figure}[H]
-\noindent \begin{centering}
-\includegraphics[width=5in]{runpylith/figs/runpylith} 
-\par\end{centering}
-
-\caption{PyLith requires a finite-element mesh (three different mechanisms
-for generating a mesh are currently supported), simulation parameters,
-and spatial databases (defining the spatial variation of various parameters).
-PyLith writes the solution output to either VTK or HDF5/Xdmf files,
-which can be visualized with ParaView or Visit. Post-processing is
-generally done using the HDF5 files with Python or Matlab scripts.}
-
-
+\begin{figure}[htbp]
+  \includegraphics[width=5in]{runpylith/figs/runpylith} 
+  \caption{PyLith requires a finite-element mesh (three different
+    mechanisms for generating a mesh are currently supported),
+    simulation parameters, and spatial databases (defining the spatial
+    variation of various parameters).  PyLith writes the solution
+    output to either VTK or HDF5/Xdmf files, which can be visualized
+    with ParaView or Visit. Post-processing is generally done using
+    the HDF5 files with Python or Matlab scripts.}
 \label{fig:pylith:workflow} 
 \end{figure}
-
-\par\end{center}
 
 
 \section{Defining the Simulation}
 
 The parameters for PyLith are specified as a hierarchy or tree of
 modules. The application assembles the hierarchy of modules from user
-input and then calls the \texttt{main} function in the top-level module
-in the same manner as a C or C++ program. The behavior of the application
-is determined by the modules included in the hierarchy as specified
-by the user. The Pyre framework provides the interface for defining
-this hierarchy. Pyre properties correspond to simple settings in the
-form of strings, integers, and real numbers. Pyre facilities correspond
-to software modules. Facilities may have their own facilities (branches
-in the tree) and any number of properties. See Figure \ref{fig:Pyre:Architecture}
-for the general concept of Pyre facilities and properties. The top-level
-object is the PyLith application with three facilities: \texttt{mesher},
-\texttt{problem}, and \texttt{petsc}. The \texttt{mesher} specifies
-how to import the mesh, the \texttt{problem} specifies the physical
-properties, boundary conditions, etc., and \texttt{petsc} is used
-to specify PETSc settings. Appendix \ref{cha:components} contains
-a list of the components provided by PyLith and spatialdata.
+input and then calls the \object{main} function in the top-level
+module in the same manner as a C or C++ program. The behavior of the
+application is determined by the modules included in the hierarchy as
+specified by the user. The Pyre framework provides the interface for
+defining this hierarchy. Pyre properties correspond to simple settings
+in the form of strings, integers, and real numbers. Pyre facilities
+correspond to software modules. Facilities may have their own
+facilities (branches in the tree) and any number of properties. See
+Figure \vref{fig:Pyre:Architecture} for the general concept of Pyre
+facilities and properties. The top-level object is the PyLith
+application with three facilities: \facility{mesher}, \facility{problem},
+and \facility{petsc}. The \facility{mesher} specifies how to import the
+mesh, the \facility{problem} specifies the physical properties, boundary
+conditions, etc., and \facility{petsc} is used to specify PETSc
+settings. Appendix \vref{sec:components} contains a list of the
+components provided by PyLith and spatialdata.
 
 
-\subsection{\label{sec:setting:parameters}Setting PyLith Parameters}
+\subsection{Setting PyLith Parameters}
+\label{sec:setting:parameters}
 
-There are several methods for setting input parameters for the \texttt{pylith}
-executable: via the command line or by using a text file in \texttt{.cfg}
-or \texttt{.pml} format. Both facilities and properties have default
-values provided, so you only need to set values when you want to deviate
-from the default behavior.
+There are several methods for setting input parameters for the
+\filename{pylith} executable: via the command line or by using a text
+file in \filename{.cfg} or \filename{.pml} format. Both facilities and
+properties have default values provided, so you only need to set
+values when you want to deviate from the default behavior.
 
 
 \subsubsection{Units}
 
 All dimensional parameters require units. The units are specified
-using Python and FORTRAN syntax, so square meters is m{*}{*}2. Whitespace
+using Python and FORTRAN syntax, so square meters is m**2. Whitespace
 is not allowed in the string, for units and dimensioned quantities
 are multiplied by the units string; for example, two meters per second
-is 2.0{*}m/s. Available units are shown in Table \ref{tab:pyre:units}
+is 2.0*m/s. Available units are shown in Table \vref{tab:pyre:units}
 
-\noindent \begin{center}
-\begin{table}[H]
-\centering{}\caption{\label{tab:pyre:units}Pyre supported units. Aliases are in parentheses.}
-\begin{tabular}{|>{\raggedright}p{0.9in}|>{\raggedright}p{4in}|}
-\hline 
-\textbf{Scale} & \textbf{Available Units}\tabularnewline
-\hline 
+\begin{table}[htbp]
+\caption{Pyre supported units. Aliases are in parentheses.}
+\label{tab:pyre:units}
+\begin{tabular}{lp{5in}}
+\textbf{Scale} & \textbf{Available Units} \\
 \hline 
 length & meter (m), micrometer (um, micron), millimeter (mm), centimeter (cm),
-kilometer (km), inch, foot, yard, mile\tabularnewline
-\hline 
+kilometer (km), inch, foot, yard, mile \\
 time & second (s), nanosecond (ns), microsecond (us), millisecond (ms), minute,
-hour, day, year\tabularnewline
-\hline 
+hour, day, year \\
 mass & kilogram (kg), gram (g), centigram (cg), milligram (mg), ounce, pound,
-ton\tabularnewline
-\hline 
-pressure & pascal (Pa), kPa, MPa, GPa, bar, millibar, atmosphere (atm)\tabularnewline
+ton \\
+pressure & pascal (Pa), kPa, MPa, GPa, bar, millibar, atmosphere (atm) \\
 \hline 
 \end{tabular}
 \end{table}
 
-\par\end{center}
-
 
 \subsubsection{Using the Command Line}
 
-The \texttt{-{}-help} command line argument displays links to useful
+The \commandline{-{}-help} command line argument displays links to useful
 resources for learning PyLith.
 
 Pyre uses the following syntax to change properties from the command
-line. To change the value of a property of a component, use:
-\begin{lyxcode}
--{}-{[}component{]}.{[}property{]}={[}value{]}
-\end{lyxcode}
-Each component is attached to a facility, so the option above can
-also be written as: 
-\begin{lyxcode}
--{}-{[}facility{]}.{[}property{]}={[}value{]}
-\end{lyxcode}
-Each facility has a default component attached to it. A different
-component can be attached to a facility by:
-\begin{lyxcode}
--{}-{[}facility{]}={[}new\_component{]}~
-\end{lyxcode}
+line. To change the value of a property of a component, use
+\commandline{-{}-COMPONENT.PROPERTY=VALUE}. Each component is attached
+to a facility, so the option above can also be written as
+\commandline{-{}-FACILITY.PROPERTY=VALUE}.  Each facility has a
+default component attached to it. A different component can be
+attached to a facility by \commandline{-{}-FACILITY=NEW\_COMPONENT}.
+
 PyLith's command-line arguments can control Pyre and PyLith properties
 and facilities, MPI settings, and PETSc settings. All PyLith-related
-properties are associated with the \texttt{pylithapp} component. You
-can get a list of all of these top-level properties along with a description
-of what they do by running PyLith with the \texttt{-{}-help-properties}
-command-line argument. To get information on user-configurable facilities
-and components, you can run PyLith with the \texttt{-{}-help-components}
-command-line argument. To find out about the properties associated
-with a given component, you can run PyLith with the \texttt{-{}-{[}component{]}.help-properties}
-flag:
-\begin{lyxcode}
-\$~pylith~-{}-problem.help-properties
-\end{lyxcode}
-Each component may also have sub-components associated with it:
-\begin{lyxcode}
-\$~pylith~-{}-~problem.help-components
-\end{lyxcode}
-By starting at the top-level components, you can determine the components
-and properties at each level by working down to lower-level components:
-\begin{lyxcode}
-\$~pylith~-{}-problem.bc.help-components
-
-\$~pylith~-{}-problem.bc.help-properties
-\end{lyxcode}
-Using the \texttt{-{}-help-components} and \texttt{-{}-help-properties}
-flags for the various components and sub-components is a good way
-to discover potential problems in a simulation.
+properties are associated with the \facility{pylithapp} component. You
+can get a list of all of these top-level properties along with a
+description of what they do by running PyLith with the
+\commandline{-{}-help-properties} command-line argument. To get
+information on user-configurable facilities and components, you can
+run PyLith with the \commandline{-{}-help-components} command-line
+argument. To find out about the properties associated with a given
+component, you can run PyLith with the
+\commandline{-{}-COMPONENT.help-properties} flag:
+\begin{shell}
+$$ pylith -{}-problem.help-properties
+# Show problem components.
+$$ pylith -{}-~problem.help-components
+# Show bc components (bc is a component of problem).
+$$ pylith -{}-problem.bc.help-components
+# Show bc properties.
+$$ pylith -{}-problem.bc.help-properties
+\end{shell}
 
 
-\subsubsection{Using a \texttt{.cfg} File}
+\subsubsection{Using a {\ttfamily .cfg} File}
 
 Entering all those parameters via the command line involves the risk
-of typographical errors, which can lead to undesired results. You
-will generally find it easier to write a brief \texttt{.cfg} input
-file that contains the parameters. This file has a format similar
-to a Windows INI file. The file is composed of one or more sections
+of typographical errors. You
+will generally find it easier to collect parameters into a
+\filename{.cfg} file. The file is composed of one or more sections
 which are formatted as follows:
-\begin{lyxcode}
-{[}pylithapp.subcomponent1.subcomponent2{]}
+\begin{cfg}
+<h>[pylithapp.COMPONENT1.COMPONENT2]</h>
+# This is a comment.
 
-\#~this~is~a~comment
+<f>FACILITY3</f> = COMPONENT3
+<p>PROPERTY1</p> = VALUE1
+<p>PROPERTY2</p> = VALUE2 ; this is another comment
+\end{cfg}
 
-property1~=~value1
-
-property2~=~value2~;~this~is~another~comment
-\end{lyxcode}
-We strongly recommend that you use \texttt{.cfg} files for your work.
-The files are syntax-highlighted in the vim editor.
+\tip{We strongly recommend that you use \filename{.cfg} files for your
+  work.  The files are syntax-highlighted in the vim editor.}
 
 
-\subsubsection{Using a \texttt{.pml} File}
+\subsubsection{Using a {\ttfamily.pml} File}
 
-A \texttt{.pml} file is an XML file that specifies parameter values
+A \filename{.pml} file is an XML file that specifies parameter values
 in a highly structured format. It is composed of nested sections which
 are formatted as follows:
-\begin{lyxcode}
-<component~name='component1'>
-
-~~~~<component~name='component2'>
-
-~~~~~~~~<property~name='property1'>value1</property>
-
-~~~~~~~~<property~name='property2'>value2</property>
-
-~~~~</component>
-
+\begin{lstlisting}[basicstyle=\ttfamily,frame=tb]{language=xml}
+<component~name="COMPONENT1">
+    <component~name="COMPONENT2">
+        <property~name="PROPERTY1">VALUE1</property>
+        <property~name="PROPERTY2">VALUE2</property>
+    </component>
 </component>
-\end{lyxcode}
+\end{lstlisting}
 XML files are intended to be read and written by machines, not edited
-manually by humans. The \texttt{.pml} file format is intended for
+manually by humans. The \filename{.pml} file format is intended for
 applications in which PyLith input files are generated by another
 program, e.g., a GUI, web application, or a high-level structured
 editor. This file format will not be discussed further here, but if
-you are interested in using \texttt{.pml} files, note that \texttt{.pml}
-files and \texttt{.cfg} files can be used interchangeably; in the
-following discussion, a file with a \texttt{.pml} extension can be
-substituted anywhere a \texttt{.cfg} file can be used.
+you are interested in using \filename{.pml} files, note that \filename{.pml}
+files and \filename{.cfg} files can be used interchangeably; in the
+following discussion, a file with a \filename{.pml} extension can be
+substituted anywhere a \filename{.cfg} file can be used.
 
 
 \subsubsection{Specification and Placement of Configuration Files}
 
 Configuration files may be specified on the command line:
-\begin{lyxcode}
-\$~pylith~example.cfg
-\end{lyxcode}
+\begin{shell}
+$$ pylith example.cfg
+\end{shell}
 In addition, the Pyre framework searches for configuration files named
-\texttt{pylithapp.cfg} in several predefined locations. You may put
+\filename{pylithapp.cfg} in several predefined locations. You may put
 settings in any or all of these locations, depending on the scope
 you want the settings to have:
 \begin{enumerate}
-\item \texttt{\$PREFIX/etc/pylithapp.cfg}, for system-wide settings;
-\item \texttt{\$HOME/.pyre/pylithapp/pylithapp.cfg}, for user settings and
-preferences;
-\item the current directory (\texttt{./pylithapp.cfg}), for local overrides. \end{enumerate}
-\begin{quote}
-\textbf{\textcolor{red}{Warning}}: The Pyre framework will search
-these directories for .cfg files matching the names of components
-(for example, \texttt{timedependent.cfg, faultcohesivekin.cfg, greensfns.cfg,
-pointforce.cfg}, etc) and attempt to assign all parameters in those
-files to the respective component.
-\end{quote}
-Parameters given directly on the command line will override any input
-contained in a configuration file. Configuration files given on the
-command line override all others. The \texttt{pylithapp.cfg} files
-placed in (3) will override those in (2), (2) overrides (1), and (1)
-overrides only the built-in defaults.
+\item \filename{\$PREFIX/etc/pylithapp.cfg}, for system-wide settings;
+\item \filename{\$HOME/.pyre/pylithapp/pylithapp.cfg}, for user
+  settings and preferences;
+\item the current directory (\filename{./pylithapp.cfg}), for local
+  overrides.
+\end{enumerate}
 
-All of the example problems are set up using configuration files in
-the example directory, and specific problems are defined by including
+\important{The Pyre framework will search these directories for
+  \filename{.cfg} files matching the names of components (for example,
+  \filename{timedependent.cfg}, \filename{faultcohesivekin.cfg},
+  \filename{greensfns.cfg}, \filename{pointforce.cfg}, etc) and will
+  attempt to assign all parameters in those files to the respective
+  component.}
+
+\important{Parameters given directly on the command line will override
+  any input contained in a configuration file. Configuration files
+  given on the command line override all others. The
+  \filename{pylithapp.cfg} files placed in (3) will override those in
+  (2), (2) overrides (1), and (1) overrides only the built-in
+  defaults.}
+
+All of the example problems are set up using configuration files and specific problems are defined by including
 the appropriate configuration file on the command-line. Referring
-to the directory \texttt{examples/twocells/twohex8}, the following
-configuration files are present:
-\begin{lyxcode}
+to the directory \filename{examples/twocells/twohex8}, we have the
+following.
+\begin{shell}
+$$ ls -1 *.cfg
 axialdisp.cfg
-
 dislocation.cfg
-
 pylithapp.cfg
-
 sheardisp.cfg
-\end{lyxcode}
-The settings in pylithapp.cfg will be read automatically, and additional
+\end{shell}
+The settings in \filename{pylithapp.cfg} will be read automatically, and additional
 settings are included by specifying one of the other files on the
 command-line:
-\begin{lyxcode}
-\$~pylith~axialdisp.cfg
-\end{lyxcode}
+\begin{shell}
+$$ pylith axialdisp.cfg
+\end{shell}
 If you want to see what settings are being used, you can either examine
-the \texttt{.cfg} files, or use the help flags as described above:
-\begin{lyxcode}
-\$~pylith~axialdisp.cfg~-{}-problem.help-components
-
-\$~pylith~axialdisp.cfg~-{}-problem.help-properties
-
-\$~pylith~axialdisp.cfg~-{}-problem.bc.help-components
-
-\$~pylith~axialdisp.cfg~-{}-problem.bc.help-properties
-\end{lyxcode}
+the \filename{.cfg} files, or use the help flags as described above:
+\begin{shell}
+# Show components for the 'problem' facility.
+$$ pylith axialdisp.cfg --problem.help-components
+# Show properties for the 'problem' facility.
+$$ pylith axialdisp.cfg --problem.help-properties
+# Show components for the 'bc' facility.
+$$ pylith axialdisp.cfg --problem.bc.help-components
+# Show properties for the 'bc' facility.
+$$ pylith axialdisp.cfg --problem.bc.help-properties
+\end{shell}
 This is generally a more useful way of determining problem settings,
 since it includes default values as well as those that have been specified
-in the \texttt{.cfg} file.
+in the \filename{.cfg} file.
 
 
-\subsubsection{List of PyLith Parameters (\texttt{pylithinfo})}
+\subsubsection{List of PyLith Parameters ({\ttfamily pylithinfo})}
 
-The Python application \texttt{pylithinfo} writes all of the current
-parameters to a text file. The default name of the text file is \texttt{pylith\_parameters.txt}.
+The Python application \filename{pylithinfo} writes all of the current
+parameters to a text file. The default name of the text file is \filename{pylith\_parameters.txt}.
 The usage synopsis is
-\begin{lyxcode}
-\$~pylithinfo~{[}-{}-verbose{]}~{[}-{}-fileout=pylith\_parameters.txt{]}~{[}PyLith~args{]}
-\end{lyxcode}
-where \texttt{-{}-verbose} (or \texttt{-v}) turns on printing the
-descriptions of the properties and components as well as the location
-where the current value was set, and \texttt{-{}-fileout=pylith\_parameters.txt}
-(or \texttt{-o pylith\_parameters.txt}) sets the name of the output
-file. The lines in the text file are indented to show the hierarchy
-of the properties and components. 
+\begin{shell}
+$$ pylithinfo --verbose [--fileout=pylith_parameters.txt] PYLITH_ARGS
+\end{shell}
+where \commandline{-{}-verbose} turns on printing the descriptions of
+the properties and components as well as the location where the
+current value was set, and
+\commandline{-{}-fileout=pylith\_parameters.txt} sets the name of the
+output file. The lines in the text file are indented to show the
+hierarchy of the properties and component.
 
 
-\subsection{Mesh Information (\texttt{mesher})}
+\subsection{Mesh Information (\facility{mesher})}
 
 Geometrical and topological information for the finite element mesh
-may be provided by exporting an Exodus II format file from CUBIT,
-by exporting a GMV file and an accompanying Pset file from LaGriT,
-or by specifying the information in PyLith mesh ASCII format. See
-Chapter \ref{cha:Tutorials} for examples.
+may be provided by exporting an Exodus II format file from
+CUBIT/Trelis, by exporting a GMV file and an accompanying Pset file
+from LaGriT, or by specifying the information in PyLith mesh ASCII
+format. See Chapter \vref{cha:examples} for examples.
 
-PyLith supports linear cells in 1D (Figure \ref{fig:1D-linear-elements}),
-2D (Figure \ref{fig:2D-linear-elements}), and 3D (Figure \ref{fig:3D-linear-elements}).
-The vertex ordering must follow the convention shown in Figures \ref{fig:1D-linear-elements}-\ref{fig:3D-linear-elements}.
+PyLith supports linear cells in 2D (Figure \vref{fig:2D:cells}), and
+3D (Figure \vref{fig:3D:cells}).  The vertex ordering must follow the
+convention shown in Figures \vref{fig:2D:cells}-\vref{fig:3D:cells}.
 PyLith no longer supports use of quadratic cells using the PyLith
 ASCII mesh format. In the next release, we plan to support higher
 order discretizations via PETSc finite-element features from meshes
@@ -320,154 +293,130 @@ conditions will be applied, while a third might specify a surface
 that defines a fault. Similarly, the mesh information contains cell
 labels that define the material type for each cell in the mesh. For
 a mesh with a single material type, there will only be a single label
-for every cell in the mesh. See Chapters \ref{cha:material:models}
-and \ref{cha:boundary:interface:conditions} for more detailed discussions
+for every cell in the mesh. See Chapters \vref{cha:material:models}
+and \vref{cha:boundary:interface:conditions} for more detailed discussions
 of setting the materials and boundary conditions.
 
-\noindent \begin{center}
-\begin{figure}[H]
-\noindent \begin{centering}
-\includegraphics{runpylith/figs/bar2} 
-\par\end{centering}
-
-\caption{Linear bar cell available for 1D problems.}
-
-
-\label{fig:1D-linear-elements} 
+\begin{figure}[htbp]
+  \includegraphics{runpylith/figs/tri3}\hspace*{0.5in}%
+  \includegraphics{runpylith/figs/quad4}
+  \caption{Linear cells available for 2D problems are the triangle
+    (left) and the quadrilateral (right).}
+  \label{fig:2D:cells}
 \end{figure}
 
-\par\end{center}
-
-\noindent \begin{center}
-\begin{figure}[H]
-\noindent \begin{centering}
-\includegraphics{runpylith/figs/tri3}\hspace*{0.5in}\includegraphics{runpylith/figs/quad4}
-\par\end{centering}
-
-\caption{Linear cells available for 2D problems are the triangle (left) and
-the quadrilateral (right).}
-
-
-\label{fig:2D-linear-elements} 
+\begin{figure}[htbp]
+  \includegraphics{runpylith/figs/tet4}\hspace*{0.5in}%
+  \includegraphics{runpylith/figs/hex8}
+  \caption{Linear cells available for 3D problems are the tetrahedron (left)
+    and the hexahedron (right).}
+  \label{fig:3D:cells}
 \end{figure}
 
-\par\end{center}
+\subsubsection{\object{Mesh Importer}}
 
-\noindent \begin{center}
-\begin{figure}[H]
-\noindent \begin{centering}
-\includegraphics{runpylith/figs/tet4}\hspace*{0.5in}\includegraphics{runpylith/figs/hex8}
-\par\end{centering}
-
-\caption{Linear cells available for 3D problems are the tetrahedron (left)
-and the hexahedron (right).\label{fig:3D-linear-elements}}
-\end{figure}
-
-\par\end{center}
-
-
-\subsubsection{Mesh Importer}
-
-The default mesher component is MeshImporter, which provides the capabilities
-of reading the mesh from files. The MeshImporter has several properties
-and facilities:
-\begin{description}
-\item [{reorder\_mesh}] Reorder the vertices and cells using the reverse
-Cuthill-McKee algorithm (default is False).
-\item [{reader}] Reader for a given type of mesh (default is MeshIOAscii).
-\item [{distributor}] Handles distribution of the mesh among processors.
-\item [{refiner}] Perform global uniform mesh refinement after distribution
-among processors (default is False).
-\end{description}
+The default mesher component is \object{MeshImporter}, which provides
+the capabilities of reading the mesh from files. The \object{MeshImporter} has
+several properties and facilities:
+\begin{inventory}
+  \propertyitem{reorder\_mesh}{Reorder the vertices and cells using the
+    reverse Cuthill-McKee algorithm (default is False)}
+  \facilityitem{reader}{Reader for a given type of mesh (default is
+    \object{MeshIOAscii}).}
+  \facilityitem{distributor}{Handles
+    distribution of the mesh among processors.}
+  \facilityitem{refiner}{Perform global uniform mesh refinement after
+    distribution among processors (default is no refinement).}
+\end{inventory}
 Reordering the mesh so that vertices and cells connected topologically
 also reside close together in memory improves overall performance
 and can improve solver performance as well.
-\begin{quote}
-\textbf{\textcolor{red}{Warning}}\textcolor{red}{:} The coordinate
-system associated with the mesh must be a Cartesian coordinate system.
-This includes generic Cartesian coordinate systems as well as geographic
-projections.
-\end{quote}
 
-\subsubsection{MeshIOAscii}
+\warning{The coordinate system associated with the mesh must be a
+  Cartesian coordinate system, such as a generic Cartesian coordinate
+  system or a geographic projection.}
 
-The MeshIOAscii object is intended for reading small, simple ASCII
-files containing a mesh constructed by hand. We use this file format
-extensively in the examples. Appendix \ref{sec:MeshIOAscii} describes
-the format of the files. The properties and facilities of the MeshIOAscii
-object include:
-\begin{description}
-\item [{filename}] Name of the mesh file.
-\item [{coordsys}] Coordinate system associated with the mesh.
-\end{description}
+\subsubsection{\object{MeshIOAscii}}
 
-\subsubsection{\label{sec:MeshIOCubit}MeshIOCubit}
+The \object{MeshIOAscii} object is intended for reading small, simple
+ASCII files containing a mesh constructed by hand. We use this file
+format extensively in the examples. Appendix \vref{sec:MeshIOAscii}
+describes the format of the files. The properties and facilities of
+the \object{MeshIOAscii} object include:
+\begin{inventory}
+\propertyitem{filename}{Name of the mesh file.}
+\facilityitem{coordsys}{Coordinate system associated with the mesh.}
+\end{inventory}
 
-The MeshIOCubit object reads the NetCDF Exodus II files output from
-CUBIT. Beginning with CUBIT 11.0, the names of the nodesets are included
+\subsubsection{\object{MeshIOCubit}}
+\label{sec:MeshIOCubit}
+
+The \object{MeshIOCubit} object reads the NetCDF Exodus II files output from
+CUBIT/Trelis. Beginning with CUBIT 11.0, the names of the nodesets are included
 in the Exodus II files and PyLith can use these nodeset names or revert
 to using the nodeset ids. The properties and facilities associated
-with the MeshIOCubit object are:
-\begin{description}
-\item [{filename}] Name of the Exodus II file.
-\item [{use\_nodeset\_names}] Identify nodesets by name rather than id
-(default is True).
-\item [{coordsys}] Coordinate system associated with the mesh.
-\end{description}
+with the \object{MeshIOCubit} object are:
+\begin{inventory}
+\propertyitem{filename}{Name of the Exodus II file.}
+\propertyitem{use\_nodeset\_names}{Identify nodesets by name rather than id
+(default is True).}
+\facilityitem{coordsys}{Coordinate system associated with the mesh.}
+\end{inventory}
 
-\subsubsection{\label{sec:MeshIOLagrit}MeshIOLagrit}
+\subsubsection{\object{MeshIOLagrit}}
+\label{sec:MeshIOLagrit}
 
-The MeshIOLagrit object is used to read ASCII and binary GMV and PSET
+The \object{MeshIOLagrit} object is used to read ASCII and binary GMV and PSET
 files output from LaGriT. PyLith will automatically detect whether
 the files are ASCII or binary. We attempt to provide support for experimental
 64-bit versions of LaGriT via flags indicating whether the FORTRAN
-code is using 32-bit or 64-bit integers. The MeshIOLagrit properties
+code is using 32-bit or 64-bit integers. The \object{MeshIOLagrit} properties
 and facilities are:
-\begin{description}
-\item [{filename\_gmv}] Name of GMV file.
-\item [{filename\_pset}] Name of the PSET file.
-\item [{flip\_endian}] Flip the endian of values when reading binary files
-(default is False).
-\item [{io\_int32}] Flag indicating that PSET files use 32-bit integers
-(default is True).
-\item [{record\_header\_32bt}] Flag indicating FORTRAN record header is
-32-bit (default is True)
-\item [{coordsys}] Coordinate system associated with mesh.\end{description}
-\begin{quote}
-\textbf{\textcolor{red}{Warning}}: The PyLith developers have not
-used LaGriT since around 2008 and the most recent release appears
-to have been in 2010.
-\end{quote}
+\begin{inventory}
+  \propertyitem{filename\_gmv}{Name of GMV file.}
+  \propertyitem{filename\_pset}{Name of the PSET file.}
+  \propertyitem{flip\_endian}{Flip the endian of values when reading
+    binary files (default is False).}
+  \propertyitem{io\_int32}{Flag
+    indicating that PSET files use 32-bit integers (default is True).}
+  \propertyitem{record\_header\_32bt}{Flag indicating FORTRAN record header is
+    32-bit (default is True).}
+\facilityitem{coordsys}{Coordinate system associated with mesh.}
+\end{inventory}
 
-\subsubsection{Distributor}
+\warning{The PyLith developers have not used LaGriT since around 2008
+  and the most recent release appears to have been in 2010.}
 
-The distributor users a partitioner to compute which cells should
-be placed on each processor, computes the overlap among the processors,
-and then distributes the mesh among the processors. The type of partitioner
-is set via PETSc settings. The properties and facilities of the Distributor
-include:
-\begin{description}
-\item [{writer\_partition}] Flag indicating that the partition information
-should be written to a file (default is False).
-\item [{data\_writer}] Writer for partition information (default is DataWriterVTKMesh
-for VTK output).
-\end{description}
-An example of setting the partitioner in a pylithapp.cfg file is:
-\begin{lyxcode}
-{[}pylithapp.petsc{]}
+\subsubsection{\object{Distributor}}
 
-petscpartitioner~=~chaco~;~Options~are~'chaco'~(default)~and~'parmetis'.
-\end{lyxcode}
+The distributor uses a partitioner to compute which cells should be
+placed on each processor, computes the overlap among the processors,
+and then distributes the mesh among the processors. The type of
+partitioner is set via PETSc settings. The properties and facilities
+of the \object{Distributor} include:
+\begin{inventory}
+\propertyitem{partitioner}{Name of mesh partitioner ['chaco','parmetis'].}
+\propertyitem{write\_partition}{Flag indicating that the partition information
+should be written to a file (default is False).}
+\facilityitem{data\_writer}{Writer for partition information (default
+  is \object{DataWriterVTK} for VTK output).}
+\end{inventory}
+An example of setting the partitioner in a \filename{pylithapp.cfg}
+  file is:
+\begin{cfg}
+<h>[pylithapp.mesh_generator.distributor]</h>
+<p>partitioner</p> = chaco ; Options are 'chaco' (default) and 'parmetis'.
+\end{cfg}
 METIS/ParMETIS are not included in the PyLith binaries due to licensing
 issues. 
 
 
-\subsubsection{Refiner}
+\subsubsection{\object{Refiner}}
 
 The refiner is used to decrease node spacing by a power of two by
 recursively subdividing each cell by a factor of two. In a 2D triangular
 mesh a node is inserted at the midpoint of each edge, splitting each
-cell into four cells (see Figure \ref{fig:uniform:refinement:2x}).
+cell into four cells (see Figure \vref{fig:uniform:refinement:2x}).
 In a 2D quadrilateral mesh a node is inserted at the midpoint of each
 edge and at the centroid of the cell, splitting each cell into four
 cells. In a 3D tetrahedral mesh a node is inserted at the midpoint
@@ -476,20 +425,15 @@ mesh a node is inserted at the midpoint of each edge, the centroid
 of each face, and at the centroid of the cell, splitting each cell
 into eight cells.
 
-\noindent \begin{center}
-\begin{figure}[H]
-\noindent \begin{centering}
-\includegraphics[scale=1.25]{runpylith/figs/refinement2x}
-\par\end{centering}
-
-\caption{Global uniform mesh refinement of 2D and 3D linear cells. The blue
-lines and orange circles identify the edges and vertices in the original
-cells. The purple lines and green circles identify the new edges and
-vertices added to the original cells to refine the mesh by a factor
-of two.\label{fig:uniform:refinement:2x}}
+\begin{figure}[htbp]
+  \includegraphics[scale=1.25]{runpylith/figs/refinement2x}
+  \caption{Global uniform mesh refinement of 2D and 3D linear
+    cells. The blue lines and orange circles identify the edges and
+    vertices in the original cells. The purple lines and green circles
+    identify the new edges and vertices added to the original cells to
+    refine the mesh by a factor of two.}
+\label{fig:uniform:refinement:2x}
 \end{figure}
-
-\par\end{center}
 
 Refinement occurs after distribution of the mesh among processors.
 This allows one to run much larger simulations by (1) permitting the
@@ -505,48 +449,41 @@ For a tetrahedral mesh, the element quality decreases with refinement
 so $n$ should be limited to 1-2.
 
 
-\subsection{Problem Specification (\texttt{problem})}
+\subsection{Problem Specification (\facility{problem})}
 
 The problem component specifies the basic parameters of the simulation,
 including the physical properties, the boundary conditions, and interface
 conditions (faults). The current release of PyLith contains two types
-of problem, \texttt{TimeDependent} for use in static, quasi-static,
-and dynamic simulations and \texttt{GreensFns} for computing static
-Green's functions. The general facilities include:
-\begin{description}
-\item [{normalizer}] Scales used to nondimensionalize the problem (default
-is NondimElasticQuasistatic).
-\item [{materials}] Array of materials comprising the domain (default is
-\texttt{{[}material{]}}).
-\item [{bc}] Array of boundary conditions (default is none).
-\item [{interfaces}] Array of interface conditions, i.e., faults (default
-is none).
-\item [{gravity\_field}] Gravity field used to construct body forces (default
-is none).
-\end{description}
-The properties for each material group are:
-\begin{description}
-\item [{dimension}] Spatial dimension of the problem (default is 3)
-\end{description}
-An example of setting these parameters in a \texttt{.cfg} file for
+of problems, \object{TimeDependent} for use in static, quasi-static,
+and dynamic simulations and \object{GreensFns} for computing static
+Green's functions. The general properties facilities include:
+\begin{inventory}
+  \propertyitem{dimension}{Spatial dimension of problem space.}
+  \facilityitem{normalizer}{Scales used to nondimensionalize the
+    problem (default is \object{NondimElasticQuasistatic}).}
+  \facilityitem{materials}{Array of materials comprising the domain
+    (default is [material]).}
+  \facilityitem{bc}{Array of boundary conditions (default is none).}
+  \facilityitem{interfaces}{Array of interface conditions, i.e., faults
+    (default is none).}
+  \facilityitem{gravity\_field}{Gravity field used to construct body
+    forces (default is none).}
+  \facilityitem{progress\_ monitor}{Show progress of running
+    simulation.}
+\end{inventory}
+An example of setting these parameters in a \filename{.cfg} file for
 a problem is:
-\begin{lyxcode}
-{[}pylithapp.timedependent{]}
+\begin{cfg}
+<h>[pylithapp.timedependent]</h>
+<p>dimension</p> = 3
+<f>normalizer</f> = spatialdata.units.NondimElasticQuasistatic
+<f>materials</f> = [elastic, viscoelastic]
+<f>bc</f> = [boundary_east, boundary_bottom, boundary_west]
+<f>interfaces</f> = [SanAndreas, SanJacinto]
+<f>gravity_field</f> = spatialdata.spatialdb.GravityField
+\end{cfg}
 
-dimension~=~3
-
-normalizer~=~spatialdata.units.NondimElasticQuasistatic
-
-materials~=~{[}elastic,viscoelastic{]}
-
-bc~=~{[}boundary\_east,boundary\_bottom,boundary\_west{]}
-
-interfaces~=~{[}SanAndreas,SanJacinto{]}
-
-gravity\_field~=~spatialdata.spatialdb.GravityField
-\end{lyxcode}
-
-\subsubsection{Nondimensionalization}
+\subsubsection{Nondimensionalization (\facility{normalizer})}
 
 PyLith nondimensionalizes all parameters provided by the user so that
 the simulation solves the equations using nondimensional quantities.
@@ -554,60 +491,56 @@ This permits application of PyLith to problems across a vast range
 of spatial and temporal scales. The scales used to nondimensionalize
 the problem are length, pressure, density, and time. PyLith provides
 two normalizer objects to make it easy to provide reasonable scales
-for the nondimensionalization. The \texttt{NondimElasticQuasistatic}
+for the nondimensionalization. The \object{NondimElasticQuasistatic}
 normalizer (which is the default) has the following properties:
-\begin{description}
-\item [{length\_scale}] Length to nondimensionalize length (default is
-1.0 km).
-\item [{shear\_modulus}] Shear modulus to nondimensionalize pressure (default
-is 3.0e+10 Pa).
-\item [{relaxation\_time}] Relaxation time to nondimensionalize time (default
-is 1.0 year).
-\end{description}
-An example of setting these parameters in a \texttt{.cfg} file for
+\begin{inventory}
+  \propertyitem{length\_scale}{Distance to nondimensionalize length
+    (default is 1.0 km).}
+  \propertyitem{shear\_modulus}{Shear modulus to nondimensionalize
+    pressure (default is 3.0e+10 Pa).}
+  \propertyitem{relaxation\_time}{Relaxation time to
+    nondimensionalize time (default is 1.0 year).}
+\end{inventory}
+An example of setting these parameters in a \filename{.cfg} file for
 a problem is:
-\begin{lyxcode}
-{[}pylithapp.timedependent.normalizer{]}
-
-length\_scale~=~1.0{*}km
-
-shear\_modules~=~3.0e+10{*}Pa
-
-relaxation\_time~=~1.0{*}yr
-\end{lyxcode}
-The \texttt{NondimElasticDynamic} normalizer has the following properties:
-\begin{description}
-\item [{shear\_wave\_speed}] Shear wave speed used to nondimensionalize
-length and pressure (default is 3.0 km/s).
-\item [{mass\_density}] Mass density to nondimensionalize density and pressure
-(default is 3.0e+3 kg/m$^{3}$).
-\item [{wave\_period}] Period of seismic waves used to nondimensionalize
-time (default is 1.0 s).
-\end{description}
-An example of setting these parameters in a \texttt{.cfg} file for
+\begin{cfg}
+<h>[pylithapp.timedependent.normalizer]</h>
+<p>length_scale</p> = 1.0*km
+<p>shear_modulus</p> = 3.0e+10*Pa
+<p>relaxation_time</p> = 1.0*yr
+\end{cfg}
+The \object{NondimElasticDynamic} normalizer has the following
+properties:
+\begin{inventory}
+  \propertyitem{shear\_wave\_speed}{Shear wave speed used to
+    nondimensionalize length and pressure (default is 3.0 km/s).}
+  \propertyitem{mass\_density}{Mass density to nondimensionalize
+    density and pressure (default is 3.0e+3 kg/m$^{3}$).}
+  \propertyitem{wave\_period}{Period of seismic waves used to
+    nondimensionalize time (default is 1.0 s).}
+\end{inventory}
+An example of setting these parameters in a \filename{.cfg} file for
 a problem is:
-\begin{lyxcode}
-{[}pylithapp.timedependent.normalizer{]}
+\begin{cfg}
+<h>[pylithapp.timedependent.normalizer]</h>
+<p>shear_wave_speed</p> = 3.0*km/s
+<p>mass_density</p> = 3.0e+3*kg/m**3
+<p>wave_period</p> = 1.0*s
+\end{cfg}
 
-shear\_wave\_speed~=~3.0{*}km/s
-
-mass\_density~=~3.0e+3{*}kg/m{*}{*}3
-
-wave\_period~=~1.0{*}s
-\end{lyxcode}
-The default nondimensionalization is reasonable for many problems;
-however, it may be necessary to change the default values in some
-cases. When doing this, keep in mind that the nondimensionalization
-generally applies to the minimum values encountered for a problem.
-For example, in a quasistatic problem, the \texttt{length\_scale}
-should be on the order of the minimum cell size. Similarly, the \texttt{relaxation\_time}
-should be on the order of the minimum relaxation time.
-
+\important{The default nondimensionalization is reasonable for many
+  problems; however, it may be necessary to change the default values
+  in some cases. When doing this, keep in mind that the
+  nondimensionalization generally applies to the minimum values
+  encountered for a problem.  For example, in a quasistatic problem,
+  the \property{length\_scale} should be on the order of the minimum
+  cell size. Similarly, the \property{relaxation\_time} should be on
+  the order of the minimum relaxation time.}
 
 \subsection{Finite-Element Integration Settings}
 
 PyLith uses numerical quadrature to evaluate the finite-element integrals
-for the residual and system Jacobian (see Chapter \ref{cha:Governing-Equations}).
+for the residual and system Jacobian (see Chapter \vref{cha:Governing-Equations}).
 PyLith employs FIAT (finite element automatic tabulator) to compute
 the basis functions and their derivatives at the quadrature points
 for various quadrature schemes and cell shapes. The parameters for
@@ -632,7 +565,7 @@ to be equal to degree for faults.
 \item [{collocate\_quad}] Collocate quadrature points with vertices (default
 is False); hardwired to True for faults.
 \end{description}
-See Section \ref{sec:material:parameters} for an example of setting
+See Section \vref{sec:material:parameters} for an example of setting
 these properties for a material.
 
 
@@ -643,20 +576,20 @@ on PETSc for the linear algebra computations, including linear Krylov
 subspace solvers and nonlinear solvers. For dynamic problems, lumping
 the mass matrix and using explicit time-stepping is much more efficient;
 this permits solving the linear system with a trivial solver so we
-do not use a PETSc solver in this case (see Section \ref{sec:solvers}).
+do not use a PETSc solver in this case (see Section \vref{sec:solvers}).
 
 PETSc options can be set in \texttt{.cfg} files in sections beginning
 with \texttt{{[}pylithapp.petsc{]}}. The options of primary interest
-in the case of PyLith are shown in Table~\ref{tab:petsc:options:defaults}.
+in the case of PyLith are shown in Table \vref{tab:petsc:options:defaults}.
 PETSc options are used to control the selection and settings for the
 solvers underlying the SolverLinear and SolverNonlinear objects discussed
-in Section \ref{sec:solvers}. A very wide range of elasticity problems
+in Section \vref{sec:solvers}. A very wide range of elasticity problems
 in quasi-static simulations can be solved with reasonable runtimes
 by replacing the default Jacobi preconditioner with the Additive Schwarz
 Method (ASM) using Incomplete LU (ILU) factorization by default (see
-Table~\ref{tab:petsc:options:recommended}). A more advanced set
+Table \vref{tab:petsc:options:recommended}). A more advanced set
 of solver settings that may provide better performance in many elasticity
-problems are given in Table \ref{tab:petsc:options:advanced}. These
+problems are given in Table \vref{tab:petsc:options:advanced}. These
 are available in \texttt{\$PYLITH\_DIR/share/settings/solver\_fault\_fieldsplit.cfg.}
 These settings are limited to problems where we store the stiffness
 matrix as a nonsymmetric sparse matrix and require additional settings
@@ -664,11 +597,11 @@ for the formulation,
 \begin{lyxcode}
 {[}pylithapp.timedependent.formulation{]}
 
-split\_fields~=~True
+split\_fields = True
 
-use\_custom\_constraint\_pc~=~True~;~Use~only~if~problem~contains~a~fault
+use\_custom\_constraint\_pc = True ; Use only if problem contains a fault
 
-matrix\_type~=~aij\end{lyxcode}
+matrix\_type = aij\end{lyxcode}
 \begin{quote}
 \textbf{\textcolor{red}{Warning:}}\textbf{ }These settings are only
 available if you build PETSc with the ML package. These features are
@@ -680,7 +613,7 @@ null space. This most often occurs when a problem contains multiple
 faults that extend through the entire domain and create subdomains
 without any Dirichlet boundary conditions. The current workaround
 is to use the Additive Schwarz preconditioner without split fields.
-See Section \ref{sec:Troubleshooting} for the error message encountered
+See Section \vref{sec:Troubleshooting} for the error message encountered
 in this situation. 
 \end{quote}
 These more advanced settings allow the displacement fields and Lagrange
@@ -808,36 +741,36 @@ an LU factorization of the displacement sub-block with a full Schur
 complement factorization using the PETSc FieldSplit preconditioner.
 If the solver for the Schur complement S is given a very low tolerance,
 this is effectively a direct solver. The options given below will
-construct this solver in PyLith. These settings are available in\texttt{}~\\
+construct this solver in PyLith. These settings are available in\texttt{} \\
 \texttt{\$PYLITH\_DIR/share/settings/solver\_fault\_exact.cfg}.
 \begin{lyxcode}
 {[}pylithapp.timedependent.formulation{]}
 
-split\_fields~=~True
+split\_fields = True
 
-matrix\_type~=~aij
+matrix\_type = aij
 
 
 
 {[}pylithapp.petsc{]}
 
-fs\_pc\_type~=~fieldsplit
+fs\_pc\_type = fieldsplit
 
-fs\_pc\_use\_amat~=~True
+fs\_pc\_use\_amat = True
 
-fs\_pc\_fieldsplit\_type~=~schur
+fs\_pc\_fieldsplit\_type = schur
 
-fs\_pc\_fieldsplit\_schur\_factorization\_type~=~full
+fs\_pc\_fieldsplit\_schur\_factorization\_type = full
 
-fs\_fieldsplit\_displacement\_ksp\_type~=~preonly
+fs\_fieldsplit\_displacement\_ksp\_type = preonly
 
-fs\_fieldsplit\_displacement\_pc\_type~=~lu
+fs\_fieldsplit\_displacement\_pc\_type = lu
 
-fs\_fieldsplit\_lagrange\_multiplier\_pc\_type~=~jacobi
+fs\_fieldsplit\_lagrange\_multiplier\_pc\_type = jacobi
 
-fs\_fieldsplit\_lagrange\_multiplier\_ksp\_type~=~gmres
+fs\_fieldsplit\_lagrange\_multiplier\_ksp\_type = gmres
 
-fs\_fieldsplit\_lagrange\_multiplier\_ksp\_rtol~=~1.0e-11
+fs\_fieldsplit\_lagrange\_multiplier\_ksp\_rtol = 1.0e-11
 \end{lyxcode}
 
 \section{Time-Dependent Problem}
@@ -851,7 +784,7 @@ of problem.
 \begin{description}
 \item [{Implicit}] Implicit time stepping for static and quasi-static problems
 with infinitesimal strains. The implicit formulation neglects inertial
-terms (see Section \ref{eq:elasticity:integral:quasistatic}). 
+terms (see Section \vref{eq:elasticity:integral:quasistatic}). 
 \item [{ImplicitLgDeform}] Implicit time stepping for static and quasi-static
 problems including the effects of rigid body motion and small strains.
 This formulation requires the use of the nonlinear solver, which is
@@ -900,11 +833,11 @@ is
 \begin{lyxcode}
 {[}pylithapp.timedependent{]}
 
-formulation~=~pylith.problems.Implicit~;~default
+formulation = pylith.problems.Implicit ; default
 
-progres\_monitor~=~pylith.problems.ProgressMonitorTime~;~default
+progres\_monitor = pylith.problems.ProgressMonitorTime ; default
 
-elastic\_preset~=~True~;~default
+elastic\_preset = True ; default
 \end{lyxcode}
 The formulation value can be set to the other formulations in a similar
 fashion. 
@@ -938,15 +871,15 @@ An example of setting these parameters in a \texttt{.cfg} file is
 \begin{lyxcode}
 {\footnotesize{}{[}pylithapp.timedependent.formulation{]}}{\footnotesize \par}
 
-{\footnotesize{}time\_step~=~pylith.problems.TimeStepUniform}{\footnotesize \par}
+{\footnotesize{}time\_step = pylith.problems.TimeStepUniform}{\footnotesize \par}
 
-{\footnotesize{}solver~=~pylith.problems.SolverLinear~;~Nonlinear~solver~is~pylith.problems.SolverNonlinear}{\footnotesize \par}
+{\footnotesize{}solver = pylith.problems.SolverLinear ; Nonlinear solver is pylith.problems.SolverNonlinear}{\footnotesize \par}
 
-{\footnotesize{}output~=~{[}domain,ground\_surface{]}}{\footnotesize \par}
+{\footnotesize{}output = {[}domain,ground\_surface{]}}{\footnotesize \par}
 
-{\footnotesize{}matrix\_type~=~sbaij~;~To~use~a~non-symmetric~sparse~matrix,~set~it~to~aij}{\footnotesize \par}
+{\footnotesize{}matrix\_type = sbaij ; To use a non-symmetric sparse matrix, set it to aij}{\footnotesize \par}
 
-{\footnotesize{}view\_jacobian~=~false}{\footnotesize \par}
+{\footnotesize{}view\_jacobian = false}{\footnotesize \par}
 \end{lyxcode}
 
 \subsection{Numerical Damping in Explicit Time Stepping}
@@ -956,7 +889,7 @@ and fault slip can excite short waveform elastic waves that are not
 accurately resolved by the discretization. We use numerical damping
 via an artificial viscosity\cite{Knopoff:Ni:2001,Day:Ely:2002} to
 reduce these high frequency oscillations. In computing the strains
-for the elasticity term in equation \ref{eq:elasticity:integral:dynamic:t},
+for the elasticity term in equation \vref{eq:elasticity:integral:dynamic:t},
 we use an adjusted displacement rather than the actual displacement,
 where 
 \begin{equation}
@@ -973,7 +906,7 @@ viscosity in a \texttt{.cfg} file is
 \begin{lyxcode}
 {[}pylithapp.timedependent.formulation{]}
 
-norm\_viscosity~=~0.2
+norm\_viscosity = 0.2
 \end{lyxcode}
 
 \subsection{\label{sec:solvers}Solvers}
@@ -988,7 +921,7 @@ ruptures, or problems involving finite strain (small strain formulation).
 The lumped solver (SolverLumped) is a specialized solver used with
 the lumped system Jacobian matrix. The options for the PETSc KSP and
 SNES solvers are set via the top-level PETSc options (see Section
-\ref{sec:petsc:options} and the PETSc documentation \url{www.mcs.anl.gov/petsc/petsc-as/documentation/index.html}).
+\vref{sec:petsc:options} and the PETSc documentation \url{www.mcs.anl.gov/petsc/petsc-as/documentation/index.html}).
 
 
 \subsection{\label{sub:Time-Stepping}Time Stepping}
@@ -1003,7 +936,7 @@ step for stable time integration. In general, quasi-static simulations
 with viscoelastic materials should use automatically calculated time
 steps and dynamic simulations should use a uniform, user-specified
 time step. Note that all three of the time stepping schemes make use
-of the computed stable time step (see \ref{sub:Stable-time-step}).
+of the computed stable time step (see \vref{sub:Stable-time-step}).
 When using user-specified time steps, the value is checked against
 the computed stable time step. The automatically calculated time step
 comes from the computed stable time step.
@@ -1031,21 +964,21 @@ file is:
 \begin{lyxcode}
 {[}pylithapp.problem.formulation{]}
 
-time\_step~=~pylith.problems.TimeStepUniform~;~Default~value
+time\_step = pylith.problems.TimeStepUniform ; Default value
 
 
 
 {[}pylithapp.problem.formulation.time\_step{]}
 
-total\_time~=~1000.0{*}year
+total\_time = 1000.0{*}year
 
-dt~=~0.5{*}year
+dt = 0.5{*}year
 \end{lyxcode}
 
 \subsubsection{Nonuniform, User-Specified Time Step}
 
 The nonuniform, user-specified, time-step implementation allows the
-user to specify the time steps in an ASCII file (see Section \ref{sec:FileFormat:TimeStepUser}
+user to specify the time steps in an ASCII file (see Section \vref{sec:FileFormat:TimeStepUser}
 for the format specification of the time-step file). If the total
 duration exceeds the time associated with the time steps, then a flag
 determines whether to cycle through the time steps or to use the last
@@ -1064,17 +997,17 @@ time steps in a \texttt{.cfg} file is:
 \begin{lyxcode}
 {[}pylithapp.problem.formulation{]}
 
-time\_step~=~pylith.problems.TimeStepUser~;~Change~the~time~step~algorithm
+time\_step = pylith.problems.TimeStepUser ; Change the time step algorithm
 
 
 
 {[}pylithapp.problem.formulation.time\_step{]}
 
-total\_time~=~1000.0{*}year
+total\_time = 1000.0{*}year
 
-filename~=~timesteps.txt
+filename = timesteps.txt
 
-loop\_steps~=~false~;~Default~value
+loop\_steps = false ; Default value
 \end{lyxcode}
 
 \subsubsection{Nonuniform, Automatic Time Step}
@@ -1108,19 +1041,19 @@ a \texttt{.cfg} file is:
 \begin{lyxcode}
 {[}pylithapp.problem.formulation{]}
 
-time\_step~=~pylith.problems.TimeStepAdapt~;~Change~the~time~step~algorithm
+time\_step = pylith.problems.TimeStepAdapt ; Change the time step algorithm
 
 
 
 {[}pylithapp.problem.formulation.time\_step{]}
 
-total\_time~=~1000.0{*}year
+total\_time = 1000.0{*}year
 
-max\_dt~=~10.0{*}year
+max\_dt = 10.0{*}year
 
-adapt\_skip~=~10~;~Default~value
+adapt\_skip = 10 ; Default value
 
-stability\_factor~=~2.0~;~Default~value
+stability\_factor = 2.0 ; Default value
 \end{lyxcode}
 
 \section{Green's Functions Problem}
@@ -1135,7 +1068,7 @@ deformation at each ``time step'' is the deformation for a different
 slip impulse. The properties provide the ability to select which fault
 to use for slip impulses. The only fault component available for use
 with the \texttt{GreensFns} problem is the \texttt{FaultCohesiveImpulses}
-component discussed in Section \ref{sec:fault:cohesive:impulses}.
+component discussed in Section \vref{sec:fault:cohesive:impulses}.
 The \texttt{GreensFns} properties amd facilities include:
 \begin{description}
 \item [{fault\_id}] Id of fault on which to impose slip impulses.
@@ -1148,17 +1081,17 @@ a \texttt{.cfg} file is:
 \begin{lyxcode}
 {[}pylithapp{]}
 
-problem~=~pylith.problems.GreensFns~;~Change~problem~type~from~the~default
+problem = pylith.problems.GreensFns ; Change problem type from the default
 
 
 
 {[}pylithapp.greensfns{]}
 
-fault\_id~=~100~;~Default~value
+fault\_id = 100 ; Default value
 
-formulation~=~pylith.problems.Implicit~;~default
+formulation = pylith.problems.Implicit ; default
 
-progres\_monitor~=~pylith.problems.ProgressMonitorTime~;~default
+progres\_monitor = pylith.problems.ProgressMonitorTime ; default
 
 \end{lyxcode}
 \begin{quote}
@@ -1197,11 +1130,11 @@ An example of setting the properties in a .\texttt{cfg} file is:
 \begin{lyxcode}
 {[}pylithapp.problem.progressmonitor{]}
 
-update\_percent~=~5.0~;~default
+update\_percent = 5.0 ; default
 
-filename~=~progress.txt~;~default
+filename = progress.txt ; default
 
-t\_units~=~year~;~default
+t\_units = year ; default
 \end{lyxcode}
 
 \subsection{ProgressMonitorStep}
@@ -1219,9 +1152,9 @@ An example of setting the properties in a .\texttt{cfg} file is:
 \begin{lyxcode}
 {[}pylithapp.problem.progressmonitor{]}
 
-update\_percent~=~5.0~;~default
+update\_percent = 5.0 ; default
 
-filename~=~progress.txt~;~default
+filename = progress.txt ; default
 \end{lyxcode}
 
 \section{\label{sec:spatial:databases}Databases for Boundaries, Interfaces,
@@ -1234,10 +1167,10 @@ provides labels defining sets of vertices to which boundary conditions
 or fault conditions will be applied, as well as cell labels that will
 be used to define the material type of each cell. For boundary conditions,
 the \texttt{.cfg} file is used to associate boundary condition types
-and spatial databases with each vertex group (see Chapter \ref{cha:boundary:interface:conditions}).
+and spatial databases with each vertex group (see Chapter \vref{cha:boundary:interface:conditions}).
 For materials, the \texttt{.cfg} file is used to associate material
 types and spatial databases with cells identified by the material
-identifier (see Figure \ref{fig:Material-models}).
+identifier (see Figure \vref{fig:Material-models}).
 
 The spatial databases define how the boundary conditions or material
 property values vary spatially, and they can be arbitrarily complex.
@@ -1255,7 +1188,7 @@ condition parameters (``point'' or 0D variation). A more complex
 case might specify a variation in the conditions on a given surface
 (``area'' or 2D variation). This sort of condition might be used,
 for example, to specify the variation of slip on a fault plane. The
-examples discussed in Chapter \ref{cha:Tutorials} also contain more
+examples discussed in Chapter \vref{cha:Tutorials} also contain more
 information regarding the specification and use of the spatial database
 files.
 
@@ -1299,8 +1232,8 @@ interpolation).
 
 SimpleDB uses a simple ASCII file to specify the variation of values
 (e.g., displacement field, slip field, physical properties) in space.
-The file format is described in Section \ref{sec:Spatialdata:SimpleIOAscii}.
-The tutorials in Chapter \ref{cha:Tutorials} use SimpleDB files to
+The file format is described in Section \vref{sec:Spatialdata:SimpleIOAscii}.
+The tutorials in Chapter \vref{cha:Tutorials} use SimpleDB files to
 specify the values for the boundary conditions,  physical properties,
 and fault slip.
 
@@ -1317,11 +1250,11 @@ so you do not need to change this setting.
 \end{description}
 An example of setting these parameters in a \texttt{.cfg} file is:
 \begin{lyxcode}
-label~=~Material~properties
+label = Material properties
 
-query\_type~=~linear
+query\_type = linear
 
-iohandler.filename~=~mydb.spatialdb
+iohandler.filename = mydb.spatialdb
 
 
 \end{lyxcode}
@@ -1351,11 +1284,11 @@ with the appropriate units using Python syntax.
 \begin{lyxcode}
 {\footnotesize{}{[}pylithapp.timedependent.materials.material{]}}{\footnotesize \par}
 
-{\footnotesize{}db\_properties~=~spatialdata.spatialdb.UniformDB~;~Set~the~db~to~a~UniformDB}{\footnotesize \par}
+{\footnotesize{}db\_properties = spatialdata.spatialdb.UniformDB ; Set the db to a UniformDB}{\footnotesize \par}
 
-{\footnotesize{}db\_properties.values~=~{[}vp,vs,density{]}~;~Set~the~names~of~the~values~in~the~database}{\footnotesize \par}
+{\footnotesize{}db\_properties.values = {[}vp,vs,density{]} ; Set the names of the values in the database}{\footnotesize \par}
 
-{\footnotesize{}db\_properties.data~=~{[}5773.5{*}m/s,~3333.3{*}m/s,~2700.0{*}kg/m{*}{*}3{]}~;~Set~the~values~in~the~database}{\footnotesize \par}
+{\footnotesize{}db\_properties.data = {[}5773.5{*}m/s, 3333.3{*}m/s, 2700.0{*}kg/m{*}{*}3{]} ; Set the values in the database}{\footnotesize \par}
 \end{lyxcode}
 
 \subsubsection{ZeroDispDB}
@@ -1365,7 +1298,7 @@ boundary conditions. The values in the database are the ones requested
 by the Dirichlet boundary conditions, \texttt{displacement-x}, \texttt{displacement-y},
 and \texttt{displacement-z}, and are all set to zero. This makes it
 trivial to set displacements to zero on a boundary. The examples discussed
-in Chapter \ref{cha:Tutorials} use this database.
+in Chapter \vref{cha:Tutorials} use this database.
 
 
 \subsection{SimpleGridDB Spatial Database}
@@ -1381,7 +1314,7 @@ axes.
 
 SimpleGridDB uses a simple ASCII file to specify the variation of
 values (e.g., displacement field, slip field, physical properties)
-in space. The file format is described in Section \ref{sec:Spatialdata:SimpleGrid}. 
+in space. The file format is described in Section \vref{sec:Spatialdata:SimpleGrid}. 
 
 As in the other Pyre objects, spatial database objects contain parameters
 that can be set from the command line or using \texttt{.cfg or .pml}
@@ -1394,11 +1327,11 @@ parameter are ``linear'' and ``nearest'' (default).
 \end{description}
 An example of setting these parameters in a \texttt{.cfg} file is:
 \begin{lyxcode}
-label~=~Material~properties
+label = Material properties
 
-query\_type~=~linear
+query\_type = linear
 
-filename~=~mydb\_grid.spatialdb
+filename = mydb\_grid.spatialdb
 
 
 \end{lyxcode}
@@ -1411,7 +1344,7 @@ properties, and when they are available, it is desirable to access
 these directly. One such database is the SCEC CVM-H database, which
 provides seismic velocities and density information for much of southern
 California. Spatialdata provides a direct interface to this database.
-See Section \ref{sec:Tutorial-Two-tet4-geoproj} for an example of
+See Section \vref{sec:Tutorial-Two-tet4-geoproj} for an example of
 using the SCEC CVM-H database for physical properties of an elastic
 material. The interface is known to work with versions 5.2 and 5.3
 of the SCEC CVM-H. Setting a minimum wave speed can be used to replace
@@ -1436,17 +1369,17 @@ using the SCEC CVM-H in a \texttt{pylithapp.cfg} file.
 \begin{lyxcode}
 {\small{}{[}pylithapp.timedependent.materials.material{]}}{\small \par}
 
-{\small{}db\_properties~=~spatialdata.spatialdb.SCECCVMH~;~Set~the~database~to~the~SCEC~CVM-H}{\small \par}
+{\small{}db\_properties = spatialdata.spatialdb.SCECCVMH ; Set the database to the SCEC CVM-H}{\small \par}
 
-{\small{}db\_properties.data\_dir~=~/home/johndoe/data/sceccvm-h/vx53~;~Directory~containing}~\\
-{\small{}the~database~data~files}{\small \par}
+{\small{}db\_properties.data\_dir = /home/johndoe/data/sceccvm-h/vx53 ; Directory containing} \\
+{\small{}the database data files}{\small \par}
 
-{\small{}db\_properties.min\_vs~=~500{*}m/s}{\small \par}
+{\small{}db\_properties.min\_vs = 500{*}m/s}{\small \par}
 
-{\small{}db\_properties.squash~=~True~;~Turn~on~squashing}{\small \par}
+{\small{}db\_properties.squash = True ; Turn on squashing}{\small \par}
 
-{\small{}db\_properties.squash\_limit~=~-1000.0~;~Only~distort~the~geometry~above~z~=~-1~km~in~}~\\
-{\small{}flattening~the~earth}{\small \par}
+{\small{}db\_properties.squash\_limit = -1000.0 ; Only distort the geometry above z = -1 km in } \\
+{\small{}flattening the earth}{\small \par}
 \end{lyxcode}
 
 \subsection{CompositeDB Spatial Database}
@@ -1462,37 +1395,37 @@ spatial database for these cases. An example would be:
 \begin{lyxcode}
 {[}pylithapp.timedependent.materials.maxwell{]}
 
-label~=~Maxwell~material
+label = Maxwell material
 
-id~=~1
+id = 1
 
-db\_properties~=~spatialdata.spatialdb.CompositeDB
+db\_properties = spatialdata.spatialdb.CompositeDB
 
-db\_properties.db\_A~=~spatialdata.spatialdb.SCECCVMH
+db\_properties.db\_A = spatialdata.spatialdb.SCECCVMH
 
-db\_properties.db\_B~=~spatialdata.spatialdb.SimpleDB
+db\_properties.db\_B = spatialdata.spatialdb.SimpleDB
 
-quadrature.cell~=~pylith.feassemble.FIATSimplex
+quadrature.cell = pylith.feassemble.FIATSimplex
 
-quadrature.cell.dimension~=~3
+quadrature.cell.dimension = 3
 
-~
+ 
 
 {[}pylithapp.timedependent.materials.maxwell.db\_properties{]}
 
-values\_A~=~{[}density,vs,vp{]}
+values\_A = {[}density,vs,vp{]}
 
-db\_A.label~=~Elastic~properties~from~CVM-H
+db\_A.label = Elastic properties from CVM-H
 
-db\_A.data\_dir~=~/Users/willic3/geoframe/tools/vx53/bin
+db\_A.data\_dir = /Users/willic3/geoframe/tools/vx53/bin
 
-db\_A.squash~=~False
+db\_A.squash = False
 
-values\_B~=~{[}viscosity{]}
+values\_B = {[}viscosity{]}
 
-db\_B.label~=~Vertically~varying~Maxwell~material
+db\_B.label = Vertically varying Maxwell material
 
-db\_B.iohandler.filename~=~../spatialdb/mat\_vert\_var\_maxwell.spatialdb
+db\_B.iohandler.filename = ../spatialdb/mat\_vert\_var\_maxwell.spatialdb
 \end{lyxcode}
 Here we have specified a \texttt{CompositeDB} where the elastic properties
 (\texttt{density}, \texttt{vs}, \texttt{vp}) are given by the SCEC
@@ -1517,7 +1450,7 @@ is applied to all of the locations, but the time history may be shifted
 with a spatial variation in the onset time and scaled with a spatial
 variation in the amplitude. The time history database uses a simple
 ASCII file which is simpler than the one used by the SimpleDB spatial
-database. The file format is described in Section \ref{sec:Spatialdata:TimeHistoryIO}. 
+database. The file format is described in Section \vref{sec:Spatialdata:TimeHistoryIO}. 
 
 As in the other Pyre objects, spatial database objects contain parameters
 that can be set from the command line or using \texttt{.cfg or .pml}
@@ -1529,9 +1462,9 @@ messages.
 \end{description}
 An example of setting these parameters in a \texttt{.cfg} file is:
 \begin{lyxcode}
-label~=~Displacement~time~history
+label = Displacement time history
 
-filename~=~mytimehistory.timedb
+filename = mytimehistory.timedb
 \end{lyxcode}
 
 \section{Labels and Identifiers for Materials, Boundary Conditions, and Faults}
@@ -1547,7 +1480,7 @@ in CUBIT) with a boundary condition. Some mesh generators use strings
 and integers. The default behavior in PyLith is to use strings to
 identify groups for both LaGriT and CUBIT meshes, but the behavior
 for CUBIT meshes can be changed to use the nodeset id (see Section
-\ref{sec:MeshIOCubit}). PyLith 1.0 had an ``id'' for boundary conditions,
+\vref{sec:MeshIOCubit}). PyLith 1.0 had an ``id'' for boundary conditions,
 but we removed it from subsequent releases because it was not used.
 For faults the ``label'' is used in the same manner as the ``label''
 for boundary conditions. That is, it associates a string with a group
@@ -1575,8 +1508,8 @@ fault, and each material. For a fault the diagnostic fields include
 the final slip, the slip initiation time, and the fault normal vector.
 For a material the diagnostic fields include the density and the elastic
 constants. Additional diagnostic information can be included by setting
-the appropriate output parameters. See Chapters \ref{cha:material:models}
-and \ref{cha:boundary:interface:conditions} for more information
+the appropriate output parameters. See Chapters \vref{cha:material:models}
+and \vref{cha:boundary:interface:conditions} for more information
 on the available fields and the next section for output parameters.
 The other files for each fault and material include solution information
 at each time step where output was requested (also customizable by
@@ -1618,26 +1551,26 @@ is set to ``skip''. A value of 0 means every time step is written.
 \item [{coordsys}] Coordinate system for vertex coordinates (currently
 ignored).
 \item [{vertex\_filter}] Filter to apply to all vertex fields (see Section
-\ref{sub:vertex:field:filters}).
+\vref{sub:vertex:field:filters}).
 \item [{cell\_filter}] Filter to apply to all cell fields (see Section
-\ref{sub:cell:field:filters}).
+\vref{sub:cell:field:filters}).
 \end{description}
 An example of setting the output parameters for a material in a \texttt{.cfg}
 file is
 \begin{lyxcode}
 {[}pylithapp.timedependent.materials.elastic.output{]}
 
-output\_freq~=~time\_step
+output\_freq = time\_step
 
-time\_step~=~1.0{*}yr
+time\_step = 1.0{*}yr
 
-cell\_filter~=~pylith.meshio.CellFilterAvg
+cell\_filter = pylith.meshio.CellFilterAvg
 
-cell\_info\_fields~=~{[}density{]}~;~limit~diagnostic~data~to~density
+cell\_info\_fields = {[}density{]} ; limit diagnostic data to density
 
-cell\_data\_fields~=~{[}total-strain,stress{]}~;~default
+cell\_data\_fields = {[}total-strain,stress{]} ; default
 
-writer.filename~=~dislocation-elastic.vtk
+writer.filename = dislocation-elastic.vtk
 \end{lyxcode}
 
 \subsubsection{Output Over Subdomain}
@@ -1674,14 +1607,14 @@ includes:
 is {[}``displacements''{]}).
 \item [{reader}] Reader for points list (default is \texttt{PointsList}).
 \item [{writer}] Writer for output (default is \texttt{DataWriterVTKPoints}).
-In most cases users will want to use the \texttt{}~\linebreak{}
+In most cases users will want to use the \texttt{} \linebreak{}
 \texttt{DataWriterHDF5}.
 \end{description}
 
 \subsubsection{PointsList Reader}
 
 This object corresponds to a simple text file containing a list of
-points (one per line) where output is desired. See \ref{sec:FileFormat:PointsList}
+points (one per line) where output is desired. See \vref{sec:FileFormat:PointsList}
 for file format specifications. The points are specified in the coordinate
 system specified by OutputSolnPoints. The coordinates will be transformed
 into the coordinate system of the mesh prior to interpolation. The
@@ -1764,7 +1697,7 @@ array output in binary files, so it is much faster and more convenient
 than the VTK output which uses ASCII files and separate files for
 each time step. Standards for organizing datasets and groups in HDF5
 files do not exist for general finite-element software in geodynamics.
-Consequently, PyLith uses its own simple layout show in Figure \ref{fig:hdf5:layout}.
+Consequently, PyLith uses its own simple layout show in Figure \vref{fig:hdf5:layout}.
 In order for visualization tools, such as ParaView, to determine which
 datasets to read and where to find them in the hierarchy of groups
 within the HDF5 file, we create an Xdmf (eXtensible Data Model and
@@ -1800,7 +1733,7 @@ or \texttt{cell\_fields} but not both. \label{fig:hdf5:layout}}
 
 \par\end{center}
 
-See Table \ref{tab:material-model-statevars} in Section \ref{sec:material:parameters}
+See Table \vref{tab:material-model-statevars} in Section \vref{sec:material:parameters}
 for a table of component values for tensor output in HDF5 files. To
 avoid confusion about the ordering of components for tensor data,
 we separate the components in the Xdmf file.
@@ -1841,8 +1774,8 @@ HDF5 and external data files, it must be run from the same relative
 location where the simulation was run. For example, if the simulation
 was run from a directory called ``work'' and the HDF5/Xdmf files
 were written to ``work/output'', then ParaView should be run from
-the ``work'' directory. See Table \ref{tab:material-model-statevars}
-in Section \ref{sec:material:parameters} for a table of component
+the ``work'' directory. See Table \vref{tab:material-model-statevars}
+in Section \vref{sec:material:parameters} for a table of component
 values for tensor output.
 
 
@@ -1855,23 +1788,23 @@ dimensions of datasets, attributes, and even the dataset values.
 Dump the entire HDF5 file to stdout (not practical or useful for large
 files):
 \begin{lyxcode}
-h5dump~mydata.h5
+h5dump mydata.h5
 \end{lyxcode}
 Dump the hierarchy of an HDF5 file to stdout:
 \begin{lyxcode}
-h5dump~-n~mydata.h5
+h5dump -n mydata.h5
 \end{lyxcode}
 Dump the hierarchy with dataset dimensions and attributes to stdout:
 \begin{lyxcode}
-h5dump~-H~mydata.h5
+h5dump -H mydata.h5
 \end{lyxcode}
 Dump dataset 'vertices' in group '/geometry' to stdout:
 \begin{lyxcode}
-h5dump~-d~/geometry/vertices~mydata.h5
+h5dump -d /geometry/vertices mydata.h5
 \end{lyxcode}
 \end{quote}
 We have also include a utility \texttt{pylith\_genxdmf} (see Section
-\ref{sub:pylith_genxdmf}) that generates an appropriate Xdmf file
+\vref{sub:pylith_genxdmf}) that generates an appropriate Xdmf file
 from a PyLith HDF5 file. This is very useful if you add fields to
 HDF5 files in post-processing and wish to view the results in ParaView
 or Visit.
@@ -1900,15 +1833,15 @@ HDF5 writer with external datasets for output over the domain in a
 \begin{lyxcode}
 {[}pylithapp.timedependent.domain.output{]}
 
-output\_freq~=~time\_step
+output\_freq = time\_step
 
-time\_step~=~1.0{*}yr
+time\_step = 1.0{*}yr
 
-cell\_data\_fields~=~{[}displacement,velocity{]}
+cell\_data\_fields = {[}displacement,velocity{]}
 
-writer~=~pylith.meshio.DataWriterHDF5Ext
+writer = pylith.meshio.DataWriterHDF5Ext
 
-writer.filename~=~dislocation.h5
+writer.filename = dislocation.h5
 \end{lyxcode}
 
 \section{Tips and Hints\label{sec:Tips:Hints}}
@@ -1934,7 +1867,7 @@ the \texttt{-{}-help}, \texttt{-{}-help-components}, and \texttt{-{}-help-proper
 command-line arguments when running PyLith to check the parameters
 to make sure PyLith is using the parameters you intended.
 \item Use the \texttt{-{}-petsc.log\_}view, \texttt{-{}-petsc.ksp\_monitor},
-\texttt{-{}-petsc.ksp\_view}, \texttt{}~\\
+\texttt{-{}-petsc.ksp\_view}, \texttt{} \\
 \texttt{-{}-petsc.ksp\_converged\_reason}, and \texttt{-{}-petsc.snes\_converged\_reason}
 command-line arguments (or set them in a parameter file) to view PyLith
 performance and monitor the convergence.
@@ -1959,13 +1892,13 @@ variables for you. If you are building PyLith from source, please
 consult the instructions for building from source.\end{quote}
 \begin{itemize}
 \begin{singlespace}
-\item \texttt{>\textcompwordmark{}> \{command line\}:: }~\\
-\texttt{-{}- pyre.inventory(error) }~\\
-\texttt{-{}- p4wd <- 'true' }~\\
-\texttt{-{}- unrecognized property 'p4wd' }~\\
-\texttt{>\textcompwordmark{}> \{command line\}:: }~\\
-\texttt{-{}- pyre.inventory(error) }~\\
-\texttt{-{}- p4pg <- 'true' }~\\
+\item \texttt{>\textcompwordmark{}> \{command line\}:: } \\
+\texttt{-{}- pyre.inventory(error) } \\
+\texttt{-{}- p4wd <- 'true' } \\
+\texttt{-{}- unrecognized property 'p4wd' } \\
+\texttt{>\textcompwordmark{}> \{command line\}:: } \\
+\texttt{-{}- pyre.inventory(error) } \\
+\texttt{-{}- p4pg <- 'true' } \\
 \texttt{-{}- unrecognized property ' p4pg'}\end{singlespace}
 \end{itemize}
 \begin{quote}
@@ -1995,11 +1928,11 @@ merlin}\textquotedbl{}.
 \end{enumerate}
 \end{quote}
 \begin{itemize}
-\item \texttt{-{}- Solving equations.}~\\
+\item \texttt{-{}- Solving equations.} \\
 \texttt{{[}0{]}PETSC ERROR: -{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-
 Error Message -{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-{}-
-}~\\
-\texttt{{[}0{]}PETSC ERROR: Detected zero pivot in LU factorization}~\\
+} \\
+\texttt{{[}0{]}PETSC ERROR: Detected zero pivot in LU factorization} \\
 \texttt{ see http://www.mcs.anl.gov/petsc/petsc-as/documentation/faq.html\#ZeroPivot!}\end{itemize}
 \begin{quote}
 This usually occurs when the null space of the system Jacobian is
@@ -2008,7 +1941,7 @@ conditions on any boundary. If this arises when using the split fields
 and algebraic multigrid preconditioning, and no additional Dirichlet
 boundary conditions are desired, then the workaround is to revert
 to using the Additive Schwarz preconditioning without split fields
-as discussed in Section \ref{sec:petsc:options}. \end{quote}
+as discussed in Section \vref{sec:petsc:options}. \end{quote}
 \begin{itemize}
 \item PyLith crashes with a bus error.\end{itemize}
 \begin{quote}
@@ -2028,7 +1961,7 @@ or a bug in the code. Please report these cases so that we can fix
 these problems (either trap the error and provide the user with an
 informative error message, or fix the bug). If this occurs with any
 of the problems distributed with PyLith, simply submit a bug report
-(see Section \ref{sec:Getting-Help-and}) indicating which problem
+(see Section \vref{sec:Getting-Help-and}) indicating which problem
 you ran and your platform. If the crash occurs for a problem you created,
 it is a great help if you can try to reproduce the crash with a very
 simple problem (e.g., adjust the boundary conditions or other parameters
@@ -2038,16 +1971,16 @@ a bug report along with log files showing the backtrace from a debugger
 You can generate a backtrace using the debugger by using the \texttt{-{}-petsc.start\_in\_debugger}
 command-line argument:\end{quote}
 \begin{lyxcode}
-pylith~{[}..args..{]}~-{}-petsc.start\_in\_debugger
+pylith {[}..args..{]} -{}-petsc.start\_in\_debugger
 
-(gdb)~continue
+(gdb) continue
 
-(gdb)~backtrace\end{lyxcode}
+(gdb) backtrace\end{lyxcode}
 \begin{quote}
 To use valgrind to detect the memory error, first go to your working
 directory and run the problem with \texttt{-{}-launcher.dry}:\end{quote}
 \begin{lyxcode}
-pylith~{[}..args..{]}~-{}-launcher.dry\end{lyxcode}
+pylith {[}..args..{]} -{}-launcher.dry\end{lyxcode}
 \begin{quote}
 Instead of actually running the problem, this causes PyLith to dump
 the mpirun/mpiexec command it will execute. Copy and paste this command
@@ -2055,7 +1988,7 @@ into your shell so you can run it directly. Insert the full path to
 valgrind before the full path to mpinemesis and tell valgrind to use
 a log file:\end{quote}
 \begin{lyxcode}
-{\footnotesize{}mpirun~-np~1~/path/to/valgrind~-{}-log-file=valgrind-log~~/path/to/mpinemesis~-{}-pyre-start~{[}..lots~of~junk..{]}}{\footnotesize \par}
+{\footnotesize{}mpirun -np 1 /path/to/valgrind -{}-log-file=valgrind-log  /path/to/mpinemesis -{}-pyre-start {[}..lots of junk..{]}}{\footnotesize \par}
 \end{lyxcode}
 
 \section{Post-Processing Utilities}
@@ -2099,7 +2032,7 @@ to regenerate Xdmf files that get corrupted or lost due to renaming
 and moving. It is also useful in updating Xdmf files when users add
 fields to HDF5 files during post-processing.
 \begin{lyxcode}
-pylith\_genxdmf~-{}-file=\textit{PYLITH\_HDF5\_FILE}\end{lyxcode}
+pylith\_genxdmf -{}-file=\textit{PYLITH\_HDF5\_FILE}\end{lyxcode}
 \begin{quote}
 \textbf{\textcolor{red}{Warning:}}\textbf{ }If the HDF5 files contain
 external datasets, then this utility should be run from the same relative
