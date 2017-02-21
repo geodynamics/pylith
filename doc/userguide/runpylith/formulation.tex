@@ -1,0 +1,347 @@
+\section{Time-Dependent Problem (\facilityshape{formulation})}
+
+This type of problem applies to transient static, quasi-static, and
+dynamic simulations. The time-dependent problem adds the
+\facility{formulation} facility to the general-problem. The
+formulation specifies the time-stepping formulation to integrate the
+elasticity equation. PyLith provides several alternative formulations,
+each specific to a different type of problem.
+\begin{description}
+\item[\object{Implicit}] Implicit time stepping for static and
+   quasi-static problems with infinitesimal strains. The implicit
+   formulation neglects inertial terms (see Section
+   \vref{eq:elasticity:integral:quasistatic}).
+\item[\object{ImplicitLgDeform}] Implicit time stepping for static
+  and quasi-static problems including the effects of rigid body motion
+  and small strains.  This formulation requires the use of the
+  nonlinear solver, which is selected automatically.
+\item[\object{Explicit}] Explicit time stepping for dynamic problems
+  with infinitesimal strains and lumped system Jacobian. The cell
+  matrices are lumped before assembly, permitting use of a vector for
+  the diagonal system Jacobian matrix. The built-in lumped solver is
+  selected automatically.
+\item[\object{ExplicitLgDeform}] Explicit time stepping for dynamic
+  problems including the effects of rigid body motion and small
+  strains. The cell matrices are lumped before assembly, permitting
+  use of a vector for the diagonal system Jacobian matrix. The
+  built-in lumped solver is selected automatically.
+\item[\object{ExplicitTri3}] Optimized elasticity formulation for
+  linear triangular cells with one point quadrature for dynamic
+  problems with infinitesimal strains and lumped system Jacobian. The
+  built-in lumped solver is selected automatically.
+\item[\object{ExplicitTet4}] Optimized elasticity formulation for
+  linear tetrahedral cells with one point quadrature for dynamic
+  problems with infinitesimal strains and lumped system Jacobian. The
+  built-in lumped solver is selected automatically.
+\end{description}
+In many quasi-static simulations it is convenient to compute a static
+problem with elastic deformation prior to computing a transient response.
+Up through PyLith version 1.6 this was hardwired into the Implicit
+Forumulation as advancing from time step $t=-\Delta t$ to $t=0$,
+and it could not be turned off. PyLith now includes a property, \property{elastic\_prestep}
+in the TimeDependent component to turn on/off this behavior (the default
+is to retain the previous behavior of computing the elastic deformation).
+
+\warning{Turning off the elastic
+prestep calculation means the model only deforms when an {\it increment}
+in loading or deformation is applied, because the time-stepping formulation
+is implemented using the increment in displacement.}
+
+The \object{TimeDependent} properties and facilities include
+\begin{inventory}
+  \propertyitem{elastic\_preset}{If true, perform a static calculation with elastic
+    behavior before time stepping (default is True).}
+  \facilityitem{formulation}{Formulation for solving the partial differential
+    equation.}
+\end{inventory}
+An example of setting the properties and components in a \filename{.cfg} file
+is
+\begin{cfg}
+<h>[pylithapp.timedependent]</h>
+<f>formulation</f> = pylith.problems.Implicit ; default
+<f>progres_monitor</f> = pylith.problems.ProgressMonitorTime ; default
+<p>elastic_preset</p> = True ; default
+\end{cfg}
+The formulation value can be set to the other formulations in a similar
+fashion. 
+
+
+\subsection{Time-Stepping Formulation}
+
+The explicit and implicit time stepping formulations use a common
+set of facilities and properties. The properties and facilities include
+\begin{inventory}
+\propertyitem{matrix\_type}{Type of PETSc matrix for the system Jacobian (sparse
+matrix, default is symmetric, block matrix with a block size of 1).}
+\propertyitem{view\_jacobian}{Flag to indicate if system Jacobian (sparse matrix)
+should be written to a file (default is false).}
+\propertyitem{split\_fields}{Split solution field into a displacement portion
+(fields 0..ndim-1) and a Lagrange multiplier portion (field ndim)
+to permit application of sophisticated PETSc preconditioners (default
+is false).}
+\facilityitem{time\_step}{Time step size specification (default is \object{TimeStepUniform} (uniform time step).}
+\facilityitem{solver}{Type of solver to use (default is \object{SolverLinear}).}
+\facilityitem{output}{Array of output managers for output of the solution (default
+is [output]).}
+\facilityitem{jacobian\_viewer}{Viewer to dump the system Jacobian (sparse matrix)
+to a file for analysis (default is PETSc binary).}
+\end{inventory}
+
+An example of setting these parameters in a \filename{.cfg} file is
+\begin{cfg}
+<h>[pylithapp.timedependent.formulation]</h>
+<p>matrix_type</p> = sbaij ; Non-symmetric sparse matrix is 'aij'
+<p>view_jacobian</p> = false
+
+# Nonlinear solver is pylith.problems.SolverNonlinear
+<f>solver</f> = pylith.problems.SolverLinear
+<f>output</f> = [domain, ground_surface]
+<f>time_step</f> = pylith.problems.TimeStepUniform
+\end{cfg}
+
+\subsection{Numerical Damping in Explicit Time Stepping}
+
+In explicit time-stepping formulations for elasticity, boundary conditions
+and fault slip can excite short waveform elastic waves that are not
+accurately resolved by the discretization. We use numerical damping
+via an artificial viscosity\cite{Knopoff:Ni:2001,Day:Ely:2002} to
+reduce these high frequency oscillations. In computing the strains
+for the elasticity term in equation \vref{eq:elasticity:integral:dynamic:t},
+we use an adjusted displacement rather than the actual displacement,
+where 
+\begin{equation}
+\vec{u}^{adj}(t)=\vec{u}(t)+\eta^{*}\Delta t\vec{\dot{u}}(t),
+\end{equation}
+$\vec{u}^{adj}(t)$ is the adjusted displacement at time t, $\vec{u}(t)$is
+the original displacement at time (t), $\eta^{*}$is the normalized
+artificial viscosity, $\Delta t$ is the time step, and $\vec{\dot{u}}(t)$
+is the velocity at time $t$. The default value for the normalized
+artificial viscosity is 0.1. We have found values in the range 0.1-0.4
+sufficiently suppress numerical noise while not excessively reducing
+the peak velocity. An example of setting the normalized artificial
+viscosity in a \filename{.cfg} file is
+\begin{cfg}
+<h>[pylithapp.timedependent.formulation]</h>
+<p>norm_viscosity</p> = 0.2
+\end{cfg}
+
+\subsection{Solvers}
+\label{sec:solvers}
+
+PyLith supports three types of solvers. The linear solver,
+SolverLinear, corresponds to the PETSc KSP solver and is used in
+linear problems with linear elastic and viscoelastic bulk constitutive
+models and kinematic fault ruptures. The nonlinear solver,
+SolverNonlinear, corresponds to the PETSc SNES solver and is used in
+nonlinear problems with nonlinear viscoelastic or elastoplastic bulk
+constitutive models, dynamic fault ruptures, or problems involving
+finite strain (small strain formulation).  The lumped solver
+(SolverLumped) is a specialized solver used with the lumped system
+Jacobian matrix. The options for the PETSc KSP and SNES solvers are
+set via the top-level PETSc options (see Section
+\vref{sec:petsc:options} and the PETSc documentation
+\url{www.mcs.anl.gov/petsc/petsc-as/documentation/index.html}).
+
+
+\subsection{Time Stepping}
+\label{sub:Time-Stepping}
+
+PyLith provides three choices for controlling the time step in time-dependent
+simulations. These include (1) a uniform, user-specified time step
+(which is the default), (2) user-specified time steps (potentially
+nonuniform), and (3) automatically calculated (potentially nonuniform)
+time steps. The procedure for automatically selecting time steps requires
+that the material models provide a reasonable estimate of the time
+step for stable time integration. In general, quasi-static simulations
+with viscoelastic materials should use automatically calculated time
+steps and dynamic simulations should use a uniform, user-specified
+time step. Note that all three of the time stepping schemes make use
+of the computed stable time step (see \vref{sec:stable:time:step}).
+When using user-specified time steps, the value is checked against
+the computed stable time step. The automatically calculated time step
+comes from the computed stable time step.
+
+\warning{Varying the time step within a simulation requires
+  recomputing the Jacobian of the system whenever the time step
+  changes, which can greatly increase the runtime if the time-step
+  size changes frequently.}
+
+\subsubsection{Uniform, User-Specified Time Step (\object{TimeStepUniform})}
+
+With a uniform, user-specified time step, the user selects the time
+step that is used over the entire duration of the simulation. If this
+value exceeds the computed stable time step at any time, PyLith will
+terminate with an error. The properties for the uniform, user-specified
+time step are:
+\begin{inventory}
+\propertyitem{total\_time}{Time duration for simulation (default is 0.0 s).}
+\propertyitem{start\_time}{Start time for simulation (default is 0.0 s).}
+\propertyitem{dt}{Time step for simulation.}
+\end{inventory}
+An example of setting a uniform, user-specified time step in a \filename{.cfg}
+file is:
+\begin{cfg}
+<h>[pylithapp.problem.formulation]</h>
+<p>time_step</p> = pylith.problems.TimeStepUniform ; Default value
+
+<h>[pylithapp.problem.formulation.time_step]</h>
+<p>total_time</p> = 1000.0*year
+<p>dt</p> = 0.5*year
+\end{cfg}
+
+\subsubsection{Nonuniform, User-Specified Time Step (\object{TimeStepUser})}
+
+The nonuniform, user-specified, time-step implementation allows the
+user to specify the time steps in an ASCII file (see Section
+\vref{sec:format:timestepuser} for the format specification of the
+time-step file). If the total duration exceeds the time associated
+with the time steps, then a flag determines whether to cycle through
+the time steps or to use the last specified time step for the time
+remaining. Similar to the uniform time step, if the user-specified
+time step size exceeds the computed stable time step at any time,
+PyLith will terminate with an error.  The properties for the
+nonuniform, user-specified time step are:
+\begin{inventory}
+\propertyitem{total\_time}{Time duration for simulation.}
+\propertyitem{filename}{Name of file with time-step sizes.}
+\propertyitem{loop\_steps}{If true, cycle through time steps, otherwise keep
+using last time-step size for any time remaining.}
+\end{inventory}
+An example of setting the properties for nonuniform, user-specified
+time steps in a \filename{.cfg} file is:
+\begin{cfg}
+<h>[pylithapp.problem.formulation]</h>
+<f>time_step</f> = pylith.problems.TimeStepUser ; Change the time step algorithm
+
+<h>[pylithapp.problem.formulation.time_step]</h>
+<p>total_time</p> = 1000.0*year
+<p>filename</p> = timesteps.txt
+<p>loop_steps</p> = false ; Default value
+\end{cfg}
+
+\subsubsection{Nonuniform, Automatic Time Step (\object{TimeStepAdapt})}
+
+This time-step implementation automatically calculates a time step
+size based on the constitutive model and rate of deformation. As a
+result, this choice for choosing the time step relies on accurate
+calculation of a stable time step within each finite-element cell
+by the constitutive models. To provide some control over the time-step
+selection, the user can control the frequency with which a new time
+step is calculated, the time step to use relative to the value determined
+by the constitutive models, and a maximum value for the time step.
+Note that the stability factor allows the computed time step size
+to exceed the computed stable time step. A stability factor of 1.0
+would provide a time step size equal to the stable time step, while
+a value of 2.0 (default value) would provide a time step size equal
+to 1/2 the stable time step. Caution should be used when adjusting
+the stability factor to values less than 1.0, as the large time step
+size may result in inaccurate solutions. The properties for controlling
+the automatic time-step selection are:
+\begin{inventory}
+\propertyitem{total\_time}{Time duration for simulation.}
+\propertyitem{max\_dt}{Maximum time step permitted.}
+\propertyitem{adapt\_skip}{Number of time steps to skip between calculating
+new stable time step.}
+\propertyitem{stability\_factor}{Safety factor for stable time step (default
+is 2.0).}
+\end{inventory}
+An example of setting the properties for the automatic time step in
+a \filename{.cfg} file is:
+\begin{cfg}
+<h>[pylithapp.problem.formulation]</h>
+<p>time_step</p> = pylith.problems.TimeStepAdapt ; Change the time step algorithm
+
+<h>[pylithapp.problem.formulation.time_step]</h>
+<p>total_time</p> = 1000.0*year
+<p>max_dt</p> = 10.0*year
+<p>adapt_skip</p> = 10 ; Default value
+<p>stability_factor</p> = 2.0 ; Default value
+\end{cfg}
+
+\section{Green's Functions Problem (\object{GreensFns})}
+
+This type of problem applies to computing static Green's functions
+for elastic deformation. The \object{GreensFns} problem specializes
+the time-dependent facility to the case of static simulations with
+slip impulses on a fault. The default formulation is the Implicit
+formulation and should not be changed as the other formulations are
+not applicable to static Green's functions. In the output files, the
+deformation at each ``time step'' is the deformation for a different
+slip impulse. The properties provide the ability to select which fault
+to use for slip impulses. The only fault component available for use
+with the \object{GreensFns} problem is the \object{FaultCohesiveImpulses}
+component discussed in Section \vref{sec:fault:cohesive:impulses}.
+The \object{GreensFns} properties amd facilities include:
+\begin{inventory}
+\propertyitem{fault\_id}{Id of fault on which to impose slip impulses.}
+\propertyitem{formulation}{Formulation for solving the partial differential
+equation.}
+\propertyitem{progress\_monitor}{Simple progress monitor via text file.}
+\end{inventory}
+An example of setting the properties for the GreensFns problem in
+a \filename{.cfg} file is:
+\begin{cfg}
+<h>[pylithapp]</h>
+<f>problem</f> = pylith.problems.GreensFns ; Change problem type from the default
+
+<h>[pylithapp.greensfns]</h>
+<p>fault_id</p> = 100 ; Default value
+<f>formulation</f> = pylith.problems.Implicit ; default
+<f>progres_monitor</f> = pylith.problems.ProgressMonitorTime ; default
+\end{cfg}
+
+\warning{The \object{GreensFns} problem generates slip impulses on a
+  fault. The current version of PyLith requires that impulses can only
+  be applied to a single fault and the fault facility must be set to
+  \object{FaultCohesiveImpulses}.}
+
+\section{Progress Monitors}
+\newfeature{v2.1.0}
+
+The progress monitors make it easy to monitor the general progress of
+long simulations, especially on clusters where stdout is not always
+easily accessible. The progress monitors update a simulation's current
+progress by writing information to a text file. The information
+includes time stamps, percent completed, and an estimate of when the
+simulation will finish.
+
+\subsection{\object{ProgressMonitorTime}}
+
+This is the default progress monitor for time-stepping problems. The
+monitor calculates the percent completed based on the time at the
+current time step and the total simulated time of the simulation,
+not the total number of time steps (which may be unknown in simulations
+with adaptive time stepping). The \object{ProgressMonitorTime} properties
+include:
+\begin{inventory}
+\propertyitem{update\_percent}{Frequency (in percent) of progress updates.}
+\propertyitem{filename}{Name of output file.}
+\propertyitem{t\_units}{Units for simulation time in output.}
+\end{inventory}
+An example of setting the properties in a \filename{.cfg} file is:
+\begin{cfg}
+<h>[pylithapp.problem.progressmonitor]</h>
+<p>update_percent</p> = 5.0 ; default
+<p>filename</p> = progress.txt ; default
+<p>t_units</p> = year ; default
+\end{cfg}
+
+\subsection{\object{ProgressMonitorStep}}
+
+This is the default progress monitor for problems with a specified
+number of steps, such as Green's function problems. The monitor calculates
+the percent completed based on the number of steps (e.g., Green's
+function impulses completed). The ProgressMonitorStep propertiles
+include:
+\begin{inventory}
+\propertyitem{update\_percent}{Frequency (in percent) of progress updates.}
+\propertyitem{filename}{Name of output file.}
+\end{inventory}
+An example of setting the properties in a \filename{.cfg} file is:
+\begin{cfg}
+<h>[pylithapp.problem.progressmonitor]</h>
+<p>update_percent</p> = 5.0 ; default
+<p>filename</p> = progress.txt ; default
+\end{cfg}
+
+% End of file

@@ -197,6 +197,8 @@
 % ------------------------------------------------------------------
 % Lists
 % Pyre inventory
+\newcommand{\propertyshape}[1]{{\ttfamily #1}}
+\newcommand{\facilityshape}[1]{{\ttfamily #1}}
 \newcommand{\property}[1]{{\ttfamily\bfseries\color{purple}#1}}
 \newcommand{\facility}[1]{{\ttfamily\bfseries\color{blue}#1}}
 \newcommand{\propertyitem}[2]{\item[\property{#1}]{#2}}

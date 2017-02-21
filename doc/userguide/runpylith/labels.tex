@@ -1,0 +1,27 @@
+\section{Labels and Identifiers for Materials, Boundary Conditions, and Faults}
+
+For materials, the ``label'' is a string used only for error messages.
+The ``id'' is an integer that corresponds to the material identifier
+in LaGriT (itetclr) and CUBIT/Trelis (block id). The id also tags the
+cells in the mesh for associating cells with a specific material model
+and quadrature rule. For boundary conditions, the ``label'' is a
+string used to associate groups of vertices (psets in LaGriT and
+nodesets in CUBIT/Trelis) with a boundary condition. Some mesh
+generators use strings (LaGriT) to identify groups of nodes while
+others (CUBIT/Trelis) use strings and integers. The default behavior
+in PyLith is to use strings to identify groups for both LaGriT and
+CUBIT/Trelis meshes, but the behavior for CUBIT/Trelis meshes can be
+changed to use the nodeset id (see Section \vref{sec:MeshIOCubit}).
+PyLith 1.0 had an ``id'' for boundary conditions, but we removed it
+from subsequent releases because it was not used. For faults the
+``label'' is used in the same manner as the ``label'' for boundary
+conditions. That is, it associates a string with a group of vertices
+(pset in LaGriT and nodeset in CUBIT/Trelis). The fault ``id'' is a
+integer used to tag the cohesive cells in the mesh with a specific
+fault and quadrature rule. Because we use the fault ``id'' to tag
+cohesive cells in the mesh the same way we tag normal cells to
+materials, it must be unique among the faults as well as the
+materials.
+
+
+% End of file
