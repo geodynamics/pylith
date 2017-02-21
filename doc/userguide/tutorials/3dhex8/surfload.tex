@@ -118,8 +118,8 @@ quadrature.cell.quad\_order~=~2~\\
 up\_dir~=~{[}0,1,0{]}
 \end{lyxcode}
 When we have run the simulation, the output VTK files will be contained
-in \texttt{examples/3d/hex8/output} (all with a prefix of \texttt{step18}).
-Results using ParaView are shown in Figure \ref{fig:step18-displ}.
+in \texttt{examples/3d/hex8/output} (all with a pvrefix of \texttt{step18}).
+Results using ParaView are shown in Figure \vref{fig:step18-displ}.
 
 \begin{figure}
 \begin{centering}
@@ -127,7 +127,7 @@ Results using ParaView are shown in Figure \ref{fig:step18-displ}.
 \par\end{centering}
 
 \caption{Displacement field for example step18 visualized using ParaView. The
-vectors show the displacement field while the colors in the wireframe
+vectors show the displacement field while the colors in the wivreframe
 correspond to the z-component of the displacement field.\label{fig:step18-displ}}
 \end{figure}
 
@@ -171,13 +171,13 @@ th\_change.label~=~Time~history~for~Neumann~BC~on~+z
 th\_change.filename~=~spatialdb/loadcycle.timedb
 \end{lyxcode}
 When we have run the simulation, the output VTK files will be contained
-in \texttt{examples/3d/hex8/output} (all with a prefix of \texttt{step19}).
-Results using ParaView are shown in Figure \ref{fig:step19-stress-t200}.
+in \texttt{examples/3d/hex8/output} (all with a pvrefix of \texttt{step19}).
+Results using ParaView are shown in Figure \vref{fig:step19-stress-t200}.
 We also output the solution at user-defined locations, which are given
-in the file \texttt{output\_points.txt.} See Section \ref{sec:output:points}
+in the file \texttt{output\_points.txt.} See Section \vref{sec:output:points}
 for a discussion of the output parameters. This type of output is
 designed for comparison against observations and inversions and output
-via HDF5 files (see Section \ref{sub:HDF5/Xdmf-Output}).
+via HDF5 files (see Section \vref{sub:HDF5/Xdmf-Output}).
 
 \begin{figure}
 \begin{centering}

@@ -1,6 +1,6 @@
 
-\section{\label{sec:Tutorial-Two-tet4-geoproj}Tutorial Using Two Tetrahedra
-with Georeferenced Coordinate System Mesh}
+\section{\label{sec:examples:twotet4-geoproj}Tutorial Using Two Tetrahedra
+with Geovreferenced Coordinate System Mesh}
 
 PyLith features discussed in this tutorial:
 \begin{itemize}
@@ -22,10 +22,10 @@ directory \texttt{examples/twocells/twotet4-geoproj.}
 \subsection{Overview}
 
 This tutorial is virtually identical to the other tutorial using two
-linear tetrahedra (See Section \ref{sec:Tutorial-Two-tet4}). The
+linear tetrahedra (See Section \vref{sec:Tutorial-Two-tet4}). The
 primary difference is in how the material properties are assigned.
 For this tutorial, the physical properties come from the SCEC CVM-H
-database (described in Section \ref{sub:SCECCVMH-Impl}). Using the
+database (described in Section \vref{sec:SCEC:CVM-H}). Using the
 SCEC CVM-H database is straightforward, requiring only a few modifications
 to \texttt{pylithapp.cfg}. Because the SCEC CVM-H database uses geographic
 coordinates, we must also use geographic coordinates in the PyLith
@@ -33,25 +33,25 @@ mesh ASCII file and other spatial databases. Note that all of these
 geographic coordinate systems do not need to be the same. PyLith will
 automatically transform from one geographic coordinate system to another
 using the spatialdata package. The spatial databases should all use
-a georeferenced Cartesian coordinate system, such as a geographic
+a geovreferenced Cartesian coordinate system, such as a geographic
 projection to insure interpolation is performed properly. Since all
 aspects of this problem other than the material database and the coordinate
-system are identical to the examples in Section \ref{sec:Tutorial-Two-tet4},
+system are identical to the examples in Section \vref{sec:Tutorial-Two-tet4},
 we only describe the kinematic fault problem in this tutorial.
 
 
 \subsection{Mesh Description}
 
 The mesh consists of two tetrahedra forming a pyramid shape (Figure
-\ref{fig:twotet4-geoproj-mesh}). The mesh geometry and topology are
+\vref{fig:twotet4-geoproj-mesh}). The mesh geometry and topology are
 described in the file \texttt{twotet4.mesh}, which is in PyLith mesh
-ASCII format. If you compare this mesh against the one used in \ref{sec:Tutorial-Two-tet4},
+ASCII format. If you compare this mesh against the one used in \vref{sec:Tutorial-Two-tet4},
 you will notice that, although the mesh topology is the same, the
 vertex coordinates are significantly different. We use zone 11 UTM
 coordinates with the NAD27 datum for the mesh. Although we used the
 same coordinate system as the SCEC CVM-H, we could have also used
 any other geographic projection supported by spatialdata and Proj.4.
-See Appendix \ref{sec:Spatialdata:SimpleIOAscii} for other examples
+See Appendix \vref{sec:spatialdata:SimpleIOAscii} for other examples
 of using geographic coordinates. 
 
 \noindent \begin{center}
@@ -60,7 +60,7 @@ of using geographic coordinates.
 \includegraphics{tutorials/twocells/figs/twotet4-mesh}
 \par\end{centering}
 
-\caption{Mesh composed of two linear tetrahedral cells in a georeferenced coordinate
+\caption{Mesh composed of two linear tetrahedral cells in a geovreferenced coordinate
 system used for the example problems.\label{fig:twotet4-geoproj-mesh}}
 \end{figure}
 
@@ -187,6 +187,6 @@ using ParaView.
 
 \caption{Color contours and vectors of displacement for the kinematic fault
 example using a mesh composed of two linear tetrahedral cells in a
-georeferenced coordinate system.\label{fig:twotet4-geoproj-disloc}}
+geovreferenced coordinate system.\label{fig:twotet4-geoproj-disloc}}
 \end{figure}
 

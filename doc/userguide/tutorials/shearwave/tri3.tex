@@ -19,13 +19,13 @@ directory \texttt{examples/bar\_shearwave/tri3.}
 
 \subsection{Mesh Generation}
 
-The mesh is a simple rectangle 8 km by 400 m (Figure \ref{fig:shearwave:tet4:mesh}).
+The mesh is a simple rectangle 8 km by 400 m (Figure \vref{fig:shearwave:tet4:mesh}).
 This mesh could be generated via a simple script, but it is even easier
 to generate this mesh using CUBIT. We provide documented journal files
 in \texttt{examples/bar\_shearwave/tri3.} We first create the geometry,
 mesh the domain using triangular cells, and then create blocks and
 nodesets to associate the cells and vertices with materials and boundary
-conditions. See Section \ref{sec:Tutorial-3d-hex8} for more information
+conditions. See Section \vref{sec:Tutorial-3d-hex8} for more information
 on using CUBIT to generate meshes.
 
 \noindent \begin{center}
@@ -92,7 +92,7 @@ vectors on the fault surface in along-strike and normal directions
 at every 3rd time step (0.10 s), and the strain and stress tensors
 for each cell at every 30th time step (1.0 s). If the problem ran
 correctly, you should be able to generate a figure such as Figure
-\ref{fig:shearwave:tri3:deform}, which was generated using ParaView.
+\vref{fig:shearwave:tri3:deform}, which was generated using ParaView.
 
 \noindent \begin{center}
 \begin{figure}

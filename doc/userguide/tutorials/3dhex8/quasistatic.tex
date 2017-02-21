@@ -208,8 +208,8 @@ and \texttt{lower\_crust}). Note that for the domain output, we requested
 output in terms of a given time frequency, while for the subdomain
 we requested output in terms of number of time steps. When we have
 run the simulation, the output VTK files will be contained in \texttt{examples/3d/hex8/output}
-(all with a prefix of \texttt{step04}). Results using ParaView are
-shown in Figure \ref{fig:step04-displ-t200}.
+(all with a pvrefix of \texttt{step04}). Results using ParaView are
+shown in Figure \vref{fig:step04-displ-t200}.
 
 \begin{figure}
 \begin{centering}
@@ -320,8 +320,8 @@ db\_rate.data~=~{[}0.0{*}cm/year,-1.0{*}cm/year,0.0{*}year{]}
 The boundary conditions on the negative z-face are supplied in the
 same manner as for example step04. When we have run the simulation,
 the output VTK files will be contained in \texttt{examples/3d/hex8/output}
-(all with a prefix of \texttt{step05}). Results using ParaView are
-shown in Figure \ref{fig:step05-displ-t40}.
+(all with a pvrefix of \texttt{step05}). Results using ParaView are
+shown in Figure \vref{fig:step05-displ-t40}.
 \begin{figure}
 \centering{}\includegraphics[width=10cm]{tutorials/3dhex8/figs/step05-displ-t40}\caption{Displacement field for example step05 at t = 40 years visualized using
 ParaView. The mesh has been distorted by the computed displacements
@@ -545,10 +545,10 @@ This additional information will be contained in file \texttt{step06-fault\_info
 It will contain final slip information for each earthquake source
 along with slip time information. When we have run the simulation,
 the output HDF5 and Xdmf files will be contained in \texttt{examples/3d/hex8/output}
-(all with a prefix of \texttt{step06}). To open the files in ParaView,
+(all with a pvrefix of \texttt{step06}). To open the files in ParaView,
 the Xdmf (\texttt{.xmf}) files should be opened, as these files describe
 the HDF5 data structure. Results using ParaView are shown in Figure
-\ref{fig:step06-displ-t300}.
+\vref{fig:step06-displ-t300}.
 \begin{figure}
 \centering{}\includegraphics[width=10cm]{tutorials/3dhex8/figs/step06-displ-t300}\caption{Displacement field for example step06 at t = 300 years visualized
 using ParaView. The mesh has been distorted by the computed displacements
@@ -674,10 +674,10 @@ writer~=~pylith.meshio.DataWriterHDF5
 writer.filename~=~output/step07-groundsurf.h5
 \end{lyxcode}
 When we have run the simulation, the output HDF5 and Xdmf files will
-be contained in \texttt{examples/3d/hex8/output} (all with a prefix
+be contained in \texttt{examples/3d/hex8/output} (all with a pvrefix
 of \texttt{step07}). As for example step06, make sure to open the
 \texttt{.xmf} files rather than the \texttt{.h5} files. Results using
-ParaView are shown in Figure \ref{fig:step07-displ-vel-t300}.
+ParaView are shown in Figure \vref{fig:step07-displ-vel-t300}.
 \begin{figure}
 \centering{}\includegraphics[width=10cm]{tutorials/3dhex8/figs/step07-displ-vel-t300}\caption{Displacement field (color contours) and velocity field (vectors) for
 example step07 at t = 300 years visualized using ParaView. The mesh
@@ -725,7 +725,7 @@ snes\_converged\_reason~=~true
 These settings are ignored unless we are using the nonlinear solver.
 
 When setting the physical properties for the power-law material in
-PyLith, the parameters (see Section \ref{sub:Power-Law-Maxwell-Viscoelastic})
+PyLith, the parameters (see Section \vref{sub:Power-Law-Maxwell-Viscoelastic})
 do not generally correspond to the values provided in laboratory results.
 PyLith includes a utility code, \texttt{powerlaw\_gendb.py}, to simplify
 the process of using laboratory results with PyLith. This utility
@@ -737,9 +737,9 @@ of laboratory-derived parameters (contained in \texttt{powerlaw\_params.}~\lineb
 field in degrees K (contained in \texttt{temperature.spatialdb}),
 and a set of points for which values are desired (\texttt{powerlaw\_points.txt}).
 The parameters for the code are defined in \texttt{powerlaw\_gendb.cfg}.
-The properties expected by PyLith are \texttt{reference\_strain\_rate},
-\texttt{reference\_stress}, and \texttt{power\_law\_exponent}. The
-user must specify either \texttt{reference\_strain\_rate} or \texttt{reference\_stress}
+The properties expected by PyLith are \texttt{vreference\_strain\_rate},
+\texttt{vreference\_stress}, and \texttt{power\_law\_exponent}. The
+user must specify either \texttt{vreference\_strain\_rate} or \texttt{vreference\_stress}
 so that \texttt{powerlaw\_gendb.py} can compute the other property.
 Default values of 1.0e-6 1/s and 1 MPa are provided. In this example,
 the same database was used for all parameters, and a separate database
@@ -772,7 +772,7 @@ of the properties. We do this as follows:
 \begin{lyxcode}
 \#~Provide~a~spatial~database~from~which~to~obtain~property~values.
 
-\#~In~this~case,~we~prefer~to~obtain~the~power-law~properties~from~one
+\#~In~this~case,~we~pvrefer~to~obtain~the~power-law~properties~from~one
 
 \#~database~and~the~elastic~properties~from~another~database,~so~we~use
 
@@ -801,7 +801,7 @@ and then provide the database parameters:
 
 {\small{}db\_A.iohandler.filename~=~spatialdb/mat\_elastic.spatialdb}{\small \par}
 
-{\small{}values\_B~=~{[}reference-stress,reference-strain-rate,power-law-exponent{]}~~~;~Power-law~properties.}{\small \par}
+{\small{}values\_B~=~{[}vreference-stress,vreference-strain-rate,power-law-exponent{]}~~~;~Power-law~properties.}{\small \par}
 
 {\small{}db\_B.label~=~Power-law~properties}{\small \par}
 
@@ -822,14 +822,14 @@ material files:
 
 {[}pylithapp.timedependent.materials.lower\_crust{]}
 
-output.cell\_info\_fields~=~{[}density,mu,lambda,reference\_strain\_rate,reference\_stress,~\\
+output.cell\_info\_fields~=~{[}density,mu,lambda,vreference\_strain\_rate,vreference\_stress,~\\
 power\_law\_exponent{]}
 
 output.cell\_data\_fields~=~{[}total\_strain,stress,viscous\_strain{]}
 \end{lyxcode}
 When we have run the simulation, the output HDF5 and Xdmf files will
-be contained in \texttt{examples/3d/hex8/output} (all with a prefix
-of \texttt{step08}). Results using ParaView are shown in Figure \ref{fig:step08-strain-displ-t150}.
+be contained in \texttt{examples/3d/hex8/output} (all with a pvrefix
+of \texttt{step08}). Results using ParaView are shown in Figure \vref{fig:step08-strain-displ-t150}.
 \begin{figure}
 \centering{}\includegraphics[width=10cm]{tutorials/3dhex8/figs/step08-strain-displ-t150}\caption{The XY-component of strain (color contours) and displacement field
 (vectors) for example step08 at t = 150 years visualized using ParaView.
@@ -882,7 +882,7 @@ materials.lower\_crust~=~pylith.materials.DruckerPrager3D
 
 \#~Provide~a~spatial~database~from~which~to~obtain~property~values.
 
-\#~In~this~case,~we~prefer~to~obtain~the~Drucker-Prager~properties~from~one
+\#~In~this~case,~we~pvrefer~to~obtain~the~Drucker-Prager~properties~from~one
 
 \#~database~and~the~elastic~properties~from~another~database,~so~we~use
 
@@ -935,8 +935,8 @@ output.cell\_info\_fields~=~{[}density,mu,lambda,alpha\_yield,beta,alpha\_flow{]
 output.cell\_data\_fields~=~{[}total\_strain,stress,plastic\_strain{]}
 \end{lyxcode}
 When we have run the simulation, the output HDF5 and Xdmf files will
-be contained in \texttt{examples/3d/hex8/output} (all with a prefix
-of \texttt{step09}). Results using ParaView are shown in Figure \ref{fig:step09-strain-displ-t150}.
+be contained in \texttt{examples/3d/hex8/output} (all with a pvrefix
+of \texttt{step09}). Results using ParaView are shown in Figure \vref{fig:step09-strain-displ-t150}.
 \begin{figure}
 \centering{}\includegraphics[width=10cm]{tutorials/3dhex8/figs/step08-strain-displ-t150}\caption{The XY-component of strain (color contours) and displacement field
 (vectors) for example step09 at t = 150 years visualized using ParaView.

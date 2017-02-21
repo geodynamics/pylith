@@ -13,7 +13,7 @@ PyLith features discussed in this tutorial:
 
 This set of examples provides an introduction to using fault friction
 in static and quasi-static problems with PyLith. Dynamic problems
-with fault friction are discussed in Section \ref{sec:tutorial:shearwave:quad4}.
+with fault friction are discussed in Section \vref{sec:tutorial:shearwave:quad4}.
 The boundary conditions are all either static or quasi-static Dirichlet
 conditions, and only elastic materials are used. In all the fault
 friction examples we apply axial (x) displacements on both the positive
@@ -77,7 +77,7 @@ fault~=~pylith.faults.FaultCohesiveDyn~\\
 friction~=~pylith.friction.StaticFriction
 \end{lyxcode}
 The \texttt{StaticFriction} model requires values for the coefficient
-of friction and the cohesion (see Section \ref{sec:fault:constitutive:models}).
+of friction and the cohesion (see Section \vref{sec:fault:constitutive:models}).
 We provide both of these using a \texttt{UniformDB}:
 \begin{lyxcode}
 {[}pylithapp.timedependent.interfaces.fault{]}
@@ -125,8 +125,8 @@ friction\_ksp\_converged\_reason~=~true
 
 \end{lyxcode}
 When we have run the simulation, the output VTK files will be contained
-in \texttt{examples/3d/hex8/output} (all with a prefix of \texttt{step10}).
-Results using ParaView are shown in Figure \ref{fig:step10-fault-traction-slip}.
+in \texttt{examples/3d/hex8/output} (all with a pvrefix of \texttt{step10}).
+Results using ParaView are shown in Figure \vref{fig:step10-fault-traction-slip}.
 
 \begin{figure}
 \begin{centering}
@@ -182,8 +182,8 @@ db\_initial.values~=~{[}displacement-x,displacement-y{]}
 db\_initial.data~=~{[}1.0{*}m,-2.0{*}m{]}
 \end{lyxcode}
 When we have run the simulation, the output VTK files will be contained
-in \texttt{examples/3d/hex8/output} (all with a prefix of \texttt{step11}).
-Results using ParaView are shown in Figure \ref{fig:step11-fault-traction-slip}.
+in \texttt{examples/3d/hex8/output} (all with a pvrefix of \texttt{step11}).
+Results using ParaView are shown in Figure \vref{fig:step11-fault-traction-slip}.
 
 \begin{figure}
 \begin{centering}
@@ -285,8 +285,8 @@ friction.db\_properties.values~=~{[}friction-coefficient,cohesion{]}
 friction.db\_properties.data~=~{[}0.6,2.0{*}MPa{]}
 \end{lyxcode}
 When we have run the simulation, the output VTK files will be contained
-in \texttt{examples/3d/hex8/output} (all with a prefix of \texttt{step12}).
-Results using ParaView are shown in Figure \ref{fig:step12-displ-t200}.
+in \texttt{examples/3d/hex8/output} (all with a pvrefix of \texttt{step12}).
+Results using ParaView are shown in Figure \vref{fig:step12-displ-t200}.
 
 \begin{figure}
 \begin{centering}
@@ -320,7 +320,7 @@ friction~=~pylith.friction.SlipWeakening
 \end{lyxcode}
 The slip-weakening constitutive model requires a static coefficient
 of friction, a dynamic coefficient of friction, a slip weakening parameter,
-and a cohesion (see Section \ref{sec:fault:constitutive:models}):
+and a cohesion (see Section \vref{sec:fault:constitutive:models}):
 \begin{lyxcode}
 {[}pylithapp.timedependent.interfaces.fault{]}
 
@@ -346,8 +346,8 @@ slip-weakening-parameter,cohesion{]}
 friction.db\_properties.data~=~{[}0.6,0.5,0.2{*}m,0.0{*}Pa{]}
 \end{lyxcode}
 When we have run the simulation, the output VTK files will be contained
-in \texttt{examples/3d/hex8/output} (all with a prefix of \texttt{step1}3).
-Results using ParaView are shown in Figure \ref{fig:step13-displ-t200}.
+in \texttt{examples/3d/hex8/output} (all with a pvrefix of \texttt{step1}3).
+Results using ParaView are shown in Figure \vref{fig:step13-displ-t200}.
 
 \begin{figure}
 \begin{centering}
@@ -378,9 +378,9 @@ We first define the friction model for the simulation:
 
 friction~=~pylith.friction.RateStateAgeing
 \end{lyxcode}
-The rate-and-state constitutive model requires a reference coefficient
-of friction, a reference slip rate, a slip weakening parameter, an
-a-value, a b-value, and a cohesion (see \ref{sec:fault:constitutive:models}):
+The rate-and-state constitutive model requires a vreference coefficient
+of friction, a vreference slip rate, a slip weakening parameter, an
+a-value, a b-value, and a cohesion (see \vref{sec:fault:constitutive:models}):
 \begin{lyxcode}
 {\small{}{[}pylithapp.timedependent.interfaces.fault{]}}{\small \par}
 
@@ -388,9 +388,9 @@ a-value, a b-value, and a cohesion (see \ref{sec:fault:constitutive:models}):
 
 {\small{}\#~follows:}{\small \par}
 
-{\small{}\#~reference~coefficient~of~friction:~0.6}{\small \par}
+{\small{}\#~vreference~coefficient~of~friction:~0.6}{\small \par}
 
-{\small{}\#~reference~slip~rate:~1.0e-06~m/s}{\small \par}
+{\small{}\#~vreference~slip~rate:~1.0e-06~m/s}{\small \par}
 
 {\small{}\#~slip-weakening~parameter:~0.037~m}{\small \par}
 
@@ -404,7 +404,7 @@ a-value, a b-value, and a cohesion (see \ref{sec:fault:constitutive:models}):
 
 {\small{}friction.db\_properties.label~=~Rate~State~Ageing}{\small \par}
 
-{\small{}friction.db\_properties.values~=~{[}reference-friction-coefficient,reference-slip-rate,}~\\
+{\small{}friction.db\_properties.values~=~{[}vreference-friction-coefficient,vreference-slip-rate,}~\\
 {\small{}characteristic-slip-distance,constitutive-parameter-a,constitutive-parameter-b,cohesion{]}}{\small \par}
 
 {\small{}friction.db\_properties.data~=~{[}0.6,1.0e-6{*}m/s,0.0370{*}m,0.0125,0.0172,0.0{*}Pa{]}}{\small \par}
@@ -425,8 +425,8 @@ friction.db\_initial\_state.values~=~{[}state-variable{]}
 friction.db\_initial\_state.data~=~{[}92.7{*}s{]}
 \end{lyxcode}
 When we have run the simulation, the output VTK files will be contained
-in \texttt{examples/3d/hex8/output} (all with a prefix of \texttt{step14}).
-Results using ParaView are shown in Figure \ref{fig:step14-displ-t200}.
+in \texttt{examples/3d/hex8/output} (all with a pvrefix of \texttt{step14}).
+Results using ParaView are shown in Figure \vref{fig:step14-displ-t200}.
 
 \begin{figure}
 \begin{centering}

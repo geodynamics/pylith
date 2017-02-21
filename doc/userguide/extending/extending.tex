@@ -63,7 +63,7 @@ database for elastic physical properties. Adding additional physical
 properties is simply a matter of including some additional values
 in the spatial database. Furthermore, in cases where we are constructing
 a spatial database for a seismic velocity model, the data points are
-georeferenced. With our uniform physical properties we do not need
+geovreferenced. With our uniform physical properties we do not need
 to worry about any differences in coordinate systems between our seismic
 velocity model and points at which the model is queried. However,
 in many cases we do, so we illustrate this functionality by using
@@ -141,7 +141,7 @@ and PyLith source code.
 
 Once you have built, installed, and tested the UniformVelModel, it
 is time to use it in a simple example. Because the seismic velocity
-model uses georeferenced coordinates, our example must also use georeferenced
+model uses geovreferenced coordinates, our example must also use geovreferenced
 coordinates. The dislocation example in the PyLith \texttt{examples/twocells/twotet4-geoproj}
 directory uses UTM zone 11 coordinates. The spatial database package
 will transform the coordinates between the two projections as defined
@@ -159,7 +159,7 @@ with the lines
 db\_properties~=~spatialdata.spatialdb.contrib.UniformVelModel
 \end{lyxcode}
 When you run the dislocation example, the \texttt{dislocation-statevars\_info.vtk}
-file should reflect the use of physical properties from the uniform
+file should vreflect the use of physical properties from the uniform
 seismic velocity with $\mu=1.69\times10^{10}\mathrm{Pa}$, $\lambda=1.6825\times10^{10}\mathrm{Pa}$,
 and $\rho=2500\mathrm{kg/m^{3}}$.
 

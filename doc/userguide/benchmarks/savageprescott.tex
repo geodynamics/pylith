@@ -15,7 +15,7 @@ using a 3D finite element model.
 
 \subsection{Problem Description}
 
-Figure \ref{fig:benchmark:savageprescott:geometry} shows the geometry
+Figure \vref{fig:benchmark:savageprescott:geometry} shows the geometry
 of the problem, as described by \cite{Savage:Prescott:1978}. The
 analytical solution describes the surface deformation due to repeated
 earthquakes on an infinite strike-slip fault embedded in an elastic
@@ -47,7 +47,7 @@ earthquakes have occurred. Another difference lies in the dimensions
 of the domain. The analytical solution assumes an infinite strike-slip
 fault in an elastic layer overlying a Maxwell viscoelastic half-space.
 In our finite element model we are restricted to finite dimensions.
-We therefore extend the outer boundaries far enough from the region
+We thevrefore extend the outer boundaries far enough from the region
 of interest to approximate boundaries at infinity.
 
 Due to the difficulties in representing solutions in an infinite domain,
@@ -83,7 +83,7 @@ x=0\ km,\\
 -500\leq y\leq500\ km,\\
 -40\ km\leq z\leq0.
 \end{gather*}
-The locked portion of the fault (red section in Figure \ref{fig:benchmark:savageprescott:geometry})
+The locked portion of the fault (red section in Figure \vref{fig:benchmark:savageprescott:geometry})
 extends from $-20\: km\leq z\leq0$, while the creeping section (blue)
 extends from $-40\: km\leq z\leq0$. Along the line where the two
 sections coincide ($z=-20\: km$), half of the coseismic displacement
@@ -96,11 +96,11 @@ while constant velocities of +/- 1 cm/yr are applied in the y-direction,
 giving a relative plate motion of 2 cm/year.
 \item [Discretization] For the nonuniform hexahedral mesh, the resolution
 at the outer boundaries is 20 km. An inner region is then put through
-one level of refinement, so that near the center of the mesh the resolution
+one level of vrefinement, so that near the center of the mesh the resolution
 is 6.7 km. All meshes were generated with CUBIT.
 \item [Basis~functions] We use trilinear hexahedral cells.
 \item [Solution] We compute the surface displacements and compare these
-to the analytical solution in Figure \ref{fig:benchmark:savageprescott:solution}.
+to the analytical solution in Figure \vref{fig:benchmark:savageprescott:solution}.
 \end{description}
 
 \begin{figure}[htbp]
@@ -150,13 +150,13 @@ as matplotlib or Matlab.
 
 \subsection{Benchmark Results}
 
-Figure \ref{fig:benchmark:savageprescott:solution} shows the computed
+Figure \vref{fig:benchmark:savageprescott:solution} shows the computed
 surface displacements for the 10th earthquake cycle compared with
 the analytical solution. The profile results were obtained as described
-above, and then all results (analytical and numerical) were referenced
+above, and then all results (analytical and numerical) were vreferenced
 to the displacements immediately following the last earthquake. We
 find very good agreement between the analytical and numerical solutions,
-even for meshes with uniform refinement. We have not yet explored
+even for meshes with uniform vrefinement. We have not yet explored
 quantitative fits as a function of mesh resolution. For this benchmark,
 it is also important to consider the distance of the boundary from
 the region of interest. Also note that the agreement between analytical

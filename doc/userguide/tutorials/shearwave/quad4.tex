@@ -22,7 +22,7 @@ directory \texttt{examples/bar\_shearwave/quad4.}
 \subsection{Mesh Generation}
 
 The mesh is a simple rectangular prism 8 km by 400 m by 400 m (Figure
-\ref{fig:shearwave:quad4:mesh}). We provide documented CUBIT journal
+\vref{fig:shearwave:quad4:mesh}). We provide documented CUBIT journal
 files in \texttt{examples/bar\_shearwave/quad4.} We first create the
 geometry, mesh the domain using quadrilateral cells, and then create
 blocks and nodesets associated with the materials and boundary conditions.
@@ -57,13 +57,13 @@ run PyLith via:
 pylith~prescribedrup.cfg
 \end{lyxcode}
 The VTK files will be written to the \texttt{output} directory with
-the prefix \texttt{prescribedrup}. The output includes the displacement
+the pvrefix \texttt{prescribedrup}. The output includes the displacement
 field over the entire domain at every other time step (0.10 s), the
 slip and traction vectors on the fault surface in along-strike and
 normal directions at every other time step (0.10 s), and the strain
 and stress tensors for each cell at every 20th time step (1.0 s).
 If the problem ran correctly, you should be able to generate a figure
-such as Figure \ref{fig:shearwave:quad4:kinematic}, which was generated
+such as Figure \vref{fig:shearwave:quad4:kinematic}, which was generated
 using ParaView.
 
 \noindent \begin{center}
@@ -83,7 +83,7 @@ by a factor of 800.\label{fig:shearwave:quad4:kinematic}}
 
 In this set of examples we replace the kinematic fault interface with
 the dynamic fault interface, resulting in fault slip controlled by
-a fault-constitutive model. See Section \ref{sec:fault:constitutive:models}
+a fault-constitutive model. See Section \vref{sec:fault:constitutive:models}
 for detailed information about the fault constitutive models available
 in PyLith. Because this is a dynamic simulation we want the generated
 shear wave to continue to be absorbed at the ends of the bar, so we
@@ -133,13 +133,13 @@ so we run the problem via:
 pylith~spontaneousrup.cfg~spontaneousrup\_staticfriction.cfg
 \end{lyxcode}
 The VTK files will be written to the \texttt{output} directory with
-the prefix \texttt{staticfriction}. The output includes the displacement
+the pvrefix \texttt{staticfriction}. The output includes the displacement
 and velocity fields over the entire domain at every other time step
 (0.10 s), the slip, slip rate, and traction vectors on the fault surface
 in along-strike and normal directions at every other time step (0.10
 s), and the strain and stress tensors for each cell at every 20th
 time step (1.0 s). If the problem ran correctly, you should be able
-to generate a figure such as Figure \ref{fig:shearwave:quad4:staticfriction},
+to generate a figure such as Figure \vref{fig:shearwave:quad4:staticfriction},
 which was generated using ParaView. The steady-state solution is a
 constant slip rate of 22.4 m/s, a shear traction of 72.0 MPa on the
 fault surface, a uniform shear strain of 5.6e-3 in the bar with uniform,
@@ -163,7 +163,7 @@ model. Deformation has been exaggerated by a factor of 20.\label{fig:shearwave:q
 
 The parameters specific to this example are related to the use of
 the slip-weakening friction fault constitutive model (see Section
-\ref{sec:fault:constitutive:models}). We set the fault constitutive
+\vref{sec:fault:constitutive:models}). We set the fault constitutive
 model via
 \begin{lyxcode}
 {[}pylithapp.timedependent.interfaces.fault{]}
@@ -188,8 +188,8 @@ so we run the problem via:
 pylith~spontaneousrup.cfg~spontaneousrup\_slipweakening.cfg
 \end{lyxcode}
 The VTK files will be written to the \texttt{output} directory with
-the prefix \texttt{slipweakening}. If the problem ran correctly, you
-should be able to generate a figure such as Figure \ref{fig:shearwave:quad4:slipweakening},
+the pvrefix \texttt{slipweakening}. If the problem ran correctly, you
+should be able to generate a figure such as Figure \vref{fig:shearwave:quad4:slipweakening},
 which was generated using ParaView. The steady-state solution is a
 constant slip rate of 32.0 m/s and shear traction of 60.0 MPa on the
 fault surface, a uniform shear strain of 8.0e-3 in the bar with uniform,
@@ -214,7 +214,7 @@ of 20.\label{fig:shearwave:quad4:slipweakening}}
 
 The parameters specific to this example are related to the use of
 the rate- and state-friction fault constitutive model (see Section
-\ref{sec:fault:constitutive:models}). The evolution of the state
+\vref{sec:fault:constitutive:models}). The evolution of the state
 variable uses the ageing law. We set the fault constitutive model
 and add the state variable to the output via
 \begin{lyxcode}
@@ -227,7 +227,7 @@ friction~=~pylith.friction.RateStateAgeing~\\
 vertex\_data\_fields~=~{[}slip,~slip\_rate,~traction,~state\_variable{]}~
 \end{lyxcode}
 and use a UniformDB to set the rate-state friction parameters. We
-use a reference coefficient of friction of 0.6, reference slip rate
+use a vreference coefficient of friction of 0.6, vreference slip rate
 of 1.0e-6 m/s, characteristic slip distance of 0.02 m, coefficients
 a and b of 0.008 and 0.012, and no cohesion (0 MPa). We set the initial
 value of the state variable so that the fault is in equilibrium for
@@ -238,8 +238,8 @@ via:
 pylith~spontaneousrup.cfg~spontaneousrup\_ratestateageing.cfg
 \end{lyxcode}
 The VTK files will be written to the \texttt{output} directory with
-the prefix \texttt{ratestateageing}. If the problem ran correctly,
-you should be able to generate a figure such as Figure \ref{fig:shearwave:quad4:ratestateageing},
+the pvrefix \texttt{ratestateageing}. If the problem ran correctly,
+you should be able to generate a figure such as Figure \vref{fig:shearwave:quad4:ratestateageing},
 which was generated using ParaView. The steady-state solution is a
 constant slip rate of 30.0 m/s and shear traction of 63.7 MPa on the
 fault surface, a uniform shear strain of 7.25e-3 in the bar with uniform,

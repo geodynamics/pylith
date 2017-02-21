@@ -1,7 +1,6 @@
 
-\chapter{\label{cha:material:models}Material Models}
-
-\raggedbottom
+\chapter{Material Models}
+\label{cha:material:models}
 
 
 \section{Specifying Material Properties}
@@ -48,8 +47,8 @@ to define material property groups using a \texttt{.cfg} file, a \texttt{.pml}
 file, or on the command-line. User-defined containers are no longer
 necessary, and the predefined containers are no longer available (or
 necessary). If a set of material groups is not specified, a single
-material model is used for the entire problem. See Sections \ref{sec:Tutorial-3d-hex8}
-and \ref{sec:Tutorial-3d-tet4} for examples that demonstrate how
+material model is used for the entire problem. See Sections \vref{sec:Tutorial-3d-hex8}
+and \vref{sec:Tutorial-3d-tet4} for examples that demonstrate how
 to specify more than one material model.
 
 
@@ -113,11 +112,11 @@ quadrature.cell~=~pylith.feassemble.FIATLagrange
 
 quadrature.cell.dimension~=~3
 \end{lyxcode}
-These settings correspond to the the problem in Section \ref{sec:Tutorial-3d-hex8}.
+These settings correspond to the the problem in Section \vref{sec:Tutorial-3d-hex8}.
 The parameters for the bulk constitutive models are specified using
 the spatial databases \texttt{mat\_elastic.spatialdb} and \texttt{mat\_viscoelastic.spatialdb}.
 Refer to the discussion of each material model to find the parameters
-that must be specified in the spatial database. Appendix \ref{sec:Spatialdata:SimpleIOAscii}
+that must be specified in the spatial database. Appendix \vref{sec:spatialdata:SimpleIOAscii}
 describes the format of the SimpleDB spatial database files. In a
 more realistic problem, a different spatial database, and possibly
 a different material model, would be used for each material group.
@@ -140,7 +139,7 @@ cell\_filter~=~pylith.meshio.CellFilterAvg
 
 writer.filename~=~dislocation-viscoelastic.vtk
 \end{lyxcode}
-These settings again correspond to the problem in Section \ref{sec:Tutorial-3d-hex8}.
+These settings again correspond to the problem in Section \vref{sec:Tutorial-3d-hex8}.
 The specification of a state variable base filename (\texttt{writer.filename}
 settings) will cause two files to be created for each material group:
 an info file, which describes the material property parameters used
@@ -162,7 +161,7 @@ to be output, they must be specified. Similarly, other material models
 require state variables in addition to the default stress and strain
 variables that are used by all material models. Additional output
 may be requested for a material model, as in this example (see Section
-\ref{sec:Tutorial-Two-hexahedra}):
+\vref{sec:Tutorial-Two-hexahedra}):
 \begin{lyxcode}
 {[}pylithapp.timedependent.materials.material.output{]}
 
@@ -171,8 +170,8 @@ cell\_data\_fields~=~{[}total\_strain,viscous\_strain,stress{]}
 cell\_info\_fields~=~{[}mu,lambda,density,maxwell\_time{]}
 \end{lyxcode}
 The properties and state variables available for output in each material
-model are listed in Table \ref{tab:material-model-output}. The order
-of the state variables in the output arrays is given in Table \ref{tab:material-model-statevars}.
+model are listed in Table \vref{tab:material-model-output}. The order
+of the state variables in the output arrays is given in Table \vref{tab:materials:statevars}.
 For the generalized Maxwell model, values of \texttt{shear\_ratio}
 and \texttt{maxwell\_time} are given for each Maxwell element in the
 model (there are presently three, as described below). Similarly,
@@ -206,7 +205,7 @@ Generalized Maxwell Viscoelastic & \texttt{mu, lambda, density,}
 \hline 
 Power-law Viscoelastic & \texttt{mu, lambda, density,}
 
-\texttt{reference\_strain\_rate, reference\_stress,}
+\texttt{vreference\_strain\_rate, vreference\_stress,}
 
 \texttt{power\_law\_exponent} & \texttt{total\_strain, stress, cauchy\_stress, viscous\_strain} & Yes\tabularnewline
 \hline 
@@ -215,7 +214,7 @@ Drucker-Prager Elastoplastic & \texttt{mu, lambda, density, alpha\_yield},\textt
 \end{tabular}
 \end{table}
 \begin{table}[H]
-\centering{}\caption{\label{tab:material-model-statevars}Order of components in tensor
+\centering{}\caption{\label{tab:materials:statevars}Order of components in tensor
 state-variables for material models.}
 \begin{tabular}{|>{\centering}p{1.25in}|>{\centering}p{0.5in}|>{\centering}p{1.25in}|>{\centering}p{2.25in}|}
 \hline 
@@ -273,7 +272,7 @@ the elastic prestep, appropriate values for the state variables are
 set; otherwise the state variables are set to zero. To override this
 behavior, specify a spatial database for the initial stress, strain,
 and/or state variables as in the example from the tutorial in Section
-\ref{sec:Tutorial-3d-hex8}:
+\vref{sec:Tutorial-3d-hex8}:
 \begin{lyxcode}
 {[}pylithapp.timedependent.materials.elastic{]}
 
@@ -292,7 +291,7 @@ initial displacements and velocities of zero, so any initial strain
 and state variables should be consistent with these initial conditions.
 This limitation will be removed in future releases.
 \end{quote}
-As mentioned in section \ref{sec:ViscoelasticFormulations}, plane
+As mentioned in section \vref{sec:ViscoelasticFormulations}, plane
 strain problems do not include the out-of-plane stress component ($\sigma_{zz}$),
 and an additional state variable (\texttt{stress-zz-initial}) is provided
 for all two-dimensional viscoelastic and elastoplastic models. To
@@ -329,7 +328,7 @@ db\_initial\_state.iohandler.filename~=~initial\_state\_2d.spatialdb
 \noindent \centering{}\caption{Values in spatial database for initial state variables for 3D problems.
 2D problems use only the relevant values. Note that initial stress
 and strain are available for all material models. Some models have
-additional state variables (Table \ref{tab:material-model-output})
+additional state variables (Table \vref{tab:material-model-output})
 and initial values for these may also be provided.}
 \begin{tabular}{|>{\centering}m{0.85in}|>{\centering}m{2.47in}|}
 \hline 
@@ -349,8 +348,8 @@ total-strain-yz, total-strain-xz}\tabularnewline
 
 \subsection{Cauchy Stress Tensor and Second Piola-Kirchoff Stress Tensor}
 
-In outputting the stress tensor (see Tables \ref{tab:material-model-output}
-and \ref{tab:material-model-statevars}), the tensor used internally
+In outputting the stress tensor (see Tables \vref{tab:material-model-output}
+and \vref{tab:materials:statevars}), the tensor used internally
 in the formulation of the governing equation is the \texttt{stress}
 field available for output. For the infinitesimal strain formulation
 this is the Cauchy stress tensor; for the finite strain formulation,
@@ -361,12 +360,12 @@ when using the infinitesimal strain formulation. Although the second
 Piola-Kirchoff stress tensor has little physical meaning, the second
 Piola-Kirchoff stress tensor (not the Cauchy stress tensor) values
 should be specified in the initial stress database when using the
-finite strain formulation. See section \ref{sec:Small-Strain-Formulation}
+finite strain formulation. See section \vref{sec:Small-Strain-Formulation}
 for a discussion of the relationship between the Cauchy stress tensor
 and the second Piola-Kirchhoff stress tensor.
 
 
-\subsection{\label{sub:Stable-time-step}Stable time step}
+\subsection{\label{sec:stable:time:step}Stable time step}
 
 PyLith computes the stable time step in both quasi-static and dynamic
 simulations. In quasi-static simulations the stability of the implicit
@@ -414,7 +413,7 @@ do not change, so that the stable time step is constant throughout
 the simulation.
 
 The stable time step is used in all three of the time stepping schemes
-used by PyLith (see section \ref{sub:Time-Stepping}). In general,
+used by PyLith (see section \vref{sub:Time-Stepping}). In general,
 an error is generated if the user attempts to use a time step size
 larger than the stable time step. The stable time steps for each cell
 can be included in the output with the other \texttt{cell\_info\_fields}.
@@ -634,12 +633,12 @@ For this case the stress-strain matrix, $\underline{C}$, becomes
 
 
 
-\section{\label{sec:Viscoelastic-Materials}Viscoelastic Materials}
+\section{\label{sec:materials:viscoelastic}Viscoelastic Materials}
 
 At present, there are six viscoelastic material models available in
-PyLith (Table \ref{tab:Viscoelastic-models-available} and Figure
-\ref{fig:Material-models}). Future code versions may include alternative
-formulations for the various material models (Appendix \ref{cha:Alternative-Formulations}),
+PyLith (Table \vref{tab:Viscoelastic-models-available} and Figure
+\vref{fig:material:models}). Future code versions may include alternative
+formulations for the various material models (Appendix \vref{cha:materials:alternative:formulations}),
 so that users may use the most efficient formulation for a particular
 problem. Note that both 2D and 3D viscoelastic models are described,
 but we present below only the 3D formulations. The 2D formulations
@@ -653,12 +652,12 @@ this initial stress component, an additional state variable corresponding
 to $\sigma_{33}^{I}$ is provided (\texttt{stress\_zz\_initial}).
 This state variable is provided for all of the viscoelastic material
 models as well as the plane strain Drucker-Prager elastoplastic model.
-See section \ref{sec:Initial-State-Variables} for additional information
+See section \vref{sec:Initial-State-Variables} for additional information
 on specifying initial stresses for plane strain problems. For the
 PowerLawPlaneStrain model, all four of the stress components are needed,
 so a 4-component stress state variable (\texttt{stress4}) is provided
 in addition to the normal 3-component \texttt{stress} state variable
-(see Table \ref{tab:material-model-output}).
+(see Table \vref{tab:material-model-output}).
 
 \noindent \begin{center}
 \begin{table}[H]
@@ -688,7 +687,7 @@ PowerLaw3D & Isotropic Maxwell material with power-law viscous rheology\tabularn
 
 \noindent \begin{center}
 \begin{figure}[H]
-\centering{}\includegraphics[scale=0.75]{materials/figs/pylith-materials}\caption{\label{fig:Material-models}Spring-dashpot 1D representations of the
+\centering{}\includegraphics[scale=0.75]{materials/figs/pylith-materials}\caption{\label{fig:material:models}Spring-dashpot 1D representations of the
 available 3D elastic and 2D/3D viscoelastic material models for PyLith.
 The top model is a linear elastic model, the middle model is a Maxwell
 model, and the bottom model is a generalized Maxwell model. For the
@@ -705,7 +704,7 @@ power-law.}
 \subsection{Definitions}
 
 In the following sections, we use a combination of vector and index
-notation (our notation conventions are shown in Table \ref{tab:Mathematical-notation}).
+notation (our notation conventions are shown in Table \vref{tab:notation}).
 When using index notation, we use the common convention where repeated
 indices indicate summation over the range of the index. We also make
 frequent use of the scalar inner product. The scalar inner product
@@ -750,13 +749,13 @@ as vectors, it is necessary to double the products representing off-diagonal
 terms.
 
 For quantities evaluated over a specific time period, we represent
-the initial time as a prefixed subscript and the end time as a prefixed
+the initial time as a pvrefixed subscript and the end time as a pvrefixed
 superscript. In cases where the initial time does not appear, it is
 understood to be $-\infty$.
 
 \noindent \begin{center}
 \begin{table}[H]
-\noindent \centering{}\caption{\label{tab:Mathematical-notation}Mathematical notation used in this
+\noindent \centering{}\caption{\label{tab:notation}Mathematical notation used in this
 section.}
 \begin{tabular}{|c|c|c|}
 \hline 
@@ -779,7 +778,7 @@ Linear viscoelastic models are obtained by various combinations of
 a linear elastic spring and a linear viscous dashpot in series or
 parallel. The simplest example is probably the linear Maxwell model,
 which consists of a spring in series with a dashpot, as shown in Figure
-\ref{fig:Material-models}. For a one-dimensional model, the response
+\vref{fig:material:models}. For a one-dimensional model, the response
 is given by
 \begin{equation}
 \frac{d\epsilon_{Total}}{dt}=\frac{d\epsilon_{D}}{dt}+\frac{d\epsilon_{S}}{dt}=\frac{\sigma}{\eta}+\frac{1}{E}\frac{d\sigma}{dt}\:,
@@ -810,7 +809,7 @@ gradually relaxes back to its undeformed state.
 
 The most general form of linear viscoelastic model is the generalized
 Maxwell model, which consists of a spring in parallel with a number
-of Maxwell models (see Figure \ref{fig:Material-models}). Using this
+of Maxwell models (see Figure \vref{fig:material:models}). Using this
 model, it is possible to represent a number of simpler viscoelastic
 models. For example, a simple Maxwell model is obtained by setting
 the elastic constants of all springs to zero, with the exception of
@@ -824,7 +823,7 @@ number).
 
 As described above, the generalized Maxwell viscoelastic model consists
 of a number of Maxwell linear viscoelastic models in parallel with
-a spring, as shown in Figure \ref{fig:Material-models}. PyLith includes
+a spring, as shown in Figure \vref{fig:material:models}. PyLith includes
 the specific case of a spring in parallel with three Maxwell models.
 As described in the previous paragraph, a number of common material
 models may be obtained from this model by setting the shear moduli
@@ -841,8 +840,8 @@ from 1. Note that the sum of all these fractions must equal 1. We
 use a similar formulation for our linear Maxwell viscoelastic model,
 but in that case $\mu_{0}$ is always zero and we only use a single
 Maxwell model. The parameters defining the standard Maxwell model
-are shown in Table \ref{tab:linearMaxwell}, and those defining the
-generalized Maxwell model are shown in Table \ref{tab:genMaxwell}.
+are shown in Table \vref{tab:linearMaxwell}, and those defining the
+generalized Maxwell model are shown in Table \vref{tab:genMaxwell}.
 
 As for all our viscoelastic models, the volumetric strain is completely
 elastic, and the viscoelastic deformation may be expressed purely
@@ -885,7 +884,7 @@ where
 \begin{equation}
 \mu_{0}+\sum_{i=1}^{N}\mu_{i}=1\,.\label{eq:24}
 \end{equation}
-With the form in Equation \ref{eq:23}, the integral equation form
+With the form in Equation \vref{eq:23}, the integral equation form
 is identical to the differential equation form.
 
 If we assume the material is undisturbed until a strain is suddenly
@@ -896,13 +895,13 @@ applied at time zero, we can divide the integral into
 The first term is zero, the second term includes a jump term associated
 with $\underline{e}_{0}$ at time zero, and the last term covers the
 subsequent history of strain. Applying this separation to Equation
-\ref{eq:22},
+\vref{eq:22},
 \begin{equation}
 \underline{S}\left(t\right)=2\mu\left(t\right)\left(\underline{e}_{0}-\underline{e}^{I}\right)+\underline{S}^{I}+2\int_{0}^{t}\mu\left(t-T\right)\underline{\dot{e}}\left(T\right)\, dT\,,\label{eq:28}
 \end{equation}
 where we have left the sign off of the lower limit on the integral.
 
-Substituting Equation \ref{eq:23} into \ref{eq:28}, we obtain
+Substituting Equation \vref{eq:23} into \vref{eq:28}, we obtain
 \begin{equation}
 \underline{S}\left(t\right)=2\mu_{tot}\left\{ \mu_{0}\underline{e}\left(t\right)+\sum_{i=1}^{N}\left[\mu_{i}\exp\frac{-t}{\tau_{i}}\left(\underline{e}_{0}+\intop_{0}^{t}\exp\frac{t}{\tau_{i}}\underline{\dot{e}}\left(T\right)\, dT\right)\right]-\underline{e}^{I}\right\} +\underline{S}^{I}\,.\label{eq:29}
 \end{equation}
@@ -951,12 +950,12 @@ tangent constitutive matrix, we require the deviatoric part:
 \frac{\partial\underline{S}}{\partial\underline{\epsilon}}=\frac{\partial\underline{S}}{\partial\underline{e}}\frac{\partial\underline{e}}{\partial\underline{\epsilon}}\,,\label{eq:38}
 \end{equation}
 where the second derivative on the right may be easily deduced from
-Equation \ref{eq:16}. The other derivative is given by
+Equation \vref{eq:16}. The other derivative is given by
 \begin{equation}
 \frac{\partial\underline{S}}{\partial\underline{e}}=2\mu_{tot}\left[\mu_{0}\underline{I}+\sum_{i=1}^{N}\mu_{i}\frac{\partial\underline{h}_{i}^{1}}{\partial\underline{e}}\right]\,,\label{eq:39}
 \end{equation}
-where $\underline{I}$ is the identity matrix. From Equations \ref{eq:33}
-through \ref{eq:35}, the derivative inside the brackets is
+where $\underline{I}$ is the identity matrix. From Equations \vref{eq:33}
+through \vref{eq:35}, the derivative inside the brackets is
 \begin{equation}
 \frac{\partial\underline{h}_{i}^{1}}{\partial\underline{e}}=\Delta h_{i}\left(\Delta t\right)\underline{I}\,.\label{eq:40}
 \end{equation}
@@ -970,7 +969,7 @@ We use this formulation for both our Maxwell and generalized Maxwell
 viscoelastic models. For the Maxwell model, $\mu_{0}=0$ and $N=1$.
 For the generalized Maxwell model, $N=3.$ The stable time step is
 equal to 1/5 of the minimum relaxation time for all of the Maxwell
-models (equation \ref{eq:21-1}).
+models (equation \vref{eq:21-1}).
 
 \noindent \begin{center}
 \begin{table}[H]
@@ -1055,7 +1054,7 @@ As an alternative to the approach outlined above, an effective stress
 function formulation \cite{Kojic:Bathe:1987} may be employed for
 both a linear Maxwell model and a power-law Maxwell model. Note that
 this formulation is not presently employed for linear viscoelastic
-models (see Appendix \ref{cha:Alternative-Formulations}), but it
+models (see Appendix \vref{cha:materials:alternative:formulations}), but it
 is used for power-law viscoelastic materials. For the viscoelastic
 materials considered here, the viscous volumetric strains are zero
 (incompressible flow), and it is convenient to separate the general
@@ -1071,7 +1070,7 @@ is the initial deviatoric strain, $^{t+\Delta t}P$ is the pressure,
 $^{t+\Delta t}\theta$ is the mean strain evaluated at time $t+\Delta t$
 , and $\theta^{I}$ is the initial mean strain. The initial deviatoric
 stress and initial pressure are given by $\underline{S}^{I}$ and
-$P^{I}$, respectively. The topmost equation in Equation \ref{eq:42}
+$P^{I}$, respectively. The topmost equation in Equation \vref{eq:42}
 may also be written as
 \begin{gather}
 ^{t+\Delta t}\underline{S}=\frac{1}{a_{E}}(^{t+\Delta t}\underline{e}^{\prime}-\underline{\Delta e}^{C})+\underline{S}^{I}\,,\label{eq:43}
@@ -1114,7 +1113,7 @@ In terms of the vectors, we have
 ^{t+\Delta t}\sigma_{i}=\phantom{}^{t+\Delta t}S_{i}+\phantom{}^{t+\Delta t}P\,\,;\,\,\, i=1,2,3\label{eq:56}\\
 ^{t+\Delta t}\sigma_{i}=\phantom{}^{t+\Delta t}S_{i}\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\, i=4,5,6\nonumber 
 \end{gather}
-Therefore,
+Thevrefore,
 \begin{gather}
 C_{ij}^{VE}=C_{ij}^{\prime}+\frac{1}{3a_{m}}\,;\,\,1\leq i,j\leq3\,\,.\label{eq:57}\\
 C_{ij}^{VE}=C_{ij}^{\prime}\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\textrm{otherwise}\nonumber 
@@ -1123,11 +1122,11 @@ Using the chain rule,
 \begin{gather}
 C_{ij}^{\prime}=\frac{\partial\phantom{}^{t+\Delta t}S_{i}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}=\frac{\partial\phantom{}^{t+\Delta t}S_{i}}{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}\frac{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}{\partial\phantom{}^{t+\Delta t}e_{l}}\frac{\partial\phantom{}^{t+\Delta t}e_{l}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}\,\,.\label{eq:58}
 \end{gather}
-From Equation \ref{eq:44}, we obtain
+From Equation \vref{eq:44}, we obtain
 \begin{gather}
 \frac{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}{\partial\phantom{}^{t+\Delta t}e_{l}}=\delta_{kl}\,\,,\label{eq:59}
 \end{gather}
-and from Equation \ref{eq:16}:
+and from Equation \vref{eq:16}:
 \begin{gather}
 \frac{\partial\phantom{}^{t+\Delta t}e_{l}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}=\frac{1}{3}\left[\begin{array}{ccc}
 2 & -1 & -1\\
@@ -1136,9 +1135,9 @@ and from Equation \ref{eq:16}:
 \end{array}\right];\,\,1\leq l,j\leq3\label{eq:60}\\
 \frac{\partial\phantom{}^{t+\Delta t}e_{l}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}=\delta_{lj}\,\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\textrm{otherwise.}\nonumber 
 \end{gather}
-The first term of Equation \ref{eq:58} depends on the particular
+The first term of Equation \vref{eq:58} depends on the particular
 constitutive relationship, and the complete tangent matrix may then
-be obtained from Equation \ref{eq:57}.
+be obtained from Equation \vref{eq:57}.
 
 
 \subsubsection{Power-Law Maxwell Viscoelastic Material\label{sub:Power-Law-Maxwell-Viscoelastic}}
@@ -1169,8 +1168,8 @@ rate component using the flow law. This is accomplished using:
 \begin{equation}
 \dot{e}_{ij}^{C}=A_{M}\exp\left(\frac{-Q}{RT}\right)\sqrt{J_{2}^{\prime}}^{n-1}S_{ij}\:.\label{eq:66}
 \end{equation}
-Note that Equations \ref{eq:65} and \ref{eq:66} are consistent,
-since Equation \ref{eq:65} may be obtained from Equation \ref{eq:66}
+Note that Equations \vref{eq:65} and \vref{eq:66} are consistent,
+since Equation \vref{eq:65} may be obtained from Equation \vref{eq:66}
 by taking the scalar inner product of both sides, multiplying by 1/2,
 and taking the square root.
 
@@ -1207,12 +1206,12 @@ In terms of the second deviatoric strain rate invariant we then have
 \begin{equation}
 \sqrt{\dot{L}_{2}^{\prime C}}=\frac{\sqrt{3}}{2}\dot{\epsilon}_{11}\:.\label{eq:72}
 \end{equation}
-Substituting Equations \ref{eq:70} and \ref{eq:72} into Equation
-\ref{eq:64}, we obtain
+Substituting Equations \vref{eq:70} and \vref{eq:72} into Equation
+\vref{eq:64}, we obtain
 \begin{equation}
 \sqrt{\dot{L}_{2}^{\prime C}}=A_{E}\frac{\sqrt{3}^{n+1}}{2}\exp\left(\frac{-Q}{RT}\right)\sqrt{J_{2}^{\prime}}^{n}\:,\label{eq:73}
 \end{equation}
-and therefore,
+and thevrefore,
 \begin{equation}
 A_{M}=\frac{\sqrt{3}^{n+1}}{2}A_{E}\:.\label{eq:74}
 \end{equation}
@@ -1233,19 +1232,19 @@ of writing the flow rule is (e.g., \cite{Prentice:1968}):
 \begin{equation}
 \frac{\sqrt{\dot{L}_{2}^{\prime C}}}{\dot{e}_{0}}=\left(\frac{\sqrt{J_{2}^{\prime}}}{S_{0}}\right)^{n},\label{eq:76}
 \end{equation}
-where $\dot{e}_{0}$ and $S_{0}$ are reference values for the strain
+where $\dot{e}_{0}$ and $S_{0}$ are vreference values for the strain
 rate and deviatoric stress. This means that
 \begin{equation}
 \frac{\dot{e}_{0}}{S_{0}^{n}}=A_{T}\:.\label{eq:77}
 \end{equation}
-Users must therefore specify three parameters for a power-law material.
-The properties \texttt{reference-strain-rate}, \texttt{reference-stress},
-and \texttt{power-law-exponent} in Table \ref{tab:powerLaw} refer
+Users must thevrefore specify three parameters for a power-law material.
+The properties \texttt{vreference-strain-rate}, \texttt{vreference-stress},
+and \texttt{power-law-exponent} in Table \vref{tab:powerLaw} vrefer
 to $\dot{e}_{0}$, $S_{0}$, and $n$, respectively. To specify the
 power-law properties for PyLith using laboratory results, the user
-must first compute $A_{T}$ using Equation \ref{eq:75}. Then, values
+must first compute $A_{T}$ using Equation \vref{eq:75}. Then, values
 for $\dot{e}_{0}$ and $S_{0}$ must be provided. The simplest method
-is probably to assume a reasonable value for the reference strain
+is probably to assume a reasonable value for the vreference strain
 rate, and then compute $S_{0}$ as
 \begin{equation}
 S_{0}=\left(\frac{\dot{e}_{0}}{A_{T}}\right)^{\frac{1}{n}}\:.\label{eq:78}
@@ -1256,9 +1255,9 @@ A utility code (\texttt{powerlaw\_gendb.py}) is provided to convert
 laboratory results to the properties used by PyLith. To use the code,
 users must specify the spatial variation of $A_{E}$, $Q$, $n$,
 and $T$. An additional parameter is given to define the units of
-$A_{E}$. The user then specifies either a reference stress or a reference
+$A_{E}$. The user then specifies either a vreference stress or a vreference
 strain rate, and a database suitable for PyLith is generated. This
-utility is described more fully in Section \ref{sub:Tutorial-Step08-Power-law}.
+utility is described more fully in Section \vref{sub:Tutorial-Step08-Power-law}.
 
 The flow law in component form is 
 \begin{equation}
@@ -1268,12 +1267,12 @@ and the creep strain increment is approximated as
 \begin{gather}
 \underline{\Delta e}^{C}\approx\frac{\Delta t\dot{e}_{0}\sqrt{^{\tau}J_{2}^{\prime}}^{n-1}\,^{\tau}\underline{S}}{S_{0}^{n}}=\frac{\Delta t\dot{e}_{0}\phantom{}^{\tau}\overline{\sigma}^{n-1}\,^{\tau}\underline{S}}{\sqrt{3}S_{0}^{n}}\,.\label{eq:80}
 \end{gather}
- Therefore,
+ Thevrefore,
 \begin{gather}
 \Delta\bar{e}^{C}\approx\frac{2\Delta t\dot{e}_{0}\sqrt{^{\tau}J_{2}^{\prime}}^{n}}{\sqrt{3}S_{0}^{n}}=\frac{2\Delta t\dot{e}_{0}\phantom{}^{\tau}\overline{\sigma}^{n}}{\sqrt{3}^{n+1}S_{0}^{n}}\,,\,\textrm{and}\,^{\tau}\gamma=\frac{\dot{e}_{0}\sqrt{^{\tau}J_{2}^{\prime}}^{n-1}}{S_{0}^{n}}\,.\label{eq:81}
 \end{gather}
-substituting Equations \ref{eq:46}, \ref{eq:80}, and \ref{eq:81}
-into \ref{eq:43}, we obtain:
+substituting Equations \vref{eq:46}, \vref{eq:80}, and \vref{eq:81}
+into \vref{eq:43}, we obtain:
 \begin{gather}
 ^{t+\Delta t}\underline{S}=\frac{1}{a_{E}}\left\{ ^{t+\Delta t}\underline{e}^{\prime}-\Delta t\phantom{}^{\tau}\gamma\left[\left(1-\alpha\right)^{t}\underline{S}+\alpha{}^{t+\Delta t}\underline{S}\right]\right\} +\underline{S}^{I}\,,\label{eq:82}
 \end{gather}
@@ -1292,17 +1291,17 @@ b=\frac{1}{2}{}^{t+\Delta t}\underline{e}^{\prime}\cdot{}^{t+\Delta t}\underline
 c=\Delta t\left(1-\alpha\right){}^{t+\Delta t}\underline{e}^{\prime}\cdot^{t}\underline{S}+\Delta t\left(1-\alpha\right)a_{E}\,^{t}\underline{S}\cdot\underline{S}^{I}\,\,\nonumber \\
 d=\Delta t\left(1-\alpha\right)\sqrt{^{t}J_{2}^{\prime}}\,\,\nonumber 
 \end{gather}
-Equation \ref{eq:84} is a function of a single unknown -- the square
+Equation \vref{eq:84} is a function of a single unknown -- the square
 root of the second deviatoric stress invariant at time $t+\Delta t$
 -- and may be solved by bisection or by Newton's method. Once this
 parameter has been found, the deviatoric stresses for the current
-time step may be found from Equations \ref{eq:49}, \ref{eq:81},
-and \ref{eq:82}, and the total stresses may be found by combining
-the deviatoric and volumetric components from Equation \ref{eq:42}.
+time step may be found from Equations \vref{eq:49}, \vref{eq:81},
+and \vref{eq:82}, and the total stresses may be found by combining
+the deviatoric and volumetric components from Equation \vref{eq:42}.
 
 Once the stresses are computed for the current time step, we can compute
 the relaxation time (used in computing the stable time step) by first
-computing the effective viscous strain rate from Equation \ref{eq:79}:
+computing the effective viscous strain rate from Equation \vref{eq:79}:
 \begin{equation}
 \dot{\bar{e}}^{C}=\frac{2\dot{e}_{0}\left(\frac{\bar{\sigma}}{\sqrt{3}}\right)^{n}}{\sqrt{3}S_{0}^{n}}\:.
 \end{equation}
@@ -1315,11 +1314,11 @@ The relaxation time is then the ratio between these two:
 \tau=\frac{\bar{e}^{E}}{\bar{\dot{e}}^{C}}=\left(\frac{S_{0}}{\sqrt{J_{2}^{\prime}}}\right)^{n-1}\frac{S_{0}}{6\mu\dot{e}_{0}}\:.\label{eq:86-1}
 \end{equation}
 The stable time step returned by PyLith is 1/5 of the value computed
-from Equation \ref{eq:86-1}.
+from Equation \vref{eq:86-1}.
 
 To compute the tangent stress-strain relation, we need to compute
-the first term in Equation \ref{eq:58}. We begin by rewriting Equation
-\ref{eq:83} as
+the first term in Equation \vref{eq:58}. We begin by rewriting Equation
+\vref{eq:83} as
 \begin{gather}
 F=^{t+\Delta t}S_{i}\left(a_{E}+\alpha\Delta t\phantom{}^{\tau}\gamma\right)-\phantom{}^{t+\Delta t}e_{i}^{\prime}+\Delta t\phantom{}^{\tau}\gamma\left(1-\alpha\right)^{t}S_{i}-a_{E}S_{i}^{I}=0\:.\label{eq:86}
 \end{gather}
@@ -1332,7 +1331,7 @@ and the derivative with respect to $^{t+\Delta t}S_{i}$ is
 \begin{gather}
 \frac{\partial F}{\partial\phantom{}^{t+\Delta t}S_{i}}=a_{E}+\alpha\Delta t\phantom{}^{\tau}\gamma+\frac{\partial\phantom{}^{\tau}\gamma}{\partial\phantom{}^{t+\Delta t}S_{i}}\Delta t\left[\alpha\phantom{}^{t+\Delta t}S_{i}+\left(1-\alpha\right)^{t}S_{i}\right]\:.\label{eq:88}
 \end{gather}
-From Equation \ref{eq:81} and Equation \ref{eq:49},
+From Equation \vref{eq:81} and Equation \vref{eq:49},
 \begin{gather}
 ^{\tau}\gamma=\frac{\dot{e}_{0}}{S_{0}^{n}}\left[\alpha\sqrt{^{t+\Delta t}J_{2}^{\prime}}+\left(1-\alpha\right)\sqrt{^{t}J_{2}^{\prime}}\right]^{n-1}\:.\label{eq:89}
 \end{gather}
@@ -1346,15 +1345,15 @@ where
 ^{t+\Delta t}T_{i}=\phantom{}^{t+\Delta t}S_{i}\:;\:\:1\leq i\leq3\label{eq:91}\\
 ^{t+\Delta t}T_{i}=2\phantom{}^{t+\Delta t}S_{i}\:;\:\:\textrm{otherwise.}\nonumber 
 \end{gather}
-Then using Equations \ref{eq:87}, \ref{eq:88}, \ref{eq:90}, and
+Then using Equations \vref{eq:87}, \vref{eq:88}, \vref{eq:90}, and
 the quotient rule for derivatives of an implicit function,
 \begin{gather}
 \frac{\partial\phantom{}^{t+\Delta t}S_{i}}{\partial{}^{t+\Delta t}e_{k}^{\prime}}=\frac{\delta_{ik}}{a_{E}+\alpha\Delta t\left[^{\tau}\gamma+\frac{\dot{e}_{0}{}^{\tau}S_{i}\left(n-1\right){}^{t+\Delta t}T_{i}\sqrt{^{\tau}J_{2}^{\prime}}^{n-2}}{2\sqrt{^{t+\Delta t}J_{2}^{\prime}}S_{0}^{n}}\right]}\,.\label{eq:92}
 \end{gather}
 Note that for a linear material $\left(n=1\right)$, this equation
-is identical to the linear formulation in Section \ref{sub:Effective-Stress-Formulation-Maxwell}
+is identical to the linear formulation in Section \vref{sub:Effective-Stress-Formulation-Maxwell}
 (making the appropriate substitution for $^{\tau}\gamma$). Then,
-using Equations \ref{eq:57} through \ref{eq:60},
+using Equations \vref{eq:57} through \vref{eq:60},
 \begin{gather}
 C_{ij}^{VE}=\frac{1}{3a_{m}}\left[\begin{array}{cccccc}
 1 & 1 & 1 & 0 & 0 & 0\\
@@ -1374,11 +1373,11 @@ C_{ij}^{VE}=\frac{1}{3a_{m}}\left[\begin{array}{cccccc}
 \end{gather}
 Note that if there are no deviatoric stresses at the beginning and
 end of a time step (or if $\nicefrac{\dot{e}_{0}}{S_{0}^{n}}$ approaches
-zero), Equations \ref{eq:92} and \ref{eq:93} reduce to the elastic
+zero), Equations \vref{eq:92} and \vref{eq:93} reduce to the elastic
 constitutive matrix, as expected.
 
 To compute the zero of the effective stress function using Newton's
-method, we require the derivative of Equation \ref{eq:84}, which
+method, we require the derivative of Equation \vref{eq:84}, which
 may be written:
 \begin{gather}
 \frac{\partial F}{\partial\sqrt{^{t+\Delta t}J_{2}^{\prime}}}=2a^{2}\sqrt{^{t+\Delta t}J_{2}^{\prime}}+\frac{\dot{e}_{0}\alpha\left(n-1\right)\sqrt{^{\tau}J_{2}^{\prime}}^{n-2}}{S_{0}^{n}}\left(2a\alpha\Delta t{}^{t+\Delta t}J_{2}^{\prime}+c-2d^{2}\,^{\tau}\gamma\right)\,.\label{eq:94}
@@ -1400,9 +1399,9 @@ in the nonlinear power-law viscoelastic material constitutive model.}
 \cline{2-3} 
  & \texttt{density} & Density, $\rho$\tabularnewline
 \cline{2-3} 
- & \texttt{reference-strain-rate} & Reference strain rate, $\dot{e}_{0}$\tabularnewline
+ & \texttt{vreference-strain-rate} & Reference strain rate, $\dot{e}_{0}$\tabularnewline
 \cline{2-3} 
- & \texttt{reference-stress} & Reference stress, $S_{0}$\tabularnewline
+ & \texttt{vreference-stress} & Reference stress, $S_{0}$\tabularnewline
 \cline{2-3} 
  & \texttt{power-law-exponent} & Power-law exponent, $n$\tabularnewline
 \hline 
@@ -1463,9 +1462,9 @@ is described as associated. Otherwise, it is non-associated. The final
 component needed is a hardening hypothesis, which describes how the
 yield condition and flow rule are modified during plastic flow. When
 the yield condition and flow rule remain constant during plastic flow
-(e.g., no hardening), the material is referred to as perfectly plastic.
+(e.g., no hardening), the material is vreferred to as perfectly plastic.
 
-To perform the solution, the yield condition (Equation \ref{eq:97})
+To perform the solution, the yield condition (Equation \vref{eq:97})
 is first evaluated under the assumption of elastic behavior. If $^{t+\Delta t}f<0$,
 the material behavior is elastic and no plastic flow occurs. Otherwise,
 the behavior is plastic and a plastic strain increment must be computed
@@ -1506,10 +1505,10 @@ different ways. The yield surface can touch the outer apices ($\theta=\pi/3$)
 of the Mohr-Coulomb model (inscribed version), the inner apices ($\theta=0$)
 of the Mohr-Coulomb model (circumscribed version), or halfway between
 the two ($\theta=pi/6,$middle version). Substituting these values
-for $\theta$ into Equation (\ref{eq:drucker:prager:haigh:westergaard})
-and casting it into the same form as Equation (\ref{eq:101}) yields
+for $\theta$ into Equation (\vref{eq:drucker:prager:haigh:westergaard})
+and casting it into the same form as Equation (\vref{eq:101}) yields
 the values of $\alpha_{f}$, $\beta$, and $\alpha_{g}$ given in
-Table \ref{tab:fit_mohr_coulomb}, where $\phi_{0}$ refers to the
+Table \vref{tab:fit_mohr_coulomb}, where $\phi_{0}$ vrefers to the
 initial friction angle. Similarly, the flow rule can be related to
 the dilatation angle, $\psi$, of a Mohr-Coulomb model. It is also
 possible for the Mohr-Coulomb parameters to be functions of the internal
@@ -1553,7 +1552,7 @@ where
 \end{gather}
 Since the plasticity is pressure-dependent, there are volumetric plastic
 strains, unlike the viscous strains in the previous section. From
-Equation \ref{eq:99}, the plastic strain increment is
+Equation \vref{eq:99}, the plastic strain increment is
 \begin{equation}
 \Delta\epsilon_{ij}^{P}=\lambda\frac{\partial\phantom{}^{t+\Delta t}g}{\partial\phantom{}^{t+\Delta t}\sigma_{ij}}=\lambda\alpha_{g}\delta_{ij}+\lambda\frac{^{t+\Delta t}S_{ij}}{2\sqrt{^{t+\Delta t}J_{2}^{\prime}}}\:.\label{eq:107}
 \end{equation}
@@ -1574,15 +1573,15 @@ different depending on whether hardening is included.
 When there is no hardening (perfect plasticity), the Drucker-Prager
 elastoplastic model may be parameterized with just three parameters,
 in addition to the normal elasticity parameters. The parameters \texttt{friction-angle},
-\texttt{cohesion}, and \texttt{dilatation-angle} in Table \ref{tab:druckerPrager}
-refer respectively to $\phi$, $\bar{c}$, and $\psi$ in Table \ref{tab:fit_mohr_coulomb}.
+\texttt{cohesion}, and \texttt{dilatation-angle} in Table \vref{tab:druckerPrager}
+vrefer respectively to $\phi$, $\bar{c}$, and $\psi$ in Table \vref{tab:fit_mohr_coulomb}.
 These are then converted to the properties $\alpha_{f}$ (\texttt{alpha-yield}),
 $\beta$ (\texttt{beta}), and $\alpha_{g}$ (\texttt{alpha-flow}),
-as shown in Table \ref{tab:material-model-output}.
+as shown in Table \vref{tab:material-model-output}.
 
 For perfect plasticity the yield and flow functions do not vary, and
-we can solve for $\lambda$ by substituting Equation \ref{eq:109}
-into Equation \ref{eq:105} and taking the scalar inner product of
+we can solve for $\lambda$ by substituting Equation \vref{eq:109}
+into Equation \vref{eq:105} and taking the scalar inner product of
 both sides:
 \begin{equation}
 \lambda=\sqrt{2}\,\phantom{}^{t+\Delta t}d-2a_{E}\sqrt{^{t+\Delta t}J_{2}^{\prime}}\:,\label{eq:110}
@@ -1591,11 +1590,11 @@ where
 \begin{equation}
 ^{t+\Delta t}d^{2}=2a_{E}^{2}J_{2}^{\prime I}+2a_{E}S_{ij}^{I}\,\phantom{}^{t+\Delta t}e_{ij}^{\prime}+\phantom{}^{t+\Delta t}e_{ij}^{\prime}\,\phantom{}^{t+\Delta t}e_{ij}^{\prime}\:.\label{eq:111}
 \end{equation}
-The second deviatoric stress invariant is therefore
+The second deviatoric stress invariant is thevrefore
 \begin{equation}
 \sqrt{^{t+\Delta t}J_{2}^{\prime}}=\frac{\sqrt{2}\,\phantom{}^{t+\Delta t}d-\lambda}{2a_{E}}\:,\label{eq:112}
 \end{equation}
-and the pressure is computed from Equations \ref{eq:105} and \ref{eq:108}
+and the pressure is computed from Equations \vref{eq:105} and \vref{eq:108}
 as:
 \begin{equation}
 ^{t+\Delta t}P=\frac{^{t+\Delta t}I_{1}}{3}=\frac{1}{a_{m}}\left(^{t+\Delta t}\theta^{\prime}-\lambda\alpha_{g}\right)+P^{I}\:.\label{eq:113}
@@ -1605,19 +1604,19 @@ for the stress invariants at $t+\Delta t$ to obtain:
 \begin{equation}
 \lambda=\frac{2a_{E}a_{m}\left(\frac{3\alpha_{f}}{a_{m}}\phantom{}^{t+\Delta t}\theta^{\prime}+\frac{^{t+\Delta t}d}{\sqrt{2}a_{E}}-\beta+3\alpha_{f}P^{I}\right)}{6\alpha_{f}\alpha_{g}a_{E}+a_{m}}\:.\label{eq:114}
 \end{equation}
-Since $\lambda$ is now known, we can substitute \ref{eq:112} into
-\ref{eq:109} to obtain
+Since $\lambda$ is now known, we can substitute \vref{eq:112} into
+\vref{eq:109} to obtain
 \begin{equation}
 ^{t+\Delta t}S_{ij}=\frac{\Delta e_{ij}^{P}\left(\sqrt{2}\,\phantom{\,}^{t+\Delta t}d-\lambda\right)}{\lambda a_{E}}\:.\label{eq:115}
 \end{equation}
-Substituting this into Equation \ref{eq:105}, we obtain the deviatoric
+Substituting this into Equation \vref{eq:105}, we obtain the deviatoric
 plastic strain increment:
 \begin{equation}
 \Delta e_{ij}^{P}=\frac{\lambda}{\sqrt{2}\,\phantom{}^{t+\Delta t}d}\left(^{t+\Delta t}e_{ij}^{\prime}+a_{E}S_{ij}^{I}\right)\:.\label{eq:116}
 \end{equation}
-We then use Equation \ref{eq:108} and the second line of Equation
-\ref{eq:105} to obtain the volumetric plastic strains and the pressure,
-and we use \ref{eq:116} and the first line of Equation \ref{eq:105}
+We then use Equation \vref{eq:108} and the second line of Equation
+\vref{eq:105} to obtain the volumetric plastic strains and the pressure,
+and we use \vref{eq:116} and the first line of Equation \vref{eq:105}
 to obtain the deviatoric plastic strains and the deviatoric stresses.
 
 In certain cases where the mean stress is tensile, it is possible
@@ -1627,23 +1626,23 @@ cone. Although this stress state is not likely to be encountered for
 quasi-static tectonic problems, it can occur for dynamic problems.
 One simple solution is to redefine the plastic multiplier, $\lambda$.
 We do this by taking the smaller of the values yielded by Equation
-\ref{eq:114} or by the following relation:
+\vref{eq:114} or by the following relation:
 \begin{equation}
 \lambda=\sqrt{2}\,\phantom{}^{t+\Delta t}d\:.\label{eq:127}
 \end{equation}
 This is equivalent to setting the second deviatoric stress invariant
-to zero in Equation \ref{eq:110}. By default, PyLith does not allow
+to zero in Equation \vref{eq:110}. By default, PyLith does not allow
 such tensile yield, since this would generally represent an error
 in problem setup for tectonic problems; however, for cases where such
 behavior is necessary, the material flag \texttt{allow\_tensile\_yield}
 may be set to \texttt{True}. This same criterion is used to determine
 whether a feasible stress state is attainable in cases where \texttt{allow\_tensile\_yield}
-is \texttt{False}. If Equation \ref{eq:114} yields a smaller value
-than Equation \ref{eq:127}, this implies $\sqrt{^{t+\Delta t}J_{2}^{\prime}}<0$,
-which is not a feasible stress state (see Equation \ref{eq:110}).
+is \texttt{False}. If Equation \vref{eq:114} yields a smaller value
+than Equation \vref{eq:127}, this implies $\sqrt{^{t+\Delta t}J_{2}^{\prime}}<0$,
+which is not a feasible stress state (see Equation \vref{eq:110}).
 
 To compute the elastoplastic tangent matrix we begin by writing Equation
-\ref{eq:105} as a single expression in terms of stress and strain
+\vref{eq:105} as a single expression in terms of stress and strain
 vectors:
 \begin{equation}
 ^{t+\Delta t}\sigma_{i}=\frac{1}{a_{E}}\left(^{t+\Delta t}e_{i}^{\prime}-\Delta e_{i}^{P}\right)+S_{i}^{I}+\frac{R_{i}}{a_{m}}\left(^{t+\Delta t}\theta^{\prime}-\Delta\theta^{P}\right)+R_{i}P^{I}\label{eq:117}
@@ -1659,7 +1658,7 @@ C_{ij}^{EP}=\frac{\partial\phantom{}^{t+\Delta t}\sigma_{i}}{\partial\phantom{}^
 \end{equation}
 
 
-From Equations \ref{eq:16} and \ref{eq:106}, we have
+From Equations \vref{eq:16} and \vref{eq:106}, we have
 \begin{equation}
 \frac{\partial\phantom{}^{t+\Delta t}e_{i}^{\prime}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}=\frac{1}{3}\left[\begin{array}{cccccc}
 2 & -1 & -1 & 0 & 0 & 0\\
@@ -1670,11 +1669,11 @@ From Equations \ref{eq:16} and \ref{eq:106}, we have
 0 & 0 & 0 & 0 & 0 & 3
 \end{array}\right]\:,\label{eq:120}
 \end{equation}
-and from Equations \ref{eq:15} and \ref{eq:106} we have
+and from Equations \vref{eq:15} and \vref{eq:106} we have
 \begin{equation}
 \frac{\partial\phantom{}^{t+\Delta t}\theta^{\prime}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}=\frac{R_{j}}{3}\:.\label{eq:121}
 \end{equation}
-From Equation \ref{eq:116} we have
+From Equation \vref{eq:116} we have
 \begin{equation}
 \frac{\partial\Delta e_{i}^{P}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}=\frac{1}{\sqrt{2}\,\phantom{}^{t+\Delta t}d}\left[\left(^{t+\Delta t}e_{i}^{\prime}+a_{E}S_{i}^{I}\right)\left(\frac{\partial\lambda}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}-\frac{\lambda}{\phantom{}^{t+\Delta t}d}\frac{\partial\phantom{}^{t+\Delta t}d}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}\right)+\lambda\frac{\partial\phantom{}^{t+\Delta t}e_{i}^{\prime}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}\right]\:.\label{eq:122}
 \end{equation}
@@ -1693,7 +1692,7 @@ already computed:
 \frac{\partial\lambda}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}} & =\frac{2a_{E}a_{m}}{6\alpha_{f}\alpha_{g}a_{E}+a_{m}}\left(\frac{3\alpha_{f}}{a_{m}}\frac{\partial\phantom{}^{t+\Delta t}\theta^{\prime}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}+\frac{1}{\sqrt{2}a_{E}}\frac{\partial\phantom{}^{t+\Delta t}d}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}\right)\nonumber \\
  & =\frac{2a_{E}a_{m}}{6\alpha_{f}\alpha_{g}a_{E}+a_{m}}\left(\frac{\alpha_{f}R_{j}}{a_{m}}+\frac{a_{E}T_{j}^{I}+\phantom{}^{t+\Delta t}E_{j}}{\sqrt{2}a_{E}\phantom{}^{t+\Delta t}d}\right)\:.\label{eq:125}
 \end{align}
-Finally, from Equation \ref{eq:108}, the derivative of the volumetric
+Finally, from Equation \vref{eq:108}, the derivative of the volumetric
 plastic strain increment is:
 \begin{equation}
 \frac{\partial\Delta\theta^{P}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}=\alpha_{g}\frac{\partial\lambda}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}\:.\label{eq:126}

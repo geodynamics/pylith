@@ -1,22 +1,20 @@
-
-\chapter{\label{cha:Governing-Equations}Governing Equations}
+\chapter{Governing Equations}
+\label{cha:governing:equations}
 
 We present here a brief derivation of the equations for both quasi-static
 and dynamic computations. Since the general equations are the same
 (except for the absence of inertial terms in the quasi-static case),
 we first derive these equations. We then present solution methods
 for each specific case. In all of our derivations, we use the notation
-described in Table \ref{tab:Mathematical-notation} for both index
+described in Table \vref{tab:notation} for both index
 and vector notation. When using index notation, we use the common
 convention that repeated indices indicate summation over the range
 of the index.
 
-\noindent \begin{center}
-\begin{table}[H]
-\caption{\label{tab:Mathematical-notation}Mathematical notation}
+\begin{table}[htbp]
+\caption{Mathematical notation}
+\label{tab:notation}
 
-
-\noindent \centering{}\medskip{}
 \begin{tabular}{|c|c|c|}
 \hline 
 \multicolumn{2}{|c|}{Symbol} & Description\tabularnewline
@@ -45,8 +43,6 @@ $\rho$ & $\rho$ & Mass density scalar field\tabularnewline
 \end{tabular}
 \end{table}
 
-\par\end{center}
-
 
 \section{Derivation of Elasticity Equation}
 
@@ -64,7 +60,7 @@ The traction vector field is related to the stress tensor through
 T_{i}=\sigma_{ij}n_{j},
 \end{equation}
 where $n_{j}$ is the vector normal to $S$. Substituting into equation
-\ref{eqn:momentum:index} yields
+\vref{eqn:momentum:index} yields
 \begin{equation}
 \frac{\partial}{\partial t}\int_{V}\rho\frac{\partial u_{i}}{\partial t}\, dV=\int_{V}f_{i}\, dV+\int_{S}\sigma_{ij}n_{j}\, dS.
 \end{equation}
@@ -91,7 +87,7 @@ R_{ki}(u_{i}^{+}-u_{i}^{-})=d_{k}\text{ on }S_{f}.
 We specify tractions, $T_{i}$, on surface $S_{f}$, displacements,
 $u_{i}^{o}$, on surface $S_{u}$, and slip, $d_{k}$, on fault surface
 $S_{f}$ (we will consider the case of fault constitutive models in
-Section \ref{sec:fault}). The rotation matrix $R_{ki}$ transforms
+Section \vref{sec:fault}). The rotation matrix $R_{ki}$ transforms
 vectors from the global coordinate system to the fault coordinate
 system. Note that since both $T_{i}$ and $u_{i}$ are vector quantities,
 there can be some spatial overlap of the surfaces $S_{T}$ and $S_{u}$;
@@ -112,7 +108,7 @@ The traction vector field is related to the stress tensor through
 \overrightarrow{T}=\underline{\sigma}\cdot\overrightarrow{n},
 \end{equation}
 where $\overrightarrow{n}$ is the vector normal to $S$. Substituting
-into equation \ref{eqn:momentum:vec} yields
+into equation \vref{eqn:momentum:vec} yields
 \begin{equation}
 \frac{\partial}{\partial t}\int_{V}\rho\frac{\partial\overrightarrow{u}}{\partial t}\, dV=\int_{V}\overrightarrow{f}\, dV+\int_{S}\underline{\sigma}\cdot\overrightarrow{n}\, dS.
 \end{equation}
@@ -139,7 +135,7 @@ vector at every location in the volume, so that we end up with
 We specify tractions, $\vec{T}$, on surface $S_{f}$, displacements,
 $\overrightarrow{u^{o}}$, on surface $S_{u}$, and slip, $\vec{d}$,
 on fault surface $S_{f}$ (we will consider the case of fault constitutive
-models in Section \ref{sec:fault}). The rotation matrix $\underline{R}$
+models in Section \vref{sec:fault}). The rotation matrix $\underline{R}$
 transforms vectors from the global coordinate system to the fault
 coordinate system. Note that since both $\overrightarrow{T}$ and
 $\overrightarrow{u}$ are vector quantities, there can be some spatial
@@ -191,7 +187,7 @@ Substituting into the weak form gives
 Turning our attention to the second term, we separate the integration
 over $S$ into integration over $S_{T}$ and $S_{u}$ (we will consider
 tractions over the fault surface, $S_{f}$, associated with the fault
-constitutive model in Section \ref{sec:fault}),
+constitutive model in Section \vref{sec:fault}),
 \begin{equation}
 -\int_{V}\sigma_{ij}\phi_{i,j}\, dV+\int_{S_{T}}\sigma_{ij}\phi_{i}n_{i}\, dS+\int_{S_{u}}\sigma_{ij}\phi_{i}n_{i}\, dS+\int_{V}f_{i}\phi_{i}\, dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\, dV=0,
 \end{equation}
@@ -346,7 +342,7 @@ vector space) and $i$ is a vector space component, $x_{q}$ are the
 coordinates of the quadrature points, $w_{q}$ are the weights of
 the quadrature points, and $|J_{cell}(x_{q})|$ is the determinant
 of the Jacobian matrix evaluated at the quadrature points associated
-with mapping the reference cell to the actual cell. The quadrature
+with mapping the vreference cell to the actual cell. The quadrature
 scheme for the integral over the tractions is one dimension lower
 than the one used in integrating the terms for the volume cells.
 
@@ -431,7 +427,7 @@ r_{i}^{n}=-\sum_{\text{vol cells}}\sum_{\text{quad pts}}\sigma_{ij}(x_{q},t)N^{n
 where $x_{q}$ are the coordinates of the quadrature points, $w_{q}$
 are the weights of the quadrature points, and $|J_{cell}(x_{q})|$
 is the determinant of the Jacobian matrix evaluated at the quadrature
-points associated with mapping the reference cell to the actual cell.
+points associated with mapping the vreference cell to the actual cell.
 The quadrature scheme for the integral over the tractions is one dimension
 lower than the one used in integrating the terms for the volume cells. 
 
@@ -468,10 +464,10 @@ to replace the integrals with sums over the cells and quadrature points,
 A_{ij}^{nm}=\delta_{ij}\frac{1}{\Delta t^{2}}\sum_{\text{vol cells}}\sum_{\text{quad pts}}\rho(x_{q})N^{m}(x_{q})N^{n}(x_{q}),
 \end{equation}
 where $A_{ij}^{mn}$ is a $nd$ by $md$ matrix ($d$ is the dimension
-of the vector space), $m$ and $n$ refer to the basis functions and
+of the vector space), $m$ and $n$ vrefer to the basis functions and
 $i$ and $j$ are vector space components. We consider the contributions
-associated with the fault in section \ref{sec:fault} and with absorbing
-boundaries is section \ref{sec:absorbing:boundaries}.
+associated with the fault in section \vref{sec:fault} and with absorbing
+boundaries is section \vref{sec:absorbing:boundaries}.
 
 
 \section{Small (Finite) Strain Formulation\label{sec:Small-Strain-Formulation}}
@@ -537,7 +533,7 @@ where we assume the the tractions on the boundary do not depend on
 the configuration. That is, the normal and share traction components
 are defined in terms of the undeformed configuration. Incorporating
 the other relationships between the underformed and deformed configurations
-allows us to rewrite Equation \ref{eq:governing:equation:deformed}
+allows us to rewrite Equation \vref{eq:governing:equation:deformed}
 in the undeformed configuration,
 \[
 -\int_{V_{0}}\underline{P}:\nabla\overrightarrow{\phi}\, dV_{0}+\int_{S_{0}}\overrightarrow{T_{0}}\cdot\overrightarrow{\phi}\, dS_{0}+\int_{V_{0}}\overrightarrow{f_{0}}\cdot\overrightarrow{\phi}\, dV_{0}-\int_{V_{0}}\rho_{0}\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV_{0}=0.

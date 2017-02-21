@@ -14,7 +14,7 @@ elastic solution.
 
 \subsection{Problem Description}
 
-Figure \ref{fig:benchmark:strikeslip:geometry} shows the geometry
+Figure \vref{fig:benchmark:strikeslip:geometry} shows the geometry
 of the strike-slip fault (red surface) embedded in the cube consisting
 of an elastic material (yellow block) over a Maxwell viscoelastic
 material (blue block). 
@@ -41,7 +41,7 @@ x=12\ km,\\
 Uniform slip of 1 m is applied over the region $0\leq y\leq12\ km$
 and $-12\ km\leq z\leq0$ with a linear taper to 0 at y = 16 km and
 z = -16 km. The tapered region is the light red portion of the fault
-surface in Figure \ref{fig:benchmark:strikeslip:geometry}. In the
+surface in Figure \vref{fig:benchmark:strikeslip:geometry}. In the
 region where the two tapers overlap, each slip value is the minimum
 of the two tapers (so that the taper remains linear).
 \item [Boundary~conditions] Bottom and side displacements are set to
@@ -103,7 +103,7 @@ resolutions of 1000 m, 500 m, and 250 m require approximately 150 MB,
 
 \subsection{Benchmark Results}
 
-Figure \ref{fig:benchmark:strikeslip:solution} shows the displacement
+Figure \vref{fig:benchmark:strikeslip:solution} shows the displacement
 field from the simulation with hexahedral cells using trilinear basis
 functions at a resolution of 1000 m. For each resolution and set of
 basis functions, we measure the accuracy by comparing the numerical
@@ -145,7 +145,7 @@ the  cells before taking the square root and dividing by the volume
 of the domain. CIG has developed a package called Cigma \url{geodynamics.org/cig/software/packages/cs/cigma}
 that computes these local and global error metrics.
 
-Figures \ref{fig:benchmark:strikeslip:tet4:1000m} through \ref{fig:benchmark:strikeslip:hex8:250m}
+Figures \vref{fig:benchmark:strikeslip:tet4:1000m} through \vref{fig:benchmark:strikeslip:hex8:250m}
 show the local error for each of the three resolutions and two cell
 types. The error decreases with decreasing cell size as expected for
 a converging solution. The largest errors, which approach 1 mm for
@@ -219,7 +219,7 @@ shown in Figure \vref{fig:benchmark:strikeslip:convergence}.
 
 \subsubsection{Performance}
 
-Figure \ref{fig:benchmark:strikeslip:summary} summarizes the overall
+Figure \vref{fig:benchmark:strikeslip:summary} summarizes the overall
 performance of each of the six simulations. Although at a given resolution,
 the number of degrees of freedom in the hexahedral and tetrahedral
 meshes are the same, the number of cells in the tetrahedral mesh is
@@ -254,7 +254,7 @@ the output to VTK files. Some initialization steps, writing the output
 to VTK files, and distributing the mesh are essentially serial processes.
 For simulations with many time steps these steps will generally occupy
 only a fraction of the runtime, and the runtime will be dominated
-by the solution of the equations. Figure \ref{fig:benchmark:strikeslip:scaling}
+by the solution of the equations. Figure \vref{fig:benchmark:strikeslip:scaling}
 also shows the total time required to form the Jacobian of the system,
 form the residual, and solve the system. These steps provide a more
 accurate representation of the parallel-performance of the computational

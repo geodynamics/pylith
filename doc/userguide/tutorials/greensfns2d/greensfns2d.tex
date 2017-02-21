@@ -57,7 +57,7 @@ to construct the geometry. It then calls the journal file \texttt{gradient.jou}
 to set the variable discretization sizes used in this mesh. Finally,
 the \texttt{createbc.jou} file is called to set up the groups associated
 with boundary conditions and materials. The mesh used for the strike-slip
-example is shown in Figure \ref{fig:greensfns2d-strikeslip-mesh}
+example is shown in Figure \vref{fig:greensfns2d-strikeslip-mesh}
 The journal files are documented and describe the various steps outlined
 below.
 \begin{enumerate}
@@ -167,7 +167,7 @@ pylith~eqsim.cfg
 Once the problem has run, four HDF5 files will be produced. The file
 named \texttt{eqsim.h5} (and the associated XDMF file) contains the
 solution for the entire domain. This corresponds to the solution shown
-in Figure \ref{fig:greensfns2d-strikeslip-mesh}. The \texttt{eqsim-fault.h5}
+in Figure \vref{fig:greensfns2d-strikeslip-mesh}. The \texttt{eqsim-fault.h5}
 file contains the applied fault slip and the change in fault tractions,
 while the \texttt{eqsim-fault\_info.h5} file contains the final slip,
 the fault normal, and the slip time. The final file (\texttt{eqsim-points.h5})
@@ -175,7 +175,7 @@ contains the solution computed at the point locations provided in
 the \texttt{output\_points.txt} file. These are the results that will
 be used as synthetic data for our inversion. One the problem has run,
 the results may be viewed with a visualization package such as ParaView.
-In Figure \ref{fig:greensfns2d-strikeslip-forward} we show the applied
+In Figure \vref{fig:greensfns2d-strikeslip-forward} we show the applied
 fault slip (from \texttt{eqsim-fault.h5}) and the resulting x-displacements
 (from \texttt{eqsim-points.h5}) for our strike-slip forward problem.
 
@@ -259,7 +259,7 @@ each `time step' corresponds to the solution computed for a slip impulse
 at a particular fault vertex. The output files contain the solution
 for each separate impulse (slip on a single fault vertex). The \texttt{greensfns-fault\_info.h5}
 file simply contains the slip amplitude and fault normal. In Figure
-\ref{fig:greensfns2d-strikeslip-gf6} we show the applied impulse
+\vref{fig:greensfns2d-strikeslip-gf6} we show the applied impulse
 (from file \texttt{greensfns-fault.h5}) and associated point responses
 (from file \texttt{greensfns-points.h5}) for the seventh generated
 Green's function in the strike-slip example. In the next section we
@@ -351,7 +351,7 @@ each subdirectory. To plot the results, type:
 {\small{}plot\_invresults.py~-{}-solution=output/eqsim-fault.h5~-{}-predicted=output/slip\_inverted.txt}{\small \par}
 \end{lyxcode}
 The script will produce an interactive matplotlib window that shows
-the estimated solution compared to the true solution (Figure \ref{fig:greensfns-invresults}).
+the estimated solution compared to the true solution (Figure \vref{fig:greensfns-invresults}).
 As the penalty parameter is increased, the solution is progressively
 damped. In a real inversion we would also include the effects of data
 uncertainties, and the penalty parameter would represent a factor

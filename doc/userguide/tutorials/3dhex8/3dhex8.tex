@@ -58,12 +58,12 @@ sections in order as the complexity increases at each step.
 \subsection{Mesh Generation and Description}
 
 The mesh for these examples is a simple rectangular solid (Figure
-\ref{fig:3dhex8-mesh}). Although it would be possible to generate
+\vref{fig:3dhex8-mesh}). Although it would be possible to generate
 this mesh by hand, it is much simpler to use a mesh generation package,
 and we use CUBIT for this example. We provide documented journal files
 in \texttt{examples/3d/hex8/mesh.} Dissection of these journal files
 should provide some insight into how to use CUBIT with PyLith. For
-more detailed information on using CUBIT, refer to the CUBIT documentation
+more detailed information on using CUBIT, vrefer to the CUBIT documentation
 \url{cubit.sandia.gov}. If you have CUBIT installed on your machine,
 you can use the journal files to create your own mesh. Otherwise,
 you can use the mesh that has already been created.
@@ -73,7 +73,7 @@ to use the journal files. The simplest method is to go to the\textsf{
 Tools} menu, select \textsf{Play Journal File}, and then select the
 file \texttt{mesh\_hex8\_1000m.jou}. This will run the commands in
 that file as well as the commands in \texttt{geometry.jou}, which
-is referenced from \texttt{mesh\_hex8\_1000m.jou}. Prior to doing
+is vreferenced from \texttt{mesh\_hex8\_1000m.jou}. Prior to doing
 this, you should set your directory to the one containing the journal
 files. This method will create the mesh, but you will gain very little
 insight into what is being done. A more informative approach is to
@@ -167,7 +167,7 @@ quadrature.cell~=~pylith.feassemble.FIATLagrange
 quadrature.cell.dimension~=~3
 \end{lyxcode}
 The two material groups correspond to the two different colored regions
-in Figure \ref{fig:3dhex8-mesh}. Using two material groups allows
+in Figure \vref{fig:3dhex8-mesh}. Using two material groups allows
 us to specify different material types or material variations for
 the upper crust and lower crust, if desired. For now, we retain the
 default \texttt{ElasticIsotropic3D} material type for both materials.

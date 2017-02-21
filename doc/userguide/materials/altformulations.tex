@@ -1,11 +1,11 @@
 
-\chapter{\label{cha:Alternative-Formulations}Alternative Material Model Formulations}
+\chapter{\label{cha:materials:alternative:formulations}Alternative Material Model Formulations}
 
 
 \section{\label{sec:ViscoelasticFormulations}Viscoelastic Formulations}
 
 The viscoelastic formulations presently used in PyLith are described
-in Section \ref{sec:Viscoelastic-Materials}. In some cases there
+in Section \vref{sec:materials:viscoelastic}. In some cases there
 are alternative formulations that may be used in future versions of
 PyLith, and those are described here.
 
@@ -15,19 +15,19 @@ Formulation for a Linear Maxwell Viscoelastic Material}
 
 An alternative technique for solving the equations for a Maxwell viscoelastic
 material is based on the effective stress formulation described in
-Section \ref{sub:Effective-Stress-Formulations-Viscoelastic}. A linear
+Section \vref{sub:Effective-Stress-Formulations-Viscoelastic}. A linear
 Maxwell viscoelastic material may be characterized by the same elastic
 parameters as an isotropic elastic material ($E$ and $\nu$), as
 well as the viscosity, $\eta$. The creep strain increment is
 \begin{gather}
 \underline{\Delta e}^{C}=\frac{\Delta t\phantom{}^{\tau}\underline{S}}{2\eta}\,\,.\label{eq:D1}
 \end{gather}
-Therefore,
+Thevrefore,
 \begin{gather}
 \Delta\overline{e}^{C}=\frac{\Delta t\sqrt{^{\tau}J_{2}^{\prime}}}{\sqrt{3\eta}}=\frac{\Delta t\phantom{}^{\tau}\overline{\sigma}}{3\eta}\,,\,\mathrm{and}\,^{\tau}\gamma=\frac{1}{2\eta}\,\,.\label{eq:D2}
 \end{gather}
-Substituting Equations \ref{eq:46}, \ref{eq:D1}, and \ref{eq:D2}
-into \ref{eq:43}, we obtain
+Substituting Equations \vref{eq:46}, \vref{eq:D1}, and \vref{eq:D2}
+into \vref{eq:43}, we obtain
 \begin{gather}
 ^{t+\Delta t}\underline{S}=\frac{1}{a_{E}}\left\{ ^{t+\Delta t}\underline{e}^{\prime}-\frac{\Delta t}{2\eta}\left[(1-\alpha)^{t}\underline{S}+\alpha\phantom{}^{t+\Delta t}\underline{S}\right]\right\} +\underline{S}^{I}\,\,.\label{eq:D3}
 \end{gather}
@@ -44,12 +44,12 @@ the total stress, we simply use
 
 
 To compute the viscoelastic tangent material matrix relating stress
-and strain, we need to compute the first term in Equation \ref{eq:58}.
-From Equation \ref{eq:D4}, we have
+and strain, we need to compute the first term in Equation \vref{eq:58}.
+From Equation \vref{eq:D4}, we have
 \begin{gather}
 \frac{\partial\phantom{}^{t+\Delta t}S_{i}}{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}=\frac{\delta_{ik}}{a_{E}+\frac{\alpha\Delta t}{2\eta}}\,\,.\label{eq:D12}
 \end{gather}
-Using this, along with Equations \ref{eq:58}, \ref{eq:59}, and \ref{eq:60},
+Using this, along with Equations \vref{eq:58}, \vref{eq:59}, and \vref{eq:60},
 the final material matrix relating stress and tensor strain is
 \begin{gather}
 C_{ij}^{VE}=\frac{1}{3a_{m}}\left[\begin{array}{cccccc}
@@ -78,6 +78,6 @@ C_{12}^{E}=\frac{E\nu}{(1+\nu)(1-2\nu)}\,.\label{eq:D14}\\
 C_{44}^{E}=\frac{E}{1+\nu}\,\,\nonumber 
 \end{gather}
 This is consistent with the regular elasticity matrix, and Equation
-\ref{eq:D13} should thus be used when forming the stiffness matrix.
+\vref{eq:D13} should thus be used when forming the stiffness matrix.
 We do not presently use this formulation, but it may be included in
 future versions.

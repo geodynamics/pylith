@@ -21,7 +21,7 @@ using a spatial database file.
 
 The procedure for creating sets of vertices differs depending on the
 mesh generator. For meshes specified using the PyLith mesh ASCII format,
-the sets of vertices are specified using groups (see Appendix \ref{sec:MeshIOAscii}).
+the sets of vertices are specified using groups (see Appendix \vref{sec:MeshIOAscii}).
 In CUBIT the groups of vertices are created using nodesets. Similarly,
 in LaGriT, psets are used. Note that we chose to associate boundary
 conditions with groups of vertices because nearly every mesh generation
@@ -157,7 +157,7 @@ of vertices associated with the boundary condition is group A. For
 the database associated with the constant displacement, we use a SimpleDB.
 We set the filename and query type for the database. For the rate
 of change of values, we use a UniformDB and specify the velocity in
-the z-direction to be 1.0e-06 m/s. See Section \ref{sec:spatial:databases}
+the z-direction to be 1.0e-06 m/s. See Section \vref{sec:spatial:databases}
 for a discussion of the different types of spatial databases available.
 
 \noindent \begin{center}
@@ -229,13 +229,13 @@ dimension that is one less than the dimension of the finite-element
 mesh. Traction values are computed at the integration points of each
 cell on the surface, using values from a spatial database. The tractions
 are integrated over each cell and assembled to obtain the forces applied
-at the vertices. See Section \ref{sub:Tutorial-twoquad4-traction}
+at the vertices. See Section \vref{sub:Tutorial-twoquad4-traction}
 for a tutorial that uses Neumann boundary conditions.
 \begin{quote}
 \textbf{\textcolor{red}{Warning:}}\textbf{ }In the small (finite)
 strain formulation, we assume that the normal and shear tractions
 are prescribed in terms of the undeformed configuration as described
-in section \ref{sec:Small-Strain-Formulation}.
+in section \vref{sec:Small-Strain-Formulation}.
 \end{quote}
 
 \subsubsection{Neumann Boundary Condition Parameters}
@@ -290,7 +290,7 @@ quadrature.cell.dimension~=~1
 quadrature.cell.quad\_order~=~2
 \end{lyxcode}
 These settings correspond to the example problem described in Section
-\ref{sub:Tutorial-twoquad4-traction}. It is necessary to set the
+\vref{sub:Tutorial-twoquad4-traction}. It is necessary to set the
 boundary condition type to \texttt{pylith.bc.Neumann}, since the default
 value is \texttt{DirichletBC}. Constant tractions are used for this
 particular problem, so a quadrature order of one would have been sufficient;
@@ -425,7 +425,7 @@ of vertices associated with the boundary condition is group A. For
 the database associated with the constant force, we use a SimpleDB.
 We set the filename and query type for the database. For the rate
 of change of values, we use a UniformDB and specify the rate of change
-in the force to be 1.0e+5 Newton/s. See Section \ref{sec:spatial:databases}
+in the force to be 1.0e+5 Newton/s. See Section \vref{sec:spatial:databases}
 for a discussion of the different types of spatial databases available.
 
 
@@ -462,7 +462,7 @@ the same displacement field.
 
 \section{\label{sec:absorbing:boundaries}Absorbing Boundary Conditions}
 
-This boundary condition attempts to prevent seismic waves reflecting
+This boundary condition attempts to prevent seismic waves vreflecting
 off of a boundary by placing simple dashpots on the boundary. Normally
 incident dilatational and shear waves are perfectly absorbed. Waves
 incident at other angles are only partially absorbed. This boundary
@@ -577,7 +577,7 @@ r_{i}^{n}=\sum_{\text{tract cells}}\sum_{\text{quad pts}}-\rho(x_{q})c_{i}(x_{q}
  where $x_{q}$ are the coordinates of the quadrature points, $w_{q}$
 are the weights of the quadrature points, and $|J_{cell}(x_{q})|$
 is the determinant of the Jacobian matrix evaluated at the quadrature
-points associated with mapping the reference cell to the actual cell.
+points associated with mapping the vreference cell to the actual cell.
 
 The appearance of velocity in the expression for the residual means
 that the absorbing dampers also contribute to the system Jacobian
@@ -603,7 +603,7 @@ increment in the displacement at time t yields
 A_{ij}^{nm}=\sum_{\text{tract cells}}\sum_{\text{quad pts}}\delta_{ij}\frac{1}{2\Delta t}\rho(x_{q})v_{i}(x_{q})N^{m}(x_{q})N^{n}(x_{q})w_{q}|J_{cells}(x_{q})|,
 \end{equation}
 where $A_{ij}^{mn}$ is an $nd$ by $md$ matrix ($d$ is the dimension
-of the vector space), $m$ and $n$ refer to the basis functions and
+of the vector space), $m$ and $n$ vrefer to the basis functions and
 $i$ and $j$ are vector space components.
 
 
@@ -621,13 +621,13 @@ dynamic (spontaneous) rupture simulations.
 \subsection{Conventions}
 
 Slip corresponds to relative motion across a fault surface. Figure
-\ref{fig:fault:orientation} shows the orientation of the slip vector
+\vref{fig:fault:orientation} shows the orientation of the slip vector
 in 3D with respect to the fault surface and coordinate axes. PyLith
 automatically determines the orientation of the fault surface. This
 alleviates the user from having to compute the strike, dip, and rake
 angles over potentially complex, nonplanar fault surfaces. Instead,
 the user specifies fault parameters in terms of lateral motion, reverse
-motion, and fault opening as shown in Figure \ref{fig:fault:slip:motions}.
+motion, and fault opening as shown in Figure \vref{fig:fault:slip:motions}.
 
 \noindent \begin{center}
 \begin{figure}[H]
@@ -663,7 +663,7 @@ with adjustment of the topology of the mesh. These additional degrees
 of freedom are associated with cohesive cells. These zero-volume cells
 allow control of the relative motion between vertices on the two sides
 of the fault. PyLith automatically adds cohesive cells for each fault
-surface. Figure \ref{fig:fault:cohesive:cells} illustrates the results
+surface. Figure \vref{fig:fault:cohesive:cells} illustrates the results
 of inserting cohesive cells in a mesh consisting of triangular cells.
 This example also shows the distinction between how buried fault edges
 are handled differently than fault edges that reach the edge of the
@@ -692,7 +692,7 @@ sides of the fault.\label{fig:fault:cohesive:cells} }
 sets of vertices. All of the vertices on the fault are included in
 the \texttt{fault} group; the subset of vertices along the buried
 edges are included in the \texttt{fault\_edge} group. In 2-D the fault
-edges are just a single vertex as shown in Figure \ref{fig:fault:cohesive:cells}(a).\label{fig:fault:fault_edge}}
+edges are just a single vertex as shown in Figure \vref{fig:fault:cohesive:cells}(a).\label{fig:fault:fault_edge}}
 \end{figure}
 For faults that have buried edges, splitting the mesh apart and inserting
 the cohesive cells becomes complex at the buried edges due to the
@@ -700,7 +700,7 @@ ambiguity of defining where the fault ends and how to insert the cohesive
 cell. In PyLith v2.0.0 we have changed how the buried edges of the
 fault are managed. An additional group of fault nodes is specified
 (e.g., via a nodeset from CUBIT) that marks the buried edges of the
-fault (see Figure \ref{fig:fault:fault_edge}). This allows the cohesive
+fault (see Figure \vref{fig:fault:fault_edge}). This allows the cohesive
 cell insertion algorithm to adjust the topology so that cohseive cells
 are inserted up to the buried edge of the fault but no additional
 degrees of freedom are added on the fault edge. This naturally forces
@@ -733,10 +733,10 @@ fault.
 \end{description}
 By default the output manager outputs both diagnostic information
 (e.g., fault normal direction) and the slip at each time step. Tables
-\ref{tab:fault:kin:output} and \ref{tab:fault:dyn:output} list the
+\vref{tab:fault:kin:output} and \vref{tab:fault:dyn:output} list the
 fields available for output for a fault with kinematic (prescribed)
 earthquake rupture and a fault with dynamic rupture, respectively.
-The fault coordinate system is shown in Figure \ref{fig:fault:slip:motions}.
+The fault coordinate system is shown in Figure \vref{fig:fault:slip:motions}.
 The vectors in the fault coordinate system can be transformed to the
 global coordinate system using the direction vectors in the diagnostic
 output. An example of setting these parameters in a \texttt{.cfg}
@@ -765,7 +765,7 @@ quadrature.cell.dimension~=~2
 The group of vertices has the label ``fault A.'' We replicate the
 default values for the fault ``up'' direction. These settings apply
 to a 2D fault surface embedded within a 3D mesh, so we use 2D Lagrange
-reference cells. The spatial database for elastic properties is used
+vreference cells. The spatial database for elastic properties is used
 to determine the approximate shear modulus and condition the equations
 for faster convergence rates.
 
@@ -794,7 +794,7 @@ associated with the Lagrange multipliers result in a complex implementation.
 However, the use of Lagrange multiplier constraints with cohesive
 cells provides for a simple formulation; we simply add the additional
 degrees of freedom associated with the Lagrange multipliers to the
-cohesive cells as shown in Figure \ref{fig:fault:cohesive:cells}.
+cohesive cells as shown in Figure \vref{fig:fault:cohesive:cells}.
 As a result, the fault implementation is completely confined to the
 cohesive cell. Furthermore, the Lagrange multiplier constraints correspond
 to forces required to impose the relative motions, so they are related
@@ -932,7 +932,7 @@ as well as the final slip or slip rate (as in the case of the constant
 slip rate slip time function) and slip initiation time for each kinematic
 rupture. The name of the slip and slip initiation time vertex fields
 are of the form \texttt{final\_slip\_NAME} and \texttt{slip\_time\_NAME},
-respectively, where \texttt{NAME} refers to the name used in the dynamic
+respectively, where \texttt{NAME} vrefers to the name used in the dynamic
 array of kinematic ruptures, \texttt{eq\_srcs}.
 
 \noindent \begin{center}
@@ -1035,7 +1035,7 @@ slip\_time.iohandler.filename~=~sliptime.spatialdb
 \end{lyxcode}
 The spatial database files for the slip time function specify the
 spatial variation in the parameters for the slip time function, as
-shown in Table \ref{tab:step-function-db-params}.
+shown in Table \vref{tab:step-function-db-params}.
 
 \noindent \begin{center}
 \begin{table}[H]
@@ -1095,7 +1095,7 @@ slip\_time.iohandler.filename~=~sliptime.spatialdb
 \end{lyxcode}
 The spatial database files for the slip time function specify the
 spatial variation in the parameters for the slip time function, as
-shown in Table \ref{tab:const-slip-rate-db-params}.
+shown in Table \vref{tab:const-slip-rate-db-params}.
 
 \noindent \begin{center}
 \begin{table}[H]
@@ -1158,7 +1158,7 @@ slip\_time.iohandler.filename~=~sliptime.spatialdb
 \end{lyxcode}
 The spatial database files for the slip time function specify the
 spatial variation in the parameters for the slip time function, as
-shown in Table \ref{tab:Brune-slip-db-params}.
+shown in Table \vref{tab:Brune-slip-db-params}.
 
 \noindent \begin{center}
 \begin{table}[H]
@@ -1215,7 +1215,7 @@ reaches the location), and $t_{\mathit{rise}}$ is the rise time.
 \end{description}
 The spatial database files for the slip time function use the same
 parameters for the slip time function as the Brune slip time function
-shown in Table \ref{tab:Brune-slip-db-params}.
+shown in Table \vref{tab:Brune-slip-db-params}.
 
 
 \paragraph{Time-History Slip Time Function}
@@ -1245,7 +1245,7 @@ time\_history.iohandler.filename~=~myfunction.timedb
 \end{lyxcode}
 The spatial database files for the slip time function specify the
 spatial variation in the parameters for the slip time function, as
-shown in Table \ref{tab:Brune-slip-db-params-2}.
+shown in Table \vref{tab:Brune-slip-db-params-2}.
 
 \noindent \begin{center}
 \begin{table}[H]
@@ -1363,7 +1363,7 @@ number of iterations.
 
 We use the PETSc Krylov subspace solver (KSP) to solve these two linear
 systems. The PETSc settings for the KSP object are set in the same
-manner as the main solver, except we use the prefix \texttt{friction\_}
+manner as the main solver, except we use the pvrefix \texttt{friction\_}
 in all of the settings related to the KSP solver for these two linear
 systems. For example, to use the recommended additive Schwarz preconditioner
 in the friction sensitivity solves, the settings in a \texttt{.cfg}
@@ -1373,8 +1373,8 @@ file are:
 
 friction\_pc\_type~=~asm
 \end{lyxcode}
-See the examples in Sections \ref{sec:Tutorial-3d-hex8-friction}
-and \ref{sec:tutorial:shearwave:quad4} for details.
+See the examples in Sections \vref{sec:Tutorial-3d-hex8-friction}
+and \vref{sec:tutorial:shearwave:quad4} for details.
 
 
 \paragraph{Diagonal A}
@@ -1427,7 +1427,7 @@ friction.db\_properties.iohandler.filename~=~friction.spatialdb\end{lyxcode}
 \begin{quote}
 \textbf{\textcolor{red}{Warning:}}\textbf{ }Use of the dynamic rupture
 implementation in a quasi-static simulations requires use of the nonlinear
-solver and careful selection of linear and nonlinear solver tolerances.
+solver and cavreful selection of linear and nonlinear solver tolerances.
 A key issue is making sure the linear solver toleance is tighter (smaller)
 than the tolerance used to detect slip (fault \texttt{zero\_toelerance}).
 As a result, the linear and solver absolute tolerances should be used
@@ -1455,9 +1455,9 @@ friction\_sub\_pc\_factor\_shift\_type~=~nonzero
 The prescribed traction perturbation is specified using the same fault
 coordinate system as the slip directions in the kinematic ruptures.
 The perurbation has the same functional form as the time-dependent
-boundary conditions (and same spatial databases). Table \ref{tab:fault:cohesive:dyn:prescribed:tractions}
+boundary conditions (and same spatial databases). Table \vref{tab:fault:cohesive:dyn:prescribed:tractions}
 gives the values in the spatial database for the prescribed tractions.
-Table \ref{tab:fault:dyn:output} shows the fields available for output.
+Table \vref{tab:fault:dyn:output} shows the fields available for output.
 Additional fields are available depending on the fault constitutive
 model.
 
@@ -1545,7 +1545,7 @@ in meters\tabularnewline
 
 PyLith provides four fault constitutive models. Future releases may
 contain additional models, and a template is provided for you to construct
-your own (see Section \ref{sec:Extending:FaultConstitutiveModels}).
+your own (see Section \vref{sec:Extending:FaultConstitutiveModels}).
 The fault constitutive model implementations are independent of dimension
 and work in both 2D and 3D. In solving the governing equations, PyLith
 will use a scalar representation of the shear traction in 2D and a
@@ -1574,7 +1574,7 @@ T_{c}-\mu_{f}T_{n} & T_{n}\leq0\\
 \end{cases}.
 \end{equation}
 The spatial database file for the static friction model properties
-specifies the spatial variation of the parameters given in Table \ref{tab:static:friction:properties}.
+specifies the spatial variation of the parameters given in Table \vref{tab:static:friction:properties}.
 
 \noindent \begin{center}
 \begin{table}[H]
@@ -1611,7 +1611,7 @@ T_{c}-\mu_{d}T_{n} & d>d_{0}\text{ and }T_{n}\leq0\\
 \end{equation}
 The spatial database files for the slip-weakening friction model properties
 and state variables specify the spatial variation of the fault constitutive
-model parameters given in Table \ref{tab:slip:weakening:properties:statevars}.
+model parameters given in Table \vref{tab:slip:weakening:properties:statevars}.
 As long as the fault is locked, the initial state variables are zero,
 so specifying the initial state variables for slip-weakening friction
 is rare. The slip-weakening friction also includes a parameter, \texttt{force\_healing},
@@ -1677,7 +1677,7 @@ T_{c}-\mu_{d}T_{n} & t>t_{0}\text{ and }T_{n}\leq0\\
 \end{equation}
 The spatial database files for the time-weakening friction model properties
 and state variables specify the spatial variation of the fault constitutive
-model parameters given in Table \ref{tab:time:weakening:properties:statevars}.
+model parameters given in Table \vref{tab:time:weakening:properties:statevars}.
 As long as the fault is locked, the initial state variable is zero,
 so specifying the initial state variable for time-weakening friction
 is rare.
@@ -1727,7 +1727,7 @@ T_{c}-\mu_{d}T_{n} & (d>d_{0}\text{ or }t\ge t_{w})\text{ and }T_{n}\leq0\\
 \end{equation}
 The spatial database files for the slip- and time-weakening friction
 model properties and state variables specify the spatial variation
-of the fault constitutive model parameters given in Table \ref{tab:slip:time:weakening:properties:statevars}.
+of the fault constitutive model parameters given in Table \vref{tab:slip:time:weakening:properties:statevars}.
 As long as the fault is locked, the initial state variables are zero,
 so specifying the initial state variables for slip-weakening friction
 is rare. This variation of slip-weakening friction does not include
@@ -1810,7 +1810,7 @@ f_{2}=\begin{cases}
 \end{equation}
 The spatial database files for the slip- and time-weakening friction
 model properties and state variables specify the spatial variation
-of the fault constitutive model parameters given in Table \ref{tab:slip:time:stable:weakening:properties:statevars}.
+of the fault constitutive model parameters given in Table \vref{tab:slip:time:stable:weakening:properties:statevars}.
 As long as the fault is locked, the initial state variables are zero,
 so specifying the initial state variables for slip-weakening friction
 is rare. This variation of slip-weakening friction does not include
@@ -1928,7 +1928,7 @@ component in a \texttt{.cfg} file is:
 \end{lyxcode}
 The spatial database files for the rate- and state-friction model
 properties and state variables specify the spatial variation of the
-fault constitutive model parameters given in Table \ref{tab:rate:state:ageing:properties:statevars}.
+fault constitutive model parameters given in Table \vref{tab:rate:state:ageing:properties:statevars}.
 
 \noindent \begin{center}
 \begin{table}[H]
@@ -1940,9 +1940,9 @@ databases for Dieterich-Ruina rate-state friction.}
 \textbf{Database} & \textbf{Value} & \textbf{Description}\tabularnewline
 \hline 
 \hline 
-\texttt{db\_properties} & \texttt{reference-friction-coefficient} & Steady-state coefficient of friction at slip rate $V_{0}$, $\mu_{s}$\tabularnewline
+\texttt{db\_properties} & \texttt{vreference-friction-coefficient} & Steady-state coefficient of friction at slip rate $V_{0}$, $\mu_{s}$\tabularnewline
 \cline{2-3} 
- & \texttt{reference-slip-rate} & Reference slip rate, $V_{0}$\tabularnewline
+ & \texttt{vreference-slip-rate} & Reference slip rate, $V_{0}$\tabularnewline
 \cline{2-3} 
  & \texttt{characteristic-slip-distance} & Slip-weakening parameter, $L$\tabularnewline
 \cline{2-3} 
@@ -2003,7 +2003,7 @@ body forces. For example, it is often important to include the effects
 of the lithostatic (overburden) pressure. In future releases of PyLith
 that permit nonlinear bulk rheologies, body forces will affect plastic
 yield criteria and the deformation field for large deformation/finite
-strain problems. As described in Chapter \ref{cha:Governing-Equations},
+strain problems. As described in Chapter \vref{cha:governing:equations},
 the body forces contribute to the residual,
 \begin{equation}
 r_{i}^{n}=\int_{V}f_{i}N^{n}\: dV.
@@ -2027,7 +2027,7 @@ with the negative z-axis, as would be the case in a geographic-projected
 coordinate system or a generic Cartesian coordinate system. For cases
 in which the curvature of the earth should be considered, the spatialdata
 package provides an earth-centered, earth-fixed (ECEF) coordinate
-system and a local georeferenced Cartesian system; in each of these
+system and a local geovreferenced Cartesian system; in each of these
 cases the orientation vector is computed automatically, although this
 feature has not been tested. For problems in one or two dimensions
 where the orientation vector is constant, the vector will need to
@@ -2053,5 +2053,5 @@ acceleration~=~100.0{*}m{*}s{*}{*}-2
 
 gravity\_dir~=~{[}0,~-1,~0{]}
 \end{lyxcode}
-Examples using gravity are described in Sections \ref{sec:Tutorial-3d-hex8-gravity}
-and \ref{sec:Tutorial-Gravity-2d}.
+Examples using gravity are described in Sections \vref{sec:Tutorial-3d-hex8-gravity}
+and \vref{sec:Tutorial-Gravity-2d}.

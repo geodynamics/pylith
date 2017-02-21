@@ -79,7 +79,7 @@ max\_dt~=~10.0{*}year
 stability\_factor~=~1.0~;~use~time~step~equal~to~stable~value~from~materials
 \end{lyxcode}
 We use a generalized Maxwell model for the lower crust (see Section
-\ref{sub:Formulation-for-Gen-Max}), and use a \texttt{SimpleDB} to
+\vref{sub:Formulation-for-Gen-Max}), and use a \texttt{SimpleDB} to
 provide the properties. We also request the relevant properties and
 state variables for output:
 \begin{lyxcode}
@@ -111,8 +111,8 @@ viscous\_strain\_3{]}
 The boundary conditions for this example are trivial, so we are able
 to use the default \texttt{ZeroDispDB} for all faces. When we have
 run the simulation, the output VTK files will be contained in \texttt{examples/3d/hex8/output}
-(all with a prefix of \texttt{step15}). Results using ParaView are
-shown in Figure \ref{fig:step15-displ-t200}.
+(all with a pvrefix of \texttt{step15}). Results using ParaView are
+shown in Figure \vref{fig:step15-displ-t200}.
 
 \begin{figure}
 \begin{centering}
@@ -175,8 +175,8 @@ Note that we use a \texttt{linear} \texttt{query\_type} rather than
 the default type of \texttt{nearest}, so that a linear interpolation
 is performed along the z-direction. When we have run the simulation,
 the output VTK files will be contained in \texttt{examples/3d/hex8/output}
-(all with a prefix of \texttt{step16}). Results using ParaView are
-shown in Figure \ref{fig:step16-stress_xx-t200}.
+(all with a pvrefix of \texttt{step16}). Results using ParaView are
+shown in Figure \vref{fig:step16-stress_xx-t200}.
 
 \begin{figure}
 \begin{centering}
@@ -196,7 +196,7 @@ we have used \texttt{CellFilterAvg} for material output.\label{fig:step16-stress
 
 The \texttt{step17.cfg} file defines a problem that is identical to
 example step15, except that we now use a small strain formulation
-(see Section \ref{sec:Small-Strain-Formulation}). All of the problems
+(see Section \vref{sec:Small-Strain-Formulation}). All of the problems
 up to this point have assumed infinitesimal strain, meaning that the
 change in shape of the domain during deformation is not taken into
 account. In many problems it is important to consider the change in
@@ -224,8 +224,8 @@ It is thus only necessary to change the formulation:
 formulation~=~pylith.problems.ImplicitLgDeform
 \end{lyxcode}
 When we have run the simulation, the output VTK files will be contained
-in \texttt{examples/3d/hex8/output} (all with a prefix of \texttt{step17}).
-Results using ParaView are shown in Figure \ref{fig:step17-disp-t200}.
+in \texttt{examples/3d/hex8/output} (all with a pvrefix of \texttt{step17}).
+Results using ParaView are shown in Figure \vref{fig:step17-disp-t200}.
 
 \begin{figure}
 \begin{centering}

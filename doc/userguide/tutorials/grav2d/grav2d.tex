@@ -57,7 +57,7 @@ cell size of 2.0 km. We construct the mesh in CUBIT following the
 same techniques used in the 2D subduction zone example, except that
 this mesh is simpler. The main driver is in the journal file \texttt{mesh.jou}.
 It calls the journal file \texttt{geometry.jou} to construct the geometry.
-The mesh shown in Figure \ref{fig:examples:gravity:2d:mesh} The journal
+The mesh shown in Figure \vref{fig:examples:gravity:2d:mesh} The journal
 files are documented and describe the various steps outlined below.
 \begin{enumerate}
 \item Create the geometry defining the domain.
@@ -192,7 +192,7 @@ approximating a sedimentary basin. In this example, we focus on the
 workflow and use a coarse mesh so we are not concerned with the fact
 that our mesh with a discretization size of 2.0 km does a poor job
 of resolving this density variation; in a real research problem we
-would use a finer mesh in the low density region. Figure \ref{fig:examples:gravity:2d:vardensity:density}shows
+would use a finer mesh in the low density region. Figure \vref{fig:examples:gravity:2d:vardensity:density}shows
 the spatial variation in density, including the contrast in density
 between the mantle and crust and the circular low density region around
 the origin.
@@ -228,7 +228,7 @@ We run the simulation using:
 \begin{lyxcode}
 pylith~gravity\_initstress.cfg~gravity\_vardensity.cfg
 \end{lyxcode}
-Figure \ref{fig:examples:gravity:2d:vardensity:stress} shows the
+Figure \vref{fig:examples:gravity:2d:vardensity:stress} shows the
 shear stress field at the end of the simulation.
 
 \begin{figure}
@@ -262,7 +262,7 @@ We run the simulation using:
 \begin{lyxcode}
 pylith~postseismic.cfg~nogravity.cfg~postseismic\_infstrain\_nograv.cfg
 \end{lyxcode}
-Figure \ref{fig:examples:gravity:2d:postseismc:infstrain:disp} shows
+Figure \vref{fig:examples:gravity:2d:postseismc:infstrain:disp} shows
 the vertical displacement field at the end of the simulation.
 
 \begin{figure}
@@ -333,7 +333,7 @@ directory (\texttt{PATH\_TO\_PARAVIEW/bin/paraview}, \texttt{File$\rightarrow$Lo
 State$\rightarrow$postseismic.pvsm}), you should not need to update
 the locations of the filenames. If you start ParaView from a dock
 or other directory, you will need to set the relative or absolute
-paths to the output files. Figure \ref{fig:examples:gravity:2d:postseismic:groundsurf}
+paths to the output files. Figure \vref{fig:examples:gravity:2d:postseismic:groundsurf}
 shows the ground deformation 2550 years after the earthquake using
 the state file.
 
@@ -407,7 +407,7 @@ is much more dominant for the stress field. This contamination by
 the initial conditions can be avoided with initial stress conditions
 at equilibrium as we did in Step 7. However, this is much more difficult
 to obtain for complex lateral variations in density or topography.
-Figure \ref{fig:examples:gravity:2d:postseismic:vardensity:shearstress}
+Figure \vref{fig:examples:gravity:2d:postseismic:vardensity:shearstress}
 shows the ground deformation at time 2000 years into the simulation
 using the state file. 
 

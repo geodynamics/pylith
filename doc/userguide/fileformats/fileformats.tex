@@ -1,8 +1,8 @@
+\chapter{File Formats}
+\label{cha:formats}
 
-\chapter{\label{cha:File-Formats}File Formats}
-
-
-\section{\label{sec:MeshIOAscii}PyLith Mesh ASCII Files}
+\section{PyLith Mesh ASCII Files}
+\label{sec:MeshIOAscii}
 
 PyLith mesh ASCII files allow quick specification of the mesh information
 for very small, simple meshes that are most easily written by hand.
@@ -15,7 +15,7 @@ very small, simple meshes.
 \includegraphics{fileformats/figs/meshquad4}
 \par\end{centering}
 
-\caption{Diagram of mesh specified in Figure \ref{fig:meshioascii:format}.\label{fig:meshioascii:diagram}}
+\caption{Diagram of mesh specified in Figure \vref{fig:meshioascii:format}.\label{fig:meshioascii:diagram}}
 \end{figure}
 
 \par\end{center}
@@ -170,7 +170,8 @@ mesh~=~\{~//~begin~specification~of~the~mesh
 
 
 
-\section{\label{sec:Spatialdata:SimpleIOAscii}SimpleDB Spatial Database Files}
+\section{SimpleDB Spatial Database Files}
+\label{sec:spatialdata:SimpleIOAscii}
 
 SimpleDB spatial database files contain a header describing the set
 of points and then the data with each line listing the coordinates
@@ -282,7 +283,7 @@ are supported in 3D. Conversions among the geographic and geographic
 projected coordinate systems are supported in 2D. In using the coordinate
 systems, we assume that you have installed the \texttt{proj} program
 in addition to the Proj.4 libraries, so that you can obtain a list
-of support projections, datums, and ellipsoids. Alternatively, refer
+of support projections, datums, and ellipsoids. Alternatively, vrefer
 to the documentation for the Proj.4 Cartographic Projections library
 \url{trac.osgeo.org/proj}.
 
@@ -310,7 +311,7 @@ cs-data~=~cartesian~\{
 
 This coordinate system is for geographic coordinates, such as longitude
 and latitude. Specification of the location in three-dimensions is
-supported. The vertical datum can be either the reference ellipsoid
+supported. The vertical datum can be either the vreference ellipsoid
 or mean sea level. The vertical coordinate is positive upwards.
 \begin{lyxcode}
 cs-data~=~geographic~\{
@@ -325,7 +326,7 @@ cs-data~=~geographic~\{
 
 ~
 
-~~//~Run~``proj~-le''~to~see~a~list~of~available~reference~ellipsoids.
+~~//~Run~``proj~-le''~to~see~a~list~of~available~vreference~ellipsoids.
 
 ~~//~Comments~are~not~allowed~at~the~end~of~the~next~line.
 
@@ -365,7 +366,7 @@ cs-data~=~geographic~\{
 
 This coordinate system applies to geographic projections. As in the
 geographic coordinate system, the vertical coordinate (if used) can
-be specified with respect to either the reference ellipsoid or mean
+be specified with respect to either the vreference ellipsoid or mean
 sea level. The coordinate system can use a local origin and be rotated
 about the vertical direction.
 \begin{lyxcode}
@@ -377,7 +378,7 @@ cs-data~=~geo-projected~\{
 
 
 
-~~//~Run~``proj~-le''~to~see~a~list~of~available~reference~ellipsoids.
+~~//~Run~``proj~-le''~to~see~a~list~of~available~vreference~ellipsoids.
 
 ~~//~Comments~are~not~allowed~at~the~end~of~the~next~line.
 
@@ -458,9 +459,9 @@ files.}
 
 \subsubsection{Geographic Local Cartesian}
 
-This coordinate system is a geographically referenced, local 3D Cartesian
+This coordinate system is a geographically vreferenced, local 3D Cartesian
 coordinate system. This allows use of a conventional Cartesian coordinate
-system with accurate georeferencing. For example, one can construct
+system with accurate geovreferencing. For example, one can construct
 a finite-element model in this coordinate system and use spatial databases
 in geographic coordinates. This coordinate system provides an alternative
 to using a geographic projection as the Cartesian grip. The advantage
@@ -479,7 +480,7 @@ cs-data~=~geo-local-cartesian~\{
 
 ~
 
-~~//~Run~``proj~-le''~to~see~a~list~of~available~reference~ellipsoids.
+~~//~Run~``proj~-le''~to~see~a~list~of~available~vreference~ellipsoids.
 
 ~~//~Comments~are~not~allowed~at~the~end~of~the~next~line.
 
@@ -538,7 +539,7 @@ database files.}
 
 
 
-\section{\label{sec:Spatialdata:SimpleGrid}SimpleGridDB Spatial Database
+\section{\label{sec:format:SimpleGridDB}SimpleGridDB Spatial Database
 Files}
 
 SimpleGridDB spatial database files contain a header describing the
@@ -546,7 +547,7 @@ grid of points and then the data with each line listing the coordinates
 of a point followed by the values of the fields for that point. The
 coordinates for each dimension of the grid do not need to be uniformly
 spaced. The coordinate systems are specified the same way as they
-are in SimpleDB spatial database files as described in Section \ref{sec:Spatialdata:SimpleIOAscii}. 
+are in SimpleDB spatial database files as described in Section \vref{sec:spatialdata:SimpleIOAscii}. 
 \begin{lyxcode}
 //~This~spatial~database~specifies~the~elastic~properties~on~a
 
@@ -732,7 +733,8 @@ TimeHistory~\{~//~start~specifying~the~database~parameters
 
 
 
-\section{\label{sec:FileFormat:TimeStepUser}User-Specified Time-Step File}
+\section{User-Specified Time-Step File}
+\label{sec:format:TimeStepUser}
 
 This file lists the time-step sizes for nonuniform, user-specified
 time steps. The file's format is an ASCII file that includes the units
@@ -772,7 +774,7 @@ units~=~year
 
 
 
-\section{\label{sec:FileFormat:PointsList}Points List File}
+\section{\label{sec:format:PointsList}Points List File}
 
 This file lists the coordinates of the locations where output is requested
 for the \texttt{OutputSolnPoints} component. The coordinate system
