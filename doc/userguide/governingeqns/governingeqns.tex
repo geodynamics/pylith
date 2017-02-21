@@ -12,48 +12,35 @@ convention that repeated indices indicate summation over the range
 of the index.
 
 \begin{table}[htbp]
-\caption{Mathematical notation}
-\label{tab:notation}
-
-\begin{tabular}{|c|c|c|}
-\hline 
-\multicolumn{2}{|c|}{Symbol} & Description\tabularnewline
-\cline{1-2} 
-Index notation & Vector Notation & \tabularnewline
-\hline 
-\hline 
-$a_{i}$ & $\overrightarrow{a}$ & Vector field a\tabularnewline
-\hline 
-$a_{ij}$ & $\underline{a}$ & Second order tensor field a\tabularnewline
-\hline 
-$u_{i}$ & $\overrightarrow{u}$ & Displacement vector field\tabularnewline
-\hline 
-$d_{i}$ & $\vec{{d}}$ & Fault slip vector field\tabularnewline
-\hline 
-$f_{i}$ & $\overrightarrow{f}$ & Body force vector field\tabularnewline
-\hline 
-$T_{i}$ & $\overrightarrow{T}$ & Traction vector field\tabularnewline
-\hline 
-$\sigma_{ij}$ & $\underline{\sigma}$ & Stress tensor field\tabularnewline
-\hline 
-$n_{i}$ & $\overrightarrow{n}$ & Normal vector field\tabularnewline
-\hline 
-$\rho$ & $\rho$ & Mass density scalar field\tabularnewline
-\hline 
-\end{tabular}
+  \caption{Mathematical notation}
+  \label{tab:notation}
+  \begin{tabular}{ccp{3in}}
+    \multicolumn{2}{c}{{\bf Symbol}} & {\bf Description} \\
+    {\bf Index notation} & {\bf Vector Notation} & \\
+    \hline 
+    $a_{i}$ & \raisebox{12pt}{}$\overrightarrow{a}$ & Vector field a \\
+    $a_{ij}$ & $\underline{a}$ & Second order tensor field a \\
+    $u_{i}$ & $\overrightarrow{u}$ & Displacement vector field \\
+    $d_{i}$ & $\vec{{d}}$ & Fault slip vector field \\
+    $f_{i}$ & $\overrightarrow{f}$ & Body force vector field \\
+    $T_{i}$ & $\overrightarrow{T}$ & Traction vector field \\
+    $\sigma_{ij}$ & $\underline{\sigma}$ & Stress tensor field \\
+    $n_{i}$ & $\overrightarrow{n}$ & Normal vector field \\
+    $\rho$ & $\rho$ & Mass density scalar field \\
+    \hline 
+  \end{tabular}
 \end{table}
 
 
 \section{Derivation of Elasticity Equation}
 
-
 \subsection{Index Notation}
 
 Consider volume $V$ bounded by surface $S$. Applying a Lagrangian
 description of the conservation of momentum gives
-
 \begin{equation}
-\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial u_{i}}{\partial t}\, dV=\int_{V}f_{i}\, dV+\int_{S}T_{i}\, dS.\label{eqn:momentum:index}
+\label{eqn:momentum:index}
+\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial u_{i}}{\partial t}\, dV=\int_{V}f_{i}\, dV+\int_{S}T_{i}\, dS.
 \end{equation}
 The traction vector field is related to the stress tensor through
 \begin{equation}
@@ -99,9 +86,9 @@ types of boundary conditions.
 
 Consider volume $V$ bounded by surface $S$. Applying a Lagrangian
 description of the conservation of momentum gives
-
 \begin{equation}
-\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial\vec{u}}{\partial t}\, dV=\int_{V}\overrightarrow{f}\, dV+\int_{S}\overrightarrow{T}\, dS.\label{eqn:momentum:vec}
+\label{eqn:momentum:vec}
+\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial\vec{u}}{\partial t}\, dV=\int_{V}\overrightarrow{f}\, dV+\int_{S}\overrightarrow{T}\, dS.
 \end{equation}
 The traction vector field is related to the stress tensor through
 \begin{equation}
@@ -142,7 +129,6 @@ $\overrightarrow{u}$ are vector quantities, there can be some spatial
 overlap of the surfaces $S_{T}$ and $S_{u}$; however, the same degree
 of freedom cannot simultaneously have both types of boundary conditions.
 
-
 \section{Finite-Element Formulation of Elasticity Equation}
 
 We formulate a set of algebraic equations using Galerkin's method.
@@ -151,11 +137,9 @@ differentiable vector field and satisfies the Dirichlet boundary conditions
 on $S_{u}$, and (2) a weighting function, $\vec{\phi}$, that is
 a piecewise differentiable vector field and is zero on $S_{u}$.
 
-
 \subsection{Index Notation}
 
 We start with the wave equation (strong form),
-
 \begin{gather}
 \sigma_{ij,j}+f_{i}=\rho\ddot{u_{i}}\text{ in }V,\\
 \sigma_{ij}n_{j}=T_{i}\text{ on }S_{T},\\
@@ -198,7 +182,8 @@ and recognize that
 \end{gather}
 so that the equation reduces to
 \begin{equation}
--\int_{V}\sigma_{ij}\phi_{i,j}\: dV+\int_{S_{T}}T_{i}\phi_{i}\, dS+\int_{V}f_{i}\phi_{i}\, dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\, dV=0.\label{eq:elasticity:integral}
+\label{eq:elasticity:integral}
+-\int_{V}\sigma_{ij}\phi_{i,j}\: dV+\int_{S_{T}}T_{i}\phi_{i}\, dS+\int_{V}f_{i}\phi_{i}\, dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\, dV=0.
 \end{equation}
 We express the trial solution and weighting function as linear combinations
 of basis functions,
@@ -218,22 +203,20 @@ in the expressions for the trial solution and weighting function yields
 for all $c_{i}^{n}$, so that the quantity in parenthesis is zero
 for each $c_{i}^{n}$
 \begin{equation}
--\int_{V}\sigma_{ij}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}N^{n}\, dS+\int_{V}f_{i}N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}N^{m}N^{n}\ dV=\vec{0}.\label{eq:elasticity:integral:discretized}
+\label{eq:elasticity:integral:discretized}
+-\int_{V}\sigma_{ij}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}N^{n}\, dS+\int_{V}f_{i}N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}N^{m}N^{n}\ dV=\vec{0}.
 \end{equation}
 We want to solve this equation for the unknown coefficients $a_{i}^{m}$
 subject to
-
 \begin{gather}
 u_{i}=u_{i}^{o}\text{ on }S_{u},\text{ and}\\
 R_{ki}(u_{i}^{+}-u_{i}^{-})=d_{k}\text{ on }S_{f},
 \end{gather}
 
 
-
 \subsection{Vector Notation}
 
 We start with the wave equation (strong form),
-
 \begin{gather}
 \nabla\cdot\underline{\sigma}+\overrightarrow{f}=\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\text{ in }V,\\
 \underline{\sigma}\cdot\overrightarrow{n}=\overrightarrow{T}\text{ on }S_{T},\\
@@ -301,13 +284,10 @@ for all $\overrightarrow{c^{n}}$, so that
 \end{equation}
 We want to solve this equation for the unknown coefficients $\overrightarrow{a^{m}}$
 subject to
-
 \begin{gather}
 \vec{u}=u^{o}\overrightarrow{}\text{ on }S_{u},\text{ and}\\
 \underline{R}(\overrightarrow{u^{+}}-\overrightarrow{u^{-}})=\vec{d}\text{ on }S_{f},
 \end{gather}
-
-
 
 \section{Solution Method for Quasi-Static Problems}
 
@@ -322,7 +302,8 @@ As a result, time-dependence only enters through the constitutive
 relationships and the loading conditions. We consider the deformation
 at time $t+\Delta t$,
 \begin{equation}
--\int_{V}\sigma_{ij}(t+\Delta t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t+\Delta t)N^{n}\, dS+\int_{V}f_{i}(t+\Delta t)N^{n}\, dV=\vec{0}.\label{eq:elasticity:integral:quasistatic}
+\label{eq:elasticity:integral:quasistatic}
+-\int_{V}\sigma_{ij}(t+\Delta t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t+\Delta t)N^{n}\, dS+\int_{V}f_{i}(t+\Delta t)N^{n}\, dV=\vec{0}.
 \end{equation}
 We solve this equation through formulation of a linear algebraic system
 of equations ($Au=b$), involving the residual ($r=b-Au$) and Jacobian
@@ -400,8 +381,6 @@ points,
 A_{ij}^{nm}=\sum_{\text{vol cells}}\sum_{\text{quad pts}}\frac{1}{4}C_{ijkl}(N_{,l}^{m}(x_{q})+N_{,k}^{m}(x_{q}))(N_{,j}^{n}(x_{q})+N_{,i}^{n}(x_{q}))w_{q}|J_{cell}(x_{q}).
 \end{equation}
 
-
-
 \section{Solution Method for Dynamic Problems}
 
 For brevity we outline the solution method for dynamic problems using
@@ -409,7 +388,8 @@ only index notation. Time-dependence enters through the constitutive
 relationships, loading conditions, and the inertial terms. We consider
 the deformation at time $t$,
 \begin{equation}
--\int_{V}\sigma_{ij}(t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t)N^{n}\, dS+\int_{V}f_{i}(t)N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}(t)N^{m}N^{n}\ dV=\vec{0}.\label{eq:elasticity:integral:dynamic:t}
+\label{eq:elasticity:integral:dynamic:t}
+-\int_{V}\sigma_{ij}(t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t)N^{n}\, dS+\int_{V}f_{i}(t)N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}(t)N^{m}N^{n}\ dV=\vec{0}.
 \end{equation}
 We solve this equation through formulation of a linear algebraic system
 of equations ($Au=b$), involving the residual ($r=b-Au$) and Jacobian
@@ -470,7 +450,8 @@ associated with the fault in section \vref{sec:fault} and with absorbing
 boundaries is section \vref{sec:absorbing:boundaries}.
 
 
-\section{Small (Finite) Strain Formulation\label{sec:Small-Strain-Formulation}}
+\section{Small (Finite) Strain Formulation}
+\label{sec:Small-Strain-Formulation}
 
 In some crustal deformation problems sufficient deformation may occur
 that the assumptions associated with infinitesimal strains no longer
@@ -484,7 +465,8 @@ with the undeformed configuration) based on the one presented by Bathe
 Starting from the governing equation, written for the deformed configuration
 (denoted by the subscript $t$), we have
 \begin{equation}
-\int(\nabla_{t}\cdot\underline{\sigma})\cdot\vec{\phi}\: dV_{t}+\int_{Vt}\overrightarrow{f_{t}}\cdot\overrightarrow{\phi}\, dV_{t}-\int_{Vt}\rho_{t}\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV_{t}=0.\label{eq:governing:equation:deformed}
+\label{eq:governing:equation:deformed}
+\int(\nabla_{t}\cdot\underline{\sigma})\cdot\vec{\phi}\: dV_{t}+\int_{Vt}\overrightarrow{f_{t}}\cdot\overrightarrow{\phi}\, dV_{t}-\int_{Vt}\rho_{t}\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV_{t}=0.
 \end{equation}
 For the total Lagrangian formulation we want to transform these integrals
 over the deformed configuration to integrals over the undeformed configuration.
@@ -535,9 +517,9 @@ are defined in terms of the undeformed configuration. Incorporating
 the other relationships between the underformed and deformed configurations
 allows us to rewrite Equation \vref{eq:governing:equation:deformed}
 in the undeformed configuration,
-\[
+\begin{equation}
 -\int_{V_{0}}\underline{P}:\nabla\overrightarrow{\phi}\, dV_{0}+\int_{S_{0}}\overrightarrow{T_{0}}\cdot\overrightarrow{\phi}\, dS_{0}+\int_{V_{0}}\overrightarrow{f_{0}}\cdot\overrightarrow{\phi}\, dV_{0}-\int_{V_{0}}\rho_{0}\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV_{0}=0.
-\]
+\end{equation}
 
 
 
