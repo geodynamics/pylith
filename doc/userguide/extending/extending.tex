@@ -1,16 +1,16 @@
+\chapter{Extending PyLith}
+\label{cha:extending}
 
-\chapter{\label{cha:Extending}Extending PyLith}
-
-One of the powerful features of using the Pyre framework in PyLith
-is the ability to extend the functionality of the software without
+One of the powerful features of using the Pyre framework in PyLith is
+the ability to extend the functionality of the software without
 altering any of the PyLith code. Any of the components can be replaced
 with other compatible components. You are already familiar with this
 feature from running the examples; when you set the spatial database
-to UniformDB, SimpleDB, or SCECCVMH you are switching between different
-compatible components for a spatial database facility. Modifying the
-governing equations to include other physical processes requires changing
-the data structures associated with the solution and altering the
-PyLith code.
+to \object{UniformDB}, \object{SimpleDB}, or \object{SCECCVMH} you are
+switching between different compatible components for a spatial
+database facility. Modifying the governing equations to include other
+physical processes requires changing the data structures associated
+with the solution and altering the PyLith code.
 
 In this section we provide examples of how to extend PyLith for components
 that users will most likely want to replace with their own custom
@@ -19,76 +19,75 @@ C++ to write your own components. The primary steps in constructing
 a component to extend PyLith's functionality include:
 \begin{enumerate}
 \item Setting up the source files for the component or set of components
-based on the templates.
-\item Edit the Python source file (\texttt{.py}) for the component.
-
-\begin{enumerate}
-\item Define the user-specified properties and facilities.
-\item Transfer the user-specified data from the Python object to the corresponding
-C++ object via calls to the SWIG interface object.
-\end{enumerate}
-\item Edit the C++ header (\texttt{.hh}) and implementation files (\texttt{.cc})
-for the component.
-
-\begin{enumerate}
-\item Implement the methods required to satisfy the interface definition
-of the component.
-\item Implement the desired functionality of the component in C++.
-\end{enumerate}
+  based on the templates.
+\item Edit the Python source file (\filename{.py}) for the component.
+  \begin{enumerate}
+  \item Define the user-specified properties and facilities.
+  \item Transfer the user-specified data from the Python object to the corresponding
+    C++ object via calls to the SWIG interface object.
+  \end{enumerate}
+\item Edit the C++ header (\filename{.hh}) and implementation files (\filename{.cc})
+  for the component.
+  \begin{enumerate}
+  \item Implement the methods required to satisfy the interface definition
+    of the component.
+  \item Implement the desired functionality of the component in C++.
+  \end{enumerate}
 \item Edit the SWIG interface files (\texttt{.i}) that provide the glue
-between Python and C++.
+  between Python and C++.
 \item Edit the Python source file that tests the functionality of the component.
 \item Run configure, build, install, and run the tests of the component.
 \end{enumerate}
 
-\section{\label{sec:Extending:SpatialDatabases}Spatial Databases}
+\section{Spatial Databases}
+\label{sec:extending:spatialdata:databases}
 
 PyLith provides several types of spatial databases that can be used
 for specification of parameters associated with boundary conditions,
 earthquake ruptures, and physical properties. In this example we demonstrate
 how to provide a spatial database, UniformVelModel, for specifying
 elastic properties. The source files are included in the source for
-the spatialdata package in the \texttt{templates/spatialdb} directory.
-The \texttt{README} file in \texttt{templates/spatialdb} provides
+the spatialdata package in the \filename{templates/spatialdb} directory.
+The \filename{README} file in \filename{templates/spatialdb} provides
 detailed instructions for the various steps involved, and the source
 files contain numerous comments to help guide you through the customization
 process. 
 
-The UniformVelModel component provides uniform physical properties:
-P-wave speed, S-wave speed, and density. Although this is a rather
-trivial specification of physical properties that could be easily
-done using a UniformDB, this example demonstrates how to create a
-user-defined component that matches the requirements of a spatial
+The \object{UniformVelModel} component provides uniform physical
+properties: P-wave speed, S-wave speed, and density. Although this is
+a rather trivial specification of physical properties that could be
+easily done using a UniformDB, this example demonstrates how to create
+a user-defined component that matches the requirements of a spatial
 database for elastic physical properties. Adding additional physical
-properties is simply a matter of including some additional values
-in the spatial database. Furthermore, in cases where we are constructing
+properties is simply a matter of including some additional values in
+the spatial database. Furthermore, in cases where we are constructing
 a spatial database for a seismic velocity model, the data points are
-geovreferenced. With our uniform physical properties we do not need
-to worry about any differences in coordinate systems between our seismic
-velocity model and points at which the model is queried. However,
-in many cases we do, so we illustrate this functionality by using
-a geographic projection as the coordinate system in our example.
+geovreferenced. With our uniform physical properties we do not need to
+worry about any differences in coordinate systems between our seismic
+velocity model and points at which the model is queried. However, in
+many cases we do, so we illustrate this functionality by using a
+geographic projection as the coordinate system in our example.
 
-Using a top-down approach, the first step is to determine what information
-the user will need to supply to the component. Is the data for the
-spatial database in a file or a series of files? If so, file names
-and possible paths to a directory containing files with known names
-might be necessary. Are there other parameters that control the behavior
-of the component, such as a minimum shear wave speed? In our example
-the user supplies values for the P-wave speed, S-wave speed, and density.
-The user-supplied parameters become Pyre properties and facilities
-in the Python source file. Because our user supplied parameters are
-floating point values with dimensions, we create dimensional properties
-\texttt{vs}, \texttt{vp}, and \texttt{density}. In addition to defining
-the properties of the component, we also need to transfer these properties
-to the C++ object that does the real work. This is done by calling
-the C++ \texttt{vs()}, \texttt{vp()}, and \texttt{density()} accessor
+Using a top-down approach, the first step is to determine what
+information the user will need to supply to the component. Is the data
+for the spatial database in a file or a series of files? If so, file
+names and possible paths to a directory containing files with known
+names might be necessary. Are there other parameters that control the
+behavior of the component, such as a minimum shear wave speed? In our
+example the user supplies values for the P-wave speed, S-wave speed,
+and density.  The user-supplied parameters become Pyre properties and
+facilities in the Python source file. Because our user supplied
+parameters are floating point values with dimensions, we create
+dimensional properties vs, vp, and density. In addition to defining the properties of the
+component, we also need to transfer these properties to the C++ object
+that does the real work. This is done by calling the C++
+\texttt{vs()}, \texttt{vp()}, and \texttt{density()} accessor
 functions that are accessible via the Python module created by SWIG.
 
 In the C++ object we must implement the functions that are required
 by the spatial database interface. These functions are listed near
 the beginning of the UniformVelModel class definition at the top of
-the C++ header file, \texttt{UniformVelModel.hh}. The C++ object also
+the C++ header file, \filename{UniformVelModel.hh}. The C++ object also
 includes the accessor functions that allow us to set the P-wave speed,
 S-wave speed, and density values to the user-specified values in the
 Python object. Additional information, such as a file name, parameters
@@ -97,134 +96,136 @@ functions. You can also add additional functions and data structures
 to the C++ class to provide the necessary operations and functionality
 of the spatial database. 
 
-In SimpleDB we use a separate class to read in the spatial database
-and yet another class to perform the actual query. In our example,
-the C++ object also creates and stores the UTM zone 10 geographic
-projection for the seismic velocity model. When the spatial database
-gets a query for physical properties, we transform the coordinates
-of the query point from its coordinate system to the coordinate system
-of our seismic velocity model.
+In \object{SimpleDB} we use a separate class to read in the spatial
+database and yet another class to perform the actual query. In our
+example, the C++ object also creates and stores the UTM zone 10
+geographic projection for the seismic velocity model. When the spatial
+database gets a query for physical properties, we transform the
+coordinates of the query point from its coordinate system to the
+coordinate system of our seismic velocity model.
 
 In order to use SWIG to create the Python module that allows us to
-call C++ from Python, we use a ``main'' SWIG interface file (\texttt{\small{}spatialdbcontrib.i}
-in this case) and then one for each object (\texttt{\small{}UniformVelModel.i}
-in this case). This greatly simplifies keeping the Python module synchronized
-with the C++ and Python code. The \texttt{\small{}UniformVelModel.i}
-SWIG file is nearly identical to the corresponding C++ header file.
-There are a few differences, as noted in the comments within the file.
-Copying and pasting the C++ header file and then doing a little cleanup
-is a very quick and easy way to construct a SWIG interface file for
-a C++ object. Because very little changes from SWIG module to SWIG
-module, it is usually easiest to construct the ``main'' SWIG interface
-by copying and customizing an existing one.
+call C++ from Python, we use a ``main'' SWIG interface file
+(\filename{spatialdbcontrib.i} in this case) and then one for each
+object (\filename{UniformVelModel.i} in this case). This greatly
+simplifies keeping the Python module synchronized with the C++ and
+Python code. The \filename{UniformVelModel.i} SWIG file is nearly
+identical to the corresponding C++ header file.  There are a few
+differences, as noted in the comments within the file.  Copying and
+pasting the C++ header file and then doing a little cleanup is a very
+quick and easy way to construct a SWIG interface file for a C++
+object. Because very little changes from SWIG module to SWIG module,
+it is usually easiest to construct the ``main'' SWIG interface by
+copying and customizing an existing one.
 
 Once the Python, C++, and SWIG interface files are complete, we are
-ready to build the module. The \texttt{Makefile.am} file defines how
-to compile and link the C++ library and generate the Python module
-via SWIG. The \texttt{configure.ac} file contains the information
-used to build a configure script. The configure script checks to make
-sure it can find all of the tools needed to build the component (C++
+ready to build the module. The \filename{Makefile.am} file defines how
+to compile and link the C++ library and generate the Python module via
+SWIG. The \filename{configure.ac} file contains the information used
+to build a configure script. The configure script checks to make sure
+it can find all of the tools needed to build the component (C++
 compiler, Python, installed spatial database package, etc.). See the
 README file for detailed instructions on how to generate the configure
 script, and build and install the component.
 
-We recommend constructing tests of the component to insure that it
-is functioning properly before attempting to use it in an application.
-The \texttt{\small{}tests} directory within \texttt{\small{}templates/spatialdb}
-contains a Python script, \texttt{\small{}testcontrib.py}, that runs
-the tests of the UniformVelModel component defined in \texttt{\small{}TestUniformVelModel.py}.
-Normally, one would want to test each function individually to isolate
-errors and create C++ tests as well as the Python tests included here.
-In our rather simple example, we simply test the overall functionality
-of the component. For examples of thorough testing, see the spatialdata
-and PyLith source code.
+We recommend constructing tests of the component to insure that it is
+functioning properly before attempting to use it in an application.
+The \filename{tests} directory within \filename{templates/spatialdb}
+contains a Python script, \filename{testcontrib.py}, that runs the
+tests of the UniformVelModel component defined in
+\filename{TestUniformVelModel.py}.  Normally, one would want to test
+each function individually to isolate errors and create C++ tests as
+well as the Python tests included here.  In our rather simple example,
+we simply test the overall functionality of the component. For
+examples of thorough testing, see the spatialdata and PyLith source
+code.
 
 Once you have built, installed, and tested the UniformVelModel, it
 is time to use it in a simple example. Because the seismic velocity
 model uses geovreferenced coordinates, our example must also use geovreferenced
-coordinates. The dislocation example in the PyLith \texttt{examples/twocells/twotet4-geoproj}
+coordinates. The dislocation example in the PyLith \filename{examples/twocells/twotet4-geoproj}
 directory uses UTM zone 11 coordinates. The spatial database package
 will transform the coordinates between the two projections as defined
 in the UniformVelModel \texttt{query()} function. The dislocation
 example uses the SCEC CVM-H seismic velocity model. In order to replace
 the SCEC CVM-H seismic velocity with our uniform velocity model, in
-\texttt{pylithapp.cfg} we replace the lines
-\begin{lyxcode}
-db\_properties~=~spatialdata.spatialdb.SCECCVMH
-
-db\_properties.data\_dir~=~/home/brad/data/sceccvm-h/vx53/bin
-\end{lyxcode}
-with the lines
-\begin{lyxcode}
-db\_properties~=~spatialdata.spatialdb.contrib.UniformVelModel
-\end{lyxcode}
-When you run the dislocation example, the \texttt{dislocation-statevars\_info.vtk}
+\filename{pylithapp.cfg}
+\begin{cfg}
+# Replace these two lines
+<f>db_properties</f> = spatialdata.spatialdb.SCECCVMH
+<p>db_properties.data_dir</p> = /home/john/data/sceccvm-h/vx53/bin
+# with
+<f>db_properties</f> = spatialdata.spatialdb.contrib.UniformVelModel
+\end{cfg}
+When you run the dislocation example, the \filename{dislocation-statevars\_info.vtk}
 file should vreflect the use of physical properties from the uniform
 seismic velocity with $\mu=1.69\times10^{10}\mathrm{Pa}$, $\lambda=1.6825\times10^{10}\mathrm{Pa}$,
 and $\rho=2500\mathrm{kg/m^{3}}$.
 
 
-\section{\label{sec:Extending:BulkConstitutiveModels}Bulk Constitutive Models}
+\section{Bulk Constitutive Models}
+\label{sec:extending:materials}
 
-PyLith includes several linearly elastic and inelastic bulk constitutive
-models for 2D and 3D problems. In this example, we demonstrate how
-to extend PyLith by adding your own bulk constitutive model. We reimplement
-the 2D plane strain constitutive model while adding the current strain
-and stress tensors as state variables. This constitutive model, \texttt{PlaneStrainState},
-is not particularly useful, but it illustrates the basic steps involved
-in creating a bulk constitutive model with state variables. The source
-files are included with the main PyLith source code in the \texttt{templates/materials}
-directory. The \texttt{README} file in \texttt{templates/materials}
-provides detailed instructions for the various steps, and the source
-files contain numerous comments to guide you through the customization
-process.
+PyLith includes several linearly elastic and inelastic bulk
+constitutive models for 2D and 3D problems. In this example, we
+demonstrate how to extend PyLith by adding your own bulk constitutive
+model. We reimplement the 2D plane strain constitutive model while
+adding the current strain and stress tensors as state variables. This
+constitutive model, \object{PlaneStrainState}, is not particularly
+useful, but it illustrates the basic steps involved in creating a bulk
+constitutive model with state variables. The source files are included
+with the main PyLith source code in the \filename{templates/materials}
+directory. The \filename{README} file in
+\filename{templates/materials} provides detailed instructions for the
+various steps, and the source files contain numerous comments to guide
+you through the customization process.
 
 In contrast to our previous example of creating a customized spatial
 database, which involved gathering user-specified parameters via the
-Pyre framework, there are no user-defined parameters for bulk constitutive
-models. The specification of the physical properties and state variables
-associated with the constitutive model is handled directly in the
-C++ code. As a result, the Python object for the constitutive model
-component is very simple, and customization is limited to simply changing
-the names of objects and labels.
+Pyre framework, there are no user-defined parameters for bulk
+constitutive models. The specification of the physical properties and
+state variables associated with the constitutive model is handled
+directly in the C++ code. As a result, the Python object for the
+constitutive model component is very simple, and customization is
+limited to simply changing the names of objects and labels.
 
 The properties and state variables used in the bulk constitutive model
-are set using arguments to the constructor of the C++ \texttt{ElasticMaterial}
+are set using arguments to the constructor of the C++ \object{ElasticMaterial}
 object. We define a number of constants at the top of the C++ file
-and use the \texttt{Metadata} object to define the properties and
+and use the \object{Metadata} object to define the properties and
 state variables. The C++ object for the bulk constitutive component
 includes a number of functions that implement elasticity behavior
 of a bulk material as well as several utility routines:
 \begin{description}
 \item [{\texttt{\_dbToProperties()}}] Computes the physical properties
-used in the constitutive model equations from the physical properties
-supplied in spatial databases.
+  used in the constitutive model equations from the physical properties
+  supplied in spatial databases.
 \item [{\texttt{\_nondimProperties()}}] Nondimensionalizes the physical
-properties used in the constitutive model equations.
+  properties used in the constitutive model equations.
 \item [{\texttt{\_dimProperties()}}] Dimensionalizes the physical properties
-used in the constitutive model equations.
+  used in the constitutive model equations.
 \item [{\texttt{\_stableTimeStepImplicit()}}] Computes the stable time
-step for implicit time stepping in quasi-static simulations given
-the current state (strain, stress, and state variables).
+  step for implicit time stepping in quasi-static simulations given
+  the current state (strain, stress, and state variables).
 \item [{\texttt{\_calcDensity()}}] Computes the density given the physical
-properties and state variables. In most cases density is a physical
-property used in the constitutive equations, so this is a trivial
-function in those cases.
+  properties and state variables. In most cases density is a physical
+  property used in the constitutive equations, so this is a trivial
+  function in those cases.
 \item [{\texttt{\_calcStress()}}] Computes the stress tensor given the
-physical properties, state variables, total strain, initial stress,
-and initial strain.
+  physical properties, state variables, total strain, initial stress,
+  and initial strain.
 \item [{\texttt{\_calcElasticConsts()}}] Computes the elastic constants
-given the physical properties, state variables, total strain, initial
-stress, and initial strain.
+  given the physical properties, state variables, total strain, initial
+  stress, and initial strain.
 \item [{\texttt{\_updateStateVars()}}] Updates the state variables given
-the physical properties, total strain, initial stress, and initial
-strain. If a constitutive model does not use state variables, then
-this routine is omitted.
+  the physical properties, total strain, initial stress, and initial
+  strain. If a constitutive model does not use state variables, then
+  this routine is omitted.
 \end{description}
 Because it is sometimes convenient to supply physical properties for
 a bulk constitutive model that are equivalent but different from the
 ones that appear in the constitutive equations (e.g., P-wave speed,
-S-wave speed, and density rather then Lame's constants $\mu,$$\lambda,$
+S-wave speed, and density rather then Lame's constants $\mu$, $\lambda,$
 and density), each bulk constitutive model component has routines
 to convert the physical property parameters and state variables a
 user specifies via spatial databases to the physical property properties
@@ -236,62 +237,61 @@ for the initial elastic step and one set for the remainder of the
 simulation. See the source code for the inelastic materials in PyLith
 for an illustration of an efficient mechanism for doing this.
 
-The SWIG interface files for a bulk constitutive component are set
-up in the same manner as in the previous example of creating a customized
-spatial database component. The ``main'' SWIG interface file (\texttt{materialscontrib.i}
-in this case) sets up the Python module, and the SWIG interface file
-for the component (\texttt{PlaneStrainState.i} in this case) defines
-the functions that should be included in the Python module. Note that
-because the C++ \texttt{ElasticMaterial} object defines a number of
-pure virtual methods (which merely specify the interface for the functions
-and do not implement default behavior), we must include many protected
+The SWIG interface files for a bulk constitutive component are set up
+in the same manner as in the previous example of creating a customized
+spatial database component. The ``main'' SWIG interface file
+(\filename{materialscontrib.i} in this case) sets up the Python
+module, and the SWIG interface file for the component
+(\filename{PlaneStrainState.i} in this case) defines the functions
+that should be included in the Python module. Note that because the
+C++ \object{ElasticMaterial} object defines a number of pure virtual
+methods (which merely specify the interface for the functions and do
+not implement default behavior), we must include many protected
 functions in the SWIG interface file. If these are omitted, SWIG will
 give a warning indicating that some of the functions remain abstract
-(i.e., some pure virtual functions defined in the parent class \texttt{ElasticMaterial}
-were not implemented in the child class \texttt{PlaneStrainState}),
-and no constructor is created. When this happens, you cannot create
-a \texttt{PlaneStrainState} Python object.
+(i.e., some pure virtual functions defined in the parent class
+\object{ElasticMaterial} were not implemented in the child class
+\object{PlaneStrainState}), and no constructor is created. When this
+happens, you cannot create a \object{PlaneStrainState} Python object.
 
 Once the Python, C++, and SWIG interface files are complete, you are
-ready to configure and build the C++ library and Python module for
-the component. Edit the \texttt{Makefile.am} file as necessary, then
-generate the configure script, run \texttt{configure}, and then build
-and install the library and module (see the \texttt{README} file for
-detailed instructions).
+ready to configure and build the C++ library and Python module for the
+component. Edit the \filename{Makefile.am} file as necessary, then
+generate the configure script, run \filename{configure}, and then
+build and install the library and module (see the \filename{README}
+file for detailed instructions).
 
-Because most functionality of the bulk constitutive model component
-is at the C++ level, properly constructed unit tests for the \texttt{component}
-should include tests for both the C++ code and Python code. The C++
-unit tests can be quite complex, and it is best to examine those used
-for the bulk constitutive models included with PyLith. In this example
-we create the Python unit tests to verify that we can create a \texttt{PlaneStrainState}
-Python object and call some of the simple underlying C++ functions.
-The source files are in the \texttt{templates/materials/tests} directory.
-The \texttt{testcontrib.py} Python script runs the tests defined in
-\texttt{TestPlaneStrainState.py}.
+Because most functionality of the bulk constitutive model component is
+at the C++ level, properly constructed unit tests for the
+\object{component} should include tests for both the C++ code and
+Python code. The C++ unit tests can be quite complex, and it is best
+to examine those used for the bulk constitutive models included with
+PyLith. In this example we create the Python unit tests to verify that
+we can create a \object{PlaneStrainState} Python object and call some
+of the simple underlying C++ functions.  The source files are in the
+\filename{templates/materials/tests} directory.  The
+\filename{testcontrib.py} Python script runs the tests defined in
+\filename{TestPlaneStrainState.py}.
 
-Once you have built, installed, and tested the \texttt{PlaneStrainState}
+Once you have built, installed, and tested the \object{PlaneStrainState}
 component, it is time to use it in a simple example. You can try using
-it in any of the 2D examples. For the examples in \texttt{examples/twocells/twoquad4},
-in \texttt{pylithapp.cfg} replace the line
-\begin{lyxcode}
-material~=~pylith.materials.ElasticPlaneStrain
-\end{lyxcode}
-with the line
-\begin{lyxcode}
-material~=~pylith.materials.contrib.PlaneStrainState
-\end{lyxcode}
+it in any of the 2D examples. For the examples in \filename{examples/twocells/twoquad4},
+in \filename{pylithapp.cfg}
+\begin{cfg}
+# Replace
+<f>material</f> = pylith.materials.ElasticPlaneStrain
+# with
+<f>material</f> = pylith.materials.contrib.PlaneStrainState
+\end{cfg}
 or simply add the command line argument
-\begin{lyxcode}
--{}-timedependent.homogeneous.material=pylith.materials.contrib.PlaneStrainState
-\end{lyxcode}
-when running any of the 2D examples. The output should remain identical,
-but you should see the \texttt{PlaneStrainState} object listed in
-the information written to \texttt{stdout}.
+\commandline{-{}-timedependent.homogeneous.material=pylith.materials.contrib.PlaneStrainState}.
+when running any of the 2D examples. The output should remain
+identical, but you should see the \object{PlaneStrainState} object
+listed in the information written to stdout.
 
 
-\section{\label{sec:Extending:FaultConstitutiveModels}Fault Constitutive
-Models}
+\section{Fault Constitutive Models}
+\label{sec:extending:fault}
 
 PyLith includes two of the most widely used fault constitutive models,
 but there are a wide range of models that have been proposed to explain
@@ -299,11 +299,11 @@ earthquake source processes. In this example, we demonstrate how to
 extend PyLith by adding your own fault constitutive model. We implement
 a linear viscous fault constitutive model wherein the perturbation
 in the coefficient of friction is linearly proportional to the slip
-rate. This constitutive model, \texttt{ViscousFriction}, is not particularly
+rate. This constitutive model, \object{ViscousFriction}, is not particularly
 useful, but it illustrates the basic steps involved in creating a
 fault constitutive model. The source files are included with the main
-PyLith source code in the \texttt{templates/friction} directory. The
-\texttt{README} file in \texttt{templates/friction} provides detailed
+PyLith source code in the \filename{templates/friction} directory. The
+\filename{README} file in \filename{templates/friction} provides detailed
 instructions for the various steps, and the source files contain numerous
 comments to guide you through the customization process.
 
@@ -314,97 +314,95 @@ model component is very simple and customization is limited to simply
 changing the names of objects and labels.
 
 The properties and state variables used in the fault constitutive
-model are set using arguments to the constructor of the C++ \texttt{FrictionModel}
-object, analogous to the \texttt{ElasticMaterial} object for bulk
+model are set using arguments to the constructor of the C++ \object{FrictionModel}
+object, analogous to the \object{ElasticMaterial} object for bulk
 constitutive models. In fact, both types of constitutive models used
-the same underlying C++ object (\texttt{Metadata::ParamDescription})
+the same underlying C++ object (\object{Metadata::ParamDescription})
 to store the description of the parameters and state variables. We
 define a number of constants at the top of the C++ file and use the
-\texttt{Metadata} object to define the properties and state variables.
+\object{Metadata} object to define the properties and state variables.
 The C++ object for the fault constitutive component includes a number
 of functions that implement friction as well as several utility routines:
 \begin{description}
 \item [{\texttt{\_dbToProperties()}}] Computes the physical properties
-used in the constitutive model equations from the physical properties
-supplied in spatial databases.
+  used in the constitutive model equations from the physical properties
+  supplied in spatial databases.
 \item [{\texttt{\_nondimProperties()}}] Nondimensionalizes the physical
-properties used in the constitutive model equations.
+  properties used in the constitutive model equations.
 \item [{\texttt{\_dimProperties()}}] Dimensionalizes the physical properties
-used in the constitutive model equations.
+  used in the constitutive model equations.
 \item [{\texttt{\_dbToStateVars()}}] Computes the initial state variables
-used in the constitutive model equations from the initial values supplied
-in spatial databases.
+  used in the constitutive model equations from the initial values supplied
+  in spatial databases.
 \item [{\texttt{\_nondimStateVars()}}] Nondimensionalizes the state variables
-used in the constitutive model equations.
+  used in the constitutive model equations.
 \item [{\texttt{\_dimStateVars()}}] Dimensionalizes the state variables
-used in the constitutive model equations.
+  used in the constitutive model equations.
 \item [{\texttt{\_calcFriction()}}] Computes the friction stress given
-the physical properties, state variables, slip, slip rate, and normal
-traction.
+  the physical properties, state variables, slip, slip rate, and normal
+  traction.
 \item [{\texttt{\_updateStateVars()}}] Updates the state variables given
-the physical properties, slip, slip rate, and normal traction.
+  the physical properties, slip, slip rate, and normal traction.
 \end{description}
 If a constitutive model does not use state variables, then the state
 variable routines are omitted. 
 
-Because it is sometimes convenient to supply physical properties for
-a fault constitutive model that are equivalent but different from
-the ones that appear in the constitutive equations, each fault constitutive
-model component has routines to convert the physical property parameters
-and state variables a user specifies via spatial databases to the
-physical property properties and state variables used in the constitutive
-model equations. 
+Because it is sometimes convenient to supply physical properties for a
+fault constitutive model that are equivalent but different from the
+ones that appear in the constitutive equations, each fault
+constitutive model component has routines to convert the physical
+property parameters and state variables a user specifies via spatial
+databases to the physical property properties and state variables used
+in the constitutive model equations.
 
-The SWIG interface files for a fault constitutive component are set
-up in the same manner as in the previous examples of creating a bulk
+The SWIG interface files for a fault constitutive component are set up
+in the same manner as in the previous examples of creating a bulk
 constitutive model or a customized spatial database component. The
-``main'' SWIG interface file (\texttt{frictioncontrib.i} in this case)
-sets up the Python module, and the SWIG interface file for the component
-(\texttt{ViscousFriction.i} in this case) defines the functions that
-should be included in the Python module. Note that because the C++
-\texttt{FrictionModel} object defines a number of pure virtual methods
-(which merely specify the interface for the functions and do not implement
-default behavior), we must include many protected functions in the
-SWIG interface file. If these are omitted, SWIG will give a warning
-indicating that some of the functions remain abstract (i.e., some
-pure virtual functions defined in the parent class \texttt{FrictionModel}
-were not implemented in the child class \texttt{ViscousFriction}),
-and no constructor is created. When this happens, you cannot create
-a \texttt{ViscousFriction} Python object.
+``main'' SWIG interface file (\filename{frictioncontrib.i} in this
+case) sets up the Python module, and the SWIG interface file for the
+component (\filename{ViscousFriction.i} in this case) defines the
+functions that should be included in the Python module. Note that
+because the C++ \object{FrictionModel} object defines a number of pure
+virtual methods (which merely specify the interface for the functions
+and do not implement default behavior), we must include many protected
+functions in the SWIG interface file. If these are omitted, SWIG will
+give a warning indicating that some of the functions remain abstract
+(i.e., some pure virtual functions defined in the parent class
+\object{FrictionModel} were not implemented in the child class
+\object{ViscousFriction}), and no constructor is created. When this
+happens, you cannot create a \object{ViscousFriction} Python object.
 
 Once the Python, C++, and SWIG interface files are complete, you are
-ready to configure and build the C++ library and Python module for
-the component. Edit the \texttt{Makefile.am} file as necessary, then
-generate the configure script, run \texttt{configure}, and then build
-and install the library and module (see the \texttt{README} file for
-detailed instructions).
+ready to configure and build the C++ library and Python module for the
+component. Edit the \filename{Makefile.am} file as necessary, then
+generate the configure script, run \filename{configure}, and then
+build and install the library and module (see the \filename{README}
+file for detailed instructions).
 
 Because most functionality of the fault constitutive model component
-is at the C++ level, properly constructed unit tests for the \texttt{component}
-should include tests for both the C++ code and Python code. The C++
-unit tests can be quite complex, and it is best to examine those used
-for the fault constitutive models included with PyLith. In this example
-we create the Python unit tests to verify that we can create a \texttt{ViscousFriction}
-Python object and call some of the simple underlying C++ functions.
-The source files are in the \texttt{templates/friction/tests} directory.
-The \texttt{testcontrib.py} Python script runs the tests defined in
-\texttt{TestViscousFriction.py}.
+is at the C++ level, properly constructed unit tests for the
+\object{component} should include tests for both the C++ code and
+Python code. The C++ unit tests can be quite complex, and it is best
+to examine those used for the fault constitutive models included with
+PyLith. In this example we create the Python unit tests to verify that
+we can create a \object{ViscousFriction} Python object and call some
+of the simple underlying C++ functions.  The source files are in the
+\filename{templates/friction/tests} directory.  The
+\filename{testcontrib.py} Python script runs the tests defined in
+\filename{TestViscousFriction.py}.
 
-Once you have built, installed, and tested the \texttt{ViscousFriction}
+Once you have built, installed, and tested the \object{ViscousFriction}
 component, it is time to use it in a simple example. You can try using
-it in any of the 2D or 3D examples. For the examples in \texttt{examples/bar\_shearwave/quad4,}
-in \texttt{shearwave\_staticfriction.cfg} replace the line
-\begin{lyxcode}
-friction~=~pylith.friction.StaticFriction
-\end{lyxcode}
-with the line
-\begin{lyxcode}
-friction~=~pylith.friction.contrib.ViscousFriction
-\end{lyxcode}
+it in any of the 2D or 3D examples. For the examples in \filename{examples/bar\_shearwave/quad4,}
+in \filename{shearwave\_staticfriction.cfg}
+\begin{cfg}
+# Replace
+<f>friction</f> = pylith.friction.StaticFriction
+# with
+<f>friction</f> = pylith.friction.contrib.ViscousFriction
+\end{cfg}
 or simply add the command line argument
-\begin{lyxcode}
--{}-timedependent.interfaces.fault.friction=pylith.friction.contrib.ViscousFriction
-\end{lyxcode}
-when running any of the friction examples. You will also need to supply
-a corresponding spatial database with the physical properties for
-the viscous friction constitutive model.
+\commandline{-{}-timedependent.interfaces.fault.friction=pylith.friction.contrib.ViscousFriction}
+when running any of the friction examples. You will also need to
+supply a corresponding spatial database with the physical properties
+for the viscous friction constitutive model.
