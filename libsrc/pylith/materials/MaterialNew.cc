@@ -364,24 +364,24 @@ pylith::materials::MaterialNew::_computeJacobian(PetscMat jacobianMat,
     PetscDS prob = NULL;
     PetscInt cStart = 0, cEnd = 0;
     PetscErrorCode err;
-    PetscDM dmSoln = solution.dmMesh();
+    PetscDM dmMesh = solution.dmMesh();
     PetscDM dmAux = _auxFields->dmMesh();
     PetscDMLabel dmLabel;
 
     // Pointwise function have been set in DS
-    err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err);
+    err = DMGetDS(dmMesh, &prob); PYLITH_CHECK_ERROR(err);
 
     // Get auxiliary data
-    err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux); PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) auxFields().localVector()); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmMesh, "dmAux", (PetscObject) dmAux); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) auxFields().localVector()); PYLITH_CHECK_ERROR(err);
 
     // Compute the local Jacobian
     assert(solution.localVector());
-    err = DMGetLabel(dmSoln, "material-id", &dmLabel); PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmMesh, "material-id", &dmLabel); PYLITH_CHECK_ERROR(err);
     err = DMLabelGetStratumBounds(dmLabel, id(), &cStart, &cEnd); PYLITH_CHECK_ERROR(err);
 
     PYLITH_JOURNAL_DEBUG("DMPlexComputeJacobian_Internal() with material-id '"<<id()<<"' and cells ["<<cStart<< ","<<cEnd<<")");
-    err = DMPlexComputeJacobian_Internal(dmSoln, cStart, cEnd, t, tshift, solution.localVector(), solutionDotVec, jacobianMat, precondMat, NULL); PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeJacobian_Internal(dmMesh, cStart, cEnd, t, tshift, solution.localVector(), solutionDotVec, jacobianMat, precondMat, NULL); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _computeJacobian
