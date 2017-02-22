@@ -89,6 +89,7 @@
 \definecolor{purple}{rgb}{0.38, 0.00, 0.68} % 97/1/175
 
 \definecolor{ltblue}{rgb}{0.2, 0.73, 1.0} % 51/187/255
+\definecolor{mdblue}{rgb}{0.28, 0.50, 0.80} % 72/128/205
 \definecolor{blue}{rgb}{0.12, 0.43, 0.59} % 30/110/150
 
 \definecolor{ltltgreen}{rgb}{0.7, 1.00, 0.7} % 96/204/14
