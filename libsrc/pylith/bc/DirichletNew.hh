@@ -58,6 +58,16 @@ void deallocate(void);
  */
 void initialize(const pylith::topology::Field& solution);
 
+/** Set constrained values in solution field.
+ *
+ * @param[out] solution Solution field.
+ * @param[in] t Current time.
+ * @param[in] dt Current time step.
+ */
+void setValues(pylith::topology::Field* solution,
+               const double t,
+               const double dt);
+
 // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
 
@@ -85,10 +95,11 @@ virtual
 void _setFEKernelsConstraint(const topology::Field& solution) = 0;
 
 
-// PRIVATE MEMBERS ////////////////////////////////////////////////////
+// PROTECTED MEMBERS //////////////////////////////////////////////////
 protected:
 
 pylith::topology::Mesh* _boundaryMesh;   ///< Boundary mesh.
+PetscPointFunc _bcKernel; ///< Kernel for boundary condition value.
 int _spaceDim; ///< Spatial dimension of domain.
 pylith::topology::FieldBase::VectorFieldEnum _vectorFieldType; ///< Vector field type of constrainted field.
 

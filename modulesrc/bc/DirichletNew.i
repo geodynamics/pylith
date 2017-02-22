@@ -48,6 +48,16 @@ public:
          */
         void initialize(const pylith::topology::Field& solution);
 
+        /** Set constrained values in solution field.
+         *
+         * @param[out] solution Solution field.
+         * @param[in] t Current time.
+         * @param[in] dt Current time step.
+         */
+        void setValues(pylith::topology::Field* solution,
+                       const double t,
+                       const double dt);
+
         // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
 
@@ -73,7 +83,7 @@ protected:
          */
         virtual
         void _setFEKernelsConstraint(const topology::Field& solution) = 0;
-        
+
         }; // class DirichletNew
 
     } // bc

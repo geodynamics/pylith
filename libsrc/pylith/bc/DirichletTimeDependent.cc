@@ -312,32 +312,31 @@ pylith::bc::DirichletTimeDependent::_setFEKernelsConstraint(const topology::Fiel
 
     const bool isScalarField = _vectorFieldType == pylith::topology::Field::SCALAR;
 
-    PetscPointFunc bcKernel = NULL;
     const int bitInitial = _useInitial ? 0x1 : 0x0;
     const int bitRate = _useRate ? 0x2 : 0x0;
     const int bitTimeHistory = _useTimeHistory ? 0x4 : 0x0;
     const int bitUse = bitInitial | bitRate | bitTimeHistory;
     switch (bitUse) {
     case 0x1:
-        bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_initial_scalar : pylith_fekernels_TimeDependentBC_initial_vector;
+        _bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_initial_scalar : pylith_fekernels_TimeDependentBC_initial_vector;
         break;
     case 0x2:
-        bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_rate_scalar : pylith_fekernels_TimeDependentBC_rate_vector;
+        _bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_rate_scalar : pylith_fekernels_TimeDependentBC_rate_vector;
         break;
     case 0x4:
-        bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_timeHistory_scalar : pylith_fekernels_TimeDependentBC_timeHistory_vector;
+        _bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_timeHistory_scalar : pylith_fekernels_TimeDependentBC_timeHistory_vector;
         break;
     case 0x3:
-        bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_initialRate_scalar : pylith_fekernels_TimeDependentBC_initialRate_vector;
+        _bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_initialRate_scalar : pylith_fekernels_TimeDependentBC_initialRate_vector;
         break;
     case 0x5:
-        bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_initialTimeHistory_scalar : pylith_fekernels_TimeDependentBC_initialTimeHistory_vector;
+        _bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_initialTimeHistory_scalar : pylith_fekernels_TimeDependentBC_initialTimeHistory_vector;
         break;
     case 0x6:
-        bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_rateTimeHistory_scalar : pylith_fekernels_TimeDependentBC_rateTimeHistory_vector;
+        _bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_rateTimeHistory_scalar : pylith_fekernels_TimeDependentBC_rateTimeHistory_vector;
         break;
     case 0x7:
-        bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_initialRateTimeHistory_scalar : pylith_fekernels_TimeDependentBC_initialRateTimeHistory_vector;
+        _bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_initialRateTimeHistory_scalar : pylith_fekernels_TimeDependentBC_initialRateTimeHistory_vector;
         break;
     case 0x0:
         PYLITH_JOURNAL_WARNING("Dirichlet BC provides no constraints.");
@@ -347,10 +346,6 @@ pylith::bc::DirichletTimeDependent::_setFEKernelsConstraint(const topology::Fiel
         throw std::logic_error("Unknown combination of flags for Dirichlet BC terms.");
     } // switch
 
-    void* context = NULL;
-    const int labelId = 1;
-    const int fieldIndex = solution.subfieldInfo(_field.c_str()).index;
-    err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL_FIELD, _label.c_str(), _label.c_str(), fieldIndex, _constrainedDOF.size(), &_constrainedDOF[0], (void (*)())bcKernel, 1, &labelId, context); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _setFEKernelsConstraint

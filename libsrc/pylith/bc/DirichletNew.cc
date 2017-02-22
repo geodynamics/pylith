@@ -35,10 +35,14 @@
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 
+extern "C" PetscErrorCode DMPlexInsertBoundaryValues_FEM_AuxField_Internal(DM dm, PetscReal time, Vec locU, PetscInt field, DMLabel label, PetscInt numids, const PetscInt ids[], PetscPointFunc func, void *ctx, Vec locX);
+
+
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::DirichletNew::DirichletNew(void) :
-    _boundaryMesh(0),
+    _boundaryMesh(NULL),
+    _bcKernel(NULL),
     _spaceDim(0),
     _vectorFieldType(pylith::topology::FieldBase::OTHER)
 { // constructor
@@ -60,7 +64,8 @@ pylith::bc::DirichletNew::deallocate(void)
 
     ConstraintPointwise::deallocate();
 
-    delete _boundaryMesh; _boundaryMesh = 0;
+    delete _boundaryMesh; _boundaryMesh = NULL;
+    _bcKernel = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -103,9 +108,49 @@ pylith::bc::DirichletNew::initialize(const pylith::topology::Field& solution)
     } // if/else
     _auxFields->createScatter(*_boundaryMesh);
     _auxFields->scatterLocalToGlobal();
+    _auxFields->view("AUXILIARY FIELDS"); // :DEBUGGING: TEMPORARY
 
     PYLITH_METHOD_END;
 } // initialize
+
+// ----------------------------------------------------------------------
+// Set constrained values in solution field.
+void
+pylith::bc::DirichletNew::setValues(pylith::topology::Field* solution,
+                                    const double t,
+                                    const double dt)
+{ // setValues
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("setValues(solution="<<solution<<", t="<<t<<", dt="<<dt<<")");
+
+    assert(solution);
+    assert(_auxFields);
+
+    PetscErrorCode err;
+    PetscDM dmSoln = solution->dmMesh();
+    PetscDM dmAux = _auxFields->dmMesh();
+
+    // Get label for constraint.
+    PetscDMLabel dmLabel;
+    err = DMGetLabel(dmSoln, _label.c_str(), &dmLabel); PYLITH_CHECK_ERROR(err);
+
+    // Set auxiliary data
+    err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxFields->localVector()); PYLITH_CHECK_ERROR(err);
+
+    void* context = NULL;
+    const int labelId = 1;
+    const int fieldIndex = solution->subfieldInfo(_field.c_str()).index;
+    assert(solution->localVector());
+    err = DMPlexLabelAddCells(dmSoln, dmLabel); PYLITH_CHECK_ERROR(err);
+    err = DMPlexInsertBoundaryValues_FEM_AuxField_Internal(dmSoln, t, solution->localVector(), fieldIndex, dmLabel, 1, &labelId, _bcKernel, context, solution->localVector()); PYLITH_CHECK_ERROR(err);
+    err = DMPlexLabelClearCells(dmSoln, dmLabel); PYLITH_CHECK_ERROR(err);
+
+    solution->view("SOLUTION"); // :DEBUGGING: TEMPORARY
+
+    PYLITH_METHOD_END;
+} // setValues
+
 
 
 // End of file

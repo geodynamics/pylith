@@ -168,6 +168,17 @@ virtual
 void prestep(const double t,
              const double dt);
 
+/** Set constrained values in solution field.
+ *
+ * @param[out] solution Solution field.
+ * @param[in] t Current time.
+ * @param[in] dt Current time step.
+ */
+virtual
+void setValues(pylith::topology::Field* solution,
+               const double t,
+               const double dt) = 0;
+
 // PROTECTED TYPEDEFS /////////////////////////////////////////////////
 protected:
 
