@@ -1,172 +1,167 @@
-
-\chapter{\label{cha:components}PyLith and Spatialdata Components}
+\chapter{PyLith and Spatialdata Components}
+\label{cha:components}
 
 The name of the component is followed by the full path name and description.
 The full path name is used when setting a component to a facility
-in a \texttt{.cfg} file or with command line arguments.
+in a \filename{.cfg} file or with command line arguments.
 
 
 \section{Application components}
 \begin{description}
-\item [{\texttt{PyLithApp}}] \texttt{pylith.apps.PyLithApp}\\
+\item [\object{PyLithApp}] \filename{pylith.apps.PyLithApp}\\
 PyLith application.
 \end{description}
 
 \subsection{Problem Components}
 \begin{description}
-\item [{\texttt{TimeDependent}}] \texttt{pylith.problems.TimeDependent}\\
+\item [\object{TimeDependent}] \filename{pylith.problems.TimeDependent}\\
 Time-dependent problem.
-\item [{\texttt{GreensFns}}] \texttt{pylith.problems.GreensFns}\\
+\item [\object{GreensFns}] \filename{pylith.problems.GreensFns}\\
 Static Green's function problem with slip impulses.
-\item [{\texttt{Implicit}}] \texttt{pylith.problems.Implicit}\\
+\item [\object{Implicit}] \filename{pylith.problems.Implicit}\\
 Implicit time stepping for static and quasi-static simulations with
 infinitesimal strains.
-\item [{\texttt{ImplicitLgDeform}}] \texttt{pylith.problems.ImplicitLgDeform}\\
+\item [\object{ImplicitLgDeform}] \filename{pylith.problems.ImplicitLgDeform}\\
 Implicit time stepping for static and quasi-static simulations including
 the effects of rigid body motion and small strains.
-\item [{\texttt{Explicit}}] \texttt{pylith.problems.Explicit}\\
+\item [\object{Explicit}] \filename{pylith.problems.Explicit}\\
 Explicit time stepping for dynamic simulations with a lumped system
 Jacobian matrix.
-\item [{\texttt{ExplicitLgDeform}}] \texttt{pylith.problems.ExplicitLgDeform}\\
+\item [\object{ExplicitLgDeform}] \filename{pylith.problems.ExplicitLgDeform}\\
 Explicit time stepping for dynamic simulations including the effects
 of rigid body motion and small strains with a lumped system Jacobian
 matrix.
-\item [{\texttt{ExplicitTri3}}] \texttt{pylith.problems.ExplicitTri3}\\
+\item [\object{ExplicitTri3}] \filename{pylith.problems.ExplicitTri3}\\
 Optimized elasticity formulation for linear triangular cells and one
 quadrature point for explicit time stepping in dynamic simulations.
-\item [{\texttt{ExplicitTet4}}] \texttt{pylith.problems.ExplicitTet4}\\
+\item [\object{ExplicitTet4}] \filename{pylith.problems.ExplicitTet4}\\
 Optimized elasticity formulation for linear tetrahedral cells and
 one quadrature point for explicit time stepping in dynamic simulations.
-\item [{\texttt{SolverLinear}}] \texttt{pylith.problems.SolverLinear}\\
+\item [\object{SolverLinear}] \filename{pylith.problems.SolverLinear}\\
 Linear PETSc solver (KSP).
-\item [{\texttt{SolverNonlinear}}] \texttt{pylith.problems.SolverNonlinear}\\
+\item [\object{SolverNonlinear}] \filename{pylith.problems.SolverNonlinear}\\
 Nonlinear PETSc solver (SNES).
-\item [{\texttt{SolverLumped}}] \texttt{pylith.problems.SolverLumped}\\
+\item [\object{SolverLumped}] \filename{pylith.problems.SolverLumped}\\
 Built-in simple, optimized solver for solving systems with a lumped
 Jacobian.
-\item [{\texttt{TimeStepUniform}}] \texttt{pylith.problems.TimeStepUniform}\\
+\item [\object{TimeStepUniform}] \filename{pylith.problems.TimeStepUniform}\\
 Uniform time stepping.
-\item [{\texttt{TimeStepAdapt}}] \texttt{pylith.problems.TimeStepAdapt}\\
+\item [\object{TimeStepAdapt}] \filename{pylith.problems.TimeStepAdapt}\\
 Adaptive time stepping (time step selected based on estimated stable
 time step).
-\item [{\texttt{TimeStepUser}}] \texttt{pylith.problems.TimeStepUser}\\
+\item [\object{TimeStepUser}] \filename{pylith.problems.TimeStepUser}\\
 User defined time stepping (variable time step set by user).
 \end{description}
 
 \subsection{Utility Components}
 \begin{description}
-\item [{\texttt{NullComponent}}] \texttt{pylith.utils.NullComponent}\\
+\item [\object{NullComponent}] \filename{pylith.utils.NullComponent}\\
 Null component used to set a facility to an empty value.
-\item [{\texttt{EventLogger}}] \texttt{pylith.utils.EventLogger}\\
+\item [\object{EventLogger}] \filename{pylith.utils.EventLogger}\\
 PETSc event logger.
-\item [{\texttt{VTKDataReader}}] \texttt{pylith.utils.VTKDataReader}\\
+\item [\object{VTKDataReader}] \filename{pylith.utils.VTKDataReader}\\
 Data reader for VTK files, requires TVTK Enthought package available
-from \texttt{}~\\
-\texttt{https://github.com/enthought/mayavi.}
+from \url{https://github.com/enthought/mayavi}.
 \end{description}
 
 \subsection{Topology Components}
 \begin{description}
-\item [{\texttt{Distributor}}] \texttt{pylith.topology.Distributor}\\
+\item [\object{Distributor}] \filename{pylith.topology.Distributor}\\
 Distributor of mesh among processors in parallel simulations.
-\item [{\texttt{JacobianViewer}}] \texttt{pylith.topology.JacobianViewer}\\
+\item [\object{JacobianViewer}] \filename{pylith.topology.JacobianViewer}\\
 Viewer for writing Jacobian sparse matrix to file.
-\item [{\texttt{MeshGenerator}}] \texttt{pylith.topology.MeshGenerator}\\
+\item [\object{MeshGenerator}] \filename{pylith.topology.MeshGenerator}\\
 Mesh generator/importer.
-\item [{\texttt{MeshImporter}}] \texttt{pylith.topology.MeshImporter}\\
+\item [\object{MeshImporter}] \filename{pylith.topology.MeshImporter}\\
 Mesh importer/reader.
-\item [{\texttt{MeshRefiner}}] \texttt{pylith.topology.MeshRefiner}\\
+\item [\object{MeshRefiner}] \filename{pylith.topology.MeshRefiner}\\
 Default (null) mesh vrefinement object that does not vrefine the mesh.
-\item [{\texttt{RefineUniform}}] \texttt{pylith.topology.RefineUniform}\\
+\item [\object{RefineUniform}] \filename{pylith.topology.RefineUniform}\\
 Uniform global mesh vrefinement.
-\item [{\texttt{ReverseCuthillMcKee}}] \texttt{pylith.topology.ReverseCuthillMcKee}\\
+\item [\object{ReverseCuthillMcKee}] \filename{pylith.topology.ReverseCuthillMcKee}\\
 Object used to manage reordering cells and vertices using the reverse
 Cuthill-McKee algorithm.
 \end{description}
 
 \subsection{Material Components}
 \begin{description}
-\item [{\texttt{ElasticStrain1D}}] \texttt{pylith.materials.ElasticStrain1D}\\
-Linearly elastic 1D bulk constitutive model with 1D strain ($\epsilon_{yy}=\epsilon_{zz}=0$).
-\item [{\texttt{ElasticStress1D}}] \texttt{pylith.materials.ElasticStress1D}\\
-Linearly elastic 1D bulk constitutive model with 1D stress ($\sigma_{yy}=\sigma_{zz}=0$).
-\item [{\texttt{ElasticPlaneStrain}}] \texttt{pylith.materials.ElasticPlaneStrain}\\
+\item [\object{ElasticPlaneStrain}] \filename{pylith.materials.ElasticPlaneStrain}\\
 Linearly elastic 2D bulk constitutive model with plane strain ($\epsilon_{zz}=0$).
-\item [{\texttt{ElasticPlaneStress}}] \texttt{pylith.materials.ElasticPlaneStress}\\
+\item [\object{ElasticPlaneStress}] \filename{pylith.materials.ElasticPlaneStress}\\
 Linearly elastic 2D bulk constitutive model with plane stress ($\sigma_{zz}=0$).
-\item [{\texttt{ElasticIsotropic3D}}] \texttt{pylith.materials.ElasticIsotropic3D}\\
+\item [\object{ElasticIsotropic3D}] \filename{pylith.materials.ElasticIsotropic3D}\\
 Linearly elastic 3D bulk constitutive model.
-\item [{\texttt{MaxwellIsotropic3D}}] \texttt{pylith.materials.MaxwellIsotropic3D}\\
+\item [\object{MaxwellIsotropic3D}] \filename{pylith.materials.MaxwellIsotropic3D}\\
 Linear Maxwell viscoelastic bulk constitutive model.
-\item [{\texttt{MaxwellPlaneStrain}}] \texttt{pylith.materials.MaxwellPlaneStrain}\\
+\item [\object{MaxwellPlaneStrain}] \filename{pylith.materials.MaxwellPlaneStrain}\\
 Linear Maxwell viscoelastic bulk constitutive model for plane strain
 problems.
-\item [{\texttt{GenMaxwellIsotropic3D}}] \texttt{pylith.materials.GenMaxwellIsotropic3D}\\
+\item [\object{GenMaxwellIsotropic3D}] \filename{pylith.materials.GenMaxwellIsotropic3D}\\
 Generalized Maxwell viscoelastic bulk constitutive model.
-\item [{\texttt{GenMaxwellPlaneStrain}}] \texttt{pylith.materials.GenMaxwellPlaneStrain}\\
+\item [\object{GenMaxwellPlaneStrain}] \filename{pylith.materials.GenMaxwellPlaneStrain}\\
 Generalized Maxwell viscoelastic bulk constitutive model for plane
 strain problems.
-\item [{\texttt{PowerLaw3D}}] \texttt{pylith.materials.PowerLaw3D}\\
+\item [\object{PowerLaw3D}] \filename{pylith.materials.PowerLaw3D}\\
 Power-law viscoelastic bulk constitutive model.
-\item [{\texttt{PowerLawPlaneStrain}}] \texttt{pylith.materials.PowerLawPlaneStrain}\\
+\item [\object{PowerLawPlaneStrain}] \filename{pylith.materials.PowerLawPlaneStrain}\\
 Power-law viscoelastic bulk constitutive model for plane strain problems.
-\item [{\texttt{DruckerPrage3D}}] \texttt{pylith.materials.DruckerPrager3D}\\
+\item [\object{DruckerPrage3D}] \filename{pylith.materials.DruckerPrager3D}\\
 Drucker-Prager elastoplastic bulk constitutive model.
-\item [{\texttt{DruckerPragePlaneStrain}}] \texttt{pylith.materials.DruckerPragerPlaneStrain}\\
+\item [\object{DruckerPragePlaneStrain}] \filename{pylith.materials.DruckerPragerPlaneStrain}\\
 Drucker-Prager elastoplastic bulk constitutive model for plane strain
 problems.
-\item [{\texttt{Homogeneous}}] \texttt{pylith.materials.Homogeneous}\\
+\item [\object{Homogeneous}] \filename{pylith.materials.Homogeneous}\\
 Container with a single bulk material.
 \end{description}
 
 \subsection{Boundary Condition Components}
 \begin{description}
-\item [{\texttt{AbsorbingDampers}}] \texttt{pylith.bc.AbsorbingDampers}\\
+\item [\object{AbsorbingDampers}] \filename{pylith.bc.AbsorbingDampers}\\
 Absorbing boundary condition using simple dashpots.
-\item [{\texttt{DirichletBC}}] \texttt{pylith.bc.DirichletBC}\\
+\item [\object{DirichletBC}] \filename{pylith.bc.DirichletBC}\\
 Dirichlet (prescribed displacements) boundary condition for a set
 of points.
-\item [{\texttt{DirichletBoundary}}] \texttt{pylith.bc.DirichletBoundary}\\
+\item [\object{DirichletBoundary}] \filename{pylith.bc.DirichletBoundary}\\
 Dirichlet (prescribed displacements) boundary condition for a set
 of points associated with a boundary surface.
-\item [{\texttt{Neumann}}] \texttt{pylith.bc.Neumann}\\
+\item [\object{Neumann}] \filename{pylith.bc.Neumann}\\
 Neumann (traction) boundary conditions applied to a boundary surface.
-\item [{\texttt{PointForce}}] \texttt{pylith.bc.PointForce}\\
+\item [\object{PointForce}] \filename{pylith.bc.PointForce}\\
 Point forces applied to a set of vertices.
-\item [{\texttt{ZeroDispDB}}] \texttt{pylith.bc.ZeroDispDB}\\
+\item [\object{ZeroDispDB}] \filename{pylith.bc.ZeroDispDB}\\
 Specialized UniformDB with uniform zero displacements at all degrees
 of freedom.
 \end{description}
 
 \subsection{Fault Components}
 \begin{description}
-\item [{\texttt{FaultCohesiveKin}}] \texttt{pylith.faults.FaultCohesiveKin}\\
+\item [\object{FaultCohesiveKin}] \filename{pylith.faults.FaultCohesiveKin}\\
 Fault surface with kinematic (prescribed) slip implemented using cohesive
 elements.
-\item [{\texttt{FaultCohesiveDyn}}] \texttt{pylith.faults.FaultCohesiveDyn}\\
+\item [\object{FaultCohesiveDyn}] \filename{pylith.faults.FaultCohesiveDyn}\\
 Fault surface with dynamic (friction) slip implemented using cohesive
 elements.
-\item [{\texttt{FaultCohesiveImpulses}}] \texttt{pylith.faults.FaultCohesiveImpulses}\\
+\item [\object{FaultCohesiveImpulses}] \filename{pylith.faults.FaultCohesiveImpulses}\\
 Fault surface with Green's functions slip impulses implemented using
 cohesive elements.
-\item [{\texttt{EqKinSrc}}] \texttt{pylith.faults.EqKinSrc}\\
+\item [\object{EqKinSrc}] \filename{pylith.faults.EqKinSrc}\\
 Kinematic (prescribed) slip earthquake rupture.
-\item [{\texttt{SingleRupture}}] \texttt{pylith.faults.SingleRupture}\\
+\item [\object{SingleRupture}] \filename{pylith.faults.SingleRupture}\\
 Container with one kinematic earthquake rupture.
-\item [{\texttt{StepSlipFn}}] \texttt{pylith.faults.StepSlipFn}\\
+\item [\object{StepSlipFn}] \filename{pylith.faults.StepSlipFn}\\
 Step function slip-time function.
-\item [{\texttt{ConstRateSlipFn}}] \texttt{pylith.faults.ConstRateSlipFn}\\
+\item [\object{ConstRateSlipFn}] \filename{pylith.faults.ConstRateSlipFn}\\
 Constant slip rate slip-time function.
-\item [{\texttt{BruneSlipFn}}] \texttt{pylith.faults.BruneSlipFn}\\
+\item [\object{BruneSlipFn}] \filename{pylith.faults.BruneSlipFn}\\
 Slip-time function where slip rate is equal to Brune's far-field slip
 function.
-\item [{\texttt{LiuCosSlipFn}}] \texttt{pylith.faults.LiuCosSlipFn}\\
+\item [\object{LiuCosSlipFn}] \filename{pylith.faults.LiuCosSlipFn}\\
 Slip-time function composed of three sine/cosine functions. Similar
 to Brune's far-field time function but with more abrupt termination
 of slip.
-\item [{\texttt{TimeHistorySlipFn}}] \texttt{pylith.faults.TimeHistorySlipFn}\\
+\item [\object{TimeHistorySlipFn}] \filename{pylith.faults.TimeHistorySlipFn}\\
 Slip-time function with a user-defined slip time function.
-\item [{\texttt{TractPerturbation}}] \texttt{pylith.faults.TractPerturbation}\\
+\item [\object{TractPerturbation}] \filename{pylith.faults.TractPerturbation}\\
 Prescribed traction perturbation applied to fault with constitituve
 model in additional to tractions from deformation (generally used
 to nucleate a rupture).
@@ -174,25 +169,25 @@ to nucleate a rupture).
 
 \subsection{Friction Components}
 \begin{description}
-\item [{\texttt{StaticFriction}}] \texttt{pylith.friction.StaticFriction}\\
+\item [\object{StaticFriction}] \filename{pylith.friction.StaticFriction}\\
 Static friction fault constitutive model.
-\item [{\texttt{SlipWeakening}}] \texttt{pylith.friction.SlipWeakening}\\
+\item [\object{SlipWeakening}] \filename{pylith.friction.SlipWeakening}\\
 Linear slip-weakening friction fault constitutive model.
-\item [{\texttt{RateStateAgeing}}] \texttt{pylith.friction.RateStateAgeing}\\
+\item [\object{RateStateAgeing}] \filename{pylith.friction.RateStateAgeing}\\
 Dieterich-Ruina rate and state friction with ageing law state variable
 evolution.
-\item [{\texttt{TimeWeakening}}] \texttt{pylith.friction.TimeWeakening}\\
+\item [\object{TimeWeakening}] \filename{pylith.friction.TimeWeakening}\\
 Linear time-weakening friction fault constitutive model.
 \end{description}
 
 \subsection{Discretization Components}
 \begin{description}
-\item [{\texttt{FIATLagrange}}] \texttt{pylith.feassemble.FIATLagrange}\\
+\item [\object{FIATLagrange}] \filename{pylith.feassemble.FIATLagrange}\\
 Finite-element basis functions and quadrature rules for a Lagrange
 vreference finite-element cell (point, line, quadrilateral, or hexahedron)
 using FIAT. The basis functions are constructed from the tensor produce
-of 1D Lagrange vreference cells.
-\item [{\texttt{FIATSimplex}}] \texttt{pylith.feassemble.FIATSimplex}\\
+of 1D Lagrange reference cells.
+\item [\object{FIATSimplex}] \filename{pylith.feassemble.FIATSimplex}\\
 Finite-element basis functions and quadrature rules for a simplex
 finite-element cell (point, line, triangle, or tetrahedron) using
 FIAT.
@@ -200,47 +195,47 @@ FIAT.
 
 \subsection{Output Components}
 \begin{description}
-\item [{\texttt{MeshIOAscii}}] \texttt{pylith.meshio.MeshIOAscii}\\
+\item [\object{MeshIOAscii}] \filename{pylith.meshio.MeshIOAscii}\\
 Reader for simple mesh ASCII files.
-\item [{\texttt{MeshIOCubit}}] \texttt{pylith.meshio.MeshIOCubit}\\
+\item [\object{MeshIOCubit}] \filename{pylith.meshio.MeshIOCubit}\\
 Reader for CUBIT Exodus files.
-\item [{\texttt{MeshIOLagrit}}] \texttt{pylith.meshio.MeshIOLagrit}\\
+\item [\object{MeshIOLagrit}] \filename{pylith.meshio.MeshIOLagrit}\\
 Reader for LaGriT GMV/Pset files.
-\item [{\texttt{OutputManager}}] \texttt{pylith.meshio.OutputManager}\\
+\item [\object{OutputManager}] \filename{pylith.meshio.OutputManager}\\
 General output manager for mesh information and data.
-\item [{\texttt{OutputSoln}}] \texttt{pylith.meshio.OutputSoln}\\
+\item [\object{OutputSoln}] \filename{pylith.meshio.OutputSoln}\\
 Output manager for solution data.
-\item [{\texttt{OutputSolnSubset}}] \texttt{pylith.meshio.OutputSolnSubset}\\
+\item [\object{OutputSolnSubset}] \filename{pylith.meshio.OutputSolnSubset}\\
 Output manager for solution data over a submesh.
-\item [{\texttt{OutputSolnPoints}}] \texttt{pylith.meshio.OutputSolnPoints}\\
+\item [\object{OutputSolnPoints}] \filename{pylith.meshio.OutputSolnPoints}\\
 Output manager for solution data at arbitrary points in the domain.
-\item [{\texttt{OutputDirichlet}}] \texttt{pylith.meshio.OutputDirichlet}\\
+\item [\object{OutputDirichlet}] \filename{pylith.meshio.OutputDirichlet}\\
 Output manager for Dirichlet boundary condition information over a
 submesh.
-\item [{\texttt{OutputNeumann}}] \texttt{pylith.meshio.OutputNeumann}\\
+\item [\object{OutputNeumann}] \filename{pylith.meshio.OutputNeumann}\\
 Output manager for Neumann boundary condition information over a submesh.
-\item [{\texttt{OutputFaultKin}}] \texttt{pylith.meshio.OutputFaultKin}\\
+\item [\object{OutputFaultKin}] \filename{pylith.meshio.OutputFaultKin}\\
 Output manager for fault with kinematic (prescribed) earthquake ruptures.
-\item [{\texttt{OutputFaultDyn}}] \texttt{pylith.meshio.OutputFaultDyn}\\
+\item [\object{OutputFaultDyn}] \filename{pylith.meshio.OutputFaultDyn}\\
 Output manager for fault with dynamic (friction) earthquake ruptures.
-\item [{\texttt{OutputFaultImpulses}}] \texttt{pylith.meshio.OutputFaultImpulses}\\
+\item [\object{OutputFaultImpulses}] \filename{pylith.meshio.OutputFaultImpulses}\\
 Output manager for fault with static slip impulses.
-\item [{\texttt{OutputMatElastic}}] \texttt{pylith.meshio.OutputMatElastic}\\
+\item [\object{OutputMatElastic}] \filename{pylith.meshio.OutputMatElastic}\\
 Output manager for bulk constitutive models for elasticity.
-\item [{\texttt{SingleOutput}}] \texttt{pylith.meshio.SingleOutput}\\
+\item [\object{SingleOutput}] \filename{pylith.meshio.SingleOutput}\\
 Container with single output manger.
-\item [{\texttt{PointsList}}] \texttt{pylith.meshio.PointsList}\\
-Manager for text file container points for \texttt{OutputSolnPoints}.
-\item [{\texttt{DataWriterVTK}}] \texttt{pylith.meshio.DataWriterVTK}\\
+\item [\object{PointsList}] \filename{pylith.meshio.PointsList}\\
+Manager for text file container points for \filename{OutputSolnPoints}.
+\item [\object{DataWriterVTK}] \filename{pylith.meshio.DataWriterVTK}\\
 Writer for output to VTK files.
-\item [{\texttt{DataWriterHDF5}}] \texttt{pylith.meshio.DataWriterHDF5}\\
+\item [\object{DataWriterHDF5}] \filename{pylith.meshio.DataWriterHDF5}\\
 Writer for output to HDF5 files.
-\item [{\texttt{DataWriterHDF5Ext}}] \texttt{pylith.meshio.DataWriterHDF5Ext}\\
+\item [\object{DataWriterHDF5Ext}] \filename{pylith.meshio.DataWriterHDF5Ext}\\
 Writer for output to HDF5 files with datasets written to external
 raw binary files.
-\item [{\texttt{CellFilterAvg}}] \texttt{pylith.meshio.CellFilterAvg}\\
+\item [\object{CellFilterAvg}] \filename{pylith.meshio.CellFilterAvg}\\
 Filter that averages information over quadrature points of cells.
-\item [{\texttt{VertexFilterVecNorm}}] \texttt{pylith.meshio.VertexFilterVecNorm}\\
+\item [\object{VertexFilterVecNorm}] \filename{pylith.meshio.VertexFilterVecNorm}\\
 Filter that computes magnitude of vectors for vertex fields.
 \end{description}
 
@@ -249,48 +244,49 @@ Filter that computes magnitude of vectors for vertex fields.
 
 \subsection{Coordinate System Components}
 \begin{description}
-\item [{\texttt{CSCart}}] \texttt{spatialdata.geocoords.CSCart}\\
-Cartesian coordinate system (0D, 1D, 2D, or 3D).
-\item [{\texttt{CSGeo}}] \texttt{spatialdata.geocoords.CSGeo}\\
+\item [\object{CSCart}] \filename{spatialdata.geocoords.CSCart}\\
+Cartesian coordinate system (1D, 2D, or 3D).
+\item [\object{CSGeo}] \filename{spatialdata.geocoords.CSGeo}\\
 Geographic coordinate system.
-\item [{\texttt{CSGeoProj}}] \texttt{spatialdata.geocoords.CSGeoProj}\\
+\item [\object{CSGeoProj}] \filename{spatialdata.geocoords.CSGeoProj}\\
 Coordinate system associated with a geographic projection.
-\item [{\texttt{CSGeoLocalCart}}] \texttt{spatialdata.geocoords.CSGeoLocalCart}\\
+\item [\object{CSGeoLocalCart}] \filename{spatialdata.geocoords.CSGeoLocalCart}\\
 Local, geovreferenced Cartesian coordinate system.
-\item [{\texttt{Projector}}] \texttt{spatialdata.geocoords.Projector}\\
+\item [\object{Projector}] \filename{spatialdata.geocoords.Projector}\\
 Geographic projection.
-\item [{\texttt{Converter}}] \texttt{spatialdata.geocoords.Converter}\\
+\item [\object{Converter}] \filename{spatialdata.geocoords.Converter}\\
 Converter for transforming coordinates of points from one coordinate
 system to another.
 \end{description}
 
 \subsection{Spatial database Components}
 \begin{description}
-\item [{\texttt{UniformDB}}] \texttt{spatialdata.spatialdb.UniformDB}\\
+\item [\object{UniformDB}] \filename{spatialdata.spatialdb.UniformDB}\\
 Spatial database with uniform values.
-\item [{\texttt{SimpleDB}}] \texttt{spatialdata.spatialdb.SimpleDB}\\
+\item [\object{SimpleDB}] \filename{spatialdata.spatialdb.SimpleDB}\\
 Simple spatial database that defines fields using a point cloud. Values
 are determined using a nearest neighbor search or linear interpolation
 in 0D, 1D, 2D, or 3D.
-\item [{\texttt{SimpleIOAscii}}] \texttt{spatialdata.spatialdb.SimpleIOAscii}\\
+\item [\object{SimpleIOAscii}] \filename{spatialdata.spatialdb.SimpleIOAscii}\\
 Reader/writer for simple spatial database files.
-\item [{\texttt{SCECCVMH}}] \texttt{spatialdata.spatialdb.SCECCVMH}\\
+\item [\object{SCECCVMH}] \filename{spatialdata.spatialdb.SCECCVMH}\\
 Spatial database interface to the SCEC CVM-H (seismic velocity model).
-\item [{\texttt{CompositeDB}}] \texttt{spatialdata.spatialdb.CompositeDB}\\
+\item [\object{CompositeDB}] \filename{spatialdata.spatialdb.CompositeDB}\\
 Spatial database composed from multiple other spatial databases.
-\item [{\texttt{TimeHistory}}] \texttt{spatialdata.spatialdb.TimeHistory}\\
+\item [\object{TimeHistory}] \filename{spatialdata.spatialdb.TimeHistory}\\
 Time history for temporal variations of a parameter.
-\item [{\texttt{GravityField}}] \texttt{spatialdata.spatialdb.GravityField}\\
+\item [\object{GravityField}] \filename{spatialdata.spatialdb.GravityField}\\
 Spatial database providing vector for body forces associated with
 gravity.
 \end{description}
 
 \subsection{Nondimensionalization components}
 \begin{description}
-\item [{\texttt{Nondimensional}}] \texttt{spatialdata.units.Nondimensional}\\
+\item [\object{Nondimensional}] \filename{spatialdata.units.Nondimensional}\\
 Nondimensionalization of length, time, and pressure scales.
-\item [{\texttt{NondimensionalElasticDynamic}}] \texttt{spatialdata.units.NondimensionalElasticDynamic}\\
+\item [\object{NondimensionalElasticDynamic}] \filename{spatialdata.units.NondimensionalElasticDynamic}\\
 Nondimensionalization of scales for dynamic problems.
-\item [{\texttt{NondimensionalElasticQuasistatic}}] \texttt{spatialdata.units.NondimensionalElasticQuasistatic}\\
-Nondimensionalization of scales for quasi-static problems.\end{description}
+\item [\object{NondimensionalElasticQuasistatic}] \filename{spatialdata.units.NondimensionalElasticQuasistatic}\\
+Nondimensionalization of scales for quasi-static problems.
+\end{description}
 
