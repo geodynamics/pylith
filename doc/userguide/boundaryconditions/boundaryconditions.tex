@@ -1,7 +1,5 @@
-
-\chapter{\label{cha:boundary:interface:conditions}Boundary and Interface
-Conditions}
-
+\chapter{Boundary and Interface Conditions}
+\label{cha:boundary:interface:conditions}
 
 \section{Assigning Boundary Conditions}
 
@@ -9,62 +7,59 @@ There are four basic steps in assigning a specific boundary condition
 to a portion of the domain.
 \begin{enumerate}
 \item Create sets of vertices in the mesh generation process for each boundary
-condition.
+  condition.
 \item Define boundary condition groups corresponding to the vertex sets.
-\item Set the parameters for each boundary condition group using \texttt{.cfg}
-or \texttt{.pml} files and/or command line arguments.
-\item Specify the spatial variation in parameters for the boundary condition
-using a spatial database file.
+\item Set the parameters for each boundary condition group using
+  \filename{.cfg} files and/or command line
+  arguments.
+\item Specify the spatial variation in parameters for the boundary
+  condition using a spatial database file.
 \end{enumerate}
 
 \subsection{Creating Sets of Vertices}
 
 The procedure for creating sets of vertices differs depending on the
-mesh generator. For meshes specified using the PyLith mesh ASCII format,
-the sets of vertices are specified using groups (see Appendix \vref{sec:format:MeshIOAscii}).
-In CUBIT the groups of vertices are created using nodesets. Similarly,
-in LaGriT, psets are used. Note that we chose to associate boundary
-conditions with groups of vertices because nearly every mesh generation
-package supports associating a string or integer with groups of vertices.
-Note also that we currently associate boundary conditions with string
-identifiers, so even if the mesh generator uses integers, the name
-is specified as the digits of the integer value. Finally, note that
-every vertex set that ultimately is associated with a boundary condition
-on a cell face (e.g., Neumann boundary conditions and fault interface
+mesh generator. For meshes specified using the PyLith mesh ASCII
+format, the sets of vertices are specified using groups (see Appendix
+\vref{sec:format:MeshIOAscii}).  In CUBIT/Trelis the groups of
+vertices are created using nodesets. Similarly, in LaGriT, psets are
+used. Note that we chose to associate boundary conditions with groups
+of vertices because nearly every mesh generation package supports
+associating a string or integer with groups of vertices.  Note also
+that we currently associate boundary conditions with string
+identifiers, so even if the mesh generator uses integers, the name is
+specified as the digits of the integer value. Finally, note that every
+vertex set that ultimately is associated with a boundary condition on
+a cell face (e.g., Neumann boundary conditions and fault interface
 conditions) must correspond to a simply-connected surface.
-
 
 \subsection{Arrays of Boundary Condition Components}
 
 A dynamic array of boundary condition components associates a name
 (string) with each boundary condition. This dynamic array of boundary
-conditions replaces the boundary condition container in PyLith 1.0.
+conditions replaces the boundary condition container in PyLith v1.0.
 User-defined containers are no longer necessary, and the predefined
 containers are no longer available (or necessary). The default boundary
-condition for each component in the array is the DirichletPoints object.
+condition for each component in the array is the \object{DirichletBC} object.
 Other boundary conditions can be bound to the named items in the array
-via a \texttt{.cfg} file, \texttt{.pml} file, or the command line.
+via a \filename{.cfg} file, \filename{.pml} file, or the command line.
 The parameters for the boundary condition are set using the name of
 the boundary condition. An example of setting the array of boundary
 condition components and changing the types of boundary conditions
 in a \texttt{.cfg} file:
-\begin{lyxcode}
-{[}pylithapp.problem{]}
+\begin{cfg}
+<h>[pylithapp.problem]</h>
+<p>bc</p> = [x_neg, x_pos, y_pos, z_neg] ; Array of boundary conditions
 
-bc~=~{[}x\_neg,x\_pos,y\_pos,z\_neg{]}~;~Array~of~boundary~conditions
+# Default boundary condition is DirichletBC
+# Keep default value for bc.x_neg
+<f>bc.x_pos</f> = pylith.bc.DirichletBoundary ; change BC type to DirichletBoundary
+<f>bc.y_pos</f> = pylith.bc.AbsorbingDampers ; change BC type to AbsorbingDampers
+<f>bc.z_neg</f> = pylith.bc.Neumann ; change BC type to Neumann (traction)
+\end{cfg}
 
-\#~Default~boundary~condition~is~DirichletPoints
-
-\#~Keep~default~value~for~bc.x\_neg
-
-bc.x\_pos~=~pylith.bc.DirichletBoundary~;~change~BC~type~to~DirichletBoundary
-
-bc.y\_pos~=~pylith.bc.AbsorbingDampers~;~change~BC~type~to~AbsorbingDampers
-
-bc.z\_neg~=~pylith.bc.Neumann~;~change~BC~type~to~Neumann~(traction)
-\end{lyxcode}
-
-\section{\label{sec:Time:Dependent:BC}Time-Dependent Boundary Conditions}
+\section{Time-Dependent Boundary Conditions}
+\label{sec:boundary:conditions:time:dependent}
 
 Several boundary conditions use a common formulation for the spatial
 and temporal variation of the boundary condition parameters,
@@ -85,16 +80,16 @@ value (along with the corresponding onset time), or just the modulation
 in amplitude (along with the corresponding temporal variation and
 onset time), or any combination of the three. The facilities associated
 with this formulation are:
-\begin{description}
-\item [{db\_initial}] Spatial database specifying the spatial variation
-in the initial value (default is none).
-\item [{db\_rate}] Spatial database specifying rate of change in the value
-(default is none).
-\item [{db\_change}] Spatial database specifying the amplitude of the temporal
-modulation (default is none).
-\item [{th\_change}] Time history database specifying the temporal change
-in amplitude (default is none).
-\end{description}
+\begin{inventory}
+\facilityitem{db\_initial}{Spatial database specifying the spatial variation
+in the initial value (default is none).}
+\facilityitem{db\_rate}{Spatial database specifying rate of change in the value
+(default is none).}
+\facilityitem{db\_change}{Spatial database specifying the amplitude of the temporal
+modulation (default is none).}
+\facilityitem{th\_change}{Time history database specifying the temporal change
+in amplitude (default is none).}
+\end{inventory}
 
 \subsection{Dirichlet Boundary Conditions}
 
@@ -102,121 +97,88 @@ Dirichlet boundary conditions in PyLith prescribe the displacement
 of a subset of the vertices of the finite-element mesh. While Dirichlet
 boundary conditions can be applied to any vertex, usually they are
 applied to vertices on the lateral and bottom boundaries of the domain.
-There are two types of Dirichlet boundary conditions, DirichletBC
-and DirichletBoundary. Both provide identical constraints on the solution,
-but DirichletBoundary is limited to vertices of a simply-connected
+There are two types of Dirichlet boundary conditions, \object{DirichletBC}
+and \object{DirichletBoundary}. Both provide identical constraints on the solution,
+but \object{DirichletBoundary} is limited to vertices of a simply-connected
 surface, which allows diagnostic output of the prescribed displacements.
-DirichletBC can be applied to a set of unconnected vertices.
+\object{DirichletBC} can be applied to a set of unconnected vertices.
 
-
-\subsubsection{Dirichlet Boundary Condition Parameters}
-
-The properties and components common to both the DirichletPoints and
-DirichletBoundary boundary conditions are:
-\begin{description}
-\item [{label}] Label of the group of vertices associated with the boundary
-condition.
-\item [{bc\_dof}] Array of degrees of freedom to be fixed (first degree
-of freedom is 0).
-\end{description}
-DirichletBoundary contains an additional component:
-\begin{description}
-\item [{output}] Manager for output of displacements on boundary with specified
-displacements.
-\end{description}
+The properties and components common to both the \object{DirichletBC} and
+\object{DirichletBoundary} boundary conditions are:
+\begin{inventory}
+\propertyitem{label}{Label of the group of vertices associated with the boundary
+condition.}
+\propertyitem{bc\_dof}{Array of degrees of freedom to be fixed (first degree
+of freedom is 0).}
+\end{inventory}
+\object{DirichletBoundary} contains an additional component:
+\begin{inventory}
+\facilityitem{output}{Manager for output of displacements on boundary with specified
+displacements.}
+\end{inventory}
 By default the output manager does not output any information. The
 specified displacements and velocities can be output by including
-``displacements'' and ``velocities'' in the output manager's \texttt{vertex\_info\_fields}
+``displacement'' and ``velocity'' in the output manager's \property{vertex\_info\_fields}
 array parameter. An example of setting the Dirichlet boundary condition
-parameters in a \texttt{.cfg} file is:
-\begin{lyxcode}
-{[}pylithapp.problem{]}
+parameters in a \filename{.cfg} file is:
+\begin{cfg}
+<h>[pylithapp.problem]</h>
+<p>bc</p> = [mybc]
 
-bc~=~{[}mybc{]}~\\
-~\\
-{[}pylithapp.problem.bc.mybc{]}
-
-label~=~group~A~
-
-bc\_dof~=~{[}2{]}~;~fixed~displacement~in~z~direction
-
-db\_initial~=~spatialdata.spatialdb.SimpleDB
-
-db\_initial.iohandler.filename~=~disp\_A.spatialdb
-
-db\_initial.query\_type~=~nearest~;~change~query~type~to~nearest~point~algorithm
-
-db\_rate~=~spatialdata.spatialdb.UniformDB
-
-db\_rate.values~=~{[}displacement-rate-z{]}
-
-db\_rate.data~=~{[}1.0e-06{*}m/s{]}~;~velocity~is~1.0e-06~m/s
-\end{lyxcode}
+<h>[pylithapp.problem.bc.mybc]</h>
+<p>label</p> = group A 
+<p>bc_dof</p> = [2] ; fixed displacement in z direction
+<f>db_initial</f> = spatialdata.spatialdb.SimpleDB
+<p>db_initial.iohandler.filename</p> = disp_A.spatialdb
+<p>db_initial.query_type</p> = nearest ; change query type to nearest point algorithm
+<f>db_rate</f> = spatialdata.spatialdb.UniformDB
+<p>db_rate.values</p> = [displacement-rate-z]
+<p>db_rate.data</p> = [1.0e-06*m/s] ; velocity is 1.0e-06 m/s
+\end{cfg}
 We have created an array with one boundary condition, mybc. The group
-of vertices associated with the boundary condition is group A. For
-the database associated with the constant displacement, we use a SimpleDB.
-We set the filename and query type for the database. For the rate
-of change of values, we use a UniformDB and specify the velocity in
-the z-direction to be 1.0e-06 m/s. See Section \vref{sec:spatial:databases}
-for a discussion of the different types of spatial databases available.
+of vertices associated with the boundary condition is group A. For the
+database associated with the constant displacement, we use a
+\object{SimpleDB}.  We set the filename and query type for the
+database. For the rate of change of values, we use a UniformDB and
+specify the velocity in the z-direction to be 1.0e-06 m/s. See Section
+\vref{sec:spatial:databases} for a discussion of the different types
+of spatial databases available.
 
-\noindent \begin{center}
-\begin{table}[H]
-\noindent \centering{}\caption{\label{tab:dirichlet:output}Fields available in output of DirichletBoundary
-boundary condition information.}
-\medskip{}
-\begin{tabular}{|c|c|>{\centering}p{3in}|}
-\hline 
-\textbf{Field Type} & \textbf{Field} & \textbf{Description}\tabularnewline
-\hline 
-\hline 
-\texttt{vertex\_info\_fields} & \texttt{displacement\_initial} & Initial displacement field in global coordinate system\tabularnewline
-\cline{2-3} 
- & \texttt{velocity} & Rate of change of displacement field in global coordinate system\tabularnewline
-\cline{2-3} 
- & \texttt{velocity\_start\_time} & Onset time in seconds for rate of change in displacement field\tabularnewline
-\cline{2-3} 
- & \texttt{displacement\_change} & Amplitude of change in displacement field in global coordinate system\tabularnewline
-\cline{2-3} 
- & \texttt{change\_start\_time} & Onset time in seconds for the amplitude change in the displacement
-field\tabularnewline
-\hline 
-\end{tabular}
+\begin{table}[htbp]
+  \caption{Fields available in output of \object{DirichletBoundary} boundary condition information.}
+  \label{tab:dirichlet:output}
+  \begin{tabular}{llp{3in}}
+    \textbf{Field Type} & \textbf{Field} & \textbf{Description} \\
+    \hline 
+    \property{vertex\_info\_fields} & \texttt{displacement\_initial} & Initial displacement field in global coordinate system\\
+    & \texttt{velocity} & Rate of change of displacement field in global coordinate system\\
+    & \texttt{velocity\_start\_time} & Onset time in seconds for rate of change in displacement field\\
+    & \texttt{displacement\_change} & Amplitude of change in displacement field in global coordinate system\\
+    & \texttt{change\_start\_time} & Onset time in seconds for the amplitude change in the displacement field\\
+    \hline 
+  \end{tabular}
 \end{table}
-
-\par\end{center}
-
 
 \subsubsection{Dirichlet Boundary Condition Spatial Database Files}
 
 The spatial database files for the Dirichlet boundary condition specify
 the fixed displacements. The spatial database file may contain displacements
 at more degrees of freedom than those specified in the Dirichlet boundary
-condition settings using the \texttt{bc\_dof} setting. Only those
-listed in \texttt{bc\_dof} will be used. This permits using the same
+condition settings using the \property{bc\_dof} setting. Only those
+listed in \property{bc\_dof} will be used. This permits using the same
 spatial database file for multiple Dirichlet boundary conditions with
 the same displacement field.
 
-\noindent \begin{center}
-\begin{table}[H]
-\noindent \centering{}\caption{Values in the spatial databases used for Dirichlet boundary conditions.}
-\medskip{}
-\begin{tabular}{|c|>{\centering}p{4in}|}
-\hline 
-\textbf{Spatial database} & \textbf{Name in Spatial Database}\tabularnewline
-\hline 
-\hline 
-\texttt{db\_initial} & \texttt{displacement-x, displacement-y, displacement-z}\tabularnewline
-\hline 
-\texttt{db\_rate} & \texttt{displacement-rate-x, displacement-rate-y, displacement-rate-z,
-rate-start-time}\tabularnewline
-\hline 
-\texttt{db\_change} & \texttt{displacement-x, displacement-y, displacement-z, change-start-time}\tabularnewline
-\hline 
-\end{tabular}
+\begin{table}[htbp]
+  \caption{Values in the spatial databases used for Dirichlet boundary conditions.}
+  \begin{tabular}{lp{4in}}
+    \textbf{Spatial database} & \textbf{Name in Spatial Database}\\
+    \facility{db\_initial} & \texttt{displacement-x, displacement-y, displacement-z}\\
+    \facility{db\_rate} & \texttt{displacement-rate-x, displacement-rate-y, displacement-rate-z, rate-start-time}\\
+    \facility{db\_change} & \texttt{displacement-x, displacement-y, displacement-z, change-start-time}\\
+    \hline 
+  \end{tabular}
 \end{table}
-
-\par\end{center}
 
 
 \subsection{Neumann Boundary Conditions}
@@ -229,100 +191,75 @@ dimension that is one less than the dimension of the finite-element
 mesh. Traction values are computed at the integration points of each
 cell on the surface, using values from a spatial database. The tractions
 are integrated over each cell and assembled to obtain the forces applied
-at the vertices. See Section \vref{sub:Tutorial-twoquad4-traction}
+at the vertices. See Section \vref{sec:examples:twoquad4-traction}
 for a tutorial that uses Neumann boundary conditions.
-\begin{quote}
-\textbf{\textcolor{red}{Warning:}}\textbf{ }In the small (finite)
-strain formulation, we assume that the normal and shear tractions
-are prescribed in terms of the undeformed configuration as described
-in section \vref{sec:Small-Strain-Formulation}.
-\end{quote}
 
-\subsubsection{Neumann Boundary Condition Parameters}
+\important{In the small (finite) strain formulation, we assume that
+  the normal and shear tractions are prescribed in terms of the
+  undeformed configuration as described in section
+  \vref{sec:small:strain:formulation}.}
 
 The Neumann boundary condition properties and components are:
-\begin{description}
-\item [{label}] Name of the group of vertices defining the mesh boundary
-for the Neumann boundary condition.
-\item [{up\_dir}] This is a 3-vector that provides a hint for the direction
+\begin{inventory}
+\propertyitem{label}{Name of the group of vertices defining the mesh boundary
+for the Neumann boundary condition.}
+\propertyitem{up\_dir}{This is a 3-vector that provides a hint for the direction
 perpendicular to the horizontal tangent direction that is not collinear
 with the direction normal to the surface. The default value is (0,0,1),
 which assumes that the z-axis is positive upward. This vector is only
 needed for three-dimensional problems where the positive upward direction
-differs from the default.
-\item [{output}] The output manager associated with diagnostic output (traction
-vector).
-\item [{quadrature}] The quadrature object to be used for numerical integration.
+differs from the default.}
+\facilityitem{output}{The output manager associated with diagnostic output (traction
+vector).}
+\facilityitem{quadrature}{The quadrature object to be used for numerical integration.
 Since we are integrating over a surface that is one dimension lower
 than the problem domain, this would typically be set to something
-like \texttt{Quadrature2Din3D} (for a three-dimensional problem).
-\end{description}
+like \texttt{Quadrature2Din3D} (for a three-dimensional problem).}
+\end{inventory}
 By default the output manager does not output any information. The
 specified tractions can be output in global coordinates by including
-``tractions'' in the output manager's \texttt{cell\_info\_fields}
-array parameter. An example of setting these parameters in a \texttt{.cfg}
-file is:
-\begin{lyxcode}
-{[}pylithapp.timedependent{]}
+``tractions'' in the output manager's \property{cell\_info\_fields}
+array parameter. An example of setting these parameters in a
+\filename{.cfg} file is:
+\begin{cfg}
+<h>pylithapp.timedependent]</h>
+<p>bc</p> = [x_neg, x_pos, y_neg]
+<f>bc.x_pos</f> = pylith.bc.Neumann ; Change BC type to Neumann
 
-bc~=~{[}x\_neg,x\_pos,y\_neg{]}
-
-bc.x\_pos~=~pylith.bc.Neumann~;~Change~BC~type~to~Neumann
-
-~
-
-{[}pylithapp.timedependent.bc.x\_pos{]}
-
-label~=~x\_pos~;~Name~of~group~of~vertices~for~+x~boundary
-
-db\_initial~=~spatialdata.spatialdb.SimpleDB
-
-db\_initial.label~=~Neumann~BC~+x~edge
-
-db\_initial.iohandler.filename~=~axialtract.spatialdb
-
-db\_initial.query\_type~=~nearest
-
-quadrature.cell~=~pylith.feassemble.FIATLagrange
-
-quadrature.cell.dimension~=~1
-
-quadrature.cell.quad\_order~=~2
-\end{lyxcode}
+<h>[pylithapp.timedependent.bc.x_pos]</h>
+<p>label</p> = x_pos ; Name of group of vertices for +x boundary
+<f>db_initial</f> = spatialdata.spatialdb.SimpleDB
+<p>db_initial.label</p> = Neumann BC +x edge
+<p>db_initial.iohandler.filename</p> = axialtract.spatialdb
+<p>db_initial.query_type</p> = nearest
+<f>quadrature.cell</f> = pylith.feassemble.FIATLagrange
+<p>quadrature.cell.dimension</p> = 1
+<p>quadrature.cell.quad_order</p> = 2
+\end{cfg}
 These settings correspond to the example problem described in Section
-\vref{sub:Tutorial-twoquad4-traction}. It is necessary to set the
-boundary condition type to \texttt{pylith.bc.Neumann}, since the default
-value is \texttt{DirichletBC}. Constant tractions are used for this
+\vref{sec:examples:twoquad4-traction}. It is necessary to set the
+boundary condition type to \object{pylith.bc.Neumann}, since the default
+value is \object{DirichletBC}. Constant tractions are used for this
 particular problem, so a quadrature order of one would have been sufficient;
 however, for problems involving more complex variations (e.g., a linear
 variation), a quadrature order of two will provide more accurate results.
 Note that there is no advantage to specifying an integration order
 higher than two, since linear elements are being used for this problem.
 
-\noindent \begin{center}
-\begin{table}[H]
-\noindent \centering{}\caption{\label{tab:neumann:output}Fields available in output of Neumann boundary
-condition information.}
-\medskip{}
-\begin{tabular}{|c|c|>{\centering}p{3in}|}
-\hline 
-\textbf{Field Type} & \textbf{Field} & \textbf{Description}\tabularnewline
-\hline 
-\hline 
-\texttt{cell\_info\_fields} & \texttt{tracton\_initial} & Initial traction field in global coordinate system\tabularnewline
-\cline{2-3} 
- & \texttt{traction\_rate} & Rate of change of traction field in global coordinate system\tabularnewline
-\cline{2-3} 
- & \texttt{rate\_start\_time} & Onset time in seconds for rate of change in traction field\tabularnewline
-\cline{2-3} 
- & \texttt{traction\_change} & Amplitude of change in traction field in global coordinate system\tabularnewline
-\cline{2-3} 
- & \texttt{change\_start\_time} & Onset time in seconds for the amplitude change in the traction field\tabularnewline
-\hline 
-\end{tabular}
+\begin{table}[htbp]
+  \caption{Fields available in output of \object{Neumann} boundary condition information.}
+  \label{tab:neumann:output}
+  \begin{tabular}{llp{3in}}
+    \textbf{Field Type} & \textbf{Field} & \textbf{Description}\\
+    \hline 
+    \property{cell\_info\_fields} & \texttt{tracton\_initial} & Initial traction field in global coordinate system\\
+    & \texttt{traction\_rate} & Rate of change of traction field in global coordinate system\\
+    & \texttt{rate\_start\_time} & Onset time in seconds for rate of change in traction field\\
+    & \texttt{traction\_change} & Amplitude of change in traction field in global coordinate system\\
+    & \texttt{change\_start\_time} & Onset time in seconds for the amplitude change in the traction field\\
+    \hline 
+  \end{tabular}
 \end{table}
-
-\par\end{center}
 
 
 \subsubsection{Neumann Boundary Condition Spatial Database Files}
@@ -333,43 +270,32 @@ to the spatial dimension for the problem. The tractions are specified
 in a local coordinate system for the boundary. The names of the components
 of the traction vector are:
 \begin{description}
-\item [{one-dimensional}] \texttt{normal}
-\item [{two-dimensional}] \texttt{shear}, \texttt{normal}
-\item [{three-dimensional}] \texttt{horiz-shear}, \texttt{vert-shear},
-\texttt{normal}
+\item [one-dimensional] \texttt{normal}
+\item [two-dimensional] \texttt{shear}, \texttt{normal}
+\item [three-dimensional] \texttt{horiz-shear}, \texttt{vert-shear}, \texttt{normal}
 \end{description}
 Ambiguities in specifying the shear tractions in 3D problems are resolved
-using the \texttt{up\_dir} parameter. In the case of a horizontal
+using the \property{up\_dir} parameter. In the case of a horizontal
 surface, users will need to pick an alternative vector, as the default
-\texttt{up\_dir} would coincide with the normal direction. In this
+\property{up\_dir} would coincide with the normal direction. In this
 case, the orientation for the \texttt{vert-shear-traction} component
-will correspond to whatever the user specifies for \texttt{up\_dir},
+will correspond to whatever the user specifies for \property{up\_dir},
 rather than the actual vertical direction.
 
-\noindent \begin{center}
-\begin{table}[H]
-\noindent \centering{}\caption{Values in the spatial databases used for Dirichlet boundary conditions
-in three dimensions. In one- and two-dimensional problems, the names
-of the components are slightly different as described earlier in this
-section.}
-\medskip{}
-\begin{tabular}{|c|>{\centering}p{4in}|}
-\hline 
-\textbf{Spatial database} & \textbf{Name in Spatial Database}\tabularnewline
-\hline 
-\hline 
-\texttt{db\_initial} & \texttt{traction-shear-horiz, traction-shear-vert, traction-normal}\tabularnewline
-\hline 
-\texttt{db\_rate} & \texttt{traction-rate-horiz-shear, traction-rate-vert-shear, traction-rate-normal,
-rate-start-time}\tabularnewline
-\hline 
-\texttt{db\_change} & \texttt{traction-horiz-shear, traction-vert-shear, traction-normal,
-change-start-time}\tabularnewline
-\hline 
-\end{tabular}
+\begin{table}[htbp]
+  \caption{Values in the spatial databases used for Dirichlet boundary conditions
+    in three dimensions. In one- and two-dimensional problems, the names
+    of the components are slightly different as described earlier in this
+    section.}
+  \begin{tabular}{lp{4in}}
+    \textbf{Spatial database} & \textbf{Name in Spatial Database}\\
+    \hline 
+    \facility{db\_initial} & \texttt{traction-shear-horiz, traction-shear-vert, traction-normal}\\
+    \facility{db\_rate} & \texttt{traction-rate-horiz-shear, traction-rate-vert-shear, traction-rate-normal,rate-start-time}\\
+    \facility{db\_change} & \texttt{traction-horiz-shear, traction-vert-shear, traction-normal,change-start-time}\\
+    \hline 
+  \end{tabular}
 \end{table}
-
-\par\end{center}
 
 
 \subsection{Point Force Boundary Conditions}
@@ -380,89 +306,61 @@ mesh. While point force boundary conditions can be applied to any
 vertex, usually they are applied to vertices on the lateral, top,
 and bottom boundaries of the domain.
 
-
 \subsubsection{Point Force Parameters}
 
-The properties and components common to both the DirichletBC and DirichletBoundary
-boundary conditions are:
-\begin{description}
-\item [{label}] Label of the group of vertices associated with the boundary
-condition.
-\item [{bc\_dof}] Array of degrees of freedom to which forces are applied
-(first degree of freedom is 0).
-\end{description}
+The properties and components for the \object{PointForce} boundary
+condition are:
+\begin{inventory}
+\propertyitem{label}{Label of the group of vertices associated with the boundary condition.}
+\propertyitem{bc\_dof}{Array of degrees of freedom to which forces are applied (first degree of freedom is 0).}
+\end{inventory}
 An example of setting the point force boundary condition parameters
-in a \texttt{.cfg} file is:
-\begin{lyxcode}
-{[}pylithapp.problem{]}
+in a \filename{.cfg} file is:
+\begin{cfg}
+<h>[pylithapp.problem]</h>
+<p>bc</p> = [mybc]
+<f>bc.mybc</f> = pylith.bc.PointForce
 
-bc~=~{[}mybc{]}
-
-bc.mybc~=~pylith.bc.PointForce
-
-
-
-{[}pylithapp.problem.bc.mybc{]}
-
-label~=~group~A~
-
-bc\_dof~=~{[}2{]}~;~force~in~z~direction
-
-db\_initial~=~spatialdata.spatialdb.SimpleDB
-
-db\_initial.iohandler.filename~=~force\_A.spatialdb
-
-db\_initial.query\_type~=~nearest~;~change~query~type~to~nearest~point~algorithm
-
-db\_rate~=~spatialdata.spatialdb.UniformDB
-
-db\_rate.values~=~{[}force-rate-z{]}
-
-db\_rate.data~=~{[}1.0e+5{*}newton/s{]}
-\end{lyxcode}
+<h<[pylithapp.problem.bc.mybc]</h>
+<p>label</p> = group A 
+<p>bc_dof</p> = [2] ; force in z direction
+<f>db_initial</f> = spatialdata.spatialdb.SimpleDB
+<p>db_initial.iohandler.filename</p> = force\_A.spatialdb
+<p>db_initial.query_type</p> = nearest ; change query type to nearest point algorithm
+<f>db_rate</f> = spatialdata.spatialdb.UniformDB
+<p>db_rate.values</p> = [force-rate-z]
+<p>db_rate.data</p> = [1.0e+5*newton/s]
+\end{cfg}
 We have created an array with one boundary condition, mybc. The group
 of vertices associated with the boundary condition is group A. For
 the database associated with the constant force, we use a SimpleDB.
 We set the filename and query type for the database. For the rate
-of change of values, we use a UniformDB and specify the rate of change
+of change of values, we use a \object{UniformDB} and specify the rate of change
 in the force to be 1.0e+5 Newton/s. See Section \vref{sec:spatial:databases}
 for a discussion of the different types of spatial databases available.
 
-
 \subsubsection{Point Force Spatial Database Files}
 
-The spatial database files for the Dirichlet boundary condition specify
-the fixed displacements. The spatial database file may contain displacements
-at more degrees of freedom than those specified in the Dirichlet boundary
-condition settings using the \texttt{bc\_dof} setting. Only those
-listed in \texttt{bc\_dof} will be used. This permits using the same
-spatial database file for multiple Dirichlet boundary conditions with
-the same displacement field.
+The spatial database files for the point force boundary condition specify
+the forces applied. 
 
-\noindent \begin{center}
-\begin{table}[H]
-\noindent \centering{}\caption{Values in the spatial databases used for point force boundary conditions.}
-\medskip{}
-\begin{tabular}{|c|>{\centering}p{4in}|}
-\hline 
-\textbf{Spatial database} & \textbf{Name in Spatial Database}\tabularnewline
-\hline 
-\hline 
-\texttt{db\_initial} & \texttt{force-x, force-y, force-z}\tabularnewline
-\hline 
-\texttt{db\_rate} & \texttt{force-rate-x, force-rate-y, force-rate-z, rate-start-time}\tabularnewline
-\hline 
-\texttt{db\_change} & \texttt{force-x, force-y, force-z, change-start-time}\tabularnewline
-\hline 
-\end{tabular}
+\begin{table}[htbp]
+  \caption{Values in the spatial databases used for point force boundary conditions.}
+  \begin{tabular}{lp{4in}}
+    \textbf{Spatial database} & \textbf{Name in Spatial Database}\\
+    \hline 
+    \facility{db\_initial} & \texttt{force-x, force-y, force-z}\\
+    \facility{db\_rate} & \texttt{force-rate-x, force-rate-y, force-rate-z, rate-start-time}\\
+    \facility{db\_change} & \texttt{force-x, force-y, force-z, change-start-time}\\
+    \hline 
+  \end{tabular}
 \end{table}
 
-\par\end{center}
 
+\section{Absorbing Boundary Conditions}
+\label{sec:absorbing:boundaries}
 
-\section{\label{sec:absorbing:boundaries}Absorbing Boundary Conditions}
-
-This boundary condition attempts to prevent seismic waves vreflecting
+This \object{AbsorbingDampers} boundary condition attempts to prevent seismic waves reflecting
 off of a boundary by placing simple dashpots on the boundary. Normally
 incident dilatational and shear waves are perfectly absorbed. Waves
 incident at other angles are only partially absorbed. This boundary
@@ -472,23 +370,23 @@ waves. If the waves arriving at the absorbing boundary are relatively
 small in amplitude compared to the amplitudes of primary interest,
 this boundary condition gives reasonable results.
 
-The Absorbing boundary condition properties and components are:
-\begin{description}
-\item [{label}] Name of the group of vertices defining the mesh boundary
-for the absorbing boundary condition.
-\item [{up\_dir}] This is a 3-vector that provides a hint for the direction
+The \object{AbsorbingDampers} boundary condition properties and components are:
+\begin{inventory}
+\propertyitem{label}{Name of the group of vertices defining the mesh boundary
+for the absorbing boundary condition.}
+\propertyitem{up\_dir}{This is a 3-vector that provides a hint for the direction
 perpendicular to the horizontal tangent direction that is not collinear
 with the direction normal to the surface. The default value is (0,0,1),
 which assumes that the z-axis is positive upward. This vector is only
 needed for three-dimensional problems where the positive upward direction
-differs from the default.
-\item [{db}] The spatial database specifying the material properties for
-the seismic velocities.
-\item [{quadrature}] The quadrature object to be used for numerical integration.
+differs from the default.}
+\facilityitem{db}{The spatial database specifying the material properties for
+the seismic velocities.}
+\facilityitem{quadrature}{The quadrature object to be used for numerical integration.
 Since we are integrating over a surface that is one dimension lower
 than the problem domain, this would typically be set to something
-like \texttt{Quadrature2Din3D} (for a three-dimensional problem).
-\end{description}
+like \facility{Quadrature2Din3D} (for a three-dimensional problem).}
+\end{inventory}
 
 \subsection{Finite-Element Implementation of Absorbing Boundary}
 
@@ -563,7 +461,6 @@ u_{i}=\sum_{m}a_{i}^{m}N^{m},\\
 \phi_{i}=\sum_{n}c_{i}^{n}N^{n}.
 \end{gather}
 Substituting into our integral over the absorbing boundaries yields
-
 \begin{equation}
 \int_{S_{T}}T_{i}\phi_{i}\, dS=\int_{S_{T}}-\rho c_{i}\sum_{m}\dot{a}_{i}^{m}N^{m}\sum_{n}c_{i}^{n}N^{n}\, dS.
 \end{equation}
@@ -577,20 +474,18 @@ r_{i}^{n}=\sum_{\text{tract cells}}\sum_{\text{quad pts}}-\rho(x_{q})c_{i}(x_{q}
  where $x_{q}$ are the coordinates of the quadrature points, $w_{q}$
 are the weights of the quadrature points, and $|J_{cell}(x_{q})|$
 is the determinant of the Jacobian matrix evaluated at the quadrature
-points associated with mapping the vreference cell to the actual cell.
+points associated with mapping the reference cell to the actual cell.
 
 The appearance of velocity in the expression for the residual means
 that the absorbing dampers also contribute to the system Jacobian
 matrix. Using the central difference method, the velocity is written
 in terms of the displacements,
-
 \begin{equation}
 \dot{u}_{i}(t)=\frac{1}{2\Delta t}(u_{i}(t+\Delta t)-u_{i}(t-\Delta t)).
 \end{equation}
 Expressing the displacement at time $t+\Delta t$ in terms of the
 displacement at time $t$ ($u_{i}(t)$) and the increment in the displacement
 at time $t$ ($du_{i}(t)$) leads to
-
 \begin{equation}
 \dot{u}_{i}(t)=\frac{1}{2\Delta t}(du_{i}(t)+u_{i}(t)-u_{i}(t-\Delta t))
 \end{equation}
@@ -598,16 +493,16 @@ The terms contributing to the system Jacobian are associated with
 the increment in the displacement at time $t$. Substituting into
 the governing equations and isolating the term associated with the
 increment in the displacement at time t yields
-
 \begin{equation}
 A_{ij}^{nm}=\sum_{\text{tract cells}}\sum_{\text{quad pts}}\delta_{ij}\frac{1}{2\Delta t}\rho(x_{q})v_{i}(x_{q})N^{m}(x_{q})N^{n}(x_{q})w_{q}|J_{cells}(x_{q})|,
 \end{equation}
 where $A_{ij}^{mn}$ is an $nd$ by $md$ matrix ($d$ is the dimension
-of the vector space), $m$ and $n$ vrefer to the basis functions and
+of the vector space), $m$ and $n$ refer to the basis functions and
 $i$ and $j$ are vector space components.
 
 
-\section{\label{sec:fault}Fault Interface Conditions}
+\section{Fault Interface Conditions}
+\label{sec:fault}
 
 Fault interfaces are used to create dislocations (jumps in the displacement
 field) in the model. The dislocations arise from slip across a fault
@@ -616,7 +511,6 @@ interfaces, dislocations in 1D correspond to fault-opening (and closing),
 in 2D lateral-slip and fault opening, and in 3D lateral-slip, reverse-slip,
 and fault opening. PyLith supports kinematic (prescribed) slip and
 dynamic (spontaneous) rupture simulations.
-
 
 \subsection{Conventions}
 
@@ -629,31 +523,20 @@ angles over potentially complex, nonplanar fault surfaces. Instead,
 the user specifies fault parameters in terms of lateral motion, reverse
 motion, and fault opening as shown in Figure \vref{fig:fault:slip:motions}.
 
-\noindent \begin{center}
-\begin{figure}[H]
-\begin{centering}
-\includegraphics{boundaryconditions/figs/faultOrientation}
-\par\end{centering}
-
-\caption{Orientation of a fault surface in 3D, where $\phi$ denotes the angle
-of the fault strike, $\delta$ denotes the angle of the fault dip,
-and $\lambda$ the rake angle. \label{fig:fault:orientation} }
+\begin{figure}[htbp]
+  \includegraphics{boundaryconditions/figs/faultOrientation}
+  \caption{Orientation of a fault surface in 3D, where $\phi$ denotes the angle
+    of the fault strike, $\delta$ denotes the angle of the fault dip,
+    and $\lambda$ the rake angle.}
+  \label{fig:fault:orientation} 
 \end{figure}
 
-\par\end{center}
-
-\noindent \begin{center}
-\begin{figure}[H]
-\begin{centering}
-\includegraphics{boundaryconditions/figs/slipmotions}
-\par\end{centering}
-
-\caption{Sign conventions associated with fault slip. Positive values are associated
-with left-lateral, reverse, and fault opening motions.\label{fig:fault:slip:motions} }
+\begin{figure}[htbp]
+  \includegraphics{boundaryconditions/figs/slipmotions}
+  \caption{Sign conventions associated with fault slip. Positive values are associated
+    with left-lateral, reverse, and fault opening motions.}
+  \label{fig:fault:slip:motions} 
 \end{figure}
-
-\par\end{center}
-
 
 \subsection{Fault Implementation}
 
@@ -669,30 +552,25 @@ This example also shows the distinction between how buried fault edges
 are handled differently than fault edges that reach the edge of the
 domain, such as the ground surface.
 
-\noindent \begin{center}
-\begin{figure}[H]
-\begin{centering}
-\includegraphics[width=6.25in]{boundaryconditions/figs/cohesivecell}
-\par\end{centering}
-
-\caption{Example of cohesive cells inserted into a mesh of triangular cells.
-The zero thickness cohesive cells control slip on the fault via the
-relative motion between the vertices on the positive and negative
-sides of the fault.\label{fig:fault:cohesive:cells} }
+\begin{figure}[htbp]
+  \includegraphics[width=6.25in]{boundaryconditions/figs/cohesivecell}
+  \caption{Example of cohesive cells inserted into a mesh of
+    triangular cells.  The zero thickness cohesive cells control slip
+    on the fault via the relative motion between the vertices on the
+    positive and negative sides of the fault.}
+  \label{fig:fault:cohesive:cells} 
 \end{figure}
 
-\par\end{center}
-
-\begin{figure}[H]
-\begin{centering}
-\includegraphics[width=4in]{boundaryconditions/figs/faultEdge}
-\par\end{centering}
-
-\caption{Example of how faults with buried edges must be described with two
-sets of vertices. All of the vertices on the fault are included in
-the \texttt{fault} group; the subset of vertices along the buried
-edges are included in the \texttt{fault\_edge} group. In 2-D the fault
-edges are just a single vertex as shown in Figure \vref{fig:fault:cohesive:cells}(a).\label{fig:fault:fault_edge}}
+\begin{figure}[htbp]
+  \includegraphics[width=4in]{boundaryconditions/figs/faultEdge}
+  \caption{Example of how faults with buried edges must be described
+    with two sets of vertices. All of the vertices on the fault are
+    included in the \texttt{fault} group; the subset of vertices along
+    the buried edges are included in the \texttt{fault\_edge}
+    group. In 2-D the fault edges are just a single vertex as shown in
+    Figure
+    \vref{fig:fault:cohesive:cells}(a).}
+  \label{fig:fault:fault_edge}
 \end{figure}
 For faults that have buried edges, splitting the mesh apart and inserting
 the cohesive cells becomes complex at the buried edges due to the
@@ -706,31 +584,29 @@ are inserted up to the buried edge of the fault but no additional
 degrees of freedom are added on the fault edge. This naturally forces
 slip to zero along the buried edges.
 
-
 \subsection{Fault Parameters}
 
 The principal parameters for fault interface conditions are:
-\begin{description}
-\item [{id}] This is an integer identifier for the fault surface. It is
-used to specify the \texttt{material-id} of the cohesive cells in
+\begin{inventory}
+\propertyitem{id}{This is an integer identifier for the fault surface. It is
+used to specify the \property{material-id} of the cohesive cells in
 the mesh. Material identifiers must be unique so this value cannot
-be the same as any of the material models or any other fault.
-\item [{label}] Name of group of vertices associated with the fault surface.
-This label is also used in error and diagnostic reports.
-\item [{edge}] Name of group of vertices marking the buried edges of the
-fault.
-\item [{up\_dir}] Up-dir or up direction (used in 2D and 3D simulations).
+be the same as any of the material models or any other fault.}
+\propertyitem{label}{Name of group of vertices associated with the fault surface.
+This label is also used in error and diagnostic reports.}
+\propertyitem{edge}{Name of group of vertices marking the buried edges of the
+fault.}
+\propertyitem{up\_dir}{Up-dir or up direction (used in 2D and 3D simulations).
 In 2D the default in-plane slip is left-lateral, so we use the up-direction
 to resolve the ambiguity in specifying reverse slip. In 3D the up-direction
 is used to resolve the ambiguity in the along-strike and dip-dir directions.
 If the fault plane is horizontal, then the up-dir corresponds to the
 reverse-motion on the +z side of the fault. The only requirement for
 this direction is that it not be collinear with the fault normal direction.
-The default value of {[}0, 0, 1{]} is appropriate for most 3D problems.
-\item [{quadrature}] Quadrature object used in integrating fault quantities.
-\item [{output}] Manager for output of diagnostic and data fields for the
-fault.
-\end{description}
+The default value of [0, 0, 1] is appropriate for most 3D problems.}
+\facilityitem{quadrature}{Quadrature object used in integrating fault quantities.}
+\facilityitem{output}{Manager for output of diagnostic and data fields for the fault.}
+\end{inventory}
 By default the output manager outputs both diagnostic information
 (e.g., fault normal direction) and the slip at each time step. Tables
 \vref{tab:fault:kin:output} and \vref{tab:fault:dyn:output} list the
@@ -739,33 +615,25 @@ earthquake rupture and a fault with dynamic rupture, respectively.
 The fault coordinate system is shown in Figure \vref{fig:fault:slip:motions}.
 The vectors in the fault coordinate system can be transformed to the
 global coordinate system using the direction vectors in the diagnostic
-output. An example of setting these parameters in a \texttt{.cfg}
+output. An example of setting these parameters in a \filename{.cfg}
 file is:
-\begin{lyxcode}
-{[}pylithapp.problem{]}
+\begin{cfg}
+<h?[pylithapp.problem]</h>
+<p>interfaces</p> = [fault] 
 
-interfaces~=~{[}fault{]}~\\
-~\\
-{[}pylithapp.problem.interfaces{]}
-
-fault~=~pylith.faults.FaultCohesiveKin~;~default~\\
-~\\
-label~=~fault\_A~;~Group~of~vertices~defining~the~fault~surface
-
-edge~=~fault\_edge~;~Group~of~vertices~defining~the~buried~edges
-
-id~=~100~;~Value~for~material~identifier~associated~with~fault's~cohesive~cells
-
-up\_dir~=~{[}0,~0,~1{]}~;~default
-
-quadrature.cell~=~pylith.feassemble.FIATLagrange
-
-quadrature.cell.dimension~=~2
-\end{lyxcode}
+<h>[pylithapp.problem.interfaces]</h>
+<f>fault</f> = pylith.faults.FaultCohesiveKin ; default
+<p>label</p> = fault_A ; Group of vertices defining the fault surface
+<p>edge</p> = fault_edge ; Group of vertices defining the buried edges
+<p>id</p> = 100 ; Value for material identifier associated with fault's cohesive cells
+<p>up_dir</p> = [0, 0, 1] ; default
+<f>quadrature.cell</f> = pylith.feassemble.FIATLagrange
+<p>quadrature.cell.dimension</p> = 2
+\end{cfg}
 The group of vertices has the label ``fault A.'' We replicate the
 default values for the fault ``up'' direction. These settings apply
 to a 2D fault surface embedded within a 3D mesh, so we use 2D Lagrange
-vreference cells. The spatial database for elastic properties is used
+reference cells. The spatial database for elastic properties is used
 to determine the approximate shear modulus and condition the equations
 for faster convergence rates.
 
@@ -827,7 +695,6 @@ across the fault, the slip vector and Lagrange multipliers (forces
 required to impose the slip) are in the local fault coordinate system
 (lateral motion, reverse motion, and fault opening). 
 
-
 \paragraph{Non-diagonal A}
 
 The Lagrange multipliers contribute to both the system Jacobian matrix
@@ -845,8 +712,6 @@ terms in the system Jacobian matrix are simply the direction cosines,
 J_{ij}^{np}=C_{ji}^{pn},\\
 J_{ij}^{pn}=C_{ij}^{pn}.
 \end{gather}
-
-
 
 \paragraph{Diagonal A}
 
@@ -908,8 +773,6 @@ the displacement increment from time $t$ to $t+\Delta t$ using
 \Delta du_{j}^{n+}=-(A_{ij}^{nm+})^{-1}C_{ki}^{pn}dl_{k}^{p}.
 \end{gather}
 
-
-
 \subsubsection{Arrays of Kinematic Rupture Components}
 
 Multiple earthquake ruptures can be specified on a single fault surface.
@@ -919,44 +782,37 @@ aseismic slip on another subset (the two subsets may overlap in both
 time and space). A dynamic array of kinematic earthquake rupture components
 associates a name (string) with each kinematic rupture. The default
 dynamic array contains a single earthquake rupture, ``rupture''. The
-\texttt{eq\_srcs} is the \texttt{FaultCohesiveKin} facility for this
+\property{eq\_srcs} is the \object{FaultCohesiveKin} facility for this
 dynamic array. An example of setting the array of kinematic rupture
-components in a \texttt{.cfg} file:
-\begin{lyxcode}
-{[}pylithapp.problem.interfaces.fault{]}
-
-eq\_srcs~=~{[}earthquake,creep{]}
-\end{lyxcode}
+components in a \filename{.cfg} file:
+\begin{cfg}
+<h<[pylithapp.problem.interfaces.fault]</h>
+<p>eq_srcs</p> = [earthquake,creep]
+\end{cfg}
 The output manager includes generic fault information (orientation)
 as well as the final slip or slip rate (as in the case of the constant
 slip rate slip time function) and slip initiation time for each kinematic
 rupture. The name of the slip and slip initiation time vertex fields
 are of the form \texttt{final\_slip\_NAME} and \texttt{slip\_time\_NAME},
-respectively, where \texttt{NAME} vrefers to the name used in the dynamic
-array of kinematic ruptures, \texttt{eq\_srcs}.
+respectively, where \texttt{NAME} refers to the name used in the dynamic
+array of kinematic ruptures, \property{eq\_srcs}.
 
-\noindent \begin{center}
-\begin{table}[H]
-\noindent \centering{}\caption{\label{tab:fault:kin:output}Fields available in output of fault information.}
-\medskip{}
-\begin{tabular}{|c|c|>{\centering}p{3.5in}|}
+\begin{table}[htbp]
+\caption{Fields available in output of fault information.}
+\label{tab:fault:kin:output}
+\begin{tabular}{llp{3.5in}}
+\textbf{Field Type} & \textbf{Field} & \textbf{Description}\\
 \hline 
-\textbf{Field Type} & \textbf{Field} & \textbf{Description}\tabularnewline
-\hline 
-\hline 
-\texttt{vertex\_info\_fields} & \texttt{normal\_dir} & Direction of fault normal in global coordinate system\tabularnewline
- & \texttt{strike\_dir} & Direction of fault strike in global coordinate system\tabularnewline
- & \texttt{dip\_dir} & Up-dip direction on hanging wall in global coordinate system\tabularnewline
- & \texttt{final\_slip\_NAME} & Vector of final slip (in fault coordinate system) in meters\tabularnewline
- & \texttt{slip\_time}\_\texttt{\noun{NAME}} & Time at which slip begins in seconds\tabularnewline
-\hline 
-\texttt{vertex\_data\_fields} & \texttt{slip} & Slip vector at time step (in fault coordinate system) in meters\tabularnewline
- & \texttt{traction\_change} & Change in fault tractions (in fault coordinate system) in Pa\tabularnewline
+\property{vertex\_info\_fields} & \texttt{normal\_dir} & Direction of fault normal in global coordinate system\\
+ & \texttt{strike\_dir} & Direction of fault strike in global coordinate system\\
+ & \texttt{dip\_dir} & Up-dip direction on hanging wall in global coordinate system\\
+ & \texttt{final\_slip\_NAME} & Vector of final slip (in fault coordinate system) in meters\\
+ & \texttt{slip\_time}\_\texttt{\noun{NAME}} & Time at which slip begins in seconds\\
+\property{vertex\_data\_fields} & \texttt{slip} & Slip vector at time step (in fault coordinate system) in meters\\
+ & \texttt{traction\_change} & Change in fault tractions (in fault coordinate system) in Pa\\
 \hline 
 \end{tabular}
 \end{table}
-
-\par\end{center}
 
 
 \subsubsection{Kinematic Rupture Parameters}
@@ -967,24 +823,21 @@ is relative to the origin time (default is 0). This means that slip
 initiates at a point at a time corresponding to the sum of the kinematic
 rupture's origin time and the slip initiation time for that point.
 An example of specifying the kinematic earthquake rupture properties
-and components in a \texttt{.cfg} file:
-\begin{lyxcode}
-{\footnotesize{}{[}pylithapp.problem.interfaces.fault{]}}{\footnotesize \par}
+and components in a \filename{.cfg} file:
+\begin{cfg}
+<h>[pylithapp.problem.interfaces.fault]</h>
 
-{\footnotesize{}eq\_srcs~=~{[}earthquake,creep{]}}~\\
-{\footnotesize{}}~\\
-{\footnotesize{}{[}pylithapp.problem.interfaces.fault.eq\_srcs.earthquake{]}}{\footnotesize \par}
+<p>eq_srcs</p> = [earthquake,creep]
 
-{\footnotesize{}origin\_time~=~0.0{*}s~;~default~origin~time}{\footnotesize \par}
+<h>[pylithapp.problem.interfaces.fault.eq_srcs.earthquake]</h>
+<p>origin_time</p> = 0.0*s ; default origin time
+<f>slip_function</f> = pylith.faults.StepSlipFn ; default slip time function
 
-{\footnotesize{}slip\_function~=~pylith.faults.StepSlipFn~;~default~slip~time~function}~\\
-{\footnotesize{}}~\\
-{\footnotesize{}{[}pylithapp.problem.interfaces.fault.eq\_srcs.creep{]}}{\footnotesize \par}
+<h>[pylithapp.problem.interfaces.fault.eq_srcs.creep]</h>
+<p>origin_time</p> = 10.0*year ; start creep at 10.0 years
 
-{\footnotesize{}origin\_time~=~10.0{*}year~;~start~creep~at~10.0~years}{\footnotesize \par}
-
-{\footnotesize{}slip\_function~=~pylith.faults.ConstRateSlipFn~;~switch~to~constant~slip~rate~slip~function}{\footnotesize \par}
-\end{lyxcode}
+<f>slip_function</f> = pylith.faults.ConstRateSlipFn ; switch to constant slip rate slip function
+\end{cfg}
 
 \subsubsection{Slip Time Function}
 
@@ -1023,42 +876,37 @@ the fault surface.
 \end{description}
 An example of setting these parameters in a \texttt{.cfg} file is:
 \begin{lyxcode}
-{[}pylithapp.problem.interfaces.fault.eq\_srcs.rupture{]}
+[pylithapp.problem.interfaces.fault.eq\_srcs.rupture]
 
-slip\_function~=~pylith.faults.StepSlipFn~\\
-~\\
-{[}pylithapp.problem.interfaces.fault.eq\_srcs.rupture.slip\_function{]}
+slip\_function = pylith.faults.StepSlipFn 
 
-final\_slip.iohandler.filename~=~final\_slip.spatialdb
+[pylithapp.problem.interfaces.fault.eq\_srcs.rupture.slip\_function]
 
-slip\_time.iohandler.filename~=~sliptime.spatialdb
+final\_slip.iohandler.filename = final\_slip.spatialdb
+
+slip\_time.iohandler.filename = sliptime.spatialdb
 \end{lyxcode}
 The spatial database files for the slip time function specify the
 spatial variation in the parameters for the slip time function, as
 shown in Table \vref{tab:step-function-db-params}.
 
-\noindent \begin{center}
-\begin{table}[H]
-\noindent \centering{}\caption{\label{tab:step-function-db-params}Values in spatial database used
+\begin{table}[htbp]
+\caption{Values in spatial database used
 as parameters in the step function slip time function.}
-\medskip{}
-\begin{tabular}{|l|l|>{\raggedright}p{2.5in}|}
-\hline 
-\textbf{Spatial database} & \textbf{Value} & \textbf{Description}\tabularnewline
-\hline 
+\label{tab:step-function-db-params}
+\begin{tabular}{llp{2.5in}}
+\textbf{Spatial database} & \textbf{Value} & \textbf{Description}\\
 \hline 
 \texttt{final\_slip} & \texttt{left-lateral-slip} & Amount of left-lateral final slip in meters. Use negative values for
-right-lateral slip. Applies to faults in 2D and 3D only.\tabularnewline
+right-lateral slip. Applies to faults in 2D and 3D only.\\
  & \texttt{reverse-slip} & Amount of reverse slip in meters. Use negative values for normal slip.
-Applies to faults in 3D only.\tabularnewline
- & \texttt{fault-opening} & Amount of fault opening in meters. Negative values imply penetration.\tabularnewline
+Applies to faults in 3D only.\\
+ & \texttt{fault-opening} & Amount of fault opening in meters. Negative values imply penetration.\\
 \hline 
-\texttt{slip\_time} & \texttt{slip-time} & Slip initiation time ($t_{t})$ in seconds.\tabularnewline
+\texttt{slip\_time} & \texttt{slip-time} & Slip initiation time ($t_{t})$ in seconds.\\
 \hline 
 \end{tabular}
 \end{table}
-
-\par\end{center}
 
 
 \paragraph{Constant Slip Rate Slip Time Function}
@@ -1083,44 +931,38 @@ fault surface.
 \end{description}
 An example of setting these parameters in a \texttt{.cfg} file is:
 \begin{lyxcode}
-{[}pylithapp.problem.interfaces.fault.eq\_srcs.ruptures{]}
+[pylithapp.problem.interfaces.fault.eq\_srcs.ruptures]
 
-slip\_function~=~pylith.faults.ConstRateSlipFn~\\
-~\\
-{[}pylithapp.problem.interfaces.fault.eq\_srcs.ruptures.slip\_function{]}
+slip\_function = pylith.faults.ConstRateSlipFn 
 
-slip\_rate.iohandler.filename~=~slip\_rate.spatialdb
+[pylithapp.problem.interfaces.fault.eq\_srcs.ruptures.slip\_function]
 
-slip\_time.iohandler.filename~=~sliptime.spatialdb
+slip\_rate.iohandler.filename = slip\_rate.spatialdb
+
+slip\_time.iohandler.filename = sliptime.spatialdb
 \end{lyxcode}
 The spatial database files for the slip time function specify the
 spatial variation in the parameters for the slip time function, as
 shown in Table \vref{tab:const-slip-rate-db-params}.
 
-\noindent \begin{center}
-\begin{table}[H]
-\noindent \centering{}\caption{\label{tab:const-slip-rate-db-params}Values in spatial database used
+\begin{table}[htbp]
+\caption{Values in spatial database used
 as parameters in the constant slip rate slip time function.}
-\medskip{}
-\begin{tabular}{|l|l|>{\raggedright}p{2.5in}|}
-\hline 
-\textbf{Spatial database} & \textbf{Value} & \textbf{Description}\tabularnewline
-\hline 
+\label{tab:const-slip-rate-db-params}
+\begin{tabular}{llp{2.5in}}
+\textbf{Spatial database} & \textbf{Value} & \textbf{Description}\\
 \hline 
 \texttt{slip\_rate} & \texttt{left-lateral-slip} & Slip rate for left-lateral final slip in meters per second. Use negative
-values for right-lateral slip. Applies to faults in 2D and 3D only.\tabularnewline
+values for right-lateral slip. Applies to faults in 2D and 3D only.\\
  & \texttt{reverse-slip} & Slip rate for reverse slip in meters per second. Use negative values
-for normal slip. Applies to faults in 3D only.\tabularnewline
+for normal slip. Applies to faults in 3D only.\\
  & \texttt{fault-opening} & Slip rate for fault opening in meters per second. Negative values
-imply penetration.\tabularnewline
+imply penetration.\\
 \hline 
-\texttt{slip\_time} & \texttt{slip-time} & Slip initiation time ($t_{t})$ in seconds.\tabularnewline
+\texttt{slip\_time} & \texttt{slip-time} & Slip initiation time ($t_{t})$ in seconds.\\
 \hline 
 \end{tabular}
 \end{table}
-
-\par\end{center}
-
 
 \paragraph{Brune Slip Time Function}
 
@@ -1144,46 +986,40 @@ reaches the location), and $t_{\mathit{rise}}$ is the rise time.
 \end{description}
 An example of setting these parameters in a \texttt{.cfg} file is:
 \begin{lyxcode}
-{[}pylithapp.problem.interfaces.fault.eq\_srcs.ruptures{]}
+[pylithapp.problem.interfaces.fault.eq\_srcs.ruptures]
 
-slip\_function~=~pylith.faults.BruneSlipFn~\\
-~\\
-{[}pylithapp.problem.interfaces.fault.eq\_srcs.rupture.slip\_function{]}
+slip\_function = pylith.faults.BruneSlipFn
 
-slip.iohandler.filename~=~finalslip.spatialdb
+[pylithapp.problem.interfaces.fault.eq\_srcs.rupture.slip\_function]
 
-rise\_time.iohandler.filename~=~risetime.spatialdb
+slip.iohandler.filename = finalslip.spatialdb
 
-slip\_time.iohandler.filename~=~sliptime.spatialdb
+rise\_time.iohandler.filename = risetime.spatialdb
+
+slip\_time.iohandler.filename = sliptime.spatialdb
 \end{lyxcode}
 The spatial database files for the slip time function specify the
 spatial variation in the parameters for the slip time function, as
 shown in Table \vref{tab:Brune-slip-db-params}.
 
-\noindent \begin{center}
-\begin{table}[H]
-\noindent \centering{}\caption{\label{tab:Brune-slip-db-params}Values in spatial database used as
-parameters in the Brune slip time function.}
-\medskip{}
-\begin{tabular}{|l|l|>{\raggedright}p{2.5in}|}
-\hline 
-\textbf{Spatial database} & \textbf{Value} & \textbf{Description}\tabularnewline
-\hline 
+\begin{table}[htbp]
+\caption{Values in spatial database used as parameters in the Brune slip time function.}
+\label{tab:Brune-slip-db-params}
+\begin{tabular}{llp{2.5in}|}
+\textbf{Spatial database} & \textbf{Value} & \textbf{Description}\\
 \hline 
 \texttt{slip} & \texttt{left-lateral-slip} & Amount of left-lateral final slip in meters. Use negative values for
-right-lateral slip. Applies to faults in 2D and 3D only.\tabularnewline
+right-lateral slip. Applies to faults in 2D and 3D only.\\
  & \texttt{reverse-slip} & Amount of reverse slip in meters. Use negative values for normal slip.
-Applies to faults in 3D only.\tabularnewline
- & \texttt{fault-opening} & Amount of fault opening in meters. Negative values imply penetration.\tabularnewline
+Applies to faults in 3D only.\\
+ & \texttt{fault-opening} & Amount of fault opening in meters. Negative values imply penetration.\\
 \hline 
-\texttt{rise\_time} & \texttt{rise-time} & Rise time ($t_{r})$ in seconds.\tabularnewline
+\texttt{rise\_time} & \texttt{rise-time} & Rise time ($t_{r})$ in seconds.\\
 \hline 
-\texttt{slip\_time} & \texttt{slip-time} & Slip initiation time ($t_{t})$ in meters.\tabularnewline
+\texttt{slip\_time} & \texttt{slip-time} & Slip initiation time ($t_{t})$ in meters.\\
 \hline 
 \end{tabular}
 \end{table}
-
-\par\end{center}
 
 
 \paragraph{Liu-Cosine Slip Time Function}
@@ -1231,46 +1067,41 @@ in general, will use a normalized amplitude.
 \end{description}
 An example of setting these parameters in a \texttt{.cfg} file is:
 \begin{lyxcode}
-{[}pylithapp.problem.interfaces.fault.eq\_srcs.ruptures{]}
+[pylithapp.problem.interfaces.fault.eq\_srcs.ruptures]
 
-slip\_function~=~pylith.faults.TimeHistorySlipFn~\\
-~\\
-{[}pylithapp.problem.interfaces.fault.eq\_srcs.rupture.slip\_function{]}
+slip\_function = pylith.faults.TimeHistorySlipFn 
 
-slip.iohandler.filename~=~finalslip.spatialdb
+[pylithapp.problem.interfaces.fault.eq\_srcs.rupture.slip\_function]
 
-slip\_time.iohandler.filename~=~sliptime.spatialdb
+slip.iohandler.filename = finalslip.spatialdb
 
-time\_history.iohandler.filename~=~myfunction.timedb
+slip\_time.iohandler.filename = sliptime.spatialdb
+
+time\_history.iohandler.filename = myfunction.timedb
 \end{lyxcode}
 The spatial database files for the slip time function specify the
 spatial variation in the parameters for the slip time function, as
 shown in Table \vref{tab:Brune-slip-db-params-2}.
 
-\noindent \begin{center}
-\begin{table}[H]
-\noindent \centering{}\caption{\label{tab:Brune-slip-db-params-2}Values in spatial database used
+\begin{table}[htbp]
+\caption{Values in spatial database used
 as parameters in the time history slip time function.}
-\medskip{}
-\begin{tabular}{|l|l|>{\raggedright}p{2.5in}|}
-\hline 
-\textbf{Spatial database} & \textbf{Value} & \textbf{Description}\tabularnewline
-\hline 
+\label{tab:Brune-slip-db-params-2}
+\begin{tabular}{llp{2.5in}}
+\textbf{Spatial database} & \textbf{Value} & \textbf{Description}\\
 \hline 
 \texttt{slip} & \texttt{left-lateral-slip} & Amount of left-lateral final slip in meters. Use negative values for
-right-lateral slip. Applies to faults in 2D and 3D only.\tabularnewline
+right-lateral slip. Applies to faults in 2D and 3D only.\\
  & \texttt{reverse-slip} & Amount of reverse slip in meters. Use negative values for normal slip.
-Applies to faults in 3D only.\tabularnewline
- & \texttt{fault-opening} & Amount of fault opening in meters. Negative values imply penetration.\tabularnewline
+Applies to faults in 3D only.\\
+ & \texttt{fault-opening} & Amount of fault opening in meters. Negative values imply penetration.\\
 \hline 
-\texttt{rise\_time} & \texttt{rise-time} & Rise time ($t_{r})$ in seconds.\tabularnewline
+\texttt{rise\_time} & \texttt{rise-time} & Rise time ($t_{r})$ in seconds.\\
 \hline 
-\texttt{slip\_time} & \texttt{slip-time} & Slip initiation time ($t_{t})$ in meters.\tabularnewline
+\texttt{slip\_time} & \texttt{slip-time} & Slip initiation time ($t_{t})$ in meters.\\
 \hline 
 \end{tabular}
 \end{table}
-
-\par\end{center}
 
 
 \subsection{Dynamic Earthquake Rupture}
@@ -1369,9 +1200,9 @@ systems. For example, to use the recommended additive Schwarz preconditioner
 in the friction sensitivity solves, the settings in a \texttt{.cfg}
 file are:
 \begin{lyxcode}
-{[}pylithapp.petsc{]}
+[pylithapp.petsc]
 
-friction\_pc\_type~=~asm
+friction\_pc\_type = asm
 \end{lyxcode}
 See the examples in Sections \vref{sec:Tutorial-3d-hex8-friction}
 and \vref{sec:tutorial:shearwave:quad4} for details.
@@ -1409,21 +1240,21 @@ is 1.0e-10); should be larger than absolute tolerance in KSP solves.
 An example of specifying the dynamic earthquake rupture properties
 and components in a \texttt{.cfg} file:
 \begin{lyxcode}
-{[}pylithapp.problem.interfaces.fault{]}
+[pylithapp.problem.interfaces.fault]
 
-open\_free\_surface~=~True~;~default
+open\_free\_surface = True ; default
 
-traction\_perturbation~=~pylith.faults.TractPerturbation~;~not~default
+traction\_perturbation = pylith.faults.TractPerturbation ; not default
 
-traction\_perturbation.db\_initial~=~spatialdata.spatialdb.SimpleDB
+traction\_perturbation.db\_initial = spatialdata.spatialdb.SimpleDB
 
-traction\_perturbation.db\_initial.iohandler.filename~=~tractions.spatialdb
+traction\_perturbation.db\_initial.iohandler.filename = tractions.spatialdb
 
-friction~=~pylith.friction.StaticFriction
+friction = pylith.friction.StaticFriction
 
-friction.db\_properties~=~spatialdata.spatialdb.SimpleDB
+friction.db\_properties = spatialdata.spatialdb.SimpleDB
 
-friction.db\_properties.iohandler.filename~=~friction.spatialdb\end{lyxcode}
+friction.db\_properties.iohandler.filename = friction.spatialdb\end{lyxcode}
 \begin{quote}
 \textbf{\textcolor{red}{Warning:}}\textbf{ }Use of the dynamic rupture
 implementation in a quasi-static simulations requires use of the nonlinear
@@ -1435,22 +1266,22 @@ to for convergence, not the relative tolerances. The code below illustrates
 the relevant parameters and example values. The values can be scaled
 to change the overall desired tolerances.\end{quote}
 \begin{lyxcode}
-{[}pylithapp.problem.interfaces.fault{]}
+[pylithapp.problem.interfaces.fault]
 
-zero\_tolerance~=~1.0e-11~\\
-~\\
-{[}pylithapp.petsc{]}~\\
-\#~Linear~solver~tolerances~\\
-ksp\_rtol~=~1.0e-20~\\
-ksp\_atol~=~1.0e-12~\\
-~\\
-\#~Nonlinear~solver~tolerances~\\
-snes\_rtol~=~1.0e-20~\\
-snes\_atol~=~1.0e-10~\\
-~\\
-\#~Set~preconditioner~for~friction~sensitivity~solve~\\
-friction\_pc\_type~=~asm~\\
-friction\_sub\_pc\_factor\_shift\_type~=~nonzero
+zero\_tolerance = 1.0e-11 \\
+
+[pylithapp.petsc] \\
+\# Linear solver tolerances \\
+ksp\_rtol = 1.0e-20 \\
+ksp\_atol = 1.0e-12 \\
+
+\# Nonlinear solver tolerances \\
+snes\_rtol = 1.0e-20 \\
+snes\_atol = 1.0e-10 \\
+
+\# Set preconditioner for friction sensitivity solve \\
+friction\_pc\_type = asm \\
+friction\_sub\_pc\_factor\_shift\_type = nonzero
 \end{lyxcode}
 The prescribed traction perturbation is specified using the same fault
 coordinate system as the slip directions in the kinematic ruptures.
@@ -1461,87 +1292,67 @@ Table \vref{tab:fault:dyn:output} shows the fields available for output.
 Additional fields are available depending on the fault constitutive
 model.
 
-\noindent \begin{center}
-\begin{table}[H]
-\noindent \centering{}\caption{\label{tab:fault:cohesive:dyn:prescribed:tractions}Values in spatial
-databases for prescribed tractions.}
-\medskip{}
-\begin{tabular}{|l|l|l|>{\raggedright}p{2.5in}|}
+\begin{table}[htbp]
+\caption{Values in spatial databases for prescribed tractions.}
+\label{tab:fault:cohesive:dyn:prescribed:tractions}
+\begin{tabular}{lllp{2.5in}}
+\textbf{Spatial database} & \textbf{Dimension} & \textbf{Value} & \textbf{Description}\\
 \hline 
-\textbf{Spatial database} & \textbf{Dimension} & \textbf{Value} & \textbf{Description}\tabularnewline
-\hline 
-\hline 
-\texttt{db\_initial} & 1D & \texttt{traction-normal} & Normal traction (tension is positive)\tabularnewline
-\cline{2-4} 
- & 2D & \texttt{traction-shear} & Left-lateral shear traction (reverse shear for dipping faults)\tabularnewline
-\cline{3-4} 
- &  & \texttt{traction-normal} & Normal traction (tension is positive)\tabularnewline
-\cline{2-4} 
- & 3D & \texttt{traction-shear-leftlateral} & Left-lateral shear traction\tabularnewline
-\cline{3-4} 
- &  & \texttt{traction-shear-updip} & Reverse shear traction\tabularnewline
-\cline{3-4} 
- &  & \texttt{traction-normal} & Normal traction (tension is positive)\tabularnewline
-\hline 
-\texttt{db\_rate} & 1D & \texttt{traction-rate-normal} & Rate of change of normal traction (tension is positive)\tabularnewline
-\cline{2-4} 
+\texttt{db\_initial} & 1D & \texttt{traction-normal} & Normal traction (tension is positive)\\
+ & 2D & \texttt{traction-shear} & Left-lateral shear traction (reverse shear for dipping faults)\\
+ &  & \texttt{traction-normal} & Normal traction (tension is positive)\\
+ & 3D & \texttt{traction-shear-leftlateral} & Left-lateral shear traction\\
+ &  & \texttt{traction-shear-updip} & Reverse shear traction\\
+ &  & \texttt{traction-normal} & Normal traction (tension is positive)\\
+\texttt{db\_rate} & 1D & \texttt{traction-rate-normal} & Rate of change of normal traction (tension is positive)\\
  & 2D & \texttt{traction-rate-shear} & Rate of change of left-lateral shear traction (reverse shear for dipping
-faults)\tabularnewline
- &  & \texttt{traction-rate-normal} & Rate of change of normal traction (tension is positive)\tabularnewline
-\cline{2-4} 
- & 3D & \texttt{traction-rate-leftlateral} & Rate of change of left-lateral shear traction\tabularnewline
- &  & \texttt{traction-rate-shear-updip} & Rate of change of reverse shear traction\tabularnewline
- &  & \texttt{traction-rate-normal} & Rate of change of normal traction (tension is positive)\tabularnewline
-\cline{2-4} 
- & all & \texttt{rate-start-time} & Time at which rate of change begins\tabularnewline
-\hline 
-\texttt{db\_change} & 1D & \texttt{traction-normal} & Change in normal traction (tension is positive)\tabularnewline
-\cline{2-4} 
- & 2D & \texttt{traction-shear} & Change in left-lateral shear traction (reverse shear for dipping faults)\tabularnewline
- &  & \texttt{traction-normal} & Change in normal traction (tension is positive)\tabularnewline
-\cline{2-4} 
- & 3D & \texttt{traction-leftlateral} & Change in left-lateral shear traction\tabularnewline
- &  & \texttt{traction-shear-updip} & Change in reverse shear traction\tabularnewline
- &  & \texttt{traction-normal} & Change in normal traction (tension is positive)\tabularnewline
-\cline{2-4} 
- & all & \texttt{change-start-time} & Time at which change begins\tabularnewline
-\hline 
-\texttt{th\_change} & all & None & Time history for change\tabularnewline
-\hline 
-\end{tabular}
-\end{table}
-\begin{table}[H]
-\noindent \centering{}\caption{\label{tab:fault:dyn:output}Fields available in output of fault information.}
-\medskip{}
-\begin{tabular}{|c|c|>{\centering}p{3.5in}|}
-\hline 
-\textbf{Field Type} & \textbf{Field} & \textbf{Description}\tabularnewline
-\hline 
-\hline 
-\texttt{vertex\_info\_fields} & \texttt{normal\_dir} & \raggedright{}Direction of fault normal in global coordinate system\tabularnewline
- & \texttt{strike\_dir} & \raggedright{}Direction of fault strike in global coordinate system\tabularnewline
- & \texttt{dip\_dir} & \raggedright{}Up-dip direction on hanging wall in global coordinate
-system\tabularnewline
- & \texttt{traction\_initial} & \raggedright{}Initial tractions (if specified) in fault coordinate
-system\tabularnewline
- & \texttt{traction\_rate} & \raggedright{}Rate of change in tractions (if specified) in fault
-coordinate system\tabularnewline
- & \texttt{rate\_start\_time} & \raggedright{}Time at which rate of change begins (if specified)\tabularnewline
- & \texttt{traction\_change} & \raggedright{}Change in tractions (if specified) in fault coordinate
-system\tabularnewline
- & \texttt{change\_start\_time} & \raggedright{}Time at which change occurs (if specified)\tabularnewline
-\hline 
-\texttt{vertex\_data\_fields} & \texttt{slip} & \raggedright{}Slip vector at time step (in fault coordinate system)
-in meters\tabularnewline
- & \texttt{traction} & \raggedright{}Fault tractions (in fault coordinate system) in Pa\tabularnewline
+faults)\\
+ &  & \texttt{traction-rate-normal} & Rate of change of normal traction (tension is positive)\\
+ & 3D & \texttt{traction-rate-leftlateral} & Rate of change of left-lateral shear traction\\
+ &  & \texttt{traction-rate-shear-updip} & Rate of change of reverse shear traction\\
+ &  & \texttt{traction-rate-normal} & Rate of change of normal traction (tension is positive)\\
+ & all & \texttt{rate-start-time} & Time at which rate of change begins\\
+\texttt{db\_change} & 1D & \texttt{traction-normal} & Change in normal traction (tension is positive)\\
+ & 2D & \texttt{traction-shear} & Change in left-lateral shear traction (reverse shear for dipping faults)\\
+ &  & \texttt{traction-normal} & Change in normal traction (tension is positive)\\
+ & 3D & \texttt{traction-leftlateral} & Change in left-lateral shear traction\\
+ &  & \texttt{traction-shear-updip} & Change in reverse shear traction\\
+ &  & \texttt{traction-normal} & Change in normal traction (tension is positive)\\
+ & all & \texttt{change-start-time} & Time at which change begins\\
+\texttt{th\_change} & all & None & Time history for change\\
 \hline 
 \end{tabular}
 \end{table}
 
-\par\end{center}
+\begin{table}[htbp]
+\caption{Fields available in output of fault information.}
+\label{tab:fault:dyn:output}
+\begin{tabular}{llp{3.5in}}
+\textbf{Field Type} & \textbf{Field} & \textbf{Description}\\
+\hline 
+\texttt{vertex\_info\_fields} & \texttt{normal\_dir} & Direction of fault normal in global coordinate system\\
+ & \texttt{strike\_dir} & Direction of fault strike in global coordinate system\\
+ & \texttt{dip\_dir} & Up-dip direction on hanging wall in global coordinate
+system\\
+ & \texttt{traction\_initial} & Initial tractions (if specified) in fault coordinate
+system\\
+ & \texttt{traction\_rate} & Rate of change in tractions (if specified) in fault
+coordinate system\\
+ & \texttt{rate\_start\_time} & Time at which rate of change begins (if specified)\\
+ & \texttt{traction\_change} & Change in tractions (if specified) in fault coordinate
+system\\
+ & \texttt{change\_start\_time} & Time at which change occurs (if specified)\\
+\hline 
+\texttt{vertex\_data\_fields} & \texttt{slip} & Slip vector at time step (in fault coordinate system)
+in meters\\
+ & \texttt{traction} & Fault tractions (in fault coordinate system) in Pa\\
+\hline 
+\end{tabular}
+\end{table}
 
 
-\subsubsection{Fault Constitutive Models\label{sec:fault:constitutive:models}}
+\subsubsection{Fault Constitutive Models}
+\label{sec:fault:constitutive:models}
 
 PyLith provides four fault constitutive models. Future releases may
 contain additional models, and a template is provided for you to construct
@@ -1576,27 +1387,21 @@ T_{c}-\mu_{f}T_{n} & T_{n}\leq0\\
 The spatial database file for the static friction model properties
 specifies the spatial variation of the parameters given in Table \vref{tab:static:friction:properties}.
 
-\noindent \begin{center}
-\begin{table}[H]
-\noindent \centering{}\caption{\label{tab:static:friction:properties}Values in the spatial database
-for constant friction parameters.}
-\medskip{}
-\begin{tabular}{|c|>{\raggedright}p{2.5in}|}
+\begin{table}[htbp]
+\caption{Values in the spatial database for constant friction parameters.}
+\label{tab:static:friction:properties}
+\begin{tabular}{lp{2.5in}}
+\textbf{Value} & \textbf{Description}\\
 \hline 
-\textbf{Value} & \centering{}\textbf{Description}\tabularnewline
-\hline 
-\hline 
-\texttt{friction-coefficient} & \centering{}Coefficient of friction, $\mu_{f}$\tabularnewline
-\hline 
-\texttt{cohesion} & \centering{}Cohesive stress, $T_{c}$\tabularnewline
+\texttt{friction-coefficient} & Coefficient of friction, $\mu_{f}$\\
+\texttt{cohesion} & Cohesive stress, $T_{c}$\\
 \hline 
 \end{tabular}
 \end{table}
 
-\par\end{center}
 
-
-\paragraph{\label{sec:friction:slip:weakening}Slip-Weakening Friction}
+\paragraph{Slip-Weakening Friction}
+\label{sec:friction:slip:weakening}
 
 The linear slip-weakening friction model produces shear tractions
 equal to the cohesive stress plus a contribution proportional to the
@@ -1627,38 +1432,33 @@ state variable reset to zero) is forced after every time step.
 An example of setting the properties for the slip-weakening friction
 component in a \texttt{.cfg} file is:
 \begin{lyxcode}
-{[}pylithapp.problem.interfaces.fault{]}
+[pylithapp.problem.interfaces.fault]
 
-friction~=~pylith.friction.SlipWeakening~;~Change~from~the~default
+friction = pylith.friction.SlipWeakening ; Change from the default
 
-friction.force\_healing~=~False~;~default~value
+friction.force\_healing = False ; default value
 \end{lyxcode}
-\noindent \begin{center}
-\begin{table}[H]
-\noindent \centering{}\caption{\label{tab:slip:weakening:properties:statevars}Values in spatial
-databases for slip-weakening friction.}
-\medskip{}
-\begin{tabular}{|l|l|>{\raggedright}p{2.5in}|}
+
+\begin{table}[htbp]
+\caption{Values in spatial databases for slip-weakening friction.}
+\label{tab:slip:weakening:properties:statevars}
+\begin{tabular}{llp{2.5in}|}
+\textbf{Spatial database} & \textbf{Value} & \textbf{Description}\\
 \hline 
-\textbf{Spatial database} & \textbf{Value} & \textbf{Description}\tabularnewline
+\texttt{db\_properties} & \texttt{static-coefficient} & Static coefficient of friction, $\mu_{s}$\\
+\cline{2-3} 
+ & \texttt{dynamic-coefficient} & Dynamic coefficient of friction, $\mu_{d}$\\
+\cline{2-3} 
+ & \texttt{slip-weakening-parameter} & Slip-weakening parameter, $d_{0}$\\
+\cline{2-3} 
+ & \texttt{cohesion} & Cohesive stress, $T_{c}$\\
 \hline 
-\hline 
-\texttt{db\_properties} & \texttt{static-coefficient} & Static coefficient of friction, $\mu_{s}$\tabularnewline
+\texttt{db\_initial\_state} & \texttt{cumulative-slip} & Cumulative slip, $d$\\
 \cline{2-3} 
- & \texttt{dynamic-coefficient} & Dynamic coefficient of friction, $\mu_{d}$\tabularnewline
-\cline{2-3} 
- & \texttt{slip-weakening-parameter} & Slip-weakening parameter, $d_{0}$\tabularnewline
-\cline{2-3} 
- & \texttt{cohesion} & Cohesive stress, $T_{c}$\tabularnewline
-\hline 
-\texttt{db\_initial\_state} & \texttt{cumulative-slip} & Cumulative slip, $d$\tabularnewline
-\cline{2-3} 
- & \texttt{previous-slip} & Slip at previous time step, $d(t-\Delta t)$\tabularnewline
+ & \texttt{previous-slip} & Slip at previous time step, $d(t-\Delta t)$\\
 \hline 
 \end{tabular}
 \end{table}
-
-\par\end{center}
 
 
 \paragraph{Time-Weakening Friction}
@@ -1682,34 +1482,24 @@ As long as the fault is locked, the initial state variable is zero,
 so specifying the initial state variable for time-weakening friction
 is rare.
 
-\noindent \begin{center}
-\begin{table}[H]
-\noindent \centering{}\caption{\label{tab:time:weakening:properties:statevars}Values in spatial
-databases for time-weakening friction.}
-\medskip{}
-\begin{tabular}{|l|l|>{\raggedright}p{2.5in}|}
+\begin{table}[htbp]
+\caption{Values in spatial databases for time-weakening friction.}
+\label{tab:time:weakening:properties:statevars}
+\begin{tabular}{llp{2.5in}}
+\textbf{Database} & \textbf{Value} & \textbf{Description}\\
 \hline 
-\textbf{Database} & \textbf{Value} & \textbf{Description}\tabularnewline
-\hline 
-\hline 
-\texttt{db\_properties} & \texttt{static-coefficient} & Static coefficient of friction, $\mu_{s}$\tabularnewline
-\cline{2-3} 
- & \texttt{dynamic-coefficient} & Dynamic coefficient of friction, $\mu_{d}$\tabularnewline
-\cline{2-3} 
- & \texttt{time-weakening-parameter} & Time-weakening parameter, $t_{0}$\tabularnewline
-\cline{2-3} 
- & \texttt{cohesion} & Cohesive stress, $T_{c}$\tabularnewline
-\hline 
-\texttt{db\_initial\_state} & \texttt{elapsed-time} & Elasped time of slip, $t$\tabularnewline
+\texttt{db\_properties} & \texttt{static-coefficient} & Static coefficient of friction, $\mu_{s}$\\
+ & \texttt{dynamic-coefficient} & Dynamic coefficient of friction, $\mu_{d}$\\
+ & \texttt{time-weakening-parameter} & Time-weakening parameter, $t_{0}$\\
+ & \texttt{cohesion} & Cohesive stress, $T_{c}$\\
+\texttt{db\_initial\_state} & \texttt{elapsed-time} & Elasped time of slip, $t$\\
 \hline 
 \end{tabular}
 \end{table}
 
-\par\end{center}
 
-
-\paragraph{\label{sec:friction:slip:time:weakening}Slip- and Time-Weakening
-Friction I}
+\paragraph{Slip- and Time-Weakening Friction I}
+\label{sec:friction:slip:time:weakening}
 
 This friction model, used in a few SCEC Spontaneous Rupture benchmarks,
 combines characteristics of slip-weakening and time-weakening friction.
@@ -1737,44 +1527,32 @@ was developed for dynamic simulations.
 An example of setting the properties for the rate and state friction
 component in a \texttt{.cfg} file is:
 \begin{lyxcode}
-{[}pylithapp.problem.interfaces.fault{]}
+[pylithapp.problem.interfaces.fault]
 
-friction~=~pylith.friction.SlipWeakeningTime~;~Change~from~the~default
-
-
+friction = pylith.friction.SlipWeakeningTime ; Change from the default
 \end{lyxcode}
-\noindent \begin{center}
-\begin{table}[H]
-\noindent \centering{}\caption{\label{tab:slip:time:weakening:properties:statevars}Values in spatial
-databases for a simple slip- and time-weakening friction model.}
-\medskip{}
-\begin{tabular}{|l|l|>{\raggedright}p{2.5in}|}
+
+\begin{table}[htbp]
+\caption{Values in spatial databases for a simple slip- and time-weakening friction model.}
+\label{tab:slip:time:weakening:properties:statevars}
+\begin{tabular}{llp{2.5in}}
+\textbf{Spatial database} & \textbf{Value} & \textbf{Description}\\
 \hline 
-\textbf{Spatial database} & \textbf{Value} & \textbf{Description}\tabularnewline
+\texttt{db\_properties} & \texttt{static-coefficient} & Static coefficient of friction, $\mu_{s}$\\
+ & \texttt{dynamic-coefficient} & Dynamic coefficient of friction, $\mu_{d}$\\
+ & \texttt{slip-weakening-parameter} & Slip-weakening parameter, $d_{0}$\\
+ & \texttt{weakening-time} & Weakening time, $t_{w}$\\
+ & \texttt{cohesion} & Cohesive stress, $T_{c}$\\
 \hline 
-\hline 
-\texttt{db\_properties} & \texttt{static-coefficient} & Static coefficient of friction, $\mu_{s}$\tabularnewline
-\cline{2-3} 
- & \texttt{dynamic-coefficient} & Dynamic coefficient of friction, $\mu_{d}$\tabularnewline
-\cline{2-3} 
- & \texttt{slip-weakening-parameter} & Slip-weakening parameter, $d_{0}$\tabularnewline
-\cline{2-3} 
- & \texttt{weakening-time} & Weakening time, $t_{w}$\tabularnewline
-\cline{2-3} 
- & \texttt{cohesion} & Cohesive stress, $T_{c}$\tabularnewline
-\hline 
-\texttt{db\_initial\_state} & \texttt{cumulative-slip} & Cumulative slip, $d$\tabularnewline
-\cline{2-3} 
- & \texttt{previous-slip} & Slip at previous time step, $d(t-\Delta t)$\tabularnewline
+\texttt{db\_initial\_state} & \texttt{cumulative-slip} & Cumulative slip, $d$\\
+ & \texttt{previous-slip} & Slip at previous time step, $d(t-\Delta t)$\\
 \hline 
 \end{tabular}
 \end{table}
 
-\par\end{center}
 
-
-\paragraph{\label{sec:friction:slip:time:stable:weakening}Slip- and Time-Weakening
-Friction II}
+\paragraph{Slip- and Time-Weakening Friction II}
+\label{sec:friction:slip:time:stable:weakening}
 
 This friction model, used in a few SCEC Spontaneous Rupture benchmarks,
 merges features of slip-weakening and time-weakening to provide a
@@ -1793,7 +1571,6 @@ T_{c}-(\mu_{s}-(\mu_{s}-\mu_{d})max(f_{1},f_{2}))T_{n} & T_{n}\leq0\\
 0 & T_{n}>0
 \end{cases}
 \end{equation}
-
 
 \begin{equation}
 f_{1}=\begin{cases}
@@ -1820,47 +1597,33 @@ was developed for dynamic simulations.
 An example of setting the properties for the rate and state friction
 component in a \texttt{.cfg} file is:
 \begin{lyxcode}
-{[}pylithapp.problem.interfaces.fault{]}
+[pylithapp.problem.interfaces.fault]
 
-friction~=~pylith.friction.SlipWeakeningTimeStable~;~Change~from~the~default
-
-
+friction = pylith.friction.SlipWeakeningTimeStable ; Change from the default
 \end{lyxcode}
-\noindent \begin{center}
-\begin{table}[H]
-\noindent \centering{}\caption{\label{tab:slip:time:stable:weakening:properties:statevars}Values
-in spatial databases for a second slip- and time-weakening friction
-model.}
-\medskip{}
-\begin{tabular}{|l|l|>{\raggedright}p{2.5in}|}
+
+\begin{table}[htbp]
+\caption{Values
+in spatial databases for a second slip- and time-weakening friction model.}
+\label{tab:slip:time:stable:weakening:properties:statevars}
+\begin{tabular}{llp{2.5in}}
+\textbf{Spatial database} & \textbf{Value} & \textbf{Description}\\
 \hline 
-\textbf{Spatial database} & \textbf{Value} & \textbf{Description}\tabularnewline
-\hline 
-\hline 
-\texttt{db\_properties} & \texttt{static-coefficient} & Static coefficient of friction, $\mu_{s}$\tabularnewline
-\cline{2-3} 
- & \texttt{dynamic-coefficient} & Dynamic coefficient of friction, $\mu_{d}$\tabularnewline
-\cline{2-3} 
- & \texttt{slip-weakening-parameter} & Slip-weakening parameter, $d_{0}$\tabularnewline
-\cline{2-3} 
- & \texttt{time-weakening-time} & Weakening time, $t_{w}$\tabularnewline
-\cline{2-3} 
- & \texttt{time-weakening-parameter} & Time-weakening parameter, $t_{0}$\tabularnewline
-\cline{2-3} 
- & \texttt{cohesion} & Cohesive stress, $T_{c}$\tabularnewline
-\hline 
-\texttt{db\_initial\_state} & \texttt{cumulative-slip} & Cumulative slip, $d$\tabularnewline
-\cline{2-3} 
- & \texttt{previous-slip} & Slip at previous time step, $d(t-\Delta t)$\tabularnewline
+\texttt{db\_properties} & \texttt{static-coefficient} & Static coefficient of friction, $\mu_{s}$\\
+ & \texttt{dynamic-coefficient} & Dynamic coefficient of friction, $\mu_{d}$\\
+ & \texttt{slip-weakening-parameter} & Slip-weakening parameter, $d_{0}$\\
+ & \texttt{time-weakening-time} & Weakening time, $t_{w}$\\
+ & \texttt{time-weakening-parameter} & Time-weakening parameter, $t_{0}$\\
+ & \texttt{cohesion} & Cohesive stress, $T_{c}$\\
+\texttt{db\_initial\_state} & \texttt{cumulative-slip} & Cumulative slip, $d$\\
+ & \texttt{previous-slip} & Slip at previous time step, $d(t-\Delta t)$\\
 \hline 
 \end{tabular}
 \end{table}
 
-\par\end{center}
 
-
-\paragraph{\label{sec:friction:rate:state:ageing}Rate- and State-Friction with
-Ageing Law}
+\paragraph{Rate- and State-Friction with Ageing Law}
+\label{sec:friction:rate:state:ageing}
 
 The Dieterich-Ruina rate and state friction model produces shear tractions
 equal to the cohesive stress plus a contribution proportional to the
@@ -1905,7 +1668,6 @@ second exponential yields
 \end{cases}
 \end{equation}
 
-
 A zero value for the initial state results in infinite values for
 the coefficient of friction. To avoid such behavior when the user
 fails to provide nonzero values for the initial state, we set the
@@ -1920,47 +1682,36 @@ one order of magnitude larger than absolute tolerance in solve.
 An example of setting the properties for the rate- and state-friction
 component in a \texttt{.cfg} file is:
 \begin{lyxcode}
-{\footnotesize{}{[}pylithapp.problem.interfaces.fault{]}}{\footnotesize \par}
+{\footnotesize{}[pylithapp.problem.interfaces.fault]}{\footnotesize \par}
 
-{\footnotesize{}friction~=~pylith.friction.RateStateAgeing~;~Change~from~the~default}{\footnotesize \par}
+{\footnotesize{}friction = pylith.friction.RateStateAgeing ; Change from the default}{\footnotesize \par}
 
-{\footnotesize{}friction.linear\_slip\_rate~=~1.0e-12~;~default~value}{\footnotesize \par}
+{\footnotesize{}friction.linear\_slip\_rate = 1.0e-12 ; default value}{\footnotesize \par}
 \end{lyxcode}
 The spatial database files for the rate- and state-friction model
 properties and state variables specify the spatial variation of the
 fault constitutive model parameters given in Table \vref{tab:rate:state:ageing:properties:statevars}.
 
-\noindent \begin{center}
-\begin{table}[H]
-\noindent \centering{}\caption{\label{tab:rate:state:ageing:properties:statevars}Values in spatial
-databases for Dieterich-Ruina rate-state friction.}
-\medskip{}
-\begin{tabular}{|l|l|>{\raggedright}p{2.5in}|}
+\begin{table}[htbp]
+\caption{Values in spatial databases for Dieterich-Ruina rate-state friction.}
+\label{tab:rate:state:ageing:properties:statevars}
+\begin{tabular}{llp{2.5in}}
+\textbf{Database} & \textbf{Value} & \textbf{Description}\\
 \hline 
-\textbf{Database} & \textbf{Value} & \textbf{Description}\tabularnewline
-\hline 
-\hline 
-\texttt{db\_properties} & \texttt{vreference-friction-coefficient} & Steady-state coefficient of friction at slip rate $V_{0}$, $\mu_{s}$\tabularnewline
-\cline{2-3} 
- & \texttt{vreference-slip-rate} & Reference slip rate, $V_{0}$\tabularnewline
-\cline{2-3} 
- & \texttt{characteristic-slip-distance} & Slip-weakening parameter, $L$\tabularnewline
-\cline{2-3} 
- & \texttt{constitutive-parameter-a} & Coefficient for the $\ln$ slip rate term, $a$\tabularnewline
-\cline{2-3} 
- & \texttt{constitutive-parameter-b} & Coefficient for the $\ln$ state variable term, $b$\tabularnewline
-\cline{2-3} 
- & \texttt{cohesion} & Cohesive stress, $T_{c}$\tabularnewline
-\hline 
-\texttt{db\_initial\_state} & \texttt{state-variable} & State variable, $\theta$\tabularnewline
+\texttt{db\_properties} & \texttt{reference-friction-coefficient} & Steady-state coefficient of friction at slip rate $V_{0}$, $\mu_{s}$\\
+ & \texttt{reference-slip-rate} & Reference slip rate, $V_{0}$\\
+ & \texttt{characteristic-slip-distance} & Slip-weakening parameter, $L$\\
+ & \texttt{constitutive-parameter-a} & Coefficient for the $\ln$ slip rate term, $a$\\
+ & \texttt{constitutive-parameter-b} & Coefficient for the $\ln$ state variable term, $b$\\
+ & \texttt{cohesion} & Cohesive stress, $T_{c}$\\
+\texttt{db\_initial\_state} & \texttt{state-variable} & State variable, $\theta$\\
 \hline 
 \end{tabular}
 \end{table}
 
-\par\end{center}
 
-
-\subsection{\label{sec:fault:cohesive:impulses}Slip Impulses for Green's Functions}
+\subsection{Slip Impulses for Green's Functions}
+\label{sec:fault:cohesive:impulses}
 
 Computing static Green's functions using the GreensFns problem requires
 a specialized fault implementation, FaultCohesiveImpulses, to set
@@ -1974,26 +1725,26 @@ include:
 be generated at locations on the fault where the amplitude exceeds
 this threshold.
 \item [{impulse\_dof}] Array of components associated with impulses, e.g.,
-{[}0, 1{]} for slip involving the lateral and up-dip components.
+[0, 1] for slip involving the lateral and up-dip components.
 \item [{db\_impulse\_amplitude}] Spatial database for amplitude of slip
 impulse (scalar field). Default is SimpleDB.
 \end{description}
 An example of setting the properties and facilities for FaultCohesiveImpulses
 in a \texttt{.cfg} file is:
 \begin{lyxcode}
-{[}pylithapp.problem.interfaces{]}
+[pylithapp.problem.interfaces]
 
-fault~=~pylith.faults.FaultCohesiveImpulses~;~Change~from~the~default~\\
-~\\
-{[}pylithapp.problem.interfaces.fault{]}
+fault = pylith.faults.FaultCohesiveImpulses ; Change from the default 
 
-threshold~=~1.0e-6{*}m~;~default
+[pylithapp.problem.interfaces.fault]
 
-impulse\_dof~=~{[}0{]}~;~lateral~slip-only
+threshold = 1.0e-6{*}m ; default
 
-db\_impulse\_amplitude.iohandler.filename~=~myimpulse.spatialdb
+impulse\_dof = [0] ; lateral slip-only
 
-db\_impulse\_amplitude.label~=~Impulse~amplitude
+db\_impulse\_amplitude.iohandler.filename = myimpulse.spatialdb
+
+db\_impulse\_amplitude.label = Impulse amplitude
 \end{lyxcode}
 
 \section{Gravitational Body Forces}
@@ -2027,7 +1778,7 @@ with the negative z-axis, as would be the case in a geographic-projected
 coordinate system or a generic Cartesian coordinate system. For cases
 in which the curvature of the earth should be considered, the spatialdata
 package provides an earth-centered, earth-fixed (ECEF) coordinate
-system and a local geovreferenced Cartesian system; in each of these
+system and a local georeferenced Cartesian system; in each of these
 cases the orientation vector is computed automatically, although this
 feature has not been tested. For problems in one or two dimensions
 where the orientation vector is constant, the vector will need to
@@ -2038,20 +1789,22 @@ three components, although the extra component is not used.
 Gravity is turned off by default. To include gravitational effects
 in a simulation, you can turn it on as follows:
 \begin{lyxcode}
-{[}pylithapp.timedependent{]}
+[pylithapp.timedependent]
 
-gravity\_field~=~spatialdata.spatialdb.GravityField
+gravity\_field = spatialdata.spatialdb.GravityField
 \end{lyxcode}
 By simply adding this flag, the default gravity field values will
 be used and a \texttt{gravity\_field} component will be assigned for
 the problem. The default values may be changed by altering the properties
 of \texttt{gravity\_field}:
 \begin{lyxcode}
-{[}pylithapp.timedependent.gravity\_field{]}
+[pylithapp.timedependent.gravity\_field]
 
-acceleration~=~100.0{*}m{*}s{*}{*}-2
+acceleration = 100.0{*}m{*}s{*}{*}-2
 
-gravity\_dir~=~{[}0,~-1,~0{]}
+gravity\_dir = [0, -1, 0]
 \end{lyxcode}
 Examples using gravity are described in Sections \vref{sec:Tutorial-3d-hex8-gravity}
 and \vref{sec:Tutorial-Gravity-2d}.
+
+% End of file
