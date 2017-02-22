@@ -256,28 +256,28 @@ pylith::materials::MaterialNew::computeLHSJacobianLumpedInv(pylith::topology::Fi
     PetscInt cStart = 0, cEnd = 0;
     PetscErrorCode err;
 
-    PetscDM dmMesh = solution.dmMesh();
+    PetscDM dmSoln = solution.dmMesh();
     PetscDM dmAux = _auxFields->dmMesh();
     PetscDMLabel dmLabel;
 
     // Pointwise function have been set in DS
-    err = DMGetDS(dmMesh, &prob); PYLITH_CHECK_ERROR(err);
+    err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err);
 
     // Get auxiliary data
-    err = PetscObjectCompose((PetscObject) dmMesh, "dmAux", (PetscObject) dmAux); PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) auxFields().localVector()); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) auxFields().localVector()); PYLITH_CHECK_ERROR(err);
 
     PetscVec vecRowSum = NULL;
-    err = DMGetGlobalVector(dmMesh, &vecRowSum); PYLITH_CHECK_ERROR(err);
+    err = DMGetGlobalVector(dmSoln, &vecRowSum); PYLITH_CHECK_ERROR(err);
     err = VecSet(vecRowSum, 1.0); PYLITH_CHECK_ERROR(err);
 
     // Compute the local Jacobian action
-    err = DMGetLabel(dmMesh, "material-id", &dmLabel); PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmSoln, "material-id", &dmLabel); PYLITH_CHECK_ERROR(err);
     err = DMLabelGetStratumBounds(dmLabel, id(), &cStart, &cEnd); PYLITH_CHECK_ERROR(err);
 
     PYLITH_JOURNAL_ERROR(":TODO: @matt DMPlexComputeJacobianAction_Internal() not yet implemented in PETSc knepley/pylith.");
 #if 0 // NOT YET IMPLEMENTED IN petsc-dev knepley/pylith
-    err = DMPlexComputeJacobianAction_Internal(dmMesh, cStart, cEnd, t, tshift, vecRowSum, NULL, vecRowSum, jacobianInv->localVector(), NULL); PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeJacobianAction_Internal(dmSoln, cStart, cEnd, t, tshift, vecRowSum, NULL, vecRowSum, jacobianInv->localVector(), NULL); PYLITH_CHECK_ERROR(err);
 
     // Compute the Jacobian inverse.
     err = VecReciprocal(jacobianInv->localVector()); PYLITH_CHECK_ERROR(err);
@@ -321,24 +321,24 @@ pylith::materials::MaterialNew::_computeResidual(PetscVec residualVec,
     PetscInt cStart = 0, cEnd = 0;
     PetscErrorCode err;
 
-    PetscDM dmMesh = solution.dmMesh();
+    PetscDM dmSoln = solution.dmMesh();
     PetscDM dmAux = _auxFields->dmMesh();
     PetscDMLabel dmLabel;
 
     // Pointwise function have been set in DS
-    err = DMGetDS(dmMesh, &prob); PYLITH_CHECK_ERROR(err);
+    err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err);
 
     // Get auxiliary data
-    err = PetscObjectCompose((PetscObject) dmMesh, "dmAux", (PetscObject) dmAux); PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) _auxFields->localVector()); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxFields->localVector()); PYLITH_CHECK_ERROR(err);
 
     // Compute the local residual
     assert(solution.localVector());
-    err = DMGetLabel(dmMesh, "material-id", &dmLabel); PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmSoln, "material-id", &dmLabel); PYLITH_CHECK_ERROR(err);
     err = DMLabelGetStratumBounds(dmLabel, id(), &cStart, &cEnd); PYLITH_CHECK_ERROR(err);
 
     PYLITH_JOURNAL_DEBUG("DMPlexComputeResidual_Internal() with material-id '"<<id()<<"' and cells ["<<cStart<<","<<cEnd<<")");
-    err = DMPlexComputeResidual_Internal(dmMesh, cStart, cEnd, PETSC_MIN_REAL, solution.localVector(), solutionDotVec, residualVec, NULL); PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeResidual_Internal(dmSoln, cStart, cEnd, PETSC_MIN_REAL, solution.localVector(), solutionDotVec, residualVec, NULL); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _computeResidual
@@ -364,24 +364,24 @@ pylith::materials::MaterialNew::_computeJacobian(PetscMat jacobianMat,
     PetscDS prob = NULL;
     PetscInt cStart = 0, cEnd = 0;
     PetscErrorCode err;
-    PetscDM dmMesh = solution.dmMesh();
+    PetscDM dmSoln = solution.dmMesh();
     PetscDM dmAux = _auxFields->dmMesh();
     PetscDMLabel dmLabel;
 
     // Pointwise function have been set in DS
-    err = DMGetDS(dmMesh, &prob); PYLITH_CHECK_ERROR(err);
+    err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err);
 
     // Get auxiliary data
-    err = PetscObjectCompose((PetscObject) dmMesh, "dmAux", (PetscObject) dmAux); PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) auxFields().localVector()); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) auxFields().localVector()); PYLITH_CHECK_ERROR(err);
 
     // Compute the local Jacobian
     assert(solution.localVector());
-    err = DMGetLabel(dmMesh, "material-id", &dmLabel); PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmSoln, "material-id", &dmLabel); PYLITH_CHECK_ERROR(err);
     err = DMLabelGetStratumBounds(dmLabel, id(), &cStart, &cEnd); PYLITH_CHECK_ERROR(err);
 
     PYLITH_JOURNAL_DEBUG("DMPlexComputeJacobian_Internal() with material-id '"<<id()<<"' and cells ["<<cStart<< ","<<cEnd<<")");
-    err = DMPlexComputeJacobian_Internal(dmMesh, cStart, cEnd, t, tshift, solution.localVector(), solutionDotVec, jacobianMat, precondMat, NULL); PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeJacobian_Internal(dmSoln, cStart, cEnd, t, tshift, solution.localVector(), solutionDotVec, jacobianMat, precondMat, NULL); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _computeJacobian
