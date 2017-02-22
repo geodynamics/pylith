@@ -156,7 +156,7 @@ are supported in 3D. Conversions among the geographic and geographic
 projected coordinate systems are supported in 2D. In using the coordinate
 systems, we assume that you have installed the \filename{proj} program
 in addition to the Proj.4 libraries, so that you can obtain a list
-of support projections, datums, and ellipsoids. Alternatively, vrefer
+of support projections, datums, and ellipsoids. Alternatively, refer
 to the documentation for the Proj.4 Cartographic Projections library
 \url{trac.osgeo.org/proj}.
 
@@ -205,7 +205,7 @@ cs-data = geographic {
 
 This coordinate system applies to geographic projections. As in the
 geographic coordinate system, the vertical coordinate (if used) can
-be specified with respect to either the vreference ellipsoid or mean
+be specified with respect to either the reference ellipsoid or mean
 sea level. The coordinate system can use a local origin and be rotated
 about the vertical direction.
 \begin{SimpleIOAscii}
@@ -213,7 +213,7 @@ cs-data = geo-projected {
   to-meters = 1.0e+3 // Conversion factor to get to meters.
   space-dim = 2 // 2 or 3 dimensions
 
-  // Run ``proj -le'' to see a list of available vreference ellipsoids.
+  // Run ``proj -le'' to see a list of available reference ellipsoids.
   // Comments are not allowed at the end of the next line.
   ellipsoid = WGS84
 
@@ -253,9 +253,9 @@ cs-data = geo-projected {
 
 \subsubsection{Geographic Local Cartesian}
 
-This coordinate system is a geographically vreferenced, local 3D Cartesian
+This coordinate system is a geographically referenced, local 3D Cartesian
 coordinate system. This allows use of a conventional Cartesian coordinate
-system with accurate geovreferencing. For example, one can construct
+system with accurate georeferencing. For example, one can construct
 a finite-element model in this coordinate system and use spatial databases
 in geographic coordinates. This coordinate system provides an alternative
 to using a geographic projection as the Cartesian grip. The advantage
@@ -268,7 +268,7 @@ cs-data = geo-local-cartesian {
   to-meters = 1.0 // use meters
   space-dim = 2 // 2 or 3 dimensions
 
-  // Run ``proj -le'' to see a list of available vreference ellipsoids.
+  // Run ``proj -le'' to see a list of available reference ellipsoids.
   // Comments are not allowed at the end of the next line.
   ellipsoid = WGS84
 

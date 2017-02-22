@@ -323,7 +323,7 @@ vector space) and $i$ is a vector space component, $x_{q}$ are the
 coordinates of the quadrature points, $w_{q}$ are the weights of
 the quadrature points, and $|J_{cell}(x_{q})|$ is the determinant
 of the Jacobian matrix evaluated at the quadrature points associated
-with mapping the vreference cell to the actual cell. The quadrature
+with mapping the reference cell to the actual cell. The quadrature
 scheme for the integral over the tractions is one dimension lower
 than the one used in integrating the terms for the volume cells.
 
@@ -407,7 +407,7 @@ r_{i}^{n}=-\sum_{\text{vol cells}}\sum_{\text{quad pts}}\sigma_{ij}(x_{q},t)N^{n
 where $x_{q}$ are the coordinates of the quadrature points, $w_{q}$
 are the weights of the quadrature points, and $|J_{cell}(x_{q})|$
 is the determinant of the Jacobian matrix evaluated at the quadrature
-points associated with mapping the vreference cell to the actual cell.
+points associated with mapping the reference cell to the actual cell.
 The quadrature scheme for the integral over the tractions is one dimension
 lower than the one used in integrating the terms for the volume cells. 
 
@@ -444,7 +444,7 @@ to replace the integrals with sums over the cells and quadrature points,
 A_{ij}^{nm}=\delta_{ij}\frac{1}{\Delta t^{2}}\sum_{\text{vol cells}}\sum_{\text{quad pts}}\rho(x_{q})N^{m}(x_{q})N^{n}(x_{q}),
 \end{equation}
 where $A_{ij}^{mn}$ is a $nd$ by $md$ matrix ($d$ is the dimension
-of the vector space), $m$ and $n$ vrefer to the basis functions and
+of the vector space), $m$ and $n$ refer to the basis functions and
 $i$ and $j$ are vector space components. We consider the contributions
 associated with the fault in section \vref{sec:fault} and with absorbing
 boundaries is section \vref{sec:absorbing:boundaries}.
@@ -520,7 +520,6 @@ in the undeformed configuration,
 \begin{equation}
 -\int_{V_{0}}\underline{P}:\nabla\overrightarrow{\phi}\, dV_{0}+\int_{S_{0}}\overrightarrow{T_{0}}\cdot\overrightarrow{\phi}\, dS_{0}+\int_{V_{0}}\overrightarrow{f_{0}}\cdot\overrightarrow{\phi}\, dV_{0}-\int_{V_{0}}\rho_{0}\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV_{0}=0.
 \end{equation}
-
 
 
 \subsection{Quasi-static Problems}
