@@ -26,6 +26,7 @@
 \RequirePackage{fourier} % texlive-fonts-extra
 \RequirePackage{float}
 \RequirePackage{varioref} % \vref
+\RequirePackage{enumitem}
 \RequirePackage{color}
 \RequirePackage{listings}
 \RequirePackage{pifont}
@@ -197,6 +198,8 @@
 
 % ------------------------------------------------------------------
 % Lists
+%
+\setlist[itemize]{itemsep=0.1em,parsep=0em}
 % Pyre inventory
 \newcommand{\propertyshape}[1]{{\ttfamily #1}}
 \newcommand{\facilityshape}[1]{{\ttfamily #1}}
