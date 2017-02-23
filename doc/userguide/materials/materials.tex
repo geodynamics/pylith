@@ -1,4 +1,3 @@
-
 \chapter{Material Models}
 \label{cha:material:models}
 
@@ -11,8 +10,7 @@ steps.
 \item In the mesh generation process, assign a material identifier to each
 cell.
 \item Define material property groups corresponding to each material identifier.
-\item Set the parameters for each material group using \texttt{.cfg} or
-\texttt{.pml} files and/or command-line arguments.
+\item Set the parameters for each material group using \filename{.cfg} and/or command-line arguments.
 \item Specify the spatial variation in material property parameters using
 a spatial database file.
 \end{enumerate}
@@ -35,112 +33,94 @@ and the mregion command.
 
 \subsection{Material Property Groups}
 
-The material property group associates a material model (label for
-the material, a bulk constitutive model, and parameters for the constitutive
-model) with a material identifier. In previous versions of PyLith
-it was necessary to specify containers that defined the number of
-groups and associated information for each group. This was necessary
-because previous versions of Pyre did not support dynamic arrays of
-components, and it was necessary to predefine these arrays. More recent
-versions of Pythia do support this, however, and it is now possible
-to define material property groups using a \texttt{.cfg} file, a \texttt{.pml}
-file, or on the command-line. User-defined containers are no longer
-necessary, and the predefined containers are no longer available (or
-necessary). If a set of material groups is not specified, a single
-material model is used for the entire problem. See Sections \vref{sec:Tutorial-3d-hex8}
-and \vref{sec:Tutorial-3d-tet4} for examples that demonstrate how
-to specify more than one material model.
+The material property group associates a material model (label for the
+material, a bulk constitutive model, and parameters for the
+constitutive model) with a material identifier. In previous versions
+of PyLith it was necessary to specify containers that defined the
+number of groups and associated information for each group. This was
+necessary because previous versions of Pyre did not support dynamic
+arrays of components, and it was necessary to predefine these
+arrays. More recent versions of Pythia do support this, however, and
+it is now possible to define material property groups using a
+\filename{.cfg} file or on the command-line. User-defined containers
+are no longer necessary, and the predefined containers are no longer
+available (or necessary). If a set of material groups is not
+specified, a single material model is used for the entire problem. See
+Sections \vref{sec:Tutorial-3d-hex8} and \vref{sec:Tutorial-3d-tet4}
+for examples that demonstrate how to specify more than one material
+model.
 
 
-\subsection{\label{sec:material:parameters}Material Parameters}
+\subsection{Material Parameters}
+\label{sec:material:parameters}
 
 For each material group, there is a single component defining the
-material model to be used. The default material model is \texttt{elasticisotropic3d}.
-For each material model, the available components are:
-\begin{description}
-\item [{db\_properties}] Spatial database specifying the spatial variation
-in the parameters of the bulk constitutive model (default is a SimpleDB).
-\item [{db\_initial\_stress}] Spatial database specifying the spatial variation
-in the initial stress (default is none).
-\item [{db\_initial\_strain}] Spatial database specifying the spatial variation
-in the initial strain (default is none).
-\item [{db\_initial\_state}] Spatial database specifying the spatial variation
-in the other initial state variables (default is none).
-\item [{output}] The output manager used for outputting material information.
-\item [{quadrature}] Numerical integration scheme used in integrating fields
-over each cell.
-\end{description}
-The properties for each material group are:
-\begin{description}
-\item [{id}] This is the material identifier that matches the integer value
-assigned to each cell in the mesh generation process.
-\item [{label}] Name or label for the material. This is used in error and
-diagnostic reports.
-\end{description}
-An example of setting these parameters in a \texttt{.cfg} file for
+material model to be used. The default material model is \object{ElasticIsotropic3D}.
+For each material model, the available properties and facilities are:
+\begin{inventory}
+\propertyitem{id}{This is the material identifier that matches the integer value
+assigned to each cell in the mesh generation process.}
+\propertyitem{label}{Name or label for the material. This is used in error and
+diagnostic reports.}
+\facilityitem{db\_properties}{Spatial database specifying the spatial variation
+in the parameters of the bulk constitutive model (default is a SimpleDB).}
+\facilityitem{db\_initial\_stress}{Spatial database specifying the spatial variation
+in the initial stress (default is none).}
+\facilityitem{db\_initial\_strain}{Spatial database specifying the spatial variation
+in the initial strain (default is none).}
+\facilityitem{db\_initial\_state}{Spatial database specifying the spatial variation
+in the other initial state variables (default is none).}
+\facilityitem{output}{The output manager used for outputting material information.}
+\facilityitem{quadrature}{Numerical integration scheme used in integrating fields
+over each cell.}
+\end{inventory}
+An example of setting these parameters in a \filename{.cfg} file for
 a problem with two material groups is:
-\begin{lyxcode}
-{[}pylithapp.timedependent{]}
+\begin{cfg}
+<h>[pylithapp.timedependent]</h>
+<p>materials</p> = [elastic,viscoelastic]
 
-materials~=~{[}elastic,viscoelastic{]}
+<h>[pylithapp.timedependent.materials.elastic]</h>
+<p>label</p> = Elastic material
+<p>id</p> = 1
+<p>db_properties.iohandler.filename</p> = mat\_elastic.spatialdb
+<f>quadrature.cell</f> = pylith.feassemble.FIATLagrange
+<p>quadrature.cell.dimension</p> = 3
 
-~
+<h>[pylithapp.timedependent.materials.viscoelastic]</h>
+<p>label</p> = Viscoelastic material
+<p>id</p> = 2
+<p>db_properties.iohandler.filename</p> = mat_viscoelastic.spatialdb
+<f>quadrature.cell</f> = pylith.feassemble.FIATLagrange
+<p>quadrature.cell.dimension</p> = 3
+\end{cfg}
 
-{[}pylithapp.timedependent.materials.elastic{]}
-
-label~=~Elastic~material
-
-id~=~1
-
-db\_properties.iohandler.filename~=~mat\_elastic.spatialdb
-
-quadrature.cell~=~pylith.feassemble.FIATLagrange
-
-quadrature.cell.dimension~=~3
-
-~
-
-{[}pylithapp.timedependent.materials.viscoelastic{]}
-
-label~=~Viscoelastic~material
-
-id~=~2
-
-db\_properties.iohandler.filename~=~mat\_viscoelastic.spatialdb
-
-quadrature.cell~=~pylith.feassemble.FIATLagrange
-
-quadrature.cell.dimension~=~3
-\end{lyxcode}
-These settings correspond to the the problem in Section \vref{sec:Tutorial-3d-hex8}.
-The parameters for the bulk constitutive models are specified using
-the spatial databases \texttt{mat\_elastic.spatialdb} and \texttt{mat\_viscoelastic.spatialdb}.
-Refer to the discussion of each material model to find the parameters
-that must be specified in the spatial database. Appendix \vref{sec:format:SimpleIOAscii}
-describes the format of the SimpleDB spatial database files. In a
-more realistic problem, a different spatial database, and possibly
-a different material model, would be used for each material group.
+These settings correspond to the the problem in Section
+\vref{sec:Tutorial-3d-hex8}.  The parameters for the bulk constitutive
+models are specified using the spatial databases
+\filename{mat\_elastic.spatialdb} and
+\filename{mat\_viscoelastic.spatialdb}.  Refer to the discussion of
+each material model to find the parameters that must be specified in
+the spatial database. Appendix \vref{sec:format:SimpleIOAscii}
+describes the format of the SimpleDB spatial database files. In a more
+realistic problem, a different spatial database, and possibly a
+different material model, would be used for each material group.
 
 In general, we average the output over the quadrature points within
 a cell and specify the name of the output files for each material
 group:
-\begin{lyxcode}
-{[}pylithapp.timedependent.materials.elastic.output{]}
+\begin{cfg}
+<h>[pylithapp.timedependent.materials.elastic.output]</h>
+<f>cell_filter</f> = pylith.meshio.CellFilterAvg
+<p>writer.filename</p> = dislocation-elastic.vtk
 
-cell\_filter~=~pylith.meshio.CellFilterAvg
+<h>[pylithapp.timedependent.materials.viscoelastic.output]</h>
+<f>cell_filter</f> = pylith.meshio.CellFilterAvg
+<p>writer.filename</p> = dislocation-viscoelastic.vtk
+\end{cfg}
 
-writer.filename~=~dislocation-elastic.vtk
-
-~
-
-{[}pylithapp.timedependent.materials.viscoelastic.output{]}
-
-cell\_filter~=~pylith.meshio.CellFilterAvg
-
-writer.filename~=~dislocation-viscoelastic.vtk
-\end{lyxcode}
 These settings again correspond to the problem in Section \vref{sec:Tutorial-3d-hex8}.
-The specification of a state variable base filename (\texttt{writer.filename}
+The specification of a state variable base filename (\filename{writer.filename}
 settings) will cause two files to be created for each material group:
 an info file, which describes the material property parameters used
 in the model, and a state variables file, which contains the state
@@ -162,83 +142,62 @@ require state variables in addition to the default stress and strain
 variables that are used by all material models. Additional output
 may be requested for a material model, as in this example (see Section
 \vref{sec:Tutorial-Two-hexahedra}):
-\begin{lyxcode}
-{[}pylithapp.timedependent.materials.material.output{]}
+\begin{cfg}
+<h>[pylithapp.timedependent.materials.material.output]</h>
+<p>cell_data_fields</p> = [total_strain, viscous_strain, stress]
+<p>cell_info_fields</p> = [mu, lambda, density, maxwell_time]
+\end{cfg}
 
-cell\_data\_fields~=~{[}total\_strain,viscous\_strain,stress{]}
-
-cell\_info\_fields~=~{[}mu,lambda,density,maxwell\_time{]}
-\end{lyxcode}
-The properties and state variables available for output in each material
-model are listed in Table \vref{tab:material-model-output}. The order
-of the state variables in the output arrays is given in Table \vref{tab:materials:statevars}.
-For the generalized Maxwell model, values of \texttt{shear\_ratio}
-and \texttt{maxwell\_time} are given for each Maxwell element in the
-model (there are presently three, as described below). Similarly,
-there are three sets of \texttt{viscous\_strain} values for the generalized
+The properties and state variables available for output in each
+material model are listed in Table
+\vref{tab:materials:output}. The order of the state variables in
+the output arrays is given in Table \vref{tab:materials:statevars}.
+For the generalized Maxwell model, values of \texttt{shear\_ratio} and
+\texttt{maxwell\_time} are given for each Maxwell element in the model
+(there are presently three, as described below). Similarly, there are
+three sets of \texttt{viscous\_strain} values for the generalized
 Maxwell model.
 
-\noindent \begin{center}
-\begin{table}[H]
-\centering{}\caption{\label{tab:material-model-output}Properties and state variables available
-for output for existing material models. Physical properties are available
-for output as \texttt{cell\_info\_fields} and state variables are
-available for output as \texttt{cell\_data\_fields}.}
-\begin{tabular}{|>{\centering}p{1.5in}|>{\centering}p{1.8in}|>{\centering}p{1.5in}|>{\centering}p{1in}|}
-\hline 
+\begin{table}[htbp]
+\caption{Properties and state variables available for output for
+  existing material models. Physical properties are available for
+  output as \property{cell\_info\_fields} and state variables are
+  available for output as \property{cell\_data\_fields}.}
+\label{tab:materials:output}
+
+\begin{tabular}{p{1.5in}p{1.8in}p{1.5in}p{1in}}
 \textbf{Model} & \textbf{Physical Properties} & \textbf{State Variables} & \textbf{Requires nonlinear solver?}\tabularnewline
 \hline 
-\hline 
-Elastic & \texttt{mu, lambda, density} & \texttt{total\_strain, stress, cauchy\_stress} & No\tabularnewline
-\hline 
-Maxwell Viscoelastic & \texttt{mu, lambda, density, maxwell\_time} & \texttt{total\_strain,}
-
-\texttt{stress, cauchy\_stress, viscous\_strain} & No\tabularnewline
-\hline 
-Generalized Maxwell Viscoelastic & \texttt{mu, lambda, density,}
-
-\texttt{shear\_ratio,}
-
-\texttt{maxwell\_time} & \texttt{total\_strain, stress, cauchy\_stress, viscous\_strain\_1,}~\\
-\texttt{viscous\_strain\_2,}~\\
-\texttt{viscous\_strain\_3} & No\tabularnewline
-\hline 
-Power-law Viscoelastic & \texttt{mu, lambda, density,}
-
-\texttt{vreference\_strain\_rate, vreference\_stress,}
-
-\texttt{power\_law\_exponent} & \texttt{total\_strain, stress, cauchy\_stress, viscous\_strain} & Yes\tabularnewline
-\hline 
-Drucker-Prager Elastoplastic & \texttt{mu, lambda, density, alpha\_yield},\texttt{ beta, alpha\_flow } & \texttt{total\_strain, stress, cauchy\_stress, plastic\_strain} & Yes\tabularnewline
-\hline 
-\end{tabular}
-\end{table}
-\begin{table}[H]
-\centering{}\caption{\label{tab:materials:statevars}Order of components in tensor
-state-variables for material models.}
-\begin{tabular}{|>{\centering}p{1.25in}|>{\centering}p{0.5in}|>{\centering}p{1.25in}|>{\centering}p{2.25in}|}
-\hline 
-\textbf{State Variable} & \textbf{1D} & \textbf{2D} & \textbf{3D}\tabularnewline
-\hline 
-\hline 
-\texttt{total\_strain} & $\epsilon_{xx}$ & $\epsilon_{xx}$, $\epsilon_{yy}$, $\epsilon_{xy}$ & $\epsilon_{xx}$, $\epsilon_{yy}$, $\epsilon_{zz}$, $\epsilon_{xy}$,
-$\epsilon_{yz}$, $\epsilon_{xz}$\tabularnewline
-\hline 
-\texttt{stress, cauchy\_stress} & $\sigma_{xx}$ & $\sigma_{xx}$, $\sigma_{yy}$, $\sigma_{xy}$ & $\sigma_{xx}$, $\sigma_{yy}$, $\sigma_{zz}$, $\sigma_{xy}$, $\sigma_{yz}$,
-$\sigma_{xz}$\tabularnewline
-\hline 
-\texttt{viscous\_strain, plastic\_strain} & $\epsilon_{xx}$ & $\epsilon_{xx}$, $\epsilon_{yy}$, $\epsilon_{zz}$, $\epsilon_{xy}$ & $\epsilon_{xx}$, $\epsilon_{yy}$, $\epsilon_{zz}$, $\epsilon_{xy}$,
-$\epsilon_{yz}$, $\epsilon_{xz}$\tabularnewline
-\hline 
-\texttt{stress4} &  & $\sigma_{xx}$, $\sigma_{yy}$, $\sigma_{zz}$, $\sigma_{xy}$ & \tabularnewline
+Elastic & \texttt{mu, lambda, density} & \texttt{total\_strain, stress, cauchy\_stress} & No\\
+Maxwell Viscoelastic & \texttt{mu, lambda, density, maxwell\_time} & \texttt{total\_strain,} \texttt{stress, cauchy\_stress, viscous\_strain} & No\\
+Generalized Maxwell Viscoelastic & \texttt{mu, lambda, density,} \texttt{shear\_ratio,} \texttt{maxwell\_time} & \texttt{total\_strain, stress, cauchy\_stress, viscous\_strain\_1,} \texttt{viscous\_strain\_2,} \texttt{viscous\_strain\_3} & No\\
+Power-law Viscoelastic & \texttt{mu, lambda, density,} \texttt{reference\_strain\_rate, reference\_stress,} 
+\texttt{power\_law\_exponent} & \texttt{total\_strain, stress, cauchy\_stress, viscous\_strain} & Yes\\
+Drucker-Prager Elastoplastic & \texttt{mu, lambda, density, alpha\_yield},\texttt{ beta, alpha\_flow } & \texttt{total\_strain, stress, cauchy\_stress, plastic\_strain} & Yes\\
 \hline 
 \end{tabular}
 \end{table}
 
-\par\end{center}
+\begin{table}[htbp]
+\caption{Order of components in tensor state-variables for material models.}
+\label{tab:materials:statevars}
+\begin{tabular}{p{2.5in}p{1.5in}p{2.0in}}
+\textbf{State Variable} & \textbf{2D} & \textbf{3D}\\
+\hline 
+\texttt{total\_strain} & $\epsilon_{xx}$, $\epsilon_{yy}$, $\epsilon_{xy}$ & $\epsilon_{xx}$, $\epsilon_{yy}$, $\epsilon_{zz}$, $\epsilon_{xy}$,
+$\epsilon_{yz}$, $\epsilon_{xz}$\\
+\texttt{stress, cauchy\_stress} & $\sigma_{xx}$, $\sigma_{yy}$, $\sigma_{xy}$ & $\sigma_{xx}$, $\sigma_{yy}$, $\sigma_{zz}$, $\sigma_{xy}$, $\sigma_{yz}$,
+$\sigma_{xz}$\\
+\texttt{viscous\_strain, plastic\_strain} & $\epsilon_{xx}$, $\epsilon_{yy}$, $\epsilon_{zz}$, $\epsilon_{xy}$ & $\epsilon_{xx}$, $\epsilon_{yy}$, $\epsilon_{zz}$, $\epsilon_{xy}$,
+$\epsilon_{yz}$, $\epsilon_{xz}$\\
+\texttt{stress4} & $\sigma_{xx}$, $\sigma_{yy}$, $\sigma_{zz}$, $\sigma_{xy}$ & \\
+\hline 
+\end{tabular}
+\end{table}
 
 
-\subsection{\label{sec:Initial-State-Variables}Initial State Variables}
+\subsection{Initial State Variables}
+\label{sec:materials:reference:state}
 
 In many problems of interest, the state variables describing a material
 model may already have nonzero values prior to the application of
@@ -273,117 +232,106 @@ set; otherwise the state variables are set to zero. To override this
 behavior, specify a spatial database for the initial stress, strain,
 and/or state variables as in the example from the tutorial in Section
 \vref{sec:Tutorial-3d-hex8}:
-\begin{lyxcode}
-{[}pylithapp.timedependent.materials.elastic{]}
+\begin{cfg}
+<h>[pylithapp.timedependent.materials.elastic]</h>
+<f>db_initial_stress</f> = spatialdata.spatialdb.SimpleDB
+<p>db_initial_stress.iohandler.filename<p> = initial\_stress.spatialdb
+\end{cfg}
 
-db\_initial\_stress~=~spatialdata.spatialdb.SimpleDB
+\warning{Using the elastic prestep with initial state variables will
+  generally lead to the state variables being ignored (the initial out
+  of plane stress is the exception), because the elastic prestep will
+  set the state variables based on the elastic solution.}
 
-db\_initial\_stress.iohandler.filename~=~initial\_stress.spatialdb\end{lyxcode}
-\begin{quote}
-\textbf{\textcolor{red}{Warning:}}\textbf{ }Using the elastic prestep
-with initial state variables will generally lead to the state variables
-being ignored (the initial out of plane stress is the exception),
-because the elastic prestep will set the state variables based on
-the elastic solution.
+\warning{Currently, PyLith assumes initial displacements and
+  velocities of zero, so any initial strain and state variables should
+  be consistent with these initial conditions.  This limitation will
+  be removed in future releases.}
 
-\textbf{\textcolor{red}{Warning:}}\textbf{ }Currently, PyLith assumes
-initial displacements and velocities of zero, so any initial strain
-and state variables should be consistent with these initial conditions.
-This limitation will be removed in future releases.
-\end{quote}
-As mentioned in section \vref{sec:ViscoelasticFormulations}, plane
+As mentioned in section \vref{sec:materials:formulations:viscoelastic}, plane
 strain problems do not include the out-of-plane stress component ($\sigma_{zz}$),
 and an additional state variable (\texttt{stress-zz-initial}) is provided
 for all two-dimensional viscoelastic and elastoplastic models. To
 completely specify the initial stresses, the user must provide two
 spatial databases: an initial stress database that includes the three
-2D stress components ($\sigma_{xx},\:\sigma_{yy},\:\sigma_{xy}$)
+2D stress components ($\sigma_{xx}$, $\sigma_{yy}$, and $\sigma_{xy}$)
 and an additional database containing the out of plane stress and
 initial values for all other state variables for the given material.
-The complete initial stress field may then be defined in the \texttt{.cfg}
+The complete initial stress field may then be defined in the \filename{.cfg}
 file as:
-\begin{lyxcode}
-{[}pylithapp.problem.materials.powerlaw{]}
+\begin{cfg}
+<h>[pylithapp.problem.materials.powerlaw]</h>
+# First specify initial 2D stresses
+<f>db_initial_stress</f> = spatialdata.spatialdb.SimpleDB
+<p>db_initial_stress.label</p> = 2D initial stress
+<p>db_initial_stress.iohandler.filename</p> = inititial_stress_2d.spatialdb
 
-\#~First~specify~initial~2D~stresses
+# Now specify out-of-plane initial stresses (and all other state variables)
+<f>db_initial_state</f> = spatialdata.spatialdb.SimpleDB
+<p>db_initial_state.label</p> = Out of plane strain initial stress
+<p>db_initial_state.iohandler.filename</p> = initial_state_2d.spatialdb
+\end{cfg}
 
-db\_initial\_stress~=~spatialdata.spatialdb.SimpleDB
-
-db\_initial\_stress.label~=~2D~initial~stress
-
-db\_initial\_stress.iohandler.filename~=~inititial\_stress\_2d.spatialdb
-
-
-
-\#~Now~specify~out-of-plane~initial~stresses~(and~all~other~state~variables)
-
-db\_initial\_state~=~spatialdata.spatialdb.SimpleDB
-
-db\_initial\_state.label~=~Out~of~plane~strain~initial~stress
-
-db\_initial\_state.iohandler.filename~=~initial\_state\_2d.spatialdb
-\end{lyxcode}
-\noindent \begin{center}
-\begin{table}[H]
-\noindent \centering{}\caption{Values in spatial database for initial state variables for 3D problems.
-2D problems use only the relevant values. Note that initial stress
-and strain are available for all material models. Some models have
-additional state variables (Table \vref{tab:material-model-output})
-and initial values for these may also be provided.}
-\begin{tabular}{|>{\centering}m{0.85in}|>{\centering}m{2.47in}|}
+\begin{table}[htbp]
+\caption{Values in spatial database for initial state variables for 3D
+  problems.  2D problems use only the relevant values. Note that
+  initial stress and strain are available for all material
+  models. Some models have additional state variables (Table
+  \vref{tab:materials:output}) and initial values for these may
+  also be provided.}
+\begin{tabular}{p{0.85in}p{5.0in}}
+\textbf{State Variable} & \textbf{Values in Spatial Database}\\
 \hline 
-\textbf{State Variable} & \centering{}\textbf{Values in Spatial Database}\tabularnewline
-\hline 
-\hline 
-initial stress & \texttt{stress-xx, stress-yy, stress-zz, stress-xy, stress-yz, stress-xz}\tabularnewline
-\hline 
+initial stress & \texttt{stress-xx, stress-yy, stress-zz, stress-xy, stress-yz, stress-xz}\\
 initial strain & \texttt{total-strain-xx, total-strain-yy, total-strain-zz, total-strain-xy,
-total-strain-yz, total-strain-xz}\tabularnewline
+total-strain-yz, total-strain-xz}\\
 \hline 
 \end{tabular}
 \end{table}
 
-\par\end{center}
-
 
 \subsection{Cauchy Stress Tensor and Second Piola-Kirchoff Stress Tensor}
 
-In outputting the stress tensor (see Tables \vref{tab:material-model-output}
-and \vref{tab:materials:statevars}), the tensor used internally
-in the formulation of the governing equation is the \texttt{stress}
-field available for output. For the infinitesimal strain formulation
-this is the Cauchy stress tensor; for the finite strain formulation,
-this is the second Piola-Kirchoff stress tensor. The user may also
-explicitly request output of the Cauchy stress tensor (\texttt{cauchy\_stress}
-field). Obviously, this is identical to the \texttt{stress} field
-when using the infinitesimal strain formulation. Although the second
-Piola-Kirchoff stress tensor has little physical meaning, the second
-Piola-Kirchoff stress tensor (not the Cauchy stress tensor) values
-should be specified in the initial stress database when using the
-finite strain formulation. See section \vref{sec:small:strain:formulation}
+In outputting the stress tensor (see Tables
+\vref{tab:materials:output} and \vref{tab:materials:statevars}),
+the tensor used internally in the formulation of the governing
+equation is the \texttt{stress} field available for output. For the
+infinitesimal strain formulation this is the Cauchy stress tensor; for
+the finite strain formulation, this is the second Piola-Kirchoff
+stress tensor. The user may also explicitly request output of the
+Cauchy stress tensor (\texttt{cauchy\_stress} field). Obviously, this
+is identical to the \texttt{stress} field when using the infinitesimal
+strain formulation.  See section \vref{sec:small:strain:formulation}
 for a discussion of the relationship between the Cauchy stress tensor
 and the second Piola-Kirchhoff stress tensor.
 
+\important{Although the second Piola-Kirchoff stress tensor has little
+  physical meaning, the second Piola-Kirchoff stress tensor (not the
+  Cauchy stress tensor) values should be specified in the initial
+  stress database when using the finite strain formulation.}
 
-\subsection{\label{sec:stable:time:step}Stable time step}
+\subsection{Stable time step}
+\label{sec:stable:time:step}
 
 PyLith computes the stable time step in both quasi-static and dynamic
 simulations. In quasi-static simulations the stability of the implicit
 time stepping scheme does not depend on the time step; instead, the
-stable time step is associated with the accuracy of the solution.
-For viscoelastic materials the stable time step is 1/5 of the minimum
-viscoelastic relaxation time. In purely elastic materials, the accuracy
-is independent of the time step, so the stable time step is infinite.
-The same is true for elastoplastic materials, since there is no inherent
-time scale for these problems. Depending on the loading rate, however,
-it is possible to impose a load increment that is large enough so
-that the resulting solution may be inaccurate or divergent. Caution
-must be used in assigning time step sizes for elastoplastic problems,
-and the linear and nonlinear convergence should be monitored closely.
-In quasi-static simulations we check the stable time step at every
-time step. 
+stable time step is associated with the accuracy of the solution.  For
+viscoelastic materials the stable time step uses 1/5 of the minimum
+viscoelastic relaxation time. In purely elastic materials, the
+accuracy is independent of the time step, so the stable time step is
+infinite.  The same is true for elastoplastic materials, since there
+is no inherent time scale for these problems. Depending on the loading
+rate, however, it is possible to impose a load increment that is large
+enough so that the resulting solution may be inaccurate or divergent.
+In quasi-static simulations we recompute the stable time step at every
+time step.
 
-In dynamic simulations the stability of the explicit time stepping
+\warning{Caution must be used in assigning time step sizes for
+  elastoplastic problems, and the linear and nonlinear convergence
+  should be monitored closely.}
+
+In dynamic simulations the stability of the explicit time-stepping
 scheme integration does depend on the time step via the Courant-Friderichs-Lewy
 condition \cite{Courant:etal:1967}. This condition states that the
 critical time step is the time it takes for the P wave to travel across
@@ -413,10 +361,10 @@ do not change, so that the stable time step is constant throughout
 the simulation.
 
 The stable time step is used in all three of the time stepping schemes
-used by PyLith (see section \vref{sub:Time-Stepping}). In general,
+used by PyLith (see section \vref{sec:time-stepping}). In general,
 an error is generated if the user attempts to use a time step size
 larger than the stable time step. The stable time steps for each cell
-can be included in the output with the other \texttt{cell\_info\_fields}.
+can be included in the output with the other \property{cell\_info\_fields}.
 For implicit time stepping the field is \texttt{stable\_dt\_implicit}
 and for explicit time stepping the field is \texttt{stable\_dt\_explicit}.
 
@@ -455,7 +403,6 @@ reduces to two, and the model can be characterized by two parameters,
 Lame's constants $\mu$ and $\lambda$. Lame's constants are related
 to the density ($\rho$), shear wave speed ($v_{s}$), and compressional
 wave speed ($v_{p}$) via
-
 \begin{equation}
 \begin{aligned}\mu= & \rho v_{s}^{2}\\
 \lambda= & \rho v_{p}^{2}-2\mu
@@ -463,69 +410,20 @@ wave speed ($v_{p}$) via
 \label{eq:4}
 \end{equation}
 
-
-\noindent \begin{center}
-\begin{table}[H]
-\noindent \begin{centering}
-\caption{Values in spatial databases for the elastic material constitutive
-models.}
-
-\par\end{centering}
-
-\noindent \centering{}%
-\begin{tabular}{|l|l|l|}
+\begin{table}[htbp]
+  \caption{Values in spatial databases for the elastic material
+    constitutive models.}
+\begin{tabular}{lll}
+\textbf{Spatial database} & \textbf{Value} & \textbf{Description}\\
 \hline 
-\textbf{Spatial database} & \textbf{Value} & \textbf{Description}\tabularnewline
-\hline 
-\hline 
-\multirow{3}{*}{\texttt{db\_properties}} & \texttt{vp} & Compressional wave speed, $v_{p}$\tabularnewline
-\cline{2-3} 
- & \texttt{vs} & Shear wave speed, $v_{s}$\tabularnewline
-\cline{2-3} 
- & \texttt{density} & Density, $\rho$\tabularnewline
-\hline 
-\texttt{db\_initial\_stress} & \texttt{stress-xx, }etc. & Initial stress components\tabularnewline
-\hline 
-\texttt{db\_initial\_strain} & \texttt{total-strain-xx, }etc. & Initial strain components\tabularnewline
+\facility{db\_properties} & \texttt{vp} & Compressional wave speed, $v_{p}$\\
+ & \texttt{vs} & Shear wave speed, $v_{s}$\\
+ & \texttt{density} & Density, $\rho$\\
+\facility{db\_initial\_stress} & \texttt{stress-xx}, \ldots & Initial stress components\\
+\facility{db\_initial\_strain} & \texttt{total-strain-xx}, \ldots & Initial strain components\\
 \hline 
 \end{tabular}
 \end{table}
-
-\par\end{center}
-
-
-\subsection{1D Elastic Material Models}
-
-In 1D we can write Hooke's law as $\sigma_{11}=C_{1111}\left(\epsilon_{11}-\epsilon_{11}^{I}\right)+\sigma_{11}^{I}$.
-
-
-\subsubsection{Elastic ``Linear'' Strain}
-
-For purely 1D axial deformation $C_{1111}=\lambda+2\mu$, so we have
-\begin{equation}
-\sigma_{11}=(\lambda+2\mu)\left(\epsilon_{11}-\epsilon_{11}^{I}\right)+\sigma_{11}^{I},\label{eq:5}
-\end{equation}
-with
-\begin{gather}
-\sigma_{22}=\sigma_{33}=\lambda\left(\epsilon_{11}-\epsilon_{11}^{I}\right)+\sigma_{22}^{I},\nonumber \\
-\sigma_{12}=\sigma_{23}=\sigma_{13}=0.\label{eq:6}
-\end{gather}
-
-
-
-\subsubsection{Elastic ``Linear'' Stress}
-
-For deformation where the tractions are confined to the axial direction,
-$C_{1111}=\frac{\mu(3\lambda+2\mu)}{\lambda+\mu}$, so we have
-\begin{equation}
-\sigma_{11}=\frac{\mu(3\lambda+2\mu)}{\lambda+\mu}\left(\epsilon_{11}-\epsilon_{11}^{I}\right)+\sigma_{11}^{I},\label{eq:7}
-\end{equation}
-with
-\begin{gather}
-\epsilon_{22}=\epsilon_{33}=-\frac{\lambda}{2(\lambda+\mu)}\epsilon_{11}+\epsilon_{22}^{I},\label{eq:8}\\
-\sigma_{22}=\sigma_{33}=\sigma_{12}=\sigma_{23}=\sigma_{13}=0.\nonumber 
-\end{gather}
-
 
 
 \subsection{2D Elastic Material Models}
@@ -552,7 +450,6 @@ C_{1112} & C_{2212} & C_{1212}
 \end{gather}
 
 
-
 \subsubsection{Elastic Plane Strain}
 
 If the gradient in deformation with respect to the $x_{3}$ axis is
@@ -577,7 +474,6 @@ strain conditions apply, so we have
 \sigma_{12}^{I}
 \end{array}\right]\:.\label{eq:10}
 \end{gather}
-
 
 
 \subsubsection{Elastic Plane Stress}
@@ -611,15 +507,11 @@ where
 \label{eq:12}
 \end{equation}
 
-
-
 \subsection{3D Elastic Material Models}
-
 
 \subsubsection{Isotropic}
 
 For this case the stress-strain matrix, $\underline{C}$, becomes
-
 \begin{gather}
 \underline{C}=\left[\begin{array}{cccccc}
 \lambda+2\mu & \lambda & \lambda & 0 & 0 & 0\\
@@ -632,11 +524,11 @@ For this case the stress-strain matrix, $\underline{C}$, becomes
 \end{gather}
 
 
-
-\section{\label{sec:materials:viscoelastic}Viscoelastic Materials}
+\section{Viscoelastic Materials}
+\label{sec:materials:viscoelastic}
 
 At present, there are six viscoelastic material models available in
-PyLith (Table \vref{tab:Viscoelastic-models-available} and Figure
+PyLith (Table \vref{tab:materials:viscoelastic} and Figure
 \vref{fig:material:models}). Future code versions may include alternative
 formulations for the various material models (Appendix \vref{cha:materials:alternative:formulations}),
 so that users may use the most efficient formulation for a particular
@@ -652,53 +544,43 @@ this initial stress component, an additional state variable corresponding
 to $\sigma_{33}^{I}$ is provided (\texttt{stress\_zz\_initial}).
 This state variable is provided for all of the viscoelastic material
 models as well as the plane strain Drucker-Prager elastoplastic model.
-See section \vref{sec:Initial-State-Variables} for additional information
+See section \vref{sec:materials:reference:state} for additional information
 on specifying initial stresses for plane strain problems. For the
 PowerLawPlaneStrain model, all four of the stress components are needed,
 so a 4-component stress state variable (\texttt{stress4}) is provided
 in addition to the normal 3-component \texttt{stress} state variable
-(see Table \vref{tab:material-model-output}).
+(see Table \vref{tab:materials:output}).
 
-\noindent \begin{center}
-\begin{table}[H]
-\noindent \centering{}\caption{\label{tab:Viscoelastic-models-available}Available viscoelastic materials
+\begin{table}[htbp]
+\caption{Available viscoelastic materials
 for PyLith.}
-\begin{tabular}{|>{\raggedright}p{2.85in}|>{\centering}p{2.47in}|}
+\label{tab:materials:viscoelastic}
+\begin{tabular}{p{1.5in}p{4.5in}}
+\textbf{Model Name} & \textbf{Description}\\
 \hline 
-\textbf{Model Name} & \textbf{Description}\tabularnewline
-\hline 
-\hline 
-MaxwellPlaneStrain & Plane strain Maxwell material with linear viscous rheology\tabularnewline
-\hline 
-GenMaxwellPlaneStrain & Plane strain generalized Maxwell material (3 Maxwell models in parallel)\tabularnewline
-\hline 
-PowerLawPlaneStrain & Plane strain Maxwell material with power-law viscous rheology\tabularnewline
-\hline 
-MaxwellIsotropic3D & Isotropic Maxwell material with linear viscous rheology\tabularnewline
-\hline 
-GenMaxwellIsotropic3D & Generalized model consisting of 3 Maxwell models in parallel\tabularnewline
-\hline 
-PowerLaw3D & Isotropic Maxwell material with power-law viscous rheology\tabularnewline
+\object{MaxwellPlaneStrain} & Plane strain Maxwell material with linear viscous rheology\\
+\object{GenMaxwellPlaneStrain} & Plane strain generalized Maxwell material (3 Maxwell models in parallel)\\
+\object{PowerLawPlaneStrain} & Plane strain Maxwell material with power-law viscous rheology\\
+\object{MaxwellIsotropic3D} & Isotropic Maxwell material with linear viscous rheology\\
+\object{GenMaxwellIsotropic3D} & Generalized model consisting of 3 Maxwell models in parallel\\
+\object{PowerLaw3D} & Isotropic Maxwell material with power-law viscous rheology\\
 \hline 
 \end{tabular}
 \end{table}
 
-\par\end{center}
-
-\noindent \begin{center}
-\begin{figure}[H]
-\centering{}\includegraphics[scale=0.75]{materials/figs/pylith-materials}\caption{\label{fig:material:models}Spring-dashpot 1D representations of the
-available 3D elastic and 2D/3D viscoelastic material models for PyLith.
-The top model is a linear elastic model, the middle model is a Maxwell
-model, and the bottom model is a generalized Maxwell model. For the
-generalized Maxwell model, $\lambda$ and $\mu_{tot}$ are specified
-for the entire model, and then the ratio $\mu_{i}/\mu_{tot}$ is specified
-for each Maxwell model. For the power-law model, the linear dashpot
-in the Maxwell model is replaced by a nonlinear dashpot obeying a
-power-law.}
+\begin{figure}[htbp]
+\includegraphics[scale=0.75]{materials/figs/pylith-materials}
+\caption{Spring-dashpot 1D representations of the available 3D elastic
+  and 2D/3D viscoelastic material models for PyLith.  The top model is
+  a linear elastic model, the middle model is a Maxwell model, and the
+  bottom model is a generalized Maxwell model. For the generalized
+  Maxwell model, $\lambda$ and $\mu_{tot}$ are specified for the
+  entire model, and then the ratio $\mu_{i}/\mu_{tot}$ is specified
+  for each Maxwell model. For the power-law model, the linear dashpot
+  in the Maxwell model is replaced by a nonlinear dashpot obeying a
+  power-law.}
+\label{fig:material:models}
 \end{figure}
-
-\par\end{center}
 
 
 \subsection{Definitions}
@@ -749,28 +631,9 @@ as vectors, it is necessary to double the products representing off-diagonal
 terms.
 
 For quantities evaluated over a specific time period, we represent
-the initial time as a pvrefixed subscript and the end time as a pvrefixed
+the initial time as a prefixed subscript and the end time as a prefixed
 superscript. In cases where the initial time does not appear, it is
 understood to be $-\infty$.
-
-\noindent \begin{center}
-\begin{table}[H]
-\noindent \centering{}\caption{\label{tab:notation}Mathematical notation used in this
-section.}
-\begin{tabular}{|c|c|c|}
-\hline 
-Index notation & Vector notation & Description\tabularnewline
-\hline 
-\hline 
-$a_{i}$ & $\overrightarrow{a}$ & Vector field a\tabularnewline
-\hline 
-$a_{ij}$ & $\underline{a}$ & Second order tensor field a\tabularnewline
-\hline 
-\end{tabular}
-\end{table}
-
-\par\end{center}
-
 
 \subsection{Linear Viscoelastic Models}
 
@@ -819,7 +682,8 @@ $\mu_{2}=\mu_{3}=0$, and setting $\mu_{1}=\infty$ (or a very large
 number).
 
 
-\subsection{Formulation for Generalized Maxwell Models\label{sub:Formulation-for-Gen-Max}}
+\subsection{Formulation for Generalized Maxwell Models}
+\label{sec:materials:formulation:generalized:Maxwell}
 
 As described above, the generalized Maxwell viscoelastic model consists
 of a number of Maxwell linear viscoelastic models in parallel with
@@ -840,8 +704,8 @@ from 1. Note that the sum of all these fractions must equal 1. We
 use a similar formulation for our linear Maxwell viscoelastic model,
 but in that case $\mu_{0}$ is always zero and we only use a single
 Maxwell model. The parameters defining the standard Maxwell model
-are shown in Table \vref{tab:linearMaxwell}, and those defining the
-generalized Maxwell model are shown in Table \vref{tab:genMaxwell}.
+are shown in Table \vref{tab:materials:linear:Maxwell}, and those defining the
+generalized Maxwell model are shown in Table \vref{tab:materials:generalized:Maxwell}.
 
 As for all our viscoelastic models, the volumetric strain is completely
 elastic, and the viscoelastic deformation may be expressed purely
@@ -859,7 +723,6 @@ The $\tau_{i}$ are the relaxation times for each Maxwell model:
 \begin{equation}
 \tau_{i}=\frac{\eta_{i}}{\mu_{tot}\mu_{i}}\:.\label{eq:21-1}
 \end{equation}
-
 
 An alternative to the differential equation form above is an integral
 equation form expressed in terms of the relaxation modulus function.
@@ -971,84 +834,54 @@ For the generalized Maxwell model, $N=3.$ The stable time step is
 equal to 1/5 of the minimum relaxation time for all of the Maxwell
 models (equation \vref{eq:21-1}).
 
-\noindent \begin{center}
-\begin{table}[H]
-\noindent \centering{}\caption{\label{tab:linearMaxwell}Values in spatial databases for the linear
-Maxwell viscoelastic material constitutive model.}
-\begin{tabular}{|l|l|l|}
+\begin{table}[htbp]
+\caption{Values in spatial databases for the linear Maxwell viscoelastic material constitutive model.}
+\label{tab:materials:linear:Maxwell}
+\begin{tabular}{lll}
+\textbf{Spatial database} & \textbf{Value} & \textbf{Description}\\
 \hline 
-\textbf{Spatial database} & \textbf{Value} & \textbf{Description}\tabularnewline
-\hline 
-\hline 
-\multirow{4}{*}{\texttt{db\_properties}} & \texttt{vp} & Compressional wave speed, $v_{p}$\tabularnewline
-\cline{2-3} 
- & \texttt{vs} & Shear wave speed, $v_{s}$\tabularnewline
-\cline{2-3} 
- & \texttt{density} & Density, $\rho$\tabularnewline
-\cline{2-3} 
- & \texttt{viscosity} & Viscosity, $\eta$\tabularnewline
-\hline 
-\texttt{db\_initial\_stress} & \texttt{stress-xx, }etc. & Initial stress components\tabularnewline
-\hline 
-\texttt{db\_initial\_strain} & \texttt{total-strain-xx, }etc. & Initial strain components\tabularnewline
-\hline 
-\multirow{2}{*}{\texttt{db\_initial\_state}} & \texttt{viscous-strain-xx, }etc. & Initial viscous strain components\tabularnewline
-\cline{2-3} 
- & \texttt{stress-zz-initial} & Initial out-of-plane stress (2D only)\tabularnewline
+\facility{db\_properties} & \texttt{vp} & Compressional wave speed, $v_{p}$\\
+ & \texttt{vs} & Shear wave speed, $v_{s}$\\
+ & \texttt{density} & Density, $\rho$\\
+ & \texttt{viscosity} & Viscosity, $\eta$\\
+\facility{db\_initial\_stress} & \texttt{stress-xx}, \ldots & Initial stress components\\
+\facility{db\_initial\_strain} & \texttt{total-strain-xx}, \ldots & Initial strain components\\
+\facility{db\_initial\_state} & \texttt{viscous-strain-xx}, \ldots & Initial viscous strain components\\
+ & \texttt{stress-zz-initial} & Initial out-of-plane stress (2D only)\\
 \hline 
 \end{tabular}
 \end{table}
 
-\par\end{center}
-
-\noindent \begin{center}
-\begin{table}[H]
-\noindent \centering{}\caption{\label{tab:genMaxwell}Values in spatial database used as parameters
-in the generalized linear Maxwell viscoelastic material constitutive
-model.}
-\begin{tabular}{|l|l|l|}
+\begin{table}[htbp]
+\caption{Values in spatial database used as parameters in the
+  generalized linear Maxwell viscoelastic material constitutive
+  model.}
+\label{tab:materials:generalized:Maxwell}
+\begin{tabular}{lll}
+\textbf{Spatial database} & \textbf{Value} & \textbf{Description}\\
 \hline 
-\textbf{Spatial database} & \textbf{Value} & \textbf{Description}\tabularnewline
-\hline 
-\hline 
-\multirow{9}{*}{\texttt{db\_properties}} & \texttt{vp} & Compressional wave speed, $v_{p}$\tabularnewline
-\cline{2-3} 
- & \texttt{vs} & Shear wave speed, $v_{s}$\tabularnewline
-\cline{2-3} 
- & \texttt{density} & Density, $\rho$\tabularnewline
-\cline{2-3} 
- & \texttt{shear-ratio-1} & Shear ratio for Maxwell model 1, $\mu_{1}/\mu_{tot}$\tabularnewline
-\cline{2-3} 
- & \texttt{shear-ratio-2} & Shear ratio for Maxwell model 2, $\mu_{2}/\mu_{tot}$\tabularnewline
-\cline{2-3} 
- & \texttt{shear-ratio-3} & Shear ratio for Maxwell model 3, $\mu_{3}/\mu_{tot}$\tabularnewline
-\cline{2-3} 
- & \texttt{viscosity-1} & Viscosity for Maxwell model 1, $\eta_{1}$\tabularnewline
-\cline{2-3} 
- & \texttt{viscosity-2} & Viscosity for Maxwell model 2, $\eta_{2}$\tabularnewline
-\cline{2-3} 
- & \texttt{viscosity-3} & Viscosity for Maxwell model 3, $\eta_{3}$\tabularnewline
-\hline 
-\texttt{db\_initial\_stress} & \texttt{stress-xx, }etc. & Initial stress components\tabularnewline
-\hline 
-\texttt{db\_initial\_strain} & \texttt{total-strain-xx, }etc. & Initial strain components\tabularnewline
-\hline 
-\multirow{4}{*}{\texttt{db\_initial\_state}} & \texttt{viscous-strain-1-xx, }etc. & Initial viscous strain components for Maxwell model 1\tabularnewline
-\cline{2-3} 
- & \texttt{viscous-strain-2-xx, }etc. & Initial viscous strain components for Maxwell model 2\tabularnewline
-\cline{2-3} 
- & \texttt{viscous-strain-3-xx, }etc. & Initial viscous strain components for Maxwell model 3\tabularnewline
-\cline{2-3} 
- & \texttt{stress-zz-initial} & Initial out-of-plane stress (2D only)\tabularnewline
+\facility{db\_properties} & \texttt{vp} & Compressional wave speed, $v_{p}$\\
+ & \texttt{vs} & Shear wave speed, $v_{s}$\\
+ & \texttt{density} & Density, $\rho$\\
+ & \texttt{shear-ratio-1} & Shear ratio for Maxwell model 1, $\mu_{1}/\mu_{tot}$\\
+ & \texttt{shear-ratio-2} & Shear ratio for Maxwell model 2, $\mu_{2}/\mu_{tot}$\\
+ & \texttt{shear-ratio-3} & Shear ratio for Maxwell model 3, $\mu_{3}/\mu_{tot}$\\
+ & \texttt{viscosity-1} & Viscosity for Maxwell model 1, $\eta_{1}$\\
+ & \texttt{viscosity-2} & Viscosity for Maxwell model 2, $\eta_{2}$\\
+ & \texttt{viscosity-3} & Viscosity for Maxwell model 3, $\eta_{3}$\\
+\facility{db\_initial\_stress} & \texttt{stress-xx}, \ldots & Initial stress components\\
+\facility{db\_initial\_strain} & \texttt{total-strain-xx}, \ldots & Initial strain components\\
+\facility{db\_initial\_state} & \texttt{viscous-strain-1-xx}, \ldots & Initial viscous strain components for Maxwell model 1\\
+ & \texttt{viscous-strain-2-xx}, \ldots & Initial viscous strain components for Maxwell model 2\\
+ & \texttt{viscous-strain-3-xx}, \ldots & Initial viscous strain components for Maxwell model 3\\
+ & \texttt{stress-zz-initial} & Initial out-of-plane stress (2D only)\\
 \hline 
 \end{tabular}
 \end{table}
 
-\par\end{center}
 
-
-\subsection{\label{sub:Effective-Stress-Formulations-Viscoelastic}Effective
-Stress Formulations for Viscoelastic Materials}
+\subsection{Effective Stress Formulations for Viscoelastic Materials}
+\label{sec:materials:formulation:viscoelastic:effective}
 
 As an alternative to the approach outlined above, an effective stress
 function formulation \cite{Kojic:Bathe:1987} may be employed for
@@ -1113,7 +946,7 @@ In terms of the vectors, we have
 ^{t+\Delta t}\sigma_{i}=\phantom{}^{t+\Delta t}S_{i}+\phantom{}^{t+\Delta t}P\,\,;\,\,\, i=1,2,3\label{eq:56}\\
 ^{t+\Delta t}\sigma_{i}=\phantom{}^{t+\Delta t}S_{i}\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\, i=4,5,6\nonumber 
 \end{gather}
-Thevrefore,
+Therefore,
 \begin{gather}
 C_{ij}^{VE}=C_{ij}^{\prime}+\frac{1}{3a_{m}}\,;\,\,1\leq i,j\leq3\,\,.\label{eq:57}\\
 C_{ij}^{VE}=C_{ij}^{\prime}\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\textrm{otherwise}\nonumber 
@@ -1140,7 +973,8 @@ constitutive relationship, and the complete tangent matrix may then
 be obtained from Equation \vref{eq:57}.
 
 
-\subsubsection{Power-Law Maxwell Viscoelastic Material\label{sub:Power-Law-Maxwell-Viscoelastic}}
+\subsubsection{Power-Law Maxwell Viscoelastic Material}
+\label{sec:materials:formulation:powerlaw}
 
 Laboratory results on rock rheology are typically performed using
 a triaxial experiment, and the creep data are fit to a power-law equation
@@ -1195,7 +1029,6 @@ In terms of the second deviatoric stress invariant, we then have
 \sqrt{J_{2}^{\prime}}=\frac{\sigma_{d}}{\sqrt{3}}\:.\label{eq:70}
 \end{equation}
 
-
 Under the assumption that the creep measured in the laboratory experiments
 is incompressible, we have
 \begin{gather}
@@ -1211,16 +1044,14 @@ Substituting Equations \vref{eq:70} and \vref{eq:72} into Equation
 \begin{equation}
 \sqrt{\dot{L}_{2}^{\prime C}}=A_{E}\frac{\sqrt{3}^{n+1}}{2}\exp\left(\frac{-Q}{RT}\right)\sqrt{J_{2}^{\prime}}^{n}\:,\label{eq:73}
 \end{equation}
-and thevrefore,
+and therefore,
 \begin{equation}
 A_{M}=\frac{\sqrt{3}^{n+1}}{2}A_{E}\:.\label{eq:74}
 \end{equation}
 When the exponential factor is included, we define a new parameter:
-
 \begin{equation}
 A_{T}=A_{M}\exp\left(\frac{-Q}{RT}\right)=\frac{\sqrt{3}^{n+1}}{2}A_{E}\exp\left(\frac{-Q}{RT}\right)\:.\label{eq:75}
 \end{equation}
-
 
 There is a problem with the usage of parameters $A_{E}$, $A_{M}$,
 and $A_{T}$. Since the dimensions of these parameters are dependent
@@ -1232,30 +1063,29 @@ of writing the flow rule is (e.g., \cite{Prentice:1968}):
 \begin{equation}
 \frac{\sqrt{\dot{L}_{2}^{\prime C}}}{\dot{e}_{0}}=\left(\frac{\sqrt{J_{2}^{\prime}}}{S_{0}}\right)^{n},\label{eq:76}
 \end{equation}
-where $\dot{e}_{0}$ and $S_{0}$ are vreference values for the strain
+where $\dot{e}_{0}$ and $S_{0}$ are reference values for the strain
 rate and deviatoric stress. This means that
 \begin{equation}
 \frac{\dot{e}_{0}}{S_{0}^{n}}=A_{T}\:.\label{eq:77}
 \end{equation}
-Users must thevrefore specify three parameters for a power-law material.
-The properties \texttt{vreference-strain-rate}, \texttt{vreference-stress},
-and \texttt{power-law-exponent} in Table \vref{tab:powerLaw} vrefer
+Users must therefore specify three parameters for a power-law material.
+The properties \texttt{reference-strain-rate}, \texttt{reference-stress},
+and \texttt{power-law-exponent} in Table \vref{tab:materials:powerlaw} refer
 to $\dot{e}_{0}$, $S_{0}$, and $n$, respectively. To specify the
 power-law properties for PyLith using laboratory results, the user
 must first compute $A_{T}$ using Equation \vref{eq:75}. Then, values
 for $\dot{e}_{0}$ and $S_{0}$ must be provided. The simplest method
-is probably to assume a reasonable value for the vreference strain
+is probably to assume a reasonable value for the reference strain
 rate, and then compute $S_{0}$ as
 \begin{equation}
 S_{0}=\left(\frac{\dot{e}_{0}}{A_{T}}\right)^{\frac{1}{n}}\:.\label{eq:78}
 \end{equation}
 
-
 A utility code (\texttt{powerlaw\_gendb.py}) is provided to convert
 laboratory results to the properties used by PyLith. To use the code,
 users must specify the spatial variation of $A_{E}$, $Q$, $n$,
 and $T$. An additional parameter is given to define the units of
-$A_{E}$. The user then specifies either a vreference stress or a vreference
+$A_{E}$. The user then specifies either a reference stress or a reference
 strain rate, and a database suitable for PyLith is generated. This
 utility is described more fully in Section \vref{sub:Tutorial-Step08-Power-law}.
 
@@ -1267,7 +1097,7 @@ and the creep strain increment is approximated as
 \begin{gather}
 \underline{\Delta e}^{C}\approx\frac{\Delta t\dot{e}_{0}\sqrt{^{\tau}J_{2}^{\prime}}^{n-1}\,^{\tau}\underline{S}}{S_{0}^{n}}=\frac{\Delta t\dot{e}_{0}\phantom{}^{\tau}\overline{\sigma}^{n-1}\,^{\tau}\underline{S}}{\sqrt{3}S_{0}^{n}}\,.\label{eq:80}
 \end{gather}
- Thevrefore,
+ Therefore,
 \begin{gather}
 \Delta\bar{e}^{C}\approx\frac{2\Delta t\dot{e}_{0}\sqrt{^{\tau}J_{2}^{\prime}}^{n}}{\sqrt{3}S_{0}^{n}}=\frac{2\Delta t\dot{e}_{0}\phantom{}^{\tau}\overline{\sigma}^{n}}{\sqrt{3}^{n+1}S_{0}^{n}}\,,\,\textrm{and}\,^{\tau}\gamma=\frac{\dot{e}_{0}\sqrt{^{\tau}J_{2}^{\prime}}^{n-1}}{S_{0}^{n}}\,.\label{eq:81}
 \end{gather}
@@ -1383,40 +1213,26 @@ may be written:
 \frac{\partial F}{\partial\sqrt{^{t+\Delta t}J_{2}^{\prime}}}=2a^{2}\sqrt{^{t+\Delta t}J_{2}^{\prime}}+\frac{\dot{e}_{0}\alpha\left(n-1\right)\sqrt{^{\tau}J_{2}^{\prime}}^{n-2}}{S_{0}^{n}}\left(2a\alpha\Delta t{}^{t+\Delta t}J_{2}^{\prime}+c-2d^{2}\,^{\tau}\gamma\right)\,.\label{eq:94}
 \end{gather}
 
-
-\noindent \begin{center}
-\begin{table}[H]
-\noindent \centering{}\caption{\label{tab:powerLaw}Values in spatial database used as parameters
+\begin{table}[htbp]
+\caption{Values in spatial database used as parameters
 in the nonlinear power-law viscoelastic material constitutive model.}
-\begin{tabular}{|l|l|l|}
+\label{tab:materials:powerlaw}
+\begin{tabular}{lll}
+\textbf{Spatial database} & \textbf{Value} & \textbf{Description}\\
 \hline 
-\textbf{Spatial database} & \textbf{Value} & \textbf{Description}\tabularnewline
-\hline 
-\hline 
-\multirow{6}{*}{\texttt{db\_properties}} & \texttt{vp} & Compressional wave speed, $v_{p}$\tabularnewline
-\cline{2-3} 
- & \texttt{vs} & Shear wave speed, $v_{s}$\tabularnewline
-\cline{2-3} 
- & \texttt{density} & Density, $\rho$\tabularnewline
-\cline{2-3} 
- & \texttt{vreference-strain-rate} & Reference strain rate, $\dot{e}_{0}$\tabularnewline
-\cline{2-3} 
- & \texttt{vreference-stress} & Reference stress, $S_{0}$\tabularnewline
-\cline{2-3} 
- & \texttt{power-law-exponent} & Power-law exponent, $n$\tabularnewline
-\hline 
-\texttt{db\_initial\_stress} & \texttt{stress-xx, }etc. & Initial stress components\tabularnewline
-\hline 
-\texttt{db\_initial\_strain} & \texttt{total-strain-xx, }etc. & Initial strain components\tabularnewline
-\hline 
-\multirow{2}{*}{\texttt{db\_initial\_state}} & \texttt{viscous-strain-xx, }etc. & Initial viscous strain components\tabularnewline
-\cline{2-3} 
- & \texttt{stress-zz-initial} & Initial out-of-plane stress (2D only)\tabularnewline
+\facility{db\_properties} & \texttt{vp} & Compressional wave speed, $v_{p}$\\
+ & \texttt{vs} & Shear wave speed, $v_{s}$\\
+ & \texttt{density} & Density, $\rho$\\
+ & \texttt{reference-strain-rate} & Reference strain rate, $\dot{e}_{0}$\\
+ & \texttt{reference-stress} & Reference stress, $S_{0}$\\
+ & \texttt{power-law-exponent} & Power-law exponent, $n$\\
+\facility{db\_initial\_stress} & \texttt{stress-xx}, \ldots & Initial stress components\\
+\facility{db\_initial\_strain} & \texttt{total-strain-xx}, \ldots & Initial strain components\\
+\facility{db\_initial\_state} & \texttt{viscous-strain-xx}, \ldots & Initial viscous strain components\\
+ & \texttt{stress-zz-initial} & Initial out-of-plane stress (2D only)\\
 \hline 
 \end{tabular}
 \end{table}
-
-\par\end{center}
 
 
 \section{Elastoplastic Materials}
@@ -1462,7 +1278,7 @@ is described as associated. Otherwise, it is non-associated. The final
 component needed is a hardening hypothesis, which describes how the
 yield condition and flow rule are modified during plastic flow. When
 the yield condition and flow rule remain constant during plastic flow
-(e.g., no hardening), the material is vreferred to as perfectly plastic.
+(e.g., no hardening), the material is referred to as perfectly plastic.
 
 To perform the solution, the yield condition (Equation \vref{eq:97})
 is first evaluated under the assumption of elastic behavior. If $^{t+\Delta t}f<0$,
@@ -1491,7 +1307,6 @@ and a flow rule given by:
 g\left(\underline{\sigma},k\right)=\sqrt{J_{2}^{\prime}}+\alpha_{g}I_{1}\:.\label{eq:101}
 \end{equation}
 
-
 The yield surface represents a circular cone in principal stress space,
 and the parameters can be related to the friction angle, $\phi$,
 and the cohesion, $\bar{c}$, of the Mohr-Coulomb model. The yield
@@ -1508,7 +1323,7 @@ the two ($\theta=pi/6,$middle version). Substituting these values
 for $\theta$ into Equation (\vref{eq:drucker:prager:haigh:westergaard})
 and casting it into the same form as Equation (\vref{eq:101}) yields
 the values of $\alpha_{f}$, $\beta$, and $\alpha_{g}$ given in
-Table \vref{tab:fit_mohr_coulomb}, where $\phi_{0}$ vrefers to the
+Table \vref{tab:fit_mohr_coulomb}, where $\phi_{0}$ refers to the
 initial friction angle. Similarly, the flow rule can be related to
 the dilatation angle, $\psi$, of a Mohr-Coulomb model. It is also
 possible for the Mohr-Coulomb parameters to be functions of the internal
@@ -1517,25 +1332,19 @@ surface and flow rule is controlled by the \texttt{fit\_mohr\_coulomb}
 property. 
 
 \begin{table}
-\caption{\label{tab:fit_mohr_coulomb}Options for fitting the Drucker-Prager
-plastic parameters to a Mohr-Coulomb model using \texttt{fit\_mohr\_coulomb}.}
-
-
-\centering{}%
-\begin{tabular}{|c|c|c|c|}
+\caption{Options for fitting the Drucker-Prager plastic parameters to a Mohr-Coulomb model using \property{fit\_mohr\_coulomb}.}
+\label{tab:fit_mohr_coulomb}
+\begin{tabular}{cccc}
+\textbf{Parameter Value} & $\alpha_{f}$ & $\beta$ & $\alpha_{g}$\\
 \hline 
-\textbf{Parameter Value} & $\alpha_{f}$ & $\beta$ & $\alpha_{g}$\tabularnewline
+\texttt{inscribed} & $\frac{2\sin\phi\left(k\right)}{\sqrt{3}\left(3-\sin\phi\left(k\right)\right)}$ & $\frac{6\bar{c}\left(k\right)\cos\phi_{0}}{\sqrt{3}\left(3-\sin\phi_{0}\right)}$ & $\frac{2\sin\psi(k)}{\sqrt{3}\left(3-\sin\psi\left(k\right)\right)}$\\
 \hline 
+\texttt{middle} & $\frac{\sin\phi\left(k\right)}{3}$ & $\bar{c}\left(k\right)\cos\left(\phi_{0}\right)$ & $\frac{\sin\psi\left(k\right)}{3}$\\
 \hline 
-\texttt{inscribed} & $\frac{2\sin\phi\left(k\right)}{\sqrt{3}\left(3-\sin\phi\left(k\right)\right)}$ & $\frac{6\bar{c}\left(k\right)\cos\phi_{0}}{\sqrt{3}\left(3-\sin\phi_{0}\right)}$ & $\frac{2\sin\psi(k)}{\sqrt{3}\left(3-\sin\psi\left(k\right)\right)}$\tabularnewline
-\hline 
-\texttt{middle} & $\frac{\sin\phi\left(k\right)}{3}$ & $\bar{c}\left(k\right)\cos\left(\phi_{0}\right)$ & $\frac{\sin\psi\left(k\right)}{3}$\tabularnewline
-\hline 
-\texttt{circumscribed} & $\frac{2\sin\phi\left(k\right)}{\sqrt{3}\left(3+\sin\phi\left(k\right)\right)}$ & $\frac{6\bar{c}\left(k\right)\cos\phi_{0}}{\sqrt{3}\left(3+\sin\phi_{0}\right)}$ & $\frac{2\sin\psi(k)}{\sqrt{3}\left(3+\sin\psi\left(k\right)\right)}$\tabularnewline
+\texttt{circumscribed} & $\frac{2\sin\phi\left(k\right)}{\sqrt{3}\left(3+\sin\phi\left(k\right)\right)}$ & $\frac{6\bar{c}\left(k\right)\cos\phi_{0}}{\sqrt{3}\left(3+\sin\phi_{0}\right)}$ & $\frac{2\sin\psi(k)}{\sqrt{3}\left(3+\sin\psi\left(k\right)\right)}$\\
 \hline 
 \end{tabular}
 \end{table}
-
 
 As for the viscoelastic models, it is convenient to separate the deformation
 into deviatoric and volumetric parts:
@@ -1573,11 +1382,11 @@ different depending on whether hardening is included.
 When there is no hardening (perfect plasticity), the Drucker-Prager
 elastoplastic model may be parameterized with just three parameters,
 in addition to the normal elasticity parameters. The parameters \texttt{friction-angle},
-\texttt{cohesion}, and \texttt{dilatation-angle} in Table \vref{tab:druckerPrager}
-vrefer respectively to $\phi$, $\bar{c}$, and $\psi$ in Table \vref{tab:fit_mohr_coulomb}.
+\texttt{cohesion}, and \texttt{dilatation-angle} in Table \vref{tab:materials:Drucker:Prager}
+refer respectively to $\phi$, $\bar{c}$, and $\psi$ in Table \vref{tab:fit_mohr_coulomb}.
 These are then converted to the properties $\alpha_{f}$ (\texttt{alpha-yield}),
 $\beta$ (\texttt{beta}), and $\alpha_{g}$ (\texttt{alpha-flow}),
-as shown in Table \vref{tab:material-model-output}.
+as shown in Table \vref{tab:materials:output}.
 
 For perfect plasticity the yield and flow functions do not vary, and
 we can solve for $\lambda$ by substituting Equation \vref{eq:109}
@@ -1590,7 +1399,7 @@ where
 \begin{equation}
 ^{t+\Delta t}d^{2}=2a_{E}^{2}J_{2}^{\prime I}+2a_{E}S_{ij}^{I}\,\phantom{}^{t+\Delta t}e_{ij}^{\prime}+\phantom{}^{t+\Delta t}e_{ij}^{\prime}\,\phantom{}^{t+\Delta t}e_{ij}^{\prime}\:.\label{eq:111}
 \end{equation}
-The second deviatoric stress invariant is thevrefore
+The second deviatoric stress invariant is therefore
 \begin{equation}
 \sqrt{^{t+\Delta t}J_{2}^{\prime}}=\frac{\sqrt{2}\,\phantom{}^{t+\Delta t}d-\lambda}{2a_{E}}\:,\label{eq:112}
 \end{equation}
@@ -1657,7 +1466,6 @@ The elastoplastic tangent matrix is then given by
 C_{ij}^{EP}=\frac{\partial\phantom{}^{t+\Delta t}\sigma_{i}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}=\frac{1}{a_{E}}\left(\frac{\partial\phantom{}^{t+\Delta t}e_{i}^{\prime}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}-\frac{\partial\Delta e_{i}^{P}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}\right)+\frac{R_{i}}{a_{m}}\left(\frac{\partial\phantom{}^{t+\Delta t}\theta^{\prime}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}-\frac{\partial\Delta\theta^{P}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}\right)\:.\label{eq:119}
 \end{equation}
 
-
 From Equations \vref{eq:16} and \vref{eq:106}, we have
 \begin{equation}
 \frac{\partial\phantom{}^{t+\Delta t}e_{i}^{\prime}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}=\frac{1}{3}\left[\begin{array}{cccccc}
@@ -1697,33 +1505,24 @@ plastic strain increment is:
 \begin{equation}
 \frac{\partial\Delta\theta^{P}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}=\alpha_{g}\frac{\partial\lambda}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}\:.\label{eq:126}
 \end{equation}
-\begin{table}
-\centering{}\caption{\label{tab:druckerPrager}Values in spatial database used as parameters
+
+\begin{table}[htbp]
+\caption{Values in spatial database used as parameters
 in the Drucker-Prager elastoplastic model with perfect plasticity.}
-\begin{tabular}{|l|l|l|}
+\label{tab:materials:Drucker:Prager}
+\begin{tabular}{lll}
+\textbf{Spatial database} & \textbf{Value} & \textbf{Description}\\
 \hline 
-\textbf{Spatial database} & \textbf{Value} & \textbf{Description}\tabularnewline
-\hline 
-\hline 
-\multirow{6}{*}{\texttt{db\_properties}} & \texttt{vp} & Compressional wave speed, $v_{p}$\tabularnewline
-\cline{2-3} 
- & \texttt{vs} & Shear wave speed, $v_{s}$\tabularnewline
-\cline{2-3} 
- & \texttt{density} & Density, $\rho$\tabularnewline
-\cline{2-3} 
- & \texttt{friction-angle} & Friction angle, $\phi$\tabularnewline
-\cline{2-3} 
- & \texttt{cohesion} & Cohesion, $\bar{c}$\tabularnewline
-\cline{2-3} 
- & \texttt{dilatation-angle} & Dilatation angle, $\psi$\tabularnewline
-\hline 
-\texttt{db\_initial\_stress} & \texttt{stress-xx, }etc. & Initial stress components\tabularnewline
-\hline 
-\texttt{db\_initial\_strain} & \texttt{total-strain-xx, }etc. & Initial strain components\tabularnewline
-\hline 
-\multirow{2}{*}{\texttt{db\_initial\_state}} & \texttt{plastic-strain-xx, }etc. & Initial plastic strain components\tabularnewline
-\cline{2-3} 
- & \texttt{stress-zz-initial} & Initial out-of-plane stress (2D only)\tabularnewline
+\facility{db\_properties} & \texttt{vp} & Compressional wave speed, $v_{p}$\\
+ & \texttt{vs} & Shear wave speed, $v_{s}$\\
+ & \texttt{density} & Density, $\rho$\\
+ & \texttt{friction-angle} & Friction angle, $\phi$\\
+ & \texttt{cohesion} & Cohesion, $\bar{c}$\\
+ & \texttt{dilatation-angle} & Dilatation angle, $\psi$\\
+\facility{db\_initial\_stress} & \texttt{stress-xx}, \ldots & Initial stress components\\
+\facility{db\_initial\_strain} & \texttt{total-strain-xx}, \ldots & Initial strain components\\
+\facility{db\_initial\_state} & \texttt{plastic-strain-xx}, \ldots & Initial plastic strain components\\
+ & \texttt{stress-zz-initial} & Initial out-of-plane stress (2D only)\\
 \hline 
 \end{tabular}
 \end{table}
@@ -1731,26 +1530,22 @@ in the Drucker-Prager elastoplastic model with perfect plasticity.}
 
 In addition to the properties available for every material, the properties
 for the Drucker-Prager model also includes:
-\begin{description}
-\item [{fit\_mohr\_coulomb}] Fit to the yield surface to the Mohr-Coulomb
-model (default is inscribed).
-\item [{allow\_tensile\_yield}] If true, allow yield beyond tensile strength;
+\begin{inventory}
+\propertyitem{fit\_mohr\_coulomb}{Fit to the yield surface to the Mohr-Coulomb
+model (default is inscribed).}
+\item{allow\_tensile\_yield}{If true, allow yield beyond tensile strength;
 otherwise an error message will occur when the model fails beyond
-the tensile strength (default is false).
-\end{description}
-An example of setting these parameters in a \texttt{.cfg} file is:
-\begin{lyxcode}
-{[}pylithapp.timedependent{]}
+the tensile strength (default is false).}
+\end{inventory}
+An example of setting these parameters in a \filename{.cfg} file is:
+\begin{cfg}
+<h>[pylithapp.timedependent]</h>
+<p>materials</p> = [plastic]
+<f>materials.plastic</f> = pylith.materials.DruckerPrager3D
 
-materials~=~{[}plastic{]}
+<h>[pylithapp.timedependent.materials.plastic]</h>
+<p>fit_mohr_coulomb</p> = inscribed ; default
+<p>allow_tensile_yield</p> = False ; default
+\end{cfg}
 
-materials.plastic~=~pylith.materials.DruckerPrager3D
-
-
-
-{[}pylithapp.timedependent.materials.plastic{]}
-
-fit\_mohr\_coulomb~=~inscribed~;~default
-
-allow\_tensile\_yield~=~False~;~default\end{lyxcode}
-
+% End of file
