@@ -35,7 +35,7 @@
 
 class pylith::materials::IsotropicLinearIncompElasticityPlaneStrain : public pylith::materials::MaterialNew
 { // class IsotropicLinearIncompElasticityPlaneStrain
-  friend class TestIsotropicLinearElasticityPlaneStrain; // unit testing
+  friend class TestIsotropicLinearIncompElasticityPlaneStrain; // unit testing
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
@@ -48,21 +48,46 @@ public :
 
   /** Include inertia?
    *
-   * @param value Flag indicating to include inertial term.
+   * @param[in] value Flag indicating to include inertial term.
    */
   void useInertia(const bool value);
 
+  /** Include inertia?
+   *
+   * @returns True if including inertial term, false otherwise.
+   */
+  bool useInertia(void) const;
+
   /** Include body force?
    *
-   * @param value Flag indicating to include body force term.
+   * @param[in] value Flag indicating to include body force term.
    */
   void useBodyForce(const bool value);
 
-  /** Include initial stress/strain?
+  /** Include body force?
+ *
+ * @returns True if including body force term, false otherwise.
+ */
+  bool useBodyForce(void) const;
+
+  /** Include reference stress/strain?
    *
-   * @param value Flag indicating to include initial stress/strain.
+   * @param value Flag indicating to include reference stress/strain.
    */
-  void useInitialState(const bool value);
+  void useReferenceState(const bool value);
+
+  /** Use reference stress and strain in computation of stress and
+   * strain?
+   *
+   * @returns True if using reference stress and strain, false otherwise.
+   */
+  bool useReferenceState(void) const;
+
+  /** Verify configuration is acceptable.
+   *
+   * @param[in] solution Solution field.
+   */
+  void verifyConfiguration(const pylith::topology::Field& solution) const;
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -88,7 +113,6 @@ protected :
    */
   void _setFEKernelsLHSResidual(const topology::Field& solution) const;
 
-
   /** Set kernels for LHS Jacobian F(t,u,\dot{u}) when implicit time-stepping.
    *
    * @param[in] solution Solution field.
@@ -108,7 +132,9 @@ private :
 
   bool _useInertia; ///< Flag to include inertial term.
   bool _useBodyForce; ///< Flag to include body force term.
-  bool _useInitialState; ///< Flag to include initial stress/strain.
+  bool _useReferenceState; ///< Flag to use reference stress and strain.
+
+  static const char* _pyreComponent; ///< Name of Pyre component.
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

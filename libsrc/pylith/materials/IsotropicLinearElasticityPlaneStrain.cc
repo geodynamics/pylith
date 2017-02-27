@@ -221,7 +221,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSResidua
     if (!solution.hasSubfield("velocity")) {
         // Displacement
         const PetscPointFunc g0u = (_useBodyForce) ? pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g0v : NULL;
-        const PetscPointFunc g1u = (!_useReferenceState) ? pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v : pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v_initstate;
+        const PetscPointFunc g1u = (!_useReferenceState) ? pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v : pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v_refstate;
 
         err = PetscDSSetResidual(prob, i_disp, g0u, g1u); PYLITH_CHECK_ERROR(err);
     } else {
@@ -233,7 +233,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsRHSResidua
 
         // Velocity
         const PetscPointFunc g0v = (_useBodyForce) ? pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g0v : NULL;
-        const PetscPointFunc g1v = (!_useReferenceState) ? pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v : pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v_initstate;
+        const PetscPointFunc g1v = (!_useReferenceState) ? pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v : pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v_refstate;
 
         err = PetscDSSetResidual(prob, i_disp, g0u, g1u); PYLITH_CHECK_ERROR(err);
         err = PetscDSSetResidual(prob, i_vel,  g0v, g1v); PYLITH_CHECK_ERROR(err);

@@ -97,6 +97,7 @@ nobase_pkgpyexec_PYTHON = \
 	materials/DruckerPragerPlaneStrain.py \
 	materials/MaterialNew.py \
 	materials/IsotropicLinearElasticityPlaneStrain.py \
+	materials/IsotropicLinearIncompElasticityPlaneStrain.py \
 	materials/AuxFieldsIsotropicLinearElasticity.py \
 	meshio/__init__.py \
 	meshio/CellFilter.py \

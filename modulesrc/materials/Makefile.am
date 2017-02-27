@@ -43,7 +43,8 @@ swig_sources = \
 	../utils/PyreComponent.i \
 	../feassemble/IntegratorPointwise.i \
 	MaterialNew.i \
-	IsotropicLinearElasticityPlaneStrain.i
+	IsotropicLinearElasticityPlaneStrain.i \
+	IsotropicLinearIncompElasticityPlaneStrain.i
 
 swigincludedir = $(pkgdatadir)/swig/$(subpackage)
 swiginclude_HEADERS = \
