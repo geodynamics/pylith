@@ -30,6 +30,7 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 #include <cassert> // USES assert()
+#include <typeinfo> // USES typeid()
 #include <stdexcept> // USES std::runtime_error
 
 // ----------------------------------------------------------------------
@@ -103,7 +104,7 @@ pylith::feassemble::IntegratorPointwise::getAuxField(pylith::topology::Field *fi
                                                      const char* name) const
 { // getAuxField
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("getAuxField(field="<<field<<", name="<<name<<")");
+    PYLITH_JOURNAL_DEBUG("getAuxField(field="<<field->label()<<", name="<<name<<")");
 
     assert(field);
     assert(_auxFields);
@@ -182,7 +183,7 @@ pylith::feassemble::IntegratorPointwise::needNewLHSJacobian(void) const {
 void
 pylith::feassemble::IntegratorPointwise::normalizer(const spatialdata::units::Nondimensional& dim)
 { // normalizer
-    PYLITH_JOURNAL_DEBUG("normalizer(dim="<<&dim<<")");
+    PYLITH_JOURNAL_DEBUG("normalizer(dim="<<typeid(dim).name()<<")");
 
     if (0 == _normalizer) {
         _normalizer = new spatialdata::units::Nondimensional(dim);
