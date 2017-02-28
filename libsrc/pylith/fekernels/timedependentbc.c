@@ -70,7 +70,7 @@ pylith_fekernels_TimeDependentBC_initial_scalar(const PylithInt dim,
     assert(aOff);
     assert(a);
 
-    const i_initial = aOff[0];
+    const PylithInt i_initial = aOff[0];
 
     value[0] = a[i_initial];
 } /* initial_scalar */
