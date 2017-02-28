@@ -37,18 +37,18 @@ namespace pylith {
       /// Destructor
       virtual
       ~DataWriter(void);
-      
+
       /** Make copy of this object.
        *
        * @returns Copy of this.
        */
       virtual
       DataWriter* clone(void) const = 0;
-      
+
       /// Deallocate PETSc and local data structures.
       virtual
       void deallocate(void);
-  
+
       /** Set time scale for simulation time.
        *
        * @param value Time scale
@@ -57,22 +57,22 @@ namespace pylith {
 
       /** Prepare for writing files.
        *
-       * @param mesh Finite-element mesh. 
-       * @param numTimeSteps Expected number of time steps for fields.
+       * @param mesh Finite-element mesh.
+       * @param isInfo True if only writing info values.
        * @param label Name of label defining cells to include in output
        *   (=0 means use all cells in mesh).
        * @param labelId Value of label defining which cells to include.
        */
       virtual
       void open(const pylith::topology::Mesh& mesh,
-		const int numTimeSteps,
+		const bool isInfo,
 		const char* label =0,
 		const int labelId =0);
-      
+
       /// Close output files.
       virtual
       void close(void);
-      
+
       /** Prepare file for data at a new time step.
        *
        * @param t Time stamp for new data
@@ -86,11 +86,11 @@ namespace pylith {
 			const pylith::topology::Mesh& mesh,
 			const char* label =0,
 			const int labelId =0);
-      
+
       /// Cleanup after writing data for a time step.
       virtual
       void closeTimeStep(void);
-      
+
       /** Write field over vertices to file.
        *
        * @param t Time associated with field.
@@ -101,7 +101,7 @@ namespace pylith {
       void writeVertexField(const PylithScalar t,
 			    pylith::topology::Field& field,
 			    const pylith::topology::Mesh& mesh) = 0;
-      
+
       /** Write field over cells to file.
        *
        * @param t Time associated with field.
@@ -119,7 +119,7 @@ namespace pylith {
       /** Write dataset with names of points to file.
        *
        * @param names Array with name for each point, e.g., station name.
-       * @param mesh Finite-element mesh. 
+       * @param mesh Finite-element mesh.
        *
        * Primarily used with OutputSolnPoints.
        */
@@ -133,4 +133,4 @@ namespace pylith {
 } // pylith
 
 
-// End of file 
+// End of file

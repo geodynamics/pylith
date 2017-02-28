@@ -28,7 +28,7 @@
 // Constructor
 pylith::meshio::DataWriter::DataWriter(void) :
     _timeScale(1.0),
-    _numTimeSteps(0),
+    _isInfo(false),
     _context("")
 { // constructor
 } // constructor
@@ -70,13 +70,13 @@ pylith::meshio::DataWriter::timeScale(const PylithScalar value)
 // Prepare for writing files.
 void
 pylith::meshio::DataWriter::open(const topology::Mesh& mesh,
-                                 const int numTimeSteps,
+                                 const bool isInfo,
                                  const char* label,
                                  const int labelId)
 { // open
     PYLITH_METHOD_BEGIN;
 
-    _numTimeSteps = numTimeSteps;
+    _isInfo = isInfo;
 
     PetscDM dmMesh = mesh.dmMesh(); assert(dmMesh);
     const char* meshName = NULL;
@@ -122,7 +122,7 @@ pylith::meshio::DataWriter::closeTimeStep(void)
 // ----------------------------------------------------------------------
 // Copy constructor.
 pylith::meshio::DataWriter::DataWriter(const DataWriter& w) :
-    _numTimeSteps(w._numTimeSteps),
+    _isInfo(w._isInfo),
     _context(w._context)
 { // copy constructor
 } // copy constructor

@@ -26,45 +26,45 @@ namespace pylith {
   namespace meshio {
 
     class pylith::meshio::DataWriterHDF5Ext : public DataWriter
-    { // DataWriterHDF5Ext  
-      
+    { // DataWriterHDF5Ext
+
       // PUBLIC METHODS /////////////////////////////////////////////////
     public :
 
       /// Constructor
       DataWriterHDF5Ext(void);
-      
+
       /// Destructor
       ~DataWriterHDF5Ext(void);
-      
+
       /** Make copy of this object.
        *
        * @returns Copy of this.
        */
       DataWriter* clone(void) const;
-      
+
       /// Deallocate PETSc and local data structures.
       void deallocate(void);
-  
+
       /** Set filename for HDF5Ext file.
        *
        * @param filename Name of HDF5Ext file.
        */
       void filename(const char* filename);
-      
+
       /** Open output file.
        *
-       * @param mesh Finite-element mesh. 
-       * @param numTimeSteps Expected number of time steps for fields.
+       * @param mesh Finite-element mesh.
+       * @param isInfo True if only writing info values.
        * @param label Name of label defining cells to include in output
        *   (=0 means use all cells in mesh).
        * @param labelId Value of label defining which cells to include.
        */
       void open(const pylith::topology::Mesh& mesh,
-		const int numTimeSteps,
+		const bool isInfo,
 		const char* label =0,
 		const int labelId =0);
-      
+
       /// Close output files.
       void close(void);
 
@@ -77,7 +77,7 @@ namespace pylith {
       void writeVertexField(const PylithScalar t,
 			    pylith::topology::Field& field,
 			    const pylith::topology::Mesh& mesh);
-      
+
       /** Write field over cells to file.
        *
        * @param t Time associated with field.
@@ -90,11 +90,11 @@ namespace pylith {
 			  pylith::topology::Field& field,
 			  const char* label =0,
 			  const int labelId =0);
-      
+
       /** Write dataset with names of points to file.
        *
        * @param names Array with name for each point, e.g., station name.
-       * @param mesh Finite-element mesh. 
+       * @param mesh Finite-element mesh.
        *
        * Primarily used with OutputSolnPoints.
        */
@@ -107,4 +107,4 @@ namespace pylith {
 } // pylith
 
 
-// End of file 
+// End of file

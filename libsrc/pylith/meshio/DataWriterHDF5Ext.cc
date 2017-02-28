@@ -92,7 +92,7 @@ pylith::meshio::DataWriterHDF5Ext::DataWriterHDF5Ext(const DataWriterHDF5Ext& w)
 // Prepare for writing files.
 void
 pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
-                                        const int numTimeSteps,
+                                        const bool isInfo,
                                         const char* label,
                                         const int labelId)
 { // open
@@ -102,7 +102,7 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
     _datasets.clear();
 
     try {
-        DataWriter::open(mesh, numTimeSteps, label, labelId);
+        DataWriter::open(mesh, isInfo, label, labelId);
 
         PetscDM dmMesh = mesh.dmMesh(); assert(dmMesh);
         MPI_Comm comm;
@@ -155,53 +155,53 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
         if (isseq) {err = VecView_Seq(coordVector, binaryViewer); PYLITH_CHECK_ERROR(err); }
         else       {err = VecView_MPI(coordVector, binaryViewer); PYLITH_CHECK_ERROR(err); }
 #endif
-	err = PetscViewerDestroy(&binaryViewer);PYLITH_CHECK_ERROR(err);
+        err = PetscViewerDestroy(&binaryViewer); PYLITH_CHECK_ERROR(err);
 
-	PetscInt vStart, vEnd;
-	PetscInt n, numVerticesLocal = 0, numVertices;
-	PetscIS globalVertexNumbers = NULL;
-	err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
-	err = DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers);PYLITH_CHECK_ERROR(err);
-	err = ISGetLocalSize(globalVertexNumbers, &n);PYLITH_CHECK_ERROR(err);
-	if (n > 0) {
-	    const PetscInt *indices = NULL;
-	    err = ISGetIndices(globalVertexNumbers, &indices);PYLITH_CHECK_ERROR(err);
-	    for(PetscInt v = 0; v < n; ++v) {
-		if (indices[v] >= 0) ++numVerticesLocal;
-	    } // for
-	    err = ISRestoreIndices(globalVertexNumbers, &indices);PYLITH_CHECK_ERROR(err);
-	} // if
-	err = MPI_Allreduce(&numVerticesLocal, &numVertices, 1, MPI_INT, MPI_SUM, comm);PYLITH_CHECK_ERROR(err);
-	assert(numVertices > 0);
-	
-	// Create external dataset for coordinates
-	if (!commRank) {
-	    const hsize_t ndims = 2;
-	    hsize_t dims[ndims];
-	    dims[0] = numVertices;
-	    dims[1] = cs->spaceDim();
-	    _h5->createDatasetRawExternal("/geometry", "vertices", filenameVertices.c_str(), dims, ndims, scalartype);
-	} // if
-	
-	// Write cells
-	
-	// Account for censored cells
-	PetscInt cellHeight, cStart, cEnd, cMax, conesSize, numCells, numCorners, numCornersLocal = 0;
-	err = DMPlexGetVTKCellHeight(dmMesh, &cellHeight);PYLITH_CHECK_ERROR(err);
-	err = DMPlexGetHeightStratum(dmMesh, cellHeight, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-	err = DMPlexGetHybridBounds(dmMesh, &cMax, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
-	if (cMax >= 0) {
-	    cEnd = PetscMin(cEnd, cMax);
-	} // if
-	for(PetscInt cell = cStart; cell < cEnd; ++cell) {
-	    PetscInt *closure = NULL;
-	    PetscInt closureSize, v;
-	    
-	    err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-	    numCornersLocal = 0;
-	    for (v = 0; v < closureSize*2; v += 2) {
-		if ((closure[v] >= vStart) && (closure[v] < vEnd)) {
-		    ++numCornersLocal;
+        PetscInt vStart, vEnd;
+        PetscInt n, numVerticesLocal = 0, numVertices;
+        PetscIS globalVertexNumbers = NULL;
+        err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd); PYLITH_CHECK_ERROR(err);
+        err = DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers); PYLITH_CHECK_ERROR(err);
+        err = ISGetLocalSize(globalVertexNumbers, &n); PYLITH_CHECK_ERROR(err);
+        if (n > 0) {
+            const PetscInt *indices = NULL;
+            err = ISGetIndices(globalVertexNumbers, &indices); PYLITH_CHECK_ERROR(err);
+            for(PetscInt v = 0; v < n; ++v) {
+                if (indices[v] >= 0) ++numVerticesLocal;
+            } // for
+            err = ISRestoreIndices(globalVertexNumbers, &indices); PYLITH_CHECK_ERROR(err);
+        } // if
+        err = MPI_Allreduce(&numVerticesLocal, &numVertices, 1, MPI_INT, MPI_SUM, comm); PYLITH_CHECK_ERROR(err);
+        assert(numVertices > 0);
+
+        // Create external dataset for coordinates
+        if (!commRank) {
+            const hsize_t ndims = 2;
+            hsize_t dims[ndims];
+            dims[0] = numVertices;
+            dims[1] = cs->spaceDim();
+            _h5->createDatasetRawExternal("/geometry", "vertices", filenameVertices.c_str(), dims, ndims, scalartype);
+        } // if
+
+        // Write cells
+
+        // Account for censored cells
+        PetscInt cellHeight, cStart, cEnd, cMax, conesSize, numCells, numCorners, numCornersLocal = 0;
+        err = DMPlexGetVTKCellHeight(dmMesh, &cellHeight); PYLITH_CHECK_ERROR(err);
+        err = DMPlexGetHeightStratum(dmMesh, cellHeight, &cStart, &cEnd); PYLITH_CHECK_ERROR(err);
+        err = DMPlexGetHybridBounds(dmMesh, &cMax, NULL, NULL, NULL); PYLITH_CHECK_ERROR(err);
+        if (cMax >= 0) {
+            cEnd = PetscMin(cEnd, cMax);
+        } // if
+        for(PetscInt cell = cStart; cell < cEnd; ++cell) {
+            PetscInt *closure = NULL;
+            PetscInt closureSize, v;
+
+            err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure); PYLITH_CHECK_ERROR(err);
+            numCornersLocal = 0;
+            for (v = 0; v < closureSize*2; v += 2) {
+                if ((closure[v] >= vStart) && (closure[v] < vEnd)) {
+                    ++numCornersLocal;
                 } // if
             } // for
             err = DMPlexRestoreTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure); PYLITH_CHECK_ERROR(err);
@@ -449,77 +449,73 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
         ++datasetInfo.numTimeSteps;
 
         // Update time stamp in "/time, if necessary.
-	if (!commRank) {
-	    if (_tstampIndex+1 == datasetInfo.numTimeSteps)
-		_writeTimeStamp(t);
-	} // if
-	
+        if (!commRank) {
+            if (_tstampIndex+1 == datasetInfo.numTimeSteps)
+                _writeTimeStamp(t);
+        } // if
+
         // Add dataset to HDF5 file, if necessary
-	if (createdExternalDataset) {
-	    PetscDM dm = NULL;
-	    PetscSection section = NULL;
-	    PetscInt dof = 0, n, numVerticesLocal = 0, numVertices, vStart;
-	    PetscIS globalVertexNumbers = NULL;
-	    
-	    err = VecGetDM(vector, &dm);PYLITH_CHECK_ERROR(err);assert(dm);
-	    err = DMGetDefaultSection(dm, &section);PYLITH_CHECK_ERROR(err);assert(section);
-	    
-	    err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, NULL);PYLITH_CHECK_ERROR(err);
-	    err = DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers);PYLITH_CHECK_ERROR(err);
-	    err = ISGetLocalSize(globalVertexNumbers, &n);PYLITH_CHECK_ERROR(err);
-	    if (n > 0) {
-		const PetscInt *indices = NULL;
-		err = ISGetIndices(globalVertexNumbers, &indices);PYLITH_CHECK_ERROR(err);
-		err = PetscSectionGetDof(section, vStart, &dof);PYLITH_CHECK_ERROR(err);
-		for(PetscInt v = 0; v < n; ++v) {
-		    if (indices[v] >= 0) ++numVerticesLocal;
-		} // for
-		err = ISRestoreIndices(globalVertexNumbers, &indices);PYLITH_CHECK_ERROR(err);
-	    } // if
-	    int fiberDimLocal = dof;
-	    int fiberDim = 0;
-	    err = MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX, comm);PYLITH_CHECK_ERROR(err);
-	    err = MPI_Allreduce(&numVerticesLocal, &numVertices, 1, MPI_INT, MPI_SUM, comm);PYLITH_CHECK_ERROR(err);
-	    assert(fiberDim > 0);assert(numVertices > 0);
-	    
-	    datasetInfo.numPoints = numVertices;
-	    datasetInfo.fiberDim = fiberDim;
-	    
-	    if (!commRank) {
-		// Add new external dataset to HDF5 file.
-		const int numTimeSteps = DataWriter::_numTimeSteps;
-		const hsize_t ndims = 3;
-		hsize_t maxDims[ndims];
-		if (numTimeSteps > 0) {
-		    maxDims[0] = H5S_UNLIMITED;
-		    maxDims[1] = datasetInfo.numPoints;
-		    maxDims[2] = datasetInfo.fiberDim;
-		} else {
-		    maxDims[0] = 1;
-		    maxDims[1] = datasetInfo.numPoints;
-		    maxDims[2] = datasetInfo.fiberDim;
-		} // else
-		// Create 'vertex_fields' group if necessary.
-		if (!_h5->hasGroup("/vertex_fields"))
-		    _h5->createGroup("/vertex_fields");
-		
-		_h5->createDatasetRawExternal("/vertex_fields", field.label(), _datasetFilename(field.label()).c_str(), maxDims, ndims, scalartype);
-		std::string fullName = std::string("/vertex_fields/") + field.label();
-		const char* sattr = topology::FieldBase::vectorFieldString(field.vectorFieldType());
-		_h5->writeAttribute(fullName.c_str(), "vector_field_type", sattr);
-	    } // if
-	} else if (!commRank) {
-	    // Update number of time steps in external dataset info in HDF5 file.
-	    const int totalNumTimeSteps = DataWriter::_numTimeSteps;
-	    assert(totalNumTimeSteps > 0);
-	    
-	    const hsize_t ndims = 3;
-	    hsize_t dims[3];
-	    dims[0] = datasetInfo.numTimeSteps; // update to current value
-	    dims[1] = datasetInfo.numPoints;
-	    dims[2] = datasetInfo.fiberDim;
-	    _h5->extendDatasetRawExternal("/vertex_fields", field.label(), dims, ndims);
-	} // if/else
+        if (createdExternalDataset) {
+            PetscDM dm = NULL;
+            PetscSection section = NULL;
+            PetscInt dof = 0, n, numVerticesLocal = 0, numVertices, vStart;
+            PetscIS globalVertexNumbers = NULL;
+
+            err = VecGetDM(vector, &dm); PYLITH_CHECK_ERROR(err); assert(dm);
+            err = DMGetDefaultSection(dm, &section); PYLITH_CHECK_ERROR(err); assert(section);
+
+            err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, NULL); PYLITH_CHECK_ERROR(err);
+            err = DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers); PYLITH_CHECK_ERROR(err);
+            err = ISGetLocalSize(globalVertexNumbers, &n); PYLITH_CHECK_ERROR(err);
+            if (n > 0) {
+                const PetscInt *indices = NULL;
+                err = ISGetIndices(globalVertexNumbers, &indices); PYLITH_CHECK_ERROR(err);
+                err = PetscSectionGetDof(section, vStart, &dof); PYLITH_CHECK_ERROR(err);
+                for(PetscInt v = 0; v < n; ++v) {
+                    if (indices[v] >= 0) ++numVerticesLocal;
+                } // for
+                err = ISRestoreIndices(globalVertexNumbers, &indices); PYLITH_CHECK_ERROR(err);
+            } // if
+            int fiberDimLocal = dof;
+            int fiberDim = 0;
+            err = MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX, comm); PYLITH_CHECK_ERROR(err);
+            err = MPI_Allreduce(&numVerticesLocal, &numVertices, 1, MPI_INT, MPI_SUM, comm); PYLITH_CHECK_ERROR(err);
+            assert(fiberDim > 0); assert(numVertices > 0);
+
+            datasetInfo.numPoints = numVertices;
+            datasetInfo.fiberDim = fiberDim;
+
+            if (!commRank) {
+                // Add new external dataset to HDF5 file.
+                const hsize_t ndims = 3;
+                hsize_t maxDims[ndims];
+                if (!DataWriter::_isInfo) {
+                    maxDims[0] = H5S_UNLIMITED;
+                    maxDims[1] = datasetInfo.numPoints;
+                    maxDims[2] = datasetInfo.fiberDim;
+                } else {
+                    maxDims[0] = 1;
+                    maxDims[1] = datasetInfo.numPoints;
+                    maxDims[2] = datasetInfo.fiberDim;
+                } // else
+                  // Create 'vertex_fields' group if necessary.
+                if (!_h5->hasGroup("/vertex_fields"))
+                    _h5->createGroup("/vertex_fields");
+
+                _h5->createDatasetRawExternal("/vertex_fields", field.label(), _datasetFilename(field.label()).c_str(), maxDims, ndims, scalartype);
+                std::string fullName = std::string("/vertex_fields/") + field.label();
+                const char* sattr = topology::FieldBase::vectorFieldString(field.vectorFieldType());
+                _h5->writeAttribute(fullName.c_str(), "vector_field_type", sattr);
+            } // if
+        } else if (!commRank) {
+            // Update number of time steps in external dataset info in HDF5 file.
+            const hsize_t ndims = 3;
+            hsize_t dims[3];
+            dims[0] = datasetInfo.numTimeSteps; // update to current value
+            dims[1] = datasetInfo.numPoints;
+            dims[2] = datasetInfo.fiberDim;
+            _h5->extendDatasetRawExternal("/vertex_fields", field.label(), dims, ndims);
+        } // if/else
     } catch (const std::exception& err) {
         std::ostringstream msg;
         msg << "Error while writing field '" << field.label() << "' at time "
@@ -642,10 +638,9 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
 
             if (!commRank) {
                 // Add new external dataset to HDF5 file.
-                const int numTimeSteps = DataWriter::_numTimeSteps;
                 const hsize_t ndims = 3;
                 hsize_t maxDims[ndims];
-                if (numTimeSteps > 0) {
+                if (!DataWriter::_isInfo) {
                     maxDims[0] = H5S_UNLIMITED;
                     maxDims[1] = datasetInfo.numPoints;
                     maxDims[2] = datasetInfo.fiberDim;
@@ -666,8 +661,6 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
 
         } else if (!commRank) {
             // Update number of time steps in external dataset info in HDF5 file.
-            const int totalNumTimeSteps = DataWriter::_numTimeSteps; assert(totalNumTimeSteps > 0);
-
             const hsize_t ndims = 3;
             hsize_t dims[3];
             dims[0] = datasetInfo.numTimeSteps; // update to current value
@@ -702,58 +695,58 @@ pylith::meshio::DataWriterHDF5Ext::writePointNames(const pylith::string_vector& 
     assert(_h5);
 
     try {
-	// Put station names into array of fixed length strings
-	// (numNames*maxStringLegnth) on each process, and then gather
-	// onto root process for writing in serial to HDF5.
-	int mpierr;
-	MPI_Comm comm = mesh.comm();
-	const int commRank = mesh.commRank();
-	const int commRoot = 0;
-	int nprocs = 0;
-	mpierr = MPI_Comm_size(comm, &nprocs);assert(MPI_SUCCESS == mpierr);
+        // Put station names into array of fixed length strings
+        // (numNames*maxStringLegnth) on each process, and then gather
+        // onto root process for writing in serial to HDF5.
+        int mpierr;
+        MPI_Comm comm = mesh.comm();
+        const int commRank = mesh.commRank();
+        const int commRoot = 0;
+        int nprocs = 0;
+        mpierr = MPI_Comm_size(comm, &nprocs); assert(MPI_SUCCESS == mpierr);
 
-	// Number of names on each process.
-	const int numNamesLocal = names.size();
-	int_array numNamesArray(nprocs);
-	mpierr = MPI_Allgather(&numNamesLocal, 1, MPI_INT, &numNamesArray[0], 1, MPI_INT, comm);assert(MPI_SUCCESS == mpierr);
-	const int numNames = numNamesArray.sum();
+        // Number of names on each process.
+        const int numNamesLocal = names.size();
+        int_array numNamesArray(nprocs);
+        mpierr = MPI_Allgather(&numNamesLocal, 1, MPI_INT, &numNamesArray[0], 1, MPI_INT, comm); assert(MPI_SUCCESS == mpierr);
+        const int numNames = numNamesArray.sum();
 
-	// Get maximum string length.
-	int maxStringLengthLocal = 0;
-	int maxStringLength = 0;
-	for (int i=0; i < numNamesLocal; ++i) {
-	    maxStringLengthLocal = std::max(maxStringLengthLocal, int(names[i].length()));
-	} // for
-	maxStringLengthLocal += 1; // add space for null terminator.
-	mpierr = MPI_Allreduce(&maxStringLengthLocal, &maxStringLength, 1, MPI_INT, MPI_MAX, comm);assert(MPI_SUCCESS == mpierr);
+        // Get maximum string length.
+        int maxStringLengthLocal = 0;
+        int maxStringLength = 0;
+        for (int i=0; i < numNamesLocal; ++i) {
+            maxStringLengthLocal = std::max(maxStringLengthLocal, int(names[i].length()));
+        } // for
+        maxStringLengthLocal += 1; // add space for null terminator.
+        mpierr = MPI_Allreduce(&maxStringLengthLocal, &maxStringLength, 1, MPI_INT, MPI_MAX, comm); assert(MPI_SUCCESS == mpierr);
 
-	char_array namesFixedLengthLocal(numNamesLocal*maxStringLength);
-	for (int i=0; i < numNamesLocal; ++i) {
-	    const int index = i*maxStringLength;
-	    strncpy(&namesFixedLengthLocal[index], names[i].c_str(), maxStringLength-1);
-	    namesFixedLengthLocal[index+maxStringLength-1] = '\0';
-	    // Fill remaining portion of string with null characters.
-	    for (int j=names[i].length(); j < maxStringLength; ++j) {
-		namesFixedLengthLocal[index+j] = '\0';
-	    } // for
-	} // for
+        char_array namesFixedLengthLocal(numNamesLocal*maxStringLength);
+        for (int i=0; i < numNamesLocal; ++i) {
+            const int index = i*maxStringLength;
+            strncpy(&namesFixedLengthLocal[index], names[i].c_str(), maxStringLength-1);
+            namesFixedLengthLocal[index+maxStringLength-1] = '\0';
+            // Fill remaining portion of string with null characters.
+            for (int j=names[i].length(); j < maxStringLength; ++j) {
+                namesFixedLengthLocal[index+j] = '\0';
+            } // for
+        } // for
 
-	char_array namesFixedLength;
-	if (!commRank) namesFixedLength.resize(numNames*maxStringLength);
-	// Convert numNames array from number of names to total size of names array.
-	numNamesArray *= maxStringLength;
-	int_array offsets;
-	if (!commRank) {
-	    offsets.resize(nprocs);
-	    offsets[0] = 0;
-	    for (int i=1; i < nprocs; ++i) {
-		offsets[i] = offsets[i-1] + numNamesArray[i-1];
-	    } // for
-	} // if
-	mpierr = MPI_Gatherv(&namesFixedLengthLocal[0], numNamesLocal*maxStringLength, MPI_CHAR, &namesFixedLength[0], &numNamesArray[0], &offsets[0], MPI_CHAR, commRoot, comm);
+        char_array namesFixedLength;
+        if (!commRank) namesFixedLength.resize(numNames*maxStringLength);
+        // Convert numNames array from number of names to total size of names array.
+        numNamesArray *= maxStringLength;
+        int_array offsets;
+        if (!commRank) {
+            offsets.resize(nprocs);
+            offsets[0] = 0;
+            for (int i=1; i < nprocs; ++i) {
+                offsets[i] = offsets[i-1] + numNamesArray[i-1];
+            } // for
+        } // if
+        mpierr = MPI_Gatherv(&namesFixedLengthLocal[0], numNamesLocal*maxStringLength, MPI_CHAR, &namesFixedLength[0], &numNamesArray[0], &offsets[0], MPI_CHAR, commRoot, comm);
 
         if (!commRank) {
-	    _h5->writeDataset("/", "stations", &namesFixedLength[0], numNames, maxStringLength);
+            _h5->writeDataset("/", "stations", &namesFixedLength[0], numNames, maxStringLength);
         } // if
 
     } catch (const std::exception& err) {
@@ -778,8 +771,7 @@ pylith::meshio::DataWriterHDF5Ext::_hdf5Filename(void) const
 
     std::ostringstream filename;
     const int indexExt = _filename.find(".h5");
-    const int numTimeSteps = DataWriter::_numTimeSteps;
-    if (0 == numTimeSteps) {
+    if (DataWriter::_isInfo) {
         filename << std::string(_filename, 0, indexExt) << "_info.h5";
     } else {
         filename << _filename;

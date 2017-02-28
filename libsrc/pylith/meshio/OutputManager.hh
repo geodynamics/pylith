@@ -35,144 +35,144 @@
 /// Manager for output of finite-element data.
 class pylith::meshio::OutputManager
 { // OutputManager
-  friend class TestOutputManager; // unit testing
+friend class TestOutputManager;   // unit testing
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
-public :
+public:
 
-  /// Constructor
-  OutputManager(void);
+/// Constructor
+OutputManager(void);
 
-  /// Destructor
-  virtual
-  ~OutputManager(void);
+/// Destructor
+virtual
+~OutputManager(void);
 
-  /// Deallocate PETSc and local data structures.
-  virtual
-  void deallocate(void);
-  
-  /** Set coordinate system in output. The vertex fields in the output
-   * are not affected by any change in coordinates.
-   *
-   * @param cs Coordinate system in output.
-   */
-  void coordsys(const spatialdata::geocoords::CoordSys* cs);
+/// Deallocate PETSc and local data structures.
+virtual
+void deallocate(void);
 
-  /** Set writer to write data to file.
-   *
-   * @param datawriter Writer for data.
-   */
-  void writer(DataWriter* const datawriter);
+/** Set coordinate system in output. The vertex fields in the output
+ * are not affected by any change in coordinates.
+ *
+ * @param cs Coordinate system in output.
+ */
+void coordsys(const spatialdata::geocoords::CoordSys* cs);
 
-  /** Set filter for vertex data.
-   *
-   * @param filter Filter to apply to vertex data before writing.
-   */
-  void vertexFilter(VertexFilter* const filter);
+/** Set writer to write data to file.
+ *
+ * @param datawriter Writer for data.
+ */
+void writer(DataWriter* const datawriter);
 
-  /** Set filter for cell data.
-   *
-   * @param filter Filter to apply to cell data before writing.
-   */
-  void cellFilter(CellFilter* const filter);
+/** Set filter for vertex data.
+ *
+ * @param filter Filter to apply to vertex data before writing.
+ */
+void vertexFilter(VertexFilter* const filter);
 
-  /** Get fields used in output.
-   *
-   * @returns Fields associated with output.
-   */
-  const topology::Fields* fields(void) const;
+/** Set filter for cell data.
+ *
+ * @param filter Filter to apply to cell data before writing.
+ */
+void cellFilter(CellFilter* const filter);
 
-  /** Prepare for output.
-   *
-   * @param mesh Finite-element mesh object.
-   * @param numTimeSteps Expected number of time steps.
-   * @param label Name of label defining cells to include in output
-   *   (=0 means use all cells in mesh).
-   * @param labelId Value of label defining which cells to include.
-   */
-  virtual
-  void open(const topology::Mesh& mesh,
-	    const int numTimeSteps,
-	    const char* label =0,
-	    const int labelId =0);
+/** Get fields used in output.
+ *
+ * @returns Fields associated with output.
+ */
+const topology::Fields* fields(void) const;
 
-  /// Close output files.
-  virtual
-  void close(void);
+/** Prepare for output.
+ *
+ * @param mesh Finite-element mesh object.
+ * @param[in] isInfo True if only writing info values.
+ * @param label Name of label defining cells to include in output
+ *   (=0 means use all cells in mesh).
+ * @param labelId Value of label defining which cells to include.
+ */
+virtual
+void open(const topology::Mesh& mesh,
+          const bool isInfo,
+          const char* label =0,
+          const int labelId =0);
 
-  /** Setup file for writing fields at time step.
-   *
-   * @param t Time of time step.
-   * @param mesh Finite-element mesh object.
-   * @param label Name of label defining cells to include in output
-   *   (=0 means use all cells in mesh).
-   * @param labelId Value of label defining which cells to include.
-   */
-  virtual
-  void openTimeStep(const PylithScalar t,
-		    const topology::Mesh& mesh,
-		    const char* label =0,
-		    const int labelId =0);
+/// Close output files.
+virtual
+void close(void);
 
-  /// End writing fields at time step.
-  virtual
-  void closeTimeStep(void);
+/** Setup file for writing fields at time step.
+ *
+ * @param t Time of time step.
+ * @param mesh Finite-element mesh object.
+ * @param label Name of label defining cells to include in output
+ *   (=0 means use all cells in mesh).
+ * @param labelId Value of label defining which cells to include.
+ */
+virtual
+void openTimeStep(const PylithScalar t,
+                  const topology::Mesh& mesh,
+                  const char* label =0,
+                  const int labelId =0);
 
-  /** Append finite-element vertex field to file.
-   *
-   * @param t Time associated with field.
-   * @param field Vertex field.
-   * @param mesh Mesh for output.
-   */
-  virtual
-  void appendVertexField(const PylithScalar t,
-			 topology::Field& field,
-			 const topology::Mesh& mesh);
+/// End writing fields at time step.
+virtual
+void closeTimeStep(void);
 
-  /** Append finite-element cell field to file.
-   *
-   * @param t Time associated with field.
-   * @param field Cell field.
-   * @param label Name of label defining cells to include in output
-   *   (=0 means use all cells in mesh).
-   * @param labelId Value of label defining which cells to include.
-   */
-  virtual
-  void appendCellField(const PylithScalar t,
-		       topology::Field& field,
-		       const char* label =0,
-		       const int labelId =0);
+/** Append finite-element vertex field to file.
+ *
+ * @param t Time associated with field.
+ * @param field Vertex field.
+ * @param mesh Mesh for output.
+ */
+virtual
+void appendVertexField(const PylithScalar t,
+                       topology::Field& field,
+                       const topology::Mesh& mesh);
+
+/** Append finite-element cell field to file.
+ *
+ * @param t Time associated with field.
+ * @param field Cell field.
+ * @param label Name of label defining cells to include in output
+ *   (=0 means use all cells in mesh).
+ * @param labelId Value of label defining which cells to include.
+ */
+virtual
+void appendCellField(const PylithScalar t,
+                     topology::Field& field,
+                     const char* label =0,
+                     const int labelId =0);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
-protected :
+protected:
 
-  /** Dimension field.
-   *
-   * @param fieldIn Field to dimensionalize.
-   */
-  topology::Field& _dimension(topology::Field& fieldIn);
+/** Dimension field.
+ *
+ * @param fieldIn Field to dimensionalize.
+ */
+topology::Field& _dimension(topology::Field& fieldIn);
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
-protected :
+protected:
 
-  topology::Fields* _fields; ///< Buffer fields.
+topology::Fields* _fields;   ///< Buffer fields.
 
-  /// Coordinate system for output.
-  spatialdata::geocoords::CoordSys* _coordsys;
+/// Coordinate system for output.
+spatialdata::geocoords::CoordSys* _coordsys;
 
-  DataWriter* _writer; ///< Writer for data.
-  VertexFilter* _vertexFilter; ///< Filter applied to vertex data.
-  CellFilter* _cellFilter; ///< Filter applied to cell data.
+DataWriter* _writer;   ///< Writer for data.
+VertexFilter* _vertexFilter;   ///< Filter applied to vertex data.
+CellFilter* _cellFilter;   ///< Filter applied to cell data.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
-private :
+private:
 
-  OutputManager(const OutputManager&); ///< Not implemented.
-  const OutputManager& operator=(const OutputManager&); ///< Not implemented
+OutputManager(const OutputManager&);   ///< Not implemented.
+const OutputManager& operator=(const OutputManager&);   ///< Not implemented
 
 }; // OutputManager
 
 #endif // pylith_meshio_outputmanager_hh
 
 
-// End of file 
+// End of file

@@ -28,44 +28,46 @@
 #define pylith_meshio_meshiofwd_hh
 
 namespace pylith {
-  namespace meshio {
+    namespace meshio {
 
-    class BinaryIO;
+        class BinaryIO;
 
-    class MeshIO;
-    class MeshBuilder;
-    class MeshIOAscii;
-    class MeshIOCubit;
-    class MeshIOLagrit;
+        class MeshIO;
+        class MeshBuilder;
+        class MeshIOAscii;
+        class MeshIOCubit;
+        class MeshIOLagrit;
 
-    class GMVFile;
-    class GMVFileAscii;
-    class GMVFileBinary;
-    class PsetFile;
-    class PsetFileAscii;
-    class PsetFileBinary;
-    class ExodusII;
-    
-    class OutputManager;
-    class DataWriter;
-    class DataWriterVTK;
-    class DataWriterHDF5;
-    class DataWriterHDF5Ext;
-    class CellFilter;
-    class CellFilterAvg;
-    class VertexFilter;
-    class VertexFilterVecNorm;
-    class OutputSolnSubset;
-    class OutputSolnPoints;
+        class GMVFile;
+        class GMVFileAscii;
+        class GMVFileBinary;
+        class PsetFile;
+        class PsetFileAscii;
+        class PsetFileBinary;
+        class ExodusII;
 
-    class HDF5;
-    class Xdmf;
+        class OutputManager;
+        class DataWriter;
+        class DataWriterVTK;
+        class DataWriterHDF5;
+        class DataWriterHDF5Ext;
+        class CellFilter;
+        class CellFilterAvg;
+        class VertexFilter;
+        class VertexFilterVecNorm;
+        class OutputSolnSubset;
+        class OutputSolnPoints;
 
-  } // meshio
+        class OutputManagerNew;
+
+        class HDF5;
+        class Xdmf;
+
+    } // meshio
 } // pylith
 
 
 #endif // pylith_meshio_meshiofwd_hh
 
 
-// End of file 
+// End of file

@@ -42,6 +42,7 @@
 #include "pylith/meshio/DataWriterHDF5Ext.hh"
 #include "pylith/meshio/Xdmf.hh"
 #endif
+#include "pylith/meshio/OutputManagerNew.hh"
 
 #include "pylith/utils/arrayfwd.hh"
 %}
@@ -90,5 +91,6 @@ import_array();
 %include "DataWriterHDF5Ext.i"
 %include "Xdmf.i"
 #endif
+#include "pylith/meshio/OutputManagerNew.i"
 
 // End of file

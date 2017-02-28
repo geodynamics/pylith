@@ -93,10 +93,10 @@ class ProblemNew(PetscComponent, ModuleProblem):
         # \b Facilities
         # @li \b solution Solution field.
         # @li \b normalizer Nondimensionalizer for problem.
-        # @li \b materials Materials in problem.
-        # @li \b bc Boundary conditions.
-        # @li \b interfaces Interior surfaces with constraints or
-        # constitutive models.
+        # @li \b materials Array of materials (governing equations) in the problem.
+        # @li \b bc Array of boundary conditions.
+        # @li \b interfaces Array of interior surfaces with relative displacement constraints or constitutive models.
+        # @li \b solution_outputs Array of output managers for solution.
         # @li \b gravityField Gravity field for problem (SpatialDB).
 
         import pyre.inventory

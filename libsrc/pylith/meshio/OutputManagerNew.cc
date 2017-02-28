@@ -18,32 +18,42 @@
 
 #include <portinfo>
 
-#include "OutputManager.hh" // Implementation of class methods
+#include "OutputManagerNew.hh" // Implementation of class methods
 
 #include "DataWriter.hh" // USES DataWriter
 #include "VertexFilter.hh" // USES VertexFilter
 #include "CellFilter.hh" // USES CellFilter
 
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 
+#include "pylith/utils/constdefs.h" // USES PYLITH_MAXSCALAR
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include <iostream> // USES std::cout
+#include <typeinfo> // USES typeid()
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::meshio::OutputManager::OutputManager(void) :
+pylith::meshio::OutputManagerNew::OutputManagerNew(void) :
     _fields(0),
-    _coordsys(0),
-    _writer(0),
-    _vertexFilter(0),
-    _cellFilter(0)
+    _coordsys(NULL),
+    _writer(NULL),
+    _vertexFilter(NULL),
+    _cellFilter(NULL),
+    _timeSkip(0.0),
+    _timeWrote(-PYLITH_MAXSCALAR),
+    _numTimeStepsSkip(0),
+    _timeStepWrote(PYLITH_MININT),
+    _trigger(SKIP_TIMESTEPS)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::meshio::OutputManager::~OutputManager(void)
+pylith::meshio::OutputManagerNew::~OutputManagerNew(void)
 { // destructor
     deallocate();
 } // destructor
@@ -51,21 +61,76 @@ pylith::meshio::OutputManager::~OutputManager(void)
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::meshio::OutputManager::deallocate(void)
+pylith::meshio::OutputManagerNew::deallocate(void)
 { // deallocate
-    _writer = 0; // :TODO: Use shared pointer
-    _vertexFilter = 0; // :TODO: Use shared pointer
-    _cellFilter = 0; // :TODO: Use shared pointer
-    delete _coordsys; _coordsys = 0;
+    _writer = NULL; // :TODO: Use shared pointer
+    _vertexFilter = NULL; // :TODO: Use shared pointer
+    _cellFilter = NULL; // :TODO: Use shared pointer
+    delete _coordsys; _coordsys = NULL;
     delete _fields; _fields = 0;
 } // deallocate
 
 // ----------------------------------------------------------------------
+// Set trigger for how often to write output.
+void
+pylith::meshio::OutputManagerNew::trigger(TriggerEnum flag)
+{ // trigger
+    PYLITH_JOURNAL_DEBUG("OutputManagerNew::trigger(flag="<<flag<<")");
+
+    _trigger = flag;
+} // trigger
+
+// ----------------------------------------------------------------------
+// Get trigger for how often to write otuput.
+pylith::meshio::OutputManagerNew::TriggerEnum
+pylith::meshio::OutputManagerNew::trigger(void) const
+{  // trigger
+    return _trigger;
+}  // trigger
+
+// ----------------------------------------------------------------------
+// Set number of time steps to skip between writes.
+void
+pylith::meshio::OutputManagerNew::numTimeStepsSkip(const int value)
+{ // numTimeStepsSkip
+    PYLITH_JOURNAL_DEBUG("OutputManagerNew::numTimeStepsSkip(value="<<value<<")");
+
+    _numTimeStepsSkip = (value >= 0) ? value : 0;
+} // numTimeStepsSkip
+
+// ----------------------------------------------------------------------
+// Get number of time steps to skip between writes.
+int
+pylith::meshio::OutputManagerNew::numTimeStepsSkip(void) const
+{ // numTimeStepsSkip
+    return _numTimeStepsSkip;
+} // numTimeStepsSkip
+
+// ----------------------------------------------------------------------
+// Set elapsed time between writes.
+void
+pylith::meshio::OutputManagerNew::timeSkip(const double value)
+{ // timeSkip
+    PYLITH_JOURNAL_DEBUG("OutputManagerNew::timeSkip(value="<<value<<")");
+
+    _timeSkip = (value >= 0.0) ? value : 0.0;
+} // timeSkip
+
+// ----------------------------------------------------------------------
+// Get elapsed time between writes.
+double
+pylith::meshio::OutputManagerNew::timeSkip(void) const
+{ // timeSkip
+    return _timeSkip;
+} // timeSkip
+
+// ----------------------------------------------------------------------
 // Set coordinate system in output. The vertex fields in the output
 void
-pylith::meshio::OutputManager::coordsys(const spatialdata::geocoords::CoordSys* cs)
+pylith::meshio::OutputManagerNew::coordsys(const spatialdata::geocoords::CoordSys* cs)
 { // coordsys
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("OutputManagerNew::coordsys(cs="<<typeid(*cs).name()<<")");
 
     delete _coordsys; _coordsys = (cs) ? cs->clone() : 0;
 
@@ -75,9 +140,10 @@ pylith::meshio::OutputManager::coordsys(const spatialdata::geocoords::CoordSys* 
 // ----------------------------------------------------------------------
 // Set writer to write data to file.
 void
-pylith::meshio::OutputManager::writer(DataWriter* const datawriter)
+pylith::meshio::OutputManagerNew::writer(DataWriter* const datawriter)
 { // writer
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("OutputManagerNew::write(datawriter="<<typeid(datawriter).name()<<")");
 
     _writer = datawriter; // :TODO: Use shared pointer
 
@@ -87,9 +153,10 @@ pylith::meshio::OutputManager::writer(DataWriter* const datawriter)
 // ----------------------------------------------------------------------
 // Set filter for vertex data.
 void
-pylith::meshio::OutputManager::vertexFilter(VertexFilter* const filter)
+pylith::meshio::OutputManagerNew::vertexFilter(VertexFilter* const filter)
 { // vertexFilter
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("OutputManagerNew::vertexFilter(filter="<<typeid(filter).name()<<")");
 
     _vertexFilter = filter; // :TODO: Use shared pointer
 
@@ -99,9 +166,10 @@ pylith::meshio::OutputManager::vertexFilter(VertexFilter* const filter)
 // ----------------------------------------------------------------------
 // Set filter for cell data.
 void
-pylith::meshio::OutputManager::cellFilter(CellFilter* const filter)
+pylith::meshio::OutputManagerNew::cellFilter(CellFilter* const filter)
 { // cellFilter
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("OutputManagerNew::cellFilter(filter="<<typeid(filter).name()<<")");
 
     _cellFilter = filter; // :TODO: Use shared pointer
 
@@ -109,24 +177,16 @@ pylith::meshio::OutputManager::cellFilter(CellFilter* const filter)
 } // cellFilter
 
 // ----------------------------------------------------------------------
-// Get fields used in output.
-const pylith::topology::Fields*
-pylith::meshio::OutputManager::fields(void) const
-{ // fields
-    PYLITH_METHOD_BEGIN;
-
-    PYLITH_METHOD_RETURN(_fields);
-} // fields
-
-// ----------------------------------------------------------------------
 // Prepare for output.
 void
-pylith::meshio::OutputManager::open(const topology::Mesh& mesh,
-                                    const bool isInfo,
-                                    const char* label,
-                                    const int labelId)
+pylith::meshio::OutputManagerNew::open(const topology::Mesh& mesh,
+                                       const bool isInfo,
+                                       const char* label,
+                                       const int labelId)
 { // open
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("OutputManagerNew::open(mesh="<<typeid(mesh).name()<<", isInfo="<<isInfo<<", label="<<label<<", labelId="<<labelId<<")");
+
 
     if (!_writer) {
         std::ostringstream msg;
@@ -147,9 +207,10 @@ pylith::meshio::OutputManager::open(const topology::Mesh& mesh,
 // ----------------------------------------------------------------------
 /// Close output files.
 void
-pylith::meshio::OutputManager::close(void)
+pylith::meshio::OutputManagerNew::close(void)
 { // close
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("OutputManagerNew::close()");
 
     assert(_writer);
     _writer->close();
@@ -160,12 +221,13 @@ pylith::meshio::OutputManager::close(void)
 // ----------------------------------------------------------------------
 // Setup file for writing fields at time step.
 void
-pylith::meshio::OutputManager::openTimeStep(const PylithScalar t,
-                                            const topology::Mesh& mesh,
-                                            const char* label,
-                                            const int labelId)
+pylith::meshio::OutputManagerNew::openTimeStep(const PylithReal t,
+                                               const topology::Mesh& mesh,
+                                               const char* label,
+                                               const int labelId)
 { // openTimeStep
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("OutputManagerNew::openTimeStep(t="<<t<<", mesh="<<typeid(mesh).name()<<", label="<<label<<", labelId="<<labelId<<")");
 
     assert(_writer);
     _writer->openTimeStep(t, mesh, label, labelId);
@@ -176,9 +238,10 @@ pylith::meshio::OutputManager::openTimeStep(const PylithScalar t,
 // ----------------------------------------------------------------------
 // End writing fields at time step.
 void
-pylith::meshio::OutputManager::closeTimeStep(void)
+pylith::meshio::OutputManagerNew::closeTimeStep(void)
 { // closeTimeStep
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("OutputManagerNew::closeTimeStep()");
 
     assert(_writer);
     _writer->closeTimeStep();
@@ -189,11 +252,12 @@ pylith::meshio::OutputManager::closeTimeStep(void)
 // ----------------------------------------------------------------------
 // Append finite-element vertex field to file.
 void
-pylith::meshio::OutputManager::appendVertexField(const PylithScalar t,
-                                                 topology::Field& field,
-                                                 const topology::Mesh& mesh)
+pylith::meshio::OutputManagerNew::appendVertexField(const PylithReal t,
+                                                    topology::Field& field,
+                                                    const topology::Mesh& mesh)
 { // appendVertexField
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("OutputManagerNew::appendVertexField(t="<<t<<", field="<<typeid(field).name()<<", mesh="<<typeid(mesh).name()<<")");
 
     topology::Field& fieldFiltered = (!_vertexFilter) ? field : _vertexFilter->filter(field);
     topology::Field& fieldDimensioned = _dimension(fieldFiltered);
@@ -206,12 +270,13 @@ pylith::meshio::OutputManager::appendVertexField(const PylithScalar t,
 // ----------------------------------------------------------------------
 // Append finite-element cell field to file.
 void
-pylith::meshio::OutputManager::appendCellField(const PylithScalar t,
-                                               topology::Field& field,
-                                               const char* label,
-                                               const int labelId)
+pylith::meshio::OutputManagerNew::appendCellField(const PylithReal t,
+                                                  topology::Field& field,
+                                                  const char* label,
+                                                  const int labelId)
 { // appendCellField
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("OutputManagerNew::appendCellField(t="<<t<<", field="<<typeid(field).name()<<", label="<<label<<", labelId="<<labelId<<")");
 
     topology::Field& fieldFiltered = (!_cellFilter) ? field : _cellFilter->filter(field, label, labelId);
     topology::Field& fieldDimensioned = _dimension(fieldFiltered);
@@ -226,11 +291,43 @@ pylith::meshio::OutputManager::appendCellField(const PylithScalar t,
 } // appendCellField
 
 // ----------------------------------------------------------------------
+// Check whether we want to write output at time t.
+bool
+pylith::meshio::OutputManagerNew::willWrite(const PylithReal t,
+                                            const PylithInt timeStep)
+{ // willWrite
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("OutputManagerNew::willWrite(t="<<t<<", timeStep="<<timeStep<<")");
+
+    bool shouldWrite = false;
+    switch (_trigger) {
+    case SKIP_TIMESTEPS:
+        if (timeStep - _timeStepWrote > _numTimeStepsSkip) {
+            shouldWrite = true;
+            _timeStepWrote = timeStep;
+        } // if
+        break;
+    case ELAPSED_TIME:
+        if (t - _timeWrote >= _timeSkip) {
+            shouldWrite = true;
+            _timeWrote = t;
+        } // if
+        break;
+    default:
+        PYLITH_JOURNAL_ERROR("Unknown trigger type.");
+        throw std::logic_error("Unknown trigger type.");
+    } // switch
+
+    PYLITH_METHOD_RETURN(shouldWrite);
+} // willWrite
+
+// ----------------------------------------------------------------------
 // Dimension field.
 pylith::topology::Field&
-pylith::meshio::OutputManager::_dimension(topology::Field& fieldIn)
+pylith::meshio::OutputManagerNew::_dimension(topology::Field& fieldIn)
 { // _dimension
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("OutputManagerNew::_dimension(fieldIn="<<typeid(fieldIn).name()<<")");
 
     if (1.0 == fieldIn.scale())
         PYLITH_METHOD_RETURN(fieldIn);

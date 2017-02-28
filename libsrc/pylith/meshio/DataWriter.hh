@@ -60,21 +60,21 @@ void deallocate(void);
 
 /** Set time scale for simulation time.
  *
- * @param value Time scale
+ * @param[in] value Time scale
  */
 void timeScale(const PylithScalar value);
 
 /** Prepare for writing files.
  *
- * @param mesh Finite-element mesh.
- * @param numTimeSteps Expected number of time steps for fields.
- * @param label Name of label defining cells to include in output
+ * @param[in] mesh Finite-element mesh.
+ * @param[in] isInfo True if only writing info values.
+ * @param[in] label Name of label defining cells to include in output
  *   (=0 means use all cells in mesh).
- * @param labelId Value of label defining which cells to include.
+ * @param[in] labelId Value of label defining which cells to include.
  */
 virtual
 void open(const topology::Mesh& mesh,
-          const int numTimeSteps,
+          const bool isInfo,
           const char* label =0,
           const int labelId =0);
 
@@ -84,11 +84,11 @@ void close(void);
 
 /** Prepare file for data at a new time step.
  *
- * @param t Time stamp for new data
- * @param mesh PETSc mesh object
- * @param label Name of label defining cells to include in output
+ * @param[in] t Time stamp for new data
+ * @param[in] mesh PETSc mesh object
+ * @param[in] label Name of label defining cells to include in output
  *   (=0 means use all cells in mesh).
- * @param labelId Value of label defining which cells to include.
+ * @param[in] labelId Value of label defining which cells to include.
  */
 virtual
 void openTimeStep(const PylithScalar t,
@@ -102,9 +102,9 @@ void closeTimeStep(void);
 
 /** Write field over vertices to file.
  *
- * @param t Time associated with field.
- * @param field Field over vertices.
- * @param mesh Mesh associated with output.
+ * @param[in] t Time associated with field.
+ * @param[in] field Field over vertices.
+ * @param[in] mesh Mesh associated with output.
  */
 virtual
 void writeVertexField(const PylithScalar t,
@@ -113,11 +113,11 @@ void writeVertexField(const PylithScalar t,
 
 /** Write field over cells to file.
  *
- * @param t Time associated with field.
- * @param field Field over cells.
- * @param label Name of label defining cells to include in output
+ * @param[in] t Time associated with field.
+ * @param[in] field Field over cells.
+ * @param[in] label Name of label defining cells to include in output
  *   (=0 means use all cells in mesh).
- * @param labelId Value of label defining which cells to include.
+ * @param[in] labelId Value of label defining which cells to include.
  */
 virtual
 void writeCellField(const PylithScalar t,
@@ -127,8 +127,8 @@ void writeCellField(const PylithScalar t,
 
 /** Write dataset with names of points to file.
  *
- * @param names Array with name for each point, e.g., station name.
- * @param mesh Finite-element mesh.
+ * @param[in] names Array with name for each point, e.g., station name.
+ * @param[in] mesh Finite-element mesh.
  *
  * Primarily used with OutputSolnPoints.
  */
@@ -141,7 +141,7 @@ protected:
 
 /** Copy constructor.
  *
- * @param w Object to copy.
+ * @param[in] w Object to copy.
  */
 DataWriter(const DataWriter& w);
 
@@ -154,7 +154,7 @@ const DataWriter& operator=(const DataWriter&);   ///< Not implemented
 protected:
 
 PylithScalar _timeScale;   ///< Time scale for dimensioning time in output.
-int _numTimeSteps;   ///< Expected number of time steps for fields.
+bool _isInfo;   ///< True if only writing info values.
 std::string _context;   ///< Context of scatters for DataWriter.
 
 }; // DataWriter

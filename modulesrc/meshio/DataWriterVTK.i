@@ -26,38 +26,38 @@ namespace pylith {
   namespace meshio {
 
     class pylith::meshio::DataWriterVTK : public DataWriter
-    { // DataWriterVTK  
-      
+    { // DataWriterVTK
+
       // PUBLIC METHODS /////////////////////////////////////////////////
     public :
 
       /// Constructor
       DataWriterVTK(void);
-      
+
       /// Destructor
       ~DataWriterVTK(void);
-      
+
       /** Make copy of this object.
        *
        * @returns Copy of this.
        */
       DataWriter* clone(void) const;
-      
+
       /// Deallocate PETSc and local data structures.
       void deallocate(void);
-  
+
       /** Set filename for VTK file.
        *
        * @param filename Name of VTK file.
        */
       void filename(const char* filename);
-      
+
       /** Set time format for time stamp in name of VTK file.
        *
        * @param format C style time format for filename.
        */
       void timeFormat(const char* format);
-      
+
       /** Set value used to normalize time stamp in name of VTK file.
        *
        * Time stamp is divided by this value (time in seconds).
@@ -66,26 +66,26 @@ namespace pylith {
        * filename.
        */
       void timeConstant(const PylithScalar value);
-      
+
       /** Set precision of floating point values in output.
-       *	
+       *
        * @param value Precision for floating point values.
        */
       void precision(const int value);
 
       /** Prepare for writing files.
        *
-       * @param mesh Finite-element mesh. 
-       * @param numTimeSteps Expected number of time steps for fields.
+       * @param mesh Finite-element mesh.
+       * @param isInfo True if only writing info values.
        * @param label Name of label defining cells to include in output
        *   (=0 means use all cells in mesh).
        * @param labelId Value of label defining which cells to include.
        */
       void open(const pylith::topology::Mesh& mesh,
-		const int numTimeSteps,
+		const bool isInfo,
 		const char* label =0,
 		const int labelId =0);
-      
+
       /// Close output files.
       void close(void);
 
@@ -101,10 +101,10 @@ namespace pylith {
 			const pylith::topology::Mesh& mesh,
 			const char* label =0,
 			const int labelId =0);
-      
+
       /// Cleanup after writing data for a time step.
       void closeTimeStep(void);
-      
+
       /** Write field over vertices to file.
        *
        * @param t Time associated with field.
@@ -114,7 +114,7 @@ namespace pylith {
       void writeVertexField(const PylithScalar t,
 			    pylith::topology::Field& field,
 			    const pylith::topology::Mesh& mesh);
-      
+
       /** Write field over cells to file.
        *
        * @param t Time associated with field.
@@ -127,11 +127,11 @@ namespace pylith {
 			  pylith::topology::Field& field,
 			  const char* label =0,
 			  const int labelId =0);
-      
+
     }; // DataWriterVTK
 
   } // meshio
 } // pylith
 
 
-// End of file 
+// End of file
