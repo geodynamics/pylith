@@ -29,7 +29,7 @@ extern "C" {
 #include "pylith/fekernels/dispvel.h" // USES DispVel kernels
 #include "pylith/fekernels/pressure.h" // USES Pressure kernels
 #include "pylith/fekernels/elasticity.h" // USES Elasticity kernels
-#include "pylith/fekernels/linearelasticityplanestrain.h" // USES IsotropicLinearElasticityPlaneStrain kernels
+#include "pylith/fekernels/linearincompelasticityplanestrain.h" // USES IsotropicLinearIncompElasticityPlaneStrain kernels
 }
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
@@ -242,7 +242,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsRHSR
 
     // Velocity
     const PetscPointFunc g0v = (_useBodyForce) ? pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g0v : NULL;
-    const PetscPointFunc g1v = (!_useReferenceState) ? pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1v : pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v_refstate;
+    const PetscPointFunc g1v = (!_useReferenceState) ? pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1v : pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1v_refstate;
 
     err = PetscDSSetResidual(prob, i_disp, g0u, g1u); PYLITH_CHECK_ERROR(err);
     err = PetscDSSetResidual(prob, i_vel,  g0v, g1v); PYLITH_CHECK_ERROR(err);
@@ -460,7 +460,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsLHSJ
     const PetscPointJac Jf2vu = NULL;
     const PetscPointJac Jf3vu = NULL;
 
-    const PetscPointJac Jf0vv = (_useInertia) ? pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0vv_implicit : NULL;
+    const PetscPointJac Jf0vv = (_useInertia) ? pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jf0vv_implicit : NULL;
     const PetscPointJac Jf1vv = NULL;
     const PetscPointJac Jf2vv = NULL;
     const PetscPointJac Jf3vv = NULL;
@@ -538,7 +538,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsLHSJ
   const PetscPointJac Jf2vu = NULL;
   const PetscPointJac Jf3vu = NULL;
 
-  const PetscPointJac Jf0vv = (_useInertia) ? pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0vv_explicit : NULL;
+  const PetscPointJac Jf0vv = (_useInertia) ? pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_Jf0vv_explicit : NULL;
   const PetscPointJac Jf1vv = NULL;
   const PetscPointJac Jf2vv = NULL;
   const PetscPointJac Jf3vv = NULL;
