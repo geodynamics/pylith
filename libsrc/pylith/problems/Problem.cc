@@ -26,15 +26,16 @@
 
 #include "pylith/feassemble/IntegratorPointwise.hh" // USES IntegratorPointwise
 #include "pylith/feassemble/ConstraintPointwise.hh" // USES ConstraintPointwise
-#include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 #include <cassert> // USES assert()
+#include <typeinfo> // USES typeid()
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -93,7 +94,7 @@ pylith::problems::Problem::solverType(void) const
 void
 pylith::problems::Problem::normalizer(const spatialdata::units::Nondimensional& dim)
 { // normalizer
-    PYLITH_JOURNAL_DEBUG("Problem::normalizer(dim="<<&dim<<")");
+    PYLITH_JOURNAL_DEBUG("Problem::normalizer(dim="<<typeid(dim).name()<<")");
 
     if (!_normalizer) {
         _normalizer = new spatialdata::units::Nondimensional(dim);
@@ -107,6 +108,8 @@ pylith::problems::Problem::normalizer(const spatialdata::units::Nondimensional& 
 void
 pylith::problems::Problem::gravityField(spatialdata::spatialdb::GravityField* const g)
 { // gravityField
+    PYLITH_JOURNAL_DEBUG("Problem::gravityField(g="<<typeid(*g).name()<<")");
+
     _gravityField = g;
 } // gravityField
 
@@ -115,6 +118,8 @@ pylith::problems::Problem::gravityField(spatialdata::spatialdb::GravityField* co
 void
 pylith::problems::Problem::solution(pylith::topology::Field* field)
 { // solution
+    PYLITH_JOURNAL_DEBUG("Problem::solution(field="<<typeid(*field).name()<<")");
+
     _solution = field;
 } // solution
 
@@ -182,7 +187,7 @@ void
 pylith::problems::Problem::preinitialize(const pylith::topology::Mesh& mesh)
 { // preinitialize
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("Problem::preinitialzie(mesh="<<&mesh<<")");
+    PYLITH_JOURNAL_DEBUG("Problem::preinitialzie(mesh="<<typeid(mesh).name()<<")");
 
     assert(_normalizer);
 
@@ -260,6 +265,17 @@ pylith::problems::Problem::initialize(void)
     // Initialize solution field.
     _solution->allocate();
     _solution->zeroAll();
+
+    // Initialize output.
+    const size_t numOutput = _outputs.size();
+    for (size_t i=0; i < numOutput; ++i) {
+        assert(_outputs[i]);
+#if 1
+        PYLITH_JOURNAL_ERROR(":TODO: @brad Implement initializing solution output in initialize().");
+#else
+        _outputs[i]->open(*_solution);
+#endif
+    } // for
 
     PYLITH_METHOD_END;
 } // initialize

@@ -328,7 +328,7 @@ pylith::problems::TimeDependent::prestep(void)
     PylithReal dt;
     PylithReal t;
     err = TSGetTimeStep(_ts, &dt); PYLITH_CHECK_ERROR(err);
-    err = TSGetTime(_ts, &t);
+    err = TSGetTime(_ts, &t); PYLITH_CHECK_ERROR(err);
 
     // Prepare constraints for a new time step.
     const size_t numConstraints = _constraints.size();
@@ -356,21 +356,37 @@ pylith::problems::TimeDependent::poststep(void)
     // Get current solution.
     // :QUESTION: :MATT: What time does this solution correspond to?
     PetscVec solutionVec = NULL;
-    PetscErrorCode err = TSGetSolution(_ts, &solutionVec); PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err;
+    err = TSGetSolution(_ts, &solutionVec); PYLITH_CHECK_ERROR(err);
+    PylithReal t;
+    err = TSGetTime(_ts, &t); PYLITH_CHECK_ERROR(err);
+
 
     // Update PyLith view of the solution.
     assert(_solution);
     _solution->scatterGlobalToLocal(solutionVec);
+
+    // Output solution.
+    const size_t numOutput = _outputs.size();
+    for (size_t i=0; i < numOutput; ++i) {
+#if 1
+        PYLITH_JOURNAL_ERROR(":TODO: @brad Implement solution output in poststep().");
+#else
+        _outputs[i].writeTimeStep(*_solution);
+#endif
+    } // for
 
     // Update state variables
     const size_t numIntegrators = _integrators.size();
     assert(numIntegrators > 0);     // must have at least 1 integrator
     for (size_t i=0; i < numIntegrators; ++i) {
         _integrators[i]->updateStateVars(*_solution);
-    }     // for
-
-    PYLITH_JOURNAL_ERROR(":TODO: @brad Implement output in poststep().");
-    // :TODO: Output [this is output at whatever time the solution corresponds to.]
+#if 1
+        PYLITH_JOURNAL_ERROR(":TODO: @brad Implement integrator output in poststep().");
+#else
+        _integrators[i]->writeTimeStep(t, *_solution);
+#endif
+    }  // for
 
     PYLITH_METHOD_END;
 } // poststep
