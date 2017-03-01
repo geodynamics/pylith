@@ -1,12 +1,11 @@
-
-\section{\label{sec:Tutorial-3d-hex8}Tutorials Using Hexahedral Mesh Created
-by CUBIT}
+\section{Tutorials Using Hexahedral Mesh Created by CUBIT/Trelis}
+\label{sec:example:3dhex8}
 
 PyLith features discussed in this set of tutorials:
 \begin{itemize}
 \item Static solution
 \item Quasi-static solution
-\item CUBIT mesh format
+\item CUBIT/Trelis mesh format
 \item Trilinear hexahedral cells
 \item VTK output
 \item HDF5 output
@@ -33,149 +32,126 @@ PyLith features discussed in this set of tutorials:
 \item Finite strain
 \end{itemize}
 All of the files necessary to run the examples are contained in the
-directory \texttt{examples/3d/hex8}.
+directory \filename{examples/3d/hex8}.
 
 
 \subsection{Overview}
 
 This tutorial is meant to demonstrate most of the important features
-of PyLith as a quasi-static finite-element code, using a sequence
-of example problems. All problems use the same 3D hexahedral mesh
-generated using the CUBIT \url{cubit.sandia.gov} mesh generation
-package. Each example builds on the previous examples, as we demonstrate
-new features. As in the other examples, the files include extensive
-comments. We start with the generation of the mesh, which is composed
-of 144 trilinear hexahedra. The tutorial demonstrates the usage of
-the CUBIT mesh generation package to create a mesh, as well as describing
-how to use a CUBIT-generated mesh in PyLith. Following the discussion
-of how to generate the mesh, we discuss the \texttt{pylithapp.cfg}
-file, which contains information common to all the simulations. We
-group the examples into four sections, each pertaining to a particular
-set of PyLith features. We suggest users go through each of these
-sections in order as the complexity increases at each step. 
+of PyLith as a quasi-static finite-element code, using a sequence of
+example problems. All problems use the same 3D hexahedral mesh
+generated using the CUBIT \url{cubit.sandia.gov} or Trelis mesh generation
+software. Each example builds on the previous examples, as we
+demonstrate new features. As in the other examples, the files include
+extensive comments. We start with the generation of the mesh, which is
+composed of 144 trilinear hexahedra. The tutorial demonstrates the
+usage of the CUBIT/Trelis mesh generation software to create a mesh, as well
+as describing how to use a CUBIT-generated mesh in PyLith. Following
+the discussion of how to generate the mesh, we discuss the
+\filename{pylithapp.cfg} file, which contains information common to
+all the simulations. We group the examples into four sections, each
+pertaining to a particular set of PyLith features. We suggest users go
+through each of these sections in order as the complexity increases at
+each step.
 
 
 \subsection{Mesh Generation and Description}
 
 The mesh for these examples is a simple rectangular solid (Figure
-\vref{fig:3dhex8-mesh}). Although it would be possible to generate
-this mesh by hand, it is much simpler to use a mesh generation package,
-and we use CUBIT for this example. We provide documented journal files
-in \texttt{examples/3d/hex8/mesh.} Dissection of these journal files
-should provide some insight into how to use CUBIT with PyLith. For
-more detailed information on using CUBIT, vrefer to the CUBIT documentation
-\url{cubit.sandia.gov}. If you have CUBIT installed on your machine,
-you can use the journal files to create your own mesh. Otherwise,
-you can use the mesh that has already been created.
+\vref{fig:3dhex8:mesh}). Although it would be possible to generate
+this mesh by hand, it is much simpler to use a mesh generation
+package, and we use CUBIT/Trelis for this example. We provide documented
+journal files in \filename{examples/3d/hex8/mesh.} Dissection of these
+journal files should provide some insight into how to use CUBIT with
+PyLith. For more detailed information on using CUBIT, refer to the
+CUBIT documentation \url{cubit.sandia.gov}. If you have CUBIT
+installed on your machine, you can use the journal files to create
+your own mesh. Otherwise, you can use the mesh that has already been
+created.
 
 If you are using CUBIT to generate your own mesh, there are two ways
 to use the journal files. The simplest method is to go to the\textsf{
-Tools} menu, select \textsf{Play Journal File}, and then select the
-file \texttt{mesh\_hex8\_1000m.jou}. This will run the commands in
-that file as well as the commands in \texttt{geometry.jou}, which
-is vreferenced from \texttt{mesh\_hex8\_1000m.jou}. Prior to doing
+  Tools} menu, select \textsf{Play Journal File}, and then select the
+file \filename{mesh\_hex8\_1000m.jou}. This will run the commands in
+that file as well as the commands in \filename{geometry.jou}, which is
+referenced from \filename{mesh\_hex8\_1000m.jou}. Prior to doing
 this, you should set your directory to the one containing the journal
 files. This method will create the mesh, but you will gain very little
 insight into what is being done. A more informative approach is to
 input each journal command into the CUBIT command window directly.
 That way, you will see what each command does. The first command in
-\texttt{mesh\_hex8\_1000m.jou} is \texttt{`playback} \texttt{geometry.jou}',
-so you should start with the commands in \texttt{geometry.jou}. The
+\filename{mesh\_hex8\_1000m.jou} is \textsf{playback geometry.jou}, so
+you should start with the commands in \filename{geometry.jou}. The
 first three commands, which define the block shape, are
-\begin{lyxcode}
+\begin{shell}
 reset
-
-brick~x~6000~y~6000~z~4000
-
-volume~1~move~x~0~y~0~z~-2000
-\end{lyxcode}
-Continuing through the remainder of the commands in \texttt{geometry.jou},
-and then using the additional commands in \texttt{mesh\_hex8\_1000m.jou},
-you will eventually end up with the file \texttt{box\_hex8\_1000m.exo},
+brick x 6000 y 6000 z 4000
+volume 1 move x 0 y 0 z -2000
+\end{shell}
+Continuing through the remainder of the commands in \filename{geometry.jou},
+and then using the additional commands in \filename{mesh\_hex8\_1000m.jou},
+you will eventually end up with the file \filename{box\_hex8\_1000m.exo},
 which contains all of the mesh information. This information is similar
 to that included in PyLith mesh ASCII format, but the information
 is contained in an Exodus file, which is a specialized netCDF file.
-If you have the \texttt{ncdump} command available, you can see what
+If you have the \filename{ncdump} command available, you can see what
 is in the file by typing:
-\begin{lyxcode}
-ncdump~box\_hex8\_1000m.exo
-\end{lyxcode}
-\noindent \begin{center}
+\begin{shell}
+$$ ncdump box_hex8_1000m.exo
+\end{shell}
+
 \begin{figure}
-\begin{centering}
-\includegraphics[scale=0.33]{tutorials/3dhex8/figs/hex8-mesh}
-\par\end{centering}
-
-\caption{Mesh composed of trilinear hexahedral cells generated by CUBIT used
-for the suite of example problems. The different colors represent
-the two different materials.\label{fig:3dhex8-mesh}}
+  \includegraphics[scale=0.33]{examples/figs/3dhex8_mesh}
+  \caption{Mesh composed of trilinear hexahedral cells generated by CUBIT used
+    for the suite of example problems. The different colors represent
+    the two different materials.}
+  \label{fig:3dhex8:mesh}
 \end{figure}
-
-\par\end{center}
 
 
 \subsection{Additional Common Information}
 
 In addition to the mesh, the example problems share other information.
-As in previous examples, we place this information in \texttt{pylithapp.cfg}.
+As in previous examples, we place this information in \filename{pylithapp.cfg}.
 Since these examples use a mesh from CUBIT, in this file we set the
-importer to \texttt{MeshIOCubit}:
-\begin{lyxcode}
-{[}pylithapp.mesh\_generator{]}
+importer to \object{MeshIOCubit}:
+\begin{cfg}
+<h>[pylithapp.mesh_generator]</h>
+<f>reader</f> = pylith.meshio.MeshIOCubit
 
-reader~=~pylith.meshio.MeshIOCubit~\\
-~\\
-
-
-{[}pylithapp.mesh\_generator.reader{]}
-
-filename~=~mesh/box\_hex8\_1000m.exo
-\end{lyxcode}
+<h>[pylithapp.mesh_generator.reader]</h>
+<p>filename</p> = mesh/box_hex8_1000m.exo
+\end{cfg}
 This example differs from some earlier examples, because we specify
 two material groups:
-\begin{lyxcode}
-{[}pylithapp.timedependent{]}
+\begin{cfg}
+<h>[pylithapp.timedependent]</h>
+<f>materials</f> = [upper_crust, lower_crust]</h>
 
-materials~=~{[}upper\_crust,lower\_crust{]}~\\
-~\\
+<h>[pylithapp.timedependent.materials.upper_crust]</h>
+<p>label</p> = Upper crust material
+<p>id</p> = 1
+<p>db.iohandler.filename</p> = spatialdb/mat_elastic.spatialdb
+<f>quadrature.cell</f> = pylith.feassemble.FIATLagrange
+<p>quadrature.cell.dimension</p> = 3
 
-
-{[}pylithapp.timedependent.materials.upper\_crust{]}
-
-label~=~Upper~crust~material
-
-id~=~1
-
-db.iohandler.filename~=~spatialdb/mat\_elastic.spatialdb
-
-quadrature.cell~=~pylith.feassemble.FIATLagrange
-
-quadrature.cell.dimension~=~3~\\
-~\\
-
-
-{[}pylithapp.timedependent.materials.lower\_crust{]}
-
-label~=~Lower~crust~material
-
-id~=~2
-
-db.iohandler.filename~=~spatialdb/mat\_elastic.spatialdb
-
-quadrature.cell~=~pylith.feassemble.FIATLagrange
-
-quadrature.cell.dimension~=~3
-\end{lyxcode}
+<h>[pylithapp.timedependent.materials.lower_crust]</h>
+<p>label</p> = Lower crust material
+<p>id</p> = 2
+<p>db.iohandler.filename</p> = spatialdb/mat\_elastic.spatialdb
+<f>quadrature.cell</f> = pylith.feassemble.FIATLagrange
+<p>quadrature.cell.dimension</p> = 3
+\end{cfg}
 The two material groups correspond to the two different colored regions
-in Figure \vref{fig:3dhex8-mesh}. Using two material groups allows
+in Figure \vref{fig:3dhex8:mesh}. Using two material groups allows
 us to specify different material types or material variations for
 the upper crust and lower crust, if desired. For now, we retain the
-default \texttt{ElasticIsotropic3D} material type for both materials.
-This behavior will be overridden by example-specific\texttt{.cfg}
+default \object{ElasticIsotropic3D} material type for both materials.
+This behavior will be overridden by example-specific\filename{.cfg}
 files in some of the examples. Although the material groups are specified
-in \texttt{pylithapp.cfg}, the physical properties for the material
-models are given in \texttt{spatialdb/}~\linebreak{}
-\texttt{mat\_elastic.spatialdb}. This spatial database provides values
+in \filename{pylithapp.cfg}, the physical properties for the material
+models are given in \filename{spatialdb/} 
+\filename{mat\_elastic.spatialdb}. This spatial database provides values
 at a single point, resulting in uniform properties within the material.
 
 
@@ -189,4 +165,12 @@ from the previous example. For this reason, it is advisable to go
 through each example in order, starting with the simplest (static
 problems).
 
-\input{tutorials/3dhex8/static.tex}\input{tutorials/3dhex8/quasistatic.tex}\input{tutorials/3dhex8/friction.tex}\input{tutorials/3dhex8/gravity.tex}\input{tutorials/3dhex8/surfload.tex}\input{tutorials/3dhex8/dike.tex}\input{tutorials/3dhex8/greensfns.tex}
+\input{examples/3dhex8_static.tex}
+\input{examples/3dhex8_quasistatic.tex}
+%\input{examples/3dhex8_friction.tex}
+%\input{examples/3dhex8_gravity.tex}
+%\input{examples/3dhex8_surfload.tex}
+%\input{examples/3dhex8_dike.tex}
+%\input{examples/3dhex8_greensfns.tex}
+
+% End of file

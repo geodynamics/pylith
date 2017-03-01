@@ -46,7 +46,7 @@ it is now possible to define material property groups using a
 are no longer necessary, and the predefined containers are no longer
 available (or necessary). If a set of material groups is not
 specified, a single material model is used for the entire problem. See
-Sections \vref{sec:Tutorial-3d-hex8} and \vref{sec:example:3dtet4}
+Sections \vref{sec:example:3dhex8} and \vref{sec:example:3dtet4}
 for examples that demonstrate how to specify more than one material
 model.
 
@@ -96,7 +96,7 @@ a problem with two material groups is:
 \end{cfg}
 
 These settings correspond to the the problem in Section
-\vref{sec:Tutorial-3d-hex8}.  The parameters for the bulk constitutive
+\vref{sec:example:3dhex8}.  The parameters for the bulk constitutive
 models are specified using the spatial databases
 \filename{mat\_elastic.spatialdb} and
 \filename{mat\_viscoelastic.spatialdb}.  Refer to the discussion of
@@ -119,7 +119,7 @@ group:
 <p>writer.filename</p> = dislocation-viscoelastic.vtk
 \end{cfg}
 
-These settings again correspond to the problem in Section \vref{sec:Tutorial-3d-hex8}.
+These settings again correspond to the problem in Section \vref{sec:example:3dhex8}.
 The specification of a state variable base filename (\filename{writer.filename}
 settings) will cause two files to be created for each material group:
 an info file, which describes the material property parameters used
@@ -231,7 +231,7 @@ the elastic prestep, appropriate values for the state variables are
 set; otherwise the state variables are set to zero. To override this
 behavior, specify a spatial database for the initial stress, strain,
 and/or state variables as in the example from the tutorial in Section
-\vref{sec:Tutorial-3d-hex8}:
+\vref{sec:example:3dhex8}:
 \begin{cfg}
 <h>[pylithapp.timedependent.materials.elastic]</h>
 <f>db_initial_stress</f> = spatialdata.spatialdb.SimpleDB
@@ -1087,7 +1087,7 @@ users must specify the spatial variation of $A_{E}$, $Q$, $n$,
 and $T$. An additional parameter is given to define the units of
 $A_{E}$. The user then specifies either a reference stress or a reference
 strain rate, and a database suitable for PyLith is generated. This
-utility is described more fully in Section \vref{sub:Tutorial-Step08-Power-law}.
+utility is described more fully in Section \vref{sec:example:3dhex8:step08}.
 
 The flow law in component form is 
 \begin{equation}
