@@ -355,12 +355,13 @@ pylith::problems::TimeDependent::poststep(void)
 
     // Get current solution.
     // :QUESTION: :MATT: What time does this solution correspond to?
-    PetscVec solutionVec = NULL;
     PetscErrorCode err;
-    err = TSGetSolution(_ts, &solutionVec); PYLITH_CHECK_ERROR(err);
     PylithReal t;
+    PylithInt timeStep;
+    PetscVec solutionVec = NULL;
     err = TSGetTime(_ts, &t); PYLITH_CHECK_ERROR(err);
-
+    err - TSGetTotalSteps(_ts, &timeStep); PYLITH_CHECK_ERROR(err);
+    err = TSGetSolution(_ts, &solutionVec); PYLITH_CHECK_ERROR(err);
 
     // Update PyLith view of the solution.
     assert(_solution);
@@ -372,7 +373,7 @@ pylith::problems::TimeDependent::poststep(void)
 #if 1
         PYLITH_JOURNAL_ERROR(":TODO: @brad Implement solution output in poststep().");
 #else
-        _outputs[i].writeTimeStep(*_solution);
+        _outputs[i].writeTimeStep(t, timeStep, *_solution);
 #endif
     } // for
 

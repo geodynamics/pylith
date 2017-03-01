@@ -76,12 +76,6 @@ void vertexFilter(VertexFilter* const filter);
  */
 void cellFilter(CellFilter* const filter);
 
-/** Get fields used in output.
- *
- * @returns Fields associated with output.
- */
-const topology::Fields* fields(void) const;
-
 /** Prepare for output.
  *
  * @param mesh Finite-element mesh object.
@@ -143,6 +137,13 @@ void appendCellField(const PylithScalar t,
                      const char* label =0,
                      const int labelId =0);
 
+/** Get fields used in output.
+ *
+ * @returns Fields associated with output.
+ */
+const topology::Fields* fields(void) const;
+
+
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected:
 
@@ -155,11 +156,8 @@ topology::Field& _dimension(topology::Field& fieldIn);
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected:
 
-topology::Fields* _fields;   ///< Buffer fields.
-
-/// Coordinate system for output.
-spatialdata::geocoords::CoordSys* _coordsys;
-
+pylith::topology::Fields* _fields;   ///< Buffer fields.
+spatialdata::geocoords::CoordSys* _coordsys; ///< Coordinate system for output.
 DataWriter* _writer;   ///< Writer for data.
 VertexFilter* _vertexFilter;   ///< Filter applied to vertex data.
 CellFilter* _cellFilter;   ///< Filter applied to cell data.

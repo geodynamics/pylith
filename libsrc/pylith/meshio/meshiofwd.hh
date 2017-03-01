@@ -59,6 +59,7 @@ namespace pylith {
         class OutputSolnPoints;
 
         class OutputManagerNew;
+        class OutputSolnNew;
 
         class HDF5;
         class Xdmf;

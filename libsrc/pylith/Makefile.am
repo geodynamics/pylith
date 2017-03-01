@@ -143,6 +143,7 @@ libpylith_la_SOURCES = \
 	meshio/DataWriterVTK.cc \
 	meshio/OutputManager.cc \
 	meshio/OutputManagerNew.cc \
+	meshio/OutputSolnNew.cc \
 	problems/Formulation.cc \
 	problems/Explicit.cc \
 	problems/Implicit.cc \

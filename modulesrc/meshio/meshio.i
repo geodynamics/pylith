@@ -43,6 +43,7 @@
 #include "pylith/meshio/Xdmf.hh"
 #endif
 #include "pylith/meshio/OutputManagerNew.hh"
+#include "pylith/meshio/OutputSolnNew.hh"
 
 #include "pylith/utils/arrayfwd.hh"
 %}
@@ -92,5 +93,6 @@ import_array();
 %include "Xdmf.i"
 #endif
 #include "pylith/meshio/OutputManagerNew.i"
+#include "pylith/meshio/OutputSolnNew.i"
 
 // End of file

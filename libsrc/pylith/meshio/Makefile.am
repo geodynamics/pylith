@@ -37,6 +37,8 @@ subpkginclude_HEADERS = \
 	OutputSolnPoints.hh \
 	VertexFilter.hh \
 	VertexFilterVecNorm.hh \
+	OutputManagerNew.hh \
+	OutputSolnNew.hh \
 	meshiofwd.hh
 
 if ENABLE_HDF5
@@ -68,4 +70,4 @@ noinst_HEADERS = \
 	ExodusII.hh
 
 
-# End of file 
+# End of file

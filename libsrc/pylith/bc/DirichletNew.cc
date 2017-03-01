@@ -121,7 +121,7 @@ pylith::bc::DirichletNew::setValues(pylith::topology::Field* solution,
                                     const double dt)
 { // setValues
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setValues(solution="<<solution<<", t="<<t<<", dt="<<dt<<")");
+    PYLITH_JOURNAL_DEBUG("setValues(solution="<<solution->label()<<", t="<<t<<", dt="<<dt<<")");
 
     assert(solution);
     assert(_auxFields);

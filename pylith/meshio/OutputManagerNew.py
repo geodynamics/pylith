@@ -41,7 +41,7 @@ class OutputManagerNew(PetscComponent, ModuleOutputManager):
     @li \b skip_timesteps Number of time steps to skip between writes.
 
     \b Facilities
-    @li \b coordsys Coordinate system for output.
+    @li \b coordsys Coordinate system for output. NOT IMPLEMENTED
     @li \b vertex_filter Filter for vertex data.
     @li \b cell_filter Filter for cell data.
     """
@@ -64,9 +64,10 @@ class OutputManagerNew(PetscComponent, ModuleOutputManager):
     writer = pyre.inventory.facility("writer", factory=DataWriterHDF5, family="data_writer")
     writer.meta['tip'] = "Writer for data."
 
-    from spatialdata.geocoords.CSCart import CSCart
-    coordsys = pyre.inventory.facility("coordsys", family="coordsys", factory=CSCart)
-    coordsys.meta['tip'] = "Coordinate system for output."
+    # Not implemented
+    #from spatialdata.geocoords.CSCart import CSCart
+    #coordsys = pyre.inventory.facility("coordsys", family="coordsys", factory=CSCart)
+    #coordsys.meta['tip'] = "Coordinate system for output."
 
     vertexFilter = pyre.inventory.facility("vertex_filter", family="output_vertex_filter", factory=NullComponent)
     vertexFilter.meta['tip'] = "Filter for vertex data."
@@ -83,6 +84,7 @@ class OutputManagerNew(PetscComponent, ModuleOutputManager):
         PetscComponent.__init__(self, name, facility="outputmanager")
         self._loggingPrefix = "OutM "
         self._createModuleObj()
+        self.coordsys = None  # not implemented
         return
 
     def preinitialize(self):
@@ -94,19 +96,13 @@ class OutputManagerNew(PetscComponent, ModuleOutputManager):
             ModuleOutputManager.numTimeStepsSkip(self.numTimeStepsSkip)
         elif self.trigger == ModuleOutputManager.ELAPSED_TIME:
             ModuleOutputManager.timeSkip(self.timeSkip)
-
-        ModuleOutputManager.coordsys(self, self.coordsys)
-        ModuleOutputManager.writer(self, self.writer)
+        if self.coordsys:
+            ModuleOutputManager.coordsys(self, self.coordsys)
         if self.vertexFilter:
             ModuleOutputManager.vertexFilter(self, self.vertexFilter)
         if self.cellFilter:
             ModuleOutputManager.cellFilter(self, self.cellFilter)
-        return
-
-    def verifyConfiguration(self, mesh):
-        """
-        Verify compatibility of configuration.
-        """
+        ModuleOutputManager.writer(self, self.writer)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -125,8 +121,7 @@ class OutputManagerNew(PetscComponent, ModuleOutputManager):
         else:
             raise ValueError("Unknown output trigger '%s'." % self.inventory.trigger)
 
-        self.writer = self.inventory.writer
-        self.coordsys = self.inventory.coordsys
+        #self.coordsys = self.inventory.coordsys
         if isinstance(self.inventory.vertexFilter, NullComponent):
             self.vertexFilter = None
         else:
@@ -135,8 +130,7 @@ class OutputManagerNew(PetscComponent, ModuleOutputManager):
             self.cellFilter = None
         else:
             self.cellFilter = self.inventory.cellFilter
-
-        self.perfLogger = self.inventory.perfLogger
+        self.writer = self.inventory.writer
         return
 
     def _createModuleObj(self):

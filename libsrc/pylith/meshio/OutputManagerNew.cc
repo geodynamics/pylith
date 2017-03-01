@@ -32,6 +32,7 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+
 #include <iostream> // USES std::cout
 #include <typeinfo> // USES typeid()
 
@@ -131,6 +132,8 @@ pylith::meshio::OutputManagerNew::coordsys(const spatialdata::geocoords::CoordSy
 { // coordsys
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("OutputManagerNew::coordsys(cs="<<typeid(*cs).name()<<")");
+
+    PYLITH_JOURNAL_WARNING("Coordinate system ignored in OutputManagerNew.");
 
     delete _coordsys; _coordsys = (cs) ? cs->clone() : 0;
 
@@ -293,11 +296,11 @@ pylith::meshio::OutputManagerNew::appendCellField(const PylithReal t,
 // ----------------------------------------------------------------------
 // Check whether we want to write output at time t.
 bool
-pylith::meshio::OutputManagerNew::willWrite(const PylithReal t,
-                                            const PylithInt timeStep)
-{ // willWrite
+pylith::meshio::OutputManagerNew::shouldWrite(const PylithReal t,
+                                              const PylithInt timeStep)
+{ // shouldWrite
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("OutputManagerNew::willWrite(t="<<t<<", timeStep="<<timeStep<<")");
+    PYLITH_JOURNAL_DEBUG("OutputManagerNew::shouldWrite(t="<<t<<", timeStep="<<timeStep<<")");
 
     bool shouldWrite = false;
     switch (_trigger) {
@@ -319,7 +322,88 @@ pylith::meshio::OutputManagerNew::willWrite(const PylithReal t,
     } // switch
 
     PYLITH_METHOD_RETURN(shouldWrite);
-} // willWrite
+} // shouldWrite
+
+// ----------------------------------------------------------------------
+/** Get buffer for field.
+ *
+ * Find the most appropriate buffer that matches field, reusing and reallocating as necessary.
+ *
+ * @param[in] fieldIn Input field.
+ * @param[in] name Name of subfield (optional).
+ * @returns Field to use as buffer for outputting field.
+ */
+pylith::topology::Field&
+pylith::meshio::OutputManagerNew::getBuffer(const pylith::topology::Field& fieldIn,
+                                            const char* name)
+{ // getBuffer
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("OutputManagerNew::_getBuffer(fieldIn="<<fieldIn.label()<<")");
+
+    pylith::topology::FieldBase::VectorFieldEnum fieldType = pylith::topology::FieldBase::MULTI_OTHER;
+    if (name) {
+        const pylith::topology::Field::SubfieldInfo& info = fieldIn.subfieldInfo(name);
+        fieldType = info.metadata.vectorFieldType;
+    } else {
+        fieldType = fieldIn.vectorFieldType();
+    } // if/else
+
+    std::string fieldName = "buffer (other)";
+    switch (fieldType)
+    { // switch
+    case topology::FieldBase::SCALAR:
+        fieldName = "buffer (scalar)";
+        break;
+    case topology::FieldBase::VECTOR:
+        fieldName = "buffer (vector)";
+        break;
+    case topology::FieldBase::TENSOR:
+        fieldName = "buffer (tensor)";
+        break;
+    case topology::FieldBase::OTHER:
+        fieldName = "buffer (other)";
+        break;
+    case topology::FieldBase::MULTI_SCALAR:
+        fieldName = "buffer (multiple scalars)";
+        break;
+    case topology::FieldBase::MULTI_VECTOR:
+        fieldName = "buffer (multiple vectors)";
+        break;
+    case topology::FieldBase::MULTI_TENSOR:
+        fieldName = "buffer (multiple tensors)";
+        break;
+    case topology::FieldBase::MULTI_OTHER:
+        fieldName = "buffer (multiple others)";
+        break;
+    default:
+        PYLITH_JOURNAL_ERROR("Unknown field type '"<<fieldIn.vectorFieldType()<<"' for field '"<<fieldIn.label()<<"'.");
+        throw std::logic_error("Unknown field type in OutputManagerNew::_getBuffer().");
+    } // switch
+
+    if (!_fields) {
+        _fields = new topology::Fields(fieldIn.mesh()); assert(_fields);
+    } // if
+
+    if (!_fields->hasField(fieldName.c_str())) {
+        _fields->add(fieldName.c_str(), fieldIn.label());
+        topology::Field& fieldOut = _fields->get(fieldName.c_str());
+        if (!name) {
+            fieldOut.cloneSection(fieldIn);
+        } // if/else
+        fieldOut.vectorFieldType(fieldIn.vectorFieldType());
+        fieldOut.scale(fieldIn.scale());
+    } // if
+    topology::Field& fieldOut = _fields->get(fieldName.c_str());
+    if (name) {
+        fieldOut.copySubfield(fieldIn, name);
+    } else {
+        fieldOut.copy(fieldIn);
+    } // if/else
+    fieldOut.dimensionalizeOkay(true);
+    fieldOut.dimensionalize();
+
+    PYLITH_METHOD_RETURN(fieldOut);
+} // getBuffer
 
 // ----------------------------------------------------------------------
 // Dimension field.
@@ -327,7 +411,7 @@ pylith::topology::Field&
 pylith::meshio::OutputManagerNew::_dimension(topology::Field& fieldIn)
 { // _dimension
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("OutputManagerNew::_dimension(fieldIn="<<typeid(fieldIn).name()<<")");
+    PYLITH_JOURNAL_DEBUG("OutputManagerNew::_dimension(fieldIn="<<fieldIn.label()<<")");
 
     if (1.0 == fieldIn.scale())
         PYLITH_METHOD_RETURN(fieldIn);
@@ -336,53 +420,7 @@ pylith::meshio::OutputManagerNew::_dimension(topology::Field& fieldIn)
         fieldIn.dimensionalize();
         PYLITH_METHOD_RETURN(fieldIn);
     } else {
-        std::string fieldName = "buffer (other)";
-        switch (fieldIn.vectorFieldType())
-        { // switch
-        case topology::FieldBase::SCALAR:
-            fieldName = "buffer (scalar)";
-            break;
-        case topology::FieldBase::VECTOR:
-            fieldName = "buffer (vector)";
-            break;
-        case topology::FieldBase::TENSOR:
-            fieldName = "buffer (tensor)";
-            break;
-        case topology::FieldBase::OTHER:
-            fieldName = "buffer (other)";
-            break;
-        case topology::FieldBase::MULTI_SCALAR:
-            fieldName = "buffer (multiple scalars)";
-            break;
-        case topology::FieldBase::MULTI_VECTOR:
-            fieldName = "buffer (multiple vectors)";
-            break;
-        case topology::FieldBase::MULTI_TENSOR:
-            fieldName = "buffer (multiple tensors)";
-            break;
-        case topology::FieldBase::MULTI_OTHER:
-            fieldName = "buffer (multiple others)";
-            break;
-        default:
-            // Spit out useful error message and stop via assert. If
-            // optimized, throw exception.
-            std::ostringstream msg;
-            msg << "Unknown field type '" << fieldIn.vectorFieldType() << "'";
-            throw std::logic_error(msg.str());
-        } // switch
-
-        if (!_fields) {
-            _fields = new topology::Fields(fieldIn.mesh()); assert(_fields);
-        } // if
-
-        if (!_fields->hasField(fieldName.c_str())) {
-            _fields->add(fieldName.c_str(), fieldIn.label());
-            topology::Field& fieldOut = _fields->get(fieldName.c_str());
-            fieldOut.cloneSection(fieldIn);
-            fieldOut.vectorFieldType(fieldIn.vectorFieldType());
-            fieldOut.scale(fieldIn.scale());
-        } // if
-        topology::Field& fieldOut = _fields->get(fieldName.c_str());
+        pylith::topology::Field& fieldOut = getBuffer(fieldIn);
         fieldOut.copy(fieldIn);
         fieldOut.dimensionalizeOkay(true);
         fieldOut.dimensionalize();

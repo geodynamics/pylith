@@ -53,7 +53,7 @@ namespace pylith {
 	     * @returns Flag indicating which method to use for determining how often to write output.
 	     */
 	    TriggerEnum trigger(void) const;
-	
+
 	    /** Set number of time steps to skip between writes.
 	     *
 	     * @param[in] Number of time steps to skip between writes.
@@ -119,7 +119,7 @@ namespace pylith {
 	     */
 	    void open(const pylith::topology::Mesh& mesh,
 		      const bool isInfo,
-		      const char* label =0,
+		      const char* label =NULL,
 		      const int labelId =0);
 
 	    /// Close output files.
@@ -135,7 +135,7 @@ namespace pylith {
 	     */
 	    void openTimeStep(const PylithScalar t,
 			      const pylith::topology::Mesh& mesh,
-			      const char* label =0,
+			      const char* label =NULL,
 			      const int labelId =0);
 
 	    /// End writing fields at time step.
@@ -161,7 +161,7 @@ namespace pylith {
 	     */
 	    void appendCellField(const PylithScalar t,
 				 pylith::topology::Field& field,
-				 const char* label =0,
+				 const char* label =NULL,
 				 const int labelId =0);
 
             /** Check whether we want to write output at time t.
@@ -170,8 +170,19 @@ namespace pylith {
 	     * @param[in] timeStep Inxex of current time step.
 	     * @returns True if output should be written at time t, false otherwise.
 	     */
-	    bool willWrite(const PylithReal t,
+	    bool shouldWrite(const PylithReal t,
 			   const PylithInt timeStep);
+
+            /** Get buffer for field.
+	     *
+	     * Find the most appropriate buffer that matches field, reusing and reallocating as necessary.
+	     *
+	     * @param[in] fieldIn Input field.
+	     * @param[in] name Name of subfield (optional).
+	     * @returns Field to use as buffer for outputting field.
+	     */
+	    pylith::topology::Field& getBuffer(const pylith::topology::Field& fieldIn,
+					       const char* name =NULL);
 
 	}; // OutputManager
 

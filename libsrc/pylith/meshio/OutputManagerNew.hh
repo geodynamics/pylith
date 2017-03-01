@@ -132,7 +132,7 @@ void cellFilter(CellFilter* const filter);
 virtual
 void open(const topology::Mesh& mesh,
           const bool isInfo,
-          const char* label =0,
+          const char* label =NULL,
           const int labelId =0);
 
 /// Close output files.
@@ -149,7 +149,7 @@ void close(void);
 virtual
 void openTimeStep(const PylithReal t,
                   const topology::Mesh& mesh,
-                  const char* label =0,
+                  const char* label =NULL,
                   const int labelId =0);
 
 /// End writing fields at time step.
@@ -177,7 +177,7 @@ void appendVertexField(const PylithReal t,
 virtual
 void appendCellField(const PylithReal t,
                      topology::Field& field,
-                     const char* label =0,
+                     const char* label =NULL,
                      const int labelId =0);
 
 /** Check whether we want to write output at time t.
@@ -186,8 +186,19 @@ void appendCellField(const PylithReal t,
  * @param[in] timeStep Inxex of current time step.
  * @returns True if output should be written at time t, false otherwise.
  */
-bool willWrite(const PylithReal t,
-               const PylithInt timeStep);
+bool shouldWrite(const PylithReal t,
+                 const PylithInt timeStep);
+
+/** Get buffer for field.
+ *
+ * Find the most appropriate buffer that matches field, reusing and reallocating as necessary.
+ *
+ * @param[in] fieldIn Input field.
+ * @param[in] name Name of subfield (optional).
+ * @returns Field to use as buffer for outputting field.
+ */
+pylith::topology::Field& getBuffer(const pylith::topology::Field& fieldIn,
+                                   const char* name =NULL);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected:
@@ -202,10 +213,7 @@ topology::Field& _dimension(topology::Field& fieldIn);
 protected:
 
 topology::Fields* _fields;   ///< Buffer fields.
-
-/// Coordinate system for output.
-spatialdata::geocoords::CoordSys* _coordsys;
-
+spatialdata::geocoords::CoordSys* _coordsys; ///< Coordinate system for output.
 DataWriter* _writer;   ///< Writer for data.
 VertexFilter* _vertexFilter;   ///< Filter applied to vertex data.
 CellFilter* _cellFilter;   ///< Filter applied to cell data.
