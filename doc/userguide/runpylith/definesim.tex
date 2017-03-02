@@ -202,19 +202,22 @@ in the \filename{.cfg} file.
 
 
 \subsubsection{List of PyLith Parameters ({\ttfamily pylithinfo})}
+\label{sec:pylithinfo}
 
 The Python application \filename{pylithinfo} writes all of the current
-parameters to a text file. The default name of the text file is \filename{pylith\_parameters.txt}.
+parameters to a text file or JSON file (default). The default name of the JSON is \filename{pylith\_parameters.json}.
 The usage synopsis is
 \begin{shell}
-$$ pylithinfo --verbose [--fileout=pylith_parameters.txt] PYLITH_ARGS
+$$ pylithinfo [--verbose-false] [--format={ascii,json} [--filename=pylith_parameters.json] PYLITH_ARGS
 \end{shell}
-where \commandline{-{}-verbose} turns on printing the descriptions of
+where \commandline{-{}-verbose-false} turns off printing the descriptions of
 the properties and components as well as the location where the
-current value was set, and
-\commandline{-{}-fileout=pylith\_parameters.txt} sets the name of the
-output file. The lines in the text file are indented to show the
-hierarchy of the properties and component.
+current value was set, \commandline{-{}-format=ascii} changes the
+output format to a simple ASCII file, and
+\commandline{-{}-filename=pylith\_parameters.json} sets the name of the
+output file. The PyLith Parameter Viewer (see Section
+\ref{sec:pylith:parameter:viewer}) provides a graphic user interface
+for examining the JSON parameter file. 
 
 
 \subsection{Mesh Information (\ttfamily{mesher})}
