@@ -1,7 +1,5 @@
 \documentclass[crop,tikz]{standalone}
 \usepackage{tikz}
-%\usetikzlibrary{external}
-%\tikzexternalize % activate
 
 \begin{document}
 
@@ -25,19 +23,19 @@
   \node (geometry) [group, right of=root] {geometry};
   \node (vertices) [dataset, right of=geometry] {vertices \dsetdims{nvertices, dim}};
 
-  \node (topology) [group, below of=geometry, yshift=+6em] {topology};
+  \node (topology) [group, below of=geometry, yshift=+10em] {topology};
   \node (cells) [dataset, right of=topology] {cells \dsetdims{ncells, ncorners}};
 
-  \node (vfields) [group, below of=topology, yshift=+6em] {vertex\_fields};
+  \node (vfields) [group, below of=topology, yshift=+10em] {vertex\_fields};
   \node (disp) [dataset, right of=vfields] {displacement \dsetdims{ntsteps, nvertices, dim}};
   \node (vel) [dataset, below of=disp, yshift=+10.0em] {velocity \dsetdims{ntsteps, nvertices, dim}};
 
-  \node (cfields) [group, below of=vfields, yshift=+1em] {cell\_fields};
+  \node (cfields) [group, below of=vfields, yshift=+5em] {cell\_fields};
   \node (stress) [dataset, right of=cfields] {stress \dsetdims{ntsteps, ncells, tensorsize}};
   \node (strain) [dataset, below of=stress, yshift=+10.0em] {strain \dsetdims{ntsteps, ncells, tensorsize}};
 
-  \node (time) [dataset, below of=cfields, yshift=+1em] {time \dsetdims{ntsteps}};
-  \node (stations) [dataset, below of=time, yshift=+6em] {stations \dsetdims{nvertices, 64}};
+  \node (time) [dataset, below of=cfields, yshift=+5em] {time \dsetdims{ntsteps}};
+  \node (stations) [dataset, below of=time, yshift=+10em] {stations \dsetdims{nvertices, maxstrlen}};
 
   % Connections
   \draw[connect] (root.east) -+(6em,0)|- (geometry.west);

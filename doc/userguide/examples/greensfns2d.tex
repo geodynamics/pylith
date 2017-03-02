@@ -1,0 +1,333 @@
+\section{Example Generating and Using Green's Functions in Two Dimensions}
+\label{sec:example:greensfns2d}
+
+PyLith features discussed in this example:
+\begin{itemize}
+\item Green's functions
+\item HDF5 output
+\item HDF5 point output
+\item Reading HDF5 output using h5py
+\item Simple inversion procedure
+\item Plotting results using matplotlib
+\item Cubit mesh generation
+\item Variable mesh resolution
+\item APREPRO programming language
+\item Static solution
+\item Linear triangular cells
+\item Kinematic fault interface conditions
+\item Plane strain linearly elastic material
+\item SimpleDB spatial database
+\item ZeroDispDB spatial database
+\item UniformDB spatial database
+\end{itemize}
+All of the files necessary to run the examples are contained under the
+directory \filename{examples/2d/greensfns.}
+
+
+\subsection{Overview}
+
+This example examines the steps necessary to generate Green's
+functions using PyLith and how they may be used in a linear
+inversion. For simplicity we discuss strike-slip and reverse faulting
+examples in the context of 2D simulations. In each example, we first
+compute surface displacement at a set of points, and these computed
+displacements provide the ``data'' for our inversion. Second, we
+compute a set of Green's functions using the same fault geometries,
+and output the results at the same set of points. Third, we perform a
+simple linear inversion. An important aspect for both the forward
+problem and the Green's function problem is that the computed solution
+is output at a set of user-specified points (not necessarily
+coincident with mesh vertices), rather than over a mesh or sub-mesh as
+for other types of output. To do this, PyLith internally performs the
+necessary interpolation. There is a README file in the top-level
+directory that explains how to perform each step in the two problems.
+
+
+\subsection{Mesh Description}
+
+We use linear triangular cells for the meshes in each of the two
+problems.  We construct the mesh in CUBIT following the same
+techniques used in the 2D subduction zone example. The main driver is
+in the journal file \filename{mesh\_tri3.jou}. It calls the journal
+file \filename{geometry.jou} to construct the geometry. It then calls
+the journal file \filename{gradient.jou} to set the variable
+discretization sizes used in this mesh. Finally, the
+\filename{createbc.jou} file is called to set up the groups associated
+with boundary conditions and materials. The mesh used for the
+strike-slip example is shown in Figure
+\vref{fig:greensfns2d-strikeslip-mesh} The journal files are
+documented and describe the various steps outlined below.
+
+\begin{enumerate}
+\item Create the geometry defining the domain.
+\item Create fault surface by splitting domain across the given locations.
+\item Define meshing scheme and cell size variation.
+\item Define cell size along curves near fault.
+\item Increase cell size away from fault at a geometric rate (bias).
+\item Generate mesh.
+\item Create blocks for materials and nodesets for boundary conditions.
+\item Export mesh.
+\end{enumerate}
+
+\begin{figure}
+  \includegraphics[width=4in]{examples/figs/greensfns2d_strikeslip_ydispl2}
+  \caption{Mesh used for both forward and Green's function computations for the
+    strike-slip problem. Computed y-displacements for the forward problem
+    are shown with the color scale.}
+  \label{fig:greensfns2d-strikeslip-mesh}
+\end{figure}
+
+
+\subsection{Additional Common Information}
+
+As in the examples discussed in previous sections of these examples,
+we place parameters common to the forward model and Green's function
+computation in the \filename{pylithapp.cfg} file so that we do not have
+to duplicate them for the two procedures. The settings contained in
+\filename{pylithapp.cfg} for this problem consist of:
+\begin{inventory}
+  \facilityitem{pylithapp.journal.info}{Settings that control the verbosity of
+    the output written to stdout for the different components.}
+  \facilityitem{pylithapp.mesh\_generator}{Settings that control mesh importing,
+    such as the importer type, the filename, and the spatial dimension
+    of the mesh.}
+  \facilityitem{pylithapp.problem}{Settings that control the problem, such as
+    the total time, time-step size, and spatial dimension.}
+  \facilityitem{pylithapp.problem.materials}{Settings that control the material
+    type, specify which material IDs are to be associated with a particular
+    material type, and give the name of the spatial database containing
+    the physical properties for the material. The quadrature information
+    is also given.}
+  \facilityitem{pylithapp.problem.bc}{Settings that control the applied boundary
+    conditions.}
+  \facilityitem{pylithapp.problem.interfaces}{Settings that control the specification
+    of faults, including quadrature information.}
+  \facilityitem{pylithapp.problem.formulation.output}{Settings related to output
+    of the solution over the domain and points (surface observation locations).}
+  \facilityitem{pylithapp.petsc}{PETSc settings to use for the problem, such as
+    the preconditioner type.}
+\end{inventory}
+One aspect that has not been covered previously is the specification
+of output at discrete points, rather than over a mesh or sub-mesh.
+We do this using the \object{OutputSolnPoints} output type:
+\begin{cfg}
+<h>[pylithapp.problem.formulation]</h>
+<f>output</f> = [domain, points]
+<f>output.points</f> = pylith.meshio.OutputSolnPoints
+
+<h>[pylithapp.problem.formulation.output.points]</h>
+<p>coordsys.space_dim</p> = 2
+<p>coordsys.units</p> = km
+<f>writer</f> = pylith.meshio.DataWriterHDF5
+<p>reader.filename</p> = output_points.txt
+\end{cfg}
+We provide the number of spatial dimensions and the units of the point
+coordinates, and then the coordinates are given in a simple ASCII
+file (\filename{output\_points.txt}). These same points are used for
+both the forward model computation and the generation of the Green's
+functions.
+
+
+\subsection{Step 1: Solution of the Forward Problem}
+
+For both the strike-slip problem and the reverse fault problem, we
+first run a static simulation to generate our synthetic
+data. Parameter settings that augment those in
+\filename{pylithapp.cfg} are contained in the file
+\filename{eqsim.cfg}. These settings are:
+\begin{inventory}
+  \facilityitem{pylithapp.problem.interfaces}{Give the type of fault interface
+    condition and provide the slip distribution to use. Linear interpolation
+    is used for the slip distribution.}
+  \facilityitem{pylithapp.problem.formulation.output}{Gives the output filenames
+    for domain output, fault output, point output, and material output.
+    All output uses HDF5 format.}
+\end{inventory}
+The applied fault slip is given in the file
+\filename{eqslip.spatialdb}.  For both the strike-slip and reverse
+problems, no fault opening is given, so only the left-lateral
+component is nonzero. We run the forward models by typing (in the
+appropriate directory)
+\begin{shell}
+$$ pylith eqsim.cfg
+\end{shell}
+Once the problem has run, four HDF5 files will be produced. The file
+named \filename{eqsim.h5} (and the associated XDMF file) contains the
+solution for the entire domain. This corresponds to the solution shown
+in Figure \vref{fig:greensfns2d-strikeslip-mesh}. The
+\filename{eqsim-fault.h5} file contains the applied fault slip and the
+change in fault tractions, while the \filename{eqsim-fault\_info.h5}
+file contains the final slip, the fault normal, and the slip time. The
+final file (\filename{eqsim-points.h5}) contains the solution computed
+at the point locations provided in the \filename{output\_points.txt}
+file. These are the results that will be used as synthetic data for
+our inversion. One the problem has run, the results may be viewed with
+a visualization package such as ParaView.  In Figure
+\vref{fig:greensfns2d-strikeslip-forward} we show the applied fault
+slip (from \filename{eqsim-fault.h5}) and the resulting
+x-displacements (from \filename{eqsim-points.h5}) for our strike-slip
+forward problem.
+
+\begin{figure}
+  \includegraphics[scale=0.33]{examples/figs/greensfns2d_strikeslip_forward_points}
+  \caption{Applied fault slip for the strike-slip forward problem as well as
+    computed x-displacements at a set of points.}
+  \label{fig:greensfns2d-strikeslip-forward}
+\end{figure}
+
+
+\subsection{Step 2: Generation of Green's Functions}
+
+The next step is to generate Green's functions that may be used in
+an inversion. The procedure is similar to that for running the forward
+problem; however, it is necessary to change the problem type from
+the default \facility{timedependent} to \facility{greensfns}. This is
+accomplished by simply typing
+\begin{shell}
+pylith --problem=pylith.problems.GreensFns
+\end{shell}
+This changes the problem type and it also causes PyLith to read the
+file \filename{greensfns.cfg} by default, in addition to \filename{pylithapp.cfg}.
+These additional parameter settings provide the information necessary
+to generate the Green's functions:
+\begin{cfg}
+<h>[greensfns]</h>
+<p>fault_id</p> = 100
+
+# Set the type of fault interface condition.
+<h>[greensfns.interfaces]</h>
+<f>fault</f> = pylith.faults.FaultCohesiveImpulses
+
+# Set the parameters for the fault interface condition.
+<h>[greensfns.interfaces.fault]</h>
+# Generate impulses for lateral slip only, no fault opening.
+# Fault DOF 0 corresponds to left-lateral slip.
+<p>impulse_dof</p> = [0]
+
+# Set the amplitude of the slip impulses (amplitude is nonzero on only
+# a subset of the fault)
+<p>db_impulse_amplitude.label</p> = Amplitude of slip impulses
+<p>db_impulse_amplitude.iohandler.filename</p> = impulse_amplitude.spatialdb
+<p>db_impulse_amplitude.query_type</p> = nearest
+\end{cfg}
+Note that the top-level identifier is now \facility{greensfns} rather
+than \facility{pylithapp}. We first set the fault interface condition
+type to \object{FaultCohesiveImpulses}, and then specify the slip
+component to use. The amplitude of the fault slip and the fault
+vertices to use are provided in the
+\filename{impulse\_amplitude.spatialdb} file.  Fault vertices for
+which zero slip is specified will not have associated Green's
+functions generated. The remainder of the \filename{greensfns.cfg}
+file provides output information, which is exactly analogous to the
+settings in \filename{eqsim.cfg}.
+
+The generation of Green's functions is somewhat similar to the
+solution of a time-dependent problem with multiple time steps. In this
+case, each `time step' corresponds to the solution computed for a slip
+impulse at a particular fault vertex. The output files contain the
+solution for each separate impulse (slip on a single fault
+vertex). The \filename{greensfns-fault\_info.h5} file simply contains
+the slip amplitude and fault normal. In Figure
+\vref{fig:greensfns2d-strikeslip-gf6} we show the applied impulse
+(from file \filename{greensfns-fault.h5}) and associated point
+responses (from file \filename{greensfns-points.h5}) for the seventh
+generated Green's function in the strike-slip example. In the next
+section we will show how to read these Green's functions and use them
+to perform a simple linear inversion.
+
+\begin{figure}
+  \includegraphics[scale=0.33]{examples/figs/greensfns2d_strikeslip_gf6}
+  \caption{Applied fault slip and computed responses (at points) for the seventh
+    Green's function generated for the strike-slip fault example.}
+  \label{fig:greensfns2d-strikeslip-gf6}
+\end{figure}
+
+
+\subsection{Step 3: Simple Inversion Using PyLith-generated Green's Functions}
+
+In the previous two steps we generated a set of synthetic data as
+well as a set of Green's functions. Both are stored in HDF5 files.
+To make use of them, we provide a simple Python script that reads
+the HDF5 results using the h5py Python package. Once we have read
+the necessary information, we will perform a simple least-squares
+inversion using the penalty method. We will be solving the equation:
+\begin{equation}
+G_{a}m=d_{a}\:,
+\end{equation}
+where $m$ are the model parameters (slip), $G_{a}$ is the augmented
+set of Green's functions, and $d_{a}$ is the augmented data vector.
+The Green's functions are augmented by the addition of a penalty function:
+\begin{equation}
+G_{a}=\left[\begin{array}{c}
+G\\
+\lambda D
+\end{array}\right]\:,
+\end{equation}
+and the data vector is augmented by the addition of the \textit{a
+priori} model parameter values:
+\begin{equation}
+d_{a}=\left[\begin{array}{c}
+d\\
+m_{ap}
+\end{array}\right]\:.
+\end{equation}
+The matrix $D$ is the penalty function, and $\lambda$ is the penalty
+parameter. The solution is obtained using the generalized inverse
+(e.g., \cite{Menke:1984}):
+\begin{equation}
+G^{-g}=\left(G_{a}^{T}G_{a}\right)^{-1}G_{a}^{T}\:,
+\end{equation}
+and the estimated solution is then:
+\begin{equation}
+m_{est}=G^{-g}d_{a}\:.
+\end{equation}
+
+
+The code to read the synthetic data and Green's functions and to perform
+the inversion is contained in the file \filename{invert\_slip.py}, which
+is contained in the top-level directory. For this simple example,
+we have simply used a diagonal matrix as the penalty funtion, and
+the \textit{a priori} parameter values are assumed to be zero. The
+solution is performed for a range of values of the penalty parameter,
+which are contained in the file \filename{penalty\_params.txt} within
+each subdirectory. The inversion is performed by running the script
+in the top-level directory from each subdirectory. To run an inversion,
+type:
+\begin{shell}
+$$ ../invert_slip.py --impulses=output/greensfns-fault.h5 \
+   --responses=output/greensfns-points.h5 --data=output/eqsim-points.h5 \
+   --penalty=penalty_params.txt --output=output/slip_inverted.txt \
+\end{shell}
+This will produce an ASCII file (\filename{slip\_inverted.txt}), which
+will contain the estimated solution.
+
+
+\subsection{Step 4: Visualization of Estimated and True Solutions}
+
+Once we have computed the solution, we would then like to visualize
+the results. We do this using another Python script that requires
+the matplotlib plotting package (this package is not included in the
+PyLith binary). We also use the h5py package again to read the applied
+slip for the forward problem. The Python code to plot the results
+is contained in the \filename{plot\_invresults.py} file contained within
+each subdirectory. To plot the results, type:
+\begin{shell}
+$$ plot_invresults.py --solution=output/eqsim-fault.h5 --predicted=output/slip_inverted.txt
+\end{shell}
+The script will produce an interactive matplotlib window that shows
+the estimated solution compared to the true solution (Figure
+\vref{fig:greensfns-invresults}).  As the penalty parameter is
+increased, the solution is progressively damped. In a real inversion
+we would also include the effects of data uncertainties, and the
+penalty parameter would represent a factor controlling the tradeoff
+between solution simplicity and fitting the noise in the data.
+
+\begin{figure}
+  \includegraphics[width=3in]{examples/figs/greensfns2d_strikeslip_inversion}
+  \includegraphics[width=3in]{examples/figs/greensfns2d_reverse_inversion}
+  \caption{Inversion results from running Python plotting script.}
+  \label{fig:greensfns-invresults}
+\end{figure}
+
+
+% End of file

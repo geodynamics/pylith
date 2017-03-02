@@ -1,0 +1,69 @@
+\subsection{Dike Intrusion Example}
+\label{sec:example:3dhex8:dike}
+
+PyLith features discussed in this example:
+\begin{itemize}
+\item Fault opening via prescribed tractions to mimic a dike instrusion
+\item Dirichlet boundary conditions
+\item Elastic material
+\item VTK output
+\end{itemize}
+
+\subsubsection{Overview}
+
+This set of examples describes a problem where prescribed tensile
+tractions are imposed on a fault to mimic a dike intrusion. The example
+is contained in the directory \filename{examples/3d/hex8}, and the corresponding
+\filename{.cfg} file is \filename{step20.cfg}. The example may be run
+as follows:
+\begin{shell}
+$$ pylith step20.cfg
+\end{shell}
+This will cause PyLith to read the default parameters in \filename{pylithapp.cfg},
+and then override or augment them with the additional parameters in
+the \filename{step20.cfg} file. The \filename{.cfg} file is extensively
+documented, to provide detailed information on the various parameters.
+
+
+\subsubsection{Step20 - Static Dike Intrusion}
+
+The \filename{step20.cfg} file defines a problem with spatially varying
+tensile normal tractions on the fault surface associated with a fluid
+intrusion. The lateral sides and bottom of the domain are fixed using
+Dirichlet (roller) boundary conditions. As in the other examples,
+we also setup output for the ground surface.
+
+We use the FaultCohesiveDyn object to impose tractions on the fault
+surface. We must include a fault constitutive model so we choose static
+friction with a coefficient of friction of 0.1. The coefficient of
+friction is irrelevant for the center of the fault where we impose
+uniform tensile tractions (10 MPa) and the fault opens, but it facilitates
+clamping the edges of the fault via compressive normal tractions (-100
+MPa). Note that we must set the property \property{open\_free\_surface}
+to False in order for the tractions to be imposed when the fault is
+open; the default behavior for fault opening is a free surface (the
+two sides of the fault are completely uncoupled). The most important
+fault parameters for prescribing the tensile fault tractions are
+\begin{cfg}
+<h>[pylithapp.timedependent.interfaces.fault]</h>
+<p>open_free_surface</p> = False
+<f>traction_perturbation</f> = pylith.faults.TractPerturbation
+
+<h>[pylithapp.timedependent.interfaces.fault.traction_perturbation]</h>
+<f>db_initial</f> = spatialdata.spatialdb.SimpleDB
+<p>db_initial.label</p> = Initial fault tractions
+<p>db_initial.iohandler.filename</p> = spatialdb/tractions_opening.spatialdb
+<p>db_initial.query_type</p> = nearest 
+\end{cfg}
+When we have run the simulation, the output VTK files will be contained
+in \filename{examples/3d/hex8/output} (all with a prefix of \filename{step20}).
+Results using ParaView are shown in Figure \vref{fig:example:3dhex8:step20:displacement}.
+
+\begin{figure}
+  \includegraphics[width=10cm]{examples/figs/3dhex8_step20_disp}
+  \caption{Displacement magnitude for example step20 visualized using ParaView.}
+  \label{fig:example:3dhex8:step20:displacement}
+\end{figure}
+
+
+% End of file

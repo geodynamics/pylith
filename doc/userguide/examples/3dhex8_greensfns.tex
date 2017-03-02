@@ -1,0 +1,114 @@
+\subsection{Green's Functions Generation Example}
+\label{sec:example:3dhex8:greensfns}
+
+PyLith features discussed in this example:
+\begin{itemize}
+\item Generation of Green's functions from a fault
+\item Kinematic fault impulses
+\item Running a different problem type
+\item Dirichlet boundary conditions
+\item Elastic material
+\item HDF5 output
+\item Interpolated point output
+\end{itemize}
+
+\subsubsection{Overview}
+
+This example describes a problem where we generate a set of Green's
+functions that could be used in an inversion. The example is contained
+in the directory \filename{examples/3d/hex8}, and the corresponding
+\filename{.cfg} file is \filename{step21.cfg}. The example may be run
+as follows:
+\begin{shell}
+$$ pylith step21.cfg --problem=pylith.problems.GreensFns
+\end{shell}
+This will cause PyLith to read the default parameters in
+\filename{pylithapp.cfg} and \filename{greensfns.cfg}, and then
+override or augment them with the additional parameters in the
+\filename{step21.cfg} file. The \filename{.cfg} files are extensively
+documented, to provide detailed information on the various parameters.
+
+
+\subsubsection{Step21 - Green's Function Generation}
+
+This problem makes use of two \filename{.cfg} files that are read by
+default -- \filename{pylithapp.cfg} and \filename{greensfns.cfg}. The
+\filename{greensfns.cfg} file is read automatically because we have
+changed the problem type to \object{GreensFns} (as opposed to the
+default \object{TimeDependent} problem type). The facility name then
+becomes \facility{greensfns}, and PyLith will therefore search for a
+\filename{.cfg} file matching the name of the facility. The
+\filename{greensfns.cfg} file contains settings that are specific to
+the \object{GreensFns} problem type:
+\begin{cfg}
+<h>[greensfns]</h>
+<p>fault_id</p> = 10
+
+<h>[greensfns.interfaces]</h>
+<f>fault</f> = pylith.faults.FaultCohesiveImpulses
+
+<h>[greensfns.interfaces.fault]</h>
+<p>impulse_dof</p> = [0, 1]
+
+<p>db_impulse_amplitude.label</p> = Amplitude of slip impulses
+<p>db_impulse_amplitude.iohandler.filename</p> = spatialdb/impulse_amplitude.spatialdb
+<p>db_impulse_amplitude.query_type</p> = nearest 
+\end{cfg}
+We specify the \property{fault\_id}, which is required by the \object{GreensFns}
+problem type (it is the same as the ID used when generating the mesh).
+We also change the fault type to \object{FaultCohesiveImpulses}, which
+allows us to apply a single impulse of slip for each impulse with
+a nonzero slip value in the corresponding spatial database file
+(\filename{spatialdb/impulse\_amplitude.spatialdb}). We indicate that
+we would like to apply slip impulses in both the left-lateral (\property{impulse\_dof}
+= 0) and updip (\property{impulse\_dof} = 1) directions, and we use
+nearest-neighbor interpolation to determine the amount of applied
+slip. Note that in the \filename{spatialdb/impulse\_amplitude.spatialdb}
+file we specify negative slip, thus reversing the sense of applied
+slip for both slip directions. Note that we also put a margin of zeros
+around the edge of the fault, which prevents impulses from being applied
+along this boundary.
+
+The \filename{step21.cfg} file defines the remainder of the parameters
+for this problem. The boundary conditions and fault information are
+provided as for previous examples. Rather than computing the solution
+over the ground surface, we choose to provide output at a set of points.
+PyLith provides the ability to interpolate displacements to a specified
+set of points, which would generally be necessary when generating
+Green's functions:
+\begin{cfg}
+<h>[pylithapp.problem.formulation]</h>
+<f>output</f> = [domain, points]
+<f>output.points</f> = pylith.meshio.OutputSolnPoints
+
+<h>[pylithapp.problem.formulation.output.points]</h>
+<f>writer</f> = pylith.meshio.DataWriterHDF5
+<p>writer.filename</p> = output/step21-points.h5
+<p>reader.filename</p> = greensfns_points.txt
+<p>coordsys.space_dim</p> = 3
+<p>coordsys.units</p> = m
+\end{cfg}
+We first define \object{OutputSolnPoints} as the output manager for
+points output. We use HDF5 output for all of the Green's function
+output, as it will generally be more efficient (faster I/O, smaller
+file sizes). We must provide a set of points for point output. The
+file \filename{greensfns\_points.txt} contains a set of (x,y,z) coordinates.
+We must also provide the spatial dimension of the coordinates as well
+as the units used. Note that we do not output any info or data fields
+for state variable output, as this would otherwise create a large
+amount of output for each applied slip impulse. When we have run the
+simulation, the output HDF5 files will be contained in \filename{examples/3d/hex8/output}
+(all with a prefix of \filename{step21}). In Figure \vref{fig:example:3dhex8:step21:impluse}
+we show an impulse of left-lateral slip applied on the fault and the
+resulting response at the specified set of points. The time corresponds
+to the impulse number in multiples of the specified time step size.
+
+\begin{figure}
+  \includegraphics[width=10cm]{examples/figs/3dhex8_step21_impulse_resp}
+  \caption{A slip impulse and the resulting point displacement
+    responses visualized using ParaView. }
+  \label{fig:example:3dhex8:step21:impluse}
+\end{figure}
+
+
+% End of file

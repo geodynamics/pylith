@@ -1,0 +1,59 @@
+
+\chapter{Running PyLith}
+
+Figure \vref{fig:pylith:workflow} shows the workflow for running PyLith.
+There are essentially three main inputs needed to run a problem with
+PyLith:
+\begin{enumerate}
+\item Mesh information. This includes the topology of the
+  finite-element mesh (coordinates of vertices and how the vertices
+  are connected into cells), a material identifier for each cell, and
+  sets of vertices associated with boundary conditions, faults, and
+  output (for subsets of the mesh). This information can be provided
+  using the PyLith mesh ASCII format (see Chapter \vref{cha:examples}
+  for examples and Section \vref{sec:format:MeshIOAscii} for the format
+  specification) or by importing the information from the LaGriT or
+  CUBIT meshing packages (see Chapter \vref{cha:examples} for
+  examples).
+\item A set of parameters describing the problem. These parameters
+  describe the type of problem to be run, solver information,
+  time-stepping information, boundary conditions, materials, etc. This
+  information can be provided from the command-line or by using a
+  \filename{.cfg.}
+\item Databases specifying the material property values and boundary
+  condition values to be used. Arbitrarily complex spatial variations
+  in boundary and fault conditions and material properties may be
+  given in the spatial database (see Chapter \vref{cha:examples} for
+  examples and Appendix \vref{sec:format:SimpleIOAscii} for the
+  format specification).
+\end{enumerate}
+PyLith writes solution information, such as solution fields and state
+variables, to either VTK files or HDF5/Xdmf files. ParaView and Visit
+can read both types of files. Post-processing of output is generally
+performed using HDF5 files accessed via a Python script and the h5py
+package or a Matlab script.
+
+\begin{figure}[htbp]
+  \includegraphics[width=5in]{runpylith/figs/runpylith} 
+  \caption{PyLith requires a finite-element mesh (three different
+    mechanisms for generating a mesh are currently supported),
+    simulation parameters, and spatial databases (defining the spatial
+    variation of various parameters).  PyLith writes the solution
+    output to either VTK or HDF5/Xdmf files, which can be visualized
+    with ParaView or Visit. Post-processing is generally done using
+    the HDF5 files with Python or Matlab scripts.}
+\label{fig:pylith:workflow} 
+\end{figure}
+
+% ----------------------------------------------------------------------
+\input{./runpylith/definesim.tex}
+\input{./runpylith/formulation.tex}
+\input{./runpylith/databases.tex}
+\input{./runpylith/labels.tex}
+\input{./runpylith/output.tex}
+\input{./runpylith/tips.tex}
+\input{./runpylith/postprocessing.tex}
+\input{./runpylith/parametersgui.tex}
+
+% End of file
+

@@ -1,0 +1,276 @@
+\section{Databases for Boundaries, Interfaces, and Material Properties}
+\label{sec:spatial:databases}
+
+Once the problem has been defined with PyLith parameters, and the
+mesh information has been provided, the final step is to specify the
+boundary conditions and material properties to be used. The mesh information
+provides labels defining sets of vertices to which boundary conditions
+or fault conditions will be applied, as well as cell labels that will
+be used to define the material type of each cell. For boundary conditions,
+the \filename{.cfg} file is used to associate boundary condition types
+and spatial databases with each vertex group (see Chapter \vref{cha:boundary:interface:conditions}).
+For materials, the \filename{.cfg} file is used to associate material
+types and spatial databases with cells identified by the material
+identifier (see Figure \vref{fig:material:models}).
+
+The spatial databases define how the boundary conditions or material
+property values vary spatially, and they can be arbitrarily complex.
+The simplest example for a material database would be a mesh where
+all the cells of a given type have uniform properties (``point''
+or 0D variation). A slightly more complex case would be a mesh where
+the cells of a given type have properties that vary linearly along
+a given direction (``line'' or 1D variation). In more complex models,
+the material properties might have different values at each point
+in the mesh (``volume'' or 3D variation). This might be the case,
+for example, if the material properties are provided by a database
+of seismic velocities and densities. For boundary conditions the simplest
+case would be where all vertices in a given group have the same boundary
+condition parameters (``point'' or 0D variation). A more complex
+case might specify a variation in the conditions on a given surface
+(``area'' or 2D variation). This sort of condition might be used,
+for example, to specify the variation of slip on a fault plane. The
+examples discussed in Chapter \vref{cha:examples} also contain more
+information regarding the specification and use of the spatial database
+files.
+
+
+\subsection{\object{SimpleDB} Spatial Database}
+
+In most cases the default type of spatial database for faults, boundary
+conditions, and materials is \object{SimpleDB}. Spatial database files
+provide specification of a field over some set of points. There is
+no topology associated with the points. Although multiple values can
+be specified at each point with more than one value included in a
+search query, the interpolation of each value will be done independently.
+Time dependent variations of a field are not supported in these files.
+Spatial database files can specify spatial variations over zero, one,
+two, and three dimensions. Zero dimensional variations correspond
+to uniform values. One-dimensional spatial variations correspond to
+piecewise linear variations, which need not coincide with coordinate
+axes. Likewise, two-dimensional spatial variations correspond to variations
+on a planar surface (which need not coincide with the coordinate axes)
+and three-dimensional spatial variations correspond to variations
+over a volume. In one, two, or three dimensions, queries can use a
+``nearest value'' search or linear interpolation.
+
+The spatial database files need not provide the data using the same
+coordinate system as the mesh coordinate system, provided the two
+coordinate systems are compatible. Examples of compatible coordinate
+systems include geographic coordinates (longitude/latitude/elevation),
+and projected coordinates (e.g., coordinates in a transverse Mercator
+projection). Spatial database queries use the Proj.4 Cartographic
+Projections library \url{proj.maptools.org} to convert between coordinate
+systems, so a large number of geographic projections are available
+with support for converting between NAD27 and WGS84 horizontal datums
+as well as several other frequently used datums. Because the interpolation
+is done in the coordinate system of the spatial database, geographic
+coordinates should only be used for very simple datasets, or undesirable
+results will occur. This is especially true when the spatial database
+coordinate system combines latitude, longitude, and elevation in meters
+(longitude and latitude in degrees are often much smaller than elevations
+in meters leading to distorted ``distance'' between locations and
+interpolation).
+
+\object{SimpleDB} uses a simple ASCII file to specify the variation of values (e.g., displacement field, slip field, physical properties) in space.  The file format is described in Section \vref{sec:format:SimpleIOAscii}.  The examples in Chapter \vref{cha:examples} use \object{SimpleDB} files to specify the values for the boundary conditions, physical properties, and fault slip.
+
+As in the other Pyre objects, spatial database objects contain parameters
+that can be set from the command line or using \filename{.cfg}
+files. The properties and facilities for a spatial database are:
+\begin{inventory}
+\propertyitem{label}{Label for the database, which is used in diagnostic messages.}
+\propertyitem{query\_type}{Type of search query to perform. Values for this
+parameter are ``linear'' and ``nearest'' (default).}
+\facilityitem{iohandler}{Database importer. Only one importer is implemented,
+so you do not need to change this setting.}
+\propertyitem{iohandler.filename}{Filename for the spatial database.}
+\end{inventory}
+An example of setting these in a \filename{.cfg} file is:
+\begin{cfg}
+<p>label</p> = Material properties
+<p>query_type</p> = linear
+<p>iohandler.filename</p> = mydb.spatialdb
+\end{cfg}
+
+\subsection{\object{UniformDB} Spatial Database}
+
+The \object{SimpleDB} spatial database is quite general, but when the values
+are uniform, it is often easier to use the \object{UniformDB} spatial database
+instead. With the \object{UniformDB}, you specify the values directly either
+on the command line or in a parameter-setting (\filename{.cfg}) file.
+On the other hand, if the values are used in more than one place,
+it is easier to place the values in a \object{SimpleDB} file, because they
+can then be referred to using the filename of the spatial database
+rather than having to repeatedly list all of the values on the command
+line or in a parameter-setting (\filename{.cfg}) file. The properties
+for a \object{UniformDB} are:
+\begin{inventory}
+\propertyitem{values}{Array of names of values in spatial database.}
+\propertyitem{data}{Array of values in spatial database.}
+\end{inventory}
+
+Specify the physical properties of a linearly elastic, isotropic material
+in a \filename{.cfg} file. The data values are dimensioned
+with the appropriate units using Python syntax.
+\begin{cfg}
+<h>[pylithapp.timedependent.materials.material]</h>
+<p>db_properties</p> = spatialdata.spatialdb.UniformDB ; Set the db to a UniformDB
+<p>db_properties.values</p> = [vp, vs, density] ; Set the names of the values in the database
+<p>db_properties.data</p> = [5773.5*m/s, 3333.3*m/s, 2700.0*kg/m**3] ; Set the values in the database}
+\end{cfg}
+
+\subsubsection{\object{ZeroDispDB}}
+
+The \object{ZeroDispDB} is a special case of the \object{UniformDB} for the Dirichlet
+boundary conditions. The values in the database are the ones requested
+by the Dirichlet boundary conditions, \filename{displacement-x}, \filename{displacement-y},
+and \filename{displacement-z}, and are all set to zero. This makes it
+trivial to set displacements to zero on a boundary. The examples discussed
+in Chapter \vref{cha:examples} use this database.
+
+
+\subsection{\object{SimpleGridDB} Spatial Database}
+
+The \object{SimpleGridDB} object provides a much more efficient query
+algorithm than \object{SimpleDB} in cases with a orthogonal grid. The
+points do not need to be uniformly spaced along each coordinate
+direction. Thus, in contrast to the \object{SimpleDB} there is an
+implicit topology. Nevertheless, the points can be specified in any
+order, as well as over a lower-dimension than the spatial dimension.
+For example, one can specify a 2-D grid in 3-D space provided that the
+2-D grid is aligned with one of the coordinate axes.
+
+\object{SimpleGridDB} uses a simple ASCII file to specify the variation of
+values (e.g., displacement field, slip field, physical properties) in
+space. The file format is described in Section
+\vref{sec:format:SimpleGridDB}.
+
+As in the other Pyre objects, spatial database objects contain parameters
+that can be set from the command line or using \filename{.cfg}
+files. The parameters for a spatial database are:
+\begin{inventory}
+\propertyitem{label}{Label for the database, which is used in
+  diagnostic messages.}
+\propertyitem{query\_type}{Type of search query to perform. Values for this
+parameter are ``linear'' and ``nearest'' (default).}
+\propertyitem{filename}{Filename for the spatial database.}
+\end{inventory}
+An example of setting these parameters in a \filename{.cfg} file is:
+\begin{cfg}
+<p>label</p> = Material properties
+<p>query_type</p> = linear
+<p>filename</p> = mydb_grid.spatialdb
+\end{cfg}
+
+\subsection{SCEC CVM-H Spatial Database (\object{SCECCVMH})}
+\label{sec:SCEC:CVM-H}
+
+Although the \object{SimpleDB} implementation is able to specify arbitrarily
+complex spatial variations, there are existing databases for physical
+properties, and when they are available, it is desirable to access
+these directly. One such database is the SCEC CVM-H database, which
+provides seismic velocities and density information for much of southern
+California. Spatialdata provides a direct interface to this database.
+See Section \vref{sec:examples:twotet4-geoproj} for an example of
+using the SCEC CVM-H database for physical properties of an elastic
+material. The interface is known to work with versions 5.2 and 5.3
+of the SCEC CVM-H. Setting a minimum wave speed can be used to replace
+water and very soft soils that are incompressible or nearly incompressible
+with stiffer, compressible materials. The Pyre properties for the
+SCEC CVM-H are:
+\begin{inventory}
+\propertyitem{data\_dir}{Directory containing the SCEC CVM-H data
+  files.}
+\propertyitem{min\_vs}{Minimum shear wave speed. Corresponding minimum values
+for the dilatational wave speed (Vp) and density are computed. Default
+value is 500 m/s.}
+\propertyitem{squash}{Squash topography/bathymetry to sea level (make the earth's
+surface flat).}
+\propertyitem{squash\_limit}{Elevation above which topography is squashed (geometry
+below this elevation remains undistorted).}
+\end{inventory}
+
+Specify the physical properties of a linearly elastic, isotropic material
+using the SCEC CVM-H in a \filename{.cfg} file.
+\begin{cfg}
+<h>[pylithapp.timedependent.materials.material]</h>
+<p>db_properties</p> = spatialdata.spatialdb.SCECCVMH ; Set the database to the SCEC CVM-H
+
+# Directory containing the database data files.
+<p>db_properties.data_dir</p> = /home/johndoe/data/sceccvm-h/vx53
+
+<p>db_properties.min_vs</p> = 500*m/s ; Default value
+<p>db_properties.squash</p> = True ; Turn on squashing
+
+# Only distort the geometry above z=-1km in flattening the earth
+<p>db_properties.squash_limit</p> = -1000.0
+\end{cfg}
+
+\subsection{\object{CompositeDB} Spatial Database}
+
+For some problems, a boundary condition or material property may have
+subsets with different spatial variations. One example would be when
+we have separate databases to describe the elastic and inelastic bulk
+material properties for a region. In this case, it would be useful
+to have two different spatial databases, e.g., a seismic velocity
+model with Vp, Vs, and density values, and another database with the
+inelastic physical properties. We can use the \object{CompositeDB}
+spatial database for these cases. An example would be:
+\begin{cfg}
+<h>[pylithapp.timedependent.materials.maxwell]</h>
+<p>label</p> = Maxwell material
+<p>id</p> = 1
+<f>db_properties</f> = spatialdata.spatialdb.CompositeDB
+<f>db_properties.db_A</f> = spatialdata.spatialdb.SCECCVMH
+<f>db_properties.db_B</f> = spatialdata.spatialdb.SimpleDB
+<f>quadrature.cell</f> = pylith.feassemble.FIATSimplex
+<p>quadrature.cell.dimension</p> = 3
+
+<h>[pylithapp.timedependent.materials.maxwell.db_properties]</h>
+<p>values_A</p> = [density, vs, vp]
+<p>db_A.label</p> = Elastic properties from CVM-H
+<p>db_A.data_dir</p> = /home/john/tools/vx53/bin
+<p>db_A.squash</p> = False
+<p>values_B</p> = [viscosity]
+<p>db_B.label</p> = Vertically varying Maxwell material
+<p>db_B.iohandler.filename<p> = ../spatialdb/mat_maxwell.spatialdb
+\end{cfg}
+Here we have specified a \object{CompositeDB} where the elastic properties
+(density, vs, vp) are given by the SCEC
+CVM-H, and viscosity is described by a \object{SimpleDB}
+(\filename{mat\_maxwell.spatialdb}). The user must first
+specify \facility{db\_properties} as a \object{CompositeDB}, and must
+then give the two components of this database (in this case, \object{SCECCVMH} and
+\object{SimpleDB}). The values to query in each of these databases
+is also required. This is followed by the usual parameters for each
+of the spatial databases. The \object{CompositeDB} provides a flexible
+mechanism for specifying material properties or boundary conditions
+where the variations come from two different sources.
+
+
+\subsection{\object{TimeHistory} Database}
+
+The \object{TimeHistory} database specifies the temporal variation in the
+amplitude of a field associated with a boundary condition. It is used
+in conjunction with spatial databases to provide spatial and temporal
+variation of parameters for boundary conditions. The same time history
+is applied to all of the locations, but the time history may be shifted
+with a spatial variation in the onset time and scaled with a spatial
+variation in the amplitude. The time history database uses a simple
+ASCII file which is simpler than the one used by the \object{SimpleDB} spatial
+database. The file format is described in Section \vref{sec:format:TimeHistoryIO}. 
+
+As in the other Pyre objects, spatial database objects contain parameters
+that can be set from the command line or using \filename{.cfg}
+files. The parameters for a spatial database are:
+\begin{inventory}
+\propertyitem{label}{Label for the time history database, which is used in diagnostic
+messages.}
+\propertyitem{filename}{Filename for the time history database.}
+\end{inventory}
+An example of setting these parameters in a \filename{.cfg} file is:
+\begin{cfg}
+<p>label</p> = Displacement time history
+<p>filename</p> = mytimehistory.timedb
+\end{cfg}
+
+% End of file
