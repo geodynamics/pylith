@@ -1,7 +1,7 @@
-\section{Tutorial for Slip on a Subduction Zone}
+\section{Example for Slip on a Subduction Zone}
 \label{sec:example:subduction}
 
-PyLith features discussed in this tutorial:
+PyLith features discussed in this example:
 \begin{itemize}
 \item Static solution
 \item Quasi-static solution
@@ -34,11 +34,11 @@ directory \filename{examples/2d/subduction.}
 
 \subsection{Overview}
 
-This tutorial examines quasi-static interseismic and coseismic
+This example examines quasi-static interseismic and coseismic
 deformation in 2D for a subduction zone (see Figure
-\vref{fig:tutorial:subduction:overview}).  It is based on the 2011
+\vref{fig:example:subduction:overview}).  It is based on the 2011
 M9.0 Tohoku earthquake off the east coast of Japan. Figure
-\vref{fig:tutorial:subduction:steps} shows the three steps of
+\vref{fig:example:subduction:steps} shows the three steps of
 increasing complexity. Step 1 focuses on the coseismic slip, Step 2
 focuses on interseismic deformation, and Step 3 combines the two into
 a pseudo-earthquake cycle deformation simulation. Step 4 focuses on
@@ -48,7 +48,7 @@ with afterslip controlled by frictional sliding.
 \begin{figure}
   \includegraphics{examples/figs/subduction_cartoon_general}
   \caption{Cartoon of subduction zone example.}
-  \label{fig:tutorial:subduction:overview}
+  \label{fig:example:subduction:overview}
 \end{figure}
 
 \begin{figure}
@@ -59,8 +59,8 @@ with afterslip controlled by frictional sliding.
     \includegraphics[width=2in]{examples/figs/subduction_step03} \\
   \end{tabular}
   \caption{Diagram of fault slip and boundary conditions for each step in the
-    subduction zone tutorial.}
-  \label{fig:tutorial:subduction:steps}
+    subduction zone example.}
+  \label{fig:example:subduction:steps}
 \end{figure}
 
 
@@ -102,13 +102,13 @@ the various steps outlined below.
   \caption{Variable resolution finite-element mesh with triangular
     cells. The nominal cell size increases at a geometric rate of 1.2
     away from the region of coseismic slip.}
-  \label{fig:tutorial:subduction:mesh}
+  \label{fig:example:subduction:mesh}
 \end{figure}
 
 
 \subsection{Common Information}
 
-As in the examples discussed in previous sections of these tutorials,
+As in the examples discussed in previous sections of these examples,
 we place parameters common to the three steps in the \filename{pylithapp.cfg}
 file so that we do not have to duplicate them for each step. The settings
 contained in \filename{pylithapp.cfg} for this problem consist of:
@@ -151,7 +151,7 @@ crust and uppermost portion of the mantle below the continental crust.
 The spatial variation of slip comes from a cross-section of Gavin
 Hayes' finite-source model \url{earthquake.usgs.gov/earthquakes/eqinthenews/2011/usc0001xgp/finite_fault.php}.
 On the lateral and bottom boundaries of the domain, we fix the degrees
-of freedom perpendicular to the boundary as shown in Figure \vref{fig:tutorial:subduction:steps}.
+of freedom perpendicular to the boundary as shown in Figure \vref{fig:example:subduction:steps}.
 Parameter settings that augment those in \filename{pylithapp.cfg} are
 contained in the file \filename{step01.cfg}. These settings are:
 \begin{inventory}
@@ -183,7 +183,7 @@ The files include the solution over the domain and ground surface
 each material (eight pairs of files), and fault parameters, slip,
 and traction (two pairs of files). 
 
-Figure \vref{fig:tutorial:subduction:step01}, which was created using
+Figure \vref{fig:example:subduction:step01}, which was created using
 ParaView, displays the magnitude of the displacement field with the
 deformation exaggerated by a factor of 1000. 
 
@@ -191,7 +191,7 @@ deformation exaggerated by a factor of 1000.
   \includegraphics[width=4.5in]{examples/figs/subduction_step01_soln}
   \caption{Solution for Step 1. The colors indicate the magnitude of the displacement,
     and the deformation is exaggerated by a factor of 1000. }
-  \label{fig:tutorial:subduction:step01}
+  \label{fig:example:subduction:step01}
 \end{figure}
 
 
@@ -202,7 +202,7 @@ with the oceanic crust subducting beneath the continental crust and
 into the mantle. We prescribe steady aseismic slip of 8 cm/yr along
 the interfaces between the oceanic crust and mantle with the interface
 between the oceanic crust and continental crust locked as shown in
-Figure \vref{fig:tutorial:subduction:steps}. We adjust the Dirichlet
+Figure \vref{fig:example:subduction:steps}. We adjust the Dirichlet
 boundary conditions on the lateral edges and bottom of the domain
 by pinning only the portions of the boundaries in the mantle and continental
 crust (i.e., not part of the oceanic crust). Parameter settings that
@@ -228,7 +228,7 @@ $$ pylith step02.cfg
 \end{shell}
 The simulation will produce pairs of HDF5/Xdmf files with separate
 files for each material and fault interface. Figure
-\vref{fig:tutorial:subduction:step02}, which was created using
+\vref{fig:example:subduction:step02}, which was created using
 ParaView, displays the magnitude of the displacement field with the
 deformation exaggerated by a factor of 1000. Using the animation
 features within ParaView or Visit you can illustrate how the
@@ -240,7 +240,7 @@ deformation.
   \caption{Solution for Step 2 at 100 years. The colors indicate the
     magnitude of the displacement, and the deformation is exaggerated
     by a factor of 1000.}
-  \label{fig:tutorial:subduction:step02}
+  \label{fig:example:subduction:step02}
 \end{figure}
 
 
@@ -272,7 +272,7 @@ We run this example by typing
 $$ pylith step03.cfg
 \end{shell}
 The simulation will produce pairs of HDF5/Xdmf files with separate
-files for each material and fault interface. Figure \vref{fig:tutorial:subduction:step03},
+files for each material and fault interface. Figure \vref{fig:example:subduction:step03},
 which was created using ParaView, displays the magnitude of the displacement
 field with the deformation exaggerated by a factor of 1000. Using
 the animation features within ParaView or Visit you can illustrate
@@ -284,7 +284,7 @@ after subsiding during the interseismic deformation.
   \caption{Solution for Step 3 at 150 years (immediately following the earthquake
     rupture). The colors indicate the magnitude of the displacement, and
     the deformation is exaggerated by a factor of 1000.}
-  \label{fig:tutorial:subduction:step03}
+  \label{fig:example:subduction:step03}
 \end{figure}
 
 
@@ -309,7 +309,7 @@ stress field by using a cohesion of 2.0 MPa in the static friction
 model. Slip will occur in regions where the coseismic slip increased
 the shear tractions by more than 2.0 MPa. On the lateral and bottom
 boundaries of the domain, we fix the degrees of freedom perpendicular
-to the boundary as shown in Figure \vref{fig:tutorial:subduction:steps}.
+to the boundary as shown in Figure \vref{fig:example:subduction:steps}.
 Parameter settings that augment those in \filename{pylithapp.cfg} are
 contained in the file \filename{step04.cfg}. These settings are:
 \begin{inventory}
@@ -340,7 +340,7 @@ The files include the solution over the domain and ground surface
 each material (eight pairs of files), and fault parameters, slip,
 and traction (two pairs of files). 
 
-Figure \vref{fig:tutorial:subduction:step04}, which was created using
+Figure \vref{fig:example:subduction:step04}, which was created using
 ParaView, displays the magnitude of the displacement field with the
 original configuration. Slip occurs down-dip from the coseismic slip
 as well as in three areas with sharp gradients in slip, including
@@ -352,7 +352,7 @@ field.
   \includegraphics[width=4.5in]{examples/figs/subduction_step01_soln}
   \caption{Solution for Step 4. The colors indicate the magnitude of
     the displacement.}
-  \label{fig:tutorial:subduction:step04}
+  \label{fig:example:subduction:step04}
 \end{figure}
 
 
