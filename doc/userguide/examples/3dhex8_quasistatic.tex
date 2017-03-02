@@ -95,7 +95,7 @@ so we retain the default \object{ZeroDispDB} for all instances of
 must specify \facility{db\_rate}, which is zero by default. We use a
 \object{UniformDB} to assign the velocities:
 \begin{cfg}
-# +x face
+# Boundary condition on +x face
 <h>[pylithapp.timedependent.bc.x_pos]</h>
 <p>bc_dof</p> = [0, 1]
 <p>label</p> = face_xpos
@@ -103,9 +103,9 @@ must specify \facility{db\_rate}, which is zero by default. We use a
 <f>db_rate</f> = spatialdata.spatialdb.UniformDB
 <p>db_rate.label</p> = Dirichlet rate BC on +x
 <p>db_rate.values</p> = [displacement-rate-x, displacement-rate-y, rate-start-time]
-<p>db_rate.data = [0.0*cm/year, 1.0*cm/year, 0.0*year]
+<p>db_rate.data</p> = [0.0*cm/year, 1.0*cm/year, 0.0*year]
 
-# -x face
+# Boundary condition on -x face
 <h>[pylithapp.timedependent.bc.x_neg]</h>
 <p>bc_dof</p> = [0, 1]
 <p>label</p> = face_xneg
@@ -357,7 +357,7 @@ for the entire rupture region, so we can use the same \object{SimpleDB}
 files providing slip and slip time for each rupture:
 \begin{cfg}
 # Define slip and origin time for first rupture.
-<h>[pylithapp.timedependent.interfaces.fault.eq_srcs.one.slip_function]<.h>
+<h>[pylithapp.timedependent.interfaces.fault.eq_srcs.one.slip_function]</h>
 <p>slip.iohandler.filename</p> = spatialdb/finalslip_rupture.spatialdb
 <p>slip_time.iohandler.filename</p> = spatialdb/sliptime.spatialdb
 
@@ -367,7 +367,7 @@ files providing slip and slip time for each rupture:
 <p>slip_time.iohandler.filename</p> = spatialdb/sliptime.spatialdb
 
 # Define slip and origin time for third rupture.
-<h>[pylithapp.timedependent.interfaces.fault.eq_srcs.three.slip_function]<.h>
+<h>[pylithapp.timedependent.interfaces.fault.eq_srcs.three.slip_function]</h>
 <p>slip.iohandler.filename</p> = spatialdb/finalslip_rupture.spatialdb
 <p>slip_time.iohandler.filename</p> = spatialdb/sliptime.spatialdb
 \end{cfg}
