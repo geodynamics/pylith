@@ -244,7 +244,7 @@ files with the locations specified by links in the HDF5 file. Note
 that the use of external data files results in one data file per
 dataset in addition to the HDF5 and Xdmf files. The external data
 files use the name of the HDF5 file with the dataset name added to the
-pvrefix and the \filename{.h5} suffix replaced by \filename{.dat}. The
+prefix and the \filename{.h5} suffix replaced by \filename{.dat}. The
 HDF5 files include relative paths to the external data files, so these
 files can also be moved, but they, too, must be kept together in the
 same directory. This provides a more robust method of output because
@@ -282,7 +282,7 @@ The parametesr for the \object{DataWriterHDF5} and
 \object{DataWriterHDF5Ext} objects is identical:
 \begin{inventory}
 \propertyitem{filename}{Name of HDF5 file (the Xdmf filename is generated from
-the same pvrefix).}
+the same prefix).}
 \end{inventory}
 
 An example of changing the writer from the default VTK writer to the
