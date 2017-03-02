@@ -37,17 +37,17 @@ directory \filename{examples/3d/hex8}.
 
 \subsection{Overview}
 
-This example is meant to demonstrate most of the important features
-of PyLith as a quasi-static finite-element code, using a sequence of
+This example is meant to demonstrate most of the important features of
+PyLith as a quasi-static finite-element code, using a sequence of
 example problems. All problems use the same 3D hexahedral mesh
-generated using the CUBIT \url{cubit.sandia.gov} or Trelis mesh generation
-software. Each example builds on the previous examples, as we
-demonstrate new features. As in the other examples, the files include
-extensive comments. We start with the generation of the mesh, which is
-composed of 144 trilinear hexahedra. The example demonstrates the
-usage of the CUBIT/Trelis mesh generation software to create a mesh, as well
-as describing how to use a CUBIT-generated mesh in PyLith. Following
-the discussion of how to generate the mesh, we discuss the
+generated using CUBIT/Trelis (CUBIT is available to employees of the
+United States government through \url{cubit.sandia.gov} and Trelis
+licenses are available through \url{www.csimsoft.com/trelis}). Each
+example builds on the previous examples, as we demonstrate new
+features. As in the other examples, the files include extensive
+comments. We start with the generation of the mesh, which is composed
+of 144 hexahedra. Following the
+discussion of how to generate the mesh, we discuss the
 \filename{pylithapp.cfg} file, which contains information common to
 all the simulations. We group the examples into four sections, each
 pertaining to a particular set of PyLith features. We suggest users go
@@ -59,27 +59,27 @@ each step.
 
 The mesh for these examples is a simple rectangular solid (Figure
 \vref{fig:3dhex8:mesh}). Although it would be possible to generate
-this mesh by hand, it is much simpler to use a mesh generation
-package, and we use CUBIT/Trelis for this example. We provide documented
-journal files in \filename{examples/3d/hex8/mesh.} Dissection of these
-journal files should provide some insight into how to use CUBIT with
-PyLith. For more detailed information on using CUBIT, refer to the
-CUBIT documentation \url{cubit.sandia.gov}. If you have CUBIT
-installed on your machine, you can use the journal files to create
-your own mesh. Otherwise, you can use the mesh that has already been
-created.
+this mesh by hand, we use this example to illustrate the use of
+CUBIT/Trelis for mesh generation. We provide documented journal files
+in \filename{examples/3d/hex8/mesh.} Dissection of these journal files
+should provide some insight into how to use CUBIT/Trelis with
+PyLith. For more detailed information on using CUBIT/Trelis, refer to
+the CUBIT/Trelis documentation. If you have CUBIT/Trelis installed on
+your machine, you can use the journal files to create your own
+mesh. Otherwise, you can use the mesh that has already been created.
 
-If you are using CUBIT to generate your own mesh, there are two ways
-to use the journal files. The simplest method is to go to the\textsf{
-  Tools} menu, select \textsf{Play Journal File}, and then select the
-file \filename{mesh\_hex8\_1000m.jou}. This will run the commands in
-that file as well as the commands in \filename{geometry.jou}, which is
-referenced from \filename{mesh\_hex8\_1000m.jou}. Prior to doing
-this, you should set your directory to the one containing the journal
-files. This method will create the mesh, but you will gain very little
-insight into what is being done. A more informative approach is to
-input each journal command into the CUBIT command window directly.
-That way, you will see what each command does. The first command in
+If you are using CUBIT/Trelis to generate your own mesh, there are two
+ways to use the journal files. The simplest method is to go to the
+\textsf{Tools} menu, select \textsf{Play Journal File}, and then
+select the file \filename{mesh\_hex8\_1000m.jou}. This will run the
+commands in that file as well as the commands in
+\filename{geometry.jou}, which is referenced from
+\filename{mesh\_hex8\_1000m.jou}. Prior to doing this, you should set
+your directory to the one containing the journal files. This method
+will create the mesh, but you will gain very little insight into what
+is being done. A more informative approach is to input each journal
+command into the CUBIT command window directly.  That way, you will
+see what each command does. The first command in
 \filename{mesh\_hex8\_1000m.jou} is \textsf{playback geometry.jou}, so
 you should start with the commands in \filename{geometry.jou}. The
 first three commands, which define the block shape, are
@@ -165,12 +165,12 @@ from the previous example. For this reason, it is advisable to go
 through each example in order, starting with the simplest (static
 problems).
 
-\input{examples/3dhex8_static.tex}
-\input{examples/3dhex8_quasistatic.tex}
-\input{examples/3dhex8_friction.tex}
-\input{examples/3dhex8_gravity.tex}
-\input{examples/3dhex8_surfload.tex}
-\input{examples/3dhex8_dike.tex}
-\input{examples/3dhex8_greensfns.tex}
+\input{./examples/3dhex8_static.tex}
+\input{./examples/3dhex8_quasistatic.tex}
+\input{./examples/3dhex8_friction.tex}
+\input{./examples/3dhex8_gravity.tex}
+\input{./examples/3dhex8_surfload.tex}
+\input{./examples/3dhex8_dike.tex}
+\input{./examples/3dhex8_greensfns.tex}
 
 % End of file
