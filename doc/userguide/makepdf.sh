@@ -16,6 +16,10 @@
 # ----------------------------------------------------------------------
 #
 
-lyx -e pdf2 userguide.lyx
-
+if [ $1 == "clean" ]; then
+    latexmk -C
+else
+    latexmk -pdf -pdflatex="pdflatex -interaction=nonstopmode" -use-make userguide.tex
+fi
+									       
 # End of file
