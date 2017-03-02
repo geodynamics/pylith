@@ -1,0 +1,133 @@
+\section{Tips and Hints}
+\label{sec:tips:hints}
+
+\subsection{Tips and Hints For Running PyLith}
+\begin{itemize}
+\item Examine the examples for a problem similar to the one you want to
+run and dissect it in detail.
+\item Start with a uniform-resolution coarse mesh to debug the problem setup.
+Increase the resolution as necessary to resolve the solution fields
+of interest (resolving stresses/strains may require a higher resolution
+than that for resolving displacements).
+\item Merge materials using the same material model. This will result in
+only one VTK or HDF5 file for each material model rather than several
+files.
+\item The rate of convergence in quasi-static (implicit) problems can sometimes
+be improved by renumbering the vertices in the finite-element mesh
+to reduce the bandwidth of the sparse matrix. PyLith can use the reverse
+Cuthill-McKee algorithm to reorder the vertices and cells.
+\item If you encounter errors or warnings, run \filename{pylithinfo} or use
+the \commandline{-{}-help}, \commandline{-{}-help-components}, and \commandline{-{}-help-properties}
+command-line arguments when running PyLith to check the parameters
+to make sure PyLith is using the parameters you intended.
+\item Use the \commandline{-{}-petsc.log\_}view, \commandline{-{}-petsc.ksp\_monitor},
+\commandline{-{}-petsc.ksp\_view}, \commandline{-{}-petsc.ksp\_converged\_reason}, and \commandline{-{}-petsc.snes\_converged\_reason}
+command-line arguments (or set them in a parameter file) to view PyLith
+performance and monitor the convergence.
+\item Turn on the journals (see the examples) to monitor the progress of
+the code.
+\end{itemize}
+
+\subsection{Troubleshooting}
+\label{sec:Troubleshooting}
+
+Consult the PyLith FAQ webpage (\url{http://www.geodynamics.org/cig/community/workinggroups/short/workarea/pylith-wiki})
+which contains a growing list of common problems and their corresponding
+solutions.
+
+\subsubsection{Import Error and Missing Library}
+\begin{shell}
+ImportError: liblapack.so.2: cannot open shared object file: No such file or directory
+\end{shell}
+
+PyLith cannot find one of the libraries. You need to set up your environment
+variables (e.g., PATH, PYTHONPATH, and LD\_LIBRARY\_PATH) to match
+your installation. If you are using the PyLith binary on Linux or
+Mac OS X, run the command \filename{source setup.sh }in the directory
+where you unpacked the distribution. This will set up your environment
+variables for you. If you are building PyLith from source, please
+consult the instructions for building from source.
+
+\subsubsection{Unrecognized Property 'p4wd'}
+
+\begin{shell}
+-- pyre.inventory(error) } \\
+-- p4wd <- 'true' } \\
+-- unrecognized property 'p4wd' } \\
+>> \{command line\}:: } \\
+-{}- pyre.inventory(error) } \\
+-{}- p4pg <- 'true' } \\
+-{}- unrecognized property ' p4pg'}
+\end{shell}
+Verify that the filename{mpirun} command included in the PyLith package is
+the first one on your PATH: \filename{which mpirun}. If it is not, adjust your PATH environment variable accordingly.
+
+\subsubsection{Detected zero pivor in LU factorization}
+
+\begin{shell}
+-- Solving equations.
+[0] PETSC ERROR: ----------------
+Error Message -------------------------------
+[0] PETSC ERROR: Detected zero pivot in LU factorization
+see http://www.mcs.anl.gov/petsc/petsc-as/documentation/faq.html\#ZeroPivot!
+\end{shell}
+
+This usually occurs when the null space of the system Jacobian is
+nonzero, such as the case of a problem without Dirichlet boundary
+conditions on any boundary. If this arises when using the split fields
+and algebraic multigrid preconditioning, and no additional Dirichlet
+boundary conditions are desired, then the workaround is to revert
+to using the Additive Schwarz preconditioning without split fields
+as discussed in Section \vref{sec:petsc:options}.
+
+\subsubsection{Bus Error}
+
+This often indicates that PyLith is using incompatible versions of
+libraries. This can result from changing your environment variables
+after configuring or installing PyLith (when building from source) or
+from errors in setting the environment variables (\filename{PATH},
+\filename{LD\_LIBRARY\_PATH}, and \filename{PYTHONPATH}). If the
+former case, simply reconfigure and rebuild PyLith. In the latter
+case, check your environment variables (order matters!) to make sure
+PyLith finds the desired directories before system directories.
+
+\subsubsection{Segmentation Fault}
+
+A segmentation fault usually results from an invalid read/write to
+memory. It might be caused by an error that wasn't trapped or a bug in
+the code. Please report these cases so that we can fix these problems
+(either trap the error and provide the user with an informative error
+message, or fix the bug). If this occurs with any of the problems
+distributed with PyLith, simply submit a bug report (see Section
+\vref{sec:help}) indicating which problem you ran and your
+platform. If the crash occurs for a problem you created, it is a great
+help if you can try to reproduce the crash with a very simple problem
+(e.g., adjust the boundary conditions or other parameters of one of
+the examples to reproduce the segmentation fault). Submit a bug report
+along with log files showing the backtrace from a debugger (e.g., gdb)
+and the valgrind log file (only available on Linux platforms).  You
+can generate a backtrace using the debugger by using the
+\commandline{-{}-petsc.start\_in\_debugger} command-line argument:
+\begin{shell}
+$$ pylith [..args..] --petsc.start_in_debugger
+(gdb) continue
+(gdb) backtrace
+\end{shell}
+
+To use valgrind to detect the memory error, first go to your working
+directory and run the problem with \commandline{-{}-launcher.dry}:
+\begin{shell}
+$$ pylith [..args..] --launcher.dry
+\end{shell}
+
+Instead of actually running the problem, this causes PyLith to dump
+the mpirun/mpiexec command it will execute. Copy and paste this command
+into your shell so you can run it directly. Insert the full path to
+valgrind before the full path to mpinemesis and tell valgrind to use
+a log file:
+\begin{shell}
+$$ mpirun /path/to/valgrind --log-file=valgrind-log /path/to/mpinemesis --pyre-start
+  [..lots of junk..]
+\end{shell}
+
+% End of file

@@ -16,6 +16,12 @@
 # ----------------------------------------------------------------------
 #
 
-lyx -e pdf2 userguide.lyx
-
+if [ $1 == "clean" ]; then
+    latexmk -C
+elif [ $1 == "cover" ]; then
+    pdflatex coveronly.tex && convert coveronly.pdf -resize 250 -quality 95 cover/cover_small.jpg
+else
+    latexmk -pdf -pdflatex="pdflatex -interaction=nonstopmode" -use-make userguide.tex
+fi
+									       
 # End of file

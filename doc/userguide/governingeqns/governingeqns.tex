@@ -1,0 +1,560 @@
+\chapter{Governing Equations}
+\label{cha:governing:equations}
+
+We present here a brief derivation of the equations for both quasi-static
+and dynamic computations. Since the general equations are the same
+(except for the absence of inertial terms in the quasi-static case),
+we first derive these equations. We then present solution methods
+for each specific case. In all of our derivations, we use the notation
+described in Table \vref{tab:notation} for both index
+and vector notation. When using index notation, we use the common
+convention that repeated indices indicate summation over the range
+of the index.
+
+\begin{table}[htbp]
+  \caption{Mathematical notation}
+  \label{tab:notation}
+  \begin{tabular}{ccp{3in}}
+    \multicolumn{2}{c}{{\bf Symbol}} & {\bf Description} \\
+    {\bf Index notation} & {\bf Vector Notation} & \\
+    \hline 
+    $a_{i}$ & \raisebox{12pt}{}$\overrightarrow{a}$ & Vector field a \\
+    $a_{ij}$ & $\underline{a}$ & Second order tensor field a \\
+    $u_{i}$ & $\overrightarrow{u}$ & Displacement vector field \\
+    $d_{i}$ & $\vec{{d}}$ & Fault slip vector field \\
+    $f_{i}$ & $\overrightarrow{f}$ & Body force vector field \\
+    $T_{i}$ & $\overrightarrow{T}$ & Traction vector field \\
+    $\sigma_{ij}$ & $\underline{\sigma}$ & Stress tensor field \\
+    $n_{i}$ & $\overrightarrow{n}$ & Normal vector field \\
+    $\rho$ & $\rho$ & Mass density scalar field \\
+    \hline 
+  \end{tabular}
+\end{table}
+
+
+\section{Derivation of Elasticity Equation}
+
+\subsection{Index Notation}
+
+Consider volume $V$ bounded by surface $S$. Applying a Lagrangian
+description of the conservation of momentum gives
+\begin{equation}
+\label{eqn:momentum:index}
+\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial u_{i}}{\partial t}\, dV=\int_{V}f_{i}\, dV+\int_{S}T_{i}\, dS.
+\end{equation}
+The traction vector field is related to the stress tensor through
+\begin{equation}
+T_{i}=\sigma_{ij}n_{j},
+\end{equation}
+where $n_{j}$ is the vector normal to $S$. Substituting into equation
+\vref{eqn:momentum:index} yields
+\begin{equation}
+\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial u_{i}}{\partial t}\, dV=\int_{V}f_{i}\, dV+\int_{S}\sigma_{ij}n_{j}\, dS.
+\end{equation}
+Applying the divergence theorem,
+\begin{equation}
+\int_{V}a_{i,j}\: dV=\int_{S}a_{j}n_{j}\: dS,
+\end{equation}
+to the surface integral results in
+\begin{equation}
+\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial u_{i}}{\partial t}\, dV=\int_{V}f_{i}\, dV+\int_{V}\sigma_{ij,j}\, dV,
+\end{equation}
+which we can rewrite as
+\begin{equation}
+\int_{V}\left(\rho\frac{\partial^{2}u_{i}}{\partial t^{2}}-f_{i}-\sigma_{ij,j}\right)\, dV=0.
+\end{equation}
+Because the volume $V$ is arbitrary, the integrand must be zero at
+every location in the volume, so that we end up with
+\begin{gather}
+\rho\frac{\partial^{2}u_{i}}{\partial t^{2}}-f_{i}-\sigma_{ij,j}=0\text{ in }V,\\
+\sigma_{ij}n_{j}=T_{i}\text{ on }S_{T}\text{,}\\
+u_{i}=u_{i}^{o}\text{ on }S_{u}\text{, and}\\
+R_{ki}(u_{i}^{+}-u_{i}^{-})=d_{k}\text{ on }S_{f}.
+\end{gather}
+We specify tractions, $T_{i}$, on surface $S_{f}$, displacements,
+$u_{i}^{o}$, on surface $S_{u}$, and slip, $d_{k}$, on fault surface
+$S_{f}$ (we will consider the case of fault constitutive models in
+Section \vref{sec:fault}). The rotation matrix $R_{ki}$ transforms
+vectors from the global coordinate system to the fault coordinate
+system. Note that since both $T_{i}$ and $u_{i}$ are vector quantities,
+there can be some spatial overlap of the surfaces $S_{T}$ and $S_{u}$;
+however, the same degree of freedom cannot simultaneously have both
+types of boundary conditions.
+
+
+\subsection{Vector Notation}
+
+Consider volume $V$ bounded by surface $S$. Applying a Lagrangian
+description of the conservation of momentum gives
+\begin{equation}
+\label{eqn:momentum:vec}
+\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial\vec{u}}{\partial t}\, dV=\int_{V}\overrightarrow{f}\, dV+\int_{S}\overrightarrow{T}\, dS.
+\end{equation}
+The traction vector field is related to the stress tensor through
+\begin{equation}
+\overrightarrow{T}=\underline{\sigma}\cdot\overrightarrow{n},
+\end{equation}
+where $\overrightarrow{n}$ is the vector normal to $S$. Substituting
+into equation \vref{eqn:momentum:vec} yields
+\begin{equation}
+\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial\overrightarrow{u}}{\partial t}\, dV=\int_{V}\overrightarrow{f}\, dV+\int_{S}\underline{\sigma}\cdot\overrightarrow{n}\, dS.
+\end{equation}
+Applying the divergence theorem,
+\begin{equation}
+\int_{V}\nabla\cdot\overrightarrow{a}\: dV=\int_{S}\overrightarrow{a}\cdot\overrightarrow{n}\: dS,
+\end{equation}
+to the surface integral results in
+\begin{equation}
+\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial\overrightarrow{u}}{\partial t}\, dV=\int_{V}\overrightarrow{f}\, dV+\int_{V}\nabla\cdot\underline{\sigma}\, dV,
+\end{equation}
+which we can rewrite as
+\begin{equation}
+\int_{V}\left(\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}-\overrightarrow{f}-\nabla\cdot\overrightarrow{\sigma}\right)\, dV=\vec{0}.
+\end{equation}
+Because the volume $V$ is arbitrary, the integrand must be the zero
+vector at every location in the volume, so that we end up with
+\begin{gather}
+\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}-\overrightarrow{f}-\nabla\cdot\overrightarrow{\sigma}=\vec{0}\text{ in }V,\\
+\underline{\sigma}\cdot\overrightarrow{n}=\overrightarrow{T}\text{ on }S_{T}\text{,}\\
+\overrightarrow{u}=\overrightarrow{u^{o}}\text{ on }S_{u},\text{ and}\\
+\underbar{R}\cdot(\vec{u^{+}}-\vec{u^{-}})=\vec{d}\text{ on }S_{f}.
+\end{gather}
+We specify tractions, $\vec{T}$, on surface $S_{f}$, displacements,
+$\overrightarrow{u^{o}}$, on surface $S_{u}$, and slip, $\vec{d}$,
+on fault surface $S_{f}$ (we will consider the case of fault constitutive
+models in Section \vref{sec:fault}). The rotation matrix $\underline{R}$
+transforms vectors from the global coordinate system to the fault
+coordinate system. Note that since both $\overrightarrow{T}$ and
+$\overrightarrow{u}$ are vector quantities, there can be some spatial
+overlap of the surfaces $S_{T}$ and $S_{u}$; however, the same degree
+of freedom cannot simultaneously have both types of boundary conditions.
+
+\section{Finite-Element Formulation of Elasticity Equation}
+
+We formulate a set of algebraic equations using Galerkin's method.
+We consider (1) a trial solution, $\vec{u}$, that is a piecewise
+differentiable vector field and satisfies the Dirichlet boundary conditions
+on $S_{u}$, and (2) a weighting function, $\vec{\phi}$, that is
+a piecewise differentiable vector field and is zero on $S_{u}$.
+
+\subsection{Index Notation}
+
+We start with the wave equation (strong form),
+\begin{gather}
+\sigma_{ij,j}+f_{i}=\rho\ddot{u_{i}}\text{ in }V,\\
+\sigma_{ij}n_{j}=T_{i}\text{ on }S_{T},\\
+u_{i}=u_{i}^{o}\text{ on }S_{u},\\
+R_{ki}(u_{i}^{+}-u_{i}^{-})=d_{k}\text{ on }S_{f},\text{ and}\\
+\sigma_{ij}=\sigma_{ji}\text{ (symmetric).}
+\end{gather}
+We construct the weak form by computing the dot product of the wave
+equation and weighting function and setting the integral over the
+domain to zero:
+\begin{gather}
+\int_{V}\left(\sigma_{ij,j}+f_{i}-\rho\ddot{u}_{i}\right)\phi_{i}\, dV=0\text{, or }\\
+\int_{V}\sigma_{ij,j}\phi_{i}\: dV+\int_{V}f_{i}\phi_{i}\: dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\: dV=0.
+\end{gather}
+ Consider the divergence theorem applied to the dot product of the
+stress tensor and the weighting function, $\sigma_{ij}\phi_{i}$,
+\begin{equation}
+\int_{V}(\sigma_{ij}\phi_{i})_{,j}\, dV=\int_{S}(\sigma_{ij}\phi_{i})n_{i}\, dS.
+\end{equation}
+Expanding the left-hand side yields
+\begin{gather}
+\int_{V}\sigma_{ij,j}\phi_{i}\: dV+\int_{V}\sigma_{ij}\phi_{i,j}\: dV=\int_{S}\sigma_{ij}\phi_{i}n_{i}\: dS,\text{ or}\\
+\int_{V}\sigma_{ij,j}\phi_{i}\: dV=-\int_{V}\sigma_{ij}\phi_{i,j}\, dV+\int_{S}\sigma_{ij}\phi_{i}n_{i}\, dS.
+\end{gather}
+Substituting into the weak form gives
+\begin{equation}
+-\int_{V}\sigma_{ij}\phi_{i,j}\, dV+\int_{S}\sigma_{ij}\phi_{i}n_{i}\, dS+\int_{V}f_{i}\phi_{i}\, dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\, dV=0.
+\end{equation}
+Turning our attention to the second term, we separate the integration
+over $S$ into integration over $S_{T}$ and $S_{u}$ (we will consider
+tractions over the fault surface, $S_{f}$, associated with the fault
+constitutive model in Section \vref{sec:fault}),
+\begin{equation}
+-\int_{V}\sigma_{ij}\phi_{i,j}\, dV+\int_{S_{T}}\sigma_{ij}\phi_{i}n_{i}\, dS+\int_{S_{u}}\sigma_{ij}\phi_{i}n_{i}\, dS+\int_{V}f_{i}\phi_{i}\, dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\, dV=0,
+\end{equation}
+and recognize that
+\begin{gather}
+\sigma_{ij}n_{i}=T_{i}\text{ on }S_{T}\text{ and}\\
+\phi_{i}=0\text{ on }S_{u},
+\end{gather}
+so that the equation reduces to
+\begin{equation}
+\label{eq:elasticity:integral}
+-\int_{V}\sigma_{ij}\phi_{i,j}\: dV+\int_{S_{T}}T_{i}\phi_{i}\, dS+\int_{V}f_{i}\phi_{i}\, dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\, dV=0.
+\end{equation}
+We express the trial solution and weighting function as linear combinations
+of basis functions,
+\begin{gather}
+u_{i}=\sum_{m}a_{i}^{m}N^{m},\\
+\phi_{i}=\sum_{n}c_{i}^{n}N^{n}.
+\end{gather}
+Note that because the trial solution satisfies the Dirichlet boundary
+condition, the number of basis functions for $u$ is generally greater
+than the number of basis functions for $\phi$, i.e., $m>n$. Substituting
+in the expressions for the trial solution and weighting function yields
+\begin{gather}
+-\int_{V}\sigma_{ij}\sum_{n}c_{i}^{n}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}\sum_{n}c_{i}^{n}N^{n}\, dS+\int_{V}f_{i}\sum_{n}c_{i}^{n}N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}N^{m}\sum_{n}c_{i}^{n}N^{n}\ dV=0,\text{ or}\\
+\sum_{n}c_{i}^{n}(-\int_{V}\sigma_{ij}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}N^{n}\, dS+\int_{V}f_{i}N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}N^{m}N^{n}\ dV)=0.
+\end{gather}
+ Because the weighting function is arbitrary, this equation must hold
+for all $c_{i}^{n}$, so that the quantity in parenthesis is zero
+for each $c_{i}^{n}$
+\begin{equation}
+\label{eq:elasticity:integral:discretized}
+-\int_{V}\sigma_{ij}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}N^{n}\, dS+\int_{V}f_{i}N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}N^{m}N^{n}\ dV=\vec{0}.
+\end{equation}
+We want to solve this equation for the unknown coefficients $a_{i}^{m}$
+subject to
+\begin{gather}
+u_{i}=u_{i}^{o}\text{ on }S_{u},\text{ and}\\
+R_{ki}(u_{i}^{+}-u_{i}^{-})=d_{k}\text{ on }S_{f},
+\end{gather}
+
+
+\subsection{Vector Notation}
+
+We start with the wave equation (strong form),
+\begin{gather}
+\nabla\cdot\underline{\sigma}+\overrightarrow{f}=\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\text{ in }V,\\
+\underline{\sigma}\cdot\overrightarrow{n}=\overrightarrow{T}\text{ on }S_{T},\\
+\overrightarrow{u}=\overrightarrow{u^{o}}\text{ on }S_{u},\\
+\underbar{R}\cdot(\overrightarrow{u^{+}}-\overrightarrow{u^{-}})=\vec{d}\text{ on }S_{f}\\
+\underline{\sigma}=\underline{\sigma}^{T}\text{ (symmetric).}
+\end{gather}
+We construct the weak form by multiplying the wave equation by a weighting
+function and setting the integral over the domain to zero. The weighting
+function is a piecewise differential vector field, $\overrightarrow{\phi}$,
+where $\overrightarrow{\phi}=0$ on $S_{u}.$ Hence our weak form
+is
+\begin{gather}
+\int_{V}\left(\nabla\cdot\underline{\sigma}+\overrightarrow{f}-\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\right)\cdot\overrightarrow{\phi}\, dV=0\text{, or }\\
+\int_{V}(\nabla\cdot\underline{\sigma})\cdot\overrightarrow{\phi}\: dV+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\: dV-\int_{V}\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\: dV=0.
+\end{gather}
+ Consider the divergence theorem applied to the dot product of the
+stress tensor and the trial function, $\underline{\sigma}\cdot\overrightarrow{\phi}$,
+\begin{equation}
+\int_{V}\nabla\cdot(\underline{\sigma}\cdot\overrightarrow{\phi})\, dV=\int_{S}(\underline{\sigma}\cdot\overrightarrow{\phi})\cdot\overrightarrow{n}\, dS.
+\end{equation}
+Expanding the left-hand side yields
+\begin{equation}
+\int_{V}(\nabla\cdot\underline{\sigma})\cdot\overrightarrow{\phi}\: dV+\int_{V}\underline{\sigma}:\nabla\overrightarrow{\phi}\: dV=\int_{S}(\underline{\sigma}\cdot\overrightarrow{\phi})\cdot\overrightarrow{n}\: dS,\text{ or}
+\end{equation}
+\begin{equation}
+\int_{V}(\nabla\cdot\underline{\sigma})\cdot\overrightarrow{\phi}\: dV=-\int_{V}\underline{\sigma}:\nabla\overrightarrow{\phi}\, dV+\int_{S}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS.
+\end{equation}
+Substituting into the weak form gives
+\begin{equation}
+-\int_{V}\underline{\sigma}:\nabla\overrightarrow{\phi}\, dV+\int_{S}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV-\int_{V}\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV=0.
+\end{equation}
+We separate the integration over $S$ into integration over $S_{T}$
+and $S_{u}$,
+\begin{multline}
+-\int_{V}\underline{\sigma}:\nabla\overrightarrow{\phi}\, dV+\int_{S_{T}}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS+\int_{S_{u}}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV-\int_{V}\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV=0,
+\end{multline}
+and recognize that
+\begin{gather}
+\underline{\sigma}\cdot\overrightarrow{n}=\overrightarrow{T}\text{ on }S_{T}\text{ and}\\
+\overrightarrow{\phi}=0\text{ on }S_{u},
+\end{gather}
+so that the equation reduces to
+\begin{equation}
+-\int_{V}\underline{\sigma}:\nabla\overrightarrow{\phi}\: dV+\int_{S_{T}}\overrightarrow{T}\cdot\overrightarrow{\phi}\, dS+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV-\int_{V}\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV=0.
+\end{equation}
+We express the trial solution and weighting function as linear combinations
+of basis functions,
+\begin{gather}
+\vec{u}=\sum_{m}\overrightarrow{a^{m}}N^{m},\\
+\vec{\phi}=\sum_{n}\overrightarrow{c^{n}}N^{n}.
+\end{gather}
+Note that because the weighting function is zero on $S_{u}$, the
+number of basis functions for $\vec{u}$ is generally greater than
+the number of basis functions for $\vec{\phi}$, i.e., $m>n$. Substituting
+in the expressions for the trial solution and weighting function yields
+\begin{multline}
+-\int_{V}\underline{\sigma}:\sum_{n}\overrightarrow{c^{n}}\nabla N_{,}^{n}\, dV+\int_{S_{T}}\vec{T}\cdot\sum_{n}\overrightarrow{c^{n}}N^{n}\, dS+\int_{V}\vec{f}\cdot\sum_{n}\overrightarrow{c^{n}}N^{n}\, dV\\
+-\int_{V}\rho\sum_{m}\frac{\partial^{2}\overrightarrow{a^{m}}}{\partial t^{2}}N^{m}\cdot\sum_{n}\overrightarrow{c^{n}}N^{n}\ dV=0.
+\end{multline}
+ Because the weighting function is arbitrary, this equation must hold
+for all $\overrightarrow{c^{n}}$, so that
+\begin{equation}
+-\int_{V}\underline{\sigma}:\nabla N^{n}\, dV+\int_{S_{T}}\vec{T}N^{n}\, dS+\int_{V}\vec{f}N^{n}\, dV-\int_{V}\rho\sum_{m}\frac{\partial^{2}\overrightarrow{a^{m}}}{\partial t^{2}}N^{m}N^{n}\, dV=\vec{0}.
+\end{equation}
+We want to solve this equation for the unknown coefficients $\overrightarrow{a^{m}}$
+subject to
+\begin{gather}
+\vec{u}=u^{o}\overrightarrow{}\text{ on }S_{u},\text{ and}\\
+\underline{R}(\overrightarrow{u^{+}}-\overrightarrow{u^{-}})=\vec{d}\text{ on }S_{f},
+\end{gather}
+
+\section{Solution Method for Quasi-Static Problems}
+
+For brevity we outline the solution method for quasi-static problems
+using only index notation. In quasi-static problems we neglect the
+inertial terms, so equation \eqref{eq:elasticity:integral:discretized}
+reduces to
+\begin{equation}
+-\int_{V}\sigma_{ij}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}N^{n}\, dS+\int_{V}f_{i}N^{n}\, dV=\vec{0}.
+\end{equation}
+As a result, time-dependence only enters through the constitutive
+relationships and the loading conditions. We consider the deformation
+at time $t+\Delta t$,
+\begin{equation}
+\label{eq:elasticity:integral:quasistatic}
+-\int_{V}\sigma_{ij}(t+\Delta t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t+\Delta t)N^{n}\, dS+\int_{V}f_{i}(t+\Delta t)N^{n}\, dV=\vec{0}.
+\end{equation}
+We solve this equation through formulation of a linear algebraic system
+of equations ($Au=b$), involving the residual ($r=b-Au$) and Jacobian
+($A$). The residual is simply
+\begin{equation}
+r_{i}^{n}=-\int_{V}\sigma_{ij}(t+\Delta t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t+\Delta t)N^{n}\, dS+\int_{V}f_{i}(t+\Delta t)N^{n}\, dV.
+\end{equation}
+We employ numerical quadrature in the finite-element discretization
+and replace the integrals with sums over the cells and quadrature
+points,
+\begin{multline}
+r_{i}^{n}=-\sum_{\text{vol cells}}\sum_{\text{quad pts}}\sigma_{ij}(x_{q},t+\Delta t)N_{,j}^{n}(x_{q})\: w_{q}|J_{cell}(x_{q})|+\sum_{\text{vol cells}}\sum_{\text{quad pt}s}f_{i}(x_{q},t+\Delta t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|\\
++\sum_{\text{tract cells}}\sum_{\text{quad pts}}T_{i}(x_{q},t+\Delta t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|,
+\end{multline}
+where $r_{i}^{n}$ is an $nd$ vector ($d$ is the dimension of the
+vector space) and $i$ is a vector space component, $x_{q}$ are the
+coordinates of the quadrature points, $w_{q}$ are the weights of
+the quadrature points, and $|J_{cell}(x_{q})|$ is the determinant
+of the Jacobian matrix evaluated at the quadrature points associated
+with mapping the reference cell to the actual cell. The quadrature
+scheme for the integral over the tractions is one dimension lower
+than the one used in integrating the terms for the volume cells.
+
+In order to find the Jacobian of the system, we let
+\begin{equation}
+\sigma_{ij}(t+\Delta t)=\sigma_{ij}(t)+d\sigma_{ij}(t).
+\end{equation}
+Isolating the term associated with the increment in stresses yields
+
+\begin{equation}
+\int_{V}d\sigma_{ij}(t)N_{j}^{n}\ dV=-\int_{V}\sigma_{ij}(t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t+\Delta t)N^{n}\, dS+\int_{V}f_{i}(t+\Delta t)N^{n}\, dV
+\end{equation}
+We associate the term on the left-hand-side with the action of the
+system Jacobian on the increment of the displacement field. We approximate
+the increment in stresses using linear elasticity and infinitesimal
+strains,
+
+\begin{gather}
+d\sigma_{ij}(t)=C_{ijkl}(t)d\varepsilon_{kl}(t)\\
+d\sigma_{ij}(t)=\frac{1}{2}C_{ijkl}(t)(du_{k.l}(t)+du_{l,k}(t))\\
+d\sigma_{ij}(t)=\frac{1}{2}C_{ijkl}(t)(\sum_{m}da_{k,l}^{m}(t)N^{m}+\sum_{m}da_{l,k}^{m}(t)N^{m})
+\end{gather}
+Now, $d\sigma_{ij}\phi_{i,j}$ is a scalar, so it is symmetric,
+\begin{equation}
+d\sigma_{ij}\phi_{i,j}=d\sigma_{ji}\phi_{j,i},
+\end{equation}
+and we know that $d\sigma_{ij}$ is symmetric, so
+\begin{equation}
+d\sigma_{ij}\phi_{i,j}=d\sigma_{ij}\phi_{j,i},
+\end{equation}
+which means
+\begin{equation}
+\phi_{i,j}=\phi_{j,i},
+\end{equation}
+which we can write as
+\begin{equation}
+\phi_{i,j}=\frac{1}{2}(\phi_{i,j}+\phi_{j,i}).
+\end{equation}
+In terms of the basis functions, we have
+
+\begin{equation}
+\sum_{n}c_{i}^{n}N_{,j}^{n}=\frac{1}{2}(\sum_{n}c_{i}^{n}N_{,j}^{n}+\sum_{n}c_{j}^{n}N_{,i}^{n}).
+\end{equation}
+Combining these expressions for the increment in stresses and making
+use of the symmetry of the weighting functions, we find the system
+Jacobian is
+
+\begin{equation}
+A_{ij}^{nm}=\int_{V}\frac{1}{4}C_{ijkl}(N_{,l}^{m}+N_{,k}^{m})(N_{,j}^{n}+N_{,i}^{n})\ dV.
+\end{equation}
+We employ numerical quadrature in the finite-element discretization
+and replace the integral with a sum over the cells and quadrature
+points,
+\begin{equation}
+A_{ij}^{nm}=\sum_{\text{vol cells}}\sum_{\text{quad pts}}\frac{1}{4}C_{ijkl}(N_{,l}^{m}(x_{q})+N_{,k}^{m}(x_{q}))(N_{,j}^{n}(x_{q})+N_{,i}^{n}(x_{q}))w_{q}|J_{cell}(x_{q}).
+\end{equation}
+
+\section{Solution Method for Dynamic Problems}
+
+For brevity we outline the solution method for dynamic problems using
+only index notation. Time-dependence enters through the constitutive
+relationships, loading conditions, and the inertial terms. We consider
+the deformation at time $t$,
+\begin{equation}
+\label{eq:elasticity:integral:dynamic:t}
+-\int_{V}\sigma_{ij}(t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t)N^{n}\, dS+\int_{V}f_{i}(t)N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}(t)N^{m}N^{n}\ dV=\vec{0}.
+\end{equation}
+We solve this equation through formulation of a linear algebraic system
+of equations ($Au=b$), involving the residual ($r=b-Au$) and Jacobian
+($A$). The residual is simply
+\begin{equation}
+r_{i}^{n}=-\int_{V}\sigma_{ij}(t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t)N^{n}\, dS+\int_{V}f_{i}(t)N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}(t)N^{m}N^{n}\ dV.
+\end{equation}
+We employ numerical quadrature in the finite-element discretization
+and replace the integrals with sums over the cells and quadrature
+points,
+\begin{multline}
+r_{i}^{n}=-\sum_{\text{vol cells}}\sum_{\text{quad pts}}\sigma_{ij}(x_{q},t)N^{n}(x_{q})\: w_{q}|J_{cell}(x_{q})|+\sum_{\text{vol cells}}\sum_{\text{quad pt}s}f_{i}(x_{q},t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|\\
++\sum_{\text{tract cells}}\sum_{\text{quad pts}}T_{i}(x_{q},t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|-\sum_{\text{vol cells}}\sum_{\text{quad pts}}\rho\sum_{m}\ddot{a}_{i}^{m}(t)N^{m}N^{n}\ w_{q|J_{cell}(x_{q})},
+\end{multline}
+where $x_{q}$ are the coordinates of the quadrature points, $w_{q}$
+are the weights of the quadrature points, and $|J_{cell}(x_{q})|$
+is the determinant of the Jacobian matrix evaluated at the quadrature
+points associated with mapping the reference cell to the actual cell.
+The quadrature scheme for the integral over the tractions is one dimension
+lower than the one used in integrating the terms for the volume cells. 
+
+We find the system Jacobian matrix by making use of the temporal discretization
+and isolating the term for the increment in the displacement field
+at time $t$. Using the central difference method to approximate the
+acceleration (and velocity),
+\begin{gather}
+\ddot{u}_{i}(t)=\frac{1}{\Delta t^{2}}\left(u_{i}(t+\Delta t)-2u_{i}(t)+u_{i}(t-\Delta t)\right)\\
+\dot{u}_{i}(t)=\frac{1}{2\Delta t}\left(u_{i}(t+\Delta t)-u_{i}(t-\Delta t)\right)
+\end{gather}
+and writing the displacement at time $t+\Delta t$ in terms of the
+displacement at $t$ (for consistency with the displacement increment
+quasi-static formulation),
+\begin{gather}
+u_{i}(t+\Delta t)=u_{i}(t)+du_{i}(t),\\
+\ddot{u}_{i}(t)=\frac{1}{\Delta t^{2}}\left(du_{i}(t)-u_{i}(t)+u_{i}(t-\Delta t)\right),\\
+\dot{u}_{i}(t)=\frac{1}{2\Delta t}\left(du_{i}(t)+u_{i}(t)-u_{i}(t-\Delta t)\right).
+\end{gather}
+Substituting into equation \eqref{eq:elasticity:integral:dynamic:t}
+yields
+\begin{multline}
+\frac{1}{\Delta t^{2}}\int_{V}\rho\sum_{m}da_{i}^{m}(t)N^{m}N^{n}\ dV=-\int_{V}\sigma_{ij}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}N^{n}\, dS+\int_{V}f_{i}N^{n}\, dV\\
+-\frac{1}{\Delta t^{2}}\int_{V}\rho\sum_{m}(a_{i}^{m}(t)-a_{i}^{m}(t-\Delta t))N^{m}N^{n}\ dV.
+\end{multline}
+Thus, the Jacobian for the system is
+\begin{equation}
+A_{ij}^{nm}=\delta_{ij}\frac{1}{\Delta t^{2}}\int_{V}\rho N^{m}N^{n}\ dV,
+\end{equation}
+and using numerical quadrature in the finite-element discretization
+to replace the integrals with sums over the cells and quadrature points,
+
+\begin{equation}
+A_{ij}^{nm}=\delta_{ij}\frac{1}{\Delta t^{2}}\sum_{\text{vol cells}}\sum_{\text{quad pts}}\rho(x_{q})N^{m}(x_{q})N^{n}(x_{q}),
+\end{equation}
+where $A_{ij}^{mn}$ is a $nd$ by $md$ matrix ($d$ is the dimension
+of the vector space), $m$ and $n$ refer to the basis functions and
+$i$ and $j$ are vector space components. We consider the contributions
+associated with the fault in section \vref{sec:fault} and with absorbing
+boundaries is section \vref{sec:absorbing:boundaries}.
+
+
+\section{Small (Finite) Strain Formulation}
+\label{sec:small:strain:formulation}
+
+In some crustal deformation problems sufficient deformation may occur
+that the assumptions associated with infinitesimal strains no longer
+hold. This is often the case for problems when one wants to include
+the effects of gravitational body forces on vertical deformation.
+In such cases we want to account for both rigid body motion and small
+strains. We use a total Lagrangian formulation (quantities are associated
+with the undeformed configuration) based on the one presented by Bathe
+\cite{Bathe:1995}.
+
+Starting from the governing equation, written for the deformed configuration
+(denoted by the subscript $t$), we have
+\begin{equation}
+\label{eq:governing:equation:deformed}
+\int(\nabla_{t}\cdot\underline{\sigma})\cdot\vec{\phi}\: dV_{t}+\int_{Vt}\overrightarrow{f_{t}}\cdot\overrightarrow{\phi}\, dV_{t}-\int_{Vt}\rho_{t}\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV_{t}=0.
+\end{equation}
+For the total Lagrangian formulation we want to transform these integrals
+over the deformed configuration to integrals over the undeformed configuration.
+We require that the deformed and undeformed configurations use the
+same coordinate system (origin and orientation). Conservation of mass
+requires that $\rho\, dV_{t}=\rho_{0}\, dV_{0}$. We define the body
+force as a force per unit volume that does not depend on the configuration,
+which leads to $\vec{f}_{t}\, dV_{t}=\vec{f}_{0}\, dV_{0}$.
+
+The Green-Lagrange strain provides a measure of the strain relative
+to the original, undeformed configuration.
+\begin{gather}
+\underline{\epsilon}=\frac{1}{2}(\nabla u_{i,j}+(\nabla u)^{T}+u_{k,i}u_{k,j}),\text{ or}\\
+\underline{\epsilon}=\underline{X}_{0}^{T}\underline{\, X}_{0}-\underline{I},\text{ where}\\
+\underline{X_{0}}=\frac{\partial}{\partial x_{j}}(\vec{x}(0)+\vec{u}(t)),
+\end{gather}
+and $\underline{X}$ is the deformation gradient tensor. The second
+Piola-Kirchhoff stress tensor, $\underline{S}$, is the work conjugate
+of the Green-Lagrange strain tensor. As a result, they are related
+through the elasticity constants,
+
+\begin{equation}
+\underline{S}=\underline{C\,}\underline{\varepsilon},
+\end{equation}
+in the same manner as the Cauchy stress is related to the infinitesimal
+strain. The Cauchy stress is related to the second Piola-Kirchoff
+stress through the deformation gradient tensor,
+\begin{equation}
+\underline{\sigma}=\frac{1}{|\underline{X}_{0}|}\underline{\, X}_{0}\,\underline{S\,}\underline{X}_{0}^{T},
+\end{equation}
+ where $\mathit{det}(\underline{X}_{0})=|\underline{X}_{0}|$. Additionally,
+the first Piola-Kirhoff stress is define to be 
+\begin{equation}
+\underline{P}=\underline{S\,}\underline{X}_{0}^{T}.
+\end{equation}
+
+
+Applying the divergence theorem, making use of the fact that $dV_{t}=|\underline{X}_{0}|\, dV_{0}$,
+and recognizing that the gradient in the deformed configuration is
+related to the gradient in the undeformed configuration through the
+deformation gradient tensor, we can show that
+\begin{equation}
+\int_{V_{t}}\nabla_{t}\cdot\underline{\sigma}\cdot\vec{\phi}\: dV_{t}=-\int_{V_{0}}\underline{P}:\nabla\overrightarrow{\phi}\, dV_{0}+\int_{S_{0}}\overrightarrow{T_{0}}\cdot\overrightarrow{\phi}\, dS_{0},
+\end{equation}
+where we assume the the tractions on the boundary do not depend on
+the configuration. That is, the normal and share traction components
+are defined in terms of the undeformed configuration. Incorporating
+the other relationships between the underformed and deformed configurations
+allows us to rewrite Equation \vref{eq:governing:equation:deformed}
+in the undeformed configuration,
+\begin{equation}
+-\int_{V_{0}}\underline{P}:\nabla\overrightarrow{\phi}\, dV_{0}+\int_{S_{0}}\overrightarrow{T_{0}}\cdot\overrightarrow{\phi}\, dS_{0}+\int_{V_{0}}\overrightarrow{f_{0}}\cdot\overrightarrow{\phi}\, dV_{0}-\int_{V_{0}}\rho_{0}\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV_{0}=0.
+\end{equation}
+
+
+\subsection{Quasi-static Problems}
+
+The system Jacobian for quasi-static problems includes terms associated
+with elasticity. For the small strain formulation, we write the elasticity
+term at time $t+\Delta t$ and consider the first terms of the Taylor
+series expansion,
+\begin{equation}
+\int_{v}S_{ij}(t+\Delta t)\delta\varepsilon_{ij}(t+\Delta t)\: dV=\int_{V}(S_{ij}(t)\delta\varepsilon_{ij}(t)+dS_{ij}(t)\delta\varepsilon_{ij}(t)+S_{ij}(t)d\delta\varepsilon_{ij}(t))\: dV.
+\end{equation}
+We approximate the increment in the stress tensor using the elastic
+constants,
+\begin{equation}
+dS_{ij}=C_{ijkl}d\varepsilon_{kl},
+\end{equation}
+and the increment in the ``virtual'' strain via
+\begin{equation}
+d\delta\varepsilon_{ij}=\frac{1}{2}(du_{k,i}\delta u_{k,j}+du_{k,j}\delta u_{k,i}).
+\end{equation}
+We associate the system Jacobian with the terms involving the increment
+in displacements. After substituting in the expressions for the increment
+in the stresses and the increment in the ``virtual'' strains, we
+have
+\begin{equation}
+A_{ij}^{nm}=\int_{V}\frac{1}{4}C_{ijkl}(N_{,k}^{m}+(\sum_{r}a_{p}^{r}N_{,l}^{r})N_{,k}^{m})(N_{,i}^{n}+(\sum_{r}a_{p}^{r}N_{,j}^{r})N_{,i}^{n})+\frac{1}{2}S_{kl}N_{,l}^{m}N_{,l}^{n}\delta_{ij}\: dV.
+\end{equation}
+The small strain formulation produces additional terms associated
+with the elastic constants and a new term associated with the stress
+tensor.
+
+
+\subsection{Dynamic Problems}
+
+The system Jacobian matrix in dynamic problems does not include any
+terms associated with elasticity, so the system Jacobian matrix in
+the small strain formulation matches the one used in the infinitesimal
+strain formulation.
