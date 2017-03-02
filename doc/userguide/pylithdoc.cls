@@ -155,7 +155,22 @@
         blur shadow={shadow blur steps=5}
       ]{\raisebox{1em}{{\LARGE\danger} {\bf Important}}\\ #1};
     \end{tikzpicture}\end{center}}
-
+%
+% TODO
+\newcommand{\todo}[2]{%
+  \begin{center}\begin{tikzpicture}
+      \node[draw=none,
+        shade,
+        text width=\textwidth-2.0in,
+        inner sep=1em,
+        top color=yellow,
+        bottom color=yellow!10,
+        rounded corners=1em,
+        blur shadow={shadow blur steps=5}
+      ]{\raisebox{1em}{{\LARGE\noway} {\bf TODO @#1}}\\ #2};
+    \end{tikzpicture}\end{center}}
+\newcommand{\todocomment}[2]{{\bfseries @#1} #2}
+%
 % New feature
 \newcommand{\newfeature}[1]{%
   \begin{tikzpicture}
