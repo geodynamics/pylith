@@ -86,7 +86,7 @@ state variables for output:
 The boundary conditions for this example are trivial, so we are able
 to use the default \object{ZeroDispDB} for all faces. When we have
 run the simulation, the output VTK files will be contained in \filename{examples/3d/hex8/output}
-(all with a pvrefix of \filename{step15}). Results using ParaView are
+(all with a prefix of \filename{step15}). Results using ParaView are
 shown in Figure \vref{fig:example:3dhex8:step15:displacement}.
 
 \begin{figure}
@@ -134,7 +134,7 @@ Note that we use a \texttt{linear} \property{query\_type} rather than
 the default type of \texttt{nearest}, so that a linear interpolation
 is performed along the z-direction. When we have run the simulation,
 the output VTK files will be contained in \filename{examples/3d/hex8/output}
-(all with a pvrefix of \filename{step16}). Results using ParaView are
+(all with a prefix of \filename{step16}). Results using ParaView are
 shown in Figure \vref{fig:example:3dhex8:step16:stress}.
 
 \begin{figure}
@@ -177,7 +177,7 @@ It is thus only necessary to change the formulation:
 <f>formulation</f> = pylith.problems.ImplicitLgDeform
 \end{cfg}
 When we have run the simulation, the output VTK files will be contained
-in \filename{examples/3d/hex8/output} (all with a pvrefix of \filename{step17}).
+in \filename{examples/3d/hex8/output} (all with a prefix of \filename{step17}).
 Results using ParaView are shown in Figure \vref{fig:example:3dhex8:step17:displacement}.
 
 \begin{figure}
