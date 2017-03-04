@@ -16,125 +16,116 @@
 # ----------------------------------------------------------------------
 #
 
+from collections import OrderedDict
+
 EXAMPLE_FILES = [
     "test",
 ]
 
 # ----------------------------------------------------------------------
-from collections import OrderedDict
-COLUMNS = OrderedDict({
-    "General": [
-        "Dimension",
-        "Coordinate system",
-        "Mesh generator",
-        "Cells",
-        "Problem type",
-        "Time dependence",
-    ],
-    "Boundary Conditions": [
-        "Dirichlet",
-        "Neumann",
-        "Absorbing",
-        "Point force",
-    ],
-    "Fault": [
-        "Prescribed slip",
-        "Slip time function",
-        "Constitutive model",
-        "Static friction",
-        "Slip-weakening friction",
-        "Time-weakening friction",
-        "Rate-state friction w/ageing",
-        "Traction perturbation",
-    ],
-    "Bulk Rheology": [
-        "Linear elastic",
-        "Linear Maxwell viscoelastic",
-        "Generalixed Maxwell viscoelastic",
-        "Powerlaw viscoelastic",
-        "Drucker-Prager elastoplastic",
-        "Incompressible linear elastic",
-        "Porous linear elastic",
-        "Stress/strain formulation",
-        "Inertia",
-        "Gravity",
-        "Reference state",
-    ],
-    "Solver": [
-        "Solver",
-        "Preconditioner",
-        "Time stepping",
-    ],
-    "Output": [
-        "Format",
-        "Domain output",
-        "Surface output",
-        "Point output",
-        "State variable output",
-        "ParaView",
-        "Matplotlib",
-    ],
-    "Spatial Database": [
-        "Uniform",
-        "Simple",
-        "Simple grid",
-        "Composite",
-        "Time history",
-    ],
-})
+class Features(object):
+    CS_CART = "Cart"
+    CS_PROJ = "Proj"
 
-SCHEMA = {
-    "$schema": "http://json-schema.org/schema#",
-    "id": "PyLith examples schema",
-    "title": "Example",
-    "type": "object",
-    "properties": {
-        "General": {
-            "type": "object",
-            "properties": {
+    CELL_TRI = "Tri"
+    CELL_QUAD = "Quad"
+    CELL_TET = "Tet"
+    CELL_HEX = "Hex"
+
+    MESH_ASCII = "ASCII"
+    MESH_CUBIT = "CUBIT"
+    MESH_LAGRIT = "LaGriT"
+
+    PROB_TIMEDEPENDENT = "TD"
+    PROB_GREENSFNS = "GF"
+
+    TIMEDEP_STATIC = "S"
+    TIMEDEP_QUASISTATIC = "QS"
+    TIMEDEP_DYNAMIC = "D"
+
+    SOLVER_LINEAR = "L"
+    SOLVER_NONLINEAR = "NL"
+
+    TS_BWDEULER = "BE"
+    TS_FWDEULER = "FE"
+    TS_RUNGEKUTTA = "RK"
+
+    PRECOND_ILU = "ILU"
+    PRECOND_ASM = "ASM"
+    PRECOND_SCHUR = "SCHUR"
+    PRECOND_CUSTOM = "CUSTOM"
+    PRECOND_ML = "ML"
+    PRECOND_GAMG = "GAMG"
+
+    SLIPFN_STEP = "STEP"
+    SLIPFN_RATE = "RATE"
+    SLIPFN_LIU = "LIU"
+    SLIPFN_BRUNE = "BRUNE"
+    SLIPFN_TIMEHISTORY = "USER"
+
+    STRESSFORM_INFINITESIMAL = "INF"
+    STRESSFORM_FINITE = "FIN"
+
+    OUTPUT_VTK = "VTK"
+    OUTPUT_HDF5 = "H5"
+    OUTPUT_HDF5EXT = "H5Ext"
+    
+    from collections import OrderedDict
+    CATEGORIES = [
+        ("General",
+             # Properties
+             OrderedDict({
                 "Dimension": { "enum": [2, 3], },
-                "Coordinate system": { "enum": ["Cart", "Proj"], },
-                "Mesh generator": { "enum": ["ASCII", "CUBIT", "LaGriT"], },
-                "Cells": { "enum": ["Tri", "Quad", "Tet", "Hex"], },
+                "Coordinate system": { "enum": [CS_CART, CS_PROJ], },
+                "Mesh generator": { "enum": [MESH_ASCII, MESH_CUBIT, MESH_LAGRIT], },
+                "Cells": { "enum": [CELL_TRI, CELL_QUAD, CELL_TET, CELL_HEX], },
                 "Refinement": { "enum": ["2x", "4x", "8x"], },
                 "Reordering": { "type": "boolean", },
-                "Problem type": { "enum": ["TD", "GF"], },
-                "Time dependence": { "enum": ["S", "QS", "D"], },
-            },
-            "required": [
-                "Dimension", 
-                "Coordinate system",
-                "Mesh generator",
-                "Cells",
-                "Problem type",
-                "Time dependence",
-            ],
-        },
-        "Boundary Conditions": {
-            "type": "object",
-            "properties": {
+                "Problem type": { "enum": [PROB_TIMEDEPENDENT, PROB_GREENSFNS], },
+                "Time dependence": { "enum": [TIMEDEP_STATIC, TIMEDEP_QUASISTATIC, TIMEDEP_DYNAMIC], },
+                }),
+            # Required
+            ["Dimension", "Coordinate system", "Mesh generator", "Cells", "Problem type"],
+        ),
+        ("Solver",
+             # Properties
+             OrderedDict({
+                "Solver": { "enum": [SOLVER_LINEAR, SOLVER_NONLINEAR], },
+                "Preconditioner": { "enum": [PRECOND_ILU, PRECOND_ASM, PRECOND_SCHUR, PRECOND_CUSTOM, PRECOND_ML, PRECOND_GAMG], },
+                "Time stepping": { "enum": [TS_BWDEULER, TS_FWDEULER, TS_RUNGEKUTTA], },
+                }),
+            # Required
+            ["Solver"],
+        ),
+        ("Boundary Conditions",
+             # Properties
+             OrderedDict({
                 "Dirichlet": { "type": "integer", "minimum": 0, },
                 "Neumann": { "type": "integer", "minimum": 0, },
                 "Absorbing": { "type": "integer", "minimum": 0, },
                 "Point force": { "type": "integer", "minimum": 0, },
-            },
-        },
-        "Fault": {
-            "type": "object",
-            "properties": {
+                }),
+            # Required
+            None,
+        ),
+        ("Fault",
+             # Properties
+             OrderedDict({
                 "Prescribed slip": { "type": "integer", "minimum": 0, },
-                "Slip time function": { "enum": ["Step", "Rate", "Liu", "Brune", "User"], },
+                "Slip time function": { "enum": [SLIPFN_STEP, SLIPFN_RATE, SLIPFN_LIU, SLIPFN_BRUNE, SLIPFN_TIMEHISTORY], },
                 "Constitutive model": { "type": "integer", "minimum": 0, },
                 "Static friction": { "type": "boolean" },
                 "Slip-weakening friction": { "type": "boolean" },
                 "Time-weakening friction": { "type": "boolean" },
                 "Rate-state friction w/ageing": { "type": "boolean" },
                 "Traction perturbation": { "type": "boolean" },
-            },
-        },
-        "Bulk Rheology": {
-            "type": "object",
-            "properties": {
+            }),
+            # Required
+            None,
+        ),
+        ("Bulk Rheology",
+             # Properties
+             OrderedDict({
                 "Linear elastic": { "type": "integer", "minimum": 0, },
                 "Linear Maxwell viscoelastic": { "type": "integer", "minimum": 0, },
                 "Generalized Maxwell viscoelastic": { "type": "integer", "minimum": 0, },
@@ -146,58 +137,58 @@ SCHEMA = {
                 "Inertia": { "type": "boolean" },
                 "Reference state": { "type": "boolean" },
                 "Gravity": { "type": "boolean" },
-            },
-        },
-        "Solver": {
-            "type": "object",
-            "properties": {
-                "Solver": { "enum": ["L","NL"], },
-                "Preconditioner": { "enum": ["ILU", "ASM", "SCHUR", "CUST"], },
-                "Time stepping": { "enum": ["BE", "FE", "RK"], },
-            },
-            "required": ["Solver"],
-        },
-        "Output": {
-            "type": "object",
-            "properties": {
-                "Format": { "enum": ["VTK", "H5", "H5Ext"], },
+            }),
+            # Required
+            None,
+        ),
+        ("Output",
+             # Properties
+             OrderedDict({
+                "Format": { "enum": [OUTPUT_VTK, OUTPUT_HDF5, OUTPUT_HDF5EXT], },
                 "Domain output": { "type": "integer", "minimum": 0, },
                 "Surface output": { "type": "integer", "minimum": 0, },
                 "Point output": { "type": "integer", "minimum": 0, },
                 "State variable output": { "type": "integer", "minimum": 0, },
                 "ParaView": { "type": "boolean", },
                 "Matplotlib": { "type": "boolean", },
-            },
-            "required": ["Format"],
-        },
-        "Spatial Database": {
-            "type": "object",
-            "properties": {
+            }),
+            # Required
+            ["Format"],
+        ),
+        ("Spatial Database",
+             # Properties
+             OrderedDict({
                 "Uniform": { "type": "integer", "minimum": 0, },
                 "Simple": { "type": "integer", "minimum": 0, },
                 "Simple grid": { "type": "integer", "minimum": 0, },
+                "Composite": { "type": "integer", "minimum": 0, },
                 "Time history": { "type": "integer", "minimum": 0, },
-            },
-        },
-    },
-}
+            }),
+            # Required
+            None,
+        )
+        ]
 
+    SCHEMA = {
+        "$schema": "http://json-schema.org/schema#",
+        "id": "PyLith examples schema",
+        "title": "Example",
+        "type": "object",
+        "properties": {},
+        "required": ["General", "Solver", "Boundary Conditions", "Bulk Rheology", "Output", "Spatial Database"],
+        }
+    for category, properties, required in CATEGORIES:
+        SCHEMA["properties"][category] = {
+            "type": "object",
+            "properties": properties}
+        if required:
+            SCHEMA["properties"][category]["required"] = required
+
+
+        
 # ----------------------------------------------------------------------
 class Table(object):
-    """Abstract base class for a table of example features.
-    
-    \usepackage[table]{xcolor}
-    
-    \rowcolors{2}{gray!25}{white}
-    \begin{tabular}{cc}
-    \rowcolor{gray!50}
-    Table head & Table head\\
-    Some values & Some values\\
-    Some values & Some values\\
-    Some values & Some values\\
-    Some values & Some values\\
-    \end{tabular}
-
+    """Object tabulating features in examples.
     """
     
     def __init__(self, fout, columns):
@@ -217,7 +208,7 @@ class Table(object):
         f.write("\\rowcolors{2}{yellow!30}{white}\n")
         ctags = ["|l|%% Example"]
         for category in self.columns:
-            cols = COLUMNS[category]
+            cols = Features.SCHEMA["properties"][category]["properties"]
             ctags.append("*{%d}c|%% %s" % (len(cols), category))
         f.write("\\begin{tabular}{%s\n}\n" % "\n    ".join(ctags))
         f.write("\\hline\n")
@@ -225,7 +216,7 @@ class Table(object):
         f.write("\\rowcolor{blue!10}\n")
         f.write("Example\n")
         for category in self.columns:
-            cols = COLUMNS[category]
+            cols = Features.SCHEMA["properties"][category]["properties"]
             f.write("& \multicolumn{%d}{c|}{%s}\n" % (len(cols), category))
         f.write("\\\\ \n")
         f.write("%%%%\n")
@@ -234,8 +225,8 @@ class Table(object):
         f.write("\n")
         for category in self.columns:
             f.write("%% %s\n" % category)
-            cols = COLUMNS[category]
-            for m in cols:
+            cols = Features.SCHEMA["properties"][category]["properties"]
+            for m in cols.keys():
                 f.write("& \\rlabel{%s}\n" % m)
         f.write("\\\\\n")
         f.write("\\hline\n")
@@ -253,22 +244,21 @@ class Table(object):
 
         f.write("%s\n" % label)
         for category in self.columns:
-            cols = COLUMNS[category]
+            cols = Features.SCHEMA["properties"][category]["properties"]
             if not category in example:
                 for col in cols:
                     f.write("& ")
                 continue
-            for col in cols:
+            for col, property in cols.items():
                 if not col in example[category]:
                     f.write("& ")
                     continue
                 value = example[category][col]
-                colSchema = SCHEMA["properties"][category]["properties"][col]
                 s = str(value)
-                if "type" in colSchema:
-                    if colSchema["type"] == "boolean":
+                if "type" in property:
+                    if property["type"] == "boolean":
                         s = fromBoolean(value)
-                    elif colSchema["type"] == "integer":
+                    elif property["type"] == "integer":
                         s = fromInt(value)
                 f.write("& %s " % s)
             f.write("\n")
@@ -278,7 +268,8 @@ class Table(object):
     def writeFooter(self):
         """Write table footer.
         """
-        self.fout.write("\end{tabular}\n")
+        self.fout.write("\\end{tabular}\n")
+        self.fout.write("\\par\n")
         return
 
     @staticmethod
@@ -330,7 +321,7 @@ class App(object):
         ok = True
         for label, example in self.examples.items():
             try:
-                jsonschema.validate(example, SCHEMA)
+                jsonschema.validate(example, Features.SCHEMA)
                 print("Example '%s': OK" % label)
             except jsonschema.exceptions.ValidationError as err:
                 print("Example '%s': ERROR" % label)
