@@ -17,6 +17,7 @@ examples = OrderedDict({
         },
         "Bulk Rheology": {
             "Linear elastic": 1,
+            "Stress/strain formulation": Features.STRESSFORM_INFINITESIMAL,
         },
         "Solver": {
             "Solver": Features.SOLVER_LINEAR,
@@ -42,12 +43,14 @@ examples = OrderedDict({
         },
         "Bulk Rheology": {
             "Linear elastic": 1,
+            "Stress/strain formulation": Features.STRESSFORM_INFINITESIMAL,
         },
         "Solver": {
             "Solver": Features.SOLVER_LINEAR,
         },
         "Output": {
             "Format": Features.OUTPUT_HDF5,
+            "ParaView": True,
         },
         "Spatial Database": {
             "Uniform": 1,

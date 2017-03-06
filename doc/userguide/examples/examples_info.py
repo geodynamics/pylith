@@ -36,6 +36,10 @@ class Features(object):
     MESH_CUBIT = "CUBIT"
     MESH_LAGRIT = "LaGriT"
 
+    REFINE_2 = "2x"
+    REFINE_4 = "4x"
+    REFINE_8 = "8x"
+    
     PROB_TIMEDEPENDENT = "TD"
     PROB_GREENSFNS = "GF"
 
@@ -63,8 +67,8 @@ class Features(object):
     SLIPFN_BRUNE = "BRUNE"
     SLIPFN_TIMEHISTORY = "USER"
 
-    STRESSFORM_INFINITESIMAL = "INF"
-    STRESSFORM_FINITE = "FIN"
+    STRESSFORM_INFINITESIMAL = "Inf"
+    STRESSFORM_FINITE = "Fin"
 
     OUTPUT_VTK = "VTK"
     OUTPUT_HDF5 = "H5"
@@ -74,96 +78,96 @@ class Features(object):
     CATEGORIES = [
         ("General",
              # Properties
-             OrderedDict({
-                "Dimension": { "enum": [2, 3], },
-                "Coordinate system": { "enum": [CS_CART, CS_PROJ], },
-                "Mesh generator": { "enum": [MESH_ASCII, MESH_CUBIT, MESH_LAGRIT], },
-                "Cells": { "enum": [CELL_TRI, CELL_QUAD, CELL_TET, CELL_HEX], },
-                "Refinement": { "enum": ["2x", "4x", "8x"], },
-                "Reordering": { "type": "boolean", },
-                "Problem type": { "enum": [PROB_TIMEDEPENDENT, PROB_GREENSFNS], },
-                "Time dependence": { "enum": [TIMEDEP_STATIC, TIMEDEP_QUASISTATIC, TIMEDEP_DYNAMIC], },
-                }),
+             OrderedDict((
+                ("Dimension", { "enum": [2, 3], }),
+                ("Coordinate system", { "enum": [CS_CART, CS_PROJ], }),
+                ("Mesh generator", { "enum": [MESH_ASCII, MESH_CUBIT, MESH_LAGRIT], }),
+                ("Cells", { "enum": [CELL_TRI, CELL_QUAD, CELL_TET, CELL_HEX], }),
+                ("Refinement", { "enum": [REFINE_2, REFINE_4, REFINE_8], }),
+                ("Reordering", { "type": "boolean", }),
+                ("Problem type", { "enum": [PROB_TIMEDEPENDENT, PROB_GREENSFNS], }),
+                ("Time dependence", { "enum": [TIMEDEP_STATIC, TIMEDEP_QUASISTATIC, TIMEDEP_DYNAMIC], }),
+                )),
             # Required
             ["Dimension", "Coordinate system", "Mesh generator", "Cells", "Problem type"],
         ),
         ("Solver",
              # Properties
-             OrderedDict({
-                "Solver": { "enum": [SOLVER_LINEAR, SOLVER_NONLINEAR], },
-                "Preconditioner": { "enum": [PRECOND_ILU, PRECOND_ASM, PRECOND_SCHUR, PRECOND_CUSTOM, PRECOND_ML, PRECOND_GAMG], },
-                "Time stepping": { "enum": [TS_BWDEULER, TS_FWDEULER, TS_RUNGEKUTTA], },
-                }),
+             OrderedDict((
+                ("Solver", { "enum": [SOLVER_LINEAR, SOLVER_NONLINEAR], }),
+                ("Preconditioner", { "enum": [PRECOND_ILU, PRECOND_ASM, PRECOND_SCHUR, PRECOND_CUSTOM, PRECOND_ML, PRECOND_GAMG], }),
+                ("Time stepping", { "enum": [TS_BWDEULER, TS_FWDEULER, TS_RUNGEKUTTA], }),
+                )),
             # Required
             ["Solver"],
         ),
         ("Boundary Conditions",
              # Properties
-             OrderedDict({
-                "Dirichlet": { "type": "integer", "minimum": 0, },
-                "Neumann": { "type": "integer", "minimum": 0, },
-                "Absorbing": { "type": "integer", "minimum": 0, },
-                "Point force": { "type": "integer", "minimum": 0, },
-                }),
+             OrderedDict((
+                ("Dirichlet", { "type": "integer", "minimum": 0, }),
+                ("Neumann", { "type": "integer", "minimum": 0, }),
+                ("Absorbing", { "type": "integer", "minimum": 0, }),
+                ("Point force", { "type": "integer", "minimum": 0, }),
+                )),
             # Required
             None,
         ),
         ("Fault",
              # Properties
-             OrderedDict({
-                "Prescribed slip": { "type": "integer", "minimum": 0, },
-                "Slip time function": { "enum": [SLIPFN_STEP, SLIPFN_RATE, SLIPFN_LIU, SLIPFN_BRUNE, SLIPFN_TIMEHISTORY], },
-                "Constitutive model": { "type": "integer", "minimum": 0, },
-                "Static friction": { "type": "boolean" },
-                "Slip-weakening friction": { "type": "boolean" },
-                "Time-weakening friction": { "type": "boolean" },
-                "Rate-state friction w/ageing": { "type": "boolean" },
-                "Traction perturbation": { "type": "boolean" },
-            }),
+             OrderedDict((
+                ("Prescribed slip", { "type": "integer", "minimum": 0, }),
+                ("Slip time function", { "enum": [SLIPFN_STEP, SLIPFN_RATE, SLIPFN_LIU, SLIPFN_BRUNE, SLIPFN_TIMEHISTORY], }),
+                ("Constitutive model", { "type": "integer", "minimum": 0, }),
+                ("Static friction", { "type": "boolean" }),
+                ("Slip-weakening friction", { "type": "boolean" }),
+                ("Time-weakening friction", { "type": "boolean" }),
+                ("Rate-state friction w/ageing", { "type": "boolean" }),
+                ("Traction perturbation", { "type": "boolean" }),
+            )),
             # Required
             None,
         ),
         ("Bulk Rheology",
              # Properties
-             OrderedDict({
-                "Linear elastic": { "type": "integer", "minimum": 0, },
-                "Linear Maxwell viscoelastic": { "type": "integer", "minimum": 0, },
-                "Generalized Maxwell viscoelastic": { "type": "integer", "minimum": 0, },
-                "Powerlaw viscoelastic": { "type": "integer", "minimum": 0, },
-                "Drucker-Prager elastoplastic": { "type": "integer", "minimum": 0, },
-                "Incompressible linear elastic": { "type": "integer", "minimum": 0, },
-                "Porous linear elastic": { "type": "integer", "minimum": 0, },
-                "Stress/stress formulation": { "enum": ["Inf","Fin"], },
-                "Inertia": { "type": "boolean" },
-                "Reference state": { "type": "boolean" },
-                "Gravity": { "type": "boolean" },
-            }),
+             OrderedDict((
+                ("Linear elastic", { "type": "integer", "minimum": 0, }),
+                ("Linear Maxwell viscoelastic", { "type": "integer", "minimum": 0, }),
+                ("Generalized Maxwell viscoelastic", { "type": "integer", "minimum": 0, }),
+                ("Powerlaw viscoelastic", { "type": "integer", "minimum": 0, }),
+                ("Drucker-Prager elastoplastic", { "type": "integer", "minimum": 0, }),
+                ("Incompressible linear elastic", { "type": "integer", "minimum": 0, }),
+                ("Porous linear elastic", { "type": "integer", "minimum": 0, }),
+                ("Stress/strain formulation", { "enum": [STRESSFORM_INFINITESIMAL, STRESSFORM_FINITE], }),
+                ("Inertia", { "type": "boolean" }),
+                ("Reference state", { "type": "boolean" }),
+                ("Gravity", { "type": "boolean" }),
+            )),
             # Required
-            None,
+            ["Stress/strain formulation"],
         ),
         ("Output",
              # Properties
-             OrderedDict({
-                "Format": { "enum": [OUTPUT_VTK, OUTPUT_HDF5, OUTPUT_HDF5EXT], },
-                "Domain output": { "type": "integer", "minimum": 0, },
-                "Surface output": { "type": "integer", "minimum": 0, },
-                "Point output": { "type": "integer", "minimum": 0, },
-                "State variable output": { "type": "integer", "minimum": 0, },
-                "ParaView": { "type": "boolean", },
-                "Matplotlib": { "type": "boolean", },
-            }),
+             OrderedDict((
+                ("Format", { "enum": [OUTPUT_VTK, OUTPUT_HDF5, OUTPUT_HDF5EXT], }),
+                ("Domain output", { "type": "integer", "minimum": 0, }),
+                ("Surface output", { "type": "integer", "minimum": 0, }),
+                ("Point output", { "type": "integer", "minimum": 0, }),
+                ("State variable output", { "type": "integer", "minimum": 0, }),
+                ("ParaView", { "type": "boolean", }),
+                ("Matplotlib", { "type": "boolean", }),
+            )),
             # Required
             ["Format"],
         ),
         ("Spatial Database",
              # Properties
-             OrderedDict({
-                "Uniform": { "type": "integer", "minimum": 0, },
-                "Simple": { "type": "integer", "minimum": 0, },
-                "Simple grid": { "type": "integer", "minimum": 0, },
-                "Composite": { "type": "integer", "minimum": 0, },
-                "Time history": { "type": "integer", "minimum": 0, },
-            }),
+             OrderedDict((
+                ("Uniform", { "type": "integer", "minimum": 0, }),
+                ("Simple", { "type": "integer", "minimum": 0, }),
+                ("Simple grid", { "type": "integer", "minimum": 0, }),
+                ("Composite", { "type": "integer", "minimum": 0, }),
+                ("Time history", { "type": "integer", "minimum": 0, }),
+            )),
             # Required
             None,
         )
@@ -240,7 +244,7 @@ class Table(object):
         """
         f = self.fout
         fromBoolean = lambda v: "\yes" if v else ""
-        fromInt = lambda v: "%dx" % v
+        fromInt = lambda v: "x%d" % v
 
         f.write("%s\n" % label)
         for category in self.columns:
