@@ -1,4 +1,4 @@
-Notes on using SWIG for interfacing C++ with SWIG.
+# Notes on using SWIG for interfacing C++ with SWIG.
 
 The SWIG interface (.i) files are simply stripped down versions of the
 C++ header files.
@@ -28,4 +28,20 @@ C++ header files.
    the class is in the same namespace. In other words, use
    pylith::topology::Mesh instead of topology::Mesh.
 
- 
+## How to safely handle Python/C++ inheritance.
+
+* SWIG interface files class declarations should match C++.
+
+* Python object inheritance should match C++.
+
+* Python objects should also inherit from corresponding SWIG interface object.
+
+* Only call the SWIG interface constructor ONCE.
+
+  Call _createModuleObj() in __init__ from highest level parent with a SWIG interface.
+  Implement _createModuleObj() in non-abstract derived classes.
+  Avoid duplicate calls:
+    if not hasattr(self, "this"):
+        MODULE.__init__(self)
+
+* Python objects should have derived object type plus corresponding proxy to SWIG interface object.

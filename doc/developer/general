@@ -1,4 +1,4 @@
-Guiding Principles for PyLith code
+# Guiding Principles for PyLith code
 
 1. Document your header files in Doxygen format. Include a description
 for EVERY method, member, and argument to a member function.
@@ -9,8 +9,8 @@ directive in header files for inline methods.
 
 3. ALL development should be done in developer branches. Merge to the
 'next' branch for integration testing. Once testing is complete, merge
-to master. See PETSc development documentation for how we use
-branches.
+to the 'master' branch. See PETSc development documentation for how
+we use branches.
 
 4. C++ and Python classes should have corresponding unit tests in
 libtests and pytests. High-level functionality should be verified
@@ -20,3 +20,28 @@ using a full-scale test.
 
   b. With gcc, you can check test coverage using gcov/lcov. See notes
   in unittests/libtests/*/Makefile.am for make targets and notes.
+
+# C++/Pyre Implementation guidelines
+
+Python code is limited to collecting user input. Everything else is
+done in C++. This facilitates debugging (easier to track symbols in
+the C/C++ debugger) and unit testing, and reduces the amount of
+information that needs to be passed between C++ and Python.
+
+## Python code
+
+  * Constructor (create object and initialize non-Pyre data members).
+
+  * _configiure (transfer Pyre inventory to Python object).
+
+  * preinitialize (transfer information from Python to C++)
+
+  * verifyConfiguration (avoid if at all possible)
+
+## C++
+
+  * verifyConfiguration (do it in C++ if possible)
+
+  * initialize (initialize object and data members)
+
+  * everything else
