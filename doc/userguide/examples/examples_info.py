@@ -67,8 +67,8 @@ class Features(object):
     SLIPFN_BRUNE = "BRUNE"
     SLIPFN_TIMEHISTORY = "USER"
 
-    STRESSFORM_INFINITESIMAL = "Inf"
-    STRESSFORM_FINITE = "Fin"
+    STRAINFORM_INFINITESIMAL = "Inf"
+    STRAINFORM_FINITE = "Fin"
 
     OUTPUT_VTK = "VTK"
     OUTPUT_HDF5 = "H5"
@@ -85,8 +85,14 @@ class Features(object):
                 ("Cells", { "enum": [CELL_TRI, CELL_QUAD, CELL_TET, CELL_HEX], }),
                 ("Refinement", { "enum": [REFINE_2, REFINE_4, REFINE_8], }),
                 ("Reordering", { "type": "boolean", }),
-                ("Problem type", { "enum": [PROB_TIMEDEPENDENT, PROB_GREENSFNS], }),
-                ("Time dependence", { "enum": [TIMEDEP_STATIC, TIMEDEP_QUASISTATIC, TIMEDEP_DYNAMIC], }),
+                ("Problem type", { 
+                    "enum": [PROB_TIMEDEPENDENT, PROB_GREENSFNS], 
+                    "description": "%s: time dependent, %s: Green's functions" % (PROB_TIMEDEPENDENT, PROB_GREENSFNS),
+                }),
+                ("Time dependence", { 
+                    "enum": [TIMEDEP_STATIC, TIMEDEP_QUASISTATIC, TIMEDEP_DYNAMIC],
+                    "description": "%s: static, %s: quasi-static, %s: dynamic" % (TIMEDEP_STATIC, TIMEDEP_QUASISTATIC, TIMEDEP_DYNAMIC),
+                }),
                 )),
             # Required
             ["Dimension", "Coordinate system", "Mesh generator", "Cells", "Problem type"],
@@ -94,9 +100,19 @@ class Features(object):
         ("Solver",
              # Properties
              OrderedDict((
-                ("Solver", { "enum": [SOLVER_LINEAR, SOLVER_NONLINEAR], }),
-                ("Preconditioner", { "enum": [PRECOND_ILU, PRECOND_ASM, PRECOND_SCHUR, PRECOND_CUSTOM, PRECOND_ML, PRECOND_GAMG], }),
-                ("Time stepping", { "enum": [TS_BWDEULER, TS_FWDEULER, TS_RUNGEKUTTA], }),
+                ("Solver", { 
+                    "enum": [SOLVER_LINEAR, SOLVER_NONLINEAR], 
+                    "description": "%s: linear, %s: nonlinear" % (SOLVER_LINEAR, SOLVER_NONLINEAR),
+                }),
+                ("Preconditioner", { 
+                    "enum": [PRECOND_ILU, PRECOND_ASM, PRECOND_SCHUR, PRECOND_CUSTOM, PRECOND_ML, PRECOND_GAMG],
+                    "description": "%s: ILU, %s: Additive Schwarz, %s: Schur complement, %s: custom, %s: ML algebraic multigrid, %s: geometric algebraic multigrid" % (PRECOND_ILU, PRECOND_ASM, PRECOND_SCHUR, PRECOND_CUSTOM, PRECOND_ML, PRECOND_GAMG),
+                }),
+                 
+                ("Time stepping", { 
+                    "enum": [TS_BWDEULER, TS_FWDEULER, TS_RUNGEKUTTA],
+                    "description": "%s: Backward Euler, %s: Forward Euler, %s: Runge-Kutta" % (TS_BWDEULER, TS_FWDEULER, TS_RUNGEKUTTA),
+                }),
                 )),
             # Required
             ["Solver"],
@@ -137,7 +153,10 @@ class Features(object):
                 ("Drucker-Prager elastoplastic", { "type": "integer", "minimum": 0, }),
                 ("Incompressible linear elastic", { "type": "integer", "minimum": 0, }),
                 ("Porous linear elastic", { "type": "integer", "minimum": 0, }),
-                ("Stress/strain formulation", { "enum": [STRESSFORM_INFINITESIMAL, STRESSFORM_FINITE], }),
+                ("Stress/strain formulation", { 
+                    "enum": [STRAINFORM_INFINITESIMAL, STRAINFORM_FINITE], 
+                    "description": "%s: infinitesimal, %s: small, finite strain" % (STRAINFORM_INFINITESIMAL, STRAINFORM_FINITE),
+                }),
                 ("Inertia", { "type": "boolean" }),
                 ("Reference state", { "type": "boolean" }),
                 ("Gravity", { "type": "boolean" }),
@@ -209,11 +228,13 @@ class Table(object):
         """
         f = self.fout
 
+        f.write("\\begin{table}[htbp]\n")
         f.write("\\rowcolors{2}{yellow!30}{white}\n")
         ctags = ["|l|%% Example"]
         for category in self.columns:
             cols = Features.SCHEMA["properties"][category]["properties"]
             ctags.append("*{%d}c|%% %s" % (len(cols), category))
+        f.write("\\resizebox{\\textwidth}{!}{%\n")
         f.write("\\begin{tabular}{%s\n}\n" % "\n    ".join(ctags))
         f.write("\\hline\n")
 
@@ -272,21 +293,31 @@ class Table(object):
     def writeFooter(self):
         """Write table footer.
         """
-        self.fout.write("\\end{tabular}\n")
-        self.fout.write("\\par\n")
+        f = self.fout
+
+        f.write("\\end{tabular}}\n")
+        f.write("\\par\n")
+        
+        for category in self.columns:
+            cols = Features.SCHEMA["properties"][category]["properties"]
+            for label, col in cols.items():
+                if "description" in col:
+                    f.write("{\\bf %s} -- %s. " % (label, col["description"]))
+        f.write("\\\\ \n")
+        f.write("\\end{table}")
         return
 
     @staticmethod
     def writeDocHeader(fout):
         """Write document header.
         """
-        fout.write("\\documentclass[10pt]{standalone}\n")
+        fout.write("\\documentclass[10pt]{article}\n")
         fout.write("\\usepackage{pifont}\n")
         fout.write("\\usepackage{graphicx}\n")
         fout.write("\\usepackage[table]{xcolor}\n")
         fout.write("\\newcommand{\\rlabel}[1]{\\rotatebox[origin=l]{90}{#1}}\n")
-        fout.write("\\newcommand{\\yes}{\\ding{52}}")
-        fout.write("\\begin{document}\n")
+        fout.write("\\newcommand{\\yes}{\\ding{52}}\n")
+        fout.write("\n\\begin{document}\n")
         return
 
     @staticmethod

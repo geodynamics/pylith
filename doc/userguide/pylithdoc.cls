@@ -27,7 +27,7 @@
 \RequirePackage{float}
 \RequirePackage{varioref} % \vref
 \RequirePackage{enumitem}
-\RequirePackage{color}
+\RequirePackage[table]{xcolor}
 \RequirePackage{listings}
 \RequirePackage{pifont}
 \RequirePackage{calc}
@@ -293,6 +293,10 @@
   morekeywords={units},
 }
 \lstnewenvironment{TimeStepUser}{\lstset{language=TimeStepUser}}{}
+%
+% % Features table
+\newcommand{\rlabel}[1]{\rotatebox[origin=l]{90}{#1}}
+\newcommand{\yes}{\ding{52}}
 
 
 % End of file
