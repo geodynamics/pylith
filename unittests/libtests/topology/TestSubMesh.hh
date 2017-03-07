@@ -31,11 +31,12 @@
 // Forward declarations -------------------------------------------------
 /// Namespace for pylith package
 namespace pylith {
-  namespace topology {
-    class TestSubMesh;
+    namespace topology {
+        class TestSubMesh;
 
-    class Mesh;
-  } // topology
+        class Mesh;
+        class TestSubMesh_Data;
+    } // topology
 } // pylith
 
 // TestSubMesh -------------------------------------------------------------
@@ -43,64 +44,74 @@ namespace pylith {
 class pylith::topology::TestSubMesh : public CppUnit::TestFixture
 { // class TestSubMesh
 
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestSubMesh );
+// CPPUNIT TEST SUITE /////////////////////////////////////////////////
+CPPUNIT_TEST_SUITE( TestSubMesh );
 
-  CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testConstructorMesh );
-  CPPUNIT_TEST( testCoordsys );
-  CPPUNIT_TEST( testDebug );
-  CPPUNIT_TEST( testDimension );
-  CPPUNIT_TEST( testNumCorners );
-  CPPUNIT_TEST( testNumVertices );
-  CPPUNIT_TEST( testNumCells );
-  CPPUNIT_TEST( testComm );
+CPPUNIT_TEST( testConstructor );
+CPPUNIT_TEST( testConstructorMesh );
+CPPUNIT_TEST( testCoordsys );
+CPPUNIT_TEST( testDebug );
+CPPUNIT_TEST( testDimension );
+CPPUNIT_TEST( testNumCorners );
+CPPUNIT_TEST( testNumVertices );
+CPPUNIT_TEST( testNumCells );
+CPPUNIT_TEST( testComm );
 
-  CPPUNIT_TEST_SUITE_END();
+CPPUNIT_TEST_SUITE_END();
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+// PUBLIC METHODS /////////////////////////////////////////////////////
+public:
 
-  /// Test constructor.
-  void testConstructor(void);
+/// Setup testing data.
+void setUp(void);
 
-  /// Test constructor w/mesh.
-  void testConstructorMesh(void);
+/// Deallocate testing data.
+void tearDown(void);
 
-  /// Test coordsys().
-  void testCoordsys(void);
+/// Test constructor.
+void testConstructor(void);
 
-  /// Test debug().
-  void testDebug(void);
+/// Test constructor w/mesh.
+void testConstructorMesh(void);
 
-  /// Test dimension().
-  void testDimension(void);
+/// Test coordsys().
+void testCoordsys(void);
 
-  /// Test numCorners().
-  void testNumCorners(void);
+/// Test debug().
+void testDebug(void);
 
-  /// Test numVertices().
-  void testNumVertices(void);
+/// Test dimension().
+void testDimension(void);
 
-  /// Test numCells().
-  void testNumCells(void);
+/// Test numCorners().
+void testNumCorners(void);
 
-  /// Test comm().
-  void testComm(void);
+/// Test numVertices().
+void testNumVertices(void);
 
-// PRIVATE METHODS /////////////////////////////////////////////////////
-private :
+/// Test numCells().
+void testNumCells(void);
 
-  /** Build mesh.
-   *
-   * @param mesh Finite-element mesh.
-   */
-  static
-  void _buildMesh(Mesh* mesh);
+/// Test comm().
+void testComm(void);
+
+// PROTECTED METHODS //////////////////////////////////////////////////
+protected:
+
+/** Build mesh.
+ *
+ * @param mesh Finite-element mesh.
+ */
+void _buildMesh(Mesh* mesh);
+
+// PROTECTED MEMBERS //////////////////////////////////////////////////
+protected:
+
+TestSubMesh_Data* _data;   ///< Data for testing.
 
 }; // class TestSubMesh
 
 #endif // pylith_topology_testsubmesh_hh
 
 
-// End of file 
+// End of file

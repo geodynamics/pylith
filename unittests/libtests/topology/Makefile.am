@@ -31,22 +31,24 @@ testtopology_SOURCES = \
 	TestMesh.cc \
 	TestMeshOps.cc \
 	TestSubMesh.cc \
+	TestSubMesh_Data.cc \
+	TestSubMesh_Cases.cc \
 	TestFieldBase.cc \
-	TestFieldMesh.cc \
-	TestFieldSubMesh.cc \
-	TestFieldsMesh.cc \
-	TestFieldsSubMesh.cc \
-	TestSolutionFields.cc \
-	TestJacobian.cc \
-	TestRefineUniform.cc \
 	TestReverseCuthillMcKee.cc \
 	test_topology.cc
+
+#	TestFieldMesh.cc \
+#	TestFieldSubMesh.cc \
+#	TestFieldsMesh.cc \
+#	TestFieldsSubMesh.cc \
+#	TestRefineUniform.cc
 
 
 
 noinst_HEADERS = \
 	TestMesh.hh \
 	TestSubMesh.hh \
+	TestSubMesh_Data.hh \
 	TestMeshOps.hh \
 	TestFieldBase.hh \
 	TestFieldMesh.hh \
@@ -101,11 +103,21 @@ noinst_tmp = \
 	jacobian.mat \
 	jacobian.mat.info
 
-CLEANFILES = $(noinst_tmp)
+#CLEANFILES = $(noinst_tmp)
 
 
 leakcheck: testtopology
 	valgrind --log-file=valgrind_topology.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/testtopology
 
+# Check test coverage. Only works with gcc and requires gcov. lcov provides a GUI for viewing coverage.
+# Requires compiling and linking (CFLAGS, CXXFLAGS, LDFLAGS) with --coverage.
+coverage:
+	lcov --directory $(top_builddir)/libsrc/pylith/topology/.libs --capture --output-file coverage.info
+	genhtml -o coverage coverage.info
 
-# End of file 
+
+clean-coverage:
+	$(RM) $(RM_FLAGS) *.gcda *.gcno data/*.gcda data/*.gcno coverage.info
+	$(RM) $(RM_FLAGS) -r coverage
+
+# End of file
