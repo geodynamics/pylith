@@ -35,9 +35,6 @@
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 
-extern "C" PetscErrorCode DMPlexInsertBoundaryValues_FEM_AuxField_Internal(DM dm, PetscReal time, Vec locU, PetscInt field, DMLabel label, PetscInt numids, const PetscInt ids[], PetscPointFunc func, void *ctx, Vec locX);
-
-
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::DirichletNew::DirichletNew(void) :
@@ -143,10 +140,10 @@ pylith::bc::DirichletNew::setValues(pylith::topology::Field* solution,
     const int fieldIndex = solution->subfieldInfo(_field.c_str()).index;
     assert(solution->localVector());
 #if 0 // :DEBUGGING: TEMPORARY
-    // Inserting boundary values is not working.
+      // Inserting boundary values is not working.
 #else
     err = DMPlexLabelAddCells(dmSoln, dmLabel); PYLITH_CHECK_ERROR(err);
-    err = DMPlexInsertBoundaryValues_FEM_AuxField_Internal(dmSoln, t, solution->localVector(), fieldIndex, dmLabel, 1, &labelId, _bcKernel, context, solution->localVector()); PYLITH_CHECK_ERROR(err);
+    err = DMPlexInsertBoundaryValuesEssentialField(dmSoln, t, solution->localVector(), fieldIndex, dmLabel, 1, &labelId, _bcKernel, context, solution->localVector()); PYLITH_CHECK_ERROR(err);
     err = DMPlexLabelClearCells(dmSoln, dmLabel); PYLITH_CHECK_ERROR(err);
 
     solution->view("SOLUTION"); // :DEBUGGING: TEMPORARY
