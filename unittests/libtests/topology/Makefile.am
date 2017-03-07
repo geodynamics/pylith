@@ -33,21 +33,21 @@ testtopology_SOURCES = \
 	TestSubMesh.cc \
 	TestSubMesh_Cases.cc \
 	TestFieldBase.cc \
+	TestFieldsMesh.cc \
+	TestFieldsSubMesh.cc \
+	TestRefineUniform.cc \
+	TestRefineUniform_Cases.cc \
 	TestReverseCuthillMcKee.cc \
 	test_topology.cc
 
 #	TestFieldMesh.cc \
-#	TestFieldSubMesh.cc \
-#	TestFieldsMesh.cc \
-#	TestFieldsSubMesh.cc \
-#	TestRefineUniform.cc
+#	TestFieldSubMesh.cc
 
 
 
 noinst_HEADERS = \
 	TestMesh.hh \
 	TestSubMesh.hh \
-	TestSubMesh_Data.hh \
 	TestMeshOps.hh \
 	TestFieldBase.hh \
 	TestFieldMesh.hh \

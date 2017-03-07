@@ -35,88 +35,98 @@
 // Forward declarations -------------------------------------------------
 /// Namespace for pylith package
 namespace pylith {
-  namespace topology {
-    class TestRefineUniform;
+    namespace topology {
+        class TestRefineUniform;
 
-    class MeshDataCohesive; // test data
-  } // topology
+        class TestRefineUniform_Data; // test data
+    } // topology
 } // pylith
 
-// RefineUniform ---------------------------------------------------------------
-class pylith::topology::TestRefineUniform : public CppUnit::TestFixture
-{ // class TestRefineUniform
+// TestRefineUniform -----------------------------------------------------------
+class pylith::topology::TestRefineUniform : public CppUnit::TestFixture {
 
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestRefineUniform );
+    // CPPUNIT TEST SUITE //////////////////////////////////////////////////////
+    CPPUNIT_TEST_SUITE( TestRefineUniform );
 
-  CPPUNIT_TEST( testConstructor );
+    CPPUNIT_TEST( testRefine );
 
-  CPPUNIT_TEST( testRefineTri3Level1 );
-  CPPUNIT_TEST( testRefineTri3Level1Fault1 );
+    CPPUNIT_TEST_SUITE_END();
 
-  CPPUNIT_TEST( testRefineQuad4Level1 );
-  CPPUNIT_TEST( testRefineQuad4Level1Fault1 );
+    // PUBLIC METHODS //////////////////////////////////////////////////////////
+public:
 
-  CPPUNIT_TEST( testRefineTet4Level1 );
-  CPPUNIT_TEST( testRefineTet4Level1Fault1 );
+    /// Setup testing data.
+    void setUp(void);
 
-  CPPUNIT_TEST( testRefineHex8Level1 );
-  CPPUNIT_TEST( testRefineHex8Level1Fault1 );
+    /// Deallocate testing data.
+    void tearDown(void);
 
-  CPPUNIT_TEST_SUITE_END();
+    /// Test refine().
+    void testRefine(void);
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+    // PROTECTED METHODS /////////////////////////////////////////////////////////
+protected:
 
-  /// Test constructor.
-  void testConstructor(void);
+    /** Setup mesh.
+     *
+     * @mesh Mesh to setup.
+     */
+    void _initializeMesh(Mesh* const mesh);
 
-  /// Test refine() with level 1, tri3 cells, and no fault.
-  void testRefineTri3Level1(void);
+    // PROTECTED MEMBERS ///////////////////////////////////////////////////////
+protected:
 
-  /// Test refine() with level 1, tri3 cells, and one fault.
-  void testRefineTri3Level1Fault1(void);
-
-  /// Test refine() with level 1, quad4 cells, and no fault.
-  void testRefineQuad4Level1(void);
-
-  /// Test refine() with level 1, quad4 cells, and one fault.
-  void testRefineQuad4Level1Fault1(void);
-
-  /// Test refine() with level 1, tet4 cells, and no fault.
-  void testRefineTet4Level1(void);
-
-  /// Test refine() with level 1, tet4 cells, and one fault.
-  void testRefineTet4Level1Fault1(void);
-
-  /// Test refine() with level 1, hex8 cells, and no fault.
-  void testRefineHex8Level1(void);
-
-  /// Test refine() with level 1, hex8 cells, and one fault.
-  void testRefineHex8Level1Fault1(void);
-
-// PRIVATE METHODS //////////////////////////////////////////////////////
-private :
-
-  /** Setup mesh.
-   *
-   * @mesh Mesh to setup.
-   * @param data Test data.
-   */
-  void _setupMesh(Mesh* const mesh,
-		  const MeshDataCohesive& data);
-
-  /** Test refine().
-   *
-   * @param data Test data.
-   * @param isSimplexMesh True if mesh is simplex (tri,tet), false if not (quad,hex).
-   */
-  void _testRefine(const MeshDataCohesive& data,
-		   const bool isSimplexMesh);
+    TestRefineUniform_Data* _data; ///< Data for testing.
 
 }; // class TestRefineUniform
+
+
+// TestRefineUniform_Data ------------------------------------------------------
+class pylith::topology::TestRefineUniform_Data {
+
+    // PUBLIC METHODS //////////////////////////////////////////////////////////
+public:
+
+    /// Constructor
+    TestRefineUniform_Data(void);
+
+    /// Destructor
+    ~TestRefineUniform_Data(void);
+
+    // PUBLIC MEMBERS //////////////////////////////////////////////////////////
+public:
+
+    /// @defgroup Input information
+    /// @{
+    const char* filename; ///< Filename of mesh file.
+    int refineLevel; ///< Refinement level.
+    const char* faultA; ///< Vertex group associated with fault A (NULL if no fault).
+    const char* faultB; ///< Vertex group associated with fault B (NULL if no fault).
+    bool isSimplexMesh; ///< True if simplex mesh.
+    /// @}
+
+    /// @defgroup Output information
+    /// @{
+    int numVertices; ///< Number of vertices
+    int spaceDim; ///< Number of dimensions in vertex coordinates
+    int cellDim; ///< Number of dimensions associated with cell.
+    int numCells; ///< Number of cells
+    int numCorners; ///< Number of vertices in cell.
+    int numCellsCohesive; ///< Number of cohesive cells.
+    int numCornersCohesive; ///< Number of vertices in cohesive cell.
+
+    int matIdSum; ///< Sum of material id as simple checksum.
+
+    int* groupSizes; ///< Array of sizes of each group
+    const char** groupNames; ///< Array of group names
+    const char** groupTypes; ///< Array of group types
+    int numGroups; ///< Number of groups
+    /// @}
+
+};
+
 
 #endif // pylith_topology_testrefineuniform_hh
 
 
-// End of file 
+// End of file

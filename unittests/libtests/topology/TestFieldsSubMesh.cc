@@ -35,28 +35,28 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestFieldsSubMesh );
 void
 pylith::topology::TestFieldsSubMesh::setUp(void)
 { // setUp
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  _mesh = new Mesh;
-  meshio::MeshIOAscii importer;
-  importer.filename("data/tri3.mesh");
-  importer.read(_mesh);
+    _mesh = new Mesh;
+    meshio::MeshIOAscii importer;
+    importer.filename("data/tri3.mesh");
+    importer.read(_mesh);
 
-  _submesh = new Mesh(*_mesh, "bc");
+    _submesh = new Mesh(*_mesh, "bc");
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // setUp
 
 // ----------------------------------------------------------------------
 void
 pylith::topology::TestFieldsSubMesh::tearDown(void)
 { // tearDown
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  delete _mesh; _mesh = 0;
-  delete _submesh; _submesh = 0;
+    delete _mesh; _mesh = NULL;
+    delete _submesh; _submesh = NULL;
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // tearDown
 
 // ----------------------------------------------------------------------
@@ -64,30 +64,31 @@ pylith::topology::TestFieldsSubMesh::tearDown(void)
 void
 pylith::topology::TestFieldsSubMesh::testConstructor(void)
 { // testConstructor
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(_submesh);
-  Fields fields(*_submesh);
+    CPPUNIT_ASSERT(_submesh);
+    Fields fields(*_submesh);
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testConstructor
- 
+
 // ----------------------------------------------------------------------
 // Test add().
 void
 pylith::topology::TestFieldsSubMesh::testAdd(void)
 { // testAdd
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(_submesh);
-  Fields fields(*_submesh);
-  
-  const char* label = "field";
-  fields.add(label, "displacement");
-  const size_t size = 1;
-  CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
+    CPPUNIT_ASSERT(_submesh);
+    Fields fields(*_submesh);
 
-  PYLITH_METHOD_END;
+    const char* key = "field";
+    const char* label = "displacement";
+    fields.add(key, label);
+    const size_t size = 1;
+    CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
+
+    PYLITH_METHOD_END;
 } // testAdd
 
 // ----------------------------------------------------------------------
@@ -95,32 +96,33 @@ pylith::topology::TestFieldsSubMesh::testAdd(void)
 void
 pylith::topology::TestFieldsSubMesh::testAddDomain(void)
 { // testAddDomain
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  const int fiberDim = 3;
+    const int fiberDim = 3;
 
-  CPPUNIT_ASSERT(_submesh);
-  Fields fields(*_submesh);
+    CPPUNIT_ASSERT(_submesh);
+    Fields fields(*_submesh);
 
-  const char* label = "field";
-  fields.add(label, "velocity", Field::VERTICES_FIELD, fiberDim);
-  const size_t size = 1;
-  CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
+    const char* key = "field";
+    const char* label = "velocity";
+    fields.add(key, label, Field::VERTICES_FIELD, fiberDim);
+    const size_t size = 1;
+    CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
 
-  Field& field = fields.get(label);
-  field.allocate();
+    Field& field = fields.get(key);
+    field.allocate();
 
-  PetscDM dmMesh = _submesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
-  Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
-  const PetscInt vStart = depthStratum.begin();
-  const PetscInt vEnd = depthStratum.end();
+    PetscDM dmMesh = _submesh->dmMesh(); CPPUNIT_ASSERT(dmMesh);
+    Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
+    const PetscInt vStart = depthStratum.begin();
+    const PetscInt vEnd = depthStratum.end();
 
-  VecVisitorMesh fieldVisitor(field);
-  for(PetscInt v = vStart; v < vEnd; ++v) {
-    CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
-  } // for
+    VecVisitorMesh fieldVisitor(field);
+    for(PetscInt v = vStart; v < vEnd; ++v) {
+        CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
+    } // for
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testAddDomain
 
 // ----------------------------------------------------------------------
@@ -128,25 +130,28 @@ pylith::topology::TestFieldsSubMesh::testAddDomain(void)
 void
 pylith::topology::TestFieldsSubMesh::testDelete(void)
 { // testDelete
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(_submesh);
-  Fields fields(*_submesh);
+    CPPUNIT_ASSERT(_submesh);
+    Fields fields(*_submesh);
 
-  const char* labelA = "field A";
-  fields.add(labelA, "displacement");
+    const char* keyA = "field A";
+    const char* labelA = "displacement";
+    fields.add(keyA, labelA);
 
-  const char* labelB = "field B";
-  fields.add(labelB, "velocity");
+    const char* keyB = "field B";
+    const char* labelB = "velocity";
+    fields.add(keyB, labelB);
 
-  size_t size = 2;
-  CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
-  fields.del(labelA);
-  size = 1;
-  CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
-  const Field& field = fields.get(labelB);
+    size_t size = 2;
+    CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
+    fields.del(keyA);
+    size = 1;
+    CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
+    const Field& field = fields.get(keyB);
+    CPPUNIT_ASSERT_EQUAL(std::string(labelB), std::string(field.label()));
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testDelete
 
 // ----------------------------------------------------------------------
@@ -154,16 +159,18 @@ pylith::topology::TestFieldsSubMesh::testDelete(void)
 void
 pylith::topology::TestFieldsSubMesh::testGet(void)
 { // testGet
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(_submesh);
-  Fields fields(*_submesh);
+    CPPUNIT_ASSERT(_submesh);
+    Fields fields(*_submesh);
 
-  const char* label = "field";
-  fields.add(label, "displacement");
-  const Field& field = fields.get(label);
+    const char* key = "field";
+    const char* label = "displacement";
+    fields.add(key, label);
+    const Field& field = fields.get(key);
+    CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(field.label()));
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testGet
 
 // ----------------------------------------------------------------------
@@ -171,19 +178,21 @@ pylith::topology::TestFieldsSubMesh::testGet(void)
 void
 pylith::topology::TestFieldsSubMesh::testGetConst(void)
 { // testGetConst
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(_submesh);
-  Fields fields(*_submesh);
+    CPPUNIT_ASSERT(_submesh);
+    Fields fields(*_submesh);
 
-  const char* label = "field";
-  fields.add(label, "displacement");
+    const char* key = "field";
+    const char* label = "displacement";
+    fields.add(key, label);
 
-  const Fields* fieldsPtr = &fields;
-  CPPUNIT_ASSERT(fieldsPtr);
-  const Field& field = fieldsPtr->get(label);
+    const Fields* fieldsPtr = &fields;
+    CPPUNIT_ASSERT(fieldsPtr);
+    const Field& field = fieldsPtr->get(key);
+    CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(field.label()));
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testGetConst
 
 // ----------------------------------------------------------------------
@@ -191,24 +200,24 @@ pylith::topology::TestFieldsSubMesh::testGetConst(void)
 void
 pylith::topology::TestFieldsSubMesh::testHasField(void)
 { // testHasField
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(_submesh);
-  Fields fields(*_submesh);
+    CPPUNIT_ASSERT(_submesh);
+    Fields fields(*_submesh);
 
-  fields.add("field A", "velocity");
-  
-  CPPUNIT_ASSERT_EQUAL(true, fields.hasField("field A"));
-  CPPUNIT_ASSERT_EQUAL(false, fields.hasField("field B"));
-  CPPUNIT_ASSERT_EQUAL(false, fields.hasField("field C"));
+    fields.add("field A", "velocity");
 
-  fields.add("field B", "displacement");
+    CPPUNIT_ASSERT_EQUAL(true, fields.hasField("field A"));
+    CPPUNIT_ASSERT_EQUAL(false, fields.hasField("field B"));
+    CPPUNIT_ASSERT_EQUAL(false, fields.hasField("field C"));
 
-  CPPUNIT_ASSERT_EQUAL(true, fields.hasField("field A"));
-  CPPUNIT_ASSERT_EQUAL(true, fields.hasField("field B"));
-  CPPUNIT_ASSERT_EQUAL(false, fields.hasField("field C"));
+    fields.add("field B", "displacement");
 
-  PYLITH_METHOD_END;
+    CPPUNIT_ASSERT_EQUAL(true, fields.hasField("field A"));
+    CPPUNIT_ASSERT_EQUAL(true, fields.hasField("field B"));
+    CPPUNIT_ASSERT_EQUAL(false, fields.hasField("field C"));
+
+    PYLITH_METHOD_END;
 } // testHasField
 
 // ----------------------------------------------------------------------
@@ -216,39 +225,39 @@ pylith::topology::TestFieldsSubMesh::testHasField(void)
 void
 pylith::topology::TestFieldsSubMesh::testCopyLayout(void)
 { // testCopyLayout
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  const int fiberDim = 3;
+    const int fiberDim = 3;
 
-  CPPUNIT_ASSERT(_submesh);
-  Fields fields(*_submesh);
-  
-  const char* labelA = "field A";
-  fields.add(labelA, "velocity", Field::VERTICES_FIELD, fiberDim);
+    CPPUNIT_ASSERT(_submesh);
+    Fields fields(*_submesh);
 
-  const char* labelB = "field B";
-  fields.add(labelB, "displacement");
-  Field& fieldA = fields.get(labelA);
-  fieldA.allocate();
+    const char* labelA = "field A";
+    fields.add(labelA, "velocity", Field::VERTICES_FIELD, fiberDim);
 
-  fields.copyLayout(labelA);
+    const char* labelB = "field B";
+    fields.add(labelB, "displacement");
+    Field& fieldA = fields.get(labelA);
+    fieldA.allocate();
 
-  const size_t size = 2;
-  CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
-  const Field& field = fields.get(labelB);
+    fields.copyLayout(labelA);
 
-  PetscDM dmMesh = _submesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
-  Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
-  const PetscInt vStart = depthStratum.begin();
-  const PetscInt vEnd = depthStratum.end();
+    const size_t size = 2;
+    CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
+    const Field& field = fields.get(labelB);
 
-  VecVisitorMesh fieldVisitor(field);
-  for(PetscInt v = vStart; v < vEnd; ++v) {
-    CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
-  } // for
+    PetscDM dmMesh = _submesh->dmMesh(); CPPUNIT_ASSERT(dmMesh);
+    Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
+    const PetscInt vStart = depthStratum.begin();
+    const PetscInt vEnd = depthStratum.end();
 
-  PYLITH_METHOD_END;
+    VecVisitorMesh fieldVisitor(field);
+    for(PetscInt v = vStart; v < vEnd; ++v) {
+        CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
+    } // for
+
+    PYLITH_METHOD_END;
 } // testCopyLayout
 
 
-// End of file 
+// End of file
