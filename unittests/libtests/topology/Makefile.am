@@ -31,7 +31,6 @@ testtopology_SOURCES = \
 	TestMesh.cc \
 	TestMeshOps.cc \
 	TestSubMesh.cc \
-	TestSubMesh_Data.cc \
 	TestSubMesh_Cases.cc \
 	TestFieldBase.cc \
 	TestReverseCuthillMcKee.cc \

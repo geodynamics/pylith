@@ -18,15 +18,13 @@
 
 #include <portinfo>
 
-#include "TestSubMesh.hh" // Implementation of class methods
+#include "TestSubMesh.hh"   // Implementation of class methods
 
-#include "TestSubMesh_Data.hh" // USES TestSubMesh_Data
-
-#include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/Mesh.hh"  // USES Mesh
+#include "pylith/topology/Stratum.hh"   // USES Stratum
 #include "pylith/meshio/MeshBuilder.hh" // USES MeshBuilder::buildMesh()
 
-#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/geocoords/CSCart.hh"  // USES CSCart
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -70,7 +68,7 @@ pylith::topology::TestSubMesh::testConstructor(void)
 // Test constructor w/mesh.
 void
 pylith::topology::TestSubMesh::testConstructorMesh(void)
-{ // testConstructorMesh
+{   // testConstructorMesh
     PYLITH_METHOD_BEGIN;
     CPPUNIT_ASSERT(_data);
 
@@ -94,7 +92,7 @@ pylith::topology::TestSubMesh::testConstructorMesh(void)
     CPPUNIT_ASSERT_EQUAL(nvertices, depthStratum.size());
     for (PetscInt v = vStart, iV=0; v < vEnd; ++v, ++iV) {
         CPPUNIT_ASSERT_EQUAL(_data->submeshVertices[iV], v);
-    } // for
+    }   // for
 
     // Check cells
     Stratum heightStratum(dmMesh, Stratum::HEIGHT, 0);
@@ -105,16 +103,16 @@ pylith::topology::TestSubMesh::testConstructorMesh(void)
     CPPUNIT_ASSERT_EQUAL(ncells, heightStratum.size());
     for (PetscInt c = cStart, iC=0; c < cEnd; ++c, ++iC) {
         CPPUNIT_ASSERT_EQUAL(_data->submeshCells[iC], c);
-    } // for
+    }   // for
 
     PYLITH_METHOD_END;
-} // testConstructorMesh
+}   // testConstructorMesh
 
 // ----------------------------------------------------------------------
 // Test coordsys().
 void
 pylith::topology::TestSubMesh::testCoordsys(void)
-{ // testCoordsys
+{   // testCoordsys
     PYLITH_METHOD_BEGIN;
     CPPUNIT_ASSERT(_data);
 
@@ -126,13 +124,13 @@ pylith::topology::TestSubMesh::testCoordsys(void)
     CPPUNIT_ASSERT_EQUAL(_data->cellDim, submesh.coordsys()->spaceDim());
 
     PYLITH_METHOD_END;
-} // testCoordsys
+}   // testCoordsys
 
 // ----------------------------------------------------------------------
 // Test debug().
 void
 pylith::topology::TestSubMesh::testDebug(void)
-{ // testDebug
+{   // testDebug
     PYLITH_METHOD_BEGIN;
     CPPUNIT_ASSERT(_data);
 
@@ -146,13 +144,13 @@ pylith::topology::TestSubMesh::testDebug(void)
     CPPUNIT_ASSERT_EQUAL(true, submesh.debug());
 
     PYLITH_METHOD_END;
-} // testDebug
+}   // testDebug
 
 // ----------------------------------------------------------------------
 // Test dimension().
 void
 pylith::topology::TestSubMesh::testDimension(void)
-{ // testDimension
+{   // testDimension
     PYLITH_METHOD_BEGIN;
     CPPUNIT_ASSERT(_data);
 
@@ -165,13 +163,13 @@ pylith::topology::TestSubMesh::testDimension(void)
     CPPUNIT_ASSERT_EQUAL(_data->cellDim-1, submesh2.dimension());
 
     PYLITH_METHOD_END;
-} // testDimension
+}   // testDimension
 
 // ----------------------------------------------------------------------
 // Test numCorners().
 void
 pylith::topology::TestSubMesh::testNumCorners(void)
-{ // testNumCorners
+{   // testNumCorners
     PYLITH_METHOD_BEGIN;
     CPPUNIT_ASSERT(_data);
 
@@ -182,13 +180,13 @@ pylith::topology::TestSubMesh::testNumCorners(void)
     CPPUNIT_ASSERT_EQUAL(_data->submeshNumCorners, submesh.numCorners());
 
     PYLITH_METHOD_END;
-} // testNumCorners
+}   // testNumCorners
 
 // ----------------------------------------------------------------------
 // Test numVertices().
 void
 pylith::topology::TestSubMesh::testNumVertices(void)
-{ // testNumVertices
+{   // testNumVertices
     PYLITH_METHOD_BEGIN;
     CPPUNIT_ASSERT(_data);
 
@@ -198,13 +196,13 @@ pylith::topology::TestSubMesh::testNumVertices(void)
     CPPUNIT_ASSERT_EQUAL(_data->submeshNumVertices, submesh.numVertices());
 
     PYLITH_METHOD_END;
-} // testNumVertices
+}   // testNumVertices
 
 // ----------------------------------------------------------------------
 // Test numCells().
 void
 pylith::topology::TestSubMesh::testNumCells(void)
-{ // testNumCells
+{   // testNumCells
     PYLITH_METHOD_BEGIN;
     CPPUNIT_ASSERT(_data);
 
@@ -214,13 +212,13 @@ pylith::topology::TestSubMesh::testNumCells(void)
     CPPUNIT_ASSERT_EQUAL(_data->submeshNumCells, submesh.numCells());
 
     PYLITH_METHOD_END;
-} // testNumCells
+}   // testNumCells
 
 // ----------------------------------------------------------------------
 // Test comm().
 void
 pylith::topology::TestSubMesh::testComm(void)
-{ // testComm
+{   // testComm
     PYLITH_METHOD_BEGIN;
     CPPUNIT_ASSERT(_data);
 
@@ -234,12 +232,12 @@ pylith::topology::TestSubMesh::testComm(void)
     CPPUNIT_ASSERT_EQUAL(int(MPI_CONGRUENT), result);
 
     PYLITH_METHOD_END;
-} // testComm
+}   // testComm
 
 // ----------------------------------------------------------------------
 void
 pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
-{ // _buildMesh
+{   // _buildMesh
     PYLITH_METHOD_BEGIN;
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(mesh);
@@ -254,15 +252,16 @@ pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
     scalar_array coordinates(size);
     for (PetscInt i=0; i < size; ++i) {
         coordinates[i] = _data->coordinates[i];
-    } // for
+    }   // for
 
     size = numCells * numCorners;
     int_array cells(size);
     for (PetscInt i=0; i < size; ++i) {
         cells[i] = _data->cells[i];
-    } // for
+    }   // for
 
-    pylith::meshio::MeshBuilder::buildMesh(mesh, &coordinates, numVertices, spaceDim, cells, numCells, numCorners, cellDim);
+    pylith::meshio::MeshBuilder::buildMesh(mesh, &coordinates, numVertices, spaceDim, cells, numCells, numCorners,
+                                           cellDim);
 
     spatialdata::geocoords::CSCart cs;
     cs.setSpaceDim(spaceDim);
@@ -272,11 +271,40 @@ pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
     PetscErrorCode err;
     const int numPoints = _data->groupSize;
     for(PetscInt i = 0; i < numPoints; ++i) {
-        err = DMSetLabelValue(mesh->dmMesh(), _data->label, numCells+_data->groupVertices[i], 1); PYLITH_CHECK_ERROR(err);
-    } // for
+        err = DMSetLabelValue(mesh->dmMesh(), _data->label, numCells+_data->groupVertices[i], 1); PYLITH_CHECK_ERROR(
+            err);
+    }   // for
 
     PYLITH_METHOD_END;
-} // _buildMesh
+}   // _buildMesh
+
+
+// ----------------------------------------------------------------------
+// Constructor
+pylith::topology::TestSubMesh_Data::TestSubMesh_Data(void) :
+    cellDim(0),
+    numVertices(0),
+    numCells(0),
+    numCorners(0),
+    cells(NULL),
+    coordinates(NULL),
+    label(NULL),
+    groupSize(0),
+    groupVertices(NULL),
+    submeshNumCorners(0),
+    submeshNumVertices(0),
+    submeshVertices(NULL),
+    submeshNumCells(0),
+    submeshCells(NULL)
+{   // constructor
+}   // constructor
+
+
+// ----------------------------------------------------------------------
+// Destructor
+pylith::topology::TestSubMesh_Data::~TestSubMesh_Data(void)
+{   // destructor
+}   // destructor
 
 
 // End of file
