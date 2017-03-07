@@ -1386,6 +1386,32 @@ pylith::topology::Field::hasSubfield(const char* name) const
 
 
 // ----------------------------------------------------------------------
+// Get names of subfields.
+pylith::string_vector
+pylith::topology::Field::subfieldNames(void) const
+{  // subfieldNames
+    PYLITH_METHOD_BEGIN;
+
+    PetscErrorCode err;
+    PetscDS prob = NULL;
+    PetscInt numFields = 0;
+    pylith::string_vector names;
+    err = DMGetDS(_dm, &prob); PYLITH_CHECK_ERROR(err);
+    err = PetscDSGetNumFields(prob, &numFields); PYLITH_CHECK_ERROR(err);
+    names.resize(numFields);
+    for (PetscInt iField=0; iField < numFields; ++iField) {
+        PetscObject fe = NULL;
+        const char* feName = NULL;
+        err = PetscDSGetDiscretization(prob, iField, &fe); PYLITH_CHECK_ERROR(err);
+        err = PetscObjectGetName(fe, &feName); PYLITH_CHECK_ERROR(err);
+        names[iField] = feName;
+    }  // for
+
+    PYLITH_METHOD_RETURN(pylith::string_vector(names));
+}  // subfieldNames
+
+
+// ----------------------------------------------------------------------
 // Get metadata for subfield.
 const pylith::topology::Field::SubfieldInfo&
 pylith::topology::Field::subfieldInfo(const char* name) const

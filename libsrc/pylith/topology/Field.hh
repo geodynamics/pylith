@@ -343,12 +343,18 @@ void subfieldSetDof(const char *name,
                     const pylith::topology::FieldBase::DomainEnum domain,
                     const int fiberDim);
 
-/** Does field have given auxiliary subfield?
+/** Does field have given subfield?
  *
  * @param name Name of subfield.
- * @returns True if field has given auxiliary subfield.
+ * @returns True if field has given subfield.
  */
 bool hasSubfield(const char* name) const;
+
+/** Get names of subfields.
+ *
+ * @returns Array of names of subfields.
+ */
+pylith::string_vector subfieldNames(void) const;
 
 /** Get auxiliary information for subfield.
  *
