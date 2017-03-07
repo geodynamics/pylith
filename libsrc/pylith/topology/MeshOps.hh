@@ -39,19 +39,6 @@ friend class TestMeshOps;   // unit testing
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
-/** Create DMPlex mesh.
- *
- * @param mesh Finite-element mesh.
- * @param dim Dimension associated with mesh cells.
- * @param comm MPI communicator for mesh.
- * @param label Label for mesh.
- */
-static
-void createDMMesh(Mesh* const mesh,
-                  const int dim =3,
-                  const MPI_Comm& comm =PETSC_COMM_WORLD,
-                  const char* label ="domain");
-
 /** Nondimensionalize the finite-element mesh.
  *
  * @param mesh Finite-element mesh.

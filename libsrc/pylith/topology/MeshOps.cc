@@ -34,26 +34,6 @@
 #include <map> // USES std::map
 
 // ----------------------------------------------------------------------
-// Create PETSc DM mesh.
-void
-pylith::topology::MeshOps::createDMMesh(Mesh* const mesh,
-                                        const int dim,
-                                        const MPI_Comm& comm,
-                                        const char* label)
-{ // createDMMesh
-    PYLITH_METHOD_BEGIN;
-
-    PetscErrorCode err;
-    PetscDM dmMesh = NULL;
-    err = DMCreate(comm, &dmMesh); PYLITH_CHECK_ERROR(err);
-    err = DMSetType(dmMesh, DMPLEX); PYLITH_CHECK_ERROR(err);
-    err = DMSetDimension(dmMesh, dim); PYLITH_CHECK_ERROR(err);
-    mesh->dmMesh(dmMesh, label);
-
-    PYLITH_METHOD_END;
-} // createDMMesh
-
-// ----------------------------------------------------------------------
 // Nondimensionalize the finite-element mesh.
 void
 pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,

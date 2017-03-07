@@ -20,7 +20,7 @@
  * @file unittests/libtests/topology/TestMeshOps.hh
  *
  * @brief C++ TestMeshOps object.
- * 
+ *
  * C++ unit testing for MeshOps.
  */
 
@@ -31,39 +31,47 @@
 
 /// Namespace for pylith package
 namespace pylith {
-  namespace topology {
-    class TestMeshOps;
-  } // topology
+    namespace topology {
+        class TestMeshOps;
+    } // topology
 } // pylith
 
 /// C++ unit testing for MeshOps.
 class pylith::topology::TestMeshOps : public CppUnit::TestFixture
 { // class TestMeshOps
 
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestMeshOps );
+// CPPUNIT TEST SUITE /////////////////////////////////////////////////
+CPPUNIT_TEST_SUITE( TestMeshOps );
 
-  CPPUNIT_TEST( testCreateDMMesh );
-  CPPUNIT_TEST( testNondimensionalize );
-  CPPUNIT_TEST( testCheckMaterialIds );
+CPPUNIT_TEST( testNondimensionalize );
+CPPUNIT_TEST( testCheckTopology );
+CPPUNIT_TEST( testIsSimplexMesh );
+CPPUNIT_TEST( testCheckMaterialIds );
+CPPUNIT_TEST( testNumMaterialCells );
 
-  CPPUNIT_TEST_SUITE_END();
+CPPUNIT_TEST_SUITE_END();
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+// PUBLIC METHODS /////////////////////////////////////////////////////
+public:
 
-  /// Test createDMMesh().
-  void testCreateDMMesh(void);
+/// Test nondimensionalize().
+void testNondimensionalize(void);
 
-  /// Test nondimensionalize().
-  void testNondimensionalize(void);
+/// Test checkTopology().
+void testCheckTopology(void);
 
-  /// Test checkMaterialIds().
-  void testCheckMaterialIds(void);
+/// Test isSimplexMesh().
+void testIsSimplexMesh(void);
+
+/// Test checkMaterialIds().
+void testCheckMaterialIds(void);
+
+/// Test numMaterialCells().
+void testNumMaterialCells(void);
 
 }; // class TestMeshOps
 
 #endif // pylith_topology_meshops_hh
 
 
-// End of file 
+// End of file
