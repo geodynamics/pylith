@@ -108,20 +108,19 @@ pylith::meshio::OutputSolnNew::writeTimeStep(const PylithReal t,
         PYLITH_METHOD_END;
     } // if
 
-    const size_t numFields = _vertexDataFields.size();
-    if (1 == numFields && std::string("all") == _vertexDataFields[0]) {
-        PYLITH_JOURNAL_ERROR(":TODO: @brad Implement writing all subfields.");
-    } else {
-        for (size_t iField=0; iField < numFields; iField++) {
-            if (!solution.hasSubfield(_vertexDataFields[iField].c_str())) {
-                std::ostringstream msg;
-                msg << "Could not find field '" << _vertexDataFields[iField] << "' in solution for output.";
-                throw std::runtime_error(msg.str());
-            } // if
-            pylith::topology::Field& fieldBuffer = this->getBuffer(solution, _vertexDataFields[iField].c_str());
-            this->appendVertexField(t, fieldBuffer, fieldBuffer.mesh());
-        } // if/else
-    } // if
+    const pylith::string_vector& subfieldNames = (1 == _vertexDataFields.size() && std::string("all") == _vertexDataFields[0]) ? solution.subfieldNames() : _vertexDataFields;
+
+    const size_t numFields = subfieldNames.size();
+    for (size_t iField=0; iField < numFields; iField++) {
+        if (!solution.hasSubfield(subfieldNames[iField].c_str())) {
+            std::ostringstream msg;
+            msg << "Could not find field '" << subfieldNames[iField] << "' in solution for output.";
+            throw std::runtime_error(msg.str());
+        } // if
+
+        pylith::topology::Field& fieldBuffer = this->getBuffer(solution, subfieldNames[iField].c_str());
+        this->appendVertexField(t, fieldBuffer, fieldBuffer.mesh());
+    } // for
 
     PYLITH_METHOD_END;
 } // writeTimeStep
