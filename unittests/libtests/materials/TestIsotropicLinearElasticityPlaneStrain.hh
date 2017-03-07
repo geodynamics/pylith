@@ -81,7 +81,7 @@ public :
   void testGetAuxField(void);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
-public :
+protected :
 
   /** Get material.
    *
