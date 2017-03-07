@@ -39,11 +39,11 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestReverseCuthillMcKee );
 void
 pylith::topology::TestReverseCuthillMcKee::testReorderTri3(void)
 { // testReorderTri3
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  _testReorder("data/reorder_tri3.mesh");
+    _testReorder("data/reorder_tri3.mesh");
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testReorderTri3
 
 // ----------------------------------------------------------------------
@@ -51,11 +51,11 @@ pylith::topology::TestReverseCuthillMcKee::testReorderTri3(void)
 void
 pylith::topology::TestReverseCuthillMcKee::testReorderTri3Fault(void)
 { // testReorderTri3Fault
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  _testReorder("data/reorder_tri3.mesh", "fault");
+    _testReorder("data/reorder_tri3.mesh", "fault");
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testReorderTri3Fault
 
 // ----------------------------------------------------------------------
@@ -63,11 +63,11 @@ pylith::topology::TestReverseCuthillMcKee::testReorderTri3Fault(void)
 void
 pylith::topology::TestReverseCuthillMcKee::testReorderQuad4(void)
 { // testReorderQuad4
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  _testReorder("data/reorder_quad4.mesh");
+    _testReorder("data/reorder_quad4.mesh");
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testReorderQuad4
 
 // ----------------------------------------------------------------------
@@ -75,11 +75,11 @@ pylith::topology::TestReverseCuthillMcKee::testReorderQuad4(void)
 void
 pylith::topology::TestReverseCuthillMcKee::testReorderQuad4Fault(void)
 { // testReorderQuad4Fault
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  _testReorder("data/reorder_quad4.mesh", "fault");
+    _testReorder("data/reorder_quad4.mesh", "fault");
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testReorderQuad4Fault
 
 // ----------------------------------------------------------------------
@@ -87,11 +87,11 @@ pylith::topology::TestReverseCuthillMcKee::testReorderQuad4Fault(void)
 void
 pylith::topology::TestReverseCuthillMcKee::testReorderTet4(void)
 { // testReorderTet4
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  _testReorder("data/reorder_tet4.mesh");
+    _testReorder("data/reorder_tet4.mesh");
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testReorderTet4
 
 // ----------------------------------------------------------------------
@@ -99,11 +99,11 @@ pylith::topology::TestReverseCuthillMcKee::testReorderTet4(void)
 void
 pylith::topology::TestReverseCuthillMcKee::testReorderTet4Fault(void)
 { // testReorderTet4Fault
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  _testReorder("data/reorder_tet4.mesh", "fault");
+    _testReorder("data/reorder_tet4.mesh", "fault");
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testReorderTet4Fault
 
 // ----------------------------------------------------------------------
@@ -111,11 +111,11 @@ pylith::topology::TestReverseCuthillMcKee::testReorderTet4Fault(void)
 void
 pylith::topology::TestReverseCuthillMcKee::testReorderHex8(void)
 { // testReorderHex8
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  _testReorder("data/reorder_hex8.mesh");
+    _testReorder("data/reorder_hex8.mesh");
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testReorderHex8
 
 // ----------------------------------------------------------------------
@@ -123,162 +123,159 @@ pylith::topology::TestReverseCuthillMcKee::testReorderHex8(void)
 void
 pylith::topology::TestReverseCuthillMcKee::testReorderHex8Fault(void)
 { // testReorderHex8Fault
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  _testReorder("data/reorder_hex8.mesh", "fault");
+    _testReorder("data/reorder_hex8.mesh", "fault");
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testReorderHex8Fault
 
 // ----------------------------------------------------------------------
 void
 pylith::topology::TestReverseCuthillMcKee::_setupMesh(Mesh* const mesh,
-						      const char* filename,
-						      const char* faultGroup)
+                                                      const char* filename,
+                                                      const char* faultGroup)
 { // _setupMesh
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  assert(mesh);
+    assert(mesh);
 
-  meshio::MeshIOAscii iohandler;
-  iohandler.filename(filename);
-  iohandler.interpolate(true);
+    meshio::MeshIOAscii iohandler;
+    iohandler.filename(filename);
+    iohandler.interpolate(true);
 
-  iohandler.read(mesh);
-  CPPUNIT_ASSERT(mesh->numCells() > 0);
-  CPPUNIT_ASSERT(mesh->numVertices() > 0);
+    iohandler.read(mesh);
+    CPPUNIT_ASSERT(mesh->numCells() > 0);
+    CPPUNIT_ASSERT(mesh->numVertices() > 0);
 
-  // Adjust topology if necessary.
-  if (faultGroup) {
-    int firstLagrangeVertex = 0;
-    int firstFaultCell = 0;
+    // Adjust topology if necessary.
+    if (faultGroup) {
+        int firstLagrangeVertex = 0;
+        int firstFaultCell = 0;
 
-    faults::FaultCohesiveKin fault;
-    fault.id(100);
-    fault.label(faultGroup);
-    const int nvertices = fault.numVerticesNoMesh(*mesh);
-    firstLagrangeVertex += nvertices;
-    firstFaultCell += 2*nvertices; // shadow + Lagrange vertices
+        faults::FaultCohesiveKin fault;
+        fault.id(100);
+        fault.label(faultGroup);
+        const int nvertices = fault.numVerticesNoMesh(*mesh);
+        firstLagrangeVertex += nvertices;
+        firstFaultCell += 2*nvertices; // shadow + Lagrange vertices
 
-    int firstFaultVertex = 0;
-    fault.adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
-  } // if
+        int firstFaultVertex = 0;
+        fault.adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
+    } // if
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // _setupMesh
 
 // ----------------------------------------------------------------------
 // Test reorder().
 void
 pylith::topology::TestReverseCuthillMcKee::_testReorder(const char* filename,
-							const char* faultGroup)
+                                                        const char* faultGroup)
 { // _testReorder
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  Mesh mesh;
-  _setupMesh(&mesh, filename, faultGroup);
+    Mesh mesh;
+    _setupMesh(&mesh, filename, faultGroup);
 
-  // Get original DM and create Mesh for it
-  const PetscDM dmOrig = mesh.dmMesh();
-  PetscObjectReference((PetscObject) dmOrig);
-  Mesh meshOrig;
-  meshOrig.dmMesh(dmOrig);
+    // Get original DM and create Mesh for it
+    const PetscDM dmOrig = mesh.dmMesh();
+    PetscObjectReference((PetscObject) dmOrig);
+    Mesh meshOrig;
+    meshOrig.dmMesh(dmOrig);
 
-  ReverseCuthillMcKee::reorder(&mesh);
-  
-  const PetscDM& dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+    ReverseCuthillMcKee::reorder(&mesh);
 
-  // Check vertices (size only)
-  topology::Stratum verticesStratumE(dmOrig, topology::Stratum::DEPTH, 0);
-  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
-  CPPUNIT_ASSERT_EQUAL(verticesStratumE.size(), verticesStratum.size());
+    const PetscDM& dmMesh = mesh.dmMesh(); CPPUNIT_ASSERT(dmMesh);
 
-  // Check cells (size only)
-  topology::Stratum cellsStratumE(dmOrig, topology::Stratum::HEIGHT, 0);
-  topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
-  const PetscInt cStart = cellsStratum.begin();
-  const PetscInt cEnd = cellsStratum.end();
-  const PetscInt numCells = cellsStratum.size();
-  CPPUNIT_ASSERT_EQUAL(cellsStratumE.size(), cellsStratum.size());
+    // Check vertices (size only)
+    topology::Stratum verticesStratumE(dmOrig, topology::Stratum::DEPTH, 0);
+    topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+    CPPUNIT_ASSERT_EQUAL(verticesStratumE.size(), verticesStratum.size());
 
-  // Check groups
-  PetscInt numGroupsE, numGroups, pStart, pEnd;
-  PetscErrorCode err;
-  err = DMGetNumLabels(dmOrig, &numGroupsE);PYLITH_CHECK_ERROR(err);
-  err = DMGetNumLabels(dmMesh, &numGroups);PYLITH_CHECK_ERROR(err);
-  CPPUNIT_ASSERT_EQUAL(numGroupsE, numGroups);
+    // Check cells (size only)
+    topology::Stratum cellsStratumE(dmOrig, topology::Stratum::HEIGHT, 0);
+    topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
+    CPPUNIT_ASSERT_EQUAL(cellsStratumE.size(), cellsStratum.size());
 
-  for (PetscInt iGroup = 0; iGroup < numGroups; ++iGroup) {
-    const char *name = NULL;
-    err = DMGetLabelName(dmMesh, iGroup, &name);PYLITH_CHECK_ERROR(err);
+    // Check groups
+    PetscInt numGroupsE, numGroups;
+    PetscErrorCode err;
+    err = DMGetNumLabels(dmOrig, &numGroupsE); PYLITH_CHECK_ERROR(err);
+    err = DMGetNumLabels(dmMesh, &numGroups); PYLITH_CHECK_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(numGroupsE, numGroups);
 
-    PetscInt numPointsE, numPoints;
-    err = DMGetStratumSize(dmOrig, name, 1, &numPointsE);PYLITH_CHECK_ERROR(err);
-    err = DMGetStratumSize(dmMesh, name, 1, &numPoints);PYLITH_CHECK_ERROR(err);
-    CPPUNIT_ASSERT_EQUAL(numPointsE, numPoints);
-  } // for
+    for (PetscInt iGroup = 0; iGroup < numGroups; ++iGroup) {
+        const char *name = NULL;
+        err = DMGetLabelName(dmMesh, iGroup, &name); PYLITH_CHECK_ERROR(err);
 
-  // Check element centroids
-  PylithScalar coordsCheckOrig = 0.0;
-  { // original
-    Stratum cellsStratum(dmOrig, Stratum::HEIGHT, 0);
-    const PetscInt cStart = cellsStratum.begin();
-    const PetscInt cEnd = cellsStratum.end();
-    topology::CoordsVisitor coordsVisitor(dmOrig);
-    for (PetscInt cell = cStart; cell < cEnd; ++cell) {
-      PetscScalar* coordsCell = NULL;
-      PetscInt coordsSize = 0;
-      PylithScalar value = 0.0;
-      coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
-      for (int i=0; i < coordsSize; ++i) {
-	value += coordsCell[i];
-      } // for
-      coordsCheckOrig += value*value;
-      coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
+        PetscInt numPointsE, numPoints;
+        err = DMGetStratumSize(dmOrig, name, 1, &numPointsE); PYLITH_CHECK_ERROR(err);
+        err = DMGetStratumSize(dmMesh, name, 1, &numPoints); PYLITH_CHECK_ERROR(err);
+        CPPUNIT_ASSERT_EQUAL(numPointsE, numPoints);
     } // for
-  } // original
-  PylithScalar coordsCheck = 0.0;
-  { // reordered
-    Stratum cellsStratum(dmMesh, Stratum::HEIGHT, 0);
-    const PetscInt cStart = cellsStratum.begin();
-    const PetscInt cEnd = cellsStratum.end();
-    topology::CoordsVisitor coordsVisitor(dmMesh);
-    for (PetscInt cell = cStart; cell < cEnd; ++cell) {
-      PetscScalar* coordsCell = NULL;
-      PetscInt coordsSize = 0;
-      PylithScalar value = 0.0;
-      coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
-      for (int i=0; i < coordsSize; ++i) {
-	value += coordsCell[i];
-      } // for
-      coordsCheck += value*value;
-      coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
-    } // for
-  } // reordered
-  const PylithScalar tolerance = 1.0e-6;
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(coordsCheckOrig, coordsCheck, tolerance*coordsCheckOrig);
 
-  // Verify reduction in Jacobian bandwidth
-  Field fieldOrig(meshOrig);
-  fieldOrig.newSection(FieldBase::VERTICES_FIELD, meshOrig.dimension());
-  fieldOrig.allocate();
-  fieldOrig.zero();
-  Jacobian jacobianOrig(fieldOrig);
-  PetscInt bandwidthOrig = 0;
-  err = MatComputeBandwidth(jacobianOrig.matrix(), 0.0, &bandwidthOrig);PYLITH_CHECK_ERROR(err);
+    // Check element centroids
+    PylithScalar coordsCheckOrig = 0.0;
+    { // original
+        Stratum cellsStratum(dmOrig, Stratum::HEIGHT, 0);
+        const PetscInt cStart = cellsStratum.begin();
+        const PetscInt cEnd = cellsStratum.end();
+        topology::CoordsVisitor coordsVisitor(dmOrig);
+        for (PetscInt cell = cStart; cell < cEnd; ++cell) {
+            PetscScalar* coordsCell = NULL;
+            PetscInt coordsSize = 0;
+            PylithScalar value = 0.0;
+            coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
+            for (int i=0; i < coordsSize; ++i) {
+                value += coordsCell[i];
+            } // for
+            coordsCheckOrig += value*value;
+            coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
+        } // for
+    } // original
+    PylithScalar coordsCheck = 0.0;
+    { // reordered
+        Stratum cellsStratum(dmMesh, Stratum::HEIGHT, 0);
+        const PetscInt cStart = cellsStratum.begin();
+        const PetscInt cEnd = cellsStratum.end();
+        topology::CoordsVisitor coordsVisitor(dmMesh);
+        for (PetscInt cell = cStart; cell < cEnd; ++cell) {
+            PetscScalar* coordsCell = NULL;
+            PetscInt coordsSize = 0;
+            PylithScalar value = 0.0;
+            coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
+            for (int i=0; i < coordsSize; ++i) {
+                value += coordsCell[i];
+            } // for
+            coordsCheck += value*value;
+            coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
+        } // for
+    } // reordered
+    const PylithScalar tolerance = 1.0e-6;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(coordsCheckOrig, coordsCheck, tolerance*coordsCheckOrig);
 
-  Field field(mesh);
-  field.newSection(FieldBase::VERTICES_FIELD, mesh.dimension());
-  field.allocate();
-  field.zero();
-  Jacobian jacobian(field);
-  PetscInt bandwidth = 0;
-  err = MatComputeBandwidth(jacobian.matrix(), 0.0, &bandwidth);PYLITH_CHECK_ERROR(err);
+    // Verify reduction in Jacobian bandwidth
+    Field fieldOrig(meshOrig);
+    fieldOrig.newSection(FieldBase::VERTICES_FIELD, meshOrig.dimension());
+    fieldOrig.allocate();
+    fieldOrig.zero();
+    Jacobian jacobianOrig(fieldOrig);
+    PetscInt bandwidthOrig = 0;
+    err = MatComputeBandwidth(jacobianOrig.matrix(), 0.0, &bandwidthOrig); PYLITH_CHECK_ERROR(err);
 
-  CPPUNIT_ASSERT(bandwidth <= bandwidthOrig);
+    Field field(mesh);
+    field.newSection(FieldBase::VERTICES_FIELD, mesh.dimension());
+    field.allocate();
+    field.zero();
+    Jacobian jacobian(field);
+    PetscInt bandwidth = 0;
+    err = MatComputeBandwidth(jacobian.matrix(), 0.0, &bandwidth); PYLITH_CHECK_ERROR(err);
 
-  PYLITH_METHOD_END;
+    CPPUNIT_ASSERT(bandwidth <= bandwidthOrig);
+
+    PYLITH_METHOD_END;
 } // _testReorder
 
 
-// End of file 
+// End of file
