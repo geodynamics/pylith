@@ -35,11 +35,11 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::MeshIOLagrit::MeshIOLagrit(void) :
-  _filenameGmv(""),
-  _filenamePset(""),
-  _flipEndian(false),
-  _ioInt32(true),
-  _isRecordHeader32Bit(true)
+    _filenameGmv(""),
+    _filenamePset(""),
+    _flipEndian(false),
+    _ioInt32(true),
+    _isRecordHeader32Bit(true)
 { // constructor
 } // constructor
 
@@ -47,7 +47,7 @@ pylith::meshio::MeshIOLagrit::MeshIOLagrit(void) :
 // Destructor
 pylith::meshio::MeshIOLagrit::~MeshIOLagrit(void)
 { // destructor
-  deallocate();
+    deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------
@@ -55,68 +55,66 @@ pylith::meshio::MeshIOLagrit::~MeshIOLagrit(void)
 void
 pylith::meshio::MeshIOLagrit::deallocate(void)
 { // deallocate
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  MeshIO::deallocate();
+    MeshIO::deallocate();
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // deallocate
-  
+
 // ----------------------------------------------------------------------
 // Unpickle mesh
 void
 pylith::meshio::MeshIOLagrit::_read(void)
 { // _read
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  const int commRank = _mesh->commRank();
-  int meshDim = 0;
-  int spaceDim = 0;
-  int numVertices = 0;
-  int numCells = 0;
-  int numCorners = 0;
-  scalar_array coordinates;
-  int_array cells;
-  int_array materialIds;
+    const int commRank = _mesh->commRank();
+    int meshDim = 0;
+    int spaceDim = 0;
+    int numVertices = 0;
+    int numCells = 0;
+    int numCorners = 0;
+    scalar_array coordinates;
+    int_array cells;
+    int_array materialIds;
 
-  if (!commRank) {
-    if (GMVFile::isAscii(_filenameGmv.c_str())) {
-      GMVFileAscii filein(_filenameGmv.c_str());
-      filein.read(&coordinates, &cells, &materialIds, 
-                  &meshDim, &spaceDim, &numVertices, &numCells, &numCorners);
-      _orientCellsAscii(&cells, numCells, numCorners, meshDim);
-    } else {
-      GMVFileBinary filein(_filenameGmv.c_str(), _flipEndian);
-      filein.read(&coordinates, &cells, &materialIds, 
-                  &meshDim, &spaceDim, &numVertices, &numCells, &numCorners);
-      _orientCellsBinary(&cells, numCells, numCorners, meshDim);
-    } // if/else
-  }
-  MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim,
-			 cells, numCells, numCorners, meshDim,
-			 _interpolate);
-  _setMaterials(materialIds);
+    if (!commRank) {
+        if (GMVFile::isAscii(_filenameGmv.c_str())) {
+            GMVFileAscii filein(_filenameGmv.c_str());
+            filein.read(&coordinates, &cells, &materialIds,
+                        &meshDim, &spaceDim, &numVertices, &numCells, &numCorners);
+            _orientCellsAscii(&cells, numCells, numCorners, meshDim);
+        } else {
+            GMVFileBinary filein(_filenameGmv.c_str(), _flipEndian);
+            filein.read(&coordinates, &cells, &materialIds,
+                        &meshDim, &spaceDim, &numVertices, &numCells, &numCorners);
+            _orientCellsBinary(&cells, numCells, numCorners, meshDim);
+        } // if/else
+    }
+    MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim, cells, numCells, numCorners, meshDim);
+    _setMaterials(materialIds);
 
-  if (0 == commRank) {
-    std::vector<PsetFile::Pset> groups;
-    if (PsetFile::isAscii(_filenamePset.c_str())) {
-      PsetFileAscii filein(_filenamePset.c_str());
-      filein.read(&groups);
-    } else {
-      PsetFileBinary filein(_filenamePset.c_str(), 
-			    _flipEndian,
-			    _ioInt32,
-			    _isRecordHeader32Bit);
-      filein.read(&groups);
-    } // if/else
-    GroupPtType type = VERTEX;
-    const int numGroups = groups.size();
-    for (int iGroup=0; iGroup < numGroups; ++iGroup)
-      _setGroup(groups[iGroup].name, type, groups[iGroup].points);
-  }
-  _distributeGroups();
+    if (0 == commRank) {
+        std::vector<PsetFile::Pset> groups;
+        if (PsetFile::isAscii(_filenamePset.c_str())) {
+            PsetFileAscii filein(_filenamePset.c_str());
+            filein.read(&groups);
+        } else {
+            PsetFileBinary filein(_filenamePset.c_str(),
+                                  _flipEndian,
+                                  _ioInt32,
+                                  _isRecordHeader32Bit);
+            filein.read(&groups);
+        } // if/else
+        GroupPtType type = VERTEX;
+        const int numGroups = groups.size();
+        for (int iGroup=0; iGroup < numGroups; ++iGroup)
+            _setGroup(groups[iGroup].name, type, groups[iGroup].points);
+    }
+    _distributeGroups();
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // _read
 
 // ----------------------------------------------------------------------
@@ -124,7 +122,7 @@ pylith::meshio::MeshIOLagrit::_read(void)
 void
 pylith::meshio::MeshIOLagrit::_write(void) const
 { // _write
-  throw std::logic_error("MeshIOLagrit::_write not implemented.");
+    throw std::logic_error("MeshIOLagrit::_write not implemented.");
 } // _write
 
 // ----------------------------------------------------------------------
@@ -132,46 +130,46 @@ pylith::meshio::MeshIOLagrit::_write(void) const
 // conventions.
 void
 pylith::meshio::MeshIOLagrit::_orientCellsAscii(int_array* const cells,
-						const int numCells,
-						const int numCorners,
-						const int meshDim)
+                                                const int numCells,
+                                                const int numCorners,
+                                                const int meshDim)
 { // _orientCellsAscii
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  assert(cells);
-  assert(cells->size() == size_t(numCells*numCorners));
+    assert(cells);
+    assert(cells->size() == size_t(numCells*numCorners));
 
-  if (3 == meshDim && 4 == numCorners) // TET
-    for (int iCell=0; iCell < numCells; ++iCell) {
-      const int i1 = iCell*numCorners+1;
-      const int i2 = iCell*numCorners+2;
-      const int tmp = (*cells)[i1];
-      (*cells)[i1] = (*cells)[i2];
-      (*cells)[i2] = tmp;
-    } // for
+    if (3 == meshDim && 4 == numCorners) // TET
+        for (int iCell=0; iCell < numCells; ++iCell) {
+            const int i1 = iCell*numCorners+1;
+            const int i2 = iCell*numCorners+2;
+            const int tmp = (*cells)[i1];
+            (*cells)[i1] = (*cells)[i2];
+            (*cells)[i2] = tmp;
+        } // for
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // _orientCellsAscii
-  
+
 // ----------------------------------------------------------------------
 // Reorder vertices in cells from binary GMV file to match PyLith
 // conventions.
 void
 pylith::meshio::MeshIOLagrit::_orientCellsBinary(int_array* const cells,
-						 const int numCells,
-						 const int numCorners,
-						 const int meshDim)
+                                                 const int numCells,
+                                                 const int numCorners,
+                                                 const int meshDim)
 { // _orientCellsBinary
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  assert(cells);
-  assert(cells->size() == size_t(numCells*numCorners));
+    assert(cells);
+    assert(cells->size() == size_t(numCells*numCorners));
 
-  if (3 == meshDim && 4 == numCorners)  // TET
-    ; // do nothing
+    if (3 == meshDim && 4 == numCorners) // TET
+        ;  // do nothing
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // _orientCellsBinary
-  
 
-// End of file 
+
+// End of file

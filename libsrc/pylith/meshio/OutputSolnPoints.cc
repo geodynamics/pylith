@@ -131,8 +131,7 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
 
     // Create mesh corresponding to points.
     const int meshDim = 0;
-    delete _pointsMesh; _pointsMesh = new topology::Mesh(meshDim); assert(_pointsMesh);
-    topology::MeshOps::createDMMesh(_pointsMesh, meshDim, _mesh->comm(), "points");
+    delete _pointsMesh; _pointsMesh = new topology::Mesh(meshDim, _mesh->comm()); assert(_pointsMesh);
 
     const int numPointsLocal = _interpolator->n;
     PylithScalar* pointsLocal = NULL;
@@ -149,10 +148,9 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
     } // for
     const int numCells = numPointsLocal;
     const int numCorners = 1;
-    const bool interpolate = false;
     const bool isParallel = true;
     MeshBuilder::buildMesh(_pointsMesh, &pointsArray, numPointsLocal, spaceDim,
-                           cells, numCells, numCorners, meshDim, interpolate, isParallel);
+                           cells, numCells, numCorners, meshDim, isParallel);
     err = VecRestoreArray(_interpolator->coords, &pointsLocal); PYLITH_CHECK_ERROR(err);
 
     // Set coordinate system and create nondimensionalized coordinates
@@ -170,18 +168,18 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
     // Copy station names. :TODO: Reorder to match output (pointsLocal).
     _stations.resize(numPointsLocal);
     for (int iLocal=0; iLocal < numPointsLocal; ++iLocal) {
-	// Find point in array of points to get index for station name.
-	for (int iAll=0; iAll < numPoints; ++iAll) {
-	    const PylithScalar tolerance = 1.0e-6;
-	    PylithScalar dist = 0.0;
-	    for (int iDim=0; iDim < spaceDim; ++iDim) {
-		dist += pow(points[iAll*spaceDim+iDim] - pointsArray[iLocal*spaceDim+iDim], 2);
-	    } // for
-	    if (sqrt(dist) < tolerance) {
-		_stations[iLocal] = names[iAll];
-		break;
-	    } // if
-	} // for
+        // Find point in array of points to get index for station name.
+        for (int iAll=0; iAll < numPoints; ++iAll) {
+            const PylithScalar tolerance = 1.0e-6;
+            PylithScalar dist = 0.0;
+            for (int iDim=0; iDim < spaceDim; ++iDim) {
+                dist += pow(points[iAll*spaceDim+iDim] - pointsArray[iLocal*spaceDim+iDim], 2);
+            } // for
+            if (sqrt(dist) < tolerance) {
+                _stations[iLocal] = names[iAll];
+                break;
+            } // if
+        } // for
     } // for
 
     PYLITH_METHOD_END;
