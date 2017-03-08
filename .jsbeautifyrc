@@ -1,0 +1,12 @@
+{
+  "code_width": 120,
+  "input_tab_size": 4,
+  "output_tab_size": 4,
+  "indent_columns": 4,
+  "indent_with_tabs": 0,
+  "indent_name_space": True,
+  "indent_namespace": True,
+  "indent_class": True,
+  "indent_relative_single_line_comments": True,
+  "indent_col1_comment": True
+}
