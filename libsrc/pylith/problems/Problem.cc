@@ -296,10 +296,10 @@ pylith::problems::Problem::computeRHSResidual(PetscVec residualVec,
     assert(_solution);
 
     // Update PyLith view of the solution.
-    _solution->scatterGlobalToLocal(solutionVec);
+    _solution->scatterVectorToLocal(solutionVec);
 
     // :QUESTION: @matt The examples insert boundary values then do the global to
-    // local scatter. Can we do them in reverse was we do here?
+    // local scatter. Can we do them in reverse as we do here?
 
     // Set Dirichlet values.
     const size_t numConstraints = _constraints.size();
@@ -333,7 +333,7 @@ pylith::problems::Problem::computeRHSJacobian(PetscMat jacobianMat,
 
     // Update PyLith view of the solution.
     assert(_solution);
-    _solution->scatterGlobalToLocal(solutionVec);
+    _solution->scatterVectorToLocal(solutionVec);
 
     // Set Dirichlet boundary conditions.
     const size_t numConstraints = _constraints.size();
@@ -369,7 +369,7 @@ pylith::problems::Problem::computeLHSResidual(PetscVec residualVec,
     assert(_solution);
 
     // Update PyLith view of the solution.
-    _solution->scatterGlobalToLocal(solutionVec);
+    _solution->scatterVectorToLocal(solutionVec);
 
     // Set Dirichlet boundary conditions.
     const size_t numConstraints = _constraints.size();
@@ -406,7 +406,7 @@ pylith::problems::Problem::computeLHSJacobianImplicit(PetscMat jacobianMat,
 
     // Update PyLith view of the solution.
     assert(_solution);
-    _solution->scatterGlobalToLocal(solutionVec);
+    _solution->scatterVectorToLocal(solutionVec);
 
     // Set Dirichlet boundary conditions.
     const size_t numConstraints = _constraints.size();
@@ -441,7 +441,7 @@ pylith::problems::Problem::computeLHSJacobianLumpedInv(const PylithReal t,
 
     // Update PyLith view of the solution.
     assert(_solution);
-    _solution->scatterGlobalToLocal(solutionVec);
+    _solution->scatterVectorToLocal(solutionVec);
 
     // Set Dirichlet boundary conditions.
     const size_t numConstraints = _constraints.size();

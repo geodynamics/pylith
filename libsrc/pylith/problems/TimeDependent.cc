@@ -360,12 +360,12 @@ pylith::problems::TimeDependent::poststep(void)
     PylithInt timeStep;
     PetscVec solutionVec = NULL;
     err = TSGetTime(_ts, &t); PYLITH_CHECK_ERROR(err);
-    err - TSGetTotalSteps(_ts, &timeStep); PYLITH_CHECK_ERROR(err);
+    err = TSGetTotalSteps(_ts, &timeStep); PYLITH_CHECK_ERROR(err);
     err = TSGetSolution(_ts, &solutionVec); PYLITH_CHECK_ERROR(err);
 
     // Update PyLith view of the solution.
     assert(_solution);
-    _solution->scatterGlobalToLocal(solutionVec);
+    _solution->scatterVectorToLocal(solutionVec);
 
     // Output solution.
     const size_t numOutput = _outputs.size();

@@ -33,6 +33,8 @@ testtopology_SOURCES = \
 	TestSubMesh.cc \
 	TestSubMesh_Cases.cc \
 	TestFieldBase.cc \
+	TestFieldMesh.cc \
+	TestFieldMesh_Cases.cc \
 	TestFieldsMesh.cc \
 	TestFieldsSubMesh.cc \
 	TestRefineUniform.cc \
@@ -40,7 +42,6 @@ testtopology_SOURCES = \
 	TestReverseCuthillMcKee.cc \
 	test_topology.cc
 
-#	TestFieldMesh.cc \
 #	TestFieldSubMesh.cc
 
 

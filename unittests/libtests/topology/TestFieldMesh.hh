@@ -33,169 +33,148 @@
 // Forward declarations -------------------------------------------------
 /// Namespace for pylith package
 namespace pylith {
-  namespace topology {
-    class TestFieldMesh;
-  } // topology
+    namespace topology {
+        class TestFieldMesh;
+        class TestFieldMesh_Data;
+    } // topology
 } // pylith
 
 // TestFieldMesh -------------------------------------------------------------
 /// C++ unit testing for Field.
-class pylith::topology::TestFieldMesh : public CppUnit::TestFixture
-{ // class TestFieldMesh
+class pylith::topology::TestFieldMesh : public CppUnit::TestFixture {
 
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestFieldMesh );
+    // CPPUNIT TEST SUITE //////////////////////////////////////////////////////
+    CPPUNIT_TEST_SUITE( TestFieldMesh );
 
-  CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testMesh );
-  CPPUNIT_TEST( testLabel );
-  CPPUNIT_TEST( testVectorFieldType );
-  CPPUNIT_TEST( testScale );
-  CPPUNIT_TEST( testAddDimensionOkay );
-  CPPUNIT_TEST( testSpaceDim );
-  CPPUNIT_TEST( testChartSize );
-  CPPUNIT_TEST( testSectionSize );
-  CPPUNIT_TEST( testHasSection );
-  CPPUNIT_TEST( testNewSectionPoints );
-  CPPUNIT_TEST( testNewSectionPointsArray );
-  CPPUNIT_TEST( testNewSectionDomain );
-  CPPUNIT_TEST( testNewSectionField );
-  CPPUNIT_TEST( testCloneSection );
-  CPPUNIT_TEST( testClear );
-  CPPUNIT_TEST( testAllocate );
-  CPPUNIT_TEST( testZero );
-  CPPUNIT_TEST( testZeroAll );
-  CPPUNIT_TEST( testComplete );
-  CPPUNIT_TEST( testCopy );
-  CPPUNIT_TEST( testCopySubfield );
-  CPPUNIT_TEST( testOperatorAdd );
-  CPPUNIT_TEST( testDimensionalize );
-  CPPUNIT_TEST( testView );
-  CPPUNIT_TEST( testCreateScatter );
-  CPPUNIT_TEST( testCreateScatterWithBC );
-  CPPUNIT_TEST( testVector );
-  CPPUNIT_TEST( testScatterLocalToGlobal );
-  CPPUNIT_TEST( testScatterGlobalToLocal );
-  CPPUNIT_TEST( testSplitDefault );
-  CPPUNIT_TEST( testCloneSectionSplit );
+    CPPUNIT_TEST( testConstructor );
+    CPPUNIT_TEST( testMesh );
+    CPPUNIT_TEST( testGeneralAccessors );
+    CPPUNIT_TEST( testSectionAccessors );
+    CPPUNIT_TEST( testVectorAccessors );
+    CPPUNIT_TEST( testNewSection );
+    CPPUNIT_TEST( testCloneSection );
+    CPPUNIT_TEST( testSubfields );
+    CPPUNIT_TEST( testClear );
+    CPPUNIT_TEST( testAllocate );
+    CPPUNIT_TEST( testZero );
+    CPPUNIT_TEST( testComplete );
+    CPPUNIT_TEST( testCopy );
+    CPPUNIT_TEST( testCopySubfield );
+    CPPUNIT_TEST( testOperatorAdd );
+    CPPUNIT_TEST( testDimensionalize );
+    CPPUNIT_TEST( testView );
+    CPPUNIT_TEST( testScatter );
 
-  CPPUNIT_TEST_SUITE_END();
+    CPPUNIT_TEST_SUITE_END();
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+    // PUBLIC METHODS //////////////////////////////////////////////////////////
+public:
 
-  /// Test constructor.
-  void testConstructor(void);
+    /// Setup testing data.
+    void setUp(void);
 
-  /// Test section().
-  void testSection(void);
+    /// Deallocate testing data.
+    void tearDown(void);
 
-  /// Test mesh().
-  void testMesh(void);
+    /// Test constructor.
+    void testConstructor(void);
 
-  /// Test label().
-  void testLabel(void);
+    /// Test mesh().
+    void testMesh(void);
 
-  /// Test vectorFieldType().
-  void testVectorFieldType(void);
+    /// Test label(), vectorFieldType(), scale(), addDimensionOkay(), spaceDim().
+    void testGeneralAccessors(void);
 
-  /// Test scale().
-  void testScale(void);
+    /// Test chartSize(), sectionSize(), localSection(), globalSection().
+    void testSectionAccessors(void);
 
-  /// Test addDimensionOkay().
-  void testAddDimensionOkay(void);
+    /// Test localVector(), globalVector().
+    void testVectorAccessors(void);
 
-  /// Test spaceDim().
-  void testSpaceDim(void);
+    /// Test newSection(points), newSection(domain), newSection(field).
+    void testNewSection(void);
 
-  /// Test chartSize().
-  void testChartSize(void);
+    /// Test cloneSection().
+    void testCloneSection(void);
 
-  /// Test sectionSize().
-  void testSectionSize(void);
+    /// Test subfieldAdd(), subfieldsSetup(), subfieldSetDof(), hasSubfield(), subfieldNames(), subfieldInfo().
+    void testSubfields(void);
 
-  /// Test hasSection().
-  void testHasSection(void);
+    /// Test clear().
+    void testClear(void);
 
-  /// Test newSection(points).
-  void testNewSectionPoints(void);
+    /// Test allocate().
+    void testAllocate(void);
 
-  /// Test newSection(int_array).
-  void testNewSectionPointsArray(void);
+    /// Test zero(), zeroAll()..
+    void testZero(void);
 
-  /// Test newSection(domain).
-  void testNewSectionDomain(void);
+    /// Test complete().
+    void testComplete(void);
 
-  /// Test newSection(field).
-  void testNewSectionField(void);
+    /// Test copy().
+    void testCopy(void);
 
-  /// Test cloneSection().
-  void testCloneSection(void);
+    /// Test copySubfield().
+    void testCopySubfield(void);
 
-  /// Test clear().
-  void testClear(void);
+    /// Test operator+=().
+    void testOperatorAdd(void);
 
-  /// Test allocate().
-  void testAllocate(void);
+    /// Test dimensionalize().
+    void testDimensionalize(void);
 
-  /// Test zero().
-  void testZero(void);
+    /// Test view().
+    void testView(void);
 
-  /// Test zeroAll().
-  void testZeroAll(void);
+    /// Test createScatter(), createScatterWithBC(), scatterLocalToGlobal(), scatterGlobalToLocal(), scatterVector().
+    void testScatter(void);
 
-  /// Test complete().
-  void testComplete(void);
+    // PROTECTED METHODS ///////////////////////////////////////////////////////
+protected:
 
-  /// Test copy().
-  void testCopy(void);
+    /** Build mesh.
+     *
+     * @param mesh Finite-element mesh.
+     */
+    void _initializeMesh(Mesh* mesh);
 
-  /// Test copySubfield().
-  void testCopySubfield(void);
+    // PROTECTED MEMBERS ///////////////////////////////////////////////////////
+protected:
 
-  /// Test operator+=().
-  void testOperatorAdd(void);
-
-  /// Test dimensionalize().
-  void testDimensionalize(void);
-
-  /// Test view().
-  void testView(void);
-
-  /// Test createScatter().
-  void testCreateScatter(void);
-
-  /// Test createScatterWithBC().
-  void testCreateScatterWithBC(void);
-
-  /// Test vector().
-  void testVector(void);
-
-  /// Test scatterLocalToGlobal().
-  void testScatterLocalToGlobal(void);
-
-  /// Test scatterGlobalToLocal().
-  void testScatterGlobalToLocal(void);
-
-  /// Test splitDefault().
-  void testSplitDefault(void);
-
-  /// Test cloneSection() with split field.
-  void testCloneSectionSplit(void);
-
-// PRIVATE METHODS /////////////////////////////////////////////////////
-private :
-
-  /** Build mesh.
-   *
-   * @param mesh Finite-element mesh.
-   */
-  static
-  void _buildMesh(Mesh* mesh);
+    TestFieldMesh_Data* _data; ///< Data for testing.
 
 }; // class TestFieldMesh
+
+// TestFieldMesh_Data-----------------------------------------------------------
+class pylith::topology::TestFieldMesh_Data {
+
+    // PUBLIC METHODS //////////////////////////////////////////////////////////
+public:
+
+    /// Constructor
+    TestFieldMesh_Data(void);
+
+    /// Destructor
+    ~TestFieldMesh_Data(void);
+
+    // PUBLIC MEMBERS //////////////////////////////////////////////////////////
+public:
+
+    /// @defgroup Domain mesh information.
+    /// @{
+    int cellDim; ///< Cell dimension (matches space dimension).
+    int numVertices; ///< Number of vertices.
+    int numCells;   ///< Number of cells.
+    int numCorners; ///< Number of vertices per cell.
+    int* cells; ///< Array of vertices in cells [numCells*numCorners].
+    PylithScalar* coordinates;  ///< Coordinates of vertices [numVertices*cellDim].
+    /// @}
+
+};  // TestFieldMesh_Data
+
 
 #endif // pylith_topology_testfieldmesh_hh
 
 
-// End of file 
+// End of file

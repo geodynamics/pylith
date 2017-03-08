@@ -1081,12 +1081,14 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
     err = PetscSectionDestroy(&newSection); PYLITH_CHECK_ERROR(err);
     err = DMGetPointSF(sinfo.dm, &sf); PYLITH_CHECK_ERROR(err);
     if (labelName.empty()) {
-        err = PetscSectionCreateGlobalSectionCensored(section, sf, PETSC_TRUE, numExcludes, excludeRanges, &gsection); PYLITH_CHECK_ERROR(err);
+        err = PetscSectionCreateGlobalSectionCensored(section, sf, PETSC_TRUE, numExcludes, excludeRanges, &gsection);
+        PYLITH_CHECK_ERROR(err);
     } else {
         DMLabel label;
 
         err = DMGetLabel(sinfo.dm, labelName.c_str(), &label); PYLITH_CHECK_ERROR(err);
-        err = PetscSectionCreateGlobalSectionLabel(section, sf, PETSC_TRUE, label, labelValue, &gsection); PYLITH_CHECK_ERROR(err);
+        err = PetscSectionCreateGlobalSectionLabel(section, sf, PETSC_TRUE, label, labelValue, &gsection);
+        PYLITH_CHECK_ERROR(err);
     } // if/else
     err = DMSetDefaultGlobalSection(sinfo.dm, gsection); PYLITH_CHECK_ERROR(err);
     err = PetscSectionDestroy(&gsection); PYLITH_CHECK_ERROR(err);
@@ -1102,49 +1104,49 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
 // ----------------------------------------------------------------------
 // Get PETSc vector associated with field.
 PetscVec
-pylith::topology::Field::vector(const char* context)
-{ // vector
+pylith::topology::Field::scatterVector(const char* context)
+{ // scatterVector
     PYLITH_METHOD_BEGIN;
 
     ScatterInfo& sinfo = _getScatter(context);
 
     PYLITH_METHOD_RETURN(sinfo.vector);
-} // vector
+} // scatterVector
 
 // ----------------------------------------------------------------------
 // Get PETSc vector associated with field.
 const PetscVec
-pylith::topology::Field::vector(const char* context) const
-{ // vector
+pylith::topology::Field::scatterVector(const char* context) const
+{ // scatterVector
     PYLITH_METHOD_BEGIN;
 
     const ScatterInfo& sinfo = _getScatter(context);
 
     PYLITH_METHOD_RETURN(sinfo.vector);
-} // vector
+} // scatterVector
 
 // ----------------------------------------------------------------------
 // Scatter section information across processors to update the
-//  PETSc vector view of the field.
+// PETSc vector view of the field.
 void
-pylith::topology::Field::scatterLocalToGlobal(const char* context) const
-{ // scatterLocalToGlobal
+pylith::topology::Field::scatterLocalToContext(const char* context) const
+{ // scatterLocalToContext
     PYLITH_METHOD_BEGIN;
 
     assert(context);
     const ScatterInfo& sinfo = _getScatter(context);
-    scatterLocalToGlobal(sinfo.vector, context);
+    scatterLocalToVector(sinfo.vector, context);
 
     PYLITH_METHOD_END;
-} // scatterLocalToGlobal
+} // scatterLocalToContext
 
 // ----------------------------------------------------------------------
 // Scatter section information across processors to update the
-//  PETSc vector view of the field.
+// PETSc vector view of the field.
 void
-pylith::topology::Field::scatterLocalToGlobal(const PetscVec vector,
+pylith::topology::Field::scatterLocalToVector(const PetscVec vector,
                                               const char* context) const
-{ // scatterLocalToGlobal
+{ // scatterLocalToVector
     PYLITH_METHOD_BEGIN;
 
     assert(vector);
@@ -1157,31 +1159,31 @@ pylith::topology::Field::scatterLocalToGlobal(const PetscVec vector,
     } // if
 
     PYLITH_METHOD_END;
-} // scatterLocalToGlobal
+} // scatterLocalToVector
 
 // ----------------------------------------------------------------------
 // Scatter PETSc vector information across processors to update the
 // section view of the field.
 void
-pylith::topology::Field::scatterGlobalToLocal(const char* context) const
-{ // scatterGlobalToLocal
+pylith::topology::Field::scatterContextToLocal(const char* context) const
+{ // scatterContextToLocal
     PYLITH_METHOD_BEGIN;
 
     assert(context);
 
     const ScatterInfo& sinfo = _getScatter(context);
-    scatterGlobalToLocal(sinfo.vector, context);
+    scatterVectorToLocal(sinfo.vector, context);
 
     PYLITH_METHOD_END;
-} // scatterGlobalToLocal
+} // scatterContextToLocal
 
 // ----------------------------------------------------------------------
 // Scatter PETSc vector information across processors to update the
 // section view of the field.
 void
-pylith::topology::Field::scatterGlobalToLocal(const PetscVec vector,
+pylith::topology::Field::scatterVectorToLocal(const PetscVec vector,
                                               const char* context) const
-{ // scatterGlobalToLocal
+{ // scatterVectorToLocal
     PYLITH_METHOD_BEGIN;
 
     assert(vector);
@@ -1195,7 +1197,7 @@ pylith::topology::Field::scatterGlobalToLocal(const PetscVec vector,
     } // if
 
     PYLITH_METHOD_END;
-} // scatterGlobalToLocal
+} // scatterVectorToLocal
 
 // ----------------------------------------------------------------------
 // Get scatter for given context.
@@ -1313,7 +1315,7 @@ pylith::topology::Field::subfieldsSetup(void)
     PetscErrorCode err;
 
     err = DMGetDS(_dm, &prob); PYLITH_CHECK_ERROR(err);
-    err = DMSetDefaultSection(_dm, NULL); PYLITH_CHECK_ERROR(err); // :TEMPORARY: Remove when using PetscDS for all fields.
+    err = DMSetDefaultSection(_dm, NULL); PYLITH_CHECK_ERROR(err); // :TODO: @brad Remove when using PetscDS for all fields.
     err = DMSetNumFields(_dm, _subfields.size()); PYLITH_CHECK_ERROR(err);
 
     for(subfields_type::const_iterator s_iter = _subfields.begin(); s_iter != _subfields.end(); ++s_iter) {
@@ -1515,7 +1517,8 @@ pylith::topology::Field::_extractSubfield(const Field& field,
         err = DMGetDefaultSection(subfieldInfo.dm, &s); PYLITH_CHECK_ERROR(err);
         err = DMSetDefaultSection(_dm, s); PYLITH_CHECK_ERROR(err);
     } else {
-        err = DMCreateSubDM(field.dmMesh(), numSubfields, indicesSubfield, &subfieldIS, &_dm); PYLITH_CHECK_ERROR(err); assert(_dm);
+        err = DMCreateSubDM(field.dmMesh(), numSubfields, indicesSubfield, &subfieldIS, &_dm); PYLITH_CHECK_ERROR(err);
+        assert(_dm);
     } // if/else
     err = ISDestroy(&subfieldIS); PYLITH_CHECK_ERROR(err);
 
@@ -1523,7 +1526,10 @@ pylith::topology::Field::_extractSubfield(const Field& field,
     for (int i=0; i < subfieldInfo.numComponents; ++i) {
         componentNames[i] = subfieldInfo.metadata.componentNames[i].c_str();
     } // for
-    this->subfieldAdd(subfieldInfo.metadata.label.c_str(), componentNames, subfieldInfo.numComponents, subfieldInfo.metadata.vectorFieldType, subfieldInfo.fe.basisOrder, subfieldInfo.fe.quadOrder, subfieldInfo.fe.isBasisContinuous, subfieldInfo.metadata.scale, subfieldInfo.metadata.validator);
+    this->subfieldAdd(
+        subfieldInfo.metadata.label.c_str(), componentNames, subfieldInfo.numComponents,
+        subfieldInfo.metadata.vectorFieldType, subfieldInfo.fe.basisOrder, subfieldInfo.fe.quadOrder,
+        subfieldInfo.fe.isBasisContinuous, subfieldInfo.metadata.scale, subfieldInfo.metadata.validator);
     delete[] componentNames; componentNames = 0;
 
     this->subfieldsSetup();
@@ -1561,7 +1567,8 @@ pylith::topology::Field::_extractSubfield(const Field& field,
         const PetscInt* indices = NULL;
         err = PetscSectionGetConstraintDof(subfieldSection, p, &dof); PYLITH_CHECK_ERROR(err);
         if (dof > 0) {
-            err = PetscSectionGetFieldConstraintIndices(fieldSection, p, subfieldIndex, &indices); PYLITH_CHECK_ERROR(err);
+            err = PetscSectionGetFieldConstraintIndices(fieldSection, p, subfieldIndex, &indices); PYLITH_CHECK_ERROR(
+                err);
             err = PetscSectionSetConstraintIndices(subfieldSection, p, indices); PYLITH_CHECK_ERROR(err);
         } // if
     } // for

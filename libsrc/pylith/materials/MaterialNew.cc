@@ -148,7 +148,7 @@ pylith::materials::MaterialNew::initialize(const pylith::topology::Field& soluti
         throw std::logic_error("Unknown case for setting up auxiliary fields.");
     } // if/else
     _auxFields->createScatter(mesh);
-    _auxFields->scatterLocalToGlobal();
+    _auxFields->scatterLocalToContext();
 
     PYLITH_METHOD_END;
 } // initialize

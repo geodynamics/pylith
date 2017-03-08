@@ -135,8 +135,8 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
         err = DMGetCoordinatesLocal(dmMesh, &coordinates); PYLITH_CHECK_ERROR(err);
         topology::Field coordinatesField(mesh, dmCoord, coordinates, metadata);
         coordinatesField.createScatterWithBC(mesh, "", 0, metadata.label.c_str());
-        coordinatesField.scatterLocalToGlobal(metadata.label.c_str());
-        PetscVec coordVector = coordinatesField.vector(metadata.label.c_str()); assert(coordVector);
+        coordinatesField.scatterLocalToContext(metadata.label.c_str());
+        PetscVec coordVector = coordinatesField.scatterVector(metadata.label.c_str()); assert(coordVector);
         err = VecScale(coordVector, lengthScale); PYLITH_CHECK_ERROR(err);
         err = PetscViewerHDF5PushGroup(_viewer, "/geometry"); PYLITH_CHECK_ERROR(err);
 #if 0
@@ -251,9 +251,9 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
             vzeroField.label(vlabel);
             vzeroField.vectorFieldType(topology::FieldBase::SCALAR);
             vzeroField.createScatterWithBC(mesh, "", 0, vlabel);
-            vzeroField.scatterLocalToGlobal(vlabel);
+            vzeroField.scatterLocalToContext(vlabel);
 
-            PetscVec vzeroVector = vzeroField.vector(vlabel); assert(vzeroVector);
+            PetscVec vzeroVector = vzeroField.scatterVector(vlabel); assert(vzeroVector);
             err = PetscObjectTypeCompare((PetscObject) vzeroVector, VECSEQ, &isseq); PYLITH_CHECK_ERROR(err);
             if (isseq) {err = VecView_Seq(vzeroVector, _viewer); PYLITH_CHECK_ERROR(err); }
             else       {err = VecView_MPI(vzeroVector, _viewer); PYLITH_CHECK_ERROR(err); }
@@ -266,9 +266,9 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
             czeroField.label(clabel);
             czeroField.vectorFieldType(topology::FieldBase::SCALAR);
             czeroField.createScatterWithBC(mesh, "", 0, clabel);
-            czeroField.scatterLocalToGlobal(clabel);
+            czeroField.scatterLocalToContext(clabel);
 
-            PetscVec czeroVector = czeroField.vector(clabel); assert(czeroVector);
+            PetscVec czeroVector = czeroField.scatterVector(clabel); assert(czeroVector);
             err = PetscObjectTypeCompare((PetscObject) czeroVector, VECSEQ, &isseq); PYLITH_CHECK_ERROR(err);
             if (isseq) {err = VecView_Seq(czeroVector, _viewer); PYLITH_CHECK_ERROR(err); }
             else       {err = VecView_MPI(czeroVector, _viewer); PYLITH_CHECK_ERROR(err); }
@@ -333,8 +333,8 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
         const char* context  = DataWriter::_context.c_str();
 
         field.createScatterWithBC(mesh, "", 0, context);
-        field.scatterLocalToGlobal(context);
-        PetscVec vector = field.vector(context); assert(vector);
+        field.scatterLocalToContext(context);
+        PetscVec vector = field.scatterVector(context); assert(vector);
 
         if (_timesteps.find(field.label()) == _timesteps.end())
             _timesteps[field.label()] = 0;
@@ -401,8 +401,8 @@ pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
         PetscErrorCode err = 0;
 
         field.createScatterWithBC(field.mesh(), label ? label : "", labelId, context);
-        field.scatterLocalToGlobal(context);
-        PetscVec vector = field.vector(context); assert(vector);
+        field.scatterLocalToContext(context);
+        PetscVec vector = field.scatterVector(context); assert(vector);
 
         if (_timesteps.find(field.label()) == _timesteps.end())
             _timesteps[field.label()] = 0;
