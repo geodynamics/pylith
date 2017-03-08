@@ -28,6 +28,7 @@
 // Include directives ----------------------------------------------------------
 #include <cppunit/extensions/HelperMacros.h>
 
+#include "pylith/topology/topologyfwd.hh" // forward declarations
 #include "pylith/utils/types.hh" // USES PylithScalar
 
 // Forward declarations --------------------------------------------------------
@@ -35,8 +36,6 @@
 namespace pylith {
     namespace topology {
         class TestSubMesh;
-
-        class Mesh;
         class TestSubMesh_Data;
     }   // topology
 }   // pylith
