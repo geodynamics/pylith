@@ -99,7 +99,7 @@ pylith::topology::TestMeshOps::testCheckTopology(void)
 { // testCheckTopology
     PYLITH_METHOD_BEGIN;
 
-    CPPUNIT_ASSERT_MESSAGE("Test not implemented.", false); // :TODO: ADD MORE HERE
+    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Test not implemented.", false); // :TODO: ADD MORE HERE
 
     PYLITH_METHOD_END;
 } // testCheckTopology
@@ -112,7 +112,7 @@ pylith::topology::TestMeshOps::testIsSimplexMesh(void)
 { // testIsSimplexMesh
     PYLITH_METHOD_BEGIN;
 
-    CPPUNIT_ASSERT_MESSAGE("Test not implemented.", false); // :TODO: ADD MORE HERE
+    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Test not implemented.", false); // :TODO: ADD MORE HERE
 
     PYLITH_METHOD_END;
 } // testIsSimplexMesh
@@ -152,7 +152,7 @@ pylith::topology::TestMeshOps::testNumMaterialCells(void)
 { // testNumMaterialCells
     PYLITH_METHOD_BEGIN;
 
-    CPPUNIT_ASSERT_MESSAGE("Test not implemented.", false); // :TODO: ADD MORE HERE
+    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Test not implemented.", false); // :TODO: ADD MORE HERE
 
     PYLITH_METHOD_END;
 } // testNumMaterialCells
