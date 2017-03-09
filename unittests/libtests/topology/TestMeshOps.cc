@@ -99,7 +99,22 @@ pylith::topology::TestMeshOps::testCheckTopology(void)
 { // testCheckTopology
     PYLITH_METHOD_BEGIN;
 
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Test not implemented.", false); // :TODO: ADD MORE HERE
+    const int numFiles = 4;
+    const char* filenames[numFiles] = {
+        "data/tri3.mesh",
+        "data/fourquad4.mesh",
+        "data/twotet4.mesh",
+        "data/twohex8.mesh",
+    };
+
+    for (int i=0; i < numFiles; ++i) {
+        const char* filename = filenames[i];
+        Mesh mesh;
+        meshio::MeshIOAscii iohandler;
+        iohandler.filename(filename);
+        iohandler.read(&mesh);
+        MeshOps::checkTopology(mesh);
+    } // for
 
     PYLITH_METHOD_END;
 } // testCheckTopology
@@ -112,7 +127,29 @@ pylith::topology::TestMeshOps::testIsSimplexMesh(void)
 { // testIsSimplexMesh
     PYLITH_METHOD_BEGIN;
 
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Test not implemented.", false); // :TODO: ADD MORE HERE
+    const int numFiles = 4;
+    const char* filenames[numFiles] = {
+        "data/tri3.mesh",
+        "data/fourquad4.mesh",
+        "data/twotet4.mesh",
+        "data/twohex8.mesh",
+    };
+    const bool results[numFiles] = {
+        true,
+        false,
+        true,
+        false,
+    };
+
+    for (int i=0; i < numFiles; ++i) {
+        const char* filename = filenames[i];
+        const bool isSimplex = results[i];
+        Mesh mesh;
+        meshio::MeshIOAscii iohandler;
+        iohandler.filename(filename);
+        iohandler.read(&mesh);
+        CPPUNIT_ASSERT_EQUAL(isSimplex, MeshOps::isSimplexMesh(mesh));
+    } // for
 
     PYLITH_METHOD_END;
 } // testIsSimplexMesh
@@ -126,7 +163,6 @@ pylith::topology::TestMeshOps::testCheckMaterialIds(void)
     PYLITH_METHOD_BEGIN;
 
     Mesh mesh;
-
     meshio::MeshIOAscii iohandler;
     iohandler.filename("data/tri3.mesh");
     iohandler.read(&mesh);
@@ -152,7 +188,15 @@ pylith::topology::TestMeshOps::testNumMaterialCells(void)
 { // testNumMaterialCells
     PYLITH_METHOD_BEGIN;
 
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Test not implemented.", false); // :TODO: ADD MORE HERE
+    Mesh mesh;
+    meshio::MeshIOAscii iohandler;
+    iohandler.filename("data/fourquad4.mesh");
+    iohandler.read(&mesh);
+
+    CPPUNIT_ASSERT_EQUAL(0, MeshOps::numMaterialCells(mesh, 0));
+    CPPUNIT_ASSERT_EQUAL(2, MeshOps::numMaterialCells(mesh, 1));
+    CPPUNIT_ASSERT_EQUAL(2, MeshOps::numMaterialCells(mesh, 2));
+    CPPUNIT_ASSERT_EQUAL(0, MeshOps::numMaterialCells(mesh, 3));
 
     PYLITH_METHOD_END;
 } // testNumMaterialCells
