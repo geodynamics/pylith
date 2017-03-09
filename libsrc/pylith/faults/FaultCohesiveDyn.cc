@@ -1470,7 +1470,7 @@ pylith::faults::FaultCohesiveDyn::_calcTractions(topology::Field* tractions,
   const PylithScalar pressureScale = _normalizer->pressureScale();
   tractions->label("traction");
   tractions->scale(pressureScale);
-  tractions->zeroAll();
+  tractions->zeroLocal();
 
   topology::VecVisitorMesh tractionsVisitor(*tractions);
   PetscScalar* tractionsArray = tractionsVisitor.localArray();
@@ -1626,7 +1626,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
     dispRel.cloneSection(solution);
   } // if
   topology::Field& dispRel = _fields->get("sensitivity relative disp");
-  dispRel.zeroAll();
+  dispRel.zeroLocal();
 
   if (!_fields->hasField("sensitivity dLagrange")) {
     _fields->add("sensitivity dLagrange", "sensitivity_dlagrange");
@@ -1635,7 +1635,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
     topology::VecVisitorMesh::optimizeClosure(dLagrange);
   } // if
   topology::Field& dLagrange = _fields->get("sensitivity dLagrange");
-  dLagrange.zeroAll();
+  dLagrange.zeroLocal();
 
   // Setup Jacobian sparse matrix for sensitivity solve.
   if (!_jacobian) {
@@ -1860,7 +1860,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negative
   scalar_array residualCell(numBasis*spaceDim);
   topology::Field& residual = _fields->get("sensitivity residual");
   topology::VecVisitorMesh residualVisitor(residual);
-  residual.zeroAll();
+  residual.zeroLocal();
 
   // Loop over cells
   for(PetscInt c = cStart; c < cEnd; ++c) {

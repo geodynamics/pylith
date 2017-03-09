@@ -144,7 +144,7 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
 
   _properties->newSection(cellsTmp, propsFiberDim);
   _properties->allocate();
-  _properties->zeroAll();
+  _properties->zeroLocal();
 
   // TODO Need to decide how to manage PetscDS
   PetscDS        prob;
@@ -202,7 +202,7 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
     assert(_properties);
     _stateVars->newSection(*_properties, stateVarsFiberDim);
     _stateVars->allocate();
-    _stateVars->zeroAll();
+    _stateVars->zeroLocal();
     stateVarsVisitor = new topology::VecVisitorMesh(*_stateVars);
     stateVarsArray = stateVarsVisitor->localArray();
   } // if

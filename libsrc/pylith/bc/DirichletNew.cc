@@ -92,7 +92,7 @@ pylith::bc::DirichletNew::initialize(const pylith::topology::Field& solution)
     _auxFieldsSetup();
     _auxFields->subfieldsSetup();
     _auxFields->allocate();
-    _auxFields->zeroAll();
+    _auxFields->zeroLocal();
 
     if (_auxFieldsDB) {
         assert(_normalizer);
@@ -106,6 +106,8 @@ pylith::bc::DirichletNew::initialize(const pylith::topology::Field& solution)
     _auxFields->createScatter(*_boundaryMesh);
     _auxFields->scatterLocalToContext();
     _auxFields->view("AUXILIARY FIELDS"); // :DEBUGGING: TEMPORARY
+
+    // :TODO: @brad @matt Set constraint DOF and indices in solution.
 
     PYLITH_METHOD_END;
 } // initialize
@@ -133,7 +135,8 @@ pylith::bc::DirichletNew::setValues(pylith::topology::Field* solution,
 
     // Set auxiliary data
     err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux); PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxFields->localVector()); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxFields->localVector()); PYLITH_CHECK_ERROR(
+        err);
 
     void* context = NULL;
     const int labelId = 1;
@@ -143,7 +146,10 @@ pylith::bc::DirichletNew::setValues(pylith::topology::Field* solution,
       // Inserting boundary values is not working.
 #else
     err = DMPlexLabelAddCells(dmSoln, dmLabel); PYLITH_CHECK_ERROR(err);
-    err = DMPlexInsertBoundaryValuesEssentialField(dmSoln, t, solution->localVector(), fieldIndex, dmLabel, 1, &labelId, _bcKernel, context, solution->localVector()); PYLITH_CHECK_ERROR(err);
+    err = DMPlexInsertBoundaryValuesEssentialField(dmSoln, t,
+                                                   solution->localVector(), fieldIndex, dmLabel, 1, &labelId, _bcKernel,
+                                                   context, solution->localVector());
+    PYLITH_CHECK_ERROR(err);
     err = DMPlexLabelClearCells(dmSoln, dmLabel); PYLITH_CHECK_ERROR(err);
 
     solution->view("SOLUTION"); // :DEBUGGING: TEMPORARY

@@ -298,7 +298,7 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
             topology::Field vzeroField(mesh);
             vzeroField.newSection(coordinatesField, 1);
             vzeroField.allocate();
-            vzeroField.zeroAll();
+            vzeroField.zeroLocal();
             vzeroField.label(vlabel);
             vzeroField.vectorFieldType(topology::FieldBase::SCALAR);
             vzeroField.createScatterWithBC(mesh, "", 0, vlabel);
@@ -327,7 +327,7 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
             topology::Field czeroField(mesh);
             czeroField.newSection(cStart, cEnd, 1);
             czeroField.allocate();
-            czeroField.zeroAll();
+            czeroField.zeroLocal();
             czeroField.label(clabel);
             czeroField.vectorFieldType(topology::FieldBase::SCALAR);
             czeroField.createScatterWithBC(mesh, "", 0, clabel);

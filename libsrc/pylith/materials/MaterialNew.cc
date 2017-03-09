@@ -136,7 +136,7 @@ pylith::materials::MaterialNew::initialize(const pylith::topology::Field& soluti
     _auxFieldsSetup();
     _auxFields->subfieldsSetup();
     _auxFields->allocate();
-    _auxFields->zeroAll();
+    _auxFields->zeroLocal();
 
     if (_auxFieldsDB) {
         assert(_normalizer);

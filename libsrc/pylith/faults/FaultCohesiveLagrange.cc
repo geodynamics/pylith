@@ -1443,7 +1443,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
     } // if
     orientation.subfieldSetDof("normal_dir", topology::FieldBase::VERTICES_FIELD, spaceDim);
     orientation.allocate();
-    orientation.zeroAll();
+    orientation.zeroLocal();
 
     topology::VecVisitorMesh orientationVisitor(orientation);
     PetscScalar* orientationArray = orientationVisitor.localArray();
@@ -1717,7 +1717,7 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
     area.vectorFieldType(topology::FieldBase::SCALAR);
     const PylithScalar lengthScale = _normalizer->lengthScale();
     area.scale(pow(lengthScale, (spaceDim-1)));
-    area.zeroAll();
+    area.zeroLocal();
 
     topology::VecVisitorMesh areaVisitor(area);
     scalar_array areaCell(numBasis);
@@ -1791,7 +1791,7 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(topology::Field* tra
         const topology::Field& dispRel = _fields->get("relative disp");
         tractions->cloneSection(dispRel);
     } // if
-    tractions->zeroAll();
+    tractions->zeroLocal();
 
     topology::VecVisitorMesh tractionsVisitor(*tractions);
     PetscScalar* tractionsArray = tractionsVisitor.localArray();
@@ -1849,7 +1849,7 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferVectorField(void)
     topology::Field& buffer = _fields->get("buffer (vector)");
     const topology::Field& dispRel = _fields->get("relative disp");
     buffer.cloneSection(dispRel);
-    buffer.zeroAll();
+    buffer.zeroLocal();
     assert(buffer.vectorFieldType() == topology::FieldBase::VECTOR);
 
     PYLITH_METHOD_END;
@@ -1874,7 +1874,7 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferScalarField(void)
     buffer.allocate();
     buffer.vectorFieldType(topology::FieldBase::SCALAR);
     buffer.scale(1.0);
-    buffer.zeroAll();
+    buffer.zeroLocal();
     assert(buffer.vectorFieldType() == topology::FieldBase::SCALAR);
 
     PYLITH_METHOD_END;

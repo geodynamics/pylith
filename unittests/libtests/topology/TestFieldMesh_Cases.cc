@@ -48,7 +48,60 @@ namespace pylith {
                     1.0, 1.0,
                 };
                 _data->coordinates = const_cast<PylithScalar*>(_coordinates);
+
+                // Subfield A
+                _data->subfieldAName = "displacement";
+                _data->subfieldAType = FieldBase::VECTOR;
+                _data->subfieldAScale = 2.0;
+                _data->subfieldANumComponents = 2;
+                static const char* _subfieldAComponents[2] = {"displacement_x", "displacement_y"};
+                _data->subfieldAComponents = const_cast<const char**>(_subfieldAComponents);
+                static const int _subfieldANumConstraints[4] = { 0, 2, 1, 1 };
+                _data->subfieldANumConstraints = const_cast<int*>(_subfieldANumConstraints);
+                static const int _subfieldAConstraints[4] = {
+                    // 0
+                    0, 1, // 1
+                    1,   // 2
+                    0,   // 3
+                };
+                _data->subfieldAConstraints = const_cast<int*>(_subfieldAConstraints);
+                static const PylithScalar _subfieldAValues[4*2] = {
+                    1.1, 1.2,
+                    2.1, 2.2,
+                    3.1, 3.2,
+                    4.1, 4.2,
+                };
+                _data->subfieldAValues = const_cast<PylithScalar*>(_subfieldAValues);
+                _data->subfieldABasisOrder = 1;
+                _data->subfieldAQuadOrder = 1;
+
+                // Subfield B
+                _data->subfieldBName = "fluid_pressure";
+                _data->subfieldAType = FieldBase::SCALAR;
+                _data->subfieldBScale = 0.1;
+                _data->subfieldBNumComponents = 1;
+                static const char* _subfieldBComponents[1] = {"pressure"};
+                _data->subfieldBComponents = const_cast<const char**>(_subfieldBComponents);
+                static const int _subfieldBNumConstraints[4] = { 1, 0, 1, 0 };
+                _data->subfieldBNumConstraints = const_cast<int*>(_subfieldBNumConstraints);
+                static const int _subfieldBConstraints[4] = {
+                    0,  // 0
+                        // 1
+                    0,  // 2
+                        // 3
+                };
+                _data->subfieldBConstraints = const_cast<int*>(_subfieldBConstraints);
+                static const PylithScalar _subfieldBValues[4*1] = {
+                    1.3,
+                    2.3,
+                    3.3,
+                    4.3,
+                };
+                _data->subfieldBValues = const_cast<PylithScalar*>(_subfieldBValues);
+                _data->subfieldBBasisOrder = 1;
+                _data->subfieldBQuadOrder = 1;
             }   // setUp
+
 
         };  // TestFieldMesh_Quad
         CPPUNIT_TEST_SUITE_REGISTRATION( TestFieldMesh_Quad );

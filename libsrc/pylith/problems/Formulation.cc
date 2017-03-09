@@ -208,7 +208,7 @@ pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
 
   // Set residual to zero.
   topology::Field& residual = _fields->get("residual");
-  residual.zeroAll();
+  residual.zeroLocal();
 
   // Add in contributions that require assembly.
   const int numIntegrators = _integrators.size();
@@ -292,7 +292,7 @@ pylith::problems::Formulation::reformJacobianLumped(void)
   assert(_fields);
 
   // Set jacobian to zero.
-  _jacobianLumped->zeroAll();
+  _jacobianLumped->zeroLocal();
 
   // Add in contributions that require assembly.
   const int numIntegrators = _integrators.size();
@@ -324,7 +324,7 @@ pylith::problems::Formulation::constrainSolnSpace(const PetscVec* tmpSolutionVec
     adjust.cloneSection(solution);
   } // for
   topology::Field& adjust = _fields->get("dispIncr adjust");
-  adjust.zeroAll();
+  adjust.zeroLocal();
 
   // Update section view of field.
   if (tmpSolutionVec) {
@@ -339,7 +339,9 @@ pylith::problems::Formulation::constrainSolnSpace(const PetscVec* tmpSolutionVec
   } // for
 
   adjust.complete();
-  solution += adjust;  
+  PetscVec solutionVec = solution.localVector();
+  PetscVec adjustVec = adjust.localVector();
+  PetscErrorCode err = VecAXPY(solutionVec, 1.0, adjustVec); PYLITH_CHECK_ERROR(err);
 
   // Update PETScVec of solution for changes to Lagrange multipliers.
   if (tmpSolutionVec) {
@@ -365,7 +367,7 @@ pylith::problems::Formulation::adjustSolnLumped(void)
     adjust.cloneSection(solution);
   } // for
   topology::Field& adjust = _fields->get("dispIncr adjust");
-  adjust.zeroAll();
+  adjust.zeroLocal();
 
   const int numIntegrators = _integrators.size();
   for (int i=0; i < numIntegrators; ++i) {
@@ -373,7 +375,9 @@ pylith::problems::Formulation::adjustSolnLumped(void)
   } // for
 
   adjust.complete();
-  solution += adjust;
+  PetscVec solutionVec = solution.localVector();
+  PetscVec adjustVec = adjust.localVector();
+  PetscErrorCode err = VecAXPY(solutionVec, 1.0, adjustVec); PYLITH_CHECK_ERROR(err);
 
   PYLITH_METHOD_END;
 } // adjustSolnLumped

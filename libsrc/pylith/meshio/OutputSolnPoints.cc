@@ -276,7 +276,7 @@ pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
     fieldInterp.label(field.label());
     fieldInterp.vectorFieldType(field.vectorFieldType());
     fieldInterp.scale(field.scale());
-    fieldInterp.zeroAll();
+    fieldInterp.zeroLocal();
 
 #if 0 // uses context
     const char* context = fieldName.c_str();

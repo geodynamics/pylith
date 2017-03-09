@@ -259,7 +259,7 @@ pylith::topology::TestReverseCuthillMcKee::_testReorder(const char* filename,
     Field fieldOrig(meshOrig);
     fieldOrig.newSection(FieldBase::VERTICES_FIELD, meshOrig.dimension());
     fieldOrig.allocate();
-    fieldOrig.zero();
+    fieldOrig.zeroLocal();
     Jacobian jacobianOrig(fieldOrig);
     PetscInt bandwidthOrig = 0;
     err = MatComputeBandwidth(jacobianOrig.matrix(), 0.0, &bandwidthOrig); PYLITH_CHECK_ERROR(err);
@@ -267,7 +267,7 @@ pylith::topology::TestReverseCuthillMcKee::_testReorder(const char* filename,
     Field field(mesh);
     field.newSection(FieldBase::VERTICES_FIELD, mesh.dimension());
     field.allocate();
-    field.zero();
+    field.zeroLocal();
     Jacobian jacobian(field);
     PetscInt bandwidth = 0;
     err = MatComputeBandwidth(jacobian.matrix(), 0.0, &bandwidth); PYLITH_CHECK_ERROR(err);

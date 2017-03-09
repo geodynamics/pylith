@@ -69,10 +69,11 @@ pylith::topology::Field::Field(const Mesh& mesh) :
             err = DMSetCoordinatesLocal(_dm, coordVec); PYLITH_CHECK_ERROR(err);
         } // if
 
-        // :TEMPORARY: These 3 lines go away once we have everything converted to using PetscDS.
+#if 1 // :TEMPORARY: These 3 lines go away once we have everything converted to using PetscDS.
         err = PetscSectionCreate(mesh.comm(), &s); PYLITH_CHECK_ERROR(err);
         err = DMSetDefaultSection(_dm, s); PYLITH_CHECK_ERROR(err);
         err = PetscSectionDestroy(&s); PYLITH_CHECK_ERROR(err);
+#endif
     } // if
 
     PYLITH_METHOD_END;
@@ -663,48 +664,17 @@ pylith::topology::Field::allocate(void)
 } // allocate
 
 // ----------------------------------------------------------------------
-// Zero section values (excluding constrained DOF).
+// Zero local vector values (including constrained DOF).
 void
-pylith::topology::Field::zero(void)
-{ // zero
-    PYLITH_METHOD_BEGIN;
-
-    assert(_localVec);
-    PetscSection section = NULL;
-    PetscInt pStart, pEnd, maxDof = 0;
-    PetscErrorCode err;
-
-    err = DMGetDefaultSection(_dm, &section); PYLITH_CHECK_ERROR(err);
-    err = PetscSectionGetChart(section, &pStart, &pEnd); PYLITH_CHECK_ERROR(err);
-    if (pEnd > pStart) {err = PetscSectionGetMaxDof(section, &maxDof); PYLITH_CHECK_ERROR(err); }
-    scalar_array values(maxDof);
-    values *= 0.0;
-
-    for(PetscInt p = pStart; p < pEnd; ++p) {
-        PetscInt dof;
-
-        err = PetscSectionGetDof(section, p, &dof); PYLITH_CHECK_ERROR(err);
-        if (dof > 0) {
-            assert(dof <= maxDof);
-            err = VecSetValuesSection(_localVec, section, p, &values[0], INSERT_VALUES); PYLITH_CHECK_ERROR(err);
-        } // if
-    } // for
-
-    PYLITH_METHOD_END;
-} // zero
-
-// ----------------------------------------------------------------------
-// Zero section values (including constrained DOF).
-void
-pylith::topology::Field::zeroAll(void)
-{ // zeroAll
+pylith::topology::Field::zeroLocal(void)
+{ // zeroLocal
     PYLITH_METHOD_BEGIN;
 
     assert(_localVec);
     PetscErrorCode err = VecSet(_localVec, 0.0); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
-} // zeroAll
+} // zeroLocal
 
 // ----------------------------------------------------------------------
 // Complete section by assembling across processors.
@@ -766,43 +736,6 @@ pylith::topology::Field::copy(const Field& field)
 
     PYLITH_METHOD_END;
 } // copy
-
-// ----------------------------------------------------------------------
-// Add two fields, storing the result in one of the fields.
-pylith::topology::Field&
-pylith::topology::Field::operator+=(const Field& field)
-{ // operator+=
-    PYLITH_METHOD_BEGIN;
-
-    // Check compatibility of sections
-    const int srcSize = field.chartSize();
-    const int dstSize = chartSize();
-    if (field.spaceDim() != spaceDim() ||
-        field._metadata.vectorFieldType != _metadata.vectorFieldType ||
-        field._metadata.scale != _metadata.scale ||
-        srcSize != dstSize) {
-        std::ostringstream msg;
-
-        msg << "Cannot add values from section '" << field._metadata.label
-            << "' to section '" << _metadata.label
-            << "'. Sections are incompatible.\n"
-            << "  Source section:\n"
-            << "    space dim: " << field.spaceDim() << "\n"
-            << "    vector field type: " << field._metadata.vectorFieldType << "\n"
-            << "    scale: " << field._metadata.scale << "\n"
-            << "    size: " << srcSize << "\n"
-            << "  Destination section:\n"
-            << "    space dim: " << spaceDim() << "\n"
-            << "    vector field type: " << _metadata.vectorFieldType << "\n"
-            << "    scale: " << _metadata.scale << "\n"
-            << "    size: " << dstSize;
-        throw std::runtime_error(msg.str());
-    } // if
-    assert(_localVec && field._localVec);
-    PetscErrorCode err = VecAXPY(_localVec, 1.0, field._localVec); PYLITH_CHECK_ERROR(err);
-
-    PYLITH_METHOD_RETURN(*this);
-} // operator+=
 
 // ----------------------------------------------------------------------
 // Dimensionalize field.

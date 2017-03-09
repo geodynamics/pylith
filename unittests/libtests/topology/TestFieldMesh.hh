@@ -29,6 +29,9 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
+#include "pylith/utils/petscfwd.h" // forward declarations
+
+#include "pylith/topology/FieldBase.hh" // USES FieldBase::VectorFieldType
 
 // Forward declarations -------------------------------------------------
 /// Namespace for pylith package
@@ -56,11 +59,10 @@ class pylith::topology::TestFieldMesh : public CppUnit::TestFixture {
     CPPUNIT_TEST( testSubfields );
     CPPUNIT_TEST( testClear );
     CPPUNIT_TEST( testAllocate );
-    CPPUNIT_TEST( testZero );
+    CPPUNIT_TEST( testZeroLocal );
     CPPUNIT_TEST( testComplete );
     CPPUNIT_TEST( testCopy );
     CPPUNIT_TEST( testCopySubfield );
-    CPPUNIT_TEST( testOperatorAdd );
     CPPUNIT_TEST( testDimensionalize );
     CPPUNIT_TEST( testView );
     CPPUNIT_TEST( testScatter );
@@ -106,8 +108,8 @@ public:
     /// Test allocate().
     void testAllocate(void);
 
-    /// Test zero(), zeroAll()..
-    void testZero(void);
+    /// Test zeroLocal().
+    void testZeroLocal(void);
 
     /// Test complete().
     void testComplete(void);
@@ -117,9 +119,6 @@ public:
 
     /// Test copySubfield().
     void testCopySubfield(void);
-
-    /// Test operator+=().
-    void testOperatorAdd(void);
 
     /// Test dimensionalize().
     void testDimensionalize(void);
@@ -133,16 +132,31 @@ public:
     // PROTECTED METHODS ///////////////////////////////////////////////////////
 protected:
 
-    /** Build mesh.
+    /// Initialize mesh and test field.
+    void _initialize(void);
+
+    /** Verify values in field match expected values.
      *
-     * @param mesh Finite-element mesh.
+     * @param field Field containing values to test.
+     * @param scale Scale to apply to expected values.
      */
-    void _initializeMesh(Mesh* mesh);
+    void _checkValues(const Field& field,
+                      const PylithReal scale =1.0);
+
+    /** Verify values in PETSc vector match expected values.
+     *
+     * @param vec PETSc vec containing values to test.
+     * @param scale Scale to apply to expected values.
+     */
+    void _checkValues(const PetscVec& vec,
+                      const PylithReal scale =1.0);
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////
 protected:
 
     TestFieldMesh_Data* _data; ///< Data for testing.
+    Mesh* _mesh; ///< Finite-element mesh.
+    Field* _field; ///< Test field associated with mesh.
 
 }; // class TestFieldMesh
 
@@ -169,6 +183,34 @@ public:
     int numCorners; ///< Number of vertices per cell.
     int* cells; ///< Array of vertices in cells [numCells*numCorners].
     PylithScalar* coordinates;  ///< Coordinates of vertices [numVertices*cellDim].
+    /// @}
+
+    /// @defgroup Subfield A information.
+    /// @{
+    const char* subfieldAName;
+    FieldBase::VectorFieldEnum subfieldAType;
+    PylithReal subfieldAScale;
+    int subfieldANumComponents;
+    const char** subfieldAComponents;
+    int* subfieldANumConstraints;
+    int* subfieldAConstraints;
+    PylithScalar* subfieldAValues;
+    int subfieldABasisOrder;
+    int subfieldAQuadOrder;
+    /// @}
+
+    /// @defgroup Subfield B information.
+    /// @{
+    const char* subfieldBName;
+    FieldBase::VectorFieldEnum subfieldBType;
+    PylithReal subfieldBScale;
+    int subfieldBNumComponents;
+    const char** subfieldBComponents;
+    int* subfieldBNumConstraints;
+    int* subfieldBConstraints;
+    PylithScalar* subfieldBValues;
+    int subfieldBBasisOrder;
+    int subfieldBQuadOrder;
     /// @}
 
 };  // TestFieldMesh_Data

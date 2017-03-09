@@ -264,7 +264,7 @@ pylith::problems::Problem::initialize(void)
 
     // Initialize solution field.
     _solution->allocate();
-    _solution->zeroAll();
+    _solution->zeroLocal();
 
     // Initialize output.
     const size_t numOutput = _outputs.size();
@@ -437,7 +437,7 @@ pylith::problems::Problem::computeLHSJacobianLumpedInv(const PylithReal t,
 
     // Set jacobian to zero.
     assert(_jacobianLHSLumpedInv);
-    _jacobianLHSLumpedInv->zeroAll();
+    _jacobianLHSLumpedInv->zeroLocal();
 
     // Update PyLith view of the solution.
     assert(_solution);
