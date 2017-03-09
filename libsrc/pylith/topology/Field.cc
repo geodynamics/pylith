@@ -846,15 +846,15 @@ pylith::topology::Field::view(const char* label) const
         for(subfields_type::const_iterator s_iter = _subfields.begin(); s_iter != _subfields.end(); ++s_iter) {
             const char* sname = s_iter->first.c_str();
             const SubfieldInfo& sinfo = s_iter->second;
-            std::cout << "    Subfield " << sname << ", Index: " << sinfo.index;
+            std::cout << "    Subfield " << sname << ", index: " << sinfo.index;
             const int nscomps = sinfo.numComponents;
             if (nscomps > 0) {
-                std::cout << ", Components:";
+                std::cout << ", components:";
                 for (int i=0; i < nscomps; ++i) {
                     std::cout << " " << sinfo.metadata.componentNames[i];
                 } // for
             } // if
-            std::cout << "\n";
+            std::cout << ", scale: " << sinfo.metadata.scale << "\n";
         } // for
     } // if
 
