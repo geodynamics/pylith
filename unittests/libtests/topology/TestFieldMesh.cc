@@ -163,7 +163,10 @@ pylith::topology::TestFieldMesh::testVectorAccessors(void)
 
     const PetscVec& globalVec = _field->globalVector();
     err = VecGetSize(globalVec, &size); CPPUNIT_ASSERT(!err);
-    CPPUNIT_ASSERT_EQUAL(_data->numVertices * fiberDim, size); // :TODO: @brad Fix this. (account for constraints)
+    // Count total number of expected constraints.
+    PylithInt numConstraints = _data->bcANumVertices * _data->bcANumConstrainedDOF +
+                               _data->bcBNumVertices * _data->bcBNumConstrainedDOF;
+    CPPUNIT_ASSERT_EQUAL(_data->numVertices * fiberDim - numConstraints, size); // :TODO: @brad Fix this. (account for constraints)
 
     PYLITH_METHOD_END;
 } // testVectorAccessors
@@ -310,9 +313,25 @@ pylith::topology::TestFieldMesh::testCloneSection(void)
         PetscInt dof, cdof;
         err = PetscSectionGetDof(section, v, &dof); CPPUNIT_ASSERT(!err);
         CPPUNIT_ASSERT_EQUAL(fiberDim, dof);
+
+        // Count number of expected constraints on vertex.
+        PylithInt numConstraintsE = 0;
+        for (int i=0; i < _data->bcANumVertices; ++i) {
+            const PylithInt vIndex = v - _data->numCells;
+            if (_data->bcAVertices[i] == vIndex) {
+                numConstraintsE += _data->bcANumConstrainedDOF;
+                break;
+            }
+        } // for
+        for (int i=0; i < _data->bcBNumVertices; ++i) {
+            const PylithInt vIndex = v - _data->numCells;
+            if (_data->bcBVertices[i] == vIndex) {
+                numConstraintsE += _data->bcBNumConstrainedDOF;
+                break;
+            }
+        } // for
         err = PetscSectionGetConstraintDof(section, v, &cdof); CPPUNIT_ASSERT(!err);
-        const PylithInt numConstraints = _data->subfieldANumConstraints[iV] + _data->subfieldBNumConstraints[iV];
-        CPPUNIT_ASSERT_EQUAL(numConstraints, cdof);
+        CPPUNIT_ASSERT_EQUAL(numConstraintsE, cdof);
     } // for
 
     // Verify vector scatters were also copied.
@@ -327,14 +346,59 @@ pylith::topology::TestFieldMesh::testCloneSection(void)
 
 // ----------------------------------------------------------------------
 void
-pylith::topology::TestFieldMesh::testSubfields(void)
-{ // testSubfields
+pylith::topology::TestFieldMesh::testSubfieldAccessors(void)
+{ // testSubfieldAccessors
     PYLITH_METHOD_BEGIN;
+    _initialize();
+    CPPUNIT_ASSERT(_mesh);
+    CPPUNIT_ASSERT(_field);
 
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Test not implemented.", false);
+    // Subfields setup via subfieldAdd() and subfieldsSetup() in _initialize().
+
+    // Test hasSubfield().
+    CPPUNIT_ASSERT(_field->hasSubfield(_data->subfieldAName));
+    CPPUNIT_ASSERT(_field->hasSubfield(_data->subfieldBName));
+    CPPUNIT_ASSERT(!_field->hasSubfield("zyxwvut987654321"));
+
+    // Test subfieldNames().
+    const string_vector& names = _field->subfieldNames();
+    CPPUNIT_ASSERT_EQUAL(size_t(2), names.size());
+    CPPUNIT_ASSERT_EQUAL(std::string(_data->subfieldAName), names[0]);
+    CPPUNIT_ASSERT_EQUAL(std::string(_data->subfieldBName), names[1]);
+
+    { // Test subfieldInfo() for subfield A.
+        const Field::SubfieldInfo& infoA = _field->subfieldInfo(_data->subfieldAName);
+        CPPUNIT_ASSERT_EQUAL(0, infoA.index);
+        CPPUNIT_ASSERT_EQUAL(_data->subfieldANumComponents, infoA.numComponents);
+        CPPUNIT_ASSERT_EQUAL(std::string(_data->subfieldAName), infoA.metadata.label);
+        CPPUNIT_ASSERT_EQUAL(_data->subfieldAType, infoA.metadata.vectorFieldType);
+        CPPUNIT_ASSERT_EQUAL(_data->subfieldAScale, infoA.metadata.scale);
+        const string_vector& componentNames = infoA.metadata.componentNames;
+        CPPUNIT_ASSERT_EQUAL(size_t(_data->subfieldANumComponents), componentNames.size());
+        for (int i=0; i < _data->subfieldANumComponents; ++i) {
+            CPPUNIT_ASSERT_EQUAL(std::string(_data->subfieldAComponents[i]), componentNames[i]);
+        } // for
+        CPPUNIT_ASSERT_EQUAL(_data->subfieldABasisOrder, infoA.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(_data->subfieldAQuadOrder, infoA.fe.quadOrder);
+    } // Test subfieldInfo() for subfield A.
+
+    { // Test subfieldInfo() for subfield B.
+        const Field::SubfieldInfo& infoB = _field->subfieldInfo(_data->subfieldBName);
+        CPPUNIT_ASSERT_EQUAL(_data->subfieldBNumComponents, infoB.numComponents);
+        CPPUNIT_ASSERT_EQUAL(std::string(_data->subfieldBName), infoB.metadata.label);
+        CPPUNIT_ASSERT_EQUAL(_data->subfieldBType, infoB.metadata.vectorFieldType);
+        CPPUNIT_ASSERT_EQUAL(_data->subfieldBScale, infoB.metadata.scale);
+        const string_vector& componentNames = infoB.metadata.componentNames;
+        CPPUNIT_ASSERT_EQUAL(size_t(_data->subfieldBNumComponents), componentNames.size());
+        for (int i=0; i < _data->subfieldBNumComponents; ++i) {
+            CPPUNIT_ASSERT_EQUAL(std::string(_data->subfieldBComponents[i]), componentNames[i]);
+        } // for
+        CPPUNIT_ASSERT_EQUAL(_data->subfieldBBasisOrder, infoB.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(_data->subfieldBQuadOrder, infoB.fe.quadOrder);
+    } // Test subfieldInfo() for subfield B.
 
     PYLITH_METHOD_END;
-} /// testSubfields
+} /// testSubfieldAccessors
 
 // ----------------------------------------------------------------------
 // Test clear().
@@ -642,56 +706,43 @@ pylith::topology::TestFieldMesh::_initialize(void)
     cs.initialize();
     _mesh->coordsys(&cs);
 
+    // Setup labels for constraints.
+    PetscErrorCode err;
+    for (PylithInt i=0; i < _data->bcANumVertices; ++i) {
+        err = DMSetLabelValue(_mesh->dmMesh(), _data->bcALabel, numCells+_data->bcAVertices[i], _data->bcALabelId);
+        CPPUNIT_ASSERT(!err);
+    }   // for
+    for (PylithInt i=0; i < _data->bcBNumVertices; ++i) {
+        err = DMSetLabelValue(_mesh->dmMesh(), _data->bcBLabel, numCells+_data->bcBVertices[i], _data->bcBLabelId);
+        CPPUNIT_ASSERT(!err);
+    }   // for
+
+
+    // Setup field
     delete _field; _field = new Field(*_mesh);
     _field->label("solution");
     _field->subfieldAdd(_data->subfieldAName, _data->subfieldAComponents, _data->subfieldANumComponents,
-                        _data->subfieldAType, _data->subfieldABasisOrder, _data->subfieldAQuadOrder,
-                        _data->subfieldAScale, true);
+                        _data->subfieldAType, _data->subfieldABasisOrder, _data->subfieldAQuadOrder, true,
+                        _data->subfieldAScale, NULL);
     _field->subfieldAdd(_data->subfieldBName, _data->subfieldBComponents, _data->subfieldBNumComponents,
-                        _data->subfieldBType, _data->subfieldBBasisOrder,_data->subfieldBQuadOrder,
-                        _data->subfieldBScale, true);
+                        _data->subfieldBType, _data->subfieldBBasisOrder, _data->subfieldBQuadOrder, true,
+                        _data->subfieldBScale, NULL);
     _field->subfieldsSetup();
 
+    err = DMAddBoundary(_field->dmMesh(), DM_BC_ESSENTIAL, "bcA", _data->bcALabel, 0, _data->bcANumConstrainedDOF,
+                        _data->bcAConstrainedDOF, NULL, 1, &_data->bcALabelId, NULL); CPPUNIT_ASSERT(!err);
+    err = DMAddBoundary(_field->dmMesh(), DM_BC_ESSENTIAL, "bcB", _data->bcBLabel, 0, _data->bcBNumConstrainedDOF,
+                        _data->bcBConstrainedDOF, NULL, 1, &_data->bcBLabelId, NULL); CPPUNIT_ASSERT(!err);
+
+    // Allocate field.
+    _field->allocate();
+
+    // Populate with values.
     PetscDM dmMesh = _mesh->dmMesh(); CPPUNIT_ASSERT(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
     const PetscInt vStart = depthStratum.begin();
     const PetscInt vEnd = depthStratum.end();
-    PetscErrorCode err;
 
-    // Set number of constraints
-#if 0
-    PetscSection section = _field->localSection(); CPPUNIT_ASSERT(section);
-    for (PylithInt v=vStart, iVertex=0; v < vEnd; ++v) {
-        const PylithInt numConstraintsA = _data->subfieldANumConstraints[iVertex];
-        const PylithInt numConstraintsB = _data->subfieldBNumConstraints[iVertex];
-        const PylithInt numConstraintsVertex = numConstraintsA + numConstraintsB;
-        err = PetscSectionSetConstraintDof(section, v, numConstraintsVertex); CPPUNIT_ASSERT(!err);
-        err = PetscSectionSetFieldConstraintDof(section, v, 0, numConstraintsA);
-        err = PetscSectionSetFieldConstraintDof(section, v, 1, numConstraintsB);
-    } // for
-#endif
-
-    // Allocate field.
-    _field->allocate();
-#if 0
-    // Set constraint DOF.
-    for (PylithInt v=vStart, iVertex=0, indexA=0, indexB=0; v < vEnd; ++v) {
-        const PylithInt numConstraintsA = _data->subfieldANumConstraints[iVertex];
-        const PylithInt numConstraintsB = _data->subfieldBNumConstraints[iVertex];
-        const PylithInt numConstraintsVertex = numConstraintsA + numConstraintsB;
-        int_array constraints(numConstraintsVertex);
-        PylithInt iC = 0;
-        for (PylithInt i=0; i < numConstraintsA; ++i) {
-            constraints[iC++] = _data->subfieldAConstraints[indexA++];
-        } // for
-        for (PylithInt i=0; i < numConstraintsB; ++i) {
-            constraints[iC++] = _data->subfieldBConstraints[indexB++];
-        } // for
-        err = PetscSectionSetConstraintIndices(section, v, &constraints[0]); CPPUNIT_ASSERT(!err);
-    } // for
-#endif
-
-    // Populate with values.
     VecVisitorMesh fieldVisitor(*_field);
     const PylithInt fiberDim = _data->subfieldANumComponents + _data->subfieldBNumComponents;
     PetscScalar* fieldArray = fieldVisitor.localArray();
@@ -802,7 +853,37 @@ pylith::topology::TestFieldMesh_Data::TestFieldMesh_Data(void) :
     numCells(0),
     numCorners(0),
     cells(NULL),
-    coordinates(NULL)
+    coordinates(NULL),
+
+    subfieldAName(NULL),
+    subfieldAType(Field::OTHER),
+    subfieldAScale(0.0),
+    subfieldANumComponents(0),
+    subfieldAComponents(NULL),
+    subfieldAValues(NULL),
+    subfieldABasisOrder(0),
+    subfieldAQuadOrder(0),
+    bcALabel(NULL),
+    bcALabelId(0),
+    bcANumConstrainedDOF(0),
+    bcAConstrainedDOF(NULL),
+    bcANumVertices(0),
+    bcAVertices(NULL),
+
+    subfieldBName(NULL),
+    subfieldBType(Field::OTHER),
+    subfieldBScale(0.0),
+    subfieldBNumComponents(0),
+    subfieldBComponents(NULL),
+    subfieldBValues(NULL),
+    subfieldBBasisOrder(0),
+    subfieldBQuadOrder(0),
+    bcBLabel(NULL),
+    bcBLabelId(0),
+    bcBNumConstrainedDOF(0),
+    bcBConstrainedDOF(NULL),
+    bcBNumVertices(0),
+    bcBVertices(NULL)
 {   // constructor
 }   // constructor
 

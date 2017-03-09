@@ -56,7 +56,7 @@ class pylith::topology::TestFieldMesh : public CppUnit::TestFixture {
     CPPUNIT_TEST( testVectorAccessors );
     CPPUNIT_TEST( testNewSection );
     CPPUNIT_TEST( testCloneSection );
-    CPPUNIT_TEST( testSubfields );
+    CPPUNIT_TEST( testSubfieldAccessors );
     CPPUNIT_TEST( testClear );
     CPPUNIT_TEST( testAllocate );
     CPPUNIT_TEST( testZeroLocal );
@@ -100,7 +100,7 @@ public:
     void testCloneSection(void);
 
     /// Test subfieldAdd(), subfieldsSetup(), subfieldSetDof(), hasSubfield(), subfieldNames(), subfieldInfo().
-    void testSubfields(void);
+    void testSubfieldAccessors(void);
 
     /// Test clear().
     void testClear(void);
@@ -187,30 +187,40 @@ public:
 
     /// @defgroup Subfield A information.
     /// @{
-    const char* subfieldAName;
-    FieldBase::VectorFieldEnum subfieldAType;
-    PylithReal subfieldAScale;
-    int subfieldANumComponents;
-    const char** subfieldAComponents;
-    int* subfieldANumConstraints;
-    int* subfieldAConstraints;
-    PylithScalar* subfieldAValues;
-    int subfieldABasisOrder;
-    int subfieldAQuadOrder;
+    const char* subfieldAName; ///< Name of subfield.
+    FieldBase::VectorFieldEnum subfieldAType; ///< Vector field type.
+    PylithReal subfieldAScale; ///< Scale.
+    int subfieldANumComponents; ///< Number of components in subfield.
+    const char** subfieldAComponents; ///< Names of components.
+    PylithScalar* subfieldAValues; ///< Array of values to for subfield,
+    int subfieldABasisOrder; ///< Basis order for discretization.
+    int subfieldAQuadOrder; ///< Quadrature order for discretization.
+
+    const char* bcALabel; ///< Label for boundary condition.
+    int bcALabelId; ///< Label id for boundary condition.
+    int bcANumConstrainedDOF; ///< Number of constrained DOF for boundary condition.
+    int* bcAConstrainedDOF; ///< Array of constrained DOF.
+    int bcANumVertices; ///< Number of vertices assocaited with boundary condition.
+    int* bcAVertices; ///< Array of vertex indices.
     /// @}
 
     /// @defgroup Subfield B information.
     /// @{
-    const char* subfieldBName;
-    FieldBase::VectorFieldEnum subfieldBType;
-    PylithReal subfieldBScale;
-    int subfieldBNumComponents;
-    const char** subfieldBComponents;
-    int* subfieldBNumConstraints;
-    int* subfieldBConstraints;
-    PylithScalar* subfieldBValues;
-    int subfieldBBasisOrder;
-    int subfieldBQuadOrder;
+    const char* subfieldBName; ///< Name of subfield.
+    FieldBase::VectorFieldEnum subfieldBType; ///< Vector field type.
+    PylithReal subfieldBScale; ///< Scale.
+    int subfieldBNumComponents; ///< Number of components in subfield.
+    const char** subfieldBComponents; ///< Names of components.
+    PylithScalar* subfieldBValues; ///< Array of values to for subfield,
+    int subfieldBBasisOrder; ///< Basis order for discretization.
+    int subfieldBQuadOrder; ///< Quadrature order for discretization.
+
+    const char* bcBLabel; ///< Label for boundary condition.
+    int bcBLabelId; ///< Label id for boundary condition.
+    int bcBNumConstrainedDOF; ///< Number of constrained DOF for boundary condition.
+    int* bcBConstrainedDOF; ///< Array of constrained DOF.
+    int bcBNumVertices; ///< Number of vertices assocaited with boundary condition.
+    int* bcBVertices; ///< Array of vertex indices.
     /// @}
 
 };  // TestFieldMesh_Data
