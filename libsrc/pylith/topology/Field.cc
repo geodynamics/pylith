@@ -22,6 +22,7 @@
 
 #include "Mesh.hh" // USES Mesh
 #include "FieldOps.hh" // USES FieldOps
+#include "VisitorMesh.hh" // USES VecVisitorMesh
 
 #include "petscds.h" // USES PetscDS
 
@@ -752,7 +753,41 @@ pylith::topology::Field::dimensionalize(void) const
     } // if
 
     assert(_localVec);
-    PetscErrorCode err = VecScale(_localVec, _metadata.scale); PYLITH_CHECK_ERROR(err);
+    const size_t numSubfields = _subfields.size();
+    if (!numSubfields) {
+        // No subfields, so scale based on metadata for entire field.
+        PetscErrorCode err = VecScale(_localVec, _metadata.scale); PYLITH_CHECK_ERROR(err);
+    } else {
+        // Dimensionalize each subfield independently.
+        int_array subNumComponents(numSubfields); assert(subNumComponents.size() == numSubfields);
+        scalar_array subScales(numSubfields); assert(subScales.size() == numSubfields);
+        for(subfields_type::const_iterator s_iter = _subfields.begin(); s_iter != _subfields.end(); ++s_iter) {
+            const SubfieldInfo& sinfo = s_iter->second;
+            const size_t index = sinfo.index; assert(index < numSubfields);
+            subScales[index] = sinfo.metadata.scale;
+            subNumComponents[index] = sinfo.numComponents;
+        } // for
+
+        assert(_dm);
+        PylithInt pStart, pEnd;
+        PetscErrorCode err = DMPlexGetChart(_dm,  &pStart, &pEnd); PYLITH_CHECK_ERROR(err);
+        VecVisitorMesh fieldVisitor(*this);
+        PylithScalar* fieldArray = fieldVisitor.localArray();
+        for (PylithInt p=pStart; p < pEnd; ++p) {
+            const size_t dof = fieldVisitor.sectionDof(p);
+            if (dof) {
+                const PylithInt off = fieldVisitor.sectionOffset(p);
+                for (size_t iField=0, doff=0; iField < numSubfields; ++iField) {
+                    const PylithScalar scale = subScales[iField];
+                    const size_t dim = subNumComponents[iField];
+                    for (size_t d=0; d < dim; ++d, ++doff) {
+                        assert(doff < dof);
+                        fieldArray[off+doff] *= scale;
+                    } // for
+                } // for
+            } // if
+        } // for
+    } // if/else
 
     PYLITH_METHOD_END;
 } // dimensionalize
