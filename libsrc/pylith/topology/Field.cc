@@ -1232,7 +1232,7 @@ pylith::topology::Field::_getScatter(const char* context) const
 } // _getScatter
 
 // ----------------------------------------------------------------------
-// Experimental
+// Add subfield.
 void
 pylith::topology::Field::subfieldAdd(const char *name,
                                      const char* components[],
@@ -1362,20 +1362,12 @@ pylith::topology::Field::subfieldNames(void) const
 {  // subfieldNames
     PYLITH_METHOD_BEGIN;
 
-    PetscErrorCode err;
-    PetscDS prob = NULL;
-    PetscInt numFields = 0;
-    pylith::string_vector names;
-    err = DMGetDS(_dm, &prob); PYLITH_CHECK_ERROR(err);
-    err = PetscDSGetNumFields(prob, &numFields); PYLITH_CHECK_ERROR(err);
-    names.resize(numFields);
-    for (PetscInt iField=0; iField < numFields; ++iField) {
-        PetscObject fe = NULL;
-        const char* feName = NULL;
-        err = PetscDSGetDiscretization(prob, iField, &fe); PYLITH_CHECK_ERROR(err);
-        err = PetscObjectGetName(fe, &feName); PYLITH_CHECK_ERROR(err);
-        names[iField] = feName;
-    }  // for
+    const size_t numSubfields = _subfields.size();
+    pylith::string_vector names(numSubfields);
+    for (subfields_type::const_iterator s_iter = _subfields.begin(); s_iter != _subfields.end(); ++s_iter) {
+        const SubfieldInfo& sinfo = s_iter->second;
+        names[sinfo.index] = s_iter->first;
+    } // for
 
     PYLITH_METHOD_RETURN(pylith::string_vector(names));
 }  // subfieldNames
