@@ -271,8 +271,7 @@ pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
     PetscErrorCode err;
     const int numPoints = _data->groupSize;
     for(PetscInt i = 0; i < numPoints; ++i) {
-        err = DMSetLabelValue(mesh->dmMesh(), _data->label, numCells+_data->groupVertices[i], 1); PYLITH_CHECK_ERROR(
-            err);
+        err = DMSetLabelValue(mesh->dmMesh(), _data->label, numCells+_data->groupVertices[i], 1); CPPUNIT_ASSERT(!err);
     }   // for
 
     PYLITH_METHOD_END;
