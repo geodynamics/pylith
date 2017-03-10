@@ -51,11 +51,8 @@
  * 6. Set the indices for the constrained DOF.
  *
  * For local fields associated with parameters, we do not have steps 4
- * and 6. The newSection() methods provide a convenient interface for
- * steps 2-3.
- *
- * For the solution field, etc, the integrators know how to layout the
- * DOF over the points (vertices, edges, faces).
+ * and 6. Step 2-4 and 6 are automatically handled by the PETSc DS if
+ * DMAddBoundary is called.
  */
 class pylith::topology::Field : public FieldBase
 { // Field
