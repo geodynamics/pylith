@@ -86,12 +86,14 @@ pylith::topology::Mesh::Mesh(const Mesh& mesh,
     PetscBool hasLabel = PETSC_FALSE;
     err = DMHasLabel(dmMesh, label, &hasLabel); PYLITH_CHECK_ERROR(err);
     if (!hasLabel) {
+        deallocate();
         std::ostringstream msg;
         msg << "Could not find group of points '" << label << "' in PETSc DM mesh.";
         throw std::runtime_error(msg.str());
     } // if
 
     if (mesh.dimension() < 1) {
+        deallocate();
         throw std::logic_error("INTERNAL ERROR in MeshOps::createSubMesh()\n"
                                "Cannot create submesh for mesh with dimension < 1.");
     } // if
@@ -107,6 +109,7 @@ pylith::topology::Mesh::Mesh(const Mesh& mesh,
                         PetscObjectComm((PetscObject) _dmMesh)); PYLITH_CHECK_ERROR(err);
 
     if (maxConeSize <= 0) {
+        deallocate();
         std::ostringstream msg;
         msg << "Error while creating submesh. Submesh '" << label << "' does not contain any cells.\n";
         throw std::runtime_error(msg.str());
