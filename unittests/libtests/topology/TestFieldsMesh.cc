@@ -119,6 +119,8 @@ pylith::topology::TestFieldsMesh::testAddDomain(void)
         CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
     } // for
 
+    CPPUNIT_ASSERT_THROW(fields.add(label, "velocity"), std::runtime_error);
+
     PYLITH_METHOD_END;
 } // testAddDomain
 
@@ -170,6 +172,9 @@ pylith::topology::TestFieldsMesh::testGet(void)
     CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(field.label()));
 
     CPPUNIT_ASSERT_THROW(fields.get("abc"), std::runtime_error);
+
+    const Fields& fieldsB = fields;
+    CPPUNIT_ASSERT_THROW(fieldsB.get("abc"), std::runtime_error);
 
     PYLITH_METHOD_END;
 } // testGet
@@ -257,6 +262,8 @@ pylith::topology::TestFieldsMesh::testCopyLayout(void)
     for(PetscInt v = vStart; v < vEnd; ++v) {
         CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
     } // for
+
+    CPPUNIT_ASSERT_THROW(fields.copyLayout("zyx"), std::runtime_error);
 
     PYLITH_METHOD_END;
 } // testCopyLayout
