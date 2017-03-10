@@ -145,22 +145,4 @@ if ENABLE_CUBIT
 endif
 
 
-# Check for memory errors. Requires valgrind.
-leakcheck: testmaterials
-	valgrind --log-file=valgrind_materials.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/testmaterials
-
-# Check test coverage. Only works with gcc and requires gcov. lcov provides a GUI for viewing coverage.
-# Requires compiling and linking (CFLAGS, CXXFLAGS, LDFLAGS) with --coverage. 
-coverage:
-	lcov --directory $(top_builddir)/libsrc/pylith/materials/.libs --capture --output-file coverage.info
-	genhtml -o coverage coverage.info
-
-
-clean-coverage:
-	$(RM) $(RM_FLAGS) *.gcda *.gcno data/*.gcda data/*.gcno coverage.info
-	$(RM) $(RM_FLAGS) -r coverage
-
-
-
-
 # End of file 
