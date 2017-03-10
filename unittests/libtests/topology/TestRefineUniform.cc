@@ -94,16 +94,16 @@ pylith::topology::TestRefineUniform::testRefine(void)
         PetscInt *closure = NULL;
         PetscInt closureSize, numCorners = 0;
 
-        err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure); PYLITH_CHECK_ERROR(err);
+        err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure); CPPUNIT_ASSERT(!err);
         for (PetscInt p = 0; p < closureSize*2; p += 2) {
             const PetscInt point = closure[p];
             if ((point >= vStart) && (point < vEnd)) {
                 closure[numCorners++] = point;
             } // if
         } // for
-        err = DMPlexInvertCell(_data->cellDim, numCorners, closure); PYLITH_CHECK_ERROR(err);
+        err = DMPlexInvertCell(_data->cellDim, numCorners, closure); CPPUNIT_ASSERT(!err);
         CPPUNIT_ASSERT_EQUAL(_data->numCorners, numCorners);
-        err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure); PYLITH_CHECK_ERROR(err);
+        err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure); CPPUNIT_ASSERT(!err);
     } // for
 
     // Cohesive cells
@@ -111,31 +111,31 @@ pylith::topology::TestRefineUniform::testRefine(void)
         PetscInt *closure = NULL;
         PetscInt closureSize, numCorners = 0;
 
-        err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure); PYLITH_CHECK_ERROR(err);
+        err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure); CPPUNIT_ASSERT(!err);
         for (PetscInt p = 0; p < closureSize*2; p += 2) {
             const PetscInt point = closure[p];
             if ((point >= vStart) && (point < vEnd)) {
                 closure[numCorners++] = point;
             } // if
         } // for
-        err = DMPlexInvertCell(_data->cellDim, numCorners, closure); PYLITH_CHECK_ERROR(err);
+        err = DMPlexInvertCell(_data->cellDim, numCorners, closure); CPPUNIT_ASSERT(!err);
         CPPUNIT_ASSERT_EQUAL(_data->numCornersCohesive, numCorners);
-        err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure); PYLITH_CHECK_ERROR(err);
+        err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure); CPPUNIT_ASSERT(!err);
     } // for
 
     // check materials
     PetscInt matId = 0;
     PetscInt matIdSum = 0; // Use sum of material ids as simple checksum.
     for (PetscInt c = cStart; c < cEnd; ++c) {
-        err = DMGetLabelValue(dmMesh, "material-id", c, &matId); PYLITH_CHECK_ERROR(err);
+        err = DMGetLabelValue(dmMesh, "material-id", c, &matId); CPPUNIT_ASSERT(!err);
         matIdSum += matId;
     } // for
     CPPUNIT_ASSERT_EQUAL(_data->matIdSum, matIdSum);
 
     // Check groups
     PetscInt numGroups, pStart, pEnd;
-    err = DMPlexGetChart(dmMesh, &pStart, &pEnd); PYLITH_CHECK_ERROR(err);
-    err = DMGetNumLabels(dmMesh, &numGroups); PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetChart(dmMesh, &pStart, &pEnd); CPPUNIT_ASSERT(!err);
+    err = DMGetNumLabels(dmMesh, &numGroups); CPPUNIT_ASSERT(!err);
     for (PetscInt iGroup = 0; iGroup < _data->numGroups; ++iGroup) {
         // Omit depth, vtk, ghost and material-id labels
         // Don't know order of labels, so do brute force linear search
@@ -145,7 +145,7 @@ pylith::topology::TestRefineUniform::testRefine(void)
         PetscInt firstPoint = 0;
 
         while (iLabel < numGroups) {
-            err = DMGetLabelName(dmMesh, iLabel, &name); PYLITH_CHECK_ERROR(err);
+            err = DMGetLabelName(dmMesh, iLabel, &name); CPPUNIT_ASSERT(!err);
             if (0 == strcmp(_data->groupNames[iGroup], name)) {
                 foundLabel = true;
                 break;
@@ -157,7 +157,7 @@ pylith::topology::TestRefineUniform::testRefine(void)
 
         for(PetscInt p = pStart; p < pEnd; ++p) {
             PetscInt val;
-            err = DMGetLabelValue(dmMesh, name, p, &val); PYLITH_CHECK_ERROR(err);
+            err = DMGetLabelValue(dmMesh, name, p, &val); CPPUNIT_ASSERT(!err);
             if (val >= 0) {
                 firstPoint = p;
                 break;
@@ -166,12 +166,12 @@ pylith::topology::TestRefineUniform::testRefine(void)
         std::string groupType = (firstPoint >= cStart && firstPoint < cEnd) ? "cell" : "vertex";
         CPPUNIT_ASSERT_EQUAL(std::string(_data->groupTypes[iGroup]), groupType);
         PetscInt numPoints;
-        err = DMGetStratumSize(dmMesh, name, 1, &numPoints); PYLITH_CHECK_ERROR(err);
+        err = DMGetStratumSize(dmMesh, name, 1, &numPoints); CPPUNIT_ASSERT(!err);
         CPPUNIT_ASSERT_EQUAL(_data->groupSizes[iGroup], numPoints);
         PetscIS pointIS = NULL;
         const PetscInt *points = NULL;
-        err = DMGetStratumIS(dmMesh, name, 1, &pointIS); PYLITH_CHECK_ERROR(err);
-        err = ISGetIndices(pointIS, &points); PYLITH_CHECK_ERROR(err);
+        err = DMGetStratumIS(dmMesh, name, 1, &pointIS); CPPUNIT_ASSERT(!err);
+        err = ISGetIndices(pointIS, &points); CPPUNIT_ASSERT(!err);
         if (groupType == std::string("vertex")) {
             for (PetscInt p = 0; p < numPoints; ++p) {
                 CPPUNIT_ASSERT((points[p] >= 0 && points[p] < cStart) || (points[p] >= cEnd));
@@ -181,8 +181,8 @@ pylith::topology::TestRefineUniform::testRefine(void)
                 CPPUNIT_ASSERT(points[p] >= cStart && points[p] < cEnd);
             } // for
         } // if/else
-        err = ISRestoreIndices(pointIS, &points); PYLITH_CHECK_ERROR(err);
-        err = ISDestroy(&pointIS); PYLITH_CHECK_ERROR(err);
+        err = ISRestoreIndices(pointIS, &points); CPPUNIT_ASSERT(!err);
+        err = ISDestroy(&pointIS); CPPUNIT_ASSERT(!err);
     } // for
 
     PYLITH_METHOD_END;
