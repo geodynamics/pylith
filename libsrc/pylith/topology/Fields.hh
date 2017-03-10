@@ -38,117 +38,103 @@
 /// Container for managing multiple fields over a finite-element mesh.
 class pylith::topology::Fields
 { // Fields
-  friend class TestFieldsMesh; // unit testing
-  friend class TestFieldsSubMesh; // unit testing
+    friend class TestFieldsMesh; // unit testing
+    friend class TestFieldsSubMesh; // unit testing
 
-// PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public :
+    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
+public:
 
-  /** Default constructor.
-   *
-   * @param mesh Finite-element mesh.
-   */
-  Fields(const Mesh& mesh);
+    /** Default constructor.
+     *
+     * @param mesh Finite-element mesh.
+     */
+    Fields(const Mesh& mesh);
 
-  /// Destructor.
-  virtual
-  ~Fields(void);
+    /// Destructor.
+    virtual
+    ~Fields(void);
 
-  /// Deallocate PETSc and local data structures.
-  virtual
-  void deallocate(void);
-  
-  /** Check if fields contains a given field.
-   *
-   * @param name Name of field.
-   * @return True if fields contains field, false otherwise.
-   */
-  bool hasField(const char* name) const;
+    /// Deallocate PETSc and local data structures.
+    virtual
+    void deallocate(void);
 
-  /** Add field.
-   *
-   * @param name Name of field.
-   * @param label Label for field (used in output).
-   */
-  void add(const char* name,
-	   const char* label);
+    /** Check if fields contains a given field.
+     *
+     * @param name Name of field.
+     * @return True if fields contains field, false otherwise.
+     */
+    bool hasField(const char* name) const;
 
-  /** Add field.
-   *
-   * @param name Name of field.
-   * @param label Label for field.
-   * @param domain Type of points over which to define field.
-   * @param fiberDim Fiber dimension for field.
-   */
-  void add(const char* name,
-	   const char* label,
-	   const pylith::topology::FieldBase::DomainEnum domain,
-	   const int fiberDim);
+    /** Add field.
+     *
+     * @param name Name of field.
+     * @param label Label for field (used in output).
+     */
+    void add(const char* name,
+             const char* label);
 
-  /** Delete field.
-   *
-   * @param name Name of field.
-   */
-  void del(const char* name);
+    /** Add field.
+     *
+     * @param name Name of field.
+     * @param label Label for field.
+     * @param domain Type of points over which to define field.
+     * @param fiberDim Fiber dimension for field.
+     */
+    void add(const char* name, // :TODO: @brad Remove obsolete.
+             const char* label,
+             const pylith::topology::FieldBase::DomainEnum domain,
+             const int fiberDim);
 
-  /** Delete field (without conflict with Python del).
-   *
-   * @param name Name of field.
-   */
-  void delField(const char* name);
+    /** Delete field.
+     *
+     * @param name Name of field.
+     */
+    void del(const char* name);
 
-  /** Get field.
-   *
-   * @param name Name of field.
-   */
-  const Field& get(const char* name) const;
-	   
-  /** Get field.
-   *
-   * @param name Name of field.
-   */
-  Field& get(const char* name);
-	   
-  /** Copy layout to other fields.
-   *
-   * @param name Name of field to use as template for layout.
-   */
-  void copyLayout(const char* name);
+    /** Get field.
+     *
+     * @param name Name of field.
+     */
+    const Field& get(const char* name) const;
 
-  /** Get mesh associated with fields.
-   *
-   * @returns Finite-element mesh.
-   */
-  const Mesh& mesh(void) const;
+    /** Get field.
+     *
+     * @param name Name of field.
+     */
+    Field& get(const char* name);
 
-  /** Return the names of all fields.
-   *
-   * @param numNames Number of field names [output].
-   * @param names Names of field names [output].
-   */
-  void fieldNames(int* numNames, 
-		  char*** names) const;
+    /** Copy layout to other fields.
+     *
+     * @param name Name of field to use as template for layout.
+     */
+    void copyLayout(const char* name);
 
-// PROTECTED TYPEDEFS ///////////////////////////////////////////////////
-protected :
+    /** Get mesh associated with fields.
+     *
+     * @returns Finite-element mesh.
+     */
+    const Mesh& mesh(void) const; // :TODO: @brad Remove obsolete.
 
-  typedef std::map< std::string, Field* > map_type;
+    // PROTECTED TYPEDEFS ///////////////////////////////////////////////////
+protected:
 
-// PROTECTED MEMBERS ////////////////////////////////////////////////////
-protected :
+    typedef std::map< std::string, Field* > map_type;
 
-  map_type _fields;
-  const Mesh& _mesh;
+    // PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected:
 
-// NOT IMPLEMENTED //////////////////////////////////////////////////////
-private :
+    map_type _fields;
+    const Mesh& _mesh;
 
-  Fields(const Fields&); ///< Not implemented
-  const Fields& operator=(const Fields&); ///< Not implemented
+    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+private:
+
+    Fields(const Fields&); ///< Not implemented
+    const Fields& operator=(const Fields&); ///< Not implemented
 
 }; // Fields
 
 #endif // pylith_topology_fields_hh
 
 
-// End of file 
+// End of file

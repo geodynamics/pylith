@@ -125,20 +125,6 @@ namespace pylith {
        */
       void view(const char* viewOption ="") const;
 
-      /** Return the names of all vertex groups.
-       *
-       * @param numValues Number of field values [output].
-       * @param values Values of field values [output].
-       */
-      void groups(int* numValues, 
-		  char*** values) const;
-
-      /** Return the size of a group.
-       *
-       * @returns the number of vertices in the group
-       */
-      int groupSize(const char *name);
-
     }; // Mesh
 
   } // topology

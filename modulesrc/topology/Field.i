@@ -201,11 +201,8 @@ void clear(void);
 /// Allocate field.
 void allocate(void);
 
-/// Zero section values (excluding constrained DOF).
-void zero(void);
-
 /// Zero section values (including constrained DOF).
-void zeroAll(void);
+void zeroLocal(void);
 
 /// Complete section by assembling across processors.
 void complete(void);
@@ -223,12 +220,6 @@ void copy(const Field& field);
  */
 void copySubfield(const Field& field,
                   const char* name);
-
-/** Add two fields, storing the result in one of the fields.
- *
- * @param field Field to add.
- */
-void add(const Field& field);
 
 /** Dimensionalize field. Throws runtime_error if field is not
  * allowed to be dimensionalized.
@@ -256,21 +247,21 @@ void createScatter(const pylith::topology::Mesh& mesh,
  * @param context Label for context associated with vector.
  * @returns PETSc vector.
  */
-PetscVec vector(const char* context ="");
+PetscVec scatterVector(const char* context ="");
 
 /** Get PETSc vector associated with field.
  *
  * @param context Label for context associated with vector.
  * @returns PETSc vector.
  */
-const PetscVec vector(const char* context ="") const;
+const PetscVec scatterVector(const char* context ="") const;
 
 /** Scatter section information across processors to update the
  * global view of the field.
  *
  * @param context Label for context associated with vector.
  */
-void scatterLocalToGlobal(const char* context ="") const;
+void scatterLocalToContext(const char* context ="") const;
 
 /** Scatter section information across processors to update the
  * global view of the field.
@@ -278,7 +269,7 @@ void scatterLocalToGlobal(const char* context ="") const;
  * @param vector PETSc vector to update.
  * @param context Label for context associated with vector.
  */
-void scatterLocalToGlobal(const PetscVec vector,
+void scatterLocalToVector(const PetscVec vector,
                           const char* context ="") const;
 
 /** Scatter global information across processors to update the local
@@ -286,7 +277,7 @@ void scatterLocalToGlobal(const PetscVec vector,
  *
  * @param context Label for context associated with vector.
  */
-void scatterGlobalToLocal(const char* context ="") const;
+void scatterContextToLocal(const char* context ="") const;
 
 /** Scatter global information across processors to update the local
  * view of the field.
@@ -294,7 +285,7 @@ void scatterGlobalToLocal(const char* context ="") const;
  * @param vector PETSc vector used in update.
  * @param context Label for context associated with vector.
  */
-void scatterGlobalToLocal(const PetscVec vector,
+void scatterVectorToLocal(const PetscVec vector,
                           const char* context ="") const;
 
 };     // Field

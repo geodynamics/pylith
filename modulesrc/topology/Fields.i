@@ -72,12 +72,6 @@ namespace pylith {
 	       const pylith::topology::FieldBase::DomainEnum domain,
 	       const int fiberDim);
 
-      /** Delete field.
-       *
-       * @param name Name of field.
-       */
-      void delField(const char* name);
-
       /** Get field.
        *
        * @param name Name of field.
@@ -101,14 +95,6 @@ namespace pylith {
        * @returns Finite-element mesh.
        */
       const pylith::topology::Mesh& mesh(void) const;
-
-      /** Return the names of all fields.
-       *
-       * @param numValues Number of field values [output].
-       * @param values Values of field values [output].
-       */
-      void fieldNames(int* numValues, 
-		      char*** values) const;
 
     }; // Fields
 

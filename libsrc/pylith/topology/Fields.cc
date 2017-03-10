@@ -133,14 +133,6 @@ pylith::topology::Fields::del(const char* name)
 } // del
 
 // ----------------------------------------------------------------------
-// Delete field.
-void
-pylith::topology::Fields::delField(const char* name)
-{ // delField
-    this->del(name);
-} // delField
-
-// ----------------------------------------------------------------------
 // Get field.
 const pylith::topology::Field&
 pylith::topology::Fields::get(const char* name) const
@@ -206,40 +198,6 @@ pylith::topology::Fields::mesh(void) const
 { // mesh
     return _mesh;
 } // mesh
-
-// ----------------------------------------------------------------------
-// Get names of all fields
-void
-pylith::topology::Fields::fieldNames(int* numNames,
-                                     char*** names) const
-{ // fieldNames
-    PYLITH_METHOD_BEGIN;
-
-    assert(numNames);
-    assert(names);
-
-    *numNames = _fields.size();
-    *names = new char*[_fields.size()];
-    assert(*names);
-    const map_type::const_iterator namesEnd = _fields.end();
-    int i = 0;
-    for (map_type::const_iterator name = _fields.begin();
-         name != namesEnd;
-         ++name) {
-        const char len = name->first.length();
-        char* newName = 0;
-        if (len > 0) {
-            newName = new char[len+1];
-            strncpy(newName, name->first.c_str(), len+1);
-        } else {
-            newName = new char[1];
-            newName[0] ='\0';
-        } // if/else
-        (*names)[i++] = newName;
-    } // for
-
-    PYLITH_METHOD_END;
-} // fieldNames
 
 
 // End of file
