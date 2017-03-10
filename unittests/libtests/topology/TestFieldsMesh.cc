@@ -84,6 +84,8 @@ pylith::topology::TestFieldsMesh::testAdd(void)
     const size_t size = 1;
     CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
 
+    CPPUNIT_ASSERT_THROW(fields.add(label, "displacement"), std::runtime_error);
+
     PYLITH_METHOD_END;
 } // testAdd
 
@@ -146,6 +148,8 @@ pylith::topology::TestFieldsMesh::testDelete(void)
     const Field& field = fields.get(keyB);
     CPPUNIT_ASSERT_EQUAL(std::string(labelB), std::string(field.label()));
 
+    CPPUNIT_ASSERT_THROW(fields.del(keyA), std::runtime_error);
+
     PYLITH_METHOD_END;
 } // testDelete
 
@@ -164,6 +168,8 @@ pylith::topology::TestFieldsMesh::testGet(void)
     fields.add(key, label);
     const Field& field = fields.get(key);
     CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(field.label()));
+
+    CPPUNIT_ASSERT_THROW(fields.get("abc"), std::runtime_error);
 
     PYLITH_METHOD_END;
 } // testGet
