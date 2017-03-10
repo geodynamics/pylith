@@ -328,6 +328,10 @@ pylith::topology::TestFieldMesh::testNewSection(void)
         PetscVec vec = field2.localVector(); CPPUNIT_ASSERT(vec);
         PetscErrorCode err = PetscObjectGetName((PetscObject) vec, &name); CPPUNIT_ASSERT(!err);
         CPPUNIT_ASSERT_EQUAL(label, std::string(name));
+
+        // Test trapping with negative fiber dimension.
+        Field field3(*_mesh);
+        CPPUNIT_ASSERT_THROW(field3.newSection(field, -1), std::runtime_error);
     } // newSection(Field)
 
 
@@ -453,6 +457,8 @@ pylith::topology::TestFieldMesh::testSubfieldAccessors(void)
         CPPUNIT_ASSERT_EQUAL(_data->subfieldBQuadOrder, infoB.fe.quadOrder);
     } // Test subfieldInfo() for subfield B.
 
+    CPPUNIT_ASSERT_THROW(_field->subfieldInfo("aabbccdd"), std::runtime_error);
+
     PYLITH_METHOD_END;
 } /// testSubfieldAccessors
 
@@ -549,6 +555,11 @@ pylith::topology::TestFieldMesh::testCopy(void)
     // Expect no change for this serial test.
     _checkValues(field);
 
+    // Test trapping when wrong size.
+    Field field2(*_mesh);
+    field2.allocate();
+    CPPUNIT_ASSERT_THROW(field2.copy(*_field), std::runtime_error);
+
     PYLITH_METHOD_END;
 } // testCopy
 
@@ -617,6 +628,11 @@ pylith::topology::TestFieldMesh::testDimensionalize(void)
     _initialize();
     CPPUNIT_ASSERT(_mesh);
     CPPUNIT_ASSERT(_field);
+
+    // Default is not okay, so verify error trapping.
+    CPPUNIT_ASSERT_THROW(_field->dimensionalize(), std::runtime_error);
+
+    // Enable dimensionalization and then test result.
     _field->dimensionalizeOkay(true);
     _field->dimensionalize();
 
@@ -685,7 +701,6 @@ pylith::topology::TestFieldMesh::testScatter(void)
         CPPUNIT_ASSERT(sinfo.dm);
         const PetscVec scatterVector = _field->scatterVector();
         CPPUNIT_ASSERT_EQUAL(sinfo.vector, scatterVector);
-
         // Check vector name
         const char* vecname = 0;
         PetscErrorCode err = PetscObjectGetName((PetscObject)scatterVector, &vecname); CPPUNIT_ASSERT(!err);
@@ -706,7 +721,7 @@ pylith::topology::TestFieldMesh::testScatter(void)
 
         const PylithScalar scale = 0.25;
         PetscErrorCode err = VecScale(vec, scale); CPPUNIT_ASSERT(!err);
-        _field->scatterVectorToLocal(vec, context);
+        _field->scatterContextToLocal(context);
         const PetscVec localVec = _field->localVector(); CPPUNIT_ASSERT(localVec);
         _checkValues(localVec, scale);
     } // Test createScatterWithBC(), scatterLocalToContext(), scatterVectorToLocal().
@@ -723,6 +738,8 @@ pylith::topology::TestFieldMesh::testScatter(void)
     const Field::ScatterInfo& sinfo2B = field2._getScatter(context);
     CPPUNIT_ASSERT(sinfo2B.dm);
     CPPUNIT_ASSERT(sinfo2B.vector);
+
+    CPPUNIT_ASSERT_THROW(field2._getScatter("zzyyxx"), std::runtime_error);
 
     PYLITH_METHOD_END;
 } // testScatter
