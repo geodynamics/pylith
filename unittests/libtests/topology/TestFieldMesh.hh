@@ -129,8 +129,8 @@ public:
     /// Test createScatter(), createScatterWithBC(), scatterLocalToGlobal(), scatterGlobalToLocal(), scatterVector().
     void testScatter(void);
 
-    // PROTECTED METHODS ///////////////////////////////////////////////////////
-protected:
+    // PRIVATE METHODS /////////////////////////////////////////////////////////
+private:
 
     /// Initialize mesh and test field.
     void _initialize(void);
