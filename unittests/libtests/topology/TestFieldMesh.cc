@@ -66,8 +66,8 @@ pylith::topology::TestFieldMesh::testConstructor(void)
 { // testConstructor
     PYLITH_METHOD_BEGIN;
 
-    Mesh mesh;
-    Field field(mesh);
+    Mesh meshA;
+    Field field(meshA);
 
     PYLITH_METHOD_END;
 } // testConstructor
@@ -183,8 +183,8 @@ pylith::topology::TestFieldMesh::testNewSection(void)
 
     PetscDM dmMesh = _mesh->dmMesh(); CPPUNIT_ASSERT(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
-    const PetscInt vStart = depthStratum.begin();
-    const PetscInt vEnd = depthStratum.end();
+    const PylithInt vStart = depthStratum.begin();
+    const PylithInt vEnd = depthStratum.end();
 
     const int fiberDim = 2;
     const std::string& label = "field A";
@@ -195,7 +195,7 @@ pylith::topology::TestFieldMesh::testNewSection(void)
         int count = 0;
         size_t iIn = 0;
         size_t iOut = 0;
-        for (PetscInt v = vStart; v < vEnd; ++v) {
+        for (PylithInt v = vStart; v < vEnd; ++v) {
             if (count % 2  == 0) {
                 pointsIn[iIn++] = v;
             } else {
@@ -218,7 +218,7 @@ pylith::topology::TestFieldMesh::testNewSection(void)
         } // for
 
         // Points not int array should have a fiber dimension of zero.
-        PetscInt pStart, pEnd;
+        PylithInt pStart, pEnd;
         PetscSection section = field.localSection(); CPPUNIT_ASSERT(section);
         PetscErrorCode err = PetscSectionGetChart(section, &pStart, &pEnd); CPPUNIT_ASSERT(!err);
         for (size_t i = 0; i < pointsOut.size(); ++i) {
@@ -230,10 +230,21 @@ pylith::topology::TestFieldMesh::testNewSection(void)
         PetscVec vec = field.localVector(); CPPUNIT_ASSERT(vec);
         err = PetscObjectGetName((PetscObject) vec, &name); CPPUNIT_ASSERT(!err);
         CPPUNIT_ASSERT_EQUAL(label, std::string(name));
+
+        // Test trapping with negative fiber dimension.
+        Field fieldB(*_mesh);
+        CPPUNIT_ASSERT_THROW(fieldB.newSection(pointsIn, -1), std::runtime_error);
+
+        // Test creation with empty point list.
+        pointsIn.resize(0);
+        Field fieldC(*_mesh);
+        fieldC.newSection(pointsIn, fiberDim);
+        CPPUNIT_ASSERT_EQUAL(0, fieldC.chartSize());
+        CPPUNIT_ASSERT_EQUAL(0, fieldC.sectionSize());
     } // newSection(points)
 
     Field field(*_mesh);
-    { // newSection(domain)
+    { // newSection(VERTICES_FIELD)
         const std::string& label = "field A";
         field.label(label.c_str());
         field.newSection(Field::VERTICES_FIELD, fiberDim);
@@ -241,11 +252,11 @@ pylith::topology::TestFieldMesh::testNewSection(void)
 
         PetscDM dmMesh = _mesh->dmMesh(); CPPUNIT_ASSERT(dmMesh);
         Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
-        const PetscInt vStart = depthStratum.begin();
-        const PetscInt vEnd = depthStratum.end();
+        const PylithInt vStart = depthStratum.begin();
+        const PylithInt vEnd = depthStratum.end();
 
         VecVisitorMesh fieldVisitor(field);
-        for(PetscInt v = vStart; v < vEnd; ++v) {
+        for(PylithInt v = vStart; v < vEnd; ++v) {
             CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
         } // for
 
@@ -253,7 +264,52 @@ pylith::topology::TestFieldMesh::testNewSection(void)
         PetscVec vec = field.localVector(); CPPUNIT_ASSERT(vec);
         PetscErrorCode err = PetscObjectGetName((PetscObject) vec, &name); CPPUNIT_ASSERT(!err);
         CPPUNIT_ASSERT_EQUAL(label, std::string(name));
-    } // newSection(domain)
+    } // newSection(VERTICES_FIELD)
+
+    { // newSection(CELLS_FIELD)
+        Field fieldA(*_mesh);
+        const std::string& label = "field B";
+        fieldA.label(label.c_str());
+        fieldA.newSection(Field::CELLS_FIELD, fiberDim);
+        fieldA.allocate();
+
+        PetscDM dmMesh = _mesh->dmMesh(); CPPUNIT_ASSERT(dmMesh);
+        Stratum heightStratum(dmMesh, Stratum::HEIGHT, 0);
+        const PylithInt cStart = heightStratum.begin();
+        const PylithInt cEnd = heightStratum.end();
+
+        VecVisitorMesh fieldVisitor(fieldA);
+        for(PylithInt c=cStart; c < cEnd; ++c) {
+            CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(c));
+        } // for
+
+        const char *name = NULL;
+        PetscVec vec = fieldA.localVector(); CPPUNIT_ASSERT(vec);
+        PetscErrorCode err = PetscObjectGetName((PetscObject) vec, &name); CPPUNIT_ASSERT(!err);
+        CPPUNIT_ASSERT_EQUAL(label, std::string(name));
+    } // newSection(CELLS_FIELD)
+
+    { // newSection(POINTS_FIELD)
+        Field fieldA(*_mesh);
+        const std::string& label = "field C";
+        fieldA.label(label.c_str());
+        fieldA.newSection(Field::POINTS_FIELD, fiberDim);
+        fieldA.allocate();
+
+        PetscDM dmMesh = _mesh->dmMesh(); CPPUNIT_ASSERT(dmMesh);
+        PylithInt pStart, pEnd;
+        PetscErrorCode err = DMPlexGetChart(dmMesh, &pStart, &pEnd); CPPUNIT_ASSERT(!err);
+
+        VecVisitorMesh fieldVisitor(fieldA);
+        for(PylithInt p=pStart; p < pEnd; ++p) {
+            CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(p));
+        } // for
+
+        const char *name = NULL;
+        PetscVec vec = fieldA.localVector(); CPPUNIT_ASSERT(vec);
+        err = PetscObjectGetName((PetscObject) vec, &name); CPPUNIT_ASSERT(!err);
+        CPPUNIT_ASSERT_EQUAL(label, std::string(name));
+    } // newSection(POINTS_FIELD)
 
     { // newSection(Field)
         const int fiberDim2 = 5;
@@ -264,7 +320,7 @@ pylith::topology::TestFieldMesh::testNewSection(void)
         field2.allocate();
 
         VecVisitorMesh field2Visitor(field2);
-        for (PetscInt v = vStart; v < vEnd; ++v) {
+        for (PylithInt v = vStart; v < vEnd; ++v) {
             CPPUNIT_ASSERT_EQUAL(fiberDim2, field2Visitor.sectionDof(v));
         } // for
 
@@ -291,8 +347,8 @@ pylith::topology::TestFieldMesh::testCloneSection(void)
 
     PetscDM dmMesh = _mesh->dmMesh(); CPPUNIT_ASSERT(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
-    const PetscInt vStart = depthStratum.begin();
-    const PetscInt vEnd = depthStratum.end();
+    const PylithInt vStart = depthStratum.begin();
+    const PylithInt vEnd = depthStratum.end();
 
     PetscErrorCode err = 0;
 
@@ -310,7 +366,7 @@ pylith::topology::TestFieldMesh::testCloneSection(void)
     CPPUNIT_ASSERT(section); CPPUNIT_ASSERT(vec);
     const PylithInt fiberDim = _data->subfieldANumComponents + _data->subfieldBNumComponents;
     for (PylithInt v=vStart, iV=0; v < vEnd; ++v, ++iV) {
-        PetscInt dof, cdof;
+        PylithInt dof, cdof;
         err = PetscSectionGetDof(section, v, &dof); CPPUNIT_ASSERT(!err);
         CPPUNIT_ASSERT_EQUAL(fiberDim, dof);
 
@@ -509,8 +565,8 @@ pylith::topology::TestFieldMesh::testCopySubfield(void)
 
     PetscDM dmMesh = _mesh->dmMesh(); CPPUNIT_ASSERT(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
-    const PetscInt vStart = depthStratum.begin();
-    const PetscInt vEnd = depthStratum.end();
+    const PylithInt vStart = depthStratum.begin();
+    const PylithInt vEnd = depthStratum.end();
 
     { // Test with preallocated field
         Field field(*_mesh);
@@ -522,10 +578,10 @@ pylith::topology::TestFieldMesh::testCopySubfield(void)
         const PetscScalar* fieldArray = fieldVisitor.localArray();
         const PylithScalar tolerance = 1.0e-6;
         const PylithInt fiberDimE = _data->subfieldBNumComponents;
-        for (PetscInt v = vStart, i = 0; v < vEnd; ++v) {
-            const PetscInt off = fieldVisitor.sectionOffset(v);
+        for (PylithInt v = vStart, i = 0; v < vEnd; ++v) {
+            const PylithInt off = fieldVisitor.sectionOffset(v);
             CPPUNIT_ASSERT_EQUAL(fiberDimE, fieldVisitor.sectionDof(v));
-            for (PetscInt d = 0; d < fiberDimE; ++d) {
+            for (PylithInt d = 0; d < fiberDimE; ++d) {
                 CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->subfieldBValues[i++], fieldArray[off+d], tolerance);
             } // for
         } // for
@@ -539,10 +595,10 @@ pylith::topology::TestFieldMesh::testCopySubfield(void)
         const PetscScalar* fieldArray = fieldVisitor.localArray();
         const PylithScalar tolerance = 1.0e-6;
         const PylithInt fiberDimE = _data->subfieldBNumComponents;
-        for (PetscInt v = vStart, i = 0; v < vEnd; ++v) {
-            const PetscInt off = fieldVisitor.sectionOffset(v);
+        for (PylithInt v = vStart, i = 0; v < vEnd; ++v) {
+            const PylithInt off = fieldVisitor.sectionOffset(v);
             CPPUNIT_ASSERT_EQUAL(fiberDimE, fieldVisitor.sectionDof(v));
-            for (PetscInt d = 0; d < fiberDimE; ++d) {
+            for (PylithInt d = 0; d < fiberDimE; ++d) {
                 CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->subfieldBValues[i++], fieldArray[off+d], tolerance);
             } // for
         } // for
@@ -566,28 +622,28 @@ pylith::topology::TestFieldMesh::testDimensionalize(void)
 
     PetscDM dmMesh = _mesh->dmMesh(); CPPUNIT_ASSERT(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
-    const PetscInt vStart = depthStratum.begin();
-    const PetscInt vEnd = depthStratum.end();
+    const PylithInt vStart = depthStratum.begin();
+    const PylithInt vEnd = depthStratum.end();
 
     // Expect no change for this serial test.
     VecVisitorMesh fieldVisitor(*_field);
     PetscScalar* fieldArray = fieldVisitor.localArray();
     const PylithInt fiberDim = _data->subfieldANumComponents + _data->subfieldBNumComponents;
     const PylithReal tolerance = 1.0e-6;
-    for (PetscInt v=vStart, indexA=0, indexB=0; v < vEnd; ++v) {
+    for (PylithInt v=vStart, indexA=0, indexB=0; v < vEnd; ++v) {
         CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
 
         // Check field A values.
-        const PetscInt offA = fieldVisitor.sectionOffset(v);
+        const PylithInt offA = fieldVisitor.sectionOffset(v);
         const PylithReal scaleA = _data->subfieldAScale;
-        for (PetscInt d = 0; d < _data->subfieldANumComponents; ++d) {
+        for (PylithInt d = 0; d < _data->subfieldANumComponents; ++d) {
             CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->subfieldAValues[indexA++]*scaleA, fieldArray[offA+d], tolerance);
         } // for
 
         // Check field B values.
-        const PetscInt offB = offA + _data->subfieldANumComponents;
+        const PylithInt offB = offA + _data->subfieldANumComponents;
         const PylithReal scaleB = _data->subfieldBScale;
-        for (PetscInt d = 0; d < _data->subfieldBNumComponents; ++d) {
+        for (PylithInt d = 0; d < _data->subfieldBNumComponents; ++d) {
             CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->subfieldBValues[indexB++]*scaleB, fieldArray[offB+d], tolerance);
         } // for
     } // for
@@ -685,15 +741,15 @@ pylith::topology::TestFieldMesh::_initialize(void)
     const int numCorners = _data->numCorners;
     const int spaceDim = _data->cellDim;
 
-    PetscInt size = numVertices * spaceDim;
+    PylithInt size = numVertices * spaceDim;
     scalar_array coordinates(size);
-    for (PetscInt i=0; i < size; ++i) {
+    for (PylithInt i=0; i < size; ++i) {
         coordinates[i] = _data->coordinates[i];
     }   // for
 
     size = numCells * numCorners;
     int_array cells(size);
-    for (PetscInt i=0; i < size; ++i) {
+    for (PylithInt i=0; i < size; ++i) {
         cells[i] = _data->cells[i];
     }   // for
 
@@ -740,8 +796,8 @@ pylith::topology::TestFieldMesh::_initialize(void)
     // Populate with values.
     PetscDM dmMesh = _mesh->dmMesh(); CPPUNIT_ASSERT(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
-    const PetscInt vStart = depthStratum.begin();
-    const PetscInt vEnd = depthStratum.end();
+    const PylithInt vStart = depthStratum.begin();
+    const PylithInt vEnd = depthStratum.end();
 
     VecVisitorMesh fieldVisitor(*_field);
     const PylithInt fiberDim = _data->subfieldANumComponents + _data->subfieldBNumComponents;
@@ -750,12 +806,12 @@ pylith::topology::TestFieldMesh::_initialize(void)
         // Set values for field A
         const PylithInt offA = fieldVisitor.sectionOffset(v);
         CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
-        for (PetscInt d = 0; d < _data->subfieldANumComponents; ++d) {
+        for (PylithInt d = 0; d < _data->subfieldANumComponents; ++d) {
             fieldArray[offA+d] = _data->subfieldAValues[indexA++];
         } // for
           // Set values for field B
         const PylithInt offB = offA + _data->subfieldANumComponents;
-        for (PetscInt d = 0; d < _data->subfieldBNumComponents; ++d) {
+        for (PylithInt d = 0; d < _data->subfieldBNumComponents; ++d) {
             fieldArray[offB+d] = _data->subfieldBValues[indexB++];
         } // for
     } // for
@@ -787,14 +843,14 @@ pylith::topology::TestFieldMesh::_checkValues(const Field& field,
 
     PetscDM dmMesh = _mesh->dmMesh(); CPPUNIT_ASSERT(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
-    const PetscInt vStart = depthStratum.begin();
-    const PetscInt vEnd = depthStratum.end();
+    const PylithInt vStart = depthStratum.begin();
+    const PylithInt vEnd = depthStratum.end();
 
     VecVisitorMesh fieldVisitor(field);
     PetscScalar* fieldArray = fieldVisitor.localArray();
     const PylithInt fiberDim = _data->subfieldANumComponents + _data->subfieldBNumComponents;
     const PylithReal tolerance = 1.0e-6;
-    for (PetscInt v=vStart, index=0; v < vEnd; ++v) {
+    for (PylithInt v=vStart, index=0; v < vEnd; ++v) {
         CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
         const PylithInt off = fieldVisitor.sectionOffset(v);
 

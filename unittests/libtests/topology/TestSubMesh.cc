@@ -105,6 +105,8 @@ pylith::topology::TestSubMesh::testConstructorMesh(void)
         CPPUNIT_ASSERT_EQUAL(_data->submeshCells[iC], c);
     }   // for
 
+    CPPUNIT_ASSERT_THROW(Mesh submesh(mesh2D, "zzyyxx"), std::runtime_error);
+
     PYLITH_METHOD_END;
 }   // testConstructorMesh
 
