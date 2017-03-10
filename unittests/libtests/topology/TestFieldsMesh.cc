@@ -119,7 +119,7 @@ pylith::topology::TestFieldsMesh::testAddDomain(void)
         CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
     } // for
 
-    CPPUNIT_ASSERT_THROW(fields.add(label, "velocity"), std::runtime_error);
+    CPPUNIT_ASSERT_THROW(fields.add(label, "velocity", Field::VERTICES_FIELD, fiberDim), std::runtime_error);
 
     PYLITH_METHOD_END;
 } // testAddDomain
