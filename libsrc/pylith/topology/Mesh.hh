@@ -39,194 +39,147 @@
  */
 class pylith::topology::Mesh
 { // Mesh
-  friend class TestMesh; // unit testing
+    friend class TestMesh; // unit testing
 
-// PUBLIC METHODS ///////////////////////////////////////////////////////
-public :
+    // PUBLIC METHODS ///////////////////////////////////////////////////////
+public:
 
-  /** Default constructor.
-   *
-   * @param isSubMesh True if mesh is a submesh of another mesh.
-   */
-  Mesh(const bool isSubMesh =false);
+    /** Default constructor.
+     *
+     * @param isSubMesh True if mesh is a submesh of another mesh.
+     */
+    Mesh(const bool isSubMesh =false);
 
-  /** Constructor with dimension and communicator.
-   *
-   * @param dim Dimension associated with mesh cells.
-   * @param comm MPI communicator for mesh.
-   */
-  Mesh(const int dim,
-       const MPI_Comm& comm =PETSC_COMM_WORLD); 
+    /** Constructor with dimension and communicator.
+     *
+     * @param dim Dimension associated with mesh cells.
+     * @param comm MPI communicator for mesh.
+     */
+    Mesh(const int dim,
+         const MPI_Comm& comm =PETSC_COMM_WORLD);
 
-  /** Create submesh.
-   *
-   * @param mesh Mesh over domain.
-   * @param label Label of vertices on boundary.
-   */
-  Mesh(const Mesh& mesh,
-       const char* label);
+    /** Create submesh.
+     *
+     * @param mesh Mesh over domain.
+     * @param label Label of vertices on boundary.
+     */
+    Mesh(const Mesh& mesh,
+         const char* label);
 
-  /// Default destructor
-  ~Mesh(void);
+    /// Default destructor
+    ~Mesh(void);
 
-  /// Deallocate PETSc and local data structures.
-  void deallocate(void);
-  
-  /** Get DMPlex mesh.
-   *
-   * @returns DMPlex mesh.
-   */
-  PetscDM dmMesh(void) const;
+    /// Deallocate PETSc and local data structures.
+    void deallocate(void);
 
-  /** Set DMPlex mesh.
-   *
-   * @param DMPlex mesh.
-   * @param label Label for mesh.
-   */
-  void dmMesh(PetscDM dm,
-	      const char* label ="domain");
+    /** Get DMPlex mesh.
+     *
+     * @returns DMPlex mesh.
+     */
+    PetscDM dmMesh(void) const;
 
-  /** Get sizes for all point types.
-   *
-   * @param numNormalCells
-   * @param numCohesiveCells
-   * @param numNormalVertices
-   * @param numShadowVertices
-   * @param numLagrangeVertices.
-   */
-  void getPointTypeSizes(PetscInt *numNormalCells, 
-			 PetscInt *numCohesiveCells,
-			 PetscInt *numNormalVertices,
-			 PetscInt *numShadowVertices,
-			 PetscInt *numLagrangeVertices) const;
+    /** Set DMPlex mesh.
+     *
+     * @param DMPlex mesh.
+     * @param label Label for mesh.
+     */
+    void dmMesh(PetscDM dm,
+                const char* label ="domain");
 
-  /** Set sizes for all point types.
-   *
-   * @param numNormalCells
-   * @param numCohesiveCells
-   * @param numNormalVertices
-   * @param numShadowVertices
-   * @param numLagrangeVertices.
-   */
-  void setPointTypeSizes(PetscInt numNormalCells,
-			 PetscInt numCohesiveCells,
-			 PetscInt numNormalVertices,
-			 PetscInt numShadowVertices,
-			 PetscInt numLagrangeVertices);
+    /** Set coordinate system.
+     *
+     * @param cs Coordinate system.
+     */
+    void coordsys(const spatialdata::geocoords::CoordSys* cs);
 
-  /** Set coordinate system.
-   *
-   * @param cs Coordinate system.
-   */
-  void coordsys(const spatialdata::geocoords::CoordSys* cs);
+    /** Get coordinate system.
+     *
+     * @returns Coordinate system.
+     */
+    const spatialdata::geocoords::CoordSys* coordsys(void) const;
 
-  /** Get coordinate system.
-   *
-   * @returns Coordinate system.
-   */
-  const spatialdata::geocoords::CoordSys* coordsys(void) const;
+    /** Set debug flag.
+     *
+     * @param value Turn on debugging if true.
+     */
+    void debug(const bool value);
 
-  /** Set debug flag.
-   *
-   * @param value Turn on debugging if true.
-   */
-   void debug(const bool value);
+    /** Get debug flag.
+     *
+     * @param Get debugging flag.
+     */
+    bool debug(void) const;
 
-  /** Get debug flag.
-   *
-   * @param Get debugging flag.
-   */
-   bool debug(void) const;
+    /** Get dimension of mesh.
+     *
+     * @returns Dimension of mesh.
+     */
+    int dimension(void) const;
 
-  /** Get dimension of mesh.
-   *
-   * @returns Dimension of mesh.
-   */
-  int dimension(void) const;
-  
-  /** Get the number of vertices per cell
-   *
-   * @returns Number of vertices per cell.
-   */
-  int numCorners(void) const;
+    /** Get the number of vertices per cell
+     *
+     * @returns Number of vertices per cell.
+     */
+    int numCorners(void) const;
 
-  /** Get number of vertices in mesh.
-   *
-   * @returns Number of vertices in mesh.
-   */
-  int numVertices(void) const;
-  
-  /** Get number of cells in mesh.
-   *
-   * @returns Number of cells in mesh.
-   */
-  int numCells(void) const;
+    /** Get number of vertices in mesh.
+     *
+     * @returns Number of vertices in mesh.
+     */
+    int numVertices(void) const;
 
-  /** Is mesh composed of simplex cells?
-   *
-   * @returns Number of cells in mesh.
-   */
-  bool isSimplex(void) const;
+    /** Get number of cells in mesh.
+     *
+     * @returns Number of cells in mesh.
+     */
+    int numCells(void) const;
 
-  /** Get MPI communicator associated with mesh.
-   *
-   * @returns MPI communicator.
-   */
-  MPI_Comm comm(void) const;
-    
-  /** Get MPI rank.
-   *
-   * @returns MPI rank.
-   */
-  int commRank(void) const;
+    /** Is mesh composed of simplex cells?
+     *
+     * @returns Number of cells in mesh.
+     */
+    bool isSimplex(void) const;
 
-  /** View mesh.
-   *
-   * @param viewOption PETSc DM view option.
-   *
-   * PETSc mesh view options include:
-   *   short summary [empty]
-   *   detail summary ::ascii_info_detail
-   *   detail in a file :refined.mesh:ascii_info_detail
-   *   latex in a file  :refined.tex:ascii_latex
-   *   VTK vtk:refined.vtk:ascii_vtk
-   */
-  void view(const char* viewOption ="") const;
+    /** Get MPI communicator associated with mesh.
+     *
+     * @returns MPI communicator.
+     */
+    MPI_Comm comm(void) const;
 
-  /** Return the names of all vertex groups.
-   *
-   * @param numNames Number of fields,
-   * @param names Names of fields.
-   */
-  void groups(int* numNames, 
-	      char*** names) const;
+    /** Get MPI rank.
+     *
+     * @returns MPI rank.
+     */
+    int commRank(void) const;
 
-  /** Return the size of a group.
-   *
-   * @returns the number of vertices in the group
-   */
-  int groupSize(const char *name);
+    /** View mesh.
+     *
+     * @param viewOption PETSc DM view option.
+     *
+     * PETSc mesh view options include:
+     *   short summary [empty]
+     *   detail summary ::ascii_info_detail
+     *   detail in a file :refined.mesh:ascii_info_detail
+     *   latex in a file  :refined.tex:ascii_latex
+     *   VTK vtk:refined.vtk:ascii_vtk
+     */
+    void view(const char* viewOption ="") const;
 
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
-private :
+    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+private:
 
-  PetscDM _dmMesh;
+    PetscDM _dmMesh;
 
-  /* The old-style point numbering: [normalCells, normalVertices, shadowVertices, lagrangeVertices, cohesiveCells]
-     The new-style point numbering: [normalCells, cohesiveCells, normalVertices, shadowVertices, lagrangeVertices]
-  */
-  PetscInt _numNormalCells, _numCohesiveCells, _numNormalVertices, _numShadowVertices, _numLagrangeVertices;
+    spatialdata::geocoords::CoordSys* _coordsys; ///< Coordinate system.
+    bool _debug; ///< Debugging flag for mesh.
+    const bool _isSubMesh; ///< True if mesh is a submesh of another mesh.
+    bool _isSimplex; ///< True if mesh has simplex cells (line, tri, tet).
 
-  spatialdata::geocoords::CoordSys* _coordsys; ///< Coordinate system.
-  bool _debug; ///< Debugging flag for mesh.
-  const bool _isSubMesh; ///< True if mesh is a submesh of another mesh.
-  bool _isSimplex; ///< True if mesh has simplex cells (line, tri, tet).
-  
-// NOT IMPLEMENTED //////////////////////////////////////////////////////
-private :
+    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+private:
 
-  Mesh(const Mesh&); ///< Not implemented
-  const Mesh& operator=(const Mesh&); ///< Not implemented
+    Mesh(const Mesh&); ///< Not implemented
+    const Mesh& operator=(const Mesh&); ///< Not implemented
 
 }; // Mesh
 

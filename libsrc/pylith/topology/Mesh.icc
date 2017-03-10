@@ -27,39 +27,7 @@
 inline
 PetscDM
 pylith::topology::Mesh::dmMesh(void) const {
-  return _dmMesh;
-}
-
-// ----------------------------------------------------------------------
-// Get point type sizes.
-inline
-void
-pylith::topology::Mesh::getPointTypeSizes(PetscInt *numNormalCells,
-					  PetscInt *numCohesiveCells,
-					  PetscInt *numNormalVertices,
-					  PetscInt *numShadowVertices,
-					  PetscInt *numLagrangeVertices) const {
-  *numNormalCells = _numNormalCells;
-  *numCohesiveCells = _numCohesiveCells;
-  *numNormalVertices = _numNormalVertices;
-  *numShadowVertices = _numShadowVertices;
-  *numLagrangeVertices = _numLagrangeVertices;
-}
-
-// ----------------------------------------------------------------------
-// Set point type sizes.
-inline
-void
-pylith::topology::Mesh::setPointTypeSizes(PetscInt numNormalCells,
-					  PetscInt numCohesiveCells,
-					  PetscInt numNormalVertices,
-					  PetscInt numShadowVertices,
-					  PetscInt numLagrangeVertices) {
-  _numNormalCells = numNormalCells;
-  _numCohesiveCells = numCohesiveCells;
-  _numNormalVertices = numNormalVertices;
-  _numShadowVertices = numShadowVertices;
-  _numLagrangeVertices = numLagrangeVertices;
+    return _dmMesh;
 }
 
 // ----------------------------------------------------------------------
@@ -67,7 +35,7 @@ pylith::topology::Mesh::setPointTypeSizes(PetscInt numNormalCells,
 inline
 const spatialdata::geocoords::CoordSys*
 pylith::topology::Mesh::coordsys(void) const {
-  return _coordsys;
+    return _coordsys;
 }
 
 // ----------------------------------------------------------------------
@@ -75,7 +43,7 @@ pylith::topology::Mesh::coordsys(void) const {
 inline
 void
 pylith::topology::Mesh::debug(const bool value) {
-  _debug = value;
+    _debug = value;
 }
 
 // ----------------------------------------------------------------------
@@ -83,7 +51,7 @@ pylith::topology::Mesh::debug(const bool value) {
 inline
 bool
 pylith::topology::Mesh::debug(void) const {
-  return _debug;
+    return _debug;
 }
 
 // ----------------------------------------------------------------------
@@ -91,14 +59,14 @@ pylith::topology::Mesh::debug(void) const {
 inline
 int
 pylith::topology::Mesh::dimension(void) const {
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  PetscInt dim = 0;
-  if (_dmMesh) {
-    PetscErrorCode err = DMGetDimension(_dmMesh, &dim);PYLITH_CHECK_ERROR(err);
-  } // if
+    PetscInt dim = 0;
+    if (_dmMesh) {
+        PetscErrorCode err = DMGetDimension(_dmMesh, &dim); PYLITH_CHECK_ERROR(err);
+    } // if
 
-  PYLITH_METHOD_RETURN(dim);
+    PYLITH_METHOD_RETURN(dim);
 }
 
 // ----------------------------------------------------------------------
@@ -106,25 +74,25 @@ pylith::topology::Mesh::dimension(void) const {
 inline
 int
 pylith::topology::Mesh::numCorners(void) const {
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  PetscInt numCorners = 0;
-  if (_dmMesh) {
-    PetscInt cStart, cEnd, vStart, vEnd, closureSize, *closure = NULL;
-    PetscErrorCode err;
-    const int cellHeight = _isSubMesh ? 1 : 0;
-    err = DMPlexGetHeightStratum(_dmMesh, cellHeight, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetDepthStratum(_dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
-    if (cEnd > cStart) {
-      err = DMPlexGetTransitiveClosure(_dmMesh, cStart, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-      for (PetscInt c = 0; c < closureSize*2; c += 2) {
-        if ((closure[c] >= vStart) && (closure[c] < vEnd)) ++numCorners;
-      }
-      err = DMPlexRestoreTransitiveClosure(_dmMesh, cStart, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-    }
-  } // if
+    PetscInt numCorners = 0;
+    if (_dmMesh) {
+        PetscInt cStart, cEnd, vStart, vEnd, closureSize, *closure = NULL;
+        PetscErrorCode err;
+        const int cellHeight = _isSubMesh ? 1 : 0;
+        err = DMPlexGetHeightStratum(_dmMesh, cellHeight, &cStart, &cEnd); PYLITH_CHECK_ERROR(err);
+        err = DMPlexGetDepthStratum(_dmMesh, 0, &vStart, &vEnd); PYLITH_CHECK_ERROR(err);
+        if (cEnd > cStart) {
+            err = DMPlexGetTransitiveClosure(_dmMesh, cStart, PETSC_TRUE, &closureSize, &closure); PYLITH_CHECK_ERROR(err);
+            for (PetscInt c = 0; c < closureSize*2; c += 2) {
+                if ((closure[c] >= vStart) && (closure[c] < vEnd)) ++numCorners;
+            }
+            err = DMPlexRestoreTransitiveClosure(_dmMesh, cStart, PETSC_TRUE, &closureSize, &closure); PYLITH_CHECK_ERROR(err);
+        }
+    } // if
 
-  PYLITH_METHOD_RETURN(numCorners);
+    PYLITH_METHOD_RETURN(numCorners);
 }
 
 // ----------------------------------------------------------------------
@@ -132,16 +100,16 @@ pylith::topology::Mesh::numCorners(void) const {
 inline
 int
 pylith::topology::Mesh::numVertices(void) const {
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  PetscInt nvertices = 0;
-  if (_dmMesh) {
-    PetscInt begin=0, end=0;
-    PetscErrorCode err = DMPlexGetDepthStratum(_dmMesh, 0, &begin, &end);PYLITH_CHECK_ERROR(err);
-    nvertices = end-begin;
-  } // if
+    PetscInt nvertices = 0;
+    if (_dmMesh) {
+        PetscInt begin=0, end=0;
+        PetscErrorCode err = DMPlexGetDepthStratum(_dmMesh, 0, &begin, &end); PYLITH_CHECK_ERROR(err);
+        nvertices = end-begin;
+    } // if
 
-  PYLITH_METHOD_RETURN(nvertices);
+    PYLITH_METHOD_RETURN(nvertices);
 }
 
 // ----------------------------------------------------------------------
@@ -149,17 +117,17 @@ pylith::topology::Mesh::numVertices(void) const {
 inline
 int
 pylith::topology::Mesh::numCells(void) const {
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  PetscInt ncells = 0;
-  if (_dmMesh) {
-    PetscInt begin=0, end=0;
-    const int cellHeight = _isSubMesh ? 1 : 0;
-    PetscErrorCode err = DMPlexGetHeightStratum(_dmMesh, cellHeight, &begin, &end);PYLITH_CHECK_ERROR(err);
-    ncells = end-begin;
-  } // if
+    PetscInt ncells = 0;
+    if (_dmMesh) {
+        PetscInt begin=0, end=0;
+        const int cellHeight = _isSubMesh ? 1 : 0;
+        PetscErrorCode err = DMPlexGetHeightStratum(_dmMesh, cellHeight, &begin, &end); PYLITH_CHECK_ERROR(err);
+        ncells = end-begin;
+    } // if
 
-  PYLITH_METHOD_RETURN(ncells);
+    PYLITH_METHOD_RETURN(ncells);
 }
 
 
@@ -168,7 +136,7 @@ pylith::topology::Mesh::numCells(void) const {
 inline
 bool
 pylith::topology::Mesh::isSimplex(void) const {
-  return _isSimplex;
+    return _isSimplex;
 }
 
 #endif

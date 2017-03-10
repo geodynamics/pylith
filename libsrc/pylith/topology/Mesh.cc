@@ -36,11 +36,6 @@
 // Default constructor
 pylith::topology::Mesh::Mesh(const bool isSubMesh) :
     _dmMesh(NULL),
-    _numNormalCells(0),
-    _numCohesiveCells(0),
-    _numNormalVertices(0),
-    _numShadowVertices(0),
-    _numLagrangeVertices(0),
     _coordsys(0),
     _debug(false),
     _isSubMesh(isSubMesh),
@@ -53,11 +48,6 @@ pylith::topology::Mesh::Mesh(const bool isSubMesh) :
 pylith::topology::Mesh::Mesh(const int dim,
                              const MPI_Comm& comm) :
     _dmMesh(NULL),
-    _numNormalCells(0),
-    _numCohesiveCells(0),
-    _numNormalVertices(0),
-    _numShadowVertices(0),
-    _numLagrangeVertices(0),
     _coordsys(0),
     _debug(false),
     _isSubMesh(false),
@@ -79,11 +69,6 @@ pylith::topology::Mesh::Mesh(const int dim,
 pylith::topology::Mesh::Mesh(const Mesh& mesh,
                              const char* label) :
     _dmMesh(NULL),
-    _numNormalCells(0),
-    _numCohesiveCells(0),
-    _numNormalVertices(0),
-    _numShadowVertices(0),
-    _numLagrangeVertices(0),
     _coordsys(0),
     _debug(mesh._debug),
     _isSubMesh(true),
@@ -258,72 +243,6 @@ pylith::topology::Mesh::view(const char* viewOption) const
 
     PYLITH_METHOD_END;
 } // view
-
-// ----------------------------------------------------------------------
-// Return the names of all vertex groups.
-void
-pylith::topology::Mesh::groups(int* numNames,
-                               char*** names) const
-{ // groups
-    PYLITH_METHOD_BEGIN;
-
-    assert(numNames);
-    assert(names);
-    *numNames = 0;
-    *names = 0;
-
-    if (_dmMesh) {
-        PetscErrorCode err = 0;
-
-        PetscInt numLabels = 0;
-        err = DMGetNumLabels(_dmMesh, &numLabels); PYLITH_CHECK_ERROR(err);
-
-        *numNames = numLabels;
-        *names = new char*[numLabels];
-        for (int iLabel=0; iLabel < numLabels; ++iLabel) {
-            const char* namestr = NULL;
-            err = DMGetLabelName(_dmMesh, iLabel, &namestr); PYLITH_CHECK_ERROR(err);
-            // Must return char* that SWIG can deallocate.
-            const char len = strlen(namestr);
-            char* newName = 0;
-            if (len > 0) {
-                newName = new char[len+1];
-                strncpy(newName, namestr, len+1);
-            } else {
-                newName = new char[1];
-                newName[0] ='\0';
-            } // if/else
-            (*names)[iLabel] = newName;
-        } // for
-    } // if
-
-    PYLITH_METHOD_END;
-} // groups
-
-// ----------------------------------------------------------------------
-// Return the names of all vertex groups.
-int
-pylith::topology::Mesh::groupSize(const char *name)
-{ // groupSize
-    PYLITH_METHOD_BEGIN;
-
-    assert(_dmMesh);
-
-    PetscErrorCode err = 0;
-
-    PetscBool hasLabel = PETSC_FALSE;
-    err = DMHasLabel(_dmMesh, name, &hasLabel); PYLITH_CHECK_ERROR(err);
-    if (!hasLabel) {
-        std::ostringstream msg;
-        msg << "Cannot get size of group '" << name << "'. Group missing from mesh.";
-        throw std::runtime_error(msg.str());
-    } // if
-
-    PetscInt size = 0;
-    err = DMGetLabelSize(_dmMesh, name, &size); PYLITH_CHECK_ERROR(err);
-
-    PYLITH_METHOD_RETURN(size);
-} // groupSize
 
 
 // End of file
