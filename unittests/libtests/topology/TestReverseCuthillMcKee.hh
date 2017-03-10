@@ -35,83 +35,72 @@
 // Forward declarations -------------------------------------------------
 /// Namespace for pylith package
 namespace pylith {
-  namespace topology {
-    class TestReverseCuthillMcKee;
-  } // topology
+    namespace topology {
+        class TestReverseCuthillMcKee;
+        class TestReverseCuthillMcKee_Data;
+    } // topology
 } // pylith
 
 // ReverseCuthillMcKee ---------------------------------------------------------------
 class pylith::topology::TestReverseCuthillMcKee : public CppUnit::TestFixture
 { // class TestReverseCuthillMcKee
 
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestReverseCuthillMcKee );
+    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+    CPPUNIT_TEST_SUITE( TestReverseCuthillMcKee );
 
-  CPPUNIT_TEST( testReorderTri3 );
-  CPPUNIT_TEST( testReorderTri3Fault );
+    CPPUNIT_TEST( testReorder );
 
-  CPPUNIT_TEST( testReorderQuad4 );
-  CPPUNIT_TEST( testReorderQuad4Fault );
+    CPPUNIT_TEST_SUITE_END();
 
-  CPPUNIT_TEST( testReorderTet4 );
-  CPPUNIT_TEST( testReorderTet4Fault );
+    // PUBLIC METHODS /////////////////////////////////////////////////////
+public:
 
-  CPPUNIT_TEST( testReorderHex8 );
-  CPPUNIT_TEST( testReorderHex8Fault );
+    /// Setup testing data.
+    void setUp(void);
 
-  CPPUNIT_TEST_SUITE_END();
+    /// Deallocate testing data.
+    void tearDown(void);
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+    /// Test reorder().
+    void testReorder(void);
 
-  /// Test reorder() with tri3 cells and no fault.
-  void testReorderTri3(void);
+    // PROTECTED MEMBERS ///////////////////////////////////////////////////////
+protected:
 
-  /// Test reorder() with tri3 cells and one fault.
-  void testReorderTri3Fault(void);
+    TestReverseCuthillMcKee_Data* _data; ///< Data for testing.
+    Mesh* _mesh; ///< Finite-element mesh.
 
-  /// Test reorder() with quad4 cells and no fault.
-  void testReorderQuad4(void);
+    // PRIVATE METHODS //////////////////////////////////////////////////////
+private:
 
-  /// Test reorder() with quad4 cells and one fault.
-  void testReorderQuad4Fault(void);
-
-  /// Test reorder() with tet4 cells and no fault.
-  void testReorderTet4(void);
-
-  /// Test reorder() with tet4 cells and one fault.
-  void testReorderTet4Fault(void);
-
-  /// Test reorder() with hex8 cells and no fault.
-  void testReorderHex8(void);
-
-  /// Test reorder() with hex8 cells and one fault.
-  void testReorderHex8Fault(void);
-
-// PRIVATE METHODS //////////////////////////////////////////////////////
-private :
-
-  /** Setup mesh.
-   *
-   * @mesh Mesh to setup.
-   * @param filename Mesh filename.
-   * @param faultGroup Name of fault group.
-   */
-  void _setupMesh(Mesh* const mesh,
-		  const char* filename,
-		  const char* faultGroup =0);
-
-  /** Test reorder().
-   *
-   * @param filename Mesh filename.
-   * @param faultGroup Name of fault group.
-   */
-  void _testReorder(const char* filename,
-		    const char* faultGroup =0);
+    /// Setup mesh.
+    void _initialize();
 
 }; // class TestReverseCuthillMcKee
+
+
+// TestReverseCuthillMcKee_Data-----------------------------------------------------------
+class pylith::topology::TestReverseCuthillMcKee_Data {
+
+    // PUBLIC METHODS //////////////////////////////////////////////////////////
+public:
+
+    /// Constructor
+    TestReverseCuthillMcKee_Data(void);
+
+    /// Destructor
+    ~TestReverseCuthillMcKee_Data(void);
+
+    // PUBLIC MEMBERS //////////////////////////////////////////////////////////
+public:
+
+    const char* filename; ///< Name of mesh file.
+    const char* faultLabel; ///< Label for fault (use NULL for no fault).
+
+};  // TestReverseCuthillMcKee_Data
+
 
 #endif // pylith_topology_testreversecuthillmckee_hh
 
 
-// End of file 
+// End of file

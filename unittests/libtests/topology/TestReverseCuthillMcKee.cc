@@ -32,161 +32,50 @@
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestReverseCuthillMcKee );
-
-// ----------------------------------------------------------------------
-// Test reorder() with tri3 cells and no fault.
+// Setup testing data.
 void
-pylith::topology::TestReverseCuthillMcKee::testReorderTri3(void)
-{ // testReorderTri3
+pylith::topology::TestReverseCuthillMcKee::setUp(void)
+{ // setUp
     PYLITH_METHOD_BEGIN;
 
-    _testReorder("data/reorder_tri3.mesh");
+    _data = new TestReverseCuthillMcKee_Data; CPPUNIT_ASSERT(_data);
+    _mesh = NULL;
 
     PYLITH_METHOD_END;
-} // testReorderTri3
+} // setUp
 
 // ----------------------------------------------------------------------
-// Test reorder() with level 2, tri3 cells, and one fault.
+// Tear down testing data.
 void
-pylith::topology::TestReverseCuthillMcKee::testReorderTri3Fault(void)
-{ // testReorderTri3Fault
+pylith::topology::TestReverseCuthillMcKee::tearDown(void)
+{ // tearDown
     PYLITH_METHOD_BEGIN;
 
-    _testReorder("data/reorder_tri3.mesh", "fault");
+    delete _data; _data = NULL;
+    delete _mesh; _mesh = NULL;
 
     PYLITH_METHOD_END;
-} // testReorderTri3Fault
-
-// ----------------------------------------------------------------------
-// Test reorder() with level 2, quad4 cells, and no fault.
-void
-pylith::topology::TestReverseCuthillMcKee::testReorderQuad4(void)
-{ // testReorderQuad4
-    PYLITH_METHOD_BEGIN;
-
-    _testReorder("data/reorder_quad4.mesh");
-
-    PYLITH_METHOD_END;
-} // testReorderQuad4
-
-// ----------------------------------------------------------------------
-// Test reorder() with level 2, quad4 cells, and one fault.
-void
-pylith::topology::TestReverseCuthillMcKee::testReorderQuad4Fault(void)
-{ // testReorderQuad4Fault
-    PYLITH_METHOD_BEGIN;
-
-    _testReorder("data/reorder_quad4.mesh", "fault");
-
-    PYLITH_METHOD_END;
-} // testReorderQuad4Fault
-
-// ----------------------------------------------------------------------
-// Test reorder() with level 2, tet4 cells, and no fault.
-void
-pylith::topology::TestReverseCuthillMcKee::testReorderTet4(void)
-{ // testReorderTet4
-    PYLITH_METHOD_BEGIN;
-
-    _testReorder("data/reorder_tet4.mesh");
-
-    PYLITH_METHOD_END;
-} // testReorderTet4
-
-// ----------------------------------------------------------------------
-// Test reorder() with level 2, tet4 cells, and one fault.
-void
-pylith::topology::TestReverseCuthillMcKee::testReorderTet4Fault(void)
-{ // testReorderTet4Fault
-    PYLITH_METHOD_BEGIN;
-
-    _testReorder("data/reorder_tet4.mesh", "fault");
-
-    PYLITH_METHOD_END;
-} // testReorderTet4Fault
-
-// ----------------------------------------------------------------------
-// Test reorder() with hex8 cells and no fault.
-void
-pylith::topology::TestReverseCuthillMcKee::testReorderHex8(void)
-{ // testReorderHex8
-    PYLITH_METHOD_BEGIN;
-
-    _testReorder("data/reorder_hex8.mesh");
-
-    PYLITH_METHOD_END;
-} // testReorderHex8
-
-// ----------------------------------------------------------------------
-// Test reorder() with hex8 cells and one fault.
-void
-pylith::topology::TestReverseCuthillMcKee::testReorderHex8Fault(void)
-{ // testReorderHex8Fault
-    PYLITH_METHOD_BEGIN;
-
-    _testReorder("data/reorder_hex8.mesh", "fault");
-
-    PYLITH_METHOD_END;
-} // testReorderHex8Fault
-
-// ----------------------------------------------------------------------
-void
-pylith::topology::TestReverseCuthillMcKee::_setupMesh(Mesh* const mesh,
-                                                      const char* filename,
-                                                      const char* faultGroup)
-{ // _setupMesh
-    PYLITH_METHOD_BEGIN;
-
-    assert(mesh);
-
-    meshio::MeshIOAscii iohandler;
-    iohandler.filename(filename);
-    iohandler.interpolate(true);
-
-    iohandler.read(mesh);
-    CPPUNIT_ASSERT(mesh->numCells() > 0);
-    CPPUNIT_ASSERT(mesh->numVertices() > 0);
-
-    // Adjust topology if necessary.
-    if (faultGroup) {
-        int firstLagrangeVertex = 0;
-        int firstFaultCell = 0;
-
-        faults::FaultCohesiveKin fault;
-        fault.id(100);
-        fault.label(faultGroup);
-        const int nvertices = fault.numVerticesNoMesh(*mesh);
-        firstLagrangeVertex += nvertices;
-        firstFaultCell += 2*nvertices; // shadow + Lagrange vertices
-
-        int firstFaultVertex = 0;
-        fault.adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
-    } // if
-
-    PYLITH_METHOD_END;
-} // _setupMesh
+} // tearDown
 
 // ----------------------------------------------------------------------
 // Test reorder().
 void
-pylith::topology::TestReverseCuthillMcKee::_testReorder(const char* filename,
-                                                        const char* faultGroup)
-{ // _testReorder
+pylith::topology::TestReverseCuthillMcKee::testReorder(void)
+{ // testReorder
     PYLITH_METHOD_BEGIN;
 
-    Mesh mesh;
-    _setupMesh(&mesh, filename, faultGroup);
+    _initialize();
+    CPPUNIT_ASSERT(_mesh);
 
     // Get original DM and create Mesh for it
-    const PetscDM dmOrig = mesh.dmMesh();
+    const PetscDM dmOrig = _mesh->dmMesh();
     PetscObjectReference((PetscObject) dmOrig);
     Mesh meshOrig;
     meshOrig.dmMesh(dmOrig);
 
-    ReverseCuthillMcKee::reorder(&mesh);
+    ReverseCuthillMcKee::reorder(_mesh);
 
-    const PetscDM& dmMesh = mesh.dmMesh(); CPPUNIT_ASSERT(dmMesh);
+    const PetscDM& dmMesh = _mesh->dmMesh(); CPPUNIT_ASSERT(dmMesh);
 
     // Check vertices (size only)
     topology::Stratum verticesStratumE(dmOrig, topology::Stratum::DEPTH, 0);
@@ -256,26 +145,86 @@ pylith::topology::TestReverseCuthillMcKee::_testReorder(const char* filename,
     CPPUNIT_ASSERT_DOUBLES_EQUAL(coordsCheckOrig, coordsCheck, tolerance*coordsCheckOrig);
 
     // Verify reduction in Jacobian bandwidth
+    const int dim = _mesh->dimension();
+    const char* components[3] = {"field_x", "field_y", "field_z"};
+
     Field fieldOrig(meshOrig);
-    fieldOrig.newSection(FieldBase::VERTICES_FIELD, meshOrig.dimension());
+    fieldOrig.subfieldAdd("solution", components, dim, FieldBase::VECTOR, 1, 1, true);
+    fieldOrig.subfieldsSetup();
     fieldOrig.allocate();
     fieldOrig.zeroLocal();
-    Jacobian jacobianOrig(fieldOrig);
+    PetscMat matrix = NULL;
     PetscInt bandwidthOrig = 0;
-    err = MatComputeBandwidth(jacobianOrig.matrix(), 0.0, &bandwidthOrig); PYLITH_CHECK_ERROR(err);
+    err = DMCreateMatrix(fieldOrig.dmMesh(), &matrix); CPPUNIT_ASSERT(!err);
+    err = MatComputeBandwidth(matrix, 0.0, &bandwidthOrig); CPPUNIT_ASSERT(!err);
+    err = MatDestroy(&matrix); CPPUNIT_ASSERT(!err);
 
-    Field field(mesh);
-    field.newSection(FieldBase::VERTICES_FIELD, mesh.dimension());
+    Field field(*_mesh);
+    field.subfieldAdd("solution", components, dim, FieldBase::VECTOR, 1, 1, true);
+    field.subfieldsSetup();
     field.allocate();
     field.zeroLocal();
-    Jacobian jacobian(field);
     PetscInt bandwidth = 0;
-    err = MatComputeBandwidth(jacobian.matrix(), 0.0, &bandwidth); PYLITH_CHECK_ERROR(err);
+    err = DMCreateMatrix(field.dmMesh(), &matrix); CPPUNIT_ASSERT(!err);
+    err = MatComputeBandwidth(matrix, 0.0, &bandwidth); CPPUNIT_ASSERT(!err);
+    err = MatDestroy(&matrix); CPPUNIT_ASSERT(!err);
 
+    CPPUNIT_ASSERT(bandwidthOrig > 0);
+    CPPUNIT_ASSERT(bandwidth > 0);
     CPPUNIT_ASSERT(bandwidth <= bandwidthOrig);
 
     PYLITH_METHOD_END;
-} // _testReorder
+} // testReorder
+
+
+// ----------------------------------------------------------------------
+void
+pylith::topology::TestReverseCuthillMcKee::_initialize()
+{ // _initialize
+    PYLITH_METHOD_BEGIN;
+    CPPUNIT_ASSERT(_data);
+
+    delete _mesh; _mesh = new Mesh; CPPUNIT_ASSERT(_mesh);
+
+    meshio::MeshIOAscii iohandler;
+    iohandler.filename(_data->filename);
+    iohandler.read(_mesh);
+    CPPUNIT_ASSERT(_mesh->numCells() > 0);
+    CPPUNIT_ASSERT(_mesh->numVertices() > 0);
+
+    // Adjust topology if necessary.
+    if (_data->faultLabel) {
+        int firstLagrangeVertex = 0;
+        int firstFaultCell = 0;
+
+        pylith::faults::FaultCohesiveKin fault;
+        fault.id(100);
+        fault.label(_data->faultLabel);
+        const int nvertices = fault.numVerticesNoMesh(*_mesh);
+        firstLagrangeVertex += nvertices;
+        firstFaultCell += 2*nvertices; // shadow + Lagrange vertices
+
+        int firstFaultVertex = 0;
+        fault.adjustTopology(_mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
+    } // if
+
+    PYLITH_METHOD_END;
+} // _initialize
+
+// ----------------------------------------------------------------------
+// Constructor
+pylith::topology::TestReverseCuthillMcKee_Data::TestReverseCuthillMcKee_Data(void) :
+    filename(NULL),
+    faultLabel(NULL)
+{   // constructor
+}   // constructor
+
+
+// ----------------------------------------------------------------------
+// Destructor
+pylith::topology::TestReverseCuthillMcKee_Data::~TestReverseCuthillMcKee_Data(void)
+{   // destructor
+}   // destructor
 
 
 // End of file
