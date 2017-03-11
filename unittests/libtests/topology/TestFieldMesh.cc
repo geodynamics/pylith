@@ -122,14 +122,6 @@ pylith::topology::TestFieldMesh::testGeneralAccessors(void)
     // Test spaceDim()
     CPPUNIT_ASSERT_EQUAL(_data->cellDim, _field->spaceDim());
 
-    // Test const accessors.
-    const Field& field = *_field;
-    CPPUNIT_ASSERT_EQUAL(label, std::string(field.label()));
-    CPPUNIT_ASSERT_EQUAL(FieldBase::SCALAR, field._metadata.vectorFieldType);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(scale, field._metadata.scale, tolerance);
-    CPPUNIT_ASSERT_EQUAL(true, field._metadata.dimsOkay);
-    CPPUNIT_ASSERT_EQUAL(_data->cellDim, field.spaceDim());
-
     PYLITH_METHOD_END;
 } // testGeneralAccessors
 
