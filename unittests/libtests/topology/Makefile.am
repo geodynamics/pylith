@@ -35,6 +35,8 @@ testtopology_SOURCES = \
 	TestFieldBase.cc \
 	TestFieldMesh.cc \
 	TestFieldMesh_Cases.cc \
+	TestFieldQuery.cc \
+	TestFieldQuery_Cases.cc \
 	TestFieldsMesh.cc \
 	TestFieldsSubMesh.cc \
 	TestRefineUniform.cc \
@@ -54,6 +56,7 @@ noinst_HEADERS = \
 	TestFieldBase.hh \
 	TestFieldMesh.hh \
 	TestFieldSubMesh.hh \
+	TestFieldQuery.hh \
 	TestFieldsMesh.hh \
 	TestFieldsSubMesh.hh \
 	TestSolutionFields.hh \
