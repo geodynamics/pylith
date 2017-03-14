@@ -1,0 +1,14 @@
+Unit tests:
+
+For each material of each dimensionality we need:
+
+Top-level:
+1.  TestMATERIALDIMENSION.cc
+2.  TestMATERIALDIMENSION.hh
+3.  TestMATERIALDIMENSION_Cases.cc
+
+In data directory:
+1.  MATERIALDIMENSION_TEST.py, which generates 3 spatial databases:
+    a.  MATERIALDIMENSION_TEST_aux.spatialdb
+    b.  MATERIALDIMENSION_TEST_pert.spatialdb
+    c.  MATERIALDIMENSION_TEST_soln.spatialdb
