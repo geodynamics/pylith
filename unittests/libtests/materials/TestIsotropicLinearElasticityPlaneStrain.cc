@@ -247,7 +247,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
         _mymaterial->getAuxField(&density, "density");
 
         density.createScatter(density.mesh()); // Populate global vector.
-        density.scatterLocalToGlobal();
+        density.scatterLocalToContext();
 
         //density.view("DENSITY"); // DEBUGGING
 
@@ -274,7 +274,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
         _mymaterial->getAuxField(&bulkModulus, "bulk_modulus");
 
         bulkModulus.createScatter(bulkModulus.mesh()); // Populate global vector.
-        bulkModulus.scatterLocalToGlobal();
+        bulkModulus.scatterLocalToContext();
 
         //bulkModulus.view("BULK MODULUS"); // DEBUGGING
 
@@ -359,7 +359,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_setupSolutionField
         field->subfieldsSetup();
     } // if
     field->allocate();
-    field->zeroAll();
+    field->zeroLocal();
 
     spatialdata::spatialdb::SimpleDB fieldDB;
     spatialdata::spatialdb::SimpleIOAscii dbIO;

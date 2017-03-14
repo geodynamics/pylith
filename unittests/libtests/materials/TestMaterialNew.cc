@@ -486,13 +486,13 @@ pylith::materials::TestMaterialNew::testComputeResidual(void)
     residualRHS.cloneSection(*_solution1);
     residualRHS.label("residual RHS");
     residualRHS.allocate();
-    residualRHS.zeroAll();
+    residualRHS.zeroLocal();
 
     pylith::topology::Field residualLHS(*_mesh);
     residualLHS.cloneSection(*_solution1);
     residualLHS.label("residual LHS");
     residualLHS.allocate();
-    residualLHS.zeroAll();
+    residualLHS.zeroLocal();
 
     MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
     TestMaterialNew_Data* data = _data(); CPPUNIT_ASSERT(data);
@@ -548,13 +548,13 @@ pylith::materials::TestMaterialNew::testComputeRHSJacobian(void)
     residual1.cloneSection(*_solution1);
     residual1.label("residual1");
     residual1.allocate();
-    residual1.zeroAll();
+    residual1.zeroLocal();
 
     pylith::topology::Field residual2(*_mesh);
     residual2.cloneSection(*_solution2);
     residual2.label("residual2");
     residual2.allocate();
-    residual2.zeroAll();
+    residual2.zeroLocal();
 
 #if 0 // DEBUGGING
     PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2");
@@ -572,8 +572,8 @@ pylith::materials::TestMaterialNew::testComputeRHSJacobian(void)
     // Scatter local to global.
     _solution1->createScatter(_solution1->mesh());
     _solution2->createScatter(_solution2->mesh());
-    _solution1->scatterLocalToGlobal();
-    _solution2->scatterLocalToGlobal();
+    _solution1->scatterLocalToContext();
+    _solution2->scatterLocalToContext();
     residual1.complete();
     residual2.complete();
 
@@ -654,13 +654,13 @@ pylith::materials::TestMaterialNew::testComputeLHSJacobianImplicit(void)
     residual1.cloneSection(*_solution1);
     residual1.label("residual1");
     residual1.allocate();
-    residual1.zeroAll();
+    residual1.zeroLocal();
 
     pylith::topology::Field residual2(*_mesh);
     residual2.cloneSection(*_solution2);
     residual2.label("residual2");
     residual2.allocate();
-    residual2.zeroAll();
+    residual2.zeroLocal();
 
 #if 0 // DEBUGGING
     PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2");
@@ -679,8 +679,8 @@ pylith::materials::TestMaterialNew::testComputeLHSJacobianImplicit(void)
     // Scatter local to global.
     _solution1->createScatter(_solution1->mesh());
     _solution2->createScatter(_solution2->mesh());
-    _solution1->scatterLocalToGlobal();
-    _solution2->scatterLocalToGlobal();
+    _solution1->scatterLocalToContext();
+    _solution2->scatterLocalToContext();
     residual1.complete();
     residual2.complete();
 
@@ -873,14 +873,12 @@ pylith::materials::TestMaterialNew::_initializeFull(void)
     _solution2->cloneSection(*_solution1);
     _solution2->label("solution2");
     _setupSolutionField(_solution2, data->pertDBFilename, isClone);
-    *_solution2 += (*_solution1);
 
     // Create time derivative of solution field 2.
     delete _solution2Dot; _solution2Dot = new pylith::topology::Field(*_mesh);
     _solution2Dot->cloneSection(*_solution1Dot);
     _solution2Dot->label("solution2_dot");
     _setupSolutionField(_solution2Dot, data->pertDBFilename, isClone);
-    *_solution2Dot += (*_solution1Dot);
 
     CPPUNIT_ASSERT(_solution1);
     material->initialize(*_solution1);
