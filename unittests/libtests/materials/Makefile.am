@@ -45,10 +45,8 @@ testmaterials_SOURCES = \
 	TestDruckerPragerPlaneStrain.cc \
 	TestEffectiveStress.cc \
 	TestMaterialNew.cc \
-	TestMaterialNew_Data.cc \
 	TestIsotropicLinearElasticityPlaneStrain.cc \
 	TestIsotropicLinearElasticityPlaneStrain_Cases.cc \
-	TestIsotropicLinearElasticityPlaneStrain_Data.cc \
 	test_materials.cc
 
 
@@ -70,9 +68,7 @@ noinst_HEADERS = \
 	TestDruckerPragerPlaneStrain.hh \
 	TestEffectiveStress.hh \
 	TestMaterialNew.hh \
-	TestMaterialNew_Data.hh \
-	TestIsotropicLinearElasticityPlaneStrain.hh \
-	TestIsotropicLinearElasticityPlaneStrain_Data.hh
+	TestIsotropicLinearElasticityPlaneStrain.hh
 
 # Source files associated with testing data
 testmaterials_SOURCES += \
@@ -145,4 +141,4 @@ if ENABLE_CUBIT
 endif
 
 
-# End of file 
+# End of file

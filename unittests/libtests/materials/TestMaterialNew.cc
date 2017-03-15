@@ -20,8 +20,6 @@
 
 #include "TestMaterialNew.hh" // Implementation of class methods
 
-#include "TestMaterialNew_Data.hh" // USES IsotropicLinearElasticityPlaneStrainData
-
 #include "pylith/materials/MaterialNew.hh" // USES MaterialNew
 #include "pylith/materials/Query.hh" // USES Query
 
@@ -382,8 +380,8 @@ pylith::materials::TestMaterialNew::testVerifyConfiguration(void)
 
     // Call verifyConfiguration()
     MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
-    CPPUNIT_ASSERT(_mesh);
-    material->verifyConfiguration(*_mesh);
+    CPPUNIT_ASSERT(_solution1);
+    material->verifyConfiguration(*_solution1);
 
     // Nothing to test.
 
@@ -819,6 +817,36 @@ pylith::materials::TestMaterialNew::_initializeMin(void)
     material->label(data->materialLabel);
     material->normalizer(normalizer);
 
+    // Setup solution field.
+
+    // Create solution field 1.
+    CPPUNIT_ASSERT(data->solnDBFilename);
+    bool isClone = false;
+
+    delete _solution1; _solution1 = new pylith::topology::Field(*_mesh);
+    _solution1->label("solution1");
+    _setupSolutionField(_solution1, data->solnDBFilename, isClone);
+
+    // Create time derivative of solution field 1.
+    delete _solution1Dot; _solution1Dot = new pylith::topology::Field(*_mesh);
+    _solution1Dot->label("solution1_dot");
+    _setupSolutionField(_solution1Dot, data->solnDBFilename, isClone);
+
+    // Create solution field 2; solution 2 = solution 1 + perturbation
+    CPPUNIT_ASSERT(data->pertDBFilename);
+    isClone = true;
+
+    delete _solution2; _solution2 = new pylith::topology::Field(*_mesh);
+    _solution2->cloneSection(*_solution1);
+    _solution2->label("solution2");
+    _setupSolutionField(_solution2, data->pertDBFilename, isClone);
+
+    // Create time derivative of solution field 2.
+    delete _solution2Dot; _solution2Dot = new pylith::topology::Field(*_mesh);
+    _solution2Dot->cloneSection(*_solution1Dot);
+    _solution2Dot->label("solution2_dot");
+    _setupSolutionField(_solution2Dot, data->pertDBFilename, isClone);
+
     PYLITH_METHOD_END;
 } // _initializeMin
 
@@ -852,33 +880,6 @@ pylith::materials::TestMaterialNew::_initializeFull(void)
     } // for
 
 
-    // Create solution field 1.
-    CPPUNIT_ASSERT(data->solnDBFilename);
-    bool isClone = false;
-
-    delete _solution1; _solution1 = new pylith::topology::Field(*_mesh);
-    _solution1->label("solution1");
-    _setupSolutionField(_solution1, data->solnDBFilename, isClone);
-
-    // Create time derivative of solution field 1.
-    delete _solution1Dot; _solution1Dot = new pylith::topology::Field(*_mesh);
-    _solution1Dot->label("solution1_dot");
-    _setupSolutionField(_solution1Dot, data->solnDBFilename);
-
-    // Create solution field 2; solution 2 = solution 1 + perturbation
-    CPPUNIT_ASSERT(data->pertDBFilename);
-    isClone = true;
-
-    delete _solution2; _solution2 = new pylith::topology::Field(*_mesh);
-    _solution2->cloneSection(*_solution1);
-    _solution2->label("solution2");
-    _setupSolutionField(_solution2, data->pertDBFilename, isClone);
-
-    // Create time derivative of solution field 2.
-    delete _solution2Dot; _solution2Dot = new pylith::topology::Field(*_mesh);
-    _solution2Dot->cloneSection(*_solution1Dot);
-    _solution2Dot->label("solution2_dot");
-    _setupSolutionField(_solution2Dot, data->pertDBFilename, isClone);
 
     CPPUNIT_ASSERT(_solution1);
     material->initialize(*_solution1);
@@ -940,6 +941,56 @@ pylith::materials::TestMaterialNew::_setupSolutionField(pylith::topology::Field*
 { // _setupSolutionField
     throw std::logic_error("Implement TestMaterialNew::_setupSolutionField() in derived class.");
 } // _setupSolutionField
+
+
+// ----------------------------------------------------------------------
+const int pylith::materials::TestMaterialNew_Data::numKernelsResidual = 2;
+const int pylith::materials::TestMaterialNew_Data::numKernelsJacobian = 4;
+
+// ----------------------------------------------------------------------
+// Constructor
+pylith::materials::TestMaterialNew_Data::TestMaterialNew_Data(void) :
+    meshFilename(0),
+    materialLabel(NULL),
+    materialId(0),
+    boundaryLabel(NULL),
+
+    lengthScale(0),
+    timeScale(0),
+    pressureScale(0),
+    densityScale(0),
+
+    t(0.0),
+    dt(0.0),
+    tshift(0.0),
+
+    solnDiscretizations(NULL),
+    solnDBFilename(NULL),
+    pertDBFilename(NULL),
+
+    numAuxFields(0),
+    auxFields(NULL),
+    auxDiscretizations(NULL),
+    auxDBFilename(NULL),
+
+    dimension(0),
+    numSolnFields(0),
+
+    kernelsRHSResidual(NULL),
+    kernelsRHSJacobian(NULL),
+    kernelsLHSResidual(NULL),
+    kernelsLHSJacobianImplicit(NULL),
+    kernelsLHSJacobianExplicit(NULL)
+
+{ // constructor
+} // constructor
+
+
+// ----------------------------------------------------------------------
+// Destructor
+pylith::materials::TestMaterialNew_Data::~TestMaterialNew_Data(void)
+{ // destructor
+} // destructor
 
 
 // End of file
