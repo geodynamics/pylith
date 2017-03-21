@@ -463,13 +463,13 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsUpdateStateva
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("_setFEKernelsUpdateStatevars(solution="<<solution.label()<<")");
 
-    const PetscDM dm = solution.dmMesh(); assert(dm);
+    const PetscDM dm = _auxFields->dmMesh(); assert(dm);
     PetscDS prob = NULL;
     PetscErrorCode err = DMGetDS(dm, &prob); PYLITH_CHECK_ERROR(err);
 
     const PetscPointFunc updateStateVarsKernel = pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_UpdateStateVarsKernel;
     // NOTE:  This function doesn't exist yet and I'm not sure what it should look like.
-    err = PetscDSSetUpdateStatevars(prob, updateStateVarsKernel); PYLITH_CHECK_ERROR(err);
+    err = PetscDSSetUpdate(prob, updateStateVarsKernel); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _setFEKernelsUpdateStatevars
