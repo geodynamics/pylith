@@ -1964,7 +1964,7 @@ pylith::faults::FaultCohesiveLagrange::_getJacobianSubmatrixNP(PetscMat* jacobia
     IS indicesIS[1];
     err = ISCreateGeneral(PETSC_COMM_SELF, indicesNP.size(), &indicesNP[0], PETSC_USE_POINTER, &indicesIS[0]);
     PYLITH_CHECK_ERROR(err);
-    err = MatGetSubMatrices(jacobianMatrix, 1, indicesIS, indicesIS, MAT_INITIAL_MATRIX, subMat);
+    err = MatCreateSubMatrices(jacobianMatrix, 1, indicesIS, indicesIS, MAT_INITIAL_MATRIX, subMat);
     PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&indicesIS[0]); PYLITH_CHECK_ERROR(err);
 
