@@ -266,7 +266,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v(const PylithInt dim,
 
     assert(_dim == dim);
     assert(1 == numS || 2 == numS);
-    assert(3 == numA || 4 == numA);
+    assert(numA >= 3);
     assert(sOff);
     assert(sOff_x);
     assert(aOff);
@@ -337,7 +337,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v_refstate(const PylithI
 
     assert(_dim == dim);
     assert(1 == numS || 2 == numS);
-    assert(5 == numA || 6 == numA);
+    assert(numA >= 5);
     assert(sOff);
     assert(sOff_x);
     assert(aOff);
@@ -361,24 +361,6 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v_refstate(const PylithI
 
 /* ---------------------------------------------------------------------- */
 /** Jf0 function for isotropic linear elasticity plane strain with implicit time stepping.
- *
- * @param dim Spatial dimension.
- * @param numS Number of registered subfields in solution field [2].
- * @param numA Number of registered subfields in auxiliary field [0].
- * @param sOff Offset of registered subfields in solution field [numS].
- * @param sOff_x Offset of registered subfields in gradient of the solution field [numS].
- * @param s Solution field with all subfields.
- * @param s_t Time derivative of solution field.
- * @param s_x Gradient of solution field.
- * @param aOff Offset of registered subfields in auxiliary field [numA]
- * @param aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
- * @param a Auxiliary field with all subfields.
- * @param a_t Time derivative of auxiliary field.
- * @param a_x Gradient of auxiliary field.
- * @param t Time for residual evaluation.
- * @param utshift Coefficient for dF/ds_t term in Jacobian.
- * @param x Coordinates of point evaluation.
- * @param f0 Result [dim*dim].
  */
 void
 pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0vv_implicit(const PylithInt dim,
@@ -420,24 +402,6 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0vv_implicit(const Pylit
 
 /* ---------------------------------------------------------------------- */
 /** Jf0 function for isotropic linear elasticity plane strain with explicit time stepping.
- *
- * @param dim Spatial dimension.
- * @param numS Number of registered subfields in solution field [2].
- * @param numA Number of registered subfields in auxiliary field [0].
- * @param sOff Offset of registered subfields in solution field [numS].
- * @param sOff_x Offset of registered subfields in gradient of the solution field [numS].
- * @param s Solution field with all subfields.
- * @param s_t Time derivative of solution field.
- * @param s_x Gradient of solution field.
- * @param aOff Offset of registered subfields in auxiliary field [numA]
- * @param aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
- * @param a Auxiliary field with all subfields.
- * @param a_t Time derivative of auxiliary field.
- * @param a_x Gradient of auxiliary field.
- * @param t Time for residual evaluation.
- * @param utshift Coefficient for dF/ds_t term in Jacobian.
- * @param x Coordinates of point evaluation.
- * @param f0 Result [dim*dim].
  */
 void
 pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0vv_explicit(const PylithInt dim,
