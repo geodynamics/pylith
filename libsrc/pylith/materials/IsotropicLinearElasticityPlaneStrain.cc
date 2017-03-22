@@ -149,8 +149,6 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_auxFieldsSetup(void)
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("_auxFieldsSetup()");
 
-    PYLITH_JOURNAL_ERROR(":TODO: Add auxiliary field for gravitational acceleration vector");
-
     // Set subfields in auxiliary fields.
     assert(_normalizer);
     const PylithReal densityScale = _normalizer->densityScale();
