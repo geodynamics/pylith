@@ -308,6 +308,7 @@ void _setFEKernelsLHSJacobianExplicit(const topology::Field& solution) const = 0
 protected:
 
 topology::StratumIS* _materialIS;   ///< Index set for material cells.
+spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
 
 // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private:
@@ -315,7 +316,6 @@ private:
 const int _dimension;   ///< Spatial dimension of material.
 int _id;   ///< Material identifier.
 std::string _label;   ///< Label of material.
-spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
 
 // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:

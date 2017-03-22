@@ -220,8 +220,8 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
 
     // Make sure DB query functions are set correctly.
     CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _mymaterial->_auxFieldsQuery->queryFn("density"));
-    CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryShearModulus2D, _mymaterial->_auxFieldsQuery->queryFn("shear_modulus"));
-    CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryBulkModulus2D, _mymaterial->_auxFieldsQuery->queryFn("bulk_modulus"));
+    CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryShearModulus, _mymaterial->_auxFieldsQuery->queryFn("shear_modulus"));
+    CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryBulkModulus, _mymaterial->_auxFieldsQuery->queryFn("bulk_modulus"));
     if (_mydata->useBodyForce) {
         CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _mymaterial->_auxFieldsQuery->queryFn("body_force"));
     } // if
@@ -287,7 +287,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
         CPPUNIT_ASSERT_EQUAL(_mydata->dimension, bulkModulus.spaceDim());
 
         pylith::topology::FieldQuery queryBulkModulus(bulkModulus);
-        queryBulkModulus.queryFn("bulk_modulus", pylith::materials::Query::dbQueryBulkModulus2D);
+        queryBulkModulus.queryFn("bulk_modulus", pylith::materials::Query::dbQueryBulkModulus);
         queryBulkModulus.openDB(_auxDB, _mydata->lengthScale);
 
         PylithReal norm = 0.0;

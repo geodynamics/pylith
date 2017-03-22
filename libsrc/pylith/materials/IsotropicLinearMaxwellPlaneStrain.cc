@@ -168,33 +168,33 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_auxFieldsSetup(void)
     // Field 1: shearModulus
     const char* shearModulusComponents[1] = {"shear_modulus"};
     const pylith::topology::Field::DiscretizeInfo& shearModulusFEInfo = this->auxFieldDiscretization("shear_modulus");
-    _auxFields->subfieldAdd("shear_modulus", shearModulusComponents, 1, topology::Field::SCALAR, shearModulusFEInfo.basisOrder, shearModulusFEInfo.quadOrder, shearModulusFEInfo.isBasisContinuous, pressureScale);
-    _auxFieldsQuery->queryFn("shear_modulus", pylith::materials::Query::dbQueryShearModulus2D);
+    _auxFields->subfieldAdd("shear_modulus", shearModulusComponents, 1, pylith::topology::Field::SCALAR, shearModulusFEInfo.basisOrder, shearModulusFEInfo.quadOrder, shearModulusFEInfo.isBasisContinuous, pressureScale);
+    _auxFieldsQuery->queryFn("shear_modulus", pylith::materials::Query::dbQueryShearModulus);
 
     // Field 2: bulkModulus
     const char* bulkModulusComponents[1] = {"bulk_modulus"};
     const pylith::topology::Field::DiscretizeInfo& bulkModulusFEInfo = this->auxFieldDiscretization("bulk_modulus");
-    _auxFields->subfieldAdd("bulk_modulus", bulkModulusComponents, 1, topology::Field::SCALAR, bulkModulusFEInfo.basisOrder, bulkModulusFEInfo.quadOrder, bulkModulusFEInfo.isBasisContinuous, pressureScale);
-    _auxFieldsQuery->queryFn("bulk_modulus", pylith::materials::Query::dbQueryBulkModulus2D);
+    _auxFields->subfieldAdd("bulk_modulus", bulkModulusComponents, 1, pylith::topology::Field::SCALAR, bulkModulusFEInfo.basisOrder, bulkModulusFEInfo.quadOrder, bulkModulusFEInfo.isBasisContinuous, pressureScale);
+    _auxFieldsQuery->queryFn("bulk_modulus", pylith::materials::Query::dbQueryBulkModulus);
 
     // Field 3: maxwellTime
     const char* maxwellTimeComponents[1] = {"maxwell_time"};
     const pylith::topology::Field::DiscretizeInfo& maxwellTimeFEInfo = this->auxFieldDiscretization("maxwell_time");
-    _auxFields->subfieldAdd("maxwell_time", maxwellTimeComponents, 1, topology::Field::SCALAR, maxwellTimeFEInfo.basisOrder, maxwellTimeFEInfo.quadOrder, maxwellTimeFEInfo.isBasisContinuous, timeScale);
+    _auxFields->subfieldAdd("maxwell_time", maxwellTimeComponents, 1, pylith::topology::Field::SCALAR, maxwellTimeFEInfo.basisOrder, maxwellTimeFEInfo.quadOrder, maxwellTimeFEInfo.isBasisContinuous, timeScale);
     _auxFieldsQuery->queryFn("maxwell_time", pylith::materials::Query::dbQueryMaxwellTime2D);
 
     // Field 4: total strain
     const PylithInt totalStrainSize = 4;
     const char* componentsTotalStrain[totalStrainSize] = {"total_strain_xx", "total_strain_yy", "total_strain_xy", "total_strain_zz"};
     const pylith::topology::Field::DiscretizeInfo& totalStrainFEInfo = this->auxFieldDiscretization("total_strain");
-    _auxFields->subfieldAdd("total_strain", componentsTotalStrain, totalStrainSize, topology::Field::OTHER, totalStrainFEInfo.basisOrder, totalStrainFEInfo.quadOrder, totalStrainFEInfo.isBasisContinuous, 1.0);
+    _auxFields->subfieldAdd("total_strain", componentsTotalStrain, totalStrainSize, pylith::topology::Field::OTHER, totalStrainFEInfo.basisOrder, totalStrainFEInfo.quadOrder, totalStrainFEInfo.isBasisContinuous, 1.0);
     _auxFieldsQuery->queryFn("total_strain", pylith::topology::FieldQuery::dbQueryGeneric);
 
     // Field 5: viscous strain
     const PylithInt viscousStrainSize = 4;
     const char* componentsViscousStrain[viscousStrainSize] = {"viscous_strain_xx", "viscous_strain_yy", "viscous_strain_xy", "viscous_strain_zz"};
     const pylith::topology::Field::DiscretizeInfo& viscousStrainFEInfo = this->auxFieldDiscretization("viscous_strain");
-    _auxFields->subfieldAdd("viscous_strain", componentsViscousStrain, viscousStrainSize, topology::Field::OTHER, viscousStrainFEInfo.basisOrder, viscousStrainFEInfo.quadOrder, viscousStrainFEInfo.isBasisContinuous, 1.0);
+    _auxFields->subfieldAdd("viscous_strain", componentsViscousStrain, viscousStrainSize, pylith::topology::Field::OTHER, viscousStrainFEInfo.basisOrder, viscousStrainFEInfo.quadOrder, viscousStrainFEInfo.isBasisContinuous, 1.0);
     _auxFieldsQuery->queryFn("viscous_strain", pylith::topology::FieldQuery::dbQueryGeneric);
 
     // Field 6: body force
@@ -202,7 +202,7 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_auxFieldsSetup(void)
         assert(2 == dimension());
         const char* components[2] = {"body_force_x", "body_force_y"};
         const pylith::topology::Field::DiscretizeInfo& bodyForceFEInfo = this->auxFieldDiscretization("body_force");
-        _auxFields->subfieldAdd("body_force", components, dimension(), topology::Field::VECTOR, bodyForceFEInfo.basisOrder, bodyForceFEInfo.quadOrder, bodyForceFEInfo.isBasisContinuous, forceScale);
+        _auxFields->subfieldAdd("body_force", components, dimension(), pylith::topology::Field::VECTOR, bodyForceFEInfo.basisOrder, bodyForceFEInfo.quadOrder, bodyForceFEInfo.isBasisContinuous, forceScale);
         _auxFieldsQuery->queryFn("body_force", pylith::topology::FieldQuery::dbQueryGeneric);
     } // if
 
@@ -211,13 +211,13 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_auxFieldsSetup(void)
         const PylithInt stressSize = 4;
         const char* componentsStress[stressSize] = {"stress_xx", "stress_yy", "stress_xy", "stress_zz"};
         const pylith::topology::Field::DiscretizeInfo& stressFEInfo = this->auxFieldDiscretization("reference_stress");
-        _auxFields->subfieldAdd("reference_stress", componentsStress, stressSize, topology::Field::OTHER, stressFEInfo.basisOrder, stressFEInfo.quadOrder, stressFEInfo.isBasisContinuous, pressureScale);
+        _auxFields->subfieldAdd("reference_stress", componentsStress, stressSize, pylith::topology::Field::OTHER, stressFEInfo.basisOrder, stressFEInfo.quadOrder, stressFEInfo.isBasisContinuous, pressureScale);
         _auxFieldsQuery->queryFn("reference_stress", pylith::topology::FieldQuery::dbQueryGeneric);
 
         const PylithInt strainSize = 4;
         const char* componentsStrain[strainSize] = {"strain_xx", "strain_yy", "strain_xy", "strain_zz"};
         const pylith::topology::Field::DiscretizeInfo& strainFEInfo = this->auxFieldDiscretization("reference_strain");
-        _auxFields->subfieldAdd("reference_strain", componentsStrain, strainSize, topology::Field::OTHER, strainFEInfo.basisOrder, strainFEInfo.quadOrder, strainFEInfo.isBasisContinuous, 1.0);
+        _auxFields->subfieldAdd("reference_strain", componentsStrain, strainSize, pylith::topology::Field::OTHER, strainFEInfo.basisOrder, strainFEInfo.quadOrder, strainFEInfo.isBasisContinuous, 1.0);
         _auxFieldsQuery->queryFn("reference_strain", pylith::topology::FieldQuery::dbQueryGeneric);
     } // if
 
@@ -227,7 +227,7 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_auxFieldsSetup(void)
 // ----------------------------------------------------------------------
 // Set kernels for RHS residual G(t,s).
 void
-pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsRHSResidual(const topology::Field& solution) const
+pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsRHSResidual(const pylith::topology::Field& solution) const
 { // _setFEKernelsRHSResidual
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("_setFEKernelsRHSResidual(solution="<<solution.label()<<")");
@@ -267,7 +267,7 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsRHSResidual(c
 // ----------------------------------------------------------------------
 // Set kernels for RHS Jacobian G(t,s).
 void
-pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsRHSJacobian(const topology::Field& solution) const
+pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsRHSJacobian(const pylith::topology::Field& solution) const
 { // _setFEKernelsRHSJacobian
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("_setFEKernelsRHSJacobian(solution="<<solution.label()<<")");
@@ -323,7 +323,7 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsRHSJacobian(c
 // ----------------------------------------------------------------------
 // Set kernels for LHS residual F(t,s,\dot{s}).
 void
-pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsLHSResidual(const topology::Field& solution) const
+pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsLHSResidual(const pylith::topology::Field& solution) const
 { // _setFEKernelsLHSResidual
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("_setFEKernelsLHSResidual(solution="<<solution.label()<<")");
@@ -358,7 +358,7 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsLHSResidual(c
 // ----------------------------------------------------------------------
 // Set kernels for LHS Jacobian F(t,s,\dot{s}).
 void
-pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsLHSJacobianImplicit(const topology::Field& solution) const
+pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsLHSJacobianImplicit(const pylith::topology::Field& solution) const
 { // _setFEKernelsLHSJacobianImplicit
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("_setFEKernelsLHSJacobianImplicit(solution="<<solution.label()<<")");
@@ -414,7 +414,7 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsLHSJacobianIm
 // ----------------------------------------------------------------------
 // Set kernels for LHS Jacobian F(t,s,\dot{s}).
 void
-pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsLHSJacobianExplicit(const topology::Field& solution) const
+pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsLHSJacobianExplicit(const pylith::topology::Field& solution) const
 { // _setFEKernelsLHSJacobianExplicit
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("_setFEKernelsLHSJacobianExplicit(solution="<<solution.label()<<")");
@@ -458,7 +458,7 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsLHSJacobianEx
 // ----------------------------------------------------------------------
 // Set kernels for updating state variables.
 void
-pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsUpdateStatevars(const topology::Field& solution) const
+pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsUpdateStatevars(const pylith::topology::Field& solution) const
 { // _setFEKernelsUpdateStatevars
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("_setFEKernelsUpdateStatevars(solution="<<solution.label()<<")");

@@ -37,7 +37,7 @@
 #include <stdexcept> // USES std::runtime_error
 
 extern "C" PetscErrorCode DMPlexComputeResidual_Internal(DM dm, PetscInt cStart, PetscInt cEnd, PetscReal time, Vec locX, Vec locX_t, Vec locF, void *user);
-extern "C" PetscErrorCode DMPlexComputeJacobian_Internal(DM dm, PetscInt cStart, PetscInt cEnd, PetscReal t, PetscReal X_tShift, Vec X, Vec X_t, Mat Jac, Mat JacP,void *user);
+extern "C" PetscErrorCode DMPlexComputeJacobian_Internal(DM dm, PetscInt cStart, PetscInt cEnd, PetscReal t, PetscReal X_tShift, Vec X, Vec X_t, Mat Jac, Mat JacP, void *user);
 extern "C" PetscErrorCode DMPlexComputeJacobianAction_Internal(DM dm, PetscInt cStart, PetscInt cEnd, PetscReal t, PetscReal X_tShift, Vec X, Vec X_t, Vec Y, Vec z, void *user);
 
 
@@ -45,12 +45,12 @@ extern "C" PetscErrorCode DMPlexComputeJacobianAction_Internal(DM dm, PetscInt c
 // Default constructor.
 pylith::materials::MaterialNew::MaterialNew(const int dimension) :
     _materialIS(NULL),
+    _gravityField(NULL),
     _dimension(dimension),
     _id(0),
-    _label(""),
-    _gravityField(0)
+    _label("")
 { // constructor
-    const topology::FieldBase::DiscretizeInfo defaultInfo = {-1, -1, true};
+    const pylith::topology::FieldBase::DiscretizeInfo defaultInfo = {-1, -1, true};
     _auxFieldsFEInfo["default"] = defaultInfo;
 } // constructor
 
@@ -125,13 +125,13 @@ pylith::materials::MaterialNew::initialize(const pylith::topology::Field& soluti
     // Get cells associated with material
     const pylith::topology::Mesh& mesh = solution.mesh();
     PetscDM dmMesh = mesh.dmMesh(); assert(dmMesh);
-    topology::CoordsVisitor::optimizeClosure(dmMesh);
+    pylith::topology::CoordsVisitor::optimizeClosure(dmMesh);
 
     const bool includeOnlyCells = true;
-    delete _materialIS; _materialIS = new topology::StratumIS(dmMesh, "material-id", _id, includeOnlyCells); assert(_materialIS);
+    delete _materialIS; _materialIS = new pylith::topology::StratumIS(dmMesh, "material-id", _id, includeOnlyCells); assert(_materialIS);
 
-    delete _auxFields; _auxFields = new topology::Field(mesh); assert(_auxFields);
-    delete _auxFieldsQuery; _auxFieldsQuery = new topology::FieldQuery(*_auxFields); assert(_auxFieldsQuery);
+    delete _auxFields; _auxFields = new pylith::topology::Field(mesh); assert(_auxFields);
+    delete _auxFieldsQuery; _auxFieldsQuery = new pylith::topology::FieldQuery(*_auxFields); assert(_auxFieldsQuery);
     _auxFields->label("auxiliary fields");
     _auxFieldsSetup();
     _auxFields->subfieldsSetup();
