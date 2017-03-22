@@ -57,6 +57,7 @@ pylith::topology::FieldQuery::deallocate(void)
     delete[] _contextPtrs; _contextPtrs = NULL;
 
     _queryFns.clear();
+    _queryDBs.clear();
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -66,24 +67,26 @@ pylith::topology::FieldQuery::deallocate(void)
 // Set query function information for subfield.
 void
 pylith::topology::FieldQuery::queryFn(const char* subfield,
-                                      const queryfn_type fn)
-{ // setQuery
+                                      const queryfn_type fn,
+                                      spatialdata::spatialdb::SpatialDB* db)
+{ // queryFn
     PYLITH_METHOD_BEGIN;
 
     assert(subfield);
     assert(fn);
 
     _queryFns[subfield] = fn;
+    _queryDBs[subfield] = db;
 
     PYLITH_METHOD_END;
-} // setQuery
+} // queryFn
 
 
 // ----------------------------------------------------------------------
 // Get query function information for subfield.
 const pylith::topology::FieldQuery::queryfn_type
 pylith::topology::FieldQuery::queryFn(const char* subfield) const
-{ // setQuery
+{ // queryFn
     PYLITH_METHOD_BEGIN;
 
     assert(subfield);
@@ -95,7 +98,26 @@ pylith::topology::FieldQuery::queryFn(const char* subfield) const
     } // if
 
     PYLITH_METHOD_RETURN(*iter->second);
-} // setQuery
+} // queryFn
+
+
+// ----------------------------------------------------------------------
+// Get spatial database used to get values for subfield.
+const spatialdata::spatialdb::SpatialDB*
+pylith::topology::FieldQuery::queryDB(const char* subfield) const
+{ // queryDB
+    PYLITH_METHOD_BEGIN;
+
+    assert(subfield);
+    const querydb_map_type::const_iterator& iter = _queryDBs.find(subfield);
+    if (iter == _queryDBs.end()) {
+        std::ostringstream msg;
+        msg << "Could not find spatial database for subfield '" << subfield << "'." << std::endl;
+        throw std::logic_error(msg.str());
+    } // if
+
+    PYLITH_METHOD_RETURN(iter->second);
+} // queryDB
 
 
 // ----------------------------------------------------------------------
@@ -149,7 +171,7 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
 
         _functions[index] = _queryFns[name];
 
-        _contexts[index].db = db;
+        _contexts[index].db = (_queryDBs[name]) ? _queryDBs[name] : db;
         _contexts[index].cs = _field.mesh().coordsys();
         _contexts[index].lengthScale = lengthScale;
 

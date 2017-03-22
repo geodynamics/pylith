@@ -33,6 +33,8 @@ extern "C" {
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
+#include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
+
 #include "petscds.h"
 
 // ----------------------------------------------------------------------
@@ -155,7 +157,8 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_auxFieldsSetup(void)
     const PylithReal pressureScale = _normalizer->pressureScale();
     const PylithReal lengthScale = _normalizer->lengthScale();
     const PylithReal timeScale = _normalizer->timeScale();
-    const PylithReal forceScale = densityScale * lengthScale / (timeScale * timeScale);
+    const PylithReal accelerationScale = lengthScale / (timeScale * timeScale);
+    const PylithReal forceScale = densityScale * accelerationScale;
 
     // :ATTENTION: The order for subfieldAdd() must match the order of the auxiliary fields in the FE kernels.
 
@@ -181,9 +184,9 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_auxFieldsSetup(void)
     if (_gravityField) {
         assert(2 == dimension());
         const char* components[2] = {"gravity_field_x", "gravity_field_y"};
-        const pylith::topology::Field::DiscretizeInfo& bodyForceFEInfo = this->auxFieldDiscretization("gravity_field");
-        _auxFields->subfieldAdd("gravity_field", components, dimension(), topology::Field::VECTOR, bodyForceFEInfo.basisOrder, bodyForceFEInfo.quadOrder, bodyForceFEInfo.isBasisContinuous, forceScale);
-        _auxFieldsQuery->queryFn("gravity_field", pylith::materials::Query::dbQueryGravityField);
+        const pylith::topology::Field::DiscretizeInfo& gravityFieldFEInfo = this->auxFieldDiscretization("gravity_field");
+        _auxFields->subfieldAdd("gravity_field", components, dimension(), topology::Field::VECTOR, gravityFieldFEInfo.basisOrder, gravityFieldFEInfo.quadOrder, gravityFieldFEInfo.isBasisContinuous, accelerationScale);
+        _auxFieldsQuery->queryFn("gravity_field", pylith::materials::Query::dbQueryGravityField, _gravityField);
     } // if
 
     // Field 4: body force
