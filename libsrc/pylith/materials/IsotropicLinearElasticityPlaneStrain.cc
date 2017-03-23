@@ -404,7 +404,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSJacobia
     } // if/else
 
     PYLITH_METHOD_END;
-} // _setFEKernelsRHSJacobianImplicit
+} // _setFEKernelsLHSJacobianImplicit
 
 
 // ----------------------------------------------------------------------
@@ -448,7 +448,7 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSJacobia
     err = PetscDSSetJacobian(prob, i_vel,  i_vel,  Jf0vv, Jf1vv, Jf2vv, Jf3vv); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
-} // _setFEKernelsRHSJacobianExplicit
+} // _setFEKernelsLHSJacobianExplicit
 
 
 // End of file

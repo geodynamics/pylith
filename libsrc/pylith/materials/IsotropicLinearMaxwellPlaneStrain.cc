@@ -33,6 +33,8 @@ extern "C" {
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
+#include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
+
 #include "petscds.h"
 
 // ----------------------------------------------------------------------
@@ -147,15 +149,14 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_auxFieldsSetup(void)
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("_auxFieldsSetup()");
 
-    PYLITH_JOURNAL_ERROR(":TODO: Add auxiliary field for gravitational acceleration vector");
-
     // Set subfields in auxiliary fields.
     assert(_normalizer);
     const PylithReal densityScale = _normalizer->densityScale();
     const PylithReal pressureScale = _normalizer->pressureScale();
     const PylithReal lengthScale = _normalizer->lengthScale();
     const PylithReal timeScale = _normalizer->timeScale();
-    const PylithReal forceScale = densityScale * lengthScale / (timeScale * timeScale);
+    const PylithReal accelerationScale = lengthScale / (timeScale * timeScale);
+    const PylithReal forceScale = densityScale * accelerationScale;
 
     // :ATTENTION: The order for subfieldAdd() must match the order of the auxiliary fields in the FE kernels.
 
@@ -197,7 +198,16 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_auxFieldsSetup(void)
     _auxFields->subfieldAdd("viscous_strain", componentsViscousStrain, viscousStrainSize, pylith::topology::Field::OTHER, viscousStrainFEInfo.basisOrder, viscousStrainFEInfo.quadOrder, viscousStrainFEInfo.isBasisContinuous, 1.0);
     _auxFieldsQuery->queryFn("viscous_strain", pylith::topology::FieldQuery::dbQueryGeneric);
 
-    // Field 6: body force
+    // Field 6: gravity_field
+    if (_gravityField) {
+        assert(2 == dimension());
+        const char* components[2] = {"gravity_field_x", "gravity_field_y"};
+        const pylith::topology::Field::DiscretizeInfo& gravityFieldFEInfo = this->auxFieldDiscretization("gravity_field");
+        _auxFields->subfieldAdd("gravity_field", components, dimension(), pylith::topology::Field::VECTOR, gravityFieldFEInfo.basisOrder, gravityFieldFEInfo.quadOrder, gravityFieldFEInfo.isBasisContinuous, forceScale);
+        _auxFieldsQuery->queryFn("gravity_field", pylith::materials::Query::dbQueryGravityField, _gravityField);
+    } // if
+
+    // Field 7: body force
     if (_useBodyForce) {
         assert(2 == dimension());
         const char* components[2] = {"body_force_x", "body_force_y"};
@@ -206,7 +216,7 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_auxFieldsSetup(void)
         _auxFieldsQuery->queryFn("body_force", pylith::topology::FieldQuery::dbQueryGeneric);
     } // if
 
-    // Fields 7 and 8: reference stress and reference strain
+    // Fields 8 and 9: reference stress and reference strain
     if (_useReferenceState) {
         const PylithInt stressSize = 4;
         const char* componentsStress[stressSize] = {"stress_xx", "stress_yy", "stress_xy", "stress_zz"};
@@ -240,7 +250,10 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsRHSResidual(c
 
     if (!solution.hasSubfield("velocity")) {
         // Displacement
-        const PetscPointFunc g0u = (_useBodyForce) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v : NULL;
+        const PetscPointFunc g0u = (_gravityField && _useBodyForce) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_gravbodyforce :
+	                           (_gravityField) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_grav :
+	                           (_useBodyForce) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_bodyforce :
+                                   NULL;
         const PetscPointFunc g1u = (!_useReferenceState) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g1v : pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g1v_refstate;
 
         err = PetscDSSetResidual(prob, i_disp, g0u, g1u); PYLITH_CHECK_ERROR(err);
@@ -252,7 +265,10 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsRHSResidual(c
         const PetscPointFunc g1u = NULL;
 
         // Velocity
-        const PetscPointFunc g0v = (_useBodyForce) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v : NULL;
+        const PetscPointFunc g0v = (_gravityField && _useBodyForce) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_gravbodyforce :
+	                           (_gravityField) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_grav :
+                                   (_useBodyForce) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_bodyforce :
+	                           NULL;
         const PetscPointFunc g1v = (!_useReferenceState) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g1v : pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g1v_refstate;
 
         err = PetscDSSetResidual(prob, i_disp, g0u, g1u); PYLITH_CHECK_ERROR(err);
@@ -408,7 +424,7 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsLHSJacobianIm
     } // if/else
 
     PYLITH_METHOD_END;
-} // _setFEKernelsRHSJacobianImplicit
+} // _setFEKernelsLHSJacobianImplicit
 
 
 // ----------------------------------------------------------------------
@@ -452,7 +468,7 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsLHSJacobianEx
     err = PetscDSSetJacobian(prob, i_vel,  i_vel,  Jf0vv, Jf1vv, Jf2vv, Jf3vv); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
-} // _setFEKernelsRHSJacobianExplicit
+} // _setFEKernelsLHSJacobianExplicit
 
 
 // ----------------------------------------------------------------------
@@ -468,13 +484,10 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsUpdateStateva
     PetscErrorCode err = DMGetDS(dm, &prob); PYLITH_CHECK_ERROR(err);
 
     const PetscPointFunc updateStateVarsKernel = pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_UpdateStateVarsKernel;
-    // NOTE:  This function doesn't exist yet and I'm not sure what it should look like.
     err = PetscDSSetUpdate(prob, updateStateVarsKernel); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _setFEKernelsUpdateStatevars
-
-
 
 
 // End of file

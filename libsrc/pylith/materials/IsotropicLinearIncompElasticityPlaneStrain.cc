@@ -34,6 +34,8 @@ extern "C" {
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
+#include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
+
 #include "petscds.h"
 
 // ----------------------------------------------------------------------
@@ -81,6 +83,7 @@ void
 pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::useBodyForce(const bool value)
 { // useBodyForce
     PYLITH_JOURNAL_DEBUG("useBodyForce(value="<<value<<")");
+
     _useBodyForce = value;
 } // useBodyForce
 
@@ -101,6 +104,7 @@ void
 pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::useReferenceState(const bool value)
 { // useReferenceState
     PYLITH_JOURNAL_DEBUG("useReferenceState="<<value<<")");
+
     _useReferenceState = value;
 } // useReferenceState
 
@@ -154,9 +158,11 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_auxFieldsSetup(v
     const PylithReal pressureScale = _normalizer->pressureScale();
     const PylithReal lengthScale = _normalizer->lengthScale();
     const PylithReal timeScale = _normalizer->timeScale();
-    const PylithReal forceScale = densityScale * lengthScale / (timeScale * timeScale);
+    const PylithReal accelerationScale = lengthScale / (timeScale * timeScale);
+    const PylithReal forceScale = densityScale * accelerationScale;
 
     // :ATTENTION: The order for subfieldAdd() must match the order of the auxiliary fields in the FE kernels.
+
     // Field 0: density
     const char* densityComponents[1] = {"density"};
     const pylith::topology::Field::DiscretizeInfo& densityFEInfo = this->auxFieldDiscretization("density");
@@ -175,7 +181,16 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_auxFieldsSetup(v
     _auxFields->subfieldAdd("bulk_modulus", bulkModulusComponents, 1, topology::Field::SCALAR, bulkModulusFEInfo.basisOrder, bulkModulusFEInfo.quadOrder, bulkModulusFEInfo.isBasisContinuous, pressureScale);
     _auxFieldsQuery->queryFn("bulk_modulus", pylith::materials::Query::dbQueryBulkModulus);
 
-    // Field 3: body force
+    // Field 3: gravity_field
+    if (_gravityField) {
+        assert(2 == dimension());
+        const char* components[2] = {"gravity_field_x", "gravity_field_y"};
+        const pylith::topology::Field::DiscretizeInfo& gravityFieldFEInfo = this->auxFieldDiscretization("gravity_field");
+        _auxFields->subfieldAdd("gravity_field", components, dimension(), topology::Field::VECTOR, gravityFieldFEInfo.basisOrder, gravityFieldFEInfo.quadOrder, gravityFieldFEInfo.isBasisContinuous, accelerationScale);
+        _auxFieldsQuery->queryFn("gravity_field", pylith::materials::Query::dbQueryGravityField, _gravityField);
+    } // if
+    
+    // Field 4: body force
     if (_useBodyForce) {
         assert(2 == dimension());
         const char* components[2] = {"body_force_x", "body_force_y"};
@@ -184,7 +199,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_auxFieldsSetup(v
         _auxFieldsQuery->queryFn("body_force", pylith::topology::FieldQuery::dbQueryGeneric);
     } // if
 
-    // Fields 4 and 5: reference stress and strain
+    // Fields 5 and 6: reference stress and strain
     if (_useReferenceState) {
         const PylithInt stressSize = 4;
         const char* componentsStress[stressSize] = {"stress_xx", "stress_yy", "stress_xy", "stress_zz"};
@@ -219,7 +234,10 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsRHSR
 
     if (!solution.hasSubfield("velocity")) {
         // Displacement
-        const PetscPointFunc g0u = (_useBodyForce) ? pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g0v : NULL;
+        const PetscPointFunc g0u = (_gravityField && _useBodyForce) ? pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g0v_gravbodyforce :
+                                   (_gravityField) ? pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g0v_grav :
+                                   (_useBodyForce) ? pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g0v_bodyforce :
+                                   NULL;
         const PetscPointFunc g1u = (!_useReferenceState) ? pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1v : pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1v_refstate;
 
         err = PetscDSSetResidual(prob, i_disp, g0u, g1u); PYLITH_CHECK_ERROR(err);
@@ -241,7 +259,10 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsRHSR
         const PetscPointFunc g1p = NULL;
 
         // Velocity
-        const PetscPointFunc g0v = (_useBodyForce) ? pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g0v : NULL;
+	const PetscPointFunc g0v = (_gravityField && _useBodyForce) ? pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g0v_gravbodyforce :
+                                   (_gravityField) ? pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g0v_grav :
+                                   (_useBodyForce) ? pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g0v_bodyforce :
+                                   NULL;
         const PetscPointFunc g1v = (!_useReferenceState) ? pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1v : pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g1v_refstate;
 
         err = PetscDSSetResidual(prob, i_disp, g0u, g1u); PYLITH_CHECK_ERROR(err);
@@ -577,7 +598,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsLHSJ
     err = PetscDSSetJacobian(prob, i_pres, i_pres, Jf0pp, Jf1pp, Jf2pp, Jf3pp); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
-} // _setFEKernelsRHSJacobianExplicit
+} // _setFEKernelsLHSJacobianExplicit
 
 
 // End of file
