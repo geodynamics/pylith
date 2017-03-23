@@ -43,6 +43,8 @@ script:
   - git clone --recursive --depth 100 https://github.com/geodynamics/spatialdata.git
   - pushd spatialdata && autoreconf --install --verbose --force && ./configure --enable-swig --enable-testing --enable-pythia --prefix=${TARGET_DIR} CPPFLAGS="-I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" && make -j${MAKE_THREADS} && make install && make -j${MAKE_THREADS} check && popd
   # PyLith
+  - pwd
+  - ls
   - git fetch --unshallow
   - autoreconf --install --verbose --force && ./configure --enable-swig --enable-testing --enable-cubit --enable-hdf5 --prefix=${TARGET_DIR} CPPFLAGS="-I${DEPS_DIR}/include -I${TARGET_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib -L${TARGET_DIR}/lib" CC=mpicc CXX=mpicxx && make -j${MAKE_THREADS} && make install && make -j${MAKE_THREADS} check
 
