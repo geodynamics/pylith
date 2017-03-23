@@ -26,6 +26,8 @@ addons:
       - proj-bin
       - proj-data
       - libproj-dev
+      - zlib1g
+      - zlib1g-dev
       - swig
 
 # Install dependencies cached on CIG server
