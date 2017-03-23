@@ -156,12 +156,10 @@ public:
          *
          * @param[out] solution Solution field.
          * @param[in] t Current time.
-         * @param[in] dt Current time step.
          */
         virtual
         void setValues(pylith::topology::Field* solution,
-                       const double t,
-                       const double dt) = 0;
+                       const double t) = 0;
 
         }; // class ConstraintPointwise
 

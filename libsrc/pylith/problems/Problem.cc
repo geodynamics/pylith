@@ -265,6 +265,7 @@ pylith::problems::Problem::initialize(void)
     // Initialize solution field.
     _solution->allocate();
     _solution->zeroLocal();
+    _solution->createScatter(_solution->mesh());
 
     // Initialize output.
     const size_t numOutput = _outputs.size();
@@ -279,6 +280,29 @@ pylith::problems::Problem::initialize(void)
 
     PYLITH_METHOD_END;
 } // initialize
+
+// ----------------------------------------------------------------------
+// Set solution values according to constraints (Dirichlet BC).
+void
+pylith::problems::Problem::setValues(PetscVec solutionVec,
+                                     const PylithReal t)
+{ // setValues
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("setValues(solutionVec="<<solutionVec<<", t="<<t<<")");
+
+    // Update PyLith view of the solution.
+    assert(_solution);
+    _solution->scatterVectorToLocal(solutionVec);
+
+    const size_t numConstraints = _constraints.size();
+    for (size_t i=0; i < numConstraints; ++i) {
+        _constraints[i]->setValues(_solution, t);
+    } // for
+
+    _solution->scatterLocalToVector(solutionVec);
+
+    PYLITH_METHOD_END;
+} // setValues
 
 // ----------------------------------------------------------------------
 // Compute RHS residual for G(t,s).
@@ -297,15 +321,6 @@ pylith::problems::Problem::computeRHSResidual(PetscVec residualVec,
 
     // Update PyLith view of the solution.
     _solution->scatterVectorToLocal(solutionVec);
-
-    // :QUESTION: @matt The examples insert boundary values then do the global to
-    // local scatter. Can we do them in reverse as we do here?
-
-    // Set Dirichlet values.
-    const size_t numConstraints = _constraints.size();
-    for (size_t i=0; i < numConstraints; ++i) {
-        _constraints[i]->setValues(_solution, t, dt);
-    } // for
 
     // Sum residual contributions across integrators.
     const size_t numIntegrators = _integrators.size();
@@ -334,12 +349,6 @@ pylith::problems::Problem::computeRHSJacobian(PetscMat jacobianMat,
     // Update PyLith view of the solution.
     assert(_solution);
     _solution->scatterVectorToLocal(solutionVec);
-
-    // Set Dirichlet boundary conditions.
-    const size_t numConstraints = _constraints.size();
-    for (size_t i=0; i < numConstraints; ++i) {
-        _constraints[i]->setValues(_solution, t, dt);
-    } // for
 
     // Sum Jacobian contributions across integrators.
     const size_t numIntegrators = _integrators.size();
@@ -370,12 +379,6 @@ pylith::problems::Problem::computeLHSResidual(PetscVec residualVec,
 
     // Update PyLith view of the solution.
     _solution->scatterVectorToLocal(solutionVec);
-
-    // Set Dirichlet boundary conditions.
-    const size_t numConstraints = _constraints.size();
-    for (size_t i=0; i < numConstraints; ++i) {
-        _constraints[i]->setValues(_solution, t, dt);
-    } // for
 
     // Sum residual across integrators.
     const int numIntegrators = _integrators.size();
@@ -408,12 +411,6 @@ pylith::problems::Problem::computeLHSJacobianImplicit(PetscMat jacobianMat,
     assert(_solution);
     _solution->scatterVectorToLocal(solutionVec);
 
-    // Set Dirichlet boundary conditions.
-    const size_t numConstraints = _constraints.size();
-    for (size_t i=0; i < numConstraints; ++i) {
-        _constraints[i]->setValues(_solution, t, dt);
-    } // for
-
     // Sum Jacobian contributions across integrators.
     const size_t numIntegrators = _integrators.size();
     for (size_t i=0; i < numIntegrators; ++i) {
@@ -442,12 +439,6 @@ pylith::problems::Problem::computeLHSJacobianLumpedInv(const PylithReal t,
     // Update PyLith view of the solution.
     assert(_solution);
     _solution->scatterVectorToLocal(solutionVec);
-
-    // Set Dirichlet boundary conditions.
-    const size_t numConstraints = _constraints.size();
-    for (size_t i=0; i < numConstraints; ++i) {
-        _constraints[i]->setValues(_solution, t, dt);
-    } // for
 
     // Sum Jacobian contributions across integrators.
     const size_t numIntegrators = _integrators.size();

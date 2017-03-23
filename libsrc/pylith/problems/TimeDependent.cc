@@ -296,7 +296,12 @@ pylith::problems::TimeDependent::initialize(void)
         _jacobianLHSLumpedInv->cloneSection(*_solution);
     } // if
 
-    _solution->createScatter(_solution->mesh());
+    // Set callback for setting values using Dirichlet BC. We prefer to set this
+    // information here rather than in Problem, because we want the application
+    // context to be more specific.
+    const PetscDM dmSoln = _solution->dmMesh(); assert(dmSoln);
+    err = PetscObjectComposeFunction((PetscObject) dmSoln, "DMPlexInsertBoundaryValues_C", TimeDependent::setValues); PYLITH_CHECK_ERROR(err);
+    err = DMSetApplicationContext(dmSoln, (void*) this); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // initialize
@@ -357,10 +362,10 @@ pylith::problems::TimeDependent::poststep(void)
     // :QUESTION: :MATT: What time does this solution correspond to?
     PetscErrorCode err;
     PylithReal t;
-    PylithInt timeStep;
+    PylithInt dt;
     PetscVec solutionVec = NULL;
     err = TSGetTime(_ts, &t); PYLITH_CHECK_ERROR(err);
-    err = TSGetTotalSteps(_ts, &timeStep); PYLITH_CHECK_ERROR(err);
+    err = TSGetTotalSteps(_ts, &dt); PYLITH_CHECK_ERROR(err);
     err = TSGetSolution(_ts, &solutionVec); PYLITH_CHECK_ERROR(err);
 
     // Update PyLith view of the solution.
@@ -373,7 +378,7 @@ pylith::problems::TimeDependent::poststep(void)
 #if 1
         PYLITH_JOURNAL_ERROR(":TODO: @brad Implement solution output in poststep().");
 #else
-        _outputs[i].writeTimeStep(t, timeStep, *_solution);
+        _outputs[i].writeTimeStep(t, dt, *_solution);
 #endif
     } // for
 
@@ -391,6 +396,31 @@ pylith::problems::TimeDependent::poststep(void)
 
     PYLITH_METHOD_END;
 } // poststep
+
+
+// ----------------------------------------------------------------------
+// Callback static method for settting solution values according to constraints.
+PetscErrorCode
+pylith::problems::TimeDependent::setValues(PetscDM dm,
+                                           PetscBool insertEssential,
+                                           PetscVec solutionVec,
+                                           PetscReal t,
+                                           PetscVec faceGeomFVM,
+                                           PetscVec cellGeomFVM,
+                                           PetscVec gradFVM)
+{ // setValues
+    PYLITH_METHOD_BEGIN;
+
+    journal::debug_t debug(_pyreComponent);
+    debug << journal::at(__HERE__)
+          << "setValues(dm="<<dm<<", insertEssential="<<insertEssential<<", solutionVec="<<solutionVec<<", t="<<t<<", faceGeomFVM="<<faceGeomFVM<<", cellGeomFVM="<<cellGeomFVM<<", gradFVM="<<gradFVM<<")" << journal::endl;
+
+    pylith::problems::TimeDependent* problem = NULL;
+    PetscErrorCode err = DMGetApplicationContext(dm, &problem); PYLITH_CHECK_ERROR(err); assert(problem);
+    problem->Problem::setValues(solutionVec, t);
+
+    PYLITH_METHOD_RETURN(0);
+} // setvalues
 
 
 // ----------------------------------------------------------------------
@@ -499,7 +529,8 @@ pylith::problems::TimeDependent::computeLHSJacobian(PetscTS ts,
 
     journal::debug_t debug(_pyreComponent);
     debug << journal::at(__HERE__)
-          << "computeLHSJacobian(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", tshift="<<tshift<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", context="<<context<<")" << journal::endl;
+          << "computeLHSJacobian(ts="<<ts<<", t="<<t<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", tshift="<<tshift<<", jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", context="<<context<<")" <<
+    journal::endl;
 
     // Get current time step.
     PylithReal dt;

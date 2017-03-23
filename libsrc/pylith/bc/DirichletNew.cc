@@ -84,7 +84,7 @@ pylith::bc::DirichletNew::initialize(const pylith::topology::Field& solution)
 
     _boundaryMesh = new topology::Mesh(solution.mesh(), _label.c_str()); assert(_boundaryMesh);
     PetscDM dmBoundary = _boundaryMesh->dmMesh(); assert(dmBoundary);
-    topology::CoordsVisitor::optimizeClosure(dmBoundary);
+    pylith::topology::CoordsVisitor::optimizeClosure(dmBoundary);
 
     delete _auxFields; _auxFields = new topology::Field(*_boundaryMesh); assert(_auxFields);
     delete _auxFieldsQuery; _auxFieldsQuery = new topology::FieldQuery(*_auxFields); assert(_auxFieldsQuery);
@@ -108,6 +108,16 @@ pylith::bc::DirichletNew::initialize(const pylith::topology::Field& solution)
     _auxFields->view("AUXILIARY FIELDS"); // :DEBUGGING: TEMPORARY
 
     // :TODO: @brad @matt Set constraint DOF and indices in solution.
+    // Get label for constraint.
+    PetscDMLabel dmLabel;
+    const PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
+    PetscErrorCode err = DMGetLabel(dmSoln, _label.c_str(), &dmLabel); PYLITH_CHECK_ERROR(err);
+
+    void* context = NULL;
+    const int labelId = 1;
+    const PylithInt numConstrained = _constrainedDOF.size();
+    err = DMAddBoundary(dmSoln, DM_BC_ESSENTIAL_FIELD, label(), label(), info.index, numConstrained, &_constrainedDOF[0],
+                        (void (*)())_bcKernel, 1, &labelId, context); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // initialize
@@ -116,11 +126,10 @@ pylith::bc::DirichletNew::initialize(const pylith::topology::Field& solution)
 // Set constrained values in solution field.
 void
 pylith::bc::DirichletNew::setValues(pylith::topology::Field* solution,
-                                    const double t,
-                                    const double dt)
+                                    const double t)
 { // setValues
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setValues(solution="<<solution->label()<<", t="<<t<<", dt="<<dt<<")");
+    PYLITH_JOURNAL_DEBUG("setValues(solution="<<solution->label()<<", t="<<t<<")");
 
     assert(solution);
     assert(_auxFields);
@@ -135,8 +144,7 @@ pylith::bc::DirichletNew::setValues(pylith::topology::Field* solution,
 
     // Set auxiliary data
     err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux); PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxFields->localVector()); PYLITH_CHECK_ERROR(
-        err);
+    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxFields->localVector()); PYLITH_CHECK_ERROR(err);
 
     void* context = NULL;
     const int labelId = 1;
