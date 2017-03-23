@@ -189,7 +189,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_auxFieldsSetup(v
         _auxFields->subfieldAdd("gravity_field", components, dimension(), topology::Field::VECTOR, gravityFieldFEInfo.basisOrder, gravityFieldFEInfo.quadOrder, gravityFieldFEInfo.isBasisContinuous, accelerationScale);
         _auxFieldsQuery->queryFn("gravity_field", pylith::materials::Query::dbQueryGravityField, _gravityField);
     } // if
-    
+
     // Field 4: body force
     if (_useBodyForce) {
         assert(2 == dimension());
@@ -232,6 +232,9 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsRHSR
     const PetscInt i_disp = solution.subfieldInfo("displacement").index;
     const PetscInt i_pres = solution.subfieldInfo("pressure").index;
 
+#if 1
+    PYLITH_JOURNAL_ERROR(":TODO: @charles Implement gravbodyforce, grav, and bodyforce kernels.");
+#else
     if (!solution.hasSubfield("velocity")) {
         // Displacement
         const PetscPointFunc g0u = (_gravityField && _useBodyForce) ? pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g0v_gravbodyforce :
@@ -259,7 +262,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsRHSR
         const PetscPointFunc g1p = NULL;
 
         // Velocity
-	const PetscPointFunc g0v = (_gravityField && _useBodyForce) ? pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g0v_gravbodyforce :
+        const PetscPointFunc g0v = (_gravityField && _useBodyForce) ? pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g0v_gravbodyforce :
                                    (_gravityField) ? pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g0v_grav :
                                    (_useBodyForce) ? pylith_fekernels_IsotropicLinearIncompElasticityPlaneStrain_g0v_bodyforce :
                                    NULL;
@@ -269,6 +272,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsRHSR
         err = PetscDSSetResidual(prob, i_vel,  g0v, g1v); PYLITH_CHECK_ERROR(err);
         err = PetscDSSetResidual(prob, i_pres, g0p, g1p); PYLITH_CHECK_ERROR(err);
     } // if/else
+#endif
 
     PYLITH_METHOD_END;
 } // _setFEKernelsRHSResidual
