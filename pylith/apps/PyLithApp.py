@@ -71,10 +71,6 @@ class PyLithApp(PetscApplication):
         problem = pyre.inventory.facility("problem", family="problem", factory=TimeDependent)
         problem.meta['tip'] = "Computational problem to solve."
 
-        from pylith.perf.MemoryLogger import MemoryLogger
-        perfLogger = pyre.inventory.facility("perf_logger", family="perf_logger", factory=MemoryLogger)
-        perfLogger.meta['tip'] = "Performance and memory logging."
-
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -142,11 +138,6 @@ class PyLithApp(PetscApplication):
         self._eventLogger.stagePush("Finalize")
         self.problem.finalize()
         self._eventLogger.stagePop()
-
-        self.perfLogger.logMesh('Mesh', mesh)
-        self.compilePerformanceLog()
-        if self.perfLogger.verbose:
-            self.perfLogger.show()
 
         return
 
@@ -259,7 +250,6 @@ class PyLithApp(PetscApplication):
         self.parameters = self.inventory.parameters
         self.mesher = self.inventory.mesher
         self.problem = self.inventory.problem
-        self.perfLogger = self.inventory.perfLogger
 
         import journal
         self._debug = journal.debug(self.name)
