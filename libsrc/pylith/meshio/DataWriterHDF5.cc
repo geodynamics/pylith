@@ -486,7 +486,7 @@ pylith::meshio::DataWriterHDF5::writePointNames(const pylith::string_vector& nam
                 } // for
                 maxStringLengthLocal += 1; // add space for null terminator.
                 // Use void* for compatibility with OpenMPI 1.3 on Travis-CI
-                mpierr = MPI_Allreduce((void*)&maxStringLengthLocal, &maxStringLength, 1, MPI_INT, MPI_MAX, comm); assert(MPI_SUCCESS == mpierr);
+                mpierr = MPI_Allreduce(&maxStringLengthLocal, &maxStringLength, 1, MPI_INT, MPI_MAX, comm); assert(MPI_SUCCESS == mpierr);
 
                 namesFixedLength = (numNamesLocal*maxStringLength > 0) ? new char[numNamesLocal*maxStringLength] : NULL;
                 for (int i=0; i < numNamesLocal; ++i) {
