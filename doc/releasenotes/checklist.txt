@@ -20,11 +20,11 @@ MANUAL
 
   * Increment version number on cover.
 
-  * Increment version in preface.lyx.
+  * Increment version in preface.tex.
 
-  * Increment version in userguide.lyx.
+  * Increment version in userguide.tex.
 
-  * Updated version numbers in install.lyx.
+  * Updated version numbers in install.tex.
 
 SOURCE CODE
 
