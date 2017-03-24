@@ -54,8 +54,8 @@ def run_pylith(appClass, dbClass=None, nprocs=1):
     numCPUs = multiprocessing.cpu_count()
     maxThreads = numCPUs
     import os
-    if "MAX_PYLITH_THREADS" in os.environ:
-      maxThreads = int(os.environ["MAX_PYLITH_THREADS"])
+    if "MAX_PYLITH_PROCS" in os.environ:
+      maxThreads = int(os.environ["MAX_PYLITH_PROCS"])
     if numCPUs < maxThreads:
       appNumProcs = min(numCPUs, nprocs)
       if appNumProcs < nprocs:
@@ -63,7 +63,7 @@ def run_pylith(appClass, dbClass=None, nprocs=1):
     else:
         appNumProcs = min(maxThreads, nprocs)
         if appNumProcs < nprocs:
-          print("WARNING: Detected environment with MAX_PYLITH_THREADS=%d. Reducing number of processes from %d to %d." % (appNumProcs, nprocs, appNumProcs))
+          print("WARNING: Detected environment with MAX_PYLITH_PROCS=%d. Reducing number of processes from %d to %d." % (appNumProcs, nprocs, appNumProcs))
       
     app = appClass()
     app.nodes = appNumProcs
