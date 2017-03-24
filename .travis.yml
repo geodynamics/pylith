@@ -4,10 +4,15 @@ sudo: false
 
 language: cpp
 
+# :TODO: @brad Add osx build (need homebrew packages)..
 matrix:
   include:
     - os: linux
       env: LD_LIBRARY_PATH="${DEPS_DIR}/lib:${TARGET_DIR}/lib:${LD_LIBRARY_PATH}"
+      compiler: gcc
+    - os:linux
+      env: LD_LIBRARY_PATH="${DEPS_DIR}/lib:${TARGET_DIR}/lib:${LD_LIBRARY_PATH}"
+      compiler: clang
 
 # Limit number of commits in cloning
 git:
