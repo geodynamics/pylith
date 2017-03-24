@@ -474,7 +474,8 @@ pylith::meshio::DataWriterHDF5::writePointNames(const pylith::string_vector& nam
         // Number of names on each process.
         const int numNamesLocal = names.size();
         int_array numNamesArray(nprocs);
-        mpierr = MPI_Allgather(&numNamesLocal, 1, MPI_INT, &numNamesArray[0], 1, MPI_INT, comm); assert(MPI_SUCCESS == mpierr);
+        // Use void* for compatibility with OpenMPI 1.3 on Travis-CI
+        mpierr = MPI_Allgather((void*)&numNamesLocal, 1, MPI_INT, &numNamesArray[0], 1, MPI_INT, comm); assert(MPI_SUCCESS == mpierr);
         const int numNames = numNamesArray.sum();
 
         // Get maximum string length.

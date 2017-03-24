@@ -1957,7 +1957,7 @@ pylith::faults::FaultCohesiveLagrange::_getJacobianSubmatrixNP(PetscMat* jacobia
         ++indexNP;
     } // for
 
-    // MatGetSubMatrices requires sorted indices
+    // MatCreateSubMatrices requires sorted indices
     std::sort(&indicesNP[0], &indicesNP[indicesNP.size()]);
 
     PetscMat* subMat[1];

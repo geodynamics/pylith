@@ -355,7 +355,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field& resid
                     << std::endl;
                 throw std::runtime_error(msg.str());
             } // if
-        }  // if/else
+        } // if/else
 
 #if defined(DETAILED_EVENT_LOGGING)
         _logger->eventEnd(updateEvent);
@@ -1338,8 +1338,8 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(topology::SolutionFields* con
 #endif
 
 #if 0 // DEBUGGING
-    //dLagrangeTpdtSection->view("AFTER dLagrange");
-    //dispIncrSection->view("AFTER DISP INCR (t->t+dt)");
+      //dLagrangeTpdtSection->view("AFTER dLagrange");
+      //dispIncrSection->view("AFTER DISP INCR (t->t+dt)");
 #endif
 
     PYLITH_METHOD_END;
@@ -1811,8 +1811,8 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
     _jacobian->assemble("final_assembly");
 
 #if 0 // DEBUGGING
-    //std::cout << "DOMAIN JACOBIAN" << std::endl;
-    //jacobian.view();
+      //std::cout << "DOMAIN JACOBIAN" << std::endl;
+      //jacobian.view();
     std::cout << "SENSITIVITY JACOBIAN" << std::endl;
     _jacobian->view();
 #endif
@@ -2141,8 +2141,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceNorm(const PylithScalar alp
         tractionTpdtVertex = 0.0;
         for(PetscInt d = 0; d < spaceDim; ++d) {
             for(PetscInt e = 0; e < spaceDim; ++e) {
-                slipTpdtVertex[d] += orientationArray[ooff+d*spaceDim+e] *
-                                     (dispTArray[dtpoff+e] + dispTIncrArray[dipoff+e] - dispTArray[dtnoff+e] - dispTIncrArray[dinoff+e] + alpha*sensDispRelArray[sdroff+e]);
+                slipTpdtVertex[d] += orientationArray[ooff+d*spaceDim+e] * (dispTArray[dtpoff+e] + dispTIncrArray[dipoff+e] - dispTArray[dtnoff+e] - dispTIncrArray[dinoff+e] + alpha*sensDispRelArray[sdroff+e]);
                 slipRateVertex[d] += orientationArray[ooff+d*spaceDim+e] * (dispTIncrArray[dipoff+e] - dispTIncrArray[dinoff+e] + alpha*sensDispRelArray[sdroff+e]) / dt;
                 tractionTpdtVertex[d] += orientationArray[ooff+d*spaceDim+e] * (dispTArray[dtloff+e] + dispTIncrArray[diloff+e] + alpha*dLagrangeArray[sdloff+e]);
             } // for
