@@ -44,7 +44,7 @@ and volcanoes.
 
 ## Release Notes
 
-See [CHANGES] for a complete list of changes for each release.
+See [CHANGES](CHANGES) for a complete list of changes for each release.
 
 ## Authors
 
