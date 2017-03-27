@@ -26,22 +26,29 @@ SOURCE CODE
 
   * Increment version number in configure.ac.
 
-  * Add changes to README.
+  * Add changes to CHANGES.
 
   * Add release notes in doc/releasenotes.
 
 DISTRIBUTIONS
 
-  * Generate binaries on buildbots.
+  * Generate binaries using installer on virtual machines and a Mac.
     Check on various platforms.
     Check trapping of errors.
 
-  * Create PETSc tarball.
+  * Create PETSc and PyLith source tarballs.
 
-    - Check build.
+    - PETSc tarball
+      1. Clone/update a clean petsc repo (e.g., petsc-dist)
+      2. pylith_installer/packager/make_petscdist.sh PETSC_DIST_REPO knepley/pylith
+      3. mv $HOME/petsc-pylith.tar.gz petsc-pylith-X.X.X.tgz
 
-  * Get PyLith source code.
+    - PyLith tarball
+      1. make dist
 
+         NOTE: This must be done on the same machine as the
+               spatialdata distribution to insure SWIG constructs the
+               same fingerprints for pointers.
     - Check build.
 
 TAG
@@ -55,31 +62,22 @@ TAG
     REMOTE: git push --delete origin vX.X.X
     LOCAL: git tag -d vX.X.X
 
+  Updating a tag label
+    git tag new old
+    git tag -d old
+    git push origin :refs/tags/old
+    git push --tags
+
+
 RELEASE
 
-  * Create source tarball and upload to GitHub. 
-
-    NOTE: This must be done on the same machine as the spatialdata
-    distribution to insure SWIG constructs the same fingerprints for
-    pointers.
-
-    make dist
-
-  * Create petsc source tarball and upload to GitHub.
-
-    1. Clone/update a clean petsc repo (e.g., petsc_dist)
-    2. packager/make_petscdist.sh PETSC_REPO knepley/pylith
-    3. mv petsc-pylith.tar.gz petsc-pylith-vX.X.X.tgz
+  * Upload source tarballs to GitHub. 
 
   * Package binaries
 
-    1. Build master branch on buildbots
-    2. Run packager on buildbots
-    3. cd PYLITH_DIR/binaries/master
-    4. packager/make_package.py
-    5. Download binary.
-
-  * Upload binaries to GitHub.
+    1. Build master branch on buildbots using pylith_installer/packager/build.py
+    2. Fix paths in Darwin tarball using pylith_installer/packager/update_darwinlinking.py
+    3. Upload binaries to GitHub.
 
   * Upload manual to GitHub.
 
@@ -104,9 +102,3 @@ UPDATE next and maint
     git merge master
     git push
 
-Updating a tag label
-
-  git tag new old
-  git tag -d old
-  git push origin :refs/tags/old
-  git push --tags
