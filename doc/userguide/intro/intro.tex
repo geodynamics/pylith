@@ -4,16 +4,35 @@
 
 \section{Overview}
 
-PyLith is a multi-scale simulation software package for earthquake
-physics. It is portable, scalable software for simulation of crustal
-deformation across spatial scales ranging from meters to hundreds
-of kilometers and temporal scales ranging from milliseconds to thousands
-of years.
+PyLith is is portable, scalable software for simulation of crustal
+deformation across spatial scales ranging from meters to hundreds of
+kilometers and temporal scales ranging from milliseconds to thousands
+of years. Its primary applications are quasi-static and dynamic
+modeling of earthquake faulting.
 
-
-\section{New in PyLith Version 2.2.0}
+\section{New in PyLith Version \pylithVersionNumber}
 \begin{itemize}
-\item \todo{brad}{Add list of new features.}
+\item Added a browser-based parameter viewer for interactive viewing
+  of all PyLith parameters and version information. See Section
+  \ref{sec:pylith:parameter:viewer}.
+\item Converted the user manual from Lyx to LaTeX and added syntax
+  highlighting of parameter and spatial database files. Fixed several
+  typos.
+\item Fixed bug that sometimes resulted in an inconsistent fault
+  orientation when running in parallel. The bug appears to have been
+  introduced in v2.0.
+\item Fixed two bugs in output of solution at points that sometimes
+  happened in parallel simulations. The errors include:
+  \begin{itemize}
+  \item The order of the station names does not match the order of the
+    points. The point data is written in parallel by process order, so
+    the points for process 0 are written first, then those for process
+    1, etc. This often results in reordering of the points. The
+    station names were written in the original order.
+  \item The output values for some points are incorrect. The wrong
+    cells were being used in the interpolation.
+  \end{itemize}
+\item Updated PETSc to v3.7.5.
 \end{itemize}
 The \filename{CHANGES} file in the top-level source directory contains
 a summary of features and bugfixes for each release.
@@ -139,7 +158,7 @@ derived from the existing ones.
 The current code design leverages Pyre and PETSc extensively. Pyre
 glues together the various modules used to construct a simulation and
 specify the parameters. PETSc provides the finite-element data
-structuresand handles the creation and manipulation of matrices and
+structures and handles the creation and manipulation of matrices and
 vectors. As a result, most of the PyLith source code pertains to
 implementing the geodynamics, such as bulk rheology, boundary
 conditions, and slip on faults.
