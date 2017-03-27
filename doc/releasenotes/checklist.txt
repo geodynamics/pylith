@@ -18,13 +18,9 @@ TESTING
 
 MANUAL
 
-  * Increment version number on cover.
+  * Update version number in macro at top of userguide.tex.
 
-  * Increment version in preface.tex.
-
-  * Increment version in userguide.tex.
-
-  * Updated version numbers in install.tex.
+  * Update version number in install/install.tex.
 
 SOURCE CODE
 
