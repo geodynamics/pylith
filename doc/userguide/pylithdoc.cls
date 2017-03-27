@@ -113,6 +113,11 @@
 
 % ------------------------------------------------------------------
 % Macros
+%
+% PyLith version
+\newcommand{\pylithVersionNumber}{X.X.X}
+\newcommand{\pylithVersion}{v\pylithVersionNumber}
+% Boxes
 \usetikzlibrary{shadows.blur}
 % Warning
 \newcommand{\warning}[1]{%

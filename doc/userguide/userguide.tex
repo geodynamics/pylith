@@ -24,29 +24,11 @@
 \usepackage{array}
 \usepackage{setspace} % remove
 
-\makeatletter
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
-\newcommand{\noun}[1]{\textsc{#1}}
-%% Because html converters don't know tabularnewline
-\providecommand{\tabularnewline}{\\}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
-\newenvironment{lyxcode}
-{\par\begin{list}{}{
-\setlength{\rightmargin}{\leftmargin}
-\setlength{\listparindent}{0pt}% needed for AMS classes
-\raggedright
-\setlength{\itemsep}{0pt}
-\setlength{\parsep}{0pt}
-\normalfont\ttfamily}%
- \item[]}
-{\end{list}}
-
-\makeatother
+\renewcommand{\pylithVersionNumber}{2.2.0}
+% Update install/install.tex (version number within verbatim environment)
 
 \title{PyLith User Manual}
-\author{\copyright University of California, Davis\\ Version 2.2.0}
+\author{\copyright University of California, Davis\\ Version \pylithVersionNumber}
 \date{\today}
 
 \begin{document}
