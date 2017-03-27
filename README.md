@@ -42,6 +42,10 @@ and volcanoes.
 * Templates for adding your own bulk rheologies, fault constitutive models, and interfacing with a custom seismic velocity model.
 * User-friendly computation of static 3-D Green's functions
 
+## Release Notes
+
+See [CHANGES] for a complete list of changes for each release.
+
 ## Authors
 
 * Brad Aagaard, Earthquake Science Center, USGS, USA
