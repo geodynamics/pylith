@@ -58,7 +58,7 @@ pressure & pascal (Pa), kPa, MPa, GPa, bar, millibar, atmosphere (atm) \\
 
 \subsubsection{Using the Command Line}
 
-The \commandline{-{}-help} command line argument displays links to useful
+The \commandline{-}-help} command line argument displays links to useful
 resources for learning PyLith.
 
 Pyre uses the following syntax to change properties from the command
@@ -81,13 +81,13 @@ argument. To find out about the properties associated with a given
 component, you can run PyLith with the
 \commandline{-{}-COMPONENT.help-properties} flag:
 \begin{shell}
-$$ pylith -{}-problem.help-properties
+$$ pylith --problem.help-properties
 # Show problem components.
-$$ pylith -{}-~problem.help-components
+$$ pylith --problem.help-components
 # Show bc components (bc is a component of problem).
-$$ pylith -{}-problem.bc.help-components
+$$ pylith --problem.bc.help-components
 # Show bc properties.
-$$ pylith -{}-problem.bc.help-properties
+$$ pylith --problem.bc.help-properties
 \end{shell}
 
 
@@ -641,7 +641,7 @@ that uses a diagonal approximation of the Schur complement.
     \property{\footnotesize{fs\_fieldsplit\_displacement\_pc\_type}} & \textit{ml} & Multilevel algebraic multigrid preconditioning using Trilinos/ML via PETSc.\\
     \property{\footnotesize{fs\_fieldsplit\_lagrange\_multiplier\_pc\_type}} & \textit{jacobi} & Jacobi preconditioning for Lagrange multiplier block\\
     \property{\footnotesize{fs\_fieldsplit\_displacement\_ksp\_type}} & \textit{preonly} & Apply only the preconditioner.\\
-    \property{\footnotesize{}fs\_fieldsplit\_lagrange\_multiplier\_ksp\_type} & \textit{preonly} & Apply only the preconditioner.\\
+    \property{\footnotesize{fs\_fieldsplit\_lagrange\_multiplier\_ksp\_type}} & \textit{preonly} & Apply only the preconditioner.\\
     \hline 
   \end{tabular}
 \end{table}
