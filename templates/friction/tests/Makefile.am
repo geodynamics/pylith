@@ -19,10 +19,11 @@
 TESTS = testcontrib.py
 dist_check_SCRIPTS = testcontrib.py
 
-TESTS_ENVIRONMENT = $(PYTHON)
-
 noinst_PYTHON = \
 	TestViscousFriction.py 
 
+
+check-local: check-TESTS
+	for f in $(TEST_LOGS); do printf "\n=== $$f ===\n\n"; cat $$f; done
 
 # End of file 
