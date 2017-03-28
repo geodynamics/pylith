@@ -168,7 +168,18 @@ class PyLithApp(PetscApplication):
         import pylith.utils.utils as utils
         v = utils.PylithVersion()
         verNum = v.version()
-        verYear = 2016
+        verYear = 2017
+        verDOI = v.doi()
+
+        software = ("@Manual{PyLith:software,\n"
+                  "  title        = {PyLith v%s},\n"
+                  "  author       = {Aagaard, B. and Knepley, M. and Williams, C.},\n"
+                  "  organization = {Computational Infrastructure for Geodynamics (CIG)},\n"
+                  "  address      = {University of California, Davis},\n"
+                  "  year         = {%d},\n"
+                  "  doi         = {http://doi.org/%s}\n"
+                  "}\n" % (verNum, verYear, verDOI)
+                  )
 
         manual = ("@Manual{PyLith:manual,\n"
                   "  title        = {PyLith User Manual, Version %s},\n"
@@ -192,7 +203,7 @@ class PyLithApp(PetscApplication):
                     "}\n"
                     )
 
-        entries = (manual, faultRup)
+        entries = (software, manual, faultRup)
         return entries
 
     def showHelp(self):
