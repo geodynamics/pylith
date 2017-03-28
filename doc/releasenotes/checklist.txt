@@ -18,13 +18,15 @@ TESTING
 
 MANUAL
 
-  * Update version number in macro at top of userguide.tex.
+  * Update version number and DOI in macro at top of userguide.tex.
 
-  * Update version number in install/install.tex.
+  * Update version number in install/install.tex (verbatim shell environment)..
+
+  * Update citation information (year) in preface.tex.
 
 SOURCE CODE
 
-  * Increment version number in configure.ac.
+  * Update version number and DOI in configure.ac.
 
   * Add changes to CHANGES.
 
@@ -71,6 +73,10 @@ TAG
 
 RELEASE
 
+  * Create release from tag on GitHub.
+
+  * Get DOI at zenodo and update DOI in README.md, configure.ac, and userguide.tex.
+
   * Upload source tarballs to GitHub. 
 
   * Package binaries
@@ -80,6 +86,8 @@ RELEASE
     3. Upload binaries to GitHub.
 
   * Upload manual to GitHub.
+
+  * Create Docker image.
 
 UPDATE next and maint
 
