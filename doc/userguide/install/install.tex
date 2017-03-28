@@ -70,6 +70,17 @@ and save it to the desired location, e.g., \filename{\$HOME/pylith}.
   \end{shell}
 \end{enumerate}
 
+\warning{The binary distribution contains PyLith and all of its
+  dependencies. If you have any of this software already installed on
+  your system, you need to be careful in setting up your environment
+  so that preexisting software does not conflict with the PyLith
+  binary. By default the \filename{setup.sh} script will prepend to
+  the PATH and PYTHONPATH (for Darwin and Linux) and LD\_LIBRARY\_PATH
+  (for Linux) environment variables. This will prevent most
+  conflicts. On Darwin systems PyLith is built against the system
+  Python, so \filename{/bin} and \filename{/usr/bin} should be at the
+  beginning of your PATH before sourcing \filename{setup.sh}.}
+
 \section{Installation of PyLith Docker Container}
 
 Docker containers provide a self-contained virtual environment that
