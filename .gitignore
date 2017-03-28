@@ -49,3 +49,11 @@ tests_auto/*/*/*_disp.spatialdb
 tests_auto/*/*/output
 tests_auto/*/*/output
 examples/3d/hex8/output
+doc/userguide/userguide.aux
+doc/userguide/userguide.fdb_latexmk
+doc/userguide/userguide.fls
+doc/userguide/userguide.lof
+doc/userguide/userguide.log
+doc/userguide/userguide.lot
+doc/userguide/userguide.out
+doc/userguide/userguide.toc
