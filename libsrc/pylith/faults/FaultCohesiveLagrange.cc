@@ -1965,7 +1965,7 @@ pylith::faults::FaultCohesiveLagrange::_getJacobianSubmatrixNP(PetscMat* jacobia
     *jacobianSub = *subMat[0];
     err = PetscObjectReference((PetscObject) *subMat[0]);
     PYLITH_CHECK_ERROR(err);
-    err = MatDestroyMatrices(1, &subMat[0]); PYLITH_CHECK_ERROR(err);
+    err = MatDestroySubMatrices(1, &subMat[0]); PYLITH_CHECK_ERROR(err);
 
     // Create map from global indices to local indices (using only the
     // first index as to match the global order.

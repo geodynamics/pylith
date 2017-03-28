@@ -1806,7 +1806,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
         err = ISDestroy(&cellsIS[c]); PYLITH_CHECK_ERROR(err);
     } // for
 
-    err = MatDestroyMatrices(numCohesiveCells, &submatrices); PYLITH_CHECK_ERROR(err);
+    err = MatDestroySubMatrices(numCohesiveCells, &submatrices); PYLITH_CHECK_ERROR(err);
     delete[] cellsIS; cellsIS = 0;
 
     _jacobian->assemble("final_assembly");
