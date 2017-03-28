@@ -1,8 +1,9 @@
 # PyLith
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/geodynamics/pylith/blob/master/COPYING)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXX)
 
-* Branch build status
+## Build status
 * Master: [![Build Status](https://travis-ci.org/geodynamics/pylith.svg?branch=master)](https://travis-ci.org/geodynamics/pylith)
 * Maint: [![Build Status](https://travis-ci.org/geodynamics/pylith.svg?branch=maint)](https://travis-ci.org/geodynamics/pylith)
 * Next: [![Build Status](https://travis-ci.org/geodynamics/pylith.svg?branch=next)](https://travis-ci.org/geodynamics/pylith)
