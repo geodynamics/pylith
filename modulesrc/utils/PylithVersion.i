@@ -51,6 +51,13 @@ namespace pylith {
       static
       const char* version(void) const;
       
+      /** Get DOI.
+       *
+       * @returns DOI.
+       */
+      static
+      const char* doi(void);
+
       /** Get GIT revision.
        *
        * @returns GIT revision.
