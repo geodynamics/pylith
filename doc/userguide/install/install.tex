@@ -11,7 +11,7 @@ requires building the software from the source code, which can be
 difficult for inexperienced users. We have created a small utility
 called PyLith Installer that makes installing PyLith and all of its
 dependencies from source much easier. Help is available from both a
-CIG mailing list and the Github issue tracking system
+CIG mailing list and the GitHub issue tracking system
 \url{https://github.com/geodynamics/pylith/issues}.
 
 
@@ -25,7 +25,7 @@ subscribe to the mailing list and view messages at cig-short Mailing
 List \url{geodynamics.org/cig/lists/cig-short}.
 
 CIG uses \object{GitHub} for source control and bug tracking. If you
-find a bug in PyLith, please submit a bug report to the Github issue
+find a bug in PyLith, please submit a bug report to the GitHub issue
 tracking system for PyLith \url{https://github.com/geodynamics/pylith/issues}.
 Of course, it is helpful to first check to see if someone else already
 submitted a report related to the issue; one of the CIG developers
@@ -40,50 +40,84 @@ Binary executables are available for Linux and Mac OS X (Intel 10.10+)
 from the PyLith web page
 \url{geodynamics.org/cig/software/packages/short/pylith/}.
 
-
 \subsection{Linux and Max OS X}
 \begin{enumerate}
 \item Open a terminal window and change to the directory where you
   want to place the distribution.
   \begin{shell}
-    $$ cd  $HOME
-    $$ mkdir pylith
-    $$ cd pylith
+$$ cd  $HOME
+$$ mkdir pylith
+$$ cd pylith
   \end{shell}
 \item Download the Linux or Mac OS X tarball from the PyLith web page \url{geodynamics.org/cig/software/packages/short/pylith/},
 and save it to the desired location, e.g., \filename{\$HOME/pylith}.
 \item Unpack the tarball.
   \begin{shell}
-    # Linux 32-bit
-    $$ tar -xzf pylith-2.1.4-linux-i686.tgz
-    # Linux 64-bit
-    $$ tar -xzf pylith-2.1.4-linux-x86_64.tgz
-    # Mac OS X
-    $$ tar -xzf pylith-2.1.4-darwin-10.11.6.tgz
+# Linux 32-bit
+$$ tar -xzf pylith-2.2.0-linux-i686.tgz
+# Linux 64-bit
+$$ tar -xzf pylith-2.2.0-linux-x86_64.tgz
+# Mac OS X
+$$ tar -xzf pylith-2.2.0-darwin-10.11.6.tgz
   \end{shell}
 \item Set environment variables. The provided \filename{setup.sh}
   script only works if you are using bash shell. If you are using a
   different shell, you will need to alter how the environment
   variables are set in \filename{setup.sh}.
   \begin{shell}
-    $$ source setup.sh
+$$ source setup.sh
   \end{shell}
 \end{enumerate}
+
+\warning{The binary distribution contains PyLith and all of its
+  dependencies. If you have any of this software already installed on
+  your system, you need to be careful in setting up your environment
+  so that preexisting software does not conflict with the PyLith
+  binary. By default the \filename{setup.sh} script will prepend to
+  the PATH and PYTHONPATH (for Darwin and Linux) and LD\_LIBRARY\_PATH
+  (for Linux) environment variables. This will prevent most
+  conflicts.}
+
+\important{The PyLith binary distribution for {\bf Darwin} systems is
+  built using the system clang compiler suite and the system
+  Python. This means the system Python must be in your path to use the
+  PyLith binary executable; ensure \filename{/bin} and
+  \filename{/usr/bin} are at the beginning of the PATH environment
+  variable before sourcing \filename{setup.sh}.}
+
+\subsection{Extending PyLith and/or Integrating Other Software Into PyLith}
+\newfeature{v.2.2.0}
+
+We have constructed the binary package so that you can extend PyLith
+and/or build additional software for integration with PyLith using the
+binary distribution.
+
+\begin{description}
+\item[Darwin] The binary package includes the header files for PyLith
+  and all of its dependencies. Use the clang compiler and Python
+  provided with the operating system. You will need to install XTools.
+\item[Linux] The binary package includes the GNU compilers, Python, as
+  well as header files for PyLith and all of its dependencies.
+\end{description}
+
+\tip{We encourage anyone extending PyLith to fork the PyLith
+  repository and build from source using the PyLith Installer Utility
+  to facilitate contributing these features back into the CIG
+  repository via pull requests.}
 
 \section{Installation of PyLith Docker Container}
 
 Docker containers provide a self-contained virtual environment that
 are a smaller, simpler alternative to a virtual machine. The PyLith
 Docker container provides a Debian Linux environment with a pre-built
-PyLith executable. These instructions are also available on the PyLith
-wiki (\url{https://wiki.geodynamics.org/software:pylith:docker}).
-
+PyLith executable, vim text editor, iceweasel (GNU version of Firefox)
+web-browser, and the matplotlib Python module.
 
 \subsection{Setup (first time only)}
 
 \begin{enumerate}
 \item Install Docker (See \url{https://www.docker.com/products/docker})
-\item Create container to store persistent user data\\
+\item Create a container to store persistent user data\\
   This container, called pylith-data, will hold a directory where all
   your user data can be stored for use with PyLith within Docker. The
   data can persist for different versions of PyLith; that is, you can
@@ -93,30 +127,62 @@ wiki (\url{https://wiki.geodynamics.org/software:pylith:docker}).
   using ``docker cp'' (see below).
 \end{enumerate}
 \begin{shell}
+# Create the container
 $$ docker create --name pylith-data geodynamics/pylith-data
+# Run the docker container and copy examples to the persistent storage.
+$$ docker run -ti --volumes-from pylith-data geodynamics/pylith
+$$ cp -R $HOME/pylith-VERSION/examples $HOME/data
 \end{shell}
 
 \subsection{Run Unix shell within Docker to use PyLith.}
 
-\tip{Within the Docker container copy the examples from the
-  pylith-VERSION directory to the data directory, which is the
-  persistent storage.}
-
+To run the container with a text only interface:
 \begin{shell}
 $$ docker run -ti --volumes-from pylith-data geodynamics/pylith
-# Copy examples to the data directory.
-$$ cp -R $HOME/pylith-VERSION/examples $HOME/data
 \end{shell}
+
+To run the container and allow display of windows on the host computer:
+\begin{shell}
+# Darwin: Allow X connections
+$$ xhost +YOUR_IP_ADDRESS; DISPLAY=YOUR_IP_ADDRESS:0
+# Linux: Allow X connections
+$$ xhost +local:root
+# For Linux and Darwin, continue with the follow lines.
+$$ XSOCK=/tmp/.X11-unix
+$$ docker run -ti --volumes-from pylith-data \
+    -e DISPLAY=$DISPLAY -v $XSOCK:$XSOCK geodynamics/pylith
+\end{shell}
+
+In addition to a minimalist Debian Linux distribution and PyLith and
+all of its depenencies, the container includes the following useful
+utilities:
+\begin{description}
+\item[vim] Lightweight text editor
+\item[matplotlib] Python plotting module
+\item[iceweasel] GNU version of Firefox
+\end{description}
+
+\important{We do not yet include ParaView due to difficulties
+  associated with setting up rendering on the host display outside the
+  container.}
 
 \subsubsection{Using Docker containers}
 \begin{itemize}
 \item To ``pause'' a container: \texttt{Control-p Control-q}
 \item To attach to a ``paused'' or ``running'' container.
   \begin{shell}
-    # Get the container id.
-    $$ docker ps
-    # Attach to the container
-    $$ docker attach CONTAINER_ID
+# Get the container id.
+$$ docker ps
+# Attach to the container
+$$ docker attach CONTAINER_ID
+  \end{shell}
+\item To restart an existing container after it exited.
+  \begin{shell}
+# Get the container id.
+$$ docker ps -a
+# Start and then attach to the container
+$$ docker run CONTAINER_ID
+$$ docker attach CONTAINER_ID
   \end{shell}
 \end{itemize}
 
@@ -182,8 +248,8 @@ the PyLith web page
 The easiest way to verify that PyLith has been installed correctly is
 to run one or more of the examples supplied with the binary and source
 code. In the binary distribution, the examples are located in
-\filename{src/pylith-2.1.4/examples} while in the source distribution,
-they are located in \texttt{pylith-2.1.4/examples}. Chapter
+\filename{src/pylith-\pylithVersionNumber/examples} while in the source distribution,
+they are located in \texttt{pylith-\pylithVersionNumber/examples}. Chapter
 \vref{cha:examples} discusses how to run and visualize the results
 for the examples. To run the example discussed in Section
 \vref{sec:example:3dhex8-static}:

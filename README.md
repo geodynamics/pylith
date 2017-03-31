@@ -1,12 +1,15 @@
 # PyLith
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/geodynamics/pylith/blob/master/COPYING)
+[![DOI](https://zenodo.org/badge/12650142.svg)](https://zenodo.org/badge/latestdoi/12650142)
 
-* Branch build status
+
+## Build status
 * Master: [![Build Status](https://travis-ci.org/geodynamics/pylith.svg?branch=master)](https://travis-ci.org/geodynamics/pylith)
 * Maint: [![Build Status](https://travis-ci.org/geodynamics/pylith.svg?branch=maint)](https://travis-ci.org/geodynamics/pylith)
 * Next: [![Build Status](https://travis-ci.org/geodynamics/pylith.svg?branch=next)](https://travis-ci.org/geodynamics/pylith)
 
+## Description
 
 PyLith is an open-source finite-element code for dynamic and
 quasistatic simulations of crustal deformation, primarily earthquakes
@@ -41,6 +44,10 @@ and volcanoes.
 * VTK and HDF5/Xdmf output of solution, fault information, and state variables
 * Templates for adding your own bulk rheologies, fault constitutive models, and interfacing with a custom seismic velocity model.
 * User-friendly computation of static 3-D Green's functions
+
+## Release Notes
+
+See [CHANGES](CHANGES) for a complete list of changes for each release.
 
 ## Authors
 

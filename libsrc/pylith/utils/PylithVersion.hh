@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2016 University of California, Davis
+// Copyright (c) 2010-2017 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -58,6 +58,13 @@ public :
   static
   const char* version(void);
 
+  /** Get DOI.
+   *
+   * @returns DOI.
+   */
+  static
+  const char* doi(void);
+
   /** Get GIT revision.
    *
    * @returns GIT revision.
@@ -97,6 +104,7 @@ private :
 
   static const bool _isRelease; ///< Is source code from a release?
   static const char* _version; ///< Version number.
+  static const char* _doi; ///< DOI..
   static const char* _gitRevision; ///< GIT revision.
   static const char* _gitDate; ///< Date of GIT revision.
   static const char* _gitHash; ///< GIT hash.

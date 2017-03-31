@@ -1,6 +1,46 @@
-See
-https://github.com/geodynamics/pylith/commits/master
+See https://github.com/geodynamics/pylith/commits/master
 for the complete log of changes made to PyLith.
+
+======================================================================
+MIGRATING FROM VERSION 2.1 TO 2.2
+======================================================================
+
+No changes are needed to parameter or other input files. The default
+format for pylithinfo output is now JSON.
+
+----------------------------------------------------------------------
+Version 2.2.0
+----------------------------------------------------------------------
+
+* Added a browser-based parameter viewer for interactive viewing of
+  all PyLith parameters and version information. See Section 4.10
+  PyLith Parameter Viewer of the PyLith user manual.
+
+* Adjusted packaging of the binary distributions so that they can be
+  used to extend PyLith and/or integrate other code with
+  PyLith.
+
+* Converted the user manual from Lyx to LaTeX and added syntax
+  highlighting of parameter and spatial database files. Fixed several
+  typos.
+
+* Fixed bug that sometimes resulted in an inconsistent fault
+  orientation when running in parallel. The bug appears to have been
+  introduced in v2.0.
+
+* Fixed two bugs in output of solution at points that sometimes
+  happened in parallel simulations. The errors include:
+
+    - The order of the station names does not match the order of the
+      points. The point data is written in parallel by process order,
+      so the points for process 0 are written first, then those for
+      process 1, etc. This often results in reordering of the
+      points. The station names were written in the original order.
+    
+    - The output values for some points are incorrect. The wrong cells
+      were being used in the interpolation.
+
+* Updated PETSc to v3.7.5.
 
 ======================================================================
 MIGRATING FROM VERSION 2.0 TO 2.1
@@ -8,6 +48,7 @@ MIGRATING FROM VERSION 2.0 TO 2.1
 
 The points file for OutputSolnPoints must now contain station names as
 the first column.
+
 
 ----------------------------------------------------------------------
 Version 2.1.4

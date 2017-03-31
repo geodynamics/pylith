@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2016 University of California, Davis
+// Copyright (c) 2010-2017 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -1971,7 +1971,7 @@ pylith::faults::FaultCohesiveLagrange::_getJacobianSubmatrixNP(PetscMat* jacobia
     *jacobianSub = *subMat[0];
     err = PetscObjectReference((PetscObject) *subMat[0]);
     PYLITH_CHECK_ERROR(err);
-    err = MatDestroyMatrices(1, &subMat[0]); PYLITH_CHECK_ERROR(err);
+    err = MatDestroySubMatrices(1, &subMat[0]); PYLITH_CHECK_ERROR(err);
 
     // Create map from global indices to local indices (using only the
     // first index as to match the global order.

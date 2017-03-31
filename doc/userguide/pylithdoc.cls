@@ -113,6 +113,12 @@
 
 % ------------------------------------------------------------------
 % Macros
+%
+% PyLith version
+\newcommand{\pylithVersionNumber}{X.X.X}
+\newcommand{\pylithDOI}{10.5281/zenodo.XXXXXX}
+\newcommand{\pylithVersion}{v\pylithVersionNumber}
+% Boxes
 \usetikzlibrary{shadows.blur}
 % Warning
 \newcommand{\warning}[1]{%
