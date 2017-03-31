@@ -25,7 +25,7 @@ subscribe to the mailing list and view messages at cig-short Mailing
 List \url{geodynamics.org/cig/lists/cig-short}.
 
 CIG uses \object{GitHub} for source control and bug tracking. If you
-find a bug in PyLith, please submit a bug report to the Github issue
+find a bug in PyLith, please submit a bug report to the GitHub issue
 tracking system for PyLith \url{https://github.com/geodynamics/pylith/issues}.
 Of course, it is helpful to first check to see if someone else already
 submitted a report related to the issue; one of the CIG developers
@@ -39,7 +39,6 @@ on the \object{New Issue} button.
 Binary executables are available for Linux and Mac OS X (Intel 10.10+)
 from the PyLith web page
 \url{geodynamics.org/cig/software/packages/short/pylith/}.
-
 
 \subsection{Linux and Max OS X}
 \begin{enumerate}
@@ -77,16 +76,42 @@ $$ source setup.sh
   binary. By default the \filename{setup.sh} script will prepend to
   the PATH and PYTHONPATH (for Darwin and Linux) and LD\_LIBRARY\_PATH
   (for Linux) environment variables. This will prevent most
-  conflicts. On Darwin systems PyLith is built against the system
-  Python, so \filename{/bin} and \filename{/usr/bin} should be at the
-  beginning of your PATH before sourcing \filename{setup.sh}.}
+  conflicts.}
+
+\important{The PyLith binary distribution for {\bf Darwin} systems is
+  built using the system clang compiler suite and the system
+  Python. This means the system Python must be in your path to use the
+  PyLith binary executable; ensure \filename{/bin} and
+  \filename{/usr/bin} are at the beginning of the PATH environment
+  variable before sourcing \filename{setup.sh}.}
+
+\subsection{Extending PyLith and/or Integrating Other Software Into PyLith}
+\newfeature{v.2.2.0}
+
+We have constructed the binary package so that you can extend PyLith
+and/or build additional software for integration with PyLith using the
+binary distribution.
+
+\begin{description}
+\item[Darwin] The binary package includes the header files for PyLith
+  and all of its dependencies. Use the clang compiler and Python
+  provided with the operating system. You will need to install XTools.
+\item[Linux] The binary package includes the GNU compilers, Python, as
+  well as header files for PyLith and all of its dependencies.
+\end{description}
+
+\tip{We encourage anyone extending PyLith to fork the PyLith
+  repository and build from source using the PyLith Installer Utility
+  to facilitate contributing these features back into the CIG
+  repository via pull requests.}
 
 \section{Installation of PyLith Docker Container}
 
 Docker containers provide a self-contained virtual environment that
 are a smaller, simpler alternative to a virtual machine. The PyLith
 Docker container provides a Debian Linux environment with a pre-built
-PyLith executable. 
+PyLith executable, vim text editor, iceweasel (GNU version of Firefox)
+web-browser, and the matplotlib Python module.
 
 \subsection{Setup (first time only)}
 
