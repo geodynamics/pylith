@@ -143,10 +143,12 @@ $$ docker run -ti --volumes-from pylith-data geodynamics/pylith
 
 To run the container and allow display of windows on the host computer:
 \begin{shell}
-# Allow X connections
+# Darwin: Allow X connections
+$$ xhost +YOUR_IP_ADDRESS; DISPLAY=YOUR_IP_ADDRESS:0
+# Linux: Allow X connections
 $$ xhost +local:root
-# Use a shell variable to hold the name of the X11 socket.
-$$ XSOCK=/tmp/.X11-unix/X0
+# For Linux and Darwin, continue with the follow lines.
+$$ XSOCK=/tmp/.X11-unix
 $$ docker run -ti --volumes-from pylith-data \
     -e DISPLAY=$DISPLAY -v $XSOCK:$XSOCK geodynamics/pylith
 \end{shell}
