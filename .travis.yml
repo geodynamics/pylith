@@ -4,10 +4,15 @@ sudo: false
 
 language: cpp
 
+# :TODO: @brad Add osx build (need homebrew packages)..
 matrix:
   include:
     - os: linux
       env: LD_LIBRARY_PATH="${DEPS_DIR}/lib:${TARGET_DIR}/lib:${LD_LIBRARY_PATH}"
+      compiler: gcc
+    - os: linux
+      env: LD_LIBRARY_PATH="${DEPS_DIR}/lib:${TARGET_DIR}/lib:${LD_LIBRARY_PATH}"
+      compiler: clang
 
 # Limit number of commits in cloning
 git:
@@ -26,6 +31,8 @@ addons:
       - proj-bin
       - proj-data
       - libproj-dev
+      - zlib1g
+      - zlib1g-dev
       - swig
 
 # Install dependencies cached on CIG server
@@ -36,17 +43,17 @@ install:
 script: 
   # PETSc
   - git clone --depth 100 -b knepley/pylith https://bitbucket.org/petsc/petsc.git petsc
-  - pushd petsc && ./configure --with-c2html=0 --with-x=0 --with-clanguage=C --with-mpicompilers=1 --with-debugging=1 --with-shared-libraries=1 --with-64-bit-points=1 --with-large-file-io=1 --with-hdf5=1 --download-chaco=1 --download-ml=1 --download-f2cblaslapack=1 CPPFLAGS="-I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" && make -j${MAKE_THREADS} -f gmakefile && make test && popd
+  - pushd petsc && ./configure --with-c2html=0 --with-x=0 --with-clanguage=C --with-mpicompilers=1 --with-debugging=1 --with-shared-libraries=1 --with-64-bit-points=1 --with-large-file-io=1 --with-hdf5=1 --with-zlib=1 --download-chaco=1 --download-ml=1 --download-f2cblaslapack=1 CPPFLAGS="-I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" && make -j$(nproc) -f gmakefile && make test; popd
   # Spatialdata
   - git clone --recursive --depth 100 https://github.com/geodynamics/spatialdata.git
-  - pushd spatialdata && autoreconf --install --verbose --force && ./configure --enable-swig --enable-testing --enable-pythia --prefix=${TARGET_DIR} CPPFLAGS="-I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" && make -j${MAKE_THREADS} && make install && make -j${MAKE_THREADS} check && popd
+  - pushd spatialdata && autoreconf --install --verbose --force && ./configure --enable-swig --enable-testing --enable-pythia --prefix=${TARGET_DIR} CPPFLAGS="-I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" && make -j$(nproc) && make install && make -j$(nproc) check; popd
   # PyLith
   - git fetch --unshallow
-  - autoreconf --install --verbose --force && ./configure --enable-swig --enable-testing --enable-cubit --enable-hdf5 --prefix=${TARGET_DIR} CPPFLAGS="-I${DEPS_DIR}/include -I${TARGET_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib -L${TARGET_DIR}/lib" CC=mpicc CXX=mpicxx && make -j${MAKE_THREADS} && make install && make -j${MAKE_THREADS} check
+  - autoreconf --install --verbose --force && ./configure --enable-swig --enable-testing --enable-cubit --enable-hdf5 --prefix=${TARGET_DIR} CPPFLAGS="-I${DEPS_DIR}/include -I${TARGET_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib -L${TARGET_DIR}/lib" CC=mpicc CXX=mpicxx && make -j$(nproc) && make install && make -j$(nproc) check
 
 env:
   global:
-    - MAKE_THREADS=2
+    - MAX_PYLITH_PROCS=2
     - PYTHON_VERSION="2.7"
     - PETSC_DIR="${TRAVIS_BUILD_DIR}/petsc"
     - PETSC_ARCH="arch-pylith"

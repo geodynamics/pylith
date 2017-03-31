@@ -1,0 +1,194 @@
+% -*- LaTeX -*-
+%
+% ----------------------------------------------------------------------
+%
+% Brad T. Aagaard, U.S. Geological Survey
+% Charles A. Williams, GNS Science
+% Matthew G. Knepley, University of Chicago
+%
+% This code was developed as part of the Computational Infrastructure
+% for Geodynamics (http://geodynamics.org).
+%
+% Copyright (c) 2010-2017 University of California, Davis
+%
+% See COPYING for license information.
+%
+% ----------------------------------------------------------------------
+%
+\documentclass{pylithdoc}
+
+\usepackage{units} % \nicefrac
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{setspace} % remove
+
+\renewcommand{\pylithVersionNumber}{2.2.0}
+\renewcommand{\pylithDOI}{10.5281/zenodo.438705}
+% Update install/install.tex (version number within verbatim environment)
+
+\title{PyLith User Manual}
+\author{\copyright University of California, Davis\\ Version \pylithVersionNumber}
+\date{\today}
+
+\begin{document}
+
+\input{cover/cover.tex}
+\maketitle
+
+\frontmatter
+\tableofcontents{}
+\listoffigures
+\listoftables
+
+\input{preface.tex}
+\mainmatter\raggedbottom
+
+\input{./intro/intro.tex}
+\input{./governingeqns/governingeqns.tex}
+\input{./install/install.tex}
+\input{./runpylith/runpylith.tex}
+\input{./materials/materials.tex}
+
+\input{./boundaryconditions/boundaryconditions}
+\input{./examples/examples.tex}
+\input{./benchmarks/benchmarks.tex}
+\input{./extending/extending.tex}
+
+\appendix
+%dummy comment inserted by tex2lyx to ensure that this paragraph is not empty
+\input{glossary.tex}
+\input{components.tex}
+\input{fileformats/fileformats.tex}
+\input{materials/altformulations}
+\input{analyticalsolns/analyticalsolns.tex}
+\input{license.tex}
+
+\begin{thebibliography}{Bibliography}
+\bibitem[Aagaard et al., 2001a]{Aagaard:etal:2001a}Aagaard, B.T.,
+J.F. Hall, and T.H. Heaton (2001), Characterization of near-source
+ground motions with earthquake simulations, \emph{Earthquake Spectra,
+17}(2), 177-207.
+
+\bibitem[Aagaard et al., 2001b]{Aagaard:etal:2001b}Aagaard, B.T.,
+T.H. Heaton, and J.F. Hall (2001), Dynamic earthquake ruptures in
+the presence of lithostatic normal stresses: Implications for friction
+models and heat production, \emph{Bulletin of the Seismological Society
+of America, 91}(6), 1765-1796.
+
+\bibitem[Aagaard et al., 2007]{Aagaard:etal:2007}Aagaard, B., C.
+Williams, and M. Knepley (2007), PyLith: A finite-element code for
+modeling quasi-static and dynamic crustal deformation, \emph{Eos Trans.
+AGU, 88}(52), Fall Meet. Suppl., Abstract T21B-0592.
+
+\bibitem[Aagaard et al., 2008]{Aagaard:etal:2008}Aagaard, B., C.
+Williams, and M. Knepley (2008), PyLith: A finite-element code for
+modeling quasi-static and dynamic crustal deformation, \emph{Eos Trans.
+AGU}, \emph{89(}53), Fall Meet. Suppl., Abstract T41A-1925.
+
+\bibitem[Bathe, 1995]{Bathe:1995}Bathe, K.-J. (1995), \textit{Finite-Element
+Procedures}, Prentice Hall, Upper Saddle River, New Jersey, 1037 pp.
+
+\bibitem[Ben-Zion and Rice, 1997]{BenZion:Rice:1997}Ben-Zion, Y.
+and J.R. Rice (1997), Dynamic simulations of slip on a smooth fault
+in an elastic solid, \emph{Journal of Geophysical Research}\textit{,
+102}, 17,771\textendash{}17,784.
+
+\bibitem[Brune, 1970]{Brune:1970}Brune, J.N. (1970), Tectonic stress
+and spectra of seismic shear waves from earthquakes, \emph{Journal
+of Geophysical Research, 75}, 4997-5009.
+
+\bibitem[Courant et al., 1967]{Courant:etal:1967}Courant, R., K.
+Friedrichs and H. Lewy (1967), On the Partial Differential Equations
+of Mathematical Physics, \textit{IBM Journal of Research and Development},
+11(2), 215--234.
+
+\bibitem[Day and Ely, 2002]{Day:Ely:2002}Day, S.M. and G.P. Ely (2002),
+Effct of a shallow weak zone on fault rupture: Numerical simulation
+of scale-model experiments, \textit{Bull. Seismol. Soc. Am.}, 92(8),
+3022-3041, doi: 10.1785/0120010273.
+
+\bibitem[Drucker and Prager, 1952]{Drucker:Prager:1952}Drucker, D.
+C. and Prager, W. (1952). Soil mechanics and plastic analysis for
+limit design, \textit{Quarterly of Applied Mathematics}, \textit{10},
+157\textendash{}165.
+
+\bibitem[Liu et al., 2006]{Liu:etal:2006}Liu, P., R.J. Archuleta,
+S.H. Hartzell (2006), Prediction of broadband ground-motion time histories:
+Hybrid low/high-frequency method with correlated random source parameters,
+\textit{Bull. Seismol. Soc. Am., 96}, 2118-2130.
+
+\bibitem[Kaneko et al., 2008]{Kaneko:etal:2008}Kaneko, Y., N. Lapusta,
+and J.-P. Ampuero (2008), Spectral element modeling of spontaneous
+earthquake rupture on rate and state faults: Effect of velocity-strengthening
+friction at shallow depths, \textit{Journal of Geophysical Research},\textit{
+113}, B09317, doi:10.1029/2007JB005553.
+
+\bibitem[Kaus et al., 2010]{Kaus:etal:2010}Kaus, B. J. P., H. Muhlhaus,
+and D. A. May (2010), A stabilization algorithm for geodynamic numerical
+simulations with a free surface, \textit{Physics of the Earth and
+Planetary Interiors}, \textit{181}, 12-20, doi:10.1016/j.pepi.2010.04.007.
+
+\bibitem[Kirby and Kronenberg, 1987]{Kirby:Kronenberg:1987}Kirby,
+S. H. and A. K. Kronenberg (1987), Rheology of the lithosphere: Selected
+topics, \textit{Reviews of Geophysics, 25}, 1219-1244.
+
+\bibitem[Knopoff and Ni, 2001]{Knopoff:Ni:2001}Knopoff, L. and X.X.
+Ni (2001), Numerical instability at the edge of a dynamic fracture,
+\emph{Geophysical Journal International,}\textit{\emph{ }}\textit{147}(3),
+1-6, doi: 10.1046/j.1365-246x.2001.01567.x.
+
+\bibitem[Kojic and Bathe, 1987]{Kojic:Bathe:1987}Kojic, M. and K.-J.
+Bathe (1987), The `Effective Stress-Function' Algorithm for Thermo-Elasto-Plasticity
+and Creep, \emph{Int. J. Num. Meth. Eng}.\emph{, 24}, 1509-1532.
+
+\bibitem[McGarr, 1988]{McGarr:1988}McGarr, A. (1988), On the state
+of lithospheric stress in the absence of applied tectonic forces,
+\textit{Journal of Geophysical Research}, \textit{93}, 13,609-13,617.
+
+\bibitem[Menke, 1984]{Menke:1984}Menke, W. (1984), \textit{Geophysical
+Data Analysis: Discrete Inverse Theory}, Academic Press, Inc., Orlando,
+260 pp.
+
+\bibitem[Okada, 1992]{Okada:1992}Okada, Y., Internal deformation
+due to shear and tensile faults in a half-space (1992), \textit{Bull.
+Seismol. Soc. Am.}, \textit{83}, 1018-1040.
+
+\bibitem[Paterson, 1994]{Paterson:1994}Paterson, W. S. B. (1994),
+\textit{The Physics of Glaciers, Third Edition}, Elsevier Science
+Ltd., Oxford, 480 pp.
+
+\bibitem[Prentice, 1968]{Prentice:1968}Prentice, J. H, (1968), Dimensional
+problem of the power law in rheology, \textit{Nature}, \textit{217},
+157.
+
+\bibitem[Savage and Prescott, 1978]{Savage:Prescott:1978}Savage,
+J. C. and W. H. Prescott (1978), Asthenosphere readjustment and the
+earthquake cycle, \textit{Journal of Geophysical} \textit{Research}\emph{,
+83}, 3369-3376.
+
+\bibitem[Taylor, 2003]{Taylor:2003}Taylor, R.L. (2003), `FEAP--A
+Finite Element Analysis Program', \textit{Version 7.5 Theory Manual},
+154 pp.
+
+\bibitem[Timoshenko and Goodier, 1987]{Timoshenko:Goodier:1987}Timoshenko,
+S.P. and J.N. Goodier (1987), \textit{Theory of Elasticity, Third
+Edition}, McGraw-Hill, New York, 567 pp.
+
+\bibitem[Williams et al., 2005]{Williams:etal:2005}Williams, C.A.,
+B. Aagaard, and M.G. Knepley (2005), Development of software for studying
+earthquakes across multiple spatial and temporal scales by coupling
+quasi-static and dynamic simulations, \emph{Eos Trans. AGU, 86}(52),
+Fall Meet. Suppl., Abstract S53A-1072.
+
+\bibitem[Williams, 2006]{Williams:2006}Williams, C.A. (2006), Development
+of a package for modeling stress in the lithosphere, \emph{Eos Trans.
+AGU,} \emph{87}(36), Jt. Assem. Suppl., Abstract T24A-01 Invited.
+
+\bibitem[Zienkiewicz and Taylor, 2000]{Zienkiewicz:Taylor:2000}Zienkiewicz,
+O.C. and R.L. Taylor (2000), \textit{The Finite Element Method, Fifth
+Edition, Volume 2: Solid Mechanics}, Butterworth-Heinemann, Oxford,
+459 pp.125\end{thebibliography}
+
+\end{document}

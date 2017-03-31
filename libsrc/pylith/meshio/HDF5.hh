@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2016 University of California, Davis
+// Copyright (c) 2010-2017 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -27,7 +27,10 @@
 #include <hdf5.h> // USES hid_t
 
 // HDF5 -----------------------------------------------------------------
-/// High-level interface for HDF5 operations.
+/** High-level serial interface for HDF5 operations.
+ *
+ * @warning Do not use this object for parallel I/O.
+ */
 class pylith::meshio::HDF5
 { // HDF5
   friend class TestHDF5; // Unit testing
@@ -267,21 +270,36 @@ public :
 				const hsize_t* dims,
 				const int ndims);
   
-  /** Write dataset comprised of an array of strings.
+  /** Write dataset comprised of an array of strings. 
+   *
+   * Data is written as fixed length strings matching the maximum
+   * string length.
    *
    * @param parent Full path of parent group for dataset.
    * @param name Name of dataset.
    * @param sarray Array of null terminated C strings.
    * @param nstrings Size of array.
-   * @param slen Fixed length of strings.
    */
   void writeDataset(const char* parent,
 		    const char* name,
 		    const char* const* sarray,
-		    const int nstrings,
-		    const int slen =64);
+		    const int nstrings);
 
-  /** Write dataset comprised of an array of strings (used with
+  /** Write dataset comprised of an array of fixed length strings.
+   *
+   * @param parent Full path of parent group for dataset.
+   * @param name Name of dataset.
+   * @param sarray Array of null terminated C strings.
+   * @param nstrings Size of array.
+   * @param slen Fixed string length.
+   */
+  void writeDataset(const char* parent,
+		    const char* name,
+		    const char* sarray,
+		    const int nstrings,
+		    const int slen);
+
+  /** Write dataset comprised of an array of fixed length strings (used with
    * external handle to HDF5 file, such as PetscHDF5Viewer).
    *
    * @param h5 HDF5 file.
@@ -289,15 +307,15 @@ public :
    * @param name Name of dataset.
    * @param sarray Array of null terminated C strings.
    * @param nstrings Size of array.
-   * @param slen Fixed length of strings.
+   * @param slen Fixed string length.
    */
   static
   void writeDataset(hid_t h5,
 		    const char* parent,
 		    const char* name,
-		    const char* const* sarray,
+		    const char* sarray,
 		    const int nstrings,
-		    const int slen =64);
+		    const int slen);
 
   /** Read dataset comprised of an array of strings.
    *

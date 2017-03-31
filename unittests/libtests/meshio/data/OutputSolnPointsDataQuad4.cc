@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2016 University of California, Davis
+// Copyright (c) 2010-2017 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -19,42 +19,39 @@
 #include "OutputSolnPointsDataQuad4.hh"
 
 const char* pylith::meshio::OutputSolnPointsDataQuad4::_meshFilename =
-  "data/quad4.mesh";
+  "data/mesh_quad4.exo";
 
 const int pylith::meshio::OutputSolnPointsDataQuad4::_spaceDim = 2;
-const int pylith::meshio::OutputSolnPointsDataQuad4::_numPoints = 7;
-const PylithScalar pylith::meshio::OutputSolnPointsDataQuad4::_points[] = {
-    0.0,  0.1, // interior points
-    0.3,  0.4,
-   -0.6, -0.7,
-   -1.0,  0.9,
-   -0.3,  0.8,
-    0.3,  0.99999, // edge point
-   -0.999999,  0.99999, // vertex point
+const int pylith::meshio::OutputSolnPointsDataQuad4::_numPoints = 9;
+const PylithScalar pylith::meshio::OutputSolnPointsDataQuad4::_points[9*2] = {
+    -2466.89062768, -3338.70224665, // random interior points
+    -2573.79512745,  3527.28189631,
+    626.05179461, -3749.09327302,
+    -3378.87781999,  2950.4481556 ,
+    -2791.09686116,   956.10709564,
+    1356.65774294, -1018.21897423,
+    -3740.56959013,   983.93227394,
+    +3999.0, -200.0, // edge
+    -4000.0, -4000.0, // vertex
+};
+const char* pylith::meshio::OutputSolnPointsDataQuad4::_names[9] = {
+    "AA",
+    "BB",
+    "CC",
+    "DD",
+    "EE",
+    "FF",
+    "GG",
+    "II",
+    "JJ",
 };
 
-const int pylith::meshio::OutputSolnPointsDataQuad4::_numVertices = 6;
 const int pylith::meshio::OutputSolnPointsDataQuad4::_fiberDim = 3;
 
-const PylithScalar pylith::meshio::OutputSolnPointsDataQuad4::_field[] = {
-  1.0, 2.1, 3.2,
-  1.1, 2.0, 3.3,
-  1.2, 1.9, 3.4,
-  1.3, 1.8, 3.5,
-  1.4, 1.7, 3.6,
-  1.5, 1.6, 3.7,
+const PylithScalar pylith::meshio::OutputSolnPointsDataQuad4::_coefs[3*2] = {
+    2.0, -3.0, 10.0,
+    -1.0, 6.0, 13.0,
 };
-
-const PylithScalar pylith::meshio::OutputSolnPointsDataQuad4::_fieldInterp[] = {
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-};
-
 
 // ----------------------------------------------------------------------
 pylith::meshio::OutputSolnPointsDataQuad4::OutputSolnPointsDataQuad4(void)
@@ -63,12 +60,10 @@ pylith::meshio::OutputSolnPointsDataQuad4::OutputSolnPointsDataQuad4(void)
   spaceDim = _spaceDim;
   numPoints = _numPoints;
   points = const_cast<PylithScalar*>(_points);
+  names = const_cast<const char**>(_names);
 
-  numVertices = _numVertices;
   fiberDim = _fiberDim;
-  field = const_cast<PylithScalar*>(_field);
-
-  fieldInterp = const_cast<PylithScalar*>(_fieldInterp);
+  coefs = const_cast<PylithScalar*>(_coefs);
 
 } // constructor
 

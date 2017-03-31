@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2016 University of California, Davis
+# Copyright (c) 2010-2017 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -169,6 +169,10 @@ nobase_pkgpyexec_PYTHON = \
 	utils/PetscComponent.py \
 	utils/PetscManager.py \
 	utils/VTKDataReader.py \
+	utils/CollectVersionInfo.py \
+	utils/DumpParameters.py \
+	utils/DumpParametersAscii.py \
+	utils/DumpParametersJson.py \
 	utils/importing.py \
 	utils/profiling.py \
 	utils/testarray.py \
@@ -191,4 +195,4 @@ if ENABLE_HDF5
 endif
 
 
-# End of file 
+# End of file

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2016 University of California, Davis
+// Copyright (c) 2010-2017 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -27,9 +27,9 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::DataWriter::DataWriter(void) :
-  _timeScale(1.0),
-  _numTimeSteps(0),
-  _context("")
+    _timeScale(1.0),
+    _numTimeSteps(0),
+    _context("")
 { // constructor
 } // constructor
 
@@ -37,8 +37,8 @@ pylith::meshio::DataWriter::DataWriter(void) :
 // Destructor
 pylith::meshio::DataWriter::~DataWriter(void)
 { // destructor
-  deallocate();
-} // destructor  
+    deallocate();
+} // destructor
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
@@ -46,50 +46,50 @@ void
 pylith::meshio::DataWriter::deallocate(void)
 { // deallocate
 } // deallocate
-  
+
 
 // ----------------------------------------------------------------------
 // Set time scale for simulation time.
 void
 pylith::meshio::DataWriter::timeScale(const PylithScalar value)
 { // timeScale
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  if (value <= 0.0) {
-    std::ostringstream msg;
-    msg << "Time scale for simulation time (" << value << " must be positive.";
-    throw std::runtime_error(msg.str());
-  } // if
-  
-  _timeScale = value;
+    if (value <= 0.0) {
+        std::ostringstream msg;
+        msg << "Time scale for simulation time (" << value << " must be positive.";
+        throw std::runtime_error(msg.str());
+    } // if
 
-  PYLITH_METHOD_END;
+    _timeScale = value;
+
+    PYLITH_METHOD_END;
 } // timeScale
-  
+
 // ----------------------------------------------------------------------
 // Prepare for writing files.
 void
 pylith::meshio::DataWriter::open(const topology::Mesh& mesh,
-				 const int numTimeSteps,
-				 const char* label,
-				 const int labelId)
+                                 const int numTimeSteps,
+                                 const char* label,
+                                 const int labelId)
 { // open
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  _numTimeSteps = numTimeSteps;
+    _numTimeSteps = numTimeSteps;
 
-  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-  const char* meshName = NULL;
-  PetscObjectGetName((PetscObject) dmMesh, &meshName);
-  
-  std::ostringstream s;
-  s << "output_"
-    << meshName;
-  if (label)
-    s << "_" << label << labelId;
-  _context = s.str();
+    PetscDM dmMesh = mesh.dmMesh(); assert(dmMesh);
+    const char* meshName = NULL;
+    PetscObjectGetName((PetscObject) dmMesh, &meshName);
 
-  PYLITH_METHOD_END;
+    std::ostringstream s;
+    s << "output_"
+      << meshName;
+    if (label)
+        s << "_" << label << labelId;
+    _context = s.str();
+
+    PYLITH_METHOD_END;
 } // open
 
 // ----------------------------------------------------------------------
@@ -97,16 +97,16 @@ pylith::meshio::DataWriter::open(const topology::Mesh& mesh,
 void
 pylith::meshio::DataWriter::close(void)
 { // close
-  _context = "";
+    _context = "";
 } // close
 
 // ----------------------------------------------------------------------
 // Prepare file for data at a new time step.
 void
 pylith::meshio::DataWriter::openTimeStep(const PylithScalar t,
-					 const topology::Mesh& mesh,
-					 const char* label,
-					 const int labelId)
+                                         const topology::Mesh& mesh,
+                                         const char* label,
+                                         const int labelId)
 { // openTimeStep
   // Default: no implementation.
 } // openTimeStep
@@ -122,8 +122,8 @@ pylith::meshio::DataWriter::closeTimeStep(void)
 // ----------------------------------------------------------------------
 // Copy constructor.
 pylith::meshio::DataWriter::DataWriter(const DataWriter& w) :
-  _numTimeSteps(w._numTimeSteps),
-  _context(w._context)
+    _numTimeSteps(w._numTimeSteps),
+    _context(w._context)
 { // copy constructor
 } // copy constructor
 
@@ -131,11 +131,10 @@ pylith::meshio::DataWriter::DataWriter(const DataWriter& w) :
 // ----------------------------------------------------------------------
 // Write dataset with names of points to file.
 void
-pylith::meshio::DataWriter::writePointNames(const char* const* names,
-					    const int numNames,
-					    const topology::Mesh& mesh)
+pylith::meshio::DataWriter::writePointNames(const pylith::string_vector& names,
+                                            const topology::Mesh& mesh)
 { // writePointNames
   // Default: no implementation.
 } // writePointNames
 
-// End of file 
+// End of file

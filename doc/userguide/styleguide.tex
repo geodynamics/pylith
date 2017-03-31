@@ -1,0 +1,71 @@
+% -*- LaTeX -*-
+%
+% ----------------------------------------------------------------------
+%
+% Brad T. Aagaard, U.S. Geological Survey
+% Charles A. Williams, GNS Science
+% Matthew G. Knepley, University of Chicago
+%
+% This code was developed as part of the Computational Infrastructure
+% for Geodynamics (http://geodynamics.org).
+%
+% Copyright (c) 2010-2017 University of California, Davis
+%
+% See COPYING for license information.
+%
+% ----------------------------------------------------------------------
+%
+\documentclass{pylithdoc}
+
+\title{Style Guide for PyLith Documentation}
+
+\begin{document}
+
+\warning{This is a warning.}
+\tip{This is a tip, helpful hint, or suggestion.}
+\important{This is something important.}
+
+\todo{brad}{This is something for Brad to do. 
+
+  \todocomment{matt}{This is a comment directed towards Matt.}
+}
+
+Use the {\tt shell} environment when listing commands to 
+be run in a Unix shell.
+% Example use of shell environment.
+\begin{shell}
+# This is a comment.
+$ ls -l
+\end{shell}
+
+Use the {\tt cfg} environment when demonstrating how to set parameters
+in a {{\tt .cfg} file. Use {\tt <h>} and {\tt </h>} to delimit section
+  headers, {\tt <p>} and {\tt </p>} to delimit properties, and {\tt <f>}
+  and {\tt </f>} to delimit facilities.
+% Example use of cfg environment
+\begin{cfg}
+# This is a comment.
+<h>[pylithapp.problem]</h>
+<p>timestep</p> = 2.0*s ; Time step comment.
+<f>bc</f> = [x_pos, x_neg]
+\end{cfg}
+
+Use the {\tt inventory} environment when listing the Pyre properties
+and facilities of an object. Use the {\tt
+  \textbackslash propertyitem\{NAME\}\{DESCRIPTION\}} command for properties and {\tt
+  \textbackslash facilityitem\{NAME\}\{DESCRIPTION\}} for facilities.
+% Example use of inventory environment
+\begin{inventory}
+\propertyitem{time\_step}{Time step in simulation.}
+\facilityitem{bc}{Array of boundary conditions.}
+\end{inventory}
+
+
+\section{My Feature}
+\newfeature{v2.1.4}
+
+Use the {\tt \textbackslash newfeature\{vX.X.X\}} command to indicate when a
+feature was implemented (if known).
+
+
+\end{document}

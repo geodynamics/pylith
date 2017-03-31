@@ -1,0 +1,66 @@
+\chapter{Glossary}
+\label{cha:glossary}
+
+\section{Pyre}
+\begin{description}
+\item [\facility{component}] Basic building block of a Pyre
+  application. A component may be built-up from smaller building
+  blocks, where simple data types are called properties and data
+  structures and objects are called facilities.  In general a
+  component is a specific implementation of the functionality of a
+  facility. For example, SimpleDB is a specific implementation of the
+  spatial database facility. A component is generally composed of a
+  Python object and a C++ object, although either one may be missing.
+  We nearly always use the naming convention such that for an object
+  called Foo the Python object is in file Foo.py, the C++ class
+  definition is in Foo.hh, inline C++ functions are in foo.icc, the
+  C++ class implementation is in Foo.cc, and the SWIG interface file
+  that glues the C++ and Python code together is in Foo.i.
+\item [\facility{facility}] Complex data type (object or data
+  structure) building block of a component. See component.
+\item [\property{property}] Simple data type (string, integer, real
+  number, or boolean value) parameter for a component.
+\end{description}
+
+\section{\object{DMPlex}}
+
+The plex construction is a representation of the topology of the
+finite element mesh based upon a covering relation. For example,
+segments are covered by their endpoints, faces by their bounding
+edges, etc. Geometry is absent from the plex, and is represented
+instead by a field with the coordinates of the vertices. Meshes can
+also be understood as directed acyclic graphs, where we call the
+constituents points and arrows.
+
+\begin{description}
+\item [mesh] A finite element mesh, used to partition space and
+  provide support for the basis functions.
+\item [cell] The highest dimensional elements of a mesh, or mesh
+  entities of codimension zero.
+\item [vertex] The zero dimensional mesh elements.
+\item [face] Mesh elements that separate cells, or mesh entities of
+  codimension one.
+\item [field] A parallel section which can be completed, or made
+  consistent, across process boundaries. These are used to represent
+  continuum fields.
+\item [section] These objects associate values in vectors to points
+  (vertices, edges, faces, and cells) in a mesh. The section describes
+  the offset into the vector along with the number of values
+  associated with each point.
+\item [dimension] The topological dimension of the mesh, meaning the
+  cell dimension. It can also mean the dimension of the space in which
+  the mesh is embedded, but this is properly the embedding dimension.
+\item [fiber\ dimension] Dimension of the space associated with the
+  field. For example, the scalar field has a fiber dimension of 1 and
+  a vector field has a fiber displacement equal to the dimension of
+  the mesh.
+\item [cohesive\ cell] A zero volume cell inserted between any two
+  cells which shared a fault face. They are prisms with a fault face
+  as the base.
+\item [cone] The set of entities which cover any entity in a mesh. For
+  example, the cone of a triangle is its three edges.
+\item [support] The set of mesh entities which are covered by any
+  entity in a mesh. For example, the support of a triangle is the two
+  tetrahedra it separates.
+\end{description}
+

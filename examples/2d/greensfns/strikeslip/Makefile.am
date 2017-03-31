@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2016 University of California, Davis
+# Copyright (c) 2010-2017 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -32,10 +32,6 @@ dist_noinst_DATA = \
 	output_points.txt \
 	penalty_params.txt \
 	plot_invresults.py
-
-
-SUBDIRS = \
-	output
 
 
 # End of file 

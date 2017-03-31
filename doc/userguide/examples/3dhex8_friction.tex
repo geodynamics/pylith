@@ -1,0 +1,306 @@
+\subsection{Fault Friction Examples}
+\label{sec:example:3dhex8:friction}
+
+PyLith features discussed in this example:
+\begin{itemize}
+\item Static fault friction
+\item Slip-weakening fault friction
+\item Rate-and-state fault friction
+\item Nonlinear solver
+\end{itemize}
+
+\subsubsection{Overview}
+
+This set of examples provides an introduction to using fault friction
+in static and quasi-static problems with PyLith. Dynamic problems
+with fault friction are discussed in Section \vref{sec:example:shearwave:quad4}.
+The boundary conditions are all either static or quasi-static Dirichlet
+conditions, and only elastic materials are used. In all the fault
+friction examples we apply axial (x) displacements on both the positive
+and negative x-faces to maintain a compressive normal tractions on
+the fault. Otherwise, there would be no frictional resistance. Fault
+friction generates nonlinear behavior, so we use the nonlinear solver.
+All of the examples are contained in the directory \filename{examples/3d/hex8},
+and the corresponding \filename{.cfg} files are \filename{step10.cfg},
+\filename{step11.cfg}, \filename{step12.cfg}, \filename{step13.cfg}, and
+\filename{step14.cfg}. Each example may be run as follows:
+\begin{shell}
+$$ pylith stepXX.cfg
+\end{shell}
+This will cause PyLith to read the default parameters in \filename{pylithapp.cfg},
+and then override or augment them with the additional parameters in
+the \filename{stepXX.cfg} file. Each \filename{.cfg} file is extensively
+documented, to provide detailed information on the various parameters.
+
+
+\subsubsection{Step10 - Static Friction (Stick) with Static Dirichlet Boundary Conditions}
+
+The \filename{step10.cfg} file defines a problem that is identical to
+example step01, except for the presence of a vertical fault with static
+friction. In this case, the applied displacements are insufficient
+to cause the fault to slip, so the solution is identical to that in
+example step01. As in previous examples involving faults, we must
+first provide an array defining the fault interfaces:
+\begin{cfg}
+<h>[pylithapp.timedependent]</h>
+# Set interfaces to an array of 1 fault: 'fault'.
+<f>interfaces</f> = [fault]
+
+# Fault friction models are nonlinear, so use nonlinear solver.
+<h>[pylithapp.timedependent.implicit]</h>
+<f>solver</f> = pylith.problems.SolverNonlinear
+\end{cfg}
+We need to change the fault interface from the default (\object{FaultCohesiveKin})
+to \object{FaultCohesiveDyn} and we set the friction model to use:
+\begin{cfg}
+<h>[pylithapp.timedependent.interfaces]</h>
+<f>fault</f> = pylith.faults.FaultCohesiveDyn ; Change to dynamic fault interface.
+
+<h>[pylithapp.timedependent.interfaces.fault]</h>
+<f>friction</f> = pylith.friction.StaticFriction ; Use static friction model.
+\end{cfg}
+The \object{StaticFriction} model requires values for the coefficient
+of friction and the cohesion (see Section \vref{sec:fault:constitutive:models}).
+We provide both of these using a \object{UniformDB}:
+\begin{cfg}
+<h>[pylithapp.timedependent.interfaces.fault]</h>
+# Set static friction model parameters using a uniform DB. Set the
+# static coefficient of friction to 0.6 and cohesion to 0.0 Pa.
+<f>friction.db_properties</f> = spatialdata.spatialdb.UniformDB
+<p>friction.db_properties.label</p> = Static friction
+<p>friction.db_properties.values</p> = [friction-coefficient, cohesion]
+<p>friction.db_properties.data</p> = [0.6, 0.0*Pa]
+
+# Fault friction models require additional PETSc settings:
+<h>[pylithapp.petsc]</h>
+# Friction sensitivity solve used to compute the increment in slip
+# associated with changes in the Lagrange multiplier imposed by the
+# fault constitutive model.
+<p>friction_pc_type</p> = asm
+<p>friction_sub_pc_factor_shift_type</p> = nonzero
+<p>friction_ksp_max_it</p> = 25
+<p>friction_ksp_gmres_restart</p> = 30
+
+# Uncomment to view details of friction sensitivity solve.
+#friction_ksp_monitor = true
+#friction_ksp_view = true
+<p>friction_ksp_converged_reason</p> = true
+\end{cfg}
+When we have run the simulation, the output VTK files will be contained
+in \filename{examples/3d/hex8/output} (all with a prefix of \filename{step10}).
+Results using ParaView are shown in Figure \vref{fig:example:3dhex8:step10:fault}.
+
+\begin{figure}
+  \includegraphics[width=10cm]{examples/figs/3dhex8_step10-fault-traction-slip}
+  \caption{Magnitude of tractions on the fault for example step10
+    visualized using ParaView.}
+  \label{fig:example:3dhex8:step10:fault}
+\end{figure}
+
+
+\subsubsection{Step11 - Static Friction (Slip) with Static Dirichlet Boundary Conditions}
+
+In step11 we apply twice as much shear displacement as in step10,
+which is sufficient to induce slip on the fault. All other settings
+are identical. To change the amount of shear displacement, we change
+the spatial database for the positive and negative x-faces to a
+\object{UniformDB}, and apply the altered values within the
+\filename{.cfg} file:
+\begin{cfg}
+# Boundary condition on +x face
+<h>[pylithapp.timedependent.bc.x_pos]</h>
+<p>bc_dof</p> = [0, 1]
+<p>label</p> = face_xpos
+<f>db_initial</f> = spatialdata.spatialdb.UniformDB
+<p>db_initial.label</p> = Dirichlet BC on +x
+<p>db_initial.values</p> = [displacement-x, displacement-y]
+<p>db_initial.data</p> = [-1.0*m, 2.0*m]
+
+# Boundary condition on -x face
+<h>[pylithapp.timedependent.bc.x_neg]</h>
+<p>bc_dof</p> = [0, 1]
+<p>label</p> = face_xneg
+<f>db_initial</f> = spatialdata.spatialdb.UniformDB
+<p>db_initial.label</p> = Dirichlet BC on -x
+<p>db_initial.values</p> = [displacement-x, displacement-y]
+<p>db_initial.data</p> = [1.0*m, -2.0*m]
+\end{cfg}
+When we have run the simulation, the output VTK files will be contained
+in \filename{examples/3d/hex8/output} (all with a prefix of \filename{step11}).
+Results using ParaView are shown in Figure \vref{fig:example:3dhex8:step11:fault}.
+
+\begin{figure}
+  \includegraphics[width=10cm]{examples/figs/3dhex8_step11-fault-traction-slip}
+  \caption{Magnitude of tractions on the fault for example step10
+    visualized using ParaView. Vectors of fault slip are also
+    plotted. Note that PyLith outputs slip in the fault coordinate
+    system, so we transform them to the global coordinate system using
+    the Calculator in ParaView.  A more general approach involves
+    outputing the fault coordinate system information and using these
+    fields in the Calculator.}
+  \label{fig:example:3dhex8:step11:fault}
+\end{figure}
+
+
+\subsubsection{Step12 - Static Friction with Quasi-Static Dirichlet Boundary Conditions}
+
+The \filename{step12.cfg} file describes a problem that is similar to
+examples step10 and step11, except that we apply velocity boundary
+conditions and run the simulation for 200 years. Once fault friction
+is overcome, the fault slips at a steady rate. To prevent convergence
+problems we set the time step size to a constant value of 5 years:
+\begin{cfg}
+# Change the total simulation time to 200 years, and use a constant time
+# step size of 5 years.
+<h>[pylithapp.timedependent.implicit.time_step]</h>
+<p>total_time</p> = 200.0*year
+<p>dt</p> = 5.0*year
+\end{cfg}
+As in the other fault friction examples, we apply initial displacements
+along the x-axis (to maintain a compressive stress on the fault),
+and we apply velocity boundary conditions that yield a left-lateral
+sense of motion:
+\begin{cfg}
+# Boundary condition on +x face -- Dirichlet
+<h>[pylithapp.timedependent.bc.x_pos]</h>
+<p>bc_dof</p> = [0,1]
+<p>label</p> = face_xpos
+<f>db_initial</f> = spatialdata.spatialdb.UniformDB
+<p>db_initial.label</p> = Dirichlet BC on +x
+<p>db_initial.values</p> = [displacement-x, displacement-y]
+<p>db_initial.data</p> = [-1.0*m, 0.0*m]
+
+<f>db_rate</f> = spatialdata.spatialdb.UniformDB
+<p>db_rate.label</p> = Dirichlet rate BC on +x
+<p>db_rate.values</p> = [displacement-rate-x, displacement-rate-y, rate-start-time]
+<p>db_rate.data</p> = [0.0*cm/year, 1.0*cm/year, 0.0*year] \\
+
+# Boundary condition on -x face
+<h>[pylithapp.timedependent.bc.x_neg]</h>
+<p>bc_dof</p> = [0, 1]
+<p>label</p> = face_xneg
+<p>db_initial.label</p> = Dirichlet BC on -x
+
+<f>db_rate</f> = spatialdata.spatialdb.UniformDB
+<p>db_rate.label</p> = Dirichlet rate BC on -x
+<p>db_rate.values</p> = [displacement-rate-x, displacement-rate-y, rate-start-time]
+<p>db_rate.data</p> = [0.0*cm/year, -1.0*cm/year, 0.0*year]
+\end{cfg}
+
+For this example, we keep the same coefficient of friction as examples
+step10 and step11, but we include a cohesion of 2 MPa:
+\begin{cfg}
+<h>[pylithapp.timedependent.interfaces.fault]</h>
+# Set static friction model parameters using a uniform DB. Set the
+# static coefficient of friction to 0.6 and cohesion to 2.0 MPa.
+<f>friction.db_properties</f> = spatialdata.spatialdb.UniformDB
+<p>friction.db_properties.label</p> = Static friction
+<p>friction.db_properties.values</p> = [friction-coefficient, cohesion]
+<p>friction.db_properties.data</p> = [0.6, 2.0*MPa]
+\end{cfg}
+When we have run the simulation, the output VTK files will be contained
+in \filename{examples/3d/hex8/output} (all with a prefix of \filename{step12}).
+Results using ParaView are shown in Figure \vref{fig:example:3dhex8:step12:displacement}.
+
+\begin{figure}
+  \includegraphics[width=10cm]{examples/figs/3dhex8_step12-displ-t200}
+  \caption{Displacement field for example step12 at t = 200 years visualized
+    using ParaView. The mesh has been distorted by the computed displacements
+    (magnified by 500), and the vectors show the computed displacements.}
+  \label{fig:example:3dhex8:step12:displacement}
+\end{figure}
+
+
+\subsubsection{Step13 - Slip-Weakening Friction with Quasi-Static Dirichlet Boundary Conditions}
+
+In this example we replace the static friction fault constitutive
+model in step12 with a slip-weakening friction fault constitutive
+model. Fault friction is overcome at about t = 80 years, the fault
+slips in each subsequent time step. We again use a constant time step
+size of 5 years and apply the same intial displacement and velocity
+boundary conditions.
+
+We first define the friction model for the simulation:
+\begin{cfg}
+<h>[pylithapp.timedependent.interfaces.fault]</h>
+# Use the slip-weakening friction model.
+<f>friction</f> = pylith.friction.SlipWeakening
+
+<h>[pylithapp.timedependent.interfaces.fault]</h>
+# Set slip-weakening friction model parameters using a uniform DB. Set the
+# parameters as follows:
+# static coefficient of friction: 0.6
+# dynamic coefficient of friction: 0.5
+# slip-weakening parameter: 0.2 m
+# cohesion: 0 Pa
+<f>friction.db_properties</f> = spatialdata.spatialdb.UniformDB
+<p>friction.db_properties.label</p> = Slip weakening
+<p>friction.db_properties.values</p> = [static-coefficient,dynamic-coefficient, \
+   slip-weakening-parameter,cohesion]
+<p>friction.db_properties.data</p> = [0.6,0.5,0.2{*}m,0.0{*}Pa]
+\end{cfg}
+When we have run the simulation, the output VTK files will be contained
+in \filename{examples/3d/hex8/output} (all with a prefix of \filename{step1}3).
+Results using ParaView are shown in Figure \vref{fig:example:3dhex8:step13:displacement}.
+
+\begin{figure}
+  \includegraphics[width=10cm]{examples/figs/3dhex8_step13-displ-t200}
+  \caption{Displacement field for example step13 at t = 200 years visualized
+    using ParaView. The mesh has been distorted by the computed displacements
+    (magnified by 500), and the vectors show the computed displacements.}
+  \label{fig:example:3dhex8:step13:displacement}
+\end{figure}
+
+
+\subsubsection{Step14 - Rate-and-State Friction with Quasi-Static Dirichlet Boundary Conditions}
+
+In step14 we use a rate-and-state friction model with an ageing law
+instead of a slip-weakening friction model. Slip begins to occur at
+about t = 45 years, and continues in each subsequent time step. We
+again use a constant time step size of 5 years and apply the same
+intial displacement and velocity boundary conditions.
+
+We first define the friction model for the simulation:
+\begin{cfg}
+<h>[pylithapp.timedependent.interfaces.fault]</h>
+# Use the rate-and-state aging friction model.
+<f>friction</f> = pylith.friction.RateStateAgeing
+
+<h>[pylithapp.timedependent.interfaces.fault]</h>
+# Set rate-and-state parameters using a UniformDB. Set the parameters as
+# follows:
+# reference coefficient of friction: 0.6
+# reference slip rate: 1.0e-06 m/s
+# slip-weakening parameter: 0.037 m
+# a: 0.0125
+# b: 0.0172
+# cohesion: 0 Pa
+<f>friction.db_properties</f> = spatialdata.spatialdb.UniformDB
+<p>friction.db_properties.label</p> = Rate State Ageing
+<p>friction.db_properties.values</p> = [reference-friction-coefficient, reference-slip-rate, \
+  characteristic-slip-distance, constitutive-parameter-a, constitutive-parameter-b, cohesion]
+<p>friction.db_properties.data</p> = [0.6, 1.0e-6*m/s, 0.0370*m, 0.0125, 0.0172, 0.0*Pa]
+\end{cfg}
+For this model, we also want to set the initial value of the state
+variable:
+\begin{cfg}
+<h>[pylithapp.timedependent.interfaces.fault]</h>
+# Set spatial database for the initial value of the state variable.
+<f>friction.db_initial_state</f> = spatialdata.spatialdb.UniformDB
+<p>friction.db_initial_state.label</p> = Rate State Ageing State
+<p>friction.db_initial_state.values</p> = [state-variable]
+<p>friction.db_initial_state.data</p> = [92.7*s]
+\end{cfg}
+When we have run the simulation, the output VTK files will be contained
+in \filename{examples/3d/hex8/output} (all with a prefix of \filename{step14}).
+Results using ParaView are shown in Figure \vref{fig:example:3dhex8:step14:displacement}.
+
+\begin{figure}
+  \includegraphics[width=10cm]{examples/figs/3dhex8_step14-displ-t200}
+  \caption{Displacement field for example step14 at t = 200 years visualized
+    using ParaView. The mesh has been distorted by the computed displacements
+    (magnified by 500), and the vectors show the computed displacements.}
+  \label{fig:example:3dhex8:step14:displacement}
+\end{figure}
+
+% End of file

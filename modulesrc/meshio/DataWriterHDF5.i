@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2016 University of California, Davis
+// Copyright (c) 2010-2017 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -94,13 +94,11 @@ namespace pylith {
       /** Write dataset with names of points to file.
        *
        * @param names Array with name for each point, e.g., station name.
-       * @param nunNames Number of names in array.
        * @param mesh Finite-element mesh. 
        *
        * Primarily used with OutputSolnPoints.
        */
-      void writePointNames(const char* const* names,
-			   const int numNames,
+      void writePointNames(const pylith::string_vector& names,
 			   const pylith::topology::Mesh& mesh);
 
     }; // DataWriterHDF5

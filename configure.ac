@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2016 University of California, Davis
+# Copyright (c) 2010-2017 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -17,7 +17,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith], [2.1.4], [cig-short@geodynamics.org])
+AC_INIT([PyLith], [2.2.0], [cig-short@geodynamics.org])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
@@ -114,7 +114,7 @@ CIT_HEADER_MPI
 
 # PETSC
 AC_LANG(C)
-CIT_PATH_PETSC([3.7.2])
+CIT_PATH_PETSC([3.7.5])
 CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC
 
@@ -130,7 +130,7 @@ CIT_PYTHON_MODULE([FIAT],[0.9.9])
 
 # SWIG
 if test "$enable_swig" = "yes" ; then
-  AC_PROG_SWIG(1.3.33)
+  AC_PROG_SWIG([2.0.4],[3.0.2])
 fi
 
 # CPPUNIT
@@ -213,7 +213,7 @@ AC_REQUIRE_CPP
 AC_LANG(C++)
 CIT_SPATIALDATA_HEADER
 CIT_SPATIALDATA_LIB
-CIT_PYTHON_MODULE([spatialdata],[1.9.6])
+CIT_PYTHON_MODULE([spatialdata],[1.9.8])
 
 # DOXYGEN
 if test "$enable_documentation" = "yes" ; then
@@ -232,6 +232,7 @@ CIT_FUNCTIONSTRING
 # VERSION
 CIG_PKG_GIT(PYLITH)
 AC_DEFINE_UNQUOTED([PYLITH_VERSION], ["$PACKAGE_VERSION"], [Define PyLith version])
+AC_DEFINE_UNQUOTED([PYLITH_DOI], ["10.5281/zenodo.438705"], [Define PyLith doi])
 
 # ENDIANNESS
 AC_C_BIGENDIAN
@@ -322,7 +323,6 @@ AC_CONFIG_FILES([Makefile
 		tests/3d/matprops/Makefile
 		tests/3d/slipdir/Makefile
 		tests/3d/cyclicfriction/Makefile
-		tests/3d/cyclicfriction/output/Makefile
 		tests/3d/plasticity/Makefile
 		tests/3d/plasticity/dynamic/Makefile
 		tests/3d/plasticity/initialstress/Makefile
@@ -335,27 +335,18 @@ AC_CONFIG_FILES([Makefile
 		examples/Makefile
 		examples/3d/Makefile
 		examples/3d/tet4/Makefile
-		examples/3d/tet4/output/Makefile
 		examples/3d/hex8/Makefile
-		examples/3d/hex8/output/Makefile
 		examples/2d/Makefile
 		examples/2d/subduction/Makefile
-		examples/2d/subduction/output/Makefile
 		examples/2d/gravity/Makefile
 		examples/2d/greensfns/Makefile
 		examples/2d/greensfns/strikeslip/Makefile
-		examples/2d/greensfns/strikeslip/output/Makefile
 		examples/2d/greensfns/reverse/Makefile
-		examples/2d/greensfns/reverse/output/Makefile
 		examples/bar_shearwave/Makefile
 		examples/bar_shearwave/hex8/Makefile
-		examples/bar_shearwave/hex8/output/Makefile
 		examples/bar_shearwave/quad4/Makefile
-		examples/bar_shearwave/quad4/output/Makefile
 		examples/bar_shearwave/tet4/Makefile
-		examples/bar_shearwave/tet4/output/Makefile
 		examples/bar_shearwave/tri3/Makefile
-		examples/bar_shearwave/tri3/output/Makefile
 		examples/twocells/Makefile
 		examples/twocells/twohex8/Makefile
 		examples/twocells/twoquad4/Makefile

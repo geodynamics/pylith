@@ -1,4 +1,0 @@
-# Example of a file defining the points at which to compute power-law
-# properties.
-0.0  0.0   0.0
-0.0  0.0  -1.0e+3

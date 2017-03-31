@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2016 University of California, Davis
+# Copyright (c) 2010-2017 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -49,14 +49,20 @@ def run_pylith(appClass, dbClass=None, nprocs=1):
       db = dbClass()
       db.run()
 
-    # Run PyLith, limiting number of processes to number of local CPUs.
-    import multiprocessing
-    maxprocs = multiprocessing.cpu_count()
-
+    # Run PyLith, limiting number of processes to number of local CPUs or maximum specified by environment.
+    import os
+    if "MAX_PYLITH_PROCS" in os.environ:
+      appNumProcs = min(int(os.environ["MAX_PYLITH_PROCS"]), nprocs)
+      if appNumProcs < nprocs:
+          print("WARNING: Detected environment with MAX_PYLITH_PROCS=%d. Reducing number of processes from %d to %d." % (appNumProcs, nprocs, appNumProcs))
+    else:
+      import multiprocessing
+      appNumProcs = min(multiprocessing.cpu_count(), nprocs)
+      if appNumProcs < nprocs:
+        print("WARNING: Detected %d CPUs. Reducing number of processes from %d to %d." % (appNumProcs, nprocs, appNumProcs))
+      
     app = appClass()
-    app.nodes = min(nprocs, maxprocs)
-    if app.nodes != nprocs:
-      print("WARNING: Detected %d CPUs. Reducing number of processes from %d to %d." % (maxprocs, nprocs, maxprocs))
+    app.nodes = appNumProcs
     setattr(run_pylith, str(appClass), True)
     app.run()
   return

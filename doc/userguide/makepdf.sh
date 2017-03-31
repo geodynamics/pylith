@@ -9,13 +9,21 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2017 University of California, Davis
 #
 # See COPYING for license information.
 #
 # ----------------------------------------------------------------------
 #
 
-lyx -e pdf2 userguide.lyx
-
+if [ $# == 1 ]; then
+    if [ $1 == "clean" ]; then
+        latexmk -C
+    elif [ $1 == "cover" ]; then
+        pdflatex coveronly.tex && convert coveronly.pdf -background white -flatten -resize 250 -quality 95 cover/cover_small.jpg
+    fi
+else
+    latexmk -pdf -pdflatex="pdflatex -interaction=nonstopmode" -use-make userguide.tex
+fi
+									       
 # End of file

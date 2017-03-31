@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2016 University of California, Davis
+// Copyright (c) 2010-2017 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -56,6 +56,9 @@ namespace pylith {
 
   /// Alias for std::valarray<PylithInt>
   typedef std::valarray<PylithInt> int_array;
+
+  /// Alias for std::valarray<char>
+  typedef std::valarray<char> char_array;
 
   /// Alias for std::valarray<PylithScalar>
   typedef std::valarray<PylithScalar> scalar_array;

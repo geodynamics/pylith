@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2016 University of California, Davis
+// Copyright (c) 2010-2017 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -42,16 +42,15 @@ public:
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
 
-  static const char* _meshFilename; ///< Filename of input mesh
+    static const char* _meshFilename; ///< Filename of input mesh
 
-  static const int _spaceDim; ///< Number of dimensions in vertex coordinates
-  static const int _numPoints; ///< Number of points.
-  static const PylithScalar _points[]; ///< Coordinates of points.
+    static const int _spaceDim; ///< Number of dimensions in vertex coordinates
+    static const int _numPoints; ///< Number of points.
+    static const PylithScalar _points[]; ///< Coordinates of points.
+    static const char* _names[]; /// Names of stations.
 
-  static const int _numVertices; ///< Number of points in mesh.
-  static const int _fiberDim; ///< Fiber dimension of field.
-  static const PylithScalar _field[]; ///< Field over mesh.
-  static const PylithScalar _fieldInterp[]; ///< Field interpolated to points.
+    static const int _fiberDim; ///< Fiber dimension of field.
+    static const PylithScalar _coefs[]; ///< Polynomial coefficients for field.
 
 };
 

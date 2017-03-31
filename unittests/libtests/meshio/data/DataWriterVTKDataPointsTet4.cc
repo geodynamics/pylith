@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2016 University of California, Davis
+// Copyright (c) 2010-2017 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -96,6 +96,12 @@ const PylithScalar pylith::meshio::DataWriterVTKDataPointsTet4::_points[4*3] = {
   +0.00000001, 0.0, 0.00000001,
   0.0, -0.99999999, 0.00000001,
 };
+const char* pylith::meshio::DataWriterVTKDataPointsTet4::_names[4] = {
+    "AA",
+    "BB",
+    "CC",
+    "DD",
+};
 
 
 pylith::meshio::DataWriterVTKDataPointsTet4::DataWriterVTKDataPointsTet4(void)
@@ -121,6 +127,7 @@ pylith::meshio::DataWriterVTKDataPointsTet4::DataWriterVTKDataPointsTet4(void)
   numPoints = _numPoints;
   spaceDim = _spaceDim;
   points = const_cast<PylithScalar*>(_points);
+  names = const_cast<const char**>(_names);
 } // constructor
 
 
