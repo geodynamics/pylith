@@ -9,6 +9,7 @@
 * Maint: [![Build Status](https://travis-ci.org/geodynamics/pylith.svg?branch=maint)](https://travis-ci.org/geodynamics/pylith)
 * Next: [![Build Status](https://travis-ci.org/geodynamics/pylith.svg?branch=next)](https://travis-ci.org/geodynamics/pylith)
 
+## Description
 
 PyLith is an open-source finite-element code for dynamic and
 quasistatic simulations of crustal deformation, primarily earthquakes
