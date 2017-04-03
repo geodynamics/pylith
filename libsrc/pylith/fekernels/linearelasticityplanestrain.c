@@ -62,7 +62,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_f0v(const PylithInt dim,
 
     assert(_dim == dim);
     assert(2 == numS);
-    assert(3 == numA || 4 == numA);
+    assert(3 >= numA && 5 <= numA);
     assert(aOff);
     assert(aOff_x);
 
@@ -390,7 +390,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0vv_implicit(const Pylit
 
     assert(_dim == dim);
     assert(2 == numS);
-    assert(3 <= numA);
+    assert(numA >= 5);
     assert(aOff);
     assert(a);
 
@@ -430,7 +430,7 @@ pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jf0vv_explicit(const Pylit
 
     assert(_dim == dim);
     assert(2 == numS);
-    assert(3 <= numA);
+    assert(numA >= 5);
     assert(aOff);
     assert(a);
 

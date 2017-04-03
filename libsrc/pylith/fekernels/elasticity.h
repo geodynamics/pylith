@@ -251,6 +251,18 @@ pylith_fekernels_Elasticity_Jf0vv_inertiaexplicit(const PylithInt dim,
                                                   const PylithScalar x[],
                                                   PylithScalar Jf0[]);
 
+
+/** Viscous strain coefficient function for Maxwell viscoelastic materials.
+ *
+ * @param[in] dt Time step size.
+ * @param[in] maxwellTime Relaxation time for material.
+ *
+ * @returns dq Viscous strain coefficient.
+ */
+PylithScalar
+pylith_fekernels_Elasticity_Maxwell_VisStrain_Coeff(const PylithScalar dt,
+						    const PylithScalar maxwellTime);
+
 #endif /* pylith_fekernels_elasticity_h */
 
 /* End of file */
