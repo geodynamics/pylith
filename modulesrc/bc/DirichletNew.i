@@ -53,8 +53,8 @@ public:
          * @param[out] solution Solution field.
          * @param[in] t Current time.
          */
-        void setValues(pylith::topology::Field* solution,
-                       const double t);
+        void setSolution(pylith::topology::Field* solution,
+			 const double t);
 
         // PROTECTED METHODS //////////////////////////////////////////////////
 protected:

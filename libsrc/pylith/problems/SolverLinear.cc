@@ -36,7 +36,7 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::problems::SolverLinear::SolverLinear(void) :
-  _ksp(0)
+    _ksp(0)
 { // constructor
 } // constructor
 
@@ -44,7 +44,7 @@ pylith::problems::SolverLinear::SolverLinear(void) :
 // Destructor
 pylith::problems::SolverLinear::~SolverLinear(void)
 { // destructor
-  deallocate();
+    deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------
@@ -52,97 +52,97 @@ pylith::problems::SolverLinear::~SolverLinear(void)
 void
 pylith::problems::SolverLinear::deallocate(void)
 { // deallocate
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  Solver::deallocate();
+    Solver::deallocate();
 
-  PetscErrorCode err = KSPDestroy(&_ksp);PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = KSPDestroy(&_ksp); PYLITH_CHECK_ERROR(err);
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // deallocate
-  
+
 // ----------------------------------------------------------------------
 // Initialize solver.
 void
 pylith::problems::SolverLinear::initialize(const topology::SolutionFields& fields,
-					   const topology::Jacobian& jacobian,
-					   Formulation* formulation)
+                                           const topology::Jacobian& jacobian,
+                                           Formulation* formulation)
 { // initialize
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  assert(formulation);
+    assert(formulation);
 
-  _initializeLogger();
-  Solver::initialize(fields, jacobian, formulation);
+    _initializeLogger();
+    Solver::initialize(fields, jacobian, formulation);
 
-  PetscErrorCode err = 0;
-  err = KSPDestroy(&_ksp);PYLITH_CHECK_ERROR(err);
-  err = KSPCreate(fields.mesh().comm(), &_ksp);PYLITH_CHECK_ERROR(err);
-  err = KSPSetInitialGuessNonzero(_ksp, PETSC_FALSE);PYLITH_CHECK_ERROR(err);
-  err = KSPSetFromOptions(_ksp);PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = 0;
+    err = KSPDestroy(&_ksp); PYLITH_CHECK_ERROR(err);
+    err = KSPCreate(fields.mesh().comm(), &_ksp); PYLITH_CHECK_ERROR(err);
+    err = KSPSetInitialGuessNonzero(_ksp, PETSC_FALSE); PYLITH_CHECK_ERROR(err);
+    err = KSPSetFromOptions(_ksp); PYLITH_CHECK_ERROR(err);
 
-  if (formulation->splitFields()) {
-    PetscPC pc = 0;
-    err = KSPGetPC(_ksp, &pc);PYLITH_CHECK_ERROR(err);
-    _setupFieldSplit(&pc, formulation, jacobian, fields);
-  } // if
+    if (formulation->splitFields()) {
+        PetscPC pc = 0;
+        err = KSPGetPC(_ksp, &pc); PYLITH_CHECK_ERROR(err);
+        _setupFieldSplit(&pc, formulation, jacobian, fields);
+    } // if
 
-  if (!_skipNullSpaceCreation) {
-    _createNullSpace(fields);
-  } // if
-  
-  PYLITH_METHOD_END;
+    if (!_skipNullSpaceCreation) {
+        _createNullSpace(fields);
+    } // if
+
+    PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------
 // Solve the system.
 void
 pylith::problems::SolverLinear::solve(topology::Field* solution,
-				      topology::Jacobian* jacobian,
-				      const topology::Field& residual)
+                                      topology::Jacobian* jacobian,
+                                      const topology::Field& residual)
 { // solve
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  assert(solution);
-  assert(jacobian);
-  assert(_formulation);
+    assert(solution);
+    assert(jacobian);
+    assert(_formulation);
 
-  const int setupEvent = _logger->eventId("SoLi setup");
-  const int solveEvent = _logger->eventId("SoLi solve");
-  const int scatterEvent = _logger->eventId("SoLi scatter");
-  _logger->eventBegin(scatterEvent);
+    const int setupEvent = _logger->eventId("SoLi setup");
+    const int solveEvent = _logger->eventId("SoLi solve");
+    const int scatterEvent = _logger->eventId("SoLi scatter");
+    _logger->eventBegin(scatterEvent);
 
-  // Update PetscVector view of field.
-  residual.scatterLocalToContext();
+    // Update PetscVector view of field.
+    residual.scatterLocalToContext("global");
 
-  _logger->eventEnd(scatterEvent);
-  _logger->eventBegin(setupEvent);
+    _logger->eventEnd(scatterEvent);
+    _logger->eventBegin(setupEvent);
 
-  PetscErrorCode err = 0;
-  const PetscMat jacobianMat = jacobian->matrix();
-  err = KSPSetOperators(_ksp, jacobianMat, jacobianMat);PYLITH_CHECK_ERROR(err);
-  jacobian->resetValuesChanged();
+    PetscErrorCode err = 0;
+    const PetscMat jacobianMat = jacobian->matrix();
+    err = KSPSetOperators(_ksp, jacobianMat, jacobianMat); PYLITH_CHECK_ERROR(err);
+    jacobian->resetValuesChanged();
 
-  const PetscVec residualVec = residual.globalVector();
-  const PetscVec solutionVec = solution->globalVector();
+    const PetscVec residualVec = residual.scatterVector("global");
+    const PetscVec solutionVec = solution->scatterVector("global");
 
-  _logger->eventEnd(setupEvent);
-  _logger->eventBegin(solveEvent);
+    _logger->eventEnd(setupEvent);
+    _logger->eventBegin(solveEvent);
 
-  err = KSPSolve(_ksp, residualVec, solutionVec); PYLITH_CHECK_ERROR(err);
+    err = KSPSolve(_ksp, residualVec, solutionVec); PYLITH_CHECK_ERROR(err);
 
-  _logger->eventEnd(solveEvent);
-  _logger->eventBegin(scatterEvent);
+    _logger->eventEnd(solveEvent);
+    _logger->eventBegin(scatterEvent);
 
-  // Update section view of field.
-  solution->scatterContextToLocal();
+    // Update section view of field.
+    solution->scatterContextToLocal("global");
 
-  _logger->eventEnd(scatterEvent);
+    _logger->eventEnd(scatterEvent);
 
-  // Update rate fields to be consistent with current solution.
-  _formulation->calcRateFields();
+    // Update rate fields to be consistent with current solution.
+    _formulation->calcRateFields();
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // solve
 
 // ----------------------------------------------------------------------
@@ -150,16 +150,16 @@ pylith::problems::SolverLinear::solve(topology::Field* solution,
 void
 pylith::problems::SolverLinear::_initializeLogger(void)
 { // initializeLogger
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  delete _logger; _logger = new utils::EventLogger;assert(_logger);
-  _logger->className("SolverLinear");
-  _logger->initialize();
-  _logger->registerEvent("SoLi setup");
-  _logger->registerEvent("SoLi solve");
-  _logger->registerEvent("SoLi scatter");
+    delete _logger; _logger = new utils::EventLogger; assert(_logger);
+    _logger->className("SolverLinear");
+    _logger->initialize();
+    _logger->registerEvent("SoLi setup");
+    _logger->registerEvent("SoLi solve");
+    _logger->registerEvent("SoLi scatter");
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // initializeLogger
 
 

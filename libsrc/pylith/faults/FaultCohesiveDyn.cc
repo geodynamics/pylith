@@ -1609,7 +1609,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
         topology::Field& solution = _fields->get("sensitivity solution");
         const topology::Field& dispRel = _fields->get("relative disp");
         solution.cloneSection(dispRel);
-        solution.createScatter(solution.mesh());
+        solution.createScatter(solution.mesh(), "global");
     } // if
     const topology::Field& solution = _fields->get("sensitivity solution");
 
@@ -1617,7 +1617,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
         _fields->add("sensitivity residual", "sensitivity_residual");
         topology::Field& residual = _fields->get("sensitivity residual");
         residual.cloneSection(solution);
-        residual.createScatter(solution.mesh());
+        residual.createScatter(solution.mesh(), "global");
     } // if
 
     if (!_fields->hasField("sensitivity relative disp")) {
@@ -1915,7 +1915,6 @@ void
 pylith::faults::FaultCohesiveDyn::_sensitivitySolve(void)
 { // _sensitivitySolve
     PYLITH_METHOD_BEGIN;
-
     assert(_fields);
     assert(_jacobian);
     assert(_ksp);
@@ -1924,21 +1923,18 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySolve(void)
     topology::Field& solution = _fields->get("sensitivity solution");
 
     // Assemble residual over processors.
-    residual.complete();
-
-    // Update PetscVector view of field.
-    residual.scatterLocalToContext();
+    residual.scatterLocalToContext("global", ADD_VALUES);
 
     PetscErrorCode err = 0;
     const PetscMat jacobianMat = _jacobian->matrix();
     err = KSPSetOperators(_ksp, jacobianMat, jacobianMat); PYLITH_CHECK_ERROR(err);
 
-    const PetscVec residualVec = residual.globalVector();
-    const PetscVec solutionVec = solution.globalVector();
+    const PetscVec residualVec = residual.scatterVector("global");
+    const PetscVec solutionVec = solution.scatterVector("global");
     err = KSPSolve(_ksp, residualVec, solutionVec); PYLITH_CHECK_ERROR(err);
 
     // Update section view of field.
-    solution.scatterContextToLocal();
+    solution.scatterContextToLocal("global");
 
 #if 0 // DEBUGGING
     residual.view("SENSITIVITY RESIDUAL");

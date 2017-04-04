@@ -250,9 +250,6 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
         pylith::topology::Field density(*_mesh);
         _mymaterial->getAuxField(&density, "density");
 
-        density.createScatter(density.mesh()); // Populate global vector.
-        density.scatterLocalToContext();
-
         //density.view("DENSITY"); // DEBUGGING
 
         // Check result
@@ -266,7 +263,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
         const PetscDM dm = density.dmMesh(); CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMComputeL2Diff(dm, t, queryDensity.functions(), (void**)queryDensity.contextPtrs(), density.globalVector(), &norm); CPPUNIT_ASSERT(!err);
+        PetscErrorCode err = DMComputeL2Diff(dm, t, queryDensity.functions(), (void**)queryDensity.contextPtrs(), density.localVector(), &norm); CPPUNIT_ASSERT(!err);
         queryDensity.closeDB(_auxDB);
 
         const PylithReal tolerance = 1.0e-6;
@@ -276,9 +273,6 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
     { // Test getting bulkModulus field.
         pylith::topology::Field bulkModulus(*_mesh);
         _mymaterial->getAuxField(&bulkModulus, "bulk_modulus");
-
-        bulkModulus.createScatter(bulkModulus.mesh()); // Populate global vector.
-        bulkModulus.scatterLocalToContext();
 
         //bulkModulus.view("BULK MODULUS"); // DEBUGGING
 
@@ -293,7 +287,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
         const PetscDM dm = bulkModulus.dmMesh(); CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMComputeL2Diff(dm, t, queryBulkModulus.functions(), (void**)queryBulkModulus.contextPtrs(), bulkModulus.globalVector(), &norm); CPPUNIT_ASSERT(!err);
+        PetscErrorCode err = DMComputeL2Diff(dm, t, queryBulkModulus.functions(), (void**)queryBulkModulus.contextPtrs(), bulkModulus.localVector(), &norm); CPPUNIT_ASSERT(!err);
         queryBulkModulus.closeDB(_auxDB);
 
         const PylithReal tolerance = 1.0e-6;

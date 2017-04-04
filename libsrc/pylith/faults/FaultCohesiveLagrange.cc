@@ -1509,7 +1509,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
     //orientation.view("ORIENTATION BEFORE COMPLETE"); // DEBUGGING
 
     // Assemble orientation information
-    orientation.complete();
+    orientation.scatterLocalToContext("global");
 
     // Loop over vertices, make orientation information unit magnitude
     scalar_array vertexDir(orientationSize);
@@ -1750,7 +1750,7 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
     PetscLogFlops(numQuadPts*(1+numBasis*2)*(cEnd-cStart));
 
     // Assemble area information
-    area.complete();
+    area.scatterLocalToContext("global");
 
 #if 0 // DEBUGGING
     area.view("AREA");

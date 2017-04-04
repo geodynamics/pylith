@@ -178,7 +178,7 @@ pylith::problems::Solver::_createNullSpace(const topology::SolutionFields& field
 
     PetscSection solutionSection = fields.solution().localSection(); assert(solutionSection);
     PetscVec solutionVec = fields.solution().localVector(); assert(solutionVec);
-    PetscVec solutionGlobalVec = fields.solution().globalVector(); assert(solutionGlobalVec);
+    PetscVec solutionGlobalVec = fields.solution().scatterVector("global"); assert(solutionGlobalVec);
     MatNullSpace nullsp = NULL;
     PetscSection coordinateSection = NULL;
     PetscVec coordinateVec = NULL;
@@ -298,7 +298,7 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     MPI_Comm comm;
     PetscSection solutionSection = fields.solution().localSection(); assert(solutionSection);
     PetscVec solutionVec = fields.solution().localVector(); assert(solutionVec);
-    PetscVec solutionGlobalVec = fields.solution().globalVector(); assert(solutionGlobalVec);
+    PetscVec solutionGlobalVec = fields.solution().scatterVector("global"); assert(solutionGlobalVec);
     PetscInt numFields;
     PetscErrorCode err;
 

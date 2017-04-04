@@ -125,25 +125,6 @@ public:
      */
     void poststep(void);
 
-    /** Callback static method for setting solution values according to constraints.
-     *
-     * @param[in] dm Solution dm.
-     * @param[in] insertEssential True if inserting values for essential BC.
-     * @param[inout] solutionVec PETSc Vec for solution.
-     * @param[in] t Current time.
-     * @param[in] faceGeomFVM Face geometry data for finite-volume discretizations.
-     * @param[in] cellGeomFVM Cell geometry data for finite-volume discretizations.
-     * @param[in] gradFVM Gradient reconstruction data for finite-volume discretizations.
-     */
-    static
-    PetscErrorCode setValues(PetscDM dm,
-                             PetscBool insertEssential,
-                             PetscVec solutionVec,
-                             PetscReal t,
-                             PetscVec faceGeomFVM,
-                             PetscVec cellGeomFVM,
-                             PetscVec gradCVM);
-
     /** Callback static method for computing residual for RHS, G(t,s).
      *
      * @param[in] ts PETSc time stepper.

@@ -60,7 +60,6 @@ class pylith::topology::TestFieldMesh : public CppUnit::TestFixture {
     CPPUNIT_TEST( testClear );
     CPPUNIT_TEST( testAllocate );
     CPPUNIT_TEST( testZeroLocal );
-    CPPUNIT_TEST( testComplete );
     CPPUNIT_TEST( testCopy );
     CPPUNIT_TEST( testCopySubfield );
     CPPUNIT_TEST( testDimensionalize );
@@ -110,9 +109,6 @@ public:
 
     /// Test zeroLocal().
     void testZeroLocal(void);
-
-    /// Test complete().
-    void testComplete(void);
 
     /// Test copy().
     void testCopy(void);

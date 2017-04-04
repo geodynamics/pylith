@@ -33,14 +33,14 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::problems::Formulation::Formulation(void) :
-  _t(0.0),
-  _dt(0.0),
-  _jacobian(0),
-  _customConstraintPCMat(0),
-  _jacobianLumped(0),
-  _fields(0),
-  _isJacobianSymmetric(false),
-  _splitFields(false)
+    _t(0.0),
+    _dt(0.0),
+    _jacobian(0),
+    _customConstraintPCMat(0),
+    _jacobianLumped(0),
+    _fields(0),
+    _isJacobianSymmetric(false),
+    _splitFields(false)
 { // constructor
 } // constructor
 
@@ -48,7 +48,7 @@ pylith::problems::Formulation::Formulation(void) :
 // Destructor
 pylith::problems::Formulation::~Formulation(void)
 { // destructor
-  deallocate();
+    deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------
@@ -56,31 +56,31 @@ pylith::problems::Formulation::~Formulation(void)
 void
 pylith::problems::Formulation::deallocate(void)
 { // deallocate
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  _jacobian = 0; // :TODO: Use shared pointer.
-  _jacobianLumped = 0; // :TODO: Use shared pointer.
-  _fields = 0; // :TODO: Use shared pointer.
+    _jacobian = 0; // :TODO: Use shared pointer.
+    _jacobianLumped = 0; // :TODO: Use shared pointer.
+    _fields = 0; // :TODO: Use shared pointer.
 
 #if 0   // :KLUDGE: Assume Solver deallocates matrix.
-  PetscErrorCode err = 0;
-  if (_customConstraintPCMat) {
-    err = PetscObjectDereference((PetscObject) _customConstraintPCMat);PYLITH_CHECK_ERROR(err);
-    _customConstraintPCMat = 0;
-  } // if
+    PetscErrorCode err = 0;
+    if (_customConstraintPCMat) {
+        err = PetscObjectDereference((PetscObject) _customConstraintPCMat); PYLITH_CHECK_ERROR(err);
+        _customConstraintPCMat = 0;
+    } // if
 #else
-  _customConstraintPCMat = 0;
+    _customConstraintPCMat = 0;
 #endif
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // deallocate
-  
+
 // ----------------------------------------------------------------------
 // Set flag for splitting fields.
 void
 pylith::problems::Formulation::splitFields(const bool flag)
 { // splitFields
-  _splitFields = flag;
+    _splitFields = flag;
 } // splitFields
 
 // ----------------------------------------------------------------------
@@ -88,7 +88,7 @@ pylith::problems::Formulation::splitFields(const bool flag)
 bool
 pylith::problems::Formulation::splitFields(void) const
 { // splitFields
-  return _splitFields;
+    return _splitFields;
 } // splitFields
 
 // ----------------------------------------------------------------------
@@ -96,7 +96,7 @@ pylith::problems::Formulation::splitFields(void) const
 void
 pylith::problems::Formulation::useCustomConstraintPC(const bool flag)
 { // useCustomConstraintPC
-  _useCustomConstraintPC = flag;
+    _useCustomConstraintPC = flag;
 } // useCustomConstraintPC
 
 // ----------------------------------------------------------------------
@@ -104,7 +104,7 @@ pylith::problems::Formulation::useCustomConstraintPC(const bool flag)
 bool
 pylith::problems::Formulation::useCustomConstraintPC(void) const
 { // useCustomConstraintPC
-  return _useCustomConstraintPC;
+    return _useCustomConstraintPC;
 } // useCustomConstraintPC
 
 // ----------------------------------------------------------------------
@@ -112,7 +112,7 @@ pylith::problems::Formulation::useCustomConstraintPC(void) const
 const pylith::topology::SolutionFields&
 pylith::problems::Formulation::fields(void) const
 { // fields
-  return *this->_fields;
+    return *this->_fields;
 } // fields
 
 // ----------------------------------------------------------------------
@@ -120,32 +120,32 @@ pylith::problems::Formulation::fields(void) const
 bool
 pylith::problems::Formulation::isJacobianSymmetric(void) const
 { // isJacobianSymmetric
-  return _isJacobianSymmetric;
+    return _isJacobianSymmetric;
 } // isJacobianSymmetric
-  
+
 // ----------------------------------------------------------------------
 // Set integrators over the mesh.
 void
 pylith::problems::Formulation::integrators(feassemble::Integrator* integratorArray[],
-					   const int numIntegrators)
+                                           const int numIntegrators)
 { // integrators
-  assert( (!integratorArray && 0 == numIntegrators) ||
-	  (integratorArray && 0 < numIntegrators) );
-  _integrators.resize(numIntegrators);
-  for (int i=0; i < numIntegrators; ++i)
-    _integrators[i] = integratorArray[i];
+    assert( (!integratorArray && 0 == numIntegrators) ||
+            (integratorArray && 0 < numIntegrators) );
+    _integrators.resize(numIntegrators);
+    for (int i=0; i < numIntegrators; ++i)
+        _integrators[i] = integratorArray[i];
 } // integrators
-  
+
 // ----------------------------------------------------------------------
 // Set handle to preconditioner.
 void
 pylith::problems::Formulation::customPCMatrix(PetscMat& mat)
 { // preconditioner
-  _customConstraintPCMat = mat;
+    _customConstraintPCMat = mat;
 
 #if 0 // :KLUDGE: Assume solver deallocates matrix
-  PetscErrorCode err = 0;
-  err = PetscObjectReference((PetscObject) mat); PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = 0;
+    err = PetscObjectReference((PetscObject) mat); PYLITH_CHECK_ERROR(err);
 #endif
 } // preconditioner
 
@@ -154,18 +154,18 @@ pylith::problems::Formulation::customPCMatrix(PetscMat& mat)
 // residual.
 void
 pylith::problems::Formulation::updateSettings(topology::Jacobian* jacobian,
-					      topology::SolutionFields* fields,
-					      const PylithScalar t,
-					      const PylithScalar dt)
+                                              topology::SolutionFields* fields,
+                                              const PylithScalar t,
+                                              const PylithScalar dt)
 { // updateSettings
-  assert(jacobian);
-  assert(fields);
-  assert(dt > 0.0);
+    assert(jacobian);
+    assert(fields);
+    assert(dt > 0.0);
 
-  _jacobian = jacobian;
-  _fields = fields;
-  _t = t;
-  _dt = dt;
+    _jacobian = jacobian;
+    _fields = fields;
+    _t = t;
+    _dt = dt;
 } // updateSettings
 
 // ----------------------------------------------------------------------
@@ -173,66 +173,63 @@ pylith::problems::Formulation::updateSettings(topology::Jacobian* jacobian,
 // residual.
 void
 pylith::problems::Formulation::updateSettings(topology::Field* jacobian,
-					      topology::SolutionFields* fields,
-					      const PylithScalar t,
-					      const PylithScalar dt)
+                                              topology::SolutionFields* fields,
+                                              const PylithScalar t,
+                                              const PylithScalar dt)
 { // updateSettings
-  assert(jacobian);
-  assert(fields);
-  assert(dt > 0.0);
+    assert(jacobian);
+    assert(fields);
+    assert(dt > 0.0);
 
-  _jacobianLumped = jacobian;
-  _fields = fields;
-  _t = t;
-  _dt = dt;
+    _jacobianLumped = jacobian;
+    _fields = fields;
+    _t = t;
+    _dt = dt;
 } // updateSettings
 
 // ----------------------------------------------------------------------
 // Reform system residual.
 void
 pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
-					      const PetscVec* tmpSolutionVec)
+                                              const PetscVec* tmpSolutionVec)
 { // reformResidual
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  assert(_fields);
+    assert(_fields);
 
-  // Update section view of field.
-  if (tmpSolutionVec) {
-    topology::Field& solution = _fields->solution();
-    solution.scatterVectorToLocal(*tmpSolutionVec);
-  } // if
+    // Update section view of field.
+    if (tmpSolutionVec) {
+        topology::Field& solution = _fields->solution();
+        solution.scatterVectorToLocal(*tmpSolutionVec);
+    } // if
 
-  // Update rate fields (must be consistent with current solution).
-  calcRateFields();  
+    // Update rate fields (must be consistent with current solution).
+    calcRateFields();
 
-  // Set residual to zero.
-  topology::Field& residual = _fields->get("residual");
-  residual.zeroLocal();
+    // Set residual to zero.
+    topology::Field& residual = _fields->get("residual");
+    residual.zeroLocal();
 
-  // Add in contributions that require assembly.
-  const int numIntegrators = _integrators.size();
-  assert(numIntegrators > 0); // must have at least 1 integrator
-  for (int i=0; i < numIntegrators; ++i) {
-    _integrators[i]->timeStep(_dt);
-    _integrators[i]->integrateResidual(residual, _t, _fields);
-  } // for
+    // Add in contributions that require assembly.
+    const int numIntegrators = _integrators.size();
+    assert(numIntegrators > 0); // must have at least 1 integrator
+    for (int i=0; i < numIntegrators; ++i) {
+        _integrators[i]->timeStep(_dt);
+        _integrators[i]->integrateResidual(residual, _t, _fields);
+    } // for
 
-  // Assemble residual.
-  residual.complete();
+    // Update PETSc view of residual
+    if (tmpResidualVec) {
+        residual.scatterLocalToVector(*tmpResidualVec);
+    } else {
+        residual.scatterLocalToContext("global");
+    } // if/else
 
-  // Update PETSc view of residual
-  if (tmpResidualVec) {
-    residual.scatterLocalToVector(*tmpResidualVec);
-  } else {
-    residual.scatterLocalToContext();
-  } // if/else
+    // TODO: Move this to SolverLinear
+    if (tmpResidualVec)
+        VecScale(*tmpResidualVec, -1.0);
 
-  // TODO: Move this to SolverLinear 
-  if (tmpResidualVec)
-    VecScale(*tmpResidualVec, -1.0);
-
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // reformResidual
 
 // ----------------------------------------------------------------------
@@ -240,45 +237,45 @@ pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
 void
 pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
 { // reformJacobian
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  assert(_jacobian);
-  assert(_fields);
+    assert(_jacobian);
+    assert(_fields);
 
-  // Update section view of field.
-  if (tmpSolutionVec) {
-    topology::Field& solution = _fields->solution();
-    solution.scatterVectorToLocal(*tmpSolutionVec);
-  } // if
+    // Update section view of field.
+    if (tmpSolutionVec) {
+        topology::Field& solution = _fields->solution();
+        solution.scatterVectorToLocal(*tmpSolutionVec);
+    } // if
 
-  // Set jacobian to zero.
-  _jacobian->zero();
+    // Set jacobian to zero.
+    _jacobian->zero();
 
-  // Add in contributions that require assembly.
-  const int numIntegrators = _integrators.size();
-  for (int i=0; i < numIntegrators; ++i) {
-    _integrators[i]->integrateJacobian(_jacobian, _t, _fields);
-  } // for
-  
-  // Assemble jacobian.
-  _jacobian->assemble("final_assembly");
-
-  if (_customConstraintPCMat) {
-    // Recalculate preconditioner.
+    // Add in contributions that require assembly.
+    const int numIntegrators = _integrators.size();
     for (int i=0; i < numIntegrators; ++i) {
-      _integrators[i]->calcPreconditioner(&_customConstraintPCMat, _jacobian, _fields);
+        _integrators[i]->integrateJacobian(_jacobian, _t, _fields);
     } // for
 
-    MatAssemblyBegin(_customConstraintPCMat, MAT_FINAL_ASSEMBLY);
-    MatAssemblyEnd(_customConstraintPCMat, MAT_FINAL_ASSEMBLY);
+    // Assemble jacobian.
+    _jacobian->assemble("final_assembly");
+
+    if (_customConstraintPCMat) {
+        // Recalculate preconditioner.
+        for (int i=0; i < numIntegrators; ++i) {
+            _integrators[i]->calcPreconditioner(&_customConstraintPCMat, _jacobian, _fields);
+        } // for
+
+        MatAssemblyBegin(_customConstraintPCMat, MAT_FINAL_ASSEMBLY);
+        MatAssemblyEnd(_customConstraintPCMat, MAT_FINAL_ASSEMBLY);
 
 #if 0 // debugging
-    std::cout << "Preconditioner Matrix" << std::endl;
-    MatView(_customConstraintPCMat, PETSC_VIEWER_STDOUT_WORLD);
+        std::cout << "Preconditioner Matrix" << std::endl;
+        MatView(_customConstraintPCMat, PETSC_VIEWER_STDOUT_WORLD);
 #endif
-  } // if
+    } // if
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // reformJacobian
 
 // ----------------------------------------------------------------------
@@ -286,24 +283,24 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
 void
 pylith::problems::Formulation::reformJacobianLumped(void)
 { // reformJacobianLumped
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  assert(_jacobianLumped);
-  assert(_fields);
+    assert(_jacobianLumped);
+    assert(_fields);
 
-  // Set jacobian to zero.
-  _jacobianLumped->zeroLocal();
+    // Set jacobian to zero.
+    _jacobianLumped->zeroLocal();
 
-  // Add in contributions that require assembly.
-  const int numIntegrators = _integrators.size();
-  for (int i=0; i < numIntegrators; ++i) {
-    _integrators[i]->integrateJacobian(_jacobianLumped, _t, _fields);
-  } // for
-  
-  // Assemble jacbian.
-  _jacobianLumped->complete();
+    // Add in contributions that require assembly.
+    const int numIntegrators = _integrators.size();
+    for (int i=0; i < numIntegrators; ++i) {
+        _integrators[i]->integrateJacobian(_jacobianLumped, _t, _fields);
+    } // for
 
-  PYLITH_METHOD_END;
+    // Assemble jacbian.
+    _jacobianLumped->scatterLocalToContext("global");
+
+    PYLITH_METHOD_END;
 } // reformJacobianLumped
 
 // ----------------------------------------------------------------------
@@ -311,44 +308,44 @@ pylith::problems::Formulation::reformJacobianLumped(void)
 void
 pylith::problems::Formulation::constrainSolnSpace(const PetscVec* tmpSolutionVec)
 { // constrainSolnSpace
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  assert(tmpSolutionVec);
-  assert(_fields);
+    assert(tmpSolutionVec);
+    assert(_fields);
 
-  topology::Field& solution = _fields->solution();
+    topology::Field& solution = _fields->solution();
 
-  if (!_fields->hasField("dispIncr adjust")) {
-    _fields->add("dispIncr adjust", "dispIncr_adjust");
+    if (!_fields->hasField("dispIncr adjust")) {
+        _fields->add("dispIncr adjust", "dispIncr_adjust");
+        topology::Field& adjust = _fields->get("dispIncr adjust");
+        adjust.cloneSection(solution);
+    } // for
     topology::Field& adjust = _fields->get("dispIncr adjust");
-    adjust.cloneSection(solution);
-  } // for
-  topology::Field& adjust = _fields->get("dispIncr adjust");
-  adjust.zeroLocal();
+    adjust.zeroLocal();
 
-  // Update section view of field.
-  if (tmpSolutionVec) {
-    solution.scatterVectorToLocal(*tmpSolutionVec);
-  } // if
+    // Update section view of field.
+    if (tmpSolutionVec) {
+        solution.scatterVectorToLocal(*tmpSolutionVec);
+    } // if
 
-  const int numIntegrators = _integrators.size();
-  assert(numIntegrators > 0); // must have at least 1 bulk integrator
-  for (int i=0; i < numIntegrators; ++i) {
-    _integrators[i]->timeStep(_dt);
-    _integrators[i]->constrainSolnSpace(_fields, _t, *_jacobian);
-  } // for
+    const int numIntegrators = _integrators.size();
+    assert(numIntegrators > 0); // must have at least 1 bulk integrator
+    for (int i=0; i < numIntegrators; ++i) {
+        _integrators[i]->timeStep(_dt);
+        _integrators[i]->constrainSolnSpace(_fields, _t, *_jacobian);
+    } // for
 
-  adjust.complete();
-  PetscVec solutionVec = solution.localVector();
-  PetscVec adjustVec = adjust.localVector();
-  PetscErrorCode err = VecAXPY(solutionVec, 1.0, adjustVec); PYLITH_CHECK_ERROR(err);
+    adjust.scatterLocalToContext("global");
+    PetscVec solutionVec = solution.localVector();
+    PetscVec adjustVec = adjust.localVector();
+    PetscErrorCode err = VecAXPY(solutionVec, 1.0, adjustVec); PYLITH_CHECK_ERROR(err);
 
-  // Update PETScVec of solution for changes to Lagrange multipliers.
-  if (tmpSolutionVec) {
-    solution.scatterLocalToVector(*tmpSolutionVec);
-  } // if
+    // Update PETScVec of solution for changes to Lagrange multipliers.
+    if (tmpSolutionVec) {
+        solution.scatterLocalToVector(*tmpSolutionVec);
+    } // if
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // constrainSolnSpace
 
 // ----------------------------------------------------------------------
@@ -357,76 +354,76 @@ pylith::problems::Formulation::constrainSolnSpace(const PetscVec* tmpSolutionVec
 void
 pylith::problems::Formulation::adjustSolnLumped(void)
 { // adjustSolnLumped
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  topology::Field& solution = _fields->solution();
+    topology::Field& solution = _fields->solution();
 
-  if (!_fields->hasField("dispIncr adjust")) {
-    _fields->add("dispIncr adjust", "dispIncr_adjust");
+    if (!_fields->hasField("dispIncr adjust")) {
+        _fields->add("dispIncr adjust", "dispIncr_adjust");
+        topology::Field& adjust = _fields->get("dispIncr adjust");
+        adjust.cloneSection(solution);
+    } // for
     topology::Field& adjust = _fields->get("dispIncr adjust");
-    adjust.cloneSection(solution);
-  } // for
-  topology::Field& adjust = _fields->get("dispIncr adjust");
-  adjust.zeroLocal();
+    adjust.zeroLocal();
 
-  const int numIntegrators = _integrators.size();
-  for (int i=0; i < numIntegrators; ++i) {
-    _integrators[i]->adjustSolnLumped(_fields, _t, *_jacobianLumped);
-  } // for
+    const int numIntegrators = _integrators.size();
+    for (int i=0; i < numIntegrators; ++i) {
+        _integrators[i]->adjustSolnLumped(_fields, _t, *_jacobianLumped);
+    } // for
 
-  adjust.complete();
-  PetscVec solutionVec = solution.localVector();
-  PetscVec adjustVec = adjust.localVector();
-  PetscErrorCode err = VecAXPY(solutionVec, 1.0, adjustVec); PYLITH_CHECK_ERROR(err);
+    adjust.scatterLocalToContext("global");
+    PetscVec solutionVec = solution.localVector();
+    PetscVec adjustVec = adjust.localVector();
+    PetscErrorCode err = VecAXPY(solutionVec, 1.0, adjustVec); PYLITH_CHECK_ERROR(err);
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // adjustSolnLumped
 
 #include "pylith/meshio/DataWriterHDF5.hh"
 // ----------------------------------------------------------------------
 void
 pylith::problems::Formulation::printState(PetscVec* solutionVec,
-					  PetscVec* residualVec,
-					  PetscVec* solution0Vec,
-					  PetscVec* searchDirVec)
+                                          PetscVec* residualVec,
+                                          PetscVec* solution0Vec,
+                                          PetscVec* searchDirVec)
 { // printState
-  assert(solutionVec);
-  assert(residualVec);
-  assert(searchDirVec);
+    assert(solutionVec);
+    assert(residualVec);
+    assert(searchDirVec);
 
-  meshio::DataWriterHDF5 writer;
+    meshio::DataWriterHDF5 writer;
 
-  const topology::Mesh& mesh = _fields->mesh();
+    const topology::Mesh& mesh = _fields->mesh();
 
-  writer.filename("state.h5");
-  const int numTimeSteps = 1;
-  writer.open(mesh, numTimeSteps);
-   
-  topology::Field& solution = _fields->solution();
-  solution.scatterVectorToLocal(*solutionVec);
-  writer.writeVertexField(0.0, solution, mesh);
-  solution.view("DIVERGED_SOLUTION");
-  const char* label = solution.label();
+    writer.filename("state.h5");
+    const int numTimeSteps = 1;
+    writer.open(mesh, numTimeSteps);
 
-  solution.label("solution_0");
-  solution.scatterVectorToLocal(*solution0Vec);
-  writer.writeVertexField(0.0, solution, mesh);
-  solution.view("DIVERGED_SOLUTION0");
-  solution.label(label);
+    topology::Field& solution = _fields->solution();
+    solution.scatterVectorToLocal(*solutionVec);
+    writer.writeVertexField(0.0, solution, mesh);
+    solution.view("DIVERGED_SOLUTION");
+    const char* label = solution.label();
 
-  topology::Field& residual = _fields->get("residual");
-  residual.scatterVectorToLocal(*residualVec);
-  writer.writeVertexField(0.0, residual, mesh);
-  residual.view("DIVERGED_RESIDUAL");
+    solution.label("solution_0");
+    solution.scatterVectorToLocal(*solution0Vec);
+    writer.writeVertexField(0.0, solution, mesh);
+    solution.view("DIVERGED_SOLUTION0");
+    solution.label(label);
 
-  residual.label("search_dir");
-  residual.scatterVectorToLocal(*searchDirVec);
-  writer.writeVertexField(0.0, residual, mesh);
-  residual.view("DIVERGED_SEARCHDIR");
+    topology::Field& residual = _fields->get("residual");
+    residual.scatterVectorToLocal(*residualVec);
+    writer.writeVertexField(0.0, residual, mesh);
+    residual.view("DIVERGED_RESIDUAL");
 
-  writer.close();
+    residual.label("search_dir");
+    residual.scatterVectorToLocal(*searchDirVec);
+    writer.writeVertexField(0.0, residual, mesh);
+    residual.view("DIVERGED_SEARCHDIR");
+
+    writer.close();
 } // printState
 
 
 
-// End of file 
+// End of file

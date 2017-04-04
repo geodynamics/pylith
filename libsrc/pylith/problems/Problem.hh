@@ -155,13 +155,15 @@ public:
 
     /** Set solution values according to constraints (Dirichlet BC).
      *
-     * @param[inout] solutionVec PETSc Vec for solution.
      * @param[in] t Current time.
+     * @param[in] solutionVec PETSc Vec with current global view of solution.
+     * @param[in] solutionDotVec PETSc Vec with current global view of time derivative of solution.
      */
-    void setValues(PetscVec solutionVec,
-                   const PylithReal t);
+    void setSolutionLocal(const PylithReal t,
+                          PetscVec solutionVec,
+                          PetscVec solutionDotVec);
 
-    /** Compute RHS residual, G(t,s).
+    /** Compute RHS residual, G(t,s) and assemble into global vector.
      *
      * @param[out] residualVec PETSc Vec for residual.
      * @param[in] t Current time.
@@ -187,7 +189,7 @@ public:
                             const PylithReal dt,
                             PetscVec solutionVec);
 
-    /** Compute LHS residual, F(t,s,\dot{s}).
+    /** Compute LHS residual, F(t,s,\dot{s}) and assemble into global vector.
      *
      * @param[out] residualVec PETSc Vec for residual.
      * @param[in] t Current time.
@@ -233,6 +235,8 @@ public:
 protected:
 
     pylith::topology::Field* _solution;   ///< Handle to solution field.
+    pylith::topology::Field* _solutionDot;   ///< Handle to time derivative of solution field.
+    pylith::topology::Field* _residual; ///< Handle to residual field.
     pylith::topology::Field* _jacobianLHSLumpedInv;   ///< Handle to inverse lumped Jacobian.
 
     spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalization of scales.

@@ -158,8 +158,8 @@ public:
          * @param[in] t Current time.
          */
         virtual
-        void setValues(pylith::topology::Field* solution,
-                       const double t) = 0;
+        void setSolution(pylith::topology::Field* solution,
+			 const double t) = 0;
 
         }; // class ConstraintPointwise
 

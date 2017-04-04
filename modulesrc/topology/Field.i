@@ -204,9 +204,6 @@ void allocate(void);
 /// Zero section values (including constrained DOF).
 void zeroLocal(void);
 
-/// Complete section by assembling across processors.
-void complete(void);
-
 /** Copy field values and metadata.
  *
  * @param field Field to copy.
@@ -240,28 +237,29 @@ void view(const char* label);
  * @param context Label for context associated with vector.
  */
 void createScatter(const pylith::topology::Mesh& mesh,
-                   const char* context ="");
+                   const char* context);
 
 /** Get PETSc vector associated with field.
  *
  * @param context Label for context associated with vector.
  * @returns PETSc vector.
  */
-PetscVec scatterVector(const char* context ="");
+PetscVec scatterVector(const char* context);
 
 /** Get PETSc vector associated with field.
  *
  * @param context Label for context associated with vector.
  * @returns PETSc vector.
  */
-const PetscVec scatterVector(const char* context ="") const;
+const PetscVec scatterVector(const char* context) const;
 
 /** Scatter section information across processors to update the
  * global view of the field.
  *
  * @param context Label for context associated with vector.
  */
-void scatterLocalToContext(const char* context ="") const;
+void scatterLocalToContext(const char* context,
+			   InsertMode mode =INSERT_VALUES) const;
 
 /** Scatter section information across processors to update the
  * global view of the field.
@@ -270,14 +268,15 @@ void scatterLocalToContext(const char* context ="") const;
  * @param context Label for context associated with vector.
  */
 void scatterLocalToVector(const PetscVec vector,
-                          const char* context ="") const;
+			  InsertMode mode =INSERT_VALUES) const;
 
 /** Scatter global information across processors to update the local
  * view of the field.
  *
  * @param context Label for context associated with vector.
  */
-void scatterContextToLocal(const char* context ="") const;
+void scatterContextToLocal(const char* context,
+			   InsertMode mode =INSERT_VALUES) const;
 
 /** Scatter global information across processors to update the local
  * view of the field.
@@ -286,7 +285,7 @@ void scatterContextToLocal(const char* context ="") const;
  * @param context Label for context associated with vector.
  */
 void scatterVectorToLocal(const PetscVec vector,
-                          const char* context ="") const;
+			  InsertMode mode =INSERT_VALUES) const;
 
 };     // Field
 

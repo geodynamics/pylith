@@ -212,12 +212,6 @@ public:
      */
     PetscVec localVector(void) const;
 
-    /** Get the global PETSc Vec.
-     *
-     * @returns PETSc Vec object.
-     */
-    PetscVec globalVector(void) const;
-
     /// Set chart for solution.
     void setupSolnChart(void); // :TODO: @brad Remove, obsolete.
 
@@ -369,9 +363,6 @@ public:
     /// Zero local values (including constrained values).
     void zeroLocal(void);
 
-    /// Complete section by assembling across processors.
-    void complete(void);
-
     /** Copy field values and metadata.
      *
      * @param field Field to copy.
@@ -407,7 +398,7 @@ public:
      * @param context Label for context associated with vector.
      */
     void createScatter(const Mesh& mesh,
-                       const char* context ="");
+                       const char* context);
 
 
     /** Create PETSc vector scatter for field. This is used to transfer
@@ -420,7 +411,7 @@ public:
      * @param context Label for context associated with vector.
      */
     void createScatterWithBC(const Mesh& mesh,
-                             const char* context ="");
+                             const char* context);
 
 
     /** Create PETSc vector scatter for field. This is used to transfer
@@ -437,53 +428,59 @@ public:
     void createScatterWithBC(const Mesh& mesh,
                              const std::string& labelName,
                              PetscInt labelValue,
-                             const char* context ="");
+                             const char* context);
 
     /** Get PETSc vector associated with scatter for field.
      *
      * @param context Label for context associated with vector.
      * @returns PETSc vector.
      */
-    PetscVec scatterVector(const char* context ="");
+    PetscVec scatterVector(const char* context);
 
     /** Get PETSc vector associated with scatter for field.
      *
      * @param context Label for context associated with vector.
      * @returns PETSc vector.
      */
-    const PetscVec scatterVector(const char* context ="") const;
+    const PetscVec scatterVector(const char* context) const;
 
     /** Scatter section information across processors to update the
      * global view of the field.
      *
-     * @param context Label for context associated with vector.
+     * @param[in] context Label for context associated with vector.
+     * @param[in] mode Mode for scatter (INSERT_VALUES, ADD_VALUES).
      */
-    void scatterLocalToContext(const char* context ="") const;
+    void scatterLocalToContext(const char* context,
+                               InsertMode mode =INSERT_VALUES) const;
 
     /** Scatter section information across processors to update the
      * global view of the field.
      *
-     * @param vector PETSc vector to update.
-     * @param context Label for context associated with vector.
+     * @param[out] vector PETSc vector to update.
+     * @param[in] context Label for context associated with vector.
+     * @param[in] mode Mode for scatter (INSERT_VALUES, ADD_VALUES).
      */
     void scatterLocalToVector(const PetscVec vector,
-                              const char* context ="") const;
+                              InsertMode mode =INSERT_VALUES) const;
 
     /** Scatter global information across processors to update the local
      * view of the field.
      *
-     * @param context Label for context associated with vector.
+     * @param[in] context Label for context associated with vector.
+     * @param[in] mode Mode for scatter (INSERT_VALUES, ADD_VALUES).
      */
-    void scatterContextToLocal(const char* context ="") const;
+    void scatterContextToLocal(const char* context,
+                               InsertMode mode =INSERT_VALUES) const;
 
     /** Scatter global information across processors to update the local
      * view of the field.
      *
-     * @param vector PETSc vector used in update.
-     * @param context Label for context associated with vector.
+     * @param[in] vector PETSc vector used in update.
+     * @param[in] context Label for context associated with vector.
+     * @param[in] mode Mode for scatter (INSERT_VALUES, ADD_VALUES).
      */
     void scatterVectorToLocal(const PetscVec vector,
-                              const char* context ="") const;
+                              InsertMode mode =INSERT_VALUES) const;
 
     // PRIVATE STRUCTS //////////////////////////////////////////////////////
 private:
@@ -537,7 +534,6 @@ private:
     scatter_map_type _scatters;   ///< Collection of scatters.
 
     PetscDM _dm;   ///< Manages the PetscSection.
-    PetscVec _globalVec;   ///< Global PETSc vector.
     PetscVec _localVec;   ///< Local PETSc vector.
     subfields_type _subfields;   ///< Map of subfields bundled together.
 

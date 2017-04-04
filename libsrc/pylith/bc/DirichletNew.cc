@@ -103,11 +103,8 @@ pylith::bc::DirichletNew::initialize(const pylith::topology::Field& solution)
         PYLITH_JOURNAL_ERROR("Unknown case for setting up auxiliary fields.");
         throw std::logic_error("Unknown case for setting up auxiliary fields.");
     } // if/else
-    _auxFields->createScatter(*_boundaryMesh);
-    _auxFields->scatterLocalToContext();
     _auxFields->view("AUXILIARY FIELDS"); // :DEBUGGING: TEMPORARY
 
-    // :TODO: @brad @matt Set constraint DOF and indices in solution.
     // Get label for constraint.
     PetscDMLabel dmLabel;
     const PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
@@ -125,11 +122,11 @@ pylith::bc::DirichletNew::initialize(const pylith::topology::Field& solution)
 // ----------------------------------------------------------------------
 // Set constrained values in solution field.
 void
-pylith::bc::DirichletNew::setValues(pylith::topology::Field* solution,
-                                    const double t)
-{ // setValues
+pylith::bc::DirichletNew::setSolution(pylith::topology::Field* solution,
+                                      const double t)
+{ // setSolution
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setValues(solution="<<solution->label()<<", t="<<t<<")");
+    PYLITH_JOURNAL_DEBUG("setSolution(solution="<<solution->label()<<", t="<<t<<")");
 
     assert(solution);
     assert(_auxFields);
@@ -164,7 +161,7 @@ pylith::bc::DirichletNew::setValues(pylith::topology::Field* solution,
 #endif
 
     PYLITH_METHOD_END;
-} // setValues
+} // setSolution
 
 
 

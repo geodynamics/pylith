@@ -51,13 +51,6 @@ pylith::topology::Field::localVector(void) const {
     return _localVec;
 }
 
-// Get global vector.
-inline
-PetscVec
-pylith::topology::Field::globalVector(void) const {
-    return _globalVec;
-}
-
 // Get mesh associated with field.
 inline
 const

@@ -265,12 +265,15 @@ pylith::problems::TimeDependent::initialize(void)
     err = TSSetDuration(_ts, _maxTimeSteps, _totalTime); PYLITH_CHECK_ERROR(err);
 
     // Set initial solution.
+    _solution->zeroLocal();
     PYLITH_JOURNAL_ERROR(":TODO: @brad Implement setting initial solution.");
     // :TODO: Set initial conditions.
-
+    PetscVec solutionVec;
+    err = DMCreateGlobalVector(_solution->dmMesh(), &solutionVec); PYLITH_CHECK_ERROR(err);
+    _solution->scatterLocalToVector(solutionVec);
     PYLITH_JOURNAL_DEBUG("Setting PetscTS initial conditions using global vector for solution.");
-    err = TSSetSolution(_ts, _solution->globalVector()); PYLITH_CHECK_ERROR(err);
-
+    err = TSSetSolution(_ts, solutionVec); PYLITH_CHECK_ERROR(err);
+    err = VecDestroy(&solutionVec); PYLITH_CHECK_ERROR(err);
 
     // Set callbacks.
     PYLITH_JOURNAL_DEBUG("Setting PetscTS callbacks prestep(), poststep(), computeRHSJacobian(), and computeRHSFunction().");
@@ -295,13 +298,6 @@ pylith::problems::TimeDependent::initialize(void)
         delete _jacobianLHSLumpedInv; _jacobianLHSLumpedInv = new pylith::topology::Field(_solution->mesh()); assert(_jacobianLHSLumpedInv);
         _jacobianLHSLumpedInv->cloneSection(*_solution);
     } // if
-
-    // Set callback for setting values using Dirichlet BC. We prefer to set this
-    // information here rather than in Problem, because we want the application
-    // context to be more specific.
-    const PetscDM dmSoln = _solution->dmMesh(); assert(dmSoln);
-    err = PetscObjectComposeFunction((PetscObject) dmSoln, "DMPlexInsertBoundaryValues_C", TimeDependent::setValues); PYLITH_CHECK_ERROR(err);
-    err = DMSetApplicationContext(dmSoln, (void*) this); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // initialize
@@ -399,32 +395,7 @@ pylith::problems::TimeDependent::poststep(void)
 
 
 // ----------------------------------------------------------------------
-// Callback static method for settting solution values according to constraints.
-PetscErrorCode
-pylith::problems::TimeDependent::setValues(PetscDM dm,
-                                           PetscBool insertEssential,
-                                           PetscVec solutionVec,
-                                           PetscReal t,
-                                           PetscVec faceGeomFVM,
-                                           PetscVec cellGeomFVM,
-                                           PetscVec gradFVM)
-{ // setValues
-    PYLITH_METHOD_BEGIN;
-
-    journal::debug_t debug(_pyreComponent);
-    debug << journal::at(__HERE__)
-          << "setValues(dm="<<dm<<", insertEssential="<<insertEssential<<", solutionVec="<<solutionVec<<", t="<<t<<", faceGeomFVM="<<faceGeomFVM<<", cellGeomFVM="<<cellGeomFVM<<", gradFVM="<<gradFVM<<")" << journal::endl;
-
-    pylith::problems::TimeDependent* problem = NULL;
-    PetscErrorCode err = DMGetApplicationContext(dm, &problem); PYLITH_CHECK_ERROR(err); assert(problem);
-    problem->Problem::setValues(solutionVec, t);
-
-    PYLITH_METHOD_RETURN(0);
-} // setvalues
-
-
-// ----------------------------------------------------------------------
-// Callback static method for computeing residual for RHS, G(t,s).
+// Callback static method for computing residual for RHS, G(t,s).
 PetscErrorCode
 pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
                                                     PetscReal t,
@@ -447,9 +418,6 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
 
     // If explicit time stepping, multiply RHS, G(t,s), by M^{-1}
     if (EXPLICIT == problem->_formulationType) {
-
-        debug << journal::at(__HERE__)
-              << ":TODO: @brad Check to see if we need to compute Jacobian." << journal::endl;
         problem->Problem::computeLHSJacobianLumpedInv(t, dt, solutionVec);
 
         assert(problem->_jacobianLHSLumpedInv);
@@ -461,7 +429,7 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
 
 
 // ----------------------------------------------------------------------
-// Callback static method for computeing Jacobian for RHS, Jacobian of G(t,s).
+// Callback static method for computing Jacobian for RHS, Jacobian of G(t,s).
 PetscErrorCode
 pylith::problems::TimeDependent::computeRHSJacobian(PetscTS ts,
                                                     PetscReal t,
@@ -487,7 +455,7 @@ pylith::problems::TimeDependent::computeRHSJacobian(PetscTS ts,
 } // computeRHSJacobian
 
 // ----------------------------------------------------------------------
-// Callback static method for computeing residual for LHS, F(t,s,\dot{s}).
+// Callback static method for computing residual for LHS, F(t,s,\dot{s}).
 PetscErrorCode
 pylith::problems::TimeDependent::computeLHSResidual(PetscTS ts,
                                                     PetscReal t,
@@ -514,7 +482,7 @@ pylith::problems::TimeDependent::computeLHSResidual(PetscTS ts,
 
 
 // ----------------------------------------------------------------------
-// Callback static method for computeing Jacobian for LHS, Jacobian of F(t,s,\dot{s}).
+// Callback static method for computing Jacobian for LHS, Jacobian of F(t,s,\dot{s}).
 PetscErrorCode
 pylith::problems::TimeDependent::computeLHSJacobian(PetscTS ts,
                                                     PetscReal t,

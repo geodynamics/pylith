@@ -161,13 +161,6 @@ pylith::topology::TestFieldMesh::testVectorAccessors(void)
     const PylithInt fiberDim = _data->subfieldANumComponents + _data->subfieldBNumComponents;
     CPPUNIT_ASSERT_EQUAL(_data->numVertices * fiberDim, size);
 
-    const PetscVec& globalVec = _field->globalVector();
-    err = VecGetSize(globalVec, &size); CPPUNIT_ASSERT(!err);
-    // Count total number of expected constraints.
-    PylithInt numConstraints = _data->bcANumVertices * _data->bcANumConstrainedDOF +
-                               _data->bcBNumVertices * _data->bcBNumConstrainedDOF;
-    CPPUNIT_ASSERT_EQUAL(_data->numVertices * fiberDim - numConstraints, size); // :TODO: @brad Fix this. (account for constraints)
-
     PYLITH_METHOD_END;
 } // testVectorAccessors
 
@@ -357,7 +350,7 @@ pylith::topology::TestFieldMesh::testCloneSection(void)
     PetscErrorCode err = 0;
 
     // Add two scatters, one with default context and one with given context.
-    _field->createScatter(*_mesh);
+    _field->createScatter(*_mesh, "");
     const char* context = "ABC";
     _field->createScatter(*_mesh, context);
 
@@ -400,6 +393,8 @@ pylith::topology::TestFieldMesh::testCloneSection(void)
     const char *name = NULL;
     err = PetscObjectGetName((PetscObject) vec, &name); CPPUNIT_ASSERT(!err);
     CPPUNIT_ASSERT_EQUAL(label, std::string(name));
+
+    field.deallocate();
 
     PYLITH_METHOD_END;
 } // testCloneSection
@@ -517,24 +512,6 @@ pylith::topology::TestFieldMesh::testZeroLocal(void)
 
     PYLITH_METHOD_END;
 } // testZeroLocal
-
-// ----------------------------------------------------------------------
-// Test complete().
-void
-pylith::topology::TestFieldMesh::testComplete(void)
-{ // testComplete
-    PYLITH_METHOD_BEGIN;
-
-    _initialize();
-    CPPUNIT_ASSERT(_mesh);
-    CPPUNIT_ASSERT(_field);
-    _field->complete();
-
-    // Expect no change for this serial test.
-    _checkValues(*_field);
-
-    PYLITH_METHOD_END;
-} // testComplete
 
 // ----------------------------------------------------------------------
 // Test copy().
@@ -692,14 +669,15 @@ pylith::topology::TestFieldMesh::testScatter(void)
     CPPUNIT_ASSERT(_mesh);
     CPPUNIT_ASSERT(_field);
 
+    const char* contextA = "abc";
     { // Test createScatter(), scatterVector().
         CPPUNIT_ASSERT_EQUAL(size_t(0), _field->_scatters.size());
 
-        _field->createScatter(*_mesh);
+        _field->createScatter(*_mesh, contextA);
         CPPUNIT_ASSERT_EQUAL(size_t(1), _field->_scatters.size());
-        const Field::ScatterInfo& sinfo = _field->_getScatter("");
+        const Field::ScatterInfo& sinfo = _field->_getScatter(contextA);
         CPPUNIT_ASSERT(sinfo.dm);
-        const PetscVec scatterVector = _field->scatterVector();
+        const PetscVec scatterVector = _field->scatterVector(contextA);
         CPPUNIT_ASSERT_EQUAL(sinfo.vector, scatterVector);
         // Check vector name
         const char* vecname = 0;
@@ -707,21 +685,21 @@ pylith::topology::TestFieldMesh::testScatter(void)
         CPPUNIT_ASSERT_EQUAL(std::string("solution"), std::string(vecname));
 
         // Make sure we can do multiple calls to createScatter().
-        _field->createScatter(*_mesh);
+        _field->createScatter(*_mesh, contextA);
         CPPUNIT_ASSERT_EQUAL(size_t(1), _field->_scatters.size());
     } // Test createScatter(), scatterVec().
 
-    const char* context = "ABC";
+    const char* contextB = "ABC";
     { // Test createScatterWithBC(), scatterLocalToContext(), scatterVectorToLocal().
-        _field->createScatterWithBC(*_mesh, context);
-        _field->scatterLocalToContext(context);
+        _field->createScatterWithBC(*_mesh, contextB);
+        _field->scatterLocalToContext(contextB);
 
-        const PetscVec& vec = _field->scatterVector(context); CPPUNIT_ASSERT(vec);
+        const PetscVec& vec = _field->scatterVector(contextB); CPPUNIT_ASSERT(vec);
         _checkValues(vec);
 
         const PylithScalar scale = 0.25;
         PetscErrorCode err = VecScale(vec, scale); CPPUNIT_ASSERT(!err);
-        _field->scatterContextToLocal(context);
+        _field->scatterContextToLocal(contextB);
         const PetscVec localVec = _field->localVector(); CPPUNIT_ASSERT(localVec);
         _checkValues(localVec, scale);
     } // Test createScatterWithBC(), scatterLocalToContext(), scatterVectorToLocal().
@@ -731,11 +709,11 @@ pylith::topology::TestFieldMesh::testScatter(void)
     field2.cloneSection(*_field);
     CPPUNIT_ASSERT_EQUAL(size_t(2), field2._scatters.size());
 
-    const Field::ScatterInfo& sinfo2 = field2._getScatter("");
+    const Field::ScatterInfo& sinfo2 = field2._getScatter(contextA);
     CPPUNIT_ASSERT(sinfo2.dm);
     CPPUNIT_ASSERT(sinfo2.vector);
 
-    const Field::ScatterInfo& sinfo2B = field2._getScatter(context);
+    const Field::ScatterInfo& sinfo2B = field2._getScatter(contextB);
     CPPUNIT_ASSERT(sinfo2B.dm);
     CPPUNIT_ASSERT(sinfo2B.vector);
 

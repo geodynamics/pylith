@@ -460,7 +460,7 @@ pylith::materials::TestMaterialNew::testInitialize(void)
     pylith::topology::FieldQuery* query = material->_auxFieldsQuery;
     query->openDB(_auxDB, data->lengthScale);
 
-    PetscErrorCode err = DMComputeL2Diff(dm, t, query->functions(), (void**)query->contextPtrs(), auxFields.globalVector(), &norm); CPPUNIT_ASSERT(!err);
+    PetscErrorCode err = DMComputeL2Diff(dm, t, query->functions(), (void**)query->contextPtrs(), auxFields.localVector(), &norm); CPPUNIT_ASSERT(!err);
     query->closeDB(_auxDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
@@ -484,37 +484,31 @@ pylith::materials::TestMaterialNew::testComputeResidual(void)
     residualRHS.cloneSection(*_solution1);
     residualRHS.label("residual RHS");
     residualRHS.allocate();
-    residualRHS.zeroLocal();
 
     pylith::topology::Field residualLHS(*_mesh);
     residualLHS.cloneSection(*_solution1);
     residualLHS.label("residual LHS");
     residualLHS.allocate();
-    residualLHS.zeroLocal();
 
     MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
     TestMaterialNew_Data* data = _data(); CPPUNIT_ASSERT(data);
 
     const PylithReal t = data->t;
     const PylithReal dt = data->dt;
-    material->computeRHSResidual(residualRHS.localVector(), t, dt, *_solution1);
-    material->computeLHSResidual(residualLHS.localVector(), t, dt, *_solution1, _solution1Dot->localVector());
+    material->computeRHSResidual(&residualRHS, t, dt, *_solution1);
+    material->computeLHSResidual(&residualLHS, t, dt, *_solution1, *_solution1Dot);
 
+    // We don't use Dirichlet BC, so we must manually zero out the residual values for constrained DOF.
     _zeroBoundary(&residualRHS);
     _zeroBoundary(&residualLHS);
 
-    // Scatter local to global.
-    residualRHS.complete();
-    residualLHS.complete();
-
-    PetscVec residualVec = NULL;
-    PetscErrorCode err;
-    err = VecDuplicate(residualRHS.globalVector(), &residualVec); CPPUNIT_ASSERT(!err);
-    err = VecZeroEntries(residualVec); CPPUNIT_ASSERT(!err);
-    err = VecWAXPY(residualVec, -1.0, residualLHS.globalVector(), residualRHS.globalVector()); CPPUNIT_ASSERT(!err);
-
     //residualRHS.view("RESIDUAL RHS"); // DEBUGGING
     //residualLHS.view("RESIDUAL LHS"); // DEBUGGING
+
+    PetscErrorCode err;
+    PetscVec residualVec = NULL;
+    err = VecDuplicate(residualRHS.localVector(), &residualVec); CPPUNIT_ASSERT(!err);
+    err = VecWAXPY(residualVec, -1.0, residualRHS.localVector(), residualLHS.localVector()); CPPUNIT_ASSERT(!err);
 
     PylithReal norm = 0.0;
     err = VecNorm(residualVec, NORM_2, &norm); CPPUNIT_ASSERT(!err);
@@ -546,13 +540,11 @@ pylith::materials::TestMaterialNew::testComputeRHSJacobian(void)
     residual1.cloneSection(*_solution1);
     residual1.label("residual1");
     residual1.allocate();
-    residual1.zeroLocal();
 
     pylith::topology::Field residual2(*_mesh);
     residual2.cloneSection(*_solution2);
     residual2.label("residual2");
     residual2.allocate();
-    residual2.zeroLocal();
 
 #if 0 // DEBUGGING
     PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2");
@@ -564,32 +556,23 @@ pylith::materials::TestMaterialNew::testComputeRHSJacobian(void)
 
     const PylithReal t = data->t;
     const PylithReal dt = data->dt;
-    material->computeRHSResidual(residual1.localVector(), t, dt, *_solution1);
-    material->computeRHSResidual(residual2.localVector(), t, dt, *_solution2);
-
-    // Scatter local to global.
-    _solution1->createScatter(_solution1->mesh());
-    _solution2->createScatter(_solution2->mesh());
-    _solution1->scatterLocalToContext();
-    _solution2->scatterLocalToContext();
-    residual1.complete();
-    residual2.complete();
+    material->computeRHSResidual(&residual1, t, dt, *_solution1);
+    material->computeRHSResidual(&residual2, t, dt, *_solution2);
 
     //residual1.view("RESIDUAL 1 RHS"); // DEBUGGING
     //residual2.view("RESIDUAL 1 RHS"); // DEBUGGING
 
     // Check that J(s_1)*(s_2 - s_1) = G(s_2) - G(s_1).
 
-    PetscVec residualVec = NULL;
     PetscErrorCode err;
-    err = VecDuplicate(residual1.globalVector(), &residualVec); CPPUNIT_ASSERT(!err);
-    err = VecZeroEntries(residualVec); CPPUNIT_ASSERT(!err);
-    err = VecWAXPY(residualVec, -1.0, residual1.globalVector(), residual2.globalVector()); CPPUNIT_ASSERT(!err);
+
+    PetscVec residualVec = NULL;
+    err = VecDuplicate(residual1.localVector(), &residualVec); CPPUNIT_ASSERT(!err);
+    err = VecWAXPY(residualVec, -1.0, residual1.localVector(), residual2.localVector()); CPPUNIT_ASSERT(!err);
 
     PetscVec solnIncrVec = NULL;
-    err = VecDuplicate(_solution1->globalVector(), &solnIncrVec); CPPUNIT_ASSERT(!err);
-    err = VecZeroEntries(solnIncrVec); CPPUNIT_ASSERT(!err);
-    err = VecWAXPY(solnIncrVec, -1.0, _solution1->globalVector(), _solution2->globalVector()); CPPUNIT_ASSERT(!err);
+    err = VecDuplicate(_solution1->localVector(), &solnIncrVec); CPPUNIT_ASSERT(!err);
+    err = VecWAXPY(solnIncrVec, -1.0, _solution1->localVector(), _solution2->localVector()); CPPUNIT_ASSERT(!err);
 
     // Compute Jacobian
     PetscMat jacobianMat = NULL;
@@ -604,7 +587,7 @@ pylith::materials::TestMaterialNew::testComputeRHSJacobian(void)
 
     // result = Jg*(-solnIncr) + residual
     PetscVec resultVec = NULL;
-    err = VecDuplicate(_solution1->globalVector(), &resultVec); CPPUNIT_ASSERT(!err);
+    err = VecDuplicate(residualVec, &resultVec); CPPUNIT_ASSERT(!err);
     err = VecZeroEntries(resultVec); CPPUNIT_ASSERT(!err);
     err = VecScale(solnIncrVec, -1.0); CPPUNIT_ASSERT(!err);
     err = MatMultAdd(jacobianMat, solnIncrVec, residualVec, resultVec); CPPUNIT_ASSERT(!err);
@@ -652,13 +635,11 @@ pylith::materials::TestMaterialNew::testComputeLHSJacobianImplicit(void)
     residual1.cloneSection(*_solution1);
     residual1.label("residual1");
     residual1.allocate();
-    residual1.zeroLocal();
 
     pylith::topology::Field residual2(*_mesh);
     residual2.cloneSection(*_solution2);
     residual2.label("residual2");
     residual2.allocate();
-    residual2.zeroLocal();
 
 #if 0 // DEBUGGING
     PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2");
@@ -671,32 +652,23 @@ pylith::materials::TestMaterialNew::testComputeLHSJacobianImplicit(void)
     const PylithReal t = data->t;
     const PylithReal dt = data->dt;
     const PylithReal tshift = data->tshift;
-    material->computeLHSResidual(residual1.localVector(), t, dt, *_solution1, _solution1Dot->localVector());
-    material->computeLHSResidual(residual2.localVector(), t, dt, *_solution2, _solution2Dot->localVector());
-
-    // Scatter local to global.
-    _solution1->createScatter(_solution1->mesh());
-    _solution2->createScatter(_solution2->mesh());
-    _solution1->scatterLocalToContext();
-    _solution2->scatterLocalToContext();
-    residual1.complete();
-    residual2.complete();
+    material->computeLHSResidual(&residual1, t, dt, *_solution1, *_solution1Dot);
+    material->computeLHSResidual(&residual2, t, dt, *_solution2, *_solution2Dot);
 
     // Check that Jf(s_1)*(s_2 - s_1) = F(s_2) - F(s_1).
 
     //residual1.view("RESIDUAL 1 LHS"); // DEBUGGING
     //residual2.view("RESIDUAL 2 LHS"); // DEBUGGING
 
-    PetscVec residualVec = NULL;
     PetscErrorCode err;
-    err = VecDuplicate(residual1.globalVector(), &residualVec); CPPUNIT_ASSERT(!err);
-    err = VecZeroEntries(residualVec); CPPUNIT_ASSERT(!err);
-    err = VecWAXPY(residualVec, -1.0, residual1.globalVector(), residual2.globalVector()); CPPUNIT_ASSERT(!err);
+
+    PetscVec residualVec = NULL;
+    err = VecDuplicate(residual1.localVector(), &residualVec); CPPUNIT_ASSERT(!err);
+    err = VecWAXPY(residualVec, -1.0, residual1.localVector(), residual2.localVector()); CPPUNIT_ASSERT(!err);
 
     PetscVec solnIncrVec = NULL;
-    err = VecDuplicate(_solution1->globalVector(), &solnIncrVec); CPPUNIT_ASSERT(!err);
-    err = VecZeroEntries(solnIncrVec); CPPUNIT_ASSERT(!err);
-    err = VecWAXPY(solnIncrVec, -1.0, _solution1->globalVector(), _solution2->globalVector()); CPPUNIT_ASSERT(!err);
+    err = VecDuplicate(_solution1->localVector(), &solnIncrVec); CPPUNIT_ASSERT(!err);
+    err = VecWAXPY(solnIncrVec, -1.0, _solution1->localVector(), _solution2->localVector()); CPPUNIT_ASSERT(!err);
 
     // Compute Jacobian
     PetscMat jacobianMat = NULL;
@@ -704,14 +676,14 @@ pylith::materials::TestMaterialNew::testComputeLHSJacobianImplicit(void)
     err = MatZeroEntries(jacobianMat); CPPUNIT_ASSERT(!err);
     PetscMat precondMat = jacobianMat; // Use Jacobian == preconditioner
 
-    material->computeLHSJacobianImplicit(jacobianMat, precondMat, t, dt, tshift, *_solution1, _solution1Dot->localVector());
+    material->computeLHSJacobianImplicit(jacobianMat, precondMat, t, dt, tshift, *_solution1, *_solution1Dot);
     CPPUNIT_ASSERT_EQUAL(false, material->needNewLHSJacobian());
     err = MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY); PYLITH_CHECK_ERROR(err);
     err = MatAssemblyEnd(jacobianMat, MAT_FINAL_ASSEMBLY); PYLITH_CHECK_ERROR(err);
 
     // result = J*(-solnIncr) + residual
     PetscVec resultVec = NULL;
-    err = VecDuplicate(_solution1->globalVector(), &resultVec); CPPUNIT_ASSERT(!err);
+    err = VecDuplicate(residualVec, &resultVec); CPPUNIT_ASSERT(!err);
     err = VecZeroEntries(resultVec); CPPUNIT_ASSERT(!err);
     err = VecScale(solnIncrVec, -1.0); CPPUNIT_ASSERT(!err);
     err = MatMultAdd(jacobianMat, solnIncrVec, residualVec, resultVec); CPPUNIT_ASSERT(!err);
@@ -878,8 +850,6 @@ pylith::materials::TestMaterialNew::_initializeFull(void)
         const pylith::topology::FieldBase::DiscretizeInfo& info = data->auxDiscretizations[i];
         material->auxFieldDiscretization(data->auxFields[i], info.basisOrder, info.quadOrder, info.isBasisContinuous);
     } // for
-
-
 
     CPPUNIT_ASSERT(_solution1);
     material->initialize(*_solution1);
