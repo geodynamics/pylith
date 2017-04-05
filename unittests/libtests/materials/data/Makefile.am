@@ -22,8 +22,13 @@ dist_noinst_DATA = \
 	matstrain.spatialdb \
 	tri3.mesh \
 	tri3_onecell.mesh \
-	tri3_small.mesh \
-	mat_elastic.spatialdb \
+	tri_small.mesh \
+	quad_small.mesh \
+	quad_onecell.mesh \
+	quad_aligned.mesh \
+	mat_elastic.spatialdb
+
+noinst_DATA = \
         IsotropicLinearElasticityPlaneStrain_UniformStrain_aux.spatialdb \
         IsotropicLinearElasticityPlaneStrain_UniformStrain_soln.spatialdb \
         IsotropicLinearElasticityPlaneStrain_UniformStrain_pert.spatialdb
@@ -41,5 +46,10 @@ clean-data:
 BUILT_SOURCES = export-data
 clean-local: clean-data
 
+
+IsotropicLinearElasticityPlaneStrain_UniformStrain_soln.spatialdb \
+IsotropicLinearElasticityPlaneStrain_UniformStrain_pert.spatialdb \
+IsotropicLinearElasticityPlaneStrain_UniformStrain_aux.spatialdb:
+	$(PYTHON) $(srcdir)/IsotropicLinearElasticityPlaneStrain_UniformStrain.py
 
 # End of file 

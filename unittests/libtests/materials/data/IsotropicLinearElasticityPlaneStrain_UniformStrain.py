@@ -88,15 +88,11 @@ def generateSolution():
 
 # ----------------------------------------------------------------------
 def generatePerturbation():
-    x = numpy.arange(-4.0e+3, 4.01e+3, 0.5e+3, dtype=numpy.float64)
-    y = numpy.arange(-4.0e+3, 4.01e+3, 0.5e+3, dtype=numpy.float64)
-    numX = x.shape[0]
-    numY = y.shape[0]
-    points = numpy.zeros((numX*numY,2), dtype=numpy.float64)
-    npts = numX*numY
-    for iY in xrange(numY):
-        points[iY*numX:(iY+1)*numX,0] = x
-        points[iY*numX:(iY+1)*numX,1] = y[iY]
+    x1 = numpy.arange(-4.0e+3, 4.01e+3, 0.5e+3, dtype=numpy.float64)
+    y1 = numpy.arange(-4.0e+3, 4.01e+3, 0.5e+3, dtype=numpy.float64)
+    x2, y2 = numpy.meshgrid(x1, y1)
+    points = numpy.vstack((x2.ravel(), y2.ravel())).transpose()
+    npts = points.shape[0]
 
     disp = 1.0e-2*(numpy.random.rand(npts,2)-0.5)
     disp_dot = 0*disp
