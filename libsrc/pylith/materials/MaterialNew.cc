@@ -167,7 +167,8 @@ pylith::materials::MaterialNew::computeRHSResidual(pylith::topology::Field* resi
 
     _setFEKernelsRHSResidual(solution);
 
-    pylith::topology::Field solutionDot(solution.mesh());; // No dependence on time derivative of solution in RHS.
+    pylith::topology::Field solutionDot(solution.mesh()); // No dependence on time derivative of solution in RHS.
+    solutionDot.label("solution_dot");
     _computeResidual(residual, t, dt, solution, solutionDot);
 
     PYLITH_METHOD_END;
@@ -189,6 +190,7 @@ pylith::materials::MaterialNew::computeRHSJacobian(PetscMat jacobianMat,
     _setFEKernelsRHSJacobian(solution);
 
     pylith::topology::Field solutionDot(solution.mesh()); // No dependence on time derivative of solution in RHS.
+    solutionDot.label("solution_dot");
     const PylithReal tshift = 0.0; // No dependence on time derivative of solution in RHS, so shift isn't applicable.
     _computeJacobian(jacobianMat, precondMat, t, dt, tshift, solution, solutionDot);
     _needNewRHSJacobian = false;
@@ -336,6 +338,7 @@ pylith::materials::MaterialNew::_computeResidual(pylith::topology::Field* residu
 
     // Compute the local residual
     assert(solution.localVector());
+    assert(residual->localVector());
     err = DMGetLabel(dmSoln, "material-id", &dmLabel); PYLITH_CHECK_ERROR(err);
     err = DMLabelGetStratumBounds(dmLabel, id(), &cStart, &cEnd); PYLITH_CHECK_ERROR(err);
 
