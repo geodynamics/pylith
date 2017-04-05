@@ -26,25 +26,20 @@
 namespace pylith {
     namespace materials {
 
-        class TestIsotropicLinearElasticityPlaneStrain_Tri3 : public TestIsotropicLinearElasticityPlaneStrain
+        class TestIsotropicLinearElasticityPlaneStrain_UniformStrain : public TestIsotropicLinearElasticityPlaneStrain
         { // TestIsotropicLinearElasticityPlaneStrain_Tri3
-
-            CPPUNIT_TEST_SUB_SUITE( TestIsotropicLinearElasticityPlaneStrain_Tri3,  TestIsotropicLinearElasticityPlaneStrain);
-            CPPUNIT_TEST_SUITE_END();
+protected:
 
             void setUp(void) {
                 TestIsotropicLinearElasticityPlaneStrain::setUp();
+                _mydata = new TestIsotropicLinearElasticityPlaneStrain_Data(); CPPUNIT_ASSERT(_mydata);
 
-                const bool useInertia = false;
-                const bool useBodyForce = false;
-                const bool useReferenceState = false;
-                _mydata = new TestIsotropicLinearElasticityPlaneStrain_Data(useInertia, useBodyForce, useReferenceState); CPPUNIT_ASSERT(_mydata);
+                _mydata->numSolnFields = 1;
+                _mydata->useInertia = false;
+                _mydata->useBodyForce = false;
+                _mydata->useGravity = false;
+                _mydata->useReferenceState = false;
 
-#if 1 // TEMPORARY (debugging)
-                _mydata->meshFilename = "data/tri3_small.mesh";
-#else
-                _mydata->meshFilename = "data/tri3_onecell.mesh";
-#endif
                 _mydata->materialLabel = "IsotropicLinearElascitity";
                 _mydata->materialId = 24;
                 _mydata->boundaryLabel = "boundary";
@@ -62,27 +57,89 @@ namespace pylith {
                 _mydata->dt = 0.05;
                 _mydata->tshift = 1.0 / _mydata->dt;
 
-                static const pylith::topology::Field::DiscretizeInfo _solnDiscretizations[2] = {
-                    {1, 1, true}, // disp
-                    {1, 1, true}, // vel
-                };
-                _mydata->solnDiscretizations = const_cast<pylith::topology::Field::DiscretizeInfo*>(_solnDiscretizations);
-
                 _mydata->numAuxFields = 3;
                 static const char* _auxFields[3] = {"density", "shear_modulus", "bulk_modulus"};
+                _mydata->auxFields = _auxFields;
                 static const pylith::topology::Field::DiscretizeInfo _auxDiscretizations[3] = {
                     {0, 1, true}, // density
                     {0, 1, true}, // shear_modulus
                     {0, 1, true}, // bulk_modulus
                 };
-                _mydata->auxFields = _auxFields;
+                _mydata->auxDiscretizations = const_cast<pylith::topology::Field::DiscretizeInfo*>(_auxDiscretizations);
+
+            } // setUp
+
+        }; // TestIsotropicLinearElasticityPlaneStrain_UniformStrain
+
+
+    } // materials
+} // pylith
+
+
+// ----------------------------------------------------------------------
+namespace pylith {
+    namespace materials {
+
+        class TestIsotropicLinearElasticityPlaneStrain_UniformStrain_TriP1 : public TestIsotropicLinearElasticityPlaneStrain_UniformStrain
+        { // TestIsotropicLinearElasticityPlaneStrain_UniformStrain_Tri3
+
+            CPPUNIT_TEST_SUB_SUITE( TestIsotropicLinearElasticityPlaneStrain_UniformStrain_TriP1,  TestIsotropicLinearElasticityPlaneStrain);
+            CPPUNIT_TEST_SUITE_END();
+
+            void setUp(void) {
+                TestIsotropicLinearElasticityPlaneStrain_UniformStrain::setUp();
+                CPPUNIT_ASSERT(_mydata);
+
+                _mydata->meshFilename = "data/tri3_small.mesh";
+
+                static const pylith::topology::Field::DiscretizeInfo _solnDiscretizations[1] = {
+                    {1, 1, true}, // disp
+                };
+                _mydata->solnDiscretizations = const_cast<pylith::topology::Field::DiscretizeInfo*>(_solnDiscretizations);
+
+                _initializeMin();
+            } // setUp
+
+        }; // TestIsotropicLinearElasticityPlaneStrain_Tri3
+        CPPUNIT_TEST_SUITE_REGISTRATION( TestIsotropicLinearElasticityPlaneStrain_UniformStrain_TriP1 );
+
+
+    } // materials
+} // pylith
+
+
+// ----------------------------------------------------------------------
+namespace pylith {
+    namespace materials {
+
+        class TestIsotropicLinearElasticityPlaneStrain_UniformStrain_TriP2 : public TestIsotropicLinearElasticityPlaneStrain_UniformStrain
+        { // TestIsotropicLinearElasticityPlaneStrain_UniformStrain_Tri3
+
+            CPPUNIT_TEST_SUB_SUITE( TestIsotropicLinearElasticityPlaneStrain_UniformStrain_TriP2,  TestIsotropicLinearElasticityPlaneStrain);
+            CPPUNIT_TEST_SUITE_END();
+
+            void setUp(void) {
+                TestIsotropicLinearElasticityPlaneStrain_UniformStrain::setUp();
+                CPPUNIT_ASSERT(_mydata);
+
+                _mydata->meshFilename = "data/tri3_small.mesh";
+                static const pylith::topology::Field::DiscretizeInfo _solnDiscretizations[1] = {
+                    {2, 2, true}, // disp
+                };
+                _mydata->solnDiscretizations = const_cast<pylith::topology::Field::DiscretizeInfo*>(_solnDiscretizations);
+
+                static const pylith::topology::Field::DiscretizeInfo _auxDiscretizations[3] = {
+                    {0, 2, true}, // density
+                    {0, 2, true}, // shear_modulus
+                    {0, 2, true}, // bulk_modulus
+                };
                 _mydata->auxDiscretizations = const_cast<pylith::topology::Field::DiscretizeInfo*>(_auxDiscretizations);
 
                 _initializeMin();
             } // setUp
 
         }; // TestIsotropicLinearElasticityPlaneStrain_Tri3
-        CPPUNIT_TEST_SUITE_REGISTRATION( TestIsotropicLinearElasticityPlaneStrain_Tri3 );
+        CPPUNIT_TEST_SUITE_REGISTRATION( TestIsotropicLinearElasticityPlaneStrain_UniformStrain_TriP2 );
 
 
     } // materials

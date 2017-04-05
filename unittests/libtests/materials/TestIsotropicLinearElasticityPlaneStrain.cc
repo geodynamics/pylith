@@ -50,7 +50,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::setUp(void)
     _mymaterial->PyreComponent::identifier("TestIsotropicLinearElasticityPlaneStrain");
     const char* journal = _mymaterial->PyreComponent::name();
     journal::debug_t debug(journal);
-    debug.activate();
+    //debug.activate(); // DEBUGGING
 } // setUp
 
 
@@ -331,6 +331,8 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_setupSolutionField
     // Create subfields.
     const bool isDot = strstr(field->label(), "dot") != NULL;
     std::string subfields[2];
+
+    const int numSolnFields = _mydata->numSolnFields;
     if (isDot) {
         subfields[0] = "displacement_dot";
         subfields[1] = "velocity_dot";
@@ -342,17 +344,22 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_setupSolutionField
     if (!isClone) {
         CPPUNIT_ASSERT(_mydata->solnDiscretizations);
         const pylith::topology::Field::DiscretizeInfo& dispFEInfo = _mydata->solnDiscretizations[0];
-        const pylith::topology::Field::DiscretizeInfo& velFEInfo = _mydata->solnDiscretizations[1];
         if (isDot) {
             const char* componentsDisp[2] = {"displacement_dot_x", "displacement_dot_y"};
-            const char* componentsVel[2] = {"velocity_dot_x", "velocity_dot_y"};
             field->subfieldAdd(subfields[0].c_str(), componentsDisp, _mydata->dimension, topology::Field::VECTOR, dispFEInfo.basisOrder, dispFEInfo.quadOrder, dispFEInfo.isBasisContinuous, _mydata->lengthScale);
-            field->subfieldAdd(subfields[1].c_str(), componentsVel, _mydata->dimension, topology::Field::VECTOR, velFEInfo.basisOrder, velFEInfo.quadOrder, velFEInfo.isBasisContinuous, _mydata->lengthScale / _mydata->timeScale);
+            if (numSolnFields > 1) {
+                const pylith::topology::Field::DiscretizeInfo& velFEInfo = _mydata->solnDiscretizations[1];
+                const char* componentsVel[2] = {"velocity_dot_x", "velocity_dot_y"};
+                field->subfieldAdd(subfields[1].c_str(), componentsVel, _mydata->dimension, topology::Field::VECTOR, velFEInfo.basisOrder, velFEInfo.quadOrder, velFEInfo.isBasisContinuous, _mydata->lengthScale / _mydata->timeScale);
+            } // if
         } else {
             const char* componentsDisp[2] = {"displacement_x", "displacement_y"};
-            const char* componentsVel[2] = {"velocity_x", "velocity_y"};
             field->subfieldAdd(subfields[0].c_str(), componentsDisp, _mydata->dimension, topology::Field::VECTOR, dispFEInfo.basisOrder, dispFEInfo.quadOrder, dispFEInfo.isBasisContinuous, _mydata->lengthScale);
-            field->subfieldAdd(subfields[1].c_str(), componentsVel, _mydata->dimension, topology::Field::VECTOR, velFEInfo.basisOrder, velFEInfo.quadOrder, velFEInfo.isBasisContinuous, _mydata->lengthScale / _mydata->timeScale);
+            if (numSolnFields > 1) {
+                const pylith::topology::Field::DiscretizeInfo& velFEInfo = _mydata->solnDiscretizations[1];
+                const char* componentsVel[2] = {"velocity_x", "velocity_y"};
+                field->subfieldAdd(subfields[1].c_str(), componentsVel, _mydata->dimension, topology::Field::VECTOR, velFEInfo.basisOrder, velFEInfo.quadOrder, velFEInfo.isBasisContinuous, _mydata->lengthScale / _mydata->timeScale);
+            } // if
         } // if/else
         field->subfieldsSetup();
     } // if
@@ -368,7 +375,9 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_setupSolutionField
 
     pylith::topology::FieldQuery queryField(*field);
     queryField.queryFn(subfields[0].c_str(), pylith::topology::FieldQuery::dbQueryGeneric);
-    queryField.queryFn(subfields[1].c_str(), pylith::topology::FieldQuery::dbQueryGeneric);
+    if (numSolnFields > 1) {
+        queryField.queryFn(subfields[1].c_str(), pylith::topology::FieldQuery::dbQueryGeneric);
+    } // if
     queryField.openDB(&fieldDB, _mydata->lengthScale);
     queryField.queryDB();
     queryField.closeDB(&fieldDB);
@@ -376,112 +385,16 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_setupSolutionField
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain_Data::TestIsotropicLinearElasticityPlaneStrain_Data(const bool withInertia,
-                                                                                                                const bool withBodyForce,
-                                                                                                                const bool withReferenceState) :
-    useInertia(withInertia),
-    useBodyForce(withBodyForce),
-    useReferenceState(withReferenceState)
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain_Data::TestIsotropicLinearElasticityPlaneStrain_Data(void) :
+    useInertia(false),
+    useBodyForce(false),
+    useGravity(false),
+    useReferenceState(false)
 { // constructor
     dimension = 2;
-    numSolnFields = 2;
-
-    // RHS Residual (nfields*2)
-    // disp
-    _kernelsRHSResidual[0*2+0] = pylith_fekernels_DispVel_g0u;
-    _kernelsRHSResidual[0*2+1] = NULL;
-    // vel
-    _kernelsRHSResidual[1*2+0] = NULL;
-    _kernelsRHSResidual[1*2+1] = pylith_fekernels_IsotropicLinearElasticityPlaneStrain_g1v;
-
-    // RHS Jacobian (nfields*nfields*4)
-    // disp/disp
-    _kernelsRHSJacobian[(0*2+0)*4+0] = NULL;
-    _kernelsRHSJacobian[(0*2+0)*4+1] = NULL;
-    _kernelsRHSJacobian[(0*2+0)*4+2] = NULL;
-    _kernelsRHSJacobian[(0*2+0)*4+3] = NULL;
-
-    // disp/vel
-    _kernelsRHSJacobian[(0*2+1)*4+0] = pylith_fekernels_DispVel_Jg0uv;
-    _kernelsRHSJacobian[(0*2+1)*4+1] = NULL;
-    _kernelsRHSJacobian[(0*2+1)*4+2] = NULL;
-    _kernelsRHSJacobian[(0*2+1)*4+3] = NULL;
-
-    // vel/disp
-    _kernelsRHSJacobian[(1*2+0)*4+0] = NULL;
-    _kernelsRHSJacobian[(1*2+0)*4+1] = NULL;
-    _kernelsRHSJacobian[(1*2+0)*4+2] = NULL;
-    _kernelsRHSJacobian[(1*2+0)*4+3] = pylith_fekernels_IsotropicLinearElasticityPlaneStrain_Jg3vu;
-
-    // vel/vel
-    _kernelsRHSJacobian[(1*2+1)*4+0] = NULL;
-    _kernelsRHSJacobian[(1*2+1)*4+1] = NULL;
-    _kernelsRHSJacobian[(1*2+1)*4+2] = NULL;
-    _kernelsRHSJacobian[(1*2+1)*4+3] = NULL;
-
-    // LHS Residual (nfields*2)
-    // disp
-    _kernelsLHSResidual[0*2+0] = pylith_fekernels_DispVel_f0u;
-    _kernelsLHSResidual[0*2+1] = NULL;
-    // vel
-    _kernelsLHSResidual[1*2+0] = NULL;
-    _kernelsLHSResidual[1*2+1] = NULL;
-
-    // LHS Jacobian Implicit (nfields*nfields*4)
-    // disp/disp
-    _kernelsLHSJacobianImplicit[(0*2+0)*4+0] = pylith_fekernels_DispVel_Jf0uu_implicit;
-    _kernelsLHSJacobianImplicit[(0*2+0)*4+1] = NULL;
-    _kernelsLHSJacobianImplicit[(0*2+0)*4+2] = NULL;
-    _kernelsLHSJacobianImplicit[(0*2+0)*4+3] = NULL;
-
-    // disp/vel
-    _kernelsLHSJacobianImplicit[(0*2+1)*4+0] = NULL;
-    _kernelsLHSJacobianImplicit[(0*2+1)*4+1] = NULL;
-    _kernelsLHSJacobianImplicit[(0*2+1)*4+2] = NULL;
-    _kernelsLHSJacobianImplicit[(0*2+1)*4+3] = NULL;
-
-    // vel/disp
-    _kernelsLHSJacobianImplicit[(1*2+0)*4+0] = NULL;
-    _kernelsLHSJacobianImplicit[(1*2+0)*4+1] = NULL;
-    _kernelsLHSJacobianImplicit[(1*2+0)*4+2] = NULL;
-    _kernelsLHSJacobianImplicit[(1*2+0)*4+3] = NULL;
-
-    // vel/vel
-    _kernelsLHSJacobianImplicit[(1*2+1)*4+0] = NULL;
-    _kernelsLHSJacobianImplicit[(1*2+1)*4+1] = NULL;
-    _kernelsLHSJacobianImplicit[(1*2+1)*4+2] = NULL;
-    _kernelsLHSJacobianImplicit[(1*2+1)*4+3] = NULL;
-
-    // LHS Jacobian Explicit (nfields*nfields*4)
-    // disp/disp
-    _kernelsLHSJacobianExplicit[(0*2+0)*4+0] = pylith_fekernels_DispVel_Jf0uu_explicit;
-    _kernelsLHSJacobianExplicit[(0*2+0)*4+1] = NULL;
-    _kernelsLHSJacobianExplicit[(0*2+0)*4+2] = NULL;
-    _kernelsLHSJacobianExplicit[(0*2+0)*4+3] = NULL;
-
-    // disp/vel
-    _kernelsLHSJacobianExplicit[(0*2+1)*4+0] = NULL;
-    _kernelsLHSJacobianExplicit[(0*2+1)*4+1] = NULL;
-    _kernelsLHSJacobianExplicit[(0*2+1)*4+2] = NULL;
-    _kernelsLHSJacobianExplicit[(0*2+1)*4+3] = NULL;
-
-    // vel/disp
-    _kernelsLHSJacobianExplicit[(1*2+0)*4+0] = NULL;
-    _kernelsLHSJacobianExplicit[(1*2+0)*4+1] = NULL;
-    _kernelsLHSJacobianExplicit[(1*2+0)*4+2] = NULL;
-    _kernelsLHSJacobianExplicit[(1*2+0)*4+3] = NULL;
-
-    // vel/vel
-    _kernelsLHSJacobianExplicit[(1*2+1)*4+0] = NULL;
-    _kernelsLHSJacobianExplicit[(1*2+1)*4+1] = NULL;
-    _kernelsLHSJacobianExplicit[(1*2+1)*4+2] = NULL;
-    _kernelsLHSJacobianExplicit[(1*2+1)*4+3] = NULL;
-
-    kernelsRHSResidual = const_cast<PetscPointFunc*>(_kernelsRHSResidual);
-    kernelsRHSJacobian = const_cast<PetscPointJac*>(_kernelsRHSJacobian);
-    kernelsLHSResidual = const_cast<PetscPointFunc*>( _kernelsLHSResidual);
-    kernelsLHSJacobianImplicit = const_cast<PetscPointJac*>(_kernelsLHSJacobianImplicit);
-    kernelsLHSJacobianExplicit = const_cast<PetscPointJac*>( _kernelsLHSJacobianExplicit);
+    gravityVector[0] = 0.0; // Use scales in test to provide correct nondimensional value.
+    gravityVector[1] = 0.0;
+    gravityVector[2] = 0;
 } // constructor
 
 

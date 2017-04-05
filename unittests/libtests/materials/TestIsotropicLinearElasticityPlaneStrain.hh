@@ -50,7 +50,7 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain : public TestM
     CPPUNIT_TEST( testUseBodyForce );
     CPPUNIT_TEST( testUseReferenceState );
 
-    // Tests that explicitly depend on how details of this material.
+    // Tests that explicitly depend on details of this material.
     CPPUNIT_TEST( test_auxFieldsSetup );
     CPPUNIT_TEST( testGetAuxField );
 
@@ -120,9 +120,7 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_Data : public 
 public:
 
     /// Constructor
-    TestIsotropicLinearElasticityPlaneStrain_Data(const bool useInertia,
-                                                  const bool useBodyForce,
-                                                  const bool useReferenceState);
+    TestIsotropicLinearElasticityPlaneStrain_Data(void);
 
     /// Destructor
     ~TestIsotropicLinearElasticityPlaneStrain_Data(void);
@@ -132,15 +130,11 @@ public:
 
     // SPECIFIC TO MATERIAL, VALUES DEPEND ON TEST CASE
 
-    PetscPointFunc _kernelsRHSResidual[2*2]; ///< FE kernels for RHS residual, G(t,s).
-    PetscPointJac _kernelsRHSJacobian[2*2*4]; ///< FE kernels for RHS Jacobian, G(t,s).
-    PetscPointFunc _kernelsLHSResidual[2*2]; ///< FE kernels for LHS residual, F(t,s,\dot{s}).
-    PetscPointJac _kernelsLHSJacobianImplicit[2*2*4]; ///< FE kernels for LHS Jacobian, F(t,s,\dot{s}) with implicit time-stepping.
-    PetscPointJac _kernelsLHSJacobianExplicit[2*2*4]; ///< FE kernels for LHS Jacobian, F(t,s,\dot{s}) with
-
     bool useInertia; ///< Flag indicating test case uses inertia.
     bool useBodyForce; ///< Flag indicating test case uses body force.
+    bool useGravity; ///< Flag indicating test case uses gravity field.
     bool useReferenceState; ///< Flag indicating test case uses reference state.
+    double gravityVector[3]; ///< Array for gravity vector.
 
 };
 

@@ -68,199 +68,6 @@ pylith::materials::TestMaterialNew::tearDown(void)
 
 
 // ----------------------------------------------------------------------
-// Test _setFEKernelsRHSResidual().
-void
-pylith::materials::TestMaterialNew::test_setFEKernelsRHSResidual(void)
-{ // test_setFEKernelsRHSResidual
-    PYLITH_METHOD_BEGIN;
-
-    _initializeFull();
-
-    CPPUNIT_ASSERT(_solution1);
-    MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
-    TestMaterialNew_Data* data = _data(); CPPUNIT_ASSERT(data);
-
-    material->_setFEKernelsRHSResidual(*_solution1);
-
-    PetscDS prob = NULL;
-    PetscErrorCode err = DMGetDS(_solution1->dmMesh(), &prob); CPPUNIT_ASSERT(!err); CPPUNIT_ASSERT(prob);
-
-    const int numSolnFields = data->numSolnFields;
-    const int numFieldKernels = data->numKernelsResidual;
-    for (int iField=0; iField < numSolnFields; ++iField) {
-        const int indexK = iField*numFieldKernels;
-
-        const PetscPointFunc* kernelsE = data->kernelsRHSResidual; CPPUNIT_ASSERT(kernelsE);
-        PetscPointFunc g0 = NULL;
-        PetscPointFunc g1 = NULL;
-        err = PetscDSGetResidual(prob, iField, &g0, &g1); CPPUNIT_ASSERT(!err);
-        CPPUNIT_ASSERT(kernelsE[indexK+0] == g0);
-        CPPUNIT_ASSERT(kernelsE[indexK+1] == g1);
-    } // for
-
-    PYLITH_METHOD_END;
-} // test_setFEKernelsRHSResidual
-
-
-// ----------------------------------------------------------------------
-// Test _setFEKernelsRHSJacobian().
-void
-pylith::materials::TestMaterialNew::test_setFEKernelsRHSJacobian(void)
-{ // test_setFEKernelsRHSJacobian
-    PYLITH_METHOD_BEGIN;
-
-    _initializeFull();
-
-    CPPUNIT_ASSERT(_solution1);
-    MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
-    TestMaterialNew_Data* data = _data(); CPPUNIT_ASSERT(data);
-
-    material->_setFEKernelsRHSJacobian(*_solution1);
-
-    PetscDS prob = NULL;
-    PetscErrorCode err = DMGetDS(_solution1->dmMesh(), &prob); CPPUNIT_ASSERT(!err); CPPUNIT_ASSERT(prob);
-
-    const int numSolnFields = data->numSolnFields;
-    const int numFieldKernels = data->numKernelsJacobian;
-    for (int iField=0; iField < numSolnFields; ++iField) {
-        for (int jField=0; jField < numSolnFields; ++jField) {
-            const int indexK = iField*numSolnFields*numFieldKernels + jField*numFieldKernels;
-
-            const PetscPointJac* kernelsE = data->kernelsRHSJacobian; CPPUNIT_ASSERT(kernelsE);
-            PetscPointJac Jg0 = NULL;
-            PetscPointJac Jg1 = NULL;
-            PetscPointJac Jg2 = NULL;
-            PetscPointJac Jg3 = NULL;
-            err = PetscDSGetJacobian(prob, iField, jField, &Jg0, &Jg1, &Jg2, &Jg3); CPPUNIT_ASSERT(!err);
-            CPPUNIT_ASSERT(kernelsE[indexK+0] == Jg0);
-            CPPUNIT_ASSERT(kernelsE[indexK+1] == Jg1);
-            CPPUNIT_ASSERT(kernelsE[indexK+2] == Jg2);
-            CPPUNIT_ASSERT(kernelsE[indexK+3] == Jg3);
-        } // for
-    } // for
-
-    PYLITH_METHOD_END;
-} // test_setFEKernelsRHSJacobian
-
-
-// ----------------------------------------------------------------------
-// Test _setFEKernelsLHSResidual().
-void
-pylith::materials::TestMaterialNew::test_setFEKernelsLHSResidual(void)
-{ // test_setFEKernelsLHSResidual
-    PYLITH_METHOD_BEGIN;
-
-    _initializeFull();
-
-    CPPUNIT_ASSERT(_solution1);
-    MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
-    TestMaterialNew_Data* data = _data(); CPPUNIT_ASSERT(data);
-
-    material->_setFEKernelsLHSResidual(*_solution1);
-
-    PetscDS prob = NULL;
-    PetscErrorCode err = DMGetDS(_solution1->dmMesh(), &prob); CPPUNIT_ASSERT(!err); CPPUNIT_ASSERT(prob);
-
-    const int numSolnFields = data->numSolnFields;
-    const int numFieldKernels = data->numKernelsResidual;
-    for (int iField=0; iField < numSolnFields; ++iField) {
-        const int indexK = iField*numFieldKernels;
-
-        const PetscPointFunc* kernelsE = data->kernelsLHSResidual; CPPUNIT_ASSERT(kernelsE);
-        PetscPointFunc f0 = NULL;
-        PetscPointFunc f1 = NULL;
-        err = PetscDSGetResidual(prob, iField, &f0, &f1); CPPUNIT_ASSERT(!err);
-        CPPUNIT_ASSERT(kernelsE[indexK+0] == f0);
-        CPPUNIT_ASSERT(kernelsE[indexK+1] == f1);
-    } // for
-
-    PYLITH_METHOD_END;
-} // test_setFEKernelsLHSResidual
-
-
-// ----------------------------------------------------------------------
-// Test _setFEKernelsLHSJacobianImplicit().
-void
-pylith::materials::TestMaterialNew::test_setFEKernelsLHSJacobianImplicit(void)
-{ // test_setFEKernelsLHSJacobianImplicit
-    PYLITH_METHOD_BEGIN;
-
-    _initializeFull();
-
-    CPPUNIT_ASSERT(_solution1);
-    MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
-    TestMaterialNew_Data* data = _data(); CPPUNIT_ASSERT(data);
-
-    material->_setFEKernelsLHSJacobianImplicit(*_solution1);
-
-    PetscDS prob = NULL;
-    PetscErrorCode err = DMGetDS(_solution1->dmMesh(), &prob); CPPUNIT_ASSERT(!err); CPPUNIT_ASSERT(prob);
-
-    const int numSolnFields = data->numSolnFields;
-    const int numFieldKernels = data->numKernelsJacobian;
-    for (int iField=0; iField < numSolnFields; ++iField) {
-        for (int jField=0; jField < numSolnFields; ++jField) {
-            const int indexK = iField*numSolnFields*numFieldKernels + jField*numFieldKernels;
-
-            const PetscPointJac* kernelsE = data->kernelsLHSJacobianImplicit; CPPUNIT_ASSERT(kernelsE);
-            PetscPointJac Jf0 = NULL;
-            PetscPointJac Jf1 = NULL;
-            PetscPointJac Jf2 = NULL;
-            PetscPointJac Jf3 = NULL;
-            err = PetscDSGetJacobian(prob, iField, jField, &Jf0, &Jf1, &Jf2, &Jf3); CPPUNIT_ASSERT(!err);
-            CPPUNIT_ASSERT(kernelsE[indexK+0] == Jf0);
-            CPPUNIT_ASSERT(kernelsE[indexK+1] == Jf1);
-            CPPUNIT_ASSERT(kernelsE[indexK+2] == Jf2);
-            CPPUNIT_ASSERT(kernelsE[indexK+3] == Jf3);
-        } // for
-    } // for
-
-    PYLITH_METHOD_END;
-} // test_setFEKernelsLHSJacobianImplicit
-
-
-// ----------------------------------------------------------------------
-// Test _setFEKernelsLHSJacobianExplicit().
-void
-pylith::materials::TestMaterialNew::test_setFEKernelsLHSJacobianExplicit(void)
-{ // test_setFEKernelsLHSJacobianExplicit
-    PYLITH_METHOD_BEGIN;
-
-    _initializeFull();
-
-    CPPUNIT_ASSERT(_solution1);
-    MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
-    TestMaterialNew_Data* data = _data(); CPPUNIT_ASSERT(data);
-
-    material->_setFEKernelsLHSJacobianExplicit(*_solution1);
-
-    PetscDS prob = NULL;
-    PetscErrorCode err = DMGetDS(_solution1->dmMesh(), &prob); CPPUNIT_ASSERT(!err); CPPUNIT_ASSERT(prob);
-
-    const int numSolnFields = data->numSolnFields;
-    const int numFieldKernels = data->numKernelsJacobian;
-    for (int iField=0; iField < numSolnFields; ++iField) {
-        for (int jField=0; jField < numSolnFields; ++jField) {
-            const int indexK = iField*numSolnFields*numFieldKernels + jField*numFieldKernels;
-
-            const PetscPointJac* kernelsE = data->kernelsLHSJacobianExplicit; CPPUNIT_ASSERT(kernelsE);
-            PetscPointJac Jf0 = NULL;
-            PetscPointJac Jf1 = NULL;
-            PetscPointJac Jf2 = NULL;
-            PetscPointJac Jf3 = NULL;
-            err = PetscDSGetJacobian(prob, iField, jField, &Jf0, &Jf1, &Jf2, &Jf3); CPPUNIT_ASSERT(!err);
-            CPPUNIT_ASSERT(kernelsE[indexK+0] == Jf0);
-            CPPUNIT_ASSERT(kernelsE[indexK+1] == Jf1);
-            CPPUNIT_ASSERT(kernelsE[indexK+2] == Jf2);
-            CPPUNIT_ASSERT(kernelsE[indexK+3] == Jf3);
-        } // for
-    } // for
-
-    PYLITH_METHOD_END;
-} // test_setFEKernelsLHSJacobianExplicit
-
-
-// ----------------------------------------------------------------------
 // Test hasAuxField().
 void
 pylith::materials::TestMaterialNew::testHasAuxField(void)
@@ -502,20 +309,24 @@ pylith::materials::TestMaterialNew::testComputeResidual(void)
     _zeroBoundary(&residualRHS);
     _zeroBoundary(&residualLHS);
 
-    //residualRHS.view("RESIDUAL RHS"); // DEBUGGING
-    //residualLHS.view("RESIDUAL LHS"); // DEBUGGING
+#if 0 // DEBUGGING
+    residualRHS.view("RESIDUAL RHS"); // DEBUGGING
+    residualLHS.view("RESIDUAL LHS"); // DEBUGGING
+#endif
 
     PetscErrorCode err;
     PetscVec residualVec = NULL;
     err = VecDuplicate(residualRHS.localVector(), &residualVec); CPPUNIT_ASSERT(!err);
     err = VecWAXPY(residualVec, -1.0, residualRHS.localVector(), residualLHS.localVector()); CPPUNIT_ASSERT(!err);
 
-    PylithReal norm = 0.0;
+    PylithReal norm = 0.0, normRHS = 0.0, normLHS = 0.0;
+    err = VecNorm(residualRHS.localVector(), NORM_2, &normRHS); CPPUNIT_ASSERT(!err);
+    err = VecNorm(residualLHS.localVector(), NORM_2, &normLHS); CPPUNIT_ASSERT(!err);
     err = VecNorm(residualVec, NORM_2, &norm); CPPUNIT_ASSERT(!err);
     err = VecDestroy(&residualVec); CPPUNIT_ASSERT(!err);
     const PylithReal tolerance = 1.0e-6;
+    CPPUNIT_ASSERT(normRHS > 0.0 || normLHS > 0.0); // Avoid trivial satisfaction of norm with zero values.
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
-    CPPUNIT_ASSERT(norm > 0.0); // Norm exactly equal to zero almost certainly means test is satisfied trivially.
 
     PYLITH_METHOD_END;
 } // testComputeResidual
@@ -623,6 +434,12 @@ pylith::materials::TestMaterialNew::testComputeLHSJacobianImplicit(void)
 { // testComputeLHSJacobianImplicit
     PYLITH_METHOD_BEGIN;
 
+    MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
+    TestMaterialNew_Data* data = _data(); CPPUNIT_ASSERT(data);
+    if (data->isExplicit) {
+        PYLITH_METHOD_END;
+    } // if
+
     // Create linear problem (MMS) with two solutions, s_1 and s_2.
     //
     // Check that Jf(s_1)*(s_2 - s_1) = F(s_2) - F(s_1).
@@ -646,8 +463,6 @@ pylith::materials::TestMaterialNew::testComputeLHSJacobianImplicit(void)
     DMSetFromOptions(_solution1->dmMesh());
 #endif
 
-    MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
-    TestMaterialNew_Data* data = _data(); CPPUNIT_ASSERT(data);
 
     const PylithReal t = data->t;
     const PylithReal dt = data->dt;
@@ -697,8 +512,10 @@ pylith::materials::TestMaterialNew::testComputeLHSJacobianImplicit(void)
     VecView(resultVec, PETSC_VIEWER_STDOUT_SELF);
 #endif
 
-    PylithReal norm = 0.0;
+    PylithReal norm = 0.0, normSolnIncr = 0.0, normResidual = 0.0;
     err = VecNorm(resultVec, NORM_2, &norm); CPPUNIT_ASSERT(!err);
+    err = VecNorm(solnIncrVec, NORM_2, &normSolnIncr); CPPUNIT_ASSERT(!err);
+    err = VecNorm(residualVec, NORM_2, &normResidual); CPPUNIT_ASSERT(!err);
     err = VecDestroy(&resultVec); CPPUNIT_ASSERT(!err);
     err = VecDestroy(&solnIncrVec); CPPUNIT_ASSERT(!err);
     err = VecDestroy(&residualVec); CPPUNIT_ASSERT(!err);
@@ -706,7 +523,7 @@ pylith::materials::TestMaterialNew::testComputeLHSJacobianImplicit(void)
 
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
-    CPPUNIT_ASSERT(norm > 0.0); // Norm exactly equal to zero almost certainly means test is satisfied trivially.
+    CPPUNIT_ASSERT((0 < normResidual && 0 < norm) || (0 == normResidual && 0 == norm));
 
     PYLITH_METHOD_END;
 } // testComputeLHSJacobianImplicit
@@ -736,6 +553,12 @@ void
 pylith::materials::TestMaterialNew::testComputeLHSJacobianInverseExplicit(void)
 { // testComputeLHSJacobianInverseExplicit
     PYLITH_METHOD_BEGIN;
+
+    MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
+    TestMaterialNew_Data* data = _data(); CPPUNIT_ASSERT(data);
+    if (!data->isExplicit) {
+        PYLITH_METHOD_END;
+    } // if
 
     CPPUNIT_ASSERT_MESSAGE("Test not implemented.", false); // :TODO: ADD MORE HERE
 
@@ -914,12 +737,9 @@ pylith::materials::TestMaterialNew::_setupSolutionField(pylith::topology::Field*
 
 
 // ----------------------------------------------------------------------
-const int pylith::materials::TestMaterialNew_Data::numKernelsResidual = 2;
-const int pylith::materials::TestMaterialNew_Data::numKernelsJacobian = 4;
-
-// ----------------------------------------------------------------------
 // Constructor
 pylith::materials::TestMaterialNew_Data::TestMaterialNew_Data(void) :
+    dimension(0),
     meshFilename(0),
     materialLabel(NULL),
     materialId(0),
@@ -934,6 +754,7 @@ pylith::materials::TestMaterialNew_Data::TestMaterialNew_Data(void) :
     dt(0.0),
     tshift(0.0),
 
+    numSolnFields(0),
     solnDiscretizations(NULL),
     solnDBFilename(NULL),
     pertDBFilename(NULL),
@@ -943,15 +764,7 @@ pylith::materials::TestMaterialNew_Data::TestMaterialNew_Data(void) :
     auxDiscretizations(NULL),
     auxDBFilename(NULL),
 
-    dimension(0),
-    numSolnFields(0),
-
-    kernelsRHSResidual(NULL),
-    kernelsRHSJacobian(NULL),
-    kernelsLHSResidual(NULL),
-    kernelsLHSJacobianImplicit(NULL),
-    kernelsLHSJacobianExplicit(NULL)
-
+    isExplicit(false)
 { // constructor
 } // constructor
 

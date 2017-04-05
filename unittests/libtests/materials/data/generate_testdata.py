@@ -25,6 +25,6 @@
 tests = "all"
 
 if tests in ["all", "elasticity", "elasticity-planestrain"]:
-    import IsotropicLinearElasticityPlaneStrain; IsotropicLinearElasticityPlaneStrain.generate()
+    import IsotropicLinearElasticityPlaneStrain_UniformStrain; IsotropicLinearElasticityPlaneStrain_UniformStrain.generate()
 
 # End of file 

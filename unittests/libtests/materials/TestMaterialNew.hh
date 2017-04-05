@@ -49,12 +49,6 @@ class pylith::materials::TestMaterialNew : public CppUnit::TestFixture { // clas
     // CPPUNIT TEST SUITE /////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE( TestMaterialNew );
 
-    CPPUNIT_TEST( test_setFEKernelsRHSResidual );
-    CPPUNIT_TEST( test_setFEKernelsRHSJacobian );
-    CPPUNIT_TEST( test_setFEKernelsLHSResidual );
-    CPPUNIT_TEST( test_setFEKernelsLHSJacobianImplicit );
-    CPPUNIT_TEST( test_setFEKernelsLHSJacobianExplicit );
-
     CPPUNIT_TEST( testHasAuxField );
     CPPUNIT_TEST( testAuxFieldsDiscretization );
     CPPUNIT_TEST( testAuxFieldsDB );
@@ -84,21 +78,6 @@ public:
 
     /// Deallocate testing data.
     void tearDown(void);
-
-    /// Test _setFEKernelsRHSResidual().
-    void test_setFEKernelsRHSResidual(void);
-
-    /// Test _setFEKernelsRHSJacobian().
-    void test_setFEKernelsRHSJacobian(void);
-
-    /// Test _setFEKernelsLHSResidual().
-    void test_setFEKernelsLHSResidual(void);
-
-    /// Test _setFEKernelsLHSJacobianImplicit().
-    void test_setFEKernelsLHSJacobianImplicit(void);
-
-    /// Test _setFEKernelsLHSJacobianExplicit().
-    void test_setFEKernelsLHSJacobianExplicit(void);
 
     /// Test hasAuxField().
     void testHasAuxField(void);
@@ -215,7 +194,7 @@ public:
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
-    // GENERAL, VALUES DEPEND ON TEST CASE
+    int dimension; ///< Dimension of material.
     const char* meshFilename; ///< Name of file with ASCII mesh.
     const char* materialLabel; ///< Label defining cells associated with material.
     int materialId; ///< Material id.
@@ -230,6 +209,7 @@ public:
     PylithReal dt; ///< Time step in simulation.
     PylithReal tshift; ///< Time shift for LHS Jacobian.
 
+    int numSolnFields; ///< Number of solution fields.
     pylith::topology::Field::DiscretizeInfo* solnDiscretizations; ///< Discretizations for solution fields.
     const char* solnDBFilename; ///< Name of file with data for solution.
     const char* pertDBFilename; ///< Name of file with data for perturbation.
@@ -239,18 +219,7 @@ public:
     topology::Field::DiscretizeInfo* auxDiscretizations; ///< Discretizations for auxiliary fields.
     const char* auxDBFilename; ///< Name of file with data for auxFieldsDB.
 
-    // GENERAL, VALUES DEPEND ONLY ON MATERIAL
-    int dimension; ///< Dimension of material.
-    int numSolnFields; ///< Number of solution fields.
-
-    static const int numKernelsResidual;
-    static const int numKernelsJacobian;
-    PetscPointFunc* kernelsRHSResidual; ///< FE kernels for RHS residual, G(t,s).
-    PetscPointJac* kernelsRHSJacobian; ///< FE kernels for RHS Jacobian, G(t,s).
-    PetscPointFunc* kernelsLHSResidual; ///< FE kernels for LHS residual, F(t,s,\dot{s}).
-    PetscPointJac* kernelsLHSJacobianImplicit; ///< FE kernels for LHS Jacobian, F(t,s,\dot{s}) with implicit time-stepping.
-    PetscPointJac* kernelsLHSJacobianExplicit; ///< FE kernels for LHS Jacobian, F(t,s,\dot{s}) with expicit time-stepping.
-
+    bool isExplicit; ///< True for explicit time stepping.
 };
 
 
