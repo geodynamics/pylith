@@ -332,6 +332,9 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_setFEKernelsLHSResidua
 
     if (!solution.hasSubfield("velocity")) {
         // F(t,s,\dot{s}) = \vec{0}.
+        const PetscPointFunc f0u = NULL;
+        const PetscPointFunc f1u = NULL;
+        err = PetscDSSetResidual(prob, i_disp, f0u, f1u); PYLITH_CHECK_ERROR(err);
     } else {
         const PetscInt i_vel = solution.subfieldInfo("velocity").index;
 
