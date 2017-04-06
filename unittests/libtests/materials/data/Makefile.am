@@ -29,9 +29,9 @@ dist_noinst_DATA = \
 	mat_elastic.spatialdb
 
 noinst_DATA = \
-        IsotropicLinearElasticityPlaneStrain_UniformStrain_aux.spatialdb \
-        IsotropicLinearElasticityPlaneStrain_UniformStrain_soln.spatialdb \
-        IsotropicLinearElasticityPlaneStrain_UniformStrain_pert.spatialdb
+        $(builddir)/IsotropicLinearElasticityPlaneStrain_UniformStrain_aux.spatialdb \
+        $(builddir)/IsotropicLinearElasticityPlaneStrain_UniformStrain_soln.spatialdb \
+        $(builddir)/IsotropicLinearElasticityPlaneStrain_UniformStrain_pert.spatialdb
 
 noinst_TMP =
 
@@ -47,9 +47,9 @@ BUILT_SOURCES = export-data
 clean-local: clean-data
 
 
-IsotropicLinearElasticityPlaneStrain_UniformStrain_soln.spatialdb \
-IsotropicLinearElasticityPlaneStrain_UniformStrain_pert.spatialdb \
-IsotropicLinearElasticityPlaneStrain_UniformStrain_aux.spatialdb:
+$(builddir)/IsotropicLinearElasticityPlaneStrain_UniformStrain_soln.spatialdb \
+$(builddir)/IsotropicLinearElasticityPlaneStrain_UniformStrain_pert.spatialdb \
+$(builddir)/IsotropicLinearElasticityPlaneStrain_UniformStrain_aux.spatialdb: IsotropicLinearElasticityPlaneStrain_UniformStrain.py
 	$(PYTHON) $(srcdir)/IsotropicLinearElasticityPlaneStrain_UniformStrain.py
 
 # End of file 
