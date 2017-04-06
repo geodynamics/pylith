@@ -20,23 +20,34 @@
 
 ## @brief Python application for generating spatial database files for
 ## testing IsotropicLinearElasticityPlaneStrain via Method of
-## Manufactured Solutions.
+## Manufactured Solutions for uniform strain.
 
+# ----------------------------------------------------------------------
+# Domain
+XLIM = (-4.0e+3, +4.0e+3)
+YLIM = XLIM
+DX = XLIM[1]-XLIM[0]
+
+# Material properties
+DENSITY = 2500.0
+VS = 3000.0
+VP = 2**0.5 * VS
+
+# ----------------------------------------------------------------------
 import numpy
 
-from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
+from spatialdata.spatialdb.SimpleGridAscii import SimpleGridAscii
 from spatialdata.geocoords.CSCart import CSCart
 
-points = numpy.array([[-4.0e+3, -4.0e+3],
-                      [-4.0e+3, +4.0e+3],
-                      [+4.0e+3, -4.0e+3],
-                      [+4.0e+3, +4.0e+3]], dtype=numpy.float64)
-
+x = numpy.arange(XLIM[0], XLIM[1]+0.1*DX, DX, dtype=numpy.float64)
+y = numpy.arange(YLIM[0], YLIM[1]+0.1*DX, DX, dtype=numpy.float64)
+xgrid, ygrid = numpy.meshgrid(x, y)
+points = numpy.vstack((xgrid.ravel(), ygrid.ravel())).transpose()
 npts = points.shape[0]
 
-density = 2500.0*numpy.ones((npts,))
-vs = 3000.0*numpy.ones((npts,))
-vp = 3**0.5*3000.0*numpy.ones((npts,))
+density = DENSITY*numpy.ones((npts,))
+vs = VS*numpy.ones((npts,))
+vp = VP*numpy.ones((npts,))
 
 # Create coordinate system for spatial database
 cs = CSCart()
@@ -45,10 +56,12 @@ cs.setSpaceDim(2)
 
 # ----------------------------------------------------------------------
 def generateAuxFields():
-    writer = SimpleIOAscii()
+    writer = SimpleGridAscii()
     writer.inventory.filename = "IsotropicLinearElasticityPlaneStrain_UniformStrain_aux.spatialdb"
     writer._configure()
     writer.write({'points': points,
+                  'x': x,
+                  'y': y,
                   'coordsys': cs,
                   'data_dim': 2,
                   'values': [{'name': "vs", 'units': "m/s", 'data': vs},
@@ -60,21 +73,23 @@ def generateAuxFields():
 
 # ----------------------------------------------------------------------
 def generateSolution():
-    exx = 0.1
-    eyy = 0.25
-    exy = 0.3
+    EXX = 0.1
+    EYY = 0.25
+    EXY = 0.3
     
     disp = numpy.zeros((npts, 2))
-    disp[:,0] = exx*points[:,0] + exy*points[:,1]
-    disp[:,1] = exy*points[:,0] + eyy*points[:,1]
+    disp[:,0] = EXX*points[:,0] + EXY*points[:,1]
+    disp[:,1] = EXY*points[:,0] + EYY*points[:,1]
 
     disp_dot = 0*disp
 
     # Create writer for spatial database file
-    writer = SimpleIOAscii()
+    writer = SimpleGridAscii()
     writer.inventory.filename = "IsotropicLinearElasticityPlaneStrain_UniformStrain_soln.spatialdb"
     writer._configure()
     writer.write({'points': points,
+                  'x': x,
+                  'y': y,
                   'coordsys': cs,
                   'data_dim': 2,
                   'values': [{'name': "displacement_x", 'units': "m", 'data': disp[:,0]},
@@ -88,20 +103,25 @@ def generateSolution():
 
 # ----------------------------------------------------------------------
 def generatePerturbation():
-    x1 = numpy.arange(-4.0e+3, 4.01e+3, 0.5e+3, dtype=numpy.float64)
-    y1 = numpy.arange(-4.0e+3, 4.01e+3, 0.5e+3, dtype=numpy.float64)
-    x2, y2 = numpy.meshgrid(x1, y1)
-    points = numpy.vstack((x2.ravel(), y2.ravel())).transpose()
+    PERT_DX = 500.0
+    PERT_AMPLITUDE = 1.0e-2
+    
+    x = numpy.arange(XLIM[0], XLIM[1]+0.1*PERT_DX, PERT_DX, dtype=numpy.float64)
+    y = numpy.arange(YLIM[0], YLIM[1]+0.1*PERT_DX, PERT_DX, dtype=numpy.float64)
+    xgrid, ygrid = numpy.meshgrid(x, y)
+    points = numpy.vstack((xgrid.ravel(), ygrid.ravel())).transpose()
     npts = points.shape[0]
 
-    disp = 1.0e-2*(numpy.random.rand(npts,2)-0.5)
+    disp = PERT_AMPLITUDE*(numpy.random.rand(npts,2)-0.5)
     disp_dot = 0*disp
 
     # Create writer for spatial database file
-    writer = SimpleIOAscii()
+    writer = SimpleGridAscii()
     writer.inventory.filename = "IsotropicLinearElasticityPlaneStrain_UniformStrain_pert.spatialdb"
     writer._configure()
     writer.write({'points': points,
+                  'x': x,
+                  'y': y,
                   'coordsys': cs,
                   'data_dim': 2,
                   'values': [{'name': "displacement_x", 'units': "m", 'data': disp[:,0]},

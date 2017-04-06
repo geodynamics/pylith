@@ -32,7 +32,7 @@
 
 #include "pylith/topology/Field.hh" // HASA FieldBase::Discretization
 #include "petscds.h" // USES PetscPointFunc, PetsPointJac
-#include "spatialdata/spatialdb/SpatialDB.hh" // HOLDSA SpatialDB
+#include "spatialdata/spatialdb/SimpleGridDB.hh" // HOLDSA SimpleGridDB
 
 /// Namespace for pylith package
 namespace pylith {
@@ -174,7 +174,7 @@ protected:
     topology::Field* _solution2;   ///< Solution field.
     topology::Field* _solution1Dot;   ///< Time derivative of solution field.
     topology::Field* _solution2Dot;   ///< Time derivative of solution field.
-    spatialdata::spatialdb::SimpleDB* _auxDB;   ///< Spatial database with data for auxiliary fields.
+    spatialdata::spatialdb::SimpleGridDB* _auxDB;   ///< Spatial database with data for auxiliary fields.
 
 }; // class TestMaterialNew
 

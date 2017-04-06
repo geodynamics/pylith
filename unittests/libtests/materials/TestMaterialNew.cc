@@ -660,13 +660,11 @@ pylith::materials::TestMaterialNew::_initializeFull(void)
     _initializeMin();
 
     // Set auxiliary fields spatial database.
-    delete _auxDB; _auxDB = new spatialdata::spatialdb::SimpleDB; CPPUNIT_ASSERT(_auxDB);
-    spatialdata::spatialdb::SimpleIOAscii dbIO;
+    delete _auxDB; _auxDB = new spatialdata::spatialdb::SimpleGridDB; CPPUNIT_ASSERT(_auxDB);
     CPPUNIT_ASSERT(data->auxDBFilename);
-    dbIO.filename(data->auxDBFilename);
-    _auxDB->ioHandler(&dbIO);
+    _auxDB->filename(data->auxDBFilename);
     _auxDB->label("IsotropicLinearElasciticityPlaneStrain auxiliary fields database");
-    _auxDB->queryType(spatialdata::spatialdb::SimpleDB::LINEAR);
+    _auxDB->queryType(spatialdata::spatialdb::SimpleGridDB::LINEAR);
     material->auxFieldsDB(_auxDB);
 
     for (int i=0; i < data->numAuxFields; ++i) {

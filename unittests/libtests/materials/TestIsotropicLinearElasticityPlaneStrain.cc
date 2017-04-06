@@ -28,8 +28,7 @@
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES JournalingComponent
 
-#include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
-#include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
+#include "spatialdata/spatialdb/SimpleGridDB.hh" // USES SimpleGridDB
 
 extern "C" {
 #include "pylith/fekernels/dispvel.h" // USES DispVel kernels
@@ -366,12 +365,10 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_setupSolutionField
     field->allocate();
     field->zeroLocal();
 
-    spatialdata::spatialdb::SimpleDB fieldDB;
-    spatialdata::spatialdb::SimpleIOAscii dbIO;
-    dbIO.filename(dbFilename);
-    fieldDB.ioHandler(&dbIO);
+    spatialdata::spatialdb::SimpleGridDB fieldDB;
+    fieldDB.filename(dbFilename);
     fieldDB.label("IsotropicLinearElasciticityPlaneStrain solution database");
-    fieldDB.queryType(spatialdata::spatialdb::SimpleDB::LINEAR);
+    fieldDB.queryType(spatialdata::spatialdb::SimpleGridDB::LINEAR);
 
     pylith::topology::FieldQuery queryField(*field);
     queryField.queryFn(subfields[0].c_str(), pylith::topology::FieldQuery::dbQueryGeneric);
