@@ -62,6 +62,8 @@ pylith::problems::TimeDependent::deallocate(void)
 { // deallocate
     PYLITH_METHOD_BEGIN;
 
+    Problem::deallocate();
+    
     PetscErrorCode err = TSDestroy(&_ts); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
