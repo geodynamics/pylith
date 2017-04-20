@@ -39,7 +39,7 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::OutputManagerNew::OutputManagerNew(void) :
-    _fields(0),
+    _fields(NULL),
     _coordsys(NULL),
     _writer(NULL),
     _vertexFilter(NULL),
@@ -68,7 +68,7 @@ pylith::meshio::OutputManagerNew::deallocate(void)
     _vertexFilter = NULL; // :TODO: Use shared pointer
     _cellFilter = NULL; // :TODO: Use shared pointer
     delete _coordsys; _coordsys = NULL;
-    delete _fields; _fields = 0;
+    delete _fields; _fields = NULL;
 } // deallocate
 
 // ----------------------------------------------------------------------
