@@ -23,6 +23,7 @@ subpkginclude_HEADERS = \
 	dispvel.h \
 	elasticity.h \
 	linearelasticityplanestrain.h \
+	linearmaxwellplanestrain.h \
 	linearincompelasticityplanestrain.h \
 	pressure.h \
 	timedependentbc.h

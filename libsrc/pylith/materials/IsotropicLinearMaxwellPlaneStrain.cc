@@ -182,18 +182,19 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_auxFieldsSetup(void)
     const char* maxwellTimeComponents[1] = {"maxwell_time"};
     const pylith::topology::Field::DiscretizeInfo& maxwellTimeFEInfo = this->auxFieldDiscretization("maxwell_time");
     _auxFields->subfieldAdd("maxwell_time", maxwellTimeComponents, 1, pylith::topology::Field::SCALAR, maxwellTimeFEInfo.basisOrder, maxwellTimeFEInfo.quadOrder, maxwellTimeFEInfo.isBasisContinuous, timeScale);
-    _auxFieldsQuery->queryFn("maxwell_time", pylith::materials::Query::dbQueryMaxwellTime2D);
+    // NOTE:  Need specific query for Maxwell time.
+    _auxFieldsQuery->queryFn("maxwell_time", pylith::topology::FieldQuery::dbQueryGeneric);
 
     // Field 4: total strain
     const PylithInt totalStrainSize = 4;
-    const char* componentsTotalStrain[totalStrainSize] = {"total_strain_xx", "total_strain_yy", "total_strain_xy", "total_strain_zz"};
+    const char* componentsTotalStrain[totalStrainSize] = {"total_strain_xx", "total_strain_yy", "total_strain_zz", "total_strain_xy"};
     const pylith::topology::Field::DiscretizeInfo& totalStrainFEInfo = this->auxFieldDiscretization("total_strain");
     _auxFields->subfieldAdd("total_strain", componentsTotalStrain, totalStrainSize, pylith::topology::Field::OTHER, totalStrainFEInfo.basisOrder, totalStrainFEInfo.quadOrder, totalStrainFEInfo.isBasisContinuous, 1.0);
     _auxFieldsQuery->queryFn("total_strain", pylith::topology::FieldQuery::dbQueryGeneric);
 
     // Field 5: viscous strain
     const PylithInt viscousStrainSize = 4;
-    const char* componentsViscousStrain[viscousStrainSize] = {"viscous_strain_xx", "viscous_strain_yy", "viscous_strain_xy", "viscous_strain_zz"};
+    const char* componentsViscousStrain[viscousStrainSize] = {"viscous_strain_xx", "viscous_strain_yy", "viscous_strain_zz", "viscous_strain_xy"};
     const pylith::topology::Field::DiscretizeInfo& viscousStrainFEInfo = this->auxFieldDiscretization("viscous_strain");
     _auxFields->subfieldAdd("viscous_strain", componentsViscousStrain, viscousStrainSize, pylith::topology::Field::OTHER, viscousStrainFEInfo.basisOrder, viscousStrainFEInfo.quadOrder, viscousStrainFEInfo.isBasisContinuous, 1.0);
     _auxFieldsQuery->queryFn("viscous_strain", pylith::topology::FieldQuery::dbQueryGeneric);
@@ -219,13 +220,13 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_auxFieldsSetup(void)
     // Fields 8 and 9: reference stress and reference strain
     if (_useReferenceState) {
         const PylithInt stressSize = 4;
-        const char* componentsStress[stressSize] = {"stress_xx", "stress_yy", "stress_xy", "stress_zz"};
+        const char* componentsStress[stressSize] = {"stress_xx", "stress_yy", "stress_zz", "stress_xy"};
         const pylith::topology::Field::DiscretizeInfo& stressFEInfo = this->auxFieldDiscretization("reference_stress");
         _auxFields->subfieldAdd("reference_stress", componentsStress, stressSize, pylith::topology::Field::OTHER, stressFEInfo.basisOrder, stressFEInfo.quadOrder, stressFEInfo.isBasisContinuous, pressureScale);
         _auxFieldsQuery->queryFn("reference_stress", pylith::topology::FieldQuery::dbQueryGeneric);
 
         const PylithInt strainSize = 4;
-        const char* componentsStrain[strainSize] = {"strain_xx", "strain_yy", "strain_xy", "strain_zz"};
+        const char* componentsStrain[strainSize] = {"strain_xx", "strain_yy", "strain_zz", "strain_xy"};
         const pylith::topology::Field::DiscretizeInfo& strainFEInfo = this->auxFieldDiscretization("reference_strain");
         _auxFields->subfieldAdd("reference_strain", componentsStrain, strainSize, pylith::topology::Field::OTHER, strainFEInfo.basisOrder, strainFEInfo.quadOrder, strainFEInfo.isBasisContinuous, 1.0);
         _auxFieldsQuery->queryFn("reference_strain", pylith::topology::FieldQuery::dbQueryGeneric);
@@ -483,8 +484,10 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsUpdateStateva
     PetscDS prob = NULL;
     PetscErrorCode err = DMGetDS(dm, &prob); PYLITH_CHECK_ERROR(err);
 
-    const PetscPointFunc updateStateVarsKernel = pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_UpdateStateVarsKernel;
-    err = PetscDSSetUpdate(prob, updateStateVarsKernel); PYLITH_CHECK_ERROR(err);
+    const PetscPointFunc updateStateVarsKernel = pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_updateStateVars;
+    //******** The call below does not seem to be correct for the way I have things set up. The PETSc function expects
+    // a field number, which seems to indicate I need a separate kernel for each state variable.
+    // err = PetscDSSetUpdate(prob, updateStateVarsKernel); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _setFEKernelsUpdateStatevars

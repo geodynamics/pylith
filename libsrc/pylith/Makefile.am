@@ -93,6 +93,7 @@ libpylith_la_SOURCES = \
 	fekernels/dispvel.c \
 	fekernels/elasticity.c \
 	fekernels/linearelasticityplanestrain.c \
+	fekernels/linearmaxwellplanestrain.c \
 	fekernels/linearincompelasticityplanestrain.c \
 	fekernels/pressure.c \
 	fekernels/timedependentbc.c \
@@ -121,6 +122,7 @@ libpylith_la_SOURCES = \
 	materials/DruckerPragerPlaneStrain.cc \
 	materials/MaterialNew.cc \
 	materials/IsotropicLinearElasticityPlaneStrain.cc \
+	materials/IsotropicLinearMaxwellPlaneStrain.cc \
 	materials/IsotropicLinearIncompElasticityPlaneStrain.cc \
 	materials/Query.cc \
 	meshio/BinaryIO.cc \
