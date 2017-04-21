@@ -596,7 +596,7 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_deviatoricStress_refstate(con
 									     PylithScalar stress[]);
 
 
-/** Calculate state variables at t+dt for 2-D plane strain isotropic linear
+/** Calculate viscous strain at t+dt for 2-D plane strain isotropic linear
  * Maxwell viscoelasticity.
  *
  * Solution fields: [disp(dim)]
@@ -617,11 +617,11 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_deviatoricStress_refstate(con
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
- * @param[out] stress Result [dim*dim].
+ * @param[out] visStrainTpdt Result [4].
  *
  */
 void
-pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_computeStateVars(const PylithInt dim,
+pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_computeVisStrain(const PylithInt dim,
 								    const PylithInt numS,
 								    const PylithInt numA,
 								    const PylithInt sOff[],
@@ -636,10 +636,10 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_computeStateVars(const Pylith
 								    const PylithScalar a_x[],
 								    const PylithReal t,
 								    const PylithScalar x[],
-								    PylithScalar stress[]);
+								    PylithScalar visStrainTpdt[]);
 
 
-/** Update state variables at t+dt for 2-D plane strain isotropic linear
+/** Update total strain for 2-D plane strain isotropic linear
  * Maxwell viscoelasticity.
  *
  * Solution fields: [disp(dim)]
@@ -660,11 +660,54 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_computeStateVars(const Pylith
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
- * @param[out] dummy Result [dim*dim].
+ * @param[out] totalStrainTpdt Result [4].
  *
  */
 void
-pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_updateStateVars(const PylithInt dim,
+pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_updateTotalStrain(const PylithInt dim,
+								     const PylithInt numS,
+								     const PylithInt numA,
+								     const PylithInt sOff[],
+								     const PylithInt sOff_x[],
+								     const PylithScalar s[],
+								     const PylithScalar s_t[],
+								     const PylithScalar s_x[],
+								     const PylithInt aOff[],
+								     const PylithInt aOff_x[],
+								     const PylithScalar a[],
+								     const PylithScalar a_t[],
+								     const PylithScalar a_x[],
+								     const PylithReal t,
+								     const PylithScalar x[],
+								     PylithScalar totalStrainTpdt[]);
+
+
+/** Update viscous strain for 2-D plane strain isotropic linear
+ * Maxwell viscoelasticity.
+ *
+ * Solution fields: [disp(dim)]
+ * Auxiliary fields: [shear_modulus(1), reference_stress(4), reference_strain(4)]
+ *
+ * @param[in] dim Spatial dimension.
+ * @param[in] numS Number of registered subfields in solution field [1].
+ * @param[in] numA Number of registered subfields in auxiliary field [1].
+ * @param[in] sOff Offset of registered subfields in solution field [numS].
+ * @param[in] sOff_x Offset of registered subfields in gradient of the solution field [numS].
+ * @param[in] s Solution field with all subfields.
+ * @param[in] s_t Time derivative of solution field.
+ * @param[in] s_x Gradient of solution field.
+ * @param[in] aOff Offset of registered subfields in auxiliary field [numA]
+ * @param[in] aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
+ * @param[in] a Auxiliary field with all subfields.
+ * @param[in] a_t Time derivative of auxiliary field.
+ * @param[in] a_x Gradient of auxiliary field.
+ * @param[in] t Time for residual evaluation.
+ * @param[in] x Coordinates of point evaluation.
+ * @param[out] visStrainTpdt Result [4].
+ *
+ */
+void
+pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_updateVisStrain(const PylithInt dim,
 								   const PylithInt numS,
 								   const PylithInt numA,
 								   const PylithInt sOff[],
@@ -679,7 +722,7 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_updateStateVars(const PylithI
 								   const PylithScalar a_x[],
 								   const PylithReal t,
 								   const PylithScalar x[],
-								   PylithScalar dummy[]);
+								   PylithScalar visStrainTpdt[]);
 
 
 

@@ -44,6 +44,7 @@ swig_sources = \
 	../feassemble/IntegratorPointwise.i \
 	MaterialNew.i \
 	IsotropicLinearElasticityPlaneStrain.i \
+	IsotropicLinearMaxwellPlaneStrain.i \
 	IsotropicLinearIncompElasticityPlaneStrain.i
 
 swigincludedir = $(pkgdatadir)/swig/$(subpackage)

@@ -484,10 +484,13 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsUpdateStateva
     PetscDS prob = NULL;
     PetscErrorCode err = DMGetDS(dm, &prob); PYLITH_CHECK_ERROR(err);
 
-    const PetscPointFunc updateStateVarsKernel = pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_updateStateVars;
-    //******** The call below does not seem to be correct for the way I have things set up. The PETSc function expects
-    // a field number, which seems to indicate I need a separate kernel for each state variable.
-    // err = PetscDSSetUpdate(prob, updateStateVarsKernel); PYLITH_CHECK_ERROR(err);
+    const PetscInt i_totalstrain = solution.subfieldInfo("total_strain").index;
+    const PetscInt i_viscousstrain = solution.subfieldInfo("viscous_strain").index;
+
+    const PetscPointFunc updateTotalStrainKernel = pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_updateTotalStrain;
+    const PetscPointFunc updateViscousStrainKernel = pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_updateVisStrain;
+    err = PetscDSSetUpdate(prob, i_totalstrain, updateTotalStrainKernel); PYLITH_CHECK_ERROR(err);
+    err = PetscDSSetUpdate(prob, i_viscousstrain, updateViscousStrainKernel); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _setFEKernelsUpdateStatevars
