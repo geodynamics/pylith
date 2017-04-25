@@ -35,6 +35,7 @@ information that needs to be passed between C++ and Python.
   * _configiure (transfer Pyre inventory to Python object).
 
   * preinitialize (transfer information from Python to C++)
+    Pass name of Pyre component to C++: `ModuleNAME.identifier(self, self.aliases[-1])`
 
   * verifyConfiguration (avoid if at all possible)
 
@@ -44,4 +45,12 @@ information that needs to be passed between C++ and Python.
 
   * initialize (initialize object and data members)
 
+  * Static data members _pyreComponent.
+
+  * Constructor
+    Set name of Pyre facility: `PyreComponent::name(_pyreComponent);`
+
   * everything else
+    Every method begins with PYLITH_METHOD_BEGIN and ends with PYLITH_METHOD_END/RETURN.
+    Use PYLITH_JOURNAL_DEBUG() immediately after PYLITH_METHOD_BEGIN.
+    
