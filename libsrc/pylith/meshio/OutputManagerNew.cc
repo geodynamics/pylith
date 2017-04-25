@@ -400,7 +400,6 @@ pylith::meshio::OutputManagerNew::getBuffer(const pylith::topology::Field& field
         fieldOut.copy(fieldIn);
     } // if/else
     fieldOut.dimensionalizeOkay(true);
-    fieldOut.dimensionalize();
 
     PYLITH_METHOD_RETURN(fieldOut);
 } // getBuffer
