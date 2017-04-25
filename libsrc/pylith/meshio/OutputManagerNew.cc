@@ -188,7 +188,7 @@ pylith::meshio::OutputManagerNew::open(const topology::Mesh& mesh,
                                        const int labelId)
 { // open
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("OutputManagerNew::open(mesh="<<typeid(mesh).name()<<", isInfo="<<isInfo<<", label="<<label<<", labelId="<<labelId<<")");
+    PYLITH_JOURNAL_DEBUG("OutputManagerNew::open(mesh="<<typeid(mesh).name()<<", isInfo="<<isInfo<<", label="<<(label ? label : "NULL")<<", labelId="<<labelId<<")");
 
 
     if (!_writer) {
@@ -230,7 +230,7 @@ pylith::meshio::OutputManagerNew::openTimeStep(const PylithReal t,
                                                const int labelId)
 { // openTimeStep
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("OutputManagerNew::openTimeStep(t="<<t<<", mesh="<<typeid(mesh).name()<<", label="<<label<<", labelId="<<labelId<<")");
+    PYLITH_JOURNAL_DEBUG("OutputManagerNew::openTimeStep(t="<<t<<", mesh="<<typeid(mesh).name()<<", label="<<(label ? label : "NULL")<<", labelId="<<labelId<<")");
 
     assert(_writer);
     _writer->openTimeStep(t, mesh, label, labelId);
