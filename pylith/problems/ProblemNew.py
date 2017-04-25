@@ -26,7 +26,7 @@ from pylith.utils.PetscComponent import PetscComponent
 from .problems import Problem as ModuleProblem
 
 from pylith.utils.NullComponent import NullComponent
-from pylith.meshio.OutputSoln import OutputSoln
+from pylith.meshio.OutputSolnNew import OutputSolnNew
 from pylith.feassemble.IntegratorPointwise import IntegratorPointwise
 from pylith.feassemble.ConstraintPointwise import ConstraintPointwise
 
@@ -65,7 +65,7 @@ def outputFactory(name):
     Factory for output items.
     """
     from pyre.inventory import facility
-    return facility(name, family="output_manager", factory=OutputSoln)
+    return facility(name, family="output_manager", factory=OutputSolnNew)
 
 
 # ProblemNew class
@@ -169,6 +169,10 @@ class ProblemNew(PetscComponent, ModuleProblem):
         for interface in self.interfaces.components():
             interface.preinitialize(mesh)
 
+        # Preinitialize solution output.
+        for output in self.outputs.components():
+            output.preinitialize()
+
         # Set integrators and constraints.
         self._setIntegratorsConstraints()
 
@@ -226,11 +230,30 @@ class ProblemNew(PetscComponent, ModuleProblem):
         raise NotImplementedError("run() not implemented.")
         return
 
-    def finalize(self, mesh):
+    def finalize(self):
         """
-        Cleanup.
+        Cleanup after running problem.
         """
-        raise NotImplementedError("finalize() not implemented.")
+        from pylith.mpi.Communicator import mpi_comm_world
+        comm = mpi_comm_world()
+        if 0 == comm.rank:
+            self._info.log("Finalizing problem.")
+
+        # Finalize materials
+        for material in self.materials.components():
+            material.finalize()
+
+        # Finalize BC
+        for bc in self.bc.components():
+            bc.finalize()
+
+        # Finalize interfaces
+        for interface in self.interfaces.components():
+            interface.finalize()
+
+        # Finalize solution output.
+        for output in self.outputs.components():
+            output.close()
         return
 
     def checkpoint(self):

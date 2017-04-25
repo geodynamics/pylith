@@ -89,6 +89,13 @@ class BoundaryConditionNew(PetscComponent,
         ModuleBoundaryCondition.label(self, self.label)
         return
 
+    def finalize(self):
+        """
+        Cleanup after running problem.
+        """
+        raise NotImplementedError("finalize() not implemented.")
+        return
+
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):

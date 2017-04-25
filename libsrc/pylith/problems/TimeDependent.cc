@@ -25,6 +25,7 @@
 
 #include "pylith/feassemble/IntegratorPointwise.hh" // USES IntegratorPointwise
 #include "pylith/feassemble/ConstraintPointwise.hh" // USES ConstraintPointwise
+#include "pylith/meshio/OutputSolnNew.hh" // USES OutputSolnNew
 
 #include "petscts.h" // USES PetscTS
 
@@ -360,10 +361,10 @@ pylith::problems::TimeDependent::poststep(void)
     // :QUESTION: :MATT: What time does this solution correspond to?
     PetscErrorCode err;
     PylithReal t;
-    PylithInt dt;
+    PylithInt tindex;
     PetscVec solutionVec = NULL;
     err = TSGetTime(_ts, &t); PYLITH_CHECK_ERROR(err);
-    err = TSGetTotalSteps(_ts, &dt); PYLITH_CHECK_ERROR(err);
+    err = TSGetTotalSteps(_ts, &tindex); PYLITH_CHECK_ERROR(err);
     err = TSGetSolution(_ts, &solutionVec); PYLITH_CHECK_ERROR(err);
 
     // Update PyLith view of the solution.
@@ -373,10 +374,11 @@ pylith::problems::TimeDependent::poststep(void)
     // Output solution.
     const size_t numOutput = _outputs.size();
     for (size_t i=0; i < numOutput; ++i) {
-#if 1
+        assert(_outputs[i]);
+#if 0
         PYLITH_JOURNAL_ERROR(":TODO: @brad Implement solution output in poststep().");
 #else
-        _outputs[i].writeTimeStep(t, dt, *_solution);
+        _outputs[i]->writeTimeStep(t, tindex, *_solution);
 #endif
     } // for
 

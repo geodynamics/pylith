@@ -50,12 +50,12 @@ class OutputManagerNew(PetscComponent, ModuleOutputManager):
 
     import pyre.inventory
 
-    trigger = pyre.inventory.str("trigger", default="num_timesteps", validator=pyre.inventory.choice(["elasped_time", "skip_timesteps"]))
+    trigger = pyre.inventory.str("trigger", default="skip_timesteps", validator=pyre.inventory.choice(["elasped_time", "skip_timesteps"]))
     trigger.meta['tip'] = "Flag indicating whether to use 'elapsed_time' or 'skip_timesteps' to set how often output is written."
 
     from pyre.units.time import s
     timeSkip = pyre.inventory.dimensional("elapsed_time", default=1.0 * s)
-    timeSkip.meta['tip'] = "Elapsed time between writes.""
+    timeSkip.meta['tip'] = "Elapsed time between writes."
 
     numTimeStepsSkip = pyre.inventory.int("skip_timesteps", default=0, validator=pyre.inventory.greaterEqual(0))
     numTimeStepsSkip.meta['tip'] = "Number of time steps to skip between writes."
@@ -91,17 +91,25 @@ class OutputManagerNew(PetscComponent, ModuleOutputManager):
         """
         Setup output manager.
         """
-        ModuleOutputManager.trigger(self.trigger)
-        if self.trigger == ModuleOutputManager.SKIP_TIMESTEPS:
-            ModuleOutputManager.numTimeStepsSkip(self.numTimeStepsSkip)
-        elif self.trigger == ModuleOutputManager.ELAPSED_TIME:
-            ModuleOutputManager.timeSkip(self.timeSkip)
-        if self.coordsys:
+        ModuleOutputManager.identifier(self, self.aliases[-1])
+        print self.trigger
+        if self.inventory.trigger == "skip_timesteps":
+            ModuleOutputManager.trigger(self, ModuleOutputManager.SKIP_TIMESTEPS)
+            ModuleOutputManager.numTimeStepsSkip(self, self.numTimeStepsSkip)
+        elif self.trigger == "elapsed_time":
+            ModuleOutputManager.trigger(self, ModuleOutputManager.ELAPSED_TIME)
+            ModuleOutputManager.timeSkip(self, self.timeSkip)
+        else:
+            raise ValueError("Unknown output trigger '%s'." % self.inventory.trigger)
+
+        if not isinstance(self.coordsys, NullComponent):
             ModuleOutputManager.coordsys(self, self.coordsys)
-        if self.vertexFilter:
+        if not isinstance(self.vertexFilter, NullComponent):
             ModuleOutputManager.vertexFilter(self, self.vertexFilter)
-        if self.cellFilter:
+        if not isinstance(self.inventory.cellFilter, NullComponent):
             ModuleOutputManager.cellFilter(self, self.cellFilter)
+
+        self.writer.preinitialize()
         ModuleOutputManager.writer(self, self.writer)
         return
 
@@ -112,24 +120,12 @@ class OutputManagerNew(PetscComponent, ModuleOutputManager):
         Set members based using inventory.
         """
         PetscComponent._configure(self)
-        if self.inventory.trigger == "skip_timesteps":
-            self.trigger = ModuleOutputManager.SKIP_TIMESTEPS
-            self.numTimeStepsSkip = self.inventory.numTimeStepsSkip
-        elif self.inventory.trigger == "elapsed_time":
-            self.trigger = ModuleOutputManager.ELAPSED_TIME
-            self.timeSkip = self.inventory.timeSkip
-        else:
-            raise ValueError("Unknown output trigger '%s'." % self.inventory.trigger)
+        self.trigger = self.inventory.trigger
+        self.numTimeStepsSkip = self.inventory.numTimeStepsSkip
+        self.timeSkip = self.inventory.timeSkip
 
-        #self.coordsys = self.inventory.coordsys
-        if isinstance(self.inventory.vertexFilter, NullComponent):
-            self.vertexFilter = None
-        else:
-            self.vertexFilter = self.inventory.vertexFilter
-        if isinstance(self.inventory.cellFilter, NullComponent):
-            self.cellFilter = None
-        else:
-            self.cellFilter = self.inventory.cellFilter
+        self.coordsys = NullComponent()
+        self.vertexFilter = self.inventory.vertexFilter
         self.writer = self.inventory.writer
         return
 

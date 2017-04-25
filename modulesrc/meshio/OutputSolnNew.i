@@ -25,7 +25,7 @@
 namespace pylith {
     namespace meshio {
 
-	class pylith::meshio::OutputSolnNew : public OutputManager {
+	class pylith::meshio::OutputSolnNew : public OutputManagerNew {
 
 	// PUBLIC METHODS ///////////////////////////////////////////////
 	public :
@@ -44,9 +44,13 @@ namespace pylith {
 	     * @param[in] names Array of names of fields to output.
 	     * @param[in] numNames Length of array.
 	     */
+	    %apply(const char* const* string_list, const int list_len){
+			(const char* names[], const int numNames)
+	    };
 	    void vertexDataFields(const char* names[],
 				  const int numNames);
-	    
+        %clear(const char* const* names, const int numNames);
+
 	    /** Verify configuration.
 	     *
 	     * @param mesh PETSc mesh

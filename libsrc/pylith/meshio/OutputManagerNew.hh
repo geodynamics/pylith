@@ -183,11 +183,11 @@ void appendCellField(const PylithReal t,
 /** Check whether we want to write output at time t.
  *
  * @param[in] t Time of proposed write.
- * @param[in] timeStep Inxex of current time step.
+ * @param[in] tindex Inxex of current time step.
  * @returns True if output should be written at time t, false otherwise.
  */
 bool shouldWrite(const PylithReal t,
-                 const PylithInt timeStep);
+                 const PylithInt tindex);
 
 /** Get buffer for field.
  *

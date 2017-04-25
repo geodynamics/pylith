@@ -47,7 +47,7 @@ pylith::meshio::OutputManagerNew::OutputManagerNew(void) :
     _timeSkip(0.0),
     _timeWrote(-PYLITH_MAXSCALAR),
     _numTimeStepsSkip(0),
-    _timeStepWrote(PYLITH_MININT),
+    _timeStepWrote(PYLITH_MININT+10),
     _trigger(SKIP_TIMESTEPS)
 { // constructor
 } // constructor

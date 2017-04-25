@@ -86,11 +86,22 @@ class MaterialNew(IntegratorPointwise,
         return
 
     def preinitialize(self, mesh):
+        """
+        Setup material.
+        """
         IntegratorPointwise.preinitialize(self, mesh)
 
         ModuleMaterial.id(self, self.materialId)
         ModuleMaterial.label(self, self.label)
         print ":TODO: @brad MaterialNew.preinitialize() Pass output manager to C++."
+        return
+
+    def finalize(self):
+        """
+        Cleanup after running problem.
+        """
+        print ":TODO: @brad MaterialNew.finalize() Close output."
+        #self.output.close()
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

@@ -101,7 +101,7 @@ public:
          * @param[in] outputArray Array of solution outputs.
          * @param[in] numOutputs Number of solution outputs.
          */
-        void outputs(pylith::meshio::OutputManager* outputArray[],
+        void outputs(pylith::meshio::OutputSolnNew* outputArray[],
                      const int numOutputs);
 
         /** Do minimal initialization.

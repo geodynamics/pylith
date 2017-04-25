@@ -56,6 +56,13 @@ class DirichletNew(BoundaryConditionNew,
         ConstraintPointwise.preinitialize(self, mesh)
         return
 
+    def finalize(self):
+        """
+        Cleanup after running problem.
+        """
+        print(":TODO: @brad Implement DirichletNew.finalize() once output manager is added.")
+        return
+
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):

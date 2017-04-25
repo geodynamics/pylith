@@ -92,7 +92,8 @@ import_array();
 %include "DataWriterHDF5Ext.i"
 %include "Xdmf.i"
 #endif
-#include "pylith/meshio/OutputManagerNew.i"
-#include "pylith/meshio/OutputSolnNew.i"
+%include "../utils/PyreComponent.i"
+%include "OutputManagerNew.i"
+%include "OutputSolnNew.i"
 
 // End of file

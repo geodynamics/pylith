@@ -127,7 +127,7 @@ public:
      * @param[in] outputArray Array of solution outputs.
      * @param[in] numOutputs Number of solution outputs.
      */
-    void outputs(pylith::meshio::OutputManager* outputArray[],
+    void outputs(pylith::meshio::OutputSolnNew* outputArray[],
                  const int numOutputs);
 
     /** Do minimal initialization.
@@ -243,7 +243,7 @@ protected:
     spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
     std::vector<pylith::feassemble::IntegratorPointwise*> _integrators;   ///< Array of integrators.
     std::vector<pylith::feassemble::ConstraintPointwise*> _constraints;   ///< Array of constraints.
-    std::vector<pylith::meshio::OutputManager*> _outputs; ///< Array of solution output managers.
+    std::vector<pylith::meshio::OutputSolnNew*> _outputs; ///< Array of solution output managers.
     SolverTypeEnum _solverType;   ///< Problem (solver) type.
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////

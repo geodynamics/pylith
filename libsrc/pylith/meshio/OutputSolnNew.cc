@@ -28,9 +28,13 @@
 #include <typeinfo> // USES typeid()
 
 // ----------------------------------------------------------------------
+const char* pylith::meshio::OutputSolnNew::_pyreComponent = "outputsoln";
+
+// ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::OutputSolnNew::OutputSolnNew(void)
 { // constructor
+    PyreComponent::name(_pyreComponent);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -98,18 +102,19 @@ pylith::meshio::OutputSolnNew::verifyConfiguration(const pylith::topology::Field
 // Write solution at time step.
 void
 pylith::meshio::OutputSolnNew::writeTimeStep(const PylithReal t,
-                                             const PylithInt timeStep,
+                                             const PylithInt tindex,
                                              const pylith::topology::Field& solution)
 { // writeTimeStep
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("OutputSolnNew::writeTimeStep(t="<<t<<", timeStep="<<timeStep<<", solution="<<solution.label()<<")");
+    PYLITH_JOURNAL_DEBUG("OutputSolnNew::writeTimeStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
 
-    if (!this->shouldWrite(t, timeStep)) {
+    if (!this->shouldWrite(t, tindex)) {
         PYLITH_METHOD_END;
     } // if
 
     const pylith::string_vector& subfieldNames = (1 == _vertexDataFields.size() && std::string("all") == _vertexDataFields[0]) ? solution.subfieldNames() : _vertexDataFields;
 
+    this->openTimeStep(t, solution.mesh());
     const size_t numFields = subfieldNames.size();
     for (size_t iField=0; iField < numFields; iField++) {
         if (!solution.hasSubfield(subfieldNames[iField].c_str())) {
@@ -121,6 +126,7 @@ pylith::meshio::OutputSolnNew::writeTimeStep(const PylithReal t,
         pylith::topology::Field& fieldBuffer = this->getBuffer(solution, subfieldNames[iField].c_str());
         this->appendVertexField(t, fieldBuffer, fieldBuffer.mesh());
     } // for
+    this->closeTimeStep();
 
     PYLITH_METHOD_END;
 } // writeTimeStep

@@ -109,20 +109,6 @@ class TimeDependentNew(ProblemNew, ModuleTimeDependent):
         ProblemNew.preinitialize(self, mesh)
         return
 
-    def verifyConfiguration(self):
-        """
-        Verify compatibility of configuration.
-        """
-        ProblemNew.verifyConfiguration(self)
-        return
-
-    def initialize(self):
-        """
-        Initialize the constraints, integrators, output managers, etc.
-        """
-        ProblemNew.initialize(self)
-        return
-
     def run(self, app):
         """
         Solve time dependent problem.
@@ -134,12 +120,6 @@ class TimeDependentNew(ProblemNew, ModuleTimeDependent):
             self._info.log("Solving problem.")
 
         ModuleTimeDependent.solve(self)
-        return
-
-    def finalize(self):
-        """
-        Cleanup after running problem.
-        """
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

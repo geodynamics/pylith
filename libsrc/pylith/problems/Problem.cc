@@ -1,4 +1,3 @@
-
 // -*- C++ -*-
 //
 // ======================================================================
@@ -26,6 +25,7 @@
 
 #include "pylith/feassemble/IntegratorPointwise.hh" // USES IntegratorPointwise
 #include "pylith/feassemble/ConstraintPointwise.hh" // USES ConstraintPointwise
+#include "pylith/meshio/OutputSolnNew.hh" // USES OutputSolnNew
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -168,7 +168,7 @@ pylith::problems::Problem::constraints(pylith::feassemble::ConstraintPointwise* 
 // ----------------------------------------------------------------------
 // Set constraints over the mesh.
 void
-pylith::problems::Problem::outputs(pylith::meshio::OutputManager* outputArray[],
+pylith::problems::Problem::outputs(pylith::meshio::OutputSolnNew* outputArray[],
                                    const int numOutputs)
 { // outputs
     PYLITH_METHOD_BEGIN;
@@ -178,6 +178,7 @@ pylith::problems::Problem::outputs(pylith::meshio::OutputManager* outputArray[],
 
     _outputs.resize(numOutputs);
     for (int i=0; i < numOutputs; ++i) {
+        assert(outputArray[i]);
         _outputs[i] = outputArray[i];
     } // for
 
@@ -275,11 +276,8 @@ pylith::problems::Problem::initialize(void)
     const size_t numOutput = _outputs.size();
     for (size_t i=0; i < numOutput; ++i) {
         assert(_outputs[i]);
-#if 1
-        PYLITH_JOURNAL_ERROR(":TODO: @brad Implement initializing solution output in initialize().");
-#else
-        _outputs[i]->open(*_solution);
-#endif
+        const bool isInfo = false;
+        _outputs[i]->open(_solution->mesh(), isInfo);
     } // for
 
     // Initialize residual.
@@ -309,17 +307,17 @@ pylith::problems::Problem::setSolutionLocal(const PylithReal t,
         if (!_solutionDot) {
             _solutionDot = new pylith::topology::Field(_solution->mesh());
             _solutionDot->cloneSection(*_solution);
-            _solution->label("solutionDot");
+            _solutionDot->label("solutionDot");
         } // if
         _solutionDot->scatterVectorToLocal(solutionDotVec);
     } // if
-
-    _solution->view("SOLUTION BEFORE SETTING VALUES");
 
     const size_t numConstraints = _constraints.size();
     for (size_t i=0; i < numConstraints; ++i) {
         _constraints[i]->setSolution(_solution, t);
     } // for
+
+    _solution->view("SOLUTION AFTER SETTING VALUES");
 
     PYLITH_METHOD_END;
 } // setSolutionLocal

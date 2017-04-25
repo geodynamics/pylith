@@ -34,6 +34,10 @@ swig_sources = \
 	SolverNonlinear.i \
 	SolverLumped.i \
 	../utils/PyreComponent.i \
+	../include/integratorarray.i \
+	../include/constraintarray.i \
+	../include/outputarray.i \
+	../include/scalartypemaps.i \
 	Problem.i \
 	TimeDependent.i
 

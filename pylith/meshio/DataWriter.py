@@ -51,9 +51,9 @@ class DataWriter(PetscComponent):
     return
 
 
-  def initialize(self, normalizer, filename):
+  def preinitialize(self, filename):
     """
-    Initialize writer.
+    Setup data writer.
     """
 
     import os

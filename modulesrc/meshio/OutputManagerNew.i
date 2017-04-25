@@ -25,11 +25,20 @@
 namespace pylith {
     namespace meshio {
 
-	class pylith::meshio::OutputManagerNew
+	class pylith::meshio::OutputManagerNew : public pylith::utils::PyreComponent
 	{ // OutputManager
 
 	    // PUBLIC METHODS /////////////////////////////////////////////////
 	public :
+
+		// PUBLIC ENUMS ///////////////////////////////////////////////////
+	public:
+
+		enum TriggerEnum {
+		    SKIP_TIMESTEPS=0, ///< Skip X time steps between writes.
+	    	ELAPSED_TIME=1, ///< Skip x time between writes.
+		}; // TriggerEnum
+
 
 	    /// Constructor
 	    OutputManagerNew(void);
@@ -102,12 +111,6 @@ namespace pylith {
 	     * @param filter Filter to apply to cell data before writing.
 	     */
 	    void cellFilter(CellFilter* const filter);
-
-	    /** Get fields used in output.
-	     *
-	     * @returns Fields associated with output.
-	     */
-	    const pylith::topology::Fields* fields(void) const;
 
 	    /** Prepare for output.
 	     *

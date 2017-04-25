@@ -68,23 +68,25 @@ void verifyConfiguration(const pylith::topology::Field& solution) const;
 /** Write solution at time step.
  *
  * @param[in] t Current time.
- * @param[in] timeStep Current time step.
+ * @param[in] tindex Current time step.
  * @param[in] solution Solution at time t.
  */
 void writeTimeStep(const PylithReal t,
-                   const PylithInt timeStep,
+                   const PylithInt tindex,
                    const pylith::topology::Field& solution);
+
+// PRIVATE MEMBERS //////////////////////////////////////////////////////
+private:
+
+pylith::string_vector _vertexDataFields; ///< Names of solution fields to output.
+
+static const char* _pyreComponent; ///< Name of Pyre component.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
 OutputSolnNew(const OutputSolnNew&);   ///< Not implemented.
 const OutputSolnNew& operator=(const OutputSolnNew&);   ///< Not implemented
-
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
-
-pylith::string_vector _vertexDataFields; ///< Names of solution fields to output.
 
 }; // OutputSolnNew
 

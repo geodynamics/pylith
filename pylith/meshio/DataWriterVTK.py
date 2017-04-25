@@ -71,19 +71,15 @@ class DataWriterVTK(DataWriter, ModuleDataWriterVTK):
     return
 
 
-  def initialize(self, normalizer):
+  def preinitialize(self):
     """
     Initialize writer.
     """
-    DataWriter.initialize(self, normalizer, self.filename)
+    DataWriter.preinitialize(self, self.filename)
     
-    timeScale = normalizer.timeScale()
-    timeConstantN = normalizer.nondimensionalize(self.timeConstant, timeScale)
-
     ModuleDataWriterVTK.filename(self, self.filename)
-    ModuleDataWriterVTK.timeScale(self, timeScale.value)
     ModuleDataWriterVTK.timeFormat(self, self.timeFormat)
-    ModuleDataWriterVTK.timeConstant(self, timeConstantN)
+    ModuleDataWriterVTK.timeConstant(self, timeConstant)
     ModuleDataWriterVTK.precision(self, self.precision)
     return
   
@@ -94,13 +90,7 @@ class DataWriterVTK(DataWriter, ModuleDataWriterVTK):
     """
     Configure object.
     """
-    try:
-      DataWriter._configure(self)
-    except ValueError, err:
-      aliases = ", ".join(self.aliases)
-      raise ValueError("Error while configuring VTK output "
-                       "(%s):\n%s" % (aliases, err.message))
-
+    DataWriter._configure(self)
     return
 
 
