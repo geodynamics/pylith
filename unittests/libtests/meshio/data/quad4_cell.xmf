@@ -102,7 +102,7 @@
         </DataItem>
       </Attribute>
       <Attribute Name="traction" Type="Vector" Center="Cell">
-        <DataItem ItemType="Function" Dimensions="6 3" Function="JOIN($0, $1, $2)">
+        <DataItem ItemType="Function" Dimensions="2 3" Function="JOIN($0, $1, $2)">
           <DataItem ItemType="HyperSlab" Dimensions="2 1" Type="HyperSlab">
             <DataItem Dimensions="3 3" Format="XML">
               0 0 0    1 1 1    1 2 1
