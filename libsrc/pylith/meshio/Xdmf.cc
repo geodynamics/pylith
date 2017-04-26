@@ -537,7 +537,7 @@ pylith::meshio::Xdmf::_writeGridAttribute(const FieldMetadata& metadata,
 
   if (2 == spaceDim && metadata.vectorFieldType == "Vector") {
     _file
-      << "        <DataItem ItemType=\"Function\" Dimensions=\"6 3\" Function=\"JOIN($0, $1, $2)\">\n"
+      << "        <DataItem ItemType=\"Function\" Dimensions=\"" << metadata.numPoints << " 3\" Function=\"JOIN($0, $1, $2)\">\n"
       // x component
       << "          <DataItem ItemType=\"HyperSlab\" Dimensions=\"" << metadata.numPoints << " 1\" Type=\"HyperSlab\">\n"
       << "            <DataItem Dimensions=\"3 3\" Format=\"XML\">\n"
