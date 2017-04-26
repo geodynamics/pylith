@@ -69,6 +69,14 @@ pylith::meshio::TestExodusII::testOpenClose(void)
   exofile.close();
   CPPUNIT_ASSERT(!exofile._file);
 
+  // Attempt to open file that doesn't exist.
+  exofile.filename("fail.exo");
+  CPPUNIT_ASSERT_THROW(exofile.open(), std::runtime_error);
+
+  // Attempt to close file with bad handle.
+  exofile._file = 1;
+  CPPUNIT_ASSERT_THROW(exofile.close(), std::runtime_error);
+
   PYLITH_METHOD_END;
 } // testOpenClose
 
@@ -150,6 +158,16 @@ pylith::meshio::TestExodusII::testGetVarDouble(void)
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(coordsE[i], coords[i], tolerance);
 
+  // Attempt to get variable that doesn't exist.
+  CPPUNIT_ASSERT_THROW(exofile.getVar(&coords[0], dims, ndims, "aabbcc"), std::runtime_error);
+
+  // Attempt to get variable with wrong number of dimensions.
+  CPPUNIT_ASSERT_THROW(exofile.getVar(&coords[0], dims, ndims+1, "coord"), std::runtime_error);
+
+  // Attempt to get variable with wrong dimension.
+  dims[0] = 99;
+  CPPUNIT_ASSERT_THROW(exofile.getVar(&coords[0], dims, ndims, "coord"), std::runtime_error);
+
   PYLITH_METHOD_END;
 } // testGetVarDouble
 
@@ -175,6 +193,16 @@ pylith::meshio::TestExodusII::testGetVarInt(void)
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(connectE[i], connect[i]);
 
+  // Attempt to get variable that doesn't exist.
+  CPPUNIT_ASSERT_THROW(exofile.getVar(&connect[0], dims, ndims, "aabbcc"), std::runtime_error);
+
+  // Attempt to get variable with wrong number of dimensions.
+  CPPUNIT_ASSERT_THROW(exofile.getVar(&connect[0], dims, ndims+1, "connect2"), std::runtime_error);
+
+  // Attempt to get variable with wrong dimension.
+  dims[0] = 99;
+  CPPUNIT_ASSERT_THROW(exofile.getVar(&connect[0], dims, ndims, "connect2"), std::runtime_error);
+
   PYLITH_METHOD_END;
 } // testGetVarDouble
 
@@ -195,6 +223,12 @@ pylith::meshio::TestExodusII::testGetVarString(void)
 
   for (int i=0; i < dim; ++i)
     CPPUNIT_ASSERT_EQUAL(std::string(namesE[i]), names[i]);
+
+  // Attempt to get variable that doesn't exist.
+  CPPUNIT_ASSERT_THROW(exofile.getVar(&names, dim, "aabbcc"), std::runtime_error);
+
+  // Attempt to get variable with wrong number of dimensions.
+  CPPUNIT_ASSERT_THROW(exofile.getVar(&names, dim+1, "coord_names"), std::runtime_error);
 
   PYLITH_METHOD_END;
 } // testGetVarString
