@@ -277,7 +277,8 @@ if ENABLE_HDF5
 	TestDataWriterHDF5ExtBCMeshCases.cc \
 	TestDataWriterHDF5ExtFaultMesh.cc \
 	TestDataWriterHDF5ExtFaultMeshCases.cc \
-	TestXdmf.cc
+	TestXdmf.cc \
+	TestXdmf_Cases.cc
 
   noinst_HEADERS += \
 	TestHDF5.hh \
@@ -325,10 +326,5 @@ clean-local: clean-local-tmp
 .PHONY: clean-local-tmp
 clean-local-tmp:
 	-rm *.vtk *.dat *.dat.info *.h5 *.xmf
-
-
-leakcheck: testmeshio
-	valgrind --log-file=valgrind_meshio.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/testmeshio
-
 
 # End of file 

@@ -33,69 +33,65 @@
 namespace pylith {
   namespace meshio {
     class TestXdmf;
+
+    class TestXdmf_Data;
   } // meshio
 } // pylith
 
+// ======================================================================
 /// C++ unit testing for Xdmf
-class pylith::meshio::TestXdmf : public CppUnit::TestFixture
-{ // class TestXdmf
+class pylith::meshio::TestXdmf : public CppUnit::TestFixture {
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestXdmf );
 
   CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testWriteTri3Vertex );
-  CPPUNIT_TEST( testWriteTri3Cell );
-  CPPUNIT_TEST( testWriteQuad4Vertex );
-  CPPUNIT_TEST( testWriteQuad4Cell );
-  CPPUNIT_TEST( testWriteTet4Vertex );
-  CPPUNIT_TEST( testWriteTet4Cell );
-  CPPUNIT_TEST( testWriteHex8Vertex );
-  CPPUNIT_TEST( testWriteHex8Cell );
+  CPPUNIT_TEST( testWrite );
 
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
+  /// Setup testing data.
+  void setUp(void);
+
+  /// Deallocate testing data.
+  void tearDown(void);
+
   /// Test constructor.
   void testConstructor(void);
 
-  /// Test write() with tri3 mesh and vertex data.
-  void testWriteTri3Vertex(void);
+  /// Test write().
+  void testWrite(void);
 
-  /// Test write() with tri3 mesh and cell data.
-  void testWriteTri3Cell(void);
+  // PROTECTED MEMBDERS /////////////////////////////////////////////////
+protected:
 
-  /// Test write() with quad4 mesh and vertex data.
-  void testWriteQuad4Vertex(void);
+  TestXdmf_Data* _data; ///< Data for testing.
 
-  /// Test write() with quad4 mesh and cell data.
-  void testWriteQuad4Cell(void);
-
-  /// Test write() with tet4 mesh and vertex data.
-  void testWriteTet4Vertex(void);
-
-  /// Test write() with tet4 mesh and cell data.
-  void testWriteTet4Cell(void);
-
-  /// Test write() with hex8 mesh and vertex data.
-  void testWriteHex8Vertex(void);
-
-  /// Test write() with hex8 mesh and cell data.
-  void testWriteHex8Cell(void);
-
-  // PRIVATE METHODS ////////////////////////////////////////////////////
-private :
-
-  /** Check Xmdf file against archived file.
-   *
-   * @param filename Name of file to check.
-   */
-  static
-  void _checkFile(const char* filename);
-  
 }; // class TestXdmf
+
+
+// ======================================================================
+class pylith::meshio::TestXdmf_Data {
+
+    // PUBLIC METHODS ///////////////////////////////////////////////////////
+public:
+
+    /// Constructor
+    TestXdmf_Data(void);
+
+    /// Destructor
+    ~TestXdmf_Data(void);
+
+    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
+public:
+
+    const char* filenameHDF5;
+    const char* filenameXdmf;
+
+}; // class TestXdmf_Data
 
 #endif // pylith_meshio_testxdmf_hh
 

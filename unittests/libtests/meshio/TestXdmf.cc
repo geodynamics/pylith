@@ -27,200 +27,93 @@
 #include <cstring> // USES strcmp()
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestXdmf );
+// Setup testing data.
+void
+pylith::meshio::TestXdmf::setUp(void)
+{ // setUp
+    _data = new TestXdmf_Data;
+} // setUp
+
+
+// ----------------------------------------------------------------------
+// Deallocate testing data.
+void
+pylith::meshio::TestXdmf::tearDown(void)
+{ // tearDown
+    delete _data; _data = NULL;
+} // tearDown
+
 
 // ----------------------------------------------------------------------
 // Test constructor.
 void
 pylith::meshio::TestXdmf::testConstructor(void)
 { // testConstructor
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  Xdmf one;
+    Xdmf one;
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
-// Test write() with tri3 mesh and vertex data.
+// Test write().
 void
-pylith::meshio::TestXdmf::testWriteTri3Vertex(void)
-{ // testWriteTri3Vertex
-  PYLITH_METHOD_BEGIN;
+pylith::meshio::TestXdmf::testWrite(void)
+{ // testWrite
+    PYLITH_METHOD_BEGIN;
 
-  const char* filenameHDF5 = "data/tri3_vertex.h5";
-  const char* filenameXdmf = "tri3_vertex.xmf";
+    CPPUNIT_ASSERT(_data);
+    CPPUNIT_ASSERT(_data->filenameHDF5);
+    CPPUNIT_ASSERT(_data->filenameXdmf);
 
-  Xdmf metafile;
-  metafile.write(filenameXdmf, filenameHDF5);
+    Xdmf metafile;
+    metafile.write(_data->filenameXdmf, _data->filenameHDF5);
 
-  _checkFile(filenameXdmf);
+    const std::string filenameE = std::string("data/") + std::string(_data->filenameXdmf);
 
-  PYLITH_METHOD_END;
-} // testWriteTri3Vertex
+    std::ifstream fileInE(filenameE.c_str());
+    CPPUNIT_ASSERT(fileInE.is_open());
+
+    std::ifstream fileIn(_data->filenameXdmf);
+    CPPUNIT_ASSERT(fileIn.is_open());
+
+    const int maxLen = 256;
+    char line[maxLen];
+    char lineE[maxLen];
+
+    int i = 1;
+    while(!fileInE.eof()) {
+        fileInE.getline(lineE, maxLen);
+        fileIn.getline(line, maxLen);
+        if (0 != strcmp(line, lineE)) {
+            std::cerr << "Line " << i << " of file '" << _data->filenameXdmf << "' is incorrect." << std::endl;
+            CPPUNIT_ASSERT(false);
+        } // if
+        ++i;
+    } // while
+
+    fileInE.close();
+    fileIn.close();
+
+    PYLITH_METHOD_END;
+} // testWrite
+
 
 // ----------------------------------------------------------------------
-// Test write() with Tri3 mesh and cell data.
-void
-pylith::meshio::TestXdmf::testWriteTri3Cell(void)
-{ // testWriteTri3Cell
-  PYLITH_METHOD_BEGIN;
+// Constructor
+pylith::meshio::TestXdmf_Data::TestXdmf_Data(void) :
+    filenameHDF5(NULL),
+    filenameXdmf(NULL)
+{ // constructor
+} // constructor
 
-  const char* filenameHDF5 = "data/tri3_cell.h5";
-  const char* filenameXdmf = "tri3_cell.xmf";
-
-  Xdmf metafile;
-  metafile.write(filenameXdmf, filenameHDF5);
-
-  _checkFile(filenameXdmf);
-
-  PYLITH_METHOD_END;
-} // testWriteTri3Cell
 
 // ----------------------------------------------------------------------
-// Test write() with quad4 mesh and vertex data.
-void
-pylith::meshio::TestXdmf::testWriteQuad4Vertex(void)
-{ // testWriteQuad4Vertex
-  PYLITH_METHOD_BEGIN;
-
-  const char* filenameHDF5 = "data/quad4_vertex.h5";
-  const char* filenameXdmf = "quad4_vertex.xmf";
-
-  Xdmf metafile;
-  metafile.write(filenameXdmf, filenameHDF5);
-
-  _checkFile(filenameXdmf);
-
-  PYLITH_METHOD_END;
-} // testWriteQuad4Vertex
-
-// ----------------------------------------------------------------------
-// Test write() with Quad4 mesh and cell data.
-void
-pylith::meshio::TestXdmf::testWriteQuad4Cell(void)
-{ // testWriteQuad4Cell
-  PYLITH_METHOD_BEGIN;
-
-  const char* filenameHDF5 = "data/quad4_cell.h5";
-  const char* filenameXdmf = "quad4_cell.xmf";
-
-  Xdmf metafile;
-  metafile.write(filenameXdmf, filenameHDF5);
-
-  _checkFile(filenameXdmf);
-
-  PYLITH_METHOD_END;
-} // testWriteQuad4Cell
-
-// ----------------------------------------------------------------------
-// Test write() with tet4 mesh and vertex data.
-void
-pylith::meshio::TestXdmf::testWriteTet4Vertex(void)
-{ // testWriteTet4Vertex
-  PYLITH_METHOD_BEGIN;
-
-  const char* filenameHDF5 = "data/tet4_vertex.h5";
-  const char* filenameXdmf = "tet4_vertex.xmf";
-
-  Xdmf metafile;
-  metafile.write(filenameXdmf, filenameHDF5);
-
-  _checkFile(filenameXdmf);
-
-  PYLITH_METHOD_END;
-} // testWriteTet4Vertex
-
-// ----------------------------------------------------------------------
-// Test write() with tet4 mesh and cell data.
-void
-pylith::meshio::TestXdmf::testWriteTet4Cell(void)
-{ // testWriteTet4Cell
-  PYLITH_METHOD_BEGIN;
-
-  const char* filenameHDF5 = "data/tet4_cell.h5";
-  const char* filenameXdmf = "tet4_cell.xmf";
-
-  Xdmf metafile;
-  metafile.write(filenameXdmf, filenameHDF5);
-
-  _checkFile(filenameXdmf);
-
-  PYLITH_METHOD_END;
-} // testWriteTet4Cell
-
-// ----------------------------------------------------------------------
-// Test write() with hex8 mesh and vertex data.
-void
-pylith::meshio::TestXdmf::testWriteHex8Vertex(void)
-{ // testWriteHex8Vertex
-  PYLITH_METHOD_BEGIN;
-
-  const char* filenameHDF5 = "data/hex8_vertex.h5";
-  const char* filenameXdmf = "hex8_vertex.xmf";
-
-  Xdmf metafile;
-  metafile.write(filenameXdmf, filenameHDF5);
-
-  _checkFile(filenameXdmf);
-
-  PYLITH_METHOD_END;
-} // testWriteHex8Vertex
-
-// ----------------------------------------------------------------------
-// Test write() with hex8 mesh and cell data.
-void
-pylith::meshio::TestXdmf::testWriteHex8Cell(void)
-{ // testWriteHex8Cell
-  PYLITH_METHOD_BEGIN;
-
-  const char* filenameHDF5 = "data/hex8_cell.h5";
-  const char* filenameXdmf = "hex8_cell.xmf";
-
-  Xdmf metafile;
-  metafile.write(filenameXdmf, filenameHDF5);
-
-  _checkFile(filenameXdmf);
-
-  PYLITH_METHOD_END;
-} // testWriteHex8Cell
-
-// ----------------------------------------------------------------------
-// Check Xdmf file against archived file.
-void
-pylith::meshio::TestXdmf::_checkFile(const char* filename)
-{ // _checkFile
-  PYLITH_METHOD_BEGIN;
-
-  const std::string filenameE = std::string("data/") + std::string(filename);
-
-  std::ifstream fileInE(filenameE.c_str());
-  CPPUNIT_ASSERT(fileInE.is_open());
-
-  std::ifstream fileIn(filename);
-  CPPUNIT_ASSERT(fileIn.is_open());
-
-  const int maxLen = 256;
-  char line[maxLen];
-  char lineE[maxLen];
-
-  int i = 1;
-  while(!fileInE.eof()) {
-    fileInE.getline(lineE, maxLen);
-    fileIn.getline(line, maxLen);
-    if (0 != strcmp(line, lineE)) {
-      std::cerr << "Line " << i << " of file '" << filename << "' is incorrect."
-		<< std::endl;
-      CPPUNIT_ASSERT(false);
-    } // if
-    ++i;
-  } // while
-
-  fileInE.close();
-  fileIn.close();
-
-  PYLITH_METHOD_END;
-} // _checkFile
+// Destructor
+pylith::meshio::TestXdmf_Data::~TestXdmf_Data(void)
+{ // destructor
+} // destructor
 
 
 // End of file 
