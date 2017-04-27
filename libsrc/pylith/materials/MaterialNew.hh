@@ -49,9 +49,7 @@
  *   + displacement, pressure, [velocity, Lagrange multipliers]
  */
 
-class pylith::materials::MaterialNew :
-    public pylith::feassemble::IntegratorPointwise
-{ // class Material
+class pylith::materials::MaterialNew : public pylith::feassemble::IntegratorPointwise {
     friend class TestMaterialNew;   // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
