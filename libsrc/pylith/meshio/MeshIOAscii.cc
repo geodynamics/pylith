@@ -26,7 +26,8 @@
 #include "pylith/utils/array.hh" // USES scalar_array, int_array, string_vector
 #include "spatialdata/utils/LineParser.hh" // USES LineParser
 
-#include "journal/info.h" // USES journal::info_t
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+
 
 #include <iomanip> // USES setw(), setiosflags(), resetiosflags()
 #include <strings.h> // USES strcasecmp()
@@ -34,6 +35,10 @@
 #include <fstream> // USES std::ifstream, std::ofstream
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
+#include <typeinfo> // USES std::typeid
+
+// ----------------------------------------------------------------------
+const char* pylith::meshio::MeshIOAscii::_pyreComponent = "meshioascii";
 
 // ----------------------------------------------------------------------
 const char* pylith::meshio::MeshIOAscii::groupTypeNames[2] = {
@@ -47,6 +52,7 @@ pylith::meshio::MeshIOAscii::MeshIOAscii(void) :
     _filename(""),
     _useIndexZero(true)
 { // constructor
+    PyreComponent::name(_pyreComponent);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -74,6 +80,7 @@ void
 pylith::meshio::MeshIOAscii::_read(void)
 { // _read
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_read()");
 
     const int commRank = _mesh->commRank();
     int meshDim = 0;
@@ -194,6 +201,7 @@ void
 pylith::meshio::MeshIOAscii::_write(void) const
 { // write
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_write()");
 
     std::ofstream fileout(_filename.c_str());
     if (!fileout.is_open() || !fileout.good()) {
@@ -204,9 +212,9 @@ pylith::meshio::MeshIOAscii::_write(void) const
     } // if
 
     fileout
-    << "mesh = {\n"
-    << "  dimension = " << getMeshDim() << "\n"
-    << "  use-index-zero = " << (_useIndexZero ? "true" : "false") << "\n";
+        << "mesh = {\n"
+        << "  dimension = " << getMeshDim() << "\n"
+        << "  use-index-zero = " << (_useIndexZero ? "true" : "false") << "\n";
 
     _writeVertices(fileout);
     _writeCells(fileout);
@@ -232,6 +240,7 @@ pylith::meshio::MeshIOAscii::_readVertices(spatialdata::utils::LineParser& parse
                                            int* numDims) const
 { // _readVertices
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_readVertices(parser="<<typeid(parser).name()<<", cordinates="<<coordinates<<", numVertices="<<numVertices<<", numDims="<<numDims<<")");
 
     assert(coordinates);
     assert(numVertices);
@@ -288,6 +297,7 @@ void
 pylith::meshio::MeshIOAscii::_writeVertices(std::ostream& fileout) const
 { // _writeVertices
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_writeVertices(fileout="<<typeid(fileout).name()<<")");
 
     int spaceDim = 0;
     int numVertices = 0;
@@ -295,13 +305,13 @@ pylith::meshio::MeshIOAscii::_writeVertices(std::ostream& fileout) const
     _getVertices(&coordinates, &numVertices, &spaceDim);
 
     fileout
-    << "  vertices = {\n"
-    << "    dimension = " << spaceDim << "\n"
-    << "    count = " << numVertices << "\n"
-    << "    coordinates = {\n"
-    << std::resetiosflags(std::ios::fixed)
-    << std::setiosflags(std::ios::scientific)
-    << std::setprecision(6);
+        << "  vertices = {\n"
+        << "    dimension = " << spaceDim << "\n"
+        << "    count = " << numVertices << "\n"
+        << "    coordinates = {\n"
+        << std::resetiosflags(std::ios::fixed)
+        << std::setiosflags(std::ios::scientific)
+        << std::setprecision(6);
     for(int iVertex=0, i=0; iVertex < numVertices; ++iVertex) {
         fileout << "      ";
         fileout << std::setw(8) << iVertex;
@@ -310,8 +320,8 @@ pylith::meshio::MeshIOAscii::_writeVertices(std::ostream& fileout) const
         fileout << "\n";
     } // for
     fileout
-    << "    }\n"
-    << "  }\n";
+        << "    }\n"
+        << "  }\n";
 
     PYLITH_METHOD_END;
 } // _writeVertices
@@ -326,6 +336,7 @@ pylith::meshio::MeshIOAscii::_readCells(spatialdata::utils::LineParser& parser,
                                         int* numCorners) const
 { // _readCells
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_readCells(parser="<<typeid(parser).name()<<", cells="<<cells<<", materialIds="<<materialIds<<", numCells="<<numCells<<",numCorners="<<numCorners<<")");
 
     assert(cells);
     assert(materialIds);
@@ -412,6 +423,7 @@ void
 pylith::meshio::MeshIOAscii::_writeCells(std::ostream& fileout) const
 { // _writeCells
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_writeCells(fileout="<<typeid(fileout).name()<<")");
 
     int meshDim = 0;
     int numCells = 0;
@@ -420,10 +432,10 @@ pylith::meshio::MeshIOAscii::_writeCells(std::ostream& fileout) const
     _getCells(&cells, &numCells, &numCorners, &meshDim);
 
     fileout
-    << "  cells = {\n"
-    << "    count = " << numCells << "\n"
-    << "    num-corners = " << numCorners << "\n"
-    << "    simplices = {\n";
+        << "  cells = {\n"
+        << "    count = " << numCells << "\n"
+        << "    num-corners = " << numCorners << "\n"
+        << "    simplices = {\n";
 
     for(int iCell=0, i=0; iCell < numCells; ++iCell) {
         fileout << "      " << std::setw(8) << iCell;
@@ -458,6 +470,7 @@ pylith::meshio::MeshIOAscii::_readGroup(spatialdata::utils::LineParser& parser,
                                         std::string* name) const
 { // _readGroup
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_readGroup(parser="<<typeid(parser).name()<<", points="<<points<<", type="<<type<<", name="<<name<<")");
 
     assert(points);
     assert(type);
@@ -540,6 +553,7 @@ pylith::meshio::MeshIOAscii::_writeGroup(std::ostream& fileout,
                                          const char* name) const
 { // _writeGroup
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_writeGroup(fileout="<<typeid(fileout).name()<<", name="<<name<<")");
 
     int_array points;
     GroupPtType type;
@@ -549,17 +563,17 @@ pylith::meshio::MeshIOAscii::_writeGroup(std::ostream& fileout,
 
     const int numPoints = points.size();
     fileout
-    << "  group = {\n"
-    << "    name = " << name << "\n"
-    << "    type = " << groupTypeNames[type] << "\n"
-    << "    count = " << numPoints << "\n"
-    << "    indices = {\n";
+        << "  group = {\n"
+        << "    name = " << name << "\n"
+        << "    type = " << groupTypeNames[type] << "\n"
+        << "    count = " << numPoints << "\n"
+        << "    indices = {\n";
     for(int i=0; i < numPoints; ++i)
         fileout << "      " << points[i]+offset << "\n";
 
     fileout
-    << "    }\n"
-    << "  }\n";
+        << "    }\n"
+        << "  }\n";
 
     PYLITH_METHOD_END;
 } // _writeGroup

@@ -29,8 +29,14 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/utils/array.hh" // USES scalar_array, int_array
 
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+
+
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error()
+
+// ----------------------------------------------------------------------
+const char* pylith::meshio::MeshIOLagrit::_pyreComponent = "meshiolagrit";
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -41,6 +47,7 @@ pylith::meshio::MeshIOLagrit::MeshIOLagrit(void) :
     _ioInt32(true),
     _isRecordHeader32Bit(true)
 { // constructor
+    PyreComponent::name(_pyreComponent);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -68,6 +75,7 @@ void
 pylith::meshio::MeshIOLagrit::_read(void)
 { // _read
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_read()");
 
     const int commRank = _mesh->commRank();
     int meshDim = 0;
@@ -146,7 +154,7 @@ pylith::meshio::MeshIOLagrit::_orientCellsAscii(int_array* const cells,
             const int tmp = (*cells)[i1];
             (*cells)[i1] = (*cells)[i2];
             (*cells)[i2] = tmp;
-        } // for
+        }                                  // for
 
     PYLITH_METHOD_END;
 } // _orientCellsAscii
@@ -166,7 +174,7 @@ pylith::meshio::MeshIOLagrit::_orientCellsBinary(int_array* const cells,
     assert(cells->size() == size_t(numCells*numCorners));
 
     if (3 == meshDim && 4 == numCorners) // TET
-        ;  // do nothing
+        ;                                      // do nothing
 
     PYLITH_METHOD_END;
 } // _orientCellsBinary
