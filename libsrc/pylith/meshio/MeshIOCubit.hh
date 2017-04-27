@@ -46,7 +46,7 @@ public :
 
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
-  
+
   /** Set filename for Cubit file.
    *
    * @param filename Name of file
@@ -88,7 +88,7 @@ private :
 		     scalar_array* coordinates,
 		     int* numVertices,
 		     int* spaceDim) const;
-  
+
   /** Read mesh cells.
    *
    * @param ncfile Cubit Exodus file.
@@ -102,25 +102,25 @@ private :
 		  int_array* pMaterialIds,
 		  int* numCells,
 		  int* numCorners) const;
-  
+
   /** Read point groups.
    *
    * @param ncfile Cubit Exodus file.
    */
   void _readGroups(ExodusII& filein);
-  
+
   /** Write mesh dimensions.
    *
    * @param ncfile Cubit Exodus file.
    */
   void _writeDimensions(ExodusII& ncfile) const;
-  
+
   /** Write mesh variables.
    *
    * @param ncfile Cubit Exodus file.
    */
   void _writeVariables(ExodusII& ncfile) const;
-  
+
   /** Write mesh attributes.
    *
    * @param ncfile Cubit Exodus file.
@@ -146,10 +146,12 @@ private :
   std::string _filename; ///< Name of file
   bool _useNodesetNames; ///< True to use node set names instead of ids.
 
+  static const char* _pyreComponent; ///< Name of Pyre component.
+
 }; // MeshIOCubit
 
 #include "MeshIOCubit.icc" // inline methods
 
 #endif // pylith_meshio_meshiocubit_hh
 
-// End of file 
+// End of file

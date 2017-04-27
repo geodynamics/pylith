@@ -24,13 +24,17 @@
 #include "ExodusII.hh" // USES ExodusII
 
 #include "pylith/utils/array.hh" // USES scalar_array, int_array, string_vector
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 #include "petsc.h" // USES MPI_Comm
-#include "journal/info.h" // USES journal::info_t
 
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
+#include <typeinfo> // USES std::typeid
+
+// ----------------------------------------------------------------------
+const char* pylith::meshio::MeshIOCubit::_pyreComponent = "meshiocubit";
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -38,6 +42,7 @@ pylith::meshio::MeshIOCubit::MeshIOCubit(void) :
     _filename(""),
     _useNodesetNames(true)
 { // constructor
+    PyreComponent::name(_pyreComponent);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -65,6 +70,7 @@ void
 pylith::meshio::MeshIOCubit::_read(void)
 { // _read
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_read()");
 
     assert(_mesh);
 
@@ -119,6 +125,7 @@ void
 pylith::meshio::MeshIOCubit::_write(void) const
 { // write
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_write()");
 
     ExodusII exofile(_filename.c_str());
 
@@ -138,12 +145,11 @@ pylith::meshio::MeshIOCubit::_readVertices(ExodusII& exofile,
                                            int* numDims) const
 { // _readVertices
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_readVertices(exofile="<<typeid(exofile).name()<<", coordinates="<<coordinates<<", numVertices="<<numVertices<<", numDims="<<numDims<<")");
 
     assert(coordinates);
     assert(numVertices);
     assert(numDims);
-
-    journal::info_t info("meshio");
 
     // Space dimension
     *numDims = exofile.getDim("num_dim");
@@ -151,8 +157,7 @@ pylith::meshio::MeshIOCubit::_readVertices(ExodusII& exofile,
     // Number of vertices
     *numVertices = exofile.getDim("num_nodes");
 
-    info << journal::at(__HERE__)
-         << "Reading " << *numVertices << " vertices." << journal::endl;
+    PYLITH_JOURNAL_INFO("Reading " << *numVertices << " vertices.");
 
     if (exofile.hasVar("coord", NULL)) {
         const int ndims = 2;
@@ -199,20 +204,17 @@ pylith::meshio::MeshIOCubit::_readCells(ExodusII& exofile,
                                         int* numCorners) const
 { // _readCells
     PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_readCells(exofile="<<typeid(exofile).name()<<", cells="<<cells<<", materialIds="<<materialIds<<", numCells="<<numCells<<", numCorners="<<numCorners<<")");
 
     assert(cells);
     assert(materialIds);
     assert(numCells);
     assert(numCorners);
 
-    journal::info_t info("meshio");
-
     *numCells = exofile.getDim("num_elem");
     const int numMaterials = exofile.getDim("num_el_blk");
 
-    info << journal::at(__HERE__)
-         << "Reading " << *numCells << " cells in " << numMaterials
-         << " blocks." << journal::endl;
+    PYLITH_JOURNAL_INFO("Reading " << *numCells << " cells in " << numMaterials << " blocks.");
 
     int_array blockIds(numMaterials);
     int ndims = 1;
@@ -269,13 +271,11 @@ void
 pylith::meshio::MeshIOCubit::_readGroups(ExodusII& exofile)
 { // _readGroups
     PYLITH_METHOD_BEGIN;
-
-    journal::info_t info("meshio");
+    PYLITH_JOURNAL_DEBUG("_readGroups(exofile="<<typeid(exofile).name()<<")");
 
     const int numGroups = exofile.getDim("num_node_sets");
 
-    info << journal::at(__HERE__)
-         << "Found " << numGroups << " node sets." << journal::endl;
+    PYLITH_JOURNAL_INFO("Found " << numGroups << " node sets.");
 
     int_array ids(numGroups);
     int ndims = 1;
@@ -302,10 +302,7 @@ pylith::meshio::MeshIOCubit::_readGroups(ExodusII& exofile)
         ndims = 1;
         dims[0] = nodesetSize;
 
-        info << journal::at(__HERE__)
-             << "Reading node set '" << groupNames[iGroup] << "' with id "
-             << ids[iGroup] << " containing " << nodesetSize << " nodes."
-             << journal::endl;
+        PYLITH_JOURNAL_INFO("Reading node set '" << groupNames[iGroup] << "' with id " << ids[iGroup] << " containing " << nodesetSize << " nodes.");
         exofile.getVar(&points[0], dims, ndims, varname.str().c_str());
 
         std::sort(&points[0], &points[nodesetSize]);

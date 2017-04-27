@@ -32,8 +32,7 @@
 
 // MeshIOLagrit ---------------------------------------------------------
 /// Input/output manager for LaGriT GMV and Pset files.
-class pylith::meshio::MeshIOLagrit : public MeshIO
-{ // MeshIOLagrit
+class pylith::meshio::MeshIOLagrit : public MeshIO {
   friend class TestMeshIOLagrit; // unit testing
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
@@ -47,7 +46,7 @@ public :
 
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
-  
+
   /** Set filename for mesh GMV file.
    *
    * @param filename Name of file
@@ -171,10 +170,12 @@ private :
   bool _ioInt32; ///< True if using 64-bit integers in Pset files.
   bool _isRecordHeader32Bit; ///< True if Fortran record header is 32-bit.
 
+  static const char* _pyreComponent; ///< Name of Pyre component.
+
 }; // MeshIOLagrit
 
 #include "MeshIOLagrit.icc" // inline methods
 
 #endif // pylith_meshio_meshiolagrit_hh
 
-// End of file 
+// End of file

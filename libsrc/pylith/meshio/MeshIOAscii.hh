@@ -35,8 +35,7 @@
 
 // MeshIOAscii ----------------------------------------------------------
 /// C++ input/output manager for PyLith ASCII mesh files.
-class pylith::meshio::MeshIOAscii : public MeshIO
-{ // MeshIOAscii
+class pylith::meshio::MeshIOAscii : public MeshIO {
   friend class TestMeshIOAscii; // unit testing
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
@@ -50,7 +49,7 @@ public :
 
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
-  
+
   /** Set filename for ASCII file.
    *
    * @param filename Name of file
@@ -86,13 +85,13 @@ private :
 		     scalar_array* coordinates,
 		     int* numVertices,
 		     int* spaceDim) const;
-  
+
   /** Write mesh vertices.
    *
    * @param fileout Output stream
    */
   void _writeVertices(std::ostream& fileout) const;
-  
+
   /** Read mesh cells.
    *
    * @param parser Input parser.
@@ -106,7 +105,7 @@ private :
 		  int_array* pMaterialIds,
 		  int* numCells,
 		  int* numCorners) const;
-  
+
   /** Write mesh cells.
    *
    * @param fileout Output stream
@@ -115,7 +114,7 @@ private :
    * @param numCorners Number of corners
    */
   void _writeCells(std::ostream& fileout) const;
-  
+
   /** Read a point group.
    *
    * @param parser Input parser.
@@ -125,7 +124,7 @@ private :
 		  int_array* points,
                   GroupPtType* type,
                   std::string* name) const;
-  
+
   /** Write a point group.
    *
    * @param fileout Output stream
@@ -143,10 +142,12 @@ private :
   static
   const char *groupTypeNames[]; ///< Types of mesh groups.
 
+  static const char* _pyreComponent; ///< Name of Pyre component.
+
 }; // MeshIOAscii
 
 #include "MeshIOAscii.icc" // inline methods
 
 #endif // pylith_meshio_meshioascii_hh
 
-// End of file 
+// End of file
