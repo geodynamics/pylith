@@ -25,7 +25,8 @@
 #include <Python.h>
 
 #include <stdexcept> // USES std::logic_error
-#include <iostream> // USES std::cerr
+#include <iostream> \
+    // USES std::cerr
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -84,12 +85,6 @@ pylith::utils::PyreComponent::identifier(const char* value)
 const char*
 pylith::utils::PyreComponent::identifier(void) const
 { // identifier
-    if (_identifier == std::string("unknown")) {
-        std::ostringstream msg;
-        msg << "Set identifier for Pyre component '" << _name << "'." << std::endl;
-        throw std::logic_error(msg.str());
-    } // if
-
     return _identifier.c_str();
 } // identifier
 
