@@ -32,94 +32,84 @@
 
 // Forward declarations -------------------------------------------------
 namespace pylith {
-  namespace meshio {
-    class TestMeshIOAscii;
-    class MeshData;
-  } // meshio
+    namespace meshio {
+        class TestMeshIOAscii;
+
+        class TestMeshIOAscii_Data; // test data
+    } // meshio
 } // pylith
 
-// TestMeshIOAscii ------------------------------------------------------
-class pylith::meshio::TestMeshIOAscii : public TestMeshIO
-{ // class TestMeshIOAscii
+// ======================================================================
+class pylith::meshio::TestMeshIOAscii : public TestMeshIO {
 
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestMeshIOAscii );
+    // CPPUNIT TEST SUITE ///////////////////////////////////////////////
+    CPPUNIT_TEST_SUITE(TestMeshIOAscii);
 
-  CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testDebug );
-  CPPUNIT_TEST( testInterpolate );
-  CPPUNIT_TEST( testFilename );
-  CPPUNIT_TEST( testWriteRead1D );
-  CPPUNIT_TEST( testWriteRead1Din2D );
-  CPPUNIT_TEST( testWriteRead1Din3D );
-  CPPUNIT_TEST( testWriteRead2D );
-  CPPUNIT_TEST( testWriteRead2Din3D );
-  CPPUNIT_TEST( testWriteRead3D );
-  CPPUNIT_TEST( testRead3DIndexOne );
-  CPPUNIT_TEST( testReadComments );
+    CPPUNIT_TEST(testConstructor);
+    CPPUNIT_TEST(testDebug);
+    CPPUNIT_TEST(testFilename);
+    CPPUNIT_TEST(testWriteRead);
 
-  CPPUNIT_TEST_SUITE_END();
+    CPPUNIT_TEST_SUITE_END();
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+    // PUBLIC METHODS ///////////////////////////////////////////////////
+public:
 
-  /// Test constructor
-  void testConstructor(void);
+    /// Setup testing data.
+    void setUp(void);
 
-  /// Test debug()
-  void testDebug(void);
+    /// Deallocate testing data.
+    void tearDown(void);
 
-  /// Test interpolate()
-  void testInterpolate(void);
+    /// Test constructor
+    void testConstructor(void);
 
-  /// Test filename()
-  void testFilename(void);
+    /// Test debug()
+    void testDebug(void);
 
-  /// Test write() and read() for 1D mesh in 1D space.
-  void testWriteRead1D(void);
+    /// Test filename()
+    void testFilename(void);
 
-  /// Test write() and read() for 1D mesh in 2D space.
-  void testWriteRead1Din2D(void);
+    /// Test write() and read().
+    void testWriteRead(void);
 
-  /// Test write() and read() for 1D mesh in 3D space.
-  void testWriteRead1Din3D(void);
+    /// Test read().
+    void testRead(void);
 
-  /// Test write() and read() for 2D mesh in 2D space.
-  void testWriteRead2D(void);
+    /** Get test data.
+     *
+     * @returns Test data.
+     */
+    TestMeshIO_Data* _getData(void);
 
-  /// Test write() and read() for 2D mesh in 3D space.
-  void testWriteRead2Din3D(void);
+    // PROTECTED METHODS ////////////////////////////////////////////////
+protected:
 
-  /// Test write() and read() for 3D mesh in 3D space.
-  void testWriteRead3D(void);
-
-  /// Test read() for 3D mesh with one based indexing.
-  void testRead3DIndexOne(void);
-
-  /// Test and read() for 2D mesh in 2D space with comments.
-  void testReadComments(void);
-
-  // PRIVATE METHODS ////////////////////////////////////////////////////
-private :
-
-  /** Build mesh, perform write() and read(), and then check values.
-   *
-   * @param data Mesh data
-   * @param filename Name of mesh file to write/read
-   */
-  void _testWriteRead(const MeshData& data,
-		      const char* filename);
-
-  /** Read mesh and then check values.
-   *
-   * @param data Mesh data
-   * @param filename Name of mesh file to read
-   */
-  void _testRead(const MeshData& data,
-		 const char* filename);
+    MeshIOAscii* _io; ///< Test subject.
+    TestMeshIOAscii_Data* _data; ///< Data for tests.
 
 }; // class TestMeshIOAscii
 
+// ======================================================================
+class pylith::meshio::TestMeshIOAscii_Data : public TestMeshIO_Data {
+
+    // PUBLIC METHODS ///////////////////////////////////////////////////
+public:
+
+    /// Constructor
+    TestMeshIOAscii_Data(void);
+
+    /// Destructor
+    ~TestMeshIOAscii_Data(void);
+
+    // PUBLIC MEMBERS ///////////////////////////////////////////////////
+public:
+
+    const char* filename;
+
+}; // class TestMeshIOAscii_Data
+
+
 #endif // pylith_meshio_testmeshioascii_hh
 
-// End of file 
+// End of file

@@ -32,89 +32,82 @@
 
 // Forward declarations -------------------------------------------------
 namespace pylith {
-  namespace meshio {
-    class TestMeshIOCubit;
-    class MeshData;
-  } // meshio
+    namespace meshio {
+        class TestMeshIOCubit;
+
+        class TestMeshIOCubit_Data; // test data
+    } // meshio
 } // pylith
 
 // TestMeshIOCubit ------------------------------------------------------
-class pylith::meshio::TestMeshIOCubit : public TestMeshIO
-{ // class TestMeshIOCubit
+class pylith::meshio::TestMeshIOCubit : public TestMeshIO { // class TestMeshIOCubit
 
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestMeshIOCubit );
-  CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testDebug );
-  CPPUNIT_TEST( testInterpolate );
-  CPPUNIT_TEST( testFilename );
-  CPPUNIT_TEST( testReadTri );
-  CPPUNIT_TEST( testReadQuad );
-  CPPUNIT_TEST( testReadTet );
-  CPPUNIT_TEST( testReadHex );
-  CPPUNIT_TEST( testOrientLine );
-  CPPUNIT_TEST( testOrientTri );
-  CPPUNIT_TEST( testOrientQuad );
-  CPPUNIT_TEST( testOrientTet );
-  CPPUNIT_TEST( testOrientHex );
-  CPPUNIT_TEST_SUITE_END();
+    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+    CPPUNIT_TEST_SUITE(TestMeshIOCubit);
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+    CPPUNIT_TEST(testConstructor);
+    CPPUNIT_TEST(testDebug);
+    CPPUNIT_TEST(testFilename);
+    CPPUNIT_TEST(testRead);
 
-  /// Test constructor
-  void testConstructor(void);
+    CPPUNIT_TEST_SUITE_END();
 
-  /// Test debug()
-  void testDebug(void);
+    // PUBLIC METHODS /////////////////////////////////////////////////////
+public:
 
-  /// Test interpolate()
-  void testInterpolate(void);
+    /// Setup testing data.
+    void setUp(void);
 
-  /// Test filename()
-  void testFilename(void);
+    /// Deallocate testing data.
+    void tearDown(void);
 
-  /// Test read() for mesh with triangle cells.
-  void testReadTri(void);
+    /// Test constructor
+    void testConstructor(void);
 
-  /// Test read() for mesh with quadrilateral cells.
-  void testReadQuad(void);
+    /// Test debug()
+    void testDebug(void);
 
-  /// Test read() for mesh with tetrahedral cells.
-  void testReadTet(void);
+    /// Test filename()
+    void testFilename(void);
 
-  /// Test read() for mesh with hexahedral cells.
-  void testReadHex(void);
+    /// Test read().
+    void testRead(void);
 
-  /// Test _orientCells with line cells.
-  void testOrientLine(void);
+    /** Get test data.
+     *
+     * @returns Test data.
+     */
+    TestMeshIO_Data* _getData(void);
 
-  /// Test _orientCells with tri cells.
-  void testOrientTri(void);
+    // PROTECTED METHODS ////////////////////////////////////////////////
+protected:
 
-  /// Test _orientCells with quad cells.
-  void testOrientQuad(void);
-
-  /// Test _orientCells with tet cells.
-  void testOrientTet(void);
-
-  /// Test _orientCells with hex cells.
-  void testOrientHex(void);
-
-  // PRIVATE METHODS ////////////////////////////////////////////////////
-private :
-
-  /** Perform read() and then check values.
-   *
-   * @param data Mesh data
-   * @param filename Name of mesh file to read
-   */
-  void _testRead(const MeshData& data,
-		 const char* filename);
+    MeshIOCubit* _io; ///< Test subject.
+    TestMeshIOCubit_Data* _data; ///< Data for tests.
 
 }; // class TestMeshIOCubit
+
+// ======================================================================
+class pylith::meshio::TestMeshIOCubit_Data : public TestMeshIO_Data {
+
+    // PUBLIC METHODS ///////////////////////////////////////////////////
+public:
+
+    /// Constructor
+    TestMeshIOCubit_Data(void);
+
+    /// Destructor
+    ~TestMeshIOCubit_Data(void);
+
+    // PUBLIC MEMBERS ///////////////////////////////////////////////////
+public:
+
+    const char* filename;
+
+}; // class TestMeshIOCubit_Data
+
 
 #endif // pylith_meshio_testmeshiocubit_hh
 
 
-// End of file 
+// End of file

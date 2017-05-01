@@ -30,7 +30,9 @@ check_PROGRAMS = testmeshio
 testmeshio_SOURCES = \
 	TestMeshIO.cc \
 	TestMeshIOAscii.cc \
+	TestMeshIOAscii_Cases.cc \
 	TestMeshIOLagrit.cc \
+	TestMeshIOLagrit_Cases.cc \
 	TestCellFilterAvg.cc \
 	TestVertexFilterVecNorm.cc \
 	TestDataWriterMesh.cc \
@@ -54,6 +56,7 @@ testmeshio_SOURCES = \
 	TestOutputSolnSubset.cc \
 	TestOutputSolnPoints.cc \
 	test_meshio.cc
+
 
 
 
@@ -83,6 +86,7 @@ noinst_HEADERS = \
 	TestDataWriterPoints.hh \
 	TestDataWriterVTKPoints.hh \
 	TestDataWriterVTKPointsCases.hh
+
 
 
 # Source files associated with testing data
@@ -141,21 +145,7 @@ testmeshio_SOURCES += \
 	data/DataWriterHDF5DataPointsTri3.cc \
 	data/DataWriterHDF5DataPointsQuad4.cc \
 	data/DataWriterHDF5DataPointsTet4.cc \
-	data/DataWriterHDF5DataPointsHex8.cc \
-	data/MeshData.cc \
-	data/MeshData1D.cc \
-	data/MeshData1Din3D.cc \
-	data/MeshData1Din2D.cc \
-	data/MeshData2D.cc \
-	data/MeshData2Din3D.cc \
-	data/MeshData3D.cc \
-	data/MeshData3DIndexOne.cc \
-	data/MeshDataCubitTri.cc \
-	data/MeshDataCubitQuad.cc \
-	data/MeshDataCubitTet.cc \
-	data/MeshDataCubitHex.cc \
-	data/MeshDataLagritTet.cc
-
+	data/DataWriterHDF5DataPointsHex8.cc 
 
 noinst_HEADERS += \
 	data/DataWriterData.hh \
@@ -212,21 +202,7 @@ noinst_HEADERS += \
 	data/DataWriterHDF5DataPointsTri3.hh \
 	data/DataWriterHDF5DataPointsQuad4.hh \
 	data/DataWriterHDF5DataPointsTet4.hh \
-	data/DataWriterHDF5DataPointsHex8.hh \
-	data/MeshData.hh \
-	data/MeshData1D.hh \
-	data/MeshData1Din2D.hh \
-	data/MeshData1Din3D.hh \
-	data/MeshData2D.hh \
-	data/MeshData2Din3D.hh \
-	data/MeshData3D.hh \
-	data/MeshData3DIndexOne.hh \
-	data/MeshDataCubitTri.hh \
-	data/MeshDataCubitQuad.hh \
-	data/MeshDataCubitTet.hh \
-	data/MeshDataCubitHex.hh \
-	data/MeshDataLagritTet.hh
-
+	data/DataWriterHDF5DataPointsHex8.hh
 
 AM_CPPFLAGS += \
 	$(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES) \
@@ -244,7 +220,8 @@ testmeshio_LDADD = \
 if ENABLE_CUBIT
   testmeshio_SOURCES += \
 	TestExodusII.cc \
-	TestMeshIOCubit.cc
+	TestMeshIOCubit.cc \
+	TestMeshIOCubit_Cases.cc
   noinst_HEADERS += \
 	TestExodusII.hh \
 	TestMeshIOCubit.hh

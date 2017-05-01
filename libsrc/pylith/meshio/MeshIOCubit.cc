@@ -168,8 +168,8 @@ pylith::meshio::MeshIOCubit::_readVertices(ExodusII& exofile,
         exofile.getVar(&buffer[0], dims, ndims, "coord");
 
         coordinates->resize(*numVertices * *numDims);
-        for (int iVertex=0; iVertex < *numVertices; ++iVertex)
-            for (int iDim=0; iDim < *numDims; ++iDim)
+        for (int iVertex = 0; iVertex < *numVertices; ++iVertex)
+            for (int iDim = 0; iDim < *numDims; ++iDim)
                 (*coordinates)[iVertex*(*numDims)+iDim] =
                     buffer[iDim*(*numVertices)+iVertex];
 
@@ -183,10 +183,10 @@ pylith::meshio::MeshIOCubit::_readVertices(ExodusII& exofile,
         int dims[1];
         dims[0] = *numVertices;
 
-        for (int i=0; i < *numDims; ++i) {
+        for (int i = 0; i < *numDims; ++i) {
             exofile.getVar(&buffer[0], dims, ndims, coordNames[i]);
 
-            for (int iVertex=0; iVertex < *numVertices; ++iVertex)
+            for (int iVertex = 0; iVertex < *numVertices; ++iVertex)
                 (*coordinates)[iVertex*(*numDims)+i] = buffer[iVertex];
         } // for
     } // else
@@ -225,7 +225,7 @@ pylith::meshio::MeshIOCubit::_readCells(ExodusII& exofile,
 
     materialIds->resize(*numCells);
     *numCorners = 0;
-    for (int iMaterial=0, index=0; iMaterial < numMaterials; ++iMaterial) {
+    for (int iMaterial = 0, index = 0; iMaterial < numMaterials; ++iMaterial) {
         std::ostringstream varname;
         varname << "num_nod_per_el" << iMaterial+1;
         if (0 == *numCorners) {
@@ -254,7 +254,7 @@ pylith::meshio::MeshIOCubit::_readCells(ExodusII& exofile,
         exofile.getVar(&(*cells)[index* (*numCorners)], dims, ndims,
                        varname.str().c_str());
 
-        for (int i=0; i < blockSize; ++i)
+        for (int i = 0; i < blockSize; ++i)
             (*materialIds)[index+i] = blockIds[iMaterial];
 
         index += blockSize;
@@ -290,7 +290,7 @@ pylith::meshio::MeshIOCubit::_readGroups(ExodusII& exofile)
         exofile.getVar(&groupNames, numGroups, "ns_names");
     } // if
 
-    for (int iGroup=0; iGroup < numGroups; ++iGroup) {
+    for (int iGroup = 0; iGroup < numGroups; ++iGroup) {
 
         std::ostringstream varname;
         varname << "num_nod_ns" << iGroup+1;
@@ -309,9 +309,9 @@ pylith::meshio::MeshIOCubit::_readGroups(ExodusII& exofile)
         points -= 1; // use zero index
 
         GroupPtType type = VERTEX;
-        if (_useNodesetNames)
+        if (_useNodesetNames) {
             _setGroup(groupNames[iGroup], type, points);
-        else {
+        } else {
             std::ostringstream name;
             name << ids[iGroup];
             _setGroup(name.str().c_str(), type, points);
@@ -345,6 +345,7 @@ pylith::meshio::MeshIOCubit::_writeAttributes(ExodusII& exofile) const
     throw std::logic_error("MeshIOCubit::_writeAttributes() not implemented.");
 } // _writeAttributes
 
+
 // ----------------------------------------------------------------------
 // Reorder vertices in cells to match PyLith conventions.
 void
@@ -358,13 +359,13 @@ pylith::meshio::MeshIOCubit::_orientCells(int_array* const cells,
     assert(cells);
     assert(cells->size() == size_t(numCells*numCorners));
 
-    if (2 == meshDim && 4 == numCorners) { // QUAD4
+    if ((2 == meshDim) && (4 == numCorners)) { // QUAD4
         ; // do nothing
 
-    } else if (3 == meshDim && 8 == numCorners) { // HEX8
+    } else if ((3 == meshDim) && (8 == numCorners)) { // HEX8
         ; // do nothing
 
-    } else if (2 == meshDim && 6 == numCorners) { // TRI6
+    } else if ((2 == meshDim) && (6 == numCorners)) { // TRI6
         // CUBIT
         // corners,
         // bottom edges, middle edges, top edges
@@ -374,7 +375,7 @@ pylith::meshio::MeshIOCubit::_orientCells(int_array* const cells,
 
         // Permutation: 3, 4, 5, 0, 1, 2
         int tmp = 0;
-        for (int iCell=0; iCell < numCells; ++iCell) {
+        for (int iCell = 0; iCell < numCells; ++iCell) {
             const int ii = iCell*numCorners;
             tmp = (*cells)[ii+0];
             (*cells)[ii+0] = (*cells)[ii+3];
@@ -389,7 +390,7 @@ pylith::meshio::MeshIOCubit::_orientCells(int_array* const cells,
             (*cells)[ii+5] = tmp;
         } // for
 
-    } else if (3 == meshDim && 27 == numCorners) { // HEX27
+    } else if ((3 == meshDim) && (27 == numCorners)) { // HEX27
         // CUBIT
         // corners,
         // bottom edges, middle edges, top edges
@@ -402,7 +403,7 @@ pylith::meshio::MeshIOCubit::_orientCells(int_array* const cells,
         // left/right, front/back, bottom/top
         // interior
         int tmp = 0;
-        for (int iCell=0; iCell < numCells; ++iCell) {
+        for (int iCell = 0; iCell < numCells; ++iCell) {
             const int i12 = iCell*numCorners+12;
             const int i13 = iCell*numCorners+13;
             const int i14 = iCell*numCorners+14;

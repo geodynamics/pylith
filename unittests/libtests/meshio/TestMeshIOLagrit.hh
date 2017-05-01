@@ -32,84 +32,85 @@
 
 // Forward declarations -------------------------------------------------
 namespace pylith {
-  namespace meshio {
-    class TestMeshIOLagrit;
-    class MeshData;
-  } // meshio
+    namespace meshio {
+        class TestMeshIOLagrit;
+
+        class TestMeshIOLagrit_Data; // test data
+    } // meshio
 } // pylith
 
 // TestMeshIOLagrit -----------------------------------------------------
-class pylith::meshio::TestMeshIOLagrit : public TestMeshIO
-{ // class TestMeshIOLagrit
+class pylith::meshio::TestMeshIOLagrit : public TestMeshIO { // class TestMeshIOLagrit
 
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestMeshIOLagrit );
-  CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testDebug );
-  CPPUNIT_TEST( testInterpolate );
-  CPPUNIT_TEST( testFilename );
-  CPPUNIT_TEST( testReadTetAscii );
-  CPPUNIT_TEST( testReadTetBinary );
-  CPPUNIT_TEST( testReadTetBinary32on64 );
-  CPPUNIT_TEST( testReadTetBinary64 );
-  CPPUNIT_TEST( testOrientAsciiTet );
-  CPPUNIT_TEST( testOrientBinaryTet );
-  CPPUNIT_TEST_SUITE_END();
+    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+    CPPUNIT_TEST_SUITE(TestMeshIOLagrit);
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+    CPPUNIT_TEST(testConstructor);
+    CPPUNIT_TEST(testDebug);
+    CPPUNIT_TEST(testFilename);
+    CPPUNIT_TEST(testRead);
 
-  /// Test constructor
-  void testConstructor(void);
+    CPPUNIT_TEST_SUITE_END();
 
-  /// Test debug()
-  void testDebug(void);
+    // PUBLIC METHODS /////////////////////////////////////////////////////
+public:
 
-  /// Test interpolate()
-  void testInterpolate(void);
+    /// Setup testing data.
+    void setUp(void);
 
-  /// Test filename()
-  void testFilename(void);
+    /// Deallocate testing data.
+    void tearDown(void);
 
-  /// Test read() for mesh with ASCII files.
-  void testReadTetAscii(void);
+    /// Test constructor
+    void testConstructor(void);
 
-  /// Test read() for mesh with binary files.
-  void testReadTetBinary(void);
+    /// Test debug()
+    void testDebug(void);
 
-  /// Test read() for mesh with binary files for 32-bit LaGrit built 
-  /// on 64-bit platform.
-  void testReadTetBinary32on64(void);
+    /// Test filename()
+    void testFilename(void);
 
-  /// Test read() for mesh with binary files for 64-bit LaGriT.
-  void testReadTetBinary64(void);
+    /// Test read().
+    void testRead(void);
 
-  /// Test _orientCellsAscii with tet cells.
-  void testOrientAsciiTet(void);
+    /** Get test data.
+     *
+     * @returns Test data.
+     */
+    TestMeshIO_Data* _getData(void);
 
-  /// Test _orientCellsBinary with tet cells.
-  void testOrientBinaryTet(void);
+    // PROTECTED METHODS ////////////////////////////////////////////////
+protected:
 
-  // PRIVATE METHODS ////////////////////////////////////////////////////
-private :
-
-  /** Perform read() and then check values.
-   *
-   * @param data Mesh data
-   * @param filenameGmv Name of mesh GMV file to read
-   * @param filenamePset Name of mesh Pset file to read
-   * @param ioInt32 True if Pset uses 32-bit integers.
-   * @param isRecordHeader32Bit True if Fortran record headers are 32-bit.
-   */
-  void _testRead(const MeshData& data,
-		 const char* filenameGmv,
-		 const char* filenamePset,
-		 const bool ioInt32 =true,
-		 const bool isRecordHeader32Bit =true);
+    MeshIOLagrit* _io; ///< Test subject.
+    TestMeshIOLagrit_Data* _data; ///< Data for tests.
 
 }; // class TestMeshIOLagrit
+
+// ======================================================================
+class pylith::meshio::TestMeshIOLagrit_Data : public TestMeshIO_Data {
+
+    // PUBLIC METHODS ///////////////////////////////////////////////////
+public:
+
+    /// Constructor
+    TestMeshIOLagrit_Data(void);
+
+    /// Destructor
+    ~TestMeshIOLagrit_Data(void);
+
+    // PUBLIC MEMBERS ///////////////////////////////////////////////////
+public:
+
+    const char* filenameGmv;
+    const char* filenamePset;
+    bool ioInt32;
+    bool isRecordHeader32Bit;
+
+}; // class TestMeshIOLagrit_Data
+
 
 #endif // pylith_meshio_testmeshiolagrit_hh
 
 
-// End of file 
+// End of file

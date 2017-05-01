@@ -53,8 +53,7 @@ public:
     MeshIO(void);
 
     /// Destructor
-    virtual
-    ~MeshIO(void);
+    virtual ~MeshIO(void);
 
     /// Deallocate PETSc and local data structures.
     virtual
@@ -71,20 +70,6 @@ public:
      * @returns True if debugging is on.
      */
     bool debug(void) const;
-
-    /** Set flag associated with building intermediate mesh topology
-     *  elements.
-     *
-     * @param flag True to build intermediate topology, false not to build
-     */
-    void interpolate(const bool flag);
-
-    /** Get flag associated with building intermediate mesh topology
-     * elements.
-     *
-     * @returns True if building intermediate topology, false if not building
-     */
-    bool interpolate(void) const;
 
     /** Read mesh from file.
      *
@@ -199,7 +184,6 @@ protected:
     topology::Mesh* _mesh; ///< Pointer to finite-element mesh.
 
     bool _debug; ///< True to turn of mesh debugging output.
-    bool _interpolate; ///< True if building intermediate topology elements.
 
 }; // MeshIO
 

@@ -24,29 +24,53 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 
-#include "data/MeshData1D.hh"
-#include "data/MeshData1Din2D.hh"
-#include "data/MeshData1Din3D.hh"
-#include "data/MeshData2D.hh"
-#include "data/MeshData2Din3D.hh"
-#include "data/MeshData3D.hh"
-#include "data/MeshData3DIndexOne.hh"
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/journals.hh" // USES JournalingComponent
 
 #include <strings.h> // USES strcasecmp()
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestMeshIOAscii );
+// Setup testing data.
+void
+pylith::meshio::TestMeshIOAscii::setUp(void)
+{ // setUp
+    TestMeshIO::setUp();
+    _io = new MeshIOAscii();CPPUNIT_ASSERT(_io);
+    _data = NULL;
+
+    _io->PyreComponent::identifier("TestMeshIOAscii");
+    const char* journalName = _io->PyreComponent::name();
+    journal::debug_t debug(journalName);
+    //debug.activate(); // DEBUGGING
+} // setUp
+
+
+// ----------------------------------------------------------------------
+// Deallocate testing data.
+void
+pylith::meshio::TestMeshIOAscii::tearDown(void)
+{ // tearDown
+    const char* journalName = _io->PyreComponent::name();
+    journal::debug_t debug(journalName);
+    debug.deactivate(); // DEBUGGING
+
+    TestMeshIO::tearDown();
+
+    delete _io; _io = NULL;
+    delete _data; _data = NULL;
+} // tearDown
+
 
 // ----------------------------------------------------------------------
 // Test constructor
 void
 pylith::meshio::TestMeshIOAscii::testConstructor(void)
 { // testConstructor
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  MeshIOAscii iohandler;
+    MeshIOAscii iohandler;
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -54,199 +78,99 @@ pylith::meshio::TestMeshIOAscii::testConstructor(void)
 void
 pylith::meshio::TestMeshIOAscii::testDebug(void)
 { // testDebug
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  MeshIOAscii iohandler;
-  _testDebug(iohandler);
+    CPPUNIT_ASSERT(_io);
 
-  PYLITH_METHOD_END;
+    _testDebug(*_io);
+
+    PYLITH_METHOD_END;
 } // testDebug
-
-// ----------------------------------------------------------------------
-// Test interpolate()
-void
-pylith::meshio::TestMeshIOAscii::testInterpolate(void)
-{ // testInterpolate
-  PYLITH_METHOD_BEGIN;
-
-  MeshIOAscii iohandler;
-  _testInterpolate(iohandler);
-
-  PYLITH_METHOD_END;
-} // testInterpolate
 
 // ----------------------------------------------------------------------
 // Test filename()
 void
 pylith::meshio::TestMeshIOAscii::testFilename(void)
 { // testFilename
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  MeshIOAscii iohandler;
+    CPPUNIT_ASSERT(_io);
 
-  const char* filename = "hi.txt";
-  iohandler.filename(filename);
-  CPPUNIT_ASSERT(0 == strcasecmp(filename, iohandler.filename()));
+    const char* filename = "hi.txt";
+    _io->filename(filename);
+    CPPUNIT_ASSERT(0 == strcasecmp(filename, _io->filename()));
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testFilename
 
 // ----------------------------------------------------------------------
-// Test write() and read() for 1D mesh.
+// Test write() and read().
 void
-pylith::meshio::TestMeshIOAscii::testWriteRead1D(void)
+pylith::meshio::TestMeshIOAscii::testWriteRead(void)
 { // testWriteRead1D
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  MeshData1D data;
-  const char* filename = "mesh1D.txt";
-  _testWriteRead(data, filename);
+    CPPUNIT_ASSERT(_io);
+    CPPUNIT_ASSERT(_data);
 
-  PYLITH_METHOD_END;
+    TestMeshIO::_createMesh();CPPUNIT_ASSERT(_mesh);
+
+    // Write mesh
+    CPPUNIT_ASSERT(_data->filename);
+    _io->filename(_data->filename);
+    _io->write(_mesh);
+
+    // Read mesh
+    delete _mesh; _mesh = new pylith::topology::Mesh;
+    _io->read(_mesh);
+
+    // Make sure meshIn matches data
+    TestMeshIO::_checkVals();
+
+    PYLITH_METHOD_END;
 } // testWriteRead1D
 
 // ----------------------------------------------------------------------
-// Test write() and read() for 1D mesh in 2D space.
+// Test read().
 void
-pylith::meshio::TestMeshIOAscii::testWriteRead1Din2D(void)
-{ // testWriteRead1Din2D
-  PYLITH_METHOD_BEGIN;
-
-  MeshData1Din2D data;
-  const char* filename = "mesh1Din2D.txt";
-  _testWriteRead(data, filename);
-
-  PYLITH_METHOD_END;
-} // testWriteRead1Din2D
-
-// ----------------------------------------------------------------------
-// Test write() and read() for 1D mesh in 3D space.
-void
-pylith::meshio::TestMeshIOAscii::testWriteRead1Din3D(void)
-{ // testWriteRead1Din3D
-  PYLITH_METHOD_BEGIN;
-
-  MeshData1Din3D data;
-  const char* filename = "mesh1Din3D.txt";
-  _testWriteRead(data, filename);
-
-  PYLITH_METHOD_END;
-} // testWriteRead1Din3D
-
-// ----------------------------------------------------------------------
-// Test write() and read() for 2D mesh in 2D space.
-void
-pylith::meshio::TestMeshIOAscii::testWriteRead2D(void)
-{ // testWriteRead2D
-  PYLITH_METHOD_BEGIN;
-
-  MeshData2D data;
-  const char* filename = "mesh2D.txt";
-  _testWriteRead(data, filename);
-
-  PYLITH_METHOD_END;
-} // testWriteRead2D
-
-// ----------------------------------------------------------------------
-// Test write() and read() for 2D mesh in 3D space.
-void
-pylith::meshio::TestMeshIOAscii::testWriteRead2Din3D(void)
-{ // testWriteRead2Din3D
-  PYLITH_METHOD_BEGIN;
-
-  MeshData2Din3D data;
-  const char* filename = "mesh2Din3D.txt";
-  _testWriteRead(data, filename);
-
-  PYLITH_METHOD_END;
-} // testWriteRead2Din3D
-
-// ----------------------------------------------------------------------
-// Test write() and read() for 3D mesh.
-void
-pylith::meshio::TestMeshIOAscii::testWriteRead3D(void)
-{ // testWriteRead3D
-  PYLITH_METHOD_BEGIN;
-
-  MeshData3D data;
-  const char* filename = "mesh3D.txt";
-  _testWriteRead(data, filename);
-
-  PYLITH_METHOD_END;
-} // testWriteRead3D
-
-// ----------------------------------------------------------------------
-// Test read() for 3D mesh with 1 based indexing.
-void
-pylith::meshio::TestMeshIOAscii::testRead3DIndexOne(void)
+pylith::meshio::TestMeshIOAscii::testRead(void)
 { // testRead3IndexDOne
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  MeshData3DIndexOne data;
-  const char* filename = "data/mesh3DIndexOne.txt";
-  _testRead(data, filename);
+    CPPUNIT_ASSERT(_io);
+    CPPUNIT_ASSERT(_data);
 
-  PYLITH_METHOD_END;
+    // Read mesh
+    delete _mesh; _mesh = new pylith::topology::Mesh;
+    CPPUNIT_ASSERT(_data->filename);
+    _io->filename(_data->filename);
+    _io->read(_mesh);
+
+    // Make sure mesh matches data
+    _checkVals();
+
+    PYLITH_METHOD_END;
 } // testRead3DIndexOne
 
 // ----------------------------------------------------------------------
-// Test write() and read() for 2D mesh in 2D space with comments.
-void
-pylith::meshio::TestMeshIOAscii::testReadComments(void)
-{ // testWriteReadComments
-  PYLITH_METHOD_BEGIN;
-
-  MeshData2D data;
-  const char* filename = "data/mesh2D_comments.txt";
-  _testRead(data, filename);
-
-  PYLITH_METHOD_END;
-} // testWriteReadComments
+// Get test data.
+pylith::meshio::TestMeshIO_Data*
+pylith::meshio::TestMeshIOAscii::_getData(void)
+{ // _data
+    return _data;
+} // _data
 
 // ----------------------------------------------------------------------
-// Build mesh, perform write() and read(), and then check values.
-void
-pylith::meshio::TestMeshIOAscii::_testWriteRead(const MeshData& data,
-						const char* filename)
-{ // _testWriteRead
-  PYLITH_METHOD_BEGIN;
-
-  _createMesh(data);
-
-  // Write mesh
-  MeshIOAscii iohandler;
-  iohandler.filename(filename);
-  iohandler.write(_mesh);
-
-  // Read mesh
-  delete _mesh; _mesh = new topology::Mesh;
-  iohandler.read(_mesh);
-
-  // Make sure meshIn matches data
-  _checkVals(data);
-
-  PYLITH_METHOD_END;
-} // _testWriteRead
+// Constructor
+pylith::meshio::TestMeshIOAscii_Data::TestMeshIOAscii_Data(void) :
+    filename(NULL)
+{ // constructor
+} // constructor
 
 // ----------------------------------------------------------------------
-// Read mesh and then check values.
-void
-pylith::meshio::TestMeshIOAscii::_testRead(const MeshData& data,
-					   const char* filename)
-{ // _testWriteRead
-  PYLITH_METHOD_BEGIN;
+// Destructor
+pylith::meshio::TestMeshIOAscii_Data::~TestMeshIOAscii_Data(void)
+{ // destructor
+} // destructor
 
-  // Read mesh
-  MeshIOAscii iohandler;
-  iohandler.filename(filename);
-  delete _mesh; _mesh = new topology::Mesh;
-  iohandler.read(_mesh);
-
-  // Make sure mesh matches data
-  _checkVals(data);
-
-  PYLITH_METHOD_END;
-} // _testRead
-
-
-// End of file 
+// End of file

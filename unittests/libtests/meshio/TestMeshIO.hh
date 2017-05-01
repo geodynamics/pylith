@@ -36,63 +36,93 @@
 // Forward declarations -------------------------------------------------
 /// Namespace for pylith package
 namespace pylith {
-  namespace meshio {
-    class TestMeshIO;
+    namespace meshio {
+        class TestMeshIO;
 
-    class MeshData; // test data
-  } // meshio
+        class TestMeshIO_Data; // test data
+    } // meshio
 } // pylith
 
-// MeshIO ---------------------------------------------------------------
-class pylith::meshio::TestMeshIO : public CppUnit::TestFixture
-{ // class TestMeshIO
+// ----------------------------------------------------------------------
+class pylith::meshio::TestMeshIO : public CppUnit::TestFixture {
 
-// PUBLIC METHODS ///////////////////////////////////////////////////////
-public :
-  
-  /// Setup testing data.
-  void setUp(void);
+    // PUBLIC METHODS ///////////////////////////////////////////////////////
+public:
 
-  /// Tear down testing data.
-  void tearDown(void);
+    /// Setup testing data.
+    void setUp(void);
 
-// PROTECTED METHODS ////////////////////////////////////////////////////
-protected :
+    /// Tear down testing data.
+    void tearDown(void);
 
-  /** Get simple mesh for testing I/O.
-   *
-   * @param data Mesh data
-   *
-   * @returns PyLith mesh
-   */
-  void _createMesh(const MeshData& data);
+    // PROTECTED METHODS ////////////////////////////////////////////////////
+protected:
 
-  /** Check values in mesh against data.
-   *
-   * @param data Mesh data
-   */
-  void _checkVals(const MeshData& data);
+    /** Get test data.
+     *
+     * @returns Pointer to test data.
+     */
+    virtual
+    TestMeshIO_Data* _getData(void) = 0;
 
-  /** Test debug().
-   *
-   * @param iohandler MeshIO object.
-   */
-  void _testDebug(MeshIO& iohandler);
+    /// Get simple mesh for testing I/O.
+    void _createMesh(void);
 
-  /** Test interpolate().
-   *
-   * @param iohandler MeshIO object.
-   */
-  void _testInterpolate(MeshIO& iohandler);
+    /// Check values in mesh against data.
+    void _checkVals(void);
 
-// PROTECTED MEMEBERS ////////////////////////////////////////////////////
-protected :
+    /** Test debug().
+     *
+     * @param iohandler MeshIO object.
+     */
+    void _testDebug(MeshIO& iohandler);
 
-  topology::Mesh* _mesh; ///< Finite-element mesh.
+    // PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected:
+
+    pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
+
 
 }; // class TestMeshIO
+
+
+// ----------------------------------------------------------------------
+class pylith::meshio::TestMeshIO_Data {
+
+    // PUBLIC METHODS ///////////////////////////////////////////////////////
+public:
+
+    /// Constructor
+    TestMeshIO_Data(void);
+
+    /// Destructor
+    ~TestMeshIO_Data(void);
+
+    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
+public:
+
+    PylithInt numVertices; ///< Number of vertices
+    PylithInt spaceDim; ///< Number of dimensions in vertex coordinates
+    PylithInt numCells; ///< Number of cells
+    PylithInt cellDim; ///< Number of dimensions associated with cell
+    PylithInt numCorners; ///< Number of vertices in cell
+
+    PylithScalar* vertices; ///< Pointer to coordinates of vertices
+    PylithInt* cells; ///< Pointer to indices of vertices in cells
+    PylithInt* materialIds; ///< Pointer to cell material identifiers
+
+    PylithInt* groups; ///< Array of pointers to indices of points in groups
+    PylithInt* groupSizes; ///< Array of sizes of each group
+    char** groupNames; ///< Array of group names
+    char** groupTypes; ///< Array of group types
+    PylithInt numGroups; ///< Number of groups
+
+    bool useIndexZero; ///< Indices start with 0 if true, 1 if false
+
+};
+
 
 #endif // pylith_meshio_testmeshio_hh
 
 
-// End of file 
+// End of file
