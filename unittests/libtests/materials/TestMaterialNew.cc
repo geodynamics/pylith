@@ -435,7 +435,7 @@ pylith::materials::TestMaterialNew::testComputeLHSJacobianImplicit(void)
     PYLITH_METHOD_BEGIN;
 
     MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
-    TestMaterialNew_Data* data = _data(); CPPUNIT_ASSERT(data);
+    const TestMaterialNew_Data* data = _data(); CPPUNIT_ASSERT(data);
     if (data->isExplicit) {
         PYLITH_METHOD_END;
     } // if

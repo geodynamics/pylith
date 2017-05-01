@@ -58,6 +58,10 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::setUp(void)
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::tearDown(void)
 { // tearDown
+    const char* journal = _mymaterial->PyreComponent::name();
+    journal::debug_t debug(journal);
+    debug.deactivate(); // DEBUGGING
+
     TestMaterialNew::tearDown();
 
     delete _mymaterial; _mymaterial = NULL;

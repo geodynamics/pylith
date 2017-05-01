@@ -39,7 +39,7 @@ namespace pylith {
     namespace materials {
         class TestMaterialNew;
 
-        class TestMaterialNew_Data;
+        class TestMaterialNew_Data; // test data
     }   // materials
 } // pylith
 
