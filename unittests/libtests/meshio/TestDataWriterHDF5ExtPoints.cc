@@ -33,7 +33,7 @@
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5ExtPoints );
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::meshio::TestDataWriterHDF5ExtPoints);
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -93,8 +93,8 @@ pylith::meshio::TestDataWriterHDF5ExtPoints::testTimeStep(void)
     output.setupInterpolator(_mesh, _data->points, _data->numPoints, _data->spaceDim, _data->names, _data->numPoints, normalizer);
 
     const PylithScalar t = _data->time;
-    const int numTimeSteps = 1;
-    output.open(*_mesh, numTimeSteps);
+    const bool isInfo = false;
+    output.open(*_mesh, isInfo);
     output.writePointNames();
     output.openTimeStep(t, *_mesh);
 
@@ -131,11 +131,11 @@ pylith::meshio::TestDataWriterHDF5ExtPoints::testWriteVertexField(void)
     const int nfields = _data->numVertexFields;
 
     const PylithScalar t = _data->time;
-    const int numTimeSteps = 1;
-    output.open(*_mesh, numTimeSteps);
+    const bool isInfo = false;
+    output.open(*_mesh, isInfo);
     output.writePointNames();
     output.openTimeStep(t, *_mesh);
-    for (int i=0; i < nfields; ++i) {
+    for (int i = 0; i < nfields; ++i) {
         topology::Field& field = vertexFields.get(_data->vertexFieldsInfo[i].name);
         output.appendVertexField(t, field, *_mesh);
     } // for

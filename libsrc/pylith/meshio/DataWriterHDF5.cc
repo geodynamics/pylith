@@ -510,32 +510,28 @@ pylith::meshio::DataWriterHDF5::writePointNames(const pylith::string_vector& nam
 #else
         hid_t group = H5Gopen(h5, parent);
 #endif
-        if (group < 0)
-            throw std::runtime_error("Could not open group.");
+        if (group < 0) { throw std::runtime_error("Could not open group."); }
 
         hid_t datatype = H5Tcopy(H5T_C_S1);
-        if (datatype < 0)
-            throw std::runtime_error("Could not create datatype.");
+        if (datatype < 0) { throw std::runtime_error("Could not create datatype."); }
         herr_t err = H5Tset_size(datatype, maxStringLength);
-        if (err < 0)
-            throw std::runtime_error("Could not set size of datatype.");
+        if (err < 0) { throw std::runtime_error("Could not set size of datatype."); }
 
         // Create the filespace
         const int ndims = 1;
         hsize_t dims[ndims];
         dims[0] = numNames;
         hid_t filespace = H5Screate_simple(ndims, dims, NULL);
-        if (filespace < 0)
-            throw std::runtime_error("Could not create filespace.");
+        if (filespace < 0) { throw std::runtime_error("Could not create filespace."); }
 
 #if defined(PYLITH_HDF5_USE_API_18)
         hid_t dataset = H5Dcreate2(group, name, datatype, filespace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 #else
         hid_t dataset = H5Dcreate(group, name, datatype, filespace, H5P_DEFAULT);
 #endif
-        if (dataset < 0) throw std::runtime_error("Could not create dataset.");
+        if (dataset < 0) { throw std::runtime_error("Could not create dataset."); }
         err = H5Sclose(filespace);
-        if (err < 0) throw std::runtime_error("Could not close filespace.");
+        if (err < 0) { throw std::runtime_error("Could not close filespace."); }
 
         // Create the memspace
         dims[0] = numNamesLocal;

@@ -31,7 +31,7 @@
 void
 pylith::meshio::TestXdmf::setUp(void)
 { // setUp
-    _data = new TestXdmf_Data;
+    _data = NULL;
 } // setUp
 
 
@@ -51,7 +51,7 @@ pylith::meshio::TestXdmf::testConstructor(void)
 { // testConstructor
     PYLITH_METHOD_BEGIN;
 
-    Xdmf one;
+    Xdmf metafile;
 
     PYLITH_METHOD_END;
 } // testConstructor

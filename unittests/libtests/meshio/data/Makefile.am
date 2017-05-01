@@ -17,6 +17,8 @@
 #
 
 dist_noinst_DATA = \
+	mesh2D_comments.txt \
+	mesh3D_index1.txt \
 	cube2_ascii.gmv \
 	cube2_ascii.pset \
 	cube2_binary.gmv \
@@ -25,7 +27,6 @@ dist_noinst_DATA = \
 	cube2_binary_32on64.pset \
 	cube2_binary_64.gmv \
 	cube2_binary_64.pset \
-	mesh3DIndexOne.txt \
 	twotri3_12.2.exo \
 	twotri3_13.0.exo \
 	twoquad4_12.2.exo \
@@ -34,7 +35,6 @@ dist_noinst_DATA = \
 	twotet4_13.0.exo \
 	twohex8_12.2.exo \
 	twohex8_13.0.exo \
-	mesh2D_comments.txt \
 	mesh_tri3.exo \
 	mesh_quad4.exo \
 	mesh_tet4.exo \

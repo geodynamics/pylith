@@ -294,15 +294,14 @@ pylith::meshio::TestHDF5::testDatasetChunk(void)
     nitems *= dimsE[i];
     nitemsS *= dimsE[i];
   } // for
-  const hsize_t sizeBytes = nitems * H5Tget_size(H5T_NATIVE_INT);
   int* valuesE = (nitems > 0) ? new int[nitems] : 0;
-  for (int i=0; i < nitems; ++i)
+  for (size_t i=0; i < nitems; ++i)
     valuesE[i] = 2 * i + 1;
 
   HDF5 h5("test.h5", H5F_ACC_TRUNC);
   h5.createDataset("/", "data", dimsE, dimsChunkE, ndimsE, H5T_NATIVE_INT);
 
-  for (int i=0; i < dimsE[0]; ++i)
+  for (size_t i=0; i < dimsE[0]; ++i)
     h5.writeDatasetChunk("/", "data", (void*)&valuesE[i*nitemsS], 
 			 dimsE, dimsChunkE, ndimsE, i, H5T_NATIVE_INT);
   h5.close();
@@ -311,14 +310,14 @@ pylith::meshio::TestHDF5::testDatasetChunk(void)
   hsize_t* dims = 0;
   int* values = 0;
   h5.open("test.h5", H5F_ACC_RDONLY);
-  for (int i=0; i < dimsE[0]; ++i) {
+  for (size_t i=0; i < dimsE[0]; ++i) {
     h5.readDatasetChunk("/", "data", (char**)&values, &dims, &ndims, i, 
 			H5T_NATIVE_INT);
     CPPUNIT_ASSERT_EQUAL(ndimsE, ndims);
     for (int iDim=1; iDim < ndims; ++iDim)
       CPPUNIT_ASSERT_EQUAL(dimsE[iDim], dims[iDim]);
 
-    for (int ii=0; ii < nitemsS; ++ii)
+    for (size_t ii=0; ii < nitemsS; ++ii)
       CPPUNIT_ASSERT_EQUAL(valuesE[i*nitemsS+ii], values[ii]);
   } // for
 
@@ -348,7 +347,7 @@ pylith::meshio::TestHDF5::testDatasetRawExternal(void)
     nitems *= dimsE[i];
   const hsize_t sizeBytes = nitems * H5Tget_size(H5T_NATIVE_INT);
   int* valuesE = (nitems > 0) ? new int[nitems] : 0;
-  for (int i=0; i < nitems; ++i)
+  for (size_t i=0; i < nitems; ++i)
     valuesE[i] = 2 * i + 1;
   std::ofstream fout("test.dat");
   fout.write((char*)valuesE, sizeBytes);
@@ -390,7 +389,7 @@ pylith::meshio::TestHDF5::testDatasetRawExternal(void)
 		       H5P_DEFAULT, (void*)values);
   CPPUNIT_ASSERT(err >= 0);
 
-  for (int i=0; i < nitems; ++i)
+  for (size_t i=0; i < nitems; ++i)
     CPPUNIT_ASSERT_EQUAL(valuesE[i], values[i]);
   delete[] valuesE; valuesE = 0;
   delete[] values; values = 0;
@@ -440,9 +439,7 @@ pylith::meshio::TestHDF5::testDatasetString(void)
 
   HDF5 h5("test.h5", H5F_ACC_TRUNC);
 
-  const hsize_t ndims = 1;
   const size_t nstrings = 3;
-  const hsize_t dims[ndims] = { nstrings };
   const char* dataE[nstrings] = {"abc", "defg", "hijkl" };
 
   h5.writeDataset("/", "data", dataE, nstrings);
@@ -453,7 +450,7 @@ pylith::meshio::TestHDF5::testDatasetString(void)
   h5.close();
 
   CPPUNIT_ASSERT_EQUAL(nstrings, data.size());
-  for (int i=0; i < nstrings; ++i) {
+  for (size_t i=0; i < nstrings; ++i) {
     const std::string& stringE = dataE[i];
     CPPUNIT_ASSERT_EQUAL(stringE, data[i]);
   } // for

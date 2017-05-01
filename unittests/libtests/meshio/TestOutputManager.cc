@@ -40,18 +40,18 @@
 #include <math.h> // USES sqrt()
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestOutputManager );
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::meshio::TestOutputManager);
 
 // ----------------------------------------------------------------------
 // Test constructor
 void
 pylith::meshio::TestOutputManager::testConstructor(void)
 { // testConstructor
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  OutputManager manager;
+    OutputManager manager;
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -59,17 +59,17 @@ pylith::meshio::TestOutputManager::testConstructor(void)
 void
 pylith::meshio::TestOutputManager::testCoordsys(void)
 { // testCoordsys
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  OutputManager manager;
+    OutputManager manager;
 
-  CPPUNIT_ASSERT(!manager._coordsys);
+    CPPUNIT_ASSERT(!manager._coordsys);
 
-  spatialdata::geocoords::CSCart cs;
-  manager.coordsys(&cs);
-  CPPUNIT_ASSERT(0 != manager._coordsys);
+    spatialdata::geocoords::CSCart cs;
+    manager.coordsys(&cs);
+    CPPUNIT_ASSERT(0 != manager._coordsys);
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testCoordsys
 
 // ----------------------------------------------------------------------
@@ -77,17 +77,17 @@ pylith::meshio::TestOutputManager::testCoordsys(void)
 void
 pylith::meshio::TestOutputManager::testWriter(void)
 { // testWriter
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  OutputManager manager;
+    OutputManager manager;
 
-  CPPUNIT_ASSERT(!manager._writer);
+    CPPUNIT_ASSERT(!manager._writer);
 
-  DataWriterVTK writer;
-  manager.writer(&writer);
-  CPPUNIT_ASSERT(manager._writer);
+    DataWriterVTK writer;
+    manager.writer(&writer);
+    CPPUNIT_ASSERT(manager._writer);
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testWriter
 
 // ----------------------------------------------------------------------
@@ -95,19 +95,19 @@ pylith::meshio::TestOutputManager::testWriter(void)
 void
 pylith::meshio::TestOutputManager::testVertexFilter(void)
 { // testVertexFilter
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  OutputManager manager;
+    OutputManager manager;
 
-  CPPUNIT_ASSERT(!manager._vertexFilter);
-  CPPUNIT_ASSERT(!manager._cellFilter);
+    CPPUNIT_ASSERT(!manager._vertexFilter);
+    CPPUNIT_ASSERT(!manager._cellFilter);
 
-  VertexFilterVecNorm filter;
-  manager.vertexFilter(&filter);
-  CPPUNIT_ASSERT(manager._vertexFilter);
-  CPPUNIT_ASSERT(!manager._cellFilter);
+    VertexFilterVecNorm filter;
+    manager.vertexFilter(&filter);
+    CPPUNIT_ASSERT(manager._vertexFilter);
+    CPPUNIT_ASSERT(!manager._cellFilter);
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testVertexFilter
 
 // ----------------------------------------------------------------------
@@ -115,19 +115,19 @@ pylith::meshio::TestOutputManager::testVertexFilter(void)
 void
 pylith::meshio::TestOutputManager::testCellFilter(void)
 { // testCellFilter
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  OutputManager manager;
+    OutputManager manager;
 
-  CPPUNIT_ASSERT(!manager._vertexFilter);
-  CPPUNIT_ASSERT(!manager._cellFilter);
+    CPPUNIT_ASSERT(!manager._vertexFilter);
+    CPPUNIT_ASSERT(!manager._cellFilter);
 
-  CellFilterAvg filter;
-  manager.cellFilter(&filter);
-  CPPUNIT_ASSERT(manager._cellFilter);
-  CPPUNIT_ASSERT(!manager._vertexFilter);
+    CellFilterAvg filter;
+    manager.cellFilter(&filter);
+    CPPUNIT_ASSERT(manager._cellFilter);
+    CPPUNIT_ASSERT(!manager._vertexFilter);
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testCellFilter
 
 // ----------------------------------------------------------------------
@@ -135,27 +135,27 @@ pylith::meshio::TestOutputManager::testCellFilter(void)
 void
 pylith::meshio::TestOutputManager::testOpenClose(void)
 { // testOpenClose
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  OutputManager manager;
+    OutputManager manager;
 
-  topology::Mesh mesh;
-  MeshIOAscii iohandler;
-  iohandler.filename("data/tri3.mesh");
-  iohandler.read(&mesh);
+    topology::Mesh mesh;
+    MeshIOAscii iohandler;
+    iohandler.filename("data/tri3.mesh");
+    iohandler.read(&mesh);
 
-  spatialdata::geocoords::CSCart cs;
-  const int numTimeSteps = 1;
+    spatialdata::geocoords::CSCart cs;
+    const bool isInfo = false;
 
-  // TODO Replace DataVTKWriter with writer that has nontrivial
-  // open()/close().
-  DataWriterVTK writer;
-  manager.writer(&writer);
+    // TODO Replace DataVTKWriter with writer that has nontrivial
+    // open()/close().
+    DataWriterVTK writer;
+    manager.writer(&writer);
 
-  manager.open(mesh, numTimeSteps);
-  manager.close();
+    manager.open(mesh, isInfo);
+    manager.close();
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testOpenClose
 
 // ----------------------------------------------------------------------
@@ -163,34 +163,34 @@ pylith::meshio::TestOutputManager::testOpenClose(void)
 void
 pylith::meshio::TestOutputManager::testOpenCloseTimeStep(void)
 { // testOpenCloseTimeStep
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  OutputManager manager;
+    OutputManager manager;
 
-  topology::Mesh mesh;
-  MeshIOAscii iohandler;
-  iohandler.filename("data/tri3.mesh");
-  iohandler.read(&mesh);
+    topology::Mesh mesh;
+    MeshIOAscii iohandler;
+    iohandler.filename("data/tri3.mesh");
+    iohandler.read(&mesh);
 
-  spatialdata::geocoords::CSCart cs;
-  const int numTimeSteps = 1;
-  const PylithScalar t = 1.2;
-  const char* filenameRoot = "output.vtk";
-  const char* timeFormat = "%3.1f";
+    spatialdata::geocoords::CSCart cs;
+    const bool isInfo = false;
+    const PylithScalar t = 1.2;
+    const char* filenameRoot = "output.vtk";
+    const char* timeFormat = "%3.1f";
 
-  DataWriterVTK writer;
-  writer.filename(filenameRoot);
-  writer.timeFormat(timeFormat);
-  manager.writer(&writer);
-  
-  manager.open(mesh, numTimeSteps);
-  manager.openTimeStep(t, mesh);
-  manager.closeTimeStep();
-  manager.close();
+    DataWriterVTK writer;
+    writer.filename(filenameRoot);
+    writer.timeFormat(timeFormat);
+    manager.writer(&writer);
 
-  // Nothing to check. We do not create VTK files without fields anymore.
+    manager.open(mesh, isInfo);
+    manager.openTimeStep(t, mesh);
+    manager.closeTimeStep();
+    manager.close();
 
-  PYLITH_METHOD_END;
+    // Nothing to check. We do not create VTK files without fields anymore.
+
+    PYLITH_METHOD_END;
 } // testOpenCloseTimeStep
 
 // ----------------------------------------------------------------------
@@ -198,87 +198,87 @@ pylith::meshio::TestOutputManager::testOpenCloseTimeStep(void)
 void
 pylith::meshio::TestOutputManager::testAppendVertexField(void)
 { // testAppendVertexField
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  const char* meshFilename = "data/tri3.mesh";
-  const int fiberDim = 2;
-  const int nvertices = 4;
-  const char* label = "field data";
-  const topology::FieldBase::VectorFieldEnum fieldType = 
-    topology::FieldBase::VECTOR;
-  const PylithScalar fieldValues[] = {
-    1.1, 1.2,
-    2.1, 2.2,
-    3.1, 3.2,
-    4.1, 4.2
-  };
-  const PylithScalar scale = 2.0;
+    const char* meshFilename = "data/tri3.mesh";
+    const int fiberDim = 2;
+    const int nvertices = 4;
+    const char* label = "field data";
+    const topology::FieldBase::VectorFieldEnum fieldType =
+        topology::FieldBase::VECTOR;
+    const PylithScalar fieldValues[] = {
+        1.1, 1.2,
+        2.1, 2.2,
+        3.1, 3.2,
+        4.1, 4.2
+    };
+    const PylithScalar scale = 2.0;
 
-  topology::Mesh mesh;
-  MeshIOAscii iohandler;
-  iohandler.filename(meshFilename);
-  iohandler.read(&mesh);
+    topology::Mesh mesh;
+    MeshIOAscii iohandler;
+    iohandler.filename(meshFilename);
+    iohandler.read(&mesh);
 
-  // Set vertex field
-  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);  
-  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
-  const PetscInt vStart = verticesStratum.begin();
-  const PetscInt vEnd = verticesStratum.end();
+    // Set vertex field
+    PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+    topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+    const PetscInt vStart = verticesStratum.begin();
+    const PetscInt vEnd = verticesStratum.end();
 
-  topology::Field field(mesh);
-  field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
-  field.allocate();
-  field.label(label);
-  field.vectorFieldType(fieldType);
-  field.scale(scale);
+    topology::Field field(mesh);
+    field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
+    field.allocate();
+    field.label(label);
+    field.vectorFieldType(fieldType);
+    field.scale(scale);
 
-  topology::VecVisitorMesh fieldVisitor(field);
-  PetscScalar* fieldArray = fieldVisitor.localArray();CPPUNIT_ASSERT(fieldArray);
-    
-  for(PetscInt v = vStart, index=0; v < vEnd; ++v) {
-    const PetscInt off = fieldVisitor.sectionOffset(v);
-    CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
-    for(PetscInt d = 0; d < fiberDim; ++d, ++index) {
-      fieldArray[off+d] = fieldValues[index]/scale;
+    topology::VecVisitorMesh fieldVisitor(field);
+    PetscScalar* fieldArray = fieldVisitor.localArray();CPPUNIT_ASSERT(fieldArray);
+
+    for (PetscInt v = vStart, index = 0; v < vEnd; ++v) {
+        const PetscInt off = fieldVisitor.sectionOffset(v);
+        CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
+        for (PetscInt d = 0; d < fiberDim; ++d, ++index) {
+            fieldArray[off+d] = fieldValues[index]/scale;
+        } // for
     } // for
-  } // for
-  CPPUNIT_ASSERT_EQUAL(nvertices, vEnd-vStart);
+    CPPUNIT_ASSERT_EQUAL(nvertices, vEnd-vStart);
 
-  spatialdata::geocoords::CSCart cs;
-  const int numTimeSteps = 1;
-  const PylithScalar t = 1.2;
-  const char* filenameRoot = "output_vertex.vtk";
-  const char* filenameRootF = "output_vertex_filter.vtk";
-  const char* timeFormat = "%3.1f";
+    spatialdata::geocoords::CSCart cs;
+    const bool isInfo = false;
+    const PylithScalar t = 1.2;
+    const char* filenameRoot = "output_vertex.vtk";
+    const char* filenameRootF = "output_vertex_filter.vtk";
+    const char* timeFormat = "%3.1f";
 
-  DataWriterVTK writer;
-  writer.filename(filenameRoot);
-  writer.timeFormat(timeFormat);
+    DataWriterVTK writer;
+    writer.filename(filenameRoot);
+    writer.timeFormat(timeFormat);
 
-  OutputManager manager;
-  manager.writer(&writer);
-  manager.open(mesh, numTimeSteps);
-  manager.openTimeStep(t, mesh);
-  manager.appendVertexField(t, field, mesh);
-  manager.closeTimeStep();
-  manager.close();
+    OutputManager manager;
+    manager.writer(&writer);
+    manager.open(mesh, isInfo);
+    manager.openTimeStep(t, mesh);
+    manager.appendVertexField(t, field, mesh);
+    manager.closeTimeStep();
+    manager.close();
 
-  TestDataWriterVTK::checkFile(filenameRoot, t, timeFormat);
+    TestDataWriterVTK::checkFile(filenameRoot, t, timeFormat);
 
-  VertexFilterVecNorm filter;
-  manager.vertexFilter(&filter);
-  writer.filename(filenameRootF);
-  manager.writer(&writer);
-  
-  manager.open(mesh, numTimeSteps);
-  manager.openTimeStep(t, mesh);
-  manager.appendVertexField(t, field, mesh);
-  manager.closeTimeStep();
-  manager.close();
+    VertexFilterVecNorm filter;
+    manager.vertexFilter(&filter);
+    writer.filename(filenameRootF);
+    manager.writer(&writer);
 
-  TestDataWriterVTK::checkFile(filenameRootF, t, timeFormat);
+    manager.open(mesh, isInfo);
+    manager.openTimeStep(t, mesh);
+    manager.appendVertexField(t, field, mesh);
+    manager.closeTimeStep();
+    manager.close();
 
-  PYLITH_METHOD_END;
+    TestDataWriterVTK::checkFile(filenameRootF, t, timeFormat);
+
+    PYLITH_METHOD_END;
 } // testAppendVertexField
 
 // ----------------------------------------------------------------------
@@ -286,119 +286,119 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
 void
 pylith::meshio::TestOutputManager::testAppendCellField(void)
 { // testAppendCellField
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  const char* meshFilename = "data/tri3.mesh";
-  const int fiberDim = 2;
-  const int ncells = 2;
-  const char* label = "field data";
-  const topology::FieldBase::VectorFieldEnum fieldType = 
-    topology::FieldBase::MULTI_SCALAR;
-  const PylithScalar fieldValues[] = {
-    1.1, 1.2,
-    2.1, 2.2,
-  };
-  const PylithScalar scale = 4.0;
+    const char* meshFilename = "data/tri3.mesh";
+    const int fiberDim = 2;
+    const int ncells = 2;
+    const char* label = "field data";
+    const topology::FieldBase::VectorFieldEnum fieldType =
+        topology::FieldBase::MULTI_SCALAR;
+    const PylithScalar fieldValues[] = {
+        1.1, 1.2,
+        2.1, 2.2,
+    };
+    const PylithScalar scale = 4.0;
 
-  topology::Mesh mesh;
-  MeshIOAscii iohandler;
-  iohandler.filename(meshFilename);
-  iohandler.read(&mesh);
+    topology::Mesh mesh;
+    MeshIOAscii iohandler;
+    iohandler.filename(meshFilename);
+    iohandler.read(&mesh);
 
-  // Set cell field
-  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);  
-  topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
-  const PetscInt cStart = cellsStratum.begin();
-  const PetscInt cEnd = cellsStratum.end();
-  PetscInt numCells = cellsStratum.size();
+    // Set cell field
+    PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+    topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
+    const PetscInt cStart = cellsStratum.begin();
+    const PetscInt cEnd = cellsStratum.end();
+    PetscInt numCells = cellsStratum.size();
 
-  topology::Field field(mesh);
-  field.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
-  field.allocate();
-  field.label(label);
-  field.vectorFieldType(fieldType);
-  field.scale(scale);
+    topology::Field field(mesh);
+    field.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
+    field.allocate();
+    field.label(label);
+    field.vectorFieldType(fieldType);
+    field.scale(scale);
 
-  topology::VecVisitorMesh fieldVisitor(field);
-  PetscScalar* fieldArray = fieldVisitor.localArray();CPPUNIT_ASSERT(fieldArray);
-    
-  for(PetscInt c = 0, index = 0; c < numCells; ++c) {
-    const PetscInt cell = c+cStart;
-      
-    const PetscInt off = fieldVisitor.sectionOffset(cell);
-    CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(cell));
-    for(PetscInt d = 0; d < fiberDim; ++d, ++index) {
-      fieldArray[off+d] = fieldValues[index]/scale;
+    topology::VecVisitorMesh fieldVisitor(field);
+    PetscScalar* fieldArray = fieldVisitor.localArray();CPPUNIT_ASSERT(fieldArray);
+
+    for (PetscInt c = 0, index = 0; c < numCells; ++c) {
+        const PetscInt cell = c+cStart;
+
+        const PetscInt off = fieldVisitor.sectionOffset(cell);
+        CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(cell));
+        for (PetscInt d = 0; d < fiberDim; ++d, ++index) {
+            fieldArray[off+d] = fieldValues[index]/scale;
+        } // for
     } // for
-  } // for
-  CPPUNIT_ASSERT_EQUAL(ncells, cEnd-cStart);
+    CPPUNIT_ASSERT_EQUAL(ncells, cEnd-cStart);
 
-  spatialdata::geocoords::CSCart cs;
-  const int numTimeSteps = 1;
-  const PylithScalar t = 1.2;
-  const char* filenameRoot = "output_cell.vtk";
-  const char* filenameRootF = "output_cell_filter.vtk";
-  const char* timeFormat = "%3.1f";
+    spatialdata::geocoords::CSCart cs;
+    const bool isInfo = false;
+    const PylithScalar t = 1.2;
+    const char* filenameRoot = "output_cell.vtk";
+    const char* filenameRootF = "output_cell_filter.vtk";
+    const char* timeFormat = "%3.1f";
 
-  DataWriterVTK writer;
-  writer.filename(filenameRoot);
-  writer.timeFormat(timeFormat);
+    DataWriterVTK writer;
+    writer.filename(filenameRoot);
+    writer.timeFormat(timeFormat);
 
-  OutputManager manager;
-  manager.writer(&writer);
-  manager.open(mesh, numTimeSteps);
-  manager.openTimeStep(t, mesh);
-  manager.appendCellField(t, field);
-  manager.closeTimeStep();
-  manager.close();
+    OutputManager manager;
+    manager.writer(&writer);
+    manager.open(mesh, isInfo);
+    manager.openTimeStep(t, mesh);
+    manager.appendCellField(t, field);
+    manager.closeTimeStep();
+    manager.close();
 
-  TestDataWriterVTK::checkFile(filenameRoot, t, timeFormat);
+    TestDataWriterVTK::checkFile(filenameRoot, t, timeFormat);
 
-  const int cellDim = 2;
-  const int numBasis = 4;
-  const int numQuadPts = 2;
-  const int spaceDim = 2;
-  const PylithScalar basis[] = {
-    1.0, 1.0,
-    1.0, 1.0,
-    1.0, 1.0,
-    1.0, 1.0,
-  };
-  const PylithScalar basisDerivRef[] = {
-    1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0,
-  };
-  const PylithScalar quadPtsRef[] = {
-    1.0, 0.0,
-   -1.0, 0.0,};
-  const PylithScalar quadWts[] = { 1.5, 0.5 };
-  const PylithScalar minJacobian = 1.0;
+    const int cellDim = 2;
+    const int numBasis = 4;
+    const int numQuadPts = 2;
+    const int spaceDim = 2;
+    const PylithScalar basis[] = {
+        1.0, 1.0,
+        1.0, 1.0,
+        1.0, 1.0,
+        1.0, 1.0,
+    };
+    const PylithScalar basisDerivRef[] = {
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
+    };
+    const PylithScalar quadPtsRef[] = {
+        1.0, 0.0,
+        -1.0, 0.0,
+    };
+    const PylithScalar quadWts[] = { 1.5, 0.5 };
 
-  feassemble::Quadrature quadrature;
-  quadrature.initialize(basis, numQuadPts, numBasis, 
-			basisDerivRef, numQuadPts, numBasis, cellDim,
-			quadPtsRef, numQuadPts, cellDim,
-			quadWts, numQuadPts,
-			spaceDim);
+    feassemble::Quadrature quadrature;
+    quadrature.initialize(basis, numQuadPts, numBasis,
+                          basisDerivRef, numQuadPts, numBasis, cellDim,
+                          quadPtsRef, numQuadPts, cellDim,
+                          quadWts, numQuadPts,
+                          spaceDim);
 
-  CellFilterAvg filter;
-  filter.quadrature(&quadrature);
-  manager.cellFilter(&filter);
-  writer.filename(filenameRootF);
-  manager.writer(&writer);
-  
-  manager.open(mesh, numTimeSteps);
-  manager.openTimeStep(t, mesh);
-  manager.appendCellField(t, field);
-  manager.closeTimeStep();
-  manager.close();
+    CellFilterAvg filter;
+    filter.quadrature(&quadrature);
+    manager.cellFilter(&filter);
+    writer.filename(filenameRootF);
+    manager.writer(&writer);
 
-  TestDataWriterVTK::checkFile(filenameRootF, t, timeFormat);
+    manager.open(mesh, isInfo);
+    manager.openTimeStep(t, mesh);
+    manager.appendCellField(t, field);
+    manager.closeTimeStep();
+    manager.close();
 
-  PYLITH_METHOD_END;
+    TestDataWriterVTK::checkFile(filenameRootF, t, timeFormat);
+
+    PYLITH_METHOD_END;
 } // testAppendCellField
 
 
-// End of file 
+// End of file

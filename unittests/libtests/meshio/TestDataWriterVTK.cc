@@ -46,7 +46,7 @@ pylith::meshio::TestDataWriterVTK::checkFile(const char* filenameRoot,
   char sbuffer[256];
   sprintf(sbuffer, timeFormat, t);
   std::string timestamp(sbuffer);
-  const int pos = timestamp.find(".");
+  const unsigned int pos = timestamp.find(".");
   if (pos != timestamp.length())
     timestamp.erase(pos, 1);
   buffer << std::string(fileroot, 0, indexExt) << "_t" << timestamp << ".vtk";

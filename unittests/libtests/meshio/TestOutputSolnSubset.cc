@@ -68,7 +68,6 @@ pylith::meshio::TestOutputSolnSubset::testSubdomainMesh(void)
 { // testSubdomainMesh
   PYLITH_METHOD_BEGIN;
 
-  const char* filename = "data/quad4.mesh";
   const char* label = "bc3";
   const int nvertices = 3;
   const int verticesE[nvertices] = { 2, 3, 4 };

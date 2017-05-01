@@ -281,7 +281,7 @@ pylith::meshio::TestOutputSolnPoints::_testInterpolate(const OutputSolnPointsDat
     field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
     field.allocate();
     field.label(fieldName);
-    field.zeroAll();
+    field.zeroLocal();
     this->_calcField(&field, data);
 
     // Create field for interpolated data.
@@ -291,13 +291,13 @@ pylith::meshio::TestOutputSolnPoints::_testInterpolate(const OutputSolnPointsDat
     fieldInterp.label(field.label());
     fieldInterp.vectorFieldType(field.vectorFieldType());
     fieldInterp.scale(field.scale());
-    fieldInterp.zeroAll();
+    fieldInterp.zeroLocal();
 
     // Create field to populate with expected data.
     pylith::topology::Field fieldInterpE(fieldInterp.mesh());
     fieldInterpE.cloneSection(fieldInterp);
     fieldInterpE.allocate();
-    fieldInterpE.zeroAll();
+    fieldInterpE.zeroLocal();
     this->_calcField(&fieldInterpE, data);
 
     PetscDM pointsMeshDM = output.pointsMesh().dmMesh(); CPPUNIT_ASSERT(pointsMeshDM);

@@ -33,7 +33,7 @@
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKPoints );
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::meshio::TestDataWriterVTKPoints);
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -96,15 +96,15 @@ pylith::meshio::TestDataWriterVTKPoints::testTimeStep(void)
     output.setupInterpolator(_mesh, _data->points, _data->numPoints, _data->spaceDim, _data->names, _data->numPoints, normalizer);
 
     const PylithScalar t = _data->time;
-    const int numTimeSteps = 1;
+    const bool isInfo = false;
     if (!_data->cellsLabel) {
-        output.open(*_mesh, numTimeSteps);
+        output.open(*_mesh, isInfo);
         output.writePointNames(); // Should do nothing
         output.openTimeStep(t, *_mesh);
     } else {
         const char* label = _data->cellsLabel;
         const int id = _data->labelId;
-        output.open(*_mesh, numTimeSteps, label, id);
+        output.open(*_mesh, isInfo, label, id);
         output.openTimeStep(t, *_mesh, label, id);
     } // else
 
@@ -142,18 +142,18 @@ pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void)
     const int nfields = _data->numVertexFields;
 
     const PylithScalar t = _data->time;
-    const int numTimeSteps = 1;
+    const bool isInfo = false;
     if (!_data->cellsLabel) {
-        output.open(*_mesh, numTimeSteps);
+        output.open(*_mesh, isInfo);
         output.writePointNames(); // Should do nothing
         output.openTimeStep(t, *_mesh);
     } else {
         const char* label = _data->cellsLabel;
         const int id = _data->labelId;
-        output.open(*_mesh, numTimeSteps, label, id);
+        output.open(*_mesh, isInfo, label, id);
         output.openTimeStep(t, *_mesh, label, id);
     } // else
-    for (int i=0; i < nfields; ++i) {
+    for (int i = 0; i < nfields; ++i) {
         topology::Field& field = vertexFields.get(_data->vertexFieldsInfo[i].name);
         // field.view("FIELD"); // DEBUGGING
         output.appendVertexField(t, field, *_mesh);

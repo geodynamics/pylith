@@ -171,7 +171,6 @@ pylith::meshio::TestDataWriterFaultMesh::_createCellFields(topology::Fields* fie
   PetscDM dmMesh = _faultMesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
   topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 1);
   const PetscInt cStart = cellsStratum.begin();
-  const PetscInt cEnd = cellsStratum.end();
   PetscInt numCells = cellsStratum.size();
 
   // Set cell fields
