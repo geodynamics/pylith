@@ -25,7 +25,8 @@
 #include <pylith/utils/error.hh> // USES PYLITH_CHECK_ERROR
 
 #include <sstream> // USES std::ostringstream
-#include <stdexcept> // USES std::runtime_error
+#include <stdexcept> \
+    // USES std::runtime_error
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -50,7 +51,7 @@ pylith::topology::Fields::deallocate(void)
 
     const map_type::iterator begin = _fields.begin();
     const map_type::iterator end = _fields.end();
-    for (map_type::iterator iter=begin; iter != end; ++iter) {
+    for (map_type::iterator iter = begin; iter != end; ++iter) {
         delete iter->second; iter->second = NULL;
     } // for
     _fields.clear();
@@ -64,6 +65,7 @@ bool
 pylith::topology::Fields::hasField(const char* name) const
 { // hasField
     PYLITH_METHOD_BEGIN;
+    assert(name);
 
     map_type::const_iterator iter = _fields.find(name);
 
@@ -77,6 +79,8 @@ pylith::topology::Fields::add(const char* name,
                               const char* label)
 { // add
     PYLITH_METHOD_BEGIN;
+    assert(name);
+    assert(label);
 
     if (hasField(name)) {
         std::ostringstream msg;
@@ -99,6 +103,8 @@ pylith::topology::Fields::add(const char* name,
                               const int fiberDim)
 { // add
     PYLITH_METHOD_BEGIN;
+    assert(name);
+    assert(label);
 
     if (hasField(name)) {
         std::ostringstream msg;
@@ -119,6 +125,7 @@ void
 pylith::topology::Fields::del(const char* name)
 { // del
     PYLITH_METHOD_BEGIN;
+    assert(name);
 
     map_type::iterator iter = _fields.find(name);
     if (iter == _fields.end()) {
@@ -138,6 +145,7 @@ const pylith::topology::Field&
 pylith::topology::Fields::get(const char* name) const
 { // get
     PYLITH_METHOD_BEGIN;
+    assert(name);
 
     map_type::const_iterator iter = _fields.find(name);
     if (iter == _fields.end()) {
@@ -155,6 +163,7 @@ pylith::topology::Field&
 pylith::topology::Fields::get(const char* name)
 { // get
     PYLITH_METHOD_BEGIN;
+    assert(name);
 
     map_type::iterator iter = _fields.find(name);
     if (iter == _fields.end()) {
@@ -172,6 +181,7 @@ void
 pylith::topology::Fields::copyLayout(const char* name)
 { // copyLayout
     PYLITH_METHOD_BEGIN;
+    assert(name);
 
     map_type::const_iterator src = _fields.find(name);
     if (src == _fields.end()) {
@@ -182,7 +192,7 @@ pylith::topology::Fields::copyLayout(const char* name)
 
     const map_type::iterator begin = _fields.begin();
     const map_type::iterator end = _fields.end();
-    for (map_type::iterator iter=begin; iter != end; ++iter) {
+    for (map_type::iterator iter = begin; iter != end; ++iter) {
         if (iter != src) {
             iter->second->cloneSection(*src->second);
         } // if
