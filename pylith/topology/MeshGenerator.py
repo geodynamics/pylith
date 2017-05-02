@@ -54,7 +54,7 @@ class MeshGenerator(PetscComponent):
     debug = pyre.inventory.bool("debug", default=False)
     debug.meta['tip'] = "Debugging flag for mesh."
 
-    interpolate = pyre.inventory.bool("interpolate", default=False)
+    interpolate = pyre.inventory.bool("interpolate", default=True)
     interpolate.meta['tip'] = "Build intermediate mesh topology elements"
 
 

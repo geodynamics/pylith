@@ -97,7 +97,7 @@ class MeshImporter(MeshGenerator):
     self._eventLogger.eventBegin(logEvent)    
 
     # Read mesh
-    mesh = self.reader.read(self.debug, self.interpolate)
+    mesh = self.reader.read(self.debug)
     if self.debug:
       mesh.view()
 

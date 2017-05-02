@@ -67,20 +67,6 @@ namespace pylith {
        */
       bool debug(void) const;
       
-      /** Set flag associated with building intermediate mesh topology
-       *  elements.
-       *
-       * @param flag True to build intermediate topology, false not to build
-       */
-      void interpolate(const bool flag);
-      
-      /** Get flag associated with building intermediate mesh topology
-       * elements.
-       *
-       * @returns True if building intermediate topology, false if not building
-       */
-      bool interpolate(void) const;
-      
       /** Read mesh from file.
        *
        * @param mesh PyLith finite-element mesh.

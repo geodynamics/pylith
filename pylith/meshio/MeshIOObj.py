@@ -43,7 +43,7 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
     return
 
 
-  def read(self, debug, interpolate):
+  def read(self, debug):
     """
     Read finite-element mesh and store in Sieve mesh object.
 
@@ -56,7 +56,6 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
 
     # Set flags
     self.debug(debug)
-    self.interpolate(interpolate)
 
     # Initialize coordinate system
     if self.coordsys is None:
