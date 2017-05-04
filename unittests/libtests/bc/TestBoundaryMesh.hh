@@ -31,40 +31,85 @@
 
 /// Namespace for pylith package
 namespace pylith {
-  namespace bc {
-    class TestBoundaryMesh;
+    namespace bc {
+        class TestBoundaryMesh;
 
-    class BoundaryMeshData;
-  } // bc
+        class TestBoundaryMesh_Data; // test data
+    } // bc
 } // pylith
 
+// ======================================================================
 /// C++ unit testing for BoundaryMesh.
-class pylith::bc::TestBoundaryMesh : public CppUnit::TestFixture
-{ // class TestBoundaryMesh
+class pylith::bc::TestBoundaryMesh : public CppUnit::TestFixture {
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+    CPPUNIT_TEST_SUITE(TestBoundaryMesh);
 
-  /// Setup testing data.
-  void setUp(void);
+    CPPUNIT_TEST(testSubmesh);
+    CPPUNIT_TEST(testSubmeshFault);
 
-  /// Tear down testing data.
-  void tearDown(void);
+    CPPUNIT_TEST_SUITE_END();
 
-  /// Test submesh() without fault.
-  void testSubmesh(void);
 
-  /// Test submesh() with fault().
-  void testSubmeshFault(void);
+    // PUBLIC METHODS /////////////////////////////////////////////////////
+public:
 
-  // PROTECTED MEMBERS //////////////////////////////////////////////////
-protected :
+    /// Setup testing data.
+    void setUp(void);
 
-  BoundaryMeshData* _data; ///< Data for testing
+    /// Tear down testing data.
+    void tearDown(void);
+
+    /// Test submesh() without fault.
+    void testSubmesh(void);
+
+    /// Test submesh() with fault().
+    void testSubmeshFault(void);
+
+    // PROTECTED MEMBERS //////////////////////////////////////////////////
+protected:
+
+    TestBoundaryMesh_Data* _data; ///< Data for testing
 
 }; // class TestBoundaryMesh
+
+// ======================================================================
+class pylith::bc::TestBoundaryMesh_Data {
+
+    // PUBLIC METHODS ///////////////////////////////////////////////////////
+public:
+
+    /// Constructor
+    TestBoundaryMesh_Data(void);
+
+    /// Destructor
+    ~TestBoundaryMesh_Data(void);
+
+    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
+public:
+
+    const char* filename; ///< Name of file with input mesh.
+    const char* bcLabel; ///< Name of group of vertices for bc.
+    const char* faultLabel; ///< Name of group of vertices for fault.
+    int faultId; ///< Material identifier for fault.
+
+    int numCorners; ///< Number of vertices in cells of boundary mesh.
+    int numCells; ///< Number of cells in boundary mesh.
+
+    /// @name Boundary mesh without fault.
+    //@{
+    int numVerticesNoFault; ///< Number of vertices.
+    //@}
+
+    /// @name Boundary mesh with fault.
+    //@{
+    int numVerticesWithFault; ///< Number of vertices.
+    //@}
+
+}; // class TestBoundaryMesh_Data
+
 
 #endif // pylith_bc_boundarymesh_hh
 
 
-// End of file 
+// End of file

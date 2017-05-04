@@ -33,7 +33,7 @@
 #include <strings.h> // USES strcasecmp()
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
-#include <sstream> // USES std::ostringstream
+#include <sstream>
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -147,9 +147,6 @@ pylith::bc::DirichletNew::setSolution(pylith::topology::Field* solution,
     const int labelId = 1;
     const int fieldIndex = solution->subfieldInfo(_field.c_str()).index;
     assert(solution->localVector());
-#if 0 // :DEBUGGING: TEMPORARY
-      // Inserting boundary values is not working.
-#else
     err = DMPlexLabelAddCells(dmSoln, dmLabel); PYLITH_CHECK_ERROR(err);
     err = DMPlexInsertBoundaryValuesEssentialField(dmSoln, t,
                                                    solution->localVector(), fieldIndex, dmLabel, 1, &labelId, _bcKernel,
@@ -158,11 +155,9 @@ pylith::bc::DirichletNew::setSolution(pylith::topology::Field* solution,
     err = DMPlexLabelClearCells(dmSoln, dmLabel); PYLITH_CHECK_ERROR(err);
 
     solution->view("SOLUTION"); // :DEBUGGING: TEMPORARY
-#endif
 
     PYLITH_METHOD_END;
 } // setSolution
-
 
 
 // End of file

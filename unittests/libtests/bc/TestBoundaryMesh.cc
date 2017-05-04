@@ -20,8 +20,6 @@
 
 #include "TestBoundaryMesh.hh" // Implementation of class methods
 
-#include "data/BoundaryMeshData.hh" // USES BoundaryMeshData
-
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Field.hh" // USES Field
@@ -38,11 +36,11 @@
 void
 pylith::bc::TestBoundaryMesh::setUp(void)
 { // setUp
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  _data = 0;
+    _data = NULL;
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -50,11 +48,11 @@ pylith::bc::TestBoundaryMesh::setUp(void)
 void
 pylith::bc::TestBoundaryMesh::tearDown(void)
 { // tearDown
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  delete _data; _data = 0;
+    delete _data; _data = NULL;
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // tearDown
 
 // ----------------------------------------------------------------------
@@ -62,53 +60,54 @@ pylith::bc::TestBoundaryMesh::tearDown(void)
 void
 pylith::bc::TestBoundaryMesh::testSubmesh(void)
 { // testSubmesh
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(_data);
-  PetscErrorCode err;
+    CPPUNIT_ASSERT(_data);
+    PetscErrorCode err;
 
-  topology::Mesh mesh;
-  meshio::MeshIOAscii iohandler;
-  iohandler.filename(_data->filename);
-  iohandler.read(&mesh);
+    pylith::topology::Mesh mesh;
+    pylith::meshio::MeshIOAscii iohandler;
+    CPPUNIT_ASSERT(_data->filename);
+    iohandler.filename(_data->filename);
+    iohandler.read(&mesh);
 
-  // Set up coordinates
-  spatialdata::geocoords::CSCart cs;
-  spatialdata::units::Nondimensional normalizer;
-  cs.setSpaceDim(mesh.dimension());
-  cs.initialize();
-  mesh.coordsys(&cs);
-  topology::MeshOps::nondimensionalize(&mesh, normalizer);
+    // Set up coordinates
+    spatialdata::geocoords::CSCart cs;
+    spatialdata::units::Nondimensional normalizer;
+    cs.setSpaceDim(mesh.dimension());
+    cs.initialize();
+    mesh.coordsys(&cs);
+    pylith::topology::MeshOps::nondimensionalize(&mesh, normalizer);
 
-  // Create submesh
-  topology::Mesh submesh(mesh, _data->bcLabel);
-  PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+    // Create submesh
+    CPPUNIT_ASSERT(_data->bcLabel);
+    pylith::topology::Mesh submesh(mesh, _data->bcLabel);
+    PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
 
-  // Check vertices
-  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
-  const PetscInt vStart = verticesStratum.begin();
-  const PetscInt vEnd = verticesStratum.end();
-  CPPUNIT_ASSERT_EQUAL(_data->numVerticesNoFault, verticesStratum.size());
+    // Check vertices
+    pylith::topology::Stratum verticesStratum(dmMesh, pylith::topology::Stratum::DEPTH, 0);
+    const PetscInt vStart = verticesStratum.begin();
+    const PetscInt vEnd = verticesStratum.end();
+    CPPUNIT_ASSERT_EQUAL(_data->numVerticesNoFault, verticesStratum.size());
 
-  // Check cells
-  topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 1);
-  const PetscInt cStart = cellsStratum.begin();
-  const PetscInt cEnd = cellsStratum.end();
-  CPPUNIT_ASSERT_EQUAL(_data->numCells, cellsStratum.size());
-  for (PetscInt c = cStart, index = 0; c < cEnd; ++c) {
-    PetscInt  vertices[32];
-    PetscInt *closure = NULL;
-    PetscInt  closureSize, numVertices = 0;
+    // Check cells
+    pylith::topology::Stratum cellsStratum(dmMesh, pylith::topology::Stratum::HEIGHT, 1);
+    const PetscInt cStart = cellsStratum.begin();
+    const PetscInt cEnd = cellsStratum.end();
+    CPPUNIT_ASSERT_EQUAL(_data->numCells, cellsStratum.size());
+    for (PetscInt c = cStart; c < cEnd; ++c) {
+        PetscInt *closure = NULL;
+        PetscInt closureSize, numVertices = 0;
 
-    err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-    for (PetscInt p = 0; p < closureSize*2; p += 2) {
-      if ((closure[p] >= vStart) && (closure[p] < vEnd)) vertices[numVertices++] = closure[p];
+        err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+        for (PetscInt p = 0; p < closureSize*2; p += 2) {
+            if ((closure[p] >= vStart) && (closure[p] < vEnd)) { numVertices++; }
+        } // for
+        err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+        CPPUNIT_ASSERT_EQUAL(_data->numCorners, numVertices);
     } // for
-    err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-    CPPUNIT_ASSERT_EQUAL(_data->numCorners, numVertices);
-  } // for
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testSubmesh
 
 // ----------------------------------------------------------------------
@@ -116,71 +115,94 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void)
 void
 pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
 { // testSubmeshFault
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(_data);
-  PetscErrorCode err;
+    CPPUNIT_ASSERT(_data);
+    PetscErrorCode err;
 
-  topology::Mesh mesh;
-  meshio::MeshIOAscii iohandler;
-  iohandler.filename(_data->filename);
-  iohandler.read(&mesh);
+    pylith::topology::Mesh mesh;
+    pylith::meshio::MeshIOAscii iohandler;
+    CPPUNIT_ASSERT(_data->filename);
+    iohandler.filename(_data->filename);
+    iohandler.read(&mesh);
 
-  // Set up coordinates
-  spatialdata::geocoords::CSCart cs;
-  spatialdata::units::Nondimensional normalizer;
-  cs.setSpaceDim(mesh.dimension());
-  cs.initialize();
-  mesh.coordsys(&cs);
-  topology::MeshOps::nondimensionalize(&mesh, normalizer);
+    // Set up coordinates
+    spatialdata::geocoords::CSCart cs;
+    spatialdata::units::Nondimensional normalizer;
+    cs.setSpaceDim(mesh.dimension());
+    cs.initialize();
+    mesh.coordsys(&cs);
+    pylith::topology::MeshOps::nondimensionalize(&mesh, normalizer);
 
-  // Adjust topology
-  faults::FaultCohesiveKin fault;
-  PetscInt firstFaultVertex = 0;
-  PetscInt firstLagrangeVertex, firstFaultCell;
+    // Adjust topology
+    CPPUNIT_ASSERT(_data->faultLabel);
+    pylith::faults::FaultCohesiveKin fault;
+    PetscInt firstFaultVertex = 0;
+    PetscInt firstLagrangeVertex, firstFaultCell;
 
-  err = DMGetStratumSize(mesh.dmMesh(), _data->faultLabel, 1, &firstLagrangeVertex);PYLITH_CHECK_ERROR(err);
-  firstFaultCell = firstLagrangeVertex;
-  fault.label(_data->faultLabel);
-  fault.id(_data->faultId);
-  fault.adjustTopology(&mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
+    err = DMGetStratumSize(mesh.dmMesh(), _data->faultLabel, 1, &firstLagrangeVertex);PYLITH_CHECK_ERROR(err);
+    firstFaultCell = firstLagrangeVertex;
+    fault.label(_data->faultLabel);
+    fault.id(_data->faultId);
+    fault.adjustTopology(&mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
 
-  // Create submesh
-  topology::Mesh submesh(mesh, _data->bcLabel);
-  PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+    // Create submesh
+    CPPUNIT_ASSERT(_data->bcLabel);
+    pylith::topology::Mesh submesh(mesh, _data->bcLabel);
+    PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
 #if 0 // DEBUGGING
-  PetscViewerPushFormat(PETSC_VIEWER_STDOUT_WORLD, PETSC_VIEWER_ASCII_INFO_DETAIL);
-  DMView(mesh.dmMesh(), PETSC_VIEWER_STDOUT_WORLD);
-  PetscViewerPopFormat(PETSC_VIEWER_STDOUT_WORLD);
+    PetscViewerPushFormat(PETSC_VIEWER_STDOUT_WORLD, PETSC_VIEWER_ASCII_INFO_DETAIL);
+    DMView(mesh.dmMesh(), PETSC_VIEWER_STDOUT_WORLD);
+    PetscViewerPopFormat(PETSC_VIEWER_STDOUT_WORLD);
 #endif
 
-  // Check vertices
-  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
-  const PetscInt vStart = verticesStratum.begin();
-  const PetscInt vEnd = verticesStratum.end();
-  CPPUNIT_ASSERT_EQUAL(_data->numVerticesFault, verticesStratum.size());
+    // Check vertices
+    pylith::topology::Stratum verticesStratum(dmMesh, pylith::topology::Stratum::DEPTH, 0);
+    const PetscInt vStart = verticesStratum.begin();
+    const PetscInt vEnd = verticesStratum.end();
+    CPPUNIT_ASSERT_EQUAL(_data->numVerticesWithFault, verticesStratum.size());
 
-  // Check cells
-  topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 1);
-  const PetscInt cStart = cellsStratum.begin();
-  const PetscInt cEnd = cellsStratum.end();
-  CPPUNIT_ASSERT_EQUAL(_data->numCells, cellsStratum.size());
+    // Check cells
+    topology::Stratum cellsStratum(dmMesh, pylith::topology::Stratum::HEIGHT, 1);
+    const PetscInt cStart = cellsStratum.begin();
+    const PetscInt cEnd = cellsStratum.end();
+    CPPUNIT_ASSERT_EQUAL(_data->numCells, cellsStratum.size());
 
-  for (PetscInt c = cStart, index = 0; c < cEnd; ++c) {
-    PetscInt  vertices[32];
-    PetscInt *closure = NULL;
-    PetscInt  closureSize, numVertices = 0;
+    for (PetscInt c = cStart; c < cEnd; ++c) {
+        PetscInt *closure = NULL;
+        PetscInt closureSize, numVertices = 0;
 
-    err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-    for (PetscInt p = 0; p < closureSize*2; p += 2) {
-      if ((closure[p] >= vStart) && (closure[p] < vEnd)) vertices[numVertices++] = closure[p];
+        err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+        for (PetscInt p = 0; p < closureSize*2; p += 2) {
+            if ((closure[p] >= vStart) && (closure[p] < vEnd)) { numVertices++; }
+        } // for
+        err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+        CPPUNIT_ASSERT_EQUAL(_data->numCorners, numVertices);
     } // for
-    err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-    CPPUNIT_ASSERT_EQUAL(_data->numCorners, numVertices);
-  } // for
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // testSubmeshFault
 
 
-// End of file 
+// ----------------------------------------------------------------------
+// Constructor
+pylith::bc::TestBoundaryMesh_Data::TestBoundaryMesh_Data(void) :
+    filename(NULL),
+    bcLabel(NULL),
+    faultLabel(NULL),
+    faultId(0),
+    numCorners(0),
+    numCells(0),
+    numVerticesNoFault(0),
+    numVerticesWithFault(0)
+{ // constructor
+} // constructor
+
+// ----------------------------------------------------------------------
+// Destructor
+pylith::bc::TestBoundaryMesh_Data::~TestBoundaryMesh_Data(void)
+{ // destructor
+} // destructor
+
+
+// End of file
