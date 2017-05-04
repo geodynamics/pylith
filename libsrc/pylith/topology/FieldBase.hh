@@ -37,87 +37,90 @@
 /** @brief Basic information related to a vector field over the
  * vertices or cells of a finite-element mesh.
  */
-class pylith::topology::FieldBase
-{ // Field
+class pylith::topology::FieldBase { // Field
 
-// PUBLIC ENUMS /////////////////////////////////////////////////////////
-public :
+    // PUBLIC ENUMS /////////////////////////////////////////////////////////
+public:
 
-  enum VectorFieldEnum {
-    SCALAR=0, ///< Scalar.
-    VECTOR=1, ///< Vector.
-    TENSOR=2, ///< Tensor.
-    OTHER=3, ///< Not a scalar, vector, or tensor.
-    MULTI_SCALAR=4, ///< Scalar at multiple points.
-    MULTI_VECTOR=5, ///< Vector at multiple points.
-    MULTI_TENSOR=6, ///< Tensor at multiple points.
-    MULTI_OTHER=7, ///< Not a scalar, vector, or tensor at multiple points.
-  }; // VectorFieldEnum
+    enum VectorFieldEnum {
+        SCALAR=0, ///< Scalar.
+        VECTOR=1, ///< Vector.
+        TENSOR=2, ///< Tensor.
+        OTHER=3, ///< Not a scalar, vector, or tensor.
+        MULTI_SCALAR=4, ///< Scalar at multiple points.
+        MULTI_VECTOR=5, ///< Vector at multiple points.
+        MULTI_TENSOR=6, ///< Tensor at multiple points.
+        MULTI_OTHER=7, ///< Not a scalar, vector, or tensor at multiple points.
+    }; // VectorFieldEnum
 
-  enum DomainEnum {
-    VERTICES_FIELD=0, ///< FieldBase over vertices.
-    CELLS_FIELD=1, ///< FieldBase over cells.
-    POINTS_FIELD=2, ///< FieldBase over all points.
-    FACES_FIELD=3, ///< FieldBase over faces.
-  }; // DomainEnum
+    enum DomainEnum {
+        VERTICES_FIELD=0, ///< FieldBase over vertices.
+        CELLS_FIELD=1, ///< FieldBase over cells.
+        POINTS_FIELD=2, ///< FieldBase over all points.
+        FACES_FIELD=3, ///< FieldBase over faces.
+    }; // DomainEnum
 
-// PUBLIC TYPEDEF ///////////////////////////////////////////////////////
-public :
+    enum SpaceEnum {
+        POLYNOMIAL_SPACE=0, ///< Polynomial finite-element space.
+        POINT_SPACE=1, ///< Point finite-element space.
+    }; // SpaceEnum
 
-  /// Function prototype for validator functions.
-  typedef const char* (*validatorfn_type)(const PylithReal);
+    // PUBLIC TYPEDEF ///////////////////////////////////////////////////////
+public:
 
-// PUBLIC STRUCTS ///////////////////////////////////////////////////////
-public :
+    /// Function prototype for validator functions.
+    typedef const char* (*validatorfn_type)(const PylithReal);
 
-  struct Metadata {
-    std::string label; ///< Label for field.
-    VectorFieldEnum vectorFieldType; ///< Type of vector field.
-    PylithReal scale; ///< Dimension scale associated with values.
-    bool dimsOkay; ///< Ok to replace nondimensionalized values with dimensionalized values.
-    pylith::string_vector componentNames; ///< Names of components.
-    validatorfn_type validator; ///< Validator for values in field;
-  }; // Metadata
+    // PUBLIC STRUCTS ///////////////////////////////////////////////////////
+public:
 
-  struct DiscretizeInfo {
-    int basisOrder; ///< Order of basis functions.
-    int quadOrder; ///< Order of quadrature scheme.
-    bool isBasisContinuous; ///< Is basis continuous?
-  }; // DiscInfo
+    struct Metadata {
+        std::string label; ///< Label for field.
+        VectorFieldEnum vectorFieldType; ///< Type of vector field.
+        PylithReal scale; ///< Dimension scale associated with values.
+        bool dimsOkay; ///< Ok to replace nondimensionalized values with dimensionalized values.
+        pylith::string_vector componentNames; ///< Names of components.
+        validatorfn_type validator; ///< Validator for values in field;
+    }; // Metadata
 
-// PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public :
+    struct DiscretizeInfo {
+        int basisOrder; ///< Order of basis functions.
+        int quadOrder; ///< Order of quadrature scheme.
+        bool isBasisContinuous; ///< Is basis continuous?
+        SpaceEnum feSpace; ///< Finite-element space.
+    }; // DiscInfo
 
-  FieldBase(void); ///< Default constructor.
-  ~FieldBase(void); ///< Default destructor.
+    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
+public:
 
-  /** Get string associated with vector field type.
-   *
-   * @param value Vector field type.
-   * @returns String associated with vector field type.
-   */
-  static
-  const char*
-  vectorFieldString(VectorFieldEnum value);
+    FieldBase(void); ///< Default constructor.
+    ~FieldBase(void); ///< Default destructor.
 
-  /** Get string associated with vector field type.
-   *
-   * @param value String associated with vector field type.
-   * @returns Vector field type.
-   */
-  static
-  VectorFieldEnum
-  parseVectorFieldString(const char* value);
+    /** Get string associated with vector field type.
+     *
+     * @param value Vector field type.
+     * @returns String associated with vector field type.
+     */
+    static
+    const char*vectorFieldString(VectorFieldEnum value);
 
-// NOT IMPLEMENTED //////////////////////////////////////////////////////
-private :
+    /** Get string associated with vector field type.
+     *
+     * @param value String associated with vector field type.
+     * @returns Vector field type.
+     */
+    static
+    VectorFieldEnum parseVectorFieldString(const char* value);
 
-  FieldBase(const FieldBase&); ///< Not implemented
-  const FieldBase& operator=(const FieldBase&); ///< Not implemented
+    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+private:
+
+    FieldBase(const FieldBase&); ///< Not implemented
+    const FieldBase& operator=(const FieldBase&); ///< Not implemented
 
 }; // FieldBase
 
 #endif // pylith_topology_fieldbase_hh
 
 
-// End of file 
+// End of file

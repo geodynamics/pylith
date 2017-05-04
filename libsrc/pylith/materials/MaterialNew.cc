@@ -36,9 +36,34 @@
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
-extern "C" PetscErrorCode DMPlexComputeResidual_Internal(DM dm, PetscInt cStart, PetscInt cEnd, PetscReal time, Vec locX, Vec locX_t, Vec locF, void *user);
-extern "C" PetscErrorCode DMPlexComputeJacobian_Internal(DM dm, PetscInt cStart, PetscInt cEnd, PetscReal t, PetscReal X_tShift, Vec X, Vec X_t, Mat Jac, Mat JacP, void *user);
-extern "C" PetscErrorCode DMPlexComputeJacobianAction_Internal(DM dm, PetscInt cStart, PetscInt cEnd, PetscReal t, PetscReal X_tShift, Vec X, Vec X_t, Vec Y, Vec z, void *user);
+extern "C" PetscErrorCode DMPlexComputeResidual_Internal(DM dm,
+                                                         PetscInt cStart,
+                                                         PetscInt cEnd,
+                                                         PetscReal time,
+                                                         Vec locX,
+                                                         Vec locX_t,
+                                                         Vec locF,
+                                                         void *user);
+extern "C" PetscErrorCode DMPlexComputeJacobian_Internal(DM dm,
+                                                         PetscInt cStart,
+                                                         PetscInt cEnd,
+                                                         PetscReal t,
+                                                         PetscReal X_tShift,
+                                                         Vec X,
+                                                         Vec X_t,
+                                                         Mat Jac,
+                                                         Mat JacP,
+                                                         void *user);
+extern "C" PetscErrorCode DMPlexComputeJacobianAction_Internal(DM dm,
+                                                               PetscInt cStart,
+                                                               PetscInt cEnd,
+                                                               PetscReal t,
+                                                               PetscReal X_tShift,
+                                                               Vec X,
+                                                               Vec X_t,
+                                                               Vec Y,
+                                                               Vec z,
+                                                               void *user);
 
 
 // ----------------------------------------------------------------------
@@ -50,7 +75,7 @@ pylith::materials::MaterialNew::MaterialNew(const int dimension) :
     _id(0),
     _label("")
 { // constructor
-    const pylith::topology::FieldBase::DiscretizeInfo defaultInfo = {-1, -1, true};
+    const pylith::topology::FieldBase::DiscretizeInfo defaultInfo = {-1, -1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE};
     _auxFieldsFEInfo["default"] = defaultInfo;
 } // constructor
 

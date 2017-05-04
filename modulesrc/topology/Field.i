@@ -162,7 +162,8 @@ void cloneSection(const Field& src);
  * @param[in] basisOrder Polynomial order for basis.
  * @param[in] quadOrder Order of quadrature rule.
  * @param[in] isBasisContinuous True if basis is continuous.
- * @param scale Scale for dimensionalizing field.
+ * @param[in] feSpace Finite-element space (polynomial or point).
+ * @param[in] scale Scale for dimensionalizing field.
  */
 %apply(const char* const* string_list, const int list_len){
     (const char* components[], const int numComponents)
@@ -174,6 +175,7 @@ void subfieldAdd(const char *name,
                  const int basisOrder,
                  const int quadOrder,
                  const bool isBasisContinuous,
+		         const SpaceEnum feSpace,
                  const double scale);
 %clear(const char* components[], const int numComponents);
 

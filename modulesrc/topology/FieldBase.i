@@ -41,11 +41,16 @@ namespace pylith {
 	MULTI_TENSOR=6, ///< Tensor at multiple points.
 	MULTI_OTHER=7, ///< Not a scalar, vector, or tensor at multiple points.
       }; // VectorFieldEnum
-      
+
       enum DomainEnum {
 	VERTICES_FIELD=0, ///< FieldBase over vertices.
 	CELLS_FIELD=1, ///< FieldBase over cells.
       }; // DomainEnum
+
+      enum SpaceEnum {
+          POLYNOMIAL_SPACE=0, ///< Polynomial finite-element space.
+          POINT_SPACE=1, ///< Point finite-element space.
+      }; // SpaceEnum
 
       // PUBLIC TYPEDEF /////////////////////////////////////////////////
     public :

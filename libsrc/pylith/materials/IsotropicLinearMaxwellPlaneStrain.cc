@@ -163,25 +163,28 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_auxFieldsSetup(void)
     // Field 0: density
     const char* densityComponents[1] = {"density"};
     const pylith::topology::Field::DiscretizeInfo& densityFEInfo = this->auxFieldDiscretization("density");
-    _auxFields->subfieldAdd("density", densityComponents, 1, pylith::topology::Field::SCALAR, densityFEInfo.basisOrder, densityFEInfo.quadOrder, densityFEInfo.isBasisContinuous, densityScale, pylith::topology::FieldQuery::validatorPositive);
+    _auxFields->subfieldAdd("density", densityComponents, 1, pylith::topology::Field::SCALAR, densityFEInfo.basisOrder, densityFEInfo.quadOrder, densityFEInfo.isBasisContinuous, densityFEInfo.feSpace, densityScale,
+                            pylith::topology::FieldQuery::validatorPositive);
     _auxFieldsQuery->queryFn("density", pylith::topology::FieldQuery::dbQueryGeneric);
 
     // Field 1: shearModulus
     const char* shearModulusComponents[1] = {"shear_modulus"};
     const pylith::topology::Field::DiscretizeInfo& shearModulusFEInfo = this->auxFieldDiscretization("shear_modulus");
-    _auxFields->subfieldAdd("shear_modulus", shearModulusComponents, 1, pylith::topology::Field::SCALAR, shearModulusFEInfo.basisOrder, shearModulusFEInfo.quadOrder, shearModulusFEInfo.isBasisContinuous, pressureScale);
+    _auxFields->subfieldAdd("shear_modulus", shearModulusComponents, 1, pylith::topology::Field::SCALAR, shearModulusFEInfo.basisOrder, shearModulusFEInfo.quadOrder, shearModulusFEInfo.isBasisContinuous, shearModulusFEInfo.feSpace,
+                            pressureScale);
     _auxFieldsQuery->queryFn("shear_modulus", pylith::materials::Query::dbQueryShearModulus);
 
     // Field 2: bulkModulus
     const char* bulkModulusComponents[1] = {"bulk_modulus"};
     const pylith::topology::Field::DiscretizeInfo& bulkModulusFEInfo = this->auxFieldDiscretization("bulk_modulus");
-    _auxFields->subfieldAdd("bulk_modulus", bulkModulusComponents, 1, pylith::topology::Field::SCALAR, bulkModulusFEInfo.basisOrder, bulkModulusFEInfo.quadOrder, bulkModulusFEInfo.isBasisContinuous, pressureScale);
+    _auxFields->subfieldAdd("bulk_modulus", bulkModulusComponents, 1, pylith::topology::Field::SCALAR, bulkModulusFEInfo.basisOrder, bulkModulusFEInfo.quadOrder, bulkModulusFEInfo.isBasisContinuous, bulkModulusFEInfo.feSpace, pressureScale);
     _auxFieldsQuery->queryFn("bulk_modulus", pylith::materials::Query::dbQueryBulkModulus);
 
     // Field 3: maxwellTime
     const char* maxwellTimeComponents[1] = {"maxwell_time"};
     const pylith::topology::Field::DiscretizeInfo& maxwellTimeFEInfo = this->auxFieldDiscretization("maxwell_time");
-    _auxFields->subfieldAdd("maxwell_time", maxwellTimeComponents, 1, pylith::topology::Field::SCALAR, maxwellTimeFEInfo.basisOrder, maxwellTimeFEInfo.quadOrder, maxwellTimeFEInfo.isBasisContinuous, timeScale);
+    _auxFields->subfieldAdd("maxwell_time", maxwellTimeComponents, 1, pylith::topology::Field::SCALAR, maxwellTimeFEInfo.basisOrder, maxwellTimeFEInfo.quadOrder, maxwellTimeFEInfo.isBasisContinuous, maxwellTimeFEInfo.feSpace,
+                            timeScale);
     // NOTE:  Need specific query for Maxwell time.
     _auxFieldsQuery->queryFn("maxwell_time", pylith::topology::FieldQuery::dbQueryGeneric);
 
@@ -189,14 +192,16 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_auxFieldsSetup(void)
     const PylithInt totalStrainSize = 4;
     const char* componentsTotalStrain[totalStrainSize] = {"total_strain_xx", "total_strain_yy", "total_strain_zz", "total_strain_xy"};
     const pylith::topology::Field::DiscretizeInfo& totalStrainFEInfo = this->auxFieldDiscretization("total_strain");
-    _auxFields->subfieldAdd("total_strain", componentsTotalStrain, totalStrainSize, pylith::topology::Field::OTHER, totalStrainFEInfo.basisOrder, totalStrainFEInfo.quadOrder, totalStrainFEInfo.isBasisContinuous, 1.0);
+    _auxFields->subfieldAdd("total_strain", componentsTotalStrain, totalStrainSize, pylith::topology::Field::OTHER, totalStrainFEInfo.basisOrder, totalStrainFEInfo.quadOrder, totalStrainFEInfo.isBasisContinuous, totalStrainFEInfo.feSpace,
+                            1.0);
     _auxFieldsQuery->queryFn("total_strain", pylith::topology::FieldQuery::dbQueryGeneric);
 
     // Field 5: viscous strain
     const PylithInt viscousStrainSize = 4;
     const char* componentsViscousStrain[viscousStrainSize] = {"viscous_strain_xx", "viscous_strain_yy", "viscous_strain_zz", "viscous_strain_xy"};
     const pylith::topology::Field::DiscretizeInfo& viscousStrainFEInfo = this->auxFieldDiscretization("viscous_strain");
-    _auxFields->subfieldAdd("viscous_strain", componentsViscousStrain, viscousStrainSize, pylith::topology::Field::OTHER, viscousStrainFEInfo.basisOrder, viscousStrainFEInfo.quadOrder, viscousStrainFEInfo.isBasisContinuous, 1.0);
+    _auxFields->subfieldAdd("viscous_strain", componentsViscousStrain, viscousStrainSize, pylith::topology::Field::OTHER, viscousStrainFEInfo.basisOrder, viscousStrainFEInfo.quadOrder, viscousStrainFEInfo.isBasisContinuous,
+                            viscousStrainFEInfo.feSpace, 1.0);
     _auxFieldsQuery->queryFn("viscous_strain", pylith::topology::FieldQuery::dbQueryGeneric);
 
     // Field 6: gravity_field
@@ -204,7 +209,8 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_auxFieldsSetup(void)
         assert(2 == dimension());
         const char* components[2] = {"gravity_field_x", "gravity_field_y"};
         const pylith::topology::Field::DiscretizeInfo& gravityFieldFEInfo = this->auxFieldDiscretization("gravity_field");
-        _auxFields->subfieldAdd("gravity_field", components, dimension(), pylith::topology::Field::VECTOR, gravityFieldFEInfo.basisOrder, gravityFieldFEInfo.quadOrder, gravityFieldFEInfo.isBasisContinuous, forceScale);
+        _auxFields->subfieldAdd("gravity_field", components,
+                                dimension(), pylith::topology::Field::VECTOR, gravityFieldFEInfo.basisOrder, gravityFieldFEInfo.quadOrder, gravityFieldFEInfo.isBasisContinuous, gravityFieldFEInfo.feSpace, forceScale);
         _auxFieldsQuery->queryFn("gravity_field", pylith::materials::Query::dbQueryGravityField, _gravityField);
     } // if
 
@@ -213,7 +219,7 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_auxFieldsSetup(void)
         assert(2 == dimension());
         const char* components[2] = {"body_force_x", "body_force_y"};
         const pylith::topology::Field::DiscretizeInfo& bodyForceFEInfo = this->auxFieldDiscretization("body_force");
-        _auxFields->subfieldAdd("body_force", components, dimension(), pylith::topology::Field::VECTOR, bodyForceFEInfo.basisOrder, bodyForceFEInfo.quadOrder, bodyForceFEInfo.isBasisContinuous, forceScale);
+        _auxFields->subfieldAdd("body_force", components, dimension(), pylith::topology::Field::VECTOR, bodyForceFEInfo.basisOrder, bodyForceFEInfo.quadOrder, bodyForceFEInfo.isBasisContinuous, bodyForceFEInfo.feSpace, forceScale);
         _auxFieldsQuery->queryFn("body_force", pylith::topology::FieldQuery::dbQueryGeneric);
     } // if
 
@@ -222,13 +228,14 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_auxFieldsSetup(void)
         const PylithInt stressSize = 4;
         const char* componentsStress[stressSize] = {"stress_xx", "stress_yy", "stress_zz", "stress_xy"};
         const pylith::topology::Field::DiscretizeInfo& stressFEInfo = this->auxFieldDiscretization("reference_stress");
-        _auxFields->subfieldAdd("reference_stress", componentsStress, stressSize, pylith::topology::Field::OTHER, stressFEInfo.basisOrder, stressFEInfo.quadOrder, stressFEInfo.isBasisContinuous, pressureScale);
+        _auxFields->subfieldAdd("reference_stress", componentsStress, stressSize, pylith::topology::Field::OTHER, stressFEInfo.basisOrder, stressFEInfo.quadOrder, stressFEInfo.isBasisContinuous, stressFEInfo.feSpace,
+                                pressureScale);
         _auxFieldsQuery->queryFn("reference_stress", pylith::topology::FieldQuery::dbQueryGeneric);
 
         const PylithInt strainSize = 4;
         const char* componentsStrain[strainSize] = {"strain_xx", "strain_yy", "strain_zz", "strain_xy"};
         const pylith::topology::Field::DiscretizeInfo& strainFEInfo = this->auxFieldDiscretization("reference_strain");
-        _auxFields->subfieldAdd("reference_strain", componentsStrain, strainSize, pylith::topology::Field::OTHER, strainFEInfo.basisOrder, strainFEInfo.quadOrder, strainFEInfo.isBasisContinuous, 1.0);
+        _auxFields->subfieldAdd("reference_strain", componentsStrain, strainSize, pylith::topology::Field::OTHER, strainFEInfo.basisOrder, strainFEInfo.quadOrder, strainFEInfo.isBasisContinuous, strainFEInfo.feSpace, 1.0);
         _auxFieldsQuery->queryFn("reference_strain", pylith::topology::FieldQuery::dbQueryGeneric);
     } // if
 
@@ -252,8 +259,8 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsRHSResidual(c
     if (!solution.hasSubfield("velocity")) {
         // Displacement
         const PetscPointFunc g0u = (_gravityField && _useBodyForce) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_gravbodyforce :
-	                           (_gravityField) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_grav :
-	                           (_useBodyForce) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_bodyforce :
+                                   (_gravityField) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_grav :
+                                   (_useBodyForce) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_bodyforce :
                                    NULL;
         const PetscPointFunc g1u = (!_useReferenceState) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g1v : pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g1v_refstate;
 
@@ -267,9 +274,9 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsRHSResidual(c
 
         // Velocity
         const PetscPointFunc g0v = (_gravityField && _useBodyForce) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_gravbodyforce :
-	                           (_gravityField) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_grav :
+                                   (_gravityField) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_grav :
                                    (_useBodyForce) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_bodyforce :
-	                           NULL;
+                                   NULL;
         const PetscPointFunc g1v = (!_useReferenceState) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g1v : pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g1v_refstate;
 
         err = PetscDSSetResidual(prob, i_disp, g0u, g1u); PYLITH_CHECK_ERROR(err);

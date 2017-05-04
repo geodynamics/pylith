@@ -47,6 +47,10 @@ main(int argc,
     err = PetscOptionsSetValue(NULL, "-malloc_dump", "");CHKERRQ(err);
 #endif
 
+    // Initialize Python (to eliminate need to initialize when
+    // parsing units in spatial databases).
+    Py_Initialize();
+
     // Create event manager and test controller
     CppUnit::TestResult controller;
 
@@ -65,6 +69,9 @@ main(int argc,
     // Print tests
     CppUnit::TextOutputter outputter(&result, std::cerr);
     outputter.write();
+
+    // Finalize Python
+    Py_Finalize();
 
     // Finalize PETSc
     err = PetscFinalize();

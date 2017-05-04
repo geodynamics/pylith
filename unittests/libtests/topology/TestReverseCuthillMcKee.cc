@@ -116,7 +116,7 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void)
             PetscInt coordsSize = 0;
             PylithScalar value = 0.0;
             coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
-            for (int i=0; i < coordsSize; ++i) {
+            for (int i = 0; i < coordsSize; ++i) {
                 value += coordsCell[i];
             } // for
             coordsCheckOrig += value*value;
@@ -134,7 +134,7 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void)
             PetscInt coordsSize = 0;
             PylithScalar value = 0.0;
             coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
-            for (int i=0; i < coordsSize; ++i) {
+            for (int i = 0; i < coordsSize; ++i) {
                 value += coordsCell[i];
             } // for
             coordsCheck += value*value;
@@ -149,7 +149,11 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void)
     const char* components[3] = {"field_x", "field_y", "field_z"};
 
     Field fieldOrig(meshOrig);
-    fieldOrig.subfieldAdd("solution", components, dim, FieldBase::VECTOR, 1, 1, true);
+    const int basisOrder = 1;
+    const int quadOrder = 1;
+    const bool isBasisContinuous = true;
+    const pylith::topology::FieldBase::SpaceEnum feSpace = pylith::topology::FieldBase::POLYNOMIAL_SPACE;
+    fieldOrig.subfieldAdd("solution", components, dim, FieldBase::VECTOR, basisOrder, quadOrder, isBasisContinuous, feSpace);
     fieldOrig.subfieldsSetup();
     fieldOrig.allocate();
     fieldOrig.zeroLocal();
@@ -160,7 +164,7 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void)
     err = MatDestroy(&matrix); CPPUNIT_ASSERT(!err);
 
     Field field(*_mesh);
-    field.subfieldAdd("solution", components, dim, FieldBase::VECTOR, 1, 1, true);
+    field.subfieldAdd("solution", components, dim, FieldBase::VECTOR,  basisOrder, quadOrder, isBasisContinuous, feSpace);
     field.subfieldsSetup();
     field.allocate();
     field.zeroLocal();

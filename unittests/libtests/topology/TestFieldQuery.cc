@@ -164,13 +164,13 @@ pylith::topology::TestFieldQuery::_initialize(void)
 
     PylithInt size = numVertices * spaceDim;
     scalar_array coordinates(size);
-    for (PylithInt i=0; i < size; ++i) {
+    for (PylithInt i = 0; i < size; ++i) {
         coordinates[i] = _data->coordinates[i];
     }   // for
 
     size = numCells * numCorners;
     int_array cells(size);
-    for (PylithInt i=0; i < size; ++i) {
+    for (PylithInt i = 0; i < size; ++i) {
         cells[i] = _data->cells[i];
     }   // for
 
@@ -186,10 +186,12 @@ pylith::topology::TestFieldQuery::_initialize(void)
     // Setup field
     delete _field; _field = new Field(*_mesh);
     _field->label("solution");
+    const bool isBasisContinuous = true;
+    const pylith::topology::FieldBase::SpaceEnum feSpace = pylith::topology::FieldBase::POLYNOMIAL_SPACE;
     _field->subfieldAdd(_data->subfieldAName, _data->subfieldAComponents, _data->subfieldANumComponents, _data->subfieldAType,
-                        _data->subfieldABasisOrder, _data->subfieldAQuadOrder, true, _data->subfieldAScale, NULL);
+                        _data->subfieldABasisOrder, _data->subfieldAQuadOrder, isBasisContinuous, feSpace, _data->subfieldAScale, NULL);
     _field->subfieldAdd(_data->subfieldBName, _data->subfieldBComponents, _data->subfieldBNumComponents, _data->subfieldBType,
-                        _data->subfieldBBasisOrder, _data->subfieldBQuadOrder, true,  _data->subfieldBScale, NULL);
+                        _data->subfieldBBasisOrder, _data->subfieldBQuadOrder, isBasisContinuous, feSpace,  _data->subfieldBScale, NULL);
     _field->subfieldsSetup();
 
     // Allocate field.
@@ -204,7 +206,7 @@ pylith::topology::TestFieldQuery::_initialize(void)
     VecVisitorMesh fieldVisitor(*_field);
     const PylithInt fiberDim = _data->subfieldANumComponents + _data->subfieldBNumComponents;
     PetscScalar* fieldArray = fieldVisitor.localArray();
-    for (PylithInt v=vStart, indexA=0, indexB=0; v < vEnd; ++v) {
+    for (PylithInt v = vStart, indexA = 0, indexB = 0; v < vEnd; ++v) {
         // Set values for field A
         const PylithInt offA = fieldVisitor.sectionOffset(v);
         CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));

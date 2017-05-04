@@ -60,7 +60,8 @@ class SolutionSubfield(PetscComponent):
         # @li \b name Name for subfield.
         # @li \b basis_order Order of basis functions.
         # @li \b quadrature_order Order of numerical quadrature.
-        # @li \b basis_continuous Is basis continuous?
+        # @li \b is_basis_continuous Is basis continuous?
+        # @li \b feSpace Finite-element space [polynomial, point).
         ##
         # \b Facilities
         # @li None
@@ -77,8 +78,11 @@ class SolutionSubfield(PetscComponent):
         quadOrder = pyre.inventory.int("quadrature_order", default=1)
         quadOrder.meta['tip'] = "Order of numerical quadrature."
 
-        basisContinuous = pyre.inventory.bool("basis_continous", default=True)
-        basisContinuous.meta['tip'] = "Is basis continuous?"
+        isBasisContinuous = pyre.inventory.bool("is_basis_continous", default=True)
+        isBasisContinuous.meta['tip'] = "Is basis continuous?"
+
+        feSpaceStr = pyre.inventory.str("finite_element_spave", default="polynomial", validator=pyre.inventory.choice(["polynomial", "point"]))
+        feSpaceStr.meta['tip'] = "Finite-element space (polynomial or point). Point space corresponds to delta functions at quadrature points."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -107,11 +111,18 @@ class SolutionSubfield(PetscComponent):
         """
         Set members based using inventory.
         """
+        from pylith.topology.topology import FieldBase
+
         PetscComponent._configure(self)
         self.fieldName = self.inventory.fieldName
         self.basisOrder = self.inventory.basisOrder
         self.quadOrder = self.inventory.quadOrder
-        self.isBasisContinuous = self.inventory.basisContinuous
+        self.isBasisContinuous = self.inventory.isBasisContinuous
+        spaceMapping = {
+            "polynomial": FieldBase.POLYNOMIAL_SPACE,
+            "point": FieldBase.POINT_SPACE,
+        }
+        self.feSpace = spaceMapping[self.inventory.feSpaceStr]
         return
 
     def _setComponents(self, spaceDim):

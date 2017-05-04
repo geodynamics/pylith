@@ -31,7 +31,8 @@
 
 #include <cassert> // USES assert()
 #include <typeinfo> // USES typeid()
-#include <stdexcept> // USES std::runtime_error
+#include <stdexcept> \
+    // USES std::runtime_error
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -128,15 +129,17 @@ void
 pylith::feassemble::IntegratorPointwise::auxFieldDiscretization(const char* name,
                                                                 const int basisOrder,
                                                                 const int quadOrder,
-                                                                const bool isBasisContinuous)
+                                                                const bool isBasisContinuous,
+                                                                const pylith::topology::FieldBase::SpaceEnum feSpace)
 { // discretization
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("auxFieldDiscretization(name="<<name<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<")");
+    PYLITH_JOURNAL_DEBUG("auxFieldDiscretization(name="<<name<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<", feSpace="<<feSpace<<")");
 
     pylith::topology::FieldBase::DiscretizeInfo feInfo;
     feInfo.basisOrder = basisOrder;
     feInfo.quadOrder = quadOrder;
     feInfo.isBasisContinuous = isBasisContinuous;
+    feInfo.feSpace = feSpace;
     _auxFieldsFEInfo[name] = feInfo;
 
     PYLITH_METHOD_END;

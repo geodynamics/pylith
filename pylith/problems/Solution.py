@@ -84,7 +84,7 @@ class Solution(PetscComponent):
             fieldName = subfield.aliases[-1]
             if 0 == comm.rank:
                 self._debug.log("Adding subfield '%s' as '%s' with components %s to solution." % (fieldName, subfield.fieldName, subfield.componentNames))
-            self.field.subfieldAdd(fieldName, subfield.componentNames, subfield.vectorFieldType, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous, subfield.scale.value)
+            self.field.subfieldAdd(fieldName, subfield.componentNames, subfield.vectorFieldType, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous, subfield.feSpace, subfield.scale.value)
         self.field.subfieldsSetup()
         return
 

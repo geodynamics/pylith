@@ -349,19 +349,21 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_setupSolutionField
         const pylith::topology::Field::DiscretizeInfo& dispFEInfo = _mydata->solnDiscretizations[0];
         if (isDot) {
             const char* componentsDisp[2] = {"displacement_dot_x", "displacement_dot_y"};
-            field->subfieldAdd(subfields[0].c_str(), componentsDisp, _mydata->dimension, topology::Field::VECTOR, dispFEInfo.basisOrder, dispFEInfo.quadOrder, dispFEInfo.isBasisContinuous, _mydata->lengthScale);
+            field->subfieldAdd(subfields[0].c_str(), componentsDisp, _mydata->dimension, topology::Field::VECTOR, dispFEInfo.basisOrder, dispFEInfo.quadOrder, dispFEInfo.isBasisContinuous, dispFEInfo.feSpace, _mydata->lengthScale);
             if (numSolnFields > 1) {
                 const pylith::topology::Field::DiscretizeInfo& velFEInfo = _mydata->solnDiscretizations[1];
                 const char* componentsVel[2] = {"velocity_dot_x", "velocity_dot_y"};
-                field->subfieldAdd(subfields[1].c_str(), componentsVel, _mydata->dimension, topology::Field::VECTOR, velFEInfo.basisOrder, velFEInfo.quadOrder, velFEInfo.isBasisContinuous, _mydata->lengthScale / _mydata->timeScale);
+                field->subfieldAdd(
+                    subfields[1].c_str(), componentsVel, _mydata->dimension, topology::Field::VECTOR, velFEInfo.basisOrder, velFEInfo.quadOrder, velFEInfo.isBasisContinuous, velFEInfo.feSpace, _mydata->lengthScale / _mydata->timeScale);
             } // if
         } else {
             const char* componentsDisp[2] = {"displacement_x", "displacement_y"};
-            field->subfieldAdd(subfields[0].c_str(), componentsDisp, _mydata->dimension, topology::Field::VECTOR, dispFEInfo.basisOrder, dispFEInfo.quadOrder, dispFEInfo.isBasisContinuous, _mydata->lengthScale);
+            field->subfieldAdd(subfields[0].c_str(), componentsDisp, _mydata->dimension, topology::Field::VECTOR, dispFEInfo.basisOrder, dispFEInfo.quadOrder, dispFEInfo.isBasisContinuous, dispFEInfo.feSpace, _mydata->lengthScale);
             if (numSolnFields > 1) {
                 const pylith::topology::Field::DiscretizeInfo& velFEInfo = _mydata->solnDiscretizations[1];
                 const char* componentsVel[2] = {"velocity_x", "velocity_y"};
-                field->subfieldAdd(subfields[1].c_str(), componentsVel, _mydata->dimension, topology::Field::VECTOR, velFEInfo.basisOrder, velFEInfo.quadOrder, velFEInfo.isBasisContinuous, _mydata->lengthScale / _mydata->timeScale);
+                field->subfieldAdd(
+                    subfields[1].c_str(), componentsVel, _mydata->dimension, topology::Field::VECTOR, velFEInfo.basisOrder, velFEInfo.quadOrder, velFEInfo.isBasisContinuous, velFEInfo.feSpace, _mydata->lengthScale / _mydata->timeScale);
             } // if
         } // if/else
         field->subfieldsSetup();

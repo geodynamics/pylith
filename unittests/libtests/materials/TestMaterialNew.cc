@@ -79,7 +79,7 @@ pylith::materials::TestMaterialNew::testHasAuxField(void)
     MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
     TestMaterialNew_Data* data = _data(); CPPUNIT_ASSERT(data);
 
-    for (int i=0; i < data->numAuxFields; ++i) {
+    for (int i = 0; i < data->numAuxFields; ++i) {
         CPPUNIT_ASSERT(material->hasAuxField(data->auxFields[i]));
     } // for
 
@@ -96,40 +96,44 @@ pylith::materials::TestMaterialNew::testAuxFieldsDiscretization(void)
 { // testAuxFieldsDiscretization
     PYLITH_METHOD_BEGIN;
 
-    const topology::FieldBase::DiscretizeInfo infoDefault = {-1, -1, true};
-    const topology::FieldBase::DiscretizeInfo infoA = {1, 2, false};
-    const topology::FieldBase::DiscretizeInfo infoB = {2, 2, true};
+    const topology::FieldBase::DiscretizeInfo infoDefault = {-1, -1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE};
+    const topology::FieldBase::DiscretizeInfo infoA = {1, 2, false, pylith::topology::FieldBase::POLYNOMIAL_SPACE};
+    const topology::FieldBase::DiscretizeInfo infoB = {2, 2, true, pylith::topology::FieldBase::POINT_SPACE};
 
     MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
-    material->auxFieldDiscretization("A", infoA.basisOrder, infoA.quadOrder, infoA.isBasisContinuous);
-    material->auxFieldDiscretization("B", infoB.basisOrder, infoB.quadOrder, infoB.isBasisContinuous);
+    material->auxFieldDiscretization("A", infoA.basisOrder, infoA.quadOrder, infoA.isBasisContinuous, infoA.feSpace);
+    material->auxFieldDiscretization("B", infoB.basisOrder, infoB.quadOrder, infoB.isBasisContinuous, infoB.feSpace);
 
     { // A
         const topology::FieldBase::DiscretizeInfo& test = material->auxFieldDiscretization("A");
-        CPPUNIT_ASSERT_EQUAL(test.basisOrder, infoA.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(test.quadOrder, infoA.quadOrder);
-        CPPUNIT_ASSERT_EQUAL(test.isBasisContinuous, infoA.isBasisContinuous);
+        CPPUNIT_ASSERT_EQUAL(infoA.basisOrder, test.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(infoA.quadOrder, test.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(infoA.isBasisContinuous, test.isBasisContinuous);
+        CPPUNIT_ASSERT_EQUAL(infoA.feSpace, test.feSpace);
     } // A
 
     { // B
         const topology::FieldBase::DiscretizeInfo& test = material->auxFieldDiscretization("B");
-        CPPUNIT_ASSERT_EQUAL(test.basisOrder, infoB.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(test.quadOrder, infoB.quadOrder);
-        CPPUNIT_ASSERT_EQUAL(test.isBasisContinuous, infoB.isBasisContinuous);
+        CPPUNIT_ASSERT_EQUAL(infoB.basisOrder, test.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(infoB.quadOrder, test.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(infoB.isBasisContinuous, test.isBasisContinuous);
+        CPPUNIT_ASSERT_EQUAL(infoB.feSpace, test.feSpace);
     } // B
 
     { // C (default)
         const topology::FieldBase::DiscretizeInfo& test = material->auxFieldDiscretization("C");
-        CPPUNIT_ASSERT_EQUAL(test.basisOrder, infoDefault.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(test.quadOrder, infoDefault.quadOrder);
-        CPPUNIT_ASSERT_EQUAL(test.isBasisContinuous, infoDefault.isBasisContinuous);
+        CPPUNIT_ASSERT_EQUAL(infoDefault.basisOrder, test.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(infoDefault.quadOrder, test.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(infoDefault.isBasisContinuous, test.isBasisContinuous);
+        CPPUNIT_ASSERT_EQUAL(infoDefault.feSpace, test.feSpace);
     } // C (default)
 
     { // default
         const topology::FieldBase::DiscretizeInfo& test = material->auxFieldDiscretization("default");
-        CPPUNIT_ASSERT_EQUAL(test.basisOrder, infoDefault.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(test.quadOrder, infoDefault.quadOrder);
-        CPPUNIT_ASSERT_EQUAL(test.isBasisContinuous, infoDefault.isBasisContinuous);
+        CPPUNIT_ASSERT_EQUAL(infoDefault.basisOrder, test.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(infoDefault.quadOrder, test.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(infoDefault.isBasisContinuous, test.isBasisContinuous);
+        CPPUNIT_ASSERT_EQUAL(infoDefault.feSpace, test.feSpace);
     } // default
 
     PYLITH_METHOD_END;
@@ -277,7 +281,7 @@ pylith::materials::TestMaterialNew::testInitialize(void)
 
 
 // ----------------------------------------------------------------------
-// Test computeRHSResidual().
+// Test computeResidual().
 void
 pylith::materials::TestMaterialNew::testComputeResidual(void)
 { // testComputeResidual
@@ -667,9 +671,9 @@ pylith::materials::TestMaterialNew::_initializeFull(void)
     _auxDB->queryType(spatialdata::spatialdb::SimpleGridDB::LINEAR);
     material->auxFieldsDB(_auxDB);
 
-    for (int i=0; i < data->numAuxFields; ++i) {
+    for (int i = 0; i < data->numAuxFields; ++i) {
         const pylith::topology::FieldBase::DiscretizeInfo& info = data->auxDiscretizations[i];
-        material->auxFieldDiscretization(data->auxFields[i], info.basisOrder, info.quadOrder, info.isBasisContinuous);
+        material->auxFieldDiscretization(data->auxFields[i], info.basisOrder, info.quadOrder, info.isBasisContinuous, info.feSpace);
     } // for
 
     CPPUNIT_ASSERT(_solution1);
@@ -711,7 +715,7 @@ pylith::materials::TestMaterialNew::_zeroBoundary(pylith::topology::Field* field
 
         const PylithInt off = fieldVisitor.sectionOffset(p_bc);
         const PylithInt dof = fieldVisitor.sectionDof(p_bc);
-        for (PylithInt i=0; i < dof; ++i) {
+        for (PylithInt i = 0; i < dof; ++i) {
             fieldArray[off+i] = 0.0;
         } // for
     } // for

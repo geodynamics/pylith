@@ -45,8 +45,7 @@
 /** @brief General operations for implicit and explicit
  * time integration of equations defined by pointwise functions.
  */
-class pylith::feassemble::IntegratorPointwise : public pylith::utils::PyreComponent
-{ // IntegratorPointwise
+class pylith::feassemble::IntegratorPointwise : public pylith::utils::PyreComponent {
     friend class TestIntegratorPointwise;   // unit testing
 
     // PUBLIC TYPEDEFS //////////////////////////////////////////////////////
@@ -59,8 +58,7 @@ public:
     IntegratorPointwise(void);
 
     /// Destructor
-    virtual
-    ~IntegratorPointwise(void);
+    virtual ~IntegratorPointwise(void);
 
     /// Deallocate PETSc and local data structures.
     virtual
@@ -100,11 +98,13 @@ public:
      * @param[in] basisOrder Polynomial order for basis.
      * @param[in] quadOrder Order of quadrature rule.
      * @param[in] isBasisContinuous True if basis is continuous.
+     * @param[in] feSpace Finite-element space.
      */
     void auxFieldDiscretization(const char* name,
                                 const int basisOrder,
                                 const int quadOrder,
-                                const bool isBasisContinuous);
+                                const bool isBasisContinuous,
+                                const pylith::topology::FieldBase::SpaceEnum feSpace);
 
     /** Get discretization information for auxiliary subfield.
      *

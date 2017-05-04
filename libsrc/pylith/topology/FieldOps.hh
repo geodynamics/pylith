@@ -33,50 +33,49 @@
 
 // FieldOps -------------------------------------------------------------
 /// @brief C++ class for simple operations for a Field object.
-class pylith::topology::FieldOps
-{ // FieldOps
-  friend class TestFieldOps; // unit testing
+class pylith::topology::FieldOps { // FieldOps
+    friend class TestFieldOps; // unit testing
 
-// PUBLIC METHODS ///////////////////////////////////////////////////////
-public :
+    // PUBLIC METHODS ///////////////////////////////////////////////////////
+public:
 
-  /** Create PetscFE object for discretization of field.
-   *
-   * @param feinfo Discretization information for field.
-   * @param dm PetscDM for finite-element mesh.
-   * @param isSimplex True if mesh contains simplex cells.
-   * @param numComponents Number of components in field.
-   *
-   * @returns PetscFE object.
-   *
-   * Discretization parameters collected from:
-   *   + User
-   *     - order of basis
-   *     - continuity of basis
-   *     - quadrature order
-   *   + Mesh
-   *     - spatial dimension
-   *     - type of cell: simplex (tri/tet) or quad/hex
-   *   + Field
-   *     - number of components
-   */
-  static
-  PetscFE createFE(const FieldBase::DiscretizeInfo& feinfo,
-		   const PetscDM dm,
-		   const bool isSimplex,
-		   const int numComponents);
+    /** Create PetscFE object for discretization of field.
+     *
+     * @param[in] feinfo Discretization information for field.
+     * @param[in] dm PetscDM for finite-element mesh.
+     * @param[in] isSimplex True if mesh contains simplex cells.
+     * @param[in] numComponents Number of components in field.
+     *
+     * @returns PetscFE object.
+     *
+     * Discretization parameters collected from:
+     *   + User
+     *     - order of basis
+     *     - continuity of basis
+     *     - quadrature order
+     *   + Mesh
+     *     - spatial dimension
+     *     - type of cell: simplex (tri/tet) or quad/hex
+     *   + Field
+     *     - number of components
+     */
+    static
+    PetscFE createFE(const FieldBase::DiscretizeInfo& feinfo,
+                     const PetscDM dm,
+                     const bool isSimplex,
+                     const int numComponents);
 
 
-// NOT IMPLEMENTED //////////////////////////////////////////////////////
-private :
+    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+private:
 
-  FieldOps(void); ///< Not implemented.
-  FieldOps(const FieldOps&); ///< Not implemented.
-  const FieldOps& operator=(const FieldOps&); ///< Not implemented.
+    FieldOps(void); ///< Not implemented.
+    FieldOps(const FieldOps&); ///< Not implemented.
+    const FieldOps& operator=(const FieldOps&); ///< Not implemented.
 
 }; // FieldOps
 
 #endif // pylith_topology_fieldOps_hh
 
 
-// End of file 
+// End of file

@@ -215,7 +215,7 @@ pylith::topology::TestFieldMesh::testNewSection(void)
         PetscSection section = field.localSection(); CPPUNIT_ASSERT(section);
         PetscErrorCode err = PetscSectionGetChart(section, &pStart, &pEnd); CPPUNIT_ASSERT(!err);
         for (size_t i = 0; i < pointsOut.size(); ++i) {
-            if (pointsOut[i] >= pStart && pointsOut[i] < pEnd) {
+            if ((pointsOut[i] >= pStart) && (pointsOut[i] < pEnd)) {
                 CPPUNIT_ASSERT_EQUAL(0, fieldVisitor.sectionDof(pointsOut[i]));
             } // if
         } // for
@@ -249,7 +249,7 @@ pylith::topology::TestFieldMesh::testNewSection(void)
         const PylithInt vEnd = depthStratum.end();
 
         VecVisitorMesh fieldVisitor(field);
-        for(PylithInt v = vStart; v < vEnd; ++v) {
+        for (PylithInt v = vStart; v < vEnd; ++v) {
             CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
         } // for
 
@@ -272,7 +272,7 @@ pylith::topology::TestFieldMesh::testNewSection(void)
         const PylithInt cEnd = heightStratum.end();
 
         VecVisitorMesh fieldVisitor(fieldA);
-        for(PylithInt c=cStart; c < cEnd; ++c) {
+        for (PylithInt c = cStart; c < cEnd; ++c) {
             CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(c));
         } // for
 
@@ -294,7 +294,7 @@ pylith::topology::TestFieldMesh::testNewSection(void)
         PetscErrorCode err = DMPlexGetChart(dmMesh, &pStart, &pEnd); CPPUNIT_ASSERT(!err);
 
         VecVisitorMesh fieldVisitor(fieldA);
-        for(PylithInt p=pStart; p < pEnd; ++p) {
+        for (PylithInt p = pStart; p < pEnd; ++p) {
             CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(p));
         } // for
 
@@ -362,21 +362,21 @@ pylith::topology::TestFieldMesh::testCloneSection(void)
     PetscVec vec = field.localVector();
     CPPUNIT_ASSERT(section); CPPUNIT_ASSERT(vec);
     const PylithInt fiberDim = _data->subfieldANumComponents + _data->subfieldBNumComponents;
-    for (PylithInt v=vStart, iV=0; v < vEnd; ++v, ++iV) {
+    for (PylithInt v = vStart, iV = 0; v < vEnd; ++v, ++iV) {
         PylithInt dof, cdof;
         err = PetscSectionGetDof(section, v, &dof); CPPUNIT_ASSERT(!err);
         CPPUNIT_ASSERT_EQUAL(fiberDim, dof);
 
         // Count number of expected constraints on vertex.
         PylithInt numConstraintsE = 0;
-        for (int i=0; i < _data->bcANumVertices; ++i) {
+        for (int i = 0; i < _data->bcANumVertices; ++i) {
             const PylithInt vIndex = v - _data->numCells;
             if (_data->bcAVertices[i] == vIndex) {
                 numConstraintsE += _data->bcANumConstrainedDOF;
                 break;
             }
         } // for
-        for (int i=0; i < _data->bcBNumVertices; ++i) {
+        for (int i = 0; i < _data->bcBNumVertices; ++i) {
             const PylithInt vIndex = v - _data->numCells;
             if (_data->bcBVertices[i] == vIndex) {
                 numConstraintsE += _data->bcBNumConstrainedDOF;
@@ -430,7 +430,7 @@ pylith::topology::TestFieldMesh::testSubfieldAccessors(void)
         CPPUNIT_ASSERT_EQUAL(_data->subfieldAScale, infoA.metadata.scale);
         const string_vector& componentNames = infoA.metadata.componentNames;
         CPPUNIT_ASSERT_EQUAL(size_t(_data->subfieldANumComponents), componentNames.size());
-        for (int i=0; i < _data->subfieldANumComponents; ++i) {
+        for (int i = 0; i < _data->subfieldANumComponents; ++i) {
             CPPUNIT_ASSERT_EQUAL(std::string(_data->subfieldAComponents[i]), componentNames[i]);
         } // for
         CPPUNIT_ASSERT_EQUAL(_data->subfieldABasisOrder, infoA.fe.basisOrder);
@@ -445,7 +445,7 @@ pylith::topology::TestFieldMesh::testSubfieldAccessors(void)
         CPPUNIT_ASSERT_EQUAL(_data->subfieldBScale, infoB.metadata.scale);
         const string_vector& componentNames = infoB.metadata.componentNames;
         CPPUNIT_ASSERT_EQUAL(size_t(_data->subfieldBNumComponents), componentNames.size());
-        for (int i=0; i < _data->subfieldBNumComponents; ++i) {
+        for (int i = 0; i < _data->subfieldBNumComponents; ++i) {
             CPPUNIT_ASSERT_EQUAL(std::string(_data->subfieldBComponents[i]), componentNames[i]);
         } // for
         CPPUNIT_ASSERT_EQUAL(_data->subfieldBBasisOrder, infoB.fe.basisOrder);
@@ -623,7 +623,7 @@ pylith::topology::TestFieldMesh::testDimensionalize(void)
     PetscScalar* fieldArray = fieldVisitor.localArray();
     const PylithInt fiberDim = _data->subfieldANumComponents + _data->subfieldBNumComponents;
     const PylithReal tolerance = 1.0e-6;
-    for (PylithInt v=vStart, indexA=0, indexB=0; v < vEnd; ++v) {
+    for (PylithInt v = vStart, indexA = 0, indexB = 0; v < vEnd; ++v) {
         CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
 
         // Check field A values.
@@ -738,13 +738,13 @@ pylith::topology::TestFieldMesh::_initialize(void)
 
     PylithInt size = numVertices * spaceDim;
     scalar_array coordinates(size);
-    for (PylithInt i=0; i < size; ++i) {
+    for (PylithInt i = 0; i < size; ++i) {
         coordinates[i] = _data->coordinates[i];
     }   // for
 
     size = numCells * numCorners;
     int_array cells(size);
-    for (PylithInt i=0; i < size; ++i) {
+    for (PylithInt i = 0; i < size; ++i) {
         cells[i] = _data->cells[i];
     }   // for
 
@@ -759,11 +759,11 @@ pylith::topology::TestFieldMesh::_initialize(void)
 
     // Setup labels for constraints.
     PetscErrorCode err;
-    for (PylithInt i=0; i < _data->bcANumVertices; ++i) {
+    for (PylithInt i = 0; i < _data->bcANumVertices; ++i) {
         err = DMSetLabelValue(_mesh->dmMesh(), _data->bcALabel, numCells+_data->bcAVertices[i], _data->bcALabelId);
         CPPUNIT_ASSERT(!err);
     }   // for
-    for (PylithInt i=0; i < _data->bcBNumVertices; ++i) {
+    for (PylithInt i = 0; i < _data->bcBNumVertices; ++i) {
         err = DMSetLabelValue(_mesh->dmMesh(), _data->bcBLabel, numCells+_data->bcBVertices[i], _data->bcBLabelId);
         CPPUNIT_ASSERT(!err);
     }   // for
@@ -772,11 +772,13 @@ pylith::topology::TestFieldMesh::_initialize(void)
     // Setup field
     delete _field; _field = new Field(*_mesh);
     _field->label("solution");
+    const bool isBasisContinuous = true;
+    const pylith::topology::FieldBase::SpaceEnum feSpace = pylith::topology::FieldBase::POLYNOMIAL_SPACE;
     _field->subfieldAdd(_data->subfieldAName, _data->subfieldAComponents, _data->subfieldANumComponents,
-                        _data->subfieldAType, _data->subfieldABasisOrder, _data->subfieldAQuadOrder, true,
+                        _data->subfieldAType, _data->subfieldABasisOrder, _data->subfieldAQuadOrder, isBasisContinuous, feSpace,
                         _data->subfieldAScale, NULL);
     _field->subfieldAdd(_data->subfieldBName, _data->subfieldBComponents, _data->subfieldBNumComponents,
-                        _data->subfieldBType, _data->subfieldBBasisOrder, _data->subfieldBQuadOrder, true,
+                        _data->subfieldBType, _data->subfieldBBasisOrder, _data->subfieldBQuadOrder, isBasisContinuous, feSpace,
                         _data->subfieldBScale, NULL);
     _field->subfieldsSetup();
 
@@ -797,7 +799,7 @@ pylith::topology::TestFieldMesh::_initialize(void)
     VecVisitorMesh fieldVisitor(*_field);
     const PylithInt fiberDim = _data->subfieldANumComponents + _data->subfieldBNumComponents;
     PetscScalar* fieldArray = fieldVisitor.localArray();
-    for (PylithInt v=vStart, indexA=0, indexB=0; v < vEnd; ++v) {
+    for (PylithInt v = vStart, indexA = 0, indexB = 0; v < vEnd; ++v) {
         // Set values for field A
         const PylithInt offA = fieldVisitor.sectionOffset(v);
         CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
@@ -827,11 +829,11 @@ pylith::topology::TestFieldMesh::_checkValues(const Field& field,
     const int fiberDimA = _data->subfieldANumComponents;
     const int fiberDimB = _data->subfieldBNumComponents;
     scalar_array valuesE(numVertices * (fiberDimA + fiberDimB));
-    for (int iVertex=0, index=0, indexA=0, indexB=0; iVertex < numVertices; ++iVertex) {
-        for (int d=0; d < fiberDimA; ++d) {
+    for (int iVertex = 0, index = 0, indexA = 0, indexB = 0; iVertex < numVertices; ++iVertex) {
+        for (int d = 0; d < fiberDimA; ++d) {
             valuesE[index++] = _data->subfieldAValues[indexA++];
         } // for
-        for (int d=0; d < fiberDimB; ++d) {
+        for (int d = 0; d < fiberDimB; ++d) {
             valuesE[index++] = _data->subfieldBValues[indexB++];
         } // for
     } // for
@@ -845,11 +847,11 @@ pylith::topology::TestFieldMesh::_checkValues(const Field& field,
     PetscScalar* fieldArray = fieldVisitor.localArray();
     const PylithInt fiberDim = _data->subfieldANumComponents + _data->subfieldBNumComponents;
     const PylithReal tolerance = 1.0e-6;
-    for (PylithInt v=vStart, index=0; v < vEnd; ++v) {
+    for (PylithInt v = vStart, index = 0; v < vEnd; ++v) {
         CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
         const PylithInt off = fieldVisitor.sectionOffset(v);
 
-        for (PylithInt d=0; d < fiberDim; ++d) {
+        for (PylithInt d = 0; d < fiberDim; ++d) {
             CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesE[index++]*scale, fieldArray[off+d], tolerance);
         } // for
     } // for
@@ -870,11 +872,11 @@ pylith::topology::TestFieldMesh::_checkValues(const PetscVec& vec,
     const int fiberDimA = _data->subfieldANumComponents;
     const int fiberDimB = _data->subfieldBNumComponents;
     scalar_array valuesE(numVertices * (fiberDimA + fiberDimB));
-    for (int iVertex=0, index=0, indexA=0, indexB=0; iVertex < numVertices; ++iVertex) {
-        for (int d=0; d < fiberDimA; ++d) {
+    for (int iVertex = 0, index = 0, indexA = 0, indexB = 0; iVertex < numVertices; ++iVertex) {
+        for (int d = 0; d < fiberDimA; ++d) {
             valuesE[index++] = _data->subfieldAValues[indexA++];
         } // for
-        for (int d=0; d < fiberDimB; ++d) {
+        for (int d = 0; d < fiberDimB; ++d) {
             valuesE[index++] = _data->subfieldBValues[indexB++];
         } // for
     } // for
@@ -888,7 +890,7 @@ pylith::topology::TestFieldMesh::_checkValues(const PetscVec& vec,
     const PylithInt sizeE = numVertices * (fiberDimA + fiberDimB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_EQUAL(sizeE, size);
-    for (PylithInt i=0; i < sizeE; ++i) {
+    for (PylithInt i = 0; i < sizeE; ++i) {
         CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesE[i]*scale, vecArray[i], tolerance);
     } // for
     err = VecRestoreArray(vec, &vecArray); CPPUNIT_ASSERT(!err);

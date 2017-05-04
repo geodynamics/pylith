@@ -54,8 +54,7 @@
  * and 6. Step 2-4 and 6 are automatically handled by the PETSc DS if
  * DMAddBoundary is called.
  */
-class pylith::topology::Field : public FieldBase
-{ // Field
+class pylith::topology::Field : public FieldBase { // Field
     friend class FieldQuery;   // Fill field using data.
 
     friend class TestFieldMesh;   // unit testing
@@ -221,7 +220,7 @@ public:
      * @param subfieldName Name of subfield for DOF.
      */
     void setupSolnDof(const int fiberDim, // :TODO: @brad Remove obsolte.
-                      const char* subfieldName ="displacement");
+                      const char* subfieldName="displacement");
 
     /** Create PETSc section and set chart and fiber dimesion for a list
      * of points.
@@ -270,7 +269,7 @@ public:
      */
     void newSection(const DomainEnum domain, // :TODO: @brad Remove obsolete.
                     const int fiberDim,
-                    const int stratum =0);
+                    const int stratum=0);
 
     /** Create section using src field as template with given fiber dimension.
      *
@@ -304,7 +303,9 @@ public:
      * @param[in] basisOrder Polynomial order for basis.
      * @param[in] quadOrder Order of quadrature rule.
      * @param[in] isBasisContinuous True if basis is continuous.
+     * @param[in] feSpace Finite-element space (polynomial or point).
      * @param[in] scale Scale for dimensionalizing field.
+     * @param[in] validator Validator function for field values.
      */
     void subfieldAdd(const char *name,
                      const char* components[],
@@ -312,8 +313,9 @@ public:
                      const VectorFieldEnum fieldType,
                      const int basisOrder,
                      const int quadOrder,
-                     const bool isBasisContinuous,
-                     const double scale =1.0,
+                     const bool isBasisContinuous=true,
+                     const SpaceEnum feSpace=POLYNOMIAL_SPACE,
+                     const double scale=1.0,
                      const validatorfn_type validator=NULL);
 
     /** Setup sections for subfields.
@@ -451,7 +453,7 @@ public:
      * @param[in] mode Mode for scatter (INSERT_VALUES, ADD_VALUES).
      */
     void scatterLocalToContext(const char* context,
-                               InsertMode mode =INSERT_VALUES) const;
+                               InsertMode mode=INSERT_VALUES) const;
 
     /** Scatter section information across processors to update the
      * global view of the field.
@@ -461,7 +463,7 @@ public:
      * @param[in] mode Mode for scatter (INSERT_VALUES, ADD_VALUES).
      */
     void scatterLocalToVector(const PetscVec vector,
-                              InsertMode mode =INSERT_VALUES) const;
+                              InsertMode mode=INSERT_VALUES) const;
 
     /** Scatter global information across processors to update the local
      * view of the field.
@@ -470,7 +472,7 @@ public:
      * @param[in] mode Mode for scatter (INSERT_VALUES, ADD_VALUES).
      */
     void scatterContextToLocal(const char* context,
-                               InsertMode mode =INSERT_VALUES) const;
+                               InsertMode mode=INSERT_VALUES) const;
 
     /** Scatter global information across processors to update the local
      * view of the field.
@@ -480,7 +482,7 @@ public:
      * @param[in] mode Mode for scatter (INSERT_VALUES, ADD_VALUES).
      */
     void scatterVectorToLocal(const PetscVec vector,
-                              InsertMode mode =INSERT_VALUES) const;
+                              InsertMode mode=INSERT_VALUES) const;
 
     // PRIVATE STRUCTS //////////////////////////////////////////////////////
 private:
@@ -517,7 +519,7 @@ private:
      * context doesn't already exist.
      */
     ScatterInfo& _getScatter(const char* context,
-                             const bool createOk =false);
+                             const bool createOk=false);
 
     /** Get scatter for given context.
      *
