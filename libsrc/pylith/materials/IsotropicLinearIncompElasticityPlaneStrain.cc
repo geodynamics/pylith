@@ -206,13 +206,13 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_auxFieldsSetup(v
     // Fields 5 and 6: reference stress and strain
     if (_useReferenceState) {
         const PylithInt stressSize = 4;
-        const char* componentsStress[stressSize] = {"stress_xx", "stress_yy", "stress_xy", "stress_zz"};
+        const char* componentsStress[stressSize] = {"stress_xx", "stress_yy", "stress_zz", "stress_xy"};
         const pylith::topology::Field::DiscretizeInfo& stressFEInfo = this->auxFieldDiscretization("reference_stress");
         _auxFields->subfieldAdd("reference_stress", componentsStress, stressSize, topology::Field::OTHER, stressFEInfo.basisOrder, stressFEInfo.quadOrder, stressFEInfo.isBasisContinuous, stressFEInfo.feSpace, pressureScale);
         _auxFieldsQuery->queryFn("reference_stress", pylith::topology::FieldQuery::dbQueryGeneric);
 
         const PylithInt strainSize = 4;
-        const char* componentsStrain[strainSize] = {"strain_xx", "strain_yy", "strain_xy", "strain_zz"};
+        const char* componentsStrain[strainSize] = {"strain_xx", "strain_yy", "strain_zz", "strain_xy"};
         const pylith::topology::Field::DiscretizeInfo& strainFEInfo = this->auxFieldDiscretization("reference_strain");
         _auxFields->subfieldAdd("reference_strain", componentsStrain, strainSize, topology::Field::OTHER, strainFEInfo.basisOrder, strainFEInfo.quadOrder, strainFEInfo.isBasisContinuous, strainFEInfo.feSpace, 1.0);
         _auxFieldsQuery->queryFn("reference_strain", pylith::topology::FieldQuery::dbQueryGeneric);
@@ -448,7 +448,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsLHSJ
 
     if (!solution.hasSubfield("velocity")) {
         // Jacobian kernels
-        const PetscPointJac Jf0uu = pylith_fekernels_DispVel_Jf0uu_implicit;
+        const PetscPointJac Jf0uu = pylith_fekernels_DispVel_Jf0uu_zero;
         const PetscPointJac Jf1uu = NULL;
         const PetscPointJac Jf2uu = NULL;
         const PetscPointJac Jf3uu = NULL;
