@@ -43,6 +43,8 @@ pylith::bc::DirichletNew::DirichletNew(void) :
     _spaceDim(0),
     _vectorFieldType(pylith::topology::FieldBase::OTHER)
 { // constructor
+    const pylith::topology::FieldBase::DiscretizeInfo defaultInfo = {-1, -1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE};
+    _auxFieldsFEInfo["default"] = defaultInfo;
 } // constructor
 
 // ----------------------------------------------------------------------

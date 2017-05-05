@@ -17,6 +17,8 @@
 #
 
 dist_noinst_DATA = \
+	tri_small.mesh \
+	quad_small.mesh \
 	elasticstrain1d.spatialdb \
 	tri3.mesh \
 	tri3_disp.spatialdb \

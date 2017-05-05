@@ -109,11 +109,13 @@ public:
          * @param[in] basisOrder Polynomial order for basis.
          * @param[in] quadOrder Order of quadrature rule.
          * @param[in] isBasisContinuous True if basis is continuous.
+         * @param[in] feSpace Finite-element space.
          */
         void auxFieldDiscretization(const char* name,
                                     const int basisOrder,
                                     const int quadOrder,
-                                    const bool isBasisContinuous);
+                                    const bool isBasisContinuous,
+                                    const pylith::topology::FieldBase::SpaceEnum feSpace);
 
         /** Get discretization information for auxiliary subfield.
          *

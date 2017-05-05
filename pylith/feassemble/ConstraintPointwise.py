@@ -108,7 +108,7 @@ class ConstraintPointwise(PetscComponent,
 
         for subfield in self.auxFields.components():
             fieldName = subfield.aliases[-1]
-            ModuleConstraint.auxFieldDiscretization(self, fieldName, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous)
+            ModuleConstraint.auxFieldDiscretization(self, fieldName, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous, subfield.feSpace)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

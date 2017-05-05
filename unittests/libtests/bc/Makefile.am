@@ -28,6 +28,8 @@ check_PROGRAMS = testbc
 testbc_SOURCES = \
 	TestBoundaryMesh.cc \
 	TestBoundaryMesh_Cases.cc \
+	TestDirichletTimeDependent.cc \
+	TestDirichletTimeDependent_Cases.cc \
 	test_bc.cc
 
 # TestBoundaryCondition.cc \
@@ -49,7 +51,8 @@ testbc_SOURCES = \
 
 
 noinst_HEADERS = \
-	TestBoundaryMesh.hh 
+	TestBoundaryMesh.hh \
+	TestDirichletTimeDependent.hh
 
 # TestBoundaryCondition.hh \
 # TestBoundaryConditionPoints.hh \

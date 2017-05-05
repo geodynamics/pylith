@@ -263,10 +263,10 @@ pylith::bc::DirichletTimeDependent::_auxFieldsSetup(void)
         } // if/else
         _auxFieldsQuery->queryFn("rate_amplitude", pylith::topology::FieldQuery::dbQueryGeneric);
 
-        const char* startNames[1] = {"rate_start"};
-        const pylith::topology::Field::DiscretizeInfo& rateStartFEInfo = this->auxFieldDiscretization("rate_start");
-        _auxFields->subfieldAdd("rate_start", startNames, 1, pylith::topology::Field::SCALAR, rateStartFEInfo.basisOrder, rateStartFEInfo.quadOrder, rateStartFEInfo.isBasisContinuous, rateStartFEInfo.feSpace, timeScale);
-        _auxFieldsQuery->queryFn("rate_start", pylith::topology::FieldQuery::dbQueryGeneric);
+        const char* startNames[1] = {"rate_start_time"};
+        const pylith::topology::Field::DiscretizeInfo& rateStartFEInfo = this->auxFieldDiscretization("rate_start_time");
+        _auxFields->subfieldAdd("rate_start_time", startNames, 1, pylith::topology::Field::SCALAR, rateStartFEInfo.basisOrder, rateStartFEInfo.quadOrder, rateStartFEInfo.isBasisContinuous, rateStartFEInfo.feSpace, timeScale);
+        _auxFieldsQuery->queryFn("rate_start_time", pylith::topology::FieldQuery::dbQueryGeneric);
     } // if
 
 
@@ -282,11 +282,11 @@ pylith::bc::DirichletTimeDependent::_auxFieldsSetup(void)
         } // if/else
         _auxFieldsQuery->queryFn("time_history_amplitude", pylith::topology::FieldQuery::dbQueryGeneric);
 
-        const char* startNames[1] = {"time_history_start"};
-        const pylith::topology::Field::DiscretizeInfo& timeHistoryStartFEInfo = this->auxFieldDiscretization("time_history_start");
-        _auxFields->subfieldAdd("time_history_start", startNames, 1, pylith::topology::Field::SCALAR, timeHistoryStartFEInfo.basisOrder, timeHistoryStartFEInfo.quadOrder, timeHistoryStartFEInfo.isBasisContinuous, thAmpFEInfo.feSpace,
+        const char* startNames[1] = {"time_history_start_time"};
+        const pylith::topology::Field::DiscretizeInfo& timeHistoryStartFEInfo = this->auxFieldDiscretization("time_history_start_time");
+        _auxFields->subfieldAdd("time_history_start_time", startNames, 1, pylith::topology::Field::SCALAR, timeHistoryStartFEInfo.basisOrder, timeHistoryStartFEInfo.quadOrder, timeHistoryStartFEInfo.isBasisContinuous, thAmpFEInfo.feSpace,
                                 timeScale);
-        _auxFieldsQuery->queryFn("time_history_start", pylith::topology::FieldQuery::dbQueryGeneric);
+        _auxFieldsQuery->queryFn("time_history_start_time", pylith::topology::FieldQuery::dbQueryGeneric);
 
         // Field to hold value from query of time history database.
         const char* valueNames[1] = {"time_history_value"};

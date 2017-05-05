@@ -44,8 +44,7 @@
 // ConstraintPointwise---------------------------------------------------
 /** @brief Abstract base class for defining constraints on boundaries.
  */
-class pylith::feassemble::ConstraintPointwise : public pylith::utils::PyreComponent
-{ // class ConstraintPointwise
+class pylith::feassemble::ConstraintPointwise : public pylith::utils::PyreComponent {
     friend class TestConstraintPointwise;   // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -55,8 +54,7 @@ public:
     ConstraintPointwise(void);
 
     /// Destructor.
-    virtual
-    ~ConstraintPointwise(void);
+    virtual ~ConstraintPointwise(void);
 
     /// Deallocate PETSc and local data structures.
     virtual
@@ -125,11 +123,13 @@ public:
      * @param[in] basisOrder Polynomial order for basis.
      * @param[in] quadOrder Order of quadrature rule.
      * @param[in] isBasisContinuous True if basis is continuous.
+     * @param[in] feSpace Finite-element space.
      */
     void auxFieldDiscretization(const char* name,
                                 const int basisOrder,
                                 const int quadOrder,
-                                const bool isBasisContinuous);
+                                const bool isBasisContinuous,
+                                const pylith::topology::FieldBase::SpaceEnum feSpace);
 
     /** Get discretization information for auxiliary subfield.
      *

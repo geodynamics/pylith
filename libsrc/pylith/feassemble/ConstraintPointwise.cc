@@ -35,7 +35,8 @@
 
 #include <cassert> // USES assert()
 #include <typeinfo> // USES typeid()
-#include <stdexcept> // USES std::runtime_error
+#include <stdexcept> \
+    // USES std::runtime_error
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -115,12 +116,10 @@ pylith::feassemble::ConstraintPointwise::constrainedDOF(const int* flags,
     assert((size > 0 && flags) || (!size && !flags));
 
     _constrainedDOF.resize(size);
-    for (int i=0; i < size; ++i) {
-        if (flags[i] < 0 || flags[i] > 2) {
+    for (int i = 0; i < size; ++i) {
+        if (flags[i] < 0) {
             std::ostringstream msg;
-            msg << "Constrained DOF '" << flags[i] << "' out of range"
-                << " in component '" << PyreComponent::identifier() << "'"
-                << ". DOF must be in range [0,2].";
+            msg << "Constrained DOF '" << flags[i] << "' must be nonnegative in component '" << PyreComponent::identifier() << "'.";
             throw std::runtime_error(msg.str());
         } // if
         _constrainedDOF[i] = flags[i];
@@ -194,7 +193,8 @@ void
 pylith::feassemble::ConstraintPointwise::auxFieldDiscretization(const char* name,
                                                                 const int basisOrder,
                                                                 const int quadOrder,
-                                                                const bool isBasisContinuous)
+                                                                const bool isBasisContinuous,
+                                                                const pylith::topology::FieldBase::SpaceEnum feSpace)
 { // discretization
     PYLITH_JOURNAL_DEBUG("auxFieldDiscretization(name="<<name<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<")");
 
@@ -202,6 +202,7 @@ pylith::feassemble::ConstraintPointwise::auxFieldDiscretization(const char* name
     feInfo.basisOrder = basisOrder;
     feInfo.quadOrder = quadOrder;
     feInfo.isBasisContinuous = isBasisContinuous;
+    feInfo.feSpace = feSpace;
     _auxFieldsFEInfo[name] = feInfo;
 } // discretization
 
@@ -261,7 +262,7 @@ pylith::feassemble::ConstraintPointwise::verifyConfiguration(const pylith::topol
     const topology::Field::SubfieldInfo& info = solution.subfieldInfo(_field.c_str());
     const int numComponents = info.numComponents;
     const int numConstrained = _constrainedDOF.size();
-    for (int iConstrained=0; iConstrained < numConstrained; ++iConstrained) {
+    for (int iConstrained = 0; iConstrained < numConstrained; ++iConstrained) {
         if (_constrainedDOF[iConstrained] >= numComponents) {
             std::ostringstream msg;
             msg << "Cannot constrain degree of freedom '" << _constrainedDOF[iConstrained] << "'"
