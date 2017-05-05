@@ -216,7 +216,7 @@ public:
 
     int numAuxFields; ///< Number of auxiliary fields.
     const char** auxFields; ///< Names of auxiliary fields.
-    topology::Field::DiscretizeInfo* auxDiscretizations; ///< Discretizations for auxiliary fields.
+    pylith::topology::Field::DiscretizeInfo* auxDiscretizations; ///< Discretizations for auxiliary fields.
     const char* auxDBFilename; ///< Name of file with data for auxFieldsDB.
 
     bool isExplicit; ///< True for explicit time stepping.

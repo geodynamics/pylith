@@ -593,7 +593,7 @@ pylith::materials::TestMaterialNew::_initializeMin(void)
     MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
     TestMaterialNew_Data* data = _data(); CPPUNIT_ASSERT(data);
 
-    meshio::MeshIOAscii iohandler;
+    pylith::meshio::MeshIOAscii iohandler;
     CPPUNIT_ASSERT(data->meshFilename);
     iohandler.filename(data->meshFilename);
     iohandler.read(_mesh); CPPUNIT_ASSERT(_mesh);

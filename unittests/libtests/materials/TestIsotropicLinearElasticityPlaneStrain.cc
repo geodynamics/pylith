@@ -153,6 +153,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // density
 
     { // shear modulus
@@ -166,6 +167,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // shear modulus
 
     { // bulk modulus
@@ -179,6 +181,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // bulk modulus
 
     if (_mydata->useBodyForce) { // body force
@@ -193,6 +196,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // body force
 
     if (_mydata->useReferenceState) { // reference stress and strain
@@ -206,6 +210,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // reference stress
 
     if (_mydata->useReferenceState) { // referece stress and strain
@@ -219,6 +224,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // reference strain
 
     // Make sure DB query functions are set correctly.
