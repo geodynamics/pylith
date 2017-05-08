@@ -50,7 +50,7 @@ pylith::topology::FieldOps::createFE(const FieldBase::DiscretizeInfo& feinfo,
     // Create space
     PetscSpace space = NULL;
     err = PetscSpaceCreate(PetscObjectComm((PetscObject) dm), &space); PYLITH_CHECK_ERROR(err); assert(space);
-    err = PetscSpaceSetType(space, feinfo.feSpace == FieldBase::POLYNOMIAL_SPACE ? PETSCSPACEPOLYNOMIAL : PETSCSPACEDG); PYLITH_CHECK_ERROR(err);
+    err = PetscSpaceSetType(space, feinfo.feSpace == FieldBase::POLYNOMIAL_SPACE ? PETSCSPACEPOLYNOMIAL : PETSCSPACEPOINT); PYLITH_CHECK_ERROR(err);
     err = PetscSpacePolynomialSetTensor(space, useTensor); PYLITH_CHECK_ERROR(err);
     err = PetscSpacePolynomialSetNumVariables(space, dim); PYLITH_CHECK_ERROR(err);
     err = PetscSpaceSetOrder(space, basisOrder);
@@ -83,9 +83,9 @@ pylith::topology::FieldOps::createFE(const FieldBase::DiscretizeInfo& feinfo,
     // Create quadrature
     PetscQuadrature quadrature = NULL;
     if (isSimplex) {
-        err = PetscDTGaussJacobiQuadrature(dim, quadOrder, -1.0, 1.0, &quadrature); PYLITH_CHECK_ERROR(err);
+      err = PetscDTGaussJacobiQuadrature(dim, 1, quadOrder, -1.0, 1.0, &quadrature); PYLITH_CHECK_ERROR(err);
     } else {
-        err = PetscDTGaussTensorQuadrature(dim, quadOrder, -1.0, 1.0, &quadrature); PYLITH_CHECK_ERROR(err);
+      err = PetscDTGaussTensorQuadrature(dim, 1, quadOrder, -1.0, 1.0, &quadrature); PYLITH_CHECK_ERROR(err);
     }
     err = PetscFESetQuadrature(fe, quadrature); PYLITH_CHECK_ERROR(err);
     err = PetscFESetFaceQuadrature(fe, quadrature); PYLITH_CHECK_ERROR(err);
