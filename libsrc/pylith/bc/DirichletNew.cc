@@ -88,8 +88,8 @@ pylith::bc::DirichletNew::initialize(const pylith::topology::Field& solution)
     PetscDM dmBoundary = _boundaryMesh->dmMesh(); assert(dmBoundary);
     pylith::topology::CoordsVisitor::optimizeClosure(dmBoundary);
 
-    delete _auxFields; _auxFields = new topology::Field(*_boundaryMesh); assert(_auxFields);
-    delete _auxFieldsQuery; _auxFieldsQuery = new topology::FieldQuery(*_auxFields); assert(_auxFieldsQuery);
+    delete _auxFields; _auxFields = new pylith::topology::Field(*_boundaryMesh); assert(_auxFields);
+    delete _auxFieldsQuery; _auxFieldsQuery = new pylith::topology::FieldQuery(*_auxFields); assert(_auxFieldsQuery);
     _auxFields->label("auxiliary fields");
     _auxFieldsSetup();
     _auxFields->subfieldsSetup();
