@@ -74,6 +74,24 @@ public:
                                       PylithScalar* values,
                                       void* context);
 
+    /** Query for Vs, density, and viscosity to determine Maxwell time. Works in 2-D and 3-D.
+     *
+     * @param[in] dim Spatial dimension.
+     * @param[in] t Current time.
+     * @param[in] x Coordinates (nondimensioned) of point location for query.
+     * @param[in] nvalues Size of values array.
+     * @param[out] values Array of values to be returned.
+     * @param[in] context Query context.
+     * @returns PETSc error code (0 for success).
+     */
+    static
+    PetscErrorCode dbQueryMaxwellTime(PylithInt dim,
+				      PylithReal t,
+				      const PylithReal x[],
+				      PylithInt nvalues,
+				      PylithScalar* values,
+				      void* context);
+
     /** Query for components of gravity field. Works in 2-D and 3-D.
      *
      * @param[in] dim Spatial dimension.

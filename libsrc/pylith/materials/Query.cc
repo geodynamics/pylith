@@ -196,6 +196,90 @@ pylith::materials::Query::dbQueryBulkModulus(PylithInt dim,
 
 
 // ----------------------------------------------------------------------
+// Query for Vs, density, and viscosity to determine Maxwell time.
+PetscErrorCode
+pylith::materials::Query::dbQueryMaxwellTime(PylithInt dim,
+					     PylithReal t,
+					     const PylithReal x[],
+					     PylithInt nvalues,
+					     PylithScalar* values,
+					     void* context)
+{ // dbQueryMaxwellTime
+    PYLITH_METHOD_BEGIN;
+
+    const int _nvalues = 1;
+
+    assert(x);
+    assert(values);
+    assert(context);
+    assert(_nvalues == nvalues);
+    assert(2 == dim || 3 == dim);
+
+    const pylith::topology::FieldQuery::DBQueryContext* queryctx = (pylith::topology::FieldQuery::DBQueryContext*)context; assert(queryctx);
+
+    // Tell database which values we want.
+    const int numDBValues = 3;
+    PylithReal dbValues[numDBValues];
+    const int i_density = 0;
+    const int i_vs = 1;
+    const int i_viscosity = 2;
+    const char* dbValueNames[numDBValues] = {"density", "vs", "viscosity"};
+    try {
+        queryctx->db->queryVals(dbValueNames, numDBValues);
+    } catch (const std::exception& err) {
+        PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, err.what());
+    } // try/catch
+
+
+    // Dimensionalize query location coordinates.
+    assert(queryctx->lengthScale > 0);
+    double xDim[3];
+    for (int i=0; i < dim; ++i) {
+        xDim[i] = x[i] * queryctx->lengthScale;
+    } // for
+
+    assert(queryctx->cs);
+    const int err = queryctx->db->query(dbValues, numDBValues, xDim, dim, queryctx->cs);
+    if (err) {
+        std::ostringstream msg;
+        msg << "Could not find density, Vs, and viscosity at (";
+        for (int i=0; i < dim; ++i)
+            msg << "  " << xDim[i];
+        msg << ") using spatial database '" << queryctx->db->label() << "'.";
+        PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
+    } // if
+
+    const PylithReal density = dbValues[i_density];
+    const PylithReal vs = dbValues[i_vs];
+    const PylithReal viscosity = dbValues[i_viscosity];
+
+    if (density <= 0) {
+        std::ostringstream msg;
+        msg << "Found negative density (" << density << ") at location (";
+        for (int i=0; i < dim; ++i)
+            msg << "  " << xDim[i];
+        msg << ") in spatial database '" << queryctx->db->label() << "'.";
+        PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
+    } // if
+    if (vs <= 0) {
+        std::ostringstream msg;
+        msg << "Found negative shear wave speed (" << vs << ") at location (";
+        for (int i=0; i < dim; ++i)
+            msg << "  " << xDim[i];
+        msg << ") in spatial database '" << queryctx->db->label() << "'.";
+        PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
+    } // if
+
+    const PylithReal shearModulus = density * vs * vs; assert(shearModulus > 0);
+    const PylithReal maxwellTime = viscosity/shearModulus; assert(maxwellTime > 0);
+    assert(queryctx->valueScale > 0);
+    values[0] = maxwellTime / queryctx->valueScale;
+
+    PYLITH_METHOD_RETURN(0);
+} // dbQueryMaxwellTime
+
+
+// ----------------------------------------------------------------------
 // Query for components of gravity field.
 PetscErrorCode
 pylith::materials::Query::dbQueryGravityField(PylithInt dim,
