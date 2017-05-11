@@ -39,20 +39,19 @@ namespace pylith {
 } // pylith
 
 /// C++ unit testing for IsotropicLinearElasticityPlaneStrain
-class pylith::materials::TestIsotropicLinearElasticityPlaneStrain : public TestMaterialNew
-{ // class TestIsotropicLinearElasticityPlaneStrain
+class pylith::materials::TestIsotropicLinearElasticityPlaneStrain : public TestMaterialNew { // class TestIsotropicLinearElasticityPlaneStrain
 
     // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUB_SUITE( TestIsotropicLinearElasticityPlaneStrain, TestMaterialNew );
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticityPlaneStrain, TestMaterialNew);
 
     // Tests specific to this materials parameters.
-    CPPUNIT_TEST( testUseInertia );
-    CPPUNIT_TEST( testUseBodyForce );
-    CPPUNIT_TEST( testUseReferenceState );
+    CPPUNIT_TEST(testUseInertia);
+    CPPUNIT_TEST(testUseBodyForce);
+    CPPUNIT_TEST(testUseReferenceState);
 
     // Tests that explicitly depend on details of this material.
-    CPPUNIT_TEST( test_auxFieldsSetup );
-    CPPUNIT_TEST( testGetAuxField );
+    CPPUNIT_TEST(test_auxFieldsSetup);
+    CPPUNIT_TEST(testGetAuxField);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -95,15 +94,8 @@ protected:
      */
     TestMaterialNew_Data* _data(void);
 
-    /** Setup and populate solution field.
-     *
-     * @param[out] field Solution field to setup and populate.
-     * @param[in] dbFilename Filename for spatial database with values for field.
-     * @param[in] isClone True if field is a clone (don't need full setup).
-     */
-    void _setupSolutionField(pylith::topology::Field* field,
-                             const char* dbFilename,
-                             const bool isClone =false);
+    /// Setup and populate solution fields.
+    void _setupSolutionFields(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected:

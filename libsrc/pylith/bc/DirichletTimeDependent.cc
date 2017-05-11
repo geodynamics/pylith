@@ -20,6 +20,8 @@
 
 #include "DirichletTimeDependent.hh" // implementation of object methods
 
+#include "DirichletAuxiliaryFactory.hh" // USES DirichletAuxiliaryFactory
+
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
@@ -28,7 +30,7 @@
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
-#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 extern "C" {
     #include "pylith/fekernels/timedependentbc.h"
@@ -97,7 +99,7 @@ pylith::bc::DirichletTimeDependent::dbTimeHistory(void)
 void
 pylith::bc::DirichletTimeDependent::useInitial(const bool value)
 { // useInitial
-    PYLITH_JOURNAL_DEBUG("useInitial(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG("useInitial(value="<<value<<")");
 
     _useInitial = value;
 } // useInitial
@@ -117,7 +119,7 @@ pylith::bc::DirichletTimeDependent::useInitial(void) const
 void
 pylith::bc::DirichletTimeDependent::useRate(const bool value)
 { // useRate
-    PYLITH_JOURNAL_DEBUG("useRate(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG("useRate(value="<<value<<")");
 
     _useRate = value;
 } // useRate
@@ -137,7 +139,7 @@ pylith::bc::DirichletTimeDependent::useRate(void) const
 void
 pylith::bc::DirichletTimeDependent::useTimeHistory(const bool value)
 { // useTimeHistory
-    PYLITH_JOURNAL_DEBUG("useTimeHistory(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG("useTimeHistory(value="<<value<<")");
 
     _useTimeHistory = value;
 } // useTimeHistory
@@ -159,7 +161,7 @@ pylith::bc::DirichletTimeDependent::prestep(const double t,
                                             const double dt)
 { // prestep
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_prestep(t="<<t<<", dt="<<dt<<")");
+    PYLITH_COMPONENT_DEBUG("_prestep(t="<<t<<", dt="<<dt<<")");
 
     if (_useTimeHistory) {
         assert(_normalizer);
@@ -175,9 +177,7 @@ pylith::bc::DirichletTimeDependent::prestep(const double t,
         pylith::topology::VecVisitorMesh auxFieldsVisitor(*_auxFields);
         PetscScalar* auxFieldsArray = auxFieldsVisitor.localArray(); assert(auxFieldsArray);
 
-        // Compute offset of time history subfields in auxiliary field.
-        // :ASSUMPTION: Constrained field is a scalar or vector field.
-        const PetscInt numComponents = (_vectorFieldType == pylith::topology::Field::VECTOR) ? _spaceDim : 1;
+        const PylithInt numComponents = _description.numComponents;
         PetscInt offTH = 0;
         if (_useInitial) {offTH += numComponents;}
         if (_useRate) {offTH += numComponents + 1;}
@@ -220,98 +220,45 @@ pylith::bc::DirichletTimeDependent::prestep(const double t,
 // ----------------------------------------------------------------------
 // Setup auxiliary subfields (discretization and query fns).
 void
-pylith::bc::DirichletTimeDependent::_auxFieldsSetup(void)
+pylith::bc::DirichletTimeDependent::_auxFieldsSetup(const pylith::topology::Field& solution)
 { // _auxFieldsSetup
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_auxFieldsSetup()");
+    PYLITH_COMPONENT_DEBUG("_auxFieldsSetup(solution="<<solution.label()<<")");
 
-    // Set subfields in auxiliary fields.
-    assert(_normalizer);
-    const PylithReal lengthScale = _normalizer->lengthScale();
-    const PylithReal timeScale = _normalizer->timeScale();
-    const PylithReal velocityScale = lengthScale / timeScale;
-
-    // :ASSUMPTION: Constrained field is a scalar or vector field.
-    const bool isVector = _vectorFieldType == pylith::topology::Field::VECTOR;
-    const int numComponents = (isVector) ? _spaceDim : 1;
+    DirichletAuxiliaryFactory factory(*this, solution, _normalizer->timeScale());
 
     // :ATTENTION: The order for subfieldAdd() must match the order of the auxiliary fields in the FE kernels.
 
-    // Initial amplitude
     if (_useInitial) {
-        const pylith::topology::Field::DiscretizeInfo& initAmpFEInfo = this->auxFieldDiscretization("initial_amplitude");
-        if (isVector) {
-            const char* componentNames[3] = {"initial_amplitude_x", "initial_amplitude_y", "initial_amplitude_z"};
-            _auxFields->subfieldAdd("initial_amplitude", componentNames, numComponents, _vectorFieldType, initAmpFEInfo.basisOrder, initAmpFEInfo.quadOrder, initAmpFEInfo.isBasisContinuous, initAmpFEInfo.feSpace, lengthScale);
-        } else {
-            const char* componentNames[1] = {"initial_amplitude"};
-            _auxFields->subfieldAdd("initial_amplitude", componentNames, numComponents, _vectorFieldType, initAmpFEInfo.basisOrder, initAmpFEInfo.quadOrder, initAmpFEInfo.isBasisContinuous, initAmpFEInfo.feSpace, lengthScale);
-        } // if/else
-        _auxFieldsQuery->queryFn("initial_amplitude", pylith::topology::FieldQuery::dbQueryGeneric);
+        factory.initialAmplitude();
     } // if
-
-
-    // Rate amplitude and start time.
     if (_useRate) {
-        const pylith::topology::Field::DiscretizeInfo& rateAmpFEInfo = this->auxFieldDiscretization("rate_amplitude");
-        if (isVector) {
-            const char* componentNames[3] = {"rate_amplitude_x", "rate_amplitude_y", "rate_amplitude_z"};
-            _auxFields->subfieldAdd("rate_amplitude", componentNames, numComponents, _vectorFieldType, rateAmpFEInfo.basisOrder, rateAmpFEInfo.quadOrder, rateAmpFEInfo.isBasisContinuous, rateAmpFEInfo.feSpace, velocityScale);
-        } else {
-            const char* componentNames[1] = {"rate_amplitude"};
-            _auxFields->subfieldAdd("rate_amplitude", componentNames, numComponents, _vectorFieldType, rateAmpFEInfo.basisOrder, rateAmpFEInfo.quadOrder, rateAmpFEInfo.isBasisContinuous, rateAmpFEInfo.feSpace, velocityScale);
-        } // if/else
-        _auxFieldsQuery->queryFn("rate_amplitude", pylith::topology::FieldQuery::dbQueryGeneric);
-
-        const char* startNames[1] = {"rate_start_time"};
-        const pylith::topology::Field::DiscretizeInfo& rateStartFEInfo = this->auxFieldDiscretization("rate_start_time");
-        _auxFields->subfieldAdd("rate_start_time", startNames, 1, pylith::topology::Field::SCALAR, rateStartFEInfo.basisOrder, rateStartFEInfo.quadOrder, rateStartFEInfo.isBasisContinuous, rateStartFEInfo.feSpace, timeScale);
-        _auxFieldsQuery->queryFn("rate_start_time", pylith::topology::FieldQuery::dbQueryGeneric);
-    } // if
-
-
-    // Time history amplitude and start time.
+        factory.rateAmplitude();
+        factory.rateStartTime();
+    } // _useRate
     if (_useTimeHistory) {
-        const pylith::topology::Field::DiscretizeInfo& thAmpFEInfo = this->auxFieldDiscretization("time_history_amplitude");
-        if (isVector) {
-            const char* componentNames[3] = {"time_history_amplitude_x", "time_history_amplitude_y", "time_history_amplitude_z"};
-            _auxFields->subfieldAdd("time_history_amplitude", componentNames, numComponents, _vectorFieldType, thAmpFEInfo.basisOrder, thAmpFEInfo.quadOrder, thAmpFEInfo.isBasisContinuous, thAmpFEInfo.feSpace, lengthScale);
-        } else {
-            const char* componentNames[1] = {"time_history_amplitude"};
-            _auxFields->subfieldAdd("time_history_amplitude", componentNames, numComponents, _vectorFieldType, thAmpFEInfo.basisOrder, thAmpFEInfo.quadOrder, thAmpFEInfo.isBasisContinuous, thAmpFEInfo.feSpace, lengthScale);
-        } // if/else
-        _auxFieldsQuery->queryFn("time_history_amplitude", pylith::topology::FieldQuery::dbQueryGeneric);
-
-        const char* startNames[1] = {"time_history_start_time"};
-        const pylith::topology::Field::DiscretizeInfo& timeHistoryStartFEInfo = this->auxFieldDiscretization("time_history_start_time");
-        _auxFields->subfieldAdd("time_history_start_time", startNames, 1, pylith::topology::Field::SCALAR, timeHistoryStartFEInfo.basisOrder, timeHistoryStartFEInfo.quadOrder, timeHistoryStartFEInfo.isBasisContinuous, thAmpFEInfo.feSpace,
-                                timeScale);
-        _auxFieldsQuery->queryFn("time_history_start_time", pylith::topology::FieldQuery::dbQueryGeneric);
-
-        // Field to hold value from query of time history database.
-        const char* valueNames[1] = {"time_history_value"};
-        _auxFields->subfieldAdd("time_history_value", valueNames, 1, pylith::topology::Field::SCALAR, thAmpFEInfo.basisOrder, thAmpFEInfo.quadOrder, thAmpFEInfo.isBasisContinuous, thAmpFEInfo.feSpace, 1.0);
-        _auxFieldsQuery->queryFn("time_history_value", NULL);
-    } // if
-
+        factory.timeHistoryAmplitude();
+        factory.timeHistoryStartTime();
+        factory.timeHistoryValue();
+    } // _useTimeHistory
 
     PYLITH_METHOD_END;
 }     // _auxFieldsSetup
 
 
 // ----------------------------------------------------------------------
-// Set kernels for RHS residual G(t,s).
+// Set kernels for setting Dirhclet values.
 void
-pylith::bc::DirichletTimeDependent::_setFEKernelsConstraint(const topology::Field& solution)
+pylith::bc::DirichletTimeDependent::_setFEKernelsConstraint(const pylith::topology::Field& solution)
 { // _setFEKernelsConstraint
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_setFEKernelsConstraint(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("_setFEKernelsConstraint(solution="<<solution.label()<<")");
 
     const PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
     PetscDS prob = NULL;
     PetscErrorCode err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err);
 
-    const bool isScalarField = _vectorFieldType == pylith::topology::Field::SCALAR;
+    const bool isScalarField = _description.vectorFieldType == pylith::topology::Field::SCALAR;
 
     const int bitInitial = _useInitial ? 0x1 : 0x0;
     const int bitRate = _useRate ? 0x2 : 0x0;
@@ -340,10 +287,10 @@ pylith::bc::DirichletTimeDependent::_setFEKernelsConstraint(const topology::Fiel
         _bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_initialRateTimeHistory_scalar : pylith_fekernels_TimeDependentBC_initialRateTimeHistory_vector;
         break;
     case 0x0:
-        PYLITH_JOURNAL_WARNING("Dirichlet BC provides no constraints.");
+        PYLITH_COMPONENT_WARNING("Dirichlet BC provides no constraints.");
         break;
     default:
-        PYLITH_JOURNAL_ERROR("Unknown combination of flags for Dirichlet BC terms (useInitial="<<_useInitial<<", useRate="<<_useRate<<", useTimeHistory="<<_useTimeHistory<<").");
+        PYLITH_COMPONENT_ERROR("Unknown combination of flags for Dirichlet BC terms (useInitial="<<_useInitial<<", useRate="<<_useRate<<", useTimeHistory="<<_useTimeHistory<<").");
         throw std::logic_error("Unknown combination of flags for Dirichlet BC terms.");
     } // switch
 

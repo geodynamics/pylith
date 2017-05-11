@@ -52,6 +52,7 @@ subpkginclude_HEADERS = \
 	EffectiveStress.hh \
 	EffectiveStress.icc \
 	MaterialNew.hh \
+	AuxiliaryFactory.hh \
 	IsotropicLinearElasticityPlaneStrain.hh \
 	IsotropicLinearMaxwellPlaneStrain.hh \
 	IsotropicLinearIncompElasticityPlaneStrain.hh \

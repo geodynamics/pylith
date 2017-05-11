@@ -36,8 +36,9 @@
 /// conditions with points on a boundary.
 class pylith::bc::DirichletNew :
     public BoundaryConditionNew,
-    public pylith::feassemble::ConstraintPointwise
-{ // class DirichletNew
+    public pylith::feassemble::ConstraintPointwise {
+
+    friend class DirichletAuxiliaryFactory; // factory for auxiliary fields
     friend class TestDirichletNew;   // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -78,9 +79,11 @@ protected:
      *
      * @attention The order of the calls to subfieldAdd() must match the
      * order of the auxiliary fields in the FE kernels.
+     *
+     * @param[in] solution Solution field.
      */
     virtual
-    void _auxFieldsSetup(void) = 0;
+    void _auxFieldsSetup(const topology::Field& solution) = 0;
 
     /** Set kernels for RHS residual G(t,s).
      *
@@ -98,8 +101,7 @@ protected:
 
     pylith::topology::Mesh* _boundaryMesh;   ///< Boundary mesh.
     PetscPointFunc _bcKernel; ///< Kernel for boundary condition value.
-    int _spaceDim; ///< Spatial dimension of domain.
-    pylith::topology::FieldBase::VectorFieldEnum _vectorFieldType; ///< Vector field type of constrainted field.
+    pylith::topology::FieldBase::Description _description; ///< Description for constrained field.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:

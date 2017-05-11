@@ -28,7 +28,7 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <strings.h> // USES strcasecmp()
 #include <cassert> // USES assert()
@@ -39,11 +39,14 @@
 // Default constructor.
 pylith::bc::DirichletNew::DirichletNew(void) :
     _boundaryMesh(NULL),
-    _bcKernel(NULL),
-    _spaceDim(0),
-    _vectorFieldType(pylith::topology::FieldBase::OTHER)
+    _bcKernel(NULL)
 { // constructor
-    const pylith::topology::FieldBase::DiscretizeInfo defaultInfo = {-1, -1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE};
+    _description.label = "unknown";
+    _description.vectorFieldType = pylith::topology::Field::OTHER;
+    _description.numComponents = 0;
+    _description.scale = 1.0;
+    _description.validator = NULL;
+    const pylith::topology::FieldBase::Discretization defaultInfo = {-1, -1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE};
     _auxFieldsFEInfo["default"] = defaultInfo;
 } // constructor
 
@@ -75,12 +78,10 @@ void
 pylith::bc::DirichletNew::initialize(const pylith::topology::Field& solution)
 { // initialize
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("initialize(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("initialize(solution="<<solution.label()<<")");
 
-    const spatialdata::geocoords::CoordSys* cs = solution.mesh().coordsys(); assert(cs);
-    _spaceDim = cs->spaceDim();
     const topology::Field::SubfieldInfo& info = solution.subfieldInfo(_field.c_str());
-    _vectorFieldType = info.metadata.vectorFieldType;
+    _description = info.description;
 
     _setFEKernelsConstraint(solution);
 
@@ -91,7 +92,7 @@ pylith::bc::DirichletNew::initialize(const pylith::topology::Field& solution)
     delete _auxFields; _auxFields = new pylith::topology::Field(*_boundaryMesh); assert(_auxFields);
     delete _auxFieldsQuery; _auxFieldsQuery = new pylith::topology::FieldQuery(*_auxFields); assert(_auxFieldsQuery);
     _auxFields->label("auxiliary fields");
-    _auxFieldsSetup();
+    _auxFieldsSetup(solution);
     _auxFields->subfieldsSetup();
     _auxFields->allocate();
     _auxFields->zeroLocal();
@@ -102,7 +103,7 @@ pylith::bc::DirichletNew::initialize(const pylith::topology::Field& solution)
         _auxFieldsQuery->queryDB();
         _auxFieldsQuery->closeDB(_auxFieldsDB);
     } else { // else
-        PYLITH_JOURNAL_ERROR("Unknown case for setting up auxiliary fields.");
+        PYLITH_COMPONENT_ERROR("Unknown case for setting up auxiliary fields.");
         throw std::logic_error("Unknown case for setting up auxiliary fields.");
     } // if/else
     _auxFields->view("AUXILIARY FIELDS"); // :DEBUGGING: TEMPORARY
@@ -128,7 +129,7 @@ pylith::bc::DirichletNew::setSolution(pylith::topology::Field* solution,
                                       const double t)
 { // setSolution
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setSolution(solution="<<solution->label()<<", t="<<t<<")");
+    PYLITH_COMPONENT_DEBUG("setSolution(solution="<<solution->label()<<", t="<<t<<")");
 
     assert(solution);
     assert(_auxFields);

@@ -47,8 +47,8 @@ def bcFactory(name):
     Factory for boundary condition items.
     """
     from pyre.inventory import facility
-    from pylith.bc.DirichletBC import DirichletBC
-    return facility(name, family="boundary_condition", factory=DirichletBC)
+    from pylith.bc.DirichletTimeDependent import DirichletTimeDependent
+    return facility(name, family="boundary_condition", factory=DirichletTimeDependent)
 
 
 def faultFactory(name):

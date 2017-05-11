@@ -46,6 +46,7 @@ namespace pylith {
         class BoundaryConditionNew;
         class DirichletNew;
         class DirichletTimeDependent;
+        class DirichletAuxiliaryFactory;
 
     } // bc
 } // pylith

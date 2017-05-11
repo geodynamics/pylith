@@ -61,7 +61,7 @@ namespace pylith {
       // PUBLIC STRUCTS /////////////////////////////////////////////////
     public :
 
-      struct DiscretizeInfo {
+      struct Discretization {
 	int basisOrder; ///< Order of basis functions.
 	int quadOrder; ///< Order of quadrature scheme.
 	bool isBasisContinuous; ///< Is basis continuous?

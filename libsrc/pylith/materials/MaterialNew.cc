@@ -31,7 +31,7 @@
 #include "spatialdata/spatialdb/GravityField.hh" // HASA GravityField
 #include "petscds.h" // USES PetscDS
 
-#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
@@ -75,7 +75,7 @@ pylith::materials::MaterialNew::MaterialNew(const int dimension) :
     _id(0),
     _label("")
 { // constructor
-    const pylith::topology::FieldBase::DiscretizeInfo defaultInfo = {-1, -1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE};
+    const pylith::topology::FieldBase::Discretization defaultInfo = {-1, -1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE};
     _auxFieldsFEInfo["default"] = defaultInfo;
 } // constructor
 
@@ -111,7 +111,7 @@ pylith::materials::MaterialNew::dimension(void) const {
 // Set identifier of material.
 void
 pylith::materials::MaterialNew::id(const int value) {
-    PYLITH_JOURNAL_DEBUG("id(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG("id(value="<<value<<")");
 
     _id = value;
 }
@@ -127,7 +127,7 @@ pylith::materials::MaterialNew::id(void) const {
 // Set label of material.
 void
 pylith::materials::MaterialNew::label(const char* value) {
-    PYLITH_JOURNAL_DEBUG("label(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG("label(value="<<value<<")");
 
     _label = value;
 }
@@ -145,7 +145,7 @@ void
 pylith::materials::MaterialNew::initialize(const pylith::topology::Field& solution)
 { // initialize
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("intialize(solution="<<solution.label()<<")");
 
     // Get cells associated with material
     const pylith::topology::Mesh& mesh = solution.mesh();
@@ -161,7 +161,6 @@ pylith::materials::MaterialNew::initialize(const pylith::topology::Field& soluti
     _auxFieldsSetup();
     _auxFields->subfieldsSetup();
     _auxFields->allocate();
-    _auxFields->zeroLocal();
 
     if (_auxFieldsDB) {
         assert(_normalizer);
@@ -169,11 +168,15 @@ pylith::materials::MaterialNew::initialize(const pylith::topology::Field& soluti
         _auxFieldsQuery->queryDB();
         _auxFieldsQuery->closeDB(_auxFieldsDB);
     } else { // else
-        PYLITH_JOURNAL_ERROR("Unknown case for setting up auxiliary fields.");
+        PYLITH_COMPONENT_ERROR("Unknown case for setting up auxiliary fields.");
         throw std::logic_error("Unknown case for setting up auxiliary fields.");
     } // if/else
       //_auxFields->createScatter(mesh);
       //_auxFields->scatterLocalToContext();
+
+#if 1 // DEBUGGING
+    _auxFields->view("AUXILIARY FIELDS");
+#endif
 
     PYLITH_METHOD_END;
 } // initialize
@@ -188,7 +191,7 @@ pylith::materials::MaterialNew::computeRHSResidual(pylith::topology::Field* resi
                                                    const pylith::topology::Field& solution)
 { // computeRHSResidual
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeRHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("computeRHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
 
     _setFEKernelsRHSResidual(solution);
 
@@ -210,7 +213,7 @@ pylith::materials::MaterialNew::computeRHSJacobian(PetscMat jacobianMat,
                                                    const pylith::topology::Field& solution)
 { // computeRHSJacobian
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeRHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("computeRHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
 
     _setFEKernelsRHSJacobian(solution);
 
@@ -234,7 +237,7 @@ pylith::materials::MaterialNew::computeLHSResidual(pylith::topology::Field* resi
                                                    const pylith::topology::Field& solutionDot)
 { // computeLHSResidual
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeLHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
+    PYLITH_COMPONENT_DEBUG("computeLHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
 
     _setFEKernelsLHSResidual(solution);
 
@@ -255,7 +258,7 @@ pylith::materials::MaterialNew::computeLHSJacobianImplicit(PetscMat jacobianMat,
                                                            const pylith::topology::Field& solutionDot)
 { // computeLHSJacobianImplicit
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeLHSJacobianImplicit(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", tshift="<<tshift<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
+    PYLITH_COMPONENT_DEBUG("computeLHSJacobianImplicit(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", tshift="<<tshift<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
 
     _setFEKernelsLHSJacobianImplicit(solution);
 
@@ -275,7 +278,7 @@ pylith::materials::MaterialNew::computeLHSJacobianLumpedInv(pylith::topology::Fi
                                                             const pylith::topology::Field& solution)
 { // computeLHSJacobianInverseExplicit
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
 
     assert(jacobianInv);
 
@@ -304,7 +307,7 @@ pylith::materials::MaterialNew::computeLHSJacobianLumpedInv(pylith::topology::Fi
     err = DMGetLabel(dmSoln, "material-id", &dmLabel); PYLITH_CHECK_ERROR(err);
     err = DMLabelGetStratumBounds(dmLabel, id(), &cStart, &cEnd); PYLITH_CHECK_ERROR(err);
 
-    PYLITH_JOURNAL_ERROR(":TODO: @matt DMPlexComputeJacobianAction_Internal() not yet implemented in PETSc knepley/pylith.");
+    PYLITH_COMPONENT_ERROR(":TODO: @matt DMPlexComputeJacobianAction_Internal() not yet implemented in PETSc knepley/pylith.");
 #if 0 // NOT YET IMPLEMENTED IN petsc-dev knepley/pylith
     err = DMPlexComputeJacobianAction_Internal(dmSoln, cStart, cEnd, t, tshift, vecRowSum, NULL, vecRowSum, jacobianInv->localVector(), NULL); PYLITH_CHECK_ERROR(err);
 
@@ -324,9 +327,9 @@ void
 pylith::materials::MaterialNew::updateStateVars(const pylith::topology::Field& solution)
 { // updateStateVars
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("updateStateVars(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("updateStateVars(solution="<<solution.label()<<")");
 
-    PYLITH_JOURNAL_ERROR(":TODO: @brad Implement updateStateVars().");
+    PYLITH_COMPONENT_ERROR(":TODO: @brad Implement updateStateVars().");
 
     PYLITH_METHOD_END;
 } // updateStateVars
@@ -341,7 +344,7 @@ pylith::materials::MaterialNew::_computeResidual(pylith::topology::Field* residu
                                                  const pylith::topology::Field& solutionDot)
 { // _computeResidual
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_computeResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
+    PYLITH_COMPONENT_DEBUG("_computeResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
 
     assert(residual);
     assert(_auxFields);
@@ -367,7 +370,7 @@ pylith::materials::MaterialNew::_computeResidual(pylith::topology::Field* residu
     err = DMGetLabel(dmSoln, "material-id", &dmLabel); PYLITH_CHECK_ERROR(err);
     err = DMLabelGetStratumBounds(dmLabel, id(), &cStart, &cEnd); PYLITH_CHECK_ERROR(err);
 
-    PYLITH_JOURNAL_DEBUG("DMPlexComputeResidual_Internal() with material-id '"<<id()<<"' and cells ["<<cStart<<","<<cEnd<<")");
+    PYLITH_COMPONENT_DEBUG("DMPlexComputeResidual_Internal() with material-id '"<<id()<<"' and cells ["<<cStart<<","<<cEnd<<")");
     err = DMPlexComputeResidual_Internal(dmSoln, cStart, cEnd, PETSC_MIN_REAL, solution.localVector(), solutionDot.localVector(), residual->localVector(), NULL); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
@@ -386,7 +389,7 @@ pylith::materials::MaterialNew::_computeJacobian(PetscMat jacobianMat,
                                                  const pylith::topology::Field& solutionDot)
 { // _computeJacobian
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_computeJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", tshift="<<tshift<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
+    PYLITH_COMPONENT_DEBUG("_computeJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", tshift="<<tshift<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
 
     assert(jacobianMat);
     assert(precondMat);
@@ -410,7 +413,7 @@ pylith::materials::MaterialNew::_computeJacobian(PetscMat jacobianMat,
     err = DMGetLabel(dmMesh, "material-id", &dmLabel); PYLITH_CHECK_ERROR(err);
     err = DMLabelGetStratumBounds(dmLabel, id(), &cStart, &cEnd); PYLITH_CHECK_ERROR(err);
 
-    PYLITH_JOURNAL_DEBUG("DMPlexComputeJacobian_Internal() with material-id '"<<id()<<"' and cells ["<<cStart<< ","<<cEnd<<")");
+    PYLITH_COMPONENT_DEBUG("DMPlexComputeJacobian_Internal() with material-id '"<<id()<<"' and cells ["<<cStart<< ","<<cEnd<<")");
     err = DMPlexComputeJacobian_Internal(dmMesh, cStart, cEnd, t, tshift, solution.localVector(), solutionDot.localVector(), jacobianMat, precondMat, NULL); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;

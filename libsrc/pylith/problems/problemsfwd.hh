@@ -28,25 +28,26 @@
 #define pylith_problems_problemsfwd_hh
 
 namespace pylith {
-  namespace problems {
+    namespace problems {
 
-    class Formulation;
-    class Implicit;
-    class Explicit;
+        class Formulation;
+        class Implicit;
+        class Explicit;
 
-    class Problem;
-    class TimeDependent;
+        class Problem;
+        class TimeDependent;
+        class SolutionFactory;
 
-    class Solver;
-    class SolverLinear;
-    class SolverNonlinear;
-    class SolverLumped;
+        class Solver;
+        class SolverLinear;
+        class SolverNonlinear;
+        class SolverLumped;
 
-  } // problems
+    } // problems
 } // pylith
 
 
 #endif // pylith_problems_problemsfwd_hh
 
 
-// End of file 
+// End of file

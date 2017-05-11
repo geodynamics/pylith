@@ -50,6 +50,8 @@
  */
 
 class pylith::materials::MaterialNew : public pylith::feassemble::IntegratorPointwise {
+    friend class AuxiliaryFactory; ///< Helper for setting up auxiliary fields.
+
     friend class TestMaterialNew;   // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -62,8 +64,7 @@ public:
     MaterialNew(const int dimension);
 
     /// Destructor.
-    virtual
-    ~MaterialNew(void);
+    virtual ~MaterialNew(void);
 
     /// Deallocate PETSc and local data structures.
     virtual

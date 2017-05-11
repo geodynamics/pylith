@@ -24,11 +24,15 @@
 #include "pylith/materials/Query.hh" // USES Query
 
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
+#include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
+
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES JournalingComponent
 
 #include "spatialdata/spatialdb/SimpleGridDB.hh" // USES SimpleGridDB
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 extern "C" {
 #include "pylith/fekernels/dispvel.h" // USES DispVel kernels
@@ -136,6 +140,12 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
     CPPUNIT_ASSERT(_mymaterial);
     CPPUNIT_ASSERT(_mesh);
     CPPUNIT_ASSERT(_mydata);
+    CPPUNIT_ASSERT(_mydata->normalizer);
+    const PylithReal densityScale = _mydata->normalizer->densityScale();
+    const PylithReal lengthScale = _mydata->normalizer->lengthScale();
+    const PylithReal timeScale = _mydata->normalizer->timeScale();
+    const PylithReal pressureScale = _mydata->normalizer->pressureScale();
+    const PylithReal forceScale = densityScale * lengthScale / (timeScale * timeScale);
 
     delete _mymaterial->_auxFields; _mymaterial->_auxFields = new topology::Field(*_mesh); CPPUNIT_ASSERT(_mymaterial->_auxFields);
     delete _mymaterial->_auxFieldsQuery; _mymaterial->_auxFieldsQuery = new topology::FieldQuery(*_mymaterial->_auxFields); CPPUNIT_ASSERT(_mymaterial->_auxFieldsQuery);
@@ -145,11 +155,10 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
     { // density
         const char* label = "density";
         const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxFields->subfieldInfo(label);
-        CPPUNIT_ASSERT_EQUAL(1, info.numComponents);
-        CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.metadata.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(_mydata->densityScale, info.metadata.scale);
-        CPPUNIT_ASSERT_EQUAL(false, info.metadata.dimsOkay);
+        CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
+        CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
+        CPPUNIT_ASSERT_EQUAL(densityScale, info.description.scale);
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
@@ -159,11 +168,10 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
     { // shear modulus
         const char* label = "shear_modulus";
         const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxFields->subfieldInfo(label);
-        CPPUNIT_ASSERT_EQUAL(1, info.numComponents);
-        CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.metadata.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(_mydata->pressureScale, info.metadata.scale);
-        CPPUNIT_ASSERT_EQUAL(false, info.metadata.dimsOkay);
+        CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
+        CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
+        CPPUNIT_ASSERT_EQUAL(pressureScale, info.description.scale);
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
@@ -173,11 +181,10 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
     { // bulk modulus
         const char* label = "bulk_modulus";
         const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxFields->subfieldInfo(label);
-        CPPUNIT_ASSERT_EQUAL(1, info.numComponents);
-        CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.metadata.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(_mydata->pressureScale, info.metadata.scale);
-        CPPUNIT_ASSERT_EQUAL(false, info.metadata.dimsOkay);
+        CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
+        CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
+        CPPUNIT_ASSERT_EQUAL(pressureScale, info.description.scale);
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
@@ -186,13 +193,11 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
 
     if (_mydata->useBodyForce) { // body force
         const char* label = "body_force";
-        const PylithReal forceScale = _mydata->densityScale * _mydata->lengthScale / (_mydata->timeScale * _mydata->timeScale);
         const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxFields->subfieldInfo(label);
-        CPPUNIT_ASSERT_EQUAL(2, info.numComponents);
-        CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::VECTOR, info.metadata.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(forceScale, info.metadata.scale);
-        CPPUNIT_ASSERT_EQUAL(false, info.metadata.dimsOkay);
+        CPPUNIT_ASSERT_EQUAL(size_t(2), info.description.numComponents);
+        CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::VECTOR, info.description.vectorFieldType);
+        CPPUNIT_ASSERT_EQUAL(forceScale, info.description.scale);
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
@@ -202,11 +207,10 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
     if (_mydata->useReferenceState) { // reference stress and strain
         const char* label = "reference_stress";
         const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxFields->subfieldInfo(label);
-        CPPUNIT_ASSERT_EQUAL(4, info.numComponents);
-        CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.metadata.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(_mydata->pressureScale, info.metadata.scale);
-        CPPUNIT_ASSERT_EQUAL(false, info.metadata.dimsOkay);
+        CPPUNIT_ASSERT_EQUAL(size_t(4), info.description.numComponents);
+        CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
+        CPPUNIT_ASSERT_EQUAL(pressureScale, info.description.scale);
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
@@ -216,11 +220,10 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldsSetup
     if (_mydata->useReferenceState) { // referece stress and strain
         const char* label = "reference_strain";
         const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxFields->subfieldInfo(label);
-        CPPUNIT_ASSERT_EQUAL(4, info.numComponents);
-        CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.metadata.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(1.0, info.metadata.scale);
-        CPPUNIT_ASSERT_EQUAL(false, info.metadata.dimsOkay);
+        CPPUNIT_ASSERT_EQUAL(size_t(4), info.description.numComponents);
+        CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
+        CPPUNIT_ASSERT_EQUAL(1.0, info.description.scale);
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
@@ -254,6 +257,8 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
 
     CPPUNIT_ASSERT(_mymaterial);
     CPPUNIT_ASSERT(_mesh);
+    CPPUNIT_ASSERT(_mydata->normalizer);
+    const PylithReal lengthScale = _mydata->normalizer->lengthScale();
 
     { // Test getting density field.
         pylith::topology::Field density(*_mesh);
@@ -267,7 +272,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
 
         pylith::topology::FieldQuery queryDensity(density);
         queryDensity.queryFn("density", pylith::topology::FieldQuery::dbQueryGeneric);
-        queryDensity.openDB(_auxDB, _mydata->lengthScale);
+        queryDensity.openDB(_auxDB, lengthScale);
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
@@ -291,7 +296,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
 
         pylith::topology::FieldQuery queryBulkModulus(bulkModulus);
         queryBulkModulus.queryFn("bulk_modulus", pylith::materials::Query::dbQueryBulkModulus);
-        queryBulkModulus.openDB(_auxDB, _mydata->lengthScale);
+        queryBulkModulus.openDB(_auxDB, lengthScale);
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
@@ -328,69 +333,70 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_data(void)
 
 
 // ----------------------------------------------------------------------
-// Setup and populate solution field.
+// Setup and populate solution fields.
 void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_setupSolutionField(pylith::topology::Field* field,
-                                                                                 const char* dbFilename,
-                                                                                 const bool isClone)
-{ // _setupSolutionField
-    CPPUNIT_ASSERT(field);
-    CPPUNIT_ASSERT(dbFilename);
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_setupSolutionFields(void)
+{ // _setupSolutionFields
+    PYLITH_METHOD_BEGIN;
 
-    // Create subfields.
-    const bool isDot = strstr(field->label(), "dot") != NULL;
-    std::string subfields[2];
+    CPPUNIT_ASSERT(_solutionFields);
 
-    const int numSolnFields = _mydata->numSolnFields;
-    if (isDot) {
-        subfields[0] = "displacement_dot";
-        subfields[1] = "velocity_dot";
-    } else {
-        subfields[0] = "displacement";
-        subfields[1] = "velocity";
-    } // if/else
+    CPPUNIT_ASSERT( (!_mydata->isExplicit && 1 == _mydata->numSolnFields) ||
+                    (_mydata->isExplicit && 2 == _mydata->numSolnFields) );
+    CPPUNIT_ASSERT(_mydata->solnDiscretizations);
+    CPPUNIT_ASSERT(_mydata->normalizer);
 
-    if (!isClone) {
-        CPPUNIT_ASSERT(_mydata->solnDiscretizations);
-        const pylith::topology::Field::DiscretizeInfo& dispFEInfo = _mydata->solnDiscretizations[0];
-        if (isDot) {
-            const char* componentsDisp[2] = {"displacement_dot_x", "displacement_dot_y"};
-            field->subfieldAdd(subfields[0].c_str(), componentsDisp, _mydata->dimension, topology::Field::VECTOR, dispFEInfo.basisOrder, dispFEInfo.quadOrder, dispFEInfo.isBasisContinuous, dispFEInfo.feSpace, _mydata->lengthScale);
-            if (numSolnFields > 1) {
-                const pylith::topology::Field::DiscretizeInfo& velFEInfo = _mydata->solnDiscretizations[1];
-                const char* componentsVel[2] = {"velocity_dot_x", "velocity_dot_y"};
-                field->subfieldAdd(
-                    subfields[1].c_str(), componentsVel, _mydata->dimension, topology::Field::VECTOR, velFEInfo.basisOrder, velFEInfo.quadOrder, velFEInfo.isBasisContinuous, velFEInfo.feSpace, _mydata->lengthScale / _mydata->timeScale);
-            } // if
-        } else {
-            const char* componentsDisp[2] = {"displacement_x", "displacement_y"};
-            field->subfieldAdd(subfields[0].c_str(), componentsDisp, _mydata->dimension, topology::Field::VECTOR, dispFEInfo.basisOrder, dispFEInfo.quadOrder, dispFEInfo.isBasisContinuous, dispFEInfo.feSpace, _mydata->lengthScale);
-            if (numSolnFields > 1) {
-                const pylith::topology::Field::DiscretizeInfo& velFEInfo = _mydata->solnDiscretizations[1];
-                const char* componentsVel[2] = {"velocity_x", "velocity_y"};
-                field->subfieldAdd(
-                    subfields[1].c_str(), componentsVel, _mydata->dimension, topology::Field::VECTOR, velFEInfo.basisOrder, velFEInfo.quadOrder, velFEInfo.isBasisContinuous, velFEInfo.feSpace, _mydata->lengthScale / _mydata->timeScale);
-            } // if
-        } // if/else
-        field->subfieldsSetup();
-    } // if
-    field->allocate();
-    field->zeroLocal();
+    spatialdata::spatialdb::SimpleGridDB solutionDB;
+    solutionDB.filename(_mydata->solnDBFilename);
+    solutionDB.label("solution database");
+    solutionDB.queryType(spatialdata::spatialdb::SimpleGridDB::LINEAR);
 
-    spatialdata::spatialdb::SimpleGridDB fieldDB;
-    fieldDB.filename(dbFilename);
-    fieldDB.label("IsotropicLinearElasciticityPlaneStrain solution database");
-    fieldDB.queryType(spatialdata::spatialdb::SimpleGridDB::LINEAR);
+    { // Solution @ t1
+        pylith::topology::Field& solution = _solutionFields->get("solution");
+        pylith::problems::SolutionFactory factory(solution, *_mydata->normalizer);
+        factory.displacement(_mydata->solnDiscretizations[0]);
+        if (_mydata->isExplicit) {
+            factory.velocity(_mydata->solnDiscretizations[1]);
+        } // if
+        solution.subfieldsSetup();
+        solution.allocate();
+        factory.setValues(&solutionDB);
+    } // Solution @ t1
 
-    pylith::topology::FieldQuery queryField(*field);
-    queryField.queryFn(subfields[0].c_str(), pylith::topology::FieldQuery::dbQueryGeneric);
-    if (numSolnFields > 1) {
-        queryField.queryFn(subfields[1].c_str(), pylith::topology::FieldQuery::dbQueryGeneric);
-    } // if
-    queryField.openDB(&fieldDB, _mydata->lengthScale);
-    queryField.queryDB();
-    queryField.closeDB(&fieldDB);
-} // _setupSolutionField
+    { // Time derivative of solution @ t1
+        pylith::topology::Field& solutionDot = _solutionFields->get("solution_dot");
+        pylith::problems::SolutionFactory factory(solutionDot, *_mydata->normalizer);
+        factory.displacementDot(_mydata->solnDiscretizations[0]);
+        if (_mydata->isExplicit) {
+            factory.velocityDot(_mydata->solnDiscretizations[1]);
+        } // if
+        solutionDot.subfieldsSetup();
+        solutionDot.allocate();
+        factory.setValues(&solutionDB);
+    } // Time derivative of solution @ t1
+
+    spatialdata::spatialdb::SimpleGridDB perturbationDB;
+    perturbationDB.filename(_mydata->pertDBFilename);
+    perturbationDB.label("perturbation database");
+    perturbationDB.queryType(spatialdata::spatialdb::SimpleGridDB::LINEAR);
+
+    { // Perturbation @ t2
+        pylith::topology::Field& perturbation = _solutionFields->get("perturbation");
+        pylith::problems::SolutionFactory factory(perturbation, *_mydata->normalizer);
+        perturbation.cloneSection(_solutionFields->get("solution"));
+        perturbation.allocate();
+        factory.setValues(&perturbationDB);
+    } // Perturbation @ t2
+
+    { // Time derivative of solution @ t2
+        pylith::topology::Field& perturbationDot = _solutionFields->get("perturbation_dot");
+        pylith::problems::SolutionFactory factory(perturbationDot, *_mydata->normalizer);
+        perturbationDot.cloneSection(_solutionFields->get("solution_dot"));
+        perturbationDot.allocate();
+        factory.setValues(&perturbationDB);
+    } // Time derivative of solution @ t2
+
+} // _setupSolutionFields
 
 // ----------------------------------------------------------------------
 // Constructor

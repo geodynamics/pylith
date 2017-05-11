@@ -20,6 +20,9 @@ subpackage = problems
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
+	Problem.hh \
+	TimeDependent.hh \
+	SolutionFactory.hh \
 	Formulation.hh \
 	Explicit.hh \
 	Implicit.hh \

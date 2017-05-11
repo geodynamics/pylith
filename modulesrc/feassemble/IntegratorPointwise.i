@@ -89,7 +89,7 @@ public:
          * @return Discretization information for auxiliary subfield. If
          * discretization information was not set, then use "default".
          */
-        const pylith::topology::FieldBase::DiscretizeInfo& auxFieldDiscretization(const char* name) const;
+        const pylith::topology::FieldBase::Discretization& auxFieldDiscretization(const char* name) const;
 
         /** Check whether RHS Jacobian needs to be recomputed.
          *

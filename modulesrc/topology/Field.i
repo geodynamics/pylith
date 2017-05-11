@@ -61,30 +61,6 @@ void label(const char* value);
  */
 const char* label(void) const;
 
-/** Set vector field type
- *
- * @param value Type of vector field.
- */
-void vectorFieldType(const pylith::topology::FieldBase::VectorFieldEnum value);
-
-/** Get vector field type
- *
- * @returns Type of vector field.
- */
-pylith::topology::FieldBase::VectorFieldEnum vectorFieldType(void) const;
-
-/** Set scale for dimensionalizing field.
- *
- * @param value Scale associated with field.
- */
-void scale(const PylithScalar value);
-
-/** Get scale for dimensionalizing field.
- *
- * @returns Scale associated with field.
- */
-PylithScalar scale(void) const;
-
 /** Set flag indicating whether it is okay to dimensionalize field.
  *
  * @param value True if it is okay to dimensionalize field.
@@ -153,12 +129,12 @@ void cloneSection(const Field& src);
 
 /** Add subfield to current field.
  *
- * Should be followed by calls to subfieldsSetup() and subfieldSetDof().
+ * Should be followed by calls to subfieldsSetup() and allocate().
  *
- * @param name Name of subfield.
- * @param components Names of components in subfield.
- * @param numComponents Number of components in subfield.
- * @param fieldType Type of vector field.
+ * @param[in] name Name of subfield.
+ * @param[in] fieldType Type of vector field.
+ * @param[in] components Names of components in subfield.
+ * @param[in] numComponents Number of components in subfield.
  * @param[in] basisOrder Polynomial order for basis.
  * @param[in] quadOrder Order of quadrature rule.
  * @param[in] isBasisContinuous True if basis is continuous.
@@ -169,14 +145,14 @@ void cloneSection(const Field& src);
     (const char* components[], const int numComponents)
 };
 void subfieldAdd(const char *name,
+                 const VectorFieldEnum fieldType,
                  const char* components[],
                  const int numComponents,
-                 const VectorFieldEnum fieldType,
+                 const double scale,
                  const int basisOrder,
                  const int quadOrder,
                  const bool isBasisContinuous,
-		         const SpaceEnum feSpace,
-                 const double scale);
+		 const SpaceEnum feSpace);
 %clear(const char* components[], const int numComponents);
 
 /** Setup sections for subfields.

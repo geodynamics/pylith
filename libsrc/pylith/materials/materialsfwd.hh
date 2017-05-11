@@ -28,46 +28,47 @@
 #define pylith_materials_materialsfwd_hh
 
 namespace pylith {
-  namespace materials {
+    namespace materials {
 
-    class Metadata;
-    class ElasticMetadata;
+        class Metadata;
+        class ElasticMetadata;
 
-    class Material;
+        class Material;
 
-    class ElasticMaterial;
-    class ElasticStrain1D;
-    class ElasticStress1D;
-    class ElasticPlaneStrain;
-    class ElasticPlaneStress;
-    class ElasticIsotropic3D;
-    class MaxwellIsotropic3D;
-    class MaxwellPlaneStrain;
-    class GenMaxwellIsotropic3D;
-    class GenMaxwellPlaneStrain;
-    class GenMaxwellQpQsIsotropic3D;
-    class PowerLaw3D;
-    class PowerLawPlaneStrain;
-    class DruckerPrager3D;
-    class DruckerPragerPlaneStrain;
+        class ElasticMaterial;
+        class ElasticStrain1D;
+        class ElasticStress1D;
+        class ElasticPlaneStrain;
+        class ElasticPlaneStress;
+        class ElasticIsotropic3D;
+        class MaxwellIsotropic3D;
+        class MaxwellPlaneStrain;
+        class GenMaxwellIsotropic3D;
+        class GenMaxwellPlaneStrain;
+        class GenMaxwellQpQsIsotropic3D;
+        class PowerLaw3D;
+        class PowerLawPlaneStrain;
+        class DruckerPrager3D;
+        class DruckerPragerPlaneStrain;
 
-    class EffectiveStress;
-    class ViscoelasticMaxwell;
+        class EffectiveStress;
+        class ViscoelasticMaxwell;
 
-    // New stuff
-    class MaterialNew;
-    
-    class IsotropicLinearElasticityPlaneStrain;
-    class IsotropicLinearMaxwellPlaneStrain;
-    class IsotropicLinearIncompElasticityPlaneStrain;
+        // New stuff
+        class MaterialNew;
+        class AuxiliaryFactory;
 
-    class Query;
+        class IsotropicLinearElasticityPlaneStrain;
+        class IsotropicLinearMaxwellPlaneStrain;
+        class IsotropicLinearIncompElasticityPlaneStrain;
 
-  } // materials
+        class Query;
+
+    } // materials
 } // pylith
 
 
 #endif // pylith_materials_materialsfwd_hh
 
 
-// End of file 
+// End of file

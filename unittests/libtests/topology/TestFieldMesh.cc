@@ -104,20 +104,10 @@ pylith::topology::TestFieldMesh::testGeneralAccessors(void)
     _field->label(label.c_str());
     CPPUNIT_ASSERT_EQUAL(label, std::string(_field->label()));
 
-    // Test vectorFieldType()
-    _field->vectorFieldType(FieldBase::SCALAR);
-    CPPUNIT_ASSERT_EQUAL(FieldBase::SCALAR, _field->_metadata.vectorFieldType);
-
-    // Test scale()
-    const PylithScalar scale = 2.0;
-    _field->scale(scale);
-    const PylithScalar tolerance = 1.0e-6;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(scale, _field->_metadata.scale, tolerance);
-
     // Test addDimensionOkay()
-    CPPUNIT_ASSERT_EQUAL(false, _field->_metadata.dimsOkay);
+    CPPUNIT_ASSERT_EQUAL(false, _field->_dimsOkay);
     _field->dimensionalizeOkay(true);
-    CPPUNIT_ASSERT_EQUAL(true, _field->_metadata.dimsOkay);
+    CPPUNIT_ASSERT_EQUAL(true, _field->_dimsOkay);
 
     // Test spaceDim()
     CPPUNIT_ASSERT_EQUAL(_data->cellDim, _field->spaceDim());
@@ -425,10 +415,10 @@ pylith::topology::TestFieldMesh::testSubfieldAccessors(void)
         const Field::SubfieldInfo& infoA = _field->subfieldInfo(_data->subfieldAName);
         CPPUNIT_ASSERT_EQUAL(0, infoA.index);
         CPPUNIT_ASSERT_EQUAL(_data->subfieldANumComponents, infoA.numComponents);
-        CPPUNIT_ASSERT_EQUAL(std::string(_data->subfieldAName), infoA.metadata.label);
-        CPPUNIT_ASSERT_EQUAL(_data->subfieldAType, infoA.metadata.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(_data->subfieldAScale, infoA.metadata.scale);
-        const string_vector& componentNames = infoA.metadata.componentNames;
+        CPPUNIT_ASSERT_EQUAL(std::string(_data->subfieldAName), infoA.description.label);
+        CPPUNIT_ASSERT_EQUAL(_data->subfieldAType, infoA.description.vectorFieldType);
+        CPPUNIT_ASSERT_EQUAL(_data->subfieldAScale, infoA.description.scale);
+        const string_vector& componentNames = infoA.description.componentNames;
         CPPUNIT_ASSERT_EQUAL(size_t(_data->subfieldANumComponents), componentNames.size());
         for (int i = 0; i < _data->subfieldANumComponents; ++i) {
             CPPUNIT_ASSERT_EQUAL(std::string(_data->subfieldAComponents[i]), componentNames[i]);
@@ -440,10 +430,10 @@ pylith::topology::TestFieldMesh::testSubfieldAccessors(void)
     { // Test subfieldInfo() for subfield B.
         const Field::SubfieldInfo& infoB = _field->subfieldInfo(_data->subfieldBName);
         CPPUNIT_ASSERT_EQUAL(_data->subfieldBNumComponents, infoB.numComponents);
-        CPPUNIT_ASSERT_EQUAL(std::string(_data->subfieldBName), infoB.metadata.label);
-        CPPUNIT_ASSERT_EQUAL(_data->subfieldBType, infoB.metadata.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(_data->subfieldBScale, infoB.metadata.scale);
-        const string_vector& componentNames = infoB.metadata.componentNames;
+        CPPUNIT_ASSERT_EQUAL(std::string(_data->subfieldBName), infoB.description.label);
+        CPPUNIT_ASSERT_EQUAL(_data->subfieldBType, infoB.description.vectorFieldType);
+        CPPUNIT_ASSERT_EQUAL(_data->subfieldBScale, infoB.description.scale);
+        const string_vector& componentNames = infoB.description.componentNames;
         CPPUNIT_ASSERT_EQUAL(size_t(_data->subfieldBNumComponents), componentNames.size());
         for (int i = 0; i < _data->subfieldBNumComponents; ++i) {
             CPPUNIT_ASSERT_EQUAL(std::string(_data->subfieldBComponents[i]), componentNames[i]);
@@ -473,9 +463,9 @@ pylith::topology::TestFieldMesh::testClear(void)
 
     field.clear();
 
-    CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0), field._metadata.scale);
-    CPPUNIT_ASSERT_EQUAL(Field::OTHER, field._metadata.vectorFieldType);
-    CPPUNIT_ASSERT_EQUAL(false, field._metadata.dimsOkay);
+    CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0), field._description.scale);
+    CPPUNIT_ASSERT_EQUAL(Field::OTHER, field._description.vectorFieldType);
+    CPPUNIT_ASSERT_EQUAL(false, field._description.dimsOkay);
 
     PYLITH_METHOD_END;
 } // testClear

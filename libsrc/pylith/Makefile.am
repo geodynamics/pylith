@@ -31,19 +31,11 @@ SUBDIRS = \
 lib_LTLIBRARIES = libpylith.la
 
 libpylith_la_SOURCES = \
-	bc/BoundaryCondition.cc \
-	bc/BoundaryConditionPoints.cc \
-	bc/BCIntegratorSubMesh.cc \
-	bc/TimeDependent.cc \
-	bc/TimeDependentPoints.cc \
-	bc/DirichletBC.cc \
-	bc/DirichletBoundary.cc \
-	bc/Neumann.cc \
-	bc/AbsorbingDampers.cc \
-	bc/PointForce.cc \
 	bc/BoundaryConditionNew.cc \
 	bc/DirichletNew.cc \
 	bc/DirichletTimeDependent.cc \
+	bc/DirichletAuxiliaryFactory.cc \
+	bc/TimeDependent.cc \
 	faults/Fault.cc \
 	faults/TopologyOps.cc \
 	faults/CohesiveTopology.cc \
@@ -121,6 +113,7 @@ libpylith_la_SOURCES = \
 	materials/DruckerPrager3D.cc \
 	materials/DruckerPragerPlaneStrain.cc \
 	materials/MaterialNew.cc \
+	materials/AuxiliaryFactory.cc \
 	materials/IsotropicLinearElasticityPlaneStrain.cc \
 	materials/IsotropicLinearMaxwellPlaneStrain.cc \
 	materials/IsotropicLinearIncompElasticityPlaneStrain.cc \
@@ -156,6 +149,7 @@ libpylith_la_SOURCES = \
 	problems/SolverLumped.cc \
 	problems/Problem.cc \
 	problems/TimeDependent.cc \
+	problems/SolutionFactory.cc \
 	topology/FieldBase.cc \
 	topology/Jacobian.cc \
 	topology/Mesh.cc \
@@ -170,6 +164,7 @@ libpylith_la_SOURCES = \
 	topology/RefineUniform.cc \
 	utils/EventLogger.cc \
 	utils/PyreComponent.cc \
+	utils/GenericComponent.cc \
 	utils/PylithVersion.cc \
 	utils/PetscVersion.cc \
 	utils/DependenciesVersion.cc \

@@ -20,7 +20,8 @@
 
 #include "TestIsotropicLinearElasticityPlaneStrain.hh" // Implementation of cases
 
-#include "pylith/topology/Field.hh" // USES pylith::topology::Field::DiscretizeInfo
+#include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 // ----------------------------------------------------------------------
 namespace pylith {
@@ -33,50 +34,48 @@ protected:
                 TestIsotropicLinearElasticityPlaneStrain::setUp();
                 _mydata = new TestIsotropicLinearElasticityPlaneStrain_Data(); CPPUNIT_ASSERT(_mydata);
 
-                _mydata->numSolnFields = 1;
+                // dimension set in base class.
                 _mydata->useInertia = false;
                 _mydata->useBodyForce = false;
                 _mydata->useGravity = false;
                 _mydata->useReferenceState = false;
 
+                // meshFilename set in derived class.
                 _mydata->materialLabel = "IsotropicLinearElascitity";
                 _mydata->materialId = 24;
                 _mydata->boundaryLabel = "boundary";
 
-                _mydata->auxDBFilename = "data/IsotropicLinearElasticityPlaneStrain_UniformStrain_aux.spatialdb";
-                _mydata->solnDBFilename = "data/IsotropicLinearElasticityPlaneStrain_UniformStrain_soln.spatialdb";
-                _mydata->pertDBFilename = "data/IsotropicLinearElasticityPlaneStrain_UniformStrain_pert.spatialdb";
-
-                _mydata->lengthScale = 1.0e+03;
-                _mydata->timeScale = 2.0;
-                _mydata->densityScale = 3.0e+3;
-                _mydata->pressureScale = 2.25e+10;
+                CPPUNIT_ASSERT(_mydata->normalizer);
+                _mydata->normalizer->lengthScale(1.0e+03);
+                _mydata->normalizer->timeScale(2.0);
+                _mydata->normalizer->densityScale(3.0e+3);
+                _mydata->normalizer->pressureScale(2.25e+10);
 
                 _mydata->t = 1.0;
                 _mydata->dt = 0.05;
                 _mydata->tshift = 1.0 / _mydata->dt;
 
+                // solnDiscretizations set in derived class.
+                _mydata->solnDBFilename = "data/IsotropicLinearElasticityPlaneStrain_UniformStrain_soln.spatialdb";
+                _mydata->pertDBFilename = "data/IsotropicLinearElasticityPlaneStrain_UniformStrain_pert.spatialdb";
+
                 _mydata->numAuxFields = 3;
                 static const char* _auxFields[3] = {"density", "shear_modulus", "bulk_modulus"};
                 _mydata->auxFields = _auxFields;
-                static const pylith::topology::Field::DiscretizeInfo _auxDiscretizations[3] = {
+                static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
                     {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // density
                     {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
                     {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
                 };
-                _mydata->auxDiscretizations = const_cast<pylith::topology::Field::DiscretizeInfo*>(_auxDiscretizations);
+                _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
+                _mydata->auxDBFilename = "data/IsotropicLinearElasticityPlaneStrain_UniformStrain_aux.spatialdb";
 
             } // setUp
 
         }; // TestIsotropicLinearElasticityPlaneStrain_UniformStrain
 
-    } // materials
-} // pylith
 
-
-// ----------------------------------------------------------------------
-namespace pylith {
-    namespace materials {
+        // ----------------------------------------------------------------------
 
         class TestIsotropicLinearElasticityPlaneStrain_UniformStrain_TriP1 : public TestIsotropicLinearElasticityPlaneStrain_UniformStrain {
 
@@ -89,10 +88,11 @@ namespace pylith {
 
                 _mydata->meshFilename = "data/tri_small.mesh";
 
-                static const pylith::topology::Field::DiscretizeInfo _solnDiscretizations[1] = {
+                _mydata->numSolnFields = 1;
+                static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
                     {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // disp
                 };
-                _mydata->solnDiscretizations = const_cast<pylith::topology::Field::DiscretizeInfo*>(_solnDiscretizations);
+                _mydata->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
                 _initializeMin();
             } // setUp
@@ -100,14 +100,8 @@ namespace pylith {
         }; // TestIsotropicLinearElasticityPlaneStrain_UniformStrain_TriP1
         CPPUNIT_TEST_SUITE_REGISTRATION(TestIsotropicLinearElasticityPlaneStrain_UniformStrain_TriP1);
 
-    } // materials
-} // pylith
 
-
-// ----------------------------------------------------------------------
-namespace pylith {
-    namespace materials {
-
+        // ----------------------------------------------------------------------
         class TestIsotropicLinearElasticityPlaneStrain_UniformStrain_TriP2 : public TestIsotropicLinearElasticityPlaneStrain_UniformStrain {
 
             CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticityPlaneStrain_UniformStrain_TriP2,  TestIsotropicLinearElasticityPlaneStrain);
@@ -118,17 +112,19 @@ namespace pylith {
                 CPPUNIT_ASSERT(_mydata);
 
                 _mydata->meshFilename = "data/tri_small.mesh";
-                static const pylith::topology::Field::DiscretizeInfo _solnDiscretizations[1] = {
+
+                _mydata->numSolnFields = 1;
+                static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
                     {2, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // disp
                 };
-                _mydata->solnDiscretizations = const_cast<pylith::topology::Field::DiscretizeInfo*>(_solnDiscretizations);
+                _mydata->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-                static const pylith::topology::Field::DiscretizeInfo _auxDiscretizations[3] = {
+                static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
                     {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // density
                     {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
                     {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
                 };
-                _mydata->auxDiscretizations = const_cast<pylith::topology::Field::DiscretizeInfo*>(_auxDiscretizations);
+                _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
                 _initializeMin();
             } // setUp
@@ -136,14 +132,8 @@ namespace pylith {
         }; // TestIsotropicLinearElasticityPlaneStrain_UniformStrain_TriP2
         CPPUNIT_TEST_SUITE_REGISTRATION(TestIsotropicLinearElasticityPlaneStrain_UniformStrain_TriP2);
 
-    } // materials
-} // pylith
 
-
-// ----------------------------------------------------------------------
-namespace pylith {
-    namespace materials {
-
+        // ----------------------------------------------------------------------
         class TestIsotropicLinearElasticityPlaneStrain_UniformStrain_QuadP1 : public TestIsotropicLinearElasticityPlaneStrain_UniformStrain { // TestIsotropicLinearElasticityPlaneStrain_UniformStrain_QuadP1
 
             CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticityPlaneStrain_UniformStrain_QuadP1,  TestIsotropicLinearElasticityPlaneStrain);
@@ -155,17 +145,18 @@ namespace pylith {
 
                 _mydata->meshFilename = "data/quad_aligned.mesh";
 
-                static const pylith::topology::Field::DiscretizeInfo _solnDiscretizations[1] = {
+                _mydata->numSolnFields = 1;
+                static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
                     {1, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // disp
                 };
-                _mydata->solnDiscretizations = const_cast<pylith::topology::Field::DiscretizeInfo*>(_solnDiscretizations);
+                _mydata->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-                static const pylith::topology::Field::DiscretizeInfo _auxDiscretizations[3] = {
+                static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
                     {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // density
                     {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
                     {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
                 };
-                _mydata->auxDiscretizations = const_cast<pylith::topology::Field::DiscretizeInfo*>(_auxDiscretizations);
+                _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
                 _initializeMin();
             } // setUp
@@ -174,14 +165,7 @@ namespace pylith {
         CPPUNIT_TEST_SUITE_REGISTRATION(TestIsotropicLinearElasticityPlaneStrain_UniformStrain_QuadP1);
 
 
-    } // materials
-} // pylith
-
-
-// ----------------------------------------------------------------------
-namespace pylith {
-    namespace materials {
-
+        // ----------------------------------------------------------------------
         class TestIsotropicLinearElasticityPlaneStrain_UniformStrain_QuadP2 : public TestIsotropicLinearElasticityPlaneStrain_UniformStrain { // TestIsotropicLinearElasticityPlaneStrain_UniformStrain_QuadP2
 
             CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticityPlaneStrain_UniformStrain_QuadP2,  TestIsotropicLinearElasticityPlaneStrain);
@@ -192,17 +176,19 @@ namespace pylith {
                 CPPUNIT_ASSERT(_mydata);
 
                 _mydata->meshFilename = "data/quad_aligned.mesh";
-                static const pylith::topology::Field::DiscretizeInfo _solnDiscretizations[1] = {
+
+                _mydata->numSolnFields = 1;
+                static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
                     {2, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // disp
                 };
-                _mydata->solnDiscretizations = const_cast<pylith::topology::Field::DiscretizeInfo*>(_solnDiscretizations);
+                _mydata->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-                static const pylith::topology::Field::DiscretizeInfo _auxDiscretizations[3] = {
+                static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
                     {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // density
                     {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
                     {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
                 };
-                _mydata->auxDiscretizations = const_cast<pylith::topology::Field::DiscretizeInfo*>(_auxDiscretizations);
+                _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
                 _initializeMin();
             } // setUp

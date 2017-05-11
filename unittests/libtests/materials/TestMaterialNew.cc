@@ -26,14 +26,14 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
-#include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
-#include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
+#include "spatialdata/spatialdb/SimpleGridDB.hh" // USES SimpleDB
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -44,11 +44,8 @@
 void
 pylith::materials::TestMaterialNew::setUp(void)
 { // setUp
-    _mesh = new topology::Mesh();
-    _solution1 = NULL;
-    _solution2 = NULL;
-    _solution1Dot = NULL;
-    _solution2Dot = NULL;
+    _mesh = new pylith::topology::Mesh();CPPUNIT_ASSERT(_mesh);
+    _solutionFields = NULL;
     _auxDB = NULL;
 } // setUp
 
@@ -58,10 +55,7 @@ pylith::materials::TestMaterialNew::setUp(void)
 void
 pylith::materials::TestMaterialNew::tearDown(void)
 { // tearDown
-    delete _solution1; _solution1 = NULL;
-    delete _solution2; _solution2 = NULL;
-    delete _solution1Dot; _solution1Dot = NULL;
-    delete _solution2Dot; _solution2Dot = NULL;
+    delete _solutionFields; _solutionFields = NULL;
     delete _mesh; _mesh = NULL;
     delete _auxDB; _auxDB = NULL;
 } // tearDown
@@ -96,16 +90,16 @@ pylith::materials::TestMaterialNew::testAuxFieldsDiscretization(void)
 { // testAuxFieldsDiscretization
     PYLITH_METHOD_BEGIN;
 
-    const topology::FieldBase::DiscretizeInfo infoDefault = {-1, -1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE};
-    const topology::FieldBase::DiscretizeInfo infoA = {1, 2, false, pylith::topology::FieldBase::POLYNOMIAL_SPACE};
-    const topology::FieldBase::DiscretizeInfo infoB = {2, 2, true, pylith::topology::FieldBase::POINT_SPACE};
+    const topology::FieldBase::Discretization infoDefault = {-1, -1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE};
+    const topology::FieldBase::Discretization infoA = {1, 2, false, pylith::topology::FieldBase::POLYNOMIAL_SPACE};
+    const topology::FieldBase::Discretization infoB = {2, 2, true, pylith::topology::FieldBase::POINT_SPACE};
 
     MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
     material->auxFieldDiscretization("A", infoA.basisOrder, infoA.quadOrder, infoA.isBasisContinuous, infoA.feSpace);
     material->auxFieldDiscretization("B", infoB.basisOrder, infoB.quadOrder, infoB.isBasisContinuous, infoB.feSpace);
 
     { // A
-        const topology::FieldBase::DiscretizeInfo& test = material->auxFieldDiscretization("A");
+        const topology::FieldBase::Discretization& test = material->auxFieldDiscretization("A");
         CPPUNIT_ASSERT_EQUAL(infoA.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoA.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoA.isBasisContinuous, test.isBasisContinuous);
@@ -113,7 +107,7 @@ pylith::materials::TestMaterialNew::testAuxFieldsDiscretization(void)
     } // A
 
     { // B
-        const topology::FieldBase::DiscretizeInfo& test = material->auxFieldDiscretization("B");
+        const topology::FieldBase::Discretization& test = material->auxFieldDiscretization("B");
         CPPUNIT_ASSERT_EQUAL(infoB.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoB.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoB.isBasisContinuous, test.isBasisContinuous);
@@ -121,7 +115,7 @@ pylith::materials::TestMaterialNew::testAuxFieldsDiscretization(void)
     } // B
 
     { // C (default)
-        const topology::FieldBase::DiscretizeInfo& test = material->auxFieldDiscretization("C");
+        const topology::FieldBase::Discretization& test = material->auxFieldDiscretization("C");
         CPPUNIT_ASSERT_EQUAL(infoDefault.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.isBasisContinuous, test.isBasisContinuous);
@@ -129,7 +123,7 @@ pylith::materials::TestMaterialNew::testAuxFieldsDiscretization(void)
     } // C (default)
 
     { // default
-        const topology::FieldBase::DiscretizeInfo& test = material->auxFieldDiscretization("default");
+        const topology::FieldBase::Discretization& test = material->auxFieldDiscretization("default");
         CPPUNIT_ASSERT_EQUAL(infoDefault.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.isBasisContinuous, test.isBasisContinuous);
@@ -148,7 +142,7 @@ pylith::materials::TestMaterialNew::testAuxFieldsDB(void)
     PYLITH_METHOD_BEGIN;
 
     const std::string label = "test db";
-    spatialdata::spatialdb::SimpleDB db;
+    spatialdata::spatialdb::SimpleGridDB db;
     db.label(label.c_str());
 
     MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
@@ -187,12 +181,10 @@ pylith::materials::TestMaterialNew::testVerifyConfiguration(void)
 { // testVerifyConfiguration
     PYLITH_METHOD_BEGIN;
 
-    _initializeMin();
-
     // Call verifyConfiguration()
     MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
-    CPPUNIT_ASSERT(_solution1);
-    material->verifyConfiguration(*_solution1);
+    CPPUNIT_ASSERT(_solutionFields);
+    material->verifyConfiguration(_solutionFields->get("solution"));
 
     // Nothing to test.
 
@@ -269,7 +261,8 @@ pylith::materials::TestMaterialNew::testInitialize(void)
     PylithReal t = 0.0;
     const PetscDM dm = auxFields.dmMesh(); CPPUNIT_ASSERT(dm);
     pylith::topology::FieldQuery* query = material->_auxFieldsQuery;
-    query->openDB(_auxDB, data->lengthScale);
+    CPPUNIT_ASSERT(data->normalizer);
+    query->openDB(_auxDB, data->normalizer->lengthScale());
 
     PetscErrorCode err = DMComputeL2Diff(dm, t, query->functions(), (void**)query->contextPtrs(), auxFields.localVector(), &norm); CPPUNIT_ASSERT(!err);
     query->closeDB(_auxDB);
@@ -291,13 +284,17 @@ pylith::materials::TestMaterialNew::testComputeResidual(void)
     _initializeFull(); // includes setting up auxFields
 
     CPPUNIT_ASSERT(_mesh);
+    CPPUNIT_ASSERT(_solutionFields);
+    pylith::topology::Field& solution = _solutionFields->get("solution");
+    pylith::topology::Field& solutionDot = _solutionFields->get("solution_dot");
+
     pylith::topology::Field residualRHS(*_mesh);
-    residualRHS.cloneSection(*_solution1);
+    residualRHS.cloneSection(solution);
     residualRHS.label("residual RHS");
     residualRHS.allocate();
 
     pylith::topology::Field residualLHS(*_mesh);
-    residualLHS.cloneSection(*_solution1);
+    residualLHS.cloneSection(solution);
     residualLHS.label("residual LHS");
     residualLHS.allocate();
 
@@ -306,14 +303,16 @@ pylith::materials::TestMaterialNew::testComputeResidual(void)
 
     const PylithReal t = data->t;
     const PylithReal dt = data->dt;
-    material->computeRHSResidual(&residualRHS, t, dt, *_solution1);
-    material->computeLHSResidual(&residualLHS, t, dt, *_solution1, *_solution1Dot);
+    material->computeRHSResidual(&residualRHS, t, dt, solution);
+    material->computeLHSResidual(&residualLHS, t, dt, solution, solutionDot);
 
     // We don't use Dirichlet BC, so we must manually zero out the residual values for constrained DOF.
     _zeroBoundary(&residualRHS);
     _zeroBoundary(&residualLHS);
 
-#if 0 // DEBUGGING
+#if 1 // DEBUGGING
+    solution.view("SOLUTION"); // DEBUGGING
+    solutionDot.view("SOLUTION_DOT"); // DEBUGGING
     residualRHS.view("RESIDUAL RHS"); // DEBUGGING
     residualLHS.view("RESIDUAL LHS"); // DEBUGGING
 #endif
@@ -343,21 +342,25 @@ pylith::materials::TestMaterialNew::testComputeRHSJacobian(void)
 { // testComputeRHSJacobian
     PYLITH_METHOD_BEGIN;
 
-    // Create linear problem (MMS) with two solutions, s_1 and s_2.
+    // Create linear problem (MMS) with two trial solutions, s and p.
     //
-    // Check that Jg(s_1)*(s_2 - s_1) = G(s_2) - G(s_1).
+    // Check that Jg(s)*(p - s) = G(p) - G(s).
 
     // Call initialize()
-    _initializeFull(); // includes setting up auxFields
+    _initializeFull();
 
     CPPUNIT_ASSERT(_mesh);
+    CPPUNIT_ASSERT(_solutionFields);
+    pylith::topology::Field& solution = _solutionFields->get("solution");
+    pylith::topology::Field& perturbation = _solutionFields->get("perturbation");
+
     pylith::topology::Field residual1(*_mesh);
-    residual1.cloneSection(*_solution1);
+    residual1.cloneSection(solution);
     residual1.label("residual1");
     residual1.allocate();
 
     pylith::topology::Field residual2(*_mesh);
-    residual2.cloneSection(*_solution2);
+    residual2.cloneSection(perturbation);
     residual2.label("residual2");
     residual2.allocate();
 
@@ -371,13 +374,13 @@ pylith::materials::TestMaterialNew::testComputeRHSJacobian(void)
 
     const PylithReal t = data->t;
     const PylithReal dt = data->dt;
-    material->computeRHSResidual(&residual1, t, dt, *_solution1);
-    material->computeRHSResidual(&residual2, t, dt, *_solution2);
+    material->computeRHSResidual(&residual1, t, dt, solution);
+    material->computeRHSResidual(&residual2, t, dt, perturbation);
 
     //residual1.view("RESIDUAL 1 RHS"); // DEBUGGING
     //residual2.view("RESIDUAL 1 RHS"); // DEBUGGING
 
-    // Check that J(s_1)*(s_2 - s_1) = G(s_2) - G(s_1).
+    // Check that J(s)*(p - s) = G(p) - G(s).
 
     PetscErrorCode err;
 
@@ -386,16 +389,16 @@ pylith::materials::TestMaterialNew::testComputeRHSJacobian(void)
     err = VecWAXPY(residualVec, -1.0, residual1.localVector(), residual2.localVector()); CPPUNIT_ASSERT(!err);
 
     PetscVec solnIncrVec = NULL;
-    err = VecDuplicate(_solution1->localVector(), &solnIncrVec); CPPUNIT_ASSERT(!err);
-    err = VecWAXPY(solnIncrVec, -1.0, _solution1->localVector(), _solution2->localVector()); CPPUNIT_ASSERT(!err);
+    err = VecDuplicate(solution.localVector(), &solnIncrVec); CPPUNIT_ASSERT(!err);
+    err = VecWAXPY(solnIncrVec, -1.0, solution.localVector(), perturbation.localVector()); CPPUNIT_ASSERT(!err);
 
     // Compute Jacobian
     PetscMat jacobianMat = NULL;
-    err = DMCreateMatrix(_solution1->dmMesh(), &jacobianMat); CPPUNIT_ASSERT(!err);
+    err = DMCreateMatrix(solution.dmMesh(), &jacobianMat); CPPUNIT_ASSERT(!err);
     err = MatZeroEntries(jacobianMat); CPPUNIT_ASSERT(!err);
     PetscMat precondMat = jacobianMat; // Use Jacobian == preconditioner
 
-    material->computeRHSJacobian(jacobianMat, precondMat, t, dt, *_solution1);
+    material->computeRHSJacobian(jacobianMat, precondMat, t, dt, solution);
     CPPUNIT_ASSERT_EQUAL(false, material->needNewRHSJacobian());
     err = MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY); PYLITH_CHECK_ERROR(err);
     err = MatAssemblyEnd(jacobianMat, MAT_FINAL_ASSEMBLY); PYLITH_CHECK_ERROR(err);
@@ -407,7 +410,7 @@ pylith::materials::TestMaterialNew::testComputeRHSJacobian(void)
     err = VecScale(solnIncrVec, -1.0); CPPUNIT_ASSERT(!err);
     err = MatMultAdd(jacobianMat, solnIncrVec, residualVec, resultVec); CPPUNIT_ASSERT(!err);
 
-#if 0 // DEBUGGING
+#if 1 // DEBUGGING
     std::cout << "SOLN INCR" << std::endl;
     VecView(solnIncrVec, PETSC_VIEWER_STDOUT_SELF);
     std::cout << "G2-G1" << std::endl;
@@ -452,13 +455,19 @@ pylith::materials::TestMaterialNew::testComputeLHSJacobianImplicit(void)
     _initializeFull(); // includes setting up auxFields
 
     CPPUNIT_ASSERT(_mesh);
+    CPPUNIT_ASSERT(_solutionFields);
+    pylith::topology::Field& solution = _solutionFields->get("solution");
+    pylith::topology::Field& solutionDot = _solutionFields->get("solution_dot");
+    pylith::topology::Field& perturbation = _solutionFields->get("perturbation");
+    pylith::topology::Field& perturbationDot = _solutionFields->get("perturbation_dot");
+
     pylith::topology::Field residual1(*_mesh);
-    residual1.cloneSection(*_solution1);
+    residual1.cloneSection(solution);
     residual1.label("residual1");
     residual1.allocate();
 
     pylith::topology::Field residual2(*_mesh);
-    residual2.cloneSection(*_solution2);
+    residual2.cloneSection(perturbation);
     residual2.label("residual2");
     residual2.allocate();
 
@@ -471,10 +480,10 @@ pylith::materials::TestMaterialNew::testComputeLHSJacobianImplicit(void)
     const PylithReal t = data->t;
     const PylithReal dt = data->dt;
     const PylithReal tshift = data->tshift;
-    material->computeLHSResidual(&residual1, t, dt, *_solution1, *_solution1Dot);
-    material->computeLHSResidual(&residual2, t, dt, *_solution2, *_solution2Dot);
+    material->computeLHSResidual(&residual1, t, dt, solution, solutionDot);
+    material->computeLHSResidual(&residual2, t, dt, perturbation, perturbationDot);
 
-    // Check that Jf(s_1)*(s_2 - s_1) = F(s_2) - F(s_1).
+    // Check that Jf(s)*(p - s) = F(p) - F(s).
 
     //residual1.view("RESIDUAL 1 LHS"); // DEBUGGING
     //residual2.view("RESIDUAL 2 LHS"); // DEBUGGING
@@ -486,16 +495,16 @@ pylith::materials::TestMaterialNew::testComputeLHSJacobianImplicit(void)
     err = VecWAXPY(residualVec, -1.0, residual1.localVector(), residual2.localVector()); CPPUNIT_ASSERT(!err);
 
     PetscVec solnIncrVec = NULL;
-    err = VecDuplicate(_solution1->localVector(), &solnIncrVec); CPPUNIT_ASSERT(!err);
-    err = VecWAXPY(solnIncrVec, -1.0, _solution1->localVector(), _solution2->localVector()); CPPUNIT_ASSERT(!err);
+    err = VecDuplicate(solution.localVector(), &solnIncrVec); CPPUNIT_ASSERT(!err);
+    err = VecWAXPY(solnIncrVec, -1.0, solution.localVector(), perturbation.localVector()); CPPUNIT_ASSERT(!err);
 
     // Compute Jacobian
     PetscMat jacobianMat = NULL;
-    err = DMCreateMatrix(_solution1->dmMesh(), &jacobianMat); CPPUNIT_ASSERT(!err);
+    err = DMCreateMatrix(solution.dmMesh(), &jacobianMat); CPPUNIT_ASSERT(!err);
     err = MatZeroEntries(jacobianMat); CPPUNIT_ASSERT(!err);
     PetscMat precondMat = jacobianMat; // Use Jacobian == preconditioner
 
-    material->computeLHSJacobianImplicit(jacobianMat, precondMat, t, dt, tshift, *_solution1, *_solution1Dot);
+    material->computeLHSJacobianImplicit(jacobianMat, precondMat, t, dt, tshift, solution, solutionDot);
     CPPUNIT_ASSERT_EQUAL(false, material->needNewLHSJacobian());
     err = MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY); PYLITH_CHECK_ERROR(err);
     err = MatAssemblyEnd(jacobianMat, MAT_FINAL_ASSEMBLY); PYLITH_CHECK_ERROR(err);
@@ -531,24 +540,6 @@ pylith::materials::TestMaterialNew::testComputeLHSJacobianImplicit(void)
 
     PYLITH_METHOD_END;
 } // testComputeLHSJacobianImplicit
-
-
-// ----------------------------------------------------------------------
-// Get material.
-pylith::materials::MaterialNew*
-pylith::materials::TestMaterialNew::_material(void)
-{ // material
-    throw std::logic_error("Implement TestMaterialNew::material in derived class.");
-} // material
-
-
-// ----------------------------------------------------------------------
-// Get test data.
-pylith::materials::TestMaterialNew_Data*
-pylith::materials::TestMaterialNew::_data(void)
-{ // data
-    throw std::logic_error("Implement TestMaterialNew::data in derived class.");
-} // data
 
 
 // ----------------------------------------------------------------------
@@ -603,48 +594,20 @@ pylith::materials::TestMaterialNew::_initializeMin(void)
     cs.setSpaceDim(_mesh->dimension());
     cs.initialize();
     _mesh->coordsys(&cs);
-
-    // Setup scales.
-    spatialdata::units::Nondimensional normalizer;
-    normalizer.lengthScale(data->lengthScale);
-    normalizer.pressureScale(data->pressureScale);
-    normalizer.timeScale(data->timeScale);
-    normalizer.densityScale(data->densityScale);
-    topology::MeshOps::nondimensionalize(_mesh, normalizer);
+    CPPUNIT_ASSERT(data->normalizer);
+    pylith::topology::MeshOps::nondimensionalize(_mesh, *data->normalizer);
 
     material->id(data->materialId);
     material->label(data->materialLabel);
-    material->normalizer(normalizer);
+    material->normalizer(*data->normalizer);
 
-    // Setup solution field.
-
-    // Create solution field 1.
-    CPPUNIT_ASSERT(data->solnDBFilename);
-    bool isClone = false;
-
-    delete _solution1; _solution1 = new pylith::topology::Field(*_mesh);
-    _solution1->label("solution1");
-    _setupSolutionField(_solution1, data->solnDBFilename, isClone);
-
-    // Create time derivative of solution field 1.
-    delete _solution1Dot; _solution1Dot = new pylith::topology::Field(*_mesh);
-    _solution1Dot->label("solution1_dot");
-    _setupSolutionField(_solution1Dot, data->solnDBFilename, isClone);
-
-    // Create solution field 2; solution 2 = solution 1 + perturbation
-    CPPUNIT_ASSERT(data->pertDBFilename);
-    isClone = true;
-
-    delete _solution2; _solution2 = new pylith::topology::Field(*_mesh);
-    _solution2->cloneSection(*_solution1);
-    _solution2->label("solution2");
-    _setupSolutionField(_solution2, data->pertDBFilename, isClone);
-
-    // Create time derivative of solution field 2.
-    delete _solution2Dot; _solution2Dot = new pylith::topology::Field(*_mesh);
-    _solution2Dot->cloneSection(*_solution1Dot);
-    _solution2Dot->label("solution2_dot");
-    _setupSolutionField(_solution2Dot, data->pertDBFilename, isClone);
+    // Setup solution fields.
+    delete _solutionFields; _solutionFields = new pylith::topology::Fields(*_mesh);CPPUNIT_ASSERT(_solutionFields);
+    _solutionFields->add("solution","solution");
+    _solutionFields->add("solution_dot","solution_dot");
+    _solutionFields->add("perturbation","perturbation");
+    _solutionFields->add("perturbation_dot","perturbation_dot");
+    this->_setupSolutionFields();
 
     PYLITH_METHOD_END;
 } // _initializeMin
@@ -661,8 +624,6 @@ pylith::materials::TestMaterialNew::_initializeFull(void)
     TestMaterialNew_Data* data = _data(); CPPUNIT_ASSERT(data);
     CPPUNIT_ASSERT(_mesh);
 
-    _initializeMin();
-
     // Set auxiliary fields spatial database.
     delete _auxDB; _auxDB = new spatialdata::spatialdb::SimpleGridDB; CPPUNIT_ASSERT(_auxDB);
     CPPUNIT_ASSERT(data->auxDBFilename);
@@ -672,12 +633,12 @@ pylith::materials::TestMaterialNew::_initializeFull(void)
     material->auxFieldsDB(_auxDB);
 
     for (int i = 0; i < data->numAuxFields; ++i) {
-        const pylith::topology::FieldBase::DiscretizeInfo& info = data->auxDiscretizations[i];
+        const pylith::topology::FieldBase::Discretization& info = data->auxDiscretizations[i];
         material->auxFieldDiscretization(data->auxFields[i], info.basisOrder, info.quadOrder, info.isBasisContinuous, info.feSpace);
     } // for
 
-    CPPUNIT_ASSERT(_solution1);
-    material->initialize(*_solution1);
+    CPPUNIT_ASSERT(_solutionFields);
+    material->initialize(_solutionFields->get("solution"));
 
     PYLITH_METHOD_END;
 } // _initializeFull
@@ -728,17 +689,6 @@ pylith::materials::TestMaterialNew::_zeroBoundary(pylith::topology::Field* field
 
 
 // ----------------------------------------------------------------------
-// Setup and populate solution field.
-void
-pylith::materials::TestMaterialNew::_setupSolutionField(pylith::topology::Field* field,
-                                                        const char* dbFilename,
-                                                        const bool isClone)
-{ // _setupSolutionField
-    throw std::logic_error("Implement TestMaterialNew::_setupSolutionField() in derived class.");
-} // _setupSolutionField
-
-
-// ----------------------------------------------------------------------
 // Constructor
 pylith::materials::TestMaterialNew_Data::TestMaterialNew_Data(void) :
     dimension(0),
@@ -747,10 +697,7 @@ pylith::materials::TestMaterialNew_Data::TestMaterialNew_Data(void) :
     materialId(0),
     boundaryLabel(NULL),
 
-    lengthScale(0),
-    timeScale(0),
-    pressureScale(0),
-    densityScale(0),
+    normalizer(new spatialdata::units::Nondimensional),
 
     t(0.0),
     dt(0.0),
@@ -768,6 +715,7 @@ pylith::materials::TestMaterialNew_Data::TestMaterialNew_Data(void) :
 
     isExplicit(false)
 { // constructor
+    CPPUNIT_ASSERT(normalizer);
 } // constructor
 
 
@@ -775,6 +723,7 @@ pylith::materials::TestMaterialNew_Data::TestMaterialNew_Data(void) :
 // Destructor
 pylith::materials::TestMaterialNew_Data::~TestMaterialNew_Data(void)
 { // destructor
+    delete normalizer; normalizer = NULL;
 } // destructor
 
 
