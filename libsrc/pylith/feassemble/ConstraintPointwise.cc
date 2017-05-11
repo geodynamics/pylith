@@ -26,7 +26,7 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 
-#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -111,7 +111,7 @@ pylith::feassemble::ConstraintPointwise::constrainedDOF(const int* flags,
                                                         const int size)
 { // constrainedDOF
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("constrainedDOF(flags="<<flags<<", size="<<size<<")");
+    PYLITH_COMPONENT_DEBUG("constrainedDOF(flags="<<flags<<", size="<<size<<")");
 
     assert((size > 0 && flags) || (!size && !flags));
 
@@ -169,7 +169,7 @@ pylith::feassemble::ConstraintPointwise::getAuxField(pylith::topology::Field *fi
                                                      const char* name) const
 { // getAuxField
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("getAuxField(field="<<field<<", name="<<name<<")");
+    PYLITH_COMPONENT_DEBUG("getAuxField(field="<<field<<", name="<<name<<")");
 
     assert(field);
     assert(_auxFields);
@@ -196,9 +196,9 @@ pylith::feassemble::ConstraintPointwise::auxFieldDiscretization(const char* name
                                                                 const bool isBasisContinuous,
                                                                 const pylith::topology::FieldBase::SpaceEnum feSpace)
 { // discretization
-    PYLITH_JOURNAL_DEBUG("auxFieldDiscretization(name="<<name<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<")");
+    PYLITH_COMPONENT_DEBUG("auxFieldDiscretization(name="<<name<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<")");
 
-    pylith::topology::FieldBase::DiscretizeInfo feInfo;
+    pylith::topology::FieldBase::Discretization feInfo;
     feInfo.basisOrder = basisOrder;
     feInfo.quadOrder = quadOrder;
     feInfo.isBasisContinuous = isBasisContinuous;
@@ -209,7 +209,7 @@ pylith::feassemble::ConstraintPointwise::auxFieldDiscretization(const char* name
 
 // ----------------------------------------------------------------------
 // Get discretization information for auxiliary subfield.
-const pylith::topology::FieldBase::DiscretizeInfo&
+const pylith::topology::FieldBase::Discretization&
 pylith::feassemble::ConstraintPointwise::auxFieldDiscretization(const char* name) const
 { // discretization
     PYLITH_METHOD_BEGIN;
@@ -233,7 +233,7 @@ pylith::feassemble::ConstraintPointwise::auxFieldDiscretization(const char* name
 void
 pylith::feassemble::ConstraintPointwise::normalizer(const spatialdata::units::Nondimensional& dim)
 { // normalizer
-    PYLITH_JOURNAL_DEBUG("normalizer(dim="<<typeid(dim).name()<<")");
+    PYLITH_COMPONENT_DEBUG("normalizer(dim="<<typeid(dim).name()<<")");
 
     if (!_normalizer) {
         _normalizer = new spatialdata::units::Nondimensional(dim);
@@ -249,7 +249,7 @@ void
 pylith::feassemble::ConstraintPointwise::verifyConfiguration(const pylith::topology::Field& solution) const
 { // verifyConfiguration
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
 
     if (!solution.hasSubfield(_field.c_str())) {
         std::ostringstream msg;
@@ -260,7 +260,7 @@ pylith::feassemble::ConstraintPointwise::verifyConfiguration(const pylith::topol
     } // if
 
     const topology::Field::SubfieldInfo& info = solution.subfieldInfo(_field.c_str());
-    const int numComponents = info.numComponents;
+    const int numComponents = info.description.numComponents;
     const int numConstrained = _constrainedDOF.size();
     for (int iConstrained = 0; iConstrained < numConstrained; ++iConstrained) {
         if (_constrainedDOF[iConstrained] >= numComponents) {

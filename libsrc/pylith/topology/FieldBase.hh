@@ -74,21 +74,21 @@ public:
     // PUBLIC STRUCTS ///////////////////////////////////////////////////////
 public:
 
-    struct Metadata {
+    struct Description {
         std::string label; ///< Label for field.
         VectorFieldEnum vectorFieldType; ///< Type of vector field.
-        PylithReal scale; ///< Dimension scale associated with values.
-        bool dimsOkay; ///< Ok to replace nondimensionalized values with dimensionalized values.
         pylith::string_vector componentNames; ///< Names of components.
+        size_t numComponents; ///< Number of components.
+        PylithReal scale; ///< Dimension scale associated with values.
         validatorfn_type validator; ///< Validator for values in field;
-    }; // Metadata
+    }; // Description
 
-    struct DiscretizeInfo {
+    struct Discretization {
         int basisOrder; ///< Order of basis functions.
         int quadOrder; ///< Order of quadrature scheme.
         bool isBasisContinuous; ///< Is basis continuous?
         SpaceEnum feSpace; ///< Finite-element space.
-    }; // DiscInfo
+    }; // Discretization
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:

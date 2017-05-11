@@ -26,7 +26,8 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
-#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" \
+    // USES PYLITH_CHECK_ERROR
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -137,7 +138,6 @@ pylith::topology::FieldQuery::contextPtrs(void) const
     return _contextPtrs;
 } // contextPtrs
 
-
 // ----------------------------------------------------------------------
 // Query spatial database to set values in field.
 void
@@ -158,8 +158,8 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
     delete[] _contexts; _contexts = (size > 0) ? new DBQueryContext[size] : NULL;
     delete[] _contextPtrs; _contextPtrs = (size > 0) ? new DBQueryContext*[size] : NULL;
 
-    int i=0;
-    for (Field::subfields_type::const_iterator iter=subfields.begin(); iter != subfields.end(); ++iter, ++i) {
+    int i = 0;
+    for (Field::subfields_type::const_iterator iter = subfields.begin(); iter != subfields.end(); ++iter, ++i) {
         const std::string& name = iter->first;
         if (_queryFns.find(name) == _queryFns.end()) { // if
             std::ostringstream msg;
@@ -175,11 +175,11 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
         _contexts[index].cs = _field.mesh().coordsys();
         _contexts[index].lengthScale = lengthScale;
 
-        const pylith::topology::Field::Metadata& metadata = iter->second.metadata;
-        _contexts[index].valueScale = metadata.scale;
-        _contexts[index].description = metadata.label;
-        _contexts[index].componentNames = metadata.componentNames;
-        _contexts[index].validator = metadata.validator;
+        const pylith::topology::Field::Description& description = iter->second.description;
+        _contexts[index].valueScale = description.scale;
+        _contexts[index].description = description.label;
+        _contexts[index].componentNames = description.componentNames;
+        _contexts[index].validator = description.validator;
 
         _contextPtrs[index] = &_contexts[index];
     } // for
@@ -252,7 +252,7 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
 
     // Tell database which values we want.
     const char** queryValueNames = (numQueryValues > 0) ? new const char*[numQueryValues] : 0;
-    for (int i=0; i < numQueryValues; ++i) {
+    for (int i = 0; i < numQueryValues; ++i) {
         queryValueNames[i] = queryctx->componentNames[i].c_str();
     } // for
     queryctx->db->queryVals(queryValueNames, numQueryValues);
@@ -260,7 +260,7 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
     // Dimensionalize query location coordinates.
     assert(queryctx->lengthScale > 0);
     double xDim[3];
-    for (int i=0; i < dim; ++i) {
+    for (int i = 0; i < dim; ++i) {
         xDim[i] = x[i] * queryctx->lengthScale;
     } // for
 
@@ -271,7 +271,7 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
     if (err) {
         std::ostringstream msg;
         msg << "Could not find " << queryctx->description << " at (";
-        for (int i=0; i < dim; ++i)
+        for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
         msg << ") in spatial database '" << queryctx->db->label() << "'.";
         (*PetscErrorPrintf)(msg.str().c_str());
@@ -281,12 +281,12 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
 
     // Validate if validator function was specified.
     if (queryctx->validator) {
-        for (int i=0; i < nvalues; ++i) {
+        for (int i = 0; i < nvalues; ++i) {
             const std::string& invalidMsg = queryctx->validator(values[i]);
             if (invalidMsg.length() > 0) {
                 std::ostringstream msg;
                 msg << "Found invalid " << queryValueNames[i] << " (" << values[i] << ") at location (";
-                for (int i=0; i < dim; ++i)
+                for (int i = 0; i < dim; ++i)
                     msg << "  " << xDim[i];
                 msg << ") in spatial database '" << queryctx->db->label() << "'. ";
                 msg << invalidMsg;
@@ -300,7 +300,7 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
 
     // Nondimensionalize values
     assert(queryctx->valueScale > 0);
-    for (int i=0; i < nvalues; ++i) {
+    for (int i = 0; i < nvalues; ++i) {
         values[i] /= queryctx->valueScale;
     } // for
 

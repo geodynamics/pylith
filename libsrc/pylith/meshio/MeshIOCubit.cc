@@ -24,7 +24,7 @@
 #include "ExodusII.hh" // USES ExodusII
 
 #include "pylith/utils/array.hh" // USES scalar_array, int_array, string_vector
-#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include "petsc.h" // USES MPI_Comm
 
@@ -70,7 +70,7 @@ void
 pylith::meshio::MeshIOCubit::_read(void)
 { // _read
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_read()");
+    PYLITH_COMPONENT_DEBUG("_read()");
 
     assert(_mesh);
 
@@ -125,7 +125,7 @@ void
 pylith::meshio::MeshIOCubit::_write(void) const
 { // write
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_write()");
+    PYLITH_COMPONENT_DEBUG("_write()");
 
     ExodusII exofile(_filename.c_str());
 
@@ -145,7 +145,7 @@ pylith::meshio::MeshIOCubit::_readVertices(ExodusII& exofile,
                                            int* numDims) const
 { // _readVertices
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_readVertices(exofile="<<typeid(exofile).name()<<", coordinates="<<coordinates<<", numVertices="<<numVertices<<", numDims="<<numDims<<")");
+    PYLITH_COMPONENT_DEBUG("_readVertices(exofile="<<typeid(exofile).name()<<", coordinates="<<coordinates<<", numVertices="<<numVertices<<", numDims="<<numDims<<")");
 
     assert(coordinates);
     assert(numVertices);
@@ -157,7 +157,7 @@ pylith::meshio::MeshIOCubit::_readVertices(ExodusII& exofile,
     // Number of vertices
     *numVertices = exofile.getDim("num_nodes");
 
-    PYLITH_JOURNAL_INFO("Reading " << *numVertices << " vertices.");
+    PYLITH_COMPONENT_INFO("Reading " << *numVertices << " vertices.");
 
     if (exofile.hasVar("coord", NULL)) {
         const int ndims = 2;
@@ -204,7 +204,7 @@ pylith::meshio::MeshIOCubit::_readCells(ExodusII& exofile,
                                         int* numCorners) const
 { // _readCells
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_readCells(exofile="<<typeid(exofile).name()<<", cells="<<cells<<", materialIds="<<materialIds<<", numCells="<<numCells<<", numCorners="<<numCorners<<")");
+    PYLITH_COMPONENT_DEBUG("_readCells(exofile="<<typeid(exofile).name()<<", cells="<<cells<<", materialIds="<<materialIds<<", numCells="<<numCells<<", numCorners="<<numCorners<<")");
 
     assert(cells);
     assert(materialIds);
@@ -214,7 +214,7 @@ pylith::meshio::MeshIOCubit::_readCells(ExodusII& exofile,
     *numCells = exofile.getDim("num_elem");
     const int numMaterials = exofile.getDim("num_el_blk");
 
-    PYLITH_JOURNAL_INFO("Reading " << *numCells << " cells in " << numMaterials << " blocks.");
+    PYLITH_COMPONENT_INFO("Reading " << *numCells << " cells in " << numMaterials << " blocks.");
 
     int_array blockIds(numMaterials);
     int ndims = 1;
@@ -271,11 +271,11 @@ void
 pylith::meshio::MeshIOCubit::_readGroups(ExodusII& exofile)
 { // _readGroups
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_readGroups(exofile="<<typeid(exofile).name()<<")");
+    PYLITH_COMPONENT_DEBUG("_readGroups(exofile="<<typeid(exofile).name()<<")");
 
     const int numGroups = exofile.getDim("num_node_sets");
 
-    PYLITH_JOURNAL_INFO("Found " << numGroups << " node sets.");
+    PYLITH_COMPONENT_INFO("Found " << numGroups << " node sets.");
 
     int_array ids(numGroups);
     int ndims = 1;
@@ -302,7 +302,7 @@ pylith::meshio::MeshIOCubit::_readGroups(ExodusII& exofile)
         ndims = 1;
         dims[0] = nodesetSize;
 
-        PYLITH_JOURNAL_INFO("Reading node set '" << groupNames[iGroup] << "' with id " << ids[iGroup] << " containing " << nodesetSize << " nodes.");
+        PYLITH_COMPONENT_INFO("Reading node set '" << groupNames[iGroup] << "' with id " << ids[iGroup] << " containing " << nodesetSize << " nodes.");
         exofile.getVar(&points[0], dims, ndims, varname.str().c_str());
 
         std::sort(&points[0], &points[nodesetSize]);

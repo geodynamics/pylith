@@ -31,9 +31,13 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
-#include <iostream> \
-    // USES std::cout
+
+#include <iostream>
+
+// ----------------------------------------------------------------------
+const char* pylith::topology::Field::_genericComponent = "field";
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -44,10 +48,11 @@ pylith::topology::Field::Field(const Mesh& mesh) :
 { // constructor
     PYLITH_METHOD_BEGIN;
 
-    _metadata.label = "unknown";
-    _metadata.vectorFieldType = OTHER;
-    _metadata.scale = 1.0;
-    _metadata.dimsOkay = false;
+    GenericComponent::name(_genericComponent);
+
+    _dimsOkay = false;
+
+    _label = "unknown";
     if (mesh.dmMesh()) {
         PetscDM dm = mesh.dmMesh(); assert(dm);
         PetscVec coordVec = NULL;
@@ -80,47 +85,59 @@ pylith::topology::Field::Field(const Mesh& mesh) :
     PYLITH_METHOD_END;
 } // constructor
 
+#if 0
 // ----------------------------------------------------------------------
 // Constructor with mesh, DM, and metadata
 pylith::topology::Field::Field(const Mesh& mesh,
                                PetscDM dm,
-                               const Metadata& metadata) :
+                               const char* label) :
     _mesh(mesh),
     _dm(dm),
     _localVec(NULL)
 { // constructor
     PYLITH_METHOD_BEGIN;
 
+    GenericComponent::name(_genericComponent);
+
     assert(dm);
     PetscErrorCode err;
-
-    _metadata = metadata;
     err = DMCreateLocalVector(_dm, &_localVec); PYLITH_CHECK_ERROR(err);
-    err = PetscObjectSetName((PetscObject) _localVec,  _metadata.label.c_str()); PYLITH_CHECK_ERROR(err);
+
+    assert(label);
+    this->label(label);
 
     PYLITH_METHOD_END;
 } // constructor
+#endif
 
 // ----------------------------------------------------------------------
 // Constructor with mesh, DM, local data, and metadata
 pylith::topology::Field::Field(const Mesh& mesh,
                                PetscDM dm,
                                PetscVec localVec,
-                               const Metadata& metadata) :
+                               const Description& description) :
+    _label(description.label),
     _mesh(mesh),
     _dm(dm),
     _localVec(NULL)
 { // constructor
     PYLITH_METHOD_BEGIN;
 
+    GenericComponent::name(_genericComponent);
+
     assert(dm);
     assert(localVec);
 
     PetscErrorCode err;
 
-    _metadata = metadata;
+    Discretization fe;
+    fe.basisOrder = 0;
+    fe.quadOrder = 0;
+    subfieldAdd(description, fe);
+    subfieldsSetup();
+
     err = DMCreateLocalVector(_dm, &_localVec); PYLITH_CHECK_ERROR(err);
-    err = PetscObjectSetName((PetscObject) _localVec,  _metadata.label.c_str()); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectSetName((PetscObject) _localVec,  _label.c_str()); PYLITH_CHECK_ERROR(err);
     err = VecCopy(localVec, _localVec); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
@@ -155,7 +172,7 @@ pylith::topology::Field::label(const char* value)
 
     PetscErrorCode err;
 
-    _metadata.label = value;
+    _label = value;
     if (_localVec) {
         err = PetscObjectSetName((PetscObject) _localVec, value); PYLITH_CHECK_ERROR(err);
     } // if
@@ -247,8 +264,6 @@ pylith::topology::Field::setupSolnChart(void)
 
     assert(_dm);
 
-    // :TODO: Update this to use discretization information after removing FIAT.
-
     // :KLUDGE: Assume solution has DOF over vertices and hybrid edges.
     PetscErrorCode err;
     // Get range of vertices.
@@ -330,7 +345,7 @@ pylith::topology::Field::newSection(const int_array& points,
     assert(_dm);
     if (fiberDim < 0) {
         std::ostringstream msg;
-        msg << "Fiber dimension (" << fiberDim << ") for field '" << _metadata.label
+        msg << "Fiber dimension (" << fiberDim << ") for field '" << _label
             << "' must be nonnegative.";
         throw std::runtime_error(msg.str());
     } // if
@@ -378,7 +393,7 @@ pylith::topology::Field::newSection(const PetscInt *points,
     assert(_dm);
     if (fiberDim < 0) {
         std::ostringstream msg;
-        msg << "Fiber dimension (" << fiberDim << ") for field '" << _metadata.label
+        msg << "Fiber dimension (" << fiberDim << ") for field '" << _label
             << "' must be nonnegative.";
         throw std::runtime_error(msg.str());
     } // if
@@ -484,7 +499,7 @@ pylith::topology::Field::newSection(const Field& src,
 
     if (fiberDim < 0) {
         std::ostringstream msg;
-        msg << "Fiber dimension (" << fiberDim << ") for field '" << _metadata.label
+        msg << "Fiber dimension (" << fiberDim << ") for field '" << _label
             << "' must be nonnegative.";
         throw std::runtime_error(msg.str());
     } // if
@@ -513,12 +528,11 @@ pylith::topology::Field::cloneSection(const Field& src)
 { // cloneSection
     PYLITH_METHOD_BEGIN;
 
-    std::string origLabel = _metadata.label;
+    const std::string& origLabel = _label;
 
     // Clear memory
     clear();
 
-    _metadata = src._metadata;
     label(origLabel.c_str());
 
     PetscSection section = src.localSection();
@@ -532,7 +546,7 @@ pylith::topology::Field::cloneSection(const Field& src)
 
     assert(!_localVec);
     err = DMCreateLocalVector(_dm, &_localVec); PYLITH_CHECK_ERROR(err);
-    err = PetscObjectSetName((PetscObject) _localVec,  _metadata.label.c_str()); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectSetName((PetscObject) _localVec,  _label.c_str()); PYLITH_CHECK_ERROR(err);
 
     // Reuse scatters in clone
     _scatters.clear();
@@ -548,7 +562,7 @@ pylith::topology::Field::cloneSection(const Field& src)
 
         // Create global vector.
         err = DMCreateGlobalVector(sinfo.dm, &sinfo.vector); PYLITH_CHECK_ERROR(err);
-        err = PetscObjectSetName((PetscObject)sinfo.vector, _metadata.label.c_str()); PYLITH_CHECK_ERROR(err);
+        err = PetscObjectSetName((PetscObject)sinfo.vector, _label.c_str()); PYLITH_CHECK_ERROR(err);
     } // for
 
     // Reuse subfields in clone
@@ -558,12 +572,11 @@ pylith::topology::Field::cloneSection(const Field& src)
     err = DMGetDS(_dm, &prob); PYLITH_CHECK_ERROR(err); assert(prob);
     for (subfields_type::const_iterator s_iter = src._subfields.begin(); s_iter != subfieldsEnd; ++s_iter) {
         SubfieldInfo& sinfo = _subfields[s_iter->first];
-        sinfo.metadata = s_iter->second.metadata;
-        sinfo.numComponents = s_iter->second.numComponents;
+        sinfo.description = s_iter->second.description;
         sinfo.index = s_iter->second.index;
 
         sinfo.fe = s_iter->second.fe;
-        PetscFE fe = FieldOps::createFE(sinfo.fe, _dm, _mesh.isSimplex(), sinfo.numComponents); assert(fe);
+        PetscFE fe = FieldOps::createFE(sinfo.fe, _dm, _mesh.isSimplex(), sinfo.description.numComponents); assert(fe);
         err = PetscObjectSetName((PetscObject) fe, s_iter->first.c_str()); PYLITH_CHECK_ERROR(err);
         err = PetscDSSetDiscretization(prob, sinfo.index, (PetscObject) fe); PYLITH_CHECK_ERROR(err);
         err = PetscFEDestroy(&fe); PYLITH_CHECK_ERROR(err);
@@ -600,9 +613,7 @@ pylith::topology::Field::clear(void)
         err = DMDestroy(&s_iter->second.dm); PYLITH_CHECK_ERROR(err);
     } // for
 
-    _metadata.scale = 1.0;
-    _metadata.vectorFieldType = OTHER;
-    _metadata.dimsOkay = false;
+    _dimsOkay = false;
 
     PYLITH_METHOD_END;
 } // clear
@@ -623,7 +634,8 @@ pylith::topology::Field::allocate(void)
 
     err = VecDestroy(&_localVec); PYLITH_CHECK_ERROR(err);
     err = DMCreateLocalVector(_dm, &_localVec); PYLITH_CHECK_ERROR(err);
-    err = PetscObjectSetName((PetscObject) _localVec,  _metadata.label.c_str()); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectSetName((PetscObject) _localVec,  _label.c_str()); PYLITH_CHECK_ERROR(err);
+    err = VecSet(_localVec, 0.0); PYLITH_CHECK_ERROR(err);
 
     // Create DM for subfields.
     int fields[1];
@@ -665,19 +677,11 @@ pylith::topology::Field::copy(const Field& field)
         ( srcSize != dstSize) ) {
         std::ostringstream msg;
 
-        msg << "Cannot copy values from section '" << _metadata.label
-            << "' to section '" << _metadata.label
+        msg << "Cannot copy values from section '" << _label
+            << "' to section '" << _label
             << "'. Sections are incompatible.\n"
-            << "  Source section:\n"
-            << "    space dim: " << field.spaceDim() << "\n"
-            << "    vector field type: " << field._metadata.vectorFieldType << "\n"
-            << "    scale: " << field._metadata.scale << "\n"
-            << "    size: " << srcSize << "\n"
-            << "  Destination section:\n"
-            << "    space dim: " << spaceDim() << "\n"
-            << "    vector field type: " << _metadata.vectorFieldType << "\n"
-            << "    scale: " << _metadata.scale << "\n"
-            << "    size: " << dstSize;
+            << "  Source section size: " << srcSize << "\n"
+            << "  Destination section size: " << dstSize;
         throw std::runtime_error(msg.str());
     } // if
     assert(_localVec && field._localVec);
@@ -685,9 +689,7 @@ pylith::topology::Field::copy(const Field& field)
     PetscErrorCode err = VecCopy(field._localVec, _localVec); PYLITH_CHECK_ERROR(err);
 
     // Update metadata
-    label(field._metadata.label.c_str());
-    _metadata.vectorFieldType = field._metadata.vectorFieldType;
-    _metadata.scale = field._metadata.scale;
+    label(field._label.c_str());
 
     PYLITH_METHOD_END;
 } // copy
@@ -699,18 +701,19 @@ pylith::topology::Field::dimensionalize(void) const
 { // dimensionalize
     PYLITH_METHOD_BEGIN;
 
-    if (!_metadata.dimsOkay) {
+    if (!_dimsOkay) {
         std::ostringstream msg;
-        msg << "Cannot dimensionalize field '" << _metadata.label
+        msg << "Cannot dimensionalize field '" << _label
             << "' because the flag has been set to keep field nondimensional.";
         throw std::runtime_error(msg.str());
     } // if
 
     assert(_localVec);
     const size_t numSubfields = _subfields.size();
-    if (!numSubfields) {
-        // No subfields, so scale based on metadata for entire field.
-        PetscErrorCode err = VecScale(_localVec, _metadata.scale); PYLITH_CHECK_ERROR(err);
+    assert(numSubfields > 0);
+    if (1 == numSubfields) {
+        const PylithReal scale = _subfields.begin()->second.description.scale;
+        PetscErrorCode err = VecScale(_localVec, scale); PYLITH_CHECK_ERROR(err);
     } else {
         // Dimensionalize each subfield independently.
         int_array subNumComponents(numSubfields); assert(subNumComponents.size() == numSubfields);
@@ -718,8 +721,8 @@ pylith::topology::Field::dimensionalize(void) const
         for (subfields_type::const_iterator s_iter = _subfields.begin(); s_iter != _subfields.end(); ++s_iter) {
             const SubfieldInfo& sinfo = s_iter->second;
             const size_t index = sinfo.index; assert(index < numSubfields);
-            subScales[index] = sinfo.metadata.scale;
-            subNumComponents[index] = sinfo.numComponents;
+            subScales[index] = sinfo.description.scale;
+            subNumComponents[index] = sinfo.description.numComponents;
         } // for
 
         assert(_dm);
@@ -753,67 +756,25 @@ pylith::topology::Field::view(const char* label) const
 { // view
     PYLITH_METHOD_BEGIN;
 
-    std::string vecFieldString;
-    switch (_metadata.vectorFieldType) { // switch
-    case SCALAR:
-        vecFieldString = "scalar";
-        break;
-    case VECTOR:
-        vecFieldString = "vector";
-        break;
-    case TENSOR:
-        vecFieldString = "tensor";
-        break;
-    case OTHER:
-        vecFieldString = "other";
-        break;
-    case MULTI_SCALAR:
-        vecFieldString = "multiple scalars";
-        break;
-    case MULTI_VECTOR:
-        vecFieldString = "multiple vectors";
-        break;
-    case MULTI_TENSOR:
-        vecFieldString = "multiple tensors";
-        break;
-    case MULTI_OTHER:
-        vecFieldString = "multiple other values";
-        break;
-    default:
-        std::ostringstream msg;
-        msg << "Unknown vector field value '" << _metadata.vectorFieldType << "'  in Field." << std::endl;
-        throw std::logic_error(msg.str());
-    } // switch
-
-    std::cout << "Viewing field '" << _metadata.label << "' "<< label << ".\n";
-    const int ncomps = _metadata.componentNames.size();
-    if (ncomps > 0) {
-        std::cout << "  Components:";
-        for (int i = 0; i < ncomps; ++i) {
-            std::cout << " " << _metadata.componentNames[i];
-        } // for
-        std::cout << "\n";
-    } // if
+    std::cout << "Viewing field '" << _label << "' "<< label << ".\n";
     if (_subfields.size() > 0) {
         std::cout << "  Subfields:\n";
         for (subfields_type::const_iterator s_iter = _subfields.begin(); s_iter != _subfields.end(); ++s_iter) {
             const char* sname = s_iter->first.c_str();
             const SubfieldInfo& sinfo = s_iter->second;
             std::cout << "    Subfield " << sname << ", index: " << sinfo.index;
-            const int nscomps = sinfo.numComponents;
+            const int nscomps = sinfo.description.numComponents;
             if (nscomps > 0) {
                 std::cout << ", components:";
                 for (int i = 0; i < nscomps; ++i) {
-                    std::cout << " " << sinfo.metadata.componentNames[i];
+                    std::cout << " " << sinfo.description.componentNames[i];
                 } // for
             } // if
-            std::cout << ", scale: " << sinfo.metadata.scale << "\n";
+            std::cout << ", scale: " << sinfo.description.scale << "\n";
         } // for
     } // if
 
-    std::cout << "  vector field type: " << vecFieldString << "\n"
-              << "  scale: " << _metadata.scale << "\n"
-              << "  dimensionalize flag: " << _metadata.dimsOkay << std::endl;
+    std::cout << "  dimensionalize flag: " << _dimsOkay << std::endl;
 
     if (_dm) {
         PetscSection section = NULL;
@@ -861,7 +822,7 @@ pylith::topology::Field::createScatter(const Mesh& mesh,
 
     err = VecDestroy(&sinfo.vector); PYLITH_CHECK_ERROR(err);
     err = DMCreateGlobalVector(_dm, &sinfo.vector); PYLITH_CHECK_ERROR(err);
-    err = PetscObjectSetName((PetscObject) sinfo.vector, _metadata.label.c_str()); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectSetName((PetscObject) sinfo.vector, _label.c_str()); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // createScatter
@@ -906,7 +867,7 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
     err = PetscSectionDestroy(&gsection); PYLITH_CHECK_ERROR(err);
     err = VecDestroy(&sinfo.vector); PYLITH_CHECK_ERROR(err);
     err = DMCreateGlobalVector(sinfo.dm, &sinfo.vector); PYLITH_CHECK_ERROR(err);
-    err = PetscObjectSetName((PetscObject) sinfo.vector, _metadata.label.c_str()); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectSetName((PetscObject) sinfo.vector, _label.c_str()); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // createScatterWithBC
@@ -1014,7 +975,7 @@ pylith::topology::Field::createScatterWithBC(const Mesh& mesh,
     err = PetscSectionDestroy(&gsection); PYLITH_CHECK_ERROR(err);
     err = VecDestroy(&sinfo.vector); PYLITH_CHECK_ERROR(err);
     err = DMCreateGlobalVector(sinfo.dm, &sinfo.vector); PYLITH_CHECK_ERROR(err);
-    err = PetscObjectSetName((PetscObject) sinfo.vector, _metadata.label.c_str()); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectSetName((PetscObject) sinfo.vector, _label.c_str()); PYLITH_CHECK_ERROR(err);
 
     err = PetscSectionDestroy(&subSection); PYLITH_CHECK_ERROR(err);
 
@@ -1192,42 +1153,57 @@ pylith::topology::Field::_getScatter(const char* context) const
 } // _getScatter
 
 // ----------------------------------------------------------------------
-// Add subfield.
+// Add subfield to current field (inteface to use from SWIG).
 void
 pylith::topology::Field::subfieldAdd(const char *name,
+                                     const VectorFieldEnum fieldType,
                                      const char* components[],
                                      const int numComponents,
-                                     const VectorFieldEnum fieldType,
+                                     const double scale,
                                      const int basisOrder,
                                      const int quadOrder,
                                      const bool isBasisContinuous,
-                                     const SpaceEnum feSpace,
-                                     const double scale,
-                                     const validatorfn_type validator)
+                                     const SpaceEnum feSpace)
+{ // subfieldAdd
+    assert(numComponents > 0);
+
+    Description description;
+    description.label = name;
+    description.vectorFieldType = fieldType;
+    description.numComponents = numComponents;
+    description.componentNames.resize(numComponents);
+    for (int i = 0; i < numComponents; ++i) {
+        description.componentNames[i] = components[i];
+    } // for
+    description.scale = scale;
+    description.validator = NULL;
+
+    Discretization discretization;
+    discretization.basisOrder = basisOrder;
+    discretization.quadOrder = quadOrder;
+    discretization.isBasisContinuous = isBasisContinuous;
+    discretization.feSpace = feSpace;
+
+    this->subfieldAdd(description, discretization);
+} // subfieldAdd
+
+// ----------------------------------------------------------------------
+// Add subfield.
+void
+pylith::topology::Field::subfieldAdd(const Description& description,
+                                     const Discretization& discretization)
 { // subfieldAdd
     PYLITH_METHOD_BEGIN;
 
-    assert(0 == _subfields.count(name));
+    assert(0 == _subfields.count(description.label));
 
     // Keep track of name/components until setup
     SubfieldInfo info;
-    info.metadata.label = name;
-    info.metadata.vectorFieldType = fieldType;
-    info.metadata.scale = scale;
-    info.metadata.dimsOkay = false;
-    info.metadata.componentNames.resize(numComponents);
-    for (int i = 0; i < numComponents; ++i) {
-        info.metadata.componentNames[i] = components[i];
-    } // for
-    info.metadata.validator = validator;
-    info.numComponents = numComponents;
-    info.fe.basisOrder = basisOrder; // Discretization information.
-    info.fe.quadOrder = quadOrder;
-    info.fe.isBasisContinuous = isBasisContinuous;
-    info.fe.feSpace = feSpace;
+    info.description = description;
+    info.fe = discretization;
     info.index = _subfields.size(); // Indices match order added.
     info.dm = NULL;
-    _subfields[name] = info;
+    _subfields[description.label] = info;
 
     PYLITH_METHOD_END;
 } // subfieldAdd
@@ -1252,7 +1228,7 @@ pylith::topology::Field::subfieldsSetup(void)
         const char* sname = s_iter->first.c_str();
         const SubfieldInfo& sinfo = s_iter->second;
 
-        PetscFE fe = FieldOps::createFE(sinfo.fe, _dm, _mesh.isSimplex(), sinfo.numComponents); assert(fe);
+        PetscFE fe = FieldOps::createFE(sinfo.fe, _dm, _mesh.isSimplex(), sinfo.description.numComponents); assert(fe);
         err = PetscObjectSetName((PetscObject) fe, sname); PYLITH_CHECK_ERROR(err);
         err = PetscDSSetDiscretization(prob, sinfo.index, (PetscObject) fe); PYLITH_CHECK_ERROR(err);
         err = PetscFEDestroy(&fe); PYLITH_CHECK_ERROR(err);
@@ -1368,6 +1344,7 @@ pylith::topology::Field::copySubfield(const Field& field,
     PYLITH_METHOD_BEGIN;
 
     // Check compatibility of sections
+    PYLITH_JOURNAL_ERROR(":TODO: @brad This is an insufficient test of field compatibility.");
     const int srcSize = field.chartSize();
     const int dstSize = chartSize();
     if (dstSize != srcSize) {
@@ -1378,8 +1355,7 @@ pylith::topology::Field::copySubfield(const Field& field,
     const SubfieldInfo& subfieldInfo = const_cast<Field&>(field)._subfields[name];
     const int subfieldIndex = subfieldInfo.index; assert(subfieldIndex >= 0);
 
-    _metadata = subfieldInfo.metadata;
-    label(subfieldInfo.metadata.label.c_str()); // Use method to insure propagation to subsidiary objects
+    label(subfieldInfo.description.label.c_str()); // Use method to insure propagation to subsidiary objects
 
     PetscErrorCode err;
     const PetscSection& fieldSection = field.localSection();
@@ -1444,20 +1420,11 @@ pylith::topology::Field::_extractSubfield(const Field& field,
     } // if/else
     err = ISDestroy(&subfieldIS); PYLITH_CHECK_ERROR(err);
 
-    const char** componentNames = (subfieldInfo.numComponents > 0) ? new const char*[subfieldInfo.numComponents] : 0;
-    for (int i = 0; i < subfieldInfo.numComponents; ++i) {
-        componentNames[i] = subfieldInfo.metadata.componentNames[i].c_str();
-    } // for
-    this->subfieldAdd(
-        subfieldInfo.metadata.label.c_str(), componentNames, subfieldInfo.numComponents,
-        subfieldInfo.metadata.vectorFieldType, subfieldInfo.fe.basisOrder, subfieldInfo.fe.quadOrder,
-        subfieldInfo.fe.isBasisContinuous, subfieldInfo.fe.feSpace, subfieldInfo.metadata.scale, subfieldInfo.metadata.validator);
-    delete[] componentNames; componentNames = 0;
-
+    this->subfieldAdd(subfieldInfo.description, subfieldInfo.fe);
     this->subfieldsSetup();
 
     err = DMCreateLocalVector(_dm, &_localVec); PYLITH_CHECK_ERROR(err);
-    err = PetscObjectSetName((PetscObject) _localVec,  _metadata.label.c_str()); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectSetName((PetscObject) _localVec,  _label.c_str()); PYLITH_CHECK_ERROR(err);
 
     // Setup section
     const PetscSection& fieldSection = field.localSection();

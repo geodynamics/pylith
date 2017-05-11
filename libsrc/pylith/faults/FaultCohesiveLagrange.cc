@@ -144,8 +144,6 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
         }
         delete[] ind; ind = 0;
     }
-    dispRel.vectorFieldType(topology::FieldBase::VECTOR);
-    dispRel.scale(_normalizer->lengthScale());
 
     _quadrature->initializeGeometry();
 
@@ -1426,18 +1424,43 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
     // Allocate orientation field.
     scalar_array orientationVertex(orientationSize);
     _fields->add("orientation", "orientation");
-    topology::Field& orientation = _fields->get("orientation");
+    pylith::topology::Field& orientation = _fields->get("orientation");
     const topology::Field& dispRel = _fields->get("relative disp");
-    const int basisOrder = 1;
-    const int quadOrder = 1;
-    const bool isBasisContinous = true;
-    const pylith::topology::FieldBase::SpaceEnum feSpace = pylith::topology::FieldBase::POLYNOMIAL_SPACE;
-    const char* strikeComponents[3] = {"strike_dir_x", "strike_dir_y", "strike_dir_z"};
-    const char* dipComponents[3] = {"dip_dir_x", "dip_dir_y", "dip_dir_z"};
-    const char* normalComponents[3] = {"normal_dir_x", "normal_dir_y", "normal_dir_z"};
-    if (spaceDim > 1) {orientation.subfieldAdd("strike_dir", strikeComponents, spaceDim, topology::Field::VECTOR, basisOrder, quadOrder, isBasisContinous, feSpace);}
-    if (spaceDim > 2) {orientation.subfieldAdd("dip_dir", dipComponents, spaceDim, topology::Field::VECTOR, basisOrder, quadOrder, isBasisContinous, feSpace);}
-    orientation.subfieldAdd("normal_dir", normalComponents, spaceDim, topology::Field::VECTOR, basisOrder, quadOrder, isBasisContinous, feSpace);
+
+    pylith::topology::Field::Description description;
+    description.vectorFieldType = pylith::topology::Field::VECTOR;
+    description.scale = 1.0;
+    description.validator = NULL;
+    description.componentNames.resize(spaceDim);
+    pylith::topology::Field::Discretization discretization;
+    discretization.basisOrder = 1;
+    discretization.quadOrder = 1;
+    discretization.isBasisContinuous = true;
+    discretization.feSpace = pylith::topology::FieldBase::POLYNOMIAL_SPACE;
+    if (spaceDim > 1) {
+        description.label = "strike_dir";
+        const char* componentNames[3] = {"strike_dir_x", "strike_dir_y", "strike_dir_z"};
+        for (int i = 0; i < spaceDim; ++i) {
+            description.componentNames[i] = componentNames[i];
+        } // for
+        orientation.subfieldAdd(description, discretization);
+    } // if
+    if (spaceDim > 2) {
+        description.label = "dip_dir";
+        const char* componentNames[3] = {"dip_dir_x", "dip_dir_y", "dip_dir_z"};
+        for (int i = 0; i < spaceDim; ++i) {
+            description.componentNames[i] = componentNames[i];
+        } // for
+        orientation.subfieldAdd(description, discretization);
+    } // if
+    { // normal_dir
+        description.label = "normal_dir";
+        const char* componentNames[3] = {"normal_dir_x", "normal_dir_y", "normal_dir_z"};
+        for (int i = 0; i < spaceDim; ++i) {
+            description.componentNames[i] = componentNames[i];
+        } // for
+        orientation.subfieldAdd(description, discretization);
+    } // normal_dir
     orientation.subfieldsSetup();
     orientation.newSection(dispRel, orientationSize);
     // Create components for along-strike, up-dip, and normal directions
@@ -1720,9 +1743,6 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
     const topology::Field& dispRel = _fields->get("relative disp");
     area.newSection(dispRel, 1);
     area.allocate();
-    area.vectorFieldType(topology::FieldBase::SCALAR);
-    const PylithScalar lengthScale = _normalizer->lengthScale();
-    area.scale(pow(lengthScale, (spaceDim-1)));
     area.zeroLocal();
 
     topology::VecVisitorMesh areaVisitor(area);
@@ -1779,7 +1799,7 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(topology::Field* tra
     assert(_normalizer);
 
     tractions->label("traction_change");
-    tractions->scale(_normalizer->pressureScale());
+    //tractions->scale(_normalizer->pressureScale());
 
     // Fiber dimension of tractions matches spatial dimension.
     const int spaceDim = _quadrature->spaceDim();
@@ -1857,7 +1877,7 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferVectorField(void)
     const topology::Field& dispRel = _fields->get("relative disp");
     buffer.cloneSection(dispRel);
     buffer.zeroLocal();
-    assert(buffer.vectorFieldType() == topology::FieldBase::VECTOR);
+    //assert(buffer.vectorFieldType() == topology::FieldBase::VECTOR);
 
     PYLITH_METHOD_END;
 } // _allocateBufferVectorField
@@ -1880,10 +1900,10 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferScalarField(void)
     topology::Field& buffer = _fields->get("buffer (scalar)");
     buffer.newSection(topology::FieldBase::VERTICES_FIELD, 1); // :TODO: Update?
     buffer.allocate();
-    buffer.vectorFieldType(topology::FieldBase::SCALAR);
-    buffer.scale(1.0);
+    //buffer.vectorFieldType(topology::FieldBase::SCALAR);
+    //buffer.scale(1.0);
     buffer.zeroLocal();
-    assert(buffer.vectorFieldType() == topology::FieldBase::SCALAR);
+    //assert(buffer.vectorFieldType() == topology::FieldBase::SCALAR);
 
     PYLITH_METHOD_END;
 } // _allocateBufferScalarField

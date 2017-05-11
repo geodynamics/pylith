@@ -26,12 +26,13 @@
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/Stratum.hh" // USES StratumIS
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/error.hh" \
+    // USES PYLITH_METHOD_BEGIN/END
 
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::CellFilterAvg::CellFilterAvg(void) :
-  _fieldAvg(0)
+    _fieldAvg(0)
 { // constructor
 } // constructor
 
@@ -39,24 +40,24 @@ pylith::meshio::CellFilterAvg::CellFilterAvg(void) :
 // Destructor
 pylith::meshio::CellFilterAvg::~CellFilterAvg(void)
 { // destructor
-  deallocate();
-} // destructor  
+    deallocate();
+} // destructor
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::meshio::CellFilterAvg::deallocate(void)
 { // deallocate
-  CellFilter::deallocate();
+    CellFilter::deallocate();
 
-  delete _fieldAvg; _fieldAvg = 0;
+    delete _fieldAvg; _fieldAvg = 0;
 } // deallocate
-  
+
 // ----------------------------------------------------------------------
 // Copy constructor.
 pylith::meshio::CellFilterAvg::CellFilterAvg(const CellFilterAvg& f) :
-  CellFilter(f),
-  _fieldAvg(0)
+    CellFilter(f),
+    _fieldAvg(0)
 { // copy constructor
 } // copy constructor
 
@@ -65,11 +66,11 @@ pylith::meshio::CellFilterAvg::CellFilterAvg(const CellFilterAvg& f) :
 pylith::meshio::CellFilter*
 pylith::meshio::CellFilterAvg::clone(void) const
 { // clone
-  PYLITH_METHOD_BEGIN;
-  
-  pylith::meshio::CellFilter* f = new CellFilterAvg(*this);
+    PYLITH_METHOD_BEGIN;
 
-  PYLITH_METHOD_RETURN(f);
+    pylith::meshio::CellFilter* f = new CellFilterAvg(*this);
+
+    PYLITH_METHOD_RETURN(f);
 } // clone
 
 // ----------------------------------------------------------------------
@@ -77,134 +78,135 @@ pylith::meshio::CellFilterAvg::clone(void) const
 const pylith::topology::Field*
 pylith::meshio::CellFilterAvg::fieldAvg(void) const
 { // fieldAvg
-  return _fieldAvg;
+    return _fieldAvg;
 } // fieldAvg
-  
+
 // ----------------------------------------------------------------------
 // Filter field.
 pylith::topology::Field&
 pylith::meshio::CellFilterAvg::filter(const topology::Field& fieldIn,
-				      const char* label,
-				      const int labelId)
+                                      const char* label,
+                                      const int labelId)
 { // filter
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  const feassemble::Quadrature* quadrature = CellFilter::_quadrature;assert(quadrature);
+    const feassemble::Quadrature* quadrature = CellFilter::_quadrature;assert(quadrature);
 
-  const int numQuadPts = quadrature->numQuadPts();
-  const scalar_array& wts = quadrature->quadWts();
-  
-  PetscDM dmMesh = fieldIn.mesh().dmMesh();assert(dmMesh);
-  PetscInt cStart = 0, cEnd, numCells;
-  PetscErrorCode err;
+    const int numQuadPts = quadrature->numQuadPts();
+    const scalar_array& wts = quadrature->quadWts();
 
-  if (!label) {
-    PetscInt h, cMax;
-    err = DMPlexGetVTKCellHeight(dmMesh, &h);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetHeightStratum(dmMesh, h, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetHybridBounds(dmMesh, &cMax, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
-    if (cMax >= 0) {cEnd = PetscMin(cEnd, cMax);}
-    numCells = cEnd - cStart;
-  } else {
-    if (!_cellsIS) {
-      const bool includeOnlyCells = true;
-      _cellsIS = new topology::StratumIS(dmMesh, label, labelId, includeOnlyCells);assert(_cellsIS);
+    PetscDM dmMesh = fieldIn.mesh().dmMesh();assert(dmMesh);
+    PetscInt cStart = 0, cEnd, numCells;
+    PetscErrorCode err;
+
+    if (!label) {
+        PetscInt h, cMax;
+        err = DMPlexGetVTKCellHeight(dmMesh, &h);PYLITH_CHECK_ERROR(err);
+        err = DMPlexGetHeightStratum(dmMesh, h, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+        err = DMPlexGetHybridBounds(dmMesh, &cMax, NULL, NULL, NULL);PYLITH_CHECK_ERROR(err);
+        if (cMax >= 0) {cEnd = PetscMin(cEnd, cMax);}
+        numCells = cEnd - cStart;
+    } else {
+        if (!_cellsIS) {
+            const bool includeOnlyCells = true;
+            _cellsIS = new topology::StratumIS(dmMesh, label, labelId, includeOnlyCells);assert(_cellsIS);
+        } // if
+        numCells = _cellsIS->size();
+        if (numCells > 0) {
+            cStart = _cellsIS->points()[0];
+        } // if
+    } // if/else
+
+    topology::VecVisitorMesh fieldInVisitor(fieldIn);
+    const PetscScalar* fieldInArray = fieldInVisitor.localArray();
+
+    // Only processors with cells for output get the correct fiber dimension.
+    PetscInt totalFiberDim = (numCells > 0) ? fieldInVisitor.sectionDof(cStart) : 0;
+    const int fiberDim = totalFiberDim / numQuadPts;
+    assert(fiberDim * numQuadPts == totalFiberDim);
+    // The decision to reallocate a field must be collective
+    PetscInt reallocate = ((!_fieldAvg) || (_fieldAvg->sectionSize() != numCells*fiberDim));
+    PetscInt reallocateGlobal = 0;
+    err = MPI_Allreduce(&reallocate, &reallocateGlobal, 1, MPIU_INT, MPI_LOR, fieldIn.mesh().comm());PYLITH_CHECK_ERROR(err);
+    if (reallocateGlobal) {
+        if (!_fieldAvg) {
+            _fieldAvg = new topology::Field(fieldIn.mesh());assert(_fieldAvg);
+        } // if
+        _fieldAvg->newSection(fieldIn, fiberDim);
+        _fieldAvg->allocate();
     } // if
-    numCells = _cellsIS->size();
-    if (numCells > 0) {
-      cStart = _cellsIS->points()[0];
-    } // if
-  } // if/else
 
-  topology::VecVisitorMesh fieldInVisitor(fieldIn);
-  const PetscScalar* fieldInArray = fieldInVisitor.localArray();
-  
-  // Only processors with cells for output get the correct fiber dimension.
-  PetscInt totalFiberDim = (numCells > 0) ? fieldInVisitor.sectionDof(cStart) : 0;
-  const int fiberDim = totalFiberDim / numQuadPts;
-  assert(fiberDim * numQuadPts == totalFiberDim);
-  // The decision to reallocate a field must be collective
-  PetscInt reallocate = ((!_fieldAvg) || (_fieldAvg->sectionSize() != numCells*fiberDim));
-  PetscInt reallocateGlobal = 0;
-  err = MPI_Allreduce(&reallocate, &reallocateGlobal, 1, MPIU_INT, MPI_LOR, fieldIn.mesh().comm());PYLITH_CHECK_ERROR(err);
-  if (reallocateGlobal) {
-    if (!_fieldAvg) {
-      _fieldAvg = new topology::Field(fieldIn.mesh());assert(_fieldAvg);
-    } // if
-    _fieldAvg->newSection(fieldIn, fiberDim);
-    _fieldAvg->allocate();
-  } // if
-
-  assert(_fieldAvg);
-  switch (fieldIn.vectorFieldType())
-    { // switch
+#if 0 // :TODO: Update this for changes to the Field interface.
+    assert(_fieldAvg);
+    switch (fieldIn.vectorFieldType()) { // switch
     case topology::FieldBase::MULTI_SCALAR:
-      _fieldAvg->vectorFieldType(topology::FieldBase::SCALAR);
-      break;
+        _fieldAvg->vectorFieldType(topology::FieldBase::SCALAR);
+        break;
     case topology::FieldBase::MULTI_VECTOR:
-      _fieldAvg->vectorFieldType(topology::FieldBase::VECTOR);
-      break;
+        _fieldAvg->vectorFieldType(topology::FieldBase::VECTOR);
+        break;
     case topology::FieldBase::MULTI_TENSOR:
-      _fieldAvg->vectorFieldType(topology::FieldBase::TENSOR);
-      break;
+        _fieldAvg->vectorFieldType(topology::FieldBase::TENSOR);
+        break;
     case topology::FieldBase::MULTI_OTHER:
-      _fieldAvg->vectorFieldType(topology::FieldBase::OTHER);
-      break;
+        _fieldAvg->vectorFieldType(topology::FieldBase::OTHER);
+        break;
     case topology::FieldBase::SCALAR:
     case topology::FieldBase::VECTOR:
     case topology::FieldBase::TENSOR:
     case topology::FieldBase::OTHER:
-    default :
-      std::ostringstream msg;
-      msg << "Bad vector field type '" << fieldIn.vectorFieldType() << " for CellFilterAvg'." << std::endl;
-      throw std::logic_error(msg.str());
+    default:
+        std::ostringstream msg;
+        msg << "Bad vector field type '" << fieldIn.vectorFieldType() << " for CellFilterAvg'." << std::endl;
+        throw std::logic_error(msg.str());
     } // switch
+    _fieldAvg->scale(fieldIn.scale());
+    #endif
 
-  _fieldAvg->label(fieldIn.label());
-  _fieldAvg->scale(fieldIn.scale());
-  _fieldAvg->dimensionalizeOkay(true);
+    _fieldAvg->label(fieldIn.label());
+    _fieldAvg->dimensionalizeOkay(true);
 
-  topology::VecVisitorMesh fieldAvgVisitor(*_fieldAvg);
-  PetscScalar* fieldAvgArray = fieldAvgVisitor.localArray();
-  
-  PylithScalar volume = 0.0;
-  for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
-    volume += wts[iQuad];
+    topology::VecVisitorMesh fieldAvgVisitor(*_fieldAvg);
+    PetscScalar* fieldAvgArray = fieldAvgVisitor.localArray();
 
-  // Loop over cells
-  if (_cellsIS) {
-    const PetscInt* cells = _cellsIS->points();
-    for(PetscInt c = 0; c < numCells; ++c) {
-      const PetscInt ioff = fieldInVisitor.sectionOffset(cells[c]);
-      assert(totalFiberDim == fieldInVisitor.sectionDof(cells[c]));
+    PylithScalar volume = 0.0;
+    for (int iQuad = 0; iQuad < numQuadPts; ++iQuad)
+        volume += wts[iQuad];
 
-      const PetscInt aoff = fieldAvgVisitor.sectionOffset(cells[c]);
-      assert(fiberDim == fieldAvgVisitor.sectionDof(cells[c]));
+    // Loop over cells
+    if (_cellsIS) {
+        const PetscInt* cells = _cellsIS->points();
+        for (PetscInt c = 0; c < numCells; ++c) {
+            const PetscInt ioff = fieldInVisitor.sectionOffset(cells[c]);
+            assert(totalFiberDim == fieldInVisitor.sectionDof(cells[c]));
 
-      for(int i = 0; i < fiberDim; ++i) {
-        fieldAvgArray[aoff+i] = 0.0;
-        for(int iQuad = 0; iQuad < numQuadPts; ++iQuad)
-          fieldAvgArray[aoff+i] += wts[iQuad] / volume * fieldInArray[ioff+iQuad*fiberDim+i];
-      } // for
-    } // for
-  } else {
-    for(PetscInt c = cStart; c < cEnd; ++c) {
-      const PetscInt ioff = fieldInVisitor.sectionOffset(c);
-      assert(totalFiberDim == fieldInVisitor.sectionDof(c));
+            const PetscInt aoff = fieldAvgVisitor.sectionOffset(cells[c]);
+            assert(fiberDim == fieldAvgVisitor.sectionDof(cells[c]));
 
-      const PetscInt aoff = fieldAvgVisitor.sectionOffset(c);
-      assert(fiberDim == fieldAvgVisitor.sectionDof(c));
+            for (int i = 0; i < fiberDim; ++i) {
+                fieldAvgArray[aoff+i] = 0.0;
+                for (int iQuad = 0; iQuad < numQuadPts; ++iQuad)
+                    fieldAvgArray[aoff+i] += wts[iQuad] / volume * fieldInArray[ioff+iQuad*fiberDim+i];
+            } // for
+        } // for
+    } else {
+        for (PetscInt c = cStart; c < cEnd; ++c) {
+            const PetscInt ioff = fieldInVisitor.sectionOffset(c);
+            assert(totalFiberDim == fieldInVisitor.sectionDof(c));
 
-      for(int i = 0; i < fiberDim; ++i) {
-        fieldAvgArray[aoff+i] = 0.0;
-        for(int iQuad = 0; iQuad < numQuadPts; ++iQuad)
-          fieldAvgArray[aoff+i] += wts[iQuad] / volume * fieldInArray[ioff+iQuad*fiberDim+i];
-      } // for
-    } // for
-  } // if/else
-  PetscLogFlops(numCells * numQuadPts*fiberDim*3);
+            const PetscInt aoff = fieldAvgVisitor.sectionOffset(c);
+            assert(fiberDim == fieldAvgVisitor.sectionDof(c));
 
-  PYLITH_METHOD_RETURN(*_fieldAvg);
+            for (int i = 0; i < fiberDim; ++i) {
+                fieldAvgArray[aoff+i] = 0.0;
+                for (int iQuad = 0; iQuad < numQuadPts; ++iQuad)
+                    fieldAvgArray[aoff+i] += wts[iQuad] / volume * fieldInArray[ioff+iQuad*fiberDim+i];
+            } // for
+        } // for
+    } // if/else
+    PetscLogFlops(numCells * numQuadPts*fiberDim*3);
+
+    PYLITH_METHOD_RETURN(*_fieldAvg);
 } // filter
 
 

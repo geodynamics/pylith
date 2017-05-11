@@ -30,7 +30,8 @@
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Nondimensional.hh" \
+    // USES Nondimensional
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -102,14 +103,14 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
     // Create nondimensionalized array of point locations
     const int size = numPoints * spaceDim;
     scalar_array pointsNondim(size);
-    for (int i=0; i < size; ++i) {
+    for (int i = 0; i < size; ++i) {
         pointsNondim[i] = points[i] / normalizer.lengthScale();
     } // for
 
 #if 0 // DEBUGGING
     std::cout << "OUTPUT SOLN POINTS (dimensioned)" << std::endl;
-    for (int i=0; i < numPoints; ++i) {
-        for (int iDim=0; iDim < spaceDim; ++iDim) {
+    for (int i = 0; i < numPoints; ++i) {
+        for (int iDim = 0; iDim < spaceDim; ++iDim) {
             std::cout << " " << points[i*spaceDim+iDim];
         } // for
         std::cout << "\n";
@@ -138,12 +139,12 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
     err = VecGetArray(_interpolator->coords, &pointsLocal); PYLITH_CHECK_ERROR(err);
     scalar_array pointsArray(numPointsLocal*spaceDim); // Array of vertex coordinates for local mesh.
     const int sizeLocal = numPointsLocal*spaceDim;
-    for (int i=0; i < sizeLocal; ++i) {
+    for (int i = 0; i < sizeLocal; ++i) {
         // Must scale by length scale because we gave interpolator nondimensioned coordinates
         pointsArray[i] = pointsLocal[i]*normalizer.lengthScale();
     } // for
     int_array cells(numPointsLocal);
-    for (int i=0; i < numPointsLocal; ++i) {
+    for (int i = 0; i < numPointsLocal; ++i) {
         cells[i] = i;
     } // for
     const int numCells = numPointsLocal;
@@ -167,12 +168,12 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
 
     // Copy station names. :TODO: Reorder to match output (pointsLocal).
     _stations.resize(numPointsLocal);
-    for (int iLocal=0; iLocal < numPointsLocal; ++iLocal) {
+    for (int iLocal = 0; iLocal < numPointsLocal; ++iLocal) {
         // Find point in array of points to get index for station name.
-        for (int iAll=0; iAll < numPoints; ++iAll) {
+        for (int iAll = 0; iAll < numPoints; ++iAll) {
             const PylithScalar tolerance = 1.0e-6;
             PylithScalar dist = 0.0;
-            for (int iDim=0; iDim < spaceDim; ++iDim) {
+            for (int iDim = 0; iDim < spaceDim; ++iDim) {
                 dist += pow(points[iAll*spaceDim+iDim] - pointsArray[iLocal*spaceDim+iDim], 2);
             } // for
             if (sqrt(dist) < tolerance) {
@@ -274,8 +275,8 @@ pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
     } // if
 
     fieldInterp.label(field.label());
-    fieldInterp.vectorFieldType(field.vectorFieldType());
-    fieldInterp.scale(field.scale());
+    //fieldInterp.vectorFieldType(field.vectorFieldType());
+    //fieldInterp.scale(field.scale());
     fieldInterp.zeroLocal();
 
     err = DMInterpolationSetDof(_interpolator, fiberDim); PYLITH_CHECK_ERROR(err);

@@ -28,7 +28,8 @@
 #include "pylith/topology/Fields.hh" // USES Fields
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include <iostream> // USES std::cout
+#include <iostream> \
+    // USES std::cout
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -218,7 +219,7 @@ pylith::meshio::OutputManager::appendCellField(const PylithScalar t,
 
     try {
         _writer->writeCellField(t, fieldDimensioned, label, labelId);
-    } catch(std::runtime_error e) {
+    } catch (std::runtime_error e) {
         std::cout << "ERROR: " << e.what() << std::endl<<std::endl<<std::endl;
     } // try/catch
 
@@ -232,16 +233,19 @@ pylith::meshio::OutputManager::_dimension(topology::Field& fieldIn)
 { // _dimension
     PYLITH_METHOD_BEGIN;
 
-    if (1.0 == fieldIn.scale())
+#if 0 // :TODO: FIX THIS.
+    if (1.0 == fieldIn.scale()) {
         PYLITH_METHOD_RETURN(fieldIn);
+    }
+#endif
 
     if (fieldIn.dimensionalizeOkay()) {
         fieldIn.dimensionalize();
         PYLITH_METHOD_RETURN(fieldIn);
     } else {
         std::string fieldName = "buffer (other)";
-        switch (fieldIn.vectorFieldType())
-        { // switch
+#if 0 // :TODO: FIX THIS.
+        switch (fieldIn.vectorFieldType()) { // switch
         case topology::FieldBase::SCALAR:
             fieldName = "buffer (scalar)";
             break;
@@ -289,8 +293,8 @@ pylith::meshio::OutputManager::_dimension(topology::Field& fieldIn)
         fieldOut.copy(fieldIn);
         fieldOut.dimensionalizeOkay(true);
         fieldOut.dimensionalize();
-
         PYLITH_METHOD_RETURN(fieldOut);
+#endif
     } // if/else
 
     // Satisfy return value. Should never get this far.

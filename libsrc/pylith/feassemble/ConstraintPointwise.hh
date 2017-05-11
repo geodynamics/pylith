@@ -36,7 +36,7 @@
 #include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
 
-#include "pylith/topology/FieldBase.hh" // USES DiscretizeInfo
+#include "pylith/topology/FieldBase.hh" // USES Discretization
 
 
 #include <map> // HOLDSA std::map
@@ -137,7 +137,7 @@ public:
      * @return Discretization information for auxiliary subfield. If
      * discretization information was not set, then use "default".
      */
-    const pylith::topology::FieldBase::DiscretizeInfo& auxFieldDiscretization(const char* name) const;
+    const pylith::topology::FieldBase::Discretization& auxFieldDiscretization(const char* name) const;
 
     /** Set manager of scales used to nondimensionalize problem.
      *
@@ -180,7 +180,7 @@ public:
     // PROTECTED TYPEDEFS /////////////////////////////////////////////////
 protected:
 
-    typedef std::map<std::string, pylith::topology::FieldBase::DiscretizeInfo> discretizations_type;
+    typedef std::map<std::string, pylith::topology::FieldBase::Discretization> discretizations_type;
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected:

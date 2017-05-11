@@ -31,37 +31,65 @@
 #include "journal/error.h"
 
 
-#define PYLITH_JOURNAL_DEBUG(msg) \
+#define PYLITH_COMPONENT_DEBUG(msg) \
     do { \
         journal::debug_t debug(PyreComponent::name()); \
         debug << journal::at(__HERE__) \
               << "Component '"<<PyreComponent::identifier()<<"': " \
               << msg << journal::endl; \
-    } while(0)
+    } while (0)
 
-#define PYLITH_JOURNAL_INFO(msg) \
+#define PYLITH_COMPONENT_INFO(msg) \
     do { \
         journal::info_t info(PyreComponent::name()); \
         info << journal::at(__HERE__) \
              << "Component '"<<PyreComponent::identifier()<<"': " \
              << msg << journal::endl; \
-    } while(0)
+    } while (0)
 
-#define PYLITH_JOURNAL_WARNING(msg) \
+#define PYLITH_COMPONENT_WARNING(msg) \
     do { \
         journal::warning_t warning(PyreComponent::name()); \
         warning << journal::at(__HERE__) \
                 << "Component '"<<PyreComponent::identifier()<<"': " \
                 << msg << journal::endl; \
-    } while(0)
+    } while (0)
 
-#define PYLITH_JOURNAL_ERROR(msg) \
+#define PYLITH_COMPONENT_ERROR(msg) \
     do { \
         journal::error_t error(PyreComponent::name()); \
         error << journal::at(__HERE__) \
               << "Component '"<<PyreComponent::identifier()<<"': " \
               << msg << journal::endl; \
-    } while(0)
+    } while (0)
+
+#define PYLITH_JOURNAL_DEBUG(msg) \
+    do { \
+        journal::debug_t debug(GenericComponent::name()); \
+        debug << journal::at(__HERE__) \
+              << msg << journal::endl; \
+    } while (0)
+
+#define PYLITH_JOURNAL_INFO(msg) \
+    do { \
+        journal::info_t info(GenericComponent::name()); \
+        info << journal::at(__HERE__) \
+             << msg << journal::endl; \
+    } while (0)
+
+#define PYLITH_JOURNAL_WARNING(msg) \
+    do { \
+        journal::warning_t warning(GenericComponent::name()); \
+        warning << journal::at(__HERE__) \
+                << msg << journal::endl; \
+    } while (0)
+
+#define PYLITH_JOURNAL_ERROR(msg) \
+    do { \
+        journal::error_t error(GenericComponent::name()); \
+        error << journal::at(__HERE__) \
+              << msg << journal::endl; \
+    } while (0)
 
 #endif // pylith_utils_journals_hh
 

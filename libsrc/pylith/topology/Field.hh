@@ -28,6 +28,7 @@
 
 // Include directives ---------------------------------------------------
 #include "FieldBase.hh" // ISA FieldBase
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/utils/arrayfwd.hh" // HASA int_array
 #include "pylith/utils/petscfwd.h" // HASA PetscVec
@@ -54,7 +55,7 @@
  * and 6. Step 2-4 and 6 are automatically handled by the PETSc DS if
  * DMAddBoundary is called.
  */
-class pylith::topology::Field : public FieldBase { // Field
+class pylith::topology::Field : public FieldBase, public pylith::utils::GenericComponent {
     friend class FieldQuery;   // Fill field using data.
 
     friend class TestFieldMesh;   // unit testing
@@ -65,9 +66,8 @@ public:
 
     /// Subfield auxiliary information.
     struct SubfieldInfo {
-        Metadata metadata; ///< Metadata for subfield.
-        DiscretizeInfo fe; ///< Discretization information for subfield.
-        int numComponents; ///< Number of components.
+        Description description; ///< Description for subfield.
+        Discretization fe; ///< Discretization information for subfield.
         int index; ///< Index of subfield in field.
         PetscDM dm; ///< PETSc DM associated with subfield.
     };   // SubfieldInfo
@@ -81,27 +81,29 @@ public:
      */
     Field(const Mesh& mesh);
 
+    #if 0
     /** Constructor with mesh, DM, and metadata
      *
      * @param mesh Finite-element mesh.
      * @param dm PETSc dm for field.
-     * @param meteadata Field metadata.
+     * @param label Label of field.
      */
     Field(const Mesh& mesh,
           PetscDM dm,
-          const Metadata& metadata);
+          const char* label);
+          #endif
 
     /** Constructor with mesh, PETSc DM, local data, and metadata.
      *
      * @param mesh Finite-element mesh.
      * @param dm PETSc DM for field.
      * @param localVec PETSc Vec with local data for field.
-     * @param meteadata Field metadata.
+     * @param description Field description.
      */
     Field(const Mesh& mesh,
           PetscDM dm,
           PetscVec localVec,
-          const Metadata& metadata);
+          const Description& description);
 
     /// Destructor.
     ~Field(void);
@@ -132,30 +134,6 @@ public:
      * @returns Label for field.
      */
     const char* label(void) const;
-
-    /** Set vector field type.
-     *
-     * @param value Type of vector field.
-     */
-    void vectorFieldType(const VectorFieldEnum value);
-
-    /** Get vector field type
-     *
-     * @returns Type of vector field.
-     */
-    VectorFieldEnum vectorFieldType(void) const;
-
-    /** Set scale for dimensionalizing field.
-     *
-     * @param value Scale associated with field.
-     */
-    void scale(const PylithReal value);
-
-    /** Get scale for dimensionalizing field.
-     *
-     * @returns Scale associated with field.
-     */
-    PylithReal scale(void) const;
 
     /** Set flag indicating whether it is okay to dimensionalize field.
      *
@@ -292,31 +270,39 @@ public:
      */
     void cloneSection(const Field& src);
 
-    /** Add subfield to current field.
+    /** Add subfield to current field (for use from SWIG).
      *
-     * Should be followed by calls to subfieldsSetup() and subfieldSetDof().
+     * Should be followed by calls to subfieldsSetup() and allocate().
      *
      * @param[in] name Name of subfield.
-     * @param[in] components Names of components in subfield.
-     * @param[in] numComponents Number of components in subfield.
      * @param[in] fieldType Type of vector field.
-     * @param[in] basisOrder Polynomial order for basis.
-     * @param[in] quadOrder Order of quadrature rule.
+     * @param[in] components Array of names of field components.
+     * @param[in] numComponents Size of array.
+     * @param[in] scale Dimensional scale associated with field.
+     * @param[in] basisOrder Order of basis functions for discretization.
+     * @param[in] quadOrder Order of numerical quadrature for discretization.
      * @param[in] isBasisContinuous True if basis is continuous.
-     * @param[in] feSpace Finite-element space (polynomial or point).
-     * @param[in] scale Scale for dimensionalizing field.
-     * @param[in] validator Validator function for field values.
+     * @param[in] feSpace Finite-element space (POLYNOMIAL_SPACE or POINT_SPACE).
      */
     void subfieldAdd(const char *name,
+                     const VectorFieldEnum fieldType,
                      const char* components[],
                      const int numComponents,
-                     const VectorFieldEnum fieldType,
+                     const double scale,
                      const int basisOrder,
                      const int quadOrder,
-                     const bool isBasisContinuous=true,
-                     const SpaceEnum feSpace=POLYNOMIAL_SPACE,
-                     const double scale=1.0,
-                     const validatorfn_type validator=NULL);
+                     const bool isBasisContinuous,
+                     const SpaceEnum feSpace);
+
+    /** Add subfield to current field.
+     *
+     * Should be followed by calls to subfieldsSetup() and allocate().
+     *
+     * @param[in] description Description for subfield.
+     * @param[in] discretization Deiscretization information for subfield.
+     */
+    void subfieldAdd(const Description& description,
+                     const Discretization& discretization);
 
     /** Setup sections for subfields.
      *
@@ -359,7 +345,7 @@ public:
     /// Clear variables associated with section.
     void clear(void);
 
-    /// Allocate field.
+    /// Allocate field and zero local vector..
     void allocate(void);
 
     /// Zero local values (including constrained values).
@@ -530,14 +516,16 @@ private:
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
 
-    Metadata _metadata;
+    subfields_type _subfields;   ///< Map of subfields bundled together.
+    std::string _label; ///< Label for field.
+    bool _dimsOkay; ///< Ok to replace nondimensionalized values with dimensionalized values.
 
     const Mesh& _mesh;   ///< Mesh associated with section.
     scatter_map_type _scatters;   ///< Collection of scatters.
-
     PetscDM _dm;   ///< Manages the PetscSection.
     PetscVec _localVec;   ///< Local PETSc vector.
-    subfields_type _subfields;   ///< Map of subfields bundled together.
+
+    static const char* _genericComponent; ///< Name of generic component.
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:

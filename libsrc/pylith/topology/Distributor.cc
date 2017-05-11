@@ -32,14 +32,15 @@
 #include <strings.h> // USES strcasecmp()
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
-#include <cassert> // USES assert()
+#include <cassert> \
+    // USES assert()
 
 // ----------------------------------------------------------------------
 // Constructor
 pylith::topology::Distributor::Distributor(void)
 { // constructor
 } // constructor
- 
+
 // ----------------------------------------------------------------------
 // Destructor
 pylith::topology::Distributor::~Distributor(void)
@@ -50,90 +51,90 @@ pylith::topology::Distributor::~Distributor(void)
 // Distribute mesh among processors.
 void
 pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
-					  const topology::Mesh& origMesh,
-					  const char* partitionerName)
+                                          const topology::Mesh& origMesh,
+                                          const char* partitionerName)
 { // distribute
-  PYLITH_METHOD_BEGIN;
-  
-  assert(newMesh);
-  newMesh->coordsys(origMesh.coordsys());
+    PYLITH_METHOD_BEGIN;
 
-  journal::info_t info("mesh_distributor");
-  const int commRank = origMesh.commRank();
-  if (0 == commRank) {
-    info << journal::at(__HERE__)
-	 << "Partitioning mesh using PETSc '" << partitionerName << "' partitioner." << journal::endl;
-  } // if
-  
-  PetscErrorCode err = 0;
-  PetscPartitioner partitioner =  0;
-  PetscDM dmOrig = origMesh.dmMesh();assert(dmOrig);
-  err = DMPlexGetPartitioner(dmOrig, &partitioner);PYLITH_CHECK_ERROR(err);
-  err = PetscPartitionerSetType(partitioner, partitionerName);PYLITH_CHECK_ERROR(err);
+    assert(newMesh);
+    newMesh->coordsys(origMesh.coordsys());
 
-  if (0 == commRank) {
-    info << journal::at(__HERE__)
-	 << "Distributing partitioned mesh." << journal::endl;
-  } // if
+    journal::info_t info("mesh_distributor");
+    const int commRank = origMesh.commRank();
+    if (0 == commRank) {
+        info << journal::at(__HERE__)
+             << "Partitioning mesh using PETSc '" << partitionerName << "' partitioner." << journal::endl;
+    } // if
 
-  PetscDM dmNew = NULL;
-  err = DMPlexDistribute(origMesh.dmMesh(), 0, NULL, &dmNew);PYLITH_CHECK_ERROR(err);
-  newMesh->dmMesh(dmNew);
+    PetscErrorCode err = 0;
+    PetscPartitioner partitioner = 0;
+    PetscDM dmOrig = origMesh.dmMesh();assert(dmOrig);
+    err = DMPlexGetPartitioner(dmOrig, &partitioner);PYLITH_CHECK_ERROR(err);
+    err = PetscPartitionerSetType(partitioner, partitionerName);PYLITH_CHECK_ERROR(err);
 
-  PYLITH_METHOD_END;
+    if (0 == commRank) {
+        info << journal::at(__HERE__)
+             << "Distributing partitioned mesh." << journal::endl;
+    } // if
+
+    PetscDM dmNew = NULL;
+    err = DMPlexDistribute(origMesh.dmMesh(), 0, NULL, &dmNew);PYLITH_CHECK_ERROR(err);
+    newMesh->dmMesh(dmNew);
+
+    PYLITH_METHOD_END;
 } // distribute
 
 // ----------------------------------------------------------------------
 // Write partitioning info for distributed mesh.
 void
 pylith::topology::Distributor::write(meshio::DataWriter* const writer,
-				     const topology::Mesh& mesh)
+                                     const topology::Mesh& mesh)
 { // write
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  journal::info_t info("mesh_distributor");
-    
-  const int commRank = mesh.commRank();
-  if (0 == commRank) {
-    info << journal::at(__HERE__)
-	 << "Writing partition." << journal::endl;
-  } // if
+    journal::info_t info("mesh_distributor");
 
-  // Setup and allocate field
-  const int fiberDim = 1;
-  topology::Field partition(mesh);
-  partition.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
-  partition.allocate();
-  partition.scale(1.0);
-  partition.label("partition");
-  partition.vectorFieldType(topology::FieldBase::SCALAR);
+    const int commRank = mesh.commRank();
+    if (0 == commRank) {
+        info << journal::at(__HERE__)
+             << "Writing partition." << journal::endl;
+    } // if
 
-  PylithScalar rankReal = PylithScalar(commRank);
+    // Setup and allocate field
+    const int fiberDim = 1;
+    topology::Field partition(mesh);
+    partition.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
+    partition.allocate();
+    //partition.scale(1.0);
+    //partition.vectorFieldType(topology::FieldBase::SCALAR);
+    partition.label("partition");
 
-  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-  topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
-  const PetscInt cStart = cellsStratum.begin();
-  const PetscInt cEnd = cellsStratum.end();
+    PylithScalar rankReal = PylithScalar(commRank);
 
-  topology::VecVisitorMesh partitionVisitor(partition);
-  PetscScalar* partitionArray = partitionVisitor.localArray();
+    PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+    topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
+    const PetscInt cStart = cellsStratum.begin();
+    const PetscInt cEnd = cellsStratum.end();
 
-  for (PetscInt c = cStart; c < cEnd; ++c) {
-    const PetscInt off = partitionVisitor.sectionOffset(c);
-    assert(fiberDim == partitionVisitor.sectionDof(c));
-    partitionArray[off] = rankReal;
-  } // for
+    topology::VecVisitorMesh partitionVisitor(partition);
+    PetscScalar* partitionArray = partitionVisitor.localArray();
 
-  //partition->view("PARTITION");
-  const PylithScalar t = 0.0;
-  const int numTimeSteps = 0;
-  writer->open(mesh, numTimeSteps);
-  writer->openTimeStep(t, mesh);
-  writer->writeCellField(t, partition);
-  writer->closeTimeStep();
-  writer->close();
+    for (PetscInt c = cStart; c < cEnd; ++c) {
+        const PetscInt off = partitionVisitor.sectionOffset(c);
+        assert(fiberDim == partitionVisitor.sectionDof(c));
+        partitionArray[off] = rankReal;
+    } // for
 
-  PYLITH_METHOD_END;
+    //partition->view("PARTITION");
+    const PylithScalar t = 0.0;
+    const int numTimeSteps = 0;
+    writer->open(mesh, numTimeSteps);
+    writer->openTimeStep(t, mesh);
+    writer->writeCellField(t, partition);
+    writer->closeTimeStep();
+    writer->close();
+
+    PYLITH_METHOD_END;
 } // write
 
-// End of file 
+// End of file

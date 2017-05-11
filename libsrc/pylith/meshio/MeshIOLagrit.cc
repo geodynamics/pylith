@@ -29,7 +29,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/utils/array.hh" // USES scalar_array, int_array
 
-#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 
 #include <cassert> // USES assert()
@@ -75,7 +75,7 @@ void
 pylith::meshio::MeshIOLagrit::_read(void)
 { // _read
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_read()");
+    PYLITH_COMPONENT_DEBUG("_read()");
 
     const int commRank = _mesh->commRank();
     int meshDim = 0;
@@ -117,7 +117,7 @@ pylith::meshio::MeshIOLagrit::_read(void)
         } // if/else
         GroupPtType type = VERTEX;
         const int numGroups = groups.size();
-        for (int iGroup=0; iGroup < numGroups; ++iGroup)
+        for (int iGroup = 0; iGroup < numGroups; ++iGroup)
             _setGroup(groups[iGroup].name, type, groups[iGroup].points);
     }
     _distributeGroups();
@@ -147,8 +147,8 @@ pylith::meshio::MeshIOLagrit::_orientCellsAscii(int_array* const cells,
     assert(cells);
     assert(cells->size() == size_t(numCells*numCorners));
 
-    if (3 == meshDim && 4 == numCorners) // TET
-        for (int iCell=0; iCell < numCells; ++iCell) {
+    if ((3 == meshDim) && (4 == numCorners)) { // TET
+        for (int iCell = 0; iCell < numCells; ++iCell) {
             const int i1 = iCell*numCorners+1;
             const int i2 = iCell*numCorners+2;
             const int tmp = (*cells)[i1];
@@ -156,6 +156,7 @@ pylith::meshio::MeshIOLagrit::_orientCellsAscii(int_array* const cells,
             (*cells)[i2] = tmp;
         }                                  // for
 
+    }
     PYLITH_METHOD_END;
 } // _orientCellsAscii
 
@@ -173,9 +174,10 @@ pylith::meshio::MeshIOLagrit::_orientCellsBinary(int_array* const cells,
     assert(cells);
     assert(cells->size() == size_t(numCells*numCorners));
 
-    if (3 == meshDim && 4 == numCorners) // TET
+    if ((3 == meshDim) && (4 == numCorners)) { // TET
         ;                                      // do nothing
 
+    }
     PYLITH_METHOD_END;
 } // _orientCellsBinary
 

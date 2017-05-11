@@ -27,7 +27,7 @@
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
-#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <cassert> // USES assert()
 #include <typeinfo> // USES typeid()
@@ -105,7 +105,7 @@ pylith::feassemble::IntegratorPointwise::getAuxField(pylith::topology::Field *fi
                                                      const char* name) const
 { // getAuxField
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("getAuxField(field="<<field->label()<<", name="<<name<<")");
+    PYLITH_COMPONENT_DEBUG("getAuxField(field="<<field->label()<<", name="<<name<<")");
 
     assert(field);
     assert(_auxFields);
@@ -133,9 +133,9 @@ pylith::feassemble::IntegratorPointwise::auxFieldDiscretization(const char* name
                                                                 const pylith::topology::FieldBase::SpaceEnum feSpace)
 { // discretization
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("auxFieldDiscretization(name="<<name<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<", feSpace="<<feSpace<<")");
+    PYLITH_COMPONENT_DEBUG("auxFieldDiscretization(name="<<name<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<", feSpace="<<feSpace<<")");
 
-    pylith::topology::FieldBase::DiscretizeInfo feInfo;
+    pylith::topology::FieldBase::Discretization feInfo;
     feInfo.basisOrder = basisOrder;
     feInfo.quadOrder = quadOrder;
     feInfo.isBasisContinuous = isBasisContinuous;
@@ -148,7 +148,7 @@ pylith::feassemble::IntegratorPointwise::auxFieldDiscretization(const char* name
 
 // ----------------------------------------------------------------------
 // Get discretization information for auxiliary subfield.
-const pylith::topology::FieldBase::DiscretizeInfo&
+const pylith::topology::FieldBase::Discretization&
 pylith::feassemble::IntegratorPointwise::auxFieldDiscretization(const char* name) const
 { // discretization
     PYLITH_METHOD_BEGIN;
@@ -186,7 +186,7 @@ pylith::feassemble::IntegratorPointwise::needNewLHSJacobian(void) const {
 void
 pylith::feassemble::IntegratorPointwise::normalizer(const spatialdata::units::Nondimensional& dim)
 { // normalizer
-    PYLITH_JOURNAL_DEBUG("normalizer(dim="<<typeid(dim).name()<<")");
+    PYLITH_COMPONENT_DEBUG("normalizer(dim="<<typeid(dim).name()<<")");
 
     if (0 == _normalizer) {
         _normalizer = new spatialdata::units::Nondimensional(dim);
@@ -211,9 +211,9 @@ void
 pylith::feassemble::IntegratorPointwise::updateStateVars(const pylith::topology::Field& solution)
 { // updateState
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("updateStateVars(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("updateStateVars(solution="<<solution.label()<<")");
 
-    PYLITH_JOURNAL_ERROR(":TODO: @brad Implement updateStateVars().");
+    PYLITH_COMPONENT_ERROR(":TODO: @brad Implement updateStateVars().");
 
     PYLITH_METHOD_END;
 } // updateStateVars

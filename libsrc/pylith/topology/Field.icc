@@ -69,49 +69,21 @@ pylith::topology::Field::dmMesh(void) const {
 inline
 const char*
 pylith::topology::Field::label(void) const {
-    return _metadata.label.c_str();
-}
-
-// Set vector field type
-inline
-void
-pylith::topology::Field::vectorFieldType(const VectorFieldEnum value) {
-    _metadata.vectorFieldType = value;
-}
-
-// Get vector field type
-inline
-pylith::topology::Field::VectorFieldEnum
-pylith::topology::Field::vectorFieldType(void) const {
-    return _metadata.vectorFieldType;
-}
-
-// Set scale for dimensionalizing field.
-inline
-void
-pylith::topology::Field::scale(const PylithReal value) {
-    _metadata.scale = value;
-}
-
-// Get scale for dimensionalizing field.
-inline
-PylithReal
-pylith::topology::Field::scale(void) const {
-    return _metadata.scale;
+    return _label.c_str();
 }
 
 // Set flag indicating whether it is okay to dimensionalize field.
 inline
 void
 pylith::topology::Field::dimensionalizeOkay(const bool value) {
-    _metadata.dimsOkay = value;
+    _dimsOkay = value;
 }
 
 // Set flag indicating whether it is okay to dimensionalize field.
 inline
 bool
 pylith::topology::Field::dimensionalizeOkay(void) const {
-    return _metadata.dimsOkay;
+    return _dimsOkay;
 }
 
 

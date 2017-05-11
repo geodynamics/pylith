@@ -68,7 +68,7 @@ pylith::meshio::DataWriterHDF5Ext::deallocate(void)
 
     PetscErrorCode err = 0;
     const dataset_type::const_iterator& dEnd = _datasets.end();
-    for (dataset_type::iterator d_iter=_datasets.begin();
+    for (dataset_type::iterator d_iter = _datasets.begin();
          d_iter != dEnd;
          ++d_iter) {
         err = PetscViewerDestroy(&d_iter->second.viewer); PYLITH_CHECK_ERROR(err);
@@ -130,18 +130,18 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
         PetscDM dmCoord = NULL;
         PetscVec coordinates = NULL;
         PetscReal lengthScale;
-        topology::FieldBase::Metadata metadata;
+        pylith::topology::FieldBase::Description description;
 
-        metadata.label = "vertices";
-        metadata.vectorFieldType = topology::FieldBase::VECTOR;
+        description.label = "vertices";
+        //description.vectorFieldType = topology::FieldBase::VECTOR;
         err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale); PYLITH_CHECK_ERROR(err);
         err = DMGetCoordinateDM(dmMesh, &dmCoord); PYLITH_CHECK_ERROR(err); assert(dmCoord);
         err = PetscObjectReference((PetscObject) dmCoord); PYLITH_CHECK_ERROR(err);
         err = DMGetCoordinatesLocal(dmMesh, &coordinates); PYLITH_CHECK_ERROR(err);
-        topology::Field coordinatesField(mesh, dmCoord, coordinates, metadata);
-        coordinatesField.createScatterWithBC(mesh, "", 0, metadata.label.c_str());
-        coordinatesField.scatterLocalToContext(metadata.label.c_str());
-        PetscVec coordVector = coordinatesField.scatterVector(metadata.label.c_str()); assert(coordVector);
+        topology::Field coordinatesField(mesh, dmCoord, coordinates, description);
+        coordinatesField.createScatterWithBC(mesh, "", 0, description.label.c_str());
+        coordinatesField.scatterLocalToContext(description.label.c_str());
+        PetscVec coordVector = coordinatesField.scatterVector(description.label.c_str()); assert(coordVector);
         err = VecScale(coordVector, lengthScale); PYLITH_CHECK_ERROR(err);
 
         const std::string& filenameVertices = _datasetFilename("vertices");
@@ -152,8 +152,7 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
 #else
         PetscBool isseq;
         err = PetscObjectTypeCompare((PetscObject) coordVector, VECSEQ, &isseq); PYLITH_CHECK_ERROR(err);
-        if (isseq) {err = VecView_Seq(coordVector, binaryViewer); PYLITH_CHECK_ERROR(err); }
-        else       {err = VecView_MPI(coordVector, binaryViewer); PYLITH_CHECK_ERROR(err); }
+        if (isseq) {err = VecView_Seq(coordVector, binaryViewer); PYLITH_CHECK_ERROR(err); } else       {err = VecView_MPI(coordVector, binaryViewer); PYLITH_CHECK_ERROR(err); }
 #endif
         err = PetscViewerDestroy(&binaryViewer); PYLITH_CHECK_ERROR(err);
 
@@ -166,8 +165,8 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
         if (n > 0) {
             const PetscInt *indices = NULL;
             err = ISGetIndices(globalVertexNumbers, &indices); PYLITH_CHECK_ERROR(err);
-            for(PetscInt v = 0; v < n; ++v) {
-                if (indices[v] >= 0) ++numVerticesLocal;
+            for (PetscInt v = 0; v < n; ++v) {
+                if (indices[v] >= 0) {++numVerticesLocal;}
             } // for
             err = ISRestoreIndices(globalVertexNumbers, &indices); PYLITH_CHECK_ERROR(err);
         } // if
@@ -193,7 +192,7 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
         if (cMax >= 0) {
             cEnd = PetscMin(cEnd, cMax);
         } // if
-        for(PetscInt cell = cStart; cell < cEnd; ++cell) {
+        for (PetscInt cell = cStart; cell < cEnd; ++cell) {
             PetscInt *closure = NULL;
             PetscInt closureSize, v;
 
@@ -205,16 +204,16 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
                 } // if
             } // for
             err = DMPlexRestoreTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure); PYLITH_CHECK_ERROR(err);
-            if (numCornersLocal) break;
+            if (numCornersLocal) {break;}
         } // for
         err = MPI_Allreduce(&numCornersLocal, &numCorners, 1, MPIU_INT, MPI_MAX, comm); PYLITH_CHECK_ERROR(err);
         if (label) {
             conesSize = 0;
-            for(PetscInt cell = cStart; cell < cEnd; ++cell) {
+            for (PetscInt cell = cStart; cell < cEnd; ++cell) {
                 PetscInt value;
 
                 err = DMGetLabelValue(dmMesh, label, cell, &value); PYLITH_CHECK_ERROR(err);
-                if (value == labelId) ++conesSize;
+                if (value == labelId) {++conesSize;}
             } // for
             conesSize *= numCorners;
         } else {
@@ -235,7 +234,7 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
         err = VecSetFromOptions(cellVec); PYLITH_CHECK_ERROR(err);
         err = PetscObjectSetName((PetscObject) cellVec, "cells"); PYLITH_CHECK_ERROR(err);
         err = VecGetArray(cellVec, &vertices); PYLITH_CHECK_ERROR(err);
-        for(PetscInt cell = cStart, v = 0; cell < cEnd; ++cell) {
+        for (PetscInt cell = cStart, v = 0; cell < cEnd; ++cell) {
             PetscInt *closure = NULL;
             PetscInt closureSize, nC = 0, p;
 
@@ -243,10 +242,10 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
                 PetscInt value;
 
                 err = DMGetLabelValue(dmMesh, label, cell, &value); PYLITH_CHECK_ERROR(err);
-                if (value != labelId) continue;
+                if (value != labelId) {continue;}
             } // if
             err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure); PYLITH_CHECK_ERROR(err);
-            for(p = 0; p < closureSize*2; p += 2) {
+            for (p = 0; p < closureSize*2; p += 2) {
                 if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
                     closure[nC++] = closure[p];
                 } // if
@@ -271,8 +270,7 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
         err = VecView(cellVec, binaryViewer); PYLITH_CHECK_ERROR(err);
 #else
         err = PetscObjectTypeCompare((PetscObject) cellVec, VECSEQ, &isseq); PYLITH_CHECK_ERROR(err);
-        if (isseq) {err = VecView_Seq(cellVec, binaryViewer); PYLITH_CHECK_ERROR(err); }
-        else       {err = VecView_MPI(cellVec, binaryViewer); PYLITH_CHECK_ERROR(err); }
+        if (isseq) {err = VecView_Seq(cellVec, binaryViewer); PYLITH_CHECK_ERROR(err); } else       {err = VecView_MPI(cellVec, binaryViewer); PYLITH_CHECK_ERROR(err); }
 #endif
         err = VecDestroy(&cellVec); PYLITH_CHECK_ERROR(err);
         err = PetscViewerDestroy(&binaryViewer); PYLITH_CHECK_ERROR(err);
@@ -290,7 +288,7 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
 
         // If 2-D, write zero vector for z coordinate and z component in vectors
         if (2 == cs->spaceDim()) {
-            if (!commRank) _h5->createGroup("/zero");
+            if (!commRank) {_h5->createGroup("/zero");}
             const char* vlabel = "vertex_zero";
             const std::string& vfilenameZero = _datasetFilename(vlabel);
             err = PetscViewerBinaryOpen(comm, vfilenameZero.c_str(), FILE_MODE_WRITE, &binaryViewer); PYLITH_CHECK_ERROR(err);
@@ -300,14 +298,13 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
             vzeroField.allocate();
             vzeroField.zeroLocal();
             vzeroField.label(vlabel);
-            vzeroField.vectorFieldType(topology::FieldBase::SCALAR);
+            //vzeroField.vectorFieldType(topology::FieldBase::SCALAR);
             vzeroField.createScatterWithBC(mesh, "", 0, vlabel);
             vzeroField.scatterLocalToContext(vlabel);
 
             PetscVec vzeroVector = vzeroField.scatterVector(vlabel); assert(vzeroVector);
             err = PetscObjectTypeCompare((PetscObject) vzeroVector, VECSEQ, &isseq); PYLITH_CHECK_ERROR(err);
-            if (isseq) {err = VecView_Seq(vzeroVector, binaryViewer); PYLITH_CHECK_ERROR(err); }
-            else       {err = VecView_MPI(vzeroVector, binaryViewer); PYLITH_CHECK_ERROR(err); }
+            if (isseq) {err = VecView_Seq(vzeroVector, binaryViewer); PYLITH_CHECK_ERROR(err); } else       {err = VecView_MPI(vzeroVector, binaryViewer); PYLITH_CHECK_ERROR(err); }
 
             err = PetscViewerDestroy(&binaryViewer); PYLITH_CHECK_ERROR(err);
 
@@ -329,14 +326,13 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
             czeroField.allocate();
             czeroField.zeroLocal();
             czeroField.label(clabel);
-            czeroField.vectorFieldType(topology::FieldBase::SCALAR);
+            //czeroField.vectorFieldType(topology::FieldBase::SCALAR);
             czeroField.createScatterWithBC(mesh, "", 0, clabel);
             czeroField.scatterLocalToContext(clabel);
 
             PetscVec czeroVector = czeroField.scatterVector(clabel); assert(czeroVector);
             err = PetscObjectTypeCompare((PetscObject) czeroVector, VECSEQ, &isseq); PYLITH_CHECK_ERROR(err);
-            if (isseq) {err = VecView_Seq(czeroVector, binaryViewer); PYLITH_CHECK_ERROR(err); }
-            else       {err = VecView_MPI(czeroVector, binaryViewer); PYLITH_CHECK_ERROR(err); }
+            if (isseq) {err = VecView_Seq(czeroVector, binaryViewer); PYLITH_CHECK_ERROR(err); } else       {err = VecView_MPI(czeroVector, binaryViewer); PYLITH_CHECK_ERROR(err); }
 
             err = PetscViewerDestroy(&binaryViewer); PYLITH_CHECK_ERROR(err);
 
@@ -441,8 +437,7 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
 #else
         PetscBool isseq;
         err = PetscObjectTypeCompare((PetscObject) vector, VECSEQ, &isseq); PYLITH_CHECK_ERROR(err);
-        if (isseq) {err = VecView_Seq(vector, binaryViewer); PYLITH_CHECK_ERROR(err); }
-        else       {err = VecView_MPI(vector, binaryViewer); PYLITH_CHECK_ERROR(err); }
+        if (isseq) {err = VecView_Seq(vector, binaryViewer); PYLITH_CHECK_ERROR(err); } else       {err = VecView_MPI(vector, binaryViewer); PYLITH_CHECK_ERROR(err); }
 #endif
 
         ExternalDataset& datasetInfo = _datasets[field.label()];
@@ -450,8 +445,9 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
 
         // Update time stamp in "/time, if necessary.
         if (!commRank) {
-            if (_tstampIndex+1 == datasetInfo.numTimeSteps)
+            if (_tstampIndex+1 == datasetInfo.numTimeSteps) {
                 _writeTimeStamp(t);
+            }
         } // if
 
         // Add dataset to HDF5 file, if necessary
@@ -471,8 +467,8 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
                 const PetscInt *indices = NULL;
                 err = ISGetIndices(globalVertexNumbers, &indices); PYLITH_CHECK_ERROR(err);
                 err = PetscSectionGetDof(section, vStart, &dof); PYLITH_CHECK_ERROR(err);
-                for(PetscInt v = 0; v < n; ++v) {
-                    if (indices[v] >= 0) ++numVerticesLocal;
+                for (PetscInt v = 0; v < n; ++v) {
+                    if (indices[v] >= 0) {++numVerticesLocal;}
                 } // for
                 err = ISRestoreIndices(globalVertexNumbers, &indices); PYLITH_CHECK_ERROR(err);
             } // if
@@ -499,13 +495,14 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
                     maxDims[2] = datasetInfo.fiberDim;
                 } // else
                   // Create 'vertex_fields' group if necessary.
-                if (!_h5->hasGroup("/vertex_fields"))
+                if (!_h5->hasGroup("/vertex_fields")) {
                     _h5->createGroup("/vertex_fields");
+                }
 
                 _h5->createDatasetRawExternal("/vertex_fields", field.label(), _datasetFilename(field.label()).c_str(), maxDims, ndims, scalartype);
                 std::string fullName = std::string("/vertex_fields/") + field.label();
-                const char* sattr = topology::FieldBase::vectorFieldString(field.vectorFieldType());
-                _h5->writeAttribute(fullName.c_str(), "vector_field_type", sattr);
+                //const char* sattr = topology::FieldBase::vectorFieldString(field.vectorFieldType());
+                //_h5->writeAttribute(fullName.c_str(), "vector_field_type", sattr);
             } // if
         } else if (!commRank) {
             // Update number of time steps in external dataset info in HDF5 file.
@@ -582,8 +579,7 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
 #else
         PetscBool isseq;
         err = PetscObjectTypeCompare((PetscObject) vector, VECSEQ, &isseq); PYLITH_CHECK_ERROR(err);
-        if (isseq) {err = VecView_Seq(vector, binaryViewer); PYLITH_CHECK_ERROR(err); }
-        else       {err = VecView_MPI(vector, binaryViewer); PYLITH_CHECK_ERROR(err); }
+        if (isseq) {err = VecView_Seq(vector, binaryViewer); PYLITH_CHECK_ERROR(err); } else       {err = VecView_MPI(vector, binaryViewer); PYLITH_CHECK_ERROR(err); }
 #endif
 
         ExternalDataset& datasetInfo = _datasets[field.label()];
@@ -591,8 +587,9 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
 
         // Update time stamp in "/time, if necessary.
         if (!commRank) {
-            if (_tstampIndex+1 == datasetInfo.numTimeSteps)
+            if (_tstampIndex+1 == datasetInfo.numTimeSteps) {
                 _writeTimeStamp(t);
+            }
         } // if
 
         // Add dataset to HDF5 file, if necessary
@@ -608,7 +605,7 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
                 topology::StratumIS cellsIS(dmMesh, label, labelId);
                 numCells = cellsIS.size();
                 const PetscInt* cells = (numCells > 0) ? cellsIS.points() : 0;
-                for(PetscInt c = 0; c < numCells; ++c) {
+                for (PetscInt c = 0; c < numCells; ++c) {
                     err = PetscSectionGetDof(section, cells[0], &dof); PYLITH_CHECK_ERROR(err);
                     if ((cells[c] >= cStart) && (cells[c] < cEnd)) {
                         ++numLocalCells;
@@ -621,8 +618,8 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
                     const PetscInt *indices = NULL;
                     err = ISGetIndices(globalCellNumbers, &indices); PYLITH_CHECK_ERROR(err);
                     err = PetscSectionGetDof(section, cStart, &dof); PYLITH_CHECK_ERROR(err);
-                    for(PetscInt v = 0; v < numCells; ++v) {
-                        if (indices[v] >= 0) ++numLocalCells;
+                    for (PetscInt v = 0; v < numCells; ++v) {
+                        if (indices[v] >= 0) {++numLocalCells;}
                     } // for
                     err = ISRestoreIndices(globalCellNumbers, &indices); PYLITH_CHECK_ERROR(err);
                 } // if
@@ -650,13 +647,14 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
                     maxDims[2] = fiberDim;
                 } // else
                   // Create 'cell_fields' group if necessary.
-                if (!_h5->hasGroup("/cell_fields"))
+                if (!_h5->hasGroup("/cell_fields")) {
                     _h5->createGroup("/cell_fields");
+                }
 
                 _h5->createDatasetRawExternal("/cell_fields", field.label(), _datasetFilename(field.label()).c_str(), maxDims, ndims, scalartype);
                 std::string fullName = std::string("/cell_fields/") + field.label();
-                const char* sattr = topology::FieldBase::vectorFieldString(field.vectorFieldType());
-                _h5->writeAttribute(fullName.c_str(), "vector_field_type", sattr);
+                //const char* sattr = topology::FieldBase::vectorFieldString(field.vectorFieldType());
+                //_h5->writeAttribute(fullName.c_str(), "vector_field_type", sattr);
             } // if
 
         } else if (!commRank) {
@@ -714,32 +712,32 @@ pylith::meshio::DataWriterHDF5Ext::writePointNames(const pylith::string_vector& 
         // Get maximum string length.
         int maxStringLengthLocal = 0;
         int maxStringLength = 0;
-        for (int i=0; i < numNamesLocal; ++i) {
+        for (int i = 0; i < numNamesLocal; ++i) {
             maxStringLengthLocal = std::max(maxStringLengthLocal, int(names[i].length()));
         } // for
         maxStringLengthLocal += 1; // add space for null terminator.
         mpierr = MPI_Allreduce(&maxStringLengthLocal, &maxStringLength, 1, MPI_INT, MPI_MAX, comm); assert(MPI_SUCCESS == mpierr);
 
         char_array namesFixedLengthLocal(numNamesLocal*maxStringLength);
-        for (int i=0; i < numNamesLocal; ++i) {
+        for (int i = 0; i < numNamesLocal; ++i) {
             const int index = i*maxStringLength;
             strncpy(&namesFixedLengthLocal[index], names[i].c_str(), maxStringLength-1);
             namesFixedLengthLocal[index+maxStringLength-1] = '\0';
             // Fill remaining portion of string with null characters.
-            for (int j=names[i].length(); j < maxStringLength; ++j) {
+            for (int j = names[i].length(); j < maxStringLength; ++j) {
                 namesFixedLengthLocal[index+j] = '\0';
             } // for
         } // for
 
         char_array namesFixedLength;
-        if (!commRank) namesFixedLength.resize(numNames*maxStringLength);
+        if (!commRank) {namesFixedLength.resize(numNames*maxStringLength);}
         // Convert numNames array from number of names to total size of names array.
         numNamesArray *= maxStringLength;
         int_array offsets;
         if (!commRank) {
             offsets.resize(nprocs);
             offsets[0] = 0;
-            for (int i=1; i < nprocs; ++i) {
+            for (int i = 1; i < nprocs; ++i) {
                 offsets[i] = offsets[i-1] + numNamesArray[i-1];
             } // for
         } // if

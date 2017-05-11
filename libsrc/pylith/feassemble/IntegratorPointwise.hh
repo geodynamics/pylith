@@ -112,7 +112,7 @@ public:
      * @return Discretization information for auxiliary subfield. If
      * discretization information was not set, then use "default".
      */
-    const pylith::topology::FieldBase::DiscretizeInfo& auxFieldDiscretization(const char* name) const;
+    const pylith::topology::FieldBase::Discretization& auxFieldDiscretization(const char* name) const;
 
     /** Check whether RHS Jacobian needs to be recomputed.
      *
@@ -250,7 +250,7 @@ public:
     // PROTECTED TYPEDEFS /////////////////////////////////////////////////
 protected:
 
-    typedef std::map<std::string, pylith::topology::FieldBase::DiscretizeInfo> discretizations_type;
+    typedef std::map<std::string, pylith::topology::FieldBase::Discretization> discretizations_type;
 
     // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected:

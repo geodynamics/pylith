@@ -42,7 +42,8 @@
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 #include <iostream> // USES std::cerr
-#include <algorithm> // USES std::transform()
+#include <algorithm> \
+    // USES std::transform()
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -95,8 +96,9 @@ pylith::feassemble::IntegratorElasticity::needNewJacobian(void)
     PYLITH_METHOD_BEGIN;
 
     assert(_material);
-    if (!_needNewJacobian)
+    if (!_needNewJacobian) {
         _needNewJacobian = _material->needNewJacobian();
+    }
     PYLITH_METHOD_RETURN(_needNewJacobian);
 } // needNewJacobian
 
@@ -157,8 +159,9 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(const PylithScalar t,
     assert(fields);
 
     // No need to update state vars if material doesn't have any.
-    if (!_material->hasStateVars())
+    if (!_material->hasStateVars()) {
         PYLITH_METHOD_END;
+    }
 
     // Get cell information that doesn't depend on particular cell
     const int cellDim = _quadrature->cellDim();
@@ -199,7 +202,7 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(const PylithScalar t,
     _material->createPropsAndVarsVisitors();
 
     // Loop over cells
-    for(PetscInt c = 0; c < numCells; ++c) {
+    for (PetscInt c = 0; c < numCells; ++c) {
         const PetscInt cell = cells[c];
 
         // Retrieve geometry information for current cell
@@ -269,13 +272,13 @@ pylith::feassemble::IntegratorElasticity::verifyConfiguration(const topology::Me
     PetscErrorCode err;
 
     err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd); PYLITH_CHECK_ERROR(err);
-    for(PetscInt c = 0; c < numCells; ++c) {
+    for (PetscInt c = 0; c < numCells; ++c) {
         const PetscInt cell = cells[c];
         PetscInt cellNumCorners = 0, closureSize, *closure = NULL;
 
         err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure); PYLITH_CHECK_ERROR(err);
         for (PetscInt cl = 0; cl < closureSize*2; cl += 2) {
-            if ((closure[cl] >= vStart) && (closure[cl] < vEnd)) ++cellNumCorners;
+            if ((closure[cl] >= vStart) && (closure[cl] < vEnd)) {++cellNumCorners;}
         }
         err = DMPlexRestoreTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure); PYLITH_CHECK_ERROR(err);
         if (numCorners != cellNumCorners) {
@@ -327,14 +330,14 @@ pylith::feassemble::IntegratorElasticity::cellField(const char* name,
             _allocateTensorField(mesh);
             topology::Field& buffer = _outputFields->get("buffer (tensor)");
             buffer.label("total_strain");
-            buffer.scale(1.0);
+            //buffer.scale(1.0);
             buffer.dimensionalizeOkay(true);
             _calcStrainStressField(&buffer, namelower.c_str(), fields);
             PYLITH_METHOD_RETURN(buffer);
 
         } // if/else
 
-    } else if (std::string("stress") == namelower || std::string("cauchy_stress") == namelower) {
+    } else if ((std::string("stress") == namelower) || (std::string("cauchy_stress") == namelower)) {
 
         if (_material->hasStateVar(namelower.c_str())) {
             // stress is available as a state variable
@@ -350,7 +353,7 @@ pylith::feassemble::IntegratorElasticity::cellField(const char* name,
             _allocateTensorField(mesh);
             topology::Field& buffer = _outputFields->get("buffer (tensor)");
             buffer.label(namelower.c_str());
-            buffer.scale(_normalizer->pressureScale());
+            //buffer.scale(_normalizer->pressureScale());
             buffer.dimensionalizeOkay(true);
             _calcStrainStressField(&buffer, namelower.c_str(), fields);
             PYLITH_METHOD_RETURN(buffer);
@@ -358,24 +361,27 @@ pylith::feassemble::IntegratorElasticity::cellField(const char* name,
         } // else
 
     } else if (0 == strcasecmp(name, "stable_dt_implicit")) {
-        if (!_outputFields->hasField("buffer (other)"))
+        if (!_outputFields->hasField("buffer (other)")) {
             _outputFields->add("buffer (other)", "buffer");
+        }
         topology::Field& buffer = _outputFields->get("buffer (other)");
         _material->stableTimeStepImplicit(mesh, &buffer);
         buffer.dimensionalizeOkay(true);
         PYLITH_METHOD_RETURN(buffer);
 
     } else if (0 == strcasecmp(name, "stable_dt_explicit")) {
-        if (!_outputFields->hasField("buffer (other)"))
+        if (!_outputFields->hasField("buffer (other)")) {
             _outputFields->add("buffer (other)", "buffer");
+        }
         topology::Field& buffer = _outputFields->get("buffer (other)");
         _material->stableTimeStepExplicit(mesh, _quadrature, &buffer);
         buffer.dimensionalizeOkay(true);
         PYLITH_METHOD_RETURN(buffer);
 
     } else {
-        if (!_outputFields->hasField("buffer (other)"))
+        if (!_outputFields->hasField("buffer (other)")) {
             _outputFields->add("buffer (other)", "buffer");
+        }
         topology::Field& buffer = _outputFields->get("buffer (other)");
         _material->getField(&buffer, name);
         buffer.dimensionalizeOkay(true);
@@ -456,7 +462,7 @@ pylith::feassemble::IntegratorElasticity::_allocateTensorField(const topology::M
         topology::Field& buffer = _outputFields->get("buffer (tensor)");
         buffer.newSection(cellsTmp, numQuadPts*tensorSize);
         buffer.allocate();
-        buffer.vectorFieldType(topology::FieldBase::MULTI_TENSOR);
+        //buffer.vectorFieldType(topology::FieldBase::MULTI_TENSOR);
         buffer.dimensionalizeOkay(true);
     } // if
 
@@ -522,7 +528,7 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(topology::Field
     _material->createPropsAndVarsVisitors();
 
     // Loop over cells
-    for(PetscInt c = 0; c < numCells; ++c) {
+    for (PetscInt c = 0; c < numCells; ++c) {
         const PetscInt cell = cells[c];
 
         // Retrieve geometry information for current cell
@@ -539,14 +545,14 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(topology::Field
         const PetscInt off = fieldVisitor.sectionOffset(cell);
         assert(tensorCellSize == fieldVisitor.sectionDof(cell));
         if (!calcStress) {
-            for (int i=0; i < tensorCellSize; ++i) {
+            for (int i = 0; i < tensorCellSize; ++i) {
                 fieldArray[off+i] = strainCell[i];
             } // for
         } else {
             _material->retrievePropsAndVars(cell);
             stressCell = _material->calcStress(strainCell);
 
-            for (int i=0; i < tensorCellSize; ++i) {
+            for (int i = 0; i < tensorCellSize; ++i) {
                 fieldArray[off+i] = stressCell[i];
             } // for
         } // else
@@ -575,13 +581,13 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual2D(const scalar_arr
     assert(_quadrature->cellDim() == cellDim);
     assert(quadWts.size() == size_t(numQuadPts));
 
-    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+    for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
         const int iQs = iQuad*stressSize;
         const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad];
         const PylithScalar s11 = stress[iQs  ];
         const PylithScalar s22 = stress[iQs+1];
         const PylithScalar s12 = stress[iQs+2];
-        for (int iBasis=0, iQ=iQuad*numBasis*spaceDim; iBasis < numBasis; ++iBasis) {
+        for (int iBasis = 0, iQ = iQuad*numBasis*spaceDim; iBasis < numBasis; ++iBasis) {
             const int iBlock = iBasis*spaceDim;
             const PylithScalar Nip = wt*basisDeriv[iQ+iBlock  ];
             const PylithScalar Niq = wt*basisDeriv[iQ+iBlock+1];
@@ -612,7 +618,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual3D(const scalar_arr
     assert(_quadrature->cellDim() == cellDim);
     assert(quadWts.size() == size_t(numQuadPts));
 
-    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+    for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
         const int iQs = iQuad * stressSize;
         const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad];
         const PylithScalar s11 = stress[iQs  ];
@@ -622,7 +628,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual3D(const scalar_arr
         const PylithScalar s23 = stress[iQs+4];
         const PylithScalar s13 = stress[iQs+5];
 
-        for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
+        for (int iBasis = 0, iQ = iQuad*numBasis*spaceDim;
              iBasis < numBasis;
              ++iBasis) {
             const int iBlock = iBasis*spaceDim;
@@ -657,7 +663,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian2D(const scalar_arr
     assert(_quadrature->cellDim() == cellDim);
     assert(quadWts.size() == size_t(numQuadPts));
 
-    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+    for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
         const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad];
         // tau_ij = C_ijkl * e_kl
         //        = C_ijkl * 0.5 (u_k,l + u_l,k)
@@ -673,12 +679,12 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian2D(const scalar_arr
         const PylithScalar C1211 = elasticConsts[iC+6];
         const PylithScalar C1222 = elasticConsts[iC+7];
         const PylithScalar C1212 = elasticConsts[iC+8] / 2.0;
-        for (int iBasis=0, iQ=iQuad*numBasis*spaceDim; iBasis < numBasis; ++iBasis) {
+        for (int iBasis = 0, iQ = iQuad*numBasis*spaceDim; iBasis < numBasis; ++iBasis) {
             const PylithScalar Ni1 = wt*basisDeriv[iQ+iBasis*spaceDim  ];
             const PylithScalar Ni2 = wt*basisDeriv[iQ+iBasis*spaceDim+1];
             const int iBlock = (iBasis*spaceDim  ) * (numBasis*spaceDim);
             const int iBlock1 = (iBasis*spaceDim+1) * (numBasis*spaceDim);
-            for (int jBasis=0; jBasis < numBasis; ++jBasis) {
+            for (int jBasis = 0; jBasis < numBasis; ++jBasis) {
                 const PylithScalar Nj1 = basisDeriv[iQ+jBasis*spaceDim  ];
                 const PylithScalar Nj2 = basisDeriv[iQ+jBasis*spaceDim+1];
                 const PylithScalar ki0j0 =
@@ -725,7 +731,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian3D(const scalar_arr
     assert(quadWts.size() == size_t(numQuadPts));
 
     // Compute Jacobian for consistent tangent matrix
-    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+    for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
         const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad];
         // tau_ij = C_ijkl * e_kl
         //        = C_ijlk * 0.5 (u_k,l + u_l,k)
@@ -767,13 +773,13 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian3D(const scalar_arr
         const PylithScalar C1312 = elasticConsts[iQuad*numConsts+33] / 2.0;
         const PylithScalar C1323 = elasticConsts[iQuad*numConsts+34] / 2.0;
         const PylithScalar C1313 = elasticConsts[iQuad*numConsts+35] / 2.0;
-        for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
+        for (int iBasis = 0, iQ = iQuad*numBasis*spaceDim;
              iBasis < numBasis;
              ++iBasis) {
             const PylithScalar Ni1 = wt*basisDeriv[iQ+iBasis*spaceDim+0];
             const PylithScalar Ni2 = wt*basisDeriv[iQ+iBasis*spaceDim+1];
             const PylithScalar Ni3 = wt*basisDeriv[iQ+iBasis*spaceDim+2];
-            for (int jBasis=0; jBasis < numBasis; ++jBasis) {
+            for (int jBasis = 0; jBasis < numBasis; ++jBasis) {
                 const PylithScalar Nj1 = basisDeriv[iQ+jBasis*spaceDim+0];
                 const PylithScalar Nj2 = basisDeriv[iQ+jBasis*spaceDim+1];
                 const PylithScalar Nj3 = basisDeriv[iQ+jBasis*spaceDim+2];
@@ -852,13 +858,13 @@ pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D(scalar_array* strai
     assert(dim == spaceDim);
 
     (*strain) = 0.0;
-    for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
-        for (int iBasis=0, iQ=iQuad*numBasis*dim; iBasis < numBasis; ++iBasis) {
+    for (int iQuad = 0; iQuad < numQuadPts; ++iQuad)
+        for (int iBasis = 0, iQ = iQuad*numBasis*dim; iBasis < numBasis; ++iBasis) {
             (*strain)[iQuad*strainSize+0] += basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim  ];
             (*strain)[iQuad*strainSize+1] += basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim+1];
             (*strain)[iQuad*strainSize+2] += 0.5 * (basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim  ] +
                                                     basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim+1]);
-        }                             // for
+        }                                                           // for
 } // calcTotalStrain2D
 
 // ----------------------------------------------------------------------
@@ -879,8 +885,8 @@ pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D(scalar_array* strai
     assert(dim == spaceDim);
 
     (*strain) = 0.0;
-    for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
-        for (int iBasis=0, iQ=iQuad*numBasis*dim; iBasis < numBasis; ++iBasis) {
+    for (int iQuad = 0; iQuad < numQuadPts; ++iQuad)
+        for (int iBasis = 0, iQ = iQuad*numBasis*dim; iBasis < numBasis; ++iBasis) {
             (*strain)[iQuad*strainSize  ] += basisDeriv[iQ+iBasis*dim] * disp[iBasis*dim];
             (*strain)[iQuad*strainSize+1] += basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim+1];
             (*strain)[iQuad*strainSize+2] += basisDeriv[iQ+iBasis*dim+2] * disp[iBasis*dim+2];
@@ -890,7 +896,7 @@ pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D(scalar_array* strai
                                                     basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim+2]);
             (*strain)[iQuad*strainSize+5] += 0.5 * (basisDeriv[iQ+iBasis*dim+2] * disp[iBasis*dim  ] +
                                                     basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim+2]);
-        }                             // for
+        }                                                           // for
 } // calcTotalStrain3D
 
 

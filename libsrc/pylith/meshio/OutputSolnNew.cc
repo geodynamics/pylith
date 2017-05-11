@@ -23,7 +23,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 
-#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <typeinfo> // USES typeid()
 
@@ -63,12 +63,12 @@ pylith::meshio::OutputSolnNew::vertexDataFields(const char* names[],
                                                 const int numNames)
 { // vertexDataFields
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("OutputSolnNew::vertexDataFields(names="<<names<<", numNames="<<numNames<<")");
+    PYLITH_COMPONENT_DEBUG("OutputSolnNew::vertexDataFields(names="<<names<<", numNames="<<numNames<<")");
 
     assert((names && numNames) || (!names && !numNames));
 
     _vertexDataFields.resize(numNames);
-    for (int i=0; i < numNames; ++i) {
+    for (int i = 0; i < numNames; ++i) {
         assert(names[i]);
         _vertexDataFields[i] = names[i];
     } // for
@@ -82,11 +82,11 @@ void
 pylith::meshio::OutputSolnNew::verifyConfiguration(const pylith::topology::Field& solution) const
 { // verifyConfiguration
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("OutputSolnNew::verifyConfiguration(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("OutputSolnNew::verifyConfiguration(solution="<<solution.label()<<")");
 
     const size_t numFields = _vertexDataFields.size();
-    if (numFields > 0 && std::string("all") != _vertexDataFields[0]) {
-        for (size_t iField=0; iField < numFields; iField++) {
+    if ((numFields > 0) && (std::string("all") != _vertexDataFields[0])) {
+        for (size_t iField = 0; iField < numFields; iField++) {
             if (!solution.hasSubfield(_vertexDataFields[iField].c_str())) {
                 std::ostringstream msg;
                 msg << "Could not find field '" << _vertexDataFields[iField] << "' in solution '" << solution.label() << "' for output.";
@@ -106,7 +106,7 @@ pylith::meshio::OutputSolnNew::writeTimeStep(const PylithReal t,
                                              const pylith::topology::Field& solution)
 { // writeTimeStep
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("OutputSolnNew::writeTimeStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("OutputSolnNew::writeTimeStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
 
     if (!this->shouldWrite(t, tindex)) {
         PYLITH_METHOD_END;
@@ -116,7 +116,7 @@ pylith::meshio::OutputSolnNew::writeTimeStep(const PylithReal t,
 
     this->openTimeStep(t, solution.mesh());
     const size_t numFields = subfieldNames.size();
-    for (size_t iField=0; iField < numFields; iField++) {
+    for (size_t iField = 0; iField < numFields; iField++) {
         if (!solution.hasSubfield(subfieldNames[iField].c_str())) {
             std::ostringstream msg;
             msg << "Could not find field '" << subfieldNames[iField] << "' in solution for output.";

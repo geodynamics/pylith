@@ -23,6 +23,7 @@ subpkginclude_HEADERS = \
 	EventLogger.hh \
 	EventLogger.icc \
 	PyreComponent.hh \
+	GenericComponent.hh \
 	journals.hh \
 	PylithVersion.hh \
 	PetscVersion.hh \
@@ -35,7 +36,7 @@ subpkginclude_HEADERS = \
 	macrodefs.h \
 	petscfwd.h \
 	error.h \
-    types.hh \
+	types.hh \
 	utilsfwd.hh
 
 noinst_HEADERS =

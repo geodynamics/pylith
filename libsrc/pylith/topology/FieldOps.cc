@@ -29,7 +29,7 @@
 // ----------------------------------------------------------------------
 // Create PetscFE object for discretization.
 PetscFE
-pylith::topology::FieldOps::createFE(const FieldBase::DiscretizeInfo& feinfo,
+pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
                                      const PetscDM dm,
                                      const bool isSimplex,
                                      const int numComponents)

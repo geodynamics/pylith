@@ -29,12 +29,13 @@
 #include "pylith/topology/Fields.hh" // USES Fields
 
 #include "pylith/utils/constdefs.h" // USES PYLITH_MAXSCALAR
-#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
 #include <iostream> // USES std::cout
-#include <typeinfo> // USES typeid()
+#include <typeinfo> \
+    // USES typeid()
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -76,7 +77,7 @@ pylith::meshio::OutputManagerNew::deallocate(void)
 void
 pylith::meshio::OutputManagerNew::trigger(TriggerEnum flag)
 { // trigger
-    PYLITH_JOURNAL_DEBUG("OutputManagerNew::trigger(flag="<<flag<<")");
+    PYLITH_COMPONENT_DEBUG("OutputManagerNew::trigger(flag="<<flag<<")");
 
     _trigger = flag;
 } // trigger
@@ -94,7 +95,7 @@ pylith::meshio::OutputManagerNew::trigger(void) const
 void
 pylith::meshio::OutputManagerNew::numTimeStepsSkip(const int value)
 { // numTimeStepsSkip
-    PYLITH_JOURNAL_DEBUG("OutputManagerNew::numTimeStepsSkip(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG("OutputManagerNew::numTimeStepsSkip(value="<<value<<")");
 
     _numTimeStepsSkip = (value >= 0) ? value : 0;
 } // numTimeStepsSkip
@@ -112,7 +113,7 @@ pylith::meshio::OutputManagerNew::numTimeStepsSkip(void) const
 void
 pylith::meshio::OutputManagerNew::timeSkip(const double value)
 { // timeSkip
-    PYLITH_JOURNAL_DEBUG("OutputManagerNew::timeSkip(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG("OutputManagerNew::timeSkip(value="<<value<<")");
 
     _timeSkip = (value >= 0.0) ? value : 0.0;
 } // timeSkip
@@ -131,9 +132,9 @@ void
 pylith::meshio::OutputManagerNew::coordsys(const spatialdata::geocoords::CoordSys* cs)
 { // coordsys
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("OutputManagerNew::coordsys(cs="<<typeid(*cs).name()<<")");
+    PYLITH_COMPONENT_DEBUG("OutputManagerNew::coordsys(cs="<<typeid(*cs).name()<<")");
 
-    PYLITH_JOURNAL_WARNING("Coordinate system ignored in OutputManagerNew.");
+    PYLITH_COMPONENT_WARNING("Coordinate system ignored in OutputManagerNew.");
 
     delete _coordsys; _coordsys = (cs) ? cs->clone() : 0;
 
@@ -146,7 +147,7 @@ void
 pylith::meshio::OutputManagerNew::writer(DataWriter* const datawriter)
 { // writer
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("OutputManagerNew::write(datawriter="<<typeid(datawriter).name()<<")");
+    PYLITH_COMPONENT_DEBUG("OutputManagerNew::write(datawriter="<<typeid(datawriter).name()<<")");
 
     _writer = datawriter; // :TODO: Use shared pointer
 
@@ -159,7 +160,7 @@ void
 pylith::meshio::OutputManagerNew::vertexFilter(VertexFilter* const filter)
 { // vertexFilter
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("OutputManagerNew::vertexFilter(filter="<<typeid(filter).name()<<")");
+    PYLITH_COMPONENT_DEBUG("OutputManagerNew::vertexFilter(filter="<<typeid(filter).name()<<")");
 
     _vertexFilter = filter; // :TODO: Use shared pointer
 
@@ -172,7 +173,7 @@ void
 pylith::meshio::OutputManagerNew::cellFilter(CellFilter* const filter)
 { // cellFilter
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("OutputManagerNew::cellFilter(filter="<<typeid(filter).name()<<")");
+    PYLITH_COMPONENT_DEBUG("OutputManagerNew::cellFilter(filter="<<typeid(filter).name()<<")");
 
     _cellFilter = filter; // :TODO: Use shared pointer
 
@@ -188,7 +189,7 @@ pylith::meshio::OutputManagerNew::open(const topology::Mesh& mesh,
                                        const int labelId)
 { // open
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("OutputManagerNew::open(mesh="<<typeid(mesh).name()<<", isInfo="<<isInfo<<", label="<<(label ? label : "NULL")<<", labelId="<<labelId<<")");
+    PYLITH_COMPONENT_DEBUG("OutputManagerNew::open(mesh="<<typeid(mesh).name()<<", isInfo="<<isInfo<<", label="<<(label ? label : "NULL")<<", labelId="<<labelId<<")");
 
 
     if (!_writer) {
@@ -213,7 +214,7 @@ void
 pylith::meshio::OutputManagerNew::close(void)
 { // close
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("OutputManagerNew::close()");
+    PYLITH_COMPONENT_DEBUG("OutputManagerNew::close()");
 
     assert(_writer);
     _writer->close();
@@ -230,7 +231,7 @@ pylith::meshio::OutputManagerNew::openTimeStep(const PylithReal t,
                                                const int labelId)
 { // openTimeStep
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("OutputManagerNew::openTimeStep(t="<<t<<", mesh="<<typeid(mesh).name()<<", label="<<(label ? label : "NULL")<<", labelId="<<labelId<<")");
+    PYLITH_COMPONENT_DEBUG("OutputManagerNew::openTimeStep(t="<<t<<", mesh="<<typeid(mesh).name()<<", label="<<(label ? label : "NULL")<<", labelId="<<labelId<<")");
 
     assert(_writer);
     _writer->openTimeStep(t, mesh, label, labelId);
@@ -244,7 +245,7 @@ void
 pylith::meshio::OutputManagerNew::closeTimeStep(void)
 { // closeTimeStep
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("OutputManagerNew::closeTimeStep()");
+    PYLITH_COMPONENT_DEBUG("OutputManagerNew::closeTimeStep()");
 
     assert(_writer);
     _writer->closeTimeStep();
@@ -260,7 +261,7 @@ pylith::meshio::OutputManagerNew::appendVertexField(const PylithReal t,
                                                     const topology::Mesh& mesh)
 { // appendVertexField
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("OutputManagerNew::appendVertexField(t="<<t<<", field="<<typeid(field).name()<<", mesh="<<typeid(mesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG("OutputManagerNew::appendVertexField(t="<<t<<", field="<<typeid(field).name()<<", mesh="<<typeid(mesh).name()<<")");
 
     topology::Field& fieldFiltered = (!_vertexFilter) ? field : _vertexFilter->filter(field);
     topology::Field& fieldDimensioned = _dimension(fieldFiltered);
@@ -279,14 +280,14 @@ pylith::meshio::OutputManagerNew::appendCellField(const PylithReal t,
                                                   const int labelId)
 { // appendCellField
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("OutputManagerNew::appendCellField(t="<<t<<", field="<<typeid(field).name()<<", label="<<label<<", labelId="<<labelId<<")");
+    PYLITH_COMPONENT_DEBUG("OutputManagerNew::appendCellField(t="<<t<<", field="<<typeid(field).name()<<", label="<<label<<", labelId="<<labelId<<")");
 
     topology::Field& fieldFiltered = (!_cellFilter) ? field : _cellFilter->filter(field, label, labelId);
     topology::Field& fieldDimensioned = _dimension(fieldFiltered);
 
     try {
         _writer->writeCellField(t, fieldDimensioned, label, labelId);
-    } catch(std::runtime_error e) {
+    } catch (std::runtime_error e) {
         std::cout << "ERROR: " << e.what() << std::endl<<std::endl<<std::endl;
     } // try/catch
 
@@ -300,7 +301,7 @@ pylith::meshio::OutputManagerNew::shouldWrite(const PylithReal t,
                                               const PylithInt timeStep)
 { // shouldWrite
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("OutputManagerNew::shouldWrite(t="<<t<<", timeStep="<<timeStep<<")");
+    PYLITH_COMPONENT_DEBUG("OutputManagerNew::shouldWrite(t="<<t<<", timeStep="<<timeStep<<")");
 
     bool shouldWrite = false;
     switch (_trigger) {
@@ -317,7 +318,7 @@ pylith::meshio::OutputManagerNew::shouldWrite(const PylithReal t,
         } // if
         break;
     default:
-        PYLITH_JOURNAL_ERROR("Unknown trigger type.");
+        PYLITH_COMPONENT_ERROR("Unknown trigger type.");
         throw std::logic_error("Unknown trigger type.");
     } // switch
 
@@ -338,19 +339,18 @@ pylith::meshio::OutputManagerNew::getBuffer(const pylith::topology::Field& field
                                             const char* name)
 { // getBuffer
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("OutputManagerNew::_getBuffer(fieldIn="<<fieldIn.label()<<")");
+    PYLITH_COMPONENT_DEBUG("OutputManagerNew::_getBuffer(fieldIn="<<fieldIn.label()<<")");
 
     pylith::topology::FieldBase::VectorFieldEnum fieldType = pylith::topology::FieldBase::MULTI_OTHER;
     if (name) {
         const pylith::topology::Field::SubfieldInfo& info = fieldIn.subfieldInfo(name);
-        fieldType = info.metadata.vectorFieldType;
+        fieldType = info.description.vectorFieldType;
     } else {
-        fieldType = fieldIn.vectorFieldType();
+        //fieldType = fieldIn.vectorFieldType();
     } // if/else
 
     std::string fieldName = "buffer (other)";
-    switch (fieldType)
-    { // switch
+    switch (fieldType) { // switch
     case topology::FieldBase::SCALAR:
         fieldName = "buffer (scalar)";
         break;
@@ -376,7 +376,7 @@ pylith::meshio::OutputManagerNew::getBuffer(const pylith::topology::Field& field
         fieldName = "buffer (multiple others)";
         break;
     default:
-        PYLITH_JOURNAL_ERROR("Unknown field type '"<<fieldIn.vectorFieldType()<<"' for field '"<<fieldIn.label()<<"'.");
+        PYLITH_COMPONENT_ERROR("Unknown field type '"<<fieldType<<"' for field '"<<fieldIn.label()<<"'.");
         throw std::logic_error("Unknown field type in OutputManagerNew::_getBuffer().");
     } // switch
 
@@ -390,8 +390,8 @@ pylith::meshio::OutputManagerNew::getBuffer(const pylith::topology::Field& field
         if (!name) {
             fieldOut.cloneSection(fieldIn);
         } // if/else
-        fieldOut.vectorFieldType(fieldIn.vectorFieldType());
-        fieldOut.scale(fieldIn.scale());
+          //fieldOut.vectorFieldType(fieldIn.vectorFieldType());
+          //fieldOut.scale(fieldIn.scale());
     } // if
     topology::Field& fieldOut = _fields->get(fieldName.c_str());
     if (name) {
@@ -410,10 +410,13 @@ pylith::topology::Field&
 pylith::meshio::OutputManagerNew::_dimension(topology::Field& fieldIn)
 { // _dimension
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("OutputManagerNew::_dimension(fieldIn="<<fieldIn.label()<<")");
+    PYLITH_COMPONENT_DEBUG("OutputManagerNew::_dimension(fieldIn="<<fieldIn.label()<<")");
 
-    if (1.0 == fieldIn.scale())
+#if 0 // :TODO: FIX THIS.
+    if (1.0 == fieldIn.scale()) {
         PYLITH_METHOD_RETURN(fieldIn);
+    }
+#endif
 
     if (fieldIn.dimensionalizeOkay()) {
         fieldIn.dimensionalize();
