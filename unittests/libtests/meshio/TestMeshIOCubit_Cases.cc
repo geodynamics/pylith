@@ -25,7 +25,7 @@ namespace pylith {
 
         // --------------------------------------------------------------
         class TestMeshIOCubit_Tri : public TestMeshIOCubit {
-	public:
+public:
             void setUp(void) {
                 TestMeshIOCubit::setUp();
                 _data = new TestMeshIOCubit_Data();CPPUNIT_ASSERT(_data);
@@ -103,7 +103,7 @@ namespace pylith {
 
         // --------------------------------------------------------------
         class TestMeshIOCubit_Quad : public TestMeshIOCubit {
-	public:
+public:
             void setUp(void) {
                 TestMeshIOCubit::setUp();
                 _data = new TestMeshIOCubit_Data();CPPUNIT_ASSERT(_data);
@@ -114,18 +114,18 @@ namespace pylith {
                 _data->numCorners = 4;
 
                 static const PylithScalar vertices[6*2] = {
-		    0.0,  0.0,
-		    1.0,  0.0,
-		    1.0,  1.0,
-		    0.0,  1.0,
-		    2.0,  0.0,
-		    2.0,  1.0,
+                    0.0,  0.0,
+                    1.0,  0.0,
+                    1.0,  1.0,
+                    0.0,  1.0,
+                    2.0,  0.0,
+                    2.0,  1.0,
                 };
                 _data->vertices = const_cast<PylithScalar*>(vertices);
 
                 static const PylithInt cells[2*4] = {
-		    0,  1,  2,  3,
-		    1,  4,  5,  2,
+                    0,  1,  2,  3,
+                    1,  4,  5,  2,
                 };
                 _data->cells = const_cast<PylithInt*>(cells);
                 static const PylithInt materialIds[2] = {
@@ -183,7 +183,7 @@ namespace pylith {
 
         // --------------------------------------------------------------
         class TestMeshIOCubit_Tet : public TestMeshIOCubit {
-	public:
+public:
             void setUp(void) {
                 TestMeshIOCubit::setUp();
                 _data = new TestMeshIOCubit_Data();CPPUNIT_ASSERT(_data);
@@ -194,17 +194,17 @@ namespace pylith {
                 _data->numCorners = 4;
 
                 static const PylithScalar vertices[5*3] = {
-		    -2.0,  0.0,  0.0,
-		    +0.0, -1.0,  0.0,
-		    +0.0,  1.0,  0.0,
-		    +0.0,  0.0,  2.0,
-		    +2.0,  0.0,  0.0
+                    -2.0,  0.0,  0.0,
+                    +0.0, -1.0,  0.0,
+                    +0.0,  1.0,  0.0,
+                    +0.0,  0.0,  2.0,
+                    +2.0,  0.0,  0.0
                 };
                 _data->vertices = const_cast<PylithScalar*>(vertices);
 
                 static const PylithInt cells[2*4] = {
-		    0,  1,  2,  3,
-		    1,  4,  2,  3,
+                    0,  1,  2,  3,
+                    1,  4,  2,  3,
                 };
                 _data->cells = const_cast<PylithInt*>(cells);
                 static const PylithInt materialIds[2] = {
@@ -217,7 +217,7 @@ namespace pylith {
                 _data->groupSizes = const_cast<PylithInt*>(groupSizes);
                 static const PylithInt groups[3+4] = {
                     1, 2, 3,
-		    0, 1, 2, 3,
+                    0, 1, 2, 3,
                 };
                 _data->groups = const_cast<PylithInt*>(groups);
                 static const char* groupNames[2] = {
@@ -262,7 +262,7 @@ namespace pylith {
 
         // --------------------------------------------------------------
         class TestMeshIOCubit_Hex : public TestMeshIOCubit {
-	public:
+public:
             void setUp(void) {
                 TestMeshIOCubit::setUp();
                 _data = new TestMeshIOCubit_Data();CPPUNIT_ASSERT(_data);
@@ -273,24 +273,24 @@ namespace pylith {
                 _data->numCorners = 8;
 
                 static const PylithScalar vertices[12*3] = {
-		    -2.0, -1.0,  1.0,
-		    -2.0, -1.0, -1.0,
-		    -2.0,  1.0, -1.0,
-		    -2.0,  1.0,  1.0,
-		    +0.0, -1.0,  1.0,
-		    +0.0, -1.0, -1.0,
-		    +0.0,  1.0, -1.0,
-		    +0.0,  1.0,  1.0,
-		    +2.0, -1.0,  1.0,
-		    +2.0, -1.0, -1.0,
-		    +2.0,  1.0, -1.0,
-		    +2.0,  1.0,  1.0,
+                    -2.0, -1.0,  1.0,
+                    -2.0, -1.0, -1.0,
+                    -2.0,  1.0, -1.0,
+                    -2.0,  1.0,  1.0,
+                    +0.0, -1.0,  1.0,
+                    +0.0, -1.0, -1.0,
+                    +0.0,  1.0, -1.0,
+                    +0.0,  1.0,  1.0,
+                    +2.0, -1.0,  1.0,
+                    +2.0, -1.0, -1.0,
+                    +2.0,  1.0, -1.0,
+                    +2.0,  1.0,  1.0,
                 };
                 _data->vertices = const_cast<PylithScalar*>(vertices);
 
                 static const PylithInt cells[2*8] = {
-		    0,  1,  2,  3,  4,  5,  6,  7,
-		    4,  5,  6,  7,  8,  9, 10, 11
+                    0,  1,  2,  3,  4,  5,  6,  7,
+                    4,  5,  6,  7,  8,  9, 10, 11
                 };
                 _data->cells = const_cast<PylithInt*>(cells);
                 static const PylithInt materialIds[2] = {
@@ -302,8 +302,8 @@ namespace pylith {
                 static const PylithInt groupSizes[2] = { 4,  6, };
                 _data->groupSizes = const_cast<PylithInt*>(groupSizes);
                 static const PylithInt groups[4+6] = {
-		    8,  9, 10, 11,
-		    0,  3,  4,  7,  8, 11
+                    8,  9, 10, 11,
+                    0,  3,  4,  7,  8, 11
                 };
                 _data->groups = const_cast<PylithInt*>(groups);
                 static const char* groupNames[2] = {
