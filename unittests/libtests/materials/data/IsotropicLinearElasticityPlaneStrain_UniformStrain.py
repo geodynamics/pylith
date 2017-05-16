@@ -31,7 +31,7 @@ DX = XLIM[1]-XLIM[0]
 # Material properties
 DENSITY = 2500.0
 VS = 3000.0
-VP = 2**0.5 * VS
+VP = 3**0.5 * VS
 
 # ----------------------------------------------------------------------
 import numpy
