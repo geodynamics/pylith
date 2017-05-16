@@ -174,7 +174,7 @@ pylith::materials::MaterialNew::initialize(const pylith::topology::Field& soluti
       //_auxFields->createScatter(mesh);
       //_auxFields->scatterLocalToContext();
 
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
     _auxFields->view("AUXILIARY FIELDS");
 #endif
 

@@ -420,6 +420,4 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain_Data::~TestIsotropic
 } // destructor
 
 
-
-
 // End of file

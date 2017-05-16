@@ -301,6 +301,11 @@ pylith::materials::TestMaterialNew::testComputeResidual(void)
     MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
     TestMaterialNew_Data* data = _data(); CPPUNIT_ASSERT(data);
 
+#if 0 // DEBUGGING
+    PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2"); // DEBUGGING
+    DMSetFromOptions(residualRHS.dmMesh()); // DEBUGGING
+#endif
+
     const PylithReal t = data->t;
     const PylithReal dt = data->dt;
     material->computeRHSResidual(&residualRHS, t, dt, solution);
@@ -310,7 +315,7 @@ pylith::materials::TestMaterialNew::testComputeResidual(void)
     _zeroBoundary(&residualRHS);
     _zeroBoundary(&residualLHS);
 
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
     solution.view("SOLUTION"); // DEBUGGING
     solutionDot.view("SOLUTION_DOT"); // DEBUGGING
     residualRHS.view("RESIDUAL RHS"); // DEBUGGING
@@ -365,8 +370,8 @@ pylith::materials::TestMaterialNew::testComputeRHSJacobian(void)
     residual2.allocate();
 
 #if 0 // DEBUGGING
-    PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2");
-    DMSetFromOptions(_solution1->dmMesh());
+    PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2"); // DEBUGGING
+    DMSetFromOptions(_solution1->dmMesh()); // DEBUGGING
 #endif
 
     MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
@@ -410,7 +415,7 @@ pylith::materials::TestMaterialNew::testComputeRHSJacobian(void)
     err = VecScale(solnIncrVec, -1.0); CPPUNIT_ASSERT(!err);
     err = MatMultAdd(jacobianMat, solnIncrVec, residualVec, resultVec); CPPUNIT_ASSERT(!err);
 
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
     std::cout << "SOLN INCR" << std::endl;
     VecView(solnIncrVec, PETSC_VIEWER_STDOUT_SELF);
     std::cout << "G2-G1" << std::endl;
@@ -472,8 +477,8 @@ pylith::materials::TestMaterialNew::testComputeLHSJacobianImplicit(void)
     residual2.allocate();
 
 #if 0 // DEBUGGING
-    PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2");
-    DMSetFromOptions(_solution1->dmMesh());
+    PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2"); // DEBUGGING
+    DMSetFromOptions(_solution1->dmMesh()); // DEBUGGING
 #endif
 
 
