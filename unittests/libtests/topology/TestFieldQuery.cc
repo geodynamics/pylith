@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2016 University of California, Davis
+// Copyright (c) 2010-2017 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -186,12 +186,8 @@ pylith::topology::TestFieldQuery::_initialize(void)
     // Setup field
     delete _field; _field = new Field(*_mesh);
     _field->label("solution");
-    const bool isBasisContinuous = true;
-    const pylith::topology::FieldBase::SpaceEnum feSpace = pylith::topology::FieldBase::POLYNOMIAL_SPACE;
-    _field->subfieldAdd(_data->subfieldAName, _data->subfieldAComponents, _data->subfieldANumComponents, _data->subfieldAType,
-                        _data->subfieldABasisOrder, _data->subfieldAQuadOrder, isBasisContinuous, feSpace, _data->subfieldAScale, NULL);
-    _field->subfieldAdd(_data->subfieldBName, _data->subfieldBComponents, _data->subfieldBNumComponents, _data->subfieldBType,
-                        _data->subfieldBBasisOrder, _data->subfieldBQuadOrder, isBasisContinuous, feSpace,  _data->subfieldBScale, NULL);
+    _field->subfieldAdd(_data->descriptionA, _data->discretizationA);
+    _field->subfieldAdd(_data->descriptionB, _data->discretizationB);
     _field->subfieldsSetup();
 
     // Allocate field.
@@ -204,18 +200,18 @@ pylith::topology::TestFieldQuery::_initialize(void)
     const PylithInt vEnd = depthStratum.end();
 
     VecVisitorMesh fieldVisitor(*_field);
-    const PylithInt fiberDim = _data->subfieldANumComponents + _data->subfieldBNumComponents;
+    const PylithInt fiberDim = _data->descriptionA.numComponents + _data->descriptionB.numComponents;
     PetscScalar* fieldArray = fieldVisitor.localArray();
     for (PylithInt v = vStart, indexA = 0, indexB = 0; v < vEnd; ++v) {
         // Set values for field A
         const PylithInt offA = fieldVisitor.sectionOffset(v);
         CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
-        for (PylithInt d = 0; d < _data->subfieldANumComponents; ++d) {
+        for (size_t d = 0; d < _data->descriptionA.numComponents; ++d) {
             fieldArray[offA+d] = _data->subfieldAValues[indexA++];
         } // for
           // Set values for field B
-        const PylithInt offB = offA + _data->subfieldANumComponents;
-        for (PylithInt d = 0; d < _data->subfieldBNumComponents; ++d) {
+        const PylithInt offB = offA + _data->descriptionA.numComponents;
+        for (size_t d = 0; d < _data->descriptionB.numComponents; ++d) {
             fieldArray[offB+d] = _data->subfieldBValues[indexB++];
         } // for
     } // for
@@ -233,23 +229,8 @@ pylith::topology::TestFieldQuery_Data::TestFieldQuery_Data(void) :
     cells(NULL),
     coordinates(NULL),
 
-    subfieldAName(NULL),
-    subfieldAType(Field::OTHER),
-    subfieldAScale(0.0),
-    subfieldANumComponents(0),
-    subfieldAComponents(NULL),
     subfieldAValues(NULL),
-    subfieldABasisOrder(0),
-    subfieldAQuadOrder(0),
-
-    subfieldBName(NULL),
-    subfieldBType(Field::OTHER),
-    subfieldBScale(0.0),
-    subfieldBNumComponents(0),
-    subfieldBComponents(NULL),
-    subfieldBValues(NULL),
-    subfieldBBasisOrder(0),
-    subfieldBQuadOrder(0)
+    subfieldBValues(NULL)
 {   // constructor
 }   // constructor
 

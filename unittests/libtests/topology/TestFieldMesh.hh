@@ -31,7 +31,7 @@
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 #include "pylith/utils/petscfwd.h" // forward declarations
 
-#include "pylith/topology/FieldBase.hh" // USES FieldBase::VectorFieldType
+#include "pylith/topology/FieldBase.hh" // USES FieldBase::Description
 
 // Forward declarations -------------------------------------------------
 /// Namespace for pylith package
@@ -47,24 +47,24 @@ namespace pylith {
 class pylith::topology::TestFieldMesh : public CppUnit::TestFixture {
 
     // CPPUNIT TEST SUITE //////////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE( TestFieldMesh );
+    CPPUNIT_TEST_SUITE(TestFieldMesh);
 
-    CPPUNIT_TEST( testConstructor );
-    CPPUNIT_TEST( testMesh );
-    CPPUNIT_TEST( testGeneralAccessors );
-    CPPUNIT_TEST( testSectionAccessors );
-    CPPUNIT_TEST( testVectorAccessors );
-    CPPUNIT_TEST( testNewSection );
-    CPPUNIT_TEST( testCloneSection );
-    CPPUNIT_TEST( testSubfieldAccessors );
-    CPPUNIT_TEST( testClear );
-    CPPUNIT_TEST( testAllocate );
-    CPPUNIT_TEST( testZeroLocal );
-    CPPUNIT_TEST( testCopy );
-    CPPUNIT_TEST( testCopySubfield );
-    CPPUNIT_TEST( testDimensionalize );
-    CPPUNIT_TEST( testView );
-    CPPUNIT_TEST( testScatter );
+    CPPUNIT_TEST(testConstructor);
+    CPPUNIT_TEST(testMesh);
+    CPPUNIT_TEST(testGeneralAccessors);
+    CPPUNIT_TEST(testSectionAccessors);
+    CPPUNIT_TEST(testVectorAccessors);
+    CPPUNIT_TEST(testNewSection);
+    CPPUNIT_TEST(testCloneSection);
+    CPPUNIT_TEST(testSubfieldAccessors);
+    CPPUNIT_TEST(testClear);
+    CPPUNIT_TEST(testAllocate);
+    CPPUNIT_TEST(testZeroLocal);
+    CPPUNIT_TEST(testCopy);
+    CPPUNIT_TEST(testCopySubfield);
+    CPPUNIT_TEST(testDimensionalize);
+    CPPUNIT_TEST(testView);
+    CPPUNIT_TEST(testScatter);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -137,7 +137,7 @@ private:
      * @param scale Scale to apply to expected values.
      */
     void _checkValues(const Field& field,
-                      const PylithReal scale =1.0);
+                      const PylithReal scale=1.0);
 
     /** Verify values in PETSc vector match expected values.
      *
@@ -145,7 +145,7 @@ private:
      * @param scale Scale to apply to expected values.
      */
     void _checkValues(const PetscVec& vec,
-                      const PylithReal scale =1.0);
+                      const PylithReal scale=1.0);
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////
 protected:
@@ -183,33 +183,23 @@ public:
 
     /// @defgroup Subfield A information.
     /// @{
-    const char* subfieldAName; ///< Name of subfield.
-    FieldBase::VectorFieldEnum subfieldAType; ///< Vector field type.
-    PylithReal subfieldAScale; ///< Scale.
-    int subfieldANumComponents; ///< Number of components in subfield.
-    const char** subfieldAComponents; ///< Names of components.
+    pylith::topology::FieldBase::Description descriptionA;
+    pylith::topology::FieldBase::Discretization discretizationA;
     PylithScalar* subfieldAValues; ///< Array of values to for subfield,
-    int subfieldABasisOrder; ///< Basis order for discretization.
-    int subfieldAQuadOrder; ///< Quadrature order for discretization.
 
     const char* bcALabel; ///< Label for boundary condition.
     int bcALabelId; ///< Label id for boundary condition.
     int bcANumConstrainedDOF; ///< Number of constrained DOF for boundary condition.
     int* bcAConstrainedDOF; ///< Array of constrained DOF.
-    int bcANumVertices; ///< Number of vertices assocaited with boundary condition.
+    int bcANumVertices; ///< Number of vertices associated with boundary condition.
     int* bcAVertices; ///< Array of vertex indices.
     /// @}
 
     /// @defgroup Subfield B information.
     /// @{
-    const char* subfieldBName; ///< Name of subfield.
-    FieldBase::VectorFieldEnum subfieldBType; ///< Vector field type.
-    PylithReal subfieldBScale; ///< Scale.
-    int subfieldBNumComponents; ///< Number of components in subfield.
-    const char** subfieldBComponents; ///< Names of components.
+    pylith::topology::FieldBase::Description descriptionB;
+    pylith::topology::FieldBase::Discretization discretizationB;
     PylithScalar* subfieldBValues; ///< Array of values to for subfield,
-    int subfieldBBasisOrder; ///< Basis order for discretization.
-    int subfieldBQuadOrder; ///< Quadrature order for discretization.
 
     const char* bcBLabel; ///< Label for boundary condition.
     int bcBLabelId; ///< Label id for boundary condition.

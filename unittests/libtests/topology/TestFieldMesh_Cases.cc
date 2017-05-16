@@ -27,7 +27,7 @@ namespace pylith {
         // ---------------------------------------------------------------------
         class TestFieldMesh_Quad : public TestFieldMesh {
 
-            CPPUNIT_TEST_SUB_SUITE( TestFieldMesh_Quad, TestFieldMesh );
+            CPPUNIT_TEST_SUB_SUITE(TestFieldMesh_Quad, TestFieldMesh);
             CPPUNIT_TEST_SUITE_END();
 
             void setUp(void) {
@@ -51,12 +51,20 @@ namespace pylith {
                 _data->coordinates = const_cast<PylithScalar*>(_coordinates);
 
                 // Subfield A
-                _data->subfieldAName = "displacement";
-                _data->subfieldAType = FieldBase::VECTOR;
-                _data->subfieldAScale = 2.0;
-                _data->subfieldANumComponents = 2;
-                static const char* _subfieldAComponents[2] = {"displacement_x", "displacement_y"};
-                _data->subfieldAComponents = const_cast<const char**>(_subfieldAComponents);
+                _data->descriptionA.label = "displacement";
+                _data->descriptionA.vectorFieldType = FieldBase::VECTOR;
+                _data->descriptionA.scale = 2.0;
+                _data->descriptionA.numComponents = 2;
+                _data->descriptionA.componentNames.resize(2);
+                _data->descriptionA.componentNames[0] = "displacement_x";
+                _data->descriptionA.componentNames[1] = "displacement_y";
+                _data->descriptionA.validator = NULL;
+
+                _data->discretizationA.basisOrder = 1;
+                _data->discretizationA.quadOrder = 1;
+                _data->discretizationA.isBasisContinuous = true;
+                _data->discretizationA.feSpace = pylith::topology::FieldBase::POLYNOMIAL_SPACE;
+
                 static const PylithScalar _subfieldAValues[4*2] = {
                     1.1, 1.2,
                     2.1, 2.2,
@@ -64,8 +72,6 @@ namespace pylith {
                     4.1, 4.2,
                 };
                 _data->subfieldAValues = const_cast<PylithScalar*>(_subfieldAValues);
-                _data->subfieldABasisOrder = 1;
-                _data->subfieldAQuadOrder = 1;
 
                 _data->bcALabel = "boundary A";
                 _data->bcALabelId = 1;
@@ -77,12 +83,19 @@ namespace pylith {
                 _data->bcAVertices = const_cast<int*>(_bcAVertices);
 
                 // Subfield B
-                _data->subfieldBName = "fluid_pressure";
-                _data->subfieldAType = FieldBase::SCALAR;
-                _data->subfieldBScale = 0.1;
-                _data->subfieldBNumComponents = 1;
-                static const char* _subfieldBComponents[1] = {"pressure"};
-                _data->subfieldBComponents = const_cast<const char**>(_subfieldBComponents);
+                _data->descriptionB.label = "fluid_pressure";
+                _data->descriptionB.vectorFieldType = FieldBase::SCALAR;
+                _data->descriptionB.scale = 0.1;
+                _data->descriptionB.numComponents = 1;
+                _data->descriptionB.componentNames.resize(1);
+                _data->descriptionB.componentNames[0] = "fluid_pressure";
+                _data->descriptionB.validator = NULL;
+
+                _data->discretizationB.basisOrder = 1;
+                _data->discretizationB.quadOrder = 1;
+                _data->discretizationB.isBasisContinuous = true;
+                _data->discretizationB.feSpace = pylith::topology::FieldBase::POLYNOMIAL_SPACE;
+
                 static const PylithScalar _subfieldBValues[4*1] = {
                     1.3,
                     2.3,
@@ -90,8 +103,6 @@ namespace pylith {
                     4.3,
                 };
                 _data->subfieldBValues = const_cast<PylithScalar*>(_subfieldBValues);
-                _data->subfieldBBasisOrder = 1;
-                _data->subfieldBQuadOrder = 1;
 
                 _data->bcBLabel = "boundary B";
                 _data->bcBLabelId = 1;
@@ -105,7 +116,7 @@ namespace pylith {
 
 
         };  // TestFieldMesh_Quad
-        CPPUNIT_TEST_SUITE_REGISTRATION( TestFieldMesh_Quad );
+        CPPUNIT_TEST_SUITE_REGISTRATION(TestFieldMesh_Quad);
 
     }   // topology
 }   // pylith

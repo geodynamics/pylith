@@ -127,7 +127,7 @@ pylith::topology::TestFieldMesh::testSectionAccessors(void)
     CPPUNIT_ASSERT(_field);
 
     CPPUNIT_ASSERT(_field->chartSize() > 0); // vertices + edges + faces + cells
-    const PylithInt fiberDim = _data->subfieldANumComponents + _data->subfieldBNumComponents;
+    const PylithInt fiberDim = _data->descriptionA.numComponents + _data->descriptionB.numComponents;
     CPPUNIT_ASSERT_EQUAL(_data->numVertices*fiberDim, _field->sectionSize());
 
     PYLITH_METHOD_END;
@@ -148,7 +148,7 @@ pylith::topology::TestFieldMesh::testVectorAccessors(void)
 
     const PetscVec& localVec = _field->localVector();
     err = VecGetSize(localVec, &size); CPPUNIT_ASSERT(!err);
-    const PylithInt fiberDim = _data->subfieldANumComponents + _data->subfieldBNumComponents;
+    const PylithInt fiberDim = _data->descriptionA.numComponents + _data->descriptionB.numComponents;
     CPPUNIT_ASSERT_EQUAL(_data->numVertices * fiberDim, size);
 
     PYLITH_METHOD_END;
@@ -351,7 +351,7 @@ pylith::topology::TestFieldMesh::testCloneSection(void)
     PetscSection section = field.localSection();
     PetscVec vec = field.localVector();
     CPPUNIT_ASSERT(section); CPPUNIT_ASSERT(vec);
-    const PylithInt fiberDim = _data->subfieldANumComponents + _data->subfieldBNumComponents;
+    const PylithInt fiberDim = _data->descriptionA.numComponents + _data->descriptionB.numComponents;
     for (PylithInt v = vStart, iV = 0; v < vEnd; ++v, ++iV) {
         PylithInt dof, cdof;
         err = PetscSectionGetDof(section, v, &dof); CPPUNIT_ASSERT(!err);
@@ -401,45 +401,50 @@ pylith::topology::TestFieldMesh::testSubfieldAccessors(void)
     // Subfields setup via subfieldAdd() and subfieldsSetup() in _initialize().
 
     // Test hasSubfield().
-    CPPUNIT_ASSERT(_field->hasSubfield(_data->subfieldAName));
-    CPPUNIT_ASSERT(_field->hasSubfield(_data->subfieldBName));
+    CPPUNIT_ASSERT(_field->hasSubfield(_data->descriptionA.label.c_str()));
+    CPPUNIT_ASSERT(_field->hasSubfield(_data->descriptionB.label.c_str()));
     CPPUNIT_ASSERT(!_field->hasSubfield("zyxwvut987654321"));
 
     // Test subfieldNames().
     const string_vector& names = _field->subfieldNames();
     CPPUNIT_ASSERT_EQUAL(size_t(2), names.size());
-    CPPUNIT_ASSERT_EQUAL(std::string(_data->subfieldAName), names[0]);
-    CPPUNIT_ASSERT_EQUAL(std::string(_data->subfieldBName), names[1]);
+    CPPUNIT_ASSERT_EQUAL(_data->descriptionA.label, names[0]);
+    CPPUNIT_ASSERT_EQUAL(_data->descriptionB.label, names[1]);
 
     { // Test subfieldInfo() for subfield A.
-        const Field::SubfieldInfo& infoA = _field->subfieldInfo(_data->subfieldAName);
+        const Field::SubfieldInfo& infoA = _field->subfieldInfo(_data->descriptionA.label.c_str());
         CPPUNIT_ASSERT_EQUAL(0, infoA.index);
-        CPPUNIT_ASSERT_EQUAL(_data->subfieldANumComponents, infoA.numComponents);
-        CPPUNIT_ASSERT_EQUAL(std::string(_data->subfieldAName), infoA.description.label);
-        CPPUNIT_ASSERT_EQUAL(_data->subfieldAType, infoA.description.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(_data->subfieldAScale, infoA.description.scale);
+        CPPUNIT_ASSERT_EQUAL(_data->descriptionA.numComponents, infoA.description.numComponents);
+        CPPUNIT_ASSERT_EQUAL(_data->descriptionA.label, infoA.description.label);
+        CPPUNIT_ASSERT_EQUAL(_data->descriptionA.vectorFieldType, infoA.description.vectorFieldType);
+        CPPUNIT_ASSERT_EQUAL(_data->descriptionA.scale, infoA.description.scale);
         const string_vector& componentNames = infoA.description.componentNames;
-        CPPUNIT_ASSERT_EQUAL(size_t(_data->subfieldANumComponents), componentNames.size());
-        for (int i = 0; i < _data->subfieldANumComponents; ++i) {
-            CPPUNIT_ASSERT_EQUAL(std::string(_data->subfieldAComponents[i]), componentNames[i]);
+        CPPUNIT_ASSERT_EQUAL(_data->descriptionA.numComponents, componentNames.size());
+        for (size_t i = 0; i < _data->descriptionA.numComponents; ++i) {
+            CPPUNIT_ASSERT_EQUAL(_data->descriptionA.componentNames[i], componentNames[i]);
         } // for
-        CPPUNIT_ASSERT_EQUAL(_data->subfieldABasisOrder, infoA.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(_data->subfieldAQuadOrder, infoA.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(_data->discretizationA.basisOrder, infoA.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(_data->discretizationA.quadOrder, infoA.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(_data->discretizationA.isBasisContinuous, infoA.fe.isBasisContinuous);
+        CPPUNIT_ASSERT_EQUAL(_data->discretizationA.feSpace, infoA.fe.feSpace);
     } // Test subfieldInfo() for subfield A.
 
     { // Test subfieldInfo() for subfield B.
-        const Field::SubfieldInfo& infoB = _field->subfieldInfo(_data->subfieldBName);
-        CPPUNIT_ASSERT_EQUAL(_data->subfieldBNumComponents, infoB.numComponents);
-        CPPUNIT_ASSERT_EQUAL(std::string(_data->subfieldBName), infoB.description.label);
-        CPPUNIT_ASSERT_EQUAL(_data->subfieldBType, infoB.description.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(_data->subfieldBScale, infoB.description.scale);
+        const Field::SubfieldInfo& infoB = _field->subfieldInfo(_data->descriptionB.label.c_str());
+        CPPUNIT_ASSERT_EQUAL(1, infoB.index);
+        CPPUNIT_ASSERT_EQUAL(_data->descriptionB.numComponents, infoB.description.numComponents);
+        CPPUNIT_ASSERT_EQUAL(_data->descriptionB.label, infoB.description.label);
+        CPPUNIT_ASSERT_EQUAL(_data->descriptionB.vectorFieldType, infoB.description.vectorFieldType);
+        CPPUNIT_ASSERT_EQUAL(_data->descriptionB.scale, infoB.description.scale);
         const string_vector& componentNames = infoB.description.componentNames;
-        CPPUNIT_ASSERT_EQUAL(size_t(_data->subfieldBNumComponents), componentNames.size());
-        for (int i = 0; i < _data->subfieldBNumComponents; ++i) {
-            CPPUNIT_ASSERT_EQUAL(std::string(_data->subfieldBComponents[i]), componentNames[i]);
+        CPPUNIT_ASSERT_EQUAL(_data->descriptionB.numComponents, componentNames.size());
+        for (size_t i = 0; i < _data->descriptionB.numComponents; ++i) {
+            CPPUNIT_ASSERT_EQUAL(_data->descriptionB.componentNames[i], componentNames[i]);
         } // for
-        CPPUNIT_ASSERT_EQUAL(_data->subfieldBBasisOrder, infoB.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(_data->subfieldBQuadOrder, infoB.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(_data->discretizationB.basisOrder, infoB.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(_data->discretizationB.quadOrder, infoB.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(_data->discretizationB.isBasisContinuous, infoB.fe.isBasisContinuous);
+        CPPUNIT_ASSERT_EQUAL(_data->discretizationB.feSpace, infoB.fe.feSpace);
     } // Test subfieldInfo() for subfield B.
 
     CPPUNIT_ASSERT_THROW(_field->subfieldInfo("aabbccdd"), std::runtime_error);
@@ -457,15 +462,11 @@ pylith::topology::TestFieldMesh::testClear(void)
     Mesh mesh(_data->cellDim);
     Field field(mesh);
 
-    field.scale(2.0);
-    field.vectorFieldType(Field::TENSOR);
     field.dimensionalizeOkay(true);
 
     field.clear();
 
-    CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0), field._description.scale);
-    CPPUNIT_ASSERT_EQUAL(Field::OTHER, field._description.vectorFieldType);
-    CPPUNIT_ASSERT_EQUAL(false, field._description.dimsOkay);
+    CPPUNIT_ASSERT_EQUAL(false, field._dimsOkay);
 
     PYLITH_METHOD_END;
 } // testClear
@@ -548,14 +549,14 @@ pylith::topology::TestFieldMesh::testCopySubfield(void)
 
     { // Test with preallocated field
         Field field(*_mesh);
-        field.newSection(Field::VERTICES_FIELD, _data->subfieldBNumComponents);
+        field.newSection(Field::VERTICES_FIELD, _data->descriptionB.numComponents);
         field.allocate();
-        field.copySubfield(*_field, _data->subfieldBName);
+        field.copySubfield(*_field, _data->descriptionB.label.c_str());
 
         VecVisitorMesh fieldVisitor(field);
         const PetscScalar* fieldArray = fieldVisitor.localArray();
         const PylithScalar tolerance = 1.0e-6;
-        const PylithInt fiberDimE = _data->subfieldBNumComponents;
+        const PylithInt fiberDimE = _data->descriptionB.numComponents;
         for (PylithInt v = vStart, i = 0; v < vEnd; ++v) {
             const PylithInt off = fieldVisitor.sectionOffset(v);
             CPPUNIT_ASSERT_EQUAL(fiberDimE, fieldVisitor.sectionDof(v));
@@ -567,12 +568,12 @@ pylith::topology::TestFieldMesh::testCopySubfield(void)
 
     { // Test with unallocated field
         Field field(*_mesh);
-        field.copySubfield(*_field, _data->subfieldBName);
+        field.copySubfield(*_field, _data->descriptionB.label.c_str());
 
         VecVisitorMesh fieldVisitor(field);
         const PetscScalar* fieldArray = fieldVisitor.localArray();
         const PylithScalar tolerance = 1.0e-6;
-        const PylithInt fiberDimE = _data->subfieldBNumComponents;
+        const PylithInt fiberDimE = _data->descriptionB.numComponents;
         for (PylithInt v = vStart, i = 0; v < vEnd; ++v) {
             const PylithInt off = fieldVisitor.sectionOffset(v);
             CPPUNIT_ASSERT_EQUAL(fiberDimE, fieldVisitor.sectionDof(v));
@@ -611,22 +612,22 @@ pylith::topology::TestFieldMesh::testDimensionalize(void)
     // Expect no change for this serial test.
     VecVisitorMesh fieldVisitor(*_field);
     PetscScalar* fieldArray = fieldVisitor.localArray();
-    const PylithInt fiberDim = _data->subfieldANumComponents + _data->subfieldBNumComponents;
+    const PylithInt fiberDim = _data->descriptionA.numComponents + _data->descriptionB.numComponents;
     const PylithReal tolerance = 1.0e-6;
     for (PylithInt v = vStart, indexA = 0, indexB = 0; v < vEnd; ++v) {
         CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
 
         // Check field A values.
         const PylithInt offA = fieldVisitor.sectionOffset(v);
-        const PylithReal scaleA = _data->subfieldAScale;
-        for (PylithInt d = 0; d < _data->subfieldANumComponents; ++d) {
+        const PylithReal scaleA = _data->descriptionA.scale;
+        for (size_t d = 0; d < _data->descriptionA.numComponents; ++d) {
             CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->subfieldAValues[indexA++]*scaleA, fieldArray[offA+d], tolerance);
         } // for
 
         // Check field B values.
-        const PylithInt offB = offA + _data->subfieldANumComponents;
-        const PylithReal scaleB = _data->subfieldBScale;
-        for (PylithInt d = 0; d < _data->subfieldBNumComponents; ++d) {
+        const PylithInt offB = offA + _data->descriptionA.numComponents;
+        const PylithReal scaleB = _data->descriptionB.scale;
+        for (size_t d = 0; d < _data->descriptionB.numComponents; ++d) {
             CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->subfieldBValues[indexB++]*scaleB, fieldArray[offB+d], tolerance);
         } // for
     } // for
@@ -762,14 +763,8 @@ pylith::topology::TestFieldMesh::_initialize(void)
     // Setup field
     delete _field; _field = new Field(*_mesh);
     _field->label("solution");
-    const bool isBasisContinuous = true;
-    const pylith::topology::FieldBase::SpaceEnum feSpace = pylith::topology::FieldBase::POLYNOMIAL_SPACE;
-    _field->subfieldAdd(_data->subfieldAName, _data->subfieldAComponents, _data->subfieldANumComponents,
-                        _data->subfieldAType, _data->subfieldABasisOrder, _data->subfieldAQuadOrder, isBasisContinuous, feSpace,
-                        _data->subfieldAScale, NULL);
-    _field->subfieldAdd(_data->subfieldBName, _data->subfieldBComponents, _data->subfieldBNumComponents,
-                        _data->subfieldBType, _data->subfieldBBasisOrder, _data->subfieldBQuadOrder, isBasisContinuous, feSpace,
-                        _data->subfieldBScale, NULL);
+    _field->subfieldAdd(_data->descriptionA, _data->discretizationA);
+    _field->subfieldAdd(_data->descriptionB, _data->discretizationB);
     _field->subfieldsSetup();
 
     err = DMAddBoundary(_field->dmMesh(), DM_BC_ESSENTIAL, "bcA", _data->bcALabel, 0, _data->bcANumConstrainedDOF,
@@ -787,18 +782,18 @@ pylith::topology::TestFieldMesh::_initialize(void)
     const PylithInt vEnd = depthStratum.end();
 
     VecVisitorMesh fieldVisitor(*_field);
-    const PylithInt fiberDim = _data->subfieldANumComponents + _data->subfieldBNumComponents;
+    const PylithInt fiberDim = _data->descriptionA.numComponents + _data->descriptionB.numComponents;
     PetscScalar* fieldArray = fieldVisitor.localArray();
     for (PylithInt v = vStart, indexA = 0, indexB = 0; v < vEnd; ++v) {
         // Set values for field A
         const PylithInt offA = fieldVisitor.sectionOffset(v);
         CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
-        for (PylithInt d = 0; d < _data->subfieldANumComponents; ++d) {
+        for (size_t d = 0; d < _data->descriptionA.numComponents; ++d) {
             fieldArray[offA+d] = _data->subfieldAValues[indexA++];
         } // for
           // Set values for field B
-        const PylithInt offB = offA + _data->subfieldANumComponents;
-        for (PylithInt d = 0; d < _data->subfieldBNumComponents; ++d) {
+        const PylithInt offB = offA + _data->descriptionA.numComponents;
+        for (size_t d = 0; d < _data->descriptionB.numComponents; ++d) {
             fieldArray[offB+d] = _data->subfieldBValues[indexB++];
         } // for
     } // for
@@ -816,8 +811,8 @@ pylith::topology::TestFieldMesh::_checkValues(const Field& field,
 
     // Create array of values in field from subfields.
     const int numVertices = _data->numVertices;
-    const int fiberDimA = _data->subfieldANumComponents;
-    const int fiberDimB = _data->subfieldBNumComponents;
+    const int fiberDimA = _data->descriptionA.numComponents;
+    const int fiberDimB = _data->descriptionB.numComponents;
     scalar_array valuesE(numVertices * (fiberDimA + fiberDimB));
     for (int iVertex = 0, index = 0, indexA = 0, indexB = 0; iVertex < numVertices; ++iVertex) {
         for (int d = 0; d < fiberDimA; ++d) {
@@ -835,7 +830,7 @@ pylith::topology::TestFieldMesh::_checkValues(const Field& field,
 
     VecVisitorMesh fieldVisitor(field);
     PetscScalar* fieldArray = fieldVisitor.localArray();
-    const PylithInt fiberDim = _data->subfieldANumComponents + _data->subfieldBNumComponents;
+    const PylithInt fiberDim = fiberDimA + fiberDimB;
     const PylithReal tolerance = 1.0e-6;
     for (PylithInt v = vStart, index = 0; v < vEnd; ++v) {
         CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
@@ -859,8 +854,8 @@ pylith::topology::TestFieldMesh::_checkValues(const PetscVec& vec,
 
     // Create array of values in field from subfields.
     const int numVertices = _data->numVertices;
-    const int fiberDimA = _data->subfieldANumComponents;
-    const int fiberDimB = _data->subfieldBNumComponents;
+    const int fiberDimA = _data->descriptionA.numComponents;
+    const int fiberDimB = _data->descriptionB.numComponents;
     scalar_array valuesE(numVertices * (fiberDimA + fiberDimB));
     for (int iVertex = 0, index = 0, indexA = 0, indexB = 0; iVertex < numVertices; ++iVertex) {
         for (int d = 0; d < fiberDimA; ++d) {
@@ -898,14 +893,7 @@ pylith::topology::TestFieldMesh_Data::TestFieldMesh_Data(void) :
     cells(NULL),
     coordinates(NULL),
 
-    subfieldAName(NULL),
-    subfieldAType(Field::OTHER),
-    subfieldAScale(0.0),
-    subfieldANumComponents(0),
-    subfieldAComponents(NULL),
     subfieldAValues(NULL),
-    subfieldABasisOrder(0),
-    subfieldAQuadOrder(0),
     bcALabel(NULL),
     bcALabelId(0),
     bcANumConstrainedDOF(0),
@@ -913,14 +901,7 @@ pylith::topology::TestFieldMesh_Data::TestFieldMesh_Data(void) :
     bcANumVertices(0),
     bcAVertices(NULL),
 
-    subfieldBName(NULL),
-    subfieldBType(Field::OTHER),
-    subfieldBScale(0.0),
-    subfieldBNumComponents(0),
-    subfieldBComponents(NULL),
     subfieldBValues(NULL),
-    subfieldBBasisOrder(0),
-    subfieldBQuadOrder(0),
     bcBLabel(NULL),
     bcBLabelId(0),
     bcBNumConstrainedDOF(0),

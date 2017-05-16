@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2016 University of California, Davis
+// Copyright (c) 2010-2017 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -46,14 +46,14 @@ namespace pylith {
 class pylith::topology::TestFieldQuery : public CppUnit::TestFixture {
 
     // CPPUNIT TEST SUITE //////////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE( TestFieldQuery );
+    CPPUNIT_TEST_SUITE(TestFieldQuery);
 
-    CPPUNIT_TEST( testConstructor );
-    CPPUNIT_TEST( testQueryFn );
-    CPPUNIT_TEST( testOpenClose );
-    CPPUNIT_TEST( testQuery );
-    CPPUNIT_TEST( testDBQueryGeneric );
-    CPPUNIT_TEST( testValidatorPositive );
+    CPPUNIT_TEST(testConstructor);
+    CPPUNIT_TEST(testQueryFn);
+    CPPUNIT_TEST(testOpenClose);
+    CPPUNIT_TEST(testQuery);
+    CPPUNIT_TEST(testDBQueryGeneric);
+    CPPUNIT_TEST(testValidatorPositive);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -127,40 +127,34 @@ public:
 
     /// @defgroup Subfield A information.
     /// @{
-    const char* subfieldAName; ///< Name of subfield.
-    FieldBase::VectorFieldEnum subfieldAType; ///< Vector field type.
-    PylithReal subfieldAScale; ///< Scale.
-    int subfieldANumComponents; ///< Number of components in subfield.
-    const char** subfieldAComponents; ///< Names of components.
-    PylithScalar* subfieldAValues; ///< Array of values to for subfield,
-    int subfieldABasisOrder; ///< Basis order for discretization.
-    int subfieldAQuadOrder; ///< Quadrature order for discretization.
+    pylith::topology::FieldBase::Description descriptionA; ///< Description of subfield A.
+    pylith::topology::FieldBase::Discretization discretizationA; ///< Discretization of subfield A.
+    PylithScalar* subfieldAValues; ///< Array of values to for subfield A.
 
+#if 0 // Not used
     const char* bcALabel; ///< Label for boundary condition.
     int bcALabelId; ///< Label id for boundary condition.
     int bcANumConstrainedDOF; ///< Number of constrained DOF for boundary condition.
     int* bcAConstrainedDOF; ///< Array of constrained DOF.
     int bcANumVertices; ///< Number of vertices assocaited with boundary condition.
     int* bcAVertices; ///< Array of vertex indices.
+#endif
     /// @}
 
     /// @defgroup Subfield B information.
     /// @{
-    const char* subfieldBName; ///< Name of subfield.
-    FieldBase::VectorFieldEnum subfieldBType; ///< Vector field type.
-    PylithReal subfieldBScale; ///< Scale.
-    int subfieldBNumComponents; ///< Number of components in subfield.
-    const char** subfieldBComponents; ///< Names of components.
-    PylithScalar* subfieldBValues; ///< Array of values to for subfield,
-    int subfieldBBasisOrder; ///< Basis order for discretization.
-    int subfieldBQuadOrder; ///< Quadrature order for discretization.
+    pylith::topology::FieldBase::Description descriptionB; ///< Description of subfield B.
+    pylith::topology::FieldBase::Discretization discretizationB; ///< Discretization of subfield B.
+    PylithScalar* subfieldBValues; ///< Array of values for subfield B.
 
+#if 0 // Not used
     const char* bcBLabel; ///< Label for boundary condition.
     int bcBLabelId; ///< Label id for boundary condition.
     int bcBNumConstrainedDOF; ///< Number of constrained DOF for boundary condition.
     int* bcBConstrainedDOF; ///< Array of constrained DOF.
     int bcBNumVertices; ///< Number of vertices assocaited with boundary condition.
     int* bcBVertices; ///< Array of vertex indices.
+#endif
     /// @}
 
 };  // TestFieldQuery_Data

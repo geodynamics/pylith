@@ -145,18 +145,24 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(coordsCheckOrig, coordsCheck, tolerance*coordsCheckOrig);
 
     // Verify reduction in Jacobian bandwidth
-    const int dim = _mesh->dimension();
-    const char* components[3] = {"field_x", "field_y", "field_z"};
-
     Field fieldOrig(meshOrig);
-    const int basisOrder = 1;
-    const int quadOrder = 1;
-    const bool isBasisContinuous = true;
-    const pylith::topology::FieldBase::SpaceEnum feSpace = pylith::topology::FieldBase::POLYNOMIAL_SPACE;
-    fieldOrig.subfieldAdd("solution", components, dim, FieldBase::VECTOR, basisOrder, quadOrder, isBasisContinuous, feSpace);
+    Field::Description description;
+    description.label = "solution";
+    description.vectorFieldType = FieldBase::SCALAR;
+    description.numComponents = 1;
+    description.componentNames.resize(1);
+    description.componentNames[0] = "field";
+    description.scale = 1.0;
+    description.validator = NULL;
+
+    Field::Discretization discretization;
+    discretization.basisOrder = 1;
+    discretization.quadOrder = 1;
+    discretization.isBasisContinuous = true;
+    discretization.feSpace = FieldBase::POLYNOMIAL_SPACE;
+    fieldOrig.subfieldAdd(description, discretization);
     fieldOrig.subfieldsSetup();
     fieldOrig.allocate();
-    fieldOrig.zeroLocal();
     PetscMat matrix = NULL;
     PetscInt bandwidthOrig = 0;
     err = DMCreateMatrix(fieldOrig.dmMesh(), &matrix); CPPUNIT_ASSERT(!err);
@@ -164,10 +170,9 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void)
     err = MatDestroy(&matrix); CPPUNIT_ASSERT(!err);
 
     Field field(*_mesh);
-    field.subfieldAdd("solution", components, dim, FieldBase::VECTOR,  basisOrder, quadOrder, isBasisContinuous, feSpace);
+    field.subfieldAdd(description, discretization);
     field.subfieldsSetup();
     field.allocate();
-    field.zeroLocal();
     PetscInt bandwidth = 0;
     err = DMCreateMatrix(field.dmMesh(), &matrix); CPPUNIT_ASSERT(!err);
     err = MatComputeBandwidth(matrix, 0.0, &bandwidth); CPPUNIT_ASSERT(!err);
