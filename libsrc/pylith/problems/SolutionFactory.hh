@@ -22,7 +22,7 @@
  */
 
 #if !defined(pylith_problems_solutionfactory_hh)
-#define pylith_materials_solutionfactory_hh
+#define pylith_problems_solutionfactory_hh
 
 // Include directives ---------------------------------------------------
 #include "problemsfwd.hh" // forward declarations
