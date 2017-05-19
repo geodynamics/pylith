@@ -36,68 +36,90 @@
 
 /// Namespace for pylith package
 namespace pylith {
-  namespace meshio {
-    class TestDataWriterVTKMesh;
-  } // meshio
+    namespace meshio {
+        class TestDataWriterVTKMesh;
+
+        class TestDataWriterVTKMesh_Data;
+    } // meshio
 } // pylith
 
+// ======================================================================
 /// C++ unit testing for DataWriterVTK
-class pylith::meshio::TestDataWriterVTKMesh : public TestDataWriterVTK,
-					      public TestDataWriterMesh,
-					      public CppUnit::TestFixture
-{ // class TestDataWriterVTKMesh
+class pylith::meshio::TestDataWriterVTKMesh : public TestDataWriterVTK, public TestDataWriterMesh, public CppUnit::TestFixture {
 
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestDataWriterVTKMesh );
+    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+    CPPUNIT_TEST_SUITE(TestDataWriterVTKMesh);
 
-  CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testFilename );
-  CPPUNIT_TEST( testTimeFormat );
-  CPPUNIT_TEST( testTimeConstant );
-  CPPUNIT_TEST( testPrecision );
-  CPPUNIT_TEST( testVtkFilename );
+    CPPUNIT_TEST(testConstructor);
+    CPPUNIT_TEST(testFilename);
+    CPPUNIT_TEST(testTimeFormat);
+    CPPUNIT_TEST(testTimeConstant);
+    CPPUNIT_TEST(testPrecision);
+    CPPUNIT_TEST(testTimeStep);
+    CPPUNIT_TEST(testWriteVertexField);
+    CPPUNIT_TEST(testWriteCellField);
+    CPPUNIT_TEST(testVtkFilename);
 
-  CPPUNIT_TEST_SUITE_END();
+    CPPUNIT_TEST_SUITE_END();
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+    // PUBLIC METHODS /////////////////////////////////////////////////////
+public:
 
-  /// Setup testing data.
-  void setUp(void);
+    /// Setup testing data.
+    void setUp(void);
 
-  /// Tear down testing data.
-  void tearDown(void);
+    /// Tear down testing data.
+    void tearDown(void);
 
-  /// Test constructor
-  void testConstructor(void);
+    /// Test constructor
+    void testConstructor(void);
 
-  /// Test filename()
-  void testFilename(void);
+    /// Test filename()
+    void testFilename(void);
 
-  /// Test timeFormat()
-  void testTimeFormat(void);
+    /// Test timeFormat()
+    void testTimeFormat(void);
 
-  /// Test timeConstant()
-  void testTimeConstant(void);
+    /// Test timeConstant()
+    void testTimeConstant(void);
 
-  /// Test precision()
-  void testPrecision(void);
+    /// Test precision()
+    void testPrecision(void);
 
-  /// Test openTimeStep() and closeTimeStep()
-  void testTimeStep(void);
+    /// Test openTimeStep() and closeTimeStep()
+    void testTimeStep(void);
 
-  /// Test writeVertexField.
-  void testWriteVertexField(void);
+    /// Test writeVertexField.
+    void testWriteVertexField(void);
 
-  /// Test writeCellField.
-  void testWriteCellField(void);
+    /// Test writeCellField.
+    void testWriteCellField(void);
 
-  /// Test vtkFilename.
-  void testVtkFilename(void);
+    /// Test vtkFilename.
+    void testVtkFilename(void);
+
+    // PROTECTED METHODS //////////////////////////////////////////////////
+protected:
+
+    /** Get test data.
+     *
+     * @returns Test data.
+     */
+    TestDataWriter_Data* _getData(void);
+
+
+    // PROTECTED MEMBDERS /////////////////////////////////////////////////
+protected:
+
+    TestDataWriterVTKMesh_Data* _data; ///< Data for testing.
 
 }; // class TestDataWriterVTKMesh
+
+
+// ======================================================================
+class pylith::meshio::TestDataWriterVTKMesh_Data : public TestDataWriterVTK_Data, public TestDataWriter_Data {};
 
 #endif // pylith_meshio_testdatawritervtkmesh_hh
 
 
-// End of file 
+// End of file

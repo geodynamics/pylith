@@ -27,56 +27,72 @@
 #if !defined(pylith_meshio_testdatawritermesh_hh)
 #define pylith_meshio_testdatawritermesh_hh
 
-#include "pylith/topology/topologyfwd.hh" // HOLDSA Mesh, Field
+#include "TestDataWriter.hh" // USES TestDataWriter_Data
+
+#include "pylith/topology/topologyfwd.hh" // HOLDSA Mesh, USES Fields
 
 /// Namespace for pylith package
 namespace pylith {
-  namespace meshio {
-    class TestDataWriterMesh;
-
-    class DataWriterData;
-  } // meshio
+    namespace meshio {
+        class TestDataWriterMesh;
+    } // meshio
 } // pylith
 
-/// C++ unit testing for DataWriter<Mesh>.
-class pylith::meshio::TestDataWriterMesh
-{ // class TestDataWriterMesh
+// ======================================================================
+class pylith::meshio::TestDataWriterMesh {
 
-  // PROTECTED METHODS //////////////////////////////////////////////////
-protected :
+    // PROTECTED METHODS //////////////////////////////////////////////////
+protected:
 
-  /// Setup testing data.
-  void setUp(void);
+    /// Setup testing data.
+    void setUp(void);
 
-  /// Tear down testing data.
-  void tearDown(void);
+    /// Tear down testing data.
+    void tearDown(void);
 
-  /// Initialize mesh.
-  void _initialize(void);
+    /// Initialize mesh.
+    void _initialize(void);
 
-  /** Create vertex fields.
-   *
-   * @param fields Vertex fields.
-   */
-  void
-  _createVertexFields(topology::Fields* fields) const;
+    /** Create vertex fields.
+     *
+     * @param fields Vertex fields.
+     */
+    void _createVertexFields(topology::Fields* fields);
 
-  /** Create cell fields.
-   *
-   * @param fields Cell fields.
-   */
-  void
-  _createCellFields(topology::Fields* fields) const;
+    /** Create cell fields.
+     *
+     * @param fields Cell fields.
+     */
+    void _createCellFields(topology::Fields* fields);
 
-  // PROTECTED MEMBERS //////////////////////////////////////////////////
-protected :
+    /// Set data for tri test case.
+    void _setDataTri(void);
 
-  DataWriterData* _data; ///< Data for testing
-  topology::Mesh* _mesh; ///< Mesh for data
+    /// Set data for quad test case.
+    void _setDataQuad(void);
+
+    /// Set data for tet test case.
+    void _setDataTet(void);
+
+    /// Set data for hex test case.
+    void _setDataHex(void);
+
+    /** Get test data.
+     *
+     * @returns Test data.
+     */
+    virtual
+    TestDataWriter_Data* _getData(void) = 0;
+
+    // PROTECTED MEMBERS //////////////////////////////////////////////////
+protected:
+
+    pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
 
 }; // class TestDataWriterMesh
+
 
 #endif // pylith_meshio_testdatawritermesh_hh
 
 
-// End of file 
+// End of file

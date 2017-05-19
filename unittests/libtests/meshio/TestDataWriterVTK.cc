@@ -33,60 +33,78 @@
 // Check VTK file against archived file.
 void
 pylith::meshio::TestDataWriterVTK::checkFile(const char* filenameRoot,
-					     const PylithScalar t,
-					     const char* timeFormat)
+                                             const PylithScalar t,
+                                             const char* timeFormat)
 { // checkFile
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  const std::string& fileroot = filenameRoot;
+    const std::string& fileroot = filenameRoot;
 
-  std::ostringstream buffer;
-  const int indexExt = fileroot.find(".vtk");
-  // Add time stamp to filename
-  char sbuffer[256];
-  sprintf(sbuffer, timeFormat, t);
-  std::string timestamp(sbuffer);
-  const unsigned int pos = timestamp.find(".");
-  if (pos != timestamp.length())
-    timestamp.erase(pos, 1);
-  buffer << std::string(fileroot, 0, indexExt) << "_t" << timestamp << ".vtk";
-  
-  const std::string& filename = buffer.str();
-  const std::string filenameE = "data/" + filename;
+    std::ostringstream buffer;
+    const int indexExt = fileroot.find(".vtk");
+    // Add time stamp to filename
+    char sbuffer[256];
+    sprintf(sbuffer, timeFormat, t);
+    std::string timestamp(sbuffer);
+    const unsigned int pos = timestamp.find(".");
+    if (pos != timestamp.length()) {
+        timestamp.erase(pos, 1);
+    }
+    buffer << std::string(fileroot, 0, indexExt) << "_t" << timestamp << ".vtk";
 
-  std::ifstream fileInE(filenameE.c_str());
-  if (!fileInE.is_open()) {
-    std::cerr << "Could not open file '" << filenameE << "'." << std::endl;
-  } // if
-  CPPUNIT_ASSERT(fileInE.is_open());
+    const std::string& filename = buffer.str();
+    const std::string filenameE = "data/" + filename;
 
-  std::ifstream fileIn(filename.c_str());
-  if (!fileIn.is_open()) {
-    std::cerr << "Could not open file '" << filename << "'." << std::endl;
-  } // if
-  CPPUNIT_ASSERT(fileIn.is_open());
-
-  const int maxLen = 256;
-  char line[maxLen];
-  char lineE[maxLen];
-
-  int i = 1;
-  while(!fileInE.eof()) {
-    fileInE.getline(lineE, maxLen);
-    fileIn.getline(line, maxLen);
-    if (0 != strcmp(line, lineE)) {
-      std::cerr << "Line " << i << " of file '" << filename << "' is incorrect."
-		<< std::endl;
-      CPPUNIT_ASSERT(false);
+    std::ifstream fileInE(filenameE.c_str());
+    if (!fileInE.is_open()) {
+        std::cerr << "Could not open file '" << filenameE << "'." << std::endl;
     } // if
-    ++i;
-  } // while
+    CPPUNIT_ASSERT(fileInE.is_open());
 
-  fileInE.close();
-  fileIn.close();
+    std::ifstream fileIn(filename.c_str());
+    if (!fileIn.is_open()) {
+        std::cerr << "Could not open file '" << filename << "'." << std::endl;
+    } // if
+    CPPUNIT_ASSERT(fileIn.is_open());
 
-  PYLITH_METHOD_END;
+    const int maxLen = 256;
+    char line[maxLen];
+    char lineE[maxLen];
+
+    int i = 1;
+    while (!fileInE.eof()) {
+        fileInE.getline(lineE, maxLen);
+        fileIn.getline(line, maxLen);
+        if (0 != strcmp(line, lineE)) {
+            std::cerr << "Line " << i << " of file '" << filename << "' is incorrect."
+                      << std::endl;
+            CPPUNIT_ASSERT(false);
+        } // if
+        ++i;
+    } // while
+
+    fileInE.close();
+    fileIn.close();
+
+    PYLITH_METHOD_END;
 } // checkFile
 
 
-// End of file 
+// ----------------------------------------------------------------------
+// Constructor
+pylith::meshio::TestDataWriterVTK_Data::TestDataWriterVTK_Data(void) :
+    timestepFilename(NULL),
+    vertexFilename(NULL),
+    cellFilename(NULL)
+{ // constructor
+} // constructor
+
+
+// ----------------------------------------------------------------------
+// Destructor
+pylith::meshio::TestDataWriterVTK_Data::~TestDataWriterVTK_Data(void)
+{ // destructor
+} // destructor
+
+
+// End of file

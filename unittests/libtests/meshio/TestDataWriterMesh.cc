@@ -20,9 +20,7 @@
 
 #include "TestDataWriterMesh.hh" // Implementation of class methods
 
-#include "data/DataWriterData.hh" // USES DataWriterData
-
-#include <cppunit/extensions/HelperMacros.h>
+#include "FieldFactory.hh" // USES FieldFactory
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
@@ -37,17 +35,19 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
+#include <cppunit/extensions/HelperMacros.h>
+
+
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterMesh::setUp(void)
 { // setUp
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  _data = 0;
-  _mesh = 0;
+    _mesh = NULL;
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -55,12 +55,11 @@ pylith::meshio::TestDataWriterMesh::setUp(void)
 void
 pylith::meshio::TestDataWriterMesh::tearDown(void)
 { // tearDown
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  delete _data; _data = 0;
-  delete _mesh; _mesh = 0;
+    delete _mesh; _mesh = NULL;
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // tearDown
 
 // ----------------------------------------------------------------------
@@ -68,139 +67,195 @@ pylith::meshio::TestDataWriterMesh::tearDown(void)
 void
 pylith::meshio::TestDataWriterMesh::_initialize(void)
 { // _initialize
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(_data);
+    TestDataWriter_Data* data = _getData();CPPUNIT_ASSERT(data);
 
-  delete _mesh; _mesh = new topology::Mesh;CPPUNIT_ASSERT(_mesh);
-  MeshIOAscii iohandler;
-  iohandler.filename(_data->meshFilename);
-  iohandler.read(_mesh);
+    delete _mesh; _mesh = new topology::Mesh;CPPUNIT_ASSERT(_mesh);
+    MeshIOAscii iohandler;
+    iohandler.filename(data->meshFilename);
+    iohandler.read(_mesh);
 
-  spatialdata::geocoords::CSCart cs;
-  cs.setSpaceDim(_mesh->dimension());
-  _mesh->coordsys(&cs);
+    spatialdata::geocoords::CSCart cs;
+    cs.setSpaceDim(_mesh->dimension());
+    _mesh->coordsys(&cs);
 
-  spatialdata::units::Nondimensional normalizer;
-  normalizer.lengthScale(10.0);
-  topology::MeshOps::nondimensionalize(_mesh, normalizer);
+    spatialdata::units::Nondimensional normalizer;
+    normalizer.lengthScale(data->lengthScale);
+    pylith::topology::MeshOps::nondimensionalize(_mesh, normalizer);
 
-  if (_data->faultLabel) {
-    faults::FaultCohesiveKin fault;
-    const bool useLagrangeConstraints = true;
-    PetscInt firstFaultVertex = 0;
-    PetscInt firstLagrangeVertex = 0, firstFaultCell = 0;
-    PetscErrorCode err = DMGetStratumSize(_mesh->dmMesh(), _data->faultLabel, 1, &firstLagrangeVertex);PYLITH_CHECK_ERROR(err);
-    firstFaultCell = firstLagrangeVertex;
-    if (useLagrangeConstraints) {
-      firstFaultCell += firstLagrangeVertex;
+    if (data->faultLabel) {
+        faults::FaultCohesiveKin fault;
+        const bool useLagrangeConstraints = true;
+        PetscInt firstFaultVertex = 0;
+        PetscInt firstLagrangeVertex = 0, firstFaultCell = 0;
+        PetscErrorCode err = DMGetStratumSize(_mesh->dmMesh(), data->faultLabel, 1, &firstLagrangeVertex);PYLITH_CHECK_ERROR(err);
+        firstFaultCell = firstLagrangeVertex;
+        if (useLagrangeConstraints) {
+            firstFaultCell += firstLagrangeVertex;
+        } // if
+        fault.label(data->faultLabel);
+        fault.id(data->faultId);
+        fault.adjustTopology(_mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
     } // if
-    fault.label(_data->faultLabel);
-    fault.id(_data->faultId);
-    fault.adjustTopology(_mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
-  } // if
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // _initialize
 
 // ----------------------------------------------------------------------
 // Create vertex fields.
 void
-pylith::meshio::TestDataWriterMesh::_createVertexFields(topology::Fields* fields) const
+pylith::meshio::TestDataWriterMesh::_createVertexFields(pylith::topology::Fields* fields)
 { // _createVertexFields
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(fields);
-  CPPUNIT_ASSERT(_mesh);
-  CPPUNIT_ASSERT(_data);
+    CPPUNIT_ASSERT(fields);
+    CPPUNIT_ASSERT(_mesh);
 
-  const int nfields = _data->numVertexFields;
-  
-  PetscDM dmMesh = _mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);  
-  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
-  const PetscInt vStart = verticesStratum.begin();
-  const PetscInt vEnd = verticesStratum.end();
-  
-  // Set vertex fields
-  for (int i=0; i < nfields; ++i) {
-    const char* name = _data->vertexFieldsInfo[i].name;
-    const int fiberDim = _data->vertexFieldsInfo[i].fiber_dim;
-    fields->add(name, name);
-    topology::Field& field = fields->get(name);
-    field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
-    field.allocate();
-    field.vectorFieldType(_data->vertexFieldsInfo[i].field_type);
+    TestDataWriter_Data* data = _getData();CPPUNIT_ASSERT(data);
 
-    topology::VecVisitorMesh fieldVisitor(field);
-    PetscScalar* fieldArray = fieldVisitor.localArray();CPPUNIT_ASSERT(fieldArray);
-    
-    for(PetscInt v = vStart, index=0; v < vEnd; ++v) {
-      const PetscInt off = fieldVisitor.sectionOffset(v);
-      CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
-      for(PetscInt d = 0; d < fiberDim; ++d, ++index) {
-	fieldArray[off+d] = _data->vertexFields[i][index];
-      } // for
-    } // for
-    CPPUNIT_ASSERT_EQUAL(_data->numVertices, vEnd-vStart);
-  } // for
+    PetscDM dmMesh = _mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
 
-  PYLITH_METHOD_END;
+    FieldFactory factory(*fields);
+    factory.scalar(data->vertexDiscretization, data->vertexScalarValues, data->vertexNumPoints, data->vertexScalarNumComponents);
+    factory.vector(data->vertexDiscretization, data->vertexVectorValues, data->vertexNumPoints, data->vertexVectorNumComponents);
+    factory.tensor(data->vertexDiscretization, data->vertexTensorValues, data->vertexNumPoints, data->vertexTensorNumComponents);
+    factory.other(data->vertexDiscretization, data->vertexOtherValues, data->vertexNumPoints, data->vertexOtherNumComponents);
+
+    PYLITH_METHOD_END;
 } // _createVertexFields
 
 // ----------------------------------------------------------------------
 // Create cell fields.
 void
-pylith::meshio::TestDataWriterMesh::_createCellFields(topology::Fields* fields) const
+pylith::meshio::TestDataWriterMesh::_createCellFields(pylith::topology::Fields* fields)
 { // _createCellFields
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(fields);
-  CPPUNIT_ASSERT(_mesh);
-  CPPUNIT_ASSERT(_data);
+    CPPUNIT_ASSERT(fields);
+    CPPUNIT_ASSERT(_mesh);
 
-  const int nfields = _data->numCellFields;
+    TestDataWriter_Data* data = _getData();CPPUNIT_ASSERT(data);
 
-  PetscDM dmMesh = _mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);  
-  topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
-  const PetscInt cStart = cellsStratum.begin();
-  const PetscInt cEnd = cellsStratum.end();
-  PetscInt numCells = cellsStratum.size();
+    PetscDM dmMesh = _mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
 
-  topology::StratumIS* cellsIS = (_data->cellsLabel) ? new topology::StratumIS(dmMesh, _data->cellsLabel, _data->labelId) : 0;
-  const PetscInt *cells  = NULL;
-  if (cellsIS) {
-    numCells = cellsIS->size();
-    cells = cellsIS->points();
-  } // if
+    FieldFactory factory(*fields);
+    factory.scalar(data->cellDiscretization, data->cellScalarValues, data->cellNumPoints, data->cellScalarNumComponents);
+    factory.vector(data->cellDiscretization, data->cellVectorValues, data->cellNumPoints, data->cellVectorNumComponents);
+    factory.tensor(data->cellDiscretization, data->cellTensorValues, data->cellNumPoints, data->cellTensorNumComponents);
+    factory.other(data->cellDiscretization, data->cellOtherValues, data->cellNumPoints, data->cellOtherNumComponents);
 
-  // Set cell fields
-  for (int i=0; i < nfields; ++i) {
-    const char* name = _data->cellFieldsInfo[i].name;
-    const int fiberDim = _data->cellFieldsInfo[i].fiber_dim;
-    fields->add(name, name);
-    topology::Field& field = fields->get(name);
-    field.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
-    field.allocate();
-    field.vectorFieldType(_data->cellFieldsInfo[i].field_type);
-
-    topology::VecVisitorMesh fieldVisitor(field);
-    PetscScalar* fieldArray = fieldVisitor.localArray();CPPUNIT_ASSERT(fieldArray);
-    
-    for(PetscInt c = 0, index = 0; c < numCells; ++c) {
-      const PetscInt cell = cells ? cells[c] : c+cStart;
-      
-      const PetscInt off = fieldVisitor.sectionOffset(cell);
-      CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(cell));
-      for(PetscInt d = 0; d < fiberDim; ++d, ++index) {
-	fieldArray[off+d] = _data->cellFields[i][index];
-      } // for
-    } // for
-    CPPUNIT_ASSERT_EQUAL(_data->numCells, numCells);
-  } // for
-  delete cellsIS; cellsIS = 0;
-
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // _createCellFields
 
 
-// End of file 
+// ----------------------------------------------------------------------
+void
+pylith::meshio::TestDataWriterMesh::_setDataTri(void) {
+    TestDataWriter_Data* data = this->_getData();CPPUNIT_ASSERT(data);
+
+    data->meshFilename = "data/tri3.mesh";
+    data->faultLabel = "fault";
+    data->faultId = 100;
+    data->spaceDim = 2;
+    data->lengthScale = 10.0;
+
+    data->time = 1.0;
+    data->timeFormat = "%3.1f";
+
+    // Vertex fields ------------------------------
+    data->vertexNumPoints = 6;
+    data->vertexDiscretization.basisOrder = 1;
+    data->vertexDiscretization.quadOrder = 1;
+    data->vertexDiscretization.isBasisContinuous = true;
+    data->vertexDiscretization.feSpace = pylith::topology::FieldBase::POLYNOMIAL_SPACE;
+
+    // Scalar
+    data->vertexScalarNumComponents = 1;
+    static const PylithScalar vertexScalarValues[6*1] = {
+        2.1, 3.2, 4.3, 5.4, 6.5, 7.6,
+    };
+    data->vertexScalarValues = const_cast<PylithScalar*>(vertexScalarValues);
+
+    // Vector
+    data->vertexVectorNumComponents = 2;
+    static const PylithScalar vertexVectorValues[6*2] = {
+        1.1, 2.2,
+        3.3, 4.4,
+        5.5, 6.6,
+        7.7, 8.8,
+        9.9, 10.0,
+        11.1, 12.2,
+    };
+    data->vertexVectorValues = const_cast<PylithScalar*>(vertexVectorValues);
+
+    // Tensor
+    data->vertexTensorNumComponents = 3;
+    static const PylithScalar vertexTensorValues[6*3] = {
+        1.1, 1.2, 1.3,
+        2.1, 2.2, 2.3,
+        3.1, 3.2, 3.3,
+        4.1, 4.2, 4.3,
+        5.1, 5.2, 5.3,
+        6.1, 6.2, 6.3,
+    };
+    data->vertexTensorValues = const_cast<PylithScalar*>(vertexTensorValues);
+
+    // Other
+    data->vertexOtherNumComponents = 2;
+    static const PylithScalar vertexOtherValues[6*2] = {
+        1.2, 2.3,
+        3.4, 4.5,
+        5.6, 6.7,
+        7.8, 8.9,
+        9.0, 10.1,
+        11.2, 12.3,
+    };
+    data->vertexOtherValues = const_cast<PylithScalar*>(vertexOtherValues);
+
+    // Cell fields ------------------------------
+    data->cellNumPoints = 3;
+    data->cellDiscretization.basisOrder = 1;
+    data->cellDiscretization.quadOrder = 0;
+    data->cellDiscretization.isBasisContinuous = true;
+    data->cellDiscretization.feSpace = pylith::topology::FieldBase::POINT_SPACE;
+
+    // Scalar
+    data->cellScalarNumComponents = 1;
+    static const PylithScalar cellScalarValues[3*1] = {
+        2.1, 2.2, 2.3
+    };
+    data->cellScalarValues = const_cast<PylithScalar*>(cellScalarValues);
+
+    // Vector
+    data->cellVectorNumComponents = 2;
+    static const PylithScalar cellVectorValues[3*2] = {
+        1.1, 2.2,
+        3.3, 4.4,
+        5.5, 6.6,
+    };
+    data->cellVectorValues = const_cast<PylithScalar*>(cellVectorValues);
+
+    // Tensor
+    data->cellTensorNumComponents = 3;
+    static const PylithScalar cellTensorValues[3*3] = {
+        1.2, 2.3, 3.4,
+        4.5, 5.6, 6.7,
+        7.8, 8.9, 9.0
+    };
+    data->cellTensorValues = const_cast<PylithScalar*>(cellTensorValues);
+
+    // Other
+    data->cellOtherNumComponents = 2;
+    static const PylithScalar cellOtherValues[3*2] = {
+        1.2, 2.3,
+        4.5, 5.6,
+        7.8, 8.9,
+    };
+    data->cellOtherValues = const_cast<PylithScalar*>(cellOtherValues);
+
+
+} // setUp
+
+
+// End of file

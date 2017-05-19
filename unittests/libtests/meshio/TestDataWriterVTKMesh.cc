@@ -30,9 +30,6 @@
 #include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::meshio::TestDataWriterVTKMesh);
-
-// ----------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::meshio::TestDataWriterVTKMesh::setUp(void)
@@ -40,6 +37,7 @@ pylith::meshio::TestDataWriterVTKMesh::setUp(void)
     PYLITH_METHOD_BEGIN;
 
     TestDataWriterMesh::setUp();
+    _data = NULL;
 
     PYLITH_METHOD_END;
 } // setUp
@@ -52,6 +50,7 @@ pylith::meshio::TestDataWriterVTKMesh::tearDown(void)
     PYLITH_METHOD_BEGIN;
 
     TestDataWriterMesh::tearDown();
+    delete _data; _data = NULL;
 
     PYLITH_METHOD_END;
 } // tearDown
@@ -117,6 +116,9 @@ pylith::meshio::TestDataWriterVTKMesh::testTimeConstant(void)
     writer.timeConstant(value);
     CPPUNIT_ASSERT_EQUAL(value, writer._timeConstant);
 
+    // Verify error with negative time constant.
+    CPPUNIT_ASSERT_THROW(writer.timeConstant(-1.0), std::runtime_error);
+
     PYLITH_METHOD_END;
 } // testTimeConstant
 
@@ -132,6 +134,10 @@ pylith::meshio::TestDataWriterVTKMesh::testPrecision(void)
     const int value = 4;
     writer.precision(value);
     CPPUNIT_ASSERT_EQUAL(value, writer._precision);
+
+    // Verify error with nonpositive precision.
+    CPPUNIT_ASSERT_THROW(writer.precision(0), std::runtime_error);
+    CPPUNIT_ASSERT_THROW(writer.precision(-1), std::runtime_error);
 
     PYLITH_METHOD_END;
 } // testPrecision
@@ -156,15 +162,8 @@ pylith::meshio::TestDataWriterVTKMesh::testTimeStep(void)
 
     const PylithScalar t = _data->time;
     const bool isInfo = false;
-    if (!_data->cellsLabel) {
-        writer.open(*_mesh, isInfo);
-        writer.openTimeStep(t, *_mesh);
-    } else {
-        const char* label = _data->cellsLabel;
-        const int id = _data->labelId;
-        writer.open(*_mesh, isInfo, label, id);
-        writer.openTimeStep(t, *_mesh, label, id);
-    } // else
+    writer.open(*_mesh, isInfo);
+    writer.openTimeStep(t, *_mesh);
 
     CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
     CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
@@ -192,37 +191,22 @@ pylith::meshio::TestDataWriterVTKMesh::testWriteVertexField(void)
 
     DataWriterVTK writer;
 
-    topology::Fields vertexFields(*_mesh);
+    pylith::topology::Fields vertexFields(*_mesh);
     _createVertexFields(&vertexFields);
 
     writer.filename(_data->vertexFilename);
     writer.timeFormat(_data->timeFormat);
 
-    const int nfields = _data->numVertexFields;
-
     const PylithScalar t = _data->time;
     const bool isInfo = false;
-    if (!_data->cellsLabel) {
-        writer.open(*_mesh, isInfo);
-        writer.openTimeStep(t, *_mesh);
-    } else {
-        const char* label = _data->cellsLabel;
-        const int id = _data->labelId;
-        writer.open(*_mesh, isInfo, label, id);
-        writer.openTimeStep(t, *_mesh, label, id);
-    } // else
-    for (int i = 0; i < nfields; ++i) {
-        topology::Field& field = vertexFields.get(_data->vertexFieldsInfo[i].name);
-        writer.writeVertexField(t, field, *_mesh);
+    writer.open(*_mesh, isInfo);
+    writer.openTimeStep(t, *_mesh);
 
-        // Make sure we can reuse field
-        std::string fieldLabel = std::string(field.label()) + std::string("2");
-        field.label(fieldLabel.c_str());
-        field.dimensionalizeOkay(true);
-        field.scale(2.0);
-        field.dimensionalize();
+    const int numFields = 4;
+    const char* fieldNames[4] = {"scalar", "vector", "tensor", "other"};
+    for (int i = 0; i < numFields; ++i) {
+        pylith::topology::Field& field = vertexFields.get(fieldNames[i]);
         writer.writeVertexField(t, field, *_mesh);
-
         CPPUNIT_ASSERT(writer._wroteVertexHeader);
         CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
     } // for
@@ -248,37 +232,25 @@ pylith::meshio::TestDataWriterVTKMesh::testWriteCellField(void)
 
     DataWriterVTK writer;
 
-    topology::Fields cellFields(*_mesh);
+    pylith::topology::Fields cellFields(*_mesh);
     _createCellFields(&cellFields);
 
     writer.filename(_data->cellFilename);
     writer.timeFormat(_data->timeFormat);
 
-    const int nfields = _data->numCellFields;
-
     const PylithScalar t = _data->time;
     const bool isInfo = false;
-    if (!_data->cellsLabel) {
-        writer.open(*_mesh, isInfo);
-        writer.openTimeStep(t, *_mesh);
-        for (int i = 0; i < nfields; ++i) {
-            topology::Field& field = cellFields.get(_data->cellFieldsInfo[i].name);
-            writer.writeCellField(t, field);
-            CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
-            CPPUNIT_ASSERT(writer._wroteCellHeader);
-        } // for
-    } else {
-        const char* label = _data->cellsLabel;
-        const int id = _data->labelId;
-        writer.open(*_mesh, isInfo, label, id);
-        writer.openTimeStep(t, *_mesh, label, id);
-        for (int i = 0; i < nfields; ++i) {
-            topology::Field& field = cellFields.get(_data->cellFieldsInfo[i].name);
-            writer.writeCellField(t, field, label, id);
-            CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
-            CPPUNIT_ASSERT(writer._wroteCellHeader);
-        } // for
-    } // else
+    writer.open(*_mesh, isInfo);
+    writer.openTimeStep(t, *_mesh);
+
+    const int numFields = 4;
+    const char* fieldNames[4] = {"scalar", "vector", "tensor", "other"};
+    for (int i = 0; i < numFields; ++i) {
+        pylith::topology::Field& field = cellFields.get(fieldNames[i]);
+        writer.writeCellField(t, field);
+        CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
+        CPPUNIT_ASSERT(writer._wroteCellHeader);
+    } // for
     writer.closeTimeStep();
     writer.close();
     CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
@@ -317,6 +289,15 @@ pylith::meshio::TestDataWriterVTKMesh::testVtkFilename(void)
 
     PYLITH_METHOD_END;
 } // testVtkFilename
+
+
+// ----------------------------------------------------------------------
+// Get test data.
+pylith::meshio::TestDataWriter_Data*
+pylith::meshio::TestDataWriterVTKMesh::_getData(void)
+{ // _getData
+    return _data;
+} // _getData
 
 
 // End of file
