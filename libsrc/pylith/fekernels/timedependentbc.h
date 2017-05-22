@@ -9,7 +9,7 @@
  * This code was developed as part of the Computational Infrastructure
  * for Geodynamics (http:*geodynamics.org).
  *
- * Copyright (c) 2010-2015 University of California, Davis
+ * Copyright (c) 2010-2017 University of California, Davis
  *
  * See COPYING for license information.
  *
@@ -50,6 +50,8 @@
  * @param a_x Gradient of auxiliary field.
  * @param t Time for residual evaluation.
  * @param x Coordinates of point evaluation.
+ * @param numConstants Number of registered constants.
+ * @param constants Array of registered constants.
  * @param value Initial value for field [numConstrainedDOF].
  */
 void
@@ -68,6 +70,8 @@ pylith_fekernels_TimeDependentBC_initial_scalar(const PylithInt dim,
                                                 const PylithScalar a_x[],
                                                 const PylithReal t,
                                                 const PylithScalar x[],
+                                                const PylithInt numConstants,
+                                                const PylithScalar constants[],
                                                 PylithScalar value[]);
 
 /** Vector initial value term for time-dependent boundary condition.
@@ -89,6 +93,8 @@ pylith_fekernels_TimeDependentBC_initial_scalar(const PylithInt dim,
  * @param a_x Gradient of auxiliary field.
  * @param t Time for residual evaluation.
  * @param x Coordinates of point evaluation.
+ * @param numConstants Number of registered constants.
+ * @param constants Array of registered constants.
  * @param value Initial value for field [numConstrainedDOF].
  */
 void
@@ -107,6 +113,8 @@ pylith_fekernels_TimeDependentBC_initial_vector(const PylithInt dim,
                                                 const PylithScalar a_x[],
                                                 const PylithReal t,
                                                 const PylithScalar x[],
+                                                const PylithInt numConstants,
+                                                const PylithScalar constants[],
                                                 PylithScalar value[]);
 
 /** Scalar rate term for time-dependent boundary condition.
@@ -128,6 +136,8 @@ pylith_fekernels_TimeDependentBC_initial_vector(const PylithInt dim,
  * @param a_x Gradient of auxiliary field.
  * @param t Time for residual evaluation.
  * @param x Coordinates of point evaluation.
+ * @param numConstants Number of registered constants.
+ * @param constants Array of registered constants.
  * @param value Initial value for field [numConstrainedDOF].
  */
 void
@@ -146,6 +156,8 @@ pylith_fekernels_TimeDependentBC_rate_scalar(const PylithInt dim,
                                              const PylithScalar a_x[],
                                              const PylithReal t,
                                              const PylithScalar x[],
+                                             const PylithInt numConstants,
+                                             const PylithScalar constants[],
                                              PylithScalar value[]);
 
 /** Vector rate term for time-dependent boundary condition.
@@ -167,6 +179,8 @@ pylith_fekernels_TimeDependentBC_rate_scalar(const PylithInt dim,
  * @param a_x Gradient of auxiliary field.
  * @param t Time for residual evaluation.
  * @param x Coordinates of point evaluation.
+ * @param numConstants Number of registered constants.
+ * @param constants Array of registered constants.
  * @param value Initial value for field [numConstrainedDOF].
  */
 void
@@ -185,6 +199,8 @@ pylith_fekernels_TimeDependentBC_rate_vector(const PylithInt dim,
                                              const PylithScalar a_x[],
                                              const PylithReal t,
                                              const PylithScalar x[],
+                                             const PylithInt numConstants,
+                                             const PylithScalar constants[],
                                              PylithScalar value[]);
 
 /** Scalar time history term for time-dependent boundary condition.
@@ -206,6 +222,8 @@ pylith_fekernels_TimeDependentBC_rate_vector(const PylithInt dim,
  * @param a_x Gradient of auxiliary field.
  * @param t Time for residual evaluation.
  * @param x Coordinates of point evaluation.
+ * @param numConstants Number of registered constants.
+ * @param constants Array of registered constants.
  * @param value Initial value for field [numConstrainedDOF].
  */
 void
@@ -224,6 +242,8 @@ pylith_fekernels_TimeDependentBC_timeHistory_scalar(const PylithInt dim,
                                                     const PylithScalar a_x[],
                                                     const PylithReal t,
                                                     const PylithScalar x[],
+                                                    const PylithInt numConstants,
+                                                    const PylithScalar constants[],
                                                     PylithScalar value[]);
 
 /** Vector time history term for time-dependent boundary condition.
@@ -245,6 +265,8 @@ pylith_fekernels_TimeDependentBC_timeHistory_scalar(const PylithInt dim,
  * @param a_x Gradient of auxiliary field.
  * @param t Time for residual evaluation.
  * @param x Coordinates of point evaluation.
+ * @param numConstants Number of registered constants.
+ * @param constants Array of registered constants.
  * @param value Initial value for field [numConstrainedDOF].
  */
 void
@@ -263,6 +285,8 @@ pylith_fekernels_TimeDependentBC_timeHistory_vector(const PylithInt dim,
                                                     const PylithScalar a_x[],
                                                     const PylithReal t,
                                                     const PylithScalar x[],
+                                                    const PylithInt numConstants,
+                                                    const PylithScalar constants[],
                                                     PylithScalar value[]);
 
 /** Compute boundary condition scalar value using initial and rate terms.
@@ -282,6 +306,8 @@ pylith_fekernels_TimeDependentBC_timeHistory_vector(const PylithInt dim,
  * @param a_x Gradient of auxiliary field.
  * @param t Time for residual evaluation.
  * @param x Coordinates of point evaluation.
+ * @param numConstants Number of registered constants.
+ * @param constants Array of registered constants.
  * @param value Initial value for field [numConstrainedDOF].
  */
 void
@@ -300,6 +326,8 @@ pylith_fekernels_TimeDependentBC_initialRate_scalar(const PylithInt dim,
                                                     const PylithScalar a_x[],
                                                     const PylithReal t,
                                                     const PylithScalar x[],
+                                                    const PylithInt numConstants,
+                                                    const PylithScalar constants[],
                                                     PylithScalar value[]);
 
 /** Compute boundary condition vector value using initial and rate terms.
@@ -319,6 +347,8 @@ pylith_fekernels_TimeDependentBC_initialRate_scalar(const PylithInt dim,
  * @param a_x Gradient of auxiliary field.
  * @param t Time for residual evaluation.
  * @param x Coordinates of point evaluation.
+ * @param numConstants Number of registered constants.
+ * @param constants Array of registered constants.
  * @param value Initial value for field [numConstrainedDOF].
  */
 void
@@ -337,6 +367,8 @@ pylith_fekernels_TimeDependentBC_initialRate_vector(const PylithInt dim,
                                                     const PylithScalar a_x[],
                                                     const PylithReal t,
                                                     const PylithScalar x[],
+                                                    const PylithInt numConstants,
+                                                    const PylithScalar constants[],
                                                     PylithScalar value[]);
 
 /** Compute boundary condition scalar value using initial and time history terms.
@@ -356,6 +388,8 @@ pylith_fekernels_TimeDependentBC_initialRate_vector(const PylithInt dim,
  * @param a_x Gradient of auxiliary field.
  * @param t Time for residual evaluation.
  * @param x Coordinates of point evaluation.
+ * @param numConstants Number of registered constants.
+ * @param constants Array of registered constants.
  * @param value Initial value for field [numConstrainedDOF].
  */
 void
@@ -374,6 +408,8 @@ pylith_fekernels_TimeDependentBC_initialTimeHistory_scalar(const PylithInt dim,
                                                            const PylithScalar a_x[],
                                                            const PylithReal t,
                                                            const PylithScalar x[],
+                                                           const PylithInt numConstants,
+                                                           const PylithScalar constants[],
                                                            PylithScalar value[]);
 
 /** Compute boundary condition vector value using initial and time history terms.
@@ -393,6 +429,8 @@ pylith_fekernels_TimeDependentBC_initialTimeHistory_scalar(const PylithInt dim,
  * @param a_x Gradient of auxiliary field.
  * @param t Time for residual evaluation.
  * @param x Coordinates of point evaluation.
+ * @param numConstants Number of registered constants.
+ * @param constants Array of registered constants.
  * @param value Initial value for field [numConstrainedDOF].
  */
 void
@@ -411,6 +449,8 @@ pylith_fekernels_TimeDependentBC_initialTimeHistory_vector(const PylithInt dim,
                                                            const PylithScalar a_x[],
                                                            const PylithReal t,
                                                            const PylithScalar x[],
+                                                           const PylithInt numConstants,
+                                                           const PylithScalar constants[],
                                                            PylithScalar value[]);
 
 /** Compute boundary condition scalar value using rate and time history terms.
@@ -430,6 +470,8 @@ pylith_fekernels_TimeDependentBC_initialTimeHistory_vector(const PylithInt dim,
  * @param a_x Gradient of auxiliary field.
  * @param t Time for residual evaluation.
  * @param x Coordinates of point evaluation.
+ * @param numConstants Number of registered constants.
+ * @param constants Array of registered constants.
  * @param value Initial value for field [numConstrainedDOF].
  */
 void
@@ -448,6 +490,8 @@ pylith_fekernels_TimeDependentBC_rateTimeHistory_scalar(const PylithInt dim,
                                                         const PylithScalar a_x[],
                                                         const PylithReal t,
                                                         const PylithScalar x[],
+                                                        const PylithInt numConstants,
+                                                        const PylithScalar constants[],
                                                         PylithScalar value[]);
 
 /** Compute boundary condition vector value using rate and time history terms.
@@ -467,6 +511,8 @@ pylith_fekernels_TimeDependentBC_rateTimeHistory_scalar(const PylithInt dim,
  * @param a_x Gradient of auxiliary field.
  * @param t Time for residual evaluation.
  * @param x Coordinates of point evaluation.
+ * @param numConstants Number of registered constants.
+ * @param constants Array of registered constants.
  * @param value Initial value for field [numConstrainedDOF].
  */
 void
@@ -485,6 +531,8 @@ pylith_fekernels_TimeDependentBC_rateTimeHistory_vector(const PylithInt dim,
                                                         const PylithScalar a_x[],
                                                         const PylithReal t,
                                                         const PylithScalar x[],
+                                                        const PylithInt numConstants,
+                                                        const PylithScalar constants[],
                                                         PylithScalar value[]);
 
 /** Compute boundary condition scalar value using initial, rate ,and time history terms.
@@ -504,6 +552,8 @@ pylith_fekernels_TimeDependentBC_rateTimeHistory_vector(const PylithInt dim,
  * @param a_x Gradient of auxiliary field.
  * @param t Time for residual evaluation.
  * @param x Coordinates of point evaluation.
+ * @param numConstants Number of registered constants.
+ * @param constants Array of registered constants.
  * @param value Initial value for field [numConstrainedDOF].
  */
 void
@@ -522,6 +572,8 @@ pylith_fekernels_TimeDependentBC_initialRateTimeHistory_scalar(const PylithInt d
                                                                const PylithScalar a_x[],
                                                                const PylithReal t,
                                                                const PylithScalar x[],
+                                                               const PylithInt numConstants,
+                                                               const PylithScalar constants[],
                                                                PylithScalar value[]);
 
 /** Compute boundary condition vector value using initial, rate, and time history terms.
@@ -541,6 +593,8 @@ pylith_fekernels_TimeDependentBC_initialRateTimeHistory_scalar(const PylithInt d
  * @param a_x Gradient of auxiliary field.
  * @param t Time for residual evaluation.
  * @param x Coordinates of point evaluation.
+ * @param numConstants Number of registered constants.
+ * @param constants Array of registered constants.
  * @param value Initial value for field [numConstrainedDOF].
  */
 void
@@ -559,6 +613,8 @@ pylith_fekernels_TimeDependentBC_initialRateTimeHistory_vector(const PylithInt d
                                                                const PylithScalar a_x[],
                                                                const PylithReal t,
                                                                const PylithScalar x[],
+                                                               const PylithInt numConstants,
+                                                               const PylithScalar constants[],
                                                                PylithScalar value[]);
 
 

@@ -52,6 +52,8 @@ pylith_fekernels_DispVel_f0u(const PylithInt dim,
                              const PylithScalar a_x[],
                              const PylithReal t,
                              const PylithScalar x[],
+                             const PylithInt numConstants,
+                             const PylithScalar constants[],
                              PylithScalar f0[])
 { /* f0u */
     const PylithInt _numS = 2;
@@ -66,7 +68,7 @@ pylith_fekernels_DispVel_f0u(const PylithInt dim,
     assert(s_t);
     assert(f0);
 
-    for (i=0; i < dim; ++i) {
+    for (i = 0; i < dim; ++i) {
         f0[i] += disp_t[i];
     } /* for */
 } /* f0u */
@@ -91,6 +93,8 @@ pylith_fekernels_DispVel_g0u(const PylithInt dim,
                              const PylithScalar a_x[],
                              const PylithReal t,
                              const PylithScalar x[],
+                             const PylithInt numConstants,
+                             const PylithScalar constants[],
                              PylithScalar g0[])
 { /* g0u */
     const PylithInt _numS = 2;
@@ -104,7 +108,7 @@ pylith_fekernels_DispVel_g0u(const PylithInt dim,
     assert(s);
     assert(g0);
 
-    for (i=0; i < dim; ++i) {
+    for (i = 0; i < dim; ++i) {
         g0[i] += vel[i];
     } /* for */
 } /* g0u */
@@ -130,6 +134,8 @@ pylith_fekernels_DispVel_Jf0uu_zero(const PylithInt dim,
                                     const PylithReal t,
                                     const PylithReal utshift,
                                     const PylithScalar x[],
+                                    const PylithInt numConstants,
+                                    const PylithScalar constants[],
                                     PylithScalar Jf0[])
 { /* Jf0uu_zero */
   // No work to do for zero values.
@@ -156,6 +162,8 @@ pylith_fekernels_DispVel_Jf0uu_implicit(const PylithInt dim,
                                         const PylithReal t,
                                         const PylithReal utshift,
                                         const PylithScalar x[],
+                                        const PylithInt numConstants,
+                                        const PylithScalar constants[],
                                         PylithScalar Jf0[])
 { /* Jf0uu_implicit */
     const PylithInt _numS = 2;
@@ -164,7 +172,7 @@ pylith_fekernels_DispVel_Jf0uu_implicit(const PylithInt dim,
 
     assert(_numS == numS);
 
-    for (i=0; i < dim; ++i) {
+    for (i = 0; i < dim; ++i) {
         Jf0[i*dim+i] += utshift;
     } /* for */
 } /* Jf0uu_implicit */
@@ -190,6 +198,8 @@ pylith_fekernels_DispVel_Jf0uu_explicit(const PylithInt dim,
                                         const PylithReal t,
                                         const PylithReal utshift,
                                         const PylithScalar x[],
+                                        const PylithInt numConstants,
+                                        const PylithScalar constants[],
                                         PylithScalar Jf0[])
 { /* Jf0uu_explicit */
     const PylithInt _numS = 2;
@@ -198,7 +208,7 @@ pylith_fekernels_DispVel_Jf0uu_explicit(const PylithInt dim,
 
     assert(_numS == numS);
 
-    for (i=0; i < dim; ++i) {
+    for (i = 0; i < dim; ++i) {
         Jf0[i*dim+i] += 1.0;
     } /* for */
 } /* Jf0uu_explicit */
@@ -227,6 +237,8 @@ pylith_fekernels_DispVel_Jg0uv(const PylithInt dim,
                                const PylithReal t,
                                const PylithReal utshift,
                                const PylithScalar x[],
+                               const PylithInt numConstants,
+                               const PylithScalar constants[],
                                PylithScalar Jg0[])
 { /* Jg0uv */
     const PylithInt _numS = 2;
@@ -235,7 +247,7 @@ pylith_fekernels_DispVel_Jg0uv(const PylithInt dim,
 
     assert(_numS == numS);
 
-    for (i=0; i < dim; ++i) {
+    for (i = 0; i < dim; ++i) {
         Jg0[i*dim+i] += 1.0;
     } /* for */
 } /* Jg0uv */

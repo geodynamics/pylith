@@ -72,25 +72,29 @@
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
+ * @param[in] numConstants Number of registered constants.
+ * @param[in] constants Array of registered constants.
  * @param[out] f0 [dim].
  */
 void
 pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_f0v(const PylithInt dim,
-						       const PylithInt numS,
-						       const PylithInt numA,
-						       const PylithInt sOff[],
-						       const PylithInt sOff_x[],
-						       const PylithScalar s[],
-						       const PylithScalar s_t[],
-						       const PylithScalar s_x[],
-						       const PylithInt aOff[],
-						       const PylithInt aOff_x[],
-						       const PylithScalar a[],
-						       const PylithScalar a_t[],
-						       const PylithScalar a_x[],
-						       const PylithReal t,
-						       const PylithScalar x[],
-						       PylithScalar f0[]);
+                                                       const PylithInt numS,
+                                                       const PylithInt numA,
+                                                       const PylithInt sOff[],
+                                                       const PylithInt sOff_x[],
+                                                       const PylithScalar s[],
+                                                       const PylithScalar s_t[],
+                                                       const PylithScalar s_x[],
+                                                       const PylithInt aOff[],
+                                                       const PylithInt aOff_x[],
+                                                       const PylithScalar a[],
+                                                       const PylithScalar a_t[],
+                                                       const PylithScalar a_x[],
+                                                       const PylithReal t,
+                                                       const PylithScalar x[],
+                                                       const PylithInt numConstants,
+                                                       const PylithScalar constants[],
+                                                       PylithScalar f0[]);
 
 
 /** g0 function for isotropic linear Maxwell plane strain with both gravity and body forces.
@@ -113,25 +117,29 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_f0v(const PylithInt dim,
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
+ * @param[in] numConstants Number of registered constants.
+ * @param[in] constants Array of registered constants.
  * @param[out] g0 [dim].
  */
 void
 pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_gravbodyforce(const PylithInt dim,
-								     const PylithInt numS,
-								     const PylithInt numA,
-								     const PylithInt sOff[],
-								     const PylithInt sOff_x[],
-								     const PylithScalar s[],
-								     const PylithScalar s_t[],
-								     const PylithScalar s_x[],
-								     const PylithInt aOff[],
-								     const PylithInt aOff_x[],
-								     const PylithScalar a[],
-								     const PylithScalar a_t[],
-								     const PylithScalar a_x[],
-								     const PylithReal t,
-								     const PylithScalar x[],
-								     PylithScalar g0[]);
+                                                                     const PylithInt numS,
+                                                                     const PylithInt numA,
+                                                                     const PylithInt sOff[],
+                                                                     const PylithInt sOff_x[],
+                                                                     const PylithScalar s[],
+                                                                     const PylithScalar s_t[],
+                                                                     const PylithScalar s_x[],
+                                                                     const PylithInt aOff[],
+                                                                     const PylithInt aOff_x[],
+                                                                     const PylithScalar a[],
+                                                                     const PylithScalar a_t[],
+                                                                     const PylithScalar a_x[],
+                                                                     const PylithReal t,
+                                                                     const PylithScalar x[],
+                                                                     const PylithInt numConstants,
+                                                                     const PylithScalar constants[],
+                                                                     PylithScalar g0[]);
 
 
 /** g0 function for isotropic linear Maxwell plane strain with gravity.
@@ -154,25 +162,29 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_gravbodyforce(const Pylit
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
+ * @param[in] numConstants Number of registered constants.
+ * @param[in] constants Array of registered constants.
  * @param[out] g0 [dim].
  */
 void
 pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_grav(const PylithInt dim,
-							    const PylithInt numS,
-							    const PylithInt numA,
-							    const PylithInt sOff[],
-							    const PylithInt sOff_x[],
-							    const PylithScalar s[],
-							    const PylithScalar s_t[],
-							    const PylithScalar s_x[],
-							    const PylithInt aOff[],
-							    const PylithInt aOff_x[],
-							    const PylithScalar a[],
-							    const PylithScalar a_t[],
-							    const PylithScalar a_x[],
-							    const PylithReal t,
-							    const PylithScalar x[],
-							    PylithScalar g0[]);
+                                                            const PylithInt numS,
+                                                            const PylithInt numA,
+                                                            const PylithInt sOff[],
+                                                            const PylithInt sOff_x[],
+                                                            const PylithScalar s[],
+                                                            const PylithScalar s_t[],
+                                                            const PylithScalar s_x[],
+                                                            const PylithInt aOff[],
+                                                            const PylithInt aOff_x[],
+                                                            const PylithScalar a[],
+                                                            const PylithScalar a_t[],
+                                                            const PylithScalar a_x[],
+                                                            const PylithReal t,
+                                                            const PylithScalar x[],
+                                                            const PylithInt numConstants,
+                                                            const PylithScalar constants[],
+                                                            PylithScalar g0[]);
 
 
 /** g0 function for isotropic linear Maxwell plane strain with body forces.
@@ -195,25 +207,29 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_grav(const PylithInt dim,
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
+ * @param[in] numConstants Number of registered constants.
+ * @param[in] constants Array of registered constants.
  * @param[out] g0 [dim].
  */
 void
 pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_bodyforce(const PylithInt dim,
-								 const PylithInt numS,
-								 const PylithInt numA,
-								 const PylithInt sOff[],
-								 const PylithInt sOff_x[],
-								 const PylithScalar s[],
-								 const PylithScalar s_t[],
-								 const PylithScalar s_x[],
-								 const PylithInt aOff[],
-								 const PylithInt aOff_x[],
-								 const PylithScalar a[],
-								 const PylithScalar a_t[],
-								 const PylithScalar a_x[],
-								 const PylithReal t,
-								 const PylithScalar x[],
-								 PylithScalar g0[]);
+                                                                 const PylithInt numS,
+                                                                 const PylithInt numA,
+                                                                 const PylithInt sOff[],
+                                                                 const PylithInt sOff_x[],
+                                                                 const PylithScalar s[],
+                                                                 const PylithScalar s_t[],
+                                                                 const PylithScalar s_x[],
+                                                                 const PylithInt aOff[],
+                                                                 const PylithInt aOff_x[],
+                                                                 const PylithScalar a[],
+                                                                 const PylithScalar a_t[],
+                                                                 const PylithScalar a_x[],
+                                                                 const PylithReal t,
+                                                                 const PylithScalar x[],
+                                                                 const PylithInt numConstants,
+                                                                 const PylithScalar constants[],
+                                                                 PylithScalar g0[]);
 
 
 /** g1 function for isotropic linear Maxwell plane strain WITHOUT reference stress and reference strain.
@@ -236,25 +252,29 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_bodyforce(const PylithInt
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
+ * @param[in] numConstants Number of registered constants.
+ * @param[in] constants Array of registered constants.
  * @param[out] g1 [dim*dim].
  */
 void
 pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g1v(const PylithInt dim,
-						       const PylithInt numS,
-						       const PylithInt numA,
-						       const PylithInt sOff[],
-						       const PylithInt sOff_x[],
-						       const PylithScalar s[],
-						       const PylithScalar s_t[],
-						       const PylithScalar s_x[],
-						       const PylithInt aOff[],
-						       const PylithInt aOff_x[],
-						       const PylithScalar a[],
-						       const PylithScalar a_t[],
-						       const PylithScalar a_x[],
-						       const PylithReal t,
-						       const PylithScalar x[],
-						       PylithScalar g1[]);
+                                                       const PylithInt numS,
+                                                       const PylithInt numA,
+                                                       const PylithInt sOff[],
+                                                       const PylithInt sOff_x[],
+                                                       const PylithScalar s[],
+                                                       const PylithScalar s_t[],
+                                                       const PylithScalar s_x[],
+                                                       const PylithInt aOff[],
+                                                       const PylithInt aOff_x[],
+                                                       const PylithScalar a[],
+                                                       const PylithScalar a_t[],
+                                                       const PylithScalar a_x[],
+                                                       const PylithReal t,
+                                                       const PylithScalar x[],
+                                                       const PylithInt numConstants,
+                                                       const PylithScalar constants[],
+                                                       PylithScalar g1[]);
 
 
 /** g1 function for isotropic linear Maxwell plane strain WITH reference stress and reference strain.
@@ -277,25 +297,29 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g1v(const PylithInt dim,
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
+ * @param[in] numConstants Number of registered constants.
+ * @param[in] constants Array of registered constants.
  * @param[out] g1 [dim*dim].
  */
 void
 pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g1v_refstate(const PylithInt dim,
-								const PylithInt numS,
-								const PylithInt numA,
-								const PylithInt sOff[],
-								const PylithInt sOff_x[],
-								const PylithScalar s[],
-								const PylithScalar s_t[],
-								const PylithScalar s_x[],
-								const PylithInt aOff[],
-								const PylithInt aOff_x[],
-								const PylithScalar a[],
-								const PylithScalar a_t[],
-								const PylithScalar a_x[],
-								const PylithReal t,
-								const PylithScalar x[],
-								PylithScalar g1[]);
+                                                                const PylithInt numS,
+                                                                const PylithInt numA,
+                                                                const PylithInt sOff[],
+                                                                const PylithInt sOff_x[],
+                                                                const PylithScalar s[],
+                                                                const PylithScalar s_t[],
+                                                                const PylithScalar s_x[],
+                                                                const PylithInt aOff[],
+                                                                const PylithInt aOff_x[],
+                                                                const PylithScalar a[],
+                                                                const PylithScalar a_t[],
+                                                                const PylithScalar a_x[],
+                                                                const PylithReal t,
+                                                                const PylithScalar x[],
+                                                                const PylithInt numConstants,
+                                                                const PylithScalar constants[],
+                                                                PylithScalar g1[]);
 
 
 /** Jf0 function for isotropic linear Maxwell plane strain with implicit time stepping.
@@ -319,26 +343,30 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g1v_refstate(const PylithInt 
  * @param[in] t Time for residual evaluation.
  * @param[in] utshift Coefficient for dF/ds_t term in Jacobian.
  * @param[in] x Coordinates of point evaluation.
+ * @param[in] numConstants Number of registered constants.
+ * @param[in] constants Array of registered constants.
  * @param[in] Jf0 Result [dim*dim].
  */
 void
 pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_Jf0vv_implicit(const PylithInt dim,
-								  const PylithInt numS,
-								  const PylithInt numA,
-								  const PylithInt sOff[],
-								  const PylithInt sOff_x[],
-								  const PylithScalar s[],
-								  const PylithScalar s_t[],
-								  const PylithScalar s_x[],
-								  const PylithInt aOff[],
-								  const PylithInt aOff_x[],
-								  const PylithScalar a[],
-								  const PylithScalar a_t[],
-								  const PylithScalar a_x[],
-								  const PylithReal t,
-								  const PylithReal utshift,
-								  const PylithScalar x[],
-								  PylithScalar Jf0[]);
+                                                                  const PylithInt numS,
+                                                                  const PylithInt numA,
+                                                                  const PylithInt sOff[],
+                                                                  const PylithInt sOff_x[],
+                                                                  const PylithScalar s[],
+                                                                  const PylithScalar s_t[],
+                                                                  const PylithScalar s_x[],
+                                                                  const PylithInt aOff[],
+                                                                  const PylithInt aOff_x[],
+                                                                  const PylithScalar a[],
+                                                                  const PylithScalar a_t[],
+                                                                  const PylithScalar a_x[],
+                                                                  const PylithReal t,
+                                                                  const PylithReal utshift,
+                                                                  const PylithScalar x[],
+                                                                  const PylithInt numConstants,
+                                                                  const PylithScalar constants[],
+                                                                  PylithScalar Jf0[]);
 
 
 /** Jf0 function for isotropic linear Maxwell plane strain with explicit time stepping.
@@ -362,26 +390,30 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_Jf0vv_implicit(const PylithIn
  * @param[in] t Time for residual evaluation.
  * @param[in] utshift Coefficient for dF/ds_t term in Jacobian.
  * @param[in] x Coordinates of point evaluation.
+ * @param[in] numConstants Number of registered constants.
+ * @param[in] constants Array of registered constants.
  * @param[in] Jf0 Result [dim*dim].
  */
 void
 pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_Jf0vv_explicit(const PylithInt dim,
-								  const PylithInt numS,
-								  const PylithInt numA,
-								  const PylithInt sOff[],
-								  const PylithInt sOff_x[],
-								  const PylithScalar s[],
-								  const PylithScalar s_t[],
-								  const PylithScalar s_x[],
-								  const PylithInt aOff[],
-								  const PylithInt aOff_x[],
-								  const PylithScalar a[],
-								  const PylithScalar a_t[],
-								  const PylithScalar a_x[],
-								  const PylithReal t,
-								  const PylithReal utshift,
-								  const PylithScalar x[],
-								  PylithScalar Jf0[]);
+                                                                  const PylithInt numS,
+                                                                  const PylithInt numA,
+                                                                  const PylithInt sOff[],
+                                                                  const PylithInt sOff_x[],
+                                                                  const PylithScalar s[],
+                                                                  const PylithScalar s_t[],
+                                                                  const PylithScalar s_x[],
+                                                                  const PylithInt aOff[],
+                                                                  const PylithInt aOff_x[],
+                                                                  const PylithScalar a[],
+                                                                  const PylithScalar a_t[],
+                                                                  const PylithScalar a_x[],
+                                                                  const PylithReal t,
+                                                                  const PylithReal utshift,
+                                                                  const PylithScalar x[],
+                                                                  const PylithInt numConstants,
+                                                                  const PylithScalar constants[],
+                                                                  PylithScalar Jf0[]);
 
 
 /** Jg3_vu entry function for 2-D plane strain isotropic linear Maxwell viscoelasticity.
@@ -405,26 +437,30 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_Jf0vv_explicit(const PylithIn
  * @param[in] t Time for residual evaluation.
  * @param[in] utshift Coefficient for dF/ds_t term in Jacobian.
  * @param[in] x Coordinates of point evaluation.
+ * @param[in] numConstants Number of registered constants.
+ * @param[in] constants Array of registered constants.
  * @param[in] Jg3 Result [dim*dim*dim*dim].
  */
 void
 pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_Jg3vu(const PylithInt dim,
-							 const PylithInt numS,
-							 const PylithInt numA,
-							 const PylithInt sOff[],
-							 const PylithInt sOff_x[],
-							 const PylithScalar s[],
-							 const PylithScalar s_t[],
-							 const PylithScalar s_x[],
-							 const PylithInt aOff[],
-							 const PylithInt aOff_x[],
-							 const PylithScalar a[],
-							 const PylithScalar a_t[],
-							 const PylithScalar a_x[],
-							 const PylithReal t,
-							 const PylithReal utshift,
-							 const PylithScalar x[],
-							 PylithScalar Jg3[]);
+                                                         const PylithInt numS,
+                                                         const PylithInt numA,
+                                                         const PylithInt sOff[],
+                                                         const PylithInt sOff_x[],
+                                                         const PylithScalar s[],
+                                                         const PylithScalar s_t[],
+                                                         const PylithScalar s_x[],
+                                                         const PylithInt aOff[],
+                                                         const PylithInt aOff_x[],
+                                                         const PylithScalar a[],
+                                                         const PylithScalar a_t[],
+                                                         const PylithScalar a_x[],
+                                                         const PylithReal t,
+                                                         const PylithReal utshift,
+                                                         const PylithScalar x[],
+                                                         const PylithInt numConstants,
+                                                         const PylithScalar constants[],
+                                                         PylithScalar Jg3[]);
 
 
 /** Calculate mean stress for 2-D plane strain isotropic linear
@@ -448,25 +484,29 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_Jg3vu(const PylithInt dim,
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
+ * @param[in] numConstants Number of registered constants.
+ * @param[in] constants Array of registered constants.
  * @param[out] stress Result [dim*dim].
  */
 void
 pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_meanStress(const PylithInt dim,
-							      const PylithInt numS,
-							      const PylithInt numA,
-							      const PylithInt sOff[],
-							      const PylithInt sOff_x[],
-							      const PylithScalar s[],
-							      const PylithScalar s_t[],
-							      const PylithScalar s_x[],
-							      const PylithInt aOff[],
-							      const PylithInt aOff_x[],
-							      const PylithScalar a[],
-							      const PylithScalar a_t[],
-							      const PylithScalar a_x[],
-							      const PylithReal t,
-							      const PylithScalar x[],
-							      PylithScalar stress[]);
+                                                              const PylithInt numS,
+                                                              const PylithInt numA,
+                                                              const PylithInt sOff[],
+                                                              const PylithInt sOff_x[],
+                                                              const PylithScalar s[],
+                                                              const PylithScalar s_t[],
+                                                              const PylithScalar s_x[],
+                                                              const PylithInt aOff[],
+                                                              const PylithInt aOff_x[],
+                                                              const PylithScalar a[],
+                                                              const PylithScalar a_t[],
+                                                              const PylithScalar a_x[],
+                                                              const PylithReal t,
+                                                              const PylithScalar x[],
+                                                              const PylithInt numConstants,
+                                                              const PylithScalar constants[],
+                                                              PylithScalar stress[]);
 
 
 /** Calculate mean stress for 2-D plane strain isotropic linear
@@ -490,25 +530,29 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_meanStress(const PylithInt di
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
+ * @param[in] numConstants Number of registered constants.
+ * @param[in] constants Array of registered constants.
  * @param[out] stress Result [dim*dim].
  */
 void
 pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_meanStress_refstate(const PylithInt dim,
-								       const PylithInt numS,
-								       const PylithInt numA,
-								       const PylithInt sOff[],
-								       const PylithInt sOff_x[],
-								       const PylithScalar s[],
-								       const PylithScalar s_t[],
-								       const PylithScalar s_x[],
-								       const PylithInt aOff[],
-								       const PylithInt aOff_x[],
-								       const PylithScalar a[],
-								       const PylithScalar a_t[],
-								       const PylithScalar a_x[],
-								       const PylithReal t,
-								       const PylithScalar x[],
-								       PylithScalar stress[]);
+                                                                       const PylithInt numS,
+                                                                       const PylithInt numA,
+                                                                       const PylithInt sOff[],
+                                                                       const PylithInt sOff_x[],
+                                                                       const PylithScalar s[],
+                                                                       const PylithScalar s_t[],
+                                                                       const PylithScalar s_x[],
+                                                                       const PylithInt aOff[],
+                                                                       const PylithInt aOff_x[],
+                                                                       const PylithScalar a[],
+                                                                       const PylithScalar a_t[],
+                                                                       const PylithScalar a_x[],
+                                                                       const PylithReal t,
+                                                                       const PylithScalar x[],
+                                                                       const PylithInt numConstants,
+                                                                       const PylithScalar constants[],
+                                                                       PylithScalar stress[]);
 
 
 /** Calculate deviatoric stress for 2-D plane strain isotropic linear
@@ -532,25 +576,29 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_meanStress_refstate(const Pyl
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
+ * @param[in] numConstants Number of registered constants.
+ * @param[in] constants Array of registered constants.
  * @param[out] stress Result [dim*dim].
  */
 void
 pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_deviatoricStress(const PylithInt dim,
-								    const PylithInt numS,
-								    const PylithInt numA,
-								    const PylithInt sOff[],
-								    const PylithInt sOff_x[],
-								    const PylithScalar s[],
-								    const PylithScalar s_t[],
-								    const PylithScalar s_x[],
-								    const PylithInt aOff[],
-								    const PylithInt aOff_x[],
-								    const PylithScalar a[],
-								    const PylithScalar a_t[],
-								    const PylithScalar a_x[],
-								    const PylithReal t,
-								    const PylithScalar x[],
-								    PylithScalar stress[]);
+                                                                    const PylithInt numS,
+                                                                    const PylithInt numA,
+                                                                    const PylithInt sOff[],
+                                                                    const PylithInt sOff_x[],
+                                                                    const PylithScalar s[],
+                                                                    const PylithScalar s_t[],
+                                                                    const PylithScalar s_x[],
+                                                                    const PylithInt aOff[],
+                                                                    const PylithInt aOff_x[],
+                                                                    const PylithScalar a[],
+                                                                    const PylithScalar a_t[],
+                                                                    const PylithScalar a_x[],
+                                                                    const PylithReal t,
+                                                                    const PylithScalar x[],
+                                                                    const PylithInt numConstants,
+                                                                    const PylithScalar constants[],
+                                                                    PylithScalar stress[]);
 
 
 /** Calculate deviatoric stress for 2-D plane strain isotropic linear
@@ -574,26 +622,30 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_deviatoricStress(const Pylith
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
+ * @param[in] numConstants Number of registered constants.
+ * @param[in] constants Array of registered constants.
  * @param[out] stress Result [dim*dim].
  *
  */
 void
 pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_deviatoricStress_refstate(const PylithInt dim,
-									     const PylithInt numS,
-									     const PylithInt numA,
-									     const PylithInt sOff[],
-									     const PylithInt sOff_x[],
-									     const PylithScalar s[],
-									     const PylithScalar s_t[],
-									     const PylithScalar s_x[],
-									     const PylithInt aOff[],
-									     const PylithInt aOff_x[],
-									     const PylithScalar a[],
-									     const PylithScalar a_t[],
-									     const PylithScalar a_x[],
-									     const PylithReal t,
-									     const PylithScalar x[],
-									     PylithScalar stress[]);
+                                                                             const PylithInt numS,
+                                                                             const PylithInt numA,
+                                                                             const PylithInt sOff[],
+                                                                             const PylithInt sOff_x[],
+                                                                             const PylithScalar s[],
+                                                                             const PylithScalar s_t[],
+                                                                             const PylithScalar s_x[],
+                                                                             const PylithInt aOff[],
+                                                                             const PylithInt aOff_x[],
+                                                                             const PylithScalar a[],
+                                                                             const PylithScalar a_t[],
+                                                                             const PylithScalar a_x[],
+                                                                             const PylithReal t,
+                                                                             const PylithScalar x[],
+                                                                             const PylithInt numConstants,
+                                                                             const PylithScalar constants[],
+                                                                             PylithScalar stress[]);
 
 
 /** Calculate viscous strain at t+dt for 2-D plane strain isotropic linear
@@ -617,26 +669,30 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_deviatoricStress_refstate(con
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
+ * @param[in] numConstants Number of registered constants.
+ * @param[in] constants Array of registered constants.
  * @param[out] visStrainTpdt Result [4].
  *
  */
 void
 pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_computeVisStrain(const PylithInt dim,
-								    const PylithInt numS,
-								    const PylithInt numA,
-								    const PylithInt sOff[],
-								    const PylithInt sOff_x[],
-								    const PylithScalar s[],
-								    const PylithScalar s_t[],
-								    const PylithScalar s_x[],
-								    const PylithInt aOff[],
-								    const PylithInt aOff_x[],
-								    const PylithScalar a[],
-								    const PylithScalar a_t[],
-								    const PylithScalar a_x[],
-								    const PylithReal t,
-								    const PylithScalar x[],
-								    PylithScalar visStrainTpdt[]);
+                                                                    const PylithInt numS,
+                                                                    const PylithInt numA,
+                                                                    const PylithInt sOff[],
+                                                                    const PylithInt sOff_x[],
+                                                                    const PylithScalar s[],
+                                                                    const PylithScalar s_t[],
+                                                                    const PylithScalar s_x[],
+                                                                    const PylithInt aOff[],
+                                                                    const PylithInt aOff_x[],
+                                                                    const PylithScalar a[],
+                                                                    const PylithScalar a_t[],
+                                                                    const PylithScalar a_x[],
+                                                                    const PylithReal t,
+                                                                    const PylithScalar x[],
+                                                                    const PylithInt numConstants,
+                                                                    const PylithScalar constants[],
+                                                                    PylithScalar visStrainTpdt[]);
 
 
 /** Update total strain for 2-D plane strain isotropic linear
@@ -660,26 +716,30 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_computeVisStrain(const Pylith
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
+ * @param[in] numConstants Number of registered constants.
+ * @param[in] constants Array of registered constants.
  * @param[out] totalStrainTpdt Result [4].
  *
  */
 void
 pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_updateTotalStrain(const PylithInt dim,
-								     const PylithInt numS,
-								     const PylithInt numA,
-								     const PylithInt sOff[],
-								     const PylithInt sOff_x[],
-								     const PylithScalar s[],
-								     const PylithScalar s_t[],
-								     const PylithScalar s_x[],
-								     const PylithInt aOff[],
-								     const PylithInt aOff_x[],
-								     const PylithScalar a[],
-								     const PylithScalar a_t[],
-								     const PylithScalar a_x[],
-								     const PylithReal t,
-								     const PylithScalar x[],
-								     PylithScalar totalStrainTpdt[]);
+                                                                     const PylithInt numS,
+                                                                     const PylithInt numA,
+                                                                     const PylithInt sOff[],
+                                                                     const PylithInt sOff_x[],
+                                                                     const PylithScalar s[],
+                                                                     const PylithScalar s_t[],
+                                                                     const PylithScalar s_x[],
+                                                                     const PylithInt aOff[],
+                                                                     const PylithInt aOff_x[],
+                                                                     const PylithScalar a[],
+                                                                     const PylithScalar a_t[],
+                                                                     const PylithScalar a_x[],
+                                                                     const PylithReal t,
+                                                                     const PylithScalar x[],
+                                                                     const PylithInt numConstants,
+                                                                     const PylithScalar constants[],
+                                                                     PylithScalar totalStrainTpdt[]);
 
 
 /** Update viscous strain for 2-D plane strain isotropic linear
@@ -703,28 +763,30 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_updateTotalStrain(const Pylit
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
+ * @param[in] numConstants Number of registered constants.
+ * @param[in] constants Array of registered constants.
  * @param[out] visStrainTpdt Result [4].
  *
  */
 void
 pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_updateVisStrain(const PylithInt dim,
-								   const PylithInt numS,
-								   const PylithInt numA,
-								   const PylithInt sOff[],
-								   const PylithInt sOff_x[],
-								   const PylithScalar s[],
-								   const PylithScalar s_t[],
-								   const PylithScalar s_x[],
-								   const PylithInt aOff[],
-								   const PylithInt aOff_x[],
-								   const PylithScalar a[],
-								   const PylithScalar a_t[],
-								   const PylithScalar a_x[],
-								   const PylithReal t,
-								   const PylithScalar x[],
-								   PylithScalar visStrainTpdt[]);
-
-
+                                                                   const PylithInt numS,
+                                                                   const PylithInt numA,
+                                                                   const PylithInt sOff[],
+                                                                   const PylithInt sOff_x[],
+                                                                   const PylithScalar s[],
+                                                                   const PylithScalar s_t[],
+                                                                   const PylithScalar s_x[],
+                                                                   const PylithInt aOff[],
+                                                                   const PylithInt aOff_x[],
+                                                                   const PylithScalar a[],
+                                                                   const PylithScalar a_t[],
+                                                                   const PylithScalar a_x[],
+                                                                   const PylithReal t,
+                                                                   const PylithScalar x[],
+                                                                   const PylithInt numConstants,
+                                                                   const PylithScalar constants[],
+                                                                   PylithScalar visStrainTpdt[]);
 
 
 #endif /* pylith_fekernels_linearmaxwellplanestrain_h */

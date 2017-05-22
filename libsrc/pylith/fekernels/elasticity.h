@@ -60,6 +60,8 @@
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
+ * @param[in] numConstants Number of registered constants.
+ * @param[in] constants Array of registered constants.
  * @param[out] f0 [dim].
  */
 void
@@ -78,6 +80,8 @@ pylith_fekernels_Elasticity_f0v_inertia(const PylithInt dim,
                                         const PylithScalar a_x[],
                                         const PylithReal t,
                                         const PylithScalar x[],
+                                        const PylithInt numConstants,
+                                        const PylithScalar constants[],
                                         PylithScalar f0[]);
 
 
@@ -103,6 +107,8 @@ pylith_fekernels_Elasticity_f0v_inertia(const PylithInt dim,
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
+ * @param[in] numConstants Number of registered constants.
+ * @param[in] constants Array of registered constants.
  * @param[out] g0 [dim].
  */
 void
@@ -121,6 +127,8 @@ pylith_fekernels_Elasticity_g0v_grav(const PylithInt dim,
                                      const PylithScalar a_x[],
                                      const PylithReal t,
                                      const PylithScalar x[],
+                                     const PylithInt numConstants,
+                                     const PylithScalar constants[],
                                      PylithScalar g0[]);
 
 
@@ -145,6 +153,8 @@ pylith_fekernels_Elasticity_g0v_grav(const PylithInt dim,
  * @param[in] a_x Gradient of auxiliary field.
  * @param[in] t Time for residual evaluation.
  * @param[in] x Coordinates of point evaluation.
+ * @param[in] numConstants Number of registered constants.
+ * @param[in] constants Array of registered constants.
  * @param[out] g0 [dim].
  */
 void
@@ -163,6 +173,8 @@ pylith_fekernels_Elasticity_g0v_bodyforce(const PylithInt dim,
                                           const PylithScalar a_x[],
                                           const PylithReal t,
                                           const PylithScalar x[],
+                                          const PylithInt numConstants,
+                                          const PylithScalar constants[],
                                           PylithScalar g0[]);
 
 
@@ -186,6 +198,8 @@ pylith_fekernels_Elasticity_g0v_bodyforce(const PylithInt dim,
  * @param[in] t Time for residual evaluation.
  * @param[in] utshift Coefficient for dF/ds_t term in Jacobian.
  * @param[in] x Coordinates of point evaluation.
+ * @param[in] numConstants Number of registered constants.
+ * @param[in] constants Array of registered constants.
  * @param[out] Jf0 [dim*dim].
  */
 void
@@ -205,9 +219,9 @@ pylith_fekernels_Elasticity_Jf0vv_inertiaimplicit(const PylithInt dim,
                                                   const PylithReal t,
                                                   const PylithReal utshift,
                                                   const PylithScalar x[],
+                                                  const PylithInt numConstants,
+                                                  const PylithScalar constants[],
                                                   PylithScalar Jf0[]);
-
-
 
 
 /** Jf0 function for generic elasticity terms (inertia) with explicit time stepping.
@@ -230,6 +244,8 @@ pylith_fekernels_Elasticity_Jf0vv_inertiaimplicit(const PylithInt dim,
  * @param[in] t Time for residual evaluation.
  * @param[in] utshift Coefficient for dF/ds_t term in Jacobian.
  * @param[in] x Coordinates of point evaluation.
+ * @param[in] numConstants Number of registered constants.
+ * @param[in] constants Array of registered constants.
  * @param[out] Jf0 [dim*dim].
  */
 void
@@ -249,6 +265,8 @@ pylith_fekernels_Elasticity_Jf0vv_inertiaexplicit(const PylithInt dim,
                                                   const PylithReal t,
                                                   const PylithReal utshift,
                                                   const PylithScalar x[],
+                                                  const PylithInt numConstants,
+                                                  const PylithScalar constants[],
                                                   PylithScalar Jf0[]);
 
 
@@ -259,9 +277,8 @@ pylith_fekernels_Elasticity_Jf0vv_inertiaexplicit(const PylithInt dim,
  *
  * @returns dq Viscous strain coefficient.
  */
-PylithScalar
-pylith_fekernels_Elasticity_Maxwell_VisStrain_Coeff(const PylithScalar dt,
-						    const PylithScalar maxwellTime);
+PylithScalar pylith_fekernels_Elasticity_Maxwell_VisStrain_Coeff(const PylithScalar dt,
+                                                                 const PylithScalar maxwellTime);
 
 #endif /* pylith_fekernels_elasticity_h */
 

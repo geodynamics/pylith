@@ -76,6 +76,8 @@
  * @param a_x Gradient of auxiliary field.
  * @param t Time for residual evaluation.
  * @param x Coordinates of point evaluation.
+ * @param numConstants Number of registered constants.
+ * @param constants Array of registered constants.
  * @param f0 Result [dim].
  */
 void
@@ -94,6 +96,8 @@ pylith_fekernels_DispVel_f0u(const PylithInt dim,
                              const PylithScalar a_x[],
                              const PylithReal t,
                              const PylithScalar x[],
+                             const PylithInt numConstants,
+                             const PylithScalar constants[],
                              PylithScalar f0[]);
 
 
@@ -114,6 +118,8 @@ pylith_fekernels_DispVel_f0u(const PylithInt dim,
  * @param a_x Gradient of auxiliary field.
  * @param t Time for residual evaluation.
  * @param x Coordinates of point evaluation.
+ * @param numConstants Number of registered constants.
+ * @param constants Array of registered constants.
  * @param f0 Result [dim].
  */
 void
@@ -132,6 +138,8 @@ pylith_fekernels_DispVel_g0u(const PylithInt dim,
                              const PylithScalar a_x[],
                              const PylithReal t,
                              const PylithScalar x[],
+                             const PylithInt numConstants,
+                             const PylithScalar constants[],
                              PylithScalar g0[]);
 
 
@@ -153,6 +161,8 @@ pylith_fekernels_DispVel_g0u(const PylithInt dim,
  * @param t Time for residual evaluation.
  * @param utshift Coefficient for dF/ds_t term in Jacobian.
  * @param x Coordinates of point evaluation.
+ * @param numConstants Number of registered constants.
+ * @param constants Array of registered constants.
  * @param g0 Result [dim*dim].
  */
 void
@@ -172,6 +182,8 @@ pylith_fekernels_DispVel_Jf0uu_zero(const PylithInt dim,
                                     const PylithReal t,
                                     const PylithReal utshift,
                                     const PylithScalar x[],
+                                    const PylithInt numConstants,
+                                    const PylithScalar constants[],
                                     PylithScalar Jf0[]);
 
 /** Jf0 function for disp/velocity equation with implicit time-stepping.
@@ -192,6 +204,8 @@ pylith_fekernels_DispVel_Jf0uu_zero(const PylithInt dim,
  * @param t Time for residual evaluation.
  * @param utshift Coefficient for dF/ds_t term in Jacobian.
  * @param x Coordinates of point evaluation.
+ * @param numConstants Number of registered constants.
+ * @param constants Array of registered constants.
  * @param g0 Result [dim*dim].
  */
 void
@@ -211,6 +225,8 @@ pylith_fekernels_DispVel_Jf0uu_implicit(const PylithInt dim,
                                         const PylithReal t,
                                         const PylithReal utshift,
                                         const PylithScalar x[],
+                                        const PylithInt numConstants,
+                                        const PylithScalar constants[],
                                         PylithScalar Jf0[]);
 
 /** Jf0 function for disp/velocity equation with explicit time-stepping.
@@ -231,6 +247,8 @@ pylith_fekernels_DispVel_Jf0uu_implicit(const PylithInt dim,
  * @param t Time for residual evaluation.
  * @param utshift Coefficient for dF/ds_t term in Jacobian.
  * @param x Coordinates of point evaluation.
+ * @param numConstants Number of registered constants.
+ * @param constants Array of registered constants.
  * @param g0 Result [dim*dim].
  */
 void
@@ -250,6 +268,8 @@ pylith_fekernels_DispVel_Jf0uu_explicit(const PylithInt dim,
                                         const PylithReal t,
                                         const PylithReal utshift,
                                         const PylithScalar x[],
+                                        const PylithInt numConstants,
+                                        const PylithScalar constants[],
                                         PylithScalar Jf0[]);
 
 
@@ -271,6 +291,8 @@ pylith_fekernels_DispVel_Jf0uu_explicit(const PylithInt dim,
  * @param t Time for residual evaluation.
  * @param utshift Coefficient for dF/ds_t term in Jacobian.
  * @param x Coordinates of point evaluation.
+ * @param numConstants Number of registered constants.
+ * @param constants Array of registered constants.
  * @param g0 Result [dim*dim].
  */
 void
@@ -290,6 +312,8 @@ pylith_fekernels_DispVel_Jg0uv(const PylithInt dim,
                                const PylithReal t,
                                const PylithReal utshift,
                                const PylithScalar x[],
+                               const PylithInt numConstants,
+                               const PylithScalar constants[],
                                PylithScalar Jg0[]);
 
 

@@ -29,23 +29,6 @@
  * Scalar initial value term for time-dependent boundary condition.
  *
  * f_0(x)
- *
- * @param dim Spatial dimension.
- * @param numS Number of registered subfields in solution field.
- * @param numA Number of registered subfields in auxiliary field [1].
- * @param sOff Offset of registered subfields in solution field.
- * @param sOff_x Offset of registered subfields in gradient of the solution field [numS].
- * @param s Solution field with all subfields.
- * @param s_t Time derivative of solution field.
- * @param s_x Gradient of solution field.
- * @param aOff Offset of registered subfields in auxiliary field [numA]
- * @param aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
- * @param a Auxiliary field with all subfields.
- * @param a_t Time derivative of auxiliary field.
- * @param a_x Gradient of auxiliary field.
- * @param t Time for residual evaluation.
- * @param x Coordinates of point evaluation.
- * @param value Initial value for field [numConstrainedDOF].
  */
 void
 pylith_fekernels_TimeDependentBC_initial_scalar(const PylithInt dim,
@@ -63,6 +46,8 @@ pylith_fekernels_TimeDependentBC_initial_scalar(const PylithInt dim,
                                                 const PylithScalar a_x[],
                                                 const PylithReal t,
                                                 const PylithScalar x[],
+                                                const PylithInt numConstants,
+                                                const PylithScalar constants[],
                                                 PylithScalar value[])
 { /* initial_scalar */
     const PylithInt _numA = 1;
@@ -79,23 +64,6 @@ pylith_fekernels_TimeDependentBC_initial_scalar(const PylithInt dim,
  * Vector initial value term for time-dependent boundary condition.
  *
  * f_0(x)
- *
- * @param dim Spatial dimension.
- * @param numS Number of registered subfields in solution field.
- * @param numA Number of registered subfields in auxiliary field [1].
- * @param sOff Offset of registered subfields in solution field.
- * @param sOff_x Offset of registered subfields in gradient of the solution field [numS].
- * @param s Solution field with all subfields.
- * @param s_t Time derivative of solution field.
- * @param s_x Gradient of solution field.
- * @param aOff Offset of registered subfields in auxiliary field [numA]
- * @param aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
- * @param a Auxiliary field with all subfields.
- * @param a_t Time derivative of auxiliary field.
- * @param a_x Gradient of auxiliary field.
- * @param t Time for residual evaluation.
- * @param x Coordinates of point evaluation.
- * @param value Initial value for field [numConstrainedDOF].
  */
 void
 pylith_fekernels_TimeDependentBC_initial_vector(const PylithInt dim,
@@ -113,6 +81,8 @@ pylith_fekernels_TimeDependentBC_initial_vector(const PylithInt dim,
                                                 const PylithScalar a_x[],
                                                 const PylithReal t,
                                                 const PylithScalar x[],
+                                                const PylithInt numConstants,
+                                                const PylithScalar constants[],
                                                 PylithScalar value[])
 { /* initial_vector */
     const PylithInt _numA = 1;
@@ -123,8 +93,7 @@ pylith_fekernels_TimeDependentBC_initial_vector(const PylithInt dim,
     const PylithInt i_initial = aOff[0];
     PylithInt i;
 
-    for (i=0; i < dim; ++i)
-    { /* for */
+    for (i = 0; i < dim; ++i) { /* for */
         value[i] = a[i_initial+i];
 
     } /* for */
@@ -134,23 +103,6 @@ pylith_fekernels_TimeDependentBC_initial_vector(const PylithInt dim,
  * Scalar rate term for time-dependent boundary condition.
  *
  * \dot{f}_1(x) * (t-t_1(x)) for t >= t_1(x).
- *
- * @param dim Spatial dimension.
- * @param numS Number of registered subfields in solution field.
- * @param numA Number of registered subfields in auxiliary field [1].
- * @param sOff Offset of registered subfields in solution field.
- * @param sOff_x Offset of registered subfields in gradient of the solution field [numS].
- * @param s Solution field with all subfields.
- * @param s_t Time derivative of solution field.
- * @param s_x Gradient of solution field.
- * @param aOff Offset of registered subfields in auxiliary field [numA]
- * @param aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
- * @param a Auxiliary field with all subfields.
- * @param a_t Time derivative of auxiliary field.
- * @param a_x Gradient of auxiliary field.
- * @param t Time for residual evaluation.
- * @param x Coordinates of point evaluation.
- * @param value Initial value for field [numConstrainedDOF].
  */
 void
 pylith_fekernels_TimeDependentBC_rate_scalar(const PylithInt dim,
@@ -168,6 +120,8 @@ pylith_fekernels_TimeDependentBC_rate_scalar(const PylithInt dim,
                                              const PylithScalar a_x[],
                                              const PylithReal t,
                                              const PylithScalar x[],
+                                             const PylithInt numConstants,
+                                             const PylithScalar constants[],
                                              PylithScalar value[])
 { /* rate_scalar */
     const PylithInt _numA = 2;
@@ -191,23 +145,6 @@ pylith_fekernels_TimeDependentBC_rate_scalar(const PylithInt dim,
 ** Vector rate term for time-dependent boundary condition.
 *
 * \dot{f}_1(x) * (t-t_1(x)) for t >= t_1(x).
-*
-* @param dim Spatial dimension.
-* @param numS Number of registered subfields in solution field.
-* @param numA Number of registered subfields in auxiliary field [1].
-* @param sOff Offset of registered subfields in solution field.
-* @param sOff_x Offset of registered subfields in gradient of the solution field [numS].
-* @param s Solution field with all subfields.
-* @param s_t Time derivative of solution field.
-* @param s_x Gradient of solution field.
-* @param aOff Offset of registered subfields in auxiliary field [numA]
-* @param aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
-* @param a Auxiliary field with all subfields.
-* @param a_t Time derivative of auxiliary field.
-* @param a_x Gradient of auxiliary field.
-* @param t Time for residual evaluation.
-* @param x Coordinates of point evaluation.
-* @param value Initial value for field [numConstrainedDOF].
 */
 void
 pylith_fekernels_TimeDependentBC_rate_vector(const PylithInt dim,
@@ -225,6 +162,8 @@ pylith_fekernels_TimeDependentBC_rate_vector(const PylithInt dim,
                                              const PylithScalar a_x[],
                                              const PylithReal t,
                                              const PylithScalar x[],
+                                             const PylithInt numConstants,
+                                             const PylithScalar constants[],
                                              PylithScalar value[])
 { /* rate_vector */
     const PylithInt _numA = 2;
@@ -238,11 +177,11 @@ pylith_fekernels_TimeDependentBC_rate_vector(const PylithInt dim,
 
     const PylithScalar tRel = t - a[i_start];
     if (tRel > 0.0) {
-        for (i=0; i < dim; ++i) {
+        for (i = 0; i < dim; ++i) {
             value[i] = a[i_rate+i]*tRel;
         } /* for */
     } else {
-        for (i=0; i < dim; ++i) {
+        for (i = 0; i < dim; ++i) {
             value[i] = 0.0;
         } /* for */
     } /* if/else */
@@ -253,23 +192,6 @@ pylith_fekernels_TimeDependentBC_rate_vector(const PylithInt dim,
  * Scalar time history term for time-dependent boundary condition.
  *
  * f_2(x) * a(t-t_2(x)) for t >= t_2(x).
- *
- * @param dim Spatial dimension.
- * @param numS Number of registered subfields in solution field.
- * @param numA Number of registered subfields in auxiliary field [1].
- * @param sOff Offset of registered subfields in solution field.
- * @param sOff_x Offset of registered subfields in gradient of the solution field [numS].
- * @param s Solution field with all subfields.
- * @param s_t Time derivative of solution field.
- * @param s_x Gradient of solution field.
- * @param aOff Offset of registered subfields in auxiliary field [numA]
- * @param aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
- * @param a Auxiliary field with all subfields.
- * @param a_t Time derivative of auxiliary field.
- * @param a_x Gradient of auxiliary field.
- * @param t Time for residual evaluation.
- * @param x Coordinates of point evaluation.
- * @param value Initial value for field [numConstrainedDOF].
  */
 void
 pylith_fekernels_TimeDependentBC_timeHistory_scalar(const PylithInt dim,
@@ -287,6 +209,8 @@ pylith_fekernels_TimeDependentBC_timeHistory_scalar(const PylithInt dim,
                                                     const PylithScalar a_x[],
                                                     const PylithReal t,
                                                     const PylithScalar x[],
+                                                    const PylithInt numConstants,
+                                                    const PylithScalar constants[],
                                                     PylithScalar value[])
 {  /* timeHistory_scalar */
     const PylithInt _numA = 3;
@@ -304,23 +228,6 @@ pylith_fekernels_TimeDependentBC_timeHistory_scalar(const PylithInt dim,
  * Vector time history term for time-dependent boundary condition.
  *
  * f_2(x) * a(t-t_2(x)) for t >= t_2(x).
- *
- * @param dim Spatial dimension.
- * @param numS Number of registered subfields in solution field.
- * @param numA Number of registered subfields in auxiliary field [1].
- * @param sOff Offset of registered subfields in solution field.
- * @param sOff_x Offset of registered subfields in gradient of the solution field [numS].
- * @param s Solution field with all subfields.
- * @param s_t Time derivative of solution field.
- * @param s_x Gradient of solution field.
- * @param aOff Offset of registered subfields in auxiliary field [numA]
- * @param aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
- * @param a Auxiliary field with all subfields.
- * @param a_t Time derivative of auxiliary field.
- * @param a_x Gradient of auxiliary field.
- * @param t Time for residual evaluation.
- * @param x Coordinates of point evaluation.
- * @param value Initial value for field [numConstrainedDOF].
  */
 void
 pylith_fekernels_TimeDependentBC_timeHistory_vector(const PylithInt dim,
@@ -338,6 +245,8 @@ pylith_fekernels_TimeDependentBC_timeHistory_vector(const PylithInt dim,
                                                     const PylithScalar a_x[],
                                                     const PylithReal t,
                                                     const PylithScalar x[],
+                                                    const PylithInt numConstants,
+                                                    const PylithScalar constants[],
                                                     PylithScalar value[])
 { /* timeHistory_vector */
     const PylithInt _numA = 3;
@@ -349,30 +258,13 @@ pylith_fekernels_TimeDependentBC_timeHistory_vector(const PylithInt dim,
     const PylithInt i_value = aOff[2];
     PylithInt i;
 
-    for (i=0; i < dim; ++i) {
+    for (i = 0; i < dim; ++i) {
         value[0] = a[i_amplitude]*a[i_value];
     } /* for */
 } /* timeHistory_vector */
 
 /* ----------------------------------------------------------------------
  * Compute boundary condition scalar value using initial and rate terms.
- *
- * @param dim Spatial dimension.
- * @param numS Number of registered subfields in solution field.
- * @param numA Number of registered subfields in auxiliary field [1].
- * @param sOff Offset of registered subfields in solution field.
- * @param sOff_x Offset of registered subfields in gradient of the solution field [numS].
- * @param s Solution field with all subfields.
- * @param s_t Time derivative of solution field.
- * @param s_x Gradient of solution field.
- * @param aOff Offset of registered subfields in auxiliary field [numA]
- * @param aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
- * @param a Auxiliary field with all subfields.
- * @param a_t Time derivative of auxiliary field.
- * @param a_x Gradient of auxiliary field.
- * @param t Time for residual evaluation.
- * @param x Coordinates of point evaluation.
- * @param value Initial value for field [numConstrainedDOF].
  */
 void
 pylith_fekernels_TimeDependentBC_initialRate_scalar(const PylithInt dim,
@@ -390,6 +282,8 @@ pylith_fekernels_TimeDependentBC_initialRate_scalar(const PylithInt dim,
                                                     const PylithScalar a_x[],
                                                     const PylithReal t,
                                                     const PylithScalar x[],
+                                                    const PylithInt numConstants,
+                                                    const PylithScalar constants[],
                                                     PylithScalar value[])
 { /* initialRate_scalar */
     const PylithInt _numA = 3;
@@ -417,33 +311,16 @@ pylith_fekernels_TimeDependentBC_initialRate_scalar(const PylithInt dim,
 
     PylithScalar valueTmp = 0.0;
 
-    pylith_fekernels_TimeDependentBC_initial_scalar(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, aInitial, aInitial_t, aInitial_x, t, x, &valueTmp);
+    pylith_fekernels_TimeDependentBC_initial_scalar(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, aInitial, aInitial_t, aInitial_x, t, x, numConstants, constants, &valueTmp);
     value[0] = valueTmp;
 
-    pylith_fekernels_TimeDependentBC_rate_scalar(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, aRate, aRate_t, aRate_x, t, x, &valueTmp);
+    pylith_fekernels_TimeDependentBC_rate_scalar(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, aRate, aRate_t, aRate_x, t, x, numConstants, constants, &valueTmp);
     value[0] += valueTmp;
 
 } /* initialRate_scalar */
 
 /* ----------------------------------------------------------------------
  * Compute boundary condition vector value using initial and rate terms.
- *
- * @param dim Spatial dimension.
- * @param numS Number of registered subfields in solution field.
- * @param numA Number of registered subfields in auxiliary field [1].
- * @param sOff Offset of registered subfields in solution field.
- * @param sOff_x Offset of registered subfields in gradient of the solution field [numS].
- * @param s Solution field with all subfields.
- * @param s_t Time derivative of solution field.
- * @param s_x Gradient of solution field.
- * @param aOff Offset of registered subfields in auxiliary field [numA]
- * @param aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
- * @param a Auxiliary field with all subfields.
- * @param a_t Time derivative of auxiliary field.
- * @param a_x Gradient of auxiliary field.
- * @param t Time for residual evaluation.
- * @param x Coordinates of point evaluation.
- * @param value Initial value for field [numConstrainedDOF].
  */
 void
 pylith_fekernels_TimeDependentBC_initialRate_vector(const PylithInt dim,
@@ -461,6 +338,8 @@ pylith_fekernels_TimeDependentBC_initialRate_vector(const PylithInt dim,
                                                     const PylithScalar a_x[],
                                                     const PylithReal t,
                                                     const PylithScalar x[],
+                                                    const PylithInt numConstants,
+                                                    const PylithScalar constants[],
                                                     PylithScalar value[])
 { /* initialRate_vector*/
     const PylithInt _numA = 3;
@@ -489,36 +368,19 @@ pylith_fekernels_TimeDependentBC_initialRate_vector(const PylithInt dim,
     PylithScalar valueTmp[3] = { 0.0, 0.0, 0.0 };
     PylithInt i;
 
-    pylith_fekernels_TimeDependentBC_initial_vector(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, aInitial, aInitial_t, aInitial_x, t, x, valueTmp);
-    for (i=0; i < dim; ++i) {
+    pylith_fekernels_TimeDependentBC_initial_vector(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, aInitial, aInitial_t, aInitial_x, t, x, numConstants, constants, valueTmp);
+    for (i = 0; i < dim; ++i) {
         value[i] = valueTmp[i];
     } /* for */
 
-    pylith_fekernels_TimeDependentBC_rate_vector(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, aRate, aRate_t, aRate_x, t, x, valueTmp);
-    for (i=0; i < dim; ++i) {
+    pylith_fekernels_TimeDependentBC_rate_vector(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, aRate, aRate_t, aRate_x, t, x, numConstants, constants, valueTmp);
+    for (i = 0; i < dim; ++i) {
         value[i] += valueTmp[i];
     } /* for */
 } /* initialRate_vector */
 
 /* ----------------------------------------------------------------------
  * Compute boundary condition scalar value using initial and time history terms.
- *
- * @param dim Spatial dimension.
- * @param numS Number of registered subfields in solution field.
- * @param numA Number of registered subfields in auxiliary field [1].
- * @param sOff Offset of registered subfields in solution field.
- * @param sOff_x Offset of registered subfields in gradient of the solution field [numS].
- * @param s Solution field with all subfields.
- * @param s_t Time derivative of solution field.
- * @param s_x Gradient of solution field.
- * @param aOff Offset of registered subfields in auxiliary field [numA]
- * @param aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
- * @param a Auxiliary field with all subfields.
- * @param a_t Time derivative of auxiliary field.
- * @param a_x Gradient of auxiliary field.
- * @param t Time for residual evaluation.
- * @param x Coordinates of point evaluation.
- * @param value Initial value for field [numConstrainedDOF].
  */
 void
 pylith_fekernels_TimeDependentBC_initialTimeHistory_scalar(const PylithInt dim,
@@ -536,6 +398,8 @@ pylith_fekernels_TimeDependentBC_initialTimeHistory_scalar(const PylithInt dim,
                                                            const PylithScalar a_x[],
                                                            const PylithReal t,
                                                            const PylithScalar x[],
+                                                           const PylithInt numConstants,
+                                                           const PylithScalar constants[],
                                                            PylithScalar value[])
 { /* initialTimeHistory_scalar */
     const PylithInt _numA = 4;
@@ -564,33 +428,16 @@ pylith_fekernels_TimeDependentBC_initialTimeHistory_scalar(const PylithInt dim,
 
     PylithScalar valueTmp = 0.0;
 
-    pylith_fekernels_TimeDependentBC_initial_scalar(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, aInitial, aInitial_t, aInitial_x, t, x, &valueTmp);
+    pylith_fekernels_TimeDependentBC_initial_scalar(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, aInitial, aInitial_t, aInitial_x, t, x, numConstants, constants, &valueTmp);
     value[0] = valueTmp;
 
-    pylith_fekernels_TimeDependentBC_timeHistory_scalar(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x, aOffTimeHistory, aOffTimeHistory_x, aTimeHistory, aTimeHistory_t, aTimeHistory_x, t, x, &valueTmp);
+    pylith_fekernels_TimeDependentBC_timeHistory_scalar(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x, aOffTimeHistory, aOffTimeHistory_x, aTimeHistory, aTimeHistory_t, aTimeHistory_x, t, x, numConstants, constants, &valueTmp);
     value[0] += valueTmp;
 
 } /* initialTimeHistory_scalar */
 
 /* ----------------------------------------------------------------------
  * Compute boundary condition vector value using initial and time history terms.
- *
- * @param dim Spatial dimension.
- * @param numS Number of registered subfields in solution field.
- * @param numA Number of registered subfields in auxiliary field [1].
- * @param sOff Offset of registered subfields in solution field.
- * @param sOff_x Offset of registered subfields in gradient of the solution field [numS].
- * @param s Solution field with all subfields.
- * @param s_t Time derivative of solution field.
- * @param s_x Gradient of solution field.
- * @param aOff Offset of registered subfields in auxiliary field [numA]
- * @param aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
- * @param a Auxiliary field with all subfields.
- * @param a_t Time derivative of auxiliary field.
- * @param a_x Gradient of auxiliary field.
- * @param t Time for residual evaluation.
- * @param x Coordinates of point evaluation.
- * @param value Initial value for field [numConstrainedDOF].
  */
 void
 pylith_fekernels_TimeDependentBC_initialTimeHistory_vector(const PylithInt dim,
@@ -608,6 +455,8 @@ pylith_fekernels_TimeDependentBC_initialTimeHistory_vector(const PylithInt dim,
                                                            const PylithScalar a_x[],
                                                            const PylithReal t,
                                                            const PylithScalar x[],
+                                                           const PylithInt numConstants,
+                                                           const PylithScalar constants[],
                                                            PylithScalar value[])
 { /* initialTimeHistory_vector */
     const PylithInt _numA = 4;
@@ -637,36 +486,19 @@ pylith_fekernels_TimeDependentBC_initialTimeHistory_vector(const PylithInt dim,
     PylithScalar valueTmp[3] = { 0.0, 0.0, 0.0 };
     PylithInt i;
 
-    pylith_fekernels_TimeDependentBC_initial_vector(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, aInitial, aInitial_t, aInitial_x, t, x, valueTmp);
-    for (i=0; i < dim; ++i) {
+    pylith_fekernels_TimeDependentBC_initial_vector(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, aInitial, aInitial_t, aInitial_x, t, x, numConstants, constants, valueTmp);
+    for (i = 0; i < dim; ++i) {
         value[i] = valueTmp[i];
     } /* for */
 
-    pylith_fekernels_TimeDependentBC_timeHistory_vector(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x, aOffTimeHistory, aOffTimeHistory_x, aTimeHistory, aTimeHistory_t, aTimeHistory_x, t, x, valueTmp);
-    for (i=0; i < dim; ++i) {
+    pylith_fekernels_TimeDependentBC_timeHistory_vector(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x, aOffTimeHistory, aOffTimeHistory_x, aTimeHistory, aTimeHistory_t, aTimeHistory_x, t, x, numConstants, constants, valueTmp);
+    for (i = 0; i < dim; ++i) {
         value[i] += valueTmp[i];
     } /* for */
 } /* initialTimeHistory_vector */
 
 /* ----------------------------------------------------------------------
  * Compute boundary condition scalar value using rate and time history terms.
- *
- * @param dim Spatial dimension.
- * @param numS Number of registered subfields in solution field.
- * @param numA Number of registered subfields in auxiliary field [1].
- * @param sOff Offset of registered subfields in solution field.
- * @param sOff_x Offset of registered subfields in gradient of the solution field [numS].
- * @param s Solution field with all subfields.
- * @param s_t Time derivative of solution field.
- * @param s_x Gradient of solution field.
- * @param aOff Offset of registered subfields in auxiliary field [numA]
- * @param aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
- * @param a Auxiliary field with all subfields.
- * @param a_t Time derivative of auxiliary field.
- * @param a_x Gradient of auxiliary field.
- * @param t Time for residual evaluation.
- * @param x Coordinates of point evaluation.
- * @param value Initial value for field [numConstrainedDOF].
  */
 void
 pylith_fekernels_TimeDependentBC_rateTimeHistory_scalar(const PylithInt dim,
@@ -684,6 +516,8 @@ pylith_fekernels_TimeDependentBC_rateTimeHistory_scalar(const PylithInt dim,
                                                         const PylithScalar a_x[],
                                                         const PylithReal t,
                                                         const PylithScalar x[],
+                                                        const PylithInt numConstants,
+                                                        const PylithScalar constants[],
                                                         PylithScalar value[])
 { /* rateTimeHistory_scalar */
     const PylithInt _numA = 5;
@@ -713,33 +547,16 @@ pylith_fekernels_TimeDependentBC_rateTimeHistory_scalar(const PylithInt dim,
 
     PylithScalar valueTmp = 0.0;
 
-    pylith_fekernels_TimeDependentBC_rate_scalar(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, aRate, aRate_t, aRate_x, t, x, &valueTmp);
+    pylith_fekernels_TimeDependentBC_rate_scalar(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, aRate, aRate_t, aRate_x, t, x, numConstants, constants, &valueTmp);
     value[0] = valueTmp;
 
-    pylith_fekernels_TimeDependentBC_timeHistory_scalar(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x, aOffTimeHistory, aOffTimeHistory_x, aTimeHistory, aTimeHistory_t, aTimeHistory_x, t, x, &valueTmp);
+    pylith_fekernels_TimeDependentBC_timeHistory_scalar(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x, aOffTimeHistory, aOffTimeHistory_x, aTimeHistory, aTimeHistory_t, aTimeHistory_x, t, x, numConstants, constants, &valueTmp);
     value[0] += valueTmp;
 
 } /* rateTimeHistory_scalar */
 
 /* ----------------------------------------------------------------------
  * Compute boundary condition vector value using rate and time history terms.
- *
- * @param dim Spatial dimension.
- * @param numS Number of registered subfields in solution field.
- * @param numA Number of registered subfields in auxiliary field [1].
- * @param sOff Offset of registered subfields in solution field.
- * @param sOff_x Offset of registered subfields in gradient of the solution field [numS].
- * @param s Solution field with all subfields.
- * @param s_t Time derivative of solution field.
- * @param s_x Gradient of solution field.
- * @param aOff Offset of registered subfields in auxiliary field [numA]
- * @param aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
- * @param a Auxiliary field with all subfields.
- * @param a_t Time derivative of auxiliary field.
- * @param a_x Gradient of auxiliary field.
- * @param t Time for residual evaluation.
- * @param x Coordinates of point evaluation.
- * @param value Initial value for field [numConstrainedDOF].
  */
 void
 pylith_fekernels_TimeDependentBC_rateTimeHistory_vector(const PylithInt dim,
@@ -757,6 +574,8 @@ pylith_fekernels_TimeDependentBC_rateTimeHistory_vector(const PylithInt dim,
                                                         const PylithScalar a_x[],
                                                         const PylithReal t,
                                                         const PylithScalar x[],
+                                                        const PylithInt numConstants,
+                                                        const PylithScalar constants[],
                                                         PylithScalar value[])
 { /* rateTimeHistory_vector */
     const PylithInt _numA = 5;
@@ -787,13 +606,13 @@ pylith_fekernels_TimeDependentBC_rateTimeHistory_vector(const PylithInt dim,
     PylithScalar valueTmp[3] = { 0.0, 0.0, 0.0 };
     PylithInt i;
 
-    pylith_fekernels_TimeDependentBC_rate_vector(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, aRate, aRate_t, aRate_x, t, x, valueTmp);
-    for (i=0; i < dim; ++i) {
+    pylith_fekernels_TimeDependentBC_rate_vector(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, aRate, aRate_t, aRate_x, t, x, numConstants, constants, valueTmp);
+    for (i = 0; i < dim; ++i) {
         value[i] = valueTmp[i];
     } /* for */
 
-    pylith_fekernels_TimeDependentBC_timeHistory_vector(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x, aOffTimeHistory, aOffTimeHistory_x, aTimeHistory, aTimeHistory_t, aTimeHistory_x, t, x, valueTmp);
-    for (i=0; i < dim; ++i) {
+    pylith_fekernels_TimeDependentBC_timeHistory_vector(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x, aOffTimeHistory, aOffTimeHistory_x, aTimeHistory, aTimeHistory_t, aTimeHistory_x, t, x, numConstants, constants, valueTmp);
+    for (i = 0; i < dim; ++i) {
         value[i] += valueTmp[i];
     } /* for */
 
@@ -801,23 +620,6 @@ pylith_fekernels_TimeDependentBC_rateTimeHistory_vector(const PylithInt dim,
 
 /* ----------------------------------------------------------------------
  * Compute boundary condition scalar value using initial, rate ,and time history terms.
- *
- * @param dim Spatial dimension.
- * @param numS Number of registered subfields in solution field.
- * @param numA Number of registered subfields in auxiliary field [1].
- * @param sOff Offset of registered subfields in solution field.
- * @param sOff_x Offset of registered subfields in gradient of the solution field [numS].
- * @param s Solution field with all subfields.
- * @param s_t Time derivative of solution field.
- * @param s_x Gradient of solution field.
- * @param aOff Offset of registered subfields in auxiliary field [numA]
- * @param aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
- * @param a Auxiliary field with all subfields.
- * @param a_t Time derivative of auxiliary field.
- * @param a_x Gradient of auxiliary field.
- * @param t Time for residual evaluation.
- * @param x Coordinates of point evaluation.
- * @param value Initial value for field [numConstrainedDOF].
  */
 void
 pylith_fekernels_TimeDependentBC_initialRateTimeHistory_scalar(const PylithInt dim,
@@ -835,6 +637,8 @@ pylith_fekernels_TimeDependentBC_initialRateTimeHistory_scalar(const PylithInt d
                                                                const PylithScalar a_x[],
                                                                const PylithReal t,
                                                                const PylithScalar x[],
+                                                               const PylithInt numConstants,
+                                                               const PylithScalar constants[],
                                                                PylithScalar value[])
 { /* initialRateTimeHistory_scalar */
     const PylithInt _numA = 6;
@@ -872,13 +676,13 @@ pylith_fekernels_TimeDependentBC_initialRateTimeHistory_scalar(const PylithInt d
 
     PylithScalar valueTmp = 0.0;
 
-    pylith_fekernels_TimeDependentBC_initial_scalar(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, aInitial, aInitial_t, aInitial_x, t, x, &valueTmp);
+    pylith_fekernels_TimeDependentBC_initial_scalar(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, aInitial, aInitial_t, aInitial_x, t, x, numConstants, constants, &valueTmp);
     value[0] = valueTmp;
 
-    pylith_fekernels_TimeDependentBC_rate_scalar(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, aRate, aRate_t, aRate_x, t, x, &valueTmp);
+    pylith_fekernels_TimeDependentBC_rate_scalar(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, aRate, aRate_t, aRate_x, t, x, numConstants, constants, &valueTmp);
     value[0] += valueTmp;
 
-    pylith_fekernels_TimeDependentBC_timeHistory_scalar(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x, aOffTimeHistory, aOffTimeHistory_x, aTimeHistory, aTimeHistory_t, aTimeHistory_x, t, x, &valueTmp);
+    pylith_fekernels_TimeDependentBC_timeHistory_scalar(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x, aOffTimeHistory, aOffTimeHistory_x, aTimeHistory, aTimeHistory_t, aTimeHistory_x, t, x, numConstants, constants, &valueTmp);
     value[0] += valueTmp;
 
 } /* initialRateTimeHistory_scalar */
@@ -886,23 +690,6 @@ pylith_fekernels_TimeDependentBC_initialRateTimeHistory_scalar(const PylithInt d
 
 /* ----------------------------------------------------------------------
  * Compute boundary condition vector value using initial, rate, and time history terms.
- *
- * @param dim Spatial dimension.
- * @param numS Number of registered subfields in solution field.
- * @param numA Number of registered subfields in auxiliary field [1].
- * @param sOff Offset of registered subfields in solution field.
- * @param sOff_x Offset of registered subfields in gradient of the solution field [numS].
- * @param s Solution field with all subfields.
- * @param s_t Time derivative of solution field.
- * @param s_x Gradient of solution field.
- * @param aOff Offset of registered subfields in auxiliary field [numA]
- * @param aOff_x Offset of registered subfields in gradient of auxiliary field [numA]
- * @param a Auxiliary field with all subfields.
- * @param a_t Time derivative of auxiliary field.
- * @param a_x Gradient of auxiliary field.
- * @param t Time for residual evaluation.
- * @param x Coordinates of point evaluation.
- * @param value Initial value for field [numConstrainedDOF].
  */
 void
 pylith_fekernels_TimeDependentBC_initialRateTimeHistory_vector(const PylithInt dim,
@@ -920,6 +707,8 @@ pylith_fekernels_TimeDependentBC_initialRateTimeHistory_vector(const PylithInt d
                                                                const PylithScalar a_x[],
                                                                const PylithReal t,
                                                                const PylithScalar x[],
+                                                               const PylithInt numConstants,
+                                                               const PylithScalar constants[],
                                                                PylithScalar value[])
 { /* initialRateTimeHistory_vector */
     const PylithInt _numA = 6;
@@ -958,18 +747,18 @@ pylith_fekernels_TimeDependentBC_initialRateTimeHistory_vector(const PylithInt d
     PylithScalar valueTmp[3] = { 0.0, 0.0, 0.0 };
     PylithInt i;
 
-    pylith_fekernels_TimeDependentBC_initial_vector(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, aInitial, aInitial_t, aInitial_x, t, x, valueTmp);
-    for (i=0; i < dim; ++i) {
+    pylith_fekernels_TimeDependentBC_initial_vector(dim, numS, numAInitial, sOff, sOff_x, s, s_t, s_x, aOffInitial, aOffInitial_x, aInitial, aInitial_t, aInitial_x, t, x, numConstants, constants, valueTmp);
+    for (i = 0; i < dim; ++i) {
         value[i] = valueTmp[i];
     } // for
 
-    pylith_fekernels_TimeDependentBC_rate_vector(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, aRate, aRate_t, aRate_x, t, x, valueTmp);
-    for (i=0; i < dim; ++i) {
+    pylith_fekernels_TimeDependentBC_rate_vector(dim, numS, numARate, sOff, sOff_x, s, s_t, s_x, aOffRate, aOffRate_x, aRate, aRate_t, aRate_x, t, x, numConstants, constants, valueTmp);
+    for (i = 0; i < dim; ++i) {
         value[i] += valueTmp[i];
     } // for
 
-    pylith_fekernels_TimeDependentBC_timeHistory_vector(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x, aOffTimeHistory, aOffTimeHistory_x, aTimeHistory, aTimeHistory_t, aTimeHistory_x, t, x, valueTmp);
-    for (i=0; i < dim; ++i) {
+    pylith_fekernels_TimeDependentBC_timeHistory_vector(dim, numS, numATimeHistory, sOff, sOff_x, s, s_t, s_x, aOffTimeHistory, aOffTimeHistory_x, aTimeHistory, aTimeHistory_t, aTimeHistory_x, t, x, numConstants, constants, valueTmp);
+    for (i = 0; i < dim; ++i) {
         value[i] += valueTmp[i];
     } // for
 

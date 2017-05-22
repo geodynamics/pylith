@@ -36,7 +36,7 @@
  *
  * Jg0_pp_Pressure: +1.0/bulkModulus
  *
- * ====================================================================== 
+ * ======================================================================
  */
 
 #if !defined(pylith_fekernels_pressure_h)
@@ -46,8 +46,8 @@
  */
 #include <portinfo>
 
-#include "pylith/utils/types.hh" 
-#include "pylith/utils/error.h" 
+#include "pylith/utils/types.hh"
+#include "pylith/utils/error.h"
 
 /** g0 function for pressure equation.
  *
@@ -66,25 +66,29 @@
  * @param a_x Gradient of auxiliary field.
  * @param t Time for residual evaluation.
  * @param x Coordinates of point evaluation.
+ * @param numConstants Number of registered constants.
+ * @param constants Array of registered constants.
  * @param g0 Result [dim].
  */
 void
 pylith_fekernels_Pressure_g0p(const PylithInt dim,
-			      const PylithInt numS,
-			      const PylithInt numA,
-			      const PylithInt sOff[],
-			      const PylithInt sOff_x[],
-			      const PylithScalar s[],
-			      const PylithScalar s_t[],
-			      const PylithScalar s_x[],
-			      const PylithInt aOff[],
-			      const PylithInt aOff_x[],
-			      const PylithScalar a[],
-			      const PylithScalar a_t[],
-			      const PylithScalar a_x[],
-			      const PylithReal t,
-			      const PylithScalar x[],
-			      PylithScalar g0[]);
+                              const PylithInt numS,
+                              const PylithInt numA,
+                              const PylithInt sOff[],
+                              const PylithInt sOff_x[],
+                              const PylithScalar s[],
+                              const PylithScalar s_t[],
+                              const PylithScalar s_x[],
+                              const PylithInt aOff[],
+                              const PylithInt aOff_x[],
+                              const PylithScalar a[],
+                              const PylithScalar a_t[],
+                              const PylithScalar a_x[],
+                              const PylithReal t,
+                              const PylithScalar x[],
+                              const PylithInt numConstants,
+                              const PylithScalar constants[],
+                              PylithScalar g0[]);
 
 
 /** Jg0 function for pressure equation.
@@ -105,26 +109,30 @@ pylith_fekernels_Pressure_g0p(const PylithInt dim,
  * @param t Time for residual evaluation.
  * @param utshift Coefficient for dF/ds_t term in Jacobian.
  * @param x Coordinates of point evaluation.
+ * @param numConstants Number of registered constants.
+ * @param constants Array of registered constants.
  * @param g0 Result [dim*dim].
  */
 void
 pylith_fekernels_Pressure_Jg0pp(const PylithInt dim,
-				const PylithInt numS,
-				const PylithInt numA,
-				const PylithInt sOff[],
-				const PylithInt sOff_x[],
-				const PylithScalar s[],
-				const PylithScalar s_t[],
-				const PylithScalar s_x[],
-				const PylithInt aOff[],
-				const PylithInt aOff_x[],
-				const PylithScalar a[],
-				const PylithScalar a_t[],
-				const PylithScalar a_x[],
-				const PylithReal t,
-				const PylithReal utshift,
-				const PylithScalar x[],
-				PylithScalar Jg0[]);
+                                const PylithInt numS,
+                                const PylithInt numA,
+                                const PylithInt sOff[],
+                                const PylithInt sOff_x[],
+                                const PylithScalar s[],
+                                const PylithScalar s_t[],
+                                const PylithScalar s_x[],
+                                const PylithInt aOff[],
+                                const PylithInt aOff_x[],
+                                const PylithScalar a[],
+                                const PylithScalar a_t[],
+                                const PylithScalar a_x[],
+                                const PylithReal t,
+                                const PylithReal utshift,
+                                const PylithScalar x[],
+                                const PylithInt numConstants,
+                                const PylithScalar constants[],
+                                PylithScalar Jg0[]);
 
 
 #endif /* pylith_fekernels_pressure_h */

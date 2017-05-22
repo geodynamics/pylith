@@ -432,8 +432,9 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsUpdateStateva
 
     const PetscPointFunc updateTotalStrainKernel = pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_updateTotalStrain;
     const PetscPointFunc updateViscousStrainKernel = pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_updateVisStrain;
-    err = PetscDSSetUpdate(prob, i_totalstrain, updateTotalStrainKernel); PYLITH_CHECK_ERROR(err);
-    err = PetscDSSetUpdate(prob, i_viscousstrain, updateViscousStrainKernel); PYLITH_CHECK_ERROR(err);
+    PYLITH_COMPONENT_ERROR(":TODO: @charles Update kernel interfaces updating state variables.");
+    //err = PetscDSSetUpdate(prob, i_totalstrain, updateTotalStrainKernel); PYLITH_CHECK_ERROR(err);
+    //err = PetscDSSetUpdate(prob, i_viscousstrain, updateViscousStrainKernel); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _setFEKernelsUpdateStatevars
