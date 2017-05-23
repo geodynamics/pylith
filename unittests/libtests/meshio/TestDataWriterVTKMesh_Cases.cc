@@ -48,7 +48,6 @@ namespace pylith {
         }; // class TestDataWriterVTKMesh_Tri
         CPPUNIT_TEST_SUITE_REGISTRATION(TestDataWriterVTKMesh_Tri);
 
-#if 0
         // --------------------------------------------------------------
         class TestDataWriterVTKMesh_Quad : public TestDataWriterVTKMesh {
             CPPUNIT_TEST_SUB_SUITE(TestDataWriterVTKMesh_Quad, TestDataWriterVTKMesh);
@@ -117,7 +116,6 @@ namespace pylith {
             } // setUp
         }; // class TestDataWriterVTKMesh_Hex
         CPPUNIT_TEST_SUITE_REGISTRATION(TestDataWriterVTKMesh_Hex);
-#endif
 
     } // meshio
 } // pylith

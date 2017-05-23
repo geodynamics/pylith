@@ -214,7 +214,8 @@ pylith::meshio::FieldFactory::setField(pylith::topology::Field* field,
     for (PylithInt i = 0; i < fieldSize; ++i) {
         fieldArray[i] = values[i];
     } // for
-    field->view("values set");
+
+    //field->view("values set"); // DEBUGGING
 
     PYLITH_METHOD_END;
 } // setField

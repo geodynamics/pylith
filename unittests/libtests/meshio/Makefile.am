@@ -100,11 +100,6 @@ noinst_HEADERS = \
 
 # Source files associated with testing data
 # testmeshio_SOURCES += \
-# 	data/DataWriterData.cc \
-# 	data/DataWriterVTKDataMeshTri3.cc \
-# 	data/DataWriterVTKDataMeshQuad4.cc \
-# 	data/DataWriterVTKDataMeshTet4.cc \
-# 	data/DataWriterVTKDataMeshHex8.cc \
 # 	data/DataWriterVTKDataMatMeshTri3.cc \
 # 	data/DataWriterVTKDataMatMeshQuad4.cc \
 # 	data/DataWriterVTKDataMatMeshTet4.cc \
@@ -157,11 +152,6 @@ noinst_HEADERS = \
 # 	data/DataWriterHDF5DataPointsHex8.cc 
 
 # noinst_HEADERS += \
-# 	data/DataWriterData.hh \
-# 	data/DataWriterVTKDataMeshTri3.hh \
-# 	data/DataWriterVTKDataMeshQuad4.hh \
-# 	data/DataWriterVTKDataMeshTet4.hh \
-# 	data/DataWriterVTKDataMeshHex8.hh \
 # 	data/DataWriterVTKDataMatMeshTri3.hh \
 # 	data/DataWriterVTKDataMatMeshQuad4.hh \
 # 	data/DataWriterVTKDataMatMeshTet4.hh \
