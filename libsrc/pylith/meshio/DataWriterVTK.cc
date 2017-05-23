@@ -135,7 +135,7 @@ pylith::meshio::DataWriterVTK::precision(const int value)
 // ----------------------------------------------------------------------
 // Prepare for writing files.
 void
-pylith::meshio::DataWriterVTK::open(const topology::Mesh& mesh,
+pylith::meshio::DataWriterVTK::open(const pylith::topology::Mesh& mesh,
                                     const bool isInfo,
                                     const char* label,
                                     const int labelId)
@@ -186,7 +186,7 @@ pylith::meshio::DataWriterVTK::close(void)
 // Prepare file for data at a new time step.
 void
 pylith::meshio::DataWriterVTK::openTimeStep(const PylithScalar t,
-                                            const topology::Mesh& mesh,
+                                            const pylith::topology::Mesh& mesh,
                                             const char* label,
                                             const int labelId)
 { // openTimeStep
@@ -202,7 +202,7 @@ pylith::meshio::DataWriterVTK::openTimeStep(const PylithScalar t,
     // Create VTK label in DM: Cleared in closeTimeStep().
     if (label) {
         const bool includeOnlyCells = true;
-        topology::StratumIS cellsIS(_dm, label, labelId, includeOnlyCells);
+        pylith::topology::StratumIS cellsIS(_dm, label, labelId, includeOnlyCells);
         const PetscInt ncells = cellsIS.size();
         const PetscInt* cells = cellsIS.points();
         DMLabel label;
@@ -264,8 +264,8 @@ pylith::meshio::DataWriterVTK::closeTimeStep(void)
 // Write field over vertices to file.
 void
 pylith::meshio::DataWriterVTK::writeVertexField(const PylithScalar t,
-                                                topology::Field& field,
-                                                const topology::Mesh& mesh)
+                                                pylith::topology::Field& field,
+                                                const pylith::topology::Mesh& mesh)
 { // writeVertexField
     PYLITH_METHOD_BEGIN;
 
@@ -276,15 +276,15 @@ pylith::meshio::DataWriterVTK::writeVertexField(const PylithScalar t,
     // then writes file. Caching the field locally allows the output
     // manager to reuse fields as buffers.
     if (!_vertexFieldCache) {
-        _vertexFieldCache = new topology::Fields(field.mesh()); assert(_vertexFieldCache);
+        _vertexFieldCache = new pylith::topology::Fields(field.mesh()); assert(_vertexFieldCache);
     } // if/else
     const char* fieldLabel = field.label();
     if (!_vertexFieldCache->hasField(fieldLabel)) {
         _vertexFieldCache->add(fieldLabel, fieldLabel);
-        topology::Field& fieldCached = _vertexFieldCache->get(fieldLabel);
+        pylith::topology::Field& fieldCached = _vertexFieldCache->get(fieldLabel);
         fieldCached.cloneSection(field);
     } // if
-    topology::Field& fieldCached = _vertexFieldCache->get(fieldLabel);
+    pylith::topology::Field& fieldCached = _vertexFieldCache->get(fieldLabel);
     assert(fieldCached.sectionSize() == field.sectionSize());
     fieldCached.copy(field);
 
@@ -295,10 +295,12 @@ pylith::meshio::DataWriterVTK::writeVertexField(const PylithScalar t,
     //
     // Will change to just VecView() once I setup the vectors correctly
     // (use VecSetOperation() to change the view method).
-    // :TODO: FIX THIS.
-    //PetscViewerVTKFieldType ft = fieldCached.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_POINT_FIELD : PETSC_VTK_POINT_VECTOR_FIELD;
-    //PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) _dm, DMPlexVTKWriteAll, ft, (PetscObject) fieldVec); PYLITH_CHECK_ERROR(err);
-    //err = PetscObjectReference((PetscObject) fieldVec); PYLITH_CHECK_ERROR(err); // Viewer destroys Vec
+    const pylith::string_vector& subfieldNames = fieldCached.subfieldNames();
+    assert(size_t(1) == subfieldNames.size());
+    const pylith::topology::Field::SubfieldInfo& sinfo = fieldCached.subfieldInfo(subfieldNames[0].c_str());
+    PetscViewerVTKFieldType ft = sinfo.description.vectorFieldType != pylith::topology::FieldBase::VECTOR ? PETSC_VTK_POINT_FIELD : PETSC_VTK_POINT_VECTOR_FIELD;
+    PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) _dm, DMPlexVTKWriteAll, ft, (PetscObject) fieldVec); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectReference((PetscObject) fieldVec); PYLITH_CHECK_ERROR(err); // Viewer destroys Vec
 
     _wroteVertexHeader = true;
 
@@ -309,7 +311,7 @@ pylith::meshio::DataWriterVTK::writeVertexField(const PylithScalar t,
 // Write field over cells to file.
 void
 pylith::meshio::DataWriterVTK::writeCellField(const PylithScalar t,
-                                              topology::Field& field,
+                                              pylith::topology::Field& field,
                                               const char* label,
                                               const int labelId)
 { // writeCellField
@@ -321,15 +323,15 @@ pylith::meshio::DataWriterVTK::writeCellField(const PylithScalar t,
     // then writes file. Caching the field locally allows the output
     // manager to reuse fields as buffers.
     if (!_cellFieldCache) {
-        _cellFieldCache = new topology::Fields(field.mesh()); assert(_cellFieldCache);
+        _cellFieldCache = new pylith::topology::Fields(field.mesh()); assert(_cellFieldCache);
     } // if/else
     const char* fieldLabel = field.label();
     if (!_cellFieldCache->hasField(fieldLabel)) {
         _cellFieldCache->add(fieldLabel, fieldLabel);
-        topology::Field& fieldCached = _cellFieldCache->get(fieldLabel);
+        pylith::topology::Field& fieldCached = _cellFieldCache->get(fieldLabel);
         fieldCached.cloneSection(field);
     } // if
-    topology::Field& fieldCached = _cellFieldCache->get(fieldLabel);
+    pylith::topology::Field& fieldCached = _cellFieldCache->get(fieldLabel);
     assert(fieldCached.sectionSize() == field.sectionSize());
     fieldCached.copy(field);
 
@@ -341,10 +343,12 @@ pylith::meshio::DataWriterVTK::writeCellField(const PylithScalar t,
     // Will change to just VecView() once I setup the vectors correctly
     // (use VecSetOperation() to change the view).
 
-    // :TODO: FIX THIS.
-    //PetscViewerVTKFieldType ft = fieldCached.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_CELL_FIELD : PETSC_VTK_CELL_VECTOR_FIELD;
-    //PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) _dm, DMPlexVTKWriteAll, ft, (PetscObject) fieldVec); PYLITH_CHECK_ERROR(err);
-    //err = PetscObjectReference((PetscObject) fieldVec); PYLITH_CHECK_ERROR(err); // Viewer destroys Vec
+    const pylith::string_vector& subfieldNames = fieldCached.subfieldNames();
+    assert(size_t(1) == subfieldNames.size());
+    const pylith::topology::Field::SubfieldInfo& sinfo = fieldCached.subfieldInfo(subfieldNames[0].c_str());
+    PetscViewerVTKFieldType ft = sinfo.description.vectorFieldType != pylith::topology::FieldBase::VECTOR ? PETSC_VTK_CELL_FIELD : PETSC_VTK_CELL_VECTOR_FIELD;
+    PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) _dm, DMPlexVTKWriteAll, ft, (PetscObject) fieldVec); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectReference((PetscObject) fieldVec); PYLITH_CHECK_ERROR(err); // Viewer destroys Vec
 
     _wroteCellHeader = true;
 
