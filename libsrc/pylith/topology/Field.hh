@@ -153,6 +153,13 @@ public:
      */
     int spaceDim(void) const;
 
+    /** Get vector field type.
+     *
+     * If field constains only one subfield, return the vector
+     * field type for that subfield, otherwise return OTHER.
+     */
+    VectorFieldEnum vectorFieldType(void) const;
+
     /** Get the number of points in the chart.
      *
      * @returns the chart size.

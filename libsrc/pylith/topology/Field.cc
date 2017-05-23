@@ -199,6 +199,19 @@ pylith::topology::Field::spaceDim(void) const
 } // spaceDim
 
 // ----------------------------------------------------------------------
+// Get vector field type.
+pylith::topology::Field::VectorFieldEnum
+pylith::topology::Field::vectorFieldType(void) const
+{ // vectorFieldType
+    VectorFieldEnum value = OTHER;
+    if (1 == _subfields.size()) {
+        value = _subfields.begin()->second.description.vectorFieldType;
+    } // if
+
+    return value;
+} // vectorFieldType
+
+// ----------------------------------------------------------------------
 // Has section been setup?
 bool
 pylith::topology::Field::hasSection(void) const

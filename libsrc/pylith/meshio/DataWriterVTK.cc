@@ -295,10 +295,8 @@ pylith::meshio::DataWriterVTK::writeVertexField(const PylithScalar t,
     //
     // Will change to just VecView() once I setup the vectors correctly
     // (use VecSetOperation() to change the view method).
-    const pylith::string_vector& subfieldNames = fieldCached.subfieldNames();
-    assert(size_t(1) == subfieldNames.size());
-    const pylith::topology::Field::SubfieldInfo& sinfo = fieldCached.subfieldInfo(subfieldNames[0].c_str());
-    PetscViewerVTKFieldType ft = sinfo.description.vectorFieldType != pylith::topology::FieldBase::VECTOR ? PETSC_VTK_POINT_FIELD : PETSC_VTK_POINT_VECTOR_FIELD;
+    const pylith::topology::Field::VectorFieldEnum vectorFieldType = fieldCached.vectorFieldType();
+    PetscViewerVTKFieldType ft = vectorFieldType != pylith::topology::FieldBase::VECTOR ? PETSC_VTK_POINT_FIELD : PETSC_VTK_POINT_VECTOR_FIELD;
     PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) _dm, DMPlexVTKWriteAll, ft, (PetscObject) fieldVec); PYLITH_CHECK_ERROR(err);
     err = PetscObjectReference((PetscObject) fieldVec); PYLITH_CHECK_ERROR(err); // Viewer destroys Vec
 
