@@ -37,7 +37,7 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
     PYLITH_METHOD_BEGIN;
 
     const int basisOrder = PetscMax(feinfo.basisOrder, 0);
-    const int quadOrder = PetscMax(feinfo.quadOrder > 0 ? feinfo.quadOrder : basisOrder, 1);
+    const int quadOrder = PetscMax(feinfo.quadOrder > 0 ? feinfo.quadOrder : basisOrder, 0);
     const PetscBool basisContinuity = feinfo.isBasisContinuous ? PETSC_TRUE : PETSC_FALSE;
     const PetscBool useTensor = isSimplex ? PETSC_FALSE : PETSC_TRUE;
 
@@ -52,9 +52,11 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
     err = PetscSpaceCreate(PetscObjectComm((PetscObject) dm), &space); PYLITH_CHECK_ERROR(err); assert(space);
     err = PetscSpaceSetType(space, feinfo.feSpace == FieldBase::POLYNOMIAL_SPACE ? PETSCSPACEPOLYNOMIAL : PETSCSPACEPOINT); PYLITH_CHECK_ERROR(err);
     err = PetscSpaceSetNumComponents(space, numComponents); PYLITH_CHECK_ERROR(err);
-    err = PetscSpacePolynomialSetTensor(space, useTensor); PYLITH_CHECK_ERROR(err);
-    err = PetscSpacePolynomialSetNumVariables(space, dim); PYLITH_CHECK_ERROR(err);
     err = PetscSpaceSetOrder(space, basisOrder);
+    if (feinfo.feSpace == FieldBase::POLYNOMIAL_SPACE) {
+        err = PetscSpacePolynomialSetTensor(space, useTensor); PYLITH_CHECK_ERROR(err);
+        err = PetscSpacePolynomialSetNumVariables(space, dim); PYLITH_CHECK_ERROR(err);
+    } // if
     err = PetscSpaceSetUp(space); PYLITH_CHECK_ERROR(err);
 
     // Create dual space
@@ -94,7 +96,14 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
         err = PetscDTGaussTensorQuadrature(dim, basisNumComponents, numPoints, xRefMin, xRefMax, &quadrature); PYLITH_CHECK_ERROR(err);
     }
     err = PetscFESetQuadrature(fe, quadrature); PYLITH_CHECK_ERROR(err);
-    err = PetscFESetFaceQuadrature(fe, quadrature); PYLITH_CHECK_ERROR(err);
+    if (feinfo.feSpace == FieldBase::POLYNOMIAL_SPACE) {
+        err = PetscFESetFaceQuadrature(fe, quadrature); PYLITH_CHECK_ERROR(err);
+    } else {
+        PetscQuadrature faceQuadrature = NULL;
+        err = PetscDTGaussJacobiQuadrature(dim-1, basisNumComponents, 0, xRefMin, xRefMax, &faceQuadrature); PYLITH_CHECK_ERROR(err);
+        err = PetscFESetFaceQuadrature(fe, faceQuadrature); PYLITH_CHECK_ERROR(err);
+        err = PetscQuadratureDestroy(&faceQuadrature); PYLITH_CHECK_ERROR(err);
+    }
     err = PetscQuadratureDestroy(&quadrature); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_RETURN(fe);
