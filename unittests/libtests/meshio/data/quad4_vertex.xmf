@@ -25,8 +25,10 @@
           &HeavyData;:/geometry/vertices
         </DataItem>
       </DataItem>
-      <DataItem Name="verticesZ" ItemType="Uniform" Dimensions="6 1" Format="HDF">
-        &HeavyData;:/zero/vertex_zero
+      <DataItem Name="verticesZ" ItemType="Function" Dimensions="6 1" Function="0*$0">
+        <DataItem Reference="XML">
+          /Xdmf/Domain/DataItem[@Name="vertices"]/DataItem[@Name="verticesX"]
+        </DataItem>
       </DataItem>
     </DataItem>
     <!-- ============================================================ -->
@@ -59,8 +61,10 @@
               &HeavyData;:/vertex_fields/displacement
             </DataItem>
           </DataItem>
-          <DataItem ItemType="Uniform" Dimensions="6 1" Format="HDF">
-            &HeavyData;:/zero/vertex_zero
+          <DataItem ItemType="Function" Dimensions="6 1" Function="0*$0">
+            <DataItem Reference="XML">
+              /Xdmf/Domain/Grid/Attribute[@Name="displacement"]/DataItem[1]/DataItem[1]
+            </DataItem>
           </DataItem>
         </DataItem>
       </Attribute>
