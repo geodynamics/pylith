@@ -22,9 +22,9 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/error.hh" \
+    // USES PYLITH_METHOD_BEGIN/END
 
-// ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::DataWriter::DataWriter(void) :
     _timeScale(1.0),
@@ -85,8 +85,9 @@ pylith::meshio::DataWriter::open(const topology::Mesh& mesh,
     std::ostringstream s;
     s << "output_"
       << meshName;
-    if (label)
+    if (label) {
         s << "_" << label << labelId;
+    }
     _context = s.str();
 
     PYLITH_METHOD_END;
@@ -142,26 +143,26 @@ pylith::meshio::DataWriter::writePointNames(const pylith::string_vector& names,
 // Create and populate PETSc global vector with coordinates of mesh vertices.
 void
 pylith::meshio::DataWriter::getCoordsGlobalVec(PetscVec* coordsGlobalVec,
-					       const pylith::topology::Mesh& mesh)
+                                               const pylith::topology::Mesh& mesh)
 { // getCoordsGlobalVec
     PYLITH_METHOD_BEGIN;
-    
+
     assert(coordsGlobalVec);
 
     PetscDM dmMesh = mesh.dmMesh(); assert(dmMesh);
     PetscDM dmCoord = NULL;
-    
+
     PetscSection section = NULL;
     PetscSection newSection = NULL;
     PetscSection gsection = NULL;
-    
+
     PetscSection subSection = NULL;
     PetscDMLabel subpointMap = NULL;
     PetscDMLabel subpointMapF = NULL;
-    
+
     PylithInt dim, dimF, pStart, pEnd, qStart, qEnd, cEnd, cMax, vEnd, vMax;
     PetscErrorCode err;
-    
+
     err = DMGetCoordinateDM(dmMesh, &dmCoord); PYLITH_CHECK_ERROR(err); assert(dmCoord);
     err = DMPlexGetHeightStratum(dmCoord, 0, NULL, &cEnd); PYLITH_CHECK_ERROR(err);
     err = DMPlexGetDepthStratum(dmCoord, 0, NULL, &vEnd); PYLITH_CHECK_ERROR(err);
@@ -232,7 +233,7 @@ pylith::meshio::DataWriter::getCoordsGlobalVec(PetscVec* coordsGlobalVec,
 
     err = PetscSectionDestroy(&subSection); PYLITH_CHECK_ERROR(err);
 
-    
+
     InsertMode mode = INSERT_VALUES;
     PetscVec coordsLocalVec = NULL;
     err = DMGetCoordinatesLocal(dmMesh, &coordsLocalVec); PYLITH_CHECK_ERROR(err);
@@ -242,6 +243,7 @@ pylith::meshio::DataWriter::getCoordsGlobalVec(PetscVec* coordsGlobalVec,
     PylithReal lengthScale = 1.0;
     err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale); PYLITH_CHECK_ERROR(err);
     err = VecScale(*coordsGlobalVec, lengthScale); PYLITH_CHECK_ERROR(err);
+    err = DMDestroy(&dmCoordGlobal); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // getCoordsGlobalVec
