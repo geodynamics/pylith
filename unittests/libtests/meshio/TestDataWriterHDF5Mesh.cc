@@ -20,15 +20,11 @@
 
 #include "TestDataWriterHDF5Mesh.hh" // Implementation of class methods
 
-#include "data/DataWriterData.hh" // USES DataWriterData
-
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/meshio/DataWriterHDF5.hh" // USES DataWriterHDF5
-
-// ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::meshio::TestDataWriterHDF5Mesh);
+#include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -38,6 +34,7 @@ pylith::meshio::TestDataWriterHDF5Mesh::setUp(void)
     PYLITH_METHOD_BEGIN;
 
     TestDataWriterMesh::setUp();
+    _data = NULL;
 
     PYLITH_METHOD_END;
 } // setUp
@@ -50,6 +47,7 @@ pylith::meshio::TestDataWriterHDF5Mesh::tearDown(void)
     PYLITH_METHOD_BEGIN;
 
     TestDataWriterMesh::tearDown();
+    delete _data; _data = NULL;
 
     PYLITH_METHOD_END;
 } // tearDown
@@ -88,7 +86,7 @@ pylith::meshio::TestDataWriterHDF5Mesh::testFilename(void)
 // Test open() and close()
 void
 pylith::meshio::TestDataWriterHDF5Mesh::testOpenClose(void)
-{ // testTimeStep
+{ // testOpenClose
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_mesh);
@@ -99,20 +97,14 @@ pylith::meshio::TestDataWriterHDF5Mesh::testOpenClose(void)
     writer.filename(_data->timestepFilename);
 
     const bool isInfo = false;
-    if (!_data->cellsLabel) {
-        writer.open(*_mesh, isInfo);
-    } else {
-        const char* label = _data->cellsLabel;
-        const int id = _data->labelId;
-        writer.open(*_mesh, isInfo, label, id);
-    } // else
+    writer.open(*_mesh, isInfo);
 
     writer.close();
 
     checkFile(_data->timestepFilename);
 
     PYLITH_METHOD_END;
-} // testTimeStep
+} // testOpenClose
 
 // ----------------------------------------------------------------------
 // Test writeVertexField.
@@ -126,7 +118,7 @@ pylith::meshio::TestDataWriterHDF5Mesh::testWriteVertexField(void)
 
     DataWriterHDF5 writer;
 
-    topology::Fields vertexFields(*_mesh);
+    pylith::topology::Fields vertexFields(*_mesh);
     _createVertexFields(&vertexFields);
 
     writer.filename(_data->vertexFilename);
@@ -135,19 +127,14 @@ pylith::meshio::TestDataWriterHDF5Mesh::testWriteVertexField(void)
     writer.timeScale(timeScale);
     const PylithScalar t = _data->time / timeScale;
 
-    const int nfields = _data->numVertexFields;
     const bool isInfo = false;
-    if (!_data->cellsLabel) {
-        writer.open(*_mesh, isInfo);
-        writer.openTimeStep(t, *_mesh);
-    } else {
-        const char* label = _data->cellsLabel;
-        const int id = _data->labelId;
-        writer.open(*_mesh, isInfo, label, id);
-        writer.openTimeStep(t, *_mesh, label, id);
-    } // else
-    for (int i = 0; i < nfields; ++i) {
-        topology::Field& field = vertexFields.get(_data->vertexFieldsInfo[i].name);
+    writer.open(*_mesh, isInfo);
+    writer.openTimeStep(t, *_mesh);
+
+    const int numFields = 4;
+    const char* fieldNames[4] = {"scalar", "vector", "tensor", "other"};
+    for (int i = 0; i < numFields; ++i) {
+        pylith::topology::Field& field = vertexFields.get(fieldNames[i]);
         writer.writeVertexField(t, field, *_mesh);
     } // for
     writer.closeTimeStep();
@@ -170,7 +157,7 @@ pylith::meshio::TestDataWriterHDF5Mesh::testWriteCellField(void)
 
     DataWriterHDF5 writer;
 
-    topology::Fields cellFields(*_mesh);
+    pylith::topology::Fields cellFields(*_mesh);
     _createCellFields(&cellFields);
 
     writer.filename(_data->cellFilename);
@@ -179,25 +166,16 @@ pylith::meshio::TestDataWriterHDF5Mesh::testWriteCellField(void)
     writer.timeScale(timeScale);
     const PylithScalar t = _data->time / timeScale;
 
-    const int nfields = _data->numCellFields;
     const bool isInfo = false;
-    if (!_data->cellsLabel) {
-        writer.open(*_mesh, isInfo);
-        writer.openTimeStep(t, *_mesh);
-        for (int i = 0; i < nfields; ++i) {
-            topology::Field& field = cellFields.get(_data->cellFieldsInfo[i].name);
-            writer.writeCellField(t, field);
-        } // for
-    } else {
-        const char* label = _data->cellsLabel;
-        const int id = _data->labelId;
-        writer.open(*_mesh, isInfo, label, id);
-        writer.openTimeStep(t, *_mesh, label, id);
-        for (int i = 0; i < nfields; ++i) {
-            topology::Field& field = cellFields.get(_data->cellFieldsInfo[i].name);
-            writer.writeCellField(t, field, label, id);
-        } // for
-    } // else
+    writer.open(*_mesh, isInfo);
+    writer.openTimeStep(t, *_mesh);
+
+    const int numFields = 4;
+    const char* fieldNames[4] = {"scalar", "vector", "tensor", "other"};
+    for (int i = 0; i < numFields; ++i) {
+        pylith::topology::Field& field = cellFields.get(fieldNames[i]);
+        writer.writeCellField(t, field);
+    } // for
     writer.closeTimeStep();
     writer.close();
 
@@ -232,6 +210,15 @@ pylith::meshio::TestDataWriterHDF5Mesh::testHdf5Filename(void)
 
     PYLITH_METHOD_END;
 } // testHdf5Filename
+
+
+// ----------------------------------------------------------------------
+// Get test data.
+pylith::meshio::TestDataWriter_Data*
+pylith::meshio::TestDataWriterHDF5Mesh::_getData(void)
+{ // _getData
+    return _data;
+} // _getData
 
 
 // End of file

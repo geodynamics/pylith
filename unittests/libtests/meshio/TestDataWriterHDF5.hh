@@ -31,28 +31,53 @@
 
 /// Namespace for pylith package
 namespace pylith {
-  namespace meshio {
-    class TestDataWriterHDF5;
-  } // meshio
+    namespace meshio {
+        class TestDataWriterHDF5;
+
+        class TestDataWriterHDF5_Data;
+    } // meshio
 } // pylith
 
+// ======================================================================
 /// C++ unit testing for DataWriterHDF5
-class pylith::meshio::TestDataWriterHDF5
-{ // class TestDataWriterHDF5
+class pylith::meshio::TestDataWriterHDF5 { // class TestDataWriterHDF5
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+    // PUBLIC METHODS /////////////////////////////////////////////////////
+public:
 
-  /** Check HDF5 file against archived file.
-   *
-   * @param filename Name of file to check.
-   */
-  static
-  void checkFile(const char* filename);
+    /** Check HDF5 file against archived file.
+     *
+     * @param filename Name of file to check.
+     */
+    static
+    void checkFile(const char* filename);
 
 }; // class TestDataWriterHDF5
+
+
+// ======================================================================
+class pylith::meshio::TestDataWriterHDF5_Data {
+
+    // PUBLIC METHODS ///////////////////////////////////////////////////////
+public:
+
+    /// Constructor
+    TestDataWriterHDF5_Data(void);
+
+    /// Destructor
+    ~TestDataWriterHDF5_Data(void);
+
+    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
+public:
+
+    const char* timestepFilename; ///< Name of file with no data fields.
+    const char* vertexFilename; ///< Name of file with vertex fields.
+    const char* cellFilename; ///< Name of file with cell fields.
+
+};
+
 
 #endif // pylith_meshio_testdatawriterhdf5_hh
 
 
-// End of file 
+// End of file

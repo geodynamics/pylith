@@ -31,133 +31,133 @@
 
 // ----------------------------------------------------------------------
 herr_t
-pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id, 
-					     const char* name, 
-					     const H5O_info_t* info,
-					     void* data)
+pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
+                                             const char* name,
+                                             const H5O_info_t* info,
+                                             void* data)
 { // checkObject
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  CPPUNIT_ASSERT(info);  
-  CPPUNIT_ASSERT(data);
+    CPPUNIT_ASSERT(info);
+    CPPUNIT_ASSERT(data);
 
-  hid_t* file = (hid_t*) data;CPPUNIT_ASSERT(H5Iis_valid(*file));
-  herr_t err = 0;
+    hid_t* file = (hid_t*) data;CPPUNIT_ASSERT(H5Iis_valid(*file));
+    herr_t err = 0;
 
-  switch (info->type) {
-  case H5O_TYPE_GROUP : {
-    hid_t group = H5Gopen2(*file, name, H5P_DEFAULT);CPPUNIT_ASSERT(group >= 0);
-    err = H5Gclose(group);CPPUNIT_ASSERT(err >= 0);
-    break;
-  } // group
-  case H5O_TYPE_DATASET : {
-    // Get expected dataset.
-    hid_t datasetE = H5Dopen2(id, name, H5P_DEFAULT);CPPUNIT_ASSERT(datasetE >= 0);
-    hid_t dataspaceE = H5Dget_space(datasetE);CPPUNIT_ASSERT(dataspaceE >= 0);
-    const int ndimsE = H5Sget_simple_extent_ndims(dataspaceE);CPPUNIT_ASSERT(ndimsE > 0);
-    hsize_t* dimsE = (ndimsE > 0) ? new hsize_t[ndimsE] : 0;
-    const int ndimsECheck = H5Sget_simple_extent_dims(dataspaceE, dimsE, 0);CPPUNIT_ASSERT_EQUAL(ndimsE, ndimsECheck);
-    int sizeE = (ndimsE > 0 && dimsE[0] > 0) ? 1 : 0;
-    for (int i=0; i < ndimsE; ++i)
-      sizeE *= dimsE[i];
+    switch (info->type) {
+    case H5O_TYPE_GROUP: {
+        hid_t group = H5Gopen2(*file, name, H5P_DEFAULT);CPPUNIT_ASSERT(group >= 0);
+        err = H5Gclose(group);CPPUNIT_ASSERT(err >= 0);
+        break;
+    } // group
+    case H5O_TYPE_DATASET: {
+        // Get expected dataset.
+        hid_t datasetE = H5Dopen2(id, name, H5P_DEFAULT);CPPUNIT_ASSERT(datasetE >= 0);
+        hid_t dataspaceE = H5Dget_space(datasetE);CPPUNIT_ASSERT(dataspaceE >= 0);
+        const int ndimsE = H5Sget_simple_extent_ndims(dataspaceE);CPPUNIT_ASSERT(ndimsE > 0);
+        hsize_t* dimsE = (ndimsE > 0) ? new hsize_t[ndimsE] : 0;
+        const int ndimsECheck = H5Sget_simple_extent_dims(dataspaceE, dimsE, 0);CPPUNIT_ASSERT_EQUAL(ndimsE, ndimsECheck);
+        int sizeE = (ndimsE > 0 && dimsE[0] > 0) ? 1 : 0;
+        for (int i = 0; i < ndimsE; ++i)
+            sizeE *= dimsE[i];
 
-    // Get dataset
-    hid_t dataset = H5Dopen2(*file, name, H5P_DEFAULT);CPPUNIT_ASSERT(dataset >= 0);
-    hid_t dataspace = H5Dget_space(dataset);CPPUNIT_ASSERT(dataspace >= 0);
-    const int ndims = H5Sget_simple_extent_ndims(dataspace);CPPUNIT_ASSERT(ndims > 0);
-    hsize_t* dims = (ndims > 0) ? new hsize_t[ndims] : 0;
-    const int ndimsCheck = H5Sget_simple_extent_dims(dataspace, dims, 0);CPPUNIT_ASSERT_EQUAL(ndims, ndimsCheck);
-    int size = (ndims > 0 && dims[0] > 0) ? 1 : 0;
-    for (int i=0; i < ndims; ++i)
-      size *= dims[i];
-    
-    // Check dimensions.
-    CPPUNIT_ASSERT_EQUAL(ndimsE, ndims);
-    for (int i=0; i < ndimsE; ++i)
-      CPPUNIT_ASSERT_EQUAL(dimsE[i], dims[i]);
+        // Get dataset
+        hid_t dataset = H5Dopen2(*file, name, H5P_DEFAULT);CPPUNIT_ASSERT(dataset >= 0);
+        hid_t dataspace = H5Dget_space(dataset);CPPUNIT_ASSERT(dataspace >= 0);
+        const int ndims = H5Sget_simple_extent_ndims(dataspace);CPPUNIT_ASSERT(ndims > 0);
+        hsize_t* dims = (ndims > 0) ? new hsize_t[ndims] : 0;
+        const int ndimsCheck = H5Sget_simple_extent_dims(dataspace, dims, 0);CPPUNIT_ASSERT_EQUAL(ndims, ndimsCheck);
+        int size = (ndims > 0 && dims[0] > 0) ? 1 : 0;
+        for (int i = 0; i < ndims; ++i)
+            size *= dims[i];
 
-    // Check the expected datatype
-    hid_t datatypeE = H5Dget_type(datasetE);CPPUNIT_ASSERT(datatypeE >= 0);
-    hid_t dataclassE = H5Tget_class(datatypeE);CPPUNIT_ASSERT(dataclassE >= 0);
+        // Check dimensions.
+        CPPUNIT_ASSERT_EQUAL(ndimsE, ndims);
+        for (int i = 0; i < ndimsE; ++i)
+            CPPUNIT_ASSERT_EQUAL(dimsE[i], dims[i]);
 
-    hid_t datatype = H5Dget_type(dataset);CPPUNIT_ASSERT(datatype >= 0);
-    hid_t dataclass = H5Tget_class(datatype);CPPUNIT_ASSERT(dataclass >= 0);
-    CPPUNIT_ASSERT_EQUAL(dataclassE, dataclass);
-    
-    switch (dataclassE) {
+        // Check the expected datatype
+        hid_t datatypeE = H5Dget_type(datasetE);CPPUNIT_ASSERT(datatypeE >= 0);
+        hid_t dataclassE = H5Tget_class(datatypeE);CPPUNIT_ASSERT(dataclassE >= 0);
 
-    case H5T_FLOAT: {
-      double* dataE = (sizeE > 0) ? new double[sizeE] : 0;CPPUNIT_ASSERT(sizeE > 0);
-      err = H5Dread(datasetE, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (void*) dataE);CPPUNIT_ASSERT(err >= 0);
+        hid_t datatype = H5Dget_type(dataset);CPPUNIT_ASSERT(datatype >= 0);
+        hid_t dataclass = H5Tget_class(datatype);CPPUNIT_ASSERT(dataclass >= 0);
+        CPPUNIT_ASSERT_EQUAL(dataclassE, dataclass);
 
-      double* data = (size > 0) ? new double[size] : 0;CPPUNIT_ASSERT(size > 0);
-      err = H5Dread(dataset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (void*) data);CPPUNIT_ASSERT(err >= 0);
+        switch (dataclassE) {
 
-      CPPUNIT_ASSERT_EQUAL(sizeE, size);
+        case H5T_FLOAT: {
+            double* dataE = (sizeE > 0) ? new double[sizeE] : 0;CPPUNIT_ASSERT(sizeE > 0);
+            err = H5Dread(datasetE, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (void*) dataE);CPPUNIT_ASSERT(err >= 0);
 
-      // Compare data values.
-      const double tolerance = 1.0e-6;
-      for (int i=0; i < size; ++i) {
-	if (dataE[i] != 0.0) {
-	  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, double(data[i])/dataE[i], tolerance);
-	} else {
-	  CPPUNIT_ASSERT_DOUBLES_EQUAL(dataE[i], double(data[i]), tolerance);
-	} // if/else
-      } // for
+            double* data = (size > 0) ? new double[size] : 0;CPPUNIT_ASSERT(size > 0);
+            err = H5Dread(dataset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (void*) data);CPPUNIT_ASSERT(err >= 0);
 
-      delete[] dataE; dataE = 0;
-      delete[] data; data = 0;
+            CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
-      break;
-    } // H5T_DOUBLE
+            // Compare data values.
+            const double tolerance = 1.0e-6;
+            for (int i = 0; i < size; ++i) {
+                if (dataE[i] != 0.0) {
+                    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, double(data[i])/dataE[i], tolerance);
+                } else {
+                    CPPUNIT_ASSERT_DOUBLES_EQUAL(dataE[i], double(data[i]), tolerance);
+                } // if/else
+            } // for
 
-    case H5T_STRING: {
-      const int slenE = H5Tget_size(datatypeE);CPPUNIT_ASSERT(slenE > 0);
-      sizeE *= slenE;
+            delete[] dataE; dataE = 0;
+            delete[] data; data = 0;
 
-      const int slen = H5Tget_size(datatype);CPPUNIT_ASSERT(slen > 0);
-      size *= slen;
+            break;
+        } // H5T_DOUBLE
 
-      CPPUNIT_ASSERT_EQUAL(slenE, slen);
-      CPPUNIT_ASSERT_EQUAL(sizeE, size);
+        case H5T_STRING: {
+            const int slenE = H5Tget_size(datatypeE);CPPUNIT_ASSERT(slenE > 0);
+            sizeE *= slenE;
 
-      char* dataE = (sizeE > 0) ? new char[sizeE] : 0;CPPUNIT_ASSERT(sizeE > 0);
-      err = H5Dread(datasetE, datatypeE, H5S_ALL, H5S_ALL, H5P_DEFAULT, dataE);CPPUNIT_ASSERT(err >= 0);
+            const int slen = H5Tget_size(datatype);CPPUNIT_ASSERT(slen > 0);
+            size *= slen;
 
-      char* data = (size > 0) ? new char[size] : 0;CPPUNIT_ASSERT(size > 0);
-      err = H5Dread(dataset, datatype, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);CPPUNIT_ASSERT(err >= 0);
+            CPPUNIT_ASSERT_EQUAL(slenE, slen);
+            CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
-      for (int i=0; i < size; ++i) {
-	CPPUNIT_ASSERT_EQUAL(dataE[i], data[i]);
-      } // for
+            char* dataE = (sizeE > 0) ? new char[sizeE] : 0;CPPUNIT_ASSERT(sizeE > 0);
+            err = H5Dread(datasetE, datatypeE, H5S_ALL, H5S_ALL, H5P_DEFAULT, dataE);CPPUNIT_ASSERT(err >= 0);
 
-      delete[] dataE; dataE = 0;
-      delete[] data; data = 0;
+            char* data = (size > 0) ? new char[size] : 0;CPPUNIT_ASSERT(size > 0);
+            err = H5Dread(dataset, datatype, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);CPPUNIT_ASSERT(err >= 0);
 
-      break;
-    } // H5T_C_S1
+            for (int i = 0; i < size; ++i) {
+                CPPUNIT_ASSERT_EQUAL(dataE[i], data[i]);
+            } // for
 
+            delete[] dataE; dataE = 0;
+            delete[] data; data = 0;
+
+            break;
+        } // H5T_C_S1
+
+        default:
+            CPPUNIT_ASSERT(false);
+        } // switch
+
+
+        err = H5Sclose(dataspaceE);CPPUNIT_ASSERT(err >= 0);
+        err = H5Dclose(datasetE);CPPUNIT_ASSERT(err >= 0);
+
+        err = H5Sclose(dataspace);CPPUNIT_ASSERT(err >= 0);
+        err = H5Dclose(dataset);CPPUNIT_ASSERT(err >= 0);
+
+        delete[] dimsE; dimsE = 0;
+        delete[] dims; dims = 0;
+
+        break;
+    } // dataset
     default:
-      CPPUNIT_ASSERT(false);
+        CPPUNIT_ASSERT(false);
     } // switch
 
-
-    err = H5Sclose(dataspaceE);CPPUNIT_ASSERT(err >= 0);
-    err = H5Dclose(datasetE);CPPUNIT_ASSERT(err >= 0);
-    
-    err = H5Sclose(dataspace);CPPUNIT_ASSERT(err >= 0);
-    err = H5Dclose(dataset);CPPUNIT_ASSERT(err >= 0);
-
-    delete[] dimsE; dimsE = 0;
-    delete[] dims; dims = 0;
-
-    break;
-  } // dataset
-  default :
-    CPPUNIT_ASSERT(false);
-  } // switch
-
-  PYLITH_METHOD_RETURN(0);
+    PYLITH_METHOD_RETURN(0);
 } // checkObject
 
 // ----------------------------------------------------------------------
@@ -165,30 +165,47 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
 void
 pylith::meshio::TestDataWriterHDF5::checkFile(const char* filename)
 { // checkFile
-  PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_BEGIN;
 
-  const std::string filenameE = "data/" + std::string(filename);
+    const std::string filenameE = "data/" + std::string(filename);
 
-  herr_t err = 0;
+    herr_t err = 0;
 
-  hid_t fileE = H5Fopen(filenameE.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);CPPUNIT_ASSERT(fileE >= 0);
+    hid_t fileE = H5Fopen(filenameE.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);CPPUNIT_ASSERT(fileE >= 0);
 
-  hid_t file = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT);CPPUNIT_ASSERT(file >= 0);
+    hid_t file = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT);CPPUNIT_ASSERT(file >= 0);
 #if defined(PYLITH_HDF5_USE_API_18)
 
-  // Traverse recursively file with expected values.
-  err = H5Ovisit(fileE, H5_INDEX_NAME, H5_ITER_NATIVE, pylith_meshio_TestDataWriterHDF5_checkObject, (void*) &file);CPPUNIT_ASSERT(err >= 0);
+    // Traverse recursively file with expected values.
+    err = H5Ovisit(fileE, H5_INDEX_NAME, H5_ITER_NATIVE, pylith_meshio_TestDataWriterHDF5_checkObject, (void*) &file);CPPUNIT_ASSERT(err >= 0);
 
 #else
 #endif
-  err = H5Fclose(fileE);
-  CPPUNIT_ASSERT(err >= 0);
+    err = H5Fclose(fileE);
+    CPPUNIT_ASSERT(err >= 0);
 
-  err = H5Fclose(file);
-  CPPUNIT_ASSERT(err >= 0);
+    err = H5Fclose(file);
+    CPPUNIT_ASSERT(err >= 0);
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // checkFile
 
 
-// End of file 
+// ----------------------------------------------------------------------
+// Constructor
+pylith::meshio::TestDataWriterHDF5_Data::TestDataWriterHDF5_Data(void) :
+    timestepFilename(NULL),
+    vertexFilename(NULL),
+    cellFilename(NULL)
+{ // constructor
+} // constructor
+
+
+// ----------------------------------------------------------------------
+// Destructor
+pylith::meshio::TestDataWriterHDF5_Data::~TestDataWriterHDF5_Data(void)
+{ // destructor
+} // destructor
+
+
+// End of file
