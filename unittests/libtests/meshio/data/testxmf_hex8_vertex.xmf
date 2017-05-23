@@ -23,16 +23,6 @@
           /Xdmf/Domain/DataItem[@Name="vertices"]
         </DataItem>
       </Geometry>
-      <Attribute Name="displacement" Type="Vector" Center="Node">
-        <DataItem ItemType="HyperSlab" Dimensions="1 16 3" Type="HyperSlab">
-          <DataItem Dimensions="3 3" Format="XML">
-            0 0 0    1 1 1    1 16 3
-          </DataItem>
-          <DataItem DataType="Float" Precision="8" Dimensions="1 16 3" Format="HDF">
-            &HeavyData;:/vertex_fields/displacement
-          </DataItem>
-        </DataItem>
-      </Attribute>
       <Attribute Name="other_0" Type="Scalar" Center="Node">
         <DataItem ItemType="HyperSlab" Dimensions="1 16 1" Type="HyperSlab">
           <DataItem Dimensions="3 3" Format="XML">
@@ -53,73 +43,83 @@
           </DataItem>
         </DataItem>
       </Attribute>
-      <Attribute Name="pressure" Type="Scalar" Center="Node">
+      <Attribute Name="scalar" Type="Scalar" Center="Node">
         <DataItem ItemType="HyperSlab" Dimensions="1 16 1" Type="HyperSlab">
           <DataItem Dimensions="3 3" Format="XML">
             0 0 0    1 1 1    1 16 1
           </DataItem>
           <DataItem DataType="Float" Precision="8" Dimensions="1 16 1" Format="HDF">
-            &HeavyData;:/vertex_fields/pressure
+            &HeavyData;:/vertex_fields/scalar
           </DataItem>
         </DataItem>
       </Attribute>
-      <Attribute Name="stress_xx" Type="Scalar" Center="Node">
+      <Attribute Name="tensor_xx" Type="Scalar" Center="Node">
         <DataItem ItemType="HyperSlab" Dimensions="1 16 1" Type="HyperSlab">
           <DataItem Dimensions="3 3" Format="XML">
             0 0 0    1 1 1    1 16 1
           </DataItem>
           <DataItem DataType="Float" Precision="8" Dimensions="1 16 6" Format="HDF">
-            &HeavyData;:/vertex_fields/stress
+            &HeavyData;:/vertex_fields/tensor
           </DataItem>
         </DataItem>
       </Attribute>
-      <Attribute Name="stress_yy" Type="Scalar" Center="Node">
+      <Attribute Name="tensor_yy" Type="Scalar" Center="Node">
         <DataItem ItemType="HyperSlab" Dimensions="1 16 1" Type="HyperSlab">
           <DataItem Dimensions="3 3" Format="XML">
             0 0 1    1 1 1    1 16 1
           </DataItem>
           <DataItem DataType="Float" Precision="8" Dimensions="1 16 6" Format="HDF">
-            &HeavyData;:/vertex_fields/stress
+            &HeavyData;:/vertex_fields/tensor
           </DataItem>
         </DataItem>
       </Attribute>
-      <Attribute Name="stress_zz" Type="Scalar" Center="Node">
+      <Attribute Name="tensor_zz" Type="Scalar" Center="Node">
         <DataItem ItemType="HyperSlab" Dimensions="1 16 1" Type="HyperSlab">
           <DataItem Dimensions="3 3" Format="XML">
             0 0 2    1 1 1    1 16 1
           </DataItem>
           <DataItem DataType="Float" Precision="8" Dimensions="1 16 6" Format="HDF">
-            &HeavyData;:/vertex_fields/stress
+            &HeavyData;:/vertex_fields/tensor
           </DataItem>
         </DataItem>
       </Attribute>
-      <Attribute Name="stress_xy" Type="Scalar" Center="Node">
+      <Attribute Name="tensor_xy" Type="Scalar" Center="Node">
         <DataItem ItemType="HyperSlab" Dimensions="1 16 1" Type="HyperSlab">
           <DataItem Dimensions="3 3" Format="XML">
             0 0 3    1 1 1    1 16 1
           </DataItem>
           <DataItem DataType="Float" Precision="8" Dimensions="1 16 6" Format="HDF">
-            &HeavyData;:/vertex_fields/stress
+            &HeavyData;:/vertex_fields/tensor
           </DataItem>
         </DataItem>
       </Attribute>
-      <Attribute Name="stress_yz" Type="Scalar" Center="Node">
+      <Attribute Name="tensor_yz" Type="Scalar" Center="Node">
         <DataItem ItemType="HyperSlab" Dimensions="1 16 1" Type="HyperSlab">
           <DataItem Dimensions="3 3" Format="XML">
             0 0 4    1 1 1    1 16 1
           </DataItem>
           <DataItem DataType="Float" Precision="8" Dimensions="1 16 6" Format="HDF">
-            &HeavyData;:/vertex_fields/stress
+            &HeavyData;:/vertex_fields/tensor
           </DataItem>
         </DataItem>
       </Attribute>
-      <Attribute Name="stress_xz" Type="Scalar" Center="Node">
+      <Attribute Name="tensor_xz" Type="Scalar" Center="Node">
         <DataItem ItemType="HyperSlab" Dimensions="1 16 1" Type="HyperSlab">
           <DataItem Dimensions="3 3" Format="XML">
             0 0 5    1 1 1    1 16 1
           </DataItem>
           <DataItem DataType="Float" Precision="8" Dimensions="1 16 6" Format="HDF">
-            &HeavyData;:/vertex_fields/stress
+            &HeavyData;:/vertex_fields/tensor
+          </DataItem>
+        </DataItem>
+      </Attribute>
+      <Attribute Name="vector" Type="Vector" Center="Node">
+        <DataItem ItemType="HyperSlab" Dimensions="1 16 3" Type="HyperSlab">
+          <DataItem Dimensions="3 3" Format="XML">
+            0 0 0    1 1 1    1 16 3
+          </DataItem>
+          <DataItem DataType="Float" Precision="8" Dimensions="1 16 3" Format="HDF">
+            &HeavyData;:/vertex_fields/vector
           </DataItem>
         </DataItem>
       </Attribute>

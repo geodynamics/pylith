@@ -231,11 +231,11 @@ if ENABLE_HDF5
   testmeshio_SOURCES += \
 	TestHDF5.cc \
 	TestXdmf.cc \
-	TestXdmf_Cases.cc
+	TestXdmf_Cases.cc \
+	TestDataWriterHDF5.cc \
+	TestDataWriterHDF5Mesh.cc \
+	TestDataWriterHDF5Mesh_Cases.cc
 
-# TestDataWriterHDF5.cc \
-# TestDataWriterHDF5Mesh.cc \
-# TestDataWriterHDF5MeshCases.cc \
 # TestDataWriterHDF5MatMeshCases.cc \
 # TestDataWriterHDF5SubMesh.cc \
 # TestDataWriterHDF5SubMeshCases.cc \
@@ -260,10 +260,10 @@ if ENABLE_HDF5
 
   noinst_HEADERS += \
 	TestHDF5.hh \
-	TestXdmf.hh
+	TestXdmf.hh \
+	TestDataWriterHDF5.hh \
+	TestDataWriterHDF5Mesh.hh
 
-# TestDataWriterHDF5.hh \
-# TestDataWriterHDF5Mesh.hh \
 # TestDataWriterHDF5MeshCases.hh \
 # TestDataWriterHDF5MatMeshCases.hh \
 # TestDataWriterHDF5SubMesh.hh \

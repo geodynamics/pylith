@@ -33,7 +33,7 @@ namespace pylith {
                 TestXdmf::setUp();
                 _data = new TestXdmf_Data;CPPUNIT_ASSERT(_data);
                 _data->filenameHDF5 = "data/tri3_vertex.h5";
-                _data->filenameXdmf = "tri3_vertex.xmf";
+                _data->filenameXdmf = "testxmf_tri3_vertex.xmf";
             } // setUp
         }; // class TestXdmf_TriP1_Vertex
         CPPUNIT_TEST_SUITE_REGISTRATION(TestXdmf_TriP1_Vertex);
@@ -48,7 +48,7 @@ namespace pylith {
                 TestXdmf::setUp();
                 _data = new TestXdmf_Data;CPPUNIT_ASSERT(_data);
                 _data->filenameHDF5 = "data/tri3_cell.h5";
-                _data->filenameXdmf = "tri3_cell.xmf";
+                _data->filenameXdmf = "testxmf_tri3_cell.xmf";
             } // setUp
         }; // class TestXdmf_TriP1_Cell
         CPPUNIT_TEST_SUITE_REGISTRATION(TestXdmf_TriP1_Cell);
@@ -62,7 +62,7 @@ namespace pylith {
                 TestXdmf::setUp();
                 _data = new TestXdmf_Data;CPPUNIT_ASSERT(_data);
                 _data->filenameHDF5 = "data/quad4_vertex.h5";
-                _data->filenameXdmf = "quad4_vertex.xmf";
+                _data->filenameXdmf = "testxmf_quad4_vertex.xmf";
             } // setUp
         }; // class TestXdmf_QuadP1_Vertex
         CPPUNIT_TEST_SUITE_REGISTRATION(TestXdmf_QuadP1_Vertex);
@@ -77,7 +77,7 @@ namespace pylith {
                 TestXdmf::setUp();
                 _data = new TestXdmf_Data;CPPUNIT_ASSERT(_data);
                 _data->filenameHDF5 = "data/quad4_cell.h5";
-                _data->filenameXdmf = "quad4_cell.xmf";
+                _data->filenameXdmf = "testxmf_quad4_cell.xmf";
             } // setUp
         }; // class TestXdmf_QuadP1_Cell
         CPPUNIT_TEST_SUITE_REGISTRATION(TestXdmf_QuadP1_Cell);
@@ -91,7 +91,7 @@ namespace pylith {
                 TestXdmf::setUp();
                 _data = new TestXdmf_Data;CPPUNIT_ASSERT(_data);
                 _data->filenameHDF5 = "data/tet4_vertex.h5";
-                _data->filenameXdmf = "tet4_vertex.xmf";
+                _data->filenameXdmf = "testxmf_tet4_vertex.xmf";
             } // setUp
         }; // class TestXdmf_TetP1_Vertex
         CPPUNIT_TEST_SUITE_REGISTRATION(TestXdmf_TetP1_Vertex);
@@ -106,7 +106,7 @@ namespace pylith {
                 TestXdmf::setUp();
                 _data = new TestXdmf_Data;CPPUNIT_ASSERT(_data);
                 _data->filenameHDF5 = "data/tet4_cell.h5";
-                _data->filenameXdmf = "tet4_cell.xmf";
+                _data->filenameXdmf = "testxmf_tet4_cell.xmf";
             } // setUp
         }; // class TestXdmf_TetP1_Cell
         CPPUNIT_TEST_SUITE_REGISTRATION(TestXdmf_TetP1_Cell);
@@ -120,7 +120,7 @@ namespace pylith {
                 TestXdmf::setUp();
                 _data = new TestXdmf_Data;CPPUNIT_ASSERT(_data);
                 _data->filenameHDF5 = "data/hex8_vertex.h5";
-                _data->filenameXdmf = "hex8_vertex.xmf";
+                _data->filenameXdmf = "testxmf_hex8_vertex.xmf";
             } // setUp
         }; // class TestXdmf_HexP1_Vertex
         CPPUNIT_TEST_SUITE_REGISTRATION(TestXdmf_HexP1_Vertex);
@@ -135,7 +135,7 @@ namespace pylith {
                 TestXdmf::setUp();
                 _data = new TestXdmf_Data;CPPUNIT_ASSERT(_data);
                 _data->filenameHDF5 = "data/hex8_cell.h5";
-                _data->filenameXdmf = "hex8_cell.xmf";
+                _data->filenameXdmf = "testxmf_hex8_cell.xmf";
             } // setUp
         }; // class TestXdmf_HexP1_Cell
         CPPUNIT_TEST_SUITE_REGISTRATION(TestXdmf_HexP1_Cell);

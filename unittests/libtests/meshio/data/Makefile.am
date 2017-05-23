@@ -90,24 +90,16 @@ dist_noinst_DATA = \
 	output_cell_filter_t12.vtk \
 	tri3.h5 \
 	tri3_cell.h5 \
-	tri3_cell.xmf \
 	tri3_vertex.h5 \
-	tri3_vertex.xmf \
 	quad4.h5 \
 	quad4_cell.h5 \
-	quad4_cell.xmf \
 	quad4_vertex.h5 \
-	quad4_vertex.xmf \
 	tet4.h5 \
 	tet4_cell.h5 \
-	tet4_cell.xmf \
 	tet4_vertex.h5 \
-	tet4_vertex.xmf \
 	hex8.h5 \
 	hex8_cell.h5 \
-	hex8_cell.xmf \
 	hex8_vertex.h5 \
-	hex8_vertex.xmf \
 	tri3_mat.h5 \
 	tri3_mat_vertex.h5 \
 	tri3_mat_cell.h5 \
@@ -171,7 +163,15 @@ dist_noinst_DATA = \
 	tet4_points.h5 \
 	tet4_points_vertex.h5 \
 	hex8_points.h5 \
-	hex8_points_vertex.h5
+	hex8_points_vertex.h5 \
+	testxmf_tri3_cell.xmf \
+	testxmf_tri3_vertex.xmf \
+	testxmf_quad4_cell.xmf \
+	testxmf_quad4_vertex.xmf \
+	testxmf_tet4_cell.xmf \
+	testxmf_tet4_vertex.xmf \
+	testxmf_hex8_vertex.xmf \
+	testxmf_hex8_cell.xmf
 
 
 noinst_TMP =

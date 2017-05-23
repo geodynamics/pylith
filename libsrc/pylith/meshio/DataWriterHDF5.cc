@@ -97,7 +97,7 @@ pylith::meshio::DataWriterHDF5::DataWriterHDF5(const DataWriterHDF5& w) :
 // ----------------------------------------------------------------------
 // Prepare file for data at a new time step.
 void
-pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
+pylith::meshio::DataWriterHDF5::open(const pylith::topology::Mesh& mesh,
                                      const bool isInfo,
                                      const char* label,
                                      const int labelId)
@@ -139,6 +139,7 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
             err = VecView_MPI(coordsGlobalVec, _viewer); PYLITH_CHECK_ERROR(err);
         } // if/else
 #endif
+        err = VecDestroy(&coordsGlobalVec); PYLITH_CHECK_ERROR(err);
         err = PetscViewerHDF5PopGroup(_viewer); PYLITH_CHECK_ERROR(err);
 
         PetscInt vStart, vEnd, cellHeight, cStart, cEnd, cMax, conesSize, numCorners, numCornersLocal = 0;
@@ -182,7 +183,6 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
         } else {
             conesSize = (cEnd - cStart)*numCorners;
         } // if/else
-
         PetscIS globalVertexNumbers = NULL;
         const PetscInt *gvertex = NULL;
         PetscVec cellVec = NULL;
@@ -233,47 +233,6 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
         assert(h5 >= 0);
         const int cellDim = mesh.dimension();
         HDF5::writeAttribute(h5, "/topology/cells", "cell_dim", (void*)&cellDim, H5T_NATIVE_INT);
-
-        // If 2-D, write zero vector for z components
-        const spatialdata::geocoords::CoordSys* cs = mesh.coordsys(); assert(cs);
-        if (2 == cs->spaceDim()) {
-#if 1
-            PYLITH_COMPONENT_ERROR(":TODO: @brad Implement writing zero vertex field and cell field.");
-#else
-            err = PetscViewerHDF5PushGroup(_viewer, "/zero"); PYLITH_CHECK_ERROR(err);
-
-            const char* vlabel = "vertex_zero";
-            topology::Field vzeroField(mesh);
-            vzeroField.newSection(coordinatesField, 1);
-            vzeroField.allocate();
-            vzeroField.zeroLocal();
-            vzeroField.label(vlabel);
-            //vzeroField.vectorFieldType(topology::FieldBase::SCALAR);
-            vzeroField.createScatterWithBC(mesh, "", 0, vlabel);
-            vzeroField.scatterLocalToContext(vlabel);
-
-            PetscVec vzeroVector = vzeroField.scatterVector(vlabel); assert(vzeroVector);
-            err = PetscObjectTypeCompare((PetscObject) vzeroVector, VECSEQ, &isseq); PYLITH_CHECK_ERROR(err);
-            if (isseq) {err = VecView_Seq(vzeroVector, _viewer); PYLITH_CHECK_ERROR(err); } else       {err = VecView_MPI(vzeroVector, _viewer); PYLITH_CHECK_ERROR(err); }
-
-            const char* clabel = "cell_zero";
-            topology::Field czeroField(mesh);
-            czeroField.newSection(cStart, cEnd, 1);
-            czeroField.allocate();
-            czeroField.zeroLocal();
-            czeroField.label(clabel);
-            //czeroField.vectorFieldType(topology::FieldBase::SCALAR);
-            czeroField.createScatterWithBC(mesh, "", 0, clabel);
-            czeroField.scatterLocalToContext(clabel);
-
-            PetscVec czeroVector = czeroField.scatterVector(clabel); assert(czeroVector);
-            err = PetscObjectTypeCompare((PetscObject) czeroVector, VECSEQ, &isseq); PYLITH_CHECK_ERROR(err);
-            if (isseq) {err = VecView_Seq(czeroVector, _viewer); PYLITH_CHECK_ERROR(err); } else       {err = VecView_MPI(czeroVector, _viewer); PYLITH_CHECK_ERROR(err); }
-
-            err = PetscViewerHDF5PopGroup(_viewer); PYLITH_CHECK_ERROR(err);
-#endif
-        } // if
-
     } catch (const std::exception& err) {
         std::ostringstream msg;
         msg << "Error while opening HDF5 file " << _hdf5Filename() << ".\n" << err.what();
@@ -318,8 +277,8 @@ pylith::meshio::DataWriterHDF5::close(void)
 // Write field over vertices to file.
 void
 pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
-                                                 topology::Field& field,
-                                                 const topology::Mesh& mesh)
+                                                 pylith::topology::Field& field,
+                                                 const pylith::topology::Mesh& mesh)
 { // writeVertexField
     PYLITH_METHOD_BEGIN;
 
@@ -354,7 +313,11 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
 #else
         PetscBool isseq;
         err = PetscObjectTypeCompare((PetscObject) vector, VECSEQ, &isseq); PYLITH_CHECK_ERROR(err);
-        if (isseq) {err = VecView_Seq(vector, _viewer); PYLITH_CHECK_ERROR(err); } else       {err = VecView_MPI(vector, _viewer); PYLITH_CHECK_ERROR(err); }
+        if (isseq) {
+            err = VecView_Seq(vector, _viewer); PYLITH_CHECK_ERROR(err);
+        } else {
+            err = VecView_MPI(vector, _viewer); PYLITH_CHECK_ERROR(err);
+        }
 #endif
         err = PetscViewerHDF5PopGroup(_viewer); PYLITH_CHECK_ERROR(err);
 
@@ -363,8 +326,8 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
             err = PetscViewerHDF5GetFileId(_viewer, &h5); PYLITH_CHECK_ERROR(err);
             assert(h5 >= 0);
             std::string fullName = std::string("/vertex_fields/") + field.label();
-            //const char* sattr = topology::FieldBase::vectorFieldString(field.vectorFieldType());
-            //HDF5::writeAttribute(h5, fullName.c_str(), "vector_field_type", sattr);
+            const char* sattr = pylith::topology::FieldBase::vectorFieldString(field.vectorFieldType());
+            HDF5::writeAttribute(h5, fullName.c_str(), "vector_field_type", sattr);
         } // if
 
     } catch (const std::exception& err) {
@@ -387,7 +350,7 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
 // Write field over cells to file.
 void
 pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
-                                               topology::Field& field,
+                                               pylith::topology::Field& field,
                                                const char* label,
                                                const int labelId)
 { // writeCellField
@@ -432,8 +395,8 @@ pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
             err = PetscViewerHDF5GetFileId(_viewer, &h5); PYLITH_CHECK_ERROR(err);
             assert(h5 >= 0);
             std::string fullName = std::string("/cell_fields/") + field.label();
-            //const char* sattr = topology::FieldBase::vectorFieldString(field.vectorFieldType());
-            //HDF5::writeAttribute(h5, fullName.c_str(), "vector_field_type", sattr);
+            const char* sattr = pylith::topology::FieldBase::vectorFieldString(field.vectorFieldType());
+            HDF5::writeAttribute(h5, fullName.c_str(), "vector_field_type", sattr);
         } // if
     } catch (const std::exception& err) {
         std::ostringstream msg;
@@ -454,7 +417,7 @@ pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
 // Write dataset with names of points to file.
 void
 pylith::meshio::DataWriterHDF5::writePointNames(const pylith::string_vector& names,
-                                                const topology::Mesh& mesh)
+                                                const pylith::topology::Mesh& mesh)
 { // writePointNames
     PYLITH_METHOD_BEGIN;
 
