@@ -424,8 +424,10 @@ pylith::meshio::Xdmf::_writeDomainVertices(const int numVertices,
       << "          &HeavyData;:/geometry/vertices\n"
       << "        </DataItem>\n"
       << "      </DataItem>\n"
-      << "      <DataItem Name=\"verticesZ\" ItemType=\"Uniform\" Dimensions=\"" << numVertices << " 1\" Format=\"HDF\">\n"
-      << "        &HeavyData;:/zero/vertex_zero\n"
+      << "      <DataItem Name=\"verticesZ\" ItemType=\"Function\" Dimensions=\"" << numVertices << " 1\" Function=\"0*$0\">\n"
+      << "        <DataItem Reference=\"XML\">\n"
+      << "          /Xdmf/Domain/DataItem[@Name=\"vertices\"]/DataItem[@Name=\"verticesX\"]\n"
+      << "        </DataItem>\n"
       << "      </DataItem>\n"
       << "    </DataItem>\n";
   } else {
@@ -563,9 +565,12 @@ pylith::meshio::Xdmf::_writeGridAttribute(const FieldMetadata& metadata,
       << "            </DataItem>\n"
       << "          </DataItem>\n"
       // z component
-      << "          <DataItem ItemType=\"Uniform\" Dimensions=\"" << metadata.numPoints << " 1\" Format=\"HDF\">\n"
-      << "            &HeavyData;:" << h5ZeroName << "\n"
+      << "          <DataItem ItemType=\"Function\" Dimensions=\"" << metadata.numPoints << " 1\" Function=\"0*$0\">\n"
+      << "            <DataItem Reference=\"XML\">\n"
+      << "              /Xdmf/Domain/Grid/Attribute[@Name=\"" << metadata.name << "\"]/DataItem[1]/DataItem[1]\n"
+      << "            </DataItem>\n"
       << "          </DataItem>\n"
+      // close
       << "        </DataItem>\n"
       << "      </Attribute>\n";
   } else {
