@@ -36,7 +36,7 @@ namespace pylith {
                 TestDataWriterHDF5Mesh::setUp();
                 _data = new TestDataWriterHDF5Mesh_Data();CPPUNIT_ASSERT(_data);
 
-                _data->timestepFilename = "tri3.h5";
+                _data->opencloseFilename = "tri3.h5";
                 _data->vertexFilename = "tri3_vertex.h5";
                 _data->cellFilename = "tri3_cell.h5";
 
@@ -59,7 +59,7 @@ namespace pylith {
                 TestDataWriterHDF5Mesh::setUp();
                 _data = new TestDataWriterHDF5Mesh_Data();CPPUNIT_ASSERT(_data);
 
-                _data->timestepFilename = "quad4.h5";
+                _data->opencloseFilename = "quad4.h5";
                 _data->vertexFilename = "quad4_vertex.h5";
                 _data->cellFilename = "quad4_cell.h5";
 
@@ -82,7 +82,7 @@ namespace pylith {
                 TestDataWriterHDF5Mesh::setUp();
                 _data = new TestDataWriterHDF5Mesh_Data();CPPUNIT_ASSERT(_data);
 
-                _data->timestepFilename = "tet4.h5";
+                _data->opencloseFilename = "tet4.h5";
                 _data->vertexFilename = "tet4_vertex.h5";
                 _data->cellFilename = "tet4_cell.h5";
 
@@ -105,7 +105,7 @@ namespace pylith {
                 TestDataWriterHDF5Mesh::setUp();
                 _data = new TestDataWriterHDF5Mesh_Data();CPPUNIT_ASSERT(_data);
 
-                _data->timestepFilename = "hex8.h5";
+                _data->opencloseFilename = "hex8.h5";
                 _data->vertexFilename = "hex8_vertex.h5";
                 _data->cellFilename = "hex8_cell.h5";
 

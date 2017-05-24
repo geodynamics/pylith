@@ -70,7 +70,7 @@ public:
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
-    const char* timestepFilename; ///< Name of file with no data fields.
+    const char* opencloseFilename; ///< Name of file with no data fields.
     const char* vertexFilename; ///< Name of file with vertex fields.
     const char* cellFilename; ///< Name of file with cell fields.
 

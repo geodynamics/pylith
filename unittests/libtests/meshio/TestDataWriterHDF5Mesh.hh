@@ -51,6 +51,7 @@ class pylith::meshio::TestDataWriterHDF5Mesh : public TestDataWriterHDF5, public
 
     CPPUNIT_TEST(testConstructor);
     CPPUNIT_TEST(testFilename);
+    CPPUNIT_TEST(testOpenClose);
     CPPUNIT_TEST(testWriteVertexField);
     CPPUNIT_TEST(testWriteCellField);
     CPPUNIT_TEST(testHdf5Filename);

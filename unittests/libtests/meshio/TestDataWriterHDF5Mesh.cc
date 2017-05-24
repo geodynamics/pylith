@@ -93,13 +93,13 @@ pylith::meshio::TestDataWriterHDF5Mesh::testOpenClose(void)
 
     DataWriterHDF5 writer;
 
-    writer.filename(_data->timestepFilename);
+    writer.filename(_data->opencloseFilename);
 
     const bool isInfo = false;
     writer.open(*_mesh, isInfo);
     writer.close();
 
-    checkFile(_data->timestepFilename);
+    checkFile(_data->opencloseFilename);
 
     PYLITH_METHOD_END;
 } // testOpenClose
