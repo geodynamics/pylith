@@ -39,155 +39,155 @@
 
 // DataWriterVTK --------------------------------------------------------
 /// Object for writing finite-element data to VTK file.
-class pylith::meshio::DataWriterVTK : public DataWriter
-{ // DataWriterVTK
-friend class TestDataWriterVTKMesh;   // unit testing
-friend class TestDataWriterVTKSubMesh;   // unit testing
-friend class TestDataWriterVTKBCMesh;   // unit testing
-friend class TestDataWriterVTKFaultMesh;   // unit testing
-friend class TestDataWriterVTKPoints;   // unit testing
+class pylith::meshio::DataWriterVTK : public DataWriter {
+    friend class TestDataWriterVTKMesh;   // unit testing
+    friend class TestDataWriterVTKMaterial;   // unit testing
+    friend class TestDataWriterVTKSubMesh;   // unit testing
+    friend class TestDataWriterVTKBCMesh;   // unit testing
+    friend class TestDataWriterVTKFaultMesh;   // unit testing
+    friend class TestDataWriterVTKPoints;   // unit testing
 
-// PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
-/// Constructor
-DataWriterVTK(void);
+    /// Constructor
+    DataWriterVTK(void);
 
-/// Destructor
-~DataWriterVTK(void);
+    /// Destructor
+    ~DataWriterVTK(void);
 
-/** Make copy of this object.
- *
- * @returns Copy of this.
- */
-DataWriter* clone(void) const;
+    /** Make copy of this object.
+     *
+     * @returns Copy of this.
+     */
+    DataWriter* clone(void) const;
 
-/// Deallocate PETSc and local data structures.
-void deallocate(void);
+    /// Deallocate PETSc and local data structures.
+    void deallocate(void);
 
-/** Set filename for VTK file.
- *
- * @param[in] filename Name of VTK file.
- */
-void filename(const char* filename);
+    /** Set filename for VTK file.
+     *
+     * @param[in] filename Name of VTK file.
+     */
+    void filename(const char* filename);
 
-/** Set time format for time stamp in name of VTK file.
- *
- * @param[in] format C style time format for filename.
- */
-void timeFormat(const char* format);
+    /** Set time format for time stamp in name of VTK file.
+     *
+     * @param[in] format C style time format for filename.
+     */
+    void timeFormat(const char* format);
 
-/** Set value used to normalize time stamp in name of VTK file.
- *
- * Time stamp is divided by this value (time in seconds).
- *
- * @param[in] value Value (time in seconds) used to normalize time stamp in
- * filename.
- */
-void timeConstant(const PylithScalar value);
+    /** Set value used to normalize time stamp in name of VTK file.
+     *
+     * Time stamp is divided by this value (time in seconds).
+     *
+     * @param[in] value Value (time in seconds) used to normalize time stamp in
+     * filename.
+     */
+    void timeConstant(const PylithScalar value);
 
-/** Set precision of floating point values in output.
- *
- * @param[in] value Precision for floating point values.
- */
-void precision(const int value);
+    /** Set precision of floating point values in output.
+     *
+     * @param[in] value Precision for floating point values.
+     */
+    void precision(const int value);
 
-/** Prepare for writing files.
- *
- * @param[in] mesh Finite-element mesh.
- * @param[in] isInfo True if only writing info values.
- * @param[in] label Name of label defining cells to include in output
- *   (=0 means use all cells in mesh).
- * @param[in] labelId Value of label defining which cells to include.
- */
-void open(const topology::Mesh& mesh,
-          const bool isInfo,
-          const char* label =0,
-          const int labelId =0);
+    /** Prepare for writing files.
+     *
+     * @param[in] mesh Finite-element mesh.
+     * @param[in] isInfo True if only writing info values.
+     * @param[in] label Name of label defining cells to include in output
+     *   (=0 means use all cells in mesh).
+     * @param[in] labelId Value of label defining which cells to include.
+     */
+    void open(const topology::Mesh& mesh,
+              const bool isInfo,
+              const char* label=NULL,
+              const int labelId=0);
 
-/// Close output files.
-void close(void);
+    /// Close output files.
+    void close(void);
 
-/** Prepare file for data at a new time step.
- *
- * @param[in] t Time stamp for new data
- * @param[in] mesh Finite-element mesh.
- * @param[in] label Name of label defining cells to include in output
- *   (=0 means use all cells in mesh).
- * @param[in] labelId Value of label defining which cells to include.
- */
-void openTimeStep(const PylithScalar t,
-                  const topology::Mesh& mesh,
-                  const char* label =0,
-                  const int labelId =0);
+    /** Prepare file for data at a new time step.
+     *
+     * @param[in] t Time stamp for new data
+     * @param[in] mesh Finite-element mesh.
+     * @param[in] label Name of label defining cells to include in output
+     *   (=0 means use all cells in mesh).
+     * @param[in] labelId Value of label defining which cells to include.
+     */
+    void openTimeStep(const PylithScalar t,
+                      const topology::Mesh& mesh,
+                      const char* label=NULL,
+                      const int labelId=0);
 
-/// Cleanup after writing data for a time step.
-void closeTimeStep(void);
+    /// Cleanup after writing data for a time step.
+    void closeTimeStep(void);
 
-/** Write field over vertices to file.
- *
- * @param[in] t Time associated with field.
- * @param[in] field Field over vertices.
- * @param[in] mesh Mesh associated with output.
- */
-void writeVertexField(const PylithScalar t,
-                      topology::Field& field,
-                      const topology::Mesh& mesh);
+    /** Write field over vertices to file.
+     *
+     * @param[in] t Time associated with field.
+     * @param[in] field Field over vertices.
+     * @param[in] mesh Mesh associated with output.
+     */
+    void writeVertexField(const PylithScalar t,
+                          topology::Field& field,
+                          const topology::Mesh& mesh);
 
-/** Write field over cells to file.
- *
- * @param[in] t Time associated with field.
- * @param[in] field Field over cells.
- * @param[in] label Name of label defining cells to include in output
- *   (=0 means use all cells in mesh).
- * @param[in] labelId Value of label defining which cells to include.
- */
-void writeCellField(const PylithScalar t,
-                    topology::Field& field,
-                    const char* label =0,
-                    const int labelId =0);
+    /** Write field over cells to file.
+     *
+     * @param[in] t Time associated with field.
+     * @param[in] field Field over cells.
+     * @param[in] label Name of label defining cells to include in output
+     *   (=0 means use all cells in mesh).
+     * @param[in] labelId Value of label defining which cells to include.
+     */
+    void writeCellField(const PylithScalar t,
+                        topology::Field& field,
+                        const char* label=NULL,
+                        const int labelId=0);
 
-// PRIVATE METHODS //////////////////////////////////////////////////////
+    // PRIVATE METHODS //////////////////////////////////////////////////////
 private:
 
-/** Copy constructor.
- *
- * @param[in] w Object to copy.
- */
-DataWriterVTK(const DataWriterVTK& w);
+    /** Copy constructor.
+     *
+     * @param[in] w Object to copy.
+     */
+    DataWriterVTK(const DataWriterVTK& w);
 
-/** Generate filename for VTK file.
- *
- * @param[in] t Time in seconds.
- */
-std::string _vtkFilename(const PylithScalar t) const;
+    /** Generate filename for VTK file.
+     *
+     * @param[in] t Time in seconds.
+     */
+    std::string _vtkFilename(const PylithScalar t) const;
 
-// NOT IMPLEMENTED //////////////////////////////////////////////////////
+    // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
-const DataWriterVTK& operator=(const DataWriterVTK&);   ///< Not implemented
+    const DataWriterVTK& operator=(const DataWriterVTK&);   ///< Not implemented
 
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
+    // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
 
-/// Time value (in seconds) used to normalize time stamp.
-PylithScalar _timeConstant;
+    /// Time value (in seconds) used to normalize time stamp.
+    PylithScalar _timeConstant;
 
-std::string _filename;   ///< Name of VTK file.
-std::string _timeFormat;   ///< C style time format for time stamp.
+    std::string _filename;   ///< Name of VTK file.
+    std::string _timeFormat;   ///< C style time format for time stamp.
 
-PetscViewer _viewer;   ///< Output file
-PetscDM _dm;   ///< Handle to PETSc DM for mesh
+    PetscViewer _viewer;   ///< Output file
+    PetscDM _dm;   ///< Handle to PETSc DM for mesh
 
-topology::Fields* _vertexFieldCache;   ///< Cache for vertex fields.
-topology::Fields* _cellFieldCache;   ///< Cache for cell fields.
+    topology::Fields* _vertexFieldCache;   ///< Cache for vertex fields.
+    topology::Fields* _cellFieldCache;   ///< Cache for cell fields.
 
-int _precision;   ///< Precision of floating point values in output.
+    int _precision;   ///< Precision of floating point values in output.
 
-bool _isOpen;   ///< True if called open().
-bool _isOpenTimeStep;   ///< true if called openTimeStep().
-bool _wroteVertexHeader;   ///< True if wrote header for vertex data.
-bool _wroteCellHeader;   ///< True if wrote header for cell data
+    bool _isOpen;   ///< True if called open().
+    bool _isOpenTimeStep;   ///< true if called openTimeStep().
+    bool _wroteVertexHeader;   ///< True if wrote header for vertex data.
+    bool _wroteCellHeader;   ///< True if wrote header for cell data
 
 }; // DataWriterVTK
 

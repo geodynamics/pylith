@@ -33,12 +33,15 @@ testmeshio_SOURCES = \
 	TestMeshIOAscii_Cases.cc \
 	TestMeshIOLagrit.cc \
 	TestMeshIOLagrit_Cases.cc \
+	FieldFactory.cc \
 	TestDataWriter.cc \
 	TestDataWriterMesh.cc \
 	TestDataWriterVTK.cc \
 	TestDataWriterVTKMesh.cc \
 	TestDataWriterVTKMesh_Cases.cc \
-	FieldFactory.cc \
+	TestDataWriterMaterial.cc \
+	TestDataWriterVTKMaterial.cc \
+	TestDataWriterVTKMaterial_Cases.cc \
 	test_meshio.cc
 
 
@@ -47,7 +50,6 @@ testmeshio_SOURCES = \
 
 #TestDataWriterSubMesh.cc \
 #TestDataWriterBCMesh.cc \
-# TestDataWriterVTKMatMeshCases.cc \
 # TestDataWriterVTKSubMesh.cc \
 # TestDataWriterVTKSubMeshCases.cc \
 # TestDataWriterVTKBCMesh.cc \
@@ -70,6 +72,7 @@ noinst_HEADERS = \
 	TestMeshIO.hh \
 	TestMeshIOAscii.hh \
 	TestMeshIOLagrit.hh \
+	FieldFactory.hh \
 	TestOutputManager.hh \
 	TestOutputSolnSubset.hh \
 	TestOutputSolnPoints.hh \
@@ -79,13 +82,13 @@ noinst_HEADERS = \
 	TestDataWriterMesh.hh \
 	TestDataWriterVTK.hh \
 	TestDataWriterVTKMesh.hh \
-	FieldFactory.hh
+	TestDataWriterMaterial.hh \
+	TestDataWriterVTKMaterial.hh
 
 # TestDataWriterSubMesh.hh \
 # TestDataWriterBCMesh.hh \
 # TestDataWriterFaultMesh.hh \
 # TestDataWriterVTKMeshCases.hh \
-# TestDataWriterVTKMatMeshCases.hh \
 # TestDataWriterVTKSubMesh.hh \
 # TestDataWriterVTKSubMeshCases.hh \
 # TestDataWriterVTKFaultMesh.hh \
@@ -100,10 +103,6 @@ noinst_HEADERS = \
 
 # Source files associated with testing data
 # testmeshio_SOURCES += \
-# 	data/DataWriterVTKDataMatMeshTri3.cc \
-# 	data/DataWriterVTKDataMatMeshQuad4.cc \
-# 	data/DataWriterVTKDataMatMeshTet4.cc \
-# 	data/DataWriterVTKDataMatMeshHex8.cc \
 # 	data/DataWriterVTKDataSubMeshTri3.cc \
 # 	data/DataWriterVTKDataSubMeshQuad4.cc \
 # 	data/DataWriterVTKDataSubMeshTet4.cc \
@@ -116,14 +115,6 @@ noinst_HEADERS = \
 # 	data/DataWriterVTKDataBCMeshQuad4.cc \
 # 	data/DataWriterVTKDataBCMeshTet4.cc \
 # 	data/DataWriterVTKDataBCMeshHex8.cc \
-# 	data/DataWriterHDF5DataMeshTri3.cc \
-# 	data/DataWriterHDF5DataMeshQuad4.cc \
-# 	data/DataWriterHDF5DataMeshTet4.cc \
-# 	data/DataWriterHDF5DataMeshHex8.cc \
-# 	data/DataWriterHDF5DataMatMeshTri3.cc \
-# 	data/DataWriterHDF5DataMatMeshQuad4.cc \
-# 	data/DataWriterHDF5DataMatMeshTet4.cc \
-# 	data/DataWriterHDF5DataMatMeshHex8.cc \
 # 	data/DataWriterHDF5DataSubMeshTri3.cc \
 # 	data/DataWriterHDF5DataSubMeshQuad4.cc \
 # 	data/DataWriterHDF5DataSubMeshTet4.cc \
@@ -152,10 +143,6 @@ noinst_HEADERS = \
 # 	data/DataWriterHDF5DataPointsHex8.cc 
 
 # noinst_HEADERS += \
-# 	data/DataWriterVTKDataMatMeshTri3.hh \
-# 	data/DataWriterVTKDataMatMeshQuad4.hh \
-# 	data/DataWriterVTKDataMatMeshTet4.hh \
-# 	data/DataWriterVTKDataMatMeshHex8.hh \
 # 	data/DataWriterVTKDataSubMeshTri3.hh \
 # 	data/DataWriterVTKDataSubMeshQuad4.hh \
 # 	data/DataWriterVTKDataSubMeshTet4.hh \
@@ -168,14 +155,6 @@ noinst_HEADERS = \
 # 	data/DataWriterVTKDataBCMeshQuad4.hh \
 # 	data/DataWriterVTKDataBCMeshTet4.hh \
 # 	data/DataWriterVTKDataBCMeshHex8.hh \
-# 	data/DataWriterHDF5DataMeshTri3.hh \
-# 	data/DataWriterHDF5DataMeshQuad4.hh \
-# 	data/DataWriterHDF5DataMeshTet4.hh \
-# 	data/DataWriterHDF5DataMeshHex8.hh \
-# 	data/DataWriterHDF5DataMatMeshTri3.hh \
-# 	data/DataWriterHDF5DataMatMeshQuad4.hh \
-# 	data/DataWriterHDF5DataMatMeshTet4.hh \
-# 	data/DataWriterHDF5DataMatMeshHex8.hh \
 # 	data/DataWriterHDF5DataSubMeshTri3.hh \
 # 	data/DataWriterHDF5DataSubMeshQuad4.hh \
 # 	data/DataWriterHDF5DataSubMeshTet4.hh \
@@ -234,9 +213,14 @@ if ENABLE_HDF5
 	TestXdmf_Cases.cc \
 	TestDataWriterHDF5.cc \
 	TestDataWriterHDF5Mesh.cc \
-	TestDataWriterHDF5Mesh_Cases.cc
+	TestDataWriterHDF5Mesh_Cases.cc \
+	TestDataWriterHDF5Material.cc \
+	TestDataWriterHDF5Material_Cases.cc \
+	TestDataWriterHDF5ExtMesh.cc \
+	TestDataWriterHDF5ExtMesh_Cases.cc \
+	TestDataWriterHDF5ExtMaterial.cc \
+	TestDataWriterHDF5ExtMaterial_Cases.cc
 
-# TestDataWriterHDF5MatMeshCases.cc \
 # TestDataWriterHDF5SubMesh.cc \
 # TestDataWriterHDF5SubMeshCases.cc \
 # TestDataWriterHDF5Points.cc \
@@ -245,9 +229,6 @@ if ENABLE_HDF5
 # TestDataWriterHDF5BCMeshCases.cc \
 # TestDataWriterHDF5FaultMesh.cc \
 # TestDataWriterHDF5FaultMeshCases.cc \
-# TestDataWriterHDF5ExtMesh.cc \
-# TestDataWriterHDF5ExtMeshCases.cc \
-# TestDataWriterHDF5ExtMatMeshCases.cc \
 # TestDataWriterHDF5ExtSubMesh.cc \
 # TestDataWriterHDF5ExtSubMeshCases.cc \
 # TestDataWriterHDF5ExtPoints.cc \
@@ -262,10 +243,11 @@ if ENABLE_HDF5
 	TestHDF5.hh \
 	TestXdmf.hh \
 	TestDataWriterHDF5.hh \
-	TestDataWriterHDF5Mesh.hh
+	TestDataWriterHDF5Mesh.hh \
+	TestDataWriterHDF5Material.hh \
+	TestDataWriterHDF5ExtMesh.hh \
+	TestDataWriterHDF5ExtMaterial.hh
 
-# TestDataWriterHDF5MeshCases.hh \
-# TestDataWriterHDF5MatMeshCases.hh \
 # TestDataWriterHDF5SubMesh.hh \
 # TestDataWriterHDF5SubMeshCases.hh \
 # TestDataWriterHDF5Points.hh \
@@ -275,8 +257,6 @@ if ENABLE_HDF5
 # TestDataWriterHDF5FaultMesh.hh \
 # TestDataWriterHDF5FaultMeshCases.hh \
 # TestDataWriterHDF5ExtMesh.hh \
-# TestDataWriterHDF5ExtMeshCases.hh \
-# TestDataWriterHDF5ExtMatMeshCases.hh \
 # TestDataWriterHDF5ExtSubMesh.hh \
 # TestDataWriterHDF5ExtSubMeshCases.hh \
 # TestDataWriterHDF5ExtPoints.hh \
