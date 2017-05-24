@@ -48,16 +48,6 @@ public:
     /// Destructor
     ~TestDataWriter_Data(void);
 
-    // PUBLIC STRUCTS ///////////////////////////////////////////////////////
-public:
-
-    struct FieldInfo {
-        const char* name; ///< Name of field
-        pylith::topology::FieldBase::VectorFieldEnum vectorFieldType; ///< Type of field.
-        const char** components; ///< Names of components.
-        int numComponents; ///< Number of field components.
-    }; // FieldStruct
-
     // PUBLIC MEMBERS ///////////////////////////////////////////////////
 public:
 
