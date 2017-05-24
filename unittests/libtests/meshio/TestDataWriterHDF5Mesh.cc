@@ -24,7 +24,6 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/meshio/DataWriterHDF5.hh" // USES DataWriterHDF5
-#include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -98,7 +97,6 @@ pylith::meshio::TestDataWriterHDF5Mesh::testOpenClose(void)
 
     const bool isInfo = false;
     writer.open(*_mesh, isInfo);
-
     writer.close();
 
     checkFile(_data->timestepFilename);
@@ -176,6 +174,7 @@ pylith::meshio::TestDataWriterHDF5Mesh::testWriteCellField(void)
         pylith::topology::Field& field = cellFields.get(fieldNames[i]);
         writer.writeCellField(t, field);
     } // for
+
     writer.closeTimeStep();
     writer.close();
 

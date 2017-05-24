@@ -87,11 +87,10 @@ pylith::meshio::DataWriterHDF5Ext::DataWriterHDF5Ext(const DataWriterHDF5Ext& w)
 { // copy constructor
 } // copy constructor
 
-#include <iostream>
 // ----------------------------------------------------------------------
 // Prepare for writing files.
 void
-pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
+pylith::meshio::DataWriterHDF5Ext::open(const pylith::topology::Mesh& mesh,
                                         const bool isInfo,
                                         const char* label,
                                         const int labelId)
@@ -124,36 +123,24 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
         const hid_t scalartype = (sizeof(double) == sizeof(PylithScalar)) ? H5T_IEEE_F64BE : H5T_IEEE_F32BE;
 
         // Write vertex coordinates
-        const spatialdata::geocoords::CoordSys* cs = mesh.coordsys(); assert(cs);
-
-        /* TODO Get rid of this and use the createScatterWithBC(numbering) code */
-        PetscDM dmCoord = NULL;
-        PetscVec coordinates = NULL;
-        PetscReal lengthScale;
-        pylith::topology::FieldBase::Description description;
-
-        description.label = "vertices";
-        //description.vectorFieldType = topology::FieldBase::VECTOR;
-        err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale); PYLITH_CHECK_ERROR(err);
-        err = DMGetCoordinateDM(dmMesh, &dmCoord); PYLITH_CHECK_ERROR(err); assert(dmCoord);
-        err = PetscObjectReference((PetscObject) dmCoord); PYLITH_CHECK_ERROR(err);
-        err = DMGetCoordinatesLocal(dmMesh, &coordinates); PYLITH_CHECK_ERROR(err);
-        topology::Field coordinatesField(mesh, dmCoord, coordinates, description);
-        coordinatesField.createScatterWithBC(mesh, "", 0, description.label.c_str());
-        coordinatesField.scatterLocalToContext(description.label.c_str());
-        PetscVec coordVector = coordinatesField.scatterVector(description.label.c_str()); assert(coordVector);
-        err = VecScale(coordVector, lengthScale); PYLITH_CHECK_ERROR(err);
-
         const std::string& filenameVertices = _datasetFilename("vertices");
         err = PetscViewerBinaryOpen(comm, filenameVertices.c_str(), FILE_MODE_WRITE, &binaryViewer); PYLITH_CHECK_ERROR(err);
         err = PetscViewerBinarySetSkipHeader(binaryViewer, PETSC_TRUE); PYLITH_CHECK_ERROR(err);
+        PetscVec coordsGlobalVec = NULL;
+        DataWriter::getCoordsGlobalVec(&coordsGlobalVec, mesh);
+
 #if 0
-        err = VecView(coordVector, binaryViewer); PYLITH_CHECK_ERROR(err);
+        err = VecView(coordsGlobalVec, binaryViewer); PYLITH_CHECK_ERROR(err);
 #else
         PetscBool isseq;
-        err = PetscObjectTypeCompare((PetscObject) coordVector, VECSEQ, &isseq); PYLITH_CHECK_ERROR(err);
-        if (isseq) {err = VecView_Seq(coordVector, binaryViewer); PYLITH_CHECK_ERROR(err); } else       {err = VecView_MPI(coordVector, binaryViewer); PYLITH_CHECK_ERROR(err); }
+        err = PetscObjectTypeCompare((PetscObject) coordsGlobalVec, VECSEQ, &isseq); PYLITH_CHECK_ERROR(err);
+        if (isseq) {
+            err = VecView_Seq(coordsGlobalVec, binaryViewer); PYLITH_CHECK_ERROR(err);
+        } else {
+            err = VecView_MPI(coordsGlobalVec, binaryViewer); PYLITH_CHECK_ERROR(err);
+        } // if/else
 #endif
+        err = VecDestroy(&coordsGlobalVec); PYLITH_CHECK_ERROR(err);
         err = PetscViewerDestroy(&binaryViewer); PYLITH_CHECK_ERROR(err);
 
         PetscInt vStart, vEnd;
@@ -178,6 +165,7 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
             const hsize_t ndims = 2;
             hsize_t dims[ndims];
             dims[0] = numVertices;
+            const spatialdata::geocoords::CoordSys* cs = mesh.coordsys(); assert(cs);
             dims[1] = cs->spaceDim();
             _h5->createDatasetRawExternal("/geometry", "vertices", filenameVertices.c_str(), dims, ndims, scalartype);
         } // if
@@ -286,66 +274,6 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
             _h5->writeAttribute("/topology/cells", "cell_dim", (void*)&cellDim, H5T_NATIVE_INT);
         } // if
 
-        // If 2-D, write zero vector for z coordinate and z component in vectors
-        if (2 == cs->spaceDim()) {
-            if (!commRank) {_h5->createGroup("/zero");}
-            const char* vlabel = "vertex_zero";
-            const std::string& vfilenameZero = _datasetFilename(vlabel);
-            err = PetscViewerBinaryOpen(comm, vfilenameZero.c_str(), FILE_MODE_WRITE, &binaryViewer); PYLITH_CHECK_ERROR(err);
-            err = PetscViewerBinarySetSkipHeader(binaryViewer, PETSC_TRUE); PYLITH_CHECK_ERROR(err);
-            topology::Field vzeroField(mesh);
-            vzeroField.newSection(coordinatesField, 1);
-            vzeroField.allocate();
-            vzeroField.zeroLocal();
-            vzeroField.label(vlabel);
-            //vzeroField.vectorFieldType(topology::FieldBase::SCALAR);
-            vzeroField.createScatterWithBC(mesh, "", 0, vlabel);
-            vzeroField.scatterLocalToContext(vlabel);
-
-            PetscVec vzeroVector = vzeroField.scatterVector(vlabel); assert(vzeroVector);
-            err = PetscObjectTypeCompare((PetscObject) vzeroVector, VECSEQ, &isseq); PYLITH_CHECK_ERROR(err);
-            if (isseq) {err = VecView_Seq(vzeroVector, binaryViewer); PYLITH_CHECK_ERROR(err); } else       {err = VecView_MPI(vzeroVector, binaryViewer); PYLITH_CHECK_ERROR(err); }
-
-            err = PetscViewerDestroy(&binaryViewer); PYLITH_CHECK_ERROR(err);
-
-            // Create external dataset for vertex_zero field
-            if (!commRank) {
-                const hsize_t ndims = 2;
-                hsize_t dims[ndims];
-                dims[0] = numVertices;
-                dims[1] = 1;
-                _h5->createDatasetRawExternal("/zero", vlabel, vfilenameZero.c_str(), dims, ndims, scalartype);
-            } // if
-
-            const char* clabel = "cell_zero";
-            const std::string& cfilenameZero = _datasetFilename(clabel);
-            err = PetscViewerBinaryOpen(comm, cfilenameZero.c_str(), FILE_MODE_WRITE, &binaryViewer); PYLITH_CHECK_ERROR(err);
-            err = PetscViewerBinarySetSkipHeader(binaryViewer, PETSC_TRUE); PYLITH_CHECK_ERROR(err);
-            topology::Field czeroField(mesh);
-            czeroField.newSection(cStart, cEnd, 1);
-            czeroField.allocate();
-            czeroField.zeroLocal();
-            czeroField.label(clabel);
-            //czeroField.vectorFieldType(topology::FieldBase::SCALAR);
-            czeroField.createScatterWithBC(mesh, "", 0, clabel);
-            czeroField.scatterLocalToContext(clabel);
-
-            PetscVec czeroVector = czeroField.scatterVector(clabel); assert(czeroVector);
-            err = PetscObjectTypeCompare((PetscObject) czeroVector, VECSEQ, &isseq); PYLITH_CHECK_ERROR(err);
-            if (isseq) {err = VecView_Seq(czeroVector, binaryViewer); PYLITH_CHECK_ERROR(err); } else       {err = VecView_MPI(czeroVector, binaryViewer); PYLITH_CHECK_ERROR(err); }
-
-            err = PetscViewerDestroy(&binaryViewer); PYLITH_CHECK_ERROR(err);
-
-            // Create external dataset for vertex_zero field
-            if (!commRank) {
-                const hsize_t ndims = 2;
-                hsize_t dims[ndims];
-                dims[0] = numCells;
-                dims[1] = 1;
-                _h5->createDatasetRawExternal("/zero", clabel, cfilenameZero.c_str(), dims, ndims, scalartype);
-            } // if
-        } // if
-
     } catch (const std::exception& err) {
         std::ostringstream msg;
         msg << "Error while opening HDF5 file " << _filename << ".\n" << err.what();
@@ -391,8 +319,8 @@ pylith::meshio::DataWriterHDF5Ext::close(void)
 // Write field over vertices to file.
 void
 pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
-                                                    topology::Field& field,
-                                                    const topology::Mesh& mesh)
+                                                    pylith::topology::Field& field,
+                                                    const pylith::topology::Mesh& mesh)
 { // writeVertexField
     PYLITH_METHOD_BEGIN;
 
@@ -501,8 +429,8 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
 
                 _h5->createDatasetRawExternal("/vertex_fields", field.label(), _datasetFilename(field.label()).c_str(), maxDims, ndims, scalartype);
                 std::string fullName = std::string("/vertex_fields/") + field.label();
-                //const char* sattr = topology::FieldBase::vectorFieldString(field.vectorFieldType());
-                //_h5->writeAttribute(fullName.c_str(), "vector_field_type", sattr);
+                const char* sattr = pylith::topology::FieldBase::vectorFieldString(field.vectorFieldType());
+                _h5->writeAttribute(fullName.c_str(), "vector_field_type", sattr);
             } // if
         } else if (!commRank) {
             // Update number of time steps in external dataset info in HDF5 file.
@@ -532,7 +460,7 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
 // Write field over cells to file.
 void
 pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
-                                                  topology::Field& field,
+                                                  pylith::topology::Field& field,
                                                   const char* label,
                                                   const int labelId)
 { // writeCellField
@@ -602,7 +530,7 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
             err = DMPlexGetVTKCellHeight(dmMesh, &cellHeight); PYLITH_CHECK_ERROR(err);
             err = DMPlexGetHeightStratum(dmMesh, cellHeight, &cStart, &cEnd); PYLITH_CHECK_ERROR(err);
             if (label) {
-                topology::StratumIS cellsIS(dmMesh, label, labelId);
+                pylith::topology::StratumIS cellsIS(dmMesh, label, labelId);
                 numCells = cellsIS.size();
                 const PetscInt* cells = (numCells > 0) ? cellsIS.points() : 0;
                 for (PetscInt c = 0; c < numCells; ++c) {
@@ -653,8 +581,8 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
 
                 _h5->createDatasetRawExternal("/cell_fields", field.label(), _datasetFilename(field.label()).c_str(), maxDims, ndims, scalartype);
                 std::string fullName = std::string("/cell_fields/") + field.label();
-                //const char* sattr = topology::FieldBase::vectorFieldString(field.vectorFieldType());
-                //_h5->writeAttribute(fullName.c_str(), "vector_field_type", sattr);
+                const char* sattr = pylith::topology::FieldBase::vectorFieldString(field.vectorFieldType());
+                _h5->writeAttribute(fullName.c_str(), "vector_field_type", sattr);
             } // if
 
         } else if (!commRank) {
@@ -686,7 +614,7 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
 // Write dataset with names of points to file.
 void
 pylith::meshio::DataWriterHDF5Ext::writePointNames(const pylith::string_vector& names,
-                                                   const topology::Mesh& mesh)
+                                                   const pylith::topology::Mesh& mesh)
 { // writePointNames
     PYLITH_METHOD_BEGIN;
 

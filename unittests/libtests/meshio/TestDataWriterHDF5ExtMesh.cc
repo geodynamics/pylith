@@ -20,17 +20,12 @@
 
 #include "TestDataWriterHDF5ExtMesh.hh" // Implementation of class methods
 
-#include "data/DataWriterData.hh" // USES DataWriterData
-
 #include "pylith/utils/types.hh" // HASA PylithScalar
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/meshio/DataWriterHDF5Ext.hh" // USES DataWriterHDF5Ext
-
-// ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::meshio::TestDataWriterHDF5ExtMesh);
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -40,6 +35,7 @@ pylith::meshio::TestDataWriterHDF5ExtMesh::setUp(void)
     PYLITH_METHOD_BEGIN;
 
     TestDataWriterMesh::setUp();
+    _data = NULL;
 
     PYLITH_METHOD_END;
 } // setUp
@@ -52,6 +48,7 @@ pylith::meshio::TestDataWriterHDF5ExtMesh::tearDown(void)
     PYLITH_METHOD_BEGIN;
 
     TestDataWriterMesh::tearDown();
+    delete _data; _data = NULL;
 
     PYLITH_METHOD_END;
 } // tearDown
@@ -101,14 +98,7 @@ pylith::meshio::TestDataWriterHDF5ExtMesh::testOpenClose(void)
     writer.filename(_data->timestepFilename);
 
     const bool isInfo = false;
-    if (!_data->cellsLabel) {
-        writer.open(*_mesh, isInfo);
-    } else {
-        const char* label = _data->cellsLabel;
-        const int id = _data->labelId;
-        writer.open(*_mesh, isInfo, label, id);
-    } // else
-
+    writer.open(*_mesh, isInfo);
     writer.close();
 
     checkFile(_data->timestepFilename);
@@ -137,21 +127,17 @@ pylith::meshio::TestDataWriterHDF5ExtMesh::testWriteVertexField(void)
     writer.timeScale(timeScale);
     const PylithScalar t = _data->time / timeScale;
 
-    const int nfields = _data->numVertexFields;
     const bool isInfo = false;
-    if (!_data->cellsLabel) {
-        writer.open(*_mesh, isInfo);
-        writer.openTimeStep(t, *_mesh);
-    } else {
-        const char* label = _data->cellsLabel;
-        const int id = _data->labelId;
-        writer.open(*_mesh, isInfo, label, id);
-        writer.openTimeStep(t, *_mesh, label, id);
-    } // else
-    for (int i = 0; i < nfields; ++i) {
-        topology::Field& field = vertexFields.get(_data->vertexFieldsInfo[i].name);
+    writer.open(*_mesh, isInfo);
+    writer.openTimeStep(t, *_mesh);
+
+    const int numFields = 4;
+    const char* fieldNames[4] = {"scalar", "vector", "tensor", "other"};
+    for (int i = 0; i < numFields; ++i) {
+        pylith::topology::Field& field = vertexFields.get(fieldNames[i]);
         writer.writeVertexField(t, field, *_mesh);
     } // for
+
     writer.closeTimeStep();
     writer.close();
 
@@ -181,25 +167,17 @@ pylith::meshio::TestDataWriterHDF5ExtMesh::testWriteCellField(void)
     writer.timeScale(timeScale);
     const PylithScalar t = _data->time / timeScale;
 
-    const int nfields = _data->numCellFields;
     const bool isInfo = false;
-    if (!_data->cellsLabel) {
-        writer.open(*_mesh, isInfo);
-        writer.openTimeStep(t, *_mesh);
-        for (int i = 0; i < nfields; ++i) {
-            topology::Field& field = cellFields.get(_data->cellFieldsInfo[i].name);
-            writer.writeCellField(t, field);
-        } // for
-    } else {
-        const char* label = _data->cellsLabel;
-        const int id = _data->labelId;
-        writer.open(*_mesh, isInfo, label, id);
-        writer.openTimeStep(t, *_mesh, label, id);
-        for (int i = 0; i < nfields; ++i) {
-            topology::Field& field = cellFields.get(_data->cellFieldsInfo[i].name);
-            writer.writeCellField(t, field, label, id);
-        } // for
-    } // else
+    writer.open(*_mesh, isInfo);
+    writer.openTimeStep(t, *_mesh);
+
+    const int numFields = 4;
+    const char* fieldNames[4] = {"scalar", "vector", "tensor", "other"};
+    for (int i = 0; i < numFields; ++i) {
+        pylith::topology::Field& field = cellFields.get(fieldNames[i]);
+        writer.writeCellField(t, field);
+    } // for
+
     writer.closeTimeStep();
     writer.close();
 
@@ -224,13 +202,11 @@ pylith::meshio::TestDataWriterHDF5ExtMesh::testHdf5Filename(void)
 
     writer._isInfo = false;
     writer._filename = "output_abc.h5";
-    CPPUNIT_ASSERT_EQUAL(std::string("output_abc.h5"),
-                         writer._hdf5Filename());
+    CPPUNIT_ASSERT_EQUAL(std::string("output_abc.h5"), writer._hdf5Filename());
 
     writer._isInfo = false;
     writer._filename = "output_abcd.h5";
-    CPPUNIT_ASSERT_EQUAL(std::string("output_abcd.h5"),
-                         writer._hdf5Filename());
+    CPPUNIT_ASSERT_EQUAL(std::string("output_abcd.h5"), writer._hdf5Filename());
 
     PYLITH_METHOD_END;
 } // testHdf5Filename
@@ -247,21 +223,27 @@ pylith::meshio::TestDataWriterHDF5ExtMesh::testDatasetFilename(void)
     // Append info to filename if info.
     writer._isInfo = true;
     writer._filename = "output.h5";
-    CPPUNIT_ASSERT_EQUAL(std::string("output_info_ABCD.dat"),
-                         writer._datasetFilename("ABCD"));
+    CPPUNIT_ASSERT_EQUAL(std::string("output_info_ABCD.dat"), writer._datasetFilename("ABCD"));
 
     writer._isInfo = false;
     writer._filename = "output_abc.h5";
-    CPPUNIT_ASSERT_EQUAL(std::string("output_abc_field1.dat"),
-                         writer._datasetFilename("field1"));
+    CPPUNIT_ASSERT_EQUAL(std::string("output_abc_field1.dat"), writer._datasetFilename("field1"));
 
     writer._isInfo = false;
     writer._filename = "output_abcd.h5";
-    CPPUNIT_ASSERT_EQUAL(std::string("output_abcd_field2.dat"),
-                         writer._datasetFilename("field2"));
+    CPPUNIT_ASSERT_EQUAL(std::string("output_abcd_field2.dat"), writer._datasetFilename("field2"));
 
     PYLITH_METHOD_END;
 } // testDatasetFilename
+
+
+// ----------------------------------------------------------------------
+// Get test data.
+pylith::meshio::TestDataWriter_Data*
+pylith::meshio::TestDataWriterHDF5ExtMesh::_getData(void)
+{ // _getData
+    return _data;
+} // _getData
 
 
 // End of file
