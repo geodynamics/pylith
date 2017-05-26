@@ -69,7 +69,7 @@ pylith::meshio::TestDataWriterMesh::_initialize(void)
 { // _initialize
     PYLITH_METHOD_BEGIN;
 
-    TestDataWriter_Data* data = _getData();CPPUNIT_ASSERT(data);
+    const TestDataWriter_Data* data = _getData();CPPUNIT_ASSERT(data);
 
     delete _mesh; _mesh = new topology::Mesh;CPPUNIT_ASSERT(_mesh);
     MeshIOAscii iohandler;
@@ -110,11 +110,8 @@ pylith::meshio::TestDataWriterMesh::_createVertexFields(pylith::topology::Fields
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(fields);
-    CPPUNIT_ASSERT(_mesh);
 
-    TestDataWriter_Data* data = _getData();CPPUNIT_ASSERT(data);
-
-    PetscDM dmMesh = _mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
+    const TestDataWriter_Data* data = _getData();CPPUNIT_ASSERT(data);
 
     FieldFactory factory(*fields);
     factory.scalar(data->vertexDiscretization, data->vertexScalarValues, data->vertexNumPoints, data->vertexScalarNumComponents);
@@ -133,11 +130,8 @@ pylith::meshio::TestDataWriterMesh::_createCellFields(pylith::topology::Fields* 
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(fields);
-    CPPUNIT_ASSERT(_mesh);
 
-    TestDataWriter_Data* data = _getData();CPPUNIT_ASSERT(data);
-
-    PetscDM dmMesh = _mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
+    const TestDataWriter_Data* data = _getData();CPPUNIT_ASSERT(data);
 
     FieldFactory factory(*fields);
     factory.scalar(data->cellDiscretization, data->cellScalarValues, data->cellNumPoints, data->cellScalarNumComponents);

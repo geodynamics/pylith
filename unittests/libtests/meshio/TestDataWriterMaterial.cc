@@ -69,7 +69,7 @@ pylith::meshio::TestDataWriterMaterial::_initialize(void)
 { // _initialize
     PYLITH_METHOD_BEGIN;
 
-    TestDataWriterMaterial_Data* data = _getData();CPPUNIT_ASSERT(data);
+    const TestDataWriterMaterial_Data* data = _getData();CPPUNIT_ASSERT(data);
 
     delete _mesh; _mesh = new topology::Mesh;CPPUNIT_ASSERT(_mesh);
     MeshIOAscii iohandler;
@@ -110,11 +110,8 @@ pylith::meshio::TestDataWriterMaterial::_createVertexFields(pylith::topology::Fi
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(fields);
-    CPPUNIT_ASSERT(_mesh);
 
-    TestDataWriterMaterial_Data* data = _getData();CPPUNIT_ASSERT(data);
-
-    PetscDM dmMesh = _mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
+    const TestDataWriterMaterial_Data* data = _getData();CPPUNIT_ASSERT(data);
 
     FieldFactory factory(*fields);
     factory.scalar(data->vertexDiscretization, data->vertexScalarValues, data->vertexNumPoints, data->vertexScalarNumComponents);
@@ -133,11 +130,8 @@ pylith::meshio::TestDataWriterMaterial::_createCellFields(pylith::topology::Fiel
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(fields);
-    CPPUNIT_ASSERT(_mesh);
 
-    TestDataWriterMaterial_Data* data = _getData();CPPUNIT_ASSERT(data);
-
-    PetscDM dmMesh = _mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
+    const TestDataWriterMaterial_Data* data = _getData();CPPUNIT_ASSERT(data);
 
     CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Need to restrict field section/chart to points associated with material.", false);
 
