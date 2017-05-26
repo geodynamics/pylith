@@ -42,6 +42,9 @@ testmeshio_SOURCES = \
 	TestDataWriterMaterial.cc \
 	TestDataWriterVTKMaterial.cc \
 	TestDataWriterVTKMaterial_Cases.cc \
+	TestDataWriterSubMesh.cc \
+	TestDataWriterVTKSubMesh.cc \
+	TestDataWriterVTKSubMesh_Cases.cc \
 	test_meshio.cc
 
 
@@ -83,7 +86,9 @@ noinst_HEADERS = \
 	TestDataWriterVTK.hh \
 	TestDataWriterVTKMesh.hh \
 	TestDataWriterMaterial.hh \
-	TestDataWriterVTKMaterial.hh
+	TestDataWriterVTKMaterial.hh \
+	TestDataWriterSubMesh.hh \
+	TestDataWriterVTKSubMesh.hh
 
 # TestDataWriterSubMesh.hh \
 # TestDataWriterBCMesh.hh \

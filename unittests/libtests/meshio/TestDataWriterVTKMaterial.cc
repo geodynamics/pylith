@@ -119,8 +119,10 @@ pylith::meshio::TestDataWriterVTKMaterial::testWriteVertexField(void)
         CPPUNIT_ASSERT(writer._wroteVertexHeader);
         CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
     } // for
+
     writer.closeTimeStep();
     writer.close();
+
     CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
     CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
 
@@ -169,6 +171,7 @@ pylith::meshio::TestDataWriterVTKMaterial::testWriteCellField(void)
 
     PYLITH_METHOD_END;
 } // testWriteCellField
+
 
 // ----------------------------------------------------------------------
 // Get test data.

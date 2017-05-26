@@ -36,48 +36,66 @@
 
 /// Namespace for pylith package
 namespace pylith {
-  namespace meshio {
-    class TestDataWriterVTKSubMesh;
-  } // meshio
+    namespace meshio {
+        class TestDataWriterVTKSubMesh;
+
+        class TestDataWriterVTKSubMesh_Data;
+    } // meshio
 } // pylith
 
 /// C++ unit testing for DataWriterVTK
-class pylith::meshio::TestDataWriterVTKSubMesh : public TestDataWriterVTK,
-						 public TestDataWriterSubMesh,
-						 public CppUnit::TestFixture
-{ // class TestDataWriterVTKSubMesh
+class pylith::meshio::TestDataWriterVTKSubMesh : public TestDataWriterVTK, public TestDataWriterSubMesh, public CppUnit::TestFixture {
 
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestDataWriterVTKSubMesh );
+    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+    CPPUNIT_TEST_SUITE(TestDataWriterVTKSubMesh);
 
-  CPPUNIT_TEST( testConstructor );
+    CPPUNIT_TEST(testTimeStep);
+    CPPUNIT_TEST(testWriteVertexField);
+    CPPUNIT_TEST(testWriteCellField);
 
-  CPPUNIT_TEST_SUITE_END();
+    CPPUNIT_TEST_SUITE_END();
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+    // PUBLIC METHODS /////////////////////////////////////////////////////
+public:
 
-  /// Setup testing data.
-  void setUp(void);
+    /// Setup testing data.
+    void setUp(void);
 
-  /// Tear down testing data.
-  void tearDown(void);
+    /// Tear down testing data.
+    void tearDown(void);
 
-  /// Test constructor
-  void testConstructor(void);
+    /// Test openTimeStep() and closeTimeStep()
+    void testTimeStep(void);
 
-  /// Test openTimeStep() and closeTimeStep()
-  void testTimeStep(void);
+    /// Test writeVertexField.
+    void testWriteVertexField(void);
 
-  /// Test writeVertexField.
-  void testWriteVertexField(void);
+    /// Test writeCellField.
+    void testWriteCellField(void);
 
-  /// Test writeCellField.
-  void testWriteCellField(void);
+    // PROTECTED METHODS //////////////////////////////////////////////////
+protected:
+
+    /** Get test data.
+     *
+     * @returns Test data.
+     */
+    TestDataWriterSubMesh_Data* _getData(void);
+
+
+    // PROTECTED MEMBDERS /////////////////////////////////////////////////
+protected:
+
+    TestDataWriterVTKSubMesh_Data* _data; ///< Data for testing.
 
 }; // class TestDataWriterVTKSubMesh
+
+
+// ======================================================================
+class pylith::meshio::TestDataWriterVTKSubMesh_Data : public TestDataWriterVTK_Data, public TestDataWriterSubMesh_Data {};
+
 
 #endif // pylith_meshio_testdatawritervtksubmesh_hh
 
 
-// End of file 
+// End of file
