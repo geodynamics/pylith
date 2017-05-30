@@ -77,7 +77,7 @@ pylith::bc::TestDirichletBCMulti::testSetConstraintSizes(void)
 
   const int fiberDim = _data->numDOF;
   topology::Field field(mesh);
-  pylith::topology::FieldBase::DiscretizeInfo dinfo;
+  pylith::topology::FieldBase::Discretization dinfo;
   dinfo.basisOrder = 1;
   dinfo.quadOrder  = 1;
   dinfo.isBasisContinuous = true;
@@ -132,7 +132,7 @@ pylith::bc::TestDirichletBCMulti::testSetConstraints(void)
 
   const int fiberDim = _data->numDOF;
   topology::Field field(mesh);
-  pylith::topology::FieldBase::DiscretizeInfo dinfo;
+  pylith::topology::FieldBase::Discretization dinfo;
   dinfo.basisOrder = 1;
   dinfo.quadOrder  = 1;
   dinfo.isBasisContinuous = true;
@@ -200,7 +200,7 @@ pylith::bc::TestDirichletBCMulti::testSetField(void)
 
   const int fiberDim = _data->numDOF;
   topology::Field field(mesh);
-  pylith::topology::FieldBase::DiscretizeInfo dinfo;
+  pylith::topology::FieldBase::Discretization dinfo;
   dinfo.basisOrder = 1;
   dinfo.quadOrder  = 1;
   dinfo.isBasisContinuous = true;
@@ -284,7 +284,7 @@ pylith::bc::TestDirichletBCMulti::testSetFieldIncr(void)
 
   const int fiberDim = _data->numDOF;
   topology::Field field(mesh);
-  pylith::topology::FieldBase::DiscretizeInfo dinfo;
+  pylith::topology::FieldBase::Discretization dinfo;
   dinfo.basisOrder = 1;
   dinfo.quadOrder  = 1;
   dinfo.isBasisContinuous = true;
