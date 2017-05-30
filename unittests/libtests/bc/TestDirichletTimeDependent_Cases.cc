@@ -20,6 +20,9 @@
 
 #include "TestDirichletTimeDependent.hh" // Implementation of cases
 
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+
+
 // ----------------------------------------------------------------------
 namespace pylith {
     namespace bc {
@@ -35,13 +38,14 @@ namespace pylith {
                 _data->meshFilename = "data/tri_small.mesh";
                 _data->bcLabel = "boundary_bottom";
 
-                _data->lengthScale = 1000.0;
-                _data->timeScale = 10.0;
-                _data->pressureScale = 0.1;
-                _data->densityScale = 1.0;
+                CPPUNIT_ASSERT(_data->normalizer);
+                _data->normalizer->lengthScale(1000.0);
+                _data->normalizer->timeScale(10.0);
+                _data->normalizer->pressureScale(0.1);
+                _data->normalizer->densityScale(2.0);
 
                 _data->field = "displacement";
-                _data->isConstrainedFieldVector = true;
+                _data->vectorFieldType = pylith::topology::Field::VECTOR;
                 _data->numConstrainedDOF = 1;
                 static const int constrainedDOF[1] = { 1 };
                 _data->constrainedDOF = const_cast<int*>(constrainedDOF);
@@ -50,23 +54,21 @@ namespace pylith {
                 _data->useRate = false;
                 _data->useTimeHistory = false;
 
-                _data->numSolnFields = 2;
-                static const char* solutionFields[2] = { "displacement", "velocity" };
-                _data->solutionFields = const_cast<const char**>(solutionFields);
-                static const pylith::topology::Field::DiscretizeInfo solnDiscretizations[2] = {
+                _data->solnNumFields = 2;
+                static const pylith::topology::Field::Discretization solnDiscretizations[3] = {
                     {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // displacement
                     {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // velocity
+                    {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // fluid_pressure
                 };
-                _data->solnDiscretizations = const_cast<pylith::topology::Field::DiscretizeInfo*>(solnDiscretizations);
-                // solnDiscretizations
+                _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(solnDiscretizations);
 
                 _data->numAuxFields = 1;
                 static const char* auxFields[1] = { "initial_amplitude" };
                 _data->auxFields = const_cast<const char**>(auxFields);
-                static const pylith::topology::Field::DiscretizeInfo auxDiscretizations[1] = {
+                static const pylith::topology::Field::Discretization auxDiscretizations[1] = {
                     {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // initial_amplitude
                 };
-                _data->auxDiscretizations = const_cast<pylith::topology::Field::DiscretizeInfo*>(auxDiscretizations);
+                _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(auxDiscretizations);
                 // auxDBFilename
 
                 // t

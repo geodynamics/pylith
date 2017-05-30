@@ -28,10 +28,12 @@
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/topology/VisitorMesh.hh" // USES VisitorMesh
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/spatialdb/SimpleGridDB.hh" // USES SimpleGridDB
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
 #include "spatialdata/spatialdb/UniformDB.hh" // USES UniformDB
@@ -149,16 +151,16 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldDiscretization(void)
 { // testAuxFieldDiscretization
     PYLITH_METHOD_BEGIN;
 
-    const topology::FieldBase::DiscretizeInfo infoDefault = {-1, -1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE};
-    const topology::FieldBase::DiscretizeInfo infoA = {1, 2, false, pylith::topology::FieldBase::POLYNOMIAL_SPACE};
-    const topology::FieldBase::DiscretizeInfo infoB = {2, 2, true, pylith::topology::FieldBase::POINT_SPACE};
+    const topology::FieldBase::Discretization infoDefault = {-1, -1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE};
+    const topology::FieldBase::Discretization infoA = {1, 2, false, pylith::topology::FieldBase::POLYNOMIAL_SPACE};
+    const topology::FieldBase::Discretization infoB = {2, 2, true, pylith::topology::FieldBase::POINT_SPACE};
 
     CPPUNIT_ASSERT(_bc);
     _bc->auxFieldDiscretization("A", infoA.basisOrder, infoA.quadOrder, infoA.isBasisContinuous, infoA.feSpace);
     _bc->auxFieldDiscretization("B", infoB.basisOrder, infoB.quadOrder, infoB.isBasisContinuous, infoB.feSpace);
 
     { // A
-        const topology::FieldBase::DiscretizeInfo& test = _bc->auxFieldDiscretization("A");
+        const topology::FieldBase::Discretization& test = _bc->auxFieldDiscretization("A");
         CPPUNIT_ASSERT_EQUAL(infoA.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoA.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoA.isBasisContinuous, test.isBasisContinuous);
@@ -166,7 +168,7 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldDiscretization(void)
     } // A
 
     { // B
-        const topology::FieldBase::DiscretizeInfo& test = _bc->auxFieldDiscretization("B");
+        const topology::FieldBase::Discretization& test = _bc->auxFieldDiscretization("B");
         CPPUNIT_ASSERT_EQUAL(infoB.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoB.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoB.isBasisContinuous, test.isBasisContinuous);
@@ -174,7 +176,7 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldDiscretization(void)
     } // B
 
     { // C (default)
-        const topology::FieldBase::DiscretizeInfo& test = _bc->auxFieldDiscretization("C");
+        const topology::FieldBase::Discretization& test = _bc->auxFieldDiscretization("C");
         CPPUNIT_ASSERT_EQUAL(infoDefault.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.isBasisContinuous, test.isBasisContinuous);
@@ -182,7 +184,7 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldDiscretization(void)
     } // C (default)
 
     { // default
-        const topology::FieldBase::DiscretizeInfo& test = _bc->auxFieldDiscretization("default");
+        const topology::FieldBase::Discretization& test = _bc->auxFieldDiscretization("default");
         CPPUNIT_ASSERT_EQUAL(infoDefault.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.isBasisContinuous, test.isBasisContinuous);
@@ -239,7 +241,7 @@ pylith::bc::TestDirichletTimeDependent::testVerifyConfiguration(void)
 { // testVerifyConfiguration
     PYLITH_METHOD_BEGIN;
 
-    _initializeMin();
+    _initialize();
 
     CPPUNIT_ASSERT(_bc);
     CPPUNIT_ASSERT(_solution);
@@ -270,7 +272,7 @@ pylith::bc::TestDirichletTimeDependent::testInitialize(void)
 #if 1
     CPPUNIT_ASSERT_MESSAGE(":TODO: @brad not implemented.", false);
 #else
-    _initializeMin();
+    _initialize();
 
     CPPUNIT_ASSERT(_bc);
     CPPUNIT_ASSERT(_solution);
@@ -316,7 +318,7 @@ pylith::bc::TestDirichletTimeDependent::testPrestep(void)
 #if 1
     CPPUNIT_ASSERT_MESSAGE(":TODO: @brad not implemented.", false);
 #else
-    _initializeMin();
+    _initialize();
 
     CPPUNIT_ASSERT(_bc);
     CPPUNIT_ASSERT(_solution);
@@ -412,13 +414,24 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldsSetup(void)
 { // testAuxFieldsSetup
     PYLITH_METHOD_BEGIN;
 
-    CPPUNIT_ASSERT(_data);
-    _initializeMin();
-    _setupSolutionField();
+#if 0
+
+    _setupSolutionFields();
 
     CPPUNIT_ASSERT(_bc);
     CPPUNIT_ASSERT(_solution);
     _bc->initialize(*_solution);
+
+    CPPUNIT_ASSERT(_mymaterial);
+    CPPUNIT_ASSERT(_mesh);
+    CPPUNIT_ASSERT(_mydata);
+    CPPUNIT_ASSERT(_mydata->normalizer);
+    const PylithReal densityScale = _mydata->normalizer->densityScale();
+    const PylithReal lengthScale = _mydata->normalizer->lengthScale();
+    const PylithReal timeScale = _mydata->normalizer->timeScale();
+    const PylithReal pressureScale = _mydata->normalizer->pressureScale();
+    const PylithReal forceScale = densityScale * lengthScale / (timeScale * timeScale);
+
 
     CPPUNIT_ASSERT(_bc->_boundaryMesh);
     CPPUNIT_ASSERT(_data);
@@ -535,15 +548,15 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldsSetup(void)
         CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _bc->_auxFieldsQuery->queryFn("time_history_start_time"));
         CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _bc->_auxFieldsQuery->queryFn("time_history_value"));
     } // if
-
+#endif
     PYLITH_METHOD_END;
 } // testAuxFieldsSetup
 
 
 // ----------------------------------------------------------------------
 void
-pylith::bc::TestDirichletTimeDependent::_initializeMin(void)
-{ // _initializeMin
+pylith::bc::TestDirichletTimeDependent::_initialize(void)
+{ // _initialize
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_data);
@@ -554,16 +567,13 @@ pylith::bc::TestDirichletTimeDependent::_initializeMin(void)
     iohandler.filename(_data->meshFilename);
     iohandler.read(_mesh);
 
+    // Setup coordinates.
     spatialdata::geocoords::CSCart cs;
-    spatialdata::units::Nondimensional normalizer;
-    normalizer.lengthScale(_data->lengthScale);
-    normalizer.pressureScale(_data->pressureScale);
-    normalizer.densityScale(_data->densityScale);
-    normalizer.timeScale(_data->timeScale);
     cs.setSpaceDim(_mesh->dimension());
     cs.initialize();
     _mesh->coordsys(&cs);
-    pylith::topology::MeshOps::nondimensionalize(_mesh, normalizer);
+    CPPUNIT_ASSERT(_data->normalizer);
+    pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->normalizer);
 
 #if 0
     spatialdata::spatialdb::SimpleDB auxFieldsDB("TestDirichletTimeDependent auxFields");
@@ -576,7 +586,7 @@ pylith::bc::TestDirichletTimeDependent::_initializeMin(void)
     _bc->label(_data->bcLabel);
     //bc->auxFieldsDB(&auxFieldsDB);
     _bc->constrainedDOF(_data->constrainedDOF, _data->numConstrainedDOF);
-    _bc->normalizer(normalizer);
+    _bc->normalizer(*_data->normalizer);
 
     _bc->useInitial(_data->useInitial);
     _bc->useRate(_data->useRate);
@@ -589,7 +599,7 @@ pylith::bc::TestDirichletTimeDependent::_initializeMin(void)
     } // if
 
     PYLITH_METHOD_END;
-} // _initializeMin
+} // _initialize
 
 
 // ----------------------------------------------------------------------
@@ -598,21 +608,18 @@ pylith::bc::TestDirichletTimeDependent::_setupSolutionField(void)
 { // setupSolutionField
     PYLITH_METHOD_BEGIN;
 
-#if 0
-    CPPUNIT_ASSERT(_mesh);
-    CPPUNIT_ASSERT(_data);
+    spatialdata::spatialdb::SimpleGridDB solutionDB;
+    solutionDB.filename(_data->solnDBFilename);
+    solutionDB.label("solution database");
+    solutionDB.queryType(spatialdata::spatialdb::SimpleGridDB::LINEAR);
 
-    delete _solution; _solution = new pylith::topology::Field(*_mesh);CPPUNIT_ASSERT(_solution);
-
-    for (int i = 0; i < _data->numSolnFields; ++i) {
-        const pylith::topology::Field::DiscretizeInfo& feInfo = _data->solnDiscretizations[i];
-        _solution->subfieldAdd(_data->solnFields[i].c_str(), solnComponents[i], numComponents, vectorFieldType, feInfo.basisOrder, feInfo.quadOrder, feInfo.isBasisContinuous, feInfo.feSpace, _data->lengthScale);
-    } // for
+    pylith::problems::SolutionFactory factory(*_solution, *_data->normalizer);
+    factory.displacement(_data->solnDiscretizations[0]);
+    factory.velocity(_data->solnDiscretizations[1]);
+    factory.fluidPressure(_data->solnDiscretizations[2]);
     _solution->subfieldsSetup();
-} // if
-_solution->allocate();
-_solution->zeroLocal();
-#endif
+    _solution->allocate();
+    factory.setValues(&solutionDB);
 
     PYLITH_METHOD_END;
 } // setupSolutionField
@@ -622,26 +629,23 @@ _solution->zeroLocal();
 pylith::bc::TestDirichletTimeDependent_Data::TestDirichletTimeDependent_Data(void) :
     meshFilename(NULL),
     bcLabel(NULL),
-    lengthScale(1.0),
-    timeScale(1.0),
-    pressureScale(1.0),
-    densityScale(1.0),
+    normalizer(new spatialdata::units::Nondimensional),
     field(NULL),
+    vectorFieldType(pylith::topology::Field::OTHER),
     numConstrainedDOF(0),
     constrainedDOF(NULL),
     useInitial(false),
     useRate(false),
     useTimeHistory(false),
     thFilename(NULL),
-    numSolnFields(0),
-    solutionFields(NULL),
+    t(0.0),
+    solnNumFields(0),
     solnDiscretizations(NULL),
+    solnDBFilename(NULL),
     numAuxFields(0),
     auxFields(NULL),
     auxDiscretizations(NULL),
-    auxDBFilename(NULL),
-    t(0.0),
-    solnDBFilename(NULL)
+    auxDBFilename(NULL)
 { // constructor
 } // constructor
 
@@ -649,6 +653,7 @@ pylith::bc::TestDirichletTimeDependent_Data::TestDirichletTimeDependent_Data(voi
 // Destructor
 pylith::bc::TestDirichletTimeDependent_Data::~TestDirichletTimeDependent_Data(void)
 { // destructor
+    delete normalizer; normalizer = NULL;
 } // destructor
 
 

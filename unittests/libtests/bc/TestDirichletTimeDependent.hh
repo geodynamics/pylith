@@ -32,7 +32,11 @@
 #include "pylith/bc/bcfwd.hh" // forward declarations
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 
-#include "pylith/topology/Field.hh" // HOLDSA DiscretizeInfo
+#include "pylith/topology/Field.hh" // HOLDSA Discretization
+
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SimpleGridDB
+#include "spatialdata/units/unitsfwd.hh" // HOLDSA Nondimensional
+
 
 /// Namespace for pylith package
 namespace pylith {
@@ -113,8 +117,8 @@ protected:
     // PRIVATE METHODS ////////////////////////////////////////////////////
 private:
 
-    /// Do minimum initialization (up to and excluding initialize()) to permit testing.
-    void _initializeMin(void);
+    /// Initializer boundary condition for testing.
+    void _initialize(void);
 
     /// Setup solution field.
     void _setupSolutionField(void);
@@ -140,13 +144,11 @@ public:
     const char* meshFilename; ///< Name of file with ASCII mesh.
     const char* bcLabel; ///< Label defining cells associated with material.
 
-    PylithReal lengthScale; ///< Length scale for nondimensionalization.
-    PylithReal timeScale; ///< Time scale for nondimensionalization.
-    PylithReal pressureScale; ///< Pressure scale for nondimensionalization.
-    PylithReal densityScale; ///< Density scale for nondimensionalization.
+    spatialdata::units::Nondimensional* normalizer; ///< Scales for nondimensionalization.
 
     const char* field; ///< Name of solution field constrained.
-    bool isConstrainedFieldVector; ///< True if constrained field is a vector.
+    pylith::topology::FieldBase::VectorFieldEnum vectorFieldType; ///< Vector field type for constrained field.
+    PylithReal scale; ///< Scale of constrained field.
     int numConstrainedDOF; ///< Number of constrained DOF;
     const int* constrainedDOF; ///< Array of constrained DOF.
 
@@ -155,17 +157,15 @@ public:
     bool useTimeHistory; ///< True if using time history;
     const char* thFilename; ///< Name of file with time history.
 
-    int numSolnFields; ///< Number of solution fields.
-    const char** solutionFields; ///< Names of solution fields.
-    pylith::topology::Field::DiscretizeInfo* solnDiscretizations; ///< Discretizations for solution fields.
+    PylithReal t; ///< Time associated with setting solution.
+    int solnNumFields; ///< Number of solution fields.
+    pylith::topology::FieldBase::Discretization* solnDiscretizations; ///< Discretizations for solution fields.
+    const char* solnDBFilename; ///< Name of file with data for solution.
 
     int numAuxFields; ///< Number of auxiliary fields.
     const char** auxFields; ///< Names of auxiliary fields.
-    pylith::topology::Field::DiscretizeInfo* auxDiscretizations; ///< Discretizations for auxiliary fields.
+    pylith::topology::Field::Discretization* auxDiscretizations; ///< Discretizations for auxiliary fields.
     const char* auxDBFilename; ///< Name of file with data for auxFieldsDB.
-
-    PylithReal t; ///< Time associated with setting solution.
-    const char* solnDBFilename; ///< Name of file with data for constrained values at time t.
 
 }; // class TestDirichletTimeDependent_Data
 
