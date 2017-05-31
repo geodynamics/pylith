@@ -180,21 +180,22 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_auxFieldsSetup(void)
 // ----------------------------------------------------------------------
 // Set constants for problem.
 void
-pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setConstants(const PylithReal dt,
-								    const pylith::topology::Field& solution) const
-{ // _setConstants
-  PYLITH_METHOD_BEGIN;
-  PYLITH_COMPONENT_DEBUG("_setConstants(dt="<<dt<<", solution="<<solution.label()<<")");
+pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEConstants(const pylith::topology::Field& solution,
+                                                                      const PylithReal dt) const
+{ // _setFEConstants
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("_setFEConstants(solution="<<solution.label()<<", dt="<<dt<<")");
 
-  const PetscDM dm = solution.dmMesh(); assert(dm);
-  PetscDS prob = NULL;
-  PetscErrorCode err = DMGetDS(dm, &prob); PYLITH_CHECK_ERROR(err);
-  
-  PetscInt numConstants = 1;
-  PetscScalar constants[1] = {dt};
-  
-  err = PetscDSSetConstants(prob, numConstants, constants); PYLITH_CHECK_ERROR(err);
-  PYLITH_METHOD_END;
+    const PetscInt numConstants = 1;
+    PetscScalar constants[1];
+    constants[0] = dt;
+
+    const PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
+    PetscDS prob = NULL;
+    PetscErrorCode err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err); assert(prob);
+    err = PetscDSSetConstants(prob, numConstants, constants); PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_END;
 } // _setConstants
 
 // ----------------------------------------------------------------------

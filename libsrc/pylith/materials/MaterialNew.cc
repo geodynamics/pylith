@@ -194,6 +194,7 @@ pylith::materials::MaterialNew::computeRHSResidual(pylith::topology::Field* resi
     PYLITH_COMPONENT_DEBUG("computeRHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
 
     _setFEKernelsRHSResidual(solution);
+    _setFEConstants(solution, dt);
 
     pylith::topology::Field solutionDot(solution.mesh()); // No dependence on time derivative of solution in RHS.
     solutionDot.label("solution_dot");
@@ -216,6 +217,7 @@ pylith::materials::MaterialNew::computeRHSJacobian(PetscMat jacobianMat,
     PYLITH_COMPONENT_DEBUG("computeRHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
 
     _setFEKernelsRHSJacobian(solution);
+    _setFEConstants(solution, dt);
 
     pylith::topology::Field solutionDot(solution.mesh()); // No dependence on time derivative of solution in RHS.
     solutionDot.label("solution_dot");
@@ -240,6 +242,7 @@ pylith::materials::MaterialNew::computeLHSResidual(pylith::topology::Field* resi
     PYLITH_COMPONENT_DEBUG("computeLHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
 
     _setFEKernelsLHSResidual(solution);
+    _setFEConstants(solution, dt);
 
     _computeResidual(residual, t, dt, solution, solutionDot);
 
@@ -261,6 +264,7 @@ pylith::materials::MaterialNew::computeLHSJacobianImplicit(PetscMat jacobianMat,
     PYLITH_COMPONENT_DEBUG("computeLHSJacobianImplicit(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", tshift="<<tshift<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
 
     _setFEKernelsLHSJacobianImplicit(solution);
+    _setFEConstants(solution, dt);
 
     _computeJacobian(jacobianMat, precondMat, t, dt, tshift, solution, solutionDot);
     _needNewLHSJacobian = false;
@@ -283,6 +287,7 @@ pylith::materials::MaterialNew::computeLHSJacobianLumpedInv(pylith::topology::Fi
     assert(jacobianInv);
 
     _setFEKernelsLHSJacobianExplicit(solution);
+    _setFEConstants(solution, dt);
 
     PetscDS prob = NULL;
     PetscInt cStart = 0, cEnd = 0;
@@ -418,6 +423,26 @@ pylith::materials::MaterialNew::_computeJacobian(PetscMat jacobianMat,
 
     PYLITH_METHOD_END;
 } // _computeJacobian
+
+
+// ----------------------------------------------------------------------
+// Set constants used in finite-element integrations.
+void
+pylith::materials::MaterialNew::_setFEConstants(const pylith::topology::Field& solution,
+                                                const PylithReal dt) const
+{ // _setFEConstants
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("_setFEConstants(solution="<<solution.label()<<", dt="<<dt<<")");
+
+    PetscDS prob = NULL;
+    PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
+
+    // Pointwise function have been set in DS
+    PetscErrorCode err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err); assert(prob);
+    err = PetscDSSetConstants(prob, 0, NULL); PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_END;
+} // _setFEConstants
 
 
 // End of file

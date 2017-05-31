@@ -243,10 +243,10 @@ protected:
      * Potentially, there are g0 and g1 kernels for each equation. If no
      * kernel is needed, then set the kernel function to NULL.
      *
-     * @param solution Solution field.
+     * @param[inout] solution Solution field.
      */
     virtual
-    void _setFEKernelsRHSResidual(const topology::Field& solution) const = 0;
+    void _setFEKernelsRHSResidual(const pylith::topology::Field& solution) const = 0;
 
 
     /** Set kernels for RHS Jacobian G(t,s).
@@ -260,10 +260,10 @@ protected:
      * - Jg2(ifield, jfield, idim)
      * - Jg3(ifield, jfield, idim, jdim)
      *
-     * @param solution Solution field.
+     * @param[inout] solution Solution field.
      */
     virtual
-    void _setFEKernelsRHSJacobian(const topology::Field& solution) const = 0;
+    void _setFEKernelsRHSJacobian(const pylith::topology::Field& solution) const = 0;
 
 
     /** Set kernels for LHS residual F(t,s,\dot{s}).
@@ -271,10 +271,10 @@ protected:
      * Potentially, there are f0 and f1 kernels for each equation. If no
      * kernel is needed, then set the kernel function to NULL.
      *
-     * @param solution Solution field.
+     * @param[inout] solution Solution field.
      */
     virtual
-    void _setFEKernelsLHSResidual(const topology::Field& solution) const = 0;
+    void _setFEKernelsLHSResidual(const pylith::topology::Field& solution) const = 0;
 
 
     /** Set kernels for LHS Jacobian F(t,s,\dot{s}) when implicit time-stepping.
@@ -284,10 +284,10 @@ protected:
      * - Jf2(ifield, jfield, idim)
      * - Jf3(ifield, jfield, idim, jdim)
      *
-     * @param solution Solution field.
+     * @param[inout] solution Solution field.
      */
     virtual
-    void _setFEKernelsLHSJacobianImplicit(const topology::Field& solution) const = 0;
+    void _setFEKernelsLHSJacobianImplicit(const pylith::topology::Field& solution) const = 0;
 
 
     /** Set kernels for LHS Jacobian F(t,s,\dot{s}) when explicit time-stepping.
@@ -297,16 +297,25 @@ protected:
      * - Jf2(ifield, jfield, idim)
      * - Jf3(ifield, jfield, idim, jdim)
      *
-     * @param solution Solution field.
+     * @param[inout] solution Solution field.
      */
     virtual
-    void _setFEKernelsLHSJacobianExplicit(const topology::Field& solution) const = 0;
+    void _setFEKernelsLHSJacobianExplicit(const pylith::topology::Field& solution) const = 0;
 
+    /** Set constants used in finite-element integrations.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     */
+    virtual
+    void _setFEConstants(const pylith::topology::Field& solution,
+                         const PylithReal dt) const;
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected:
 
-    topology::StratumIS* _materialIS;   ///< Index set for material cells.
+    pylith::topology::StratumIS* _materialIS;   ///< Index set for material cells.
     spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
