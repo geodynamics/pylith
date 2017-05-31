@@ -96,6 +96,14 @@ protected:
 /// Setup auxiliary subfields (discretization and query fns).
 void _auxFieldsSetup(void);
 
+/** Set constants for problem.
+ *
+ * @param[in] solution Solution field.
+ * @param[in] dt Time step size for current time step.
+ */
+void _setConstants(const PylithReal dt,
+		   const topology::Field& solution) const;
+
 /** Set kernels for RHS residual G(t,u).
  *
  * @param[in] solution Solution field.

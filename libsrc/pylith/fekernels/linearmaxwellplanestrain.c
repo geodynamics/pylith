@@ -288,6 +288,7 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g1v(
     assert(sOff_x);
     assert(aOff);
     assert(aOff_x);
+    assert(numConstants == 1);
 
     pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_meanStress(_dim, _numS, numAMean,
                                                                   sOffDisp, sOffDisp_x, s, s_t, s_x,
@@ -367,6 +368,7 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g1v_refstate(
     assert(sOff_x);
     assert(aOff);
     assert(aOff_x);
+    assert(numConstants == 1);
 
     pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_meanStress_refstate(_dim, _numS, numAMean,
                                                                            sOffDisp, sOffDisp_x, s, s_t, s_x,
@@ -519,7 +521,7 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_Jg3vu(
     const PylithScalar shearModulus = a[aOff[i_shearModulus]];
     const PylithScalar bulkModulus = a[aOff[i_bulkModulus]];
     const PylithScalar maxwellTime = a[aOff[i_maxwellTime]];
-    const PylithScalar dt = 1.0;
+    const PylithScalar dt = constants[0];
 
     const PylithScalar dq = pylith_fekernels_Elasticity_Maxwell_VisStrain_Coeff(dt, maxwellTime);
 
@@ -534,6 +536,7 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_Jg3vu(
     assert(aOff);
     assert(a);
     assert(Jg3);
+    assert(numConstants == 1);
 
     /* j(f,g,df,dg) = C(f,df,g,dg)
 
@@ -750,6 +753,7 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_deviatoricStress(
     assert(s_x);
     assert(a);
     assert(stress);
+    assert(numConstants == 1);
 
     pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_computeVisStrain(_dim, _numS, numAVis,
                                                                         sOffDisp, sOffDisp_x, s, s_t, s_x,
@@ -829,6 +833,7 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_deviatoricStress_refstate(
     assert(s_x);
     assert(a);
     assert(stress);
+    assert(numConstants == 1);
 
     // Compute viscous strain for current time step.
     pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_computeVisStrain(_dim, _numS, numAVis,
@@ -898,7 +903,7 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_computeVisStrain(
     const PylithInt i_maxwellTime = 0;
     const PylithScalar maxwellTime = a[aOff[i_maxwellTime]];
 
-    const PylithScalar dt = 1.0;
+    const PylithScalar dt = constants[0];
 
     const PylithInt i_totalStrain = 1;
     const PylithScalar* totalStrain = &a[aOff[i_totalStrain]];
@@ -914,6 +919,7 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_computeVisStrain(
     assert(s_x);
     assert(a);
     assert(visStrainTpdt);
+    assert(numConstants == 1);
 
     const PylithScalar dq = pylith_fekernels_Elasticity_Maxwell_VisStrain_Coeff(dt, maxwellTime);
     const PylithScalar expFac = exp(-dt/maxwellTime);
@@ -949,7 +955,7 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_computeVisStrain(
 
 
 /* ---------------------------------------------------------------------- */
-/* Calculate total strain for a Maxwell viscoelastic material.
+/* Update total strain for a Maxwell viscoelastic material.
  *
  */
 void
@@ -1045,6 +1051,7 @@ pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_updateVisStrain(
     assert(s_x);
     assert(a);
     assert(visStrainTpdt);
+    assert(numConstants == 1);
 
     pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_computeVisStrain(_dim, _numS, numAVis,
                                                                         sOffDisp, sOffDisp_x, s, s_t, s_x,

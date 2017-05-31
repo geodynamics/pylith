@@ -178,6 +178,26 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_auxFieldsSetup(void)
 } // _auxFieldsSetup
 
 // ----------------------------------------------------------------------
+// Set constants for problem.
+void
+pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setConstants(const PylithReal dt,
+								    const pylith::topology::Field& solution) const
+{ // _setConstants
+  PYLITH_METHOD_BEGIN;
+  PYLITH_COMPONENT_DEBUG("_setConstants(dt="<<dt<<", solution="<<solution.label()<<")");
+
+  const PetscDM dm = solution.dmMesh(); assert(dm);
+  PetscDS prob = NULL;
+  PetscErrorCode err = DMGetDS(dm, &prob); PYLITH_CHECK_ERROR(err);
+  
+  PetscInt numConstants = 1;
+  PetscScalar constants[1] = {dt};
+  
+  err = PetscDSSetConstants(prob, numConstants, constants); PYLITH_CHECK_ERROR(err);
+  PYLITH_METHOD_END;
+} // _setConstants
+
+// ----------------------------------------------------------------------
 // Set kernels for RHS residual G(t,s).
 void
 pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsRHSResidual(const pylith::topology::Field& solution) const
