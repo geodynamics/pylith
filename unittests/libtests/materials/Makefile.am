@@ -46,6 +46,7 @@ testmaterials_SOURCES = \
 	TestEffectiveStress.cc \
 	TestMaterialNew.cc \
 	TestIsotropicLinearElasticityPlaneStrain.cc \
+	TestIsotropicLinearMaxwellPlaneStrain.cc \
 	TestIsotropicLinearElasticityPlaneStrain_Cases.cc \
 	test_materials.cc
 
@@ -68,7 +69,8 @@ noinst_HEADERS = \
 	TestDruckerPragerPlaneStrain.hh \
 	TestEffectiveStress.hh \
 	TestMaterialNew.hh \
-	TestIsotropicLinearElasticityPlaneStrain.hh
+	TestIsotropicLinearElasticityPlaneStrain.hh \
+	TestIsotropicLinearMaxwellPlaneStrain.hh
 
 # Source files associated with testing data
 testmaterials_SOURCES += \

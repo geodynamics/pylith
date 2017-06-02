@@ -301,7 +301,7 @@ pylith::materials::AuxiliaryFactory::maxwellTime(void) const
     assert(_material._auxFields);
     assert(_material._auxFieldsQuery);
     _material._auxFields->subfieldAdd(description, _material.auxFieldDiscretization(fieldName));
-    _material._auxFieldsQuery->queryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _material._auxFieldsQuery->queryFn(fieldName, pylith::materials::Query::dbQueryMaxwellTime);
 
     PYLITH_METHOD_END;
 } // maxwellTime
