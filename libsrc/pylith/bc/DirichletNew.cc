@@ -149,10 +149,11 @@ pylith::bc::DirichletNew::setSolution(pylith::topology::Field* solution,
     void* context = NULL;
     const int labelId = 1;
     const int fieldIndex = solution->subfieldInfo(_field.c_str()).index;
+    const PylithInt numConstrained = _constrainedDOF.size();
     assert(solution->localVector());
     err = DMPlexLabelAddCells(dmSoln, dmLabel); PYLITH_CHECK_ERROR(err);
     err = DMPlexInsertBoundaryValuesEssentialField(dmSoln, t,
-                                                   solution->localVector(), fieldIndex, dmLabel, 1, &labelId, _bcKernel,
+                                                   solution->localVector(), fieldIndex, numConstrained, &_constrainedDOF[0], dmLabel, 1, &labelId, _bcKernel,
                                                    context, solution->localVector());
     PYLITH_CHECK_ERROR(err);
     err = DMPlexLabelClearCells(dmSoln, dmLabel); PYLITH_CHECK_ERROR(err);
