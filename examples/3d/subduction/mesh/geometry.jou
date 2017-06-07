@@ -39,15 +39,18 @@ reset
 import Acis "surf_slabtop.sat"
 ${idSurf=Id("surface")}
 surface {idSurf} name "s_slabtop"
+${idVol=Id("volume")}
+volume {idVol} name "v_slabtop"
 
 import Acis "surf_slabbot.sat"
 ${idSurf=Id("surface")}
 surface {idSurf} name "s_slabbot"
+${idVol=Id("volume")}
+volume {idVol} name "v_slabbot"
 
 create volume loft surface s_slabtop s_slabbot
 ${idVol=Id("volume")}
 volume {idVol} name "v_slab"
-delete surface s_slabtop s_slabbot
 
 # ----------------------------------------------------------------------
 # Create block
@@ -81,24 +84,18 @@ surface {idSurf} name "s_moho"
 webcut volume v_domain@A with plane surface s_moho
 delete surface s_moho
 
-
+# ----------------------------------------------------------------------
 # Create fault patch
+# ----------------------------------------------------------------------
 ${patchLength=200.0*km}
-create planar surface with plane yplane offset {-0.5*patchLength}
-${idSurf=Id("surface")}
-surface {idSurf} name "s_southlimit"
+brick x {400.0*km} y {patchLength} z {100.0*km}
+${idVol=Id("volume")}
+volume {idVol} name "v_patchblock"
+move volume v_patchblock  x {-100*km} y 0 z 0
 
-project curve 83 onto surface s_slabtop@B trim
-split surface s_slabtop@B across location vertex 59 location vertex 60
-
-create planar surface with plane yplane offset {+0.5*patchLength}
-${idSurf=Id("surface")}
-surface {idSurf} name "s_northlimit"
-
-project curve 93 onto surface s_slabtop@D trim
-split surface s_slabtop@D across location vertex 67 location vertex 68
-
-delete curve all
+chop volume v_slabtop with volume v_patchblock 
+imprint volume v_domain@A with volume v_slabtop 
+delete volume v_slabtop v_slabtop@A v_slabbot
 
 # ----------------------------------------------------------------------
 # Import splay surface and cut volume.
@@ -110,9 +107,6 @@ surface {idSurf} name "s_splay"
 webcut volume v_domain@A with sheet surface s_splay
 delete surface s_splay
 
-
-
-
 # ----------------------------------------------------------------------
 # Imprint all volumes, then merge.
 # ----------------------------------------------------------------------
@@ -120,6 +114,7 @@ imprint all with volume all
 merge all
 
 # End of file
+
 
 
 
