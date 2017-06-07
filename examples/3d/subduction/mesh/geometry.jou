@@ -34,6 +34,22 @@ ${Units('si')}
 reset
 
 # ----------------------------------------------------------------------
+# Import slab surfaces and construct slab.
+# ----------------------------------------------------------------------
+import Acis "surf_slabtop.sat"
+${idSurf=Id("surface")}
+surface {idSurf} name "s_slabtop"
+
+import Acis "surf_slabbot.sat"
+${idSurf=Id("surface")}
+surface {idSurf} name "s_slabbot"
+
+create volume loft surface s_slabtop s_slabbot
+${idVol=Id("volume")}
+volume {idVol} name "v_slab"
+delete surface s_slabtop s_slabbot
+
+# ----------------------------------------------------------------------
 # Create block
 # ----------------------------------------------------------------------
 # Block is 800 km x 800 km x 400 km
@@ -43,45 +59,59 @@ ${blockHeight=400.0*km}
 
 brick x {blockLength} y {blockWidth} z {blockHeight}
 ${idVol=Id("volume")}
+volume {idVol} name "v_domain"
 
 # Translate block so top is a z=0.
 ${moveX=-60.0*km}
 ${moveY=0.0*km}
-
-volume {idVol} move x {moveX} y {moveY} z {-0.5*blockHeight}
+volume v_domain move x {moveX} y {moveY} z {-0.5*blockHeight}
 
 # ----------------------------------------------------------------------
-# Import subduction interface.
+# Webcut block with slab.
 # ----------------------------------------------------------------------
-import Acis "slabtop_surf.sat"
+chop volume v_domain with volume v_slab
+
+# ----------------------------------------------------------------------
+# Create planar surface for continental crust/mantle boundary.
+# ----------------------------------------------------------------------
+create planar surface with plane zplane offset {-40.0*km}
 ${idSurf=Id("surface")}
-surface {idSurf} name "s_slabtop"
+surface {idSurf} name "s_moho"
 
-# Slab bottom
-${n_x=-0.209}
-${n_y=+0.016}
-${n_z=-0.979}
-${slabThickness=50.0*km}
-surface s_slabtop copy move x {n_x*slabThickness} y {n_y*slabThickness} z {n_z*slabThickness}
+webcut volume v_domain@A with plane surface s_moho
+delete surface s_moho
+
+
+# Create fault patch
+${patchLength=200.0*km}
+create planar surface with plane yplane offset {-0.5*patchLength}
+${idSurf=Id("surface")}
+surface {idSurf} name "s_southlimit"
+
+project curve 83 onto surface s_slabtop@B trim
+split surface s_slabtop@B across location vertex 59 location vertex 60
+
+create planar surface with plane yplane offset {+0.5*patchLength}
+${idSurf=Id("surface")}
+surface {idSurf} name "s_northlimit"
+
+project curve 93 onto surface s_slabtop@D trim
+split surface s_slabtop@D across location vertex 67 location vertex 68
+
+delete curve all
 
 # ----------------------------------------------------------------------
-# Webcut block with topography and delete volume lying above topography.
+# Import splay surface and cut volume.
 # ----------------------------------------------------------------------
-webcut volume {idVol} with sheet surface 7
-delete volume 1
-delete body 2
+import Acis "surf_splay.sat"
+${idSurf=Id("surface")}
+surface {idSurf} name "s_splay"
 
-# ----------------------------------------------------------------------
-# Webcut remaining portion of block with subduction interface.
-# ----------------------------------------------------------------------
-webcut volume 5 with sheet surface 8
-delete body 3
+webcut volume v_domain@A with sheet surface s_splay
+delete surface s_splay
 
-# ----------------------------------------------------------------------
-# Webcut volume above subduction interface with splay fault.
-# ----------------------------------------------------------------------
-webcut volume 5 with sheet surface 9
-delete body 4
+
+
 
 # ----------------------------------------------------------------------
 # Imprint all volumes, then merge.
@@ -90,4 +120,6 @@ imprint all with volume all
 merge all
 
 # End of file
+
+
 

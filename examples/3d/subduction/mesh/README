@@ -1,1 +1,6 @@
 ./generate_slabtop.py --slab-filename=cas_contours_dep.in.txt --journal-filename=slabtop_surf.jou --stride=10
+
+
+
+
+CUBIT> surface 16 Scheme TriMesh geometry approximation angle 90.0 
