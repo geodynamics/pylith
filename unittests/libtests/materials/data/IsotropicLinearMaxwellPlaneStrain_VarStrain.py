@@ -133,7 +133,7 @@ def generateSolution():
 
     # Create writer for spatial database file
     writer = SimpleGridAscii()
-    writer.inventory.filename = "IsotropicLinearElasticityPlaneStrain_VarStrain_soln.spatialdb"
+    writer.inventory.filename = "IsotropicLinearMaxwellPlaneStrain_VarStrain_soln.spatialdb"
     writer._configure()
     writer.write({'points': points,
                   'x': x,
@@ -165,7 +165,7 @@ def generatePerturbation():
 
     # Create writer for spatial database file
     writer = SimpleGridAscii()
-    writer.inventory.filename = "IsotropicLinearElasticityPlaneStrain_VarStrain_pert.spatialdb"
+    writer.inventory.filename = "IsotropicLinearMaxwellPlaneStrain_VarStrain_pert.spatialdb"
     writer._configure()
     writer.write({'points': points,
                   'x': x,

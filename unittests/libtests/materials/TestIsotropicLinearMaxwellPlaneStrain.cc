@@ -244,7 +244,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldsSetup(vo
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // body force
 
-    if (_mydata->useGravityField) { // gravity field
+    if (_mydata->useGravity) { // gravity field
         const char* label = "gravity_field";
         const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxFields->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(2), info.description.numComponents);
@@ -287,11 +287,11 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldsSetup(vo
     CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _mymaterial->_auxFieldsQuery->queryFn("density"));
     CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryShearModulus, _mymaterial->_auxFieldsQuery->queryFn("shear_modulus"));
     CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryBulkModulus, _mymaterial->_auxFieldsQuery->queryFn("bulk_modulus"));
-    CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryGeneric, _mymaterial->_auxFieldsQuery->queryFn("maxwell_time"));
+    CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryMaxwellTime, _mymaterial->_auxFieldsQuery->queryFn("maxwell_time"));
     CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _mymaterial->_auxFieldsQuery->queryFn("total_strain"));
     CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _mymaterial->_auxFieldsQuery->queryFn("viscous_strain"));
-    if (_mydata->useGravityField) {
-        CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGravityField, _mymaterial->_auxFieldsQuery->queryFn("gravity_field"));
+    if (_mydata->useGravity) {
+        CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryGravityField, _mymaterial->_auxFieldsQuery->queryFn("gravity_field"));
     } // if
     if (_mydata->useBodyForce) {
         CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _mymaterial->_auxFieldsQuery->queryFn("body_force"));
@@ -308,7 +308,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldsSetup(vo
 // ----------------------------------------------------------------------
 // Test getAuxField().
 void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(void)
+pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void)
 { // testGetAuxField
     PYLITH_METHOD_BEGIN;
 

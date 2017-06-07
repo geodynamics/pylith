@@ -48,6 +48,7 @@ testmaterials_SOURCES = \
 	TestIsotropicLinearElasticityPlaneStrain.cc \
 	TestIsotropicLinearMaxwellPlaneStrain.cc \
 	TestIsotropicLinearElasticityPlaneStrain_Cases.cc \
+	TestIsotropicLinearMaxwellPlaneStrain_Cases.cc \
 	test_materials.cc
 
 
