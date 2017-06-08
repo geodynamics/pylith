@@ -14,13 +14,15 @@
 #
 # ----------------------------------------------------------------------
 #
-# CUBIT journal file with geometry for example showing how to import
+# This file is called from the mesh file (mesh_tet.jou or mesh_hex.jou).
+#
+# CUBIT/Trelis journal file with geometry for example showing how to import
 # several surfaces (topography, subduction interface, splay fault), and
 # mesh the resulting volumes.
 #
-# We also use the CUBIT support for APREPRO (the expressions in
+# We also use the CUBIT/Trelis support for APREPRO (the expressions in
 # braces), which includes units and mathematical functions. See the
-# APREPRO section in the appendix of the CUBIT documentation for more
+# APREPRO section in the appendix of the CUBIT/Trelis documentation for more
 # information.
 #
 # ----------------------------------------------------------------------
@@ -41,16 +43,22 @@ ${idSurf=Id("surface")}
 surface {idSurf} name "s_slabtop"
 ${idVol=Id("volume")}
 volume {idVol} name "v_slabtop"
+${idBody=Id("body")}
+body {idBody} name "b_slabtop"
 
 import Acis "surf_slabbot.sat"
 ${idSurf=Id("surface")}
 surface {idSurf} name "s_slabbot"
 ${idVol=Id("volume")}
 volume {idVol} name "v_slabbot"
+${idBody=Id("body")}
+body {idBody} name "b_slabbot"
 
 create volume loft surface s_slabtop s_slabbot
 ${idVol=Id("volume")}
 volume {idVol} name "v_slab"
+
+delete body b_slabbot
 
 # ----------------------------------------------------------------------
 # Create block
@@ -85,27 +93,40 @@ webcut volume v_domain@A with plane surface s_moho
 delete surface s_moho
 
 # ----------------------------------------------------------------------
+# Import splay surface and cut volume.
+# ----------------------------------------------------------------------
+import Acis "surf_splay.sat"
+${idSurf=Id("surface")}
+surface {idSurf} name "s_splay"
+${idVol=Id("volume")}
+volume {idVol} name "v_splay"
+${idBody=Id("body")}
+body {idBody} name "b_splay"
+
+webcut volume v_domain@A with sheet surface s_splay
+
+# ----------------------------------------------------------------------
 # Create fault patch
 # ----------------------------------------------------------------------
+# Create block to create rupture patch.
 ${patchLength=200.0*km}
 brick x {400.0*km} y {patchLength} z {100.0*km}
 ${idVol=Id("volume")}
 volume {idVol} name "v_patchblock"
 move volume v_patchblock  x {-100*km} y 0 z 0
 
-chop volume v_slabtop with volume v_patchblock 
-imprint volume v_domain@A with volume v_slabtop 
-delete volume v_slabtop v_slabtop@A v_slabbot
+# Scribe rupture patch onto surface geometry (volumes of sheet bodies).
+chop volume v_slabtop with volume v_patchblock keep
+chop volume v_splay with volume v_patchblock
 
-# ----------------------------------------------------------------------
-# Import splay surface and cut volume.
-# ----------------------------------------------------------------------
-import Acis "surf_splay.sat"
-${idSurf=Id("surface")}
-surface {idSurf} name "s_splay"
+# Imprint rupture patch from sheet bodies onto domain volumes.
+imprint volume v_domain@A with volume v_slabtop@A 
+imprint volume v_domain@C with volume v_slabtop@A
+imprint volume v_domain@A with volume v_splay
 
-webcut volume v_domain@A with sheet surface s_splay
-delete surface s_splay
+# Remove sheet body volumes.
+delete body b_slabtop b_slabtop@A b_slabtop@B
+delete body b_splay b_splay@A
 
 # ----------------------------------------------------------------------
 # Imprint all volumes, then merge.
@@ -114,6 +135,7 @@ imprint all with volume all
 merge all
 
 # End of file
+
 
 
 
