@@ -1,0 +1,187 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2017 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+#
+# This file is called from the mesh file (mesh_tet.jou or mesh_hex.jou).
+#
+# CUBIT/Trelis journal file for setting blocks and nodesets for the meshes
+# created by mesh_tet.jou and mesh_hex.jou.
+#
+
+# ----------------------------------------------------------------------
+# Create blocks for materials
+# ----------------------------------------------------------------------
+block 1 volume v_domain
+block 1 name "slab"
+
+block 2 volume v_domain@A
+block 2 name "wedge"
+
+block 3 volume v_domain@B
+block 3 name "mantle"
+
+block 4 volume v_domain@C
+block 4 name "crust"
+
+# ----------------------------------------------------------------------
+# Create nodesets for faults and boundary conditions.
+# ----------------------------------------------------------------------
+
+# ----------------------------------------------------------------------
+# FAULT INTERFACES
+# ----------------------------------------------------------------------
+
+# Entire top of slab
+group "fault_slabtop" add node in s_slabtop@A
+group "fault_slabtop" add node in s_slabtop@B
+group "fault_slabtop" add node in s_slabtop@C
+group "fault_slabtop" add node in s_slabtop@D
+group "fault_slabtop" add node in s_slabtop@E
+group "fault_slabtop" add node in s_slabtop@G
+group "fault_slabtop" add node in s_slabtop@H
+nodeset 10 group fault_slabtop
+nodeset 10 name "fault_slabtop"
+
+# Buried edge for top of slab.
+group "fault_slabtop_edge" add node in curve 38
+nodeset 11 group fault_slabtop_edge
+nodeset 11 name "fault_slabtop_edge"
+
+
+# Entire bottom of slab
+group "fault_slabbot" add node in s_slabbot@A
+nodeset 20 group fault_slabtop
+nodeset 20 name "fault_slabtop"
+
+# Buried edge for bottom of slab.
+group "fault_slabbot_edge" add node in curve 36
+nodeset 21 group fault_slabbot_edge
+nodeset 21 name "fault_slabbot_edge"
+
+
+# Entire splay fault
+group "fault_splay" add node in s_splay@A
+group "fault_splay" add node in s_splay@C
+group "fault_splay" add node in s_splay@D
+nodeset 30 group fault_splay
+nodeset 30 name "fault_splay"
+
+# Buried edge for splay fault.
+group "fault_splay_edge" add node in curve 138
+group "fault_splay_edge" add node in curve 141
+group "fault_splay_edge" add node in curve 142
+nodeset 31 group fault_splay_edge
+nodeset 31 name "fault_splay_edge"
+
+
+# Top of slab rupture patch.
+group "fault_slabtop_patch" add node in s_slabtop@E
+group "fault_slabtop_patch" add node in s_slabtop@H
+nodeset 40 group fault_slabtop_patch
+nodeset 40 name "fault_slabtop_patch"
+
+# Buried edge for top of slab rupture patch.
+group "fault_slabtop_patch_edge" add node in curve 136
+group "fault_slabtop_patch_edge" add node in curve 155
+group "fault_slabtop_patch_edge" add node in curve 156
+group "fault_slabtop_patch_edge" add node in curve 152
+group "fault_slabtop_patch_edge" add node in curve 139
+nodeset 41 group fault_slabtop_patch_edge
+nodeset 41 name "fault_slabtop_patch_edge"
+
+
+# Splay fault rupture patch.
+group "fault_splay_patch" add node in s_splay@C
+nodeset 50 group fault_splay_patch
+nodeset 50 name "fault_splay_patch"
+
+# Buried edge for top of slab rupture patch.
+group "fault_splay_patch_edge" add node in curve 165
+group "fault_splay_patch_edge" add node in curve 141
+group "fault_splay_patch_edge" add node in curve 167
+nodeset 51 group fault_splay_patch_edge
+nodeset 51 name "fault_splay_patch_edge"
+
+# ----------------------------------------------------------------------
+# BOUNDARIES
+# ----------------------------------------------------------------------
+
+# +x
+group "boundary_xpos" add node in surface 33
+group "boundary_xpos" add node in surface 37
+nodeset 80 group boundary_xpos
+nodeset 80 name "boundary_xpos"
+
+# -x
+group "boundary_xneg" add node in surface 20
+group "boundary_xneg" add node in surface 28
+nodeset 80 group boundary_xneg
+nodeset 80 name "boundary_xneg"
+
+# -x w/o fault
+group "boundary_xneg_nofault" add node in group boundary_xneg
+group "boundary_xneg_nofault" remove node in group fault_slabbot
+nodeset 81 group boundary_xneg_nofault
+nodeset 81 name "boundary_xneg_nofault"
+
+
+# +y
+group "boundary_ypos" add node in surface 18
+group "boundary_ypos" add node in surface 45
+group "boundary_ypos" add node in surface 48
+group "boundary_ypos" add node in surface 39
+nodeset 82 group boundary_ypos
+nodeset 82 name "boundary_ypos"
+
+# +y w/o fault
+group "boundary_ypos_nofault" add node in group boundary_ypos
+group "boundary_ypos_nofault" remove node in group fault_slabtop
+group "boundary_ypos_nofault" remove node in group fault_slabbot
+group "boundary_ypos_nofault" remove node in group fault_splay
+nodeset 83 group boundary_ypos_nofault
+nodeset 83 name "boundary_ypos_nofault"
+
+
+# -y
+group "boundary_yneg" add node in surface 21
+group "boundary_yneg" add node in surface 43
+group "boundary_yneg" add node in surface 50
+group "boundary_yneg" add node in surface 36
+nodeset 84 group boundary_yneg
+nodeset 84 name "boundary_yneg"
+
+# -y w/o fault
+group "boundary_yneg_nofault" add node in group boundary_yneg
+group "boundary_yneg_nofault" remove node in group fault_slabtop
+group "boundary_yneg_nofault" remove node in group fault_slabbot
+group "boundary_yneg_nofault" remove node in group fault_splay
+nodeset 85 group boundary_yneg_nofault
+nodeset 85 name "boundary_yneg_nofault"
+
+# -z
+group "boundary_zneg" add node in surface 10
+nodeset 86 group boundary_zneg
+nodeset 86 name "boundary_zneg"
+
+# +z
+group "boundary_zpos" add node in surface 47
+group "boundary_zpos" add node in surface 42
+group "boundary_zpos" add node in surface 19
+nodeset 86 group boundary_zpos
+nodeset 86 name "boundary_zpos"
+
+
+# End of file
+
