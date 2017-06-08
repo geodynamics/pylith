@@ -105,6 +105,12 @@ class JournalFile(Component):
         self.file = None
         return
     
+
+    def _configure(self):
+        Component._configure(self)
+        self.filename = self.inventory.filename
+        return
+
     
 # ----------------------------------------------------------------------
 class SlabContoursFile(Component):
@@ -126,7 +132,6 @@ class SlabContoursFile(Component):
     def read(self):
         """Read contours from Slab 1.0 file.
         """
-
         if self.filename.endswith(".gz"):
             import gzip
             with gzip.open(self.filename, "rb") as file:
@@ -152,6 +157,12 @@ class SlabContoursFile(Component):
         return
 
     
+    def _configure(self):
+        Component._configure(self)
+        self.filename = self.inventory.filename
+        return
+
+    
 # ----------------------------------------------------------------------
 class SlabExtender(Component):
 
@@ -161,25 +172,36 @@ class SlabExtender(Component):
         from pyre.units.length import km
         from pyre.units.angle import deg
         
-        upDipElev = pyre.inventory.dimensional("up_dip_elev", default=1,0*km)
+        upDipElev = pyre.inventory.dimensional("up_dip_elev", default=1.0*km)
         upDipElev.meta["tip"] = "Elevation of contours extended in up-dip direction."
         
-        upDipDist = pyre.inventory.dimensional("up_dip_dist", default=600,0*km)
+        upDipDist = pyre.inventory.dimensional("up_dip_dist", default=600.0*km)
         upDipDist.meta["tip"] = "Distance to extend contours in up-dip direction."
         
         upDipAngle = pyre.inventory.dimensional("up_dip_angle", default=10.0*deg)
         upDipAngle.meta["tip"] = "Distance to extend contours in up-dip direction."
         
         faultStrike = pyre.inventory.dimensional("fault_strike", default=0.0*deg)
-        faultString.meta["tip"] = "Approximate strike of fault."
+        faultStrike.meta["tip"] = "Approximate strike of fault."
 
-        contourStride = pyre.inventory.int("contour_stride", default=4)
-        contourStride.meta["tip"] = "Stride to use in decimating number of contours."
+        contoursStride = pyre.inventory.int("contour_stride", default=4)
+        contoursStride.meta["tip"] = "Stride to use in decimating number of contours."
 
         pointsStride = pyre.inventory.int("points_stride", default=20)
         pointsStride.meta["tip"] = "Stride to use in decimating number of points in a contour."
         
 
+    def _configure(self):
+        Component._configure(self)
+        self.upDipElev = self.inventory.upDipElev
+        self.upDipDist = self.inventory.upDipDist
+        self.upDipAngle = self.inventory.upDipAngle
+        self.faultStrike = self.inventory.faultStrike
+        self.contoursStride = self.inventory.contoursStride
+        self.pointsStride = self.inventory.pointsStride
+        return
+
+    
     def __init__(self, name="slabextender"):
         """Constructor.
         """
@@ -189,18 +211,12 @@ class SlabExtender(Component):
 
     def initialize(self, slab):
         self.contours = slab.contours
-        self._decimate(stride)
+        self._decimate(self.pointsStride)
         self._toXYZ()
         
     
-    def addUpDipContours(self, elevKm=1.0, strikeDeg=0.0, dipDeg=10.0, extendDistKm=600.0):
+    def addUpDipContours(self):
         """Add contours up-dip from original contours.
-        
-        Keyword arguments:
-        elevKm -- Elevation in kilometers of additional contours.
-        strikeDeg -- Approximate strike of fault in degrees (default 0.0).
-        dipDeg -- Dip angle in degrees at up-dip edge of fault (default 10.0).
-        extendDistKm -- Distance in kilometers to extend slab surface in up-dip direction.
 
         We increase the horizontal distance between the contours at a
         geometric rate. The first contour is at a distance of
@@ -211,43 +227,50 @@ class SlabExtender(Component):
 
         """
         import math
+        from pyre.units.length import m
+        
         key = min(self.contours.keys())
         contourTop = self.contours[key]
-        zTop = contourTop[0][2]
+        zTop = contourTop[0][2]*m
 
-        distHoriz = (elevKm*1.0e+3-zTop)/math.tan(dipDeg*math.pi/180.0)
-        dx = -distHoriz*math.cos(strikeDeg*math.pi/180.0)
-        dy = distHoriz*math.sin(strikeDeg*math.pi/180.0)
+        distHoriz = (self.upDipElev - zTop) / math.tan(self.upDipAngle)
+        dx = -distHoriz * math.cos(self.faultStrike)
+        dy = distHoriz * math.sin(self.faultStrike)
 
         contoursUpDip = {}
-        numContours = int(math.ceil(math.log((extendDistKm*1.0e+3/distHoriz)+1)/math.log(2.0)))
+        numContours = int(math.ceil(math.log((self.upDipDist/distHoriz)+1)/math.log(2.0)))
         for i in xrange(numContours):
             contour = numpy.array(contourTop)
-            contour[:,0] += (2**i)*dx
-            contour[:,1] += (2**i)*dy
-            contour[:,2] = elevKm*1.0e+3
+            contour[:,0] += (2**i)*dx.value
+            contour[:,1] += (2**i)*dy.value
+            contour[:,2] = self.upDipElev.value
             contoursUpDip[-i] = contour
         self.contoursUpDip = contoursUpDip
         return
     
     
-    def getContours(self, spacingKm=10.0):
-        keys = []
-        for k in self.contours.keys():
-            if 0 == k % spacingKm:
-                keys.append(k)
-        contours = [self.contours[k] for k in sorted(keys)]
-        return contours
+    def getContours(self):
+        """Get contours for slab surface.
+        """
+        contours = [self.contours[k] for k in sorted(self.contours.keys())]
+        contoursD = contours[::self.contoursStride]
+        if (len(contours)-1) % self.contoursStride:
+            contoursD += [contours[-1]]
+        return contoursD
 
 
     def getUpDipContours(self):
+        """Get contours for up-dip extension of slab surface.
+        """
         contoursUpDip = [self.contoursUpDip[k] for k in sorted(self.contoursUpDip.keys())]
         return contoursUpDip
 
     
-    def getAllContours(self, spacingKm=10.0):
+    def getAllContours(self):
+        """Get all contours for slab surface.
+        """
         contours = self.getUpDipContours()
-        contours += self.getContours(spacingKm)
+        contours += self.getContours()
         return contours
 
     
@@ -255,8 +278,8 @@ class SlabExtender(Component):
         """Decimate the number of points in a contour.
         """
         for key,points in self.contours.items():
-            pointsD = points[::stride]
-            if (len(points)-1) % stride:
+            pointsD = points[::self.pointsStride]
+            if (len(points)-1) % self.pointsStride:
                 pointsD = numpy.vstack((pointsD, points[-1],))
             self.contours[key] = numpy.ascontiguousarray(pointsD)
         return 
@@ -280,7 +303,7 @@ class SurfaceApp(Application):
     """SurfaceApp object for top-level application workflow.
     """
 
-    class Inventory(Component.Inventory):
+    class Inventory(Application.Inventory):
         """Pyre properties and facilities for SurfaceApp.
         """
         from pyre.units.length import km
@@ -304,7 +327,10 @@ class SurfaceApp(Application):
         splayFilename = pyre.inventory.str("splay_filename", default="surf_splay.sat")
         splayFilename.meta["tip"] = "Name of ACIS file with splay fault surface."
 
-        slabNormalDir = pyre.inventory.list("slab_normal_dir", default=[0,0,1])
+        slabThickness = pyre.inventory.dimensional("slab_thickness", default=50.0*km)
+        slabThickness.meta["tip"] = "Thickness of slab."
+        
+        slabNormalDir = pyre.inventory.list("slab_normal_dir", default=[+0.209, -0.016, +0.979])
         slabNormalDir.meta["tip"] = "Approximate average upward normal direction for slab."
         
     
@@ -315,11 +341,10 @@ class SurfaceApp(Application):
         return
 
     
-    def main(self):
+    def main(self, *args, **kwds):
         """Open Slab 1.0 input file and journal output file and loop over
         contours.
         """
-        
         self.contours.read()
 
         self.extender.initialize(self.contours)
@@ -331,40 +356,50 @@ class SurfaceApp(Application):
         self.modeler.newSurface()
         for contour in self.extender.getAllContours():
             self.modeler.addContour(contour)
-        self.modeler.skinSurface("surf_slabtop.sat")
+        self.modeler.skinSurface(self.slabTopFilename)
 
         # Bottom of slab
         normalX = -0.209
         normalY = +0.016
         normalZ = -0.979
-        slabThicknessKm = 50.0
         
         self.modeler.newSurface()
         for contour in self.extender.getUpDipContours():
-            contour[:,2] = -slabThicknessKm*1.0e+3
+            contour[:,2] = -self.slabThickness.value
             self.modeler.addContour(contour)
         
         for contour in self.extender.getContours():
-            contour[:,0] += slabNormalDir[0]*slabThicknessKm*1.0e+3
-            contour[:,1] += slabNormalDir[1]*slabThicknessKm*1.0e+3
-            contour[:,2] += slabNormalDir[2]*slabThicknessKm*1.0e+3
+            contour[:,0] -= self.slabNormalDir[0]*self.slabThickness.value
+            contour[:,1] -= self.slabNormalDir[1]*self.slabThickness.value
+            contour[:,2] -= self.slabNormalDir[2]*self.slabThickness.value
             self.modeler.addContour(contour)
-        self.modeler.skinSurface("surf_slabbot.sat")
+        self.modeler.skinSurface(self.slabBotFilename)
 
         # Splay fault
         self.modeler.newSurface()
-        contour = extender.contours[15]
-        contour[:,2] -= 5.0e+3
+        contour = self.extender.contours[15]
+        contour[:,2] -= 8.0e+3
         self.modeler.addContour(contour)
         contour[:,2] = 1.0e+3
-        contour[:,0] -= 15.0e+3
+        contour[:,0] -= 24.0e+3
         self.modeler.addContour(contour)
-        self.modeler.skinSurface("surf_splay.sat")
+        self.modeler.skinSurface(self.splayFilename)
         
         self.modeler.close()
         return
 
 
+    def _configure(self):
+        Application._configure(self)
+        self.modeler = self.inventory.modeler
+        self.contours = self.inventory.contours
+        self.extender = self.inventory.extender
+        self.slabTopFilename = self.inventory.slabTopFilename
+        self.slabBotFilename = self.inventory.slabBotFilename
+        self.splayFilename = self.inventory.splayFilename
+        self.slabThickness = self.inventory.slabThickness
+        self.slabNormalDir = self.inventory.slabNormalDir
+    
 # ======================================================================
 if __name__ == "__main__":
 
