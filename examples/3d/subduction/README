@@ -1,0 +1,76 @@
+Features:
+
+  Spatial databases
+    + SimpleDB
+    + UniformDB
+    + SimpleGridDB
+    + CompositeDB
+
+    - Geographic coordinates with SimpleGridDB
+    - Depth profile with SimpleGridDB
+
+  Dirichlet Boundary conditions
+    + Fixed displacement
+    + Fixed velocity
+    + Time history
+
+  Materials
+    + Elastic
+    + Linear Maxwell viscoelastic
+    + Powerlaw [exercise]
+
+  Preconditioners
+    + LU
+    + AMG (ML)
+    + AMG (ML) + custom preconditioner
+
+  Uniform refinement [exercise]
+
+  Output
+    + Output of solution
+    + Output of solution on ground surface
+    + Output of solution at points
+    + Output of state variables
+
+    + HDF5
+
+  Visualization with ParaView Python scripts
+
+  Generation of spatial databases via Python
+
+  Faults
+    + Buried edges
+    + Intersecting
+    + Multiple faults
+    + Prescribed slip
+    + Prescribed slip w/multiple ruptures
+    + Fault friction
+
+Step01: Compression [tutorial]
+  UniformDB for material properties
+
+Step02: Coseismic [exercise]
+  Prescribed slip on fault patch with viscoelastic relaxation
+  Viscosity via CompositeDB
+
+Step03: Interseismic [tutorial]
+  Compression with slab creep
+
+
+Step04: Earthquake cycle [exercise]
+  
+
+Step05: Compression with frictional interface [tutorial]
+
+Step06: Slow slip event [tutorial]
+  Prescribed slow slip on fault patch
+
+Step07: Green's functions [tutorial]
+  Generate Green's functions (slab patch + splay patch?)
+  Simple inversion of GPS data (slip on slab or splay?)
+
+Step08: Gravity
+  uniform density, demonstrate initial stresses
+  variable density, elastic: demonstrate deviation
+  variable density, elastic+viscoelastic: demonstrate problems
+

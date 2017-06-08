@@ -21,8 +21,19 @@
 # ----------------------------------------------------------------------
 playback 'geometry.jou'
 
-# Uniform resolution tetmesh.
-volume all scheme tetmesh
+# Set paving scheme on +y boundary.
+surface 45 48 39 18 scheme pave
+
+# Set paving scheme on -y boundary.
+surface 43 50 21 36 scheme pave
+
+surface all size {25.0*km}
+
+volume v_domain  scheme sweep  source surface 18   target surface 21
+volume v_domain@A scheme sweep  source surface 43   target surface 45
+volume v_domain@B scheme sweep  source surface 39   target surface 36
+volume v_domain@C scheme sweep  source surface 48   target surface 50
+
 volume all size {25.0*km}
 mesh volume all
 
@@ -35,8 +46,9 @@ playback 'bc.jou'
 # ----------------------------------------------------------------------
 # Export exodus file
 # ----------------------------------------------------------------------
-export mesh "mesh_tet.exo" dimension 3 overwrite
+export mesh "mesh_hex.exo" dimension 3 overwrite
 
 
 # End of file
+
 
