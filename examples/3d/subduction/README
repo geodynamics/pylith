@@ -46,31 +46,60 @@ Features:
     + Prescribed slip w/multiple ruptures
     + Fault friction
 
-Step01: Compression [tutorial]
-  UniformDB for material properties
+Step01: Axial compression [tutorial]
+  Dirichlet BC with initial values
+  UniformDB with properties for each material
+  Static
+    LU preconditioner
+
+  ParaView
+    Python script to view displacement field
+    Python script to view material properties (shear modulus)
+
+  Exercise: Shear instead of axial compression
 
 Step02: Coseismic [exercise]
-  Prescribed slip on fault patch with viscoelastic relaxation
-  Viscosity via CompositeDB
+  DirichletBC constraining normal displacement on lateral and bottom boundaries
+  Prescribed uniform slip (UniformDB) on slab fault patch with viscoelastic relaxation
+  Viscosity via CompositeDB (single SimpleGridDB with viscosity as a fn of depth)
+  Quasistatic
+    field split + custom preconditioner
+
+  ParaView
+    Python script to view prescribed slip
+    Python script to view relaxation of shear stress
+
+  Exercise: Change slip on slab to slip on splay fault
+  Exercise: Slip on lower slab and splay fault
+  Exercise: Slip on slab and splay fault
 
 Step03: Interseismic [tutorial]
-  Compression with slab creep
-
+  DirichletBC with constant velocity (compression)
+  Prescribed fault slip with constant slip rate (UniformDB) [lower slab]
+  Prescribed fault slip with constant slip rate at depth (SimpleGridDB) [top slab]
+  Quasistatic
 
 Step04: Earthquake cycle [exercise]
-  
+  Interseismic + coseismic
 
 Step05: Compression with frictional interface [tutorial]
+  Interseismic + rate- and state-friction
+  Quasistatic
 
 Step06: Slow slip event [tutorial]
-  Prescribed slow slip on fault patch
+  DirichletBC constraining normal displacement on lateral and bottom boundaries
+  Prescribed slow slip on slab fault patch (SimpleGridDB 2-D in geo coordinates)
+    Time history slip-time function
+  Quasistatic
+  OutputSolnPoints
 
 Step07: Green's functions [tutorial]
   Generate Green's functions (slab patch + splay patch?)
   Simple inversion of GPS data (slip on slab or splay?)
+  OutputSolnPoints
 
 Step08: Gravity
-  uniform density, demonstrate initial stresses
-  variable density, elastic: demonstrate deviation
+  uniform density (SimpleDB), demonstrate initial stresses to compensate gravity
+  variable density (match Step01), initial stress matches avg desnity, elastic: demonstrate deviation
   variable density, elastic+viscoelastic: demonstrate problems
 
