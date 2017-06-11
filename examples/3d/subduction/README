@@ -1,3 +1,7 @@
+Directory structure:
+  mesh (mesh related files)
+  spatialdb (spatial database related files)
+
 Features:
 
   Spatial databases
