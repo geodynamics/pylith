@@ -2,6 +2,7 @@
 # Script to get coastline from GMT and make a VTK file for visualization.
 # Note that GMT4 is used. Parameters and Python script would need modification
 # for GMT5.
+# PROJ.4 is also required for coordinate conversions.
 
 # Filenames.
 txtwgs84="cascadia_wgs84.txt"

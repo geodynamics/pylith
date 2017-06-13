@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-import math
-import numpy
-import pdb
+# import pdb
 # pdb.set_trace()
 
 # Get command-line arguments.
@@ -31,7 +29,7 @@ f = open(in_file, 'r')
 g = open(out_file, 'w')
 
 g.write('# vtk DataFile Version 2.0\n')
-g.write('New Zealand coastlines.\n')
+g.write('Coastline segments.\n')
 g.write('ASCII\n')
 g.write('DATASET POLYDATA\n')
 
