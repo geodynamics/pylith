@@ -13,7 +13,7 @@ vtktm="cascadia_tm.vtk"
 region="-R-129/-117/41/50"
 
 # Resolution: (f)ull, (h)igh, (i)ntermediate, (l)ow, or (c)rude.
-reso="-Dh"
+reso="-Dl"
 
 # Draw rivers option.
 # rivers="-Ia"
