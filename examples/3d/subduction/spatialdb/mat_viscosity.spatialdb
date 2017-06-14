@@ -1,0 +1,29 @@
+#SPATIAL_GRID.ascii 1
+SimpleGridDB {
+  num-x = 1
+  num-y = 1
+  num-z = 4
+  num-values = 1
+  space-dim = 3
+  value-names = viscosity
+  value-units = Pa*s
+  cs-data = cartesian {
+    space-dim = 3
+    to-meters = 1.0e+3
+  }
+}
+
+// x coordinate
+0.0
+
+// y coordinate
+0.0
+
+// z coordinates
+0.0  -50.0 -100.0  -400.0
+
+// z  viscosity
+0.0  0.0     0.0    1.0e+22
+0.0  0.0   -50.0    8.0e+21
+0.0  0.0  -100.0    2.0e+20
+0.0  0.0  -400.0    1.0e+20
