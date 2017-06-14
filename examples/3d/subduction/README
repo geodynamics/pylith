@@ -16,8 +16,8 @@ https://pubs.usgs.gov/of/2007/1348/.
 Features:
 
   Spatial databases
-    + SimpleDB
-    + UniformDB
+    + SimpleDB [1]
+    + UniformDB [1]
     + SimpleGridDB
     + CompositeDB
 
@@ -25,25 +25,25 @@ Features:
     - Depth profile with SimpleGridDB
 
   Dirichlet Boundary conditions
-    + Fixed displacement
+    + Fixed displacement [1]
     + Fixed velocity
     + Time history
 
   Materials
-    + Elastic
+    + Elastic [1]
     + Linear Maxwell viscoelastic
     + Powerlaw [exercise]
 
   Preconditioners
-    + LU
+    + LU [1]
     + AMG (ML)
     + AMG (ML) + custom preconditioner
 
   Uniform refinement [exercise]
 
   Output
-    + Output of solution
-    + Output of solution on ground surface
+    + Output of solution [1]
+    + Output of solution on ground surface [1]
     + Output of solution at points
     + Output of state variables
 

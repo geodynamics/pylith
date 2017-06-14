@@ -26,28 +26,20 @@
 # Root name for simulation.
 SIM_NAME = "step01"
 
-# Format of simulation output (choices=["vtk", "hdf5"], case insentitive)
-DATA_FORMAT = "hdf5"
-
 # Scale used to exaggerate deformation.
 DISPLACEMENT_SCALE = 10.0e+3
 
 # ----------------------------------------------------------------------
-# We create sources, filters, etc using the servermanager so that we can set the
-# name of the proxy shown in the pipeline using Register(registrationName=NAME).
-
 from paraview.simple import *
 # Disable automatic camera reset on "Show"
 paraview.simple._DisableFirstRenderCameraReset()
 
 # Read data
-if DATA_FORMAT.lower() == "vtk":
-    dataDomain = servermanager.sources.LegacyVTKReader(FileNames=['output/%s-domain_t0000000.vtk' % SIM_NAME])
-elif DATA_FORMAT.lower() == "hdf5":
-    dataDomain = servermanager.sources.XDMFReader(FileNames=["output/%s-domain.xmf" % SIM_NAME])
-else:
-     raise ValueError("Unknown file format '%s' when choosing reader in Python script." % DATA_FORMAT)
-servermanager.Register(dataDomain, registrationName="%s-domain" % SIM_NAME)
+dataDomain = XDMFReader(FileNames=["output/%s-domain.xmf" % SIM_NAME])
+RenameSource("%s-domain" % SIM_NAME, dataDomain)
+
+scene = GetAnimationScene()
+scene.UpdateAnimationUsingDataTimeSteps()
 view = GetActiveViewOrCreate('RenderView')
 
 # Gray wireframe for undeformed domain.
@@ -56,8 +48,7 @@ domainDisplay.Representation = 'Wireframe'
 domainDisplay.AmbientColor = [0.5, 0.5, 0.5]
 
 # Warp domain to show deformation
-warp = servermanager.filters.WarpByVector(Input=dataDomain)
-servermanager.Register(warp, registrationName="%s-domain-warp" % SIM_NAME)
+warp = WarpByVector(Input=dataDomain)
 warp.Vectors = ['POINTS', 'displacement']
 warp.ScaleFactor = DISPLACEMENT_SCALE
 
@@ -74,6 +65,7 @@ warpDisplay.RescaleTransferFunctionToDataRange(False, False)
 UpdateScalarBarsComponentTitle(displacementLUT, warpDisplay)
 
 view.ResetCamera()
+view.Update()
 
 Render()
 
