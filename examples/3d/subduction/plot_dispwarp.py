@@ -27,7 +27,7 @@
 SIM_NAME = "step01"
 
 # Format of simulation output (choices=["vtk", "hdf5"], case insentitive)
-DATA_FORMAT = "vtk"
+DATA_FORMAT = "hdf5"
 
 # Scale used to exaggerate deformation.
 DISPLACEMENT_SCALE = 10.0e+3
@@ -41,10 +41,10 @@ from paraview.simple import *
 paraview.simple._DisableFirstRenderCameraReset()
 
 # Read data
-if DATA_FORMAT == "vtk":
+if DATA_FORMAT.lower() == "vtk":
     dataDomain = servermanager.sources.LegacyVTKReader(FileNames=['output/%s-domain_t0000000.vtk' % SIM_NAME])
-elif DATA_FORMAT == "HDF5":
-    pass
+elif DATA_FORMAT.lower() == "hdf5":
+    dataDomain = servermanager.sources.XDMFReader(FileNames=["output/%s-domain.xmf" % SIM_NAME])
 else:
      raise ValueError("Unknown file format '%s' when choosing reader in Python script." % DATA_FORMAT)
 servermanager.Register(dataDomain, registrationName="%s-domain" % SIM_NAME)
