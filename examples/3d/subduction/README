@@ -2,6 +2,17 @@ Directory structure:
   mesh (mesh related files)
   spatialdb (spatial database related files)
 
+
+Elastic properties loosely based on
+
+Stephenson, W.J., 2007, Velocity and density models incorporating the
+Cascadia subduction zone for 3D earthquake ground motion simulations,
+Version 1.3: U.S. Geological Survey, Earthquake Hazards Ground Motion
+Investigations, Open-File Report 2007–1348, 24 pages,
+https://pubs.usgs.gov/of/2007/1348/.
+
+
+
 Features:
 
   Spatial databases
@@ -51,8 +62,8 @@ Features:
     + Fault friction
 
 Step01: Axial compression [tutorial]
-  Dirichlet BC with initial values
-  UniformDB with properties for each material
+  Dirichlet BC with initial values (UniformDB)
+  SimpleDB with properties for each material
   Static
     LU preconditioner
 

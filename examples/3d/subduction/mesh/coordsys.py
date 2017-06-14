@@ -55,17 +55,4 @@ def geoToMesh(xyz):
     return
     
 
-def bbox_mesh():
-    """
-    """
-    xdim = 2000.0e+3
-    ydim = 2000.0e+3
-    xoffset = 0.0e+3
-    yoffset = 0.0e+3
-
-    bbox = (xoffset-0.5*xdim, yoffset-0.5*ydim,
-            xoffset+0.5*xdim, yoffset+0.5*ydim)
-    return bbox
-
-
 # End of file
