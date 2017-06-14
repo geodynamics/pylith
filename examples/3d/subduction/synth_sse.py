@@ -12,10 +12,6 @@ from spatialdata.spatialdb.SimpleGridDB import SimpleGridDB
 from spatialdata.spatialdb.SimpleGridAscii import SimpleGridAscii
 from spatialdata.spatialdb import TimeHistoryIO
 from spatialdata.geocoords.CSGeo import CSGeo
-from spatialdata.geocoords.CoordSys import CoordSys
-from spatialdata.geocoords.CSGeoProj import CSGeoProj
-from spatialdata.geocoords.Converter import convert
-
 
 from pyre.applications.Script import Script as Application
 
