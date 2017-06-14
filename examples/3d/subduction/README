@@ -1,6 +1,10 @@
+TODO
+  Set coordinate system to projected geographic coordinate system.
+
 Directory structure:
   mesh (mesh related files)
   spatialdb (spatial database related files)
+  viz
 
 
 Elastic properties loosely based on
