@@ -11,9 +11,19 @@ SimpleDB {
   num-locs = 1 // number of locations
   data-dim = 0
   space-dim = 3
-  cs-data = cartesian {
-    to-meters = 1.0
-    space-dim = 3
+  cs-data = geo-projected {
+    to-meters = 1
+    ellipsoid = WGS84
+    datum-horiz = WGS84
+    datum-vert = mean sea level
+    origin-lon = 0
+    origin-lat = 0
+    rotation-angle = 0
+    projector = projector {
+      projection = tmerc
+      units = m
+      proj-options = +lon_0=-122.6765 +lat_0=45.5231 +k=0.9996
+    }
   }
 }
 // Columns are
