@@ -31,4 +31,4 @@ cs2cs +proj=lonlat +ellps=WGS84 +datum=WGS84 +to +proj=tmerc +lon_0=-122.6765 +l
 # Run seg2vtk.py script to convert pscoast info to VTK file.
 ./seg2vtk.py --in_file=$txttm --out_file=$vtktm --elevation=0.1
 
-# /bin/rm $txtwgs84 $txttm
+/bin/rm $txtwgs84 $txttm
