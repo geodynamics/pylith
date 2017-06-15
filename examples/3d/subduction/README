@@ -1,6 +1,10 @@
+TODO
+  Set coordinate system to projected geographic coordinate system.
+
 Directory structure:
   mesh (mesh related files)
   spatialdb (spatial database related files)
+  viz
 
 
 Elastic properties loosely based on
@@ -17,33 +21,33 @@ Features:
 
   Spatial databases
     + SimpleDB [1]
-    + UniformDB [1]
-    + SimpleGridDB
-    + CompositeDB
+    + UniformDB [1,2,3]
+    + SimpleGridDB [2,3]
+    + CompositeDB [2,3]
 
     - Geographic coordinates with SimpleGridDB
-    - Depth profile with SimpleGridDB
+    - Depth profile with SimpleGridDB [2,3]
 
   Dirichlet Boundary conditions
-    + Fixed displacement [1]
+    + Fixed displacement [1,2,3]
     + Fixed velocity
     + Time history
 
   Materials
-    + Elastic [1]
-    + Linear Maxwell viscoelastic
+    + Elastic [1,2,3]
+    + Linear Maxwell viscoelastic [2,3]
     + Powerlaw [exercise]
 
   Preconditioners
     + LU [1]
     + AMG (ML)
-    + AMG (ML) + custom preconditioner
+    + AMG (ML) + custom preconditioner [2,3]
 
   Uniform refinement [exercise]
 
   Output
-    + Output of solution [1]
-    + Output of solution on ground surface [1]
+    + Output of solution [1,2,3]
+    + Output of solution on ground surface [1,2,3]
     + Output of solution at points
     + Output of state variables
 
@@ -54,10 +58,10 @@ Features:
   Generation of spatial databases via Python
 
   Faults
-    + Buried edges
+    + Buried edges [2,3]
     + Intersecting
-    + Multiple faults
-    + Prescribed slip
+    + Multiple faults [3]
+    + Prescribed slip [2,3]
     + Prescribed slip w/multiple ruptures
     + Fault friction
 
