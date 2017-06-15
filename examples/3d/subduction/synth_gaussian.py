@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-## @file synth_sse.py
+## @file synth_gaussian.py
 
 ## @brief Python application to create spatial databases for a synthetic
-## SSE with time-varying circular slip.
+## event with time-varying Gaussian slip.
 
 # import pdb
 import math
@@ -15,14 +15,14 @@ from spatialdata.geocoords.CSGeo import CSGeo
 
 from pyre.applications.Script import Script as Application
 
-class SynthSse(Application):
+class SynthGaussian(Application):
   """
   Python application to create spatial databases for a synthetic
   SSE with time-varying Gaussian slip.
   """
   
   import pyre.inventory
-  ## Python object for managing SynthSse facilities and properties.
+  ## Python object for managing SynthGaussian facilities and properties.
   ##
   ## \b Properties
   ## @li \b rake Rake of fault slip (degrees).
@@ -95,7 +95,7 @@ class SynthSse(Application):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="synth_sse"):
+  def __init__(self, name="synth_gaussian"):
     Application.__init__(self, name)
 
     self.lon = None
@@ -229,6 +229,9 @@ class SynthSse(Application):
     Write temporal database with time variation of fault slip.
     """
 
+    if (len(self.slipTimes) == 1):
+      return
+
     time = [float(i) for i in self.slipTimes]
     timeArr = numpy.array(time, dtype=numpy.float64)
 
@@ -243,7 +246,7 @@ class SynthSse(Application):
 
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
-  app = SynthSse()
+  app = SynthGaussian()
   app.run()
 
 # End of file
