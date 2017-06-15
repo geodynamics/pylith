@@ -4,17 +4,18 @@
 // associated with aseismic creep on the interface between the mantle
 // and the subducting oceanic crust.
 // 
-// We specify uniform slip above a depth of 45 km, tapering to
-// 0 at a depth of 60 km.
+// We specify depth-dependent fault tractions with higher values in
+// the stable sliding regions consistent with residual stresses in
+// those regions.
 //
 #SPATIAL_GRID.ascii 1
 SimpleGridDB {
   num-x = 1
   num-y = 1
-  num-z = 4
+  num-z = 6
   num-values = 3
-  value-names =  left-lateral-slip  reverse-slip  fault-opening
-  value-units =  m  m  m
+  value-names =  traction-shear-leftlateral traction-shear-updip traction-normal
+  value-units =  MPa  MPa  MPa
   space-dim = 3
   cs-data = geo-projected {
     to-meters = 1.0e+3 // Specify coordinates in km for convenience.
@@ -39,16 +40,18 @@ SimpleGridDB {
 0.0
 
 // z coordinate
-99.0  -45.0  -60.0  -999.0
+99.0  -5.0  -15.0  -35.0  -45.0  -999.0
 
 // Columns are
 // (1) x coordinate (km)
 // (2) y coordinate (km)
 // (3) z coordinate (km)
-// (4) left-laterial-slip (m)
-// (5) reverse-slip (m)
-// (6) fault-opening (m)
-0.0  0.0    99.0   -2.0 +4.0  0.0
-0.0  0.0   -45.0   -2.0 +4.0  0.0
-0.0  0.0   -60.0    0.0  0.0  0.0
-0.0  0.0  -999.0    0.0  0.0  0.0
+// (4) left-lateral shear traction (MPa)
+// (5) reverse shear traction (MPa)
+// (6) normal traction (MPa)
+0.0  0.0    99.0   0.0  10.0  -20.0
+0.0  0.0    -5.0   0.6  10.0  -20.0
+0.0  0.0   -15.0   0.6   0.0  -20.0
+0.0  0.0   -30.0   0.6   0.0  -20.0
+0.0  0.0   -45.0   0.6  10.0  -20.0
+0.0  0.0  -999.0   0.6  10.0  -20.0

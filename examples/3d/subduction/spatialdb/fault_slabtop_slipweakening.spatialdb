@@ -4,17 +4,18 @@
 // associated with aseismic creep on the interface between the mantle
 // and the subducting oceanic crust.
 // 
-// We specify uniform slip above a depth of 45 km, tapering to
-// 0 at a depth of 60 km.
+// We specify depth-dependent frictional properties with stable
+// sliding (equal dynamic and static coefficients of friction) above
+// and below the seismogenic zone (elevations of -5 km to -45 km).
 //
 #SPATIAL_GRID.ascii 1
 SimpleGridDB {
   num-x = 1
   num-y = 1
-  num-z = 4
-  num-values = 3
-  value-names =  left-lateral-slip  reverse-slip  fault-opening
-  value-units =  m  m  m
+  num-z = 6
+  num-values = 4
+  value-names =  static-coefficient  dynamic-coefficient  slip-weakening-parameter  cohesion
+  value-units =  none  none  m  Pa
   space-dim = 3
   cs-data = geo-projected {
     to-meters = 1.0e+3 // Specify coordinates in km for convenience.
@@ -39,16 +40,19 @@ SimpleGridDB {
 0.0
 
 // z coordinate
-99.0  -45.0  -60.0  -999.0
+99.0  -5.0  -15.0  -35.0  -45.0  -999.0
 
 // Columns are
 // (1) x coordinate (km)
 // (2) y coordinate (km)
 // (3) z coordinate (km)
-// (4) left-laterial-slip (m)
-// (5) reverse-slip (m)
-// (6) fault-opening (m)
-0.0  0.0    99.0   -2.0 +4.0  0.0
-0.0  0.0   -45.0   -2.0 +4.0  0.0
-0.0  0.0   -60.0    0.0  0.0  0.0
-0.0  0.0  -999.0    0.0  0.0  0.0
+// (4) static-coefficient
+// (5) dynamic-coefficient
+// (6) slip-weakening-parameter (m)
+// (7) cohesion (Pa)
+0.0  0.0    99.0   0.6  0.6  1.0  0.0
+0.0  0.0    -5.0   0.6  0.6  1.0  0.0
+0.0  0.0   -15.0   0.6  0.2  1.0  0.0
+0.0  0.0   -30.0   0.6  0.2  1.0  0.0
+0.0  0.0   -45.0   0.6  0.6  1.0  0.0
+0.0  0.0  -999.0   0.6  0.6  1.0  0.0
