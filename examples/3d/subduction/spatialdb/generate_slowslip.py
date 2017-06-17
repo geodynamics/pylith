@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-## @file synth_gaussian.py
+## @file generate_slowslip.py
 
 ## @brief Python application to create spatial databases for a synthetic
 ## event with time-varying Gaussian slip.
@@ -67,8 +67,7 @@ class SynthGaussian(Application):
   slipTimeUnits = pyre.inventory.str("slip_time_units", default="year")
   slipTimeUnits.meta['tip'] = "Units used for slip times."
 
-  slipAmplitudes = pyre.inventory.list("slip_amplitudes",
-                                       default=[0.0, 0.5, 1.0])
+  slipAmplitudes = pyre.inventory.list("slip_amplitudes", default=[0.0, 0.5, 1.0])
   slipAmplitudes.meta['tip'] = "List of slip amplitudes."
 
   gridLonRange = pyre.inventory.list("grid_lon_range", default=[-123.0, -124.0])
@@ -83,19 +82,16 @@ class SynthGaussian(Application):
   timeDbFilename = pyre.inventory.str("time_db_filename", default="slip.timedb")
   timeDbFilename.meta['tip'] = "Filename of temporal DB output file."
 
-  coordsys = pyre.inventory.facility("coordsys",
-                                     family="coordsys",
-                                     factory=CSGeo)
+  coordsys = pyre.inventory.facility("coordsys", family="coordsys", factory=CSGeo)
   coordsys.meta['tip'] = "Coordinate system for output database."
   
-  iohandler = pyre.inventory.facility("iohandler", family="simplegrid_io",
-                                      factory=SimpleGridAscii)
+  iohandler = pyre.inventory.facility("iohandler", family="simplegrid_io", factory=SimpleGridAscii)
   iohandler.meta['tip'] = "Object for writing spatial database."
   
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="synth_gaussian"):
+  def __init__(self, name="generate_slowslip"):
     Application.__init__(self, name)
 
     self.lon = None
@@ -193,10 +189,7 @@ class SynthGaussian(Application):
     """
     Write spatial database with fault slip.
     """
-
-    print "Writing spatial database:"
-
-    llSlipInfo = {'name': "left-lateral-slip",
+    llSlipInfo = {'name': "left-lateral-slip", 
                   'units': "m",
                   'data': self.faultSlip[:,0]}
 

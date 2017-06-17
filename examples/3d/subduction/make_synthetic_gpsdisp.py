@@ -4,7 +4,6 @@
 
 ## @brief Python application to create synthetic data from PyLith points output.
 
-import pdb
 import math
 import numpy
 import h5py
@@ -27,8 +26,7 @@ class MakeSynthData(Application):
   ## @li \b output_file Name of ASCII output file.
   ##
 
-  pointInputFile = pyre.inventory.str("point_input_file",
-                                        default="cascadia-cgps_points.h5")
+  pointInputFile = pyre.inventory.str("point_input_file", default="cascadia-cgps_points.h5")
   pointInputFile.meta['tip'] = "HDF5 point output file from PyLith."
 
   sigmaEast = pyre.inventory.float("sigma_east", default=0.0005)
@@ -40,14 +38,13 @@ class MakeSynthData(Application):
   sigmaUp = pyre.inventory.float("sigma_up", default=0.001)
   sigmaUp.meta['tip'] = "Sigma value for Up displacements."
 
-  outputFile = pyre.inventory.str("output_file",
-                                  default="cascadia-cgps_displ.txt")
+  outputFile = pyre.inventory.str("output_file", default="cascadia-cgps_disp.txt")
   outputFile.meta['tip'] = "Name of ASCII output file."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="make_synth_data"):
+  def __init__(self, name="make_synthetic_gpsdisp"):
     Application.__init__(self, name)
 
     self.coords = None
@@ -61,8 +58,6 @@ class MakeSynthData(Application):
 
 
   def main(self):
-    pdb.set_trace()
-                                         
     self._readHDF5()
     self._addNoise()
     self._writeOutput()
@@ -87,10 +82,12 @@ class MakeSynthData(Application):
     Function to read HDF5 file from PyLith.
     """
 
-    h5File = h5py.File(self.pointInputFile, 'r')
-    self.coords = h5File['geometry/vertices'][:]
-    self.stations = h5File['stations'][:]
-    self.dispRaw = h5File['vertex_fields/displacement'][0,:,:]
+    h5 = h5py.File(self.pointInputFile, 'r')
+    self.coords = h5['geometry/vertices'][:]
+    self.stations = h5['stations'][:]
+    self.dispRaw = h5['vertex_fields/displacement'][0,:,:]
+    hf.close()
+
     self.numStations = self.coords.shape[0]
 
     return
@@ -100,14 +97,9 @@ class MakeSynthData(Application):
     """
     Function to add noise to computed displacements.
     """
-
-    self.dispNoise[:,0] = self.dispRaw[:,0] + \
-                          self.sigmaEast * numpy.random.randn(self.numStations)
-    self.dispNoise[:,1] = self.dispRaw[:,1] + \
-                          self.sigmaNorth * numpy.random.randn(self.numStations)
-    self.dispNoise[:,2] = self.dispRaw[:,2] + \
-                          self.sigmaUp * numpy.random.randn(self.numStations)
-
+    self.dispNoise[:,0] = self.dispRaw[:,0] + self.sigmaEast * numpy.random.randn(self.numStations)
+    self.dispNoise[:,1] = self.dispRaw[:,1] + self.sigmaNorth * numpy.random.randn(self.numStations)
+    self.dispNoise[:,2] = self.dispRaw[:,2] + self.sigmaUp * numpy.random.randn(self.numStations)
     return
     
 
