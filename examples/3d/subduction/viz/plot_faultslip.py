@@ -28,21 +28,25 @@
 # pvpython.
 
 # Root name for simulation.
-SIM_NAME = "step02"
+SIM_NAME = "step07a"
 
 # Names of faults for output files.
 FAULTS = ["fault-slab"]
 
 # ----------------------------------------------------------------------
 from paraview.simple import *
+import os
 
 def visualize(sim, faults):
     # Disable automatic camera reset on "Show"
     paraview.simple._DisableFirstRenderCameraReset()
 
     # Read domain data
-    dataDomain = XDMFReader(FileNames=["output/%s-domain.xmf" % SIM_NAME])
-    RenameSource("%s-domain" % SIM_NAME, dataDomain)
+    filename = "output/%s-domain.xmf" % sim
+    if not os.path.isfile(filename):
+        raise IOError("File '%s' does not exist." % filename)
+    dataDomain = XDMFReader(FileNames=[filename])
+    RenameSource("%s-domain" % sim, dataDomain)
 
     scene = GetAnimationScene()
     scene.UpdateAnimationUsingDataTimeSteps()
@@ -56,8 +60,11 @@ def visualize(sim, faults):
     # Read fault data
     dataFaults = []
     for fault in faults:
-        data = XDMFReader(FileNames=["output/%s-%s.xmf" % (SIM_NAME, fault)])
-        RenameSource("%s-%s" % (SIM_NAME, fault), data)
+        filename = "output/%s-%s.xmf" % (sim, fault)
+        if not os.path.isfile(filename):
+            raise IOError("File '%s' does not exist." % filename)
+        data = XDMFReader(FileNames=[filename])
+        RenameSource("%s-%s" % (sim, fault), data)
         dataFaults.append(data)
 
     groupFaults = GroupDatasets(Input=dataFaults)

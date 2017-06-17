@@ -33,6 +33,7 @@ MATERIALS = ["crust", "mantle", "wedge", "slab"]
 
 # ----------------------------------------------------------------------
 from paraview.simple import *
+import os
 
 def visualize(sim, field, materials):
 
@@ -43,7 +44,10 @@ def visualize(sim, field, materials):
     dataAll = []
     # Read data
     for material in materials:
-        dataMaterial = XDMFReader(FileNames=["output/%s-%s_info.xmf" % (sim, material)])
+        filename = "output/%s-%s_info.xmf" % (sim, material)
+        if not os.path.isfile(filename):
+            raise IOError("File '%s' does not exist." % filename)
+        dataMaterial = XDMFReader(FileNames=[filename])
         RenameSource("%s-%s" % (sim, material), dataMaterial)
         dataAll.append(dataMaterial)
     groupMaterials = GroupDatasets(Input=dataAll)

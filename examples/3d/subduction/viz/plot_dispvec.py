@@ -37,7 +37,7 @@ DISPLACEMENT_SCALE = 10.0e+3
 
 # ----------------------------------------------------------------------
 from paraview.simple import *
-
+import os
 
 def visualize(sim, dispScale):
     
@@ -45,8 +45,11 @@ def visualize(sim, dispScale):
     paraview.simple._DisableFirstRenderCameraReset()
 
     # Read data
-    dataDomain = XDMFReader(FileNames=["output/%s-domain.xmf" % SIM_NAME])
-    RenameSource("%s-domain" % SIM_NAME, dataDomain)
+    filename = "output/%s-domain.xmf" % sim
+    if not os.path.isfile(filename):
+        raise IOError("File '%s' does not exist." % filename)
+    dataDomain = XDMFReader(FileNames=[sim])
+    RenameSource("%s-domain" % sim, dataDomain)
 
     scene = GetAnimationScene()
     scene.UpdateAnimationUsingDataTimeSteps()
@@ -69,7 +72,7 @@ def visualize(sim, dispScale):
     # Add arrows to show displacement vectors.
     glyph = Glyph(Input=dataDomain, GlyphType="Arrow")
     glyph.Vectors = ["POINTS", "displacement"]
-    glyph.ScaleFactor = DISPLACEMENT_SCALE
+    glyph.ScaleFactor = dispScale
     glyph.ScaleMode = "vector"
     glyph.GlyphMode = "All Points"
 

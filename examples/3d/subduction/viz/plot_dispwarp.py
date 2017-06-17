@@ -33,6 +33,7 @@ DISPLACEMENT_SCALE = 10.0e+3
 
 # ----------------------------------------------------------------------
 from paraview.simple import *
+import os
 
 def visualize(sim, exaggeration):
     
@@ -40,7 +41,10 @@ def visualize(sim, exaggeration):
     paraview.simple._DisableFirstRenderCameraReset()
 
     # Read data
-    dataDomain = XDMFReader(FileNames=["output/%s-domain.xmf" % sim])
+    filename = "output/%s-domain.xmf" % sim
+    if not os.path.isfile(filename):
+        raise IOError("File '%s' does not exist." % filename)
+    dataDomain = XDMFReader(FileNames=[filename])
     RenameSource("%s-domain" % sim, dataDomain)
 
     scene = GetAnimationScene()
