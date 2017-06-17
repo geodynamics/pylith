@@ -34,3 +34,5 @@ examples/3d/subduction/output
 examples/3d/subduction/mesh/geometry_surfs.jou
 examples/3d/subduction/mesh/*.exo
 examples/3d/subduction/mesh/*.sat
+examples/3d/subduction/spatialdb/fault_slabtop_slowslip.spatialdb
+examples/3d/subduction/spatialdb/fault_slabtop_slowslip.timedb
