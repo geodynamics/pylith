@@ -1,7 +1,7 @@
 Directory structure:
   mesh (mesh related files)
-  spatialdb (spatial database related files)
-  viz
+  spatialdb (spatial and temporal database related files)
+  viz (ParaView Python scripts)
 
 
 Elastic properties loosely based on
