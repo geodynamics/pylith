@@ -176,11 +176,20 @@ class MakeSyntheticGpsdisp(Application):
     v = open(self.vtkOutputFile, 'w')
     v.write(vtkHead)
     numpy.savetxt(v, self.coords)
+
+    numConnect = 2 * self.numStations
+    connectHead = "VERTICES %d %d\n" % (self.numStations, numConnect)
+    v.write(connectHead)
+    verts = numpy.arange(self.numStations, dtype=numpy.int)
+    sizes = numpy.ones_like(verts)
+    outConnect = numpy.column_stack((sizes, verts))
+    numpy.savetxt(v, outConnect, fmt="%d")
+    
     dispHead = "POINT_DATA " + repr(self.numStations) + "\n" + \
-               "VECTORS displacement double\n" + \
-               "LOOKUP_TABLE DEFAULT\n"
+               "VECTORS displacement double\n"
     v.write(dispHead)
     numpy.savetxt(v, self.dispNoise)
+
     sigHead = "VECTORS uncertainty double\n"
     v.write(sigHead)
     numpy.savetxt(v, sigma)
