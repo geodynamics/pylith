@@ -15,14 +15,14 @@ from spatialdata.geocoords.CSGeo import CSGeo
 
 from pyre.applications.Script import Script as Application
 
-class SynthGaussian(Application):
+class GenerateSlowslip(Application):
   """
   Python application to create spatial databases for a synthetic
   SSE with time-varying Gaussian slip.
   """
   
   import pyre.inventory
-  ## Python object for managing SynthGaussian facilities and properties.
+  ## Python object for managing GenerateSlowslip facilities and properties.
   ##
   ## \b Properties
   ## @li \b rake Rake of fault slip (degrees).
@@ -239,7 +239,7 @@ class SynthGaussian(Application):
 
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
-  app = SynthGaussian()
+  app = GenerateSlowslip()
   app.run()
 
 # End of file
