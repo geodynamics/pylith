@@ -133,8 +133,8 @@ class SlipInvert(Application):
 
 
   def main(self):
-    import pdb
-    pdb.set_trace()
+    # import pdb
+    # pdb.set_trace()
     self.readData()
     self.readGreens()
     self.runInversions()

@@ -1,13 +1,27 @@
 #!/usr/bin/env python
-
-## @file make_synth_data.py
-
-## @brief Python application to create synthetic data from PyLith points output.
+# -*- Python -*- (syntax highlighting)
+#
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2017 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+#
+# Python application to create synthetic data from PyLith points output.
 
 import math
 import numpy
 import h5py
-# import pdb
+import pdb
 
 from pyre.applications.Script import Script as Application
 
@@ -26,9 +40,11 @@ class MakeSyntheticGpsdisp(Application):
   ## @li \b sigma_north Sigma value for north displacements.
   ## @li \b sigma_up Sigma value for up displacements.
   ## @li \b output_file Name of ASCII output file.
+  ## @li \b vtk_output_file Name of VTK output file.
   ##
 
-  pointInputFile = pyre.inventory.str("point_input_file", default="cascadia-cgps_points.h5")
+  pointInputFile = pyre.inventory.str("point_input_file",
+                                      default="cascadia-cgps_points.h5")
   pointInputFile.meta['tip'] = "HDF5 point output file from PyLith."
 
   timeStep = pyre.inventory.int("time_step", default=0)
@@ -43,8 +59,13 @@ class MakeSyntheticGpsdisp(Application):
   sigmaUp = pyre.inventory.float("sigma_up", default=0.001)
   sigmaUp.meta['tip'] = "Sigma value for Up displacements."
 
-  outputFile = pyre.inventory.str("output_file", default="cascadia-cgps_disp.txt")
+  outputFile = pyre.inventory.str("output_file",
+                                  default="cascadia-cgps_disp.txt")
   outputFile.meta['tip'] = "Name of ASCII output file."
+
+  vtkOutputFile = pyre.inventory.str("vtk_output_file",
+                                  default="cascadia-cgps_disp.vtk")
+  vtkOutputFile.meta['tip'] = "Name of VTK output file."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -67,6 +88,7 @@ class MakeSyntheticGpsdisp(Application):
     self._readHDF5()
     self._addNoise()
     self._writeOutput()
+    self._writeVTKOutput()
 
     return
   
@@ -132,6 +154,38 @@ class MakeSyntheticGpsdisp(Application):
 
     f.close()
 
+    return
+    
+
+  def _writeVTKOutput(self):
+    """
+    Function to write VTK output file with noisy data and uncertainties.
+    """
+
+    sigma = numpy.ones((self.numStations, 3), dtype=numpy.float64)
+    sigma[:,0] *= self.sigmaEast
+    sigma[:,1] *= self.sigmaNorth
+    sigma[:,2] *= self.sigmaUp
+
+    vtkHead = "# vtk DataFile Version 2.0\n" + \
+              "Synthetic GPS stations\n" + \
+              "ASCII\n" + \
+              "DATASET POLYDATA\n" + \
+              "POINTS " + repr(self.numStations) + " double\n"
+
+    v = open(self.vtkOutputFile, 'w')
+    v.write(vtkHead)
+    numpy.savetxt(v, self.coords)
+    dispHead = "POINT_DATA " + repr(self.numStations) + "\n" + \
+               "VECTORS displacement double\n" + \
+               "LOOKUP_TABLE DEFAULT\n"
+    v.write(dispHead)
+    numpy.savetxt(v, self.dispNoise)
+    sigHead = "VECTORS uncertainty double\n"
+    v.write(sigHead)
+    numpy.savetxt(v, sigma)
+    v.close()
+    
     return
 
 
