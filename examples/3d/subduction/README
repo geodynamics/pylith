@@ -54,6 +54,11 @@ Features:
 
   Generation of spatial databases via Python
 
+  Coordinate systems
+
+    + Geographic projection
+    + Geographic
+
   Faults
     + Buried edges [2,3]
     + Intersecting
