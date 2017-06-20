@@ -117,6 +117,19 @@ The next step is to use CUBIT/Trelis to run the
 surfaces for the slab and splay fault and save them as ACIS
 surfaces. 
 
+\important{The CUBIT/Trelis journal files name objects and then later
+  reference them by name. When objects are cut, a suffix of
+  \object{@LETTER} is appended to the original name (for example,
+  \object{domain} becomes \object{domain} and
+  \object{domain@A}). However, which one retains the original name and
+  which ones gets the suffix is ambiguous. In general, the names are
+  consistent across versions of CUBIT/Trelis with the same version of
+  the underlying ACIS library. {\bf As a result, you may need to
+    update the ids in the references to previously named objects that
+    have been split (for example \object{domain@A} may need to be changed to
+    \object{domain@B}, etc) in order to account for differences in how
+    your version of CUBIT/Trelis has named split objects.}}
+
 Currently we discretize the domain using a uniform, coarse resolution
 of 25 km. This allows the simulations to run relatively quickly and
 fit on a laptop. In a real research problem, we would tailor the
@@ -141,6 +154,8 @@ generate the mesh. In the end you will have an Exodus-II file
   rectangular into pieces.}
 
 \subsection{Organization of Parameters}
+
+
 
 % pylithapp
 %  + mesh
