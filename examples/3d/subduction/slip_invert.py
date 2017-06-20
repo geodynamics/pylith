@@ -19,6 +19,16 @@
 # Simple inversion script that uses PyLith-generated Green's functions.
 # NOTE:  This script assumes that you have PETSc installed, and that you
 # have PETSC_DIR set as an environmental variable.
+# This script is used as part of example step07. To perform the inversion you
+# must have already:
+# 1.  Run example step06.
+# 2.  Run the make_synthetic_gpsdisp.py script to generate synthetic data.
+# 3.  Generated the step07 Green's functions (step07a and step07b).
+#
+# Once you have performed the steps above, you can run this script. The
+# parameters are defined in slip_invert.cfg.
+# Run this script as follows:
+# ./slip_invert.py
 #
 
 import math

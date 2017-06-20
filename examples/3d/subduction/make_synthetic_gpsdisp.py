@@ -22,6 +22,9 @@
 # step06, adds noise to the displacements, and then generates text and
 # VTK files with the synthetic data. The parameters are defined in
 # the make_synthetic_gpsdisp.cfg file.
+# Run this script as follows:
+# ./make_synthetic_gpsdisp.py
+#
 
 import math
 import numpy
