@@ -30,8 +30,8 @@
 # Root name for simulation.
 SIM_NAME = "step05"
 
-# Names of faults for output files.
-FAULTS = ["fault-slab"]
+# Names of faults (with spontaneous rupture) for output files.
+FAULTS = ["fault-slabtop"]
 
 # ----------------------------------------------------------------------
 from paraview.simple import *
@@ -71,11 +71,11 @@ def visualize(sim, faults):
     groupFaults = GroupDatasets(Input=dataFaults)
 
     # Ratio of shear to normal traction
-    calculator = Calculator(Input=groupFaults)
-    calculator.Function = 'mag(traction_X*iHat+traction_Y*jHat)/abs(traction_Z)'
-    calculator.ResultArrayName = 'shearDivNormal'
+    calculatorRatio = Calculator(Input=groupFaults)
+    calculatorRatio.Function = 'mag(traction_X*iHat+traction_Y*jHat)/abs(traction_Z)'
+    calculatorRatio.ResultArrayName = 'shearDivNormal'
 
-    ratioDisplay = Show(groupFaults, view)
+    ratioDisplay = Show(calculatorRatio, view)
     ColorBy(ratioDisplay, ('POINTS', 'shearDivNormal'))
     ratioDisplay.RescaleTransferFunctionToDataRange(True)
     ratioDisplay.SetScalarBarVisibility(view, True)
@@ -87,11 +87,14 @@ def visualize(sim, faults):
     # Update a scalar bar component title.
     UpdateScalarBarsComponentTitle(ratioLUT, ratioDisplay)
 
-    calculator = Calculator(Input=groupFaults)
-    calculator.Function = 'mag(slip)'
-    calculator.ResultArrayName = 'slipMag'
+    # Slip contours
+    SetActiveSource(groupFaults)
+
+    calculatorSlip = Calculator(Input=groupFaults)
+    calculatorSlip.Function = 'mag(slip)'
+    calculatorSlip.ResultArrayName = 'slipMag'
     
-    contour = Contour(Input=groupFaults)
+    contour = Contour(Input=calculatorSlip)
     contour.ContourBy = ['POINTS', 'slipMag']
     contour.Isosurfaces = numpy.arange(0.0, 4.01, 0.5)
     contour.PointMergeMethod = 'Uniform Binning'
