@@ -22,8 +22,11 @@
 # complexity of the slab geometry so that the mesh generation is
 # faster.
 #
-# The Slab contours can be downloaded from:
-# https://earthquake.usgs.gov/data/slab/models.php
+# The Slab contours (cas_contours_dep.in.txt) can be downloaded from:
+# https://earthquake.usgs.gov/data/slab/models.php. Note that we have
+# gzipped the file to reduce its size in the Git repository and we
+# uncompress it on the fly in this script using the gzip Python
+# module.
 #
 # The reference for the Slab 1.0 model is:
 #

@@ -14,16 +14,17 @@
 #
 # ----------------------------------------------------------------------
 #
-# This file is called from the mesh file (mesh_tet.jou or mesh_hex.jou).
+# This file is called from the mesh file (mesh_tet.jou or
+# mesh_hex.jou). You can also run this file separately to examine how
+# the geometry is constructed.
 #
-# CUBIT/Trelis journal file with geometry for example showing how to import
-# several surfaces (topography, subduction interface, splay fault), and
-# mesh the resulting volumes.
-#
-# We also use the CUBIT/Trelis support for APREPRO (the expressions in
+# We use the CUBIT/Trelis support for APREPRO (the expressions in
 # braces), which includes units and mathematical functions. See the
-# APREPRO section in the appendix of the CUBIT/Trelis documentation for more
-# information.
+# APREPRO section in the appendix of the CUBIT/Trelis documentation
+# for more information.
+#
+# We use the Id() APPREPRO function to get the id of various objects
+# and rename them for future reference.
 #
 # ----------------------------------------------------------------------
 # Set units to SI.
@@ -38,6 +39,7 @@ reset
 # ----------------------------------------------------------------------
 # Import slab surfaces and construct slab.
 # ----------------------------------------------------------------------
+# We name the surface, volume, and body for future reference.
 import Acis "surf_slabtop.sat"
 ${idSurf=Id("surface")}
 surface {idSurf} name "s_slabtop"
@@ -61,7 +63,7 @@ volume {idVol} name "v_slab"
 delete body b_slabbot
 
 # ----------------------------------------------------------------------
-# Create block
+# Create block for domain.
 # ----------------------------------------------------------------------
 # Block is 800 km x 800 km x 400 km
 ${blockLength=800.0*km}
@@ -72,7 +74,8 @@ brick x {blockLength} y {blockWidth} z {blockHeight}
 ${idVol=Id("volume")}
 volume {idVol} name "v_domain"
 
-# Translate block so top is a z=0.
+# Translate block so the top is at z=0 and the domain is roughly
+# centered on the subduction zone.
 ${moveX=-60.0*km}
 ${moveY=0.0*km}
 volume v_domain move x {moveX} y {moveY} z {-0.5*blockHeight}
@@ -83,7 +86,7 @@ volume v_domain move x {moveX} y {moveY} z {-0.5*blockHeight}
 chop volume v_domain with volume v_slab
 
 # ----------------------------------------------------------------------
-# Create planar surface for continental crust/mantle boundary.
+# Create planar horizontal surface for continental crust/mantle boundary.
 # ----------------------------------------------------------------------
 create planar surface with plane zplane offset {-40.0*km}
 ${idSurf=Id("surface")}
@@ -93,7 +96,7 @@ webcut volume v_domain@A with plane surface s_moho
 delete surface s_moho
 
 # ----------------------------------------------------------------------
-# Import splay surface and cut volume.
+# Import splay fault surface and cut the crust volume.
 # ----------------------------------------------------------------------
 import Acis "surf_splay.sat"
 ${idSurf=Id("surface")}
@@ -108,14 +111,24 @@ webcut volume v_domain@A with sheet surface s_splay
 # ----------------------------------------------------------------------
 # Create fault patch
 # ----------------------------------------------------------------------
-# Create block to create rupture patch.
+# In order to make it easier to specify slip on a subset 200 km
+# along-strike section of the subduction interface, we inscribe curves
+# on the sheet body corresponding to the subducting slab. This allows
+# us to imprint this patch on the domain volumes, resulting in
+# splitting the subduction interface into multiple pieces.
+
+# Create block with horizontal dimensions matching the desired rupture
+# patch. The x and z dimensions are set to exceed the dimensions of
+# the subducting interface so that the fault patch reaches the trench
+# and extends to the bottom of the crust.
 ${patchLength=200.0*km}
 brick x {400.0*km} y {patchLength} z {100.0*km}
 ${idVol=Id("volume")}
 volume {idVol} name "v_patchblock"
 move volume v_patchblock  x {-100*km} y 0 z 0
 
-# Scribe rupture patch onto surface geometry (volumes of sheet bodies).
+# Enscribe the rupture patch onto the geometry of the subducting slab
+# surface (volumes of sheet bodies).
 chop volume v_slabtop with volume v_patchblock keep
 chop volume v_splay with volume v_patchblock
 
@@ -135,8 +148,3 @@ imprint all with volume all
 merge all
 
 # End of file
-
-
-
-
-
