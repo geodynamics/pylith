@@ -232,7 +232,7 @@ class Table(object):
         """
         f = self.fout
 
-        f.write("\\begin{table}[htbp]\n")
+        #f.write("\\begin{table}[htbp]\n")
         f.write("\\rowcolors{2}{yellow!30}{white}\n")
         ctags = ["|l|%% Example"]
         for category in self.columns:
@@ -308,7 +308,7 @@ class Table(object):
                 if "description" in col:
                     f.write("{\\bf %s} -- %s. " % (label, col["description"]))
         f.write("\\\\ \n")
-        f.write("\\end{table}")
+        #f.write("\\end{table}")
         return
 
     @staticmethod

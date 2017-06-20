@@ -24,7 +24,12 @@
 \usepackage{array}
 \usepackage{setspace} % remove
 
-\renewcommand{\pylithVersionNumber}{2.2.0}
+\usepackage{pifont}
+\newcommand{\yes}{\ding{52}}
+\newcommand{\rlabel}[1]{\rotatebox[origin=l]{90}{#1}}
+
+
+\renewcommand{\pylithVersionNumber}{2.2.1}
 \renewcommand{\pylithDOI}{10.5281/zenodo.438705}
 % Update install/install.tex (version number within verbatim environment)
 
@@ -189,6 +194,13 @@ AGU,} \emph{87}(36), Jt. Assem. Suppl., Abstract T24A-01 Invited.
 \bibitem[Zienkiewicz and Taylor, 2000]{Zienkiewicz:Taylor:2000}Zienkiewicz,
 O.C. and R.L. Taylor (2000), \textit{The Finite Element Method, Fifth
 Edition, Volume 2: Solid Mechanics}, Butterworth-Heinemann, Oxford,
-459 pp.125\end{thebibliography}
+459 pp.125
+
+\bibitem[Hayes et al., 2012]{Hayes:etal:2012}Hayes, G. P., D. J. Wald,
+  and R. L. Johnson (2012), Slab1.0: A three-dimensional model of
+  global subduction zone geometries, J. Geophys. Res., 117, B01302,
+  doi:10.1029/2011JB008524.
+
+\end{thebibliography}
 
 \end{document}

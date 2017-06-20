@@ -31,6 +31,7 @@
 \RequirePackage{listings}
 \RequirePackage{pifont}
 \RequirePackage{calc}
+\RequirePackage[table]{xcolor}
 \RequirePackage{tikz}
 
 %\RequirePackage{url}
