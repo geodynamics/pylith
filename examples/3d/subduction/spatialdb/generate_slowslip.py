@@ -149,8 +149,11 @@ class GenerateSlowslip(Application):
 
     lonGrid, latGrid = numpy.meshgrid(self.lon, self.lat)
     zGrid = numpy.zeros_like(lonGrid)
-    self.grid = numpy.column_stack((lonGrid.flatten(), latGrid.flatten(),
-                                    zGrid.flatten()))
+    self.grid = numpy.column_stack((
+      lonGrid.flatten(),
+      latGrid.flatten(),
+      zGrid.flatten(),
+    ))
 
     return
 
@@ -231,8 +234,7 @@ class GenerateSlowslip(Application):
     amplitude = [float(i) for i in self.slipAmplitudes]
     amplitudeArr = numpy.array(amplitude, dtype=numpy.float64)
 
-    TimeHistoryIO.write(timeArr, amplitudeArr, self.slipTimeUnits,
-                        self.timeDbFilename)
+    TimeHistoryIO.write(timeArr, amplitudeArr, self.slipTimeUnits, self.timeDbFilename)
 
     return
 
