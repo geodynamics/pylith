@@ -2,6 +2,9 @@
 """
 This script creates a spatial database for the initial stress using results
 from a previous PyLith run.
+It is used in step08 to read stresses from example step08a, and then create a
+spatial database of initial stresses that is used by examples step08b and
+step08c.
 """
 
 dbPrefix = "initial_stress"
@@ -10,11 +13,13 @@ materials = ["crust","mantle","slab","wedge"]
 
 import numpy
 import h5py
+import sys
+sys.path.append('../mesh')
 # import pdb
 # pdb.set_trace()
 
 from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
-from mesh.coordsys import cs_mesh
+from coordsys import cs_mesh
 cs = cs_mesh()
 
 def getCellCenters(vertices, cells):
@@ -29,8 +34,8 @@ def getCellCenters(vertices, cells):
 
 for material in materials:
 
-  filenameH5 = "output/%s-%s.h5" % (matPrefix, material)
-  filenameDB = "spatialdb/%s-%s.spatialdb" % (dbPrefix, material)
+  filenameH5 = "../output/%s-%s.h5" % (matPrefix, material)
+  filenameDB = "%s-%s.spatialdb" % (dbPrefix, material)
 
   # Open HDF5 file and get coordinates, cells, and stress.
   h5 = h5py.File(filenameH5, "r")
