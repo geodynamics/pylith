@@ -48,7 +48,7 @@ def visualize(sim, dispScale):
     filename = "output/%s-domain.xmf" % sim
     if not os.path.isfile(filename):
         raise IOError("File '%s' does not exist." % filename)
-    dataDomain = XDMFReader(FileNames=[sim])
+    dataDomain = XDMFReader(FileNames=[filename])
     RenameSource("%s-domain" % sim, dataDomain)
 
     scene = GetAnimationScene()
