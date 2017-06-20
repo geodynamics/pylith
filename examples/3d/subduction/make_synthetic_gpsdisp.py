@@ -43,8 +43,7 @@ class MakeSyntheticGpsdisp(Application):
   ## @li \b vtk_output_file Name of VTK output file.
   ##
 
-  pointInputFile = pyre.inventory.str("point_input_file",
-                                      default="cascadia-cgps_points.h5")
+  pointInputFile = pyre.inventory.str("point_input_file", default="cascadia-cgps_points.h5")
   pointInputFile.meta['tip'] = "HDF5 point output file from PyLith."
 
   timeStep = pyre.inventory.int("time_step", default=0)
@@ -59,12 +58,10 @@ class MakeSyntheticGpsdisp(Application):
   sigmaUp = pyre.inventory.float("sigma_up", default=0.001)
   sigmaUp.meta['tip'] = "Sigma value for Up displacements."
 
-  outputFile = pyre.inventory.str("output_file",
-                                  default="cascadia-cgps_disp.txt")
+  outputFile = pyre.inventory.str("output_file", default="cascadia-cgps_disp.txt")
   outputFile.meta['tip'] = "Name of ASCII output file."
 
-  vtkOutputFile = pyre.inventory.str("vtk_output_file",
-                                  default="cascadia-cgps_disp.vtk")
+  vtkOutputFile = pyre.inventory.str("vtk_output_file", default="cascadia-cgps_disp.vtk")
   vtkOutputFile.meta['tip'] = "Name of VTK output file."
 
 
