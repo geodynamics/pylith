@@ -17,6 +17,11 @@
 # ----------------------------------------------------------------------
 #
 # Python application to create synthetic data from PyLith points output.
+# This script is meant to be used with example step07. It reads the
+# slow slip displacements at synthetic cGPS stations from example
+# step06, adds noise to the displacements, and then generates text and
+# VTK files with the synthetic data. The parameters are defined in
+# the make_synthetic_gpsdisp.cfg file.
 
 import math
 import numpy
