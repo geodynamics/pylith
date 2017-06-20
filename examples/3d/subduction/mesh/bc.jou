@@ -23,6 +23,10 @@
 # ----------------------------------------------------------------------
 # Create blocks for materials
 # ----------------------------------------------------------------------
+# We create a block for each material in the PyLith simulations. In
+# the PyLith parameters, we will set the material 'id' to the block
+# 'id' here to indcate which cells correspond to a given material.
+
 block 1 volume v_domain
 block 1 name "slab"
 
