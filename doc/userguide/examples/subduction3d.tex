@@ -91,7 +91,7 @@ download the mesh from
 skip generating the mesh.
 
 We use contours of the Cascadia Subduction Zone from Slab v1.0
-\ref{Hayes:etal:2012} for the geometry of the top of the slab. In
+\cite{Hayes:etal:2012} for the geometry of the top of the slab. In
 order to make use of these contours from within CUBIT/Trelis, we use a
 Python script (\filename{generate\_surfjou.py}) to read the contours
 file and create a CUBIT/Trelis journal file
@@ -151,9 +151,10 @@ generate the mesh. In the end you will have an Exodus-II file
 
 \tip{We recommend carefully examining the \filename{geometry.jou}
   journal file to understand how we assemble the 3-D slab and cut the
-  rectangular into pieces.}
+  rectangular domain into pieces.}
 
 \subsection{Organization of Simulation Parameters}
+\label{sec:example:subduction:3d:organization}
 
 PyLith automatically reads in \filename{pylithapp.cfg} from the
 current directory, if it exists. As a result, we generally put all
@@ -161,16 +162,17 @@ parameters common to a set of examples in this file to avoid
 duplicating parameters across multiple files. Because we often use a
 single mesh for multiple simulations in a directory, we place all
 parameters related to our mesh and identifying the materials in our
-mesh in \filename{pylithapp.cfg}. We set the bulk constitutive model
-and its parameters in other files, because we vary those across the
-simulations. In general, we place roller boundary conditions
-(Dirichlet boundary conditions constraining the degrees of freedom
-perpendicular to the boundary) on the lateral and bottom boundaries,
-so we include those in \filename{pylithapp.cfg}. In some simulations
-we will overwrite the values for parameters will values specific to a
-given example. This file is also a convenient place to put basic
-solver parameters and to turn on Pyre journals for displaying
-informational messages during a run.journalling debugging flags.
+mesh in \filename{pylithapp.cfg}. We assign the bulk constitutive
+model and its parameters to each material in other files, because we
+vary those across the simulations. In general, we place roller
+boundary conditions (Dirichlet boundary conditions constraining the
+degrees of freedom perpendicular to the boundary) on the lateral and
+bottom boundaries, so we include those in \filename{pylithapp.cfg}. In
+some simulations we will overwrite the values for parameters will
+values specific to a given example. This file is also a convenient
+place to put basic solver parameters and to turn on Pyre journals for
+displaying informational messages during a run.journalling debugging
+flags.
 
 Hence the settings contained in \filename{pylithapp.cfg} include:
 \begin{inventory}
@@ -192,6 +194,45 @@ Hence the settings contained in \filename{pylithapp.cfg} include:
   \facilityitem{pylithapp.petsc}{PETSc solver and logging settings.}
 \end{inventory}
 
+\subsubsection{Coordinate system}
+
+We generated the mesh in a Cartesian coordinate system corresponding
+to a transverse Mercator projection. We specify this geographic
+projection coordinate system in the \filename{pylithapp.cfg} file, so
+that we can use other convenient georeferenced coordinate systems in
+the spatial databases. PyLith will automatically transform points
+between compatible coordinate systems. Our spatialdata library uses
+Proj4 for geographic projections, so we specify the projection using
+Proj4 syntax in the \property{proj\_options} property:
+\begin{cfg}
+<h>[pylithapp.mesh_generator.reader]</h>
+<f>coordsys</f> = spatialdata.geocoords.CSGeoProj
+<p>coordsys</p>.space_dim = 3
+<p>coordsys</p>.datum_horiz = WGS84
+<p>coordsys.datum_vert</p> = mean sea level
+<p>coordsys.projector.projection</p> = tmerc
+<p>coordsys.projector.proj_options</p> = +lon_0=-122.6765 +lat_0=45.5231 +k=0.9996
+\end{cfg}
+
+\subsubsection{Materials}
+
+The finite-element mesh marks cells for each material and the type of
+cell determines the type of basis functions we use in the
+discretization. This means we can specify this information in the
+\filename{pylithapp.cfg} file and avoid duplicating it in each
+simulation parameter file. For eacmple for the slab, the parameters include
+\begin{cfg}
+<h>[pylithapp.problem.materials.slab]</h>
+<p>label</p> = Subducting slab ; Label for informative error messages
+<p>id</p> = 1 ; Block id in ExodusII file from CUBIT/Trelis
+<f>quadrature.cell</f> = pylith.feassemble.FIATSimplex ; Tetrahedral cells
+<p>quadrature.cell.dimension</p> = 3
+
+# Average cell output over quadrature points, yielding one point per cell
+<f>output.cell_filter</f> = pylith.meshio.CellFilterAvg
+<f>output.writer</f> = pylith.meshio.DataWriterHDF5 ; Output using HDF5
+\end{cfg}
+
 In this set of examples, we will consider cases in which all materials
 are linear, isotropic elastic and cases where the crust and wedge are
 linear, isotropic elastic but the slab and mantle are linear Maxwell
@@ -200,15 +241,70 @@ in separate \filename{.cfg} files with \filename{mat\_elastic.cfg} for
 the case with purely elastic models and
 \filename{mat\_viscoelastic.cfg} for the case with a mix of elastic
 and viscoelastic models. Each of these files specifies the bulk
-constitutive model and spatial database to use for each material.
+constitutive model and spatial database to use for the properties for
+each material. The values for the material properties are loosely
+based on a 3-D seismic velocity model for the Pacific Northwest 
+\cite{Stephenson:2007}.
 
-Similarly, we group solver parameters into a few different files to
-handle different cases. The \filename{pylithapp.cfg} file uses a
-direct solver, which is suitable for debugging and test problems that
-do not include a fault; a direct solver is not well-suited for
-production runs because it does not scale well and uses a lot of
-memory. The \filename{solver\_algebraicmultigrid.cfg} provides more
-optimal settings for simulations without a fault by using an algebraic
+\subsubsection{Boundary Conditions}
+
+For the Dirichlet boundary conditions, we specify the degree of
+freedom constrained, the name of the nodeset in the ExodusII file from
+CUBIT/Trelis that defines the boundary, and a label for the spatial
+database (required for informative error messages). These settings
+constrain the y-displacement on the north (+y) boundary:
+\begin{cfg}
+<h>[pylithapp.problem.bc.y_pos]</h>
+<p>bc_dof</p> = [1] ; Degree of freedoms are: x=0, y=1, and z=2
+<p>label</p> = boundary_ypos ; nodeset in ExodusII file form CUBIT/Trelis
+<p>db_initial.label</p> = Dirichlet BC on +y ; label for informative error messages
+\end{cfg}
+
+\subsubsection{Solver Parameters}
+
+We group solver parameters into a few different files to handle
+different cases. The \filename{pylithapp.cfg} contains tolerance
+values for the linear and nonlinear solvers and turns on some simple
+diagnostic information. The file also directs PyLith to use a direct
+solver, which is suitable for debugging and test problems that do not
+include a fault; a direct solver is not well-suited for production
+runs because it does not scale well and uses a lot of memory.
+\begin{cfg}
+<h>[pylithapp.petsc]</h>
+<p>malloc_dump</p> = ; Dump information about PETSc memory not deallocated.
+
+# Use LU preconditioner (helful for learning and debugging, not production simulations)
+<p>pc_type</p> = lu
+
+# Convergence parameters.
+<p>ksp_rtol</p> = 1.0e-10 ; Converge if residual norm decreases by this amount
+<p>ksp_atol</p> = 1.0e-11 ; Converge if residual norm drops below this value
+<p>ksp_max_it</p> = 500 ; Maximum number of iterations in linear solve
+<p>ksp_gmres_restart</p> = 50 ; Restart orthogonalization in GMRES after this number of iterations
+
+# Linear solver monitoring options.
+<p>ksp_monitor</p> = true ; Show residual norm at each iteration
+#ksp_view = true ; Show solver parameters (commented out)
+<p>ksp_converged_reason</p> = true ; Show reason linear solve converged
+<p>ksp_error_if_not_converged</p> = true ; Generate an error if linear solve fails to converge
+
+# Nonlinear solver monitoring options.
+<p>snes_rtol</p> = 1.0e-10 ; Converge if nonlinear residual norm decreases by this amount
+<p>snes_atol</p> = 1.0e-9 ; Converge if nonlinear residual norm drops below this value
+<p>snes_max_it</p> = 100 ; Maximum number of iterations in nonlinear solve
+<p>snes_monitor</p> = true ; Show nonlinear residual norm at each iteration
+<p>snes_linesearch_monitor</p> = true ; Show nonlinear solver line search information
+#snes_view = true ; Show nolinear solver parameters (commented out)
+<p>snes_converged_reason</p> = true ; Show reason nonlinear solve converged
+<p>snes_error_if_not_converged</p> = true ; Generate an error if nonlinear solve fails to converge
+
+# PETSc summary -- useful for performance information.
+<p>log_view</p> = true
+\end{cfg}
+
+The
+\filename{solver\_algebraicmultigrid.cfg} provides more optimal
+settings for simulations without a fault by using an algebraic
 multigrid preconditioner. Similarly, for simulations with a fault
 \filename{solver\_fieldsplit.cfg} provides settings for applying the
 algebraic multigrid preconditioner to the elasticity portion of the
@@ -216,11 +312,17 @@ system Jacobian matrix and our custom fault preconditioner to the
 Lagrange multiplier portion.
 
 \subsection{Step 1: Axial Compression}
+\label{sec:example:subduction:3d:step01}
 
-% big picture
-%   + squeeze boundaries => DirichletBC with prescribed displacements
-%   + elastic material properties => linear solver with single time step
-
+We start with a very simple example of axial compression in the
+east-west direction with purely elastic material properties, and no
+faults (Figure~\ref{fig:example:subduction:3d:step01:diagram}). We
+impose axial compression using Dirichlet boundary conditions on the
+east (+x) and west (-x) boundaries and confine the domain in the
+north-south direction via zero displacement Dirichlet boundary
+conditions on the north (+y) and south (-y) boundaries.  We constrain
+the vertical displacement by imposing zero displacement boundary
+conditions on the bottom (-z) boundary.
 
 \begin{figure}[htbp]
   \begin{tikzpicture}
@@ -235,68 +337,144 @@ Lagrange multiplier portion.
   \end{tikzpicture}
   \caption{Diagram of axial compression example. This static
     simulation uses Dirichlet boundary conditions with axial
-    compression in the east-west (x-direction) and purely elastic
-    properties.}
+    compression in the east-west (x-direction), roller boundary
+    conditions on the north, south, and bottom boundaries, and purely
+    elastic properties.}
   \label{fig:example:subduction:3d:step01:diagram}
 \end{figure}
 
-The first example problem is earthquake rupture involving coseismic
-slip along the interface between the subducting slab and the continental
-crust and uppermost portion of the mantle below the continental crust.
-The spatial variation of slip comes from a cross-section of Gavin
-Hayes' finite-source model \url{earthquake.usgs.gov/earthquakes/eqinthenews/2011/usc0001xgp/finite_fault.php}.
-On the lateral and bottom boundaries of the domain, we fix the degrees
-of freedom perpendicular to the boundary as shown in Figure \vref{fig:example:subduction:2d:steps}.
-Parameter settings that augment those in \filename{pylithapp.cfg} are
-contained in the file \filename{step01.cfg}. These settings are:
-\begin{inventory}
-  \facilityitem{pylithapp.timedependent.formulation.time\_step}{Adjust the total
-    simulation time to 0 years (static simulation).}
-  \facilityitem{pylithapp.timedependent}{Specifies the array of
-    boundary conditions.}
-  \facilityitem{pylithapp.timedependent.bc.\textit{BOUNDARY}}{Defines the settings
-    for boundary \textit{BOUNDARY}, including which degrees of freedom
-    are being constrained (x or y), the label (defined in\filename{ mesh\_tri3.exo})
-    corresponding to the nodeset in CUBIT, and a label to the boundary
-    condition used in any error messages.}
-  \facilityitem{pylithapp.timedependent.interfaces.fault}{Specify the coseismic
-    slip along the interface between the oceanic crust and continental
-    crust with a small amount of slip penetrating into the upper mantle.}
-  \facilityitem{pylithapp.problem.formulation.output.domain}{Gives the base filenames
-    for HDF5 output (for example, \filename{step01.h5}).}
-\end{inventory}
+The \filename{pylithapp.cfg} file creates an array of five boundary
+conditions, which impose zero displacements by default. We overwrite
+this behavior in the \filename{step01.cfg} file for the -x and +x
+boundaries using spatial databases with a single uniform displacement
+value to create the axial compression:
+\begin{cfg}
+# -x face
+<h>[pylithapp.problem.bc.x_neg]</h>
+<f>db_initial</f> = spatialdata.spatialdb.UniformDB
+<p>db_initial.label</p> = Dirichlet BC on -x
+<p>db_initial.values</p> = [displacement-x]
+<p>db_initial.data</p> = [+2.0*m]
+
+# +x face
+<h>[pylithapp.problem.bc.x_pos]</h>
+<f>db_initial</f> = spatialdata.spatialdb.UniformDB
+<p>db_initial.label</p> = Dirichlet BC on +x
+<p>db_initial.values</p> = [displacement-x]
+<p>db_initial.data</p> = [-2.0*m]
+\end{cfg}
+
+As discussed in Section~\ref{sec:example:subduction:3d:organization},
+we use \filename{mat\_elastic.cfg} to specify the parameters
+associated with linear, isotropic elastic bulk constitutive models for
+all of the materials for convenient reuse across several different
+simulations.
+\begin{cfg}
+<h>[pylithapp.problem.materials]</h>
+<f>slab</f> = pylith.materials.ElasticIsotropic3D
+<f>wedge</f> = pylith.materials.ElasticIsotropic3D
+<f>crust</f> = pylith.materials.ElasticIsotropic3D
+<f>mantle</f> = pylith.materials.ElasticIsotropic3D
+
+# Slab
+<h>[pylithapp.problem.materials.slab]</h>
+<f>db_properties</f> = spatialdata.spatialdb.SimpleDB
+<p>db_properties.label</p> = Properties for subducting slab
+<p>db_properties.iohandler</p>.filename = spatialdb/mat_slab_elastic.spatialdb
+
+# Wedge
+<h>[pylithapp.problem.materials.wedge]</h>
+<f>db_properties</f> = spatialdata.spatialdb.SimpleDB
+<p>db_properties.label</p> = Properties for accretionary wedge
+<p>db_properties.iohandler.filename</p> = spatialdb/mat_wedge_elastic.spatialdb
+
+# Mantle
+<h>[pylithapp.problem.materials.mantle]</h>
+<f>db_properties</f> = spatialdata.spatialdb.SimpleDB
+<p>db_properties.label</p> = Properties for mantle
+<p>db_properties.iohandler.filename</p> = spatialdb/mat_mantle_elastic.spatialdb
+
+# Crust
+<h>[pylithapp.problem.materials.crust]</h>
+<f>db_properties</f> = spatialdata.spatialdb.SimpleDB
+<p>db_properties.label</p> = Properties for continental crust
+<p>db_properties.iohandler.filename</p> = spatialdb/mat_crust_elastic.spatialdb
+\end{cfg}
+We specify different elastic properties for each material
+(slab, wedge, mantle, and crust) using \object{SimpleDB} spatial
+databases with a single point to specify uniform properties within a
+material. We choose \object{SimpleDB} rather than \object{UniformDB},
+because we will reuse some of these spatial databases for the elastic
+properties when we use linear Maxwell viscoelastic constitutive model.
+
+The remaining parameters in the \filename{step01.cfg} file are mostly
+associated with setting filenames for all of the various output,
+including all of the parameters used and version information in a JSON
+file, a file reporting the progress of the simulation and estimated
+time of completion, and the filenames for the HDF5 files (the
+corresponding Xdmf files will use the same filename with the
+\filename{.xmf} suffix).
+
 We run this example by typing
 \begin{shell}
-$$ pylith step01.cfg
+$$ pylith step01.cfg mat_elastic.cfg
 \end{shell}
-The problem will produce twelve pairs of HDF5/Xdmf files. The HDF5
+The problem will produce ten pairs of HDF5/Xdmf files. The HDF5
 files contain the data and the Xdmf files contain the metadata required
-by ParaView and Visit (and possibly other visualization tools that
+by ParaView and Visit (and other visualization tools that
 use Xdmf files) to access the mesh and data sets in the HDF5 files.
 The files include the solution over the domain and ground surface
-(two pairs of files), physical properties, stress, and strain within
-each material (eight pairs of files), and fault parameters, slip,
-and traction (two pairs of files). 
+(two pairs of files), and physical properties, stress, and strain within
+each material (eight pairs of files). 
 
-Figure \vref{fig:example:subduction:2d:step01}, which was created using
+Figure \vref{fig:example:subduction:3d:step01}, which was created using
 ParaView, displays the magnitude of the displacement field with the
 deformation exaggerated by a factor of 1000. 
 
 \begin{figure}
-  \includegraphics[width=4.5in]{examples/figs/subduction2d_step01_soln}
-  \caption{Solution for Step 1. The colors indicate the magnitude of the displacement,
-    and the deformation is exaggerated by a factor of 1000. }
-  \label{fig:example:subduction:2d:step01}
+  \includegraphics[width=5.0in]{examples/figs/subduction3d_step01_soln}
+  \caption{Solution over the domain for Step 1. The colors indicate
+    the magnitude of the displacement and the arrows indicate the
+    direction with the length of each arrow equal to 10,000 times the
+    magnitude of the displacement.}
+  \label{fig:example:subduction:3d:step01}
 \end{figure}
 
 
 \subsubsection{Exercises}
 
-% Algebraic multigrid preconditioner
-% Adjust material properties (stiffer, softer, nearly incompressible)
-% Pure shear instead of axial compression
 
-\subsection{Step 2: Postseismic Relaxation}
+\begin{itemize}
+\item Run PyLith again and add
+  \filename{solver\_algebraicmultigrid.cfg} as an argument on the
+  command line to switch to the
+  algebraic multigrid preconditioner.
+  \begin{itemize}
+  \item Using the PETSc log summary to compare the runtime and
+    memory use between the original LU preconditiner and the ML
+    algebraic multigrid preconditioner. Hint: The algebraic
+    multigrid preconditioner is faster.
+  \item Run the simulation again with the algebraic multigrid
+    preconditioner using multiple cores via the
+    \commandline{-{}-nodes=NCORES} argument, replacing
+    \commandline{NCORES} with 2 or up to the number of cores on your
+    machine. Examine the PETSc log summary for the various runs to
+    see how the time spent at varies stages changes with the number
+    of cores. Make a plot of runtime versus the number of
+    cores.
+  \end{itemize}
+\item Adjust the material properties in the spatial databases so that the slab is stiffer and
+  the wedge is more compliant. What happens to the solution if you make the
+  materials nearly incompressible? Does this also affect the rate of
+  convergence of the linear solve?
+\item Change the Dirichlet boundary conditions to impose pure shear
+  instead of axial compression. Hint: You will need to change the
+  boundary conditions on the east, west, north, and south
+  boundaries.
+\end{itemize}
+    
+
+\subsection{Step 2: Prescribed Coseismic Slip and Postseismic Relaxation}
 
 \subsubsection{Exercises}
 
@@ -304,7 +482,7 @@ deformation exaggerated by a factor of 1000.
 % Slip on lower slab and splay fault
 % Slip on slab and splay fault
 
-\subsection{Step 3: Interseismic Deformation}
+\subsection{Step 3: Prescribed Aseismic Creep and Interseismic Deformation}
 
 \subsubsection{Exercises}
 
@@ -383,7 +561,8 @@ horizontal displacement vectors at the cGPS sites, superimposed on
 contours of the applied slip at t = 24 days.
 
 \begin{figure}
-  \includegraphics[width=4.5in]{examples/figs/subduction3d_step06_soln}
+  %\includegraphics[width=4.5in]{examples/figs/subduction3d_step06_soln}
+  ADD FIGURE HERE
   \caption{Solution for Step 6. The colors indicate the vertical
     displacement, the vectors represent the horizontal displacements
     at simulated cGPS sites, and the contours represent the applied
@@ -409,7 +588,7 @@ contours of the applied slip at t = 24 days.
   \end{itemize}
 \end{itemize}
 
-\subsection{Step 7: Inversion of Slow-Slip using 3D Green's Functions}
+\subsection{Step 7: Inversion of Slow-Slip Event using 3-D Green's Functions}
 
 This example is essentially a three-dimensional analog of
 {sec:example:greensfns2d}, and is a more realistic example of how
@@ -421,19 +600,19 @@ Green's functions to perform an inversion, using the same generalized
 inverse approach described in {sec:example:greensfns2d}.
 
 We first generate the synthetic data by using the script
-\filename{make_synthetic_gpsdisp.py} in the top-level directory. This
-script reads the parameters in \filename{make_synthetic_gpsdisp.cfg}
+\filename{make\_synthetic\_gpsdisp.py} in the top-level directory. This
+script reads the parameters in \filename{make\_synthetic\_gpsdisp.cfg}
 to generate synthetic data from the selected time step with a
 specified amount of noise. Run this script as:
 \begin{shell}
 $$ ./make_synthetic_gpsdisp.py
 \end{shell}
 This will create the following files:
-\begin{itemize}
-\item \filename{cgps_synthetic_displacement.txt}: Read by the
+\begin{description}
+\item[\filename{cgps\_synthetic\_displacement.txt}] read by the
   inversion script.
-\item \filename{cgps_synthetic_displacement.vtk}: For visualization.
-\end{itemize}
+\item[\filename{cgps\_synthetic\_displacement.vtk}] for visualization.
+\end{description}
 
 After we generate the synthetic data, we generate the Green's
 functions. We divide the Green's function generation into two sub-problems:
@@ -479,7 +658,7 @@ on the command line. When we change the problem type to
 % Adjust noise level
 % Invert for slip at each time step
 
-\subsection{Step 8: Gravitational Body Forces}
+\subsection{Step 8: Stress Field Due to Gravitational Body Forces}
 
 
 % End of file
