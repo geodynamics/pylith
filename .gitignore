@@ -36,3 +36,4 @@ examples/3d/subduction/mesh/*.exo
 examples/3d/subduction/mesh/*.sat
 examples/3d/subduction/spatialdb/fault_slabtop_slowslip.spatialdb
 examples/3d/subduction/spatialdb/fault_slabtop_slowslip.timedb
+examples/3d/subduction/spatialdb/mat_initial_stress_grav-*.spatialdb
