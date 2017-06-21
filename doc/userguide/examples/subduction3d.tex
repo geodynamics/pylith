@@ -16,7 +16,7 @@ elastic properties for the subducting slab, mantle, continental crust,
 and an accretionary wedge. To keep the computation time in these
 examples short, we limit our model to an 800 km $\times$ 800 km
 $\times$ 400 km domain and we will use a relatively coarse
-discretization. For simplicity and to reduce comlexity in constructing
+discretization. For simplicity and to reduce complexity in constructing
 the mesh, we use a flat top surface (elevation of 0 with respect
 to mean sea level).
 
@@ -97,7 +97,7 @@ Python script (\filename{generate\_surfjou.py}) to read the contours
 file and create a CUBIT/Trelis journal file
 (\filename{generate\_surfs.jou}) that adds additional contours west of
 the trench and then constructs the top and bottom surfaces of the
-slab. The Python script also constructs a splay fault but copying a
+slab. The Python script also constructs a splay fault by copying a
 contour to a depth below the slab and above the ground surface.
 
 \tip{We define the coordinate systems we use in the simulations in the
@@ -325,36 +325,136 @@ deformation exaggerated by a factor of 1000.
 
 \subsection{Step 6: Prescribed Slow-Slip Event}
 
+This example simulates a simple slow slip event (SSE) that remains
+fixed spatially but increases its amplitude with time. We assume a
+constant rake angle of 110 degrees, and a time duration of 30
+days. This problem requres the use of both a spatial database to
+provide the spatial distribution of slip, and a temporal database to
+describe the time evolution of slip. To create these databases we
+provide the \filename{generate\_slowslip.py} script, which is in the
+\filename{spatialdb} directory. Once you are in the
+\filename{spatialdb} directory, run the script as follows:
+\begin{shell}
+$$ ./generate_slowslip.py
+\end{shell}
+This script reads parameters from \filename{generate\_slowslip.cfg} to
+generate a Gaussian slip distribution in geographic coordinates, along
+with a temporal database providing the slip amplitudes at different
+times. The files created are:
+\begin{itemize}
+\item \filename{fault\_slabtop\_slowslip.spatialdb}: Spatial database
+\item \filename{fault\_slabtop\_slowslip.timedb}: Temporal database
+\end{itemize}
+
+Once the database files have been generated, it is possible to run the
+example. Parameter settings that augment those in pylithapp.cfg are
+contained in the file \filename{step06.cfg}. These settings are:
+\begin{inventory}
+  \facilityitem{pylithapp.timedependent.formulation.time\_step}{Adjust
+    the total simulation time to 30 days with a time step size of 2 days.}
+  \facilityitem{pylithapp.timedependent.formulation}{Specify output
+    for the domain, for the ground surface, and for a set of
+    simulated cGPS sites.}
+  \facilityitem{pylithapp.timedependent.interfaces.slab}{Specify the
+    spatial distribution of slip and the temporal evolution of slip on
+    the slab interface. We change the slip function from the default
+    to a time history slip function to make use of the temporal database.}
+  \facilityitem{pylithapp.problem.formulation.output.domain}{Gives the
+    base filenames for HDF5 output for all output types (for example, 
+    \filename{step06-domain.h5}). Note that for cGPS output we need to
+    provide coordinate system information as well as the name of a
+    text file providing cGPS site locations.}
+\end{inventory}
+We use elastic properties for all materials, and custom solver
+settings appropriate for a problem with a fault. We run the example by typing
+\begin{shell}
+$$ pylith step06.cfg mat_elastic.cfg solver_fieldsplit.cfg
+\end{shell}
+The problem will produce 13 pairs of HDF5/Xdmf files. In the data
+files (those without a \filename{\_info} before the file suffix) there
+are field values representing 15 time steps. The additional HDF5 file
+that was not present in previous examples is
+\filename{step06-cgps\_sites.h5}, which contains the displacements at
+the simulated cGPS sites.
+
+Figure \vref{fig:example:subduction:3d:step06}, which was created
+using ParaView, shows the surface vertical displacement along with
+horizontal displacement vectors at the cGPS sites, superimposed on
+contours of the applied slip at t = 24 days.
+
+\begin{figure}
+  \includegraphics[width=4.5in]{examples/figs/subduction3d_step06_soln}
+  \caption{Solution for Step 6. The colors indicate the vertical
+    displacement, the vectors represent the horizontal displacements
+    at simulated cGPS sites, and the contours represent the applied
+    slip at t = 24 days. }
+  \label{fig:example:subduction:3d:step06}
+\end{figure}
+
+
 \subsubsection{Exercises}
 
-% Change spatial distribution and time history of slip.
-
-% Add propagation of the slow slip (spatial variation of slip starting
-% time, change rise time)
+\begin{itemize}
+\item Change spatial distribution and time history of slip.
+  \begin{itemize}
+  \item Edit \filename{generate\_slowslip.cfg} to change spatial and
+    temporal distributions, and edit \filename{step06.cfg} to change the
+    time duration and/or time step size.
+  \end{itemize}
+\item Add propagation of the slow slip (spatial variation of slip
+  initiation time).
+  \begin{itemize}
+  \item Either alter Python script to produce a spatial database of
+    slip initiation times, or write a new script.
+  \end{itemize}
+\end{itemize}
 
 \subsection{Step 7: Inversion of Slow-Slip using 3D Green's Functions}
 
- %% In this problem we generate Green's functions that will be used
- %% to invert synthetic data generated from step06. There are two
- %% different sub-problems:
+This example is essentially a three-dimensional analog of
+{sec:example:greensfns2d}, and is a more realistic example of how
+PyLith can be used to perform geodetic inversions. We use the output
+of example step06 to create synthetic data. Once we have done this we
+generate Green's functions to represent the geodetic responses at a
+set of synthetic cGPS stations. Finally, we use the synthetic data and
+Green's functions to perform an inversion, using the same generalized
+inverse approach described in {sec:example:greensfns2d}.
 
- %% step07a:  Generate Green's functions corresponding to left-lateral
- %%           slip on the subduction interface (slab top).
- %% step07b:  Generate Green's functions corresponding to updip
- %%           slip on the subduction interface (slab top).
+We first generate the synthetic data by using the script
+\filename{make_synthetic_gpsdisp.py} in the top-level directory. This
+script reads the parameters in \filename{make_synthetic_gpsdisp.cfg}
+to generate synthetic data from the selected time step with a
+specified amount of noise. Run this script as:
+\begin{shell}
+$$ ./make_synthetic_gpsdisp.py
+\end{shell}
+This will create the following files:
+\begin{itemize}
+\item \filename{cgps_synthetic_displacement.txt}: Read by the
+  inversion script.
+\item \filename{cgps_synthetic_displacement.vtk}: For visualization.
+\end{itemize}
 
- %% Allows trivial parallel.
+After we generate the synthetic data, we generate the Green's
+functions. We divide the Green's function generation into two sub-problems:
+\begin{itemize}
+ \item step07a:  Generate Green's functions corresponding to
+   left-lateral slip on the subduction interface (slab top).
+ \item step07b:  Generate Green's functions corresponding to
+   updip slip on the subduction interface (slab top).
+\end{itemize}
+Note that the Green's functions could all be generated at the same
+time; however, for real problems it is generally preferable to
+separate the problems to improve runtimes (e.g., both problems can be
+run simultaneously).
 
- %% Responses (Green's functions) are computed at simulated cGPS
- %% locations defined in the file cgps_sites.txt.
- %% Note that we change the default problem type from TimeDependent to
- %% GreensFns.
+To generate the Green's functions we change the problem type from the
+default \facility{timedependent} to \facility{greensfns}. We do this
+on the command line. When we change the problem type to
+\facility{greensfns}, PyLith automatically reads the file
+\filename{greensfns.cfg}. We use this file to augment the settings in
+\filename{pylithapp.cfg}:
 
- %% Prior to generating the Green's functions, we first generate synthetic
- %% data from the output of problem step06, using the make_synthetic_gpsdisp.py
- %% script, with parameters defined in make_synthetic_gpsdisp.cfg:
-
- %% ./make_synthetic_gpsdisp.py
 
  %% After generating the synthetic data and Green's functions, we then
  %% perform a simple inversion using the slip_invert.py script, with
@@ -371,7 +471,6 @@ deformation exaggerated by a factor of 1000.
  %% solution misfit by going into the viz directory and running:
 
  %% ./plot_inversion_misfit.py --summary=../step07-inversion-summary.txt
-
 
 
 \subsubsection{Exercises}
