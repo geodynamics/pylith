@@ -1,6 +1,7 @@
 \section{Examples for a 3D Subduction Zone}
 \label{sec:example:subduction:3d}
 
+% ----------------------------------------------------------------------
 \subsection{Overview}
 
 This suite of examples demonstrates use of a wide variety of features
@@ -63,6 +64,7 @@ several subdirectories:
 \end{description}
 
 
+% ----------------------------------------------------------------------
 \subsection{Features Illustrated}
 
 Table~\vref{tab:example:subduction:3d:features} lists the features
@@ -81,6 +83,7 @@ zooming when run outside the ParaView GUI.
   \input{examples/subduction3d_features}
 \end{table}
 
+% ----------------------------------------------------------------------
 \subsection{Generating the Finite-Element Mesh}
 
 We use CUBIT/Trelis to generate the finite-element mesh. Due to its
@@ -220,8 +223,14 @@ The finite-element mesh marks cells for each material and the type of
 cell determines the type of basis functions we use in the
 discretization. This means we can specify this information in the
 \filename{pylithapp.cfg} file and avoid duplicating it in each
-simulation parameter file. For eacmple for the slab, the parameters include
+simulation parameter file. To set up the materials, we first create an
+aray of materials that defines the name for each material component.
+For example, we create the array of four materials and then set the
+parameters for the slab:
 \begin{cfg}
+<h>[pylithapp.problem]</h>
+<f>materials</f> = [slab, wedge, crust, mantle]
+
 <h>[pylithapp.problem.materials.slab]</h>
 <p>label</p> = Subducting slab ; Label for informative error messages
 <p>id</p> = 1 ; Block id in ExodusII file from CUBIT/Trelis
@@ -311,6 +320,7 @@ algebraic multigrid preconditioner to the elasticity portion of the
 system Jacobian matrix and our custom fault preconditioner to the
 Lagrange multiplier portion.
 
+% ----------------------------------------------------------------------
 \subsection{Step 1: Axial Compression}
 \label{sec:example:subduction:3d:step01}
 
@@ -335,7 +345,7 @@ conditions on the bottom (-z) boundary.
       \draw[>=latex, ->, ultra thick, annotation] (xpos) -- (1.0,0.5);
     \end{scope}
   \end{tikzpicture}
-  \caption{Diagram of axial compression example. This static
+  \caption{Diagram of Step 1: Axial compression. This static
     simulation uses Dirichlet boundary conditions with axial
     compression in the east-west (x-direction), roller boundary
     conditions on the north, south, and bottom boundaries, and purely
@@ -524,7 +534,151 @@ $$ ./viz/plot_dispvec.py [--vector-scale=10.0e+4] [--sim=step01.cfg} [--screensh
 \end{itemize}
     
 
+% ----------------------------------------------------------------------
 \subsection{Step 2: Prescribed Coseismic Slip and Postseismic Relaxation}
+\label{sec:example:subduction:3d:step02}
+
+In this example we model the postseismic relaxation of the deep slab
+and mantle resulting from coseismic slip on a fault patch in the
+central portion of the subduction (top of the slab) interface. For
+simplicity we will prescribed uniform slip on the fault patch and use
+a linear Maxwell viscoelastic constitutive models for the slab and
+mantle. As the lateral and bottom boundaries are far from the
+earthquake source, we use roller boundary conditions on these
+boundaries. We do not expect significant relaxation of stresses on the
+shallow part of the slab, so we impose a depth-dependent
+viscosity. Figure~\ref{fig:example:subduction:3d:step02:diagram}
+summarizes the problem description.
+
+\todo{brad}{Add annotation to figure.}
+\begin{figure}[htbp]
+  \begin{tikzpicture}
+    \tikzstyle{annotation} = [black];
+    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[width=4.5in]{examples/figs/subduction3d_geometry}};
+    \begin{scope}[x={(image.south east)},y={(image.north west)}]
+      \node at (0.5,0.5) {{\bf\LARGE ADD ANNOTATION}};
+      %\node[anchor=west, annotation] (xneg) at (-0.2,0.5) {+2.0 m};
+      %\draw[>=latex, ->, ultra thick, annotation] (xneg) -- (0.0,0.5);
+      %\node[anchor=east, annotation] (xpos) at (+1.2,0.5) {-2.0 m};
+      %\draw[>=latex, ->, ultra thick, annotation] (xpos) -- (1.0,0.5);
+    \end{scope}
+  \end{tikzpicture}
+  \caption{Diagram of Step 2: Prescribed coseismic slip and
+    postseismic relaxation. This quasistatic simulation prescribes
+    uniform slip on the central rupture patch on the top of the slab,
+    depth-dependent viscoelastic relaxation in the slab and mantle,
+    and roller boundary conditions on the lateral (north, south, east,
+    and west) and bottom boundaries.}
+  \label{fig:example:subduction:3d:step02:diagram}
+\end{figure}
+
+The \filename{pylithapp.cfg} completely specifies the Dirichlet roller
+boundary conditions on the five boundaries, so we do not include any
+boundary condition information in \filename{step02.cfg}. As discussed
+in Section~\vref{sec:example:subduction:3d:organization}, we bundle
+the parameters for specification of an elastic crust and wedge and
+viscoelastic slab and mantle in \filename{mat\_viscoelastic.cfg}.
+
+% Materials
+We describe the properties of the linear, isotropic Maxwell
+viscoelastic constitutive model using viscosity in addition to the Vp,
+Vs, and density used to describe purely linear, isotropic elastic
+models. Rather than create a database with all four of these
+parameters, we leverage the \object{SimpldDB} spatial databases used
+by \filename{mat\_elastic.cfg} for the elastic properties and simply
+create a single new spatial database with the depth-dependent
+viscosity for the slab and mantle. We use the \object{CompositeDB}
+spatial database to combine these two spatial databases into a single
+spatial database with the material properties. Rather than using a
+\object{SimpleDB} for the depth-dependent viscosity, we use a
+\object{SimpleGridDB} spatial database
+(\filename{spatialdb/mat\_viscosity}), which provides faster
+interpolation using a bilinear search algorithm along each coordinate
+direction. We use a very large viscosity at depths above 20 km to give
+behavior that is essentially elastic and decrease it so the Maxwell
+relaxation time (viscosity divided by the shear modulus) is
+approximately 200 years at a depth of 30 km, 100 years at a depth of
+100 km, and 50 years at a depth of 400 km. Using linear interpolation
+results in a piecewise linear variation in the viscosity with depth.
+
+\tip{The \object{SimpleGridDB} should be used whenever the points in a
+  spatial database can be described with a logically rectangular
+  grid. The grid points along each direction do not need to be
+  uniformly spaced.}
+
+In setting the parameters for the \object{CompositeDB} in
+\filename{mat\_viscoelastic.cfg}, we specify which properties are
+contained in each of the two spatial databases in the composite
+database and the type and parameters for each of those spatial
+databases. For the slab we have:
+\begin{cfg}
+<h>[pylithapp.problem.materials.slab]</h>
+<f>db_properties</f> = spatialdata.spatialdb.CompositeDB
+<p>db_properties.label</p> = Composite spatial database for slab material properties
+
+<h>[pylithapp.timedependent.materials.slab.db_properties]</h>
+# Elastic properties
+<p>values_A</p> = [density, vs, vp]
+<f>db_A</f> = spatialdata.spatialdb.SimpleDB
+<p>db_A.label</p> = Elastic properties
+<p>db_A.iohandler.filename</p> = spatialdb/mat_slab_elastic.spatialdb
+
+# Viscoelastic properties
+<p>values_B</p> = [viscosity]
+<f>db_B</f> = spatialdata.spatialdb.SimpleGridDB
+<p>db_B.label</p> = Linear Maxwell viscoelatic properties
+<p>db_B.filename</p> = spatialdb/mat_viscosity.spatialdb
+<p>db_B.query_type</p> = linear
+\end{cfg}
+
+In the simulation specific parameter file \filename{step02.cfg}, we
+specify the parameters for the quasistatic time stepping, the
+coesismic rupture, and the filenames for output. By default, PyLith
+will use implicit time stepping with uniform time steps, so we need
+only specify the duration and time step size.
+\begin{cfg}
+<h>[pylithapp.problem.formulation.time_step]</h>
+# Define the total time for the simulation and the time step size.
+<p>total_time</p> = 200.0*year
+<p>dt</p> = 10.0*year
+\end{cfg}
+
+In prescribing coseismic slip, we need to create an array of one fault
+interface and then set its parameters. Because the central fault patch
+contains edges of the fault buried within the domain, we need to
+specify the nodeset that corresponds to the entire fault surface as
+well as the nodeset that corresponds to the buried edges. This ensures
+that PyLith inserts the cohesive cells and properly terminates the
+fault surface at the edges. We must also set the discretization
+information for the fault.
+\begin{cfg}
+<h>[pylithapp.problem]</h>
+# We prescribe slip on the slab fault patch.
+<f>interfaces</f> = [slab]
+
+<h>[pylithapp.problem.interfaces]</h>
+<f>slab</f> = pylith.faults.FaultCohesiveKin ; Default
+
+<h>[pylithapp.problem.interfaces.slab]</h>
+<p>label</p> = fault_slabtop_patch ; Nodeset for entire fault surface
+<p>edge</p> = fault_slabtop_patch_edge ; Nodeset for buried edges
+
+# We must define the quadrature information for fault cells.
+# The fault cells are 2D (surface).
+<f>quadrature.cell</f> = pylith.feassemble.FIATSimplex
+<p>quadrature.cell.dimension</p> = 2
+\end{cfg}
+Just as we do for the boundary conditions and materials, we create an
+array of components (in this case an array of one fault,
+\facility{slab}, and then refer to those components by name, for
+example \facility{pylithapp.problem.interfaces.slab}.
+
+
+We run this example by typing
+\begin{shell}
+$$ pylith step02.cfg mat_viscoelastic.cfg
+\end{shell}
+
 
 \subsubsection{Exercises}
 
@@ -532,10 +686,20 @@ $$ ./viz/plot_dispvec.py [--vector-scale=10.0e+4] [--sim=step01.cfg} [--screensh
 % Slip on lower slab and splay fault
 % Slip on slab and splay fault
 
+\begin{itemize}
+\item
+\end{itemize}
+    
+
+
+
+
+% ----------------------------------------------------------------------
 \subsection{Step 3: Prescribed Aseismic Creep and Interseismic Deformation}
 
 \subsubsection{Exercises}
 
+% ----------------------------------------------------------------------
 \subsection{Step 4: Prescribed Earthquake Cycle}
 
 \subsubsection{Exercises}
@@ -547,10 +711,12 @@ $$ ./viz/plot_dispvec.py [--vector-scale=10.0e+4] [--sim=step01.cfg} [--screensh
 
 
 
+% ----------------------------------------------------------------------
 \subsection{Step 5: Spontaneous Rupture Driven by Subducting Slab}
 
 \subsubsection{Exercises}
 
+% ----------------------------------------------------------------------
 \subsection{Step 6: Prescribed Slow-Slip Event}
 
 This example simulates a simple slow slip event (SSE) that remains
@@ -638,6 +804,7 @@ contours of the applied slip at t = 24 days.
   \end{itemize}
 \end{itemize}
 
+% ----------------------------------------------------------------------
 \subsection{Step 7: Inversion of Slow-Slip Event using 3-D Green's Functions}
 
 This example is essentially a three-dimensional analog of
@@ -708,6 +875,7 @@ on the command line. When we change the problem type to
 % Adjust noise level
 % Invert for slip at each time step
 
+% ----------------------------------------------------------------------
 \subsection{Step 8: Stress Field Due to Gravitational Body Forces}
 
 
