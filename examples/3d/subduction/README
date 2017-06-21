@@ -1,131 +1,23 @@
+The examples in this directory form a step-by-step sequence of 8
+problems involving a 3-D subduction zone. In general, each example
+builds on the previous one. All of the examples use the same mesh,
+generated using CUBIT/Trelis.
+
+See the PyLith User Manual for a detailed discussion of these examples.
+
 Directory structure:
-  mesh (mesh related files)
-  spatialdb (spatial and temporal database related files)
-  viz (ParaView Python scripts)
+  * mesh (mesh related files)
+  * output (simulation output files, created automatically by PyLith)
+  * spatialdb (spatial and temporal database related files)
+  * (viz (ParaView Python scripts)
 
+List of examples
 
-Elastic properties loosely based on
-
-Stephenson, W.J., 2007, Velocity and density models incorporating the
-Cascadia subduction zone for 3D earthquake ground motion simulations,
-Version 1.3: U.S. Geological Survey, Earthquake Hazards Ground Motion
-Investigations, Open-File Report 2007–1348, 24 pages,
-https://pubs.usgs.gov/of/2007/1348/.
-
-
-
-Features:
-
-  Spatial databases
-    + SimpleDB [1]
-    + UniformDB [1,2,3]
-    + SimpleGridDB [2,3]
-    + CompositeDB [2,3]
-
-    - Geographic coordinates with SimpleGridDB
-    - Depth profile with SimpleGridDB [2,3]
-
-  Dirichlet Boundary conditions
-    + Fixed displacement [1,2,3]
-    + Fixed velocity
-    + Time history
-
-  Materials
-    + Elastic [1,2,3]
-    + Linear Maxwell viscoelastic [2,3]
-    + Powerlaw [exercise]
-
-  Preconditioners
-    + LU [1]
-    + AMG (ML) [1ex]
-    + AMG (ML) + custom preconditioner [2,3]
-
-  Uniform refinement [exercise]
-
-  Output
-    + Output of solution [1,2,3]
-    + Output of solution on ground surface [1,2,3]
-    + Output of solution at points
-    + Output of state variables
-
-    + HDF5
-
-  Visualization with ParaView Python scripts
-
-  Generation of spatial databases via Python
-
-  Coordinate systems
-
-    + Geographic projection
-    + Geographic
-
-  Faults
-    + Buried edges [2,3]
-    + Intersecting
-    + Multiple faults [3]
-    + Prescribed slip [2,3]
-    + Prescribed slip w/multiple ruptures
-    + Fault friction
-
-Step01: Axial compression [tutorial]
-  Dirichlet BC with initial values (UniformDB)
-  SimpleDB with properties for each material
-  Static
-    LU preconditioner
-
-  ParaView
-    Python script to view displacement field
-    Python script to view material properties (shear modulus)
-
-  Exercise: Shear instead of axial compression
-
-Step02: Coseismic [exercise]
-  DirichletBC constraining normal displacement on lateral and bottom boundaries
-  Prescribed uniform slip (UniformDB) on slab fault patch with viscoelastic relaxation
-  Viscosity via CompositeDB (single SimpleGridDB with viscosity as a fn of depth)
-  Quasistatic
-    field split + custom preconditioner
-
-  ParaView
-    Python script to view prescribed slip
-    Python script to view relaxation of shear stress
-
-  Exercise: Change slip on slab to slip on splay fault
-  Exercise: Slip on lower slab and splay fault
-  Exercise: Slip on slab and splay fault
-
-Step03: Interseismic [tutorial]
-  DirichletBC with constant velocity (compression)
-  Prescribed fault slip with constant slip rate (UniformDB) [lower slab]
-  Prescribed fault slip with constant slip rate at depth (SimpleGridDB) [top slab]
-  Quasistatic
-
-Step04: Earthquake cycle [exercise]
-  Interseismic + coseismic
-
-  Exercise: Make lower slab + splay fault the primary fault surface
-    and the upper slab (trench side of the splay fault) the secondary
-    fault surface. Hint: You will need to create a nodesets in CUBIT
-    that correspond to the primary and secondary fault surfaces.
-
-Step05: Compression with frictional interface [tutorial]
-  Interseismic + rate- and state-friction
-  Quasistatic
-
-Step06: Slow slip event [tutorial]
-  DirichletBC constraining normal displacement on lateral and bottom boundaries
-  Prescribed slow slip on slab fault patch (SimpleGridDB 2-D in geo coordinates)
-    Time history slip-time function
-  Quasistatic
-  OutputSolnPoints
-
-Step07: Green's functions [tutorial]
-  Generate Green's functions (slab patch + splay patch?)
-  Simple inversion of GPS data (slip on slab or splay?)
-  OutputSolnPoints
-
-Step08: Gravity
-  uniform density (SimpleDB), demonstrate initial stresses to compensate gravity
-  variable density (match Step01), initial stress matches avg desnity, elastic: demonstrate deviation
-  variable density, elastic+viscoelastic: demonstrate problems
-
+step01: Axial compression
+step02: Prescribed coseismic slip and postseismic relaxation
+step03: Prescribed aseismic creep and interseismic deformation
+step04: Prescribed earthquake cycle
+step05: Spontaneous rupture driven by subducting slab
+step06: Prescribed slow-slip event
+step07a,b: Inversion of slow-slip event using 3-D Green's functions
+step08a,b,c: Stress field due to gravitational body forces
