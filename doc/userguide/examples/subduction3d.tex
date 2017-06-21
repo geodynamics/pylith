@@ -643,14 +643,17 @@ only specify the duration and time step size.
 <p>dt</p> = 10.0*year
 \end{cfg}
 
-In prescribing coseismic slip, we need to create an array of one fault
-interface and then set its parameters. Because the central fault patch
-contains edges of the fault buried within the domain, we need to
-specify the nodeset that corresponds to the entire fault surface as
-well as the nodeset that corresponds to the buried edges. This ensures
-that PyLith inserts the cohesive cells and properly terminates the
-fault surface at the edges. We must also set the discretization
-information for the fault.
+In prescribing coseismic slip on the single fault patch, we create an
+array with one fault interface and then set its parameters. Because
+the edges of the central fault patch are buried within the domain, we
+need to specify the nodeset that corresponds to the buried edges as
+well as the nodeset for the entire fault surface. This ensures that
+PyLith inserts the cohesive cells and properly terminates the fault
+surface at the edges. Just as we do for the boundary conditions and
+materials, we create an array of components (in this case an array
+with one fault interface, \facility{slab}, and then refer to those
+components by name, \facility{pylithapp.problem.interfaces.slab}. We
+must also set the discretization information for the fault.
 \begin{cfg}
 <h>[pylithapp.problem]</h>
 # We prescribe slip on the slab fault patch.
@@ -668,30 +671,74 @@ information for the fault.
 <f>quadrature.cell</f> = pylith.feassemble.FIATSimplex
 <p>quadrature.cell.dimension</p> = 2
 \end{cfg}
-Just as we do for the boundary conditions and materials, we create an
-array of components (in this case an array of one fault,
-\facility{slab}, and then refer to those components by name, for
-example \facility{pylithapp.problem.interfaces.slab}.
 
+Prescribing the coseismic slip distribution on the fault involves
+specifying an origin time for the rupture (default is 0.0), and a slip
+time function along with its
+parameters. In this case, we treat the earthquake rupture as just the
+coseismic slip happening in one time step, so we use a step function
+for the slip time function (which is the default). The parameters
+include the final slip and slip initiation time. Because we want
+uniform slip and a uniform rise time, we use \object{UniformDB}
+spatial databases for both of these. Note that we specify oblique slip
+with 1.0 m of right-lateral motion and 4.0 m of reverse motion.
+\begin{cfg}
+<h>[pylithapp.problem.interfaces.slab.eq_srcs.rupture.slip_function]</h>
+<f>slip</f> = spatialdata.spatialdb.UniformDB
+<p>slip.label</p> = Final slip
+<p>slip.values</p> = [left-lateral-slip, reverse-slip, fault-opening]
+<p>slip.data</p> = [-1.0*m, 4.0*m, 0.0*m] 
+
+<f>slip_time</f> = spatialdata.spatialdb.UniformDB
+<p>slip_time.label</p>  = Slip initiation time
+<p>slip_time.values</p> = [slip-time]
+<p>slip_time.data</p> = [9.999*year] ; Use 10*year-small value to account for roundoff errors
+
+<h>[pylithapp.problem.interfaces.slab.output]</h>
+<f>writer</f> = pylith.meshio.DataWriterHDF5
+<p>writer.filename</p> = output/step02-fault-slab.h5
+<p>vertex_info_fields</p> = [normal_dir, strike_dir, dip_dir, final_slip_rupture, slip_time_rupture]
+\end{cfg}
 
 We run this example by typing
 \begin{shell}
-$$ pylith step02.cfg mat_viscoelastic.cfg
+$$ pylith step02.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg
 \end{shell}
+
+Figure \vref{fig:example:subduction:3d:step02}, which was created
+using the ParaView Python script \filename{plot\_dispwarp.py}, displays
+the magnitude of the displacement field exaggerated by a factor of 10,000.
+The shallow fault results in deformation that is localized over a
+small region.
+
+\begin{figure}
+  \includegraphics[width=5.0in]{examples/figs/subduction3d_step02_soln}
+  \caption{Solution over the domain for Step 2 at t=200*yr. The colors indicate
+    the magnitude of the displacement and we have exaggerated the
+    deformation by a factor of 10,000.}
+  \label{fig:example:subduction:3d:step02}
+\end{figure}
 
 
 \subsubsection{Exercises}
 
-% Change slip on slab to slip on splay fault
-% Slip on lower slab and splay fault
-% Slip on slab and splay fault
-
 \begin{itemize}
-\item
+\item Change the slip from the top of the slab to the splay fault
+  rupture patch. Hint: Identify the nodesets for the splay fault
+  patch.
+\item Create simulataneous rupture on the central patch for the splay
+  fault and top of the slab.
+\item Prescribe coseismic slip on the central patch for splay fault
+  and the top of the slab below the intersection with the splay fault.
+  \begin{itemize}
+  \item Implement this without changing the any of the nodesets. Hint:
+    You will need to create two fault interfaces. What do you notice
+    about the slip at the intersection between the splay fault and slab?
+  \item Add nodesets in CUBIT/Trelis to create a uniform coseismic
+    slip distribution across the splay fault and on the slab interface
+    below the splay fault.
+  \end{itemize}
 \end{itemize}
-    
-
-
 
 
 % ----------------------------------------------------------------------
