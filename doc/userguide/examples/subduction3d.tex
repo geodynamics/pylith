@@ -153,58 +153,67 @@ generate the mesh. In the end you will have an Exodus-II file
   journal file to understand how we assemble the 3-D slab and cut the
   rectangular into pieces.}
 
-\subsection{Organization of Parameters}
+\subsection{Organization of Simulation Parameters}
 
+PyLith automatically reads in \filename{pylithapp.cfg} from the
+current directory, if it exists. As a result, we generally put all
+parameters common to a set of examples in this file to avoid
+duplicating parameters across multiple files. Because we often use a
+single mesh for multiple simulations in a directory, we place all
+parameters related to our mesh and identifying the materials in our
+mesh in \filename{pylithapp.cfg}. We set the bulk constitutive model
+and its parameters in other files, because we vary those across the
+simulations. In general, we place roller boundary conditions
+(Dirichlet boundary conditions constraining the degrees of freedom
+perpendicular to the boundary) on the lateral and bottom boundaries,
+so we include those in \filename{pylithapp.cfg}. In some simulations
+we will overwrite the values for parameters will values specific to a
+given example. This file is also a convenient place to put basic
+solver parameters and to turn on Pyre journals for displaying
+informational messages during a run.journalling debugging flags.
 
-
-% pylithapp
-%  + mesh
-%  + materials
-%  + boundary conditions
-%  + output
-%  + solver
-
-% solver*
-%  production preconditioners for use with and without faults
-
-% mat*
-%  + linear, isotropic elastic material model for all materials
-%  + linear, isotropic elastic material model for crust, wedge, linear Maxwell viscoelastic model with depth-dependent viscosity for slab, mantle
-
-As in the examples discussed in previous sections of these examples,
-we place parameters common to the three steps in the \filename{pylithapp.cfg}
-file so that we do not have to duplicate them for each step. The settings
-contained in \filename{pylithapp.cfg} for this problem consist of:
+Hence the settings contained in \filename{pylithapp.cfg} include:
 \begin{inventory}
   \facilityitem{pylithapp.journal.info}{Settings that control the
     verbosity of the output written to stdout for the different
-    components.}  \facilityitem{pylithapp.mesh\_generator}{Settings
-    that control mesh importing, such as the importer type, the
-    filename, and the spatial dimension of the mesh.}
-  \facilityitem{pylithapp.timedependent}{Settings that control the
-    problem, such as the total time, time-step size, and spatial
-    dimension.}
-  \facilityitem{pylithapp.timedependent.materials}{Settings that
-    control the material type, specify which material IDs are to be
-    associated with a particular material type, and give the name of
-    the spatial database containing the physical properties for the
-    material. The quadrature information is also given.}
+    components.}
+  \facilityitem{pylithapp.mesh\_generator}{Parameters for the type of
+    mesh importer (generator), reordering of the mesh, and the mesh
+    coordinate system.}
+  \facilityitem{pylithapp.problem.materials}{Basic parameters for each
+    of the four materials, including the label, block id in the mesh
+    file, discretization, and output writer.}
+  \facilityitem{pylithapp.problem.bc}{Parameters for Dirichlet
+    boundary conditions on the lateral and bottom boundaries of the
+    domain.}
   \facilityitem{pylithapp.problem.formulation.output}{Settings related
     output of the solution over the domain and subdomain (ground
     surface).}
-  \facilityitem{pylithapp.timedependent.materials.\textit{MATERIAL}.output}{Settings
-    related to output of the state variables for material
-    \textit{MATERIAL}.}  \facilityitem{pylithapp.petsc}{PETSc settings
-    to use for the problem, such as the preconditioner type.}
+  \facilityitem{pylithapp.petsc}{PETSc solver and logging settings.}
 \end{inventory}
-The physical properties for each material are specified in spatial
-database files. For example, the elastic properties for the
-continental crust are in \filename{mat\_concrust.spatialdb}. The
-provided spatial database files all use just a single point to specify
-uniform physical properties within each material. A good exercise is
-to alter the spatial database files with the physical properties to
-match PREM.
 
+In this set of examples, we will consider cases in which all materials
+are linear, isotropic elastic and cases where the crust and wedge are
+linear, isotropic elastic but the slab and mantle are linear Maxwell
+viscoelastic. As a result, we put the parameters for these two cases
+in separate \filename{.cfg} files with \filename{mat\_elastic.cfg} for
+the case with purely elastic models and
+\filename{mat\_viscoelastic.cfg} for the case with a mix of elastic
+and viscoelastic models. Each of these files specifies the bulk
+constitutive model and spatial database to use for each material.
+
+Similarly, we group solver parameters into a few different files to
+handle different cases. The \filename{pylithapp.cfg} file uses a
+direct solver, which is suitable for debugging and test problems that
+do not include a fault; a direct solver is not well-suited for
+production runs because it does not scale well and uses a lot of
+memory. The \filename{solver\_algebraicmultigrid.cfg} provides more
+optimal settings for simulations without a fault by using an algebraic
+multigrid preconditioner. Similarly, for simulations with a fault
+\filename{solver\_fieldsplit.cfg} provides settings for applying the
+algebraic multigrid preconditioner to the elasticity portion of the
+system Jacobian matrix and our custom fault preconditioner to the
+Lagrange multiplier portion.
 
 \subsection{Step 1: Axial Compression}
 
@@ -213,7 +222,23 @@ match PREM.
 %   + elastic material properties => linear solver with single time step
 
 
-% Squeeze
+\begin{figure}[htbp]
+  \begin{tikzpicture}
+    \tikzstyle{annotation} = [black];
+    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[width=4.5in]{examples/figs/subduction3d_geometry}};
+    \begin{scope}[x={(image.south east)},y={(image.north west)}]
+      \node[anchor=west, annotation] (xneg) at (-0.2,0.5) {+2.0 m};
+      \draw[>=latex, ->, ultra thick, annotation] (xneg) -- (0.0,0.5);
+      \node[anchor=east, annotation] (xpos) at (+1.2,0.5) {-2.0 m};
+      \draw[>=latex, ->, ultra thick, annotation] (xpos) -- (1.0,0.5);
+    \end{scope}
+  \end{tikzpicture}
+  \caption{Diagram of axial compression example. This static
+    simulation uses Dirichlet boundary conditions with axial
+    compression in the east-west (x-direction) and purely elastic
+    properties.}
+  \label{fig:example:subduction:3d:step01:diagram}
+\end{figure}
 
 The first example problem is earthquake rupture involving coseismic
 slip along the interface between the subducting slab and the continental
@@ -304,6 +329,9 @@ deformation exaggerated by a factor of 1000.
 
 % Change spatial distribution and time history of slip.
 
+% Add propagation of the slow slip (spatial variation of slip starting
+% time, change rise time)
+
 \subsection{Step 7: Inversion of Slow-Slip using 3D Green's Functions}
 
  %% In this problem we generate Green's functions that will be used
@@ -314,6 +342,8 @@ deformation exaggerated by a factor of 1000.
  %%           slip on the subduction interface (slab top).
  %% step07b:  Generate Green's functions corresponding to updip
  %%           slip on the subduction interface (slab top).
+
+ %% Allows trivial parallel.
 
  %% Responses (Green's functions) are computed at simulated cGPS
  %% locations defined in the file cgps_sites.txt.
