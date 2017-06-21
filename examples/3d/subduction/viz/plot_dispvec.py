@@ -82,12 +82,6 @@ def visualize(sim, dispScale):
     glyphDisplay.Representation = "Surface"
     
     view.ResetCamera()
-
-    view.CameraPosition = [78002.89373974672, -1531813.1739094853, 595774.2094961794]
-    view.CameraFocalPoint = [-45014.6313325238, 149523.68421156122, -335271.271063906]
-    view.CameraViewUp = [0.0, 0.0, 1.0]
-    view.ViewSize = [960, 540]
-    
     Render()
 
 # ----------------------------------------------------------------------
@@ -117,8 +111,6 @@ else:
     # Running inside the ParaView GUI
 
     visualize(SIM_NAME, DISPLACEMENT_SCALE)
-
-    Render()
 
     
 
