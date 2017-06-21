@@ -113,22 +113,15 @@ if __name__ == "__main__":
     
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--sim", action="store", dest="sim")
+    parser.add_argument("--sim", action="store", dest="sim", default=SIM_NAME)
     parser.add_argument("--faults", action="store", dest="faults")
     args = parser.parse_args()
 
-    sim = args.sim
     if args.faults:
         faults = args.faults.split(",")
     else:
-        faults = None
-
-    if sim is None:
-        sim = SIM_NAME
-    if faults is None:
         faults = FAULTS
-        
-    visualize(sim, faults)
+    visualize(args.sim, faults)
     Interact()
 
 else:

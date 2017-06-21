@@ -83,17 +83,11 @@ if __name__ == "__main__":
     
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--sim", action="store", dest="sim")
-    parser.add_argument("--exaggeration", action="store", type=float, dest="exaggeration")
+    parser.add_argument("--sim", action="store", dest="sim", default=SIM_NAME)
+    parser.add_argument("--exaggeration", action="store", type=float, dest="exaggeration", default=DISPLACEMENT_SCALE)
     args = parser.parse_args()
 
-    sim = args.sim
-    exaggeration = args.exaggeration
-    if sim is None:
-        sim = SIM_NAME
-    if exaggeration is None:
-        exaggeration = DISPLACEMENT_SCALE
-    visualize(sim, exaggeration)
+    visualize(args.sim, args.exaggeration)
     Interact()
 
 else:

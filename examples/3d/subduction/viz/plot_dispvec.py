@@ -89,17 +89,11 @@ if __name__ == "__main__":
     
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--sim", action="store", dest="sim")
-    parser.add_argument("--vector-scale", action="store", type=float, dest="scale")
+    parser.add_argument("--sim", action="store", dest="sim", default=SIM_NAME)
+    parser.add_argument("--vector-scale", action="store", type=float, dest="scale", default=DISPLACEMENT_SCALE)
     args = parser.parse_args()
 
-    sim = args.sim
-    scale = args.scale
-    if sim is None:
-        sim = SIM_NAME
-    if scale is None:
-        scale = DISPLACEMENT_SCALE
-    visualize(sim, scale)
+    visualize(args.sim, args.scale)
     Interact()
 
 else:

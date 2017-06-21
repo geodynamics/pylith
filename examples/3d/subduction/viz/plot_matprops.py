@@ -76,25 +76,17 @@ if __name__ == "__main__":
     
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--sim", action="store", dest="sim")
-    parser.add_argument("--field", action="store", dest="field")
+    parser.add_argument("--sim", action="store", dest="sim", default=SIM_NAME)
+    parser.add_argument("--field", action="store", dest="field", default=INFO_FIELD)
     parser.add_argument("--materials", action="store", dest="materials")
     args = parser.parse_args()
 
-    sim = args.sim
-    field = args.field
     if args.materials:
         materials = args.materials.split(",")
     else:
-        materials = None
-    
-    if sim is None:
-        sim = SIM_NAME
-    if field is None:
-        field = INFO_FIELD
-    if materials is None:
         materials = MATERIALS
-    visualize(sim, field, materials)
+    
+    visualize(args.sim, args.field, materials)
     Interact()
 
 else:
