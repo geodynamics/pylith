@@ -75,11 +75,18 @@ def visualize(sim, dispScale):
     glyph.ScaleFactor = dispScale
     glyph.ScaleMode = "vector"
     glyph.GlyphMode = "All Points"
+    glyph.GlyphType.TipRadius = 0.2
+    glyph.GlyphType.ShaftRadius = 0.05
 
     glyphDisplay = Show(glyph, view)
     glyphDisplay.Representation = "Surface"
     
     view.ResetCamera()
+
+    view.CameraPosition = [78002.89373974672, -1531813.1739094853, 595774.2094961794]
+    view.CameraFocalPoint = [-45014.6313325238, 149523.68421156122, -335271.271063906]
+    view.CameraViewUp = [0.0, 0.0, 1.0]
+    view.ViewSize = [960, 540]
     
     Render()
 
@@ -91,9 +98,19 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--sim", action="store", dest="sim", default=SIM_NAME)
     parser.add_argument("--vector-scale", action="store", type=float, dest="scale", default=DISPLACEMENT_SCALE)
+    parser.add_argument("--screenshot", action="store", dest="screenshot")
     args = parser.parse_args()
 
     visualize(args.sim, args.scale)
+
+    view = GetRenderView()
+    view.CameraPosition = [78002.89373974672, -1531813.1739094853, 595774.2094961794]
+    view.CameraFocalPoint = [-45014.6313325238, 149523.68421156122, -335271.271063906]
+    view.CameraViewUp = [0.0, 0.0, 1.0]
+    view.ViewSize = [960, 540]
+    if args.screenshot:
+        WriteImage(args.screenshot)
+
     Interact()
 
 else:
@@ -101,5 +118,8 @@ else:
 
     visualize(SIM_NAME, DISPLACEMENT_SCALE)
 
+    Render()
+
+    
 
 # End of file
