@@ -719,15 +719,15 @@ $$ pylith step02.cfg mat_viscoelastic.cfg
 % ----------------------------------------------------------------------
 \subsection{Step 6: Prescribed Slow-Slip Event}
 
-This example simulates a simple slow slip event (SSE) that remains
-fixed spatially but increases its amplitude with time. We assume a
-constant rake angle of 110 degrees, and a time duration of 30
-days. This problem requres the use of both a spatial database to
-provide the spatial distribution of slip, and a temporal database to
-describe the time evolution of slip. To create these databases we
-provide the \filename{generate\_slowslip.py} script, which is in the
-\filename{spatialdb} directory. Once you are in the
-\filename{spatialdb} directory, run the script as follows:
+This example simulates a simple slow slip event (SSE) on the
+subduction interface that remains fixed spatially but increases its
+amplitude with time. We assume a constant rake angle of 110 degrees,
+and a time duration of 30 days. This problem requres the use of both a
+spatial database to provide the spatial distribution of slip, and a
+temporal database to describe the time evolution of slip. To create
+these databases we provide the \filename{generate\_slowslip.py}
+script, which is in the \filename{spatialdb} directory. Once you are
+in the \filename{spatialdb} directory, run the script as follows:
 \begin{shell}
 $$ ./generate_slowslip.py
 \end{shell}
@@ -740,25 +740,144 @@ times. The files created are:
 \item \filename{fault\_slabtop\_slowslip.timedb}: Temporal database
 \end{itemize}
 
-Once the database files have been generated, it is possible to run the
-example. Parameter settings that augment those in pylithapp.cfg are
-contained in the file \filename{step06.cfg}. These settings are:
-\begin{inventory}
-  \facilityitem{pylithapp.timedependent.formulation.time\_step}{Adjust
-    the total simulation time to 30 days with a time step size of 2 days.}
-  \facilityitem{pylithapp.timedependent.formulation}{Specify output
-    for the domain, for the ground surface, and for a set of
-    simulated cGPS sites.}
-  \facilityitem{pylithapp.timedependent.interfaces.slab}{Specify the
-    spatial distribution of slip and the temporal evolution of slip on
-    the slab interface. We change the slip function from the default
-    to a time history slip function to make use of the temporal database.}
-  \facilityitem{pylithapp.problem.formulation.output.domain}{Gives the
-    base filenames for HDF5 output for all output types (for example, 
-    \filename{step06-domain.h5}). Note that for cGPS output we need to
-    provide coordinate system information as well as the name of a
-    text file providing cGPS site locations.}
-\end{inventory}
+Note that \filename{fault\_slabtop\_slowslip.spatialdb} is a
+\facility{SimpleGridDB}. This type of spatial database is very
+efficient in cases where property values lie on a regular grid in 2 or
+3 dimensions, since searches and interpolations reduce to a set of 1D
+operations. Once the database files have been generated, it is
+possible to run the example. There are a number of parameters that are
+changed from or added to those in \filename{pylithapp.cfg}. We first
+change the total simulation time to 30 days with a time step size of 2
+days:
+\begin{cfg}
+<h>[pylithapp.problem.formulation.time_step]</h>
+# Define the total time for the simulation and the time step size.
+<p>total_time</p> = 30.0*day
+<p>dt</p> = 2.0*day
+\end{cfg}
+
+The results in this example will be used to simulate output at cGPS
+stations for example step07, so we modify the output manager to
+provide output at synthetic cGPS stations as well as the entire domain
+and ground surface:
+\begin{cfg}
+# For this problem, we want output over the entire domain, for the
+# ground surface, and at simulated cGPS locations.
+<h>[pylithapp.problem.implicit]</h>
+<f>output</f> = [domain, subdomain, cgps_sites]
+
+# Default output is for the entire domain.
+# We need to set the type of output for the subdomain and points.
+<f>output.subdomain</f> = pylith.meshio.OutputSolnSubset
+<f>output.cgps_sites</f> = pylith.meshio.OutputSolnPoints
+\end{cfg}
+
+There are a number of parameters to change/modify related to the
+fault. In particular, we change the default slip function to
+\facility{pylith.faults.TimeHistorySlipFn}, which allows us to change
+the slip amplitude as a function of time. We also use a
+\facility{SimpleGridDB} to specify fault slip and linear interpolation
+for the fault slip:
+\begin{cfg}
+<h>[pylithapp.problem]</h>
+# We prescribe slip on the slab fault patch.
+<f>interfaces</f> = [slab]
+
+<h>[pylithapp.problem.interfaces]</h>
+<f>slab</f> = pylith.faults.FaultCohesiveKin
+
+<h>[pylithapp.problem.interfaces.slab]</h>
+# Nodeset corresponding to the fault patch and buried edge.
+<p>label</p> = fault_slabtop_patch
+<p>edge</p> = fault_slabtop_patch_edge
+
+# We must define the quadrature information for fault cells.
+# The fault cells are 2D (surface).
+<f>quadrature.cell</f> = pylith.feassemble.FIATSimplex
+<p>quadrature.cell.dimension</p> = 2
+
+# We use a time history slip function.
+<h>[pylithapp.problem.interfaces.slab.eq_srcs.rupture]</h>
+<f>slip_function</f> = pylith.faults.TimeHistorySlipFn
+
+# The slip is defined in a spatial database.
+<h>[pylithapp.problem.interfaces.slab.eq_srcs.rupture.slip_function]</h>
+<f>slip</f> = spatialdata.spatialdb.SimpleGridDB
+<p>slip.label</p> = Gaussian slip distribution for SSE
+<p>slip.filename</p> = spatialdb/fault_slabtop_slowslip.spatialdb
+
+# Use linear interpolation.
+<p>slip.query_type</p> = linear
+
+# We use a UniformDB to specify the slip initiation time.
+<f>slip_time</f> = spatialdata.spatialdb.UniformDB
+<p>slip_time.label</p> = Slip initiation time
+<p>slip_time.values</p> = [slip-time]
+<p>slip_time.data</p> = [0.0*year] 
+
+# We use a temporal database to provide the slip time history.
+<p>time_history.label</p> = Time history of slip
+<p>time_history.filename</p> = spatialdb/fault_slabtop_slowslip.timedb
+\end{cfg}
+
+The final set of parameters involve output. The domain and subdomain
+output are similar to previous examples:
+\begin{cfg}
+<h>[pylithapp.problem.formulation.output.domain]</h>
+<f>writer</f> = pylith.meshio.DataWriterHDF5
+<p>writer.filename</p> = output/step06-domain.h5
+
+<h>[pylithapp.problem.formulation.output.subdomain]</h>
+# Name of nodeset for top surface.
+<p>label</p> = boundary_zpos
+<f>writer</f> = pylith.meshio.DataWriterHDF5
+<p>writer.filename</p> = output/step06-groundsurf.h5
+\end{cfg}
+For points output, we need to provide coordinate system information as
+well as the name of the text file containing station names and
+coordinates:
+\begin{cfg}
+# Specify output type, coordinate system, and station file for cgps_sites.
+<h>[pylithapp.problem.formulation.output.cgps_sites]</h>
+# We will use a geographic coordinate system for the cGPS sites file.
+<f>coordsys</f> = spatialdata.geocoords.CSGeo
+<p>coordsys.space_dim</p> = 3
+<p>coordsys.datum_horiz</p> = WGS84
+<p>coordsys.datum_vert</p> = mean sea level
+
+# Use HDF5 output.
+<f>writer</f> = pylith.meshio.DataWriterHDF5
+<p>writer.filename</p> = output/step06-cgps_sites.h5
+
+# Simulated cGPS station file.
+<p>reader.filename</p> = cgps_sites.txt
+\end{cfg}
+The remainder of the settings are for fault and material output,
+similar to other examples:
+\begin{cfg}
+# Fault output ------------------------------------------------------
+<h>[pylithapp.problem.interfaces.slab.output]</h>
+# Output fault results to HDF5 file.
+writer = pylith.meshio.DataWriterHDF5
+writer.filename = output/step06-fault-slab.h5
+
+# We want both orientation and slip information in the information file.
+vertex_info_fields = [normal_dir, strike_dir, dip_dir, final_slip_rupture]
+
+# Material output ------------------------------------------------------
+<h>[pylithapp.problem.materials.slab.output]</h>
+<p>writer.filename</p> = output/step06-slab.h5
+
+<h>[pylithapp.problem.materials.wedge.output]</h>
+<p>writer.filename</p> = output/step06-wedge.h5
+
+<h>[pylithapp.problem.materials.crust.output]</h>
+<p>writer.filename</p> = output/step06-crust.h5
+
+<h>[pylithapp.problem.materials.mantle.output]</h>
+<p>writer.filename</p> = output/step06-mantle.h5
+\end{cfg}
+
 We use elastic properties for all materials, and custom solver
 settings appropriate for a problem with a fault. We run the example by typing
 \begin{shell}
@@ -777,8 +896,7 @@ horizontal displacement vectors at the cGPS sites, superimposed on
 contours of the applied slip at t = 24 days.
 
 \begin{figure}
-  %\includegraphics[width=4.5in]{examples/figs/subduction3d_step06_soln}
-  ADD FIGURE HERE
+  \includegraphics[width=4.5in]{examples/figs/subduction3d_step06_soln}
   \caption{Solution for Step 6. The colors indicate the vertical
     displacement, the vectors represent the horizontal displacements
     at simulated cGPS sites, and the contours represent the applied
@@ -800,7 +918,8 @@ contours of the applied slip at t = 24 days.
   initiation time).
   \begin{itemize}
   \item Either alter Python script to produce a spatial database of
-    slip initiation times, or write a new script.
+    slip initiation times, or write a new script. Can you produce a
+    more realistic-looking slow slip event?
   \end{itemize}
 \end{itemize}
 
