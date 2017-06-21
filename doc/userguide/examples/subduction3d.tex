@@ -6,7 +6,7 @@
 This suite of examples demonstrates use of a wide variety of features
 and the general workflow often used in research simulations. We base
 the model on the Cascadia subduction zone
-(Figure~\ref{fig:example:subduction:3d:cascadia}). These examples will
+(Figure~\vref{fig:example:subduction:3d:cascadia}). These examples will
 focus on modeling the deformation associated with the the subducting
 slab, including interseismic deformation with aseismic slip (creep)
 and viscoelastic relaxation, coseismic slip on the slab interface and
@@ -30,7 +30,7 @@ to mean sea level).
   \label{fig:example:subduction:3d:cascadia}
 \end{figure}
 
-Figure~\ref{fig:example:subduction:3d:concept} shows our conceptual
+Figure~\vref{fig:example:subduction:3d:concept} shows our conceptual
 model with a slab, mantle, continental crust, and accretionary
 wedge. We cut off the slab at a depth of 100 km. We use a transverse
 geographic projection coordinate system with Portland, Oregon, as the
@@ -65,7 +65,7 @@ several subdirectories:
 
 \subsection{Features Illustrated}
 
-Table~\ref{tab:example:subduction:3d:features} lists the features
+Table~\vref{tab:example:subduction:3d:features} lists the features
 discussed in each of these 3-D subduction zone examples. With the
 intent of illustrating features used in research simulations, we use
 HDF5 output and, we make extensive use the most efficient
@@ -316,7 +316,7 @@ Lagrange multiplier portion.
 
 We start with a very simple example of axial compression in the
 east-west direction with purely elastic material properties, and no
-faults (Figure~\ref{fig:example:subduction:3d:step01:diagram}). We
+faults (Figure~\vref{fig:example:subduction:3d:step01:diagram}). We
 impose axial compression using Dirichlet boundary conditions on the
 east (+x) and west (-x) boundaries and confine the domain in the
 north-south direction via zero displacement Dirichlet boundary
@@ -364,7 +364,7 @@ value to create the axial compression:
 <p>db_initial.data</p> = [-2.0*m]
 \end{cfg}
 
-As discussed in Section~\ref{sec:example:subduction:3d:organization},
+As discussed in Section~\vref{sec:example:subduction:3d:organization},
 we use \filename{mat\_elastic.cfg} to specify the parameters
 associated with linear, isotropic elastic bulk constitutive models for
 all of the materials for convenient reuse across several different
@@ -427,9 +427,14 @@ The files include the solution over the domain and ground surface
 (two pairs of files), and physical properties, stress, and strain within
 each material (eight pairs of files). 
 
-Figure \vref{fig:example:subduction:3d:step01}, which was created using
-ParaView, displays the magnitude of the displacement field with the
-deformation exaggerated by a factor of 1000. 
+Figure \vref{fig:example:subduction:3d:step01}, which was created
+using the ParaView Python script \filename{plot\_dispvec.py}, displays
+the magnitude of the displacement field arrows showing the direction
+and magnitude of the deformation. Material properties with a positive
+Poisson's ratio result in vertical deformation along with the axial
+compression. The variations in material properties among the
+properties result in local spatial variations that are most evident in
+the horizontal displacement components.
 
 \begin{figure}
   \includegraphics[width=5.0in]{examples/figs/subduction3d_step01_soln}
@@ -441,6 +446,51 @@ deformation exaggerated by a factor of 1000.
 \end{figure}
 
 
+There are three different ways you can run this Python script to view
+the solution:
+\begin{enumerate}
+\item From a shell (terminal window) start ParaView via the command line from the
+  \filename{examples/3d/subduction} directory. Within the ParaView GUI, select
+  \object{Tools}$\rightarrow$\object{Python Shell}, click on the
+  \object{Run Script} button, and navigate to the \filename{viz}
+  directory and select the \filename{plot\_dispvec.py} file.
+
+\item From a shell (terminal window) start ParaView via the command line from the
+  \filename{examples/3d/subduction} directory adding the
+  \filename{-{}-script=viz/plot\_dispvec.py} command line argument.
+\begin{shell}
+# Make sure you are in the examples/3d/subduction directory.
+$$ PATH_TO_PARAVIEW/paraview --script=viz/plot_dispvec.py
+\end{shell}
+\item Run the ParaView Python script directly from a shell (terminal
+  window) via the command line. You can use command line arguments to
+  set user-specified parameters.
+\begin{shell}
+# Make sure you are in the examples/3d/subduction directory.
+# We show the optional command line arguments in square brackets.  
+$$ ./viz/plot_dispvec.py [--vector-scale=10.0e+4] [--sim=step01.cfg} [--screenshot=FILE]
+\end{shell}
+\end{enumerate}
+
+\tip{Running the ParaView Python script from within the ParaView GUI
+  allows further manipulation of the data, which is not possible when
+  running the ParaView Python script outside the ParaView
+  GUI.}
+
+\tip{In order to change the user-specified parameters in the ParaView
+  Python scripts when running them from within the ParaView GUI, you
+  must edit the file in an external text editor before running the
+  script. If you are running these script from outside the ParaView
+  GUI, you can simply use command line argument to change the
+  user-specified parameters.}
+
+\important{The ParaView Python scripts run Python via
+  \filename{pvpython}, which is a customized version of the Python
+  interpreter included in the ParaView distribution. This is different
+  from Python provided with your operating system and the one included
+  in the PyLith distribution.}
+
+  
 \subsubsection{Exercises}
 
 
