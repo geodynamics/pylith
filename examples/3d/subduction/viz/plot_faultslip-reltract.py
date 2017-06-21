@@ -101,7 +101,14 @@ def visualize(sim, faults):
 
     contourDisplay = Show(contour, view)
 
+    # Annotate time
+    tstamp = AnnotateTimeFilter(dataDomain)
+    tstamp.Format = 'Time: %2.0f yr'
+    tstamp.Scale = 3.168808781402895e-08 # seconds to years
 
+    tstampDisplay = Show(tstamp, view)
+    tstampDisplay.FontFamily = "Courier"
+    tstampDisplay.FontSize = 14
     
     view.ResetCamera()
     view.Update()
@@ -122,6 +129,14 @@ if __name__ == "__main__":
     else:
         faults = FAULTS
     visualize(args.sim, faults)
+
+    view = GetRenderView()
+    view.CameraPosition = [78002.89373974672, -1531813.1739094853, 595774.2094961794]
+    view.CameraFocalPoint = [-45014.6313325238, 149523.68421156122, -335271.271063906]
+    view.CameraViewUp = [0.0, 0.0, 1.0]
+    view.ViewSize = [960, 540]
+    view.Update()
+
     Interact()
 
 else:

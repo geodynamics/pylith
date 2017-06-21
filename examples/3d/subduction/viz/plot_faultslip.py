@@ -28,7 +28,7 @@
 # pvpython.
 
 # Root name for simulation.
-SIM_NAME = "step06"
+SIM_NAME = "step02"
 
 # Names of faults for output files.
 FAULTS = ["fault-slab"]
@@ -37,7 +37,7 @@ FAULTS = ["fault-slab"]
 from paraview.simple import *
 import os
 
-def visualize(sim, faults):
+def visualize(sim, faults, showFinalTimeStep=False):
     # Disable automatic camera reset on "Show"
     paraview.simple._DisableFirstRenderCameraReset()
 
@@ -50,6 +50,8 @@ def visualize(sim, faults):
 
     scene = GetAnimationScene()
     scene.UpdateAnimationUsingDataTimeSteps()
+    if showFinalTimeStep:
+        scene.GoToLast()
     view = GetActiveViewOrCreate('RenderView')
 
     # Gray wireframe for undeformed domain.
@@ -81,6 +83,15 @@ def visualize(sim, faults):
     # Update a scalar bar component title.
     UpdateScalarBarsComponentTitle(slipLUT, faultDisplay)
 
+    # Annotate time
+    tstamp = AnnotateTimeFilter(dataDomain)
+    tstamp.Format = 'Time: %2.0f yr'
+    tstamp.Scale = 3.168808781402895e-08 # seconds to years
+
+    tstampDisplay = Show(tstamp, view)
+    tstampDisplay.FontFamily = "Courier"
+    tstampDisplay.FontSize = 14
+    
     view.ResetCamera()
     view.Update()
     Render()
@@ -93,13 +104,25 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--sim", action="store", dest="sim", default=SIM_NAME)
     parser.add_argument("--faults", action="store", dest="faults")
+    parser.add_argument("--screenshot", action="store", dest="screenshot")
     args = parser.parse_args()
 
     if args.faults:
         faults = args.faults.split(",")
     else:
         faults = FAULTS
-    visualize(args.sim, faults)
+    visualize(args.sim, faults, showFinalTimeStep=True)
+
+    view = GetRenderView()
+    view.CameraPosition = [78002.89373974672, -1531813.1739094853, 595774.2094961794]
+    view.CameraFocalPoint = [-45014.6313325238, 149523.68421156122, -335271.271063906]
+    view.CameraViewUp = [0.0, 0.0, 1.0]
+    view.ViewSize = [960, 540]
+    view.Update()
+
+    if args.screenshot:
+        WriteImage(args.screenshot)    
+
     Interact()
 
 else:

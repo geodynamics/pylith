@@ -35,7 +35,7 @@ DISPLACEMENT_SCALE = 10.0e+3
 from paraview.simple import *
 import os
 
-def visualize(sim, exaggeration):
+def visualize(sim, exaggeration, showFinalTimeStep=False):
     
     # Disable automatic camera reset on "Show"
     paraview.simple._DisableFirstRenderCameraReset()
@@ -49,6 +49,9 @@ def visualize(sim, exaggeration):
 
     scene = GetAnimationScene()
     scene.UpdateAnimationUsingDataTimeSteps()
+    if showFinalTimeStep:
+        scene.GoToLast()
+
     view = GetActiveViewOrCreate('RenderView')
 
     # Gray wireframe for undeformed domain.
@@ -73,6 +76,15 @@ def visualize(sim, exaggeration):
     # Update a scalar bar component title.
     UpdateScalarBarsComponentTitle(displacementLUT, warpDisplay)
 
+    # Annotate time
+    tstamp = AnnotateTimeFilter(warp)
+    tstamp.Format = 'Time: %2.0f yr'
+    tstamp.Scale = 3.168808781402895e-08 # seconds to years
+
+    tstampDisplay = Show(tstamp, view)
+    tstampDisplay.FontFamily = "Courier"
+    tstampDisplay.FontSize = 14
+    
     view.ResetCamera()
     view.Update()
     Render()
@@ -85,9 +97,21 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--sim", action="store", dest="sim", default=SIM_NAME)
     parser.add_argument("--exaggeration", action="store", type=float, dest="exaggeration", default=DISPLACEMENT_SCALE)
+    parser.add_argument("--screenshot", action="store", dest="screenshot")
     args = parser.parse_args()
 
-    visualize(args.sim, args.exaggeration)
+    visualize(args.sim, args.exaggeration, showFinalTimeStep=True)
+
+    view = GetRenderView()
+    view.CameraPosition = [78002.89373974672, -1531813.1739094853, 595774.2094961794]
+    view.CameraFocalPoint = [-45014.6313325238, 149523.68421156122, -335271.271063906]
+    view.CameraViewUp = [0.0, 0.0, 1.0]
+    view.ViewSize = [960, 540]
+    view.Update()
+
+    if args.screenshot:
+        WriteImage(args.screenshot)    
+
     Interact()
 
 else:

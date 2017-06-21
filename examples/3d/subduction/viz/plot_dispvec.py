@@ -39,7 +39,7 @@ DISPLACEMENT_SCALE = 10.0e+3
 from paraview.simple import *
 import os
 
-def visualize(sim, dispScale):
+def visualize(sim, dispScale, showFinalTimeStep=False):
     
     # Disable automatic camera reset on "Show"
     paraview.simple._DisableFirstRenderCameraReset()
@@ -53,6 +53,8 @@ def visualize(sim, dispScale):
 
     scene = GetAnimationScene()
     scene.UpdateAnimationUsingDataTimeSteps()
+    if showFinalTimeStep:
+        scene.GoToLast()
     view = GetActiveViewOrCreate('RenderView')
 
     # Show undeformed domain, colored by magnitude of displacement vector.
@@ -80,8 +82,18 @@ def visualize(sim, dispScale):
 
     glyphDisplay = Show(glyph, view)
     glyphDisplay.Representation = "Surface"
+
+    # Annotate time
+    tstamp = AnnotateTimeFilter(dataDomain)
+    tstamp.Format = 'Time: %2.0f yr'
+    tstamp.Scale = 3.168808781402895e-08 # seconds to years
+
+    tstampDisplay = Show(tstamp, view)
+    tstampDisplay.FontFamily = "Courier"
+    tstampDisplay.FontSize = 14
     
     view.ResetCamera()
+    view.Update()
     Render()
 
 # ----------------------------------------------------------------------
@@ -95,13 +107,15 @@ if __name__ == "__main__":
     parser.add_argument("--screenshot", action="store", dest="screenshot")
     args = parser.parse_args()
 
-    visualize(args.sim, args.scale)
+    visualize(args.sim, args.scale, showFinalTimeStep=True)
 
     view = GetRenderView()
     view.CameraPosition = [78002.89373974672, -1531813.1739094853, 595774.2094961794]
     view.CameraFocalPoint = [-45014.6313325238, 149523.68421156122, -335271.271063906]
     view.CameraViewUp = [0.0, 0.0, 1.0]
     view.ViewSize = [960, 540]
+    view.Update()
+    
     if args.screenshot:
         WriteImage(args.screenshot)
 
