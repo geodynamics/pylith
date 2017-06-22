@@ -590,8 +590,11 @@ The principal parameters for fault interface conditions are:
 \begin{inventory}
 \propertyitem{id}{This is an integer identifier for the fault surface. It is
 used to specify the \property{material-id} of the cohesive cells in
-the mesh. Material identifiers must be unique so this value cannot
-be the same as any of the material models or any other fault.}
+the mesh. Material identifiers must be unique across all materials and
+fault interfaces. Because PyLith creates the cohesive
+cells at runtime, there is no correspondence between the \property{id}
+property and information in the input mesh like there
+is for materials.}
 \propertyitem{label}{Name of group of vertices associated with the fault surface.
 This label is also used in error and diagnostic reports.}
 \propertyitem{edge}{Name of group of vertices marking the buried edges of the
