@@ -231,7 +231,7 @@ examples["3d/subduction/step06"] = {
         "Stress/strain formulation": Features.STRAINFORM_INFINITESIMAL,
     },
     "Solver": {
-        "Solver": Features.SOLVER_NONLINEAR,
+        "Solver": Features.SOLVER_LINEAR,
         "Preconditioner": Features.PRECOND_ML_CUSTOM,
         "Time stepping": Features.TS_BWDEULER,
     },
@@ -248,6 +248,156 @@ examples["3d/subduction/step06"] = {
         "Simple": 4,
         "Simple grid": 1,
         "Time history": 1,
+    },
+}
+
+
+examples["3d/subduction/step07a,b"] = {
+    "General": {
+        "Dimension": 3,
+        "Coordinate system": Features.CS_PROJ,
+        "Mesh generator": Features.MESH_CUBIT,
+        "Cells": Features.CELL_TET,
+        "Problem type": Features.PROB_GREENSFNS,
+        "Time dependence": Features.TIMEDEP_STATIC,
+        "Reordering": True,
+    },
+    "Boundary Condition": {
+        "Dirichlet": 5,
+    },
+    "Fault": {
+        "Prescribed slip": 1,
+        "Slip time function": Features.SLIPFN_STEP,
+    },
+    "Bulk Rheology": {
+        "Linear elastic": 4,
+        "Stress/strain formulation": Features.STRAINFORM_INFINITESIMAL,
+    },
+    "Solver": {
+        "Solver": Features.SOLVER_LINEAR,
+        "Preconditioner": Features.PRECOND_ML_CUSTOM,
+        "Time stepping": Features.TS_BWDEULER,
+    },
+    "Output": {
+        "Format": Features.OUTPUT_HDF5,
+        "ParaView": True,
+        "Surface output": 1,
+        "Point output": 1,
+        "State variable output": 4,
+    },
+    "Spatial Database": {
+        "Uniform": 1,
+        "Simple": 4,
+    },
+}
+
+
+examples["3d/subduction/step08a"] = {
+    "General": {
+        "Dimension": 3,
+        "Coordinate system": Features.CS_PROJ,
+        "Mesh generator": Features.MESH_CUBIT,
+        "Cells": Features.CELL_TET,
+        "Problem type": Features.PROB_TIMEDEPENDENT,
+        "Time dependence": Features.TIMEDEP_STATIC,
+        "Reordering": True,
+    },
+    "Boundary Condition": {
+        "Dirichlet": 5,
+    },
+    "Bulk Rheology": {
+        "Linear elastic": 4,
+        "Stress/strain formulation": Features.STRAINFORM_INFINITESIMAL,
+        "Reference state": True,
+        "Gravity": True,
+    },
+    "Solver": {
+        "Solver": Features.SOLVER_LINEAR,
+        "Preconditioner": Features.PRECOND_ML_CUSTOM,
+    },
+    "Output": {
+        "Format": Features.OUTPUT_HDF5,
+        "ParaView": True,
+        "Domain output": 1,
+        "Surface output": 1,
+        "State variable output": 4,
+    },
+    "Spatial Database": {
+        "Simple": 4,
+    },
+}
+
+
+examples["3d/subduction/step08b"] = {
+    "General": {
+        "Dimension": 3,
+        "Coordinate system": Features.CS_PROJ,
+        "Mesh generator": Features.MESH_CUBIT,
+        "Cells": Features.CELL_TET,
+        "Problem type": Features.PROB_TIMEDEPENDENT,
+        "Time dependence": Features.TIMEDEP_STATIC,
+        "Reordering": True,
+    },
+    "Boundary Condition": {
+        "Dirichlet": 5,
+    },
+    "Bulk Rheology": {
+        "Linear elastic": 4,
+        "Stress/strain formulation": Features.STRAINFORM_INFINITESIMAL,
+        "Reference state": True,
+        "Gravity": True,
+    },
+    "Solver": {
+        "Solver": Features.SOLVER_LINEAR,
+        "Preconditioner": Features.PRECOND_ML_CUSTOM,
+    },
+    "Output": {
+        "Format": Features.OUTPUT_HDF5,
+        "ParaView": True,
+        "Domain output": 1,
+        "Surface output": 1,
+        "State variable output": 4,
+    },
+    "Spatial Database": {
+        "Simple": 4,
+    },
+}
+
+
+examples["3d/subduction/step08c"] = {
+    "General": {
+        "Dimension": 3,
+        "Coordinate system": Features.CS_PROJ,
+        "Mesh generator": Features.MESH_CUBIT,
+        "Cells": Features.CELL_TET,
+        "Problem type": Features.PROB_TIMEDEPENDENT,
+        "Time dependence": Features.TIMEDEP_QUASISTATIC,
+        "Reordering": True,
+    },
+    "Boundary Condition": {
+        "Dirichlet": 5,
+    },
+    "Bulk Rheology": {
+        "Linear elastic": 2,
+        "Linear Maxwell viscoelastic": 2,
+        "Stress/strain formulation": Features.STRAINFORM_FINITE,
+        "Reference state": True,
+        "Gravity": True,
+    },
+    "Solver": {
+        "Solver": Features.SOLVER_NONLINEAR,
+        "Preconditioner": Features.PRECOND_ML_CUSTOM,
+        "Time stepping": Features.TS_BWDEULER,
+    },
+    "Output": {
+        "Format": Features.OUTPUT_HDF5,
+        "ParaView": True,
+        "Domain output": 1,
+        "Surface output": 1,
+        "State variable output": 4,
+    },
+    "Spatial Database": {
+        "Simple": 4,
     },
 }
 

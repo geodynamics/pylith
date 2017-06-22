@@ -57,16 +57,16 @@ class Features(object):
     PRECOND_ILU = "ILU"
     PRECOND_ASM = "ASM"
     PRECOND_SCHUR = "SCHUR"
-    PRECOND_CUSTOM = "CUST"
+    PRECOND_CUSTOM = "Cust"
     PRECOND_ML = "ML"
     PRECOND_GAMG = "GAMG"
-    PRECOND_ML_CUSTOM = "ML+CUST"
+    PRECOND_ML_CUSTOM = "ML+Cust"
 
-    SLIPFN_STEP = "STEP"
-    SLIPFN_RATE = "RATE"
-    SLIPFN_LIU = "LIU"
-    SLIPFN_BRUNE = "BRUNE"
-    SLIPFN_TIMEHISTORY = "USER"
+    SLIPFN_STEP = "Step"
+    SLIPFN_RATE = "Rate"
+    SLIPFN_LIU = "Liu"
+    SLIPFN_BRUNE = "Brune"
+    SLIPFN_TIMEHISTORY = "User"
 
     STRAINFORM_INFINITESIMAL = "Inf"
     STRAINFORM_FINITE = "Fin"
@@ -81,9 +81,17 @@ class Features(object):
              # Properties
              OrderedDict((
                 ("Dimension", { "enum": [2, 3], }),
-                ("Coordinate system", { "enum": [CS_CART, CS_PROJ], }),
-                ("Mesh generator", { "enum": [MESH_ASCII, MESH_CUBIT, MESH_LAGRIT], }),
-                ("Cells", { "enum": [CELL_TRI, CELL_QUAD, CELL_TET, CELL_HEX], }),
+                ("Coordinate system", {
+                    "enum": [CS_CART, CS_PROJ],
+                    "description": "%s: Cartesian, %s: geographic projection" % (CS_CART, CS_PROJ),
+                }),
+                ("Mesh generator", {
+                    "enum": [MESH_ASCII, MESH_CUBIT, MESH_LAGRIT],
+                    "description": "%s: ASCII, %s: CUBIT/Trelis, %s: LaGriT" % (MESH_ASCII, MESH_CUBIT, MESH_LAGRIT),
+                }),
+                ("Cells", {
+                    "enum": [CELL_TRI, CELL_QUAD, CELL_TET, CELL_HEX],
+                }),
                 ("Refinement", { "enum": [REFINE_2, REFINE_4, REFINE_8], }),
                 ("Reordering", { "type": "boolean", }),
                 ("Problem type", { 
@@ -170,7 +178,10 @@ class Features(object):
         ("Output",
              # Properties
              OrderedDict((
-                ("Format", { "enum": [OUTPUT_VTK, OUTPUT_HDF5, OUTPUT_HDF5EXT], }),
+                ("Format", {
+                    "enum": [OUTPUT_VTK, OUTPUT_HDF5, OUTPUT_HDF5EXT],
+                    "description": "%s: VTK, %s: HDF5, %s: HDF5 w/external datasets" % (OUTPUT_VTK, OUTPUT_HDF5, OUTPUT_HDF5EXT),
+                }),
                 ("Domain output", { "type": "integer", "minimum": 0, }),
                 ("Surface output", { "type": "integer", "minimum": 0, }),
                 ("Point output", { "type": "integer", "minimum": 0, }),
