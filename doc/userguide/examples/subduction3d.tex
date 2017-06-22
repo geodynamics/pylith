@@ -974,19 +974,22 @@ contours of the applied slip at t = 24 days.
 \subsection{Step 7: Inversion of Slow-Slip Event using 3-D Green's Functions}
 
 This example is essentially a three-dimensional analog of
-{sec:example:greensfns2d}, and is a more realistic example of how
+\vref{sec:example:greensfns2d}, and is a more realistic example of how
 PyLith can be used to perform geodetic inversions. We use the output
 of example step06 to create synthetic data. Once we have done this we
 generate Green's functions to represent the geodetic responses at a
 set of synthetic cGPS stations. Finally, we use the synthetic data and
 Green's functions to perform an inversion, using the same generalized
-inverse approach described in {sec:example:greensfns2d}.
+inverse approach described in \vref{sec:example:greensfns2d:inversion}.
 
 We first generate the synthetic data by using the script
-\filename{make\_synthetic\_gpsdisp.py} in the top-level directory. This
-script reads the parameters in \filename{make\_synthetic\_gpsdisp.cfg}
-to generate synthetic data from the selected time step with a
-specified amount of noise. Run this script as:
+\filename{make\_synthetic\_gpsdisp.py} in the top-level
+directory. This script reads the parameters in
+\filename{make\_synthetic\_gpsdisp.cfg} to generate synthetic data
+from the selected time step with a specified amount of noise. The
+point data output from example step06 is read, the specified time step
+is selected, and the specified amount of noise is added to the
+results. Run this script as:
 \begin{shell}
 $$ ./make_synthetic_gpsdisp.py
 \end{shell}
@@ -997,7 +1000,7 @@ This will create the following files:
 \item[\filename{cgps\_synthetic\_displacement.vtk}] for visualization.
 \end{description}
 
-After we generate the synthetic data, we generate the Green's
+After we create the synthetic data, we generate the Green's
 functions. We divide the Green's function generation into two sub-problems:
 \begin{itemize}
  \item step07a:  Generate Green's functions corresponding to
