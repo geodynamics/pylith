@@ -336,7 +336,7 @@ the vertical displacement by imposing zero displacement boundary
 conditions on the bottom (-z) boundary.
 
 \begin{figure}[htbp]
-  \includegraphics[width=5.0in]{examples/figs/subduction3d_step01_diagram}
+  \includegraphics[scale=0.75]{examples/figs/subduction3d_step01_diagram}
   \caption{Diagram of Step 1: Axial compression. This static
     simulation uses Dirichlet boundary conditions with axial
     compression in the east-west (x-direction), roller boundary
@@ -545,19 +545,8 @@ shallow part of the slab, so we impose a depth-dependent
 viscosity. Figure~\ref{fig:example:subduction:3d:step02:diagram}
 summarizes the problem description.
 
-\todo{brad}{Add annotation to figure.}
 \begin{figure}[htbp]
-  \begin{tikzpicture}
-    \tikzstyle{annotation} = [black];
-    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[width=4.5in]{examples/figs/subduction3d_geometry}};
-    \begin{scope}[x={(image.south east)},y={(image.north west)}]
-      \node at (0.5,0.5) {{\bf\LARGE ADD ANNOTATION}};
-      %\node[anchor=west, annotation] (xneg) at (-0.2,0.5) {+2.0 m};
-      %\draw[>=latex, ->, ultra thick, annotation] (xneg) -- (0.0,0.5);
-      %\node[anchor=east, annotation] (xpos) at (+1.2,0.5) {-2.0 m};
-      %\draw[>=latex, ->, ultra thick, annotation] (xpos) -- (1.0,0.5);
-    \end{scope}
-  \end{tikzpicture}
+  \includegraphics[scale=0.75]{examples/figs/subduction3d_step02_diagram}
   \caption{Diagram of Step 2: Prescribed coseismic slip and
     postseismic relaxation. This quasistatic simulation prescribes
     uniform slip on the central rupture patch on the subduction interface,
@@ -757,7 +746,7 @@ mantle.  Figure~\ref{fig:example:subduction:3d:step03:diagram}
 summarizes the problem description.
 
 \begin{figure}[htbp]
-  \includegraphics[width=5.0in]{examples/figs/subduction3d_step03_diagram}
+  \includegraphics[scale=0.75]{examples/figs/subduction3d_step03_diagram}
   \caption{Diagram of Step 3: Prescribed aseismic slip (creep) and
     interseismic deformation for the subducting slab. We prescribe
     steady, uniform creep on the bottom of the slab and deeper portion
@@ -938,7 +927,7 @@ roller Dirichlet boundary conditions and combination of elastic and
 viscoelatic materials as we did in Step 3.
 
 \begin{figure}[htbp]
-  \includegraphics[width=5.0in]{examples/figs/subduction3d_step04_diagram}
+  \includegraphics[scale=0.75]{examples/figs/subduction3d_step04_diagram}
   \caption{Diagram of Step 4: A simple earthquake cycle combining the
     prescribed aseismic slip (creep) from Step 3 with prescribed
     coseismic slip for two earthquakes on the shallow portion of the
