@@ -709,14 +709,14 @@ $$ pylith step02.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg
 Figure \vref{fig:example:subduction:3d:step02}, which was created
 using the ParaView Python script \filename{plot\_dispwarp.py},
 displays the magnitude of the displacement field exaggerated by a
-factor of 10,000 at the final time step (t=200*yr)..  The shallow
+factor of 10,000 at the final time step (200 yr).  The shallow
 fault results in deformation that is localized over a small region.
 
 \begin{figure}
   \includegraphics[width=5.0in]{examples/figs/subduction3d_step02_soln}
-  \caption{Solution over the domain for Step 2 at t=200*yr. The colors indicate
-    the magnitude of the displacement and we have exaggerated the
-    deformation by a factor of 10,000.}
+  \caption{Solution over the domain for Step 2 at $t = 200 \mathrm{yr}$. The
+    colors indicate the magnitude of the displacement and we have
+    exaggerated the deformation by a factor of 10,000.}
   \label{fig:example:subduction:3d:step02}
 \end{figure}
 
@@ -797,8 +797,21 @@ slip.
 \end{cfg}
 
 % Bottom of slab
-\todo{brad}{ADD STUFF HERE}
-
+We specify the \property{id} used to identify the cohesive cells for
+this fault so that it is unique among all materials and faults. We
+also specify the appropriate nodesets identifying the entire fault
+surface and the buried edges.  Some portions of the bottom of the slab
+are perfectly horizontal, so our procedure that uses the vertical
+direction and the fault normal to set the along-strike and up-dip
+shear components breaks down. We remedy this by tweaking the
+\property{up\_dir} direction from being completely vertical (0,0,1) to
+tilting slightly to the west. This results in consistent along-strike
+and up-dip directions across the fault surface. For the aseismic slip
+we use a constant slip rate time function (\object{ConstRateSlipFn})
+with \object[UniformDB} spatial databases to specify the constant,
+uniform oblique slip rate of 2.0 cm/yr of left-lateral motion and 4.0
+cm/yr of normal motion. Note that slip on the bottom of the subducting
+slab has the opposite sense of motion as that on the top of the slab.
 \begin{cfg}
 <h>[pylithapp.problem.interfaces.slab_bottom]</h>
 <p>id</p> = 100 ; Must be different from ids used for materials
@@ -835,10 +848,12 @@ slip.
 <p>vertex_info_fields</p> = [normal_dir, strike_dir, dip_dir]
 \end{cfg}
 
-
 % Top of slab
-\todo{brad}{ADD STUFF HERE}
-
+The parameters for the top of the slab closely resemble those for the
+bottom of the slab. The main difference is that we use a
+\object{SimpleGridDB} to define a depth variation in the slip
+rate. The fault is locked at depths above 45 km and increases linearly
+to the same slip rate as the bottom of the slab at a depth of 60 km.
 \begin{cfg}
 <h>[pylithapp.problem.interfaces.slab_top]</h>
 <p>id</p> = 101 ; Must be different from ids used for materials
@@ -871,33 +886,55 @@ slip.
 <p>vertex_info_fields</p> = [normal_dir, strike_dir, dip_dir]
 \end{cfg}
 
+% Boundary conditions
+PyLith does not support an overlap between Dirichlet boundary
+conditions and fault interfaces, so we use nodesets that exclude
+vertices on the faults for the -x, -y, and +y boundaries rather than
+the nodesets that include all vertices on those boundaries.
+\begin{cfg}
+# -x face
+<h>[pylithapp.problem.bc.x_neg]</h>
+<p>label</p> = boundary_xneg_nofault
+
+# -y face
+<h>[pylithapp.problem.bc.y_neg]</h>
+<p>label</p> = boundary_yneg_nofault
+
+# +y face
+<h>[pylithapp.problem.bc.y_pos]</h>
+<p>label</p> = boundary_ypos_nofault
+\end{cfg}
+
 We run this example by typing
 \begin{shell}
 $$ pylith step03.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg
 \end{shell}
 
-\todo{brad}{Update this}
 Figure \vref{fig:example:subduction:3d:step03}, which was created
-using the ParaView Python script \filename{plot\_dispwarp.py}, displays
-the magnitude of the displacement field exaggerated by a factor of 10,000.
-The shallow fault results in deformation that is localized over a
-small region.
+using the ParaView Python script \filename{plot\_dispwarp.py}, shows
+the deformation exaggerated by a factor of 5,000 at the final time
+step of t=200*yr. Notice that there are some local edge effects
+associated with the unconstrained degrees of freedom at the
+intersection of the boundaries and fault surfaces.
 
 \begin{figure}
-\todo{brad}{Add figure here}
   %\includegraphics[width=5.0in]{examples/figs/subduction3d_step03_soln}
-  \caption{Solution over the domain for Step 2 at t=200*yr. The colors indicate
-    the magnitude of the displacement and we have exaggerated the
-    deformation by a factor of 10,000.}
-  \label{fig:example:subduction:3d:step02}
+  \caption{Solution over the domain for Step 2 at $t=200 \mathrm{yr}$. The colors indicate
+    the x-displacement and we have exaggerated the
+    deformation by a factor of 5,000.}
+  \label{fig:example:subduction:3d:step03}
 \end{figure}
 
 
 \subsubsection{Exercises}
 
-\todo{brad}{Add stuff here}
 \begin{itemize}
-\item 
+\item Adjust the locking depth for the top of the slab. How does this
+  affect the spatial distribution of the change in tractions on
+  the fault interfaces?
+\item Increase the rigidity of the slab and decrease the rigidity of
+  the wedge and/or crust. How do these affect the change in tractions
+  on the fault interfaces?
 \end{itemize}
 
 
