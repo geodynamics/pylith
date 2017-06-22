@@ -1103,49 +1103,41 @@ wedge.
 \subsection{Step 6: Prescribed Slow-Slip Event}
 
 This example simulates a simple slow slip event (SSE) on the
-subduction interface that remains fixed spatially but increases its
-amplitude with time. We assume a constant rake angle of 110 degrees,
-and a time duration of 30 days. This problem requres the use of both a
-spatial database to provide the spatial distribution of slip, and a
-temporal database to describe the time evolution of slip. To create
-these databases we provide the \filename{generate\_slowslip.py}
-script, which is in the \filename{spatialdb} directory. Once you are
-in the \filename{spatialdb} directory, run the script as follows:
-\begin{shell}
-$$ ./generate_slowslip.py
-\end{shell}
-This script reads parameters from \filename{generate\_slowslip.cfg} to
-generate a Gaussian slip distribution in geographic coordinates, along
-with a temporal database providing the slip amplitudes at different
-times. The files created are:
-\begin{itemize}
-\item \filename{fault\_slabtop\_slowslip.spatialdb}: Spatial database
-\item \filename{fault\_slabtop\_slowslip.timedb}: Temporal database
-\end{itemize}
+subduction interface, in which the entire patch slips simultaneously
+with an amplitude that grows with time. We impose a constant rake
+angle of 110 degrees, and a time duration of 30 days. The time
+duration is much shorter than the Maxwell time for our viscoelastic
+materials, so we use elastic material properties (as we did in Step 1).
 
-Note that \filename{fault\_slabtop\_slowslip.spatialdb} is a
-\facility{SimpleGridDB}. This type of spatial database is very
-efficient in cases where property values lie on a regular grid in 2 or
-3 dimensions, since searches and interpolations reduce to a set of 1D
-operations. Once the database files have been generated, it is
-possible to run the example. There are a number of parameters that are
-changed from or added to those in \filename{pylithapp.cfg}. We first
-change the total simulation time to 30 days with a time step size of 2
-days:
+\begin{figure}[htbp]
+  \includegraphics[scale=0.75]{examples/figs/subduction3d_step06_diagram}
+  \caption{Diagram of Step 6: Prescribed slow-slip event on the
+    subduction interface. This quasistatic simulation prescribes a
+    Gaussian slip distribution on the central rupture patch of the
+    subduction interface, purely elastic material properties, and
+    roller boundary conditions on the lateral (north, south, east, and
+    west) and bottom boundaries.}
+  \label{fig:example:subduction:3d:step06:diagram}
+\end{figure}
+
+
+% Problem
+The only time dependence in this problem is the time evolution of
+slip, so we set the duration of the simulation to match the duration
+of the slow slip event. We use a time step of 2.0 days to insure that
+we resolve the temporal evolution of the slip.
 \begin{cfg}
 <h>[pylithapp.problem.formulation.time_step]</h>
-# Define the total time for the simulation and the time step size.
 <p>total_time</p> = 30.0*day
 <p>dt</p> = 2.0*day
 \end{cfg}
 
-The results in this example will be used to simulate output at cGPS
-stations for example step07, so we modify the output manager to
-provide output at synthetic cGPS stations as well as the entire domain
-and ground surface:
+% Output at points
+The results in this example will be used to simulate output at fake
+continuous GPS (cGPS) stations in Step 7, so we add an output manager
+for saving the solution at specific points (\object{OutputSolnPoints})
+in addition to our output managers over the domain and top surface:
 \begin{cfg}
-# For this problem, we want output over the entire domain, for the
-# ground surface, and at simulated cGPS locations.
 <h>[pylithapp.problem.implicit]</h>
 <f>output</f> = [domain, subdomain, cgps_sites]
 
@@ -1155,12 +1147,38 @@ and ground surface:
 <f>output.cgps_sites</f> = pylith.meshio.OutputSolnPoints
 \end{cfg}
 
-There are a number of parameters to change/modify related to the
-fault. In particular, we change the default slip function to
-\facility{pylith.faults.TimeHistorySlipFn}, which allows us to change
-the slip amplitude as a function of time. We also use a
-\facility{SimpleGridDB} to specify fault slip and linear interpolation
-for the fault slip:
+For the point output we specify the output data writer, the file
+containing the list of cGPS stations and the coordinate system
+associated with the station locations. The format of the station file
+is whitespace separated columns of station name and then the
+coordinates of the station. See Section~\vref{sec:format:PointsList}
+for more information.
+\begin{cfg}
+<h>[pylithapp.problem.formulation.output.cgps_sites]</h>
+<f>writer</f> = pylith.meshio.DataWriterHDF5
+<p>writer.filename</p> = output/step06-cgps_sites.h5
+
+# File with coordinates of cGPS stations.
+<p>reader.filename</p> = cgps_sites.txt
+
+# Specify coordinate system used in cGPS station file.
+<f>coordsys</f> = spatialdata.geocoords.CSGeo
+<p>coordsys.space_dim</p> = 3
+<p>coordsys.datum_horiz</p> = WGS84
+<p>coordsys.datum_vert</p> = mean sea level
+\end{cfg}
+
+% Fault
+The fault parameters are very similar to those in Step 2, in which we
+also prescribed slip on the subduction interface patch. The primary
+difference is that we use a user-defined slip time history function
+(\object{TimeHistorySlipFn}). This slip time function requires spatial
+databases for the amplitude of the final slip and slip initiation
+time, and a time history file specifying the normalized amplitude as a
+function of time. Additional to illustrate PyLith's ability to use
+spatial databases with points in other, but compatible, georeferenced
+coordinate systems, we specify the slip distribution using geographic
+(longitude and latitude) coordinates.
 \begin{cfg}
 <h>[pylithapp.problem]</h>
 # We prescribe slip on the slab fault patch.
@@ -1183,13 +1201,11 @@ for the fault slip:
 <h>[pylithapp.problem.interfaces.slab.eq_srcs.rupture]</h>
 <f>slip_function</f> = pylith.faults.TimeHistorySlipFn
 
-# The slip is defined in a spatial database.
+# The slip is defined in a SimpleGridDB spatial database with linear interpolation.
 <h>[pylithapp.problem.interfaces.slab.eq_srcs.rupture.slip_function]</h>
 <f>slip</f> = spatialdata.spatialdb.SimpleGridDB
 <p>slip.label</p> = Gaussian slip distribution for SSE
 <p>slip.filename</p> = spatialdb/fault_slabtop_slowslip.spatialdb
-
-# Use linear interpolation.
 <p>slip.query_type</p> = linear
 
 # We use a UniformDB to specify the slip initiation time.
@@ -1203,86 +1219,44 @@ for the fault slip:
 <p>time_history.filename</p> = spatialdb/fault_slabtop_slowslip.timedb
 \end{cfg}
 
-The final set of parameters involve output. The domain and subdomain
-output are similar to previous examples:
-\begin{cfg}
-<h>[pylithapp.problem.formulation.output.domain]</h>
-<f>writer</f> = pylith.meshio.DataWriterHDF5
-<p>writer.filename</p> = output/step06-domain.h5
+You will notice that the \filename{spatialdb} does not contain the
+\filename{fault\_slabtop\_slowslip.spatialdb} and
+\filename{fault\_slabtop\_slowslip.timedb} files. We use the
+\filename{generate\_slowslip.py} Python script to generate these files
+as an illustration of how to use Python to generate more somple
+spatial variations and the \object{SimpleGridAscii} object to write
+spatial database files. This script reads parameters from
+\filename{generate\_slowslip.cfg} to generate a Gaussian slip
+distribution in geographic coordinates, along with a temporal database
+providing the slip amplitudes at different times.
 
-<h>[pylithapp.problem.formulation.output.subdomain]</h>
-# Name of nodeset for top surface.
-<p>label</p> = boundary_zpos
-<f>writer</f> = pylith.meshio.DataWriterHDF5
-<p>writer.filename</p> = output/step06-groundsurf.h5
-\end{cfg}
-For points output, we need to provide coordinate system information as
-well as the name of the text file containing station names and
-coordinates:
-\begin{cfg}
-# Specify output type, coordinate system, and station file for cgps_sites.
-<h>[pylithapp.problem.formulation.output.cgps_sites]</h>
-# We will use a geographic coordinate system for the cGPS sites file.
-<f>coordsys</f> = spatialdata.geocoords.CSGeo
-<p>coordsys.space_dim</p> = 3
-<p>coordsys.datum_horiz</p> = WGS84
-<p>coordsys.datum_vert</p> = mean sea level
-
-# Use HDF5 output.
-<f>writer</f> = pylith.meshio.DataWriterHDF5
-<p>writer.filename</p> = output/step06-cgps_sites.h5
-
-# Simulated cGPS station file.
-<p>reader.filename</p> = cgps_sites.txt
-\end{cfg}
-The remainder of the settings are for fault and material output,
-similar to other examples:
-\begin{cfg}
-# Fault output ------------------------------------------------------
-<h>[pylithapp.problem.interfaces.slab.output]</h>
-# Output fault results to HDF5 file.
-writer = pylith.meshio.DataWriterHDF5
-writer.filename = output/step06-fault-slab.h5
-
-# We want both orientation and slip information in the information file.
-vertex_info_fields = [normal_dir, strike_dir, dip_dir, final_slip_rupture]
-
-# Material output ------------------------------------------------------
-<h>[pylithapp.problem.materials.slab.output]</h>
-<p>writer.filename</p> = output/step06-slab.h5
-
-<h>[pylithapp.problem.materials.wedge.output]</h>
-<p>writer.filename</p> = output/step06-wedge.h5
-
-<h>[pylithapp.problem.materials.crust.output]</h>
-<p>writer.filename</p> = output/step06-crust.h5
-
-<h>[pylithapp.problem.materials.mantle.output]</h>
-<p>writer.filename</p> = output/step06-mantle.h5
-\end{cfg}
-
-We use elastic properties for all materials, and custom solver
-settings appropriate for a problem with a fault. We run the example by typing
+To run the simulation, first run the Python script to generate the
+spatial database files, and then run PyLith.
 \begin{shell}
+# Generate the spatial database files
+$$ cd spatialdb && ./generate_slowslip.py
+$$ ls fault_slabtop_slowslip.*
+# You should see
+fault_slabtop_slowslip.spatialdb  fault_slabtop_slowslip.timedb 
+# Change back to the subduction directory and run PyLith
+$$ cd ..
 $$ pylith step06.cfg mat_elastic.cfg solver_fieldsplit.cfg
 \end{shell}
-The problem will produce 13 pairs of HDF5/Xdmf files. In the data
-files (those without a \filename{\_info} before the file suffix) there
-are field values representing 15 time steps. The additional HDF5 file
-that was not present in previous examples is
+The problem will produce 13 pairs of HDF5/Xdmf files. The additional
+HDF5 file that was not present in previous examples is
 \filename{step06-cgps\_sites.h5}, which contains the displacements at
-the simulated cGPS sites.
+the fake cGPS sites.
 
 Figure \vref{fig:example:subduction:3d:step06}, which was created
 using ParaView, shows the surface vertical displacement along with
 horizontal displacement vectors at the cGPS sites, superimposed on
-contours of the applied slip at t = 24 days.
+contours of the applied slip at $t = 24 \mathrm{days}$.
 
 \begin{figure}
   \includegraphics[width=4.5in]{examples/figs/subduction3d_step06_soln}
   \caption{Solution for Step 6. The colors indicate the vertical
     displacement, the vectors represent the horizontal displacements
-    at simulated cGPS sites, and the contours represent the applied
+    at fake cGPS sites, and the contours represent the applied
     slip at t = 24 days.}
   \label{fig:example:subduction:3d:step06}
 \end{figure}
@@ -1423,8 +1397,8 @@ names. Here are the fault parameters in \filename{step07a.cfg}:
 <p>impulse_dof</p> = [0]
 \end{cfg}
 
-In the output settings, we turn off output for the domain and ground
-surface, provide coordinate system info for the simulated cGPS output,
+In the output settings, we turn off output for the domain, provide the
+coordinate system for the fake cGPS stations,
 and provide filenames:
 \begin{cfg}
 # Add cggs_sites to solution output.
@@ -1479,11 +1453,12 @@ mat_elastic.cfg solver_fieldsplit.cfg
 $$ pylith --problem=pylith.problems.GreensFns step07b.cfg
 mat_elastic.cfg solver_fieldsplit.cfg
 \end{shell}
-\tip{To save runtime, run the two sub-problems simultaneously in
-separate terminal windows. For a problem this size, this should work
-fine on a laptop. For larger problems, this approach can still be
-useful. Each sub-problem could be run simultaneously on several nodes
-of a cluster, for example.}
+
+\tip{To save time, run the two sub-problems simultaneously in separate
+  shells (terminals). For a problem this size, this should work fine
+  on a laptop. For larger problems, this approach can still be
+  useful. For example, each sub-problem could be run simultaneously on
+  several nodes of a cluster.}
 
 After generating the synthetic data and Green's functions, we then
 perform a simple inversion using the \filename{slip\_invert.py} script,
