@@ -26,16 +26,17 @@
 # pvpython.
 
 # Root name for simulation.
-SIM_NAME = "step01"
+SIM_NAME = "step03"
 
 # Scale used to exaggerate deformation.
 DISPLACEMENT_SCALE = 10.0e+3
+DISPLACEMENT_COMPONENT = "X"
 
 # ----------------------------------------------------------------------
 from paraview.simple import *
 import os
 
-def visualize(sim, exaggeration, showFinalTimeStep=False):
+def visualize(sim, exaggeration, component, showFinalTimeStep=False):
     
     # Disable automatic camera reset on "Show"
     paraview.simple._DisableFirstRenderCameraReset()
@@ -65,16 +66,21 @@ def visualize(sim, exaggeration, showFinalTimeStep=False):
     warp.ScaleFactor = exaggeration
 
     warpDisplay = Show(warp, view)
-    ColorBy(warpDisplay, ('POINTS', 'displacement', 'X'))
+    ColorBy(warpDisplay, ('POINTS', 'displacement', component))
     warpDisplay.RescaleTransferFunctionToDataRange(True)
     warpDisplay.SetScalarBarVisibility(view, True)
     warpDisplay.SetRepresentationType('Surface With Edges')
-
-    # Rescale color and/or opacity maps used to exactly fit the current data range
-    displacementLUT = GetColorTransferFunction('displacement')
+    # Rescale color bar to exactly fit the current data range
     warpDisplay.RescaleTransferFunctionToDataRange(False, False)
-    # Update a scalar bar component title.
-    UpdateScalarBarsComponentTitle(displacementLUT, warpDisplay)
+
+    # Customize colorbar
+    displacementLUT = GetColorTransferFunction('displacement')
+    colorbar = GetScalarBar(displacementLUT, view)
+    if component.lower() == "magnitude":
+        colorbar.Title = "Displacement Mag. (m)"
+    else:
+        colorbar.Title = "%s-displacement (m)" % component.lower()
+    colorbar.ComponentTitle = ""
 
     # Annotate time
     tstamp = AnnotateTimeFilter(warp)
@@ -97,10 +103,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--sim", action="store", dest="sim", default=SIM_NAME)
     parser.add_argument("--exaggeration", action="store", type=float, dest="exaggeration", default=DISPLACEMENT_SCALE)
+    parser.add_argument("--component", action="store", dest="component", default=DISPLACEMENT_COMPONENT)
     parser.add_argument("--screenshot", action="store", dest="screenshot")
     args = parser.parse_args()
 
-    visualize(args.sim, args.exaggeration, showFinalTimeStep=True)
+    visualize(args.sim, args.exaggeration, args.component, showFinalTimeStep=True)
 
     view = GetRenderView()
     view.CameraPosition = [78002.89373974672, -1531813.1739094853, 595774.2094961794]
@@ -117,7 +124,7 @@ if __name__ == "__main__":
 else:
     # Running inside the ParaView GUI
 
-    visualize(SIM_NAME, DISPLACEMENT_SCALE)
+    visualize(SIM_NAME, DISPLACEMENT_SCALE, DISPLACEMENT_COMPONENT)
 
 
 # End of file

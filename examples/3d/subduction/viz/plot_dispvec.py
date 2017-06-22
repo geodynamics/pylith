@@ -63,13 +63,14 @@ def visualize(sim, dispScale, showFinalTimeStep=False):
     domainDisplay.RescaleTransferFunctionToDataRange(True)
     domainDisplay.SetScalarBarVisibility(view, True)
     domainDisplay.SetRepresentationType("Surface With Edges")
-    
-    # Rescale color and/or opacity maps used to exactly fit the current data range
-    displacementLUT = GetColorTransferFunction('displacement')
+    # Rescale color maps to exactly fit the current data range
     domainDisplay.RescaleTransferFunctionToDataRange(False, False)
-    # Update scalar bar component title.
-    UpdateScalarBarsComponentTitle(displacementLUT, domainDisplay)
 
+    # Customize colorbar
+    displacementLUT = GetColorTransferFunction('displacement')
+    colorbar = GetScalarBar(displacementLUT, view)
+    colorbar.Title = "Displacement Mag. (m)"
+    colorbar.ComponentTitle = ""
 
     # Add arrows to show displacement vectors.
     glyph = Glyph(Input=dataDomain, GlyphType="Arrow")
