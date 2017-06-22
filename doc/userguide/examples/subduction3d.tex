@@ -11,7 +11,7 @@ the model on the Cascadia subduction zone
 focus on modeling the deformation associated with the the subducting
 slab, including interseismic deformation with aseismic slip (creep)
 and viscoelastic relaxation, coseismic slip on the slab interface and
-a splay fault, and slow slip events on the top slab interface. We want
+a splay fault, and slow slip events on the subduction interface. We want
 to account for the 3-D material properties associated with different
 elastic properties for the subducting slab, mantle, continental crust,
 and an accretionary wedge. To keep the computation time in these
@@ -36,9 +36,10 @@ model with a slab, mantle, continental crust, and accretionary
 wedge. We cut off the slab at a depth of 100 km. We use a transverse
 geographic projection coordinate system with Portland, Oregon, as the
 origin in order to georeference our model. In order to model the
-motion of the slab, we include a fault on the top of the slab at the
-interface between the mantle, crust, and wedge, as well as a fault
-between the bottom of the slab and the mantle.
+motion of the slab, we include a fault for the subduction interface
+(the interface between the top of the slab and the mantle, crust, and
+wedge), as well as a fault between the bottom of the slab and the
+mantle.
 
 \begin{figure}[htbp]
   \includegraphics[width=4.5in]{examples/figs/subduction3d_conceptualmodel}
@@ -95,7 +96,7 @@ download the mesh from
 skip generating the mesh.
 
 We use contours of the Cascadia Subduction Zone from Slab v1.0
-\cite{Hayes:etal:2012} for the geometry of the top of the slab. In
+\cite{Hayes:etal:2012} for the geometry of the subduction interface. In
 order to make use of these contours from within CUBIT/Trelis, we use a
 Python script (\filename{generate\_surfjou.py}) to read the contours
 file and create a CUBIT/Trelis journal file
@@ -566,7 +567,7 @@ summarizes the problem description.
   \end{tikzpicture}
   \caption{Diagram of Step 2: Prescribed coseismic slip and
     postseismic relaxation. This quasistatic simulation prescribes
-    uniform slip on the central rupture patch on the top of the slab,
+    uniform slip on the central rupture patch on the subduction interface,
     depth-dependent viscoelastic relaxation in the slab and mantle,
     and roller boundary conditions on the lateral (north, south, east,
     and west) and bottom boundaries.}
@@ -675,12 +676,16 @@ must also set the discretization information for the fault.
 
 Prescribing the coseismic slip distribution on the fault involves
 specifying an origin time for the rupture (default is 0.0), and a slip
-time function along with its
-parameters. In this case, we treat the earthquake rupture as just the
-coseismic slip happening in one time step, so we use a step function
-for the slip time function (which is the default). The parameters
-include the final slip and slip initiation time. Because we want
-uniform slip and a uniform rise time, we use \object{UniformDB}
+time function along with its parameters. In this case, we treat the
+earthquake rupture as just the coseismic slip happening in one time
+step, so we use a step function for the slip time function (which is
+the default). The parameters include the final slip and slip
+initiation time. This slip initiation time is relative to the
+earthquake source origin time, which is 0 by default. Thus, to specify
+the time of the slip for a step function, we can either specify the
+origin time or the slip initiation time; in this case, we use the slip
+initiation time. In Step 4 we will use the origin time. Because we
+want uniform slip and a uniform rise time, we use \object{UniformDB}
 spatial databases for both of these. Note that we specify oblique slip
 with 1.0 m of right-lateral motion and 4.0 m of reverse motion.
 \begin{cfg}
@@ -724,19 +729,20 @@ fault results in deformation that is localized over a small region.
 \subsubsection{Exercises}
 
 \begin{itemize}
-\item Change the slip from the top of the slab to the splay fault
-  rupture patch. Hint: Identify the nodesets for the splay fault
-  patch.
-\item Create simulataneous rupture on the central patch for the splay
-  fault and top of the slab.
+\item Change the slip from the subduction interface rupture patch to
+  the splay fault rupture patch. Hint: Identify the nodesets for the
+  splay fault patch.
+\item Create simulataneous rupture on the subduction interface rupture
+  patch and the splay fault rupture patch.
 \item Prescribe coseismic slip on the central patch for splay fault
-  and the top of the slab below the intersection with the splay fault.
+  and the subduction interface below the intersection with the splay fault.
   \begin{itemize}
-  \item Implement this without changing the any of the nodesets. Hint:
-    You will need to create two fault interfaces. What do you notice
-    about the slip at the intersection between the splay fault and slab?
+  \item Implement this without changing any of the nodesets in
+    CUBIT/Trelis. Hint: you will need to create two fault
+    interfaces. What do you notice about the slip at the intersection
+    between the splay fault and slab?
   \item Add nodesets in CUBIT/Trelis to create a uniform coseismic
-    slip distribution across the splay fault and on the slab interface
+    slip distribution across the splay fault and on the subduction interface
     below the splay fault.
   \end{itemize}
 \end{itemize}
@@ -750,12 +756,12 @@ We now increase the complexity of our fault model by simulating the
 interseismic deformation associated with the subducting slab. We
 approximate the motion of the Juan de Fuca Plate subducting under the
 North American Plate by introducing aseismic slip (creep) on the
-bottom of the slab and the deeper portion of the top of the slab; we
-keep the interface between the top of the slab and the accretionary
-wedge and shallow crust locked. As in Step 2, we will use the linear
-Maxwell viscoelastic constitutive model for the slab and mantle.
-Figure~\ref{fig:example:subduction:3d:step03:diagram} summarizes the
-problem description.
+bottom of the slab and the deeper portion of the subduction interface;
+we keep the interface between the subduction interface and the
+accretionary wedge and shallow crust locked. As in Step 2, we will use
+the linear Maxwell viscoelastic constitutive model for the slab and
+mantle.  Figure~\ref{fig:example:subduction:3d:step03:diagram}
+summarizes the problem description.
 
 \todo{brad}{Add annotation to figure.}
 \begin{figure}[htbp]
@@ -772,21 +778,19 @@ problem description.
   \end{tikzpicture}
   \caption{Diagram of Step 3: Prescribed aseismic slip (creep) and
     interseismic deformation for the subducting slab. We precsribed
-    steady, uniform creep on the
-    bottom of the slab and deeper portion of the top of the slab. We
-    impose roller Dirichlet boundary conditions on the lateral and
-    bottom boundaries, except where they overlap with the fault
-    interfaces for the slab.}
+    steady, uniform creep on the bottom of the slab and deeper portion
+    of the subduction interface. We impose roller Dirichlet boundary
+    conditions on the lateral and bottom boundaries, except where they
+    overlap with the fault interfaces for the slab.}
   \label{fig:example:subduction:3d:step03:diagram}
 \end{figure}
 
 % Fault
 With slip on the top and bottom of the slab, our fault interfaces
-array contains two components, one for the top of the slab,
-\facility{slab\_top}, and one for the bottom of the slab,
-\facility{slab\_bottom}. We use the \object{FaultCohesiveKin}
-object for each of these interfaces since we want to prescribe the
-slip.
+array contains two components, one for the top of the slab (subduction
+interface), \facility{slab\_top}, and one for the bottom of the slab,
+\facility{slab\_bottom}. We use the \object{FaultCohesiveKin} object
+for each of these interfaces since we want to prescribe the slip.
 \begin{cfg}
 <h>[pylithapp.problem]</h>
 <f>interfaces</f> = [slab_top, slab_bottom]
@@ -808,7 +812,7 @@ shear components breaks down. We remedy this by tweaking the
 tilting slightly to the west. This results in consistent along-strike
 and up-dip directions across the fault surface. For the aseismic slip
 we use a constant slip rate time function (\object{ConstRateSlipFn})
-with \object[UniformDB} spatial databases to specify the constant,
+with \object{UniformDB} spatial databases to specify the constant,
 uniform oblique slip rate of 2.0 cm/yr of left-lateral motion and 4.0
 cm/yr of normal motion. Note that slip on the bottom of the subducting
 slab has the opposite sense of motion as that on the top of the slab.
@@ -849,9 +853,9 @@ slab has the opposite sense of motion as that on the top of the slab.
 \end{cfg}
 
 % Top of slab
-The parameters for the top of the slab closely resemble those for the
-bottom of the slab. The main difference is that we use a
-\object{SimpleGridDB} to define a depth variation in the slip
+The parameters for the top of the slab (subduction interface) closely
+resemble those for the bottom of the slab. The main difference is that
+we use a \object{SimpleGridDB} to define a depth variation in the slip
 rate. The fault is locked at depths above 45 km and increases linearly
 to the same slip rate as the bottom of the slab at a depth of 60 km.
 \begin{cfg}
@@ -887,22 +891,25 @@ to the same slip rate as the bottom of the slab at a depth of 60 km.
 \end{cfg}
 
 % Boundary conditions
-PyLith does not support an overlap between Dirichlet boundary
-conditions and fault interfaces, so we use nodesets that exclude
-vertices on the faults for the -x, -y, and +y boundaries rather than
-the nodesets that include all vertices on those boundaries.
+We do not want the boundaries to constrain the motion of the
+subducting slab, so we use the nodesets that exclude vertices on the
+subducting slab. Furthermore, PyLith does not permit overlap between
+the fault interfaces and Dirichlet boundary conditions. This is why
+we exclude vertices on the splay fault in these nodesets as well. We
+only update the name of the nodeset for the -x, -y, and +y
+boundaries.
 \begin{cfg}
 # -x face
 <h>[pylithapp.problem.bc.x_neg]</h>
-<p>label</p> = boundary_xneg_nofault
+<p>label</p> = boundary_xneg_noslab
 
 # -y face
 <h>[pylithapp.problem.bc.y_neg]</h>
-<p>label</p> = boundary_yneg_nofault
+<p>label</p> = boundary_yneg_noslab
 
 # +y face
 <h>[pylithapp.problem.bc.y_pos]</h>
-<p>label</p> = boundary_ypos_nofault
+<p>label</p> = boundary_ypos_noslab
 \end{cfg}
 
 We run this example by typing
@@ -918,7 +925,7 @@ associated with the unconstrained degrees of freedom at the
 intersection of the boundaries and fault surfaces.
 
 \begin{figure}
-  %\includegraphics[width=5.0in]{examples/figs/subduction3d_step03_soln}
+  \includegraphics[width=5.0in]{examples/figs/subduction3d_step03_soln}
   \caption{Solution over the domain for Step 2 at $t=200 \mathrm{yr}$. The colors indicate
     the x-displacement and we have exaggerated the
     deformation by a factor of 5,000.}
@@ -929,7 +936,7 @@ intersection of the boundaries and fault surfaces.
 \subsubsection{Exercises}
 
 \begin{itemize}
-\item Adjust the locking depth for the top of the slab. How does this
+\item Adjust the locking depth for the subduction interface. How does this
   affect the spatial distribution of the change in tractions on
   the fault interfaces?
 \item Increase the rigidity of the slab and decrease the rigidity of
@@ -941,14 +948,190 @@ intersection of the boundaries and fault surfaces.
 % ----------------------------------------------------------------------
 \subsection{Step 4: Prescribed Earthquake Cycle}
 
+In Step 4, We combine the interseismic deformation in Step 3 with the
+coseismic slip in Step 2 to simulate two earthquake cycles. We also
+include an earthquake on the splay fault. This illustrates how to
+include multiple earthquake sources on a single fault. We use the same
+roller Dirichlet boundary conditions and combination of elastic and
+viscoelatic materials as we did in Step 3.
+
+\todo{brad}{Add annotation to figure.}
+\begin{figure}[htbp]
+  \begin{tikzpicture}
+    \tikzstyle{annotation} = [black];
+    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[width=4.5in]{examples/figs/subduction3d_geometry}};
+    \begin{scope}[x={(image.south east)},y={(image.north west)}]
+      \node at (0.5,0.5) {{\bf\LARGE ADD ANNOTATION}};
+      %\node[anchor=west, annotation] (xneg) at (-0.2,0.5) {+2.0 m};
+      %\draw[>=latex, ->, ultra thick, annotation] (xneg) -- (0.0,0.5);
+      %\node[anchor=east, annotation] (xpos) at (+1.2,0.5) {-2.0 m};
+      %\draw[>=latex, ->, ultra thick, annotation] (xpos) -- (1.0,0.5);
+    \end{scope}
+  \end{tikzpicture}
+  \caption{Diagram of Step 3: Prescribed aseismic slip (creep) and
+    interseismic deformation for the subducting slab. We precsribed
+    steady, uniform creep on the bottom of the slab and deeper portion
+    of the subduction interface. We impose roller Dirichlet boundary
+    conditions on the lateral and bottom boundaries, except where they
+    overlap with the fault interfaces for the slab.}
+  \label{fig:example:subduction:3d:step03:diagram}
+\end{figure}
+
+% Faults
+We create an array of three fault interfaces, one for the top of the
+slab (subduction interface), one for the bottom of the slab, and one
+for the splay fault. The splay fault terminates into the fault on the
+top of the slab, so we must list the through-going fault on the top of
+the slab first.
+\begin{cfg}
+# We prescribe slip on the top and bottom of the slab and on the splay fault.
+<h>[pylithapp.problem]</h>
+<f>interfaces</f> = [slab_top, slab_bottom, splay]
+
+<h>[pylithapp.problem.interfaces]</h>
+<f>slab_top</f> = pylith.faults.FaultCohesiveKin
+<f>slab_bottom</f> = pylith.faults.FaultCohesiveKin
+<f>splay</f> = pylith.faults.FaultCohesiveKin
+\end{cfg}
+
+\important{When including intersecting faults, the through-going fault
+  must be listed first in the array of fault interfaces. This ensures
+  its cohesive cells are created before the adjacent fault that
+  terminates into the through-going fault. For nonintersecting faults,
+  the order in the list of fault interfaces does not matter.}
+
+% Fault: slab_bottom and slab top
+The settings for the fault interface on the bottom of the slab match
+those used in Step 3. For the subduction interface, we want to
+impose creep on the deeper portion and earthquakes (coseismic slip) at
+specific times on the upper portion. We create an array of earthquake
+sources, one for the creep and one for each of the earthquakes. We
+want the earthquake to be imposed at specific times, so we set their
+origin time equal to the desire rupture time (100 years and 200 years)
+minus a value much smaller than the time step, so that roundoff errors
+do not result in the ruptures occuring one time step later than
+intended.  We use the same settings as we did in Step 3 for the creep
+earthquake source. For the coseismic slip, we use a
+\object{SimpleGridDB} to impose a depth-dependent slip distribution
+that exactly complements the depth-dependent slip distribution of the
+creep. Note that the slip time within an earthquake rupture is
+relative to the origin time, so we set the slip time to zero to
+coincide with the specified origin time.
+\begin{cfg}
+[pylithapp.problem.interfaces.slab_top]
+# --- Skipping lines already discussed in Step 3 ---
+<f>eq_srcs</f> = [creep, eq1, eq2]
+<p>eq_srcs.creep.origin_time</p> = 0.0*year
+<p>eq_srcs.eq1.origin_time</p> = 99.999*year ; 100*yr - small value
+<p>eq_srcs.eq2.origin_time</p> = 199.999*year l 200*yr - small value
+
+# Use the constant slip rate time function for the creep earthquake source.
+<f>eq_srcs.creep.slip_function</f> = pylith.faults.ConstRateSlipFn
+
+# Creep
+<h>[pylithapp.problem.interfaces.slab_top.eq_srcs.creep.slip_function]</h>
+<f>slip_rate</f> = spatialdata.spatialdb.SimpleGridDB
+<p>slip_rate.label</p> = Slab top slip rate.
+<p>slip_rate.filename</p> = spatialdb/fault_slabtop_creep.spatialdb
+<p>slip_rate.query_type</p> = linear
+
+<f>slip_time</f> = spatialdata.spatialdb.UniformDB
+<p>slip_time.label</p>  = Slip initiation time
+<p>slip_time.values</p> = [slip-time]
+<p>slip_time.data</p> = [0.0*year] ; Slip time is relative to origin time
+
+# Earthquake 1
+<h>[pylithapp.problem.interfaces.slab_top.eq_srcs.eq1.slip_function]</h>
+<f>slip</f> = spatialdata.spatialdb.SimpleGridDB
+<p>slip.label</p> = Slab top slip rate.
+<p>slip.filename</p> = spatialdb/fault_slabtop_coseismic.spatialdb
+<p>slip.query_type</p> = linear
+
+<f>slip_time</f> = spatialdata.spatialdb.UniformDB
+<p>slip_time.label</p>  = Slip initiation time
+<p>slip_time.values</p> = [slip-time]
+<p>slip_time.data</p> = [0.0*year] ; Slip time is relative to origin time.
+
+# Earthquake 2 (same as earthquake 1)
+<h>[pylithapp.problem.interfaces.slab_top.eq_srcs.eq2.slip_function]</h>
+<f>slip</f> = spatialdata.spatialdb.SimpleGridDB
+<p>slip.label</p> = Slab top slip rate.
+<p>slip.filename</p> = spatialdb/fault_slabtop_coseismic.spatialdb
+<p>slip.query_type</p> = linear
+
+<f>slip_time</f> = spatialdata.spatialdb.UniformDB
+<p>slip_time.label</p>  = Slip initiation time
+<p>slip_time.values</p> = [slip-time]
+<p>slip_time.data</p> = [0.0*year] ; Slip time is relative to origin time.
+# --- Omitting output settings already discussed ---
+\end{cfg}
+
+The settings for the splay fault look very similar to those for the
+coseismic slip on the slab rupture patch in Step 2. The primary
+difference is that we specify an origin time of 250 years.
+
+% Fault: splay
+\begin{cfg}
+<h>[pylithapp.problem.interfaces.splay]</h>
+<p>id</p> = 102 ; id must be unique across all materials and faults
+<p>label</p> = fault_splay ; Nodeset for the entire fault surface
+<p>edge</p> = fault_splay_edge ; Nodeset for the buried edges
+
+# We must define the quadrature information for fault cells.
+# The fault cells are 2D (surface).
+<f>quadrature.cell</f> = pylith.feassemble.FIATSimplex
+<p>quadrature.cell.dimension</p> = 2
+
+# Origin time for splay fault earthquake.
+<p>eq_srcs.rupture.origin_time</p> = 249.999*year
+
+# The slip time and final slip are defined in spatial databases.
+<h>[pylithapp.problem.interfaces.splay.eq_srcs.rupture.slip_function]</h>
+<f>slip</f> = spatialdata.spatialdb.UniformDB
+<p>slip.label</p> = Splay fault slip.
+<p>slip.values</p> = [left-lateral-slip, reverse-slip, fault-opening]
+<p>slip.data</p> = [-1.0*m, 2.0*m, 0.0*m]
+
+<f>slip_time</f> = spatialdata.spatialdb.UniformDB
+<p>slip_time.label</p>  = Slip initiation time
+<p>slip_time.values</p> = [slip-time]
+<p>slip_time.data</p> = [0.0*year] ; Relative to the origin time
+# --- Omitting output settings already discussed ---
+\end{cfg}
+
+We run this example by typing
+\begin{shell}
+$$ pylith step04.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg
+\end{shell}
+
+Figure \vref{fig:example:subduction:3d:step04}, which was created
+using the ParaView Python script \filename{plot\_dispwarp.py}, shows
+the deformation exaggerated by a factor of 5,000 at the final time
+step of t=300*yr. Compared to the solution in Step 3, we see the
+earthquakes have reduced the deformation in the crust and accretionary
+wedge.
+
+\begin{figure}
+  \includegraphics[width=5.0in]{examples/figs/subduction3d_step04_soln}
+  \caption{Solution over the domain for Step 4 at $t=300 \mathrm{yr}$. The colors indicate
+    the z-displacement and we have exaggerated the
+    deformation by a factor of 5,000.}
+  \label{fig:example:subduction:3d:step04}
+\end{figure}
+
 \subsubsection{Exercises}
 
-% Make lower slab + splay fault the primary fault surface and the
-% upper slab (trench side of the splay fault) the secondary fault
-% surface. Hint: You will need to create a nodesets in CUBIT that
-% correspond to the primary and secondary fault surfaces.
-
-
+\begin{itemize}
+  \item Adjust the timing of the earthquake rupture sequence. How does
+    this affect the deformation?
+  \item Add additional earthquakes with different depth variations in
+    slip, keeping the total equal to the overall slip rate.
+  \item Adjust the nodesets in CUBIT/Trelis so that the splay fault
+    and the deeper portion of the subduction interface form the
+    through-going fault and the upper portion of the subduction
+    interface is the secondary fault. How does this affect the stress
+    accumulation in the crust and upper mantle?
+\end{itemize}
 
 % ----------------------------------------------------------------------
 \subsection{Step 5: Spontaneous Rupture Driven by Subducting Slab}
@@ -1482,7 +1665,7 @@ zero (static problem):
 \end{cfg}
 Then, for each material, we use the same spatial database for the
 initial stresses. We use linear interpolation and in the database the
-initial stress is simply computed as $\{rho}_mgh$, where $\{rho}_m$ is
+initial stress is simply computed as $\rho_mgh$, where $\rho_m$ is
 the density of the mantle material and $h$ is the depth below the
 ground surface:
 \begin{cfg}
