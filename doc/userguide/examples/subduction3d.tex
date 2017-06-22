@@ -77,6 +77,7 @@ scripts can be run within the ParaView GUI or outside the ParaView
 GUI, although the interaction is limited to rotating, translating, and
 zooming when run outside the ParaView GUI.
 
+\todo{brad}{Complete filling in table.}
 \begin{table}[htbp]
   \caption{PyLith features covered in the suite of 3-D subduction zone examples.}
   \label{tab:example:subduction:3d:features}
@@ -706,10 +707,10 @@ $$ pylith step02.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg
 \end{shell}
 
 Figure \vref{fig:example:subduction:3d:step02}, which was created
-using the ParaView Python script \filename{plot\_dispwarp.py}, displays
-the magnitude of the displacement field exaggerated by a factor of 10,000.
-The shallow fault results in deformation that is localized over a
-small region.
+using the ParaView Python script \filename{plot\_dispwarp.py},
+displays the magnitude of the displacement field exaggerated by a
+factor of 10,000 at the final time step (t=200*yr)..  The shallow
+fault results in deformation that is localized over a small region.
 
 \begin{figure}
   \includegraphics[width=5.0in]{examples/figs/subduction3d_step02_soln}
@@ -743,8 +744,162 @@ small region.
 
 % ----------------------------------------------------------------------
 \subsection{Step 3: Prescribed Aseismic Creep and Interseismic Deformation}
+\label{sec:example:subduction:3d:step03}
+
+We now increase the complexity of our fault model by simulating the
+interseismic deformation associated with the subducting slab. We
+approximate the motion of the Juan de Fuca Plate subducting under the
+North American Plate by introducing aseismic slip (creep) on the
+bottom of the slab and the deeper portion of the top of the slab; we
+keep the interface between the top of the slab and the accretionary
+wedge and shallow crust locked. As in Step 2, we will use the linear
+Maxwell viscoelastic constitutive model for the slab and mantle.
+Figure~\ref{fig:example:subduction:3d:step03:diagram} summarizes the
+problem description.
+
+\todo{brad}{Add annotation to figure.}
+\begin{figure}[htbp]
+  \begin{tikzpicture}
+    \tikzstyle{annotation} = [black];
+    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[width=4.5in]{examples/figs/subduction3d_geometry}};
+    \begin{scope}[x={(image.south east)},y={(image.north west)}]
+      \node at (0.5,0.5) {{\bf\LARGE ADD ANNOTATION}};
+      %\node[anchor=west, annotation] (xneg) at (-0.2,0.5) {+2.0 m};
+      %\draw[>=latex, ->, ultra thick, annotation] (xneg) -- (0.0,0.5);
+      %\node[anchor=east, annotation] (xpos) at (+1.2,0.5) {-2.0 m};
+      %\draw[>=latex, ->, ultra thick, annotation] (xpos) -- (1.0,0.5);
+    \end{scope}
+  \end{tikzpicture}
+  \caption{Diagram of Step 3: Prescribed aseismic slip (creep) and
+    interseismic deformation for the subducting slab. We precsribed
+    steady, uniform creep on the
+    bottom of the slab and deeper portion of the top of the slab. We
+    impose roller Dirichlet boundary conditions on the lateral and
+    bottom boundaries, except where they overlap with the fault
+    interfaces for the slab.}
+  \label{fig:example:subduction:3d:step03:diagram}
+\end{figure}
+
+% Fault
+With slip on the top and bottom of the slab, our fault interfaces
+array contains two components, one for the top of the slab,
+\facility{slab\_top}, and one for the bottom of the slab,
+\facility{slab\_bottom}. We use the \object{FaultCohesiveKin}
+object for each of these interfaces since we want to prescribe the
+slip.
+\begin{cfg}
+<h>[pylithapp.problem]</h>
+<f>interfaces</f> = [slab_top, slab_bottom]
+
+<h>[pylithapp.problem.interfaces]</h>
+<f>slab_top</f> = pylith.faults.FaultCohesiveKin
+<f>slab_bottom</f> = pylith.faults.FaultCohesiveKin
+\end{cfg}
+
+% Bottom of slab
+\todo{brad}{ADD STUFF HERE}
+
+\begin{cfg}
+<h>[pylithapp.problem.interfaces.slab_bottom]</h>
+<p>id</p> = 100 ; Must be different from ids used for materials
+<p>label</p> = fault_slabbot ; Nodeset for the entire fault surface
+<p>edge</p> = fault_slabbot_edge ; Nodeset for the buried edges
+# Give slight westward tilt to the up_dir to avoid ambigious
+# directions for the shear components on the horizontal portions of the
+# fault.
+<p>up_dir</p> = [-0.1,0,0.9]
+
+# We must define the quadrature information for fault cells.
+# The fault cells are 2D (surface).
+<f>quadrature.cell</f> = pylith.feassemble.FIATSimplex
+<p>quadrature.cell.dimension</p> = 2
+
+# Use the constant slip rate time function.
+<f>eq_srcs.rupture.slip_function</f> = pylith.faults.ConstRateSlipFn
+
+# The slip time and final slip are defined in spatial databases.
+<h>[pylithapp.problem.interfaces.slab_bottom.eq_srcs.rupture.slip_function]</h>
+<f>slip_rate</f> = spatialdata.spatialdb.UniformDB
+<p>slip_rate.label</p> = Slab bottom slip rate.
+<p>slip_rate.values</p> = [left-lateral-slip, reverse-slip, fault-opening]
+<p>slip_rate.data</p> = [+2.0*cm/year, -4.0*cm/year, 0.0*cm/year]
+
+<f>slip_time</f> = spatialdata.spatialdb.UniformDB
+<p>slip_time.label</p>  = Slip initiation time
+<p>slip_time.values</p> = [slip-time]
+<p>slip_time.data</p> = [0.0*year] 
+
+<h>[pylithapp.problem.interfaces.slab_bottom.output]</h>
+<f>writer</f> = pylith.meshio.DataWriterHDF5
+<p>writer.filename</p> = output/step03-fault-slabbot.h5
+<p>vertex_info_fields</p> = [normal_dir, strike_dir, dip_dir]
+\end{cfg}
+
+
+% Top of slab
+\todo{brad}{ADD STUFF HERE}
+
+\begin{cfg}
+<h>[pylithapp.problem.interfaces.slab_top]</h>
+<p>id</p> = 101 ; Must be different from ids used for materials
+<p>label</p> = fault_slabtop ; Nodeset for the entire fault surface
+<p>edge</p> = fault_slabtop_edge ; Nodeset for the buried edges
+
+# We must define the quadrature information for fault cells.
+# The fault cells are 2D (surface).
+<f>quadrature.cell</f> = pylith.feassemble.FIATSimplex
+<p>quadrature.cell.dimension</p> = 2
+
+# Use the constant slip rate time function.
+<f>eq_srcs.rupture.slip_function</f> = pylith.faults.ConstRateSlipFn
+
+# The slip time and final slip are defined in spatial databases.
+<h>[pylithapp.problem.interfaces.slab_top.eq_srcs.rupture.slip_function]</h>
+<f>slip_rate</f> = spatialdata.spatialdb.SimpleGridDB
+<p>slip_rate.label</p> = Slab top slip rate.
+<p>slip_rate.filename</p> = spatialdb/fault_slabtop_creep.spatialdb
+<p>slip_rate.query_type</p> = linear
+
+<f>slip_time</f> = spatialdata.spatialdb.UniformDB
+<p>slip_time.label</p>  = Slip initiation time
+<p>slip_time.values</p> = [slip-time]
+<p>slip_time.data</p> = [0.0*year]
+
+<h>[pylithapp.problem.interfaces.slab_top.output]</h>
+<f>writer</f> = pylith.meshio.DataWriterHDF5
+<p>writer.filename</p> = output/step03-fault-slabtop.h5
+<p>vertex_info_fields</p> = [normal_dir, strike_dir, dip_dir]
+\end{cfg}
+
+We run this example by typing
+\begin{shell}
+$$ pylith step03.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg
+\end{shell}
+
+\todo{brad}{Update this}
+Figure \vref{fig:example:subduction:3d:step03}, which was created
+using the ParaView Python script \filename{plot\_dispwarp.py}, displays
+the magnitude of the displacement field exaggerated by a factor of 10,000.
+The shallow fault results in deformation that is localized over a
+small region.
+
+\begin{figure}
+\todo{brad}{Add figure here}
+  %\includegraphics[width=5.0in]{examples/figs/subduction3d_step03_soln}
+  \caption{Solution over the domain for Step 2 at t=200*yr. The colors indicate
+    the magnitude of the displacement and we have exaggerated the
+    deformation by a factor of 10,000.}
+  \label{fig:example:subduction:3d:step02}
+\end{figure}
+
 
 \subsubsection{Exercises}
+
+\todo{brad}{Add stuff here}
+\begin{itemize}
+\item 
+\end{itemize}
+
 
 % ----------------------------------------------------------------------
 \subsection{Step 4: Prescribed Earthquake Cycle}
