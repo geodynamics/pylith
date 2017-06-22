@@ -78,7 +78,6 @@ scripts can be run within the ParaView GUI or outside the ParaView
 GUI, although the interaction is limited to rotating, translating, and
 zooming when run outside the ParaView GUI.
 
-\todo{brad}{Complete filling in table.}
 \begin{table}[htbp]
   \caption{PyLith features covered in the suite of 3-D subduction zone examples.}
   \label{tab:example:subduction:3d:features}
@@ -337,16 +336,7 @@ the vertical displacement by imposing zero displacement boundary
 conditions on the bottom (-z) boundary.
 
 \begin{figure}[htbp]
-  \begin{tikzpicture}
-    \tikzstyle{annotation} = [black];
-    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[width=4.5in]{examples/figs/subduction3d_geometry}};
-    \begin{scope}[x={(image.south east)},y={(image.north west)}]
-      \node[anchor=west, annotation] (xneg) at (-0.2,0.5) {+2.0 m};
-      \draw[>=latex, ->, ultra thick, annotation] (xneg) -- (0.0,0.5);
-      \node[anchor=east, annotation] (xpos) at (+1.2,0.5) {-2.0 m};
-      \draw[>=latex, ->, ultra thick, annotation] (xpos) -- (1.0,0.5);
-    \end{scope}
-  \end{tikzpicture}
+  \includegraphics[width=5.0in]{examples/figs/subduction3d_step01_diagram}
   \caption{Diagram of Step 1: Axial compression. This static
     simulation uses Dirichlet boundary conditions with axial
     compression in the east-west (x-direction), roller boundary
@@ -476,11 +466,14 @@ $$ PATH_TO_PARAVIEW/paraview --script=viz/plot_dispvec.py
 \end{shell}
 \item Run the ParaView Python script directly from a shell (terminal
   window) via the command line. You can use command line arguments to
-  set user-specified parameters.
+  set user-specified parameters. If pvpython 
 \begin{shell}
 # Make sure you are in the examples/3d/subduction directory.
 # We show the optional command line arguments in square brackets.  
 $$ ./viz/plot_dispvec.py [--vector-scale=10.0e+4] [--sim=step01.cfg} [--screenshot=FILE]
+#
+# If pvpython is not in your PATH, then you can run the script using:
+$$ PATH_TO_PVPYTHON/pvpython ./viz/plot_dispvec.py
 \end{shell}
 \end{enumerate}
 
@@ -763,25 +756,14 @@ the linear Maxwell viscoelastic constitutive model for the slab and
 mantle.  Figure~\ref{fig:example:subduction:3d:step03:diagram}
 summarizes the problem description.
 
-\todo{brad}{Add annotation to figure.}
 \begin{figure}[htbp]
-  \begin{tikzpicture}
-    \tikzstyle{annotation} = [black];
-    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[width=4.5in]{examples/figs/subduction3d_geometry}};
-    \begin{scope}[x={(image.south east)},y={(image.north west)}]
-      \node at (0.5,0.5) {{\bf\LARGE ADD ANNOTATION}};
-      %\node[anchor=west, annotation] (xneg) at (-0.2,0.5) {+2.0 m};
-      %\draw[>=latex, ->, ultra thick, annotation] (xneg) -- (0.0,0.5);
-      %\node[anchor=east, annotation] (xpos) at (+1.2,0.5) {-2.0 m};
-      %\draw[>=latex, ->, ultra thick, annotation] (xpos) -- (1.0,0.5);
-    \end{scope}
-  \end{tikzpicture}
+  \includegraphics[width=5.0in]{examples/figs/subduction3d_step03_diagram}
   \caption{Diagram of Step 3: Prescribed aseismic slip (creep) and
-    interseismic deformation for the subducting slab. We precsribed
+    interseismic deformation for the subducting slab. We prescribe
     steady, uniform creep on the bottom of the slab and deeper portion
     of the subduction interface. We impose roller Dirichlet boundary
     conditions on the lateral and bottom boundaries, except where they
-    overlap with the fault interfaces for the slab.}
+    overlap with the slab and splay fault.}
   \label{fig:example:subduction:3d:step03:diagram}
 \end{figure}
 
@@ -955,26 +937,16 @@ include multiple earthquake sources on a single fault. We use the same
 roller Dirichlet boundary conditions and combination of elastic and
 viscoelatic materials as we did in Step 3.
 
-\todo{brad}{Add annotation to figure.}
 \begin{figure}[htbp]
-  \begin{tikzpicture}
-    \tikzstyle{annotation} = [black];
-    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[width=4.5in]{examples/figs/subduction3d_geometry}};
-    \begin{scope}[x={(image.south east)},y={(image.north west)}]
-      \node at (0.5,0.5) {{\bf\LARGE ADD ANNOTATION}};
-      %\node[anchor=west, annotation] (xneg) at (-0.2,0.5) {+2.0 m};
-      %\draw[>=latex, ->, ultra thick, annotation] (xneg) -- (0.0,0.5);
-      %\node[anchor=east, annotation] (xpos) at (+1.2,0.5) {-2.0 m};
-      %\draw[>=latex, ->, ultra thick, annotation] (xpos) -- (1.0,0.5);
-    \end{scope}
-  \end{tikzpicture}
-  \caption{Diagram of Step 3: Prescribed aseismic slip (creep) and
-    interseismic deformation for the subducting slab. We precsribed
-    steady, uniform creep on the bottom of the slab and deeper portion
-    of the subduction interface. We impose roller Dirichlet boundary
-    conditions on the lateral and bottom boundaries, except where they
-    overlap with the fault interfaces for the slab.}
-  \label{fig:example:subduction:3d:step03:diagram}
+  \includegraphics[width=5.0in]{examples/figs/subduction3d_step04_diagram}
+  \caption{Diagram of Step 4: A simple earthquake cycle combining the
+    prescribed aseismic slip (creep) from Step 3 with prescribed
+    coseismic slip for two earthquakes on the shallow portion of the
+    subduction interface and one earthquake on the play fault. We
+    impose roller Dirichlet boundary conditions on the lateral and
+    bottom boundaries, except where they overlap with the slab and
+    splay fault.}
+  \label{fig:example:subduction:3d:step04:diagram}
 \end{figure}
 
 % Faults
