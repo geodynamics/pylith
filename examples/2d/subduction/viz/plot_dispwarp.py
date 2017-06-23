@@ -84,12 +84,12 @@ def visualize(sim, exaggeration, component, showFinalTimeStep=False):
 
     # Annotate time
     tstamp = AnnotateTimeFilter(warp)
-    tstamp.Format = 'Time: %2.0f yr'
+    tstamp.Format = 'Time: %5.1f yr'
     tstamp.Scale = 3.168808781402895e-08 # seconds to years
 
     tstampDisplay = Show(tstamp, view)
     tstampDisplay.FontFamily = "Courier"
-    tstampDisplay.FontSize = 14
+    tstampDisplay.FontSize = 12
     
     view.ResetCamera()
     view.Update()
