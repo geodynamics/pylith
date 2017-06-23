@@ -282,6 +282,9 @@ private :
   /// Minimum resolvable value accounting for roundoff errors
   PylithScalar _zeroTolerance;
 
+  /// Minimum resolvable value accounting for roundoff errors
+  PylithScalar _zeroToleranceNormal;
+
   /// Prescribed traction variation.
   TractPerturbation* _tractPerturbation;
 

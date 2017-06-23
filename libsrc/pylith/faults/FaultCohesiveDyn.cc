@@ -62,6 +62,7 @@
 // Default constructor.
 pylith::faults::FaultCohesiveDyn::FaultCohesiveDyn(void) :
     _zeroTolerance(1.0e-10),
+    _zeroToleranceNormal(1.0e-8),
     _tractPerturbation(0),
     _friction(0),
     _jacobian(0),
@@ -331,7 +332,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field& resid
         _logger->eventEnd(computeEvent);
         _logger->eventBegin(updateEvent);
 #endif
-        if (slipNormal < _zeroTolerance || !_openFreeSurf) {
+        if (slipNormal < _zeroToleranceNormal || !_openFreeSurf) {
             // if no opening or flag indicates to still impose initial tractions when fault is open.
             // Assemble contributions into field
             const PetscInt rnoff = residualVisitor.sectionOffset(v_negative);
@@ -631,7 +632,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
                 slipRateVertex[d] = 0.0;
             } // if
         } // for
-        if (fabs(slipTpdtVertex[indexN]) < _zeroTolerance) {
+        if (fabs(slipTpdtVertex[indexN]) < _zeroToleranceNormal) {
             slipTpdtVertex[indexN] = 0.0;
         } // if
 
@@ -938,7 +939,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
                 dSlipTpdtVertex[indexN] = -slipTpdtVertex[indexN];
             } // if/else
 
-        } else if (slipTpdtVertex[indexN] + dSlipTpdtVertex[indexN] > _zeroTolerance) {
+        } else if (slipTpdtVertex[indexN] + dSlipTpdtVertex[indexN] > _zeroToleranceNormal) {
             // Step 5b: Insure fault traction is zero when opening (if alpha=1
             // this should be enforced already, but will not be properly
             // enforced when alpha < 1).
@@ -2150,7 +2151,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceNorm(const PylithScalar alp
                 slipRateVertex[d] = 0.0;
             } // if
         } // for
-        if (fabs(slipTpdtVertex[indexN]) < _zeroTolerance) {
+        if (fabs(slipTpdtVertex[indexN]) < _zeroToleranceNormal) {
             slipTpdtVertex[indexN] = 0.0;
         } // if
 
@@ -2173,7 +2174,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceNorm(const PylithScalar alp
                 slipTpdtVertex[indexN] = 0.0;
             } // if/else
 
-        } else if (slipTpdtVertex[indexN] > _zeroTolerance) {
+        } else if (slipTpdtVertex[indexN] > _zeroToleranceNormal) {
             // Step b: Ensure fault traction is zero when opening (if
             // alpha=1 this should be enforced already, but will not be
             // properly enforced when alpha < 1).
@@ -2187,7 +2188,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceNorm(const PylithScalar alp
             slipTpdtVertex[indexN] = 0.0;
         } // if
 
-        if (slipTpdtVertex[indexN] > _zeroTolerance) {
+        if (slipTpdtVertex[indexN] > _zeroToleranceNormal) {
             isOpening = true;
         } // if
 
@@ -2292,7 +2293,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(scalar_array* dTractionT
     const PylithScalar tractionNormal = tractionTpdt[1];
     const PylithScalar tractionShearMag = fabs(tractionTpdt[0]);
 
-    if (fabs(slip[1]) < _zeroTolerance && tractionNormal < -_zeroTolerance) {
+    if (fabs(slip[1]) < _zeroToleranceNormal && tractionNormal < -_zeroTolerance) {
         // if in compression and no opening
         PylithScalar frictionStress = _friction->calcFriction(t, slipMag, slipRateMag, tractionNormal);
 
@@ -2374,7 +2375,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(scalar_array* dTractionT
     const PylithScalar tractionNormal = tractionTpdt[2];
     const PylithScalar tractionShearMag = sqrt(tractionTpdt[0] * tractionTpdt[0] + tractionTpdt[1] * tractionTpdt[1]);
 
-    if (fabs(slip[2]) < _zeroTolerance && tractionNormal < -_zeroTolerance) {
+    if (fabs(slip[2]) < _zeroToleranceNormal && tractionNormal < -_zeroTolerance) {
         // if in compression and no opening
         PylithScalar frictionStress = _friction->calcFriction(t, slipMag, slipRateMag, tractionNormal);
 
