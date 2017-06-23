@@ -1,8 +1,7 @@
 // -*- C++ -*- (syntax highlighting)
 //
-// This spatial database specifies the distribution of slip rate
-// associated with aseismic creep on the interface between the mantle
-// and the subducting oceanic crust.
+// This spatial database specifies the distribution of initial fault
+// tractions on the subducting interface.
 // 
 // We specify depth-dependent fault tractions with higher values in
 // the stable sliding regions consistent with residual stresses in
@@ -51,7 +50,7 @@ SimpleGridDB {
 // (6) normal traction (MPa)
 0.0  0.0    99.0   0.0  11.9  -20.0
 0.0  0.0    -5.0   0.0  11.9  -20.0
-0.0  0.0   -15.0   0.0  10.0  -20.0
-0.0  0.0   -30.0   0.0  10.0  -20.0
+0.0  0.0   -15.0   0.0  11.0  -20.0
+0.0  0.0   -30.0   0.0  11.0  -20.0
 0.0  0.0   -45.0   0.0  11.9  -20.0
 0.0  0.0  -999.0   0.0  11.9  -20.0

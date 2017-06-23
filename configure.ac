@@ -336,6 +336,7 @@ AC_CONFIG_FILES([Makefile
 		examples/3d/Makefile
 		examples/3d/tet4/Makefile
 		examples/3d/hex8/Makefile
+		examples/3d/subduction/Makefile
 		examples/2d/Makefile
 		examples/2d/subduction/Makefile
 		examples/2d/gravity/Makefile
