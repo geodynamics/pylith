@@ -148,7 +148,8 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
 
   const int numTimeStamps = timeStamps.size();
   const int numFields = fieldsMetadata.size();
-  if (numTimeStamps > 1) {
+  const bool hasTimeStamps = numTimeStamps > 1;
+  if (hasTimeStamps) {
     _file << "    <Grid Name=\"TimeSeries\" GridType=\"Collection\" "
 	  << "CollectionType=\"Temporal\">\n";
 
@@ -174,7 +175,7 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
 	  for (int component=0; component < fiberDim; ++component)
 	    _writeGridAttributeComponent(fieldsMetadata[iField], iTimeStep, component, spaceDim);
 	} else {
-	  _writeGridAttribute(fieldsMetadata[iField], iTimeStep, spaceDim);
+	    _writeGridAttribute(fieldsMetadata[iField], iTimeStep, spaceDim, hasTimeStamps);
 	} // if/else
       } // for
       _file << "      </Grid>\n";
@@ -200,7 +201,7 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
 	for (int component=0; component < fiberDim; ++component)
 	  _writeGridAttributeComponent(fieldsMetadata[iField], iTimeStep, component, spaceDim);
       } else {
-	_writeGridAttribute(fieldsMetadata[iField], iTimeStep, spaceDim);
+	  _writeGridAttribute(fieldsMetadata[iField], iTimeStep, spaceDim, hasTimeStamps);
       } // if/else
     } // for
     _file << "    </Grid>\n";
@@ -509,7 +510,8 @@ pylith::meshio::Xdmf::_writeGridGeometry(void)
 void
 pylith::meshio::Xdmf::_writeGridAttribute(const FieldMetadata& metadata,
 					  const int iTime,
-					  const int spaceDim)
+					  const int spaceDim,
+					  const bool hasTimeStamps)
 { // _writeGridAttribute
   PYLITH_METHOD_BEGIN;
 
@@ -534,6 +536,8 @@ pylith::meshio::Xdmf::_writeGridAttribute(const FieldMetadata& metadata,
     throw std::runtime_error(msg.str());
   } // if/else
 
+  const char* gridRef = (hasTimeStamps) ? "/Xdmf/Domain/Grid/Grid[1]/" : "/Xdmf/Domain/Grid/";
+  
   _file 
     << "      <Attribute Name=\"" << metadata.name << "\" Type=\"" << metadata.vectorFieldType << "\" Center=\"" << metadata.domain << "\">\n";
 
@@ -567,7 +571,7 @@ pylith::meshio::Xdmf::_writeGridAttribute(const FieldMetadata& metadata,
       // z component
       << "          <DataItem ItemType=\"Function\" Dimensions=\"" << metadata.numPoints << " 1\" Function=\"0*$0\">\n"
       << "            <DataItem Reference=\"XML\">\n"
-      << "              /Xdmf/Domain/Grid/Attribute[@Name=\"" << metadata.name << "\"]/DataItem[1]/DataItem[1]\n"
+      << "              " << gridRef << "Attribute[@Name=\"" << metadata.name << "\"]/DataItem[1]/DataItem[1]\n"
       << "            </DataItem>\n"
       << "          </DataItem>\n"
       // close
