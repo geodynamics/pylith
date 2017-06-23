@@ -769,7 +769,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
             break;
 
 #if 0 // DEBUGGING
-        const int rank = _faultMesh->sieveMesh()->commRank();
+        const int rank = _faultMesh->commRank();
         std::cout << "["<<rank<<"] alphaL: " << pow(10.0, logAlphaL)
                   << ", residuaL: " << residualL
                   << ", alphaM: " << pow(10.0, logAlphaM)
