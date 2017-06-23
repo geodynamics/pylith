@@ -91,7 +91,7 @@ public:
   /// Test tractPerturbation().
   void testTractPerturbation(void);
 
-  /// Test zeroTolerance().
+  /// Test zeroTolerance() and zeroToleranceNormal().
   void testZeroTolerance(void);
 
   /// Test openFreeSurf().

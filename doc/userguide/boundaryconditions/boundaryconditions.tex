@@ -1199,14 +1199,20 @@ expression on the right-hand side reduces to
 
 The properties and facilities of the \object{FaultCohesiveDyn} object include
 \begin{inventory}
-\propertyitem{open\_free\_surface}{If true, enforce traction free surface when
-the fault opens, otherwise apply prescribed tractions even when the
-fault opens (default is true); to mimic a dike opening, use false.}
-\propertyitem{zero\_tolerance}{Tolerance for detecting zero values (default
-is 1.0e-10); should be larger than absolute tolerance in KSP solves.}
-\facilityitem{traction\_perturbation}{Prescribed tractions on fault surface
-(generally used for nucleating earthquake ruptures; default is none).}
-\facilityitem{friction}{Fault constitutive model.}
+  \propertyitem{open\_free\_surface}{If true, enforce traction free
+    surface when the fault opens, otherwise apply prescribed tractions
+    even when the fault opens (default is true); to mimic a dike
+    opening, use false.}
+  \propertyitem{zero\_tolerance}{Tolerance for detecting zero values
+    (default is 1.0e-10); should be larger than absolute tolerance in
+    KSP solves.}
+  \propertyitem{zero\_tolerance\_normal}{Tolerance for
+    suppressing near zero fault opening values (default is 1.0e-10);
+    should be larger than absolute tolerance in KSP solves.}
+  \facilityitem{traction\_perturbation}{Prescribed tractions on fault
+    surface (generally used for nucleating earthquake ruptures;
+    default is none).}
+  \facilityitem{friction}{Fault constitutive model.}
 \end{inventory}
 An example of specifying the dynamic earthquake rupture properties
 and components in a \filename{.cfg} file:
@@ -1229,15 +1235,20 @@ and components in a \filename{.cfg} file:
 \important{The dynamic rupture implementation requires careful
   selection of linear and nonlinear solver tolerances.  A key issue is
   making sure the linear solver toleance is tighter (smaller) than the
-  tolerance used to detect slip (fault \property{zero\_toelerance}).
-  As a result, the linear and solver absolute tolerances should be
-  used to for convergence, not the relative tolerances. The settings below
-  illustrates the relevant parameters and example values. The values
-  can be scaled to change the overall desired tolerances.}
+  tolerance used to detect slip (fault \property{zero\_toelerance} and
+  \property{zero\_toelerance\_normal}).  As a result, the linear and
+  solver absolute tolerances should be used to for convergence, not
+  the relative tolerances. The settings below illustrates the relevant
+  parameters and example values. The values can be scaled to change
+  the overall desired tolerances. The separate tolerance for near zero
+  values of fault opening was added in v2.2.1. This provides the
+  solver greater flexibility to prevent fault opening with nonplanar
+  faults..}
 
 \begin{cfg}
 <h>[pylithapp.problem.interfaces.fault]</h>
 <p>zero_tolerance</p> = 1.0e-11
+<p>zero_tolerance_normal</p> = 2.0e-11
 
 <h>[pylithapp.petsc]</h>
 # Linear solver tolerances

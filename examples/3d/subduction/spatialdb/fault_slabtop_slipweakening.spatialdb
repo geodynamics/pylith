@@ -15,7 +15,7 @@ SimpleGridDB {
   num-z = 6
   num-values = 4
   value-names =  static-coefficient  dynamic-coefficient  slip-weakening-parameter  cohesion
-  value-units =  none  none  m  Pa
+  value-units =  none  none  cm  Pa
   space-dim = 3
   cs-data = geo-projected {
     to-meters = 1.0e+3 // Specify coordinates in km for convenience.
@@ -48,7 +48,7 @@ SimpleGridDB {
 // (3) z coordinate (km)
 // (4) static-coefficient
 // (5) dynamic-coefficient
-// (6) slip-weakening-parameter (m)
+// (6) slip-weakening-parameter (cm)
 // (7) cohesion (Pa)
 0.0  0.0    99.0   0.6  0.6  1.0  0.0
 0.0  0.0    -5.0   0.6  0.6  1.0  0.0

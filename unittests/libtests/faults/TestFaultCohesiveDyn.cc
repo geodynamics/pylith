@@ -111,7 +111,7 @@ pylith::faults::TestFaultCohesiveDyn::testTractPerturbation(void)
 } // testTractPerturbation
 
 // ----------------------------------------------------------------------
-// Test zeroTolerance().
+// Test zeroTolerance() and zeroToleranceNormal().
 void
 pylith::faults::TestFaultCohesiveDyn::testZeroTolerance(void)
 { // testZeroTolerance
@@ -121,9 +121,15 @@ pylith::faults::TestFaultCohesiveDyn::testZeroTolerance(void)
 
   CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0e-10), fault._zeroTolerance); // default
 
-  const PylithScalar value = 1.0e-20;
+  PylithScalar value = 1.0e-20;
   fault.zeroTolerance(value);
   CPPUNIT_ASSERT_EQUAL(value, fault._zeroTolerance);
+
+  CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0e-10), fault._zeroToleranceNormal); // default
+
+  value = 1.0e-8;
+  fault.zeroToleranceNormal(value);
+  CPPUNIT_ASSERT_EQUAL(value, fault._zeroToleranceNormal);
 
   PYLITH_METHOD_END;
 } // zeroTolerance
@@ -207,7 +213,7 @@ pylith::faults::TestFaultCohesiveDyn::testInitialize(void)
 
       const PylithScalar tolerance = 1.0e-06;
       for(PetscInt d = 0; d < spaceDim; ++d) {
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->initialTractions[iVertex * spaceDim + d], tractionArray[off+d]*_data->pressureScale, tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->initialTractions[iVertex * spaceDim + d], tractionArray[off+d]*tractionScale, tolerance);
       } // for
     } // for
   } // if
@@ -504,8 +510,6 @@ pylith::faults::TestFaultCohesiveDyn::testUpdateStateVars(void)
   topology::Jacobian jacobian(fields.solution());
   _setFieldsJacobian(&mesh, &fault, &fields, &jacobian, _data->fieldIncrSlip);
 
-  const int spaceDim = _data->spaceDim;
-
   const PylithScalar t = 2.134;
   const PylithScalar dt = 0.01;
   fault.timeStep(dt);
@@ -794,7 +798,7 @@ pylith::faults::TestFaultCohesiveDyn::_isConstraintEdge(const int point) const
 
   const int numConstraintEdges = _data->numConstraintEdges;
   bool isFound = false;
-  for (int i=0; i < _data->numConstraintEdges; ++i)
+  for (int i=0; i < numConstraintEdges; ++i)
     if (_data->constraintEdges[i] == point) {
       isFound = true;
       break;

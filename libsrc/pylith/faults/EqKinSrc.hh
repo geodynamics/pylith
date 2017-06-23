@@ -49,6 +49,7 @@ public :
   EqKinSrc(void);
 
   /// Destructor.
+  virtual
   ~EqKinSrc(void);
 
   /// Deallocate PETSc and local data structures.

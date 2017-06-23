@@ -239,7 +239,6 @@ pylith::faults::TestConstRateSlipFn::_initialize(topology::Mesh* mesh,
   CPPUNIT_ASSERT(mesh);
   CPPUNIT_ASSERT(faultMesh);
   CPPUNIT_ASSERT(slipfn);
-  PetscErrorCode err;
 
   const char* meshFilename = "data/tri3.mesh";
   const char* faultLabel = "fault";
@@ -292,7 +291,6 @@ pylith::faults::TestConstRateSlipFn::_testInitialize(const _TestConstRateSlipFn:
 { // _testInitialize
   PYLITH_METHOD_BEGIN;
 
-  PetscErrorCode err;
   // Setup mesh
   topology::Mesh mesh;
   meshio::MeshIOAscii meshIO;
