@@ -54,7 +54,8 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
-#include <iostream> // TEMPORARY
+//#include <iostream> // TEMPORARY
+//#define DISABLE_SLIPRATE_TOLERANCE
 
 //#define DETAILED_EVENT_LOGGING
 
@@ -62,7 +63,7 @@
 // Default constructor.
 pylith::faults::FaultCohesiveDyn::FaultCohesiveDyn(void) :
     _zeroTolerance(1.0e-10),
-    _zeroToleranceNormal(1.0e-8),
+    _zeroToleranceNormal(1.0e-10),
     _tractPerturbation(0),
     _friction(0),
     _jacobian(0),
@@ -125,6 +126,21 @@ pylith::faults::FaultCohesiveDyn::zeroTolerance(const PylithScalar value)
 
     _zeroTolerance = value;
 } // zeroTolerance
+
+// ----------------------------------------------------------------------
+// Nondimensional tolerance for detecting near zero fault opening values.
+void
+pylith::faults::FaultCohesiveDyn::zeroToleranceNormal(const PylithScalar value)
+{ // zeroToleranceNormal
+    if (value < 0.0) {
+        std::ostringstream msg;
+        msg << "Tolerance (" << value << ") for suppressing zero values for fault opening for "
+        "fault " << label() << " must be nonnegative.";
+        throw std::runtime_error(msg.str());
+    } // if
+
+    _zeroToleranceNormal = value;
+} // zeroToleranceNormal
 
 // ----------------------------------------------------------------------
 // Set flag used to determine when fault is traction free when it
@@ -628,9 +644,11 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
                 slipRateVertex[d] += orientationArray[ooff+d*spaceDim+e] * (dispTIncrArray[dipoff+e] - dispTIncrArray[dinoff+e]) / dt;
                 tractionTpdtVertex[d] += orientationArray[ooff+d*spaceDim+e] * (dispTArray[dtloff+e] + dispTIncrArray[diloff+e]);
             } // for
-            if (fabs(slipRateVertex[d]) < _zeroTolerance) {
+#if !defined(DISABLE_SLIPRATE_TOLERANCE) // 2017-06-23  Is this really necessary?
+            if (fabs(slipRateVertex[d]) < _zeroTolerance / dt) {
                 slipRateVertex[d] = 0.0;
             } // if
+#endif
         } // for
         if (fabs(slipTpdtVertex[indexN]) < _zeroToleranceNormal) {
             slipTpdtVertex[indexN] = 0.0;
@@ -2147,9 +2165,11 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceNorm(const PylithScalar alp
                 slipRateVertex[d] += orientationArray[ooff+d*spaceDim+e] * (dispTIncrArray[dipoff+e] - dispTIncrArray[dinoff+e] + alpha*sensDispRelArray[sdroff+e]) / dt;
                 tractionTpdtVertex[d] += orientationArray[ooff+d*spaceDim+e] * (dispTArray[dtloff+e] + dispTIncrArray[diloff+e] + alpha*dLagrangeArray[sdloff+e]);
             } // for
-            if (fabs(slipRateVertex[d]) < _zeroTolerance) {
+#if !defined(DISABLE_SLIPRATE_TOLERANCE) // 2017-06-23  Is this really necessary?
+            if (fabs(slipRateVertex[d]) < _zeroTolerance / dt) {
                 slipRateVertex[d] = 0.0;
             } // if
+#endif
         } // for
         if (fabs(slipTpdtVertex[indexN]) < _zeroToleranceNormal) {
             slipTpdtVertex[indexN] = 0.0;
