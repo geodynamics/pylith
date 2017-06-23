@@ -70,7 +70,7 @@ Step 2. Interseismic deformation simulation
   constant 8 cm/yr.
 
   The parameters for the creep along the top of the slab are defined in
-    fault_creep_slabtop.spatialdb
+    fault_slabtop_creep.spatialdb
 
   Run the simulation via the following command:
     pylith step02.cfg
@@ -96,6 +96,28 @@ Step 4. Friction controlled afterslip
 
   Run the simulation via the following command:
     pylith step04.cfg
+
+Step 5. Earthquake cycle with slip-weakening friction
+
+  This simulation uses drives sponaneous rupture on the subducting
+  interface using prescribed asesismic slip on the bottom of the
+  slab. We use the slip-weakening friction model on the subducting
+  interface.
+
+  Run the simulation and capture the output via the following commands:
+    pylith step05.cfg >& step05.log &
+    tail -f step05.log
+
+Step 6. Earthquake cycle with rate-state friction
+
+  This simulation uses drives sponaneous rupture on the subducting
+  interface using prescribed asesismic slip on the bottom of the
+  slab. We use the rate-state friction model on the subducting
+  interface.
+
+  Run the simulation and capture the output via the following commands:
+    pylith step06.cfg >& step06.log &
+    tail -f step06.log
 
 Suggestions variations
 

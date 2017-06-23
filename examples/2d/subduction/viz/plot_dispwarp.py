@@ -26,7 +26,7 @@
 # pvpython.
 
 # Root name for simulation.
-SIM_NAME = "stepXX"
+SIM_NAME = "step05"
 
 # Scale used to exaggerate deformation.
 DISPLACEMENT_SCALE = 10.0e+3

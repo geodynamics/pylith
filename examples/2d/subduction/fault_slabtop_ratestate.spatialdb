@@ -1,8 +1,7 @@
 // -*- C++ -*- (syntax highlighting)
 //
-// This spatial database specifies the distribution of slip rate
-// associated with aseismic creep on the interface between the mantle
-// and the subducting oceanic crust.
+// This spatial database specifies the distribution of rate and state
+// friction parameters for the subducting interface.
 // 
 // We specify depth-dependent frictional properties with stable
 // sliding (equal dynamic and static coefficients of friction) above
@@ -14,7 +13,7 @@ SimpleGridDB {
   num-y = 6
   num-values = 6
   value-names =  reference-friction-coefficient  reference-slip-rate  characteristic-slip-distance  constitutive-parameter-a  constitutive-parameter-b  cohesion
-  value-units =  none  m/s  m  none  none Pa
+  value-units =  none  cm/year  m  none  none Pa
   space-dim = 2
   cs-data = cartesian {
     to-meters = 1.0e+3
@@ -34,11 +33,11 @@ SimpleGridDB {
 // (3) z coordinate (km)
 // (4) static-coefficient
 // (5) dynamic-coefficient
-// (6) slip-weakening-parameter (cm)
+// (6) slip-weakening-parameter (m)
 // (7) cohesion (Pa)
-0.0    99.0   0.6  1.0e-12  0.05  0.01  0.08  0.0
-0.0    -5.0   0.6  1.0e-12  0.05  0.01  0.08  0.0
-0.0   -15.0   0.6  1.0e-12  0.05  0.01  0.08  0.0
-0.0   -30.0   0.6  1.0e-12  0.05  0.01  0.08  0.0
-0.0   -45.0   0.6  1.0e-12  0.05  0.01  0.08  0.0
-0.0  -999.0   0.6  1.0e-12  0.05  0.01  0.08  0.0
+0.0    99.0   0.6  1.0  0.2  0.015  0.010  0.0
+0.0    -5.0   0.6  1.0  0.2  0.015  0.010  0.0
+0.0   -15.0   0.6  1.0  0.2  0.015  0.017  0.0
+0.0   -30.0   0.6  1.0  0.2  0.015  0.017  0.0
+0.0   -45.0   0.6  1.0  0.2  0.015  0.010  0.0
+0.0  -999.0   0.6  1.0  0.2  0.015  0.010  0.0

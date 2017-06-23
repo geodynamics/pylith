@@ -28,7 +28,7 @@
 # pvpython.
 
 # Root name for simulation.
-SIM_NAME = "stepXX"
+SIM_NAME = "step05"
 
 # Names of faults (with spontaneous rupture) for output files.
 FAULTS = ["fault-slabtop"]
