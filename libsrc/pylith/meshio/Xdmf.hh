@@ -137,10 +137,12 @@ private :
    * @param metadata Metadata for field.
    * @param iTime Index of time step.
    * @param spaceDim Spatial dimension.
+   * @param hasTimeStamps True if file contains multiple time steps.
    */
   void _writeGridAttribute(const FieldMetadata& metadata,
 			   const int iTime,
-			   const int spaceDim);
+			   const int spaceDim,
+			   const bool hasTimeStamps =false);
 
   /** Write grid attribute as single component (for 2-D vector).
    * 
