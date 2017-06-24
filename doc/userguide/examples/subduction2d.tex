@@ -20,12 +20,12 @@ PyLith features discussed in this example:
 \item Plane strain linearly elastic material
 \item Plane Maxwell linear viscoelastic material
 \item Prescribed slip
+\item Spontaneous rupture
 \item Static fault rupture
 \item Multiple faults
 \item Spatially variable coseismic slip
 \item Spatially variable aseismic creep
 \item Afterslip via fault friction
-\item Static fault rupture
 \item Static friction
 \end{itemize}
 All of the files necessary to run the examples are contained in the
@@ -43,7 +43,10 @@ increasing complexity. Step 1 focuses on the coseismic slip, Step 2
 focuses on interseismic deformation, and Step 3 combines the two into
 a pseudo-earthquake cycle deformation simulation. Step 4 focuses on
 using the change in tractions from Step 1 to construct a simulation
-with afterslip controlled by frictional sliding.
+with afterslip controlled by frictional sliding. Steps 5 and 6 replace
+the prescribed aseismic slip on the subducting slab in Step 2 with a
+frictional interface, producing spontaneous earthquake ruptures and
+creep.
 
 \begin{figure}
   \includegraphics{examples/figs/subduction2d_cartoon_general}
@@ -356,6 +359,14 @@ field.
 \end{figure}
 
 
+\subsection{Step 5: Spontaneous Earthquakes With Slip-Weakening Friction}
+
+\todo{brad}{ADD STUFF HERE}
+
+\subsection{Step 5: Spontaneous Earthquakes With Rate-State Friction}
+
+\todo{brad}{ADD STUFF HERE}
+
 \subsection{Suggested Variations}
 
 The list below includes some suggested modifications to the problem
@@ -377,10 +388,8 @@ some interesting physics.
   and change data-dim to 1.
 \item Modify the CUBIT journal files to use quad4 cells rather than tri3
   cells. This requires using the pave mesh scheme.
-\item Create a simulation with multiple earthquake cycles by lengthening
-  the duration of the simulation and adding additional earthquake ruptures.
-  See \filename{examples/3d/hex8/step06.cfg} for an example with multiple
-  earthquake ruptures. Examine spinup towards a steady-state solution.
+\item Adjust the friction model parameters and examine the effects on
+    the deformation and the convergence of the nonlinear solve.
 \end{itemize}
 
 
