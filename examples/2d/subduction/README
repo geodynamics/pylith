@@ -4,7 +4,7 @@ M9.0 Tohoku earthquake off the east coast of Japan.
 
 The main features of this example are:
 
-  * Generating a finite-element mesh using CUBIT
+  * Generating a finite-element mesh using CUBIT/Trelis
     + Nonplanar geometry
     + Variable mesh resolution
   * Spatially variable coseismic slip and creep
@@ -43,10 +43,10 @@ Mesh generation (optional)
   NOTE: The result of this step will overwrite the included file
         tri3_mesh.exo. You may want to copy/rename this file so that
         you have a backup copy in case you have difficulty running
-        CUBIT.
+        CUBIT/Trelis.
 
-  Start CUBIT and play the journal file "mesh_tri3.jou". We highly
-  recommend that you study the contents of the journal files to
+  Start CUBIT/Trelis and play the journal file "mesh_tri3.jou". We
+  highly recommend that you study the contents of the journal files to
   understand the mesh generation process.
 
 
@@ -143,12 +143,8 @@ Suggestions variations
 
     Add points, update num-locs accordingly, and change data-dim to be 1.
 
-  * Modify the CUBIT journal files to use quad4 cells rather than tri3
-    cells. This requires using the pave mesh scheme.
+  * Modify the CUBIT/Trelis journal files to use quad4 cells rather
+    than tri3 cells. This requires using the pave mesh scheme.
 
-  * Create a simulation with multiple earthquake cycles by lengthening
-    the duration of the simulation and adding additional earthquake
-    ruptures. See examples/3d/hex8/step06.cfg for an example with
-    multiple earthquake ruptures. Examine spinup towards a
-    steady-state solution.
-
+  * Adjust the friction model parameters and examine the effects on
+    the deformation and the convergence of the nonlinear solve.
