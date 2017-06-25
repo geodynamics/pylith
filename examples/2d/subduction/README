@@ -119,32 +119,3 @@ Step 6. Earthquake cycle with rate-state friction
     pylith step06.cfg >& step06.log &
     tail -f step06.log
 
-Suggestions variations
-
-  The list below includes some suggested modifications to the problem
-  that will allow you to become more familiar with PyLith while
-  examining some interesting physics.
-
-  * Change the resolution of the mesh by editing the mesh_tri3.jou
-    journal file. Change the resolution and bias factor.
-
-  * Add depth dependent viscosity to the mantle and crust. This
-    requires using the linear Maxwell plane strain bulk constitutive
-    model in the crust as well and creating spatial databases that
-    include viscosity for the crust. Specifying a depth dependent
-    variation in the parameters will require adding points, updating
-    num-locs accordingly, and changing data-dim to 1.
-
-  * Modify the spatial database files for the material properties to
-    use depth-dependent elastic properties based on PREM (Dziewonski
-    and Anderson, 1981, 10.1016/0031-9201(81)90046-7). See
-    http://geophysics.ou.edu/solid_earth/prem.html for a simple table
-    of values.
-
-    Add points, update num-locs accordingly, and change data-dim to be 1.
-
-  * Modify the CUBIT/Trelis journal files to use quad4 cells rather
-    than tri3 cells. This requires using the pave mesh scheme.
-
-  * Adjust the friction model parameters and examine the effects on
-    the deformation and the convergence of the nonlinear solve.
