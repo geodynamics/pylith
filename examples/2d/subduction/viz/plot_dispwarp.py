@@ -30,13 +30,14 @@ SIM_NAME = "step05"
 
 # Scale used to exaggerate deformation.
 DISPLACEMENT_SCALE = 10.0e+3
-DISPLACEMENT_COMPONENT = "X"
+FIELD = "displacement"
+FIELD_COMPONENT = "X"
 
 # ----------------------------------------------------------------------
 from paraview.simple import *
 import os
 
-def visualize(sim, exaggeration, component, showFinalTimeStep=False):
+def visualize(sim, exaggeration, field, component, showFinalTimeStep=False):
     
     # Disable automatic camera reset on "Show"
     paraview.simple._DisableFirstRenderCameraReset()
@@ -59,6 +60,7 @@ def visualize(sim, exaggeration, component, showFinalTimeStep=False):
     domainDisplay = Show(dataDomain, view)
     domainDisplay.Representation = 'Wireframe'
     domainDisplay.AmbientColor = [0.5, 0.5, 0.5]
+    Hide(dataDomain, view)
 
     # Warp domain to show deformation
     warp = WarpByVector(Input=dataDomain)
@@ -66,7 +68,7 @@ def visualize(sim, exaggeration, component, showFinalTimeStep=False):
     warp.ScaleFactor = exaggeration
 
     warpDisplay = Show(warp, view)
-    ColorBy(warpDisplay, ('POINTS', 'displacement', component))
+    ColorBy(warpDisplay, ('POINTS', field, component))
     warpDisplay.RescaleTransferFunctionToDataRange(True)
     warpDisplay.SetScalarBarVisibility(view, True)
     warpDisplay.SetRepresentationType('Surface With Edges')
@@ -103,14 +105,17 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--sim", action="store", dest="sim", default=SIM_NAME)
     parser.add_argument("--exaggeration", action="store", type=float, dest="exaggeration", default=DISPLACEMENT_SCALE)
-    parser.add_argument("--component", action="store", dest="component", default=DISPLACEMENT_COMPONENT)
+    parser.add_argument("--field", action="store", dest="field", default=FIELD)
+    parser.add_argument("--component", action="store", dest="component", default=FIELD_COMPONENT)
     parser.add_argument("--screenshot", action="store", dest="screenshot")
     args = parser.parse_args()
 
-    visualize(args.sim, args.exaggeration, args.component, showFinalTimeStep=True)
+    visualize(args.sim, args.exaggeration, args.field, args.component, showFinalTimeStep=True)
 
     view = GetRenderView()
-    view.ViewSize = [960, 540]
+    view.ViewSize = [1024, 540]
+    view.CameraPosition = [68527.89880980579, -152111.39463431376, 1405120.1034155919]
+    view.CameraFocalPoint = [68527.89880980579, -152111.39463431376, -1004573.5784798338]
     view.Update()
 
     if args.screenshot:
@@ -121,7 +126,7 @@ if __name__ == "__main__":
 else:
     # Running inside the ParaView GUI
 
-    visualize(SIM_NAME, DISPLACEMENT_SCALE, DISPLACEMENT_COMPONENT)
+    visualize(SIM_NAME, DISPLACEMENT_SCALE, FIELD, FIELD_COMPONENT)
 
 
 # End of file
