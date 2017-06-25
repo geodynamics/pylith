@@ -35,6 +35,7 @@ dist_noinst_DATA = \
 	step08a.cfg \
 	step08b.cfg \
 	step08c.cfg \
+	cgps_sites.txt \
 	make_synthetic_gpsdisp.cfg \
 	slip_invert.cfg \
 	make_synthetic_gpsdisp.py \
