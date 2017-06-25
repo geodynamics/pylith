@@ -165,7 +165,7 @@ class SlipInvert(Application):
     self.llComp = math.cos(self.rake.value)
     self.udComp = math.sin(self.rake.value)
 
-    self.genXdmfCmd = "pylith_genxdmf"
+    self.genXdmfCmd = "petsc_gen_xdmf.py "
 
     return
 
