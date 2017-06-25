@@ -331,6 +331,7 @@ contained in the file \filename{step04.cfg}. These settings are:
   \facilityitem{pylithapp.problem.formulation.output.domain}{Gives the base filenames
     for HDF5 output (for example, \filename{step04.h5}).}
 \end{inventory}
+
 We run this example by typing
 \begin{shell}
 $$ pylith step04.cfg
@@ -429,30 +430,30 @@ friction in the seismogenic zone, by introducing depth-dependent
 variations in the dynamic coefficient of friction. using a
 \object{SimpleGridDB} spatial database. As discussed in Section
 \vref{sec:spatial:databases} This provides more efficient
-interpolation compared to the \object[SimpleDB} implementation.
+interpolation compared to the \object{SimpleDB} implementation.
 We impose initial tractions on the fault in a similar fashion as we
 did in Step 4. We reduce the initial shear tractions slightly in the
 seismogenic zone, consistent with a stress drop in the penultimate
 earthquake followed by loading during the interseimic period.
 \begin{cfg}
-[pylithapp.timedependent.interfaces.fault_slabtop]
+<h>[pylithapp.timedependent.interfaces.fault_slabtop]</h>
 # --- Skipping general information discussed previously ---
 # Friction
-friction = pylith.friction.SlipWeakening
-friction.label = Slip weakening
+<f>friction</f> = pylith.friction.SlipWeakening
+<p>friction.label</p> = Slip weakening
 # Force healing after each time step, so weakening is confined to each
 # time step and is not carried over into subsequent time steps.
-friction.force_healing = True
+<p>friction.force_healing</p> = True
 
-friction.db_properties = spatialdata.spatialdb.SimpleGridDB
-friction.db_properties.label = Slip weakening
-friction.db_properties.filename = fault_slabtop_slipweakening.spatialdb
+<f>friction.db_properties</f> = spatialdata.spatialdb.SimpleGridDB
+<p>friction.db_properties.label</p> = Slip weakening
+<p>friction.db_properties.filename</p> = fault_slabtop_slipweakening.spatialdb
 
 # Initial fault tractions
-traction_perturbation = pylith.faults.TractPerturbation
-traction_perturbation.db_initial = spatialdata.spatialdb.SimpleGridDB
-traction_perturbation.db_initial.label = Initial fault tractions
-traction_perturbation.db_initial.filename = fault_slabtop_tractions.spatialdb
+<f>traction_perturbation</f> = pylith.faults.TractPerturbation
+<f>traction_perturbation.db_initial</f> = spatialdata.spatialdb.SimpleGridDB
+<p>traction_perturbation.db_initial.label</p> = Initial fault tractions
+<p>traction_perturbation.db_initial.filename</p> = fault_slabtop_tractions.spatialdb
 \end{cfg}
 
 % Solver
@@ -494,15 +495,141 @@ sensitivity solve).
 <p>friction_ksp_error_if_not_converged</p> = true
 \end{cfg}
 
-\subsection{Step 5: Spontaneous Earthquakes With Rate-State Friction}
+We run this example by typing
+\begin{shell}
+$$ pylith step05.cfg
+\end{shell}
+The problem will produce fourteen pairs of HDF5/Xdmf files. Figure
+\vref{fig:example:subduction:2d:step05}, which was created using the
+ParaView Python script \filename{viz/plot\_dispwarp.py} (see
+Section~\ref{sec:example:subduction:3d:step01} for a discussion of how
+  to run ParaView Python scripts), displays the
+magnitude of the velocity field with the original configuration
+exaggerated by a factor of 4000. Steady slip is largely confined to
+the stable sliding regions with a sequence of ruptures in the
+seismogenic zone; most have a duration of a few time steps, although
+most of the slip occurs in a single time
+step. Figure~\ref{fig:example:subduction:2d:step05:slip} shows the
+cumulative slip as a function of time and distance down dip from the
+trench.
 
-\todo{brad}{ADD STUFF HERE}
+\begin{figure}
+  \includegraphics[width=4.5in]{examples/figs/subduction2d_step05_soln}
+  \caption{Solution for Step 5 at the end of the simulation. The
+    colors indicate the magnitude of the x-displacement component and
+    the deformation has been exaggerated by a factor of 10,000. }
+  \label{fig:example:subduction:2d:step05}
+\end{figure}
 
-\subsection{Suggested Variations}
+\begin{figure}
+  \includegraphics[width=4.5in]{examples/figs/subduction2d_step05_slip}
+  \caption{Cumulative slip as a function of time and depth in Step
+    5. The red lines indicate slip every 10 time steps.}
+  \label{fig:example:subduction:2d:step05:slip}
+\end{figure}
 
-The list below includes some suggested modifications to the problem
-that will allow you to become more familiar with PyLith while examining
-some interesting physics.
+
+\subsection{Step 6: Spontaneous Earthquakes With Rate-State Friction}
+
+In this example we replace the slip-weakening in Step 5 with rate- and
+state-friction using the ageing law. We also lengthen the duration of
+the simulation to 200 years and reduce the time step to 1.0 years,
+which were determined through trial and error to get a couple
+earthquake cycles with reasonable convergence for this relatively
+coarse resolution mesh.
+\begin{cfg}
+<h>[pylithapp.timedependent.formulation.time_step]</h>
+<p>total_time</p> = 200.0*year
+<h>dt</h> = 1.0*year
+\end{cfg}
+
+The specification of the parameters for the rate- and state-friction
+model follow a similar pattern to the ones for the slip-weakening
+friction in Step 5. Our regulatization of the coefficient of friction
+for near zero slip rate values involves a transition to a linear
+dependence on slip rate; in this example we specify that this
+transition should occur at a nondimensional slip rate of
+$1.0 \times 10^{-6}$. We impose depth variation of the friction model
+parameters via a \object{SimpleGridDB} spatial database in order to
+generate earthquake-like ruptures in the seismogenic zone with stable
+sliding above and below. For the initial tractions, we impose uniform
+values using a \object{SimpleDB} spatial database. We set the initial
+state for the friction model to be roughly consistent with steady
+state sliding at the reference coefficient of friction at the
+reference slip rate, and include it in the state variable in the
+output as a check.
+\begin{cfg}
+<h>[pylithapp.timedependent.interfaces.fault_slabtop]</h>
+# --- Skipping parameters discussed in previous examples. ---
+# Friction
+<f>friction</f> = pylith.friction.RateStateAgeing
+<p>friction.label</p> = Rate-state friction
+# Nondimensional slip rate below which friction depends linearly on slip rate.
+<p>friction.linear_slip_rate</p> = 1.0e-6
+
+# Set spatial database for distribution of friction parameters
+<f>friction.db_properties</f> = spatialdata.spatialdb.SimpleGridDB
+<p>friction.db_properties.label</p> = Slip weakening
+<p>friction.db_properties.filename</p> = fault_slabtop_ratestate.spatialdb
+
+# Set spatial database for the initial value of the state variable.
+<f>friction.db_initial_state</f> = spatialdata.spatialdb.UniformDB
+<p>friction.db_initial_state.label</p> = Rate State Ageing State
+<p>friction.db_initial_state.values</p> = [state-variable]
+# theta_ss = characteristic_slip_dist / reference_slip_rate
+<p>friction.db_initial_state.data</p> = [20.0*year]
+
+# Initial fault tractions
+<f>traction_perturbation</f> = pylith.faults.TractPerturbation
+<f>traction_perturbation.db_initial</f> = spatialdata.spatialdb.UniformDB
+<p>traction_perturbation.db_initial.label</p> = Initial fault tractions
+<p>traction_perturbation.db_initial.values</p> = [traction-shear, traction-normal]
+<p>traction_perturbation.db_initial.data</p> = [-12.0*MPa, -20.0*MPa]
+
+<h>[pylithapp.problem.interfaces.fault_slabtop.output]</h>
+<f>writer</f> = pylith.meshio.DataWriterHDF5
+<p>writer.filename</p> = output/step06-fault-slabtop.h5
+<p>vertex_info_fields</p> = [normal_dir, strike_dir]
+<p>vertex_data_fields</p> = [slip, slip_rate, traction, state_variable]
+\end{cfg}
+
+We run this example by typing
+\begin{shell}
+$$ pylith step06.cfg
+\end{shell}
+The problem will produce fourteen pairs of HDF5/Xdmf files. Figure
+\vref{fig:example:subduction:2d:step06}, which was created using the
+ParaView Python script \filename{viz/plot\_dispwarp.py}, displays the
+magnitude of the velocity field with the original configuration
+exaggerated by a factor of 4000. Steady slip is largely confined to
+the stable sliding regions with a sequence of ruptures in the
+seismogenic zone; note how the rate-state friction allows a more
+natural nucleation of the ruptures compared to the slip-weakening
+friction. Figure~\ref{fig:example:subduction:2d:step05:slip} shows the
+cumulative slip as a function of time and distance down dip from the
+trench.
+
+\begin{figure}
+  \includegraphics[width=4.5in]{examples/figs/subduction2d_step06_soln}
+  \caption{Solution for Step 6 at the end of the simulation. The
+    colors indicate the magnitude of the x-displacement component and
+    the deformation has been exaggerated by a factor of 10,000.}
+  \label{fig:example:subduction:2d:step06}
+\end{figure}
+
+\begin{figure}
+  \includegraphics[width=4.5in]{examples/figs/subduction2d_step06_slip}
+  \caption{Cumulative slip as a function of time and depth in Step
+    6. The red lines indicate slip every 10 time steps.}
+  \label{fig:example:subduction:2d:step06:slip}
+\end{figure}
+
+
+\subsection{Exercises}
+
+The list below includes some suggested modifications to these examples
+that will allow you to become more familiar with PyLith while
+examining some interesting physics.
 \begin{itemize}
 \item Change the resolution of the mesh by editing the \filename{mesh\_tri3.jou}
   journal file. Change the resolution and bias factor.
@@ -519,8 +646,14 @@ some interesting physics.
   and change data-dim to 1.
 \item Modify the CUBIT journal files to use quad4 cells rather than tri3
   cells. This requires using the pave mesh scheme.
-\item Adjust the friction model parameters and examine the effects on
-    the deformation and the convergence of the nonlinear solve.
+\item Modify Steps 5 and 6 to use a user-defined variable time
+  step. Experiment with longer time steps between earthquake ruptures
+  and smaller time steps around the time of the earthquake
+  ruptures. Can you develop a simple algorithm for choosing the time step?
+\item Adjust the parameters of the friction models and examine the
+  effects on the deformation and the convergence of the nonlinear
+  solve. In which cases do you need to adjust the time step to retain
+  reasonable convergence?
 \end{itemize}
 
 
