@@ -87,6 +87,7 @@ class ProgressMonitorTime(ProgressMonitor):
     uparser = pyre.units.parser()
     self.tSimScale = uparser.parse(self.tUnits)
 
+    self._createPath(self.filename)
     self.fout = open(self.filename, "w")
     self.fout.write("Timestamp                     Simulation t   % complete   Est. completion\n")
     self.fout.flush()
