@@ -1291,57 +1291,31 @@ contours of the applied slip at $t = 24 \mathrm{days}$.
 % ----------------------------------------------------------------------
 \subsection{Step 7: Inversion of Slow-Slip Event using 3-D Green's Functions}
 
-This example is essentially a three-dimensional analog of
-\vref{sec:example:greensfns2d}, and is a more realistic example of how
-PyLith can be used to perform geodetic inversions. We use the output
-of example step06 to create synthetic data. Once we have done this we
-generate Green's functions to represent the geodetic responses at a
-set of synthetic cGPS stations. Finally, we use the synthetic data and
-Green's functions to perform an inversion, using the same generalized
-inverse approach described in \vref{sec:example:greensfns2d:inversion}.
-
-We first generate the synthetic data by using the script
-\filename{make\_synthetic\_gpsdisp.py} in the top-level
-directory. This script reads the parameters in
-\filename{make\_synthetic\_gpsdisp.cfg} to generate synthetic data
-from the selected time step with a specified amount of noise. The
-point data output from example step06 is read, the specified time step
-is selected, and the specified amount of noise is added to the
-results. Run this script as:
-\begin{shell}
-$$ ./make_synthetic_gpsdisp.py
-\end{shell}
-This will create the following files:
+This example a three-dimensional analog of
+\vref{sec:example:greensfns2d} and is a more realistic example of how
+PyLith can be used to perform geodetic inversions. We divide
+generating Green's functions for slip impulses on the central rupture
+patch of the subduction interface two sub-problems:
 \begin{description}
-\item[\filename{cgps\_synthetic\_displacement.txt}] read by the
-  inversion script.
-\item[\filename{cgps\_synthetic\_displacement.vtk}] for visualization.
+ \item[step07a] Left-lateral slip component.
+ \item[step07b] Reverse slip component.
 \end{description}
+Although PyLith can generate the two components in one simulation, we
+often prefer to speed up the process by running simulations for each
+of the components at the same time using multiple processes on a cluster.
 
-After we create the synthetic data, we generate the Green's
-functions. We divide the Green's function generation into two sub-problems:
-\begin{itemize}
- \item step07a:  Generate Green's functions corresponding to
-   left-lateral slip on the subduction interface (slab top).
- \item step07b:  Generate Green's functions corresponding to
-   updip slip on the subduction interface (slab top).
-\end{itemize}
-Note that the Green's functions could all be generated at the same
-time; however, for real problems it is generally preferable to
-separate the problems to improve runtimes (e.g., both problems can be
-run simultaneously).
-
-To generate the Green's functions we change the problem type from the
-default \facility{timedependent} to \facility{greensfns}. We do this
-on the command line. When we change the problem type to
-\facility{greensfns}, PyLith automatically reads the file
-\filename{greensfns.cfg}. This file contains non-default settings that
-are common to both sub-problems. Note that since the problem type has
-been changed from the default \facility{timedependent} to
-\facility{greensfns}, the facility labels are changed. Also, since
-\facility{problem} is a facility of \facility{pylithapp}, we no longer
-need the \facility{pylithapp} prefix in this file. We first specify
-the fault information:
+To generate the Green's functions we change the problem from the
+default \object{TimeDependent} to \object{GreensFns}. We do this on
+the command line (as illustrated below). PyLith automatically reads
+the \filename{greensfns.cfg} parameter file. This file contains
+settings that are common to both sub-problems. Note that the settings
+in the \filename{greensfns.cfg} only apply to parameters associated
+with the \object{GreensFns} and its sub-components. For the Green's
+function problem, we must specify the fault interface and the id for
+the fault. We specify the amplitude of the impulses via a
+\object{UniformDB} spatial database, because we want impulses over the
+entire fault patch. We also request the amplitude of the impulses to
+be include in the fault info file.
 \begin{cfg}
 # Define the interfaces (slab) and provide a fault_id.
 <h>[greensfns]</h>
@@ -1352,8 +1326,8 @@ the fault information:
 <h>[greensfns.interfaces]</h>
 <f>slab</f> = pylith.faults.FaultCohesiveImpulses
 
-# Nodesets corresponding to the fault and its buried edge.
 <h>[greensfns.interfaces.slab]</h>
+# Nodesets corresponding to the fault and its buried edges.
 <p>label</p> = fault_slabtop_patch
 <p>edge</p> = fault_slabtop_patch_edge
 
@@ -1367,19 +1341,16 @@ the fault information:
 <p>db_impulse_amplitude.label</p> = Amplitude of fault slip impulses
 <p>db_impulse_amplitude.values</p> = [slip]
 <p>db_impulse_amplitude.data</p> = [1.0]
+
+# Add impulse amplitude to fault info output.
+<p>output.vertex_info_fields</p> = [normal_dir, strike_dir, dip_dir, impulse_amplitude]
+<f>output.writer</f> = pylith.meshio.DataWriterHDF5
 \end{cfg}
 
-In addition to defining the fault information, we also set some output
-information common to both sub-problems, writing additional info fields
-for fault output, and turning off material output. If we left material
-output turned on, we would end up with extremely large state variable
-output files:
+We do not make use of the state variable output for the impulse
+responses, so we turn off the data fields for all of the
+materials to eliminate these large data files.
 \begin{cfg}
-<h>[greensfns.interfaces.slab.output]</h>
-# Add impulse amplitude to fault info output.
-<p>vertex_info_fields</p> = [normal_dir, strike_dir, dip_dir, impulse_amplitude]
-<f>writer</f> = pylith.meshio.DataWriterHDF5
-
 # Turn off output of state variables for materials.
 <h>[greensfns.materials.slab.output]</h>
 <p>cell_data_fields</p> = []
@@ -1396,132 +1367,101 @@ output files:
 
 The \filename{step07a.cfg} and \filename{step07b.cfg} files are
 identical, except for the impulse type specification and file
-names. Here are the fault parameters in \filename{step07a.cfg}:
+names.
 \begin{cfg}
 <h>[pylithapp.problem.interfaces.slab]</h>
+# If we wanted to generate impulses for both the left-lateral and
+# reverse components in the same simulation, we would use:
+# impulse_dof = [0,1]
+#
 # Impulses for left-lateral slip.
-# Note that it is possible to apply both left-lateral and updip slip
-# (impulse_dof = [0,1]), but we separate the impulses into two problems.
 <p>impulse_dof</p> = [0]
 \end{cfg}
 
-In the output settings, we turn off output for the domain, provide the
-coordinate system for the fake cGPS stations, and provide filenames:
+In the output settings, we turn off writing the solution field for the
+domain:
 \begin{cfg}
-# Add cggs_sites to solution output.
-<h>[pylithapp.problem.formulation]</h>
-<f>output</f> = [domain, subdomain, cgps_sites]
-<f>output.cgps_sites</f> = pylith.meshio.OutputSolnPoints
-
-# Domain, subdomain, and cgs_sites
 <h>[pylithapp.problem.formulation.output.domain]</h>
 <p>writer.filename</p> = output/step07a-domain.h5
 # Turn off data fields.
 <p>vertex_data_fields</p> = []
-
-<h>[pylithapp.problem.formulation.output.subdomain]</h>
-<p>writer.filename</p> = output/step07a-groundsurf.h5
-# Turn off data fields.
-<p>vertex_data_fields</p> = []
-
-<h>[pylithapp.problem.formulation.output.cgps_sites]</h>
-<f>writer</f> = pylith.meshio.DataWriterHDF5
-<p>writer.filename</p> = output/step07a-cgps_sites.h5
-
-# Set coordinate system associated with file with cGPS sites
-<p>reader.filename</p> = cgps_sites.txt
-<f>coordsys</f> = spatialdata.geocoords.CSGeo
-<p>coordsys.space_dim</p> = 3
-<p>coordsys.datum_horiz</p> = WGS84
-<p>coordsys.datum_vert</p> = mean sea level
-
-# Fault
-<h>[pylithapp.problem.interfaces.slab.output]</h>
-<p>writer.filename</p> = output/step07a-fault-slab.h5
-
-# Materials
-<h>[pylithapp.problem.materials.slab.output]</h>
-<p>writer.filename</p> = output/step07a-slab.h5
-
-<h>[pylithapp.problem.materials.wedge.output]</h>
-<p>writer.filename</p> = output/step07a-wedge.h5
-
-<h>[pylithapp.problem.materials.crust.output]</h>
-<p>writer.filename</p> = output/step07a-crust.h5
-
-<h>[pylithapp.problem.materials.mantle.output]</h>
-<p>writer.filename</p> = output/step07a-mantle.h5
 \end{cfg}
 
 You can run the two sub-problems as follows:
 \begin{shell}
-$$ pylith --problem=pylith.problems.GreensFns step07a.cfg
-mat_elastic.cfg solver_fieldsplit.cfg
-$$ pylith --problem=pylith.problems.GreensFns step07b.cfg
-mat_elastic.cfg solver_fieldsplit.cfg
+$$ pylith --problem=pylith.problems.GreensFns step07a.cfg mat_elastic.cfg solver_fieldsplit.cfg
+$$ pylith --problem=pylith.problems.GreensFns step07b.cfg mat_elastic.cfg solver_fieldsplit.cfg
 \end{shell}
 
 \tip{To save time, run the two sub-problems simultaneously in separate
   shells (terminals). For a problem this size, this should work fine
-  on a laptop. For larger problems, this approach can still be
-  useful. For example, each sub-problem could be run simultaneously on
-  several nodes of a cluster.}
+  on a laptop. For larger problems, we would run the simulations via
+  separate jobs on a cluster with each job running on multiple
+  processes.}
 
-After generating the synthetic data and Green's functions, we then
-perform a simple inversion using the \filename{slip\_invert.py} script,
+% Post-process Step 6 output
+Before we can run the inversion, we post-process the output from Step
+6 to create synthetic data. We use the same generalized inverse
+approach described in \vref{sec:example:greensfns2d:inversion}. The
+Python script \filename{make\_synthetic\_gpsdisp.py} reads the
+parameters in \filename{make\_synthetic\_gpsdisp.cfg} and generates
+synthetic data from the selected time step with a specified amount of
+noise. Run this script by typing:
+\begin{shell}
+$$ ./make_synthetic_gpsdisp.py
+\end{shell}
+This will create the following files:
+\begin{description}
+\item[\filename{cgps\_synthetic\_displacement.txt}] read by the
+  inversion script.
+\item[\filename{cgps\_synthetic\_displacement.vtk}] for visualization.
+\end{description}
+
+% Inversion
+We perform a simple inversion using the \filename{slip\_invert.py} script,
 with parameters defined in \filename{slip\_invert.cfg}. This script
 performs a set of linear inversions, in a manner similar to the
-inversion in \vref{sec:example:greensfns2d:inversion}. This script is
-in the top-level \filename{subduction} directory. From there, run the
-script as follows:
+inversion in \vref{sec:example:greensfns2d:inversion}. 
 \begin{shell}
 $$ ./slip_invert.py
 \end{shell}
-This will create a number of files in the output directory. Note that
-the HDF5 files have an associated \filename{.xmf} file to use with
-ParaView:
+This will create a number of files in the output directory.
 \begin{description}
-\item[\filename{step07-inversion-slip.h5}] This file may
-  be used to visualize the predicted slip distributions for different
-  values of the penalty weight.
-\item[\filename{step07-inversion-displacement.h5}] This file may be used to
-  visualize the predicted cGPS displacements for each solution.
+\item[\filename{step07-inversion-slip.h5}] This HDF5/Xdmf pair of files
+  may be used to visualize the predicted slip distributions for
+  different values of the penalty weight.
+\item[\filename{step07-inversion-displacement.h5}] This HDF5/Xdmf pair
+  of files may be used to visualize the predicted cGPS displacements
+  for each solution.
 \item[\filename{step07-inversion-summary.txt}] This file provides a summary
   of the inversion results for each value of the penalty weight.
 \end{description}
 
-When performing an inversion such as this, one approach is to find the
-corner of the 'L-curve' when plotting the log of the weighted data
-residual vs. the log of the penalty residual. This is viewed as the
-point of diminishing returns for reducing the penalty
-weight. Further reductions provide little improvement to the
-weighted data residual, while providing a solution with less
-regularization. A Python script has been provided in the
-\filename{viz} subdirectory to plot this curve, assuming that the user
-has the numpy and matplotlib Python packages installed. From the
-\filename{viz} subdirectory, run this script as:
-\begin{shell}
-$$ ./plot_inversion_misfit.py
---summary=../output/step07-inversion-summary.txt
-\end{shell}
-This will produce a curve similar to that shown in Figure
-\vref{fig:example:subduction:3d:step07:curve}
+One approach to finding the optimal penalty weight is to find the
+corner of the 'L-curve' for the log of the weighted data residual
+versus the log of the penalty residual. This is viewed as the point of
+diminishing returns for reducing the penalty weight. Further
+reductions provide little improvement to the weighted data residual,
+while providing a solution with less regularization. Figure
+\vref{fig:example:subduction:3d:step07:optimal} shows that this
+procedure suggests an optimal penalty weight of 0.1 for our inversion.
+
 \begin{figure}
   \includegraphics[width=4.5in]{examples/figs/subduction3d_step07_inverse_curve}
-  \caption{Plot of the 'L-curve' for inversion in example step07. The
+  \caption{Plot of the 'L-curve' for inversion in Step 7. The
     'corner' of the L-curve would be about the third or fourth point
     from the right of the plot, representing a penalty weight of 0.5
     or 1.0 in our example. }
-  \label{fig:example:subduction:3d:step07:curve}
+  \label{fig:example:subduction:3d:step07:optimal}
 \end{figure}
 
-Once we have determined the optimal solution by analyzing the L-curve,
-we can then visualize the results using ParaView. Figure
-\vref{fig:example:subduction:3d:step07:invresults} shows the predicted
-slip, the observed and predicted displacement vectors, and the slip
-applied from example step06 for a penalty weight of 1.0. The data fit
-is very good, and the predicted slip distribution is very close to the
-applied slip, although the magnitude is slightly underestimated.
+Figure \vref{fig:example:subduction:3d:step07:soln} shows the
+predicted slip, the observed and predicted displacement vectors, and
+the slip applied from example step06 for a penalty weight of 1.0. The
+data fit is very good, and the predicted slip distribution is very
+close to the applied slip, although the magnitude is slightly
+underestimated.
+
 \begin{figure}
   \includegraphics[width=4.5in]{examples/figs/subduction3d_step07_inverse_soln}
   \caption{ParaView image of the inversion solution for a penalty
@@ -1529,7 +1469,7 @@ applied slip, although the magnitude is slightly underestimated.
     displacements are shown with magenta arrows. Color contours
     represent the predicted slip distribution and orange line contours
     show the applied slip from the forward problem.}
-  \label{fig:example:subduction:3d:step07:invresults}
+  \label{fig:example:subduction:3d:step07:soln}
 \end{figure}
 
 \subsubsection{Exercises}
