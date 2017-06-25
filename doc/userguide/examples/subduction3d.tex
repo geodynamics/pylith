@@ -7,7 +7,7 @@
 This suite of examples demonstrates use of a wide variety of features
 and the general workflow often used in research simulations. We base
 the model on the Cascadia subduction zone
-(Figure~\vref{fig:example:subduction:3d:cascadia}). These examples will
+(Figure~\ref{fig:example:subduction:3d:cascadia}). These examples will
 focus on modeling the deformation associated with the the subducting
 slab, including interseismic deformation with aseismic slip (creep)
 and viscoelastic relaxation, coseismic slip on the slab interface and
@@ -31,7 +31,7 @@ to mean sea level).
   \label{fig:example:subduction:3d:cascadia}
 \end{figure}
 
-Figure~\vref{fig:example:subduction:3d:concept} shows our conceptual
+Figure~\ref{fig:example:subduction:3d:concept} shows our conceptual
 model with a slab, mantle, continental crust, and accretionary
 wedge. We cut off the slab at a depth of 100 km. We use a transverse
 geographic projection coordinate system with Portland, Oregon, as the
@@ -45,7 +45,7 @@ mantle.
   \includegraphics[width=4.5in]{examples/figs/subduction3d_conceptualmodel}
   \caption{Conceptual model based on the Cascadia Subduction Zone. The
     model includes the subduction slab (white), the mantle (green),
-    continental crust (blue), and an acrretionary wedge (red).}
+    continental crust (blue), and an accretionary wedge (red).}
   \label{fig:example:subduction:3d:concept}
 \end{figure}
 
@@ -68,7 +68,7 @@ several subdirectories:
 % ----------------------------------------------------------------------
 \subsection{Features Illustrated}
 
-Table~\vref{tab:example:subduction:3d:features} lists the features
+Table~\ref{tab:example:subduction:3d:features} lists the features
 discussed in each of these 3-D subduction zone examples. With the
 intent of illustrating features used in research simulations, we use
 HDF5 output and, we make extensive use the most efficient
@@ -225,7 +225,7 @@ cell determines the type of basis functions we use in the
 discretization. This means we can specify this information in the
 \filename{pylithapp.cfg} file and avoid duplicating it in each
 simulation parameter file. To set up the materials, we first create an
-aray of materials that defines the name for each material component.
+array of materials that defines the name for each material component.
 For example, we create the array of four materials and then set the
 parameters for the slab:
 \begin{cfg}
@@ -283,7 +283,7 @@ runs because it does not scale well and uses a lot of memory.
 <h>[pylithapp.petsc]</h>
 <p>malloc_dump</p> = ; Dump information about PETSc memory not deallocated.
 
-# Use LU preconditioner (helful for learning and debugging, not production simulations)
+# Use LU preconditioner (helpful for learning and debugging, not production simulations)
 <p>pc_type</p> = lu
 
 # Convergence parameters.
@@ -304,7 +304,7 @@ runs because it does not scale well and uses a lot of memory.
 <p>snes_max_it</p> = 100 ; Maximum number of iterations in nonlinear solve
 <p>snes_monitor</p> = true ; Show nonlinear residual norm at each iteration
 <p>snes_linesearch_monitor</p> = true ; Show nonlinear solver line search information
-#snes_view = true ; Show nolinear solver parameters (commented out)
+#snes_view = true ; Show nonlinear solver parameters (commented out)
 <p>snes_converged_reason</p> = true ; Show reason nonlinear solve converged
 <p>snes_error_if_not_converged</p> = true ; Generate an error if nonlinear solve fails to converge
 
@@ -327,7 +327,7 @@ Lagrange multiplier portion.
 
 We start with a very simple example of axial compression in the
 east-west direction with purely elastic material properties, and no
-faults (Figure~\vref{fig:example:subduction:3d:step01:diagram}). We
+faults (Figure~\ref{fig:example:subduction:3d:step01:diagram}). We
 impose axial compression using Dirichlet boundary conditions on the
 east (+x) and west (-x) boundaries and confine the domain in the
 north-south direction via zero displacement Dirichlet boundary
@@ -429,7 +429,7 @@ The files include the solution over the domain and ground surface
 (two pairs of files), and physical properties, stress, and strain within
 each material (eight pairs of files). 
 
-Figure \vref{fig:example:subduction:3d:step01}, which was created
+Figure \ref{fig:example:subduction:3d:step01}, which was created
 using the ParaView Python script \filename{plot\_dispvec.py}, displays
 the magnitude of the displacement field arrows showing the direction
 and magnitude of the deformation. Material properties with a positive
@@ -506,7 +506,7 @@ $$ PATH_TO_PVPYTHON/pvpython ./viz/plot_dispvec.py
   algebraic multigrid preconditioner.
   \begin{itemize}
   \item Using the PETSc log summary to compare the runtime and
-    memory use between the original LU preconditiner and the ML
+    memory use between the original LU preconditioner and the ML
     algebraic multigrid preconditioner. Hint: The algebraic
     multigrid preconditioner is faster.
   \item Run the simulation again with the algebraic multigrid
@@ -568,7 +568,7 @@ We describe the properties of the linear, isotropic Maxwell
 viscoelastic constitutive model using viscosity in addition to the Vp,
 Vs, and density used to describe purely linear, isotropic elastic
 models. Rather than create a database with all four of these
-parameters, we leverage the \object{SimpldDB} spatial databases used
+parameters, we leverage the \object{SimpleDB} spatial databases used
 by \filename{mat\_elastic.cfg} for the elastic properties and simply
 create a single new spatial database with the depth-dependent
 viscosity for the slab and mantle. We use the \object{CompositeDB}
@@ -610,14 +610,14 @@ databases. For the slab we have:
 # Viscoelastic properties
 <p>values_B</p> = [viscosity]
 <f>db_B</f> = spatialdata.spatialdb.SimpleGridDB
-<p>db_B.label</p> = Linear Maxwell viscoelatic properties
+<p>db_B.label</p> = Linear Maxwell viscoelastic properties
 <p>db_B.filename</p> = spatialdb/mat_viscosity.spatialdb
 <p>db_B.query_type</p> = linear
 \end{cfg}
 
 In the simulation specific parameter file \filename{step02.cfg}, we
 specify the parameters for the quasistatic time stepping, the
-coesismic rupture, and the filenames for output. By default, PyLith
+coseismic rupture, and the filenames for output. By default, PyLith
 will use implicit time stepping with uniform time steps, so we need
 only specify the duration and time step size.
 \begin{cfg}
@@ -693,7 +693,7 @@ We run this example by typing
 $$ pylith step02.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg
 \end{shell}
 
-Figure \vref{fig:example:subduction:3d:step02}, which was created
+Figure \ref{fig:example:subduction:3d:step02}, which was created
 using the ParaView Python script \filename{plot\_dispwarp.py},
 displays the magnitude of the displacement field exaggerated by a
 factor of 10,000 at the final time step (200 yr).  The shallow
@@ -714,7 +714,7 @@ fault results in deformation that is localized over a small region.
 \item Change the slip from the subduction interface rupture patch to
   the splay fault rupture patch. Hint: Identify the nodesets for the
   splay fault patch.
-\item Create simulataneous rupture on the subduction interface rupture
+\item Create simultaneous rupture on the subduction interface rupture
   patch and the splay fault rupture patch.
 \item Prescribe coseismic slip on the central patch for splay fault
   and the subduction interface below the intersection with the splay fault.
@@ -792,7 +792,7 @@ slab has the opposite sense of motion as that on the top of the slab.
 <p>id</p> = 100 ; Must be different from ids used for materials
 <p>label</p> = fault_slabbot ; Nodeset for the entire fault surface
 <p>edge</p> = fault_slabbot_edge ; Nodeset for the buried edges
-# Give slight westward tilt to the up_dir to avoid ambigious
+# Give slight westward tilt to the up_dir to avoid ambiguous
 # directions for the shear components on the horizontal portions of the
 # fault.
 <p>up_dir</p> = [-0.1,0,0.9]
@@ -888,7 +888,7 @@ We run this example by typing
 $$ pylith step03.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg
 \end{shell}
 
-Figure \vref{fig:example:subduction:3d:step03}, which was created
+Figure \ref{fig:example:subduction:3d:step03}, which was created
 using the ParaView Python script \filename{plot\_dispwarp.py}, shows
 the deformation exaggerated by a factor of 5,000 at the final time
 step of t=200*yr. Notice that there are some local edge effects
@@ -924,7 +924,7 @@ coseismic slip in Step 2 to simulate two earthquake cycles. We also
 include an earthquake on the splay fault. This illustrates how to
 include multiple earthquake sources on a single fault. We use the same
 roller Dirichlet boundary conditions and combination of elastic and
-viscoelatic materials as we did in Step 3.
+viscoelastic materials as we did in Step 3.
 
 \begin{figure}[htbp]
   \includegraphics[scale=0.75]{examples/figs/subduction3d_step04_diagram}
@@ -970,7 +970,7 @@ sources, one for the creep and one for each of the earthquakes. We
 want the earthquake to be imposed at specific times, so we set their
 origin time equal to the desire rupture time (100 years and 200 years)
 minus a value much smaller than the time step, so that roundoff errors
-do not result in the ruptures occuring one time step later than
+do not result in the ruptures occurring one time step later than
 intended.  We use the same settings as we did in Step 3 for the creep
 earthquake source. For the coseismic slip, we use a
 \object{SimpleGridDB} to impose a depth-dependent slip distribution
@@ -1065,7 +1065,7 @@ We run this example by typing
 $$ pylith step04.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg
 \end{shell}
 
-Figure \vref{fig:example:subduction:3d:step04}, which was created
+Figure \ref{fig:example:subduction:3d:step04}, which was created
 using the ParaView Python script \filename{plot\_dispwarp.py}, shows
 the deformation exaggerated by a factor of 5,000 at the final time
 step of t=300*yr. Compared to the solution in Step 3, we see the
@@ -1255,7 +1255,7 @@ HDF5 file that was not present in previous examples is
 \filename{step06-cgps\_sites.h5}, which contains the displacements at
 the fake cGPS sites.
 
-Figure \vref{fig:example:subduction:3d:step06}, which was created
+Figure \ref{fig:example:subduction:3d:step06}, which was created
 using ParaView, shows the surface vertical displacement along with
 horizontal displacement vectors at the cGPS sites, superimposed on
 contours of the applied slip at $t = 24 \mathrm{days}$.
@@ -1297,8 +1297,8 @@ PyLith can be used to perform geodetic inversions. We divide
 generating Green's functions for slip impulses on the central rupture
 patch of the subduction interface two sub-problems:
 \begin{description}
- \item[step07a] Left-lateral slip component.
- \item[step07b] Reverse slip component.
+ \item[Step 7a] Left-lateral slip component.
+ \item[Step 7b] Reverse slip component.
 \end{description}
 Although PyLith can generate the two components in one simulation, we
 often prefer to speed up the process by running simulations for each
@@ -1443,7 +1443,7 @@ versus the log of the penalty residual. This is viewed as the point of
 diminishing returns for reducing the penalty weight. Further
 reductions provide little improvement to the weighted data residual,
 while providing a solution with less regularization. Figure
-\vref{fig:example:subduction:3d:step07:optimal} shows that this
+\ref{fig:example:subduction:3d:step07:optimal} shows that this
 procedure suggests an optimal penalty weight of 0.1 for our inversion.
 
 \begin{figure}
@@ -1455,7 +1455,7 @@ procedure suggests an optimal penalty weight of 0.1 for our inversion.
   \label{fig:example:subduction:3d:step07:optimal}
 \end{figure}
 
-Figure \vref{fig:example:subduction:3d:step07:soln} shows the
+Figure \ref{fig:example:subduction:3d:step07:soln} shows the
 predicted slip, the observed and predicted displacement vectors, and
 the slip applied from example step06 for a penalty weight of 1.0. The
 data fit is very good, and the predicted slip distribution is very
@@ -1512,33 +1512,37 @@ underestimated.
 % ----------------------------------------------------------------------
 \subsection{Step 8: Stress Field Due to Gravitational Body Forces}
 
-This example demonstrates the use of gravitational body forces in
-PyLith simulations, as well as the use of initial stresses to balance
-the body forces. We also demonstrate what happens when the initial
-stresses are not in balance with the gravitational stresses, and show
-how viscoelastic problems with gravitational stresses will in general
-not reach a steady-state solution. We do not include faults in
-this example. The example is divided into three sub-problems:
-\begin{itemize}
-\item Step08a: Gravitational body forces with 3-D density variations
+This example demonstrates the use of gravitational body forces as well
+as the use of initial stresses to balance the body forces. This
+involves enabling gravity within our domain with Dirichlet roller
+boundary conditions on the lateral and bottom boundaries; we do not
+include faults in this example.  We also demonstrate what happens when
+the initial stresses are not in balance with the gravitational
+stresses, and show how viscoelastic problems with gravitational
+stresses will in general not reach a steady-state solution. The
+example is divided into three sub-problems:
+\begin{description}
+\item[Step 8a] Gravitational body forces with 3-D density variations
   in elastic materials and initial stresses for a uniform density.
-\item Step08b: Gravitational body forces with 3-D density variations
-  in elastic materials and initial stresses from Step08a (initial
-  stresses satisfy equilibrium, so there is no deformation).
-\item Step08c: Gravitational body forces with 3-D density variations
+\item[Step 8b] Gravitational body forces with 3-D density variations
+  in elastic materials and initial stresses from Step 8a (initial
+  stresses satisfy equilibrium, so there is almost no deformation).
+\item[Step 8c] Gravitational body forces with 3-D density variations
   in elastic and viscoelastic materials and initial stresses from
-  Step08a plus finite strain formulation (does not reach a steady-state
+  Step 8a plus finite strain formulation (does not reach a steady-state
   solution).
-\end{itemize}
+\end{description}
 
-For the first sub-problem (step08a), we apply gravitational stresses
-and attempt to balance these with analytically computed stresses
-consistent with the density of the mantle. Since the actual densities
-are not constant, the forces are out of balance and we end up with
-significant deformation. We first apply gravity and set the simulation
-time to zero (static problem):
+\subsubsection{Step 08a}
+
+For Step 8a we apply gravitational stresses and attempt to balance
+these with analytically computed stresses consistent with the density
+of the mantle. Since the actual density is not uniform, the stresses
+are out of balance and we end up with some deformation. In
+\filename{step08a.cfg} we turn on gravity and set the total time to
+zero (there is no time dependence in this model).
 \begin{cfg}
-<h>[pylithapp.timedependent]</h>
+<h>[pylithapp.problem]</h>
 # Set gravity field (default is None).
 <f>gravity_field</f> = spatialdata.spatialdb.GravityField
 
@@ -1546,11 +1550,14 @@ time to zero (static problem):
 # Define the total time for the simulation.
 <p>total_time</p> = 0.0*year
 \end{cfg}
-Then, for each material, we use the same spatial database for the
-initial stresses. We use linear interpolation and in the database the
-initial stress is simply computed as $\rho_mgh$, where $\rho_m$ is
-the density of the mantle material and $h$ is the depth below the
-ground surface:
+
+Our initial stress field corresponds to
+$\sigma_\mathit{xx} = \sigma_\mathit{yy} = \sigma_\mathit{zz} =
+\rho_\mathit{mantle} gz$ for all four materials, where $\rho_\mathit{mantle}$ is the density
+of the mantle, $g$ is the acceleration due to gravity, and $z$ is
+elevation. With only two control points necessary to describe this linear
+variation, we use the same \object{SimpleDB} spatial database for all
+four materials.
 \begin{cfg}
 # We specify initial stresses for each material via a SimpleDB and linear interpolation.
 <h>[pylithapp.problem.materials.slab]</h>
@@ -1578,63 +1585,62 @@ ground surface:
 <p>db_initial_stress.query_type</p> = linear
 \end{cfg}
 
-The output parameters are simply the output filenames, since all the
-other parameters are the defaults in \filename{pylithapp.cfg}. We use
-the algebraic multigrid solver, which is appropriate for problems with
-no fault. We run the sub-problem by doing:
+We run the sub-problem by typing:
 \begin{shell}
 $$ pylith step08a.cfg mat_elastic.cfg solver_algebraicmultigrid.cfg
 \end{shell}
 
 When the problem has run, we see deformation that is consistent with
-the mismatched densities. Figure
-\vref{fig:example:subduction:3d:step08a} demonstrates the deformed
-mesh visualized by running the following command from the
-\filename{subduction} directory:
-\begin{shell}
-$$ ./viz/plot_dispwarp.py --sim=step08a --exaggeration=500.0
---component=Z --screenshot=subduction3d_step08a_soln.png
-\end{shell}
+the mismatched densities. The slab subsides while the crust undergoes
+uplift due to the differences in density relative to the mantle. Figure
+\ref{fig:example:subduction:3d:step08a} shows the deformed mesh
+visualized with the \filename{plot\_dispwarp.py} ParaView Python
+script.
+
 \begin{figure}
   \includegraphics[width=4.5in]{examples/figs/subduction3d_step08a_soln}
-  \caption{Image generated by running the \filename{plot\_dispwarp.py}
-    script for sub-problem step08a. The crustal material to the
+  \caption{Solution for Step 8a. The deformation has been exaggerated
+    by a factor of 500 and the colors highlight the vertical
+    displacement component. The crustal material in the
     east is less dense than the assumed mantle material for initial
-    stresses, while the slab material to the west is more dense. The
-    result is uplift to the east and downward movement to the west.}
+    stresses, while the slab material in the west is more dense. The
+    result is uplift in the east and subsidence in the west.}
   \label{fig:example:subduction:3d:step08a}
 \end{figure}
 
-Sub-problem step08b is similar to step08a, but rather than
-analytically computing the initial stresses, we use the stresses
-computed in sub-problem step08a. Since the initial stresses are now
-computed using the correct densities, the stresses balance and we end
-up with no elastic deformation. To generate the initial stress spatial
-database, we read the state variables output files from  sub-problem
-step08a. The script \filename{generate\_initial\_stress.py}, located in
-the \filename{spatialdb} directory, will read these files and generate
-the necessary spatial database files. Note that this script is another
-instance of using the Python interface to the spatialdata package. The
-script allows arguments, but the default arguments are appropriate for
-this example. Once you are in the \filename{spatialdb} directory, run
-the script as follows:
+\subsubsection{Step 8b}
+
+Step 8b is similar to Step 8a, but we use the stresses output from Step 8a as the
+initial stress rather than analytically computing
+initial stresses. Because the initial stresses are consistent with the
+variations in density across the materials, the initial stresses will
+satisfy equilibrium and there will be essentially no deformation; the
+initial stresses do not perfectly balance because in Step 8a we
+average the values over the quadrature points for the output. We use
+the Python script \filename{generate\_initial\_stress.py}, located in the
+\filename{spatialdb} directory, to
+postprocess the output from Step 8a and generate the initial stress
+spatial database. Note that this script uses the Python interface to
+the spatialdata package to write the spatial database; this is much
+easier than writing a script to format the data to conform to the
+format of the spatial database. The spatial database will contain the
+stresses at each cell of our unstructured mesh, so the points are not
+on a logical grid, and we must use a \object{SimpleDB}.
 \begin{shell}
+# From the examples/3d/subduction directory, change to the spatialdb subdirectory.
+$$ cd spatialdb
 $$ ./generate_initial_stress.py
 \end{shell}
 This will create spatial databases containing initial stresses for
 each of the four materials.
 
-Once we have generated the initial stresses, we can perform the
-simulation. Other than filenames, the only difference between
-\filename{.cfg} files \filename{step08a.cfg} and
-\filename{step08b.cfg} is in the specification of the initial
-stresses. There is a separate spatial database for each material, and
-since there is an initial stress for each cell centroid, we retain the
-default nearest neighbor interpolation method:
+In the \filename{step08b.cfg} file we specify the \object{SimpleDB}
+spatial database for each material (they are now material
+specific). With points at each cell centroid, we use nearest
+interpolation (default) rather than linear interpolation; this is a
+small approximation but it is much faster than using linear
+interpolation in this unstructured set of points.
 \begin{cfg}
-# We specify initial stresses for each material via a SimpleDB.
-# Since there is a point in the database corresponding to each cell
-# center, we keep the default query_type of 'nearest'.
 <h>[pylithapp.problem.materials.slab]</h>
 <f>db_initial_stress</f> = spatialdata.spatialdb.SimpleDB
 <p>db_initial_stress.label</p> = Initial stress in the slab
@@ -1658,39 +1664,34 @@ spatialdb/mat_initial_stress_grav-crust.spatialdb
 \end{cfg}
 
 When we compare the resulting elastic displacements with those of
-example step08a, we find that there is essentially no displacement,
-as seen in Figure \vref{fig:example:subduction:3d:step08b}. This
-figure was also generated with the \filename{plot\_dispwarp.py}
-script, using the following command:
-\begin{shell}
-$$ ./viz/plot_dispwarp.py --sim=step08b --exaggeration=1000.0
---component=Z --screenshot=subduction3d_step08b_soln.png
-\end{shell}
+Step 8a, we find that there is essentially no displacement,
+as seen in Figure \ref{fig:example:subduction:3d:step08b}.
+
 \begin{figure}
   \includegraphics[width=4.5in]{examples/figs/subduction3d_step08b_soln}
-  \caption{Image generated by running the \filename{plot\_dispwarp.py}
-    script for sub-problem step08b. In this case the densities used to
-    compute the initial stresses are consistent with the actual
-    densities, and there is no elastic deformation.}
+  \caption{Solution for Step 8b. In this case the initial stresses
+    satisfy the governing equation, so there is no deformation.}
   \label{fig:example:subduction:3d:step08b}
 \end{figure}
 
-The final sub-problem is step08c. This problem is very similar to
-step08b, but we now use viscoelastic materials, and we use the finite
-strain formulation (\object{ImplicitLgDeform}). With this formulation,
-the deformed configuration is taken into account, whereas in the
-default \object{Implicit} infinitesimal strain formulation,
-deformation is not taken into account when computing stresses. The
-finite strain formulation should generally be used for viscoelastic
-problems with gravity where you need accurate estimates of the
-vertical deformation.
+\subsubsection{Step 8c}
 
-As we saw in step08b, it is possible to balance the stresses for an
-elastic problem. Once we include viscoelasticity, however, this
-becomes much more difficult. That is what we demonstrate in this
-example. Although the stresses are in equilibrium for the elastic
-solution, there are still deviatoric stresses remaining, which will
-drive viscous flow. Thus, a steady-state solution is never achieved.
+In this example we use linear Maxwell viscoelastic models in place of
+the elastic models for the slab and mantle. We also use the small
+strain formulation (\object{ImplicitLgDeform}) so that the deformed
+configuration is taken into account; Steps 8a and 8b use the default
+\object{Implicit} infinitesimal strain formulation. The small strain
+formulation should generally be used for viscoelastic problems with
+gravity where you need accurate estimates of the vertical deformation.
+
+\warning{The shear stress variations in the initial stresses will
+  cause the viscoelastic materials to drive viscous flow, resulting in
+  time-dependent deformation. As long as the elastic materials impose
+  deviatoric stresses in the viscoelastic materials through continuity
+  of strain, the viscoelastic materials will continue to flow. {\bf As
+    a result, in this case and many other simulations with
+    viscoelastic materials and gravitational body forces, it is
+    difficult to find a steady state solution.}}
 
 The only difference between the parameters in \filename{step08b.cfg}
 and \filename{step08c.cfg} is in the formulation setting and the
@@ -1710,18 +1711,16 @@ simulation time:
 <p>dt</p> = 10.0*year
 \end{cfg}
 We use the material settings in \filename{mat\_viscoelastic.cfg}. We
-can run the simulation and visualize the vertical deformation for the
-last time step by doing:
+can run the simulation by typing:
 \begin{shell}
 $$ pylith step08c.cfg mat_viscoelastic.cfg solver_algebraicmultigrid.cfg
-$$ ./viz/plot_dispwarp.py --sim=step08c --exaggeration=300.0
---component=Z --screenshot=subduction3d_step08c_soln.png
 \end{shell}
 The resulting deformation is shown in Figure
-\vref{fig:example:subduction:3d:step08c}. As a result of viscous flow,
-the vertical deformation is even larger than for sub-problem
-step08a. If we were to run the simulation for a longer time period,
-the amount of vertical deformation would continue to increase.
+\ref{fig:example:subduction:3d:step08c}. As a result of viscous flow,
+the vertical deformation is even larger than that for Step 8a. If we
+were to run the simulation for a longer time period, the amount of
+vertical deformation would continue to increase.
+
 \begin{figure}
   \includegraphics[width=4.5in]{examples/figs/subduction3d_step08c_soln}
   \caption{Image generated by running the \filename{plot\_dispwarp.py}
