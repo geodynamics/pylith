@@ -434,7 +434,7 @@ interpolation compared to the \object{SimpleDB} implementation.
 We impose initial tractions on the fault in a similar fashion as we
 did in Step 4. We reduce the initial shear tractions slightly in the
 seismogenic zone, consistent with a stress drop in the penultimate
-earthquake followed by loading during the interseimic period.
+earthquake followed by loading during the interseismic period.
 \begin{cfg}
 <h>[pylithapp.timedependent.interfaces.fault_slabtop]</h>
 # --- Skipping general information discussed previously ---
@@ -464,7 +464,7 @@ suppressing fault opening to $1.0 \times 10^{-8}$. We want tolerances
 for the linear solve to be smaller than these values, so we use an
 absolute tolerance of $1.0 \times 10^{-9}$ and a very small relative
 tolerance to force the residual below the absolute tolerance. We
-impose an absolute tolerance for the nonlinear solver to be geater
+impose an absolute tolerance for the nonlinear solver to be greater
 than our zero tolerances and also force the residual to match the
 absolute tolerance level by using a very small relative
 tolerances. Finally, we set the parameters for the solver used to
@@ -545,7 +545,7 @@ coarse resolution mesh.
 
 The specification of the parameters for the rate- and state-friction
 model follow a similar pattern to the ones for the slip-weakening
-friction in Step 5. Our regulatization of the coefficient of friction
+friction in Step 5. Our regularization of the coefficient of friction
 for near zero slip rate values involves a transition to a linear
 dependence on slip rate; in this example we specify that this
 transition should occur at a nondimensional slip rate of
