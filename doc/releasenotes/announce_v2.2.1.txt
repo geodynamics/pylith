@@ -1,0 +1,44 @@
+Greetings,
+
+I am pleased to announce the release of PyLith 2.2.1, a finite-element
+code designed to solve dynamic elastic problems and quasi-static
+viscoelastic problems in tectonic deformation.
+
+This release provides a few new examples and bugfixes.
+
+You can download the source code and binaries from
+
+    http://geodynamics.org/cig/software/pylith
+
+Detailed installation instructions for the binary packages are in the
+User Manual with detailed building instructions for a few platforms in
+the INSTALL file bundled with the PyLith Installer utility. We also
+offer a Docker image
+(https://wiki.geodynamics.org/software:pylith:docker) for running
+PyLith within a portable, virtual Linux environment.
+
+======================================================================
+MIGRATING FROM VERSION 2.1 TO 2.2
+======================================================================
+
+No changes are needed to parameter or other input files. The default
+format for pylithinfo output is now JSON.
+
+======================================================================
+RELEASE NOTES
+======================================================================
+
+* Added new examples.
+
+    - examples/3d/subduction: New suite of examples for a 3-D
+      subduction zone.
+
+    - examples/2d/subduction: Added spontaneous rupture examples for
+      slip-weakening and rate- and state-friction.
+
+* Fixed bug in generating Xdmf files for 2-D vector output.
+
+* Updated PETSc to v3.7.6.
+
+See CHANGES in the top-level source directory for a list of changes
+for each prior release.

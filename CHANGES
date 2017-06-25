@@ -9,6 +9,22 @@ No changes are needed to parameter or other input files. The default
 format for pylithinfo output is now JSON.
 
 ----------------------------------------------------------------------
+Version 2.2.1
+----------------------------------------------------------------------
+
+* Added new examples.
+
+    - examples/3d/subduction: New suite of examples for a 3-D
+      subduction zone.
+
+    - examples/2d/subduction: Added spontaneous rupture examples for
+      slip-weakening and rate- and state-friction.
+
+* Fixed bug in generating Xdmf files for 2-D vector output.
+
+* Updated PETSc to v3.7.6.
+
+----------------------------------------------------------------------
 Version 2.2.0
 ----------------------------------------------------------------------
 
