@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 # -*- Python -*- (syntax highlighting)
 #
 # ----------------------------------------------------------------------
@@ -17,8 +17,7 @@
 # ----------------------------------------------------------------------
 #
 # Simple inversion script that uses PyLith-generated Green's functions.
-# NOTE:  This script assumes that you have PETSc installed, and that you
-# have PETSC_DIR set as an environmental variable.
+#
 # This script is used as part of example step07. To perform the inversion you
 # must have already:
 # 1.  Run example step06.
@@ -166,8 +165,7 @@ class SlipInvert(Application):
     self.llComp = math.cos(self.rake.value)
     self.udComp = math.sin(self.rake.value)
 
-    petscDir = os.environ['PETSC_DIR']
-    self.genXdmfCmd = petscDir + "/bin/petsc_gen_xdmf.py "
+    self.genXdmfCmd = "pylith_genxdmf"
 
     return
 
