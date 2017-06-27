@@ -30,9 +30,8 @@ SimpleGridDB {
 // Columns are
 // (1) x coordinate (km)
 // (2) y coordinate (km)
-// (3) z coordinate (km)
-// (4) shear traction (MPa)
-// (5) normal traction (MPa)
+// (3) shear traction (MPa)
+// (4) normal traction (MPa)
 0.0    99.0   -11.9  -20.0
 0.0    -5.0   -11.9  -20.0
 0.0   -15.0   -11.0  -20.0

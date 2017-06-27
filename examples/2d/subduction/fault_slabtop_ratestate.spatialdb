@@ -30,11 +30,12 @@ SimpleGridDB {
 // Columns are
 // (1) x coordinate (km)
 // (2) y coordinate (km)
-// (3) z coordinate (km)
-// (4) static-coefficient
-// (5) dynamic-coefficient
-// (6) slip-weakening-parameter (m)
-// (7) cohesion (Pa)
+// (3) reference-friction-coefficient
+// (4) reference-slip-rate (cm/yr)
+// (5) characteristic-slip-distance (m)
+// (6) constitutive-parameter-a
+// (7) constitutive-parameter-b
+// (8) cohesion (Pa)
 0.0    99.0   0.6  1.0  0.2  0.015  0.010  0.0
 0.0    -5.0   0.6  1.0  0.2  0.015  0.010  0.0
 0.0   -15.0   0.6  1.0  0.2  0.015  0.017  0.0
