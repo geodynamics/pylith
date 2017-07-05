@@ -20,24 +20,30 @@
 
 # User-specified parameters.
 #
-# These are used if running from within the ParaView GUI via the
-# Python shell or as defaults if running outside the ParaView GUI via
-# pvpython.
+# Default values for parameters. To use different values, overwrite
+# them in the ParaView Python shell or on the command line. For
+# example, set OUTPUT_DIR to the absolute path if not starting
+# ParaView from the terminal shell where you ran PyLith:
+#
+# import os
+# OUTPUT_DIR = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "2d", "subduction", "output")
 
-EXODUS_FILE = "mesh/mesh_tet.exo"
+DEFAULTS = {
+    "EXODUS_FILE": "mesh/mesh_tet.exo",
+    }
 
 # ----------------------------------------------------------------------
 from paraview.simple import *
 import os
 
-def visualize(filename):
+def visualize(parameters):
 
     # Disable automatic camera reset on "Show"
     paraview.simple._DisableFirstRenderCameraReset()
 
-    if not os.path.isfile(filename):
-        raise IOError("Exodus file '%s' does not exist." % filename)
-    dataDomain = ExodusIIReader(FileName=[filename])
+    if not os.path.isfile(parameters.exodus_file):
+        raise IOError("Exodus file '%s' does not exist." % parameters.exodus_file)
+    dataDomain = ExodusIIReader(FileName=[parameters.exodus_file])
     RenameSource("domain", dataDomain)
 
     view = GetActiveViewOrCreate('RenderView')
@@ -63,16 +69,29 @@ def visualize(filename):
     view.ResetCamera()
     Render()
 
+class Parameters(object):
+    keys = ("EXODUS_FILE",)
+    
+    def __init__(self):
+        globalVars = globals()
+        for key in Parameters.keys:
+            if key in globalVars.keys():
+                setattr(self, key.lower(), globalVars[key])
+            else:
+                setattr(self, key.lower(), DEFAULTS[key])
+        return
+                
+    
 # ----------------------------------------------------------------------
 if __name__ == "__main__":
     # Running from outside the ParaView GUI via pvpython
     
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--filename", action="store", dest="filename", default=EXODUS_FILE)
+    parser.add_argument("--filename", action="store", dest="exodus_file", default=DEFAULTS["EXODUS_FILE"])
     args = parser.parse_args()
 
-    visualize(args.filename)
+    visualize(args)
 
     view = GetRenderView()
     #view.CameraPosition = [-80160, -1130898, 133977]
@@ -87,7 +106,7 @@ if __name__ == "__main__":
 else:
     # Running inside the ParaView GUI
 
-    visualize(EXODUS_FILE)
+    visualize(Parameters())
 
 
 # End of file

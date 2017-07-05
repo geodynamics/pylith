@@ -20,22 +20,26 @@
 
 # User-specified parameters.
 #
-# These are used if running from within the ParaView GUI via the
-# Python shell or as defaults if running outside the ParaView GUI via
-# pvpython.
+# Default values for parameters. To use different values, overwrite
+# them in the ParaView Python shell or on the command line. For
+# example, set OUTPUT_DIR to the absolute path if not starting
+# ParaView from the terminal shell where you ran PyLith:
+#
+# import os
+# OUTPUT_DIR = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "2d", "subduction", "output")
 
-# Root name for simulation.
-SIM_NAME = "step01"
-
-# Material property and materials to plot.
-INFO_FIELD = "mu"
-MATERIALS = ["crust", "mantle", "wedge", "slab"]
+DEFAULTS = {
+    "OUTPUT_DIR": "output",
+    "SIM": "step02",
+    "FIELD": "mu",
+    "MATERIALS": ["crust", "mantle", "wedge", "slab"],
+    }
 
 # ----------------------------------------------------------------------
 from paraview.simple import *
 import os
 
-def visualize(sim, field, materials):
+def visualize(parameters):
 
     # Disable automatic camera reset on "Show"
     paraview.simple._DisableFirstRenderCameraReset()
@@ -43,12 +47,12 @@ def visualize(sim, field, materials):
 
     dataAll = []
     # Read data
-    for material in materials:
-        filename = "output/%s-%s_info.xmf" % (sim, material)
+    for material in parameters.materials:
+        filename = os.path.join(parameters.output_dir, "%s-%s_info.xmf" % (parameters.sim, material))
         if not os.path.isfile(filename):
             raise IOError("File '%s' does not exist." % filename)
         dataMaterial = XDMFReader(FileNames=[filename])
-        RenameSource("%s-%s" % (sim, material), dataMaterial)
+        RenameSource("%s-%s" % (parameters.sim, material), dataMaterial)
         dataAll.append(dataMaterial)
     groupMaterials = GroupDatasets(Input=dataAll)
 
@@ -56,13 +60,13 @@ def visualize(sim, field, materials):
 
     # Show domain, colored by magnitude of displacement vector.
     materialDisplay = Show(groupMaterials, view)
-    ColorBy(materialDisplay, ("CELLS", field))
+    ColorBy(materialDisplay, ("CELLS", parameters.field))
     materialDisplay.RescaleTransferFunctionToDataRange(True)
     materialDisplay.SetScalarBarVisibility(view, True)
     materialDisplay.SetRepresentationType("Surface With Edges")
 
     # Rescale color and/or opacity maps used to exactly fit the current data range
-    materialLUT = GetColorTransferFunction(INFO_FIELD)
+    materialLUT = GetColorTransferFunction(parameters.field)
     materialDisplay.RescaleTransferFunctionToDataRange(False, False)
     # Update scalar bar component title.
     UpdateScalarBarsComponentTitle(materialLUT, materialDisplay)
@@ -70,29 +74,43 @@ def visualize(sim, field, materials):
     view.ResetCamera()
     Render()
 
+class Parameters(object):
+    keys = ("OUTPUT_DIR", "SIM", "FIELD", "MATERIALS")
+    
+    def __init__(self):
+        globalVars = globals()
+        for key in Parameters.keys:
+            if key in globalVars.keys():
+                setattr(self, key.lower(), globalVars[key])
+            else:
+                setattr(self, key.lower(), DEFAULTS[key])
+        return
+                
+    
 # ----------------------------------------------------------------------
 if __name__ == "__main__":
     # Running from outside the ParaView GUI via pvpython
     
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--sim", action="store", dest="sim", default=SIM_NAME)
-    parser.add_argument("--field", action="store", dest="field", default=INFO_FIELD)
+    parser.add_argument("--output-dir", action="store", dest="output_dir", default=DEFAULTS["OUTPUT_DIR"])
+    parser.add_argument("--sim", action="store", dest="sim", default=DEFAULTS["SIM"])
+    parser.add_argument("--field", action="store", dest="field", default=DEFAULTS["FIELD"])
     parser.add_argument("--materials", action="store", dest="materials")
     args = parser.parse_args()
 
     if args.materials:
-        materials = args.materials.split(",")
+        args.materials = args.materials.split(",")
     else:
-        materials = MATERIALS
+        args.materials = DEFAULTS["MATERIALS"]
     
-    visualize(args.sim, args.field, materials)
+    visualize(args)
     Interact()
 
 else:
     # Running inside the ParaView GUI
 
-    visualize(SIM_NAME, INFO_FIELD, MATERIALS)
+    visualize(Parameters())
 
 
 # End of file

@@ -23,34 +23,39 @@
 
 # User-specified parameters.
 #
-# These are used if running from within the ParaView GUI via the
-# Python shell or as defaults if running outside the ParaView GUI via
-# pvpython.
+# Default values for parameters. To use different values, overwrite
+# them in the ParaView Python shell or on the command line. For
+# example, set OUTPUT_DIR to the absolute path if not starting
+# ParaView from the terminal shell where you ran PyLith:
+#
+# import os
+# OUTPUT_DIR = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "2d", "subduction", "output")
 
-# Root name for simulation.
-SIM_NAME = "step02"
-
-# Names of faults for output files.
-FAULTS = ["fault-slab"]
+DEFAULTS = {
+    "OUTPUT_DIR": "output",
+    "SIM": "step02",
+    "FAULTS": ["fault-slab"],
+    "TIMESTEP": 0,
+    }
 
 # ----------------------------------------------------------------------
 from paraview.simple import *
 import os
 
-def visualize(sim, faults, showFinalTimeStep=False):
+def visualize(parameters):
     # Disable automatic camera reset on "Show"
     paraview.simple._DisableFirstRenderCameraReset()
 
     # Read domain data
-    filename = "output/%s-domain.xmf" % sim
+    filename = os.path.join(parameters.output_dir, "%s-domain.xmf" % parameters.sim)
     if not os.path.isfile(filename):
         raise IOError("File '%s' does not exist." % filename)
     dataDomain = XDMFReader(FileNames=[filename])
-    RenameSource("%s-domain" % sim, dataDomain)
+    RenameSource("%s-domain" % parameters.sim, dataDomain)
 
     scene = GetAnimationScene()
     scene.UpdateAnimationUsingDataTimeSteps()
-    if showFinalTimeStep:
+    if parameters.timestep == -1:
         scene.GoToLast()
     view = GetActiveViewOrCreate('RenderView')
 
@@ -61,12 +66,12 @@ def visualize(sim, faults, showFinalTimeStep=False):
 
     # Read fault data
     dataFaults = []
-    for fault in faults:
-        filename = "output/%s-%s.xmf" % (sim, fault)
+    for fault in parameters.faults:
+        filename = os.path.join(parameters.output_dir, "%s-%s.xmf" % (parameters.sim, fault))
         if not os.path.isfile(filename):
             raise IOError("File '%s' does not exist." % filename)
         data = XDMFReader(FileNames=[filename])
-        RenameSource("%s-%s" % (sim, fault), data)
+        RenameSource("%s-%s" % (parameters.sim, fault), data)
         dataFaults.append(data)
 
     groupFaults = GroupDatasets(Input=dataFaults)
@@ -96,22 +101,37 @@ def visualize(sim, faults, showFinalTimeStep=False):
     view.Update()
     Render()
 
+class Parameters(object):
+    keys = ("OUTPUT_DIR", "SIM", "FAULTS", "TIMESTEP")
+    
+    def __init__(self):
+        globalVars = globals()
+        for key in Parameters.keys:
+            if key in globalVars.keys():
+                setattr(self, key.lower(), globalVars[key])
+            else:
+                setattr(self, key.lower(), DEFAULTS[key])
+        return
+                
+    
 # ----------------------------------------------------------------------
 if __name__ == "__main__":
     # Running from outside the ParaView GUI via pvpython
     
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--sim", action="store", dest="sim", default=SIM_NAME)
+    parser.add_argument("--output-dir", action="store", dest="output_dir", default=DEFAULTS["OUTPUT_DIR"])
+    parser.add_argument("--sim", action="store", dest="sim", default=DEFAULTS["SIM"])
     parser.add_argument("--faults", action="store", dest="faults")
+    parser.add_argument("--timestep", action="store", dest="timestep", default=-1)
     parser.add_argument("--screenshot", action="store", dest="screenshot")
     args = parser.parse_args()
 
     if args.faults:
-        faults = args.faults.split(",")
+        args.faults = args.faults.split(",")
     else:
-        faults = FAULTS
-    visualize(args.sim, faults, showFinalTimeStep=True)
+        args.faults = DEFAULTS["FAULTS"]
+    visualize(args)
 
     view = GetRenderView()
     view.CameraPosition = [78002.89373974672, -1531813.1739094853, 595774.2094961794]
@@ -128,7 +148,7 @@ if __name__ == "__main__":
 else:
     # Running inside the ParaView GUI
 
-    visualize(SIM_NAME, FAULTS)
+    visualize(Parameters())
 
 
 # End of file

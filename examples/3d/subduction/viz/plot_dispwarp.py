@@ -21,36 +21,42 @@
 
 # User-specified parameters.
 #
-# These are used if running from within the ParaView GUI via the
-# Python shell or as defaults if running outside the ParaView GUI via
-# pvpython.
+# Default values for parameters. To use different values, overwrite
+# them in the ParaView Python shell or on the command line. For
+# example, set OUTPUT_DIR to the absolute path if not starting
+# ParaView from the terminal shell where you ran PyLith:
+#
+# import os
+# OUTPUT_DIR = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "2d", "subduction", "output")
 
-# Root name for simulation.
-SIM_NAME = "step03"
-
-# Scale used to exaggerate deformation.
-DISPLACEMENT_SCALE = 10.0e+3
-DISPLACEMENT_COMPONENT = "X"
+DEFAULTS = {
+    "OUTPUT_DIR": "output",
+    "SIM": "step02",
+    "WARP_SCALE": 10.0e+3,
+    "FIELD": "displacement",
+    "FIELD_COMPONENT": "Magnitude",
+    "TIMESTEP": 0,
+    }
 
 # ----------------------------------------------------------------------
 from paraview.simple import *
 import os
 
-def visualize(sim, exaggeration, component, showFinalTimeStep=False):
+def visualize(parameters):
     
     # Disable automatic camera reset on "Show"
     paraview.simple._DisableFirstRenderCameraReset()
 
     # Read data
-    filename = "output/%s-domain.xmf" % sim
+    filename = os.path.join(parameters.output_dir, "%s-domain.xmf" % parameters.sim)
     if not os.path.isfile(filename):
         raise IOError("File '%s' does not exist." % filename)
     dataDomain = XDMFReader(FileNames=[filename])
-    RenameSource("%s-domain" % sim, dataDomain)
+    RenameSource("%s-domain" % parameters.sim, dataDomain)
 
     scene = GetAnimationScene()
     scene.UpdateAnimationUsingDataTimeSteps()
-    if showFinalTimeStep:
+    if parameters.timestep == -1:
         scene.GoToLast()
 
     view = GetActiveViewOrCreate('RenderView')
@@ -63,10 +69,10 @@ def visualize(sim, exaggeration, component, showFinalTimeStep=False):
     # Warp domain to show deformation
     warp = WarpByVector(Input=dataDomain)
     warp.Vectors = ['POINTS', 'displacement']
-    warp.ScaleFactor = exaggeration
+    warp.ScaleFactor = parameters.warp_scale
 
     warpDisplay = Show(warp, view)
-    ColorBy(warpDisplay, ('POINTS', 'displacement', component))
+    ColorBy(warpDisplay, ('POINTS', parameters.field, parameters.field_component))
     warpDisplay.RescaleTransferFunctionToDataRange(True)
     warpDisplay.SetScalarBarVisibility(view, True)
     warpDisplay.SetRepresentationType('Surface With Edges')
@@ -74,12 +80,12 @@ def visualize(sim, exaggeration, component, showFinalTimeStep=False):
     warpDisplay.RescaleTransferFunctionToDataRange(False, False)
 
     # Customize colorbar
-    displacementLUT = GetColorTransferFunction('displacement')
+    displacementLUT = GetColorTransferFunction(parameters.field)
     colorbar = GetScalarBar(displacementLUT, view)
-    if component.lower() == "magnitude":
+    if parameters.field_component.lower() == "magnitude":
         colorbar.Title = "Displacement Mag. (m)"
     else:
-        colorbar.Title = "%s-displacement (m)" % component.lower()
+        colorbar.Title = "%s-displacement (m)" % parameters.field_component.lower()
     colorbar.ComponentTitle = ""
 
     # Annotate time
@@ -95,19 +101,35 @@ def visualize(sim, exaggeration, component, showFinalTimeStep=False):
     view.Update()
     Render()
 
+class Parameters(object):
+    keys = ("OUTPUT_DIR", "SIM", "WARP_SCALE", "FIELD", "FIELD_COMPONENT", "TIMESTEP")
+    
+    def __init__(self):
+        globalVars = globals()
+        for key in Parameters.keys:
+            if key in globalVars.keys():
+                setattr(self, key.lower(), globalVars[key])
+            else:
+                setattr(self, key.lower(), DEFAULTS[key])
+        return
+                
+    
 # ----------------------------------------------------------------------
 if __name__ == "__main__":
     # Running from outside the ParaView GUI via pvpython
     
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--sim", action="store", dest="sim", default=SIM_NAME)
-    parser.add_argument("--exaggeration", action="store", type=float, dest="exaggeration", default=DISPLACEMENT_SCALE)
-    parser.add_argument("--component", action="store", dest="component", default=DISPLACEMENT_COMPONENT)
+    parser.add_argument("--output-dir", action="store", dest="output_dir", default=DEFAULTS["OUTPUT_DIR"])
+    parser.add_argument("--sim", action="store", dest="sim", default=DEFAULTS["SIM"])
+    parser.add_argument("--warp-scale", action="store", type=float, dest="warp_scale", default=DEFAULTS["WARP_SCALE"])
+    parser.add_argument("--field", action="store", dest="field", default=DEFAULTS["FIELD"])
+    parser.add_argument("--component", action="store", dest="field_component", default=DEFAULTS["FIELD_COMPONENT"])
+    parser.add_argument("--timestep", action="store", dest="timestep", default=-1)
     parser.add_argument("--screenshot", action="store", dest="screenshot")
     args = parser.parse_args()
 
-    visualize(args.sim, args.exaggeration, args.component, showFinalTimeStep=True)
+    visualize(args)
 
     view = GetRenderView()
     view.CameraPosition = [78002.89373974672, -1531813.1739094853, 595774.2094961794]
@@ -124,7 +146,7 @@ if __name__ == "__main__":
 else:
     # Running inside the ParaView GUI
 
-    visualize(SIM_NAME, DISPLACEMENT_SCALE, DISPLACEMENT_COMPONENT)
+    visualize(Parameters())
 
 
 # End of file
