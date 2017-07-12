@@ -31,6 +31,76 @@ noinst_TMP = \
 	mesh2Din3D_test.txt \
 	twohex8_test.txt
 
+
+if ENABLE_HDF5
+  dist_noinst_DATA += \
+	tri3.h5 \
+	tri3.xmf \
+	tri3_vertex.h5 \
+	tri3_vertex.xmf \
+	tri3_cell.h5 \
+	tri3_cell.xmf \
+	tri3_points.h5 \
+	tri3_points.xmf \
+	tri3_points_vertex.h5 \
+	tri3_points_vertex.xmf \
+	tri3_surf.h5 \
+	tri3_surf.xmf \
+	tri3_surf_vertex.h5 \
+	tri3_surf_vertex.xmf \
+	tri3_surf_cell.h5 \
+	tri3_surf_cell.xmf \
+	quad4.h5 \
+	quad4.xmf \
+	quad4_vertex.h5 \
+	quad4_vertex.xmf \
+	quad4_cell.h5 \
+	quad4_cell.xmf \
+	quad4_points.h5 \
+	quad4_points.xmf \
+	quad4_points_vertex.h5 \
+	quad4_points_vertex.xmf \
+	quad4_surf.h5 \
+	quad4_surf.xmf \
+	quad4_surf_vertex.h5 \
+	quad4_surf_vertex.xmf \
+	quad4_surf_cell.h5 \
+	quad4_surf_cell.xmf \
+	tet4.h5 \
+	tet4.xmf \
+	tet4_vertex.h5 \
+	tet4_vertex.xmf \
+	tet4_cell.h5 \
+	tet4_cell.xmf \
+	tet4_points.h5 \
+	tet4_points.xmf \
+	tet4_points_vertex.h5 \
+	tet4_points_vertex.xmf \
+	tet4_surf.h5 \
+	tet4_surf.xmf \
+	tet4_surf_vertex.h5 \
+	tet4_surf_vertex.xmf \
+	tet4_surf_cell.h5 \
+	tet4_surf_cell.xmf \
+	hex8.h5 \
+	hex8.xmf \
+	hex8_vertex.h5 \
+	hex8_vertex.xmf \
+	hex8_cell.h5 \
+	hex8_cell.xmf \
+	hex8_points.h5 \
+	hex8_points.xmf \
+	hex8_points_vertex.h5 \
+	hex8_points_vertex.xmf \
+	hex8_surf.h5 \
+	hex8_surf.xmf \
+	hex8_surf_vertex.h5 \
+	hex8_surf_vertex.xmf \
+	hex8_surf_cell.h5 \
+	hex8_surf_cell.xmf
+
+endif
+
 # 'export' the input files by performing a mock install
 export_datadir = $(top_builddir)/unittests/pytests/meshio/data
 export-data: $(dist_noinst_DATA)
