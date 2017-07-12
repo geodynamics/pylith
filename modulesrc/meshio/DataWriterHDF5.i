@@ -52,6 +52,17 @@ namespace pylith {
        */
       void filename(const char* filename);
       
+      /** Generate filename for HDF5 file.
+       *
+       * Appends _info if only writing parameters.
+       *
+       * :KLUDGE: We should separate generating "info" files from the
+       * DataWriter interface.
+       *
+       * @returns String for HDF5 filename.
+       */
+       std::string hdf5Filename(void) const;
+
       /** Open output file.
        *
        * @param mesh Finite-element mesh. 

@@ -69,6 +69,9 @@ class Xdmf(object):
             print("Generating %s..." % filenameXdmf)
 
         import h5py
+        import os
+        if not os.path.isfile(filenameH5):
+            raise IOError("Cannot create Xdmf file for HDF5 file '%s'. File not found." % filenameH5)
         self.h5 = h5py.File(filenameH5, "r")
 
         if self._spaceDim() == 1:
@@ -90,7 +93,7 @@ class Xdmf(object):
         timeStamps = self._getTimeStamps()
         fields = self._getFields()
 
-        if timeStamps:
+        if not timeStamps is None:
             self._openTimeCollection()
             self._writeTimeStamps(timeStamps)
             for iTime,timeStamp in enumerate(timeStamps):
@@ -471,10 +474,16 @@ class Xdmf(object):
             % (field.name, field.vectorFieldType, field.domain,)
         )
         h5Name = "/" + Field.domainToGroup[field.domain] + "/" + field.name
+        iStep = iTime
         if iTime is None:
-            assert(2 == len(field.data.shape))
-            numPoints, numComponents = field.data.shape
-            numTimeSteps = 1
+            iStep = 0
+            if 2 == len(field.data.shape):
+                numPoints, numComponents = field.data.shape
+                numTimeSteps = 1
+            elif 3 == len(field.data.shape):
+                numTimeSteps, numPoints, numComponents = field.data.shape
+            else:
+                raise ValueError("Unexpected shape for dataset '%s'." % field.name)
         else:
             assert(3 == len(field.data.shape))
             numTimeSteps, numPoints, numComponents = field.data.shape
@@ -489,26 +498,26 @@ class Xdmf(object):
             self.file.write(
                 "            <DataItem ItemType=\"HyperSlab\" Dimensions=\"%(numPoints)d 1\" Type=\"HyperSlab\">\n"
                 "              <DataItem Dimensions=\"3 3\" Format=\"XML\">\n"
-                "                %(iTime)d 0 0    1 1 1    1 %(numPoints)d 1\n"
+                "                %(iStep)d 0 0    1 1 1    1 %(numPoints)d 1\n"
                 "              </DataItem>\n"
                 "              <DataItem DataType=\"Float\" Precision=\"8\" Dimensions=\"%(numTimeSteps)d %(numPoints)d %(numComponents)d\" Format=\"HDF\">\n"
                 "                &HeavyData;:%(h5Name)s\n"
                 "              </DataItem>\n"
                 "            </DataItem>\n"
-                % {"numTimeSteps": numTimeSteps, "numPoints": numPoints, "iTime": iTime, "numComponents": numComponents, "h5Name": h5Name}
+                % {"numTimeSteps": numTimeSteps, "numPoints": numPoints, "iStep": iStep, "numComponents": numComponents, "h5Name": h5Name}
             )
 
             # y component
             self.file.write(
                 "            <DataItem ItemType=\"HyperSlab\" Dimensions=\"%(numPoints)d 1\" Type=\"HyperSlab\">\n"
                 "              <DataItem Dimensions=\"3 3\" Format=\"XML\">\n"
-                "                %(iTime)d 0 1    1 1 1    1 %(numPoints)d 1\n"
+                "                %(iStep)d 0 1    1 1 1    1 %(numPoints)d 1\n"
                 "              </DataItem>\n"
                 "              <DataItem DataType=\"Float\" Precision=\"8\" Dimensions=\"%(numTimeSteps)d %(numPoints)d %(numComponents)d\" Format=\"HDF\">\n"
                 "                &HeavyData;:%(h5Name)s\n"
                 "              </DataItem>\n"
                 "            </DataItem>\n"
-                % {"numTimeSteps": numTimeSteps, "numPoints": numPoints, "iTime": iTime, "numComponents": numComponents, "h5Name": h5Name}
+                % {"numTimeSteps": numTimeSteps, "numPoints": numPoints, "iStep": iStep, "numComponents": numComponents, "h5Name": h5Name}
             )
 
             # z component
@@ -532,14 +541,14 @@ class Xdmf(object):
             
                 "          <DataItem ItemType=\"HyperSlab\" Dimensions=\"1 %(numPoints)d %(numComponents)d\" Type=\"HyperSlab\">\n"
                 "            <DataItem Dimensions=\"3 3\" Format=\"XML\">\n"
-                "              %(iTime)d 0 0    1 1 1    1 %(numPoints)d %(numComponents)d\n"
+                "              %(iStep)d 0 0    1 1 1    1 %(numPoints)d %(numComponents)d\n"
                 "            </DataItem>\n"
                 "            <DataItem DataType=\"Float\" Precision=\"8\" Dimensions=\"%(numTimeSteps)d %(numPoints)d %(numComponents)d\" Format=\"HDF\">\n"
                 "              &HeavyData;:%(h5Name)s\n"
                 "            </DataItem>\n"
                 "          </DataItem>\n"
                 "        </Attribute>\n"
-                % {"numTimeSteps": numTimeSteps, "numPoints": numPoints, "iTime": iTime, "numComponents": numComponents, "h5Name": h5Name}
+                % {"numTimeSteps": numTimeSteps, "numPoints": numPoints, "iStep": iStep, "numComponents": numComponents, "h5Name": h5Name}
             )
             
             return

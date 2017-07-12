@@ -461,9 +461,9 @@ class OutputManager(PetscComponent, ModuleOutputManager):
 
   def _close(self):
     """
-    Call C++ close().
+    Call writer close().
     """
-    ModuleOutputManager.close(self)
+    self.writer.close()
     return
 
 

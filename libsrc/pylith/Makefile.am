@@ -167,7 +167,6 @@ if ENABLE_HDF5
 	meshio/HDF5.cc \
 	meshio/DataWriterHDF5.cc \
 	meshio/DataWriterHDF5Ext.cc \
-	meshio/Xdmf.cc
   libpylith_la_LIBADD += -lhdf5
 endif
 
