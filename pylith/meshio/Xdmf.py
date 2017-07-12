@@ -60,11 +60,13 @@ class Xdmf(object):
         return
 
 
-    def write(self, filenameH5):
+    def write(self, filenameH5, filenameXdmf=None, verbose=True):
         """Write Xdmf file corresponding to given HDF5 file.
         """
-        filenameXdmf = filenameH5.replace(".h5", ".xmf")
-        print("Generating %s..." % filenameXdmf)
+        if not filenameXdmf:
+            filenameXdmf = filenameH5.replace(".h5", ".xmf")
+        if verbose:
+            print("Generating %s..." % filenameXdmf)
 
         import h5py
         self.h5 = h5py.File(filenameH5, "r")
@@ -106,6 +108,7 @@ class Xdmf(object):
             self._closeTimeCollection()
         else:
             iTime = None
+            self._openTimeGrid()
             self._writeGridTopology(cells)
             self._writeGridGeometry(vertices)
             for field in fields:
@@ -115,6 +118,7 @@ class Xdmf(object):
                         self._writeGridFieldComponent(field, iTime, iComponent)
                 else:
                     self._writeGridField(field, iTime)
+            self._closeTimeGrid()
 
         self._closeDomain()
         self._closeXdmf()
@@ -381,11 +385,11 @@ class Xdmf(object):
         numCells = cells.shape[0]
         
         self.file.write(
-            "      <Topology TopologyType=\"%s\" NumberOfElements=\"%d\">\n"
-            "        <DataItem Reference=\"XML\">\n"
-            "          /Xdmf/Domain/DataItem[@Name=\"cells\"]\n"
-            "        </DataItem>\n"
-            "      </Topology>\n"
+            "        <Topology TopologyType=\"%s\" NumberOfElements=\"%d\">\n"
+            "          <DataItem Reference=\"XML\">\n"
+            "            /Xdmf/Domain/DataItem[@Name=\"cells\"]\n"
+            "          </DataItem>\n"
+            "        </Topology>\n"
             % (cellType, numCells,)
         )
         return
@@ -395,11 +399,11 @@ class Xdmf(object):
         """Write vertices information for current grid.
         """
         self.file.write(
-            "      <Geometry GeometryType=\"XYZ\">\n"
-            "        <DataItem Reference=\"XML\">\n"
-            "          /Xdmf/Domain/DataItem[@Name=\"vertices\"]\n"
-            "        </DataItem>\n"
-            "      </Geometry>\n"
+            "        <Geometry GeometryType=\"XYZ\">\n"
+            "          <DataItem Reference=\"XML\">\n"
+            "            /Xdmf/Domain/DataItem[@Name=\"vertices\"]\n"
+            "          </DataItem>\n"
+            "        </Geometry>\n"
         )
         return
 
@@ -415,7 +419,7 @@ class Xdmf(object):
             if spaceDim == 2:
                 components = ["_xx", "_yy", "_xy"]
             elif spaceDim == 3:
-                components = ["_xx", "_yy", "_zz", "_xy", "_yz", "xz"]
+                components = ["_xx", "_yy", "_zz", "_xy", "_yz", "_xz"]
             else:
                 self._close()
                 raise ValueError("Unexpected spatial dimension %d for field component names." % spaceDim)
@@ -435,16 +439,16 @@ class Xdmf(object):
             numTimeSteps, numPoints, numComponents = field.data.shape
         
         self.file.write(
-            "      <Attribute Name=\"%(componentName)s\" Type=\"Scalar\" Center=\"%(domain)s\">\n"
-            "        <DataItem ItemType=\"HyperSlab\" Dimensions=\"1 %(numPoints)d 1\" Type=\"HyperSlab\">\n"
-            "          <DataItem Dimensions=\"3 3\" Format=\"XML\">\n"
-            "            %(iTime)d 0 %(iComponent)d    1 1 1    1 %(numPoints)d 1\n"
+            "        <Attribute Name=\"%(componentName)s\" Type=\"Scalar\" Center=\"%(domain)s\">\n"
+            "          <DataItem ItemType=\"HyperSlab\" Dimensions=\"1 %(numPoints)d 1\" Type=\"HyperSlab\">\n"
+            "            <DataItem Dimensions=\"3 3\" Format=\"XML\">\n"
+            "              %(iTime)d 0 %(iComponent)d    1 1 1    1 %(numPoints)d 1\n"
+            "            </DataItem>\n"
+            "            <DataItem DataType=\"Float\" Precision=\"8\" Dimensions=\"%(numTimeSteps)d %(numPoints)d %(numComponents)d\" Format=\"HDF\">\n"
+            "              &HeavyData;:%(h5Name)s\n"
+            "            </DataItem>\n"
             "          </DataItem>\n"
-            "          <DataItem DataType=\"Float\" Precision=\"8\" Dimensions=\"%(numTimeSteps)d %(numPoints)d %(numComponents)d\" Format=\"HDF\">\n"
-            "            &HeavyData;:%(h5Name)s\n"
-            "          </DataItem>\n"
-            "        </DataItem>\n"
-            "      </Attribute>\n"
+            "        </Attribute>\n"
             % {"componentName": componentName,
                "domain": field.domain,
                "numPoints": numPoints,
@@ -463,7 +467,7 @@ class Xdmf(object):
         """
         gridRef = "/Xdmf/Domain/Grid" if iTime is None else "/Xdmf/Domain/Grid/Grid[1]"
         self.file.write(
-            "      <Attribute Name=\"%s\" Type=\"%s\" Center=\"%s\">\n"
+            "        <Attribute Name=\"%s\" Type=\"%s\" Center=\"%s\">\n"
             % (field.name, field.vectorFieldType, field.domain,)
         )
         h5Name = "/" + Field.domainToGroup[field.domain] + "/" + field.name
@@ -478,63 +482,63 @@ class Xdmf(object):
         if 2 == self._spaceDim() and field.vectorFieldType == "Vector":
             
             self.file.write(
-                "        <DataItem ItemType=\"Function\" Dimensions=\"%d 3\" Function=\"JOIN($0, $1, $2)\">\n"
+                "          <DataItem ItemType=\"Function\" Dimensions=\"%d 3\" Function=\"JOIN($0, $1, $2)\">\n"
                 % (numPoints,)
                 )
             # x component
             self.file.write(
-                "          <DataItem ItemType=\"HyperSlab\" Dimensions=\"%(numPoints)d 1\" Type=\"HyperSlab\">\n"
-                "            <DataItem Dimensions=\"3 3\" Format=\"XML\">\n"
-                "              %(iTime)d 0 0    1 1 1    1 %(numPoints)d 1\n"
+                "            <DataItem ItemType=\"HyperSlab\" Dimensions=\"%(numPoints)d 1\" Type=\"HyperSlab\">\n"
+                "              <DataItem Dimensions=\"3 3\" Format=\"XML\">\n"
+                "                %(iTime)d 0 0    1 1 1    1 %(numPoints)d 1\n"
+                "              </DataItem>\n"
+                "              <DataItem DataType=\"Float\" Precision=\"8\" Dimensions=\"%(numTimeSteps)d %(numPoints)d %(numComponents)d\" Format=\"HDF\">\n"
+                "                &HeavyData;:%(h5Name)s\n"
+                "              </DataItem>\n"
                 "            </DataItem>\n"
-                "            <DataItem DataType=\"Float\" Precision=\"8\" Dimensions=\"%(numTimeSteps)d %(numPoints)d %(numComponents)d\" Format=\"HDF\">\n"
-                "              &HeavyData;:%(h5Name)s\n"
-                "            </DataItem>\n"
-                "          </DataItem>\n"
                 % {"numTimeSteps": numTimeSteps, "numPoints": numPoints, "iTime": iTime, "numComponents": numComponents, "h5Name": h5Name}
             )
 
             # y component
             self.file.write(
-                "          <DataItem ItemType=\"HyperSlab\" Dimensions=\"%(numPoints)d 1\" Type=\"HyperSlab\">\n"
-                "            <DataItem Dimensions=\"3 3\" Format=\"XML\">\n"
-                "              %(iTime)d 0 1    1 1 1    1 %(numPoints)d 1\n"
+                "            <DataItem ItemType=\"HyperSlab\" Dimensions=\"%(numPoints)d 1\" Type=\"HyperSlab\">\n"
+                "              <DataItem Dimensions=\"3 3\" Format=\"XML\">\n"
+                "                %(iTime)d 0 1    1 1 1    1 %(numPoints)d 1\n"
+                "              </DataItem>\n"
+                "              <DataItem DataType=\"Float\" Precision=\"8\" Dimensions=\"%(numTimeSteps)d %(numPoints)d %(numComponents)d\" Format=\"HDF\">\n"
+                "                &HeavyData;:%(h5Name)s\n"
+                "              </DataItem>\n"
                 "            </DataItem>\n"
-                "            <DataItem DataType=\"Float\" Precision=\"8\" Dimensions=\"%(numTimeSteps)d %(numPoints)d %(numComponents)d\" Format=\"HDF\">\n"
-                "              &HeavyData;:%(h5Name)s\n"
-                "            </DataItem>\n"
-                "          </DataItem>\n"
                 % {"numTimeSteps": numTimeSteps, "numPoints": numPoints, "iTime": iTime, "numComponents": numComponents, "h5Name": h5Name}
             )
 
             # z component
             self.file.write(
-                "          <DataItem ItemType=\"Function\" Dimensions=\"%(numPoints)d 1\" Function=\"0*$0\">\n"
-                "            <DataItem Reference=\"XML\">\n"
-                "              %(gridRef)s/Attribute[@Name=\"%(name)s\"]/DataItem[1]/DataItem[1]\n"
+                "            <DataItem ItemType=\"Function\" Dimensions=\"%(numPoints)d 1\" Function=\"0*$0\">\n"
+                "              <DataItem Reference=\"XML\">\n"
+                "                %(gridRef)s/Attribute[@Name=\"%(name)s\"]/DataItem[1]/DataItem[1]\n"
+                "              </DataItem>\n"
                 "            </DataItem>\n"
-                "          </DataItem>\n"
                 % {"numPoints": numPoints, "name": field.name, "gridRef": gridRef}
             )
             
             # close
             self.file.write(
-                "        </DataItem>\n"
-                "      </Attribute>\n"
+                "          </DataItem>\n"
+                "        </Attribute>\n"
             )
 
         else:
             self.file.write(
             
-                "        <DataItem ItemType=\"HyperSlab\" Dimensions=\"1 %(numPoints)d %(numComponents)d\" Type=\"HyperSlab\">\n"
-                "          <DataItem Dimensions=\"3 3\" Format=\"XML\">\n"
-                "            %(iTime)d 0 0    1 1 1    1 %(numPoints)d %(numComponents)d\n"
+                "          <DataItem ItemType=\"HyperSlab\" Dimensions=\"1 %(numPoints)d %(numComponents)d\" Type=\"HyperSlab\">\n"
+                "            <DataItem Dimensions=\"3 3\" Format=\"XML\">\n"
+                "              %(iTime)d 0 0    1 1 1    1 %(numPoints)d %(numComponents)d\n"
+                "            </DataItem>\n"
+                "            <DataItem DataType=\"Float\" Precision=\"8\" Dimensions=\"%(numTimeSteps)d %(numPoints)d %(numComponents)d\" Format=\"HDF\">\n"
+                "              &HeavyData;:%(h5Name)s\n"
+                "            </DataItem>\n"
                 "          </DataItem>\n"
-                "          <DataItem DataType=\"Float\" Precision=\"8\" Dimensions=\"%(numTimeSteps)d %(numPoints)d %(numComponents)d\" Format=\"HDF\">\n"
-                "            &HeavyData;:%(h5Name)s\n"
-                "          </DataItem>\n"
-                "        </DataItem>\n"
-                "      </Attribute>\n"
+                "        </Attribute>\n"
                 % {"numTimeSteps": numTimeSteps, "numPoints": numPoints, "iTime": iTime, "numComponents": numComponents, "h5Name": h5Name}
             )
             
