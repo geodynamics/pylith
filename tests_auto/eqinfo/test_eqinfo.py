@@ -16,40 +16,45 @@
 # ======================================================================
 #
 
+from pylith.tests.FullTestApp import FullTestApp
+
 import unittest
 
-def suite():
+class TestApp(FullTestApp):
   """
-  Create test suite.
+  Test application.
   """
-  suite = unittest.TestSuite()
 
-  from TestEqInfoLine import TestEqInfoLine
-  suite.addTest(unittest.makeSuite(TestEqInfoLine))
-
-  from TestEqInfoTri3 import TestEqInfoTri3
-  suite.addTest(unittest.makeSuite(TestEqInfoTri3))
-
-  from TestEqInfoQuad4 import TestEqInfoQuad4
-  suite.addTest(unittest.makeSuite(TestEqInfoQuad4))
-
-  return suite
+  def __init__(self):
+    """
+    Constructor.
+    """
+    FullTestApp.__init__(self)
+    return
 
 
-def main():
-  """
-  Run test suite.
-  """
-  import sys
-  sys.path.append(".")
+  def _suite(self):
+    """
+    Create test suite.
+    """
+    suite = unittest.TestSuite()
 
-  unittest.TextTestRunner(verbosity=2).run(suite())
-  return
+    from TestEqInfoLine import TestEqInfoLine
+    suite.addTest(unittest.makeSuite(TestEqInfoLine))
+
+    from TestEqInfoTri3 import TestEqInfoTri3
+    suite.addTest(unittest.makeSuite(TestEqInfoTri3))
+
+    from TestEqInfoQuad4 import TestEqInfoQuad4
+    suite.addTest(unittest.makeSuite(TestEqInfoQuad4))
+
+    return suite
 
 
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
-  main()
+  app = TestApp()
+  app.main()
 
   
 # End of file 
