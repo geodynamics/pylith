@@ -21,7 +21,6 @@
 #include "DataWriterHDF5.hh" // Implementation of class methods
 
 #include "HDF5.hh" // USES HDF5
-#include "Xdmf.hh" // USES Xdmf
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
@@ -105,7 +104,7 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
 
         deallocate();
 
-        const std::string& filename = _hdf5Filename();
+        const std::string& filename = hdf5Filename();
 
         _timesteps.clear();
         _tstampIndex = 0;
@@ -241,11 +240,11 @@ pylith::meshio::DataWriterHDF5::open(const topology::Mesh& mesh,
 
     } catch (const std::exception& err) {
         std::ostringstream msg;
-        msg << "Error while opening HDF5 file " << _hdf5Filename() << ".\n" << err.what();
+        msg << "Error while opening HDF5 file " << hdf5Filename() << ".\n" << err.what();
         throw std::runtime_error(msg.str());
     } catch (...) {
         std::ostringstream msg;
-        msg << "Unknown error while opening HDF5 file " << _hdf5Filename() << ".";
+        msg << "Unknown error while opening HDF5 file " << hdf5Filename() << ".";
         throw std::runtime_error(msg.str());
     } // try/catch
 
@@ -265,16 +264,6 @@ pylith::meshio::DataWriterHDF5::close(void)
 
     _timesteps.clear();
     _tstampIndex = 0;
-
-    int rank = 0;
-    MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
-    if (!rank) {
-        Xdmf metafile;
-        const std::string& hdf5filename = _hdf5Filename();
-        const int indexExt = hdf5filename.find(".h5");
-        std::string xdmfFilename = std::string(hdf5filename, 0, indexExt) + ".xmf";
-        metafile.write(xdmfFilename.c_str(), _hdf5Filename().c_str());
-    } // if
 
     PYLITH_METHOD_END;
 } // close
@@ -334,13 +323,13 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
     } catch (const std::exception& err) {
         std::ostringstream msg;
         msg << "Error while writing field '" << field.label() << "' at time "
-            << t << " to HDF5 file '" << _hdf5Filename() << "'.\n" << err.what();
+            << t << " to HDF5 file '" << hdf5Filename() << "'.\n" << err.what();
         throw std::runtime_error(msg.str());
 
     } catch (...) {
         std::ostringstream msg;
         msg << "Error while writing field '" << field.label() << "' at time "
-            << t << " to HDF5 file '" << _hdf5Filename() << "'.";
+            << t << " to HDF5 file '" << hdf5Filename() << "'.";
         throw std::runtime_error(msg.str());
     } // try/catch
 
@@ -401,12 +390,12 @@ pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
     } catch (const std::exception& err) {
         std::ostringstream msg;
         msg << "Error while writing field '" << field.label() << "' at time "
-            << t << " to HDF5 file '" << _hdf5Filename() << "'.\n" << err.what();
+            << t << " to HDF5 file '" << hdf5Filename() << "'.\n" << err.what();
         throw std::runtime_error(msg.str());
     } catch (...) {
         std::ostringstream msg;
         msg << "Error while writing field '" << field.label() << "' at time "
-            << t << " to HDF5 file '" << _hdf5Filename() << "'.";
+            << t << " to HDF5 file '" << hdf5Filename() << "'.";
         throw std::runtime_error(msg.str());
     } // try/catch
 
@@ -544,13 +533,13 @@ pylith::meshio::DataWriterHDF5::writePointNames(const pylith::string_vector& nam
         delete[] namesFixedLength; namesFixedLength = NULL;
 
         std::ostringstream msg;
-        msg << "Error while writing stations to HDF5 file '" << _hdf5Filename() << "'.\n" << err.what();
+        msg << "Error while writing stations to HDF5 file '" << hdf5Filename() << "'.\n" << err.what();
         throw std::runtime_error(msg.str());
     } catch (...) {
         delete[] namesFixedLength; namesFixedLength = NULL;
 
         std::ostringstream msg;
-        msg << "Error while writing stations to HDF5 file '" << _hdf5Filename() << "'.";
+        msg << "Error while writing stations to HDF5 file '" << hdf5Filename() << "'.";
         throw std::runtime_error(msg.str());
     } // try/catch
 
@@ -560,8 +549,8 @@ pylith::meshio::DataWriterHDF5::writePointNames(const pylith::string_vector& nam
 // ----------------------------------------------------------------------
 // Generate filename for HDF5 file.
 std::string
-pylith::meshio::DataWriterHDF5::_hdf5Filename(void) const
-{ // _hdf5Filename
+pylith::meshio::DataWriterHDF5::hdf5Filename(void) const
+{ // hdf5Filename
     PYLITH_METHOD_BEGIN;
 
     std::ostringstream filename;
@@ -574,7 +563,7 @@ pylith::meshio::DataWriterHDF5::_hdf5Filename(void) const
     } // if/else
 
     PYLITH_METHOD_RETURN(std::string(filename.str()));
-} // _hdf5Filename
+} // hdf5Filename
 
 
 // ----------------------------------------------------------------------
