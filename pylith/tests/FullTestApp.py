@@ -16,45 +16,36 @@
 # ======================================================================
 #
 
-from pylith.tests.FullTestApp import FullTestApp
+## @file pylith/tests/FullTestApp.py
+
+## @brief Python application for Python full-scale tests.
 
 import unittest
 
-class TestApp(FullTestApp):
+class FullTestApp(object):
   """
   Test application.
   """
+
+  # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self):
     """
     Constructor.
     """
-    FullTestApp.__init__(self)
     return
 
 
-  def _suite(self):
+  def main(self):
     """
-    Create test suite.
+    Run the application.
     """
-    suite = unittest.TestSuite()
+    success = unittest.TextTestRunner(verbosity=2).run(self._suite()).wasSuccessful()
     
-    from TestRigidRotate import TestRigidRotate
-    suite.addTest(unittest.makeSuite(TestRigidRotate))
-    
-    from TestCompressRotate import TestCompressRotate
-    suite.addTest(unittest.makeSuite(TestCompressRotate))
-    
-    from TestShearRotate import TestShearRotate
-    suite.addTest(unittest.makeSuite(TestShearRotate))
-  
-    return suite
+    if not success:
+      import sys
+      sys.exit(1)
+    return
 
 
-# ----------------------------------------------------------------------
-if __name__ == '__main__':
-  app = TestApp()
-  app.main()
-
-  
 # End of file 
