@@ -177,6 +177,7 @@ nobase_pkgpyexec_PYTHON = \
 	utils/profiling.py \
 	utils/testarray.py \
 	tests/__init__.py \
+	tests/UnitTestApp.py \
 	tests/PhysicalProperties.py \
 	tests/Solution.py \
 	tests/SolutionPoints.py \
