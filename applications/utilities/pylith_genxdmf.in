@@ -21,52 +21,53 @@
 # by PyLith permitting the data to be viewed in VTK visualization
 # software, such as ParaView and Visit.
 #
-# Usage: pylith_genxdmf --file=FILE
+# Usage: pylith_genxdmf --files=FILE_OR_FILE_PATTERN
 
 # ======================================================================
 class GenXdmfApp(object):
-  """
-  Application for generating an Xdmf file for an HDF5 file.
-  """
-
-  # PUBLIC METHODS /////////////////////////////////////////////////////
-
-  def __init__(self, name="pylith_genxdmf"):
     """
-    Constructor.
+    Application for generating corresponding Xdmf files for HDF5 files.
     """
-    self.filename = "output.h5"
-    return
+
+    # PUBLIC METHODS /////////////////////////////////////////////////////
+
+    def __init__(self, name="pylith_genxdmf"):
+        """
+        Constructor.
+        """
+        self.filepattern = "*.h5"
+        return
 
 
-  def main(self, *args, **kwds):
-    """
-    Main entry point for application.
-    """
-    from pylith.meshio.Xdmf import Xdmf
-    writer = Xdmf()
-    filenameHDF5 = self.filename
-    filenameXdmf = filenameHDF5.replace(".h5", ".xmf")
-    writer.write(filenameXdmf, filenameHDF5)
-    return
+    def main(self):
+        """
+        Main entry point for application.
+        """
+        import glob
+        from pylith.meshio.Xdmf import Xdmf
+    
+        xdmf = Xdmf()
+        for filenameHDF5 in glob.iglob(self.filepattern):
+              xdmf.write(filenameHDF5)
+        return
 
-
+      
 # ----------------------------------------------------------------------
 if __name__ == "__main__":
 
-  usage = "%prog --file=FILE"
-  from optparse import OptionParser
-  parser = OptionParser(usage=usage)
-  parser.add_option("-f", "--file", 
-                    dest="filename",
-                    type="string", metavar="FILE",
-                    help="Create Xdmf file for HDF5 file FILE. [output.h5]",
-                    default="output.h5")
-  (options, args) = parser.parse_args()
+    usage = "%prog --files=FILE_OR_FILE_PATTERN"
+    from optparse import OptionParser
+    parser = OptionParser(usage=usage)
+    parser.add_option("-f", "--files", 
+                      dest="filepattern",
+                      type="string", metavar="FILE",
+                      help="Create Xdmf file for HDF5 file FILE. [*.h5]",
+                      default="*.h5")
+    (options, args) = parser.parse_args()
 
-  app = GenXdmfApp()
-  app.filename = options.filename
-  app.main()
+    app = GenXdmfApp()
+    app.filepattern = options.filepattern
+    app.main()
 
 
 # End of file 

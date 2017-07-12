@@ -16,37 +16,45 @@
 # ======================================================================
 #
 
+from pylith.tests.FullTestApp import FullTestApp
+
 import unittest
 
-def suite():
+class TestApp(FullTestApp):
   """
-  Create test suite.
+  Test application.
   """
-  suite = unittest.TestSuite()
 
-  from TestRigidRotate import TestRigidRotate
-  suite.addTest(unittest.makeSuite(TestRigidRotate))
-
-  from TestCompressRotate import TestCompressRotate
-  suite.addTest(unittest.makeSuite(TestCompressRotate))
-
-  from TestShearRotate import TestShearRotate
-  suite.addTest(unittest.makeSuite(TestShearRotate))
-
-  return suite
+  def __init__(self):
+    """
+    Constructor.
+    """
+    FullTestApp.__init__(self)
+    return
 
 
-def main():
-  """
-  Run test suite.
-  """
-  unittest.TextTestRunner(verbosity=2).run(suite())
-  return
+  def _suite(self):
+    """
+    Create test suite.
+    """
+    suite = unittest.TestSuite()
+    
+    from TestRigidRotate import TestRigidRotate
+    suite.addTest(unittest.makeSuite(TestRigidRotate))
+    
+    from TestCompressRotate import TestCompressRotate
+    suite.addTest(unittest.makeSuite(TestCompressRotate))
+    
+    from TestShearRotate import TestShearRotate
+    suite.addTest(unittest.makeSuite(TestShearRotate))
+  
+    return suite
 
 
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
-  main()
+  app = TestApp()
+  app.main()
 
   
 # End of file 
