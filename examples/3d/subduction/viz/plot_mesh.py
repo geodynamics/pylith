@@ -46,6 +46,7 @@ def visualize(parameters):
     dataDomain = ExodusIIReader(FileName=[parameters.exodus_file])
     RenameSource("domain", dataDomain)
 
+    
     view = GetActiveViewOrCreate('RenderView')
 
     # Show domain, colored by block.
@@ -54,6 +55,7 @@ def visualize(parameters):
     domainDisplay.RescaleTransferFunctionToDataRange(True, False)
     domainDisplay.SetScalarBarVisibility(view, False)
     domainDisplay.SetRepresentationType("Surface")
+    domainDisplay.PointSize = 6.0
     domainDisplay.Opacity = 0.5
 
     # Add coordinate axes
@@ -65,6 +67,43 @@ def visualize(parameters):
     axesDisplay.LineWidth = 4.0
     axesDisplay.SetScalarBarVisibility(view, False)
     axesDisplay.DataAxesGrid.GridColor = [0.0, 0.0, 0.0]
+
+    # Nodeset information
+    nodeSetInfo = dataDomain.GetProperty("NodeSetInfo").GetData()
+    nodeSets = nodeSetInfo[::2]
+    dataDomain.NodeSetArrayStatus = nodeSets[0]
+    numNodeSets = len(nodeSets)
+
+    nsLabel = Text()
+    nsLabel.Text = "Nodeset: %s" % nodeSets[0]
+    RenameSource("nodeset-label")
+    labelDisplay = Show(nsLabel, view)
+    labelDisplay.FontSize = 10
+    
+    scene = GetAnimationScene()
+    scene.NumberOfFrames = numNodeSets
+    scene.StartTime = 0
+    scene.EndTime = float(numNodeSets-1)
+    
+    cue = PythonAnimationCue()
+    cue.Script = """
+from paraview.simple import *
+
+def tick(self):
+    scene = GetAnimationScene()
+    i = int(scene.TimeKeeper.Time)
+    
+    domain = FindSource("domain")
+    nodeSetInfo = domain.GetProperty("NodeSetInfo").GetData()
+    nodeSets = nodeSetInfo[::2]
+    nodeSet = nodeSets[i]
+    domain.NodeSetArrayStatus = nodeSet
+
+    label = FindSource("nodeset-label")
+    label.Text = "Nodeset: %s" % nodeSet
+"""
+    scene.Cues.append(cue)
+
     
     view.ResetCamera()
     Render()
