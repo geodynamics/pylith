@@ -150,52 +150,52 @@ group "boundary_xneg_noslab" remove node in group block_slab
 nodeset 83 group boundary_xneg_noslab
 nodeset 83 name "boundary_xneg_noslab"
 
-# +y
-group "boundary_ypos" add node in surface 18
-group "boundary_ypos" add node in surface 45
-group "boundary_ypos" add node in surface 48
-group "boundary_ypos" add node in surface 39
-nodeset 84 group boundary_ypos
-nodeset 84 name "boundary_ypos"
+# -y
+group "boundary_yneg" add node in surface 18
+group "boundary_yneg" add node in surface 45
+group "boundary_yneg" add node in surface 48
+group "boundary_yneg" add node in surface 39
+nodeset 84 group boundary_yneg
+nodeset 84 name "boundary_yneg"
 
 # +y w/o fault
-group "boundary_ypos_nofault" add node in group boundary_ypos
-group "boundary_ypos_nofault" remove node in group fault_slabtop
-group "boundary_ypos_nofault" remove node in group fault_slabbot
-group "boundary_ypos_nofault" remove node in group fault_splay
-nodeset 85 group boundary_ypos_nofault
-nodeset 85 name "boundary_ypos_nofault"
-
-# +y w/o slab
-group "boundary_ypos_noslab" add node in group boundary_ypos
-group "boundary_ypos_noslab" remove node in group block_slab
-group "boundary_ypos_noslab" remove node in group fault_splay
-nodeset 86 group boundary_ypos_noslab
-nodeset 86 name "boundary_ypos_noslab"
-
-
-# -y
-group "boundary_yneg" add node in surface 21
-group "boundary_yneg" add node in surface 43
-group "boundary_yneg" add node in surface 50
-group "boundary_yneg" add node in surface 36
-nodeset 87 group boundary_yneg
-nodeset 87 name "boundary_yneg"
-
-# -y w/o fault
 group "boundary_yneg_nofault" add node in group boundary_yneg
 group "boundary_yneg_nofault" remove node in group fault_slabtop
 group "boundary_yneg_nofault" remove node in group fault_slabbot
 group "boundary_yneg_nofault" remove node in group fault_splay
-nodeset 88 group boundary_yneg_nofault
-nodeset 88 name "boundary_yneg_nofault"
+nodeset 85 group boundary_yneg_nofault
+nodeset 85 name "boundary_yneg_nofault"
 
-# -y w/o slab
+# +y w/o slab
 group "boundary_yneg_noslab" add node in group boundary_yneg
 group "boundary_yneg_noslab" remove node in group block_slab
 group "boundary_yneg_noslab" remove node in group fault_splay
-nodeset 89 group boundary_yneg_noslab
-nodeset 89 name "boundary_yneg_noslab"
+nodeset 86 group boundary_yneg_noslab
+nodeset 86 name "boundary_yneg_noslab"
+
+
+# +y
+group "boundary_ypos" add node in surface 21
+group "boundary_ypos" add node in surface 43
+group "boundary_ypos" add node in surface 50
+group "boundary_ypos" add node in surface 36
+nodeset 87 group boundary_ypos
+nodeset 87 name "boundary_ypos"
+
+# -y w/o fault
+group "boundary_ypos_nofault" add node in group boundary_ypos
+group "boundary_ypos_nofault" remove node in group fault_slabtop
+group "boundary_ypos_nofault" remove node in group fault_slabbot
+group "boundary_ypos_nofault" remove node in group fault_splay
+nodeset 88 group boundary_ypos_nofault
+nodeset 88 name "boundary_ypos_nofault"
+
+# -y w/o slab
+group "boundary_ypos_noslab" add node in group boundary_ypos
+group "boundary_ypos_noslab" remove node in group block_slab
+group "boundary_ypos_noslab" remove node in group fault_splay
+nodeset 89 group boundary_ypos_noslab
+nodeset 89 name "boundary_ypos_noslab"
 
 # -z
 group "boundary_zneg" add node in surface 10
