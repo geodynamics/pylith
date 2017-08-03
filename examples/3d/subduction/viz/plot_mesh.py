@@ -15,26 +15,100 @@
 #
 # ----------------------------------------------------------------------
 
-# Plot the domain, colored by materials.
-
-
+# Plot the domain, colored by materials. Optionally, plot nodesets and
+# mesh quality.
+#
 # User-specified parameters.
 #
-# Default values for parameters. To use different values, overwrite
-# them in the ParaView Python shell or on the command line. For
-# example, set OUTPUT_DIR to the absolute path if not starting
-# ParaView from the terminal shell where you ran PyLith:
+# To use different values, overwrite them in the ParaView Python shell
+# or on the command line. For example, set EXODUS_FILE to the absolute
+# path for the Exodus file if not starting ParaView from the terminal
+# shell where you ran PyLith:
 #
 # import os
-# OUTPUT_DIR = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "2d", "subduction", "output")
+# EXODUS_FILE = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "3d", "subduction", "mesh", "mesh_tet.exo")
 
 DEFAULTS = {
     "EXODUS_FILE": "mesh/mesh_tet.exo",
+    "SHOW_NODESETS": True,
+    "SHOW_QUALITY": True,
+    "QUALITY_METRIC": "Condition",
+    "QUALITY_THRESHOLD": 2.0,
     }
 
 # ----------------------------------------------------------------------
 from paraview.simple import *
 import os
+
+def plot_nodesets(dataDomain):
+    """Create animation with each nodeset displayed as a different
+    frame. We use a Python script to set the nodeset to display.
+    """
+    # Nodeset information
+    nodeSetInfo = dataDomain.GetProperty("NodeSetInfo").GetData()
+    nodeSets = nodeSetInfo[::2]
+    dataDomain.NodeSetArrayStatus = nodeSets[0]
+    numNodeSets = len(nodeSets)
+
+    view = GetActiveViewOrCreate('RenderView')
+
+    nsLabel = Text()
+    nsLabel.Text = "Nodeset: %s" % nodeSets[0]
+    RenameSource("nodeset-label")
+    labelDisplay = Show(nsLabel, view)
+    labelDisplay.FontSize = 10
+
+    scene = GetAnimationScene()
+    scene.NumberOfFrames = numNodeSets
+    scene.StartTime = 0
+    scene.EndTime = float(numNodeSets-1)
+    
+    cue = PythonAnimationCue()
+    cue.Script = """
+from paraview.simple import *
+
+def tick(self):
+    scene = GetAnimationScene()
+    i = int(scene.TimeKeeper.Time)
+    
+    domain = FindSource("domain")
+    nodeSetInfo = domain.GetProperty("NodeSetInfo").GetData()
+    nodeSets = nodeSetInfo[::2]
+    nodeSet = nodeSets[i]
+    domain.NodeSetArrayStatus = nodeSet
+
+    label = FindSource("nodeset-label")
+    label.Text = "Nodeset: %s" % nodeSet
+"""
+    scene.Cues.append(cue)
+    
+    return
+
+def plot_quality(dataDomain, parameters):
+    """Plot the mesh quality. Only cells with a quality greater (poorer
+    quality) than the threshold are displayed.
+    """
+
+    quality = MeshQuality(Input=dataDomain)
+    quality.TriangleQualityMeasure = parameters.quality_metric
+    quality.QuadQualityMeasure = parameters.quality_metric
+    quality.TetQualityMeasure = parameters.quality_metric
+
+
+    view = GetActiveViewOrCreate('RenderView')
+
+    # Threshold
+    threshold = Threshold(Input=quality)
+    threshold.Scalars = ['CELLS', 'Quality']
+    threshold.ThresholdRange = [parameters.quality_threshold, 1.0e+3]
+
+    thresholdDisplay = Show(threshold, view)
+    thresholdDisplay.Representation = 'Surface'
+    thresholdDisplay.ColorArrayName = ['CELLS', 'Quality']
+    thresholdDisplay.SetScalarBarVisibility(view, True)
+
+    return
+
 
 def visualize(parameters):
 
@@ -68,48 +142,20 @@ def visualize(parameters):
     axesDisplay.SetScalarBarVisibility(view, False)
     axesDisplay.DataAxesGrid.GridColor = [0.0, 0.0, 0.0]
 
-    # Nodeset information
-    nodeSetInfo = dataDomain.GetProperty("NodeSetInfo").GetData()
-    nodeSets = nodeSetInfo[::2]
-    dataDomain.NodeSetArrayStatus = nodeSets[0]
-    numNodeSets = len(nodeSets)
-
-    nsLabel = Text()
-    nsLabel.Text = "Nodeset: %s" % nodeSets[0]
-    RenameSource("nodeset-label")
-    labelDisplay = Show(nsLabel, view)
-    labelDisplay.FontSize = 10
+    if parameters.show_nodesets:
+        plot_nodesets(dataDomain)
     
-    scene = GetAnimationScene()
-    scene.NumberOfFrames = numNodeSets
-    scene.StartTime = 0
-    scene.EndTime = float(numNodeSets-1)
-    
-    cue = PythonAnimationCue()
-    cue.Script = """
-from paraview.simple import *
-
-def tick(self):
-    scene = GetAnimationScene()
-    i = int(scene.TimeKeeper.Time)
-    
-    domain = FindSource("domain")
-    nodeSetInfo = domain.GetProperty("NodeSetInfo").GetData()
-    nodeSets = nodeSetInfo[::2]
-    nodeSet = nodeSets[i]
-    domain.NodeSetArrayStatus = nodeSet
-
-    label = FindSource("nodeset-label")
-    label.Text = "Nodeset: %s" % nodeSet
-"""
-    scene.Cues.append(cue)
-
+    if parameters.show_quality:
+        plot_quality(dataDomain, parameters)
     
     view.ResetCamera()
     Render()
 
 class Parameters(object):
-    keys = ("EXODUS_FILE",)
+    """Object for managing default values and overriding them from the
+    current Python shell.
+    """
+    keys = ("EXODUS_FILE", "SHOW_NODESETS", "SHOW_QUALITY", "QUALITY_METRIC", "QUALITY_THRESHOLD",)
     
     def __init__(self):
         globalVars = globals()
@@ -128,6 +174,13 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("--filename", action="store", dest="exodus_file", default=DEFAULTS["EXODUS_FILE"])
+    parser.add_argument("--hide-nodesets", action="store_false", dest="show_nodesets", default=DEFAULTS["SHOW_NODESETS"])
+    parser.add_argument("--hide-quality", action="store_false", dest="show_quality", default=DEFAULTS["SHOW_QUALITY"])
+    parser.add_argument("--quality-metric", action="store", dest="quality_metric", default=DEFAULTS["QUALITY_METRIC"])
+    parser.add_argument("--quality-threshold", action="store", type=float, dest="quality_threshold", default=DEFAULTS["QUALITY_THRESHOLD"])
+    
+
+
     args = parser.parse_args()
 
     visualize(args)
