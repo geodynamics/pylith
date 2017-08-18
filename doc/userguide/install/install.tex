@@ -1,46 +1,57 @@
 \chapter{Installation and Getting Help}
 \label{cha:installation}
 
-Installation of PyLith on a desktop or laptop machine is, in most
-cases, very easy. Binary packages have been created for Linux and Mac
-OS X platforms. You can also run PyLith inside a Docker container,
-which provides a virtual Linux environment on any platform that Docker
-supports, including Linux, Mac OS X, and Windows. Installation of
-PyLith on other operating systems -- or installation on a cluster --
-requires building the software from the source code, which can be
-difficult for inexperienced users. We have created a small utility
-called PyLith Installer that makes installing PyLith and all of its
-dependencies from source much easier. Help is available from both a
-CIG mailing list and the GitHub issue tracking system
-\url{https://github.com/geodynamics/pylith/issues}.
+Figure~\ref{fig:install:choices} provides a guide to select the
+appropriate method for installing PyLith.  Installation of PyLith on a
+desktop or laptop machine is, in most cases, very easy. Binary
+packages have been created for Linux and Mac OS X (Darwin) platforms. For
+Windows 10 users, we recommend installing the Windows Subsystem for
+Linux and using the Linux binary (see instructions in
+Section~\ref{sec:install:windows}). You can also run PyLith
+inside a Docker container, which provides a virtual Linux environment
+on any platform that Docker supports, including Linux, Mac OS X, and
+Windows. Installation of PyLith on other operating systems -- or
+installation on a cluster -- requires building the software from the
+source code, which can be difficult for inexperienced users. We have
+created a small utility called PyLith Installer that makes installing
+PyLith and all of its dependencies from source much easier.
 
+\begin{figure}[htbp]
+  \includegraphics[scale=0.8]{install/figs/installchoices} 
+  \caption{Guide for selecting the appropriate installation choice
+  based on a hardware and intended use. The installation options are
+  discussed in more detail in the following sections.}
+\label{fig:install:choices} 
+\end{figure}
 
-\section{Getting Help and Reporting Bugs}
-\label{sec:help}
-
-The CIG Short-Term Crustal Dynamics Mailing List
-\url{cig-short@geodynamics.org} is dedicated to CIG issues associated
-with short-term crustal dynamics, including the use of PyLith. You can
-subscribe to the mailing list and view messages at cig-short Mailing
-List \url{geodynamics.org/cig/lists/cig-short}.
-
-CIG uses \object{GitHub} for source control and bug tracking. If you
-find a bug in PyLith, please submit a bug report to the GitHub issue
-tracking system for PyLith \url{https://github.com/geodynamics/pylith/issues}.
-Of course, it is helpful to first check to see if someone else already
-submitted a report related to the issue; one of the CIG developers
-may have posted a work around to the problem. You can reply to a current
-issue by clicking on the issue title. To submit a new issue, click
-on the \object{New Issue} button.
-
+Help for installing and using PyLith is available from both a CIG
+mailing list and the GitHub issue tracking system
+\url{https://github.com/geodynamics/pylith/issues}. See
+Section~\vref{sec:help} for more information.
 
 \section{Installation of Binary Executable}
 
-Binary executables are available for Linux and Mac OS X (Intel 10.10+)
-from the PyLith web page
-\url{geodynamics.org/cig/software/packages/short/pylith/}.
+The binaries are intended for users running on laptops or desktop
+computers (as opposed to clusters). The binaries contain the compilers
+and header files, so users wishing to extend the code can still use
+the binary and do not need to build PyLith and its dependencies from
+source. See Chapter~\vref{cha:extending} for more information on
+extending PyLith.
 
-\subsection{Linux and Max OS X}
+Binary executables are available for Linux (glibc 2.12 and later) and
+Mac OS X (Intel 10.10 and later) from the PyLith web page
+\url{geodynamics.org/cig/software/packages/short/pylith/}. Users
+running Windows 10 build 14316 and later can install a Linux bash
+environment and use the PyLith binary for Linux (see
+Section~\vref{sec:install:windows} for more information).
+
+\tip{On Linux systems you can check which version of glibc you have by
+  running \filename{ldd --version}}.
+
+\tip{On Darwin systems running OS X, you can check the operating
+  system version by clicking on the Apple icon and \menu{About this Mac}.}
+
+\subsection{Linux and Max OS X (Darwin)}
 \begin{enumerate}
 \item Open a terminal window and change to the directory where you
   want to place the distribution.
@@ -49,8 +60,9 @@ $$ cd  $HOME
 $$ mkdir pylith
 $$ cd pylith
   \end{shell}
-\item Download the Linux or Mac OS X tarball from the PyLith web page \url{geodynamics.org/cig/software/packages/short/pylith/},
-and save it to the desired location, e.g., \filename{\$HOME/pylith}.
+\item Download the Linux or Mac OS X (Darwin) tarball from the PyLith
+  web page \url{geodynamics.org/cig/software/packages/short/pylith/},
+  and save it to the desired location, e.g., \filename{\$HOME/pylith}.
 \item Unpack the tarball.
   \begin{shell}
 # Linux 32-bit
@@ -80,12 +92,42 @@ $$ source setup.sh
 
 \warning{The PyLith binary distribution for {\bf Darwin} systems is
   built using the system clang compiler suite and the system
-  Python. {\bf This means the system Python must be in your path to use the
-  PyLith binary executable}; ensure \filename{/bin} and
+  Python. {\bf This means the system Python must be in your path to
+    use the PyLith binary executable}; ensure \filename{/bin} and
   \filename{/usr/bin} are at the beginning of the PATH environment
-  variable before sourcing \filename{setup.sh}. {\bf This usually
-    applies if you have Python installed from Anaconda, HomeBrew,
-    MacPorts, etc.}}
+  variable, which is done automatically if you use the
+  \filename{setup.sh} script. {\bf This condition is often violated if
+    you have Python installed from Anaconda, HomeBrew, MacPorts,
+    etc. and set the PATH variable in your bash configuration file.}}
+
+\subsection{Windows 10}
+\label{sec:install:windows}
+
+PyLith is developed within the Unix/Linux framework, and we do not
+provide a native PyLith binary distribution for Windows. The preferred
+approach to installing PyLith on a computer running Windows 10 is to
+enable use of a Linux subsystem. This permits use of the PyLith Linux
+x86\_64 binary within the bash environment.
+
+To enable the Linux subsystem on Windows 10 build 14316 and later
+(users running an earlier Windows build should use the PyLith Docker
+container):
+\begin{enumerate}
+\item Go to \menu{Settings} $\rightarrow$ \menu{Security}.
+\item Under \menu{For developers} select \menu{Developer mode}. This
+  step should not be required for Windows build 16215 and later.
+\item Go to \menu{Control Panel} $\rightarrow$ \menu{Programs}
+  $\rightarrow$ \menu{Turn Windows Features On or Off}.
+\item Enable \menu{Windows Subsystem for Linux} and click \menu{OK}.
+\item Restart the computer.
+\item Go to \menu{Start} $\rightarrow$ \menu{bash}. You will be
+  prompted to download "Bash on Ubuntu on Windows" from the Windows
+  Store. Create a user account and password for the bash environment.
+\item Install the PyLith Linux x86 binary within the bash environment
+  following the instructions for installing the PyLith binary for
+  Linux. You will run PyLith within the bash environment just like you
+  would for a Linux operating system.
+\end{enumerate}
 
 \subsection{Extending PyLith and/or Integrating Other Software Into PyLith}
 \newfeature{v.2.2.0}
@@ -109,11 +151,20 @@ binary distribution.
 
 \section{Installation of PyLith Docker Container}
 
-Docker containers provide a self-contained virtual environment that
-are a smaller, simpler alternative to a virtual machine. The PyLith
-Docker container provides a Debian Linux environment with a pre-built
-PyLith executable, vim text editor, iceweasel (GNU version of Firefox)
-web-browser, and the matplotlib Python module.
+As an alternative to installing a binary package, we provide a Docker
+container for running PyLith in a self-contained virtual
+environment. Docker containers provide a self-contained virtual
+environment that are a smaller, simpler alternative to a virtual
+machine. The PyLith Docker container provides a Debian Linux
+environment with a pre-built PyLith executable, vim text editor,
+iceweasel (GNU version of Firefox) web-browser, and the matplotlib
+Python module.
+
+\tip{In nearly all cases, installing a PyLith binary provides easier
+  integration with mesh generation and post-processing tools, so
+  binaries are the preferred approach to using the PyLith Docker
+  container. This installation method targets users running Windows
+  versions earlier than Windows 10 build 14316.}
 
 \subsection{Setup (first time only)}
 
@@ -156,7 +207,7 @@ $$ docker run -ti --volumes-from pylith-data \
 \end{shell}
 
 In addition to a minimalist Debian Linux distribution and PyLith and
-all of its depenencies, the container includes the following useful
+all of its dependencies, the container includes the following useful
 utilities:
 \begin{description}
 \item[vim] Lightweight text editor
@@ -220,17 +271,17 @@ PyLith depends on a number of other packages (see Figure
 \vref{fig:pylith-dependencies}).  This complicates building the
 software from the source code. In many cases some of the packages
 required by PyLith are available as binary packages. On the one hand,
-using the binary packages removes the burden of configuring, building,
-and installing these packages, but that can come with its own host of
-complications if consistent compiler and configuration settings are
-not used across all of the packages on which PyLith depends. This is
-usually not an issue with Linux distributions, such as Fedora, Ubuntu,
-and Debian that have good quality control; it can be an issue with
-Darwin package managers, such as Fink, MacPorts, and Homebrew, where
-there is limited enforcement of consistency across
-packages. Nevertheless, PyLith can be built on most systems provided
-the instructions are followed carefully. PyLith is developed and
-tested on Linux and Mac OS X.
+using the binary packages for the dependencies removes the burden of
+configuring, building, and installing these dependencies, but that can
+come with its own host of complications if consistent compiler and
+configuration settings are not used across all of the packages on
+which PyLith depends. This is usually not an issue with Linux
+distributions, such as Fedora, Ubuntu, and Debian that have good
+quality control; it can be an issue with Darwin package managers, such
+as Fink, MacPorts, and Homebrew, where there is limited enforcement of
+consistency across packages. Nevertheless, PyLith can be built on most
+systems provided the instructions are followed carefully. PyLith is
+developed and tested on Linux and Mac OS X.
 
 A small utility, PyLith Installer, removes most of the obstacles in
 building PyLith and its dependencies from source. For each package
@@ -350,7 +401,7 @@ $$ pylith --launcher.dry
 
 On a cluster without a batch system, you need to explicitly specify
 the machines on which the job will run. Supposing the machines on your
-cluster are named n001, n002, \ldots{}, etc., but you want to run the
+cluster are named n001, n002, \ldots, etc., but you want to run the
 job on machines n001, n003, n004, and n005 (maybe n002 is down for the
 moment). To run an example, create a file named
 \filename{mymachines.cfg} which specifies the machines to use:
@@ -447,5 +498,25 @@ $$ pylith example1.cfg \
 \end{cfg}
 For most PBS batch systems you can specify N processes per compute
 node via the command line argument \commandline{-{}-scheduler.ppn=N}.
+
+\section{Getting Help and Reporting Bugs}
+\label{sec:help}
+
+The CIG Short-Term
+Crustal Dynamics Mailing List \url{cig-short@geodynamics.org} is
+dedicated to CIG issues associated with short-term crustal dynamics,
+including the use of PyLith. You can subscribe to the mailing list and
+view messages at cig-short Mailing List
+\url{geodynamics.org/cig/lists/cig-short}.
+
+CIG uses \object{GitHub} for source control and bug tracking. If you
+find a bug in PyLith, please submit a bug report to the GitHub issue
+tracking system for PyLith \url{https://github.com/geodynamics/pylith/issues}.
+Of course, it is helpful to first check to see if someone else already
+submitted a report related to the issue; one of the CIG developers
+may have posted a work around to the problem. You can reply to a current
+issue by clicking on the issue title. To submit a new issue, click
+on the \object{New Issue} button.
+
 
 % End of file

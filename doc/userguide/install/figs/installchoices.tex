@@ -1,0 +1,61 @@
+\documentclass[tikz]{standalone}
+\usepackage{tikz}
+
+\begin{document}
+
+\usetikzlibrary{arrows,shapes}
+\input{../../palettes/figcolors}
+
+\tikzstyle{tnode} = [rectangle, very thick, rounded corners, draw, anchor=center,
+text width=5em, align=center, inner sep=1ex]
+\tikzstyle{start} = [tnode, draw=green!80!black, top color=ltgreen!20!white, bottom color=ltgreen]
+\tikzstyle{decision} = [tnode, diamond, inner sep=0pt, draw=blue!80!black, top color=ltblue!50!white, bottom color=blue]
+\tikzstyle{binary} = [tnode, draw=purple!80!black, top color=ltpurple!20!white, bottom color=ltpurple]
+\tikzstyle{installer} = [tnode, draw=orange!80!black, top color=ltorange!50!white, bottom color=orange]
+\tikzstyle{repository} = [tnode, draw=red!80!black, top color=ltred!20!white, bottom color=ltred]
+
+\tikzstyle{arrowto} = [>=latex, ->, very thick]
+\tikzstyle{answer} = [font=\sffamily, midway, above]
+
+
+\begin{tikzpicture}[node distance=12.0em]
+
+  \node(start) [start] {Installing PyLith};
+
+  \node(code) [decision, below of=start] {Modify or extend code?};
+
+  \node(develop) [decision, right of=code] {Contribute to development?};
+  \node(fork) [repository, right of=develop] {Fork repository};
+  \node(dev-cluster) [decision, below of=develop] {Cluster?};
+  \node(build-master) [installer, right of=dev-cluster] {Installer w/master branch};
+  \node(dev-os) [decision, below of=dev-cluster] {OS X, Linux, Windows 10?};
+  \node(binary) [binary, below of=dev-os] {Binary};
+
+  \node(nodev-cluster) [decision, below of=code] {Cluster?};
+  \node(nodev-os) [decision, below of=nodev-cluster] {OS X, Linux, Windows 10?};
+  \node(build-tarball) [installer, left of=nodev-cluster] {Installer w/tarball};
+
+  % Paths
+  \draw[arrowto] (start) -- (code);
+
+  \draw[arrowto] (code) -- (develop) node[answer] {yes};
+  \draw[arrowto] (develop) -- (fork) node[answer] {yes};
+
+  \draw[arrowto] (develop) -- (fork) node[answer] {yes};
+
+  \draw[arrowto] (develop) -- (dev-cluster) node[answer, right] {no};
+  \draw[arrowto] (dev-cluster) -- (build-master) node[answer] {yes};
+  \draw[arrowto] (dev-cluster) -- (dev-os) node[answer, right] {no};
+  \draw[arrowto] (dev-os) -- (binary) node[answer, right] {yes};
+
+  \draw[arrowto] (dev-os) -| (build-master) node[answer, near start] {no};
+
+  \draw[arrowto] (code) -- (nodev-cluster) node[answer, right] {no};
+  \draw[arrowto] (nodev-cluster) -- (nodev-os) node[answer, right] {no};
+  \draw[arrowto] (nodev-os) |- (binary) node[answer, near start, right] {yes};
+  \draw[arrowto] (nodev-cluster) -- (build-tarball) node[answer] {yes};
+  \draw[arrowto] (nodev-os) -| (build-tarball) node[answer, near start] {no};
+
+\end{tikzpicture}
+
+\end{document}
