@@ -643,12 +643,12 @@ for faster convergence rates.
 
 \subsection{Kinematic Earthquake Rupture}
 
-Kinematic earthquake ruptures use the FaultCohesiveKin object to specify
-the slip as a function of time on the fault surface. Slip may evolve
-simultaneously over the fault surface instantaneously in a single
-time step (as is usually done in quasi-static simulations) or propagate
-over the fault surface over hundreds and up to thousands of time steps
-(as is usually done in a dynamic simulation).
+Kinematic earthquake ruptures use the \object{FaultCohesiveKin} object
+to specify the slip as a function of time on the fault surface. Slip
+may evolve simultaneously over the fault surface instantaneously in a
+single time step (as is usually done in quasi-static simulations) or
+propagate over the fault surface over hundreds and up to thousands of
+time steps (as is usually done in a dynamic simulation).
 
 
 \subsubsection{Governing Equations}
@@ -1690,7 +1690,8 @@ include:
 be generated at locations on the fault where the amplitude exceeds
 this threshold.}
 \propertyitem{impulse\_dof}{Array of components associated with impulses, e.g.,
-[0, 1] for slip involving the lateral and up-dip components.}
+[0, 1, 2] for slip involving the left-lateral, reverse, and opening
+components, respectively.}
 \facilityitem{db\_impulse\_amplitude}{Spatial database for amplitude of slip
 impulse (scalar field). Default is \object{SimpleDB}.}
 \end{inventory}
