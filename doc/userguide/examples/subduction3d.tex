@@ -157,6 +157,47 @@ generate the mesh. In the end you will have an Exodus-II file
   journal file to understand how we assemble the 3-D slab and cut the
   rectangular domain into pieces.}
 
+\subsubsection{Visualizing the Mesh}
+
+The Exodus-II file \filename{mesh\_tet.exo} can be viewed with
+ParaView. We provide the Python script \filename{viz/pot\_mesh.py} to
+visualize the nodesets and the mesh quality using the condition number
+metric. As in our other Python scripts for ParaView (see
+Section~\vref{sec:ParaView:Python:scripts} for a discussion of how to use
+Python ParaView scripts), you can override the default
+parameters by setting appropriate values in the Python shell (if
+running within the ParaView GUI) or from the command line (if running
+the script directly outside the GUI). When viewing the nodesets, the
+animation controls allow stepping through the nodesets. When viewing
+the mesh quality, only the cells with the given quality metric above
+some threshold (poorer quality) are shown. The default quality metric
+is condition number and the default threshold is 2.0.
+
+To visualize the mesh, start ParaView. Within the ParaView GUI Python shell
+(\menu{Tools}$\rightarrow$\menu{Python Shell}), we override the
+\filename{EXODUS\_FILE} and \filename{SHOW\_QUALITY} parameters.
+\begin{python}
+# Import the os module so we can get access to the HOME environment variable.
+>>> import os
+>>> HOME = os.environ["HOME"]
+>>> EXODUS_FILE = os.path.join(HOME,"pylith","examples","3d","subduction","mesh","mesh_tet.exo")
+# Turn off display of the mesh quality (show only the nodesets).
+>>> SHOW_QUALITY = False
+\end{python}
+We then click on the \menu{Run Script} button and navigate to the
+\filename{examples/3d/subduction/viz} directory and select
+\filename{plot\_mesh.py}.
+
+\begin{figure}[htbp]
+  \includegraphics[width=5.0in]{examples/figs/subduction3d_mesh}
+  \caption{Visualization of the \object{fault\_slabtop} nodeset
+    (yellow dots) for the Exodus-II file \filename{mesh/mesh\_tet.exo}
+    using the \filename{viz/plot\_mesh.py} ParaView Python script. One
+    can step through the different nodesets using the animation
+    controls. This script can also be use to show the mesh quality.}
+  \label{fig:example:subduction:3d:mesh}
+\end{figure}
+
 \subsection{Organization of Simulation Parameters}
 \label{sec:example:subduction:3d:organization}
 
@@ -448,6 +489,7 @@ the horizontal displacement components.
 \end{figure}
 
 
+\todo{brad}{Update this}
 There are three different ways you can run this Python script to view
 the solution:
 \begin{enumerate}
