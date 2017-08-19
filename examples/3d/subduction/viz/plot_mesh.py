@@ -178,20 +178,20 @@ if __name__ == "__main__":
     parser.add_argument("--hide-quality", action="store_false", dest="show_quality", default=DEFAULTS["SHOW_QUALITY"])
     parser.add_argument("--quality-metric", action="store", dest="quality_metric", default=DEFAULTS["QUALITY_METRIC"])
     parser.add_argument("--quality-threshold", action="store", type=float, dest="quality_threshold", default=DEFAULTS["QUALITY_THRESHOLD"])
-    
-
-
+    parser.add_argument("--screenshot", action="store", dest="screenshot")
     args = parser.parse_args()
 
     visualize(args)
 
     view = GetRenderView()
-    #view.CameraPosition = [-80160, -1130898, 133977]
-    #view.CameraFocalPoint = [-55107, 446810, 283137]
+    view.CameraPosition = [78002.89373974672, -1531813.1739094853, 595774.2094961794]
+    view.CameraFocalPoint = [-45014.6313325238, 149523.68421156122, -335271.271063906]
     view.CameraViewUp = [0.0, 0.0, 1.0]
-    view.CameraViewAngle = 45.0
     view.ViewSize = [960, 540]
     view.Update()
+
+    if args.screenshot:
+        WriteImage(args.screenshot)
 
     Interact()
 
