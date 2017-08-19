@@ -218,6 +218,15 @@
     morekeywords={$$},%
     commentstyle=\itshape\color{orange},
 }}{}
+%
+% python
+\lstnewenvironment{python}{\lstset{%
+    language=python,%
+    frame=single,%
+    basicstyle=\small\ttfamily,%
+    morekeywords={>>>},%
+    commentstyle=\itshape\color{orange},
+}}{}
 
 % ------------------------------------------------------------------
 % Lists
