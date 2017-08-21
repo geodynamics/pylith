@@ -502,16 +502,15 @@ $$ pylith step05.cfg
 The problem will produce fourteen pairs of HDF5/Xdmf files. Figure
 \vref{fig:example:subduction:2d:step05}, which was created using the
 ParaView Python script \filename{viz/plot\_dispwarp.py} (see
-Section~\ref{sec:example:subduction:3d:step01} for a discussion of how
-  to run ParaView Python scripts), displays the
-magnitude of the velocity field with the original configuration
-exaggerated by a factor of 4000. Steady slip is largely confined to
-the stable sliding regions with a sequence of ruptures in the
-seismogenic zone; most have a duration of a few time steps, although
-most of the slip occurs in a single time
-step. Figure~\ref{fig:example:subduction:2d:step05:slip} shows the
-cumulative slip as a function of time and distance down dip from the
-trench.
+Section~\vref{sec:ParaView:Python:scripts} for a discussion of how to
+run ParaView Python scripts), displays the magnitude of the velocity
+field with the original configuration exaggerated by a factor of
+4000. Steady slip is largely confined to the stable sliding regions
+with a sequence of ruptures in the seismogenic zone; most have a
+duration of a few time steps, although most of the slip occurs in a
+single time step. Figure~\ref{fig:example:subduction:2d:step05:slip}
+shows the cumulative slip as a function of time and distance down dip
+from the trench.
 
 \begin{figure}
   \includegraphics[width=4.5in]{examples/figs/subduction2d_step05_soln}
