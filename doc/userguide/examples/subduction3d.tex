@@ -180,6 +180,7 @@ To visualize the mesh, start ParaView. Within the ParaView GUI Python shell
 # Import the os module so we can get access to the HOME environment variable.
 >>> import os
 >>> HOME = os.environ["HOME"]
+# You may need to adjust the next line, depending on where you installed PyLith.
 >>> EXODUS_FILE = os.path.join(HOME,"pylith","examples","3d","subduction","mesh","mesh_tet.exo")
 # Turn off display of the mesh quality (show only the nodesets).
 >>> SHOW_QUALITY = False
@@ -453,31 +454,53 @@ properties when we use linear Maxwell viscoelastic constitutive model.
 The remaining parameters in the \filename{step01.cfg} file are mostly
 associated with setting filenames for all of the various output,
 including all of the parameters used and version information in a JSON
-file, a file reporting the progress of the simulation and estimated
-time of completion, and the filenames for the HDF5 files (the
-corresponding Xdmf files will use the same filename with the
-\filename{.xmf} suffix).
+file (\filename{output/step01-parameters.json}), a file reporting the
+progress of the simulation and estimated time of completion
+(\filename{output/step01-progress.txt}), and the filenames for the
+HDF5 files (the corresponding Xdmf files will use the same filename
+with the \filename{.xmf} suffix).
 
 We run this example by typing
 \begin{shell}
 $$ pylith step01.cfg mat_elastic.cfg
 \end{shell}
-The problem will produce ten pairs of HDF5/Xdmf files. The HDF5
-files contain the data and the Xdmf files contain the metadata required
-by ParaView and Visit (and other visualization tools that
-use Xdmf files) to access the mesh and data sets in the HDF5 files.
-The files include the solution over the domain and ground surface
-(two pairs of files), and physical properties, stress, and strain within
-each material (eight pairs of files). 
+The simulation will produce ten pairs of HDF5/Xdmf files in the
+\filename{output} directory:
+\begin{description}
+% Domain and subdomain output
+\item[\filename{step01-domain.h5[.xmf]}] Time series of the solution field over the domain.
+\item[\filename{step01-groundsurf.h5[.xmf]}] Time series of the solution field over the ground surface.
+% Materials
+\item[\filename{step01-slab\_info.h5[.xmf]}] Properties for
+  the slab material.
+\item[\filename{step01-slab.h5[.xmf]}] Time series of the state variables (stress and strain) for the slab material.
+\item[\filename{step01-wedge\_info.h5[.xmf]}] Properties for
+  the wedge material.
+\item[\filename{step01-wedge.h5[.xmf]}] Time series of the state variables (stress and strain) for the wedge material.
+\item[\filename{step01-crust\_info.h5[.xmf]}] Properties for
+  the crust material.
+\item[\filename{step01-crust.h5[.xmf]}] Time series of the tate variables
+  (stress and strain) for the crust material.
+\item[\filename{step01-mantle\_info.h5[.xmf]}] Properties for
+  the mantle material.
+\item[\filename{step01-mantle.h5[.xmf]}] Time series of the state variables
+  (stress and strain) for the mantle material.
+\end{description}
+The HDF5 files contain the data and the Xdmf files contain the
+metadata required by ParaView and Visit (and other visualization tools
+that use Xdmf files) to access the mesh and data sets in the HDF5
+files.
 
-Figure \ref{fig:example:subduction:3d:step01}, which was created
-using the ParaView Python script \filename{plot\_dispvec.py}, displays
-the magnitude of the displacement field arrows showing the direction
-and magnitude of the deformation. Material properties with a positive
-Poisson's ratio result in vertical deformation along with the axial
-compression. The variations in material properties among the
-properties result in local spatial variations that are most evident in
-the horizontal displacement components.
+Figure \ref{fig:example:subduction:3d:step01}, which was created using
+the ParaView Python script \filename{plot\_dispvec.py} (see
+Section~\vref{sec:ParaView:Python:scripts} for how to run ParaView
+Python scripts), displays the magnitude of
+the displacement field arrows showing the direction and magnitude of
+the deformation. Material properties with a positive Poisson's ratio
+result in vertical deformation along with the axial compression. The
+variations in material properties among the properties result in local
+spatial variations that are most evident in the horizontal
+displacement components.
 
 \begin{figure}
   \includegraphics[width=5.0in]{examples/figs/subduction3d_step01_soln}
@@ -488,86 +511,32 @@ the horizontal displacement components.
   \label{fig:example:subduction:3d:step01}
 \end{figure}
 
-
-\todo{brad}{Update this}
-There are three different ways you can run this Python script to view
-the solution:
-\begin{enumerate}
-\item From a shell (terminal window) start ParaView via the command line from the
-  \filename{examples/3d/subduction} directory. Within the ParaView GUI, select
-  \object{Tools}$\rightarrow$\object{Python Shell}, click on the
-  \object{Run Script} button, and navigate to the \filename{viz}
-  directory and select the \filename{plot\_dispvec.py} file.
-
-\item From a shell (terminal window) start ParaView via the command line from the
-  \filename{examples/3d/subduction} directory adding the
-  \filename{-{}-script=viz/plot\_dispvec.py} command line argument.
-\begin{shell}
-# Make sure you are in the examples/3d/subduction directory.
-$$ PATH_TO_PARAVIEW/paraview --script=viz/plot_dispvec.py
-\end{shell}
-\item Run the ParaView Python script directly from a shell (terminal
-  window) via the command line. You can use command line arguments to
-  set user-specified parameters. If pvpython 
-\begin{shell}
-# Make sure you are in the examples/3d/subduction directory.
-# We show the optional command line arguments in square brackets.  
-$$ ./viz/plot_dispvec.py [--vector-scale=10.0e+4] [--sim=step01.cfg} [--screenshot=FILE]
-#
-# If pvpython is not in your PATH, then you can run the script using:
-$$ PATH_TO_PVPYTHON/pvpython ./viz/plot_dispvec.py
-\end{shell}
-\end{enumerate}
-
-\tip{Running the ParaView Python script from within the ParaView GUI
-  allows further manipulation of the data, which is not possible when
-  running the ParaView Python script outside the ParaView
-  GUI.}
-
-\tip{In order to change the user-specified parameters in the ParaView
-  Python scripts when running them from within the ParaView GUI, you
-  must edit the file in an external text editor before running the
-  script. If you are running these script from outside the ParaView
-  GUI, you can simply use command line argument to change the
-  user-specified parameters.}
-
-\important{The ParaView Python scripts run Python via
-  \filename{pvpython}, which is a customized version of the Python
-  interpreter included in the ParaView distribution. This is different
-  from Python provided with your operating system and the one included
-  in the PyLith distribution.}
-
-  
 \subsubsection{Exercises}
-
 
 \begin{itemize}
 \item Run PyLith again and add
   \filename{solver\_algebraicmultigrid.cfg} as an argument on the
-  command line to switch to the
-  algebraic multigrid preconditioner.
+  command line to switch to the algebraic multigrid preconditioner.
   \begin{itemize}
-  \item Using the PETSc log summary to compare the runtime and
-    memory use between the original LU preconditioner and the ML
-    algebraic multigrid preconditioner. Hint: The algebraic
-    multigrid preconditioner is faster.
+  \item Using the PETSc log summary to compare the runtime and memory
+    use between the original LU preconditioner and the ML algebraic
+    multigrid preconditioner. Hint: The algebraic multigrid
+    preconditioner is faster.
   \item Run the simulation again with the algebraic multigrid
     preconditioner using multiple cores via the
     \commandline{-{}-nodes=NCORES} argument, replacing
     \commandline{NCORES} with 2 or up to the number of cores on your
-    machine. Examine the PETSc log summary for the various runs to
-    see how the time spent at varies stages changes with the number
-    of cores. Make a plot of runtime versus the number of
-    cores.
+    machine. Examine the PETSc log summary for the various runs to see
+    how the time spent at varies stages changes with the number of
+    cores. Make a plot of runtime versus the number of cores.
   \end{itemize}
-\item Adjust the material properties in the spatial databases so that the slab is stiffer and
-  the wedge is more compliant. What happens to the solution if you make the
-  materials nearly incompressible? Does this also affect the rate of
-  convergence of the linear solve?
+\item Adjust the material properties in the spatial databases so that
+  the slab is stiffer and the wedge is more compliant. What happens to
+  the solution if you make the materials nearly incompressible? Does
+  this also affect the rate of convergence of the linear solve?
 \item Change the Dirichlet boundary conditions to impose pure shear
   instead of axial compression. Hint: You will need to change the
-  boundary conditions on the east, west, north, and south
-  boundaries.
+  boundary conditions on the east, west, north, and south boundaries.
 \end{itemize}
     
 
@@ -734,6 +703,18 @@ We run this example by typing
 \begin{shell}
 $$ pylith step02.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg
 \end{shell}
+The simulation will produce twelve pairs of HDF5/Xdmf files, beginning
+with \filename{step02}, in the \filename{output} directory. In
+addition to the ten pairs of HDF5/Xdmf files analogous to those
+produced in Step 1, we also have two pairs of HDF5/Xdmf files
+associated with the fault:
+\begin{description}
+% Fault
+\item[\filename{step02-fault-slab\_info.h5[.xmf]}] Fault orientation
+  and rupture information.
+\item[\filename{step02-fault-slab.h5[.xmf]}] Time series of slip and
+  traction changes.
+\end{description}
 
 Figure \ref{fig:example:subduction:3d:step02}, which was created
 using the ParaView Python script \filename{plot\_dispwarp.py},
@@ -929,6 +910,11 @@ We run this example by typing
 \begin{shell}
 $$ pylith step03.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg
 \end{shell}
+The simulation will produce fourteen pairs of HDF5/Xdmf files,
+beginning with \filename{step03}, in the \filename{output}
+directory. As in Step 2, there are two pairs of HDF5/Xdmf files for
+each fault; one set for the fault orientation and rupture information
+and one set for the time series of slip and change in tractions.
 
 Figure \ref{fig:example:subduction:3d:step03}, which was created
 using the ParaView Python script \filename{plot\_dispwarp.py}, shows
@@ -1106,6 +1092,11 @@ We run this example by typing
 \begin{shell}
 $$ pylith step04.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg
 \end{shell}
+The simulation will produce sixteen pairs of HDF5/Xdmf files,
+beginning with \filename{step04}, in the \filename{output}
+directory. The output includes the solution over the domain and ground
+surface, the properties and state variables for each material, and the
+the fault orientation and rupture information for each fault.
 
 Figure \ref{fig:example:subduction:3d:step04}, which was created
 using the ParaView Python script \filename{plot\_dispwarp.py}, shows
@@ -1292,7 +1283,7 @@ fault_slabtop_slowslip.spatialdb  fault_slabtop_slowslip.timedb
 $$ cd ..
 $$ pylith step06.cfg mat_elastic.cfg solver_fieldsplit.cfg
 \end{shell}
-The problem will produce 13 pairs of HDF5/Xdmf files. The additional
+The problem will produce thirteen pairs of HDF5/Xdmf files. The additional
 HDF5 file that was not present in previous examples is
 \filename{step06-cgps\_sites.h5}, which contains the displacements at
 the fake cGPS sites.
@@ -1434,12 +1425,24 @@ You can run the two sub-problems as follows:
 $$ pylith --problem=pylith.problems.GreensFns step07a.cfg mat_elastic.cfg solver_fieldsplit.cfg
 $$ pylith --problem=pylith.problems.GreensFns step07b.cfg mat_elastic.cfg solver_fieldsplit.cfg
 \end{shell}
+Each simulation will produce four pairs of HDF5/Xdmf files. For Step
+7a these will be:
+\begin{description}
+\item[\filename{step07a-groundsurf.h5[.xmf]}] Solution field over the
+  ground surface for each slip impulse.
+\item[\filename{step07a-cgps\_sites.h5[.xmf]}] Solution field at
+  continuous GPS sites for each slip impulse.
+\item[\filename{step07a-fault-slab\_info.h5[.xmf]}] Fault orientation
+  and impulse information.
+\item[\filename{step07a-fault-slab.h5[.xmf]}] Fault slip for each slip
+  impulse.
+\end{description}
 
 \tip{To save time, run the two sub-problems simultaneously in separate
-  shells (terminals). For a problem this size, this should work fine
-  on a laptop. For larger problems, we would run the simulations via
-  separate jobs on a cluster with each job running on multiple
-  processes.}
+  shells (terminal windows or tabs). For a problem this size, this
+  should work fine on a laptop. For larger problems, we would run the
+  simulations via separate jobs on a cluster with each job running on
+  multiple processes.}
 
 % Post-process Step 6 output
 Before we can run the inversion, we post-process the output from Step
@@ -1631,6 +1634,11 @@ We run the sub-problem by typing:
 \begin{shell}
 $$ pylith step08a.cfg mat_elastic.cfg solver_algebraicmultigrid.cfg
 \end{shell}
+The simulation will generate ten pairs of HDF5/Xdmf files beginning
+with \filename{step08a}. Two pairs of files include the solution over
+the domain and ground surface. For each material the \filename{info}
+pair of files contains the properties and the other pair of files
+pairs of files contains the state variables.
 
 When the problem has run, we see deformation that is consistent with
 the mismatched densities. The slab subsides while the crust undergoes
@@ -1652,22 +1660,22 @@ script.
 
 \subsubsection{Step 8b}
 
-Step 8b is similar to Step 8a, but we use the stresses output from Step 8a as the
-initial stress rather than analytically computing
+Step 8b is similar to Step 8a, but we use the stresses output from
+Step 8a as the initial stress rather than analytically computing
 initial stresses. Because the initial stresses are consistent with the
 variations in density across the materials, the initial stresses will
 satisfy equilibrium and there will be essentially no deformation; the
 initial stresses do not perfectly balance because in Step 8a we
 average the values over the quadrature points for the output. We use
-the Python script \filename{generate\_initial\_stress.py}, located in the
-\filename{spatialdb} directory, to
-postprocess the output from Step 8a and generate the initial stress
-spatial database. Note that this script uses the Python interface to
-the spatialdata package to write the spatial database; this is much
-easier than writing a script to format the data to conform to the
-format of the spatial database. The spatial database will contain the
-stresses at each cell of our unstructured mesh, so the points are not
-on a logical grid, and we must use a \object{SimpleDB}.
+the Python script \filename{generate\_initial\_stress.py}, located in
+the \filename{spatialdb} directory, to postprocess the output from
+Step 8a and generate the initial stress spatial database. Note that
+this script uses the Python interface to the spatialdata package to
+write the spatial database; this is much easier than writing a script
+to format the data to conform to the format of the spatial
+database. The spatial database will contain the stresses at each cell
+of our unstructured mesh, so the points are not on a logical grid, and
+we must use a \object{SimpleDB}.
 \begin{shell}
 # From the examples/3d/subduction directory, change to the spatialdb subdirectory.
 $$ cd spatialdb
@@ -1704,6 +1712,13 @@ interpolation in this unstructured set of points.
 <p>db_initial_stress.iohandler.filename</p> =
 spatialdb/mat_initial_stress_grav-crust.spatialdb
 \end{cfg}
+
+We run the sub-problem by typing:
+\begin{shell}
+$$ pylith step08b.cfg mat_elastic.cfg solver_algebraicmultigrid.cfg
+\end{shell}
+This simulation will produce files in the \filename{output} directory
+analogous to Step 8a.
 
 When we compare the resulting elastic displacements with those of
 Step 8a, we find that there is essentially no displacement,
