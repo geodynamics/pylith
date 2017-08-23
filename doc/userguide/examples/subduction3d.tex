@@ -703,12 +703,28 @@ We run this example by typing
 \begin{shell}
 $$ pylith step02.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg
 \end{shell}
-The simulation will produce twelve pairs of HDF5/Xdmf files, beginning
-with \filename{step02}, in the \filename{output} directory. In
-addition to the ten pairs of HDF5/Xdmf files analogous to those
+In addition to the ten pairs of HDF5/Xdmf files analogous to those
 produced in Step 1, we also have two pairs of HDF5/Xdmf files
 associated with the fault:
 \begin{description}
+% Domain and subdomain output
+\item[\filename{step02-domain.h5[.xmf]}] Time series of the solution field over the domain.
+\item[\filename{step02-groundsurf.h5[.xmf]}] Time series of the solution field over the ground surface.
+% Materials
+\item[\filename{step02-slab\_info.h5[.xmf]}] Properties for
+  the slab material.
+\item[\filename{step02-slab.h5[.xmf]}] Time series of the state variables (stress and strain) for the slab material.
+\item[\filename{step02-wedge\_info.h5[.xmf]}] Properties for
+  the wedge material.
+\item[\filename{step02-wedge.h5[.xmf]}] Time series of the state variables (stress and strain) for the wedge material.
+\item[\filename{step02-crust\_info.h5[.xmf]}] Properties for
+  the crust material.
+\item[\filename{step02-crust.h5[.xmf]}] Time series of the tate variables
+  (stress and strain) for the crust material.
+\item[\filename{step02-mantle\_info.h5[.xmf]}] Properties for
+  the mantle material.
+\item[\filename{step02-mantle.h5[.xmf]}] Time series of the state variables
+  (stress and strain) for the mantle material.
 % Fault
 \item[\filename{step02-fault-slab\_info.h5[.xmf]}] Fault orientation
   and rupture information.
@@ -912,7 +928,37 @@ $$ pylith step03.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg
 \end{shell}
 The simulation will produce fourteen pairs of HDF5/Xdmf files,
 beginning with \filename{step03}, in the \filename{output}
-directory. As in Step 2, there are two pairs of HDF5/Xdmf files for
+directory:
+\begin{description}
+% Domain and subdomain output
+\item[\filename{step03-domain.h5[.xmf]}] Time series of the solution field over the domain.
+\item[\filename{step03-groundsurf.h5[.xmf]}] Time series of the solution field over the ground surface.
+% Materials
+\item[\filename{step03-slab\_info.h5[.xmf]}] Properties for
+  the slab material.
+\item[\filename{step03-slab.h5[.xmf]}] Time series of the state variables (stress and strain) for the slab material.
+\item[\filename{step03-wedge\_info.h5[.xmf]}] Properties for
+  the wedge material.
+\item[\filename{step03-wedge.h5[.xmf]}] Time series of the state variables (stress and strain) for the wedge material.
+\item[\filename{step03-crust\_info.h5[.xmf]}] Properties for
+  the crust material.
+\item[\filename{step03-crust.h5[.xmf]}] Time series of the tate variables
+  (stress and strain) for the crust material.
+\item[\filename{step03-mantle\_info.h5[.xmf]}] Properties for
+  the mantle material.
+\item[\filename{step03-mantle.h5[.xmf]}] Time series of the state variables
+  (stress and strain) for the mantle material.
+% Fault
+\item[\filename{step03-fault-slabbot\_info.h5[.xmf]}] Fault orientation
+  and rupture information for the bottom of the slab.
+\item[\filename{step03-fault-slabbot.h5[.xmf]}] Time series of slip and
+  traction changes for the bottom of the slab.
+\item[\filename{step03-fault-slabtop\_info.h5[.xmf]}] Fault orientation
+  and rupture information for the top of the slab.
+\item[\filename{step03-fault-slabtop.h5[.xmf]}] Time series of slip and
+  traction changes for the top of the slab.
+\end{description}
+As in Step 2, there are two pairs of HDF5/Xdmf files for
 each fault; one set for the fault orientation and rupture information
 and one set for the time series of slip and change in tractions.
 
@@ -1094,9 +1140,40 @@ $$ pylith step04.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg
 \end{shell}
 The simulation will produce sixteen pairs of HDF5/Xdmf files,
 beginning with \filename{step04}, in the \filename{output}
-directory. The output includes the solution over the domain and ground
-surface, the properties and state variables for each material, and the
-the fault orientation and rupture information for each fault.
+directory:
+\begin{description}
+% Domain and subdomain output
+\item[\filename{step04-domain.h5[.xmf]}] Time series of the solution field over the domain.
+\item[\filename{step04-groundsurf.h5[.xmf]}] Time series of the solution field over the ground surface.
+% Materials
+\item[\filename{step04-slab\_info.h5[.xmf]}] Properties for
+  the slab material.
+\item[\filename{step04-slab.h5[.xmf]}] Time series of the state variables (stress and strain) for the slab material.
+\item[\filename{step04-wedge\_info.h5[.xmf]}] Properties for
+  the wedge material.
+\item[\filename{step04-wedge.h5[.xmf]}] Time series of the state variables (stress and strain) for the wedge material.
+\item[\filename{step04-crust\_info.h5[.xmf]}] Properties for
+  the crust material.
+\item[\filename{step04-crust.h5[.xmf]}] Time series of the tate variables
+  (stress and strain) for the crust material.
+\item[\filename{step04-mantle\_info.h5[.xmf]}] Properties for
+  the mantle material.
+\item[\filename{step04-mantle.h5[.xmf]}] Time series of the state variables
+  (stress and strain) for the mantle material.
+% Fault
+\item[\filename{step04-fault-slabbot\_info.h5[.xmf]}] Fault orientation
+  and rupture information for the bottom of the slab.
+\item[\filename{step04-fault-slabbot.h5[.xmf]}] Time series of slip and
+  traction changes for the bottom of the slab.
+\item[\filename{step04-fault-slabtop\_info.h5[.xmf]}] Fault orientation
+  and rupture information for the top of the slab.
+\item[\filename{step04-fault-slabtop.h5[.xmf]}] Time series of slip and
+  traction changes for the top of the slab.
+\item[\filename{step04-fault-splay\_info.h5[.xmf]}] Fault orientation
+  and rupture information for the splay fault.
+\item[\filename{step04-fault-splay.h5[.xmf]}] Time series of slip and
+  traction changes for the splay fault.
+\end{description}
 
 Figure \ref{fig:example:subduction:3d:step04}, which was created
 using the ParaView Python script \filename{plot\_dispwarp.py}, shows
@@ -1283,8 +1360,34 @@ fault_slabtop_slowslip.spatialdb  fault_slabtop_slowslip.timedb
 $$ cd ..
 $$ pylith step06.cfg mat_elastic.cfg solver_fieldsplit.cfg
 \end{shell}
-The problem will produce thirteen pairs of HDF5/Xdmf files. The additional
-HDF5 file that was not present in previous examples is
+The problem will produce thirteen pairs of HDF5/Xdmf files:
+\begin{description}
+% Domain and subdomain output
+\item[\filename{step06-domain.h5[.xmf]}] Time series of the solution field over the domain.
+\item[\filename{step06-groundsurf.h5[.xmf]}] Time series of the solution field over the ground surface.
+\item[\filename{step06-cgps\_sites.h5[.xmf]}] Time series of the solution field at the cGPS sites.
+% Materials
+\item[\filename{step06-slab\_info.h5[.xmf]}] Properties for
+  the slab material.
+\item[\filename{step06-slab.h5[.xmf]}] Time series of the state variables (stress and strain) for the slab material.
+\item[\filename{step06-wedge\_info.h5[.xmf]}] Properties for
+  the wedge material.
+\item[\filename{step06-wedge.h5[.xmf]}] Time series of the state variables (stress and strain) for the wedge material.
+\item[\filename{step06-crust\_info.h5[.xmf]}] Properties for
+  the crust material.
+\item[\filename{step06-crust.h5[.xmf]}] Time series of the tate variables
+  (stress and strain) for the crust material.
+\item[\filename{step06-mantle\_info.h5[.xmf]}] Properties for
+  the mantle material.
+\item[\filename{step06-mantle.h5[.xmf]}] Time series of the state variables
+  (stress and strain) for the mantle material.
+% Fault
+\item[\filename{step06-fault-slab\_info.h5[.xmf]}] Fault orientation
+  and rupture information for the top of the slab.
+\item[\filename{step06-fault-slab.h5[.xmf]}] Time series of slip and
+  traction changes for the top of the slab.
+\end{description}
+The additional HDF5 file that was not present in previous examples is
 \filename{step06-cgps\_sites.h5}, which contains the displacements at
 the fake cGPS sites.
 
@@ -1635,10 +1738,27 @@ We run the sub-problem by typing:
 $$ pylith step08a.cfg mat_elastic.cfg solver_algebraicmultigrid.cfg
 \end{shell}
 The simulation will generate ten pairs of HDF5/Xdmf files beginning
-with \filename{step08a}. Two pairs of files include the solution over
-the domain and ground surface. For each material the \filename{info}
-pair of files contains the properties and the other pair of files
-pairs of files contains the state variables.
+with \filename{step08a}:
+\begin{description}
+% Domain and subdomain output
+\item[\filename{step08a-domain.h5[.xmf]}] Time series of the solution field over the domain.
+\item[\filename{step08a-groundsurf.h5[.xmf]}] Time series of the solution field over the ground surface.
+% Materials
+\item[\filename{step08a-slab\_info.h5[.xmf]}] Properties for
+  the slab material.
+\item[\filename{step08a-slab.h5[.xmf]}] Time series of the state variables (stress and strain) for the slab material.
+\item[\filename{step08a-wedge\_info.h5[.xmf]}] Properties for
+  the wedge material.
+\item[\filename{step08a-wedge.h5[.xmf]}] Time series of the state variables (stress and strain) for the wedge material.
+\item[\filename{step08a-crust\_info.h5[.xmf]}] Properties for
+  the crust material.
+\item[\filename{step08a-crust.h5[.xmf]}] Time series of the tate variables
+  (stress and strain) for the crust material.
+\item[\filename{step08a-mantle\_info.h5[.xmf]}] Properties for
+  the mantle material.
+\item[\filename{step08a-mantle.h5[.xmf]}] Time series of the state variables
+  (stress and strain) for the mantle material.
+\end{description}
 
 When the problem has run, we see deformation that is consistent with
 the mismatched densities. The slab subsides while the crust undergoes
@@ -1772,6 +1892,9 @@ can run the simulation by typing:
 \begin{shell}
 $$ pylith step08c.cfg mat_viscoelastic.cfg solver_algebraicmultigrid.cfg
 \end{shell}
+This simulation will produce files in the \filename{output} directory
+analogous to Steps 8a and 8b.
+
 The resulting deformation is shown in Figure
 \ref{fig:example:subduction:3d:step08c}. As a result of viscous flow,
 the vertical deformation is even larger than that for Step 8a. If we
