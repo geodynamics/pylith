@@ -3,9 +3,34 @@
 
 \section{Overview}
 
-Each example is a self-contained lesson in how to use PyLith. The
-examples increase in degree of complexity from one to the next.
+This chapter includes several suites of examples. Each suite includes
+several ``steps'' which are examples that increase in complexity from
+one ``step'' to the next. In some cases, a later step may make use of
+output from an earlier step; these cases are clearly
+documented. Table~\ref{tab:examples:overview} classifies the level of
+difficulty of each example suite and provides a general description of
+the type of problems discussed.
 
+\begin{table}[htbp]
+\caption{Overview of example suites.}
+\label{tab:examples:overview}
+\begin{tabular}{lccp{4in}}
+\textbf{Directory} & \textbf{Section(s)} & \textbf{Difficulty} & \textbf{Description} \\
+\hline 
+\filename{twocells} & \ref{sec:example:twotri3}--\ref{sec:examples:twotet4-geoproj} & novice & Toy problems with ASCII two-cell meshes. \\
+\filename{3d/hex8} & \ref{sec:example:3dhex8} & beginner & Illustration of most features using simple CUBIT box mesh. \\
+\filename{3d/tet4} & \ref{sec:example:3dtet4} & beginner & Illustration of refinement using simple LaGriT box mesh. \\
+\filename{bar\_shearwave} & \ref{sec:example:shearwave:tri3}--\ref{sec:example:shearwave:hex8} & beginner & Illustration of wave propagation using simple shear beam. \\
+\filename{2d/subduction} & \ref{sec:example:subduction:2d} & intermediate & Illustration of coseismic, postseismic, and creep deformation using a 2-D subduction zone cross-section with a CUBIT mesh. \\
+\filename{2d/greensfns} & \ref{sec:example:greensfns2d} & intermediate & Illustration of computing static Green's functions for a strike-slip and reverse fault using a CUBIT mesh. \\
+\filename{3d/subduction} & \ref{sec:example:subduction:3d} & intermediate & Illustration of most PyLith features for quasi-static deformation using a 3-D subduction zone with a CUBIT mesh. \\
+\hline 
+\end{tabular}
+The \filename{3d/subduction} example suite is the newest and most
+comprehensive. Users wanting to use PyLith in their research should
+work through relevant beginner examples and then the
+\filename{3d/subduction} examples.
+\end{table}
 
 \subsection{Prerequisites}
 
@@ -26,7 +51,7 @@ example using files provided (as described below), skipping the steps
 for which you do not have the proper software packages installed.
 
 
-\subsubsection{Input Files}
+\subsection{Input Files}
 
 The files needed to work through the examples are found in the
 \filename{examples} directory under the top-level PyLith
@@ -38,10 +63,6 @@ since it is easy to create these files by hand.  More complex
 problems, such as those found in \filename{examples/3d}, use external
 mesh generation software to create the meshes. All of the files used
 in the example problems are extensively documented with comments.
-
-\subsection{Organization of Examples}
-
-\todo{brad}{ADD STUFF HERE}
 
 \section{ParaView Python Scripts}
 \label{sec:ParaView:Python:scripts}
