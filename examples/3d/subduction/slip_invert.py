@@ -70,42 +70,34 @@ class SlipInvert(Application):
   rake = pyre.inventory.dimensional("rake", default=90.0*degree)
   rake.meta['tip'] = "Assumed rake angle."
 
-  gfImpulsesLlFile = pyre.inventory.str("gfimpulses_ll_file",
-                                         default="gfimpulse_ll.h5")
+  gfImpulsesLlFile = pyre.inventory.str("gfimpulses_ll_file", default="gfimpulse_ll.h5")
   gfImpulsesLlFile.meta['tip'] = "HDF5 file with left-lateral GF impulses."
 
-  gfImpulsesUdFile = pyre.inventory.str("gfimpulses_ud_file",
-                                         default="gfimpulse_ud.h5")
+  gfImpulsesUdFile = pyre.inventory.str("gfimpulses_ud_file", default="gfimpulse_ud.h5")
   gfImpulsesUdFile.meta['tip'] = "HDF5 file with updip GF impulses."
 
-  gfResponsesLlFile = pyre.inventory.str("gfresponses_ll_file",
-                                         default="gfresponse_ll.h5")
+  gfResponsesLlFile = pyre.inventory.str("gfresponses_ll_file", default="gfresponse_ll.h5")
   gfResponsesLlFile.meta['tip'] = "HDF5 file with left-lateral GF responses."
 
-  gfResponsesUdFile = pyre.inventory.str("gfresponses_ud_file",
-                                         default="gfresponse_ud.h5")
+  gfResponsesUdFile = pyre.inventory.str("gfresponses_ud_file", default="gfresponse_ud.h5")
   gfResponsesUdFile.meta['tip'] = "HDF5 file with updip GF responses."
 
   aPrioriValue = pyre.inventory.float("a_priori_value", default=0.0)
   aPrioriValue.meta['tip'] = "A priori value for parameters."
 
-  penaltyWeightVals = pyre.inventory.list("penalty_weight_vals",
-                                          default=[0.1,0.5,1.0,5.0,10.0])
+  penaltyWeightVals = pyre.inventory.list("penalty_weight_vals", default=[0.1,0.5,1.0,5.0,10.0])
   penaltyWeightVals.meta['tip'] = "List of penalty weights."
 
   dataScale = pyre.inventory.float("data_scale", default=1.0)
   dataScale.meta['tip'] = "Scaling factor to apply to data and stdDev."
 
-  resultSummaryFile = pyre.inventory.str("result_summary_file",
-                                         default='result_summary.txt')
+  resultSummaryFile = pyre.inventory.str("result_summary_file", default='result_summary.txt')
   resultSummaryFile.meta['tip'] = "Text file summarizing inversion results."
 
-  slipOutputFile = pyre.inventory.str("slip_output_file",
-                                      default='predicted_slip.h5')
+  slipOutputFile = pyre.inventory.str("slip_output_file", default='predicted_slip.h5')
   slipOutputFile.meta['tip'] = "HDF5 file with predicted slip results."
 
-  displacementOutputFile = pyre.inventory.str("displacement_output_file",
-                                      default='predicted_displacement.h5')
+  displacementOutputFile = pyre.inventory.str("displacement_output_file", default='predicted_displacement.h5')
   displacementOutputFile.meta['tip'] = "HDF5 file with predicted displacements."
 
   
@@ -142,8 +134,6 @@ class SlipInvert(Application):
 
 
   def main(self):
-    # import pdb
-    # pdb.set_trace()
     self.readData()
     self.readGreens()
     self.runInversions()
@@ -157,15 +147,12 @@ class SlipInvert(Application):
     Setup members using inventory.
     """
     Application._configure(self)
-    self.penaltyWeights = numpy.array(self.penaltyWeightVals,
-                                      dtype=numpy.float64)
+    self.penaltyWeights = numpy.array(self.penaltyWeightVals, dtype=numpy.float64)
     self.numPenaltyWeights = self.penaltyWeights.shape[0]
     
     # Left-lateral and updip components from assumed rake.
     self.llComp = math.cos(self.rake.value)
     self.udComp = math.sin(self.rake.value)
-
-    self.genXdmfCmd = "petsc_gen_xdmf.py "
 
     return
 
@@ -182,37 +169,29 @@ class SlipInvert(Application):
     s = h5py.File(self.slipOutputFile, 'w')
 
     # Write fault mesh and time info.
-    summaryInfo = numpy.zeros((self.numPenaltyWeights, self.numSummaryCols),
-                              dtype=numpy.float64)
+    summaryInfo = numpy.zeros((self.numPenaltyWeights, self.numSummaryCols), dtype=numpy.float64)
     cellDimF = 2
     timesF = self.penaltyWeights.reshape(self.numPenaltyWeights, 1, 1)
     vertsF = s.create_dataset('geometry/vertices', data=self.faultVertCoords)
     timesF = s.create_dataset('time', data=timesF, maxshape=(None, 1, 1))
     topoF = s.create_dataset('topology/cells', data=self.faultCells, dtype='d')
     topoF.attrs['cell_dim'] = numpy.int32(cellDimF)
-    totSlip = numpy.zeros((self.numPenaltyWeights, self.numFaultVerts),
-                          dtype=numpy.float64)
-    llSlip = numpy.zeros((self.numPenaltyWeights, self.numFaultVerts),
-                         dtype=numpy.float64)
-    udSlip = numpy.zeros((self.numPenaltyWeights, self.numFaultVerts),
-                         dtype=numpy.float64)
+    totSlip = numpy.zeros((self.numPenaltyWeights, self.numFaultVerts, 1), dtype=numpy.float64)
+    llSlip = numpy.zeros((self.numPenaltyWeights, self.numFaultVerts, 1), dtype=numpy.float64)
+    udSlip = numpy.zeros((self.numPenaltyWeights, self.numFaultVerts, 1), dtype=numpy.float64)
 
     # Write data mesh and time info.
-    cellDimD = 1
-    topolD = numpy.arange(self.numDataPoints,
-                          dtype=numpy.int64).reshape(self.numDataPoints, 1)
+    cellDimD = 0
+    topolD = numpy.arange(self.numDataPoints, dtype=numpy.int64).reshape(self.numDataPoints, 1)
     timesD = self.penaltyWeights.reshape(self.numPenaltyWeights, 1, 1)
     vertsD = d.create_dataset('geometry/vertices', data=self.dataCoords)
     timesD = d.create_dataset('time', data=timesD, maxshape=(None, 1, 1))
     topoD = d.create_dataset('topology/cells', data=topolD, dtype='d')
     topoD.attrs['cell_dim'] = numpy.int32(cellDimD)
 
-    dispEast = numpy.zeros((self.numPenaltyWeights, self.numDataPoints),
-                           dtype=numpy.float64)
-    dispNorth = numpy.zeros((self.numPenaltyWeights, self.numDataPoints),
-                            dtype=numpy.float64)
-    dispUp = numpy.zeros((self.numPenaltyWeights, self.numDataPoints),
-                         dtype=numpy.float64)
+    dispEast = numpy.zeros((self.numPenaltyWeights, self.numDataPoints, 1), dtype=numpy.float64)
+    dispNorth = numpy.zeros((self.numPenaltyWeights, self.numDataPoints, 1), dtype=numpy.float64)
+    dispUp = numpy.zeros((self.numPenaltyWeights, self.numDataPoints, 1), dtype=numpy.float64)
 
     # Indices of displacement components in solution vector.
     eastBegin = 0
@@ -229,8 +208,7 @@ class SlipInvert(Application):
     dataScaledVals = numpy.dot(dataStdDevInvDiag, self.dataVals)
 
     # Create a priori parameter vector.
-    paramVec = self.aPrioriValue * numpy.ones(self.numImpulses,
-                                              dtype=numpy.float64)
+    paramVec = self.aPrioriValue * numpy.ones(self.numImpulses, dtype=numpy.float64)
 
     summFmt = '%g' + 6 * '\t%e' + '\n'
 
@@ -240,16 +218,14 @@ class SlipInvert(Application):
     # Loop over inversions.
     for invNum in range(self.numPenaltyWeights):
       penWeight = self.penaltyWeights[invNum]
-      print '  Working on inversion %d, penalty weight = %g' % (invNum,
-                                                                penWeight)
+      print '  Working on inversion %d, penalty weight = %g' % (invNum, penWeight)
       sys.stdout.flush()
       paramScaledDesign = penWeight * regArray
       paramScaledData = penWeight * paramVec
       designMat = numpy.vstack((dataScaledDesign, paramScaledDesign))
       dataVec = numpy.hstack((dataScaledVals, paramScaledData))
       designMatTrans = numpy.transpose(designMat)
-      genInv = numpy.dot(numpy.linalg.inv(numpy.dot(designMatTrans, designMat)),
-                         designMatTrans)
+      genInv = numpy.dot(numpy.linalg.inv(numpy.dot(designMatTrans, designMat)), designMatTrans)
       solution = numpy.dot(genInv, dataVec)
 
       # Compute residuals, etc.
@@ -264,8 +240,7 @@ class SlipInvert(Application):
       penaltyResidualNorm = numpy.linalg.norm(penaltyResidual)
       penaltyWeightResidualNorm = numpy.linalg.norm(penaltyWeightResidual)
       totalResidualNorm = dataResidualNorm + penaltyResidualNorm
-      totalWeightResidualNorm = dataWeightResidualNorm + \
-                                penaltyWeightResidualNorm
+      totalWeightResidualNorm = dataWeightResidualNorm + penaltyWeightResidualNorm
 
       summaryInfo[invNum,0] = penWeight
       summaryInfo[invNum,1] = dataResidualNorm
@@ -275,12 +250,12 @@ class SlipInvert(Application):
       summaryInfo[invNum,5] = totalResidualNorm
       summaryInfo[invNum,6] = totalWeightResidualNorm
 
-      totSlip[invNum, self.impulseInds] = solution
-      llSlip[invNum, self.impulseInds] = self.llComp * solution
-      udSlip[invNum, self.impulseInds] = self.udComp * solution
-      dispEast[invNum, :] = predicted[eastBegin:eastEnd]
-      dispNorth[invNum, :] = predicted[northBegin:northEnd]
-      dispUp[invNum, :] = predicted[upBegin:upEnd]
+      totSlip[invNum, self.impulseInds, 0] = solution
+      llSlip[invNum, self.impulseInds, 0] = self.llComp * solution
+      udSlip[invNum, self.impulseInds, 0] = self.udComp * solution
+      dispEast[invNum, :, 0] = predicted[eastBegin:eastEnd]
+      dispNorth[invNum, :, 0] = predicted[northBegin:northEnd]
+      dispUp[invNum, :, 0] = predicted[upBegin:upEnd]
 
       print '    Data residual:              %e' % dataResidualNorm
       print '    Weighted data residual:     %e' % dataWeightResidualNorm
@@ -310,9 +285,10 @@ class SlipInvert(Application):
     s.close()
     d.close()
 
-    os.system(self.genXdmfCmd + self.slipOutputFile)
-    os.system(self.genXdmfCmd + self.displacementOutputFile)
-
+    from pylith.meshio.Xdmf import Xdmf
+    xdmfWriter = Xdmf()
+    xdmfWriter.write(self.slipOutputFile)
+    xdmfWriter.write(self.displacementOutputFile)
     return
     
 
