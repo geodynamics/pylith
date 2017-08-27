@@ -169,16 +169,18 @@ class SlipInvert(Application):
     s = h5py.File(self.slipOutputFile, 'w')
 
     # Write fault mesh and time info.
-    summaryInfo = numpy.zeros((self.numPenaltyWeights, self.numSummaryCols), dtype=numpy.float64)
+    summaryInfo = numpy.zeros((self.numPenaltyWeights, self.numSummaryCols),
+                              dtype=numpy.float64)
     cellDimF = 2
     timesF = self.penaltyWeights.reshape(self.numPenaltyWeights, 1, 1)
     vertsF = s.create_dataset('geometry/vertices', data=self.faultVertCoords)
     timesF = s.create_dataset('time', data=timesF, maxshape=(None, 1, 1))
     topoF = s.create_dataset('topology/cells', data=self.faultCells, dtype='d')
     topoF.attrs['cell_dim'] = numpy.int32(cellDimF)
-    totSlip = numpy.zeros((self.numPenaltyWeights, self.numFaultVerts, 1), dtype=numpy.float64)
-    llSlip = numpy.zeros((self.numPenaltyWeights, self.numFaultVerts, 1), dtype=numpy.float64)
-    udSlip = numpy.zeros((self.numPenaltyWeights, self.numFaultVerts, 1), dtype=numpy.float64)
+    slipVec = numpy.zeros((self.numPenaltyWeights, self.numFaultVerts, 3),
+                          dtype=numpy.float64)
+    slipAlongRake = numpy.zeros((self.numPenaltyWeights, self.numFaultVerts, 1),
+                                dtype=numpy.float64)
 
     # Write data mesh and time info.
     cellDimD = 0
@@ -189,17 +191,7 @@ class SlipInvert(Application):
     topoD = d.create_dataset('topology/cells', data=topolD, dtype='d')
     topoD.attrs['cell_dim'] = numpy.int32(cellDimD)
 
-    dispEast = numpy.zeros((self.numPenaltyWeights, self.numDataPoints, 1), dtype=numpy.float64)
-    dispNorth = numpy.zeros((self.numPenaltyWeights, self.numDataPoints, 1), dtype=numpy.float64)
-    dispUp = numpy.zeros((self.numPenaltyWeights, self.numDataPoints, 1), dtype=numpy.float64)
-
-    # Indices of displacement components in solution vector.
-    eastBegin = 0
-    eastEnd = self.numDataPoints
-    northBegin = eastEnd
-    northEnd = northBegin + self.numDataPoints
-    upBegin = northEnd
-    upEnd = northEnd + self.numDataPoints
+    predictedDisp = numpy.zeros((self.numPenaltyWeights, self.numDataPoints, 3), dtype=numpy.float64)
 
     # Rescale equations using data standard deviations.
     dataStdDev = numpy.sqrt(self.dataCov)
@@ -250,12 +242,11 @@ class SlipInvert(Application):
       summaryInfo[invNum,5] = totalResidualNorm
       summaryInfo[invNum,6] = totalWeightResidualNorm
 
-      totSlip[invNum, self.impulseInds, 0] = solution
-      llSlip[invNum, self.impulseInds, 0] = self.llComp * solution
-      udSlip[invNum, self.impulseInds, 0] = self.udComp * solution
-      dispEast[invNum, :, 0] = predicted[eastBegin:eastEnd]
-      dispNorth[invNum, :, 0] = predicted[northBegin:northEnd]
-      dispUp[invNum, :, 0] = predicted[upBegin:upEnd]
+      slipAlongRake[invNum, self.impulseInds, 0] = solution
+      slipVec[invNum, self.impulseInds, 0] = self.llComp * solution
+      slipVec[invNum, self.impulseInds, 1] = self.udComp * solution
+      predictedDisp[invNum, :, :] = predicted.reshape(self.numDataPoints, 3,
+                                                      order='F')
 
       print '    Data residual:              %e' % dataResidualNorm
       print '    Weighted data residual:     %e' % dataWeightResidualNorm
@@ -269,18 +260,12 @@ class SlipInvert(Application):
                   header=self.summaryHead)
     
     # Write results to HDF5 files.
-    slipTot = s.create_dataset('vertex_fields/total_slip', data=totSlip)
-    slipTot.attrs['vector_field_type'] = 'scalar'
-    slipLl = s.create_dataset('vertex_fields/leftlat_slip', data=llSlip)
-    slipLl.attrs['vector_field_type'] = 'scalar'
-    slipUd = s.create_dataset('vertex_fields/updip_slip', data=udSlip)
-    slipUd.attrs['vector_field_type'] = 'scalar'
-    eastDisp = d.create_dataset('vertex_fields/disp_east', data=dispEast)
-    eastDisp.attrs['vector_field_type'] = 'scalar'
-    northDisp = d.create_dataset('vertex_fields/disp_north', data=dispNorth)
-    northDisp.attrs['vector_field_type'] = 'scalar'
-    upDisp = d.create_dataset('vertex_fields/disp_ups', data=dispUp)
-    upDisp.attrs['vector_field_type'] = 'scalar'
+    rakeSlip = s.create_dataset('vertex_fields/rake_slip', data=slipAlongRake)
+    rakeSlip.attrs['vector_field_type'] = 'scalar'
+    vecSlip = s.create_dataset('vertex_fields/slip_vector', data=slipVec)
+    vecSlip.attrs['vector_field_type'] = 'vector'
+    vecDisp = d.create_dataset('vertex_fields/disp_vec', data=predictedDisp)
+    vecDisp.attrs['vector_field_type'] = 'vector'
 
     s.close()
     d.close()
