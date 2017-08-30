@@ -48,7 +48,7 @@ noinst_TMP = \
 	stats_quad4.py
 
 
-AM_TESTS_ENVIRONMENT = PYTHONPATH='$(PYTHONPATH):$(abs_builddir)'
+TESTS_ENVIRONMENT = PYTHONPATH='$(PYTHONPATH):$(abs_builddir)'
 
 # 'export' the input files by performing a mock install
 export_datadir = $(top_builddir)/tests_auto/eqinfo
