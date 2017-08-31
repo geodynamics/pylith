@@ -194,7 +194,8 @@ To run the container with a text only interface:
 $$ docker run -ti --volumes-from pylith-data geodynamics/pylith
 \end{shell}
 
-To run the container and allow display of windows on the host computer:
+To run the container and allow display of windows on the host computer
+(requires that X-Windows be installed):
 \begin{shell}
 # Darwin: Allow X connections
 $$ xhost +YOUR_IP_ADDRESS; DISPLAY=YOUR_IP_ADDRESS:0
@@ -217,7 +218,8 @@ utilities:
 
 \important{We do not yet include ParaView due to difficulties
   associated with setting up rendering on the host display outside the
-  container.}
+  container. You will need to copy the output files to your host
+  machine to view them in ParaView as described later.}
 
 \subsubsection{Using Docker containers}
 \begin{itemize}
@@ -242,7 +244,11 @@ $$ docker attach CONTAINER_ID
 \subsection{Copy data to/from persistent storage volume.}
 
 These commands are run on the local host outside the container, not
-inside the Docker container.
+inside the Docker container. These commands are used to move files
+from your host machine into the PyLith Docker container and vice
+versa. For example, you will generate your mesh on the host, copy the
+mesh file into the Docker container, run PyLith within the container,
+and then copy the output files to the host to display in ParaView.
 
 \begin{shell}
 # Copy data FROM persistent storage volume TO local host
