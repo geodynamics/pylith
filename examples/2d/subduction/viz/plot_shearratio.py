@@ -35,7 +35,7 @@ DEFAULTS = {
     "OUTPUT_DIR": "output",
     "SIM": "step05",
     "FAULTS": ["fault-slabtop"],
-    "TIMESTEP": 0,
+    "TIMESTEP": 0, # Use 0 for first, -1 for last.
     }
 
 # ----------------------------------------------------------------------

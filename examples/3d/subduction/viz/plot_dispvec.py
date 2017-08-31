@@ -38,7 +38,7 @@ DEFAULTS = {
     "VECTOR_SCALE": 10.0e+3,
     "FIELD": "displacement",
     "FIELD_COMPONENT": "Magnitude",
-    "TIMESTEP": 0,
+    "TIMESTEP": 0, # Use 0 for first, -1 for last.
     }
 
 # ----------------------------------------------------------------------
