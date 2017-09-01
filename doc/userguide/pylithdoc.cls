@@ -78,26 +78,29 @@
 \renewcommand{\footnotesize}{\@setfontsize\footnotesize{8}{9.5}}
 %
 % Colors
-\definecolor{yellow}{rgb}{1.0, 1.0, 0.45} % 255/255/115
-\definecolor{dkyellow}{rgb}{0.9, 0.9, 0.0} % % 230/230/0
+\definecolor{ltred}{rgb}{1.0, 0.57, 0.59} % 255/145/151
+\definecolor{red}{rgb}{0.63, 0.00, 0.06} % 161/0/16
 
-\definecolor{ltorange}{rgb}{1.0, 0.74, 0.41} % 255/188/105
-\definecolor{orange}{rgb}{0.96, 0.50, 0.0} % 246/127/0
-
-\definecolor{ltred}{rgb}{1.0, 0.25, 0.25} % 255/64/64
-\definecolor{red}{rgb}{0.79, 0.00, 0.01} % 201/0/3
-
-\definecolor{ltpurple}{rgb}{0.81, 0.57, 1.00} % 206/145/255
-\definecolor{purple}{rgb}{0.38, 0.00, 0.68} % 97/1/175
-
-\definecolor{ltblue}{rgb}{0.2, 0.73, 1.0} % 51/187/255
+\definecolor{ltblue}{rgb}{0.57, 0.59, 1.00} % 145/151/255
 \definecolor{mdblue}{rgb}{0.28, 0.50, 0.80} % 72/128/205
-\definecolor{blue}{rgb}{0.12, 0.43, 0.59} % 30/110/150
+\definecolor{blue}{rgb}{0.00, 0.06, 0.63} % 0/16/161
 
-\definecolor{ltltgreen}{rgb}{0.7, 1.00, 0.7} % 96/204/14
-\definecolor{ltgreen}{rgb}{0.37, 0.80, 0.05} % 96/204/14
-\definecolor{green}{rgb}{0.23, 0.49, 0.03} % 59/125/8
-  
+\definecolor{ltgreen}{rgb}{0.59, 1.00, 0.57} % 151/255/145
+\definecolor{green}{rgb}{0.06, 0.63, 0.00} % 16/161/0
+
+\definecolor{ltpurple}{rgb}{0.62, 0.29, 0.63} % 157/75/161
+\definecolor{purple}{rgb}{0.63, 0.00, 0.54} % 131/1/138
+
+\definecolor{ltcyan}{rgb}{0.33, 0.70, 0.68} % 83/179/174
+\definecolor{cyan}{rgb}{0.00, 0.54, 0.51} % 1/138/131
+
+\definecolor{ltyellow}{rgb}{1.0, 0.97, 0.46} % 255/248/118
+\definecolor{yellow}{rgb}{0.90, 0.83, 0.0} % % 230/211/0
+
+
+\definecolor{ltorange}{rgb}{1.0, 0.74, 0.35} % 255/189/89
+\definecolor{orange}{rgb}{0.87, 0.45, 0.0} % 222/115/0
+
 \definecolor{dkslate}{rgb}{0.18, 0.21, 0.28} % 47/53/72
 \definecolor{mdslate}{rgb}{0.45, 0.50, 0.68} % 114/127/173
 \definecolor{ltslate}{rgb}{0.85, 0.88, 0.95} % 216/225/229
@@ -227,7 +230,7 @@
   moredelim=[is][\color{blue}\bfseries]{<f>}{</f>},
 }
 \lstnewenvironment{cfg}[1][\@empty]{%
-  \def\captioncolor{blue}
+  \def\captioncolor{cyan}
   \def\@makecaption{\lst@makecaption}
   \lstset{%
     language=cfg,
@@ -239,7 +242,7 @@
 % shell
 %
 \lstnewenvironment{shell}[1][\@empty]{%
-  \def\captioncolor{green}
+  \def\captioncolor{mdslate}
   \def\@makecaption{\lst@makecaption}
   \lstset{%
     language=bash,%
