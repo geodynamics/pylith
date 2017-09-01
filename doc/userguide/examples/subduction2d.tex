@@ -174,8 +174,8 @@ contained in the file \filename{step01.cfg}. These settings are:
   \facilityitem{pylithapp.problem.formulation.output.domain}{Gives the base filenames
     for HDF5 output (for example, \filename{step01.h5}).}
 \end{inventory}
-We run this example by typing
-\begin{shell}
+
+\begin{shell}[Run Step 1 simulation]
 $ pylith step01.cfg
 \end{shell}
 The problem will produce twelve pairs of HDF5/Xdmf files. The HDF5
@@ -226,8 +226,8 @@ augment those in \filename{pylithapp.cfg} are contained in the file
   \facilityitem{pylithapp.problem.formulation.output.domain}{Gives the base filename
     for HDF5 output (for example, \filename{step02.h5}).}
 \end{inventory}
-We run this example by typing
-\begin{shell}
+
+\begin{shell}[Run Step 2 simulation]
 $ pylith step02.cfg
 \end{shell}
 The simulation will produce pairs of HDF5/Xdmf files with separate
@@ -302,10 +302,10 @@ with initial tractions based on the change in tractions from Step 1
 and a background stress field.  The background stress field is simply
 normal tractions consistent with the overburden (lithostatic load) for
 a uniform half-space and shear tractions consistent with a coefficient
-of friction of 0.6.  The \texttt{afterslip\_tractions.}  spatialdb
+of friction of 0.6.  The \texttt{afterslip\_tractions.spatialdb}
 file is provided, so you do not need to run the Python script
 \filename{afterslip\_tractions.py}; however, you can do so by typing
-\begin{shell}
+\begin{shell}[Optional: Generate \filename{afterslip\_tractions.spatialdb}]
 $ python afterslip_tractions.py
 \end{shell}
 We provide 2.0 MPa of strength excess associated with the background
@@ -332,8 +332,7 @@ contained in the file \filename{step04.cfg}. These settings are:
     for HDF5 output (for example, \filename{step04.h5}).}
 \end{inventory}
 
-We run this example by typing
-\begin{shell}
+\begin{shell}[Run Step 4 simulation]
 $ pylith step04.cfg
 \end{shell}
 The problem will produce twelve pairs of HDF5/Xdmf files. The HDF5
@@ -495,8 +494,7 @@ sensitivity solve).
 <p>friction_ksp_error_if_not_converged</p> = true
 \end{cfg}
 
-We run this example by typing
-\begin{shell}
+\begin{shell}[Run Step 5 simulation]
 $ pylith step05.cfg
 \end{shell}
 The problem will produce fourteen pairs of HDF5/Xdmf files. Figure
@@ -592,8 +590,7 @@ output as a check.
 <p>vertex_data_fields</p> = [slip, slip_rate, traction, state_variable]
 \end{cfg}
 
-We run this example by typing
-\begin{shell}
+\begin{shell}[Run Step 6 simulation]
 $ pylith step06.cfg
 \end{shell}
 The problem will produce fourteen pairs of HDF5/Xdmf files. Figure
