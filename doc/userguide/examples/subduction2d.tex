@@ -368,7 +368,7 @@ using slip-weakening friction. As in Step 4 including fault friction
 requires the nonlinear solver. Through trial and error we choose a
 time step of 2.5 years that permits reasonable convergence of the
 nonlinear solver and runtime. 
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step05.cfg}]
 <h>[pylithapp.problem.formulation]</h>
 # Fault friction is a nonlinear problem so we need to use the
 # nonlinear solver.
@@ -387,7 +387,7 @@ We constrain the displacement normal to the lateral and bottom
 boundaries without restraining the subducting slab. We also constrain
 the vertical deformation of the west boundary to facilitate the
 downward motion of the subducting slab.
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step05.cfg}]
 <h>[pylithapp.timedependent.bc.boundary_west]</h>
 <p>bc_dof</p> = [0, 1]
 <p>label</p> = bndry_west
@@ -398,7 +398,7 @@ downward motion of the subducting slab.
 We replace the prescribed aseismic slip
 on the subduction interface that we used in Step 2 with a friction interface with the
 slip-weakening fault constitutive model. 
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step05.cfg}]
 <h>[pylithapp.timedependent]</h>
 <f>interfaces</f> = [fault_slabtop, fault_slabbot]
 
@@ -435,7 +435,7 @@ We impose initial tractions on the fault in a similar fashion as we
 did in Step 4. We reduce the initial shear tractions slightly in the
 seismogenic zone, consistent with a stress drop in the penultimate
 earthquake followed by loading during the interseismic period.
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step05.cfg}]
 <h>[pylithapp.timedependent.interfaces.fault_slabtop]</h>
 # --- Skipping general information discussed previously ---
 # Friction
@@ -471,7 +471,7 @@ tolerances. Finally, we set the parameters for the solver used to
 calculate consistent values for the change in slip for a given change
 in the Lagrange multipliers (which we sometimes call the friction
 sensitivity solve).
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step05.cfg}]
 <h>[pylithapp.timedependent.interfaces.fault_slabtop]</h>
 <p>zero_tolerance</p> = 1.0e-8
 <p>zero_tolerance_normal</p> = 1.0e-8
@@ -536,7 +536,7 @@ the simulation to 200 years and reduce the time step to 1.0 years,
 which were determined through trial and error to get a couple
 earthquake cycles with reasonable convergence for this relatively
 coarse resolution mesh.
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step06.cfg}]
 <h>[pylithapp.timedependent.formulation.time_step]</h>
 <p>total_time</p> = 200.0*year
 <h>dt</h> = 1.0*year
@@ -557,7 +557,7 @@ state for the friction model to be roughly consistent with steady
 state sliding at the reference coefficient of friction at the
 reference slip rate, and include it in the state variable in the
 output as a check.
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step06.cfg}]
 <h>[pylithapp.timedependent.interfaces.fault_slabtop]</h>
 # --- Skipping parameters discussed in previous examples. ---
 # Friction

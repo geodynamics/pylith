@@ -23,9 +23,22 @@ friction generates nonlinear behavior, so we use the nonlinear solver.
 All of the examples are contained in the directory \filename{examples/3d/hex8},
 and the corresponding \filename{cfg} files are \filename{step10.cfg},
 \filename{step11.cfg}, \filename{step12.cfg}, \filename{step13.cfg}, and
-\filename{step14.cfg}. Each example may be run as follows:
+\filename{step14.cfg}. Run the examples as follows:
 \begin{shell}
-$ pylith stepXX.cfg
+# Step10
+$ pylith step10.cfg
+
+# Step11
+$ pylith step11.cfg
+
+# Step12
+$ pylith step12.cfg
+
+# Step13
+$ pylith step13.cfg
+
+# Step14
+$ pylith step14.cfg
 \end{shell}
 This will cause PyLith to read the default parameters in \filename{pylithapp.cfg},
 and then override or augment them with the additional parameters in
@@ -41,7 +54,7 @@ friction. In this case, the applied displacements are insufficient
 to cause the fault to slip, so the solution is identical to that in
 example step01. As in previous examples involving faults, we must
 first provide an array defining the fault interfaces:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step10.cfg}]
 <h>[pylithapp.timedependent]</h>
 # Set interfaces to an array of 1 fault: 'fault'.
 <f>interfaces</f> = [fault]
@@ -52,7 +65,7 @@ first provide an array defining the fault interfaces:
 \end{cfg}
 We need to change the fault interface from the default (\object{FaultCohesiveKin})
 to \object{FaultCohesiveDyn} and we set the friction model to use:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step10.cfg}]
 <h>[pylithapp.timedependent.interfaces]</h>
 <f>fault</f> = pylith.faults.FaultCohesiveDyn ; Change to dynamic fault interface.
 
@@ -62,7 +75,7 @@ to \object{FaultCohesiveDyn} and we set the friction model to use:
 The \object{StaticFriction} model requires values for the coefficient
 of friction and the cohesion (see Section \vref{sec:fault:constitutive:models}).
 We provide both of these using a \object{UniformDB}:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step10.cfg}]
 <h>[pylithapp.timedependent.interfaces.fault]</h>
 # Set static friction model parameters using a uniform DB. Set the
 # static coefficient of friction to 0.6 and cohesion to 0.0 Pa.
@@ -106,7 +119,7 @@ are identical. To change the amount of shear displacement, we change
 the spatial database for the positive and negative x-faces to a
 \object{UniformDB}, and apply the altered values within the
 \filename{cfg} file:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step11.cfg}]
 # Boundary condition on +x face
 <h>[pylithapp.timedependent.bc.x_pos]</h>
 <p>bc_dof</p> = [0, 1]
@@ -149,7 +162,7 @@ examples step10 and step11, except that we apply velocity boundary
 conditions and run the simulation for 200 years. Once fault friction
 is overcome, the fault slips at a steady rate. To prevent convergence
 problems we set the time step size to a constant value of 5 years:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step12.cfg}]
 # Change the total simulation time to 200 years, and use a constant time
 # step size of 5 years.
 <h>[pylithapp.timedependent.implicit.time_step]</h>
@@ -160,7 +173,7 @@ As in the other fault friction examples, we apply initial displacements
 along the x-axis (to maintain a compressive stress on the fault),
 and we apply velocity boundary conditions that yield a left-lateral
 sense of motion:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step12.cfg}]
 # Boundary condition on +x face -- Dirichlet
 <h>[pylithapp.timedependent.bc.x_pos]</h>
 <p>bc_dof</p> = [0,1]
@@ -189,7 +202,7 @@ sense of motion:
 
 For this example, we keep the same coefficient of friction as examples
 step10 and step11, but we include a cohesion of 2 MPa:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step12.cfg}]
 <h>[pylithapp.timedependent.interfaces.fault]</h>
 # Set static friction model parameters using a uniform DB. Set the
 # static coefficient of friction to 0.6 and cohesion to 2.0 MPa.
@@ -221,7 +234,7 @@ size of 5 years and apply the same intial displacement and velocity
 boundary conditions.
 
 We first define the friction model for the simulation:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step13.cfg}]
 <h>[pylithapp.timedependent.interfaces.fault]</h>
 # Use the slip-weakening friction model.
 <f>friction</f> = pylith.friction.SlipWeakening
@@ -261,7 +274,7 @@ again use a constant time step size of 5 years and apply the same
 intial displacement and velocity boundary conditions.
 
 We first define the friction model for the simulation:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step14.cfg}]
 <h>[pylithapp.timedependent.interfaces.fault]</h>
 # Use the rate-and-state aging friction model.
 <f>friction</f> = pylith.friction.RateStateAgeing
@@ -283,7 +296,7 @@ We first define the friction model for the simulation:
 \end{cfg}
 For this model, we also want to set the initial value of the state
 variable:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step14.cfg}]
 <h>[pylithapp.timedependent.interfaces.fault]</h>
 # Set spatial database for the initial value of the state variable.
 <f>friction.db_initial_state</f> = spatialdata.spatialdb.UniformDB

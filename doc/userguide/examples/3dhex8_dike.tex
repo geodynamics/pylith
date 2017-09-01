@@ -44,7 +44,7 @@ to False in order for the tractions to be imposed when the fault is
 open; the default behavior for fault opening is a free surface (the
 two sides of the fault are completely uncoupled). The most important
 fault parameters for prescribing the tensile fault tractions are
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{Step20.cfg}]
 <h>[pylithapp.timedependent.interfaces.fault]</h>
 <p>open_free_surface</p> = False
 <f>traction_perturbation</f> = pylith.faults.TractPerturbation

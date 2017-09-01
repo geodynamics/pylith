@@ -19,9 +19,13 @@ load in a quasi-static problem. The second problem also includes output
 of the solution at user-defined locations. All of the examples are
 contained in the directory \filename{examples/3d/hex8}, and the corresponding
 \filename{cfg} files are \filename{step18.cfg} and \filename{step19.cfg}.
-Each example may be run as follows:
+Run the examples as follows:
 \begin{shell}
-$ pylith stepXX.cfg
+# Step18
+$ pylith step18.cfg
+
+# Step19
+$ pylith step19.cfg
 \end{shell}
 This will cause PyLith to read the default parameters in \filename{pylithapp.cfg},
 and then override or augment them with the additional parameters in
@@ -47,7 +51,7 @@ in a Dirichlet boundary condition, so all we need to specify is the
 degree of freedom that is constrained, the name of the nodeset from
 CUBIT, and a label used in diagnostic output. For the Dirichlet boundary
 condition on the +x surface we have:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{Step18.cfg}]
 <h>[pylithapp.timedependent.bc.x_pos]</h>
 <p>label</p> = face_xpos
 <p>bc_dof</p> = [0]
@@ -63,7 +67,7 @@ boundary, so we also specify the numerical integration scheme to use.
 Finally, we specify a vector for the up direction because the tractions
 are applied to a horizontal surface, resulting in ambiguous shear
 directions for our default orientation convention.
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{Step18.cfg}]
 <h>[pylithapp.timedependent.bc]</h>
 <f>z_pos</f> = pylith.bc.Neumann
 
@@ -120,7 +124,7 @@ arbitrary time histories.
 Rather than specify a spatial database for the initial value of the
 Neumann boundary condition corresponding to the surface load, we specify
 a spatial database for the change in value and the temporal database:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{Step19.cfg}]
 <h>[pylithapp.timedependent.bc.z_pos]</h>
 <p>label</p> = face_zpos
 

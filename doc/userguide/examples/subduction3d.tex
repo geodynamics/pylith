@@ -110,7 +110,7 @@ contour to a depth below the slab and above the ground surface.
   and post-processing. PyLith will automatically convert among
   compatible coordinate systems during the simulation.}
 
-\begin{shell}
+\begin{shell}[Generate \filename{generate\_surfs.jou}]
 # Make sure you are in the 'mesh' directory and then run the Python
 # script to generate the journal file 'generate_surfs.jou'.
 $ ./generate_surfjou.py  
@@ -176,7 +176,7 @@ is condition number and the default threshold is 2.0.
 To visualize the mesh, start ParaView. Within the ParaView GUI Python shell
 (\menu{Tools}$\rightarrow$\menu{Python Shell}), we override the
 \filename{EXODUS\_FILE} and \filename{SHOW\_QUALITY} parameters.
-\begin{python}
+\begin{python}[ParaView Python shell]
 # Import the os module so we can get access to the HOME environment variable.
 >>> import os
 >>> HOME = os.environ["HOME"]
@@ -250,7 +250,7 @@ the spatial databases. PyLith will automatically transform points
 between compatible coordinate systems. Our spatialdata library uses
 Proj4 for geographic projections, so we specify the projection using
 Proj4 syntax in the \property{proj\_options} property:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{pylithapp.cfg}]
 <h>[pylithapp.mesh_generator.reader]</h>
 <f>coordsys</f> = spatialdata.geocoords.CSGeoProj
 <p>coordsys</p>.space_dim = 3
@@ -270,7 +270,7 @@ simulation parameter file. To set up the materials, we first create an
 array of materials that defines the name for each material component.
 For example, we create the array of four materials and then set the
 parameters for the slab:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{pylithapp.cfg}]
 <h>[pylithapp.problem]</h>
 <f>materials</f> = [slab, wedge, crust, mantle]
 
@@ -305,7 +305,7 @@ freedom constrained, the name of the nodeset in the ExodusII file from
 CUBIT/Trelis that defines the boundary, and a label for the spatial
 database (required for informative error messages). These settings
 constrain the y-displacement on the north (+y) boundary:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{pylithapp.cfg}]
 <h>[pylithapp.problem.bc.y_pos]</h>
 <p>bc_dof</p> = [1] ; Degree of freedoms are: x=0, y=1, and z=2
 <p>label</p> = boundary_ypos ; nodeset in ExodusII file form CUBIT/Trelis
@@ -321,7 +321,7 @@ diagnostic information. The file also directs PyLith to use a direct
 solver, which is suitable for debugging and test problems that do not
 include a fault; a direct solver is not well-suited for production
 runs because it does not scale well and uses a lot of memory.
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{pylithapp.cfg}]
 <h>[pylithapp.petsc]</h>
 <p>malloc_dump</p> = ; Dump information about PETSc memory not deallocated.
 
@@ -392,7 +392,7 @@ conditions, which impose zero displacements by default. We overwrite
 this behavior in the \filename{step01.cfg} file for the -x and +x
 boundaries using spatial databases with a single uniform displacement
 value to create the axial compression:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step01.cfg}]
 # -x face
 <h>[pylithapp.problem.bc.x_neg]</h>
 <f>db_initial</f> = spatialdata.spatialdb.UniformDB
@@ -413,7 +413,7 @@ we use \filename{mat\_elastic.cfg} to specify the parameters
 associated with linear, isotropic elastic bulk constitutive models for
 all of the materials for convenient reuse across several different
 simulations.
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{mat\_elastic.cfg}]
 <h>[pylithapp.problem.materials]</h>
 <f>slab</f> = pylith.materials.ElasticIsotropic3D
 <f>wedge</f> = pylith.materials.ElasticIsotropic3D
@@ -460,8 +460,7 @@ progress of the simulation and estimated time of completion
 HDF5 files (the corresponding Xdmf files will use the same filename
 with the \filename{xmf} suffix).
 
-We run this example by typing
-\begin{shell}
+\begin{shell}[Run Step 1 simulation]
 $ pylith step01.cfg mat_elastic.cfg
 \end{shell}
 The simulation will produce ten pairs of HDF5/Xdmf files in the
@@ -606,7 +605,7 @@ In setting the parameters for the \object{CompositeDB} in
 contained in each of the two spatial databases in the composite
 database and the type and parameters for each of those spatial
 databases. For the slab we have:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{mat\_viscoelastic.cfg}]
 <h>[pylithapp.problem.materials.slab]</h>
 <f>db_properties</f> = spatialdata.spatialdb.CompositeDB
 <p>db_properties.label</p> = Composite spatial database for slab material properties
@@ -631,7 +630,7 @@ specify the parameters for the quasistatic time stepping, the
 coseismic rupture, and the filenames for output. By default, PyLith
 will use implicit time stepping with uniform time steps, so we need
 only specify the duration and time step size.
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step02.cfg}]
 <h>[pylithapp.problem.formulation.time_step]</h>
 # Define the total time for the simulation and the time step size.
 <p>total_time</p> = 200.0*year
@@ -649,7 +648,7 @@ materials, we create an array of components (in this case an array
 with one fault interface, \facility{slab}, and then refer to those
 components by name, \facility{pylithapp.problem.interfaces.slab}. We
 must also set the discretization information for the fault.
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step02.cfg}]
 <h>[pylithapp.problem]</h>
 # We prescribe slip on the slab fault patch.
 <f>interfaces</f> = [slab]
@@ -681,7 +680,7 @@ initiation time. In Step 4 we will use the origin time. Because we
 want uniform slip and a uniform rise time, we use \object{UniformDB}
 spatial databases for both of these. Note that we specify oblique slip
 with 1.0 m of right-lateral motion and 4.0 m of reverse motion.
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step02.cfg}]
 <h>[pylithapp.problem.interfaces.slab.eq_srcs.rupture.slip_function]</h>
 <f>slip</f> = spatialdata.spatialdb.UniformDB
 <p>slip.label</p> = Final slip
@@ -699,8 +698,7 @@ with 1.0 m of right-lateral motion and 4.0 m of reverse motion.
 <p>vertex_info_fields</p> = [normal_dir, strike_dir, dip_dir, final_slip_rupture, slip_time_rupture]
 \end{cfg}
 
-We run this example by typing
-\begin{shell}
+\begin{shell}[Run Step 2 simulation]
 $ pylith step02.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg
 \end{shell}
 In addition to the ten pairs of HDF5/Xdmf files analogous to those
@@ -801,13 +799,13 @@ array contains two components, one for the top of the slab (subduction
 interface), \facility{slab\_top}, and one for the bottom of the slab,
 \facility{slab\_bottom}. We use the \object{FaultCohesiveKin} object
 for each of these interfaces since we want to prescribe the slip.
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step03.cfg}]
 <h>[pylithapp.problem]</h>
-<f>interfaces</f> = [slab_top, slab_bottom]
+<f>interfaces</f> = [slab_bottom, slab_top]
 
 <h>[pylithapp.problem.interfaces]</h>
-<f>slab_top</f> = pylith.faults.FaultCohesiveKin
 <f>slab_bottom</f> = pylith.faults.FaultCohesiveKin
+<f>slab_top</f> = pylith.faults.FaultCohesiveKin
 \end{cfg}
 
 % Bottom of slab
@@ -826,7 +824,7 @@ with \object{UniformDB} spatial databases to specify the constant,
 uniform oblique slip rate of 2.0 cm/yr of left-lateral motion and 4.0
 cm/yr of normal motion. Note that slip on the bottom of the subducting
 slab has the opposite sense of motion as that on the top of the slab.
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step03.cfg}]
 <h>[pylithapp.problem.interfaces.slab_bottom]</h>
 <p>id</p> = 100 ; Must be different from ids used for materials
 <p>label</p> = fault_slabbot ; Nodeset for the entire fault surface
@@ -868,7 +866,7 @@ resemble those for the bottom of the slab. The main difference is that
 we use a \object{SimpleGridDB} to define a depth variation in the slip
 rate. The fault is locked at depths above 45 km and increases linearly
 to the same slip rate as the bottom of the slab at a depth of 60 km.
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step03.cfg}]
 <h>[pylithapp.problem.interfaces.slab_top]</h>
 <p>id</p> = 101 ; Must be different from ids used for materials
 <p>label</p> = fault_slabtop ; Nodeset for the entire fault surface
@@ -908,7 +906,7 @@ the fault interfaces and Dirichlet boundary conditions. This is why
 we exclude vertices on the splay fault in these nodesets as well. We
 only update the name of the nodeset for the -x, -y, and +y
 boundaries.
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step03.cfg}]
 # -x face
 <h>[pylithapp.problem.bc.x_neg]</h>
 <p>label</p> = boundary_xneg_noslab
@@ -922,8 +920,7 @@ boundaries.
 <p>label</p> = boundary_ypos_noslab
 \end{cfg}
 
-We run this example by typing
-\begin{shell}
+\begin{shell}[Run Step 3 simulation]
 $ pylith step03.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg
 \end{shell}
 The simulation will produce fourteen pairs of HDF5/Xdmf files,
@@ -1018,7 +1015,7 @@ slab (subduction interface), one for the bottom of the slab, and one
 for the splay fault. The splay fault terminates into the fault on the
 top of the slab, so we must list the through-going fault on the top of
 the slab first.
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step04.cfg}]
 # We prescribe slip on the top and bottom of the slab and on the splay fault.
 <h>[pylithapp.problem]</h>
 <f>interfaces</f> = [slab_top, slab_bottom, splay]
@@ -1052,7 +1049,7 @@ that exactly complements the depth-dependent slip distribution of the
 creep. Note that the slip time within an earthquake rupture is
 relative to the origin time, so we set the slip time to zero to
 coincide with the specified origin time.
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step04.cfg}]
 [pylithapp.problem.interfaces.slab_top]
 # --- Skipping lines already discussed in Step 3 ---
 <f>eq_srcs</f> = [creep, eq1, eq2]
@@ -1106,7 +1103,7 @@ coseismic slip on the slab rupture patch in Step 2. The primary
 difference is that we specify an origin time of 250 years.
 
 % Fault: splay
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step04.cfg}]
 <h>[pylithapp.problem.interfaces.splay]</h>
 <p>id</p> = 102 ; id must be unique across all materials and faults
 <p>label</p> = fault_splay ; Nodeset for the entire fault surface
@@ -1134,8 +1131,7 @@ difference is that we specify an origin time of 250 years.
 # --- Omitting output settings already discussed ---
 \end{cfg}
 
-We run this example by typing
-\begin{shell}
+\begin{shell}[Run Step 4 simulation]
 $ pylith step04.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg
 \end{shell}
 The simulation will produce sixteen pairs of HDF5/Xdmf files,
@@ -1239,7 +1235,7 @@ The only time dependence in this problem is the time evolution of
 slip, so we set the duration of the simulation to match the duration
 of the slow slip event. We use a time step of 2.0 days to insure that
 we resolve the temporal evolution of the slip.
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step06.cfg}]
 <h>[pylithapp.problem.formulation.time_step]</h>
 <p>total_time</p> = 30.0*day
 <p>dt</p> = 2.0*day
@@ -1250,7 +1246,7 @@ The results in this example will be used to simulate output at fake
 continuous GPS (cGPS) stations in Step 7, so we add an output manager
 for saving the solution at specific points (\object{OutputSolnPoints})
 in addition to our output managers over the domain and top surface:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step06.cfg}]
 <h>[pylithapp.problem.implicit]</h>
 <f>output</f> = [domain, subdomain, cgps_sites]
 
@@ -1266,7 +1262,7 @@ associated with the station locations. The format of the station file
 is whitespace separated columns of station name and then the
 coordinates of the station. See Section~\vref{sec:format:PointsList}
 for more information.
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step06.cfg}]
 <h>[pylithapp.problem.formulation.output.cgps_sites]</h>
 <f>writer</f> = pylith.meshio.DataWriterHDF5
 <p>writer.filename</p> = output/step06-cgps_sites.h5
@@ -1292,7 +1288,7 @@ function of time. Additionally, to illustrate PyLith's ability to use
 spatial databases with points in other, but compatible, georeferenced
 coordinate systems, we specify the slip distribution using geographic
 (longitude and latitude) coordinates.
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step06.cfg}]
 <h>[pylithapp.problem]</h>
 # We prescribe slip on the slab fault patch.
 <f>interfaces</f> = [slab]
@@ -1350,7 +1346,7 @@ providing the slip amplitudes at different times.
 
 To run the simulation, first run the Python script to generate the
 spatial database files, and then run PyLith.
-\begin{shell}
+\begin{shell}[Run Step 4 simulation]
 # Generate the spatial database files
 $ cd spatialdb && ./generate_slowslip.py
 $ ls fault_slabtop_slowslip.*
@@ -1452,7 +1448,7 @@ the fault. We specify the amplitude of the impulses via a
 \object{UniformDB} spatial database, because we want impulses over the
 entire fault patch. We also request the amplitude of the impulses to
 be included in the fault info file.
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{greensfns.cfg}]
 # Define the interfaces (slab) and provide a fault_id.
 <h>[greensfns]</h>
 <f>interfaces</f> = [slab]
@@ -1486,7 +1482,7 @@ be included in the fault info file.
 We do not make use of the state variable output for the impulse
 responses, so we turn off the data fields for all of the
 materials to eliminate these large data files.
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{greensfns.cfg}]
 # Turn off output of state variables for materials.
 <h>[greensfns.materials.slab.output]</h>
 <p>cell_data_fields</p> = []
@@ -1504,7 +1500,7 @@ materials to eliminate these large data files.
 The \filename{step07a.cfg} and \filename{step07b.cfg} files are
 identical, except for the impulse type specification and file
 names.
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step07a.cfg}]
 <h>[pylithapp.problem.interfaces.slab]</h>
 # If we wanted to generate impulses for both the left-lateral and
 # reverse components in the same simulation, we would use:
@@ -1516,15 +1512,14 @@ names.
 
 In the output settings, we turn off writing the solution field for the
 domain:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step07a.cfg}]
 <h>[pylithapp.problem.formulation.output.domain]</h>
 <p>writer.filename</p> = output/step07a-domain.h5
 # Turn off data fields.
 <p>vertex_data_fields</p> = []
 \end{cfg}
 
-You can run the two sub-problems as follows:
-\begin{shell}
+\begin{shell}[Run Step 7 simulations]
 $ pylith --problem=pylith.problems.GreensFns step07a.cfg mat_elastic.cfg solver_fieldsplit.cfg
 $ pylith --problem=pylith.problems.GreensFns step07b.cfg mat_elastic.cfg solver_fieldsplit.cfg
 \end{shell}
@@ -1554,8 +1549,8 @@ approach described in \vref{sec:example:greensfns2d:inversion}. The
 Python script \filename{make\_synthetic\_gpsdisp.py} reads the
 parameters in \filename{make\_synthetic\_gpsdisp.cfg} and generates
 synthetic data from the selected time step with a specified amount of
-noise. Run this script by typing:
-\begin{shell}
+noise.
+\begin{shell}[Generate synthetic GPS data]
 $ ./make_synthetic_gpsdisp.py
 \end{shell}
 This will create the following files:
@@ -1570,7 +1565,7 @@ We perform a simple inversion using the \filename{slip\_invert.py} script,
 with parameters defined in \filename{slip\_invert.cfg}. This script
 performs a set of linear inversions, in a manner similar to the
 inversion in \vref{sec:example:greensfns2d:inversion}. 
-\begin{shell}
+\begin{shell}[Run the inversion]
 $ ./slip_invert.py
 \end{shell}
 This will create a number of files in the output directory.
@@ -1689,7 +1684,7 @@ of the mantle. Since the actual density is not uniform, the stresses
 are out of balance and we end up with some deformation. In
 \filename{step08a.cfg} we turn on gravity and set the total time to
 zero (there is no time dependence in this model).
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step08a.cfg}]
 <h>[pylithapp.problem]</h>
 # Set gravity field (default is None).
 <f>gravity_field</f> = spatialdata.spatialdb.GravityField
@@ -1706,7 +1701,7 @@ of the mantle, $g$ is the acceleration due to gravity, and $z$ is
 elevation. With only two control points necessary to describe this linear
 variation, we use the same \object{SimpleDB} spatial database for all
 four materials.
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step08a.cfg}]
 # We specify initial stresses for each material via a SimpleDB and linear interpolation.
 <h>[pylithapp.problem.materials.slab]</h>
 <f>db_initial_stress</f> = spatialdata.spatialdb.SimpleDB
@@ -1733,8 +1728,7 @@ four materials.
 <p>db_initial_stress.query_type</p> = linear
 \end{cfg}
 
-We run the sub-problem by typing:
-\begin{shell}
+\begin{shell}[Run Step 8a simulation]
 $ pylith step08a.cfg mat_elastic.cfg solver_algebraicmultigrid.cfg
 \end{shell}
 The simulation will generate ten pairs of HDF5/Xdmf files beginning
@@ -1796,7 +1790,7 @@ to format the data to conform to the format of the spatial
 database. The spatial database will contain the stresses at each cell
 of our unstructured mesh, so the points are not on a logical grid, and
 we must use a \object{SimpleDB}.
-\begin{shell}
+\begin{shell}[Generate the initial stresses for Step 8b]
 # From the examples/3d/subduction directory, change to the spatialdb subdirectory.
 $ cd spatialdb
 $ ./generate_initial_stress.py
@@ -1810,7 +1804,7 @@ specific). With points at each cell centroid, we use nearest
 interpolation (default) rather than linear interpolation; this is a
 small approximation but it is much faster than using linear
 interpolation in this unstructured set of points.
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step08b.cfg}]
 <h>[pylithapp.problem.materials.slab]</h>
 <f>db_initial_stress</f> = spatialdata.spatialdb.SimpleDB
 <p>db_initial_stress.label</p> = Initial stress in the slab
@@ -1833,8 +1827,7 @@ interpolation in this unstructured set of points.
 spatialdb/mat_initial_stress_grav-crust.spatialdb
 \end{cfg}
 
-We run the sub-problem by typing:
-\begin{shell}
+\begin{shell}[Run Step 8b simulation]
 $ pylith step08b.cfg mat_elastic.cfg solver_algebraicmultigrid.cfg
 \end{shell}
 This simulation will produce files in the \filename{output} directory
@@ -1873,7 +1866,7 @@ gravity where you need accurate estimates of the vertical deformation.
 The only difference between the parameters in \filename{step08b.cfg}
 and \filename{step08c.cfg} is in the formulation setting and the
 simulation time:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step08c.cfg}]
 <h>[pylithapp.timedependent]</h>
 # Turn on the small strain formulation, which automatically runs the
 # simulation as a nonlinear problem.
@@ -1887,9 +1880,8 @@ simulation time:
 <p>total_time</p> = 100.0*year
 <p>dt</p> = 10.0*year
 \end{cfg}
-We use the material settings in \filename{mat\_viscoelastic.cfg}. We
-can run the simulation by typing:
-\begin{shell}
+We use the material settings in \filename{mat\_viscoelastic.cfg}.
+\begin{shell}[Run Step 8c simulation]
 $ pylith step08c.cfg mat_viscoelastic.cfg solver_algebraicmultigrid.cfg
 \end{shell}
 This simulation will produce files in the \filename{output} directory

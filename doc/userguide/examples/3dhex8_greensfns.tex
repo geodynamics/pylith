@@ -40,7 +40,7 @@ becomes \facility{greensfns}, and PyLith will therefore search for a
 \filename{cfg} file matching the name of the facility. The
 \filename{greensfns.cfg} file contains settings that are specific to
 the \object{GreensFns} problem type:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{Step21.cfg}]
 <h>[greensfns]</h>
 <p>fault_id</p> = 10
 
@@ -76,7 +76,7 @@ over the ground surface, we choose to provide output at a set of points.
 PyLith provides the ability to interpolate displacements to a specified
 set of points, which would generally be necessary when generating
 Green's functions:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{Step21.cfg}]
 <h>[pylithapp.problem.formulation]</h>
 <f>output</f> = [domain, points]
 <f>output.points</f> = pylith.meshio.OutputSolnPoints

@@ -20,10 +20,16 @@ demonstrates the usage of a finite strain formulation, which
 automatically invokes the nonlinear solver. All of the examples are
 contained in the directory \filename{examples/3d/hex8}, and the
 corresponding \filename{cfg} files are \filename{step15.cfg},
-\filename{step16.cfg}, and \filename{step17.cfg}.  Each example may be
-run as follows:
+\filename{step16.cfg}, and \filename{step17.cfg}.  Run the examples as follows:
 \begin{shell}
-$ pylith stepXX.cfg
+# Step15
+$ pylith step15.cfg
+
+# Step16
+$ pylith step16.cfg
+
+# Step17
+$ pylith step17.cfg
 \end{shell}
 This will cause PyLith to read the default parameters in
 \filename{pylithapp.cfg}, and then override or augment them with the
@@ -47,7 +53,7 @@ for loading via gravitational body forces is
 We set the gravity field, which by default has values of 9.80655
 $\unitfrac{m}{s^{2}}$ for acceleration and $\left[0,0,-1\right]$
 for direction and time stepping implementation:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{Step15.cfg}]
 <h>[pylithapp.timedependent]</h>
 <f>gravity_field</f> = spatialdata.spatialdb.GravityField ; Set gravity field
 
@@ -68,7 +74,7 @@ We use a generalized Maxwell model for the lower crust (see Section
 \vref{sec:materials:formulation:generalized:Maxwell}), and use a \object{SimpleDB} to
 provide the properties. We also request the relevant properties and
 state variables for output:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{Step15.cfg}]
 # Change material type of lower crust to generalized Maxwell viscoelastic.
 <h>[pylithapp.timedependent]</h>
 <f>materials.lower_crust</f> = pylith.materials.GenMaxwellIsotropic3D
@@ -116,7 +122,7 @@ We provide values for the initial stress for both the upper and lower
 crust. Since the materials have the same density, we are able to use
 the same \object{SimpleDB} with a linear variation for both (see file
 \filename{examples/3d/hex8/spatialdb/initial\_stress.spatialdb}):
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{Step16.cfg}]
 # We must specify initial stresses for each material.
 # We provide a filename for the spatial database that gives the stresses,
 # and we change the query_type from the default 'nearest' to 'linear'.
@@ -170,7 +176,7 @@ default \object{Implicit} to \object{ImplicitLgDeform}. Since the
 large deformation formulation is nonlinear, PyLith automatically switches
 the solver from the default \object{SolverLinear} to \object{SolverNonlinear}.
 It is thus only necessary to change the formulation:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{Step17.cfg}]
 <h>[pylithapp.timedependent]</h>
 # Set the formulation for finite strain. The default solver will
 # automatically be switched to the nonlinear solver.
