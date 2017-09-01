@@ -74,11 +74,10 @@ in the other initial state variables (default is none).}
 \facilityitem{quadrature}{Numerical integration scheme used in integrating fields
 over each cell.}
 \end{inventory}
-An example of setting these parameters in a \filename{.cfg} file for
-a problem with two material groups is:
-\begin{cfg}
+
+\begin{cfg}[Parameters for two materials in a \filename{.cfg} file]
 <h>[pylithapp.timedependent]</h>
-<p>materials</p> = [elastic,viscoelastic]
+<p>materials</p> = [elastic, viscoelastic]
 
 <h>[pylithapp.timedependent.materials.elastic]</h>
 <p>label</p> = Elastic material
@@ -232,7 +231,7 @@ set; otherwise the state variables are set to zero. To override this
 behavior, specify a spatial database for the initial stress, strain,
 and/or state variables as in the example from the example in Section
 \vref{sec:example:3dhex8}:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{examples/3d/hex8/step16.cfg}]
 <h>[pylithapp.timedependent.materials.elastic]</h>
 <f>db_initial_stress</f> = spatialdata.spatialdb.SimpleDB
 <p>db_initial_stress.iohandler.filename<p> = initial\_stress.spatialdb
@@ -1537,8 +1536,8 @@ model (default is inscribed).}
 otherwise an error message will occur when the model fails beyond
 the tensile strength (default is false).}
 \end{inventory}
-An example of setting these parameters in a \filename{.cfg} file is:
-\begin{cfg}
+
+\begin{cfg}[\object{DruckerPrager3D} parameters in a \filename{.cfg} file]
 <h>[pylithapp.timedependent]</h>
 <p>materials</p> = [plastic]
 <f>materials.plastic</f> = pylith.materials.DruckerPrager3D
