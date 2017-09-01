@@ -43,6 +43,15 @@ in a {{\tt .cfg} file. Use {\tt <h>} and {\tt </h>} to delimit section
   headers, {\tt <p>} and {\tt </p>} to delimit properties, and {\tt <f>}
   and {\tt </f>} to delimit facilities.
 % Example use of cfg environment
+\begin{cfg}[Excerpt from \filename{pylithapp.cfg}]
+# This is a comment.
+<h>[pylithapp.problem]</h>
+<p>timestep</p> = 2.0*s ; Time step comment.
+<f>bc</f> = [x_pos, x_neg]
+\end{cfg}
+
+Example of \filename{.cfg} environment without title.
+% Example use of cfg environment
 \begin{cfg}
 # This is a comment.
 <h>[pylithapp.problem]</h>
@@ -59,6 +68,11 @@ and facilities of an object. Use the {\tt
 \propertyitem{time\_step}{Time step in simulation.}
 \facilityitem{bc}{Array of boundary conditions.}
 \end{inventory}
+
+
+\begin{python}[ParaView Python shell]
+>>> EXODUS_FILE = "/home/johndoe/pylith/examples/3d/subduction/mesh/mesh_tet.exo"
+\end{python}
 
 
 \section{My Feature}

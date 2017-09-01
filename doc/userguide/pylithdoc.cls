@@ -17,7 +17,7 @@
 %
 % pylithdoc.cls    Style file for PyLith documentation.
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
-\ProvidesClass{pylithdoc}[2017/02/17 v0.1 PyLith Documentation class]
+\ProvidesClass{pylithdoc}[2017/09/01 v0.2 PyLith Documentation class]
 
 \ProcessOptions*
 \LoadClass[10pt,twoside]{book}
@@ -198,7 +198,25 @@
 
 % ------------------------------------------------------------------
 % Code blocks
+%
+% Caption
+\renewcommand{\lst@makecaption}[2]{%
+  \if\lst@title\@empty
+  \else
+  \vskip\abovecaptionskip%
+  \begin{tikzpicture}
+    \node[draw=none,
+      inner sep=0.3em,
+      top color=\captioncolor!50,
+      bottom color=\captioncolor!10,
+    ]{#1: #2};
+  \end{tikzpicture}\par\vspace{-1pt}
+  \fi
+}
+%
+%
 % .cfg
+%
 \lstdefinelanguage{cfg}{%
   basicstyle=\small\ttfamily,
   frame=tb,%
@@ -208,24 +226,46 @@
   moredelim=[is][\color{purple}\bfseries]{<p>}{</p>},
   moredelim=[is][\color{blue}\bfseries]{<f>}{</f>},
 }
-\lstnewenvironment{cfg}{\lstset{language=cfg}}{}
+\lstnewenvironment{cfg}[1][\@empty]{%
+  \def\captioncolor{blue}
+  \def\@makecaption{\lst@makecaption}
+  \lstset{%
+    language=cfg,
+    title={#1},
+    backgroundcolor=\color{\captioncolor!10},
+    rulecolor=\color{\captioncolor},
+}}{}
 %
-% shell  
-\lstnewenvironment{shell}{\lstset{%
+% shell
+%
+\lstnewenvironment{shell}[1][\@empty]{%
+  \def\captioncolor{green}
+  \def\@makecaption{\lst@makecaption}
+  \lstset{%
     language=bash,%
-    frame=single,%
+    frame=tb,%
     basicstyle=\small\ttfamily,%
-    morekeywords={$$},%
+    morekeywords={$},%
     commentstyle=\itshape\color{orange},
+    title={#1},
+    backgroundcolor=\color{\captioncolor!10},
+    rulecolor=\color{\captioncolor},
 }}{}
 %
 % python
-\lstnewenvironment{python}{\lstset{%
+%
+\lstnewenvironment{python}[1][\@empty]{%
+  \def\captioncolor{purple}
+  \def\@makecaption{\lst@makecaption}
+  \lstset{%
     language=python,%
-    frame=single,%
+    frame=tb,%
     basicstyle=\small\ttfamily,%
     morekeywords={>>>},%
     commentstyle=\itshape\color{orange},
+    title={#1},
+    backgroundcolor=\color{\captioncolor!10},
+    rulecolor=\color{\captioncolor},
 }}{}
 
 % ------------------------------------------------------------------
