@@ -21,7 +21,7 @@ and negative x-faces to maintain a compressive normal tractions on
 the fault. Otherwise, there would be no frictional resistance. Fault
 friction generates nonlinear behavior, so we use the nonlinear solver.
 All of the examples are contained in the directory \filename{examples/3d/hex8},
-and the corresponding \filename{.cfg} files are \filename{step10.cfg},
+and the corresponding \filename{cfg} files are \filename{step10.cfg},
 \filename{step11.cfg}, \filename{step12.cfg}, \filename{step13.cfg}, and
 \filename{step14.cfg}. Each example may be run as follows:
 \begin{shell}
@@ -29,7 +29,7 @@ $ pylith stepXX.cfg
 \end{shell}
 This will cause PyLith to read the default parameters in \filename{pylithapp.cfg},
 and then override or augment them with the additional parameters in
-the \filename{stepXX.cfg} file. Each \filename{.cfg} file is extensively
+the \filename{stepXX.cfg} file. Each \filename{cfg} file is extensively
 documented, to provide detailed information on the various parameters.
 
 
@@ -105,7 +105,7 @@ which is sufficient to induce slip on the fault. All other settings
 are identical. To change the amount of shear displacement, we change
 the spatial database for the positive and negative x-faces to a
 \object{UniformDB}, and apply the altered values within the
-\filename{.cfg} file:
+\filename{cfg} file:
 \begin{cfg}
 # Boundary condition on +x face
 <h>[pylithapp.timedependent.bc.x_pos]</h>

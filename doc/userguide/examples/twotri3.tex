@@ -58,7 +58,7 @@ information. For problems of this type, it is generally useful to
 create a file named \filename{pylithapp.cfg} in the working directory,
 since this file is read automatically every time PyLith is
 run. Settings specific to a particular problem may be placed in other
-\filename{.cfg} files, as described later, and then those files are
+\filename{cfg} files, as described later, and then those files are
 placed on the command line. The settings contained in
 \filename{pylithapp.cfg} for this problem consist of:
 \begin{inventory}
@@ -137,7 +137,7 @@ a single quadrature point for each cell and thus a single set of stress
 and strain values for each cell. The final file (\filename{axialdisp-statevars\_info.vtk})
 gives the material properties used for the problem. Since we have
 not specified which properties to write, the default properties (\texttt{mu},
-\texttt{lambda}, \texttt{density}) are written. All of the \filename{.vtk}
+\texttt{lambda}, \texttt{density}) are written. All of the \filename{vtk}
 files may be used with a number of visualization packages. If the
 problem ran correctly, you should be able to generate a figure such
 as Figure \vref{fig:twotri3-axial}, which was generated using ParaView.

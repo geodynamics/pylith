@@ -61,7 +61,7 @@ ignored).}
 \vref{sub:cell:field:filters}).}
 \end{inventory}
 
-\begin{cfg}[\object{OutputManager} parameters in a \filename{.cfg} file]
+\begin{cfg}[\object{OutputManager} parameters in a \filename{cfg} file]
 <h>[pylithapp.timedependent.materials.elastic.output]</h>
 <p>output_freq</p> = time_step
 <p>time_step</p> = 1.0*yr
@@ -203,7 +203,7 @@ within the HDF5 file, we create an Xdmf (eXtensible Data Model and
 Format, \url{www.xdmf.org}) metadata file that provides this information.
 This file is written when PyLith closes the HDF5 file at the end of
 the simulation. In order to visualize the datasets in an HDF5 file,
-one simply opens the corresponding Xdmf file (the extension is \filename{.xmf})
+one simply opens the corresponding Xdmf file (the extension is \filename{xmf})
 in ParaView or Visit. The Xdmf file contains the relative path to
 the HDF5 file so the files can be moved but must be located together
 in the same directory. 
@@ -243,7 +243,7 @@ files with the locations specified by links in the HDF5 file. Note
 that the use of external data files results in one data file per
 dataset in addition to the HDF5 and Xdmf files. The external data
 files use the name of the HDF5 file with the dataset name added to the
-prefix and the \filename{.h5} suffix replaced by \filename{.dat}. The
+prefix and the \filename{h5} suffix replaced by \filename{dat}. The
 HDF5 files include relative paths to the external data files, so these
 files can also be moved, but they, too, must be kept together in the
 same directory. This provides a more robust method of output because
@@ -284,7 +284,7 @@ The parametesr for the \object{DataWriterHDF5} and
 the same prefix).}
 \end{inventory}
 
-\begin{cfg}[\object{DataWriterHDF5Ext} parameters in a \filename{.cfg} file]
+\begin{cfg}[\object{DataWriterHDF5Ext} parameters in a \filename{cfg} file]
 <h>[pylithapp.timedependent.domain.output]</h>
 <p>output_freq</p> = time_step
 <p>time_step</p> = 1.0*yr

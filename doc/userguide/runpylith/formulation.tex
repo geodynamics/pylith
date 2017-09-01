@@ -55,7 +55,7 @@ The \object{TimeDependent} properties and facilities include
     equation.}
 \end{inventory}
 
-\begin{cfg}[\object{TimeDependent} parameters in a \filename{.cfg} file]
+\begin{cfg}[\object{TimeDependent} parameters in a \filename{cfg} file]
 <h>[pylithapp.timedependent]</h>
 <f>formulation</f> = pylith.problems.Implicit ; default
 <f>progres_monitor</f> = pylith.problems.ProgressMonitorTime ; default
@@ -86,7 +86,7 @@ is [output]).}
 to a file for analysis (default is PETSc binary).}
 \end{inventory}
 
-\begin{cfg}[Time-stepping formulation parameters in a \filename{.cfg} file]
+\begin{cfg}[Time-stepping formulation parameters in a \filename{cfg} file]
 <h>[pylithapp.timedependent.formulation]</h>
 <p>matrix_type</p> = sbaij ; Non-symmetric sparse matrix is 'aij'
 <p>view_jacobian</p> = false
@@ -117,7 +117,7 @@ is the velocity at time $t$. The default value for the normalized
 artificial viscosity is 0.1. We have found values in the range 0.1-0.4
 sufficiently suppress numerical noise while not excessively reducing
 the peak velocity. An example of setting the normalized artificial
-viscosity in a \filename{.cfg} file is
+viscosity in a \filename{cfg} file is
 \begin{cfg}
 <h>[pylithapp.timedependent.formulation]</h>
 <p>norm_viscosity</p> = 0.2
@@ -177,7 +177,7 @@ time step are:
 \propertyitem{dt}{Time step for simulation.}
 \end{inventory}
 
-\begin{cfg}[\object{TimeStepUniform} parameters in a \filename{.cfg} file]
+\begin{cfg}[\object{TimeStepUniform} parameters in a \filename{cfg} file]
 <h>[pylithapp.problem.formulation]</h>
 <p>time_step</p> = pylith.problems.TimeStepUniform ; Default value
 
@@ -205,7 +205,7 @@ nonuniform, user-specified time step are:
 using last time-step size for any time remaining.}
 \end{inventory}
 
-\begin{cfg}[\object{TimeStepUser} parameters in a \filename{.cfg} file]
+\begin{cfg}[\object{TimeStepUser} parameters in a \filename{cfg} file]
 <h>[pylithapp.problem.formulation]</h>
 <f>time_step</f> = pylith.problems.TimeStepUser ; Change the time step algorithm
 
@@ -242,7 +242,7 @@ new stable time step.}
 is 2.0).}
 \end{inventory}
 
-\begin{cfg}[\object{TimeStepAdapt} parameters in a \filename{.cfg} file]
+\begin{cfg}[\object{TimeStepAdapt} parameters in a \filename{cfg} file]
 <h>[pylithapp.problem.formulation]</h>
 <p>time_step</p> = pylith.problems.TimeStepAdapt ; Change the time step algorithm
 
@@ -274,7 +274,7 @@ equation.}
 \propertyitem{progress\_monitor}{Simple progress monitor via text file.}
 \end{inventory}
 
-\begin{cfg}[\object{GreensFns} parameters in a \filename{.cfg} file]
+\begin{cfg}[\object{GreensFns} parameters in a \filename{cfg} file]
 <h>[pylithapp]</h>
 <f>problem</f> = pylith.problems.GreensFns ; Change problem type from the default
 
@@ -313,7 +313,7 @@ include:
 \propertyitem{t\_units}{Units for simulation time in output.}
 \end{inventory}
 
-\begin{cfg}[\object{ProgressMonitorTime} parameters in a \filename{.cfg} file]
+\begin{cfg}[\object{ProgressMonitorTime} parameters in a \filename{cfg} file]
 <h>[pylithapp.problem.progressmonitor]</h>
 <p>update_percent</p> = 5.0 ; default
 <p>filename</p> = progress.txt ; default
@@ -332,7 +332,7 @@ include:
 \propertyitem{filename}{Name of output file.}
 \end{inventory}
 
-\begin{cfg}[\object{ProgressMonitorStep} parameters in a \filename{.cfg} file]
+\begin{cfg}[\object{ProgressMonitorStep} parameters in a \filename{cfg} file]
 <h>[pylithapp.problem.progressmonitor]</h>
 <p>update_percent</p> = 5.0 ; default
 <p>filename</p> = progress.txt ; default

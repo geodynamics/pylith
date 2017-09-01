@@ -17,7 +17,7 @@ PyLith features discussed in this example:
 This example describes a problem where we generate a set of Green's
 functions that could be used in an inversion. The example is contained
 in the directory \filename{examples/3d/hex8}, and the corresponding
-\filename{.cfg} file is \filename{step21.cfg}. The example may be run
+\filename{cfg} file is \filename{step21.cfg}. The example may be run
 as follows:
 \begin{shell}
 $ pylith step21.cfg --problem=pylith.problems.GreensFns
@@ -25,19 +25,19 @@ $ pylith step21.cfg --problem=pylith.problems.GreensFns
 This will cause PyLith to read the default parameters in
 \filename{pylithapp.cfg} and \filename{greensfns.cfg}, and then
 override or augment them with the additional parameters in the
-\filename{step21.cfg} file. The \filename{.cfg} files are extensively
+\filename{step21.cfg} file. The \filename{cfg} files are extensively
 documented, to provide detailed information on the various parameters.
 
 
 \subsubsection{Step21 - Green's Function Generation}
 
-This problem makes use of two \filename{.cfg} files that are read by
+This problem makes use of two \filename{cfg} files that are read by
 default -- \filename{pylithapp.cfg} and \filename{greensfns.cfg}. The
 \filename{greensfns.cfg} file is read automatically because we have
 changed the problem type to \object{GreensFns} (as opposed to the
 default \object{TimeDependent} problem type). The facility name then
 becomes \facility{greensfns}, and PyLith will therefore search for a
-\filename{.cfg} file matching the name of the facility. The
+\filename{cfg} file matching the name of the facility. The
 \filename{greensfns.cfg} file contains settings that are specific to
 the \object{GreensFns} problem type:
 \begin{cfg}

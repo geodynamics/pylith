@@ -75,9 +75,9 @@ you will eventually end up with the files \filename{tet4\_1000m\_binary.gmv},
 and \filename{tet4\_1000m\_binary.pset}. The ASCII files are not actually
 needed, but we create them so users can see what is contained in the
 files. These files may also be used instead of the binary versions,
-if desired. The \filename{.gmv} files define the mesh information, and
+if desired. The \filename{gmv} files define the mesh information, and
 they may be read directly by the GMV \url{laws.lanl.gov/XCM/gmv/GMVHome.html}
-mesh visualization package. The \filename{.pset} files specify the vertices
+mesh visualization package. The \filename{pset} files specify the vertices
 corresponding to each set of vertices on a surface used in the problem,
 including the fault as well as external boundaries to which boundary
 conditions are applied.
@@ -97,7 +97,7 @@ In addition to the mesh, the example problems share additional information.
 In such cases it is generally useful to create a file named \filename{pylithapp.cfg}
 in the run directory, since this file is read automatically every
 time PyLith is run. Settings specific to a particular problem may
-be placed in other \filename{.cfg} files, as described later, and then
+be placed in other \filename{cfg} files, as described later, and then
 those files are placed on the command line.  The settings contained
 in \filename{pylithapp.cfg} for this problem consist of:
 \begin{inventory}
@@ -261,7 +261,7 @@ variables for each of the material sets. The final file
 given for a subset of the mesh corresponding to the ground
 surface. Also, the cells in this file are one dimension lower than the
 cells described in \filename{step01\_t0000000.vtk}, so they are
-triangles rather than tetrahedra. All of the \filename{.vtk} files may
+triangles rather than tetrahedra. All of the \filename{vtk} files may
 be used with a number of visualization packages. If the problem ran
 correctly, you should be able to generate a figure such as Figure
 \vref{fig:3dtet4:shear}, which was generated using ParaView.
@@ -443,7 +443,7 @@ for each vertex on the fault, along with the computed traction change
 for the cohesive cell. The final file,
 \filename{step03-fault\_info.vtk}, provides information such as the
 normal direction, final slip, and slip time for each vertex on the
-fault. All of the \filename{.vtk} files may be used with a number of
+fault. All of the \filename{vtk} files may be used with a number of
 visualization packages. If the problem ran correctly, you should be
 able to generate a figure such as Figure\vref{fig:3dtet:dislocation},
 which was generated using ParaView.

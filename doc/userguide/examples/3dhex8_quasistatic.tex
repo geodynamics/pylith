@@ -31,7 +31,7 @@ nonlinear solver, which is required by the nonlinear rheologies (power-law
 viscoelastic and Drucker-Prager elastoplastic). Some of the examples
 also demonstrate the usage of HDF5 output, which is an alternative
 to the default VTK output. All of the examples are contained in the
-directory \filename{examples/3d/hex8}, and the corresponding \filename{.cfg}
+directory \filename{examples/3d/hex8}, and the corresponding \filename{cfg}
 files are \filename{step04.cfg}, \filename{step05.cfg}, \filename{step06.cfg},
 \filename{step07.cfg}, \filename{step08.cfg}, and \filename{step09.cfg}.
 Each example may be run as follows:
@@ -40,7 +40,7 @@ $ pylith stepXX.cfg
 \end{shell}
 This will cause PyLith to read the default parameters in \filename{pylithapp.cfg},
 and then override or augment them with the additional parameters in
-the \filename{stepXX.cfg} file. Each \filename{.cfg} file is extensively
+the \filename{stepXX.cfg} file. Each \filename{cfg} file is extensively
 documented, to provide detailed information on the various parameters.
 
 
@@ -292,7 +292,7 @@ time steps can be contained in a single file. PyLith also produces
 Xdmf files describing the contents of the HDF5 files, which allows
 the files to be read easily by applications such as ParaView. Since
 VTK output is still the default, we must change the value from the
-default. Also note that the filename suffix is \filename{.h5}:
+default. Also note that the filename suffix is \filename{h5}:
 \begin{cfg}
 # Give basename for output of solution over domain.
 <h>[pylithapp.problem.formulation.output.domain]</h>
@@ -400,7 +400,7 @@ It will contain final slip information for each earthquake source
 along with slip time information. When we have run the simulation,
 the output HDF5 and Xdmf files will be contained in \filename{examples/3d/hex8/output}
 (all with a prefix of \filename{step06}). To open the files in ParaView,
-the Xdmf (\filename{.xmf}) files should be opened, as these files describe
+the Xdmf (\filename{xmf}) files should be opened, as these files describe
 the HDF5 data structure. Results using ParaView are shown in Figure
 \vref{fig:example:3dhex8:step06:displacement}.
 
@@ -489,7 +489,7 @@ obtain this information by explicitly requesting it in \property{vertex\_data\_f
 When we have run the simulation, the output HDF5 and Xdmf files will
 be contained in \filename{examples/3d/hex8/output} (all with a prefix
 of \filename{step07}). As for example step06, make sure to open the
-\filename{.xmf} files rather than the \filename{.h5} files. Results using
+\filename{xmf} files rather than the \filename{h5} files. Results using
 ParaView are shown in Figure \vref{fig:example:3dhex8:step07:displacement}.
 
 \begin{figure}
