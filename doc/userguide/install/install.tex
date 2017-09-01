@@ -56,9 +56,9 @@ Section~\vref{sec:install:windows} for more information).
 \item Open a terminal window and change to the directory where you
   want to place the distribution.
   \begin{shell}
-$$ cd  $HOME
-$$ mkdir pylith
-$$ cd pylith
+$ cd  $HOME
+$ mkdir pylith
+$ cd pylith
   \end{shell}
 \item Download the Linux or Mac OS X (Darwin) tarball from the PyLith
   web page \url{geodynamics.org/cig/software/packages/short/pylith/},
@@ -66,18 +66,18 @@ $$ cd pylith
 \item Unpack the tarball.
   \begin{shell}
 # Linux 32-bit
-$$ tar -xzf pylith-2.2.1-linux-i686.tgz
+$ tar -xzf pylith-2.2.1-linux-i686.tgz
 # Linux 64-bit
-$$ tar -xzf pylith-2.2.1-linux-x86_64.tgz
+$ tar -xzf pylith-2.2.1-linux-x86_64.tgz
 # Mac OS X
-$$ tar -xzf pylith-2.2.1-darwin-10.11.6.tgz
+$ tar -xzf pylith-2.2.1-darwin-10.11.6.tgz
   \end{shell}
 \item Set environment variables. The provided \filename{setup.sh}
   script only works if you are using bash shell. If you are using a
   different shell, you will need to alter how the environment
   variables are set in \filename{setup.sh}.
   \begin{shell}
-$$ source setup.sh
+$ source setup.sh
   \end{shell}
 \end{enumerate}
 
@@ -179,31 +179,32 @@ Python module.
   host computer. However, you can copy files to/from your host filesystem
   using ``docker cp'' (see below).
 \end{enumerate}
-\begin{shell}
+\begin{shell}[]
 # Create the container
-$$ docker create --name pylith-data geodynamics/pylith-data
+$ docker create --name pylith-data geodynamics/pylith-data
 # Run the docker container and copy examples to the persistent storage.
-$$ docker run -ti --volumes-from pylith-data geodynamics/pylith
-$$ cp -R $HOME/pylith-VERSION/examples $HOME/data
+$ docker run -ti --volumes-from pylith-data geodynamics/pylith
+# This next command is run WITHIN the docker container.  
+$ cp -R $HOME/pylith-VERSION/examples $HOME/data
 \end{shell}
 
 \subsection{Run Unix shell within Docker to use PyLith.}
 
 To run the container with a text only interface:
 \begin{shell}
-$$ docker run -ti --volumes-from pylith-data geodynamics/pylith
+$ docker run -ti --volumes-from pylith-data geodynamics/pylith
 \end{shell}
 
 To run the container and allow display of windows on the host computer
 (requires that X-Windows be installed):
 \begin{shell}
 # Darwin: Allow X connections
-$$ xhost +YOUR_IP_ADDRESS; DISPLAY=YOUR_IP_ADDRESS:0
+$ xhost +YOUR_IP_ADDRESS; DISPLAY=YOUR_IP_ADDRESS:0
 # Linux: Allow X connections
-$$ xhost +local:root
+$ xhost +local:root
 # For Linux and Darwin, continue with the follow lines.
-$$ XSOCK=/tmp/.X11-unix
-$$ docker run -ti --volumes-from pylith-data \
+$ XSOCK=/tmp/.X11-unix
+$ docker run -ti --volumes-from pylith-data \
     -e DISPLAY=$DISPLAY -v $XSOCK:$XSOCK geodynamics/pylith
 \end{shell}
 
@@ -227,17 +228,17 @@ utilities:
 \item To attach to a ``paused'' or ``running'' container.
   \begin{shell}
 # Get the container id.
-$$ docker ps
+$ docker ps
 # Attach to the container
-$$ docker attach CONTAINER_ID
+$ docker attach CONTAINER_ID
   \end{shell}
 \item To restart an existing container after it exited.
   \begin{shell}
 # Get the container id.
-$$ docker ps -a
+$ docker ps -a
 # Start and then attach to the container
-$$ docker run CONTAINER_ID
-$$ docker attach CONTAINER_ID
+$ docker run CONTAINER_ID
+$ docker attach CONTAINER_ID
   \end{shell}
 \end{itemize}
 
@@ -252,24 +253,24 @@ and then copy the output files to the host to display in ParaView.
 
 \begin{shell}
 # Copy data FROM persistent storage volume TO local host
-$$ docker cp pylith-data:/data/pylith-user/PATH/FILENAME LOCAL_PATH
+$ docker cp pylith-data:/data/pylith-user/PATH/FILENAME LOCAL_PATH
 # Copy data FROM local host TO persistent storage volume
-$$ docker cp LOCAL_PATH pylith-data:/data/pylith-user/PATH/
+$ docker cp LOCAL_PATH pylith-data:/data/pylith-user/PATH/
 \end{shell}
 
 
 \subsection{Docker Quick Reference}
 \begin{shell}
 # List local docker images.
-$$ docker images
+$ docker images
 # List all docker containers.
-$$ docker ps -a
+$ docker ps -a
 # List running docker containers.
-$$ docker ps
+$ docker ps
 # Remove docker container
-$$ docker rm CONTAINER_ID
+$ docker rm CONTAINER_ID
 # Remove docker image
-$$ docker rmi IMAGE_ID
+$ docker rmi IMAGE_ID
 \end{shell}
 \section{Installation from Source}
 
@@ -313,13 +314,23 @@ they are located in \texttt{pylith-\pylithVersionNumber/examples}. Chapter
 for the examples. To run the example discussed in Section
 \vref{sec:example:3dhex8-static}:
 \begin{shell}
-$$ cd examples/3d/hex8
-$$ pylith step01.cfg
+$ cd examples/3d/hex8
+$ pylith step01.cfg
+# A bunch of stuff will be written to stdout. The last few lines should be:  
+WARNING! There are options you set that were not used!
+WARNING! could be spelling mistake, etc!
+Option left: name:-snes_atol value: 1.0e-9
+Option left: name:-snes_converged_reason (no value)
+Option left: name:-snes_error_if_not_converged (no value)
+Option left: name:-snes_linesearch_monitor (no value)
+Option left: name:-snes_max_it value: 100
+Option left: name:-snes_monitor (no value)
+Option left: name:-snes_rtol value: 1.0e-10
 \end{shell}
 If you run PyLith in a directory without any input, you will get the
 error message:
 \begin{shell}
-$$ pylith
+$ pylith
  >> {default}::
  -- pyre.inventory(error)
  -- meshimporter.meshioascii.filename <- ''
@@ -398,9 +409,9 @@ batch script or mpirun command to the console, instead of actually submitting it
 execution (the output is only meaningful if you're using a batch system).
 \begin{shell}
 # Display the bash script that would be submitted.
-$$ pylith --scheduler.dry
+$ pylith --scheduler.dry
 # Display the mpirun command.
-$$ pylith --launcher.dry
+$ pylith --launcher.dry
 \end{shell}
 
 \subsection{Running without a Batch System}
@@ -423,7 +434,7 @@ machine names in square brackets.
 
 Now, invoke the following:
 \begin{shell}
-$$ pylith example.cfg mymachines.cfg
+$ pylith example.cfg mymachines.cfg
 \end{shell}
 This strategy gives you the flexibility to create an assortment of
 \filename{.cfg} files (with one \filename{.cfg} file for each machine
@@ -435,7 +446,7 @@ in \filename{\$HOME/.pyre/pylithapp/pylithapp.cfg} (which
 is read automatically). Then, you can run any simulation with no additional
 arguments:
 \begin{shell}
-$$ pylith example.cfg
+$ pylith example.cfg
 \end{shell}
 
 \warning{This assumes your machine list has enough nodes for the
@@ -456,7 +467,7 @@ the command line, where one typically specifies the number of compute
 nodes and number of processes per compute node, the job name, and
 the allotted time for the job:
 \begin{shell}
-$$ pylith example1.cfg \
+$ pylith example1.cfg \
     --job.queue=debug \
     --job.name=example1 \
     --job.stdout=example1.log \

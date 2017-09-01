@@ -149,7 +149,7 @@ problems, no fault opening is given, so only the left-lateral
 component is nonzero. We run the forward models by typing (in the
 appropriate directory)
 \begin{shell}
-$$ pylith eqsim.cfg
+$ pylith eqsim.cfg
 \end{shell}
 Once the problem has run, four HDF5 files will be produced. The file
 named \filename{eqsim.h5} (and the associated XDMF file) contains the
@@ -295,7 +295,7 @@ each subdirectory. The inversion is performed by running the script
 in the top-level directory from each subdirectory. To run an inversion,
 type:
 \begin{shell}
-$$ ../invert_slip.py --impulses=output/greensfns-fault.h5 \
+$ ../invert_slip.py --impulses=output/greensfns-fault.h5 \
    --responses=output/greensfns-points.h5 --data=output/eqsim-points.h5 \
    --penalty=penalty_params.txt --output=output/slip_inverted.txt \
 \end{shell}
@@ -313,7 +313,7 @@ slip for the forward problem. The Python code to plot the results
 is contained in the \filename{plot\_invresults.py} file contained within
 each subdirectory. To plot the results, type:
 \begin{shell}
-$$ plot_invresults.py --solution=output/eqsim-fault.h5 --predicted=output/slip_inverted.txt
+$ plot_invresults.py --solution=output/eqsim-fault.h5 --predicted=output/slip_inverted.txt
 \end{shell}
 The script will produce an interactive matplotlib window that shows
 the estimated solution compared to the true solution (Figure

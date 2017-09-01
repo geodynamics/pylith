@@ -21,7 +21,7 @@ PyLith Parameter Viewer tarball from the PyLith software page
 downloading the tarball, unpack it. We recommend unpacking the tarball
 in the top-level PyLith directory.
 \begin{shell}
-$$ tar -xvf pylith_parameters-1.0.0.tgz
+$ tar -xvf pylith_parameters-1.1.0.tgz
 \end{shell}
 
 \section{Running the Parameter Viewer}
@@ -45,7 +45,7 @@ command line argument. When using \filename{pylith}, the
 DumpParametersJSON component contains a property for the name of the
 file. You can set the filename on the command line
 \begin{shell}
-$$ pylith --dump_parameters.filename=FILENAME.json
+$ pylith --dump_parameters.filename=FILENAME.json
 \end{shell}
 or within a .cfg file
 \begin{cfg}
@@ -64,8 +64,8 @@ script (usually the \filename{parametersgui} directory under the top-level
 script. This will start a simple Python-based web server on your local
 computer.
 \begin{shell}
-$$ cd parametersgui
-$$ ./pylith\_paramviewer
+$ cd parametersgui
+$ ./pylith_paramviewer
 \end{shell}
 The script will instruct you to point your web browswer to a local
 port on your computer. The default is \url{http://127.0.0.1:9000}.
@@ -86,7 +86,7 @@ a new JSON parameter file, click the \textsf{Choose File} button and
 navigate to the desired file.
 
 \begin{figure}[htbp]
-  \includegraphics[width=5in]{runpylith/figs/paramgui_startup} 
+  \fbox{\includegraphics[width=5in]{runpylith/figs/paramgui_startup}}
   \caption{Screenshot of PyLith Parameter Viewer in web browser upon startup.}
   \label{fig:parameters:gui:startup} 
 \end{figure}
@@ -103,7 +103,7 @@ PyLith version, and versions of the dependencies, as shown in Figure
 \ref{fig:parameters:gui:version}.
 
 \begin{figure}[htbp]
-  \includegraphics[width=5in]{runpylith/figs/paramgui_version} 
+  \fbox{\includegraphics[width=5in]{runpylith/figs/paramgui_version}}
   \caption{Screenshot of \textsf{Version} tab of the PyLith Parameter Viewer
     with sample JSON parameter file.}
   \label{fig:parameters:gui:version} 
@@ -125,7 +125,7 @@ highlighted via a gray background (Figure
 \ref{fig:parameters:gui:parameters:selected}).
 
 \begin{figure}[htbp]
-  \includegraphics[width=5in]{runpylith/figs/paramgui_parameters} 
+  \fbox{\includegraphics[width=5in]{runpylith/figs/paramgui_parameters}}
   \caption{Screenshot of \textsf{Parameters} tab of the PyLith Parameter Viewer
     with sample JSON parameter file before selecting a component in the
     left panel.}
@@ -134,7 +134,7 @@ highlighted via a gray background (Figure
 
 
 \begin{figure}[htbp]
-  \includegraphics[width=5in]{runpylith/figs/paramgui_detail} 
+  \fbox{\includegraphics[width=5in]{runpylith/figs/paramgui_detail}}
   \caption{Screenshot of \textsf{Parameters} tab of the PyLith Parameter Viewer
     with sample JSON parameter file with the \facility{z\_neg} facility
     selected.}

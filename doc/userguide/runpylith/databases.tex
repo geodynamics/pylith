@@ -84,8 +84,8 @@ parameter are ``linear'' and ``nearest'' (default).}
 so you do not need to change this setting.}
 \propertyitem{iohandler.filename}{Filename for the spatial database.}
 \end{inventory}
-An example of setting these in a \filename{.cfg} file is:
-\begin{cfg}
+
+\begin{cfg}[\object{SimpleDB} parameters in a \filename{.cfg} file]
 <p>label</p> = Material properties
 <p>query_type</p> = linear
 <p>iohandler.filename</p> = mydb.spatialdb
@@ -108,15 +108,16 @@ for a \object{UniformDB} are:
 \propertyitem{data}{Array of values in spatial database.}
 \end{inventory}
 
-Specify the physical properties of a linearly elastic, isotropic material
-in a \filename{.cfg} file. The data values are dimensioned
-with the appropriate units using Python syntax.
-\begin{cfg}
+\begin{cfg}[\object{UniformDB} parameters in a \filename{.cfg} file]
 <h>[pylithapp.timedependent.materials.material]</h>
 <p>db_properties</p> = spatialdata.spatialdb.UniformDB ; Set the db to a UniformDB
 <p>db_properties.values</p> = [vp, vs, density] ; Set the names of the values in the database
 <p>db_properties.data</p> = [5773.5*m/s, 3333.3*m/s, 2700.0*kg/m**3] ; Set the values in the database}
 \end{cfg}
+This example specifies the physical properties of a linearly elastic,
+isotropic material in a \filename{.cfg} file. The data values are
+dimensioned with the appropriate units using Python syntax.
+
 
 \subsubsection{\object{ZeroDispDB}}
 
@@ -154,8 +155,8 @@ files. The parameters for a spatial database are:
 parameter are ``linear'' and ``nearest'' (default).}
 \propertyitem{filename}{Filename for the spatial database.}
 \end{inventory}
-An example of setting these parameters in a \filename{.cfg} file is:
-\begin{cfg}
+
+\begin{cfg}[\object{SimpleGridDB} parameters in a \filename{.cfg} file]
 <p>label</p> = Material properties
 <p>query_type</p> = linear
 <p>filename</p> = mydb_grid.spatialdb
@@ -189,9 +190,7 @@ surface flat).}
 below this elevation remains undistorted).}
 \end{inventory}
 
-Specify the physical properties of a linearly elastic, isotropic material
-using the SCEC CVM-H in a \filename{.cfg} file.
-\begin{cfg}
+\begin{cfg}[\object{SCECCVMH} parameters in a \filename{.cfg} file]
 <h>[pylithapp.timedependent.materials.material]</h>
 <p>db_properties</p> = spatialdata.spatialdb.SCECCVMH ; Set the database to the SCEC CVM-H
 
@@ -214,8 +213,9 @@ material properties for a region. In this case, it would be useful
 to have two different spatial databases, e.g., a seismic velocity
 model with Vp, Vs, and density values, and another database with the
 inelastic physical properties. We can use the \object{CompositeDB}
-spatial database for these cases. An example would be:
-\begin{cfg}
+spatial database for these cases.
+
+\begin{cfg}[\object{CompositeDB} parameters in a \filename{.cfg} file]
 <h>[pylithapp.timedependent.materials.maxwell]</h>
 <p>label</p> = Maxwell material
 <p>id</p> = 1
@@ -267,8 +267,8 @@ files. The parameters for a spatial database are:
 messages.}
 \propertyitem{filename}{Filename for the time history database.}
 \end{inventory}
-An example of setting these parameters in a \filename{.cfg} file is:
-\begin{cfg}
+
+\begin{cfg}[\object{TimeHistory} parameters in a \filename{.cfg} file]
 <p>label</p> = Displacement time history
 <p>filename</p> = mytimehistory.timedb
 \end{cfg}

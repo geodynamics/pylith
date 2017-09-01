@@ -140,7 +140,7 @@ get an estimate of when the simulation will finish.
 
 We run the simulation using:
 \begin{shell}
-$$ pylith gravity_infstrain.cfg
+$ pylith gravity_infstrain.cfg
 \end{shell}
 The simulation produces HDF5 (and corresponding XDMF) files with the
 output of the displacements on the ground surface and the entire
@@ -173,7 +173,7 @@ for the output.
 
 We run the simulation using:
 \begin{shell}
-$$ pylith gravity_initstress.cfg gravity_isostatic.cfg
+$ pylith gravity_initstress.cfg gravity_isostatic.cfg
 \end{shell}
 
 \subsection{Step 3: Infinitesimal Strain Simulation with Initial Stresses and
@@ -218,7 +218,7 @@ body forces and lateral density variations or topography.
 
 We run the simulation using:
 \begin{shell}
-$$ pylith gravity_initstress.cfg gravity_vardensity.cfg
+$ pylith gravity_initstress.cfg gravity_vardensity.cfg
 \end{shell}
 Figure \vref{fig:examples:gravity:2d:vardensity:stress} shows the
 shear stress field at the end of the simulation.
@@ -249,7 +249,7 @@ custom fault preconditioner for the Lagrange multipliers.
 
 We run the simulation using:
 \begin{shell}
-$$ pylith postseismic.cfg nogravity.cfg postseismic_infstrain_nograv.cfg
+$ pylith postseismic.cfg nogravity.cfg postseismic_infstrain_nograv.cfg
 \end{shell}
 Figure \vref{fig:examples:gravity:2d:postseismc:infstrain:disp} shows
 the vertical displacement field at the end of the simulation.
@@ -273,7 +273,7 @@ formulation.:
 When we use the finite strain formulation, the solver is automatically
 switched to the nonlinear solver. We run the simulation using:
 \begin{shell}
-$$ pylith postseismic.cfg nogravity.cfg postseismic_finstrain_nograv.cfg
+$ pylith postseismic.cfg nogravity.cfg postseismic_finstrain_nograv.cfg
 \end{shell}
 The results are nearly identical to those with infinitesimal strain.
 
@@ -287,7 +287,7 @@ overburden pressure.
 
 We run the simulation using:
 \begin{shell}
-$$ pylith postseismic.cfg postseismic_infstrain.cfg
+$ pylith postseismic.cfg postseismic_infstrain.cfg
 \end{shell}
 With the infinitesimal strain formulation and linearly material behavior,
 the initial stress state of equal axial stresses does not alter the
@@ -303,7 +303,7 @@ body forces; this is also the same as Step 6, but with finite strain.
 
 We run the simulation using:
 \begin{shell}
-$$ pylith postseismic.cfg postseismic\_finstrain.cfg
+$ pylith postseismic.cfg postseismic\_finstrain.cfg
 \end{shell}
 The finite strain formulation accounts for the redistribution of
 gravitational body forces as the domain deforms during the postseismic
@@ -355,7 +355,7 @@ by commenting out the lines with the CellFilterAvg settings:
 \end{cfg}
 for both the crust and mantle. Next we rerun Step 3 using
 \begin{shell}
-$$ pylith gravity_initstress.cfg gravity_vardensity.cfg
+$ pylith gravity_initstress.cfg gravity_vardensity.cfg
 \end{shell}
 This will change how the values appear in ParaView output. Because
 the output data fields contain the values at multiple points within
@@ -368,14 +368,14 @@ point, etc. We use the Python script \filename{generate\_statedb.py}
 to generate the spatial databases with the initial stresses from the
 output of Step 3:
 \begin{shell}
-$$ ./generate_statedb.py
+$ ./generate_statedb.py
 \end{shell}
 After generating the initial state variables, we uncomment the \texttt{cell\_filter}
 lines in \filename{pylithapp.cfg} to allow easier visualization of Step
 8 results. Finally, we run the simulation of the postseismic deformation
 using
 \begin{shell}
-$$ pylith postseismic.cfg gravity_initstress.cfg postseismic_vardensity.cfg
+$ pylith postseismic.cfg gravity_initstress.cfg postseismic_vardensity.cfg
 \end{shell}
 In the 100 years before the earthquake, it is clear that there is
 some ongoing deformation associated with the relaxation of the mantle.

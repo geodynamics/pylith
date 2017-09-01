@@ -113,7 +113,7 @@ contour to a depth below the slab and above the ground surface.
 \begin{shell}
 # Make sure you are in the 'mesh' directory and then run the Python
 # script to generate the journal file 'generate_surfs.jou'.
-$$ ./generate_surfjou.py  
+$ ./generate_surfjou.py  
 \end{shell}
 
 The next step is to use CUBIT/Trelis to run the
@@ -462,7 +462,7 @@ with the \filename{.xmf} suffix).
 
 We run this example by typing
 \begin{shell}
-$$ pylith step01.cfg mat_elastic.cfg
+$ pylith step01.cfg mat_elastic.cfg
 \end{shell}
 The simulation will produce ten pairs of HDF5/Xdmf files in the
 \filename{output} directory:
@@ -701,7 +701,7 @@ with 1.0 m of right-lateral motion and 4.0 m of reverse motion.
 
 We run this example by typing
 \begin{shell}
-$$ pylith step02.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg
+$ pylith step02.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg
 \end{shell}
 In addition to the ten pairs of HDF5/Xdmf files analogous to those
 produced in Step 1, we also have two pairs of HDF5/Xdmf files
@@ -924,7 +924,7 @@ boundaries.
 
 We run this example by typing
 \begin{shell}
-$$ pylith step03.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg
+$ pylith step03.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg
 \end{shell}
 The simulation will produce fourteen pairs of HDF5/Xdmf files,
 beginning with \filename{step03}, in the \filename{output}
@@ -1136,7 +1136,7 @@ difference is that we specify an origin time of 250 years.
 
 We run this example by typing
 \begin{shell}
-$$ pylith step04.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg
+$ pylith step04.cfg mat_viscoelastic.cfg solver_fieldsplit.cfg
 \end{shell}
 The simulation will produce sixteen pairs of HDF5/Xdmf files,
 beginning with \filename{step04}, in the \filename{output}
@@ -1352,13 +1352,13 @@ To run the simulation, first run the Python script to generate the
 spatial database files, and then run PyLith.
 \begin{shell}
 # Generate the spatial database files
-$$ cd spatialdb && ./generate_slowslip.py
-$$ ls fault_slabtop_slowslip.*
+$ cd spatialdb && ./generate_slowslip.py
+$ ls fault_slabtop_slowslip.*
 # You should see
 fault_slabtop_slowslip.spatialdb  fault_slabtop_slowslip.timedb 
 # Change back to the subduction directory and run PyLith
-$$ cd ..
-$$ pylith step06.cfg mat_elastic.cfg solver_fieldsplit.cfg
+$ cd ..
+$ pylith step06.cfg mat_elastic.cfg solver_fieldsplit.cfg
 \end{shell}
 The problem will produce thirteen pairs of HDF5/Xdmf files:
 \begin{description}
@@ -1525,8 +1525,8 @@ domain:
 
 You can run the two sub-problems as follows:
 \begin{shell}
-$$ pylith --problem=pylith.problems.GreensFns step07a.cfg mat_elastic.cfg solver_fieldsplit.cfg
-$$ pylith --problem=pylith.problems.GreensFns step07b.cfg mat_elastic.cfg solver_fieldsplit.cfg
+$ pylith --problem=pylith.problems.GreensFns step07a.cfg mat_elastic.cfg solver_fieldsplit.cfg
+$ pylith --problem=pylith.problems.GreensFns step07b.cfg mat_elastic.cfg solver_fieldsplit.cfg
 \end{shell}
 Each simulation will produce four pairs of HDF5/Xdmf files. For Step
 7a these will be:
@@ -1556,7 +1556,7 @@ parameters in \filename{make\_synthetic\_gpsdisp.cfg} and generates
 synthetic data from the selected time step with a specified amount of
 noise. Run this script by typing:
 \begin{shell}
-$$ ./make_synthetic_gpsdisp.py
+$ ./make_synthetic_gpsdisp.py
 \end{shell}
 This will create the following files:
 \begin{description}
@@ -1571,7 +1571,7 @@ with parameters defined in \filename{slip\_invert.cfg}. This script
 performs a set of linear inversions, in a manner similar to the
 inversion in \vref{sec:example:greensfns2d:inversion}. 
 \begin{shell}
-$$ ./slip_invert.py
+$ ./slip_invert.py
 \end{shell}
 This will create a number of files in the output directory.
 \begin{description}
@@ -1735,7 +1735,7 @@ four materials.
 
 We run the sub-problem by typing:
 \begin{shell}
-$$ pylith step08a.cfg mat_elastic.cfg solver_algebraicmultigrid.cfg
+$ pylith step08a.cfg mat_elastic.cfg solver_algebraicmultigrid.cfg
 \end{shell}
 The simulation will generate ten pairs of HDF5/Xdmf files beginning
 with \filename{step08a}:
@@ -1798,8 +1798,8 @@ of our unstructured mesh, so the points are not on a logical grid, and
 we must use a \object{SimpleDB}.
 \begin{shell}
 # From the examples/3d/subduction directory, change to the spatialdb subdirectory.
-$$ cd spatialdb
-$$ ./generate_initial_stress.py
+$ cd spatialdb
+$ ./generate_initial_stress.py
 \end{shell}
 This will create spatial databases containing initial stresses for
 each of the four materials.
@@ -1835,7 +1835,7 @@ spatialdb/mat_initial_stress_grav-crust.spatialdb
 
 We run the sub-problem by typing:
 \begin{shell}
-$$ pylith step08b.cfg mat_elastic.cfg solver_algebraicmultigrid.cfg
+$ pylith step08b.cfg mat_elastic.cfg solver_algebraicmultigrid.cfg
 \end{shell}
 This simulation will produce files in the \filename{output} directory
 analogous to Step 8a.
@@ -1890,7 +1890,7 @@ simulation time:
 We use the material settings in \filename{mat\_viscoelastic.cfg}. We
 can run the simulation by typing:
 \begin{shell}
-$$ pylith step08c.cfg mat_viscoelastic.cfg solver_algebraicmultigrid.cfg
+$ pylith step08c.cfg mat_viscoelastic.cfg solver_algebraicmultigrid.cfg
 \end{shell}
 This simulation will produce files in the \filename{output} directory
 analogous to Steps 8a and 8b.

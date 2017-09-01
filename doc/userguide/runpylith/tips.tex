@@ -109,7 +109,7 @@ and the valgrind log file (only available on Linux platforms).  You
 can generate a backtrace using the debugger by using the
 \commandline{-{}-petsc.start\_in\_debugger} command-line argument:
 \begin{shell}
-$$ pylith [..args..] --petsc.start_in_debugger
+$ pylith [..args..] --petsc.start_in_debugger
 (gdb) continue
 (gdb) backtrace
 \end{shell}
@@ -117,7 +117,7 @@ $$ pylith [..args..] --petsc.start_in_debugger
 To use valgrind to detect the memory error, first go to your working
 directory and run the problem with \commandline{-{}-launcher.dry}:
 \begin{shell}
-$$ pylith [..args..] --launcher.dry
+$ pylith [..args..] --launcher.dry
 \end{shell}
 
 Instead of actually running the problem, this causes PyLith to dump
@@ -126,7 +126,7 @@ into your shell so you can run it directly. Insert the full path to
 valgrind before the full path to mpinemesis and tell valgrind to use
 a log file:
 \begin{shell}
-$$ mpirun /path/to/valgrind --log-file=valgrind-log /path/to/mpinemesis --pyre-start
+$ mpirun /path/to/valgrind --log-file=valgrind-log /path/to/mpinemesis --pyre-start
   [..lots of junk..]
 \end{shell}
 
