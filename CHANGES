@@ -19,8 +19,8 @@ Version 2.2.1
       illustrates a wide range of PyLith features for quasi-static simulations.
 
     - examples/2d/subduction: Added quasi-static spontaneous rupture
-      earthquake cycle examples for slip-weakening and rate- and
-      state-friction.
+      earthquake cycle examples (Steps 5 and 6) for slip-weakening and
+      rate- and state-friction.
 
     - These new examples make use of ParaView Python scripts to
       facilitate using ParaView with PyLith.
@@ -41,7 +41,9 @@ Version 2.2.1
 * Updated spatialdata to v1.9.10. Improved error messages when reading
   SimpleDB and SimpleGridDB files.
 
-* Updated PyLith parameter viewer to v1.0.1. Small fix to insure
+* Updated PyLith parameter viewer to v1.1.0. Application and
+  documentation are now available on line at
+  https://geodynamics.github.io/pylith_parameters. Small fix to insure
   hierarchy path listed matches the one for PyLith.
 
 * Updated PETSc to v3.7.6. See the PETSc documentation for a summary
