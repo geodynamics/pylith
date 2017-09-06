@@ -1,0 +1,44 @@
+// -*- C++ -*- (syntax highlighting)
+//
+// This spatial database specifies the distribution of rate and state
+// friction parameters for the subducting interface.
+// 
+// We specify depth-dependent frictional properties with stable
+// sliding (equal dynamic and static coefficients of friction) above
+// and below the seismogenic zone (elevations of -5 km to -45 km).
+//
+#SPATIAL_GRID.ascii 1
+SimpleGridDB {
+  num-x = 1
+  num-y = 6
+  num-values = 6
+  value-names =  reference-friction-coefficient  reference-slip-rate  characteristic-slip-distance  constitutive-parameter-a  constitutive-parameter-b  cohesion
+  value-units =  none  cm/year  m  none  none Pa
+  space-dim = 2
+  cs-data = cartesian {
+    to-meters = 1.0e+3
+    space-dim = 2
+  }
+} // SimpleGridDB
+
+// x coordinate
+0.0
+
+// y coordinate
+99.0  -5.0  -15.0  -35.0  -45.0  -999.0
+
+// Columns are
+// (1) x coordinate (km)
+// (2) y coordinate (km)
+// (3) reference-friction-coefficient
+// (4) reference-slip-rate (cm/yr)
+// (5) characteristic-slip-distance (m)
+// (6) constitutive-parameter-a
+// (7) constitutive-parameter-b
+// (8) cohesion (Pa)
+0.0    99.0   0.6  1.0  0.2  0.015  0.010  0.0
+0.0    -5.0   0.6  1.0  0.2  0.015  0.010  0.0
+0.0   -15.0   0.6  1.0  0.2  0.015  0.017  0.0
+0.0   -30.0   0.6  1.0  0.2  0.015  0.017  0.0
+0.0   -45.0   0.6  1.0  0.2  0.015  0.010  0.0
+0.0  -999.0   0.6  1.0  0.2  0.015  0.010  0.0

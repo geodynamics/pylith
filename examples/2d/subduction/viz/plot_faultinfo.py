@@ -26,7 +26,7 @@ def getStep01():
   """
 
   # Open solution file and get slip and coordinates.
-  h5 = h5py.File("output/step01-fault.h5", "r", driver='sec2')
+  h5 = h5py.File("output/step01-fault.h5", "r")
   vertices = h5['geometry/vertices'][:]
   slip = h5['vertex_fields/slip'][0,:,0].squeeze()
   traction_change = h5['vertex_fields/traction_change'][0,:,:].squeeze()

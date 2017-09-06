@@ -73,6 +73,12 @@ public :
    */
   void zeroTolerance(const PylithScalar value);
 
+  /** Nondimensional tolerance for suppressing near zero values of fault opening.
+   *
+   * @param value Nondimensional tolerance
+   */
+  void zeroToleranceNormal(const PylithScalar value);
+
   /** Set flag used to determine when fault is traction free when it
    * opens or it still imposes any initial tractions.
    *
@@ -279,8 +285,11 @@ private :
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
-  /// Minimum resolvable value accounting for roundoff errors
+  /// Minimum resolvable value accounting for roundoff errors.
   PylithScalar _zeroTolerance;
+
+  /// Minimum resolvable value accounting for roundoff errors for fault opening.
+  PylithScalar _zeroToleranceNormal;
 
   /// Prescribed traction variation.
   TractPerturbation* _tractPerturbation;

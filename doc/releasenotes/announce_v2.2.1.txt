@@ -1,0 +1,72 @@
+Greetings,
+
+I am pleased to announce the release of PyLith 2.2.1, a finite-element
+code designed to solve dynamic elastic problems and quasi-static
+viscoelastic problems in tectonic deformation.
+
+This release provides a few new examples and bugfixes.
+
+You can download the source code and binaries from
+
+    http://geodynamics.org/cig/software/pylith
+
+Detailed installation instructions for the binary packages are in the
+User Manual with detailed building instructions for a few platforms in
+the INSTALL file bundled with the PyLith Installer utility. We also
+offer a Docker image
+(https://wiki.geodynamics.org/software:pylith:docker) for running
+PyLith within a portable, virtual Linux environment.
+
+======================================================================
+MIGRATING FROM VERSION 2.1 TO 2.2
+======================================================================
+
+No changes are needed to parameter or other input files. The default
+format for pylithinfo output is now JSON.
+
+======================================================================
+RELEASE NOTES
+======================================================================
+
+* Added new examples.
+
+    - examples/3d/subduction: New suite of examples for a 3-D
+      subduction zone. This intermediate level suite of examples
+      illustrates a wide range of PyLith features for quasi-static simulations.
+
+    - examples/2d/subduction: Added quasi-static spontaneous rupture
+      earthquake cycle examples (Steps 5 and 6) for slip-weakening and
+      rate- and state-friction.
+
+    - These new examples make use of ParaView Python scripts to
+      facilitate using ParaView with PyLith.
+
+* Improved the PyLith manual
+
+    - Added diagram to guide users on which installation method best
+      meets their needs.
+
+    - Added instructions for how to use the Windows Subsystem for
+      Linux to install the PyLith Linux binary on systems running
+      Windows 10.
+
+* Fixed bug in generating Xdmf files for 2-D vector output. Converted
+  Xdmf generator from C++ to Python for more robust generation of Xdmf
+  files from Python scripts.
+
+* Updated spatialdata to v1.9.10. Improved error messages when reading
+  SimpleDB and SimpleGridDB files.
+
+* Updated PyLith parameter viewer to v1.1.0. Application and
+  documentation are now available on line at
+  https://geodynamics.github.io/pylith_parameters. Small fix to insure
+  hierarchy path listed matches the one for PyLith.
+
+* Updated PETSc to v3.7.6. See the PETSc documentation for a summary
+  of all of the changes.
+
+* Switched to using CentOS 6.9 for Linux binary builds to insure
+  compatibility with glibc 2.12 and later.
+
+See CHANGES in the top-level source directory for a list of changes
+for each prior release.

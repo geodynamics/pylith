@@ -10,7 +10,7 @@ steps.
 \item In the mesh generation process, assign a material identifier to each
 cell.
 \item Define material property groups corresponding to each material identifier.
-\item Set the parameters for each material group using \filename{.cfg} and/or command-line arguments.
+\item Set the parameters for each material group using \filename{cfg} and/or command-line arguments.
 \item Specify the spatial variation in material property parameters using
 a spatial database file.
 \end{enumerate}
@@ -42,7 +42,7 @@ necessary because previous versions of Pyre did not support dynamic
 arrays of components, and it was necessary to predefine these
 arrays. More recent versions of Pythia do support this, however, and
 it is now possible to define material property groups using a
-\filename{.cfg} file or on the command-line. User-defined containers
+\filename{cfg} file or on the command-line. User-defined containers
 are no longer necessary, and the predefined containers are no longer
 available (or necessary). If a set of material groups is not
 specified, a single material model is used for the entire problem. See
@@ -74,11 +74,10 @@ in the other initial state variables (default is none).}
 \facilityitem{quadrature}{Numerical integration scheme used in integrating fields
 over each cell.}
 \end{inventory}
-An example of setting these parameters in a \filename{.cfg} file for
-a problem with two material groups is:
-\begin{cfg}
+
+\begin{cfg}[Parameters for two materials in a \filename{cfg} file]
 <h>[pylithapp.timedependent]</h>
-<p>materials</p> = [elastic,viscoelastic]
+<p>materials</p> = [elastic, viscoelastic]
 
 <h>[pylithapp.timedependent.materials.elastic]</h>
 <p>label</p> = Elastic material
@@ -232,7 +231,7 @@ set; otherwise the state variables are set to zero. To override this
 behavior, specify a spatial database for the initial stress, strain,
 and/or state variables as in the example from the example in Section
 \vref{sec:example:3dhex8}:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{examples/3d/hex8/step16.cfg}]
 <h>[pylithapp.timedependent.materials.elastic]</h>
 <f>db_initial_stress</f> = spatialdata.spatialdb.SimpleDB
 <p>db_initial_stress.iohandler.filename<p> = initial\_stress.spatialdb
@@ -257,7 +256,7 @@ spatial databases: an initial stress database that includes the three
 2D stress components ($\sigma_{xx}$, $\sigma_{yy}$, and $\sigma_{xy}$)
 and an additional database containing the out of plane stress and
 initial values for all other state variables for the given material.
-The complete initial stress field may then be defined in the \filename{.cfg}
+The complete initial stress field may then be defined in the \filename{cfg}
 file as:
 \begin{cfg}
 <h>[pylithapp.problem.materials.powerlaw]</h>
@@ -1537,8 +1536,8 @@ model (default is inscribed).}
 otherwise an error message will occur when the model fails beyond
 the tensile strength (default is false).}
 \end{inventory}
-An example of setting these parameters in a \filename{.cfg} file is:
-\begin{cfg}
+
+\begin{cfg}[\object{DruckerPrager3D} parameters in a \filename{cfg} file]
 <h>[pylithapp.timedependent]</h>
 <p>materials</p> = [plastic]
 <f>materials.plastic</f> = pylith.materials.DruckerPrager3D

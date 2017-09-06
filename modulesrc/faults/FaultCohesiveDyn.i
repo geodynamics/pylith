@@ -59,6 +59,12 @@ namespace pylith {
        */
       void zeroTolerance(const PylithScalar value);
 
+	/** Nondimensional tolerance for suppressing near zero values of fault opening.
+	 *
+	 * @param value Nondimensional tolerance
+	 */
+	void zeroToleranceNormal(const PylithScalar value);
+
       /** Set flag used to determine when fault is traction free when it
        * opens or it still imposes any initial tractions.
        *

@@ -17,7 +17,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith], [2.2.0], [cig-short@geodynamics.org])
+AC_INIT([PyLith], [2.2.1], [cig-short@geodynamics.org])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
@@ -213,7 +213,7 @@ AC_REQUIRE_CPP
 AC_LANG(C++)
 CIT_SPATIALDATA_HEADER
 CIT_SPATIALDATA_LIB
-CIT_PYTHON_MODULE([spatialdata],[1.9.8])
+CIT_PYTHON_MODULE([spatialdata],[1.9.9])
 
 # DOXYGEN
 if test "$enable_documentation" = "yes" ; then
@@ -336,6 +336,7 @@ AC_CONFIG_FILES([Makefile
 		examples/3d/Makefile
 		examples/3d/tet4/Makefile
 		examples/3d/hex8/Makefile
+		examples/3d/subduction/Makefile
 		examples/2d/Makefile
 		examples/2d/subduction/Makefile
 		examples/2d/gravity/Makefile

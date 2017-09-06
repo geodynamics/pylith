@@ -1,0 +1,42 @@
+// -*- C++ -*- (tell Emacs to use C++ mode for syntax highlighting)
+//
+// This spatial database specifies initial stresses that increase with
+// depth corresponding to the overburden pressure for gravitational
+// body forces acting on a material with a uniform density of 3300
+// kg/m**3 (mantle).
+//
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 6 // number of stress components
+  value-names =  stress-xx stress-yy stress-zz stress-xy stress-yz stress-xz
+  value-units =  GPa GPa GPa GPa GPa GPa // units
+  num-locs = 2 // z=0 and z=-400*km
+  data-dim = 1 // points on a (vertical) line
+  space-dim = 3
+  cs-data = geo-projected {
+    to-meters = 1.0e+3 // Specify coordinates in km for convenience.
+    ellipsoid = WGS84
+    datum-horiz = WGS84
+    datum-vert = mean sea level
+    origin-lon = 0
+    origin-lat = 0
+    rotation-angle = 0
+    projector = projector {
+      projection = tmerc
+      units = m
+      proj-options = +lon_0=-122.6765 +lat_0=45.5231 +k=0.9996
+    }
+  }
+}
+// Columns are
+// (1) x coordinate (km)
+// (2) y coordinate (km)
+// (3) z coordinate (km)
+// (4) stress-xx (GPa)
+// (5) stress-yy (GPa)
+// (6) stress-zz (GPa)
+// (7) stress-xy (GPa)
+// (8) stress-yz (GPa)
+// (9) stress-xz (GPa)
+0.0  0.0    0.0   0.0          0.0          0.0     0.0  0.0  0.0
+0.0  0.0 -400.0 -12.944778  -12.944778  -12.944778  0.0  0.0  0.0

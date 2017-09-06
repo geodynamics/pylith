@@ -76,6 +76,7 @@ class DumpParametersAscii(DumpParameters):
             self.collect(app)
 
         parameters = self.info["application"]
+        self._createPath(self.filename)
         with open(self.filename, "w") as fout:
             from .CollectVersionInfo import CollectVersionInfo
             import datetime

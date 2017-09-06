@@ -14,14 +14,14 @@ PyLith features discussed in this example:
 This set of examples describes a problem where prescribed tensile
 tractions are imposed on a fault to mimic a dike intrusion. The example
 is contained in the directory \filename{examples/3d/hex8}, and the corresponding
-\filename{.cfg} file is \filename{step20.cfg}. The example may be run
+\filename{cfg} file is \filename{step20.cfg}. The example may be run
 as follows:
 \begin{shell}
-$$ pylith step20.cfg
+$ pylith step20.cfg
 \end{shell}
 This will cause PyLith to read the default parameters in \filename{pylithapp.cfg},
 and then override or augment them with the additional parameters in
-the \filename{step20.cfg} file. The \filename{.cfg} file is extensively
+the \filename{step20.cfg} file. The \filename{cfg} file is extensively
 documented, to provide detailed information on the various parameters.
 
 
@@ -44,7 +44,7 @@ to False in order for the tractions to be imposed when the fault is
 open; the default behavior for fault opening is a free surface (the
 two sides of the fault are completely uncoupled). The most important
 fault parameters for prescribing the tensile fault tractions are
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{Step20.cfg}]
 <h>[pylithapp.timedependent.interfaces.fault]</h>
 <p>open_free_surface</p> = False
 <f>traction_perturbation</f> = pylith.faults.TractPerturbation

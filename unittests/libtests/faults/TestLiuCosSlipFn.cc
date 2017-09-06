@@ -303,7 +303,6 @@ pylith::faults::TestLiuCosSlipFn::_initialize(topology::Mesh* mesh,
   PYLITH_METHOD_BEGIN;
 
   assert(slipfn);
-  PetscErrorCode  err;
 
   const char* meshFilename = "data/tri3.mesh";
   const char* faultLabel = "fault";
@@ -363,7 +362,6 @@ pylith::faults::TestLiuCosSlipFn::_testInitialize(const _TestLiuCosSlipFn::DataS
 { // _testInitialize
   PYLITH_METHOD_BEGIN;
 
-  PetscErrorCode err;
   // Setup mesh
   topology::Mesh mesh;
   meshio::MeshIOAscii meshIO;

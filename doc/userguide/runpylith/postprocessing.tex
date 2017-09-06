@@ -15,7 +15,7 @@ we compute the shear modulus from a user-specified spatial database
 at the centroid of the fault cells. In the future we plan to account
 for lateral variations in shear modulus across the fault when calculating
 the seismic moment. The Python script is a Pyre application, so its
-parameters can be specified using \filename{.cfg} and command line arguments
+parameters can be specified using \filename{cfg} and command line arguments
 just like PyLith. The Pyre properties and facilities include:
 \begin{inventory}
 \propertyitem{output\_filename}{Filename for output of slip information.}
@@ -40,9 +40,9 @@ Xdmf files that get corrupted or lost due to renaming and moving. It
 is also useful in updating Xdmf files when users add fields to HDF5
 files during post-processing.
 \begin{shell}
-$$ pylith_genxdmf --files=FILE_OR_FILE_PATTERN
+$ pylith_genxdmf --files=FILE_OR_FILE_PATTERN
 \end{shell}
-The default value is the \filename{*.h5} file pattern.
+The default value for \filename{FILE\_OR\_FILE\_PATTERN} is \filename{*.h5}.
 
 \warning{If the HDF5 files contain external datasets, then this
   utility should be run from the same relative path to the HDF5 files

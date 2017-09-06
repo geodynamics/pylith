@@ -127,6 +127,18 @@ class ProgressMonitor(PetscComponent):
   def _update(self, current, start, stop, now, finished, percentComplete):
     return
 
+  def _createPath(self, filename):
+    """Create path for filename if it doesn't exist.
+    """
+    import os
+    relpath = os.path.dirname(filename)
+    
+    if len(relpath) > 0 and not os.path.exists(relpath):
+      # Only create directory on master
+      if self.isMaster:
+        os.makedirs(relpath)
+    return
+  
   
 # FACTORIES ////////////////////////////////////////////////////////////
 
