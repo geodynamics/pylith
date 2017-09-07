@@ -20,13 +20,13 @@ a component to extend PyLith's functionality include:
 \begin{enumerate}
 \item Setting up the source files for the component or set of components
   based on the templates.
-\item Edit the Python source file (\filename{.py}) for the component.
+\item Edit the Python source file (\filename{py}) for the component.
   \begin{enumerate}
   \item Define the user-specified properties and facilities.
   \item Transfer the user-specified data from the Python object to the corresponding
     C++ object via calls to the SWIG interface object.
   \end{enumerate}
-\item Edit the C++ header (\filename{.hh}) and implementation files (\filename{.cc})
+\item Edit the C++ header (\filename{hh}) and implementation files (\filename{cc})
   for the component.
   \begin{enumerate}
   \item Implement the methods required to satisfy the interface definition

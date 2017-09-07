@@ -23,14 +23,22 @@ This set of elastostatic examples primarily demonstrates the application
 of different types of boundary conditions in PyLith, as well as demonstrating
 the use of a kinematic fault for a static problem. All of the examples
 are contained in the directory \filename{examples/3d/hex8}, and the
-corresponding \filename{.cfg} files are \filename{step01.cfg}, \filename{step02.cfg},
-and \filename{step03.cfg}. Each example may be run as follows:
+corresponding \filename{cfg} files are \filename{step01.cfg}, \filename{step02.cfg},
+and \filename{step03.cfg}. Run the examples as follows:
 \begin{shell}
-$$ pylith stepXX.cfg
+# Step01
+$ pylith step01.cfg
+
+# Step02
+$ pylith step02.cfg
+
+# Step03
+$ pylith step03.cfg
+
 \end{shell}
 This will cause PyLith to read the default parameters in \filename{pylithapp.cfg},
 and then override or augment them with the additional parameters in
-the \filename{stepXX.cfg} file. Each \filename{.cfg} file is extensively
+the \filename{stepXX.cfg} file. Each \filename{cfg} file is extensively
 documented to provide detailed information on the various parameters.
 
 
@@ -46,7 +54,7 @@ of shear are applied in the y-direction. In this example and in
 subsequent examples we would like to output the displacement solution
 over a subset of the domain corresponding to the ground surface.
 
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step01.cfg}]
 <h>[pylithapp.timedependent.implicit]</h>
 # Set the output to an array of 2 output managers.
 # We will output the solution over the domain and the ground surface.
@@ -67,7 +75,7 @@ associated with the CUBIT/Trelis nodeset associated with the BC, and we must
 specify the type of spatial database is being used to describe the
 boundary conditions. For the x-faces, we use a \object{SimpleDB} to
 provide the displacements on the x-faces:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step01.cfg}]
 # Boundary condition on +x face
 <h>[pylithapp.timedependent.bc.x_pos]</h>
 <p>bc_dof</p> = [0, 1]
@@ -88,7 +96,7 @@ For a \object{SimpleDB}, we must provide a filename. The default spatial
 database for \facility{db\_initial} is \object{ZeroDispBC}, which automatically
 applies zero displacements to all vertices in the nodeset, and no
 filename is required (or needed).
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step01.cfg}]
 # Boundary condition on -z face
 <h>[pylithapp.timedependent.bc.z_neg]</h>
 <p>bc_dof</p> = [2]
@@ -122,7 +130,7 @@ is pinned in both the x and y-directions.
 
 For the boundary conditions, we must first change the boundary condition
 type for the positive x-face from the default Dirichlet to Neumann:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step02.cfg}]
 # +x face -- first change bc type to Neumann
 <h>[pylithapp.timedependent.bc]</h>
 <f>x_pos</f> = pylith.bc.Neumann 
@@ -136,7 +144,7 @@ hexahedra, the cell type is \object{FIATLagrange} and we use an
 integration order of 2.  A lower integration order would not provide
 sufficient accuracy while a higher integration order would offer no
 benefit (while requiring more computation time and storage):
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step02.cfg}]
 # Boundary condition on +x face
 <h>[pylithapp.timedependent.bc.x_pos]</h>
 <p>label</p> = face_xpos
@@ -152,7 +160,7 @@ benefit (while requiring more computation time and storage):
 The boundary conditions on the negative x-face are simpler than they
 were in example step01 (zero displacements in the x and y-directions),
 so we can use the default \object{ZeroDispBC}:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step02.cfg}]
 # Boundary condition on -x face
 <h>[pylithapp.timedependent.bc.x_neg]</h>
 <p>bc_dof</p> = [0, 1] 
@@ -191,7 +199,7 @@ as well as the negative z-face. To use a fault, we must first define
 a fault interface. We do this by providing an array containing a single
 interface. For this example we specify the fault slip, so we set the interface
 type to \object{FaultCohesiveKin}.
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step03.cfg}]
 <h>[pylithapp.timedependent]</h>
 # Set interfaces to an array of 1 fault: 'fault'.
 <f>interfaces</f> = [fault] 
@@ -214,7 +222,7 @@ slip. Finally, we use one \object{SimpleDB} to define the spatial
 variation of fault slip, and another \object{SimpleDB} to define the
 spatial variation in slip initiation times (the start time is 0.0
 everywhere since this is a static problem):
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step03.cfg}]
 # The slip time and final slip are defined in spatial databases.
 <h>[pylithapp.timedependent.interfaces.fault.eq\_srcs.rupture.slip\_function]</h>
 <p>slip.iohandler.filename</p> = spatialdb/finalslip.spatialdb

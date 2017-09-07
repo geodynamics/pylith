@@ -1,0 +1,205 @@
+\rowcolors{2}{yellow!30}{white}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|l|%% Example
+    *{8}c|% General
+    *{3}c|% Solver
+    *{5}c|% Spatial Database
+}
+\hline
+\rowcolor{blue!10}
+Example
+& \multicolumn{8}{c|}{General}
+& \multicolumn{3}{c|}{Solver}
+& \multicolumn{5}{c|}{Spatial Database}
+\\ 
+%%%%
+\hline
+\rowcolor{blue!10}
+
+% General
+& \rlabel{Dimension}
+& \rlabel{Coordinate system}
+& \rlabel{Mesh generator}
+& \rlabel{Cells}
+& \rlabel{Refinement}
+& \rlabel{Reordering}
+& \rlabel{Problem type}
+& \rlabel{Time dependence}
+% Solver
+& \rlabel{Solver}
+& \rlabel{Preconditioner}
+& \rlabel{Time stepping}
+% Spatial Database
+& \rlabel{Uniform}
+& \rlabel{Simple}
+& \rlabel{Simple grid}
+& \rlabel{Composite}
+& \rlabel{Time history}
+\\
+\hline
+3d/subduction/step01
+& 3 & Proj & CUBIT & Tet & & \yes & TD & S 
+& L & ILU & 
+& x2 & x4 & & & 
+\\ \hline
+3d/subduction/step02
+& 3 & Proj & CUBIT & Tet & & \yes & TD & QS 
+& L & ML+Cust & BE 
+& x2 & x3 & x2 & x2 & 
+\\ \hline
+3d/subduction/step03
+& 3 & Proj & CUBIT & Tet & & \yes & TD & QS 
+& L & ML+Cust & BE 
+& x4 & x3 & x2 & x2 & 
+\\ \hline
+3d/subduction/step04
+& 3 & Proj & CUBIT & Tet & & \yes & TD & QS 
+& L & ML+Cust & BE 
+& x7 & x3 & x5 & x2 & 
+\\ \hline
+3d/subduction/step05
+& 3 & Proj & CUBIT & Tet & & \yes & TD & QS 
+& NL & ML+Cust & BE 
+& x7 & x3 & x5 & x2 & 
+\\ \hline
+3d/subduction/step06
+& 3 & Proj & CUBIT & Tet & & \yes & TD & QS 
+& L & ML+Cust & BE 
+& x1 & x4 & x1 & & x1 
+\\ \hline
+3d/subduction/step07a,b
+& 3 & Proj & CUBIT & Tet & & \yes & GF & S 
+& L & ML+Cust & BE 
+& x1 & x4 & & & 
+\\ \hline
+3d/subduction/step08a
+& 3 & Proj & CUBIT & Tet & & \yes & TD & S 
+& L & ML+Cust & 
+& & x4 & & & 
+\\ \hline
+3d/subduction/step08b
+& 3 & Proj & CUBIT & Tet & & \yes & TD & S 
+& L & ML+Cust & 
+& & x4 & & & 
+\\ \hline
+3d/subduction/step08c
+& 3 & Proj & CUBIT & Tet & & \yes & TD & QS 
+& NL & ML+Cust & BE 
+& & x4 & & & 
+\\ \hline
+\end{tabular}}
+\par
+{\bf Coordinate system} -- Cart: Cartesian, Proj: geographic projection. {\bf Mesh generator} -- ASCII: ASCII, CUBIT: CUBIT/Trelis, LaGriT: LaGriT. {\bf Problem type} -- TD: time dependent, GF: Green's functions. {\bf Time dependence} -- S: static, QS: quasi-static, D: dynamic. {\bf Solver} -- L: linear, NL: nonlinear. {\bf Preconditioner} -- ILU: ILU, ASM: Additive Schwarz, SCHUR: Schur complement, Cust: custom, ML: ML algebraic multigrid, GAMG: geometric algebraic multigrid. {\bf Time stepping} -- BE: Backward Euler, FE: Forward Euler. \\ 
+\rowcolors{2}{yellow!30}{white}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|l|%% Example
+    *{4}c|% Boundary Condition
+    *{8}c|% Fault
+    *{9}c|% Bulk Rheology
+    *{7}c|% Output
+}
+\hline
+\rowcolor{blue!10}
+Example
+& \multicolumn{4}{c|}{Boundary Condition}
+& \multicolumn{8}{c|}{Fault}
+& \multicolumn{9}{c|}{Bulk Rheology}
+& \multicolumn{7}{c|}{Output}
+\\ 
+%%%%
+\hline
+\rowcolor{blue!10}
+
+% Boundary Condition
+& \rlabel{Dirichlet}
+& \rlabel{Neumann}
+& \rlabel{Absorbing}
+& \rlabel{Point force}
+% Fault
+& \rlabel{Prescribed slip}
+& \rlabel{Slip time function}
+& \rlabel{Constitutive model}
+& \rlabel{Static friction}
+& \rlabel{Slip-weakening friction}
+& \rlabel{Time-weakening friction}
+& \rlabel{Rate-state friction w/ageing}
+& \rlabel{Traction perturbation}
+% Bulk Rheology
+& \rlabel{Linear elastic}
+& \rlabel{Linear Maxwell viscoelastic}
+& \rlabel{Generalized Maxwell viscoelastic}
+& \rlabel{Powerlaw viscoelastic}
+& \rlabel{Drucker-Prager elastoplastic}
+& \rlabel{Stress/strain formulation}
+& \rlabel{Inertia}
+& \rlabel{Reference state}
+& \rlabel{Gravity}
+% Output
+& \rlabel{Format}
+& \rlabel{Domain output}
+& \rlabel{Surface output}
+& \rlabel{Point output}
+& \rlabel{State variable output}
+& \rlabel{ParaView}
+& \rlabel{Matplotlib}
+\\
+\hline
+3d/subduction/step01
+& x5 & & & 
+& & & & & & & & & x4 & & & & & Inf & & & 
+& H5 & x1 & x1 & & x4 & \yes & 
+\\ \hline
+3d/subduction/step02
+& x5 & & & 
+& x1 & Step & & & & & & 
+& x2 & x2 & & & & Inf & & & 
+& H5 & x1 & x1 & & x4 & \yes & 
+\\ \hline
+3d/subduction/step03
+& x5 & & & 
+& x2 & Rate & & & & & & 
+& x2 & x2 & & & & Inf & & & 
+& H5 & x1 & x1 & & x4 & \yes & 
+\\ \hline
+3d/subduction/step04
+& x5 & & & 
+& x3 & Step & & & & & & 
+& x2 & x2 & & & & Inf & & & 
+& H5 & x1 & x1 & & x4 & \yes & 
+\\ \hline
+3d/subduction/step05
+& x5 & & & 
+& x1 & Rate & x1 & & \yes & & & \yes 
+& x2 & x2 & & & & Inf & & & 
+& H5 & x1 & x1 & & x4 & \yes & 
+\\ \hline
+3d/subduction/step06
+& x5 & & & 
+& x1 & User & & & & & & 
+& x4 & & & & & Inf & & & 
+& H5 & x1 & x1 & x1 & x4 & \yes & 
+\\ \hline
+3d/subduction/step07a,b
+& x5 & & & 
+& x1 & Step & & & & & & 
+& x4 & & & & & Inf & & & 
+& H5 & & x1 & x1 & x4 & \yes & 
+\\ \hline
+3d/subduction/step08a
+& x5 & & & 
+& & & & & & & & & x4 & & & & & Inf & & \yes & \yes 
+& H5 & x1 & x1 & & x4 & \yes & 
+\\ \hline
+3d/subduction/step08b
+& x5 & & & 
+& & & & & & & & & x4 & & & & & Inf & & \yes & \yes 
+& H5 & x1 & x1 & & x4 & \yes & 
+\\ \hline
+3d/subduction/step08c
+& x5 & & & 
+& & & & & & & & & x2 & x2 & & & & Fin & & \yes & \yes 
+& H5 & x1 & x1 & & x4 & \yes & 
+\\ \hline
+\end{tabular}}
+\par
+{\bf Stress/strain formulation} -- Inf: infinitesimal, Fin: small, finite strain. {\bf Format} -- VTK: VTK, H5: HDF5, H5Ext: HDF5 w/external datasets. \\ 

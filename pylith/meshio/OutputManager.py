@@ -240,9 +240,7 @@ class OutputManager(PetscComponent, ModuleOutputManager):
     logEvent = "%swriteData" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)    
 
-    if self._checkWrite(t) and \
-           ( len(self.vertexDataFields) > 0 or \
-             len(self.cellDataFields) ) > 0:
+    if self._checkWrite(t) and ( len(self.vertexDataFields) > 0 or len(self.cellDataFields) ) > 0:
 
       (mesh, label, labelId) = self.dataProvider().getDataMesh()
       self._openTimeStep(t, mesh, label, labelId)
@@ -461,9 +459,9 @@ class OutputManager(PetscComponent, ModuleOutputManager):
 
   def _close(self):
     """
-    Call C++ close().
+    Call writer close().
     """
-    ModuleOutputManager.close(self)
+    self.writer.close()
     return
 
 

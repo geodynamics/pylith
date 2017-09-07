@@ -21,7 +21,6 @@
 #include "DataWriterHDF5Ext.hh" // Implementation of class methods
 
 #include "HDF5.hh" // USES HDF5
-#include "Xdmf.hh" // USES Xdmf
 
 #include "pylith/topology/Mesh.hh" /// USES Mesh
 #include "pylith/topology/Field.hh" /// USES Field
@@ -111,7 +110,7 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
 
         err = MPI_Comm_rank(comm, &commRank); PYLITH_CHECK_ERROR(err);
         if (!commRank) {
-            _h5->open(_hdf5Filename().c_str(), H5F_ACC_TRUNC);
+            _h5->open(hdf5Filename().c_str(), H5F_ACC_TRUNC);
 
             // Create groups
             _h5->createGroup("/topology");
@@ -288,68 +287,6 @@ pylith::meshio::DataWriterHDF5Ext::open(const topology::Mesh& mesh,
             _h5->writeAttribute("/topology/cells", "cell_dim", (void*)&cellDim, H5T_NATIVE_INT);
         } // if
 
-        // If 2-D, write zero vector for z coordinate and z component in vectors
-        if (2 == cs->spaceDim()) {
-            if (!commRank) _h5->createGroup("/zero");
-            const char* vlabel = "vertex_zero";
-            const std::string& vfilenameZero = _datasetFilename(vlabel);
-            err = PetscViewerBinaryOpen(comm, vfilenameZero.c_str(), FILE_MODE_WRITE, &binaryViewer); PYLITH_CHECK_ERROR(err);
-            err = PetscViewerBinarySetSkipHeader(binaryViewer, PETSC_TRUE); PYLITH_CHECK_ERROR(err);
-            topology::Field vzeroField(mesh);
-            vzeroField.newSection(coordinatesField, 1);
-            vzeroField.allocate();
-            vzeroField.zeroAll();
-            vzeroField.label(vlabel);
-            vzeroField.vectorFieldType(topology::FieldBase::SCALAR);
-            vzeroField.createScatterWithBC(mesh, "", 0, vlabel);
-            vzeroField.scatterLocalToGlobal(vlabel);
-
-            PetscVec vzeroVector = vzeroField.vector(vlabel); assert(vzeroVector);
-            err = PetscObjectTypeCompare((PetscObject) vzeroVector, VECSEQ, &isseq); PYLITH_CHECK_ERROR(err);
-            if (isseq) {err = VecView_Seq(vzeroVector, binaryViewer); PYLITH_CHECK_ERROR(err); }
-            else       {err = VecView_MPI(vzeroVector, binaryViewer); PYLITH_CHECK_ERROR(err); }
-
-            err = PetscViewerDestroy(&binaryViewer); PYLITH_CHECK_ERROR(err);
-
-            // Create external dataset for vertex_zero field
-            if (!commRank) {
-                const hsize_t ndims = 2;
-                hsize_t dims[ndims];
-                dims[0] = numVertices;
-                dims[1] = 1;
-                _h5->createDatasetRawExternal("/zero", vlabel, vfilenameZero.c_str(), dims, ndims, scalartype);
-            } // if
-
-            const char* clabel = "cell_zero";
-            const std::string& cfilenameZero = _datasetFilename(clabel);
-            err = PetscViewerBinaryOpen(comm, cfilenameZero.c_str(), FILE_MODE_WRITE, &binaryViewer); PYLITH_CHECK_ERROR(err);
-            err = PetscViewerBinarySetSkipHeader(binaryViewer, PETSC_TRUE); PYLITH_CHECK_ERROR(err);
-            topology::Field czeroField(mesh);
-            czeroField.newSection(cStart, cEnd, 1);
-            czeroField.allocate();
-            czeroField.zeroAll();
-            czeroField.label(clabel);
-            czeroField.vectorFieldType(topology::FieldBase::SCALAR);
-            czeroField.createScatterWithBC(mesh, "", 0, clabel);
-            czeroField.scatterLocalToGlobal(clabel);
-
-            PetscVec czeroVector = czeroField.vector(clabel); assert(czeroVector);
-            err = PetscObjectTypeCompare((PetscObject) czeroVector, VECSEQ, &isseq); PYLITH_CHECK_ERROR(err);
-            if (isseq) {err = VecView_Seq(czeroVector, binaryViewer); PYLITH_CHECK_ERROR(err); }
-            else       {err = VecView_MPI(czeroVector, binaryViewer); PYLITH_CHECK_ERROR(err); }
-
-            err = PetscViewerDestroy(&binaryViewer); PYLITH_CHECK_ERROR(err);
-
-            // Create external dataset for vertex_zero field
-            if (!commRank) {
-                const hsize_t ndims = 2;
-                hsize_t dims[ndims];
-                dims[0] = numCells;
-                dims[1] = 1;
-                _h5->createDatasetRawExternal("/zero", clabel, cfilenameZero.c_str(), dims, ndims, scalartype);
-            } // if
-        } // if
-
     } catch (const std::exception& err) {
         std::ostringstream msg;
         msg << "Error while opening HDF5 file " << _filename << ".\n" << err.what();
@@ -377,16 +314,6 @@ pylith::meshio::DataWriterHDF5Ext::close(void)
     } // if
     _tstampIndex = 0;
     deallocate();
-
-    int commRank = 0;
-    MPI_Comm_rank(PETSC_COMM_WORLD, &commRank);
-    if (!commRank) {
-        Xdmf metafile;
-        const std::string& hdf5filename = _hdf5Filename();
-        const int indexExt = hdf5filename.find(".h5");
-        std::string xdmfFilename = std::string(hdf5filename, 0, indexExt) + ".xmf";
-        metafile.write(xdmfFilename.c_str(), _hdf5Filename().c_str());
-    } // if
 
     PYLITH_METHOD_END;
 } // close
@@ -759,11 +686,11 @@ pylith::meshio::DataWriterHDF5Ext::writePointNames(const pylith::string_vector& 
 
     } catch (const std::exception& err) {
         std::ostringstream msg;
-        msg << "Error while writing stations to HDF5 file '" << _hdf5Filename() << "'.\n" << err.what();
+        msg << "Error while writing stations to HDF5 file '" << hdf5Filename() << "'.\n" << err.what();
         throw std::runtime_error(msg.str());
     } catch (...) {
         std::ostringstream msg;
-        msg << "Error while writing stations to HDF5 file '" << _hdf5Filename() << "'.";
+        msg << "Error while writing stations to HDF5 file '" << hdf5Filename() << "'.";
         throw std::runtime_error(msg.str());
     } // try/catch
 
@@ -773,8 +700,8 @@ pylith::meshio::DataWriterHDF5Ext::writePointNames(const pylith::string_vector& 
 // ----------------------------------------------------------------------
 // Generate filename for HDF5 file.
 std::string
-pylith::meshio::DataWriterHDF5Ext::_hdf5Filename(void) const
-{ // _hdf5Filename
+pylith::meshio::DataWriterHDF5Ext::hdf5Filename(void) const
+{ // hdf5Filename
     PYLITH_METHOD_BEGIN;
 
     std::ostringstream filename;
@@ -787,7 +714,7 @@ pylith::meshio::DataWriterHDF5Ext::_hdf5Filename(void) const
     } // if/else
 
     PYLITH_METHOD_RETURN(std::string(filename.str()));
-} // _hdf5Filename
+} // hdf5Filename
 
 // ----------------------------------------------------------------------
 // Generate filename for external dataset file.
@@ -797,7 +724,7 @@ pylith::meshio::DataWriterHDF5Ext::_datasetFilename(const char* field) const
     PYLITH_METHOD_BEGIN;
 
     std::ostringstream filenameS;
-    std::string filenameH5 = _hdf5Filename();
+    std::string filenameH5 = hdf5Filename();
     const int indexExt = filenameH5.find(".h5");
     filenameS << std::string(filenameH5, 0, indexExt) << "_" << field << ".dat";
 

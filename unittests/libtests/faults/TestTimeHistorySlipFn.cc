@@ -265,7 +265,6 @@ pylith::faults::TestTimeHistorySlipFn::_initialize(topology::Mesh* mesh,
   PYLITH_METHOD_BEGIN;
 
   assert(slipfn);
-  PetscErrorCode err;
 
   const char* meshFilename = "data/tri3.mesh";
   const char* faultLabel = "fault";
@@ -323,7 +322,6 @@ pylith::faults::TestTimeHistorySlipFn::_testInitialize(const _TestTimeHistorySli
 { // _testInitialize
   PYLITH_METHOD_BEGIN;
 
-  PetscErrorCode err;
   // Setup mesh
   topology::Mesh mesh;
   meshio::MeshIOAscii meshIO;

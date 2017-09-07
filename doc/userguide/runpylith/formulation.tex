@@ -54,9 +54,8 @@ The \object{TimeDependent} properties and facilities include
   \facilityitem{formulation}{Formulation for solving the partial differential
     equation.}
 \end{inventory}
-An example of setting the properties and components in a \filename{.cfg} file
-is
-\begin{cfg}
+
+\begin{cfg}[\object{TimeDependent} parameters in a \filename{cfg} file]
 <h>[pylithapp.timedependent]</h>
 <f>formulation</f> = pylith.problems.Implicit ; default
 <f>progres_monitor</f> = pylith.problems.ProgressMonitorTime ; default
@@ -87,8 +86,7 @@ is [output]).}
 to a file for analysis (default is PETSc binary).}
 \end{inventory}
 
-An example of setting these parameters in a \filename{.cfg} file is
-\begin{cfg}
+\begin{cfg}[Time-stepping formulation parameters in a \filename{cfg} file]
 <h>[pylithapp.timedependent.formulation]</h>
 <p>matrix_type</p> = sbaij ; Non-symmetric sparse matrix is 'aij'
 <p>view_jacobian</p> = false
@@ -119,7 +117,7 @@ is the velocity at time $t$. The default value for the normalized
 artificial viscosity is 0.1. We have found values in the range 0.1-0.4
 sufficiently suppress numerical noise while not excessively reducing
 the peak velocity. An example of setting the normalized artificial
-viscosity in a \filename{.cfg} file is
+viscosity in a \filename{cfg} file is
 \begin{cfg}
 <h>[pylithapp.timedependent.formulation]</h>
 <p>norm_viscosity</p> = 0.2
@@ -178,9 +176,8 @@ time step are:
 \propertyitem{start\_time}{Start time for simulation (default is 0.0 s).}
 \propertyitem{dt}{Time step for simulation.}
 \end{inventory}
-An example of setting a uniform, user-specified time step in a \filename{.cfg}
-file is:
-\begin{cfg}
+
+\begin{cfg}[\object{TimeStepUniform} parameters in a \filename{cfg} file]
 <h>[pylithapp.problem.formulation]</h>
 <p>time_step</p> = pylith.problems.TimeStepUniform ; Default value
 
@@ -207,9 +204,8 @@ nonuniform, user-specified time step are:
 \propertyitem{loop\_steps}{If true, cycle through time steps, otherwise keep
 using last time-step size for any time remaining.}
 \end{inventory}
-An example of setting the properties for nonuniform, user-specified
-time steps in a \filename{.cfg} file is:
-\begin{cfg}
+
+\begin{cfg}[\object{TimeStepUser} parameters in a \filename{cfg} file]
 <h>[pylithapp.problem.formulation]</h>
 <f>time_step</f> = pylith.problems.TimeStepUser ; Change the time step algorithm
 
@@ -245,9 +241,8 @@ new stable time step.}
 \propertyitem{stability\_factor}{Safety factor for stable time step (default
 is 2.0).}
 \end{inventory}
-An example of setting the properties for the automatic time step in
-a \filename{.cfg} file is:
-\begin{cfg}
+
+\begin{cfg}[\object{TimeStepAdapt} parameters in a \filename{cfg} file]
 <h>[pylithapp.problem.formulation]</h>
 <p>time_step</p> = pylith.problems.TimeStepAdapt ; Change the time step algorithm
 
@@ -278,9 +273,8 @@ The \object{GreensFns} properties amd facilities include:
 equation.}
 \propertyitem{progress\_monitor}{Simple progress monitor via text file.}
 \end{inventory}
-An example of setting the properties for the GreensFns problem in
-a \filename{.cfg} file is:
-\begin{cfg}
+
+\begin{cfg}[\object{GreensFns} parameters in a \filename{cfg} file]
 <h>[pylithapp]</h>
 <f>problem</f> = pylith.problems.GreensFns ; Change problem type from the default
 
@@ -318,8 +312,8 @@ include:
 \propertyitem{filename}{Name of output file.}
 \propertyitem{t\_units}{Units for simulation time in output.}
 \end{inventory}
-An example of setting the properties in a \filename{.cfg} file is:
-\begin{cfg}
+
+\begin{cfg}[\object{ProgressMonitorTime} parameters in a \filename{cfg} file]
 <h>[pylithapp.problem.progressmonitor]</h>
 <p>update_percent</p> = 5.0 ; default
 <p>filename</p> = progress.txt ; default
@@ -337,8 +331,8 @@ include:
 \propertyitem{update\_percent}{Frequency (in percent) of progress updates.}
 \propertyitem{filename}{Name of output file.}
 \end{inventory}
-An example of setting the properties in a \filename{.cfg} file is:
-\begin{cfg}
+
+\begin{cfg}[\object{ProgressMonitorStep} parameters in a \filename{cfg} file]
 <h>[pylithapp.problem.progressmonitor]</h>
 <p>update_percent</p> = 5.0 ; default
 <p>filename</p> = progress.txt ; default

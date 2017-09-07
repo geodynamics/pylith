@@ -20,41 +20,24 @@
 
 ## @brief Python application for testing fault constitutive models.
 
-from pyre.applications.Script import Script
+from pylith.tests.UnitTestApp import UnitTestApp
 
 import unittest
 
-class TestApp(Script):
+class TestApp(UnitTestApp):
   """
   Test application.
   """
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="testapp"):
+  def __init__(self):
     """
     Constructor.
     """
-    Script.__init__(self, name)
+    UnitTestApp.__init__(self)
     return
 
-
-  def main(self):
-    """
-    Run the application.
-    """
-    from pylith.utils.PetscManager import PetscManager
-    petsc = PetscManager()
-    petsc.options = [("malloc_dump", "true")]
-    petsc.initialize()
-
-    unittest.TextTestRunner(verbosity=2).run(self._suite())
-
-    petsc.finalize()
-    return
-
-
-  # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _suite(self):
     """

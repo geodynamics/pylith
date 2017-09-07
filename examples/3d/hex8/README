@@ -1,4 +1,4 @@
-The examples in this directory form a step-by-step sequence of 20 problems,
+The examples in this directory form a step-by-step sequence of 21 problems,
 each building on the one before (for the most part). All of the examples
 use the same mesh, which was created by Cubit.  The mesh is 6 km x 6 km x 4
 km with linear hexahedral cells that have edges 1.0 km long.

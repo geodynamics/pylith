@@ -90,24 +90,16 @@ dist_noinst_DATA = \
 	output_cell_filter_t12.vtk \
 	tri3.h5 \
 	tri3_cell.h5 \
-	tri3_cell.xmf \
 	tri3_vertex.h5 \
-	tri3_vertex.xmf \
 	quad4.h5 \
 	quad4_cell.h5 \
-	quad4_cell.xmf \
 	quad4_vertex.h5 \
-	quad4_vertex.xmf \
 	tet4.h5 \
 	tet4_cell.h5 \
-	tet4_cell.xmf \
 	tet4_vertex.h5 \
-	tet4_vertex.xmf \
 	hex8.h5 \
 	hex8_cell.h5 \
-	hex8_cell.xmf \
 	hex8_vertex.h5 \
-	hex8_vertex.xmf \
 	tri3_mat.h5 \
 	tri3_mat_vertex.h5 \
 	tri3_mat_cell.h5 \

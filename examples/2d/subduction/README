@@ -4,7 +4,7 @@ M9.0 Tohoku earthquake off the east coast of Japan.
 
 The main features of this example are:
 
-  * Generating a finite-element mesh using CUBIT
+  * Generating a finite-element mesh using CUBIT/Trelis
     + Nonplanar geometry
     + Variable mesh resolution
   * Spatially variable coseismic slip and creep
@@ -43,10 +43,10 @@ Mesh generation (optional)
   NOTE: The result of this step will overwrite the included file
         tri3_mesh.exo. You may want to copy/rename this file so that
         you have a backup copy in case you have difficulty running
-        CUBIT.
+        CUBIT/Trelis.
 
-  Start CUBIT and play the journal file "mesh_tri3.jou". We highly
-  recommend that you study the contents of the journal files to
+  Start CUBIT/Trelis and play the journal file "mesh_tri3.jou". We
+  highly recommend that you study the contents of the journal files to
   understand the mesh generation process.
 
 
@@ -70,7 +70,7 @@ Step 2. Interseismic deformation simulation
   constant 8 cm/yr.
 
   The parameters for the creep along the top of the slab are defined in
-    fault_creep_slabtop.spatialdb
+    fault_slabtop_creep.spatialdb
 
   Run the simulation via the following command:
     pylith step02.cfg
@@ -97,36 +97,25 @@ Step 4. Friction controlled afterslip
   Run the simulation via the following command:
     pylith step04.cfg
 
-Suggestions variations
+Step 5. Earthquake cycle with slip-weakening friction
 
-  The list below includes some suggested modifications to the problem
-  that will allow you to become more familiar with PyLith while
-  examining some interesting physics.
+  This simulation uses drives sponaneous rupture on the subducting
+  interface using prescribed asesismic slip on the bottom of the
+  slab. We use the slip-weakening friction model on the subducting
+  interface.
 
-  * Change the resolution of the mesh by editing the mesh_tri3.jou
-    journal file. Change the resolution and bias factor.
+  Run the simulation and capture the output via the following commands:
+    pylith step05.cfg >& step05.log &
+    tail -f step05.log
 
-  * Add depth dependent viscosity to the mantle and crust. This
-    requires using the linear Maxwell plane strain bulk constitutive
-    model in the crust as well and creating spatial databases that
-    include viscosity for the crust. Specifying a depth dependent
-    variation in the parameters will require adding points, updating
-    num-locs accordingly, and changing data-dim to 1.
+Step 6. Earthquake cycle with rate-state friction
 
-  * Modify the spatial database files for the material properties to
-    use depth-dependent elastic properties based on PREM (Dziewonski
-    and Anderson, 1981, 10.1016/0031-9201(81)90046-7). See
-    http://geophysics.ou.edu/solid_earth/prem.html for a simple table
-    of values.
+  This simulation uses drives sponaneous rupture on the subducting
+  interface using prescribed asesismic slip on the bottom of the
+  slab. We use the rate-state friction model on the subducting
+  interface.
 
-    Add points, update num-locs accordingly, and change data-dim to be 1.
-
-  * Modify the CUBIT journal files to use quad4 cells rather than tri3
-    cells. This requires using the pave mesh scheme.
-
-  * Create a simulation with multiple earthquake cycles by lengthening
-    the duration of the simulation and adding additional earthquake
-    ruptures. See examples/3d/hex8/step06.cfg for an example with
-    multiple earthquake ruptures. Examine spinup towards a
-    steady-state solution.
+  Run the simulation and capture the output via the following commands:
+    pylith step06.cfg >& step06.log &
+    tail -f step06.log
 

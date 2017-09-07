@@ -66,8 +66,7 @@ endif
 if ENABLE_HDF5
   swig_sources += \
 	DataWriterHDF5.i \
-	DataWriterHDF5Ext.i \
-	Xdmf.i
+	DataWriterHDF5Ext.i
 endif
 
 

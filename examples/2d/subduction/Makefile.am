@@ -23,12 +23,17 @@ dist_noinst_DATA = \
 	step02.cfg \
 	step03.cfg \
 	step04.cfg \
+	step05.cfg \
+	step06.cfg \
 	geometry.jou \
 	mesh_tri3.jou \
 	createbc.jou \
 	mesh_tri3.exo \
 	fault_slip_coseismic.spatialdb \
-	fault_creep_slabtop.spatialdb \
+	fault_slabtop_creep.spatialdb \
+	fault_slabtop_ratestate.spatialdb \
+	fault_slabtop_slipweakening.spatialdb \
+	fault_slabtop_tractions.spatialdb \
 	mat_concrust.spatialdb \
 	mat_conmantle.spatialdb \
 	mat_oceancrust.spatialdb \

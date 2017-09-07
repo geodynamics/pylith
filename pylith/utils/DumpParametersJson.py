@@ -75,6 +75,7 @@ class DumpParametersJson(DumpParameters):
         if self.info is None:
             self.collect(app)
 
+        self._createPath(self.filename)
         with open(self.filename, "w") as fout:
             import json
             if self.style == "compact":
