@@ -22,9 +22,11 @@ class TestDependenciesVersion(unittest.TestCase):
 
   def test_mpiVersion(self):
     version = DependenciesVersion.mpiVersion()
-    # Check that version is of the form X.X.X
+    # Check that version is of the form X.X.X or X.X
     import re
     match = re.search("[0-9]+\.[0-9]+\.[0-9]+", version)
+    if match is None:
+      match = re.search("[0-9]+\.[0-9]+", version)
     self.failIf(match is None)
     return
 
