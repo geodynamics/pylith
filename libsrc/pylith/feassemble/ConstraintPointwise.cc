@@ -42,7 +42,6 @@
 // Default constructor.
 pylith::feassemble::ConstraintPointwise::ConstraintPointwise(void) :
     _normalizer(new spatialdata::units::Nondimensional),
-    _field(""),
     _auxFields(0),
     _auxFieldsDB(0),
     _auxFieldsQuery(0),
@@ -73,35 +72,6 @@ pylith::feassemble::ConstraintPointwise::deallocate(void)
 
     PYLITH_METHOD_END;
 } // deallocate
-
-
-// ----------------------------------------------------------------------
-// Set name of field in solution to constrain.
-void
-pylith::feassemble::ConstraintPointwise::field(const char* value)
-{  // field
-    PYLITH_METHOD_BEGIN;
-
-    if (strlen(value) == 0) {
-        throw std::runtime_error("Empty string given for name of solution field to constrain.");
-    } // if
-    _field = value;
-
-    PYLITH_METHOD_END;
-}  // field
-
-
-// ----------------------------------------------------------------------
-// Get name of field in solution to constrain.
-const char*
-pylith::feassemble::ConstraintPointwise::field(void) const
-{ // field
-    journal::debug_t debug("constraint");
-    debug << journal::at(__HERE__)
-          << "ConstraintPointwise::field()" << journal::endl;
-
-    return _field.c_str();
-} // field
 
 
 // ----------------------------------------------------------------------
@@ -241,39 +211,6 @@ pylith::feassemble::ConstraintPointwise::normalizer(const spatialdata::units::No
         *_normalizer = dim;
     } // if/else
 } // normalizer
-
-
-// ----------------------------------------------------------------------
-// Verify configuration is acceptable.
-void
-pylith::feassemble::ConstraintPointwise::verifyConfiguration(const pylith::topology::Field& solution) const
-{ // verifyConfiguration
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
-
-    if (!solution.hasSubfield(_field.c_str())) {
-        std::ostringstream msg;
-        msg << "Cannot constrain field '"<< _field
-            << "' in component '" << PyreComponent::identifier() << "'"
-            << "; field is not in solution.";
-        throw std::runtime_error(msg.str());
-    } // if
-
-    const topology::Field::SubfieldInfo& info = solution.subfieldInfo(_field.c_str());
-    const int numComponents = info.description.numComponents;
-    const int numConstrained = _constrainedDOF.size();
-    for (int iConstrained = 0; iConstrained < numConstrained; ++iConstrained) {
-        if (_constrainedDOF[iConstrained] >= numComponents) {
-            std::ostringstream msg;
-            msg << "Cannot constrain degree of freedom '" << _constrainedDOF[iConstrained] << "'"
-                << " in component '" << PyreComponent::identifier() << "'"
-                << "; solution field '" << _field << "' contains only " << numComponents << " components.";
-            throw std::runtime_error(msg.str());
-        } // if
-    } // for
-
-    PYLITH_METHOD_END;
-} // verifyConfiguration
 
 
 // ----------------------------------------------------------------------

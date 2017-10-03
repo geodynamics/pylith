@@ -24,34 +24,44 @@
 namespace pylith {
     namespace bc {
 
-        class BoundaryConditionNew
-        { // class BoundaryConditionNew
+        class BoundaryConditionNew { // class BoundaryConditionNew
 
-        // PUBLIC METHODS /////////////////////////////////////////////////
+            // PUBLIC METHODS /////////////////////////////////////////////////
 public:
 
-        /// Default constructor.
-        BoundaryConditionNew(void);
+            /// Default constructor.
+            BoundaryConditionNew(void);
 
-        /// Destructor.
-        virtual
-        ~BoundaryConditionNew(void);
+            /// Destructor.
+            virtual ~BoundaryConditionNew(void);
 
-        /// Deallocate PETSc and local data structures.
-        virtual
-        void deallocate(void);
+            /// Deallocate PETSc and local data structures.
+            virtual
+            void deallocate(void);
 
-        /** Set label of boundary condition surface.
-         *
-         * @param value Label of surface (from mesh generator).
-         */
-        void label(const char* value);
+            /** Set label of boundary condition surface.
+             *
+             * @param value Label of surface (from mesh generator).
+             */
+            void label(const char* value);
 
-        /** Get label of boundary condition surface.
-         *
-         * @returns Label of surface (from mesh generator).
-         */
-        const char* label(void) const;
+            /** Get label of boundary condition surface.
+             *
+             * @returns Label of surface (from mesh generator).
+             */
+            const char* label(void) const;
+
+            /** Set name of field in solution to constrain.
+             *
+             * @param[in] value Name of field in solution to constrain.
+             */
+            void field(const char* value);
+
+            /** Get name of field in solution to constrain.
+             *
+             * @returns Name of field in solution to constrain.
+             */
+            const char* field(void) const;
 
         }; // class BoundaryConditionNew
 

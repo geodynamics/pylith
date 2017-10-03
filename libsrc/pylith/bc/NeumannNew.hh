@@ -16,48 +16,39 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/bc/DirichletNew.hh
+/** @file libsrc/bc/NeumannNew.hh
  *
- * @brief C++ implementation of Dirichlet (prescribed values at
- * degrees of freedom) boundary conditions.
+ * @brief C++ implementation of Neumann (e.g., traction) boundary conditions.
  */
 
-#if !defined(pylith_bc_dirichletnew_hh)
-#define pylith_bc_dirichletnew_hh
+#if !defined(pylith_bc_neumannnew_hh)
+#define pylith_bc_neumannnew_hh
 
 // Include directives ---------------------------------------------------
 #include "BoundaryConditionNew.hh" // ISA BoundaryCondition
-#include "pylith/feassemble/ConstraintPointwise.hh" // ISA ConstraintPointwise
+#include "pylith/feassemble/IntegratorPointwise.hh" // ISA IntegratorPointwise
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
 
-// DirichletNew ----------------------------------------------------
-/// @brief Dirichlet (prescribed values at degrees of freedom) boundary
-/// conditions with points on a boundary.
-class pylith::bc::DirichletNew :
+// NeumannNew ----------------------------------------------------
+/// @brief Neumann (e.g., traction) boundary conditions.
+class pylith::bc::NeumannNew :
     public BoundaryConditionNew,
-    public pylith::feassemble::ConstraintPointwise {
-
-    friend class DirichletAuxiliaryFactory; // factory for auxiliary fields
-    friend class TestDirichletNew;   // unit testing
+    public pylith::feassemble::IntegratorPointwise
+{ // class NeumannNew
+    friend class TestNeumannNew;   // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
-    DirichletNew(void);
+    NeumannNew(void);
 
     /// Destructor.
-    ~DirichletNew(void);
+    ~NeumannNew(void);
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
-
-    /** Verify configuration is acceptable.
-     *
-     * @param[in] solution Solution field.
-     */
-    void verifyConfiguration(const pylith::topology::Field& solution) const;
 
     /** Initialize boundary condition.
      *
@@ -65,13 +56,17 @@ public:
      */
     void initialize(const pylith::topology::Field& solution);
 
-    /** Set constrained values in solution field.
+    /** Compute RHS residual for G(t,s).
      *
-     * @param[out] solution Solution field.
+     * @param[out] residual Field for residual.
      * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] solution Field with current trial solution.
      */
-    void setSolution(pylith::topology::Field* solution,
-                     const double t);
+    void computeRHSResidual(pylith::topology::Field* residual,
+                            const PylithReal t,
+                            const PylithReal dt,
+                            const pylith::topology::Field& solution);
 
     // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
@@ -85,11 +80,9 @@ protected:
      *
      * @attention The order of the calls to subfieldAdd() must match the
      * order of the auxiliary fields in the FE kernels.
-     *
-     * @param[in] solution Solution field.
      */
     virtual
-    void _auxFieldsSetup(const topology::Field& solution) = 0;
+    void _auxFieldsSetup(void) = 0;
 
     /** Set kernels for RHS residual G(t,s).
      *
@@ -99,7 +92,7 @@ protected:
      * @param solution Solution field.
      */
     virtual
-    void _setFEKernelsConstraint(const topology::Field& solution) = 0;
+    void _setFEKernelsRHSResidual(const topology::Field& solution) = 0;
 
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////
@@ -107,17 +100,17 @@ protected:
 
     pylith::topology::Mesh* _boundaryMesh;   ///< Boundary mesh.
     PetscPointFunc _bcKernel; ///< Kernel for boundary condition value.
-    pylith::topology::FieldBase::Description _description; ///< Description for constrained field.
+    pylith::topology::FieldBase::Description _description; ///< Description for integrated field.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:
 
-    DirichletNew(const DirichletNew&); ///< Not implemented.
-    const DirichletNew& operator=(const DirichletNew&); ///< Not implemented.
+    NeumannNew(const NeumannNew&); ///< Not implemented.
+    const NeumannNew& operator=(const NeumannNew&); ///< Not implemented.
 
-}; // class DirichletNew
+}; // class NeumannNew
 
-#endif // pylith_bc_dirichletnew_hh
+#endif // pylith_bc_neumannnew_hh
 
 
 // End of file

@@ -35,6 +35,7 @@ libpylith_la_SOURCES = \
 	bc/DirichletNew.cc \
 	bc/DirichletTimeDependent.cc \
 	bc/DirichletAuxiliaryFactory.cc \
+	bc/NeumannNew.cc \
 	bc/TimeDependent.cc \
 	faults/Fault.cc \
 	faults/TopologyOps.cc \

@@ -39,7 +39,6 @@ namespace pylith {
         class DirichletBC;
         class DirichletBoundary;
         class Neumann;
-        class Neumann_NEW;
         class AbsorbingDampers;
         class PointForce;
 
@@ -47,6 +46,7 @@ namespace pylith {
         class DirichletNew;
         class DirichletTimeDependent;
         class DirichletAuxiliaryFactory;
+        class NeumannNew;
 
     } // bc
 } // pylith

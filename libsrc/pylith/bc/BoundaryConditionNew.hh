@@ -33,46 +33,57 @@
 
 // BoundaryConditionNew ----------------------------------------------------
 /// Abstract base class for boundary conditions.
-class pylith::bc::BoundaryConditionNew
-{ // class BoundaryConditionNew
-friend class TestBoundaryConditionNew;   // unit testing
+class pylith::bc::BoundaryConditionNew { // class BoundaryConditionNew
+    friend class TestBoundaryConditionNew;   // unit testing
 
-// PUBLIC METHODS /////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
 
-/// Default constructor.
-BoundaryConditionNew(void);
+    /// Default constructor.
+    BoundaryConditionNew(void);
 
-/// Destructor.
-virtual
-~BoundaryConditionNew(void);
+    /// Destructor.
+    virtual ~BoundaryConditionNew(void);
 
-/// Deallocate PETSc and local data structures.
-virtual
-void deallocate(void);
+    /// Deallocate PETSc and local data structures.
+    virtual
+    void deallocate(void);
 
-/** Set mesh label associated with boundary condition surface.
- *
- * @param[in] value Label of surface (from mesh generator).
- */
-void label(const char* value);
+    /** Set mesh label associated with boundary condition surface.
+     *
+     * @param[in] value Label of surface (from mesh generator).
+     */
+    void label(const char* value);
 
-/** Get mesh label associated with boundary condition surface.
- *
- * @returns Label of surface (from mesh generator).
- */
-const char* label(void) const;
+    /** Get mesh label associated with boundary condition surface.
+     *
+     * @returns Label of surface (from mesh generator).
+     */
+    const char* label(void) const;
 
-// PROTECTED MEMBERS //////////////////////////////////////////////////
+    /** Set name of field in solution to constrain.
+     *
+     * @param[in] value Name of field in solution to constrain.
+     */
+    void field(const char* value);
+
+    /** Get name of field in solution to constrain.
+     *
+     * @returns Name of field in solution to constrain.
+     */
+    const char* field(void) const;
+
+    // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected:
 
-std::string _label;   ///< Label to identify boundary condition points in mesh.
+    std::string _label;   ///< Label to identify boundary condition points in mesh.
+    std::string _field; ///< Name of solution field for boundary condition.
 
-// NOT IMPLEMENTED ////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:
 
-BoundaryConditionNew(const BoundaryConditionNew&); ///< Not implemented.
-const BoundaryConditionNew& operator=(const BoundaryConditionNew&); ///< Not implemented.
+    BoundaryConditionNew(const BoundaryConditionNew&); ///< Not implemented.
+    const BoundaryConditionNew& operator=(const BoundaryConditionNew&); ///< Not implemented.
 
 }; // class BoundaryConditionNew
 

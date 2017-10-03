@@ -20,6 +20,9 @@
 
 #include "BoundaryConditionNew.hh" // implementation of object methods
 
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+
 #include <cstring> // USES strlen()
 #include <stdexcept> // USES std::runtime_error()
 
@@ -67,6 +70,35 @@ pylith::bc::BoundaryConditionNew::label(void) const
 { // Label
     return _label.c_str();
 } // label
+
+
+// ----------------------------------------------------------------------
+// Set name of field in solution to constrain.
+void
+pylith::bc::BoundaryConditionNew::field(const char* value)
+{  // field
+    PYLITH_METHOD_BEGIN;
+
+    if (strlen(value) == 0) {
+        throw std::runtime_error("Empty string given for name of solution field for boundary condition.");
+    } // if
+    _field = value;
+
+    PYLITH_METHOD_END;
+}  // field
+
+
+// ----------------------------------------------------------------------
+// Get name of field in solution to constrain.
+const char*
+pylith::bc::BoundaryConditionNew::field(void) const
+{ // field
+    journal::debug_t debug("boundarycondition");
+    debug << journal::at(__HERE__)
+          << "BoundaryCondition::field()" << journal::endl;
+
+    return _field.c_str();
+} // field
 
 
 // End of file

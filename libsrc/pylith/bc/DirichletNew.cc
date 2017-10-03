@@ -73,6 +73,39 @@ pylith::bc::DirichletNew::deallocate(void)
 } // deallocate
 
 // ----------------------------------------------------------------------
+// Verify configuration is acceptable.
+void
+pylith::bc::DirichletNew::verifyConfiguration(const pylith::topology::Field& solution) const
+{ // verifyConfiguration
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
+
+    if (!solution.hasSubfield(_field.c_str())) {
+        std::ostringstream msg;
+        msg << "Cannot constrain field '"<< _field
+            << "' in component '" << PyreComponent::identifier() << "'"
+            << "; field is not in solution.";
+        throw std::runtime_error(msg.str());
+    } // if
+
+    const topology::Field::SubfieldInfo& info = solution.subfieldInfo(_field.c_str());
+    const int numComponents = info.description.numComponents;
+    const int numConstrained = _constrainedDOF.size();
+    for (int iConstrained = 0; iConstrained < numConstrained; ++iConstrained) {
+        if (_constrainedDOF[iConstrained] >= numComponents) {
+            std::ostringstream msg;
+            msg << "Cannot constrain degree of freedom '" << _constrainedDOF[iConstrained] << "'"
+                << " in component '" << PyreComponent::identifier() << "'"
+                << "; solution field '" << _field << "' contains only " << numComponents << " components.";
+            throw std::runtime_error(msg.str());
+        } // if
+    } // for
+
+    PYLITH_METHOD_END;
+} // verifyConfiguration
+
+
+// ----------------------------------------------------------------------
 // Initialize boundary condition.
 void
 pylith::bc::DirichletNew::initialize(const pylith::topology::Field& solution)

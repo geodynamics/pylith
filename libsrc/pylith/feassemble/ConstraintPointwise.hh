@@ -60,18 +60,6 @@ public:
     virtual
     void deallocate(void);
 
-    /** Set name of field in solution to constrain.
-     *
-     * @param[in] value Name of field in solution to constrain.
-     */
-    void field(const char* value);
-
-    /** Get name of field in solution to constrain.
-     *
-     * @returns Name of field in solution to constrain.
-     */
-    const char* field(void) const;
-
     /** Set indices of constrained degrees of freedom at each location.
      *
      * Example: [0, 1] to apply forces to x and y degrees of freedom in
@@ -150,7 +138,7 @@ public:
      * @param[in] solution Solution field.
      */
     virtual
-    void verifyConfiguration(const pylith::topology::Field& solution) const;
+    void verifyConfiguration(const pylith::topology::Field& solution) const = 0;
 
     /** Initialize integrator.
      *
@@ -186,7 +174,6 @@ protected:
 protected:
 
     spatialdata::units::Nondimensional* _normalizer;   ///< Nondimensionalizer.
-    std::string _field; ///< Name of solution field to constrain.
     int_array _constrainedDOF; ///< List of constrained degrees of freedom at each location.
 
     /// Auxiliary fields for this problem
