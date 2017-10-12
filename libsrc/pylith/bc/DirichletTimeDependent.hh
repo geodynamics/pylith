@@ -132,7 +132,7 @@ protected:
      *
      * @param[in] solution Solution field.
      */
-    void _auxFieldsSetup(const topology::Field& solution);
+    void _auxFieldsSetup(const pylith::topology::Field& solution);
 
     /** Set kernels for RHS residual G(t,s).
      *
@@ -141,7 +141,7 @@ protected:
      *
      * @param solution Solution field.
      */
-    void _setFEKernelsConstraint(const topology::Field& solution);
+    void _setFEKernelsConstraint(const pylith::topology::Field& solution);
 
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////
