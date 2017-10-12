@@ -111,5 +111,21 @@ pylith::bc::NeumannNew::initialize(const pylith::topology::Field& solution)
     PYLITH_METHOD_END;
 } // initialize
 
+// ----------------------------------------------------------------------
+// Compute RHS residual for G(t,s).
+void
+pylith::bc::NeumannNew::computeRHSResidual(pylith::topology::Field* residual,
+					   const PylithReal t,
+					   const PylithReal dt,
+					   const pylith::topology::Field& solution)
+{ // computeRHSResidual
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("initialize(solution="<<solution.label()<<")");
+
+    PYLITH_COMPONENT_ERROR(":TODO: @brad NeumannNew::computeRHSResidual().");
+    
+    PYLITH_METHOD_END;
+} // computeRHSResidual
+
 
 // End of file
