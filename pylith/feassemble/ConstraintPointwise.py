@@ -64,16 +64,13 @@ class ConstraintPointwise(PetscComponent,
         # Python object for managing ConstraintPointwise facilities and properties.
         ##
         # \b Properties
-        # @li \b field Field in solution to constrain.
+        # @li None
         ##
         # \b Facilities
         # @li \b auxiliary_fields Discretization of auxiliary fields associated with material.
         # @li \b db_auxiliary_fields Database for auxiliary fields associated with material.
 
         import pyre.inventory
-
-        field = pyre.inventory.str("field", default="displacement")
-        field.meta['tip'] = "Field to constrain."
 
         constrainedDOF = pyre.inventory.list("constrained_dof", default=[], validator=validateDOF)
         constrainedDOF.meta['tip'] = "Constrained degrees of freedom (0=1st DOF, 1=2nd DOF, etc)."
@@ -102,7 +99,6 @@ class ConstraintPointwise(PetscComponent,
         Setup constraint.
         """
         ModuleConstraint.identifier(self, self.aliases[-1])
-        ModuleConstraint.field(self, self.field)
         ModuleConstraint.constrainedDOF(self, numpy.array(self.constrainedDOF, dtype=numpy.int32))
         ModuleConstraint.auxFieldsDB(self, self.inventory.auxFieldsDB)
 
@@ -119,7 +115,6 @@ class ConstraintPointwise(PetscComponent,
         """
         try:
             PetscComponent._configure(self)
-            self.field = self.inventory.field
             self.constrainedDOF = self.inventory.constrainedDOF
             self.auxFields = self.inventory.auxFields
             self.auxFieldsDB = self.inventory.auxFieldsDB

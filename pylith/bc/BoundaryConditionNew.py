@@ -61,13 +61,17 @@ class BoundaryConditionNew(PetscComponent,
 
         # @class Inventory
         # Python object for managing BoundaryConditionNew facilities and properties.
-        ##
+        #
         # \b Properties
         # @li \b label Label identifier for boundary.
-        ##
+        # @li \b field Field in solution to constrain.
+        #
         # \b Facilities
 
         import pyre.inventory
+
+        field = pyre.inventory.str("field", default="displacement")
+        field.meta['tip'] = "Solution field associated with boundary condition."
 
         label = pyre.inventory.str("label", default="", validator=validateLabel)
         label.meta['tip'] = "Label identifier for boundary."
@@ -87,6 +91,7 @@ class BoundaryConditionNew(PetscComponent,
         Setup boundary condition.
         """
         ModuleBoundaryCondition.label(self, self.label)
+        ModuleBoundaryCondition.field(self, self.field)
         return
 
     def finalize(self):
@@ -105,6 +110,7 @@ class BoundaryConditionNew(PetscComponent,
         try:
             PetscComponent._configure(self)
             self.label = self.inventory.label
+            self.field = self.inventory.field
         except ValueError as err:
             aliases = ", ".join(self.aliases)
             raise ValueError("Error while configuring boundary condition "
