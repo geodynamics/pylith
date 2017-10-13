@@ -139,7 +139,7 @@ pylith::bc::DirichletNew::initialize(const pylith::topology::Field& solution)
         PYLITH_COMPONENT_ERROR("Unknown case for setting up auxiliary fields.");
         throw std::logic_error("Unknown case for setting up auxiliary fields.");
     } // if/else
-    _auxFields->view("AUXILIARY FIELDS"); // :DEBUGGING: TEMPORARY
+    //_auxFields->view("AUXILIARY FIELDS"); // :DEBUGGING: TEMPORARY
 
     // Get label for constraint.
     PetscDMLabel dmLabel;
@@ -191,7 +191,7 @@ pylith::bc::DirichletNew::setSolution(pylith::topology::Field* solution,
     PYLITH_CHECK_ERROR(err);
     err = DMPlexLabelClearCells(dmSoln, dmLabel); PYLITH_CHECK_ERROR(err);
 
-    solution->view("SOLUTION"); // :DEBUGGING: TEMPORARY
+    //solution->view("SOLUTION"); // :DEBUGGING: TEMPORARY
 
     PYLITH_METHOD_END;
 } // setSolution

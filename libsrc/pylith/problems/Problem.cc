@@ -318,7 +318,7 @@ pylith::problems::Problem::setSolutionLocal(const PylithReal t,
         _constraints[i]->setSolution(_solution, t);
     } // for
 
-    _solution->view("SOLUTION AFTER SETTING VALUES");
+    //_solution->view("SOLUTION AFTER SETTING VALUES");
 
     PYLITH_METHOD_END;
 } // setSolutionLocal
