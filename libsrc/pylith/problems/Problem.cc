@@ -350,7 +350,9 @@ pylith::problems::Problem::computeRHSResidual(PetscVec residualVec,
         _integrators[i]->computeRHSResidual(_residual, t, dt, *_solution);
     } // for
 
+    
     // Assemble residual values across processes.
+    PetscErrorCode err = VecSet(residualVec, 0.0); PYLITH_CHECK_ERROR(err); // Move to TSComputeIFunction()?
     _residual->scatterLocalToVector(residualVec, ADD_VALUES);
 
     PYLITH_METHOD_END;
@@ -431,6 +433,7 @@ pylith::problems::Problem::computeLHSResidual(PetscVec residualVec,
     } // for
 
     // Assemble residual values across processes.
+    PetscErrorCode err = VecSet(residualVec, 0.0); PYLITH_CHECK_ERROR(err); // Move to TSComputeIFunction()?
     _residual->scatterLocalToVector(residualVec, ADD_VALUES);
 
     PYLITH_METHOD_END;
