@@ -298,7 +298,7 @@ pylith::problems::Problem::setSolutionLocal(const PylithReal t,
                                             PetscVec solutionDotVec)
 { // setSolutionLocal
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("setSolutionLocal(t="<<t<<", solutionVec="<<solutionVec<<", solutionDotVec"<<solutionDotVec<<")");
+    PYLITH_COMPONENT_DEBUG("setSolutionLocal(t="<<t<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<")");
 
     // Update PyLith view of the solution.
     assert(_solution);
@@ -412,7 +412,7 @@ pylith::problems::Problem::computeLHSResidual(PetscVec residualVec,
                                               PetscVec solutionDotVec)
 { // computeLHSResidual
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::computeLHSResidual(t="<<t<<", dt="<<dt<<", solutionVec="<<solutionVec<<", solutionDotVec"<<solutionDotVec<<", residualVec="<<residualVec<<")");
+    PYLITH_COMPONENT_DEBUG("Problem::computeLHSResidual(t="<<t<<", dt="<<dt<<", solutionVec="<<solutionVec<<", solutionDotVec="<<solutionDotVec<<", residualVec="<<residualVec<<")");
 
     assert(residualVec);
     assert(solutionVec);
