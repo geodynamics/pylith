@@ -34,8 +34,7 @@
 /// @brief Neumann (e.g., traction) boundary conditions.
 class pylith::bc::NeumannNew :
     public BoundaryConditionNew,
-    public pylith::feassemble::IntegratorPointwise
-{ // class NeumannNew
+    public pylith::feassemble::IntegratorPointwise { // class NeumannNew
     friend class TestNeumannNew;   // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -55,18 +54,6 @@ public:
      * @param[in] solution Solution field.
      */
     void initialize(const pylith::topology::Field& solution);
-
-    /** Compute RHS residual for G(t,s).
-     *
-     * @param[out] residual Field for residual.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] solution Field with current trial solution.
-     */
-    void computeRHSResidual(pylith::topology::Field* residual,
-                            const PylithReal t,
-                            const PylithReal dt,
-                            const pylith::topology::Field& solution);
 
     // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
@@ -99,8 +86,7 @@ protected:
 protected:
 
     pylith::topology::Mesh* _boundaryMesh;   ///< Boundary mesh.
-    PetscPointFunc _bcKernel; ///< Kernel for boundary condition value.
-    pylith::topology::FieldBase::Description _description; ///< Description for integrated field.
+    pylith::topology::FieldBase::Description _description; ///< Description of field associated with BC.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:

@@ -33,13 +33,13 @@
 #include <strings.h> // USES strcasecmp()
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
-#include <sstream> // USES std::ostringstream
+#include <sstream> \
+    // USES std::ostringstream
 
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::NeumannNew::NeumannNew(void) :
-    _boundaryMesh(NULL),
-    _bcKernel(NULL)
+    _boundaryMesh(NULL)
 { // constructor
     _description.label = "unknown";
     _description.vectorFieldType = pylith::topology::Field::OTHER;
@@ -67,7 +67,6 @@ pylith::bc::NeumannNew::deallocate(void)
     IntegratorPointwise::deallocate();
 
     delete _boundaryMesh; _boundaryMesh = NULL;
-    _bcKernel = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -108,24 +107,18 @@ pylith::bc::NeumannNew::initialize(const pylith::topology::Field& solution)
     } // if/else
     _auxFields->view("AUXILIARY FIELDS"); // :DEBUGGING: TEMPORARY
 
+    const PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
+    PetscDS prob = NULL;
+    PetscErrorCode err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err);
+
+    // :TODO: @brad @matt Expect this to need updating once we associate point functions with a domain.
+    void* context = NULL;
+    const int labelId = 1;
+    err = PetscDSAddBoundary(prob, DM_BC_NATURAL, label(), label(), info.index, 0, NULL,
+                             NULL, 1, &labelId, context); PYLITH_CHECK_ERROR(err);
+
+
     PYLITH_METHOD_END;
 } // initialize
-
-// ----------------------------------------------------------------------
-// Compute RHS residual for G(t,s).
-void
-pylith::bc::NeumannNew::computeRHSResidual(pylith::topology::Field* residual,
-					   const PylithReal t,
-					   const PylithReal dt,
-					   const pylith::topology::Field& solution)
-{ // computeRHSResidual
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("initialize(solution="<<solution.label()<<")");
-
-    PYLITH_COMPONENT_ERROR(":TODO: @brad NeumannNew::computeRHSResidual().");
-    
-    PYLITH_METHOD_END;
-} // computeRHSResidual
-
 
 // End of file
