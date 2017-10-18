@@ -139,18 +139,17 @@ pylith::bc::DirichletNew::initialize(const pylith::topology::Field& solution)
         PYLITH_COMPONENT_ERROR("Unknown case for setting up auxiliary fields.");
         throw std::logic_error("Unknown case for setting up auxiliary fields.");
     } // if/else
-    //_auxFields->view("AUXILIARY FIELDS"); // :DEBUGGING: TEMPORARY
+      //_auxFields->view("AUXILIARY FIELDS"); // :DEBUGGING: TEMPORARY
 
-    // Get label for constraint.
-    PetscDMLabel dmLabel;
     const PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
-    PetscErrorCode err = DMGetLabel(dmSoln, _label.c_str(), &dmLabel); PYLITH_CHECK_ERROR(err);
+    PetscDS prob = NULL;
+    PetscErrorCode err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err);
 
     void* context = NULL;
     const int labelId = 1;
     const PylithInt numConstrained = _constrainedDOF.size();
-    err = DMAddBoundary(dmSoln, DM_BC_ESSENTIAL_FIELD, label(), label(), info.index, numConstrained, &_constrainedDOF[0],
-                        (void (*)())_bcKernel, 1, &labelId, context); PYLITH_CHECK_ERROR(err);
+    err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL_FIELD, label(), label(), info.index, numConstrained, &_constrainedDOF[0],
+                             (void (*)())_bcKernel, 1, &labelId, context); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // initialize
