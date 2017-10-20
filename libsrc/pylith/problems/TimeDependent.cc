@@ -264,8 +264,10 @@ pylith::problems::TimeDependent::initialize(void)
         throw std::logic_error("Unknown problem type.");
     }     // switch
     PYLITH_COMPONENT_DEBUG("Setting PetscTS parameters: dtInitial="<<_dtInitial<<", startTime="<<_startTime<<", maxTimeSteps="<<_maxTimeSteps<<", totalTime="<<_totalTime);
-    err = TSSetInitialTimeStep(_ts, _startTime, _dtInitial); PYLITH_CHECK_ERROR(err);
-    err = TSSetDuration(_ts, _maxTimeSteps, _totalTime); PYLITH_CHECK_ERROR(err);
+    err = TSSetTime(_ts, _startTime); PYLITH_CHECK_ERROR(err);
+    err = TSSetTimeStep(_ts, _dtInitial); PYLITH_CHECK_ERROR(err);
+    err = TSSetMaxSteps(_ts, _maxTimeSteps); PYLITH_CHECK_ERROR(err);
+    err = TSSetMaxTime(_ts, _totalTime); PYLITH_CHECK_ERROR(err);
 
     // Set initial solution.
     _solution->zeroLocal();
@@ -364,7 +366,7 @@ pylith::problems::TimeDependent::poststep(void)
     PylithInt tindex;
     PetscVec solutionVec = NULL;
     err = TSGetTime(_ts, &t); PYLITH_CHECK_ERROR(err);
-    err = TSGetTotalSteps(_ts, &tindex); PYLITH_CHECK_ERROR(err);
+    err = TSGetStepNumber(_ts, &tindex); PYLITH_CHECK_ERROR(err);
     err = TSGetSolution(_ts, &solutionVec); PYLITH_CHECK_ERROR(err);
 
     // Update PyLith view of the solution.
