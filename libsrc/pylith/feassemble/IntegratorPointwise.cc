@@ -20,9 +20,9 @@
 
 #include "IntegratorPointwise.hh" // implementation of class methods
 
+#include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -38,11 +38,9 @@
 // Constructor
 pylith::feassemble::IntegratorPointwise::IntegratorPointwise(void) :
     _normalizer(new spatialdata::units::Nondimensional),
-    _gravityField(0),
-    _logger(0),
-    _auxFields(0),
-    _auxFieldsDB(0),
-    _auxFieldsQuery(0),
+    _gravityField(NULL),
+    _auxField(NULL),
+    _logger(NULL),
     _needNewRHSJacobian(true),
     _needNewLHSJacobian(true)
 { // constructor
@@ -62,109 +60,58 @@ pylith::feassemble::IntegratorPointwise::deallocate(void)
 { // deallocate
     PYLITH_METHOD_BEGIN;
 
-    delete _normalizer; _normalizer = 0;
-    delete _logger; _logger = 0;
-    delete _auxFields; _auxFields = 0;
-    delete _auxFieldsQuery; _auxFieldsQuery = 0;
+    delete _normalizer; _normalizer = NULL;
+    delete _logger; _logger = NULL;
+    delete _auxField; _auxField = NULL;
 
-    _gravityField = 0; // :TODO: Use shared points.
-    _auxFieldsDB = 0; // :TODO: Use shared pointer.
+    _gravityField = NULL; // :KLUDGE: Use shared points.
 
     PYLITH_METHOD_END;
 } // deallocate
 
 // ----------------------------------------------------------------------
-// Return auxiliary fields for this problem
-const pylith::topology::Field&
-pylith::feassemble::IntegratorPointwise::auxFields(void) const
-{ // auxFields
-    PYLITH_METHOD_BEGIN;
-
-    assert(_auxFields);
-
-    PYLITH_METHOD_RETURN(*_auxFields);
-} // auxFields
-
-// ----------------------------------------------------------------------
-// Check whether material has a given auxilirary field.
-bool
-pylith::feassemble::IntegratorPointwise::hasAuxField(const char* name)
-{ // hasAuxField
-    PYLITH_METHOD_BEGIN;
-
-    assert(_auxFields);
-
-    PYLITH_METHOD_RETURN(_auxFields->hasSubfield(name));
-} // hasAuxField
-
-
-// ----------------------------------------------------------------------
 // Get auxiliary field.
-void
-pylith::feassemble::IntegratorPointwise::getAuxField(pylith::topology::Field *field,
-                                                     const char* name) const
-{ // getAuxField
+const pylith::topology::Field&
+pylith::feassemble::IntegratorPointwise::auxField(void) const
+{ // auxField
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getAuxField(field="<<field->label()<<", name="<<name<<")");
 
-    assert(field);
-    assert(_auxFields);
+    assert(_auxField);
 
-    field->copySubfield(*_auxFields, name);
-
-    PYLITH_METHOD_END;
-} // getAuxField
-
+    PYLITH_METHOD_RETURN(*_auxField);
+} // auxField
 
 // ----------------------------------------------------------------------
 // Set database for auxiliary fields.
 void
-pylith::feassemble::IntegratorPointwise::auxFieldsDB(spatialdata::spatialdb::SpatialDB* value) {
-    _auxFieldsDB = value;
-}
+pylith::feassemble::IntegratorPointwise::auxFieldDB(spatialdata::spatialdb::SpatialDB* value)
+{ // auxFieldDB
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("auxFieldDB(value="<<value<<")");
+
+    pylith::feassemble::AuxiliaryFactory* factory = _auxFactory(); assert(factory);
+    factory->queryDB(value);
+
+    PYLITH_METHOD_END;
+} // auxFieldDB
 
 // ----------------------------------------------------------------------
 // Set discretization information for auxiliary subfield.
 void
-pylith::feassemble::IntegratorPointwise::auxFieldDiscretization(const char* name,
-                                                                const int basisOrder,
-                                                                const int quadOrder,
-                                                                const bool isBasisContinuous,
-                                                                const pylith::topology::FieldBase::SpaceEnum feSpace)
-{ // discretization
+pylith::feassemble::IntegratorPointwise::auxSubfieldDiscretization(const char* name,
+                                                                   const int basisOrder,
+                                                                   const int quadOrder,
+                                                                   const bool isBasisContinuous,
+                                                                   const pylith::topology::FieldBase::SpaceEnum feSpace)
+{ // auxSubfieldDiscretization
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("auxFieldDiscretization(name="<<name<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<", feSpace="<<feSpace<<")");
+    PYLITH_COMPONENT_DEBUG("auxSubfieldDiscretization(name="<<name<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<")");
 
-    pylith::topology::FieldBase::Discretization feInfo;
-    feInfo.basisOrder = basisOrder;
-    feInfo.quadOrder = quadOrder;
-    feInfo.isBasisContinuous = isBasisContinuous;
-    feInfo.feSpace = feSpace;
-    _auxFieldsFEInfo[name] = feInfo;
+    pylith::feassemble::AuxiliaryFactory* factory = _auxFactory(); assert(factory);
+    factory->subfieldDiscretization(name, basisOrder, quadOrder, isBasisContinuous, feSpace);
 
     PYLITH_METHOD_END;
-} // discretization
-
-
-// ----------------------------------------------------------------------
-// Get discretization information for auxiliary subfield.
-const pylith::topology::FieldBase::Discretization&
-pylith::feassemble::IntegratorPointwise::auxFieldDiscretization(const char* name) const
-{ // discretization
-    PYLITH_METHOD_BEGIN;
-
-    discretizations_type::const_iterator iter = _auxFieldsFEInfo.find(name);
-    if (iter != _auxFieldsFEInfo.end()) {
-        PYLITH_METHOD_RETURN(iter->second);
-    } else { // not found so try default
-        iter = _auxFieldsFEInfo.find("default");
-        if (iter == _auxFieldsFEInfo.end()) {
-            throw std::logic_error("Default discretization not set for auxiliary fields.");
-        } // if
-    } // if/else
-
-    PYLITH_METHOD_RETURN(iter->second); // default
-} // discretization
+} // auxSubfieldDiscretization
 
 
 // ----------------------------------------------------------------------
@@ -188,7 +135,7 @@ pylith::feassemble::IntegratorPointwise::normalizer(const spatialdata::units::No
 { // normalizer
     PYLITH_COMPONENT_DEBUG("normalizer(dim="<<typeid(dim).name()<<")");
 
-    if (0 == _normalizer) {
+    if (!_normalizer) {
         _normalizer = new spatialdata::units::Nondimensional(dim);
     } else {
         *_normalizer = dim;

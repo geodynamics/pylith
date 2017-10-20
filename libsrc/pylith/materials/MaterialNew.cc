@@ -22,7 +22,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
+#include "pylith/materials/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 #include "pylith/topology/Stratum.hh" // USES StratumIS
 
@@ -36,33 +36,33 @@
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
-extern "C" PetscErrorCode DMPlexComputeResidual_Internal(DM dm,
+extern "C" PetscErrorCode DMPlexComputeResidual_Internal(PetscDM dm,
                                                          PetscInt cStart,
                                                          PetscInt cEnd,
                                                          PetscReal time,
-                                                         Vec locX,
-                                                         Vec locX_t,
-                                                         Vec locF,
+                                                         PetscVec locX,
+                                                         PetscVec locX_t,
+                                                         PetscVec locF,
                                                          void *user);
-extern "C" PetscErrorCode DMPlexComputeJacobian_Internal(DM dm,
+extern "C" PetscErrorCode DMPlexComputeJacobian_Internal(PetscDM dm,
                                                          PetscInt cStart,
                                                          PetscInt cEnd,
                                                          PetscReal t,
                                                          PetscReal X_tShift,
-                                                         Vec X,
-                                                         Vec X_t,
-                                                         Mat Jac,
-                                                         Mat JacP,
+                                                         PetscVec X,
+                                                         PetscVec X_t,
+                                                         PetscMat Jac,
+                                                         PetscMat JacP,
                                                          void *user);
-extern "C" PetscErrorCode DMPlexComputeJacobianAction_Internal(DM dm,
+extern "C" PetscErrorCode DMPlexComputeJacobianAction_Internal(PetscDM dm,
                                                                PetscInt cStart,
                                                                PetscInt cEnd,
                                                                PetscReal t,
                                                                PetscReal X_tShift,
-                                                               Vec X,
-                                                               Vec X_t,
-                                                               Vec Y,
-                                                               Vec z,
+                                                               PetscVec X,
+                                                               PetscVec X_t,
+                                                               PetscVec Y,
+                                                               PetscVec z,
                                                                void *user);
 
 
@@ -71,31 +71,29 @@ extern "C" PetscErrorCode DMPlexComputeJacobianAction_Internal(DM dm,
 pylith::materials::MaterialNew::MaterialNew(const int dimension) :
     _materialIS(NULL),
     _gravityField(NULL),
+    _auxMaterialFactory(new pylith::materials::AuxiliaryFactory),
     _dimension(dimension),
     _id(0),
     _label("")
 { // constructor
-    const pylith::topology::FieldBase::Discretization defaultInfo = {-1, -1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE};
-    _auxFieldsFEInfo["default"] = defaultInfo;
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::materials::MaterialNew::~MaterialNew(void)
-{ // destructor
+pylith::materials::MaterialNew::~MaterialNew(void) {
     deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::materials::MaterialNew::deallocate(void)
-{ // deallocate
+pylith::materials::MaterialNew::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
     IntegratorPointwise::deallocate();
     delete _materialIS; _materialIS = NULL;
     delete _gravityField; _gravityField = NULL;
+    delete _auxMaterialFactory; _auxMaterialFactory = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -114,14 +112,14 @@ pylith::materials::MaterialNew::id(const int value) {
     PYLITH_COMPONENT_DEBUG("id(value="<<value<<")");
 
     _id = value;
-}
+} // id
 
 // ----------------------------------------------------------------------
 // Get identifier of material.
 int
 pylith::materials::MaterialNew::id(void) const {
     return _id;
-}
+} // id
 
 // ----------------------------------------------------------------------
 // Set label of material.
@@ -130,20 +128,19 @@ pylith::materials::MaterialNew::label(const char* value) {
     PYLITH_COMPONENT_DEBUG("label(value="<<value<<")");
 
     _label = value;
-}
+} // label
 
 // ----------------------------------------------------------------------
 // Get label of material.
 const char*
 pylith::materials::MaterialNew::label(void) const {
     return _label.c_str();
-}
+} // label
 
 // ----------------------------------------------------------------------
 // Get physical property parameters and initial state (if used) from database.
 void
-pylith::materials::MaterialNew::initialize(const pylith::topology::Field& solution)
-{ // initialize
+pylith::materials::MaterialNew::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("intialize(solution="<<solution.label()<<")");
 
@@ -155,28 +152,18 @@ pylith::materials::MaterialNew::initialize(const pylith::topology::Field& soluti
     const bool includeOnlyCells = true;
     delete _materialIS; _materialIS = new pylith::topology::StratumIS(dmMesh, "material-id", _id, includeOnlyCells); assert(_materialIS);
 
-    delete _auxFields; _auxFields = new pylith::topology::Field(mesh); assert(_auxFields);
-    delete _auxFieldsQuery; _auxFieldsQuery = new pylith::topology::FieldQuery(*_auxFields); assert(_auxFieldsQuery);
-    _auxFields->label("auxiliary fields");
+    delete _auxField; _auxField = new pylith::topology::Field(mesh); assert(_auxField);
+    _auxField->label("auxiliary fields");
     _auxFieldsSetup();
-    _auxFields->subfieldsSetup();
-    _auxFields->allocate();
+    _auxField->subfieldsSetup();
+    _auxField->allocate();
+    _auxField->zeroLocal();
 
-    if (_auxFieldsDB) {
-        assert(_normalizer);
-        _auxFieldsQuery->openDB(_auxFieldsDB, _normalizer->lengthScale());
-        _auxFieldsQuery->queryDB();
-        _auxFieldsQuery->closeDB(_auxFieldsDB);
-    } else { // else
-        PYLITH_COMPONENT_ERROR("Unknown case for setting up auxiliary fields.");
-        throw std::logic_error("Unknown case for setting up auxiliary fields.");
-    } // if/else
-      //_auxFields->createScatter(mesh);
-      //_auxFields->scatterLocalToContext();
+    assert(_normalizer);
+    pylith::feassemble::AuxiliaryFactory* factory = _auxFactory(); assert(factory);
+    factory->initializeSubfields();
 
-#if 0 // DEBUGGING
-    _auxFields->view("AUXILIARY FIELDS");
-#endif
+    //_auxField->view("MATERIAL AUXILIARY FIELD"); // :DEBUG: TEMPORARY
 
     PYLITH_METHOD_END;
 } // initialize
@@ -294,7 +281,7 @@ pylith::materials::MaterialNew::computeLHSJacobianLumpedInv(pylith::topology::Fi
     PetscErrorCode err;
 
     PetscDM dmSoln = solution.dmMesh();
-    PetscDM dmAux = _auxFields->dmMesh();
+    PetscDM dmAux = _auxField->dmMesh();
     PetscDMLabel dmLabel;
 
     // Pointwise function have been set in DS
@@ -302,7 +289,7 @@ pylith::materials::MaterialNew::computeLHSJacobianLumpedInv(pylith::topology::Fi
 
     // Get auxiliary data
     err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux); PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) auxFields().localVector()); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) auxField().localVector()); PYLITH_CHECK_ERROR(err);
 
     PetscVec vecRowSum = NULL;
     err = DMGetGlobalVector(dmSoln, &vecRowSum); PYLITH_CHECK_ERROR(err);
@@ -352,14 +339,14 @@ pylith::materials::MaterialNew::_computeResidual(pylith::topology::Field* residu
     PYLITH_COMPONENT_DEBUG("_computeResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
 
     assert(residual);
-    assert(_auxFields);
+    assert(_auxField);
 
     PetscDS prob = NULL;
     PetscInt cStart = 0, cEnd = 0;
     PetscErrorCode err;
 
     PetscDM dmSoln = solution.dmMesh();
-    PetscDM dmAux = _auxFields->dmMesh();
+    PetscDM dmAux = _auxField->dmMesh();
     PetscDMLabel dmLabel;
 
     // Pointwise function have been set in DS
@@ -367,7 +354,7 @@ pylith::materials::MaterialNew::_computeResidual(pylith::topology::Field* residu
 
     // Get auxiliary data
     err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux); PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxFields->localVector()); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxField->localVector()); PYLITH_CHECK_ERROR(err);
 
     // Compute the local residual
     assert(solution.localVector());
@@ -403,7 +390,7 @@ pylith::materials::MaterialNew::_computeJacobian(PetscMat jacobianMat,
     PetscInt cStart = 0, cEnd = 0;
     PetscErrorCode err;
     PetscDM dmMesh = solution.dmMesh();
-    PetscDM dmAux = _auxFields->dmMesh();
+    PetscDM dmAux = _auxField->dmMesh();
     PetscDMLabel dmLabel;
 
     // Pointwise function have been set in DS
@@ -411,7 +398,7 @@ pylith::materials::MaterialNew::_computeJacobian(PetscMat jacobianMat,
 
     // Get auxiliary data
     err = PetscObjectCompose((PetscObject) dmMesh, "dmAux", (PetscObject) dmAux); PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) auxFields().localVector()); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmMesh, "A", (PetscObject) auxField().localVector()); PYLITH_CHECK_ERROR(err);
 
     // Compute the local Jacobian
     assert(solution.localVector());
@@ -444,5 +431,11 @@ pylith::materials::MaterialNew::_setFEConstants(const pylith::topology::Field& s
     PYLITH_METHOD_END;
 } // _setFEConstants
 
+// ----------------------------------------------------------------------
+// Get factory for setting up auxliary fields.
+pylith::feassemble::AuxiliaryFactory*
+pylith::materials::MaterialNew::_auxFactory(void) {
+    return _auxMaterialFactory;
+} // _auxFactory
 
 // End of file

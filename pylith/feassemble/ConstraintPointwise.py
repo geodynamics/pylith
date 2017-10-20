@@ -77,12 +77,12 @@ class ConstraintPointwise(PetscComponent,
 
         from pylith.topology.AuxSubfield import subfieldFactory
         from pylith.utils.EmptyBin import EmptyBin
-        auxFields = pyre.inventory.facilityArray("auxiliary_fields", itemFactory=subfieldFactory, factory=EmptyBin)
-        auxFields.meta['tip'] = "Discretization of constraint parameters."
+        auxSubfields = pyre.inventory.facilityArray("auxiliary_subfields", itemFactory=subfieldFactory, factory=EmptyBin)
+        auxSubfields.meta['tip'] = "Discretization of constraint parameters."
 
         from spatialdata.spatialdb.SimpleDB import SimpleDB
-        auxFieldsDB = pyre.inventory.facility("db_auxiliary_fields", family="spatial_database", factory=SimpleDB)
-        auxFieldsDB.meta['tip'] = "Database for constraint parameters."
+        auxFieldDB = pyre.inventory.facility("db_auxiliary_field", family="spatial_database", factory=SimpleDB)
+        auxFieldDB.meta['tip'] = "Database for constraint parameters."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -100,11 +100,11 @@ class ConstraintPointwise(PetscComponent,
         """
         ModuleConstraint.identifier(self, self.aliases[-1])
         ModuleConstraint.constrainedDOF(self, numpy.array(self.constrainedDOF, dtype=numpy.int32))
-        ModuleConstraint.auxFieldsDB(self, self.inventory.auxFieldsDB)
+        ModuleConstraint.auxFieldDB(self, self.inventory.auxFieldDB)
 
-        for subfield in self.auxFields.components():
+        for subfield in self.auxSubfields.components():
             fieldName = subfield.aliases[-1]
-            ModuleConstraint.auxFieldDiscretization(self, fieldName, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous, subfield.feSpace)
+            ModuleConstraint.auxSubfieldDiscretization(self, fieldName, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous, subfield.feSpace)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -116,8 +116,8 @@ class ConstraintPointwise(PetscComponent,
         try:
             PetscComponent._configure(self)
             self.constrainedDOF = self.inventory.constrainedDOF
-            self.auxFields = self.inventory.auxFields
-            self.auxFieldsDB = self.inventory.auxFieldsDB
+            self.auxSubfields = self.inventory.auxSubfields
+            self.auxFieldDB = self.inventory.auxFieldDB
 
         except ValueError, err:
             aliases = ", ".join(self.aliases)

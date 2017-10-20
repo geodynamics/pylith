@@ -61,33 +61,17 @@ public:
              */
             const pylith::int_array& constrainedDOF(void) const;
 
-            /** Get auxiliary fields.
+            /** Get auxiliary field.
              *
              * @returns field Field over boundary.
              */
-            const pylith::topology::Field& auxFields(void) const;
-
-            /** Check whether constraint has a given auxiliary field.
-             *
-             * @param[in] name Name of field.
-             *
-             * @returns True if constraint has auxiliary field, false otherwise.
-             */
-            bool hasAuxField(const char* name);
-
-            /** Get auxiliary field.
-             *
-             * @param[out] field Pointer to field.
-             * @param[in] name Name of field to retrieve.
-             */
-            void getAuxField(pylith::topology::Field *field,
-                             const char* name) const;
+            const pylith::topology::Field& auxField(void) const;
 
             /** Set spatial database for auxiliary fields.
              *
              * @param[in] value Pointer to database.
              */
-            void auxFieldsDB(spatialdata::spatialdb::SpatialDB* value);
+            void auxFieldDB(spatialdata::spatialdb::SpatialDB* value);
 
             /** Set discretization information for auxiliary subfield.
              *
@@ -97,19 +81,11 @@ public:
              * @param[in] isBasisContinuous True if basis is continuous.
              * @param[in] feSpace Finite-element space.
              */
-            void auxFieldDiscretization(const char* name,
-                                        const int basisOrder,
-                                        const int quadOrder,
-                                        const bool isBasisContinuous,
-                                        const pylith::topology::FieldBase::SpaceEnum feSpace);
-
-            /** Get discretization information for auxiliary subfield.
-             *
-             * @param[in] name Name of subfield.
-             * @return Discretization information for auxiliary subfield. If
-             * discretization information was not set, then use "default".
-             */
-            const pylith::topology::FieldBase::Discretization& auxFieldDiscretization(const char* name) const;
+            void auxSubfieldDiscretization(const char* name,
+					   const int basisOrder,
+					   const int quadOrder,
+					   const bool isBasisContinuous,
+					   const pylith::topology::FieldBase::SpaceEnum feSpace);
 
             /** Set manager of scales used to nondimensionalize problem.
              *

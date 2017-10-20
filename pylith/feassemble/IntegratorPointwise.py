@@ -55,12 +55,12 @@ class IntegratorPointwise(PetscComponent,
 
         from pylith.topology.AuxSubfield import subfieldFactory
         from pylith.utils.EmptyBin import EmptyBin
-        auxFields = pyre.inventory.facilityArray("auxiliary_fields", itemFactory=subfieldFactory, factory=EmptyBin)
-        auxFields.meta['tip'] = "Discretization of physical properties and state variables."
+        auxSubfields = pyre.inventory.facilityArray("auxiliary_subfields", itemFactory=subfieldFactory, factory=EmptyBin)
+        auxSubfields.meta['tip'] = "Discretization of physical properties and state variables."
 
         from spatialdata.spatialdb.SimpleDB import SimpleDB
-        auxFieldsDB = pyre.inventory.facility("db_auxiliary_fields", family="spatial_database", factory=SimpleDB)
-        auxFieldsDB.meta['tip'] = "Database for physical property parameters."
+        auxFieldDB = pyre.inventory.facility("db_auxiliary_field", family="spatial_database", factory=SimpleDB)
+        auxFieldDB.meta['tip'] = "Database for physical property parameters."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -77,11 +77,11 @@ class IntegratorPointwise(PetscComponent,
         Do pre-initialization setup.
         """
         ModuleIntegrator.identifier(self, self.aliases[-1])
-        ModuleIntegrator.auxFieldsDB(self, self.auxFieldsDB)
+        ModuleIntegrator.auxFieldDB(self, self.auxFieldDB)
 
-        for subfield in self.auxFields.components():
+        for subfield in self.auxSubfields.components():
             fieldName = subfield.aliases[-1]
-            ModuleIntegrator.auxFieldDiscretization(self, fieldName, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous, subfield.feSpace)
+            ModuleIntegrator.auxSubfieldDiscretization(self, fieldName, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous, subfield.feSpace)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -92,8 +92,8 @@ class IntegratorPointwise(PetscComponent,
         """
         try:
             PetscComponent._configure(self)
-            self.auxFields = self.inventory.auxFields
-            self.auxFieldsDB = self.inventory.auxFieldsDB
+            self.auxSubfields = self.inventory.auxSubfields
+            self.auxFieldDB = self.inventory.auxFieldDB
 
         except ValueError, err:
             aliases = ", ".join(self.aliases)

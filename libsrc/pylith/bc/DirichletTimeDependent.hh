@@ -132,7 +132,7 @@ protected:
      *
      * @param[in] solution Solution field.
      */
-    void _auxFieldsSetup(const pylith::topology::Field& solution);
+    void _auxFieldSetup(const pylith::topology::Field& solution);
 
     /** Set kernels for RHS residual G(t,s).
      *
@@ -143,11 +143,17 @@ protected:
      */
     void _setFEKernelsConstraint(const pylith::topology::Field& solution);
 
+    /** Get factory for setting up auxliary fields.
+     *
+     * @returns Factor for auxiliary fields.
+     */
+    pylith::feassemble::AuxiliaryFactory* _auxFactory(void);
 
-    // PROTECTED MEMBERS //////////////////////////////////////////////////
+    // PRIVATE MEMBERS //////////////////////////////////////////////////
 private:
 
-    spatialdata::spatialdb::TimeHistory* _dbTimeHistory;
+    spatialdata::spatialdb::TimeHistory* _dbTimeHistory; ///< Time history database.
+    pylith::bc::TimeDependentAuxiliaryFactory* _auxTimeDependentFactory; ///< Factory for auxiliary fields.
 
     bool _useInitial; ///< Use initial value term.
     bool _useRate; ///< Use rate term.

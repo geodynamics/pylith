@@ -89,7 +89,7 @@ protected:
      * @param[in] solution Solution field.
      */
     virtual
-    void _auxFieldsSetup(const pylith::topology::Field& solution) = 0;
+    void _auxFieldSetup(const pylith::topology::Field& solution) = 0;
 
     /** Set kernels for RHS residual G(t,s).
      *

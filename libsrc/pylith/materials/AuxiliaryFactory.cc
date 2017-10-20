@@ -34,18 +34,12 @@
 #include <cassert>
 
 // ----------------------------------------------------------------------
-const char* pylith::materials::AuxiliaryFactory::_genericComponent = "auxiliaryfactory";
+const char* pylith::materials::AuxiliaryFactory::_genericComponent = "materialauxiliaryfactory";
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::materials::AuxiliaryFactory::AuxiliaryFactory(const MaterialNew& material,
-                                                      const spatialdata::units::Nondimensional& normalizer,
-                                                      const int spaceDim) :
-    _material(material),
-    _normalizer(normalizer),
-    _spaceDim(spaceDim)
+pylith::materials::AuxiliaryFactory::AuxiliaryFactory(void)
 { // constructor
-    assert(1 <= _spaceDim && _spaceDim <= 3);
     GenericComponent::name(_genericComponent);
 } // constructor
 
@@ -58,13 +52,13 @@ pylith::materials::AuxiliaryFactory::~AuxiliaryFactory(void)
 // ----------------------------------------------------------------------
 // Add density field to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactory::density(void) const
+pylith::materials::AuxiliaryFactory::density(void)
 { // density
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("density(void)");
 
     const char* fieldName = "density";
-    const PylithReal densityScale = _normalizer.densityScale();
+    const PylithReal densityScale = _normalizer->densityScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -75,10 +69,8 @@ pylith::materials::AuxiliaryFactory::density(void) const
     description.scale = densityScale;
     description.validator = pylith::topology::FieldQuery::validatorPositive;
 
-    assert(_material._auxFields);
-    assert(_material._auxFieldsQuery);
-    _material._auxFields->subfieldAdd(description, _material.auxFieldDiscretization(fieldName));
-    _material._auxFieldsQuery->queryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, _subfieldDiscretization(fieldName));
+    _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
 } // density
@@ -87,13 +79,13 @@ pylith::materials::AuxiliaryFactory::density(void) const
 // ----------------------------------------------------------------------
 // Add shear modulus field to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactory::shearModulus(void) const
+pylith::materials::AuxiliaryFactory::shearModulus(void)
 { // shearModulus
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("shearModulus(void)");
 
     const char* fieldName = "shear_modulus";
-    const PylithReal pressureScale = _normalizer.pressureScale();
+    const PylithReal pressureScale = _normalizer->pressureScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -104,10 +96,8 @@ pylith::materials::AuxiliaryFactory::shearModulus(void) const
     description.scale = pressureScale;
     description.validator = NULL;
 
-    assert(_material._auxFields);
-    assert(_material._auxFieldsQuery);
-    _material._auxFields->subfieldAdd(description, _material.auxFieldDiscretization(fieldName));
-    _material._auxFieldsQuery->queryFn(fieldName, pylith::materials::Query::dbQueryShearModulus);
+    _field->subfieldAdd(description, _subfieldDiscretization(fieldName));
+    _subfieldQueryFn(fieldName, pylith::materials::Query::dbQueryShearModulus);
 
     PYLITH_METHOD_END;
 } // shearModulus
@@ -116,13 +106,13 @@ pylith::materials::AuxiliaryFactory::shearModulus(void) const
 // ----------------------------------------------------------------------
 // Add bulk modulus field to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactory::bulkModulus(void) const
+pylith::materials::AuxiliaryFactory::bulkModulus(void)
 { // bulkModulus
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("bulkModulus(void)");
 
     const char* fieldName = "bulk_modulus";
-    const PylithReal pressureScale = _normalizer.pressureScale();
+    const PylithReal pressureScale = _normalizer->pressureScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -133,10 +123,8 @@ pylith::materials::AuxiliaryFactory::bulkModulus(void) const
     description.scale = pressureScale;
     description.validator = NULL;
 
-    assert(_material._auxFields);
-    assert(_material._auxFieldsQuery);
-    _material._auxFields->subfieldAdd(description, _material.auxFieldDiscretization(fieldName));
-    _material._auxFieldsQuery->queryFn(fieldName, pylith::materials::Query::dbQueryBulkModulus);
+    _field->subfieldAdd(description, _subfieldDiscretization(fieldName));
+    _subfieldQueryFn(fieldName, pylith::materials::Query::dbQueryBulkModulus);
 
     PYLITH_METHOD_END;
 } // bulkModulus
@@ -145,7 +133,7 @@ pylith::materials::AuxiliaryFactory::bulkModulus(void) const
 // ----------------------------------------------------------------------
 // Add gravity field to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactory::gravityField(spatialdata::spatialdb::GravityField* gf) const
+pylith::materials::AuxiliaryFactory::gravityField(spatialdata::spatialdb::GravityField* gf)
 { // gravityField
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("gravityField(void)");
@@ -153,8 +141,8 @@ pylith::materials::AuxiliaryFactory::gravityField(spatialdata::spatialdb::Gravit
     const char* fieldName = "gravity_field";
     const char* componentNames[3] = { "gravity_field_x", "gravity_field_y", "gravity_field_z" };
 
-    const PylithReal lengthScale = _normalizer.lengthScale();
-    const PylithReal timeScale = _normalizer.timeScale();
+    const PylithReal lengthScale = _normalizer->lengthScale();
+    const PylithReal timeScale = _normalizer->timeScale();
     const PylithReal accelerationScale = lengthScale / (timeScale * timeScale);
 
     pylith::topology::Field::Description description;
@@ -168,10 +156,8 @@ pylith::materials::AuxiliaryFactory::gravityField(spatialdata::spatialdb::Gravit
     description.scale = accelerationScale;
     description.validator = NULL;
 
-    assert(_material._auxFields);
-    assert(_material._auxFieldsQuery);
-    _material._auxFields->subfieldAdd(description, _material.auxFieldDiscretization(fieldName));
-    _material._auxFieldsQuery->queryFn(fieldName, pylith::materials::Query::dbQueryGravityField, gf);
+    _field->subfieldAdd(description, _subfieldDiscretization(fieldName));
+    _subfieldQueryFn(fieldName, pylith::materials::Query::dbQueryGravityField, gf);
 
     PYLITH_METHOD_END;
 } // gravityField
@@ -179,7 +165,7 @@ pylith::materials::AuxiliaryFactory::gravityField(spatialdata::spatialdb::Gravit
 // ----------------------------------------------------------------------
 // Add body force field to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactory::bodyForce(void) const
+pylith::materials::AuxiliaryFactory::bodyForce(void)
 { // bodyForce
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("bodyForce(void)");
@@ -187,9 +173,9 @@ pylith::materials::AuxiliaryFactory::bodyForce(void) const
     const char* fieldName = "body_force";
     const char* componentNames[3] = { "body_force_x", "body_force_y", "body_force_z" };
 
-    const PylithReal densityScale = _normalizer.densityScale();
-    const PylithReal lengthScale = _normalizer.lengthScale();
-    const PylithReal timeScale = _normalizer.timeScale();
+    const PylithReal densityScale = _normalizer->densityScale();
+    const PylithReal lengthScale = _normalizer->lengthScale();
+    const PylithReal timeScale = _normalizer->timeScale();
     const PylithReal accelerationScale = lengthScale / (timeScale * timeScale);
     const PylithReal forceScale = densityScale * accelerationScale;
 
@@ -204,10 +190,8 @@ pylith::materials::AuxiliaryFactory::bodyForce(void) const
     description.scale = forceScale;
     description.validator = NULL;
 
-    assert(_material._auxFields);
-    assert(_material._auxFieldsQuery);
-    _material._auxFields->subfieldAdd(description, _material.auxFieldDiscretization(fieldName));
-    _material._auxFieldsQuery->queryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, _subfieldDiscretization(fieldName));
+    _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
 } // if
@@ -216,7 +200,7 @@ pylith::materials::AuxiliaryFactory::bodyForce(void) const
 // ----------------------------------------------------------------------
 // Add reference stress to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactory::referenceStress(void) const
+pylith::materials::AuxiliaryFactory::referenceStress(void)
 { // referenceStress
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("referenceStress(void)");
@@ -224,7 +208,7 @@ pylith::materials::AuxiliaryFactory::referenceStress(void) const
     const char* fieldName = "reference_stress";
     const char* componentNames[6] = { "stress_xx", "stress_yy", "stress_zz", "stress_xy", "stress_yz", "stress_xz" };
     const int stressSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
-    const PylithReal pressureScale = _normalizer.pressureScale();
+    const PylithReal pressureScale = _normalizer->pressureScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -237,10 +221,8 @@ pylith::materials::AuxiliaryFactory::referenceStress(void) const
     description.scale = pressureScale;
     description.validator = NULL;
 
-    assert(_material._auxFields);
-    assert(_material._auxFieldsQuery);
-    _material._auxFields->subfieldAdd(description, _material.auxFieldDiscretization(fieldName));
-    _material._auxFieldsQuery->queryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, _subfieldDiscretization(fieldName));
+    _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
 } // referenceStress
@@ -249,7 +231,7 @@ pylith::materials::AuxiliaryFactory::referenceStress(void) const
 // ----------------------------------------------------------------------
 // Add reference strain to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactory::referenceStrain(void) const
+pylith::materials::AuxiliaryFactory::referenceStrain(void)
 { // referenceStrain
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("refrenceStrain(void)");
@@ -269,10 +251,8 @@ pylith::materials::AuxiliaryFactory::referenceStrain(void) const
     description.scale = 1.0;
     description.validator = NULL;
 
-    assert(_material._auxFields);
-    assert(_material._auxFieldsQuery);
-    _material._auxFields->subfieldAdd(description, _material.auxFieldDiscretization(fieldName));
-    _material._auxFieldsQuery->queryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, _subfieldDiscretization(fieldName));
+    _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
 } // referenceStrain
@@ -281,13 +261,13 @@ pylith::materials::AuxiliaryFactory::referenceStrain(void) const
 // ----------------------------------------------------------------------
 // Add Maxwell time field to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactory::maxwellTime(void) const
+pylith::materials::AuxiliaryFactory::maxwellTime(void)
 { // maxwellTime
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("maxwellTime(void)");
 
     const char* fieldName = "maxwell_time";
-    const PylithReal timeScale = _normalizer.timeScale();
+    const PylithReal timeScale = _normalizer->timeScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -298,10 +278,8 @@ pylith::materials::AuxiliaryFactory::maxwellTime(void) const
     description.scale = timeScale;
     description.validator = pylith::topology::FieldQuery::validatorPositive;
 
-    assert(_material._auxFields);
-    assert(_material._auxFieldsQuery);
-    _material._auxFields->subfieldAdd(description, _material.auxFieldDiscretization(fieldName));
-    _material._auxFieldsQuery->queryFn(fieldName, pylith::materials::Query::dbQueryMaxwellTime);
+    _field->subfieldAdd(description, _subfieldDiscretization(fieldName));
+    _subfieldQueryFn(fieldName, pylith::materials::Query::dbQueryMaxwellTime);
 
     PYLITH_METHOD_END;
 } // maxwellTime
@@ -309,7 +287,7 @@ pylith::materials::AuxiliaryFactory::maxwellTime(void) const
 // ----------------------------------------------------------------------
 // Add total strain field to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactory::totalStrain(void) const
+pylith::materials::AuxiliaryFactory::totalStrain(void)
 { // totalStrain
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("totalStrain(void)");
@@ -329,10 +307,8 @@ pylith::materials::AuxiliaryFactory::totalStrain(void) const
     description.scale = 1.0;
     description.validator = NULL;
 
-    assert(_material._auxFields);
-    assert(_material._auxFieldsQuery);
-    _material._auxFields->subfieldAdd(description, _material.auxFieldDiscretization(fieldName));
-    _material._auxFieldsQuery->queryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, _subfieldDiscretization(fieldName));
+    _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
 } // totalStrain
@@ -340,7 +316,7 @@ pylith::materials::AuxiliaryFactory::totalStrain(void) const
 // ----------------------------------------------------------------------
 // Add viscous strain field to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactory::viscousStrain(void) const
+pylith::materials::AuxiliaryFactory::viscousStrain(void)
 { // viscousStrain
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("viscousStrain(void)");
@@ -360,10 +336,8 @@ pylith::materials::AuxiliaryFactory::viscousStrain(void) const
     description.scale = 1.0;
     description.validator = NULL;
 
-    assert(_material._auxFields);
-    assert(_material._auxFieldsQuery);
-    _material._auxFields->subfieldAdd(description, _material.auxFieldDiscretization(fieldName));
-    _material._auxFieldsQuery->queryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+    _field->subfieldAdd(description, _subfieldDiscretization(fieldName));
+    _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
 } // viscousStrain

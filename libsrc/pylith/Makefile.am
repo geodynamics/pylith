@@ -32,9 +32,9 @@ lib_LTLIBRARIES = libpylith.la
 
 libpylith_la_SOURCES = \
 	bc/BoundaryConditionNew.cc \
+	bc/TimeDependentAuxiliaryFactory.cc \
 	bc/DirichletNew.cc \
 	bc/DirichletTimeDependent.cc \
-	bc/DirichletAuxiliaryFactory.cc \
 	bc/NeumannNew.cc \
 	bc/TimeDependent.cc \
 	faults/Fault.cc \
@@ -83,6 +83,7 @@ libpylith_la_SOURCES = \
 	feassemble/ElasticityExplicitLgDeform.cc \
 	feassemble/IntegratorPointwise.cc \
 	feassemble/ConstraintPointwise.cc \
+	feassemble/AuxiliaryFactory.cc \
 	fekernels/dispvel.c \
 	fekernels/elasticity.c \
 	fekernels/linearelasticityplanestrain.c \

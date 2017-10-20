@@ -29,11 +29,12 @@
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 
 #include "pylith/topology/FieldBase.hh" // HASA validatorfn_type
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SpatialDB
+#include "spatialdata/geocoords/geocoordsfwd.hh" // USES CoordSys
 
 #include <map> // HOLDSA std::map
 #include <string> // USES std::string
 
-#include "spatialdata/spatialdb/SpatialDB.hh" // HOLDSA SpatialDB
 
 // FieldQuery ----------------------------------------------------------------
 /** @brief Set field via query of spatial database, etc.
@@ -41,8 +42,7 @@
  * Each subfield is queried separately via user-defined functions to
  * allow for conversions, dimensionalization, etc.
  */
-class pylith::topology::FieldQuery
-{ // FieldQuery
+class pylith::topology::FieldQuery { // FieldQuery
     friend class TestFieldQuery; // unit testing
 
     // PUBLIC TYPEDEF ///////////////////////////////////////////////////////
@@ -93,7 +93,7 @@ public:
      */
     void queryFn(const char* subfield,
                  const queryfn_type fn,
-                 spatialdata::spatialdb::SpatialDB* db =NULL);
+                 spatialdata::spatialdb::SpatialDB* db=NULL);
 
     /** Get query function for subfield.
      *

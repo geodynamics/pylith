@@ -18,10 +18,11 @@
 
 #include <portinfo>
 
-#include "DirichletNew.hh" // implementation of object methods
+#include "pylith/bc/DirichletNew.hh" // implementation of object methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
@@ -41,27 +42,18 @@ pylith::bc::DirichletNew::DirichletNew(void) :
     _boundaryMesh(NULL),
     _bcKernel(NULL)
 { // constructor
-    _description.label = "unknown";
-    _description.vectorFieldType = pylith::topology::Field::OTHER;
-    _description.numComponents = 0;
-    _description.scale = 1.0;
-    _description.validator = NULL;
-    const pylith::topology::FieldBase::Discretization defaultInfo = {-1, -1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE};
-    _auxFieldsFEInfo["default"] = defaultInfo;
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::bc::DirichletNew::~DirichletNew(void)
-{ // destructor
+pylith::bc::DirichletNew::~DirichletNew(void) {
     deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::bc::DirichletNew::deallocate(void)
-{ // deallocate
+pylith::bc::DirichletNew::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
     ConstraintPointwise::deallocate();
@@ -75,8 +67,7 @@ pylith::bc::DirichletNew::deallocate(void)
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
-pylith::bc::DirichletNew::verifyConfiguration(const pylith::topology::Field& solution) const
-{ // verifyConfiguration
+pylith::bc::DirichletNew::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
 
@@ -113,33 +104,24 @@ pylith::bc::DirichletNew::initialize(const pylith::topology::Field& solution)
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("initialize(solution="<<solution.label()<<")");
 
-    const topology::Field::SubfieldInfo& info = solution.subfieldInfo(_field.c_str());
-    _description = info.description;
-
     _setFEKernelsConstraint(solution);
 
     _boundaryMesh = new pylith::topology::Mesh(solution.mesh(), _label.c_str()); assert(_boundaryMesh);
     PetscDM dmBoundary = _boundaryMesh->dmMesh(); assert(dmBoundary);
     pylith::topology::CoordsVisitor::optimizeClosure(dmBoundary);
 
-    delete _auxFields; _auxFields = new pylith::topology::Field(*_boundaryMesh); assert(_auxFields);
-    delete _auxFieldsQuery; _auxFieldsQuery = new pylith::topology::FieldQuery(*_auxFields); assert(_auxFieldsQuery);
-    _auxFields->label("auxiliary fields");
-    _auxFieldsSetup(solution);
-    _auxFields->subfieldsSetup();
-    _auxFields->allocate();
-    _auxFields->zeroLocal();
+    delete _auxField; _auxField = new pylith::topology::Field(*_boundaryMesh); assert(_auxField);
+    _auxField->label("auxiliary fields");
+    _auxFieldSetup(solution);
+    _auxField->subfieldsSetup();
+    _auxField->allocate();
+    _auxField->zeroLocal();
 
-    if (_auxFieldsDB) {
-        assert(_normalizer);
-        _auxFieldsQuery->openDB(_auxFieldsDB, _normalizer->lengthScale());
-        _auxFieldsQuery->queryDB();
-        _auxFieldsQuery->closeDB(_auxFieldsDB);
-    } else { // else
-        PYLITH_COMPONENT_ERROR("Unknown case for setting up auxiliary fields.");
-        throw std::logic_error("Unknown case for setting up auxiliary fields.");
-    } // if/else
-      //_auxFields->view("AUXILIARY FIELDS"); // :DEBUGGING: TEMPORARY
+    assert(_normalizer);
+    pylith::feassemble::AuxiliaryFactory* factory = _auxFactory(); assert(factory);
+    factory->initializeSubfields();
+
+    //_auxField->view("AUXILIARY FIELD"); // :DEBUG: TEMPORARY
 
     const PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
     PetscDS prob = NULL;
@@ -148,6 +130,7 @@ pylith::bc::DirichletNew::initialize(const pylith::topology::Field& solution)
     void* context = NULL;
     const int labelId = 1;
     const PylithInt numConstrained = _constrainedDOF.size();
+    const topology::Field::SubfieldInfo& info = solution.subfieldInfo(_field.c_str());
     err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL_FIELD, label(), label(), info.index, numConstrained, &_constrainedDOF[0],
                              (void (*)())_bcKernel, 1, &labelId, context); PYLITH_CHECK_ERROR(err);
 
@@ -164,11 +147,11 @@ pylith::bc::DirichletNew::setSolution(pylith::topology::Field* solution,
     PYLITH_COMPONENT_DEBUG("setSolution(solution="<<solution->label()<<", t="<<t<<")");
 
     assert(solution);
-    assert(_auxFields);
+    assert(_auxField);
 
     PetscErrorCode err;
     PetscDM dmSoln = solution->dmMesh();
-    PetscDM dmAux = _auxFields->dmMesh();
+    PetscDM dmAux = _auxField->dmMesh();
 
     // Get label for constraint.
     PetscDMLabel dmLabel;
@@ -176,7 +159,7 @@ pylith::bc::DirichletNew::setSolution(pylith::topology::Field* solution,
 
     // Set auxiliary data
     err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux); PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxFields->localVector()); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxField->localVector()); PYLITH_CHECK_ERROR(err);
 
     void* context = NULL;
     const int labelId = 1;
@@ -190,7 +173,7 @@ pylith::bc::DirichletNew::setSolution(pylith::topology::Field* solution,
     PYLITH_CHECK_ERROR(err);
     err = DMPlexLabelClearCells(dmSoln, dmLabel); PYLITH_CHECK_ERROR(err);
 
-    //solution->view("SOLUTION"); // :DEBUGGING: TEMPORARY
+    //solution->view("SOLUTION"); // :DEBUG: TEMPORARY
 
     PYLITH_METHOD_END;
 } // setSolution

@@ -32,14 +32,11 @@
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase
-
-#include "pylith/topology/topologyfwd.hh" // HOLDSA Field
 #include "pylith/utils/petscfwd.h" // USES PetscMat, PetscVec
+#include "pylith/utils/utilsfwd.hh" // HOLDSA Logger
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HASA spatialdb
 #include "spatialdata/units/unitsfwd.hh" // HASA Nondimensional
-
-#include <map> // HOLDSA std::map
 
 // IntegratorPointwise -------------------------------------------------
 /** @brief General operations for implicit and explicit
@@ -64,33 +61,17 @@ public:
     virtual
     void deallocate(void);
 
-    /** Get auxiliary fields.
-     *
-     * @return field Field over material.
-     */
-    const pylith::topology::Field& auxFields(void) const;
-
-    /** Check whether material has a given auxiliary field.
-     *
-     * @param[in] name Name of field.
-     *
-     * @returns True if material has auxiliary field, false otherwise.
-     */
-    bool hasAuxField(const char* name);
-
     /** Get auxiliary field.
      *
-     * @param[out] field Field over material.
-     * @param[in] name Name of field to retrieve.
+     * @return field Field over integrator domain.
      */
-    void getAuxField(pylith::topology::Field *field,
-                     const char* name) const;
+    const pylith::topology::Field& auxField(void) const;
 
-    /** Set spatial database for auxiliary fields.
+    /** Set spatial database for filling auxiliary subfields.
      *
      * @param[in] value Pointer to database.
      */
-    void auxFieldsDB(spatialdata::spatialdb::SpatialDB* value);
+    void auxFieldDB(spatialdata::spatialdb::SpatialDB* value);
 
     /** Set discretization information for auxiliary subfield.
      *
@@ -100,19 +81,11 @@ public:
      * @param[in] isBasisContinuous True if basis is continuous.
      * @param[in] feSpace Finite-element space.
      */
-    void auxFieldDiscretization(const char* name,
-                                const int basisOrder,
-                                const int quadOrder,
-                                const bool isBasisContinuous,
-                                const pylith::topology::FieldBase::SpaceEnum feSpace);
-
-    /** Get discretization information for auxiliary subfield.
-     *
-     * @param[in] name Name of subfield.
-     * @return Discretization information for auxiliary subfield. If
-     * discretization information was not set, then use "default".
-     */
-    const pylith::topology::FieldBase::Discretization& auxFieldDiscretization(const char* name) const;
+    void auxSubfieldDiscretization(const char* name,
+                                   const int basisOrder,
+                                   const int quadOrder,
+                                   const bool isBasisContinuous,
+                                   const pylith::topology::FieldBase::SpaceEnum feSpace);
 
     /** Check whether RHS Jacobian needs to be recomputed.
      *
@@ -247,31 +220,24 @@ public:
     virtual
     void updateStateVars(const pylith::topology::Field& solution);
 
-    // PROTECTED TYPEDEFS /////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
 
-    typedef std::map<std::string, pylith::topology::FieldBase::Discretization> discretizations_type;
+    /** Get factory for setting up auxliary fields.
+     *
+     * @returns Factor for auxiliary fields.
+     */
+    virtual
+    pylith::feassemble::AuxiliaryFactory* _auxFactory(void) = 0;
 
     // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected:
 
     spatialdata::units::Nondimensional* _normalizer;   ///< Nondimensionalizer.
     spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
-    utils::EventLogger* _logger;   ///< Event logger.
-    std::string _nameInHierarchy; ///< Name in component hierarchy.
+    pylith::topology::Field* _auxField; ///< Auxiliary field for this integrator.
 
-    /// Auxiliary fields for this problem
-    pylith::topology::Field *_auxFields;
-
-    /// Database of values for auxiliary fields.
-    spatialdata::spatialdb::SpatialDB* _auxFieldsDB;
-
-    /// Set auxiliary fields via query.
-    pylith::topology::FieldQuery* _auxFieldsQuery;
-
-    /// Map from auxiliary field to discretization.
-    discretizations_type _auxFieldsFEInfo;
-
+    pylith::utils::EventLogger* _logger;   ///< Event logger.
 
     /// True if we need to recompute Jacobian for operator, false otherwise.
     /// Default is false;

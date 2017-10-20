@@ -21,10 +21,11 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	BoundaryConditionNew.hh \
+	TimeDependentAuxiliaryFactory.hh \
 	DirichletNew.hh \
 	DirichletTimeDependent.hh \
-	DirichletAuxiliaryFactory.hh \
 	NeumannNew.hh \
+	NeumannTimeDependent.hh \
 	bcfwd.hh
 
 

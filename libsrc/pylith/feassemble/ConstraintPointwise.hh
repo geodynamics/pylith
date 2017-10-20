@@ -26,20 +26,16 @@
 #define pylith_feassemble_constraintpointwise_hh
 
 // Include directives ---------------------------------------------------
-#include "feassemblefwd.hh"
+#include "pylith/feassemble/feassemblefwd.hh"
 
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
-#include "pylith/topology/topologyfwd.hh" // HOLDSA Field
-#include "pylith/utils/utilsfwd.hh" // HOLDSA Logger
+#include "pylith/topology/FieldBase.hh" // USES FieldBase::discretizations_map
 #include "pylith/utils/array.hh" // HASA int_array
+#include "pylith/utils/utilsfwd.hh" // HOLDSA Logger
+
 #include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
-
-#include "pylith/topology/FieldBase.hh" // USES Discretization
-
-
-#include <map> // HOLDSA std::map
 
 // ConstraintPointwise---------------------------------------------------
 /** @brief Abstract base class for defining constraints on boundaries.
@@ -77,33 +73,17 @@ public:
      */
     const pylith::int_array& constrainedDOF(void) const;
 
-    /** Get auxiliary fields.
+    /** Get auxiliary field.
      *
      * @returns field Field over boundary.
      */
-    const pylith::topology::Field& auxFields(void) const;
+    const pylith::topology::Field& auxField(void) const;
 
-    /** Check whether constraint has a given auxiliary field.
-     *
-     * @param[in] name Name of field.
-     *
-     * @returns True if constraint has auxiliary field, false otherwise.
-     */
-    bool hasAuxField(const char* name);
-
-    /** Get auxiliary field.
-     *
-     * @param[out] field Pointer to field.
-     * @param[in] name Name of field to retrieve.
-     */
-    void getAuxField(pylith::topology::Field *field,
-                     const char* name) const;
-
-    /** Set spatial database for auxiliary fields.
+    /** Set spatial database for filling auxiliary subfields.
      *
      * @param[in] value Pointer to database.
      */
-    void auxFieldsDB(spatialdata::spatialdb::SpatialDB* value);
+    void auxFieldDB(spatialdata::spatialdb::SpatialDB* value);
 
     /** Set discretization information for auxiliary subfield.
      *
@@ -113,19 +93,11 @@ public:
      * @param[in] isBasisContinuous True if basis is continuous.
      * @param[in] feSpace Finite-element space.
      */
-    void auxFieldDiscretization(const char* name,
-                                const int basisOrder,
-                                const int quadOrder,
-                                const bool isBasisContinuous,
-                                const pylith::topology::FieldBase::SpaceEnum feSpace);
-
-    /** Get discretization information for auxiliary subfield.
-     *
-     * @param[in] name Name of subfield.
-     * @return Discretization information for auxiliary subfield. If
-     * discretization information was not set, then use "default".
-     */
-    const pylith::topology::FieldBase::Discretization& auxFieldDiscretization(const char* name) const;
+    void auxSubfieldDiscretization(const char* name,
+                                   const int basisOrder,
+                                   const int quadOrder,
+                                   const bool isBasisContinuous,
+                                   const pylith::topology::FieldBase::SpaceEnum feSpace);
 
     /** Set manager of scales used to nondimensionalize problem.
      *
@@ -165,10 +137,15 @@ public:
     void setSolution(pylith::topology::Field* solution,
                      const double t) = 0;
 
-    // PROTECTED TYPEDEFS /////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
 
-    typedef std::map<std::string, pylith::topology::FieldBase::Discretization> discretizations_type;
+    /** Get factory for setting up auxliary fields.
+     *
+     * @returns Factor for auxiliary fields.
+     */
+    virtual
+    pylith::feassemble::AuxiliaryFactory* _auxFactory(void) = 0;
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected:
@@ -176,17 +153,7 @@ protected:
     spatialdata::units::Nondimensional* _normalizer;   ///< Nondimensionalizer.
     int_array _constrainedDOF; ///< List of constrained degrees of freedom at each location.
 
-    /// Auxiliary fields for this problem
-    pylith::topology::Field *_auxFields;
-
-    /// Database of values for auxiliary fields.
-    spatialdata::spatialdb::SpatialDB* _auxFieldsDB;
-
-    /// Set auxiliary fields via query.
-    pylith::topology::FieldQuery* _auxFieldsQuery;
-
-    /// Map from auxiliary field to discretization.
-    discretizations_type _auxFieldsFEInfo;
+    pylith::topology::Field *_auxField; ///< Auxiliary field for this constraint.
 
     pylith::utils::EventLogger* _logger;   ///< Event logger.
 

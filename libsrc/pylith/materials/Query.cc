@@ -21,6 +21,7 @@
 #include "pylith/materials/Query.hh"
 
 #include "pylith/topology/FieldQuery.hh" // USES DBQueryContext
+#include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END, PYLITH_SET_ERROR
 
 // ----------------------------------------------------------------------
@@ -61,7 +62,7 @@ pylith::materials::Query::dbQueryShearModulus(PylithInt dim,
     // Dimensionalize query location coordinates.
     assert(queryctx->lengthScale > 0);
     double xDim[3];
-    for (int i=0; i < dim; ++i) {
+    for (int i = 0; i < dim; ++i) {
         xDim[i] = x[i] * queryctx->lengthScale;
     } // for
 
@@ -70,7 +71,7 @@ pylith::materials::Query::dbQueryShearModulus(PylithInt dim,
     if (err) {
         std::ostringstream msg;
         msg << "Could not find density and Vs at (";
-        for (int i=0; i < dim; ++i)
+        for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
         msg << ") using spatial database '" << queryctx->db->label() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
@@ -82,7 +83,7 @@ pylith::materials::Query::dbQueryShearModulus(PylithInt dim,
     if (density <= 0) {
         std::ostringstream msg;
         msg << "Found negative density (" << density << ") at location (";
-        for (int i=0; i < dim; ++i)
+        for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
         msg << ") in spatial database '" << queryctx->db->label() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
@@ -90,7 +91,7 @@ pylith::materials::Query::dbQueryShearModulus(PylithInt dim,
     if (vs <= 0) {
         std::ostringstream msg;
         msg << "Found negative shear wave speed (" << vs << ") at location (";
-        for (int i=0; i < dim; ++i)
+        for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
         msg << ") in spatial database '" << queryctx->db->label() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
@@ -143,7 +144,7 @@ pylith::materials::Query::dbQueryBulkModulus(PylithInt dim,
     // Dimensionalize query location coordinates.
     assert(queryctx->lengthScale > 0);
     double xDim[3];
-    for (int i=0; i < dim; ++i) {
+    for (int i = 0; i < dim; ++i) {
         xDim[i] = x[i] * queryctx->lengthScale;
     } // for
 
@@ -152,7 +153,7 @@ pylith::materials::Query::dbQueryBulkModulus(PylithInt dim,
     if (err) {
         std::ostringstream msg;
         msg << "Could not find density, Vs, and Vp at (";
-        for (int i=0; i < dim; ++i)
+        for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
         msg << ") using spatial database '" << queryctx->db->label() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
@@ -165,7 +166,7 @@ pylith::materials::Query::dbQueryBulkModulus(PylithInt dim,
     if (density <= 0) {
         std::ostringstream msg;
         msg << "Found negative density (" << density << ") at location (";
-        for (int i=0; i < dim; ++i)
+        for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
         msg << ") in spatial database '" << queryctx->db->label() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
@@ -173,7 +174,7 @@ pylith::materials::Query::dbQueryBulkModulus(PylithInt dim,
     if (vs <= 0) {
         std::ostringstream msg;
         msg << "Found negative shear wave speed (" << vs << ") at location (";
-        for (int i=0; i < dim; ++i)
+        for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
         msg << ") in spatial database '" << queryctx->db->label() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
@@ -181,7 +182,7 @@ pylith::materials::Query::dbQueryBulkModulus(PylithInt dim,
     if (vp <= 0) {
         std::ostringstream msg;
         msg << "Found negative dilatational wave speed (" << vp << ") at location (";
-        for (int i=0; i < dim; ++i)
+        for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
         msg << ") in spatial database '" << queryctx->db->label() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
@@ -199,11 +200,11 @@ pylith::materials::Query::dbQueryBulkModulus(PylithInt dim,
 // Query for Vs, density, and viscosity to determine Maxwell time.
 PetscErrorCode
 pylith::materials::Query::dbQueryMaxwellTime(PylithInt dim,
-					     PylithReal t,
-					     const PylithReal x[],
-					     PylithInt nvalues,
-					     PylithScalar* values,
-					     void* context)
+                                             PylithReal t,
+                                             const PylithReal x[],
+                                             PylithInt nvalues,
+                                             PylithScalar* values,
+                                             void* context)
 { // dbQueryMaxwellTime
     PYLITH_METHOD_BEGIN;
 
@@ -234,7 +235,7 @@ pylith::materials::Query::dbQueryMaxwellTime(PylithInt dim,
     // Dimensionalize query location coordinates.
     assert(queryctx->lengthScale > 0);
     double xDim[3];
-    for (int i=0; i < dim; ++i) {
+    for (int i = 0; i < dim; ++i) {
         xDim[i] = x[i] * queryctx->lengthScale;
     } // for
 
@@ -243,7 +244,7 @@ pylith::materials::Query::dbQueryMaxwellTime(PylithInt dim,
     if (err) {
         std::ostringstream msg;
         msg << "Could not find density, Vs, and viscosity at (";
-        for (int i=0; i < dim; ++i)
+        for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
         msg << ") using spatial database '" << queryctx->db->label() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
@@ -256,7 +257,7 @@ pylith::materials::Query::dbQueryMaxwellTime(PylithInt dim,
     if (density <= 0) {
         std::ostringstream msg;
         msg << "Found negative density (" << density << ") at location (";
-        for (int i=0; i < dim; ++i)
+        for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
         msg << ") in spatial database '" << queryctx->db->label() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
@@ -264,7 +265,7 @@ pylith::materials::Query::dbQueryMaxwellTime(PylithInt dim,
     if (vs <= 0) {
         std::ostringstream msg;
         msg << "Found negative shear wave speed (" << vs << ") at location (";
-        for (int i=0; i < dim; ++i)
+        for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
         msg << ") in spatial database '" << queryctx->db->label() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
@@ -318,7 +319,7 @@ pylith::materials::Query::dbQueryGravityField(PylithInt dim,
     // Dimensionalize query location coordinates.
     assert(queryctx->lengthScale > 0);
     double xDim[3];
-    for (int i=0; i < dim; ++i) {
+    for (int i = 0; i < dim; ++i) {
         xDim[i] = x[i] * queryctx->lengthScale;
     } // for
 
@@ -327,21 +328,21 @@ pylith::materials::Query::dbQueryGravityField(PylithInt dim,
     if (err) {
         std::ostringstream msg;
         msg << "Could not find gravity field at (";
-        for (int i=0; i < dim; ++i)
+        for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
         msg << ") using spatial database '" << queryctx->db->label() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
     } // if
 
     PylithReal mag = 0.0;
-    for (int i=0; i < dim; ++i) {
+    for (int i = 0; i < dim; ++i) {
         mag += values[i]*values[i];
     } // for
     const PylithReal tolerance = 1.0e-6;
     if (mag < tolerance) {
         std::ostringstream msg;
         msg << "Found near zero magnitude (" << mag << ") for gravity field vector at location (";
-        for (int i=0; i < dim; ++i)
+        for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
         msg << ") in spatial database '" << queryctx->db->label() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());

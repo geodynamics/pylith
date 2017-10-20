@@ -18,19 +18,16 @@
 
 #include <portinfo>
 
-#include "ConstraintPointwise.hh" // implementation of object methods
+#include "pylith/feassemble/ConstraintPointwise.hh" // implementation of object methods
 
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
-
+#include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldQuery.hh" // USES FieldQuery
-
-#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include <cassert> // USES assert()
@@ -42,10 +39,8 @@
 // Default constructor.
 pylith::feassemble::ConstraintPointwise::ConstraintPointwise(void) :
     _normalizer(new spatialdata::units::Nondimensional),
-    _auxFields(0),
-    _auxFieldsDB(0),
-    _auxFieldsQuery(0),
-    _logger(0)
+    _auxField(NULL),
+    _logger(NULL)
 { // constructor
 } // constructor
 
@@ -63,12 +58,9 @@ pylith::feassemble::ConstraintPointwise::deallocate(void)
 { // deallocate
     PYLITH_METHOD_BEGIN;
 
-    delete _normalizer; _normalizer = 0;
-    delete _logger; _logger = 0;
-    delete _auxFields; _auxFields = 0;
-    delete _auxFieldsQuery; _auxFieldsQuery = 0;
-
-    _auxFieldsDB = 0; // :TODO: Use shared pointer.
+    delete _normalizer; _normalizer = NULL;
+    delete _logger; _logger = NULL;
+    delete _auxField; _auxField = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -108,94 +100,48 @@ pylith::feassemble::ConstraintPointwise::constrainedDOF(void) const
 } // constrainedDOF
 
 // ----------------------------------------------------------------------
-// Return auxiliary fields for this problem
+// Return auxiliary subfields for this problem.
 const pylith::topology::Field&
-pylith::feassemble::ConstraintPointwise::auxFields(void) const
-{ // auxFields
+pylith::feassemble::ConstraintPointwise::auxField(void) const
+{ // auxField
     PYLITH_METHOD_BEGIN;
 
-    assert(_auxFields);
+    assert(_auxField);
 
-    PYLITH_METHOD_RETURN(*_auxFields);
-} // auxFields
-
-// ----------------------------------------------------------------------
-// Check whether constraint has a given auxilirary field.
-bool
-pylith::feassemble::ConstraintPointwise::hasAuxField(const char* name)
-{ // hasAuxField
-    PYLITH_METHOD_BEGIN;
-
-    assert(_auxFields);
-
-    PYLITH_METHOD_RETURN(_auxFields->hasSubfield(name));
-} // hasAuxField
-
+    PYLITH_METHOD_RETURN(*_auxField);
+} // auxField
 
 // ----------------------------------------------------------------------
-// Get auxiliary field.
+// Set database for filling auxiliary subfields.
 void
-pylith::feassemble::ConstraintPointwise::getAuxField(pylith::topology::Field *field,
-                                                     const char* name) const
-{ // getAuxField
+pylith::feassemble::ConstraintPointwise::auxFieldDB(spatialdata::spatialdb::SpatialDB* value)
+{ // auxFieldDB
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getAuxField(field="<<field<<", name="<<name<<")");
+    PYLITH_COMPONENT_DEBUG("auxFieldDB(value="<<value<<")");
 
-    assert(field);
-    assert(_auxFields);
-
-    field->copySubfield(*_auxFields, name);
+    pylith::feassemble::AuxiliaryFactory* factory = _auxFactory(); assert(factory);
+    factory->queryDB(value);
 
     PYLITH_METHOD_END;
-} // getAuxField
-
-
-// ----------------------------------------------------------------------
-// Set database for auxiliary fields.
-void
-pylith::feassemble::ConstraintPointwise::auxFieldsDB(spatialdata::spatialdb::SpatialDB* value) {
-    _auxFieldsDB = value;
-}
+} // auxFieldDB
 
 // ----------------------------------------------------------------------
 // Set discretization information for auxiliary subfield.
 void
-pylith::feassemble::ConstraintPointwise::auxFieldDiscretization(const char* name,
-                                                                const int basisOrder,
-                                                                const int quadOrder,
-                                                                const bool isBasisContinuous,
-                                                                const pylith::topology::FieldBase::SpaceEnum feSpace)
-{ // discretization
-    PYLITH_COMPONENT_DEBUG("auxFieldDiscretization(name="<<name<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<")");
-
-    pylith::topology::FieldBase::Discretization feInfo;
-    feInfo.basisOrder = basisOrder;
-    feInfo.quadOrder = quadOrder;
-    feInfo.isBasisContinuous = isBasisContinuous;
-    feInfo.feSpace = feSpace;
-    _auxFieldsFEInfo[name] = feInfo;
-} // discretization
-
-
-// ----------------------------------------------------------------------
-// Get discretization information for auxiliary subfield.
-const pylith::topology::FieldBase::Discretization&
-pylith::feassemble::ConstraintPointwise::auxFieldDiscretization(const char* name) const
-{ // discretization
+pylith::feassemble::ConstraintPointwise::auxSubfieldDiscretization(const char* name,
+                                                                   const int basisOrder,
+                                                                   const int quadOrder,
+                                                                   const bool isBasisContinuous,
+                                                                   const pylith::topology::FieldBase::SpaceEnum feSpace)
+{ // auxSubfieldDiscretization
     PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("auxSubfieldDiscretization(name="<<name<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<")");
 
-    discretizations_type::const_iterator iter = _auxFieldsFEInfo.find(name);
-    if (iter != _auxFieldsFEInfo.end()) {
-        PYLITH_METHOD_RETURN(iter->second);
-    } else { // not found so try default
-        iter = _auxFieldsFEInfo.find("default");
-        if (iter == _auxFieldsFEInfo.end()) {
-            throw std::logic_error("Default discretization not set for auxiliary fields.");
-        } // if
-    } // if/else
+    pylith::feassemble::AuxiliaryFactory* factory = _auxFactory(); assert(factory);
+    factory->subfieldDiscretization(name, basisOrder, quadOrder, isBasisContinuous, feSpace);
 
-    PYLITH_METHOD_RETURN(iter->second); // default
-} // discretization
+    PYLITH_METHOD_END;
+} // auxSubfieldDiscretization
 
 
 // ----------------------------------------------------------------------

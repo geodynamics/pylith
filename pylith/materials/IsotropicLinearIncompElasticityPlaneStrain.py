@@ -67,8 +67,8 @@ class IsotropicLinearIncompElasticityPlaneStrain(MaterialNew, ModuleMaterial):
 
         from .AuxFieldsIsotropicLinearElasticity import AuxFieldsIsotropicLinearElasticity
         from pylith.topology.AuxSubfield import subfieldFactory
-        auxFields = pyre.inventory.facilityArray("auxiliary_fields", itemFactory=subfieldFactory, factory=AuxFieldsIsotropicLinearElasticity)
-        auxFields.meta['tip'] = "Discretization of physical properties and state variables."
+        auxSubfields = pyre.inventory.facilityArray("auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxFieldsIsotropicLinearElasticity)
+        auxSubfields.meta['tip'] = "Discretization of physical properties and state variables."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

@@ -312,11 +312,18 @@ protected:
     void _setFEConstants(const pylith::topology::Field& solution,
                          const PylithReal dt) const;
 
+    /** Get factory for setting up auxliary fields.
+     *
+     * @returns Factor for auxiliary fields.
+     */
+    pylith::feassemble::AuxiliaryFactory* _auxFactory(void);
+
     // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected:
 
     pylith::topology::StratumIS* _materialIS;   ///< Index set for material cells.
     spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
+    pylith::materials::AuxiliaryFactory* _auxMaterialFactory; ///< Factory for auxiliary fields.
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private:

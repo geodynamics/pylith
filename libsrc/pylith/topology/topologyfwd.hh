@@ -30,41 +30,42 @@
 #include "pylith/utils/types.hh"
 
 namespace pylith {
-  namespace topology {
+    namespace topology {
 
-    class Mesh;
-    class MeshOps;
-    class CoordsVisitor;
-    class SubMeshIS;
-    class Stratum;
-    class StratumIS;
-    
-    class FieldBase;
-    class Field;
-    class Fields;
-    class VecVisitorMesh;
-    class VecVisitorSubMesh;
+        class Mesh;
+        class MeshOps;
+        class CoordsVisitor;
+        class SubMeshIS;
+        class Stratum;
+        class StratumIS;
 
-    class FieldOps;
-    class FieldQuery;
+        class FieldBase;
+        class Field;
+        class AuxiliaryField;
+        class Fields;
+        class VecVisitorMesh;
+        class VecVisitorSubMesh;
 
-    class SolutionFields;
+        class FieldOps;
+        class FieldQuery;
 
-    class Jacobian;
-    class MatVisitorMesh;
-    class MatVisitorSubMesh;
+        class SolutionFields;
 
-    class Distributor;
+        class Jacobian;
+        class MatVisitorMesh;
+        class MatVisitorSubMesh;
 
-    class RefineUniform;
+        class Distributor;
 
-    class ReverseCuthillMcKee;
+        class RefineUniform;
 
-  } // topology
+        class ReverseCuthillMcKee;
+
+    } // topology
 } // pylith
 
 
 #endif // pylith_topology_topologyfwd_hh
 
 
-// End of file 
+// End of file

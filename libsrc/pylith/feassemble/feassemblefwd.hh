@@ -67,6 +67,7 @@ namespace pylith {
 
         class IntegratorPointwise;
         class ConstraintPointwise;
+        class AuxiliaryFactory;
 
     } // feassemble
 } // pylith

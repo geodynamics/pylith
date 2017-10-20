@@ -20,7 +20,7 @@
 
 #include "DirichletTimeDependent.hh" // implementation of object methods
 
-#include "DirichletAuxiliaryFactory.hh" // USES DirichletAuxiliaryFactory
+#include "TimeDependentAuxiliaryFactory.hh" // USES TimeDependentAuxiliaryFactory
 
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
@@ -47,6 +47,7 @@ const char* pylith::bc::DirichletTimeDependent::_pyreComponent = "dirichlettimed
 // Default constructor.
 pylith::bc::DirichletTimeDependent::DirichletTimeDependent(void) :
     _dbTimeHistory(NULL),
+    _auxTimeDependentFactory(new pylith::bc::TimeDependentAuxiliaryFactory),
     _useInitial(true),
     _useRate(false),
     _useTimeHistory(false)
@@ -72,6 +73,7 @@ pylith::bc::DirichletTimeDependent::deallocate(void)
 
     DirichletNew::deallocate();
     _dbTimeHistory = NULL; // :KLUDGE: Use shared pointer.
+    delete _auxTimeDependentFactory; _auxTimeDependentFactory = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -165,16 +167,16 @@ pylith::bc::DirichletTimeDependent::prestep(const double t,
 
     if (_useTimeHistory) {
         assert(_normalizer);
-        assert(_auxFields);
+        assert(_auxField);
 
         const PylithScalar timeScale = _normalizer->timeScale();
 
         PetscErrorCode err;
 
-        PetscSection auxFieldsSection = _auxFields->localSection(); assert(auxFieldsSection);
+        PetscSection auxFieldsSection = _auxField->localSection(); assert(auxFieldsSection);
         PetscInt pStart = 0, pEnd = 0;
         err = PetscSectionGetChart(auxFieldsSection, &pStart, &pEnd); PYLITH_CHECK_ERROR(err);
-        pylith::topology::VecVisitorMesh auxFieldsVisitor(*_auxFields);
+        pylith::topology::VecVisitorMesh auxFieldsVisitor(*_auxField);
         PetscScalar* auxFieldsArray = auxFieldsVisitor.localArray(); assert(auxFieldsArray);
 
         const PylithInt numComponents = _description.numComponents;
@@ -220,30 +222,33 @@ pylith::bc::DirichletTimeDependent::prestep(const double t,
 // ----------------------------------------------------------------------
 // Setup auxiliary subfields (discretization and query fns).
 void
-pylith::bc::DirichletTimeDependent::_auxFieldsSetup(const pylith::topology::Field& solution)
+pylith::bc::DirichletTimeDependent::_auxFieldSetup(const pylith::topology::Field& solution)
 { // _auxFieldsSetup
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_auxFieldsSetup(solution="<<solution.label()<<")");
 
-    DirichletAuxiliaryFactory factory(*this, solution, _normalizer->timeScale());
+    assert(_auxTimeDependentFactory);
+    assert(_normalizer);
+    _auxTimeDependentFactory->initialize(_auxField, *_normalizer, solution.spaceDim(),
+                                         &solution.subfieldInfo(_field.c_str()).description);
 
-    // :ATTENTION: The order for subfieldAdd() must match the order of the auxiliary fields in the FE kernels.
+    // :ATTENTION: The order of the factory methods must match the order of the auxiliary subfields in the FE kernels.
 
     if (_useInitial) {
-        factory.initialAmplitude();
+        _auxTimeDependentFactory->initialAmplitude();
     } // if
     if (_useRate) {
-        factory.rateAmplitude();
-        factory.rateStartTime();
+        _auxTimeDependentFactory->rateAmplitude();
+        _auxTimeDependentFactory->rateStartTime();
     } // _useRate
     if (_useTimeHistory) {
-        factory.timeHistoryAmplitude();
-        factory.timeHistoryStartTime();
-        factory.timeHistoryValue();
+        _auxTimeDependentFactory->timeHistoryAmplitude();
+        _auxTimeDependentFactory->timeHistoryStartTime();
+        _auxTimeDependentFactory->timeHistoryValue();
     } // _useTimeHistory
 
     PYLITH_METHOD_END;
-}     // _auxFieldsSetup
+}     // _auxFieldSetup
 
 
 // ----------------------------------------------------------------------
@@ -294,8 +299,16 @@ pylith::bc::DirichletTimeDependent::_setFEKernelsConstraint(const pylith::topolo
         throw std::logic_error("Unknown combination of flags for Dirichlet BC terms.");
     } // switch
 
-
     PYLITH_METHOD_END;
 } // _setFEKernelsConstraint
+
+// ----------------------------------------------------------------------
+// Get factory for setting up auxliary fields.
+pylith::feassemble::AuxiliaryFactory*
+pylith::bc::DirichletTimeDependent::_auxFactory(void)
+{ // _auxFactory
+    return _auxTimeDependentFactory;
+} // auxFactory
+
 
 // End of file

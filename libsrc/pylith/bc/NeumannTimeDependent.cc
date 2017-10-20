@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "DirichletTimeDependent.hh" // implementation of object methods
+#include "NeumannTimeDependent.hh" // implementation of object methods
 
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
@@ -28,7 +28,7 @@
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
-#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 extern "C" {
     #include "pylith/fekernels/timedependentbc.h"
@@ -39,11 +39,11 @@ extern "C" {
 #include <sstream> // USES std::ostringstream
 
 // ----------------------------------------------------------------------
-const char* pylith::bc::DirichletTimeDependent::_pyreComponent = "dirichlettimedependent";
+const char* pylith::bc::NeumannTimeDependent::_pyreComponent = "neumanntimedependent";
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::bc::DirichletTimeDependent::DirichletTimeDependent(void) :
+pylith::bc::NeumannTimeDependent::NeumannTimeDependent(void) :
     _dbTimeHistory(NULL),
     _useInitial(true),
     _useRate(false),
@@ -55,7 +55,7 @@ pylith::bc::DirichletTimeDependent::DirichletTimeDependent(void) :
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::bc::DirichletTimeDependent::~DirichletTimeDependent(void)
+pylith::bc::NeumannTimeDependent::~NeumannTimeDependent(void)
 { // destructor
     deallocate();
 } // destructor
@@ -64,7 +64,7 @@ pylith::bc::DirichletTimeDependent::~DirichletTimeDependent(void)
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::bc::DirichletTimeDependent::deallocate(void)
+pylith::bc::NeumannTimeDependent::deallocate(void)
 { // deallocate
     PYLITH_METHOD_BEGIN;
 
@@ -78,7 +78,7 @@ pylith::bc::DirichletTimeDependent::deallocate(void)
 // ----------------------------------------------------------------------
 // Set time history database.
 void
-pylith::bc::DirichletTimeDependent::dbTimeHistory(spatialdata::spatialdb::TimeHistory* th)
+pylith::bc::NeumannTimeDependent::dbTimeHistory(spatialdata::spatialdb::TimeHistory* th)
 { // dbTimeHistory
     _dbTimeHistory = th;
 } // dbTimeHistory
@@ -87,7 +87,7 @@ pylith::bc::DirichletTimeDependent::dbTimeHistory(spatialdata::spatialdb::TimeHi
 // ----------------------------------------------------------------------
 // Get time history database.
 const spatialdata::spatialdb::TimeHistory*
-pylith::bc::DirichletTimeDependent::dbTimeHistory(void)
+pylith::bc::NeumannTimeDependent::dbTimeHistory(void)
 { // dbTimeHistory
     return _dbTimeHistory;
 } // dbTimeHistory
@@ -95,9 +95,9 @@ pylith::bc::DirichletTimeDependent::dbTimeHistory(void)
 // ----------------------------------------------------------------------
 // Use initial value term in time history expression.
 void
-pylith::bc::DirichletTimeDependent::useInitial(const bool value)
+pylith::bc::NeumannTimeDependent::useInitial(const bool value)
 { // useInitial
-    PYLITH_JOURNAL_DEBUG("useInitial(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG("useInitial(value="<<value<<")");
 
     _useInitial = value;
 } // useInitial
@@ -106,7 +106,7 @@ pylith::bc::DirichletTimeDependent::useInitial(const bool value)
 // ----------------------------------------------------------------------
 // Get flag associated with using initial value term in time history expression.
 bool
-pylith::bc::DirichletTimeDependent::useInitial(void) const
+pylith::bc::NeumannTimeDependent::useInitial(void) const
 { // useInitial
     return _useInitial;
 } // useInitial
@@ -115,9 +115,9 @@ pylith::bc::DirichletTimeDependent::useInitial(void) const
 // ----------------------------------------------------------------------
 // Use rate value term in time history expression.
 void
-pylith::bc::DirichletTimeDependent::useRate(const bool value)
+pylith::bc::NeumannTimeDependent::useRate(const bool value)
 { // useRate
-    PYLITH_JOURNAL_DEBUG("useRate(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG("useRate(value="<<value<<")");
 
     _useRate = value;
 } // useRate
@@ -126,7 +126,7 @@ pylith::bc::DirichletTimeDependent::useRate(const bool value)
 // ----------------------------------------------------------------------
 // Get flag associated with using rate value term in time history expression.
 bool
-pylith::bc::DirichletTimeDependent::useRate(void) const
+pylith::bc::NeumannTimeDependent::useRate(void) const
 { // useRate
     return _useRate;
 } // useRate
@@ -135,9 +135,9 @@ pylith::bc::DirichletTimeDependent::useRate(void) const
 // ----------------------------------------------------------------------
 // Use time history term in time history expression.
 void
-pylith::bc::DirichletTimeDependent::useTimeHistory(const bool value)
+pylith::bc::NeumannTimeDependent::useTimeHistory(const bool value)
 { // useTimeHistory
-    PYLITH_JOURNAL_DEBUG("useTimeHistory(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG("useTimeHistory(value="<<value<<")");
 
     _useTimeHistory = value;
 } // useTimeHistory
@@ -146,7 +146,7 @@ pylith::bc::DirichletTimeDependent::useTimeHistory(const bool value)
 // ----------------------------------------------------------------------
 // Get flag associated with using time history term in time history expression.
 bool
-pylith::bc::DirichletTimeDependent::useTimeHistory(void) const
+pylith::bc::NeumannTimeDependent::useTimeHistory(void) const
 { // useTimeHistory
     return _useTimeHistory;
 } // useTimeHistory
@@ -155,11 +155,11 @@ pylith::bc::DirichletTimeDependent::useTimeHistory(void) const
 // ----------------------------------------------------------------------
 // Update auxiliary fields at beginning of time step.
 void
-pylith::bc::DirichletTimeDependent::prestep(const double t,
-                                            const double dt)
+pylith::bc::NeumannTimeDependent::prestep(const double t,
+                                          const double dt)
 { // prestep
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_prestep(t="<<t<<", dt="<<dt<<")");
+    PYLITH_COMPONENT_DEBUG("_prestep(t="<<t<<", dt="<<dt<<")");
 
     if (_useTimeHistory) {
         assert(_normalizer);
@@ -170,7 +170,7 @@ pylith::bc::DirichletTimeDependent::prestep(const double t,
         PetscErrorCode err;
 
         PetscSection auxFieldsSection = _auxFields->localSection(); assert(auxFieldsSection);
-        PetscInt pStart=0, pEnd=0;
+        PetscInt pStart = 0, pEnd = 0;
         err = PetscSectionGetChart(auxFieldsSection, &pStart, &pEnd); PYLITH_CHECK_ERROR(err);
         pylith::topology::VecVisitorMesh auxFieldsVisitor(*_auxFields);
         PetscScalar* auxFieldsArray = auxFieldsVisitor.localArray(); assert(auxFieldsArray);
@@ -179,15 +179,15 @@ pylith::bc::DirichletTimeDependent::prestep(const double t,
         // :ASSUMPTION: Constrained field is a scalar or vector field.
         const PetscInt numComponents = (_vectorFieldType == pylith::topology::Field::VECTOR) ? _spaceDim : 1;
         PetscInt offTH = 0;
-        if (_useInitial) offTH += numComponents;
-        if (_useRate) offTH += numComponents + 1;
+        if (_useInitial) {offTH += numComponents;}
+        if (_useRate) {offTH += numComponents + 1;}
         const PetscInt offStartTime = offTH + numComponents;
         const PetscInt offValue = offStartTime + 1;
 
         // Loop over all points in section.
-        for (PetscInt p=pStart; p < pEnd; ++p) {
+        for (PetscInt p = pStart; p < pEnd; ++p) {
             // Skip points without values in section.
-            if (!auxFieldsVisitor.sectionDof(p)) continue;
+            if (!auxFieldsVisitor.sectionDof(p)) {continue;}
 
             // Get offset for point.
             const PetscInt off = auxFieldsVisitor.sectionOffset(p);
@@ -220,79 +220,27 @@ pylith::bc::DirichletTimeDependent::prestep(const double t,
 // ----------------------------------------------------------------------
 // Setup auxiliary subfields (discretization and query fns).
 void
-pylith::bc::DirichletTimeDependent::_auxFieldsSetup(void)
+pylith::bc::NeumannTimeDependent::_auxFieldsSetup(const pylith::topology::Field& solution)
 { // _auxFieldsSetup
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_auxFieldsSetup()");
+    PYLITH_COMPONENT_DEBUG("_auxFieldsSetup(solution="<<solution.label()<<")");
 
-    // Set subfields in auxiliary fields.
-    assert(_normalizer);
-    const PylithReal lengthScale = _normalizer->lengthScale();
-    const PylithReal timeScale = _normalizer->timeScale();
-    const PylithReal velocityScale = lengthScale / timeScale;
+    TimeDependentAuxiliaryFactory factory(_auxField, solution.subfieldInfo(_field.c_str()), solution.spaceDim(), _normalizer->timeScale());
 
-    // :ASSUMPTION: Constrained field is a scalar or vector field.
-    const bool isVector = _vectorFieldType == pylith::topology::Field::VECTOR;
-    const int numComponents = (isVector) ? _spaceDim : 1;
+    // :ATTENTION: The order of the factory methods must match the order of the auxiliary subfields in the FE kernels.
 
-    // :ATTENTION: The order for subfieldAdd() must match the order of the auxiliary fields in the FE kernels.
-
-    // Initial amplitude
     if (_useInitial) {
-        const pylith::topology::Field::DiscretizeInfo& initialAmplitudeFEInfo = this->auxFieldDiscretization("initial_amplitude");
-        if (isVector) {
-            const char* componentNames[3] = {"initial_amplitude_x", "initial_amplitude_y", "initial_amplitude_z"};
-            _auxFields->subfieldAdd("initial_amplitude", componentNames, numComponents, _vectorFieldType, initialAmplitudeFEInfo.basisOrder, initialAmplitudeFEInfo.quadOrder, initialAmplitudeFEInfo.isBasisContinuous, lengthScale);
-        } else {
-            const char* componentNames[1] = {"initial_amplitude"};
-            _auxFields->subfieldAdd("initial_amplitude", componentNames, numComponents, _vectorFieldType, initialAmplitudeFEInfo.basisOrder, initialAmplitudeFEInfo.quadOrder, initialAmplitudeFEInfo.isBasisContinuous, lengthScale);
-        } // if/else
-        _auxFieldsQuery->queryFn("initial_amplitude", pylith::topology::FieldQuery::dbQueryGeneric);
+        factory.initialAmplitude();
     } // if
-
-
-    // Rate amplitude and start time.
     if (_useRate) {
-        const pylith::topology::Field::DiscretizeInfo& rateAmplitudeFEInfo = this->auxFieldDiscretization("rate_amplitude");
-        if (isVector) {
-            const char* componentNames[3] = {"rate_amplitude_x", "rate_amplitude_y", "rate_amplitude_z"};
-            _auxFields->subfieldAdd("rate_amplitude", componentNames, numComponents, _vectorFieldType, rateAmplitudeFEInfo.basisOrder, rateAmplitudeFEInfo.quadOrder, rateAmplitudeFEInfo.isBasisContinuous, velocityScale);
-        } else {
-            const char* componentNames[1] = {"rate_amplitude"};
-            _auxFields->subfieldAdd("rate_amplitude", componentNames, numComponents, _vectorFieldType, rateAmplitudeFEInfo.basisOrder, rateAmplitudeFEInfo.quadOrder, rateAmplitudeFEInfo.isBasisContinuous, velocityScale);
-        } // if/else
-        _auxFieldsQuery->queryFn("rate_amplitude", pylith::topology::FieldQuery::dbQueryGeneric);
-
-        const char* startNames[1] = {"rate_start"};
-        const pylith::topology::Field::DiscretizeInfo& rateStartFEInfo = this->auxFieldDiscretization("rate_start");
-        _auxFields->subfieldAdd("rate_start", startNames, 1, pylith::topology::Field::SCALAR, rateStartFEInfo.basisOrder, rateStartFEInfo.quadOrder, rateStartFEInfo.isBasisContinuous, timeScale);
-        _auxFieldsQuery->queryFn("rate_start", pylith::topology::FieldQuery::dbQueryGeneric);
-    } // if
-
-
-    // Time history amplitude and start time.
+        factory.rateAmplitude();
+        factory.rateStartTime();
+    } // _useRate
     if (_useTimeHistory) {
-        const pylith::topology::Field::DiscretizeInfo& timeHistoryAmplitudeFEInfo = this->auxFieldDiscretization("time_history_amplitude");
-        if (isVector) {
-            const char* componentNames[3] = {"time_history_amplitude_x", "time_history_amplitude_y", "time_history_amplitude_z"};
-            _auxFields->subfieldAdd("time_history_amplitude", componentNames, numComponents, _vectorFieldType, timeHistoryAmplitudeFEInfo.basisOrder, timeHistoryAmplitudeFEInfo.quadOrder, timeHistoryAmplitudeFEInfo.isBasisContinuous, lengthScale);
-        } else {
-            const char* componentNames[1] = {"time_history_amplitude"};
-            _auxFields->subfieldAdd("time_history_amplitude", componentNames, numComponents, _vectorFieldType, timeHistoryAmplitudeFEInfo.basisOrder, timeHistoryAmplitudeFEInfo.quadOrder, timeHistoryAmplitudeFEInfo.isBasisContinuous, lengthScale);
-        } // if/else
-        _auxFieldsQuery->queryFn("time_history_amplitude", pylith::topology::FieldQuery::dbQueryGeneric);
-
-        const char* startNames[1] = {"time_history_start"};
-        const pylith::topology::Field::DiscretizeInfo& timeHistoryStartFEInfo = this->auxFieldDiscretization("time_history_start");
-        _auxFields->subfieldAdd("time_history_start", startNames, 1, pylith::topology::Field::SCALAR, timeHistoryStartFEInfo.basisOrder, timeHistoryStartFEInfo.quadOrder, timeHistoryStartFEInfo.isBasisContinuous, timeScale);
-        _auxFieldsQuery->queryFn("time_history_start", pylith::topology::FieldQuery::dbQueryGeneric);
-
-        // Field to hold value from query of time history database.
-        const char* valueNames[1] = {"time_history_value"};
-        _auxFields->subfieldAdd("time_history_value", valueNames, 1, pylith::topology::Field::SCALAR, timeHistoryAmplitudeFEInfo.basisOrder, timeHistoryAmplitudeFEInfo.quadOrder, timeHistoryAmplitudeFEInfo.isBasisContinuous, 1.0);
-        _auxFieldsQuery->queryFn("time_history_value", NULL);
-    } // if
-
+        factory.timeHistoryAmplitude();
+        factory.timeHistoryStartTime();
+        factory.timeHistoryValue();
+    } // _useTimeHistory
 
     PYLITH_METHOD_END;
 }     // _auxFieldsSetup
@@ -301,10 +249,10 @@ pylith::bc::DirichletTimeDependent::_auxFieldsSetup(void)
 // ----------------------------------------------------------------------
 // Set kernels for RHS residual G(t,s).
 void
-pylith::bc::DirichletTimeDependent::_setFEKernelsConstraint(const topology::Field& solution)
-{ // _setFEKernelsConstraint
+pylith::bc::NeumannTimeDependent::_setFEKernelsResidual(const topology::Field& solution)
+{ // _setFEKernelsResidual
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_setFEKernelsConstraint(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("_setFEKernelsResidual(solution="<<solution.label()<<")");
 
     const PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
     PetscDS prob = NULL;
@@ -312,42 +260,52 @@ pylith::bc::DirichletTimeDependent::_setFEKernelsConstraint(const topology::Fiel
 
     const bool isScalarField = _vectorFieldType == pylith::topology::Field::SCALAR;
 
+    // static
+    // void f0_bd_u(PetscInt dim, PetscInt Nf, PetscInt NfAux,
+    //                     const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[],
+    //                     const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[],
+    //                     PetscReal t, const PetscReal x[], const PetscReal n[], PetscInt numConstants, const PetscScalar constants[], PetscScalar g0[])
+
+    PetscPointFunc g0 = NULL;
+    PetscPointFunc g1 = NULL;
+
     const int bitInitial = _useInitial ? 0x1 : 0x0;
     const int bitRate = _useRate ? 0x2 : 0x0;
     const int bitTimeHistory = _useTimeHistory ? 0x4 : 0x0;
     const int bitUse = bitInitial | bitRate | bitTimeHistory;
     switch (bitUse) {
     case 0x1:
-        _bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_initial_scalar : pylith_fekernels_TimeDependentBC_initial_vector;
+        g0 = (isScalarField) ? pylith_fekernels_TimeDependentBC_g0_initial_scalar : pylith_fekernels_TimeDependentBC_g0_initial_vector;
         break;
     case 0x2:
-        _bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_rate_scalar : pylith_fekernels_TimeDependentBC_rate_vector;
+        g0 = (isScalarField) ? pylith_fekernels_TimeDependentBC_g0_rate_scalar : pylith_fekernels_TimeDependentBC_g0_rate_vector;
         break;
     case 0x4:
-        _bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_timeHistory_scalar : pylith_fekernels_TimeDependentBC_timeHistory_vector;
+        g0 = (isScalarField) ? pylith_fekernels_TimeDependentBC_g0_timeHistory_scalar : pylith_fekernels_TimeDependentBC_g0_timeHistory_vector;
         break;
     case 0x3:
-        _bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_initialRate_scalar : pylith_fekernels_TimeDependentBC_initialRate_vector;
+        g0 = (isScalarField) ? pylith_fekernels_TimeDependentBC_g0_initialRate_scalar : pylith_fekernels_TimeDependentBC_g0_initialRate_vector;
         break;
     case 0x5:
-        _bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_initialTimeHistory_scalar : pylith_fekernels_TimeDependentBC_initialTimeHistory_vector;
+        g0 = (isScalarField) ? pylith_fekernels_TimeDependentBC_g0_initialTimeHistory_scalar : pylith_fekernels_TimeDependentBC_g0_initialTimeHistory_vector;
         break;
     case 0x6:
-        _bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_rateTimeHistory_scalar : pylith_fekernels_TimeDependentBC_rateTimeHistory_vector;
+        g0 = (isScalarField) ? pylith_fekernels_TimeDependentBC_g0_rateTimeHistory_scalar : pylith_fekernels_TimeDependentBC_g0_rateTimeHistory_vector;
         break;
     case 0x7:
-        _bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_initialRateTimeHistory_scalar : pylith_fekernels_TimeDependentBC_initialRateTimeHistory_vector;
+        g0 = (isScalarField) ? pylith_fekernels_TimeDependentBC_g0_initialRateTimeHistory_scalar : pylith_fekernels_TimeDependentBC_g0_initialRateTimeHistory_vector;
         break;
     case 0x0:
-        PYLITH_JOURNAL_WARNING("Dirichlet BC provides no constraints.");
+        PYLITH_COMPONENT_WARNING("Neumann BC provides no values.");
         break;
     default:
-        PYLITH_JOURNAL_ERROR("Unknown combination of flags for Dirichlet BC terms (useInitial="<<_useInitial<<", useRate="<<_useRate<<", useTimeHistory="<<_useTimeHistory<<").");
+        PYLITH_COMPONENT_ERROR("Unknown combination of flags for Dirichlet BC terms (useInitial="<<_useInitial<<", useRate="<<_useRate<<", useTimeHistory="<<_useTimeHistory<<").");
         throw std::logic_error("Unknown combination of flags for Dirichlet BC terms.");
     } // switch
 
+    err = PetscDSSetBdResidual(prob, i_field, g0, g1); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
-} // _setFEKernelsConstraint
+} // _setFEKernelsResidual
 
 // End of file

@@ -32,6 +32,7 @@
 #include "pylith/utils/array.hh" // HASA string_vector
 
 #include <string> // USES std::string
+#include <map> // USES std::map
 
 // FieldBase ------------------------------------------------------------
 /** @brief Basic information related to a vector field over the
@@ -89,6 +90,9 @@ public:
         bool isBasisContinuous; ///< Is basis continuous?
         SpaceEnum feSpace; ///< Finite-element space.
     }; // Discretization
+
+    /// Mapping from field name to discretization (intended for subfields).
+    typedef std::map<std::string, pylith::topology::FieldBase::Discretization> discretizations_map;
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:

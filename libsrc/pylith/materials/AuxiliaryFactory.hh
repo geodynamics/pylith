@@ -26,72 +26,61 @@
 
 // Include directives ---------------------------------------------------
 #include "materialsfwd.hh" // forward declarations
-#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
+#include "pylith/feassemble/AuxiliaryFactory.hh" // ISA AuxiliaryFactory
 
 #include "spatialdata/units/unitsfwd.hh" // HASA Nondimensional
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES GravityField
 
 // AuxiliaryFactory-----------------------------------------------
 /// @brief C++ helper class for setting up auxiliary fields for materials.
-class pylith::materials::AuxiliaryFactory : public pylith::utils::GenericComponent {
+class pylith::materials::AuxiliaryFactory : public pylith::feassemble::AuxiliaryFactory {
     friend class TestAuxiliaryFactory;   // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
 
-    /** Default constructor.
-     *
-     * @param[inout material Material for auxiliary fields.
-     * @param[in] normalizer Nondimensionalizer for problem.
-     * @param[in] spaceDim Spatial dimension of problem.
-     */
-    AuxiliaryFactory(const MaterialNew& material,
-                     const spatialdata::units::Nondimensional& normalizer,
-                     const int spaceDim);
+    /// Default constructor.
+    AuxiliaryFactory(void);
 
     /// Destructor.
     ~AuxiliaryFactory(void);
 
     /// Add density field to auxiliary fields.
-    void density(void) const;
+    void density(void);
 
     /// Add shear modulus field to auxiliary fields.
-    void shearModulus(void) const;
+    void shearModulus(void);
 
     /// Add bulk field to auxiliary fields.
-    void bulkModulus(void) const;
+    void bulkModulus(void);
 
     /** Add gravity field to auxiliary fields.
      *
      * @param[in] gf Gravity field.
      */
-    void gravityField(spatialdata::spatialdb::GravityField* gf) const;
+    void gravityField(spatialdata::spatialdb::GravityField* gf);
 
     /// Add body force field to auxiliary fields.
-    void bodyForce(void) const;
+    void bodyForce(void);
 
     /// Add reference stress field to auxiliary fields.
-    void referenceStress(void) const;
+    void referenceStress(void);
 
     /// Add reference strain field to auxiliary fields.
-    void referenceStrain(void) const;
+    void referenceStrain(void);
 
     /// Add Maxwell time field to auxiliary fields.
-    void maxwellTime(void) const;
+    void maxwellTime(void);
 
     /// Add total strain field to auxiliary fields.
-    void totalStrain(void) const;
+    void totalStrain(void);
 
     /// Add viscous strain field to auxiliary fields.
-    void viscousStrain(void) const;
+    void viscousStrain(void);
 
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private:
-
-    const MaterialNew& _material; ///< Material with auxiliary fields.
-    const spatialdata::units::Nondimensional& _normalizer; ///< Nondimensionalizer.
-    const int _spaceDim; ///< Spatal dimension of problem.
 
     static const char* _genericComponent; ///< Name of generic component.
 

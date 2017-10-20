@@ -18,9 +18,9 @@
 
 #include <portinfo>
 
-#include "IsotropicLinearIncompElasticityPlaneStrain.hh" // implementation of object methods
+#include "pylith/materials/IsotropicLinearIncompElasticityPlaneStrain.hh" // implementation of object methods
 
-#include "AuxiliaryFactory.hh" // USES AuxiliaryFactory
+#include "pylith/materials/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
@@ -46,25 +46,22 @@ const char* pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_pyre
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::IsotropicLinearIncompElasticityPlaneStrain(void) :
-    MaterialNew(2),
+    pylith::materials::MaterialNew(2),
     _useInertia(false),
     _useBodyForce(false),
     _useReferenceState(false)
 { // constructor
-    PyreComponent::name(_pyreComponent);
+    pylith::utils::PyreComponent::name(_pyreComponent);
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::~IsotropicLinearIncompElasticityPlaneStrain(void)
-{ // destructor
-} // destructor
+pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::~IsotropicLinearIncompElasticityPlaneStrain(void) {} // destructor
 
 // ----------------------------------------------------------------------
 // Include inertia?
 void
-pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::useInertia(const bool value)
-{ // useInertia
+pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::useInertia(const bool value) {
     PYLITH_COMPONENT_DEBUG("useInertia(value="<<value<<")");
     _useInertia = value;
 } // useInertia
@@ -73,8 +70,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::useInertia(const 
 // ----------------------------------------------------------------------
 // Include inertia?
 bool
-pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::useInertia(void) const
-{ // useInertia
+pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::useInertia(void) const {
     return _useInertia;
 } // useInertia
 
@@ -82,8 +78,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::useInertia(void) 
 // ----------------------------------------------------------------------
 // Include body force?
 void
-pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::useBodyForce(const bool value)
-{ // useBodyForce
+pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::useBodyForce(const bool value) {
     PYLITH_COMPONENT_DEBUG("useBodyForce(value="<<value<<")");
 
     _useBodyForce = value;
@@ -93,8 +88,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::useBodyForce(cons
 // ----------------------------------------------------------------------
 // Include body force?
 bool
-pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::useBodyForce(void) const
-{ // useBodyForce
+pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::useBodyForce(void) const {
     return _useBodyForce;
 } // useBodyForce
 
@@ -103,8 +97,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::useBodyForce(void
 // Use reference stress and strain in computation of stress and
 // strain?
 void
-pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::useReferenceState(const bool value)
-{ // useReferenceState
+pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::useReferenceState(const bool value) {
     PYLITH_COMPONENT_DEBUG("useReferenceState="<<value<<")");
 
     _useReferenceState = value;
@@ -115,8 +108,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::useReferenceState
 // Use reference stress and strain in computation of stress and
 // strain?
 bool
-pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::useReferenceState(void) const
-{ // useReferenceState
+pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::useReferenceState(void) const {
     return _useReferenceState;
 } // useReferenceState
 
@@ -124,8 +116,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::useReferenceState
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
-pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::verifyConfiguration(const pylith::topology::Field& solution) const
-{ // verifyConfiguration
+pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
 
@@ -147,29 +138,30 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::verifyConfigurati
 // ----------------------------------------------------------------------
 // Preinitialize material. Set names/sizes of auxiliary fields.
 void
-pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_auxFieldsSetup(void)
-{ // _auxFieldsSetup
+pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_auxFieldsSetup(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_auxFieldsSetup()");
 
+    const int dim = 2;
+
+    assert(_auxMaterialFactory);
+    assert(_normalizer);
+    _auxMaterialFactory->initialize(_auxField, *_normalizer, dim);
+
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
 
-    assert(_normalizer);
-
-    const int dim = 2;
-    AuxiliaryFactory factory(*this, *_normalizer, dim);
-    factory.density();
-    factory.shearModulus();
-    factory.bulkModulus();
+    _auxMaterialFactory->density();
+    _auxMaterialFactory->shearModulus();
+    _auxMaterialFactory->bulkModulus();
     if (_gravityField) {
-        factory.gravityField(_gravityField);
+        _auxMaterialFactory->gravityField(_gravityField);
     } // if
     if (_useBodyForce) {
-        factory.bodyForce();
+        _auxMaterialFactory->bodyForce();
     } // if
     if (_useReferenceState) {
-        factory.referenceStress();
-        factory.referenceStrain();
+        _auxMaterialFactory->referenceStress();
+        _auxMaterialFactory->referenceStrain();
     } // if
 
     PYLITH_METHOD_END;
@@ -178,8 +170,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_auxFieldsSetup(v
 // ----------------------------------------------------------------------
 // Set kernels for RHS residual G(t,s).
 void
-pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsRHSResidual(const topology::Field& solution) const
-{ // _setFEKernelsRHSResidual
+pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsRHSResidual(const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setFEKernelsRHSResidual(solution="<<solution.label()<<")");
 
@@ -239,8 +230,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsRHSR
 // ----------------------------------------------------------------------
 // Set kernels for RHS Jacobian G(t,s).
 void
-pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsRHSJacobian(const topology::Field& solution) const
-{ // _setFEKernelsRHSJacobian
+pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsRHSJacobian(const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setFEKernelsRHSJacobian(solution="<<solution.label()<<")");
 
@@ -345,8 +335,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsRHSJ
 // ----------------------------------------------------------------------
 // Set kernels for LHS residual F(t,s,\dot{s}).
 void
-pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsLHSResidual(const topology::Field& solution) const
-{ // _setFEKernelsLHSResidual
+pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsLHSResidual(const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setFEKernelsLHSResidual(solution="<<solution.label()<<")");
 
@@ -388,8 +377,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsLHSR
 // ----------------------------------------------------------------------
 // Set kernels for LHS Jacobian F(t,s,\dot{s}).
 void
-pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsLHSJacobianImplicit(const topology::Field& solution) const
-{ // _setFEKernelsLHSJacobianImplicit
+pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsLHSJacobianImplicit(const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setFEKernelsLHSJacobianImplicit(solution="<<solution.label()<<")");
 
@@ -491,8 +479,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsLHSJ
 // ----------------------------------------------------------------------
 // Set kernels for LHS Jacobian F(t,s,\dot{s}).
 void
-pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsLHSJacobianExplicit(const topology::Field& solution) const
-{ // _setFEKernelsLHSJacobianExplicit
+pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsLHSJacobianExplicit(const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setFEKernelsLHSJacobianExplicit(solution="<<solution.label()<<")");
 

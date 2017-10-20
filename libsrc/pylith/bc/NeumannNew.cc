@@ -22,6 +22,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
@@ -41,27 +42,18 @@
 pylith::bc::NeumannNew::NeumannNew(void) :
     _boundaryMesh(NULL)
 { // constructor
-    _description.label = "unknown";
-    _description.vectorFieldType = pylith::topology::Field::OTHER;
-    _description.numComponents = 0;
-    _description.scale = 1.0;
-    _description.validator = NULL;
-    const pylith::topology::FieldBase::Discretization defaultInfo = {-1, -1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE};
-    _auxFieldsFEInfo["default"] = defaultInfo;
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::bc::NeumannNew::~NeumannNew(void)
-{ // destructor
+pylith::bc::NeumannNew::~NeumannNew(void) {
     deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::bc::NeumannNew::deallocate(void)
-{ // deallocate
+pylith::bc::NeumannNew::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
     IntegratorPointwise::deallocate();
@@ -74,38 +66,26 @@ pylith::bc::NeumannNew::deallocate(void)
 // ----------------------------------------------------------------------
 // Initialize boundary condition.
 void
-pylith::bc::NeumannNew::initialize(const pylith::topology::Field& solution)
-{ // initialize
+pylith::bc::NeumannNew::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("initialize(solution="<<solution.label()<<")");
 
-    const topology::Field::SubfieldInfo& info = solution.subfieldInfo(_field.c_str());
-    _description = info.description;
-
     _setFEKernelsRHSResidual(solution);
 
-    _boundaryMesh = new topology::Mesh(solution.mesh(), _label.c_str()); assert(_boundaryMesh);
+    _boundaryMesh = new pylith::topology::Mesh(solution.mesh(), _label.c_str()); assert(_boundaryMesh);
     PetscDM dmBoundary = _boundaryMesh->dmMesh(); assert(dmBoundary);
     pylith::topology::CoordsVisitor::optimizeClosure(dmBoundary);
 
-    delete _auxFields; _auxFields = new pylith::topology::Field(*_boundaryMesh); assert(_auxFields);
-    delete _auxFieldsQuery; _auxFieldsQuery = new pylith::topology::FieldQuery(*_auxFields); assert(_auxFieldsQuery);
-    _auxFields->label("auxiliary fields");
+    delete _auxField; _auxField = new pylith::topology::Field(*_boundaryMesh); assert(_auxField);
+    _auxField->label("auxiliary fields");
     _auxFieldsSetup();
-    _auxFields->subfieldsSetup();
-    _auxFields->allocate();
-    _auxFields->zeroLocal();
+    _auxField->subfieldsSetup();
+    _auxField->allocate();
+    _auxField->zeroLocal();
 
-    if (_auxFieldsDB) {
-        assert(_normalizer);
-        _auxFieldsQuery->openDB(_auxFieldsDB, _normalizer->lengthScale());
-        _auxFieldsQuery->queryDB();
-        _auxFieldsQuery->closeDB(_auxFieldsDB);
-    } else { // else
-        PYLITH_COMPONENT_ERROR("Unknown case for setting up auxiliary fields.");
-        throw std::logic_error("Unknown case for setting up auxiliary fields.");
-    } // if/else
-    _auxFields->view("AUXILIARY FIELDS"); // :DEBUGGING: TEMPORARY
+    assert(_normalizer);
+    pylith::feassemble::AuxiliaryFactory* factory = _auxFactory(); assert(factory);
+    factory->initializeSubfields();
 
     const PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
     PetscDS prob = NULL;
@@ -114,6 +94,7 @@ pylith::bc::NeumannNew::initialize(const pylith::topology::Field& solution)
     // :TODO: @brad @matt Expect this to need updating once we associate point functions with a domain.
     void* context = NULL;
     const int labelId = 1;
+    const topology::Field::SubfieldInfo& info = solution.subfieldInfo(_field.c_str());
     err = PetscDSAddBoundary(prob, DM_BC_NATURAL, label(), label(), info.index, 0, NULL,
                              NULL, 1, &labelId, context); PYLITH_CHECK_ERROR(err);
 

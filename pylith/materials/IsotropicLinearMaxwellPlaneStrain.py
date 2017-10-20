@@ -67,8 +67,8 @@ class IsotropicLinearMaxwellPlaneStrain(MaterialNew, ModuleMaterial):
 
         from .AuxFieldsIsotropicLinearMaxwell import AuxFieldsIsotropicLinearMaxwell
         from pylith.topology.AuxSubfield import subfieldFactory
-        auxFields = pyre.inventory.facilityArray("auxiliary_fields", itemFactory=subfieldFactory, factory=AuxFieldsIsotropicLinearMaxwell)
-        auxFields.meta['tip'] = "Discretization of physical properties and state variables."
+        auxSubfields = pyre.inventory.facilityArray("auxiliary_subfields", itemFactory=subfieldFactory, factory=AuxFieldsIsotropicLinearMaxwell)
+        auxSubfields.meta['tip'] = "Discretization of physical properties and state variables."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

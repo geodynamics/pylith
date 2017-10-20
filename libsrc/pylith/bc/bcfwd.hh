@@ -43,10 +43,11 @@ namespace pylith {
         class PointForce;
 
         class BoundaryConditionNew;
+        class TimeDependentAuxiliaryFactory;
         class DirichletNew;
         class DirichletTimeDependent;
-        class DirichletAuxiliaryFactory;
         class NeumannNew;
+        class NeumannTimeDependent;
 
     } // bc
 } // pylith

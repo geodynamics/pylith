@@ -35,6 +35,7 @@
 #include "pylith/bc/DirichletTimeDependent.hh"
 %}
 
+
 %include "exception.i"
 %exception {
     try {
