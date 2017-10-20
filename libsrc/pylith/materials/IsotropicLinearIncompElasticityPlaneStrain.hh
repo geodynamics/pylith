@@ -33,118 +33,117 @@
 /** @brief C++ class for isotropic linear incompressible elastic plane strain material.
  */
 
-class pylith::materials::IsotropicLinearIncompElasticityPlaneStrain : public pylith::materials::MaterialNew
-{ // class IsotropicLinearIncompElasticityPlaneStrain
-  friend class TestIsotropicLinearIncompElasticityPlaneStrain; // unit testing
+class pylith::materials::IsotropicLinearIncompElasticityPlaneStrain : public pylith::materials::MaterialNew { // class IsotropicLinearIncompElasticityPlaneStrain
+    friend class TestIsotropicLinearIncompElasticityPlaneStrain; // unit testing
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+    // PUBLIC METHODS /////////////////////////////////////////////////////
+public:
 
-  /// Default constructor.
-  IsotropicLinearIncompElasticityPlaneStrain(void);
+    /// Default constructor.
+    IsotropicLinearIncompElasticityPlaneStrain(void);
 
-  /// Destructor.
-  ~IsotropicLinearIncompElasticityPlaneStrain(void);
+    /// Destructor.
+    ~IsotropicLinearIncompElasticityPlaneStrain(void);
 
-  /** Include inertia?
-   *
-   * @param[in] value Flag indicating to include inertial term.
-   */
-  void useInertia(const bool value);
+    /** Include inertia?
+     *
+     * @param[in] value Flag indicating to include inertial term.
+     */
+    void useInertia(const bool value);
 
-  /** Include inertia?
-   *
-   * @returns True if including inertial term, false otherwise.
-   */
-  bool useInertia(void) const;
+    /** Include inertia?
+     *
+     * @returns True if including inertial term, false otherwise.
+     */
+    bool useInertia(void) const;
 
-  /** Include body force?
-   *
-   * @param[in] value Flag indicating to include body force term.
-   */
-  void useBodyForce(const bool value);
+    /** Include body force?
+     *
+     * @param[in] value Flag indicating to include body force term.
+     */
+    void useBodyForce(const bool value);
 
-  /** Include body force?
- *
- * @returns True if including body force term, false otherwise.
- */
-  bool useBodyForce(void) const;
+    /** Include body force?
+     *
+     * @returns True if including body force term, false otherwise.
+     */
+    bool useBodyForce(void) const;
 
-  /** Include reference stress/strain?
-   *
-   * @param value Flag indicating to include reference stress/strain.
-   */
-  void useReferenceState(const bool value);
+    /** Include reference stress/strain?
+     *
+     * @param value Flag indicating to include reference stress/strain.
+     */
+    void useReferenceState(const bool value);
 
-  /** Use reference stress and strain in computation of stress and
-   * strain?
-   *
-   * @returns True if using reference stress and strain, false otherwise.
-   */
-  bool useReferenceState(void) const;
+    /** Use reference stress and strain in computation of stress and
+     * strain?
+     *
+     * @returns True if using reference stress and strain, false otherwise.
+     */
+    bool useReferenceState(void) const;
 
-  /** Verify configuration is acceptable.
-   *
-   * @param[in] solution Solution field.
-   */
-  void verifyConfiguration(const pylith::topology::Field& solution) const;
+    /** Verify configuration is acceptable.
+     *
+     * @param[in] solution Solution field.
+     */
+    void verifyConfiguration(const pylith::topology::Field& solution) const;
 
-  // PROTECTED METHODS //////////////////////////////////////////////////
-protected :
+    // PROTECTED METHODS //////////////////////////////////////////////////
+protected:
 
-  /// Setup auxiliary subfields (discretization and query fns).
-  void _auxFieldsSetup(void);
- 
-  /** Set kernels for RHS residual G(t,u).
-   *
-   * @param[in] solution Solution field.
-   */
-  void _setFEKernelsRHSResidual(const topology::Field& solution) const;
+    /// Setup auxiliary subfields (discretization and query fns).
+    void _auxFieldSetup(void);
 
-  /** Set kernels for RHS Jacobian G(t,u).
-   *
-   * @param[in] solution Solution field.
-   */
-  void _setFEKernelsRHSJacobian(const topology::Field& solution) const ;
+    /** Set kernels for RHS residual G(t,u).
+     *
+     * @param[in] solution Solution field.
+     */
+    void _setFEKernelsRHSResidual(const topology::Field& solution) const;
 
-  /** Set kernels for LHS residual F(t,u,\dot{u}).
-   *
-   * @param[in] solution Solution field.
-   */
-  void _setFEKernelsLHSResidual(const topology::Field& solution) const;
+    /** Set kernels for RHS Jacobian G(t,u).
+     *
+     * @param[in] solution Solution field.
+     */
+    void _setFEKernelsRHSJacobian(const topology::Field& solution) const;
 
-  /** Set kernels for LHS Jacobian F(t,u,\dot{u}) when implicit time-stepping.
-   *
-   * @param[in] solution Solution field.
-   */
-  void _setFEKernelsLHSJacobianImplicit(const topology::Field& solution) const;
+    /** Set kernels for LHS residual F(t,u,\dot{u}).
+     *
+     * @param[in] solution Solution field.
+     */
+    void _setFEKernelsLHSResidual(const topology::Field& solution) const;
 
-
-  /** Set kernels for LHS Jacobian F(t,u,\dot{u}) when explicit time-stepping.
-   *
-   * @param[in] solution Solution field.
-   */
-  void _setFEKernelsLHSJacobianExplicit(const topology::Field& solution) const;
+    /** Set kernels for LHS Jacobian F(t,u,\dot{u}) when implicit time-stepping.
+     *
+     * @param[in] solution Solution field.
+     */
+    void _setFEKernelsLHSJacobianImplicit(const topology::Field& solution) const;
 
 
-  // PRIVATE MEMBERS ////////////////////////////////////////////////////
-private :
+    /** Set kernels for LHS Jacobian F(t,u,\dot{u}) when explicit time-stepping.
+     *
+     * @param[in] solution Solution field.
+     */
+    void _setFEKernelsLHSJacobianExplicit(const topology::Field& solution) const;
 
-  bool _useInertia; ///< Flag to include inertial term.
-  bool _useBodyForce; ///< Flag to include body force term.
-  bool _useReferenceState; ///< Flag to use reference stress and strain.
 
-  static const char* _pyreComponent; ///< Name of Pyre component.
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////
+private:
 
-  // NOT IMPLEMENTED ////////////////////////////////////////////////////
-private :
+    bool _useInertia; ///< Flag to include inertial term.
+    bool _useBodyForce; ///< Flag to include body force term.
+    bool _useReferenceState; ///< Flag to use reference stress and strain.
 
-  IsotropicLinearIncompElasticityPlaneStrain(const IsotropicLinearIncompElasticityPlaneStrain&); ///< Not implemented.
-  const IsotropicLinearIncompElasticityPlaneStrain& operator=(const IsotropicLinearIncompElasticityPlaneStrain&); ///< Not implemented
+    static const char* _pyreComponent; ///< Name of Pyre component.
+
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////
+private:
+
+    IsotropicLinearIncompElasticityPlaneStrain(const IsotropicLinearIncompElasticityPlaneStrain&); ///< Not implemented.
+    const IsotropicLinearIncompElasticityPlaneStrain& operator=(const IsotropicLinearIncompElasticityPlaneStrain&); ///< Not implemented
 
 }; // class IsotropicLinearIncompElasticityPlaneStrain
 
 #endif // pylith_materials_isotropiclinearincompelasticityplanestrain_hh
 
 
-// End of file 
+// End of file

@@ -93,7 +93,7 @@ public:
 protected:
 
     /// Setup auxiliary subfields (discretization and query fns).
-    void _auxFieldsSetup(void);
+    void _auxFieldSetup(void);
 
     /** Set finite-element constants.
      *

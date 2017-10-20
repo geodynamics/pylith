@@ -154,7 +154,7 @@ pylith::materials::MaterialNew::initialize(const pylith::topology::Field& soluti
 
     delete _auxField; _auxField = new pylith::topology::Field(mesh); assert(_auxField);
     _auxField->label("auxiliary fields");
-    _auxFieldsSetup();
+    _auxFieldSetup();
     _auxField->subfieldsSetup();
     _auxField->allocate();
     _auxField->zeroLocal();

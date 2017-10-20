@@ -136,11 +136,11 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::verifyConfigurati
 
 
 // ----------------------------------------------------------------------
-// Preinitialize material. Set names/sizes of auxiliary fields.
+// Preinitialize material. Set names/sizes of auxiliary subfields.
 void
-pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_auxFieldsSetup(void) {
+pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_auxFieldSetup(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_auxFieldsSetup()");
+    PYLITH_COMPONENT_DEBUG("_auxFieldSetup()");
 
     const int dim = 2;
 
@@ -165,7 +165,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_auxFieldsSetup(v
     } // if
 
     PYLITH_METHOD_END;
-} // _auxFieldsSetup
+} // _auxFieldSetup
 
 // ----------------------------------------------------------------------
 // Set kernels for RHS residual G(t,s).

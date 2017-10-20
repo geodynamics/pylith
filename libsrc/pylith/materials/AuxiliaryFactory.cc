@@ -69,7 +69,7 @@ pylith::materials::AuxiliaryFactory::density(void)
     description.scale = densityScale;
     description.validator = pylith::topology::FieldQuery::validatorPositive;
 
-    _field->subfieldAdd(description, _subfieldDiscretization(fieldName));
+    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
     _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
@@ -96,7 +96,7 @@ pylith::materials::AuxiliaryFactory::shearModulus(void)
     description.scale = pressureScale;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, _subfieldDiscretization(fieldName));
+    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
     _subfieldQueryFn(fieldName, pylith::materials::Query::dbQueryShearModulus);
 
     PYLITH_METHOD_END;
@@ -123,7 +123,7 @@ pylith::materials::AuxiliaryFactory::bulkModulus(void)
     description.scale = pressureScale;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, _subfieldDiscretization(fieldName));
+    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
     _subfieldQueryFn(fieldName, pylith::materials::Query::dbQueryBulkModulus);
 
     PYLITH_METHOD_END;
@@ -156,7 +156,7 @@ pylith::materials::AuxiliaryFactory::gravityField(spatialdata::spatialdb::Gravit
     description.scale = accelerationScale;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, _subfieldDiscretization(fieldName));
+    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
     _subfieldQueryFn(fieldName, pylith::materials::Query::dbQueryGravityField, gf);
 
     PYLITH_METHOD_END;
@@ -190,7 +190,7 @@ pylith::materials::AuxiliaryFactory::bodyForce(void)
     description.scale = forceScale;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, _subfieldDiscretization(fieldName));
+    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
     _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
@@ -221,7 +221,7 @@ pylith::materials::AuxiliaryFactory::referenceStress(void)
     description.scale = pressureScale;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, _subfieldDiscretization(fieldName));
+    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
     _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
@@ -251,7 +251,7 @@ pylith::materials::AuxiliaryFactory::referenceStrain(void)
     description.scale = 1.0;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, _subfieldDiscretization(fieldName));
+    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
     _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
@@ -278,7 +278,7 @@ pylith::materials::AuxiliaryFactory::maxwellTime(void)
     description.scale = timeScale;
     description.validator = pylith::topology::FieldQuery::validatorPositive;
 
-    _field->subfieldAdd(description, _subfieldDiscretization(fieldName));
+    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
     _subfieldQueryFn(fieldName, pylith::materials::Query::dbQueryMaxwellTime);
 
     PYLITH_METHOD_END;
@@ -307,7 +307,7 @@ pylith::materials::AuxiliaryFactory::totalStrain(void)
     description.scale = 1.0;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, _subfieldDiscretization(fieldName));
+    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
     _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
@@ -336,7 +336,7 @@ pylith::materials::AuxiliaryFactory::viscousStrain(void)
     description.scale = 1.0;
     description.validator = NULL;
 
-    _field->subfieldAdd(description, _subfieldDiscretization(fieldName));
+    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
     _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;

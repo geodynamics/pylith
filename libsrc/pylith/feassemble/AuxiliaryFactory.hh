@@ -54,6 +54,12 @@ public:
      */
     void queryDB(spatialdata::spatialdb::SpatialDB* value);
 
+    /** Get spatial database for filling auxiliary subfields.
+     *
+     * @returns Pointer to database.
+     */
+    const spatialdata::spatialdb::SpatialDB* queryDB(void);
+
     /** Set discretization information for auxiliary subfield.
      *
      * @param[in] name Name of auxiliary subfield.
@@ -67,6 +73,14 @@ public:
                                 const int quadOrder,
                                 const bool isBasisContinuous,
                                 const pylith::topology::FieldBase::SpaceEnum feSpace);
+
+    /** Get discretization information for subfield.
+     *
+     * @param[in] name Name of subfield.
+     * @return Discretization information for auxiliary subfield. If
+     * discretization information was not set, then use "default".
+     */
+    const pylith::topology::FieldBase::Discretization& subfieldDiscretization(const char* name) const;
 
     /** Initialize factory for setting up auxiliary subfields.
      *
@@ -85,14 +99,6 @@ public:
 
     // PROTECTED METHODS ////////////////////////////////////////////////////
 protected:
-
-    /** Get discretization information for subfield.
-     *
-     * @param[in] name Name of subfield.
-     * @return Discretization information for auxiliary subfield. If
-     * discretization information was not set, then use "default".
-     */
-    const pylith::topology::FieldBase::Discretization& _subfieldDiscretization(const char* name) const;
 
     /** Set query function for subfield.
      *

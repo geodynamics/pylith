@@ -82,7 +82,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::initialAmplitude(void)
         throw std::logic_error("Unknown vector field case in TimeDependentAuxiliaryFactory::initialAmplitude().");
     } // switch
 
-    _field->subfieldAdd(subfieldDescription, _subfieldDiscretization(fieldName));
+    _field->subfieldAdd(subfieldDescription, subfieldDiscretization(fieldName));
     _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
@@ -125,7 +125,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::rateAmplitude(void)
         throw std::logic_error("Unknown vector field case in TimeDependentAuxiliaryFactory::rateAmplitude().");
     } // switch
 
-    _field->subfieldAdd(subfieldDescription, _subfieldDiscretization(fieldName));
+    _field->subfieldAdd(subfieldDescription, subfieldDiscretization(fieldName));
     _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
@@ -153,7 +153,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::rateStartTime(void)
     subfieldDescription.scale = _normalizer->timeScale();
     subfieldDescription.validator = NULL;
 
-    _field->subfieldAdd(subfieldDescription, _subfieldDiscretization(fieldName));
+    _field->subfieldAdd(subfieldDescription, subfieldDiscretization(fieldName));
     _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
@@ -196,7 +196,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::timeHistoryAmplitude(void)
         throw std::logic_error("Unknown vector field case in TimeDependentAuxiliaryFactory::timeHistoryAmplitude().");
     } // switch
 
-    _field->subfieldAdd(subfieldDescription, _subfieldDiscretization(fieldName));
+    _field->subfieldAdd(subfieldDescription, subfieldDiscretization(fieldName));
     _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
@@ -224,7 +224,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::timeHistoryStartTime(void)
     subfieldDescription.scale = _normalizer->timeScale();
     subfieldDescription.validator = NULL;
 
-    _field->subfieldAdd(subfieldDescription, _subfieldDiscretization(fieldName));
+    _field->subfieldAdd(subfieldDescription, subfieldDiscretization(fieldName));
     _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
 
     PYLITH_METHOD_END;
@@ -252,7 +252,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::timeHistoryValue(void)
     subfieldDescription.scale = _normalizer->timeScale();
     subfieldDescription.validator = NULL;
 
-    _field->subfieldAdd(subfieldDescription, _subfieldDiscretization(fieldName));
+    _field->subfieldAdd(subfieldDescription, subfieldDiscretization(fieldName));
     _subfieldQueryFn(fieldName, NULL); // populated by integrator or constraint at begining of time step.
 
     PYLITH_METHOD_END;

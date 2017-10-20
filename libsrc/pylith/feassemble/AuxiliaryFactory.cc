@@ -60,6 +60,13 @@ pylith::feassemble::AuxiliaryFactory::queryDB(spatialdata::spatialdb::SpatialDB*
 } // queryDB
 
 // ----------------------------------------------------------------------
+// Get database for filling auxiliary subfields.
+const spatialdata::spatialdb::SpatialDB*
+pylith::feassemble::AuxiliaryFactory::queryDB(void) {
+    return _queryDB;
+} // queryDB
+
+// ----------------------------------------------------------------------
 // Set discretization information for auxiliary subfield.
 void
 pylith::feassemble::AuxiliaryFactory::subfieldDiscretization(const char* name,
@@ -78,6 +85,26 @@ pylith::feassemble::AuxiliaryFactory::subfieldDiscretization(const char* name,
     _subfieldDiscretizations[name] = feInfo;
 
     PYLITH_METHOD_END;
+} // subfieldDiscretization
+
+// ----------------------------------------------------------------------
+// Get discretization information for subfield.
+const pylith::topology::FieldBase::Discretization&
+pylith::feassemble::AuxiliaryFactory::subfieldDiscretization(const char* name) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("subfieldDiscretization(name="<<name<<")");
+
+    pylith::topology::FieldBase::discretizations_map::const_iterator iter = _subfieldDiscretizations.find(name);
+    if (iter != _subfieldDiscretizations.end()) {
+        PYLITH_METHOD_RETURN(iter->second);
+    } else { // not found so try default
+        iter = _subfieldDiscretizations.find("default");
+        if (iter == _subfieldDiscretizations.end()) {
+            throw std::logic_error("Default discretization not set for auxiliary fields.");
+        } // if
+    } // if/else
+
+    PYLITH_METHOD_RETURN(iter->second); // default
 } // subfieldDiscretization
 
 // ----------------------------------------------------------------------
@@ -138,26 +165,6 @@ pylith::feassemble::AuxiliaryFactory::initializeSubfields(void) {
 
     PYLITH_METHOD_END;
 } // initializeSubfields
-
-// ----------------------------------------------------------------------
-// Get discretization information for subfield.
-const pylith::topology::FieldBase::Discretization&
-pylith::feassemble::AuxiliaryFactory::_subfieldDiscretization(const char* name) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_subfieldDiscretization(name="<<name<<")");
-
-    pylith::topology::FieldBase::discretizations_map::const_iterator iter = _subfieldDiscretizations.find(name);
-    if (iter != _subfieldDiscretizations.end()) {
-        PYLITH_METHOD_RETURN(iter->second);
-    } else { // not found so try default
-        iter = _subfieldDiscretizations.find("default");
-        if (iter == _subfieldDiscretizations.end()) {
-            throw std::logic_error("Default discretization not set for auxiliary fields.");
-        } // if
-    } // if/else
-
-    PYLITH_METHOD_RETURN(iter->second); // default
-} // subfieldDiscretization
 
 // ----------------------------------------------------------------------
 // Set query function for subfield.

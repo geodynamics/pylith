@@ -172,7 +172,7 @@ namespace pylith {
        * order of the auxiliary fields in the FE kernels.
        */
       virtual
-      void _auxFieldsSetup(void) = 0;
+      void _auxFieldSetup(void) = 0;
 
       /** Set kernels for RHS residual G(t,s).
        *
