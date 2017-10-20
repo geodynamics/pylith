@@ -29,6 +29,7 @@
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
+#include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
@@ -62,10 +63,10 @@ pylith::materials::TestMaterialNew::tearDown(void)
 
 
 // ----------------------------------------------------------------------
-// Test hasAuxField().
+// Test auxField().
 void
-pylith::materials::TestMaterialNew::testHasAuxField(void)
-{ // testHasAuxField
+pylith::materials::TestMaterialNew::testAuxField(void)
+{ // testAuxField
     PYLITH_METHOD_BEGIN;
 
     _initializeFull();
@@ -73,21 +74,22 @@ pylith::materials::TestMaterialNew::testHasAuxField(void)
     MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
     TestMaterialNew_Data* data = _data(); CPPUNIT_ASSERT(data);
 
+    const pylith::topology::Field& auxField = material->auxField();
     for (int i = 0; i < data->numAuxFields; ++i) {
-        CPPUNIT_ASSERT(material->hasAuxField(data->auxFields[i]));
+        CPPUNIT_ASSERT(auxField.hasSubfield(data->auxFields[i]));
     } // for
 
-    CPPUNIT_ASSERT(!material->hasAuxField("abc4598245"));
+    CPPUNIT_ASSERT(!auxField.hasSubfield("abc4598245"));
 
     PYLITH_METHOD_END;
-} // testHaxAuxField
+} // testAuxField
 
 
 // ----------------------------------------------------------------------
-// Test auxFieldDiscretization().
+// Test auxSubfieldDiscretization().
 void
-pylith::materials::TestMaterialNew::testAuxFieldsDiscretization(void)
-{ // testAuxFieldsDiscretization
+pylith::materials::TestMaterialNew::testAuxSubfieldDiscretization(void)
+{ // testAuxSubfieldDiscretization
     PYLITH_METHOD_BEGIN;
 
     const topology::FieldBase::Discretization infoDefault = {-1, -1, true, pylith::topology::FieldBase::POLYNOMIAL_SPACE};
@@ -95,11 +97,12 @@ pylith::materials::TestMaterialNew::testAuxFieldsDiscretization(void)
     const topology::FieldBase::Discretization infoB = {2, 2, true, pylith::topology::FieldBase::POINT_SPACE};
 
     MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
-    material->auxFieldDiscretization("A", infoA.basisOrder, infoA.quadOrder, infoA.isBasisContinuous, infoA.feSpace);
-    material->auxFieldDiscretization("B", infoB.basisOrder, infoB.quadOrder, infoB.isBasisContinuous, infoB.feSpace);
+    material->auxSubfieldDiscretization("A", infoA.basisOrder, infoA.quadOrder, infoA.isBasisContinuous, infoA.feSpace);
+    material->auxSubfieldDiscretization("B", infoB.basisOrder, infoB.quadOrder, infoB.isBasisContinuous, infoB.feSpace);
 
+    CPPUNIT_ASSERT(material->_auxFactory());
     { // A
-        const topology::FieldBase::Discretization& test = material->auxFieldDiscretization("A");
+        const topology::FieldBase::Discretization& test = material->_auxFactory()->subfieldDiscretization("A");
         CPPUNIT_ASSERT_EQUAL(infoA.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoA.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoA.isBasisContinuous, test.isBasisContinuous);
@@ -107,7 +110,7 @@ pylith::materials::TestMaterialNew::testAuxFieldsDiscretization(void)
     } // A
 
     { // B
-        const topology::FieldBase::Discretization& test = material->auxFieldDiscretization("B");
+        const topology::FieldBase::Discretization& test = material->_auxFactory()->subfieldDiscretization("B");
         CPPUNIT_ASSERT_EQUAL(infoB.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoB.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoB.isBasisContinuous, test.isBasisContinuous);
@@ -115,7 +118,7 @@ pylith::materials::TestMaterialNew::testAuxFieldsDiscretization(void)
     } // B
 
     { // C (default)
-        const topology::FieldBase::Discretization& test = material->auxFieldDiscretization("C");
+        const topology::FieldBase::Discretization& test = material->_auxFactory()->subfieldDiscretization("C");
         CPPUNIT_ASSERT_EQUAL(infoDefault.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.isBasisContinuous, test.isBasisContinuous);
@@ -123,7 +126,7 @@ pylith::materials::TestMaterialNew::testAuxFieldsDiscretization(void)
     } // C (default)
 
     { // default
-        const topology::FieldBase::Discretization& test = material->auxFieldDiscretization("default");
+        const topology::FieldBase::Discretization& test = material->_auxFactory()->subfieldDiscretization("default");
         CPPUNIT_ASSERT_EQUAL(infoDefault.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.isBasisContinuous, test.isBasisContinuous);
@@ -131,14 +134,14 @@ pylith::materials::TestMaterialNew::testAuxFieldsDiscretization(void)
     } // default
 
     PYLITH_METHOD_END;
-} // testAuxFieldsDiscretization
+} // testAuxSubfieldDiscretization
 
 
 // ----------------------------------------------------------------------
-// Test auxFieldsDB().
+// Test auxFieldDB().
 void
-pylith::materials::TestMaterialNew::testAuxFieldsDB(void)
-{ // testAuxFieldsDB
+pylith::materials::TestMaterialNew::testAuxFieldDB(void)
+{ // testAuxFieldDB
     PYLITH_METHOD_BEGIN;
 
     const std::string label = "test db";
@@ -146,13 +149,14 @@ pylith::materials::TestMaterialNew::testAuxFieldsDB(void)
     db.label(label.c_str());
 
     MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
-    material->auxFieldsDB(&db);
+    material->auxFieldDB(&db);
 
-    CPPUNIT_ASSERT(material->_auxFieldsDB);
-    CPPUNIT_ASSERT_EQUAL(label, std::string(material->_auxFieldsDB->label()));
+    CPPUNIT_ASSERT(material->_auxFactory());
+    CPPUNIT_ASSERT(material->_auxFactory()->queryDB());
+    CPPUNIT_ASSERT_EQUAL(label, std::string(material->_auxFactory()->queryDB()->label()));
 
     PYLITH_METHOD_END;
-} // testAuxFieldsDB
+} // testAuxFieldDB
 
 
 // ----------------------------------------------------------------------
@@ -245,29 +249,33 @@ pylith::materials::TestMaterialNew::testInitialize(void)
     PYLITH_METHOD_BEGIN;
 
     // Call initialize()
-    _initializeFull(); // includes setting up auxFields
+    _initializeFull(); // includes setting up auxField
 
     MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
-    const pylith::topology::Field& auxFields = material->auxFields();
+    const pylith::topology::Field& auxField = material->auxField();
 
     //material->_auxFields->view("AUX FIELDS"); // :DEBUGGING:
 
     // Check result
     TestMaterialNew_Data* data = _data(); CPPUNIT_ASSERT(data);
-    CPPUNIT_ASSERT_EQUAL(std::string("auxiliary fields"), std::string(auxFields.label()));
-    CPPUNIT_ASSERT_EQUAL(data->dimension, auxFields.spaceDim());
+    CPPUNIT_ASSERT_EQUAL(std::string("auxiliary fields"), std::string(auxField.label()));
+    CPPUNIT_ASSERT_EQUAL(data->dimension, auxField.spaceDim());
 
+#if 0 // TEMPORARY
     PylithReal norm = 0.0;
     PylithReal t = 0.0;
-    const PetscDM dm = auxFields.dmMesh(); CPPUNIT_ASSERT(dm);
+    const PetscDM dm = auxField.dmMesh(); CPPUNIT_ASSERT(dm);
     pylith::topology::FieldQuery* query = material->_auxFieldsQuery;
     CPPUNIT_ASSERT(data->normalizer);
     query->openDB(_auxDB, data->normalizer->lengthScale());
 
-    PetscErrorCode err = DMComputeL2Diff(dm, t, query->functions(), (void**)query->contextPtrs(), auxFields.localVector(), &norm); CPPUNIT_ASSERT(!err);
+    PetscErrorCode err = DMComputeL2Diff(dm, t, query->functions(), (void**)query->contextPtrs(), auxField.localVector(), &norm); CPPUNIT_ASSERT(!err);
     query->closeDB(_auxDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
+#else
+    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Need alternative mechanism to check auxiliary field (spatial database user function?)", false);
+#endif
 
     PYLITH_METHOD_END;
 } // testInitialize
@@ -281,7 +289,7 @@ pylith::materials::TestMaterialNew::testComputeResidual(void)
     PYLITH_METHOD_BEGIN;
 
     // Call initialize()
-    _initializeFull(); // includes setting up auxFields
+    _initializeFull(); // includes setting up auxField
 
     CPPUNIT_ASSERT(_mesh);
     CPPUNIT_ASSERT(_solutionFields);
@@ -457,7 +465,7 @@ pylith::materials::TestMaterialNew::testComputeLHSJacobianImplicit(void)
     // Check that Jf(s_1)*(s_2 - s_1) = F(s_2) - F(s_1).
 
     // Call initialize()
-    _initializeFull(); // includes setting up auxFields
+    _initializeFull(); // includes setting up auxField
 
     CPPUNIT_ASSERT(_mesh);
     CPPUNIT_ASSERT(_solutionFields);
@@ -635,11 +643,11 @@ pylith::materials::TestMaterialNew::_initializeFull(void)
     _auxDB->filename(data->auxDBFilename);
     _auxDB->label("IsotropicLinearElasciticityPlaneStrain auxiliary fields database");
     _auxDB->queryType(spatialdata::spatialdb::SimpleGridDB::LINEAR);
-    material->auxFieldsDB(_auxDB);
+    material->auxFieldDB(_auxDB);
 
     for (int i = 0; i < data->numAuxFields; ++i) {
         const pylith::topology::FieldBase::Discretization& info = data->auxDiscretizations[i];
-        material->auxFieldDiscretization(data->auxFields[i], info.basisOrder, info.quadOrder, info.isBasisContinuous, info.feSpace);
+        material->auxSubfieldDiscretization(data->auxFields[i], info.basisOrder, info.quadOrder, info.isBasisContinuous, info.feSpace);
     } // for
 
     CPPUNIT_ASSERT(_solutionFields);

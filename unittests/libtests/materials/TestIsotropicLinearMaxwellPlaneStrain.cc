@@ -131,10 +131,10 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testUseReferenceState(
 
 
 // ----------------------------------------------------------------------
-// Test auxFieldsSetup().
+// Test auxFieldSetup().
 void
-pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldsSetup(void)
-{ // test_auxFieldsSetup
+pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldSetup(void)
+{ // test_auxFieldSetup
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_mymaterial);
@@ -148,14 +148,13 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldsSetup(vo
     const PylithReal forceScale = densityScale * lengthScale / (timeScale * timeScale);
     const PylithReal accelerationScale = lengthScale/(timeScale * timeScale);
 
-    delete _mymaterial->_auxFields; _mymaterial->_auxFields = new topology::Field(*_mesh); CPPUNIT_ASSERT(_mymaterial->_auxFields);
-    delete _mymaterial->_auxFieldsQuery; _mymaterial->_auxFieldsQuery = new topology::FieldQuery(*_mymaterial->_auxFields); CPPUNIT_ASSERT(_mymaterial->_auxFieldsQuery);
-    _mymaterial->_auxFieldsSetup();
+    delete _mymaterial->_auxField; _mymaterial->_auxField = new topology::Field(*_mesh); CPPUNIT_ASSERT(_mymaterial->_auxField);
+    _mymaterial->_auxFieldSetup();
 
     // Check discretizations
     { // density
         const char* label = "density";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxFields->subfieldInfo(label);
+        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
@@ -168,7 +167,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldsSetup(vo
 
     { // shear modulus
         const char* label = "shear_modulus";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxFields->subfieldInfo(label);
+        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
@@ -181,7 +180,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldsSetup(vo
 
     { // bulk modulus
         const char* label = "bulk_modulus";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxFields->subfieldInfo(label);
+        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
@@ -194,7 +193,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldsSetup(vo
 
     { // Maxwell time
         const char* label = "maxwell_time";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxFields->subfieldInfo(label);
+        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
@@ -207,7 +206,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldsSetup(vo
 
     { // Total strain
         const char* label = "total_strain";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxFields->subfieldInfo(label);
+        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(4), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
@@ -220,7 +219,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldsSetup(vo
 
     { // Viscous strain
         const char* label = "viscous_strain";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxFields->subfieldInfo(label);
+        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(4), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
@@ -233,7 +232,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldsSetup(vo
 
     if (_mydata->useBodyForce) { // body force
         const char* label = "body_force";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxFields->subfieldInfo(label);
+        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(2), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::VECTOR, info.description.vectorFieldType);
@@ -246,7 +245,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldsSetup(vo
 
     if (_mydata->useGravity) { // gravity field
         const char* label = "gravity_field";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxFields->subfieldInfo(label);
+        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(2), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::VECTOR, info.description.vectorFieldType);
@@ -259,7 +258,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldsSetup(vo
 
     if (_mydata->useReferenceState) { // reference stress
         const char* label = "reference_stress";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxFields->subfieldInfo(label);
+        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(4), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
@@ -272,7 +271,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldsSetup(vo
 
     if (_mydata->useReferenceState) { // reference strain
         const char* label = "reference_strain";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxFields->subfieldInfo(label);
+        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(4), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
@@ -283,26 +282,8 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldsSetup(vo
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // reference strain
 
-    // Make sure DB query functions are set correctly.
-    CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _mymaterial->_auxFieldsQuery->queryFn("density"));
-    CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryShearModulus, _mymaterial->_auxFieldsQuery->queryFn("shear_modulus"));
-    CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryBulkModulus, _mymaterial->_auxFieldsQuery->queryFn("bulk_modulus"));
-    CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryMaxwellTime, _mymaterial->_auxFieldsQuery->queryFn("maxwell_time"));
-    CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _mymaterial->_auxFieldsQuery->queryFn("total_strain"));
-    CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _mymaterial->_auxFieldsQuery->queryFn("viscous_strain"));
-    if (_mydata->useGravity) {
-        CPPUNIT_ASSERT_EQUAL(&pylith::materials::Query::dbQueryGravityField, _mymaterial->_auxFieldsQuery->queryFn("gravity_field"));
-    } // if
-    if (_mydata->useBodyForce) {
-        CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _mymaterial->_auxFieldsQuery->queryFn("body_force"));
-    } // if
-    if (_mydata->useReferenceState) {
-        CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _mymaterial->_auxFieldsQuery->queryFn("reference_stress"));
-        CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _mymaterial->_auxFieldsQuery->queryFn("reference_strain"));
-    } // if
-
     PYLITH_METHOD_END;
-} // test_auxFieldsSetup
+} // test_auxFieldSetup
 
 
 // ----------------------------------------------------------------------
@@ -319,9 +300,10 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void)
     CPPUNIT_ASSERT(_mydata->normalizer);
     const PylithReal lengthScale = _mydata->normalizer->lengthScale();
 
+    const pylith::topology::Field& auxField = _mymaterial->auxField();
     { // Test getting density field.
         pylith::topology::Field density(*_mesh);
-        _mymaterial->getAuxField(&density, "density");
+        density.copySubfield(auxField, "density");
 
         //density.view("DENSITY"); // DEBUGGING
 
@@ -345,7 +327,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void)
 
     { // Test getting bulkModulus field.
         pylith::topology::Field bulkModulus(*_mesh);
-        _mymaterial->getAuxField(&bulkModulus, "bulk_modulus");
+        bulkModulus.copySubfield(auxField, "bulk_modulus");
 
         //bulkModulus.view("BULK MODULUS"); // DEBUGGING
 
@@ -369,7 +351,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void)
 
     { // Test getting maxwellTime field.
         pylith::topology::Field maxwellTime(*_mesh);
-        _mymaterial->getAuxField(&maxwellTime, "maxwell_time");
+        maxwellTime.copySubfield(auxField, "maxwell_time");
 
         //maxwellTime.view("MAXWELL TIME"); // DEBUGGING
 

@@ -51,9 +51,9 @@ class pylith::materials::TestMaterialNew : public CppUnit::TestFixture {
     // CPPUNIT TEST SUITE /////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestMaterialNew);
 
-    CPPUNIT_TEST(testHasAuxField);
-    CPPUNIT_TEST(testAuxFieldsDiscretization);
-    CPPUNIT_TEST(testAuxFieldsDB);
+    CPPUNIT_TEST(testAuxField);
+    CPPUNIT_TEST(testAuxSubfieldDiscretization);
+    CPPUNIT_TEST(testAuxFieldDB);
     CPPUNIT_TEST(testNormalizer);
 
     CPPUNIT_TEST(testVerifyConfiguration);
@@ -81,14 +81,14 @@ public:
     /// Deallocate testing data.
     void tearDown(void);
 
-    /// Test hasAuxField().
-    void testHasAuxField(void);
+    /// Test auxField().
+    void testAuxField(void);
 
-    /// Test auxFieldsDiscretization().
-    void testAuxFieldsDiscretization(void);
+    /// Test auxSubfieldDiscretization().
+    void testAuxSubfieldDiscretization(void);
 
-    /// Test auxFieldsDB().
-    void testAuxFieldsDB(void);
+    /// Test auxFieldDB().
+    void testAuxFieldDB(void);
 
     /// Test normalizer().
     void testNormalizer(void);

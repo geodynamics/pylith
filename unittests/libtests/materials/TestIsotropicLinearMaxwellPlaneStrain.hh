@@ -50,7 +50,7 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain : public TestMate
     CPPUNIT_TEST(testUseReferenceState);
 
     // Tests that explicitly depend on details of this material.
-    CPPUNIT_TEST(test_auxFieldsSetup);
+    CPPUNIT_TEST(test_auxFieldSetup);
     CPPUNIT_TEST(testGetAuxField);
 
     CPPUNIT_TEST_SUITE_END();
@@ -73,8 +73,8 @@ public:
     /// Test useReferenceState().
     void testUseReferenceState(void);
 
-    /// Test _auxFieldsSetup().
-    void test_auxFieldsSetup(void);
+    /// Test _auxFieldSetup().
+    void test_auxFieldSetup(void);
 
     /// Test getAuxField().
     void testGetAuxField(void);
