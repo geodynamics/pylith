@@ -56,13 +56,13 @@ class pylith::bc::TestDirichletTimeDependent : public CppUnit::TestFixture {
     CPPUNIT_TEST(testConstructor);
     CPPUNIT_TEST(testAccessors);
     CPPUNIT_TEST(testAuxFieldDiscretization);
-    CPPUNIT_TEST(testAuxFieldsDB);
+    CPPUNIT_TEST(testAuxFieldDB);
     CPPUNIT_TEST(testNormalizer);
     CPPUNIT_TEST(testVerifyConfiguration);
     CPPUNIT_TEST(testInitialize);
     CPPUNIT_TEST(testPrestep);
     CPPUNIT_TEST(testSetSolution);
-    CPPUNIT_TEST(testAuxFieldsSetup);
+    CPPUNIT_TEST(testAuxFieldSetup);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -84,8 +84,8 @@ public:
     /// Test auxFieldDiscretization().
     void testAuxFieldDiscretization(void);
 
-    /// Test auxFieldsDB().
-    void testAuxFieldsDB(void);
+    /// Test auxFieldDB().
+    void testAuxFieldDB(void);
 
     /// Test normalizer().
     void testNormalizer(void);
@@ -103,7 +103,7 @@ public:
     void testSetSolution(void);
 
     /// Test _auxFieldsSetup().
-    void testAuxFieldsSetup(void);
+    void testAuxFieldSetup(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected:
@@ -165,7 +165,7 @@ public:
     int numAuxFields; ///< Number of auxiliary fields.
     const char** auxFields; ///< Names of auxiliary fields.
     pylith::topology::Field::Discretization* auxDiscretizations; ///< Discretizations for auxiliary fields.
-    const char* auxDBFilename; ///< Name of file with data for auxFieldsDB.
+    const char* auxDBFilename; ///< Name of file with data for auxFieldDB.
 
 }; // class TestDirichletTimeDependent_Data
 

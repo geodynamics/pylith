@@ -26,6 +26,7 @@
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
+#include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/topology/VisitorMesh.hh" // USES VisitorMesh
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
@@ -156,11 +157,12 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldDiscretization(void)
     const topology::FieldBase::Discretization infoB = {2, 2, true, pylith::topology::FieldBase::POINT_SPACE};
 
     CPPUNIT_ASSERT(_bc);
-    _bc->auxFieldDiscretization("A", infoA.basisOrder, infoA.quadOrder, infoA.isBasisContinuous, infoA.feSpace);
-    _bc->auxFieldDiscretization("B", infoB.basisOrder, infoB.quadOrder, infoB.isBasisContinuous, infoB.feSpace);
+    _bc->auxSubfieldDiscretization("A", infoA.basisOrder, infoA.quadOrder, infoA.isBasisContinuous, infoA.feSpace);
+    _bc->auxSubfieldDiscretization("B", infoB.basisOrder, infoB.quadOrder, infoB.isBasisContinuous, infoB.feSpace);
 
+    CPPUNIT_ASSERT(_bc->_auxFactory());
     { // A
-        const topology::FieldBase::Discretization& test = _bc->auxFieldDiscretization("A");
+        const topology::FieldBase::Discretization& test = _bc->_auxFactory()->subfieldDiscretization("A");
         CPPUNIT_ASSERT_EQUAL(infoA.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoA.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoA.isBasisContinuous, test.isBasisContinuous);
@@ -168,7 +170,7 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldDiscretization(void)
     } // A
 
     { // B
-        const topology::FieldBase::Discretization& test = _bc->auxFieldDiscretization("B");
+        const topology::FieldBase::Discretization& test = _bc->_auxFactory()->subfieldDiscretization("B");
         CPPUNIT_ASSERT_EQUAL(infoB.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoB.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoB.isBasisContinuous, test.isBasisContinuous);
@@ -176,7 +178,7 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldDiscretization(void)
     } // B
 
     { // C (default)
-        const topology::FieldBase::Discretization& test = _bc->auxFieldDiscretization("C");
+        const topology::FieldBase::Discretization& test = _bc->_auxFactory()->subfieldDiscretization("C");
         CPPUNIT_ASSERT_EQUAL(infoDefault.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.isBasisContinuous, test.isBasisContinuous);
@@ -184,7 +186,7 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldDiscretization(void)
     } // C (default)
 
     { // default
-        const topology::FieldBase::Discretization& test = _bc->auxFieldDiscretization("default");
+        const topology::FieldBase::Discretization& test = _bc->_auxFactory()->subfieldDiscretization("default");
         CPPUNIT_ASSERT_EQUAL(infoDefault.basisOrder, test.basisOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.quadOrder, test.quadOrder);
         CPPUNIT_ASSERT_EQUAL(infoDefault.isBasisContinuous, test.isBasisContinuous);
@@ -196,10 +198,10 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldDiscretization(void)
 } // testAuxFieldDiscretization
 
 // ----------------------------------------------------------------------
-// Test auxFieldsDB().
+// Test auxFieldDB().
 void
-pylith::bc::TestDirichletTimeDependent::testAuxFieldsDB(void)
-{ // testAuxFieldsDB
+pylith::bc::TestDirichletTimeDependent::testAuxFieldDB(void)
+{ // testAuxFieldDB
     PYLITH_METHOD_BEGIN;
 
     const std::string label = "test db";
@@ -207,13 +209,15 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldsDB(void)
     db.label(label.c_str());
 
     CPPUNIT_ASSERT(_bc);
-    _bc->auxFieldsDB(&db);
+    _bc->auxFieldDB(&db);
 
-    CPPUNIT_ASSERT(_bc->_auxFieldsDB);
-    CPPUNIT_ASSERT_EQUAL(label, std::string(_bc->_auxFieldsDB->label()));
+    CPPUNIT_ASSERT(_bc->_auxFactory());
+    CPPUNIT_ASSERT(_bc->_auxFactory()->queryDB());
+
+    CPPUNIT_ASSERT_EQUAL(label, std::string(_bc->_auxFactory()->queryDB()->label()));
 
     PYLITH_METHOD_END;
-} // testAuxFieldsDB
+} // testAuxFieldDB
 
 
 // ----------------------------------------------------------------------
@@ -294,10 +298,10 @@ pylith::bc::TestDirichletTimeDependent::testInitialize(void)
     PylithReal t = _data->t;
     const PetscDM dm = auxFields.dmMesh(); CPPUNIT_ASSERT(dm);
     pylith::topology::FieldQuery* query = _db->_auxFieldsQuery;
-    query->openDB(_auxFieldsDB, _data->lengthScale);
+    query->openDB(queryDB, _data->lengthScale);
 
     PetscErrorCode err = DMComputeL2Diff(dm, t, query->functions(), (void**)query->contextPtrs(), auxFields.localVector(), &norm); CPPUNIT_ASSERT(!err);
-    query->closeDB(_auxFieldsDB);
+    query->closeDB(queryDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
 
@@ -333,10 +337,10 @@ pylith::bc::TestDirichletTimeDependent::testPrestep(void)
     PylithReal t = _data->t;
     const PetscDM dm = auxFields.dmMesh(); CPPUNIT_ASSERT(dm);
     pylith::topology::FieldQuery* query = _db->_auxFieldsQuery;
-    query->openDB(_auxFieldsDB, _data->lengthScale);
+    query->openDB(queryDB, _data->lengthScale);
 
     PetscErrorCode err = DMComputeL2Diff(dm, t, query->functions(), (void**)query->contextPtrs(), valueField.localVector(), &norm); CPPUNIT_ASSERT(!err);
-    query->closeDB(_auxFieldsDB);
+    query->closeDB(queryDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
 #endif
@@ -396,10 +400,10 @@ pylith::bc::TestDirichletTimeDependent::testSetSolution(void)
     PylithReal t = _data->t;
     const PetscDM dmSoln = _solution->dmMesh(); CPPUNIT_ASSERT(dmSoln);
     pylith::topology::FieldQuery* query = _db->_auxFieldsQuery;
-    query->openDB(_auxFieldsDB, _data->lengthScale);
+    query->openDB(queryDB, _data->lengthScale);
 
     PetscErrorCode err = DMComputeL2Diff(dm, t, query->functions(), (void**)query->contextPtrs(), _solution->localVector(), &norm); CPPUNIT_ASSERT(!err);
-    query->closeDB(_auxFieldsDB);
+    query->closeDB(queryDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
 #endif
@@ -408,10 +412,10 @@ pylith::bc::TestDirichletTimeDependent::testSetSolution(void)
 } // testSetSolution
 
 // ----------------------------------------------------------------------
-// Test _auxFieldsSetup().
+// Test _auxFieldSetup().
 void
-pylith::bc::TestDirichletTimeDependent::testAuxFieldsSetup(void)
-{ // testAuxFieldsSetup
+pylith::bc::TestDirichletTimeDependent::testAuxFieldSetup(void)
+{ // testAuxFieldSetup
     PYLITH_METHOD_BEGIN;
 
 #if 0
@@ -438,7 +442,7 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldsSetup(void)
 
     delete _bc->_auxFields; _bc->_auxFields = new pylith::topology::Field(*_bc->_boundaryMesh); CPPUNIT_ASSERT(_bc->_auxFields);
     delete _bc->_auxFieldsQuery; _bc->_auxFieldsQuery = new pylith::topology::FieldQuery(*_bc->_auxFields); CPPUNIT_ASSERT(_bc->_auxFieldsQuery);
-    _bc->_auxFieldsSetup();
+    _bc->_auxFieldSetup();
 
     CPPUNIT_ASSERT(_mesh->coordsys());
     const int spaceDim = _mesh->coordsys()->spaceDim();
@@ -550,7 +554,7 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldsSetup(void)
     } // if
 #endif
     PYLITH_METHOD_END;
-} // testAuxFieldsSetup
+} // testAuxFieldSetup
 
 
 // ----------------------------------------------------------------------
@@ -576,15 +580,15 @@ pylith::bc::TestDirichletTimeDependent::_initialize(void)
     pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->normalizer);
 
 #if 0
-    spatialdata::spatialdb::SimpleDB auxFieldsDB("TestDirichletTimeDependent auxFields");
+    spatialdata::spatialdb::SimpleDB auxFieldDB("TestDirichletTimeDependent auxFields");
     spatialdata::spatialdb::SimpleIOAscii dbIO;
     dbIO.filename(_data->auxDBFilename);
-    auxFieldsDB.ioHandler(&dbIO);
-    auxFieldsDB.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
+    auxFieldDB.ioHandler(&dbIO);
+    auxFieldDB.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
 #endif
 
     _bc->label(_data->bcLabel);
-    //bc->auxFieldsDB(&auxFieldsDB);
+    //bc->auxFieldDB(&auxFieldDB);
     _bc->constrainedDOF(_data->constrainedDOF, _data->numConstrainedDOF);
     _bc->normalizer(*_data->normalizer);
 
