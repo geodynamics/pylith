@@ -50,9 +50,7 @@ class DataWriterVTK(DataWriter, ModuleDataWriterVTK):
   timeFormat.meta['tip'] = "C style format string for time stamp in filename."
 
   from pyre.units.time import second
-  timeConstant = pyre.inventory.dimensional("time_constant",
-                                            default=1.0*second,
-                                            validator=pyre.inventory.greater(0.0*second))
+  timeConstant = pyre.inventory.dimensional("time_constant", default=1.0*second, validator=pyre.inventory.greater(0.0*second))
   timeConstant.meta['tip'] = "Values used to normalize time stamp in filename."
 
   precision = pyre.inventory.int("float_precision", default=6,
@@ -79,7 +77,7 @@ class DataWriterVTK(DataWriter, ModuleDataWriterVTK):
     
     ModuleDataWriterVTK.filename(self, self.filename)
     ModuleDataWriterVTK.timeFormat(self, self.timeFormat)
-    ModuleDataWriterVTK.timeConstant(self, timeConstant)
+    ModuleDataWriterVTK.timeConstant(self, self.timeConstant.value)
     ModuleDataWriterVTK.precision(self, self.precision)
     return
   
