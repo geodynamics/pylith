@@ -95,6 +95,9 @@ public:
                  const queryfn_type fn,
                  spatialdata::spatialdb::SpatialDB* db=NULL);
 
+    /// Initialize query with default query functions.
+    void initializeWithDefaultQueryFns(void);
+
     /** Get query function for subfield.
      *
      * @param subfield Name of subfield.

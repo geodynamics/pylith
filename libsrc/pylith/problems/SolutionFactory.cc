@@ -329,15 +329,11 @@ pylith::problems::SolutionFactory::setValues(spatialdata::spatialdb::SpatialDB* 
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("setValues(db="<<typeid(*db).name()<<")");
 
-    // Allocate solution field
+    // Set solution field to zero.
     _solution.zeroLocal();
 
     pylith::topology::FieldQuery query(_solution);
-    const pylith::string_vector& subfieldNames = _solution.subfieldNames();
-    const size_t numSubfields = subfieldNames.size();
-    for (size_t i = 0; i < numSubfields; ++i) {
-        query.queryFn(subfieldNames[i].c_str(), pylith::topology::FieldQuery::dbQueryGeneric);
-    } // for
+    query.initializeWithDefaultQueryFns();
     query.openDB(db, _normalizer.lengthScale());
     query.queryDB();
     query.closeDB(db);

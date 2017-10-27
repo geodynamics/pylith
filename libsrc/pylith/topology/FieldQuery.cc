@@ -101,6 +101,25 @@ pylith::topology::FieldQuery::queryFn(const char* subfield) const
     PYLITH_METHOD_RETURN(*iter->second);
 } // queryFn
 
+// ----------------------------------------------------------------------
+// Initialize query with default query functions.
+void
+pylith::topology::FieldQuery::initializeWithDefaultQueryFns(void) {
+    PYLITH_METHOD_BEGIN;
+
+    _queryFns.clear();
+    _queryDBs.clear();
+
+    const pylith::string_vector& subfields = _field.subfieldNames();
+    const unsigned int numSubfields = subfields.size();
+    for (unsigned int i = 0; i < numSubfields; ++i) {
+        _queryFns[subfields[i]] = dbQueryGeneric;
+        _queryDBs[subfields[i]] = NULL;
+    } // for
+
+    PYLITH_METHOD_END;
+} // initializeWithDefaultQueryFns
+
 
 // ----------------------------------------------------------------------
 // Get spatial database used to get values for subfield.
@@ -251,11 +270,16 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
     assert(numQueryValues == nvalues);
 
     // Tell database which values we want.
-    const char** queryValueNames = (numQueryValues > 0) ? new const char*[numQueryValues] : 0;
+    const char** queryValueNames = (numQueryValues > 0) ? new const char*[numQueryValues] : NULL;
     for (int i = 0; i < numQueryValues; ++i) {
         queryValueNames[i] = queryctx->componentNames[i].c_str();
     } // for
-    queryctx->db->queryVals(queryValueNames, numQueryValues);
+    try {
+        queryctx->db->queryVals(queryValueNames, numQueryValues);
+    } catch (const std::runtime_error& err) {
+        delete[] queryValueNames; queryValueNames = NULL;
+        PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, err.what());
+    } // try/catch
 
     // Dimensionalize query location coordinates.
     assert(queryctx->lengthScale > 0);
@@ -275,7 +299,7 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
             msg << "  " << xDim[i];
         msg << ") in spatial database '" << queryctx->db->label() << "'.";
         (*PetscErrorPrintf)(msg.str().c_str());
-        delete[] queryValueNames; queryValueNames = 0;
+        delete[] queryValueNames; queryValueNames = NULL;
         PYLITH_METHOD_RETURN(1);
     } // if
 
@@ -292,7 +316,7 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
                 msg << invalidMsg;
                 (*PetscErrorPrintf)(msg.str().c_str());
 
-                delete[] queryValueNames; queryValueNames = 0;
+                delete[] queryValueNames; queryValueNames = NULL;
                 PYLITH_METHOD_RETURN(1);
             } // if
         } // for
@@ -304,7 +328,7 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
         values[i] /= queryctx->valueScale;
     } // for
 
-    delete[] queryValueNames; queryValueNames = 0;
+    delete[] queryValueNames; queryValueNames = NULL;
 
     PYLITH_METHOD_RETURN(0);
 } // dbQueryGeneric
