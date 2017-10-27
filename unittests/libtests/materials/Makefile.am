@@ -46,9 +46,9 @@ testmaterials_SOURCES = \
 	TestEffectiveStress.cc \
 	TestMaterialNew.cc \
 	TestIsotropicLinearElasticityPlaneStrain.cc \
+	TestIsotropicLinearElasticityPlaneStrain_UniformStrain.cc \
 	TestIsotropicLinearMaxwellPlaneStrain.cc \
-	TestIsotropicLinearElasticityPlaneStrain_Cases.cc \
-	TestIsotropicLinearMaxwellPlaneStrain_Cases.cc \
+	TestIsotropicLinearMaxwellPlaneStrain_LinearStrain.cc \
 	test_materials.cc
 
 

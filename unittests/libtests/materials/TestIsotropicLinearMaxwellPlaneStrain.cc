@@ -31,7 +31,8 @@
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES JournalingComponent
 
-#include "spatialdata/spatialdb/SimpleGridDB.hh" // USES SimpleGridDB
+#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 extern "C" {
@@ -49,6 +50,8 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::setUp(void)
     TestMaterialNew::setUp();
     _mymaterial = new IsotropicLinearMaxwellPlaneStrain(); CPPUNIT_ASSERT(_mymaterial);
     _mydata = NULL;
+
+    GenericComponent::name("TestIsotropicLinearMaxwellPlaneStrain");
 
     _mymaterial->PyreComponent::identifier("TestIsotropicLinearMaxwellPlaneStrain");
     const char* journal = _mymaterial->PyreComponent::name();
@@ -82,7 +85,8 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testUseInertia(void)
 
     CPPUNIT_ASSERT(_mymaterial);
 
-    const bool flag = false; // default
+    const bool flag = false;
+    _mymaterial->useInertia(flag);
     CPPUNIT_ASSERT_EQUAL(flag, _mymaterial->_useInertia);
 
     _mymaterial->useInertia(!flag);
@@ -101,7 +105,8 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testUseBodyForce(void)
 
     CPPUNIT_ASSERT(_mymaterial);
 
-    const bool flag = false; // default
+    const bool flag = false;
+    _mymaterial->useBodyForce(flag);
     CPPUNIT_ASSERT_EQUAL(flag, _mymaterial->_useBodyForce);
 
     _mymaterial->useBodyForce(!flag);
@@ -120,7 +125,8 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testUseReferenceState(
 
     CPPUNIT_ASSERT(_mymaterial);
 
-    const bool flag = false; // default
+    const bool flag = false;
+    _mymaterial->useReferenceState(flag);
     CPPUNIT_ASSERT_EQUAL(flag, _mymaterial->_useReferenceState);
 
     _mymaterial->useReferenceState(!flag);
@@ -230,7 +236,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldSetup(voi
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // Viscous strain
 
-    if (_mydata->useBodyForce) { // body force
+    if (_mymaterial->_useBodyForce) { // body force
         const char* label = "body_force";
         const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(2), info.description.numComponents);
@@ -243,7 +249,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldSetup(voi
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // body force
 
-    if (_mydata->useGravity) { // gravity field
+    if (_mymaterial->_gravityField) { // gravity field
         const char* label = "gravity_field";
         const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(2), info.description.numComponents);
@@ -256,7 +262,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldSetup(voi
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // gravity field
 
-    if (_mydata->useReferenceState) { // reference stress
+    if (_mymaterial->_useReferenceState) { // reference stress
         const char* label = "reference_stress";
         const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(4), info.description.numComponents);
@@ -269,7 +275,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldSetup(voi
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // reference stress
 
-    if (_mydata->useReferenceState) { // reference strain
+    if (_mymaterial->_useReferenceState) { // reference strain
         const char* label = "reference_strain";
         const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(4), info.description.numComponents);
@@ -312,14 +318,14 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void)
         CPPUNIT_ASSERT_EQUAL(_mydata->dimension, density.spaceDim());
 
         pylith::topology::FieldQuery queryDensity(density);
-        queryDensity.queryFn("density", pylith::topology::FieldQuery::dbQueryGeneric);
-        queryDensity.openDB(_auxDB, lengthScale);
+        queryDensity.initializeWithDefaultQueryFns();
+        queryDensity.openDB(_mydata->auxDB, lengthScale);
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
         const PetscDM dm = density.dmMesh(); CPPUNIT_ASSERT(dm);
         PetscErrorCode err = DMComputeL2Diff(dm, t, queryDensity.functions(), (void**)queryDensity.contextPtrs(), density.localVector(), &norm); CPPUNIT_ASSERT(!err);
-        queryDensity.closeDB(_auxDB);
+        queryDensity.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
@@ -336,14 +342,14 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void)
         CPPUNIT_ASSERT_EQUAL(_mydata->dimension, bulkModulus.spaceDim());
 
         pylith::topology::FieldQuery queryBulkModulus(bulkModulus);
-        queryBulkModulus.queryFn("bulk_modulus", pylith::materials::Query::dbQueryBulkModulus);
-        queryBulkModulus.openDB(_auxDB, lengthScale);
+        queryBulkModulus.initializeWithDefaultQueryFns();
+        queryBulkModulus.openDB(_mydata->auxDB, lengthScale);
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
         const PetscDM dm = bulkModulus.dmMesh(); CPPUNIT_ASSERT(dm);
         PetscErrorCode err = DMComputeL2Diff(dm, t, queryBulkModulus.functions(), (void**)queryBulkModulus.contextPtrs(), bulkModulus.localVector(), &norm); CPPUNIT_ASSERT(!err);
-        queryBulkModulus.closeDB(_auxDB);
+        queryBulkModulus.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
@@ -360,20 +366,20 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void)
         CPPUNIT_ASSERT_EQUAL(_mydata->dimension, maxwellTime.spaceDim());
 
         pylith::topology::FieldQuery queryMaxwellTime(maxwellTime);
-        queryMaxwellTime.queryFn("maxwell_time", pylith::materials::Query::dbQueryMaxwellTime);
-        queryMaxwellTime.openDB(_auxDB, lengthScale);
+        queryMaxwellTime.initializeWithDefaultQueryFns();
+        queryMaxwellTime.openDB(_mydata->auxDB, lengthScale);
 
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
         const PetscDM dm = maxwellTime.dmMesh(); CPPUNIT_ASSERT(dm);
         PetscErrorCode err = DMComputeL2Diff(dm, t, queryMaxwellTime.functions(), (void**)queryMaxwellTime.contextPtrs(), maxwellTime.localVector(), &norm); CPPUNIT_ASSERT(!err);
-        queryMaxwellTime.closeDB(_auxDB);
+        queryMaxwellTime.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
     } // Test getting maxwellTime field
 
-    std::cout << " :TODO: Add test for getting reference stress/strain. " << std::endl;
+    PYLITH_JOURNAL_DEBUG(":TODO: @charles Add test for getting reference stress/strain.");
 
     PYLITH_METHOD_END;
 } // testGetAuxField
@@ -411,11 +417,6 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_setupSolutionFields(v
     CPPUNIT_ASSERT(_mydata->solnDiscretizations);
     CPPUNIT_ASSERT(_mydata->normalizer);
 
-    spatialdata::spatialdb::SimpleGridDB solutionDB;
-    solutionDB.filename(_mydata->solnDBFilename);
-    solutionDB.label("solution database");
-    solutionDB.queryType(spatialdata::spatialdb::SimpleGridDB::LINEAR);
-
     { // Solution @ t1
         pylith::topology::Field& solution = _solutionFields->get("solution");
         pylith::problems::SolutionFactory factory(solution, *_mydata->normalizer);
@@ -425,7 +426,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_setupSolutionFields(v
         } // if
         solution.subfieldsSetup();
         solution.allocate();
-        factory.setValues(&solutionDB);
+        factory.setValues(_mydata->solnDB);
     } // Solution @ t1
 
     { // Time derivative of solution @ t1
@@ -437,44 +438,46 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_setupSolutionFields(v
         } // if
         solutionDot.subfieldsSetup();
         solutionDot.allocate();
-        factory.setValues(&solutionDB);
+        factory.setValues(_mydata->solnDB);
     } // Time derivative of solution @ t1
-
-    spatialdata::spatialdb::SimpleGridDB perturbationDB;
-    perturbationDB.filename(_mydata->pertDBFilename);
-    perturbationDB.label("perturbation database");
-    perturbationDB.queryType(spatialdata::spatialdb::SimpleGridDB::LINEAR);
 
     { // Perturbation @ t2
         pylith::topology::Field& perturbation = _solutionFields->get("perturbation");
-        pylith::problems::SolutionFactory factory(perturbation, *_mydata->normalizer);
-        perturbation.cloneSection(_solutionFields->get("solution"));
+        const pylith::topology::Field& solution = _solutionFields->get("solution");
+        perturbation.cloneSection(solution);
         perturbation.allocate();
-        factory.setValues(&perturbationDB);
+        perturbation.copy(solution);
+
+        PYLITH_JOURNAL_WARNING(":TODO: @brad Add perturbation to solution.");
     } // Perturbation @ t2
 
     { // Time derivative of solution @ t2
         pylith::topology::Field& perturbationDot = _solutionFields->get("perturbation_dot");
-        pylith::problems::SolutionFactory factory(perturbationDot, *_mydata->normalizer);
-        perturbationDot.cloneSection(_solutionFields->get("solution_dot"));
+        const pylith::topology::Field& solutionDot = _solutionFields->get("solution_dot");
+        perturbationDot.cloneSection(solutionDot);
         perturbationDot.allocate();
-        factory.setValues(&perturbationDB);
+        perturbationDot.copy(solutionDot);
+
+        PYLITH_JOURNAL_WARNING(":TODO: @brad Add perturbation to solution.");
     } // Time derivative of solution @ t2
 
 } // _setupSolutionFields
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_Data::TestIsotropicLinearMaxwellPlaneStrain_Data(void) :
-    useInertia(false),
-    useBodyForce(false),
-    useGravity(false),
-    useReferenceState(false)
+pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_Data::TestIsotropicLinearMaxwellPlaneStrain_Data(void)
 { // constructor
     dimension = 2;
     gravityVector[0] = 0.0; // Use scales in test to provide correct nondimensional value.
     gravityVector[1] = 0.0;
     gravityVector[2] = 0;
+
+    cs = new spatialdata::geocoords::CSCart; CPPUNIT_ASSERT(cs);
+    cs->setSpaceDim(dimension);
+    cs->initialize();
+
+    solnDB->coordsys(*cs);
+    auxDB->coordsys(*cs);
 } // constructor
 
 

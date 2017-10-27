@@ -34,8 +34,8 @@
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
-#include "spatialdata/spatialdb/SimpleGridDB.hh" // USES SimpleDB
-#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "journal/debug.h" // USES journal::debug_t
@@ -47,7 +47,6 @@ pylith::materials::TestMaterialNew::setUp(void)
 { // setUp
     _mesh = new pylith::topology::Mesh();CPPUNIT_ASSERT(_mesh);
     _solutionFields = NULL;
-    _auxDB = NULL;
 } // setUp
 
 
@@ -58,7 +57,6 @@ pylith::materials::TestMaterialNew::tearDown(void)
 { // tearDown
     delete _solutionFields; _solutionFields = NULL;
     delete _mesh; _mesh = NULL;
-    delete _auxDB; _auxDB = NULL;
 } // tearDown
 
 
@@ -75,8 +73,8 @@ pylith::materials::TestMaterialNew::testAuxField(void)
     TestMaterialNew_Data* data = _data(); CPPUNIT_ASSERT(data);
 
     const pylith::topology::Field& auxField = material->auxField();
-    for (int i = 0; i < data->numAuxFields; ++i) {
-        CPPUNIT_ASSERT(auxField.hasSubfield(data->auxFields[i]));
+    for (int i = 0; i < data->numAuxSubfields; ++i) {
+        CPPUNIT_ASSERT(auxField.hasSubfield(data->auxSubfields[i]));
     } // for
 
     CPPUNIT_ASSERT(!auxField.hasSubfield("abc4598245"));
@@ -145,7 +143,7 @@ pylith::materials::TestMaterialNew::testAuxFieldDB(void)
     PYLITH_METHOD_BEGIN;
 
     const std::string label = "test db";
-    spatialdata::spatialdb::SimpleGridDB db;
+    spatialdata::spatialdb::UserFunctionDB db;
     db.label(label.c_str());
 
     MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
@@ -219,8 +217,10 @@ pylith::materials::TestMaterialNew::testId(void)
     PYLITH_METHOD_BEGIN;
 
     MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
-    TestMaterialNew_Data* data = _data(); CPPUNIT_ASSERT(data);
-    CPPUNIT_ASSERT_EQUAL(data->materialId, material->id());
+
+    const int matId = 1234;
+    material->id(matId);
+    CPPUNIT_ASSERT_EQUAL(matId, material->id());
 
     PYLITH_METHOD_END;
 } // testId
@@ -234,8 +234,9 @@ pylith::materials::TestMaterialNew::testLabel(void)
     PYLITH_METHOD_BEGIN;
 
     MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
-    TestMaterialNew_Data* data = _data(); CPPUNIT_ASSERT(data);
-    CPPUNIT_ASSERT_EQUAL(std::string(data->materialLabel), std::string(material->label()));
+    const std::string& matLabel = "xyz";
+    material->label(matLabel.c_str());
+    CPPUNIT_ASSERT_EQUAL(matLabel, std::string(material->label()));
 
     PYLITH_METHOD_END;
 } // testLabel
@@ -254,28 +255,24 @@ pylith::materials::TestMaterialNew::testInitialize(void)
     MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
     const pylith::topology::Field& auxField = material->auxField();
 
-    //material->_auxFields->view("AUX FIELDS"); // :DEBUGGING:
+    //material->_auxField->view("AUX FIELDS"); // :DEBUGGING:
 
     // Check result
     TestMaterialNew_Data* data = _data(); CPPUNIT_ASSERT(data);
-    CPPUNIT_ASSERT_EQUAL(std::string("auxiliary fields"), std::string(auxField.label()));
+    CPPUNIT_ASSERT_EQUAL(std::string("auxiliary subfields"), std::string(auxField.label()));
     CPPUNIT_ASSERT_EQUAL(data->dimension, auxField.spaceDim());
 
-#if 0 // TEMPORARY
     PylithReal norm = 0.0;
     PylithReal t = 0.0;
     const PetscDM dm = auxField.dmMesh(); CPPUNIT_ASSERT(dm);
-    pylith::topology::FieldQuery* query = material->_auxFieldsQuery;
+    pylith::topology::FieldQuery query(auxField);
+    query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(data->normalizer);
-    query->openDB(_auxDB, data->normalizer->lengthScale());
-
-    PetscErrorCode err = DMComputeL2Diff(dm, t, query->functions(), (void**)query->contextPtrs(), auxField.localVector(), &norm); CPPUNIT_ASSERT(!err);
-    query->closeDB(_auxDB);
+    query.openDB(data->auxDB, data->normalizer->lengthScale());
+    PetscErrorCode err = DMComputeL2Diff(dm, t, query.functions(), (void**)query.contextPtrs(), auxField.localVector(), &norm); CPPUNIT_ASSERT(!err);
+    query.closeDB(data->auxDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
-#else
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Need alternative mechanism to check auxiliary field (spatial database user function?)", false);
-#endif
 
     PYLITH_METHOD_END;
 } // testInitialize
@@ -460,9 +457,9 @@ pylith::materials::TestMaterialNew::testComputeLHSJacobianImplicit(void)
         PYLITH_METHOD_END;
     } // if
 
-    // Create linear problem (MMS) with two solutions, s_1 and s_2.
+    // Create linear problem (MMS) with two trial solutions, s,s_dor and p,p_dot.
     //
-    // Check that Jf(s_1)*(s_2 - s_1) = F(s_2) - F(s_1).
+    // Check that Jf(s,s_dot)*(p - s) = F(p,p_dot) - F(s,s_dot).
 
     // Call initialize()
     _initializeFull(); // includes setting up auxField
@@ -495,8 +492,6 @@ pylith::materials::TestMaterialNew::testComputeLHSJacobianImplicit(void)
     const PylithReal tshift = data->tshift;
     material->computeLHSResidual(&residual1, t, dt, solution, solutionDot);
     material->computeLHSResidual(&residual2, t, dt, perturbation, perturbationDot);
-
-    // Check that Jf(s)*(p - s) = F(p) - F(s).
 
     //residual1.view("RESIDUAL 1 LHS"); // DEBUGGING
     //residual2.view("RESIDUAL 2 LHS"); // DEBUGGING
@@ -603,15 +598,11 @@ pylith::materials::TestMaterialNew::_initializeMin(void)
     iohandler.read(_mesh); CPPUNIT_ASSERT(_mesh);
 
     // Setup coordinates.
-    spatialdata::geocoords::CSCart cs;
-    cs.setSpaceDim(_mesh->dimension());
-    cs.initialize();
-    _mesh->coordsys(&cs);
+    _mesh->coordsys(data->cs);
     CPPUNIT_ASSERT(data->normalizer);
     pylith::topology::MeshOps::nondimensionalize(_mesh, *data->normalizer);
 
-    material->id(data->materialId);
-    material->label(data->materialLabel);
+    // id and label initialized in derived class
     material->normalizer(*data->normalizer);
 
     // Setup solution fields.
@@ -638,16 +629,11 @@ pylith::materials::TestMaterialNew::_initializeFull(void)
     CPPUNIT_ASSERT(_mesh);
 
     // Set auxiliary fields spatial database.
-    delete _auxDB; _auxDB = new spatialdata::spatialdb::SimpleGridDB; CPPUNIT_ASSERT(_auxDB);
-    CPPUNIT_ASSERT(data->auxDBFilename);
-    _auxDB->filename(data->auxDBFilename);
-    _auxDB->label("IsotropicLinearElasciticityPlaneStrain auxiliary fields database");
-    _auxDB->queryType(spatialdata::spatialdb::SimpleGridDB::LINEAR);
-    material->auxFieldDB(_auxDB);
+    material->auxFieldDB(data->auxDB);
 
-    for (int i = 0; i < data->numAuxFields; ++i) {
+    for (int i = 0; i < data->numAuxSubfields; ++i) {
         const pylith::topology::FieldBase::Discretization& info = data->auxDiscretizations[i];
-        material->auxSubfieldDiscretization(data->auxFields[i], info.basisOrder, info.quadOrder, info.isBasisContinuous, info.feSpace);
+        material->auxSubfieldDiscretization(data->auxSubfields[i], info.basisOrder, info.quadOrder, info.isBasisContinuous, info.feSpace);
     } // for
 
     CPPUNIT_ASSERT(_solutionFields);
@@ -706,9 +692,8 @@ pylith::materials::TestMaterialNew::_zeroBoundary(pylith::topology::Field* field
 pylith::materials::TestMaterialNew_Data::TestMaterialNew_Data(void) :
     dimension(0),
     meshFilename(0),
-    materialLabel(NULL),
-    materialId(0),
     boundaryLabel(NULL),
+    cs(NULL),
 
     normalizer(new spatialdata::units::Nondimensional),
 
@@ -718,17 +703,22 @@ pylith::materials::TestMaterialNew_Data::TestMaterialNew_Data(void) :
 
     numSolnFields(0),
     solnDiscretizations(NULL),
-    solnDBFilename(NULL),
-    pertDBFilename(NULL),
+    solnDB(new spatialdata::spatialdb::UserFunctionDB),
 
-    numAuxFields(0),
-    auxFields(NULL),
+    numAuxSubfields(0),
+    auxSubfields(NULL),
     auxDiscretizations(NULL),
-    auxDBFilename(NULL),
+    auxDB(new spatialdata::spatialdb::UserFunctionDB),
 
     isExplicit(false)
 { // constructor
     CPPUNIT_ASSERT(normalizer);
+
+    CPPUNIT_ASSERT(solnDB);
+    solnDB->label("solution");
+
+    CPPUNIT_ASSERT(auxDB);
+    auxDB->label("auxiliary field");
 } // constructor
 
 
@@ -736,7 +726,10 @@ pylith::materials::TestMaterialNew_Data::TestMaterialNew_Data(void) :
 // Destructor
 pylith::materials::TestMaterialNew_Data::~TestMaterialNew_Data(void)
 { // destructor
+    delete cs; cs = NULL;
     delete normalizer; normalizer = NULL;
+    delete solnDB; solnDB = NULL;
+    delete auxDB; auxDB = NULL;
 } // destructor
 
 

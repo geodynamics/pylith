@@ -26,6 +26,7 @@
 #define pylith_materials_testmaterialnew_hh
 
 #include <cppunit/extensions/HelperMacros.h>
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/materials/materialsfwd.hh" // forward declarations
 #include "pylith/topology/topologyfwd.hh" // forward declarations
@@ -34,6 +35,7 @@
 #include "petscds.h" // USES PetscPointFunc, PetsPointJac
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SimpleGridDB
+#include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
 #include "spatialdata/units/unitsfwd.hh" // HOLDSA Nondimensional
 
 /// Namespace for pylith package
@@ -46,7 +48,7 @@ namespace pylith {
 } // pylith
 
 /// C++ abstract base class for testing material objects.
-class pylith::materials::TestMaterialNew : public CppUnit::TestFixture {
+class pylith::materials::TestMaterialNew : public CppUnit::TestFixture, public pylith::utils::GenericComponent {
 
     // CPPUNIT TEST SUITE /////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestMaterialNew);
@@ -166,7 +168,6 @@ protected:
     // TestMaterialNew
     pylith::topology::Mesh* _mesh;   ///< Finite-element mesh.
     pylith::topology::Fields* _solutionFields; ///< Contrainer for solution fields.
-    spatialdata::spatialdb::SimpleGridDB* _auxDB;   ///< Spatial database with data for auxiliary fields.
 
 }; // class TestMaterialNew
 
@@ -188,10 +189,9 @@ public:
 
     int dimension; ///< Dimension of material.
     const char* meshFilename; ///< Name of file with ASCII mesh.
-    const char* materialLabel; ///< Label defining cells associated with material.
-    int materialId; ///< Material id.
     const char* boundaryLabel; ///< Group defining domain boundary.
 
+    spatialdata::geocoords::CoordSys* cs; ///< Coordinate system.
     spatialdata::units::Nondimensional* normalizer; ///< Scales for nondimensionalization.
 
     PylithReal t; ///< Time for solution in simulation.
@@ -200,13 +200,12 @@ public:
 
     int numSolnFields; ///< Number of solution fields.
     pylith::topology::Field::Discretization* solnDiscretizations; ///< Discretizations for solution fields.
-    const char* solnDBFilename; ///< Name of file with data for solution.
-    const char* pertDBFilename; ///< Name of file with data for perturbation.
+    spatialdata::spatialdb::UserFunctionDB* solnDB; ///< Spatial database with solution.
 
-    int numAuxFields; ///< Number of auxiliary fields.
-    const char** auxFields; ///< Names of auxiliary fields.
-    pylith::topology::Field::Discretization* auxDiscretizations; ///< Discretizations for auxiliary fields.
-    const char* auxDBFilename; ///< Name of file with data for auxFieldsDB.
+    int numAuxSubfields; ///< Number of auxiliary subfields.
+    const char** auxSubfields; ///< Names of auxiliary subfields.
+    pylith::topology::Field::Discretization* auxDiscretizations; ///< Discretizations for auxiliary subfields.
+    spatialdata::spatialdb::UserFunctionDB* auxDB; ///< Spatial database with auxiliary field.
 
     bool isExplicit; ///< True for explicit time stepping.
 };

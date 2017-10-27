@@ -121,11 +121,6 @@ public:
 public:
 
     // SPECIFIC TO MATERIAL, VALUES DEPEND ON TEST CASE
-
-    bool useInertia; ///< Flag indicating test case uses inertia.
-    bool useBodyForce; ///< Flag indicating test case uses body force.
-    bool useGravity; ///< Flag indicating test case uses gravity field.
-    bool useReferenceState; ///< Flag indicating test case uses reference state.
     double gravityVector[3]; ///< Array for gravity vector.
 
 };

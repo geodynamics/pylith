@@ -29,9 +29,6 @@ dist_noinst_DATA = \
 	mat_elastic.spatialdb
 
 noinst_DATA = \
-        $(builddir)/IsotropicLinearElasticityPlaneStrain_UniformStrain_aux.spatialdb \
-        $(builddir)/IsotropicLinearElasticityPlaneStrain_UniformStrain_soln.spatialdb \
-        $(builddir)/IsotropicLinearElasticityPlaneStrain_UniformStrain_pert.spatialdb \
         $(builddir)/IsotropicLinearMaxwellPlaneStrain_VarStrain_aux.spatialdb \
         $(builddir)/IsotropicLinearMaxwellPlaneStrain_VarStrain_soln.spatialdb \
         $(builddir)/IsotropicLinearMaxwellPlaneStrain_VarStrain_pert.spatialdb
@@ -50,14 +47,9 @@ BUILT_SOURCES = export-data
 clean-local: clean-data
 
 
-$(builddir)/IsotropicLinearElasticityPlaneStrain_UniformStrain_soln.spatialdb \
-$(builddir)/IsotropicLinearElasticityPlaneStrain_UniformStrain_pert.spatialdb \
-$(builddir)/IsotropicLinearElasticityPlaneStrain_UniformStrain_aux.spatialdb: IsotropicLinearElasticityPlaneStrain_UniformStrain.py
-	$(PYTHON) $(srcdir)/IsotropicLinearElasticityPlaneStrain_UniformStrain.py
-
 $(builddir)/IsotropicLinearMaxwellPlaneStrain_VarStrain_soln.spatialdb \
 $(builddir)/IsotropicLinearMaxwellPlaneStrain_VarStrain_pert.spatialdb \
 $(builddir)/IsotropicLinearMaxwellPlaneStrain_VarStrain_aux.spatialdb: IsotropicLinearMaxwellPlaneStrain_VarStrain.py
 	$(PYTHON) $(srcdir)/IsotropicLinearMaxwellPlaneStrain_VarStrain.py
 
-# End of file 
+# End of file
