@@ -206,7 +206,7 @@ pylith::materials::AuxiliaryFactory::referenceStress(void)
     PYLITH_JOURNAL_DEBUG("referenceStress(void)");
 
     const char* fieldName = "reference_stress";
-    const char* componentNames[6] = { "stress_xx", "stress_yy", "stress_zz", "stress_xy", "stress_yz", "stress_xz" };
+    const char* componentNames[6] = { "reference_stress_xx", "reference_stress_yy", "reference_stress_zz", "reference_stress_xy", "reference_stress_yz", "reference_stress_xz" };
     const int stressSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
     const PylithReal pressureScale = _normalizer->pressureScale();
 
@@ -237,7 +237,7 @@ pylith::materials::AuxiliaryFactory::referenceStrain(void)
     PYLITH_JOURNAL_DEBUG("refrenceStrain(void)");
 
     const char* fieldName = "reference_strain";
-    const char* componentNames[6] = { "strain_xx", "strain_yy", "strain_zz", "strain_xy", "strain_yz", "strain_xz" };
+    const char* componentNames[6] = { "reference_strain_xx", "reference_strain_yy", "reference_strain_zz", "reference_strain_xy", "reference_strain_yz", "reference_strain_xz" };
     const int strainSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
 
     pylith::topology::Field::Description description;
@@ -293,7 +293,7 @@ pylith::materials::AuxiliaryFactory::totalStrain(void)
     PYLITH_JOURNAL_DEBUG("totalStrain(void)");
 
     const char* fieldName = "total_strain";
-    const char* componentNames[6] = { "strain_xx", "strain_yy", "strain_zz", "strain_xy", "strain_yz", "strain_xz" };
+    const char* componentNames[6] = { "total_strain_xx", "total_strain_yy", "total_strain_zz", "total_strain_xy", "total_strain_yz", "total_strain_xz" };
     const int strainSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
 
     pylith::topology::Field::Description description;
@@ -322,7 +322,7 @@ pylith::materials::AuxiliaryFactory::viscousStrain(void)
     PYLITH_JOURNAL_DEBUG("viscousStrain(void)");
 
     const char* fieldName = "viscous_strain";
-    const char* componentNames[6] = { "strain_xx", "strain_yy", "strain_zz", "strain_xy", "strain_yz", "strain_xz" };
+    const char* componentNames[6] = { "viscous_strain_xx", "viscous_strain_yy", "viscous_strain_zz", "viscous_strain_xy", "viscous_strain_yz", "viscous_strain_xz" };
     const int strainSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
 
     pylith::topology::Field::Description description;
