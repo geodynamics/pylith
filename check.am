@@ -23,7 +23,7 @@ check-local: check-TESTS
 	for f in $(TEST_LOGS); do printf "\n=== $$f ===\n\n"; cat $$f; done
 
 
-leakcheck: testtopology
+leakcheck: 
 	valgrind --log-file=valgrind_$(subpackage).log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/test$(subpackage)
 
 # Check test coverage. Only works with gcc and requires gcov. lcov provides a GUI for viewing coverage.
