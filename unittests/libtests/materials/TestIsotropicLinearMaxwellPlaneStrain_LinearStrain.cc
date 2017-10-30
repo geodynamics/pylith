@@ -194,12 +194,12 @@ protected:
 
                 CPPUNIT_ASSERT(_mydata->normalizer);
                 _mydata->normalizer->lengthScale(1.0e+03);
-                _mydata->normalizer->timeScale(2.0);
+                _mydata->normalizer->timeScale(2.0e+7);
                 _mydata->normalizer->densityScale(3.0e+3);
                 _mydata->normalizer->pressureScale(2.25e+10);
 
-                _mydata->t = 1.0e7;
-                _mydata->dt = 1.0e7;
+                _mydata->t = 1.0e+7;
+                _mydata->dt = 1.0e+7;
                 _mydata->tshift = 1.0 / _mydata->dt;
 
                 // solnDiscretizations set in derived class.
