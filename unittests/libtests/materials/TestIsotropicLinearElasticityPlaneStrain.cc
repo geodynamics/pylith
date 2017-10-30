@@ -35,13 +35,6 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-extern "C" {
-#include "pylith/fekernels/dispvel.h" // USES DispVel kernels
-#include "pylith/fekernels/elasticity.h" // USES Elasticity kernels
-#include "pylith/fekernels/linearelasticityplanestrain.h" // USES IsotropicLinearElasticityPlaneStrain kernels
-}
-
-
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
@@ -384,6 +377,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_setupSolutionField
         PYLITH_JOURNAL_WARNING(":TODO: @brad Add perturbation to solution.");
     } // Time derivative of solution @ t2
 
+    PYLITH_METHOD_END;
 } // _setupSolutionFields
 
 // ----------------------------------------------------------------------
