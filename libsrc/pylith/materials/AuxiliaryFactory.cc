@@ -173,11 +173,7 @@ pylith::materials::AuxiliaryFactory::bodyForce(void)
     const char* fieldName = "body_force";
     const char* componentNames[3] = { "body_force_x", "body_force_y", "body_force_z" };
 
-    const PylithReal densityScale = _normalizer->densityScale();
-    const PylithReal lengthScale = _normalizer->lengthScale();
-    const PylithReal timeScale = _normalizer->timeScale();
-    const PylithReal accelerationScale = lengthScale / (timeScale * timeScale);
-    const PylithReal forceScale = densityScale * accelerationScale;
+    const PylithReal forceScale = _normalizer->pressureScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
