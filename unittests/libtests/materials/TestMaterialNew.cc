@@ -332,7 +332,9 @@ pylith::materials::TestMaterialNew::testComputeResidual(void)
     err = VecDuplicate(residualRHS.localVector(), &residualVec); CPPUNIT_ASSERT(!err);
     err = VecWAXPY(residualVec, -1.0, residualRHS.localVector(), residualLHS.localVector()); CPPUNIT_ASSERT(!err);
 
-    PylithReal norm = 0.0, normRHS = 0.0, normLHS = 0.0;
+    PylithReal norm = 0.0;
+    PylithReal normRHS = 0.0;
+    PylithReal normLHS = 0.0;
     err = VecNorm(residualRHS.localVector(), NORM_2, &normRHS); CPPUNIT_ASSERT(!err);
     err = VecNorm(residualLHS.localVector(), NORM_2, &normLHS); CPPUNIT_ASSERT(!err);
     err = VecNorm(residualVec, NORM_2, &norm); CPPUNIT_ASSERT(!err);
@@ -388,7 +390,7 @@ pylith::materials::TestMaterialNew::testComputeRHSJacobian(void)
     material->computeRHSResidual(&residual2, t, dt, perturbation);
 
     //residual1.view("RESIDUAL 1 RHS"); // DEBUGGING
-    //residual2.view("RESIDUAL 1 RHS"); // DEBUGGING
+    //residual2.view("RESIDUAL 2 RHS"); // DEBUGGING
 
     // Check that J(s)*(p - s) = G(p) - G(s).
 
@@ -429,6 +431,7 @@ pylith::materials::TestMaterialNew::testComputeRHSJacobian(void)
     VecView(resultVec, PETSC_VIEWER_STDOUT_SELF);
 #endif
 
+#if 0
     PylithReal norm = 0.0;
     err = VecNorm(resultVec, NORM_2, &norm); CPPUNIT_ASSERT(!err);
     err = VecDestroy(&resultVec); CPPUNIT_ASSERT(!err);
@@ -439,6 +442,9 @@ pylith::materials::TestMaterialNew::testComputeRHSJacobian(void)
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
     CPPUNIT_ASSERT(norm > 0.0); // Norm exactly equal to zero almost certainly means test is satisfied trivially.
+#else
+    CPPUNIT_ASSERT_MESSAGE(":TODO: Test requires solution perturbation.",false);
+#endif
 
     PYLITH_METHOD_END;
 } // testComputeRHSJacobian
