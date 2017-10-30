@@ -1,4 +1,4 @@
-/* -*- C -*-
+/* -*- C++ -*-
  *
  * ----------------------------------------------------------------------
  *
@@ -22,11 +22,10 @@
  *
  * Solution fields: [disp(dim), vel(dim, optional)]
  *
- * Isotropic, linear elasticity plane strain without reference stress/strain.
  * Auxiliary fields:
  * - 0: density(1)
- * - 1: shear_odulus(1)
- * - 2: bulk_odulus(1)
+ * - 1: shear_modulus(1)
+ * - 2: bulk_modulus(1)
  * - 3: gravity_field (2, optional)
  * - 4: body_force(2,optional)
  * - 5: reference_stress(4,optional) (stress_xx, stress_yy, stress_xy, stress_zz)

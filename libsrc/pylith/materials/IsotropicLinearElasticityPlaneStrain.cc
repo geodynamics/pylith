@@ -148,9 +148,9 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_auxFieldSetup(void) {
 
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
 
-    _auxMaterialFactory->density();
-    _auxMaterialFactory->shearModulus();
-    _auxMaterialFactory->bulkModulus();
+    _auxMaterialFactory->density(); // 0
+    _auxMaterialFactory->shearModulus(); // 1
+    _auxMaterialFactory->bulkModulus(); // 2
     if (_gravityField) {
         _auxMaterialFactory->gravityField(_gravityField);
     } // if
@@ -158,8 +158,8 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_auxFieldSetup(void) {
         _auxMaterialFactory->bodyForce();
     } // if
     if (_useReferenceState) {
-        _auxMaterialFactory->referenceStress();
-        _auxMaterialFactory->referenceStrain();
+        _auxMaterialFactory->referenceStress(); // numA-2
+        _auxMaterialFactory->referenceStrain(); // numA-1
     } // if
 
     PYLITH_METHOD_END;

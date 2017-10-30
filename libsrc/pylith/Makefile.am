@@ -88,13 +88,9 @@ libpylith_la_SOURCES = \
 	fekernels/ElasticityPlaneStrain.cc \
 	fekernels/IsotropicLinearElasticityPlaneStrain.cc \
 	fekernels/IsotropicLinearMaxwellPlaneStrain.cc \
+	fekernels/IncompressibleElasticity.cc \
+	fekernels/IsotropicLinearIncompElasticityPlaneStrain.cc \
 	fekernels/DispVel.cc \
-	fekernels/dispvel.c \
-	fekernels/elasticity.c \
-	fekernels/linearelasticityplanestrain.c \
-	fekernels/linearmaxwellplanestrain.c \
-	fekernels/linearincompelasticityplanestrain.c \
-	fekernels/pressure.c \
 	fekernels/timedependentbc.c \
 	friction/FrictionModel.cc \
 	friction/StaticFriction.cc \

@@ -36,8 +36,10 @@ namespace pylith {
         class IsotropicLinearMaxwellPlaneStrain;
         class IsotropicLinearIncompElasticity;
 
+        class IncompressibleElasticity;
+        class IsotropicLinearIncompElasticityPlaneStrain;
+
         class DispVel;
-        class Pressure;
 
         class TimeDependentBC;
 

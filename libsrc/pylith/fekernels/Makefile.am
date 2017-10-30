@@ -25,13 +25,9 @@ subpkginclude_HEADERS = \
 	ElasticityPlaneStrain.hh \
 	IsotropicLinearElasticityPlaneStrain.hh \
 	IsotropicLinearMaxwellPlaneStrain.hh \
+	IncompressibleElasticity.hh \
+	IsotropicLinearIncompElasticityPlaneStrain.hh \
 	DispVel.hh \
-	dispvel.h \
-	elasticity.h \
-	linearelasticityplanestrain.h \
-	linearmaxwellplanestrain.h \
-	linearincompelasticityplanestrain.h \
-	pressure.h \
 	timedependentbc.h
 
 noinst_HEADERS =
