@@ -84,6 +84,11 @@ libpylith_la_SOURCES = \
 	feassemble/IntegratorPointwise.cc \
 	feassemble/ConstraintPointwise.cc \
 	feassemble/AuxiliaryFactory.cc \
+	fekernels/Elasticity.cc \
+	fekernels/ElasticityPlaneStrain.cc \
+	fekernels/IsotropicLinearElasticityPlaneStrain.cc \
+	fekernels/IsotropicLinearMaxwellPlaneStrain.cc \
+	fekernels/DispVel.cc \
 	fekernels/dispvel.c \
 	fekernels/elasticity.c \
 	fekernels/linearelasticityplanestrain.c \

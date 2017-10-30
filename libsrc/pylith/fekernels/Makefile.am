@@ -20,6 +20,12 @@ subpackage = fekernels
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
+	fekernelsfwd.hh \
+	Elasticity.hh \
+	ElasticityPlaneStrain.hh \
+	IsotropicLinearElasticityPlaneStrain.hh \
+	IsotropicLinearMaxwellPlaneStrain.hh \
+	DispVel.hh \
 	dispvel.h \
 	elasticity.h \
 	linearelasticityplanestrain.h \

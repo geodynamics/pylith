@@ -21,21 +21,20 @@
 #include "pylith/materials/IsotropicLinearMaxwellPlaneStrain.hh" // implementation of object methods
 
 #include "pylith/materials/AuxiliaryFactory.hh" // USES AuxiliaryFactory
+#include "pylith/materials/Query.hh" // USES Query
 
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-#include "pylith/materials/Query.hh" // USES Query
-extern "C" {
-#include "pylith/fekernels/dispvel.h" // USES DispVel kernels
-#include "pylith/fekernels/elasticity.h" // USES Elasticity kernels
-#include "pylith/fekernels/linearmaxwellplanestrain.h" // USES IsotropicLinearMaxwellPlaneStrain kernels
-}
+#include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
+#include "pylith/fekernels/ElasticityPlaneStrain.hh" // USES ElasticityPlaneStrain kernels
+#include "pylith/fekernels/IsotropicLinearMaxwellPlaneStrain.hh" // USES IsotropicLinearMaxwellPlaneStrain kernels
+#include "pylith/fekernels/DispVel.hh" // USES DispVel kernels
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "petscds.h"
 
@@ -205,26 +204,26 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsRHSResidual(c
 
     if (!solution.hasSubfield("velocity")) {
         // Displacement
-        const PetscPointFunc g0u = (_gravityField && _useBodyForce) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_gravbodyforce :
-                                   (_gravityField) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_grav :
-                                   (_useBodyForce) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_bodyforce :
+        const PetscPointFunc g0u = (_gravityField && _useBodyForce) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g0v_gravbodyforce :
+                                   (_gravityField) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g0v_grav :
+                                   (_useBodyForce) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g0v_bodyforce :
                                    NULL;
-        const PetscPointFunc g1u = (!_useReferenceState) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g1v : pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g1v_refstate;
+        const PetscPointFunc g1u = (!_useReferenceState) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g1v : pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g1v_refstate;
 
         err = PetscDSSetResidual(prob, i_disp, g0u, g1u); PYLITH_CHECK_ERROR(err);
     } else {
         const PetscInt i_vel = solution.subfieldInfo("velocity").index;
 
         // Displacement
-        const PetscPointFunc g0u = pylith_fekernels_DispVel_g0u;
+        const PetscPointFunc g0u = pylith::fekernels::DispVel::g0u;
         const PetscPointFunc g1u = NULL;
 
         // Velocity
-        const PetscPointFunc g0v = (_gravityField && _useBodyForce) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_gravbodyforce :
-                                   (_gravityField) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_grav :
-                                   (_useBodyForce) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g0v_bodyforce :
+        const PetscPointFunc g0v = (_gravityField && _useBodyForce) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g0v_gravbodyforce :
+                                   (_gravityField) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g0v_grav :
+                                   (_useBodyForce) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g0v_bodyforce :
                                    NULL;
-        const PetscPointFunc g1v = (!_useReferenceState) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g1v : pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_g1v_refstate;
+        const PetscPointFunc g1v = (!_useReferenceState) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g1v : pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::g1v_refstate;
 
         err = PetscDSSetResidual(prob, i_disp, g0u, g1u); PYLITH_CHECK_ERROR(err);
         err = PetscDSSetResidual(prob, i_vel,  g0v, g1v); PYLITH_CHECK_ERROR(err);
@@ -252,7 +251,7 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsRHSJacobian(c
         const PetscPointJac Jg0uu = NULL;
         const PetscPointJac Jg1uu = NULL;
         const PetscPointJac Jg2uu = NULL;
-        const PetscPointJac Jg3uu = pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_Jg3vu;
+        const PetscPointJac Jg3uu = pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::Jg3vu;
 
         err = PetscDSSetJacobian(prob, i_disp, i_disp, Jg0uu, Jg1uu, Jg2uu, Jg3uu); PYLITH_CHECK_ERROR(err);
     } else {
@@ -264,7 +263,7 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsRHSJacobian(c
         const PetscPointJac Jg2uu = NULL;
         const PetscPointJac Jg3uu = NULL;
 
-        const PetscPointJac Jg0uv = pylith_fekernels_DispVel_Jg0uv;
+        const PetscPointJac Jg0uv = pylith::fekernels::DispVel::Jg0uv;
         const PetscPointJac Jg1uv = NULL;
         const PetscPointJac Jg2uv = NULL;
         const PetscPointJac Jg3uv = NULL;
@@ -272,7 +271,7 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsRHSJacobian(c
         const PetscPointJac Jg0vu = NULL;
         const PetscPointJac Jg1vu = NULL;
         const PetscPointJac Jg2vu = NULL;
-        const PetscPointJac Jg3vu = pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_Jg3vu;
+        const PetscPointJac Jg3vu = pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::Jg3vu;
 
         const PetscPointJac Jg0vv = NULL;
         const PetscPointJac Jg1vv = NULL;
@@ -309,11 +308,11 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsLHSResidual(c
         const PetscInt i_vel = solution.subfieldInfo("velocity").index;
 
         // Displacement
-        const PetscPointFunc f0u = pylith_fekernels_DispVel_f0u;
+        const PetscPointFunc f0u = pylith::fekernels::DispVel::f0u;
         const PetscPointFunc f1u = NULL;
 
         // Velocity
-        const PetscPointFunc f0v = (_useInertia) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_f0v : NULL;
+        const PetscPointFunc f0v = (_useInertia) ? pylith::fekernels::ElasticityPlaneStrain::f0v : NULL;
         const PetscPointFunc f1v = NULL;
 
         err = PetscDSSetResidual(prob, i_disp, f0u, f1u); PYLITH_CHECK_ERROR(err);
@@ -339,7 +338,7 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsLHSJacobianIm
 
     if (!solution.hasSubfield("velocity")) {
         // Jacobian kernels
-        const PetscPointJac Jf0uu = pylith_fekernels_DispVel_Jf0uu_zero;
+        const PetscPointJac Jf0uu = pylith::fekernels::DispVel::Jf0uu_zero;
         const PetscPointJac Jf1uu = NULL;
         const PetscPointJac Jf2uu = NULL;
         const PetscPointJac Jf3uu = NULL;
@@ -349,7 +348,7 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsLHSJacobianIm
         const PetscInt i_vel = solution.subfieldInfo("velocity").index;
 
         // Jacobian kernels
-        const PetscPointJac Jf0uu = pylith_fekernels_DispVel_Jf0uu_implicit;
+        const PetscPointJac Jf0uu = pylith::fekernels::DispVel::Jf0uu_implicit;
         const PetscPointJac Jf1uu = NULL;
         const PetscPointJac Jf2uu = NULL;
         const PetscPointJac Jf3uu = NULL;
@@ -364,7 +363,7 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsLHSJacobianIm
         const PetscPointJac Jf2vu = NULL;
         const PetscPointJac Jf3vu = NULL;
 
-        const PetscPointJac Jf0vv = (_useInertia) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_Jf0vv_implicit : NULL;
+        const PetscPointJac Jf0vv = (_useInertia) ? pylith::fekernels::ElasticityPlaneStrain::Jf0vv_implicit : NULL;
         const PetscPointJac Jf1vv = NULL;
         const PetscPointJac Jf2vv = NULL;
         const PetscPointJac Jf3vv = NULL;
@@ -390,7 +389,7 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsLHSJacobianEx
     const PetscInt i_vel = solution.subfieldInfo("velocity").index;
 
     // Jacobian kernels
-    const PetscPointJac Jf0uu = pylith_fekernels_DispVel_Jf0uu_explicit;
+    const PetscPointJac Jf0uu = pylith::fekernels::DispVel::Jf0uu_explicit;
     const PetscPointJac Jf1uu = NULL;
     const PetscPointJac Jf2uu = NULL;
     const PetscPointJac Jf3uu = NULL;
@@ -405,7 +404,7 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsLHSJacobianEx
     const PetscPointJac Jf2vu = NULL;
     const PetscPointJac Jf3vu = NULL;
 
-    const PetscPointJac Jf0vv = (_useInertia) ? pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_Jf0vv_explicit : NULL;
+    const PetscPointJac Jf0vv = (_useInertia) ? pylith::fekernels::ElasticityPlaneStrain::Jf0vv_explicit : NULL;
     const PetscPointJac Jf1vv = NULL;
     const PetscPointJac Jf2vv = NULL;
     const PetscPointJac Jf3vv = NULL;
@@ -436,8 +435,8 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsUpdateStateva
     const PetscInt i_totalstrain = solution.subfieldInfo("total_strain").index;
     const PetscInt i_viscousstrain = solution.subfieldInfo("viscous_strain").index;
 
-    const PetscPointFunc updateTotalStrainKernel = pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_updateTotalStrain;
-    const PetscPointFunc updateViscousStrainKernel = pylith_fekernels_IsotropicLinearMaxwellPlaneStrain_updateVisStrain;
+    const PetscPointFunc updateTotalStrainKernel = pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateTotalStrain;
+    const PetscPointFunc updateViscousStrainKernel = pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateViscousStrain;
     err = PetscDSSetUpdate(prob, i_totalstrain, updateTotalStrainKernel); PYLITH_CHECK_ERROR(err);
     err = PetscDSSetUpdate(prob, i_viscousstrain, updateViscousStrainKernel); PYLITH_CHECK_ERROR(err);
 
