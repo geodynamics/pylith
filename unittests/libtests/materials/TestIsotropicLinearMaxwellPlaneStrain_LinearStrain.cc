@@ -226,6 +226,7 @@ protected:
                 _mydata->auxDB->addValue("shear_modulus", shearModulus, shearModulus_units());
                 _mydata->auxDB->addValue("bulk_modulus", bulkModulus, bulkModulus_units());
                 _mydata->auxDB->addValue("viscosity", viscosity, viscosity_units());
+                _mydata->auxDB->addValue("maxwell_time", maxwellTime, maxwellTime_units());
                 _mydata->auxDB->addValue("total_strain_xx", totalStrain_xx, "none");
                 _mydata->auxDB->addValue("total_strain_yy", totalStrain_yy, "none");
                 _mydata->auxDB->addValue("total_strain_zz", totalStrain_zz, "none");

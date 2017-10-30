@@ -153,7 +153,7 @@ pylith::materials::MaterialNew::initialize(const pylith::topology::Field& soluti
     delete _materialIS; _materialIS = new pylith::topology::StratumIS(dmMesh, "material-id", _id, includeOnlyCells); assert(_materialIS);
 
     delete _auxField; _auxField = new pylith::topology::Field(mesh); assert(_auxField);
-    _auxField->label("auxiliary fields");
+    _auxField->label("auxiliary subfields");
     _auxFieldSetup();
     _auxField->subfieldsSetup();
     _auxField->allocate();
