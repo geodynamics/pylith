@@ -144,7 +144,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldSetup(
     const PylithReal lengthScale = _mydata->normalizer->lengthScale();
     const PylithReal timeScale = _mydata->normalizer->timeScale();
     const PylithReal pressureScale = _mydata->normalizer->pressureScale();
-    const PylithReal forceScale = pressureScale;
+    const PylithReal forceScale = pressureScale / lengthScale;
 
     delete _mymaterial->_auxField; _mymaterial->_auxField = new topology::Field(*_mesh); CPPUNIT_ASSERT(_mymaterial->_auxField);
     _mymaterial->_auxFieldSetup();

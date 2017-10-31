@@ -173,7 +173,7 @@ pylith::materials::AuxiliaryFactory::bodyForce(void)
     const char* fieldName = "body_force";
     const char* componentNames[3] = { "body_force_x", "body_force_y", "body_force_z" };
 
-    const PylithReal forceScale = _normalizer->pressureScale();
+    const PylithReal forceScale = _normalizer->pressureScale() / _normalizer->lengthScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
