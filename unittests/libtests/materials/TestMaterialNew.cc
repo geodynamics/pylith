@@ -431,7 +431,6 @@ pylith::materials::TestMaterialNew::testComputeRHSJacobian(void)
     VecView(resultVec, PETSC_VIEWER_STDOUT_SELF);
 #endif
 
-#if 0
     PylithReal norm = 0.0;
     err = VecNorm(resultVec, NORM_2, &norm); CPPUNIT_ASSERT(!err);
     err = VecDestroy(&resultVec); CPPUNIT_ASSERT(!err);
@@ -440,11 +439,9 @@ pylith::materials::TestMaterialNew::testComputeRHSJacobian(void)
     err = MatDestroy(&jacobianMat); CPPUNIT_ASSERT(!err);
 
     const PylithReal tolerance = 1.0e-6;
+    CPPUNIT_ASSERT_MESSAGE(":TODO: Test requires solution perturbation.",false); // TEMPORARY
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
     CPPUNIT_ASSERT(norm > 0.0); // Norm exactly equal to zero almost certainly means test is satisfied trivially.
-#else
-    CPPUNIT_ASSERT_MESSAGE(":TODO: Test requires solution perturbation.",false);
-#endif
 
     PYLITH_METHOD_END;
 } // testComputeRHSJacobian
