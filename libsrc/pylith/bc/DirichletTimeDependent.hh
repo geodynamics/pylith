@@ -153,7 +153,7 @@ protected:
 private:
 
     spatialdata::spatialdb::TimeHistory* _dbTimeHistory; ///< Time history database.
-    pylith::bc::TimeDependentAuxiliaryFactory* _auxTimeDependentFactory; ///< Factory for auxiliary fields.
+    pylith::bc::TimeDependentAuxiliaryFactory* _auxTimeDependentFactory; ///< Factory for auxiliary subfields.
 
     bool _useInitial; ///< Use initial value term.
     bool _useRate; ///< Use rate term.

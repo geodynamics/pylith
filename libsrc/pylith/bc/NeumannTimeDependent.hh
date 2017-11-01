@@ -128,8 +128,10 @@ protected:
      *
      * @attention The order of the calls to subfieldAdd() must match the
      * order of the auxiliary fields in the FE kernels.
+     *
+     * @param[in] solution Solution field.
      */
-    void _auxFieldsSetup(void);
+    void _auxFieldSetup(const pylith::topology::Field& solution);
 
     /** Set kernels for RHS residual G(t,s).
      *
@@ -144,7 +146,8 @@ protected:
     // PROTECTED MEMBERS //////////////////////////////////////////////////
 private:
 
-    spatialdata::spatialdb::TimeHistory* _dbTimeHistory;
+    spatialdata::spatialdb::TimeHistory* _dbTimeHistory; ///< Time history database.
+    pylith::bc::TimeDependentAuxiliaryFactory* _auxTimeDependentFactory; ///< Factory for auxiliary subfields.
 
     bool _useInitial; ///< Use initial value term.
     bool _useRate; ///< Use rate term.

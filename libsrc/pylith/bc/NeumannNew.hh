@@ -67,9 +67,11 @@ protected:
      *
      * @attention The order of the calls to subfieldAdd() must match the
      * order of the auxiliary fields in the FE kernels.
+     *
+     * @param[in] solution Solution field.
      */
     virtual
-    void _auxFieldsSetup(void) = 0;
+    void _auxFieldSetup(const pylith::topology::Field& solution) = 0;
 
     /** Set kernels for RHS residual G(t,s).
      *

@@ -25,8 +25,8 @@
  * f_2(x) * a(t-t_2(x)) * H(t-t_2(s).
  */
 
-#if !defined(pylith_fekernels_timedependentfnh_h)
-#define pylith_fekernels_timedependentfhn_h
+#if !defined(pylith_fekernels_timedependentfn_hh)
+#define pylith_fekernels_timedependentfn_hh
 
 // Include directives ---------------------------------------------------
 #include "fekernelsfwd.hh" // forward declarations

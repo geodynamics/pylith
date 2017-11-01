@@ -36,6 +36,7 @@ libpylith_la_SOURCES = \
 	bc/DirichletNew.cc \
 	bc/DirichletTimeDependent.cc \
 	bc/NeumannNew.cc \
+	bc/NeumannTimeDependent.cc \
 	bc/TimeDependent.cc \
 	faults/Fault.cc \
 	faults/TopologyOps.cc \
@@ -93,6 +94,7 @@ libpylith_la_SOURCES = \
 	fekernels/IsotropicLinearIncompElasticityPlaneStrain.cc \
 	fekernels/DispVel.cc \
 	fekernels/TimeDependentFn.cc \
+	fekernels/NeumannTimeDependent.cc \
 	friction/FrictionModel.cc \
 	friction/StaticFriction.cc \
 	friction/SlipWeakening.cc \

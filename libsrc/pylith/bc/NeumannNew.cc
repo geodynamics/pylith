@@ -78,7 +78,7 @@ pylith::bc::NeumannNew::initialize(const pylith::topology::Field& solution) {
 
     delete _auxField; _auxField = new pylith::topology::Field(*_boundaryMesh); assert(_auxField);
     _auxField->label("auxiliary fields");
-    _auxFieldsSetup();
+    _auxFieldSetup(solution);
     _auxField->subfieldsSetup();
     _auxField->allocate();
     _auxField->zeroLocal();

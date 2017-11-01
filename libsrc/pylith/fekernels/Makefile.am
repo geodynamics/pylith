@@ -29,7 +29,8 @@ subpkginclude_HEADERS = \
 	IncompressibleElasticity.hh \
 	IsotropicLinearIncompElasticityPlaneStrain.hh \
 	DispVel.hh \
-	TimeDependentFn.hh
+	TimeDependentFn.hh \
+	NeumannTimeDependent.hh
 
 noinst_HEADERS =
 

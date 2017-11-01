@@ -26,6 +26,7 @@ subpkginclude_HEADERS = \
 	DirichletTimeDependent.hh \
 	NeumannNew.hh \
 	NeumannTimeDependent.hh \
+	TimeDependent.hh \
 	bcfwd.hh
 
 
