@@ -26,15 +26,13 @@
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
+#include "pylith/fekernels/TimeDependentFn.hh" // USES TimeDependentFn kernels
+
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-
-extern "C" {
-    #include "pylith/fekernels/timedependentbc.h"
-}
 
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
@@ -271,25 +269,25 @@ pylith::bc::DirichletTimeDependent::_setFEKernelsConstraint(const pylith::topolo
     const int bitUse = bitInitial | bitRate | bitTimeHistory;
     switch (bitUse) {
     case 0x1:
-        _bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_initial_scalar : pylith_fekernels_TimeDependentBC_initial_vector;
+        _bcKernel = (isScalarField) ? pylith::fekernels::TimeDependentFn::initial_scalar : pylith::fekernels::TimeDependentFn::initial_vector;
         break;
     case 0x2:
-        _bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_rate_scalar : pylith_fekernels_TimeDependentBC_rate_vector;
+        _bcKernel = (isScalarField) ? pylith::fekernels::TimeDependentFn::rate_scalar : pylith::fekernels::TimeDependentFn::rate_vector;
         break;
     case 0x4:
-        _bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_timeHistory_scalar : pylith_fekernels_TimeDependentBC_timeHistory_vector;
+        _bcKernel = (isScalarField) ? pylith::fekernels::TimeDependentFn::timeHistory_scalar : pylith::fekernels::TimeDependentFn::timeHistory_vector;
         break;
     case 0x3:
-        _bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_initialRate_scalar : pylith_fekernels_TimeDependentBC_initialRate_vector;
+        _bcKernel = (isScalarField) ? pylith::fekernels::TimeDependentFn::initialRate_scalar : pylith::fekernels::TimeDependentFn::initialRate_vector;
         break;
     case 0x5:
-        _bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_initialTimeHistory_scalar : pylith_fekernels_TimeDependentBC_initialTimeHistory_vector;
+        _bcKernel = (isScalarField) ? pylith::fekernels::TimeDependentFn::initialTimeHistory_scalar : pylith::fekernels::TimeDependentFn::initialTimeHistory_vector;
         break;
     case 0x6:
-        _bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_rateTimeHistory_scalar : pylith_fekernels_TimeDependentBC_rateTimeHistory_vector;
+        _bcKernel = (isScalarField) ? pylith::fekernels::TimeDependentFn::rateTimeHistory_scalar : pylith::fekernels::TimeDependentFn::rateTimeHistory_vector;
         break;
     case 0x7:
-        _bcKernel = (isScalarField) ? pylith_fekernels_TimeDependentBC_initialRateTimeHistory_scalar : pylith_fekernels_TimeDependentBC_initialRateTimeHistory_vector;
+        _bcKernel = (isScalarField) ? pylith::fekernels::TimeDependentFn::initialRateTimeHistory_scalar : pylith::fekernels::TimeDependentFn::initialRateTimeHistory_vector;
         break;
     case 0x0:
         PYLITH_COMPONENT_WARNING("Dirichlet BC provides no constraints.");

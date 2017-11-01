@@ -49,14 +49,13 @@ pylith::fekernels::Elasticity::f0v_inertia(const PylithInt dim,
                                            const PylithScalar constants[],
                                            PylithScalar f0[]) {
     const PylithInt _numS = 2;
-    const PylithInt i_vel = 1;
-    const PylithScalar* vel_t = &s_t[sOff[i_vel]]; // acceleration
-
     const PylithInt _numA = 1;
-    const PylithInt i_density = 0;
-    const PylithScalar density = a[aOff[i_density]];
 
-    PylithInt i;
+    // Incoming solution fields.
+    const PylithInt i_vel = 1;
+
+    // Incoming auxiliary fields.
+    const PylithInt i_density = 0;
 
     assert(_numS == numS);
     assert(_numA == numA);
@@ -65,7 +64,10 @@ pylith::fekernels::Elasticity::f0v_inertia(const PylithInt dim,
     assert(aOff);
     assert(a);
 
-    for (i = 0; i < dim; ++i) {
+    const PylithScalar* vel_t = &s_t[sOff[i_vel]]; // acceleration
+    const PylithScalar density = a[aOff[i_density]];
+
+    for (PylithInt i = 0; i < dim; ++i) {
         f0[i] += vel_t[i] * density;
     } // for
 } // f0v_inertia
@@ -93,14 +95,13 @@ pylith::fekernels::Elasticity::g0v_grav(const PylithInt dim,
                                         const PylithScalar constants[],
                                         PylithScalar g0[]) {
     const PylithInt _numS = 0;
-
     const PylithInt _numA = 2;
-    const PylithInt i_density = 0;
-    const PylithInt i_gravityField = 1;
-    const PylithScalar density = a[aOff[i_density]];
-    const PylithScalar* gravityField = &a[aOff[i_gravityField]];
 
-    PylithInt i;
+    // Incoming solution fields.
+    const PylithInt i_density = 0;
+
+    // Incoming auxiliary fields.
+    const PylithInt i_gravityField = 1;
 
     assert(_numS == numS);
     assert(_numA == numA);
@@ -109,7 +110,10 @@ pylith::fekernels::Elasticity::g0v_grav(const PylithInt dim,
     assert(aOff[i_gravityField] >= 0);
     assert(a);
 
-    for (i = 0; i < dim; ++i) {
+    const PylithScalar density = a[aOff[i_density]];
+    const PylithScalar* gravityField = &a[aOff[i_gravityField]];
+
+    for (PylithInt i = 0; i < dim; ++i) {
         g0[i] += density*gravityField[i];
     } // for
 } // g0v_grav
@@ -137,12 +141,10 @@ pylith::fekernels::Elasticity::g0v_bodyforce(const PylithInt dim,
                                              const PylithScalar constants[],
                                              PylithScalar g0[]) {
     const PylithInt _numS = 0;
-
     const PylithInt _numA = 1;
-    const PylithInt i_bodyForce = 0;
-    const PylithScalar* bodyForce = &a[aOff[i_bodyForce]];
 
-    PylithInt i;
+    // Incoming auxiliary fields.
+    const PylithInt i_bodyForce = 0;
 
     assert(_numS == numS);
     assert(_numA == numA);
@@ -150,7 +152,9 @@ pylith::fekernels::Elasticity::g0v_bodyforce(const PylithInt dim,
     assert(aOff[i_bodyForce] >= 0);
     assert(a);
 
-    for (i = 0; i < dim; ++i) {
+    const PylithScalar* bodyForce = &a[aOff[i_bodyForce]];
+
+    for (PylithInt i = 0; i < dim; ++i) {
         g0[i] += bodyForce[i];
     } // for
 } // g0v_bodyforce
@@ -179,12 +183,10 @@ pylith::fekernels::Elasticity::Jf0vv_inertiaimplicit(const PylithInt dim,
                                                      const PylithScalar constants[],
                                                      PylithScalar Jf0[]) {
     const PylithInt _numS = 2;
-
     const PylithInt _numA = 1;
-    const PylithInt i_density = 0;
-    const PylithScalar density = a[aOff[i_density]];
 
-    PylithInt i, j;
+    // Incoming auxiliary fields.
+    const PylithInt i_density = 0;
 
     assert(_numS == numS);
     assert(_numA == numA);
@@ -192,8 +194,10 @@ pylith::fekernels::Elasticity::Jf0vv_inertiaimplicit(const PylithInt dim,
     assert(aOff[i_density] >= 0);
     assert(a);
 
-    for (i = 0; i < dim; ++i) {
-        for (j = 0; j < dim; ++j) {
+    const PylithScalar density = a[aOff[i_density]];
+
+    for (PylithInt i = 0; i < dim; ++i) {
+        for (PylithInt j = 0; j < dim; ++j) {
             Jf0[i*dim+j] += utshift * density;
         } // for
     } // for
@@ -223,75 +227,24 @@ pylith::fekernels::Elasticity::Jf0vv_inertiaexplicit(const PylithInt dim,
                                                      const PylithScalar constants[],
                                                      PylithScalar Jf0[]) {
     const PylithInt _numS = 2;
+    const PylithInt _numA = 1;
+
+    // Incoming solution fields.
     const PylithInt i_disp = 0;
     const PylithInt i_vel = 1;
 
-    const PylithInt _numA = 1;
+    // Incoming auxiliary fields.
     const PylithInt i_density = 0;
-    const PylithScalar density = a[aOff[i_density]];
-
 
     assert(_numS == numS);
     assert(_numA == numA);
     assert(aOff);
     assert(a);
 
+    const PylithScalar density = a[aOff[i_density]];
+
     Jf0[i_disp*_numS+i_vel] += density;
 } // Jf0vv_inertiaexplicit
-
-
-// ----------------------------------------------------------------------
-// Function to compute Maxwell viscous strain coefficient.
-PylithScalar
-pylith::fekernels::Elasticity::maxwellViscousStrainCoeff(const PylithScalar dt,
-                                                         const PylithScalar maxwellTime) {
-#if 0
-    if (maxwellTime <= 0.0) {
-        throw std::runtime_error("Maxwell time must be greater than 0.");
-    }
-
-    // Define cutoff values
-    const PylithScalar timeFrac = 1.0e-10;
-
-    // Compute viscous strain parameter.  The ratio of dt and
-    // maxwellTime should never approach timeFrac for any reasonable
-    // computation, but I have put in alternative solutions just in
-    // case.
-
-    // For now, assume time step size is reasonable to avoid if statements.
-    PylithScalar dq = 0.0;
-
-    // Use series expansion if dt is very small, since default solution
-    // blows up otherwise.
-    if (dt < timeFrac*maxwellTime) {
-        PylithScalar fSign = 1.0;
-        PylithScalar factorial = 1.0;
-        PylithScalar fraction = 1.0;
-        dq = 1.0;
-
-        const int numTerms = 5;
-        for (int iTerm = 2; iTerm <= numTerms; ++iTerm) {
-            factorial *= iTerm;
-            fSign *= -1.0;
-            fraction *= dt / maxwellTime;
-            dq += fSign * fraction / factorial;
-        } // for
-        PetscLogFlops(8*(numTerms-1));
-    } else if (maxwellTime < timeFrac*dt) {
-        // Throw away exponential term if maxwellTime is very small.
-        dq = maxwellTime / dt;
-        PetscLogFlops(1);
-    } else {
-        // Default solution.
-        dq = maxwellTime*(1.0-exp(-dt/maxwellTime))/dt;
-        PetscLogFlops(6);
-    } // else
-#endif
-
-    PylithScalar dq = maxwellTime*(1.0-exp(-dt/maxwellTime))/dt;
-
-    return dq;
-} // maxwellViscousStrainCoef
 
 
 // End of file

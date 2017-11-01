@@ -24,11 +24,12 @@ subpkginclude_HEADERS = \
 	Elasticity.hh \
 	ElasticityPlaneStrain.hh \
 	IsotropicLinearElasticityPlaneStrain.hh \
+	Viscoelastic.hh \
 	IsotropicLinearMaxwellPlaneStrain.hh \
 	IncompressibleElasticity.hh \
 	IsotropicLinearIncompElasticityPlaneStrain.hh \
 	DispVel.hh \
-	timedependentbc.h
+	TimeDependentFn.hh
 
 noinst_HEADERS =
 

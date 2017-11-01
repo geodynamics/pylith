@@ -20,6 +20,7 @@
 
 #include "pylith/fekernels/IsotropicLinearMaxwellPlaneStrain.hh"
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
+#include "pylith/fekernels/Viscoelastic.hh" // USES Viscoelastic kernels
 #include "pylith/fekernels/ElasticityPlaneStrain.hh" // USES ElasticityPlaneStrain kernels
 
 #include <cassert> // USES assert()
@@ -378,7 +379,7 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::Jg3vu(const PylithInt dim,
     const PylithScalar maxwellTime = a[aOff[i_maxwellTime]];
     const PylithScalar dt = constants[0];
 
-    const PylithScalar dq = pylith::fekernels::Elasticity::maxwellViscousStrainCoeff(dt, maxwellTime);
+    const PylithScalar dq = pylith::fekernels::Viscoelastic::maxwellViscousStrainCoeff(dt, maxwellTime);
 
     // Unique components of Jacobian.
     const PylithReal C1111 = bulkModulus + 4.0/3.0 * shearModulus * dq;
@@ -638,7 +639,7 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::computeViscousStrain(const
 
     const PylithScalar dt = constants[0];
 
-    const PylithScalar dq = pylith::fekernels::Elasticity::maxwellViscousStrainCoeff(dt, maxwellTime);
+    const PylithScalar dq = pylith::fekernels::Viscoelastic::maxwellViscousStrainCoeff(dt, maxwellTime);
     const PylithScalar expFac = exp(-dt/maxwellTime);
 
     const PylithScalar strainTpdt[4] = {

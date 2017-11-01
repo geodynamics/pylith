@@ -16,7 +16,7 @@
  * ----------------------------------------------------------------------
  */
 
-/** @file libsrc/fekernels/elasticity.h
+/** @file libsrc/fekernels/Elasticity.hh
  *
  * Generic elasticity kernels for inertia and body forces.
  *
@@ -198,19 +198,8 @@ public:
                                PylithScalar Jf0[]);
 
 
-    /** Viscous strain coefficient function for Maxwell viscoelastic materials.
-     *
-     * @param[in] dt Time step size.
-     * @param[in] maxwellTime Relaxation time for material.
-     *
-     * @returns Viscous strain coefficient.
-     */
-    static
-    PylithScalar maxwellViscousStrainCoeff(const PylithScalar dt,
-                                           const PylithScalar maxwellTime);
-
 }; // Elasticity
 
-#endif /* pylith_fekernels_elasticity_hh */
+#endif // pylith_fekernels_elasticity_hh
 
-/* End of file */
+// End of file

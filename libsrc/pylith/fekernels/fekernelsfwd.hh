@@ -33,15 +33,17 @@ namespace pylith {
         class Elasticity;
         class ElasticityPlaneStrain;
         class IsotropicLinearElasticityPlaneStrain;
+
+        class Viscoelastic;
         class IsotropicLinearMaxwellPlaneStrain;
-        class IsotropicLinearIncompElasticity;
 
         class IncompressibleElasticity;
         class IsotropicLinearIncompElasticityPlaneStrain;
 
         class DispVel;
 
-        class TimeDependentBC;
+        class TimeDependentFn;
+        class NeumannTimeDependent;
 
     } // fekernels
 } // pylith
