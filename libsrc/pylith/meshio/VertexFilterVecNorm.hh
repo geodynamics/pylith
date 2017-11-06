@@ -23,8 +23,8 @@
  * vertices when outputing finite-element data.
  */
 
-#if !defined(pylith_meshio_cellfiltervecnorm_hh)
-#define pylith_meshio_cellfiltervecnorm_hh
+#if !defined(pylith_meshio_vertexfiltervecnorm_hh)
+#define pylith_meshio_vertexfiltervecnorm_hh
 
 // Include directives ---------------------------------------------------
 #include "VertexFilter.hh" // ISA VertexFilter
@@ -33,58 +33,56 @@
 /** @brief C++ object for computing vector norms for fields over
  * vertices when outputing finite-element data.
  */
-class pylith::meshio::VertexFilterVecNorm : public VertexFilter
-{ // VertexFilterVecNorm
+class pylith::meshio::VertexFilterVecNorm : public VertexFilter { // VertexFilterVecNorm
 
-// PUBLIC METHODS ///////////////////////////////////////////////////////
-public :
+    // PUBLIC METHODS ///////////////////////////////////////////////////////
+public:
 
-  /// Constructor
-  VertexFilterVecNorm(void);
+    /// Constructor
+    VertexFilterVecNorm(void);
 
-  /// Destructor
-  ~VertexFilterVecNorm(void);
+    /// Destructor
+    ~VertexFilterVecNorm(void);
 
-  /** Create copy of filter.
-   *
-   * @returns Copy of filter.
-   */
-  VertexFilter* clone(void) const;
+    /** Create copy of filter.
+     *
+     * @returns Copy of filter.
+     */
+    VertexFilter* clone(void) const;
 
-  /// Deallocate PETSc and local data structures.
-  void deallocate(void);
-  
-  /** Filter vertex field.
-   *
-   * @param fieldIn Field to filter.
-   */
-  topology::Field&
-  filter(const topology::Field& fieldIn);
+    /// Deallocate PETSc and local data structures.
+    void deallocate(void);
 
-// PROTECTED METHODS ////////////////////////////////////////////////////
-protected :
+    /** Filter vertex field.
+     *
+     * @param fieldIn Field to filter.
+     */
+    topology::Field&filter(const topology::Field& fieldIn);
 
-  /** Copy constructor.
-   *
-   * @param f Filter to copy.
-   * @returns Pointer to this.
-   */
-  VertexFilterVecNorm(const VertexFilterVecNorm& f);
+    // PROTECTED METHODS ////////////////////////////////////////////////////
+protected:
 
-// NOT IMPLEMENTED //////////////////////////////////////////////////////
-private :
+    /** Copy constructor.
+     *
+     * @param f Filter to copy.
+     * @returns Pointer to this.
+     */
+    VertexFilterVecNorm(const VertexFilterVecNorm& f);
 
-  /// Not implemented.
-  const VertexFilterVecNorm& operator=(const VertexFilterVecNorm&);
+    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+private:
 
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
-private :
+    /// Not implemented.
+    const VertexFilterVecNorm& operator=(const VertexFilterVecNorm&);
 
-  topology::Field* _fieldVecNorm; ///< Filtered vertex field
+    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+private:
+
+    topology::Field* _fieldVecNorm; ///< Filtered vertex field
 
 }; // VertexFilterVecNorm
 
-#endif // pylith_meshio_cellfiltervecnorm_hh
+#endif // pylith_meshio_vertexfiltervecnorm_hh
 
 
-// End of file 
+// End of file
