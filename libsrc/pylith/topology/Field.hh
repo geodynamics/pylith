@@ -176,7 +176,7 @@ public:
      *
      * @returns True if section has been setup.
      */
-    bool hasSection(void) const; // :TODO: @brad Remove, obsolete.
+    bool hasSection(void) const; // :TODO: @brad Remove, OBSOLETE.
 
     /** Get local PetscSection.
      *
@@ -197,14 +197,14 @@ public:
     PetscVec localVector(void) const;
 
     /// Set chart for solution.
-    void setupSolnChart(void); // :TODO: @brad Remove, obsolete.
+    void setupSolnChart(void); // :TODO: @brad Remove, OBSOLETE.
 
     /** Set default DOF for solution.
      *
      * @param fiberDim Total number of components in solution.
      * @param subfieldName Name of subfield for DOF.
      */
-    void setupSolnDof(const int fiberDim, // :TODO: @brad Remove obsolte.
+    void setupSolnDof(const int fiberDim, // :TODO: @brad Remove OBSOLETE.
                       const char* subfieldName="displacement");
 
     /** Create PETSc section and set chart and fiber dimesion for a list
@@ -216,7 +216,7 @@ public:
      *
      * @note Don't forget to call label(), especially if reusing a field.
      */
-    void newSection(const PetscInt pStart, // :TODO: @brad Remove obsolete.
+    void newSection(const PetscInt pStart, // :TODO: @brad Remove OBSOLETE.
                     const PetscInt pEnd,
                     const int fiberDim);
 
@@ -228,7 +228,7 @@ public:
      *
      * @note Don't forget to call label(), especially if reusing a field.
      */
-    void newSection(const int_array& points, // :TODO: @brad Remove obsolete.
+    void newSection(const int_array& points, // :TODO: @brad Remove OBSOLETE.
                     const int fiberDim);
 
     /** Create PETSc section and set chart and fiber dimesion for a list
@@ -252,7 +252,7 @@ public:
      *
      * @note Don't forget to call label(), especially if reusing a field.
      */
-    void newSection(const DomainEnum domain, // :TODO: @brad Remove obsolete.
+    void newSection(const DomainEnum domain, // :TODO: @brad Remove OBSOLETE.
                     const int fiberDim,
                     const int stratum=0);
 
@@ -325,7 +325,7 @@ public:
      * @param domain Point classification for subfield.
      * @param fiberDim Number of subfield components per point.
      */
-    void subfieldSetDof(const char *name,  // :TODO: @brad Remove obsolete.
+    void subfieldSetDof(const char *name,  // :TODO: @brad Remove OBSOLETE.
                         const pylith::topology::FieldBase::DomainEnum domain,
                         const int fiberDim);
 
