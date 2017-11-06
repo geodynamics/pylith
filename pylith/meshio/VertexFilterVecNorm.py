@@ -16,44 +16,46 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pyre/meshio/VertexFilterVecNormMesh.py
+# @file pyre/meshio/VertexFilterVecNorm.py
 ##
-## @brief Python class for computing vector norm for each vertex for
-## field over vertices when writing finite-element data.
+# @brief Python class for computing vector norm for each vertex for
+# field over vertices when writing finite-element data.
 ##
-## Factory: output_vertex_filter
+# Factory: output_vertex_filter
 
 from VertexFilter import VertexFilter
 from meshio import VertexFilterVecNorm as ModuleVertexFilterVecNorm
 
 # VertexFilterVecNorm class
+
+
 class VertexFilterVecNorm(VertexFilter, ModuleVertexFilterVecNorm):
-  """
-  Python class for computing vector norm for each vertex for field
-  over vertices when writing finite-element data.
-
-  Factory: output_vertex_filter
-  """
-
-  # PUBLIC METHODS /////////////////////////////////////////////////////
-
-  def __init__(self, name="vertexfiltervecnor"):
     """
-    Constructor.
+    Python class for computing vector norm for each vertex for field
+    over vertices when writing finite-element data.
+
+    Factory: output_vertex_filter
     """
-    VertexFilter.__init__(self, name)
-    ModuleVertexFilterVecNorm.__init__(self)
-    self.filter = True
-    return
+
+    # PUBLIC METHODS /////////////////////////////////////////////////////
+
+    def __init__(self, name="vertexfiltervecnorm"):
+        """
+        Constructor.
+        """
+        VertexFilter.__init__(self, name)
+        ModuleVertexFilterVecNorm.__init__(self)
+        self.filter = True
+        return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def output_vertex_filter():
-  """
-  Factory associated with VertexFilter.
-  """
-  return VertexFilterVecNorm()
+    """
+    Factory associated with VertexFilter.
+    """
+    return VertexFilterVecNorm()
 
 
-# End of file 
+# End of file
