@@ -37,6 +37,7 @@ subpkginclude_HEADERS = \
 	OutputSolnPoints.hh \
 	VertexFilter.hh \
 	VertexFilterVecNorm.hh \
+	VertexFilterDecimateP1.hh \
 	OutputManagerNew.hh \
 	OutputSolnNew.hh \
 	meshiofwd.hh

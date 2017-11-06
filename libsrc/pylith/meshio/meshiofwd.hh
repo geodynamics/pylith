@@ -55,6 +55,7 @@ namespace pylith {
         class CellFilterAvg;
         class VertexFilter;
         class VertexFilterVecNorm;
+        class VertexFilterDecimateP1;
         class OutputSolnSubset;
         class OutputSolnPoints;
 

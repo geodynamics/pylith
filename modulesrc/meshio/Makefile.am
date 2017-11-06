@@ -32,6 +32,7 @@ swig_sources = \
 	MeshIOCubit.i \
 	VertexFilter.i \
 	VertexFilterVecNorm.i \
+	VertexFilterDecimateP1.i \
 	CellFilter.i \
 	CellFilterAvg.i \
 	DataWriter.i \

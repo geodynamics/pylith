@@ -123,6 +123,7 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/SingleOutput.py \
 	meshio/VertexFilter.py \
 	meshio/VertexFilterVecNorm.py \
+	meshio/VertexFilterDecimateP1.py \
 	meshio/OutputManagerNew.py \
 	meshio/OutputSolnNew.py \
 	mpi/__init__.py \

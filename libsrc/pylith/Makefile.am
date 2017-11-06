@@ -141,6 +141,7 @@ libpylith_la_SOURCES = \
 	meshio/CellFilterAvg.cc \
 	meshio/VertexFilter.cc \
 	meshio/VertexFilterVecNorm.cc \
+	meshio/VertexFilterDecimateP1.cc \
 	meshio/DataWriter.cc \
 	meshio/DataWriterVTK.cc \
 	meshio/OutputManager.cc \
