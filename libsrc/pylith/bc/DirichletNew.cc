@@ -111,7 +111,7 @@ pylith::bc::DirichletNew::initialize(const pylith::topology::Field& solution)
     pylith::topology::CoordsVisitor::optimizeClosure(dmBoundary);
 
     delete _auxField; _auxField = new pylith::topology::Field(*_boundaryMesh); assert(_auxField);
-    _auxField->label("auxiliary fields");
+    _auxField->label("auxiliary subfields");
     _auxFieldSetup(solution);
     _auxField->subfieldsSetup();
     _auxField->allocate();

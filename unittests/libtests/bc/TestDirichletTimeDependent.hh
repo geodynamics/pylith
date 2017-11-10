@@ -28,13 +28,15 @@
 #define pylith_bc_testdirichlettimedependent_hh
 
 #include <cppunit/extensions/HelperMacros.h>
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/bc/bcfwd.hh" // forward declarations
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 
 #include "pylith/topology/Field.hh" // HOLDSA Discretization
 
-#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SimpleGridDB
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA UserFunctionDB
+#include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
 #include "spatialdata/units/unitsfwd.hh" // HOLDSA Nondimensional
 
 
@@ -48,7 +50,7 @@ namespace pylith {
 } // pylith
 
 /// C++ unit testing for DirichletBC.
-class pylith::bc::TestDirichletTimeDependent : public CppUnit::TestFixture {
+class pylith::bc::TestDirichletTimeDependent : public CppUnit::TestFixture, public pylith::utils::GenericComponent {
 
     // CPPUNIT TEST SUITE /////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestDirichletTimeDependent);
@@ -144,6 +146,7 @@ public:
     const char* meshFilename; ///< Name of file with ASCII mesh.
     const char* bcLabel; ///< Label defining cells associated with material.
 
+    spatialdata::geocoords::CoordSys* cs; ///< Coordinate system.
     spatialdata::units::Nondimensional* normalizer; ///< Scales for nondimensionalization.
 
     const char* field; ///< Name of solution field constrained.
@@ -157,15 +160,15 @@ public:
     bool useTimeHistory; ///< True if using time history;
     const char* thFilename; ///< Name of file with time history.
 
-    PylithReal t; ///< Time associated with setting solution.
-    int solnNumFields; ///< Number of solution fields.
-    pylith::topology::FieldBase::Discretization* solnDiscretizations; ///< Discretizations for solution fields.
-    const char* solnDBFilename; ///< Name of file with data for solution.
-
-    int numAuxFields; ///< Number of auxiliary fields.
-    const char** auxFields; ///< Names of auxiliary fields.
+    int numAuxSubfields; ///< Number of auxiliary subfields.
+    const char** auxSubfields; ///< Names of auxiliary subfields.
     pylith::topology::Field::Discretization* auxDiscretizations; ///< Discretizations for auxiliary fields.
-    const char* auxDBFilename; ///< Name of file with data for auxFieldDB.
+    spatialdata::spatialdb::UserFunctionDB* auxDB; ///< Spatial database with auxiliary field.
+
+    PylithReal t; ///< Time associated with setting solution.
+    int solnNumSubfields; ///< Number of solution fields.
+    pylith::topology::FieldBase::Discretization* solnDiscretizations; ///< Discretizations for solution fields.
+    spatialdata::spatialdb::UserFunctionDB* solnDB; ///< Spatial database with solution.
 
 }; // class TestDirichletTimeDependent_Data
 
