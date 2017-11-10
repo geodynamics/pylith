@@ -255,7 +255,7 @@ pylith::materials::TestMaterialNew::testInitialize(void)
     MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
     const pylith::topology::Field& auxField = material->auxField();
 
-    material->_auxField->view("AUX FIELDS"); // :DEBUGGING:
+    //material->_auxField->view("AUX FIELDS"); // :DEBUGGING:
 
     // Check result
     TestMaterialNew_Data* data = _data(); CPPUNIT_ASSERT(data);
@@ -704,7 +704,7 @@ pylith::materials::TestMaterialNew_Data::TestMaterialNew_Data(void) :
     dt(0.0),
     tshift(0.0),
 
-    numSolnFields(0),
+    numSolnSubfields(0),
     solnDiscretizations(NULL),
     solnDB(new spatialdata::spatialdb::UserFunctionDB),
 

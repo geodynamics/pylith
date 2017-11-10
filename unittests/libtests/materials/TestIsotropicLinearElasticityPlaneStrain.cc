@@ -328,8 +328,8 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_setupSolutionField
 
     CPPUNIT_ASSERT(_solutionFields);
 
-    CPPUNIT_ASSERT( (!_mydata->isExplicit && 1 == _mydata->numSolnFields) ||
-                    (_mydata->isExplicit && 2 == _mydata->numSolnFields) );
+    CPPUNIT_ASSERT( (!_mydata->isExplicit && 1 == _mydata->numSolnSubfields) ||
+                    (_mydata->isExplicit && 2 == _mydata->numSolnSubfields) );
     CPPUNIT_ASSERT(_mydata->solnDiscretizations);
     CPPUNIT_ASSERT(_mydata->normalizer);
 

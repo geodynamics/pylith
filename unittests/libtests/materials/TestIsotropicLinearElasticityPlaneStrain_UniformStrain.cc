@@ -185,7 +185,7 @@ protected:
 
                 _mydata->meshFilename = "data/tri_small.mesh";
 
-                _mydata->numSolnFields = 1;
+                _mydata->numSolnSubfields = 1;
                 static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
                     {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // disp
                 };
@@ -210,7 +210,7 @@ protected:
 
                 _mydata->meshFilename = "data/tri_small.mesh";
 
-                _mydata->numSolnFields = 1;
+                _mydata->numSolnSubfields = 1;
                 static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
                     {2, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // disp
                 };
@@ -242,7 +242,7 @@ protected:
 
                 _mydata->meshFilename = "data/tri_small.mesh";
 
-                _mydata->numSolnFields = 1;
+                _mydata->numSolnSubfields = 1;
                 static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
                     {3, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // disp
                 };
@@ -274,7 +274,7 @@ protected:
 
                 _mydata->meshFilename = "data/tri_small.mesh";
 
-                _mydata->numSolnFields = 1;
+                _mydata->numSolnSubfields = 1;
                 static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
                     {4, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // disp
                 };
@@ -306,7 +306,7 @@ protected:
 
                 _mydata->meshFilename = "data/quad_aligned.mesh";
 
-                _mydata->numSolnFields = 1;
+                _mydata->numSolnSubfields = 1;
                 static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
                     {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // disp
                 };
@@ -338,7 +338,7 @@ protected:
 
                 _mydata->meshFilename = "data/quad_aligned.mesh";
 
-                _mydata->numSolnFields = 1;
+                _mydata->numSolnSubfields = 1;
                 static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
                     {2, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // disp
                 };
@@ -370,7 +370,7 @@ protected:
 
                 _mydata->meshFilename = "data/quad_aligned.mesh";
 
-                _mydata->numSolnFields = 1;
+                _mydata->numSolnSubfields = 1;
                 static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
                     {3, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // disp
                 };
@@ -402,7 +402,7 @@ protected:
 
                 _mydata->meshFilename = "data/quad_aligned.mesh";
 
-                _mydata->numSolnFields = 1;
+                _mydata->numSolnSubfields = 1;
                 static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
                     {4, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // disp
                 };

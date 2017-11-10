@@ -30,11 +30,9 @@
 
 #include "pylith/materials/materialsfwd.hh" // forward declarations
 #include "pylith/topology/topologyfwd.hh" // forward declarations
-
 #include "pylith/topology/Field.hh" // HASA FieldBase::Discretization
-#include "petscds.h" // USES PetscPointFunc, PetsPointJac
 
-#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SimpleGridDB
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA UserFunctionDB
 #include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
 #include "spatialdata/units/unitsfwd.hh" // HOLDSA Nondimensional
 
@@ -198,7 +196,7 @@ public:
     PylithReal dt; ///< Time step in simulation.
     PylithReal tshift; ///< Time shift for LHS Jacobian.
 
-    int numSolnFields; ///< Number of solution fields.
+    int numSolnSubfields; ///< Number of solution fields.
     pylith::topology::Field::Discretization* solnDiscretizations; ///< Discretizations for solution fields.
     spatialdata::spatialdb::UserFunctionDB* solnDB; ///< Spatial database with solution.
 
