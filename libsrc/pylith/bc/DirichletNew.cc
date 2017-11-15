@@ -106,7 +106,7 @@ pylith::bc::DirichletNew::initialize(const pylith::topology::Field& solution)
 
     _setFEKernelsConstraint(solution);
 
-    _boundaryMesh = new pylith::topology::Mesh(solution.mesh(), _label.c_str()); assert(_boundaryMesh);
+    delete _boundaryMesh; _boundaryMesh = new pylith::topology::Mesh(solution.mesh(), _label.c_str()); assert(_boundaryMesh);
     PetscDM dmBoundary = _boundaryMesh->dmMesh(); assert(dmBoundary);
     pylith::topology::CoordsVisitor::optimizeClosure(dmBoundary);
 
