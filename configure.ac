@@ -58,7 +58,7 @@ AM_CONDITIONAL([ENABLE_FULL_TESTING], [test "$enable_full_testing" = yes])
 AC_ARG_ENABLE([cubit],
     [AC_HELP_STRING([--enable-cubit],
         [enable reading/writing Cubit EXODUS files (requires netcdf) @<:@default=no@:>@])],
-	[if test "$enableval" = yes ; then 
+	[if test "$enableval" = yes ; then
 	  enable_cubit=yes
 	  CPPFLAGS="-DENABLE_CUBIT $CPPFLAGS"; export CPPFLAGS;
 	  PYLITH_SWIG_CPPFLAGS="-DENABLE_CUBIT $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS
@@ -71,7 +71,7 @@ AC_SUBST(PYLITH_SWIG_CPPFLAGS)
 AC_ARG_ENABLE([hdf5],
     [AC_HELP_STRING([--enable-hdf5],
         [enable output to HDF5 files via PETSc @<:@default=no@:>@])],
-	[if test "$enableval" = yes; 
+	[if test "$enableval" = yes;
 	  then enable_hdf5=yes
           else enable_hdf5=no; fi],
 	[enable_hdf5=yes])
@@ -114,7 +114,7 @@ CIT_HEADER_MPI
 
 # PETSC
 AC_LANG(C)
-CIT_PATH_PETSC([3.8.0])
+CIT_PATH_PETSC([3.8.2])
 CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC
 
@@ -177,7 +177,7 @@ fi
 if test "$enable_full_testing" = yes ; then
   AM_PATH_PYTHON
   AC_MSG_CHECKING(for python module h5py for full scale testing)
-  $PYTHON -c "import h5py" 2>/dev/null   
+  $PYTHON -c "import h5py" 2>/dev/null
   if test $? == 0; then
     AC_MSG_RESULT([found h5py, enabling full scale testing])
     enable_full_testing=yes
