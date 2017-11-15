@@ -99,6 +99,7 @@ protected:
 
                 _data->field = "displacement";
                 _data->vectorFieldType = pylith::topology::Field::VECTOR;
+                _data->scale = _data->normalizer->lengthScale();
                 _data->numConstrainedDOF = 1;
                 static const int constrainedDOF[1] = { 1 };
                 _data->constrainedDOF = const_cast<int*>(constrainedDOF);

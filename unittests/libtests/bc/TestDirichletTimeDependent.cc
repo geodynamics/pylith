@@ -277,8 +277,15 @@ pylith::bc::TestDirichletTimeDependent::testInitialize(void)
 
     CPPUNIT_ASSERT(_bc);
     CPPUNIT_ASSERT(_solution);
+
+    PetscDS prob = NULL;
+    PetscErrorCode err = DMGetDS(_solution->dmMesh(), &prob); CPPUNIT_ASSERT(!err);
+    int numBCBefore = 0;
+    err = PetscDSGetNumBoundary(prob, &numBCBefore); CPPUNIT_ASSERT(!err);
+
     _bc->initialize(*_solution);
 
+    // Verify auxiliary field.
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(_mesh);
     const pylith::topology::Field& auxField = _bc->auxField();
@@ -292,13 +299,15 @@ pylith::bc::TestDirichletTimeDependent::testInitialize(void)
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(_data->normalizer);
     query.openDB(_data->auxDB, _data->normalizer->lengthScale());
-    PetscErrorCode err = DMComputeL2Diff(dm, t, query.functions(), (void**)query.contextPtrs(), auxField.localVector(), &norm); CPPUNIT_ASSERT(!err);
+    err = DMComputeL2Diff(dm, t, query.functions(), (void**)query.contextPtrs(), auxField.localVector(), &norm); CPPUNIT_ASSERT(!err);
     query.closeDB(_data->auxDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
 
-    // Verify boundary was added to DM.
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Verify boundary was added to DM.", false);
+    // Verify boundary condition was added to DS.
+    int numBCAfter = 0;
+    err = PetscDSGetNumBoundary(prob, &numBCAfter); CPPUNIT_ASSERT(!err);
+    CPPUNIT_ASSERT_EQUAL(numBCAfter, 1+numBCBefore);
 
     PYLITH_METHOD_END;
 } // testInitialize
@@ -310,9 +319,8 @@ pylith::bc::TestDirichletTimeDependent::testPrestep(void)
 { // testPrestep
     PYLITH_METHOD_BEGIN;
 
-#if 1
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad not implemented.", false);
-#else
+    if (!_data->useTimeHistory) {PYLITH_METHOD_END;}
+
     _initialize();
     _setupSolutionField();
 
@@ -320,22 +328,25 @@ pylith::bc::TestDirichletTimeDependent::testPrestep(void)
     CPPUNIT_ASSERT(_solution);
     _bc->initialize(*_solution);
 
+    const pylith::topology::Field& auxField = _bc->auxField();
+    CPPUNIT_ASSERT(auxField.hasSubfield("time_history_value"));
+
     pylith::topology::Field valueField(*_mesh);
-    _bc->getAuxField(&valueField, "time_history_value");
+    valueField.copySubfield(auxField, "time_history_value");
     CPPUNIT_ASSERT(valueField.sectionSize() > 0);
-    CPPUNIT_ASSERT_EQUAL(std::string("value"), std::string(valueField.label()));
+    CPPUNIT_ASSERT_EQUAL(std::string("time_history_value"), std::string(valueField.label()));
 
     PylithReal norm = 0.0;
     PylithReal t = _data->t;
     const PetscDM dm = auxField.dmMesh(); CPPUNIT_ASSERT(dm);
-    pylith::topology::FieldQuery* query = _db->_auxSubfieldsQuery;
-    query->openDB(queryDB, _data->lengthScale);
-
-    PetscErrorCode err = DMComputeL2Diff(dm, t, query->functions(), (void**)query->contextPtrs(), valueField.localVector(), &norm); CPPUNIT_ASSERT(!err);
-    query->closeDB(queryDB);
+    pylith::topology::FieldQuery query(valueField);
+    query.initializeWithDefaultQueryFns();
+    CPPUNIT_ASSERT(_data->normalizer);
+    query.openDB(_data->auxDB, _data->normalizer->lengthScale());
+    PetscErrorCode err = DMComputeL2Diff(dm, t, query.functions(), (void**)query.contextPtrs(), valueField.localVector(), &norm); CPPUNIT_ASSERT(!err);
+    query.closeDB(_data->auxDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
-#endif
 
     PYLITH_METHOD_END;
 } // testPrestep
@@ -410,46 +421,35 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldSetup(void)
 { // testAuxFieldSetup
     PYLITH_METHOD_BEGIN;
 
-#if 0
-
-    _setupSolutionFields();
+    _initialize();
+    _setupSolutionField();
 
     CPPUNIT_ASSERT(_bc);
     CPPUNIT_ASSERT(_solution);
-    _bc->initialize(*_solution);
-
-    CPPUNIT_ASSERT(_mymaterial);
     CPPUNIT_ASSERT(_mesh);
-    CPPUNIT_ASSERT(_mydata);
-    CPPUNIT_ASSERT(_mydata->normalizer);
-    const PylithReal densityScale = _mydata->normalizer->densityScale();
-    const PylithReal lengthScale = _mydata->normalizer->lengthScale();
-    const PylithReal timeScale = _mydata->normalizer->timeScale();
-    const PylithReal pressureScale = _mydata->normalizer->pressureScale();
-    const PylithReal forceScale = densityScale * lengthScale / (timeScale * timeScale);
-
-
-    CPPUNIT_ASSERT(_bc->_boundaryMesh);
     CPPUNIT_ASSERT(_data);
+    CPPUNIT_ASSERT(_data->normalizer);
+    const PylithReal timeScale = _data->normalizer->timeScale();
 
-    delete _bc->_auxSubfields; _bc->_auxSubfields = new pylith::topology::Field(*_bc->_boundaryMesh); CPPUNIT_ASSERT(_bc->_auxSubfields);
-    delete _bc->_auxSubfieldsQuery; _bc->_auxSubfieldsQuery = new pylith::topology::FieldQuery(*_bc->_auxSubfields); CPPUNIT_ASSERT(_bc->_auxSubfieldsQuery);
-    _bc->_auxFieldSetup();
+    delete _bc->_boundaryMesh; _bc->_boundaryMesh = new pylith::topology::Mesh(_solution->mesh(), _data->bcLabel);
+    CPPUNIT_ASSERT(_bc->_boundaryMesh);
+
+    delete _bc->_auxField; _bc->_auxField = new pylith::topology::Field(*_bc->_boundaryMesh); CPPUNIT_ASSERT(_bc->_auxField);
+    _bc->_auxFieldSetup(*_solution);
 
     CPPUNIT_ASSERT(_mesh->coordsys());
-    const int spaceDim = _mesh->coordsys()->spaceDim();
-    const int numComponents = (_data->isConstrainedFieldVector) ? spaceDim : 1;
-    const pylith::topology::Field::VectorFieldEnum vectorFieldType = (_data->isConstrainedFieldVector) ? pylith::topology::Field::VECTOR : pylith::topology::Field::SCALAR;
+    const size_t spaceDim = _mesh->coordsys()->spaceDim();
+    const pylith::topology::Field::VectorFieldEnum vectorFieldType = _data->vectorFieldType;
+    const size_t numComponents = (vectorFieldType == pylith::topology::Field::VECTOR) ? spaceDim : 1;
 
     // Check discretizations
     if (_data->useInitial) {
         const char* label = "initial_amplitude";
-        const pylith::topology::Field::SubfieldInfo& info = _bc->_auxSubfields->subfieldInfo(label);
-        CPPUNIT_ASSERT_EQUAL(numComponents, info.numComponents);
-        CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
-        CPPUNIT_ASSERT_EQUAL(vectorFieldType, info.metadata.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(_data->lengthScale, info.metadata.scale);
-        CPPUNIT_ASSERT_EQUAL(false, info.metadata.dimsOkay);
+        const pylith::topology::Field::SubfieldInfo& info = _bc->_auxField->subfieldInfo(label);
+        CPPUNIT_ASSERT_EQUAL(numComponents, info.description.numComponents);
+        CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
+        CPPUNIT_ASSERT_EQUAL(vectorFieldType, info.description.vectorFieldType);
+        CPPUNIT_ASSERT_EQUAL(_data->scale, info.description.scale);
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
         CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
@@ -459,12 +459,11 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldSetup(void)
     if (_data->useRate) {
         { // amplitude
             const char* label = "rate_amplitude";
-            const pylith::topology::Field::SubfieldInfo& info = _bc->_auxSubfields->subfieldInfo(label);
-            CPPUNIT_ASSERT_EQUAL(numComponents, info.numComponents);
-            CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
-            CPPUNIT_ASSERT_EQUAL(vectorFieldType, info.metadata.vectorFieldType);
-            CPPUNIT_ASSERT_EQUAL(_data->lengthScale / _data->timeScale, info.metadata.scale);
-            CPPUNIT_ASSERT_EQUAL(false, info.metadata.dimsOkay);
+            const pylith::topology::Field::SubfieldInfo& info = _bc->_auxField->subfieldInfo(label);
+            CPPUNIT_ASSERT_EQUAL(numComponents, info.description.numComponents);
+            CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
+            CPPUNIT_ASSERT_EQUAL(vectorFieldType, info.description.vectorFieldType);
+            CPPUNIT_ASSERT_EQUAL(_data->scale / timeScale, info.description.scale);
             CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
             CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
             CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
@@ -473,12 +472,11 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldSetup(void)
 
         { // start time
             const char* label = "rate_start_time";
-            const pylith::topology::Field::SubfieldInfo& info = _bc->_auxSubfields->subfieldInfo(label);
-            CPPUNIT_ASSERT_EQUAL(1, info.numComponents);
-            CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
-            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.metadata.vectorFieldType);
-            CPPUNIT_ASSERT_EQUAL(_data->timeScale, info.metadata.scale);
-            CPPUNIT_ASSERT_EQUAL(false, info.metadata.dimsOkay);
+            const pylith::topology::Field::SubfieldInfo& info = _bc->_auxField->subfieldInfo(label);
+            CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
+            CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
+            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
+            CPPUNIT_ASSERT_EQUAL(timeScale, info.description.scale);
             CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
             CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
             CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
@@ -489,12 +487,11 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldSetup(void)
     if (_data->useTimeHistory) {
         { // amplitude
             const char* label = "time_history_amplitude";
-            const pylith::topology::Field::SubfieldInfo& info = _bc->_auxSubfields->subfieldInfo(label);
-            CPPUNIT_ASSERT_EQUAL(1, info.numComponents);
-            CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
-            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.metadata.vectorFieldType);
-            CPPUNIT_ASSERT_EQUAL(_data->lengthScale, info.metadata.scale);
-            CPPUNIT_ASSERT_EQUAL(false, info.metadata.dimsOkay);
+            const pylith::topology::Field::SubfieldInfo& info = _bc->_auxField->subfieldInfo(label);
+            CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
+            CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
+            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
+            CPPUNIT_ASSERT_EQUAL(_data->scale, info.description.scale);
             CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
             CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
             CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
@@ -503,12 +500,11 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldSetup(void)
 
         { // start time
             const char* label = "time_history_start_time";
-            const pylith::topology::Field::SubfieldInfo& info = _bc->_auxSubfields->subfieldInfo(label);
-            CPPUNIT_ASSERT_EQUAL(1, info.numComponents);
-            CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
-            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.metadata.vectorFieldType);
-            CPPUNIT_ASSERT_EQUAL(_data->timeScale, info.metadata.scale);
-            CPPUNIT_ASSERT_EQUAL(false, info.metadata.dimsOkay);
+            const pylith::topology::Field::SubfieldInfo& info = _bc->_auxField->subfieldInfo(label);
+            CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
+            CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
+            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
+            CPPUNIT_ASSERT_EQUAL(timeScale, info.description.scale);
             CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
             CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
             CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
@@ -517,12 +513,11 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldSetup(void)
 
         { // time_history_amplitude
             const char* label = "time_history_value";
-            const pylith::topology::Field::SubfieldInfo& info = _bc->_auxSubfields->subfieldInfo(label);
-            CPPUNIT_ASSERT_EQUAL(1, info.numComponents);
-            CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
-            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.metadata.vectorFieldType);
-            CPPUNIT_ASSERT_EQUAL(1.0, info.metadata.scale);
-            CPPUNIT_ASSERT_EQUAL(false, info.metadata.dimsOkay);
+            const pylith::topology::Field::SubfieldInfo& info = _bc->_auxField->subfieldInfo(label);
+            CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
+            CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
+            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
+            CPPUNIT_ASSERT_EQUAL(1.0, info.description.scale);
             CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
             CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
             CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
@@ -531,20 +526,6 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldSetup(void)
 
     } // if
 
-    // Make sure DB query functions are set correctly.
-    if (_data->useInitial) {
-        CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _bc->_auxSubfieldsQuery->queryFn("initial_amplitude"));
-    } // if
-    if (_data->useRate) {
-        CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _bc->_auxSubfieldsQuery->queryFn("rate_amplitude"));
-        CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _bc->_auxSubfieldsQuery->queryFn("rate_start_time"));
-    } // if
-    if (_data->useTimeHistory) {
-        CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _bc->_auxSubfieldsQuery->queryFn("time_history_amplitude"));
-        CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _bc->_auxSubfieldsQuery->queryFn("time_history_start_time"));
-        CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _bc->_auxSubfieldsQuery->queryFn("time_history_value"));
-    } // if
-#endif
     PYLITH_METHOD_END;
 } // testAuxFieldSetup
 
