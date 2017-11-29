@@ -28,8 +28,10 @@
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/topology/VisitorMesh.hh" // USES VisitorMesh
+#include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
+#include "pylith/utils/constdefs.h" // USES PYLITH_MAXFLOAT
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
@@ -358,58 +360,67 @@ pylith::bc::TestDirichletTimeDependent::testSetSolution(void)
 { // testSetSolution
     PYLITH_METHOD_BEGIN;
 
-#if 1
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad not implemented.", false);
-#else
+    _initialize();
+    _setupSolutionField();
+
     CPPUNIT_ASSERT(_bc);
     CPPUNIT_ASSERT(_solution);
     _bc->initialize(*_solution);
 
     // Initialize solution field.
     _solution->allocate();
-    _solution->zeroLocal();
-    _solution->createScatter(_solution->mesh(), "global");
+    PetscErrorCode err;
+    err = VecSet(_solution->localVector(), PYLITH_MAXFLOAT); CPPUNIT_ASSERT(!err);
 
     // Set solution field.
     CPPUNIT_ASSERT(_data);
-    _bc->setSolution(*_solution, _data->t);
+    _bc->setSolution(_solution, _data->t);
 
-    // Verify number and DOF of constraints in solution field.
-    int iConstraint = 0;
-    PetscErrorCode err = 0;
-    for (PetscInt v = vStart; v < vEnd; ++v) {
-        PetscInt dof, cdof, fdof, fcdof;
-
-        err = PetscSectionGetDof(fieldSection, v, &dof);PYLITH_CHECK_ERROR(err);
-        err = PetscSectionGetConstraintDof(fieldSection, v, &cdof);PYLITH_CHECK_ERROR(err);
-        err = PetscSectionGetFieldDof(fieldSection, v, 0, &fdof);PYLITH_CHECK_ERROR(err);
-        err = PetscSectionGetFieldConstraintDof(fieldSection, v, 0, &fcdof);PYLITH_CHECK_ERROR(err);
-        if (v != _data->constrainedPoints[iConstraint] + offset) {
-            CPPUNIT_ASSERT_EQUAL(_data->numDOF, dof);
-            CPPUNIT_ASSERT_EQUAL(0, cdof);
-            CPPUNIT_ASSERT_EQUAL(_data->numDOF, fdof);
-            CPPUNIT_ASSERT_EQUAL(0, fcdof);
-        } else {
-            CPPUNIT_ASSERT_EQUAL(_data->numDOF, dof);
-            CPPUNIT_ASSERT_EQUAL(_data->numFixedDOF, cdof);
-            CPPUNIT_ASSERT_EQUAL(_data->numDOF, fdof);
-            CPPUNIT_ASSERT_EQUAL(_data->numFixedDOF, fcdof);
-            ++iConstraint;
-        } // if/else
-    } // for
+    //_solution->view("SOLUTION"); // DEBUGGING
 
     // Verify values in solution field.
-    PylithReal norm = 0.0;
-    PylithReal t = _data->t;
-    const PetscDM dmSoln = _solution->dmMesh(); CPPUNIT_ASSERT(dmSoln);
-    pylith::topology::FieldQuery* query = _db->_auxSubfieldsQuery;
-    query->openDB(queryDB, _data->lengthScale);
+    PetscDM dmSoln = _solution->mesh().dmMesh(); CPPUNIT_ASSERT(dmSoln);
+    PetscDMLabel label = NULL;
+    PetscIS pointIS = NULL;
+    const PetscInt *points;
+    PetscInt numPoints = 0;
+    PetscBool hasLabel = PETSC_FALSE;
+    err = DMHasLabel(dmSoln, _data->bcLabel, &hasLabel); CPPUNIT_ASSERT(!err); CPPUNIT_ASSERT(hasLabel);
+    err = DMGetLabel(dmSoln, _data->bcLabel, &label); CPPUNIT_ASSERT(!err);
+    err = DMLabelGetStratumIS(label, 1, &pointIS); CPPUNIT_ASSERT(!err); CPPUNIT_ASSERT(pointIS);
+    err = ISGetLocalSize(pointIS, &numPoints); CPPUNIT_ASSERT(!err);
+    err = ISGetIndices(pointIS, &points); CPPUNIT_ASSERT(!err);
 
-    PetscErrorCode err = DMComputeL2Diff(dm, t, query->functions(), (void**)query->contextPtrs(), _solution->localVector(), &norm); CPPUNIT_ASSERT(!err);
-    query->closeDB(queryDB);
-    const PylithReal tolerance = 1.0e-6;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
-#endif
+    pylith::topology::Stratum verticesStratum(dmSoln, pylith::topology::Stratum::DEPTH, 0);
+    const PylithInt vStart = verticesStratum.begin();
+    const PylithInt vEnd = verticesStratum.end();
+
+    pylith::topology::VecVisitorMesh solutionVisitor(*_solution);
+    PylithScalar* solutionArray = solutionVisitor.localArray(); CPPUNIT_ASSERT(solutionArray);
+    const PetscSection solutionSection = solutionVisitor.localSection(); CPPUNIT_ASSERT(solutionSection);
+
+    const size_t spaceDim = _mesh->coordsys()->spaceDim();
+    const pylith::topology::Field::VectorFieldEnum vectorFieldType = _data->vectorFieldType;
+    const size_t numComponents = (vectorFieldType == pylith::topology::Field::VECTOR) ? spaceDim : 1;
+
+    const int subfieldIndex = _solution->subfieldInfo(_data->field).index;
+    for (PetscInt p = 0, dof = 0, off = 0; p < numPoints; ++p) {
+        const PetscInt p_bc = points[p];
+        if ((p_bc < vStart) || (p_bc > vEnd)) {continue;}
+
+        err = PetscSectionGetFieldDof(solutionSection, p_bc, subfieldIndex, &dof); CPPUNIT_ASSERT(!err);
+        CPPUNIT_ASSERT_EQUAL(numComponents, size_t(dof));
+        err = PetscSectionGetFieldConstraintDof(solutionSection, p_bc, subfieldIndex, &dof); CPPUNIT_ASSERT(!err);
+        CPPUNIT_ASSERT_EQUAL(_data->numConstrainedDOF, dof);
+        err = PetscSectionGetFieldOffset(solutionSection, p_bc, subfieldIndex, &off); CPPUNIT_ASSERT(!err);
+
+        for (PylithInt i = 0; i < _data->numConstrainedDOF; ++i) {
+            CPPUNIT_ASSERT(solutionArray[off+_data->constrainedDOF[i]] != PYLITH_MAXFLOAT);
+        } // for
+    } // for
+
+    err = ISRestoreIndices(pointIS, &points); PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&pointIS); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // testSetSolution
@@ -583,9 +594,6 @@ pylith::bc::TestDirichletTimeDependent::_setupSolutionField(void)
     factory.velocity(_data->solnDiscretizations[1]);
     factory.fluidPressure(_data->solnDiscretizations[2]);
     _solution->subfieldsSetup();
-    _solution->allocate();
-
-    factory.setValues(_data->solnDB);
 
     PYLITH_METHOD_END;
 } // setupSolutionField
