@@ -40,6 +40,8 @@
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
+const double pylith::bc::TestDirichletTimeDependent::FILL_VALUE = -999.0;
+
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
@@ -287,6 +289,8 @@ pylith::bc::TestDirichletTimeDependent::testInitialize(void)
 
     _bc->initialize(*_solution);
 
+    //_bc->auxField().view("AUXILIARY FIELD"); // DEBUGGING
+
     // Verify auxiliary field.
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(_mesh);
@@ -301,7 +305,7 @@ pylith::bc::TestDirichletTimeDependent::testInitialize(void)
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(_data->normalizer);
     query.openDB(_data->auxDB, _data->normalizer->lengthScale());
-    err = DMComputeL2Diff(dm, t, query.functions(), (void**)query.contextPtrs(), auxField.localVector(), &norm); CPPUNIT_ASSERT(!err);
+    err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField.localVector(), &norm); CPPUNIT_ASSERT(!err);
     query.closeDB(_data->auxDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
@@ -345,7 +349,7 @@ pylith::bc::TestDirichletTimeDependent::testPrestep(void)
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(_data->normalizer);
     query.openDB(_data->auxDB, _data->normalizer->lengthScale());
-    PetscErrorCode err = DMComputeL2Diff(dm, t, query.functions(), (void**)query.contextPtrs(), valueField.localVector(), &norm); CPPUNIT_ASSERT(!err);
+    PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), valueField.localVector(), &norm); CPPUNIT_ASSERT(!err);
     query.closeDB(_data->auxDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
@@ -370,57 +374,44 @@ pylith::bc::TestDirichletTimeDependent::testSetSolution(void)
     // Initialize solution field.
     _solution->allocate();
     PetscErrorCode err;
-    err = VecSet(_solution->localVector(), PYLITH_MAXFLOAT); CPPUNIT_ASSERT(!err);
+    err = VecSet(_solution->localVector(), FILL_VALUE); CPPUNIT_ASSERT(!err);
 
     // Set solution field.
     CPPUNIT_ASSERT(_data);
+    _solution->mesh().view(":detail.txt:ascii_info_detail");
     _bc->setSolution(_solution, _data->t);
 
-    //_solution->view("SOLUTION"); // DEBUGGING
+    //_solution->view("SOLUTION BC ONLY"); // DEBUGGING
 
-    // Verify values in solution field.
-    PetscDM dmSoln = _solution->mesh().dmMesh(); CPPUNIT_ASSERT(dmSoln);
-    PetscDMLabel label = NULL;
-    PetscIS pointIS = NULL;
-    const PetscInt *points;
-    PetscInt numPoints = 0;
-    PetscBool hasLabel = PETSC_FALSE;
-    err = DMHasLabel(dmSoln, _data->bcLabel, &hasLabel); CPPUNIT_ASSERT(!err); CPPUNIT_ASSERT(hasLabel);
-    err = DMGetLabel(dmSoln, _data->bcLabel, &label); CPPUNIT_ASSERT(!err);
-    err = DMLabelGetStratumIS(label, 1, &pointIS); CPPUNIT_ASSERT(!err); CPPUNIT_ASSERT(pointIS);
-    err = ISGetLocalSize(pointIS, &numPoints); CPPUNIT_ASSERT(!err);
-    err = ISGetIndices(pointIS, &points); CPPUNIT_ASSERT(!err);
+    // Verify setting solution did not change unconstrained values.
+    const PylithReal tolerance = 1.0e-6;
+    _solution->createScatter(_solution->mesh(), "global");
+    _solution->scatterLocalToContext("global", ADD_VALUES);
+    PylithScalar value = 0.0;
+    err = VecMax(_solution->scatterVector("global"), NULL, &value); CPPUNIT_ASSERT(!err);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(FILL_VALUE, value, tolerance);
+    err = VecMin(_solution->scatterVector("global"), NULL, &value); CPPUNIT_ASSERT(!err);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(FILL_VALUE, value, tolerance);
 
-    pylith::topology::Stratum verticesStratum(dmSoln, pylith::topology::Stratum::DEPTH, 0);
-    const PylithInt vStart = verticesStratum.begin();
-    const PylithInt vEnd = verticesStratum.end();
+    // Verify solution values match expected values.
+    // Fill unconstrained values only.
+    const PylithReal t = _data->t;
+    const PetscDM dmSoln = _solution->dmMesh(); CPPUNIT_ASSERT(dmSoln);
+    pylith::topology::FieldQuery query(*_solution);
+    query.initializeWithDefaultQueryFns();
+    CPPUNIT_ASSERT(_data->normalizer);
+    query.openDB(_data->solnDB, _data->normalizer->lengthScale());
+    err = DMProjectFunction(dmSoln, t, query.functions(), (void**)query.contextPtrs(), INSERT_VALUES, _solution->scatterVector("global")); CPPUNIT_ASSERT(!err);
+    query.closeDB(_data->solnDB);
+    _solution->scatterContextToLocal("global", INSERT_VALUES);
 
-    pylith::topology::VecVisitorMesh solutionVisitor(*_solution);
-    PylithScalar* solutionArray = solutionVisitor.localArray(); CPPUNIT_ASSERT(solutionArray);
-    const PetscSection solutionSection = solutionVisitor.localSection(); CPPUNIT_ASSERT(solutionSection);
+    //_solution->view("SOLUTION ALL"); // DEBUGGING
 
-    const size_t spaceDim = _mesh->coordsys()->spaceDim();
-    const pylith::topology::Field::VectorFieldEnum vectorFieldType = _data->vectorFieldType;
-    const size_t numComponents = (vectorFieldType == pylith::topology::Field::VECTOR) ? spaceDim : 1;
-
-    const int subfieldIndex = _solution->subfieldInfo(_data->field).index;
-    for (PetscInt p = 0, dof = 0, off = 0; p < numPoints; ++p) {
-        const PetscInt p_bc = points[p];
-        if ((p_bc < vStart) || (p_bc > vEnd)) {continue;}
-
-        err = PetscSectionGetFieldDof(solutionSection, p_bc, subfieldIndex, &dof); CPPUNIT_ASSERT(!err);
-        CPPUNIT_ASSERT_EQUAL(numComponents, size_t(dof));
-        err = PetscSectionGetFieldConstraintDof(solutionSection, p_bc, subfieldIndex, &dof); CPPUNIT_ASSERT(!err);
-        CPPUNIT_ASSERT_EQUAL(_data->numConstrainedDOF, dof);
-        err = PetscSectionGetFieldOffset(solutionSection, p_bc, subfieldIndex, &off); CPPUNIT_ASSERT(!err);
-
-        for (PylithInt i = 0; i < _data->numConstrainedDOF; ++i) {
-            CPPUNIT_ASSERT(solutionArray[off+_data->constrainedDOF[i]] != PYLITH_MAXFLOAT);
-        } // for
-    } // for
-
-    err = ISRestoreIndices(pointIS, &points); PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&pointIS); PYLITH_CHECK_ERROR(err);
+    PylithReal norm = 0.0;
+    query.openDB(_data->solnDB, _data->normalizer->lengthScale());
+    err = DMPlexComputeL2DiffLocal(dmSoln, t, query.functions(), (void**)query.contextPtrs(), _solution->localVector(), &norm); CPPUNIT_ASSERT(!err);
+    query.closeDB(_data->solnDB);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
 
     PYLITH_METHOD_END;
 } // testSetSolution
@@ -454,17 +445,21 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldSetup(void)
     const size_t numComponents = (vectorFieldType == pylith::topology::Field::VECTOR) ? spaceDim : 1;
 
     // Check discretizations
+    int ifield = 0;
     if (_data->useInitial) {
         const char* label = "initial_amplitude";
+        CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(_data->auxSubfields[ifield]));
+        const pylith::topology::Field::Discretization& discretization = _data->auxDiscretizations[ifield];
+
         const pylith::topology::Field::SubfieldInfo& info = _bc->_auxField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(numComponents, info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(vectorFieldType, info.description.vectorFieldType);
         CPPUNIT_ASSERT_EQUAL(_data->scale, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
-        CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
+        CPPUNIT_ASSERT_EQUAL(discretization.basisOrder, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(discretization.quadOrder, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(discretization.isBasisContinuous, info.fe.isBasisContinuous);
+        CPPUNIT_ASSERT_EQUAL(discretization.feSpace, info.fe.feSpace);
     } // if
 
     if (_data->useRate) {
@@ -563,6 +558,11 @@ pylith::bc::TestDirichletTimeDependent::_initialize(void)
     _bc->auxFieldDB(_data->auxDB);
     _bc->constrainedDOF(_data->constrainedDOF, _data->numConstrainedDOF);
     _bc->normalizer(*_data->normalizer);
+    for (int ifield = 0; ifield < _data->numAuxSubfields; ++ifield) {
+        const pylith::topology::Field::Discretization& discretization = _data->auxDiscretizations[ifield];
+        const char* name = _data->auxSubfields[ifield];
+        _bc->auxSubfieldDiscretization(name, discretization.basisOrder, discretization.quadOrder, discretization.isBasisContinuous, discretization.feSpace);
+    } // for
 
     _bc->useInitial(_data->useInitial);
     _bc->useRate(_data->useRate);

@@ -26,6 +26,7 @@
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 
+#include <iostream>
 // ----------------------------------------------------------------------
 namespace pylith {
     namespace bc {
@@ -48,18 +49,18 @@ namespace pylith {
             // Initial amplitude
             static double initial_disp_x(const double x,
                                          const double y) {
-                return -888.0;
+                return FILL_VALUE;
             } // initial_disp_x
             static double initial_disp_y(const double x,
                                          const double y) {
-                return 2.4*x + 1.8*y;
+                return 4.0*x; //2.4*x + 1.8*y;
             } // initial_disp_y
 
             // Solution field at time t.
 
             static double disp_x(const double x,
                                  const double y) {
-                return -999.0;
+                return FILL_VALUE;
             } // disp_x
             static double disp_y(const double x,
                                  const double y) {
@@ -67,15 +68,15 @@ namespace pylith {
             } // disp_y
             static double vel_x(const double x,
                                 const double y) {
-                return -999.0;
+                return FILL_VALUE;
             } // vel_x
             static double vel_y(const double x,
                                 const double y) {
-                return -999.0;
+                return FILL_VALUE;
             } // vel_y
             static double fluid_press(const double x,
                                       const double y) {
-                return -999.0;
+                return FILL_VALUE;
             } // fluid_press
 
             CPPUNIT_TEST_SUB_SUITE(TestDirichletTimeDependent_TriP1, TestDirichletTimeDependent);

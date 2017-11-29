@@ -116,6 +116,8 @@ protected:
     pylith::topology::Mesh* _mesh; /// Mesh used in testing.
     pylith::topology::Field* _solution; ///< Solution field used in testing.
 
+    static const double FILL_VALUE; ///< Fill value for unconstrained values.
+
     // PRIVATE METHODS ////////////////////////////////////////////////////
 private:
 
