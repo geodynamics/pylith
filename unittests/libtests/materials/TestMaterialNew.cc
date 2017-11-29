@@ -269,7 +269,7 @@ pylith::materials::TestMaterialNew::testInitialize(void)
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(data->normalizer);
     query.openDB(data->auxDB, data->normalizer->lengthScale());
-    PetscErrorCode err = DMComputeL2Diff(dm, t, query.functions(), (void**)query.contextPtrs(), auxField.localVector(), &norm); CPPUNIT_ASSERT(!err);
+    PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField.localVector(), &norm); CPPUNIT_ASSERT(!err);
     query.closeDB(data->auxDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);

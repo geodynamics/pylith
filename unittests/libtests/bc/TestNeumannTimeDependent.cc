@@ -300,7 +300,7 @@ pylith::bc::TestNeumannTimeDependent::testInitialize(void)
     pylith::topology::FieldQuery* query = _db->_auxFieldsQuery;
     query->openDB(queryDB, _data->lengthScale);
 
-    PetscErrorCode err = DMComputeL2Diff(dm, t, query->functions(), (void**)query->contextPtrs(), auxFields.localVector(), &norm); CPPUNIT_ASSERT(!err);
+    PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query->functions(), (void**)query->contextPtrs(), auxFields.localVector(), &norm); CPPUNIT_ASSERT(!err);
     query->closeDB(queryDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
@@ -339,7 +339,7 @@ pylith::bc::TestNeumannTimeDependent::testPrestep(void)
     pylith::topology::FieldQuery* query = _db->_auxFieldsQuery;
     query->openDB(queryDB, _data->lengthScale);
 
-    PetscErrorCode err = DMComputeL2Diff(dm, t, query->functions(), (void**)query->contextPtrs(), valueField.localVector(), &norm); CPPUNIT_ASSERT(!err);
+    PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query->functions(), (void**)query->contextPtrs(), valueField.localVector(), &norm); CPPUNIT_ASSERT(!err);
     query->closeDB(queryDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
@@ -402,7 +402,7 @@ pylith::bc::TestNeumannTimeDependent::testComputeRHSResidual(void)
     pylith::topology::FieldQuery* query = _db->_auxFieldsQuery;
     query->openDB(queryDB, _data->lengthScale);
 
-    PetscErrorCode err = DMComputeL2Diff(dm, t, query->functions(), (void**)query->contextPtrs(), _solution->localVector(), &norm); CPPUNIT_ASSERT(!err);
+    PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query->functions(), (void**)query->contextPtrs(), _solution->localVector(), &norm); CPPUNIT_ASSERT(!err);
     query->closeDB(queryDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
