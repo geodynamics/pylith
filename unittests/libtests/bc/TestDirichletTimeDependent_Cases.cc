@@ -53,7 +53,7 @@ namespace pylith {
             } // initial_disp_x
             static double initial_disp_y(const double x,
                                          const double y) {
-                return 4.0*x; //2.4*x + 1.8*y;
+                return 2.4*x + 1.8*y;
             } // initial_disp_y
 
             // Solution field at time t.
