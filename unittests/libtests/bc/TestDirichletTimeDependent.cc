@@ -460,74 +460,95 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldSetup(void)
         CPPUNIT_ASSERT_EQUAL(discretization.quadOrder, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(discretization.isBasisContinuous, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(discretization.feSpace, info.fe.feSpace);
+        ++ifield;
     } // if
 
     if (_data->useRate) {
         { // amplitude
             const char* label = "rate_amplitude";
+            CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(_data->auxSubfields[ifield]));
+            const pylith::topology::Field::Discretization& discretization = _data->auxDiscretizations[ifield];
+
             const pylith::topology::Field::SubfieldInfo& info = _bc->_auxField->subfieldInfo(label);
             CPPUNIT_ASSERT_EQUAL(numComponents, info.description.numComponents);
             CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
             CPPUNIT_ASSERT_EQUAL(vectorFieldType, info.description.vectorFieldType);
             CPPUNIT_ASSERT_EQUAL(_data->scale / timeScale, info.description.scale);
-            CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-            CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
-            CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
+            CPPUNIT_ASSERT_EQUAL(discretization.basisOrder, info.fe.basisOrder);
+            CPPUNIT_ASSERT_EQUAL(discretization.quadOrder, info.fe.quadOrder);
+            CPPUNIT_ASSERT_EQUAL(discretization.isBasisContinuous, info.fe.isBasisContinuous);
+            CPPUNIT_ASSERT_EQUAL(discretization.feSpace, info.fe.feSpace);
+            ++ifield;
         } // amplitude
 
         { // start time
             const char* label = "rate_start_time";
+            CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(_data->auxSubfields[ifield]));
+            const pylith::topology::Field::Discretization& discretization = _data->auxDiscretizations[ifield];
+
             const pylith::topology::Field::SubfieldInfo& info = _bc->_auxField->subfieldInfo(label);
             CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
             CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
             CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
             CPPUNIT_ASSERT_EQUAL(timeScale, info.description.scale);
-            CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-            CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
-            CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
+            CPPUNIT_ASSERT_EQUAL(discretization.basisOrder, info.fe.basisOrder);
+            CPPUNIT_ASSERT_EQUAL(discretization.quadOrder, info.fe.quadOrder);
+            CPPUNIT_ASSERT_EQUAL(discretization.isBasisContinuous, info.fe.isBasisContinuous);
+            CPPUNIT_ASSERT_EQUAL(discretization.feSpace, info.fe.feSpace);
+            ++ifield;
         } // start time
     } // if
 
     if (_data->useTimeHistory) {
         { // amplitude
             const char* label = "time_history_amplitude";
+            CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(_data->auxSubfields[ifield]));
+            const pylith::topology::Field::Discretization& discretization = _data->auxDiscretizations[ifield];
+
             const pylith::topology::Field::SubfieldInfo& info = _bc->_auxField->subfieldInfo(label);
             CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
             CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
             CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
             CPPUNIT_ASSERT_EQUAL(_data->scale, info.description.scale);
-            CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-            CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
-            CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
+            CPPUNIT_ASSERT_EQUAL(discretization.basisOrder, info.fe.basisOrder);
+            CPPUNIT_ASSERT_EQUAL(discretization.quadOrder, info.fe.quadOrder);
+            CPPUNIT_ASSERT_EQUAL(discretization.isBasisContinuous, info.fe.isBasisContinuous);
+            CPPUNIT_ASSERT_EQUAL(discretization.feSpace, info.fe.feSpace);
+            ++ifield;
         } // amplitude
 
         { // start time
             const char* label = "time_history_start_time";
+            CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(_data->auxSubfields[ifield]));
+            const pylith::topology::Field::Discretization& discretization = _data->auxDiscretizations[ifield];
+
             const pylith::topology::Field::SubfieldInfo& info = _bc->_auxField->subfieldInfo(label);
             CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
             CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
             CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
             CPPUNIT_ASSERT_EQUAL(timeScale, info.description.scale);
-            CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-            CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
-            CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
+            CPPUNIT_ASSERT_EQUAL(discretization.basisOrder, info.fe.basisOrder);
+            CPPUNIT_ASSERT_EQUAL(discretization.quadOrder, info.fe.quadOrder);
+            CPPUNIT_ASSERT_EQUAL(discretization.isBasisContinuous, info.fe.isBasisContinuous);
+            CPPUNIT_ASSERT_EQUAL(discretization.feSpace, info.fe.feSpace);
+            ++ifield;
         } // start time
 
         { // time_history_amplitude
             const char* label = "time_history_value";
+            CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(_data->auxSubfields[ifield]));
+            const pylith::topology::Field::Discretization& discretization = _data->auxDiscretizations[ifield];
+
             const pylith::topology::Field::SubfieldInfo& info = _bc->_auxField->subfieldInfo(label);
             CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
             CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
             CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
             CPPUNIT_ASSERT_EQUAL(1.0, info.description.scale);
-            CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-            CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
-            CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
+            CPPUNIT_ASSERT_EQUAL(discretization.basisOrder, info.fe.basisOrder);
+            CPPUNIT_ASSERT_EQUAL(discretization.quadOrder, info.fe.quadOrder);
+            CPPUNIT_ASSERT_EQUAL(discretization.isBasisContinuous, info.fe.isBasisContinuous);
+            CPPUNIT_ASSERT_EQUAL(discretization.feSpace, info.fe.feSpace);
+            ++ifield;
         } // time_history_amplitude
 
     } // if
