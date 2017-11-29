@@ -42,8 +42,8 @@
  * ======================================================================
  */
 
-#if !defined(pylith_fekernels_isotropiclinearmaxwellplanestrainh_hh)
-#define pylith_fekernels_isotropiclinearmaxwellplanestraihn_hh
+#if !defined(pylith_fekernels_isotropiclinearmaxwellplanestrain_hh)
+#define pylith_fekernels_isotropiclinearmaxwellplanestrain_hh
 
 // Include directives ---------------------------------------------------
 #include "fekernelsfwd.hh" // forward declarations
@@ -80,13 +80,13 @@ public:
     /** g0 function for isotropic linear Maxwell plane strain with both gravity and body forces.
      *
      * Solution fields: [...]
-     * Auxiliary fields: [0: density(1), 
-     *                    1: shear_modulus(1), 
-     *                    2: bulk_modulus(1), 
-     *                    3: maxwell_time(1), 
-     *                    4: total_strain(4), 
-     *                    5: viscous_strain(4), 
-     *                    6: gravity_field(dim), 
+     * Auxiliary fields: [0: density(1),
+     *                    1: shear_modulus(1),
+     *                    2: bulk_modulus(1),
+     *                    3: maxwell_time(1),
+     *                    4: total_strain(4),
+     *                    5: viscous_strain(4),
+     *                    6: gravity_field(dim),
      *                    7: body_force(dim),
      *                    ...]
      */
@@ -114,13 +114,13 @@ public:
     /** g0 function for isotropic linear Maxwell plane strain with gravity.
      *
      * Solution fields: [...]
-     * Auxiliary fields: [0: density(1), 
-     *                    1: shear_modulus(1), 
-     *                    2: bulk_modulus(1), 
-     *                    3: maxwell_time(1), 
-     *                    4: total_strain(4), 
-     *                    5: viscous_strain(4), 
-     *                    6: gravity_field(dim), 
+     * Auxiliary fields: [0: density(1),
+     *                    1: shear_modulus(1),
+     *                    2: bulk_modulus(1),
+     *                    3: maxwell_time(1),
+     *                    4: total_strain(4),
+     *                    5: viscous_strain(4),
+     *                    6: gravity_field(dim),
      *                    ...]
      */
     static
@@ -147,12 +147,12 @@ public:
     /** g0 function for isotropic linear Maxwell plane strain with body forces.
      *
      * Solution fields: [...]
-     * Auxiliary fields: [0: density(1), 
-     *                    1: shear_modulus(1), 
-     *                    2: bulk_modulus(1), 
-     *                    3: maxwell_time(1), 
-     *                    4: total_strain(4), 
-     *                    5: viscous_strain(4), 
+     * Auxiliary fields: [0: density(1),
+     *                    1: shear_modulus(1),
+     *                    2: bulk_modulus(1),
+     *                    3: maxwell_time(1),
+     *                    4: total_strain(4),
+     *                    5: viscous_strain(4),
      *                    6: body_force(dim),
      *                    ...]
      */
@@ -180,12 +180,12 @@ public:
     /** g1 function for isotropic linear Maxwell plane strain WITHOUT reference stress and reference strain.
      *
      * Solution fields: [disp(dim), ...]
-     * Auxiliary fields: [0: density(1), 
-     *                    1: shear_modulus(1), 
-     *                    2: bulk_modulus(1), 
-     *                    3: maxwell_time(1), 
-     *                    4: total_strain(4), 
-     *                    5: viscous_strain(4), 
+     * Auxiliary fields: [0: density(1),
+     *                    1: shear_modulus(1),
+     *                    2: bulk_modulus(1),
+     *                    3: maxwell_time(1),
+     *                    4: total_strain(4),
+     *                    5: viscous_strain(4),
      *                    ...]
      */
     static
@@ -212,12 +212,12 @@ public:
     /** g1 function for isotropic linear Maxwell plane strain WITH reference stress and reference strain.
      *
      * Solution fields: [disp(dim), ...]
-     * Auxiliary fields: [0: density(1), 
-     *                    1: shear_modulus(1), 
-     *                    2: bulk_modulus(1), 
-     *                    3: maxwell_time(1), 
-     *                    4: total_strain(4), 
-     *                    5: viscous_strain(4), 
+     * Auxiliary fields: [0: density(1),
+     *                    1: shear_modulus(1),
+     *                    2: bulk_modulus(1),
+     *                    3: maxwell_time(1),
+     *                    4: total_strain(4),
+     *                    5: viscous_strain(4),
      *                    ...
      *                    numA-2: reference_stress(4),
      *                    numA-1: reference_strain(4)]
@@ -246,12 +246,12 @@ public:
     /** Jg3_vu entry function for 2-D plane strain isotropic linear Maxwell viscoelasticity.
      *
      * Solution fields: [...]
-     * Auxiliary fields: [0: density(1), 
-     *                    1: shear_modulus(1), 
-     *                    2: bulk_modulus(1), 
-     *                    3: maxwell_time(1), 
-     *                    4: total_strain(4), 
-     *                    5: viscous_strain(4), 
+     * Auxiliary fields: [0: density(1),
+     *                    1: shear_modulus(1),
+     *                    2: bulk_modulus(1),
+     *                    3: maxwell_time(1),
+     *                    4: total_strain(4),
+     *                    5: viscous_strain(4),
      *                    ...]
      */
     static
@@ -307,8 +307,8 @@ public:
      * Maxwell viscoelasticity WITH reference stress and strain.
      *
      * Solution fields: [disp(dim)]
-     * Auxiliary fields: [0: shear_modulus(1), 
-     *                    1: maxwell_time(1), 
+     * Auxiliary fields: [0: shear_modulus(1),
+     *                    1: maxwell_time(1),
      *                    2: total_strain(4),
      *                    3: viscous_strain(4),
      *                    4: reference_stress(4),
@@ -393,12 +393,12 @@ public:
      * Maxwell viscoelasticity.
      *
      * Solution fields: [disp(dim)]
-     * Auxiliary fields: [0: density(1), 
-     *                    1: shear_modulus(1), 
-     *                    2: bulk_modulus(1), 
-     *                    3: maxwell_time(1), 
-     *                    4: total_strain(4), 
-     *                    5: viscous_strain(4), 
+     * Auxiliary fields: [0: density(1),
+     *                    1: shear_modulus(1),
+     *                    2: bulk_modulus(1),
+     *                    3: maxwell_time(1),
+     *                    4: total_strain(4),
+     *                    5: viscous_strain(4),
      *                    ...]
      */
     static
