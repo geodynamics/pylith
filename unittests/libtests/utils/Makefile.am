@@ -28,6 +28,7 @@ check_PROGRAMS = testutils
 testutils_SOURCES = \
 	TestEventLogger.cc \
 	TestPyreComponent.cc \
+	TestGenericComponent.cc \
 	TestPylithVersion.cc \
 	TestPetscVersion.cc \
 	TestDependenciesVersion.cc \
@@ -36,6 +37,7 @@ testutils_SOURCES = \
 noinst_HEADERS = \
 	TestEventLogger.hh \
 	TestPyreComponent.hh \
+	TestGenericComponent.hh \
 	TestPylithVersion.hh \
 	TestPetscVersion.hh \
 	TestDependenciesVersion.hh

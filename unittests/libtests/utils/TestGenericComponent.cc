@@ -18,21 +18,21 @@
 
 #include <portinfo>
 
-#include "TestPyreComponent.hh" // Implementation of class methods
+#include "TestGenericComponent.hh" // Implementation of class methods
 
-#include "pylith/utils/PyreComponent.hh" // USES PyreComponent
+#include "pylith/utils/GenericComponent.hh" // USES GenericComponent
 
-#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::utils::TestPyreComponent);
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::utils::TestGenericComponent);
 
 // ----------------------------------------------------------------------
 // Test constructor.
 void
-pylith::utils::TestPyreComponent::testConstructor(void)
+pylith::utils::TestGenericComponent::testConstructor(void)
 { // testConstructor
-    PyreComponent component;
+    GenericComponent component;
 
     CPPUNIT_ASSERT_EQUAL(std::string(""), component._name);
 } // testConstructor
@@ -40,9 +40,9 @@ pylith::utils::TestPyreComponent::testConstructor(void)
 // ----------------------------------------------------------------------
 // Test name().
 void
-pylith::utils::TestPyreComponent::testName(void)
+pylith::utils::TestGenericComponent::testName(void)
 { // testName
-    PyreComponent component;
+    GenericComponent component;
     CPPUNIT_ASSERT_EQUAL(std::string(""), std::string(component.name()));
 
     const std::string& name = "my name";
@@ -51,30 +51,16 @@ pylith::utils::TestPyreComponent::testName(void)
 } // testName
 
 // ----------------------------------------------------------------------
-// Test identifier().
-void
-pylith::utils::TestPyreComponent::testIdentifier(void)
-{ // testIdentifier
-    PyreComponent component;
-    component.name("my component");
-    CPPUNIT_ASSERT_EQUAL(std::string("unknown"), std::string(component._identifier));
-
-    const std::string& identifier = "my identifier";
-    component.identifier(identifier.c_str());
-    CPPUNIT_ASSERT_EQUAL(identifier, std::string(component.identifier()));
-} // testIdentifier
-
-// ----------------------------------------------------------------------
 // Test PYLITH_JOURNAL_*.
 namespace pylith {
     namespace utils {
-        class TestComponentJournals : public PyreComponent {
+        class TestGenericJournals : public GenericComponent {
 public:
             void test(void) {
-                PYLITH_COMPONENT_DEBUG("CORRECT: This is a debug message.");
-                PYLITH_COMPONENT_INFO("CORRECT: This is an info mesasge.");
-                PYLITH_COMPONENT_WARNING("CORRECT: This is a warning mesasge.");
-                PYLITH_COMPONENT_ERROR("CORRECT: This is an error mesage.");
+                PYLITH_JOURNAL_DEBUG("CORRECT: This is a debug message.");
+                PYLITH_JOURNAL_INFO("CORRECT: This is an info mesasge.");
+                PYLITH_JOURNAL_WARNING("CORRECT: This is a warning mesasge.");
+                PYLITH_JOURNAL_ERROR("CORRECT: This is an error mesage.");
             } // testJournals
 
         };
@@ -82,7 +68,7 @@ public:
 } // pylith
 
 void
-pylith::utils::TestPyreComponent::testJournals(void)
+pylith::utils::TestGenericComponent::testJournals(void)
 { // testJournals
     const char* name = "test";
     journal::info_t info(name); info.activate();
@@ -90,9 +76,8 @@ pylith::utils::TestPyreComponent::testJournals(void)
     journal::warning_t warning(name); warning.activate();
     journal::error_t error(name); error.activate();
 
-    TestComponentJournals journals;
+    TestGenericJournals journals;
     journals.name("test");
-    journals.identifier("TestJournals");
     journals.test();
 } // testJournals
 

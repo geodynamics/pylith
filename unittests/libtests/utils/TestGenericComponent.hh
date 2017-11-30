@@ -17,34 +17,33 @@
 //
 
 /**
- * @file unittests/libtests/utils/TestPyreComponent.hh
+ * @file unittests/libtests/utils/TestGenericComponent.hh
  *
- * @brief C++ TestPyreComponent object
+ * @brief C++ TestGenericComponent object
  *
- * C++ unit testing for PyreComponent.
+ * C++ unit testing for GenericComponent.
  */
 
-#if !defined(pylith_utils_testpyrecomponent_hh)
-#define pylith_utils_testpyrecomponent_hh
+#if !defined(pylith_utils_testgenericcomponent_hh)
+#define pylith_utils_testgenericcomponent_hh
 
 #include <cppunit/extensions/HelperMacros.h>
 
 /// Namespace for pylith package
 namespace pylith {
     namespace utils {
-        class TestPyreComponent;
+        class TestGenericComponent;
     } // utils
 } // pylith
 
-/// C++ unit testing for TestPyreComponent
-class pylith::utils::TestPyreComponent : public CppUnit::TestFixture {
+/// C++ unit testing for TestGenericComponent
+class pylith::utils::TestGenericComponent : public CppUnit::TestFixture {
 
     // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestPyreComponent);
+    CPPUNIT_TEST_SUITE(TestGenericComponent);
 
     CPPUNIT_TEST(testConstructor);
     CPPUNIT_TEST(testName);
-    CPPUNIT_TEST(testIdentifier);
     CPPUNIT_TEST(testJournals);
 
     CPPUNIT_TEST_SUITE_END();
@@ -64,9 +63,9 @@ public:
     /// Test PYLITH_JOURNAL_DEBUG(), PYLITH_JOURNAL_INFO(), PYLITH_JOURNAL_ERROR().
     void testJournals(void);
 
-}; // class TestPyreComponent
+}; // class TestGenericComponent
 
-#endif // pylith_utils_testpyrecomponent_hh
+#endif // pylith_utils_testgenericcomponent_hh
 
 
 // End of file
