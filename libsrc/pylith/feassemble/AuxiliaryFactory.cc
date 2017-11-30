@@ -49,6 +49,7 @@ pylith::feassemble::AuxiliaryFactory::~AuxiliaryFactory(void) {
     _field = NULL; // :TODO: use shared pointer
     _queryDB = NULL; // :TODO: use shared pointer
 
+    delete _defaultDescription; _defaultDescription = NULL;
     delete _normalizer; _normalizer = NULL;
     delete _fieldQuery; _fieldQuery = NULL;
 } // destructor
