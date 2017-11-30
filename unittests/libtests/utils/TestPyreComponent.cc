@@ -71,10 +71,10 @@ namespace pylith {
         class TestJournals : public PyreComponent {
 public:
         void test(void) {
-            PYLITH_JOURNAL_DEBUG("CORRECT: This is a debug message.");
-            PYLITH_JOURNAL_INFO("CORRECT: This is an info mesasge.");
-            PYLITH_JOURNAL_WARNING("CORRECT: This is a warning mesasge.");
-            PYLITH_JOURNAL_ERROR("CORRECT: This is an error mesage.");
+            PYLITH_COMPONENT_DEBUG("CORRECT: This is a debug message.");
+            PYLITH_COMPONENT_INFO("CORRECT: This is an info mesasge.");
+            PYLITH_COMPONENT_WARNING("CORRECT: This is a warning mesasge.");
+            PYLITH_COMPONENT_ERROR("CORRECT: This is an error mesage.");
         } // testJournals
 
         };
