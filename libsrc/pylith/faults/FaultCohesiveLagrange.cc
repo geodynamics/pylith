@@ -667,7 +667,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precon
     _logger->eventBegin(computeEvent);
 #endif
 
-    PetscMat jacobianNP;
+    PetscMat jacobianNP = NULL;
     std::map<int, int> indicesMatToSubmat;
     _getJacobianSubmatrixNP(&jacobianNP, &indicesMatToSubmat, *jacobian, *fields);
 
@@ -1954,18 +1954,14 @@ pylith::faults::FaultCohesiveLagrange::_getJacobianSubmatrixNP(PetscMat* jacobia
     // MatCreateSubMatrices requires sorted indices
     std::sort(&indicesNP[0], &indicesNP[indicesNP.size()]);
 
-    PetscMat* subMat[1];
+    PetscMat* subMat = NULL;
     IS indicesIS[1];
-    err = ISCreateGeneral(PETSC_COMM_SELF, indicesNP.size(), &indicesNP[0], PETSC_USE_POINTER, &indicesIS[0]);
-    PYLITH_CHECK_ERROR(err);
-    err = MatCreateSubMatrices(jacobianMatrix, 1, indicesIS, indicesIS, MAT_INITIAL_MATRIX, subMat);
-    PYLITH_CHECK_ERROR(err);
+    err = ISCreateGeneral(PETSC_COMM_SELF, indicesNP.size(), &indicesNP[0], PETSC_USE_POINTER, &indicesIS[0]);PYLITH_CHECK_ERROR(err);
+    err = MatCreateSubMatrices(jacobianMatrix, 1, indicesIS, indicesIS, MAT_INITIAL_MATRIX, &subMat);PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&indicesIS[0]); PYLITH_CHECK_ERROR(err);
 
-    *jacobianSub = *subMat[0];
-    err = PetscObjectReference((PetscObject) *subMat[0]);
-    PYLITH_CHECK_ERROR(err);
-    err = MatDestroySubMatrices(1, &subMat[0]); PYLITH_CHECK_ERROR(err);
+    *jacobianSub = subMat[0];
+    err = PetscFree(subMat); PYLITH_CHECK_ERROR(err);
 
     // Create map from global indices to local indices (using only the
     // first index as to match the global order.
