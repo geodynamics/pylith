@@ -26,7 +26,6 @@
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 
-#include <iostream>
 // ----------------------------------------------------------------------
 namespace pylith {
     namespace bc {
