@@ -36,8 +36,8 @@
  * Provides object name to facilitate consistent names for Pyre journals for
  * use in error and debugging messages.
  */
-class pylith::utils::GenericComponent {     // GenericComponent
-    friend class TestGenericComponent;     // unit testing
+class pylith::utils::GenericComponent {
+    friend class TestGenericComponent; // unit testing
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:

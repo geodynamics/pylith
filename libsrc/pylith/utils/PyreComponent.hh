@@ -36,54 +36,53 @@
  * Provides component name to facilitate consistent names for Pyre journals and
  * component identifier for use in error and debugging messages.
  */
-class pylith::utils::PyreComponent
-{     // PyreComponent
-friend class TestPyreComponent;     // unit testing
+class pylith::utils::PyreComponent {
+    friend class TestPyreComponent; // unit testing
 
-// PUBLIC MEMBERS ///////////////////////////////////////////////////////
+    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
-/// Constructor
-PyreComponent(void);
+    /// Constructor
+    PyreComponent(void);
 
-/// Destructor
-~PyreComponent(void);
+    /// Destructor
+    ~PyreComponent(void);
 
-/** Set name of component.
- *
- * @param value Name of component.
- */
-void name(const char* value);
+    /** Set name of component.
+     *
+     * @param value Name of component.
+     */
+    void name(const char* value);
 
-/** Get name of component.
- *
- * @returns Name of component.
- */
-const char* name(void) const;
+    /** Get name of component.
+     *
+     * @returns Name of component.
+     */
+    const char* name(void) const;
 
-/** Set component identifier (identifies object in component hierarchy).
- *
- * @param value Component identifier.
- */
-void identifier(const char* value);
+    /** Set component identifier (identifies object in component hierarchy).
+     *
+     * @param value Component identifier.
+     */
+    void identifier(const char* value);
 
-/** Get component identifier (identifies object in component hierarchy).
- *
- * @returns Component identifier.
- */
-const char* identifier(void) const;
+    /** Get component identifier (identifies object in component hierarchy).
+     *
+     * @returns Component identifier.
+     */
+    const char* identifier(void) const;
 
-// PRIVATE METHODS //////////////////////////////////////////////////////
+    // PRIVATE METHODS //////////////////////////////////////////////////////
 private:
 
-std::string _name; ///< Name of component (used in journals).
-std::string _identifier; ///< Identifier for object in component hierarchy.
+    std::string _name; ///< Name of component (used in journals).
+    std::string _identifier; ///< Identifier for object in component hierarchy.
 
-// PRIVATE METHODS //////////////////////////////////////////////////////
+    // PRIVATE METHODS //////////////////////////////////////////////////////
 private:
 
-PyreComponent(const PyreComponent&);     ///< Not implemented
-const PyreComponent& operator=(const PyreComponent&);     ///< Not implemented
+    PyreComponent(const PyreComponent&);     ///< Not implemented
+    const PyreComponent& operator=(const PyreComponent&);     ///< Not implemented
 
 };      // PyreComponent
 
