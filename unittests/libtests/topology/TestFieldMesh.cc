@@ -394,6 +394,7 @@ void
 pylith::topology::TestFieldMesh::testSubfieldAccessors(void)
 { // testSubfieldAccessors
     PYLITH_METHOD_BEGIN;
+    
     _initialize();
     CPPUNIT_ASSERT(_mesh);
     CPPUNIT_ASSERT(_field);
