@@ -42,6 +42,11 @@ pylith::bc::DirichletNew::DirichletNew(void) :
     _boundaryMesh(NULL),
     _bcKernel(NULL)
 { // constructor
+    _description.label = "unknown";
+    _description.vectorFieldType = pylith::topology::FieldBase::OTHER;
+    _description.numComponents = 0;
+    _description.scale = 1.0;
+    _description.validator = NULL;
 } // constructor
 
 // ----------------------------------------------------------------------
