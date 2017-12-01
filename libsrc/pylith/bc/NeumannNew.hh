@@ -55,6 +55,12 @@ public:
      */
     void initialize(const pylith::topology::Field& solution);
 
+  /** Set up direction to discriminate among shear directions in 3-D.
+   *
+   * @param vec Up direction unit vector.
+   */
+  void upDir(const double vec[3]);
+  
     // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
 
