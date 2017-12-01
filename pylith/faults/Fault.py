@@ -91,7 +91,7 @@ class Fault(PetscComponent, ModuleFault):
   faultLabel.meta['tip'] = "Label identifier for fault."
   
   faultEdge = pyre.inventory.str("edge", default="")
-  faultEdge.meta['tip'] = "Label identifier for fault edge."
+  faultEdge.meta['tip'] = "Label identifier for buried fault edges."
   
   upDir = pyre.inventory.list("up_dir", default=[0.0, 0.0, 1.0], validator=validateDir)
   upDir.meta['tip'] = "Up-dip or up direction " \
