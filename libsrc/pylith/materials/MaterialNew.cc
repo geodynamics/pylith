@@ -90,7 +90,7 @@ void
 pylith::materials::MaterialNew::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
-    IntegratorPointwise::deallocate();
+    pylith::feassemble::IntegratorPointwise::deallocate();
     delete _materialIS; _materialIS = NULL;
     delete _gravityField; _gravityField = NULL;
     delete _auxMaterialFactory; _auxMaterialFactory = NULL;
