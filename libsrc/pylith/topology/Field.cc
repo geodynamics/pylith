@@ -1237,10 +1237,25 @@ pylith::topology::Field::subfieldsSetup(void)
     err = DMSetDefaultSection(_dm, NULL); PYLITH_CHECK_ERROR(err); // :TODO: @brad Remove when using PetscDS for all fields.
     err = DMSetNumFields(_dm, _subfields.size()); PYLITH_CHECK_ERROR(err);
 
+    bool quadOrderSet = false;
+    int quadOrder = -999;
     for (subfields_type::const_iterator s_iter = _subfields.begin(); s_iter != _subfields.end(); ++s_iter) {
         const char* sname = s_iter->first.c_str();
         const SubfieldInfo& sinfo = s_iter->second;
 
+	if (quadOrderSet) {
+	  if (quadOrder != sinfo.fe.quadOrder) {
+	    std::ostringstream msg;
+	    msg << "PETSc DMPlex routines currently assume all subfields use the same quadrature order. Quaadrature order of "
+		<< sinfo.fe.quadOrder << " for subfield '" << sname << "' does not match the quadrature order of " << quadOrder
+		<< " for other subfields in field '" << label() << "'.";
+	    throw std::runtime_error(msg.str());
+	  } // if
+	} else {
+	  quadOrder = sinfo.fe.quadOrder;
+	  quadOrderSet = true;
+	} // if/else
+	
         PetscFE fe = FieldOps::createFE(sinfo.fe, _dm, _mesh.isSimplex(), sinfo.description.numComponents); assert(fe);
         err = PetscObjectSetName((PetscObject) fe, sname); PYLITH_CHECK_ERROR(err);
         err = PetscDSSetDiscretization(prob, sinfo.index, (PetscObject) fe); PYLITH_CHECK_ERROR(err);
