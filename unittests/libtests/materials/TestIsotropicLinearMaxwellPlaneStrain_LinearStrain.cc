@@ -183,7 +183,6 @@ namespace pylith {
             } // disp_dot_units
 
 protected:
-
             void setUp(void) {
                 TestIsotropicLinearMaxwellPlaneStrain::setUp();
                 _mydata = new TestIsotropicLinearMaxwellPlaneStrain_Data(); CPPUNIT_ASSERT(_mydata);
@@ -323,7 +322,6 @@ protected:
         }; // TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP2
         CPPUNIT_TEST_SUITE_REGISTRATION(TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP2);
 
-
         // ----------------------------------------------------------------------
         class TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadP1 : public TestIsotropicLinearMaxwellPlaneStrain_LinearStrain { // TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadP1
 
@@ -343,13 +341,13 @@ protected:
                 _mydata->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
                 static const pylith::topology::Field::Discretization _auxDiscretizations[7] = {
-                    {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // density
-                    {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
-                    {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
-                    {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // maxwell_time
-                    {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // total_strain
-                    {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // viscous_strain
-                    {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // body_force
+                    {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // density
+                    {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
+                    {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
+                    {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // maxwell_time
+                    {1, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // total_strain
+                    {1, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // viscous_strain
+                    {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // body_force
                 };
                 _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
@@ -394,7 +392,6 @@ protected:
 
         }; // TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadP2
         CPPUNIT_TEST_SUITE_REGISTRATION(TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadP2);
-
 
     } // materials
 } // pylith
