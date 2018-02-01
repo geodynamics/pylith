@@ -32,6 +32,7 @@ testbc_SOURCES = \
 	TestBoundaryMesh_Cases.cc \
 	TestDirichletTimeDependent.cc \
 	TestDirichletTimeDependent_Cases.cc \
+	TestNeumannTimeDependent.cc \
 	test_bc.cc
 
 # TestBoundaryCondition.cc \

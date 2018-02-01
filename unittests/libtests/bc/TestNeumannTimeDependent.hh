@@ -34,7 +34,8 @@
 
 #include "pylith/topology/Field.hh" // HOLDSA Discretization
 
-#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SimpleGridDB
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA UserFunctionDB
+#include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
 #include "spatialdata/units/unitsfwd.hh" // HOLDSA Nondimensional
 
 
@@ -78,7 +79,7 @@ public:
     /// Test constructor.
     void testConstructor(void);
 
-    /// Test accessors (field, constrainedDOF, dbTimeHistory, useInitial, useRate, useTimeHistory).
+    /// Test accessors (field, dbTimeHistory, useInitial, useRate, useTimeHistory).
     void testAccessors(void);
 
     /// Test auxFieldDiscretization().
@@ -144,6 +145,7 @@ public:
     const char* meshFilename; ///< Name of file with ASCII mesh.
     const char* bcLabel; ///< Label defining cells associated with material.
 
+    spatialdata::geocoords::CoordSys* cs; ///< Coordinate system.
     spatialdata::units::Nondimensional* normalizer; ///< Scales for nondimensionalization.
 
     const char* field; ///< Name of solution field constrained.
@@ -155,15 +157,16 @@ public:
     bool useTimeHistory; ///< True if using time history;
     const char* thFilename; ///< Name of file with time history.
 
-    PylithReal t; ///< Time associated with setting solution.
-    int solnNumSubfields; ///< Number of solution subfields.
-    pylith::topology::FieldBase::Discretization* solnDiscretizations; ///< Discretizations for solution fields.
-    spatialdata::spatialdb::UserFunctionDB* solnDB; ///< Spatial database with solution.
-
     int numAuxSubfields; ///< Number of auxiliary subfields.
     const char** auxSubfields; ///< Names of auxiliary subfields.
     pylith::topology::Field::Discretization* auxDiscretizations; ///< Discretizations for auxiliary fields.
     spatialdata::spatialdb::UserFunctionDB* auxDB; ///< Spatial database with auxiliary field.
+
+
+    PylithReal t; ///< Time associated with setting solution.
+    int solnNumSubfields; ///< Number of solution subfields.
+    pylith::topology::FieldBase::Discretization* solnDiscretizations; ///< Discretizations for solution fields.
+    spatialdata::spatialdb::UserFunctionDB* solnDB; ///< Spatial database with solution.
 
 }; // class TestNeumannTimeDependent_Data
 

@@ -33,11 +33,8 @@
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
-#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/spatialdb/SimpleGridDB.hh" // USES SimpleGridDB
-#include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
-#include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
-#include "spatialdata/spatialdb/UniformDB.hh" // USES UniformDB
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -99,16 +96,6 @@ pylith::bc::TestNeumannTimeDependent::testAccessors(void)
     const std::string fieldName = "displacement";
     _bc->field(fieldName.c_str());
     CPPUNIT_ASSERT_EQUAL(fieldName, std::string(_bc->field()));
-
-    // constrainedDOF().
-    const size_t numConstrained = 4;
-    const int constrainedDOF[4] = { 0, 2, 3, 6 };
-    _bc->constrainedDOF(constrainedDOF, numConstrained);
-    const pylith::int_array& dof = _bc->constrainedDOF();
-    CPPUNIT_ASSERT_EQUAL(numConstrained, dof.size());
-    for (size_t i = 0; i < numConstrained; ++i) {
-        CPPUNIT_ASSERT_EQUAL(constrainedDOF[i], dof[i]);
-    } // for
 
     // dbTimeHistory()
     spatialdata::spatialdb::TimeHistory db;
@@ -193,7 +180,6 @@ pylith::bc::TestNeumannTimeDependent::testAuxFieldDiscretization(void)
         CPPUNIT_ASSERT_EQUAL(infoDefault.feSpace, test.feSpace);
     } // default
 
-
     PYLITH_METHOD_END;
 } // testAuxFieldDiscretization
 
@@ -205,7 +191,7 @@ pylith::bc::TestNeumannTimeDependent::testAuxFieldDB(void)
     PYLITH_METHOD_BEGIN;
 
     const std::string label = "test db";
-    spatialdata::spatialdb::SimpleDB db;
+    spatialdata::spatialdb::UserFunctionDB db;
     db.label(label.c_str());
 
     CPPUNIT_ASSERT(_bc);
@@ -257,12 +243,6 @@ pylith::bc::TestNeumannTimeDependent::testVerifyConfiguration(void)
     _bc->field("dslfjadsf");
     CPPUNIT_ASSERT_THROW(_bc->verifyConfiguration(*_solution), std::runtime_error);
 
-    // Check for failure with constrained DOF not in solution.
-    const size_t numConstrainedDOF = 1;
-    const int constrainedDOF[1] = { 9999 };
-    _bc->constrainedDOF(constrainedDOF, numConstrainedDOF);
-    CPPUNIT_ASSERT_THROW(_bc->verifyConfiguration(*_solution), std::runtime_error);
-
     PYLITH_METHOD_END;
 } // testVerifyConfiguration
 
@@ -273,41 +253,35 @@ pylith::bc::TestNeumannTimeDependent::testInitialize(void)
 { // testInitialize
     PYLITH_METHOD_BEGIN;
 
-#if 1
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad not implemented.", false);
-#else
-    _initialize();
+    // Call initialize()
+    _initialize(); // includes setting up auxField
+    _setupSolutionField();
 
     CPPUNIT_ASSERT(_bc);
     CPPUNIT_ASSERT(_solution);
+
     _bc->initialize(*_solution);
 
-    // Verify auxiliary fields.
-    for (int i = 0; i < _data->numAuxFields; ++i) {
-        CPPUNIT_ASSERT(_bc->hasAuxField(_data->auxFields[i]));
-    } // for
-    CPPUNIT_ASSERT(!_bc->hasAuxField("sgkgflgkjf"));
+    //_bc->auxField().view("AUXILIARY FIELD"); // DEBUGGING
 
+    // Verify auxiliary field.
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT(_mesh);
-    const pylith::topology::Field& auxFields = _bc->auxFields();
-    CPPUNIT_ASSERT_EQUAL(std::string("auxiliary fields"), std::string(auxFields.label()));
-    CPPUNIT_ASSERT_EQUAL(_mesh->dimension(), auxFields.spaceDim());
+    const pylith::topology::Field& auxField = _bc->auxField();
+    CPPUNIT_ASSERT_EQUAL(std::string("auxiliary subfields"), std::string(auxField.label()));
+    CPPUNIT_ASSERT_EQUAL(_mesh->dimension(), auxField.spaceDim());
 
     PylithReal norm = 0.0;
     PylithReal t = _data->t;
-    const PetscDM dm = auxFields.dmMesh(); CPPUNIT_ASSERT(dm);
-    pylith::topology::FieldQuery* query = _db->_auxFieldsQuery;
-    query->openDB(queryDB, _data->lengthScale);
-
-    PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query->functions(), (void**)query->contextPtrs(), auxFields.localVector(), &norm); CPPUNIT_ASSERT(!err);
-    query->closeDB(queryDB);
+    const PetscDM dm = auxField.dmMesh(); CPPUNIT_ASSERT(dm);
+    pylith::topology::FieldQuery query(auxField);
+    query.initializeWithDefaultQueryFns();
+    CPPUNIT_ASSERT(_data->normalizer);
+    query.openDB(_data->auxDB, _data->normalizer->lengthScale());
+    PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField.localVector(), &norm); CPPUNIT_ASSERT(!err);
+    query.closeDB(_data->auxDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
-
-    // Verify boundary was added to DM.
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Verify boundary was added to DM.", false);
-#endif
 
     PYLITH_METHOD_END;
 } // testInitialize
@@ -319,31 +293,34 @@ pylith::bc::TestNeumannTimeDependent::testPrestep(void)
 { // testPrestep
     PYLITH_METHOD_BEGIN;
 
-#if 1
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad not implemented.", false);
-#else
+    if (!_data->useTimeHistory) {PYLITH_METHOD_END;}
+
     _initialize();
+    _setupSolutionField();
 
     CPPUNIT_ASSERT(_bc);
     CPPUNIT_ASSERT(_solution);
     _bc->initialize(*_solution);
 
+    const pylith::topology::Field& auxField = _bc->auxField();
+    CPPUNIT_ASSERT(auxField.hasSubfield("time_history_value"));
+
     pylith::topology::Field valueField(*_mesh);
-    _bc->getAuxField(&valueField, "time_history_value");
+    valueField.copySubfield(auxField, "time_history_value");
     CPPUNIT_ASSERT(valueField.sectionSize() > 0);
-    CPPUNIT_ASSERT_EQUAL(std::string("value"), std::string(valueField.label()));
+    CPPUNIT_ASSERT_EQUAL(std::string("time_history_value"), std::string(valueField.label()));
 
     PylithReal norm = 0.0;
     PylithReal t = _data->t;
-    const PetscDM dm = auxFields.dmMesh(); CPPUNIT_ASSERT(dm);
-    pylith::topology::FieldQuery* query = _db->_auxFieldsQuery;
-    query->openDB(queryDB, _data->lengthScale);
-
-    PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query->functions(), (void**)query->contextPtrs(), valueField.localVector(), &norm); CPPUNIT_ASSERT(!err);
-    query->closeDB(queryDB);
+    const PetscDM dm = auxField.dmMesh(); CPPUNIT_ASSERT(dm);
+    pylith::topology::FieldQuery query(valueField);
+    query.initializeWithDefaultQueryFns();
+    CPPUNIT_ASSERT(_data->normalizer);
+    query.openDB(_data->auxDB, _data->normalizer->lengthScale());
+    PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), valueField.localVector(), &norm); CPPUNIT_ASSERT(!err);
+    query.closeDB(_data->auxDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
-#endif
 
     PYLITH_METHOD_END;
 } // testPrestep
@@ -418,141 +395,136 @@ pylith::bc::TestNeumannTimeDependent::testAuxFieldSetup(void)
 { // testAuxFieldSetup
     PYLITH_METHOD_BEGIN;
 
-#if 0
-
-    _setupSolutionFields();
+    _initialize();
+    _setupSolutionField();
 
     CPPUNIT_ASSERT(_bc);
     CPPUNIT_ASSERT(_solution);
-    _bc->initialize(*_solution);
-
-    CPPUNIT_ASSERT(_mymaterial);
     CPPUNIT_ASSERT(_mesh);
-    CPPUNIT_ASSERT(_mydata);
-    CPPUNIT_ASSERT(_mydata->normalizer);
-    const PylithReal densityScale = _mydata->normalizer->densityScale();
-    const PylithReal lengthScale = _mydata->normalizer->lengthScale();
-    const PylithReal timeScale = _mydata->normalizer->timeScale();
-    const PylithReal pressureScale = _mydata->normalizer->pressureScale();
-    const PylithReal forceScale = densityScale * lengthScale / (timeScale * timeScale);
-
-
-    CPPUNIT_ASSERT(_bc->_boundaryMesh);
     CPPUNIT_ASSERT(_data);
+    CPPUNIT_ASSERT(_data->normalizer);
+    const PylithReal timeScale = _data->normalizer->timeScale();
 
-    delete _bc->_auxFields; _bc->_auxFields = new pylith::topology::Field(*_bc->_boundaryMesh); CPPUNIT_ASSERT(_bc->_auxFields);
-    delete _bc->_auxFieldsQuery; _bc->_auxFieldsQuery = new pylith::topology::FieldQuery(*_bc->_auxFields); CPPUNIT_ASSERT(_bc->_auxFieldsQuery);
-    _bc->_auxFieldSetup();
+    delete _bc->_boundaryMesh; _bc->_boundaryMesh = new pylith::topology::Mesh(_solution->mesh(), _data->bcLabel);
+    CPPUNIT_ASSERT(_bc->_boundaryMesh);
+
+    delete _bc->_auxField; _bc->_auxField = new pylith::topology::Field(*_bc->_boundaryMesh); CPPUNIT_ASSERT(_bc->_auxField);
+    _bc->_auxFieldSetup(*_solution);
 
     CPPUNIT_ASSERT(_mesh->coordsys());
-    const int spaceDim = _mesh->coordsys()->spaceDim();
-    const int numComponents = (_data->isConstrainedFieldVector) ? spaceDim : 1;
-    const pylith::topology::Field::VectorFieldEnum vectorFieldType = (_data->isConstrainedFieldVector) ? pylith::topology::Field::VECTOR : pylith::topology::Field::SCALAR;
+    const size_t spaceDim = _mesh->coordsys()->spaceDim();
+    const pylith::topology::Field::VectorFieldEnum vectorFieldType = _data->vectorFieldType;
+    const size_t numComponents = (vectorFieldType == pylith::topology::Field::VECTOR) ? spaceDim : 1;
 
     // Check discretizations
+    int ifield = 0;
     if (_data->useInitial) {
         const char* label = "initial_amplitude";
-        const pylith::topology::Field::SubfieldInfo& info = _bc->_auxFields->subfieldInfo(label);
-        CPPUNIT_ASSERT_EQUAL(numComponents, info.numComponents);
-        CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
-        CPPUNIT_ASSERT_EQUAL(vectorFieldType, info.metadata.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(_data->lengthScale, info.metadata.scale);
-        CPPUNIT_ASSERT_EQUAL(false, info.metadata.dimsOkay);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
-        CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
+        CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(_data->auxSubfields[ifield]));
+        const pylith::topology::Field::Discretization& discretization = _data->auxDiscretizations[ifield];
+
+        const pylith::topology::Field::SubfieldInfo& info = _bc->_auxField->subfieldInfo(label);
+        CPPUNIT_ASSERT_EQUAL(numComponents, info.description.numComponents);
+        CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
+        CPPUNIT_ASSERT_EQUAL(vectorFieldType, info.description.vectorFieldType);
+        CPPUNIT_ASSERT_EQUAL(_data->scale, info.description.scale);
+        CPPUNIT_ASSERT_EQUAL(discretization.basisOrder, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(discretization.quadOrder, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(discretization.isBasisContinuous, info.fe.isBasisContinuous);
+        CPPUNIT_ASSERT_EQUAL(discretization.feSpace, info.fe.feSpace);
+        ++ifield;
     } // if
 
     if (_data->useRate) {
         { // amplitude
             const char* label = "rate_amplitude";
-            const pylith::topology::Field::SubfieldInfo& info = _bc->_auxFields->subfieldInfo(label);
-            CPPUNIT_ASSERT_EQUAL(numComponents, info.numComponents);
-            CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
-            CPPUNIT_ASSERT_EQUAL(vectorFieldType, info.metadata.vectorFieldType);
-            CPPUNIT_ASSERT_EQUAL(_data->lengthScale / _data->timeScale, info.metadata.scale);
-            CPPUNIT_ASSERT_EQUAL(false, info.metadata.dimsOkay);
-            CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-            CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
-            CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
+            CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(_data->auxSubfields[ifield]));
+            const pylith::topology::Field::Discretization& discretization = _data->auxDiscretizations[ifield];
+
+            const pylith::topology::Field::SubfieldInfo& info = _bc->_auxField->subfieldInfo(label);
+            CPPUNIT_ASSERT_EQUAL(numComponents, info.description.numComponents);
+            CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
+            CPPUNIT_ASSERT_EQUAL(vectorFieldType, info.description.vectorFieldType);
+            CPPUNIT_ASSERT_EQUAL(_data->scale / timeScale, info.description.scale);
+            CPPUNIT_ASSERT_EQUAL(discretization.basisOrder, info.fe.basisOrder);
+            CPPUNIT_ASSERT_EQUAL(discretization.quadOrder, info.fe.quadOrder);
+            CPPUNIT_ASSERT_EQUAL(discretization.isBasisContinuous, info.fe.isBasisContinuous);
+            CPPUNIT_ASSERT_EQUAL(discretization.feSpace, info.fe.feSpace);
+            ++ifield;
         } // amplitude
 
         { // start time
             const char* label = "rate_start_time";
-            const pylith::topology::Field::SubfieldInfo& info = _bc->_auxFields->subfieldInfo(label);
-            CPPUNIT_ASSERT_EQUAL(1, info.numComponents);
-            CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
-            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.metadata.vectorFieldType);
-            CPPUNIT_ASSERT_EQUAL(_data->timeScale, info.metadata.scale);
-            CPPUNIT_ASSERT_EQUAL(false, info.metadata.dimsOkay);
-            CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-            CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
-            CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
+            CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(_data->auxSubfields[ifield]));
+            const pylith::topology::Field::Discretization& discretization = _data->auxDiscretizations[ifield];
+
+            const pylith::topology::Field::SubfieldInfo& info = _bc->_auxField->subfieldInfo(label);
+            CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
+            CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
+            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
+            CPPUNIT_ASSERT_EQUAL(timeScale, info.description.scale);
+            CPPUNIT_ASSERT_EQUAL(discretization.basisOrder, info.fe.basisOrder);
+            CPPUNIT_ASSERT_EQUAL(discretization.quadOrder, info.fe.quadOrder);
+            CPPUNIT_ASSERT_EQUAL(discretization.isBasisContinuous, info.fe.isBasisContinuous);
+            CPPUNIT_ASSERT_EQUAL(discretization.feSpace, info.fe.feSpace);
+            ++ifield;
         } // start time
     } // if
 
     if (_data->useTimeHistory) {
         { // amplitude
             const char* label = "time_history_amplitude";
-            const pylith::topology::Field::SubfieldInfo& info = _bc->_auxFields->subfieldInfo(label);
-            CPPUNIT_ASSERT_EQUAL(1, info.numComponents);
-            CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
-            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.metadata.vectorFieldType);
-            CPPUNIT_ASSERT_EQUAL(_data->lengthScale, info.metadata.scale);
-            CPPUNIT_ASSERT_EQUAL(false, info.metadata.dimsOkay);
-            CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-            CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
-            CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
+            CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(_data->auxSubfields[ifield]));
+            const pylith::topology::Field::Discretization& discretization = _data->auxDiscretizations[ifield];
+
+            const pylith::topology::Field::SubfieldInfo& info = _bc->_auxField->subfieldInfo(label);
+            CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
+            CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
+            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
+            CPPUNIT_ASSERT_EQUAL(_data->scale, info.description.scale);
+            CPPUNIT_ASSERT_EQUAL(discretization.basisOrder, info.fe.basisOrder);
+            CPPUNIT_ASSERT_EQUAL(discretization.quadOrder, info.fe.quadOrder);
+            CPPUNIT_ASSERT_EQUAL(discretization.isBasisContinuous, info.fe.isBasisContinuous);
+            CPPUNIT_ASSERT_EQUAL(discretization.feSpace, info.fe.feSpace);
+            ++ifield;
         } // amplitude
 
         { // start time
             const char* label = "time_history_start_time";
-            const pylith::topology::Field::SubfieldInfo& info = _bc->_auxFields->subfieldInfo(label);
-            CPPUNIT_ASSERT_EQUAL(1, info.numComponents);
-            CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
-            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.metadata.vectorFieldType);
-            CPPUNIT_ASSERT_EQUAL(_data->timeScale, info.metadata.scale);
-            CPPUNIT_ASSERT_EQUAL(false, info.metadata.dimsOkay);
-            CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-            CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
-            CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
+            CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(_data->auxSubfields[ifield]));
+            const pylith::topology::Field::Discretization& discretization = _data->auxDiscretizations[ifield];
+
+            const pylith::topology::Field::SubfieldInfo& info = _bc->_auxField->subfieldInfo(label);
+            CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
+            CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
+            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
+            CPPUNIT_ASSERT_EQUAL(timeScale, info.description.scale);
+            CPPUNIT_ASSERT_EQUAL(discretization.basisOrder, info.fe.basisOrder);
+            CPPUNIT_ASSERT_EQUAL(discretization.quadOrder, info.fe.quadOrder);
+            CPPUNIT_ASSERT_EQUAL(discretization.isBasisContinuous, info.fe.isBasisContinuous);
+            CPPUNIT_ASSERT_EQUAL(discretization.feSpace, info.fe.feSpace);
+            ++ifield;
         } // start time
 
         { // time_history_amplitude
             const char* label = "time_history_value";
-            const pylith::topology::Field::SubfieldInfo& info = _bc->_auxFields->subfieldInfo(label);
-            CPPUNIT_ASSERT_EQUAL(1, info.numComponents);
-            CPPUNIT_ASSERT_EQUAL(std::string(label), info.metadata.label);
-            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.metadata.vectorFieldType);
-            CPPUNIT_ASSERT_EQUAL(1.0, info.metadata.scale);
-            CPPUNIT_ASSERT_EQUAL(false, info.metadata.dimsOkay);
-            CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-            CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
-            CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
+            CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(_data->auxSubfields[ifield]));
+            const pylith::topology::Field::Discretization& discretization = _data->auxDiscretizations[ifield];
+
+            const pylith::topology::Field::SubfieldInfo& info = _bc->_auxField->subfieldInfo(label);
+            CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
+            CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
+            CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
+            CPPUNIT_ASSERT_EQUAL(1.0, info.description.scale);
+            CPPUNIT_ASSERT_EQUAL(discretization.basisOrder, info.fe.basisOrder);
+            CPPUNIT_ASSERT_EQUAL(discretization.quadOrder, info.fe.quadOrder);
+            CPPUNIT_ASSERT_EQUAL(discretization.isBasisContinuous, info.fe.isBasisContinuous);
+            CPPUNIT_ASSERT_EQUAL(discretization.feSpace, info.fe.feSpace);
+            ++ifield;
         } // time_history_amplitude
 
     } // if
 
-    // Make sure DB query functions are set correctly.
-    if (_data->useInitial) {
-        CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _bc->_auxFieldsQuery->queryFn("initial_amplitude"));
-    } // if
-    if (_data->useRate) {
-        CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _bc->_auxFieldsQuery->queryFn("rate_amplitude"));
-        CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _bc->_auxFieldsQuery->queryFn("rate_start_time"));
-    } // if
-    if (_data->useTimeHistory) {
-        CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _bc->_auxFieldsQuery->queryFn("time_history_amplitude"));
-        CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _bc->_auxFieldsQuery->queryFn("time_history_start_time"));
-        CPPUNIT_ASSERT_EQUAL(&pylith::topology::FieldQuery::dbQueryGeneric, _bc->_auxFieldsQuery->queryFn("time_history_value"));
-    } // if
-#endif
     PYLITH_METHOD_END;
 } // testAuxFieldSetup
 
@@ -570,27 +542,18 @@ pylith::bc::TestNeumannTimeDependent::_initialize(void)
     CPPUNIT_ASSERT(_data->meshFilename);
     iohandler.filename(_data->meshFilename);
     iohandler.read(_mesh);
-
-    // Setup coordinates.
-    spatialdata::geocoords::CSCart cs;
-    cs.setSpaceDim(_mesh->dimension());
-    cs.initialize();
-    _mesh->coordsys(&cs);
+    _mesh->coordsys(_data->cs);
     CPPUNIT_ASSERT(_data->normalizer);
     pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->normalizer);
 
-#if 0
-    spatialdata::spatialdb::SimpleDB auxFieldDB("TestNeumannTimeDependent auxFields");
-    spatialdata::spatialdb::SimpleIOAscii dbIO;
-    dbIO.filename(_data->auxDBFilename);
-    auxFieldDB.ioHandler(&dbIO);
-    auxFieldDB.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
-#endif
-
     _bc->label(_data->bcLabel);
-    //bc->auxFieldDB(&auxFieldDB);
-    _bc->constrainedDOF(_data->constrainedDOF, _data->numConstrainedDOF);
+    _bc->auxFieldDB(_data->auxDB);
     _bc->normalizer(*_data->normalizer);
+    for (int ifield = 0; ifield < _data->numAuxSubfields; ++ifield) {
+        const pylith::topology::Field::Discretization& discretization = _data->auxDiscretizations[ifield];
+        const char* name = _data->auxSubfields[ifield];
+        _bc->auxSubfieldDiscretization(name, discretization.basisOrder, discretization.quadOrder, discretization.isBasisContinuous, discretization.feSpace);
+    } // for
 
     _bc->useInitial(_data->useInitial);
     _bc->useRate(_data->useRate);
@@ -612,18 +575,16 @@ pylith::bc::TestNeumannTimeDependent::_setupSolutionField(void)
 { // setupSolutionField
     PYLITH_METHOD_BEGIN;
 
-    spatialdata::spatialdb::SimpleGridDB solutionDB;
-    solutionDB.filename(_data->solnDBFilename);
-    solutionDB.label("solution database");
-    solutionDB.queryType(spatialdata::spatialdb::SimpleGridDB::LINEAR);
+    CPPUNIT_ASSERT(_mesh);
+    CPPUNIT_ASSERT(_data);
+    CPPUNIT_ASSERT(_data->normalizer);
 
+    delete _solution; _solution = new pylith::topology::Field(*_mesh);
     pylith::problems::SolutionFactory factory(*_solution, *_data->normalizer);
     factory.displacement(_data->solnDiscretizations[0]);
     factory.velocity(_data->solnDiscretizations[1]);
     factory.fluidPressure(_data->solnDiscretizations[2]);
     _solution->subfieldsSetup();
-    _solution->allocate();
-    factory.setValues(&solutionDB);
 
     PYLITH_METHOD_END;
 } // setupSolutionField
@@ -636,20 +597,18 @@ pylith::bc::TestNeumannTimeDependent_Data::TestNeumannTimeDependent_Data(void) :
     normalizer(new spatialdata::units::Nondimensional),
     field(NULL),
     vectorFieldType(pylith::topology::Field::OTHER),
-    numConstrainedDOF(0),
-    constrainedDOF(NULL),
     useInitial(false),
     useRate(false),
     useTimeHistory(false),
     thFilename(NULL),
-    t(0.0),
-    solnNumFields(0),
-    solnDiscretizations(NULL),
-    solnDBFilename(NULL),
-    numAuxFields(0),
-    auxFields(NULL),
+    numAuxSubfields(0),
+    auxSubfields(NULL),
     auxDiscretizations(NULL),
-    auxDBFilename(NULL)
+    auxDB(new spatialdata::spatialdb::UserFunctionDB),
+    t(0.0),
+    solnNumSubfields(0),
+    solnDiscretizations(NULL),
+    solnDB(new spatialdata::spatialdb::UserFunctionDB)
 { // constructor
 } // constructor
 
@@ -657,7 +616,10 @@ pylith::bc::TestNeumannTimeDependent_Data::TestNeumannTimeDependent_Data(void) :
 // Destructor
 pylith::bc::TestNeumannTimeDependent_Data::~TestNeumannTimeDependent_Data(void)
 { // destructor
+    delete cs; cs = NULL;
     delete normalizer; normalizer = NULL;
+    delete auxDB; auxDB = NULL;
+    delete solnDB; solnDB = NULL;
 } // destructor
 
 

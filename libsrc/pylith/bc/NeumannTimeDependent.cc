@@ -252,7 +252,7 @@ pylith::bc::NeumannTimeDependent::_auxFieldSetup(const pylith::topology::Field& 
 // ----------------------------------------------------------------------
 // Set kernels for RHS residual G(t,s).
 void
-pylith::bc::NeumannTimeDependent::_setFEKernelsResidual(const topology::Field& solution)
+pylith::bc::NeumannTimeDependent::_setFEKernelsRHSResidual(const pylith::topology::Field& solution) const
 { // _setFEKernelsResidual
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setFEKernelsResidual(solution="<<solution.label()<<")");
@@ -305,5 +305,13 @@ pylith::bc::NeumannTimeDependent::_setFEKernelsResidual(const topology::Field& s
 
     PYLITH_METHOD_END;
 } // _setFEKernelsResidual
+
+// ----------------------------------------------------------------------
+// Get factory for setting up auxliary fields.
+pylith::feassemble::AuxiliaryFactory*
+pylith::bc::NeumannTimeDependent::_auxFactory(void) {
+    return _auxTimeDependentFactory;
+} // _auxFactory
+
 
 // End of file

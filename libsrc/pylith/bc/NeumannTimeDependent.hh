@@ -45,7 +45,7 @@
  *        time history start (scalar) t_2(x)
  *        time history value (scalar) a(t-t_2(x))
  */
-class pylith::bc::NeumannTimeDependent : public NeumannNew { // class NeumannTimeDependent
+class pylith::bc::NeumannTimeDependent : public NeumannNew {
     friend class TestNeumannTimeDependent;   // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -140,8 +140,13 @@ protected:
      *
      * @param solution Solution field.
      */
-    void _setFEKernelsResidual(const topology::Field& solution);
+    void _setFEKernelsRHSResidual(const topology::Field& solution) const;
 
+    /** Get factory for setting up auxliary fields.
+     *
+     * @returns Factor for auxiliary fields.
+     */
+    pylith::feassemble::AuxiliaryFactory* _auxFactory(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////
 private:
