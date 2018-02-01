@@ -305,7 +305,6 @@ protected:
     /** Set constants used in finite-element integrations.
      *
      * @param[in] solution Solution field.
-     * @param[in] t Current time.
      * @param[in] dt Current time step.
      */
     virtual
