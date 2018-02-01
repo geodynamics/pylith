@@ -97,7 +97,7 @@ is contained in an Exodus file, which is a specialized netCDF file.
 If you have the \filename{ncdump} command available, you can see what
 is in the file by typing:
 \begin{shell}
-$$ ncdump box_hex8_1000m.exo
+$ ncdump box_hex8_1000m.exo
 \end{shell}
 
 \begin{figure}
@@ -115,16 +115,17 @@ In addition to the mesh, the example problems share other information.
 As in previous examples, we place this information in \filename{pylithapp.cfg}.
 Since these examples use a mesh from CUBIT, in this file we set the
 importer to \object{MeshIOCubit}:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{pylithapp.cfg}]
 <h>[pylithapp.mesh_generator]</h>
 <f>reader</f> = pylith.meshio.MeshIOCubit
 
 <h>[pylithapp.mesh_generator.reader]</h>
 <p>filename</p> = mesh/box_hex8_1000m.exo
 \end{cfg}
+
 This example differs from some earlier examples, because we specify
 two material groups:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{pylithapp.cfg}]
 <h>[pylithapp.timedependent]</h>
 <f>materials</f> = [upper_crust, lower_crust]</h>
 
@@ -147,7 +148,7 @@ in Figure \vref{fig:3dhex8:mesh}. Using two material groups allows
 us to specify different material types or material variations for
 the upper crust and lower crust, if desired. For now, we retain the
 default \object{ElasticIsotropic3D} material type for both materials.
-This behavior will be overridden by example-specific\filename{.cfg}
+This behavior will be overridden by example-specific \filename{cfg}
 files in some of the examples. Although the material groups are specified
 in \filename{pylithapp.cfg}, the physical properties for the material
 models are given in \filename{spatialdb/} 

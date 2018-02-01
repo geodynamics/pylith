@@ -16,7 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-# @file pyre/meshio/OutputManager.py
+# @file pylith/meshio/OutputManager.py
 ##
 # @brief Python abstract base class for managing output of
 # finite-element information.
@@ -233,9 +233,7 @@ class OutputManager(PetscComponent, ModuleOutputManager):
         logEvent = "%swriteData" % self._loggingPrefix
         self._eventLogger.eventBegin(logEvent)
 
-        if self._checkWrite(t) and \
-            (len(self.vertexDataFields) > 0 or
-             len(self.cellDataFields)) > 0:
+        if self._checkWrite(t) and (len(self.vertexDataFields) > 0 or len(self.cellDataFields)) > 0:
 
             (mesh, label, labelId) = self.dataProvider().getDataMesh()
             self._openTimeStep(t, mesh, label, labelId)

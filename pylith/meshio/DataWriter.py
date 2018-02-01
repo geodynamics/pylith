@@ -63,7 +63,7 @@ class DataWriter(PetscComponent):
       # Only create directory on proc 0
       from pylith.mpi.Communicator import mpi_comm_world
       comm = mpi_comm_world()
-      if 0 == comm.rank:
+      if not comm.rank:
         os.makedirs(relpath)
     return
 

@@ -1,0 +1,42 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2017 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+#
+# CUBIT/Trelis journal file for generating a tet mesh of the subduction zone.
+
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+playback 'geometry.jou'
+
+# Uniform resolution tetmesh.
+volume all scheme tetmesh
+volume all size {25.0*km}
+mesh volume all
+
+# ----------------------------------------------------------------------
+# Create blocks and nodesets for materials and boundary conditions.
+# ----------------------------------------------------------------------
+playback 'bc.jou'
+
+
+# ----------------------------------------------------------------------
+# Export exodus file
+# ----------------------------------------------------------------------
+export mesh "mesh_tet.exo" dimension 3 overwrite
+
+
+# End of file
+

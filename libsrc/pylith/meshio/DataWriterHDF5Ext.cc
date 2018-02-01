@@ -21,7 +21,6 @@
 #include "DataWriterHDF5Ext.hh" // Implementation of class methods
 
 #include "HDF5.hh" // USES HDF5
-#include "Xdmf.hh" // USES Xdmf
 
 #include "pylith/topology/Mesh.hh" /// USES Mesh
 #include "pylith/topology/Field.hh" /// USES Field
@@ -110,7 +109,7 @@ pylith::meshio::DataWriterHDF5Ext::open(const pylith::topology::Mesh& mesh,
 
         err = MPI_Comm_rank(comm, &commRank); PYLITH_CHECK_ERROR(err);
         if (!commRank) {
-            _h5->open(_hdf5Filename().c_str(), H5F_ACC_TRUNC);
+            _h5->open(hdf5Filename().c_str(), H5F_ACC_TRUNC);
 
             // Create groups
             _h5->createGroup("/topology");
@@ -301,16 +300,6 @@ pylith::meshio::DataWriterHDF5Ext::close(void)
     } // if
     _tstampIndex = 0;
     deallocate();
-
-    int commRank = 0;
-    MPI_Comm_rank(PETSC_COMM_WORLD, &commRank);
-    if (!commRank) {
-        Xdmf metafile;
-        const std::string& hdf5filename = _hdf5Filename();
-        const int indexExt = hdf5filename.find(".h5");
-        std::string xdmfFilename = std::string(hdf5filename, 0, indexExt) + ".xmf";
-        metafile.write(xdmfFilename.c_str(), _hdf5Filename().c_str());
-    } // if
 
     PYLITH_METHOD_END;
 } // close
@@ -677,11 +666,11 @@ pylith::meshio::DataWriterHDF5Ext::writePointNames(const pylith::string_vector& 
 
     } catch (const std::exception& err) {
         std::ostringstream msg;
-        msg << "Error while writing stations to HDF5 file '" << _hdf5Filename() << "'.\n" << err.what();
+        msg << "Error while writing stations to HDF5 file '" << hdf5Filename() << "'.\n" << err.what();
         throw std::runtime_error(msg.str());
     } catch (...) {
         std::ostringstream msg;
-        msg << "Error while writing stations to HDF5 file '" << _hdf5Filename() << "'.";
+        msg << "Error while writing stations to HDF5 file '" << hdf5Filename() << "'.";
         throw std::runtime_error(msg.str());
     } // try/catch
 
@@ -691,8 +680,8 @@ pylith::meshio::DataWriterHDF5Ext::writePointNames(const pylith::string_vector& 
 // ----------------------------------------------------------------------
 // Generate filename for HDF5 file.
 std::string
-pylith::meshio::DataWriterHDF5Ext::_hdf5Filename(void) const
-{ // _hdf5Filename
+pylith::meshio::DataWriterHDF5Ext::hdf5Filename(void) const
+{ // hdf5Filename
     PYLITH_METHOD_BEGIN;
 
     std::ostringstream filename;
@@ -704,7 +693,7 @@ pylith::meshio::DataWriterHDF5Ext::_hdf5Filename(void) const
     } // if/else
 
     PYLITH_METHOD_RETURN(std::string(filename.str()));
-} // _hdf5Filename
+} // hdf5Filename
 
 // ----------------------------------------------------------------------
 // Generate filename for external dataset file.
@@ -714,7 +703,7 @@ pylith::meshio::DataWriterHDF5Ext::_datasetFilename(const char* field) const
     PYLITH_METHOD_BEGIN;
 
     std::ostringstream filenameS;
-    std::string filenameH5 = _hdf5Filename();
+    std::string filenameH5 = hdf5Filename();
     const int indexExt = filenameH5.find(".h5");
     filenameS << std::string(filenameH5, 0, indexExt) << "_" << field << ".dat";
 

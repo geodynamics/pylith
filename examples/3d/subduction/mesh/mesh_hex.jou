@@ -1,0 +1,54 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2017 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+#
+# CUBIT/Trelis journal file for generating a tet mesh of the subduction zone.
+
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+playback 'geometry.jou'
+
+# Set paving scheme on +y boundary.
+surface 45 48 39 18 scheme pave
+
+# Set paving scheme on -y boundary.
+surface 43 50 21 36 scheme pave
+
+surface all size {25.0*km}
+
+volume v_domain  scheme sweep  source surface 18   target surface 21
+volume v_domain@A scheme sweep  source surface 43   target surface 45
+volume v_domain@B scheme sweep  source surface 39   target surface 36
+volume v_domain@C scheme sweep  source surface 48   target surface 50
+
+volume all size {25.0*km}
+mesh volume all
+
+# ----------------------------------------------------------------------
+# Create blocks and nodesets for materials and boundary conditions.
+# ----------------------------------------------------------------------
+playback 'bc.jou'
+
+
+# ----------------------------------------------------------------------
+# Export exodus file
+# ----------------------------------------------------------------------
+export mesh "mesh_hex.exo" dimension 3 overwrite
+
+
+# End of file
+
+

@@ -34,6 +34,8 @@ EXTRA_DIST = \
 	materials/m4/ac_pkg_swig.m4 \
 	materials/m4/cit_numpy.m4 \
 	materials/m4/cit_python.m4 \
+	materials/m4/cit_mpi.m4 \
+	materials/m4/cit_petsc.m4 \
 	friction/README \
 	friction/configure.ac \
 	friction/Makefile.am \
@@ -48,7 +50,9 @@ EXTRA_DIST = \
 	friction/tests/TestViscousFriction.py \
 	friction/m4/ac_pkg_swig.m4 \
 	friction/m4/cit_numpy.m4 \
-	friction/m4/cit_python.m4
+	friction/m4/cit_python.m4 \
+	friction/m4/cit_mpi.m4 \
+	friction/m4/cit_petsc.m4
 
 
 # End of file 

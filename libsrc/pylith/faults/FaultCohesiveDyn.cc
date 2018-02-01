@@ -54,8 +54,8 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
-#include <iostream> \
-    // TEMPORARY
+//#include <iostream> // TEMPORARY
+//#define DISABLE_SLIPRATE_TOLERANCE
 
 //#define DETAILED_EVENT_LOGGING
 
@@ -63,6 +63,7 @@
 // Default constructor.
 pylith::faults::FaultCohesiveDyn::FaultCohesiveDyn(void) :
     _zeroTolerance(1.0e-10),
+    _zeroToleranceNormal(1.0e-10),
     _tractPerturbation(0),
     _friction(0),
     _jacobian(0),
@@ -126,6 +127,21 @@ pylith::faults::FaultCohesiveDyn::zeroTolerance(const PylithScalar value)
 
     _zeroTolerance = value;
 } // zeroTolerance
+
+// ----------------------------------------------------------------------
+// Nondimensional tolerance for detecting near zero fault opening values.
+void
+pylith::faults::FaultCohesiveDyn::zeroToleranceNormal(const PylithScalar value)
+{ // zeroToleranceNormal
+    if (value < 0.0) {
+        std::ostringstream msg;
+        msg << "Tolerance (" << value << ") for suppressing zero values for fault opening for "
+        "fault " << label() << " must be nonnegative.";
+        throw std::runtime_error(msg.str());
+    } // if
+
+    _zeroToleranceNormal = value;
+} // zeroToleranceNormal
 
 // ----------------------------------------------------------------------
 // Set flag used to determine when fault is traction free when it
@@ -334,7 +350,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field& resid
         _logger->eventEnd(computeEvent);
         _logger->eventBegin(updateEvent);
 #endif
-        if ((slipNormal < _zeroTolerance) || !_openFreeSurf) {
+        if (slipNormal < _zeroToleranceNormal || !_openFreeSurf) {
             // if no opening or flag indicates to still impose initial tractions when fault is open.
             // Assemble contributions into field
             const PetscInt rnoff = residualVisitor.sectionOffset(v_negative);
@@ -630,11 +646,13 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
                 slipRateVertex[d] += orientationArray[ooff+d*spaceDim+e] * (dispTIncrArray[dipoff+e] - dispTIncrArray[dinoff+e]) / dt;
                 tractionTpdtVertex[d] += orientationArray[ooff+d*spaceDim+e] * (dispTArray[dtloff+e] + dispTIncrArray[diloff+e]);
             } // for
-            if (fabs(slipRateVertex[d]) < _zeroTolerance) {
+#if !defined(DISABLE_SLIPRATE_TOLERANCE) // 2017-06-23  Is this really necessary?
+            if (fabs(slipRateVertex[d]) < _zeroTolerance / dt) {
                 slipRateVertex[d] = 0.0;
             } // if
+#endif
         } // for
-        if (fabs(slipTpdtVertex[indexN]) < _zeroTolerance) {
+        if (fabs(slipTpdtVertex[indexN]) < _zeroToleranceNormal) {
             slipTpdtVertex[indexN] = 0.0;
         } // if
 
@@ -772,7 +790,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
         }
 
 #if 0 // DEBUGGING
-        const int rank = _faultMesh->sieveMesh()->commRank();
+        const int rank = _faultMesh->commRank();
         std::cout << "["<<rank<<"] alphaL: " << pow(10.0, logAlphaL)
                   << ", residuaL: " << residualL
                   << ", alphaM: " << pow(10.0, logAlphaM)
@@ -942,7 +960,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
                 dSlipTpdtVertex[indexN] = -slipTpdtVertex[indexN];
             } // if/else
 
-        } else if (slipTpdtVertex[indexN] + dSlipTpdtVertex[indexN] > _zeroTolerance) {
+        } else if (slipTpdtVertex[indexN] + dSlipTpdtVertex[indexN] > _zeroToleranceNormal) {
             // Step 5b: Insure fault traction is zero when opening (if alpha=1
             // this should be enforced already, but will not be properly
             // enforced when alpha < 1).
@@ -2147,11 +2165,13 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceNorm(const PylithScalar alp
                 slipRateVertex[d] += orientationArray[ooff+d*spaceDim+e] * (dispTIncrArray[dipoff+e] - dispTIncrArray[dinoff+e] + alpha*sensDispRelArray[sdroff+e]) / dt;
                 tractionTpdtVertex[d] += orientationArray[ooff+d*spaceDim+e] * (dispTArray[dtloff+e] + dispTIncrArray[diloff+e] + alpha*dLagrangeArray[sdloff+e]);
             } // for
-            if (fabs(slipRateVertex[d]) < _zeroTolerance) {
+#if !defined(DISABLE_SLIPRATE_TOLERANCE) // 2017-06-23  Is this really necessary?
+            if (fabs(slipRateVertex[d]) < _zeroTolerance / dt) {
                 slipRateVertex[d] = 0.0;
             } // if
+#endif
         } // for
-        if (fabs(slipTpdtVertex[indexN]) < _zeroTolerance) {
+        if (fabs(slipTpdtVertex[indexN]) < _zeroToleranceNormal) {
             slipTpdtVertex[indexN] = 0.0;
         } // if
 
@@ -2174,7 +2194,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceNorm(const PylithScalar alp
                 slipTpdtVertex[indexN] = 0.0;
             } // if/else
 
-        } else if (slipTpdtVertex[indexN] > _zeroTolerance) {
+        } else if (slipTpdtVertex[indexN] > _zeroToleranceNormal) {
             // Step b: Ensure fault traction is zero when opening (if
             // alpha=1 this should be enforced already, but will not be
             // properly enforced when alpha < 1).
@@ -2188,7 +2208,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceNorm(const PylithScalar alp
             slipTpdtVertex[indexN] = 0.0;
         } // if
 
-        if (slipTpdtVertex[indexN] > _zeroTolerance) {
+        if (slipTpdtVertex[indexN] > _zeroToleranceNormal) {
             isOpening = true;
         } // if
 
@@ -2293,7 +2313,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(scalar_array* dTractionT
     const PylithScalar tractionNormal = tractionTpdt[1];
     const PylithScalar tractionShearMag = fabs(tractionTpdt[0]);
 
-    if ((fabs(slip[1]) < _zeroTolerance) && (tractionNormal < -_zeroTolerance)) {
+    if (fabs(slip[1]) < _zeroToleranceNormal && tractionNormal < -_zeroTolerance) {
         // if in compression and no opening
         PylithScalar frictionStress = _friction->calcFriction(t, slipMag, slipRateMag, tractionNormal);
 
@@ -2375,7 +2395,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(scalar_array* dTractionT
     const PylithScalar tractionNormal = tractionTpdt[2];
     const PylithScalar tractionShearMag = sqrt(tractionTpdt[0] * tractionTpdt[0] + tractionTpdt[1] * tractionTpdt[1]);
 
-    if ((fabs(slip[2]) < _zeroTolerance) && (tractionNormal < -_zeroTolerance)) {
+    if (fabs(slip[2]) < _zeroToleranceNormal && tractionNormal < -_zeroTolerance) {
         // if in compression and no opening
         PylithScalar frictionStress = _friction->calcFriction(t, slipMag, slipRateMag, tractionNormal);
 

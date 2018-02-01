@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2016 University of California, Davis
+# Copyright (c) 2010-2017 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -19,7 +19,7 @@
 from collections import OrderedDict
 
 EXAMPLE_FILES = [
-    "test",
+    "subduction3d",
 ]
 
 # ----------------------------------------------------------------------
@@ -57,15 +57,16 @@ class Features(object):
     PRECOND_ILU = "ILU"
     PRECOND_ASM = "ASM"
     PRECOND_SCHUR = "SCHUR"
-    PRECOND_CUSTOM = "CUSTOM"
+    PRECOND_CUSTOM = "Cust"
     PRECOND_ML = "ML"
     PRECOND_GAMG = "GAMG"
+    PRECOND_ML_CUSTOM = "ML+Cust"
 
-    SLIPFN_STEP = "STEP"
-    SLIPFN_RATE = "RATE"
-    SLIPFN_LIU = "LIU"
-    SLIPFN_BRUNE = "BRUNE"
-    SLIPFN_TIMEHISTORY = "USER"
+    SLIPFN_STEP = "Step"
+    SLIPFN_RATE = "Rate"
+    SLIPFN_LIU = "Liu"
+    SLIPFN_BRUNE = "Brune"
+    SLIPFN_TIMEHISTORY = "User"
 
     STRAINFORM_INFINITESIMAL = "Inf"
     STRAINFORM_FINITE = "Fin"
@@ -80,9 +81,17 @@ class Features(object):
              # Properties
              OrderedDict((
                 ("Dimension", { "enum": [2, 3], }),
-                ("Coordinate system", { "enum": [CS_CART, CS_PROJ], }),
-                ("Mesh generator", { "enum": [MESH_ASCII, MESH_CUBIT, MESH_LAGRIT], }),
-                ("Cells", { "enum": [CELL_TRI, CELL_QUAD, CELL_TET, CELL_HEX], }),
+                ("Coordinate system", {
+                    "enum": [CS_CART, CS_PROJ],
+                    "description": "%s: Cartesian, %s: geographic projection" % (CS_CART, CS_PROJ),
+                }),
+                ("Mesh generator", {
+                    "enum": [MESH_ASCII, MESH_CUBIT, MESH_LAGRIT],
+                    "description": "%s: ASCII, %s: CUBIT/Trelis, %s: LaGriT" % (MESH_ASCII, MESH_CUBIT, MESH_LAGRIT),
+                }),
+                ("Cells", {
+                    "enum": [CELL_TRI, CELL_QUAD, CELL_TET, CELL_HEX],
+                }),
                 ("Refinement", { "enum": [REFINE_2, REFINE_4, REFINE_8], }),
                 ("Reordering", { "type": "boolean", }),
                 ("Problem type", { 
@@ -105,19 +114,21 @@ class Features(object):
                     "description": "%s: linear, %s: nonlinear" % (SOLVER_LINEAR, SOLVER_NONLINEAR),
                 }),
                 ("Preconditioner", { 
-                    "enum": [PRECOND_ILU, PRECOND_ASM, PRECOND_SCHUR, PRECOND_CUSTOM, PRECOND_ML, PRECOND_GAMG],
+                    "enum": [PRECOND_ILU, PRECOND_ASM, PRECOND_SCHUR, PRECOND_CUSTOM, PRECOND_ML, PRECOND_GAMG, PRECOND_ML_CUSTOM],
                     "description": "%s: ILU, %s: Additive Schwarz, %s: Schur complement, %s: custom, %s: ML algebraic multigrid, %s: geometric algebraic multigrid" % (PRECOND_ILU, PRECOND_ASM, PRECOND_SCHUR, PRECOND_CUSTOM, PRECOND_ML, PRECOND_GAMG),
                 }),
                  
                 ("Time stepping", { 
-                    "enum": [TS_BWDEULER, TS_FWDEULER, TS_RUNGEKUTTA],
-                    "description": "%s: Backward Euler, %s: Forward Euler, %s: Runge-Kutta" % (TS_BWDEULER, TS_FWDEULER, TS_RUNGEKUTTA),
+                    #"enum": [TS_BWDEULER, TS_FWDEULER, TS_RUNGEKUTTA],
+                    #"description": "%s: Backward Euler, %s: Forward Euler, %s: Runge-Kutta" % (TS_BWDEULER, TS_FWDEULER, TS_RUNGEKUTTA),
+                    "enum": [TS_BWDEULER, TS_FWDEULER],
+                    "description": "%s: Backward Euler, %s: Forward Euler" % (TS_BWDEULER, TS_FWDEULER),
                 }),
                 )),
             # Required
             ["Solver"],
         ),
-        ("Boundary Conditions",
+        ("Boundary Condition",
              # Properties
              OrderedDict((
                 ("Dirichlet", { "type": "integer", "minimum": 0, }),
@@ -151,8 +162,8 @@ class Features(object):
                 ("Generalized Maxwell viscoelastic", { "type": "integer", "minimum": 0, }),
                 ("Powerlaw viscoelastic", { "type": "integer", "minimum": 0, }),
                 ("Drucker-Prager elastoplastic", { "type": "integer", "minimum": 0, }),
-                ("Incompressible linear elastic", { "type": "integer", "minimum": 0, }),
-                ("Porous linear elastic", { "type": "integer", "minimum": 0, }),
+                #("Incompressible linear elastic", { "type": "integer", "minimum": 0, }),
+                #("Porous linear elastic", { "type": "integer", "minimum": 0, }),
                 ("Stress/strain formulation", { 
                     "enum": [STRAINFORM_INFINITESIMAL, STRAINFORM_FINITE], 
                     "description": "%s: infinitesimal, %s: small, finite strain" % (STRAINFORM_INFINITESIMAL, STRAINFORM_FINITE),
@@ -167,7 +178,10 @@ class Features(object):
         ("Output",
              # Properties
              OrderedDict((
-                ("Format", { "enum": [OUTPUT_VTK, OUTPUT_HDF5, OUTPUT_HDF5EXT], }),
+                ("Format", {
+                    "enum": [OUTPUT_VTK, OUTPUT_HDF5, OUTPUT_HDF5EXT],
+                    "description": "%s: VTK, %s: HDF5, %s: HDF5 w/external datasets" % (OUTPUT_VTK, OUTPUT_HDF5, OUTPUT_HDF5EXT),
+                }),
                 ("Domain output", { "type": "integer", "minimum": 0, }),
                 ("Surface output", { "type": "integer", "minimum": 0, }),
                 ("Point output", { "type": "integer", "minimum": 0, }),
@@ -203,7 +217,8 @@ class Features(object):
     for category, properties, required in CATEGORIES:
         SCHEMA["properties"][category] = {
             "type": "object",
-            "properties": properties}
+            "properties": properties,
+            "additionalProperties": False}
         if required:
             SCHEMA["properties"][category]["required"] = required
 
@@ -228,7 +243,7 @@ class Table(object):
         """
         f = self.fout
 
-        f.write("\\begin{table}[htbp]\n")
+        #f.write("\\begin{table}[htbp]\n")
         f.write("\\rowcolors{2}{yellow!30}{white}\n")
         ctags = ["|l|%% Example"]
         for category in self.columns:
@@ -304,7 +319,7 @@ class Table(object):
                 if "description" in col:
                     f.write("{\\bf %s} -- %s. " % (label, col["description"]))
         f.write("\\\\ \n")
-        f.write("\\end{table}")
+        #f.write("\\end{table}")
         return
 
     @staticmethod
@@ -373,13 +388,13 @@ class App(object):
             [
                 "General",
                 "Solver",
-                "Boundary Conditions",
-                "Fault"
+                "Spatial Database",
             ],
             [
+                "Boundary Condition",
+                "Fault",
                 "Bulk Rheology",
                 "Output",
-                "Spatial Database",
             ],
         ]        
         with open(filename, "w") as fout:

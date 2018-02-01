@@ -25,7 +25,7 @@
  *
  * / - root group
  *   geometry - group
-       coordsys - attribute string with coordinate system
+ *     coordsys - attribute string with coordinate system
  *     vertices - dataset [nvertices, spacedim]
  *   topology - group
  *     cell_type - attribute string with cell type
@@ -55,14 +55,14 @@
 
 // DataWriterHDF5 --------------------------------------------------------
 /// Object for writing finite-element data to HDF5 file.
-class pylith::meshio::DataWriterHDF5 : public DataWriter { // DataWriterHDF5
+class pylith::meshio::DataWriterHDF5 : public DataWriter {
     friend class TestDataWriterHDF5Mesh;   // unit testing
     friend class TestDataWriterHDF5SubMesh;   // unit testing
     friend class TestDataWriterHDF5Points;   // unit testing
     friend class TestDataWriterHDF5BCMesh;   // unit testing
     friend class TestDataWriterHDF5FaultMesh;   // unit testing
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+// PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -86,6 +86,17 @@ public:
      */
     void filename(const char* filename);
 
+    /** Generate filename for HDF5 file.
+     *
+     * Appends _info if only writing parameters.
+     *
+     * :KLUDGE: We should separate generating "info" files from the
+     * DataWriter interface.
+     *
+     * @returns String for HDF5 filename.
+     */
+    std::string hdf5Filename(void) const;
+
     /** Open output file.
      *
      * @param[in] mesh Finite-element mesh.
@@ -106,6 +117,7 @@ public:
      *
      * @param[in] t Time associated with field.
      * @param[in] field Field over vertices.
+
      * @param[in] mesh Mesh associated with output.
      */
     void writeVertexField(const PylithScalar t,
@@ -143,9 +155,6 @@ private:
      * @param[in] w Object to copy.
      */
     DataWriterHDF5(const DataWriterHDF5& w);
-
-    /// Generate filename for HDF5 file.
-    std::string _hdf5Filename(void) const;
 
     /** Write time stamp to file.
      *

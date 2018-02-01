@@ -1,0 +1,42 @@
+// -*- C++ -*- (syntax highlighting)
+//
+// This spatial database specifies the distribution of slip-weakening
+// friction properties for the subducting interface.
+// 
+// We specify depth-dependent frictional properties with stable
+// sliding (equal dynamic and static coefficients of friction) above
+// and below the seismogenic zone (elevations of -5 km to -45 km).
+//
+#SPATIAL_GRID.ascii 1
+SimpleGridDB {
+  num-x = 1
+  num-y = 6
+  num-values = 4
+  value-names =  static-coefficient  dynamic-coefficient  slip-weakening-parameter  cohesion
+  value-units =  none  none  m  Pa
+  space-dim = 2
+  cs-data = cartesian {
+    to-meters = 1.0e+3
+    space-dim = 2
+  }
+} // SimpleGridDB
+
+// x coordinate
+0.0
+
+// y coordinate
+99.0  -5.0  -15.0  -35.0  -45.0  -999.0
+
+// Columns are
+// (1) x coordinate (km)
+// (2) y coordinate (km)
+// (3) static-coefficient
+// (4) dynamic-coefficient
+// (5) slip-weakening-parameter (m)
+// (6) cohesion (Pa)
+0.0    99.0   0.6  0.60  1.0e-8  0.0
+0.0    -5.0   0.6  0.60  1.0e-8  0.0
+0.0   -15.0   0.6  0.55  1.0e-8  0.0
+0.0   -30.0   0.6  0.55  1.0e-8  0.0
+0.0   -45.0   0.6  0.60  1.0e-8  0.0
+0.0  -999.0   0.6  0.60  1.0e-8  0.0

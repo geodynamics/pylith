@@ -214,8 +214,6 @@ endif
 if ENABLE_HDF5
   testmeshio_SOURCES += \
 	TestHDF5.cc \
-	TestXdmf.cc \
-	TestXdmf_Cases.cc \
 	TestDataWriterHDF5.cc \
 	TestDataWriterHDF5Mesh.cc \
 	TestDataWriterHDF5Mesh_Cases.cc \
@@ -246,7 +244,6 @@ if ENABLE_HDF5
 
   noinst_HEADERS += \
 	TestHDF5.hh \
-	TestXdmf.hh \
 	TestDataWriterHDF5.hh \
 	TestDataWriterHDF5Mesh.hh \
 	TestDataWriterHDF5Material.hh \

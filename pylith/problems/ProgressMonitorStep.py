@@ -78,6 +78,7 @@ class ProgressMonitorStep(ProgressMonitor):
 
 
   def _open(self):
+    self._createPath(self.filename)
     self.fout = open(self.filename, "w")
     self.fout.write("Timestamp                     Step        % complete   Est. completion\n")
     self.fout.flush()

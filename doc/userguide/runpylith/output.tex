@@ -60,9 +60,8 @@ ignored).}
 \facilityitem{cell\_filter}{Filter to apply to all cell fields (see Section
 \vref{sub:cell:field:filters}).}
 \end{inventory}
-An example of setting the output parameters for a material in a \filename{.cfg}
-file is
-\begin{cfg}
+
+\begin{cfg}[\object{OutputManager} parameters in a \filename{cfg} file]
 <h>[pylithapp.timedependent.materials.elastic.output]</h>
 <p>output_freq</p> = time_step
 <p>time_step</p> = 1.0*yr
@@ -204,7 +203,7 @@ within the HDF5 file, we create an Xdmf (eXtensible Data Model and
 Format, \url{www.xdmf.org}) metadata file that provides this information.
 This file is written when PyLith closes the HDF5 file at the end of
 the simulation. In order to visualize the datasets in an HDF5 file,
-one simply opens the corresponding Xdmf file (the extension is \filename{.xmf})
+one simply opens the corresponding Xdmf file (the extension is \filename{xmf})
 in ParaView or Visit. The Xdmf file contains the relative path to
 the HDF5 file so the files can be moved but must be located together
 in the same directory. 
@@ -244,7 +243,7 @@ files with the locations specified by links in the HDF5 file. Note
 that the use of external data files results in one data file per
 dataset in addition to the HDF5 and Xdmf files. The external data
 files use the name of the HDF5 file with the dataset name added to the
-prefix and the \filename{.h5} suffix replaced by \filename{.dat}. The
+prefix and the \filename{h5} suffix replaced by \filename{dat}. The
 HDF5 files include relative paths to the external data files, so these
 files can also be moved, but they, too, must be kept together in the
 same directory. This provides a more robust method of output because
@@ -285,10 +284,7 @@ The parametesr for the \object{DataWriterHDF5} and
 the same prefix).}
 \end{inventory}
 
-An example of changing the writer from the default VTK writer to the
-HDF5 writer with external datasets (\object{DataWriterHDF5Ext}) for
-output over the domain in a \filename{.cfg} file is
-\begin{cfg}
+\begin{cfg}[\object{DataWriterHDF5Ext} parameters in a \filename{cfg} file]
 <h>[pylithapp.timedependent.domain.output]</h>
 <p>output_freq</p> = time_step
 <p>time_step</p> = 1.0*yr
@@ -296,6 +292,9 @@ output over the domain in a \filename{.cfg} file is
 <f>writer</f> = pylith.meshio.DataWriterHDF5Ext
 <p>writer.filename</p> = dislocation.h5
 \end{cfg}
+In this example, we change the writer from the default VTK writer to
+the HDF5 writer with external datasets (\object{DataWriterHDF5Ext})
+for output over the domain.
 
 
 \subsubsection{HDF5 Utilities}
@@ -306,13 +305,16 @@ dimensions of datasets, attributes, and even the dataset values to
 stdout. 
 \begin{shell}
 # Dump the entire HDF5 file (not useful for large files).
-$$ h5dump mydata.h5
+$ h5dump mydata.h5
+
 # Dump the hierarchy of an HDF5 file.
-$$ h5dump -n mydata.h5
+$ h5dump -n mydata.h5
+
 # Dump the hierarchy with dataset dimensions and attributes.
-$$ h5dump -H mydata.h5
+$ h5dump -H mydata.h5
+
 # Dump dataset 'vertices' in group '/geometry' to stdout.
-$$ h5dump -d /geometry/vertices mydata.h5
+$ h5dump -d /geometry/vertices mydata.h5
 \end{shell}
 We have also include a utility \filename{pylith\_genxdmf} (see Section
 \vref{sec:pylith:genxdmf}) that generates an appropriate Xdmf file

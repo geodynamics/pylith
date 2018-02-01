@@ -187,28 +187,27 @@ pylith::meshio::TestDataWriterHDF5ExtMesh::testWriteCellField(void)
 } // testWriteCellField
 
 // ----------------------------------------------------------------------
-// Test _hdf5Filename().
-void
-pylith::meshio::TestDataWriterHDF5ExtMesh::testHdf5Filename(void)
+// Test hdf5Filename().
+void pylith::meshio::TestDataWriterHDF5ExtMesh::testHdf5Filename(void)
 { // testHdf5Filename
-    PYLITH_METHOD_BEGIN;
+  PYLITH_METHOD_BEGIN;
 
-    DataWriterHDF5Ext writer;
+  DataWriterHDF5Ext writer;
 
-    // Append info to filename if info.
-    writer._isInfo = true;
-    writer._filename = "output.h5";
-    CPPUNIT_ASSERT_EQUAL(std::string("output_info.h5"), writer._hdf5Filename());
+  // Append info to filename if number of time steps is 0.
+  writer._isInfo = true;
+  writer._filename = "output.h5";
+  CPPUNIT_ASSERT_EQUAL(std::string("output_info.h5"), writer.hdf5Filename());
+		       
+  writer._isInfo = false;
+  writer._filename = "output_abc.h5";
+  CPPUNIT_ASSERT_EQUAL(std::string("output_abc.h5"), writer.hdf5Filename());
+  
+  writer._isInfo = false;
+  writer._filename = "output_abcd.h5";
+  CPPUNIT_ASSERT_EQUAL(std::string("output_abcd.h5"), writer.hdf5Filename());
 
-    writer._isInfo = false;
-    writer._filename = "output_abc.h5";
-    CPPUNIT_ASSERT_EQUAL(std::string("output_abc.h5"), writer._hdf5Filename());
-
-    writer._isInfo = false;
-    writer._filename = "output_abcd.h5";
-    CPPUNIT_ASSERT_EQUAL(std::string("output_abcd.h5"), writer._hdf5Filename());
-
-    PYLITH_METHOD_END;
+  PYLITH_METHOD_END;
 } // testHdf5Filename
 
 // ----------------------------------------------------------------------

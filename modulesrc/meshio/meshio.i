@@ -41,7 +41,6 @@
 #if defined(ENABLE_HDF5)
 #include "pylith/meshio/DataWriterHDF5.hh"
 #include "pylith/meshio/DataWriterHDF5Ext.hh"
-#include "pylith/meshio/Xdmf.hh"
 #endif
 #include "pylith/meshio/OutputManagerNew.hh"
 #include "pylith/meshio/OutputSolnNew.hh"
@@ -58,6 +57,7 @@
   } // try/catch
  } // exception
 
+%include "std_string.i"
 %include "typemaps.i"
 %include "../include/scalartypemaps.i"
 %include "../include/chararray.i"
@@ -92,7 +92,6 @@ import_array();
 #if defined(ENABLE_HDF5)
 %include "DataWriterHDF5.i"
 %include "DataWriterHDF5Ext.i"
-%include "Xdmf.i"
 #endif
 %include "../utils/PyreComponent.i"
 %include "OutputManagerNew.i"

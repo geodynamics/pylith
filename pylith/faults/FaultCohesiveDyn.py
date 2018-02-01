@@ -43,6 +43,7 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
   
   \b Properties
   @li \b zero_tolerance Tolerance for detecting zero values.
+  @li \b zero_tolerance_normal Tolerance for suppressing near zero values of fault opening.
   @li \b open_free_surface If True, enforce traction free surface when
     the fault opens, otherwise use initial tractions even when the
     fault opens.
@@ -59,26 +60,25 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
 
   import pyre.inventory
 
-  zeroTolerance = pyre.inventory.float("zero_tolerance", default=1.0e-10,
-                                       validator=pyre.inventory.greaterEqual(0.0))
+  zeroTolerance = pyre.inventory.float("zero_tolerance", default=1.0e-10, validator=pyre.inventory.greater(0.0))
   zeroTolerance.meta['tip'] = "Tolerance for detecting zero values."
+
+  zeroToleranceNormal = pyre.inventory.float("zero_tolerance_normal", default=1.0e-10, validator=pyre.inventory.greater(0.0))
+  zeroToleranceNormal.meta['tip'] = "Tolerance for suppressing near zero values of fault opening."
 
   openFreeSurf = pyre.inventory.bool("open_free_surface", default=True)
   openFreeSurf.meta['tip'] = "If True, enforce traction free surface when " \
     "the fault opens, otherwise use initial tractions even when the " \
     "fault opens."
 
-  tract = pyre.inventory.facility("traction_perturbation", family="traction_perturbation",
-                               factory=NullComponent)
+  tract = pyre.inventory.facility("traction_perturbation", family="traction_perturbation", factory=NullComponent)
   tract.meta['tip'] = "Prescribed perturbation in fault tractions."
 
   from pylith.friction.StaticFriction import StaticFriction
-  friction = pyre.inventory.facility("friction", family="friction_model",
-                                     factory=StaticFriction)
+  friction = pyre.inventory.facility("friction", family="friction_model", factory=StaticFriction)
 
   from pylith.meshio.OutputFaultDyn import OutputFaultDyn
-  output = pyre.inventory.facility("output", family="output_manager",
-                                   factory=OutputFaultDyn)
+  output = pyre.inventory.facility("output", family="output_manager", factory=OutputFaultDyn)
   output.meta['tip'] = "Output manager associated with fault data."
   
 
@@ -214,6 +214,7 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
       ModuleFaultCohesiveDyn.tractPerturbation(self, self.inventory.tract)
     ModuleFaultCohesiveDyn.frictionModel(self, self.inventory.friction)
     ModuleFaultCohesiveDyn.zeroTolerance(self, self.inventory.zeroTolerance)
+    ModuleFaultCohesiveDyn.zeroToleranceNormal(self, self.inventory.zeroToleranceNormal)
     ModuleFaultCohesiveDyn.openFreeSurf(self, self.inventory.openFreeSurf)
     self.output = self.inventory.output
     return

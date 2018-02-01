@@ -31,16 +31,32 @@ nonlinear solver, which is required by the nonlinear rheologies (power-law
 viscoelastic and Drucker-Prager elastoplastic). Some of the examples
 also demonstrate the usage of HDF5 output, which is an alternative
 to the default VTK output. All of the examples are contained in the
-directory \filename{examples/3d/hex8}, and the corresponding \filename{.cfg}
+directory \filename{examples/3d/hex8}, and the corresponding \filename{cfg}
 files are \filename{step04.cfg}, \filename{step05.cfg}, \filename{step06.cfg},
 \filename{step07.cfg}, \filename{step08.cfg}, and \filename{step09.cfg}.
-Each example may be run as follows:
+Run the examples as follows:
 \begin{shell}
-$$ pylith stepXX.cfg
+# Step04
+$ pylith step04.cfg
+
+# Step05
+$ pylith step05.cfg
+
+# Step06
+$ pylith step06.cfg
+
+# Step07
+$ pylith step07.cfg
+
+# Step08
+$ pylith step08.cfg
+
+# Step09
+$ pylith step09.cfg
 \end{shell}
 This will cause PyLith to read the default parameters in \filename{pylithapp.cfg},
 and then override or augment them with the additional parameters in
-the \filename{stepXX.cfg} file. Each \filename{.cfg} file is extensively
+the \filename{stepXX.cfg} file. Each \filename{cfg} file is extensively
 documented, to provide detailed information on the various parameters.
 
 
@@ -56,7 +72,7 @@ using a constant time-step size of 20 years. The default time stepping
 behavior is \object{TimeStepUniform}. We retain that behavior for
 this problem and provide the total simulation time and the time-step
 size:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step04.cfg}]
 # Change the total simulation time to 200 years, and use a constant time
 # step size of 20 years.
 <h>[pylithapp.timedependent.implicit.time_step]<.h>
@@ -67,7 +83,7 @@ We then change the material type of the lower crust, provide a spatial
 database from which to obtain the material properties (using the default
 \object{SimpleDB}), and request additional output information for
 the material:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step04.cfg}]
 # Change material type of lower crust to Maxwell viscoelastic.
 <h>[pylithapp.timedependent]</h>
 <f>materials.lower_crust</f> = pylith.materials.MaxwellIsotropic3D
@@ -94,7 +110,7 @@ so we retain the default \object{ZeroDispDB} for all instances of
 \facility{db\_initial}. To apply the velocity boundary conditions, we
 must specify \facility{db\_rate}, which is zero by default. We use a
 \object{UniformDB} to assign the velocities:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step04.cfg}]
 # Boundary condition on +x face
 <h>[pylithapp.timedependent.bc.x_pos]</h>
 <p>bc_dof</p> = [0, 1]
@@ -125,7 +141,7 @@ frequency with which output occurs for each output manager. We also
 assign a more user-friendly format to the output file time stamp,
 and we request that the time stamp is in units of 1 year (rather than
 the default value of seconds):
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step04.cfg}]
 # Give basename for VTK domain output of solution over domain.
 <h>[pylithapp.problem.formulation.output.domain]</h>
 # We specify that output occurs in terms of a given time frequency, and
@@ -185,7 +201,7 @@ We again use a Maxwell viscoelastic material for the lower crust.
 
 For the boundary conditions, we must first change the boundary condition
 type for the positive x-face from the default Dirichlet to Neumann:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step05.cfg}]
 # +x face -- first change bc type to Neumann
 <h>[pylithapp.timedependent.bc]</h>
 <f>x_pos</f> = pylith.bc.Neumann 
@@ -196,7 +212,7 @@ as well as the traction rates. We provide a start time of 100 years
 for the traction rates, and use a rate of 0.01 MPa/year, so that by
 the end of 200 years we have completely cancelled the initial traction
 of -1 MPa:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step05.cfg}]
 <h>[pylithapp.timedependent.bc.x_pos]</h>
 # First specify a UniformDB for the initial tractions, along with the values.
 <f>db_initial</f> = spatialdata.spatialdb.UniformDB
@@ -213,7 +229,7 @@ of -1 MPa:
 The boundary conditions on the negative x-face are analogous, but
 we are instead using Dirichlet boundary conditions, and the initial
 displacement is in the same direction as the applied velocities:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step05.cfg}]
 # -x face
 <h>[pylithapp.timedependent.bc.x_neg]</h>
 <p>bc_dof<p> = [0, 1]
@@ -272,7 +288,7 @@ want to use a smaller time-step size. A \property{stability\_factor}
 less than 1.0 allows time-step sizes greater than the stable time-step
 size, which may provide inaccurate results. The adaptive time stepping
 information is provided as:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step06.cfg}]
 # Change time stepping algorithm from uniform time step, to adaptive
 # time stepping.
 <f>time_step</f> = pylith.problems.TimeStepAdapt
@@ -292,8 +308,8 @@ time steps can be contained in a single file. PyLith also produces
 Xdmf files describing the contents of the HDF5 files, which allows
 the files to be read easily by applications such as ParaView. Since
 VTK output is still the default, we must change the value from the
-default. Also note that the filename suffix is \filename{.h5}:
-\begin{cfg}
+default. Also note that the filename suffix is \filename{h5}:
+\begin{cfg}[Excerpt from \filename{step06.cfg}]
 # Give basename for output of solution over domain.
 <h>[pylithapp.problem.formulation.output.domain]</h>
 # We specify that output occurs in terms of a given time frequency, and
@@ -312,7 +328,7 @@ properties, so if we attempt to define them an error will result.
 
 We also set the writer for other output as well, since it is not the
 default. For subdomain output we use:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step06.cfg}]
 # Give basename for output of solution over ground surface.
 <h>[pylithapp.problem.formulation.output.subdomain]</h>
 # Name of nodeset for ground surface.
@@ -340,7 +356,7 @@ as well as the negative z-face. As for example step03, we define a
 fault interface, we identify the nodeset corresponding to the fault,
 and we provide quadrature information for the fault. We then define
 an array of earthquake sources and provide an origin time for each:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step06.cfg}]
 <h>[pylithapp.timedependent.interfaces.fault]</h>
 # Set earthquake sources to an array consisting of creep and 3 ruptures.
 <f>eq_srcs</f> = [creep, one, two, three]
@@ -355,7 +371,7 @@ We retain the default \object{StepSlipFn} for the ruptures. Each of
 the ruptures has the same amount of slip, and slip occurs simultaneously
 for the entire rupture region, so we can use the same \object{SimpleDB}
 files providing slip and slip time for each rupture:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step06.cfg}]
 # Define slip and origin time for first rupture.
 <h>[pylithapp.timedependent.interfaces.fault.eq_srcs.one.slip_function]</h>
 <p>slip.iohandler.filename</p> = spatialdb/finalslip_rupture.spatialdb
@@ -374,7 +390,7 @@ files providing slip and slip time for each rupture:
 For the creep source, we change the slip function to \object{ConstRateSlipFn},
 and we use a \object{SimpleDB} for both the slip time and the slip
 rate:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step06.cfg}]
 # Define slip rate and origin time for fault creep.
 <h>[pylithapp.timedependent.interfaces.fault.eq_srcs.creep]</h>
 <f>slip_function</f> = pylith.faults.ConstRateSlipFn
@@ -389,7 +405,7 @@ spatial variation in the slip time with respect to the \property{origin\_time}
 types, there are a number of additional fault information fields available
 for output. We add these additional fields' output to the fault information
 file:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step06.cfg}]
 <h>[pylithapp.timedependent.interfaces.fault]</h>
 <p>output.vertex_info_fields</p> = [normal_dir, strike_dir, dip_dir, final_slip_creep, \
   final_slip_one, final_slip_two, final_slip_three, slip_time_creep, slip_time_one, \
@@ -400,7 +416,7 @@ It will contain final slip information for each earthquake source
 along with slip time information. When we have run the simulation,
 the output HDF5 and Xdmf files will be contained in \filename{examples/3d/hex8/output}
 (all with a prefix of \filename{step06}). To open the files in ParaView,
-the Xdmf (\filename{.xmf}) files should be opened, as these files describe
+the Xdmf (\filename{xmf}) files should be opened, as these files describe
 the HDF5 data structure. Results using ParaView are shown in Figure
 \vref{fig:example:3dhex8:step06:displacement}.
 
@@ -426,7 +442,7 @@ We use the default \object{ZeroDispBC} for the initial displacements
 on the positive and negative x-faces, as well as the negative z-face.
 For the velocities on the positive and negative x-faces, we use a
 \object{UniformDB}:
-\begin{cfg}
+\begin{cfg}`w
 # Boundary condition on +x face
 [pylithapp.timedependent.bc.x_pos]
 <p>bc_dof</p> = [0, 1]
@@ -457,7 +473,7 @@ the displacements from the previous time step, divided by the time-step
 size. This is more accurate than computing the velocities from the
 displacement field output that has been decimated in time. We can
 obtain this information by explicitly requesting it in \property{vertex\_data\_fields}:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step07.cfg}]
 # Give basename for output of solution over domain.
 <h>[pylithapp.problem.formulation.output.domain]</h>
 # We specify that output occurs in terms of a given time frequency, and
@@ -489,7 +505,7 @@ obtain this information by explicitly requesting it in \property{vertex\_data\_f
 When we have run the simulation, the output HDF5 and Xdmf files will
 be contained in \filename{examples/3d/hex8/output} (all with a prefix
 of \filename{step07}). As for example step06, make sure to open the
-\filename{.xmf} files rather than the \filename{.h5} files. Results using
+\filename{xmf} files rather than the \filename{h5} files. Results using
 ParaView are shown in Figure \vref{fig:example:3dhex8:step07:displacement}.
 
 \begin{figure}
@@ -509,7 +525,7 @@ The \filename{step08.cfg} file defines a problem that is identical to
 example step07, except the the lower crust is composed of a power-law
 viscoelastic material. Since the material behavior is now nonlinear,
 we must use the nonlinear solver:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step08.cfg}]
 <h>[pylithapp.timedependent]</h>
 # For this problem we must switch to a nonlinear solver.
 <f>implicit.solver</f> = pylith.problems.SolverNonlinear
@@ -518,7 +534,7 @@ Although we have not discussed the PyLith PETSc settings previously,
 note that the use of the nonlinear solver may require additional options
 if we wish to override the defaults. These settings are contained
 in \filename{pylithapp.cfg}:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step08.cfg}]
 <h>[pylithapp.petsc]</h>
 # Nonlinear solver monitoring options.
 <p>snes_rtol</p> = 1.0e-8
@@ -558,13 +574,13 @@ example, a simple 1D (vertically-varying) distribution was used. The
 utility code can be used by simply executing it from the
 \filename{examples/3d/hex8/spatialdb/powerlaw} directory:
 \begin{shell}
-$$ powerlaw_gendb.py
+$ powerlaw_gendb.py
 \end{shell}
 This code will automatically read the parameters in \filename{powerlaw\_gendb.cfg}
 in creating the file \filename{examples/3d/hex8/spatialdb/mat\_powerlaw.spatialdb}.
 
 We first change the material type of the lower crust to \object{PowerLaw3D}:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step08.cfg}]
 # Change material type of lower crust to power-law viscoelastic.
 <h>[pylithapp.timedependent]</h>
 <f>materials.lower_crust</f> = pylith.materials.PowerLaw3D
@@ -575,7 +591,7 @@ seismic velocity model while the viscous properties may be derived
 from a thermal model. In such a case we can use a
 \object{CompositeDB}, which allows a different spatial database to be
 used for a subset of the properties. We do this as follows:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step08.cfg}]
 # Provide a spatial database from which to obtain property values.
 # In this case, we prefer to obtain the power-law properties from one
 # database and the elastic properties from another database, so we use
@@ -587,7 +603,7 @@ used for a subset of the properties. We do this as follows:
 \end{cfg}
 We must define the properties that come from each spatial database
 and then provide the database parameters:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step08.cfg}]
 # Provide the values to be obtained from each database and the database
 # name.
 <h>[pylithapp.timedependent.materials.lower_crust.db_properties]</h>
@@ -602,7 +618,7 @@ The \object{PowerLaw3D} material has additional properties and state
 variables with respect to the default \object{ElasticIsotropic3D}
 material, so we request that these properties be written to the \facility{lower\_crust}
 material files:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step08.cfg}]
 # Since there are additional properties and state variables for the
 # power-law model, we explicitly request that they be output. Properties are
 # named in cell_info_fields and state variables are named in
@@ -637,7 +653,7 @@ there is no inherent time-dependent response and the stable time-step
 size for the material depends on the loading conditions. To avoid
 this, we set the maximum time-step size to 5 years rather than the
 value of 10 years used in example \filename{step08}:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step09.cfg}]
 # Change the total simulation time to 700 years, and set the maximum time
 # step size to 5 years.
 <h>[pylithapp.timedependent.implicit.time_step]</h>
@@ -664,7 +680,7 @@ value of 10 years used in example \filename{step08}:
 \end{cfg}
 As for the step08 example, we first define the properties that come
 from each spatial database and then provide the database filename:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step09.cfg}]
 # Provide the values to be obtained from each database and the database
 # name.
 <h>[pylithapp.timedependent.materials.lower_crust.db_properties]</h>
@@ -678,7 +694,7 @@ from each spatial database and then provide the database filename:
 \end{cfg}
 We also request output of the properties and state variables that
 are unique to the \object{DruckerPrager3D} material:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{step09.cfg}]
 # Since there are additional properties and state variables for the
 # Drucker-Prager model, we explicitly request that they be output.
 # Properties are named in cell\_info\_fields and state variables are named in

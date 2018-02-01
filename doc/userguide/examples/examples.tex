@@ -3,30 +3,57 @@
 
 \section{Overview}
 
-Each example is a self-contained lesson in how to use PyLith. The
-examples increase in degree of complexity from one to the next.
+This chapter includes several suites of examples. Each suite includes
+several ``steps'' which are examples that increase in complexity from
+one ``step'' to the next. In some cases, a later step may make use of
+output from an earlier step; these cases are clearly
+documented. Table~\ref{tab:examples:overview} classifies the level of
+difficulty of each example suite and provides a general description of
+the type of problems discussed.
 
+\begin{table}[htbp]
+\caption{Overview of example suites.}
+\label{tab:examples:overview}
+\begin{tabular}{lccp{4in}}
+\textbf{Directory} & \textbf{Section(s)} & \textbf{Difficulty} & \textbf{Description} \\
+\hline 
+\filename{twocells} & \ref{sec:example:twotri3}--\ref{sec:examples:twotet4-geoproj} & novice & Toy problems with ASCII two-cell meshes. \\
+\filename{3d/hex8} & \ref{sec:example:3dhex8} & beginner & Illustration of most features using simple CUBIT box mesh. \\
+\filename{3d/tet4} & \ref{sec:example:3dtet4} & beginner & Illustration of refinement using simple LaGriT box mesh. \\
+\filename{bar\_shearwave} & \ref{sec:example:shearwave:tri3}--\ref{sec:example:shearwave:hex8} & beginner & Illustration of wave propagation using simple shear beam. \\
+\filename{2d/subduction} & \ref{sec:example:subduction:2d} & intermediate & Illustration of coseismic, postseismic, and creep deformation using a 2-D subduction zone cross-section with a CUBIT mesh. \\
+\filename{2d/greensfns} & \ref{sec:example:greensfns2d} & intermediate & Illustration of computing static Green's functions for a strike-slip and reverse fault using a CUBIT mesh. \\
+\filename{3d/subduction} & \ref{sec:example:subduction:3d} & intermediate & Illustration of most PyLith features for quasi-static deformation using a 3-D subduction zone with a CUBIT mesh. \\
+\hline 
+\end{tabular}
+The \filename{3d/subduction} example suite is the newest and most
+comprehensive. Users wanting to use PyLith in their research should
+work through relevant beginner examples and then the
+\filename{3d/subduction} examples.
+\end{table}
 
 \subsection{Prerequisites}
 
 Before you begin any of the examples, you will need to install PyLith
 following the instructions in Chapter~\vref{cha:installation}.  For
-more complex examples, you will also need either CUBIT
-\url{cubit.sandia.gov} or LaGriT \url{meshing.lanl.gov} mesh
-generation software to create the meshes. If you do not wish to create
-your own mesh at this time, the meshes are also provided as part of
-the example. The ParaView \url{www.paraview.org} visualization
-package may be used to view simulation results. ParaView 3 includes
-built-in documentation that is accessed by clicking on the Help menu
-item. Some additional documentation is available on the ParaView Wiki
-site \url{paraview.org/Wiki/ParaView}.  You may use other
-visualization software, but some adaption from what is described here
-will be necessary. Furthermore, you can complete a subset of the
-example using files provided (as described below), skipping the steps
-for which you do not have the proper software packages installed.
+more complex examples, you will also need either Trelis (available
+from \url{csimsoft.com}), CUBIT (available to US federal government
+agencies from \url{cubit.sandia.gov}) or LaGriT (available form
+\url{meshing.lanl.gov}) mesh generation software to create the
+meshes. If you do not wish to create your own mesh at this time, the
+meshes are also provided as part of the example. The ParaView
+\url{www.paraview.org} visualization package may be used to view
+simulation results. ParaView 3 includes built-in documentation that is
+accessed by clicking on the Help menu item. Some additional
+documentation is available on the ParaView Wiki site
+\url{paraview.org/Wiki/ParaView}.  You may use other visualization
+software, but some adaption from what is described here will be
+necessary. Furthermore, you can complete a subset of the example using
+files provided (as described below), skipping the steps for which you
+do not have the proper software packages installed.
 
 
-\subsubsection{Input Files}
+\subsection{Input Files}
 
 The files needed to work through the examples are found in the
 \filename{examples} directory under the top-level PyLith
@@ -39,6 +66,87 @@ problems, such as those found in \filename{examples/3d}, use external
 mesh generation software to create the meshes. All of the files used
 in the example problems are extensively documented with comments.
 
+\section{ParaView Python Scripts}
+\label{sec:ParaView:Python:scripts}
+\newfeature{v2.2.1}
+
+In some of the examples (currently only the 2D and 3D subduction zone
+examples) we provide ParaView Python scripts for visualizing the input
+finite-element mesh and the PyLith simulation results. Some of these
+scripts are very generic and are easily reused; others are more
+specific to the examples. The primary advantage of the ParaView Python
+scripts is that they make it easy to replicate visualizations, whether
+they are produced by the developers and regenerated by users.
+
+There are several different ways to run the ParaView Python scripts:
+\begin{itemize}
+\item Within the ParaView GUI, select
+  \menu{Tools}$\rightarrow$\menu{Python Shell}. Override the default
+  parameters as desired (which we will discuss later in this
+  section). Click on the \menu{Run Script} button, and navigate to the
+  select the script you want to run.
+\item From a shell (terminal window) start ParaView from the command
+  line with the \filename{-{}-script=FILENAME} where
+  \filename{FILENAME} is the relative or absolute path to the ParaView
+  Python script. Note that this method does not provide a mechanism
+  for overriding the default parameters.
+\item Run the ParaView Python script directly from a shell (terminal
+  window) via the command line. You can use command line arguments to
+  override the default values for the parameters. If pvpython is not
+  in your PATH, then you can run a script called
+  \filename{MY\_SCRIPT.py} using:
+  \filename{PATH\_TO\_PVPYTHON/pvpython MY\_SCRIPT.py}
+\end{itemize}
+
+\tip{Running the ParaView Python script from within the ParaView GUI
+  allows further manipulation of the data, which is not possible when
+  running the ParaView Python script outside the ParaView GUI. When
+  run outside the ParaView GUI, the interaction is limited to
+  rotating, translating, and zooming.}
+
+\important{The ParaView Python scripts run Python via
+  \filename{pvpython}, which is a customized version of the Python
+  interpreter included in the ParaView distribution. This is different
+  from Python provided with your operating system and/or the one
+  included in the PyLith distribution. This means you cannot, in
+  general, import Python modules provided with the PyLith distribution
+  into ParaView.}
+
+\tip{In creating the ParaView Python scripts, we performed the steps
+  within the GUI while capturing the commands using
+  \menu{Tools}$\rightarrow$\menu{Start Trace} and then
+  \menu{Tools}$\rightarrow$\menu{Start Trace}. This makes it very easy
+  to create the Python script. Note that we have omitted supefluous
+  commands in the trace when transferring the trace into a Python
+  script. See the ParaView documentation for additional information
+  about the Python API.}
+
+\subsection{Overriding Default Parameters}
+
+We setup the ParaView Python scripts, so that when they are run from
+the command line in the main directory for a given example, e.g.,
+\filename{examples/3d/subduction}, the script will produce the output
+discussed in the manual. If you start ParaView from the OS X Dock or a
+similar method, like a shortcut, then you will need to override at
+least the default values for the data file(s).
+
+In order to override the default values from within the ParaView GUI,
+simply set the values within the Python shell. For example, to set the
+value of the variable \object{EXODUS\_FILE} to the absolute path of
+the input file,
+\begin{python}[ParaView Python shell]
+>>> EXODUS_FILE = "/home/johndoe/pylith/examples/3d/subduction/mesh/mesh_tet.exo"
+\end{python}
+In this case, we use the Python os module to get the absolute path of
+the home directory and append the path to the Exodus file with the
+appropriate separators for the operating system.
+
+\important{In each of the ParaView Python scripts, the names of the
+  variables and their default values are given by the DEFAULTS
+  dictionary near the top of the file.}
+
+
+% ======================================================================
 \input{./examples/twotri3.tex}
 \input{./examples/twoquad4.tex}
 \input{./examples/twotet4.tex}
@@ -46,10 +154,11 @@ in the example problems are extensively documented with comments.
 \input{./examples/twotet4-geoproj.tex}
 \input{./examples/3dtet4.tex}
 \input{./examples/3dhex8.tex}
-\input{./examples/subduction.tex}
+\input{./examples/subduction2d.tex}
 \input{./examples/shearwave.tex}
 \input{./examples/greensfns2d.tex}
 \input{./examples/grav2d}
+\input{./examples/subduction3d}
 
 
 \section{Additional Examples}

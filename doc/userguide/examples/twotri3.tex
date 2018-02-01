@@ -58,7 +58,7 @@ information. For problems of this type, it is generally useful to
 create a file named \filename{pylithapp.cfg} in the working directory,
 since this file is read automatically every time PyLith is
 run. Settings specific to a particular problem may be placed in other
-\filename{.cfg} files, as described later, and then those files are
+\filename{cfg} files, as described later, and then those files are
 placed on the command line. The settings contained in
 \filename{pylithapp.cfg} for this problem consist of:
 \begin{inventory}
@@ -78,16 +78,14 @@ placed on the command line. The settings contained in
     the preconditioner type.}
 \end{inventory}
 All of the problems in this directory use the same material database,
-as specified under 
-\begin{cfg}
-<h>[pylithapp.timedependent.materials]</h>
-\end{cfg}
-in \filename{pylithapp.cfg}. This information is contained in the file
-\filename{matprops.spatialdb}. Although the material model is specified
-in \filename{pylithapp.cfg}, the values for the physical properties
-of the material are given in \filename{matprops.spatialdb}. For this
-example, values describing elastic plane strain material properties
-are given at a single point, resulting in uniform material properties.
+as specified under \object{pylithapp.timedependent.materials} in
+\filename{pylithapp.cfg}. This information is contained in the file
+\filename{matprops.spatialdb}. Although the material model is
+specified in \filename{pylithapp.cfg}, the values for the physical
+properties of the material are given in
+\filename{matprops.spatialdb}. For this example, values describing
+elastic plane strain material properties are given at a single point,
+resulting in uniform material properties.
 
 
 \subsection{Axial Displacement Example}
@@ -123,7 +121,7 @@ the problem-specific files (\filename{axialdisp.cfg},
 \filename{axialdisp.spatialdb}) provide a complete description of the
 problem, and we can then run this example by typing
 \begin{shell}
-$$ pylith axialdisp.cfg
+$ pylith axialdisp.cfg
 \end{shell}
 Once the problem has run, three files will be produced. The first
 file is named \filename{axialdisp\_t0000000.vtk}. The \filename{t0000000}
@@ -137,7 +135,7 @@ a single quadrature point for each cell and thus a single set of stress
 and strain values for each cell. The final file (\filename{axialdisp-statevars\_info.vtk})
 gives the material properties used for the problem. Since we have
 not specified which properties to write, the default properties (\texttt{mu},
-\texttt{lambda}, \texttt{density}) are written. All of the \filename{.vtk}
+\texttt{lambda}, \texttt{density}) are written. All of the \filename{vtk}
 files may be used with a number of visualization packages. If the
 problem ran correctly, you should be able to generate a figure such
 as Figure \vref{fig:twotri3-axial}, which was generated using ParaView.
@@ -177,7 +175,7 @@ the problem-specific files (\filename{sheardisp.cfg},
 \filename{sheardisp.spatialdb}) provide a complete description of the
 problem, and we can then run this example by typing
 \begin{shell}
-$$ pylith sheardisp.cfg
+$ pylith sheardisp.cfg
 \end{shell}
 Once the problem has run, three files will be produced as in the
 previous example. If the problem ran correctly, you should be able to
@@ -243,7 +241,7 @@ the problem-specific files (\filename{dislocation.cfg},
 \filename{dislocation\_sliptime.spatialdb}) provide a complete
 description of the problem, and we can then run this example by typing
 \begin{shell}
-$$ pylith dislocation.cfg
+$ pylith dislocation.cfg
 \end{shell}
 Once the problem has run, five files are produced. In addition to the
 files produced in the previous two examples, this example produces two

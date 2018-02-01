@@ -57,7 +57,7 @@ In addition to the mesh, the four example problems share additional
 information. As in the previous examples, we place this information
 in \filename{pylithapp.cfg}, since this file is read automatically every
 time PyLith is run. Settings specific to a particular problem may
-be placed in other \filename{.cfg} files, as described later, and then
+be placed in other \filename{cfg} files, as described later, and then
 those files are placed on the command line.
 
 
@@ -103,7 +103,7 @@ the problem-specific files (\filename{axialdisp.cfg},
 \filename{axialdisp.spatialdb}) provide a complete description of the
 problem, and we can then run this example by typing
 \begin{shell}
-$$ pylith axialdisp.cfg
+$ pylith axialdisp.cfg
 \end{shell}
 As in the two triangle axial displacement example, three files will be
 produced. If the problem ran correctly, you should be able to produce
@@ -157,7 +157,7 @@ the problem-specific files (\filename{sheardisp.cfg},
 \filename{sheardisp.spatialdb}) provide a complete description of the
 problem, and we can then run this example by typing
 \begin{shell}
-$$ pylith sheardisp.cfg
+$ pylith sheardisp.cfg
 \end{shell}
 As in the previous example, three files will be produced. If the
 problem ran correctly, you should be able to produce a figure such as
@@ -221,7 +221,7 @@ the problem-specific files (\filename{dislocation.cfg},
 \filename{dislocation\_sliptime.spatialdb}) provide a complete
 description of the problem, and we can then run this example by typing
 \begin{shell}
-$$ pylith dislocation.cfg
+$ pylith dislocation.cfg
 \end{shell}
 The addition of a fault results in two additional output files (as in
 the two triangle fault example),
@@ -294,7 +294,7 @@ the file \filename{axialtract.spatialdb}, as specified in
 complete description of the problem, and we can then run this example
 by typing
 \begin{shell}
-$$ pylith axialtract.cfg
+$ pylith axialtract.cfg
 \end{shell}
 Once the problem has run, six files will be produced. This includes
 the five files as in the previous example plus

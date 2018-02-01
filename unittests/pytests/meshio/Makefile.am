@@ -55,4 +55,9 @@ noinst_tmp = \
 
 CLEANFILES = $(noinst_tmp)
 
+clean-local: clean-local-tmp
+.PHONY: clean-local-tmp
+clean-local-tmp:
+	-rm *.vtk *.dat *.dat.info *.h5 *.xmf
+
 # End of file 

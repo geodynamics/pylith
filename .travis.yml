@@ -37,16 +37,23 @@ addons:
 
 # Install dependencies cached on CIG server
 install:
-  - if [ ! -f ${DEPS_DIR}/bin/nemesis ]; then travis/dependencies.sh build; else echo "Using cached dependencies."; fi
+  - if [ ! -f ${DEPS_DIR}/bin/proj ]; then travis/dependencies.sh build; else echo "Using cached dependencies."; fi
   - ls -R ${DEPS_DIR}
 
-script: 
+script:
+  - mkdir -p ${TARGET_DIR}/lib/python2.7/site-packages
+  # Pythia/Pyre
+  - git clone --recursive --depth 100 https://github.com/geodynamics/pythia.git
+  - pushd pythia && python setup.py install --prefix=${TARGET_DIR}; popd
+  # Nemesis
+  - git clone --recursive --depth 100 https://github.com/geodynamics/nemesis.git
+  - pushd nemesis && autoreconf --install --verbose --force && ./configure --prefix=${TARGET_DIR} CPPFLAGS="-I${DEPS_DIR}/include -I${TARGET_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib -L${TARGET_DIR}/lib" CC=mpicc CXX=mpicxx && make -j$(nproc) && make install; popd
   # PETSc
   - git clone --depth 100 -b knepley/pylith https://bitbucket.org/petsc/petsc.git petsc
   - pushd petsc && ./configure --with-c2html=0 --with-x=0 --with-clanguage=C --with-mpicompilers=1 --with-debugging=1 --with-shared-libraries=1 --with-64-bit-points=1 --with-large-file-io=1 --with-hdf5=1 --with-zlib=1 --download-chaco=1 --download-ml=1 --download-f2cblaslapack=1 CPPFLAGS="-I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" && make -j$(nproc) -f gmakefile && make test; popd
   # Spatialdata
   - git clone --recursive --depth 100 https://github.com/geodynamics/spatialdata.git
-  - pushd spatialdata && autoreconf --install --verbose --force && ./configure --enable-swig --enable-testing --enable-pythia --prefix=${TARGET_DIR} CPPFLAGS="-I${DEPS_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib" && make -j$(nproc) && make install && make -j$(nproc) check; popd
+  - pushd spatialdata && autoreconf --install --verbose --force && ./configure --enable-swig --enable-testing --enable-pythia --prefix=${TARGET_DIR} CPPFLAGS="-I${DEPS_DIR}/include -I${TARGET_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib -L${TARGET_DIR}/lib" && make -j$(nproc) && make install && make -j$(nproc) check; popd
   # PyLith
   - git fetch --unshallow
   - autoreconf --install --verbose --force && ./configure --enable-swig --enable-testing --enable-cubit --enable-hdf5 --prefix=${TARGET_DIR} CPPFLAGS="-I${DEPS_DIR}/include -I${TARGET_DIR}/include" LDFLAGS="-L${DEPS_DIR}/lib -L${TARGET_DIR}/lib" CC=mpicc CXX=mpicxx && make -j$(nproc) && make install && make -j$(nproc) check

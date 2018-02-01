@@ -82,6 +82,17 @@ void deallocate(void);
  */
 void filename(const char* filename);
 
+/** Generate filename for HDF5 file.
+ *
+ * Appends _info if only writing parameters.
+ *
+ * :KLUDGE: We should separate generating "info" files from the
+ * DataWriter interface.
+ *
+ * @returns String for HDF5 filename.
+ */
+std::string hdf5Filename(void) const;
+
 /** Prepare for writing files.
  *
  * @param[in] mesh Finite-element mesh.
@@ -139,9 +150,6 @@ private:
  * @param[in] w Object to copy.
  */
 DataWriterHDF5Ext(const DataWriterHDF5Ext& w);
-
-/// Generate filename for HDF5 file.
-std::string _hdf5Filename(void) const;
 
 /// Generate filename for external dataset file.
 std::string _datasetFilename(const char* field) const;

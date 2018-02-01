@@ -56,7 +56,7 @@ cell size of 2.0 km. We construct the mesh in CUBIT following the
 same techniques used in the 2D subduction zone example, except that
 this mesh is simpler. The main driver is in the journal file \filename{mesh.jou}.
 It calls the journal file \filename{geometry.jou} to construct the geometry.
-The mesh shown in Figure \vref{fig:examples:gravity:2d:mesh} The journal
+The mesh shown in Figure \ref{fig:examples:gravity:2d:mesh} The journal
 files are documented and describe the various steps outlined below.
 \begin{enumerate}
 \item Create the geometry defining the domain.
@@ -109,13 +109,13 @@ for this problem consist of:
 \end{inventory}
 Since we do not desire an initial elastic solution prior to beginning
 our time stepping for the simulations, we turn off the elastic prestep:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{pylithapp.cfg}]
 <h>[pylithapp.timedependent]</h>
 <p>elastic_prestep</p> = False
 \end{cfg}
 For two-dimensional problems involving gravity, we also need to change
 the default \property{gravity\_dir}:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{pylithapp.cfg}]
 <h>[pylithapp.timedependent]</h>
 <f>gravity_field</f> = spatialdata.spatialdb.GravityField
 <p>gravity_field.gravity_dir</p> = [0.0, -1.0, 0.0]
@@ -138,9 +138,8 @@ HDF5 ouput we also set the filename for the progress monitor. You can
 look at this file during the simulation to monitor the progress and
 get an estimate of when the simulation will finish.
 
-We run the simulation using:
-\begin{shell}
-$$ pylith gravity_infstrain.cfg
+\begin{shell}[Run Step 1 simulation]
+$ pylith gravity_infstrain.cfg
 \end{shell}
 The simulation produces HDF5 (and corresponding XDMF) files with the
 output of the displacements on the ground surface and the entire
@@ -171,9 +170,8 @@ their own parameter file, \filename{gravity\_initstress.cfg}. As in
 Step 1, the simulation specific parameter file contains the filenames
 for the output.
 
-We run the simulation using:
-\begin{shell}
-$$ pylith gravity_initstress.cfg gravity_isostatic.cfg
+\begin{shell}[Run Step 2 simulation]
+$ pylith gravity_initstress.cfg gravity_isostatic.cfg
 \end{shell}
 
 \subsection{Step 3: Infinitesimal Strain Simulation with Initial Stresses and
@@ -216,9 +214,8 @@ from vertically layered material properties in computing an
 equilibrium or steady state stress state associated with gravitational
 body forces and lateral density variations or topography.
 
-We run the simulation using:
-\begin{shell}
-$$ pylith gravity_initstress.cfg gravity_vardensity.cfg
+\begin{shell}[Run Step 3 simulation]
+$ pylith gravity_initstress.cfg gravity_vardensity.cfg
 \end{shell}
 Figure \vref{fig:examples:gravity:2d:vardensity:stress} shows the
 shear stress field at the end of the simulation.
@@ -247,9 +244,8 @@ related parameters. Note that we change the preconditioner to the
 algebraic multigrid preconditioner for the elastic block and the
 custom fault preconditioner for the Lagrange multipliers.
 
-We run the simulation using:
-\begin{shell}
-$$ pylith postseismic.cfg nogravity.cfg postseismic_infstrain_nograv.cfg
+\begin{shell}[Run Step 4 simulation]
+$ pylith postseismic.cfg nogravity.cfg postseismic_infstrain_nograv.cfg
 \end{shell}
 Figure \vref{fig:examples:gravity:2d:postseismc:infstrain:disp} shows
 the vertical displacement field at the end of the simulation.
@@ -266,14 +262,14 @@ the vertical displacement field at the end of the simulation.
 
 This simulation is the same as Step 4, but we use the finite strain
 formulation.:
-\begin{cfg}
+\begin{cfg}[Excerpt from \filename{postseismic\_finstrain.cfg}]
 <h>[pylithapp.timedependent]</h>
 <f>formulation</f> = pylith.problems.ImplicitLgDeform
 \end{cfg}
 When we use the finite strain formulation, the solver is automatically
-switched to the nonlinear solver. We run the simulation using:
-\begin{shell}
-$$ pylith postseismic.cfg nogravity.cfg postseismic_finstrain_nograv.cfg
+switched to the nonlinear solver.
+\begin{shell}[Run Step 5 simulation]
+$ pylith postseismic.cfg nogravity.cfg postseismic_finstrain_nograv.cfg
 \end{shell}
 The results are nearly identical to those with infinitesimal strain.
 
@@ -285,9 +281,8 @@ body forces. We use initial stresses that satisfy the governing
 equations, so our initial conditions are axial stresses equal to the
 overburden pressure.
 
-We run the simulation using:
-\begin{shell}
-$$ pylith postseismic.cfg postseismic_infstrain.cfg
+\begin{shell}[Run Step 6 simulation] 
+$ pylith postseismic.cfg postseismic_infstrain.cfg
 \end{shell}
 With the infinitesimal strain formulation and linearly material behavior,
 the initial stress state of equal axial stresses does not alter the
@@ -301,9 +296,8 @@ initial stresses and those from the postseismic deformation.
 This simulation is the same as Step 5, but we include gravitational
 body forces; this is also the same as Step 6, but with finite strain.
 
-We run the simulation using:
-\begin{shell}
-$$ pylith postseismic.cfg postseismic\_finstrain.cfg
+\begin{shell}[Run Step 7 simulation]
+$ pylith postseismic.cfg postseismic_finstrain.cfg
 \end{shell}
 The finite strain formulation accounts for the redistribution of
 gravitational body forces as the domain deforms during the postseismic
@@ -349,13 +343,12 @@ formulation are very small given that we start Step 8 from an undeformed
 state so that the Cauchy stresses are very close to the second Pioloa-Kirchoff
 stresses. Our first step is to modify the \filename{pylithapp.cfg} file
 by commenting out the lines with the CellFilterAvg settings:
-\begin{cfg}
-# If rerunning Step 3 to get initial conditions for Step 8, comment out the next line as shown.
+\begin{cfg}[Modify \filename{pylithapp.cfg} when rerunning Step 3]
 #cell_filter = pylith.meshio.CellFilterAvg
 \end{cfg}
-for both the crust and mantle. Next we rerun Step 3 using
-\begin{shell}
-$$ pylith gravity_initstress.cfg gravity_vardensity.cfg
+for both the crust and mantle.
+\begin{shell}[Rerun Step 3 after modifying \filename{pylithapp.cfg}]
+$ pylith gravity_initstress.cfg gravity_vardensity.cfg
 \end{shell}
 This will change how the values appear in ParaView output. Because
 the output data fields contain the values at multiple points within
@@ -366,16 +359,15 @@ and $\sigma_{\mathit{xy}}$ values at the first quadrature point;
 values 3, 4, and 5 correspond to the values at the second quadrature
 point, etc. We use the Python script \filename{generate\_statedb.py}
 to generate the spatial databases with the initial stresses from the
-output of Step 3:
-\begin{shell}
-$$ ./generate_statedb.py
+output of Step 3.
+\begin{shell}[Generate intial stresses using output from Step 3]
+$ ./generate_statedb.py
 \end{shell}
 After generating the initial state variables, we uncomment the \texttt{cell\_filter}
 lines in \filename{pylithapp.cfg} to allow easier visualization of Step
-8 results. Finally, we run the simulation of the postseismic deformation
-using
-\begin{shell}
-$$ pylith postseismic.cfg gravity_initstress.cfg postseismic_vardensity.cfg
+8 results.
+\begin{shell}[Run Step 8 simulation]
+$ pylith postseismic.cfg gravity_initstress.cfg postseismic_vardensity.cfg
 \end{shell}
 In the 100 years before the earthquake, it is clear that there is
 some ongoing deformation associated with the relaxation of the mantle.
