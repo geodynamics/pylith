@@ -163,15 +163,7 @@ dist_noinst_DATA = \
 	tet4_points.h5 \
 	tet4_points_vertex.h5 \
 	hex8_points.h5 \
-	hex8_points_vertex.h5 \
-	testxmf_tri3_cell.xmf \
-	testxmf_tri3_vertex.xmf \
-	testxmf_quad4_cell.xmf \
-	testxmf_quad4_vertex.xmf \
-	testxmf_tet4_cell.xmf \
-	testxmf_tet4_vertex.xmf \
-	testxmf_hex8_vertex.xmf \
-	testxmf_hex8_cell.xmf
+	hex8_points_vertex.h5
 
 
 noinst_TMP =
