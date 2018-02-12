@@ -306,10 +306,10 @@ pylith::materials::TestMaterialNew::testComputeResidual(void)
     MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
     TestMaterialNew_Data* data = _data(); CPPUNIT_ASSERT(data);
 
-#if 0 // DEBUGGING
-    PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2"); // DEBUGGING
-    DMSetFromOptions(residualRHS.dmMesh()); // DEBUGGING
-#endif
+#if 0 // :DEBUG:
+    PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2"); // :DEBUG:
+    DMSetFromOptions(residualRHS.dmMesh()); // :DEBUG:
+#endif // :DEBUG:
 
     const PylithReal t = data->t;
     const PylithReal dt = data->dt;
@@ -320,12 +320,12 @@ pylith::materials::TestMaterialNew::testComputeResidual(void)
     _zeroBoundary(&residualRHS);
     _zeroBoundary(&residualLHS);
 
-#if 0 // DEBUGGING
-    solution.view("SOLUTION"); // DEBUGGING
-    solutionDot.view("SOLUTION_DOT"); // DEBUGGING
-    residualRHS.view("RESIDUAL RHS"); // DEBUGGING
-    residualLHS.view("RESIDUAL LHS"); // DEBUGGING
-#endif
+#if 0 // :DEBUG:
+    solution.view("SOLUTION"); // :DEBUG:
+    solutionDot.view("SOLUTION_DOT"); // :DEBUG:
+    residualRHS.view("RESIDUAL RHS"); // :DEBUG:
+    residualLHS.view("RESIDUAL LHS"); // :DEBUG:
+#endif // :DEBUG:
 
     PetscErrorCode err;
     PetscVec residualVec = NULL;
@@ -376,10 +376,10 @@ pylith::materials::TestMaterialNew::testComputeRHSJacobian(void)
     residual2.label("residual2");
     residual2.allocate();
 
-#if 0 // DEBUGGING
-    PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2"); // DEBUGGING
-    DMSetFromOptions(_solution1->dmMesh()); // DEBUGGING
-#endif
+#if 0 // :DEBUG:
+    PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2"); // :DEBUG:
+    DMSetFromOptions(_solution1->dmMesh()); // :DEBUG:
+#endif // :DEBUG:
 
     MaterialNew* material = _material(); CPPUNIT_ASSERT(material);
     TestMaterialNew_Data* data = _data(); CPPUNIT_ASSERT(data);
@@ -389,8 +389,8 @@ pylith::materials::TestMaterialNew::testComputeRHSJacobian(void)
     material->computeRHSResidual(&residual1, t, dt, solution);
     material->computeRHSResidual(&residual2, t, dt, perturbation);
 
-    //residual1.view("RESIDUAL 1 RHS"); // DEBUGGING
-    //residual2.view("RESIDUAL 2 RHS"); // DEBUGGING
+    //residual1.view("RESIDUAL 1 RHS"); // :DEBUG:
+    //residual2.view("RESIDUAL 2 RHS"); // :DEBUG:
 
     // Check that J(s)*(p - s) = G(p) - G(s).
 
@@ -422,14 +422,14 @@ pylith::materials::TestMaterialNew::testComputeRHSJacobian(void)
     err = VecScale(solnIncrVec, -1.0); CPPUNIT_ASSERT(!err);
     err = MatMultAdd(jacobianMat, solnIncrVec, residualVec, resultVec); CPPUNIT_ASSERT(!err);
 
-#if 0 // DEBUGGING
+#if 0 // :DEBUG:
     std::cout << "SOLN INCR" << std::endl;
     VecView(solnIncrVec, PETSC_VIEWER_STDOUT_SELF);
     std::cout << "G2-G1" << std::endl;
     VecView(residualVec, PETSC_VIEWER_STDOUT_SELF);
     std::cout << "RESULT" << std::endl;
     VecView(resultVec, PETSC_VIEWER_STDOUT_SELF);
-#endif
+#endif // :DEBUG:
 
     PylithReal norm = 0.0;
     err = VecNorm(resultVec, NORM_2, &norm); CPPUNIT_ASSERT(!err);
@@ -484,10 +484,10 @@ pylith::materials::TestMaterialNew::testComputeLHSJacobianImplicit(void)
     residual2.label("residual2");
     residual2.allocate();
 
-#if 0 // DEBUGGING
-    PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2"); // DEBUGGING
-    DMSetFromOptions(_solution1->dmMesh()); // DEBUGGING
-#endif
+#if 0 // :DEBUG:
+    PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2"); // :DEBUG:
+    DMSetFromOptions(_solution1->dmMesh()); // :DEBUG:
+#endif // :DEBUG:
 
 
     const PylithReal t = data->t;
@@ -496,8 +496,8 @@ pylith::materials::TestMaterialNew::testComputeLHSJacobianImplicit(void)
     material->computeLHSResidual(&residual1, t, dt, solution, solutionDot);
     material->computeLHSResidual(&residual2, t, dt, perturbation, perturbationDot);
 
-    //residual1.view("RESIDUAL 1 LHS"); // DEBUGGING
-    //residual2.view("RESIDUAL 2 LHS"); // DEBUGGING
+    //residual1.view("RESIDUAL 1 LHS"); // :DEBUG:
+    //residual2.view("RESIDUAL 2 LHS"); // :DEBUG:
 
     PetscErrorCode err;
 
@@ -527,14 +527,14 @@ pylith::materials::TestMaterialNew::testComputeLHSJacobianImplicit(void)
     err = VecScale(solnIncrVec, -1.0); CPPUNIT_ASSERT(!err);
     err = MatMultAdd(jacobianMat, solnIncrVec, residualVec, resultVec); CPPUNIT_ASSERT(!err);
 
-#if 0 // DEBUGGING
+#if 0 // :DEBUG:
     std::cout << "SOLN INCR" << std::endl;
     VecView(solnIncrVec, PETSC_VIEWER_STDOUT_SELF);
     std::cout << "F2-F1" << std::endl;
     VecView(residualVec, PETSC_VIEWER_STDOUT_SELF);
     std::cout << "RESULT" << std::endl;
     VecView(resultVec, PETSC_VIEWER_STDOUT_SELF);
-#endif
+#endif // :DEBUG:
 
     PylithReal norm = 0.0, normSolnIncr = 0.0, normResidual = 0.0;
     err = VecNorm(resultVec, NORM_2, &norm); CPPUNIT_ASSERT(!err);
