@@ -194,7 +194,6 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldDiscretization(void)
         CPPUNIT_ASSERT_EQUAL(infoDefault.feSpace, test.feSpace);
     } // default
 
-
     PYLITH_METHOD_END;
 } // testAuxFieldDiscretization
 
@@ -378,10 +377,11 @@ pylith::bc::TestDirichletTimeDependent::testSetSolution(void)
 
     // Set solution field.
     CPPUNIT_ASSERT(_data);
-    _solution->mesh().view(":detail.txt:ascii_info_detail");
+    //_solution->mesh().view(":detail.txt:ascii_info_detail"); // :DEBUG: TEMPORARY
+    _bc->prestep(_data->t, _data->dt);
     _bc->setSolution(_solution, _data->t);
 
-    //_solution->view("SOLUTION BC ONLY"); // DEBUGGING
+    //_solution->view("SOLUTION BC ONLY"); // :DEBUG:
 
     // Verify setting solution did not change unconstrained values.
     const PylithReal tolerance = 1.0e-6;
@@ -394,7 +394,7 @@ pylith::bc::TestDirichletTimeDependent::testSetSolution(void)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(FILL_VALUE, value, tolerance);
 
     // Verify solution values match expected values.
-    // Fill unconstrained values only.
+    // Fill unconstrained values in global vector and then scatter to local vector.
     const PylithReal t = _data->t;
     const PetscDM dmSoln = _solution->dmMesh(); CPPUNIT_ASSERT(dmSoln);
     pylith::topology::FieldQuery query(*_solution);
@@ -405,7 +405,7 @@ pylith::bc::TestDirichletTimeDependent::testSetSolution(void)
     query.closeDB(_data->solnDB);
     _solution->scatterContextToLocal("global", INSERT_VALUES);
 
-    //_solution->view("SOLUTION ALL"); // DEBUGGING
+    //_solution->view("SOLUTION ALL"); // :DEBUG:
 
     PylithReal norm = 0.0;
     query.openDB(_data->solnDB, _data->normalizer->lengthScale());
@@ -639,6 +639,7 @@ pylith::bc::TestDirichletTimeDependent_Data::TestDirichletTimeDependent_Data(voi
     auxDiscretizations(NULL),
     auxDB(new spatialdata::spatialdb::UserFunctionDB),
     t(0.0),
+    dt(0.0),
     solnNumSubfields(0),
     solnDiscretizations(NULL),
     solnDB(new spatialdata::spatialdb::UserFunctionDB)

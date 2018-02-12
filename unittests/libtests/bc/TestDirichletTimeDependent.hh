@@ -168,6 +168,7 @@ public:
     spatialdata::spatialdb::UserFunctionDB* auxDB; ///< Spatial database with auxiliary field.
 
     PylithReal t; ///< Time associated with setting solution.
+    PylithReal dt; ///< Time step associated with setting solution.
     int solnNumSubfields; ///< Number of solution fields.
     pylith::topology::FieldBase::Discretization* solnDiscretizations; ///< Discretizations for solution fields.
     spatialdata::spatialdb::UserFunctionDB* solnDB; ///< Spatial database with solution.

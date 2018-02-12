@@ -63,7 +63,7 @@ namespace pylith {
             } // disp_x
             static double disp_y(const double x,
                                  const double y) {
-                return initial_disp_y(x,y);
+                return initial_disp_y(x, y);
             } // disp_y
             static double vel_x(const double x,
                                 const double y) {
@@ -122,6 +122,7 @@ protected:
                 _data->auxDB->addValue("initial_amplitude_y", initial_disp_y, disp_units());
 
                 _data->t = 1.23;
+                _data->dt = 0.1;
                 _data->solnNumSubfields = 3;
                 static const pylith::topology::Field::Discretization solnDiscretizations[3] = {
                     {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // displacement
