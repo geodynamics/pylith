@@ -213,6 +213,8 @@ pylith::bc::DirichletTimeDependent::prestep(const double t,
 
     } // if
 
+    //_auxField->view("AUXILIARY FIELD"); // :DEBUG: TEMPORARY
+
     PYLITH_METHOD_END;
 } // prestep
 

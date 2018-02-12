@@ -178,7 +178,7 @@ pylith::bc::DirichletNew::setSolution(pylith::topology::Field* solution,
     PYLITH_CHECK_ERROR(err);
     err = DMPlexLabelClearCells(dmSoln, dmLabel); PYLITH_CHECK_ERROR(err);
 
-    //solution->view("SOLUTION"); // :DEBUG: TEMPORARY
+    //solution->view("SOLUTION at end of setSolution()"); // :DEBUG: TEMPORARY
 
     PYLITH_METHOD_END;
 } // setSolution
