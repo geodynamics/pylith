@@ -441,8 +441,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_setupSolutionFields(v
         perturbation.cloneSection(solution);
         perturbation.allocate();
         perturbation.copy(solution);
-
-        PYLITH_JOURNAL_WARNING(":TODO: @brad Add perturbation to solution.");
+        _addRandomPerturbation(&perturbation, _mydata->perturbation);
     } // Perturbation @ t2
 
     { // Time derivative of solution @ t2
@@ -451,8 +450,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_setupSolutionFields(v
         perturbationDot.cloneSection(solutionDot);
         perturbationDot.allocate();
         perturbationDot.copy(solutionDot);
-
-        PYLITH_JOURNAL_WARNING(":TODO: @brad Add perturbation to solution.");
+        _addRandomPerturbation(&perturbationDot, _mydata->perturbation);
     } // Time derivative of solution @ t2
 
     PYLITH_METHOD_END;

@@ -159,6 +159,18 @@ protected:
     virtual
     void _setupSolutionFields(void) = 0;
 
+    /** Add small, random perturbations to field.
+     *
+     * The random value is sampled from a uniform distribution with the given
+     * limit.
+     *
+     * @param[inout] field Field to add small, random perturbation to.
+     * @param[in] limit Uniform random distribution is bounded by -limit and +limit.
+     */
+    void _addRandomPerturbation(pylith::topology::Field* field,
+                                const PylithReal limit);
+
+
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected:
@@ -195,6 +207,7 @@ public:
     PylithReal t; ///< Time for solution in simulation.
     PylithReal dt; ///< Time step in simulation.
     PylithReal tshift; ///< Time shift for LHS Jacobian.
+    PylithReal perturbation; ///< Maximum amplitude of random perturbation.
 
     int numSolnSubfields; ///< Number of solution fields.
     pylith::topology::Field::Discretization* solnDiscretizations; ///< Discretizations for solution fields.

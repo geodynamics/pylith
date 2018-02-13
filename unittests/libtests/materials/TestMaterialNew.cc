@@ -439,7 +439,6 @@ pylith::materials::TestMaterialNew::testComputeRHSJacobian(void)
     err = MatDestroy(&jacobianMat); CPPUNIT_ASSERT(!err);
 
     const PylithReal tolerance = 1.0e-6;
-    CPPUNIT_ASSERT_MESSAGE(":TODO: Test requires solution perturbation.",false); // TEMPORARY
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
     CPPUNIT_ASSERT(norm > 0.0); // Norm exactly equal to zero almost certainly means test is satisfied trivially.
 
@@ -691,6 +690,27 @@ pylith::materials::TestMaterialNew::_zeroBoundary(pylith::topology::Field* field
 
 
 // ----------------------------------------------------------------------
+// Add small, random perturbations to field.
+void
+pylith::materials::TestMaterialNew::_addRandomPerturbation(pylith::topology::Field* field,
+                                                           const PylithReal limit) {
+    PYLITH_METHOD_BEGIN;
+
+    CPPUNIT_ASSERT(field);
+
+    PetscErrorCode err;
+    PetscRandom random = NULL;
+    err = PetscRandomCreate(PETSC_COMM_SELF, &random); CPPUNIT_ASSERT(!err);
+    err = PetscRandomSetType(random, PETSCRAND48); CPPUNIT_ASSERT(!err);
+    err = PetscRandomSetInterval(random, -limit, +limit); CPPUNIT_ASSERT(!err);
+    err = VecSetRandom(field->localVector(), random); CPPUNIT_ASSERT(!err);
+    err = PetscRandomDestroy(&random); CPPUNIT_ASSERT(!err);
+
+    PYLITH_METHOD_END;
+} // _addRandomPerturbation
+
+
+// ----------------------------------------------------------------------
 // Constructor
 pylith::materials::TestMaterialNew_Data::TestMaterialNew_Data(void) :
     dimension(0),
@@ -703,6 +723,7 @@ pylith::materials::TestMaterialNew_Data::TestMaterialNew_Data(void) :
     t(0.0),
     dt(0.0),
     tshift(0.0),
+    perturbation(1.0e-4),
 
     numSolnSubfields(0),
     solnDiscretizations(NULL),
