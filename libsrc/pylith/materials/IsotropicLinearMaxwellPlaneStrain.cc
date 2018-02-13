@@ -194,7 +194,6 @@ void
 pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsRHSResidual(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setFEKernelsRHSResidual(solution="<<solution.label()<<")");
-    PYLITH_COMPONENT_ERROR(":TODO: @matt Need scalar array to hold variables such as dt. These are presently hardwired in the kernels.");
 
     const PetscDM dm = solution.dmMesh(); assert(dm);
     PetscDS prob = NULL;

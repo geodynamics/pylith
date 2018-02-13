@@ -373,7 +373,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void)
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
     } // Test getting maxwellTime field
 
-    PYLITH_JOURNAL_DEBUG(":TODO: @charles Add test for getting reference stress/strain.");
+    PYLITH_JOURNAL_WARNING(":TODO: @charles Add test for getting reference stress/strain.");
 
     PYLITH_METHOD_END;
 } // testGetAuxField
