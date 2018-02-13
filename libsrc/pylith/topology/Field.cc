@@ -1243,19 +1243,19 @@ pylith::topology::Field::subfieldsSetup(void)
         const char* sname = s_iter->first.c_str();
         const SubfieldInfo& sinfo = s_iter->second;
 
-	if (quadOrderSet) {
-	  if (quadOrder != sinfo.fe.quadOrder) {
-	    std::ostringstream msg;
-	    msg << "PETSc DMPlex routines currently assume all subfields use the same quadrature order. Quaadrature order of "
-		<< sinfo.fe.quadOrder << " for subfield '" << sname << "' does not match the quadrature order of " << quadOrder
-		<< " for other subfields in field '" << label() << "'.";
-	    throw std::runtime_error(msg.str());
-	  } // if
-	} else {
-	  quadOrder = sinfo.fe.quadOrder;
-	  quadOrderSet = true;
-	} // if/else
-	
+        if (quadOrderSet) {
+            if (quadOrder != sinfo.fe.quadOrder) {
+                std::ostringstream msg;
+                msg << "PETSc DMPlex routines currently assume all subfields use the same quadrature order. Quaadrature order of "
+                    << sinfo.fe.quadOrder << " for subfield '" << sname << "' does not match the quadrature order of " << quadOrder
+                    << " for other subfields in field '" << label() << "'.";
+                throw std::runtime_error(msg.str());
+            } // if
+        } else {
+            quadOrder = sinfo.fe.quadOrder;
+            quadOrderSet = true;
+        } // if/else
+
         PetscFE fe = FieldOps::createFE(sinfo.fe, _dm, _mesh.isSimplex(), sinfo.description.numComponents); assert(fe);
         err = PetscObjectSetName((PetscObject) fe, sname); PYLITH_CHECK_ERROR(err);
         err = PetscDSSetDiscretization(prob, sinfo.index, (PetscObject) fe); PYLITH_CHECK_ERROR(err);
@@ -1371,11 +1371,13 @@ pylith::topology::Field::copySubfield(const Field& field,
 { // copySubfield
     PYLITH_METHOD_BEGIN;
 
-    // Check compatibility of sections
-    PYLITH_JOURNAL_ERROR(":TODO: @brad This is an insufficient test of field compatibility.");
-    const int srcSize = field.chartSize();
-    const int dstSize = chartSize();
-    if (dstSize != srcSize) {
+    PetscErrorCode err;
+
+    // Check compatibility of sections (section size and chart begin and end points).
+    PylithInt pStartSrc = 0, pEndSrc = 0, pStartDest = 0, pEndDest = 0;
+    err = PetscSectionGetChart(field.localSection(), &pStartSrc, &pEndSrc);
+    err = PetscSectionGetChart(localSection(), &pStartDest, &pEndDest);
+    if ((field.sectionSize() != sectionSize()) || (pStartSrc != pStartDest) || (pEndSrc != pEndDest)) {
         _extractSubfield(field, name);
     } // if
     assert(_localVec && field._localVec);
@@ -1385,7 +1387,6 @@ pylith::topology::Field::copySubfield(const Field& field,
 
     label(subfieldInfo.description.label.c_str()); // Use method to insure propagation to subsidiary objects
 
-    PetscErrorCode err;
     const PetscSection& fieldSection = field.localSection();
     const PetscSection& subfieldSection = this->localSection();
 
