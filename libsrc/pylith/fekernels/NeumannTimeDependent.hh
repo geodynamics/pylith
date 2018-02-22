@@ -33,7 +33,6 @@
 
 class pylith::fekernels::NeumannTimeDependent {
 
-    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
     /** Kernel interface.
@@ -421,6 +420,33 @@ public:
                                           const PylithScalar constants[],
                                           PylithScalar g0[]);
 
+private:
+    // PRIVATE MEMBERS ///////////////////////////////////////////////////////
+
+    /** Compute tangential directions from reference direction (first and second choice) and normal direction in 3-D.
+     *
+     * We use the first reference direction if it is not colinear with the normal direction; otherwise, we use the second
+     * reference direction.
+     *
+     * + tangential direction 1 is refDir x normal.
+     * + tangential direction 2 is normal x tangential direction 1.
+     *
+     * @param[in] dim Dimension (must be 3)
+     * @param[in] refDir1 Reference direction (first choice) [3].
+     * @param[in] refDir2 Reference direction (second choice) [3].
+     * @param[in] normDir Normal direction [3].
+     * @param[out] tanDir1 First tangential direction [3].
+     * @param[out] tanDir2 Second tangential direction [3].
+     */
+    static
+    void _tangential_directions(const PylithInt dim,
+                                const PylithScalar refDir1[],
+                                const PylithScalar refDir2[],
+                                const PylithScalar normDir[],
+                                PylithScalar tanDir1[],
+                                PylithScalar tanDir2[]);
+
+    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 }; // NeumannTimeDependent
 
 #endif // pylith_fekernels_neumanntimedependent_hh

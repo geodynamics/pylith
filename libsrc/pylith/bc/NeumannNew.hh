@@ -49,11 +49,17 @@ public:
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
-    /** Set up direction to discriminate among shear directions in 3-D.
+    /** Set first choice for reference direction to discriminate among tangential directions in 3-D.
      *
-     * @param vec Up direction unit vector.
+     * @param vec Reference direction unit vector.
      */
-    void upDir(const double vec[3]);
+    void refDir1(const double vec[3]);
+
+    /** Set second choice for reference direction to discriminate among tangential directions in 3-D.
+     *
+     * @param vec Reference direction unit vector.
+     */
+    void refDir2(const double vec[3]);
 
     /** Verify configuration is acceptable.
      *
@@ -183,7 +189,8 @@ protected:
 
     pylith::topology::Mesh* _boundaryMesh;   ///< Boundary mesh.
     pylith::topology::FieldBase::Description _description; ///< Description of field associated with BC.
-    PylithReal _upDir[3]; ///< Reference "up" direction used to compute boundary tangential directions.
+    PylithReal _refDir1[3]; ///< First choice reference direction used to compute boundary tangential directions.
+    PylithReal _refDir2[3]; ///< Second choice reference direction used to compute boundary tangential directions.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:

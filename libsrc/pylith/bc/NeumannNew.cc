@@ -37,14 +37,15 @@
 #include <sstream> \
     // USES std::ostringstream
 
-extern "C" PetscErrorCode DMPlexComputeBdResidual_Internal(PetscDM dm,
-                                                           PetscInt cStart,
-                                                           PetscInt cEnd,
-                                                           PetscReal time,
-                                                           PetscVec locX,
-                                                           PetscVec locX_t,
-                                                           PetscVec locF,
-                                                           void *user);
+extern "C" PetscErrorCode DMPlexComputeBdResidual_Single_Internal(DM dm,
+                                                                  PetscReal t,
+                                                                  DMLabel label,
+                                                                  PetscInt numValues,
+                                                                  const PetscInt values[],
+                                                                  PetscInt field,
+                                                                  Vec locX,
+                                                                  Vec locX_t,
+                                                                  Vec locF);
 
 
 // ----------------------------------------------------------------------
@@ -52,6 +53,13 @@ extern "C" PetscErrorCode DMPlexComputeBdResidual_Internal(PetscDM dm,
 pylith::bc::NeumannNew::NeumannNew(void) :
     _boundaryMesh(NULL)
 { // constructor
+    _refDir1[0] = 0.0;
+    _refDir1[1] = 0.0;
+    _refDir1[2] = 1.0;
+
+    _refDir2[0] = 0.0;
+    _refDir2[1] = 1.0;
+    _refDir2[2] = 0.0;
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -73,16 +81,37 @@ pylith::bc::NeumannNew::deallocate(void) {
     PYLITH_METHOD_END;
 } // deallocate
 
-// Set up direction to discriminate among shear directions in 3-D.
 // ----------------------------------------------------------------------
+// Set first choice for reference direction to discriminate among tangential directions in 3-D.
 void
-pylith::bc::NeumannNew::upDir(const double vec[3]) {
-    // Set up direction, insuring it is a unit vector.
+pylith::bc::NeumannNew::refDir1(const double vec[3]) {
+    // Set reference direction, insuring it is a unit vector.
     const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
+    if (mag < 1.0e-6) {
+        std::ostringstream msg;
+        msg << "Magnitude of reference direction 1 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]<<") is negligible. Use a unit vector.";
+        throw std::runtime_error(msg.str());
+    } // if
     for (int i = 0; i < 3; ++i) {
-        _upDir[i] = vec[i] / mag;
+        _refDir1[i] = vec[i] / mag;
     } // for
-} // upDir
+} // refDir1
+
+// ----------------------------------------------------------------------
+// Set second choice for reference direction to discriminate among tangential directions in 3-D.
+void
+pylith::bc::NeumannNew::refDir2(const double vec[3]) {
+    // Set reference direction, insuring it is a unit vector.
+    const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
+    if (mag < 1.0e-6) {
+        std::ostringstream msg;
+        msg << "Magnitude of reference direction 2 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]<<") is negligible. Use a unit vector.";
+        throw std::runtime_error(msg.str());
+    } // if
+    for (int i = 0; i < 3; ++i) {
+        _refDir1[i] = vec[i] / mag;
+    } // for
+} // refDir2
 
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
@@ -162,7 +191,6 @@ pylith::bc::NeumannNew::computeRHSResidual(pylith::topology::Field* residual,
     assert(_auxField);
 
     PetscDS prob = NULL;
-    PetscInt cStart = 0, cEnd = 0;
     PetscErrorCode err;
 
     PetscDM dmSoln = solution.dmMesh();
@@ -177,15 +205,14 @@ pylith::bc::NeumannNew::computeRHSResidual(pylith::topology::Field* residual,
     err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxField->localVector()); PYLITH_CHECK_ERROR(err);
 
     // Compute the local residual
-#if 0 // :TODO: @brad @matt Update this for Matt's interface for computing the residual on a boundary.
     assert(solution.localVector());
     assert(residual->localVector());
-    err = DMGetLabel(dmSoln, "material-id", &dmLabel); PYLITH_CHECK_ERROR(err);
-    err = DMLabelGetStratumBounds(dmLabel, id(), &cStart, &cEnd); PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmSoln, _label.c_str(), &dmLabel); PYLITH_CHECK_ERROR(err);
+    const int labelId = 1;
+    const topology::Field::SubfieldInfo& info = solution.subfieldInfo(_field.c_str());
 
-    PYLITH_COMPONENT_DEBUG("DMPlexComputeResidual_Internal() with material-id '"<<id()<<"' and cells ["<<cStart<<","<<cEnd<<")");
-    err = DMPlexComputeResidual_Internal(dmSoln, cStart, cEnd, PETSC_MIN_REAL, solution.localVector(), solutionDot.localVector(), residual->localVector(), NULL); PYLITH_CHECK_ERROR(err);
-#endif
+    PYLITH_COMPONENT_DEBUG("DMPlexComputeBdResidual_Single_Internal() for boundary '"<<label()<<"')");
+    err = DMPlexComputeBdResidual_Single_Internal(dmSoln, t, dmLabel, 1, &labelId, info.index, solution.localVector(), solutionDot.localVector(), residual->localVector()); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // computeRHSResidual
@@ -237,10 +264,14 @@ pylith::bc::NeumannNew::_setFEConstants(const pylith::topology::Field& solution,
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setFEConstants(solution="<<solution.label()<<", dt="<<dt<<")");
 
-    const PetscInt numConstants = 3;
-    PetscScalar constants[3];
-    for (int i = 0; i < 3; ++i) {
-        constants[i] = _upDir[i];
+    const PetscInt numConstants = 6;
+    PetscScalar constants[6];
+    int index = 0;
+    for (int i = 0; i < 3; ++i, index++) {
+        constants[index] = _refDir1[i];
+    } // for
+    for (int i = 0; i < 3; ++i, index++) {
+        constants[index] = _refDir2[i];
     } // for
 
     const PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);

@@ -140,7 +140,7 @@ protected:
      *
      * @param solution Solution field.
      */
-    void _setFEKernelsRHSResidual(const topology::Field& solution) const;
+    void _setFEKernelsRHSResidual(const pylith::topology::Field& solution) const;
 
     /** Get factory for setting up auxliary fields.
      *
