@@ -44,7 +44,9 @@ swig_sources = \
 	../feassemble/IntegratorPointwise.i \
 	BoundaryConditionNew.i \
 	DirichletNew.i \
-	DirichletTimeDependent.i
+	DirichletTimeDependent.i \
+	NeumannNew.i \
+	NeumannTimeDependent.i
 
 swig_generated = \
 	bc_wrap.cxx \
