@@ -32,9 +32,14 @@
 // ----------------------------------------------------------------------
 const char* pylith::bc::TimeDependentAuxiliaryFactory::_genericComponent = "timedependentauxiliaryfactory";
 
+const char* pylith::bc::TimeDependentAuxiliaryFactory::_componentsXYZ[3] = { "_x", "_y", "_z" };
+const char* pylith::bc::TimeDependentAuxiliaryFactory::_componentsTN[2] = { "_tangential", "_normal" };
+const char* pylith::bc::TimeDependentAuxiliaryFactory::_componentsTTN[3] = { "_tangential_1", "_tangential_2", "_normal" };
+
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::bc::TimeDependentAuxiliaryFactory::TimeDependentAuxiliaryFactory(void)
+pylith::bc::TimeDependentAuxiliaryFactory::TimeDependentAuxiliaryFactory(const ReferenceEnum reference) :
+    _auxComponents(reference)
 { // constructor
     GenericComponent::name(_genericComponent);
 } // constructor
@@ -44,6 +49,39 @@ pylith::bc::TimeDependentAuxiliaryFactory::TimeDependentAuxiliaryFactory(void)
 pylith::bc::TimeDependentAuxiliaryFactory::~TimeDependentAuxiliaryFactory(void)
 { // destructor
 } // destructor
+
+// ----------------------------------------------------------------------
+// Set names of vector components in auxiliary subfield.
+void
+pylith::bc::TimeDependentAuxiliaryFactory::_setVectorFieldComponentNames(pylith::topology::FieldBase::Description* description) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_setVectorFieldComponentNames(description)");
+
+    assert(description);
+
+    const char** componentNames = NULL;
+    if (XYZ == _auxComponents) {
+        componentNames = _componentsXYZ;
+    } else if (TANGENTIAL_NORMAL == _auxComponents) {
+        if (2 == _spaceDim) {
+            componentNames = _componentsTN;
+        } else if (3 == _spaceDim) {
+            componentNames = _componentsTTN;
+        } // if/else
+    } // if/else
+    if (!componentNames) {
+        PYLITH_JOURNAL_ERROR("Unknown case for auxiliary component reference ("<<_auxComponents<<") and spatial dimension ("<<_spaceDim<<").");
+        throw std::logic_error("Unknown case for auxiliary component reference and spatial dimension.");
+    } // if
+
+    assert(size_t(_spaceDim) == description->numComponents);
+    for (int i = 0; i < _spaceDim; ++i) {
+        description->componentNames[i] = description->label + std::string(componentNames[i]);
+    } // for
+
+    PYLITH_METHOD_END;
+} // _setVectorFieldComponentNames
+
 
 // ----------------------------------------------------------------------
 // Add initial amplitude field to auxiliary fields.
@@ -65,16 +103,11 @@ pylith::bc::TimeDependentAuxiliaryFactory::initialAmplitude(void)
         const size_t numComponents = 1;
         assert(numComponents == subfieldDescription.numComponents);
         assert(numComponents == subfieldDescription.componentNames.size());
-        subfieldDescription.componentNames[0] = "initial_amplitude";
+        subfieldDescription.componentNames[0] = fieldName;
         break;
     } // SCALAR
     case pylith::topology::FieldBase::VECTOR: {
-        const char* componentNames[3] = { "initial_amplitude_x", "initial_amplitude_y", "initial_amplitude_z" };
-        assert(size_t(_spaceDim) == subfieldDescription.numComponents);
-        assert(size_t(_spaceDim) == subfieldDescription.componentNames.size());
-        for (int i = 0; i < _spaceDim; ++i) {
-            subfieldDescription.componentNames[i] = componentNames[i];
-        } // for
+        _setVectorFieldComponentNames(&subfieldDescription);
         break;
     } // VECTOR
     default:
@@ -108,16 +141,11 @@ pylith::bc::TimeDependentAuxiliaryFactory::rateAmplitude(void)
         const size_t numComponents = 1;
         assert(numComponents == subfieldDescription.numComponents);
         assert(numComponents == subfieldDescription.componentNames.size());
-        subfieldDescription.componentNames[0] = "rate_amplitude";
+        subfieldDescription.componentNames[0] = fieldName;
         break;
     } // SCALAR
     case pylith::topology::FieldBase::VECTOR: {
-        const char* componentNames[3] = { "rate_amplitude_x", "rate_amplitude_y", "rate_amplitude_z" };
-        assert(size_t(_spaceDim) == subfieldDescription.numComponents);
-        assert(size_t(_spaceDim) == subfieldDescription.componentNames.size());
-        for (int i = 0; i < _spaceDim; ++i) {
-            subfieldDescription.componentNames[i] = componentNames[i];
-        } // for
+        _setVectorFieldComponentNames(&subfieldDescription);
         break;
     } // VECTOR
     default:
@@ -149,7 +177,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::rateStartTime(void)
     subfieldDescription.vectorFieldType = pylith::topology::FieldBase::SCALAR;
     subfieldDescription.numComponents = 1;
     subfieldDescription.componentNames.resize(1);
-    subfieldDescription.componentNames[0] = "rate_start_time";
+    subfieldDescription.componentNames[0] = fieldName;
     subfieldDescription.scale = _normalizer->timeScale();
     subfieldDescription.validator = NULL;
 
@@ -179,16 +207,11 @@ pylith::bc::TimeDependentAuxiliaryFactory::timeHistoryAmplitude(void)
         const size_t numComponents = 1;
         assert(numComponents == subfieldDescription.numComponents);
         assert(numComponents == subfieldDescription.componentNames.size());
-        subfieldDescription.componentNames[0] = "time_history_amplitude";
+        subfieldDescription.componentNames[0] = fieldName;
         break;
     } // SCALAR
     case pylith::topology::FieldBase::VECTOR: {
-        const char* componentNames[3] = { "time_history_amplitude_x", "time_history_amplitude_y", "time_history_amplitude_z" };
-        assert(size_t(_spaceDim) == subfieldDescription.numComponents);
-        assert(size_t(_spaceDim) == subfieldDescription.componentNames.size());
-        for (int i = 0; i < _spaceDim; ++i) {
-            subfieldDescription.componentNames[i] = componentNames[i];
-        } // for
+        _setVectorFieldComponentNames(&subfieldDescription);
         break;
     } // VECTOR
     default:
@@ -220,7 +243,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::timeHistoryStartTime(void)
     subfieldDescription.vectorFieldType = pylith::topology::FieldBase::SCALAR;
     subfieldDescription.numComponents = 1;
     subfieldDescription.componentNames.resize(1);
-    subfieldDescription.componentNames[0] = "time_history_start_time";
+    subfieldDescription.componentNames[0] = fieldName;
     subfieldDescription.scale = _normalizer->timeScale();
     subfieldDescription.validator = NULL;
 
@@ -248,7 +271,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::timeHistoryValue(void)
     subfieldDescription.vectorFieldType = pylith::topology::FieldBase::SCALAR;
     subfieldDescription.numComponents = 1;
     subfieldDescription.componentNames.resize(1);
-    subfieldDescription.componentNames[0] = "time_history_value";
+    subfieldDescription.componentNames[0] = fieldName;
     subfieldDescription.scale = _normalizer->timeScale();
     subfieldDescription.validator = NULL;
 

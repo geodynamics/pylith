@@ -45,6 +45,7 @@ const char* pylith::bc::NeumannTimeDependent::_pyreComponent = "neumanntimedepen
 // Default constructor.
 pylith::bc::NeumannTimeDependent::NeumannTimeDependent(void) :
     _dbTimeHistory(NULL),
+    _auxTimeDependentFactory(new pylith::bc::TimeDependentAuxiliaryFactory(pylith::bc::TimeDependentAuxiliaryFactory::TANGENTIAL_NORMAL)),
     _useInitial(true),
     _useRate(false),
     _useTimeHistory(false)

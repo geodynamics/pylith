@@ -33,11 +33,22 @@
 class pylith::bc::TimeDependentAuxiliaryFactory : public pylith::feassemble::AuxiliaryFactory {
     friend class TestDirichletAuxiliaryFactory;   // unit testing
 
+    // PUBLIC ENUMS ///////////////////////////////////////////////////////
+public:
+
+    enum ReferenceEnum {
+        XYZ=0, ///< Coordinate directions (x, y, z).
+        TANGENTIAL_NORMAL=1, ///< Directions tangential and normal to the boundary (tangential_1, tangential_2, normal).
+    };
+
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
 
-    /// Default constructor.
-    TimeDependentAuxiliaryFactory(void);
+    /** Default constructor.
+     *
+     * @param[in] reference Reference for coordinate directions in auxiliary subfield.s
+     */
+    TimeDependentAuxiliaryFactory(const ReferenceEnum reference=XYZ);
 
     /// Destructor.
     ~TimeDependentAuxiliaryFactory(void);
@@ -64,9 +75,24 @@ public:
     void timeHistoryValue(void);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
+public:
+
+    /** Set names of vector field components in auxiliary subfield.
+     *
+     * @param[in] description Subfield description.
+     */
+    void _setVectorFieldComponentNames(pylith::topology::FieldBase::Description* description);
+
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private:
 
     static const char* _genericComponent; ///< Name of generic component.
+
+    static const char* _componentsXYZ[3]; ///< Names of field components in XYZ coordinate system.
+    static const char* _componentsTN[2]; ///< Names of field components in 2-D tangential/normal coordinate system.
+    static const char* _componentsTTN[3]; ///< Names of field components in 3-D tangential/normal coordinate system.
+
+    ReferenceEnum _auxComponents; ///< Coordinate system reference for field components.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:
