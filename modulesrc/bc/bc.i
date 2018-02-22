@@ -33,6 +33,8 @@
 #include "pylith/bc/BoundaryConditionNew.hh"
 #include "pylith/bc/DirichletNew.hh"
 #include "pylith/bc/DirichletTimeDependent.hh"
+#include "pylith/bc/NeumannNew.hh"
+#include "pylith/bc/NeumannTimeDependent.hh"
 %}
 
 
@@ -73,12 +75,14 @@
 //%include "PointForce.i"
 
 %include "../utils/PyreComponent.i"
-%include "../feassemble/ConstraintPointwise.i" // ISA Constraint
-//%include "../feassemble/IntegratorPointwise.i" // ISA Integrator
+%include "../feassemble/ConstraintPointwise.i"
+%include "../feassemble/IntegratorPointwise.i"
 
 %include "BoundaryConditionNew.i"
 %include "DirichletNew.i"
 %include "DirichletTimeDependent.i"
+%include "NeumannNew.i"
+%include "NeumannTimeDependent.i"
 
 
 

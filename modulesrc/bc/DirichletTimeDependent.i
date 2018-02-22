@@ -16,9 +16,9 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file modulesrc/bc/DirichletBoundary.i
+/** @file modulesrc/bc/DirichletTimeDependent.i
  *
- * @brief Python interface to C++ DirichletBoundary object.
+ * @brief Python interface to C++ DirichletTimeDependent object.
  */
 
 namespace pylith {
