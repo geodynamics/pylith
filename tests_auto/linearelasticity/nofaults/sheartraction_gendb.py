@@ -25,7 +25,7 @@
 import numpy
 
 
-class GenerateDDB(object):
+class GenerateDB(object):
     """
     Python object to generate spatial database with displacement
     boundary conditions for the shear test.
