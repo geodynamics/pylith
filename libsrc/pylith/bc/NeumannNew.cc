@@ -37,17 +37,6 @@
 #include <sstream> \
     // USES std::ostringstream
 
-extern "C" PetscErrorCode DMPlexComputeBdResidual_Single_Internal(DM dm,
-                                                                  PetscReal t,
-                                                                  DMLabel label,
-                                                                  PetscInt numValues,
-                                                                  const PetscInt values[],
-                                                                  PetscInt field,
-                                                                  Vec locX,
-                                                                  Vec locX_t,
-                                                                  Vec locF);
-
-
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::NeumannNew::NeumannNew(void) :
@@ -212,7 +201,7 @@ pylith::bc::NeumannNew::computeRHSResidual(pylith::topology::Field* residual,
     const topology::Field::SubfieldInfo& info = solution.subfieldInfo(_field.c_str());
 
     PYLITH_COMPONENT_DEBUG("DMPlexComputeBdResidual_Single_Internal() for boundary '"<<label()<<"')");
-    err = DMPlexComputeBdResidual_Single_Internal(dmSoln, t, dmLabel, 1, &labelId, info.index, solution.localVector(), solutionDot.localVector(), residual->localVector()); PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeBdResidualSingle(dmSoln, t, dmLabel, 1, &labelId, info.index, solution.localVector(), solutionDot.localVector(), residual->localVector()); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // computeRHSResidual
