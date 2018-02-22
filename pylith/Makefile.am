@@ -35,6 +35,8 @@ nobase_pkgpyexec_PYTHON = \
 	bc/BoundaryConditionNew.py \
 	bc/DirichletNew.py \
 	bc/DirichletTimeDependent.py \
+	bc/NeumannNew.py \
+	bc/NeumannTimeDependent.py \
 	bc/AuxFieldsTimeDependent.py \
 	faults/__init__.py \
 	faults/BruneSlipFn.py \
