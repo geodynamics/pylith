@@ -125,7 +125,7 @@ public:
 	 *
 	 * @returns Factor for auxiliary fields.
 	 */
-	pylith:g:feassemble::AuxiliaryFactory* _auxFactory(void);
+	pylith:feassemble::AuxiliaryFactory* _auxFactory(void);
 
 
         }; // class NeumannTimeDependent

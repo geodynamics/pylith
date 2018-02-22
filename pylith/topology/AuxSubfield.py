@@ -65,7 +65,7 @@ class AuxSubfield(Component):
         isBasisContinuous = pyre.inventory.bool("is_basis_continous", default=True)
         isBasisContinuous.meta['tip'] = "Is basis continuous?"
 
-        feSpaceStr = pyre.inventory.str("finite_element_spave", default="polynomial", validator=pyre.inventory.choice(["polynomial", "point"]))
+        feSpaceStr = pyre.inventory.str("finite_element_space", default="polynomial", validator=pyre.inventory.choice(["polynomial", "point"]))
         feSpaceStr.meta['tip'] = "Finite-element space (polynomial or point). Point space corresponds to delta functions at quadrature points."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
