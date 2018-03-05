@@ -38,6 +38,8 @@
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
+const double pylith::bc::TestNeumannTimeDependent::FILL_VALUE = -999.0;
+
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
@@ -232,6 +234,7 @@ pylith::bc::TestNeumannTimeDependent::testVerifyConfiguration(void)
     PYLITH_METHOD_BEGIN;
 
     _initialize();
+    _setupSolutionField();
 
     CPPUNIT_ASSERT(_bc);
     CPPUNIT_ASSERT(_solution);
@@ -547,6 +550,7 @@ pylith::bc::TestNeumannTimeDependent::_initialize(void)
     pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->normalizer);
 
     _bc->label(_data->bcLabel);
+    _bc->field(_data->field);
     _bc->auxFieldDB(_data->auxDB);
     _bc->normalizer(*_data->normalizer);
     for (int ifield = 0; ifield < _data->numAuxSubfields; ++ifield) {

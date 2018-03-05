@@ -112,7 +112,7 @@ pylith::bc::NeumannNew::verifyConfiguration(const pylith::topology::Field& solut
     if (!solution.hasSubfield(_field.c_str())) {
         std::ostringstream msg;
         msg << "Cannot apply Neumann boundary condition to field '"<< _field
-            << "; field is not in solution.";
+            << "'; field is not in solution.";
         throw std::runtime_error(msg.str());
     } // if
 
@@ -134,7 +134,7 @@ pylith::bc::NeumannNew::initialize(const pylith::topology::Field& solution) {
     pylith::topology::CoordsVisitor::optimizeClosure(dmBoundary);
 
     delete _auxField; _auxField = new pylith::topology::Field(*_boundaryMesh); assert(_auxField);
-    _auxField->label("auxiliary fields");
+    _auxField->label("auxiliary subfields");
     _auxFieldSetup(solution);
     _auxField->subfieldsSetup();
     _auxField->allocate();
@@ -144,6 +144,8 @@ pylith::bc::NeumannNew::initialize(const pylith::topology::Field& solution) {
     pylith::feassemble::AuxiliaryFactory* factory = _auxFactory(); assert(factory);
     factory->initializeSubfields();
 
+    _auxField->view("AUXILIARY FIELD"); // :DEBUG:
+    
 #if 0 // Use low-level function to set kernels
     const PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
     PetscDS prob = NULL;

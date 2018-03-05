@@ -63,7 +63,7 @@ namespace pylith {
             } // disp_x
             static double disp_y(const double x,
                                  const double y) {
-                return initial_disp_y(x,y);
+                return FILL_VALUE;
             } // disp_y
             static double vel_x(const double x,
                                 const double y) {
@@ -115,8 +115,8 @@ protected:
 
                 CPPUNIT_ASSERT(_data->auxDB);
                 _data->auxDB->coordsys(*_data->cs);
-                _data->auxDB->addValue("initial_amplitude_x", initial_traction_x, disp_units());
-                _data->auxDB->addValue("initial_amplitude_y", initial_traction_y, disp_units());
+                _data->auxDB->addValue("initial_amplitude_tangential", initial_traction_tangential, pressure_units());
+                _data->auxDB->addValue("initial_amplitude_normal", initial_traction_normal, pressure_units());
 
                 _data->t = 1.23;
                 _data->solnNumSubfields = 3;
