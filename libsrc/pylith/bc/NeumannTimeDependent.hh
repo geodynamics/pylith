@@ -148,7 +148,7 @@ protected:
      */
     pylith::feassemble::AuxiliaryFactory* _auxFactory(void);
 
-    // PROTECTED MEMBERS //////////////////////////////////////////////////
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private:
 
     spatialdata::spatialdb::TimeHistory* _dbTimeHistory; ///< Time history database.
