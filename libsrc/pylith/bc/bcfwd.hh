@@ -48,6 +48,8 @@ namespace pylith {
         class DirichletTimeDependent;
         class NeumannNew;
         class NeumannTimeDependent;
+	class AbsorbingDampersNew;
+	class AbsorbingDampersAuxiliaryFactory;
 
     } // bc
 } // pylith

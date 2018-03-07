@@ -27,6 +27,8 @@ subpkginclude_HEADERS = \
 	NeumannNew.hh \
 	NeumannTimeDependent.hh \
 	TimeDependent.hh \
+	AbsorbingDampersNew.hh \
+	AbsorbingDampersAuxiliaryFactory.hh \
 	bcfwd.hh
 
 

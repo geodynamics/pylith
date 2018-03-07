@@ -38,6 +38,8 @@ libpylith_la_SOURCES = \
 	bc/NeumannNew.cc \
 	bc/NeumannTimeDependent.cc \
 	bc/TimeDependent.cc \
+	bc/AbsorbingDampersNew.cc \
+	bc/AbsorbingDampersAuxiliaryFactory.cc \
 	faults/Fault.cc \
 	faults/TopologyOps.cc \
 	faults/CohesiveTopology.cc \
