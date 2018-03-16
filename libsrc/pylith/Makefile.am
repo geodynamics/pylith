@@ -31,14 +31,13 @@ SUBDIRS = \
 lib_LTLIBRARIES = libpylith.la
 
 libpylith_la_SOURCES = \
-	bc/BoundaryConditionNew.cc \
+	bc/BoundaryCondition.cc \
 	bc/TimeDependentAuxiliaryFactory.cc \
-	bc/DirichletNew.cc \
+	bc/Dirichlet.cc \
 	bc/DirichletTimeDependent.cc \
-	bc/NeumannNew.cc \
+	bc/Neumann.cc \
 	bc/NeumannTimeDependent.cc \
-	bc/TimeDependent.cc \
-	bc/AbsorbingDampersNew.cc \
+	bc/AbsorbingDampers.cc \
 	bc/AbsorbingDampersAuxiliaryFactory.cc \
 	faults/Fault.cc \
 	faults/TopologyOps.cc \
@@ -56,7 +55,6 @@ libpylith_la_SOURCES = \
 	faults/BruneSlipFn.cc \
 	faults/TimeHistorySlipFn.cc \
 	faults/LiuCosSlipFn.cc \
-	faults/TractPerturbation.cc \
 	feassemble/CellGeometry.cc \
 	feassemble/Constraint.cc \
 	feassemble/GeometryLine2D.cc \
@@ -97,6 +95,7 @@ libpylith_la_SOURCES = \
 	fekernels/DispVel.cc \
 	fekernels/TimeDependentFn.cc \
 	fekernels/NeumannTimeDependent.cc \
+	fekernels/AbsorbingDampers.cc \
 	friction/FrictionModel.cc \
 	friction/StaticFriction.cc \
 	friction/SlipWeakening.cc \
@@ -178,6 +177,8 @@ libpylith_la_SOURCES = \
 	utils/PetscVersion.cc \
 	utils/DependenciesVersion.cc \
 	utils/TestArray.cc
+
+#	faults/TractPerturbation.cc 
 
 
 libpylith_la_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)

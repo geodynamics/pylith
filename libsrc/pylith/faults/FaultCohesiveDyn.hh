@@ -54,12 +54,14 @@ public :
   /// Deallocate PETSc and local data structures.
   virtual
   void deallocate(void);
-  
+
+ #if 0
   /** Sets the traction perturbation for prescribed tractions.
    *
    * @param tract Spatial and temporal variation of tractions.
    */
   void tractPerturbation(TractPerturbation* tract);
+#endif
   
   /** Set the friction (constitutive) model.
    *
@@ -291,8 +293,10 @@ private :
   /// Minimum resolvable value accounting for roundoff errors for fault opening.
   PylithScalar _zeroToleranceNormal;
 
+#if 0
   /// Prescribed traction variation.
   TractPerturbation* _tractPerturbation;
+#endif
 
   /// To identify constitutive model
   friction::FrictionModel* _friction;

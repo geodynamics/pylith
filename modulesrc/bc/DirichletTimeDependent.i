@@ -24,8 +24,7 @@
 namespace pylith {
     namespace bc {
 
-        class DirichletTimeDependent : public DirichletNew
-        { // class DirichletTimeDependent
+        class DirichletTimeDependent : public Dirichlet {
 
         // PUBLIC METHODS /////////////////////////////////////////////////
 public:

@@ -26,7 +26,7 @@
 #define pylith_bc_neumanntimedependent_hh
 
 // Include directives ---------------------------------------------------
-#include "NeumannNew.hh" // ISA NeumannNew
+#include "Neumann.hh" // ISA Neumann
 
 // NeumannTimeDependent ----------------------------------------------------
 /** @brief Neumann (e.g., traction) boundary
@@ -45,7 +45,7 @@
  *        time history start (scalar) t_2(x)
  *        time history value (scalar) a(t-t_2(x))
  */
-class pylith::bc::NeumannTimeDependent : public NeumannNew {
+class pylith::bc::NeumannTimeDependent : public pylith::bc::Neumann {
     friend class TestNeumannTimeDependent;   // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////

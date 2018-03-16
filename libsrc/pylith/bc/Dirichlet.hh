@@ -16,7 +16,7 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/bc/DirichletNew.hh
+/** @file libsrc/bc/Dirichlet.hh
  *
  * @brief C++ implementation of Dirichlet (prescribed values at
  * degrees of freedom) boundary conditions.
@@ -26,16 +26,16 @@
 #define pylith_bc_dirichletnew_hh
 
 // Include directives ---------------------------------------------------
-#include "BoundaryConditionNew.hh" // ISA BoundaryCondition
+#include "BoundaryCondition.hh" // ISA BoundaryCondition
 #include "pylith/feassemble/ConstraintPointwise.hh" // ISA ConstraintPointwise
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
 
-// DirichletNew ----------------------------------------------------
+// Dirichlet ----------------------------------------------------
 /// @brief Dirichlet (prescribed values at degrees of freedom) boundary
 /// conditions with points on a boundary.
-class pylith::bc::DirichletNew :
-    public BoundaryConditionNew,
+class pylith::bc::Dirichlet :
+    public pylith::bc::BoundaryCondition,
     public pylith::feassemble::ConstraintPointwise {
 
     friend class DirichletAuxiliaryFactory; // factory for auxiliary fields
@@ -45,10 +45,10 @@ class pylith::bc::DirichletNew :
 public:
 
     /// Default constructor.
-    DirichletNew(void);
+    Dirichlet(void);
 
     /// Destructor.
-    ~DirichletNew(void);
+    ~Dirichlet(void);
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
@@ -112,10 +112,10 @@ protected:
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:
 
-    DirichletNew(const DirichletNew&); ///< Not implemented.
-    const DirichletNew& operator=(const DirichletNew&); ///< Not implemented.
+    Dirichlet(const Dirichlet&); ///< Not implemented.
+    const Dirichlet& operator=(const Dirichlet&); ///< Not implemented.
 
-}; // class DirichletNew
+}; // class Dirichlet
 
 #endif // pylith_bc_dirichletnew_hh
 

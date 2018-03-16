@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "pylith/bc/DirichletNew.hh" // implementation of object methods
+#include "pylith/bc/Dirichlet.hh" // implementation of object methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
@@ -38,7 +38,7 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::bc::DirichletNew::DirichletNew(void) :
+pylith::bc::Dirichlet::Dirichlet(void) :
     _boundaryMesh(NULL),
     _bcKernel(NULL)
 { // constructor
@@ -51,14 +51,14 @@ pylith::bc::DirichletNew::DirichletNew(void) :
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::bc::DirichletNew::~DirichletNew(void) {
+pylith::bc::Dirichlet::~Dirichlet(void) {
     deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::bc::DirichletNew::deallocate(void) {
+pylith::bc::Dirichlet::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
     ConstraintPointwise::deallocate();
@@ -72,7 +72,7 @@ pylith::bc::DirichletNew::deallocate(void) {
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
-pylith::bc::DirichletNew::verifyConfiguration(const pylith::topology::Field& solution) const {
+pylith::bc::Dirichlet::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
 
@@ -104,7 +104,7 @@ pylith::bc::DirichletNew::verifyConfiguration(const pylith::topology::Field& sol
 // ----------------------------------------------------------------------
 // Initialize boundary condition.
 void
-pylith::bc::DirichletNew::initialize(const pylith::topology::Field& solution)
+pylith::bc::Dirichlet::initialize(const pylith::topology::Field& solution)
 { // initialize
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("initialize(solution="<<solution.label()<<")");
@@ -145,8 +145,8 @@ pylith::bc::DirichletNew::initialize(const pylith::topology::Field& solution)
 // ----------------------------------------------------------------------
 // Set constrained values in solution field.
 void
-pylith::bc::DirichletNew::setSolution(pylith::topology::Field* solution,
-                                      const double t)
+pylith::bc::Dirichlet::setSolution(pylith::topology::Field* solution,
+                                   const double t)
 { // setSolution
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("setSolution(solution="<<solution->label()<<", t="<<t<<")");

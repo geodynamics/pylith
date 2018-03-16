@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -18,155 +18,178 @@
 
 /** @file libsrc/bc/AbsorbingDampers.hh
  *
- * @brief C++ implementation of an absorbing boundary with simple
- * dampers.
- *
- * Computes contributions to terms A and r in 
- *
- * A(t) u(t+dt) = b(u(t), u(t-dt)),
- *
- * r = b - a u0(t+dt)
- *
- * where A(t) is a sparse matrix or vector, u(t+dt) is the field we
- * want to compute at time t+dt, b is a vector that depends on the
- * field at time t and t-dt, and u0 is zero at unknown DOF and set to
- * the known values at the constrained DOF.
- *
- * Contributions from elasticity include the intertial and stiffness
- * terms, so this object computes the following portions of A and r:
- *
- * A = 1/(2*dt) [C]
- *
- * r = (1/(2*dt) [C])(- {u(t+dt)} + {u(t-dt)})
- *
- * Damping matrix.
- *   - Residual action over cell
- *     \f[
- *       \int_{S^e} \rho c_i N^p \sum_q N^q u_i^q \, dS
- *     \f]
- *   - Jacobian action over cell
- *     \f[
- *       \int_{S^e} (\rho c_i N^q N^q)_i \, dS
- *     \f]
- *
- * See boundary conditions section of user manual for more
- * information.
+ * @brief C++ implementation of AbsorbingDampers for absorbing boundary conditions in dynamic problems.
  */
 
 #if !defined(pylith_bc_absorbingdampers_hh)
 #define pylith_bc_absorbingdampers_hh
 
 // Include directives ---------------------------------------------------
-#include "BCIntegratorSubMesh.hh" // ISA BCIntegratorSubMesh
+#include "BoundaryCondition.hh" // ISA BoundaryCondition
+#include "pylith/feassemble/IntegratorPointwise.hh" // ISA IntegratorPointwise
 
-// AbsorbingDampers ------------------------------------------------------
-/// Absorbing boundary with simple dampers.
-class pylith::bc::AbsorbingDampers : public BCIntegratorSubMesh
-{ // class AbsorbingDampers
-  friend class TestAbsorbingDampers; // unit testing
+#include "pylith/topology/topologyfwd.hh" // USES Field
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+// AbsorbingDampers ----------------------------------------------------
+/// @brief AbsorbingDampers (e.g., traction) boundary conditions.
+class pylith::bc::AbsorbingDampers :
+    public BoundaryCondition,
+    public pylith::feassemble::IntegratorPointwise { // class AbsorbingDampers
+    friend class TestAbsorbingDampers;   // unit testing
 
-  /// Default constructor.
-  AbsorbingDampers(void);
+    // PUBLIC METHODS /////////////////////////////////////////////////////
+public:
 
-  /// Destructor.
-  ~AbsorbingDampers(void);
+    /// Default constructor.
+    AbsorbingDampers(void);
 
-  /// Deallocate PETSc and local data structures.
-  void deallocate(void);
-  
-  /** Set database for boundary condition parameters.
-   *
-   * @param db Spatial database
-   */
-  void db(spatialdata::spatialdb::SpatialDB* const db);
+    /// Destructor.
+    ~AbsorbingDampers(void);
 
-  /** Initialize boundary condition.
-   *
-   * @param mesh Finite-element mesh.
-   * @param upDir Direction perpendicular to horizontal surface tangent 
-   *   direction that is not collinear with surface normal.
-   */
-  void initialize(const topology::Mesh& mesh,
-		  const PylithScalar upDir[3]);
+    /// Deallocate PETSc and local data structures.
+    void deallocate(void);
 
-  /** Integrate contributions to residual term (r) for operator.
-   *
-   * @param residual Field containing values for residual
-   * @param t Current time
-   * @param fields Solution fields
-   */
-  void integrateResidual(const topology::Field& residual,
-			 const PylithScalar t,
-			 topology::SolutionFields* const fields);
+    /** Verify configuration is acceptable.
+     *
+     * @param[in] solution Solution field.
+     */
+    void verifyConfiguration(const pylith::topology::Field& solution) const;
 
-  /** Integrate contributions to residual term (r) for operator.
-   *
-   * @param residual Field containing values for residual
-   * @param t Current time
-   * @param fields Solution fields
-   */
-  void integrateResidualLumped(const topology::Field& residual,
-			       const PylithScalar t,
-			       topology::SolutionFields* const fields);
+    /** Initialize boundary condition.
+     *
+     * @param[in] solution Solution field.
+     */
+    void initialize(const pylith::topology::Field& solution);
 
-  /** Integrate contributions to Jacobian matrix (A) associated with
-   * operator.
-   *
-   * @param jacobian Jacobian of system.
-   * @param t Current time
-   * @param fields Solution fields
-   */
-  void integrateJacobian(topology::Jacobian* jacobian,
-			 const PylithScalar t,
-			 topology::SolutionFields* const fields);
+    /** Compute RHS residual for G(t,s).
+     *
+     * @param[out] residual Field for residual.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] solution Field with current trial solution.
+     */
+    void computeRHSResidual(pylith::topology::Field* residual,
+                            const PylithReal t,
+                            const PylithReal dt,
+                            const pylith::topology::Field& solution);
 
-  /** Integrate contributions to Jacobian matrix (A) associated with
-   * operator.
-   *
-   * @param jacobian Jacobian of system.
-   * @param t Current time
-   * @param fields Solution fields
-   */
-  void integrateJacobian(topology::Field* jacobian,
-			 const PylithScalar t,
-			 topology::SolutionFields* const fields);
+    /** Compute RHS Jacobian and preconditioner for G(t,s).
+     *
+     * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
+     * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] solution Field with current trial solution.
+     */
+    void computeRHSJacobian(PetscMat jacobianMat,
+                            PetscMat preconMat,
+                            const PylithReal t,
+                            const PylithReal dt,
+                            const pylith::topology::Field& solution);
 
-  /** Verify configuration is acceptable.
-   *
-   * @param mesh Finite-element mesh
-   */
-  void verifyConfiguration(const topology::Mesh& mesh) const;
+    /** Compute LHS residual for F(t,s,\dot{s}).
+     *
+     * @param[out] residual Field for residual.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] solution Field with current trial solution.
+     * @param[in] solutionDot Field with time derivative of current trial solution.
+     */
+    void computeLHSResidual(pylith::topology::Field* residual,
+                            const PylithReal t,
+                            const PylithReal dt,
+                            const pylith::topology::Field& solution,
+                            const pylith::topology::Field& solutionDot);
 
-  // PRIVATE METHODS ////////////////////////////////////////////////////
-private :
+    /** Compute LHS Jacobian and preconditioner for F(t,s,\dot{s}) with implicit time-stepping.
+     *
+     * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
+     * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] tshift Scale for time derivative.
+     * @param[in] solution Field with current trial solution.
+     * @param[in] solutionDot Field with time derivative of current trial solution.
+     */
+    void computeLHSJacobianImplicit(PetscMat jacobianMat,
+                                    PetscMat precondMat,
+                                    const PylithReal t,
+                                    const PylithReal dt,
+                                    const PylithReal tshift,
+                                    const pylith::topology::Field& solution,
+                                    const pylith::topology::Field& solutionDot);
 
-  /// Initialize logger.
-  void _initializeLogger(void);
 
-  // PRIVATE MEMBERS ////////////////////////////////////////////////////
-private :
+    /** Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
+     *
+     * @param[out] jacobianInv Inverse of lumped Jacobian as a field.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] solution Field with current trial solution.
+     */
+    void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
+                                     const PylithReal t,
+                                     const PylithReal dt,
+                                     const pylith::topology::Field& solution);
 
-  topology::VecVisitorSubMesh* _velocityVisitor; ///< Cache velocity field visitor.
 
-  spatialdata::spatialdb::SpatialDB* _db; ///< Spatial database w/parameters
 
-  // NOT IMPLEMENTED ////////////////////////////////////////////////////
-private :
+    // PROTECTED METHODS //////////////////////////////////////////////////
+protected:
 
-  /// Not implemented
-  AbsorbingDampers(const AbsorbingDampers&);
+    /** Setup auxiliary subfields (discretization and query fns).
+     *
+     * Create subfields in auxiliary fields (includes name of the field,
+     * vector field type, discretization, and scale for
+     * nondimensionalization) and set query functions for filling them
+     * from a spatial database.
+     *
+     * @attention The order of the calls to subfieldAdd() must match the
+     * order of the auxiliary fields in the FE kernels.
+     *
+     * @param[in] solution Solution field.
+     */
+    void _auxFieldSetup(const pylith::topology::Field& solution);
 
-  /// Not implemented
-  const AbsorbingDampers& operator=(const AbsorbingDampers&);
+    /** Set kernels for RHS residual G(t,s).
+     *
+     * Potentially, there are g0 and g1 kernels for each equation. If no
+     * kernel is needed, then set the kernel function to NULL.
+     *
+     * @param solution Solution field.
+     */
+    void _setFEKernelsRHSResidual(const pylith::topology::Field& solution) const;
+
+    /** Get factory for setting up auxliary fields.
+     *
+     * @returns Factor for auxiliary fields.
+     */
+    pylith::feassemble::AuxiliaryFactory* _auxFactory(void);
+
+
+    // PROTECTED MEMBERS //////////////////////////////////////////////////
+protected:
+
+    pylith::topology::Mesh* _boundaryMesh;   ///< Boundary mesh.
+    pylith::topology::FieldBase::Description _description; ///< Description of field associated with BC.
+    PylithReal _refDir1[3]; ///< First choice reference direction used to compute boundary tangential directions.
+    PylithReal _refDir2[3]; ///< Second choice reference direction used to compute boundary tangential directions.
+
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////
+private:
+
+    pylith::bc::AbsorbingDampersAuxiliaryFactory* _auxAbsorbingDampersFactory; ///< Factory for auxiliary subfields.
+    static const char* _pyreComponent; ///< Name of Pyre component.
+
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////
+private:
+
+    AbsorbingDampers(const AbsorbingDampers&); ///< Not implemented.
+    const AbsorbingDampers& operator=(const AbsorbingDampers&); ///< Not implemented.
 
 }; // class AbsorbingDampers
-
-#include "AbsorbingDampers.icc" // inline methods
 
 #endif // pylith_bc_absorbingdampers_hh
 
 
-// End of file 
+// End of file

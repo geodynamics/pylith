@@ -21,7 +21,7 @@
 #include "FaultCohesiveDyn.hh" // implementation of object methods
 
 #include "CohesiveTopology.hh" // USES CohesiveTopology
-#include "TractPerturbation.hh" // HOLDSA TractPerturbation
+//#include "TractPerturbation.hh" // HOLDSA TractPerturbation
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
@@ -64,7 +64,7 @@
 pylith::faults::FaultCohesiveDyn::FaultCohesiveDyn(void) :
     _zeroTolerance(1.0e-10),
     _zeroToleranceNormal(1.0e-10),
-    _tractPerturbation(0),
+    //_tractPerturbation(0),
     _friction(0),
     _jacobian(0),
     _ksp(0),
@@ -88,7 +88,7 @@ pylith::faults::FaultCohesiveDyn::deallocate(void)
 
     FaultCohesiveLagrange::deallocate();
 
-    _tractPerturbation = 0; // :TODO: Use shared pointer
+    //_tractPerturbation = 0; // :TODO: Use shared pointer
     _friction = 0; // :TODO: Use shared pointer
 
     delete _jacobian; _jacobian = 0;
@@ -97,6 +97,7 @@ pylith::faults::FaultCohesiveDyn::deallocate(void)
     PYLITH_METHOD_END;
 } // deallocate
 
+#if 0
 // ----------------------------------------------------------------------
 // Sets the spatial database for the inital tractions
 void
@@ -104,6 +105,7 @@ pylith::faults::FaultCohesiveDyn::tractPerturbation(TractPerturbation* tract)
 { // tractPerturbation
     _tractPerturbation = tract;
 } // tractPerturbation
+#endif
 
 // ----------------------------------------------------------------------
 // Get the friction (constitutive) model.
@@ -166,12 +168,14 @@ pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
 
     FaultCohesiveLagrange::initialize(mesh, upDir);
 
+#if 0
     // Get initial tractions using a spatial database.
     if (_tractPerturbation) {
         const topology::Field& orientation = _fields->get("orientation");
         _tractPerturbation->initialize(*_faultMesh, orientation, *_normalizer);
     } // if
-
+#endif
+    
     // Setup fault constitutive model.
     assert(_friction);
     assert(_faultMesh);
@@ -245,6 +249,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field& resid
     scalar_array tractPerturbVertex(spaceDim);
     topology::VecVisitorMesh* tractionsVisitor = 0;
     PetscScalar *tractionsArray = NULL;
+#if 0
     if (_tractPerturbation) {
         _tractPerturbation->calculate(t);
 
@@ -254,6 +259,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field& resid
         tractionsVisitor = new topology::VecVisitorMesh(tractions);
         tractionsArray = tractionsVisitor->localArray();
     } // if
+#endif
 
     topology::Field& area = _fields->get("area");
     topology::VecVisitorMesh areaVisitor(area);
@@ -294,6 +300,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field& resid
 #endif
 
         // Get prescribed traction perturbation at fault vertex.
+#if 0
         if (_tractPerturbation) {
             const PetscInt toff = tractionsVisitor->sectionOffset(v_fault);
             assert(spaceDim == tractionsVisitor->sectionDof(v_fault));
@@ -303,7 +310,10 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field& resid
         } else {
             tractPerturbVertex = 0.0;
         } // if/else
-
+#else
+	tractPerturbVertex = 0.0;
+#endif
+	
         // Get orientation associated with fault vertex.
         const PetscInt ooff = orientationVisitor.sectionOffset(v_fault);
         assert(spaceDim*spaceDim == orientationVisitor.sectionDof(v_fault));
@@ -1432,8 +1442,9 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     } else if (_friction->hasPropStateVar(name)) {
         PYLITH_METHOD_RETURN(_friction->getField(name));
 
-    } else if (_tractPerturbation && _tractPerturbation->hasParameter(name)) {
+       
 #if 0 // :TODO: Update this to reflect changes to Field interface.
+    } else if (_tractPerturbation && _tractPerturbation->hasParameter(name)) {
         const topology::Field& param = _tractPerturbation->vertexField(name, fields);
         if (param.vectorFieldType() == topology::FieldBase::VECTOR) {
             _allocateBufferVectorField();

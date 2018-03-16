@@ -24,19 +24,18 @@
 namespace pylith {
     namespace bc {
 
-        class DirichletNew :
-	    public BoundaryConditionNew,
-	    public pylith::feassemble::ConstraintPointwise
-        { // class DirichletNew
+        class Dirichlet :
+	    public pylith::bc::BoundaryCondition,
+	    public pylith::feassemble::ConstraintPointwise {
 	    
 	    // PUBLIC METHODS /////////////////////////////////////////////////
 	public:
 	    
 	    /// Default constructor.
-	    DirichletNew(void);
+	    Dirichlet(void);
 	    
 	    /// Destructor.
-	    ~DirichletNew(void);
+	    ~Dirichlet(void);
 	    
 	    /// Deallocate PETSc and local data structures.
 	    virtual
@@ -88,7 +87,7 @@ namespace pylith {
 	    virtual
 	    void _setFEKernelsConstraint(const topology::Field& solution) = 0;
 	    
-        }; // class DirichletNew
+        }; // class Dirichlet
 	
     } // bc
 } // pylith

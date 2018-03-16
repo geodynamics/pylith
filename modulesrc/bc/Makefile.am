@@ -27,25 +27,12 @@ subpkgpyexec_PYTHON = bc.py
 swig_sources = \
 	bc.i \
 	BoundaryCondition.i \
-	BoundaryConditionPoints.i \
-	BCIntegratorSubMesh.i \
-	TimeDependent.i \
-	TimeDependentPoints.i \
-	DirichletBC.i \
-	DirichletBoundary.i \
-	AbsorbingDampers.i \
-	Neumann.i \
-	PointForce.i \
-	../feassemble/Constraint.i \
-	../feassemble/Quadrature.i \
-	../feassemble/Integrator.i \
 	../utils/PyreComponent.i \
 	../feassemble/ConstraintPointwise.i \
 	../feassemble/IntegratorPointwise.i \
-	BoundaryConditionNew.i \
-	DirichletNew.i \
+	Dirichlet.i \
 	DirichletTimeDependent.i \
-	NeumannNew.i \
+	Neumann.i \
 	NeumannTimeDependent.i
 
 swig_generated = \

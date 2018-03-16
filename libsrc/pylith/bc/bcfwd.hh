@@ -31,24 +31,12 @@ namespace pylith {
     namespace bc {
 
         class BoundaryCondition;
-        class BoundaryConditionPoints;
-        class BCIntegratorSubMesh;
-        class TimeDependent;
-        class TimeDependentPoints;
-        class TimeDependentSubMesh;
-        class DirichletBC;
-        class DirichletBoundary;
-        class Neumann;
-        class AbsorbingDampers;
-        class PointForce;
-
-        class BoundaryConditionNew;
         class TimeDependentAuxiliaryFactory;
-        class DirichletNew;
+        class Dirichlet;
         class DirichletTimeDependent;
-        class NeumannNew;
+        class Neumann;
         class NeumannTimeDependent;
-	class AbsorbingDampersNew;
+	class AbsorbingDampers;
 	class AbsorbingDampersAuxiliaryFactory;
 
     } // bc

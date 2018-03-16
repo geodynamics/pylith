@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -20,50 +20,79 @@
 
 #include "BoundaryCondition.hh" // implementation of object methods
 
-#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
-#include <stdexcept> // USES std::runtime_error()
+#include <cstring> // USES strlen()
+#include <stdexcept> \
+    // USES std::runtime_error()
 
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::BoundaryCondition::BoundaryCondition(void) :
-  _label("")
+    _label("")
 { // constructor
 } // constructor
 
+
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::bc::BoundaryCondition::~BoundaryCondition(void)
-{ // destructor
-  deallocate();
+pylith::bc::BoundaryCondition::~BoundaryCondition(void) {
+    deallocate();
 } // destructor
+
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::bc::BoundaryCondition::deallocate(void)
-{ // deallocate
-} // deallocate
-  
+pylith::bc::BoundaryCondition::deallocate(void) {}
+
+
 // ----------------------------------------------------------------------
-// Verify configuration is acceptable.
+// Set mesh label associated with boundary condition surface.
 void
-pylith::bc::BoundaryCondition::verifyConfiguration(const topology::Mesh& mesh) const
-{ // verifyConfiguration
-  PYLITH_METHOD_BEGIN;
+pylith::bc::BoundaryCondition::label(const char* value) {
+    if (strlen(value) == 0) {
+        throw std::runtime_error("Empty string given for boundary condition label.");
+    } // if
 
-  const PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-  PetscBool hasLabel = PETSC_FALSE;
-  PetscErrorCode err = DMHasLabel(dmMesh, _label.c_str(), &hasLabel);PYLITH_CHECK_ERROR(err);
-  if (!hasLabel) {
-    std::ostringstream msg;
-    msg << "Mesh missing group of vertices '" << _label
-	<< "' for boundary condition.";
-    throw std::runtime_error(msg.str());
-  } // if
-
-  PYLITH_METHOD_END;
-} // verifyConfiguration
+    _label = value;
+} // label
 
 
-// End of file 
+// ----------------------------------------------------------------------
+// Get mesh label associated with boundary condition surface.
+const char*
+pylith::bc::BoundaryCondition::label(void) const {
+    return _label.c_str();
+} // label
+
+
+// ----------------------------------------------------------------------
+// Set name of field in solution to constrain.
+void
+pylith::bc::BoundaryCondition::field(const char* value) {
+    PYLITH_METHOD_BEGIN;
+
+    if (strlen(value) == 0) {
+        throw std::runtime_error("Empty string given for name of solution field for boundary condition.");
+    } // if
+    _field = value;
+
+    PYLITH_METHOD_END;
+}  // field
+
+
+// ----------------------------------------------------------------------
+// Get name of field in solution to constrain.
+const char*
+pylith::bc::BoundaryCondition::field(void) const {
+    journal::debug_t debug("boundarycondition");
+    debug << journal::at(__HERE__)
+          << "BoundaryCondition::field()" << journal::endl;
+
+    return _field.c_str();
+} // field
+
+
+// End of file

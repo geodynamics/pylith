@@ -69,7 +69,7 @@ pylith::bc::DirichletTimeDependent::deallocate(void)
 { // deallocate
     PYLITH_METHOD_BEGIN;
 
-    DirichletNew::deallocate();
+    Dirichlet::deallocate();
     _dbTimeHistory = NULL; // :KLUDGE: Use shared pointer.
     delete _auxTimeDependentFactory; _auxTimeDependentFactory = NULL;
 

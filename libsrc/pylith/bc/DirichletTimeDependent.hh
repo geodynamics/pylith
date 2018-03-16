@@ -27,7 +27,7 @@
 #define pylith_bc_dirichlettimedependent_hh
 
 // Include directives ---------------------------------------------------
-#include "DirichletNew.hh" // ISA DirichletNew
+#include "Dirichlet.hh" // ISA Dirichlet
 
 // DirichletTimeDependent ----------------------------------------------------
 /** @brief Dirichlet (prescribed values at degrees of freedom) boundary
@@ -46,7 +46,7 @@
  *        time history start (scalar) t_2(x)
  *        time history value (scalar) a(t-t_2(x))
  */
-class pylith::bc::DirichletTimeDependent : public DirichletNew { // class DirichletTimeDependent
+class pylith::bc::DirichletTimeDependent : public pylith::bc::Dirichlet { // class DirichletTimeDependent
     friend class TestDirichletTimeDependent;   // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////

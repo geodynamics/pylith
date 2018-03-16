@@ -69,7 +69,7 @@ pylith::bc::NeumannTimeDependent::deallocate(void)
 { // deallocate
     PYLITH_METHOD_BEGIN;
 
-    NeumannNew::deallocate();
+    Neumann::deallocate();
     _dbTimeHistory = NULL; // :KLUDGE: Use shared pointer.
 
     PYLITH_METHOD_END;

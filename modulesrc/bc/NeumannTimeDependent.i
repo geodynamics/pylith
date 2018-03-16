@@ -24,8 +24,7 @@
 namespace pylith {
     namespace bc {
 
-        class NeumannTimeDependent : public NeumannNew
-        { // class NeumannTimeDependent
+        class NeumannTimeDependent : public Neumann {
 
         // PUBLIC METHODS /////////////////////////////////////////////////
 public:

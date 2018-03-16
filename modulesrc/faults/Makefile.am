@@ -33,7 +33,6 @@ swig_sources = \
 	LiuCosSlipFn.i \
 	TimeHistorySlipFn.i \
 	EqKinSrc.i \
-	TractPerturbation.i \
 	Fault.i \
 	FaultCohesive.i \
 	FaultCohesiveLagrange.i \
@@ -44,6 +43,8 @@ swig_sources = \
 	../topology/Mesh.i \
 	../feassemble/Quadrature.i \
 	../feassemble/Integrator.i
+
+#	TractPerturbation.i 
 
 swig_generated = \
 	faults_wrap.cxx \

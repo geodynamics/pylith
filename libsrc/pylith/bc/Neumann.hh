@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -18,127 +18,189 @@
 
 /** @file libsrc/bc/Neumann.hh
  *
- * @brief C++ implementation of time dependent Neumann (traction)
- * boundary conditions applied to a simply-connected boundary.
+ * @brief C++ implementation of Neumann (e.g., traction) boundary conditions.
  */
 
 #if !defined(pylith_bc_neumann_hh)
 #define pylith_bc_neumann_hh
 
 // Include directives ---------------------------------------------------
-#include "BCIntegratorSubMesh.hh" // ISA BCIntegratorSubMesh
-#include "TimeDependent.hh" // ISA TimeDependent
+#include "BoundaryCondition.hh" // ISA BoundaryCondition
+#include "pylith/feassemble/IntegratorPointwise.hh" // ISA IntegratorPointwise
 
-// Neumann ------------------------------------------------------
-/// @brief Time dependent Neumann (traction) boundary conditions
-/// applied to a simply-connected boundary.
-class pylith::bc::Neumann : public BCIntegratorSubMesh, 
-			    public TimeDependent
-{ // class Neumann
-  friend class TestNeumann; // unit testing
+#include "pylith/topology/topologyfwd.hh" // USES Field
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+// Neumann ----------------------------------------------------
+/// @brief Neumann (e.g., traction) boundary conditions.
+class pylith::bc::Neumann :
+    public pylith::bc::BoundaryCondition,
+    public pylith::feassemble::IntegratorPointwise { // class Neumann
+    friend class TestNeumann;   // unit testing
 
-  /// Default constructor.
-  Neumann(void);
+    // PUBLIC METHODS /////////////////////////////////////////////////////
+public:
 
-  /// Destructor.
-  ~Neumann(void);
+    /// Default constructor.
+    Neumann(void);
 
-  /// Deallocate PETSc and local data structures.
-  void deallocate(void);
-  
-  /** Initialize boundary condition.
-   *
-   * @param mesh Finite-element mesh.
-   * @param upDir Direction perpendicular to horizontal surface tangent 
-   *   direction that is not collinear with surface normal.
-   */
-  void initialize(const topology::Mesh& mesh,
-		  const PylithScalar upDir[3]);
+    /// Destructor.
+    ~Neumann(void);
 
-  /** Integrate contributions to residual term (r) for operator.
-   *
-   * @param residual Field containing values for residual.
-   * @param t Current time.
-   * @param fields Solution fields.
-   */
-  void integrateResidual(const topology::Field& residual,
-			 const PylithScalar t,
-			 topology::SolutionFields* const fields);
+    /// Deallocate PETSc and local data structures.
+    void deallocate(void);
 
-  /** Verify configuration is acceptable.
-   *
-   * @param mesh Finite-element mesh
-   */
-  void verifyConfiguration(const topology::Mesh& mesh) const;
+    /** Set first choice for reference direction to discriminate among tangential directions in 3-D.
+     *
+     * @param vec Reference direction unit vector.
+     */
+    void refDir1(const double vec[3]);
 
-  /** Get cell field with BC information.
-   *
-   * @param name Name of field.
-   * @param fields Solution fields.
-   *
-   * @returns Traction vector at integration points.
-   */
-  const topology::Field& cellField(const char* name,
-				   topology::SolutionFields* const fields =0);
+    /** Set second choice for reference direction to discriminate among tangential directions in 3-D.
+     *
+     * @param vec Reference direction unit vector.
+     */
+    void refDir2(const double vec[3]);
 
-  // PROTECTED METHODS //////////////////////////////////////////////////
-protected :
+    /** Verify configuration is acceptable.
+     *
+     * @param[in] solution Solution field.
+     */
+    void verifyConfiguration(const pylith::topology::Field& solution) const;
 
-  /** Get label of boundary condition surface.
-   *
-   * @returns Label of surface (from mesh generator).
-   */
-  const char* _getLabel(void) const;
+    /** Initialize boundary condition.
+     *
+     * @param[in] solution Solution field.
+     */
+    void initialize(const pylith::topology::Field& solution);
 
-  /** Get manager of scales used to nondimensionalize problem.
-   *
-   * @returns Nondimensionalizer.
-   */
-  const spatialdata::units::Nondimensional& _getNormalizer(void) const;
+    /** Compute RHS residual for G(t,s).
+     *
+     * @param[out] residual Field for residual.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] solution Field with current trial solution.
+     */
+    void computeRHSResidual(pylith::topology::Field* residual,
+                            const PylithReal t,
+                            const PylithReal dt,
+                            const pylith::topology::Field& solution);
 
-  /// Query databases for time dependent parameters.
-  void _queryDatabases(void);
+    /** Compute RHS Jacobian and preconditioner for G(t,s).
+     *
+     * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
+     * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] solution Field with current trial solution.
+     */
+    void computeRHSJacobian(PetscMat jacobianMat,
+                            PetscMat preconMat,
+                            const PylithReal t,
+                            const PylithReal dt,
+                            const pylith::topology::Field& solution);
 
-  /** Query database for values.
-   *
-   * @param name Name of field associated with database.
-   * @param db Spatial database with values.
-   * @param querySize Number of values at each location.
-   * @param scale Dimension scale associated with values.
-   */
-  void _queryDB(const char* name,
-		spatialdata::spatialdb::SpatialDB* const db,
-		const int querySize,
-		const PylithScalar scale);
+    /** Compute LHS residual for F(t,s,\dot{s}).
+     *
+     * @param[out] residual Field for residual.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] solution Field with current trial solution.
+     * @param[in] solutionDot Field with time derivative of current trial solution.
+     */
+    void computeLHSResidual(pylith::topology::Field* residual,
+                            const PylithReal t,
+                            const PylithReal dt,
+                            const pylith::topology::Field& solution,
+                            const pylith::topology::Field& solutionDot);
 
-  /** Convert parameters in local coordinates to global coordinates.
-   *
-   * @param upDir Direction perpendicular to horizontal surface tangent 
-   *   direction that is not collinear with surface normal.
-   */
-  void _paramsLocalToGlobal(const PylithScalar upDir[3]);
+    /** Compute LHS Jacobian and preconditioner for F(t,s,\dot{s}) with implicit time-stepping.
+     *
+     * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
+     * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] tshift Scale for time derivative.
+     * @param[in] solution Field with current trial solution.
+     * @param[in] solutionDot Field with time derivative of current trial solution.
+     */
+    void computeLHSJacobianImplicit(PetscMat jacobianMat,
+                                    PetscMat precondMat,
+                                    const PylithReal t,
+                                    const PylithReal dt,
+                                    const PylithReal tshift,
+                                    const pylith::topology::Field& solution,
+                                    const pylith::topology::Field& solutionDot);
 
-  /** Calculate spatial and temporal variation of value over the list
-   *  of submesh.
-   *
-   * @param t Current time.
-   */
-  void _calculateValue(const PylithScalar t);
 
-  // NOT IMPLEMENTED ////////////////////////////////////////////////////
-private :
+    /** Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
+     *
+     * @param[out] jacobianInv Inverse of lumped Jacobian as a field.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] solution Field with current trial solution.
+     */
+    void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
+                                     const PylithReal t,
+                                     const PylithReal dt,
+                                     const pylith::topology::Field& solution);
 
-  Neumann(const Neumann&); ///< Not implemented.
-  const Neumann& operator=(const Neumann&); ///< Not implemented.
+
+
+    // PROTECTED METHODS //////////////////////////////////////////////////
+protected:
+
+    /** Setup auxiliary subfields (discretization and query fns).
+     *
+     * Create subfields in auxiliary fields (includes name of the field,
+     * vector field type, discretization, and scale for
+     * nondimensionalization) and set query functions for filling them
+     * from a spatial database.
+     *
+     * @attention The order of the calls to subfieldAdd() must match the
+     * order of the auxiliary fields in the FE kernels.
+     *
+     * @param[in] solution Solution field.
+     */
+    virtual
+    void _auxFieldSetup(const pylith::topology::Field& solution) = 0;
+
+    /** Set kernels for RHS residual G(t,s).
+     *
+     * Potentially, there are g0 and g1 kernels for each equation. If no
+     * kernel is needed, then set the kernel function to NULL.
+     *
+     * @param solution Solution field.
+     */
+    virtual
+    void _setFEKernelsRHSResidual(const pylith::topology::Field& solution) const = 0;
+
+    /** Set constants used in finite-element integrations.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] dt Current time step.
+     */
+    virtual
+    void _setFEConstants(const pylith::topology::Field& solution,
+                         const PylithReal dt) const;
+
+
+    // PROTECTED MEMBERS //////////////////////////////////////////////////
+protected:
+
+    pylith::topology::Mesh* _boundaryMesh;   ///< Boundary mesh.
+    pylith::topology::FieldBase::Description _description; ///< Description of field associated with BC.
+    PylithReal _refDir1[3]; ///< First choice reference direction used to compute boundary tangential directions.
+    PylithReal _refDir2[3]; ///< Second choice reference direction used to compute boundary tangential directions.
+
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////
+private:
+
+    Neumann(const Neumann&); ///< Not implemented.
+    const Neumann& operator=(const Neumann&); ///< Not implemented.
 
 }; // class Neumann
-
-#include "Neumann.icc"
 
 #endif // pylith_bc_neumann_hh
 
 
-// End of file 
+// End of file

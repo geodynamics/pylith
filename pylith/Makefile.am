@@ -23,21 +23,14 @@ nobase_pkgpyexec_PYTHON = \
 	apps/PetscApplication.py \
 	apps/EqInfoApp.py \
 	bc/__init__.py \
-	bc/AbsorbingDampers.py \
 	bc/BoundaryCondition.py \
-	bc/DirichletBC.py \
-	bc/DirichletBoundary.py \
-	bc/Neumann.py \
-	bc/PointForce.py \
-	bc/TimeDependent.py \
-	bc/TimeDependentPoints.py \
-	bc/ZeroDispDB.py \
-	bc/BoundaryConditionNew.py \
-	bc/DirichletNew.py \
+	bc/Dirichlet.py \
 	bc/DirichletTimeDependent.py \
-	bc/NeumannNew.py \
+	bc/Neumann.py \
 	bc/NeumannTimeDependent.py \
 	bc/AuxFieldsTimeDependent.py \
+	bc/AbsorbingDampers.py \
+	bc/ZeroDispDB.py \
 	faults/__init__.py \
 	faults/BruneSlipFn.py \
 	faults/ConstRateSlipFn.py \

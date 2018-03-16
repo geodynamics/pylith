@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -21,703 +21,261 @@
 #include "Neumann.hh" // implementation of object methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/Fields.hh" // HOLDSA Fields
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
+#include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
-#include "pylith/topology/VisitorSubMesh.hh" // USES VecVisitorSubMesh
-#include "pylith/topology/Stratum.hh" // USES Stratum
-
-#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
-
-#include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
-#include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
+#include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
+#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-#include <cstring> // USES strcpy()
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+
 #include <strings.h> // USES strcasecmp()
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
-#include <sstream> // USES std::ostringstream
+#include <sstream> \
+    // USES std::ostringstream
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::bc::Neumann::Neumann(void)
+pylith::bc::Neumann::Neumann(void) :
+    _boundaryMesh(NULL)
 { // constructor
+    _refDir1[0] = 0.0;
+    _refDir1[1] = 0.0;
+    _refDir1[2] = 1.0;
+
+    _refDir2[0] = 0.0;
+    _refDir2[1] = 1.0;
+    _refDir2[2] = 0.0;
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::bc::Neumann::~Neumann(void)
-{ // destructor
-  deallocate();
+pylith::bc::Neumann::~Neumann(void) {
+    deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::bc::Neumann::deallocate(void)
-{ // deallocate
-  PYLITH_METHOD_BEGIN;
+pylith::bc::Neumann::deallocate(void) {
+    PYLITH_METHOD_BEGIN;
 
-  BCIntegratorSubMesh::deallocate();
-  TimeDependent::deallocate();
+    IntegratorPointwise::deallocate();
 
-  PYLITH_METHOD_END;
+    delete _boundaryMesh; _boundaryMesh = NULL;
+
+    PYLITH_METHOD_END;
 } // deallocate
-  
-// ----------------------------------------------------------------------
-// Initialize boundary condition. Determine orienation and compute traction
-// vector at integration points.
-void
-pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
-				const PylithScalar upDir[3])
-{ // initialize
-  PYLITH_METHOD_BEGIN;
-
-  _queryDatabases();
-  _paramsLocalToGlobal(upDir);
-
-  // Optimize coordinate retrieval in closure
-  assert(_boundaryMesh);
-  const PetscDM dmSubMesh = _boundaryMesh->dmMesh();assert(dmSubMesh);
-  topology::CoordsVisitor::optimizeClosure(dmSubMesh);
-
-  PYLITH_METHOD_END;
-} // initialize
 
 // ----------------------------------------------------------------------
-// Integrate contributions to residual term (r) for operator.
+// Set first choice for reference direction to discriminate among tangential directions in 3-D.
 void
-pylith::bc::Neumann::integrateResidual(const topology::Field& residual,
-				       const PylithScalar t,
-				       topology::SolutionFields* const fields)
-{ // integrateResidual
-  PYLITH_METHOD_BEGIN;
-
-  assert(_quadrature);
-  assert(_boundaryMesh);
-  assert(_parameters);
-
-  // Get cell geometry information that doesn't depend on cell
-  const int numQuadPts = _quadrature->numQuadPts();
-  const scalar_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == size_t(numQuadPts));
-  const int numBasis = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
-
-  // Allocate vectors for cell values.
-  _initCellVector();
-  scalar_array tractionsCell(numQuadPts*spaceDim);
-
-  // Get cell information
-  PetscDM dmSubMesh = _boundaryMesh->dmMesh();assert(dmSubMesh);
-  topology::Stratum cellsStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
-  const PetscInt cStart = cellsStratum.begin();
-  const PetscInt cEnd = cellsStratum.end();
-
-  // Get sections
-  _calculateValue(t);
-  topology::Field& valueField = _parameters->get("value");
-  topology::VecVisitorMesh valueVisitor(valueField);
-  PetscScalar* valueArray = valueVisitor.localArray();
-
-  // Get subsections
-  topology::SubMeshIS submeshIS(*_boundaryMesh);
-  topology::VecVisitorSubMesh residualVisitor(residual, submeshIS);
-  submeshIS.deallocate();
-
-  scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
-  topology::CoordsVisitor coordsVisitor(dmSubMesh);
-
-  // Loop over faces and integrate contribution from each face
-  for(PetscInt c = cStart; c < cEnd; ++c) {
-    coordsVisitor.getClosure(&coordsCell, c);
-    _quadrature->computeGeometry(&coordsCell[0], coordsCell.size(), c);
-
-    // Reset element vector to zero
-    _resetCellVector();
-
-    // Restrict tractions to cell
-    const PetscInt voff = valueVisitor.sectionOffset(c);
-    assert(numQuadPts*spaceDim == valueVisitor.sectionDof(c));
-
-    // Get cell geometry information that depends on cell
-    const scalar_array& basis = _quadrature->basis();
-    const scalar_array& jacobianDet = _quadrature->jacobianDet();
-
-    // Compute action for traction bc terms
-    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-      const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad];
-      for (int iBasis=0; iBasis < numBasis; ++iBasis) {
-        const PylithScalar valI = wt*basis[iQuad*numBasis+iBasis];
-        for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-          const PylithScalar valIJ = valI * basis[iQuad*numBasis+jBasis];
-          for (int iDim=0; iDim < spaceDim; ++iDim)
-            _cellVector[iBasis*spaceDim+iDim] += valueArray[voff+iQuad*spaceDim+iDim] * valIJ;
-        } // for
-      } // for
+pylith::bc::Neumann::refDir1(const double vec[3]) {
+    // Set reference direction, insuring it is a unit vector.
+    const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
+    if (mag < 1.0e-6) {
+        std::ostringstream msg;
+        msg << "Magnitude of reference direction 1 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]<<") is negligible. Use a unit vector.";
+        throw std::runtime_error(msg.str());
+    } // if
+    for (int i = 0; i < 3; ++i) {
+        _refDir1[i] = vec[i] / mag;
     } // for
+} // refDir1
 
-    residualVisitor.setClosure(&_cellVector[0], _cellVector.size(), c, ADD_VALUES);
-
-    PetscLogFlops(numQuadPts*(1+numBasis*(1+numBasis*(1+2*spaceDim))));
-  } // for
-
-  PYLITH_METHOD_END;
-} // integrateResidual
+// ----------------------------------------------------------------------
+// Set second choice for reference direction to discriminate among tangential directions in 3-D.
+void
+pylith::bc::Neumann::refDir2(const double vec[3]) {
+    // Set reference direction, insuring it is a unit vector.
+    const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
+    if (mag < 1.0e-6) {
+        std::ostringstream msg;
+        msg << "Magnitude of reference direction 2 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]<<") is negligible. Use a unit vector.";
+        throw std::runtime_error(msg.str());
+    } // if
+    for (int i = 0; i < 3; ++i) {
+        _refDir1[i] = vec[i] / mag;
+    } // for
+} // refDir2
 
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
-pylith::bc::Neumann::verifyConfiguration(const topology::Mesh& mesh) const
-{ // verifyConfiguration
-  PYLITH_METHOD_BEGIN;
+pylith::bc::Neumann::verifyConfiguration(const pylith::topology::Field& solution) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.label()<<")");
 
-  BCIntegratorSubMesh::verifyConfiguration(mesh);
+    if (!solution.hasSubfield(_field.c_str())) {
+        std::ostringstream msg;
+        msg << "Cannot apply Neumann boundary condition to field '"<< _field
+            << "'; field is not in solution.";
+        throw std::runtime_error(msg.str());
+    } // if
 
-  PYLITH_METHOD_END;
+    PYLITH_METHOD_END;
 } // verifyConfiguration
 
-// ----------------------------------------------------------------------
-// Get cell field for tractions.
-const pylith::topology::Field&
-pylith::bc::Neumann::cellField(const char* name,
-			       topology::SolutionFields* const fields)
-{ // cellField
-  PYLITH_METHOD_BEGIN;
-
-  assert(_parameters);
-  assert(name);
-
-  if (0 == strcasecmp(name, "initial_value"))
-    PYLITH_METHOD_RETURN(_parameters->get("initial"));
-
-  else if (0 == strcasecmp(name, "rate_of_change"))
-    PYLITH_METHOD_RETURN(_parameters->get("rate"));
-
-  else if (0 == strcasecmp(name, "change_in_value"))
-    PYLITH_METHOD_RETURN(_parameters->get("change"));
-
-  else if (0 == strcasecmp(name, "rate_start_time"))
-    PYLITH_METHOD_RETURN(_parameters->get("rate time"));
-
-  else if (0 == strcasecmp(name, "change_start_time"))
-    PYLITH_METHOD_RETURN(_parameters->get("change time"));
-
-  else {
-    std::ostringstream msg;
-    msg << "Unknown field '" << name << "' requested for Neumann BC '" 
-	<< _label << "'.";
-    throw std::runtime_error(msg.str());
-  } // else
-
-  // Satisfy method definition
-  PYLITH_METHOD_RETURN(_parameters->get("traction"));
-} // cellField
 
 // ----------------------------------------------------------------------
-// Query databases for parameters.
+// Initialize boundary condition.
 void
-pylith::bc::Neumann::_queryDatabases(void)
-{ // _queryDatabases
-  PYLITH_METHOD_BEGIN;
+pylith::bc::Neumann::initialize(const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("initialize(solution="<<solution.label()<<")");
 
-  assert(_quadrature);
-  assert(_boundaryMesh);
-  
-  const PylithScalar pressureScale = _normalizer->pressureScale();
-  const PylithScalar timeScale = _normalizer->timeScale();
-  const PylithScalar rateScale = pressureScale / timeScale;
+    _setFEKernelsRHSResidual(solution);
 
-  const int spaceDim = _quadrature->spaceDim();
-  const int numQuadPts = _quadrature->numQuadPts();
+    _boundaryMesh = new pylith::topology::Mesh(solution.mesh(), _label.c_str()); assert(_boundaryMesh);
+    PetscDM dmBoundary = _boundaryMesh->dmMesh(); assert(dmBoundary);
+    pylith::topology::CoordsVisitor::optimizeClosure(dmBoundary);
 
-  delete _parameters; _parameters = new topology::Fields(*_boundaryMesh);assert(_parameters);
+    delete _auxField; _auxField = new pylith::topology::Field(*_boundaryMesh); assert(_auxField);
+    _auxField->label("auxiliary subfields");
+    _auxFieldSetup(solution);
+    _auxField->subfieldsSetup();
+    _auxField->allocate();
+    _auxField->zeroLocal();
 
-  // Create section to hold time dependent values
-  _parameters->add("value", "traction", topology::FieldBase::FACES_FIELD, numQuadPts*spaceDim);
-  topology::Field& value = _parameters->get("value");
-  value.vectorFieldType(topology::FieldBase::MULTI_VECTOR);
-  value.scale(pressureScale);
-  value.allocate();
-  if (_dbInitial) {
-    _parameters->add("initial", "initial_traction", topology::FieldBase::FACES_FIELD, numQuadPts*spaceDim);
-    topology::Field& initial = _parameters->get("initial");
-    initial.vectorFieldType(topology::FieldBase::MULTI_VECTOR);
-    initial.scale(pressureScale);
-    initial.allocate();
-  }
-  if (_dbRate) {
-    _parameters->add("rate", "traction_rate", topology::FieldBase::FACES_FIELD, numQuadPts*spaceDim);
-    topology::Field& rate = _parameters->get("rate");
-    rate.vectorFieldType(topology::FieldBase::MULTI_VECTOR);
-    rate.scale(rateScale);
-    rate.allocate();
-    _parameters->add("rate time", "traction_rate_time", topology::FieldBase::FACES_FIELD, numQuadPts);
-    topology::Field& rateTime = _parameters->get("rate time");
-    rateTime.vectorFieldType(topology::FieldBase::MULTI_VECTOR);
-    rateTime.scale(timeScale);
-    rateTime.allocate();
-  } // if
-  if (_dbChange) {
-    _parameters->add("change", "change_traction", topology::FieldBase::FACES_FIELD, numQuadPts*spaceDim);
-    topology::Field& change = _parameters->get("change");
-    change.vectorFieldType(topology::FieldBase::MULTI_VECTOR);
-    change.scale(pressureScale);
-    change.allocate();
-    _parameters->add("change time", "change_traction_time", topology::FieldBase::FACES_FIELD, numQuadPts);
-    topology::Field& changeTime = _parameters->get("change time");
-    changeTime.vectorFieldType(topology::FieldBase::MULTI_VECTOR);
-    changeTime.scale(timeScale);
-    changeTime.allocate();
-  } // if
+    assert(_normalizer);
+    pylith::feassemble::AuxiliaryFactory* factory = _auxFactory(); assert(factory);
+    factory->initializeSubfields();
 
-  if (_dbInitial) { // Setup initial values, if provided.
-    _dbInitial->open();
-    switch (spaceDim)
-      { // switch
-      case 1 : {
-	const char* valueNames[] = {"traction-normal"};
-	_dbInitial->queryVals(valueNames, 1);
-	break;
-      } // case 1
-      case 2 : {
-	const char* valueNames[] = {"traction-shear", "traction-normal"};
-	_dbInitial->queryVals(valueNames, 2);
-	break;
-      } // case 2
-      case 3 : {
-	const char* valueNames[] = {"traction-shear-horiz",
-				    "traction-shear-vert",
-				    "traction-normal"};
-	_dbInitial->queryVals(valueNames, 3);
-	break;
-      } // case 3
-      default :
-        std::ostringstream msg;
-        msg << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
-        throw std::logic_error(msg.str());
-      } // switch
-    _queryDB("initial", _dbInitial, spaceDim, pressureScale);
-    _dbInitial->close();
-  } // if
+    _auxField->view("AUXILIARY FIELD"); // :DEBUG:
 
-  if (_dbRate) { // Setup rate of change of values, if provided.
-    _dbRate->open();
-    switch (spaceDim)
-      { // switch
-      case 1 : {
-	const char* valueNames[] = {"traction-rate-normal"};
-	_dbRate->queryVals(valueNames, 1);
-	break;
-      } // case 1
-      case 2 : {
-	const char* valueNames[] = {"traction-rate-shear", 
-				    "traction-rate-normal"};
-	_dbRate->queryVals(valueNames, 2);
-	break;
-      } // case 2
-      case 3 : {
-	const char* valueNames[] = {"traction-rate-shear-horiz",
-				    "traction-rate-shear-vert",
-				    "traction-rate-normal"};
-	_dbRate->queryVals(valueNames, 3);
-	break;
-      } // case 3
-      default :
-        std::ostringstream msg;
-        msg << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
-        throw std::logic_error(msg.str());
-      } // switch
-    _queryDB("rate", _dbRate, spaceDim, rateScale);
+#if 0 // Use low-level function to set kernels
+    const PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
+    PetscDS prob = NULL;
+    PetscErrorCode err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err);
 
-    const char* timeNames[1] = { "rate-start-time" };
-    _dbRate->queryVals(timeNames, 1);
-    _queryDB("rate time", _dbRate, 1, timeScale);
-    _dbRate->close();
-  } // if
+    // :TODO: @brad @matt Expect this to need updating once we associate point functions with a domain.
+    void* context = NULL;
+    const int labelId = 1;
+    const topology::Field::SubfieldInfo& info = solution.subfieldInfo(_field.c_str());
+    err = PetscDSAddBoundary(prob, DM_BC_NATURAL, label(), label(), info.index, 0, NULL,
+                             NULL, 1, &labelId, context); PYLITH_CHECK_ERROR(err);
+#endif
 
-  if (_dbChange) { // Setup change of values, if provided.
-    _dbChange->open();
-    switch (spaceDim)
-      { // switch
-      case 1 : {
-	const char* valueNames[] = {"traction-normal"};
-	_dbChange->queryVals(valueNames, 1);
-	break;
-      } // case 1
-      case 2 : {
-	const char* valueNames[] = {"traction-shear", "traction-normal"};
-	_dbChange->queryVals(valueNames, 2);
-	break;
-      } // case 2
-      case 3 : {
-	const char* valueNames[] = {"traction-shear-horiz",
-				    "traction-shear-vert",
-				    "traction-normal"};
-	_dbChange->queryVals(valueNames, 3);
-	break;
-      } // case 3
-      default :
-        std::ostringstream msg;
-        msg << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
-        throw std::logic_error(msg.str());
-      } // switch
-    _queryDB("change", _dbChange, spaceDim, pressureScale);
-
-    const char* timeNames[1] = { "change-start-time" };
-    _dbChange->queryVals(timeNames, 1);
-    _queryDB("change time", _dbChange, 1, timeScale);
-    _dbChange->close();
-
-    if (_dbTimeHistory)
-      _dbTimeHistory->open();
-  } // if
-
-  PYLITH_METHOD_END;
-} // _queryDatabases
+    PYLITH_METHOD_END;
+} // initialize
 
 // ----------------------------------------------------------------------
-// Query database for values.
+// Compute RHS residual for G(t,s).
 void
-pylith::bc::Neumann::_queryDB(const char* name,
-			      spatialdata::spatialdb::SpatialDB* const db,
-			      const int querySize,
-			      const PylithScalar scale)
-{ // _queryDB
-  PYLITH_METHOD_BEGIN;
+pylith::bc::Neumann::computeRHSResidual(pylith::topology::Field* residual,
+                                        const PylithReal t,
+                                        const PylithReal dt,
+                                        const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("computeRHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<")");
 
-  assert(name);
-  assert(db);
-  assert(_boundaryMesh);
-  assert(_quadrature);
-  assert(_parameters);
+    _setFEKernelsRHSResidual(solution);
+    _setFEConstants(solution, dt);
 
-  // Get 'surface' cells (1 dimension lower than top-level cells)
-  PetscDM dmSubMesh = _boundaryMesh->dmMesh();assert(dmSubMesh);
-  topology::Stratum cellsStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
-  const PetscInt cStart = cellsStratum.begin();
-  const PetscInt cEnd = cellsStratum.end();
+    pylith::topology::Field solutionDot(solution.mesh()); // No dependence on time derivative of solution in RHS.
+    solutionDot.label("solution_dot");
 
-  const int numBasis = _quadrature->numBasis();
-  const int numQuadPts = _quadrature->numQuadPts();
-  const int spaceDim = _quadrature->spaceDim();
-  
-  // Containers for database query results and quadrature coordinates in
-  // reference geometry.
-  scalar_array valuesCell(numQuadPts*querySize);
-  scalar_array quadPtsGlobal(numQuadPts*spaceDim);
+    assert(residual);
+    assert(_auxField);
 
-  // Get sections.
-  topology::Field& valueField = _parameters->get(name);
-  topology::VecVisitorMesh valueVisitor(valueField);
-  PetscScalar* valueArray = valueVisitor.localArray();
+    PetscDS prob = NULL;
+    PetscErrorCode err;
 
-  // Get coordinates
-  scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
-  topology::CoordsVisitor coordsVisitor(dmSubMesh);
+    PetscDM dmSoln = solution.dmMesh();
+    PetscDM dmAux = _auxField->dmMesh();
+    PetscDMLabel dmLabel;
 
-  const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
-  assert(cs);
+    // Pointwise function have been set in DS
+    err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err);
 
-  assert(_normalizer);
-  const PylithScalar lengthScale = _normalizer->lengthScale();
+    // Get auxiliary data
+    err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxField->localVector()); PYLITH_CHECK_ERROR(err);
 
-  // Compute quadrature information
-  _quadrature->initializeGeometry();
+    // Compute the local residual
+    assert(solution.localVector());
+    assert(residual->localVector());
+    err = DMGetLabel(dmSoln, _label.c_str(), &dmLabel); PYLITH_CHECK_ERROR(err);
+    const int labelId = 1;
+    const topology::Field::SubfieldInfo& info = solution.subfieldInfo(_field.c_str());
 
-  // Loop over cells in boundary mesh and perform queries.
-  for(PetscInt c = cStart; c < cEnd; ++c) {
-    // Compute geometry information for current cell
-    coordsVisitor.getClosure(&coordsCell, c);
-    _quadrature->computeGeometry(&coordsCell[0], coordsCell.size(), c);
+    solution.mesh().view(":mesh.txt:ascii_info_detail"); // :DEBUG:
 
-    const scalar_array& quadPtsNondim = _quadrature->quadPts();
-    quadPtsGlobal = quadPtsNondim;
-    _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(), lengthScale);
-    
-    valuesCell = 0.0;
-    for (int iQuad=0, iSpace=0; iQuad < numQuadPts; ++iQuad, iSpace+=spaceDim) {
-      const int err = db->query(&valuesCell[iQuad*querySize], querySize,
-                                &quadPtsGlobal[iSpace], spaceDim, cs);
-      
-      if (err) {
-        std::ostringstream msg;
-        msg << "Could not find values at (";
-        for (int i=0; i < spaceDim; ++i)
-          msg << " " << quadPtsGlobal[i+iSpace];
-        msg << ") for traction boundary condition '" << _label
-            << "' using spatial database '" << db->label() << "'.";
-        throw std::runtime_error(msg.str());
-      } // if
+    PYLITH_COMPONENT_DEBUG("DMPlexComputeBdResidualSingle() for boundary '"<<label()<<"')");
+    err = DMPlexComputeBdResidualSingle(dmSoln, t, dmLabel, 1, &labelId, info.index, solution.localVector(), solutionDot.localVector(), residual->localVector()); PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_END;
+} // computeRHSResidual
+
+// ----------------------------------------------------------------------
+// Compute RHS Jacobian and preconditioner for G(t,s).
+void
+pylith::bc::Neumann::computeRHSJacobian(PetscMat jacobianMat,
+                                        PetscMat preconMat,
+                                        const PylithReal t,
+                                        const PylithReal dt,
+                                        const pylith::topology::Field& solution) {}
+
+// ----------------------------------------------------------------------
+// Compute LHS residual for F(t,s,\dot{s}).
+void
+pylith::bc::Neumann::computeLHSResidual(pylith::topology::Field* residual,
+                                        const PylithReal t,
+                                        const PylithReal dt,
+                                        const pylith::topology::Field& solution,
+                                        const pylith::topology::Field& solutionDot) {}
+
+// ----------------------------------------------------------------------
+// Compute LHS Jacobian and preconditioner for F(t,s,\dot{s}) with implicit time-stepping.
+void
+pylith::bc::Neumann::computeLHSJacobianImplicit(PetscMat jacobianMat,
+                                                PetscMat precondMat,
+                                                const PylithReal t,
+                                                const PylithReal dt,
+                                                const PylithReal tshift,
+                                                const pylith::topology::Field& solution,
+                                                const pylith::topology::Field& solutionDot) {}
+
+
+// ----------------------------------------------------------------------
+// Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
+void
+pylith::bc::Neumann::computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
+                                                 const PylithReal t,
+                                                 const PylithReal dt,
+                                                 const pylith::topology::Field& solution) {}
+
+
+// ----------------------------------------------------------------------
+// Set constants used in finite-element integrations.
+void
+pylith::bc::Neumann::_setFEConstants(const pylith::topology::Field& solution,
+                                     const PylithReal dt) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("_setFEConstants(solution="<<solution.label()<<", dt="<<dt<<")");
+
+    const PetscInt numConstants = 6;
+    PetscScalar constants[6];
+    int index = 0;
+    for (int i = 0; i < 3; ++i, index++) {
+        constants[index] = _refDir1[i];
     } // for
-    _normalizer->nondimensionalize(&valuesCell[0], valuesCell.size(), scale);
-
-    // Update section
-    const PetscInt voff = valueVisitor.sectionOffset(c);
-    const PetscInt vdof = valueVisitor.sectionDof(c);
-    assert(numQuadPts*querySize == vdof);
-    for(PetscInt d = 0; d < vdof; ++d)
-      valueArray[voff+d] = valuesCell[d];
-  } // for
-
-  PYLITH_METHOD_END;
-} // _queryDB
-
-// ----------------------------------------------------------------------
-// Initialize boundary condition. Determine orienation and compute traction
-// vector at integration points.
-void
-  pylith::bc::Neumann::_paramsLocalToGlobal(const PylithScalar upDir[3])
-{ // _paramsLocalToGlobal
-  PYLITH_METHOD_BEGIN;
-
-  assert(_boundaryMesh);
-  assert(_parameters);
-  assert(_quadrature);
-
-  scalar_array up(3);
-  for (int i=0; i < 3; ++i)
-    up[i] = upDir[i];
-
-  // Get 'surface' cells (1 dimension lower than top-level cells)
-  PetscDM dmSubMesh = _boundaryMesh->dmMesh();assert(dmSubMesh);
-  topology::Stratum cellsStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
-  const PetscInt cStart = cellsStratum.begin();
-  const PetscInt cEnd = cellsStratum.end();
-
-  // Quadrature related values.
-  const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
-  const int cellDim = _quadrature->cellDim() > 0 ? _quadrature->cellDim() : 1;
-  const int numBasis = _quadrature->numBasis();
-  const int numQuadPts = _quadrature->numQuadPts();
-  const int spaceDim = cellGeometry.spaceDim();
-  const scalar_array& quadPtsRef = _quadrature->quadPtsRef();
-  
-  // Containers for orientation information
-  const int orientationSize = spaceDim * spaceDim;
-  const int jacobianSize = spaceDim * cellDim;
-  scalar_array jacobian(jacobianSize);
-  PylithScalar jacobianDet = 0;
-  scalar_array orientation(orientationSize);
-
-  // Get coordinates.
-  scalar_array coordsCell(numBasis*spaceDim); // :KULDGE: Update numBasis to numCorners after implementing higher order
-  topology::CoordsVisitor coordsVisitor(dmSubMesh);
-
-  // Get sections
-  scalar_array tmpLocal(spaceDim);
-  
-  topology::Field* initialField = (_dbInitial) ? &_parameters->get("initial") : 0;
-  topology::VecVisitorMesh* initialVisitor = (initialField) ? new topology::VecVisitorMesh(*initialField) : 0;
-  PetscScalar* initialArray = (initialVisitor) ? initialVisitor->localArray() : NULL;
-
-  topology::Field* rateField = (_dbRate) ? &_parameters->get("rate") : 0;
-  topology::VecVisitorMesh* rateVisitor = (rateField) ? new topology::VecVisitorMesh(*rateField) : 0;
-  PetscScalar* rateArray = (rateVisitor) ? rateVisitor->localArray() : NULL;
-
-  topology::Field* changeField = (_dbChange) ? &_parameters->get("change") : 0;
-  topology::VecVisitorMesh* changeVisitor = (changeField) ? new topology::VecVisitorMesh(*changeField) : 0;
-  PetscScalar* changeArray = (changeVisitor) ? changeVisitor->localArray() : NULL;
-
-  // Loop over cells in boundary mesh, compute orientations, and then
-  // rotate corresponding traction vector from local to global coordinates.
-  for(PetscInt c = cStart; c < cEnd; ++c) {
-    // Compute geometry information for current cell
-    coordsVisitor.getClosure(&coordsCell, c);
-    _quadrature->computeGeometry(&coordsCell[0], coordsCell.size(), c);
-
-    for(int iQuad=0, iRef=0, iSpace=0; iQuad < numQuadPts; ++iQuad, iRef+=cellDim, iSpace+=spaceDim) {
-      // Compute Jacobian and determinant at quadrature point, then get orientation.
-      cellGeometry.jacobian(&jacobian, &jacobianDet, &coordsCell[0], numBasis, spaceDim, &quadPtsRef[iRef], cellDim);
-      cellGeometry.orientation(&orientation, jacobian, jacobianDet, up);
-      assert(jacobianDet > 0.0);
-      orientation /= jacobianDet;
-
-      if (_dbInitial) {
-        // Rotate traction vector from local coordinate system to global coordinate system
-	assert(initialVisitor);
-	const PetscInt ioff = initialVisitor->sectionOffset(c);
-	assert(numQuadPts*spaceDim == initialVisitor->sectionDof(c));
-        for(int iDim = 0; iDim < spaceDim; ++iDim) {
-          tmpLocal[iDim] = initialArray[ioff+iSpace+iDim];
-        } // for
-        for(int iDim = 0; iDim < spaceDim; ++iDim) {
-          initialArray[ioff+iSpace+iDim] = 0.0;
-          for(int jDim = 0; jDim < spaceDim; ++jDim) {
-            initialArray[ioff+iSpace+iDim] += orientation[jDim*spaceDim+iDim] * tmpLocal[jDim];
-	  } // for
-        } // for
-      } // if
-
-      if (_dbRate) {
-        // Rotate traction vector from local coordinate system to global coordinate system
-	assert(rateVisitor);
-	const PetscInt roff = rateVisitor->sectionOffset(c);
-	assert(numQuadPts*spaceDim == rateVisitor->sectionDof(c));
-        for(int iDim = 0; iDim < spaceDim; ++iDim) {
-          tmpLocal[iDim] = rateArray[roff+iSpace+iDim];
-        } // for
-        for(int iDim = 0; iDim < spaceDim; ++iDim) {
-          rateArray[roff+iSpace+iDim] = 0.0;
-          for(int jDim = 0; jDim < spaceDim; ++jDim) {
-            rateArray[roff+iSpace+iDim] += orientation[jDim*spaceDim+iDim] * tmpLocal[jDim];
-	  } // for
-        } // for
-      } // if
-
-      if (_dbChange) {
-        // Rotate traction vector from local coordinate system to global coordinate system
-	assert(changeVisitor);
-	const PetscInt coff = changeVisitor->sectionOffset(c);
-	assert(numQuadPts*spaceDim == changeVisitor->sectionDof(c));
-        for (int iDim = 0; iDim < spaceDim; ++iDim) {
-          tmpLocal[iDim] = changeArray[coff+iSpace+iDim];
-        } // for
-        for(int iDim = 0; iDim < spaceDim; ++iDim) {
-          changeArray[coff+iSpace+iDim] = 0.0;
-          for(int jDim = 0; jDim < spaceDim; ++jDim) {
-            changeArray[coff+iSpace+iDim] += orientation[jDim*spaceDim+iDim] * tmpLocal[jDim];
-	  } // for
-        } // for
-      } // if
-    } // for
-  } // for
-
-  delete initialVisitor; initialVisitor = 0;
-  delete rateVisitor; rateVisitor = 0;
-  delete changeVisitor; changeVisitor = 0;
-
-  PYLITH_METHOD_END;
-} // paramsLocalToGlobal
-
-// ----------------------------------------------------------------------
-// Calculate temporal and spatial variation of value over the list of Submesh.
-void
-pylith::bc::Neumann::_calculateValue(const PylithScalar t)
-{ // _calculateValue
-  PYLITH_METHOD_BEGIN;
-
-  assert(_parameters);
-  assert(_boundaryMesh);
-  assert(_quadrature);
-
-  const PylithScalar timeScale = _getNormalizer().timeScale();
-
-  // Get 'surface' cells (1 dimension lower than top-level cells)
-  PetscDM dmSubMesh = _boundaryMesh->dmMesh();assert(dmSubMesh);
-  topology::Stratum cellsStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
-  const PetscInt cStart = cellsStratum.begin();
-  const PetscInt cEnd = cellsStratum.end();
-
-  const int spaceDim = _quadrature->spaceDim();
-  const int numQuadPts = _quadrature->numQuadPts();
-
-  // Get sections
-  topology::Field& valueField = _parameters->get("value");
-  topology::VecVisitorMesh valueVisitor(valueField);
-  PetscScalar* valueArray = valueVisitor.localArray();
-  
-  topology::Field* initialField = (_dbInitial) ? &_parameters->get("initial") : 0;
-  topology::VecVisitorMesh* initialVisitor = (initialField) ? new topology::VecVisitorMesh(*initialField) : 0;
-  PetscScalar* initialArray = (initialVisitor) ? initialVisitor->localArray() : NULL;
-
-  topology::Field* rateField = (_dbRate) ? &_parameters->get("rate") : 0;
-  topology::VecVisitorMesh* rateVisitor = (rateField) ? new topology::VecVisitorMesh(*rateField) : 0;
-  PetscScalar* rateArray = (rateVisitor) ? rateVisitor->localArray() : NULL;
-
-  topology::Field* rateTimeField = (_dbRate) ? &_parameters->get("rate time") : 0;
-  topology::VecVisitorMesh* rateTimeVisitor = (rateTimeField) ? new topology::VecVisitorMesh(*rateTimeField) : 0;
-  PetscScalar* rateTimeArray = (rateTimeVisitor) ? rateTimeVisitor->localArray() : NULL;
-
-  topology::Field* changeField = (_dbChange) ? &_parameters->get("change") : 0;
-  topology::VecVisitorMesh* changeVisitor = (changeField) ? new topology::VecVisitorMesh(*changeField) : 0;
-  PetscScalar* changeArray = (changeVisitor) ? changeVisitor->localArray() : NULL;
-
-  topology::Field* changeTimeField = (_dbChange) ? &_parameters->get("change time") : 0;
-  topology::VecVisitorMesh* changeTimeVisitor = (changeTimeField) ? new topology::VecVisitorMesh(*changeTimeField) : 0;
-  PetscScalar* changeTimeArray = (changeTimeVisitor) ? changeTimeVisitor->localArray() : NULL;
-
-  for(PetscInt c = cStart; c < cEnd; ++c) {
-    const PetscInt voff = valueVisitor.sectionOffset(c);
-    const PetscInt vdof = valueVisitor.sectionDof(c);
-    assert(numQuadPts*spaceDim == vdof);
-    for (PetscInt d = 0; d < vdof; ++d) {
-      valueArray[voff+d] = 0.0;
+    for (int i = 0; i < 3; ++i, index++) {
+        constants[index] = _refDir2[i];
     } // for
 
-    // Contribution from initial value
-    if (_dbInitial) {
-      assert(initialVisitor);
-      const PetscInt ioff = initialVisitor->sectionOffset(c);
-      const PetscInt idof = initialVisitor->sectionDof(c);
-      assert(numQuadPts*spaceDim == idof);
-      for (PetscInt d = 0; d < idof; ++d) {
-        valueArray[voff+d] += initialArray[ioff+d];
-      } // for
-    } // if
-    
-    // Contribution from rate of change of value
-    if (_dbRate) {
-      assert(rateVisitor);
-      const PetscInt roff = rateVisitor->sectionOffset(c);
-      const PetscInt rdof = rateVisitor->sectionDof(c);
-      assert(numQuadPts*spaceDim == rdof);
-      assert(rateTimeVisitor);
-      const PetscInt rtoff = rateTimeVisitor->sectionOffset(c);
-      assert(numQuadPts == rateTimeVisitor->sectionDof(c));
+    const PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
+    PetscDS prob = NULL;
+    PetscErrorCode err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err); assert(prob);
+    err = PetscDSSetConstants(prob, numConstants, constants); PYLITH_CHECK_ERROR(err);
 
-      for(int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
-        const PylithScalar tRel = t - rateTimeArray[rtoff+iQuad];
-        if (tRel > 0.0)  // rate of change integrated over time
-          for(int iDim = 0; iDim < spaceDim; ++iDim) {
-            valueArray[voff+iQuad*spaceDim+iDim] += rateArray[roff+iQuad*spaceDim+iDim] * tRel;
-	  } // for
-      } // for
-    } // if
-    
-    // Contribution from change of value
-    if (_dbChange) {
-      assert(changeVisitor);
-      const PetscInt coff = changeVisitor->sectionOffset(c);
-      assert(changeTimeField);
-      const PetscInt ctoff = changeTimeVisitor->sectionOffset(c);
-      assert(numQuadPts == changeTimeVisitor->sectionDof(c));
+    PYLITH_METHOD_END;
 
-      for(int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
-        const PylithScalar tRel = t - changeTimeArray[ctoff+iQuad];
-        if (tRel >= 0) { // change in value over time
-          PylithScalar scale = 1.0;
-          if (_dbTimeHistory) {
-            PylithScalar tDim = tRel;
-            _getNormalizer().dimensionalize(&tDim, 1, timeScale);
-            const int err = _dbTimeHistory->query(&scale, tDim);
-            if (err) {
-              std::ostringstream msg;
-              msg << "Error querying for time '" << tDim 
-                  << "' in time history database "
-                  << _dbTimeHistory->label() << ".";
-              throw std::runtime_error(msg.str());
-            } // if
-          } // if
-          for (int iDim = 0; iDim < spaceDim; ++iDim) {
-            valueArray[voff+iQuad*spaceDim+iDim] += changeArray[coff+iQuad*spaceDim+iDim]*scale;
-	  } // for
-        } // if
-      } // for
-    } // if
-  } // for
-
-  delete initialVisitor; initialVisitor = 0;
-  delete rateVisitor; rateVisitor = 0;
-  delete rateTimeVisitor; rateTimeVisitor = 0;
-  delete changeVisitor; changeVisitor = 0;
-  delete changeTimeVisitor; changeTimeVisitor = 0;
-
-  PYLITH_METHOD_END;
-}  // _calculateValue
+    // Put up direction into constants.
+} // _setFEConstants
 
 
-// End of file 
+// End of file

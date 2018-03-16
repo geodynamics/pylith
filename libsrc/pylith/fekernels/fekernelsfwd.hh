@@ -44,6 +44,7 @@ namespace pylith {
 
         class TimeDependentFn;
         class NeumannTimeDependent;
+	class AbsorbingDampers;
 
     } // fekernels
 } // pylith

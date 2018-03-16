@@ -16,21 +16,21 @@
 # ----------------------------------------------------------------------
 #
 
-# @file pylith/bc/DirichletNew.py
+# @file pylith/bc/Dirichlet.py
 ##
 # @brief Python object for managing a Dirichlet (prescribed
 # values) boundary condition.
 ##
 # Factory: boundary_condition
 
-from .BoundaryConditionNew import BoundaryConditionNew
+from .BoundaryCondition import BoundaryCondition
 from pylith.feassemble.ConstraintPointwise import ConstraintPointwise
 
-# DirichletNew class
+# Dirichlet class
 
 
-class DirichletNew(BoundaryConditionNew,
-                   ConstraintPointwise):
+class Dirichlet(BoundaryCondition,
+                ConstraintPointwise):
     """
     Python object for managing a Dirichlet (prescribed values)
     boundary condition.
@@ -44,7 +44,7 @@ class DirichletNew(BoundaryConditionNew,
         """
         Constructor.
         """
-        BoundaryConditionNew.__init__(self, name)
+        BoundaryCondition.__init__(self, name)
         ConstraintPointwise.__init__(self, name)
         return
 
@@ -52,7 +52,7 @@ class DirichletNew(BoundaryConditionNew,
         """
         Do pre-initialization setup.
         """
-        BoundaryConditionNew.preinitialize(self, mesh)
+        BoundaryCondition.preinitialize(self, mesh)
         ConstraintPointwise.preinitialize(self, mesh)
         return
 
@@ -60,7 +60,7 @@ class DirichletNew(BoundaryConditionNew,
         """
         Cleanup after running problem.
         """
-        print(":TODO: @brad Implement DirichletNew.finalize() once output manager is added.")
+        print(":TODO: @brad Implement Dirichlet.finalize() once output manager is added.")
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -70,7 +70,7 @@ class DirichletNew(BoundaryConditionNew,
         Setup members using inventory.
         """
         try:
-            BoundaryConditionNew._configure(self)
+            BoundaryCondition._configure(self)
             ConstraintPointwise._configure(self)
         except ValueError as err:
             aliases = ", ".join(self.aliases)

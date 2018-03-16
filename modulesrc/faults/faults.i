@@ -28,7 +28,7 @@
 #include "pylith/faults/LiuCosSlipFn.hh"
 #include "pylith/faults/TimeHistorySlipFn.hh"
 #include "pylith/faults/EqKinSrc.hh"
-#include "pylith/faults/TractPerturbation.hh"
+//#include "pylith/faults/TractPerturbation.hh"
 #include "pylith/faults/Fault.hh"
 #include "pylith/faults/FaultCohesive.hh"
 #include "pylith/faults/FaultCohesiveLagrange.hh"
@@ -63,7 +63,7 @@ import_array();
 
 // Interfaces
 %include "../feassemble/Integrator.i" // ISA Integrator
-%include "../bc/TimeDependent.i" // ISA TimeDependent
+ //%include "../bc/TimeDependent.i" // ISA TimeDependent
 
 %include "SlipTimeFn.i"
 %include "StepSlipFn.i"
@@ -72,7 +72,7 @@ import_array();
 %include "LiuCosSlipFn.i"
 %include "TimeHistorySlipFn.i"
 %include "EqKinSrc.i"
-%include "TractPerturbation.i"
+ //%include "TractPerturbation.i"
 %include "Fault.i"
 %include "FaultCohesive.i"
 %include "FaultCohesiveLagrange.i"

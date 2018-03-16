@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -22,57 +22,51 @@
  */
 
 namespace pylith {
-  namespace bc {
+    namespace bc {
 
-    class BoundaryCondition
-    { // class BoundaryCondition
+        class BoundaryCondition { // class BoundaryCondition
 
-      // PUBLIC METHODS /////////////////////////////////////////////////
-    public :
+            // PUBLIC METHODS /////////////////////////////////////////////////
+public:
 
-      /// Default constructor.
-      BoundaryCondition(void);
+            /// Default constructor.
+            BoundaryCondition(void);
 
-      /// Destructor.
-      virtual
-      ~BoundaryCondition(void);
+            /// Destructor.
+            virtual ~BoundaryCondition(void);
 
-      /// Deallocate PETSc and local data structures.
-      virtual
-      void deallocate(void);
-  
-      /** Set label of boundary condition surface.
-       *
-       * @param value Label of surface (from mesh generator).
-       */
-      void label(const char* value);
+            /// Deallocate PETSc and local data structures.
+            virtual
+            void deallocate(void);
 
-      /** Get label of boundary condition surface.
-       *
-       * @returns Label of surface (from mesh generator).
-       */
-      const char* label(void) const;
+            /** Set label of boundary condition surface.
+             *
+             * @param value Label of surface (from mesh generator).
+             */
+            void label(const char* value);
 
-      /** Verify configuration.
-       *
-       * @param mesh Finite-element mesh.
-       */
-      virtual
-      void verifyConfiguration(const pylith::topology::Mesh& mesh) const;
+            /** Get label of boundary condition surface.
+             *
+             * @returns Label of surface (from mesh generator).
+             */
+            const char* label(void) const;
 
-      /** Initialize boundary condition.
-       *
-       * @param mesh Finite-element mesh.
-       * @param upDir Vertical direction (somtimes used in 3-D problems).
-       */
-      virtual
-      void initialize(const pylith::topology::Mesh& mesh,
-		      const PylithScalar upDir[3]) = 0;
+            /** Set name of field in solution to constrain.
+             *
+             * @param[in] value Name of field in solution to constrain.
+             */
+            void field(const char* value);
 
-    }; // class BoundaryCondition
+            /** Get name of field in solution to constrain.
+             *
+             * @returns Name of field in solution to constrain.
+             */
+            const char* field(void) const;
 
-  } // bc
+        }; // class BoundaryCondition
+
+    } // bc
 } // pylith
 
 
-// End of file 
+// End of file

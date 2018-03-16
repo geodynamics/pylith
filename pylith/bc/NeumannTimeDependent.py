@@ -22,14 +22,14 @@
 ##
 # Factory: boundary_condition
 
-from .NeumannNew import NeumannNew
+from .Neumann import Neumann
 from .bc import NeumannTimeDependent as ModuleNeumannTimeDependent
 from pylith.utils.NullComponent import NullComponent
 
 # NeumannTimeDependent class
 
 
-class NeumannTimeDependent(NeumannNew,
+class NeumannTimeDependent(Neumann,
                              ModuleNeumannTimeDependent):
     """
     Python object for managing a time-dependent Neumann (prescribed values)
@@ -40,7 +40,7 @@ class NeumannTimeDependent(NeumannNew,
 
     # INVENTORY //////////////////////////////////////////////////////////
 
-    class Inventory(NeumannNew.Inventory):
+    class Inventory(Neumann.Inventory):
         """
         Python object for managing NeumannTimeDependent facilities and properties.
         """
@@ -81,7 +81,7 @@ class NeumannTimeDependent(NeumannNew,
         """
         Constructor.
         """
-        NeumannNew.__init__(self, name)
+        Neumann.__init__(self, name)
         return
 
     def preinitialize(self, mesh):
@@ -93,7 +93,7 @@ class NeumannTimeDependent(NeumannNew,
         if 0 == comm.rank:
             self._info.log("Performing minimal initialization of time-dependent Neumann boundary condition '%s'." % self.aliases[-1])
 
-        NeumannNew.preinitialize(self, mesh)
+        Neumann.preinitialize(self, mesh)
 
         ModuleNeumannTimeDependent.useInitial(self, self.useInitial)
         ModuleNeumannTimeDependent.useRate(self, self.useRate)
@@ -109,7 +109,7 @@ class NeumannTimeDependent(NeumannNew,
         logEvent = "%sverify" % self._loggingPrefix
         self._eventLogger.eventBegin(logEvent)
 
-        NeumannNew.verifyConfiguration(self, self.mesh())
+        Neumann.verifyConfiguration(self, self.mesh())
 
         self._eventLogger.eventEnd(logEvent)
         return
@@ -126,7 +126,7 @@ class NeumannTimeDependent(NeumannNew,
             if not self.inventory.useTimeHistory and not isinstance(self.inventory.dbTimeHistory, NullComponent):
                 self._warning.log("Ignoring time history database setting for time-dependent Neumann boundary condition '%s'." % self.aliases[-1])
 
-            NeumannNew._configure(self)
+            Neumann._configure(self)
             self.useInitial = self.inventory.useInitial
             self.useRate = self.inventory.useRate
             self.useTimeHistory = self.inventory.useTimeHistory

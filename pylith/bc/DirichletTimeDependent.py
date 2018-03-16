@@ -23,14 +23,14 @@
 ##
 # Factory: boundary_condition
 
-from .DirichletNew import DirichletNew
+from .Dirichlet import Dirichlet
 from .bc import DirichletTimeDependent as ModuleDirichletTimeDependent
 from pylith.utils.NullComponent import NullComponent
 
 # DirichletTimeDependent class
 
 
-class DirichletTimeDependent(DirichletNew,
+class DirichletTimeDependent(Dirichlet,
                              ModuleDirichletTimeDependent):
     """
     Python object for managing a time-dependent Dirichlet (prescribed values)
@@ -41,7 +41,7 @@ class DirichletTimeDependent(DirichletNew,
 
     # INVENTORY //////////////////////////////////////////////////////////
 
-    class Inventory(DirichletNew.Inventory):
+    class Inventory(Dirichlet.Inventory):
         """
         Python object for managing DirichletTimeDependent facilities and properties.
         """
@@ -82,7 +82,7 @@ class DirichletTimeDependent(DirichletNew,
         """
         Constructor.
         """
-        DirichletNew.__init__(self, name)
+        Dirichlet.__init__(self, name)
         return
 
     def preinitialize(self, mesh):
@@ -94,7 +94,7 @@ class DirichletTimeDependent(DirichletNew,
         if 0 == comm.rank:
             self._info.log("Performing minimal initialization of time-dependent Dirichlet boundary condition '%s'." % self.aliases[-1])
 
-        DirichletNew.preinitialize(self, mesh)
+        Dirichlet.preinitialize(self, mesh)
 
         ModuleDirichletTimeDependent.useInitial(self, self.useInitial)
         ModuleDirichletTimeDependent.useRate(self, self.useRate)
@@ -110,7 +110,7 @@ class DirichletTimeDependent(DirichletNew,
         logEvent = "%sverify" % self._loggingPrefix
         self._eventLogger.eventBegin(logEvent)
 
-        DirichletNew.verifyConfiguration(self, self.mesh())
+        Dirichlet.verifyConfiguration(self, self.mesh())
         spaceDim = self.mesh().coordsys().spaceDim()
         for d in self.bcDOF:
             if d < 0 or d >= spaceDim:
@@ -132,7 +132,7 @@ class DirichletTimeDependent(DirichletNew,
             if not self.inventory.useTimeHistory and not isinstance(self.inventory.dbTimeHistory, NullComponent):
                 self._warning.log("Ignoring time history database setting for time-dependent Dirichlet boundary condition '%s'." % self.aliases[-1])
 
-            DirichletNew._configure(self)
+            Dirichlet._configure(self)
             self.useInitial = self.inventory.useInitial
             self.useRate = self.inventory.useRate
             self.useTimeHistory = self.inventory.useTimeHistory

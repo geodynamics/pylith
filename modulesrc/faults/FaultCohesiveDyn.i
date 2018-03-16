@@ -45,7 +45,7 @@ namespace pylith {
        *
        * @param tract Spatial and temporal variation of tractions.
        */
-      void tractPerturbation(TractPerturbation* tract);
+      //void tractPerturbation(TractPerturbation* tract);
   
       /** Set the friction (constitutive) model.
        *

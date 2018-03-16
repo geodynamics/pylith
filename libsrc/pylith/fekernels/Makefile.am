@@ -30,7 +30,8 @@ subpkginclude_HEADERS = \
 	IsotropicLinearIncompElasticityPlaneStrain.hh \
 	DispVel.hh \
 	TimeDependentFn.hh \
-	NeumannTimeDependent.hh
+	NeumannTimeDependent.hh \
+	AbsorbingDampers.hh
 
 noinst_HEADERS =
 
