@@ -113,6 +113,10 @@ class OutputManagerNew(PetscComponent, ModuleOutputManager):
         ModuleOutputManager.writer(self, self.writer)
         return
 
+    def close(self):
+        self.writer.close()
+        return
+
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
