@@ -177,7 +177,6 @@ pylith::bc::NeumannTimeDependent::prestep(const double t,
         PetscScalar* auxFieldsArray = auxFieldsVisitor.localArray(); assert(auxFieldsArray);
 
         // Compute offset of time history subfields in auxiliary field.
-        // :ASSUMPTION: Constrained field is a scalar or vector field.
         const PetscInt numComponents = _description.numComponents;
         PetscInt offTH = 0;
         if (_useInitial) {offTH += numComponents;}
@@ -228,8 +227,24 @@ pylith::bc::NeumannTimeDependent::_auxFieldSetup(const pylith::topology::Field& 
 
     assert(_auxTimeDependentFactory);
     assert(_normalizer);
-    _auxTimeDependentFactory->initialize(_auxField, *_normalizer, solution.spaceDim(),
-                                         &solution.subfieldInfo(_field.c_str()).description);
+    pylith::topology::Field::Description description = solution.subfieldInfo(_field.c_str()).description;
+    if (_scaleName == std::string("pressure")) {
+	description.scale = _normalizer->pressureScale();
+    } else if (_scaleName == std::string("velocity")) {
+	  description.scale = _normalizer->lengthScale() / _normalizer->pressureScale();
+    } else if (_scaleName == std::string("length")) {
+	description.scale = _normalizer->pressureScale();
+    } else if (_scaleName == std::string("time")) {
+	description.scale = _normalizer->pressureScale();
+    } else if (_scaleName == std::string("debsuty")) {
+	description.scale = _normalizer->pressureScale();
+    } else {
+      std::ostringstream msg;
+      msg << "Unknown name of scale ("<<_scaleName<<") for Neumann boundary condition '" << label() << "'.";
+      PYLITH_COMPONENT_ERROR(msg.str());
+      throw std::logic_error(msg.str());
+    } // if/else
+    _auxTimeDependentFactory->initialize(_auxField, *_normalizer, solution.spaceDim(), &description);
 
     // :ATTENTION: The order of the factory methods must match the order of the auxiliary subfields in the FE kernels.
 
