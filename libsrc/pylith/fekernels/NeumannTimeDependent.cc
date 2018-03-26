@@ -100,7 +100,7 @@ pylith::fekernels::NeumannTimeDependent::g0_initial_vector(const PylithInt dim,
     switch (dim) {
     case 2: {
         const PylithInt _dim = 2;
-        const PylithScalar tanDir[2] = {-n[0], n[1] };
+        const PylithScalar tanDir[2] = {-n[1], n[0] };
         for (PylithInt i = 0; i < _dim; ++i) {
             g0[i] += a[i_initial+0]*tanDir[i] + a[i_initial+1]*n[i];
         } // for

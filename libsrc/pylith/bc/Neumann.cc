@@ -40,7 +40,8 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::Neumann::Neumann(void) :
-    _boundaryMesh(NULL)
+  _boundaryMesh(NULL),
+  _scaleName("pressure")
 { // constructor
     _refDir1[0] = 0.0;
     _refDir1[1] = 0.0;
@@ -71,6 +72,23 @@ pylith::bc::Neumann::deallocate(void) {
 } // deallocate
 
 // ----------------------------------------------------------------------
+// Name of scale associated with Neumann boundary condition (e.g., pressure for elasticity).
+void
+pylith::bc::Neumann::scaleName(const char* value) {
+  if (value == std::string("length") ||
+      value == std::string("time") ||
+      value == std::string("pressure") ||
+      value == std::string("density") ||
+      value == std::string("pressure")) {
+    _scaleName = value;
+  } else {
+        std::ostringstream msg;
+        msg << "Unknown name of scale ("<<value<<") for Neumann boundary condition '" << label() << "'.";
+        throw std::runtime_error(msg.str());
+  } // if
+} // scaleName
+
+// ----------------------------------------------------------------------
 // Set first choice for reference direction to discriminate among tangential directions in 3-D.
 void
 pylith::bc::Neumann::refDir1(const double vec[3]) {
@@ -78,7 +96,8 @@ pylith::bc::Neumann::refDir1(const double vec[3]) {
     const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
     if (mag < 1.0e-6) {
         std::ostringstream msg;
-        msg << "Magnitude of reference direction 1 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]<<") is negligible. Use a unit vector.";
+        msg << "Magnitude of reference direction 1 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]
+	    <<") for Neumann boundary condition '" << label() << "' is negligible. Use a unit vector.";
         throw std::runtime_error(msg.str());
     } // if
     for (int i = 0; i < 3; ++i) {
@@ -94,7 +113,8 @@ pylith::bc::Neumann::refDir2(const double vec[3]) {
     const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
     if (mag < 1.0e-6) {
         std::ostringstream msg;
-        msg << "Magnitude of reference direction 2 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]<<") is negligible. Use a unit vector.";
+        msg << "Magnitude of reference direction 2 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]
+	    <<") for Neumann boundary condition '" << label() << "' is negligible. Use a unit vector.";
         throw std::runtime_error(msg.str());
     } // if
     for (int i = 0; i < 3; ++i) {
@@ -267,14 +287,13 @@ pylith::bc::Neumann::_setFEConstants(const pylith::topology::Field& solution,
         constants[index] = _refDir2[i];
     } // for
 
+    // Put up direction into constants.
     const PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
     PetscDS prob = NULL;
     PetscErrorCode err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err); assert(prob);
     err = PetscDSSetConstants(prob, numConstants, constants); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
-
-    // Put up direction into constants.
 } // _setFEConstants
 
 

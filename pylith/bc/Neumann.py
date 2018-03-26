@@ -23,13 +23,15 @@
 # Factory: boundary_condition
 
 from .BoundaryCondition import BoundaryCondition
+from .bc import NeumannTimeDependent as ModuleNeumann
 from pylith.feassemble.IntegratorPointwise import IntegratorPointwise
 
 # Neumann class
 
 
 class Neumann(BoundaryCondition,
-                   IntegratorPointwise):
+                   IntegratorPointwise,
+                  ModuleNeumann):
     """
     Python object for managing a Neumann (natural)
     boundary condition.
@@ -37,9 +39,30 @@ class Neumann(BoundaryCondition,
     Factory: boundary_condition
     """
 
+    # INVENTORY //////////////////////////////////////////////////////////
+
+    class Inventory(BoundaryCondition.Inventory, IntegratorPointwise.Inventory):
+        """
+        Python object for managing Neumann facilities and properties.
+        """
+
+        # @class Inventory
+        # Python object for managing Neumann facilities and properties.
+        ##
+        # \b Properties
+        # @li \b scale Type of scale for nondimenaionlizing Neumann boundary condition (e.g., "pressure" for elasticity").
+        ##
+        # \b Facilities
+        # @li None
+
+        import pyre.inventory
+
+        scaleName = pyre.inventory.str("scale_name", default="pressure", validator=pyre.inventory.choice(["length", "time", "pressure", "density", "velocity"]))
+        scaleName.meta['tip'] = "Type of scale for nondimensionalizing Neumann boundary condition ('pressure' for elasticity)."
+
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="neumannnew"):
+    def __init__(self, name="neumann"):
         """
         Constructor.
         """
@@ -71,6 +94,7 @@ class Neumann(BoundaryCondition,
         try:
             BoundaryCondition._configure(self)
             IntegratorPointwise._configure(self)
+            ModuleNeumann.scaleName(self, self.inventory.scaleName)
         except ValueError as err:
             aliases = ", ".join(self.aliases)
             raise ValueError("Error while configuring Dirichlet boundary condition "

@@ -49,6 +49,19 @@ public:
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
+    /** Name of scale associated with Neumann boundary
+     * condition (e.g., 'pressure' for elasticity).
+     *
+     * A Neumann boundary condition constrains the gradient in
+     * a solution subfield. In some cases the constraint is
+     * actually on a scaled version of the gradient as is the
+     * case of a Neumann boundary condition for elasticity
+     * that constrains boundary tractions.
+     *
+     * @param value Name of scale for nondimensionalizing Neumann boundary condition.
+     */
+    void scaleName(const char* value);
+  
     /** Set first choice for reference direction to discriminate among tangential directions in 3-D.
      *
      * @param vec Reference direction unit vector.
@@ -189,6 +202,7 @@ protected:
 
     pylith::topology::Mesh* _boundaryMesh;   ///< Boundary mesh.
     pylith::topology::FieldBase::Description _description; ///< Description of field associated with BC.
+    std::string _scaleName; ///< Name of scale associated with Neumann boundary condition.
     PylithReal _refDir1[3]; ///< First choice reference direction used to compute boundary tangential directions.
     PylithReal _refDir2[3]; ///< Second choice reference direction used to compute boundary tangential directions.
 
