@@ -28,35 +28,17 @@
 #define pylith_faults_faultsfwd_hh
 
 namespace pylith {
-  namespace faults {
+    namespace faults {
 
-    class CohesiveTopology;
+        class FaultCohesive;
+        class FaultCohesiveStub;
 
-    class Fault;
-    class FaultCohesive;
-    class FaultCohesiveLagrange;
-    class FaultCohesiveKin;
-    class FaultCohesiveDyn;
-    class FaultCohesiveImpulses;
-    class FaultCohesiveTract;
-
-    class EqKinSrc;
-    class SlipTimeFn;
-    class BruneSlipFn;
-    class ConstRateSlipFn;
-    class LiuCosSlipFn;
-    class StepSlipFn;
-    class TimeHistorySlipFn;
-
-    class Nucleator;
-    class TractPerturbation;
-
-    class TopologyOps;
-  } // faults
+        class TopologyOps;
+    } // faults
 } // pylith
 
 
 #endif // pylith_faults_bcfwd_hh
 
 
-// End of file 
+// End of file

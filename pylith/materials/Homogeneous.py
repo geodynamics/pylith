@@ -34,7 +34,7 @@ class Homogeneous(PetscComponent):
     """
     Python object for managing Homogeneous facilities and properties.
     """
-    
+
     ## @class Inventory
     ## Python object for managing Homogeneous facilities and properties.
     ##
@@ -46,9 +46,8 @@ class Homogeneous(PetscComponent):
 
     import pyre.inventory
 
-    from ElasticIsotropic3D import ElasticIsotropic3D
-    material = pyre.inventory.facility("material", family="material",
-                                       factory=ElasticIsotropic3D)
+    from IsotropicLinearElasticityPlaneStrain import IsotropicLinearElasticityPlaneStrain
+    material = pyre.inventory.facility("material", family="material", factory=IsotropicLinearElasticityPlaneStrain)
     material.meta['tip'] = "Material in problem."
 
 
@@ -62,4 +61,4 @@ class Homogeneous(PetscComponent):
     return
 
 
-# End of file 
+# End of file

@@ -26,7 +26,7 @@
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
+#include "pylith/faults/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 
 #include "pylith/utils/array.hh" // USES int_array
 
@@ -202,35 +202,18 @@ pylith::topology::TestRefineUniform::_initializeMesh(Mesh* const mesh)
     iohandler.read(mesh);
 
     // Adjust topology if necessary.
-    if (_data->faultA || _data->faultB) {
-        int firstLagrangeVertex = 0;
-        int firstFaultCell = 0;
-
-        faults::FaultCohesiveKin faultA;
-        faultA.id(100);
-        if (_data->faultA) {
-            faultA.label(_data->faultA);
-            const int nvertices = faultA.numVerticesNoMesh(*mesh);
-            firstLagrangeVertex += nvertices;
-            firstFaultCell += 2*nvertices; // shadow + Lagrange vertices
-        } // if
-
-        faults::FaultCohesiveKin faultB;
-        faultB.id(101);
-        if (_data->faultB) {
-            faultA.label(_data->faultB);
-            const int nvertices = faultB.numVerticesNoMesh(*mesh);
-            firstLagrangeVertex += nvertices;
-            firstFaultCell += 2*nvertices; // shadow + Lagrange vertices
-        } // if
-
-        int firstFaultVertex = 0;
-        if (_data->faultA) {
-            faultA.adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
-        } // if
-        if (_data->faultB) {
-            faultB.adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
-        } // if
+    if (_data->faultA) {
+	faults::FaultCohesiveStub faultA;
+	faultA.id(100);
+	faultA.label(_data->faultA);
+	faultA.adjustTopology(mesh);
+    } // if
+    
+    if (_data->faultB) {
+	faults::FaultCohesiveStub faultB;
+	faultB.id(101);
+	faultB.label(_data->faultB);
+	faultB.adjustTopology(mesh);
     } // if
 
     PYLITH_METHOD_END;

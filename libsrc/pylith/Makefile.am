@@ -22,11 +22,12 @@ SUBDIRS = \
 	meshio \
 	materials \
 	bc \
-	feassemble \
-	fekernels \
 	faults \
 	friction \
+	feassemble \
+	fekernels \
 	problems
+
 
 lib_LTLIBRARIES = libpylith.la
 
@@ -39,49 +40,9 @@ libpylith_la_SOURCES = \
 	bc/NeumannTimeDependent.cc \
 	bc/AbsorbingDampers.cc \
 	bc/AbsorbingDampersAuxiliaryFactory.cc \
-	faults/Fault.cc \
-	faults/TopologyOps.cc \
-	faults/CohesiveTopology.cc \
 	faults/FaultCohesive.cc \
-	faults/FaultCohesiveLagrange.cc \
-	faults/FaultCohesiveKin.cc \
-	faults/FaultCohesiveDyn.cc \
-	faults/FaultCohesiveImpulses.cc \
-	faults/FaultCohesiveTract.cc \
-	faults/EqKinSrc.cc \
-	faults/SlipTimeFn.cc \
-	faults/StepSlipFn.cc \
-	faults/ConstRateSlipFn.cc \
-	faults/BruneSlipFn.cc \
-	faults/TimeHistorySlipFn.cc \
-	faults/LiuCosSlipFn.cc \
-	feassemble/CellGeometry.cc \
-	feassemble/Constraint.cc \
-	feassemble/GeometryLine2D.cc \
-	feassemble/GeometryLine3D.cc \
-	feassemble/GeometryTri2D.cc \
-	feassemble/GeometryTri3D.cc \
-	feassemble/GeometryTet3D.cc \
-	feassemble/GeometryQuad2D.cc \
-	feassemble/GeometryQuad3D.cc \
-	feassemble/GeometryHex3D.cc \
-	feassemble/Quadrature.cc \
-	feassemble/QuadratureRefCell.cc \
-	feassemble/QuadratureEngine.cc \
-	feassemble/Quadrature1Din2D.cc \
-	feassemble/Quadrature1Din3D.cc \
-	feassemble/Quadrature2D.cc \
-	feassemble/Quadrature2Din3D.cc \
-	feassemble/Quadrature3D.cc \
-	feassemble/Integrator.cc \
-	feassemble/IntegratorElasticity.cc \
-	feassemble/ElasticityImplicit.cc \
-	feassemble/ElasticityExplicit.cc \
-	feassemble/ElasticityExplicitTri3.cc \
-	feassemble/ElasticityExplicitTet4.cc \
-	feassemble/IntegratorElasticityLgDeform.cc \
-	feassemble/ElasticityImplicitLgDeform.cc \
-	feassemble/ElasticityExplicitLgDeform.cc \
+	faults/FaultCohesiveStub.cc \
+	faults/TopologyOps.cc \
 	feassemble/IntegratorPointwise.cc \
 	feassemble/ConstraintPointwise.cc \
 	feassemble/AuxiliaryFactory.cc \
@@ -96,30 +57,7 @@ libpylith_la_SOURCES = \
 	fekernels/TimeDependentFn.cc \
 	fekernels/NeumannTimeDependent.cc \
 	fekernels/AbsorbingDampers.cc \
-	friction/FrictionModel.cc \
-	friction/StaticFriction.cc \
-	friction/SlipWeakening.cc \
-	friction/SlipWeakeningTime.cc \
-	friction/SlipWeakeningTimeStable.cc \
-	friction/RateStateAgeing.cc \
-	friction/TimeWeakening.cc \
-	materials/Metadata.cc \
 	materials/Material.cc \
-	materials/ElasticMaterial.cc \
-	materials/ElasticPlaneStrain.cc \
-	materials/ElasticPlaneStress.cc \
-	materials/ElasticIsotropic3D.cc \
-	materials/ViscoelasticMaxwell.cc \
-	materials/GenMaxwellIsotropic3D.cc \
-	materials/GenMaxwellPlaneStrain.cc \
-	materials/GenMaxwellQpQsIsotropic3D.cc \
-	materials/MaxwellIsotropic3D.cc \
-	materials/MaxwellPlaneStrain.cc \
-	materials/PowerLaw3D.cc \
-	materials/PowerLawPlaneStrain.cc \
-	materials/DruckerPrager3D.cc \
-	materials/DruckerPragerPlaneStrain.cc \
-	materials/MaterialNew.cc \
 	materials/AuxiliaryFactory.cc \
 	materials/IsotropicLinearElasticityPlaneStrain.cc \
 	materials/IsotropicLinearMaxwellPlaneStrain.cc \
@@ -139,34 +77,23 @@ libpylith_la_SOURCES = \
 	meshio/OutputSolnSubset.cc \
 	meshio/OutputSolnPoints.cc \
 	meshio/CellFilter.cc \
-	meshio/CellFilterAvg.cc \
 	meshio/VertexFilter.cc \
 	meshio/VertexFilterVecNorm.cc \
 	meshio/VertexFilterDecimateP1.cc \
 	meshio/DataWriter.cc \
 	meshio/DataWriterVTK.cc \
 	meshio/OutputManager.cc \
-	meshio/OutputManagerNew.cc \
-	meshio/OutputSolnNew.cc \
-	problems/Formulation.cc \
-	problems/Explicit.cc \
-	problems/Implicit.cc \
-	problems/Solver.cc \
-	problems/SolverLinear.cc \
-	problems/SolverNonlinear.cc \
-	problems/SolverLumped.cc \
+	meshio/OutputSoln.cc \
 	problems/Problem.cc \
 	problems/TimeDependent.cc \
 	problems/SolutionFactory.cc \
 	topology/FieldBase.cc \
-	topology/Jacobian.cc \
 	topology/Mesh.cc \
 	topology/MeshOps.cc \
 	topology/Field.cc \
 	topology/FieldOps.cc \
 	topology/FieldQuery.cc \
 	topology/Fields.cc \
-	topology/SolutionFields.cc \
 	topology/Distributor.cc \
 	topology/ReverseCuthillMcKee.cc \
 	topology/RefineUniform.cc \
@@ -177,8 +104,6 @@ libpylith_la_SOURCES = \
 	utils/PetscVersion.cc \
 	utils/DependenciesVersion.cc \
 	utils/TestArray.cc
-
-#	faults/TractPerturbation.cc 
 
 
 libpylith_la_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)

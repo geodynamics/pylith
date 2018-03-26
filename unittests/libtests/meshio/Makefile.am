@@ -80,7 +80,6 @@ noinst_HEADERS = \
 	TestOutputSolnSubset.hh \
 	TestOutputSolnPoints.hh \
 	TestVertexFilterVecNorm.hh \
-	TestCellFilterAvg.hh \
 	TestDataWriter.hh \
 	TestDataWriterMesh.hh \
 	TestDataWriterVTK.hh \

@@ -25,7 +25,6 @@
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/meshio/DataWriterVTK.hh" // USES DataWriterVTK
-#include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
 
 // ----------------------------------------------------------------------
 // Setup testing data.

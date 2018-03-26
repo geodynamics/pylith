@@ -24,7 +24,7 @@
 namespace pylith {
   namespace materials {
 
-    class IsotropicLinearMaxwellPlaneStrain : public MaterialNew
+    class IsotropicLinearMaxwellPlaneStrain : public Material
     { // class IsotropicLinearMaxwellPlaneStrain
 
       // PUBLIC METHODS /////////////////////////////////////////////////////

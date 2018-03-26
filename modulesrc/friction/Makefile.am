@@ -25,18 +25,11 @@ subpkgpyexec_LTLIBRARIES = _frictionmodule.la
 subpkgpyexec_PYTHON = friction.py
 
 swig_sources = \
-	friction.i \
-	FrictionModel.i \
-	StaticFriction.i \
-	SlipWeakening.i \
-	SlipWeakeningTime.i \
-	SlipWeakeningTimeStable.i \
-	RateStateAgeing.i \
-	TimeWeakening.i
+	friction.i 
 
 swigincludedir = $(pkgdatadir)/swig/$(subpackage)
-swiginclude_HEADERS = \
-	FrictionModel.i
+#swiginclude_HEADERS = \
+#	FrictionModel.i
 
 swig_generated = \
 	friction_wrap.cxx \

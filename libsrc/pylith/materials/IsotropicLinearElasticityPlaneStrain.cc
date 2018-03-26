@@ -44,7 +44,7 @@ const char* pylith::materials::IsotropicLinearElasticityPlaneStrain::_pyreCompon
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::materials::IsotropicLinearElasticityPlaneStrain::IsotropicLinearElasticityPlaneStrain(void) :
-    pylith::materials::MaterialNew(2),
+    pylith::materials::Material(2),
     _useInertia(false),
     _useBodyForce(false),
     _useReferenceState(false)

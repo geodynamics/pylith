@@ -55,7 +55,7 @@ namespace pylith {
         class ViscoelasticMaxwell;
 
         // New stuff
-        class MaterialNew;
+        class Material;
         class AuxiliaryFactory;
 
         class IsotropicLinearElasticityPlaneStrain;

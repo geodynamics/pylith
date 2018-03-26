@@ -48,8 +48,8 @@ class SingleOutput(PetscComponent):
 
     import pyre.inventory
 
-    from OutputSolnNew import OutputSolnNew
-    output = pyre.inventory.facility("output", family="output_manager", factory=OutputSolnNew)
+    from OutputSoln import OutputSoln
+    output = pyre.inventory.facility("output", family="output_manager", factory=OutputSoln)
     output.meta['tip'] = "Output manager."
 
 

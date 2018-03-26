@@ -30,18 +30,9 @@
 namespace pylith {
     namespace problems {
 
-        class Formulation;
-        class Implicit;
-        class Explicit;
-
         class Problem;
         class TimeDependent;
         class SolutionFactory;
-
-        class Solver;
-        class SolverLinear;
-        class SolverNonlinear;
-        class SolverLumped;
 
     } // problems
 } // pylith

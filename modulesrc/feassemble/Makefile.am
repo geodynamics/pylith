@@ -26,26 +26,6 @@ subpkgpyexec_PYTHON = feassemble.py
 
 swig_sources = \
 	feassemble.i \
-	CellGeometry.i \
-	GeometryLine2D.i \
-	GeometryLine3D.i \
-	GeometryTri2D.i \
-	GeometryTri3D.i \
-	GeometryQuad2D.i \
-	GeometryQuad3D.i \
-	GeometryTet3D.i \
-	GeometryHex3D.i \
-	QuadratureRefCell.i \
-	Quadrature.i \
-	Integrator.i \
-	IntegratorElasticity.i \
-	ElasticityImplicit.i \
-	ElasticityExplicit.i \
-	ElasticityExplicitTri3.i \
-	ElasticityExplicitTet4.i \
-	IntegratorElasticityLgDeform.i \
-	ElasticityImplicitLgDeform.i \
-	ElasticityExplicitLgDeform.i \
 	IntegratorPointwise.i \
 	ConstraintPointwise.i \
 	../utils/PyreComponent.i \

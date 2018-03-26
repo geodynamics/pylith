@@ -25,7 +25,7 @@
 
 #include "pylith/feassemble/IntegratorPointwise.hh" // USES IntegratorPointwise
 #include "pylith/feassemble/ConstraintPointwise.hh" // USES ConstraintPointwise
-#include "pylith/meshio/OutputSolnNew.hh" // USES OutputSolnNew
+#include "pylith/meshio/OutputSoln.hh" // USES OutputSoln
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -169,7 +169,7 @@ pylith::problems::Problem::constraints(pylith::feassemble::ConstraintPointwise* 
 // ----------------------------------------------------------------------
 // Set constraints over the mesh.
 void
-pylith::problems::Problem::outputs(pylith::meshio::OutputSolnNew* outputArray[],
+pylith::problems::Problem::outputs(pylith::meshio::OutputSoln* outputArray[],
                                    const int numOutputs)
 { // outputs
     PYLITH_METHOD_BEGIN;

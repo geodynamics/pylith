@@ -22,13 +22,13 @@
 ##
 # Factory: material
 
-from .MaterialNew import MaterialNew
+from .Material import Material
 from .materials import IsotropicLinearIncompElasticityPlaneStrain as ModuleMaterial
 
 # IsotropicLinearIncompElasticityPlaneStrain class
 
 
-class IsotropicLinearIncompElasticityPlaneStrain(MaterialNew, ModuleMaterial):
+class IsotropicLinearIncompElasticityPlaneStrain(Material, ModuleMaterial):
     """
     Python material for isotropic, linearly elastic incompressible plane strain.
 
@@ -37,7 +37,7 @@ class IsotropicLinearIncompElasticityPlaneStrain(MaterialNew, ModuleMaterial):
 
     # INVENTORY //////////////////////////////////////////////////////////
 
-    class Inventory(MaterialNew.Inventory):
+    class Inventory(Material.Inventory):
         """
         Python object for managing IsotropicLinearIncompElasticityPlaneStrain facilities and properties.
         """
@@ -76,7 +76,7 @@ class IsotropicLinearIncompElasticityPlaneStrain(MaterialNew, ModuleMaterial):
         """
         Constructor.
         """
-        MaterialNew.__init__(self, name)
+        Material.__init__(self, name)
         return
 
     def preinitialize(self, mesh):
@@ -85,7 +85,7 @@ class IsotropicLinearIncompElasticityPlaneStrain(MaterialNew, ModuleMaterial):
         if 0 == comm.rank:
             self._info.log("Performing minimal initialization of material '%s'" % self.aliases[-1])
 
-        MaterialNew.preinitialize(self, mesh)
+        Material.preinitialize(self, mesh)
 
         ModuleMaterial.useInertia(self, self.useInertia)
         ModuleMaterial.useBodyForce(self, self.useBodyForce)
@@ -100,7 +100,7 @@ class IsotropicLinearIncompElasticityPlaneStrain(MaterialNew, ModuleMaterial):
         Setup members using inventory.
         """
         try:
-            MaterialNew._configure(self)
+            Material._configure(self)
             self.useInertia = self.inventory.useInertia
             self.useBodyForce = self.inventory.useBodyForce
             self.useReferenceState = self.inventory.useReferenceState

@@ -23,13 +23,6 @@ subpkginclude_HEADERS = \
 	Problem.hh \
 	TimeDependent.hh \
 	SolutionFactory.hh \
-	Formulation.hh \
-	Explicit.hh \
-	Implicit.hh \
-	Solver.hh \
-	SolverLinear.hh \
-	SolverNonlinear.hh \
-	SolverLumped.hh \
 	problemsfwd.hh
 
 noinst_HEADERS =

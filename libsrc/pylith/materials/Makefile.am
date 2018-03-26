@@ -20,38 +20,7 @@ subpackage = materials
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
-	ElasticIsotropic3D.hh \
-	ElasticIsotropic3D.icc \
-	ElasticMaterial.hh \
-	ElasticMaterial.icc \
-	ElasticPlaneStrain.hh \
-	ElasticPlaneStress.hh \
-	GenMaxwellIsotropic3D.hh \
-	GenMaxwellIsotropic3D.icc \
-	GenMaxwellPlaneStrain.hh \
-	GenMaxwellPlaneStrain.icc \
-	GenMaxwellQpQsIsotropic3D.hh \
-	GenMaxwellQpQsIsotropic3D.icc \
-	MaxwellIsotropic3D.hh \
-	MaxwellIsotropic3D.icc \
-	MaxwellPlaneStrain.hh \
-	MaxwellPlaneStrain.icc \
-	PowerLaw3D.hh \
-	PowerLaw3D.icc \
-	PowerLawPlaneStrain.hh \
-	PowerLawPlaneStrain.icc \
-	DruckerPrager3D.hh \
-	DruckerPrager3D.icc \
-	DruckerPragerPlaneStrain.hh \
-	DruckerPragerPlaneStrain.icc \
-	Metadata.hh \
-	Metadata.icc \
 	Material.hh \
-	Material.icc \
-	ViscoelasticMaxwell.hh \
-	EffectiveStress.hh \
-	EffectiveStress.icc \
-	MaterialNew.hh \
 	AuxiliaryFactory.hh \
 	IsotropicLinearElasticityPlaneStrain.hh \
 	IsotropicLinearMaxwellPlaneStrain.hh \

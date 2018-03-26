@@ -25,7 +25,7 @@
 
 #include "pylith/feassemble/IntegratorPointwise.hh" // USES IntegratorPointwise
 #include "pylith/feassemble/ConstraintPointwise.hh" // USES ConstraintPointwise
-#include "pylith/meshio/OutputSolnNew.hh" // USES OutputSolnNew
+#include "pylith/meshio/OutputSoln.hh" // USES OutputSoln
 
 #include "petscts.h" // USES PetscTS
 

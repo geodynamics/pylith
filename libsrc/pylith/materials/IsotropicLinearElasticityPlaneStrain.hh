@@ -27,13 +27,13 @@
 // Include directives ---------------------------------------------------
 #include "materialsfwd.hh" // forward declarations
 
-#include "pylith/materials/MaterialNew.hh" // ISA Material
+#include "pylith/materials/Material.hh" // ISA Material
 
 // Material -------------------------------------------------------------
 /** @brief C++ class for isotropic linear elastic plane strain material.
  */
 
-class pylith::materials::IsotropicLinearElasticityPlaneStrain : public pylith::materials::MaterialNew { // class IsotropicLinearElasticityPlaneStrain
+class pylith::materials::IsotropicLinearElasticityPlaneStrain : public pylith::materials::Material { // class IsotropicLinearElasticityPlaneStrain
     friend class TestIsotropicLinearElasticityPlaneStrain;   // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////

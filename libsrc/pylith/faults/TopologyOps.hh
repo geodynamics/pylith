@@ -18,7 +18,7 @@
 
 /** @file libsrc/faults/TopologyOps.hh
  *
- * @brief C++ helper object for creation of cohesive cells.
+ * @brief C++ helper object for creating cohesive cells.
  */
 
 #if !defined(pylith_faults_topologyops_hh)
@@ -28,37 +28,76 @@
 #include "faultsfwd.hh" // forward declarations
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include <set>
-#include <vector>
-#include <iostream>
+#include <set> // USES std::set
 
 // TopologyOps ----------------------------------------------------------
 /// Helper object for creation of cohesive cells.
-class pylith::faults::TopologyOps
-{ // class TopologyOps
+class pylith::faults::TopologyOps {
 
-  // PUBLIC TYPEDEFS ////////////////////////////////////////////////////
-public :
+    // PUBLIC TYPEDEFS ////////////////////////////////////////////////////
+public:
 
-  typedef std::set<PetscInt> PointSet;
-  typedef std::vector<PetscInt> PointArray;
+    typedef std::set<PetscInt> PointSet;
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+    // PUBLIC METHODS /////////////////////////////////////////////////////
+public:
 
-  static
-  void classifyCellsDM(PetscDM dmMesh,
-		       PetscInt vertex,
-		       const int depth,
-		       const int faceSize,
-		       PetscInt firstCohesiveCell,
-		       PointSet& replaceCells,
-		       PointSet& noReplaceCells,
-		       const int debug);
+    /** Create the fault mesh.
+     *
+     * @param faultMesh Finite-element mesh of fault (output).
+     * @param mesh Finite-element mesh of domain.
+     * @param groupdField Group of vertices assocated with faces of
+     *   cells defining fault surface
+     */
+    static
+    void createFault(topology::Mesh* faultMesh,
+                     const topology::Mesh& mesh,
+                     DMLabel groupField);
 
-}; // class CohesiveTopology
+    /** Create cohesive cells in an interpolated mesh.
+     *
+     * If firstFaultVertex == 0, then firstFaultVertex is set to the first point
+     * not currently used in the mesh, and firstFaultCell is incremented with this
+     * point. These values are updated as new fault vertices and cells are added.
+     *
+     * @param fault Finite-element mesh of fault (output)
+     * @param mesh Finite-element mesh
+     * @param materialId Material id for cohesive elements.
+     */
+    static
+    void create(topology::Mesh* mesh,
+                const topology::Mesh& faultMesh,
+                PetscDMLabel faultBdLabel,
+                const int materialId);
 
-#endif // pylith_faults_cohesivetopology_hh
+    /** Create (distributed) fault mesh from cohesive cells.
+     *
+     * @param faultMesh Finite-element mesh of fault (output).
+     * @param mesh Finite-element mesh.
+     * @param materialId Material id for cohesive elements.
+     * @param label Fault label.
+     */
+    static
+    void createFaultParallel(topology::Mesh* faultMesh,
+                             const topology::Mesh& mesh,
+                             const int materialId,
+                             const char* label);
+
+    /** Classify cells adjacent to the fault as to the side of the fault each cell is on.
+     */
+    static
+    void classifyCellsDM(PetscDM dmMesh,
+                         PetscInt vertex,
+                         const int depth,
+                         const int faceSize,
+                         PetscInt firstCohesiveCell,
+                         PointSet& replaceCells,
+                         PointSet& noReplaceCells,
+                         const int debug);
+
+}; // class TopologyOps
+
+#endif // pylith_faults_topologyops_hh
 
 
-// End of file 
+// End of file

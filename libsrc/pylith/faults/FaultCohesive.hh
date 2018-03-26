@@ -26,111 +26,131 @@
 #define pylith_faults_faultcohesive_hh
 
 // Include directives ---------------------------------------------------
-#include "Fault.hh" // ISA Fault
+#include "faultsfwd.hh" // forward declarations
 
-#include "pylith/feassemble/Integrator.hh" // ISA Integrator
+#include "pylith/feassemble/IntegratorPointwise.hh" // ISA Integrator
 
-#include <map>
+#include <string> // HASA std::string
 
 // FaultCohesive --------------------------------------------------------
 /// Absract base class for fault surface implemented with cohesive cells.
-class pylith::faults::FaultCohesive : public Fault,
-				      public feassemble::Integrator
-{ // class FaultCohesive
-  friend class TestFaultCohesive; // unit testing
+class pylith::faults::FaultCohesive : public pylith::feassemble::IntegratorPointwise {
+    friend class TestFaultCohesive; // unit testing
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+    // PUBLIC METHODS /////////////////////////////////////////////////////
+public:
 
-  /// Default constructor.
-  FaultCohesive(void);
+    /// Default constructor.
+    FaultCohesive(void);
 
-  /// Destructor.
-  virtual
-  ~FaultCohesive(void);
+    /// Destructor.
+    virtual ~FaultCohesive(void);
 
-  /// Deallocate PETSc and local data structures.
-  virtual
-  void deallocate(void);
-  
-  /** Set flag for using fault mesh or group of vertices to define
-   * fault surface.
-   *
-   * This method is part of a KLUDGE to allow creation of cohesive
-   * cells in cases where domain cells have more than one face (edge
-   * for 2-D problems) on the fault.
-   *
-   * @param flag True if using fault mesh, false if using vertices.
-   */
-  void useFaultMesh(const bool flag);
+    /// Deallocate PETSc and local data structures.
+    virtual
+    void deallocate(void);
 
-  /** Get the number of vertices associated with the fault (before
-   * fault mesh exists).
-   *
-   * @param mesh PETSc mesh
-   * @return Number of vertices on the fault.
-   */
-  int numVerticesNoMesh(const topology::Mesh& mesh) const;
+    /** Set material identifier of fault.
+     *
+     * @param[in] value Fault identifier
+     */
+    void id(const int value);
 
-  /** Adjust mesh topology for fault implementation.
-   *
-   * If firstFaultVertex == 0, then firstFaultVertex is set to the first point
-   * not currently used in the mesh, and firstLagrangeVertex/firstFaultCell are
-   * incremented with this point. These values are updated as new fault vertices
-   * and cells are added.
-   *
-   * @param mesh PETSc mesh.
-   * @param firstFaultVertex The first point eligible to become a new fault vertex
-   * @param firstLagrangeVertex The first point eligible to become a new Lagrange vertex
-   * @param firstFaultCell The first point eligible to become a new fault cell
-   */
-  void adjustTopology(topology::Mesh* const mesh,
-                      int *firstFaultVertex,
-                      int *firstLagrangeVertex,
-                      int *firstFaultCell);
+    /** Get material identifier of fault.
+     *
+     * @returns Fault identifier
+     */
+    int id(void) const;
 
-  /** Cohesive cells use Lagrange multiplier constraints?
-   *
-   * @returns True if implementation using Lagrange multiplier
-   * constraints, false otherwise.
-   */
-  bool useLagrangeConstraints(void) const;
+    /** Set label of group of vertices associated with fault.
+     *
+     * @param[in] value Label of fault
+     */
+    void label(const char* value);
 
-  /** Get fields associated with fault.
-   *
-   * @returns Fields associated with fault.
-   */
-  const topology::Fields* fields(void) const;
+    /** Get label of group of vertices associated with fault.
+     *
+     * @returns Label of fault
+     */
+    const char* label(void) const;
 
-  // PROTECTED MEMBERS //////////////////////////////////////////////////
-protected :
+    /** Set label of group of vertices defining buried edge of fault.
+     *
+     * @param[in] value Label of fault
+     */
+    void edge(const char* value);
 
-  /// Fields for fault information.
-  topology::Fields* _fields;
+    /** Get label of group of vertices defining buried edge of fault.
+     *
+     * @returns Label of fault
+     */
+    const char* edge(void) const;
 
-  bool _useLagrangeConstraints; ///< True if uses Lagrange multipliers.
+    /** Set first choice for reference direction to discriminate among tangential directions in 3-D.
+     *
+     * @param vec Reference direction unit vector.
+     */
+    void refDir1(const double vec[3]);
 
-  /// Map label of cohesive cell to label of fault cell.
-  std::map<PetscInt, PetscInt> _cohesiveToFault;
+    /** Set second choice for reference direction to discriminate among tangential directions in 3-D.
+     *
+     * @param vec Reference direction unit vector.
+     */
+    void refDir2(const double vec[3]);
 
-// PRIVATE MEMBERS ////////////////////////////////////////////////////
-private :
+    /** Adjust mesh topology for fault implementation.
+     *
+     * @param mesh[in] PETSc mesh.
+     */
+    void adjustTopology(topology::Mesh* const mesh);
 
-  /// If true, use fault mesh to define fault; otherwise, use group of
-  /// vertices to define fault.
-  bool _useFaultMesh;
+    /** Verify configuration is acceptable.
+     *
+     * @param[in] solution Solution field.
+     */
+    virtual
+    void verifyConfiguration(const pylith::topology::Field& solution) const;
 
-  // NOT IMPLEMENTED ////////////////////////////////////////////////////
-private :
+    /** Initialize integrator.
+     *
+     * Create fault mesh from cohesive cells and cohesive point map.
+     *
+     * Derived class initialize, should:
+     * 1. Setup subfields in auxiliary field.
+     * 2. Populate auxiliary subfields.
+     * 3. Set finite-element kernels.
+     *
+     * @param[in] solution Solution field (layout).
+     */
+    virtual
+    void initialize(const pylith::topology::Field& solution);
 
-  FaultCohesive(const FaultCohesive&); ///< Not implemented
-  const FaultCohesive& operator=(const FaultCohesive&); ///< Not implemented
+
+    // PROTECTED MEMBERS //////////////////////////////////////////////////
+protected:
+
+    pylith::topology::Mesh* _faultMesh; ///< Mesh over fault surface.
+
+    PetscIS _cohesivePointMap; ///< Map from fault point to higher dimension point in cohesive cell.
+
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////
+private:
+
+    int _id; ///< Identifier for cohesive cells.
+    std::string _label; ///< Label for vertices associated with fault.
+    std::string _edge; ///< Label for vertices along buried edges of fault.
+    PylithReal _refDir1[3]; ///< First choice reference direction used to compute boundary tangential directions.
+    PylithReal _refDir2[3]; ///< Second choice reference direction used to compute boundary tangential directions.
+
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////
+private:
+
+    FaultCohesive(const FaultCohesive&); ///< Not implemented
+    const FaultCohesive& operator=(const FaultCohesive&); ///< Not implemented
 
 }; // class FaultCohesive
-
-#include "FaultCohesive.icc" // inline methods
 
 #endif // pylith_faults_faultcohesive_hh
 
 
-// End of file 
+// End of file

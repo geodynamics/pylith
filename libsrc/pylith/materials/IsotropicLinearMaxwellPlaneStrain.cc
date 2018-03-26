@@ -44,7 +44,7 @@ const char* pylith::materials::IsotropicLinearMaxwellPlaneStrain::_pyreComponent
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::materials::IsotropicLinearMaxwellPlaneStrain::IsotropicLinearMaxwellPlaneStrain(void) :
-    pylith::materials::MaterialNew(2),
+    pylith::materials::Material(2),
     _useInertia(false),
     _useBodyForce(false),
     _useReferenceState(false)

@@ -20,7 +20,7 @@
 
 #include "AuxiliaryFactory.hh" // implementation of object methods
 
-#include "MaterialNew.hh" // USES MaterialNew
+#include "Material.hh" // USES Material
 #include "Query.hh" // USES Query
 
 #include "pylith/topology/Field.hh" // USES Field

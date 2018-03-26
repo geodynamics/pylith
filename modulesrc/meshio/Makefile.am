@@ -34,15 +34,14 @@ swig_sources = \
 	VertexFilterVecNorm.i \
 	VertexFilterDecimateP1.i \
 	CellFilter.i \
-	CellFilterAvg.i \
 	DataWriter.i \
 	DataWriterVTK.i \
 	OutputManager.i \
 	OutputSolnSubset.i \
 	OutputSolnPoints.i \
 	../utils/PyreComponent.i \
-	OutputManagerNew.i \
-	OutputSolnNew.i
+	OutputManager.i \
+	OutputSoln.i
 
 swig_generated = \
 	meshio_wrap.cxx \

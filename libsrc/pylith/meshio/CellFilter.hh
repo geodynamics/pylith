@@ -29,7 +29,6 @@
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
-#include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Quadrature
 #include "pylith/topology/topologyfwd.hh" // USES Field
 
 // CellFilter -----------------------------------------------------------
@@ -60,12 +59,6 @@ public :
   virtual
   void deallocate(void);
   
-  /** Set quadrature associated with cells.
-   *
-   * @param q Quadrature for cells.
-   */
-  void quadrature(const feassemble::Quadrature* q);
-
   /** Filter field. Field type of filtered field is returned via an argument.
    *
    * @param fieldIn Field to filter.
@@ -98,9 +91,6 @@ private :
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
-
-  /// Quadrature associated with cells.
-  feassemble::Quadrature* _quadrature;
 
   topology::StratumIS* _cellsIS; ///< Index set of cells.
 

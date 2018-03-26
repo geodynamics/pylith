@@ -32,18 +32,16 @@
 #include "pylith/meshio/VertexFilterVecNorm.hh"
 #include "pylith/meshio/VertexFilterDecimateP1.hh"
 #include "pylith/meshio/CellFilter.hh"
-#include "pylith/meshio/CellFilterAvg.hh"
 #include "pylith/meshio/DataWriter.hh"
 #include "pylith/meshio/DataWriterVTK.hh"
-#include "pylith/meshio/OutputManager.hh"
 #include "pylith/meshio/OutputSolnSubset.hh"
 #include "pylith/meshio/OutputSolnPoints.hh"
 #if defined(ENABLE_HDF5)
 #include "pylith/meshio/DataWriterHDF5.hh"
 #include "pylith/meshio/DataWriterHDF5Ext.hh"
 #endif
-#include "pylith/meshio/OutputManagerNew.hh"
-#include "pylith/meshio/OutputSolnNew.hh"
+#include "pylith/meshio/OutputManager.hh"
+#include "pylith/meshio/OutputSoln.hh"
 
 #include "pylith/utils/arrayfwd.hh"
 %}
@@ -83,10 +81,8 @@ import_array();
 %include "VertexFilterVecNorm.i"
 %include "VertexFilterDecimateP1.i"
 %include "CellFilter.i"
-%include "CellFilterAvg.i"
 %include "DataWriter.i"
 %include "DataWriterVTK.i"
-%include "OutputManager.i"
 %include "OutputSolnSubset.i"
 %include "OutputSolnPoints.i"
 #if defined(ENABLE_HDF5)
@@ -94,7 +90,7 @@ import_array();
 %include "DataWriterHDF5Ext.i"
 #endif
 %include "../utils/PyreComponent.i"
-%include "OutputManagerNew.i"
-%include "OutputSolnNew.i"
+%include "OutputManager.i"
+%include "OutputSoln.i"
 
 // End of file

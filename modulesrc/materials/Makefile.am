@@ -27,31 +27,13 @@ subpkgpyexec_PYTHON = materials.py
 swig_sources = \
 	materials.i \
 	Material.i \
-	ElasticMaterial.i \
-	ElasticPlaneStrain.i \
-	ElasticPlaneStress.i \
-	ElasticIsotropic3D.i \
-	MaxwellIsotropic3D.i \
-	MaxwellPlaneStrain.i \
-	GenMaxwellIsotropic3D.i \
-	GenMaxwellPlaneStrain.i \
-	GenMaxwellQpQsIsotropic3D.i \
-	PowerLaw3D.i \
-	PowerLawPlaneStrain.i \
-	DruckerPrager3D.i \
-	DruckerPragerPlaneStrain.i \
-	../utils/PyreComponent.i \
-	../feassemble/IntegratorPointwise.i \
-	MaterialNew.i \
 	IsotropicLinearElasticityPlaneStrain.i \
 	IsotropicLinearMaxwellPlaneStrain.i \
 	IsotropicLinearIncompElasticityPlaneStrain.i
 
 swigincludedir = $(pkgdatadir)/swig/$(subpackage)
 swiginclude_HEADERS = \
-	Material.i \
-	ElasticMaterial.i \
-	MaterialNew.i
+	Material.i
 
 swig_generated = \
 	materials_wrap.cxx \

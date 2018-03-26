@@ -40,7 +40,7 @@
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::setUp(void)
 { // setUp
-    TestMaterialNew::setUp();
+    TestMaterial::setUp();
     _mymaterial = new IsotropicLinearElasticityPlaneStrain(); CPPUNIT_ASSERT(_mymaterial);
     _mydata = NULL;
 
@@ -62,7 +62,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::tearDown(void)
     journal::debug_t debug(journal);
     debug.deactivate(); // DEBUGGING
 
-    TestMaterialNew::tearDown();
+    TestMaterial::tearDown();
 
     delete _mymaterial; _mymaterial = NULL;
     delete _mydata; _mydata = NULL;
@@ -303,7 +303,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
 
 // ----------------------------------------------------------------------
 // Get material.
-pylith::materials::MaterialNew*
+pylith::materials::Material*
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_material(void)
 { // _material
     return _mymaterial;
@@ -312,7 +312,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_material(void)
 
 // ----------------------------------------------------------------------
 // Get test data.
-pylith::materials::TestMaterialNew_Data*
+pylith::materials::TestMaterial_Data*
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_data(void)
 { // _data
     return _mydata;

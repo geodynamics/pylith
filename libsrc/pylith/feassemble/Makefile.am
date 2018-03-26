@@ -20,47 +20,9 @@ subpackage = feassemble
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
-	CellGeometry.hh \
-	CellGeometry.icc \
-	Constraint.hh \
-	Constraint.icc \
-	ElasticityExplicit.hh \
-	ElasticityExplicitTri3.hh \
-	ElasticityExplicitTet4.hh \
-	ElasticityExplicitLgDeform.hh \
-	ElasticityImplicit.hh \
-	ElasticityImplicitLgDeform.hh \
-	Integrator.hh \
-	Integrator.icc \
-	IntegratorElasticity.hh \
-	IntegratorElasticityLgDeform.hh \
 	IntegratorPointwise.hh \
 	ConstraintPointwise.hh \
 	AuxiliaryFactory.hh \
-	GeometryLine2D.hh \
-	GeometryLine3D.hh \
-	GeometryTri2D.hh \
-	GeometryTri3D.hh \
-	GeometryTet3D.hh \
-	GeometryQuad2D.hh \
-	GeometryQuad3D.hh \
-	GeometryHex3D.hh \
-	QuadratureRefCell.hh \
-	QuadratureRefCell.icc \
-	QuadratureEngine.hh \
-	QuadratureEngine.icc \
-	Quadrature.hh \
-	Quadrature.icc \
-	Quadrature1Din2D.hh \
-	Quadrature1Din2D.icc \
-	Quadrature1Din3D.hh \
-	Quadrature1Din3D.icc \
-	Quadrature2D.hh \
-	Quadrature2D.icc \
-	Quadrature2Din3D.hh \
-	Quadrature2Din3D.icc \
-	Quadrature3D.hh \
-	Quadrature3D.icc \
 	feassemblefwd.hh
 
 noinst_HEADERS =

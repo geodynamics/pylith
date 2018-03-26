@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2016 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -24,42 +24,38 @@
 namespace pylith {
   namespace materials {
 
-    class Material
+    class Material : public pylith::feassemble::IntegratorPointwise
     { // class Material
 
-      // PUBLIC METHODS /////////////////////////////////////////////////
-    public :
-      
+      // PUBLIC METHODS /////////////////////////////////////////////////////
+    public:
+
       /** Default constructor.
        *
        * @param dimension Spatial dimension associated with material.
-       * @param tensorSize Array of names of database values for material.
-       * @param metadata Metadata for physical properties and state variables.
        */
-      Material(const int dimension,
-	       const int tensorSize,
-	       const pylith::materials::Metadata& metadata);
+      Material(const int dimension);
 
       /// Destructor.
       virtual
-      ~Material(void);
-
+	~Material(void);
+      
       /// Deallocate PETSc and local data structures.
       virtual
-      void deallocate(void);
-  
+	void deallocate(void);
+
       /** Get spatial dimension of material.
        *
        * @returns Spatial dimension.
        */
       int dimension(void) const;
-      
+
       /** Set identifier of material.
        *
        * @param value Material identifier
        */
       void id(const int value);
-      
+
       /** Get identifier of material.
        *
        * @returns Material identifier
@@ -78,111 +74,170 @@ namespace pylith {
        */
       const char* label(void) const;
       
-      /** Set current time step.
+      /** Initialize material. Setup auxiliary fields.
        *
-       * @param dt Current time step.
+       * @param solution Solution field.
        */
-      virtual
-      void timeStep(const PylithScalar dt);
+      void initialize(const pylith::topology::Field& solution);
       
-      /** Get current time step.
+      /** Compute RHS residual for G(t,s).
        *
-       * @returns Current time step.
+       * @param[out] residual Field for residual.
+       * @param[in] t Current time.
+       * @param[in] dt Current time step.
+       * @param[in] solution Field with current trial solution.
        */
-      PylithScalar timeStep(void) const;
-      
-      /** Set database for physical property parameters.
+      void computeRHSResidual(pylith::topology::Field* residual,
+			      const PylithReal t,
+			      const PylithReal dt,
+			      const pylith::topology::Field& solution);
+	
+      /** Compute RHS Jacobian and preconditioner for G(t,s).
        *
-       * @param value Pointer to database.
+       * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
+       * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
+       * @param[in] t Current time.
+       * @param[in] dt Current time step.
+       * @param[in] solution Field with current trial solution.
        */
-      void dbProperties(spatialdata::spatialdb::SpatialDB* value);
-      
-      /** Set database for initial state variables.
+      void computeRHSJacobian(PetscMat jacobianMat,
+			      PetscMat preconMat,
+			      const PylithReal t,
+			      const PylithReal dt,
+			      const pylith::topology::Field& solution);
+	
+      /** Compute LHS residual for F(t,s,\dot{s}).
        *
-       * @param value Pointer to database.
+       * @param[out] residual Field for residual.
+       * @param[in] t Current time.
+       * @param[in] dt Current time step.
+       * @param[in] solution Field with current trial solution.
+       * @param[in] solutionDot Field with time derivative of current trial solution.
        */
-      void dbInitialState(spatialdata::spatialdb::SpatialDB* value);
-      
-      /** Set scales used to nondimensionalize physical properties.
+      void computeLHSResidual(pylith::topology::Field* residual,
+			      const PylithReal t,
+			      const PylithReal dt,
+			      const pylith::topology::Field& solution,
+			      const pylith::topology::Field& solutionDot);
+	
+      /** Compute LHS Jacobian and preconditioner for F(t,s,\dot{s}) with implicit time-stepping.
        *
-       * @param dim Nondimensionalizer
+       * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
+       * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
+       * @param[in] t Current time.
+       * @param[in] dt Current time step.
+       * @param[in] tshift Scale for time derivative.
+       * @param[in] solution Field with current trial solution.
+       * @param[in] solutionDot Field with time derivative of current trial solution.
        */
-      void normalizer(const spatialdata::units::Nondimensional& dim);
-      
-      /** Get size of stress/strain tensor associated with material.
+      void computeLHSJacobianImplicit(PetscMat jacobianMat,
+				      PetscMat precondMat,
+				      const PylithReal t,
+				      const PylithReal dt,
+				      const PylithReal tshift,
+				      const pylith::topology::Field& solution,
+				      const pylith::topology::Field& solutionDot);
+            
+      /** Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
        *
-       * @returns Size of array holding stress/strain tensor.
+       * @param[out] jacobian Inverse of lumped Jacobian as a field.
+       * @param[in] t Current time.
+       * @param[in] dt Current time step.
+       * @param[in] solution Field with current trial solution.
        */
-      int tensorSize(void) const;
-      
-      /** Get flag indicating whether Jacobian matrix must be reformed for
-       * current state.
-       *
-       * @returns True if Jacobian matrix must be reformed, false otherwise.
-       */
-      bool needNewJacobian(void) const;
-      
-      /// Reset flag indicating whether Jacobian matrix must be reformed for
-      /// current state.
-      void resetNeedNewJacobian(void);
-      
-      /** Check whether integrator generates a symmetric Jacobian.
-       *
-       * @returns True if integrator generates symmetric Jacobian.
-       */
-      bool isJacobianSymmetric(void) const;
+      void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
+				       const PylithReal t,
+				       const PylithReal dt,
+				       const pylith::topology::Field& solution);
 
-      /** Get physical property or state variable field. Data is returned
-       * via the argument.
-       *
-       * @param field Field over material cells.
-       * @param name Name of field to retrieve.
-       */
-      void getField(pylith::topology::Field* field,
-		    const char* name) const;
-      
-      /** Get the properties field.
-       *
-       * @returns Properties field.
-       */
-      const pylith::topology::Field* propertiesField() const;
-      
-      /** Get the state variables field.
-       *
-       * @returns State variables field.
-       */
-      const pylith::topology::Field* stateVarsField() const;
 
-      // PROTECTED METHODS //////////////////////////////////////////////
-    protected :
-      
-      /** Compute properties from values in spatial database.
+      /** Update state variables as needed.
        *
-       * @param propValues Array of property values.
-       * @param dbValues Array of database values.
+       * @param[in] solution Field with current trial solution.
        */
-      virtual
-      void _dbToProperties(PylithScalar* const propValues,
-			   const pylith::scalar_array& dbValues) = 0;
-      
-      /** Nondimensionalize properties.
-       *
-       * @param values Array of property values.
-       * @param nvalues Number of values.
-       */
-      virtual
-      void _nondimProperties(PylithScalar* const values,
-			     const int nvalues) const = 0;
-      
-      /** Dimensionalize properties.
-       *
-       * @param values Array of property values.
-       * @param nvalues Number of values.
-       */
-      virtual
-      void _dimProperties(PylithScalar* const values,
-			  const int nvalues) const = 0;
+      void updateStateVars(const pylith::topology::Field& solution);
 
+
+      // PROTECTED METHODS //////////////////////////////////////////////////
+    protected:
+
+      /** Setup auxiliary subfields (discretization and query fns).
+       *
+       * Create subfields in auxiliary fields (includes name of the field,
+       * vector field type, discretization, and scale for
+       * nondimensionalization) and set query functions for filling them
+       * from a spatial database.
+       *
+       * @attention The order of the calls to subfieldAdd() must match the
+       * order of the auxiliary fields in the FE kernels.
+       */
+      virtual
+      void _auxFieldSetup(void) = 0;
+
+      /** Set kernels for RHS residual G(t,s).
+       *
+       * Potentially, there are g0 and g1 kernels for each equation. If no
+       * kernel is needed, then set the kernel function to NULL.
+       *
+       * @param solution Solution field.
+       */
+      virtual
+      void _setFEKernelsRHSResidual(const topology::Field& solution) const = 0;
+
+
+      /** Set kernels for RHS Jacobian G(t,s).
+       *
+       * Potentially, there are Jg0, Jg1, Jg2, and Jg3 kernels for each
+       * combination of equations. If no kernel is needed, then set the
+       * kernel function to NULL.
+       *
+       * - Jg0(ifield, jfield)
+       * - Jg1(ifield, jfield, jdim)
+       * - Jg2(ifield, jfield, idim)
+       * - Jg3(ifield, jfield, idim, jdim)
+       *
+       * @param solution Solution field.
+       */
+      virtual
+      void _setFEKernelsRHSJacobian(const topology::Field& solution) const = 0;
+
+      
+      /** Set kernels for LHS residual F(t,s,\dot{s}).
+       *
+       * Potentially, there are f0 and f1 kernels for each equation. If no
+       * kernel is needed, then set the kernel function to NULL.
+       *
+       * @param solution Solution field.
+       */
+      virtual
+      void _setFEKernelsLHSResidual(const topology::Field& solution) const = 0;
+      
+
+      /** Set kernels for LHS Jacobian F(t,s,\dot{s}) when implicit time-stepping.
+       *
+       * - Jf0(ifield, jfield)
+       * - Jf1(ifield, jfield, jdim)
+       * - Jf2(ifield, jfield, idim)
+       * - Jf3(ifield, jfield, idim, jdim)
+       *
+       * @param solution Solution field.
+       */
+      virtual
+      void _setFEKernelsLHSJacobianImplicit(const topology::Field& solution) const = 0;
+
+
+      /** Set kernels for LHS Jacobian F(t,s,\dot{s}) when explicit time-stepping.
+       *
+       * - Jf0(ifield, jfield)
+       * - Jf1(ifield, jfield, jdim)
+       * - Jf2(ifield, jfield, idim)
+       * - Jf3(ifield, jfield, idim, jdim)
+       *
+       * @param solution Solution field.
+       */
+      virtual
+      void _setFEKernelsLHSJacobianExplicit(const topology::Field& solution) const = 0;
+      
     }; // class Material
 
   } // materials

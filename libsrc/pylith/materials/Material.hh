@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2015 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -27,310 +27,319 @@
 // Include directives ---------------------------------------------------
 #include "materialsfwd.hh" // forward declarations
 
-#include "pylith/topology/topologyfwd.hh" // forward declarations
-#include "pylith/feassemble/feassemblefwd.hh" // forward declarations
-#include "spatialdata/spatialdb/spatialdbfwd.hh" // forward declarations
-#include "spatialdata/units/unitsfwd.hh" // forward declarations
+#include "pylith/feassemble/IntegratorPointwise.hh" // ISA IntegratorPointwise
 
-#include "Metadata.hh" // HASA Metadata
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // HASA GravityField
 
 #include <string> // HASA std::string
 
 // Material -------------------------------------------------------------
 /** @brief C++ abstract base class for Material object.
  *
- * Interface definition for a material. The physical properties for
- * the material are associated with the constants in the constitutive
- * model.
+ * Interface definition for a material. A material encapsulates both
+ * the rheology as well as the governing equation.
+ *
+ * An individual material must abide by specific rules for the
+ * interface, especially the order of the fields in the solution.
+ *
+ * Elasticity:
+ *   + displacement, [velocity, Lagrange multipliers]
+ *
+ * Incompressible elasticity
+ *   + displacement, pressure, [velocity, Lagrange multipliers]
  */
 
-class pylith::materials::Material
-{ // class Material
-  friend class TestMaterial; // unit testing
+class pylith::materials::Material : public pylith::feassemble::IntegratorPointwise {
+    friend class AuxiliaryFactory; ///< Helper for setting up auxiliary fields.
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+    friend class TestMaterial;   // unit testing
 
-  /** Default constructor.
-   *
-   * @param dimension Spatial dimension associated with material.
-   * @param tensorSize Array of names of database values for material.
-   * @param metadata Metadata for physical properties and state variables.
-   */
-  Material(const int dimension,
-	   const int tensorSize,
-	   const Metadata& metadata);
+    // PUBLIC METHODS /////////////////////////////////////////////////////
+public:
 
-  /// Destructor.
-  virtual
-  ~Material(void);
+    /** Default constructor.
+     *
+     * @param dimension Spatial dimension associated with material.
+     */
+    Material(const int dimension);
 
-  /// Deallocate PETSc and local data structures.
-  virtual
-  void deallocate(void);
-  
-  /** Get spatial dimension of material.
-   *
-   * @returns Spatial dimension.
-   */
-  int dimension(void) const;
+    /// Destructor.
+    virtual ~Material(void);
 
-  /** Set identifier of material.
-   *
-   * @param value Material identifier
-   */
-  void id(const int value);
+    /// Deallocate PETSc and local data structures.
+    virtual
+    void deallocate(void);
 
-  /** Get identifier of material.
-   *
-   * @returns Material identifier
-   */
-  int id(void) const;
+    /** Get spatial dimension of material.
+     *
+     * @returns Spatial dimension.
+     */
+    int dimension(void) const;
 
-  /** Set label of material.
-   *
-   * @param value Label of material
-   */
-  void label(const char* value);
+    /** Set identifier of material.
+     *
+     * @param value Material identifier
+     */
+    void id(const int value);
 
-  /** Get label of material.
-   *
-   * @returns Label of material
-   */
-  const char* label(void) const;
+    /** Get identifier of material.
+     *
+     * @returns Material identifier
+     */
+    int id(void) const;
 
-  /** Set current time step.
-   *
-   * @param dt Current time step.
-   */
-  virtual
-  void timeStep(const PylithScalar dt);
+    /** Set label of material.
+     *
+     * @param value Label of material
+     */
+    void label(const char* value);
 
-  /** Get current time step.
-   *
-   * @returns Current time step.
-   */
-  PylithScalar timeStep(void) const;
+    /** Get label of material.
+     *
+     * @returns Label of material
+     */
+    const char* label(void) const;
 
-  /** Set database for physical property parameters.
-   *
-   * @param value Pointer to database.
-   */
-  void dbProperties(spatialdata::spatialdb::SpatialDB* value);
+    /** Set gravity field.
+     *
+     * @param g Gravity field.
+     */
+    void gravityField(spatialdata::spatialdb::GravityField* const gravityField);
 
-  /** Set database for initial state variables.
-   *
-   * @param value Pointer to database.
-   */
-  void dbInitialState(spatialdata::spatialdb::SpatialDB* value);
+    /** Initialize material. Setup auxiliary fields.
+     *
+     * @param solution Solution field.
+     */
+    void initialize(const pylith::topology::Field& solution);
 
-  /** Set scales used to nondimensionalize physical properties.
-   *
-   * @param dim Nondimensionalizer
-   */
-  void normalizer(const spatialdata::units::Nondimensional& dim);
+    /** Compute RHS residual for G(t,s).
+     *
+     * @param[out] residual Field for residual.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] solution Field with current trial solution.
+     */
+    void computeRHSResidual(pylith::topology::Field* residual,
+                            const PylithReal t,
+                            const PylithReal dt,
+                            const pylith::topology::Field& solution);
 
-  /** Initialize material by getting physical property parameters from
-   * database.
-   *
-   * @pre Must call Quadrature::computeGeometry() before calling
-   * initialize().
-   *
-   * @param mesh Finite-element mesh.
-   * @param quadrature Quadrature for finite-element integration
-   */
-  virtual
-  void initialize(const topology::Mesh& mesh,
-		  feassemble::Quadrature* quadrature);
-  
-  /** Get size of stress/strain tensor associated with material.
-   *
-   * @returns Size of array holding stress/strain tensor.
-   */
-  int tensorSize(void) const;
+    /** Compute RHS Jacobian and preconditioner for G(t,s).
+     *
+     * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
+     * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] solution Field with current trial solution.
+     */
+    void computeRHSJacobian(PetscMat jacobianMat,
+                            PetscMat preconMat,
+                            const PylithReal t,
+                            const PylithReal dt,
+                            const pylith::topology::Field& solution);
 
-  /** Get flag indicating whether Jacobian matrix must be reformed for
-   * current state.
-   *
-   * @returns True if Jacobian matrix must be reformed, false otherwise.
-   */
-  bool needNewJacobian(void) const;
+    /** Compute LHS residual for F(t,s,\dot{s}).
+     *
+     * @param[out] residual Field for residual.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] solution Field with current trial solution.
+     * @param[in] solutionDot Field with time derivative of current trial solution.
+     */
+    void computeLHSResidual(pylith::topology::Field* residual,
+                            const PylithReal t,
+                            const PylithReal dt,
+                            const pylith::topology::Field& solution,
+                            const pylith::topology::Field& solutionDot);
 
-   /** Check whether material generates a symmetric Jacobian.
-    *
-    * @returns True if material generates symmetric Jacobian.
-    */
-   bool isJacobianSymmetric(void) const;
+    /** Compute LHS Jacobian and preconditioner for F(t,s,\dot{s}) with implicit time-stepping.
+     *
+     * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
+     * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] tshift Scale for time derivative.
+     * @param[in] solution Field with current trial solution.
+     * @param[in] solutionDot Field with time derivative of current trial solution.
+     */
+    void computeLHSJacobianImplicit(PetscMat jacobianMat,
+                                    PetscMat precondMat,
+                                    const PylithReal t,
+                                    const PylithReal dt,
+                                    const PylithReal tshift,
+                                    const pylith::topology::Field& solution,
+                                    const pylith::topology::Field& solutionDot);
 
-  /// Reset flag indicating whether Jacobian matrix must be reformed for
-  /// current state.
-  void resetNeedNewJacobian(void);
 
-  /** Set whether elastic or inelastic constitutive relations are used.
-   *
-   * @param flag True to use elastic, false to use inelastic.
-   */
-  virtual
-  void useElasticBehavior(const bool flag);
+    /** Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
+     *
+     * @param[out] jacobian Inverse of lumped Jacobian as a field.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] solution Field with current trial solution.
+     */
+    void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
+                                     const PylithReal t,
+                                     const PylithReal dt,
+                                     const pylith::topology::Field& solution);
 
-  /** Check whether material has a field as a property.
-   *
-   * @param name Name of field.
-   *
-   * @returns True if material has field as a property, false otherwise.
-   */
-  bool hasProperty(const char* name);
 
-  /** Check whether material has a field as a state variable.
-   *
-   * @param name Name of field.
-   *
-   * @returns True if material has field as a state variable, false otherwise.
-   */
-  bool hasStateVar(const char* name);
+    /** Update state variables as needed.
+     *
+     * @param[in] solution Field with current trial solution.
+     */
+    void updateStateVars(const pylith::topology::Field& solution);
 
-  /** Get physical property or state variable field. Data is returned
-   * via the argument.
-   *
-   * @param field Field over material cells.
-   * @param name Name of field to retrieve.
-   */
-  void getField(topology::Field *field,
-		const char* name) const;
+    // PROTECTED METHODS //////////////////////////////////////////////////
+protected:
 
-  /** Get the field with all properties.
-   *
-   * @returns Properties field.
-   */
-  const topology::Field* propertiesField() const;
+    /* Compute residual using current kernels.
+     *
+     * @param[out] residual Field for residual.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] solution Field with current trial solution.
+     * @param[in] solutionDot Field with time derivative of current trial solution.
+     */
+    void _computeResidual(pylith::topology::Field* residual,
+                          const PylithReal t,
+                          const PylithReal dt,
+                          const pylith::topology::Field& solution,
+                          const pylith::topology::Field& solutionDot);
 
-  /** Get the field with all of the state variables.
-   *
-   * @returns State variables field.
-   */
-  const topology::Field* stateVarsField() const;
+    /* Compute Jacobian using current kernels.
+     *
+     * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
+     * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] tshift Scale for time derivative.
+     * @param[in] solution Field with current trial solution.
+     * @param[in] solutionDot Field with time derivative of current trial solution.
+     */
+    void _computeJacobian(PetscMat jacobianMat,
+                          PetscMat precondMat,
+                          const PylithReal t,
+                          const PylithReal dt,
+                          const PylithReal tshift,
+                          const pylith::topology::Field& solution,
+                          const pylith::topology::Field& solutionDot);
 
-  // PROTECTED METHODS //////////////////////////////////////////////////
-protected :
+    /** Setup auxiliary subfields (discretization and query fns).
+     *
+     * Create subfields in auxiliary fields (includes name of the field,
+     * vector field type, discretization, and scale for
+     * nondimensionalization) and set query functions for filling them
+     * from a spatial database.
+     *
+     * @attention The order of the calls to subfieldAdd() must match the
+     * order of the auxiliary fields in the FE kernels.
+     */
+    virtual
+    void _auxFieldSetup(void) = 0;
 
-  /// These methods should be implemented by every constitutive model.
+    /** Set kernels for RHS residual G(t,s).
+     *
+     * Potentially, there are g0 and g1 kernels for each equation. If no
+     * kernel is needed, then set the kernel function to NULL.
+     *
+     * @param[inout] solution Solution field.
+     */
+    virtual
+    void _setFEKernelsRHSResidual(const pylith::topology::Field& solution) const = 0;
 
-  /** Compute properties from values in spatial database.
-   *
-   * @param propValues Array of property values.
-   * @param dbValues Array of database values.
-   */
-  virtual
-  void _dbToProperties(PylithScalar* const propValues,
-		       const scalar_array& dbValues) = 0;
 
-  /** Nondimensionalize properties.
-   *
-   * @param values Array of property values.
-   * @param nvalues Number of values.
-   */
-  virtual
-  void _nondimProperties(PylithScalar* const values,
-			 const int nvalues) const = 0;
+    /** Set kernels for RHS Jacobian G(t,s).
+     *
+     * Potentially, there are Jg0, Jg1, Jg2, and Jg3 kernels for each
+     * combination of equations. If no kernel is needed, then set the
+     * kernel function to NULL.
+     *
+     * - Jg0(ifield, jfield)
+     * - Jg1(ifield, jfield, jdim)
+     * - Jg2(ifield, jfield, idim)
+     * - Jg3(ifield, jfield, idim, jdim)
+     *
+     * @param[inout] solution Solution field.
+     */
+    virtual
+    void _setFEKernelsRHSJacobian(const pylith::topology::Field& solution) const = 0;
 
-  /** Dimensionalize properties.
-   *
-   * @param values Array of property values.
-   * @param nvalues Number of values.
-   */
-  virtual
-  void _dimProperties(PylithScalar* const values,
-		      const int nvalues) const = 0;
 
-  /** Compute initial state variables from values in spatial database.
-   *
-   * @param stateValues Array of state variable values.
-   * @param dbValues Array of database values.
-   */
-  virtual
-  void _dbToStateVars(PylithScalar* const stateValues,
-		      const scalar_array& dbValues);
+    /** Set kernels for LHS residual F(t,s,\dot{s}).
+     *
+     * Potentially, there are f0 and f1 kernels for each equation. If no
+     * kernel is needed, then set the kernel function to NULL.
+     *
+     * @param[inout] solution Solution field.
+     */
+    virtual
+    void _setFEKernelsLHSResidual(const pylith::topology::Field& solution) const = 0;
 
-  /** Nondimensionalize state variables.
-   *
-   * @param values Array of initial state values.
-   * @param nvalues Number of values.
-   */
-  virtual
-  void _nondimStateVars(PylithScalar* const values,
-			   const int nvalues) const;
-  
-  /** Dimensionalize state variables.
-   *
-   * @param values Array of initial state values.
-   * @param nvalues Number of values.
-   */
-  virtual
-  void _dimStateVars(PylithScalar* const values,
-			const int nvalues) const;
 
-  // PROTECTED MEMBERS //////////////////////////////////////////////////
-protected :
+    /** Set kernels for LHS Jacobian F(t,s,\dot{s}) when implicit time-stepping.
+     *
+     * - Jf0(ifield, jfield)
+     * - Jf1(ifield, jfield, jdim)
+     * - Jf2(ifield, jfield, idim)
+     * - Jf3(ifield, jfield, idim, jdim)
+     *
+     * @param[inout] solution Solution field.
+     */
+    virtual
+    void _setFEKernelsLHSJacobianImplicit(const pylith::topology::Field& solution) const = 0;
 
-  PylithScalar _dt; ///< Current time step
 
-  /// Field containing physical properties of material.
-  topology::Field *_properties;
+    /** Set kernels for LHS Jacobian F(t,s,\dot{s}) when explicit time-stepping.
+     *
+     * - Jf0(ifield, jfield)
+     * - Jf1(ifield, jfield, jdim)
+     * - Jf2(ifield, jfield, idim)
+     * - Jf3(ifield, jfield, idim, jdim)
+     *
+     * @param[inout] solution Solution field.
+     */
+    virtual
+    void _setFEKernelsLHSJacobianExplicit(const pylith::topology::Field& solution) const = 0;
 
-  /// Field containing the state variables for the material.
-  topology::Field *_stateVars;
+    /** Set constants used in finite-element integrations.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] dt Current time step.
+     */
+    virtual
+    void _setFEConstants(const pylith::topology::Field& solution,
+                         const PylithReal dt) const;
 
-  spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer
-  
-  topology::StratumIS* _materialIS; ///< Index set for material cells.
+    /** Get factory for setting up auxliary fields.
+     *
+     * @returns Factor for auxiliary fields.
+     */
+    pylith::feassemble::AuxiliaryFactory* _auxFactory(void);
 
-  int _numPropsQuadPt; ///< Number of properties per quad point.
-  int _numVarsQuadPt; ///< Number of state variables per quad point.
-  const int _dimension; ///< Spatial dimension associated with material.
-  const int _tensorSize; ///< Tensor size for material.
-  bool _needNewJacobian; ///< True if need to reform Jacobian, false otherwise.
-  bool _isJacobianSymmetric; ///< True if Jacobian is symmetric;
+    // PROTECTED MEMBERS //////////////////////////////////////////////////
+protected:
 
-  // PRIVATE METHODS ////////////////////////////////////////////////////
-private :
-  
-  /** Get indices for physical property or state variable field. Index
-   * of physical property or state variable is set, unknown values are
-   * -1.
-   *
-   * @param propertyIndex Index of field in properties array.
-   * @param stateVarIndex Index of field in state variables array.
-   * @param name Name of field.
-   */
-  void _findField(int* propertyIndex,
-		  int* stateVarIndex,
-		  const char* name) const;
+    pylith::topology::StratumIS* _materialIS;   ///< Index set for material cells.
+    spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
+    pylith::materials::AuxiliaryFactory* _auxMaterialFactory; ///< Factory for auxiliary fields.
 
-  // PRIVATE MEMBERS ////////////////////////////////////////////////////
-private :
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////
+private:
 
-  /// Database of parameters for physical properties of material.
-  spatialdata::spatialdb::SpatialDB* _dbProperties;
+    const int _dimension;   ///< Spatial dimension of material.
+    int _id;   ///< Material identifier.
+    std::string _label;   ///< Label of material.
 
-  /// Database of initial state variables for the material.
-  spatialdata::spatialdb::SpatialDB* _dbInitialState;
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////
+private:
 
-  int _id; ///< Material identifier.
-  std::string _label; ///< Label of material.
-
-  const Metadata _metadata; ///< Property and state variable metadata.
-
-  // NOT IMPLEMENTED ////////////////////////////////////////////////////
-private :
-
-  Material(const Material&); ///< Not implemented.
-  const Material& operator=(const Material&); ///< Not implemented
+    Material(const Material&);   ///< Not implemented.
+    const Material& operator=(const Material&);   ///< Not implemented
 
 }; // class Material
-
-#include "Material.icc" // inline methods
 
 #endif // pylith_materials_material_hh
 
 
-// End of file 
+// End of file

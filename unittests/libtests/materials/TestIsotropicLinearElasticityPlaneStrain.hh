@@ -27,7 +27,7 @@
 #if !defined(pylith_materials_testisotropiclinearelasticityplanestrain_hh)
 #define pylith_materials_testisotropiclinearelasticityplanestrain_hh
 
-#include "TestMaterialNew.hh" // ISA TestMaterialNew
+#include "TestMaterial.hh" // ISA TestMaterial
 
 /// Namespace for pylith package
 namespace pylith {
@@ -39,10 +39,10 @@ namespace pylith {
 } // pylith
 
 /// C++ unit testing for IsotropicLinearElasticityPlaneStrain
-class pylith::materials::TestIsotropicLinearElasticityPlaneStrain : public TestMaterialNew { // class TestIsotropicLinearElasticityPlaneStrain
+class pylith::materials::TestIsotropicLinearElasticityPlaneStrain : public TestMaterial { // class TestIsotropicLinearElasticityPlaneStrain
 
     // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticityPlaneStrain, TestMaterialNew);
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticityPlaneStrain, TestMaterial);
 
     // Tests specific to this materials parameters.
     CPPUNIT_TEST(testUseInertia);
@@ -86,13 +86,13 @@ protected:
      *
      * @returns Pointer to material.
      */
-    MaterialNew* _material(void);
+    Material* _material(void);
 
     /** Get test data.
      *
      * @returns Pointer to test data.
      */
-    TestMaterialNew_Data* _data(void);
+    TestMaterial_Data* _data(void);
 
     /// Setup and populate solution fields.
     void _setupSolutionFields(void);
@@ -106,7 +106,7 @@ protected:
 }; // class TestIsotropicLinearElasticityPlaneStrain
 
 // =============================================================================
-class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_Data : public TestMaterialNew_Data {
+class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_Data : public TestMaterial_Data {
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:

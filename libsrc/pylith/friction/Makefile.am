@@ -20,14 +20,6 @@ subpackage = friction
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
-	FrictionModel.hh \
-	FrictionModel.icc \
-	StaticFriction.hh \
-	SlipWeakening.hh \
-	SlipWeakeningTime.hh \
-	SlipWeakeningTimeStable.hh \
-	RateStateAgeing.hh \
-	TimeWeakening.hh \
 	frictionfwd.hh
 
 

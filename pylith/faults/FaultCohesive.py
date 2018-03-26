@@ -24,8 +24,35 @@
 ##
 ## Factory: fault
 
-from Fault import Fault
+from pylith.utils.PetscComponent import PetscComponent
 from faults import FaultCohesive as ModuleFaultCohesive
+
+# Validator for label
+def validateLabel(value):
+  """
+  Validate label for group/nodeset/pset.
+  """
+  if 0 == len(value):
+    raise ValueError("Label for group/nodeset/pset in mesh not specified.")
+  return value
+
+
+# Validator for direction
+def validateDir(value):
+  """
+  Validate direction.
+  """
+  msg = "Direction must be a 3 component vector (list)."
+  if not isinstance(value, list):
+    raise ValueError(msg)
+  if 3 != len(value):
+    raise ValueError(msg)
+  try:
+    nums = map(float, value)
+  except:
+    raise ValueError(msg)
+  return nums
+
 
 # FaultCohesive class
 class FaultCohesive(Fault, ModuleFaultCohesive):
@@ -39,11 +66,14 @@ class FaultCohesive(Fault, ModuleFaultCohesive):
   Python object for managing FaultCohesive facilities and properties.
   
   \b Properties
-  @li \b use_fault_mesh If true, use fault mesh to define fault;
-    otherwise, use group of vertices to define fault.
+  @li \b id Fault identifier
+  @li \b label Label identifier for fault.
+  @li \b edge Label identifier for buried fault edges.
+  @li \b up_dir Up-dip or up direction
+    (perpendicular to along-strike and not collinear with fault normal;
+    applies to fault surfaces in 2-D and 3-D).
   
   \b Facilities
-  @li \b fault_mesh_importer Importer for fault mesh.
 
   Factory: fault
   """
@@ -52,30 +82,88 @@ class FaultCohesive(Fault, ModuleFaultCohesive):
 
   import pyre.inventory
 
-  useMesh = pyre.inventory.bool("use_fault_mesh", default=False)
-  useMesh.meta['tip'] = "If true, use fault mesh to define fault; " \
-      "otherwise, use group of vertices to define fault."
+  matId = pyre.inventory.int("id", default=100)
+  matId.meta['tip'] = "Fault identifier (must be unique across all faults " \
+      "and materials)."
+  
+  faultLabel = pyre.inventory.str("label", default="", validator=validateLabel)
+  faultLabel.meta['tip'] = "Label identifier for fault."
+  
+  faultEdge = pyre.inventory.str("edge", default="")
+  faultEdge.meta['tip'] = "Label identifier for buried fault edges."
+  
+  upDir = pyre.inventory.list("up_dir", default=[0.0, 0.0, 1.0], validator=validateDir)
+  upDir.meta['tip'] = "Up-dip or up direction " \
+      "(perpendicular to along-strike and not collinear " \
+      "with fault normal; applies to fault surfaces " \
+      "in 2-D and 3-D)."
 
-  # Future, improved implementation
-  #from pylith.meshio.MeshIOAscii imoport MeshIOAscii
-  #faultMeshImporter = pyre.inventory.facility("fault_mesh_importer",
-  #                                            factory=MeshIOLagrit,
-  #                                            family="mesh_io")
-  #faultMeshImporter.meta['tip'] = "Importer for fault mesh."
 
-  # Current kludge
-  meshFilename = pyre.inventory.str("fault_mesh_filename",
-                                    default="fault.inp")
-  meshFilename.meta['tip'] = "Filename for fault mesh UCD file."
+        # PUBLIC METHODS /////////////////////////////////////////////////////
 
-
-  # PUBLIC METHODS /////////////////////////////////////////////////////
-
-  def __init__(self, name="faultcohesive"):
+  def __init__(self, name="fault"):
     """
     Constructor.
     """
-    Fault.__init__(self, name)
+    PetscComponent.__init__(self, name, facility="fault")
+    self._createModuleObj()
+    self.mesh = None
+    self.output = None
+    return
+
+
+  def preinitialize(self, mesh):
+    """
+    Setup fault.
+    """
+    import weakref
+    self.mesh = weakref.ref(mesh)
+    
+    self.faultQuadrature.preinitialize(mesh.coordsys().spaceDim())
+
+    if None != self.output:
+      self.output.preinitialize(self)
+
+    return
+  
+
+  def verifyConfiguration(self):
+    """
+    Verify compatibility of configuration.
+    """
+    logEvent = "%sverify" % self._loggingPrefix
+    self._eventLogger.eventBegin(logEvent)
+
+    faultDim = self.mesh().dimension() - 1
+    if faultDim != self.faultQuadrature.cell.cellDim:
+      raise ValueError, \
+            "Quadrature is incompatible with fault surface.\n" \
+            "Dimensions for quadrature: %d, dimensions of fault: %d" % \
+            (self.faultQuadrature.cell.cellDim, faultDim)
+
+    if None != self.output:
+      self.output.verifyConfiguration(self.mesh())
+
+    self._eventLogger.eventEnd(logEvent)
+    return
+  
+
+  def initialize(self, totalTime, numTimeSteps, normalizer):
+    """
+    Initialize fault.
+    """
+    logEvent = "%sinit" % self._loggingPrefix
+    self._eventLogger.eventBegin(logEvent)
+
+    self.faultQuadrature.initialize()
+    ModuleFault.initialize(self, self.mesh(), self.upDir)
+
+    if None != self.output:
+      self.output.initialize(normalizer, self.faultQuadrature)
+      self.output.writeInfo()
+      self.output.open(totalTime, numTimeSteps)
+
+    self._eventLogger.eventEnd(logEvent)
     return
 
 
@@ -85,17 +173,21 @@ class FaultCohesive(Fault, ModuleFaultCohesive):
     """
     Setup members using inventory.
     """
-    Fault._configure(self)
-    ModuleFaultCohesive.useFaultMesh(self, self.inventory.useMesh)
-    #ModuleFaultCohesive.faultMeshImporter(self, 
-    #                                      self.inventory.faultMeshImporter)
-
-    # Hardwire collocated quadrature
-    self.faultQuadrature.inventory.cell._configure()
-    self.faultQuadrature._configure()
-    self.faultQuadrature.cell.collocateQuad = True
-    self.faultQuadrature.cell.order = self.faultQuadrature.cell.degree
+    PetscComponent._configure(self)
+    self.faultQuadrature = self.inventory.faultQuadrature
+    self.upDir = map(float, self.inventory.upDir)
+    ModuleFault.id(self, self.inventory.matId)
+    ModuleFault.label(self, self.inventory.faultLabel)
+    ModuleFault.edge(self, self.inventory.faultEdge)
+    self.perfLogger = self.inventory.perfLogger
     return
 
+  
+  def _createModuleObj(self):
+    """
+    Create handle to corresponding C++ object.
+    """
+    raise NotImplementedError("Please implement _createModuleObj() in derived class.")
+  
   
 # End of file 

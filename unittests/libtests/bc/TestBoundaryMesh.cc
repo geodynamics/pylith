@@ -26,7 +26,7 @@
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorSubMesh.hh" // USES SubMeshIS
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/faults/FaultCohesiveKin.hh" // USES FaultsCohesiveKin
+#include "pylith/faults/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -136,15 +136,10 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
 
     // Adjust topology
     CPPUNIT_ASSERT(_data->faultLabel);
-    pylith::faults::FaultCohesiveKin fault;
-    PetscInt firstFaultVertex = 0;
-    PetscInt firstLagrangeVertex, firstFaultCell;
-
-    err = DMGetStratumSize(mesh.dmMesh(), _data->faultLabel, 1, &firstLagrangeVertex);PYLITH_CHECK_ERROR(err);
-    firstFaultCell = firstLagrangeVertex;
+    pylith::faults::FaultCohesiveStub fault;
     fault.label(_data->faultLabel);
     fault.id(_data->faultId);
-    fault.adjustTopology(&mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
+    fault.adjustTopology(&mesh);
 
     // Create submesh
     CPPUNIT_ASSERT(_data->bcLabel);

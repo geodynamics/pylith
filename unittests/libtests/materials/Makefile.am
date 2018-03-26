@@ -28,7 +28,7 @@ check_PROGRAMS = testmaterials
 
 # Primary source files
 testmaterials_SOURCES = \
-	TestMaterialNew.cc \
+	TestMaterial.cc \
 	TestIsotropicLinearElasticityPlaneStrain.cc \
 	TestIsotropicLinearElasticityPlaneStrain_UniformStrain.cc \
 	TestIsotropicLinearMaxwellPlaneStrain.cc \
@@ -54,7 +54,7 @@ testmaterials_SOURCES = \
 
 
 noinst_HEADERS = \
-	TestMaterialNew.hh \
+	TestMaterial.hh \
 	TestIsotropicLinearElasticityPlaneStrain.hh \
 	TestIsotropicLinearMaxwellPlaneStrain.hh
 

@@ -41,7 +41,7 @@
 void
 pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::setUp(void)
 { // setUp
-    TestMaterialNew::setUp();
+    TestMaterial::setUp();
     _mymaterial = new IsotropicLinearMaxwellPlaneStrain(); CPPUNIT_ASSERT(_mymaterial);
     _mydata = NULL;
 
@@ -63,7 +63,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::tearDown(void)
     journal::debug_t debug(journal);
     debug.deactivate(); // DEBUGGING
 
-    TestMaterialNew::tearDown();
+    TestMaterial::tearDown();
 
     delete _mymaterial; _mymaterial = NULL;
     delete _mydata; _mydata = NULL;
@@ -381,7 +381,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void)
 
 // ----------------------------------------------------------------------
 // Get material.
-pylith::materials::MaterialNew*
+pylith::materials::Material*
 pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_material(void)
 { // _material
     return _mymaterial;
@@ -390,7 +390,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_material(void)
 
 // ----------------------------------------------------------------------
 // Get test data.
-pylith::materials::TestMaterialNew_Data*
+pylith::materials::TestMaterial_Data*
 pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_data(void)
 { // _data
     return _mydata;

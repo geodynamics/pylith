@@ -26,13 +26,6 @@ subpkgpyexec_PYTHON = problems.py
 
 swig_sources = \
 	problems.i \
-	Formulation.i \
-	Explicit.i \
-	Implicit.i \
-	Solver.i \
-	SolverLinear.i \
-	SolverNonlinear.i \
-	SolverLumped.i \
 	../utils/PyreComponent.i \
 	../include/integratorarray.i \
 	../include/constraintarray.i \

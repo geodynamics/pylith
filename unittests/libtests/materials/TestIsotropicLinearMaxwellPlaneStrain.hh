@@ -27,7 +27,7 @@
 #if !defined(pylith_materials_testisotropiclinearmaxwellplanestrain_hh)
 #define pylith_materials_testisotropiclinearmaxwellplanestrain_hh
 
-#include "TestMaterialNew.hh" // ISA TestMaterialNew
+#include "TestMaterial.hh" // ISA TestMaterial
 
 /// Namespace for pylith package
 namespace pylith {
@@ -39,10 +39,10 @@ namespace pylith {
 } // pylith
 
 /// C++ unit testing for IsotropicLinearMaxwellPlaneStrain
-class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain : public TestMaterialNew { // class TestIsotropicLinearMaxwellPlaneStrain
+class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain : public TestMaterial { // class TestIsotropicLinearMaxwellPlaneStrain
 
     // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearMaxwellPlaneStrain, TestMaterialNew);
+    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearMaxwellPlaneStrain, TestMaterial);
 
     // Tests specific to this materials parameters.
     CPPUNIT_TEST(testUseInertia);
@@ -86,13 +86,13 @@ protected:
      *
      * @returns Pointer to material.
      */
-    MaterialNew* _material(void);
+    Material* _material(void);
 
     /** Get test data.
      *
      * @returns Pointer to test data.
      */
-    TestMaterialNew_Data* _data(void);
+    TestMaterial_Data* _data(void);
 
     /// Setup and populate solution fields.
     void _setupSolutionFields(void);
@@ -106,7 +106,7 @@ protected:
 }; // class TestIsotropicLinearMaxwellPlaneStrain
 
 // =============================================================================
-class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_Data : public TestMaterialNew_Data {
+class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_Data : public TestMaterial_Data {
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:

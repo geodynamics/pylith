@@ -25,26 +25,7 @@ subpkgpyexec_LTLIBRARIES = _faultsmodule.la
 subpkgpyexec_PYTHON = faults.py
 
 swig_sources = \
-	faults.i \
-	SlipTimeFn.i \
-	ConstRateSlipFn.i \
-	StepSlipFn.i \
-	BruneSlipFn.i \
-	LiuCosSlipFn.i \
-	TimeHistorySlipFn.i \
-	EqKinSrc.i \
-	Fault.i \
-	FaultCohesive.i \
-	FaultCohesiveLagrange.i \
-	FaultCohesiveKin.i \
-	FaultCohesiveDyn.i \
-	FaultCohesiveImpulses.i \
-	FaultCohesiveTract.i \
-	../topology/Mesh.i \
-	../feassemble/Quadrature.i \
-	../feassemble/Integrator.i
-
-#	TractPerturbation.i 
+	faults.i 
 
 swig_generated = \
 	faults_wrap.cxx \

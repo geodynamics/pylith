@@ -30,7 +30,7 @@
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
-#include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
+#include "pylith/faults/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -85,18 +85,10 @@ pylith::meshio::TestDataWriterMesh::_initialize(void)
     pylith::topology::MeshOps::nondimensionalize(_mesh, normalizer);
 
     if (data->faultLabel) {
-        faults::FaultCohesiveKin fault;
-        const bool useLagrangeConstraints = true;
-        PetscInt firstFaultVertex = 0;
-        PetscInt firstLagrangeVertex = 0, firstFaultCell = 0;
-        PetscErrorCode err = DMGetStratumSize(_mesh->dmMesh(), data->faultLabel, 1, &firstLagrangeVertex);PYLITH_CHECK_ERROR(err);
-        firstFaultCell = firstLagrangeVertex;
-        if (useLagrangeConstraints) {
-            firstFaultCell += firstLagrangeVertex;
-        } // if
+        faults::FaultCohesiveStub fault;
         fault.label(data->faultLabel);
         fault.id(data->faultId);
-        fault.adjustTopology(_mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
+        fault.adjustTopology(_mesh);
     } // if
 
     PYLITH_METHOD_END;

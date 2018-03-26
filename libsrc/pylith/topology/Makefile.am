@@ -29,12 +29,10 @@ subpkginclude_HEADERS = \
 	FieldOps.hh \
 	FieldQuery.hh \
 	Fields.hh \
-	Jacobian.hh \
 	Mesh.hh \
 	Mesh.icc \
 	MeshOps.hh \
 	ReverseCuthillMcKee.hh \
-	SolutionFields.hh \
 	Stratum.hh \
 	Stratum.icc \
 	VisitorMesh.hh \

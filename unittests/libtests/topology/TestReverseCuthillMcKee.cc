@@ -27,7 +27,7 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Jacobian.hh" // USES Field
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
+#include "pylith/faults/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 
@@ -203,18 +203,10 @@ pylith::topology::TestReverseCuthillMcKee::_initialize()
 
     // Adjust topology if necessary.
     if (_data->faultLabel) {
-        int firstLagrangeVertex = 0;
-        int firstFaultCell = 0;
-
-        pylith::faults::FaultCohesiveKin fault;
+        pylith::faults::FaultCohesiveStub fault;
         fault.id(100);
         fault.label(_data->faultLabel);
-        const int nvertices = fault.numVerticesNoMesh(*_mesh);
-        firstLagrangeVertex += nvertices;
-        firstFaultCell += 2*nvertices; // shadow + Lagrange vertices
-
-        int firstFaultVertex = 0;
-        fault.adjustTopology(_mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell);
+        fault.adjustTopology(_mesh);
     } // if
 
     PYLITH_METHOD_END;

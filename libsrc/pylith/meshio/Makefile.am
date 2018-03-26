@@ -21,7 +21,6 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	CellFilter.hh \
-	CellFilterAvg.hh \
 	DataWriter.hh \
 	DataWriterVTK.hh \
 	DataWriterVTK.icc \
@@ -38,8 +37,7 @@ subpkginclude_HEADERS = \
 	VertexFilter.hh \
 	VertexFilterVecNorm.hh \
 	VertexFilterDecimateP1.hh \
-	OutputManagerNew.hh \
-	OutputSolnNew.hh \
+	OutputSoln.hh \
 	meshiofwd.hh
 
 if ENABLE_HDF5

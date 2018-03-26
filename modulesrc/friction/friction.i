@@ -21,18 +21,7 @@
 
 // Header files for module C++ code
 %{
-#include "pylith/friction/frictionfwd.hh" // forward declarations
-
-#include "spatialdata/spatialdb/spatialdbfwd.hh" // forward declarations
-#include "spatialdata/units/unitsfwd.hh" // forward declarations
-
-#include "pylith/friction/FrictionModel.hh"
-#include "pylith/friction/StaticFriction.hh"
-#include "pylith/friction/SlipWeakening.hh"
-#include "pylith/friction/SlipWeakeningTime.hh"
-#include "pylith/friction/SlipWeakeningTimeStable.hh"
-#include "pylith/friction/RateStateAgeing.hh"
-#include "pylith/friction/TimeWeakening.hh"
+//#include "pylith/friction/FrictionModel.hh"
 
 #include "pylith/utils/types.hh"
 #include "pylith/utils/array.hh"
@@ -60,13 +49,7 @@ import_array();
 %}
 
 // Interfaces
-%include "FrictionModel.i"
-%include "StaticFriction.i"
-%include "SlipWeakening.i"
-%include "SlipWeakeningTime.i"
-%include "SlipWeakeningTimeStable.i"
-%include "RateStateAgeing.i"
-%include "TimeWeakening.i"
+//%include "FrictionModel.i"
 
 
 // End of file

@@ -125,9 +125,6 @@ AC_SYS_LARGEFILE
 CIT_NUMPY_PYTHON_MODULE
 CIT_NUMPY_INCDIR
 
-# FIAT
-CIT_PYTHON_MODULE([FIAT],[0.9.9])
-
 # SWIG
 if test "$enable_swig" = "yes" ; then
   AC_PROG_SWIG([2.0.4],[3.0.2])

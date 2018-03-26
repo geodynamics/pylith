@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2017 University of California, Davis
+// Copyright (c) 2010-2015 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -19,120 +19,210 @@
 /**
  * @file unittests/libtests/materials/TestMaterial.hh
  *
- * @brief C++ TestMaterial object
- *
- * C++ unit testing for Material.
+ * @brief C++ abstract base class for testing material objects.
  */
 
-#if !defined(pylith_materials_testmaterial_hh)
-#define pylith_materials_testmaterial_hh
+#if !defined(pylith_materials_testMaterial_hh)
+#define pylith_materials_testMaterial_hh
 
 #include <cppunit/extensions/HelperMacros.h>
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/materials/materialsfwd.hh" // forward declarations
+#include "pylith/topology/topologyfwd.hh" // forward declarations
+#include "pylith/topology/Field.hh" // HASA FieldBase::Discretization
+
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA UserFunctionDB
+#include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
+#include "spatialdata/units/unitsfwd.hh" // HOLDSA Nondimensional
 
 /// Namespace for pylith package
 namespace pylith {
-  namespace materials {
-    class TestMaterial;
-    class MaterialData;
-  } // materials
+    namespace materials {
+        class TestMaterial;
+
+        class TestMaterial_Data; // test data
+    }   // materials
 } // pylith
 
-/// C++ unit testing for Material
-class pylith::materials::TestMaterial : public CppUnit::TestFixture
-{ // class TestMaterial
+/// C++ abstract base class for testing material objects.
+class pylith::materials::TestMaterial : public CppUnit::TestFixture, public pylith::utils::GenericComponent {
 
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestMaterial );
+    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+    CPPUNIT_TEST_SUITE(TestMaterial);
 
-  CPPUNIT_TEST( testID );
-  CPPUNIT_TEST( testLabel );
-  CPPUNIT_TEST( testTimeStep );
-  CPPUNIT_TEST( testDBProperties );
-  CPPUNIT_TEST( testDBStateVars );
-  CPPUNIT_TEST( testNormalizer );
-  CPPUNIT_TEST( testNeedNewJacobian );
-  CPPUNIT_TEST( testIsJacobianSymmetric );
-  CPPUNIT_TEST( testInitialize );
+    CPPUNIT_TEST(testAuxField);
+    CPPUNIT_TEST(testAuxSubfieldDiscretization);
+    CPPUNIT_TEST(testAuxFieldDB);
+    CPPUNIT_TEST(testNormalizer);
 
-  CPPUNIT_TEST_SUITE_END();
+    CPPUNIT_TEST(testVerifyConfiguration);
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+    CPPUNIT_TEST(testDimension);
+    CPPUNIT_TEST(testId);
+    CPPUNIT_TEST(testLabel);
+    CPPUNIT_TEST(testInitialize);
 
-  /// Test id().
-  void testID(void);
+    CPPUNIT_TEST(testComputeResidual);
+    CPPUNIT_TEST(testComputeRHSJacobian);
+    CPPUNIT_TEST(testComputeLHSJacobianImplicit);
+    CPPUNIT_TEST(testComputeLHSJacobianInverseExplicit);
+    CPPUNIT_TEST(testUpdateStateVars);
 
-  /// Test label()
-  void testLabel(void);
+    CPPUNIT_TEST_SUITE_END_ABSTRACT();
 
-  /// Test timeStep()
-  void testTimeStep(void);
+    // PUBLIC METHODS /////////////////////////////////////////////////////
+public:
 
-  /// Test dbProperties()
-  void testDBProperties(void);
+    /// Setup testing data.
+    virtual
+    void setUp(void);
 
-  /// Test dbStateVars().
-  void testDBStateVars(void);
+    /// Deallocate testing data.
+    void tearDown(void);
 
-  /// Test normalizer().
-  void testNormalizer(void);
+    /// Test auxField().
+    void testAuxField(void);
 
-  /// Test needNewJacobian()
-  void testNeedNewJacobian(void);
+    /// Test auxSubfieldDiscretization().
+    void testAuxSubfieldDiscretization(void);
 
-  /// Test isJacobianSymmetric()
-  void testIsJacobianSymmetric(void);
+    /// Test auxFieldDB().
+    void testAuxFieldDB(void);
 
-  /// Test initialize()
-  void testInitialize(void);
+    /// Test normalizer().
+    void testNormalizer(void);
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+    /// Test verifyConfiguration().
+    void testVerifyConfiguration(void);
 
-  // Methods used in testing children of this class.
+    /// Test checkConstraints().
+    void testCheckConstraints(void);
 
-  /// Setup testing data.
-  virtual
-  void setUp(void);
+    /// Test dimension().
+    void testDimension(void);
 
-  /// Tear down testing data.
-  virtual
-  void tearDown(void);
+    /// Test id().
+    void testId(void);
 
-  /// Test dimension().
-  void testDimension();
+    /// Test label().
+    void testLabel(void);
 
-  /// Test tensorSize().
-  void testTensorSize();
+    /// Test initialize().
+    void testInitialize(void);
 
-  /// Test _dbToProperties().
-  void testDBToProperties(void);
+    /// Test computeRHSResidual(), computeLHSResidual().
+    void testComputeResidual(void);
 
-  /// Test _nondimProperties().
-  void testNonDimProperties(void);
+    /// Test computeRHSJacobian().
+    void testComputeRHSJacobian(void);
 
-  /// Test _dimProperties().
-  void testDimProperties(void);
+    /// Test computeLHSJacobianImplicit().
+    void testComputeLHSJacobianImplicit(void);
 
-  /// Test _dbToStateVars().
-  void testDBToStateVars(void);
+    /// Test computeLHSJacobianInverseExplicit().
+    void testComputeLHSJacobianInverseExplicit(void);
 
-  /// Test _nondimStateVars().
-  void testNonDimStateVars(void);
+    /// Test updateStateVars().
+    void testUpdateStateVars(void);
 
-  /// Test _dimStateVars().
-  void testDimStateVars(void);
+    // PROTECTED METHODS //////////////////////////////////////////////////
+protected:
 
-  // PROTECTED MEMBERS //////////////////////////////////////////////////
-protected :
+    /** Get material.
+     *
+     * @returns Pointer to material.
+     */
+    virtual
+    Material* _material(void) = 0;
 
-  Material* _material; ///< Object for testing
-  MaterialData* _data; ///< Data for testing
+    /** Get test data.
+     *
+     * @returns Pointer to test data.
+     */
+    virtual
+    TestMaterial_Data* _data(void) = 0;
+
+    /// Do minimal initilaization of test data.
+    void _initializeMin(void);
+
+    /// Do full initilaization of test data.
+    void _initializeFull(void);
+
+    /** Set field to zero on the boundary.
+     *
+     * @param[out] field Field in which to set boundary values to zero.
+     */
+    void _zeroBoundary(pylith::topology::Field* field);
+
+    /// Setup and populate solution fields.
+    virtual
+    void _setupSolutionFields(void) = 0;
+
+    /** Add small, random perturbations to field.
+     *
+     * The random value is sampled from a uniform distribution with the given
+     * limit.
+     *
+     * @param[inout] field Field to add small, random perturbation to.
+     * @param[in] limit Uniform random distribution is bounded by -limit and +limit.
+     */
+    void _addRandomPerturbation(pylith::topology::Field* field,
+                                const PylithReal limit);
+
+
+
+    // PROTECTED MEMBERS //////////////////////////////////////////////////
+protected:
+
+    // TestMaterial
+    pylith::topology::Mesh* _mesh;   ///< Finite-element mesh.
+    pylith::topology::Fields* _solutionFields; ///< Contrainer for solution fields.
 
 }; // class TestMaterial
 
-#endif // pylith_materials_testmaterial_hh
 
-// End of file 
+// =============================================================================
+class pylith::materials::TestMaterial_Data {
+
+    // PUBLIC METHODS ///////////////////////////////////////////////////////
+public:
+
+    /// Constructor
+    TestMaterial_Data(void);
+
+    /// Destructor
+    ~TestMaterial_Data(void);
+
+    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
+public:
+
+    int dimension; ///< Dimension of material.
+    const char* meshFilename; ///< Name of file with ASCII mesh.
+    const char* boundaryLabel; ///< Group defining domain boundary.
+
+    spatialdata::geocoords::CoordSys* cs; ///< Coordinate system.
+    spatialdata::units::Nondimensional* normalizer; ///< Scales for nondimensionalization.
+
+    PylithReal t; ///< Time for solution in simulation.
+    PylithReal dt; ///< Time step in simulation.
+    PylithReal tshift; ///< Time shift for LHS Jacobian.
+    PylithReal perturbation; ///< Maximum amplitude of random perturbation.
+
+    int numSolnSubfields; ///< Number of solution fields.
+    pylith::topology::Field::Discretization* solnDiscretizations; ///< Discretizations for solution fields.
+    spatialdata::spatialdb::UserFunctionDB* solnDB; ///< Spatial database with solution.
+
+    int numAuxSubfields; ///< Number of auxiliary subfields.
+    const char** auxSubfields; ///< Names of auxiliary subfields.
+    pylith::topology::Field::Discretization* auxDiscretizations; ///< Discretizations for auxiliary subfields.
+    spatialdata::spatialdb::UserFunctionDB* auxDB; ///< Spatial database with auxiliary field.
+
+    bool isExplicit; ///< True for explicit time stepping.
+};
+
+
+#endif // pylith_materials_testMaterial_hh
+
+
+// End of file
