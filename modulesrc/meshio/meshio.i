@@ -29,7 +29,6 @@
 #endif
 
 #include "pylith/meshio/VertexFilter.hh"
-#include "pylith/meshio/VertexFilterVecNorm.hh"
 #include "pylith/meshio/VertexFilterDecimateP1.hh"
 #include "pylith/meshio/CellFilter.hh"
 #include "pylith/meshio/DataWriter.hh"
@@ -78,7 +77,6 @@ import_array();
 #endif
 
 %include "VertexFilter.i"
-%include "VertexFilterVecNorm.i"
 %include "VertexFilterDecimateP1.i"
 %include "CellFilter.i"
 %include "DataWriter.i"

@@ -52,7 +52,6 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/PointsList.py \
 	meshio/SingleOutput.py \
 	meshio/VertexFilter.py \
-	meshio/VertexFilterVecNorm.py \
 	meshio/VertexFilterDecimateP1.py \
 	meshio/OutputManager.py \
 	meshio/OutputSoln.py \

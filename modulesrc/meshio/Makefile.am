@@ -31,7 +31,6 @@ swig_sources = \
 	MeshIOLagrit.i \
 	MeshIOCubit.i \
 	VertexFilter.i \
-	VertexFilterVecNorm.i \
 	VertexFilterDecimateP1.i \
 	CellFilter.i \
 	DataWriter.i \

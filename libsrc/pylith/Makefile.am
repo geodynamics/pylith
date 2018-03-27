@@ -78,7 +78,6 @@ libpylith_la_SOURCES = \
 	meshio/OutputSolnPoints.cc \
 	meshio/CellFilter.cc \
 	meshio/VertexFilter.cc \
-	meshio/VertexFilterVecNorm.cc \
 	meshio/VertexFilterDecimateP1.cc \
 	meshio/DataWriter.cc \
 	meshio/DataWriterVTK.cc \
