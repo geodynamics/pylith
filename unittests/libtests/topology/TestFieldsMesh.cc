@@ -29,7 +29,7 @@
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestFieldsMesh );
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::topology::TestFieldsMesh);
 
 // ----------------------------------------------------------------------
 void
@@ -88,41 +88,6 @@ pylith::topology::TestFieldsMesh::testAdd(void)
 
     PYLITH_METHOD_END;
 } // testAdd
-
-// ----------------------------------------------------------------------
-// Test add(domain).
-void
-pylith::topology::TestFieldsMesh::testAddDomain(void)
-{ // testAddDomain
-    PYLITH_METHOD_BEGIN;
-
-    const int fiberDim = 3;
-
-    CPPUNIT_ASSERT(_mesh);
-    Fields fields(*_mesh);
-
-    const char* label = "field";
-    fields.add(label, "velocity", Field::VERTICES_FIELD, fiberDim);
-    const size_t size = 1;
-    CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
-
-    Field& field = fields.get(label);
-    field.allocate();
-
-    PetscDM dmMesh = _mesh->dmMesh(); CPPUNIT_ASSERT(dmMesh);
-    Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
-    const PetscInt vStart = depthStratum.begin();
-    const PetscInt vEnd = depthStratum.end();
-
-    VecVisitorMesh fieldVisitor(field);
-    for(PetscInt v = vStart; v < vEnd; ++v) {
-        CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
-    } // for
-
-    CPPUNIT_ASSERT_THROW(fields.add(label, "velocity", Field::VERTICES_FIELD, fiberDim), std::runtime_error);
-
-    PYLITH_METHOD_END;
-} // testAddDomain
 
 // ----------------------------------------------------------------------
 // Test del().
@@ -223,7 +188,6 @@ pylith::topology::TestFieldsMesh::testHasField(void)
     CPPUNIT_ASSERT_EQUAL(true, fields.hasField("field B"));
     CPPUNIT_ASSERT_EQUAL(false, fields.hasField("field C"));
 
-
     PYLITH_METHOD_END;
 } // testHasField
 
@@ -240,13 +204,19 @@ pylith::topology::TestFieldsMesh::testCopyLayout(void)
     Fields fields(*_mesh);
 
     const char* labelA = "field A";
-    fields.add(labelA, "displacement", Field::VERTICES_FIELD, fiberDim);
+    fields.add(labelA, "displacement");
+    Field& fieldA = fields.get(labelA);
+    const int numComponents = 3;
+    const char* components[3] = {"x", "y", "z"};
+    const int basisOrder = 1;
+    const int quadOrder = 1;
+    const double scale = 1.2;
+    fieldA.subfieldAdd("displacement", Field::SCALAR, components, numComponents, scale, basisOrder, quadOrder, true, Field::POLYNOMIAL_SPACE);
+    fieldA.subfieldsSetup();
+    fieldA.allocate();
 
     const char* labelB = "field B";
     fields.add(labelB, "velocity");
-    Field& fieldA = fields.get(labelA);
-    fieldA.allocate();
-
     fields.copyLayout(labelA);
 
     const size_t size = 2;
@@ -259,7 +229,7 @@ pylith::topology::TestFieldsMesh::testCopyLayout(void)
 
     const Field& field = fields.get(labelB);
     VecVisitorMesh fieldVisitor(field);
-    for(PetscInt v = vStart; v < vEnd; ++v) {
+    for (PetscInt v = vStart; v < vEnd; ++v) {
         CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
     } // for
 

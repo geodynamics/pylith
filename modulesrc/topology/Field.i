@@ -97,27 +97,6 @@ int sectionSize(void) const;
  */
 bool hasSection(void) const;
 
-/// Set chart for solution.
-void setupSolnChart(void);
-
-/** Set default DOF for solution.
- *
- * @param fiberDim Total number of components in solution.
- * @param subfieldName Name of subfield for DOF.
- */
-void setupSolnDof(const int fiberDim,
-                  const char* subfieldName ="displacement");
-
-/** Create PETSc section and set chart and fiber dimesion.
- *
- * @param domain Type of points over which to define section.
- * @param dim Fiber dimension for section.
- * @param stratum Stratum depth (for vertices) and height (for cells).
- */
-void newSection(const pylith::topology::FieldBase::DomainEnum domain,
-                const int fiberDim,
-                const int stratum =0);
-
 /** Create section with same layout (fiber dimension and
  * constraints) as another section. This allows the layout data
  * structures to be reused across multiple fields, reducing memory
@@ -160,18 +139,6 @@ void subfieldAdd(const char *name,
  * Should be preceded by calls to subfieldAdd() and followed by calls to subfieldSetDof().
  */
 void subfieldsSetup(void);
-
-/** Convenience method for setting number of DOF (fiberdim) for subfield at points.
- *
- * Should be preceded by calls to subfieldAdd() and subfieldsSetup().
- *
- * @param name Name of subfield.
- * @param domain Point classification for subfield.
- * @param fiberDim Number of subfield components per point.
- */
-void subfieldSetDof(const char *name,
-                    const pylith::topology::FieldBase::DomainEnum domain,
-                    const int fiberDim);
 
 /// Clear variables associated with section.
 void clear(void);

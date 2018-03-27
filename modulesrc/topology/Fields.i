@@ -60,18 +60,6 @@ namespace pylith {
       void add(const char* name,
 	       const char* label);
 
-      /** Add field.
-       *
-       * @param name Name of field.
-       * @param label Label for field.
-       * @param domain Type of points over which to define field.
-       * @param fiberDim Fiber dimension for field.
-       */
-      void add(const char* name,
-	       const char* label,
-	       const pylith::topology::FieldBase::DomainEnum domain,
-	       const int fiberDim);
-
       /** Get field.
        *
        * @param name Name of field.

@@ -270,13 +270,21 @@ pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
     PetscInt reallocateGlobal = 0;
     err = MPI_Allreduce(&reallocate, &reallocateGlobal, 1, MPIU_INT, MPI_LOR, fieldInterp.mesh().comm()); PYLITH_CHECK_ERROR(err);
     if (reallocateGlobal) {
-        fieldInterp.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
+        pylith::topology::Field::Discretization fe;
+        fe.basisOrder = 0;
+        fe.quadOrder = 0;
+        fe.isBasisContinuous = true;
+        fe.feSpace = pylith::topology::Field::POLYNOMIAL_SPACE;
+        const pylith::string_vector& subfieldNames = field.subfieldNames();
+        for (size_t i = 0; i < subfieldNames.size(); ++i) {
+            const pylith::topology::Field::SubfieldInfo& sinfo = field.subfieldInfo(subfieldNames[i].c_str());
+            fieldInterp.subfieldAdd(sinfo.description, fe);
+        } // for
+        fieldInterp.subfieldsSetup();
         fieldInterp.allocate();
     } // if
 
     fieldInterp.label(field.label());
-    //fieldInterp.vectorFieldType(field.vectorFieldType());
-    //fieldInterp.scale(field.scale());
     fieldInterp.zeroLocal();
 
     err = DMInterpolationSetDof(_interpolator, fiberDim); PYLITH_CHECK_ERROR(err);

@@ -37,16 +37,14 @@ pylith::topology::Fields::Fields(const Mesh& mesh) :
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::topology::Fields::~Fields(void)
-{ // destructor
+pylith::topology::Fields::~Fields(void) {
     deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::topology::Fields::deallocate(void)
-{ // deallocate
+pylith::topology::Fields::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
     const map_type::iterator begin = _fields.begin();
@@ -62,8 +60,7 @@ pylith::topology::Fields::deallocate(void)
 // ----------------------------------------------------------------------
 // Check if fields contains a given field.
 bool
-pylith::topology::Fields::hasField(const char* name) const
-{ // hasField
+pylith::topology::Fields::hasField(const char* name) const {
     PYLITH_METHOD_BEGIN;
     assert(name);
 
@@ -76,8 +73,7 @@ pylith::topology::Fields::hasField(const char* name) const
 // Add field.
 void
 pylith::topology::Fields::add(const char* name,
-                              const char* label)
-{ // add
+                              const char* label) {
     PYLITH_METHOD_BEGIN;
     assert(name);
     assert(label);
@@ -94,36 +90,11 @@ pylith::topology::Fields::add(const char* name,
     PYLITH_METHOD_END;
 } // add
 
-// ----------------------------------------------------------------------
-// Add field.
-void
-pylith::topology::Fields::add(const char* name,
-                              const char* label,
-                              const pylith::topology::FieldBase::DomainEnum domain,
-                              const int fiberDim)
-{ // add
-    PYLITH_METHOD_BEGIN;
-    assert(name);
-    assert(label);
-
-    if (hasField(name)) {
-        std::ostringstream msg;
-        msg << "Could not add field '" << name << "' to fields manager, because it already exists.";
-        throw std::runtime_error(msg.str());
-    } // if
-
-    _fields[name] = new Field(_mesh);
-    _fields[name]->label(label);
-    _fields[name]->newSection(domain, fiberDim);
-
-    PYLITH_METHOD_END;
-} // add
 
 // ----------------------------------------------------------------------
 // Delete field.
 void
-pylith::topology::Fields::del(const char* name)
-{ // del
+pylith::topology::Fields::del(const char* name) {
     PYLITH_METHOD_BEGIN;
     assert(name);
 
@@ -142,8 +113,7 @@ pylith::topology::Fields::del(const char* name)
 // ----------------------------------------------------------------------
 // Get field.
 const pylith::topology::Field&
-pylith::topology::Fields::get(const char* name) const
-{ // get
+pylith::topology::Fields::get(const char* name) const {
     PYLITH_METHOD_BEGIN;
     assert(name);
 
@@ -160,8 +130,7 @@ pylith::topology::Fields::get(const char* name) const
 // ----------------------------------------------------------------------
 // Get field.
 pylith::topology::Field&
-pylith::topology::Fields::get(const char* name)
-{ // get
+pylith::topology::Fields::get(const char* name) {
     PYLITH_METHOD_BEGIN;
     assert(name);
 
@@ -178,8 +147,7 @@ pylith::topology::Fields::get(const char* name)
 // ----------------------------------------------------------------------
 // Copy layout to other fields.
 void
-pylith::topology::Fields::copyLayout(const char* name)
-{ // copyLayout
+pylith::topology::Fields::copyLayout(const char* name) {
     PYLITH_METHOD_BEGIN;
     assert(name);
 
@@ -204,8 +172,7 @@ pylith::topology::Fields::copyLayout(const char* name)
 // ----------------------------------------------------------------------
 // Get mesh associated with fields.
 const pylith::topology::Mesh&
-pylith::topology::Fields::mesh(void) const
-{ // mesh
+pylith::topology::Fields::mesh(void) const {
     return _mesh;
 } // mesh
 

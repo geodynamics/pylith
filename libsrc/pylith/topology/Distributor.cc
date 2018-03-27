@@ -101,15 +101,18 @@ pylith::topology::Distributor::write(meshio::DataWriter* const writer,
     } // if
 
     // Setup and allocate field
-    const int fiberDim = 1;
-    topology::Field partition(mesh);
-    partition.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
+    pylith::topology::Field partition(mesh);
+    const char* components[1] = {"partition"};
+    const int numComponents = 1;
+    const int basisOrder = 0;
+    const int quadOrder = 0;
+    const double scale = 1.0;
+    partition.subfieldAdd("partition", pylith::topology::Field::SCALAR, components, numComponents, scale, basisOrder, quadOrder, true, pylith::topology::Field::POLYNOMIAL_SPACE);
+    partition.subfieldsSetup();
     partition.allocate();
-    //partition.scale(1.0);
-    //partition.vectorFieldType(topology::FieldBase::SCALAR);
     partition.label("partition");
 
-    PylithScalar rankReal = PylithScalar(commRank);
+    PylithScalar rankReal = PylithReal(commRank);
 
     PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
     topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
@@ -121,7 +124,7 @@ pylith::topology::Distributor::write(meshio::DataWriter* const writer,
 
     for (PetscInt c = cStart; c < cEnd; ++c) {
         const PetscInt off = partitionVisitor.sectionOffset(c);
-        assert(fiberDim == partitionVisitor.sectionDof(c));
+        assert(numComponents == partitionVisitor.sectionDof(c));
         partitionArray[off] = rankReal;
     } // for
 

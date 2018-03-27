@@ -44,18 +44,16 @@
  *
  * General steps for setting up a field:
  *
- * 1. Set the number of subfields and the number of components per subfield.
+ * 1. Add subfields (description and discretization).
  * 2. Set the chart.
- * 3. Set the DOF (fiberdim) for each point in the chart.
- * 4. Set any constraints (known DOF).
- * 5. Allocate.
- * 6. Set the indices for the constrained DOF.
+ * 3. Set any constraints (known DOF).
+ * 4. Allocate.
  *
- * For local fields associated with parameters, we do not have steps 4
- * and 6. Step 2-4 and 6 are automatically handled by the PETSc DS if
+ * For local fields associated with parameters, we do not have step 3.
+ * Step 3 is handled automatically by the PETSc DS if
  * DMAddBoundary is called.
  */
-class pylith::topology::Field : public FieldBase, public pylith::utils::GenericComponent {
+class pylith::topology::Field : public pylith::topology::FieldBase, public pylith::utils::GenericComponent {
     friend class FieldQuery;   // Fill field using data.
 
     friend class TestFieldMesh;   // unit testing
@@ -80,18 +78,6 @@ public:
      * @param mesh Finite-element mesh.
      */
     Field(const Mesh& mesh);
-
-    #if 0
-    /** Constructor with mesh, DM, and metadata
-     *
-     * @param mesh Finite-element mesh.
-     * @param dm PETSc dm for field.
-     * @param label Label of field.
-     */
-    Field(const Mesh& mesh,
-          PetscDM dm,
-          const char* label);
-          #endif
 
     /** Constructor with mesh, PETSc DM, local data, and metadata.
      *
@@ -196,76 +182,6 @@ public:
      */
     PetscVec localVector(void) const;
 
-    /// Set chart for solution.
-    void setupSolnChart(void); // :TODO: @brad Remove, OBSOLETE.
-
-    /** Set default DOF for solution.
-     *
-     * @param fiberDim Total number of components in solution.
-     * @param subfieldName Name of subfield for DOF.
-     */
-    void setupSolnDof(const int fiberDim, // :TODO: @brad Remove OBSOLETE.
-                      const char* subfieldName="displacement");
-
-    /** Create PETSc section and set chart and fiber dimesion for a list
-     * of points.
-     *
-     * @param pStart First point
-     * @param pEnd Upper bound for points
-     * @param dim Fiber dimension for section.
-     *
-     * @note Don't forget to call label(), especially if reusing a field.
-     */
-    void newSection(const PetscInt pStart, // :TODO: @brad Remove OBSOLETE.
-                    const PetscInt pEnd,
-                    const int fiberDim);
-
-    /** Create PETSc section and set chart and fiber dimesion for a list
-     * of points.
-     *
-     * @param points Points over which to define section.
-     * @param dim Fiber dimension for section.
-     *
-     * @note Don't forget to call label(), especially if reusing a field.
-     */
-    void newSection(const int_array& points, // :TODO: @brad Remove OBSOLETE.
-                    const int fiberDim);
-
-    /** Create PETSc section and set chart and fiber dimesion for a list
-     * of points.
-     *
-     * @param points Points over which to define section.
-     * @param num The number of points
-     * @param dim Fiber dimension for section.
-     *
-     * @note Don't forget to call label(), especially if reusing a field.
-     */
-    void newSection(const PetscInt *points,
-                    const PetscInt num,
-                    const int fiberDim);
-
-    /** Create PETSc section and set chart and fiber dimesion.
-     *
-     * @param domain Type of points over which to define section.
-     * @param dim Fiber dimension for section.
-     * @param stratum Stratum depth (for vertices) and height (for cells).
-     *
-     * @note Don't forget to call label(), especially if reusing a field.
-     */
-    void newSection(const DomainEnum domain, // :TODO: @brad Remove OBSOLETE.
-                    const int fiberDim,
-                    const int stratum=0);
-
-    /** Create section using src field as template with given fiber dimension.
-     *
-     * @param sec Field defining layout.
-     * @param fiberDim Fiber dimension.
-     *
-     * @note Don't forget to call label(), especially if reusing a field.
-     */
-    void newSection(const Field& src,
-                    const int fiberDim);
-
     /** Create section with same layout (fiber dimension and
      * constraints) as another section. This allows the layout data
      * structures to be reused across multiple fields, reducing memory
@@ -316,18 +232,6 @@ public:
      * Should be preceded by calls to subfieldAdd() and followed by calls to subfieldSetDof().
      */
     void subfieldsSetup(void);
-
-    /** Convenience method for setting number of DOF (fiberdim) for subfield at points.
-     *
-     * Should be preceded by calls to subfieldAdd() and subfieldsSetup().
-     *
-     * @param name Name of subfield.
-     * @param domain Point classification for subfield.
-     * @param fiberDim Number of subfield components per point.
-     */
-    void subfieldSetDof(const char *name,  // :TODO: @brad Remove OBSOLETE.
-                        const pylith::topology::FieldBase::DomainEnum domain,
-                        const int fiberDim);
 
     /** Does field have given subfield?
      *

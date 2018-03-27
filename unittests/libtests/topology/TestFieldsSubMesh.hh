@@ -31,74 +31,69 @@
 // Forward declarations -------------------------------------------------
 /// Namespace for pylith package
 namespace pylith {
-  namespace topology {
-    class TestFieldsSubMesh;
+    namespace topology {
+        class TestFieldsSubMesh;
 
-    class Mesh;
-  } // topology
+        class Mesh;
+    } // topology
 } // pylith
 
 // TestField -------------------------------------------------------------
 /// C++ unit testing for Field.
-class pylith::topology::TestFieldsSubMesh : public CppUnit::TestFixture
-{ // class TestField
+class pylith::topology::TestFieldsSubMesh : public CppUnit::TestFixture { // class TestField
 
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestFieldsSubMesh );
+    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+    CPPUNIT_TEST_SUITE(TestFieldsSubMesh);
 
-  CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testAdd );
-  CPPUNIT_TEST( testAddDomain );
-  CPPUNIT_TEST( testDelete );
-  CPPUNIT_TEST( testGet );
-  CPPUNIT_TEST( testGetConst );
-  CPPUNIT_TEST( testHasField );
-  CPPUNIT_TEST( testCopyLayout );
+    CPPUNIT_TEST(testConstructor);
+    CPPUNIT_TEST(testAdd);
+    CPPUNIT_TEST(testDelete);
+    CPPUNIT_TEST(testGet);
+    CPPUNIT_TEST(testGetConst);
+    CPPUNIT_TEST(testHasField);
+    CPPUNIT_TEST(testCopyLayout);
 
-  CPPUNIT_TEST_SUITE_END();
+    CPPUNIT_TEST_SUITE_END();
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+    // PUBLIC METHODS /////////////////////////////////////////////////////
+public:
 
-  /// Setup test case.
-  void setUp(void);
+    /// Setup test case.
+    void setUp(void);
 
-  /// Tear down test case.
-  void tearDown(void);
+    /// Tear down test case.
+    void tearDown(void);
 
-  /// Test constructor.
-  void testConstructor(void);
+    /// Test constructor.
+    void testConstructor(void);
 
-  /// Test add().
-  void testAdd(void);
+    /// Test add().
+    void testAdd(void);
 
-  /// Test add(domain).
-  void testAddDomain(void);
+    /// Test delete().
+    void testDelete(void);
 
-  /// Test delete().
-  void testDelete(void);
+    /// Test get().
+    void testGet(void);
 
-  /// Test get().
-  void testGet(void);
+    /// Test get() for const Fields.
+    void testGetConst(void);
 
-  /// Test get() for const Fields.
-  void testGetConst(void);
+    /// Test hasField().
+    void testHasField(void);
 
-  /// Test hasField().
-  void testHasField(void);
+    /// Test copyLayout(domain).
+    void testCopyLayout(void);
 
-  /// Test copyLayout(domain).
-  void testCopyLayout(void);
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////
+private:
 
-// PRIVATE MEMBERS /////////////////////////////////////////////////////
-private :
-
-  Mesh* _mesh;
-  Mesh* _submesh;
+    Mesh* _mesh;
+    Mesh* _submesh;
 
 }; // class TestFieldsSubMesh
 
 #endif // pylith_topology_testfieldssubmesh_hh
 
 
-// End of file 
+// End of file

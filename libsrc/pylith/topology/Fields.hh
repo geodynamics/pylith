@@ -36,8 +36,7 @@
 
 // Fields ---------------------------------------------------------------
 /// Container for managing multiple fields over a finite-element mesh.
-class pylith::topology::Fields
-{ // Fields
+class pylith::topology::Fields { // Fields
     friend class TestFieldsMesh; // unit testing
     friend class TestFieldsSubMesh; // unit testing
 
@@ -51,8 +50,7 @@ public:
     Fields(const Mesh& mesh);
 
     /// Destructor.
-    virtual
-    ~Fields(void);
+    virtual ~Fields(void);
 
     /// Deallocate PETSc and local data structures.
     virtual
@@ -72,18 +70,6 @@ public:
      */
     void add(const char* name,
              const char* label);
-
-    /** Add field.
-     *
-     * @param name Name of field.
-     * @param label Label for field.
-     * @param domain Type of points over which to define field.
-     * @param fiberDim Fiber dimension for field.
-     */
-    void add(const char* name, // :TODO: @brad Remove obsolete.
-             const char* label,
-             const pylith::topology::FieldBase::DomainEnum domain,
-             const int fiberDim);
 
     /** Delete field.
      *

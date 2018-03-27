@@ -54,7 +54,6 @@ class pylith::topology::TestFieldMesh : public CppUnit::TestFixture {
     CPPUNIT_TEST(testGeneralAccessors);
     CPPUNIT_TEST(testSectionAccessors);
     CPPUNIT_TEST(testVectorAccessors);
-    CPPUNIT_TEST(testNewSection);
     CPPUNIT_TEST(testCloneSection);
     CPPUNIT_TEST(testSubfieldAccessors);
     CPPUNIT_TEST(testClear);
@@ -92,13 +91,10 @@ public:
     /// Test localVector(), globalVector().
     void testVectorAccessors(void);
 
-    /// Test newSection(points), newSection(domain), newSection(field).
-    void testNewSection(void);
-
     /// Test cloneSection().
     void testCloneSection(void);
 
-    /// Test subfieldAdd(), subfieldsSetup(), subfieldSetDof(), hasSubfield(), subfieldNames(), subfieldInfo().
+    /// Test subfieldAdd(), subfieldsSetup(), hasSubfield(), subfieldNames(), subfieldInfo().
     void testSubfieldAccessors(void);
 
     /// Test clear().
