@@ -50,7 +50,7 @@ pylith::materials::AuxiliaryFactory::~AuxiliaryFactory(void)
 } // destructor
 
 // ----------------------------------------------------------------------
-// Add density field to auxiliary fields.
+// Add density subfield to auxiliary fields.
 void
 pylith::materials::AuxiliaryFactory::density(void)
 { // density
@@ -77,7 +77,7 @@ pylith::materials::AuxiliaryFactory::density(void)
 
 
 // ----------------------------------------------------------------------
-// Add shear modulus field to auxiliary fields.
+// Add shear modulus subfield to auxiliary fields.
 void
 pylith::materials::AuxiliaryFactory::shearModulus(void)
 { // shearModulus
@@ -104,7 +104,7 @@ pylith::materials::AuxiliaryFactory::shearModulus(void)
 
 
 // ----------------------------------------------------------------------
-// Add bulk modulus field to auxiliary fields.
+// Add bulk modulus subfield to auxiliary fields.
 void
 pylith::materials::AuxiliaryFactory::bulkModulus(void)
 { // bulkModulus
@@ -131,7 +131,7 @@ pylith::materials::AuxiliaryFactory::bulkModulus(void)
 
 
 // ----------------------------------------------------------------------
-// Add gravity field to auxiliary fields.
+// Add gravity subfield to auxiliary fields.
 void
 pylith::materials::AuxiliaryFactory::gravityField(spatialdata::spatialdb::GravityField* gf)
 { // gravityField
@@ -163,7 +163,7 @@ pylith::materials::AuxiliaryFactory::gravityField(spatialdata::spatialdb::Gravit
 } // gravityField
 
 // ----------------------------------------------------------------------
-// Add body force field to auxiliary fields.
+// Add body force subfield to auxiliary fields.
 void
 pylith::materials::AuxiliaryFactory::bodyForce(void)
 { // bodyForce
@@ -194,7 +194,7 @@ pylith::materials::AuxiliaryFactory::bodyForce(void)
 
 
 // ----------------------------------------------------------------------
-// Add reference stress to auxiliary fields.
+// Add reference stress subfield to auxiliary fields.
 void
 pylith::materials::AuxiliaryFactory::referenceStress(void)
 { // referenceStress
@@ -225,7 +225,7 @@ pylith::materials::AuxiliaryFactory::referenceStress(void)
 
 
 // ----------------------------------------------------------------------
-// Add reference strain to auxiliary fields.
+// Add reference strain subfield to auxiliary fields.
 void
 pylith::materials::AuxiliaryFactory::referenceStrain(void)
 { // referenceStrain
@@ -255,22 +255,23 @@ pylith::materials::AuxiliaryFactory::referenceStrain(void)
 
 
 // ----------------------------------------------------------------------
-// Add Maxwell time field to auxiliary fields.
+// Add Maxwell time subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactory::maxwellTime(void)
+pylith::materials::AuxiliaryFactory::maxwellTime(const char* identifier)
 { // maxwellTime
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("maxwellTime(void)");
+    PYLITH_JOURNAL_DEBUG("maxwellTime(identifier)");
 
     const char* fieldName = "maxwell_time";
+    const std::string& fieldNameFull = (identifier) ? std::string(fieldName) + std::string("_") + std::string(identifier) : fieldName;
     const PylithReal timeScale = _normalizer->timeScale();
 
     pylith::topology::Field::Description description;
-    description.label = fieldName;
+    description.label = fieldNameFull;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);
-    description.componentNames[0] = fieldName;
+    description.componentNames[0] = fieldNameFull;
     description.scale = timeScale;
     description.validator = pylith::topology::FieldQuery::validatorPositive;
 
@@ -281,7 +282,7 @@ pylith::materials::AuxiliaryFactory::maxwellTime(void)
 } // maxwellTime
 
 // ----------------------------------------------------------------------
-// Add total strain field to auxiliary fields.
+// Add total strain subfield to auxiliary fields.
 void
 pylith::materials::AuxiliaryFactory::totalStrain(void)
 { // totalStrain
@@ -310,15 +311,17 @@ pylith::materials::AuxiliaryFactory::totalStrain(void)
 } // totalStrain
 
 // ----------------------------------------------------------------------
-// Add viscous strain field to auxiliary fields.
+// Add viscous strain subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactory::viscousStrain(void)
+pylith::materials::AuxiliaryFactory::viscousStrain(const char* identifier)
 { // viscousStrain
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("viscousStrain(void)");
+    PYLITH_JOURNAL_DEBUG("viscousStrain(identifier)");
 
     const char* fieldName = "viscous_strain";
-    const char* componentNames[6] = { "viscous_strain_xx", "viscous_strain_yy", "viscous_strain_zz", "viscous_strain_xy", "viscous_strain_yz", "viscous_strain_xz" };
+    const char* componentSuffixes[6] = { "_xx", "_yy", "_zz", "_xy", "_yz", "_xz" };
+    const std::string& fieldNameFull = (identifier) ? std::string(fieldName) + std::string("_") + std::string(identifier) : fieldName;
+    
     const int strainSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
 
     pylith::topology::Field::Description description;
@@ -327,7 +330,7 @@ pylith::materials::AuxiliaryFactory::viscousStrain(void)
     description.numComponents = strainSize;
     description.componentNames.resize(strainSize);
     for (int i = 0; i < strainSize; ++i) {
-        description.componentNames[i] = componentNames[i];
+      description.componentNames[i] = std::string(fieldNameFull) + std::string(componentSuffixes[i]);
     } // for
     description.scale = 1.0;
     description.validator = NULL;
@@ -337,5 +340,31 @@ pylith::materials::AuxiliaryFactory::viscousStrain(void)
 
     PYLITH_METHOD_END;
 } // viscousStrain
+
+// ----------------------------------------------------------------------
+// Add shear modulus ratio subfield to auxiliary fields.
+void
+pylith::materials::AuxiliaryFactory::shearModulusRatio(const char* identifier)
+{ // shearModulusRatio
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("shearModulusRatio(identifier)");
+
+    const char* fieldName = "shear_modulus_ratio";
+    const std::string& fieldNameFull = (identifier) ? std::string(fieldName) + std::string("_") + std::string(identifier) : fieldName;
+    
+    pylith::topology::Field::Description description;
+    description.label = fieldNameFull;
+    description.vectorFieldType = pylith::topology::Field::SCALAR;
+    description.numComponents = 1;
+    description.componentNames.resize(1);
+    description.componentNames[0] = fieldNameFull;
+    description.scale = 1.0;
+    description.validator = NULL;
+
+    _field->subfieldAdd(description, subfieldDiscretization(fieldName));
+    _subfieldQueryFn(fieldName, pylith::topology::FieldQuery::dbQueryGeneric);
+
+    PYLITH_METHOD_END;
+} // shearModulusRatio
 
 // End of file

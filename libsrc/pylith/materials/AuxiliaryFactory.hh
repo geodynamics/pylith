@@ -45,39 +45,59 @@ public:
     /// Destructor.
     ~AuxiliaryFactory(void);
 
-    /// Add density field to auxiliary fields.
+    /// Add density subfield to auxiliary fields.
     void density(void);
 
-    /// Add shear modulus field to auxiliary fields.
+    /// Add shear modulus subfield to auxiliary fields.
     void shearModulus(void);
 
-    /// Add bulk field to auxiliary fields.
+    /// Add bulk subfield to auxiliary fields.
     void bulkModulus(void);
 
-    /** Add gravity field to auxiliary fields.
+    /** Add gravity subfield to auxiliary fields.
      *
      * @param[in] gf Gravity field.
      */
     void gravityField(spatialdata::spatialdb::GravityField* gf);
 
-    /// Add body force field to auxiliary fields.
+    /// Add body force subfield to auxiliary fields.
     void bodyForce(void);
 
-    /// Add reference stress field to auxiliary fields.
+    /// Add reference stress subfield to auxiliary fields.
     void referenceStress(void);
 
-    /// Add reference strain field to auxiliary fields.
+    /// Add reference strain subfield to auxiliary fields.
     void referenceStrain(void);
 
-    /// Add Maxwell time field to auxiliary fields.
-    void maxwellTime(void);
+  /** Add Maxwell time subfield to auxiliary fields.
+   *
+   * The identifier is used to distinguish among multiple subfields of
+   * the same parameters for cases like a generalized Maxwell model.
+   *
+   * @param[in] identifier Identifier appended to field name.
+   */
+    void maxwellTime(const char* identifier =NULL);
 
-    /// Add total strain field to auxiliary fields.
+    /// Add total strain subfield to auxiliary fields.
     void totalStrain(void);
 
-    /// Add viscous strain field to auxiliary fields.
-    void viscousStrain(void);
+  /** Add viscous strain subfield to auxiliary fields.
+   *
+   * The identifier is used to distinguish among multiple subfields of
+   * the same parameters for cases like a generalized Maxwell model.
+   *
+   * @param[in] identifier Identifier appended to field name.
+   */
+    void viscousStrain(const char* identigier =NULL);
 
+  /** Add shear modulus ratio subfield to auxliary fields.
+   *
+   * The identifier is used to distinguish among multiple subfields of
+   * the same parameters for cases like a generalized Maxwell model.
+   *
+   * @param[in] identifier Identifier appended to field name.
+   */
+  void shearModulusRatio(const char* identifier =NULL);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private:
