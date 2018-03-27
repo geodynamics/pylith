@@ -25,7 +25,6 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/Jacobian.hh" // USES Field
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/faults/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 #include "pylith/topology/Stratum.hh" // USES Stratum
