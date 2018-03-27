@@ -46,8 +46,7 @@ void
 pylith::meshio::FieldFactory::scalar(const pylith::topology::FieldBase::Discretization& discretization,
                                      const PylithScalar* values,
                                      const PylithInt numPoints,
-                                     const PylithInt numComponents)
-{ // scalar
+                                     const PylithInt numComponents) {
     PYLITH_METHOD_BEGIN;
 
     const char* fieldName = "scalar";
@@ -79,8 +78,7 @@ void
 pylith::meshio::FieldFactory::vector(const pylith::topology::FieldBase::Discretization& discretization,
                                      const PylithScalar* values,
                                      const PylithInt numPoints,
-                                     const PylithInt numComponents)
-{ // vector
+                                     const PylithInt numComponents) {
     PYLITH_METHOD_BEGIN;
 
     const char* fieldName = "vector";
@@ -116,8 +114,7 @@ void
 pylith::meshio::FieldFactory::tensor(const pylith::topology::FieldBase::Discretization& discretization,
                                      const PylithScalar* values,
                                      const PylithInt numPoints,
-                                     const PylithInt numComponents)
-{ // tensor
+                                     const PylithInt numComponents) {
 
     const char* fieldName = "tensor";
 
@@ -166,8 +163,7 @@ void
 pylith::meshio::FieldFactory::other(const pylith::topology::FieldBase::Discretization& discretization,
                                     const PylithScalar* values,
                                     const PylithInt numPoints,
-                                    const PylithInt numComponents)
-{ // other
+                                    const PylithInt numComponents) {
     const char* fieldName = "other";
     const int otherSize = 2;
     const char* componentNames[otherSize] = { "other_1", "other_2" };
@@ -201,8 +197,7 @@ void
 pylith::meshio::FieldFactory::setField(pylith::topology::Field* field,
                                        const PylithScalar* values,
                                        const PylithInt numPoints,
-                                       const PylithInt numComponents)
-{ // setField
+                                       const PylithInt numComponents) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(field);
