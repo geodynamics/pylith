@@ -30,7 +30,6 @@
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
-#include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
