@@ -99,7 +99,7 @@ protected:
 
                 _data->field = "displacement";
                 _data->vectorFieldType = pylith::topology::Field::VECTOR;
-                _data->scale = _data->normalizer->lengthScale();
+                _data->scale = _data->normalizer->pressureScale();
 
                 _data->useInitial = true;
                 _data->useRate = false;
