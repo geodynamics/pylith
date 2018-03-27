@@ -142,7 +142,6 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldSetup(
     CPPUNIT_ASSERT(_mydata->normalizer);
     const PylithReal densityScale = _mydata->normalizer->densityScale();
     const PylithReal lengthScale = _mydata->normalizer->lengthScale();
-    const PylithReal timeScale = _mydata->normalizer->timeScale();
     const PylithReal pressureScale = _mydata->normalizer->pressureScale();
     const PylithReal forceScale = pressureScale / lengthScale;
 
