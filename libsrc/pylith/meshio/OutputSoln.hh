@@ -35,58 +35,57 @@
 // OutputSoln -----------------------------------------------------
 /** @brief C++ object for managing output of the solution over the domain.
  */
-class pylith::meshio::OutputSoln : public OutputManager
-{ // OutputSoln
-friend class TestOutputSoln;   // unit testing
+class pylith::meshio::OutputSoln : public OutputManager {
+    friend class TestOutputSoln;   // unit testing
 
-// PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
-/// Constructor
-OutputSoln(void);
+    /// Constructor
+    OutputSoln(void);
 
-/// Destructor
-~OutputSoln(void);
+    /// Destructor
+    ~OutputSoln(void);
 
-/// Deallocate PETSc and local data structures.
-void deallocate(void);
+    /// Deallocate PETSc and local data structures.
+    void deallocate(void);
 
-/** Set names of solution fields to output.
- *
- * @param[in] names Array of names of fields to output.
- * @param[in] numNames Length of array.
- */
-void vertexDataFields(const char* names[],
-                      const int numNames);
+    /** Set names of solution fields to output.
+     *
+     * @param[in] names Array of names of fields to output.
+     * @param[in] numNames Length of array.
+     */
+    void vertexDataFields(const char* names[],
+                          const int numNames);
 
-/** Verify configuration.
- *
- * @param mesh PETSc mesh
- */
-void verifyConfiguration(const pylith::topology::Field& solution) const;
+    /** Verify configuration.
+     *
+     * @param mesh PETSc mesh
+     */
+    void verifyConfiguration(const pylith::topology::Field& solution) const;
 
-/** Write solution at time step.
- *
- * @param[in] t Current time.
- * @param[in] tindex Current time step.
- * @param[in] solution Solution at time t.
- */
-void writeTimeStep(const PylithReal t,
-                   const PylithInt tindex,
-                   const pylith::topology::Field& solution);
+    /** Write solution at time step.
+     *
+     * @param[in] t Current time.
+     * @param[in] tindex Current time step.
+     * @param[in] solution Solution at time t.
+     */
+    void writeTimeStep(const PylithReal t,
+                       const PylithInt tindex,
+                       const pylith::topology::Field& solution);
 
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
+    // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
 
-pylith::string_vector _vertexDataFields; ///< Names of solution fields to output.
+    pylith::string_vector _vertexDataFields; ///< Names of solution fields to output.
 
-static const char* _pyreComponent; ///< Name of Pyre component.
+    static const char* _pyreComponent; ///< Name of Pyre component.
 
-// NOT IMPLEMENTED //////////////////////////////////////////////////////
+    // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
-OutputSoln(const OutputSoln&);   ///< Not implemented.
-const OutputSoln& operator=(const OutputSoln&);   ///< Not implemented
+    OutputSoln(const OutputSoln&);   ///< Not implemented.
+    const OutputSoln& operator=(const OutputSoln&);   ///< Not implemented
 
 }; // OutputSoln
 
