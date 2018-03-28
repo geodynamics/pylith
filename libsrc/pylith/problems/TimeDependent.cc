@@ -377,11 +377,7 @@ pylith::problems::TimeDependent::poststep(void)
     const size_t numOutput = _outputs.size();
     for (size_t i = 0; i < numOutput; ++i) {
         assert(_outputs[i]);
-#if 0
-        PYLITH_COMPONENT_ERROR(":TODO: @brad Implement solution output in poststep().");
-#else
         _outputs[i]->writeTimeStep(t, tindex, *_solution);
-#endif
     } // for
 
     // Update state variables
