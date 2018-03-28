@@ -41,7 +41,6 @@ class OutputManager(PetscComponent, ModuleOutputManager):
     @li \b skip_timesteps Number of time steps to skip between writes.
 
     \b Facilities
-    @li \b coordsys Coordinate system for output. NOT IMPLEMENTED
     @li \b vertex_filter Filter for vertex data.
     @li \b cell_filter Filter for cell data.
     """
@@ -64,11 +63,6 @@ class OutputManager(PetscComponent, ModuleOutputManager):
     writer = pyre.inventory.facility("writer", factory=DataWriterHDF5, family="data_writer")
     writer.meta['tip'] = "Writer for data."
 
-    # Not implemented
-    #from spatialdata.geocoords.CSCart import CSCart
-    #coordsys = pyre.inventory.facility("coordsys", family="coordsys", factory=CSCart)
-    #coordsys.meta['tip'] = "Coordinate system for output."
-
     vertexFilter = pyre.inventory.facility("vertex_filter", family="output_vertex_filter", factory=NullComponent)
     vertexFilter.meta['tip'] = "Filter for vertex data."
 
@@ -84,7 +78,6 @@ class OutputManager(PetscComponent, ModuleOutputManager):
         PetscComponent.__init__(self, name, facility="outputmanager")
         self._loggingPrefix = "OutM "
         self._createModuleObj()
-        self.coordsys = None  # not implemented
         return
 
     def preinitialize(self):
@@ -102,8 +95,6 @@ class OutputManager(PetscComponent, ModuleOutputManager):
         else:
             raise ValueError("Unknown output trigger '%s'." % self.inventory.trigger)
 
-        if not isinstance(self.coordsys, NullComponent):
-            ModuleOutputManager.coordsys(self, self.coordsys)
         if not isinstance(self.vertexFilter, NullComponent):
             ModuleOutputManager.vertexFilter(self, self.vertexFilter)
         if not isinstance(self.inventory.cellFilter, NullComponent):

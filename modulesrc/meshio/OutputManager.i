@@ -87,13 +87,6 @@ namespace pylith {
 	     */
 	    double timeSkip(void) const;
 
-	    /** Set coordinate system in output. The vertex fields in the output
-	     * are not affected by any change in coordinates.
-	     *
-	     * @param cs Coordinate system in output.
-	     */
-	    void coordsys(const spatialdata::geocoords::CoordSys* cs);
-
 	    /** Set writer to write data to file.
 	     *
 	     * @param datawriter Writer for data.
