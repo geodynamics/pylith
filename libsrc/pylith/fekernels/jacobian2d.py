@@ -180,8 +180,8 @@ writeJacobianInfo(fileName, jacobian)
 fileName = 'elasticity-max_iso2d.txt'
 shearModulus, deltaT, tauM = sympy.symbols('shearModulus deltaT tauM')
 expFac = sympy.exp(-deltaT/tauM)
-delHM = sympy.symbols('delHM')
-delHArr = delHM * (devStrain - devStrainN)
+dq = sympy.symbols('dq')
+delHArr = dq * (devStrain - devStrainN)
 # Dummy tensor represents viscous strain from previous time step.
 hMArr = expFac * dummyTensor + delHArr
 meanStress = bulkModulus * volStrainArr
@@ -192,28 +192,30 @@ jacobian2 = sympy.tensor.array.derive_by_array(stress, defGradTranspose)
 jacobian = 0.5 * (jacobian1 + jacobian2)
 writeJacobianInfo(fileName, jacobian)
 
+# ----------------------------------------------------------------------
 # Generalized Maxwell viscoelastic.
 fileName = 'elasticity-genmax_iso2d.txt'
 (shearModulus, deltaT, tauM1, tauM2, tauM3,
- shearRatio1, shearRatio2, shearRatio3) = sympy.symbols(
-  'shearModulus deltaT tauM1 tauM2 tauM3 shearRatio1 shearRatio2 shearRatio3')
-shearRatio0 = sympy.symbols('shearRatio0')
+ shearModulusRatio_1, shearModulusRatio_2,
+ shearModulusRatio_3) = sympy.symbols(
+  'shearModulus deltaT tauM1 tauM2 tauM3 shearModulusRatio_1 shearModulusRatio_2 shearModulusRatio_3')
+shearModulusRatio_0 = sympy.symbols('shearModulusRatio_0')
 expFac1 = sympy.exp(-deltaT/tauM1)
 expFac2 = sympy.exp(-deltaT/tauM2)
 expFac3 = sympy.exp(-deltaT/tauM3)
-delHM1, delHM2, delHM3 = sympy.symbols('delHM1 delHM2 delHM3')
-delHArr1 = delHM1 * (devStrain - devStrainN)
-delHArr2 = delHM2 * (devStrain - devStrainN)
-delHArr3 = delHM3 * (devStrain - devStrainN)
+dq_1, dq_2, dq_3 = sympy.symbols('dq_1 dq_2 dq_3')
+delHArr1 = dq_1 * (devStrain - devStrainN)
+delHArr2 = dq_2 * (devStrain - devStrainN)
+delHArr3 = dq_3 * (devStrain - devStrainN)
 # Dummy tensors represent viscous strain from previous time step.
 hMArr1 = expFac1 * dummyTensor + delHArr1
 hMArr2 = expFac2 * dummyTensor + delHArr2
 hMArr3 = expFac3 * dummyTensor + delHArr3
 meanStress = bulkModulus * volStrainArr
-devStress = 2.0 * shearModulus * (shearRatio0 * devStrain + \
-                                  shearRatio1 * hMArr1 + \
-                                  shearRatio2 * hMArr2 + \
-                                  shearRatio3 * hMArr3)
+devStress = 2.0 * shearModulus * (shearModulusRatio_0 * devStrain + \
+                                  shearModulusRatio_1 * hMArr1 + \
+                                  shearModulusRatio_2 * hMArr2 + \
+                                  shearModulusRatio_3 * hMArr3)
 stress = meanStress + devStress
 jacobian1 = sympy.tensor.array.derive_by_array(stress, defGrad)
 jacobian2 = sympy.tensor.array.derive_by_array(stress, defGradTranspose)
