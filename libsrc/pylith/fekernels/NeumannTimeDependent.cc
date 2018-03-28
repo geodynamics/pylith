@@ -104,6 +104,7 @@ pylith::fekernels::NeumannTimeDependent::g0_initial_vector(const PylithInt dim,
         for (PylithInt i = 0; i < _dim; ++i) {
             g0[i] += a[i_initial+0]*tanDir[i] + a[i_initial+1]*n[i];
         } // for
+        break;
     } // case 2
     case 3: {
         const PylithInt _dim = 3;
@@ -115,8 +116,10 @@ pylith::fekernels::NeumannTimeDependent::g0_initial_vector(const PylithInt dim,
         for (PylithInt i = 0; i < _dim; ++i) {
             g0[i] += a[i_initial+0]*tanDir1[i] + a[i_initial+1]*tanDir2[i] + a[i_initial+2]*n[i];
         } // for
-
+        break;
     } // case 3
+    default:
+        assert(0);
     } // switch
 
 } // g0_initial_vector
