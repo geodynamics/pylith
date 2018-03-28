@@ -32,6 +32,7 @@
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase
+#include "pylith/meshio/meshiofwd.hh" // HOLDSA OutputIntegrator
 #include "pylith/utils/petscfwd.h" // USES PetscMat, PetscVec
 #include "pylith/utils/utilsfwd.hh" // HOLDSA Logger
 
@@ -72,6 +73,12 @@ public:
      * @param[in] value Pointer to database.
      */
     void auxFieldDB(spatialdata::spatialdb::SpatialDB* value);
+
+    /** Set output manager.
+     *
+     * @param[in] manager Output manager for integrator.
+     */
+    void output(pylith::meshio::OutputIntegrator* manager);
 
     /** Set discretization information for auxiliary subfield.
      *
@@ -220,6 +227,21 @@ public:
     virtual
     void updateStateVars(const pylith::topology::Field& solution);
 
+    // Write information (auxiliary field) output.
+    virtual
+    void writeInfo(void);
+
+    /** Write solution related output.
+     *
+     * @param[in] t Current time.
+     * @param[in] tindex Current time step.
+     * @param[in] solution Field with solution at current time.
+     */
+    virtual
+    void writeTimeStep(const PylithReal t,
+                       const PylithInt tindex,
+                       const pylith::topology::Field& solution);
+
     // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
 
@@ -236,6 +258,7 @@ protected:
     spatialdata::units::Nondimensional* _normalizer;   ///< Nondimensionalizer.
     spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
     pylith::topology::Field* _auxField; ///< Auxiliary field for this integrator.
+    pylith::meshio::OutputIntegrator* _output; ///< Output manager for integrator.
 
     pylith::utils::EventLogger* _logger;   ///< Event logger.
 

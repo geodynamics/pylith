@@ -17,40 +17,40 @@
 //
 
 /**
- * @file libsrc/meshio/OutputSoln.hh
+ * @file libsrc/meshio/OutputMaterial.hh
  *
  * @brief C++ object for managing output of the solution over the domain.
  */
 
-#if !defined(pylith_meshio_outputsoln_hh)
-#define pylith_meshio_outputsoln_hh
+#if !defined(pylith_meshio_outputmaterial_hh)
+#define pylith_meshio_outputmaterial_hh
 
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
-#include "OutputManager.hh" // ISA OutputManager
+#include "OutputIntegrator.hh" // ISA OutputIntegrator
 
 #include "pylith/utils/array.hh" // HASA string_vector
 
-// OutputSoln -----------------------------------------------------
+// OutputMaterial -----------------------------------------------------
 /** @brief C++ object for managing output of the solution over the domain.
  */
-class pylith::meshio::OutputSoln : public OutputManager {
-    friend class TestOutputSoln;   // unit testing
+class pylith::meshio::OutputMaterial : public OutputIntegrator {
+    friend class TestOutputMaterial;   // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
     /// Constructor
-    OutputSoln(void);
+    OutputMaterial(void);
 
     /// Destructor
-    ~OutputSoln(void);
+    ~OutputMaterial(void);
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
-    /** Set names of solution fields to output.
+    /** Set names of solution related fields to output.
      *
      * @param[in] names Array of names of fields to output.
      * @param[in] numNames Length of array.
@@ -84,11 +84,11 @@ private:
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
-    OutputSoln(const OutputSoln&);   ///< Not implemented.
-    const OutputSoln& operator=(const OutputSoln&);   ///< Not implemented
+    OutputMaterial(const OutputMaterial&);   ///< Not implemented.
+    const OutputMaterial& operator=(const OutputMaterial&);   ///< Not implemented
 
-}; // OutputSoln
+}; // OutputMaterial
 
-#endif // pylith_meshio_outputsoln_hh
+#endif // pylith_meshio_outputmaterial_hh
 
 // End of file

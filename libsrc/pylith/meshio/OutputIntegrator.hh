@@ -17,13 +17,13 @@
 //
 
 /**
- * @file libsrc/meshio/OutputSoln.hh
+ * @file libsrc/meshio/OutputIntegrator.hh
  *
  * @brief C++ object for managing output of the solution over the domain.
  */
 
-#if !defined(pylith_meshio_outputsoln_hh)
-#define pylith_meshio_outputsoln_hh
+#if !defined(pylith_meshio_outputintegrator_hh)
+#define pylith_meshio_outputintegrator_hh
 
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
@@ -32,37 +32,46 @@
 
 #include "pylith/utils/array.hh" // HASA string_vector
 
-// OutputSoln -----------------------------------------------------
+// OutputIntegrator -----------------------------------------------------
 /** @brief C++ object for managing output of the solution over the domain.
  */
-class pylith::meshio::OutputSoln : public OutputManager {
-    friend class TestOutputSoln;   // unit testing
+class pylith::meshio::OutputIntegrator : public OutputManager {
+    friend class TestOutputIntegrator;   // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
     /// Constructor
-    OutputSoln(void);
+    OutputIntegrator(void);
 
     /// Destructor
-    ~OutputSoln(void);
+    virtual ~OutputIntegrator(void);
 
     /// Deallocate PETSc and local data structures.
+    virtual
     void deallocate(void);
 
-    /** Set names of solution fields to output.
+    /** Set names of information related fields to output.
      *
      * @param[in] names Array of names of fields to output.
      * @param[in] numNames Length of array.
      */
-    void vertexDataFields(const char* names[],
+    void vertexInfoFields(const char* names[],
                           const int numNames);
 
     /** Verify configuration.
      *
-     * @param mesh PETSc mesh
+     * @param[in] auxField Auxiliary field.
      */
-    void verifyConfiguration(const pylith::topology::Field& solution) const;
+    virtual
+    void verifyConfiguration(const pylith::topology::Field& auxField) const;
+
+    /** Write information.
+     *
+     * @param[in] auxField Auxiliary field.
+     */
+    virtual
+    void writeInfo(const pylith::topology::Field& auxField);
 
     /** Write solution at time step.
      *
@@ -70,25 +79,24 @@ public:
      * @param[in] tindex Current time step.
      * @param[in] solution Solution at time t.
      */
+    virtual
     void writeTimeStep(const PylithReal t,
                        const PylithInt tindex,
                        const pylith::topology::Field& solution);
 
-    // PRIVATE MEMBERS //////////////////////////////////////////////////////
-private:
+    // PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected:
 
-    pylith::string_vector _vertexDataFields; ///< Names of solution fields to output.
-
-    static const char* _pyreComponent; ///< Name of Pyre component.
+    pylith::string_vector _vertexInfoFields; ///< Names of information fields to output.
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 
-    OutputSoln(const OutputSoln&);   ///< Not implemented.
-    const OutputSoln& operator=(const OutputSoln&);   ///< Not implemented
+    OutputIntegrator(const OutputIntegrator&);   ///< Not implemented.
+    const OutputIntegrator& operator=(const OutputIntegrator&);   ///< Not implemented
 
-}; // OutputSoln
+}; // OutputIntegrator
 
-#endif // pylith_meshio_outputsoln_hh
+#endif // pylith_meshio_outputintegrator_hh
 
 // End of file

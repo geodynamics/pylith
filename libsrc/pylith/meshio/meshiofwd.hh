@@ -46,24 +46,24 @@ namespace pylith {
         class PsetFileBinary;
         class ExodusII;
 
-        class OutputManager;
         class DataWriter;
         class DataWriterVTK;
         class DataWriterHDF5;
         class DataWriterHDF5Ext;
         class CellFilter;
-        class CellFilterAvg;
+        class CellFilterDecimateP0;
         class VertexFilter;
-        class VertexFilterVecNorm;
         class VertexFilterDecimateP1;
+
+        class OutputManager;
+	class OutputIntegrator;
+	class OutputMaterial;
+        class OutputSoln;
         class OutputSolnSubset;
         class OutputSolnPoints;
 
-        class OutputManager;
-        class OutputSoln;
 
         class HDF5;
-        class Xdmf;
 
     } // meshio
 } // pylith

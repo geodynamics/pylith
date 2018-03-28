@@ -40,31 +40,30 @@ pylith::feassemble::IntegratorPointwise::IntegratorPointwise(void) :
     _normalizer(new spatialdata::units::Nondimensional),
     _gravityField(NULL),
     _auxField(NULL),
+    _output(NULL),
     _logger(NULL),
     _needNewRHSJacobian(true),
     _needNewLHSJacobian(true)
-{ // constructor
-} // constructor
+{} // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::feassemble::IntegratorPointwise::~IntegratorPointwise(void)
-{ // destructor
+pylith::feassemble::IntegratorPointwise::~IntegratorPointwise(void) {
     deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::feassemble::IntegratorPointwise::deallocate(void)
-{ // deallocate
+pylith::feassemble::IntegratorPointwise::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
     delete _normalizer; _normalizer = NULL;
     delete _logger; _logger = NULL;
     delete _auxField; _auxField = NULL;
 
-    _gravityField = NULL; // :KLUDGE: Use shared points.
+    _gravityField = NULL; // :KLUDGE: Memory managed by Python object. :TODO: Use shared pointer.
+    _output = NULL; // :KLUDGE: Memory managed by Python object. :TODO: Use shared pointer.
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -72,8 +71,7 @@ pylith::feassemble::IntegratorPointwise::deallocate(void)
 // ----------------------------------------------------------------------
 // Get auxiliary field.
 const pylith::topology::Field&
-pylith::feassemble::IntegratorPointwise::auxField(void) const
-{ // auxField
+pylith::feassemble::IntegratorPointwise::auxField(void) const {
     PYLITH_METHOD_BEGIN;
 
     assert(_auxField);
@@ -84,8 +82,7 @@ pylith::feassemble::IntegratorPointwise::auxField(void) const
 // ----------------------------------------------------------------------
 // Set database for auxiliary fields.
 void
-pylith::feassemble::IntegratorPointwise::auxFieldDB(spatialdata::spatialdb::SpatialDB* value)
-{ // auxFieldDB
+pylith::feassemble::IntegratorPointwise::auxFieldDB(spatialdata::spatialdb::SpatialDB* value) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("auxFieldDB(value="<<value<<")");
 
@@ -96,14 +93,27 @@ pylith::feassemble::IntegratorPointwise::auxFieldDB(spatialdata::spatialdb::Spat
 } // auxFieldDB
 
 // ----------------------------------------------------------------------
+// Set output manager.
+void
+pylith::feassemble::IntegratorPointwise::output(pylith::meshio::OutputIntegrator* manager) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("output(manager="<<manager<<")");
+
+    _output = manager;
+
+    PYLITH_METHOD_END;
+} // output
+
+
+
+// ----------------------------------------------------------------------
 // Set discretization information for auxiliary subfield.
 void
 pylith::feassemble::IntegratorPointwise::auxSubfieldDiscretization(const char* name,
                                                                    const int basisOrder,
                                                                    const int quadOrder,
                                                                    const bool isBasisContinuous,
-                                                                   const pylith::topology::FieldBase::SpaceEnum feSpace)
-{ // auxSubfieldDiscretization
+                                                                   const pylith::topology::FieldBase::SpaceEnum feSpace) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("auxSubfieldDiscretization(name="<<name<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", isBasisContinuous="<<isBasisContinuous<<")");
 
@@ -131,8 +141,7 @@ pylith::feassemble::IntegratorPointwise::needNewLHSJacobian(void) const {
 // ----------------------------------------------------------------------
 // Set manager of scales used to nondimensionalize problem.
 void
-pylith::feassemble::IntegratorPointwise::normalizer(const spatialdata::units::Nondimensional& dim)
-{ // normalizer
+pylith::feassemble::IntegratorPointwise::normalizer(const spatialdata::units::Nondimensional& dim) {
     PYLITH_COMPONENT_DEBUG("normalizer(dim="<<typeid(dim).name()<<")");
 
     if (!_normalizer) {
@@ -146,8 +155,7 @@ pylith::feassemble::IntegratorPointwise::normalizer(const spatialdata::units::No
 // ----------------------------------------------------------------------
 // Set gravity field.
 void
-pylith::feassemble::IntegratorPointwise::gravityField(spatialdata::spatialdb::GravityField* const g)
-{ // gravityField
+pylith::feassemble::IntegratorPointwise::gravityField(spatialdata::spatialdb::GravityField* const g) {
     _gravityField = g;
 } // gravityField
 
@@ -155,8 +163,7 @@ pylith::feassemble::IntegratorPointwise::gravityField(spatialdata::spatialdb::Gr
 // ----------------------------------------------------------------------
 // Update state variables as needed.
 void
-pylith::feassemble::IntegratorPointwise::updateStateVars(const pylith::topology::Field& solution)
-{ // updateState
+pylith::feassemble::IntegratorPointwise::updateStateVars(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("updateStateVars(solution="<<solution.label()<<")");
 
@@ -167,12 +174,47 @@ pylith::feassemble::IntegratorPointwise::updateStateVars(const pylith::topology:
 
 
 // ----------------------------------------------------------------------
+// Write information (auxiliary field) output.
+void
+pylith::feassemble::IntegratorPointwise::writeInfo(void) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("writeInfo(void)");
+
+#if 1
+    PYLITH_COMPONENT_ERROR(":TODO: @brad Implement writeInfo().");
+#else
+    _output->writeInfo(*_auxField);
+#endif
+
+    PYLITH_METHOD_END;
+} // writeTimeStep
+
+
+// ----------------------------------------------------------------------
+// Write solution related output.
+void
+pylith::feassemble::IntegratorPointwise::writeTimeStep(const PylithReal t,
+                                                       const PylithInt tindex,
+                                                       const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("writeTimeStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
+
+#if 1
+    PYLITH_COMPONENT_ERROR(":TODO: @brad Implement writeTimeStep().");
+#else
+    _output->writeTimeStep(t, tindex, solution, *_auxField);
+#endif
+
+    PYLITH_METHOD_END;
+} // writeTimeStep
+
+
+// ----------------------------------------------------------------------
 // Update auxiliary fields at beginning of time step.
 void
 pylith::feassemble::IntegratorPointwise::prestep(const double t,
-                                                 const double dt)
-{ // prestep
-  // Default is to do nothing.
+                                                 const double dt) {
+    // Default is to do nothing.
 } // prestep
 
 

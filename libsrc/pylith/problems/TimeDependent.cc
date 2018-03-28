@@ -388,7 +388,7 @@ pylith::problems::TimeDependent::poststep(void)
 #if 1
         PYLITH_COMPONENT_ERROR(":TODO: @brad Implement integrator output in poststep().");
 #else
-        _integrators[i]->writeTimeStep(t, *_solution);
+        _integrators[i]->writeTimeStep(t, tindex, *_solution);
 #endif
     }  // for
 

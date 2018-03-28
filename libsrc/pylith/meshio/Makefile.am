@@ -20,7 +20,6 @@ subpackage = meshio
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
-	CellFilter.hh \
 	DataWriter.hh \
 	DataWriterVTK.hh \
 	DataWriterVTK.icc \
@@ -32,11 +31,14 @@ subpkginclude_HEADERS = \
 	MeshIOLagrit.hh \
 	MeshIOLagrit.icc \
 	OutputManager.hh \
+	OutputIntegrator.hh \
+	OutputMaterial.hh \
+	OutputSoln.hh \
 	OutputSolnSubset.hh \
 	OutputSolnPoints.hh \
+	CellFilter.hh \
 	VertexFilter.hh \
 	VertexFilterDecimateP1.hh \
-	OutputSoln.hh \
 	meshiofwd.hh
 
 if ENABLE_HDF5
