@@ -411,7 +411,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_setupSolutionFields(v
     CPPUNIT_ASSERT(_mydata->solnDiscretizations);
     CPPUNIT_ASSERT(_mydata->normalizer);
 
-    { // Solution @ t1
+    { // Solution
         pylith::topology::Field& solution = _solutionFields->get("solution");
         pylith::problems::SolutionFactory factory(solution, *_mydata->normalizer);
         factory.displacement(_mydata->solnDiscretizations[0]);
@@ -421,9 +421,9 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_setupSolutionFields(v
         solution.subfieldsSetup();
         solution.allocate();
         factory.setValues(_mydata->solnDB);
-    } // Solution @ t1
+    } // Solution
 
-    { // Time derivative of solution @ t1
+    { // Time derivative of solution
         pylith::topology::Field& solutionDot = _solutionFields->get("solution_dot");
         pylith::problems::SolutionFactory factory(solutionDot, *_mydata->normalizer);
         factory.displacementDot(_mydata->solnDiscretizations[0]);
@@ -433,15 +433,15 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_setupSolutionFields(v
         solutionDot.subfieldsSetup();
         solutionDot.allocate();
         factory.setValues(_mydata->solnDB);
-    } // Time derivative of solution @ t1
+    } // Time derivative of solution
 
-    { // Perturbation @ t2
+    { // Perturbation
         pylith::topology::Field& perturbation = _solutionFields->get("perturbation");
         const pylith::topology::Field& solution = _solutionFields->get("solution");
         perturbation.cloneSection(solution);
         perturbation.allocate();
-        perturbation.copy(solution);
-        _addRandomPerturbation(&perturbation, _mydata->perturbation);
+        perturbation.zeroLocal();
+        _addRandomPerturbation(&perturbation, solution, _mydata->perturbation);
     } // Perturbation @ t2
 
     { // Time derivative of solution @ t2
@@ -449,8 +449,8 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_setupSolutionFields(v
         const pylith::topology::Field& solutionDot = _solutionFields->get("solution_dot");
         perturbationDot.cloneSection(solutionDot);
         perturbationDot.allocate();
-        perturbationDot.copy(solutionDot);
-        _addRandomPerturbation(&perturbationDot, _mydata->perturbation);
+        perturbationDot.zeroLocal();
+        _addRandomPerturbation(&perturbationDot, solutionDot, _mydata->perturbation);
     } // Time derivative of solution @ t2
 
     PYLITH_METHOD_END;

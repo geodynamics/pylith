@@ -149,17 +149,19 @@ protected:
     /// Do full initilaization of test data.
     void _initializeFull(void);
 
-    /** Set field to zero on the boundary.
+    /** Set field (and, optionally, matrix rows and columns) to zero on the boundary.
      *
      * @param[out] field Field in which to set boundary values to zero.
+     * @param[out] matrix Matrix in which to set rows and columns to zero.
      */
-    void _zeroBoundary(pylith::topology::Field* field);
+    void _zeroBoundary(pylith::topology::Field* field,
+                       PetscMat matrix=NULL);
 
     /// Setup and populate solution fields.
     virtual
     void _setupSolutionFields(void) = 0;
 
-    /** Add small, random perturbations to field.
+    /** Add small, random perturbations to field, excluding points on the boundary.
      *
      * The random value is sampled from a uniform distribution with the given
      * limit.
@@ -168,8 +170,8 @@ protected:
      * @param[in] limit Uniform random distribution is bounded by -limit and +limit.
      */
     void _addRandomPerturbation(pylith::topology::Field* field,
+                                const pylith::topology::Field& fieldRef,
                                 const PylithReal limit);
-
 
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////

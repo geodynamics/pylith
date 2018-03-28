@@ -183,7 +183,7 @@ protected:
                 TestIsotropicLinearElasticityPlaneStrain_UniformStrain::setUp();
                 CPPUNIT_ASSERT(_mydata);
 
-                _mydata->meshFilename = "data/tri_small.mesh";
+                _mydata->meshFilename = "data/tri_fourcells.mesh";
 
                 _mydata->numSolnSubfields = 1;
                 static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -208,7 +208,7 @@ protected:
                 TestIsotropicLinearElasticityPlaneStrain_UniformStrain::setUp();
                 CPPUNIT_ASSERT(_mydata);
 
-                _mydata->meshFilename = "data/tri_small.mesh";
+                _mydata->meshFilename = "data/tri_fourcells.mesh";
 
                 _mydata->numSolnSubfields = 1;
                 static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -240,7 +240,7 @@ protected:
                 TestIsotropicLinearElasticityPlaneStrain_UniformStrain::setUp();
                 CPPUNIT_ASSERT(_mydata);
 
-                _mydata->meshFilename = "data/tri_small.mesh";
+                _mydata->meshFilename = "data/tri_fourcells.mesh";
 
                 _mydata->numSolnSubfields = 1;
                 static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -272,7 +272,7 @@ protected:
                 TestIsotropicLinearElasticityPlaneStrain_UniformStrain::setUp();
                 CPPUNIT_ASSERT(_mydata);
 
-                _mydata->meshFilename = "data/tri_small.mesh";
+                _mydata->meshFilename = "data/tri_fourcells.mesh";
 
                 _mydata->numSolnSubfields = 1;
                 static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -304,7 +304,7 @@ protected:
                 TestIsotropicLinearElasticityPlaneStrain_UniformStrain::setUp();
                 CPPUNIT_ASSERT(_mydata);
 
-                _mydata->meshFilename = "data/quad_aligned.mesh";
+                _mydata->meshFilename = "data/quad_fourcells.mesh";
 
                 _mydata->numSolnSubfields = 1;
                 static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -336,7 +336,7 @@ protected:
                 TestIsotropicLinearElasticityPlaneStrain_UniformStrain::setUp();
                 CPPUNIT_ASSERT(_mydata);
 
-                _mydata->meshFilename = "data/quad_aligned.mesh";
+                _mydata->meshFilename = "data/quad_fourcells.mesh";
 
                 _mydata->numSolnSubfields = 1;
                 static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -368,7 +368,7 @@ protected:
                 TestIsotropicLinearElasticityPlaneStrain_UniformStrain::setUp();
                 CPPUNIT_ASSERT(_mydata);
 
-                _mydata->meshFilename = "data/quad_aligned.mesh";
+                _mydata->meshFilename = "data/quad_fourcells.mesh";
 
                 _mydata->numSolnSubfields = 1;
                 static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -400,7 +400,7 @@ protected:
                 TestIsotropicLinearElasticityPlaneStrain_UniformStrain::setUp();
                 CPPUNIT_ASSERT(_mydata);
 
-                _mydata->meshFilename = "data/quad_aligned.mesh";
+                _mydata->meshFilename = "data/quad_fourcells.mesh";
 
                 _mydata->numSolnSubfields = 1;
                 static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {

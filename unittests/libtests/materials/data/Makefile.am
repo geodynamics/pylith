@@ -20,11 +20,12 @@ dist_noinst_DATA = \
 	matinitialize.spatialdb \
 	matstress.spatialdb \
 	matstrain.spatialdb \
-	tri3.mesh \
-	tri3_onecell.mesh \
+	tri_onecell.mesh \
+	tri_fourcells.mesh \
 	tri_small.mesh \
-	quad_small.mesh \
 	quad_onecell.mesh \
+	quad_fourcells.mesh \
+	quad_small.mesh \
 	quad_aligned.mesh \
 	mat_elastic.spatialdb
 

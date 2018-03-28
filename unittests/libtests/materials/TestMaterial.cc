@@ -388,12 +388,24 @@ pylith::materials::TestMaterial::testComputeRHSJacobian(void)
     material->computeRHSResidual(&residual1, t, dt, solution);
     material->computeRHSResidual(&residual2, t, dt, perturbation);
 
-    //residual1.view("RESIDUAL 1 RHS"); // :DEBUG:
+    residual1.view("RESIDUAL 1 RHS"); // :DEBUG:
     //residual2.view("RESIDUAL 2 RHS"); // :DEBUG:
 
-    // Check that J(s)*(p - s) = G(p) - G(s).
-
+    // Compute Jacobian
     PetscErrorCode err;
+    PetscMat jacobianMat = NULL;
+    err = DMCreateMatrix(solution.dmMesh(), &jacobianMat); CPPUNIT_ASSERT(!err);
+    err = MatZeroEntries(jacobianMat); CPPUNIT_ASSERT(!err);
+    PetscMat precondMat = jacobianMat; // Use Jacobian == preconditioner
+
+    material->computeRHSJacobian(jacobianMat, precondMat, t, dt, solution);
+    CPPUNIT_ASSERT_EQUAL(false, material->needNewRHSJacobian());
+    //_zeroBoundary(&residual1);
+    //_zeroBoundary(&residual2, jacobianMat);
+    err = MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY); PYLITH_CHECK_ERROR(err);
+    err = MatAssemblyEnd(jacobianMat, MAT_FINAL_ASSEMBLY); PYLITH_CHECK_ERROR(err);
+
+    // Check that J(s)*(p - s) = G(p) - G(s).
 
     PetscVec residualVec = NULL;
     err = VecDuplicate(residual1.localVector(), &residualVec); CPPUNIT_ASSERT(!err);
@@ -403,16 +415,6 @@ pylith::materials::TestMaterial::testComputeRHSJacobian(void)
     err = VecDuplicate(solution.localVector(), &solnIncrVec); CPPUNIT_ASSERT(!err);
     err = VecWAXPY(solnIncrVec, -1.0, solution.localVector(), perturbation.localVector()); CPPUNIT_ASSERT(!err);
 
-    // Compute Jacobian
-    PetscMat jacobianMat = NULL;
-    err = DMCreateMatrix(solution.dmMesh(), &jacobianMat); CPPUNIT_ASSERT(!err);
-    err = MatZeroEntries(jacobianMat); CPPUNIT_ASSERT(!err);
-    PetscMat precondMat = jacobianMat; // Use Jacobian == preconditioner
-
-    material->computeRHSJacobian(jacobianMat, precondMat, t, dt, solution);
-    CPPUNIT_ASSERT_EQUAL(false, material->needNewRHSJacobian());
-    err = MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY); PYLITH_CHECK_ERROR(err);
-    err = MatAssemblyEnd(jacobianMat, MAT_FINAL_ASSEMBLY); PYLITH_CHECK_ERROR(err);
 
     // result = Jg*(-solnIncr) + residual
     PetscVec resultVec = NULL;
@@ -421,7 +423,7 @@ pylith::materials::TestMaterial::testComputeRHSJacobian(void)
     err = VecScale(solnIncrVec, -1.0); CPPUNIT_ASSERT(!err);
     err = MatMultAdd(jacobianMat, solnIncrVec, residualVec, resultVec); CPPUNIT_ASSERT(!err);
 
-#if 0 // :DEBUG:
+#if 1 // :DEBUG:
     std::cout << "SOLN INCR" << std::endl;
     VecView(solnIncrVec, PETSC_VIEWER_STDOUT_SELF);
     std::cout << "G2-G1" << std::endl;
@@ -647,7 +649,8 @@ pylith::materials::TestMaterial::_initializeFull(void)
 // ----------------------------------------------------------------------
 // Set field to zero on the boundary.
 void
-pylith::materials::TestMaterial::_zeroBoundary(pylith::topology::Field* field)
+pylith::materials::TestMaterial::_zeroBoundary(pylith::topology::Field* field,
+                                               PetscMat matrix)
 { // _zeroBoundary
     PYLITH_METHOD_BEGIN;
 
@@ -671,8 +674,8 @@ pylith::materials::TestMaterial::_zeroBoundary(pylith::topology::Field* field)
     pylith::topology::VecVisitorMesh fieldVisitor(*field);
     PylithScalar* fieldArray = fieldVisitor.localArray(); CPPUNIT_ASSERT(fieldArray);
 
-    for (PetscInt p = 0; p < numPoints; ++p) {
-        const PetscInt p_bc = points[p];
+    for (PylithInt p = 0; p < numPoints; ++p) {
+        const PylithInt p_bc = points[p];
 
         const PylithInt off = fieldVisitor.sectionOffset(p_bc);
         const PylithInt dof = fieldVisitor.sectionDof(p_bc);
@@ -680,6 +683,27 @@ pylith::materials::TestMaterial::_zeroBoundary(pylith::topology::Field* field)
             fieldArray[off+i] = 0.0;
         } // for
     } // for
+
+    if (matrix) {
+        // Use point IS and section offsets to create list of degrees of
+        // freedom on boundary in order to zero rows and columns of
+        // matrix.
+        const int maxDOF = (numPoints > 0) ? fieldVisitor.sectionOffset(points[numPoints-1])+fieldVisitor.sectionDof(points[numPoints-1]) : 0;
+        PylithInt* boundaryDOF = (maxDOF > 0) ? new PylithInt[maxDOF] : NULL;
+        PylithInt numDOF = 0;
+
+        for (PylithInt p = 0; p < numPoints; ++p) {
+            const PylithInt p_bc = points[p];
+
+            const PylithInt off = fieldVisitor.sectionOffset(p_bc);
+            const PylithInt dof = fieldVisitor.sectionDof(p_bc);
+            for (PylithInt i = 0; i < dof; ++i) {
+                boundaryDOF[numDOF++] = off + i;
+            } // for
+        } // for
+        err = MatZeroRowsColumns(matrix, numDOF, boundaryDOF, 0.0, NULL, NULL); CPPUNIT_ASSERT(!err);
+        delete[] boundaryDOF; boundaryDOF = NULL;
+    } // if
 
     err = ISRestoreIndices(pointIS, &points); PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&pointIS); PYLITH_CHECK_ERROR(err);
@@ -692,7 +716,8 @@ pylith::materials::TestMaterial::_zeroBoundary(pylith::topology::Field* field)
 // Add small, random perturbations to field.
 void
 pylith::materials::TestMaterial::_addRandomPerturbation(pylith::topology::Field* field,
-                                                           const PylithReal limit) {
+                                                        const pylith::topology::Field& fieldRef,
+                                                        const PylithReal limit) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(field);
@@ -704,6 +729,10 @@ pylith::materials::TestMaterial::_addRandomPerturbation(pylith::topology::Field*
     err = PetscRandomSetInterval(random, -limit, +limit); CPPUNIT_ASSERT(!err);
     err = VecSetRandom(field->localVector(), random); CPPUNIT_ASSERT(!err);
     err = PetscRandomDestroy(&random); CPPUNIT_ASSERT(!err);
+
+    _zeroBoundary(field);
+
+    err = VecAXPY(field->localVector(), 1.0, fieldRef.localVector()); CPPUNIT_ASSERT(!err);
 
     PYLITH_METHOD_END;
 } // _addRandomPerturbation
