@@ -23,6 +23,7 @@
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/meshio/OutputIntegrator.hh" // USES OutputIntegrator
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -180,11 +181,7 @@ pylith::feassemble::IntegratorPointwise::writeInfo(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("writeInfo(void)");
 
-#if 1
-    PYLITH_COMPONENT_ERROR(":TODO: @brad Implement writeInfo().");
-#else
     _output->writeInfo(*_auxField);
-#endif
 
     PYLITH_METHOD_END;
 } // writeTimeStep

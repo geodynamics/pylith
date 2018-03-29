@@ -33,14 +33,16 @@
 #include "pylith/meshio/CellFilter.hh"
 #include "pylith/meshio/DataWriter.hh"
 #include "pylith/meshio/DataWriterVTK.hh"
-#include "pylith/meshio/OutputSolnSubset.hh"
-#include "pylith/meshio/OutputSolnPoints.hh"
 #if defined(ENABLE_HDF5)
 #include "pylith/meshio/DataWriterHDF5.hh"
 #include "pylith/meshio/DataWriterHDF5Ext.hh"
 #endif
 #include "pylith/meshio/OutputManager.hh"
 #include "pylith/meshio/OutputSoln.hh"
+#include "pylith/meshio/OutputSolnSubset.hh"
+#include "pylith/meshio/OutputSolnPoints.hh"
+#include "pylith/meshio/OutputIntegrator.hh"
+#include "pylith/meshio/OutputMaterial.hh"
 
 #include "pylith/utils/arrayfwd.hh"
 %}
@@ -81,8 +83,6 @@ import_array();
 %include "CellFilter.i"
 %include "DataWriter.i"
 %include "DataWriterVTK.i"
-%include "OutputSolnSubset.i"
-%include "OutputSolnPoints.i"
 #if defined(ENABLE_HDF5)
 %include "DataWriterHDF5.i"
 %include "DataWriterHDF5Ext.i"
@@ -90,5 +90,10 @@ import_array();
 %include "../utils/PyreComponent.i"
 %include "OutputManager.i"
 %include "OutputSoln.i"
+%include "OutputSolnSubset.i"
+%include "OutputSolnPoints.i"
+%include "OutputIntegrator.i"
+%include "OutputMaterial.i"
+
 
 // End of file

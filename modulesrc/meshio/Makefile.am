@@ -40,7 +40,9 @@ swig_sources = \
 	OutputSolnPoints.i \
 	../utils/PyreComponent.i \
 	OutputManager.i \
-	OutputSoln.i
+	OutputSoln.i \
+	OutputIntegrator.i \
+	OutputMaterial.i
 
 swig_generated = \
 	meshio_wrap.cxx \
