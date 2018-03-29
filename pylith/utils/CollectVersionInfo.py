@@ -208,7 +208,7 @@ class CollectVersionInfo(Component):
             "compiler": platform.python_compiler(),
             "modules": {},
         }
-        pkgs = ("numpy", "spatialdata", "FIAT", "h5py", "netCDF4", "pyre")
+        pkgs = ("numpy", "spatialdata", "h5py", "netCDF4", "pyre")
         for pkg in pkgs:
             ver, loc = cls._getPackageVersion(pkg)
             info["modules"][pkg] = {
