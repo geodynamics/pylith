@@ -42,7 +42,7 @@ def validateLabel(value):
 
 # BoundaryCondition class
 class BoundaryCondition(PetscComponent,
-                           ModuleBoundaryCondition):
+                        ModuleBoundaryCondition):
     """
     Python abstract base class for managing a boundary condition.
 
@@ -94,36 +94,22 @@ class BoundaryCondition(PetscComponent,
         ModuleBoundaryCondition.field(self, self.field)
         return
 
-    def finalize(self):
-        """
-        Cleanup after running problem.
-        """
-        raise NotImplementedError("finalize() not implemented.")
-        return
-
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """
         Setup members using inventory.
         """
-        try:
-            PetscComponent._configure(self)
-            self.label = self.inventory.label
-            self.field = self.inventory.field
-        except ValueError as err:
-            aliases = ", ".join(self.aliases)
-            raise ValueError("Error while configuring boundary condition "
-                             "(%s):\n%s" % (aliases, err.message))
-
+        PetscComponent._configure(self)
+        self.label = self.inventory.label
+        self.field = self.inventory.field
         return
 
     def _createModuleObj(self):
         """
         Call constructor for module object for access to C++ object.
         """
-        raise NotImplementedError, \
-            "Please implement _createModuleObj() in derived class."
+        raise NotImplementedError("Please implement _createModuleObj() in derived class.")
 
 
 # End of file
