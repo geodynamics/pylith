@@ -37,6 +37,8 @@ namespace pylith {
         class Viscoelastic;
         class IsotropicLinearMaxwellPlaneStrain;
 
+        class IsotropicLinearGenMaxwellPlaneStrain;
+
         class IncompressibleElasticity;
         class IsotropicLinearIncompElasticityPlaneStrain;
 
