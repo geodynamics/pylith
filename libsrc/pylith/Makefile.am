@@ -51,6 +51,7 @@ libpylith_la_SOURCES = \
 	fekernels/IsotropicLinearElasticityPlaneStrain.cc \
 	fekernels/Viscoelastic.cc \
 	fekernels/IsotropicLinearMaxwellPlaneStrain.cc \
+	fekernels/IsotropicLinearGenMaxwellPlaneStrain.cc \
 	fekernels/IncompressibleElasticity.cc \
 	fekernels/IsotropicLinearIncompElasticityPlaneStrain.cc \
 	fekernels/DispVel.cc \
@@ -61,6 +62,7 @@ libpylith_la_SOURCES = \
 	materials/AuxiliaryFactory.cc \
 	materials/IsotropicLinearElasticityPlaneStrain.cc \
 	materials/IsotropicLinearMaxwellPlaneStrain.cc \
+	materials/IsotropicLinearGenMaxwellPlaneStrain.cc \
 	materials/IsotropicLinearIncompElasticityPlaneStrain.cc \
 	materials/Query.cc \
 	meshio/BinaryIO.cc \
