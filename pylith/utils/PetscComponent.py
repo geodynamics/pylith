@@ -38,26 +38,6 @@ class PetscComponent(Component):
     """
     Component.__init__(self, name, facility)
     return
-  
-
-  def compilePerformanceLog(self, parentLogger):
-    """
-    Compile performance and memory information.
-    """
-    if hasattr(self, 'perfLogger'):
-      if not parentLogger is None:
-        parentLogger.join(self.perfLogger)
-
-    for component in self.components():
-      if isinstance(component, PetscComponent):
-        component.compilePerformanceLog(parentLogger)
-
-      # Facility arrays are not PetscComponents but have components().
-      elif hasattr(component, "components"):
-        for subcomponent in component.components():
-          if isinstance(subcomponent, PetscComponent):
-            subcomponent.compilePerformanceLog(parentLogger)
-    return
 
 
   def cleanup(self):
@@ -87,6 +67,6 @@ class PetscComponent(Component):
     if "deallocate" in dir(self):
       self.deallocate()
     return
-    
 
-# End of file 
+
+# End of file

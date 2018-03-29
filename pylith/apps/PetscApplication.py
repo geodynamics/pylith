@@ -32,7 +32,7 @@ class PetscApplication(Application):
   Inventory:
     petsc Manager for PETSc options
   """
-  
+
   # INVENTORY //////////////////////////////////////////////////////////
 
   import pyre.inventory
@@ -44,7 +44,7 @@ class PetscApplication(Application):
 
   includeCitations = pyre.inventory.bool("include-citations", default=False)
   includeCitations.meta['tip'] = "At end of simulation, display information on how to cite PyLith and components used."
-    
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -86,17 +86,6 @@ class PetscApplication(Application):
     self.cleanup()
     self.petsc.finalize()
     return
-  
-
-  def compilePerformanceLog(self):
-    """
-    Compile performance and memory information.
-    """
-    from pylith.utils.PetscComponent import PetscComponent
-    for component in self.components():
-      if isinstance(component, PetscComponent):
-        component.compilePerformanceLog(self.perfLogger)
-    return
 
 
   def cleanup(self):
@@ -133,7 +122,7 @@ class PetscApplication(Application):
     """
     Deallocate locally managed data structures.
     """
-    return    
+    return
 
 
-# End of file 
+# End of file

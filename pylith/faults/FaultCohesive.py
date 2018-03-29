@@ -64,7 +64,7 @@ class FaultCohesive(Fault, ModuleFaultCohesive):
 
   @class Inventory
   Python object for managing FaultCohesive facilities and properties.
-  
+
   \b Properties
   @li \b id Fault identifier
   @li \b label Label identifier for fault.
@@ -72,7 +72,7 @@ class FaultCohesive(Fault, ModuleFaultCohesive):
   @li \b up_dir Up-dip or up direction
     (perpendicular to along-strike and not collinear with fault normal;
     applies to fault surfaces in 2-D and 3-D).
-  
+
   \b Facilities
 
   Factory: fault
@@ -85,13 +85,13 @@ class FaultCohesive(Fault, ModuleFaultCohesive):
   matId = pyre.inventory.int("id", default=100)
   matId.meta['tip'] = "Fault identifier (must be unique across all faults " \
       "and materials)."
-  
+
   faultLabel = pyre.inventory.str("label", default="", validator=validateLabel)
   faultLabel.meta['tip'] = "Label identifier for fault."
-  
+
   faultEdge = pyre.inventory.str("edge", default="")
   faultEdge.meta['tip'] = "Label identifier for buried fault edges."
-  
+
   upDir = pyre.inventory.list("up_dir", default=[0.0, 0.0, 1.0], validator=validateDir)
   upDir.meta['tip'] = "Up-dip or up direction " \
       "(perpendicular to along-strike and not collinear " \
@@ -118,14 +118,14 @@ class FaultCohesive(Fault, ModuleFaultCohesive):
     """
     import weakref
     self.mesh = weakref.ref(mesh)
-    
+
     self.faultQuadrature.preinitialize(mesh.coordsys().spaceDim())
 
     if None != self.output:
       self.output.preinitialize(self)
 
     return
-  
+
 
   def verifyConfiguration(self):
     """
@@ -146,7 +146,7 @@ class FaultCohesive(Fault, ModuleFaultCohesive):
 
     self._eventLogger.eventEnd(logEvent)
     return
-  
+
 
   def initialize(self, totalTime, numTimeSteps, normalizer):
     """
@@ -179,15 +179,14 @@ class FaultCohesive(Fault, ModuleFaultCohesive):
     ModuleFault.id(self, self.inventory.matId)
     ModuleFault.label(self, self.inventory.faultLabel)
     ModuleFault.edge(self, self.inventory.faultEdge)
-    self.perfLogger = self.inventory.perfLogger
     return
 
-  
+
   def _createModuleObj(self):
     """
     Create handle to corresponding C++ object.
     """
     raise NotImplementedError("Please implement _createModuleObj() in derived class.")
-  
-  
-# End of file 
+
+
+# End of file
