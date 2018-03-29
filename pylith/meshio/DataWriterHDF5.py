@@ -16,78 +16,80 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pyre/meshio/DataWriterHDF5.py
+# @file pyre/meshio/DataWriterHDF5.py
 ##
-## @brief Python object for writing finite-element data to HDF5 file.
+# @brief Python object for writing finite-element data to HDF5 file.
 
 from DataWriter import DataWriter
 from meshio import DataWriterHDF5 as ModuleDataWriterHDF5
 
-# DataWriterHDF5 class
+
 class DataWriterHDF5(DataWriter, ModuleDataWriterHDF5):
-  """
-  Python object for writing finite-element data to HDF5 file.
-
-  Inventory
-
-  \b Properties
-  @li \b filename Name of HDF5 file.
-  
-  \b Facilities
-  @li None
-  """
-
-  # INVENTORY //////////////////////////////////////////////////////////
-
-  import pyre.inventory
-
-  filename = pyre.inventory.str("filename", default="output.h5")
-  filename.meta['tip'] = "Name of HDF5 file."
-
-  # PUBLIC METHODS /////////////////////////////////////////////////////
-
-  def __init__(self, name="datawriterhdf5"):
     """
-    Constructor.
+    Python object for writing finite-element data to HDF5 file.
+
+    Inventory
+
+    \b Properties
+    @li \b filename Name of HDF5 file.
+
+    \b Facilities
+    @li None
     """
-    DataWriter.__init__(self, name)
-    ModuleDataWriterHDF5.__init__(self)
-    return
+
+    # INVENTORY //////////////////////////////////////////////////////////
+
+    import pyre.inventory
+
+    filename = pyre.inventory.str("filename", default="output.h5")
+    filename.meta['tip'] = "Name of HDF5 file."
+
+    # PUBLIC METHODS /////////////////////////////////////////////////////
+
+    def __init__(self, name="datawriterhdf5"):
+        """
+        Constructor.
+        """
+        DataWriter.__init__(self, name)
+        ModuleDataWriterHDF5.__init__(self)
+        return
+
+    def preinitialize(self):
+        """
+        Initialize writer.
+        """
+        DataWriter.preinitialize(self, self.filename)
+
+        ModuleDataWriterHDF5.filename(self, self.filename)
+        return
+
+    def close(self):
+        """
+        Close writer.
+        """
+        ModuleDataWriterHDF5.close(self)
+
+        # Only write Xdmf file on proc 0
+        import os
+        if not os.path.isfile(self.filename):
+            return
+
+        from pylith.mpi.Communicator import mpi_comm_world
+        comm = mpi_comm_world()
+        if not comm.rank:
+            from Xdmf import Xdmf
+            xdmf = Xdmf()
+            xdmf.write(ModuleDataWriterHDF5.hdf5Filename(self), verbose=False)
+        return
 
 
-  def preinitialize(self):
-    """
-    Initialize writer.
-    """
-    DataWriter.preinitialize(self, self.filename)
-
-    ModuleDataWriterHDF5.filename(self, self.filename)
-    return
-  
-
-  def close(self):
-    """
-    Close writer.
-    """
-    ModuleDataWriterHDF5.close(self)
-
-    # Only write Xdmf file on proc 0
-    from pylith.mpi.Communicator import mpi_comm_world
-    comm = mpi_comm_world()
-    if not comm.rank:
-      from Xdmf import Xdmf
-      xdmf = Xdmf()
-      xdmf.write(ModuleDataWriterHDF5.hdf5Filename(self), verbose=False)
-    return
-  
-  
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def data_writer():
-  """
-  Factory associated with DataWriter.
-  """
-  return DataWriterHDF5()
+    """
+    Factory associated with DataWriter.
+    """
+    return DataWriterHDF5()
 
 
-# End of file 
+# End of file

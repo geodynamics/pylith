@@ -62,6 +62,10 @@ class IntegratorPointwise(PetscComponent,
         auxFieldDB = pyre.inventory.facility("db_auxiliary_field", family="spatial_database", factory=SimpleDB)
         auxFieldDB.meta['tip'] = "Database for physical property parameters."
 
+        from pylith.meshio.OutputIntegrator import OutputIntegrator
+        outputManager = pyre.inventory.facility("output", family="output_manager", factory=OutputIntegrator)
+        outputManager.meta['tip'] = "Output manager."
+
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="integratorpointwise"):
@@ -78,34 +82,39 @@ class IntegratorPointwise(PetscComponent,
         """
         ModuleIntegrator.identifier(self, self.aliases[-1])
         ModuleIntegrator.auxFieldDB(self, self.auxFieldDB)
+        ModuleIntegrator.output(self, self.outputManager)
 
         for subfield in self.auxSubfields.components():
             fieldName = subfield.aliases[-1]
             ModuleIntegrator.auxSubfieldDiscretization(self, fieldName, subfield.basisOrder, subfield.quadOrder, subfield.isBasisContinuous, subfield.feSpace)
+
+        self.outputManager.preinitialize()
         return
 
-    # PRIVATE METHODS ////////////////////////////////////////////////////
+    def finalize(self):
+        """
+        Cleanup after running problem.
+        """
+        self.outputManager.close()
+        return
+
+# PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """
         Setup members using inventory.
         """
-        try:
-            PetscComponent._configure(self)
-            self.auxSubfields = self.inventory.auxSubfields
-            self.auxFieldDB = self.inventory.auxFieldDB
-
-        except ValueError, err:
-            aliases = ", ".join(self.aliases)
-            raise ValueError("Error while configuring integrator (%s):\n%s" % (aliases, err.message))
+        PetscComponent._configure(self)
+        self.auxSubfields = self.inventory.auxSubfields
+        self.auxFieldDB = self.inventory.auxFieldDB
+        self.outputManager = self.inventory.outputManager
         return
 
     def _createModuleObj(self):
         """
         Call constructor for module object for access to C++ object.
         """
-        raise NotImplementedError, \
-            "Please implement _createModuleOb() in derived class."
+        raise NotImplementedError("Please implement _createModuleOb() in derived class.")
 
 
 # End of file

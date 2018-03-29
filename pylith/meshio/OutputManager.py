@@ -25,7 +25,7 @@
 
 from pylith.utils.PetscComponent import PetscComponent
 from pylith.utils.NullComponent import NullComponent
-from meshio import OutputManager as ModuleOutputManager
+from .meshio import OutputManager as ModuleOutputManager
 
 # OutputManager class
 
@@ -105,7 +105,11 @@ class OutputManager(PetscComponent, ModuleOutputManager):
         return
 
     def close(self):
-        self.writer.close()
+        try:
+            self.writer.close()
+        except IOError as err:
+            # Assume non-fatal error, so just print error message.
+            self._error.log(err.message)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

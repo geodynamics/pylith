@@ -78,13 +78,6 @@ class Neumann(BoundaryCondition,
         IntegratorPointwise.preinitialize(self, mesh)
         return
 
-    def finalize(self):
-        """
-        Cleanup after running problem.
-        """
-        print(":TODO: @brad Implement Neumann.finalize() once output manager is added.")
-        return
-
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):

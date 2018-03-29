@@ -125,9 +125,10 @@ pylith::meshio::OutputIntegrator::writeInfo(const pylith::topology::Field& auxFi
 void
 pylith::meshio::OutputIntegrator::writeTimeStep(const PylithReal t,
                                                 const PylithInt tindex,
-                                                const pylith::topology::Field& solution) {
+                                                const pylith::topology::Field& solution,
+                                                const pylith::topology::Field& auxField) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputMaterial::writeTimeStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<") empty method");
+    PYLITH_COMPONENT_DEBUG("OutputMaterial::writeTimeStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<", auxField="<<auxField.label()<<") empty method");
     PYLITH_METHOD_END;
 } // writeTimeStep
 

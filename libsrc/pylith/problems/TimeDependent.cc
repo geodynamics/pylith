@@ -382,14 +382,10 @@ pylith::problems::TimeDependent::poststep(void)
 
     // Update state variables
     const size_t numIntegrators = _integrators.size();
-    assert(numIntegrators > 0);     // must have at least 1 integrator
+    assert(numIntegrators > 0); // must have at least 1 integrator
     for (size_t i = 0; i < numIntegrators; ++i) {
         _integrators[i]->updateStateVars(*_solution);
-#if 1
-        PYLITH_COMPONENT_ERROR(":TODO: @brad Implement integrator output in poststep().");
-#else
         _integrators[i]->writeTimeStep(t, tindex, *_solution);
-#endif
     }  // for
 
     PYLITH_METHOD_END;

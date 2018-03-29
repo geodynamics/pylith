@@ -52,6 +52,12 @@ public:
          * @param[in] value Pointer to database.
          */
         void auxFieldDB(spatialdata::spatialdb::SpatialDB* value);
+	    
+	/** Set output manager.
+	 *
+	 * @param[in] manager Output manager for integrator.
+	 */
+	void output(pylith::meshio::OutputIntegrator* manager);
 
         /** Set discretization information for auxiliary subfield.
          *

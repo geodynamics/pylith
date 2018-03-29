@@ -23,8 +23,8 @@
 ##
 # Factory: output_manager
 
-from OutputManager import OutputManager
-from meshio import OutputIntegrator as ModuleOutputIntegrator
+from .OutputManager import OutputManager
+from .meshio import OutputIntegrator as ModuleOutputIntegrator
 
 # OutputIntegrator class
 
@@ -48,10 +48,14 @@ class OutputIntegrator(OutputManager, ModuleOutputIntegrator):
 
     # INVENTORY //////////////////////////////////////////////////////////
 
-    import pyre.inventory
+    class Inventory(OutputManager.Inventory):
+        """Python object for managing OutputIntegrator facilities and properties.
+        """
 
-    vertexInfoFields = pyre.inventory.list("vertex_info_fields", default=["all"])
-    vertexInfoFields.meta['tip'] = "Names of vertex information fields to output."
+        import pyre.inventory
+
+        vertexInfoFields = pyre.inventory.list("vertex_info_fields", default=["all"])
+        vertexInfoFields.meta['tip'] = "Names of vertex information fields to output."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -67,7 +71,7 @@ class OutputIntegrator(OutputManager, ModuleOutputIntegrator):
         Do
         """
         OutputManager.preinitialize(self)
-        ModuleOutputIntegrator.vertexInfoFields(self, self.vertexDataFields)
+        ModuleOutputIntegrator.vertexInfoFields(self, self.vertexInfoFields)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

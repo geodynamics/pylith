@@ -71,9 +71,9 @@ class Material(IntegratorPointwise, ModuleMaterial):
         label = pyre.inventory.str("label", default="", validator=validateLabel)
         label.meta['tip'] = "Descriptive label for material."
 
-        #from pylith.meshio.OutputMatElastic import OutputMatElastic
-        #output = pyre.inventory.facility("output", family="output_manager", factory=OutputMatElastic)
-        #output.meta['tip'] = "Output manager for elastic material information."
+        from pylith.meshio.OutputMaterial import OutputMaterial
+        outputManager = pyre.inventory.facility("output", family="output_manager", factory=OutputMaterial)
+        outputManager.meta['tip'] = "Output manager for material information."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -92,15 +92,6 @@ class Material(IntegratorPointwise, ModuleMaterial):
 
         ModuleMaterial.id(self, self.materialId)
         ModuleMaterial.label(self, self.label)
-        print ":TODO: @brad Material.preinitialize() Pass output manager to C++."
-        return
-
-    def finalize(self):
-        """
-        Cleanup after running problem.
-        """
-        print ":TODO: @brad Material.finalize() Close output."
-        #self.output.close()
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -109,15 +100,11 @@ class Material(IntegratorPointwise, ModuleMaterial):
         """
         Setup members using inventory.
         """
-        try:
-            IntegratorPointwise._configure(self)
-            self.materialId = self.inventory.materialId
-            self.label = self.inventory.label
-            #self.output = self.inventory.output
+        IntegratorPointwise._configure(self)
+        self.materialId = self.inventory.materialId
+        self.label = self.inventory.label
+        self.outputManager = self.inventory.outputManager
 
-        except ValueError, err:
-            aliases = ", ".join(self.aliases)
-            raise ValueError("Error while configuring material (%s):\n%s" % (aliases, err.message))
         return
 
 # End of file

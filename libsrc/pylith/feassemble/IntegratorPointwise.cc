@@ -162,6 +162,20 @@ pylith::feassemble::IntegratorPointwise::gravityField(spatialdata::spatialdb::Gr
 
 
 // ----------------------------------------------------------------------
+// Update auxiliary fields at beginning of time step.
+void
+pylith::feassemble::IntegratorPointwise::prestep(const double t,
+                                                 const double dt) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("prestep(t="<<t<<", dt="<<dt<<") empty method");
+
+    // Default is to do nothing.
+
+    PYLITH_METHOD_END;
+} // prestep
+
+
+// ----------------------------------------------------------------------
 // Update state variables as needed.
 void
 pylith::feassemble::IntegratorPointwise::updateStateVars(const pylith::topology::Field& solution) {
@@ -181,10 +195,13 @@ pylith::feassemble::IntegratorPointwise::writeInfo(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("writeInfo(void)");
 
-    _output->writeInfo(*_auxField);
+    if (_output) {
+        assert(_auxField);
+        _output->writeInfo(*_auxField);
+    } // if
 
     PYLITH_METHOD_END;
-} // writeTimeStep
+} // writeInfo
 
 
 // ----------------------------------------------------------------------
@@ -196,23 +213,13 @@ pylith::feassemble::IntegratorPointwise::writeTimeStep(const PylithReal t,
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("writeTimeStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
 
-#if 1
-    PYLITH_COMPONENT_ERROR(":TODO: @brad Implement writeTimeStep().");
-#else
-    _output->writeTimeStep(t, tindex, solution, *_auxField);
-#endif
+    if (_output) {
+        assert(_auxField);
+        _output->writeTimeStep(t, tindex, solution, *_auxField);
+    } // if
 
     PYLITH_METHOD_END;
 } // writeTimeStep
-
-
-// ----------------------------------------------------------------------
-// Update auxiliary fields at beginning of time step.
-void
-pylith::feassemble::IntegratorPointwise::prestep(const double t,
-                                                 const double dt) {
-    // Default is to do nothing.
-} // prestep
 
 
 // End of file

@@ -26,6 +26,7 @@
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
+#include "pylith/meshio/OutputIntegrator.hh" // USES OutputIntegrator
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -40,8 +41,8 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::Neumann::Neumann(void) :
-  _boundaryMesh(NULL),
-  _scaleName("pressure")
+    _boundaryMesh(NULL),
+    _scaleName("pressure")
 { // constructor
     _refDir1[0] = 0.0;
     _refDir1[1] = 0.0;
@@ -75,17 +76,17 @@ pylith::bc::Neumann::deallocate(void) {
 // Name of scale associated with Neumann boundary condition (e.g., pressure for elasticity).
 void
 pylith::bc::Neumann::scaleName(const char* value) {
-  if (value == std::string("length") ||
-      value == std::string("time") ||
-      value == std::string("pressure") ||
-      value == std::string("density") ||
-      value == std::string("pressure")) {
-    _scaleName = value;
-  } else {
+    if (( value == std::string("length")) ||
+        ( value == std::string("time")) ||
+        ( value == std::string("pressure")) ||
+        ( value == std::string("density")) ||
+        ( value == std::string("pressure")) ) {
+        _scaleName = value;
+    } else {
         std::ostringstream msg;
         msg << "Unknown name of scale ("<<value<<") for Neumann boundary condition '" << label() << "'.";
         throw std::runtime_error(msg.str());
-  } // if
+    } // if
 } // scaleName
 
 // ----------------------------------------------------------------------
@@ -97,7 +98,7 @@ pylith::bc::Neumann::refDir1(const double vec[3]) {
     if (mag < 1.0e-6) {
         std::ostringstream msg;
         msg << "Magnitude of reference direction 1 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]
-	    <<") for Neumann boundary condition '" << label() << "' is negligible. Use a unit vector.";
+            <<") for Neumann boundary condition '" << label() << "' is negligible. Use a unit vector.";
         throw std::runtime_error(msg.str());
     } // if
     for (int i = 0; i < 3; ++i) {
@@ -114,7 +115,7 @@ pylith::bc::Neumann::refDir2(const double vec[3]) {
     if (mag < 1.0e-6) {
         std::ostringstream msg;
         msg << "Magnitude of reference direction 2 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]
-	    <<") for Neumann boundary condition '" << label() << "' is negligible. Use a unit vector.";
+            <<") for Neumann boundary condition '" << label() << "' is negligible. Use a unit vector.";
         throw std::runtime_error(msg.str());
     } // if
     for (int i = 0; i < 3; ++i) {
@@ -165,6 +166,9 @@ pylith::bc::Neumann::initialize(const pylith::topology::Field& solution) {
     factory->initializeSubfields();
 
     _auxField->view("AUXILIARY FIELD"); // :DEBUG:
+    if (_output) {
+        _output->writeInfo(*_auxField);
+    } // if
 
 #if 0 // Use low-level function to set kernels
     const PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);

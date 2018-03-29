@@ -23,8 +23,8 @@
 ##
 # Factory: output_manager
 
-from OutputIntegrator import OutputIntegrator
-from meshio import OutputMaterial as ModuleOutputMaterial
+from .OutputIntegrator import OutputIntegrator
+from .meshio import OutputMaterial as ModuleOutputMaterial
 
 # OutputMaterial class
 
@@ -48,10 +48,14 @@ class OutputMaterial(OutputIntegrator, ModuleOutputMaterial):
 
     # INVENTORY //////////////////////////////////////////////////////////
 
-    import pyre.inventory
+    class Inventory(OutputIntegrator.Inventory):
+        """Python object for managing OutputIntegrator facilities and properties.
+        """
 
-    vertexDataFields = pyre.inventory.list("vertex_data_fields", default=["all"])
-    vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
+        import pyre.inventory
+
+        vertexDataFields = pyre.inventory.list("vertex_data_fields", default=["all"])
+        vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

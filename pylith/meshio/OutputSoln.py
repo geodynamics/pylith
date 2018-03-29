@@ -23,8 +23,8 @@
 ##
 # Factory: output_manager
 
-from OutputManager import OutputManager
-from meshio import OutputSoln as ModuleOutputSoln
+from .OutputManager import OutputManager
+from .meshio import OutputSoln as ModuleOutputSoln
 
 # OutputSoln class
 
