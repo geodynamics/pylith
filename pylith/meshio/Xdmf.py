@@ -60,7 +60,7 @@ class Xdmf(object):
         return
 
 
-    def write(self, filenameH5, filenameXdmf=None, verbose=True):
+    def write(self, filenameH5, filenameXdmf=None, verbose=False):
         """Write Xdmf file corresponding to given HDF5 file.
         """
         if not filenameXdmf:

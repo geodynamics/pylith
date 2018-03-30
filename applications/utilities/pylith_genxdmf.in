@@ -48,7 +48,7 @@ class GenXdmfApp(object):
     
         xdmf = Xdmf()
         for filenameHDF5 in glob.iglob(self.filepattern):
-              xdmf.write(filenameHDF5)
+              xdmf.write(filenameHDF5, verbose=True)
         return
 
       
