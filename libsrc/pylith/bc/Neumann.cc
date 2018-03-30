@@ -51,6 +51,13 @@ pylith::bc::Neumann::Neumann(void) :
     _refDir2[0] = 0.0;
     _refDir2[1] = 1.0;
     _refDir2[2] = 0.0;
+
+    _description.label = "unknown";
+    _description.vectorFieldType = pylith::topology::FieldBase::OTHER;
+    _description.numComponents = 0;
+    _description.scale = 1.0;
+    _description.validator = NULL;
+
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -147,6 +154,9 @@ void
 pylith::bc::Neumann::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("initialize(solution="<<solution.label()<<")");
+
+    const topology::Field::SubfieldInfo& info = solution.subfieldInfo(_field.c_str());
+    _description = info.description;
 
     _setFEKernelsRHSResidual(solution);
 

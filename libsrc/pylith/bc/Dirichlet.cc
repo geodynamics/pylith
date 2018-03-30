@@ -109,6 +109,9 @@ pylith::bc::Dirichlet::initialize(const pylith::topology::Field& solution)
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("initialize(solution="<<solution.label()<<")");
 
+    const topology::Field::SubfieldInfo& info = solution.subfieldInfo(_field.c_str());
+    _description = info.description;
+
     _setFEKernelsConstraint(solution);
 
     delete _boundaryMesh; _boundaryMesh = new pylith::topology::Mesh(solution.mesh(), _label.c_str()); assert(_boundaryMesh);
@@ -136,7 +139,6 @@ pylith::bc::Dirichlet::initialize(const pylith::topology::Field& solution)
     void* context = NULL;
     const int labelId = 1;
     const PylithInt numConstrained = _constrainedDOF.size();
-    const topology::Field::SubfieldInfo& info = solution.subfieldInfo(_field.c_str());
     err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL_FIELD, label(), label(), info.index, numConstrained, &_constrainedDOF[0],
                              (void (*)())_bcKernel, 1, &labelId, context); PYLITH_CHECK_ERROR(err);
 

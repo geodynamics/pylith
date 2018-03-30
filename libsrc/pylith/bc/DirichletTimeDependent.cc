@@ -177,7 +177,7 @@ pylith::bc::DirichletTimeDependent::prestep(const double t,
         pylith::topology::VecVisitorMesh auxFieldsVisitor(*_auxField);
         PetscScalar* auxFieldsArray = auxFieldsVisitor.localArray(); assert(auxFieldsArray);
 
-        const PylithInt numComponents = _description.numComponents;
+        const PylithInt numComponents = _description.numComponents; assert(numComponents > 0);
         PetscInt offTH = 0;
         if (_useInitial) {offTH += numComponents;}
         if (_useRate) {offTH += numComponents + 1;}

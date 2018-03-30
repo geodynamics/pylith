@@ -70,7 +70,10 @@ pylith::bc::NeumannTimeDependent::deallocate(void)
     PYLITH_METHOD_BEGIN;
 
     Neumann::deallocate();
+    delete _auxTimeDependentFactory; _auxTimeDependentFactory = NULL;
+
     _dbTimeHistory = NULL; // :KLUDGE: Use shared pointer.
+
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -177,7 +180,7 @@ pylith::bc::NeumannTimeDependent::prestep(const double t,
         PetscScalar* auxFieldsArray = auxFieldsVisitor.localArray(); assert(auxFieldsArray);
 
         // Compute offset of time history subfields in auxiliary field.
-        const PetscInt numComponents = _description.numComponents;
+        const PetscInt numComponents = _description.numComponents; assert(numComponents > 0);
         PetscInt offTH = 0;
         if (_useInitial) {offTH += numComponents;}
         if (_useRate) {offTH += numComponents + 1;}
@@ -229,20 +232,20 @@ pylith::bc::NeumannTimeDependent::_auxFieldSetup(const pylith::topology::Field& 
     assert(_normalizer);
     pylith::topology::Field::Description description = solution.subfieldInfo(_field.c_str()).description;
     if (_scaleName == std::string("pressure")) {
-	description.scale = _normalizer->pressureScale();
+        description.scale = _normalizer->pressureScale();
     } else if (_scaleName == std::string("velocity")) {
-	  description.scale = _normalizer->lengthScale() / _normalizer->pressureScale();
+        description.scale = _normalizer->lengthScale() / _normalizer->pressureScale();
     } else if (_scaleName == std::string("length")) {
-	description.scale = _normalizer->pressureScale();
+        description.scale = _normalizer->pressureScale();
     } else if (_scaleName == std::string("time")) {
-	description.scale = _normalizer->pressureScale();
+        description.scale = _normalizer->pressureScale();
     } else if (_scaleName == std::string("debsuty")) {
-	description.scale = _normalizer->pressureScale();
+        description.scale = _normalizer->pressureScale();
     } else {
-      std::ostringstream msg;
-      msg << "Unknown name of scale ("<<_scaleName<<") for Neumann boundary condition '" << label() << "'.";
-      PYLITH_COMPONENT_ERROR(msg.str());
-      throw std::logic_error(msg.str());
+        std::ostringstream msg;
+        msg << "Unknown name of scale ("<<_scaleName<<") for Neumann boundary condition '" << label() << "'.";
+        PYLITH_COMPONENT_ERROR(msg.str());
+        throw std::logic_error(msg.str());
     } // if/else
     _auxTimeDependentFactory->initialize(_auxField, *_normalizer, solution.spaceDim(), &description);
 

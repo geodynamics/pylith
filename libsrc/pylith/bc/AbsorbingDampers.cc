@@ -63,6 +63,7 @@ pylith::bc::AbsorbingDampers::deallocate(void) {
     IntegratorPointwise::deallocate();
 
     delete _boundaryMesh; _boundaryMesh = NULL;
+    delete _auxAbsorbingDampersFactory; _auxAbsorbingDampersFactory = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate

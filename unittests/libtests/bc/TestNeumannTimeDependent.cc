@@ -584,6 +584,7 @@ pylith::bc::TestNeumannTimeDependent::_setupSolutionField(void)
     CPPUNIT_ASSERT(_data->normalizer);
 
     delete _solution; _solution = new pylith::topology::Field(*_mesh);
+    _solution->label("Solution (displacement, velocity, pressure)");
     pylith::problems::SolutionFactory factory(*_solution, *_data->normalizer);
     factory.displacement(_data->solnDiscretizations[0]);
     factory.velocity(_data->solnDiscretizations[1]);
