@@ -41,3 +41,4 @@ doc/userguide/userguide.lof
 doc/userguide/userguide.log
 doc/userguide/userguide.lot
 doc/userguide/userguide.out
+/tests_auto/linearelasticity/nofaults/*.spatialdb
