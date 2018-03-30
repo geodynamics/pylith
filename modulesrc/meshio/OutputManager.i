@@ -105,6 +105,83 @@ namespace pylith {
 	     */
 	    void cellFilter(CellFilter* const filter);
 
+	    /** Set names of vertex information fields to output.
+	     *
+	     * @param[in] names Array of field names.
+	     * @param[in] numNames Length of array.
+	     */
+	    %apply(const char* const* string_list, const int list_len){
+			(const char* names[], const int numNames)
+	    };
+	    void vertexInfoFields(const char* names[],
+				  const int numNames);
+	    %clear(const char* const* names, const int numNames);
+
+	    /** Set names of vertex data fields to output.
+	     *
+	     * @param[in] names Array of field names.
+	     * @param[in] numNames Length of array.
+	     */
+	    %apply(const char* const* string_list, const int list_len){
+			(const char* names[], const int numNames)
+	    };
+	    void vertexDataFields(const char* names[],
+				  const int numNames);
+	    %clear(const char* const* names, const int numNames);
+
+	    /** Set names of cell information fields to output.
+	     *
+	     * @param[in] names Array of field names.
+	     * @param[in] numNames Length of array.
+	     */
+	    %apply(const char* const* string_list, const int list_len){
+			(const char* names[], const int numNames)
+	    };
+	    void cellInfoFields(const char* names[],
+				const int numNames);
+	    %clear(const char* const* names, const int numNames);
+
+	    /** Set names of cell data fields to output.
+	     *
+	     * @param[in] names Array of field names.
+	     * @param[in] numNames Length of array.
+	     */
+	    %apply(const char* const* string_list, const int list_len){
+			(const char* names[], const int numNames)
+	    };
+	    void cellDataFields(const char* names[],
+				const int numNames);
+	    %clear(const char* const* names, const int numNames);
+
+	    /** Verify configuration.
+	     *
+	     * @param[in] solution Solution field.
+	     * @param[in] auxField Auxiliary field.
+	     */
+	    virtual
+	    void verifyConfiguration(const pylith::topology::Field& solution,
+				     const pylith::topology::Field& auxField) const;
+	    
+	    /** Write information.
+	     *
+	     * @param[in] auxField Auxiliary field.
+	     */
+	    virtual
+	    void writeInfo(const pylith::topology::Field& auxField);
+	    
+	    /** Write solution at time step.
+	     *
+	     * @param[in] t Current time.
+	     * @param[in] tindex Current time step.
+	     * @param[in] solution Solution at time t.
+	     * @param[in] auxField Auxiliary field.
+	     */
+	    virtual
+	    void writeTimeStep(const PylithReal t,
+			       const PylithInt tindex,
+			       const pylith::topology::Field& solution,
+			       const pylith::topology::Field& auxField);
+	    
 	    /** Prepare for output.
 	     *
 	     * @param mesh Finite-element mesh object.
@@ -113,12 +190,14 @@ namespace pylith {
 	     *   (=0 means use all cells in mesh).
 	     * @param labelId Value of label defining which cells to include.
 	     */
+	    virtual
 	    void open(const pylith::topology::Mesh& mesh,
 		      const bool isInfo,
 		      const char* label =NULL,
 		      const int labelId =0);
 
 	    /// Close output files.
+	    virtual
 	    void close(void);
 
 	    /** Setup file for writing fields at time step.
@@ -129,12 +208,14 @@ namespace pylith {
 	     *   (=0 means use all cells in mesh).
 	     * @param labelId Value of label defining which cells to include.
 	     */
+	    virtual
 	    void openTimeStep(const PylithScalar t,
 			      const pylith::topology::Mesh& mesh,
 			      const char* label =NULL,
 			      const int labelId =0);
 
 	    /// End writing fields at time step.
+	    virtual
 	    void closeTimeStep(void);
 
 	    /** Append finite-element vertex field to file.
@@ -143,6 +224,7 @@ namespace pylith {
 	     * @param field Vertex field.
 	     * @param mesh Mesh for output.
 	     */
+	    virtual
 	    void appendVertexField(const PylithScalar t,
 				   pylith::topology::Field& field,
 				   const pylith::topology::Mesh& mesh);
@@ -155,6 +237,7 @@ namespace pylith {
 	     *   (=0 means use all cells in mesh).
 	     * @param labelId Value of label defining which cells to include.
 	     */
+	    virtual
 	    void appendCellField(const PylithScalar t,
 				 pylith::topology::Field& field,
 				 const char* label =NULL,

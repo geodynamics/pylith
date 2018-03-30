@@ -23,66 +23,30 @@
 ##
 # Factory: output_manager
 
-from .OutputIntegrator import OutputIntegrator
+from .OutputManager import OutputManager
 from .meshio import OutputMaterial as ModuleOutputMaterial
 
 # OutputMaterial class
 
 
-class OutputMaterial(OutputIntegrator, ModuleOutputMaterial):
+class OutputMaterial(OutputManager, ModuleOutputMaterial):
     """
     Python object for managing output of finite-element solution
     information.
 
-    @class Inventory
-    Python object for managing OutputMaterial facilities and properties.
-
-    \b Properties
-    @li \b vertex_data_fields Names of vertex data fields to output.
-
-    \b Facilities
-    @li None
-
     Factory: output_manager
     """
 
-    # INVENTORY //////////////////////////////////////////////////////////
-
-    class Inventory(OutputIntegrator.Inventory):
-        """Python object for managing OutputIntegrator facilities and properties.
-        """
-
-        import pyre.inventory
-
-        vertexDataFields = pyre.inventory.list("vertex_data_fields", default=["all"])
-        vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
-
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="OutputMaterial"):
+    def __init__(self, name="outputmaterial"):
         """
         Constructor.
         """
-        OutputIntegrator.__init__(self, name)
-        return
-
-    def preinitialize(self):
-        """
-        Do minimal initialization.
-        """
-        OutputIntegrator.preinitialize(self)
-        ModuleOutputMaterial.vertexDataFields(self, self.vertexDataFields)
+        OutputManager.__init__(self, name)
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
-
-    def _configure(self):
-        """
-        Set members based using inventory.
-        """
-        OutputIntegrator._configure(self)
-        self.vertexDataFields = self.inventory.vertexDataFields
-        return
 
     def _createModuleObj(self):
         """
@@ -96,7 +60,7 @@ class OutputMaterial(OutputIntegrator, ModuleOutputMaterial):
 
 def output_manager():
     """
-    Factory associated with OutputIntegrator.
+    Factory associated with OutputManager.
     """
     return OutputMaterial()
 

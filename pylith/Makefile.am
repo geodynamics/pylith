@@ -55,7 +55,6 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/VertexFilterDecimateP1.py \
 	meshio/OutputManager.py \
 	meshio/OutputSoln.py \
-	meshio/OutputIntegrator.py \
 	meshio/OutputMaterial.py \
 	mpi/__init__.py \
 	mpi/Communicator.py \

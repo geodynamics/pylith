@@ -39,6 +39,10 @@ class OutputManager(PetscComponent, ModuleOutputManager):
     @li \b trigger Flag indicating whether to use 'elapsed_time' or 'skip_timesteps' to set how often output is written.
     @li \b elapsed_time Elapsed time between writes.
     @li \b skip_timesteps Number of time steps to skip between writes.
+    @li \b vertex_info_fields Names of vertex information fields to output.
+    @li \b vertex_data_fields Names of vertex data fields to output.
+    @li \b cell_info_fields Names of cell information fields to output.
+    @li \b cell_data_fields Names of cell data fields to output.
 
     \b Facilities
     @li \b vertex_filter Filter for vertex data.
@@ -69,6 +73,18 @@ class OutputManager(PetscComponent, ModuleOutputManager):
     cellFilter = pyre.inventory.facility("cell_filter", family="output_cell_filter", factory=NullComponent)
     cellFilter.meta['tip'] = "Filter for cell data."
 
+    vertexInfoFields = pyre.inventory.list("vertex_info_fields", default=["all"])
+    vertexInfoFields.meta['tip'] = "Names of vertex information fields to output."
+
+    vertexDataFields = pyre.inventory.list("vertex_data_fields", default=["all"])
+    vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
+
+    cellInfoFields = pyre.inventory.list("cell_info_fields", default=["all"])
+    cellInfoFields.meta['tip'] = "Names of cell information fields to output."
+
+    cellDataFields = pyre.inventory.list("cell_data_fields", default=["all"])
+    cellDataFields.meta['tip'] = "Names of cell data fields to output."
+
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="outputmanager"):
@@ -85,7 +101,6 @@ class OutputManager(PetscComponent, ModuleOutputManager):
         Setup output manager.
         """
         ModuleOutputManager.identifier(self, self.aliases[-1])
-        print self.trigger
         if self.inventory.trigger == "skip_timesteps":
             ModuleOutputManager.trigger(self, ModuleOutputManager.SKIP_TIMESTEPS)
             ModuleOutputManager.numTimeStepsSkip(self, self.numTimeStepsSkip)
@@ -95,10 +110,15 @@ class OutputManager(PetscComponent, ModuleOutputManager):
         else:
             raise ValueError("Unknown output trigger '%s'." % self.inventory.trigger)
 
-        if not isinstance(self.vertexFilter, NullComponent):
+        if not isinstance(self.inventory.vertexFilter, NullComponent):
             ModuleOutputManager.vertexFilter(self, self.vertexFilter)
         if not isinstance(self.inventory.cellFilter, NullComponent):
             ModuleOutputManager.cellFilter(self, self.cellFilter)
+
+        ModuleOutputManager.vertexInfoFields(self, self.inventory.vertexInfoFields)
+        ModuleOutputManager.vertexDataFields(self, self.inventory.vertexDataFields)
+        ModuleOutputManager.cellInfoFields(self, self.inventory.cellInfoFields)
+        ModuleOutputManager.cellDataFields(self, self.inventory.cellDataFields)
 
         self.writer.preinitialize()
         ModuleOutputManager.writer(self, self.writer)
@@ -116,7 +136,6 @@ class OutputManager(PetscComponent, ModuleOutputManager):
         self.timeSkip = self.inventory.timeSkip
 
         self.coordsys = NullComponent()
-        self.vertexFilter = self.inventory.vertexFilter
         self.writer = self.inventory.writer
         return
 
@@ -134,7 +153,7 @@ def output_manager():
     """
     Factory associated with OutputManager.
     """
-    return OutputManagerMew()
+    return OutputManager()
 
 
 # End of file

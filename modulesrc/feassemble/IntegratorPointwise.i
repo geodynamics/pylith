@@ -52,12 +52,6 @@ public:
          * @param[in] value Pointer to database.
          */
         void auxFieldDB(spatialdata::spatialdb::SpatialDB* value);
-	    
-	/** Set output manager.
-	 *
-	 * @param[in] manager Output manager for integrator.
-	 */
-	void output(pylith::meshio::OutputIntegrator* manager);
 
         /** Set discretization information for auxiliary subfield.
          *
@@ -93,7 +87,19 @@ public:
          */
         void normalizer(const spatialdata::units::Nondimensional& dim);
 
-        /** Verify configuration is acceptable.
+	    /** Set gravity field.
+	     *
+	     * @param g Gravity field.
+	     */
+	    void gravityField(spatialdata::spatialdb::GravityField* const g);
+
+	/** Set output manager.
+	 *
+	 * @param[in] manager Output manager for integrator.
+	 */
+	void output(pylith::meshio::OutputManager* manager);
+
+	/** Verify configuration is acceptable.
          *
          * @param[in] solution Solution field.
          */
@@ -200,6 +206,21 @@ public:
         virtual
         void updateStateVars(const pylith::topology::Field& solution);
 
+
+	    // Write information (auxiliary field) output.
+	    virtual
+	    void writeInfo(void);
+
+	    /** Write solution related output.
+	     *
+	     * @param[in] t Current time.
+	     * @param[in] tindex Current time step.
+	     * @param[in] solution Field with solution at current time.
+	     */
+	    virtual
+	    void writeTimeStep(const PylithReal t,
+			       const PylithInt tindex,
+			       const pylith::topology::Field& solution);
 
         }; // IntegratorPointwise
 

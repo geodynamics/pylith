@@ -41,7 +41,6 @@ swig_sources = \
 	../utils/PyreComponent.i \
 	OutputManager.i \
 	OutputSoln.i \
-	OutputIntegrator.i \
 	OutputMaterial.i
 
 swig_generated = \
@@ -79,4 +78,4 @@ MAINTAINERCLEANFILES = \
 	$(srcdir)/meshio.py
 
 
-# End of file 
+# End of file

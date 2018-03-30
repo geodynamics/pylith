@@ -31,6 +31,7 @@
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
+#include "pylith/utils/array.hh" // HASA string_vector
 
 // OutputManager --------------------------------------------------------
 /// Manager for output of finite-element data.
@@ -111,6 +112,91 @@ public:
      * @param[in] filter Filter to apply to cell data before writing.
      */
     void cellFilter(CellFilter* const filter);
+
+    /** Set names of vertex information related fields to output.
+     *
+     * @param[in] names Array of field names.
+     * @param[in] numNames Length of array.
+     */
+    void vertexInfoFields(const char* names[],
+                          const int numNames);
+
+    /** Get names of vertex information fields requested for output.
+     *
+     * @returns Array of field names.
+     */
+    const pylith::string_vector& vertexInfoFields(void) const;
+
+    /** Set names of vertex data related fields to output.
+     *
+     * @param[in] names Array of field names.
+     * @param[in] numNames Length of array.
+     */
+    void vertexDataFields(const char* names[],
+                          const int numNames);
+
+    /** Get names of vertex data fields requested for output.
+     *
+     * @returns Array of field names.
+     */
+    const pylith::string_vector& vertexDataFields(void) const;
+
+    /** Set names of cell information related fields to output.
+     *
+     * @param[in] names Array of field names.
+     * @param[in] numNames Length of array.
+     */
+    void cellInfoFields(const char* names[],
+                        const int numNames);
+
+    /** Get names of cell information fields requested for output.
+     *
+     * @returns Array of field names.
+     */
+    const pylith::string_vector& cellInfoFields(void) const;
+
+    /** Set names of cell data related fields to output.
+     *
+     * @param[in] names Array of field names.
+     * @param[in] numNames Length of array.
+     */
+    void cellDataFields(const char* names[],
+                        const int numNames);
+
+    /** Get names of cell data fields requested for output.
+     *
+     * @returns Array of field names.
+     */
+    const pylith::string_vector& cellDataFields(void) const;
+
+    /** Verify configuration.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] auxField Auxiliary field.
+     */
+    virtual
+    void verifyConfiguration(const pylith::topology::Field& solution,
+                             const pylith::topology::Field& auxField) const;
+
+    /** Write information.
+     *
+     * @param[in] auxField Auxiliary field.
+     */
+    virtual
+    void writeInfo(const pylith::topology::Field& auxField);
+
+    /** Write solution at time step.
+     *
+     * @param[in] t Current time.
+     * @param[in] tindex Current time step.
+     * @param[in] solution Solution at time t.
+     * @param[in] auxField Auxiliary field.
+     */
+    virtual
+    void writeTimeStep(const PylithReal t,
+                       const PylithInt tindex,
+                       const pylith::topology::Field& solution,
+                       const pylith::topology::Field& auxField);
 
     /** Prepare for output.
      *
@@ -202,16 +288,26 @@ protected:
     // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected:
 
-    topology::Fields* _fields;   ///< Buffer fields.
+    pylith::topology::Fields* _fields;   ///< Container with fields used for output.
     DataWriter* _writer;   ///< Writer for data.
     VertexFilter* _vertexFilter;   ///< Filter applied to vertex data.
     CellFilter* _cellFilter;   ///< Filter applied to cell data.
+
+    pylith::string_vector _vertexInfoFields;
+    pylith::string_vector _vertexDataFields;
+    pylith::string_vector _cellInfoFields;
+    pylith::string_vector _cellDataFields;
 
     PylithReal _timeSkip; ///< Elapsed time between writes.
     PylithReal _timeWrote; ///< Time when data was previously writtern.
     PylithInt _numTimeStepsSkip; ///< Number of time steps to skip between writes.
     PylithInt _timeStepWrote; ///< Time step when data was previously written.
     TriggerEnum _trigger; ///< Flag indicating whether to use elapsed time or number of time steps when deciding when to write.
+
+    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+private:
+
+    static const char* _pyreComponent; ///< Name of Pyre component.
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:

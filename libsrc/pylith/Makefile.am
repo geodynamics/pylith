@@ -84,7 +84,6 @@ libpylith_la_SOURCES = \
 	meshio/DataWriter.cc \
 	meshio/DataWriterVTK.cc \
 	meshio/OutputManager.cc \
-	meshio/OutputIntegrator.cc \
 	meshio/OutputMaterial.cc \
 	meshio/OutputSoln.cc \
 	problems/Problem.cc \

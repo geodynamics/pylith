@@ -36,6 +36,9 @@
     // USES typeid()
 
 // ----------------------------------------------------------------------
+const char* pylith::meshio::OutputManager::_pyreComponent = "outputmanager";
+
+// ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::OutputManager::OutputManager(void) :
     _fields(NULL),
@@ -48,6 +51,7 @@ pylith::meshio::OutputManager::OutputManager(void) :
     _timeStepWrote(PYLITH_MININT+10),
     _trigger(SKIP_TIMESTEPS)
 { // constructor
+    PyreComponent::name(_pyreComponent);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -149,6 +153,194 @@ pylith::meshio::OutputManager::cellFilter(CellFilter* const filter) {
 
     PYLITH_METHOD_END;
 } // cellFilter
+
+// ----------------------------------------------------------------------
+// Set names of vertex information fields to output.
+void
+pylith::meshio::OutputManager::vertexInfoFields(const char* names[],
+                                                const int numNames) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("OutputManager::vertexInfoFields(names="<<names<<", numNames="<<numNames<<")");
+
+    assert((names && numNames) || (!names && !numNames));
+
+    _vertexInfoFields.resize(numNames);
+    for (int i = 0; i < numNames; ++i) {
+        assert(names[i]);
+        _vertexInfoFields[i] = names[i];
+    } // for
+
+    PYLITH_METHOD_END;
+} // vertexInfoFields
+
+
+// ----------------------------------------------------------------------
+// Get names of vertex information fields to output.
+const pylith::string_vector&
+pylith::meshio::OutputManager::vertexInfoFields(void) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("OutputManager::vertexInfoFields()");
+
+    PYLITH_METHOD_RETURN(_vertexInfoFields);
+} // vertexInfoFields
+
+
+// ----------------------------------------------------------------------
+// Set names of vertex data fields to output.
+void
+pylith::meshio::OutputManager::vertexDataFields(const char* names[],
+                                                const int numNames) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("OutputManager::vertexDataFields(names="<<names<<", numNames="<<numNames<<")");
+
+    assert((names && numNames) || (!names && !numNames));
+
+    _vertexDataFields.resize(numNames);
+    for (int i = 0; i < numNames; ++i) {
+        assert(names[i]);
+        _vertexDataFields[i] = names[i];
+    } // for
+
+    PYLITH_METHOD_END;
+} // vertexDataFields
+
+
+// ----------------------------------------------------------------------
+// Get names of vertex data fields to output.
+const pylith::string_vector&
+pylith::meshio::OutputManager::vertexDataFields(void) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("OutputManager::vertexDataFields()");
+
+    PYLITH_METHOD_RETURN(_vertexDataFields);
+} // vertexDataFields
+
+
+// ----------------------------------------------------------------------
+// Set names of cell information fields to output.
+void
+pylith::meshio::OutputManager::cellInfoFields(const char* names[],
+                                              const int numNames) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("OutputManager::cellInfoFields(names="<<names<<", numNames="<<numNames<<")");
+
+    assert((names && numNames) || (!names && !numNames));
+
+    _cellInfoFields.resize(numNames);
+    for (int i = 0; i < numNames; ++i) {
+        assert(names[i]);
+        _cellInfoFields[i] = names[i];
+    } // for
+
+    PYLITH_METHOD_END;
+} // cellInfoFields
+
+// ----------------------------------------------------------------------
+// Get names of cell information fields to output.
+const pylith::string_vector&
+pylith::meshio::OutputManager::cellInfoFields(void) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("OutputManager::cellInfoFields()");
+
+    PYLITH_METHOD_RETURN(_cellInfoFields);
+} // cellInfoFields
+
+
+// ----------------------------------------------------------------------
+// Get names of cell data fields to output.
+const pylith::string_vector&
+pylith::meshio::OutputManager::cellDataFields(void) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("OutputManager::cellDataFields()");
+
+    PYLITH_METHOD_RETURN(_cellDataFields);
+} // cellDataFields
+
+
+// ----------------------------------------------------------------------
+// Set names of vertex data fields to output.
+void
+pylith::meshio::OutputManager::cellDataFields(const char* names[],
+                                              const int numNames) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("OutputManager::cellDataFields(names="<<names<<", numNames="<<numNames<<")");
+
+    assert((names && numNames) || (!names && !numNames));
+
+    _cellDataFields.resize(numNames);
+    for (int i = 0; i < numNames; ++i) {
+        assert(names[i]);
+        _vertexInfoFields[i] = names[i];
+    } // for
+
+    PYLITH_METHOD_END;
+} // cellDataFields
+
+
+// ----------------------------------------------------------------------
+// Verify configuration is acceptable.
+void
+pylith::meshio::OutputManager::verifyConfiguration(const pylith::topology::Field& solution,
+                                                   const pylith::topology::Field& auxField) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("OutputConstraint::verifyConfiguration(solution="<<solution.label()<<", auxField="<<auxField.label()<<")");
+
+    const size_t numFields = _vertexInfoFields.size();
+    if ((numFields > 0) && (std::string("all") != _vertexInfoFields[0])) {
+        for (size_t iField = 0; iField < numFields; iField++) {
+            if (!auxField.hasSubfield(_vertexInfoFields[iField].c_str())) {
+                std::ostringstream msg;
+                msg << "Could not find field '" << _vertexInfoFields[iField] << "' in auxiliary field '" << auxField.label() << "' for output.";
+                throw std::runtime_error(msg.str());
+            } // if
+        } // for
+    } // if
+
+    PYLITH_METHOD_END;
+} // verifyConfiguration
+
+
+// ----------------------------------------------------------------------
+// Write information.
+void
+pylith::meshio::OutputManager::writeInfo(const pylith::topology::Field& auxField) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("OutputManager::writeInfo(auxField="<<auxField.label()<<")");
+
+    const pylith::string_vector& subfieldNames = (1 == _vertexInfoFields.size() && std::string("all") == _vertexInfoFields[0]) ? auxField.subfieldNames() : _vertexInfoFields;
+
+    const bool isInfo = true;
+    this->open(auxField.mesh(), isInfo);
+    this->openTimeStep(0.0, auxField.mesh());
+    const size_t numFields = subfieldNames.size();
+    for (size_t iField = 0; iField < numFields; iField++) {
+        if (!auxField.hasSubfield(subfieldNames[iField].c_str())) {
+            std::ostringstream msg;
+            msg << "Could not find field '" << subfieldNames[iField] << "' in auxiliary field for output.";
+            throw std::runtime_error(msg.str());
+        } // if
+
+        pylith::topology::Field& fieldBuffer = this->getBuffer(auxField, subfieldNames[iField].c_str());
+        this->appendVertexField(0.0, fieldBuffer, fieldBuffer.mesh());
+    } // for
+    this->closeTimeStep();
+    this->close();
+
+    PYLITH_METHOD_END;
+} // writeInfo
+
+
+// ----------------------------------------------------------------------
+// Write solution at time step.
+void
+pylith::meshio::OutputManager::writeTimeStep(const PylithReal t,
+                                             const PylithInt tindex,
+                                             const pylith::topology::Field& solution,
+                                             const pylith::topology::Field& auxField) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("OutputManager::writeTimeStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<", auxField="<<auxField.label()<<") empty method");
+    PYLITH_METHOD_END;
+} // writeTimeStep
 
 // ----------------------------------------------------------------------
 // Prepare for output.

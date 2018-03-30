@@ -23,7 +23,7 @@
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/meshio/OutputIntegrator.hh" // USES OutputIntegrator
+#include "pylith/meshio/OutputManager.hh" // USES OutputManager
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -93,19 +93,6 @@ pylith::feassemble::IntegratorPointwise::auxFieldDB(spatialdata::spatialdb::Spat
     PYLITH_METHOD_END;
 } // auxFieldDB
 
-// ----------------------------------------------------------------------
-// Set output manager.
-void
-pylith::feassemble::IntegratorPointwise::output(pylith::meshio::OutputIntegrator* manager) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("output(manager="<<manager<<")");
-
-    _output = manager;
-
-    PYLITH_METHOD_END;
-} // output
-
-
 
 // ----------------------------------------------------------------------
 // Set discretization information for auxiliary subfield.
@@ -159,6 +146,19 @@ void
 pylith::feassemble::IntegratorPointwise::gravityField(spatialdata::spatialdb::GravityField* const g) {
     _gravityField = g;
 } // gravityField
+
+
+// ----------------------------------------------------------------------
+// Set output manager.
+void
+pylith::feassemble::IntegratorPointwise::output(pylith::meshio::OutputManager* manager) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("output(manager="<<manager<<")");
+
+    _output = manager;
+
+    PYLITH_METHOD_END;
+} // output
 
 
 // ----------------------------------------------------------------------

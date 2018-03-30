@@ -127,6 +127,7 @@ pylith::bc::Dirichlet::initialize(const pylith::topology::Field& solution)
     factory->initializeSubfields();
 
     //_auxField->view("AUXILIARY FIELD"); // :DEBUG: TEMPORARY
+    writeInfo();
 
     const PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
     PetscDS prob = NULL;

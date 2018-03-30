@@ -93,6 +93,12 @@ public:
              */
             void normalizer(const spatialdata::units::Nondimensional& dim);
 
+	    /** Set output manager.
+	     *
+	     * @param[in] manager Output manager for integrator.
+	     */
+	    void output(pylith::meshio::OutputManager* manager);
+
             /** Verify configuration is acceptable.
              *
              * @param[in] solution Solution field.
@@ -106,6 +112,10 @@ public:
              */
             virtual
             void initialize(const pylith::topology::Field& solution) = 0;
+
+	    // Write information (auxiliary field) output.
+	    virtual
+	    void writeInfo(void);
 
             /** Update auxiliary fields at beginning of time step.
              *

@@ -49,49 +49,22 @@ void
 pylith::meshio::OutputMaterial::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
-    OutputIntegrator::deallocate();
+    OutputManager::deallocate();
 
     PYLITH_METHOD_END;
 } // deallocate
 
 // ----------------------------------------------------------------------
-// Set names of solution fields to output.
-void
-pylith::meshio::OutputMaterial::vertexDataFields(const char* names[],
-                                                 const int numNames) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputMaterial::vertexDataFields(names="<<names<<", numNames="<<numNames<<")");
-
-    assert((names && numNames) || (!names && !numNames));
-
-    _vertexDataFields.resize(numNames);
-    for (int i = 0; i < numNames; ++i) {
-        assert(names[i]);
-        _vertexDataFields[i] = names[i];
-    } // for
-
-    PYLITH_METHOD_END;
-} // vertexDataFields
-
-// ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
-pylith::meshio::OutputMaterial::verifyConfiguration(const pylith::topology::Field& auxField) const {
+pylith::meshio::OutputMaterial::verifyConfiguration(const pylith::topology::Field& solution,
+                                                    const pylith::topology::Field& auxField) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputIntegrator::verifyConfiguration(auxField="<<auxField.label()<<")");
+    PYLITH_COMPONENT_DEBUG("OutputManager::verifyConfiguration(auxField="<<auxField.label()<<")");
 
-    OutputIntegrator::verifyConfiguration(auxField);
+    OutputManager::verifyConfiguration(solution, auxField);
 
-    const size_t numFields = _vertexDataFields.size();
-    if ((numFields > 0) && (std::string("all") != _vertexDataFields[0])) {
-        for (size_t iField = 0; iField < numFields; iField++) {
-            if (!auxField.hasSubfield(_vertexDataFields[iField].c_str())) {
-                std::ostringstream msg;
-                msg << "Could not find field '" << _vertexDataFields[iField] << "' for output.";
-                throw std::runtime_error(msg.str());
-            } // if
-        } // for
-    } // if
+    PYLITH_COMPONENT_ERROR("@brad :TODO: Implement verifyConfiguration().");
 
     PYLITH_METHOD_END;
 } // verifyConfiguration
@@ -101,9 +74,10 @@ pylith::meshio::OutputMaterial::verifyConfiguration(const pylith::topology::Fiel
 void
 pylith::meshio::OutputMaterial::writeTimeStep(const PylithReal t,
                                               const PylithInt tindex,
-                                              const pylith::topology::Field& solution) {
+                                              const pylith::topology::Field& solution,
+                                              const pylith::topology::Field& auxField) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputMaterial::writeTimeStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("OutputMaterial::writeTimeStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<", auxField="<<auxField.label()<<")");
 
     if (!this->shouldWrite(t, tindex)) {
         PYLITH_METHOD_END;
@@ -111,19 +85,19 @@ pylith::meshio::OutputMaterial::writeTimeStep(const PylithReal t,
 
     const pylith::string_vector& subfieldNames = (1 == _vertexDataFields.size() && std::string("all") == _vertexDataFields[0]) ? solution.subfieldNames() : _vertexDataFields;
 
+#if 0
     this->openTimeStep(t, solution.mesh());
     const size_t numFields = subfieldNames.size();
     for (size_t iField = 0; iField < numFields; iField++) {
-        if (!solution.hasSubfield(subfieldNames[iField].c_str())) {
-            std::ostringstream msg;
-            msg << "Could not find field '" << subfieldNames[iField] << "' in solution for output.";
-            throw std::runtime_error(msg.str());
-        } // if
+        // :TODO: STUFF GOES HERE
 
         pylith::topology::Field& fieldBuffer = this->getBuffer(solution, subfieldNames[iField].c_str());
         this->appendVertexField(t, fieldBuffer, fieldBuffer.mesh());
     } // for
     this->closeTimeStep();
+#else
+    PYLITH_COMPONENT_ERROR("@brad :TODO: Implemenet writeTimeStep().");
+#endif
 
     PYLITH_METHOD_END;
 } // writeTimeStep

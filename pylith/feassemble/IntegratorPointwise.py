@@ -62,8 +62,8 @@ class IntegratorPointwise(PetscComponent,
         auxFieldDB = pyre.inventory.facility("db_auxiliary_field", family="spatial_database", factory=SimpleDB)
         auxFieldDB.meta['tip'] = "Database for physical property parameters."
 
-        from pylith.meshio.OutputIntegrator import OutputIntegrator
-        outputManager = pyre.inventory.facility("output", family="output_manager", factory=OutputIntegrator)
+        from pylith.meshio.OutputManager import OutputManager
+        outputManager = pyre.inventory.facility("output", family="output_manager", factory=OutputManager)
         outputManager.meta['tip'] = "Output manager."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

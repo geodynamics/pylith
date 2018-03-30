@@ -56,15 +56,14 @@ namespace pylith {
         class VertexFilterDecimateP1;
 
         class OutputManager;
-	class OutputIntegrator;
-	class OutputMaterial;
+        class OutputMaterial;
         class OutputSoln;
         class OutputSolnSubset;
         class OutputSolnPoints;
 
         class HDF5;
-	class Xdmf;
-	
+        class Xdmf;
+
     } // meshio
 } // pylith
 

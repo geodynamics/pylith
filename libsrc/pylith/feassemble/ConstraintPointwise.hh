@@ -31,6 +31,7 @@
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::discretizations_map
+#include "pylith/meshio/meshiofwd.hh" // HOLDSA OutputManager
 #include "pylith/utils/array.hh" // HASA int_array
 #include "pylith/utils/utilsfwd.hh" // HOLDSA Logger
 
@@ -105,6 +106,12 @@ public:
      */
     void normalizer(const spatialdata::units::Nondimensional& dim);
 
+    /** Set output manager.
+     *
+     * @param[in] manager Output manager for integrator.
+     */
+    void output(pylith::meshio::OutputManager* manager);
+
     /** Verify configuration is acceptable.
      *
      * @param[in] solution Solution field.
@@ -118,6 +125,10 @@ public:
      */
     virtual
     void initialize(const pylith::topology::Field& solution) = 0;
+
+    // Write information (auxiliary field) output.
+    virtual
+    void writeInfo(void);
 
     /** Update auxiliary fields at beginning of time step.
      *
@@ -154,6 +165,7 @@ protected:
     int_array _constrainedDOF; ///< List of constrained degrees of freedom at each location.
 
     pylith::topology::Field *_auxField; ///< Auxiliary field for this constraint.
+    pylith::meshio::OutputManager* _output; ///< Output manager for integrator.
 
     pylith::utils::EventLogger* _logger;   ///< Event logger.
 

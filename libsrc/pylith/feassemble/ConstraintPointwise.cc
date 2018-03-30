@@ -21,6 +21,7 @@
 #include "pylith/feassemble/ConstraintPointwise.hh" // implementation of object methods
 
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
+#include "pylith/meshio/OutputManager.hh" // USES OutputManager
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 
@@ -40,6 +41,7 @@
 pylith::feassemble::ConstraintPointwise::ConstraintPointwise(void) :
     _normalizer(new spatialdata::units::Nondimensional),
     _auxField(NULL),
+    _output(NULL),
     _logger(NULL)
 { // constructor
 } // constructor
@@ -61,6 +63,8 @@ pylith::feassemble::ConstraintPointwise::deallocate(void)
     delete _normalizer; _normalizer = NULL;
     delete _logger; _logger = NULL;
     delete _auxField; _auxField = NULL;
+
+    _output = NULL; // :KLUDGE: Memory managed by Python object. :TODO: Use shared pointer.
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -160,12 +164,46 @@ pylith::feassemble::ConstraintPointwise::normalizer(const spatialdata::units::No
 
 
 // ----------------------------------------------------------------------
+// Set output manager.
+void
+pylith::feassemble::ConstraintPointwise::output(pylith::meshio::OutputManager* manager) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("output(manager="<<manager<<")");
+
+    _output = manager;
+
+    PYLITH_METHOD_END;
+} // output
+
+
+// ----------------------------------------------------------------------
+// Write information (auxiliary field) output.
+void
+pylith::feassemble::ConstraintPointwise::writeInfo(void) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("writeInfo(void)");
+
+    if (_output) {
+        assert(_auxField);
+        _output->writeInfo(*_auxField);
+    } // if
+
+    PYLITH_METHOD_END;
+} // writeInfo
+
+
+// ----------------------------------------------------------------------
 // Update auxiliary fields at beginning of time step.
 void
 pylith::feassemble::ConstraintPointwise::prestep(const double t,
                                                  const double dt)
 { // prestep
-  // Default is to do nothing.
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("prestep(t="<<t<<", dt="<<dt<<") empty method");
+
+    // Default is to do nothing.
+
+    PYLITH_METHOD_END;
 } // prestep
 
 
