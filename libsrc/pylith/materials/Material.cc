@@ -164,6 +164,7 @@ pylith::materials::Material::initialize(const pylith::topology::Field& solution)
     factory->initializeSubfields();
 
     //_auxField->view("MATERIAL AUXILIARY FIELD"); // :DEBUG: TEMPORARY
+    writeInfo();
 
     PYLITH_METHOD_END;
 } // initialize
