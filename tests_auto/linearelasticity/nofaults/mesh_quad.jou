@@ -17,8 +17,11 @@ mesh surface all
 # ----------------------------------------------------------------------
 # Create blocks for materials
 # ----------------------------------------------------------------------
-block 1 surface 3 4 5
-block 1 name "elastic"
+block 1 surface 4 5
+block 1 name "elastic_xneg"
+
+block 2 surface 3
+block 2 name "elastic_xpos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for faults
@@ -74,5 +77,6 @@ nodeset 24 name "edge_yneg_nofault"
 # ----------------------------------------------------------------------
 # Export exodus file
 # ----------------------------------------------------------------------
-export mesh "mesh_quad4.exo" dimension 2 overwrite
+export mesh "mesh_quad.exo" dimension 2 overwrite
+
 
