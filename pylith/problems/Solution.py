@@ -64,6 +64,7 @@ class Solution(PetscComponent):
         Constructor.
         """
         PetscComponent.__init__(self, name, facility="solution")
+        self.field = None
         return
 
     def preinitialize(self, mesh, normalizer):
@@ -99,8 +100,9 @@ class Solution(PetscComponent):
         return
 
     def _cleanup(self):
-        self.field.deallocate()
-
+        if self.field:
+            self.field.deallocate()
+        return
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
