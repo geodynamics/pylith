@@ -17,7 +17,7 @@
 //
 
 /**
- * @file libsrc/meshio/OutputIntegrator.hh
+ * @file libsrc/pylith/meshio/OutputIntegrator.hh
  *
  * @brief C++ object for managing output of the solution over the domain.
  */

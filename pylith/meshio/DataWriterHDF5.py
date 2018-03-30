@@ -63,27 +63,8 @@ class DataWriterHDF5(DataWriter, ModuleDataWriterHDF5):
         ModuleDataWriterHDF5.filename(self, self.filename)
         return
 
-    def close(self):
-        """
-        Close writer.
-        """
-        ModuleDataWriterHDF5.close(self)
-
-        # Only write Xdmf file on proc 0
-        import os
-        if not os.path.isfile(self.filename):
-            return
-
-        from pylith.mpi.Communicator import mpi_comm_world
-        comm = mpi_comm_world()
-        if not comm.rank:
-            from Xdmf import Xdmf
-            xdmf = Xdmf()
-            xdmf.write(ModuleDataWriterHDF5.hdf5Filename(self), verbose=False)
-        return
-
-
 # FACTORIES ////////////////////////////////////////////////////////////
+
 
 def data_writer():
     """

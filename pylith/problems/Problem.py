@@ -239,19 +239,7 @@ class Problem(PetscComponent, ModuleProblem):
         if 0 == comm.rank:
             self._info.log("Finalizing problem.")
 
-        # Finalize materials
-        for material in self.materials.components():
-            material.finalize()
-
-        # Finalize BC
-        for bc in self.bc.components():
-            bc.finalize()
-
-        # Finalize interfaces
-        for interface in self.interfaces.components():
-            interface.finalize()
-
-        # Finalize solution output.
+        # Close solution output.
         for output in self.outputs.components():
             output.close()
         return

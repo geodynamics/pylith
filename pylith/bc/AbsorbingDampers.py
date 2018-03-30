@@ -25,8 +25,9 @@
 from .BoundaryCondition import BoundaryCondition
 from pylith.feassemble.IntegratorPointwise import IntegratorPointwise
 
+
 class AbsorbingDampers(BoundaryCondition,
-                   IntegratorPointwise):
+                       IntegratorPointwise):
     """
     Python object for managing an absorbing boundary condition.
 
@@ -49,13 +50,6 @@ class AbsorbingDampers(BoundaryCondition,
         """
         BoundaryCondition.preinitialize(self, mesh)
         IntegratorPointwise.preinitialize(self, mesh)
-        return
-
-    def finalize(self):
-        """
-        Cleanup after running problem.
-        """
-        print(":TODO: @brad Implement AbsorbingDampers.finalize() once output manager is added.")
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////

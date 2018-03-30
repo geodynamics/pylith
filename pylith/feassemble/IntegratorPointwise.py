@@ -91,13 +91,6 @@ class IntegratorPointwise(PetscComponent,
         self.outputManager.preinitialize()
         return
 
-    def finalize(self):
-        """
-        Cleanup after running problem.
-        """
-        self.outputManager.close()
-        return
-
 # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):

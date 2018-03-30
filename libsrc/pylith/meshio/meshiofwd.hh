@@ -62,9 +62,9 @@ namespace pylith {
         class OutputSolnSubset;
         class OutputSolnPoints;
 
-
         class HDF5;
-
+	class Xdmf;
+	
     } // meshio
 } // pylith
 

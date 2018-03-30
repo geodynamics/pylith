@@ -104,14 +104,6 @@ class OutputManager(PetscComponent, ModuleOutputManager):
         ModuleOutputManager.writer(self, self.writer)
         return
 
-    def close(self):
-        try:
-            self.writer.close()
-        except IOError as err:
-            # Assume non-fatal error, so just print error message.
-            self._error.log(err.message)
-        return
-
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):

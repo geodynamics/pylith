@@ -21,6 +21,7 @@
 #include "DataWriterHDF5.hh" // Implementation of class methods
 
 #include "HDF5.hh" // USES HDF5
+#include "Xdmf.hh" // USES Xdmf
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
@@ -258,6 +259,13 @@ pylith::meshio::DataWriterHDF5::close(void)
 
     _timesteps.clear();
     _tstampIndex = 0;
+
+    // Only write Xdmf file on process 0
+    PetscMPIInt commRank;
+    err = MPI_Comm_rank(PETSC_COMM_WORLD, &commRank); PYLITH_CHECK_ERROR(err);
+    if (!commRank) {
+        Xdmf::write(hdf5Filename().c_str());
+    } // if
 
     PYLITH_METHOD_END;
 } // close
