@@ -377,6 +377,9 @@ pylith::problems::Problem::computeRHSJacobian(PetscMat jacobianMat,
 
     const size_t numIntegrators = _integrators.size();
 
+    PetscErrorCode err;
+    err = MatZeroEntries(precondMat);PYLITH_CHECK_ERROR(err);
+    
     // Check to see if we need to compute RHS Jacobian.
     bool needNewRHSJacobian = false;
     for (size_t i = 0; i < numIntegrators; ++i) {
