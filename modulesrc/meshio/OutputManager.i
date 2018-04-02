@@ -165,9 +165,14 @@ namespace pylith {
 	    /** Write information.
 	     *
 	     * @param[in] auxField Auxiliary field.
+	     * @param label Name of label defining cells to include in output
+	     *   (=NULL means use all cells in mesh).
+	     * @param labelId Value of label defining which cells to include.
 	     */
 	    virtual
-	    void writeInfo(const pylith::topology::Field& auxField);
+	    void writeInfo(const pylith::topology::Field& auxField,
+			   const char* label,
+		const int labelId);
 	    
 	    /** Write solution at time step.
 	     *
@@ -187,7 +192,7 @@ namespace pylith {
 	     * @param mesh Finite-element mesh object.
 	     * @param isInfo True if writing only once.
 	     * @param label Name of label defining cells to include in output
-	     *   (=0 means use all cells in mesh).
+	     *   (=NULL means use all cells in mesh).
 	     * @param labelId Value of label defining which cells to include.
 	     */
 	    virtual

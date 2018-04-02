@@ -181,9 +181,13 @@ public:
     /** Write information.
      *
      * @param[in] auxField Auxiliary field.
+     * @param[in] label Name of label defining cells to include in output (=0 means use all cells in mesh).
+     * @param[in] labelId Value of label defining which cells to include.
      */
     virtual
-    void writeInfo(const pylith::topology::Field& auxField);
+    void writeInfo(const pylith::topology::Field& auxField,
+                   const char* label=NULL,
+                   const int labelId=0);
 
     /** Write solution at time step.
      *

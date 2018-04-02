@@ -53,19 +53,24 @@ namespace pylith {
 
 	    /** Verify configuration.
 	     *
-	     * @param mesh PETSc mesh
+	     * @param[in] solution Solution field.
+	     * @param[in] auxField Auxiliary field.
 	     */
-	    void verifyConfiguration(const pylith::topology::Field& solution) const;
+	    void verifyConfiguration(const pylith::topology::Field& solution,
+				     const pylith::topology::Field& auxField) const;
 	    
 	    /** Write solution at time step.
 	     *
 	     * @param[in] t Current time.
-	     * @param[in] timeStep Current time step.
+	     * @param[in] tindex Current time step.
 	     * @param[in] solution Solution at time t.
+	     * @param[in] auxField Auxiliary field.
 	     */
+	    virtual
 	    void writeTimeStep(const PylithReal t,
-			       const PylithInt timeStep,
-			       const pylith::topology::Field& solution);
+			       const PylithInt tindex,
+			       const pylith::topology::Field& solution,
+			       const pylith::topology::Field& auxField);
 	    
 	}; // OutputSoln
       

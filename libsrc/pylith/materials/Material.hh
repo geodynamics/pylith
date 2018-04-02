@@ -190,6 +190,19 @@ public:
      */
     void updateStateVars(const pylith::topology::Field& solution);
 
+    // Write information (auxiliary field) output.
+    void writeInfo(void);
+
+    /** Write solution related output.
+     *
+     * @param[in] t Current time.
+     * @param[in] tindex Current time step.
+     * @param[in] solution Field with solution at current time.
+     */
+    void writeTimeStep(const PylithReal t,
+                       const PylithInt tindex,
+                       const pylith::topology::Field& solution);
+
     // PROTECTED METHODS //////////////////////////////////////////////////
 protected:
 

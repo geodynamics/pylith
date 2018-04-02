@@ -303,15 +303,17 @@ pylith::meshio::OutputManager::verifyConfiguration(const pylith::topology::Field
 // ----------------------------------------------------------------------
 // Write information.
 void
-pylith::meshio::OutputManager::writeInfo(const pylith::topology::Field& auxField) {
+pylith::meshio::OutputManager::writeInfo(const pylith::topology::Field& auxField,
+                                         const char* label,
+                                         const int labelId) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("OutputManager::writeInfo(auxField="<<auxField.label()<<")");
 
     const pylith::string_vector& subfieldNames = (1 == _vertexInfoFields.size() && std::string("all") == _vertexInfoFields[0]) ? auxField.subfieldNames() : _vertexInfoFields;
 
     const bool isInfo = true;
-    this->open(auxField.mesh(), isInfo);
-    this->openTimeStep(0.0, auxField.mesh());
+    this->open(auxField.mesh(), isInfo, label, labelId);
+    this->openTimeStep(0.0, auxField.mesh(), label, labelId);
     const size_t numFields = subfieldNames.size();
     for (size_t iField = 0; iField < numFields; iField++) {
         if (!auxField.hasSubfield(subfieldNames[iField].c_str())) {

@@ -25,6 +25,7 @@
 #include "pylith/materials/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 #include "pylith/topology/Stratum.hh" // USES StratumIS
+#include "pylith/meshio/OutputManager.hh" // USES OutputManager
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -326,6 +327,44 @@ pylith::materials::Material::updateStateVars(const pylith::topology::Field& solu
 
     PYLITH_METHOD_END;
 } // updateStateVars
+
+
+// ----------------------------------------------------------------------
+// Write information (auxiliary field) output.
+void
+pylith::materials::Material::writeInfo(void) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("writeInfo(void)");
+
+    if (_output) {
+        assert(_auxField);
+        _output->writeInfo(*_auxField, "material-id", _id);
+    } // if
+
+    PYLITH_METHOD_END;
+
+} // writeInfo
+
+
+// ----------------------------------------------------------------------
+// Write solution related output.
+void
+pylith::materials::Material::writeTimeStep(const PylithReal t,
+                                           const PylithInt tindex,
+                                           const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("writeTimeStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
+
+    if (_output) {
+        assert(_auxField);
+        _output->writeTimeStep(t, tindex, solution, *_auxField);
+    } // if
+
+    PYLITH_METHOD_END;
+
+} // writeTimeStep
+
+
 
 // ----------------------------------------------------------------------
 // Compute residual using current kernels.
