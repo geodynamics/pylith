@@ -81,7 +81,8 @@ pylith::bc::TestDirichletTimeDependent::testConstructor(void)
 { // testConstructor
     PYLITH_METHOD_BEGIN;
 
-    _bc = new DirichletTimeDependent();CPPUNIT_ASSERT(_bc);
+    DirichletTimeDependent* bc = new DirichletTimeDependent();CPPUNIT_ASSERT(bc);
+    delete bc; bc = NULL;
 
     PYLITH_METHOD_END;
 } // testConstructor
@@ -93,7 +94,8 @@ pylith::bc::TestDirichletTimeDependent::testAccessors(void)
 { // testAccessors
     PYLITH_METHOD_BEGIN;
 
-    _bc = new DirichletTimeDependent();CPPUNIT_ASSERT(_bc);
+    CPPUNIT_ASSERT(_bc);
+
     bool flag;
 
     // field()

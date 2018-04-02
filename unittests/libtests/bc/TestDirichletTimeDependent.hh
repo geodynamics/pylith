@@ -66,7 +66,7 @@ class pylith::bc::TestDirichletTimeDependent : public CppUnit::TestFixture, publ
     CPPUNIT_TEST(testSetSolution);
     CPPUNIT_TEST(testAuxFieldSetup);
 
-    CPPUNIT_TEST_SUITE_END();
+    CPPUNIT_TEST_SUITE_END_ABSTRACT();
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:

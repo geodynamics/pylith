@@ -65,7 +65,7 @@ class pylith::bc::TestNeumannTimeDependent : public CppUnit::TestFixture {
     CPPUNIT_TEST(testComputeRHSResidual);
     CPPUNIT_TEST(testAuxFieldSetup);
 
-    CPPUNIT_TEST_SUITE_END();
+    CPPUNIT_TEST_SUITE_END_ABSTRACT();
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
@@ -117,7 +117,7 @@ protected:
 
     static const double FILL_VALUE; ///< Fill value for unconstrained values.
 
-  // PRIVATE METHODS ////////////////////////////////////////////////////
+    // PRIVATE METHODS ////////////////////////////////////////////////////
 private:
 
     /// Initializer boundary condition for testing.

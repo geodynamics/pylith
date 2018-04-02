@@ -79,7 +79,8 @@ pylith::bc::TestAbsorbingDampers::testConstructor(void)
 { // testConstructor
     PYLITH_METHOD_BEGIN;
 
-    _bc = new AbsorbingDampers();CPPUNIT_ASSERT(_bc);
+    AbsorbingDampers* bc = new AbsorbingDampers();CPPUNIT_ASSERT(bc);
+    delete bc; bc = NULL;
 
     PYLITH_METHOD_END;
 } // testConstructor
@@ -91,7 +92,7 @@ pylith::bc::TestAbsorbingDampers::testAccessors(void)
 { // testAccessors
     PYLITH_METHOD_BEGIN;
 
-    _bc = new AbsorbingDampers();CPPUNIT_ASSERT(_bc);
+    CPPUNIT_ASSERT(_bc);
 
     // field()
     const std::string fieldName = "displacement";

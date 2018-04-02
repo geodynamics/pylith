@@ -79,7 +79,8 @@ pylith::bc::TestNeumannTimeDependent::testConstructor(void)
 { // testConstructor
     PYLITH_METHOD_BEGIN;
 
-    _bc = new NeumannTimeDependent();CPPUNIT_ASSERT(_bc);
+    NeumannTimeDependent* bc = new NeumannTimeDependent();CPPUNIT_ASSERT(bc);
+    delete bc; bc = NULL;
 
     PYLITH_METHOD_END;
 } // testConstructor
@@ -91,7 +92,8 @@ pylith::bc::TestNeumannTimeDependent::testAccessors(void)
 { // testAccessors
     PYLITH_METHOD_BEGIN;
 
-    _bc = new NeumannTimeDependent();CPPUNIT_ASSERT(_bc);
+    CPPUNIT_ASSERT(_bc);
+
     bool flag;
 
     // field()

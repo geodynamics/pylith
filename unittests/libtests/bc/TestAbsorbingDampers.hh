@@ -64,7 +64,7 @@ class pylith::bc::TestAbsorbingDampers : public CppUnit::TestFixture {
     CPPUNIT_TEST(testComputeRHSResidual);
     CPPUNIT_TEST(testAuxFieldSetup);
 
-    CPPUNIT_TEST_SUITE_END();
+    CPPUNIT_TEST_SUITE_END_ABSTRACT();
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
