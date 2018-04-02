@@ -148,6 +148,12 @@ pylith::materials::IsotropicLinearElasticityPlaneStrain::_auxFieldSetup(void) {
 
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
 
+    // :ATTENTION: In quasi-static problems, the time scale is usually quite large
+    // (order of tens to hundreds of years), which means that the density scale is very large,
+    // and the acceleration scale is very small. Nevertheless, density times gravitational
+    // acceleration will have a scale of pressure divided by length and should be within a few orders
+    // of magnitude of 1.
+
     _auxMaterialFactory->density(); // 0
     _auxMaterialFactory->shearModulus(); // 1
     _auxMaterialFactory->bulkModulus(); // 2
