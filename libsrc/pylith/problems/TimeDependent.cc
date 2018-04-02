@@ -373,11 +373,13 @@ pylith::problems::TimeDependent::poststep(void)
     assert(_solution);
     _solution->scatterVectorToLocal(solutionVec);
 
+
     // Output solution.
+    pylith::topology::Field nullField(_solution->mesh());
     const size_t numOutput = _outputs.size();
     for (size_t i = 0; i < numOutput; ++i) {
         assert(_outputs[i]);
-        _outputs[i]->writeTimeStep(t, tindex, *_solution);
+        _outputs[i]->writeTimeStep(t, tindex, *_solution, nullField);
     } // for
 
     // Update state variables

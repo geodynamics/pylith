@@ -60,7 +60,7 @@ pylith::meshio::OutputSoln::deallocate(void)
 // Set names of solution fields to output.
 void
 pylith::meshio::OutputSoln::vertexDataFields(const char* names[],
-                                                const int numNames)
+                                             const int numNames)
 { // vertexDataFields
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("OutputSoln::vertexDataFields(names="<<names<<", numNames="<<numNames<<")");
@@ -79,7 +79,8 @@ pylith::meshio::OutputSoln::vertexDataFields(const char* names[],
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
-pylith::meshio::OutputSoln::verifyConfiguration(const pylith::topology::Field& solution) const
+pylith::meshio::OutputSoln::verifyConfiguration(const pylith::topology::Field& solution,
+                                                const pylith::topology::Field& auxField) const
 { // verifyConfiguration
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("OutputSoln::verifyConfiguration(solution="<<solution.label()<<")");
@@ -102,8 +103,9 @@ pylith::meshio::OutputSoln::verifyConfiguration(const pylith::topology::Field& s
 // Write solution at time step.
 void
 pylith::meshio::OutputSoln::writeTimeStep(const PylithReal t,
-                                             const PylithInt tindex,
-                                             const pylith::topology::Field& solution)
+                                          const PylithInt tindex,
+                                          const pylith::topology::Field& solution,
+                                          const pylith::topology::Field& auxField)
 { // writeTimeStep
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("OutputSoln::writeTimeStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.label()<<")");
