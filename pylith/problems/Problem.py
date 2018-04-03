@@ -152,6 +152,8 @@ class Problem(PetscComponent, ModuleProblem):
         ModuleProblem.identifier(self, self.aliases[-1])
         ModuleProblem.solverType(self, self.solverType)
         ModuleProblem.normalizer(self, self.normalizer)
+        if not self.gravityField is None:
+            ModuleProblem.gravityField(self, self.gravityField)
 
         # Do minimal setup of solution.
         self.solution.preinitialize(mesh, self.normalizer)
@@ -209,6 +211,8 @@ class Problem(PetscComponent, ModuleProblem):
         import numpy
         idValues = numpy.array(materialIds.keys(), dtype=numpy.int32)
         ModuleProblem.verifyConfiguration(self, idValues)
+
+        self._printInfo()
         return
 
     def initialize(self):
@@ -276,7 +280,6 @@ class Problem(PetscComponent, ModuleProblem):
             self.gravityField = None
         else:
             self.gravityField = self.inventory.gravityField
-            ModuleProblem.gravityField(self, self.gravityField)
 
         return
 
@@ -308,6 +311,20 @@ class Problem(PetscComponent, ModuleProblem):
 
     def _setSolutionOutputs(self):
         ModuleProblem.outputs(self, self.outputs.components())
+        return
+
+    def _printInfo(self):
+        """Write overview of problem to info journal.
+        """
+        msg = (
+            "Scales for nondimensionalization:",
+            "    Length scale: {}".format(self.normalizer.lengthScale()),
+            "    Time scale: {}".format(self.normalizer.timeScale()),
+            "    Pressure scale: {}".format(self.normalizer.pressureScale()),
+            "    Density scale: {}".format(self.normalizer.densityScale()),
+            "    Temperature scale: {}".format(self.normalizer.temperatureScale()),
+        )
+        self._info.log("\n".join(msg))
         return
 
     def _setupLogging(self):
