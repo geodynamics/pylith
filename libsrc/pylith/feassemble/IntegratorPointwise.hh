@@ -252,6 +252,19 @@ protected:
     virtual
     pylith::feassemble::AuxiliaryFactory* _auxFactory(void) = 0;
 
+  /** Check compatibility of discretization of subfields in the solution
+   * and auxiliary fields.
+   *
+   * Verify that the quadrature order of the solution subfields all
+   * match and that they match the quadrature order of the auxiliary
+   * subfields, because this is assumed by DMPlex integration
+   * routines.
+   *
+   * @param[in] solution Solution field.
+   */
+  void
+  _checkDiscretization(const pylith::topology::Field& solution) const;
+
     // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected:
 

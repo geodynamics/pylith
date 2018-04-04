@@ -157,9 +157,10 @@ pylith::materials::Material::initialize(const pylith::topology::Field& solution)
     _auxField->label("auxiliary subfields");
     _auxFieldSetup();
     _auxField->subfieldsSetup();
+    _checkDiscretization(solution);
     _auxField->allocate();
     _auxField->zeroLocal();
-
+    
     assert(_normalizer);
     pylith::feassemble::AuxiliaryFactory* factory = _auxFactory(); assert(factory);
     factory->initializeSubfields();
