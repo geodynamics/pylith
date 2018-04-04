@@ -33,8 +33,8 @@
 // AbsorbingDampers ----------------------------------------------------
 /// @brief AbsorbingDampers (e.g., traction) boundary conditions.
 class pylith::bc::AbsorbingDampers :
-    public BoundaryCondition,
-    public pylith::feassemble::IntegratorPointwise { // class AbsorbingDampers
+    public pylith::bc::BoundaryCondition,
+    public pylith::feassemble::IntegratorPointwise {
     friend class TestAbsorbingDampers;   // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
