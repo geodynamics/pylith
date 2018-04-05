@@ -32,7 +32,8 @@ namespace pylith {
         class TestIsotropicLinearElasticityPlaneStrain_UniformStrain : public TestIsotropicLinearElasticityPlaneStrain {
 
             /// Spatial database user functions for auxiiliary subfields (includes derived fields).
-
+	  static const double SMALL;
+	  
             // Density
             static double density(const double x,
                                   const double y) {
@@ -115,6 +116,17 @@ namespace pylith {
                 return "m/s";
             } // disp_dot_units
 
+
+            // Displacement + perturbation
+            static double disp_perturb_x(const double x,
+                                 const double y) {
+	      return disp_x(x, y) + SMALL;
+            } // disp_perturb_x
+            static double disp_perturb_y(const double x,
+                                 const double y) {
+	      return disp_y(x, y) + SMALL;
+            } // disp_perturb_y
+
 protected:
 
             void setUp(void) {
@@ -160,6 +172,12 @@ protected:
                 _mydata->solnDB->addValue("displacement_dot_x", disp_dot_x, disp_dot_units());
                 _mydata->solnDB->addValue("displacement_dot_y", disp_dot_y, disp_dot_units());
 
+                CPPUNIT_ASSERT(_mydata->perturbDB);
+                _mydata->perturbDB->addValue("displacement_x", disp_perturb_x, disp_units());
+                _mydata->perturbDB->addValue("displacement_y", disp_perturb_y, disp_units());
+                _mydata->perturbDB->addValue("displacement_dot_x", disp_dot_x, disp_dot_units());
+                _mydata->perturbDB->addValue("displacement_dot_y", disp_dot_y, disp_dot_units());
+
                 CPPUNIT_ASSERT(_mymaterial);
                 _mymaterial->useInertia(false);
                 _mymaterial->useBodyForce(false);
@@ -170,7 +188,7 @@ protected:
             } // setUp
 
         }; // TestIsotropicLinearElasticityPlaneStrain_UniformStrain
-
+      const double TestIsotropicLinearElasticityPlaneStrain_UniformStrain::SMALL = 1.0e-5;
 
         // ----------------------------------------------------------------------
 

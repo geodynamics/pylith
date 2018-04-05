@@ -362,7 +362,8 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_setupSolutionField
         perturbation.cloneSection(solution);
         perturbation.allocate();
         perturbation.zeroLocal();
-        _addRandomPerturbation(&perturbation, solution, _mydata->perturbation);
+        pylith::problems::SolutionFactory factory(perturbation, *_mydata->normalizer);
+        factory.setValues(_mydata->perturbDB);
     } // Perturbation
 
     { // Time derivative perturbation
@@ -371,7 +372,8 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_setupSolutionField
         perturbationDot.cloneSection(solutionDot);
         perturbationDot.allocate();
         perturbationDot.zeroLocal();
-        _addRandomPerturbation(&perturbationDot, solutionDot, _mydata->perturbation);
+        pylith::problems::SolutionFactory factory(perturbationDot, *_mydata->normalizer);
+        factory.setValues(_mydata->perturbDB);
     } // Time derivative perturbation
 
     PYLITH_METHOD_END;
@@ -391,6 +393,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain_Data::TestIsotropicL
     cs->initialize();
 
     solnDB->coordsys(*cs);
+    perturbDB->coordsys(*cs);
     auxDB->coordsys(*cs);
 } // constructor
 

@@ -214,6 +214,7 @@ public:
     int numSolnSubfields; ///< Number of solution fields.
     pylith::topology::Field::Discretization* solnDiscretizations; ///< Discretizations for solution fields.
     spatialdata::spatialdb::UserFunctionDB* solnDB; ///< Spatial database with solution.
+    spatialdata::spatialdb::UserFunctionDB* perturbDB; ///< Spatial database with solution + perturbation.
 
     int numAuxSubfields; ///< Number of auxiliary subfields.
     const char** auxSubfields; ///< Names of auxiliary subfields.

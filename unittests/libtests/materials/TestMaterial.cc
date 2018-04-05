@@ -756,6 +756,7 @@ pylith::materials::TestMaterial_Data::TestMaterial_Data(void) :
     numSolnSubfields(0),
     solnDiscretizations(NULL),
     solnDB(new spatialdata::spatialdb::UserFunctionDB),
+    perturbDB(new spatialdata::spatialdb::UserFunctionDB),
 
     numAuxSubfields(0),
     auxSubfields(NULL),
@@ -768,6 +769,9 @@ pylith::materials::TestMaterial_Data::TestMaterial_Data(void) :
 
     CPPUNIT_ASSERT(solnDB);
     solnDB->label("solution");
+
+    CPPUNIT_ASSERT(perturbDB);
+    perturbDB->label("solution+perturbation");
 
     CPPUNIT_ASSERT(auxDB);
     auxDB->label("auxiliary field");
