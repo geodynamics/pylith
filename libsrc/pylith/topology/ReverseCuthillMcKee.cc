@@ -29,17 +29,50 @@ void
 pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh)
 { // reorder
   assert(mesh);
-  DMLabel label;
-  PetscIS permutation;
+  DMLabel dmLabel = NULL;
+  PetscIS permutation = NULL;
   PetscDM dmOrig = mesh->dmMesh();
   PetscDM dmNew = NULL;
   PetscErrorCode err;
 
-  err = DMGetLabel(dmOrig, "material-id", &label);PYLITH_CHECK_ERROR(err);
-  err = DMPlexGetOrdering(dmOrig, MATORDERINGRCM, label, &permutation);PYLITH_CHECK_ERROR(err);
+  err = DMGetLabel(dmOrig, "material-id", &dmLabel);PYLITH_CHECK_ERROR(err);
+  err = DMPlexGetOrdering(dmOrig, MATORDERINGRCM, dmLabel, &permutation);PYLITH_CHECK_ERROR(err);
   err = DMPlexPermute(dmOrig, permutation, &dmNew);PYLITH_CHECK_ERROR(err);
   err = ISDestroy(&permutation);PYLITH_CHECK_ERROR(err);
   mesh->dmMesh(dmNew);
+
+  // Verify that all material points (cells) are consecutive.
+  PetscIS valuesIS = NULL;
+  PetscInt numValues = 0;
+  const PetscInt* values = NULL;
+  err = DMLabelGetValueIS(dmLabel, &valuesIS);PYLITH_CHECK_ERROR(err);
+  err = ISGetLocalSize(valuesIS, &numValues);PYLITH_CHECK_ERROR(err);
+  err = ISGetIndices(valuesIS, &values);PYLITH_CHECK_ERROR(err);
+  for (PetscInt iValue=0; iValue < numValues; ++iValue) {
+    PetscIS pointsIS = NULL;
+    PetscInt numPoints = 0;
+    const PetscInt* points = NULL;
+    err = DMLabelGetStratumIS(dmLabel, values[iValue], &pointsIS);PYLITH_CHECK_ERROR(err);
+    err = ISGetLocalSize(pointsIS, &numPoints);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(pointsIS, &points);PYLITH_CHECK_ERROR(err);
+    for (PetscInt iPoint=1; iPoint < numPoints; ++iPoint) {
+      if (points[iPoint] - points[iPoint-1] != 1) {
+	// Cleanup
+	err = ISRestoreIndices(pointsIS, &points);PYLITH_CHECK_ERROR(err);
+	err = ISDestroy(&pointsIS);PYLITH_CHECK_ERROR(err);
+	err = ISRestoreIndices(valuesIS, &values);PYLITH_CHECK_ERROR(err);
+	err = ISDestroy(&valuesIS);PYLITH_CHECK_ERROR(err);
+
+	std::ostringstream msg;
+	msg << "Cells for label material-id " << values[iValue] << " are not consecutive (" << points[iPoint] << " and " << points[iPoint-1] << ").";
+	throw std::runtime_error(msg.str());
+      } // if
+    } // for
+    err = ISRestoreIndices(pointsIS, &points);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&pointsIS);PYLITH_CHECK_ERROR(err);
+  } // for
+  err = ISRestoreIndices(valuesIS, &values);PYLITH_CHECK_ERROR(err);
+  err = ISDestroy(&valuesIS);PYLITH_CHECK_ERROR(err);
 } // reorder
 
 
