@@ -308,13 +308,12 @@ pylith::materials::Query::dbQueryGravityField(PylithInt dim,
     const int i_x = 0;
     const int i_y = 1;
     const int i_z = 2;
-    const char* dbValueNames[3] = {"x", "y", "z"};
+    const char* dbValueNames[3] = {"gravity_field_x", "gravity_field_y", "gravity_field_z"};
     try {
         queryctx->db->queryVals(dbValueNames, numDBValues);
     } catch (const std::exception& err) {
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, err.what());
     } // try/catch
-
 
     // Dimensionalize query location coordinates.
     assert(queryctx->lengthScale > 0);
@@ -336,14 +335,19 @@ pylith::materials::Query::dbQueryGravityField(PylithInt dim,
 
     PylithReal mag = 0.0;
     for (int i = 0; i < dim; ++i) {
-        mag += values[i]*values[i];
+        mag += dbValues[i] * dbValues[i];
     } // for
     const PylithReal tolerance = 1.0e-6;
     if (mag < tolerance) {
         std::ostringstream msg;
-        msg << "Found near zero magnitude (" << mag << ") for gravity field vector at location (";
-        for (int i = 0; i < dim; ++i)
+        msg << "Found near zero magnitude (" << mag << ") for gravity field vector (";
+        for (int i = 0; i < dim; ++i) {
+            msg << "  " << dbValues[i];
+          } // for
+        msg << ") at location (";
+        for (int i = 0; i < dim; ++i) {
             msg << "  " << xDim[i];
+          } // for
         msg << ") in spatial database '" << queryctx->db->label() << "'.";
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
     } // if

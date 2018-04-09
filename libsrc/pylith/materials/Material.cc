@@ -71,7 +71,6 @@ extern "C" PetscErrorCode DMPlexComputeJacobianAction_Internal(PetscDM dm,
 // Default constructor.
 pylith::materials::Material::Material(const int dimension) :
     _materialIS(NULL),
-    _gravityField(NULL),
     _auxMaterialFactory(new pylith::materials::AuxiliaryFactory),
     _dimension(dimension),
     _id(0),
@@ -93,7 +92,6 @@ pylith::materials::Material::deallocate(void) {
 
     pylith::feassemble::IntegratorPointwise::deallocate();
     delete _materialIS; _materialIS = NULL;
-    delete _gravityField; _gravityField = NULL;
     delete _auxMaterialFactory; _auxMaterialFactory = NULL;
 
     PYLITH_METHOD_END;
@@ -160,7 +158,7 @@ pylith::materials::Material::initialize(const pylith::topology::Field& solution)
     _checkDiscretization(solution);
     _auxField->allocate();
     _auxField->zeroLocal();
-    
+
     assert(_normalizer);
     pylith::feassemble::AuxiliaryFactory* factory = _auxFactory(); assert(factory);
     factory->initializeSubfields();

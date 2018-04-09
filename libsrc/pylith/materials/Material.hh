@@ -29,8 +29,6 @@
 
 #include "pylith/feassemble/IntegratorPointwise.hh" // ISA IntegratorPointwise
 
-#include "spatialdata/spatialdb/spatialdbfwd.hh" // HASA GravityField
-
 #include <string> // HASA std::string
 
 // Material -------------------------------------------------------------
@@ -99,12 +97,6 @@ public:
      * @returns Label of material
      */
     const char* label(void) const;
-
-    /** Set gravity field.
-     *
-     * @param g Gravity field.
-     */
-    void gravityField(spatialdata::spatialdb::GravityField* const gravityField);
 
     /** Initialize material. Setup auxiliary fields.
      *
@@ -334,7 +326,6 @@ protected:
 protected:
 
     pylith::topology::StratumIS* _materialIS;   ///< Index set for material cells.
-    spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
     pylith::materials::AuxiliaryFactory* _auxMaterialFactory; ///< Factory for auxiliary fields.
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////

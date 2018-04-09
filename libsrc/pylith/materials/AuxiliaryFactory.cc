@@ -138,8 +138,8 @@ pylith::materials::AuxiliaryFactory::gravityField(spatialdata::spatialdb::Gravit
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("gravityField(void)");
 
-    const char* fieldName = "gravity_field";
-    const char* componentNames[3] = { "gravity_field_x", "gravity_field_y", "gravity_field_z" };
+    const char* fieldName = "gravitational_acceleration";
+    const char* componentNames[3] = { "gravitational_acceleration_x", "gravitational_acceleration_y", "gravitational_acceleration_z" };
 
     const PylithReal lengthScale = _normalizer->lengthScale();
     const PylithReal timeScale = _normalizer->timeScale();
@@ -321,7 +321,7 @@ pylith::materials::AuxiliaryFactory::viscousStrain(const char* identifier)
     const char* fieldName = "viscous_strain";
     const char* componentSuffixes[6] = { "_xx", "_yy", "_zz", "_xy", "_yz", "_xz" };
     const std::string& fieldNameFull = (identifier) ? std::string(fieldName) + std::string("_") + std::string(identifier) : fieldName;
-    
+
     const int strainSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
 
     pylith::topology::Field::Description description;
@@ -351,7 +351,7 @@ pylith::materials::AuxiliaryFactory::shearModulusRatio(const char* identifier)
 
     const char* fieldName = "shear_modulus_ratio";
     const std::string& fieldNameFull = (identifier) ? std::string(fieldName) + std::string("_") + std::string(identifier) : fieldName;
-    
+
     pylith::topology::Field::Description description;
     description.label = fieldNameFull;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
