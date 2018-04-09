@@ -253,8 +253,8 @@ pylith::fekernels::ElasticityPlaneStrain::meanStress_refstate(const PylithInt di
     const PylithInt i_rstress = 1;
     const PylithInt i_rstrain = 2;
     const PylithScalar bulkModulus = a[aOff[i_bulkModulus]];
-    const PylithScalar* refstress = &a[aOff[i_rstress]]; // sigma_11, sigma_22, sigma_12, sigma_33
-    const PylithScalar* refstrain = &a[aOff[i_rstrain]]; // epsilon_11, epsilon_22, epsilon_12, epsilon_33
+    const PylithScalar* refstress = &a[aOff[i_rstress]]; // stress_xx, stress_yy, streass_zz, stress_xy
+    const PylithScalar* refstrain = &a[aOff[i_rstrain]]; // strain_xx, strain_yy, strain_zz, strain_xy
 
     PylithInt i;
 
@@ -268,9 +268,9 @@ pylith::fekernels::ElasticityPlaneStrain::meanStress_refstate(const PylithInt di
     assert(stress);
 
     const PylithReal strainTrace = disp_x[0*_dim+0] + disp_x[1*_dim+1];
-    const PylithReal refstrainTrace = refstrain[0] + refstrain[1] + refstrain[3];
+    const PylithReal refstrainTrace = refstrain[0] + refstrain[1] + refstrain[2];
 
-    const PylithReal meanrstress = (refstress[0] + refstress[1] + refstress[3]) / 3.0;
+    const PylithReal meanrstress = (refstress[0] + refstress[1] + refstress[2]) / 3.0;
     const PylithReal meanStress = meanrstress + bulkModulus * (strainTrace - refstrainTrace);
 
     for (i = 0; i < _dim; ++i) {
@@ -333,14 +333,14 @@ pylith::fekernels::ElasticityPlaneStrain::deviatoricStress(const PylithInt dim,
     const PylithReal traceTerm = -2.0/3.0*shearModulus * strainTrace;
     const PylithReal twomu = 2.0*shearModulus;
 
-    const PylithScalar sigma_11 = twomu*disp_x[0*_dim+0] + traceTerm;
-    const PylithScalar sigma_22 = twomu*disp_x[1*_dim+1] + traceTerm;
-    const PylithScalar sigma_12 = shearModulus * (disp_x[0*_dim+1] + disp_x[1*_dim+0]);
+    const PylithScalar stress_xx = twomu*disp_x[0*_dim+0] + traceTerm;
+    const PylithScalar stress_yy = twomu*disp_x[1*_dim+1] + traceTerm;
+    const PylithScalar stress_xy = shearModulus * (disp_x[0*_dim+1] + disp_x[1*_dim+0]);
 
-    stress[0*_dim+0] += sigma_11;
-    stress[1*_dim+1] += sigma_22;
-    stress[0*_dim+1] += sigma_12;
-    stress[1*_dim+0] += sigma_12;
+    stress[0*_dim+0] += stress_xx;
+    stress[1*_dim+1] += stress_yy;
+    stress[0*_dim+1] += stress_xy;
+    stress[1*_dim+0] += stress_xy;
 } // deviatoricStress
 
 
@@ -386,8 +386,8 @@ pylith::fekernels::ElasticityPlaneStrain::deviatoricStress_refstate(const Pylith
     const PylithInt i_rstress = 1;
     const PylithInt i_rstrain = 2;
     const PylithScalar shearModulus = a[aOff[i_shearModulus]];
-    const PylithScalar* refstress = &a[aOff[i_rstress]]; // sigma_11, sigma_22, sigma_12, sigma_33
-    const PylithScalar* refstrain = &a[aOff[i_rstrain]]; // epsilon_11, epsilon_22, epsilon_12, epsilon_33
+    const PylithScalar* refstress = &a[aOff[i_rstress]]; // stress_xx, stress_yy, stress_zz, stress_xy
+    const PylithScalar* refstrain = &a[aOff[i_rstrain]]; // strain_xx, strain_yy, strain_zz, strain_xy
 
     assert(_dim == dim);
     assert(1 == numS);
@@ -404,14 +404,14 @@ pylith::fekernels::ElasticityPlaneStrain::deviatoricStress_refstate(const Pylith
     const PylithReal traceTerm = -2.0/3.0*shearModulus * (strainTrace - refstrainTrace);
     const PylithReal twomu = 2.0*shearModulus;
 
-    const PylithScalar sigma_11 = refstress[0] - meanrstress + twomu*(disp_x[0*_dim+0]-refstrain[0]) + traceTerm;
-    const PylithScalar sigma_22 = refstress[1] - meanrstress + twomu*(disp_x[1*_dim+1]-refstrain[1]) + traceTerm;
-    const PylithScalar sigma_12 = refstress[2] + twomu * (0.5*(disp_x[0*_dim+1] + disp_x[1*_dim+0]) - refstrain[2]);
+    const PylithScalar stress_xx = refstress[0] - meanrstress + twomu*(disp_x[0*_dim+0]-refstrain[0]) + traceTerm;
+    const PylithScalar stress_yy = refstress[1] - meanrstress + twomu*(disp_x[1*_dim+1]-refstrain[1]) + traceTerm;
+    const PylithScalar stress_xy = refstress[2] + twomu * (0.5*(disp_x[0*_dim+1] + disp_x[1*_dim+0]) - refstrain[3]);
 
-    stress[0*_dim+0] += sigma_11;
-    stress[1*_dim+1] += sigma_22;
-    stress[0*_dim+1] += sigma_12;
-    stress[1*_dim+0] += sigma_12;
+    stress[0*_dim+0] += stress_xx;
+    stress[1*_dim+1] += stress_yy;
+    stress[0*_dim+1] += stress_xy;
+    stress[1*_dim+0] += stress_xy;
 
 } // deviatoricStress_refstate
 
