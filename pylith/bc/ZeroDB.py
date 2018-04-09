@@ -16,19 +16,19 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/bc/ZeroDispDB.py
+## @file pylith/bc/ZeroDB.py
 ##
-## @brief Python object for spatial database with uniform zero
-## displacements for degrees of freedom.
+## @brief Python object for spatial database with uniform zero initial
+## amplitude values for degrees of freedom.
 ##
 ## Factory: spatial_database
 
 from spatialdata.spatialdb.UniformDB import UniformDB
 
-# ZeroDispDB class
-class ZeroDispDB(UniformDB):
+# ZeroDB class
+class ZeroDB(UniformDB):
   """
-  Python object for spatial database with uniform zero displacements
+  Python object for spatial database with uniform zero initial amplitude values
   for degrees of freedom.
 
   Factory: spatial_database
@@ -38,11 +38,11 @@ class ZeroDispDB(UniformDB):
 
   class Inventory(UniformDB.Inventory):
     """
-    Python object for managing ZeroDispDB facilities and properties.
+    Python object for managing ZeroDB facilities and properties.
     """
 
     ## @class Inventory
-    ## Python object for managing ZeroDispDB facilities and properties.
+    ## Python object for managing ZeroDB facilities and properties.
     ##
     ## \b Properties
     ## @li None
@@ -53,15 +53,15 @@ class ZeroDispDB(UniformDB):
     import pyre.inventory
 
     from pyre.units.length import m
-    values = ["displacement-x", "displacement-y", "displacement-z"]
+    values = ["initial_amplitude_x", "initial_amplitude_y", "initial_amplitude_z"]
     data = [0.0*m, 0.0*m, 0.0*m]
 
-    label = pyre.inventory.str("label", default="Zero displacement BC.")
+    label = pyre.inventory.str("label", default="Zero initial amplitude spatial database.")
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="zerodispdb"):
+  def __init__(self, name="zerodb"):
     """
     Constructor.
     """
@@ -83,9 +83,9 @@ class ZeroDispDB(UniformDB):
 
 def spatial_database():
   """
-  Factory associated with ZeroDispDB.
+  Factory associated with ZeroDB.
   """
-  return ZeroDispDB()
+  return ZeroDB()
 
 
 # End of file 

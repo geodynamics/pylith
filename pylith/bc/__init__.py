@@ -20,16 +20,16 @@
 ##
 ## @brief Python PyLith boundary condition module initialization
 
-__all__ = ['AbsorbingDampers',
-           'BoundaryCondition',
-           'TimeDependent',
-           'TimeDependentPoints',
-           'DirichletBC',
-           'DirichletBoundary',
-           'Neumann',
-           'PointForce', 
-           'ZeroDispDB',
-           ]
+__all__ = [
+    'AbsorbingDampers',
+    'AuxFieldsTimeDependent',
+    'BoundaryCondition',
+    'Dirichlet',
+    'DirichletTimeDependent',
+    'Neumann',
+    'NeumannTimeDependent',
+    'ZeroDB',
+    ]
 
 
 # End of file

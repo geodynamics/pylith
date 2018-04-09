@@ -30,6 +30,7 @@ nobase_pkgpyexec_PYTHON = \
 	bc/NeumannTimeDependent.py \
 	bc/AuxFieldsTimeDependent.py \
 	bc/AbsorbingDampers.py \
+	bc/ZeroDB.py \
 	feassemble/__init__.py \
 	feassemble/IntegratorPointwise.py \
 	feassemble/ConstraintPointwise.py \
