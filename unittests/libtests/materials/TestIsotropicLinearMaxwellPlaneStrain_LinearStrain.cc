@@ -32,6 +32,7 @@ namespace pylith {
         class TestIsotropicLinearMaxwellPlaneStrain_LinearStrain : public TestIsotropicLinearMaxwellPlaneStrain {
 
             /// Spatial database user functions for auxiiliary subfields (includes derived fields).
+			static const double SMALL;
 
             // Density
             static double density(const double x,
@@ -95,12 +96,14 @@ namespace pylith {
             static const char* maxwellTime_units(void) {
                 return "s";
             } // maxwellTime_units
-
+			
+			// Temporal and spatial constants.
             struct AuxConstants {
-                double a;
-                double b;
-                double c;
-                double t;
+				double a;
+				double b;
+				double c;
+				double t;
+				double dt;
             };
             static const AuxConstants constants;
 
@@ -108,11 +111,11 @@ namespace pylith {
 
             static double totalStrain_xx(const double x,
                                          const double y) {
-                return (2.0*constants.a*x + constants.b*y) * exp(-constants.t/maxwellTime(x,y));
+                return (2.0*constants.a*x + 2.0*constants.b*y) * exp(-constants.t/maxwellTime(x,y));
             } // totalStrain_xx
             static double totalStrain_yy(const double x,
                                          const double y) {
-                return (constants.b*x + 2.0*constants.a*y) * exp(-constants.t/maxwellTime(x,y));
+                return (2.0*constants.b*x + 2.0*constants.a*y) * exp(-constants.t/maxwellTime(x,y));
             } // totalStrain_yy
             static double totalStrain_zz(const double x,
                                          const double y) {
@@ -120,22 +123,22 @@ namespace pylith {
             } // totalStrain_zz
             static double totalStrain_xy(const double x,
                                          const double y) {
-                return (constants.b*x/2.0 + constants.b*y/2.0 + constants.c*(x+y))*exp(-constants.t/maxwellTime(x,y));
+				return (constants.b*(x+y) + constants.c*(x+y))*exp(-constants.t/maxwellTime(x,y));
             } // totalStrain_xy
 
             // Viscous strain
 
             static double viscousStrain_xx(const double x,
                                            const double y) {
-                return (exp(constants.t/maxwellTime(x,y)) - 1.0)*(constants.a*(x-y) - constants.b*(x-y)) * exp(-2.0*constants.t/maxwellTime(x,y));
+                return 2.0*(exp(constants.t/maxwellTime(x,y)) - 1.0)*(constants.a*(2.0*x-y) - constants.b*(x-2.0*y)) * exp(-2.0*constants.t/maxwellTime(x,y))/3.0;
             } // viscousStrain_xx
             static double viscousStrain_yy(const double x,
                                            const double y) {
-                return -(exp(constants.t/maxwellTime(x,y)) - 1.0)*(constants.a*(x-y) - constants.b*(x-y)) * exp(-2.0*constants.t/maxwellTime(x,y));
+                return -2.0*(exp(constants.t/maxwellTime(x,y)) - 1.0)*(constants.a*(x-2.0*y) - constants.b*(2.0*x-y)) * exp(-2.0*constants.t/maxwellTime(x,y))/3.0;
             } // viscousStrain_yy
             static double viscousStrain_zz(const double x,
                                            const double y) {
-                return -(exp(constants.t/maxwellTime(x,y)) - 1.0)*(constants.a*(x+y) + constants.b*(x+y)) * exp(-2.0*constants.t/maxwellTime(x,y));
+                return -2.0*(exp(constants.t/maxwellTime(x,y)) - 1.0)*(constants.a*(x+y) + constants.b*(x+y)) * exp(-2.0*constants.t/maxwellTime(x,y))/3.0;
             } // viscousStrain_zz
             static double viscousStrain_xy(const double x,
                                            const double y) {
@@ -145,11 +148,11 @@ namespace pylith {
             // Body force
             static double bodyforce_x(const double x,
                                       const double y) {
-                return 4.0*bulkModulus(x,y)*(constants.a + constants.b) * exp(-constants.t/maxwellTime(x,y));
+                return 6.0*bulkModulus(x,y)*(constants.a + constants.b) * exp(-constants.t/maxwellTime(x,y));
             } // bodyforce_x
             static double bodyforce_y(const double x,
                                       const double y) {
-                return 4.0*bulkModulus(x,y)*(constants.a + constants.b) * exp(-constants.t/maxwellTime(x,y));
+                return 6.0*bulkModulus(x,y)*(constants.a + constants.b) * exp(-constants.t/maxwellTime(x,y));
             } // bodyforce_y
             static const char* bodyforce_units(void) {
                 return "kg*m/s**2";
@@ -172,7 +175,7 @@ namespace pylith {
 
             static double disp_dot_x(const double x,
                                      const double y) {
-                return -(constants.a*x*x + 2.0*constants.b*x*y + constants.c*y*y) * exp(-constants.t/maxwellTime(x,y)) / maxwellTime(x,y);
+				return -(constants.a*x*x + 2.0*constants.b*x*y + constants.c*y*y) * exp(-constants.t/maxwellTime(x,y)) / maxwellTime(x,y);
             } // disp_dot_x
             static double disp_dot_y(const double x,
                                      const double y) {
@@ -181,6 +184,16 @@ namespace pylith {
             static const char* disp_dot_units(void) {
                 return "m/s";
             } // disp_dot_units
+
+			// Displacement + perturbation
+			static double disp_perturb_x(const double x,
+										 const double y) {
+				return disp_x(x, y) + SMALL;
+			} // disp_perturb_x
+			static double disp_perturb_y(const double x,
+										 const double y) {
+				return disp_y(x, y) + SMALL;
+			} // disp_perturb_
 
 protected:
             void setUp(void) {
@@ -193,12 +206,12 @@ protected:
 
                 CPPUNIT_ASSERT(_mydata->normalizer);
                 _mydata->normalizer->lengthScale(1.0e+03);
-                _mydata->normalizer->timeScale(2.0e+7);
-                _mydata->normalizer->densityScale(3.0e+3);
-                _mydata->normalizer->pressureScale(2.25e+10);
+                _mydata->normalizer->timeScale(6.3e+8);
+                _mydata->normalizer->densityScale(4.0e+3);
+                _mydata->normalizer->pressureScale(2.5e+11);
 
-                _mydata->t = 1.0e+7;
-                _mydata->dt = 1.0e+7;
+                _mydata->t = constants.t;
+                _mydata->dt = constants.dt;
                 _mydata->tshift = 1.0 / _mydata->dt;
 
                 // solnDiscretizations set in derived class.
@@ -243,6 +256,12 @@ protected:
                 _mydata->solnDB->addValue("displacement_dot_x", disp_dot_x, disp_dot_units());
                 _mydata->solnDB->addValue("displacement_dot_y", disp_dot_y, disp_dot_units());
 
+				CPPUNIT_ASSERT(_mydata->perturbDB);
+                _mydata->perturbDB->addValue("displacement_x", disp_perturb_x, disp_units());
+                _mydata->perturbDB->addValue("displacement_y", disp_perturb_y, disp_units());
+                _mydata->perturbDB->addValue("displacement_dot_x", disp_dot_x, disp_dot_units());
+                _mydata->perturbDB->addValue("displacement_dot_y", disp_dot_y, disp_dot_units());
+
                 CPPUNIT_ASSERT(_mymaterial);
                 _mymaterial->useInertia(false);
                 _mymaterial->useBodyForce(true);
@@ -254,11 +273,14 @@ protected:
             } // setUp
 
         }; // TestIsotropicLinearMaxwellPlaneStrain_LinearStrain
-        const TestIsotropicLinearMaxwellPlaneStrain_LinearStrain::AuxConstants TestIsotropicLinearMaxwellPlaneStrain_LinearStrain::constants = {
-            1.0e-6, // a
-            2.5e-6, // b
-            3.0e-6, // c
-            1.0e+7, // t
+		const double TestIsotropicLinearMaxwellPlaneStrain_LinearStrain::SMALL = 1.0e-5;
+
+		const TestIsotropicLinearMaxwellPlaneStrain_LinearStrain::AuxConstants TestIsotropicLinearMaxwellPlaneStrain_LinearStrain::constants = {
+            1.0e-4, // a
+            2.5e-4, // b
+            3.0e-4, // c
+			5.0e+7, // t
+			5.0e+7  // dt
         };
 
 

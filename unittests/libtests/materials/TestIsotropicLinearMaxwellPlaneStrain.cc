@@ -441,17 +441,19 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_setupSolutionFields(v
         perturbation.cloneSection(solution);
         perturbation.allocate();
         perturbation.zeroLocal();
-        _addRandomPerturbation(&perturbation, solution, _mydata->perturbation);
-    } // Perturbation @ t2
+	pylith::problems::SolutionFactory factory(perturbation, *_mydata->normalizer);
+        factory.setValues(_mydata->perturbDB);
+    } // Perturbation
 
-    { // Time derivative of solution @ t2
+    { // Time derivative perturbation
         pylith::topology::Field& perturbationDot = _solutionFields->get("perturbation_dot");
         const pylith::topology::Field& solutionDot = _solutionFields->get("solution_dot");
         perturbationDot.cloneSection(solutionDot);
         perturbationDot.allocate();
         perturbationDot.zeroLocal();
-        _addRandomPerturbation(&perturbationDot, solutionDot, _mydata->perturbation);
-    } // Time derivative of solution @ t2
+	pylith::problems::SolutionFactory factory(perturbationDot, *_mydata->normalizer);
+        factory.setValues(_mydata->perturbDB);
+    } // Time derivative perturbation
 
     PYLITH_METHOD_END;
 } // _setupSolutionFields
@@ -470,6 +472,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_Data::TestIsotropicLine
     cs->initialize();
 
     solnDB->coordsys(*cs);
+    perturbDB->coordsys(*cs);
     auxDB->coordsys(*cs);
 } // constructor
 
