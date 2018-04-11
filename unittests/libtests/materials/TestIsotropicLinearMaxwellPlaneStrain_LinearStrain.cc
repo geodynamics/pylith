@@ -429,18 +429,18 @@ protected:
 
                 _mydata->numSolnSubfields = 1;
                 static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
-                    {1, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // disp
+                    {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // disp
                 };
                 _mydata->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
                 static const pylith::topology::Field::Discretization _auxDiscretizations[7] = {
-                    {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // density
-                    {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
-                    {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
-                    {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // maxwell_time
-                    {1, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // total_strain
-                    {1, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // viscous_strain
-                    {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // body_force
+                    {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // density
+                    {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
+                    {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
+                    {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // maxwell_time
+                    {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // total_strain
+                    {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // viscous_strain
+                    {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // body_force
                 };
                 _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
