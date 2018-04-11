@@ -368,30 +368,30 @@ pylith::materials::TestMaterial::testComputeRHSJacobian(void)
     Material* material = _material(); CPPUNIT_ASSERT(material);
     TestMaterial_Data* data = _data(); CPPUNIT_ASSERT(data);
 
-{ // :DEBUG:
-    PylithReal norm = 0.0;
-    PylithReal t = 0.0;
-    const PetscDM dmSoln = solution.dmMesh(); CPPUNIT_ASSERT(dmSoln);
-    pylith::topology::FieldQuery solnQuery(solution);
-    solnQuery.initializeWithDefaultQueryFns();
-    CPPUNIT_ASSERT(data->normalizer);
-    solnQuery.openDB(data->solnDB, data->normalizer->lengthScale());
-    PetscErrorCode err = DMPlexComputeL2DiffLocal(dmSoln, t, solnQuery.functions(), (void**)solnQuery.contextPtrs(), solution.localVector(), &norm); CPPUNIT_ASSERT(!err);
-    solnQuery.closeDB(data->solnDB);
-    const PylithReal tolerance = 1.0e-6;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
+#if 1
+    { // :DEBUG:
+        PylithReal norm = 0.0;
+        PylithReal t = 0.0;
+        const PetscDM dmSoln = solution.dmMesh(); CPPUNIT_ASSERT(dmSoln);
+        pylith::topology::FieldQuery solnQuery(solution);
+        solnQuery.initializeWithDefaultQueryFns();
+        CPPUNIT_ASSERT(data->normalizer);
+        solnQuery.openDB(data->solnDB, data->normalizer->lengthScale());
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dmSoln, t, solnQuery.functions(), (void**)solnQuery.contextPtrs(), solution.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        solnQuery.closeDB(data->solnDB);
+        const PylithReal tolerance = 1.0e-6;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
 
-#if 0
-    const PetscDM dmPerturb = perturbation.dmMesh(); CPPUNIT_ASSERT(dmPerturb);
-    pylith::topology::FieldQuery perturbQuery(perturbation);
-    perturbQuery.initializeWithDefaultQueryFns();
-    CPPUNIT_ASSERT(data->normalizer);
-    perturbQuery.openDB(data->perturbDB, data->normalizer->lengthScale());
-    err = DMPlexComputeL2DiffLocal(dmPerturb, t, perturbQuery.functions(), (void**)perturbQuery.contextPtrs(), perturbation.localVector(), &norm); CPPUNIT_ASSERT(!err);
-    perturbQuery.closeDB(data->perturbDB);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
-    #endif
-  } // :DEBUG:
+        const PetscDM dmPerturb = perturbation.dmMesh(); CPPUNIT_ASSERT(dmPerturb);
+        pylith::topology::FieldQuery perturbQuery(perturbation);
+        perturbQuery.initializeWithDefaultQueryFns();
+        CPPUNIT_ASSERT(data->normalizer);
+        perturbQuery.openDB(data->perturbDB, data->normalizer->lengthScale());
+        err = DMPlexComputeL2DiffLocal(dmPerturb, t, perturbQuery.functions(), (void**)perturbQuery.contextPtrs(), perturbation.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        perturbQuery.closeDB(data->perturbDB);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
+    } // :DEBUG:
+#endif
 
     pylith::topology::Field residual1(*_mesh);
     residual1.cloneSection(solution);

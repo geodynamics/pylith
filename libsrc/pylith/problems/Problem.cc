@@ -46,6 +46,7 @@ pylith::problems::Problem::Problem() :
     _residual(NULL),
     _jacobianLHSLumpedInv(NULL),
     _normalizer(NULL),
+    _gravityField(NULL),
     _integrators(0),
     _constraints(0),
     _outputs(0),
@@ -72,6 +73,7 @@ pylith::problems::Problem::deallocate(void)
     delete _residual; _residual = NULL;
     delete _jacobianLHSLumpedInv; _jacobianLHSLumpedInv = NULL;
     delete _normalizer; _normalizer = NULL;
+    _gravityField = NULL; // Held by Python. :KLUDGE: :TODO: Use shared pointer.
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -350,7 +352,7 @@ pylith::problems::Problem::computeRHSResidual(PetscVec residualVec,
         _integrators[i]->computeRHSResidual(_residual, t, dt, *_solution);
     } // for
 
-    
+
     // Assemble residual values across processes.
     PetscErrorCode err = VecSet(residualVec, 0.0); PYLITH_CHECK_ERROR(err); // Move to TSComputeIFunction()?
     _residual->scatterLocalToVector(residualVec, ADD_VALUES);
@@ -379,7 +381,7 @@ pylith::problems::Problem::computeRHSJacobian(PetscMat jacobianMat,
 
     PetscErrorCode err;
     err = MatZeroEntries(precondMat);PYLITH_CHECK_ERROR(err);
-    
+
     // Check to see if we need to compute RHS Jacobian.
     bool needNewRHSJacobian = false;
     for (size_t i = 0; i < numIntegrators; ++i) {
