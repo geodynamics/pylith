@@ -28,7 +28,6 @@
  * ======================================================================
  */
 
-
 // ----------------------------------------------------------------------
 // f0 function for isotropic linear elasticity plane strain.
 void
@@ -406,7 +405,7 @@ pylith::fekernels::ElasticityPlaneStrain::deviatoricStress_refstate(const Pylith
 
     const PylithScalar stress_xx = refstress[0] - meanrstress + twomu*(disp_x[0*_dim+0]-refstrain[0]) + traceTerm;
     const PylithScalar stress_yy = refstress[1] - meanrstress + twomu*(disp_x[1*_dim+1]-refstrain[1]) + traceTerm;
-    const PylithScalar stress_xy = refstress[2] + twomu * (0.5*(disp_x[0*_dim+1] + disp_x[1*_dim+0]) - refstrain[3]);
+    const PylithScalar stress_xy = refstress[3] + twomu * (0.5*(disp_x[0*_dim+1] + disp_x[1*_dim+0]) - refstrain[3]);
 
     stress[0*_dim+0] += stress_xx;
     stress[1*_dim+1] += stress_yy;
