@@ -372,6 +372,8 @@ pylith::materials::TestMaterial::testComputeRHSJacobian(void)
     { // :DEBUG:
         PylithReal norm = 0.0;
         PylithReal t = 0.0;
+	
+        //solution.view("SOLUTION"); // :DEBUG:
         const PetscDM dmSoln = solution.dmMesh(); CPPUNIT_ASSERT(dmSoln);
         pylith::topology::FieldQuery solnQuery(solution);
         solnQuery.initializeWithDefaultQueryFns();
@@ -382,6 +384,7 @@ pylith::materials::TestMaterial::testComputeRHSJacobian(void)
         const PylithReal tolerance = 1.0e-6;
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
 
+	//perturbation.view("PERTURBATION"); // :DEBUG:
         const PetscDM dmPerturb = perturbation.dmMesh(); CPPUNIT_ASSERT(dmPerturb);
         pylith::topology::FieldQuery perturbQuery(perturbation);
         perturbQuery.initializeWithDefaultQueryFns();
@@ -404,7 +407,7 @@ pylith::materials::TestMaterial::testComputeRHSJacobian(void)
     residual2.allocate();
 
 #if 0 // :DEBUG:
-    PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2"); // :DEBUG:
+    PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "3"); // :DEBUG:
     DMSetFromOptions(_solution1->dmMesh()); // :DEBUG:
 #endif // :DEBUG:
 
@@ -413,7 +416,7 @@ pylith::materials::TestMaterial::testComputeRHSJacobian(void)
     material->computeRHSResidual(&residual1, t, dt, solution);
     material->computeRHSResidual(&residual2, t, dt, perturbation);
 
-    residual1.view("RESIDUAL 1 RHS"); // :DEBUG:
+    //residual1.view("RESIDUAL 1 RHS"); // :DEBUG:
     //residual2.view("RESIDUAL 2 RHS"); // :DEBUG:
 
     // Compute Jacobian
@@ -448,7 +451,7 @@ pylith::materials::TestMaterial::testComputeRHSJacobian(void)
     err = VecScale(solnIncrVec, -1.0); CPPUNIT_ASSERT(!err);
     err = MatMultAdd(jacobianMat, solnIncrVec, residualVec, resultVec); CPPUNIT_ASSERT(!err);
 
-#if 1 // :DEBUG:
+#if 0 // :DEBUG:
     std::cout << "SOLN INCR" << std::endl;
     VecView(solnIncrVec, PETSC_VIEWER_STDOUT_SELF);
     std::cout << "G2-G1" << std::endl;
@@ -513,7 +516,6 @@ pylith::materials::TestMaterial::testComputeLHSJacobianImplicit(void)
     PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2"); // :DEBUG:
     DMSetFromOptions(_solution1->dmMesh()); // :DEBUG:
 #endif // :DEBUG:
-
 
     const PylithReal t = data->t;
     const PylithReal dt = data->dt;
