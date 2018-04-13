@@ -1,0 +1,3 @@
+# LLDB
+
+* Print array values `p *(int(*)[10])ptr`
