@@ -38,16 +38,14 @@
 #include <stdexcept> // USES std::runtime_error
 
 extern "C" PetscErrorCode DMPlexComputeResidual_Internal(PetscDM dm,
-                                                         PetscInt cStart,
-                                                         PetscInt cEnd,
+                                                         IS cellIS,
                                                          PetscReal time,
                                                          PetscVec locX,
                                                          PetscVec locX_t,
                                                          PetscVec locF,
                                                          void *user);
 extern "C" PetscErrorCode DMPlexComputeJacobian_Internal(PetscDM dm,
-                                                         PetscInt cStart,
-                                                         PetscInt cEnd,
+                                                         IS cellIS,
                                                          PetscReal t,
                                                          PetscReal X_tShift,
                                                          PetscVec X,
@@ -56,8 +54,7 @@ extern "C" PetscErrorCode DMPlexComputeJacobian_Internal(PetscDM dm,
                                                          PetscMat JacP,
                                                          void *user);
 extern "C" PetscErrorCode DMPlexComputeJacobianAction_Internal(PetscDM dm,
-                                                               PetscInt cStart,
-                                                               PetscInt cEnd,
+                                                               IS cellIS,
                                                                PetscReal t,
                                                                PetscReal X_tShift,
                                                                PetscVec X,
@@ -278,6 +275,7 @@ pylith::materials::Material::computeLHSJacobianLumpedInv(pylith::topology::Field
     _setFEConstants(solution, dt);
 
     PetscDS prob = NULL;
+    IS       cells;
     PetscInt cStart = 0, cEnd = 0;
     PetscErrorCode err;
 
@@ -302,7 +300,9 @@ pylith::materials::Material::computeLHSJacobianLumpedInv(pylith::topology::Field
 
     PYLITH_COMPONENT_ERROR(":TODO: @matt DMPlexComputeJacobianAction_Internal() not yet implemented in PETSc knepley/pylith.");
 #if 0 // NOT YET IMPLEMENTED IN petsc-dev knepley/pylith
-    err = DMPlexComputeJacobianAction_Internal(dmSoln, cStart, cEnd, t, tshift, vecRowSum, NULL, vecRowSum, jacobianInv->localVector(), NULL); PYLITH_CHECK_ERROR(err);
+    err = ISCreateStride(PETSC_COMM_SELF, cEnd-cStart, cStart, 1, &cells); PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeJacobianAction_Internal(dmSoln, cells, t, tshift, vecRowSum, NULL, vecRowSum, jacobianInv->localVector(), NULL); PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&cells); PYLITH_CHECK_ERROR(err);
 
     // Compute the Jacobian inverse.
     err = VecReciprocal(jacobianInv->localVector()); PYLITH_CHECK_ERROR(err);
@@ -381,6 +381,7 @@ pylith::materials::Material::_computeResidual(pylith::topology::Field* residual,
     assert(_auxField);
 
     PetscDS prob = NULL;
+    IS       cells;
     PetscInt cStart = 0, cEnd = 0;
     PetscErrorCode err;
 
@@ -402,7 +403,9 @@ pylith::materials::Material::_computeResidual(pylith::topology::Field* residual,
     err = DMLabelGetStratumBounds(dmLabel, id(), &cStart, &cEnd); PYLITH_CHECK_ERROR(err);
 
     PYLITH_COMPONENT_DEBUG("DMPlexComputeResidual_Internal() with material-id '"<<id()<<"' and cells ["<<cStart<<","<<cEnd<<")");
-    err = DMPlexComputeResidual_Internal(dmSoln, cStart, cEnd, PETSC_MIN_REAL, solution.localVector(), solutionDot.localVector(), residual->localVector(), NULL); PYLITH_CHECK_ERROR(err);
+    err = ISCreateStride(PETSC_COMM_SELF, cEnd-cStart, cStart, 1, &cells); PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeResidual_Internal(dmSoln, cells, PETSC_MIN_REAL, solution.localVector(), solutionDot.localVector(), residual->localVector(), NULL); PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&cells); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _computeResidual
@@ -426,6 +429,7 @@ pylith::materials::Material::_computeJacobian(PetscMat jacobianMat,
     assert(precondMat);
 
     PetscDS prob = NULL;
+    IS       cells;
     PetscInt cStart = 0, cEnd = 0;
     PetscErrorCode err;
     PetscDM dmMesh = solution.dmMesh();
@@ -445,7 +449,9 @@ pylith::materials::Material::_computeJacobian(PetscMat jacobianMat,
     err = DMLabelGetStratumBounds(dmLabel, id(), &cStart, &cEnd); PYLITH_CHECK_ERROR(err);
 
     PYLITH_COMPONENT_DEBUG("DMPlexComputeJacobian_Internal() with material-id '"<<id()<<"' and cells ["<<cStart<< ","<<cEnd<<")");
-    err = DMPlexComputeJacobian_Internal(dmMesh, cStart, cEnd, t, tshift, solution.localVector(), solutionDot.localVector(), jacobianMat, precondMat, NULL); PYLITH_CHECK_ERROR(err);
+    err = ISCreateStride(PETSC_COMM_SELF, cEnd-cStart, cStart, 1, &cells); PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeJacobian_Internal(dmMesh, cells, t, tshift, solution.localVector(), solutionDot.localVector(), jacobianMat, precondMat, NULL); PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&cells); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _computeJacobian
