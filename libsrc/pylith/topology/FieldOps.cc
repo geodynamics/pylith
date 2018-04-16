@@ -55,7 +55,7 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
     err = PetscSpaceSetOrder(space, basisOrder);
     if (feinfo.feSpace == FieldBase::POLYNOMIAL_SPACE) {
         err = PetscSpacePolynomialSetTensor(space, useTensor); PYLITH_CHECK_ERROR(err);
-        err = PetscSpacePolynomialSetNumVariables(space, dim); PYLITH_CHECK_ERROR(err);
+        err = PetscSpaceSetNumVariables(space, dim); PYLITH_CHECK_ERROR(err);
     } // if
     err = PetscSpaceSetUp(space); PYLITH_CHECK_ERROR(err);
 
