@@ -32,8 +32,8 @@ namespace pylith {
         class TestIsotropicLinearElasticityPlaneStrain_UniformStrain : public TestIsotropicLinearElasticityPlaneStrain {
 
             /// Spatial database user functions for auxiiliary subfields (includes derived fields).
-	  static const double SMALL;
-	  
+            static const double SMALL;
+
             // Density
             static double density(const double x,
                                   const double y) {
@@ -119,14 +119,14 @@ namespace pylith {
 
             // Displacement + perturbation
             static double disp_perturb_x(const double x,
-                                 const double y) {
-	      const double perturbation = SMALL * disp_x(y, x);
-	      return disp_x(x, y) + perturbation;
+                                         const double y) {
+                const double perturbation = SMALL * disp_x(y, x);
+                return disp_x(x, y) + perturbation;
             } // disp_perturb_x
             static double disp_perturb_y(const double x,
-                                 const double y) {
-	      const double perturbation = SMALL * disp_y(y, x);
-	      return disp_y(x, y) + perturbation;
+                                         const double y) {
+                const double perturbation = SMALL * disp_y(y, x);
+                return disp_y(x, y) + perturbation;
             } // disp_perturb_y
 
 protected:
@@ -190,7 +190,7 @@ protected:
             } // setUp
 
         }; // TestIsotropicLinearElasticityPlaneStrain_UniformStrain
-      const double TestIsotropicLinearElasticityPlaneStrain_UniformStrain::SMALL = 0.1;
+        const double TestIsotropicLinearElasticityPlaneStrain_UniformStrain::SMALL = 0.1;
 
         // ----------------------------------------------------------------------
 
