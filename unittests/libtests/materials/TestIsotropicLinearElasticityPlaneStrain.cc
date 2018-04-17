@@ -143,7 +143,9 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldSetup(
     const PylithReal densityScale = _mydata->normalizer->densityScale();
     const PylithReal lengthScale = _mydata->normalizer->lengthScale();
     const PylithReal pressureScale = _mydata->normalizer->pressureScale();
+    const PylithReal timeScale = _mydata->normalizer->timeScale();
     const PylithReal forceScale = pressureScale / lengthScale;
+    const PylithReal accelerationScale = lengthScale / (timeScale * timeScale);
 
     delete _mymaterial->_auxField; _mymaterial->_auxField = new topology::Field(*_mesh); CPPUNIT_ASSERT(_mymaterial->_auxField);
     _mymaterial->_auxFieldSetup();
@@ -187,6 +189,19 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldSetup(
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // bulk modulus
+
+    if (_mymaterial->_gravityField) { // gravity field
+        const char* label = "gravitational_acceleration";
+        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
+        CPPUNIT_ASSERT_EQUAL(size_t(2), info.description.numComponents);
+        CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::VECTOR, info.description.vectorFieldType);
+        CPPUNIT_ASSERT_EQUAL(accelerationScale, info.description.scale);
+        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
+    } // body force
 
     if (_mymaterial->_useBodyForce) { // body force
         const char* label = "body_force";

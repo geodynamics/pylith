@@ -35,6 +35,7 @@
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+#include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "journal/debug.h" // USES journal::debug_t
@@ -372,7 +373,7 @@ pylith::materials::TestMaterial::testComputeRHSJacobian(void)
     { // :DEBUG:
         PylithReal norm = 0.0;
         PylithReal t = 0.0;
-	
+
         //solution.view("SOLUTION"); // :DEBUG:
         const PetscDM dmSoln = solution.dmMesh(); CPPUNIT_ASSERT(dmSoln);
         pylith::topology::FieldQuery solnQuery(solution);
@@ -384,7 +385,7 @@ pylith::materials::TestMaterial::testComputeRHSJacobian(void)
         const PylithReal tolerance = 1.0e-6;
         CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
 
-	//perturbation.view("PERTURBATION"); // :DEBUG:
+        //perturbation.view("PERTURBATION"); // :DEBUG:
         const PetscDM dmPerturb = perturbation.dmMesh(); CPPUNIT_ASSERT(dmPerturb);
         pylith::topology::FieldQuery perturbQuery(perturbation);
         perturbQuery.initializeWithDefaultQueryFns();
@@ -634,6 +635,7 @@ pylith::materials::TestMaterial::_initializeMin(void)
 
     // id and label initialized in derived class
     material->normalizer(*data->normalizer);
+    material->gravityField(data->gravityField);
 
     // Setup solution fields.
     delete _solutionFields; _solutionFields = new pylith::topology::Fields(*_mesh);CPPUNIT_ASSERT(_solutionFields);
@@ -676,8 +678,7 @@ pylith::materials::TestMaterial::_initializeFull(void)
 // ----------------------------------------------------------------------
 // Set field to zero on the boundary.
 void
-pylith::materials::TestMaterial::_zeroBoundary(pylith::topology::Field* field,
-                                               PetscMat matrix)
+pylith::materials::TestMaterial::_zeroBoundary(pylith::topology::Field* field)
 { // _zeroBoundary
     PYLITH_METHOD_BEGIN;
 
@@ -711,58 +712,11 @@ pylith::materials::TestMaterial::_zeroBoundary(pylith::topology::Field* field,
         } // for
     } // for
 
-    if (matrix) {
-        // Use point IS and section offsets to create list of degrees of
-        // freedom on boundary in order to zero rows and columns of
-        // matrix.
-        const int maxDOF = (numPoints > 0) ? fieldVisitor.sectionOffset(points[numPoints-1])+fieldVisitor.sectionDof(points[numPoints-1]) : 0;
-        PylithInt* boundaryDOF = (maxDOF > 0) ? new PylithInt[maxDOF] : NULL;
-        PylithInt numDOF = 0;
-
-        for (PylithInt p = 0; p < numPoints; ++p) {
-            const PylithInt p_bc = points[p];
-
-            const PylithInt off = fieldVisitor.sectionOffset(p_bc);
-            const PylithInt dof = fieldVisitor.sectionDof(p_bc);
-            for (PylithInt i = 0; i < dof; ++i) {
-                boundaryDOF[numDOF++] = off + i;
-            } // for
-        } // for
-        err = MatZeroRowsColumns(matrix, numDOF, boundaryDOF, 0.0, NULL, NULL); CPPUNIT_ASSERT(!err);
-        delete[] boundaryDOF; boundaryDOF = NULL;
-    } // if
-
     err = ISRestoreIndices(pointIS, &points); PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&pointIS); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _zeroBoundary
-
-
-// ----------------------------------------------------------------------
-// Add small, random perturbations to field.
-void
-pylith::materials::TestMaterial::_addRandomPerturbation(pylith::topology::Field* field,
-                                                        const pylith::topology::Field& fieldRef,
-                                                        const PylithReal limit) {
-    PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(field);
-
-    PetscErrorCode err;
-    PetscRandom random = NULL;
-    err = PetscRandomCreate(PETSC_COMM_SELF, &random); CPPUNIT_ASSERT(!err);
-    err = PetscRandomSetType(random, PETSCRAND48); CPPUNIT_ASSERT(!err);
-    err = PetscRandomSetInterval(random, -limit, +limit); CPPUNIT_ASSERT(!err);
-    err = VecSetRandom(field->localVector(), random); CPPUNIT_ASSERT(!err);
-    err = PetscRandomDestroy(&random); CPPUNIT_ASSERT(!err);
-
-    _zeroBoundary(field);
-
-    err = VecAXPY(field->localVector(), 1.0, fieldRef.localVector()); CPPUNIT_ASSERT(!err);
-
-    PYLITH_METHOD_END;
-} // _addRandomPerturbation
 
 
 // ----------------------------------------------------------------------
@@ -772,6 +726,7 @@ pylith::materials::TestMaterial_Data::TestMaterial_Data(void) :
     meshFilename(0),
     boundaryLabel(NULL),
     cs(NULL),
+    gravityField(NULL),
 
     normalizer(new spatialdata::units::Nondimensional),
 
@@ -810,6 +765,7 @@ pylith::materials::TestMaterial_Data::TestMaterial_Data(void) :
 pylith::materials::TestMaterial_Data::~TestMaterial_Data(void)
 { // destructor
     delete cs; cs = NULL;
+    delete gravityField; gravityField = NULL;
     delete normalizer; normalizer = NULL;
     delete solnDB; solnDB = NULL;
     delete auxDB; auxDB = NULL;

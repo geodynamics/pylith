@@ -152,27 +152,12 @@ protected:
     /** Set field (and, optionally, matrix rows and columns) to zero on the boundary.
      *
      * @param[out] field Field in which to set boundary values to zero.
-     * @param[out] matrix Matrix in which to set rows and columns to zero.
      */
-    void _zeroBoundary(pylith::topology::Field* field,
-                       PetscMat matrix=NULL);
+    void _zeroBoundary(pylith::topology::Field* field);
 
     /// Setup and populate solution fields.
     virtual
     void _setupSolutionFields(void) = 0;
-
-    /** Add small, random perturbations to field, excluding points on the boundary.
-     *
-     * The random value is sampled from a uniform distribution with the given
-     * limit.
-     *
-     * @param[inout] field Field to add small, random perturbation to.
-     * @param[in] limit Uniform random distribution is bounded by -limit and +limit.
-     */
-    void _addRandomPerturbation(pylith::topology::Field* field,
-                                const pylith::topology::Field& fieldRef,
-                                const PylithReal limit);
-
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected:
@@ -204,6 +189,7 @@ public:
     const char* boundaryLabel; ///< Group defining domain boundary.
 
     spatialdata::geocoords::CoordSys* cs; ///< Coordinate system.
+    spatialdata::spatialdb::GravityField* gravityField; ///< Gravity field.
     spatialdata::units::Nondimensional* normalizer; ///< Scales for nondimensionalization.
 
     PylithReal t; ///< Time for solution in simulation.
