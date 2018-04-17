@@ -31,10 +31,10 @@ testmaterials_SOURCES = \
 	TestMaterial.cc \
 	TestIsotropicLinearElasticityPlaneStrain.cc \
 	TestIsotropicLinearElasticityPlaneStrain_UniformStrain.cc \
+	TestIsotropicLinearElasticityPlaneStrain_GravityRefState.cc \
 	TestIsotropicLinearMaxwellPlaneStrain.cc \
 	TestIsotropicLinearMaxwellPlaneStrain_LinearStrain.cc \
 	test_materials.cc
-
 
 
 noinst_HEADERS = \
