@@ -1,3 +1,4 @@
 # LLDB
 
 * Print array values `p *(int(*)[10])ptr`
+* Breakpoint at line `b -f FILE -l LINE`
