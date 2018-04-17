@@ -162,7 +162,7 @@ pylith::bc::AbsorbingDampers::computeRHSResidual(pylith::topology::Field* residu
     const int labelId = 1;
     const topology::Field::SubfieldInfo& info = solution.subfieldInfo(_field.c_str());
 
-    solution.mesh().view(":mesh.txt:ascii_info_detail"); // :DEBUG:
+    //solution.mesh().view(":mesh.txt:ascii_info_detail"); // :DEBUG:
 
     PYLITH_COMPONENT_DEBUG("DMPlexComputeBdResidualSingle() for boundary '"<<label()<<"')");
     err = DMPlexComputeBdResidualSingle(dmSoln, t, dmLabel, 1, &labelId, info.index, solution.localVector(), solutionDot.localVector(), residual->localVector()); PYLITH_CHECK_ERROR(err);
