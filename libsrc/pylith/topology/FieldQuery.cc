@@ -279,6 +279,7 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
     } catch (const std::runtime_error& err) {
         delete[] queryValueNames; queryValueNames = NULL;
         PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, err.what());
+        PYLITH_METHOD_RETURN(1);
     } // try/catch
 
     // Dimensionalize query location coordinates.
@@ -293,13 +294,13 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
     const int err = queryctx->db->query(values, nvalues, xDim, dim, queryctx->cs);
 
     if (err) {
+        delete[] queryValueNames; queryValueNames = NULL;
         std::ostringstream msg;
         msg << "Could not find " << queryctx->description << " at (";
         for (int i = 0; i < dim; ++i)
             msg << "  " << xDim[i];
         msg << ") in spatial database '" << queryctx->db->label() << "'.";
-        (*PetscErrorPrintf)(msg.str().c_str());
-        delete[] queryValueNames; queryValueNames = NULL;
+        PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
         PYLITH_METHOD_RETURN(1);
     } // if
 
@@ -308,15 +309,15 @@ pylith::topology::FieldQuery::dbQueryGeneric(PylithInt dim,
         for (int i = 0; i < nvalues; ++i) {
             const std::string& invalidMsg = queryctx->validator(values[i]);
             if (invalidMsg.length() > 0) {
+                delete[] queryValueNames; queryValueNames = NULL;
+
                 std::ostringstream msg;
                 msg << "Found invalid " << queryValueNames[i] << " (" << values[i] << ") at location (";
                 for (int i = 0; i < dim; ++i)
                     msg << "  " << xDim[i];
                 msg << ") in spatial database '" << queryctx->db->label() << "'. ";
                 msg << invalidMsg;
-                (*PetscErrorPrintf)(msg.str().c_str());
-
-                delete[] queryValueNames; queryValueNames = NULL;
+                PYLITH_SET_ERROR(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
                 PYLITH_METHOD_RETURN(1);
             } // if
         } // for
