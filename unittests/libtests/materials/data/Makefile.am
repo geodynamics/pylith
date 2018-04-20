@@ -17,22 +17,15 @@
 #
 
 dist_noinst_DATA = \
-	matinitialize.spatialdb \
-	matstress.spatialdb \
-	matstrain.spatialdb \
 	tri_onecell.mesh \
 	tri_fourcells.mesh \
 	tri_small.mesh \
 	quad_onecell.mesh \
 	quad_fourcells.mesh \
 	quad_small.mesh \
-	quad_aligned.mesh \
-	mat_elastic.spatialdb
+	quad_aligned.mesh
 
-noinst_DATA = \
-        $(builddir)/IsotropicLinearMaxwellPlaneStrain_VarStrain_aux.spatialdb \
-        $(builddir)/IsotropicLinearMaxwellPlaneStrain_VarStrain_soln.spatialdb \
-        $(builddir)/IsotropicLinearMaxwellPlaneStrain_VarStrain_pert.spatialdb
+noinst_DATA =
 
 noinst_TMP =
 
@@ -47,10 +40,5 @@ clean-data:
 BUILT_SOURCES = export-data
 clean-local: clean-data
 
-
-$(builddir)/IsotropicLinearMaxwellPlaneStrain_VarStrain_soln.spatialdb \
-$(builddir)/IsotropicLinearMaxwellPlaneStrain_VarStrain_pert.spatialdb \
-$(builddir)/IsotropicLinearMaxwellPlaneStrain_VarStrain_aux.spatialdb: IsotropicLinearMaxwellPlaneStrain_VarStrain.py
-	$(PYTHON) $(srcdir)/IsotropicLinearMaxwellPlaneStrain_VarStrain.py
 
 # End of file
