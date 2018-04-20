@@ -195,51 +195,27 @@ pylith::materials::TestMaterial::testVerifyConfiguration(void)
 
 
 // ----------------------------------------------------------------------
-// Test dimension().
+// Test dimension(), id(), and label().
 void
-pylith::materials::TestMaterial::testDimension(void)
-{ // testDimension
+pylith::materials::TestMaterial::testAccessors(void)
+{ // testAccessors
     PYLITH_METHOD_BEGIN;
 
     Material* material = _material(); CPPUNIT_ASSERT(material);
     TestMaterial_Data* data = _data(); CPPUNIT_ASSERT(data);
-    CPPUNIT_ASSERT_EQUAL(data->dimension, material->dimension());
 
-    PYLITH_METHOD_END;
-} // testDimension
-
-
-// ----------------------------------------------------------------------
-// Test id().
-void
-pylith::materials::TestMaterial::testId(void)
-{ // testId
-    PYLITH_METHOD_BEGIN;
-
-    Material* material = _material(); CPPUNIT_ASSERT(material);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of Material::dimension() failed.", data->dimension, material->dimension());
 
     const int matId = 1234;
     material->id(matId);
-    CPPUNIT_ASSERT_EQUAL(matId, material->id());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of Material::id() failed.", matId, material->id());
 
-    PYLITH_METHOD_END;
-} // testId
-
-
-// ----------------------------------------------------------------------
-// Test label().
-void
-pylith::materials::TestMaterial::testLabel(void)
-{ // testLabel
-    PYLITH_METHOD_BEGIN;
-
-    Material* material = _material(); CPPUNIT_ASSERT(material);
     const std::string& matLabel = "xyz";
     material->label(matLabel.c_str());
-    CPPUNIT_ASSERT_EQUAL(matLabel, std::string(material->label()));
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of Material::label() failed.", matLabel, std::string(material->label()));
 
     PYLITH_METHOD_END;
-} // testLabel
+} // testAccessors
 
 
 // ----------------------------------------------------------------------
@@ -272,7 +248,35 @@ pylith::materials::TestMaterial::testInitialize(void)
     PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField.localVector(), &norm); CPPUNIT_ASSERT(!err);
     query.closeDB(data->auxDB);
     const PylithReal tolerance = 1.0e-6;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of auxiliary field values failed.", 0.0, norm, tolerance);
+
+#if 1
+    // Verify solution and perturbation fields can be exactly represented by discretization.
+    norm = 0.0;
+    t = 0.0;
+
+    pylith::topology::Field& solution = _solutionFields->get("solution");
+    //solution.view("SOLUTION"); // :DEBUG:
+    const PetscDM dmSoln = solution.dmMesh(); CPPUNIT_ASSERT(dmSoln);
+    pylith::topology::FieldQuery solnQuery(solution);
+    solnQuery.initializeWithDefaultQueryFns();
+    CPPUNIT_ASSERT(data->normalizer);
+    solnQuery.openDB(data->solnDB, data->normalizer->lengthScale());
+    err = DMPlexComputeL2DiffLocal(dmSoln, t, solnQuery.functions(), (void**)solnQuery.contextPtrs(), solution.localVector(), &norm); CPPUNIT_ASSERT(!err);
+    solnQuery.closeDB(data->solnDB);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Discretized solution field failed representation test.", 0.0, norm, tolerance);
+
+    pylith::topology::Field& perturbation = _solutionFields->get("perturbation");
+    //perturbation.view("PERTURBATION"); // :DEBUG:
+    const PetscDM dmPerturb = perturbation.dmMesh(); CPPUNIT_ASSERT(dmPerturb);
+    pylith::topology::FieldQuery perturbQuery(perturbation);
+    perturbQuery.initializeWithDefaultQueryFns();
+    CPPUNIT_ASSERT(data->normalizer);
+    perturbQuery.openDB(data->perturbDB, data->normalizer->lengthScale());
+    err = DMPlexComputeL2DiffLocal(dmPerturb, t, perturbQuery.functions(), (void**)perturbQuery.contextPtrs(), perturbation.localVector(), &norm); CPPUNIT_ASSERT(!err);
+    perturbQuery.closeDB(data->perturbDB);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Discretized perturbation field failed representation test.", 0.0, norm, tolerance);
+#endif
 
     PYLITH_METHOD_END;
 } // testInitialize
@@ -320,7 +324,7 @@ pylith::materials::TestMaterial::testComputeResidual(void)
     _zeroBoundary(&residualRHS);
     _zeroBoundary(&residualLHS);
 
-#if 1 // :DEBUG:
+#if 0 // :DEBUG:
     solution.view("SOLUTION"); // :DEBUG:
     solutionDot.view("SOLUTION_DOT"); // :DEBUG:
     residualRHS.view("RESIDUAL RHS"); // :DEBUG:
@@ -340,8 +344,8 @@ pylith::materials::TestMaterial::testComputeResidual(void)
     err = VecNorm(residualVec, NORM_2, &norm); CPPUNIT_ASSERT(!err);
     err = VecDestroy(&residualVec); CPPUNIT_ASSERT(!err);
     const PylithReal tolerance = 1.0e-6;
-    CPPUNIT_ASSERT(normRHS > 0.0 || normLHS > 0.0); // Avoid trivial satisfaction of norm with zero values.
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of F(s) - G(s) == 0 failed.", 0.0, norm, tolerance);
+    CPPUNIT_ASSERT_MESSAGE("RHS and LHS residuals are both exactly zero, which is suspicious.", normRHS > 0.0 || normLHS > 0.0); // Avoid trivial satisfaction of norm with zero values.
 
     PYLITH_METHOD_END;
 } // testComputeResidual
@@ -368,34 +372,6 @@ pylith::materials::TestMaterial::testComputeRHSJacobian(void)
 
     Material* material = _material(); CPPUNIT_ASSERT(material);
     TestMaterial_Data* data = _data(); CPPUNIT_ASSERT(data);
-
-#if 1
-    { // :DEBUG:
-        PylithReal norm = 0.0;
-        PylithReal t = 0.0;
-
-        //solution.view("SOLUTION"); // :DEBUG:
-        const PetscDM dmSoln = solution.dmMesh(); CPPUNIT_ASSERT(dmSoln);
-        pylith::topology::FieldQuery solnQuery(solution);
-        solnQuery.initializeWithDefaultQueryFns();
-        CPPUNIT_ASSERT(data->normalizer);
-        solnQuery.openDB(data->solnDB, data->normalizer->lengthScale());
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dmSoln, t, solnQuery.functions(), (void**)solnQuery.contextPtrs(), solution.localVector(), &norm); CPPUNIT_ASSERT(!err);
-        solnQuery.closeDB(data->solnDB);
-        const PylithReal tolerance = 1.0e-6;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
-
-        //perturbation.view("PERTURBATION"); // :DEBUG:
-        const PetscDM dmPerturb = perturbation.dmMesh(); CPPUNIT_ASSERT(dmPerturb);
-        pylith::topology::FieldQuery perturbQuery(perturbation);
-        perturbQuery.initializeWithDefaultQueryFns();
-        CPPUNIT_ASSERT(data->normalizer);
-        perturbQuery.openDB(data->perturbDB, data->normalizer->lengthScale());
-        err = DMPlexComputeL2DiffLocal(dmPerturb, t, perturbQuery.functions(), (void**)perturbQuery.contextPtrs(), perturbation.localVector(), &norm); CPPUNIT_ASSERT(!err);
-        perturbQuery.closeDB(data->perturbDB);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
-    } // :DEBUG:
-#endif
 
     pylith::topology::Field residual1(*_mesh);
     residual1.cloneSection(solution);
@@ -469,8 +445,8 @@ pylith::materials::TestMaterial::testComputeRHSJacobian(void)
     err = MatDestroy(&jacobianMat); CPPUNIT_ASSERT(!err);
 
     const PylithReal tolerance = 1.0e-6;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
-    CPPUNIT_ASSERT(norm > 0.0); // Norm exactly equal to zero almost certainly means test is satisfied trivially.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Check of Jg(s)*(p-s) - (G(p) - G(s)) == 0 failed.", 0.0, norm, tolerance);
+    CPPUNIT_ASSERT_MESSAGE("Norm of resulting vector is exactly zero, which is suspicious.", norm > 0.0);
 
     PYLITH_METHOD_END;
 } // testComputeRHSJacobian
@@ -574,8 +550,8 @@ pylith::materials::TestMaterial::testComputeLHSJacobianImplicit(void)
     err = MatDestroy(&jacobianMat); CPPUNIT_ASSERT(!err);
 
     const PylithReal tolerance = 1.0e-6;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
-    CPPUNIT_ASSERT((0 < normResidual && 0 < norm) || (0 == normResidual && 0 == norm));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Check of Jf(s)*(p-s) - (F(p) - F(s)) == 0 failed.", 0.0, norm, tolerance);
+    CPPUNIT_ASSERT_MESSAGE("Norm of resulting vector is exactly zero, which is suspicious.", (0 < normResidual && 0 < norm) || (0 == normResidual && 0 == norm));
 
     PYLITH_METHOD_END;
 } // testComputeLHSJacobianImplicit
@@ -607,7 +583,34 @@ pylith::materials::TestMaterial::testUpdateStateVars(void)
 { // testUpdateStateVars
     PYLITH_METHOD_BEGIN;
 
-    CPPUNIT_ASSERT_MESSAGE("Test not implemented.", false); // :TODO: ADD MORE HERE
+    TestMaterial_Data* data = _data(); CPPUNIT_ASSERT(data);
+    if (!data->auxUpdateDB) {
+        PYLITH_METHOD_END;
+    } // if
+
+    // Call initialize()
+    _initializeFull(); // includes setting up auxField
+
+    Material* material = _material(); CPPUNIT_ASSERT(material);
+    CPPUNIT_ASSERT(_solutionFields);
+    pylith::topology::Field& solution = _solutionFields->get("solution");
+    material->updateStateVars(data->t, data->dt, solution);
+
+    const pylith::topology::Field& auxField = material->auxField();
+    //material->_auxField->view("AUX FIELDS"); // :DEBUGGING:
+
+    // Check updated auxiliary field.
+    PylithReal norm = 0.0;
+    PylithReal t = 0.0;
+    const PetscDM dm = auxField.dmMesh(); CPPUNIT_ASSERT(dm);
+    pylith::topology::FieldQuery query(auxField);
+    query.initializeWithDefaultQueryFns();
+    CPPUNIT_ASSERT(data->normalizer);
+    query.openDB(data->auxUpdateDB, data->normalizer->lengthScale());
+    PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField.localVector(), &norm); CPPUNIT_ASSERT(!err);
+    query.closeDB(data->auxUpdateDB);
+    const PylithReal tolerance = 1.0e-6;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Check of updated auxiliary field values failed.", 0.0, norm, tolerance);
 
     PYLITH_METHOD_END;
 } // testUpdateStateVars
@@ -744,6 +747,7 @@ pylith::materials::TestMaterial_Data::TestMaterial_Data(void) :
     auxSubfields(NULL),
     auxDiscretizations(NULL),
     auxDB(new spatialdata::spatialdb::UserFunctionDB),
+    auxUpdateDB(NULL),
 
     isExplicit(false)
 { // constructor
@@ -769,6 +773,7 @@ pylith::materials::TestMaterial_Data::~TestMaterial_Data(void)
     delete normalizer; normalizer = NULL;
     delete solnDB; solnDB = NULL;
     delete auxDB; auxDB = NULL;
+    delete auxUpdateDB; auxUpdateDB = NULL;
 } // destructor
 
 

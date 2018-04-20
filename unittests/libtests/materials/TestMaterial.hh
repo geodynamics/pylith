@@ -58,9 +58,7 @@ class pylith::materials::TestMaterial : public CppUnit::TestFixture, public pyli
 
     CPPUNIT_TEST(testVerifyConfiguration);
 
-    CPPUNIT_TEST(testDimension);
-    CPPUNIT_TEST(testId);
-    CPPUNIT_TEST(testLabel);
+    CPPUNIT_TEST(testAccessors);
     CPPUNIT_TEST(testInitialize);
 
     CPPUNIT_TEST(testComputeResidual);
@@ -99,14 +97,8 @@ public:
     /// Test checkConstraints().
     void testCheckConstraints(void);
 
-    /// Test dimension().
-    void testDimension(void);
-
-    /// Test id().
-    void testId(void);
-
-    /// Test label().
-    void testLabel(void);
+    /// Test dimension(), id(), and label().
+    void testAccessors(void);
 
     /// Test initialize().
     void testInitialize(void);
