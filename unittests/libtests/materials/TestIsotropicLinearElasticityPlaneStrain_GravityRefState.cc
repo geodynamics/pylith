@@ -109,10 +109,10 @@ namespace pylith {
             } // gravityAcc_x
             static double gravityAcc_y(const double x,
                                        const double y) {
-                return 0.0;
+                return -GACC;
             } // gravityAcc_y
             static const char* acc_units(void) {
-                return "m/s**2";;
+                return "m/s**2";
             } // acc_units
 
 
@@ -165,8 +165,8 @@ protected:
                 CPPUNIT_ASSERT(_mydata->normalizer);
                 _mydata->normalizer->lengthScale(1.0e+03);
                 _mydata->normalizer->timeScale(2.0);
-                _mydata->normalizer->densityScale(3.0e+3);
                 _mydata->normalizer->pressureScale(2.25e+10);
+                _mydata->normalizer->computeDensityScale();
 
                 delete _mydata->gravityField; _mydata->gravityField = new spatialdata::spatialdb::GravityField();
                 _mydata->gravityField->gravityDir(0.0, -1.0, 0.0);
@@ -186,7 +186,7 @@ protected:
                     {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
                     {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
                     {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // gravitational_acceleration
-                    {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // reference_stress
+                    {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // reference_stress
                     {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // reference_strain
                 };
                 _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -245,7 +245,7 @@ protected:
                 TestIsotropicLinearElasticityPlaneStrain_GravityRefState::setUp();
                 CPPUNIT_ASSERT(_mydata);
 
-                _mydata->meshFilename = "data/tri_small.mesh";
+                _mydata->meshFilename = "data/tri_fourcells.mesh";
 
                 _mydata->numSolnSubfields = 1;
                 static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -270,7 +270,7 @@ protected:
                 TestIsotropicLinearElasticityPlaneStrain_GravityRefState::setUp();
                 CPPUNIT_ASSERT(_mydata);
 
-                _mydata->meshFilename = "data/tri_small.mesh";
+                _mydata->meshFilename = "data/tri_fourcells.mesh";
 
                 _mydata->numSolnSubfields = 1;
                 static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -283,7 +283,7 @@ protected:
                     {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
                     {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
                     {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // gravitational_acceleration
-                    {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // reference_stress
+                    {1, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // reference_stress
                     {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // reference_strain
                 };
                 _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -305,7 +305,7 @@ protected:
                 TestIsotropicLinearElasticityPlaneStrain_GravityRefState::setUp();
                 CPPUNIT_ASSERT(_mydata);
 
-                _mydata->meshFilename = "data/tri_small.mesh";
+                _mydata->meshFilename = "data/tri_fourcells.mesh";
 
                 _mydata->numSolnSubfields = 1;
                 static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -318,7 +318,7 @@ protected:
                     {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
                     {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
                     {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // gravitational_acceleration
-                    {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // reference_stress
+                    {1, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // reference_stress
                     {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // reference_strain
                 };
                 _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -340,7 +340,7 @@ protected:
                 TestIsotropicLinearElasticityPlaneStrain_GravityRefState::setUp();
                 CPPUNIT_ASSERT(_mydata);
 
-                _mydata->meshFilename = "data/tri_small.mesh";
+                _mydata->meshFilename = "data/tri_fourcells.mesh";
 
                 _mydata->numSolnSubfields = 1;
                 static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -353,7 +353,7 @@ protected:
                     {0, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
                     {0, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
                     {0, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // gravitational_acceleration
-                    {0, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // reference_stress
+                    {1, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // reference_stress
                     {0, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // reference_strain
                 };
                 _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -388,7 +388,7 @@ protected:
                     {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
                     {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
                     {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // gravitational_acceleration
-                    {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // reference_stress
+                    {1, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // reference_stress
                     {0, 1, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // reference_strain
                 };
                 _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -423,7 +423,7 @@ protected:
                     {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
                     {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
                     {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // gravitational_acceleration
-                    {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // reference_stress
+                    {1, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // reference_stress
                     {0, 2, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // reference_strain
                 };
                 _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -458,7 +458,7 @@ protected:
                     {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
                     {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
                     {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // gravitational_acceleration
-                    {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // reference_stress
+                    {1, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // reference_stress
                     {0, 3, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // reference_strain
                 };
                 _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
@@ -493,7 +493,7 @@ protected:
                     {0, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // shear_modulus
                     {0, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // bulk_modulus
                     {0, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // gravitational_acceleration
-                    {0, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // reference_stress
+                    {1, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // reference_stress
                     {0, 4, true, pylith::topology::Field::POLYNOMIAL_SPACE}, // reference_strain
                 };
                 _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
