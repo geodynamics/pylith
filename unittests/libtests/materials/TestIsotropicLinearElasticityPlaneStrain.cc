@@ -38,8 +38,7 @@
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::setUp(void)
-{ // setUp
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::setUp(void) {
     TestMaterial::setUp();
     _mymaterial = new IsotropicLinearElasticityPlaneStrain(); CPPUNIT_ASSERT(_mymaterial);
     _mydata = NULL;
@@ -56,8 +55,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::setUp(void)
 // ----------------------------------------------------------------------
 // Deallocate testing data.
 void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::tearDown(void)
-{ // tearDown
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::tearDown(void) {
     const char* journal = _mymaterial->PyreComponent::name();
     journal::debug_t debug(journal);
     debug.deactivate(); // DEBUGGING
@@ -70,70 +68,41 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::tearDown(void)
 
 
 // ----------------------------------------------------------------------
-// Test useInertia().
+// Test useInertia(), useBodyForce(), useReferenceState().
 void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testUseInertia(void)
-{ // testUseInertia
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testAccessors(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_mymaterial);
 
     const bool flag = false;
+
     _mymaterial->useInertia(flag);
-    CPPUNIT_ASSERT_EQUAL(flag, _mymaterial->_useInertia);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of useInertia() failed.", flag, _mymaterial->_useInertia);
 
     _mymaterial->useInertia(!flag);
-    CPPUNIT_ASSERT_EQUAL(!flag, _mymaterial->_useInertia);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of useInertia() failed.", !flag, _mymaterial->_useInertia);
 
-    PYLITH_METHOD_END;
-} // testUseInertia
-
-
-// ----------------------------------------------------------------------
-// Test useBodyForce().
-void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testUseBodyForce(void)
-{ // testUseBodyForce
-    PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_mymaterial);
-
-    const bool flag = false;
     _mymaterial->useBodyForce(flag);
-    CPPUNIT_ASSERT_EQUAL(flag, _mymaterial->_useBodyForce);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of useBodyForce() failed.", flag, _mymaterial->_useBodyForce);
 
     _mymaterial->useBodyForce(!flag);
-    CPPUNIT_ASSERT_EQUAL(!flag, _mymaterial->_useBodyForce);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of useBodyForce() failed.", !flag, _mymaterial->_useBodyForce);
 
-    PYLITH_METHOD_END;
-} // testUseBodyForce
-
-
-// ----------------------------------------------------------------------
-// Test useReferenceState().
-void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testUseReferenceState(void)
-{ // testUseReferenceState
-    PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_mymaterial);
-
-    const bool flag = false;
     _mymaterial->useReferenceState(flag);
-    CPPUNIT_ASSERT_EQUAL(flag, _mymaterial->_useReferenceState);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of useReferenceState() failed.", flag, _mymaterial->_useReferenceState);
 
     _mymaterial->useReferenceState(!flag);
-    CPPUNIT_ASSERT_EQUAL(!flag, _mymaterial->_useReferenceState);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of useReferenceState() failed.", !flag, _mymaterial->_useReferenceState);
 
     PYLITH_METHOD_END;
-} // testUseReferenceState
+} // testAccessors
 
 
 // ----------------------------------------------------------------------
 // Test auxFieldsSetup().
 void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldSetup(void)
-{ // test_auxFieldSetup
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldSetup(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_mymaterial);
@@ -216,7 +185,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldSetup(
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // body force
 
-    if (_mymaterial->_useReferenceState) { // reference stress and strain
+    if (_mymaterial->_useReferenceState) { // reference stress
         const char* label = "reference_stress";
         const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(4), info.description.numComponents);
@@ -229,7 +198,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldSetup(
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // reference stress
 
-    if (_mymaterial->_useReferenceState) { // referece stress and strain
+    if (_mymaterial->_useReferenceState) { // referece strain
         const char* label = "reference_strain";
         const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
         CPPUNIT_ASSERT_EQUAL(size_t(4), info.description.numComponents);
@@ -249,8 +218,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::test_auxFieldSetup(
 // ----------------------------------------------------------------------
 // Test getAuxField().
 void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(void)
-{ // testGetAuxField
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(void) {
     PYLITH_METHOD_BEGIN;
 
     _initializeFull();
@@ -282,10 +250,10 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
         queryDensity.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting density subfield from auxiliary field failed.", 0.0, norm, tolerance);
     } // Test getting density field
 
-    { // Test getting bulkModulus field.
+    { // Test getting bulk_modulus field.
         pylith::topology::Field bulkModulus(*_mesh);
         bulkModulus.copySubfield(auxField, "bulk_modulus");
 
@@ -306,10 +274,33 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
         queryBulkModulus.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting bulk modulus subfield from auxiliary field failed.", 0.0, norm, tolerance);
     } // Test getting bulkModulus field
 
-    PYLITH_JOURNAL_WARNING(":TODO: @brad Add test for getting reference stress/strain.");
+    if (_mymaterial->_useReferenceState) { // Test getting reference_stress field.
+        pylith::topology::Field referenceStress(*_mesh);
+        referenceStress.copySubfield(auxField, "reference_stress");
+
+        //referenceStress.view("REFERENCE STRESS"); // DEBUGGING
+
+        // Check result
+        CPPUNIT_ASSERT_EQUAL(std::string("reference_stress"), std::string(referenceStress.label()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, referenceStress.spaceDim());
+
+        pylith::topology::FieldQuery queryRefStress(referenceStress);
+        queryRefStress.initializeWithDefaultQueryFns();
+        queryRefStress.openDB(_mydata->auxDB, lengthScale);
+
+        PylithReal norm = 0.0;
+        const PylithReal t = _mydata->t;
+        const PetscDM dm = referenceStress.dmMesh(); CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryRefStress.functions(), (void**)queryRefStress.contextPtrs(), referenceStress.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        queryRefStress.closeDB(_mydata->auxDB);
+
+        const PylithReal tolerance = 1.0e-6;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting reference stress subfield from auxiliary field failed.", 0.0, norm, tolerance);
+    } // Test getting reference_stress field
+
 
     PYLITH_METHOD_END;
 } // testGetAuxField
@@ -318,8 +309,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::testGetAuxField(voi
 // ----------------------------------------------------------------------
 // Get material.
 pylith::materials::Material*
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_material(void)
-{ // _material
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_material(void) {
     return _mymaterial;
 } // _material
 
@@ -327,8 +317,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_material(void)
 // ----------------------------------------------------------------------
 // Get test data.
 pylith::materials::TestMaterial_Data*
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_data(void)
-{ // _data
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_data(void) {
     return _mydata;
 } // _data
 
@@ -336,8 +325,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_data(void)
 // ----------------------------------------------------------------------
 // Setup and populate solution fields.
 void
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_setupSolutionFields(void)
-{ // _setupSolutionFields
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_setupSolutionFields(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_solutionFields);
@@ -396,8 +384,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::_setupSolutionField
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain_Data::TestIsotropicLinearElasticityPlaneStrain_Data(void)
-{ // constructor
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain_Data::TestIsotropicLinearElasticityPlaneStrain_Data(void) {
     dimension = 2;
     gravityVector[0] = 0.0; // Use scales in test to provide correct nondimensional value.
     gravityVector[1] = 0.0;
@@ -415,9 +402,7 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain_Data::TestIsotropicL
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::materials::TestIsotropicLinearElasticityPlaneStrain_Data::~TestIsotropicLinearElasticityPlaneStrain_Data(void)
-{ // destructor
-} // destructor
+pylith::materials::TestIsotropicLinearElasticityPlaneStrain_Data::~TestIsotropicLinearElasticityPlaneStrain_Data(void) {}
 
 
 // End of file

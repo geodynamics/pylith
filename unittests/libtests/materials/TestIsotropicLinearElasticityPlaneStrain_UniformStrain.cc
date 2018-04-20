@@ -44,7 +44,6 @@ namespace pylith {
 } // pylith
 
 
-
 // ----------------------------------------------------------------------
 class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_UniformStrain :
     public pylith::materials::TestIsotropicLinearElasticityPlaneStrain {
