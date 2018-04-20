@@ -39,8 +39,7 @@
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::setUp(void)
-{ // setUp
+pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::setUp(void) {
     TestMaterial::setUp();
     _mymaterial = new IsotropicLinearMaxwellPlaneStrain(); CPPUNIT_ASSERT(_mymaterial);
     _mydata = NULL;
@@ -57,8 +56,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::setUp(void)
 // ----------------------------------------------------------------------
 // Deallocate testing data.
 void
-pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::tearDown(void)
-{ // tearDown
+pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::tearDown(void) {
     const char* journal = _mymaterial->PyreComponent::name();
     journal::debug_t debug(journal);
     debug.deactivate(); // DEBUGGING
@@ -71,70 +69,41 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::tearDown(void)
 
 
 // ----------------------------------------------------------------------
-// Test useInertia().
+// Test useInertia(), useBodyForce(), useReferenceState().
 void
-pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testUseInertia(void)
-{ // testUseInertia
+pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testAccessors(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_mymaterial);
 
     const bool flag = false;
+
     _mymaterial->useInertia(flag);
-    CPPUNIT_ASSERT_EQUAL(flag, _mymaterial->_useInertia);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of useInertia() failed.", flag, _mymaterial->_useInertia);
 
     _mymaterial->useInertia(!flag);
-    CPPUNIT_ASSERT_EQUAL(!flag, _mymaterial->_useInertia);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of useInertia() failed.", !flag, _mymaterial->_useInertia);
 
-    PYLITH_METHOD_END;
-} // testUseInertia
-
-
-// ----------------------------------------------------------------------
-// Test useBodyForce().
-void
-pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testUseBodyForce(void)
-{ // testUseBodyForce
-    PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_mymaterial);
-
-    const bool flag = false;
     _mymaterial->useBodyForce(flag);
-    CPPUNIT_ASSERT_EQUAL(flag, _mymaterial->_useBodyForce);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of useBodyForce() failed.", flag, _mymaterial->_useBodyForce);
 
     _mymaterial->useBodyForce(!flag);
-    CPPUNIT_ASSERT_EQUAL(!flag, _mymaterial->_useBodyForce);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of useBodyForce() failed.", !flag, _mymaterial->_useBodyForce);
 
-    PYLITH_METHOD_END;
-} // testUseBodyForce
-
-
-// ----------------------------------------------------------------------
-// Test useReferenceState().
-void
-pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testUseReferenceState(void)
-{ // testUseReferenceState
-    PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_mymaterial);
-
-    const bool flag = false;
     _mymaterial->useReferenceState(flag);
-    CPPUNIT_ASSERT_EQUAL(flag, _mymaterial->_useReferenceState);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of useReferenceState() failed.", flag, _mymaterial->_useReferenceState);
 
     _mymaterial->useReferenceState(!flag);
-    CPPUNIT_ASSERT_EQUAL(!flag, _mymaterial->_useReferenceState);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of useReferenceState() failed.", !flag, _mymaterial->_useReferenceState);
 
     PYLITH_METHOD_END;
-} // testUseReferenceState
+} // testAccessors
 
 
 // ----------------------------------------------------------------------
 // Test auxFieldSetup().
 void
-pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldSetup(void)
-{ // test_auxFieldSetup
+pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldSetup(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_mymaterial);
@@ -230,19 +199,6 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldSetup(voi
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // Viscous strain
 
-    if (_mymaterial->_useBodyForce) { // body force
-        const char* label = "body_force";
-        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
-        CPPUNIT_ASSERT_EQUAL(size_t(2), info.description.numComponents);
-        CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::VECTOR, info.description.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(forceScale, info.description.scale);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
-        CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
-    } // body force
-
     if (_mymaterial->_gravityField) { // gravity field
         const char* label = "gravity_field";
         const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
@@ -255,6 +211,19 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldSetup(voi
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
     } // gravity field
+
+    if (_mymaterial->_useBodyForce) { // body force
+        const char* label = "body_force";
+        const pylith::topology::Field::SubfieldInfo& info = _mymaterial->_auxField->subfieldInfo(label);
+        CPPUNIT_ASSERT_EQUAL(size_t(2), info.description.numComponents);
+        CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::VECTOR, info.description.vectorFieldType);
+        CPPUNIT_ASSERT_EQUAL(forceScale, info.description.scale);
+        CPPUNIT_ASSERT_EQUAL(-1, info.fe.basisOrder);
+        CPPUNIT_ASSERT_EQUAL(-1, info.fe.quadOrder);
+        CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
+        CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::POLYNOMIAL_SPACE, info.fe.feSpace);
+    } // body force
 
     if (_mymaterial->_useReferenceState) { // reference stress
         const char* label = "reference_stress";
@@ -289,8 +258,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxFieldSetup(voi
 // ----------------------------------------------------------------------
 // Test getAuxField().
 void
-pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void)
-{ // testGetAuxField
+pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void) {
     PYLITH_METHOD_BEGIN;
 
     _initializeFull();
@@ -322,10 +290,10 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void)
         queryDensity.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting density subfield from auxiliary field failed.", 0.0, norm, tolerance);
     } // Test getting density field
 
-    { // Test getting bulkModulus field.
+    { // Test getting bulk_modulus field.
         pylith::topology::Field bulkModulus(*_mesh);
         bulkModulus.copySubfield(auxField, "bulk_modulus");
 
@@ -346,10 +314,10 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void)
         queryBulkModulus.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
-    } // Test getting bulkModulus field
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting bulk modulus subfield from auxiliary field failed.", 0.0, norm, tolerance);
+    } // Test getting bulk_modulus field
 
-    { // Test getting maxwellTime field.
+    { // Test getting maxwell_time field.
         pylith::topology::Field maxwellTime(*_mesh);
         maxwellTime.copySubfield(auxField, "maxwell_time");
 
@@ -370,10 +338,33 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void)
         queryMaxwellTime.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
-    } // Test getting maxwellTime field
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting Maxwell time subfield from auxiliary field failed.", 0.0, norm, tolerance);
+    } // Test getting maxwell_time field
 
-    PYLITH_JOURNAL_WARNING(":TODO: @charles Add test for getting reference stress/strain.");
+    if (_mymaterial->_useReferenceState) { // Test getting reference_stress field.
+        pylith::topology::Field referenceStress(*_mesh);
+        referenceStress.copySubfield(auxField, "reference_stress");
+
+        //referenceStress.view("REFERENCE STRESS"); // DEBUGGING
+
+        // Check result
+        CPPUNIT_ASSERT_EQUAL(std::string("reference_stress"), std::string(referenceStress.label()));
+        CPPUNIT_ASSERT_EQUAL(_mydata->dimension, referenceStress.spaceDim());
+
+        pylith::topology::FieldQuery queryRefStress(referenceStress);
+        queryRefStress.initializeWithDefaultQueryFns();
+        queryRefStress.openDB(_mydata->auxDB, lengthScale);
+
+        PylithReal norm = 0.0;
+        const PylithReal t = _mydata->t;
+        const PetscDM dm = referenceStress.dmMesh(); CPPUNIT_ASSERT(dm);
+        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryRefStress.functions(), (void**)queryRefStress.contextPtrs(), referenceStress.localVector(), &norm); CPPUNIT_ASSERT(!err);
+        queryRefStress.closeDB(_mydata->auxDB);
+
+        const PylithReal tolerance = 1.0e-6;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test extracting reference stress subfield from auxiliary field failed.", 0.0, norm, tolerance);
+    } // Test getting reference_stress field
+
 
     PYLITH_METHOD_END;
 } // testGetAuxField
@@ -382,8 +373,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void)
 // ----------------------------------------------------------------------
 // Get material.
 pylith::materials::Material*
-pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_material(void)
-{ // _material
+pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_material(void) {
     return _mymaterial;
 } // _material
 
@@ -391,8 +381,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_material(void)
 // ----------------------------------------------------------------------
 // Get test data.
 pylith::materials::TestMaterial_Data*
-pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_data(void)
-{ // _data
+pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_data(void) {
     return _mydata;
 } // _data
 
@@ -400,8 +389,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_data(void)
 // ----------------------------------------------------------------------
 // Setup and populate solution fields.
 void
-pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_setupSolutionFields(void)
-{ // _setupSolutionFields
+pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_setupSolutionFields(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_solutionFields);
@@ -441,7 +429,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_setupSolutionFields(v
         perturbation.cloneSection(solution);
         perturbation.allocate();
         perturbation.zeroLocal();
-	pylith::problems::SolutionFactory factory(perturbation, *_mydata->normalizer);
+        pylith::problems::SolutionFactory factory(perturbation, *_mydata->normalizer);
         factory.setValues(_mydata->perturbDB);
     } // Perturbation
 
@@ -451,7 +439,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_setupSolutionFields(v
         perturbationDot.cloneSection(solutionDot);
         perturbationDot.allocate();
         perturbationDot.zeroLocal();
-	pylith::problems::SolutionFactory factory(perturbationDot, *_mydata->normalizer);
+        pylith::problems::SolutionFactory factory(perturbationDot, *_mydata->normalizer);
         factory.setValues(_mydata->perturbDB);
     } // Time derivative perturbation
 
@@ -460,8 +448,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_setupSolutionFields(v
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_Data::TestIsotropicLinearMaxwellPlaneStrain_Data(void)
-{ // constructor
+pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_Data::TestIsotropicLinearMaxwellPlaneStrain_Data(void) {
     dimension = 2;
     gravityVector[0] = 0.0; // Use scales in test to provide correct nondimensional value.
     gravityVector[1] = 0.0;
@@ -471,17 +458,19 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_Data::TestIsotropicLine
     cs->setSpaceDim(dimension);
     cs->initialize();
 
+    // Some auxiliary subfields get updated in updateStateVars().
+    //auxUpdateDB = new spatialdata::spatialdb::UserFunctionDB; CPPUNIT_ASSERT(auxUpdateDB);
+
     solnDB->coordsys(*cs);
     perturbDB->coordsys(*cs);
     auxDB->coordsys(*cs);
+    //auxUpdateDB->coordsys(*cs);
 } // constructor
 
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_Data::~TestIsotropicLinearMaxwellPlaneStrain_Data(void)
-{ // destructor
-} // destructor
+pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_Data::~TestIsotropicLinearMaxwellPlaneStrain_Data(void) {}
 
 
 // End of file

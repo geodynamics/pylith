@@ -165,6 +165,12 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_auxFieldSetup(void) {
         _auxMaterialFactory->referenceStrain(); // numA-1
     } // if
 
+    PYLITH_COMPONENT_ERROR(":TODO: @charles Set kernels for updating state variables.");
+    // Each auxiliary subfield that gets updated needs its own pointwise function (kernel).
+    // They pointwise functions are called in the order in which the subfields appear in the auxiliary field.
+    _updateStateVarsKernels["total_strain"] = NULL;
+    _updateStateVarsKernels["viscous_strain"] = NULL;
+
     PYLITH_METHOD_END;
 } // _auxFieldSetup
 
