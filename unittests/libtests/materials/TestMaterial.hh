@@ -206,6 +206,7 @@ public:
     const char** auxSubfields; ///< Names of auxiliary subfields.
     pylith::topology::Field::Discretization* auxDiscretizations; ///< Discretizations for auxiliary subfields.
     spatialdata::spatialdb::UserFunctionDB* auxDB; ///< Spatial database with auxiliary field.
+    spatialdata::spatialdb::UserFunctionDB* auxUpdateDB; ///< Spatial database with updated auxiliary field.
 
     bool isExplicit; ///< True for explicit time stepping.
 };
