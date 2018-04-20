@@ -178,9 +178,10 @@ public:
 
     /** Update state variables as needed.
      *
+     * @param[in] time Time for current solution.
      * @param[in] solution Field with current trial solution.
      */
-    void updateStateVars(const pylith::topology::Field& solution);
+    void updateStateVars(PylithReal time, const pylith::topology::Field& solution);
 
     // Write information (auxiliary field) output.
     void writeInfo(void);
