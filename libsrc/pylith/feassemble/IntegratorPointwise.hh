@@ -222,10 +222,14 @@ public:
 
     /** Update state variables as needed.
      *
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
      * @param[in] solution Field with current trial solution.
      */
     virtual
-    void updateStateVars(const pylith::topology::Field& solution);
+    void updateStateVars(const PylithReal t,
+                         const PylithReal dt,
+                         const pylith::topology::Field& solution);
 
     // Write information (auxiliary field) output.
     virtual
@@ -252,18 +256,26 @@ protected:
     virtual
     pylith::feassemble::AuxiliaryFactory* _auxFactory(void) = 0;
 
-  /** Check compatibility of discretization of subfields in the solution
-   * and auxiliary fields.
-   *
-   * Verify that the quadrature order of the solution subfields all
-   * match and that they match the quadrature order of the auxiliary
-   * subfields, because this is assumed by DMPlex integration
-   * routines.
-   *
-   * @param[in] solution Solution field.
-   */
-  void
-  _checkDiscretization(const pylith::topology::Field& solution) const;
+    /** Set constants used in finite-element integrations.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] dt Current time step.
+     */
+    virtual
+    void _setFEConstants(const pylith::topology::Field& solution,
+                         const PylithReal dt) const;
+
+    /** Check compatibility of discretization of subfields in the solution
+     * and auxiliary fields.
+     *
+     * Verify that the quadrature order of the solution subfields all
+     * match and that they match the quadrature order of the auxiliary
+     * subfields, because this is assumed by DMPlex integration
+     * routines.
+     *
+     * @param[in] solution Solution field.
+     */
+    void _checkDiscretization(const pylith::topology::Field& solution) const;
 
     // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected:
@@ -280,6 +292,10 @@ protected:
     /// Default is false;
     bool _needNewRHSJacobian;
     bool _needNewLHSJacobian;
+
+    typedef std::map<std::string, PetscPointFunc> UpdateStateVarsMap;
+    UpdateStateVarsMap _updateStateVarsKernels;
+
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:

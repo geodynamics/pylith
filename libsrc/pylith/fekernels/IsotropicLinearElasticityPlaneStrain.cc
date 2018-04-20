@@ -118,7 +118,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::g0v_grav(const PylithIn
     assert(aOff);
     assert(aOff_x);
 
-    const PylithInt _numS = 0; // Number passed on to g0_bodyforce.
+    const PylithInt _numS = 0; // Number passed on to g0_grav.
 
     const PylithInt numAGrav = 2; // Number passed on to g0_grav.
     const PylithInt aOffGrav[2] = { aOff[i_density], aOff[i_gravityField] };
@@ -242,7 +242,6 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::g1v(const PylithInt dim
         g1[i] -= stress[i];
     } // for
 } // g1v
-
 
 // ----------------------------------------------------------------------
 // g1 function for isotropic linear elasticity plane strain with reference stress and strain.

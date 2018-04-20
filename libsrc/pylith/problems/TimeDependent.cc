@@ -362,17 +362,17 @@ pylith::problems::TimeDependent::poststep(void)
     // Get current solution.
     // :QUESTION: :MATT: What time does this solution correspond to?
     PetscErrorCode err;
-    PylithReal t;
+    PylithReal t, dt;
     PylithInt tindex;
     PetscVec solutionVec = NULL;
     err = TSGetTime(_ts, &t); PYLITH_CHECK_ERROR(err);
+    err = TSGetTimeStep(_ts, &dt); PYLITH_CHECK_ERROR(err);
     err = TSGetStepNumber(_ts, &tindex); PYLITH_CHECK_ERROR(err);
     err = TSGetSolution(_ts, &solutionVec); PYLITH_CHECK_ERROR(err);
 
     // Update PyLith view of the solution.
     assert(_solution);
     _solution->scatterVectorToLocal(solutionVec);
-
 
     // Output solution.
     pylith::topology::Field nullField(_solution->mesh());
@@ -386,7 +386,7 @@ pylith::problems::TimeDependent::poststep(void)
     const size_t numIntegrators = _integrators.size();
     assert(numIntegrators > 0); // must have at least 1 integrator
     for (size_t i = 0; i < numIntegrators; ++i) {
-        _integrators[i]->updateStateVars(*_solution);
+        _integrators[i]->updateStateVars(t, dt, *_solution);
         _integrators[i]->writeTimeStep(t, tindex, *_solution);
     }  // for
 

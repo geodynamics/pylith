@@ -201,11 +201,14 @@ public:
 
         /** Update state variables as needed.
          *
+         * @param[in] t Current time.
+         * @param[in] dt Current time step.
          * @param[in] solution Field with current trial solution.
          */
         virtual
-        void updateStateVars(const pylith::topology::Field& solution);
-
+        void updateStateVars(const PylithReal t,
+			     const PylithReal dt,
+			     const pylith::topology::Field& solution);
 
 	    // Write information (auxiliary field) output.
 	    virtual

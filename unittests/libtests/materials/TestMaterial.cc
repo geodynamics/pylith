@@ -320,7 +320,7 @@ pylith::materials::TestMaterial::testComputeResidual(void)
     _zeroBoundary(&residualRHS);
     _zeroBoundary(&residualLHS);
 
-#if 0 // :DEBUG:
+#if 1 // :DEBUG:
     solution.view("SOLUTION"); // :DEBUG:
     solutionDot.view("SOLUTION_DOT"); // :DEBUG:
     residualRHS.view("RESIDUAL RHS"); // :DEBUG:

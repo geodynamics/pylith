@@ -275,7 +275,7 @@ pylith::materials::Material::computeLHSJacobianLumpedInv(pylith::topology::Field
     _setFEConstants(solution, dt);
 
     PetscDS prob = NULL;
-    IS       cells;
+    PetscIS cells = NULL;
     PetscInt cStart = 0, cEnd = 0;
     PetscErrorCode err;
 
@@ -312,49 +312,6 @@ pylith::materials::Material::computeLHSJacobianLumpedInv(pylith::topology::Field
 
     PYLITH_METHOD_END;
 } // computeLHSJacobianInverseExplicit
-
-static void identity(PetscInt dim, PetscInt Nf, PetscInt NfAux,
-                     const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[],
-                     const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[],
-                     PetscReal t, const PetscReal x[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f[])
-{
-  PetscInt d;
-  for (d = aOff[0]; d < aOff[1]; ++d) f[d-aOff[0]] = a[d];
-}
-
-// ----------------------------------------------------------------------
-// Update state variables as needed.
-void
-pylith::materials::Material::updateStateVars(PylithReal time, const pylith::topology::Field& solution)
-{ // updateStateVars
-    void           (**statefuncs)(PetscInt, PetscInt, PetscInt,
-                                  const PetscInt[], const PetscInt[], const PetscScalar[], const PetscScalar[], const PetscScalar[],
-                                  const PetscInt[], const PetscInt[], const PetscScalar[], const PetscScalar[], const PetscScalar[],
-                                  PetscReal, const PetscReal[], PetscInt, const PetscScalar[], PetscScalar[]);
-    DM             statedm = _auxField->dmMesh(), oldAuxdm;
-    Vec            oldA;
-    PetscInt       Nf, f;
-    PetscErrorCode err;
-
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("updateStateVars(solution="<<solution.label()<<")");
-
-    err = PetscObjectQuery((PetscObject) statedm, "dmAux", (PetscObject *) &oldAuxdm);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectQuery((PetscObject) statedm, "A", (PetscObject *) &oldA);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) statedm, "dmAux", (PetscObject) solution.dmMesh());PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) statedm, "A", (PetscObject) solution.localVector());PYLITH_CHECK_ERROR(err);
-
-    err = DMGetNumFields(statedm, &Nf);PYLITH_CHECK_ERROR(err);
-    err = PetscMalloc1(Nf, &statefuncs);PYLITH_CHECK_ERROR(err);
-    for (f = 0; f < Nf; ++f) statefuncs[f] = identity;
-    err = DMProjectFieldLocal(statedm, time, _auxField->localVector(), statefuncs, INSERT_VALUES, _auxField->localVector());PYLITH_CHECK_ERROR(err);
-    err = PetscFree(statefuncs);PYLITH_CHECK_ERROR(err);
-
-    err = PetscObjectCompose((PetscObject) statedm, "dmAux", (PetscObject) oldAuxdm);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) statedm, "A", (PetscObject) oldA);PYLITH_CHECK_ERROR(err);
-
-    PYLITH_METHOD_END;
-} // updateStateVars
 
 
 // ----------------------------------------------------------------------
@@ -393,7 +350,6 @@ pylith::materials::Material::writeTimeStep(const PylithReal t,
 } // writeTimeStep
 
 
-
 // ----------------------------------------------------------------------
 // Compute residual using current kernels.
 void
@@ -410,7 +366,7 @@ pylith::materials::Material::_computeResidual(pylith::topology::Field* residual,
     assert(_auxField);
 
     PetscDS prob = NULL;
-    IS       cells;
+    IS cells;
     PetscInt cStart = 0, cEnd = 0;
     PetscErrorCode err;
 
@@ -458,7 +414,7 @@ pylith::materials::Material::_computeJacobian(PetscMat jacobianMat,
     assert(precondMat);
 
     PetscDS prob = NULL;
-    IS       cells;
+    IS cells;
     PetscInt cStart = 0, cEnd = 0;
     PetscErrorCode err;
     PetscDM dmMesh = solution.dmMesh();
@@ -485,25 +441,6 @@ pylith::materials::Material::_computeJacobian(PetscMat jacobianMat,
     PYLITH_METHOD_END;
 } // _computeJacobian
 
-
-// ----------------------------------------------------------------------
-// Set constants used in finite-element integrations.
-void
-pylith::materials::Material::_setFEConstants(const pylith::topology::Field& solution,
-                                             const PylithReal dt) const
-{ // _setFEConstants
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setFEConstants(solution="<<solution.label()<<", dt="<<dt<<")");
-
-    PetscDS prob = NULL;
-    PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
-
-    // Pointwise function have been set in DS
-    PetscErrorCode err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err); assert(prob);
-    err = PetscDSSetConstants(prob, 0, NULL); PYLITH_CHECK_ERROR(err);
-
-    PYLITH_METHOD_END;
-} // _setFEConstants
 
 // ----------------------------------------------------------------------
 // Get factory for setting up auxliary fields.

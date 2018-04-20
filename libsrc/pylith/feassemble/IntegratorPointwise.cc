@@ -73,11 +73,13 @@ pylith::feassemble::IntegratorPointwise::deallocate(void) {
 // Get auxiliary field.
 const pylith::topology::Field&
 pylith::feassemble::IntegratorPointwise::auxField(void) const
-{    PYLITH_METHOD_BEGIN;
+{
+    PYLITH_METHOD_BEGIN;
 
-     assert(_auxField);
+    assert(_auxField);
 
-     PYLITH_METHOD_RETURN(*_auxField);} // auxField
+    PYLITH_METHOD_RETURN(*_auxField);
+} // auxField
 
 // ----------------------------------------------------------------------
 // Set database for auxiliary fields.
@@ -177,11 +179,40 @@ pylith::feassemble::IntegratorPointwise::prestep(const double t,
 // ----------------------------------------------------------------------
 // Update state variables as needed.
 void
-pylith::feassemble::IntegratorPointwise::updateStateVars(const pylith::topology::Field& solution) {
+pylith::feassemble::IntegratorPointwise::updateStateVars(const PylithReal t,
+                                                         const PylithReal dt,
+                                                         const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("updateStateVars(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("updateStateVars(t="<<t<<", dt="<<dt<<", solution="<<solution.label()<<") empty method");
 
-    PYLITH_COMPONENT_ERROR(":TODO: @brad Implement updateStateVars().");
+    if (0 == _updateStateVarsKernels.size()) {
+        PYLITH_METHOD_END;
+    } // if
+
+    assert(_auxField);
+
+    _setFEConstants(solution, dt);
+
+    // Set update kernel for each auxiliary subfield.
+    const pylith::string_vector& subfieldNames = _auxField->subfieldNames();
+    const size_t numSubfields = subfieldNames.size();
+    PetscPointFunc* stateVarsKernels = (numSubfields > 0) ? new PetscPointFunc[numSubfields] : NULL;
+    // By default, set all auxiliary subfield update kernels to NULL.
+    for (size_t i = 0; i < numSubfields; ++i) {
+        stateVarsKernels[i] = NULL;
+    } // for
+    for (UpdateStateVarsMap::const_iterator iter = _updateStateVarsKernels.begin(); iter != _updateStateVarsKernels.end(); ++iter) {
+        const pylith::topology::Field::SubfieldInfo& sinfo = _auxField->subfieldInfo(iter->first.c_str());
+        stateVarsKernels[sinfo.index] = iter->second;
+    } // for
+
+    PetscErrorCode err;
+    PetscDM dmState = _auxField->dmMesh();
+    err = PetscObjectCompose((PetscObject) dmState, "dmAux", (PetscObject) solution.dmMesh());PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmState, "A", (PetscObject) solution.localVector());PYLITH_CHECK_ERROR(err);
+
+    err = DMProjectFieldLocal(dmState, t, _auxField->localVector(), stateVarsKernels, INSERT_VALUES, _auxField->localVector());PYLITH_CHECK_ERROR(err);
+    delete[] stateVarsKernels; stateVarsKernels = NULL;
 
     PYLITH_METHOD_END;
 } // updateStateVars
@@ -222,6 +253,25 @@ pylith::feassemble::IntegratorPointwise::writeTimeStep(const PylithReal t,
 
 
 // ----------------------------------------------------------------------
+// Set constants used in finite-element integrations.
+void
+pylith::feassemble::IntegratorPointwise::_setFEConstants(const pylith::topology::Field& solution,
+                                                         const PylithReal dt) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("_setFEConstants(solution="<<solution.label()<<", dt="<<dt<<")");
+
+    PetscDS prob = NULL;
+    PetscDM dmSoln = solution.dmMesh(); assert(dmSoln);
+
+    // Pointwise functions have been set in DS
+    PetscErrorCode err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err); assert(prob);
+    err = PetscDSSetConstants(prob, 0, NULL); PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_END;
+} // _setFEConstants
+
+
+// ----------------------------------------------------------------------
 // Check compatibility of discretization of subfields in the solution
 // and auxiliary fields.
 void
@@ -245,7 +295,7 @@ pylith::feassemble::IntegratorPointwise::_checkDiscretization(const pylith::topo
                 if (quadOrder != sinfo.fe.quadOrder) {
                     std::ostringstream msg;
                     msg << "Quadrature order of subfields in solution field '" << solution.label() << "' must all be the same. Expected quadrature order of " << quadOrder << ", but subfield '" << subfieldNames[i] <<
-                        "' has a quadrature order of " << sinfo.fe.quadOrder << ".";
+                    "' has a quadrature order of " << sinfo.fe.quadOrder << ".";
                     throw std::runtime_error(msg.str());
                 } // if
             } else {
@@ -265,7 +315,7 @@ pylith::feassemble::IntegratorPointwise::_checkDiscretization(const pylith::topo
                 if (quadOrder != sinfo.fe.quadOrder) {
                     std::ostringstream msg;
                     msg << "Quadrature order of subfields in auxiliary field '" << _auxField->label() << "' must all match the quadrature order in the solution subfields '" << solution.label() << "'. Expected quadrature order of " <<
-                        quadOrder << ", but subfield '" << subfieldNames[i] << "' has a quadrature order of " << sinfo.fe.quadOrder << ".";
+                    quadOrder << ", but subfield '" << subfieldNames[i] << "' has a quadrature order of " << sinfo.fe.quadOrder << ".";
                     throw std::runtime_error(msg.str());
                 } // if
             } else {

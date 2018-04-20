@@ -8,8 +8,8 @@ apps
 
 problems
 
-    ProblemNew
-    TimeDependentNew
+    Problem
+    TimeDependent
         db_initialconditions :TODO:
 
     --in progress--
@@ -38,42 +38,20 @@ problems
 
 bc
 
-    BoundaryConditionNew
+    BoundaryCondition
     ZeroDispDB
     DirichletNew
     DirichletTimeDependent
 
-    --TODO--
-    DirichletPoints?
-    AbsorbingDampersNew
-    NeumannNew
-    PointForceNew
-
-
 materials
 
-    --TODO--
-    MaterialNew
-        subfields
-        db_properties
-        db_initialconditions :TODO:
-    --Subfield containers--
-        PropsElastic
-        PropsMaxwellViscoelastic
-        PropsGenMaxwellViscoelastic
-	    PropsPowerlawViscoelastic
-        PropsDruckerPrager
-        PropsPoroelastic
+    Material
 
 faults
 
     --TODO--
     Fault
     FaultCohesive
-    FaultCohesiveKin
-    FaultCohesiveDyn
-        db_properties
-        db_initialconditions
 
     EqKinSrc
     SlipTimeFn
@@ -88,7 +66,6 @@ faults
 topology
     Mesh
     Field
-    Subfield [children hardwire vectorFieldType, compute ncomponents and scale]
 
 
 ======================================================================

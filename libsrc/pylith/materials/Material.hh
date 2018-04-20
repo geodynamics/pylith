@@ -176,13 +176,6 @@ public:
                                      const pylith::topology::Field& solution);
 
 
-    /** Update state variables as needed.
-     *
-     * @param[in] time Time for current solution.
-     * @param[in] solution Field with current trial solution.
-     */
-    void updateStateVars(PylithReal time, const pylith::topology::Field& solution);
-
     // Write information (auxiliary field) output.
     void writeInfo(void);
 
@@ -307,15 +300,6 @@ protected:
      */
     virtual
     void _setFEKernelsLHSJacobianExplicit(const pylith::topology::Field& solution) const = 0;
-
-    /** Set constants used in finite-element integrations.
-     *
-     * @param[in] solution Solution field.
-     * @param[in] dt Current time step.
-     */
-    virtual
-    void _setFEConstants(const pylith::topology::Field& solution,
-                         const PylithReal dt) const;
 
     /** Get factory for setting up auxliary fields.
      *

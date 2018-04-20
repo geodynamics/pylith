@@ -151,13 +151,6 @@ namespace pylith {
 				       const pylith::topology::Field& solution);
 
 
-      /** Update state variables as needed.
-       *
-       * @param[in] solution Field with current trial solution.
-       */
-      void updateStateVars(const pylith::topology::Field& solution);
-
-
       // PROTECTED METHODS //////////////////////////////////////////////////
     protected:
 
