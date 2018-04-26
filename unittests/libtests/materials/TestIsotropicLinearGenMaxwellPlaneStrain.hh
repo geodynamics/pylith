@@ -39,15 +39,13 @@ namespace pylith {
 } // pylith
 
 /// C++ unit testing for IsotropicLinearGenMaxwellPlaneStrain
-class pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain : public TestMaterial { // class TestIsotropicLinearGenMaxwellPlaneStrain
+class pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain : public TestMaterial {
 
     // CPPUNIT TEST SUITE /////////////////////////////////////////////////
     CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearGenMaxwellPlaneStrain, TestMaterial);
 
     // Tests specific to this materials parameters.
-    CPPUNIT_TEST(testUseInertia);
-    CPPUNIT_TEST(testUseBodyForce);
-    CPPUNIT_TEST(testUseReferenceState);
+    CPPUNIT_TEST(testAccessors);
 
     // Tests that explicitly depend on details of this material.
     CPPUNIT_TEST(test_auxFieldSetup);
@@ -64,14 +62,8 @@ public:
     /// Deallocate testing data.
     void tearDown(void);
 
-    /// Test useInertia().
-    void testUseInertia(void);
-
-    /// Test useBodyForce().
-    void testUseBodyForce(void);
-
-    /// Test useReferenceState().
-    void testUseReferenceState(void);
+    /// Test useInertia(), useBodyForce(), useReferenceState().
+    void testAccessors(void);
 
     /// Test _auxFieldSetup().
     void test_auxFieldSetup(void);
