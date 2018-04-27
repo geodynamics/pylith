@@ -269,8 +269,15 @@ protected:
         _mydata->auxDB->addValue("body_force_x", bodyforce_x, bodyforce_units());
         _mydata->auxDB->addValue("body_force_y", bodyforce_y, bodyforce_units());
 
-        //CPPUNIT_ASSERT(_mydata->auxUpdateDB);
-        PYLITH_JOURNAL_ERROR(":TODO: @charles Add setting up auxUpdateDB for test data.");
+        CPPUNIT_ASSERT(_mydata->auxUpdateDB);
+        _mydata->auxUpdateDB->addValue("total_strain_xx", totalStrain_xx, "none");
+        _mydata->auxUpdateDB->addValue("total_strain_yy", totalStrain_yy, "none");
+        _mydata->auxUpdateDB->addValue("total_strain_zz", totalStrain_zz, "none");
+        _mydata->auxUpdateDB->addValue("total_strain_xy", totalStrain_xy, "none");
+        _mydata->auxUpdateDB->addValue("viscous_strain_xx", viscousStrain_xx, "none");
+        _mydata->auxUpdateDB->addValue("viscous_strain_yy", viscousStrain_yy, "none");
+        _mydata->auxUpdateDB->addValue("viscous_strain_zz", viscousStrain_zz, "none");
+        _mydata->auxUpdateDB->addValue("viscous_strain_xy", viscousStrain_xy, "none");
 
         CPPUNIT_ASSERT(_mydata->solnDB);
         _mydata->solnDB->addValue("displacement_x", disp_x, disp_units());

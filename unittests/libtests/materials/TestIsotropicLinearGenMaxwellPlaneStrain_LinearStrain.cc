@@ -477,6 +477,24 @@ protected:
 		_mydata->auxDB->addValue("viscous_strain_xy_3", viscousStrain_xy_3, "none");
 		_mydata->auxDB->addValue("body_force_x", bodyforce_x, bodyforce_units());
 		_mydata->auxDB->addValue("body_force_y", bodyforce_y, bodyforce_units());
+
+		CPPUNIT_ASSERT(_mydata->auxUpdateDB);
+		_mydata->auxUpdateDB->addValue("total_strain_xx", totalStrain_xx, "none");
+		_mydata->auxUpdateDB->addValue("total_strain_yy", totalStrain_yy, "none");
+		_mydata->auxUpdateDB->addValue("total_strain_zz", totalStrain_zz, "none");
+		_mydata->auxUpdateDB->addValue("total_strain_xy", totalStrain_xy, "none");
+		_mydata->auxUpdateDB->addValue("viscous_strain_xx_1", viscousStrain_xx_1, "none");
+		_mydata->auxUpdateDB->addValue("viscous_strain_yy_1", viscousStrain_yy_1, "none");
+		_mydata->auxUpdateDB->addValue("viscous_strain_zz_1", viscousStrain_zz_1, "none");
+		_mydata->auxUpdateDB->addValue("viscous_strain_xy_1", viscousStrain_xy_1, "none");
+		_mydata->auxUpdateDB->addValue("viscous_strain_xx_2", viscousStrain_xx_2, "none");
+		_mydata->auxUpdateDB->addValue("viscous_strain_yy_2", viscousStrain_yy_2, "none");
+		_mydata->auxUpdateDB->addValue("viscous_strain_zz_2", viscousStrain_zz_2, "none");
+		_mydata->auxUpdateDB->addValue("viscous_strain_xy_2", viscousStrain_xy_2, "none");
+		_mydata->auxUpdateDB->addValue("viscous_strain_xx_3", viscousStrain_xx_3, "none");
+		_mydata->auxUpdateDB->addValue("viscous_strain_yy_3", viscousStrain_yy_3, "none");
+		_mydata->auxUpdateDB->addValue("viscous_strain_zz_3", viscousStrain_zz_3, "none");
+		_mydata->auxUpdateDB->addValue("viscous_strain_xy_3", viscousStrain_xy_3, "none");
 		
 		CPPUNIT_ASSERT(_mydata->solnDB);
 		_mydata->solnDB->addValue("displacement_x", disp_x, disp_units());

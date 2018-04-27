@@ -165,11 +165,8 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_auxFieldSetup(void) {
         _auxMaterialFactory->referenceStrain(); // numA-1
     } // if
 
-    PYLITH_COMPONENT_ERROR(":TODO: @charles Set kernels for updating state variables.");
-    // Each auxiliary subfield that gets updated needs its own pointwise function (kernel).
-    // They pointwise functions are called in the order in which the subfields appear in the auxiliary field.
-    _updateStateVarsKernels["total_strain"] = NULL;
-    _updateStateVarsKernels["viscous_strain"] = NULL;
+    _updateStateVarsKernels["total_strain"] = pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateTotalStrain;
+    _updateStateVarsKernels["viscous_strain"] = pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateViscousStrain;
 
     PYLITH_METHOD_END;
 } // _auxFieldSetup
@@ -424,29 +421,6 @@ pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsLHSJacobianEx
 
     PYLITH_METHOD_END;
 } // _setFEKernelsLHSJacobianExplicit
-
-
-// ----------------------------------------------------------------------
-// Set kernels for updating state variables.
-void
-pylith::materials::IsotropicLinearMaxwellPlaneStrain::_setFEKernelsUpdateStatevars(const pylith::topology::Field& solution) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setFEKernelsUpdateStatevars(solution="<<solution.label()<<")");
-
-    const PetscDM dm = _auxField->dmMesh(); assert(dm);
-    PetscDS prob = NULL;
-    PetscErrorCode err = DMGetDS(dm, &prob); PYLITH_CHECK_ERROR(err);
-
-    const PetscInt i_totalstrain = solution.subfieldInfo("total_strain").index;
-    const PetscInt i_viscousstrain = solution.subfieldInfo("viscous_strain").index;
-
-    const PetscPointFunc updateTotalStrainKernel = pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateTotalStrain;
-    const PetscPointFunc updateViscousStrainKernel = pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateViscousStrain;
-    err = PetscDSSetUpdate(prob, i_totalstrain, updateTotalStrainKernel); PYLITH_CHECK_ERROR(err);
-    err = PetscDSSetUpdate(prob, i_viscousstrain, updateViscousStrainKernel); PYLITH_CHECK_ERROR(err);
-
-    PYLITH_METHOD_END;
-} // _setFEKernelsUpdateStatevars
 
 
 // End of file

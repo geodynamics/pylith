@@ -173,6 +173,11 @@ pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::_auxFieldSetup(void) {
         _auxMaterialFactory->referenceStrain(); // numA-1
     } // if
 
+	_updateStateVarsKernels["total_strain"] = pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateTotalStrain;
+    _updateStateVarsKernels["viscous_strain_1"] = pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateViscousStrain_1;
+    _updateStateVarsKernels["viscous_strain_2"] = pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateViscousStrain_2;
+    _updateStateVarsKernels["viscous_strain_3"] = pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateViscousStrain_3;
+
     PYLITH_METHOD_END;
 } // _auxFieldSetup
 
@@ -180,7 +185,7 @@ pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::_auxFieldSetup(void) {
 // Set constants for problem.
 void
 pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::_setFEConstants(const pylith::topology::Field& solution,
-                                                                      const PylithReal dt) const {
+																		 const PylithReal dt) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setFEConstants(solution="<<solution.label()<<", dt="<<dt<<")");
 
@@ -426,35 +431,6 @@ pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::_setFEKernelsLHSJacobia
 
     PYLITH_METHOD_END;
 } // _setFEKernelsLHSJacobianExplicit
-
-
-// ----------------------------------------------------------------------
-// Set kernels for updating state variables.
-void
-pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::_setFEKernelsUpdateStatevars(const pylith::topology::Field& solution) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setFEKernelsUpdateStatevars(solution="<<solution.label()<<")");
-
-    const PetscDM dm = _auxField->dmMesh(); assert(dm);
-    PetscDS prob = NULL;
-    PetscErrorCode err = DMGetDS(dm, &prob); PYLITH_CHECK_ERROR(err);
-
-    const PetscInt i_totalstrain = solution.subfieldInfo("total_strain").index;
-    const PetscInt i_viscousstrain_1 = solution.subfieldInfo("viscous_strain_1").index;
-    const PetscInt i_viscousstrain_2 = solution.subfieldInfo("viscous_strain_2").index;
-    const PetscInt i_viscousstrain_3 = solution.subfieldInfo("viscous_strain_3").index;
-
-    const PetscPointFunc updateTotalStrainKernel = pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateTotalStrain;
-    const PetscPointFunc updateViscousStrainKernel_1 = pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateViscousStrain_1;
-    const PetscPointFunc updateViscousStrainKernel_2 = pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateViscousStrain_2;
-    const PetscPointFunc updateViscousStrainKernel_3 = pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateViscousStrain_3;
-    err = PetscDSSetUpdate(prob, i_totalstrain, updateTotalStrainKernel); PYLITH_CHECK_ERROR(err);
-    err = PetscDSSetUpdate(prob, i_viscousstrain_1, updateViscousStrainKernel_1); PYLITH_CHECK_ERROR(err);
-    err = PetscDSSetUpdate(prob, i_viscousstrain_2, updateViscousStrainKernel_2); PYLITH_CHECK_ERROR(err);
-    err = PetscDSSetUpdate(prob, i_viscousstrain_3, updateViscousStrainKernel_3); PYLITH_CHECK_ERROR(err);
-
-    PYLITH_METHOD_END;
-} // _setFEKernelsUpdateStatevars
 
 
 // End of file

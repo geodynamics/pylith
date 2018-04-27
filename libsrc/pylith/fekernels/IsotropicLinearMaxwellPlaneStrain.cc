@@ -25,6 +25,7 @@
 
 #include <cassert> // USES assert()
 #include <cmath> // USES exp()
+#include <iostream> // debugging.
 
 /* ======================================================================
  * Kernels for isotropic, linear Maxwell viscoelastic plane strain.
@@ -700,6 +701,21 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateTotalStrain(const Py
     // Incoming solution fields.
     const PylithInt i_disp = 0;
 
+#if 0 // :DEBUG:
+	std::cout << "dim:  " << dim << std::endl;
+	std::cout << "numS:  " << numS << std::endl;
+	std::cout << "numA:  " << numA << std::endl;
+	std::cout << "sOff[0]:  " << sOff[0] << std::endl;
+	std::cout << "sOff_x[0]:  " << sOff_x[0] << std::endl;
+	std::cout << "s[0]:  " << s[0] << std::endl;
+	std::cout << "aOff[0]:  " << aOff[0] << std::endl;
+	std::cout << "a[0]:  " << a[0] << std::endl;
+	std::cout << "t:  " << t << std::endl;
+	std::cout << "x[0]:  " << x[0] << std::endl;
+	std::cout << "numConstants:  " << numConstants << std::endl;
+	std::cout << "totalStrainTpdt[0]:  " << totalStrainTpdt[0] << std::endl;
+#endif
+
     assert(_dim == dim);
     assert(1 == numS || 2 == numS);
     assert(6 >= numA && 10 <= numA);
@@ -751,6 +767,21 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::updateViscousStrain(const 
     const PylithInt i_maxwellTime = 3;
     const PylithInt i_totalStrain = 4;
     const PylithInt i_viscousStrain = 5;
+
+#if 0 // :DEBUG:
+	std::cout << "dim:  " << dim << std::endl;
+	std::cout << "numS:  " << numS << std::endl;
+	std::cout << "numA:  " << numA << std::endl;
+	std::cout << "sOff[0]:  " << sOff[0] << std::endl;
+	std::cout << "sOff_x[0]:  " << sOff_x[0] << std::endl;
+	std::cout << "s[0]:  " << s[0] << std::endl;
+	std::cout << "aOff[0]:  " << aOff[0] << std::endl;
+	std::cout << "a[0]:  " << a[0] << std::endl;
+	std::cout << "t:  " << t << std::endl;
+	std::cout << "x[0]:  " << x[0] << std::endl;
+	std::cout << "numConstants:  " << numConstants << std::endl;
+	std::cout << "visStrainTpdt[0]:  " << visStrainTpdt[0] << std::endl;
+#endif
 
     assert(_dim == dim);
     assert(1 == numS || 2 == numS);

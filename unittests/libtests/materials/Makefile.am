@@ -33,14 +33,17 @@ testmaterials_SOURCES = \
 	TestIsotropicLinearElasticityPlaneStrain_UniformStrain.cc \
 	TestIsotropicLinearElasticityPlaneStrain_GravityRefState.cc \
 	TestIsotropicLinearMaxwellPlaneStrain.cc \
+	TestIsotropicLinearGenMaxwellPlaneStrain.cc \
 	TestIsotropicLinearMaxwellPlaneStrain_LinearStrain.cc \
+	TestIsotropicLinearGenMaxwellPlaneStrain_LinearStrain.cc \
 	test_materials.cc
 
 
 noinst_HEADERS = \
 	TestMaterial.hh \
 	TestIsotropicLinearElasticityPlaneStrain.hh \
-	TestIsotropicLinearMaxwellPlaneStrain.hh
+	TestIsotropicLinearMaxwellPlaneStrain.hh \
+	TestIsotropicLinearGenMaxwellPlaneStrain.hh
 
 AM_CPPFLAGS += \
 	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \

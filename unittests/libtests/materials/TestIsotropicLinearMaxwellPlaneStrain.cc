@@ -459,12 +459,12 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_Data::TestIsotropicLine
     cs->initialize();
 
     // Some auxiliary subfields get updated in updateStateVars().
-    //auxUpdateDB = new spatialdata::spatialdb::UserFunctionDB; CPPUNIT_ASSERT(auxUpdateDB);
+    auxUpdateDB = new spatialdata::spatialdb::UserFunctionDB; CPPUNIT_ASSERT(auxUpdateDB);
 
     solnDB->coordsys(*cs);
     perturbDB->coordsys(*cs);
     auxDB->coordsys(*cs);
-    //auxUpdateDB->coordsys(*cs);
+    auxUpdateDB->coordsys(*cs);
 } // constructor
 
 

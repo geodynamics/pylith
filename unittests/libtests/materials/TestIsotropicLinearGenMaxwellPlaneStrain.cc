@@ -675,20 +675,18 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain_Data::TestIsotropicL
     cs->initialize();
 
 	// Some auxiliary subfields get updated in updateStateVars().
-    //auxUpdateDB = new spatialdata::spatialdb::UserFunctionDB; CPPUNIT_ASSERT(auxUpdateDB);
+    auxUpdateDB = new spatialdata::spatialdb::UserFunctionDB; CPPUNIT_ASSERT(auxUpdateDB);
 
     solnDB->coordsys(*cs);
     perturbDB->coordsys(*cs);
     auxDB->coordsys(*cs);
-    //auxUpdateDB->coordsys(*cs);
+    auxUpdateDB->coordsys(*cs);
 } // constructor
 
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain_Data::~TestIsotropicLinearGenMaxwellPlaneStrain_Data(void)
-{ // destructor
-} // destructor
+pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain_Data::~TestIsotropicLinearGenMaxwellPlaneStrain_Data(void) {}
 
 
 // End of file

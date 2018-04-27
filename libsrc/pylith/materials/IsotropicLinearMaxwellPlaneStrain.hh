@@ -136,13 +136,6 @@ protected:
     void _setFEKernelsLHSJacobianExplicit(const topology::Field& solution) const;
 
 
-    /** Set kernels for updating state variables.
-     *
-     * @param[in] solution Solution field.
-     */
-    void _setFEKernelsUpdateStatevars(const topology::Field& solution) const;
-
-
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private:
 
