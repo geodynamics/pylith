@@ -191,7 +191,7 @@ pylith::feassemble::IntegratorPointwise::updateStateVars(const PylithReal t,
 
     assert(_auxField);
 
-    _setFEConstants(solution, dt);
+    _setFEConstants(*_auxField, dt);
 
     // Set update kernel for each auxiliary subfield.
     const pylith::string_vector& subfieldNames = _auxField->subfieldNames();
