@@ -208,7 +208,7 @@ namespace pylith {
       void _setFEKernelsLHSResidual(const topology::Field& solution) const = 0;
       
 
-      /** Set kernels for LHS Jacobian F(t,s,\dot{s}) when implicit time-stepping.
+      /** Set kernels for LHS Jacobian F(t,s,\dot{s}).
        *
        * - Jf0(ifield, jfield)
        * - Jf1(ifield, jfield, jdim)
@@ -218,21 +218,9 @@ namespace pylith {
        * @param solution Solution field.
        */
       virtual
-      void _setFEKernelsLHSJacobianImplicit(const topology::Field& solution) const = 0;
+      void _setFEKernelsLHSJacobian(const topology::Field& solution) const = 0;
 
 
-      /** Set kernels for LHS Jacobian F(t,s,\dot{s}) when explicit time-stepping.
-       *
-       * - Jf0(ifield, jfield)
-       * - Jf1(ifield, jfield, jdim)
-       * - Jf2(ifield, jfield, idim)
-       * - Jf3(ifield, jfield, idim, jdim)
-       *
-       * @param solution Solution field.
-       */
-      virtual
-      void _setFEKernelsLHSJacobianExplicit(const topology::Field& solution) const = 0;
-      
     }; // class Material
 
   } // materials

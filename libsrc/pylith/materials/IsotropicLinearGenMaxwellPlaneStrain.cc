@@ -55,7 +55,7 @@ pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::IsotropicLinearGenMaxwe
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::~IsotropicLinearGenMaxwellPlaneStrain(void) {} // destructor
+pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::~IsotropicLinearGenMaxwellPlaneStrain(void) {}
 
 
 // ----------------------------------------------------------------------
@@ -173,7 +173,7 @@ pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::_auxFieldSetup(void) {
         _auxMaterialFactory->referenceStrain(); // numA-1
     } // if
 
-	_updateStateVarsKernels["total_strain"] = pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateTotalStrain;
+    _updateStateVarsKernels["total_strain"] = pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateTotalStrain;
     _updateStateVarsKernels["viscous_strain_1"] = pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateViscousStrain_1;
     _updateStateVarsKernels["viscous_strain_2"] = pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateViscousStrain_2;
     _updateStateVarsKernels["viscous_strain_3"] = pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::updateViscousStrain_3;
@@ -185,7 +185,7 @@ pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::_auxFieldSetup(void) {
 // Set constants for problem.
 void
 pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::_setFEConstants(const pylith::topology::Field& solution,
-																		 const PylithReal dt) const {
+                                                                         const PylithReal dt) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setFEConstants(solution="<<solution.label()<<", dt="<<dt<<")");
 
@@ -338,9 +338,9 @@ pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::_setFEKernelsLHSResidua
 // ----------------------------------------------------------------------
 // Set kernels for LHS Jacobian F(t,s,\dot{s}).
 void
-pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::_setFEKernelsLHSJacobianImplicit(const pylith::topology::Field& solution) const {
+pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::_setFEKernelsLHSJacobian(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setFEKernelsLHSJacobianImplicit(solution="<<solution.label()<<")");
+    PYLITH_COMPONENT_DEBUG("_setFEKernelsLHSJacobian(solution="<<solution.label()<<")");
 
     const PetscDM dm = solution.dmMesh(); assert(dm);
     PetscDS prob = NULL;
@@ -360,7 +360,7 @@ pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::_setFEKernelsLHSJacobia
         const PetscInt i_vel = solution.subfieldInfo("velocity").index;
 
         // Jacobian kernels
-        const PetscPointJac Jf0uu = pylith::fekernels::DispVel::Jf0uu_implicit;
+        const PetscPointJac Jf0uu = pylith::fekernels::DispVel::Jf0uu;
         const PetscPointJac Jf1uu = NULL;
         const PetscPointJac Jf2uu = NULL;
         const PetscPointJac Jf3uu = NULL;
@@ -375,7 +375,7 @@ pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::_setFEKernelsLHSJacobia
         const PetscPointJac Jf2vu = NULL;
         const PetscPointJac Jf3vu = NULL;
 
-        const PetscPointJac Jf0vv = (_useInertia) ? pylith::fekernels::ElasticityPlaneStrain::Jf0vv_implicit : NULL;
+        const PetscPointJac Jf0vv = (_useInertia) ? pylith::fekernels::ElasticityPlaneStrain::Jf0vv : NULL;
         const PetscPointJac Jf1vv = NULL;
         const PetscPointJac Jf2vv = NULL;
         const PetscPointJac Jf3vv = NULL;
@@ -387,50 +387,7 @@ pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::_setFEKernelsLHSJacobia
     } // if/else
 
     PYLITH_METHOD_END;
-} // _setFEKernelsLHSJacobianImplicit
-
-
-// ----------------------------------------------------------------------
-// Set kernels for LHS Jacobian F(t,s,\dot{s}).
-void
-pylith::materials::IsotropicLinearGenMaxwellPlaneStrain::_setFEKernelsLHSJacobianExplicit(const pylith::topology::Field& solution) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setFEKernelsLHSJacobianExplicit(solution="<<solution.label()<<")");
-
-    const PetscInt i_disp = solution.subfieldInfo("displacement").index;
-    const PetscInt i_vel = solution.subfieldInfo("velocity").index;
-
-    // Jacobian kernels
-    const PetscPointJac Jf0uu = pylith::fekernels::DispVel::Jf0uu_explicit;
-    const PetscPointJac Jf1uu = NULL;
-    const PetscPointJac Jf2uu = NULL;
-    const PetscPointJac Jf3uu = NULL;
-
-    const PetscPointJac Jf0uv = NULL;
-    const PetscPointJac Jf1uv = NULL;
-    const PetscPointJac Jf2uv = NULL;
-    const PetscPointJac Jf3uv = NULL;
-
-    const PetscPointJac Jf0vu = NULL;
-    const PetscPointJac Jf1vu = NULL;
-    const PetscPointJac Jf2vu = NULL;
-    const PetscPointJac Jf3vu = NULL;
-
-    const PetscPointJac Jf0vv = (_useInertia) ? pylith::fekernels::ElasticityPlaneStrain::Jf0vv_explicit : NULL;
-    const PetscPointJac Jf1vv = NULL;
-    const PetscPointJac Jf2vv = NULL;
-    const PetscPointJac Jf3vv = NULL;
-
-    const PetscDM dm = solution.dmMesh(); assert(dm);
-    PetscDS prob = NULL;
-    PetscErrorCode err = DMGetDS(dm, &prob); PYLITH_CHECK_ERROR(err);
-    err = PetscDSSetJacobian(prob, i_disp, i_disp, Jf0uu, Jf1uu, Jf2uu, Jf3uu); PYLITH_CHECK_ERROR(err);
-    err = PetscDSSetJacobian(prob, i_disp, i_vel,  Jf0uv, Jf1uv, Jf2uv, Jf3uv); PYLITH_CHECK_ERROR(err);
-    err = PetscDSSetJacobian(prob, i_vel,  i_disp, Jf0vu, Jf1vu, Jf2vu, Jf3vu); PYLITH_CHECK_ERROR(err);
-    err = PetscDSSetJacobian(prob, i_vel,  i_vel,  Jf0vv, Jf1vv, Jf2vv, Jf3vv); PYLITH_CHECK_ERROR(err);
-
-    PYLITH_METHOD_END;
-} // _setFEKernelsLHSJacobianExplicit
+} // _setFEKernelsLHSJacobian
 
 
 // End of file

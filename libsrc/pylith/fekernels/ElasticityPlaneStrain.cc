@@ -74,27 +74,27 @@ pylith::fekernels::ElasticityPlaneStrain::f0v(const PylithInt dim,
 
 
 // ----------------------------------------------------------------------
-// Jf0 function for isotropic linear elasticity plane strain with implicit time stepping.
+// Jf0 function for isotropic linear elasticity plane strain.
 void
-pylith::fekernels::ElasticityPlaneStrain::Jf0vv_implicit(const PylithInt dim,
-                                                         const PylithInt numS,
-                                                         const PylithInt numA,
-                                                         const PylithInt sOff[],
-                                                         const PylithInt sOff_x[],
-                                                         const PylithScalar s[],
-                                                         const PylithScalar s_t[],
-                                                         const PylithScalar s_x[],
-                                                         const PylithInt aOff[],
-                                                         const PylithInt aOff_x[],
-                                                         const PylithScalar a[],
-                                                         const PylithScalar a_t[],
-                                                         const PylithScalar a_x[],
-                                                         const PylithReal t,
-                                                         const PylithReal utshift,
-                                                         const PylithScalar x[],
-                                                         const PylithInt numConstants,
-                                                         const PylithScalar constants[],
-                                                         PylithScalar Jf0[]) {
+pylith::fekernels::ElasticityPlaneStrain::Jf0vv(const PylithInt dim,
+                                                const PylithInt numS,
+                                                const PylithInt numA,
+                                                const PylithInt sOff[],
+                                                const PylithInt sOff_x[],
+                                                const PylithScalar s[],
+                                                const PylithScalar s_t[],
+                                                const PylithScalar s_x[],
+                                                const PylithInt aOff[],
+                                                const PylithInt aOff_x[],
+                                                const PylithScalar a[],
+                                                const PylithScalar a_t[],
+                                                const PylithScalar a_x[],
+                                                const PylithReal t,
+                                                const PylithReal utshift,
+                                                const PylithScalar x[],
+                                                const PylithInt numConstants,
+                                                const PylithScalar constants[],
+                                                PylithScalar Jf0[]) {
     const PylithInt _dim = 2;
 
     const PylithInt i_density = 0;
@@ -111,48 +111,7 @@ pylith::fekernels::ElasticityPlaneStrain::Jf0vv_implicit(const PylithInt dim,
     for (i = 0; i < _dim; ++i) {
         Jf0[i*_dim+i] += utshift * density;
     } // for
-} // Jf0vv_implicit
-
-
-// ----------------------------------------------------------------------
-// Jf0 function for isotropic linear elasticity plane strain with explicit time stepping.
-void
-pylith::fekernels::ElasticityPlaneStrain::Jf0vv_explicit(const PylithInt dim,
-                                                         const PylithInt numS,
-                                                         const PylithInt numA,
-                                                         const PylithInt sOff[],
-                                                         const PylithInt sOff_x[],
-                                                         const PylithScalar s[],
-                                                         const PylithScalar s_t[],
-                                                         const PylithScalar s_x[],
-                                                         const PylithInt aOff[],
-                                                         const PylithInt aOff_x[],
-                                                         const PylithScalar a[],
-                                                         const PylithScalar a_t[],
-                                                         const PylithScalar a_x[],
-                                                         const PylithReal t,
-                                                         const PylithReal utshift,
-                                                         const PylithScalar x[],
-                                                         const PylithInt numConstants,
-                                                         const PylithScalar constants[],
-                                                         PylithScalar Jf0[]) {
-    const PylithInt _dim = 2;
-
-    const PylithInt i_density = 0;
-    const PylithScalar density = a[aOff[i_density]];
-    PylithInt i;
-
-    assert(_dim == dim);
-    assert(2 == numS);
-    assert(numA >= 5);
-    assert(aOff);
-    assert(a);
-
-    for (i = 0; i < _dim; ++i) {
-        Jf0[i*_dim+i] += density;
-    } // for
-
-} // Jf0vv_explicit
+} // Jf0vv
 
 
 // ----------------------------------------------------------------------

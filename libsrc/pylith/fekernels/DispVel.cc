@@ -141,25 +141,25 @@ pylith::fekernels::DispVel::Jf0uu_zero(const PylithInt dim,
 // ----------------------------------------------------------------------
 // Jf0 function for disp/velocity equation with implicit time-stepping.
 void
-pylith::fekernels::DispVel::Jf0uu_implicit(const PylithInt dim,
-                                           const PylithInt numS,
-                                           const PylithInt numA,
-                                           const PylithInt sOff[],
-                                           const PylithInt sOff_x[],
-                                           const PylithScalar s[],
-                                           const PylithScalar s_t[],
-                                           const PylithScalar s_x[],
-                                           const PylithInt aOff[],
-                                           const PylithInt aOff_x[],
-                                           const PylithScalar a[],
-                                           const PylithScalar a_t[],
-                                           const PylithScalar a_x[],
-                                           const PylithReal t,
-                                           const PylithReal utshift,
-                                           const PylithScalar x[],
-                                           const PylithInt numConstants,
-                                           const PylithScalar constants[],
-                                           PylithScalar Jf0[]) {
+pylith::fekernels::DispVel::Jf0uu(const PylithInt dim,
+                                  const PylithInt numS,
+                                  const PylithInt numA,
+                                  const PylithInt sOff[],
+                                  const PylithInt sOff_x[],
+                                  const PylithScalar s[],
+                                  const PylithScalar s_t[],
+                                  const PylithScalar s_x[],
+                                  const PylithInt aOff[],
+                                  const PylithInt aOff_x[],
+                                  const PylithScalar a[],
+                                  const PylithScalar a_t[],
+                                  const PylithScalar a_x[],
+                                  const PylithReal t,
+                                  const PylithReal utshift,
+                                  const PylithScalar x[],
+                                  const PylithInt numConstants,
+                                  const PylithScalar constants[],
+                                  PylithScalar Jf0[]) {
     const PylithInt _numS = 2;
 
     PylithInt i;
@@ -169,41 +169,7 @@ pylith::fekernels::DispVel::Jf0uu_implicit(const PylithInt dim,
     for (i = 0; i < dim; ++i) {
         Jf0[i*dim+i] += utshift;
     } // for
-} // Jf0uu_implicit
-
-
-// ----------------------------------------------------------------------
-// Jf0 function for disp/velocity equation with explicit time-stepping.
-void
-pylith::fekernels::DispVel::Jf0uu_explicit(const PylithInt dim,
-                                           const PylithInt numS,
-                                           const PylithInt numA,
-                                           const PylithInt sOff[],
-                                           const PylithInt sOff_x[],
-                                           const PylithScalar s[],
-                                           const PylithScalar s_t[],
-                                           const PylithScalar s_x[],
-                                           const PylithInt aOff[],
-                                           const PylithInt aOff_x[],
-                                           const PylithScalar a[],
-                                           const PylithScalar a_t[],
-                                           const PylithScalar a_x[],
-                                           const PylithReal t,
-                                           const PylithReal utshift,
-                                           const PylithScalar x[],
-                                           const PylithInt numConstants,
-                                           const PylithScalar constants[],
-                                           PylithScalar Jf0[]) {
-    const PylithInt _numS = 2;
-
-    PylithInt i;
-
-    assert(_numS == numS);
-
-    for (i = 0; i < dim; ++i) {
-        Jf0[i*dim+i] += 1.0;
-    } // for
-} // Jf0uu_explicit
+} // Jf0uu
 
 
 // ----------------------------------------------------------------------

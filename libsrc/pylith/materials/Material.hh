@@ -278,7 +278,7 @@ protected:
     void _setFEKernelsLHSResidual(const pylith::topology::Field& solution) const = 0;
 
 
-    /** Set kernels for LHS Jacobian F(t,s,\dot{s}) when implicit time-stepping.
+    /** Set kernels for LHS Jacobian F(t,s,\dot{s}).
      *
      * - Jf0(ifield, jfield)
      * - Jf1(ifield, jfield, jdim)
@@ -288,20 +288,8 @@ protected:
      * @param[inout] solution Solution field.
      */
     virtual
-    void _setFEKernelsLHSJacobianImplicit(const pylith::topology::Field& solution) const = 0;
+    void _setFEKernelsLHSJacobian(const pylith::topology::Field& solution) const = 0;
 
-
-    /** Set kernels for LHS Jacobian F(t,s,\dot{s}) when explicit time-stepping.
-     *
-     * - Jf0(ifield, jfield)
-     * - Jf1(ifield, jfield, jdim)
-     * - Jf2(ifield, jfield, idim)
-     * - Jf3(ifield, jfield, idim, jdim)
-     *
-     * @param[inout] solution Solution field.
-     */
-    virtual
-    void _setFEKernelsLHSJacobianExplicit(const pylith::topology::Field& solution) const = 0;
 
     /** Get factory for setting up auxliary fields.
      *

@@ -160,57 +160,30 @@ public:
                     const PylithScalar constants[],
                     PylithScalar Jf0[]);
 
-    /** Jf0 function for disp/velocity equation with implicit time-stepping.
+    /** Jf0 function for disp/velocity equation.
      *
      * Solution fields: [disp(dim), vel(dim)]
      */
     static
-    void Jf0uu_implicit(const PylithInt dim,
-                        const PylithInt numS,
-                        const PylithInt numA,
-                        const PylithInt sOff[],
-                        const PylithInt sOff_x[],
-                        const PylithScalar s[],
-                        const PylithScalar s_t[],
-                        const PylithScalar s_x[],
-                        const PylithInt aOff[],
-                        const PylithInt aOff_x[],
-                        const PylithScalar a[],
-                        const PylithScalar a_t[],
-                        const PylithScalar a_x[],
-                        const PylithReal t,
-                        const PylithReal utshift,
-                        const PylithScalar x[],
-                        const PylithInt numConstants,
-                        const PylithScalar constants[],
-                        PylithScalar Jf0[]);
-
-    /** Jf0 function for disp/velocity equation with explicit time-stepping.
-     *
-     *
-     * Solution fields: [disp(dim), vel(dim)]
-     */
-    static
-    void Jf0uu_explicit(const PylithInt dim,
-                        const PylithInt numS,
-                        const PylithInt numA,
-                        const PylithInt sOff[],
-                        const PylithInt sOff_x[],
-                        const PylithScalar s[],
-                        const PylithScalar s_t[],
-                        const PylithScalar s_x[],
-                        const PylithInt aOff[],
-                        const PylithInt aOff_x[],
-                        const PylithScalar a[],
-                        const PylithScalar a_t[],
-                        const PylithScalar a_x[],
-                        const PylithReal t,
-                        const PylithReal utshift,
-                        const PylithScalar x[],
-                        const PylithInt numConstants,
-                        const PylithScalar constants[],
-                        PylithScalar Jf0[]);
-
+    void Jf0uu(const PylithInt dim,
+               const PylithInt numS,
+               const PylithInt numA,
+               const PylithInt sOff[],
+               const PylithInt sOff_x[],
+               const PylithScalar s[],
+               const PylithScalar s_t[],
+               const PylithScalar s_x[],
+               const PylithInt aOff[],
+               const PylithInt aOff_x[],
+               const PylithScalar a[],
+               const PylithScalar a_t[],
+               const PylithScalar a_x[],
+               const PylithReal t,
+               const PylithReal utshift,
+               const PylithScalar x[],
+               const PylithInt numConstants,
+               const PylithScalar constants[],
+               PylithScalar Jf0[]);
 
     /** Jg0 function for disp/velocity equation.
      *

@@ -85,20 +85,11 @@ namespace pylith {
        */
       void _setFEKernelsLHSResidual(const topology::Field& solution) const;
 
-
       /** Set kernels for LHS Jacobian F(t,u,\dot{u}) when implicit time-stepping.
        *
        * @param[in] solution Solution field.
        */
-      void _setFEKernelsLHSJacobianImplicit(const topology::Field& solution) const;
-
-
-      /** Set kernels for LHS Jacobian F(t,u,\dot{u}) when explicit time-stepping.
-       *
-       * @param[in] solution Solution field.
-       */
-      void _setFEKernelsLHSJacobianExplicit(const topology::Field& solution) const;
-
+      void _setFEKernelsLHSJacobian(const topology::Field& solution) const;
 
       /** Set kernels for updating state variables.
        *

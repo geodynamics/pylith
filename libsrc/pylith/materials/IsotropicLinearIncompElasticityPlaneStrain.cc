@@ -267,7 +267,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsRHSJ
         err = PetscDSSetJacobian(prob, i_pres, i_pres, Jg0pp, Jg1pp, Jg2pp, Jg3pp); PYLITH_CHECK_ERROR(err);
 
     } else {
-        PYLITH_COMPONENT_WARNING("IsotropicLinearIncompElasticityPlaneStrain with velocity solution field not implemented.");
+        PYLITH_COMPONENT_ERROR("IsotropicLinearIncompElasticityPlaneStrain with velocity solution field not implemented.");
         throw std::logic_error("IsotropicLinearIncompElasticityPlaneStrain with velocity solution field not implemented.");
     } // if/else
 
@@ -292,7 +292,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsLHSR
     if (!solution.hasSubfield("velocity")) {
         // F(t,s,\dot{s}) = \vec{0}.
     } else {
-        PYLITH_COMPONENT_WARNING("IsotropicLinearIncompElasticityPlaneStrain with velocity solution field not implemented.");
+        PYLITH_COMPONENT_ERROR("IsotropicLinearIncompElasticityPlaneStrain with velocity solution field not implemented.");
         throw std::logic_error("IsotropicLinearIncompElasticityPlaneStrain with velocity solution field not implemented.");
     } // if/else
 
@@ -303,7 +303,7 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsLHSR
 // ----------------------------------------------------------------------
 // Set kernels for LHS Jacobian F(t,s,\dot{s}).
 void
-pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsLHSJacobianImplicit(const topology::Field& solution) const {
+pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsLHSJacobian(const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setFEKernelsLHSJacobianImplicit(solution="<<solution.label()<<")");
 
@@ -340,24 +340,12 @@ pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsLHSJ
         err = PetscDSSetJacobian(prob, i_pres, i_disp, Jf0pu, Jf1pu, Jf2pu, Jf3pu); PYLITH_CHECK_ERROR(err);
         err = PetscDSSetJacobian(prob, i_pres, i_pres, Jf0pp, Jf1pp, Jf2pp, Jf3pp); PYLITH_CHECK_ERROR(err);
     } else {
-        PYLITH_COMPONENT_WARNING("IsotropicLinearIncompElasticityPlaneStrain with velocity solution field not implemented.");
+        PYLITH_COMPONENT_ERROR("IsotropicLinearIncompElasticityPlaneStrain with velocity solution field not implemented.");
         throw std::logic_error("IsotropicLinearIncompElasticityPlaneStrain with velocity solution field not implemented.");
     } // if/else
 
     PYLITH_METHOD_END;
-} // _setFEKernelsLHSJacobianImplicit
-
-
-// ----------------------------------------------------------------------
-// Set kernels for LHS Jacobian F(t,s,\dot{s}).
-void
-pylith::materials::IsotropicLinearIncompElasticityPlaneStrain::_setFEKernelsLHSJacobianExplicit(const topology::Field& solution) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setFEKernelsLHSJacobianExplicit(solution="<<solution.label()<<")");
-
-    PYLITH_COMPONENT_WARNING("IsotropicLinearIncompElasticityPlaneStrain with velocity solution field not implemented.");
-    throw std::logic_error("IsotropicLinearIncompElasticityPlaneStrain with velocity solution field not implemented.");
-} // _setFEKernelsLHSJacobianExplicit
+} // _setFEKernelsLHSJacobian
 
 
 // End of file

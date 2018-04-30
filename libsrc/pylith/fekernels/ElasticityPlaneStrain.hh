@@ -87,58 +87,31 @@ public:
              PylithScalar f0[]);
 
 
-    /** Jf0 function for isotropoc linear elasticity plane strain with implicit time stepping.
+    /** Jf0 function for isotropoc linear elasticity plane strain.
      *
      * Solution fields: [...]
      * Auxiliary fields: [density(1), ...]
      */
     static
-    void Jf0vv_implicit(const PylithInt dim,
-                        const PylithInt numS,
-                        const PylithInt numA,
-                        const PylithInt sOff[],
-                        const PylithInt sOff_x[],
-                        const PylithScalar s[],
-                        const PylithScalar s_t[],
-                        const PylithScalar s_x[],
-                        const PylithInt aOff[],
-                        const PylithInt aOff_x[],
-                        const PylithScalar a[],
-                        const PylithScalar a_t[],
-                        const PylithScalar a_x[],
-                        const PylithReal t,
-                        const PylithReal utshift,
-                        const PylithScalar x[],
-                        const PylithInt numConstants,
-                        const PylithScalar constants[],
-                        PylithScalar Jf0[]);
-
-
-    /** Jf0 function for isotropoc linear elasticity plane strain with explicit time stepping.
-     *
-     * Solution fields: [...]
-     * Auxiliary fields: [density(1), ...]
-     */
-    static
-    void Jf0vv_explicit(const PylithInt dim,
-                        const PylithInt numS,
-                        const PylithInt numA,
-                        const PylithInt sOff[],
-                        const PylithInt sOff_x[],
-                        const PylithScalar s[],
-                        const PylithScalar s_t[],
-                        const PylithScalar s_x[],
-                        const PylithInt aOff[],
-                        const PylithInt aOff_x[],
-                        const PylithScalar a[],
-                        const PylithScalar a_t[],
-                        const PylithScalar a_x[],
-                        const PylithReal t,
-                        const PylithReal utshift,
-                        const PylithScalar x[],
-                        const PylithInt numConstants,
-                        const PylithScalar constants[],
-                        PylithScalar Jf0[]);
+    void Jf0vv(const PylithInt dim,
+               const PylithInt numS,
+               const PylithInt numA,
+               const PylithInt sOff[],
+               const PylithInt sOff_x[],
+               const PylithScalar s[],
+               const PylithScalar s_t[],
+               const PylithScalar s_x[],
+               const PylithInt aOff[],
+               const PylithInt aOff_x[],
+               const PylithScalar a[],
+               const PylithScalar a_t[],
+               const PylithScalar a_x[],
+               const PylithReal t,
+               const PylithReal utshift,
+               const PylithScalar x[],
+               const PylithInt numConstants,
+               const PylithScalar constants[],
+               PylithScalar Jf0[]);
 
 
     /** Calculate mean stress for 2-D plane strain isotropic linear

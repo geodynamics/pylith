@@ -248,7 +248,7 @@ pylith::materials::Material::computeLHSJacobianImplicit(PetscMat jacobianMat,
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("computeLHSJacobianImplicit(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", tshift="<<tshift<<", solution="<<solution.label()<<", solutionDot="<<solutionDot.label()<<")");
 
-    _setFEKernelsLHSJacobianImplicit(solution);
+    _setFEKernelsLHSJacobian(solution);
     _setFEConstants(solution, dt);
 
     _computeJacobian(jacobianMat, precondMat, t, dt, tshift, solution, solutionDot);
@@ -272,17 +272,14 @@ pylith::materials::Material::computeLHSJacobianLumpedInv(pylith::topology::Field
 
     assert(jacobianInv);
 
-    _setFEKernelsLHSJacobianExplicit(solution);
+    _setFEKernelsLHSJacobian(solution);
     _setFEConstants(solution, dt);
 
     PetscDS prob = NULL;
-    PetscIS cells = NULL;
-    PetscInt cStart = 0, cEnd = 0;
     PetscErrorCode err;
 
     PetscDM dmSoln = solution.dmMesh();
     PetscDM dmAux = _auxField->dmMesh();
-    PetscDMLabel dmLabel;
 
     // Pointwise function have been set in DS
     err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err);
@@ -296,18 +293,20 @@ pylith::materials::Material::computeLHSJacobianLumpedInv(pylith::topology::Field
     err = VecSet(vecRowSum, 1.0); PYLITH_CHECK_ERROR(err);
 
     // Compute the local Jacobian action
+    PetscDMLabel dmLabel;
+    PetscIS cells = NULL;
+    PetscInt cStart = 0, cEnd = 0;
     err = DMGetLabel(dmSoln, "material-id", &dmLabel); PYLITH_CHECK_ERROR(err);
     err = DMLabelGetStratumBounds(dmLabel, id(), &cStart, &cEnd); PYLITH_CHECK_ERROR(err);
-
-    PYLITH_COMPONENT_ERROR(":TODO: @matt DMPlexComputeJacobianAction_Internal() not yet implemented in PETSc knepley/pylith.");
-#if 0 // NOT YET IMPLEMENTED IN petsc-dev knepley/pylith
     err = ISCreateStride(PETSC_COMM_SELF, cEnd-cStart, cStart, 1, &cells); PYLITH_CHECK_ERROR(err);
+
+#if 0
     err = DMPlexComputeJacobianAction_Internal(dmSoln, cells, t, tshift, vecRowSum, NULL, vecRowSum, jacobianInv->localVector(), NULL); PYLITH_CHECK_ERROR(err);
+#endif
     err = ISDestroy(&cells); PYLITH_CHECK_ERROR(err);
 
     // Compute the Jacobian inverse.
     err = VecReciprocal(jacobianInv->localVector()); PYLITH_CHECK_ERROR(err);
-#endif
 
     _needNewLHSJacobian = false;
 
