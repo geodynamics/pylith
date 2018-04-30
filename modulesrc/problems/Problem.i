@@ -203,10 +203,12 @@ public:
          *
          * @param[in] t Current time.
          * @param[in] dt Current time step.
+         * @param[in] tshift Scale for time derivative.
          * @param[in] solutionVec PETSc Vec with current trial solution.
          */
         void computeLHSJacobianLumpedInv(const PylithReal t,
                                          const PylithReal dt,
+					 const PylithReal tshift,
                                          PetscVec solutionVec);
 
 

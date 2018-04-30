@@ -264,6 +264,7 @@ void
 pylith::materials::Material::computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
                                                          const PylithReal t,
                                                          const PylithReal dt,
+                                                         const PylithReal tshift,
                                                          const pylith::topology::Field& solution)
 { // computeLHSJacobianInverseExplicit
     PYLITH_METHOD_BEGIN;

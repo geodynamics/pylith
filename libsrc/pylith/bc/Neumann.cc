@@ -280,6 +280,7 @@ void
 pylith::bc::Neumann::computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
                                                  const PylithReal t,
                                                  const PylithReal dt,
+                                                 const PylithReal tshift,
                                                  const pylith::topology::Field& solution) {}
 
 

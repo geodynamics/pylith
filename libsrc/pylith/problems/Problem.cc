@@ -352,7 +352,6 @@ pylith::problems::Problem::computeRHSResidual(PetscVec residualVec,
         _integrators[i]->computeRHSResidual(_residual, t, dt, *_solution);
     } // for
 
-
     // Assemble residual values across processes.
     PetscErrorCode err = VecSet(residualVec, 0.0); PYLITH_CHECK_ERROR(err); // Move to TSComputeIFunction()?
     _residual->scatterLocalToVector(residualVec, ADD_VALUES);
@@ -491,15 +490,17 @@ pylith::problems::Problem::computeLHSJacobianImplicit(PetscMat jacobianMat,
     PYLITH_METHOD_END;
 } // computeLHSJacobianImplicit
 
+
 // ----------------------------------------------------------------------
-// Compute LHS Jacobian for F(t,s,\dot{s}) for explicit time stepping.
+// Compute inverse of LHS Jacobian for F(t,s,\dot{s}) for explicit time stepping.
 void
 pylith::problems::Problem::computeLHSJacobianLumpedInv(const PylithReal t,
                                                        const PylithReal dt,
+                                                       const PylithReal tshift,
                                                        PetscVec solutionVec)
 { // computeLHSJacobianLumpedInv
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::computeLHSJacobianLumpedInv(t="<<t<<", dt="<<dt<<", solutionVec="<<solutionVec<<")");
+    PYLITH_COMPONENT_DEBUG("Problem::computeLHSJacobianLumpedInv(t="<<t<<", dt="<<dt<<", tshift="<<tshift<<", solutionVec="<<solutionVec<<")");
 
     assert(solutionVec);
     assert(_solution);
@@ -507,7 +508,7 @@ pylith::problems::Problem::computeLHSJacobianLumpedInv(const PylithReal t,
 
     const size_t numIntegrators = _integrators.size();
 
-    // Check to see if we need to compute RHS Jacobian.
+    // Check to see if we need to compute LHS Jacobian.
     bool needNewLHSJacobian = false;
     for (size_t i = 0; i < numIntegrators; ++i) {
         if (_integrators[i]->needNewLHSJacobian()) {
@@ -528,12 +529,13 @@ pylith::problems::Problem::computeLHSJacobianLumpedInv(const PylithReal t,
 
     // Sum Jacobian contributions across integrators.
     for (size_t i = 0; i < numIntegrators; ++i) {
-        _integrators[i]->computeLHSJacobianLumpedInv(_jacobianLHSLumpedInv, t, dt, *_solution);
+        _integrators[i]->computeLHSJacobianLumpedInv(_jacobianLHSLumpedInv, t, dt, tshift, *_solution);
     } // for
 
-    // No need to assemble lumped Jacobian across processes, because it contributes to residual.
+    // No need to assemble inverse of lumped Jacobian across processes, because it contributes to residual.
 
     PYLITH_METHOD_END;
 } // computeLHSJacobianLumpedInv
+
 
 // End of file

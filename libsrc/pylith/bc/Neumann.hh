@@ -61,7 +61,7 @@ public:
      * @param value Name of scale for nondimensionalizing Neumann boundary condition.
      */
     void scaleName(const char* value);
-  
+
     /** Set first choice for reference direction to discriminate among tangential directions in 3-D.
      *
      * @param vec Reference direction unit vector.
@@ -150,11 +150,13 @@ public:
      * @param[out] jacobianInv Inverse of lumped Jacobian as a field.
      * @param[in] t Current time.
      * @param[in] dt Current time step.
+     * @param[in] tshift Scale for time derivative.
      * @param[in] solution Field with current trial solution.
      */
     void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
                                      const PylithReal t,
                                      const PylithReal dt,
+                                     const PylithReal tshift,
                                      const pylith::topology::Field& solution);
 
 

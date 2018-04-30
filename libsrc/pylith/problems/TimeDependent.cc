@@ -418,7 +418,8 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
 
     // If explicit time stepping, multiply RHS, G(t,s), by M^{-1}
     if (EXPLICIT == problem->_formulationType) {
-        problem->Problem::computeLHSJacobianLumpedInv(t, dt, solutionVec);
+        const PylithReal tshift = 1.0; // Keep shift terms on LHS, so use 1.0 for terms moved to RHS.
+        problem->Problem::computeLHSJacobianLumpedInv(t, dt, tshift, solutionVec);
 
         assert(problem->_jacobianLHSLumpedInv);
         err = VecPointwiseMult(residualVec, problem->_jacobianLHSLumpedInv->localVector(), residualVec); PYLITH_CHECK_ERROR(err);

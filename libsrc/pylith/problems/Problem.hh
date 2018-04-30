@@ -50,8 +50,7 @@
  * function (which we call the LHS).
  *
  */
-class pylith::problems::Problem : public pylith::utils::PyreComponent
-{ // Problem
+class pylith::problems::Problem : public pylith::utils::PyreComponent { // Problem
     friend class TestProblem;   // unit testing
 
     // PUBLIC ENUM //////////////////////////////////////////////////////////
@@ -70,8 +69,7 @@ public:
     Problem(void);
 
     /// Destructor
-    virtual
-    ~Problem(void);
+    virtual ~Problem(void);
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
@@ -225,10 +223,12 @@ public:
      *
      * @param[in] t Current time.
      * @param[in] dt Current time step.
+     * @param[in] tshift Scale for time derivative.
      * @param[in] solutionVec PETSc Vec with current trial solution.
      */
     void computeLHSJacobianLumpedInv(const PylithReal t,
                                      const PylithReal dt,
+                                     const PylithReal tshift,
                                      PetscVec solutionVec);
 
     // PROTECTED MEMBERS ////////////////////////////////////////////////////
