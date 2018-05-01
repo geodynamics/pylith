@@ -76,8 +76,10 @@ void
 pylith::faults::FaultCohesiveStub::computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
                                                                const PylithReal t,
                                                                const PylithReal dt,
+                                                               const PylithReal tshift,
                                                                const pylith::topology::Field& solution) {}
 
+// ----------------------------------------------------------------------
 // Get factory for setting up auxliary fields.
 pylith::feassemble::AuxiliaryFactory*
 pylith::faults::FaultCohesiveStub::_auxFactory(void) {
