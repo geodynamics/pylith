@@ -270,6 +270,13 @@ protected:
         _mydata->auxDB->addValue("body_force_y", bodyforce_y, bodyforce_units());
 
         CPPUNIT_ASSERT(_mydata->auxUpdateDB);
+        _mydata->auxUpdateDB->addValue("density", density, density_units());
+        _mydata->auxUpdateDB->addValue("vp", vp, vp_units());
+        _mydata->auxUpdateDB->addValue("vs", vs, vs_units());
+        _mydata->auxUpdateDB->addValue("shear_modulus", shearModulus, shearModulus_units());
+        _mydata->auxUpdateDB->addValue("bulk_modulus", bulkModulus, bulkModulus_units());
+        _mydata->auxUpdateDB->addValue("viscosity", viscosity, viscosity_units());
+        _mydata->auxUpdateDB->addValue("maxwell_time", maxwellTime, maxwellTime_units());
         _mydata->auxUpdateDB->addValue("total_strain_xx", totalStrain_xx, "none");
         _mydata->auxUpdateDB->addValue("total_strain_yy", totalStrain_yy, "none");
         _mydata->auxUpdateDB->addValue("total_strain_zz", totalStrain_zz, "none");
@@ -278,6 +285,8 @@ protected:
         _mydata->auxUpdateDB->addValue("viscous_strain_yy", viscousStrain_yy, "none");
         _mydata->auxUpdateDB->addValue("viscous_strain_zz", viscousStrain_zz, "none");
         _mydata->auxUpdateDB->addValue("viscous_strain_xy", viscousStrain_xy, "none");
+        _mydata->auxUpdateDB->addValue("body_force_x", bodyforce_x, bodyforce_units());
+        _mydata->auxUpdateDB->addValue("body_force_y", bodyforce_y, bodyforce_units());
 
         CPPUNIT_ASSERT(_mydata->solnDB);
         _mydata->solnDB->addValue("displacement_x", disp_x, disp_units());
@@ -337,7 +346,8 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP
     } // setUp
 
 }; // TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP1
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP1);
+// Do not use this test because TriP1 cannot represent a linear strain field.
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_TriP1);
 
 
 // ----------------------------------------------------------------------
@@ -487,7 +497,8 @@ class pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_Quad
     } // setUp
 
 }; // TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ1
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ1);
+// Do not use this test because TriP1 cannot represent a linear strain field.
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearMaxwellPlaneStrain_LinearStrain_QuadQ1);
 
 
 // ----------------------------------------------------------------------
